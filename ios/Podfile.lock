@@ -1,4 +1,6 @@
 PODS:
+  - ABI43_0_0EASClient (0.2.1):
+    - ABI43_0_0ExpoModulesCore
   - ABI43_0_0EXAdsAdMob (11.0.0):
     - ABI43_0_0ExpoModulesCore
     - Google-Mobile-Ads-SDK (= 8.13.0)
@@ -244,19 +246,21 @@ PODS:
     - ABI43_0_0ExpoModulesCore
   - ABI43_0_0EXStoreReview (5.0.0):
     - ABI43_0_0ExpoModulesCore
-  - ABI43_0_0EXStructuredHeaders (2.0.0)
+  - ABI43_0_0EXStructuredHeaders (2.2.0)
   - ABI43_0_0EXTaskManager (10.0.0):
     - ABI43_0_0ExpoModulesCore
     - ABI43_0_0UMAppLoader
     - ABI43_0_0UMTaskManagerInterface
   - ABI43_0_0EXTrackingTransparency (2.0.0):
     - ABI43_0_0ExpoModulesCore
-  - ABI43_0_0EXUpdates (0.10.1):
+  - ABI43_0_0EXUpdates (0.12.0):
+    - ABI43_0_0EASClient
     - ABI43_0_0EXManifests
     - ABI43_0_0ExpoModulesCore
     - ABI43_0_0EXStructuredHeaders
     - ABI43_0_0EXUpdatesInterface
     - ABI43_0_0React-Core
+    - ASN1Decoder (~> 1.8)
   - ABI43_0_0EXUpdatesInterface (0.4.0)
   - ABI43_0_0EXVideoThumbnails (6.0.0):
     - ABI43_0_0ExpoModulesCore
@@ -591,6 +595,8 @@ PODS:
   - ABI43_0_0UMTaskManagerInterface (7.0.0):
     - ABI43_0_0ExpoModulesCore
   - ABI43_0_0Yoga (1.14.0)
+  - ABI44_0_0EASClient (0.2.1):
+    - ABI44_0_0ExpoModulesCore
   - ABI44_0_0EXAdsAdMob (12.0.0):
     - ABI44_0_0ExpoModulesCore
     - Google-Mobile-Ads-SDK (= 8.13.0)
@@ -846,19 +852,21 @@ PODS:
     - ABI44_0_0ExpoModulesCore
   - ABI44_0_0EXStoreReview (5.1.0):
     - ABI44_0_0ExpoModulesCore
-  - ABI44_0_0EXStructuredHeaders (2.1.0)
+  - ABI44_0_0EXStructuredHeaders (2.2.0)
   - ABI44_0_0EXTaskManager (10.1.0):
     - ABI44_0_0ExpoModulesCore
     - ABI44_0_0UMAppLoader
     - ABI44_0_0UMTaskManagerInterface
   - ABI44_0_0EXTrackingTransparency (2.1.0):
     - ABI44_0_0ExpoModulesCore
-  - ABI44_0_0EXUpdates (0.11.0):
+  - ABI44_0_0EXUpdates (0.12.0):
+    - ABI44_0_0EASClient
     - ABI44_0_0EXManifests
     - ABI44_0_0ExpoModulesCore
     - ABI44_0_0EXStructuredHeaders
     - ABI44_0_0EXUpdatesInterface
     - ABI44_0_0React-Core
+    - ASN1Decoder (~> 1.8)
   - ABI44_0_0EXUpdatesInterface (0.5.0)
   - ABI44_0_0EXVideoThumbnails (6.1.0):
     - ABI44_0_0ExpoModulesCore
@@ -2596,6 +2604,7 @@ PODS:
     - ZXingObjC/Core
 
 DEPENDENCIES:
+  - ABI43_0_0EASClient (from `./versioned/sdk43/EASClient`)
   - ABI43_0_0EXAdsAdMob (from `./versioned/sdk43/EXAdsAdMob`)
   - ABI43_0_0EXAdsFacebook (from `./versioned/sdk43/EXAdsFacebook`)
   - ABI43_0_0EXAmplitude (from `./versioned/sdk43/EXAmplitude`)
@@ -2705,6 +2714,7 @@ DEPENDENCIES:
   - ABI43_0_0UMAppLoader (from `./versioned/sdk43/UMAppLoader`)
   - ABI43_0_0UMTaskManagerInterface (from `./versioned/sdk43/UMTaskManagerInterface`)
   - ABI43_0_0Yoga (from `./versioned-react-native/ABI43_0_0/ReactNative/ReactCommon/yoga`)
+  - ABI44_0_0EASClient (from `./versioned/sdk44/EASClient`)
   - ABI44_0_0EXAdsAdMob (from `./versioned/sdk44/EXAdsAdMob`)
   - ABI44_0_0EXAdsFacebook (from `./versioned/sdk44/EXAdsFacebook`)
   - ABI44_0_0EXAmplitude (from `./versioned/sdk44/EXAmplitude`)
@@ -3105,6 +3115,8 @@ SPEC REPOS:
     - ZXingObjC
 
 EXTERNAL SOURCES:
+  ABI43_0_0EASClient:
+    :path: "./versioned/sdk43/EASClient"
   ABI43_0_0EXAdsAdMob:
     :path: "./versioned/sdk43/EXAdsAdMob"
   ABI43_0_0EXAdsFacebook:
@@ -3317,6 +3329,8 @@ EXTERNAL SOURCES:
     :path: "./versioned/sdk43/UMTaskManagerInterface"
   ABI43_0_0Yoga:
     :path: "./versioned-react-native/ABI43_0_0/ReactNative/ReactCommon/yoga"
+  ABI44_0_0EASClient:
+    :path: "./versioned/sdk44/EASClient"
   ABI44_0_0EXAdsAdMob:
     :path: "./versioned/sdk44/EXAdsAdMob"
   ABI44_0_0EXAdsFacebook:
@@ -3979,6 +3993,7 @@ EXTERNAL SOURCES:
     :path: "../react-native-lab/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
+  ABI43_0_0EASClient: 5d85863f5de4de9a19e8434b4a150c121acc05e3
   ABI43_0_0EXAdsAdMob: 0b9da21008a7a32cbdd4bbaf722d4e4c0ea912db
   ABI43_0_0EXAdsFacebook: f5ddbc318d83603fb1d4e1cf9a295be1ffcb1eac
   ABI43_0_0EXAmplitude: 9556161276fc84317781fe0e93bbb7b7e227dc75
@@ -4043,10 +4058,10 @@ SPEC CHECKSUMS:
   ABI43_0_0EXSplashScreen: 9997f5ff725e52a8296d1e67852d4fd5d0b306c3
   ABI43_0_0EXSQLite: 76d59b82d76c77475a0db3dbc89f717efbf5b013
   ABI43_0_0EXStoreReview: 476241d11f87d98038a50dd65fdc31d63f4495e7
-  ABI43_0_0EXStructuredHeaders: 1b5f6bdd6e75c263f37907fd636446bcdf930a7e
+  ABI43_0_0EXStructuredHeaders: 636fdec236aa3f13c1b38285a98c2cb79d3b5f95
   ABI43_0_0EXTaskManager: 6e2868656a129f3237d6788cc016855c3a473f6b
   ABI43_0_0EXTrackingTransparency: 8152a43c655e3d2b724b0cdd94b5237c4fa81ef9
-  ABI43_0_0EXUpdates: 360780972089247c673f8bcf63171afcb06c9af1
+  ABI43_0_0EXUpdates: b0b41e299e4182b5919e2e82069f745f7aea9e60
   ABI43_0_0EXUpdatesInterface: a1b00595ce410069b049cc6bc0688f92303ec229
   ABI43_0_0EXVideoThumbnails: f9d30f4430fd73bf5d0550876c39be39165837b0
   ABI43_0_0EXWebBrowser: fa11039b71b6c1e34d422c4c15fe5064d7234430
@@ -4085,6 +4100,7 @@ SPEC CHECKSUMS:
   ABI43_0_0UMAppLoader: ac4c403f59e691af683873f22b44a023155bac55
   ABI43_0_0UMTaskManagerInterface: af977f83f0ab2c68d8023174a7d542a8cf465351
   ABI43_0_0Yoga: b4a69fd97272b10eb433c11dd8bb2e571e311e36
+  ABI44_0_0EASClient: 8fc2bff1af8847a79d89c6bff16cb99ba7bb25a9
   ABI44_0_0EXAdsAdMob: cb243b69fd127619881f385415247a53b95a9f10
   ABI44_0_0EXAdsFacebook: 46b859638bd86cd89c52ac4012f845173b2d5d2c
   ABI44_0_0EXAmplitude: 54a07b781b2ca42f1238cd4f0557ce8a8e4babc4
@@ -4149,10 +4165,10 @@ SPEC CHECKSUMS:
   ABI44_0_0EXSplashScreen: a4b87ec6a1ccfcf1025ace8b45e70cdc41db882a
   ABI44_0_0EXSQLite: 6ebae3d9d2b4c52080c5975bd7e13180cbdf1f9f
   ABI44_0_0EXStoreReview: 142725f1ebdc599bc50aff52644cbf003a0086ec
-  ABI44_0_0EXStructuredHeaders: 722298dd39b6fbfdd4d0fb13dbb31177c321ba4d
+  ABI44_0_0EXStructuredHeaders: df766718a77baefc580d9c621a06360a1a50da97
   ABI44_0_0EXTaskManager: cbebb7b881531a1e492e5ed39a8eac1adbd7fdc0
   ABI44_0_0EXTrackingTransparency: b98c490c1a9f81b5d7587967fedc1c152a8b0724
-  ABI44_0_0EXUpdates: 883b06cfd9a844a7c67594e68bf7b3288df4c157
+  ABI44_0_0EXUpdates: f1d89075cb20607d70a1f5b1c16b0bb7b54a1876
   ABI44_0_0EXUpdatesInterface: 95784c144941ed282da4a21b1a5b8e9330de0364
   ABI44_0_0EXVideoThumbnails: 002faa2841bf70244f766330630fd6cf3b2f1f76
   ABI44_0_0EXWebBrowser: 5f4a34c63ea57bac9c4f2fabc0db4cda7f41203c

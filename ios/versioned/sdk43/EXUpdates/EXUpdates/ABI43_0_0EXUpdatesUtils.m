@@ -22,7 +22,7 @@ static NSString * const ABI43_0_0EXUpdatesUtilsErrorDomain = @"ABI43_0_0EXUpdate
   }
 }
 
-+ (NSString *)sha256WithData:(NSData *)data
++ (NSString *)hexEncodedSHA256WithData:(NSData *)data
 {
   uint8_t digest[CC_SHA256_DIGEST_LENGTH];
   CC_SHA256(data.bytes, (CC_LONG)data.length, digest);
@@ -34,6 +34,19 @@ static NSString * const ABI43_0_0EXUpdatesUtilsErrorDomain = @"ABI43_0_0EXUpdate
   }
 
   return output;
+}
+
++ (NSString *)base64UrlEncodedSHA256WithData:(NSData *)data
+{
+  uint8_t digest[CC_SHA256_DIGEST_LENGTH];
+  CC_SHA256(data.bytes, (CC_LONG)data.length, digest);
+  NSString *base64String = [[NSData dataWithBytes:digest length:CC_SHA256_DIGEST_LENGTH] base64EncodedStringWithOptions:0];
+  
+  // ref. https://datatracker.ietf.org/doc/html/rfc4648#section-5
+  return [[[base64String
+            stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"="]] // remove extra padding
+           stringByReplacingOccurrencesOfString:@"+" withString:@"-"] // replace "+" character w/ "-"
+          stringByReplacingOccurrencesOfString:@"/" withString:@"_"]; // replace "/" character w/ "_"
 }
 
 + (nullable NSURL *)initializeUpdatesDirectoryWithError:(NSError ** _Nullable)error
@@ -78,6 +91,9 @@ static NSString * const ABI43_0_0EXUpdatesUtilsErrorDomain = @"ABI43_0_0EXUpdate
   switch (config.checkOnLaunch) {
     case ABI43_0_0EXUpdatesCheckAutomaticallyConfigNever:
       return NO;
+    case ABI43_0_0EXUpdatesCheckAutomaticallyConfigErrorRecoveryOnly:
+      // check will happen later on if there's an error
+      return NO;
     case ABI43_0_0EXUpdatesCheckAutomaticallyConfigWifiOnly: {
       struct sockaddr_in zeroAddress;
       bzero(&zeroAddress, sizeof(zeroAddress));
@@ -102,6 +118,20 @@ static NSString * const ABI43_0_0EXUpdatesUtilsErrorDomain = @"ABI43_0_0EXUpdate
   // hasn't configured either runtimeVersion or sdkVersion, we'll use a dummy value of "1" but warn
   // the developer in JS that they need to configure one of these values
   return config.runtimeVersion ?: config.sdkVersion ?: @"1";
+}
+
++ (NSURL *)urlForBundledAsset:(ABI43_0_0EXUpdatesAsset *)asset
+{
+  return asset.mainBundleDir
+    ? [[NSBundle mainBundle] URLForResource:asset.mainBundleFilename withExtension:asset.type subdirectory:asset.mainBundleDir]
+    : [[NSBundle mainBundle] URLForResource:asset.mainBundleFilename withExtension:asset.type];
+}
+
++ (NSString *)pathForBundledAsset:(ABI43_0_0EXUpdatesAsset *)asset
+{
+  return asset.mainBundleDir
+    ? [[NSBundle mainBundle] pathForResource:asset.mainBundleFilename ofType:asset.type inDirectory:asset.mainBundleDir]
+    : [[NSBundle mainBundle] pathForResource:asset.mainBundleFilename ofType:asset.type];
 }
 
 @end

@@ -19,8 +19,7 @@
 - (void)setUp
 {
   _config = [ABI43_0_0EXUpdatesConfig configWithDictionary:@{
-    @"ABI43_0_0EXUpdatesURL": @"https://exp.host/@test/test",
-    @"ABI43_0_0EXUpdatesUsesLegacyManifest": @(YES)
+    ABI43_0_0EXUpdatesConfigUpdateUrlKey: @"https://exp.host/@test/test",
   }];
 
   _database = [ABI43_0_0EXUpdatesDatabase new];
@@ -40,7 +39,16 @@
     @"createdAt": @"2020-11-11T00:17:54.797Z",
     @"launchAsset": @{@"url": @"https://url.to/bundle.js", @"contentType": @"application/javascript"}
   }];
-  XCTAssert([ABI43_0_0EXUpdatesNewUpdate updateWithNewManifest:manifest response:nil config:_config database:_database] != nil);
+  ABI43_0_0EXUpdatesManifestHeaders *manifestHeaders = [[ABI43_0_0EXUpdatesManifestHeaders alloc] initWithProtocolVersion:nil
+                                                                                   serverDefinedHeaders:nil
+                                                                                        manifestFilters:nil
+                                                                                      manifestSignature:nil
+                                                                                              signature:nil];
+  XCTAssert([ABI43_0_0EXUpdatesNewUpdate updateWithNewManifest:manifest
+                                      manifestHeaders:manifestHeaders
+                                           extensions:@{}
+                                               config:_config
+                                             database:_database] != nil);
 }
 
 - (void)testUpdateWithNewManifest_NoRuntimeVersion
@@ -50,7 +58,16 @@
     @"createdAt": @"2020-11-11T00:17:54.797Z",
     @"launchAsset": @{@"url": @"https://url.to/bundle.js", @"contentType": @"application/javascript"}
   }];
-  XCTAssertThrows([ABI43_0_0EXUpdatesNewUpdate updateWithNewManifest:manifest response:nil config:_config database:_database]);
+  ABI43_0_0EXUpdatesManifestHeaders *manifestHeaders = [[ABI43_0_0EXUpdatesManifestHeaders alloc] initWithProtocolVersion:nil
+                                                                                   serverDefinedHeaders:nil
+                                                                                        manifestFilters:nil
+                                                                                      manifestSignature:nil
+                                                                                              signature:nil];
+  XCTAssertThrows([ABI43_0_0EXUpdatesNewUpdate updateWithNewManifest:manifest
+                                            manifestHeaders:manifestHeaders
+                                                 extensions:@{}
+                                                     config:_config
+                                                   database:_database]);
 }
 
 - (void)testUpdateWithNewManifest_NoId
@@ -60,7 +77,16 @@
     @"createdAt": @"2020-11-11T00:17:54.797Z",
     @"launchAsset": @{@"url": @"https://url.to/bundle.js", @"contentType": @"application/javascript"}
   }];
-  XCTAssertThrows([ABI43_0_0EXUpdatesNewUpdate updateWithNewManifest:manifest response:nil config:_config database:_database]);
+  ABI43_0_0EXUpdatesManifestHeaders *manifestHeaders = [[ABI43_0_0EXUpdatesManifestHeaders alloc] initWithProtocolVersion:nil
+                                                                                   serverDefinedHeaders:nil
+                                                                                        manifestFilters:nil
+                                                                                      manifestSignature:nil
+                                                                                              signature:nil];
+  XCTAssertThrows([ABI43_0_0EXUpdatesNewUpdate updateWithNewManifest:manifest
+                                            manifestHeaders:manifestHeaders
+                                                 extensions:@{}
+                                                     config:_config
+                                                   database:_database]);
 }
 
 - (void)testUpdateWithNewManifest_NoCreatedAt
@@ -70,7 +96,16 @@
     @"id": @"0eef8214-4833-4089-9dff-b4138a14f196",
     @"launchAsset": @{@"url": @"https://url.to/bundle.js", @"contentType": @"application/javascript"}
   }];
-  XCTAssertThrows([ABI43_0_0EXUpdatesNewUpdate updateWithNewManifest:manifest response:nil config:_config database:_database]);
+  ABI43_0_0EXUpdatesManifestHeaders *manifestHeaders = [[ABI43_0_0EXUpdatesManifestHeaders alloc] initWithProtocolVersion:nil
+                                                                                   serverDefinedHeaders:nil
+                                                                                        manifestFilters:nil
+                                                                                      manifestSignature:nil
+                                                                                              signature:nil];
+  XCTAssertThrows([ABI43_0_0EXUpdatesNewUpdate updateWithNewManifest:manifest
+                                            manifestHeaders:manifestHeaders
+                                                 extensions:@{}
+                                                     config:_config
+                                                   database:_database]);
 }
 
 - (void)testUpdateWithNewManifest_NoLaunchAsset
@@ -80,7 +115,15 @@
     @"id": @"0eef8214-4833-4089-9dff-b4138a14f196",
     @"createdAt": @"2020-11-11T00:17:54.797Z"
   }];
-  XCTAssertThrows([ABI43_0_0EXUpdatesNewUpdate updateWithNewManifest:manifest response:nil config:_config database:_database]);
+  ABI43_0_0EXUpdatesManifestHeaders *manifestHeaders = [[ABI43_0_0EXUpdatesManifestHeaders alloc] initWithProtocolVersion:nil
+                                                                                   serverDefinedHeaders:nil
+                                                                                        manifestFilters:nil
+                                                                                      manifestSignature:nil
+                                                                                              signature:nil];
+  XCTAssertThrows([ABI43_0_0EXUpdatesNewUpdate updateWithNewManifest:manifest
+                                            manifestHeaders:manifestHeaders
+                                                 extensions:@{}
+                                                     config:_config database:_database]);
 }
 
 - (void)testDictionaryWithStructuredHeader_SupportedTypes

@@ -4,6 +4,7 @@
 #import <ABI44_0_0EXUpdates/ABI44_0_0EXUpdatesAppLauncherWithDatabase.h>
 #import <ABI44_0_0EXUpdates/ABI44_0_0EXUpdatesConfig.h>
 #import <ABI44_0_0EXUpdates/ABI44_0_0EXUpdatesDevLauncherController.h>
+#import <ABI44_0_0EXupdates/ABI44_0_0EXUpdatesLauncherSelectionPolicySingleUpdate.h>
 #import <ABI44_0_0EXUpdates/ABI44_0_0EXUpdatesReaper.h>
 #import <ABI44_0_0EXUpdates/ABI44_0_0EXUpdatesReaperSelectionPolicyDevelopmentClient.h>
 #import <ABI44_0_0EXUpdates/ABI44_0_0EXUpdatesRemoteAppLoader.h>
@@ -94,7 +95,7 @@ typedef NS_ENUM(NSInteger, ABI44_0_0EXUpdatesDevLauncherErrorCode) {
   [self _setDevelopmentSelectionPolicy];
   [controller setConfigurationInternal:updatesConfiguration];
 
-  ABI44_0_0EXUpdatesRemoteAppLoader *loader = [[ABI44_0_0EXUpdatesRemoteAppLoader alloc] initWithConfig:updatesConfiguration database:controller.database directory:controller.updatesDirectory completionQueue:controller.controllerQueue];
+  ABI44_0_0EXUpdatesRemoteAppLoader *loader = [[ABI44_0_0EXUpdatesRemoteAppLoader alloc] initWithConfig:updatesConfiguration database:controller.database directory:controller.updatesDirectory launchedUpdate:nil completionQueue:controller.controllerQueue];
   [loader loadUpdateFromUrl:updatesConfiguration.updateUrl onManifest:^BOOL(ABI44_0_0EXUpdatesUpdate * _Nonnull update) {
     return manifestBlock(update.manifest.rawManifestJSON);
   } asset:^(ABI44_0_0EXUpdatesAsset * _Nonnull asset, NSUInteger successfulAssetCount, NSUInteger failedAssetCount, NSUInteger totalAssetCount) {
@@ -105,12 +106,17 @@ typedef NS_ENUM(NSInteger, ABI44_0_0EXUpdatesDevLauncherErrorCode) {
       return;
     }
     [self _launchUpdate:update withConfiguration:updatesConfiguration success:successBlock error:errorBlock];
-  } error:errorBlock];
+  } error:^(NSError * _Nonnull error) {
+    // reset controller's configuration to what it was before this request
+    [controller setConfigurationInternal:self->_tempConfig];
+    errorBlock(error);
+  }];
 }
 
 - (void)_setDevelopmentSelectionPolicy
 {
   ABI44_0_0EXUpdatesAppController *controller = ABI44_0_0EXUpdatesAppController.sharedInstance;
+  [controller resetSelectionPolicyToDefault];
   ABI44_0_0EXUpdatesSelectionPolicy *currentSelectionPolicy = controller.selectionPolicy;
   [controller setDefaultSelectionPolicy:[[ABI44_0_0EXUpdatesSelectionPolicy alloc]
                                          initWithLauncherSelectionPolicy:currentSelectionPolicy.launcherSelectionPolicy
@@ -125,12 +131,20 @@ typedef NS_ENUM(NSInteger, ABI44_0_0EXUpdatesDevLauncherErrorCode) {
                 error:(ABI44_0_0EXUpdatesErrorBlock)errorBlock
 {
   ABI44_0_0EXUpdatesAppController *controller = ABI44_0_0EXUpdatesAppController.sharedInstance;
+
+  // ensure that we launch the update we want, even if it isn't the latest one
+  ABI44_0_0EXUpdatesSelectionPolicy *currentSelectionPolicy = controller.selectionPolicy;
+  [controller setNextSelectionPolicy:[[ABI44_0_0EXUpdatesSelectionPolicy alloc]
+                                      initWithLauncherSelectionPolicy:[[ABI44_0_0EXUpdatesLauncherSelectionPolicySingleUpdate alloc] initWithUpdateID:update.updateId]
+                                      loaderSelectionPolicy:currentSelectionPolicy.loaderSelectionPolicy
+                                      reaperSelectionPolicy:currentSelectionPolicy.reaperSelectionPolicy]];
+
   ABI44_0_0EXUpdatesAppLauncherWithDatabase *launcher = [[ABI44_0_0EXUpdatesAppLauncherWithDatabase alloc] initWithConfig:configuration database:controller.database directory:controller.updatesDirectory completionQueue:controller.controllerQueue];
   [launcher launchUpdateWithSelectionPolicy:controller.selectionPolicy completion:^(NSError * _Nullable error, BOOL success) {
     if (!success) {
-      errorBlock(error ?: [NSError errorWithDomain:ABI44_0_0EXUpdatesDevLauncherControllerErrorDomain code:ABI44_0_0EXUpdatesDevLauncherErrorCodeUpdateLaunchFailed userInfo:@{NSLocalizedDescriptionKey: @"Failed to launch update with an unknown error"}]);
       // reset controller's configuration to what it was before this request
       [controller setConfigurationInternal:self->_tempConfig];
+      errorBlock(error ?: [NSError errorWithDomain:ABI44_0_0EXUpdatesDevLauncherControllerErrorDomain code:ABI44_0_0EXUpdatesDevLauncherErrorCodeUpdateLaunchFailed userInfo:@{NSLocalizedDescriptionKey: @"Failed to launch update with an unknown error"}]);
       return;
     }
 

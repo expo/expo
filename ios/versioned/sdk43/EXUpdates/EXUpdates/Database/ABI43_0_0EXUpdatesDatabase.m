@@ -16,6 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 static NSString * const ABI43_0_0EXUpdatesDatabaseManifestFiltersKey = @"manifestFilters";
 static NSString * const ABI43_0_0EXUpdatesDatabaseServerDefinedHeadersKey = @"serverDefinedHeaders";
+static NSString * const ABI43_0_0EXUpdatesDatabaseStaticBuildDataKey = @"staticBuildData";
 
 @implementation ABI43_0_0EXUpdatesDatabase
 
@@ -56,8 +57,8 @@ static NSString * const ABI43_0_0EXUpdatesDatabaseServerDefinedHeadersKey = @"se
 
 - (void)addUpdate:(ABI43_0_0EXUpdatesUpdate *)update error:(NSError ** _Nullable)error
 {
-  NSString * const sql = @"INSERT INTO \"updates\" (\"id\", \"scope_key\", \"commit_time\", \"runtime_version\", \"manifest\", \"status\" , \"keep\", \"last_accessed\")\
-  VALUES (?1, ?2, ?3, ?4, ?5, ?6, 1, ?7);";
+  NSString * const sql = @"INSERT INTO \"updates\" (\"id\", \"scope_key\", \"commit_time\", \"runtime_version\", \"manifest\", \"status\" , \"keep\", \"last_accessed\", \"successful_launch_count\", \"failed_launch_count\")\
+  VALUES (?1, ?2, ?3, ?4, ?5, ?6, 1, ?7, ?8, ?9);";
 
   [self _executeSql:sql
            withArgs:@[
@@ -67,7 +68,9 @@ static NSString * const ABI43_0_0EXUpdatesDatabaseServerDefinedHeadersKey = @"se
                       update.runtimeVersion,
                       update.manifestJSON ?: [NSNull null],
                       @(update.status),
-                      update.lastAccessed
+                      update.lastAccessed,
+                      @(update.successfulLaunchCount),
+                      @(update.failedLaunchCount)
                       ]
               error:error];
 }
@@ -81,19 +84,21 @@ static NSString * const ABI43_0_0EXUpdatesDatabaseServerDefinedHeadersKey = @"se
     NSAssert(asset.filename, @"asset filename should be nonnull");
     NSAssert(asset.contentHash, @"asset contentHash should be nonnull");
 
-    NSString * const assetInsertSql = @"INSERT OR REPLACE INTO \"assets\" (\"key\", \"url\", \"headers\", \"type\", \"metadata\", \"download_time\", \"relative_path\", \"hash\", \"hash_type\", \"marked_for_deletion\")\
-    VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, 0);";
+    NSString * const assetInsertSql = @"INSERT OR REPLACE INTO \"assets\" (\"key\", \"url\", \"headers\", \"extra_request_headers\", \"type\", \"metadata\", \"download_time\", \"relative_path\", \"hash\", \"hash_type\", \"expected_hash\", \"marked_for_deletion\")\
+    VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, 0);";
     if ([self _executeSql:assetInsertSql
                  withArgs:@[
                           asset.key ?: [NSNull null],
                           asset.url ? asset.url.absoluteString : [NSNull null],
                           asset.headers ?: [NSNull null],
+                          asset.extraRequestHeaders ?: [NSNull null],
                           asset.type,
                           asset.metadata ?: [NSNull null],
                           asset.downloadTime,
                           asset.filename,
                           asset.contentHash,
-                          @(ABI43_0_0EXUpdatesDatabaseHashTypeSha1)
+                          @(ABI43_0_0EXUpdatesDatabaseHashTypeSha1),
+                          asset.expectedHash ?: [NSNull null],
                           ]
                     error:error] == nil) {
       sqlite3_exec(_db, "ROLLBACK;", NULL, NULL, NULL);
@@ -161,16 +166,18 @@ static NSString * const ABI43_0_0EXUpdatesDatabaseServerDefinedHeadersKey = @"se
   NSAssert(asset.filename, @"asset filename should be nonnull");
   NSAssert(asset.contentHash, @"asset contentHash should be nonnull");
 
-  NSString * const assetUpdateSql = @"UPDATE \"assets\" SET \"headers\" = ?2, \"type\" = ?3, \"metadata\" = ?4, \"download_time\" = ?5, \"relative_path\" = ?6, \"hash\" = ?7, \"url\" = ?8 WHERE \"key\" = ?1;";
+  NSString * const assetUpdateSql = @"UPDATE \"assets\" SET \"headers\" = ?2, \"extra_request_headers\" = ?3, \"type\" = ?4, \"metadata\" = ?5, \"download_time\" = ?6, \"relative_path\" = ?7, \"hash\" = ?8, \"expected_hash\" = ?9, \"url\" = ?10 WHERE \"key\" = ?1;";
   [self _executeSql:assetUpdateSql
            withArgs:@[
                       asset.key ?: [NSNull null],
                       asset.headers ?: [NSNull null],
+                      asset.extraRequestHeaders ?: [NSNull null],
                       asset.type,
                       asset.metadata ?: [NSNull null],
                       asset.downloadTime,
                       asset.filename,
                       asset.contentHash,
+                      asset.expectedHash,
                       asset.url ? asset.url.absoluteString : [NSNull null]
                       ]
               error:error];
@@ -179,13 +186,25 @@ static NSString * const ABI43_0_0EXUpdatesDatabaseServerDefinedHeadersKey = @"se
 - (void)mergeAsset:(ABI43_0_0EXUpdatesAsset *)asset withExistingEntry:(ABI43_0_0EXUpdatesAsset *)existingAsset error:(NSError ** _Nullable)error
 {
   // if the existing entry came from an embedded manifest, it may not have a URL in the database
-  if (asset.url && !existingAsset.url) {
+  BOOL shouldUpdate = false;
+  if (asset.url && (!existingAsset.url || ![asset.url isEqual:existingAsset.url])) {
     existingAsset.url = asset.url;
+    shouldUpdate = true;
+  }
+  
+  if (asset.extraRequestHeaders && (!existingAsset.extraRequestHeaders || ![asset.extraRequestHeaders isEqualToDictionary:existingAsset.extraRequestHeaders])) {
+    existingAsset.extraRequestHeaders = asset.extraRequestHeaders;
+    shouldUpdate = true;
+  }
+  
+  if (shouldUpdate) {
     [self updateAsset:existingAsset error:error];
   }
+  
   // all other properties should be overridden by database values
   asset.filename = existingAsset.filename;
   asset.contentHash = existingAsset.contentHash;
+  asset.expectedHash = existingAsset.expectedHash;
   asset.downloadTime = existingAsset.downloadTime;
 }
 
@@ -208,6 +227,20 @@ static NSString * const ABI43_0_0EXUpdatesDatabaseServerDefinedHeadersKey = @"se
   update.lastAccessed = [NSDate date];
   NSString * const updateSql = @"UPDATE updates SET last_accessed = ?1 WHERE id = ?2;";
   [self _executeSql:updateSql withArgs:@[update.lastAccessed, update.updateId] error:error];
+}
+
+- (void)incrementSuccessfulLaunchCountForUpdate:(ABI43_0_0EXUpdatesUpdate *)update error:(NSError ** _Nullable)error
+{
+  update.successfulLaunchCount++;
+  NSString * const updateSql = @"UPDATE updates SET successful_launch_count = ?1 WHERE id = ?2;";
+  [self _executeSql:updateSql withArgs:@[@(update.successfulLaunchCount), update.updateId] error:error];
+}
+
+- (void)incrementFailedLaunchCountForUpdate:(ABI43_0_0EXUpdatesUpdate *)update error:(NSError ** _Nullable)error
+{
+  update.failedLaunchCount++;
+  NSString * const updateSql = @"UPDATE updates SET failed_launch_count = ?1 WHERE id = ?2;";
+  [self _executeSql:updateSql withArgs:@[@(update.failedLaunchCount), update.updateId] error:error];
 }
 
 - (void)setScopeKey:(NSString *)scopeKey onUpdate:(ABI43_0_0EXUpdatesUpdate *)update error:(NSError ** _Nullable)error
@@ -275,6 +308,17 @@ static NSString * const ABI43_0_0EXUpdatesDatabaseServerDefinedHeadersKey = @"se
     return nil;
   }
 
+  // check for duplicate rows representing a single file on disk
+  NSString * const update3Sql = @"UPDATE assets SET marked_for_deletion = 0 WHERE relative_path IN (\
+  SELECT relative_path\
+  FROM assets\
+  WHERE marked_for_deletion = 0\
+  );";
+  if ([self _executeSql:update3Sql withArgs:nil error:error] == nil) {
+    sqlite3_exec(_db, "ROLLBACK;", NULL, NULL, NULL);
+    return nil;
+  }
+
   NSString * const selectSql = @"SELECT * FROM assets WHERE marked_for_deletion = 1;";
   NSArray<NSDictionary *> *rows = [self _executeSql:selectSql withArgs:nil error:error];
   if (!rows) {
@@ -333,9 +377,12 @@ static NSString * const ABI43_0_0EXUpdatesDatabaseServerDefinedHeadersKey = @"se
 
 - (nullable NSArray<ABI43_0_0EXUpdatesUpdate *> *)launchableUpdatesWithConfig:(ABI43_0_0EXUpdatesConfig *)config error:(NSError ** _Nullable)error
 {
+  // if an update has successfully launched at least once, we treat it as launchable
+  // even if it has also failed to launch at least once
   NSString *sql = [NSString stringWithFormat:@"SELECT *\
   FROM updates\
   WHERE scope_key = ?1\
+  AND (successful_launch_count > 0 OR failed_launch_count < 1)\
   AND status IN (%li, %li, %li);", (long)ABI43_0_0EXUpdatesUpdateStatusReady, (long)ABI43_0_0EXUpdatesUpdateStatusEmbedded, (long)ABI43_0_0EXUpdatesUpdateStatusDevelopment];
 
   NSArray<NSDictionary *> *rows = [self _executeSql:sql withArgs:@[config.scopeKey] error:error];
@@ -430,7 +477,7 @@ static NSString * const ABI43_0_0EXUpdatesDatabaseServerDefinedHeadersKey = @"se
     id value = rows[0][@"value"];
     if (value && [value isKindOfClass:[NSString class]]) {
       NSDictionary *jsonObject = [NSJSONSerialization JSONObjectWithData:[(NSString *)value dataUsingEncoding:NSUTF8StringEncoding] options:kNilOptions error:error];
-      if (!*error && jsonObject && [jsonObject isKindOfClass:[NSDictionary class]]) {
+      if (!(error && *error) && jsonObject && [jsonObject isKindOfClass:[NSDictionary class]]) {
         return jsonObject;
       }
     }
@@ -475,6 +522,11 @@ static NSString * const ABI43_0_0EXUpdatesDatabaseServerDefinedHeadersKey = @"se
   return [self _jsonDataWithKey:ABI43_0_0EXUpdatesDatabaseManifestFiltersKey scopeKey:scopeKey error:error];
 }
 
+- (nullable NSDictionary *)staticBuildDataWithScopeKey:(NSString *)scopeKey error:(NSError ** _Nullable)error
+{
+  return [self _jsonDataWithKey:ABI43_0_0EXUpdatesDatabaseStaticBuildDataKey scopeKey:scopeKey error:error];
+}
+
 - (void)setServerDefinedHeaders:(NSDictionary *)serverDefinedHeaders withScopeKey:(NSString *)scopeKey error:(NSError ** _Nullable)error
 {
   [self _setJsonData:serverDefinedHeaders withKey:ABI43_0_0EXUpdatesDatabaseServerDefinedHeadersKey scopeKey:scopeKey isInTransaction:NO error:error];
@@ -511,6 +563,11 @@ static NSString * const ABI43_0_0EXUpdatesDatabaseServerDefinedHeadersKey = @"se
   sqlite3_exec(_db, "COMMIT;", NULL, NULL, NULL);
 }
 
+- (void)setStaticBuildData:(NSDictionary *)staticBuildData withScopeKey:(NSString *)scopeKey error:(NSError ** _Nullable)error
+{
+  [self _setJsonData:staticBuildData withKey:ABI43_0_0EXUpdatesDatabaseStaticBuildDataKey scopeKey:scopeKey isInTransaction:NO error:error];
+}
+
 # pragma mark - helper methods
 
 - (nullable NSArray<NSDictionary *> *)_executeSql:(NSString *)sql withArgs:(nullable NSArray *)args error:(NSError ** _Nullable)error
@@ -544,17 +601,27 @@ static NSString * const ABI43_0_0EXUpdatesDatabaseServerDefinedHeadersKey = @"se
                                                    config:config
                                                  database:self];
   update.lastAccessed = [ABI43_0_0EXUpdatesDatabaseUtils dateFromUnixTimeMilliseconds:(NSNumber *)row[@"last_accessed"]];
+  update.successfulLaunchCount = [(NSNumber *)row[@"successful_launch_count"] integerValue];
+  update.failedLaunchCount = [(NSNumber *)row[@"failed_launch_count"] integerValue];
   return update;
 }
 
 - (ABI43_0_0EXUpdatesAsset *)_assetWithRow:(NSDictionary *)row
 {
-  NSError *error;
+  NSError *metadataDeserializationError;
   id metadata = nil;
   id rowMetadata = row[@"metadata"];
   if ([rowMetadata isKindOfClass:[NSString class]]) {
-    metadata = [NSJSONSerialization JSONObjectWithData:[(NSString *)rowMetadata dataUsingEncoding:NSUTF8StringEncoding] options:kNilOptions error:&error];
-    NSAssert(!error && metadata && [metadata isKindOfClass:[NSDictionary class]], @"Asset metadata should be a valid JSON object");
+    metadata = [NSJSONSerialization JSONObjectWithData:[(NSString *)rowMetadata dataUsingEncoding:NSUTF8StringEncoding] options:kNilOptions error:&metadataDeserializationError];
+    NSAssert(!metadataDeserializationError && metadata && [metadata isKindOfClass:[NSDictionary class]], @"Asset metadata should be a valid JSON object");
+  }
+  
+  NSError *extraRequestHeadersDeserializationError;
+  id extraRequestHeaders = nil;
+  id rowExtraRequestHeaders = row[@"extra_request_headers"];
+  if ([rowExtraRequestHeaders isKindOfClass:[NSString class]]) {
+    extraRequestHeaders = [NSJSONSerialization JSONObjectWithData:[(NSString *)rowExtraRequestHeaders dataUsingEncoding:NSUTF8StringEncoding] options:kNilOptions error:&extraRequestHeadersDeserializationError];
+    NSAssert(!extraRequestHeadersDeserializationError && extraRequestHeaders && [extraRequestHeaders isKindOfClass:[NSDictionary class]], @"Asset extra_request_headers should be a valid JSON object");
   }
 
   id launchAssetId = row[@"launch_asset_id"];
@@ -571,9 +638,11 @@ static NSString * const ABI43_0_0EXUpdatesDatabaseServerDefinedHeadersKey = @"se
   ABI43_0_0EXUpdatesAsset *asset = [[ABI43_0_0EXUpdatesAsset alloc] initWithKey:key type:row[@"type"]];
   asset.assetId = [(NSNumber *)row[@"id"] unsignedIntegerValue];
   asset.url = url;
+  asset.extraRequestHeaders = extraRequestHeaders;
   asset.downloadTime = [ABI43_0_0EXUpdatesDatabaseUtils dateFromUnixTimeMilliseconds:(NSNumber *)row[@"download_time"]];
   asset.filename = row[@"relative_path"];
   asset.contentHash = row[@"hash"];
+  asset.expectedHash = row[@"expected_hash"];
   asset.metadata = metadata;
   asset.isLaunchAsset = (launchAssetId && [launchAssetId isKindOfClass:[NSNumber class]])
     ? [(NSNumber *)launchAssetId isEqualToNumber:(NSNumber *)row[@"id"]]

@@ -1,6 +1,7 @@
 // Copyright 2020-present 650 Industries. All rights reserved.
 
 #import <ABI43_0_0EXUpdates/ABI43_0_0EXUpdatesAppController.h>
+#import <ABI43_0_0EXUpdates/ABI43_0_0EXUpdatesEmbeddedAppLoader.h>
 #import <ABI43_0_0EXUpdates/ABI43_0_0EXUpdatesService.h>
 #import <ABI43_0_0ExpoModulesCore/ABI43_0_0EXUtilities.h>
 
@@ -33,6 +34,11 @@ ABI43_0_0EX_REGISTER_MODULE();
 - (NSURL *)directory
 {
   return ABI43_0_0EXUpdatesAppController.sharedInstance.updatesDirectory;
+}
+
+- (nullable ABI43_0_0EXUpdatesUpdate *)embeddedUpdate
+{
+  return [ABI43_0_0EXUpdatesEmbeddedAppLoader embeddedManifestWithConfig:self.config database:self.database];
 }
 
 - (nullable ABI43_0_0EXUpdatesUpdate *)launchedUpdate

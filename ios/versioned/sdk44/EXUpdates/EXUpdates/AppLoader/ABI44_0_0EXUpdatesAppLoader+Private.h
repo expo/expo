@@ -12,6 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) ABI44_0_0EXUpdatesConfig *config;
 @property (nonatomic, strong) ABI44_0_0EXUpdatesDatabase *database;
 @property (nonatomic, strong) NSURL *directory;
+@property (nonatomic, strong, nullable) ABI44_0_0EXUpdatesUpdate *launchedUpdate;
 @property (nonatomic, strong) ABI44_0_0EXUpdatesUpdate *updateManifest;
 @property (nonatomic, copy) ABI44_0_0EXUpdatesAppLoaderManifestBlock manifestBlock;
 @property (nonatomic, copy) ABI44_0_0EXUpdatesAppLoaderAssetBlock assetBlock;

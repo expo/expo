@@ -43,8 +43,7 @@
     @"launchAsset": @{@"url": @"https://url.to/bundle.js", @"contentType": @"application/javascript"}
   }];
   _config = [ABI44_0_0EXUpdatesConfig configWithDictionary:@{
-    @"ABI44_0_0EXUpdatesURL": @"https://exp.host/@test/test",
-    @"ABI44_0_0EXUpdatesUsesLegacyManifest": @(NO)
+    ABI44_0_0EXUpdatesConfigUpdateUrlKey: @"https://exp.host/@test/test",
   }];
 }
 
@@ -61,7 +60,15 @@
 - (void)testForeignKeys
 {
   __block NSError *expectedError;
-  ABI44_0_0EXUpdatesUpdate *update = [ABI44_0_0EXUpdatesNewUpdate updateWithNewManifest:_manifest response:nil config:_config database:_db];
+  ABI44_0_0EXUpdatesManifestHeaders *manifestHeaders = [[ABI44_0_0EXUpdatesManifestHeaders alloc] initWithProtocolVersion:nil
+                                                                                   serverDefinedHeaders:nil
+                                                                                        manifestFilters:nil
+                                                                                      manifestSignature:nil
+                                                                                              signature:nil];
+  ABI44_0_0EXUpdatesUpdate *update = [ABI44_0_0EXUpdatesNewUpdate updateWithNewManifest:_manifest
+                                                      manifestHeaders:manifestHeaders
+                                                           extensions:@{}
+                                                               config:_config database:_db];
   dispatch_sync(_db.databaseQueue, ^{
     NSError *updatesError;
     [_db addUpdate:update error:&updatesError];
@@ -80,20 +87,32 @@
 
 - (void)testSetMetadata_OverwriteAllFields
 {
-  NSHTTPURLResponse *response1 = [[NSHTTPURLResponse alloc] initWithURL:[NSURL URLWithString:@"https://exp.host/"] statusCode:200 HTTPVersion:@"HTTP/2" headerFields:@{
-    @"expo-manifest-filters": @"branch-name=\"rollout-1\",test=\"value\""
-  }];
-  ABI44_0_0EXUpdatesUpdate *update1 = [ABI44_0_0EXUpdatesNewUpdate updateWithNewManifest:_manifest response:response1 config:_config database:_db];
+  ABI44_0_0EXUpdatesManifestHeaders *manifestHeaders1 = [[ABI44_0_0EXUpdatesManifestHeaders alloc] initWithProtocolVersion:nil
+                                                                                   serverDefinedHeaders:nil
+                                                                                        manifestFilters:@"branch-name=\"rollout-1\",test=\"value\""
+                                                                                      manifestSignature:nil
+                                                                                               signature:nil];
+  ABI44_0_0EXUpdatesUpdate *update1 = [ABI44_0_0EXUpdatesNewUpdate updateWithNewManifest:_manifest
+                                                       manifestHeaders:manifestHeaders1
+                                                            extensions:@{}
+                                                                config:_config
+                                                              database:_db];
   __block NSError *error1;
   dispatch_sync(_db.databaseQueue, ^{
     [_db setMetadataWithManifest:update1 error:&error1];
   });
   XCTAssertNil(error1);
 
-  NSHTTPURLResponse *response2 = [[NSHTTPURLResponse alloc] initWithURL:[NSURL URLWithString:@"https://exp.host/"] statusCode:200 HTTPVersion:@"HTTP/2" headerFields:@{
-    @"expo-manifest-filters": @"branch-name=\"rollout-2\""
-  }];
-  ABI44_0_0EXUpdatesUpdate *update2 = [ABI44_0_0EXUpdatesNewUpdate updateWithNewManifest:_manifest response:response2 config:_config database:_db];
+  ABI44_0_0EXUpdatesManifestHeaders *manifestHeaders2 = [[ABI44_0_0EXUpdatesManifestHeaders alloc] initWithProtocolVersion:nil
+                                                                                   serverDefinedHeaders:nil
+                                                                                        manifestFilters:@"branch-name=\"rollout-2\""
+                                                                                      manifestSignature:nil
+                                                                                               signature:nil];
+  ABI44_0_0EXUpdatesUpdate *update2 = [ABI44_0_0EXUpdatesNewUpdate updateWithNewManifest:_manifest
+                                                       manifestHeaders:manifestHeaders2
+                                                            extensions:@{}
+                                                                config:_config
+                                                              database:_db];
   __block NSError *error2;
   dispatch_sync(_db.databaseQueue, ^{
     [_db setMetadataWithManifest:update2 error:&error2];
@@ -113,20 +132,32 @@
 
 - (void)testSetMetadata_OverwriteEmpty
 {
-  NSHTTPURLResponse *response1 = [[NSHTTPURLResponse alloc] initWithURL:[NSURL URLWithString:@"https://exp.host/"] statusCode:200 HTTPVersion:@"HTTP/2" headerFields:@{
-    @"expo-manifest-filters": @"branch-name=\"rollout-1\""
-  }];
-  ABI44_0_0EXUpdatesUpdate *update1 = [ABI44_0_0EXUpdatesNewUpdate updateWithNewManifest:_manifest response:response1 config:_config database:_db];
+  ABI44_0_0EXUpdatesManifestHeaders *manifestHeaders1 = [[ABI44_0_0EXUpdatesManifestHeaders alloc] initWithProtocolVersion:nil
+                                                                                   serverDefinedHeaders:nil
+                                                                                        manifestFilters:@"branch-name=\"rollout-1\""
+                                                                                      manifestSignature:nil
+                                                                                               signature:nil];
+  ABI44_0_0EXUpdatesUpdate *update1 = [ABI44_0_0EXUpdatesNewUpdate updateWithNewManifest:_manifest
+                                                       manifestHeaders:manifestHeaders1
+                                                            extensions:@{}
+                                                                config:_config
+                                                              database:_db];
   __block NSError *error1;
   dispatch_sync(_db.databaseQueue, ^{
     [_db setMetadataWithManifest:update1 error:&error1];
   });
   XCTAssertNil(error1);
 
-  NSHTTPURLResponse *response2 = [[NSHTTPURLResponse alloc] initWithURL:[NSURL URLWithString:@"https://exp.host/"] statusCode:200 HTTPVersion:@"HTTP/2" headerFields:@{
-    @"expo-manifest-filters": @""
-  }];
-  ABI44_0_0EXUpdatesUpdate *update2 = [ABI44_0_0EXUpdatesNewUpdate updateWithNewManifest:_manifest response:response2 config:_config database:_db];
+  ABI44_0_0EXUpdatesManifestHeaders *manifestHeaders2 = [[ABI44_0_0EXUpdatesManifestHeaders alloc] initWithProtocolVersion:nil
+                                                                                   serverDefinedHeaders:nil
+                                                                                        manifestFilters:@""
+                                                                                      manifestSignature:nil
+                                                                                               signature:nil];
+  ABI44_0_0EXUpdatesUpdate *update2 = [ABI44_0_0EXUpdatesNewUpdate updateWithNewManifest:_manifest
+                                                       manifestHeaders:manifestHeaders2
+                                                            extensions:@{}
+                                                                config:_config
+                                                              database:_db];
   __block NSError *error2;
   dispatch_sync(_db.databaseQueue, ^{
     [_db setMetadataWithManifest:update2 error:&error2];
@@ -146,18 +177,32 @@
 
 - (void)testSetMetadata_OverwriteNull
 {
-  NSHTTPURLResponse *response1 = [[NSHTTPURLResponse alloc] initWithURL:[NSURL URLWithString:@"https://exp.host/"] statusCode:200 HTTPVersion:@"HTTP/2" headerFields:@{
-    @"expo-manifest-filters": @"branch-name=\"rollout-1\""
-  }];
-  ABI44_0_0EXUpdatesUpdate *update1 = [ABI44_0_0EXUpdatesNewUpdate updateWithNewManifest:_manifest response:response1 config:_config database:_db];
+  ABI44_0_0EXUpdatesManifestHeaders *manifestHeaders1 = [[ABI44_0_0EXUpdatesManifestHeaders alloc] initWithProtocolVersion:nil
+                                                                                   serverDefinedHeaders:nil
+                                                                                        manifestFilters:@"branch-name=\"rollout-1\""
+                                                                                      manifestSignature:nil
+                                                                                               signature:nil];
+  ABI44_0_0EXUpdatesUpdate *update1 = [ABI44_0_0EXUpdatesNewUpdate updateWithNewManifest:_manifest
+                                                       manifestHeaders:manifestHeaders1
+                                                            extensions:@{}
+                                                                config:_config
+                                                              database:_db];
   __block NSError *error1;
   dispatch_sync(_db.databaseQueue, ^{
     [_db setMetadataWithManifest:update1 error:&error1];
   });
   XCTAssertNil(error1);
 
-  NSHTTPURLResponse *response2 = [[NSHTTPURLResponse alloc] initWithURL:[NSURL URLWithString:@"https://exp.host/"] statusCode:200 HTTPVersion:@"HTTP/2" headerFields:@{}];
-  ABI44_0_0EXUpdatesUpdate *update2 = [ABI44_0_0EXUpdatesNewUpdate updateWithNewManifest:_manifest response:response2 config:_config database:_db];
+  ABI44_0_0EXUpdatesManifestHeaders *manifestHeaders2 = [[ABI44_0_0EXUpdatesManifestHeaders alloc] initWithProtocolVersion:nil
+                                                                                   serverDefinedHeaders:nil
+                                                                                        manifestFilters:nil
+                                                                                      manifestSignature:nil
+                                                                                               signature:nil];
+  ABI44_0_0EXUpdatesUpdate *update2 = [ABI44_0_0EXUpdatesNewUpdate updateWithNewManifest:_manifest
+                                                       manifestHeaders:manifestHeaders2
+                                                            extensions:@{}
+                                                                config:_config
+                                                              database:_db];
   __block NSError *error2;
   dispatch_sync(_db.databaseQueue, ^{
     [_db setMetadataWithManifest:update2 error:&error2];
@@ -199,8 +244,21 @@
   asset2.filename = @"same-filename.png";
   asset3.filename = @"same-filename.png";
 
-  ABI44_0_0EXUpdatesUpdate *update1 = [ABI44_0_0EXUpdatesNewUpdate updateWithNewManifest:manifest1 response:nil config:_config database:_db];
-  ABI44_0_0EXUpdatesUpdate *update2 = [ABI44_0_0EXUpdatesNewUpdate updateWithNewManifest:manifest2 response:nil config:_config database:_db];
+  ABI44_0_0EXUpdatesManifestHeaders *manifestHeaders = [[ABI44_0_0EXUpdatesManifestHeaders alloc] initWithProtocolVersion:nil
+                                                                                   serverDefinedHeaders:nil
+                                                                                        manifestFilters:nil
+                                                                                      manifestSignature:nil
+                                                                                              signature:nil];
+  ABI44_0_0EXUpdatesUpdate *update1 = [ABI44_0_0EXUpdatesNewUpdate updateWithNewManifest:manifest1
+                                                       manifestHeaders:manifestHeaders
+                                                            extensions:@{}
+                                                                config:_config
+                                                              database:_db];
+  ABI44_0_0EXUpdatesUpdate *update2 = [ABI44_0_0EXUpdatesNewUpdate updateWithNewManifest:manifest2
+                                                       manifestHeaders:manifestHeaders
+                                                            extensions:@{}
+                                                                config:_config
+                                                              database:_db];
 
   dispatch_sync(_db.databaseQueue, ^{
     NSError *update1Error;

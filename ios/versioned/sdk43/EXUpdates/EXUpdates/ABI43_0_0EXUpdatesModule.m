@@ -25,31 +25,46 @@ ABI43_0_0EX_EXPORT_MODULE(ExpoUpdates);
 
 - (NSDictionary *)constantsToExport
 {
+  NSString *releaseChannel = _updatesService.config.releaseChannel;
+  NSString *channel = _updatesService.config.requestHeaders[@"expo-channel-name"] ?: @"";
+  NSString *runtimeVersion = _updatesService.config.runtimeVersion ?: @"";
+  NSNumber *isMissingRuntimeVersion = @(_updatesService.config.isMissingRuntimeVersion);
+  
   if (!_updatesService.isStarted) {
     return @{
       @"isEnabled": @(NO),
-      @"isMissingRuntimeVersion": @(_updatesService.config.isMissingRuntimeVersion)
+      @"isMissingRuntimeVersion": isMissingRuntimeVersion,
+      @"releaseChannel": releaseChannel,
+      @"runtimeVersion": runtimeVersion,
+      @"channel": channel
     };
   }
   ABI43_0_0EXUpdatesUpdate *launchedUpdate = _updatesService.launchedUpdate;
   if (!launchedUpdate) {
     return @{
       @"isEnabled": @(NO),
-      @"isMissingRuntimeVersion": @(_updatesService.config.isMissingRuntimeVersion)
-    };
-  } else {
-    return @{
-      @"isEnabled": @(YES),
-      @"isUsingEmbeddedAssets": @(_updatesService.isUsingEmbeddedAssets),
-      @"updateId": launchedUpdate.updateId.UUIDString ?: @"",
-      @"manifest": launchedUpdate.manifest.rawManifestJSON ?: @{},
-      @"releaseChannel": _updatesService.config.releaseChannel,
-      @"localAssets": _updatesService.assetFilesMap ?: @{},
-      @"isEmergencyLaunch": @(_updatesService.isEmergencyLaunch),
-      @"isMissingRuntimeVersion": @(_updatesService.config.isMissingRuntimeVersion)
+      @"isMissingRuntimeVersion": isMissingRuntimeVersion,
+      @"releaseChannel": releaseChannel,
+      @"runtimeVersion": runtimeVersion,
+      @"channel": channel
     };
   }
+
+  long long commitTime = [@(floor([launchedUpdate.commitTime timeIntervalSince1970] * 1000)) longLongValue];
   
+  return @{
+    @"isEnabled": @(YES),
+    @"isUsingEmbeddedAssets": @(_updatesService.isUsingEmbeddedAssets),
+    @"updateId": launchedUpdate.updateId.UUIDString ?: @"",
+    @"manifest": launchedUpdate.manifest.rawManifestJSON ?: @{},
+    @"localAssets": _updatesService.assetFilesMap ?: @{},
+    @"isEmergencyLaunch": @(_updatesService.isEmergencyLaunch),
+    @"isMissingRuntimeVersion": isMissingRuntimeVersion,
+    @"releaseChannel": releaseChannel,
+    @"runtimeVersion": runtimeVersion,
+    @"channel": channel,
+    @"commitTime": @(commitTime)
+  };
 }
 
 ABI43_0_0EX_EXPORT_METHOD_AS(reload,
@@ -89,11 +104,10 @@ ABI43_0_0EX_EXPORT_METHOD_AS(checkForUpdateAsync,
 
   __block NSDictionary *extraHeaders;
   dispatch_sync(_updatesService.database.databaseQueue, ^{
-    NSError *error;
-    extraHeaders = [self->_updatesService.database serverDefinedHeadersWithScopeKey:self->_updatesService.config.scopeKey error:&error];
-    if (error) {
-      NSLog(@"Error selecting serverDefinedHeaders from database: %@", error.localizedDescription);
-    }
+    extraHeaders = [ABI43_0_0EXUpdatesFileDownloader extraHeadersWithDatabase:self->_updatesService.database
+                                                              config:self->_updatesService.config
+                                                      launchedUpdate:self->_updatesService.launchedUpdate
+                                                      embeddedUpdate:self->_updatesService.embeddedUpdate];
   });
 
   ABI43_0_0EXUpdatesFileDownloader *fileDownloader = [[ABI43_0_0EXUpdatesFileDownloader alloc] initWithUpdatesConfig:_updatesService.config];
@@ -113,7 +127,7 @@ ABI43_0_0EX_EXPORT_METHOD_AS(checkForUpdateAsync,
         @"isAvailable": @(NO)
       });
     }
-  } errorBlock:^(NSError *error, NSURLResponse *response) {
+  } errorBlock:^(NSError *error) {
     reject(@"ERR_UPDATES_CHECK", error.localizedDescription, error);
   }];
 }
@@ -131,7 +145,7 @@ ABI43_0_0EX_EXPORT_METHOD_AS(fetchUpdateAsync,
     return;
   }
 
-  ABI43_0_0EXUpdatesRemoteAppLoader *remoteAppLoader = [[ABI43_0_0EXUpdatesRemoteAppLoader alloc] initWithConfig:_updatesService.config database:_updatesService.database directory:_updatesService.directory completionQueue:self.methodQueue];
+  ABI43_0_0EXUpdatesRemoteAppLoader *remoteAppLoader = [[ABI43_0_0EXUpdatesRemoteAppLoader alloc] initWithConfig:_updatesService.config database:_updatesService.database directory:_updatesService.directory launchedUpdate:_updatesService.launchedUpdate completionQueue:self.methodQueue];
   [remoteAppLoader loadUpdateFromUrl:_updatesService.config.updateUrl onManifest:^BOOL(ABI43_0_0EXUpdatesUpdate * _Nonnull update) {
     return [self->_updatesService.selectionPolicy shouldLoadNewUpdate:update withLaunchedUpdate:self->_updatesService.launchedUpdate filters:update.manifestFilters];
   } asset:^(ABI43_0_0EXUpdatesAsset *asset, NSUInteger successfulAssetCount, NSUInteger failedAssetCount, NSUInteger totalAssetCount) {

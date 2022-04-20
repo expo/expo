@@ -32,6 +32,7 @@ static NSString * const ABI44_0_0EXUpdatesCryptoPublicKeyFilename = @"manifestPu
 
   ABI44_0_0EXUpdatesFileDownloader *fileDownloader = [[ABI44_0_0EXUpdatesFileDownloader alloc] initWithUpdatesConfig:config URLSessionConfiguration:configuration];
   [fileDownloader downloadDataFromURL:[NSURL URLWithString:ABI44_0_0EXUpdatesCryptoPublicKeyUrl]
+                         extraHeaders:@{}
                          successBlock:^(NSData *publicKeyData, NSURLResponse *response) {
                                         [[self class] verifyWithPublicKey:publicKeyData signature:signature signedString:data callback:^(BOOL isValid) {
                                           if (isValid) {
@@ -41,7 +42,7 @@ static NSString * const ABI44_0_0EXUpdatesCryptoPublicKeyFilename = @"manifestPu
                                           }
                                         }];
                                       }
-                           errorBlock:^(NSError *error, NSURLResponse *response) {
+                           errorBlock:^(NSError *error) {
                                         fetchRemotelyBlock();
                                       }
    ];
@@ -58,10 +59,11 @@ static NSString * const ABI44_0_0EXUpdatesCryptoPublicKeyFilename = @"manifestPu
 
   ABI44_0_0EXUpdatesFileDownloader *fileDownloader = [[ABI44_0_0EXUpdatesFileDownloader alloc] initWithUpdatesConfig:config URLSessionConfiguration:configuration];
   [fileDownloader downloadDataFromURL:[NSURL URLWithString:ABI44_0_0EXUpdatesCryptoPublicKeyUrl]
+                         extraHeaders:@{}
                          successBlock:^(NSData *publicKeyData, NSURLResponse *response) {
                                         [[self class] verifyWithPublicKey:publicKeyData signature:signature signedString:data callback:successBlock];
                                       }
-                           errorBlock:^(NSError *error, NSURLResponse *response) {
+                           errorBlock:^(NSError *error) {
                                         errorBlock(error);
                                       }
   ];

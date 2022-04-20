@@ -1,6 +1,13 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 
 #import <ABI44_0_0EXUpdates/ABI44_0_0EXUpdatesConfig.h>
+#import <ABI44_0_0EXUpdates/ABI44_0_0EXUpdatesAppController.h>
+
+#if __has_include(<ABI44_0_0EXUpdates/ABI44_0_0EXUpdates-Swift.h>)
+#import <ABI44_0_0EXUpdates/ABI44_0_0EXUpdates-Swift.h>
+#else
+#import "ABI44_0_0EXUpdates-Swift.h"
+#endif
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -14,6 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readwrite, strong) NSString *releaseChannel;
 @property (nonatomic, readwrite, strong) NSNumber *launchWaitMs;
 @property (nonatomic, readwrite, assign) ABI44_0_0EXUpdatesCheckAutomaticallyConfig checkOnLaunch;
+@property (nonatomic, readwrite, strong, nullable) ABI44_0_0EXUpdatesCodeSigningConfiguration *codeSigningConfiguration;
 
 @property (nullable, nonatomic, readwrite, strong) NSString *sdkVersion;
 @property (nullable, nonatomic, readwrite, strong) NSString *runtimeVersion;
@@ -21,25 +29,30 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 NSString * const ABI44_0_0EXUpdatesConfigPlistName = @"Expo";
+
 NSString * const ABI44_0_0EXUpdatesConfigEnableAutoSetupKey = @"ABI44_0_0EXUpdatesAutoSetup";
+NSString * const ABI44_0_0EXUpdatesConfigEnabledKey = @"ABI44_0_0EXUpdatesEnabled";
+NSString * const ABI44_0_0EXUpdatesConfigScopeKeyKey = @"ABI44_0_0EXUpdatesScopeKey";
+NSString * const ABI44_0_0EXUpdatesConfigUpdateUrlKey = @"ABI44_0_0EXUpdatesURL";
+NSString * const ABI44_0_0EXUpdatesConfigRequestHeadersKey = @"ABI44_0_0EXUpdatesRequestHeaders";
+NSString * const ABI44_0_0EXUpdatesConfigReleaseChannelKey = @"ABI44_0_0EXUpdatesReleaseChannel";
+NSString * const ABI44_0_0EXUpdatesConfigLaunchWaitMsKey = @"ABI44_0_0EXUpdatesLaunchWaitMs";
+NSString * const ABI44_0_0EXUpdatesConfigCheckOnLaunchKey = @"ABI44_0_0EXUpdatesCheckOnLaunch";
+NSString * const ABI44_0_0EXUpdatesConfigSDKVersionKey = @"ABI44_0_0EXUpdatesSDKVersion";
+NSString * const ABI44_0_0EXUpdatesConfigRuntimeVersionKey = @"ABI44_0_0EXUpdatesRuntimeVersion";
+NSString * const ABI44_0_0EXUpdatesConfigHasEmbeddedUpdateKey = @"ABI44_0_0EXUpdatesHasEmbeddedUpdate";
+NSString * const ABI44_0_0EXUpdatesConfigExpectsSignedManifestKey = @"ABI44_0_0EXUpdatesExpectsSignedManifest";
+NSString * const ABI44_0_0EXUpdatesConfigCodeSigningCertificateKey = @"ABI44_0_0EXUpdatesCodeSigningCertificate";
+NSString * const ABI44_0_0EXUpdatesConfigCodeSigningMetadataKey = @"ABI44_0_0EXUpdatesCodeSigningMetadata";
+NSString * const ABI44_0_0EXUpdatesConfigCodeSigningIncludeManifestResponseCertificateChainKey = @"ABI44_0_0EXUpdatesCodeSigningIncludeManifestResponseCertificateChain";
+NSString * const ABI44_0_0EXUpdatesConfigCodeSigningAllowUnsignedManifestsKey = @"ABI44_0_0EXUpdatesConfigCodeSigningAllowUnsignedManifests";
 
-static NSString * const ABI44_0_0EXUpdatesDefaultReleaseChannelName = @"default";
+NSString * const ABI44_0_0EXUpdatesConfigReleaseChannelDefaultValue = @"default";
 
-static NSString * const ABI44_0_0EXUpdatesConfigEnabledKey = @"ABI44_0_0EXUpdatesEnabled";
-static NSString * const ABI44_0_0EXUpdatesConfigScopeKeyKey = @"ABI44_0_0EXUpdatesScopeKey";
-static NSString * const ABI44_0_0EXUpdatesConfigUpdateUrlKey = @"ABI44_0_0EXUpdatesURL";
-static NSString * const ABI44_0_0EXUpdatesConfigRequestHeadersKey = @"ABI44_0_0EXUpdatesRequestHeaders";
-static NSString * const ABI44_0_0EXUpdatesConfigReleaseChannelKey = @"ABI44_0_0EXUpdatesReleaseChannel";
-static NSString * const ABI44_0_0EXUpdatesConfigLaunchWaitMsKey = @"ABI44_0_0EXUpdatesLaunchWaitMs";
-static NSString * const ABI44_0_0EXUpdatesConfigCheckOnLaunchKey = @"ABI44_0_0EXUpdatesCheckOnLaunch";
-static NSString * const ABI44_0_0EXUpdatesConfigSDKVersionKey = @"ABI44_0_0EXUpdatesSDKVersion";
-static NSString * const ABI44_0_0EXUpdatesConfigRuntimeVersionKey = @"ABI44_0_0EXUpdatesRuntimeVersion";
-static NSString * const ABI44_0_0EXUpdatesConfigHasEmbeddedUpdateKey = @"ABI44_0_0EXUpdatesHasEmbeddedUpdate";
-
-static NSString * const ABI44_0_0EXUpdatesConfigAlwaysString = @"ALWAYS";
-static NSString * const ABI44_0_0EXUpdatesConfigWifiOnlyString = @"WIFI_ONLY";
-static NSString * const ABI44_0_0EXUpdatesConfigErrorRecoveryOnlyString = @"ERROR_RECOVERY_ONLY";
-static NSString * const ABI44_0_0EXUpdatesConfigNeverString = @"NEVER";
+NSString * const ABI44_0_0EXUpdatesConfigCheckOnLaunchValueAlways = @"ALWAYS";
+NSString * const ABI44_0_0EXUpdatesConfigCheckOnLaunchValueWifiOnly = @"WIFI_ONLY";
+NSString * const ABI44_0_0EXUpdatesConfigCheckOnLaunchValueErrorRecoveryOnly = @"ERROR_RECOVERY_ONLY";
+NSString * const ABI44_0_0EXUpdatesConfigCheckOnLaunchValueNever = @"NEVER";
 
 @implementation ABI44_0_0EXUpdatesConfig
 
@@ -49,7 +62,7 @@ static NSString * const ABI44_0_0EXUpdatesConfigNeverString = @"NEVER";
     _isEnabled = YES;
     _expectsSignedManifest = NO;
     _requestHeaders = @{};
-    _releaseChannel = ABI44_0_0EXUpdatesDefaultReleaseChannelName;
+    _releaseChannel = ABI44_0_0EXUpdatesConfigReleaseChannelDefaultValue;
     _launchWaitMs = @(0);
     _checkOnLaunch = ABI44_0_0EXUpdatesCheckAutomaticallyConfigAlways;
     _hasEmbeddedUpdate = YES;
@@ -82,7 +95,7 @@ static NSString * const ABI44_0_0EXUpdatesConfigNeverString = @"NEVER";
     _isEnabled = [(NSNumber *)isEnabled boolValue];
   }
   
-  id expectsSignedManifest = config[@"ABI44_0_0EXUpdatesExpectsSignedManifest"];
+  id expectsSignedManifest = config[ABI44_0_0EXUpdatesConfigExpectsSignedManifestKey];
   if (expectsSignedManifest && [expectsSignedManifest isKindOfClass:[NSNumber class]]) {
     _expectsSignedManifest = [(NSNumber *)expectsSignedManifest boolValue];
   }
@@ -109,7 +122,7 @@ static NSString * const ABI44_0_0EXUpdatesConfigNeverString = @"NEVER";
   if (requestHeaders) {
     if(![requestHeaders isKindOfClass:[NSDictionary class]]){
       @throw [NSException exceptionWithName:NSInternalInconsistencyException
-                                     reason:[NSString stringWithFormat:@"PList key '%@' must be a string valued Dictionary.", ABI44_0_0EXUpdatesConfigRequestHeadersKey]
+                                     reason:[NSString stringWithFormat:@"Plist key \"%@\" must be a string-valued Dictionary.", ABI44_0_0EXUpdatesConfigRequestHeadersKey]
                                    userInfo:@{}];
     }
     _requestHeaders = (NSDictionary *)requestHeaders;
@@ -117,7 +130,7 @@ static NSString * const ABI44_0_0EXUpdatesConfigNeverString = @"NEVER";
     for (id key in _requestHeaders){
       if (![_requestHeaders[key] isKindOfClass:[NSString class]]){
         @throw [NSException exceptionWithName:NSInternalInconsistencyException
-                                       reason:[NSString stringWithFormat:@"PList key '%@' must be a string valued Dictionary.", ABI44_0_0EXUpdatesConfigRequestHeadersKey]
+                                       reason:[NSString stringWithFormat:@"Plist key \"%@\" must be a string-valued Dictionary.", ABI44_0_0EXUpdatesConfigRequestHeadersKey]
                                      userInfo:@{}];
       }
     }
@@ -139,13 +152,13 @@ static NSString * const ABI44_0_0EXUpdatesConfigNeverString = @"NEVER";
 
   id checkOnLaunch = config[ABI44_0_0EXUpdatesConfigCheckOnLaunchKey];
   if (checkOnLaunch && [checkOnLaunch isKindOfClass:[NSString class]]) {
-    if ([ABI44_0_0EXUpdatesConfigNeverString isEqualToString:(NSString *)checkOnLaunch]) {
+    if ([ABI44_0_0EXUpdatesConfigCheckOnLaunchValueNever isEqualToString:(NSString *)checkOnLaunch]) {
       _checkOnLaunch = ABI44_0_0EXUpdatesCheckAutomaticallyConfigNever;
-    } else if ([ABI44_0_0EXUpdatesConfigErrorRecoveryOnlyString isEqualToString:(NSString *)checkOnLaunch]) {
+    } else if ([ABI44_0_0EXUpdatesConfigCheckOnLaunchValueErrorRecoveryOnly isEqualToString:(NSString *)checkOnLaunch]) {
       _checkOnLaunch = ABI44_0_0EXUpdatesCheckAutomaticallyConfigErrorRecoveryOnly;
-    } else if ([ABI44_0_0EXUpdatesConfigWifiOnlyString isEqualToString:(NSString *)checkOnLaunch]) {
+    } else if ([ABI44_0_0EXUpdatesConfigCheckOnLaunchValueWifiOnly isEqualToString:(NSString *)checkOnLaunch]) {
       _checkOnLaunch = ABI44_0_0EXUpdatesCheckAutomaticallyConfigWifiOnly;
-    } else if ([ABI44_0_0EXUpdatesConfigAlwaysString isEqualToString:(NSString *)checkOnLaunch]) {
+    } else if ([ABI44_0_0EXUpdatesConfigCheckOnLaunchValueAlways isEqualToString:(NSString *)checkOnLaunch]) {
       _checkOnLaunch = ABI44_0_0EXUpdatesCheckAutomaticallyConfigAlways;
     }
   }
@@ -164,11 +177,72 @@ static NSString * const ABI44_0_0EXUpdatesConfigNeverString = @"NEVER";
   if (hasEmbeddedUpdate && [hasEmbeddedUpdate isKindOfClass:[NSNumber class]]) {
     _hasEmbeddedUpdate = [(NSNumber *)hasEmbeddedUpdate boolValue];
   }
+  
+  NSString *codeSigningCertificate;
+  id codeSigningCertificateRaw = config[ABI44_0_0EXUpdatesConfigCodeSigningCertificateKey];
+  if (codeSigningCertificateRaw && [codeSigningCertificateRaw isKindOfClass:[NSString class]]) {
+    codeSigningCertificate = (NSString *)codeSigningCertificateRaw;
+  }
+  
+  NSDictionary *codeSigningMetadata;
+  id codeSigningMetadataRaw = config[ABI44_0_0EXUpdatesConfigCodeSigningMetadataKey];
+  if (codeSigningMetadataRaw) {
+    if(![codeSigningMetadataRaw isKindOfClass:[NSDictionary class]]){
+      @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                     reason:[NSString stringWithFormat:@"Plist key \"%@\" must be a string-valued Dictionary.", ABI44_0_0EXUpdatesConfigCodeSigningMetadataKey]
+                                   userInfo:@{}];
+    }
+    codeSigningMetadata = (NSDictionary *)codeSigningMetadataRaw;
+    for (id key in codeSigningMetadata){
+      if (![codeSigningMetadata[key] isKindOfClass:[NSString class]]){
+        @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                       reason:[NSString stringWithFormat:@"Plist key \"%@\" must be a string-valued Dictionary.", ABI44_0_0EXUpdatesConfigCodeSigningMetadataKey]
+                                     userInfo:@{}];
+      }
+    }
+  }
+  
+  BOOL codeSigningIncludeManifestResponseCertificateChain = NO;
+  id codeSigningIncludeManifestResponseCertificateChainRaw = config[ABI44_0_0EXUpdatesConfigCodeSigningIncludeManifestResponseCertificateChainKey];
+  if (codeSigningIncludeManifestResponseCertificateChainRaw && [codeSigningIncludeManifestResponseCertificateChainRaw isKindOfClass:[NSNumber class]]) {
+    codeSigningIncludeManifestResponseCertificateChain = [(NSNumber *)codeSigningIncludeManifestResponseCertificateChainRaw boolValue];
+  }
+  
+  BOOL codeSigningAllowUnsignedManifests = NO;
+  id codeSigningAllowUnsignedManifestsRaw = config[ABI44_0_0EXUpdatesConfigCodeSigningAllowUnsignedManifestsKey];
+  if (codeSigningAllowUnsignedManifestsRaw && [codeSigningAllowUnsignedManifestsRaw isKindOfClass:[NSNumber class]]) {
+    codeSigningAllowUnsignedManifests = [(NSNumber *)codeSigningAllowUnsignedManifestsRaw boolValue];
+  }
+  
+  if (codeSigningCertificate) {
+    _codeSigningConfiguration = [ABI44_0_0EXUpdatesConfig codeSigningConfigurationForCodeSigningCertificate:codeSigningCertificate
+                                                                               codeSigningMetadata:codeSigningMetadata
+                                                codeSigningIncludeManifestResponseCertificateChain:codeSigningIncludeManifestResponseCertificateChain
+                                                                 codeSigningAllowUnsignedManifests:codeSigningAllowUnsignedManifests];
+  }
 }
 
 - (BOOL)isMissingRuntimeVersion
 {
   return (!_runtimeVersion || !_runtimeVersion.length) && (!_sdkVersion || !_sdkVersion.length);
+}
+
++ (nullable ABI44_0_0EXUpdatesCodeSigningConfiguration *)codeSigningConfigurationForCodeSigningCertificate:(NSString *)codeSigningCertificate
+                                                                              codeSigningMetadata:(nullable NSDictionary *)codeSigningMetadata
+                                               codeSigningIncludeManifestResponseCertificateChain:(BOOL)codeSigningIncludeManifestResponseCertificateChain
+                                                                codeSigningAllowUnsignedManifests:(BOOL)codeSigningAllowUnsignedManifests {
+  NSError *error;
+  ABI44_0_0EXUpdatesCodeSigningConfiguration *codeSigningConfiguration = [[ABI44_0_0EXUpdatesCodeSigningConfiguration alloc] initWithEmbeddedCertificateString:codeSigningCertificate
+                                                                                                                                    metadata:codeSigningMetadata
+                                                                                                     includeManifestResponseCertificateChain:codeSigningIncludeManifestResponseCertificateChain
+                                                                                                                      allowUnsignedManifests:codeSigningAllowUnsignedManifests
+                                                                                                                                       error:&error];
+  if (error) {
+    NSString *message = [ABI44_0_0EXUpdatesCodeSigningErrorUtils messageForError:error.code];
+    @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:message userInfo:nil];
+  }
+  
+  return codeSigningConfiguration;
 }
 
 + (NSString *)normalizedURLOrigin:(NSURL *)url

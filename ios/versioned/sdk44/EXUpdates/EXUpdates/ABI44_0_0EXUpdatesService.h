@@ -17,6 +17,7 @@ typedef void (^ABI44_0_0EXUpdatesAppRelaunchCompletionBlock)(BOOL success);
 @property (nonatomic, readonly) ABI44_0_0EXUpdatesSelectionPolicy *selectionPolicy;
 @property (nonatomic, readonly) NSURL *directory;
 
+@property (nullable, nonatomic, readonly, strong) ABI44_0_0EXUpdatesUpdate *embeddedUpdate;
 @property (nullable, nonatomic, readonly, strong) ABI44_0_0EXUpdatesUpdate *launchedUpdate;
 @property (nullable, nonatomic, readonly, strong) NSDictionary *assetFilesMap;
 @property (nonatomic, readonly, assign) BOOL isUsingEmbeddedAssets;

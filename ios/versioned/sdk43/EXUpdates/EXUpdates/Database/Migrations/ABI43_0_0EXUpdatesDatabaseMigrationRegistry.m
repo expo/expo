@@ -4,6 +4,9 @@
 
 #import <ABI43_0_0EXUpdates/ABI43_0_0EXUpdatesDatabaseMigration4To5.h>
 #import <ABI43_0_0EXUpdates/ABI43_0_0EXUpdatesDatabaseMigration5To6.h>
+#import <ABI43_0_0EXUpdates/ABI43_0_0EXUpdatesDatabaseMigration6To7.h>
+#import <ABI43_0_0EXUpdates/ABI43_0_0EXUpdatesDatabaseMigration7To8.h>
+#import <ABI43_0_0EXUpdates/ABI43_0_0EXUpdatesDatabaseMigration8To9.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -14,11 +17,13 @@ NS_ASSUME_NONNULL_BEGIN
   // migrations should be added here in the order they should be performed (e.g. oldest first)
   return @[
     [ABI43_0_0EXUpdatesDatabaseMigration4To5 new],
-    [ABI43_0_0EXUpdatesDatabaseMigration5To6 new]
+    [ABI43_0_0EXUpdatesDatabaseMigration5To6 new],
+    [ABI43_0_0EXUpdatesDatabaseMigration6To7 new],
+    [ABI43_0_0EXUpdatesDatabaseMigration7To8 new],
+    [ABI43_0_0EXUpdatesDatabaseMigration8To9 new]
   ];
 }
 
 @end
 
 NS_ASSUME_NONNULL_END
-

@@ -46,10 +46,15 @@
   NSString *runtimeVersion = @"1.0";
   NSString *scopeKey = @"dummyScope";
   ABI44_0_0EXUpdatesConfig *config = [ABI44_0_0EXUpdatesConfig configWithDictionary:@{
-    @"ABI44_0_0EXUpdatesRuntimeVersion": runtimeVersion,
-    @"ABI44_0_0EXUpdatesScopeKey": scopeKey
+    ABI44_0_0EXUpdatesConfigRuntimeVersionKey: runtimeVersion,
+    ABI44_0_0EXUpdatesConfigScopeKeyKey: scopeKey
   }];
   ABI44_0_0EXUpdatesDatabase *database = [ABI44_0_0EXUpdatesDatabase new];
+  ABI44_0_0EXUpdatesManifestHeaders *manifestHeaders = [[ABI44_0_0EXUpdatesManifestHeaders alloc] initWithProtocolVersion:nil
+                                                                                   serverDefinedHeaders:nil
+                                                                                        manifestFilters:nil
+                                                                                      manifestSignature:nil
+                                                                                              signature:nil];
 
   _updateRollout0 = [ABI44_0_0EXUpdatesNewUpdate updateWithNewManifest:[[ABI44_0_0EXManifestsNewManifest alloc] initWithRawManifestJSON:@{
     @"id": @"079cde35-8433-4c17-81c8-7117c1513e71",
@@ -58,7 +63,7 @@
     @"launchAsset": launchAsset,
     @"assets": @[imageAsset],
     @"metadata": @{@"branchName": @"rollout"}
-  }] response:nil config:config database:database];
+  }] manifestHeaders:manifestHeaders extensions:@{} config:config database:database];
 
   _updateDefault1 = [ABI44_0_0EXUpdatesNewUpdate updateWithNewManifest:[[ABI44_0_0EXManifestsNewManifest alloc] initWithRawManifestJSON:@{
     @"id": @"079cde35-8433-4c17-81c8-7117c1513e72",
@@ -67,7 +72,7 @@
     @"launchAsset": launchAsset,
     @"assets": @[imageAsset],
     @"metadata": @{@"branchName": @"default"}
-  }] response:nil config:config database:database];
+  }] manifestHeaders:manifestHeaders extensions:@{} config:config database:database];
 
   _updateRollout1 = [ABI44_0_0EXUpdatesNewUpdate updateWithNewManifest:[[ABI44_0_0EXManifestsNewManifest alloc] initWithRawManifestJSON:@{
     @"id": @"079cde35-8433-4c17-81c8-7117c1513e73",
@@ -76,7 +81,7 @@
     @"launchAsset": launchAsset,
     @"assets": @[imageAsset],
     @"metadata": @{@"branchName": @"rollout"}
-  }] response:nil config:config database:database];
+  }] manifestHeaders:manifestHeaders extensions:@{} config:config database:database];
 
   _updateDefault2 = [ABI44_0_0EXUpdatesNewUpdate updateWithNewManifest:[[ABI44_0_0EXManifestsNewManifest alloc] initWithRawManifestJSON:@{
     @"id": @"079cde35-8433-4c17-81c8-7117c1513e74",
@@ -85,7 +90,7 @@
     @"launchAsset": launchAsset,
     @"assets": @[imageAsset],
     @"metadata": @{@"branchName": @"default"}
-  }] response:nil config:config database:database];
+  }] manifestHeaders:manifestHeaders extensions:@{} config:config database:database];
 
   _updateRollout2 = [ABI44_0_0EXUpdatesNewUpdate updateWithNewManifest:[[ABI44_0_0EXManifestsNewManifest alloc] initWithRawManifestJSON:@{
     @"id": @"079cde35-8433-4c17-81c8-7117c1513e75",
@@ -94,7 +99,7 @@
     @"launchAsset": launchAsset,
     @"assets": @[imageAsset],
     @"metadata": @{@"branchName": @"rollout"}
-  }] response:nil config:config database:database];
+  }] manifestHeaders:manifestHeaders extensions:@{} config:config database:database];
 
   _updateMultipleFilters = [ABI44_0_0EXUpdatesNewUpdate updateWithNewManifest:[[ABI44_0_0EXManifestsNewManifest alloc] initWithRawManifestJSON:@{
     @"id": @"079cde35-8433-4c17-81c8-7117c1513e72",
@@ -103,7 +108,7 @@
     @"launchAsset": launchAsset,
     @"assets": @[imageAsset],
     @"metadata": @{@"firstKey": @"value1", @"secondKey": @"value2"}
-  }] response:nil config:config database:database];
+  }] manifestHeaders:manifestHeaders extensions:@{} config:config database:database];
 
   _updateNoMetadata = [ABI44_0_0EXUpdatesNewUpdate updateWithNewManifest:[[ABI44_0_0EXManifestsNewManifest alloc] initWithRawManifestJSON:@{
     @"id": @"079cde35-8433-4c17-81c8-7117c1513e72",
@@ -111,7 +116,7 @@
     @"runtimeVersion": @"1.0",
     @"launchAsset": launchAsset,
     @"assets": @[imageAsset]
-  }] response:nil config:config database:database];
+  }] manifestHeaders:manifestHeaders extensions:@{} config:config database:database];
 
   _selectionPolicy = [ABI44_0_0EXUpdatesSelectionPolicyFactory filterAwarePolicyWithRuntimeVersion:runtimeVersion];
   _manifestFilters = @{@"branchname": @"rollout"};

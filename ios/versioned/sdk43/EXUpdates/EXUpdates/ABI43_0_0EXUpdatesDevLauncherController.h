@@ -1,6 +1,6 @@
 //  Copyright © 2021 650 Industries. All rights reserved.
 
-#import <ABI43_0_0EXUpdatesInterface/ABI43_0_0EXUpdatesExternalInterface.h>
+#import <ABI43_0_0EXUpdatesInterface/ABI43_0_0EXUpdatesInterface-umbrella.h>
 
 #import <Foundation/Foundation.h>
 

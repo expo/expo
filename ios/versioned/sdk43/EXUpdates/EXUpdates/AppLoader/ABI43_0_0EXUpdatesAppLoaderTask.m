@@ -25,6 +25,7 @@ static NSString * const ABI43_0_0EXUpdatesAppLoaderTaskErrorDomain = @"ABI43_0_0
 @property (nonatomic, strong) ABI43_0_0EXUpdatesRemoteAppLoader *remoteAppLoader;
 
 @property (nonatomic, strong) NSTimer *timer;
+@property (nonatomic, assign) BOOL isRunning;
 @property (nonatomic, assign) BOOL isReadyToLaunch;
 @property (nonatomic, assign) BOOL isTimerFinished;
 @property (nonatomic, assign) BOOL hasLaunched;
@@ -47,6 +48,7 @@ static NSString * const ABI43_0_0EXUpdatesAppLoaderTaskErrorDomain = @"ABI43_0_0
     _database = database;
     _directory = directory;
     _selectionPolicy = selectionPolicy;
+    _isRunning = NO;
     _isUpToDate = NO;
     _delegateQueue = delegateQueue;
     _loaderTaskQueue = dispatch_queue_create("expo.loader.LoaderTaskQueue", DISPATCH_QUEUE_SERIAL);
@@ -86,6 +88,8 @@ static NSString * const ABI43_0_0EXUpdatesAppLoaderTaskErrorDomain = @"ABI43_0_0
     return;
   }
 
+  _isRunning = YES;
+
   __block BOOL shouldCheckForUpdate = [ABI43_0_0EXUpdatesUtils shouldCheckForUpdateWithConfig:_config];
   NSNumber *launchWaitMs = _config.launchWaitMs;
   if ([launchWaitMs isEqualToNumber:@(0)] || !shouldCheckForUpdate) {
@@ -99,7 +103,7 @@ static NSString * const ABI43_0_0EXUpdatesAppLoaderTaskErrorDomain = @"ABI43_0_0
   [self _loadEmbeddedUpdateWithCompletion:^{
     [self _launchWithCompletion:^(NSError * _Nullable error, BOOL success) {
       if (!success) {
-        if (!shouldCheckForUpdate){
+        if (!shouldCheckForUpdate) {
           [self _finishWithError:error];
         }
         NSLog(@"Failed to launch embedded or launchable update: %@", error.localizedDescription);
@@ -121,6 +125,7 @@ static NSString * const ABI43_0_0EXUpdatesAppLoaderTaskErrorDomain = @"ABI43_0_0
           [self _handleRemoteUpdateLoaded:update error:error];
         }];
       } else {
+        self->_isRunning = NO;
         [self _runReaper];
       }
     }];
@@ -205,7 +210,9 @@ static NSString * const ABI43_0_0EXUpdatesAppLoaderTaskErrorDomain = @"ABI43_0_0
             [self->_selectionPolicy shouldLoadNewUpdate:[ABI43_0_0EXUpdatesEmbeddedAppLoader embeddedManifestWithConfig:self->_config database:self->_database]
                                      withLaunchedUpdate:launchableUpdate
                                                 filters:manifestFilters]) {
-          self->_embeddedAppLoader = [[ABI43_0_0EXUpdatesEmbeddedAppLoader alloc] initWithConfig:self->_config database:self->_database directory:self->_directory completionQueue:self->_loaderTaskQueue];
+          // launchedUpdate is nil because we don't yet have one, and it doesn't matter as we won't
+          // be sending an HTTP request from ABI43_0_0EXUpdatesEmbeddedAppLoader
+          self->_embeddedAppLoader = [[ABI43_0_0EXUpdatesEmbeddedAppLoader alloc] initWithConfig:self->_config database:self->_database directory:self->_directory launchedUpdate:nil completionQueue:self->_loaderTaskQueue];
           [self->_embeddedAppLoader loadUpdateFromEmbeddedManifestWithCallback:^BOOL(ABI43_0_0EXUpdatesUpdate * _Nonnull update) {
             // we already checked using selection policy, so we don't need to check again
             return YES;
@@ -233,7 +240,7 @@ static NSString * const ABI43_0_0EXUpdatesAppLoaderTaskErrorDomain = @"ABI43_0_0
 
 - (void)_loadRemoteUpdateWithCompletion:(void (^)(NSError * _Nullable error, ABI43_0_0EXUpdatesUpdate * _Nullable update))completion
 {
-  _remoteAppLoader = [[ABI43_0_0EXUpdatesRemoteAppLoader alloc] initWithConfig:_config database:_database directory:_directory completionQueue:_loaderTaskQueue];
+  _remoteAppLoader = [[ABI43_0_0EXUpdatesRemoteAppLoader alloc] initWithConfig:_config database:_database directory:_directory launchedUpdate:_candidateLauncher.launchedUpdate completionQueue:_loaderTaskQueue];
   [_remoteAppLoader loadUpdateFromUrl:_config.updateUrl onManifest:^BOOL(ABI43_0_0EXUpdatesUpdate * _Nonnull update) {
     if ([self->_selectionPolicy shouldLoadNewUpdate:update withLaunchedUpdate:self->_candidateLauncher.launchedUpdate filters:update.manifestFilters]) {
       self->_isUpToDate = NO;
@@ -280,10 +287,12 @@ static NSString * const ABI43_0_0EXUpdatesAppLoaderTaskErrorDomain = @"ABI43_0_0
             [self _finishWithError:error];
             NSLog(@"Downloaded update but failed to relaunch: %@", error.localizedDescription);
           }
+          self->_isRunning = NO;
           [self _runReaper];
         }];
       } else {
         [self _didFinishBackgroundUpdateWithStatus:ABI43_0_0EXUpdatesBackgroundUpdateStatusUpdateAvailable manifest:update error:nil];
+        self->_isRunning = NO;
         [self _runReaper];
       }
     } else {
@@ -294,6 +303,7 @@ static NSString * const ABI43_0_0EXUpdatesAppLoaderTaskErrorDomain = @"ABI43_0_0
       } else {
         [self _didFinishBackgroundUpdateWithStatus:ABI43_0_0EXUpdatesBackgroundUpdateStatusNoUpdateAvailable manifest:nil error:nil];
       }
+      self->_isRunning = NO;
       [self _runReaper];
     }
   });

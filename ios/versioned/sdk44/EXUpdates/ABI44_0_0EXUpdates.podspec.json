@@ -1,6 +1,6 @@
 {
   "name": "ABI44_0_0EXUpdates",
-  "version": "0.11.0",
+  "version": "0.12.0",
   "summary": "Fetches and manages remotely-hosted assets and updates to your app's JS bundle.",
   "description": "Fetches and manages remotely-hosted assets and updates to your app's JS bundle.",
   "license": "MIT",
@@ -15,16 +15,21 @@
   },
   "static_framework": true,
   "dependencies": {
+    "ASN1Decoder": [
+      "~> 1.8"
+    ],
     "ABI44_0_0ExpoModulesCore": [],
     "ABI44_0_0React-Core": [],
     "ABI44_0_0EXStructuredHeaders": [],
     "ABI44_0_0EXUpdatesInterface": [],
-    "ABI44_0_0EXManifests": []
+    "ABI44_0_0EXManifests": [],
+    "ABI44_0_0EASClient": []
   },
   "pod_target_xcconfig": {
     "GCC_TREAT_INCOMPATIBLE_POINTER_TYPE_WARNINGS_AS_ERRORS": "YES",
     "GCC_TREAT_IMPLICIT_FUNCTION_DECLARATIONS_AS_ERRORS": "YES",
-    "DEFINES_MODULE": "YES"
+    "DEFINES_MODULE": "YES",
+    "SWIFT_COMPILATION_MODE": "wholemodule"
   },
   "source_files": "EXUpdates/**/*.{h,m,swift}",
   "testspecs": [
@@ -32,10 +37,17 @@
       "name": "Tests",
       "test_type": "unit",
       "source_files": "Tests/*.{h,m,swift}",
+      "resources": "Tests/Support/**/*",
       "dependencies": {
         "OCMockito": [
           "~> 6.0"
         ]
+      },
+      "pod_target_xcconfig": {
+        "GCC_TREAT_INCOMPATIBLE_POINTER_TYPE_WARNINGS_AS_ERRORS": "YES",
+        "GCC_TREAT_IMPLICIT_FUNCTION_DECLARATIONS_AS_ERRORS": "YES",
+        "DEFINES_MODULE": "YES",
+        "SWIFT_COMPILATION_MODE": "wholemodule"
       }
     }
   ],
