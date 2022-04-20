@@ -31,6 +31,10 @@ public class EXDevLauncherErrorManager: NSObject {
     self.error = error
     currentVC = nextViewController
     controller?.currentWindow()?.rootViewController = currentVC
+    controller?.currentWindow()?.makeKeyAndVisible()
+    
+    // remove splash screen
+    currentVC?.view.subviews.last?.removeFromSuperview()
   }
 
   private func getNextErrorViewController() -> EXDevLauncherErrorViewController? {
