@@ -13,6 +13,13 @@ jest.mock('react-native/Libraries/Core/Devtools/getDevServer', () => {
   };
 });
 
+jest.mock('react-native/Libraries/TurboModule/TurboModuleRegistry.js', () => ({
+  ...(jest.requireActual('react-native/Libraries/TurboModule/TurboModuleRegistry.js') as any),
+  get: () => ({
+    getConstants: () => ({}),
+  }),
+}));
+
 if (Platform.OS === 'web') {
   it('provides a helpful error message on web', () => {
     // @ts-ignore
