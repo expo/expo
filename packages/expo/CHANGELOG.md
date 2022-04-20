@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix `Overwriting fontFamily style attribute preprocessor` warning when startup.
+
 ### 💡 Others
 
 ## 45.0.0-beta.1 — 2022-04-18
