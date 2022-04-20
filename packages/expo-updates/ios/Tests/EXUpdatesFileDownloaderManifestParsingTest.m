@@ -27,16 +27,16 @@
 @implementation EXUpdatesFileDownloaderManifestParsingTests
 
 - (void)setUp {
-  _classicJSON = TestHelper.testClassicBody;
-  _modernJSON = TestHelper.testBody;
-  _modernJSONCertificate = [TestHelper getTestCertificateObjc:@"test"];
-  _modernJSONSignature = TestHelper.testSignature;
-  _leafCertificate = [TestHelper getTestCertificateObjc:@"chainLeaf"];
-  _intermediateCertificate = [TestHelper getTestCertificateObjc:@"chainIntermediate"];
-  _rootCertificate = [TestHelper getTestCertificateObjc:@"chainRoot"];
-  _chainLeafSignature = TestHelper.testValidChainLeafSignature;
-  _manifestBodyIncorrectProjectId = TestHelper.testNewManifestBodyIncorrectProjectId;
-  _validChainLeafSignatureIncorrectProjectId = TestHelper.testNewManifestBodyValidChainLeafSignatureIncorrectProjectId;
+  _classicJSON = EXUpdatesTestHelper.testClassicBody;
+  _modernJSON = EXUpdatesTestHelper.testBody;
+  _modernJSONCertificate = [EXUpdatesTestHelper getTestCertificateObjc:@"test"];
+  _modernJSONSignature = EXUpdatesTestHelper.testSignature;
+  _leafCertificate = [EXUpdatesTestHelper getTestCertificateObjc:@"chainLeaf"];
+  _intermediateCertificate = [EXUpdatesTestHelper getTestCertificateObjc:@"chainIntermediate"];
+  _rootCertificate = [EXUpdatesTestHelper getTestCertificateObjc:@"chainRoot"];
+  _chainLeafSignature = EXUpdatesTestHelper.testValidChainLeafSignature;
+  _manifestBodyIncorrectProjectId = EXUpdatesTestHelper.testNewManifestBodyIncorrectProjectId;
+  _validChainLeafSignatureIncorrectProjectId = EXUpdatesTestHelper.testNewManifestBodyValidChainLeafSignatureIncorrectProjectId;
 }
 
 - (NSData *)multipartDataFromManifest:(NSString *)manifest
