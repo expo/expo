@@ -1,5 +1,6 @@
 // This method needs to be in a separate file because react-native-reanimated
-// import does not work correctly with inlineRequires option in metro.config.js
+// import wrapped in try catch does not work correctly with inlineRequires option
+// in metro.config.js
 //
 // It looks like in generated bundle "react-native-reanimated" is not present
 // in _dependencyMap, but references to it count it as if it was, e.g. bundle contains
