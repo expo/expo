@@ -4,10 +4,10 @@ import XCTest
 
 @testable import EXUpdates
 
-class CodeSigningCertificateChainTests : XCTestCase {
+class EXUpdatesCertificateChainTests : XCTestCase {
   func test_ValidSingleCertificate() throws {
     let cert = try TestHelper.getTestCertificate(TestCertificate.test)
-    let codeSigningCertificate = try CodeSigningCertificateChain(certificateStrings: [cert]).codeSigningCertificate()
+    let codeSigningCertificate = try EXUpdatesCertificateChain(certificateStrings: [cert]).codeSigningCertificate()
     XCTAssertNotNil(codeSigningCertificate)
     XCTAssertNil(try codeSigningCertificate.1.expoProjectInformation())
   }
@@ -16,7 +16,7 @@ class CodeSigningCertificateChainTests : XCTestCase {
     let leafCert = try TestHelper.getTestCertificate(TestCertificate.chainLeaf)
     let intermediateCert = try TestHelper.getTestCertificate(TestCertificate.chainIntermediate)
     let rootCert = try TestHelper.getTestCertificate(TestCertificate.chainRoot)
-    let codeSigningCertificate = try CodeSigningCertificateChain(certificateStrings: [leafCert, intermediateCert, rootCert]).codeSigningCertificate()
+    let codeSigningCertificate = try EXUpdatesCertificateChain(certificateStrings: [leafCert, intermediateCert, rootCert]).codeSigningCertificate()
     XCTAssertNotNil(codeSigningCertificate)
     let expoProjectInformation = try codeSigningCertificate.1.expoProjectInformation()
     XCTAssertEqual(expoProjectInformation?.scopeKey, "@test/app")
@@ -24,29 +24,29 @@ class CodeSigningCertificateChainTests : XCTestCase {
   }
   
   func test_RequiresLengthGreaterThanZero() throws {
-    XCTAssertThrowsError(try CodeSigningCertificateChain(certificateStrings: []).codeSigningCertificate()) { error in
-      XCTAssertEqual(error as? CodeSigningError, CodeSigningError.CertificateEmptyError)
+    XCTAssertThrowsError(try EXUpdatesCertificateChain(certificateStrings: []).codeSigningCertificate()) { error in
+      XCTAssertEqual(error as? EXUpdatesCodeSigningError, EXUpdatesCodeSigningError.CertificateEmptyError)
     }
   }
   
   func test_ThrowsWhenAnyCertificateIsInvalidDate() throws {
     let cert = try TestHelper.getTestCertificate(TestCertificate.validityExpired)
-    XCTAssertThrowsError(try CodeSigningCertificateChain(certificateStrings: [cert]).codeSigningCertificate()) { error in
-      XCTAssertEqual(error as? CodeSigningError, CodeSigningError.CertificateValidityError)
+    XCTAssertThrowsError(try EXUpdatesCertificateChain(certificateStrings: [cert]).codeSigningCertificate()) { error in
+      XCTAssertEqual(error as? EXUpdatesCodeSigningError, EXUpdatesCodeSigningError.CertificateValidityError)
     }
   }
   
   func test_ThrowsWhenLeafIsNotCodeSigningNoKeyUsage() throws {
     let cert = try TestHelper.getTestCertificate(TestCertificate.noKeyUsage)
-    XCTAssertThrowsError(try CodeSigningCertificateChain(certificateStrings: [cert]).codeSigningCertificate()) { error in
-      XCTAssertEqual(error as? CodeSigningError, CodeSigningError.CertificateMissingCodeSigningError)
+    XCTAssertThrowsError(try EXUpdatesCertificateChain(certificateStrings: [cert]).codeSigningCertificate()) { error in
+      XCTAssertEqual(error as? EXUpdatesCodeSigningError, EXUpdatesCodeSigningError.CertificateMissingCodeSigningError)
     }
   }
   
   func test_ThrowsWhenLeafIsNotCodeSigningNoCodeSigningExtendedKeyUsage() throws {
     let cert = try TestHelper.getTestCertificate(TestCertificate.noCodeSigningExtendedUsage)
-    XCTAssertThrowsError(try CodeSigningCertificateChain(certificateStrings: [cert]).codeSigningCertificate()) { error in
-      XCTAssertEqual(error as? CodeSigningError, CodeSigningError.CertificateMissingCodeSigningError)
+    XCTAssertThrowsError(try EXUpdatesCertificateChain(certificateStrings: [cert]).codeSigningCertificate()) { error in
+      XCTAssertEqual(error as? EXUpdatesCodeSigningError, EXUpdatesCodeSigningError.CertificateMissingCodeSigningError)
     }
   }
   
@@ -55,8 +55,8 @@ class CodeSigningCertificateChainTests : XCTestCase {
     let leafCert = try TestHelper.getTestCertificate(TestCertificate.chainLeaf)
     let rootCert = try TestHelper.getTestCertificate(TestCertificate.chainRoot)
     
-    XCTAssertThrowsError(try CodeSigningCertificateChain(certificateStrings: [leafCert, rootCert]).codeSigningCertificate()) { error in
-      XCTAssertEqual(error as? CodeSigningError, CodeSigningError.CertificateChainError)
+    XCTAssertThrowsError(try EXUpdatesCertificateChain(certificateStrings: [leafCert, rootCert]).codeSigningCertificate()) { error in
+      XCTAssertEqual(error as? EXUpdatesCodeSigningError, EXUpdatesCodeSigningError.CertificateChainError)
     }
   }
   
@@ -65,8 +65,8 @@ class CodeSigningCertificateChainTests : XCTestCase {
     let intermediateCert = try TestHelper.getTestCertificate(TestCertificate.chainIntermediate)
     let rootCert = try TestHelper.getTestCertificate(TestCertificate.chainRoot)
     
-    XCTAssertThrowsError(try CodeSigningCertificateChain(certificateStrings: [leafCert, intermediateCert, rootCert]).codeSigningCertificate()) { error in
-      XCTAssertEqual(error as? CodeSigningError, CodeSigningError.CertificateChainError)
+    XCTAssertThrowsError(try EXUpdatesCertificateChain(certificateStrings: [leafCert, intermediateCert, rootCert]).codeSigningCertificate()) { error in
+      XCTAssertEqual(error as? EXUpdatesCodeSigningError, EXUpdatesCodeSigningError.CertificateChainError)
     }
   }
   
@@ -75,16 +75,16 @@ class CodeSigningCertificateChainTests : XCTestCase {
     let leafCert = try TestHelper.getTestCertificate(TestCertificate.chainLeaf)
     let intermediateCert = try TestHelper.getTestCertificate(TestCertificate.chainIntermediate)
     
-    XCTAssertThrowsError(try CodeSigningCertificateChain(certificateStrings: [leafCert, intermediateCert]).codeSigningCertificate()) { error in
-      XCTAssertEqual(error as? CodeSigningError, CodeSigningError.CertificateRootNotSelfSigned)
+    XCTAssertThrowsError(try EXUpdatesCertificateChain(certificateStrings: [leafCert, intermediateCert]).codeSigningCertificate()) { error in
+      XCTAssertEqual(error as? EXUpdatesCodeSigningError, EXUpdatesCodeSigningError.CertificateRootNotSelfSigned)
     }
   }
   
   // iOS doesn't provide a way to verify signature of any root cert (including self-signed), only certs up to root cert
   func skip_test_ThrowsWhenRootSignatureInvalid() throws {
     let cert = try TestHelper.getTestCertificate(TestCertificate.signatureInvalid)
-    XCTAssertThrowsError(try CodeSigningCertificateChain(certificateStrings: [cert]).codeSigningCertificate()) { error in
-      XCTAssertEqual(error as? CodeSigningError, CodeSigningError.CertificateChainError)
+    XCTAssertThrowsError(try EXUpdatesCertificateChain(certificateStrings: [cert]).codeSigningCertificate()) { error in
+      XCTAssertEqual(error as? EXUpdatesCodeSigningError, EXUpdatesCodeSigningError.CertificateChainError)
     }
   }
   
@@ -93,8 +93,8 @@ class CodeSigningCertificateChainTests : XCTestCase {
     let intermediateCert = try TestHelper.getTestCertificate(TestCertificate.chainNotCAIntermediate)
     let rootCert = try TestHelper.getTestCertificate(TestCertificate.chainNotCARoot)
     
-    XCTAssertThrowsError(try CodeSigningCertificateChain(certificateStrings: [leafCert, intermediateCert, rootCert]).codeSigningCertificate()) { error in
-      XCTAssertEqual(error as? CodeSigningError, CodeSigningError.CertificateChainError)
+    XCTAssertThrowsError(try EXUpdatesCertificateChain(certificateStrings: [leafCert, intermediateCert, rootCert]).codeSigningCertificate()) { error in
+      XCTAssertEqual(error as? EXUpdatesCodeSigningError, EXUpdatesCodeSigningError.CertificateChainError)
     }
   }
   
@@ -103,8 +103,8 @@ class CodeSigningCertificateChainTests : XCTestCase {
     let intermediateCert = try TestHelper.getTestCertificate(TestCertificate.chainPathLenViolationIntermediate)
     let rootCert = try TestHelper.getTestCertificate(TestCertificate.chainPathLenViolationRoot)
     
-    XCTAssertThrowsError(try CodeSigningCertificateChain(certificateStrings: [leafCert, intermediateCert, rootCert]).codeSigningCertificate()) { error in
-      XCTAssertEqual(error as? CodeSigningError, CodeSigningError.CertificateChainError)
+    XCTAssertThrowsError(try EXUpdatesCertificateChain(certificateStrings: [leafCert, intermediateCert, rootCert]).codeSigningCertificate()) { error in
+      XCTAssertEqual(error as? EXUpdatesCodeSigningError, EXUpdatesCodeSigningError.CertificateChainError)
     }
   }
   
@@ -113,8 +113,8 @@ class CodeSigningCertificateChainTests : XCTestCase {
     let intermediateCert = try TestHelper.getTestCertificate(TestCertificate.chainExpoProjectInformationViolationIntermediate)
     let rootCert = try TestHelper.getTestCertificate(TestCertificate.chainExpoProjectInformationViolationRoot)
     
-    XCTAssertThrowsError(try CodeSigningCertificateChain(certificateStrings: [leafCert, intermediateCert, rootCert]).codeSigningCertificate()) { error in
-      XCTAssertEqual(error as? CodeSigningError, CodeSigningError.CertificateProjectInformationChainError)
+    XCTAssertThrowsError(try EXUpdatesCertificateChain(certificateStrings: [leafCert, intermediateCert, rootCert]).codeSigningCertificate()) { error in
+      XCTAssertEqual(error as? EXUpdatesCodeSigningError, EXUpdatesCodeSigningError.CertificateProjectInformationChainError)
     }
   }
 }
