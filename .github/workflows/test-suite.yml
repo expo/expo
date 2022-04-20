@@ -158,6 +158,9 @@ jobs:
     env:
       ORG_GRADLE_PROJECT_reactNativeArchitectures: x86_64
       GRADLE_OPTS: -Dorg.gradle.jvmargs=-Xmx4096m -XX:MaxMetaspaceSize=2048m
+    strategy:
+      matrix:
+        api-level: [29]
     steps:
       - name: ⬢ Setup Node
         uses: actions/setup-node@v3
@@ -193,12 +196,16 @@ jobs:
           key: ${{ runner.os }}-modules-${{ hashFiles('yarn.lock') }}
       - name: 🧶 Install node modules in root dir
         run: yarn install --frozen-lockfile
-      - uses: actions/cache@v2
+      - name: 🧺 Gradle cache
+        uses: gradle/gradle-build-action@v2
+      - name: 🧺 AVD cache
+        uses: actions/cache@v3
+        id: avd-cache
         with:
-          path: ~/.gradle/caches
-          key: ${{ runner.os }}-gradle-v20210625-${{ hashFiles('android/*.gradle*') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-v20210625
+          path: |
+            ~/.android/avd/*
+            ~/.android/adb*
+          key: avd-${{ matrix.api-level }}
       - name: ⚛️ Display React Native config
         run: yarn react-native config
         working-directory: apps/bare-expo
@@ -211,15 +218,26 @@ jobs:
         timeout-minutes: 35
         env:
           GRADLE_OPTS: '-Dorg.gradle.internal.http.connectionTimeout=180000 -Dorg.gradle.internal.http.socketTimeout=180000 -Dorg.gradle.internal.network.retry.max.attempts=18 -Dorg.gradle.internal.network.retry.initial.backOff=2000'
-      - name: Run tests
+      - name: 📱 Create AVD and generate snapshot for caching
+        if: steps.avd-cache.outputs.cache-hit != 'true'
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 29
+          api-level: ${{ matrix.api-level }}
           arch: x86_64
-          avd-name: bare-expo
+          force-avd-creation: false
+          emulator-options: -no-window -gpu swiftshader_indirect -no-boot-anim
+          script: echo "Generated AVD snapshot for caching."
+      - name: 🧪 Run tests
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: ${{ matrix.api-level }}
+          arch: x86_64
+          force-avd-creation: false
+          emulator-options: -no-window -gpu swiftshader_indirect -no-boot-anim
+          disable-animations: true
           script: yarn android:detox:test:release
           working-directory: ./apps/bare-expo
-      - name: Store images of build failures
+      - name: 📸 Store images of build failures
         if: always()
         uses: actions/upload-artifact@v3
         with:
