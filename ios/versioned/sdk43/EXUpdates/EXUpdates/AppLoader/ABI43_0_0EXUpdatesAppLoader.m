@@ -28,6 +28,7 @@ static NSString * const ABI43_0_0EXUpdatesAppLoaderErrorDomain = @"ABI43_0_0EXUp
 - (instancetype)initWithConfig:(ABI43_0_0EXUpdatesConfig *)config
                       database:(ABI43_0_0EXUpdatesDatabase *)database
                      directory:(NSURL *)directory
+                launchedUpdate:(nullable ABI43_0_0EXUpdatesUpdate *)launchedUpdate
                completionQueue:(dispatch_queue_t)completionQueue
 {
   if (self = [super init]) {
@@ -39,6 +40,7 @@ static NSString * const ABI43_0_0EXUpdatesAppLoaderErrorDomain = @"ABI43_0_0EXUp
     _config = config;
     _database = database;
     _directory = directory;
+    _launchedUpdate = launchedUpdate;
     _completionQueue = completionQueue;
   }
   return self;
@@ -176,6 +178,9 @@ static NSString * const ABI43_0_0EXUpdatesAppLoaderErrorDomain = @"ABI43_0_0EXUp
           [self downloadAsset:asset];
         } else {
           NSError *mergeError;
+          // merge fields from existing database entry into our current asset object
+          // retaining the original object since it's used in self->_assetsToLoad
+          // (this is different from on Android, where we keep the database-sourced object instead)
           [self->_database mergeAsset:asset withExistingEntry:matchingDbEntry error:&mergeError];
           if (mergeError) {
             NSLog(@"Failed to merge asset with existing database entry: %@", mergeError.localizedDescription);
@@ -234,7 +239,7 @@ static NSString * const ABI43_0_0EXUpdatesAppLoaderErrorDomain = @"ABI43_0_0EXUp
   if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
     asset.headers = ((NSHTTPURLResponse *)response).allHeaderFields;
   }
-  asset.contentHash = [ABI43_0_0EXUpdatesUtils sha256WithData:data];
+  asset.contentHash = [ABI43_0_0EXUpdatesUtils hexEncodedSHA256WithData:data];
   asset.downloadTime = [NSDate date];
   [self->_finishedAssets addObject:asset];
   [self _notifyProgressWithAsset:asset];
@@ -287,7 +292,7 @@ static NSString * const ABI43_0_0EXUpdatesAppLoaderErrorDomain = @"ABI43_0_0EXUp
         // do our best to create a new entry for this file even though it already existed on disk
         // TODO: we should probably get rid of this assumption that if an asset exists on disk with the same filename, it's the same asset
         NSData *contents = [NSData dataWithContentsOfURL:[self->_directory URLByAppendingPathComponent:existingAsset.filename]];
-        existingAsset.contentHash = [ABI43_0_0EXUpdatesUtils sha256WithData:contents];
+        existingAsset.contentHash = [ABI43_0_0EXUpdatesUtils hexEncodedSHA256WithData:contents];
         existingAsset.downloadTime = [NSDate date];
         [self->_finishedAssets addObject:existingAsset];
       }

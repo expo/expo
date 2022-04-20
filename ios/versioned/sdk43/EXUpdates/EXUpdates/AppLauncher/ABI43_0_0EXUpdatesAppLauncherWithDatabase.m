@@ -261,7 +261,13 @@ static NSString * const ABI43_0_0EXUpdatesAppLauncherErrorDomain = @"AppLauncher
 
     if (matchingAsset && matchingAsset.mainBundleFilename) {
       dispatch_async([ABI43_0_0EXUpdatesFileDownloader assetFilesQueue], ^{
-        NSString *bundlePath = [[NSBundle mainBundle] pathForResource:matchingAsset.mainBundleFilename ofType:matchingAsset.type];
+        NSString *bundlePath = [ABI43_0_0EXUpdatesUtils pathForBundledAsset:matchingAsset];
+        if (bundlePath == nil) {
+          dispatch_async(self->_launcherQueue, ^{
+            completion(NO, [NSError errorWithDomain:ABI43_0_0EXUpdatesAppLauncherErrorDomain code:1013 userInfo:@{NSLocalizedDescriptionKey: @"Asset bundlePath was unexpectedly nil"}]);
+          });
+          return;
+        }
         NSError *error;
         BOOL success = [NSFileManager.defaultManager copyItemAtPath:bundlePath toPath:[assetLocalUrl path] error:&error];
         dispatch_async(self->_launcherQueue, ^{
@@ -271,7 +277,7 @@ static NSString * const ABI43_0_0EXUpdatesAppLauncherErrorDomain = @"AppLauncher
       return;
     }
   }
-  
+
   completion(NO, nil);
 }
 
@@ -283,16 +289,30 @@ static NSString * const ABI43_0_0EXUpdatesAppLauncherErrorDomain = @"AppLauncher
     completion([NSError errorWithDomain:ABI43_0_0EXUpdatesAppLauncherErrorDomain code:1007 userInfo:@{NSLocalizedDescriptionKey: @"Failed to download asset with no URL provided"}], asset, assetLocalUrl);
   }
   dispatch_async([ABI43_0_0EXUpdatesFileDownloader assetFilesQueue], ^{
-    [self.downloader downloadFileFromURL:asset.url toPath:[assetLocalUrl path] successBlock:^(NSData *data, NSURLResponse *response) {
+    [self.downloader downloadFileFromURL:asset.url
+                                  toPath:[assetLocalUrl path]
+                            extraHeaders:asset.extraRequestHeaders ?: @{}
+                            successBlock:^(NSData *data, NSURLResponse *response) {
       dispatch_async(self->_launcherQueue, ^{
+        NSString *hashBase64String = [ABI43_0_0EXUpdatesUtils base64UrlEncodedSHA256WithData:data];
+        if (asset.expectedHash && ![asset.expectedHash.lowercaseString isEqualToString:hashBase64String.lowercaseString]) {
+          completion([NSError errorWithDomain:ABI43_0_0EXUpdatesAppLauncherErrorDomain
+                                         code:1016
+                                     userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithFormat:@"Asset hash invalid: %@; expectedHash: %@; actualHash: %@", asset.key, asset.expectedHash.lowercaseString, hashBase64String.lowercaseString]}],
+                     asset,
+                     assetLocalUrl);
+          return;
+        }
+        
         if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
           asset.headers = ((NSHTTPURLResponse *)response).allHeaderFields;
         }
-        asset.contentHash = [ABI43_0_0EXUpdatesUtils sha256WithData:data];
+        asset.contentHash = hashBase64String;
         asset.downloadTime = [NSDate date];
         completion(nil, asset, assetLocalUrl);
       });
-    } errorBlock:^(NSError *error, NSURLResponse *response) {
+    }
+                              errorBlock:^(NSError *error) {
       dispatch_async(self->_launcherQueue, ^{
         completion(error, asset, assetLocalUrl);
       });
