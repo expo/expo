@@ -6,6 +6,14 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.11.0 — 2022-04-20
+
+### 🎉 New features
+
 - Add expo-modules and ReactDelegate-based automatic setup on iOS. ([#16190](https://github.com/expo/expo/pull/16190) by [@esamelson](https://github.com/esamelson))
 - Add support for auto-setup with updates integration on iOS. ([#16230](https://github.com/expo/expo/pull/16230) by [@esamelson](https://github.com/esamelson))
 - Send uncaught exceptions to the bundler server if possible. ([#15938](https://github.com/expo/expo/pull/15938) & [#15964](https://github.com/expo/expo/pull/15964) by [@lukmccall](https://github.com/lukmccall))
