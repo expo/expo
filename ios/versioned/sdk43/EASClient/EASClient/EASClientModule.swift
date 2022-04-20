@@ -6,8 +6,10 @@ public class EASClientModule: Module {
   public func definition() -> ModuleDefinition {
     name("EASClient")
 
-    constants([
-      "clientID": EASClientID.uuid().uuidString
-    ])
+    constants {
+      return [
+        "clientID": EASClientID.uuid().uuidString
+      ]
+    }
   }
 }
