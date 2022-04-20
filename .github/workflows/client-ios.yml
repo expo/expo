@@ -127,7 +127,7 @@ jobs:
         with:
           name: fastlane-logs
           path: ~/Library/Logs/fastlane
-      - name: 🏗 Build Expo Go for simulator
+      - name: 🚚 Release the simulator build
         run: expotools client-build --platform ios --release # should only upload already-built app
         if: ${{ github.event.inputs.releaseSimulator == 'release-simulator' }}
         env:
