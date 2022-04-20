@@ -63,6 +63,10 @@ class DevLauncherController private constructor() : DevLauncherControllerInterfa
     throw IllegalStateException(DEV_LAUNCHER_IS_NOT_AVAILABLE)
   }
 
+  override suspend fun loadApp(url: Uri, projectUrl: Uri?, mainActivity: ReactActivity?) {
+    throw IllegalStateException(DEV_LAUNCHER_IS_NOT_AVAILABLE)
+  }
+
   override fun onAppLoaded(context: ReactContext) {
     throw IllegalStateException(DEV_LAUNCHER_IS_NOT_AVAILABLE)
   }
