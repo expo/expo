@@ -131,6 +131,8 @@ class NativeProxy : public jni::HybridClass<NativeProxy> {
       jni::alias_ref<LayoutAnimations::javaobject> layoutAnimations);
   static void registerNatives();
 
+ ~NativeProxy();
+
  private:
   friend HybridBase;
   jni::global_ref<NativeProxy::javaobject> javaPart_;
