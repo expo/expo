@@ -6,7 +6,7 @@ function uriFromFontSource(asset) {
         return asset || null;
     }
     else if (typeof asset === 'object') {
-        return asset.uri || asset.localUri || null;
+        return asset.uri || asset.localUri || asset.default || null;
     }
     return null;
 }
