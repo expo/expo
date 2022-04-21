@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 45.0.0-beta.3 — 2022-04-21
+
+_This version does not introduce any user-facing changes._
+
 ## 45.0.0-beta.2 — 2022-04-20
 
 ### 🎉 New features

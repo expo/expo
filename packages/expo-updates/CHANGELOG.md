@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 0.13.0 — 2022-04-21
+
+### 🐛 Bug fixes
+
 - Fix asset hash validation. ([#17152](https://github.com/expo/expo/pull/17152) by [@wschurman](https://github.com/wschurman))
 
 ### 💡 Others

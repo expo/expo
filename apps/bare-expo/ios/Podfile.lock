@@ -70,7 +70,7 @@ PODS:
     - Firebase/Core (= 8.14.0)
   - EXFont (10.1.0):
     - ExpoModulesCore
-  - EXGL (11.2.1):
+  - EXGL (11.2.2):
     - EXGL_CPP
     - ExpoModulesCore
   - EXGL_CPP (11.2.1):
@@ -107,7 +107,7 @@ PODS:
     - ExpoModulesCore
   - EXPermissions (13.2.0):
     - ExpoModulesCore
-  - Expo (45.0.0-beta.2):
+  - Expo (45.0.0-beta.3):
     - ExpoModulesCore
   - expo-dev-client (0.9.0):
     - EXManifests
@@ -227,7 +227,7 @@ PODS:
     - ExpoModulesCore
   - ExpoLocalization (13.0.0):
     - ExpoModulesCore
-  - ExpoModulesCore (0.8.0):
+  - ExpoModulesCore (0.9.0):
     - React-Core
     - ReactCommon/turbomodule/core
   - ExpoRandom (12.2.0):
@@ -1370,7 +1370,7 @@ SPEC CHECKSUMS:
   EXFirebaseAnalytics: aeefc63f92277313c3ee86da6a7ecf892f345ed1
   EXFirebaseCore: bdfa87df74fa1b74a6b38957561456aabad28a4f
   EXFont: 04235cc22e6fef86028feb67db452978dc6f240f
-  EXGL: 4a080e7b64cb182f4c045ab8259e39a1e4ca8f48
+  EXGL: f84d22778dd933164d0a739cc4868ad93e688594
   EXGL_CPP: 9c41650d987c2aa6e999740bf8803e445cb9e195
   EXGoogleSignIn: d4ec785c6d98732a47824257c04a3415cfbd8986
   EXImage: b41d1f72f0565a9f62ab0c6dde0d4d6d3c68c226
@@ -1385,7 +1385,7 @@ SPEC CHECKSUMS:
   EXNetwork: 116e5ec043168904c1f24a2e96a8361063e57d26
   EXNotifications: e0031e6cf1d018b8a09a1f7790faef25ccbf107e
   EXPermissions: 3dbb869e7f96a5711314f73d48ddc2f28009a7f6
-  Expo: 023cb99a32bec1ebe321bd2e6d750cd68c4c5828
+  Expo: cf95e4738189a464b35df14814619b62d187e1cf
   expo-dev-client: 5e8a619fd0e9b34cacb762bc743d70af12669822
   expo-dev-launcher: 61cc2aaac9ace59cf6b9bf7c7e1335b7873f55c6
   expo-dev-menu: 407ce36c976972ad5b8baac9504f7b5371ae3b6c
@@ -1399,7 +1399,7 @@ SPEC CHECKSUMS:
   ExpoKeepAwake: 6f23558b054e4d0c04535f7d70c3fe6a2025d8f7
   ExpoLinearGradient: 0debcf7d6cd7fea3050c218544f0db2de9a64f42
   ExpoLocalization: 8f619bb6eec64575cd5220bfabbd7b4e2d6f33f8
-  ExpoModulesCore: 513415e2677f43fb5bca744ecc82e1973e32b337
+  ExpoModulesCore: 4093531a41eb8b2e3b508ee519afbd84b09de727
   ExpoRandom: 14df0976aa363a71a730ceb7655250f3047c0e42
   ExpoSystemUI: 6175204b809d9598d56e5a711480415d28c9fb5b
   ExpoWebBrowser: 818c519c3519cdd79780228039938fbd8236c885
