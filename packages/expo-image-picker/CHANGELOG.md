@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [plugin] Added ability to disable permissions.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

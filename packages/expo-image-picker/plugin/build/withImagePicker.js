@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.setImagePickerManifestActivity = void 0;
+exports.setImagePickerInfoPlist = exports.setImagePickerManifestActivity = void 0;
 const config_plugins_1 = require("@expo/config-plugins");
 const pkg = require('expo-image-picker/package.json');
 const CAMERA_USAGE = 'Allow $(PRODUCT_NAME) to access your camera';
@@ -29,26 +29,49 @@ const withImagePickerManifestActivity = (config) => {
         return config;
     });
 };
+function setImagePickerInfoPlist(infoPlist, { cameraPermission, microphonePermission, photosPermission }) {
+    if (photosPermission === false) {
+        delete infoPlist.NSPhotoLibraryUsageDescription;
+    }
+    else {
+        infoPlist.NSPhotoLibraryUsageDescription =
+            photosPermission || infoPlist.NSPhotoLibraryUsageDescription || READ_PHOTOS_USAGE;
+    }
+    if (cameraPermission === false) {
+        delete infoPlist.NSCameraUsageDescription;
+    }
+    else {
+        infoPlist.NSCameraUsageDescription =
+            cameraPermission || infoPlist.NSCameraUsageDescription || CAMERA_USAGE;
+    }
+    if (microphonePermission === false) {
+        delete infoPlist.NSMicrophoneUsageDescription;
+    }
+    else {
+        infoPlist.NSMicrophoneUsageDescription =
+            microphonePermission || infoPlist.NSMicrophoneUsageDescription || MICROPHONE_USAGE;
+    }
+    return infoPlist;
+}
+exports.setImagePickerInfoPlist = setImagePickerInfoPlist;
 const withImagePicker = (config, { photosPermission, cameraPermission, microphonePermission } = {}) => {
-    if (!config.ios)
-        config.ios = {};
-    if (!config.ios.infoPlist)
-        config.ios.infoPlist = {};
-    config.ios.infoPlist.NSPhotoLibraryUsageDescription =
-        photosPermission || config.ios.infoPlist.NSPhotoLibraryUsageDescription || READ_PHOTOS_USAGE;
-    config.ios.infoPlist.NSCameraUsageDescription =
-        cameraPermission || config.ios.infoPlist.NSCameraUsageDescription || CAMERA_USAGE;
-    config.ios.infoPlist.NSMicrophoneUsageDescription =
-        microphonePermission || config.ios.infoPlist.NSMicrophoneUsageDescription || MICROPHONE_USAGE;
+    config = (0, config_plugins_1.withInfoPlist)(config, (config) => {
+        config.modResults = setImagePickerInfoPlist(config.modResults, {
+            photosPermission,
+            cameraPermission,
+            microphonePermission,
+        });
+        return config;
+    });
     return (0, config_plugins_1.withPlugins)(config, [
         [
             config_plugins_1.AndroidConfig.Permissions.withPermissions,
             [
-                'android.permission.CAMERA',
-                'android.permission.READ_EXTERNAL_STORAGE',
-                'android.permission.WRITE_EXTERNAL_STORAGE',
-                'android.permission.RECORD_AUDIO',
-            ],
+                cameraPermission !== false && 'android.permission.CAMERA',
+                photosPermission !== false && 'android.permission.READ_EXTERNAL_STORAGE',
+                photosPermission !== false && 'android.permission.WRITE_EXTERNAL_STORAGE',
+                microphonePermission !== false && 'android.permission.RECORD_AUDIO',
+            ].filter(Boolean),
         ],
         withImagePickerManifestActivity,
     ]);
