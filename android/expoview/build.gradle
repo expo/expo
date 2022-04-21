@@ -306,24 +306,26 @@ dependencies {
   // WHEN_DISTRIBUTING_REMOVE_TO_HERE
 
   // React native dependencies
+  api 'androidx.appcompat:appcompat:1.2.0'
+  api 'androidx.autofill:autofill:1.1.0'
   api 'androidx.swiperefreshlayout:swiperefreshlayout:1.0.0'
-  api 'com.facebook.fresco:fresco:2.0.0'
-  api 'com.facebook.fresco:animated-gif:2.0.0'
-  api 'com.facebook.fresco:animated-webp:2.0.0'
-  api 'com.facebook.fresco:webpsupport:2.0.0'
-  api 'com.facebook.fresco:imagepipeline-okhttp3:2.0.0'
-  api 'com.facebook.stetho:stetho:1.3.1' // do we need this?
-  api 'com.facebook.stetho:stetho-okhttp3:1.3.1' // do we need this?
-  compileOnly 'com.facebook.soloader:soloader:0.8.2'
+  api 'com.facebook.fbjni:fbjni-java-only:0.2.2'
+  api 'com.facebook.fresco:fresco:2.5.0'
+  api 'com.facebook.fresco:animated-gif:2.5.0'
+  api 'com.facebook.fresco:animated-webp:2.5.0'
+  api 'com.facebook.fresco:webpsupport:2.5.0'
+  api 'com.facebook.fresco:imagepipeline-okhttp3:2.5.0'
+  api 'com.facebook.fresco:ui-common:2.5.0'
+  api 'com.facebook.infer.annotation:infer-annotation:0.18.0'
+  api 'com.facebook.soloader:soloader:0.10.3'
+  api 'com.facebook.yoga:proguard-annotations:1.19.0'
   api 'com.google.code.findbugs:jsr305:3.0.2'
-  api 'com.squareup.okhttp3:okhttp:3.12.1'
-  api 'com.squareup.okhttp3:okhttp-urlconnection:3.12.1'
-  api 'com.squareup.okio:okio:1.15.0'
-  api 'com.facebook.infer.annotation:infer-annotation:0.11.2'
+  api 'com.squareup.okhttp3:okhttp-urlconnection:4.9.2'
+  api 'com.squareup.okhttp3:okhttp:4.9.2'
+  api 'com.squareup.okio:okio:2.9.0'
   api 'javax.inject:javax.inject:1'
 
   // Our dependencies
-  api "androidx.appcompat:appcompat:1.2.0"
   compileOnly 'org.glassfish:javax.annotation:3.1.1'
   api 'de.greenrobot:eventbus:2.4.0'
   api "androidx.room:room-runtime:2.1.0"
