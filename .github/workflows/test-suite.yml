@@ -233,7 +233,6 @@ jobs:
           avd-name: avd-${{ matrix.api-level }}
           arch: x86_64
           force-avd-creation: false
-          disable-animations: true
           script: yarn android:detox:test:release
           working-directory: ./apps/bare-expo
       - name: 📸 Store images of build failures
