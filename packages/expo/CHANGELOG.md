@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix `Overwriting fontFamily style attribute preprocessor` warning when startup. ([#17138](https://github.com/expo/expo/pull/17138) by [@Kudo](https://github.com/Kudo))
+
 ### 💡 Others
 
 ## 45.0.0-beta.4 — 2022-04-21
