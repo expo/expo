@@ -58,7 +58,7 @@ export class ADBServer {
       await this.runAsync(['kill-server']);
       return true;
     } catch (error: any) {
-      error('Failed to stop ADB server: ' + error.message);
+      Log.error('Failed to stop ADB server: ' + error.message);
       return false;
     } finally {
       debug('Stopped ADB server');
