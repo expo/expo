@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fix import errors when option `inlineRequires` is enabled in `metro.config.js`. ([#17141](https://github.com/expo/expo/pull/17141) by [@wkozyra95](https://github.com/wkozyra95))
-
 ### 💡 Others
+
+## 11.2.2 — 2022-04-21
+
+### 🐛 Bug fixes
+
+- Fix import errors when option `inlineRequires` is enabled in `metro.config.js`. ([#17141](https://github.com/expo/expo/pull/17141) by [@wkozyra95](https://github.com/wkozyra95))
 
 ## 11.2.1 — 2022-04-20
 
