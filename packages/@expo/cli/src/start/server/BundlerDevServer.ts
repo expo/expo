@@ -163,7 +163,7 @@ export abstract class BundlerDevServer {
     // Must come after ngrok (`startTunnelAsync`) setup.
 
     if (this.devSession) {
-      await this.devSession.stopNotifying();
+      this.devSession.stopNotifying();
     }
 
     this.devSession = new DevelopmentSession(
