@@ -31,7 +31,7 @@ No additional set up necessary.
 
 ### Plugin
 
-In order to enable Apple iCloud storage in managed EAS builds, you'll need to define the `appleTeamId` property in the config plugin:
+You can change the `com.apple.developer.icloud-container-environment` entitlement using the `iCloudContainerEnvironment` property.
 
 `app.json`
 
@@ -41,18 +41,11 @@ In order to enable Apple iCloud storage in managed EAS builds, you'll need to de
     "usesIcloudStorage": true,
     "bundleIdentifier": "com.yourname.yourapp"
   },
-  "plugins": [
-    [
-      "expo-document-picker",
-      {
-        "appleTeamId": "YOUR_TEAM_ID"
-      }
-    ]
-  ]
+  "plugins": ["expo-document-picker"]
 }
 ```
 
-> Running `expo eject` will generate a the native project locally with the applied changes in your iOS Entitlements file.
+> Running `expo prebuild` will generate a the [native project locally](https://docs.expo.io/workflow/customizing/) with the applied changes in your iOS Entitlements file.
 
 # Contributing
 

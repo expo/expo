@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [plugin] Update to use codesigning variables in entitlements.
+
 ## 10.2.0 — 2022-04-18
 
 ### 💡 Others
