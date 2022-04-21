@@ -39,7 +39,7 @@ describe(`startAsync`, () => {
       exp,
       runtime,
     });
-    session.stop();
+    session.stopNotifying();
     expect(ProjectDevices.getDevicesInfoAsync).toHaveBeenCalledTimes(1);
     expect(scope.isDone()).toBe(true);
   });
