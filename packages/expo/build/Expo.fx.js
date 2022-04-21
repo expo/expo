@@ -17,7 +17,18 @@ const isManagedEnvironment = Constants.executionEnvironment === ExecutionEnviron
     Constants.executionEnvironment === ExecutionEnvironment.StoreClient;
 // If expo-font is installed and the style preprocessor is available, use it to parse fonts.
 if (StyleSheet.setStyleAttributePreprocessor) {
-    StyleSheet.setStyleAttributePreprocessor('fontFamily', Font.processFontFamily);
+    if (__DEV__) {
+        // Temporarily disable console.warn() in dev mode,
+        // because the experimented `StyleSheet.setStyleAttributePreprocessor` will show a warning about
+        // `Overwriting fontFamily style attribute preprocessor`.
+        const originalConsoleWarn = global.console.warn;
+        global.console.warn = () => { };
+        StyleSheet.setStyleAttributePreprocessor('fontFamily', Font.processFontFamily);
+        global.console.warn = originalConsoleWarn;
+    }
+    else {
+        StyleSheet.setStyleAttributePreprocessor('fontFamily', Font.processFontFamily);
+    }
 }
 // Asserts if bare workflow isn't setup correctly.
 if (NativeModulesProxy.ExpoUpdates?.isMissingRuntimeVersion) {
