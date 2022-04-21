@@ -498,7 +498,7 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
   }
 }
 
--(void) updateVideoWithOptions:(NSDictionary *)options onReject:(EXPromiseRejectBlock)reject
+-(void)updateVideoWithOptions:(NSDictionary *)options onReject:(EXPromiseRejectBlock)reject
 {
     AVCaptureConnection *connection = [_movieFileOutput connectionWithMediaType:AVMediaTypeVideo];
     // TODO: Add support for videoStabilizationMode (right now it is not only read, never written to)
@@ -518,12 +518,11 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
     }
 }
 
--(void) updateSessionWithOptions:(NSDictionary *)options
+-(void)updateSessionWithOptions:(NSDictionary *)options
 {
   bool shouldBeMuted = options[@"mute"] && [options[@"mute"] boolValue];
   [self updateSessionAudioIsMuted:shouldBeMuted];
 
-  
   AVCaptureSessionPreset preset;
   if (options[@"quality"]) {
     EXCameraVideoResolution resolution = [options[@"quality"] integerValue];
@@ -551,12 +550,11 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
 
     
   if (_movieFileOutput != nil && !_movieFileOutput.isRecording && _videoRecordedResolve == nil && _videoRecordedReject == nil) {
-    // there are some options, which are called within commitConfiguration. These kind of options need to
+    // There are some options, which are called within commitConfiguration. These kinds of options need to
     // be preset as early as possible, however, if we receive a new options - we still configure them.
-    // All these options are configured in `updateSessionWithOptions`
-    // However, some fields should be configured when starting a video because it depends on movieFileOutput
-    // these options don't cause flickering => we can configure it before starting a video
-    // we do it in `upadteVideoWithOptions`
+    // All these options are configured in `updateSessionWithOptions`.
+    // However, some fields should be configured when starting a video because it depends on `movieFileOutput`.
+    // These options don't cause flickering => we can configure it before starting recording - we do it in `upadteVideoWithOptions`.
     if (options != nil && options.count >= 1) {
         [self updateSessionWithOptions:options];
         [self updateVideoWithOptions:options onReject:reject];

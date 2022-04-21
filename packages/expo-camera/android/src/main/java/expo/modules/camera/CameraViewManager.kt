@@ -70,7 +70,7 @@ class CameraViewManager(
   }
 
   @ExpoProp(name = "defaultRecordOptions")
-  fun setDefaultRecordOptions(view: ExpoCameraView, defaultRecordOptions: Map<String, Any>?) {
+  fun setDefaultRecordOptions(view: ExpoCameraView, defaultRecordOptions: Map<String?, Any?>?) {
     view.defaultRecordOptions = defaultRecordOptions
   }
 

@@ -151,9 +151,10 @@ class ExpoCameraView(
   }
 
   fun record(baseOptions: Map<String?, Any?>, promise: Promise, cacheDirectory: File) {
-    var options = defaultRecordOptions as Map<String?, Any?>
-    if (baseOptions.isNotEmpty() || defaultRecordOptions == null) {
-      options = baseOptions
+    val options =  if (baseOptions.isNotEmpty() || defaultRecordOptions == null) {
+      baseOptions
+    } else {
+      defaultRecordOptions
     }
 
     try {
