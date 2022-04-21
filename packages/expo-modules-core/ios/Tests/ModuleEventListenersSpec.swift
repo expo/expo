@@ -18,22 +18,22 @@ class ModuleEventListenersSpec: ExpoSpec {
       appContext = AppContext()
     }
 
-    it("calls onCreate once the module instance is created") {
+    it("calls OnCreate once the module instance is created") {
       waitUntil { done in
         _ = mockModuleHolder(appContext) {
-          $0.onCreate {
+          OnCreate {
             done()
           }
         }
       }
     }
 
-    it("calls onDestroy once the module is about to be deallocated") {
+    it("calls OnDestroy once the module is about to be deallocated") {
       waitUntil { done in
         let moduleName = "mockedModule"
         let holder = mockModuleHolder(appContext) {
-          $0.name(moduleName)
-          $0.onDestroy {
+          Name(moduleName)
+          OnDestroy {
             done()
           }
         }
@@ -44,10 +44,10 @@ class ModuleEventListenersSpec: ExpoSpec {
       }
     }
 
-    it("calls onAppContextDestroys once the context destroys") {
+    it("calls OnAppContextDestroys once the context destroys") {
       waitUntil { done in
         let holder = mockModuleHolder(appContext) {
-          $0.onAppContextDestroys {
+          OnAppContextDestroys {
             done()
           }
         }
@@ -69,10 +69,10 @@ class ModuleEventListenersSpec: ExpoSpec {
       }
     }
 
-    it("calls onAppEntersForeground when system's willEnterForegroundNotification is sent") {
+    it("calls OnAppEntersForeground when system's willEnterForegroundNotification is sent") {
       waitUntil { done in
         let holder = mockModuleHolder(appContext) {
-          $0.onAppEntersForeground {
+          OnAppEntersForeground {
             done()
           }
         }
@@ -81,10 +81,10 @@ class ModuleEventListenersSpec: ExpoSpec {
       }
     }
 
-    it("calls onAppBecomesActive when system's didBecomeActiveNotification is sent") {
+    it("calls OnAppBecomesActive when system's didBecomeActiveNotification is sent") {
       waitUntil { done in
         let holder = mockModuleHolder(appContext) {
-          $0.onAppBecomesActive {
+          OnAppBecomesActive {
             done()
           }
         }
@@ -93,10 +93,10 @@ class ModuleEventListenersSpec: ExpoSpec {
       }
     }
 
-    it("calls onAppEntersBackground when system's didEnterBackgroundNotification is sent") {
+    it("calls OnAppEntersBackground when system's didEnterBackgroundNotification is sent") {
       waitUntil { done in
         let holder = mockModuleHolder(appContext) {
-          $0.onAppEntersBackground {
+          OnAppEntersBackground {
             done()
           }
         }

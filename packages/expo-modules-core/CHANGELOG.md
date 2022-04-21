@@ -4,6 +4,10 @@
 
 ### 🛠 Breaking changes
 
+### ⚠️ Notices
+
+- Renamed all definition components to start with the uppercase letter. The old names will be removed in the next minor release. ([#17153](https://github.com/expo/expo/pull/17153) by [@lukmccall](https://github.com/lukmccall), [#17098](https://github.com/expo/expo/pull/17098) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🎉 New features
 
 - Add `ReactNativeHostHandler.getUseDeveloperSupport()` to allow `expo-dev-launcher` to override this value at runtime. ([#17069](https://github.com/expo/expo/pull/17069) by [@esamelson](https://github.com/esamelson))
