@@ -295,10 +295,10 @@ static NSString * const ABI44_0_0EXUpdatesAppLauncherErrorDomain = @"AppLauncher
                             successBlock:^(NSData *data, NSURLResponse *response) {
       dispatch_async(self->_launcherQueue, ^{
         NSString *hashBase64String = [ABI44_0_0EXUpdatesUtils base64UrlEncodedSHA256WithData:data];
-        if (asset.expectedHash && ![asset.expectedHash.lowercaseString isEqualToString:hashBase64String.lowercaseString]) {
+        if (asset.expectedHash && ![asset.expectedHash isEqualToString:hashBase64String]) {
           completion([NSError errorWithDomain:ABI44_0_0EXUpdatesAppLauncherErrorDomain
                                          code:1016
-                                     userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithFormat:@"Asset hash invalid: %@; expectedHash: %@; actualHash: %@", asset.key, asset.expectedHash.lowercaseString, hashBase64String.lowercaseString]}],
+                                     userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithFormat:@"Asset hash invalid: %@; expectedHash: %@; actualHash: %@", asset.key, asset.expectedHash, hashBase64String]}],
                      asset,
                      assetLocalUrl);
           return;

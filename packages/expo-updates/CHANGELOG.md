@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix asset hash validation. ([#17152](https://github.com/expo/expo/pull/17152) by [@wschurman](https://github.com/wschurman))
+
 ### 💡 Others
 
 - Add current and embedded update headers to manifest requests. ([#17033](https://github.com/expo/expo/pull/17033) by [@esamelson](https://github.com/esamelson))
