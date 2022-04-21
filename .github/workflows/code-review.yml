@@ -20,14 +20,10 @@ jobs:
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v3
-      - name: ♻️ Restore node modules in tools
-        uses: actions/cache@v2
-        id: tools-modules-cache
+      - name: ♻️ Restore caches
+        uses: ./.github/actions/expo-caches
         with:
-          path: tools/node_modules
-          key: ${{ runner.os }}-tools-modules-${{ hashFiles('tools/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-tools-modules-
+          yarn-tools: 'true'
       - name: 🔬 Reviewing a pull request
         run: bin/expotools code-review --pr ${{ github.event.inputs.pullNumber || github.event.number }}
         env:
