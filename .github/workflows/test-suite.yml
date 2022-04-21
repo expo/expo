@@ -225,15 +225,14 @@ jobs:
           api-level: ${{ matrix.api-level }}
           arch: x86_64
           force-avd-creation: false
-          emulator-options: -no-window -gpu swiftshader_indirect -no-boot-anim
           script: echo "Generated AVD snapshot for caching."
       - name: 🧪 Run tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: ${{ matrix.api-level }}
+          avd-name: avd-${{ matrix.api-level }}
           arch: x86_64
           force-avd-creation: false
-          emulator-options: -no-window -gpu swiftshader_indirect -no-boot-anim
           disable-animations: true
           script: yarn android:detox:test:release
           working-directory: ./apps/bare-expo
