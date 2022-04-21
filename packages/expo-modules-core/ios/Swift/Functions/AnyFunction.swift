@@ -15,6 +15,11 @@ public protocol AnyFunction: AnyDefinition {
   var takesPromise: Bool { get }
 
   /**
+   An array of argument types that the function takes. If the last type is `Promise`, it's not included.
+   */
+  var argumentTypes: [AnyArgumentType] { get }
+
+  /**
    A number of arguments the function takes. If the last argument is of type `Promise`, it is not counted.
    */
   var argumentsCount: Int { get }
