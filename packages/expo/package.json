@@ -55,7 +55,7 @@
   "dependencies": {
     "@babel/runtime": "^7.14.0",
     "@expo/cli": "0.0.0",
-    "@expo/vector-icons": "^12.0.4",
+    "@expo/vector-icons": "^13.0.0",
     "babel-preset-expo": "~9.1.0",
     "cross-spawn": "^6.0.5",
     "expo-application": "~4.1.0",
