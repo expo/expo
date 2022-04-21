@@ -53,7 +53,8 @@ describe('getAssetForSource', () => {
       (FontLoader.getAssetForSource({ uri: 'foo', display: Font.FontDisplay.SWAP }) as any).display
     ).toBe(Font.FontDisplay.SWAP);
     expect(
-      (FontLoader.getAssetForSource({ default: 'foo', display: Font.FontDisplay.SWAP }) as any).display
+      (FontLoader.getAssetForSource({ default: 'foo', display: Font.FontDisplay.SWAP }) as any)
+        .display
     ).toBe(Font.FontDisplay.SWAP);
   });
   it(`doesn't support numeric assets on web`, () => {
