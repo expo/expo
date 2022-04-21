@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- [plugin] Update to use codesigning variables in entitlements.
+- [plugin] Update to use codesigning variables in entitlements. ([#17158](https://github.com/expo/expo/pull/17158) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 10.2.0 — 2022-04-18
 
