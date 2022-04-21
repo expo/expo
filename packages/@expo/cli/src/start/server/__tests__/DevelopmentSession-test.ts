@@ -31,16 +31,22 @@ describe(`startAsync`, () => {
       primaryColor: '#4630eb',
     };
     const runtime = 'native';
-    const scope = nock(getExpoApiBaseUrl())
+    const startScope = nock(getExpoApiBaseUrl())
       .post('/v2/development-sessions/notify-alive?deviceId=123&deviceId=456')
+      .reply(200, '');
+    const closeScope = nock(getExpoApiBaseUrl())
+      .post('/v2/development-sessions/notify-close?deviceId=123&deviceId=456')
       .reply(200, '');
 
     await session.startAsync({
       exp,
       runtime,
     });
-    session.stopNotifying();
-    expect(ProjectDevices.getDevicesInfoAsync).toHaveBeenCalledTimes(1);
-    expect(scope.isDone()).toBe(true);
+
+    await session.closeAsync();
+
+    expect(ProjectDevices.getDevicesInfoAsync).toHaveBeenCalledTimes(2);
+    expect(startScope.isDone()).toBe(true);
+    expect(closeScope.isDone()).toBe(true);
   });
 });
