@@ -1,0 +1,62 @@
+name: 'Expo Caches'
+description: 'Composite action to perform cache related tasks.'
+
+inputs:
+  yarn-workspace:
+    description: ''
+    required: false
+  yarn-tools:
+    description: ''
+    required: false
+  ios-pods:
+    description: ''
+    required: false
+
+outputs:
+  yarn-workspace-hit:
+    description: ''
+    value: steps.workspace-modules-cache.outputs.cache-hit
+  yarn-tools-hit:
+    description: ''
+    value: steps.tools-modules-cache.outputs.cache-hit
+  ios-pods-hit:
+    description: ''
+    value: steps.ios-pods-cache.outputs.cache-hit
+
+runs:
+  using: 'composite'
+  steps:
+    - name: ♻️ Restore workspace node modules
+      if: inputs.yarn-workspace == 'true'
+      uses: actions/cache@v2
+      id: workspace-modules-cache
+      with:
+        # See "workspaces" → "packages" in the root package.json for the source of truth of
+        # which node_modules are affected by the root yarn.lock
+        path: |
+          node_modules
+          apps/*/node_modules
+          home/node_modules
+          packages/*/node_modules
+          packages/@expo/*/node_modules
+          react-native-lab/react-native/node_modules
+        key: ${{ runner.os }}-workspace-modules-${{ hashFiles('yarn.lock') }}
+
+    - name: ♻️ Restore /tools node modules and bins
+      if: inputs.yarn-tools == 'true'
+      uses: actions/cache@v2
+      id: tools-modules-cache
+      with:
+        path: |
+          bin/et
+          bin/expotools
+          tools/node_modules
+        key: ${{ runner.os }}-tools-modules-${{ hashFiles('tools/yarn.lock') }}
+
+    - name: ♻️ Restore ios/Pods from cache
+      if: inputs.ios-pods == 'true'
+      uses: actions/cache@v2
+      id: ios-pods-cache
+      with:
+        path: 'ios/Pods'
+        key: ${{ runner.os }}-ios-pods-${{ hashFiles('ios/Podfile.lock') }}
