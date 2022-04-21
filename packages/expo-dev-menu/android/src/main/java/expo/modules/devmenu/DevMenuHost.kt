@@ -32,12 +32,17 @@ class DevMenuHost(application: Application) : ReactNativeHost(application) {
       getVendoredPackage("com.th3rdwave.safeareacontext.SafeAreaContextPackage"),
     )
 
-    val devLauncherPackage = Class.forName("expo.modules.devlauncher.DevLauncherDevMenuExtensionPackage")
-    
-    if (devLauncherPackage != null) {
-      val pkg = devLauncherPackage.getConstructor().newInstance() as ReactPackage
-      packages.add(pkg)
+    try {
+      val devLauncherPackage = Class.forName("expo.modules.devlauncher.DevLauncherDevMenuExtensionPackage")
+
+      if (devLauncherPackage != null) {
+        val pkg = devLauncherPackage.getConstructor().newInstance() as ReactPackage
+        packages.add(pkg)
+      }
+    } catch (e: ClassNotFoundException) {
+      // dev launcher is not installed in this project
     }
+
 
     return packages
   }
