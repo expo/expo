@@ -283,6 +283,12 @@
   }
   
   self.pendingDeepLinkRegistry.pendingDeepLink = url;
+
+  // cold boot -- need to initialize the dev launcher app RN app to handle the link
+  if (![_launcherBridge isValid]) {
+    [self navigateToLauncher];
+  }
+  
   return true;
 }
 
@@ -294,13 +300,41 @@
   return _sourceUrl;
 }
 
-- (void)loadApp:(NSURL *)expoUrl onSuccess:(void (^ _Nullable)(void))onSuccess onError:(void (^ _Nullable)(NSError *error))onError
+- (BOOL)isEASUpdateURL:(NSURL *)url
 {
+  if ([url.host isEqual: @"u.expo.dev"]) {
+    return true;
+  }
+  
+  return false;
+}
+
+-(void)loadApp:(NSURL *)url onSuccess:(void (^ _Nullable)(void))onSuccess onError:(void (^ _Nullable)(NSError *error))onError
+{
+  [self loadApp:url withProjectUrl:nil onSuccess:onSuccess onError:onError];
+}
+
+- (void)loadApp:(NSURL *)expoUrl withProjectUrl:(NSURL * _Nullable)projectUrl onSuccess:(void (^ _Nullable)(void))onSuccess onError:(void (^ _Nullable)(NSError *error))onError
+{
+  BOOL isEASUpdate = [self isEASUpdateURL:expoUrl];
+  
+  // an update url requires a matching projectUrl
+  // if one isn't provided, default to the configured project url in Expo.plist
+  if (isEASUpdate && projectUrl == nil) {
+    NSString *projectUrlString = [self getUpdatesConfigForKey:@"EXUpdatesURL"];
+    projectUrl = [NSURL URLWithString:projectUrlString];
+  }
+  
+  // if there is no project url and its not an updates url, the project url can be the same as the app url
+  if (!isEASUpdate && projectUrl == nil) {
+    projectUrl = expoUrl;
+  }
+  
   NSString *installationID = [_installationIDHelper getOrCreateInstallationID];
   expoUrl = [EXDevLauncherURLHelper replaceEXPScheme:expoUrl to:@"http"];
 
   NSDictionary *updatesConfiguration = [EXDevLauncherUpdatesHelper createUpdatesConfigurationWithURL:expoUrl
-                                                                                          projectURL:expoUrl
+                                                                                          projectURL:projectUrl
                                                                                       installationID:installationID];
 
   void (^launchReactNativeApp)(void) = ^{
@@ -605,18 +639,23 @@
   // url structure for EASUpdates: `http://u.expo.dev/{appId}`
   // this url field is added to app.json.updates when running `eas update:configure`
   // the `u.expo.dev` determines that it is the modern manifest protocol
-  NSString *updatesUrl = [self getUpdatesConfigForKey:@"EXUpdatesURL"];
-  NSURL *url = [NSURL URLWithString:updatesUrl];
+  NSString *projectUrl = [self getUpdatesConfigForKey:@"EXUpdatesURL"];
+  NSURL *url = [NSURL URLWithString:projectUrl];
   NSString *appId = [[url pathComponents] lastObject];
   
   BOOL isModernManifestProtocol = [[url host] isEqualToString:@"u.expo.dev"];
-  BOOL usesEASUpdates = isModernManifestProtocol && appId.length > 0;
+  BOOL expoUpdatesInstalled = EXDevLauncherController.sharedInstance.updatesInterface != nil;
+  BOOL hasAppId = appId.length > 0;
+  
+  BOOL usesEASUpdates = isModernManifestProtocol && expoUpdatesInstalled && hasAppId;
   
   [updatesConfig setObject:runtimeVersion forKey:@"runtimeVersion"];
   [updatesConfig setObject:sdkVersion forKey:@"sdkVersion"];
   
+  
   if (usesEASUpdates) {
     [updatesConfig setObject:appId forKey:@"appId"];
+    [updatesConfig setObject:projectUrl forKey:@"projectUrl"];
   }
   
   [updatesConfig setObject:@(usesEASUpdates) forKey:@"usesEASUpdates"];

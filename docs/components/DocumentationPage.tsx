@@ -4,6 +4,8 @@ import some from 'lodash/some';
 import Router, { NextRouter } from 'next/router';
 import * as React from 'react';
 
+import { AppJSBanner } from './AppJSBanner.tsx';
+
 import * as Utilities from '~/common/utilities';
 import * as WindowUtils from '~/common/window';
 import DocumentationFooter from '~/components/DocumentationFooter';
@@ -278,6 +280,7 @@ class DocumentationPageWithApiVersion extends React.Component<Props, State> {
 
         {!this.state.isMenuActive ? (
           <div css={STYLES_DOCUMENT}>
+            <AppJSBanner />
             <H1>{this.props.title}</H1>
             {this.props.children}
             <DocumentationFooter

@@ -4,9 +4,17 @@
 
 ### 🛠 Breaking changes
 
-- Removed `AdMobBanner#onAdViewWillLeaveApplication`, `AdMobInterstitial#interstitialWillLeaveApplication` and `PublisherBanner#onAdViewWillLeaveApplication` callbacks as they are no longer exposed by the native libraries. ([#17002](https://github.com/expo/expo/pull/17002) by [@bbarthec](https://github.com/bbarthec))
-
 ### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 13.0.0 — 2022-04-18
+
+### 🛠 Breaking changes
+
+- Removed `AdMobBanner#onAdViewWillLeaveApplication`, `AdMobInterstitial#interstitialWillLeaveApplication` and `PublisherBanner#onAdViewWillLeaveApplication` callbacks as they are no longer exposed by the native libraries. ([#17002](https://github.com/expo/expo/pull/17002) by [@bbarthec](https://github.com/bbarthec))
 
 ### 🐛 Bug fixes
 

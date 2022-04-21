@@ -3,7 +3,7 @@ import { useNavigation } from '@react-navigation/native';
 import { Button, View, Row, Image, Text } from 'expo-dev-client-components';
 import * as Haptics from 'expo-haptics';
 import * as React from 'react';
-import { Platform, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
 import { HomeScreenDataQuery } from '../../graphql/types';
@@ -20,11 +20,7 @@ export function HomeScreenHeader({ currentUser, loading }: Props) {
   const navigation = useNavigation();
 
   async function onAccountButtonPress() {
-    try {
-      if (Platform.OS === 'ios') Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    } catch (e) {
-      console.error(e);
-    }
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     navigation.navigate('Account');
   }
 

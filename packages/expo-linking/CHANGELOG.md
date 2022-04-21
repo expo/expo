@@ -6,6 +6,14 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 3.1.0 — 2022-04-18
+
+### 🎉 New features
+
 - `addEventListener` returns `EmitterSubscription` rather than `void` ([#17014](https://github.com/expo/expo/pull/17014) by [@frankcalise](https://github.com/frankcalise))
 
 ### 🐛 Bug fixes
