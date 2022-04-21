@@ -37,7 +37,6 @@ jobs:
             home/node_modules
             packages/*/node_modules
             packages/@expo/*/node_modules
-            packages/@unimodules/*/node_modules
             react-native-lab/react-native/node_modules
           key: ${{ runner.os }}-modules-v2-${{ hashFiles('yarn.lock') }}
       - name: 🧶 Install node modules in root dir
