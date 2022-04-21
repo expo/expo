@@ -2,6 +2,7 @@ import { NativeModulesProxy, UnavailabilityError, requireNativeViewManager, Code
 import * as React from 'react';
 import { Platform, View, findNodeHandle } from 'react-native';
 import { configureLogging } from './GLUtils';
+import { createWorkletContextProvider } from './GLWorkletContextProvider';
 const { ExponentGLObjectManager, ExponentGLViewManager } = NativeModulesProxy;
 const NativeView = requireNativeViewManager('ExponentGLView');
 /**
@@ -24,22 +25,7 @@ export class GLView extends React.Component {
         const exglCtxId = getContextId(exgl);
         return ExponentGLObjectManager.takeSnapshotAsync(exglCtxId, options);
     }
-    static getWorkletContext = (function () {
-        try {
-            // reanimated needs to be imported before any workletized code
-            // is created, but we don't want to make it dependency on expo-gl.
-            require('react-native-reanimated');
-            return (contextId) => {
-                'worklet';
-                return global.__EXGLContexts?.[String(contextId)];
-            };
-        }
-        catch {
-            return () => {
-                throw new Error('Worklet runtime is not available');
-            };
-        }
-    })();
+    static getWorkletContext = createWorkletContextProvider();
     nativeRef = null;
     exglCtxId;
     render() {

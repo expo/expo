@@ -16,6 +16,7 @@ import {
   SnapshotOptions,
   BaseGLViewProps,
 } from './GLView.types';
+import { createWorkletContextProvider } from './GLWorkletContextProvider';
 
 export interface WebGLObject {
   id: number;
@@ -74,21 +75,7 @@ export class GLView extends React.Component<GLViewProps> {
   }
 
   static getWorkletContext: (contextId: number) => ExpoWebGLRenderingContext | undefined =
-    (function () {
-      try {
-        // reanimated needs to be imported before any workletized code
-        // is created, but we don't want to make it dependency on expo-gl.
-        require('react-native-reanimated');
-        return (contextId: number): ExpoWebGLRenderingContext | undefined => {
-          'worklet';
-          return global.__EXGLContexts?.[String(contextId)];
-        };
-      } catch {
-        return () => {
-          throw new Error('Worklet runtime is not available');
-        };
-      }
-    })();
+    createWorkletContextProvider();
 
   nativeRef: ComponentOrHandle = null;
   exglCtxId?: number;
