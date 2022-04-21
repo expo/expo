@@ -494,7 +494,7 @@ class ModuleDefinitionBuilder(@PublishedApi internal val module: Module? = null)
   }
 
   @Deprecated(
-    message = "The 'onActivityEntersForeground' component was renamed to 'onActivityEntersForeground'.",
+    message = "The 'onActivityEntersForeground' component was renamed to 'OnActivityEntersForeground'.",
     replaceWith = ReplaceWith("OnActivityEntersForeground(body)")
   )
   inline fun onActivityEntersForeground(crossinline body: () -> Unit) = OnActivityEntersForeground(body)
@@ -520,7 +520,7 @@ class ModuleDefinitionBuilder(@PublishedApi internal val module: Module? = null)
   }
 
   @Deprecated(
-    message = "The 'onActivityDestroys' component was renamed to 'onActivityDestroys'.",
+    message = "The 'onActivityDestroys' component was renamed to 'OnActivityDestroys'.",
     replaceWith = ReplaceWith("OnActivityDestroys(body)")
   )
   inline fun onActivityDestroys(crossinline body: () -> Unit) = OnActivityDestroys(body)
