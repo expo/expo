@@ -40,12 +40,10 @@ export function Onboarding({ isDevice }: OnboardingProps) {
             <Spacer.Vertical size="medium" />
 
             <View>
-              <Text size="large" weight="medium">
-                {isDevice ? deviceMessage : simulatorMessage}
-              </Text>
+              <Text size="large">{isDevice ? deviceMessage : simulatorMessage}</Text>
 
               <Spacer.Vertical size="medium" />
-              <Text size="large" weight="medium">
+              <Text size="large">
                 Also, this menu is only available in development builds and won't be in any release
                 builds.
               </Text>
