@@ -107,7 +107,7 @@ static NSString * const ABI43_0_0EXUpdatesRemoteAppLoaderErrorDomain = @"ABI43_0
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
           NSString *hashBase64String = [ABI43_0_0EXUpdatesUtils base64UrlEncodedSHA256WithData:data];
           if (asset.expectedHash && ![asset.expectedHash isEqualToString:hashBase64String]) {
-            NSError* error = [NSError errorWithDomain:ABI43_0_0EXUpdatesRemoteAppLoaderErrorDomain
+            NSError *error = [NSError errorWithDomain:ABI43_0_0EXUpdatesRemoteAppLoaderErrorDomain
                                                  code:1016
                                              userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithFormat:@"Asset hash invalid: %@; expectedHash: %@; actualHash: %@", asset.key, asset.expectedHash, hashBase64String]}];
             [self handleAssetDownloadWithError:error asset:asset];
