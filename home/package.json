@@ -21,7 +21,7 @@
     "@expo/react-native-action-sheet": "^2.1.0",
     "@expo/sdk-runtime-versions": "^1.0.0",
     "@expo/styleguide-native": "^1.0.1",
-    "@expo/vector-icons": "^12.0.4",
+    "@expo/vector-icons": "^13.0.0",
     "@graphql-codegen/introspection": "^2.1.1",
     "@react-native-async-storage/async-storage": "~1.15.0",
     "@react-native-community/netinfo": "8.2.0",
