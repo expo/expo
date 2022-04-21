@@ -151,8 +151,7 @@ class FunctionSpec: ExpoSpec {
         // Function expects one argument, let's give it more.
         .call(function: functionName, args: [1, 2]) { _, error in
           expect(error).notTo(beNil())
-          expect(error).to(beAKindOf(FunctionCallException.self))
-          expect((error as! Exception).isCausedBy(InvalidArgsNumberException.self)) == true
+          expect(error).to(beAKindOf(InvalidArgsNumberException.self))
           done()
         }
       }
@@ -168,7 +167,7 @@ class FunctionSpec: ExpoSpec {
         // Function expects a string, let's give it a number.
         .call(function: functionName, args: [1]) { value, error in
           expect(error).notTo(beNil())
-          expect(error).to(beAKindOf(FunctionCallException.self))
+          expect(error).to(beAKindOf(ArgumentCastException.self))
           expect((error as! Exception).isCausedBy(Conversions.CastingException<String>.self)) == true
           done()
         }
