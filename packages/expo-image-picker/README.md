@@ -51,15 +51,6 @@ This package automatically adds the `CAMERA`, `READ_EXTERNAL_STORAGE`, and `WRIT
 <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 ```
 
-In `AndroidManifest.xml` add the following `activity` within `application`:
-
-```xml
-<activity
-  android:name="com.canhub.cropper.CropImageActivity"
-  android:theme="@style/Base.Theme.AppCompat">
-</activity>
-```
-
 ## Config Plugin
 
 > This plugin is applied automatically in EAS Build, only add the config plugin if you want to pass in extra properties.
@@ -80,9 +71,9 @@ Next, rebuild your app as described in the ["Adding custom native code"](https:/
 
 The plugin provides props for extra customization. Every time you change the props or plugins, you'll need to rebuild (and `prebuild`) the native app. If no extra properties are added, defaults will be used.
 
-- `photosPermission` (_string | false_): Sets the iOS `NSPhotoLibraryUsageDescription` permission message to the `Info.plist`. Setting `false` will skip adding the permission and skips adding `android.permission.READ_EXTERNAL_STORAGE` and `android.permission.WRITE_EXTERNAL_STORAGE`. Defaults to `Allow $(PRODUCT_NAME) to access your photos`.
-- `cameraPermission` (_string | false_): Sets the iOS `NSCameraUsageDescription` permission message to the `Info.plist`. Setting `false` will skip adding the permission and skips adding the `android.permission.CAMERA` Android permission. Defaults to `Allow $(PRODUCT_NAME) to access your camera`.
-- `microphonePermission` (_string | false_): Sets the iOS `NSCameraUsageDescription` permission message to the `Info.plist`. Setting `false` will skip adding the permission and skips adding the `android.permission.RECORD_AUDIO` Android permission. Defaults to `Allow $(PRODUCT_NAME) to access your photos`.
+- `photosPermission` (_string | false_): Sets the iOS `NSPhotoLibraryUsageDescription` permission message to the `Info.plist`. Setting `false` will skip adding the permission on iOS and **does not** skip the permission on Android. Defaults to `Allow $(PRODUCT_NAME) to access your photos`.
+- `cameraPermission` (_string | false_): Sets the iOS `NSCameraUsageDescription` permission message to the `Info.plist`. Setting `false` will skip adding the permission on iOS and **does not** skip the permission on Android. Defaults to `Allow $(PRODUCT_NAME) to access your camera`.
+- `microphonePermission` (_string | false_): Sets the iOS `NSCameraUsageDescription` permission message to the `Info.plist`. Setting `false` will skip adding the permission on iOS and skips adding the `android.permission.RECORD_AUDIO` Android permission. Defaults to `Allow $(PRODUCT_NAME) to access your photos`.
 
 ### Example
 
