@@ -1,8 +1,14 @@
 import express from 'express';
+import path from 'path';
 import { setTimeout } from 'timers/promises';
 
 const app: any = express();
 let server: any;
+
+let notifyString: string | null = null;
+let updateRequest: any = null;
+let manifestToServe: any = null;
+let manifestHeadersToServe: any = null;
 
 export function start(port: number) {
   if (!server) {
@@ -17,9 +23,12 @@ export function stop() {
   }
   notifyString = null;
   updateRequest = null;
+  manifestToServe = null;
+  manifestHeadersToServe = null;
 }
 
-let notifyString: string | null = null;
+app.use('/static', express.static(path.resolve(__dirname, '..', '.static')));
+
 app.get('/notify/:string', (req: any, res: any) => {
   notifyString = req.params.string;
   res.set('Cache-Control', 'no-store');
@@ -41,11 +50,24 @@ export async function waitForResponse(timeout: number) {
   return response;
 }
 
-let updateRequest: any = null;
 app.get('/update', (req: any, res: any) => {
   updateRequest = req;
-  res.send('No update available');
+  if (manifestToServe) {
+    if (manifestHeadersToServe) {
+      Object.keys(manifestHeadersToServe).forEach((headerName) => {
+        res.set(headerName, manifestHeadersToServe[headerName]);
+      });
+    }
+    res.json(manifestToServe);
+  } else {
+    res.send('No update available');
+  }
 });
+
+export function serveManifest(manifest: any, headers?: any) {
+  manifestToServe = manifest;
+  manifestHeadersToServe = headers ?? null;
+}
 
 export async function waitForUpdateRequest(timeout: number) {
   const finishTime = new Date().getTime() + timeout;

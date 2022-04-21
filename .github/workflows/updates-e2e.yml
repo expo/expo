@@ -100,7 +100,7 @@ jobs:
         run: yarn add file:../expo/packages/expo-updates file:../expo/packages/expo file:../expo/packages/expo-splash-screen file:../expo/packages/expo-status-bar
       - name: Setup app.config.json
         working-directory: ../updates-e2e
-        run: echo "{\"name\":\"updates-e2e\",\"plugins\":[\"expo-updates\"],\"android\":{\"package\":\"dev.expo.updatese2e\"},\"ios\":{\"bundleIdentifier\":\"dev.expo.updatese2e\"},\"updates\":{\"url\":\"http://10.0.2.2:$UPDATES_PORT/update\"}}" > app.config.json
+        run: echo "{\"name\":\"updates-e2e\",\"runtimeVersion\":\"1.0.0\",\"plugins\":[\"expo-updates\"],\"android\":{\"package\":\"dev.expo.updatese2e\"},\"ios\":{\"bundleIdentifier\":\"dev.expo.updatese2e\"},\"updates\":{\"url\":\"http://10.0.2.2:$UPDATES_PORT/update\"}}" > app.config.json
       - name: Pack latest bare-minimum template as tarball for expo prebuild
         working-directory: templates/expo-template-bare-minimum
         run: npm pack --pack-destination ../../../updates-e2e/
@@ -127,9 +127,17 @@ jobs:
         id: test-apk-path
         working-directory: ../updates-e2e/android/app/build/outputs/apk/release
         run: echo "::set-output name=dir::$(pwd)"
+      - name: Export update bundle for test server to host
+        working-directory: ../updates-e2e
+        run: expo export --public-url https://expo.dev/dummy-url --platform android
+      - name: Get test bundle dist path
+        id: test-bundle-dist-path
+        working-directory: ../updates-e2e/dist
+        run: echo "::set-output name=dir::$(pwd)"
       - name: Run tests
         env:
           TEST_APK_PATH: '${{ steps.test-apk-path.outputs.dir }}/app-release.apk'
+          TEST_BUNDLE_DIST_PATH: '${{ steps.test-bundle-dist-path.outputs.dir }}'
         timeout-minutes: 30
         uses: reactivecircus/android-emulator-runner@v2
         with:
