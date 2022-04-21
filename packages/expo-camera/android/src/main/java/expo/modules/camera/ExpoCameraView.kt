@@ -88,7 +88,7 @@ class ExpoCameraView(
   private var pendingFaceDetectorSettings: Map<String, Any>? = null
   private var shouldDetectFaces = false
   private var mShouldScanBarCodes = false
-  public var defaultRecordOptions: Map<String, Any>? = null
+  private var defaultRecordOptions: Map<String?, Any?>? = null
 
   override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
     val preview = view ?: return
