@@ -83,7 +83,7 @@ class DevLauncherInternalModule(reactContext: ReactApplicationContext?)
       putString("runtimeVersion", runtimeVersion)
       putString("sdkVersion", sdkVersion)
       putBoolean("usesEASUpdates", usesEASUpdates)
-      putString("projectUrl", projectUrl)
+      putString("updatesUrl", projectUrl)
     }
   }
 
