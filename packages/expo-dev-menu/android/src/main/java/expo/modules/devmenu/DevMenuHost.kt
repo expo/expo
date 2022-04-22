@@ -33,7 +33,7 @@ class DevMenuHost(application: Application) : ReactNativeHost(application) {
     )
 
     try {
-      val devLauncherPackage = Class.forName("expo.modules.devlauncher.DevLauncherDevMenuExtensionPackage")
+      val devLauncherPackage = Class.forName("expo.modules.devlauncher.DevLauncherPackage")
 
       if (devLauncherPackage != null) {
         val pkg = devLauncherPackage.getConstructor().newInstance() as ReactPackage
