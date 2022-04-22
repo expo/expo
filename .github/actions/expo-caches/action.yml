@@ -91,7 +91,7 @@ runs:
       if: inputs.avd == 'true' && steps.avd-cache.outputs.cache-hit != 'true'
       uses: reactivecircus/android-emulator-runner@v2
       with:
-        api-level: inputs.avd-api
+        api-level: ${{ inputs.avd-api }}
         arch: x86_64
         force-avd-creation: false
         script: echo "Generated AVD snapshot for caching."
