@@ -2,7 +2,7 @@ import crypto from 'crypto';
 import fs from 'fs/promises';
 import path from 'path';
 
-import * as Device from './device.ios'; // TODO: fix!!!!!
+import * as Device from './device';
 
 const EXPORT_PUBLIC_URL = 'https://expo.dev/dummy-url';
 const BUNDLE_DIST_PATH = process.env.TEST_BUNDLE_DIST_PATH;

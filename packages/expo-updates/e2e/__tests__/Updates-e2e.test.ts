@@ -2,7 +2,7 @@ import { setTimeout } from 'timers/promises';
 import uuid from 'uuid/v4';
 
 import { copyBundleToStaticFolder } from './utils/bundle';
-import * as Device from './utils/device.ios'; // TODO: fix!!!!
+import * as Device from './utils/device';
 import * as Server from './utils/server';
 
 const SERVER_HOST = process.env.UPDATES_HOST;
