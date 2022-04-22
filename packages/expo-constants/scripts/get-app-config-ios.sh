@@ -8,18 +8,10 @@ RESOURCE_BUNDLE_NAME="EXConstants.bundle"
 # Path to expo-constants folder inside node_modules
 EXPO_CONSTANTS_PACKAGE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
-
-export NVM_DIR=$HOME/.nvm;
-NVM_SH_FILE=$NVM_DIR/nvm.sh
-# first attempt to source via nvm and fallback to sourcing via login scripts
-if test -f "$NVM_SH_FILE"; then
-  source $NVM_SH_FILE
-else
-  # Suppress environment errors from sourcing the login scripts
-  set +e
-  source "$EXPO_CONSTANTS_PACKAGE_DIR/scripts/source-login-scripts.sh"
-  set -e
-fi
+# Suppress environment errors from sourcing the login scripts
+set +e
+source "$EXPO_CONSTANTS_PACKAGE_DIR/scripts/source-login-scripts.sh"
+set -e
 
 NODE_BINARY=${NODE_BINARY:-node}
 
