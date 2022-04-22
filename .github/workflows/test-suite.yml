@@ -2,23 +2,23 @@ name: Test Suite
 
 on:
   workflow_dispatch: {}
-  push:
-    branches: [main, 'sdk-*']
-    paths:
-      - .github/workflows/test-suite.yml
-      - apps/bare-expo/**
-      - apps/test-suite/**
-      - packages/**
-      - yarn.lock
-  pull_request:
-    paths:
-      - .github/workflows/test-suite.yml
-      - apps/bare-expo/**
-      - apps/test-suite/**
-      - packages/**
-      - yarn.lock
-      # Ignore Expo CLI for now...
-      - '!packages/@expo/cli/**'
+  # push:
+  #   branches: [main, 'sdk-*']
+  #   paths:
+  #     - .github/workflows/test-suite.yml
+  #     - apps/bare-expo/**
+  #     - apps/test-suite/**
+  #     - packages/**
+  #     - yarn.lock
+  # pull_request:
+  #   paths:
+  #     - .github/workflows/test-suite.yml
+  #     - apps/bare-expo/**
+  #     - apps/test-suite/**
+  #     - packages/**
+  #     - yarn.lock
+  #     # Ignore Expo CLI for now...
+  #     - '!packages/@expo/cli/**'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}

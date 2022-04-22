@@ -7,23 +7,23 @@ on:
         description: 'type "check-all" to force checking all packages'
         required: false
         default: ''
-  push:
-    branches: [main, 'sdk-*']
-    paths:
-      - .github/workflows/sdk.yml
-      - tools/**
-      - packages/**
-      - yarn.lock
-      # Ignore Expo CLI for now...
-      - '!packages/@expo/cli/**'
-  pull_request:
-    paths:
-      - .github/workflows/sdk.yml
-      - tools/**
-      - packages/**
-      - yarn.lock
-      # Ignore Expo CLI for now...
-      - '!packages/@expo/cli/**'
+  # push:
+  #   branches: [main, 'sdk-*']
+  #   paths:
+  #     - .github/workflows/sdk.yml
+  #     - tools/**
+  #     - packages/**
+  #     - yarn.lock
+  #     # Ignore Expo CLI for now...
+  #     - '!packages/@expo/cli/**'
+  # pull_request:
+  #   paths:
+  #     - .github/workflows/sdk.yml
+  #     - tools/**
+  #     - packages/**
+  #     - yarn.lock
+  #     # Ignore Expo CLI for now...
+  #     - '!packages/@expo/cli/**'
   schedule:
     - cron: 0 14 * * *
 
