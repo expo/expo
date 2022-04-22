@@ -11,6 +11,16 @@ inputs:
   ios-pods:
     description: ''
     required: false
+  avd:
+    description: ''
+    required: false
+  gradle:
+    description: ''
+    required: false
+  avd-api:
+    description: ''
+    default: '29'
+    required: false
 
 outputs:
   yarn-workspace-hit:
@@ -22,6 +32,9 @@ outputs:
   ios-pods-hit:
     description: ''
     value: steps.ios-pods-cache.outputs.cache-hit
+  avd-hit:
+    description: ''
+    value: steps.avd-cache.outputs.cache-hit
 
 runs:
   using: 'composite'
@@ -60,3 +73,25 @@ runs:
       with:
         path: 'ios/Pods'
         key: ${{ runner.os }}-ios-pods-${{ hashFiles('ios/Podfile.lock') }}
+
+    - name: ♻️ Restore Gradle cache
+      if: inputs.avd == 'true' || inputs.gradle == 'true'
+      uses: gradle/gradle-build-action@v2
+
+    - name: ♻️ Restore AVD cache
+      if: inputs.avd == 'true'
+      uses: actions/cache@v3
+      id: avd-cache
+      with:
+        path: |
+          ~/.android/avd/*
+          ~/.android/adb*
+        key: avd-${{ inputs.avd-api }}
+    - name: 📱 Create AVD and generate snapshot for caching
+      if: inputs.avd == 'true' && steps.avd-cache.outputs.cache-hit != 'true'
+      uses: reactivecircus/android-emulator-runner@v2
+      with:
+        api-level: inputs.avd-api
+        arch: x86_64
+        force-avd-creation: false
+        script: echo "Generated AVD snapshot for caching."

@@ -62,7 +62,8 @@ jobs:
           else
             git crypt unlock <(echo $GIT_CRYPT_KEY_BASE64 | base64 --decode)
           fi
-      - run: echo "$(pwd)/bin" >> $GITHUB_PATH
+      - name: ➕ Add `bin` to GITHUB_PATH
+        run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: 💎 Setup Ruby and install gems
         uses: ruby/setup-ruby@v1
         with:
