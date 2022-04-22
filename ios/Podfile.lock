@@ -2014,8 +2014,8 @@ PODS:
     - ExpoModulesCore
   - EXStoreReview (5.2.0):
     - ExpoModulesCore
-  - EXStructuredHeaders (2.2.0)
-  - EXStructuredHeaders/Tests (2.2.0)
+  - EXStructuredHeaders (2.2.1)
+  - EXStructuredHeaders/Tests (2.2.1)
   - EXTaskManager (10.2.0):
     - ExpoModulesCore
     - UMAppLoader
@@ -4390,7 +4390,7 @@ SPEC CHECKSUMS:
   EXSplashScreen: 8a3b224b8432cba0b3081e4235956acd671666f1
   EXSQLite: 2b9accd925438293f9f39e0a57a08cca13bdffb2
   EXStoreReview: e61fbd500624ee7363ab134ee247cff380a8b254
-  EXStructuredHeaders: 494ffc2fd8509e3b19d68d3958451a331539b131
+  EXStructuredHeaders: 5d86829469399370a9fc7cb1e4391b09de87681d
   EXTaskManager: 59126789151b2cbc8b0605aac233675b56531eb0
   EXTrackingTransparency: e6193655ba7c4cf6c1493162b87c766a780f1f11
   EXUpdates: a98894060512391cbc8a0ee48336fb57f2a8eedd
