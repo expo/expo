@@ -34,6 +34,7 @@ jobs:
   android:
     runs-on: ubuntu-20.04
     env:
+      UPDATES_HOST: 10.0.2.2
       UPDATES_PORT: 4747
     steps:
       - name: ⬢ Setup Node
@@ -100,7 +101,7 @@ jobs:
         run: yarn add file:../expo/packages/expo-updates file:../expo/packages/expo file:../expo/packages/expo-splash-screen file:../expo/packages/expo-status-bar
       - name: Setup app.config.json
         working-directory: ../updates-e2e
-        run: echo "{\"name\":\"updates-e2e\",\"runtimeVersion\":\"1.0.0\",\"plugins\":[\"expo-updates\"],\"android\":{\"package\":\"dev.expo.updatese2e\"},\"ios\":{\"bundleIdentifier\":\"dev.expo.updatese2e\"},\"updates\":{\"url\":\"http://10.0.2.2:$UPDATES_PORT/update\"}}" > app.config.json
+        run: echo "{\"name\":\"updates-e2e\",\"runtimeVersion\":\"1.0.0\",\"plugins\":[\"expo-updates\"],\"android\":{\"package\":\"dev.expo.updatese2e\"},\"ios\":{\"bundleIdentifier\":\"dev.expo.updatese2e\"},\"updates\":{\"url\":\"http://$UPDATES_HOST:$UPDATES_PORT/update\"}}" > app.config.json
       - name: Pack latest bare-minimum template as tarball for expo prebuild
         working-directory: templates/expo-template-bare-minimum
         run: npm pack --pack-destination ../../../updates-e2e/
@@ -110,9 +111,9 @@ jobs:
       - name: Copy App.js from test fixtures
         working-directory: ../updates-e2e
         run: cp ../expo/packages/expo-updates/e2e/__tests__/fixtures/App.js .
-      - name: Set port in App.js
+      - name: Set host and port in App.js
         working-directory: ../updates-e2e
-        run: sed -i -e "s/UPDATES_PORT/$UPDATES_PORT/" ./App.js
+        run: sed -i -e "s/UPDATES_HOST/$UPDATES_HOST/" ./App.js && sed -i -e "s/UPDATES_PORT/$UPDATES_PORT/" ./App.js
       - name: Assemble release APK
         working-directory: ../updates-e2e/android
         run: ./gradlew assembleRelease
@@ -143,5 +144,5 @@ jobs:
         with:
           api-level: 29
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -no-snapshot-save
-          script: yarn test --config e2e/jest.config.js
+          script: yarn test --config e2e/jest.config.android.js
           working-directory: packages/expo-updates
