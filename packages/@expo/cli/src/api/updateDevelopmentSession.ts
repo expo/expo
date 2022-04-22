@@ -65,3 +65,32 @@ export async function updateDevelopmentSessionAsync({
     );
   }
 }
+
+/** Send a request to Expo API to close the 'development session' for the provided devices. */
+export async function closeDevelopmentSessionAsync({
+  deviceIds,
+  url,
+}: {
+  deviceIds: string[];
+  url: string;
+}) {
+  const searchParams = new URLSearchParams();
+  deviceIds.forEach((id) => {
+    searchParams.append('deviceId', id);
+  });
+
+  const results = await fetchAsync('development-sessions/notify-close', {
+    searchParams,
+    method: 'POST',
+    body: JSON.stringify({
+      session: { url },
+    }),
+  });
+
+  if (!results.ok) {
+    throw new CommandError(
+      'API',
+      `Unexpected response when closing the development session on Expo servers: ${results.statusText}.`
+    );
+  }
+}
