@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Stop prebuilding xcframework. ([#17161](https://github.com/expo/expo/pull/17161) by [@wschurman](https://github.com/wschurman))
-
 ### 💡 Others
+
+## 2.2.1 — 2022-04-22
+
+### 🐛 Bug fixes
+
+- Stop prebuilding xcframework. ([#17161](https://github.com/expo/expo/pull/17161) by [@wschurman](https://github.com/wschurman))
 
 ## 2.2.0 — 2022-04-18
 
