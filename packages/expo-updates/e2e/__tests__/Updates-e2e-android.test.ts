@@ -7,7 +7,7 @@ import uuid from 'uuid/v4';
 
 import * as Server from './utils/server';
 
-const SERVER_HOST = '10.0.2.2';
+const SERVER_HOST = process.env.UPDATES_HOST;
 const SERVER_PORT = parseInt(process.env.UPDATES_PORT, 10);
 const APK_PATH = process.env.TEST_APK_PATH;
 const ADB_PATH = (function () {
@@ -32,6 +32,9 @@ const PACKAGE_NAME = 'dev.expo.updatese2e';
 const ACTIVITY_NAME = `${PACKAGE_NAME}/${PACKAGE_NAME}.MainActivity`;
 const TIMEOUT_BIAS = process.env.CI ? 10 : 1;
 
+const BUNDLE_IDENTIFIER = 'dev.expo.updatese2e';
+const APP_PATH = process.env.TEST_APP_PATH;
+
 // android utils
 
 async function installAndroidApk(apkPath: string) {
@@ -50,12 +53,30 @@ async function stopApplication(packageName: string) {
   await spawnAsync(ADB_PATH, ['shell', 'am', 'force-stop', packageName]);
 }
 
+// ios utils
+
+async function installIosApp(appPath: string) {
+  await spawnAsync('xcrun', ['simctl', 'install', 'booted', appPath]);
+}
+
+async function uninstallIosApp(bundleIdentifier: string) {
+  await spawnAsync('xcrun', ['simctl', 'uninstall', 'booted', bundleIdentifier]);
+}
+
+async function startIosApp(bundleIdentifier: string) {
+  await spawnAsync('xcrun', ['simctl', 'launch', 'booted', bundleIdentifier]);
+}
+
+async function stopIosApp(bundleIdentifier: string) {
+  await spawnAsync('xcrun', ['simctl', 'terminate', 'booted', bundleIdentifier]);
+}
+
 // general test utils
 
 function findBundlePath(): string {
   if (!bundlePath) {
-    const androidClassicManifest = require(path.join(BUNDLE_DIST_PATH, 'android-index.json'));
-    const { bundleUrl }: { bundleUrl: string } = androidClassicManifest;
+    const iosClassicManifest = require(path.join(BUNDLE_DIST_PATH, 'ios-index.json'));
+    const { bundleUrl }: { bundleUrl: string } = iosClassicManifest;
     bundlePath = path.join(BUNDLE_DIST_PATH, bundleUrl.replace(EXPORT_PUBLIC_URL, ''));
   }
   return bundlePath;
@@ -77,24 +98,25 @@ async function copyBundleToStaticFolder(filename: string, notifyString?: string)
 beforeEach(async () => {});
 
 afterEach(async () => {
-  await uninstallAndroidApk(PACKAGE_NAME);
+  // await uninstallAndroidApk(PACKAGE_NAME);
+  await uninstallIosApp(BUNDLE_IDENTIFIER);
   Server.stop();
 });
 
 test('starts app, stops, and starts again', async () => {
   jest.setTimeout(300000 * TIMEOUT_BIAS);
   Server.start(SERVER_PORT);
-  await installAndroidApk(APK_PATH);
-  await startActivity(ACTIVITY_NAME);
+  await installIosApp(APP_PATH);
+  await startIosApp(BUNDLE_IDENTIFIER);
   const response = await Server.waitForResponse(10000 * TIMEOUT_BIAS);
   expect(response).toBe('test');
-  await stopApplication(PACKAGE_NAME);
+  await stopIosApp(BUNDLE_IDENTIFIER);
 
   await expect(Server.waitForResponse(5000 * TIMEOUT_BIAS)).rejects.toThrow(
     'Timed out waiting for response'
   );
 
-  await startActivity(ACTIVITY_NAME);
+  await startIosApp(BUNDLE_IDENTIFIER);
   const response2 = await Server.waitForResponse(10000 * TIMEOUT_BIAS);
   expect(response2).toBe('test');
 });
@@ -102,8 +124,8 @@ test('starts app, stops, and starts again', async () => {
 test('initial request includes correct update-id headers', async () => {
   jest.setTimeout(300000 * TIMEOUT_BIAS);
   Server.start(SERVER_PORT);
-  await installAndroidApk(APK_PATH);
-  await startActivity(ACTIVITY_NAME);
+  await installIosApp(APP_PATH);
+  await startIosApp(BUNDLE_IDENTIFIER);
   const request = await Server.waitForUpdateRequest(10000 * TIMEOUT_BIAS);
   expect(request.headers['expo-embedded-update-id']).toBeDefined();
   expect(request.headers['expo-current-update-id']).toBeDefined();
@@ -133,8 +155,8 @@ test('downloads and runs update, and updates current-update-id header', async ()
 
   Server.start(SERVER_PORT);
   Server.serveManifest(manifest, { 'expo-protocol-version': '0' });
-  await installAndroidApk(APK_PATH);
-  await startActivity(ACTIVITY_NAME);
+  await installIosApp(APP_PATH);
+  await startIosApp(BUNDLE_IDENTIFIER);
   const firstRequest = await Server.waitForUpdateRequest(10000 * TIMEOUT_BIAS);
   const response = await Server.waitForResponse(10000 * TIMEOUT_BIAS);
   expect(response).toBe('test');
@@ -143,8 +165,8 @@ test('downloads and runs update, and updates current-update-id header', async ()
   await setTimeout(2000 * TIMEOUT_BIAS);
 
   // restart the app so it will launch the new update
-  await stopApplication(PACKAGE_NAME);
-  await startActivity(ACTIVITY_NAME);
+  await stopIosApp(BUNDLE_IDENTIFIER);
+  await startIosApp(BUNDLE_IDENTIFIER);
   const secondRequest = await Server.waitForUpdateRequest(10000 * TIMEOUT_BIAS);
   const updatedResponse = await Server.waitForResponse(10000 * TIMEOUT_BIAS);
   expect(updatedResponse).toBe('test-update-1');
