@@ -79,12 +79,12 @@ Also, if you select a different native version between iOS and Android, you'll e
 
 ### Custom `"runtimeVersion"`
 
-You can also set a custom runtime version that meets the [runtime version formatting requirements](/versions/latest/config/app/#runtimeversion):
+<!-- You can also set a custom runtime version that meets the [runtime version formatting requirements](/versions/latest/config/app/#runtimeversion): -->
 
 ```json
 {
   "expo": {
-    "runtimeVersion": "1.0.0"
+    "runtimeVersion": "rtv-1.0.0"
   }
 }
 ```
@@ -99,7 +99,7 @@ You can also set a runtime version for a specific platform:
 {
   "expo": {
     "android": {
-        "runtimeVersion": "1.0.0"
+        "runtimeVersion": "rtv-1.0.0"
     }
   }
 }
@@ -109,9 +109,9 @@ When both a top level runtime and a platform specific runtime are set, the platf
 
 ## Avoiding crashes with incompatible updates
 
-The main issue that can arise when publishing updates is that the update could rely on native code that the build it's running on does not support. For instance, imagine we made a build with a runtime version of `"1.0.0"`. Then, we submitted that build to the app stores and released it to the public.
+The main issue that can arise when publishing updates is that the update could rely on native code that the build it's running on does not support. For instance, imagine we made a build with a runtime version of `"rtv-1.0.0"`. Then, we submitted that build to the app stores and released it to the public.
 
-Later on, imagine that we developed an update that relied on a newly installed native library, like the `expo-in-app-purchases` library, and we did not update the `"runtimeVersion"` property, so that it is still `"1.0.0"`. If we published an update, the builds with the `"runtimeVersion"` of `"1.0.0"` would think the incoming update with the same runtime version was compatible and it would attempt to load the update. Since the update would make calls to code that does not exist inside the build, the app would crash.
+Later on, imagine that we developed an update that relied on a newly installed native library, like the `expo-in-app-purchases` library, and we did not update the `"runtimeVersion"` property, so that it is still `"rtv-1.0.0"`. If we published an update, the builds with the `"runtimeVersion"` of `"rtv-1.0.0"` would think the incoming update with the same runtime version was compatible and it would attempt to load the update. Since the update would make calls to code that does not exist inside the build, the app would crash.
 
 There are a few ways to avoid crashes like this:
 
