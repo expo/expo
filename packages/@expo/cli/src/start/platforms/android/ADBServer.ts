@@ -1,6 +1,7 @@
 import spawnAsync from '@expo/spawn-async';
 import { execFileSync } from 'child_process';
 
+import { Log } from '../../../log';
 import { AbortCommandError } from '../../../utils/errors';
 import { installExitHooks } from '../../../utils/exit';
 
