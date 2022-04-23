@@ -13,7 +13,7 @@ export type IosProps = {
 
 export const withDocumentPickerIOS: ConfigPlugin<IosProps> = (
   config,
-  { iCloudContainerEnvironment }
+  { iCloudContainerEnvironment } = {}
 ) => {
   return withEntitlementsPlist(config, (config) => {
     config.modResults = setICloudEntitlements(
@@ -36,13 +36,14 @@ export function setICloudEntitlements(
     entitlements['com.apple.developer.icloud-container-environment'] = iCloudContainerEnvironment;
 
     entitlements['com.apple.developer.icloud-container-identifiers'] = [
-      'iCloud.$(CFBundleIdentifier)',
+      `iCloud.${config.ios.bundleIdentifier}`,
     ];
     entitlements['com.apple.developer.ubiquity-container-identifiers'] = [
-      'iCloud.$(CFBundleIdentifier)',
+      `iCloud.${config.ios.bundleIdentifier}`,
     ];
-    entitlements['com.apple.developer.ubiquity-kvstore-identifier'] =
-      '$(TeamIdentifierPrefix)$(CFBundleIdentifier)';
+    entitlements[
+      'com.apple.developer.ubiquity-kvstore-identifier'
+    ] = `$(TeamIdentifierPrefix)${config.ios.bundleIdentifier}`;
 
     entitlements['com.apple.developer.icloud-services'] = ['CloudDocuments'];
   }

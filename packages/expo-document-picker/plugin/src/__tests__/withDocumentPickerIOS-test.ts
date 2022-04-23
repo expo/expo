@@ -15,11 +15,10 @@ describe(setICloudEntitlements, () => {
       )
     ).toStrictEqual({
       'com.apple.developer.icloud-container-environment': 'Production',
-      'com.apple.developer.icloud-container-identifiers': ['iCloud.$(CFBundleIdentifier)'],
+      'com.apple.developer.icloud-container-identifiers': ['iCloud.com.bacon.foobar'],
       'com.apple.developer.icloud-services': ['CloudDocuments'],
-      'com.apple.developer.ubiquity-container-identifiers': ['iCloud.$(CFBundleIdentifier)'],
-      'com.apple.developer.ubiquity-kvstore-identifier':
-        '$(TeamIdentifierPrefix)$(CFBundleIdentifier)',
+      'com.apple.developer.ubiquity-container-identifiers': ['iCloud.com.bacon.foobar'],
+      'com.apple.developer.ubiquity-kvstore-identifier': '$(TeamIdentifierPrefix)com.bacon.foobar',
     });
   });
 });
