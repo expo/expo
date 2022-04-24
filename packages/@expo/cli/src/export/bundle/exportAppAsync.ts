@@ -40,12 +40,11 @@ export async function exportAppAsync(
 ): Promise<void> {
   const exp = await getPublicExpoManifestAsync(projectRoot);
 
-  const absoluteOutputDir = path.resolve(projectRoot, outputDir);
+  const outputPath = path.resolve(projectRoot, outputDir);
+  const assetsPath = path.join(outputPath, 'assets');
+  const bundlesPath = path.join(outputPath, 'bundles');
 
-  const assetPathToWrite = path.resolve(absoluteOutputDir, 'assets');
-  const bundlesPathToWrite = path.resolve(absoluteOutputDir, 'bundles');
-
-  await Promise.all([assetPathToWrite, bundlesPathToWrite].map(ensureDirectoryAsync));
+  await Promise.all([assetsPath, bundlesPath].map(ensureDirectoryAsync));
 
   // Run metro bundler and create the JS bundles/source maps.
   const bundles = await createBundlesAsync(
@@ -63,33 +62,36 @@ export async function exportAppAsync(
   printBundleSizes(bundles);
 
   // Write the JS bundles to disk, and get the bundle file names (this could change with async chunk loading support).
-  const { hashes, fileNames } = await writeBundlesAsync({ bundles, outputDir: bundlesPathToWrite });
+  const { hashes, fileNames } = await writeBundlesAsync({ bundles, outputDir: bundlesPath });
 
   Log.log('Finished saving JS Bundles');
 
   const { assets } = await exportAssetsAsync(projectRoot, {
     exp,
-    outputDir: absoluteOutputDir,
+    outputDir: outputPath,
     bundles,
   });
 
   if (dumpAssetmap) {
     Log.log('Dumping asset map');
-    await writeAssetMapAsync({ outputDir: absoluteOutputDir, assets });
+    await writeAssetMapAsync({ outputDir: outputPath, assets });
   }
 
   // build source maps
   if (dumpSourcemap) {
+    Log.log('Dumping source maps');
     await writeSourceMapsAsync({
       bundles,
       hashes,
-      outputDir: bundlesPathToWrite,
+      outputDir: bundlesPath,
       fileNames,
     });
+
+    Log.log('Preparing additional debugging files');
     // If we output source maps, then add a debug HTML file which the user can open in
     // the web browser to inspect the output like web.
     await writeDebugHtmlAsync({
-      outputDir: absoluteOutputDir,
+      outputDir: outputPath,
       fileNames,
     });
   }

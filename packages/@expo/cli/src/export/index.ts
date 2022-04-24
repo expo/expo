@@ -18,8 +18,6 @@ export const expoExport: Command = async (argv) => {
       '--quiet': Boolean,
       '--max-workers': Number,
       '--output-dir': String,
-      '--merge-src-dir': [String],
-      '--merge-src-url': [String],
       // Aliases
       '-h': '--help',
       '-q': '--quiet',
@@ -47,8 +45,6 @@ export const expoExport: Command = async (argv) => {
     --dev                         Configure static files for developing locally using a non-https server
     --output-dir <path>           The directory to export the static files to (default: dist)
     --max-workers <number>        Maximum number of tasks to allow Metro to spawn
-    --merge-src-dir <path>        Source directory to merge in
-    --merge-src-url <url>         Source tar.gz file URL to merge in
     -c, --clear                   Clear the Metro bundler cache
     -d, --dump-assetmap           Dump the asset map for further processing
     -s, --dump-sourcemap          Dump the source map for debugging the JS bundle

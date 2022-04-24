@@ -5,8 +5,6 @@ import { resolvePlatformOption } from '../prebuild/resolveOptions';
 export type Options = {
   outputDir: string;
   platforms: ModPlatform[];
-  mergeSrcUrl: string[];
-  mergeSrcDir: string[];
   maxWorkers?: number;
   dev: boolean;
   clear: boolean;
@@ -21,8 +19,6 @@ export async function resolveOptionsAsync(args: any): Promise<Options> {
   return {
     outputDir: args['--output-dir'] ?? 'dist',
     platforms,
-    mergeSrcUrl: args['--merge-src-url'] ?? [],
-    mergeSrcDir: args['--merge-src-dir'] ?? [],
     clear: !!args['--clear'],
     quiet: !!args['--quiet'],
     dev: !!args['--dev'],

@@ -1,34 +1,10 @@
 import { BundleOutput } from '@expo/dev-server';
-import JsonFile, { JSONObject } from '@expo/json-file';
 import crypto from 'crypto';
-import fs from 'fs';
+import fs from 'fs/promises';
 import path from 'path';
 
-import * as Log from '../../log';
 import { createMetadataJson } from './createMetadataJson';
 import { Asset } from './saveAssets';
-
-export async function writeDebugHtmlAsync({
-  outputDir,
-  fileNames,
-}: {
-  outputDir: string;
-  fileNames: Record<string, string>;
-}) {
-  // Make a debug html so user can debug their bundles
-  Log.log('Preparing additional debugging files');
-  const debugHtml = `
-      ${Object.values(fileNames)
-        .map((fileName) => `<script src="${path.join('bundles', fileName)}"></script>`)
-        .join('\n      ')}
-      Open up this file in Chrome. In the JavaScript developer console, navigate to the Source tab.
-      You can see a red colored folder containing the original source code from your bundle.
-      `;
-
-  await fs.promises.writeFile(path.join(outputDir, 'debug.html'), debugHtml);
-
-  return debugHtml;
-}
 
 /**
  * @param props.platform native platform for the bundle
@@ -64,7 +40,7 @@ export async function writeBundlesAsync({
 
     hashes[platform] = hash;
     fileNames[platform] = fileName;
-    await fs.promises.writeFile(path.join(outputDir, fileName), bundle);
+    await fs.writeFile(path.join(outputDir, fileName), bundle);
   }
 
   return { hashes, fileNames };
@@ -84,20 +60,20 @@ export async function writeSourceMapsAsync({
   fileNames?: Record<string, string>;
   outputDir: string;
 }) {
-  return await Promise.all(
+  return Promise.all(
     Object.entries(bundles).map(async ([platform, bundle]) => {
       const sourceMap = bundle.hermesSourcemap ?? bundle.map;
       const hash =
         hashes?.[platform] ?? createBundleHash(bundle.hermesBytecodeBundle ?? bundle.code);
       const mapName = `${platform}-${hash}.map`;
-      await fs.promises.writeFile(path.join(outputDir, mapName), sourceMap);
+      await fs.writeFile(path.join(outputDir, mapName), sourceMap);
 
       const jsBundleFileName = fileNames?.[platform] ?? createBundleFileName({ platform, hash });
       const jsPath = path.join(outputDir, jsBundleFileName);
 
       // Add correct mapping to sourcemap paths
       const mappingComment = `\n//# sourceMappingURL=${mapName}`;
-      await fs.promises.appendFile(jsPath, mappingComment);
+      await fs.appendFile(jsPath, mappingComment);
       return {
         platform,
         fileName: mapName,
@@ -122,7 +98,7 @@ export async function writeMetadataJsonAsync({
     bundles,
     fileNames,
   });
-  await fs.promises.writeFile(path.join(outputDir, 'metadata.json'), JSON.stringify(contents));
+  await fs.writeFile(path.join(outputDir, 'metadata.json'), JSON.stringify(contents));
   return contents;
 }
 
@@ -135,6 +111,26 @@ export async function writeAssetMapAsync({
 }) {
   // Convert the assets array to a k/v pair where the asset hash is the key and the asset is the value.
   const contents = Object.fromEntries(assets.map((asset) => [asset.hash, asset]));
-  await fs.promises.writeFile(path.join(outputDir, 'assetmap.json'), JSON.stringify(contents));
+  await fs.writeFile(path.join(outputDir, 'assetmap.json'), JSON.stringify(contents));
+  return contents;
+}
+
+export async function writeDebugHtmlAsync({
+  outputDir,
+  fileNames,
+}: {
+  outputDir: string;
+  fileNames: Record<string, string>;
+}) {
+  // Make a debug html so user can debug their bundles
+  const contents = `
+      ${Object.values(fileNames)
+        .map((fileName) => `<script src="${path.join('bundles', fileName)}"></script>`)
+        .join('\n      ')}
+      Open up this file in Chrome. In the JavaScript developer console, navigate to the Source tab.
+      You can see a red colored folder containing the original source code from your bundle.
+      `;
+
+  await fs.writeFile(path.join(outputDir, 'debug.html'), contents);
   return contents;
 }
