@@ -14,6 +14,7 @@ const commands: { [command: string]: () => Promise<Command> } = {
 
   // Auxiliary commands
   install: () => import('../src/install').then((i) => i.expoInstall),
+  customize: () => import('../src/customize').then((i) => i.expoCustomize),
 
   // Auth
   login: () => import('../src/login').then((i) => i.expoLogin),
