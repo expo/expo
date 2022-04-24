@@ -133,14 +133,8 @@ it(
       '2f334f6c7ca5b2a504bdf8acdee104f3': {
         __packager_asset: true,
         fileHashes: ['2f334f6c7ca5b2a504bdf8acdee104f3'],
-        fileSystemLocation: expect.stringMatching(
-          /\/private\/var\/folders\/.*\/basic-export\/assets/
-        ),
-        files: [
-          expect.stringMatching(
-            /\/private\/var\/folders\/.*\/basic-export\/assets\/font\.ios\.ttf/
-          ),
-        ],
+        fileSystemLocation: expect.stringMatching(/\/.*\/basic-export\/assets/),
+        files: [expect.stringMatching(/\/.*\/basic-export\/assets\/font\.ios\.ttf/)],
         hash: '2f334f6c7ca5b2a504bdf8acdee104f3',
         httpServerLocation: '/assets/assets',
         name: 'font',
@@ -151,12 +145,8 @@ it(
       '3858f62230ac3c915f300c664312c63f': {
         __packager_asset: true,
         fileHashes: ['3858f62230ac3c915f300c664312c63f'],
-        fileSystemLocation: expect.stringMatching(
-          /\/private\/var\/folders\/.*\/basic-export\/assets/
-        ),
-        files: [
-          expect.stringMatching(/\/private\/var\/folders\/.*\/basic-export\/assets\/font\.ttf/),
-        ],
+        fileSystemLocation: expect.stringMatching(/\/.*\/basic-export\/assets/),
+        files: [expect.stringMatching(/\/.*\/basic-export\/assets\/font\.ttf/)],
         hash: '3858f62230ac3c915f300c664312c63f',
         httpServerLocation: '/assets/assets',
         name: 'font',
@@ -166,12 +156,10 @@ it(
       d48d481475a80809fcf9253a765193d1: {
         __packager_asset: true,
         fileHashes: ['fb960eb5e4eb49ec8786c7f6c4a57ce2', '9ce7db807e4147e00df372d053c154c2'],
-        fileSystemLocation: expect.stringMatching(
-          /\/private\/var\/folders\/.*\/basic-export\/assets/
-        ),
+        fileSystemLocation: expect.stringMatching(/\/.*\/basic-export\/assets/),
         files: [
-          expect.stringMatching(/\/private\/var\/folders\/.*\/basic-export\/assets\/icon\.png/),
-          expect.stringMatching(/\/private\/var\/folders\/.*\/basic-export\/assets\/icon@2x\.png/),
+          expect.stringMatching(/\/.*\/basic-export\/assets\/icon\.png/),
+          expect.stringMatching(/\/.*\/basic-export\/assets\/icon@2x\.png/),
         ],
         hash: 'd48d481475a80809fcf9253a765193d1',
         height: 1,
@@ -199,5 +187,5 @@ it(
     ]);
   },
   // Could take 45s depending on how fast npm installs
-  60 * 1000
+  80 * 1000
 );
