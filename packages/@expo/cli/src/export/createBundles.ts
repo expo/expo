@@ -1,7 +1,7 @@
 import { getConfig, Platform, ProjectTarget } from '@expo/config';
 
-import * as Log from '../../log';
-import { resolveEntryPoint } from '../../start/server/middleware/resolveEntryPoint';
+import * as Log from '../log';
+import { resolveEntryPoint } from '../start/server/middleware/resolveEntryPoint';
 import { bundleAsync, BundleOutput } from './fork-bundleAsync';
 
 export type PublishOptions = {
