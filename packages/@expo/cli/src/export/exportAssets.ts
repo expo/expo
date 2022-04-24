@@ -4,9 +4,9 @@ import { BundleOutput } from '@expo/dev-server';
 import minimatch from 'minimatch';
 import path from 'path';
 
-import * as Log from '../../log';
-import { resolveGoogleServicesFile } from '../../start/server/middleware/resolveAssets';
-import { uniqBy } from '../../utils/array';
+import * as Log from '../log';
+import { resolveGoogleServicesFile } from '../start/server/middleware/resolveAssets';
+import { uniqBy } from '../utils/array';
 import { Asset, saveAssetsAsync } from './saveAssets';
 
 /**

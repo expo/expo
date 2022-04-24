@@ -15,12 +15,11 @@ import chalk from 'chalk';
 import Metro from 'metro';
 import { Terminal } from 'metro-core';
 
-import { MetroTerminalReporter } from '../../start/server/metro/MetroTerminalReporter';
+import { MetroTerminalReporter } from '../start/server/metro/MetroTerminalReporter';
 
 export type MetroDevServerOptions = LoadOptions & {
   logger: Log;
   quiet?: boolean;
-  unversioned?: boolean;
 };
 export type BundleOptions = {
   entryPoint: string;
@@ -42,14 +41,12 @@ export type BundleOutput = {
 
 function getExpoMetroConfig(
   projectRoot: string,
-  { logger, unversioned }: Pick<MetroDevServerOptions, 'logger' | 'unversioned'>
+  { logger }: Pick<MetroDevServerOptions, 'logger'>
 ): typeof import('@expo/metro-config') {
-  if (!unversioned) {
-    try {
-      return importExpoMetroConfigFromProject(projectRoot);
-    } catch {
-      // If expo isn't installed, use the unversioned config and warn about installing expo.
-    }
+  try {
+    return importExpoMetroConfigFromProject(projectRoot);
+  } catch {
+    // If expo isn't installed, use the unversioned config and warn about installing expo.
   }
 
   const unversionedVersion = require('@expo/metro-config/package.json').version;

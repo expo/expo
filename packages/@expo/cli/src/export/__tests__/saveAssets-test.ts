@@ -1,9 +1,9 @@
-import { copyAsync } from '../../../utils/dir';
+import { copyAsync } from '../../utils/dir';
 import { saveAssetsAsync } from '../saveAssets';
 
-jest.mock('../../../log');
+jest.mock('../../log');
 
-jest.mock('../../../utils/dir', () => ({
+jest.mock('../../utils/dir', () => ({
   copyAsync: jest.fn(),
 }));
 

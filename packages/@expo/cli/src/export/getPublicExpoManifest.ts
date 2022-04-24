@@ -1,7 +1,7 @@
 import { ExpoAppManifest, getConfig } from '@expo/config';
 
-import { env } from '../../utils/env';
-import { CommandError } from '../../utils/errors';
+import { env } from '../utils/env';
+import { CommandError } from '../utils/errors';
 import { getResolvedLocalesAsync } from './getResolvedLocales';
 
 /** Get the public Expo manifest from the local project config. */

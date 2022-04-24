@@ -1,6 +1,6 @@
 import { printBundleSizes } from '../printBundleSizes';
 
-jest.mock('../../../log');
+jest.mock('../../log');
 
 describe(printBundleSizes, () => {
   it(`prints bundle sizes`, () => {

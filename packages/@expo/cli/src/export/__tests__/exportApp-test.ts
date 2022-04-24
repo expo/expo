@@ -2,7 +2,7 @@ import { vol } from 'memfs';
 
 import { exportAppAsync } from '../exportApp';
 
-jest.mock('../../../log');
+jest.mock('../../log');
 
 jest.mock('../createBundles', () => ({
   createBundlesAsync: jest.fn(
