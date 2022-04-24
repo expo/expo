@@ -12,7 +12,7 @@ The React Native module API does not provide any mechanism to hook into these, a
 
 First, you need to have created an Expo module or integrated the Expo modules API in library using the React Native module API. [Learn more](./overview.md#setup)
 
-Inside of your module, a concrete class that implements the [`Package`](https://github.com/expo/expo/blob/master/packages/expo-modules-core/android/src/main/java/expo/modules/core/interfaces/Package.java) interface. For most cases, you only need to implement the `createReactActivityLifecycleListeners` or `createApplicationLifecycleListeners` methods.
+Inside of your module, create a concrete class that implements the [`Package`](https://github.com/expo/expo/tree/main/packages/expo-modules-core/android/src/main/java/expo/modules/core/interfaces/Package.java) interface. For most cases, you only need to implement the `createReactActivityLifecycleListeners` or `createApplicationLifecycleListeners` methods.
 
 ## `Activity` Lifecycle Listeners
 

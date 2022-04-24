@@ -59,10 +59,24 @@ class JSI_EXPORT NativeReanimatedModuleSpec : public TurboModule {
       const jsi::Value &propName,
       const jsi::Value &callback) = 0;
 
+  // sensors
+  virtual jsi::Value registerSensor(
+      jsi::Runtime &rt,
+      const jsi::Value &sensorType,
+      const jsi::Value &interval,
+      const jsi::Value &sensorDataContainer) = 0;
+  virtual void unregisterSensor(
+      jsi::Runtime &rt,
+      const jsi::Value &sensorId) = 0;
+
   // other
   virtual jsi::Value enableLayoutAnimations(
       jsi::Runtime &rt,
       const jsi::Value &config) = 0;
+  virtual jsi::Value configureProps(
+      jsi::Runtime &rt,
+      const jsi::Value &uiProps,
+      const jsi::Value &nativeProps) = 0;
 };
 
 } // namespace reanimated

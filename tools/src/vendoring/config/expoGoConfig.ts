@@ -1,4 +1,5 @@
 import fs from 'fs-extra';
+
 import { Podspec } from '../../CocoaPods';
 import { VendoringTargetConfig } from '../types';
 
@@ -59,7 +60,7 @@ const config: VendoringTargetConfig = {
       ios: {
         async preReadPodspecHookAsync(podspecPath: string): Promise<string> {
           let content = await fs.readFile(podspecPath, 'utf-8');
-          content = content.replace("reactVersion = '0.66.0'", "reactVersion = '0.64.3'");
+          content = content.replace("reactVersion = '0.66.0'", "reactVersion = '0.67.2'");
           content = content.replace(/(puts "\[RNReanimated\].*$)/gm, '# $1');
           await fs.writeFile(podspecPath, content);
           return podspecPath;
@@ -96,10 +97,23 @@ const config: VendoringTargetConfig = {
       source: 'https://github.com/software-mansion/react-native-screens.git',
       semverPrefix: '~',
       ios: {},
-    },
-    'react-native-appearance': {
-      source: 'https://github.com/expo/react-native-appearance.git',
-      semverPrefix: '~',
+      // TODO: Uncomment once the new vendoring scripts supports Android
+      // android: {
+      //   transforms: {
+      //     content: [
+      //       {
+      //         paths: 'ScreenStack.kt',
+      //         find: /(?=^class ScreenStack\()/m,
+      //         replaceWith: `import host.exp.expoview.R\n\n`,
+      //       },
+      //       {
+      //         paths: 'ScreenStackHeaderConfig.kt',
+      //         find: /(?=^class ScreenStackHeaderConfig\()/m,
+      //         replaceWith: `import host.exp.expoview.BuildConfig\nimport host.exp.expoview.R\n\n`,
+      //       },
+      //     ],
+      //   },
+      // },
     },
     'amazon-cognito-identity-js': {
       source: 'https://github.com/aws-amplify/amplify-js.git',
@@ -255,6 +269,7 @@ const config: VendoringTargetConfig = {
     },
     '@react-native-community/slider': {
       source: 'https://github.com/callstack/react-native-slider',
+      packageJsonPath: 'src/package.json',
     },
   },
 };

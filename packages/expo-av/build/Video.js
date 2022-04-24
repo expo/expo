@@ -5,15 +5,6 @@ import ExpoVideoManager from './ExpoVideoManager';
 import ExponentAV from './ExponentAV';
 import ExponentVideo from './ExponentVideo';
 import { ResizeMode, } from './Video.types';
-export { ResizeMode, };
-export const FULLSCREEN_UPDATE_PLAYER_WILL_PRESENT = 0;
-export const FULLSCREEN_UPDATE_PLAYER_DID_PRESENT = 1;
-export const FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS = 2;
-export const FULLSCREEN_UPDATE_PLAYER_DID_DISMISS = 3;
-export const IOS_FULLSCREEN_UPDATE_PLAYER_WILL_PRESENT = FULLSCREEN_UPDATE_PLAYER_WILL_PRESENT;
-export const IOS_FULLSCREEN_UPDATE_PLAYER_DID_PRESENT = FULLSCREEN_UPDATE_PLAYER_DID_PRESENT;
-export const IOS_FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS = FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS;
-export const IOS_FULLSCREEN_UPDATE_PLAYER_DID_DISMISS = FULLSCREEN_UPDATE_PLAYER_DID_DISMISS;
 const _STYLES = StyleSheet.create({
     base: {
         overflow: 'hidden',
@@ -38,27 +29,18 @@ const _STYLES = StyleSheet.create({
 // we have to use the provided native module mock to access constants
 const ExpoVideoManagerConstants = ExpoVideoManager;
 const ExpoVideoViewManager = ExpoVideoManager;
-export default class Video extends React.Component {
-    static RESIZE_MODE_CONTAIN = ResizeMode.CONTAIN;
-    static RESIZE_MODE_COVER = ResizeMode.COVER;
-    static RESIZE_MODE_STRETCH = ResizeMode.STRETCH;
-    static IOS_FULLSCREEN_UPDATE_PLAYER_WILL_PRESENT = IOS_FULLSCREEN_UPDATE_PLAYER_WILL_PRESENT;
-    static IOS_FULLSCREEN_UPDATE_PLAYER_DID_PRESENT = IOS_FULLSCREEN_UPDATE_PLAYER_DID_PRESENT;
-    static IOS_FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS = IOS_FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS;
-    static IOS_FULLSCREEN_UPDATE_PLAYER_DID_DISMISS = IOS_FULLSCREEN_UPDATE_PLAYER_DID_DISMISS;
-    static FULLSCREEN_UPDATE_PLAYER_WILL_PRESENT = FULLSCREEN_UPDATE_PLAYER_WILL_PRESENT;
-    static FULLSCREEN_UPDATE_PLAYER_DID_PRESENT = FULLSCREEN_UPDATE_PLAYER_DID_PRESENT;
-    static FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS = FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS;
-    static FULLSCREEN_UPDATE_PLAYER_DID_DISMISS = FULLSCREEN_UPDATE_PLAYER_DID_DISMISS;
+class Video extends React.Component {
     _nativeRef = React.createRef();
     _onPlaybackStatusUpdate = null;
-    // componentOrHandle: null | number | React.Component<any, any> | React.ComponentClass<any>
     constructor(props) {
         super(props);
         this.state = {
             showPoster: !!props.usePoster,
         };
     }
+    /**
+     * @hidden
+     */
     setNativeProps(nativeProps) {
         const nativeVideo = this._nativeRef.current;
         if (!nativeVideo)
@@ -89,47 +71,60 @@ export default class Video extends React.Component {
         this._handleNewStatus(status);
         return status;
     };
-    // ### iOS Fullscreening API ###
+    // Fullscreening API
     _setFullscreen = async (value) => {
         return this._performOperationAndHandleStatusAsync((tag) => ExpoVideoViewManager.setFullscreen(tag, value));
     };
+    /**
+     * This presents a fullscreen view of your video component on top of your app's UI. Note that even if `useNativeControls` is set to `false`,
+     * native controls will be visible in fullscreen mode.
+     * @return A `Promise` that is fulfilled with the `AVPlaybackStatus` of the video once the fullscreen player has finished presenting,
+     * or rejects if there was an error, or if this was called on an Android device.
+     */
     presentFullscreenPlayer = async () => {
         return this._setFullscreen(true);
     };
-    presentIOSFullscreenPlayer = () => {
-        console.warn("You're using `presentIOSFullscreenPlayer`. Please migrate your code to use `presentFullscreenPlayer` instead.");
-        return this.presentFullscreenPlayer();
-    };
-    presentFullscreenPlayerAsync = async () => {
-        return await this.presentFullscreenPlayer();
-    };
+    /**
+     * This dismisses the fullscreen video view.
+     * @return A `Promise` that is fulfilled with the `AVPlaybackStatus` of the video once the fullscreen player has finished dismissing,
+     * or rejects if there was an error, or if this was called on an Android device.
+     */
     dismissFullscreenPlayer = async () => {
         return this._setFullscreen(false);
     };
-    dismissIOSFullscreenPlayer = () => {
-        console.warn("You're using `dismissIOSFullscreenPlayer`. Please migrate your code to use `dismissFullscreenPlayer` instead.");
-        this.dismissFullscreenPlayer();
-    };
     // ### Unified playback API ### (consistent with Audio.js)
     // All calls automatically call onPlaybackStatusUpdate as a side effect.
-    // Get status API
+    /**
+     * @hidden
+     */
     getStatusAsync = async () => {
         return this._performOperationAndHandleStatusAsync((tag) => ExponentAV.getStatusForVideo(tag));
     };
-    // Loading / unloading API
+    /**
+     * @hidden
+     */
     loadAsync = async (source, initialStatus = {}, downloadFirst = true) => {
         const { nativeSource, fullInitialStatus } = await getNativeSourceAndFullInitialStatusForLoadAsync(source, initialStatus, downloadFirst);
         return this._performOperationAndHandleStatusAsync((tag) => ExponentAV.loadForVideo(tag, nativeSource, fullInitialStatus));
     };
-    // Equivalent to setting URI to null.
+    /**
+     * Equivalent to setting URI to `null`.
+     * @hidden
+     */
     unloadAsync = async () => {
         return this._performOperationAndHandleStatusAsync((tag) => ExponentAV.unloadForVideo(tag));
     };
-    // Set status API (only available while isLoaded = true)
+    /**
+     * Set status API, only available while `isLoaded = true`.
+     * @hidden
+     */
     setStatusAsync = async (status) => {
         assertStatusValuesInBounds(status);
         return this._performOperationAndHandleStatusAsync((tag) => ExponentAV.setStatusForVideo(tag, status));
     };
+    /**
+     * @hidden
+     */
     replayAsync = async (status = {}) => {
         if (status.positionMillis && status.positionMillis !== 0) {
             throw new Error('Requested position after replay has to be 0.');
@@ -140,6 +135,9 @@ export default class Video extends React.Component {
             shouldPlay: true,
         }));
     };
+    /**
+     * @hidden
+     */
     setOnPlaybackStatusUpdate(onPlaybackStatusUpdate) {
         this._onPlaybackStatusUpdate = onPlaybackStatusUpdate;
         this.getStatusAsync();
@@ -155,7 +153,7 @@ export default class Video extends React.Component {
     setIsMutedAsync;
     setIsLoopingAsync;
     setProgressUpdateIntervalAsync;
-    // ### Callback wrappers ###
+    // Callback wrappers
     _nativeOnPlaybackStatusUpdate = (event) => {
         this._handleNewStatus(event.nativeEvent);
     };
@@ -184,15 +182,6 @@ export default class Video extends React.Component {
         }
     };
     _nativeOnFullscreenUpdate = (event) => {
-        if (this.props.onIOSFullscreenUpdate && this.props.onFullscreenUpdate) {
-            console.warn("You've supplied both `onIOSFullscreenUpdate` and `onFullscreenUpdate`. You're going to receive updates on both the callbacks.");
-        }
-        else if (this.props.onIOSFullscreenUpdate) {
-            console.warn("You're using `onIOSFullscreenUpdate`. Please migrate your code to use `onFullscreenUpdate` instead.");
-        }
-        if (this.props.onIOSFullscreenUpdate) {
-            this.props.onIOSFullscreenUpdate(event.nativeEvent);
-        }
         if (this.props.onFullscreenUpdate) {
             this.props.onFullscreenUpdate(event.nativeEvent);
         }
@@ -263,4 +252,6 @@ function omit(props, propNames) {
     return copied;
 }
 Object.assign(Video.prototype, PlaybackMixin);
+// note(simek): TypeDoc cannot resolve correctly name of inline and default exported class
+export default Video;
 //# sourceMappingURL=Video.js.map

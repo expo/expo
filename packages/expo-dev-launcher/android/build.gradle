@@ -2,12 +2,27 @@ import groovy.json.JsonSlurper
 
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-apply plugin: 'maven'
+apply plugin: 'maven-publish'
 
 buildscript {
+  def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
+  if (expoModulesCorePlugin.exists()) {
+    apply from: expoModulesCorePlugin
+    applyKotlinExpoModulesCorePlugin()
+  }
+
   // Simple helper that allows the root project to override versions declared by this library.
   ext.safeExtGet = { prop, fallback ->
     rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
+  }
+
+  // Ensures backward compatibility
+  ext.getKotlinVersion = {
+    if (ext.has("kotlinVersion")) {
+      ext.kotlinVersion()
+    } else {
+      ext.safeExtGet("kotlinVersion", "1.6.10")
+    }
   }
 
   repositories {
@@ -15,17 +30,17 @@ buildscript {
   }
 
   dependencies {
-    classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${safeExtGet('kotlinVersion', '1.6.10')}")
+    classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${getKotlinVersion()}")
   }
 }
 
 android {
-  compileSdkVersion safeExtGet('compileSdkVersion', 30)
+  compileSdkVersion safeExtGet("compileSdkVersion", 31)
   defaultConfig {
     minSdkVersion safeExtGet('minSdkVersion', 21)
-    targetSdkVersion safeExtGet('targetSdkVersion', 30)
+    targetSdkVersion safeExtGet("targetSdkVersion", 31)
     versionCode 9
-    versionName "0.10.1"
+    versionName "0.11.1"
   }
 
   lintOptions {
@@ -33,12 +48,12 @@ android {
   }
 
   compileOptions {
-    sourceCompatibility JavaVersion.VERSION_1_8
-    targetCompatibility JavaVersion.VERSION_1_8
+    sourceCompatibility JavaVersion.VERSION_11
+    targetCompatibility JavaVersion.VERSION_11
   }
 
   kotlinOptions {
-    jvmTarget = "1.8"
+    jvmTarget = JavaVersion.VERSION_11.majorVersion
   }
 
   buildTypes {
@@ -56,13 +71,30 @@ android {
     main {
       java {
         def rnVersion = getRNVersion()
-
-        if (rnVersion >= versionToNumber(0, 66, 0)) {
+        if (rnVersion >= versionToNumber(0, 67, 0)) {
+          srcDirs += "src/react-native-67"
+        } else if (rnVersion >= versionToNumber(0, 66, 0)) {
           srcDirs += "src/react-native-66"
         } else if (rnVersion >= versionToNumber(0, 65, 0)) {
           srcDirs += "src/react-native-65"
         } else {
           srcDirs += 'src/react-native-64'
+        }
+
+        if (projectIncludesExpoUpdates()) {
+          srcDirs += 'src/with-updates'
+        } else {
+          srcDirs += 'src/without-updates'
+        }
+      }
+    }
+    debug {
+      java {
+        def expoPackageVersion = getExpoPackageVersion()
+        if (expoPackageVersion >= versionToNumber(45, 0, 0)) {
+          srcDirs += "src/expo-45"
+        } else {
+          srcDirs += "src/expo-44"
         }
       }
     }
@@ -88,7 +120,6 @@ repositories {
     url "$rootDir/../node_modules/jsc-android/dist"
   }
   google()
-  jcenter()
 }
 
 dependencies {
@@ -97,6 +128,10 @@ dependencies {
   implementation project(":expo-manifests")
   implementation project(":expo-updates-interface")
   implementation project(":expo-dev-menu")
+
+  if (projectIncludesExpoUpdates()) {
+    implementation project(":expo-updates")
+  }
 
   //noinspection GradleDynamicVersion
   implementation 'com.facebook.react:react-native:+'  // From node_modules
@@ -112,10 +147,10 @@ dependencies {
   api "androidx.appcompat:appcompat:1.1.0"
   api "androidx.lifecycle:lifecycle-extensions:2.2.0"
 
-  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${safeExtGet('kotlinVersion', '1.6.10')}"
+  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.3")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.1")
-  implementation "org.jetbrains.kotlin:kotlin-reflect:${safeExtGet('kotlinVersion', '1.6.10')}"
+  implementation "org.jetbrains.kotlin:kotlin-reflect:${getKotlinVersion()}"
 
   api "io.insert-koin:koin-core:3.1.2"
 
@@ -125,8 +160,8 @@ dependencies {
   testImplementation 'com.squareup.okhttp3:mockwebserver:4.3.1'
   testImplementation "io.insert-koin:koin-test:3.1.2"
   testImplementation "io.insert-koin:koin-test-junit4:3.1.2"
-  testImplementation 'io.mockk:mockk:1.9.3'
-  testImplementation "org.robolectric:robolectric:4.3.1"
+  testImplementation 'io.mockk:mockk:1.12.3'
+  testImplementation "org.robolectric:robolectric:4.7.3"
 }
 
 // Koin uses a different version of Kotlin under the hood.
@@ -143,14 +178,11 @@ def versionToNumber(major, minor, patch) {
   return patch * 100 + minor * 10000 + major * 1000000
 }
 
-def getRNVersion() {
-  def reactNativePackageJsonPath = ["node", "-e", "console.log(require.resolve('react-native/package.json'));"].execute([], projectDir).text.trim()
-  def packageJsonFile = new File(reactNativePackageJsonPath)
-  def packageJson = new JsonSlurper().parseText(packageJsonFile.text)
-  def version = safeExtGet("reactNativeVersion", packageJson.version)
+def getNodeModulesPackageVersion(packageName, overridePropName) {
+  def nodeModulesVersion = ["node", "-e", "console.log(require('$packageName/package.json').version);"].execute([], projectDir).text.trim()
+  def version = safeExtGet(overridePropName, nodeModulesVersion)
 
   def coreVersion = version.split("-")[0]
-
   def (major, minor, patch) = coreVersion.tokenize('.').collect { it.toInteger() }
 
   return versionToNumber(
@@ -159,3 +191,47 @@ def getRNVersion() {
       patch
   )
 }
+
+def getRNVersion() {
+  return getNodeModulesPackageVersion("react-native", "reactNativeVersion")
+}
+
+def getExpoPackageVersion() {
+  return getNodeModulesPackageVersion("expo", "expoPackageVersion")
+}
+
+def projectIncludesExpoUpdates() {
+  try {
+    def version = getNodeModulesPackageVersion("expo-updates", "expoUpdatesVersion")
+    return version != null
+  } catch (Exception e) {
+    return false
+  }
+}
+
+// [BEGIN] Workaround okhttp/okio compatibility issue
+// Remove when we drop support for SDK 44
+def okhttpPinnedArtifacts = []
+configurations.implementation.getDependencies().removeIf { it ->
+  if (it.group == 'com.squareup.okhttp3' && it.name == 'okhttp') {
+    okhttpPinnedArtifacts.add(it)
+    return true
+  }
+  return false
+}
+okhttpPinnedArtifacts.each { artifact ->
+  dependencies.add('compileOnly', artifact)
+  dependencies.add('testImplementation', artifact)
+  configurations.all { conf ->
+    resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+      def requested = details.requested
+      // Only to pin old okhttp in compile phase because mockwebserver requires okhttp4
+      if (conf.name.contains('Compile')) {
+        if (requested.group == artifact.group && requested.name == artifact.name) {
+          details.useVersion artifact.version
+        }
+      }
+    }
+  }
+}
+// [END] Workaround okhttp/okio compatibility issue

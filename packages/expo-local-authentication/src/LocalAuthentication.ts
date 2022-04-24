@@ -102,7 +102,8 @@ export async function authenticateAsync(
 
 // @needsAudit
 /**
- * **(Android Only)** Cancels authentication flow.
+ * Cancels authentication flow.
+ * @platform android
  */
 export async function cancelAuthenticate(): Promise<void> {
   if (!ExpoLocalAuthentication.cancelAuthenticate) {

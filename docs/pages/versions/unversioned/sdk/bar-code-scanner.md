@@ -1,6 +1,6 @@
 ---
 title: BarCodeScanner
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-barcode-scanner'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-barcode-scanner'
 packageName: 'expo-barcode-scanner'
 ---
 
@@ -28,7 +28,7 @@ In managed apps, scanning barcodes with the camera requires the [`Permission.CAM
 | Bar code format | iOS   | Android     |
 | --------------- | ----- | ----------- |
 | aztec           | Yes   | Yes         |
-| codabar         | No    | Yes         |
+| codabar         | Yes   | Yes         |
 | code39          | Yes   | Yes         |
 | code93          | Yes   | Yes         |
 | code128         | Yes   | Yes         |

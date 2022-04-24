@@ -3,7 +3,7 @@ name: Expotools
 on:
   workflow_dispatch: {}
   push:
-    branches: [master, 'sdk-*']
+    branches: [main, 'sdk-*']
     paths:
       - .github/workflows/expotools.yml
       - tools/**
@@ -18,10 +18,10 @@ concurrency:
 
 jobs:
   build:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: ♻️ Restore node modules in tools
         uses: actions/cache@v2
         id: tools-modules-cache
@@ -36,4 +36,7 @@ jobs:
         working-directory: tools
       - name: 🛠 Compile TypeScript sources
         run: yarn tsc
+        working-directory: tools
+      - name: 🚨 Lint TypeScript sources
+        run: yarn lint --max-warnings 0
         working-directory: tools

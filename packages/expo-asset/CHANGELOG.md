@@ -8,11 +8,19 @@
 
 ### 🐛 Bug fixes
 
-- Fix missing `getManifest2()` function on web. ([#15891](https://github.com/expo/expo/pull/15891)) by [@jonsamp](https://github.com/jonsamp)
+### 💡 Others
+
+## 8.5.0 — 2022-04-18
 
 ### 💡 Others
 
 - Swap out Cloudfront CDN for `classic-assets.eascdn.net`. ([#15781](https://github.com/expo/expo/pull/15781)) by [@quinlanj](https://github.com/quinlanj)
+
+## 8.4.6 - 2022-01-13
+
+### 🐛 Bug fixes
+
+- Fix missing `getManifest2()` function on web. ([#15891](https://github.com/expo/expo/pull/15891)) by [@jonsamp](https://github.com/jonsamp) ([#15891](https://github.com/expo/expo/pull/15891) by [@jonsamp](https://github.com/jonsamp))
 
 ## 8.4.5 — 2021-12-21
 

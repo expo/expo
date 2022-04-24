@@ -79,7 +79,7 @@
           android:host="expo.io"
           android:path="/expo-go"
           android:scheme="http"/>
-        
+
         <data
           android:host="expo.dev"
           android:path="/expo-go"
@@ -94,7 +94,7 @@
         <category android:name="android.intent.category.DEFAULT"/>
         <category android:name="android.intent.category.BROWSABLE"/>
       </intent-filter>
-      
+
       <!-- This has to be separate from the exp[s]:// scheme filter. No idea why -->
       <intent-filter>
         <data
@@ -130,15 +130,17 @@
 
     <activity
       android:name=".experience.ExperienceActivity"
-      android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode"
+      android:exported="true"
+      android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|screenSize|smallestScreenSize|uiMode"
       android:theme="@style/Theme.Exponent.Light"
       android:windowSoftInputMode="adjustResize">
     </activity>
 
     <activity
       android:name=".MainActivity"
+      android:exported="true"
       android:launchMode="singleTask"
-      android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode"
+      android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|screenSize|smallestScreenSize|uiMode"
       android:theme="@style/Theme.Exponent.Splash"
       android:windowSoftInputMode="adjustResize">
       <!-- ADD DETACH SCHEME HERE -->
@@ -148,7 +150,8 @@
 
     <activity
       android:name=".experience.HomeActivity"
-      android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode"
+      android:exported="true"
+      android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|screenSize|smallestScreenSize|uiMode"
       android:label="${appLabel}"
       android:launchMode="singleTask"
       android:screenOrientation="portrait"
@@ -181,6 +184,7 @@
 
     <activity
       android:name=".experience.TvActivity"
+      android:exported="true"
       android:label="${appLabel}"
       android:theme="@style/Theme.Exponent.Light"
       android:screenOrientation="landscape">
@@ -195,19 +199,20 @@
     <activity android:name="com.facebook.react.devsupport.DevSettingsActivity"/>
     <!-- WHEN_PREPARING_SHELL_REMOVE_FROM_HERE -->
     <!-- ADD DEV SETTINGS HERE -->
+    <!-- BEGIN_SDK_45 -->
+    <activity android:name="abi45_0_0.com.facebook.react.devsupport.DevSettingsActivity"/>
+    <!-- END_SDK_45 -->
     <!-- BEGIN_SDK_44 -->
     <activity android:name="abi44_0_0.com.facebook.react.devsupport.DevSettingsActivity"/>
     <!-- END_SDK_44 -->
     <!-- BEGIN_SDK_43 -->
     <activity android:name="abi43_0_0.com.facebook.react.devsupport.DevSettingsActivity"/>
     <!-- END_SDK_43 -->
-    <!-- BEGIN_SDK_42 -->
-    <activity android:name="abi42_0_0.com.facebook.react.devsupport.DevSettingsActivity"/>
-    <!-- END_SDK_42 -->
     <!-- WHEN_PREPARING_SHELL_REMOVE_TO_HERE -->
 
     <activity
         android:name="net.openid.appauth.RedirectUriReceiverActivity"
+        android:exported="true"
         tools:node="replace">
       <intent-filter>
         <action android:name="android.intent.action.VIEW"/>
@@ -281,7 +286,8 @@
 
     <!-- FCM -->
     <service
-      android:name=".fcm.ExpoFcmMessagingService">
+      android:name=".fcm.ExpoFcmMessagingService"
+      android:exported="true">
       <intent-filter>
         <action android:name="com.google.firebase.MESSAGING_EVENT" />
       </intent-filter>
@@ -309,7 +315,7 @@
 
     <!-- ImagePicker native module -->
     <activity
-      android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
+      android:name="com.canhub.cropper.CropImageActivity"
       android:theme="@style/Base.Theme.AppCompat">
     </activity>
 

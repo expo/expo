@@ -1,6 +1,6 @@
 ---
 title: Facebook
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-facebook'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-facebook'
 packageName: 'expo-facebook'
 ---
 
@@ -8,6 +8,9 @@ import { ConfigClassic, ConfigReactNative, ConfigPluginExample, ConfigPluginProp
 import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
 import APISection from '~/components/plugins/APISection';
 import {APIInstallSection} from '~/components/plugins/InstallSection';
+import PlatformsSection from '~/components/plugins/PlatformsSection';
+
+> **Deprecated.** This module will be removed in SDK 46. There will be no replacement that works with the classic build service (`expo build`) because [the classic build service has been superseded by **EAS Build**](https://blog.expo.dev/turtle-goes-out-to-sea-d334db2a6b60). With **EAS Build**, you should use [react-native-fbsdk-next](https://github.com/thebergamo/react-native-fbsdk-next/#expo-installation) instead.
 
 **`expo-facebook`** provides Facebook integration, such as logging in through Facebook, for React Native apps. Expo exposes a minimal native API since you can access Facebook's [Graph API](https://developers.facebook.com/docs/graph-api) directly through HTTP (using [fetch](https://reactnative.dev/docs/network.html#fetch), for example).
 
@@ -78,7 +81,7 @@ You can configure [the permissions for this library](#permissions) using [`ios.i
 
 <ConfigReactNative>
 
-Learn how to configure the native projects in the [installation instructions in the `expo-facebook` repository](https://github.com/expo/expo/tree/master/packages/expo-facebook#installation-in-bare-react-native-projects).
+Learn how to configure the native projects in the [installation instructions in the `expo-facebook` repository](https://github.com/expo/expo/tree/main/packages/expo-facebook#installation-in-bare-react-native-projects).
 
 </ConfigReactNative>
 

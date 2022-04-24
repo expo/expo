@@ -15,6 +15,7 @@
 #import "EXDevLauncherLoadingView.h"
 #import "EXDevLauncherInternal.h"
 #import "EXDevLauncherUpdatesHelper.h"
+#import "EXDevLauncherAuth.h"
 #import "RCTPackagerConnection+EXDevLauncherPackagerConnectionInterceptor.h"
 
 #if __has_include(<EXDevLauncher/EXDevLauncher-Swift.h>)
@@ -26,7 +27,6 @@
 
 #import <EXManifests/EXManifestsManifestFactory.h>
 
-@import EXDevMenuInterface;
 @import EXDevMenu;
 
 #ifdef EX_DEV_LAUNCHER_VERSION
@@ -37,9 +37,7 @@
 #endif
 
 // Uncomment the below and set it to a React Native bundler URL to develop the launcher JS
-//  #define DEV_LAUNCHER_URL "http://10.0.0.226:8090/index.bundle?platform=ios&dev=true&minify=false"
-
-NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
+//  #define DEV_LAUNCHER_URL "http://localhost:8090//index.bundle?platform=ios&dev=true&minify=false"
 
 @interface EXDevLauncherController ()
 
@@ -53,6 +51,7 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
 @property (nonatomic, strong) NSURL *manifestURL;
 @property (nonatomic, strong) EXDevLauncherErrorManager *errorManager;
 @property (nonatomic, strong) EXDevLauncherInstallationIDHelper *installationIDHelper;
+@property (nonatomic, assign) BOOL isStarted;
 
 @end
 
@@ -78,8 +77,6 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
     self.errorManager = [[EXDevLauncherErrorManager alloc] initWithController:self];
     self.installationIDHelper = [EXDevLauncherInstallationIDHelper new];
     self.shouldPreferUpdatesInterfaceSourceUrl = NO;
-
-    EXDevLauncherBundleURLProviderInterceptor.isInstalled = true;
   }
   return self;
 }
@@ -89,13 +86,13 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
   
   NSMutableArray *modules = [[DevMenuVendoredModulesUtils vendoredModules] mutableCopy];
   
-  [modules addObject:[DevMenuInternalModule new]];
   [modules addObject:[RCTDevMenu new]];
   [modules addObject:[RCTAsyncLocalStorage new]];
   [modules addObject:[EXDevLauncherLoadingView new]];
   [modules addObject:[EXDevLauncherInternal new]];
-   
-   return modules;
+  [modules addObject:[EXDevLauncherAuth new]];
+  
+  return modules;
 }
 
 + (NSString * _Nullable)version {
@@ -155,6 +152,7 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
 
 - (void)startWithWindow:(UIWindow *)window delegate:(id<EXDevLauncherControllerDelegate>)delegate launchOptions:(NSDictionary *)launchOptions
 {
+  _isStarted = YES;
   _delegate = delegate;
   _launchOptions = launchOptions;
   _window = window;
@@ -168,9 +166,27 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
   }
 }
 
+- (void)autoSetupPrepare:(id<EXDevLauncherControllerDelegate>)delegate launchOptions:(NSDictionary * _Nullable)launchOptions
+{
+  _delegate = delegate;
+  _launchOptions = launchOptions;
+  EXDevLauncherBundleURLProviderInterceptor.isInstalled = true;
+}
+
+- (void)autoSetupStart:(UIWindow *)window
+{
+  if (_delegate != nil) {
+    [self startWithWindow:window delegate:_delegate launchOptions:_launchOptions];
+  } else {
+    @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"[EXDevLauncherController autoSetupStart:] was called before autoSetupPrepare:. Make sure you've set up expo-modules correctly in AppDelegate and are using ReactDelegate to create a bridge before calling [super application:didFinishLaunchingWithOptions:]." userInfo:nil];
+  }
+}
+
 - (void)navigateToLauncher
 {
   [_appBridge invalidate];
+  [self invalidateDevMenuApp];
+  
   self.manifest = nil;
   self.manifestURL = nil;
 
@@ -181,19 +197,35 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
   [self _removeInitModuleObserver];
 
   _launcherBridge = [[EXDevLauncherRCTBridge alloc] initWithDelegate:self launchOptions:_launchOptions];
-
-  // Set up the `expo-dev-menu` delegate if menu is available
-  [self _maybeInitDevMenuDelegate:_launcherBridge];
+  
+  NSMutableDictionary *insets = [NSMutableDictionary new];
+  [insets setObject:@(0) forKey:@"top"];
+  [insets setObject:@(0) forKey:@"right"];
+  [insets setObject:@(0) forKey:@"bottom"];
+  [insets setObject:@(0) forKey:@"left"];
+  
+  if (@available(iOS 11.0, *)) {
+    UIWindow* window = [[UIApplication sharedApplication] keyWindow];
+    UIEdgeInsets safeAreaInsets = window.safeAreaInsets;
+    
+    [insets setObject:@(safeAreaInsets.top) forKey:@"top"];
+    [insets setObject:@(safeAreaInsets.right) forKey:@"right"];
+    [insets setObject:@(safeAreaInsets.bottom) forKey:@"bottom"];
+    [insets setObject:@(safeAreaInsets.left) forKey:@"left"];
+  }
+  
 
   RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:_launcherBridge
                                                    moduleName:@"main"
                                             initialProperties:@{
+                                              @"insets": insets,
                                               @"isSimulator":
                                                               #if TARGET_IPHONE_SIMULATOR
                                                               @YES
                                                               #else
                                                               @NO
                                                               #endif
+                                              
                                             }];
 
   [self _ensureUserInterfaceStyleIsInSyncWithTraitEnv:rootView];
@@ -251,6 +283,12 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
   }
   
   self.pendingDeepLinkRegistry.pendingDeepLink = url;
+
+  // cold boot -- need to initialize the dev launcher app RN app to handle the link
+  if (![_launcherBridge isValid]) {
+    [self navigateToLauncher];
+  }
+  
   return true;
 }
 
@@ -262,28 +300,41 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
   return _sourceUrl;
 }
 
-- (void)loadApp:(NSURL *)expoUrl onSuccess:(void (^ _Nullable)(void))onSuccess onError:(void (^ _Nullable)(NSError *error))onError
+- (BOOL)isEASUpdateURL:(NSURL *)url
 {
-  if (@available(iOS 14, *)) {
-    // Try to detect if we're trying to open a local network URL so we can preemptively show the
-    // Local Network permission prompt -- otherwise the network request will fail before the user
-    // has time to accept or reject the permission.
-    NSString *host = expoUrl.host;
-    if ([host hasPrefix:@"192.168."] || [host hasPrefix:@"172."] || [host hasPrefix:@"10."]) {
-      // We want to trigger the local network permission dialog. However, the iOS API doesn't expose a way to do it.
-      // But we can use system functionality that needs this permission to trigger prompt.
-      // See https://stackoverflow.com/questions/63940427/ios-14-how-to-trigger-local-network-dialog-and-check-user-answer
-      static dispatch_once_t once;
-      dispatch_once(&once, ^{
-        [[NSProcessInfo processInfo] hostName];
-      });
-    }
+  if ([url.host isEqual: @"u.expo.dev"]) {
+    return true;
   }
+  
+  return false;
+}
 
+-(void)loadApp:(NSURL *)url onSuccess:(void (^ _Nullable)(void))onSuccess onError:(void (^ _Nullable)(NSError *error))onError
+{
+  [self loadApp:url withProjectUrl:nil onSuccess:onSuccess onError:onError];
+}
+
+- (void)loadApp:(NSURL *)expoUrl withProjectUrl:(NSURL * _Nullable)projectUrl onSuccess:(void (^ _Nullable)(void))onSuccess onError:(void (^ _Nullable)(NSError *error))onError
+{
+  BOOL isEASUpdate = [self isEASUpdateURL:expoUrl];
+  
+  // an update url requires a matching projectUrl
+  // if one isn't provided, default to the configured project url in Expo.plist
+  if (isEASUpdate && projectUrl == nil) {
+    NSString *projectUrlString = [self getUpdatesConfigForKey:@"EXUpdatesURL"];
+    projectUrl = [NSURL URLWithString:projectUrlString];
+  }
+  
+  // if there is no project url and its not an updates url, the project url can be the same as the app url
+  if (!isEASUpdate && projectUrl == nil) {
+    projectUrl = expoUrl;
+  }
+  
   NSString *installationID = [_installationIDHelper getOrCreateInstallationID];
   expoUrl = [EXDevLauncherURLHelper replaceEXPScheme:expoUrl to:@"http"];
 
   NSDictionary *updatesConfiguration = [EXDevLauncherUpdatesHelper createUpdatesConfigurationWithURL:expoUrl
+                                                                                          projectURL:projectUrl
                                                                                       installationID:installationID];
 
   void (^launchReactNativeApp)(void) = ^{
@@ -315,7 +366,8 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
   }
 
   EXDevLauncherManifestParser *manifestParser = [[EXDevLauncherManifestParser alloc] initWithURL:expoUrl installationID:installationID session:[NSURLSession sharedSession]];
-  [manifestParser isManifestURLWithCompletion:^(BOOL isManifestURL) {
+  
+  void (^onIsManifestURL)(BOOL) = ^(BOOL isManifestURL) {
     if (!isManifestURL) {
       // assume this is a direct URL to a bundle hosted by metro
       launchReactNativeApp();
@@ -348,7 +400,23 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
         launchExpoApp(self->_updatesInterface.launchAssetURL, [EXManifestsManifestFactory manifestForManifestJSON:manifest]);
       }
     } error:onError];
-  } onError:onError];
+  };
+  
+  [manifestParser isManifestURLWithCompletion:onIsManifestURL onError:^(NSError * _Nonnull error) {
+    if (@available(iOS 14, *)) {
+      // Try to retry if the network connection was rejected because of the luck of the lan network permission.
+      static BOOL shouldRetry = true;
+      NSString *host = expoUrl.host;
+
+      if (shouldRetry && ([host hasPrefix:@"192.168."] || [host hasPrefix:@"172."] || [host hasPrefix:@"10."])) {
+        shouldRetry = false;
+        [manifestParser isManifestURLWithCompletion:onIsManifestURL onError:onError];
+        return;
+      }
+    }
+    
+    onError(error);
+  }];
 }
 
 - (void)_initAppWithUrl:(NSURL *)appUrl bundleUrl:(NSURL *)bundleUrl manifest:(EXManifestsManifest * _Nullable)manifest
@@ -390,8 +458,9 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
     [self _addInitModuleObserver];
     
     [self.delegate devLauncherController:self didStartWithSuccess:YES];
-    [self _maybeInitDevMenuDelegate:self.appBridge];
-
+    
+    [self setDevMenuAppBridge];
+    
     [self _ensureUserInterfaceStyleIsInSyncWithTraitEnv:self.window.rootViewController];
 
     [[UIDevice currentDevice] setValue:@(orientation) forKey:@"orientation"];
@@ -458,19 +527,6 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
   RCTOverrideAppearancePreference(colorSchema);
 }
 
-- (void)_maybeInitDevMenuDelegate:(RCTBridge *)bridge
-{
-  static dispatch_once_t once;
-  dispatch_once(&once, ^{
-    id<DevMenuManagerProviderProtocol> devMenuManagerProvider = [bridge modulesConformingToProtocol:@protocol(DevMenuManagerProviderProtocol)].firstObject;
-    
-    if (devMenuManagerProvider) {
-      id<DevMenuManagerProtocol> devMenuManager = [devMenuManagerProvider getDevMenuManager];
-      devMenuManager.delegate = [[EXDevLauncherMenuDelegate alloc] initWithLauncherController:self];
-    }
-  });
-}
-
 - (void)_addInitModuleObserver {
   [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didInitializeModule:) name:RCTDidInitializeModuleNotification object:nil];
 }
@@ -501,7 +557,7 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
   NSString *sdkVersion = [self getUpdatesConfigForKey:@"EXUpdatesSDKVersion"];
   NSString *appVersion = [self getFormattedAppVersion];
   NSString *appName = [[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleDisplayName"] ?: [[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleExecutable"];
-
+  
   [buildInfo setObject:appName forKey:@"appName"];
   [buildInfo setObject:appIcon forKey:@"appIcon"];
   [buildInfo setObject:appVersion forKey:@"appVersion"];
@@ -553,5 +609,59 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
   UIPasteboard *clipboard = [UIPasteboard generalPasteboard];
   clipboard.string = (content ? : @"");
 }
+
+- (void)setDevMenuAppBridge
+{
+  DevMenuManager *manager = [DevMenuManager shared];
+  manager.currentBridge = self.appBridge;
+  
+  if (self.manifest != nil) {
+    manager.currentManifest = self.manifest;
+    manager.currentManifestURL = self.manifestURL;
+  }
+}
+
+- (void)invalidateDevMenuApp
+{
+  DevMenuManager *manager = [DevMenuManager shared];
+  manager.currentBridge = nil;
+  manager.currentManifest = nil;
+  manager.currentManifestURL = nil;
+}
+
+-(NSDictionary *)getUpdatesConfig
+{
+  NSMutableDictionary *updatesConfig = [NSMutableDictionary new];
+  
+  NSString *runtimeVersion = [self getUpdatesConfigForKey:@"EXUpdatesRuntimeVersion"];
+  NSString *sdkVersion = [self getUpdatesConfigForKey:@"EXUpdatesSDKVersion"];
+  
+  // url structure for EASUpdates: `http://u.expo.dev/{appId}`
+  // this url field is added to app.json.updates when running `eas update:configure`
+  // the `u.expo.dev` determines that it is the modern manifest protocol
+  NSString *projectUrl = [self getUpdatesConfigForKey:@"EXUpdatesURL"];
+  NSURL *url = [NSURL URLWithString:projectUrl];
+  NSString *appId = [[url pathComponents] lastObject];
+  
+  BOOL isModernManifestProtocol = [[url host] isEqualToString:@"u.expo.dev"];
+  BOOL expoUpdatesInstalled = EXDevLauncherController.sharedInstance.updatesInterface != nil;
+  BOOL hasAppId = appId.length > 0;
+  
+  BOOL usesEASUpdates = isModernManifestProtocol && expoUpdatesInstalled && hasAppId;
+  
+  [updatesConfig setObject:runtimeVersion forKey:@"runtimeVersion"];
+  [updatesConfig setObject:sdkVersion forKey:@"sdkVersion"];
+  
+  
+  if (usesEASUpdates) {
+    [updatesConfig setObject:appId forKey:@"appId"];
+    [updatesConfig setObject:projectUrl forKey:@"projectUrl"];
+  }
+  
+  [updatesConfig setObject:@(usesEASUpdates) forKey:@"usesEASUpdates"];
+    
+  return updatesConfig;
+}
+
 
 @end

@@ -18,6 +18,8 @@ import {
   TypePropertyDataFlags,
 } from '~/components/plugins/api/APIDataTypes';
 
+const isDev = process.env.NODE_ENV === 'development';
+
 export enum TypeDocKind {
   LegacyEnum = 4,
   Enum = 8,
@@ -32,6 +34,9 @@ export enum TypeDocKind {
 
 export type MDComponents = React.ComponentProps<typeof ReactMarkdown>['components'];
 
+const getInvalidLinkMessage = (href: string) =>
+  `Using "../" when linking other packages in doc comments produce a broken link! Please use "./" instead. Problematic link:\n\t${href}`;
+
 export const mdComponents: MDComponents = {
   blockquote: ({ children }) => (
     <Quote>
@@ -44,7 +49,20 @@ export const mdComponents: MDComponents = {
   h1: ({ children }) => <H4>{children}</H4>,
   ul: ({ children }) => <UL>{children}</UL>,
   li: ({ children }) => <LI>{children}</LI>,
-  a: ({ href, children }) => <Link href={href}>{children}</Link>,
+  a: ({ href, children }) => {
+    if (
+      href?.startsWith('../') &&
+      !href?.startsWith('../..') &&
+      !href?.startsWith('../react-native')
+    ) {
+      if (isDev) {
+        throw new Error(getInvalidLinkMessage(href));
+      } else {
+        console.warn(getInvalidLinkMessage(href));
+      }
+    }
+    return <Link href={href}>{children}</Link>;
+  },
   p: ({ children }) => (children ? <P>{children}</P> : null),
   strong: ({ children }) => <B>{children}</B>,
   span: ({ children }) => (children ? <span>{children}</span> : null),
@@ -92,27 +110,26 @@ const omittableTypes = [
  * Map of internal names/type names that should be replaced with something more developer-friendly.
  */
 const replaceableTypes: Partial<Record<string, string>> = {
-  /**
-   *
-   */
   ForwardRefExoticComponent: 'Component',
 };
 
 const hardcodedTypeLinks: Record<string, string> = {
+  AVPlaybackSource: '/versions/latest/sdk/av/#playback-api',
+  AVPlaybackStatus: '/versions/latest/sdk/av/#playback-status',
+  AVPlaybackStatusToSet: '/versions/latest/sdk/av/#default-initial--avplaybackstatustoset',
   Date: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date',
   Element: 'https://www.typescriptlang.org/docs/handbook/jsx.html#function-component',
   Error: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error',
-  ExpoConfig:
-    'https://github.com/expo/expo-cli/blob/master/packages/config-types/src/ExpoConfig.ts',
+  ExpoConfig: 'https://github.com/expo/expo-cli/blob/main/packages/config-types/src/ExpoConfig.ts',
   MessageEvent: 'https://developer.mozilla.org/en-US/docs/Web/API/MessageEvent',
   Omit: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#omittype-keys',
   Pick: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#picktype-keys',
   Partial: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#partialtype',
   Promise:
     'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise',
-  View: '../../react-native/view',
-  ViewProps: '../../react-native/view#props',
-  ViewStyle: '../../react-native/view-style-props/',
+  View: '/versions/latest/react-native/view',
+  ViewProps: '/versions/latest/react-native/view#props',
+  ViewStyle: '/versions/latest/react-native/view-style-props',
 };
 
 const renderWithLink = (name: string, type?: string) => {
@@ -148,6 +165,9 @@ export const resolveTypeName = ({
   declaration,
   value,
   queryType,
+  operator,
+  objectType,
+  indexType,
 }: TypeDefinitionData): string | JSX.Element | (string | JSX.Element)[] => {
   try {
     if (name) {
@@ -274,6 +294,10 @@ export const resolveTypeName = ({
             {index + 1 !== array.length && ' & '}
           </span>
         ));
+    } else if (type === 'indexedAccess') {
+      return `${objectType?.name}['${indexType?.value}']`;
+    } else if (type === 'typeOperator') {
+      return operator || 'undefined';
     } else if (value === null) {
       return 'null';
     }
@@ -337,7 +361,8 @@ export type CommentTextBlockProps = {
   comment?: CommentData;
   components?: MDComponents;
   withDash?: boolean;
-  beforeContent?: JSX.Element;
+  beforeContent?: JSX.Element | null;
+  afterContent?: JSX.Element | null;
   includePlatforms?: boolean;
 };
 
@@ -385,6 +410,7 @@ export const CommentTextBlock = ({
   components = mdComponents,
   withDash,
   beforeContent,
+  afterContent,
   includePlatforms = true,
 }: CommentTextBlockProps) => {
   const shortText = comment?.shortText?.trim().length ? (
@@ -400,8 +426,14 @@ export const CommentTextBlock = ({
 
   const examples = getAllTagData('example', comment);
   const exampleText = examples?.map((example, index) => (
-    <React.Fragment key={'Example-' + index}>
-      <H4>Example</H4>
+    <React.Fragment key={'example-' + index}>
+      {components !== mdComponents ? (
+        <div css={STYLES_EXAMPLE_IN_TABLE}>
+          <B>Example</B>
+        </div>
+      ) : (
+        <H4>Example</H4>
+      )}
       <ReactMarkdown components={components}>{example.text}</ReactMarkdown>
     </React.Fragment>
   ));
@@ -410,7 +442,8 @@ export const CommentTextBlock = ({
   const deprecationNote = deprecation ? (
     <Quote key="deprecation-note">
       {deprecation.text.trim().length ? (
-        <ReactMarkdown components={mdInlineComponents}>{deprecation.text}</ReactMarkdown>
+        <ReactMarkdown
+          components={mdInlineComponents}>{`**Deprecated.** ${deprecation.text}`}</ReactMarkdown>
       ) : (
         <B>Deprecated</B>
       )}
@@ -433,10 +466,17 @@ export const CommentTextBlock = ({
       {includePlatforms && getPlatformTags(comment, !withDash)}
       {shortText}
       {text}
+      {afterContent}
       {seeText}
       {exampleText}
     </>
   );
+};
+
+export const getComponentName = (name?: string, children: PropData[] = []) => {
+  if (name && name !== 'default') return name;
+  const ctor = children.filter((child: PropData) => child.name === 'constructor')[0];
+  return ctor?.signatures?.[0]?.type?.name ?? 'default';
 };
 
 export const STYLES_OPTIONAL = css`
@@ -452,13 +492,23 @@ export const STYLES_SECONDARY = css`
 `;
 
 export const STYLES_PLATFORM = css`
-  display: inline-block;
-  background-color: ${theme.background.tertiary};
-  color: ${theme.text.default};
-  font-size: 90%;
-  font-weight: 700;
-  padding: 6px 12px;
-  margin-bottom: 8px;
-  margin-right: 8px;
-  border-radius: 4px;
+  & {
+    display: inline-block;
+    background-color: ${theme.background.tertiary};
+    color: ${theme.text.default};
+    font-size: 90%;
+    font-weight: 700;
+    padding: 6px 12px;
+    margin-bottom: 8px;
+    margin-right: 8px;
+    border-radius: 4px;
+  }
+
+  table & {
+    margin-bottom: 1rem;
+  }
+`;
+
+const STYLES_EXAMPLE_IN_TABLE = css`
+  margin: 8px 0;
 `;

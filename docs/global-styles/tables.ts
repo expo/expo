@@ -1,8 +1,7 @@
 import { css } from '@emotion/react';
-import { theme } from '@expo/styleguide';
+import { theme, typography } from '@expo/styleguide';
 
-import * as Constants from '~/constants/theme';
-
+// TODO(cedric): move these global table styles to ui/components/Table
 export const globalTables = css`
   table {
     margin-bottom: 1rem;
@@ -41,7 +40,7 @@ export const globalTables = css`
   }
 
   th {
-    font-family: ${Constants.fontFamilies.bold};
+    font-family: ${typography.fontFaces.semiBold};
     font-weight: 400;
   }
 `;

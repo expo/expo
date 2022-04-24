@@ -6,14 +6,12 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 
+import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;
-import com.facebook.react.ReactRootView;
 
 import expo.modules.ReactActivityDelegateWrapper;
-import expo.modules.devlauncher.DevLauncherController;
-import expo.modules.devmenu.react.DevMenuAwareReactActivity;
 
-public class MainActivity extends DevMenuAwareReactActivity {
+public class MainActivity extends ReactActivity {
 
   /**
    * Returns the name of the main component registered from JavaScript.
@@ -27,7 +25,7 @@ public class MainActivity extends DevMenuAwareReactActivity {
   @Override
   protected ReactActivityDelegate createReactActivityDelegate() {
     Activity activity = this;
-    ReactActivityDelegate delegate = new ReactActivityDelegateWrapper(this,
+    ReactActivityDelegate delegate = new ReactActivityDelegateWrapper(this, BuildConfig.IS_NEW_ARCHITECTURE_ENABLED,
       new ReactActivityDelegate(this, getMainComponentName()) {
       @Override
       protected void onCreate(Bundle savedInstanceState) {
@@ -48,20 +46,6 @@ public class MainActivity extends DevMenuAwareReactActivity {
       }
     });
 
-    if (MainApplication.USE_DEV_CLIENT) {
-      return DevLauncherController.wrapReactActivityDelegate(this, () -> delegate);
-    }
-
     return delegate;
-  }
-
-  @Override
-  public void onNewIntent(Intent intent) {
-    if (MainApplication.USE_DEV_CLIENT) {
-      if (DevLauncherController.tryToHandleIntent(this, intent)) {
-        return;
-      }
-    }
-    super.onNewIntent(intent);
   }
 }

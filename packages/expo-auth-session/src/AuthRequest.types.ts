@@ -1,26 +1,26 @@
 import { CreateURLOptions } from 'expo-linking';
 import { WebBrowserOpenOptions, WebBrowserWindowFeatures } from 'expo-web-browser';
 
+// @needsAudit
 export enum CodeChallengeMethod {
   /**
    * The default and recommended method for transforming the code verifier.
-   * 1. Convert the code verifier to ASCII.
-   * 2. Create a digest of the string using crypto method SHA256.
-   * 3. Convert the digest to Base64 and URL encode it.
+   * - Convert the code verifier to ASCII.
+   * - Create a digest of the string using crypto method SHA256.
+   * - Convert the digest to Base64 and URL encode it.
    */
   S256 = 'S256',
   /**
-   * This should not be used.
-   * When used, the code verifier will be sent to the server as-is.
+   * This should not be used. When used, the code verifier will be sent to the server as-is.
    */
   Plain = 'plain',
 }
 
+// @needsAudit
 /**
- * The client informs the authorization server of the
- * desired grant type by using the a response type.
+ * The client informs the authorization server of the desired grant type by using the response type.
  *
- * [Section 3.1.1](https://tools.ietf.org/html/rfc6749#section-3.1.1)
+ * @see [Section 3.1.1](https://tools.ietf.org/html/rfc6749#section-3.1.1).
  */
 export enum ResponseType {
   /**
@@ -37,11 +37,13 @@ export enum ResponseType {
   IdToken = 'id_token',
 }
 
+// @needsAudit
 /**
- * Should the user be prompted to login or consent again.
+ * Informs the server if the user should be prompted to login or consent again.
  * This can be used to present a dialog for switching accounts after the user has already been logged in.
+ * You should use this in favor of clearing cookies (which is mostly not possible on iOS).
  *
- * [Section 3.1.2.1](https://openid.net/specs/openid-connect-core-1_0.html#AuthorizationRequest)
+ * @see [Section 3.1.2.1](https://openid.net/specs/openid-connect-core-1_0.html#AuthorizationRequest).
  */
 export enum Prompt {
   /**
@@ -67,18 +69,19 @@ export enum Prompt {
   SelectAccount = 'select_account',
 }
 
+// @needsAudit
 /**
- * Options for the prompt window / web browser.
+ * Options passed to the `promptAsync()` method of `AuthRequest`s.
  * This can be used to configure how the web browser should look and behave.
  */
 export type AuthRequestPromptOptions = Omit<WebBrowserOpenOptions, 'windowFeatures'> & {
   /**
-   * URL to open when prompting the user. This should be defined internally.
+   * URL to open when prompting the user. This usually should be defined internally and left `undefined` in most cases.
    */
   url?: string;
   /**
    * Should the authentication request use the Expo proxy service `auth.expo.io`.
-   * Default: `false`.
+   * @default false
    */
   useProxy?: boolean;
   /**
@@ -86,11 +89,13 @@ export type AuthRequestPromptOptions = Omit<WebBrowserOpenOptions, 'windowFeatur
    */
   proxyOptions?: Omit<CreateURLOptions, 'queryParams'> & { path?: string };
   /**
-   * **Web:** features to use with `window.open()`
+   * Features to use with `window.open()`.
+   * @platform web
    */
   windowFeatures?: WebBrowserWindowFeatures;
 };
 
+// @needsAudit
 /**
  * Represents an OAuth authorization request as JSON.
  */
@@ -115,7 +120,7 @@ export interface AuthRequestConfig {
   clientId: string;
   /**
    * After completing an interaction with a resource owner the
-   * server will redirect to this URI. Learn more about [linking in Expo](https://docs.expo.io/versions/latest/workflow/linking/).
+   * server will redirect to this URI. Learn more about [linking in Expo](https://docs.expo.dev/versions/latest/workflow/linking/).
    *
    * [Section 3.1.2](https://tools.ietf.org/html/rfc6749#section-3.1.2)
    */
@@ -134,8 +139,8 @@ export interface AuthRequestConfig {
    */
   clientSecret?: string;
   /**
-   * Method used to generate the code challenge.
-   * Defaults to `S256`. You should never use `Plain` as it's not good enough for secure verification.
+   * Method used to generate the code challenge. You should never use `Plain` as it's not good enough for secure verification.
+   * @default CodeChallengeMethod.S256
    */
   codeChallengeMethod?: CodeChallengeMethod;
   /**
@@ -161,7 +166,7 @@ export interface AuthRequestConfig {
   extraParams?: Record<string, string>;
   /**
    * Should use [Proof Key for Code Exchange](https://oauth.net/2/pkce/).
-   * Defaults to true.
+   * @default true
    */
   usePKCE?: boolean;
 }

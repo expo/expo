@@ -1,16 +1,18 @@
 import React from 'react';
 
 import { InlineCode } from '~/components/base/code';
-import { B } from '~/components/base/paragraph';
+import { B, P } from '~/components/base/paragraph';
 import { H2, H3Code } from '~/components/plugins/Headings';
 import {
   CommentData,
+  CommentTagData,
   InterfaceDefinitionData,
   MethodSignatureData,
   PropData,
 } from '~/components/plugins/api/APIDataTypes';
 import {
   CommentTextBlock,
+  getTagData,
   mdInlineComponents,
   renderFlags,
   renderParam,
@@ -22,9 +24,19 @@ export type APISectionInterfacesProps = {
   data: InterfaceDefinitionData[];
 };
 
+const renderDefaultValue = (defaultValue?: CommentTagData) =>
+  defaultValue ? (
+    <>
+      <br />
+      <br />
+      <B>Default:</B> <InlineCode>{defaultValue.text}</InlineCode>
+    </>
+  ) : null;
+
 const renderInterfaceComment = (comment?: CommentData, signatures?: MethodSignatureData[]) => {
   if (signatures && signatures.length) {
     const { type, parameters, comment: signatureComment } = signatures[0];
+    const defaultValue = getTagData('default', signatureComment);
     return (
       <>
         {parameters?.length ? parameters.map(param => renderParam(param)) : null}
@@ -33,13 +45,26 @@ const renderInterfaceComment = (comment?: CommentData, signatures?: MethodSignat
         {signatureComment && (
           <>
             <br />
-            <CommentTextBlock comment={signatureComment} components={mdInlineComponents} />
+            <CommentTextBlock
+              comment={signatureComment}
+              components={mdInlineComponents}
+              afterContent={renderDefaultValue(defaultValue)}
+            />
           </>
         )}
       </>
     );
   } else {
-    return comment ? <CommentTextBlock comment={comment} components={mdInlineComponents} /> : '-';
+    const defaultValue = getTagData('default', comment);
+    return comment ? (
+      <CommentTextBlock
+        comment={comment}
+        components={mdInlineComponents}
+        afterContent={renderDefaultValue(defaultValue)}
+      />
+    ) : (
+      '-'
+    );
   }
 };
 
@@ -67,12 +92,23 @@ const renderInterface = ({
   name,
   children,
   comment,
+  extendedTypes,
 }: InterfaceDefinitionData): JSX.Element | null =>
   children ? (
     <div key={`interface-definition-${name}`}>
       <H3Code>
         <InlineCode>{name}</InlineCode>
       </H3Code>
+      {extendedTypes?.length && (
+        <P>
+          <B>Extends: </B>
+          {extendedTypes.map(extendedType => (
+            <InlineCode key={`extend-${extendedType.name}`}>
+              {resolveTypeName(extendedType)}
+            </InlineCode>
+          ))}
+        </P>
+      )}
       <CommentTextBlock comment={comment} />
       <table>
         <thead>
@@ -82,7 +118,9 @@ const renderInterface = ({
             <th>Description</th>
           </tr>
         </thead>
-        <tbody>{children.map(renderInterfacePropertyRow)}</tbody>
+        <tbody>
+          {children.filter(child => !child?.inheritedFrom).map(renderInterfacePropertyRow)}
+        </tbody>
       </table>
     </div>
   ) : null;

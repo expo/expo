@@ -12,10 +12,10 @@ import expo.modules.core.interfaces.ExpoMethod
 import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.launcher.Launcher.LauncherCallback
+import expo.modules.updates.loader.FileDownloader
 import expo.modules.updates.loader.FileDownloader.ManifestDownloadCallback
 import expo.modules.updates.loader.Loader
 import expo.modules.updates.loader.RemoteLoader
-import expo.modules.updates.manifest.ManifestMetadata
 import expo.modules.updates.manifest.UpdateManifest
 
 // these unused imports must stay because of versioning
@@ -56,6 +56,7 @@ class UpdatesModule(
         val launchedUpdate = updatesServiceLocal.launchedUpdate
         if (launchedUpdate != null) {
           constants["updateId"] = launchedUpdate.id.toString()
+          constants["commitTime"] = launchedUpdate.commitTime.time
           constants["manifestString"] =
             if (launchedUpdate.manifest != null) launchedUpdate.manifest.toString() else "{}"
         }
@@ -126,8 +127,11 @@ class UpdatesModule(
         return
       }
       val databaseHolder = updatesServiceLocal.databaseHolder
-      val extraHeaders = ManifestMetadata.getServerDefinedHeaders(
-        databaseHolder.database, updatesServiceLocal.configuration
+      val extraHeaders = FileDownloader.getExtraHeaders(
+        databaseHolder.database,
+        updatesServiceLocal.configuration,
+        updatesServiceLocal.launchedUpdate,
+        updatesServiceLocal.embeddedUpdate
       )
       databaseHolder.releaseDatabase()
       updatesServiceLocal.fileDownloader.downloadManifest(
@@ -193,7 +197,8 @@ class UpdatesModule(
           updatesServiceLocal.configuration,
           databaseHolder.database,
           updatesServiceLocal.fileDownloader,
-          updatesServiceLocal.directory
+          updatesServiceLocal.directory,
+          updatesServiceLocal.launchedUpdate
         )
           .start(
             object : Loader.LoaderCallback {

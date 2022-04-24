@@ -16,7 +16,7 @@ on:
       - Gemfile.lock
       - .ruby-version
   push:
-    branches: [master]
+    branches: [main]
     paths:
       - .github/workflows/ios-unit-tests.yml
       - ios/**
@@ -39,7 +39,7 @@ jobs:
     runs-on: macos-11
     timeout-minutes: 60
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           submodules: true
       - name: 🔨 Switch to Xcode 13.0

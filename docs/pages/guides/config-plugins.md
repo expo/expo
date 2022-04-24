@@ -470,7 +470,7 @@ Because of this reasoning, the root of a Node module is searched instead of righ
 
 > Use [modifier previews](https://github.com/expo/vscode-expo#expo-preview-modifier) to debug the results of your plugin live.
 
-To make plugin development easier, we've added plugin support to [`expo-module-scripts`](https://www.npmjs.com/package/expo-module-scripts). Refer to the [config plugins guide](https://github.com/expo/expo/tree/master/packages/expo-module-scripts#-config-plugin) for more info on using TypeScript, and Jest to build plugins.
+To make plugin development easier, we've added plugin support to [`expo-module-scripts`](https://www.npmjs.com/package/expo-module-scripts). Refer to the [config plugins guide](https://github.com/expo/expo/tree/main/packages/expo-module-scripts#-config-plugin) for more info on using TypeScript, and Jest to build plugins.
 
 Plugins will generally have `@expo/config-plugins` installed as a dependency, and `expo-module-scripts`, `@expo/config-types` installed as a devDependencies.
 
@@ -494,7 +494,7 @@ You can develop plugins easily using JS, but if you want to setup Jest tests and
 A monorepo will enable you to work on a node module and import it in your Expo app like you would if it were published to NPM. Expo config plugins have full monorepo support built-in so all you need to do is setup a project.
 
 We recommend using [`expo-yarn-workspaces`](https://www.npmjs.com/package/expo-yarn-workspaces) which makes Expo monorepos very easy to setup.
-In your monorepo's `packages/` folder, create a module, and [bootstrap a config plugin](https://github.com/expo/expo/tree/master/packages/expo-module-scripts#-config-plugin) in it.
+In your monorepo's `packages/` folder, create a module, and [bootstrap a config plugin](https://github.com/expo/expo/tree/main/packages/expo-module-scripts#-config-plugin) in it.
 
 ### Manually running a plugin
 
@@ -592,7 +592,7 @@ Podfile configuration is often done with environment variables:
 - `process.env.EXPO_USE_SOURCE` when set to `1`, Expo modules will install source code instead of xcframeworks.
 - `process.env.CI` in some projects, when set to `0`, Flipper installation will be skipped.
 
-We do expose one mechanism for safely interacting with the Podfile, but it's very limited. The versioned [template Podfile](https://github.com/expo/expo/blob/master/templates/expo-template-bare-minimum/ios/Podfile) is hard coded to read from a static JSON file **Podfile.properties.json**, we expose a mod (`ios.podfileProperties`, `withPodfileProperties`) to safely read and write from this file.
+We do expose one mechanism for safely interacting with the Podfile, but it's very limited. The versioned [template Podfile](https://github.com/expo/expo/tree/main/templates/expo-template-bare-minimum/ios/Podfile) is hard coded to read from a static JSON file **Podfile.properties.json**, we expose a mod (`ios.podfileProperties`, `withPodfileProperties`) to safely read and write from this file.
 
 In Expo SDK 43, the **Podfile.properties.json** only supports the following configuration:
 
@@ -647,7 +647,7 @@ export default createRunOncePlugin(
 - **Leverage built-in plugins**: Account for built-in plugins from the [prebuild config](https://github.com/expo/expo-cli/blob/master/packages/prebuild-config/src/plugins/withDefaultPlugins.ts). Some features are included for historical reasons, like the ability to automatically copy and link [Google services files](https://github.com/expo/expo-cli/blob/3a0ef962a27525a0fe4b7e5567fb7b3fb18ec786/packages/config-plugins/src/ios/Google.ts#L15) defined in the Expo config. If there is overlap, then maybe recommend the user uses the built-in types to keep your plugin as simple as possible.
 - **Split up plugins by platform**: For example — `withIosSplash`, `withAndroidSplash`. This makes using the `--platform` flag in `expo prebuild` a bit easier to follow in `EXPO_DEBUG` mode.
 - **Unit test your plugin**: Write Jest tests for complex modifications. If your plugin requires access to the filesystem, use a mock system (we strongly recommend [`memfs`][memfs]), you can see examples of this in the [`expo-notifications`](https://github.com/expo/expo/blob/fc3fb2e81ad3a62332fa1ba6956c1df1c3186464/packages/expo-notifications/plugin/src/__tests__/withNotificationsAndroid-test.ts#L34) plugin tests.
-  - Notice the root [**/__mocks__**](https://github.com/expo/expo/tree/master/packages/expo-notifications/plugin/__mocks__) folder and [**plugin/jest.config.js**](https://github.com/expo/expo/blob/master/packages/expo-notifications/plugin/jest.config.js).
+  - Notice the root [**/__mocks__**](https://github.com/expo/expo/tree/main/packages/expo-notifications/plugin/__mocks__) folder and [**plugin/jest.config.js**](https://github.com/expo/expo/tree/main/packages/expo-notifications/plugin/jest.config.js).
 - A TypeScript plugin is always better than a JavaScript plugin. Check out the [`expo-module-script` plugin][ems-plugin] tooling for more info.
 - Do not modify the `sdkVersion` via a config plugin, this can break commands like `expo install` and cause other unexpected issues.
 
@@ -1081,17 +1081,17 @@ Please add the following to your Expo config
 ```
 
 [config-docs]: /versions/latest/config/app/
-[prebuild-config]: https://github.com/expo/expo-cli/tree/master/packages/prebuild-config#readme
+[prebuild-config]: https://github.com/expo/expo-cli/tree/main/packages/prebuild-config#readme
 [cli-prebuild]: /workflow/expo-cli/#expo-prebuild
 [configplugin]: https://github.com/expo/expo-cli/blob/3a0ef962a27525a0fe4b7e5567fb7b3fb18ec786/packages/config-plugins/src/Plugin.types.ts#L76
-[source-template]: https://github.com/expo/expo/tree/master/templates/expo-template-bare-minimum
-[expo-beta-docs]: https://github.com/expo/expo/blob/master/guides/releasing/Release%20Workflow.md#stage-5---beta-release
+[source-template]: https://github.com/expo/expo/tree/main/templates/expo-template-bare-minimum
+[expo-beta-docs]: https://github.com/expo/expo/tree/main/guides/releasing/Release%20Workflow.md#stage-5---beta-release
 [vscode-expo]: https://marketplace.visualstudio.com/items?itemName=byCedric.vscode-expo
-[ems-plugin]: https://github.com/expo/expo/tree/master/packages/expo-module-scripts#-config-plugin
+[ems-plugin]: https://github.com/expo/expo/tree/main/packages/expo-module-scripts#-config-plugin
 [xml2js]: https://www.npmjs.com/package/xml2js
 [expo-plist]: https://www.npmjs.com/package/@expo/plist
 [memfs]: https://www.npmjs.com/package/memfs
-[emc]: https://github.com/expo/expo/tree/master/packages/expo-modules-core
+[emc]: https://github.com/expo/expo/tree/main/packages/expo-modules-core
 
 <!-- TODO: Better link for Expo autolinking docs -->
 

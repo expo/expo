@@ -20,7 +20,7 @@ jobs:
     runs-on: macos-11
     steps:
       - name: 👀 Checkout a ref for the event
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           submodules: true
       - name: 🔨 Switch to Xcode 13.0
@@ -49,7 +49,7 @@ jobs:
             apps/*/node_modules
             home/node_modules
             packages/*/node_modules
-            packages/@unimodules/*/node_modules
+            packages/@expo/*/node_modules
             react-native-lab/react-native/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('yarn.lock') }}
       - name: 🧶 Yarn install
@@ -83,13 +83,14 @@ jobs:
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: 'us-east-1'
       - name: 🗑 Removing SDK version
         run: expotools remove-sdk-version --platform ios --sdkVersion latest
       - name: 🐙 Git working dir is clean
         run: git diff --exit-code
       - name: 🔔 Notify on Slack
         uses: 8398a7/action-slack@v3
-        if: failure() && (github.event.ref == 'refs/heads/master' || startsWith(github.event.ref, 'refs/heads/sdk-'))
+        if: failure() && (github.event.ref == 'refs/heads/main' || startsWith(github.event.ref, 'refs/heads/sdk-'))
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SLACK_WEBHOOK_URL: ${{ secrets.slack_webhook_ios }}

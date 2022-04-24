@@ -1,6 +1,6 @@
 ---
 title: Segment
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-analytics-segment'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-analytics-segment'
 packageName: 'expo-analytics-segment'
 ---
 
@@ -8,11 +8,13 @@ import APISection from '~/components/plugins/APISection';
 import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
+> **Deprecated.** This module will be removed in SDK 46. We recommend using the official [@segment/analytics-react-native](https://github.com/segmentio/analytics-react-native) instead.
+
 **`expo-analytics-segment`** provides access to <https://segment.com/> mobile analytics. Wraps Segment's [iOS](https://segment.com/docs/sources/mobile/ios/) and [Android](https://segment.com/docs/sources/mobile/android/) sources.
 
 > **Note:** Session tracking may not work correctly when running Experiences in the main Expo app. It will work correctly if you create a standalone app.
 
-<PlatformsSection android emulator ios simulator web={{ pending: 'https://github.com/expo/expo/issues/6887' }} />
+<PlatformsSection android emulator ios simulator />
 
 ## Installation
 

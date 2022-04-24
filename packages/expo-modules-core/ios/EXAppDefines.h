@@ -16,6 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (class, nonatomic, assign, readonly) BOOL APP_DEBUG NS_SWIFT_NAME(APP_DEBUG);
 @property (class, nonatomic, assign, readonly) BOOL APP_RCT_DEBUG NS_SWIFT_NAME(APP_RCT_DEBUG);
 @property (class, nonatomic, assign, readonly) BOOL APP_RCT_DEV NS_SWIFT_NAME(APP_RCT_DEV);
+@property (class, nonatomic, assign, readonly) BOOL APP_NEW_ARCH_ENABLED NS_SWIFT_NAME(APP_NEW_ARCH_ENABLED);
 
 + (NSDictionary *)getAllDefines;
 

@@ -12,7 +12,7 @@ try {
       // Alert.alert('Opened Branch link', JSON.stringify(bundle.params, null, 2));
     }
   });
-} catch (e) {
+} catch {
   // Branch is not available, do nothing
 }
 
@@ -31,7 +31,6 @@ const screens = [
   'ActionSheet',
   'Alert',
   'Amplitude',
-  'AppAuth',
   'Appearance',
   'AppleAuthentication',
   'Audio',
@@ -57,7 +56,6 @@ const screens = [
   'Font',
   'Errors',
   'Geocoding',
-  'Google',
   'GoogleSignIn',
   'Haptics',
   'ImageManipulator',

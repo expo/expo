@@ -1,6 +1,6 @@
 {
   "name": "jest-expo-enzyme",
-  "version": "1.2.5",
+  "version": "1.3.0",
   "description": "A Jest preset that enables you to test your universal Expo & React elements with the Enzyme testing library.",
   "license": "MIT",
   "main": "build/index.js",
@@ -44,8 +44,8 @@
     "enzyme-to-json": "~3.5.0",
     "jest-canvas-mock": "~2.2.0",
     "jest-enzyme": "~7.1.2",
-    "jest-expo": "~44.0.0-beta.0",
-    "react-test-renderer": "~17.0.1"
+    "jest-expo": "~45.0.0-beta.1",
+    "react-test-renderer": "~17.0.2"
   },
   "devDependencies": {
     "@types/enzyme": "^3.10.3",
@@ -55,5 +55,5 @@
   "bugs": {
     "url": "https://github.com/expo/expo/issues"
   },
-  "homepage": "https://github.com/expo/expo/tree/master/packages/jest-expo-enzyme"
+  "homepage": "https://github.com/expo/expo/tree/main/packages/jest-expo-enzyme"
 }

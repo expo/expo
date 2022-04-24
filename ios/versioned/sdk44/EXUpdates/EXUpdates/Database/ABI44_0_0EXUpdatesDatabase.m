@@ -84,19 +84,21 @@ static NSString * const ABI44_0_0EXUpdatesDatabaseStaticBuildDataKey = @"staticB
     NSAssert(asset.filename, @"asset filename should be nonnull");
     NSAssert(asset.contentHash, @"asset contentHash should be nonnull");
 
-    NSString * const assetInsertSql = @"INSERT OR REPLACE INTO \"assets\" (\"key\", \"url\", \"headers\", \"type\", \"metadata\", \"download_time\", \"relative_path\", \"hash\", \"hash_type\", \"marked_for_deletion\")\
-    VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, 0);";
+    NSString * const assetInsertSql = @"INSERT OR REPLACE INTO \"assets\" (\"key\", \"url\", \"headers\", \"extra_request_headers\", \"type\", \"metadata\", \"download_time\", \"relative_path\", \"hash\", \"hash_type\", \"expected_hash\", \"marked_for_deletion\")\
+    VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, 0);";
     if ([self _executeSql:assetInsertSql
                  withArgs:@[
                           asset.key ?: [NSNull null],
                           asset.url ? asset.url.absoluteString : [NSNull null],
                           asset.headers ?: [NSNull null],
+                          asset.extraRequestHeaders ?: [NSNull null],
                           asset.type,
                           asset.metadata ?: [NSNull null],
                           asset.downloadTime,
                           asset.filename,
                           asset.contentHash,
-                          @(ABI44_0_0EXUpdatesDatabaseHashTypeSha1)
+                          @(ABI44_0_0EXUpdatesDatabaseHashTypeSha1),
+                          asset.expectedHash ?: [NSNull null],
                           ]
                     error:error] == nil) {
       sqlite3_exec(_db, "ROLLBACK;", NULL, NULL, NULL);
@@ -164,16 +166,18 @@ static NSString * const ABI44_0_0EXUpdatesDatabaseStaticBuildDataKey = @"staticB
   NSAssert(asset.filename, @"asset filename should be nonnull");
   NSAssert(asset.contentHash, @"asset contentHash should be nonnull");
 
-  NSString * const assetUpdateSql = @"UPDATE \"assets\" SET \"headers\" = ?2, \"type\" = ?3, \"metadata\" = ?4, \"download_time\" = ?5, \"relative_path\" = ?6, \"hash\" = ?7, \"url\" = ?8 WHERE \"key\" = ?1;";
+  NSString * const assetUpdateSql = @"UPDATE \"assets\" SET \"headers\" = ?2, \"extra_request_headers\" = ?3, \"type\" = ?4, \"metadata\" = ?5, \"download_time\" = ?6, \"relative_path\" = ?7, \"hash\" = ?8, \"expected_hash\" = ?9, \"url\" = ?10 WHERE \"key\" = ?1;";
   [self _executeSql:assetUpdateSql
            withArgs:@[
                       asset.key ?: [NSNull null],
                       asset.headers ?: [NSNull null],
+                      asset.extraRequestHeaders ?: [NSNull null],
                       asset.type,
                       asset.metadata ?: [NSNull null],
                       asset.downloadTime,
                       asset.filename,
                       asset.contentHash,
+                      asset.expectedHash,
                       asset.url ? asset.url.absoluteString : [NSNull null]
                       ]
               error:error];
@@ -182,13 +186,25 @@ static NSString * const ABI44_0_0EXUpdatesDatabaseStaticBuildDataKey = @"staticB
 - (void)mergeAsset:(ABI44_0_0EXUpdatesAsset *)asset withExistingEntry:(ABI44_0_0EXUpdatesAsset *)existingAsset error:(NSError ** _Nullable)error
 {
   // if the existing entry came from an embedded manifest, it may not have a URL in the database
-  if (asset.url && !existingAsset.url) {
+  BOOL shouldUpdate = false;
+  if (asset.url && (!existingAsset.url || ![asset.url isEqual:existingAsset.url])) {
     existingAsset.url = asset.url;
+    shouldUpdate = true;
+  }
+  
+  if (asset.extraRequestHeaders && (!existingAsset.extraRequestHeaders || ![asset.extraRequestHeaders isEqualToDictionary:existingAsset.extraRequestHeaders])) {
+    existingAsset.extraRequestHeaders = asset.extraRequestHeaders;
+    shouldUpdate = true;
+  }
+  
+  if (shouldUpdate) {
     [self updateAsset:existingAsset error:error];
   }
+  
   // all other properties should be overridden by database values
   asset.filename = existingAsset.filename;
   asset.contentHash = existingAsset.contentHash;
+  asset.expectedHash = existingAsset.expectedHash;
   asset.downloadTime = existingAsset.downloadTime;
 }
 
@@ -592,12 +608,20 @@ static NSString * const ABI44_0_0EXUpdatesDatabaseStaticBuildDataKey = @"staticB
 
 - (ABI44_0_0EXUpdatesAsset *)_assetWithRow:(NSDictionary *)row
 {
-  NSError *error;
+  NSError *metadataDeserializationError;
   id metadata = nil;
   id rowMetadata = row[@"metadata"];
   if ([rowMetadata isKindOfClass:[NSString class]]) {
-    metadata = [NSJSONSerialization JSONObjectWithData:[(NSString *)rowMetadata dataUsingEncoding:NSUTF8StringEncoding] options:kNilOptions error:&error];
-    NSAssert(!error && metadata && [metadata isKindOfClass:[NSDictionary class]], @"Asset metadata should be a valid JSON object");
+    metadata = [NSJSONSerialization JSONObjectWithData:[(NSString *)rowMetadata dataUsingEncoding:NSUTF8StringEncoding] options:kNilOptions error:&metadataDeserializationError];
+    NSAssert(!metadataDeserializationError && metadata && [metadata isKindOfClass:[NSDictionary class]], @"Asset metadata should be a valid JSON object");
+  }
+  
+  NSError *extraRequestHeadersDeserializationError;
+  id extraRequestHeaders = nil;
+  id rowExtraRequestHeaders = row[@"extra_request_headers"];
+  if ([rowExtraRequestHeaders isKindOfClass:[NSString class]]) {
+    extraRequestHeaders = [NSJSONSerialization JSONObjectWithData:[(NSString *)rowExtraRequestHeaders dataUsingEncoding:NSUTF8StringEncoding] options:kNilOptions error:&extraRequestHeadersDeserializationError];
+    NSAssert(!extraRequestHeadersDeserializationError && extraRequestHeaders && [extraRequestHeaders isKindOfClass:[NSDictionary class]], @"Asset extra_request_headers should be a valid JSON object");
   }
 
   id launchAssetId = row[@"launch_asset_id"];
@@ -614,9 +638,11 @@ static NSString * const ABI44_0_0EXUpdatesDatabaseStaticBuildDataKey = @"staticB
   ABI44_0_0EXUpdatesAsset *asset = [[ABI44_0_0EXUpdatesAsset alloc] initWithKey:key type:row[@"type"]];
   asset.assetId = [(NSNumber *)row[@"id"] unsignedIntegerValue];
   asset.url = url;
+  asset.extraRequestHeaders = extraRequestHeaders;
   asset.downloadTime = [ABI44_0_0EXUpdatesDatabaseUtils dateFromUnixTimeMilliseconds:(NSNumber *)row[@"download_time"]];
   asset.filename = row[@"relative_path"];
   asset.contentHash = row[@"hash"];
+  asset.expectedHash = row[@"expected_hash"];
   asset.metadata = metadata;
   asset.isLaunchAsset = (launchAssetId && [launchAssetId isKindOfClass:[NSNumber class]])
     ? [(NSNumber *)launchAssetId isEqualToNumber:(NSNumber *)row[@"id"]]

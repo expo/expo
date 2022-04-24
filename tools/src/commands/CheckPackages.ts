@@ -1,9 +1,9 @@
-import chalk from 'chalk';
 import { Command } from '@expo/commander';
+import chalk from 'chalk';
 
 import logger from '../Logger';
-import getPackagesToCheckAsync from '../check-packages/getPackagesToCheckAsync';
 import checkPackageAsync from '../check-packages/checkPackageAsync';
+import getPackagesToCheckAsync from '../check-packages/getPackagesToCheckAsync';
 import { ActionOptions } from '../check-packages/types';
 
 const { green, magenta, yellow } = chalk;
@@ -14,8 +14,8 @@ export default (program: Command) => {
     .alias('check', 'cp')
     .option(
       '-s, --since <commit>',
-      'Reference to the commit since which you want to run incremental checks. Defaults to HEAD of the master branch.',
-      'master'
+      'Reference to the commit since which you want to run incremental checks. Defaults to HEAD of the main branch.',
+      'main'
     )
     .option('-a, --all', 'Whether to check all packages and ignore `--since` option.', false)
     .option('--no-build', 'Whether to skip `yarn build` check.', false)

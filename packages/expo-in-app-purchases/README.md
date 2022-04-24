@@ -4,12 +4,12 @@
 
 # API documentation
 
-- [Documentation for the master branch](https://github.com/expo/expo/blob/master/docs/pages/versions/unversioned/sdk/in-app-purchases.md)
-- [Documentation for the latest stable release](https://docs.expo.io/versions/latest/sdk/in-app-purchases/)
+- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/in-app-purchases.md)
+- [Documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/in-app-purchases/)
 
 # Installation
 
-You must ensure that you have [installed and configured the `react-native-unimodules` package](https://github.com/expo/expo/tree/master/packages/react-native-unimodules) before continuing.
+You must ensure that you have [installed and configured the `react-native-unimodules` package](https://github.com/expo/expo/tree/main/packages/react-native-unimodules) before continuing.
 
 ### Add the package to your dependencies
 

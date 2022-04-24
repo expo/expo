@@ -8,6 +8,8 @@
 #import <React/RCTBridge+Private.h>
 #import <React/RCTDevMenu.h>
 
+@import EXDevMenuInterface;
+
 @implementation DevMenuRCTCxxBridge
 
 /**
@@ -17,6 +19,8 @@
  */
 - (RCTDevSettings *)devSettings
 {
+  // uncomment below to enable fast refresh for development builds of DevMenu
+  //  return super.devSettings;
   return nil;
 }
 
@@ -30,6 +34,11 @@
   NSArray<NSString *> *allowedModules = @[@"RCT"];
   NSArray<Class> *filteredModuleList = [modules filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id  _Nullable clazz, NSDictionary<NSString *,id> * _Nullable bindings) {
     NSString* clazzName = NSStringFromClass(clazz);
+      
+    if ([clazz conformsToProtocol:@protocol(EXDevExtensionProtocol)]) {
+      return true;
+    }
+    
     for (NSString *allowedModule in allowedModules) {
       if ([clazzName hasPrefix:allowedModule]) {
         return true;

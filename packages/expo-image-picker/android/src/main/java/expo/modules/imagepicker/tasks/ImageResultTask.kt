@@ -64,7 +64,7 @@ open class ImageResultTask(
     coroutineScope.launch {
       try {
         val outputFile = getFile()
-        if (isEdited) {
+        if (isEdited && withExifData) {
           exifDataHandler?.copyExifData(uri, contentResolver)
         }
         val exif = getExifData()

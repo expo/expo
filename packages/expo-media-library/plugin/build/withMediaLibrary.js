@@ -37,7 +37,7 @@ const withMediaLibrary = (config, { photosPermission, savePhotosPermission, isAc
             [
                 'android.permission.READ_EXTERNAL_STORAGE',
                 'android.permission.WRITE_EXTERNAL_STORAGE',
-                isAccessMediaLocationEnabled !== null && isAccessMediaLocationEnabled !== void 0 ? isAccessMediaLocationEnabled : 'android.permission.ACCESS_MEDIA_LOCATION',
+                isAccessMediaLocationEnabled && 'android.permission.ACCESS_MEDIA_LOCATION',
             ].filter(Boolean),
         ],
         withMediaLibraryExternalStorage,

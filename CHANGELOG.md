@@ -7,6 +7,22 @@ Package-specific changes not released in any SDK will be added here just before 
 
 ### 📚 3rd party library updates
 
+- Removed `react-native-appearance` that is deprecated since SDK 43. Migrate to [`Appearance` API](https://reactnative.dev/docs/appearance). ([#16436](https://github.com/expo/expo/pull/16436) by [@kudo](https://github.com/kudo))
+- Updated `react-native-shared-element` from `0.8.3` to `0.8.4`. ([#16866](https://github.com/expo/expo/pull/16866) by [@brentvatne](https://github.com/brentvatne))
+- Updated `react-native-pager-view` from `5.4.9` to `5.4.15`. ([#16890](https://github.com/expo/expo/pull/16890) by [@brentvatne](https://github.com/brentvatne))
+- Updated `react-native-webview` from `11.15.0` to `11.18.1`. ([#16826](https://github.com/expo/expo/pull/16826) by [@tsapeta](https://github.com/tsapeta))
+- Updated `@react-native-picker/picker` from `2.2.1` to `2.4.0`. ([#16876](https://github.com/expo/expo/pull/16876) by [@tsapeta](https://github.com/tsapeta))
+- Updated `@react-native-community/slider` from `4.1.12` to `4.2.1`. ([#16901](https://github.com/expo/expo/pull/16901) by [@tsapeta](https://github.com/tsapeta))
+- Updated `react-native-svg` from `12.1.1` to `12.3.0`. ([#16874](https://github.com/expo/expo/pull/16874) by [@bbarthec](https://github.com/bbarthec))
+- Updated `react-native-screens` from `3.10.1` to `3.11.1`. ([#16913](https://github.com/expo/expo/pull/16913) by [@bbarthec](https://github.com/bbarthec))
+- Updated `react-native-gesture-handler` from `2.1.0` to `2.2.0`. ([#16922](https://github.com/expo/expo/pull/16922) by [@bbarthec](https://github.com/bbarthec))
+- Updated `@react-native-community/netinfo` from `7.1.3` to `8.2.0`. ([#16883](https://github.com/expo/expo/pull/16883) by [@bycedric](https://github.com/bycedric))
+- Updated `@react-native-community/react-native-datetimepicker` from `4.0.0` to `6.1.2` ([#16951](https://github.com/expo/expo/pull/16951) by [@brentvatne](https://github.com/brentvatne))
+- Updated `react-native-safe-area-context` from `3.3.2` to `4.2.4`. ([#16939](https://github.com/expo/expo/pull/16939) by [@kudo](https://github.com/kudo))
+- Updated `@stripe/stripe-react-native` from `0.2.3` to `0.6.0`. ([#16938](https://github.com/expo/expo/pull/16938) by [@kudo](https://github.com/kudo))
+- Updated `react-native-reanimated` from `2.4.1` to `2.8.0`. ([#16956](https://github.com/expo/expo/pull/16956), [#17159](https://github.com/expo/expo/pull/17159) by [@tsapeta](https://github.com/tsapeta))
+- Updated `react-native-maps` from `0.29.4` to `0.30.1`. ([#16944](https://github.com/expo/expo/pull/16944) by [@bycedric](https://github.com/bycedric))
+
 ### 🛠 Breaking changes
 
 ### 🎉 New features
@@ -186,7 +202,7 @@ Package-specific changes not released in any SDK will be added here just before 
 - Updated `firebase` from `8.2.3` to `8.10.0`. ([#14259](https://github.com/expo/expo/pull/14259) by [@IjzerenHein](https://github.com/IjzerenHein))
 - Updated `@react-native-community/netinfo` from `6.0.0` to `6.0.2`. ([#14329](https://github.com/expo/expo/pull/14329) by [@cruzach](https://github.com/cruzach))
 - Updated `react-native-webview` from `11.6.2` to `11.13.0`. ([#14301](https://github.com/expo/expo/pull/14301) by [@kudo](https://github.com/kudo))
-- Updated `react-native-lottie` from `4.0.2` to `4.0.3`. ([#14331](https://github.com/expo/expo/pull/14331) by [@cruzach](https://github.com/cruzach))
+- Updated `lottie-react-native` from `4.0.2` to `4.0.3`. ([#14331](https://github.com/expo/expo/pull/14331) by [@cruzach](https://github.com/cruzach))
 - Updated `@stripe/stripe-react-native` from `0.1.4` to `0.2.2`. ([#14357](https://github.com/expo/expo/pull/14357) & [#14452](https://github.com/expo/expo/pull/14452) by [@cruzach](https://github.com/cruzach))
 - Updated `react-native-safe-area-context` from `3.2.0` to `3.3.2`. ([#14303](https://github.com/expo/expo/pull/14303) by [@kudo](https://github.com/kudo))
 - Updated `@react-native-community/viewpager` from `5.0.11` to `react-native-pager-view@5.4.6`. ([#14348](https://github.com/expo/expo/pull/14348) by [@cruzach](https://github.com/cruzach)) ([#14657](https://github.com/expo/expo/pull/14657) by [@kudo](https://github.com/kudo))
@@ -200,6 +216,7 @@ Package-specific changes not released in any SDK will be added here just before 
 - Removed `expo-payments-stripe`. Please use `@stripe/stripe-react-native` instead. ([#14382](https://github.com/expo/expo/pull/14382) by [@cruzach](https://github.com/cruzach))
 - Updated firebase to version 9.0.2, including support for compat libraries and new modular style. ([#14616](https://github.com/expo/expo/pull/14616) by [@sebastianwilczek](https://github.com/sebastianwilczek))
 - `navigator.geolocation` is no longer defined automatically as a side effect of the `expo` package. It previously provided a warning that you needed to install `expo-location`. ([#14441](https://github.com/expo/expo/pull/14441) by [@brentvatne](https://github.com/brentvatne)
+- Require scopeKey in custom push notifications. ([#12964](https://github.com/expo/expo/pull/12964) by [@wschurman](https://github.com/wschurman)
 - **`expo-ads-admob`**
   - Dropped support for iOS 11.0 ([#14383](https://github.com/expo/expo/pull/14383) by [@cruzach](https://github.com/cruzach))
 - **`expo-ads-facebook`**
@@ -2103,7 +2120,7 @@ Package-specific changes not released in any SDK will be added here just before 
   - Error code `E_CONF_ERROR` has been replaced with `ERR_FACEBOOK_MISCONFIGURED`. ([#7101](https://github.com/expo/expo/pull/7101) by [@evanbacon](https://github.com/evanbacon))
   - Some instances of the error code `E_NO_INIT` in the client have been replaced with `ERR_FACEBOOK_UNINITIALIZED`. ([#7101](https://github.com/expo/expo/pull/7101) by [@evanbacon](https://github.com/evanbacon))
   - Some instances of the error code `E_FBLOGIN_ERROR` in the client have been replaced with `ERR_FACEBOOK_LOGIN`. ([#7101](https://github.com/expo/expo/pull/7101) by [@evanbacon](https://github.com/evanbacon))
-  - `initializeAsync` now accepts a single argument of type [`FacebookInitializationOptions`](https://github.com/expo/expo/blob/master/docs/pages/versions/unversioned/sdk/facebook.md#login-options), previously this method accepted two arguments: `appId: string` & `appName: string`. ([#7101](https://github.com/expo/expo/pull/7101) by [@evanbacon](https://github.com/evanbacon))
+  - `initializeAsync` now accepts a single argument of type [`FacebookInitializationOptions`](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/facebook.md#login-options), previously this method accepted two arguments: `appId: string` & `appName: string`. ([#7101](https://github.com/expo/expo/pull/7101) by [@evanbacon](https://github.com/evanbacon))
 - **`expo-gl`**
   - This version requires at least version 0.63.0 of React Native. It may crash when used with older versions. ([#7948](https://github.com/expo/expo/pull/7948) by [@wkozyra95](https://github.com/wkozyra95))
 - **`expo-image-picker`**
@@ -2831,7 +2848,7 @@ Package-specific changes not released in any SDK will be added here just before 
 
 - updated `react-native-view-shot` to `2.6.0` by [@sjchmiela](https://github.com/sjchmiela) ([#4175](https://github.com/expo/expo/pull/4175))
 - added `VideoThumbnails` API allowing you to thumbnail videos by [@graszka22](https://github.com/graszka22) ([#3980](https://github.com/expo/expo/pull/3980))
-- upgraded `react-native-lottie` to `2.6.1` by [@sjchmiela](https://github.com/sjchmiela) ([#4147](https://github.com/expo/expo/pull/4147))
+- upgraded `lottie-react-native` to `2.6.1` by [@sjchmiela](https://github.com/sjchmiela) ([#4147](https://github.com/expo/expo/pull/4147))
 - `BarCodeScanner` is now returning barcode's bounding box [@Szymon20000](https://github.com/Szymon20000) ([#2904](https://github.com/expo/expo/pull/2904))
 - added method `Speech.getAvailableVoicesAsync()` [@Szymon20000](https://github.com/Szymon20000) ([#3423](https://github.com/expo/expo/pull/3423))
 - added `BackgroundFetch` support for Android by [@tsapeta](https://github.com/tsapeta) ([#3281](https://github.com/expo/expo/pull/3281))

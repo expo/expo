@@ -1,3 +1,4 @@
+import { EmitterSubscription } from 'react-native';
 import { CreateURLOptions, ParsedURL, QueryParams, SendIntentExtras, URLListener } from './Linking.types';
 /**
  * Create a URL that works for the environment the app is currently running in.
@@ -54,9 +55,10 @@ export declare function parse(url: string): ParsedURL;
  * @param type The only valid type is `'url'`.
  * @param handler An [`URLListener`](#urllistener) function that takes an `event` object of the type
  * [`EventType`](#eventype).
+ * @return An EmitterSubscription that has the remove method from EventSubscription
  * @see [React Native Docs Linking page](https://reactnative.dev/docs/linking#addeventlistener).
  */
-export declare function addEventListener(type: string, handler: URLListener): void;
+export declare function addEventListener(type: 'url', handler: URLListener): EmitterSubscription;
 /**
  * Remove a handler by passing the `url` event type and the handler.
  * @param type The only valid type is `'url'`.
@@ -64,7 +66,7 @@ export declare function addEventListener(type: string, handler: URLListener): vo
  * [`EventType`](#eventype).
  * @see [React Native Docs Linking page](https://reactnative.dev/docs/linking#removeeventlistener).
  */
-export declare function removeEventListener(type: string, handler: URLListener): void;
+export declare function removeEventListener(type: 'url', handler: URLListener): void;
 /**
  * Helper method which wraps React Native's `Linking.getInitialURL()` in `Linking.parse()`.
  * Parses the deep link information out of the URL used to open the experience initially.
@@ -75,7 +77,7 @@ export declare function removeEventListener(type: string, handler: URLListener):
 export declare function parseInitialURLAsync(): Promise<ParsedURL>;
 /**
  * Launch an Android intent with extras.
- * > Use [IntentLauncher](../intent-launcher) instead, `sendIntent` is only included in
+ * > Use [IntentLauncher](./intent-launcher) instead, `sendIntent` is only included in
  * > `Linking` for API compatibility with React Native's Linking API.
  * @platform android
  */
@@ -116,4 +118,5 @@ export declare function canOpenURL(url: string): Promise<boolean>;
  */
 export declare function useURL(): string | null;
 export * from './Linking.types';
+export * from './Schemes';
 //# sourceMappingURL=Linking.d.ts.map

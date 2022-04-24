@@ -99,14 +99,16 @@ export declare type LocationOptions = {
      */
     accuracy?: LocationAccuracy;
     /**
-     * (Android only) Specifies whether to ask the user to turn on improved accuracy location mode
+     * Specifies whether to ask the user to turn on improved accuracy location mode
      * which uses Wi-Fi, cell networks and GPS sensor.
-     * @default true.
+     * @default true
+     * @platform android
      */
     mayShowUserSettingsDialog?: boolean;
     /**
-     * (Android only) Minimum time to wait between each update in milliseconds.
+     * Minimum time to wait between each update in milliseconds.
      * Default value may depend on `accuracy` option.
+     * @platform android
      */
     timeInterval?: number;
     /**
@@ -239,6 +241,11 @@ export declare type LocationObject = {
      * The time at which this position information was obtained, in milliseconds since epoch.
      */
     timestamp: number;
+    /**
+     * Whether the location coordinates is mocked or not.
+     * @platform android
+     */
+    mocked?: boolean;
 };
 /**
  * Type representing the location GPS related data.
@@ -431,7 +438,7 @@ export declare type PermissionDetailsLocationIOS = {
 };
 export declare type PermissionDetailsLocationAndroid = {
     /**
-     * @deprecated __Deprecated.__ Use `accuracy` field instead.
+     * @deprecated Use `accuracy` field instead.
      */
     scope: 'fine' | 'coarse' | 'none';
     /**

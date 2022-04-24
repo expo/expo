@@ -219,6 +219,9 @@ export class BarCodeScanner extends React.Component<BarCodeScannerProps> {
     );
   }
 
+  /**
+   * @hidden
+   */
   onObjectDetected =
     (callback?: BarCodeScannedCallback) =>
     ({ nativeEvent }: BarCodeEventCallbackArguments) => {
@@ -239,6 +242,9 @@ export class BarCodeScanner extends React.Component<BarCodeScannerProps> {
       }
     };
 
+  /**
+   * @hidden
+   */
   convertNativeProps(props: BarCodeScannerProps) {
     const nativeProps: BarCodeScannerProps = {};
 

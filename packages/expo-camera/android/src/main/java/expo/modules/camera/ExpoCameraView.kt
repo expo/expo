@@ -178,8 +178,8 @@ class ExpoCameraView(
    * Additionally supports [codabar, code128, maxicode, rss14, rssexpanded, upc_a, upc_ean]
    */
   private fun initBarCodeScanner() {
-    val barCodeScannerProvider: BarCodeScannerProviderInterface by moduleRegistry()
-    barCodeScanner = barCodeScannerProvider.createBarCodeDetectorWithContext(context)
+    val barCodeScannerProvider: BarCodeScannerProviderInterface? by moduleRegistry()
+    barCodeScanner = barCodeScannerProvider?.createBarCodeDetectorWithContext(context)
   }
 
   fun setShouldScanBarCodes(shouldScanBarCodes: Boolean) {
@@ -210,9 +210,9 @@ class ExpoCameraView(
         isNew = false
         if (!Build.FINGERPRINT.contains("generic")) {
           start()
-          val faceDetectorProvider: FaceDetectorProviderInterface by moduleRegistry()
-          faceDetector = faceDetectorProvider.createFaceDetectorWithContext(context)
-          pendingFaceDetectorSettings.let {
+          val faceDetectorProvider: FaceDetectorProviderInterface? by moduleRegistry()
+          faceDetector = faceDetectorProvider?.createFaceDetectorWithContext(context)
+          pendingFaceDetectorSettings?.let {
             faceDetector?.setSettings(it)
             pendingFaceDetectorSettings = null
           }

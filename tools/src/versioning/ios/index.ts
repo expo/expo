@@ -7,6 +7,7 @@ import inquirer from 'inquirer';
 import path from 'path';
 import semver from 'semver';
 
+import { runReactNativeCodegenAsync } from '../../Codegen';
 import { EXPO_DIR, IOS_DIR, VERSIONED_RN_IOS_DIR } from '../../Constants';
 import logger from '../../Logger';
 import { getListOfPackagesAsync, Package } from '../../Packages';
@@ -22,7 +23,6 @@ import {
   MODULES_PROVIDER_POD_NAME,
   versionExpoModulesProviderAsync,
 } from './versionExpoModulesProvider';
-import { runReactNativeCodegenAsync } from './versionReactNative';
 import {
   versionVendoredModulesAsync,
   removeVersionedVendoredModulesAsync,
@@ -49,6 +49,8 @@ const EXTERNAL_REACT_ABI_DEPENDENCIES = [
   'RCT-Folly',
 ];
 
+const EXCLUDED_POD_DEPENDENCIES = ['ExpoModulesTestCore'];
+
 /**
  *  Transform and rename the given react native source code files.
  *  @param filenames list of files to transform
@@ -68,9 +70,9 @@ async function namespaceReactNativeFilesAsync(filenames, versionPrefix, versione
       return;
     }
     // protect contents of EX_UNVERSIONED macro
-    let unversionedCaptures: string[] = [];
+    const unversionedCaptures: string[] = [];
     await _transformFileContentsAsync(filename, (fileString) => {
-      let pattern = /EX_UNVERSIONED\((.*?)\)/g;
+      const pattern = /EX_UNVERSIONED\((.*?)\)/g;
       let match = pattern.exec(fileString);
       while (match != null) {
         unversionedCaptures.push(match[1]);
@@ -141,11 +143,11 @@ async function namespaceReactNativeFilesAsync(filenames, versionPrefix, versione
  *  Transform and rename all code files we care about under `rnPath`
  */
 async function transformReactNativeAsync(rnPath, versionName, versionedPodNames) {
-  let filenameQueries = [`${rnPath}/**/*.[hmSc]`, `${rnPath}/**/*.mm`, `${rnPath}/**/*.cpp`];
+  const filenameQueries = [`${rnPath}/**/*.[hmSc]`, `${rnPath}/**/*.mm`, `${rnPath}/**/*.cpp`];
   let filenames: string[] = [];
   await Promise.all(
     filenameQueries.map(async (query) => {
-      let queryFilenames = (await glob(query)) as string[];
+      const queryFilenames = (await glob(query)) as string[];
       if (queryFilenames) {
         filenames = filenames.concat(queryFilenames);
       }
@@ -164,11 +166,11 @@ async function transformReactNativeAsync(rnPath, versionName, versionedPodNames)
  * @param versionNumber Exponent SDK version, e.g. 42.0.0
  */
 export async function versionReactNativeIOSFilesAsync(globQuery, versionNumber) {
-  let filenames = await glob(globQuery);
+  const filenames = await glob(globQuery);
   if (!filenames || !filenames.length) {
     throw new Error(`No files matched the given pattern: ${globQuery}`);
   }
-  let { versionName, versionedPodNames } = await getConfigsFromArguments(versionNumber);
+  const { versionName, versionedPodNames } = await getConfigsFromArguments(versionNumber);
   console.log(`Versioning ${filenames.length} files with SDK version ${versionNumber}...`);
   return namespaceReactNativeFilesAsync(filenames, versionName, versionedPodNames);
 }
@@ -220,7 +222,17 @@ async function generateVersionedReactNativeAsync(versionName: string): Promise<v
   await Promise.all(jsFiles.map((jsFile) => fs.remove(jsFile)));
 
   console.log('Running react-native-codegen');
-  await runReactNativeCodegenAsync(path.join(EXPO_DIR, RELATIVE_RN_PATH), versionedReactNativePath);
+  await runReactNativeCodegenAsync({
+    reactNativeRoot: path.join(EXPO_DIR, RELATIVE_RN_PATH),
+    codegenPkgRoot: path.join(EXPO_DIR, RELATIVE_RN_PATH, 'packages', 'react-native-codegen'),
+    outputDir: path.join(versionedReactNativePath, 'codegen', 'ios'),
+    outputDirBaseName: `${versionName}FBReactNativeSpec`,
+    name: 'FBReactNativeSpec',
+    type: 'modules',
+    platform: 'ios',
+    jsSrcsDir: path.join(EXPO_DIR, RELATIVE_RN_PATH, 'Libraries'),
+    keepIntermediateSchema: true,
+  });
 
   console.log(
     `Copying cpp libraries from ${chalk.magenta(path.join(RELATIVE_RN_PATH, 'ReactCommon'))} ...`
@@ -256,7 +268,7 @@ async function modifyKernelFilesAsync(
   let filenames: string[] = [];
   await Promise.all(
     filenameQueries.map(async (query) => {
-      let queryFilenames = (await glob(query)) as string[];
+      const queryFilenames = (await glob(query)) as string[];
       if (queryFilenames) {
         filenames = filenames.concat(queryFilenames);
       }
@@ -284,19 +296,49 @@ async function generateReactNativePodScriptAsync(
   versionedReactNativePath: string,
   versionName: string
 ): Promise<void> {
-  const targetAutolinkPath = path.join(versionedReactNativePath, 'scripts', 'react_native_pods.rb');
-
   await fs.copy(
-    path.join(EXPO_DIR, RELATIVE_RN_PATH, 'scripts', 'react_native_pods.rb'),
-    targetAutolinkPath
+    path.join(EXPO_DIR, RELATIVE_RN_PATH, 'scripts'),
+    path.join(versionedReactNativePath, 'scripts')
   );
 
-  const targetSource = (await fs.readFile(targetAutolinkPath, 'utf8'))
+  const targetAutolinkPath = path.join(versionedReactNativePath, 'scripts', 'react_native_pods.rb');
+  let targetSource = (await fs.readFile(targetAutolinkPath, 'utf8'))
     .replace('def use_react_native!', `def use_react_native_${versionName}!`)
     .replace('def use_react_native_codegen!', `def use_react_native_codegen_${versionName}!`)
     .replace(/(\bpod\s+([^\n]+)\/third-party-podspecs\/([^\n]+))/g, '# $1')
     .replace(/\bpod\s+'([^\']+)'/g, `pod '${versionName}$1'`)
-    .replace(/(:path => "[^"]+")/g, `$1, :project_name => '${versionName}'`);
+    .replace(/(:path => "[^"]+")/g, `$1, :project_name => '${versionName}'`)
+    // Removes duplicated constants
+    .replace("DEFAULT_OTHER_CPLUSPLUSFLAGS = '$(inherited)'", '')
+    .replace(
+      "NEW_ARCH_OTHER_CPLUSPLUSFLAGS = '$(inherited) -DRCT_NEW_ARCH_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1'",
+      ''
+    );
+  // Since `React-Codegen.podspec` is generated during `pod install`, versioning should be done in the pod script.
+  const reactCodegenDependencies = [
+    'FBReactNativeSpec',
+    'React-jsiexecutor',
+    'RCTRequired',
+    'RCTTypeSafety',
+    'React-Core',
+    'React-jsi',
+    'ReactCommon/turbomodule/core',
+    'React-graphics',
+    'React-rncore',
+  ];
+  const reactCodegenDependenciesRegExp = new RegExp(
+    `["'](${reactCodegenDependencies.join('|')})["']:(\\s*\\[version\\],?)`,
+    'g'
+  );
+  targetSource = targetSource
+    .replace(
+      "$CODEGEN_OUTPUT_DIR = 'build/generated/ios'",
+      `$CODEGEN_OUTPUT_DIR = '${path.relative(IOS_DIR, versionedReactNativePath)}/codegen/ios'`
+    )
+    .replace(/\$(CODEGEN_OUTPUT_DIR)\b/g, `$${versionName}$1`)
+    .replace(/\b(React-Codegen)\b/g, `${versionName}$1`)
+    .replace(/(\$\(PODS_ROOT\)\/Headers\/Private\/)React-/g, `$1${versionName}React-`)
+    .replace(reactCodegenDependenciesRegExp, `"${versionName}$1":$2`);
 
   await fs.writeFile(targetAutolinkPath, targetSource);
 }
@@ -403,7 +445,12 @@ async function generateExpoKitPodspecAsync(
     // `universalModulesPodNames` contains only versioned unimodules,
     // so we fall back to the original name if the module is not there
     const universalModulesDependencies = (await getListOfPackagesAsync())
-      .filter((pkg) => pkg.isIncludedInExpoClientOnPlatform('ios') && pkg.podspecName)
+      .filter(
+        (pkg) =>
+          pkg.isIncludedInExpoClientOnPlatform('ios') &&
+          pkg.podspecName &&
+          !EXCLUDED_POD_DEPENDENCIES.includes(pkg.podspecName)
+      )
       .map(
         ({ podspecName }) =>
           `ss.dependency         "${universalModulesPodNames[podspecName!] || podspecName}"`
@@ -413,12 +460,14 @@ async function generateExpoKitPodspecAsync(
       (podName) => `ss.dependency         "${podName}"`
     ).join(`
     `);
-    let subspec = `s.subspec "Expo" do |ss|
+    const subspec = `s.subspec "Expo" do |ss|
     ss.source_files     = "Core/**/*.{h,m,mm,cpp}"
 
     ss.dependency         "${versionedReactPodName}-Core"
     ss.dependency         "${versionedReactPodName}-Core/DevSupport"
     ss.dependency         "${versionedReactPodName}Common"
+    ss.dependency         "${versionName}RCTRequired"
+    ss.dependency         "${versionName}RCTTypeSafety"
     ${universalModulesDependencies}
     ${externalDependencies}
     ss.dependency         "${versionName}${MODULES_PROVIDER_POD_NAME}"
@@ -450,11 +499,11 @@ boost_compiler_flags = '-Wno-documentation'\n\n`
         `
   s.pod_target_xcconfig    = {
     "USE_HEADERMAP"       => "YES",
-    "HEADER_SEARCH_PATHS" => "\\"$(PODS_TARGET_SRCROOT)/ReactCommon\\" \\"$(PODS_TARGET_SRCROOT)\\" \\"$(PODS_ROOT)/RCT-Folly\\" \\"$(PODS_ROOT)/boost-for-react-native\\" \\"$(PODS_ROOT)/DoubleConversion\\" \\"$(PODS_ROOT)/Headers/Private/React-Core\\" "
+    "HEADER_SEARCH_PATHS" => "\\"$(PODS_TARGET_SRCROOT)/ReactCommon\\" \\"$(PODS_TARGET_SRCROOT)\\" \\"$(PODS_ROOT)/RCT-Folly\\" \\"$(PODS_ROOT)/boost\\" \\"$(PODS_ROOT)/DoubleConversion\\" \\"$(PODS_ROOT)/Headers/Private/React-Core\\" "
   }
   s.compiler_flags = folly_compiler_flags + ' ' + boost_compiler_flags
   s.xcconfig               = {
-    "HEADER_SEARCH_PATHS" => "\\"$(PODS_ROOT)/boost-for-react-native\\" \\"$(PODS_ROOT)/glog\\" \\"$(PODS_ROOT)/RCT-Folly\\" \\"$(PODS_ROOT)/Headers/Private/${versionName}React-Core\\"",
+    "HEADER_SEARCH_PATHS" => "\\"$(PODS_ROOT)/boost\\" \\"$(PODS_ROOT)/glog\\" \\"$(PODS_ROOT)/RCT-Folly\\" \\"$(PODS_ROOT)/Headers/Private/${versionName}React-Core\\"",
     "OTHER_CFLAGS"        => "$(inherited)" + " " + folly_flags
   }\n\n`
       );
@@ -585,7 +634,7 @@ use_pods! '{versioned,vendored}/sdk${semver.major(
 
   // Add postinstall.
   // In particular, resolve conflicting globals from React by redefining them.
-  let globals = {
+  const globals = {
     React: [
       // RCTNavigator
       'kNeverRequested',
@@ -613,7 +662,7 @@ use_pods! '{versioned,vendored}/sdk${semver.major(
       'gNodeInstanceCount',
     ],
   };
-  let configValues = getCFlagsToPrefixGlobals(
+  const configValues = getCFlagsToPrefixGlobals(
     versionedPodNames.React,
     globals.React.concat(globals.yoga)
   );
@@ -642,7 +691,7 @@ end
  * @param transformConfig function that takes a config dict and returns a new config dict.
  */
 async function modifyVersionConfigAsync(configPath, transformConfig) {
-  let jsConfigFilename = `${configPath}/sdkVersions.json`;
+  const jsConfigFilename = `${configPath}/sdkVersions.json`;
   await _transformFileContentsAsync(jsConfigFilename, (jsConfigContents) => {
     let jsConfig;
 
@@ -673,7 +722,7 @@ async function modifyVersionConfigAsync(configPath, transformConfig) {
 
 function validateAddVersionDirectories(rootPath, newVersionPath) {
   // Make sure the paths we want to read are available
-  let relativePathsToCheck = [
+  const relativePathsToCheck = [
     RELATIVE_RN_PATH,
     'ios/versioned-react-native',
     'ios/Exponent',
@@ -683,7 +732,7 @@ function validateAddVersionDirectories(rootPath, newVersionPath) {
   relativePathsToCheck.forEach((path) => {
     try {
       fs.accessSync(`${rootPath}/${path}`, fs.constants.F_OK);
-    } catch (e) {
+    } catch {
       console.log(`${rootPath}/${path} does not exist or is otherwise inaccessible`);
       isValid = false;
     }
@@ -694,13 +743,13 @@ function validateAddVersionDirectories(rootPath, newVersionPath) {
     fs.accessSync(newVersionPath, fs.constants.F_OK);
     console.log(`${newVersionPath} already exists, will not overwrite`);
     isValid = false;
-  } catch (e) {}
+  } catch {}
 
   return isValid;
 }
 
 function validateRemoveVersionDirectories(rootPath, newVersionPath) {
-  let pathsToCheck = [
+  const pathsToCheck = [
     `${rootPath}/ios/versioned-react-native`,
     `${rootPath}/ios/Exponent`,
     newVersionPath,
@@ -709,7 +758,7 @@ function validateRemoveVersionDirectories(rootPath, newVersionPath) {
   pathsToCheck.forEach((path) => {
     try {
       fs.accessSync(path, fs.constants.F_OK);
-    } catch (e) {
+    } catch {
       console.log(`${path} does not exist or is otherwise inaccessible`);
       isValid = false;
     }
@@ -720,12 +769,12 @@ function validateRemoveVersionDirectories(rootPath, newVersionPath) {
 async function getConfigsFromArguments(versionNumber) {
   let versionComponents = versionNumber.split('.');
   versionComponents = versionComponents.map((number) => parseInt(number, 10));
-  let versionName = 'ABI' + versionNumber.replace(/\./g, '_');
-  let rootPathComponents = EXPO_DIR.split('/');
-  let versionPathComponents = path.join('ios', 'versioned-react-native', versionName).split('/');
-  let newVersionPath = rootPathComponents.concat(versionPathComponents).join('/');
+  const versionName = 'ABI' + versionNumber.replace(/\./g, '_');
+  const rootPathComponents = EXPO_DIR.split('/');
+  const versionPathComponents = path.join('ios', 'versioned-react-native', versionName).split('/');
+  const newVersionPath = rootPathComponents.concat(versionPathComponents).join('/');
 
-  let versionedPodNames = {
+  const versionedPodNames = {
     React: getVersionedReactPodName(versionName),
     yoga: getVersionedYogaPodName(versionName),
     ExpoKit: getVersionedExpoKitPodName(versionName),
@@ -816,6 +865,9 @@ function getCppLibrariesToVersion() {
     {
       libName: 'runtimeexecutor',
     },
+    {
+      libName: 'logger',
+    },
   ];
 }
 
@@ -825,7 +877,7 @@ export async function addVersionAsync(versionNumber: string, packages: Package[]
 
   // Validate the directories we need before doing anything
   console.log(`Validating root directory ${chalk.magenta(EXPO_DIR)} ...`);
-  let isFilesystemReady = validateAddVersionDirectories(EXPO_DIR, newVersionPath);
+  const isFilesystemReady = validateAddVersionDirectories(EXPO_DIR, newVersionPath);
   if (!isFilesystemReady) {
     throw new Error('Aborting: At least one directory we need is not available');
   }
@@ -892,11 +944,14 @@ export async function addVersionAsync(versionNumber: string, packages: Package[]
   console.log('Removing any `filename--` files from the new pod ...');
 
   try {
-    const minusMinusFiles = await glob(path.join(newVersionPath, '**', '*--'));
+    const minusMinusFiles = [
+      ...(await glob(path.join(newVersionPath, '**', '*--'))),
+      ...(await glob(path.join(IOS_DIR, 'build', versionName, 'generated', 'ios', '**', '*--'))),
+    ];
     for (const minusMinusFile of minusMinusFiles) {
       await fs.remove(minusMinusFile);
     }
-  } catch (error) {
+  } catch {
     console.warn(
       "The script wasn't able to remove any possible `filename--` files created by sed. Please ensure there are no such files manually."
     );
@@ -949,7 +1004,7 @@ export async function removeVersionAsync(versionNumber: string) {
 
   // Validate the directories we need before doing anything
   console.log(`Validating root directory ${chalk.magenta(EXPO_DIR)} ...`);
-  let isFilesystemReady = validateRemoveVersionDirectories(EXPO_DIR, newVersionPath);
+  const isFilesystemReady = validateRemoveVersionDirectories(EXPO_DIR, newVersionPath);
   if (!isFilesystemReady) {
     console.log('Aborting: At least one directory we expect is not available');
     return;
@@ -971,7 +1026,7 @@ export async function removeVersionAsync(versionNumber: string) {
   // remove from sdkVersions.json
   console.log('Unregistering version from sdkVersions config...');
   const removeVersionFromConfig = (config, versionNumber) => {
-    let index = config.sdkVersions.indexOf(versionNumber);
+    const index = config.sdkVersions.indexOf(versionNumber);
     if (index > -1) {
       // modify in place
       config.sdkVersions.splice(index, 1);
@@ -1193,7 +1248,7 @@ function _isDirectory(dir) {
     }
 
     return false;
-  } catch (e) {
+  } catch {
     return false;
   }
 }
@@ -1203,8 +1258,8 @@ async function _transformFileContentsAsync(
   filename: string,
   transform: (fileString: string) => Promise<string> | string | null
 ) {
-  let fileString = await fs.readFile(filename, 'utf8');
-  let newFileString = await transform(fileString);
+  const fileString = await fs.readFile(filename, 'utf8');
+  const newFileString = await transform(fileString);
   if (newFileString !== null) {
     await fs.writeFile(filename, newFileString);
   }

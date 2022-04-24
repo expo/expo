@@ -1,5 +1,6 @@
 import { css } from '@emotion/react';
 import { theme } from '@expo/styleguide';
+import { NextRouter } from 'next/router';
 import * as React from 'react';
 
 import { UL, LI } from '~/components/base/list';
@@ -7,7 +8,6 @@ import Bug from '~/components/icons/Bug';
 import ChatBoxes from '~/components/icons/ChatBoxes';
 import Pencil from '~/components/icons/Pencil';
 import Spectacles from '~/components/icons/Spectacles';
-import { Url } from '~/types/common';
 
 const STYLES_FOOTER = css`
   border-top: 1px solid ${theme.border.default};
@@ -51,15 +51,14 @@ export function githubUrl(path: string) {
     pathAsMarkdown = pathAsMarkdown.replace('/versions/latest', '/versions/unversioned');
   }
 
-  return `https://github.com/expo/expo/edit/master/docs/pages${pathAsMarkdown}`;
+  return `https://github.com/expo/expo/edit/main/docs/pages${pathAsMarkdown}`;
 }
 
 // Add any page in the /sdk/ section that is not an actual Expo API
-const SDK_BLACKLIST = ['Overview'];
+const SDK_IGNORE = ['Overview'];
 
 type Props = {
-  asPath: string;
-  url?: Url;
+  router: NextRouter;
   title: string;
   sourceCodeUrl?: string;
 };
@@ -79,7 +78,7 @@ export default class DocumentationFooter extends React.PureComponent<Props> {
   }
 
   private renderForumsLink() {
-    if (!this.props.asPath.includes('/sdk/') || SDK_BLACKLIST.includes(this.props.title)) {
+    if (!this.props.router.asPath.includes('/sdk/') || SDK_IGNORE.includes(this.props.title)) {
       return (
         <LI>
           <a
@@ -113,14 +112,14 @@ export default class DocumentationFooter extends React.PureComponent<Props> {
   }
 
   private maybeRenderGithubUrl() {
-    if (this.props.url) {
+    if (this.props.router) {
       return (
         <LI>
           <a
             css={STYLES_FOOTER_LINK}
             target="_blank"
             rel="noopener"
-            href={githubUrl(this.props.url.pathname)}>
+            href={githubUrl(this.props.router.pathname)}>
             <span css={STYLES_FOOTER_ICON}>
               <Pencil fillColor="currentColor" />
             </span>
@@ -132,7 +131,7 @@ export default class DocumentationFooter extends React.PureComponent<Props> {
   }
 
   private maybeRenderIssuesLink = () => {
-    if (!this.props.asPath.includes('/sdk/') || SDK_BLACKLIST.includes(this.props.title)) {
+    if (!this.props.router.asPath.includes('/sdk/') || SDK_IGNORE.includes(this.props.title)) {
       return;
     }
 
@@ -152,7 +151,7 @@ export default class DocumentationFooter extends React.PureComponent<Props> {
   };
 
   private maybeRenderSourceCodeLink = () => {
-    if (!this.props.asPath.includes('/sdk/') || !this.props.sourceCodeUrl) {
+    if (!this.props.router.asPath.includes('/sdk/') || !this.props.sourceCodeUrl) {
       return;
     }
 

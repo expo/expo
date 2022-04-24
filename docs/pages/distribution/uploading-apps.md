@@ -51,22 +51,32 @@ To upload your Android app to Google Play, run `eas submit -p android`. [Learn m
 
 ## 2.2. If you choose to upload your iOS app to TestFlight
 
-
 ### Using EAS CLI
 
 To upload your iOS app to TestFlight, run `eas submit -p ios`. [Learn more about this command](/submit/ios.md), and [how to use it with `expo build:ios`](/submit/classic-builds.md) if you are not using [EAS Build](/build/introduction.md) yet.
 
-### Manually uploading your app
+### Manually uploading your app (without EAS CLI)
 
 > This approach only works on macOS. If you don't have access to a macOS device, use EAS Submit.
 
-In order to see your app on Testflight, you will first need to submit your .IPA file to Apple using **Transporter** (previously known as Application Loader), available on the App Store ([link](https://apps.apple.com/app/transporter/id1450874784)). In order to do this:
+#### Creating an app on App Store Connect
 
-1. Make sure you have logged into iTunes connect at least once with your Apple ID and accepted the terms.
+Start by creating an app profile in App Store Connect, if you haven't already:
+
+1. Go to https://appstoreconnect.apple.com/apps and sign in. Make sure you've accepted the terms.
+2. Click the blue plus button by the Apps header, then click "New App". 
+3. Add your app's name, language, bundle identifier, and SKU (this isn't seen by end users, it can be any unique string. A common choice is your app's bundle ID, then something like "\_1", e.g. "com.exampleco.appname_1"). 
+4. Click create. If it succeeds, then you've created your application record and you can proceed to .
+
+#### Uploading with Transporter
+
+In order to see your app on Testflight, you will first need to submit your build to Apple using **Transporter** (previously known as Application Loader), available on the App Store ([link](https://apps.apple.com/app/transporter/id1450874784)). In order to do this:
+
+1. Make sure you have logged into App Store Connect with your Apple ID and accepted any terms and agreements.
 2. Download Transporter from the [App Store](https://apps.apple.com/app/transporter/id1450874784).
 3. Sign in with your Apple ID.
-4. Add the IPA either by dragging it onto the Transporter window or by selecting it from the file dialog opened with **+** or **Add App** button.
-5. Submit the IPA by clicking the **Deliver** button.
+4. Add the build either by dragging th file directly to the Transporter window or by selecting it from the file dialog opened with **+** or **Add App** button.
+5. Submit it by clicking the **Deliver** button.
 
 This process can take a few minutes. After this process is complete, you can check the status of your app submission to TestFlight in [App Store Connect](https://appstoreconnect.apple.com):
 

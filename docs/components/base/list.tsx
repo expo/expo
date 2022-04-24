@@ -10,13 +10,28 @@ const attributes = {
 };
 
 const STYLES_UNORDERED_LIST = css`
-  ${paragraph}
-  list-style: disc;
-  margin-left: 1rem;
-  margin-bottom: 1rem;
+  & {
+    ${paragraph}
+    list-style: disc;
+    margin-left: 1rem;
+    margin-bottom: 1rem;
 
-  .anchor-icon {
-    display: none;
+    .anchor-icon {
+      display: none;
+    }
+  }
+
+  table & {
+    margin: 0.5rem 1rem;
+    line-height: 125%;
+
+    &:first-child {
+      margin-top: 0;
+    }
+
+    &:last-child {
+      margin-bottom: 0;
+    }
   }
 `;
 
@@ -69,19 +84,38 @@ const STYLES_LIST_ITEM = css`
 `;
 
 const STYLE_RETURN_LIST = css`
-  list-style-type: '⇒';
+  list-style-type: '⮑';
   padding-left: 0.5rem;
+  margin-left: 0.25rem;
+
+  ::marker {
+    color: ${theme.icon.secondary};
+    font-size: 90%;
+  }
+`;
+
+const STYLE_PROP_LIST = css`
+  ::marker {
+    color: ${theme.text.secondary};
+    font-size: 125%;
+  }
 `;
 
 type LIProps = {
   returnType?: boolean;
-  customCss?: SerializedStyles | undefined;
+  propType?: boolean;
+  customCss?: SerializedStyles;
 };
 
-export const LI: React.FC<LIProps> = ({ children, returnType, customCss }) => {
+export const LI: React.FC<LIProps> = ({ children, returnType, propType, customCss }) => {
   return (
     <li
-      css={[STYLES_LIST_ITEM, returnType && STYLE_RETURN_LIST, customCss]}
+      css={[
+        STYLES_LIST_ITEM,
+        returnType && STYLE_RETURN_LIST,
+        propType && STYLE_PROP_LIST,
+        customCss,
+      ]}
       className="docs-list-item">
       {children}
     </li>

@@ -4,8 +4,8 @@
 
 ## API documentation
 
-- [Documentation for the master branch](https://github.com/expo/expo/blob/master/docs/pages/versions/unversioned/sdk/updates.md)
-- [Documentation for the latest stable release](https://docs.expo.io/versions/latest/sdk/updates/)
+- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/updates.md)
+- [Documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/updates/)
 
 Additionally, for an introduction to this module and tooling around OTA updates, you can watch [this talk](https://www.youtube.com/watch?v=Si909la3rLk) by [@esamelson](https://github.com/esamelson) from ReactEurope 2020.
 
@@ -19,15 +19,15 @@ Finally, this module is not compatible with ExpoKit. Make sure you do not have `
 
 ## Upgrading
 
-If you're upgrading from `expo-updates@0.1.x`, you can opt into the **no-publish workflow**. In this workflow, release builds of both iOS and Android apps will create and embed a new update at build-time from the JS code currently on disk, rather than embedding a copy of the most recently published update. For instructions and more information, see the [CHANGELOG](https://github.com/expo/expo/blob/master/packages/expo-updates/CHANGELOG.md). (For new projects, the no-publish workflow is enabled by default.)
+If you're upgrading from `expo-updates@0.1.x`, you can opt into the **no-publish workflow**. In this workflow, release builds of both iOS and Android apps will create and embed a new update at build-time from the JS code currently on disk, rather than embedding a copy of the most recently published update. For instructions and more information, see the [CHANGELOG](https://github.com/expo/expo/blob/main/packages/expo-updates/CHANGELOG.md). (For new projects, the no-publish workflow is enabled by default.)
 
 # Installation in managed Expo projects
 
-For [managed](https://docs.expo.io/versions/latest/introduction/managed-vs-bare/) Expo projects, please follow the installation instructions in the [API documentation for the latest stable release](https://docs.expo.io/versions/latest/sdk/updates/).
+For [managed](https://docs.expo.dev/versions/latest/introduction/managed-vs-bare/) Expo projects, please follow the installation instructions in the [API documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/updates/).
 
 # Installation in bare React Native projects
 
-Learn how to install expo-updates in your project in the [Installing expo-updates documentation page](https://docs.expo.io/bare/installing-updates/).
+Learn how to install expo-updates in your project in the [Installing expo-updates documentation page](https://docs.expo.dev/bare/installing-updates/).
 
 ## Embedded Assets
 
@@ -93,12 +93,16 @@ The number of milliseconds `expo-updates` should delay the app launch and stay o
 | --------------------------------- | ------------------------ | -------------------------------------------------- | ------- | --------- |
 | `EXUpdatesCodeSigningCertificate` | `codeSigningCertificate` | `expo.modules.updates.CODE_SIGNING_CERTIFICATE`    | (none)  | ❌        |
 | `EXUpdatesCodeSigningMetadata`    | `codeSigningMetadata`    | `expo.modules.updates.CODE_SIGNING_METADATA`       | (none)  | ❌        |
+| `EXUpdatesCodeSigningIncludeManifestResponseCertificateChain` | `codeSigningIncludeManifestResponseCertificateChain` | `expo.modules.updates.CODE_SIGNING_INCLUDE_MANIFEST_RESPONSE_CERTIFICATE_CHAIN` | false | ❌        |
+| `EXUpdatesConfigCodeSigningAllowUnsignedManifests` | `codeSigningAllowUnsignedManifests` | `expo.modules.updates.CODE_SIGNING_ALLOW_UNSIGNED_MANIFESTS` | false | ❌        |
 
 If `codeSigningCertificate` is present, `expo-updates` will enforce manifest code signing using the certificate and any metadata associated with it.
 - `codeSigningCertificate` must be a valid PEM formatted X.509 certificate with code signing extended key usage.
 - `codeSigningMetadata` (optional) must be a JSON object containing:
     - `alg` - Algorithm used to generate manifest signature. Only `rsa-v1_5-sha256` is currently supported.
     - `keyid` - Identifier for the key in `codeSigningCertificate`. Used to instruct signing mechanisms when signing or verifying signatures.
+- `codeSigningIncludeManifestResponseCertificateChain` (optional) instructs `expo-updates` to evaluate certificates included in a multipart manifest response (under the `certificate_chain` multipart part) as part of the code signing certificate chain with the embedded `codeSigningCertificate` as the implicitly trusted root certificate of the chain. The leaf certificate in the chain must be valid for code signing.
+- `codeSigningAllowUnsignedManifests` (optional) instructs `expo-updates` to treat a missing signature in the response as if code signing weren't enabled rather than as invalid as it normally would.
 
 ## Customizing automatic setup
 

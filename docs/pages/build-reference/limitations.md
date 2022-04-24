@@ -21,7 +21,7 @@ Build jobs for Android install npm and Maven dependencies from a local cache. Bu
 
 Intermediate artifacts like `node_modules` directories are not cached and restored (eg: based on `yarn.lock` or `package-lock.json`), but if you commit them to your git repository then they will be uploaded to build servers.
 
-[Learn more about dependendy caching](./caching.md).
+[Learn more about dependency caching](./caching.md).
 
 </p>
 </details>
@@ -54,7 +54,7 @@ The goal for managed projects with EAS Build is to remove the limitations common
 
 ## Get notified about changes
 
-To be notified as progress is made on these items, you can subscribe to the changelog on [expo.dev/eas](https://expo.dev/eas).
+To be notified as progress is made on these items, you can subscribe to the EAS newsletter on [expo.dev/eas](https://expo.dev/eas).
 
 <br />
 

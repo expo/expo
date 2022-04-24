@@ -1,11 +1,11 @@
-# Copyright (c) Facebook, Inc. and its affiliates.
+# Copyright (c) Meta Platforms, Inc. and affiliates.
 #
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
 APP_BUILD_SCRIPT := Android.mk
 
-APP_ABI := $(if $(NDK_ABI_FILTERS),$(NDK_ABI_FILTERS),$(armeabi-v7a x86 arm64-v8a x86_64))
+APP_ABI := armeabi-v7a x86 arm64-v8a x86_64
 APP_PLATFORM := android-21
 
 APP_MK_DIR := $(dir $(lastword $(MAKEFILE_LIST)))

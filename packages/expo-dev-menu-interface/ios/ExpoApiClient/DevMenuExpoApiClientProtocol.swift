@@ -32,9 +32,6 @@ public protocol DevMenuExpoApiClientProtocol {
   func setSessionSecret(_ sessionSecret: String?)
 
   @objc
-  func queryDevSessionsAsync(_ installationID: String?, completionHandler: @escaping HTTPCompletionHandler)
-
-  @objc
   func queryUpdateChannels(
     appId: String,
     completionHandler: @escaping ([DevMenuEASUpdates.Channel]?, URLResponse?, Error?) -> Void,

@@ -1,6 +1,6 @@
 ---
 title: Sharing
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-sharing'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-sharing'
 packageName: 'expo-sharing'
 ---
 

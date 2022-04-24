@@ -1,7 +1,7 @@
-import chalk from 'chalk';
-import semver from 'semver';
-import inquirer from 'inquirer';
 import { Command } from '@expo/commander';
+import chalk from 'chalk';
+import inquirer from 'inquirer';
+import semver from 'semver';
 
 import {
   Platform,

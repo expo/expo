@@ -6,7 +6,7 @@ export function resolveExpoUpdatesVersion(projectRoot: string): string | null {
   let expoUpdatesBuildPath;
   try {
     expoUpdatesBuildPath = resolveFrom(projectRoot, 'expo-updates');
-  } catch (e) {
+  } catch {
     // this is expected in projects that don't have expo-updates installed
     return null;
   }

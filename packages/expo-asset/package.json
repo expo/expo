@@ -1,6 +1,6 @@
 {
   "name": "expo-asset",
-  "version": "8.4.5",
+  "version": "8.5.0",
   "description": "An Expo universal module to download assets and pass them into other APIs",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -41,7 +41,7 @@
     "invariant": "^2.2.4",
     "md5-file": "^3.2.3",
     "path-browserify": "^1.0.0",
-    "url-parse": "^1.4.4"
+    "url-parse": "^1.5.9"
   },
   "devDependencies": {
     "@testing-library/react-hooks": "^7.0.1",

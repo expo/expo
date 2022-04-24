@@ -14,7 +14,6 @@
 @property (nonatomic, copy) EXDirectEventBlock onAdViewWillPresentScreen;
 @property (nonatomic, copy) EXDirectEventBlock onAdViewWillDismissScreen;
 @property (nonatomic, copy) EXDirectEventBlock onAdViewDidDismissScreen;
-@property (nonatomic, copy) EXDirectEventBlock onAdViewWillLeaveApplication;
 
 - (GADAdSize)getAdSizeFromString:(NSString *)bannerSize;
 - (void)loadBanner;

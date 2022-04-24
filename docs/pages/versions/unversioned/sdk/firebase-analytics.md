@@ -1,6 +1,6 @@
 ---
 title: FirebaseAnalytics
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-firebase-analytics'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-firebase-analytics'
 packageName: 'expo-firebase-analytics'
 ---
 
@@ -143,7 +143,7 @@ export default () => (
       const prevScreen = getActiveRouteName(prevState);
       if (prevScreen !== currentScreen) {
         // Update Firebase with the name of your screen
-        Analytics.setCurrentScreen(currentScreen);
+        Analytics.logEvent('screen view', { currentScreen });
       }
     }}
   />

@@ -1,6 +1,7 @@
 import { AndroidShellApp } from '@expo/xdl';
 import fs from 'fs-extra';
 import path from 'path';
+
 import * as Directories from '../Directories';
 import * as ProjectVersions from '../ProjectVersions';
 

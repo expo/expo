@@ -1,8 +1,11 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
+import React
+
 @objc
 class DevMenuAppInstance: DevMenuBaseAppInstance, RCTBridgeDelegate {
   static private var CloseEventName = "closeDevMenu"
+  static private var OpenEventName = "openDevMenu"
 
   private let manager: DevMenuManager
 
@@ -31,7 +34,7 @@ class DevMenuAppInstance: DevMenuBaseAppInstance, RCTBridgeDelegate {
     // It will be EXDevMenuApp.ios.js in our case.
     // To let Hermes aware target bundle, we try to reload here as a workaround solution.
     // See https://github.com/facebook/react-native/blob/ec614c16b331bf3f793fda5780fa273d181a8492/ReactCommon/hermes/inspector/Inspector.cpp#L291
-    if let appBridge = manager.delegate?.appBridge?(forDevMenuManager: manager) as? RCTBridge {
+    if let appBridge = manager.currentBridge {
       appBridge.requestReload()
     }
   }
@@ -41,6 +44,10 @@ class DevMenuAppInstance: DevMenuBaseAppInstance, RCTBridgeDelegate {
    */
   public func sendCloseEvent() {
     bridge?.enqueueJSCall("RCTDeviceEventEmitter.emit", args: [DevMenuAppInstance.CloseEventName])
+  }
+  
+  public func sendOpenEvent() {
+    bridge?.enqueueJSCall("RCTDeviceEventEmitter.emit", args: [DevMenuAppInstance.OpenEventName])
   }
 
   // MARK: RCTBridgeDelegate

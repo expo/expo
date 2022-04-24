@@ -44,7 +44,7 @@ receive a response with an SVG image containing a QR code that can be easily sca
 
 ## Example Workflows
 
-These are a few examples of workflows to help your team get the most out of your development build. If you come up with others that would be useful for other teams, please [submit a PR](https://github.com/expo/expo/blob/master/CONTRIBUTING.md#-updating-documentation) to share your knowledge!
+These are a few examples of workflows to help your team get the most out of your development build. If you come up with others that would be useful for other teams, please [submit a PR](https://github.com/expo/expo/tree/main/CONTRIBUTING.md#-updating-documentation) to share your knowledge!
 
 ### Development Builds
 

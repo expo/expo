@@ -11,7 +11,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 ## Installation
 
-For [managed](../../../introduction/managed-vs-bare.md#managed-workflow) apps, you'll need to run `expo install expo-google-sign-in`. To use it in a [bare](../../../introduction/managed-vs-bare.md#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-google-sign-in).
+For [managed](../../../introduction/managed-vs-bare.md#managed-workflow) apps, you'll need to run `expo install expo-google-sign-in`. To use it in a [bare](../../../introduction/managed-vs-bare.md#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/main/packages/expo-google-sign-in).
 
 ## Configuration
 
@@ -379,7 +379,7 @@ All of the available authentication error codes.
 - `GoogleSignIn.ERRORS.SIGN_IN_REQUIRED` Attempting to access user data before any user has been authenticated
 - `GoogleSignIn.ERRORS.TASK_IN_PROGRESS` An existing auth task is already running.
 - `GoogleSignIn.ERRORS.SIGN_IN_EXCEPTION` A general error has occurred
-- `GoogleSignIn.ERRORS.SIGN_IN_FAILED` A Play Services error has occured (Android only)
+- `GoogleSignIn.ERRORS.SIGN_IN_FAILED` A Play Services error has occurred (Android only)
 - `GoogleSignIn.ERRORS.INVALID_ACCOUNT` An invalid account has been provided with `accountName` (Android only)
 - `GoogleSignIn.ERRORS.SIGN_IN_NETWORK_ERROR` An issue with the internet connection has caused the auth task to fail (Android only)
 

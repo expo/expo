@@ -23,7 +23,7 @@ class EXDevLauncherControllerTest: QuickSpec {
 
       let modules = module.extraModules(for: nil)!
 
-      expect(modules.count).to(equal(10))
+      expect(modules.count).to(equal(11))
       expect(modules.first { $0 is RCTDevMenu }).toNot(beNil())
       expect(modules.first { $0 is RCTAsyncLocalStorage }).toNot(beNil())
       expect(modules.first { type(of: $0).moduleName() == "DevLoadingView" }).toNot(beNil())

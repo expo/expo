@@ -23,6 +23,7 @@ interface UpdatesInterface {
   val isEmergencyLaunch: Boolean
   val isUsingEmbeddedAssets: Boolean
   fun canRelaunch(): Boolean
+  val embeddedUpdate: UpdateEntity?
   val launchedUpdate: UpdateEntity?
   val localAssetFiles: Map<AssetEntity, String>?
 

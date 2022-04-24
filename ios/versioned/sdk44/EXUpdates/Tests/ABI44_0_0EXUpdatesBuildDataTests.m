@@ -52,36 +52,46 @@ static NSString * const scopeKey = @"test";
   
   
   _configChannelTestDictionary = @{
-    @"ABI44_0_0EXUpdatesScopeKey": scopeKey,
-    @"ABI44_0_0EXUpdatesURL": @"https://exp.host/@test/test",
-    @"ABI44_0_0EXUpdatesRequestHeaders": @{@"expo-channel-name":@"test"}
+    ABI44_0_0EXUpdatesConfigScopeKeyKey: scopeKey,
+    ABI44_0_0EXUpdatesConfigUpdateUrlKey: @"https://exp.host/@test/test",
+    ABI44_0_0EXUpdatesConfigRequestHeadersKey: @{@"expo-channel-name":@"test"}
   };
   _configChannelTest = [ABI44_0_0EXUpdatesConfig configWithDictionary:_configChannelTestDictionary];
   _configChannelTestTwoDictionary = @{
-    @"ABI44_0_0EXUpdatesScopeKey": scopeKey,
-    @"ABI44_0_0EXUpdatesURL": @"https://exp.host/@test/test",
-    @"ABI44_0_0EXUpdatesRequestHeaders": @{@"expo-channel-name":@"testTwo"}
+    ABI44_0_0EXUpdatesConfigScopeKeyKey: scopeKey,
+    ABI44_0_0EXUpdatesConfigUpdateUrlKey: @"https://exp.host/@test/test",
+    ABI44_0_0EXUpdatesConfigRequestHeadersKey: @{@"expo-channel-name":@"testTwo"}
   };
   _configChannelTestTwo = [ABI44_0_0EXUpdatesConfig configWithDictionary:_configChannelTestTwoDictionary
   ];
   
   _configReleaseChannelTestDictionary = @{
-    @"ABI44_0_0EXUpdatesScopeKey": scopeKey,
-    @"ABI44_0_0EXUpdatesURL": @"https://exp.host/@test/test",
-    @"ABI44_0_0EXUpdatesReleaseChannel": @"test",
+    ABI44_0_0EXUpdatesConfigScopeKeyKey: scopeKey,
+    ABI44_0_0EXUpdatesConfigUpdateUrlKey: @"https://exp.host/@test/test",
+    ABI44_0_0EXUpdatesConfigReleaseChannelKey: @"test",
   };
   _configReleaseChannelTest = [ABI44_0_0EXUpdatesConfig configWithDictionary:_configReleaseChannelTestDictionary];
   _configReleaseChannelTestTwoDictionary = @{
-    @"ABI44_0_0EXUpdatesScopeKey": scopeKey,
-    @"ABI44_0_0EXUpdatesURL": @"https://exp.host/@test/test",
-    @"ABI44_0_0EXUpdatesReleaseChannel": @"testTwo",
+    ABI44_0_0EXUpdatesConfigScopeKeyKey: scopeKey,
+    ABI44_0_0EXUpdatesConfigUpdateUrlKey: @"https://exp.host/@test/test",
+    ABI44_0_0EXUpdatesConfigReleaseChannelKey: @"testTwo",
   };
   _configReleaseChannelTestTwo = [ABI44_0_0EXUpdatesConfig configWithDictionary:_configReleaseChannelTestTwoDictionary
   ];
   
+  ABI44_0_0EXUpdatesManifestHeaders *manifestHeaders = [[ABI44_0_0EXUpdatesManifestHeaders alloc] initWithProtocolVersion:nil
+                                                                                   serverDefinedHeaders:nil
+                                                                                        manifestFilters:nil
+                                                                                      manifestSignature:nil
+                                                                                              signature:nil];
+  
   // start every test with an update
   dispatch_sync(_db.databaseQueue, ^{
-    ABI44_0_0EXUpdatesUpdate *update = [ABI44_0_0EXUpdatesNewUpdate updateWithNewManifest:_manifest response:nil config:_configChannelTest database:_db];
+    ABI44_0_0EXUpdatesUpdate *update = [ABI44_0_0EXUpdatesNewUpdate updateWithNewManifest:_manifest
+                                                        manifestHeaders:manifestHeaders
+                                                             extensions:@{}
+                                                                 config:_configChannelTest
+                                                               database:_db];
 
     NSError *updatesError;
     [_db addUpdate:update error:&updatesError];

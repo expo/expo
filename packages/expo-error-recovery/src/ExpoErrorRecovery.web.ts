@@ -7,7 +7,7 @@ function _consumeRecoveryProps(): string | null {
     const props = localStorage.getItem(LOCAL_STORAGE_KEY);
     localStorage.removeItem(LOCAL_STORAGE_KEY);
     return props;
-  } catch (e) {
+  } catch {
     // Catches localStorage SecurityError https://github.com/expo/expo/issues/8355
   }
   return null;
@@ -22,7 +22,7 @@ export default {
     if (!Platform.isDOMAvailable) return;
     try {
       localStorage.setItem(LOCAL_STORAGE_KEY, props);
-    } catch (e) {
+    } catch {
       // Catches localStorage SecurityError https://github.com/expo/expo/issues/8355
     }
   },

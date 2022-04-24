@@ -4,10 +4,10 @@ import java.util.regex.Pattern
 
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-apply plugin: 'maven'
+apply plugin: 'maven-publish'
 
 group = 'host.exp.exponent'
-version = '0.9.1'
+version = '0.10.2'
 
 // reanimated v2
 def reactNativeFilePath = ["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim()
@@ -62,27 +62,29 @@ def getCurrentFlavor() {
 
   if (taskRequestName.contains("assemble")) {
     pattern = Pattern.compile("assemble(\\w+)(Release|Debug)")
+  } else if (taskRequestName.contains("bundle")) {
+    pattern = Pattern.compile("bundle(\\w+)(Release|Debug)")
   } else {
     pattern = Pattern.compile("generate(\\w+)(Release|Debug)")
   }
   Matcher matcher = pattern.matcher(taskRequestName)
 
   if (matcher.find()) {
-    return matcher.group(1).toLowerCase()
+    return matcher.group(1)
   }
   return ""
 }
 
 def replaceSoTaskDebug
-def replaceSoTaskRelease
+def replaceSoTaskReleaseWithDevMenu
 
 if (Integer.parseInt(minor) < 65 && shouldSwapJNI()) {
   println("DevMenu will replace JNI library.")
 
   tasks.register("replaceSoTaskDebug", replaceSoTask)
-  tasks.register("replaceSoTaskRelease", replaceSoTask)
+  tasks.register("replaceSoTaskReleaseWithDevMenu", replaceSoTask)
   replaceSoTaskDebug = project.getTasks().getByPath(":expo-dev-menu:replaceSoTaskDebug")
-  replaceSoTaskRelease = project.getTasks().getByPath(":expo-dev-menu:replaceSoTaskRelease")
+  replaceSoTaskReleaseWithDevMenu = project.getTasks().getByPath(":expo-dev-menu:replaceSoTaskReleaseWithDevMenu")
 }
 
 rootProject.getSubprojects().forEach({ project ->
@@ -96,22 +98,27 @@ rootProject.getSubprojects().forEach({ project ->
       if (!projectProperties.get("reanimated")
           || (projectProperties.get("reanimated") && projectProperties.get("reanimated").get("enablePackagingOptions"))
       ) {
-        def flavorString = getCurrentFlavor()
+        def flavorNameCapitalized = getCurrentFlavor()
         replaceSoTask.appName = project.getProperties().path
         replaceSoTask.buildDir = project.getProperties().buildDir
         def appName = project.getProperties().path
 
+        def tasks = project.getTasks()
         replaceSoTaskDebug.dependsOn(
-            project.getTasks().getByPath("${appName}:merge${flavorString}DebugNativeLibs"),
-            project.getTasks().getByPath("${appName}:strip${flavorString}DebugDebugSymbols")
+            tasks.getByPath("${appName}:merge${flavorNameCapitalized}DebugNativeLibs"),
+            tasks.getByPath("${appName}:strip${flavorNameCapitalized}DebugDebugSymbols")
         )
-        project.getTasks().getByPath("${appName}:package${flavorString}Debug").dependsOn(replaceSoTaskDebug)
+        tasks.getByPath("${appName}:package${flavorNameCapitalized}Debug").dependsOn(replaceSoTaskDebug)
 
-        replaceSoTaskRelease.dependsOn(
-            project.getTasks().getByPath("${appName}:merge${flavorString}ReleaseNativeLibs"),
-            project.getTasks().getByPath("${appName}:strip${flavorString}ReleaseDebugSymbols")
-        )
-        project.getTasks().getByPath("${appName}:package${flavorString}Release").dependsOn(replaceSoTaskRelease)
+        if (tasks.findByPath("${appName}:merge${flavorNameCapitalized}ReleaseWithDevMenuNativeLibs")
+            && tasks.findByPath("${appName}:strip${flavorNameCapitalized}ReleaseWithDevMenuDebugSymbols")
+            && tasks.findByPath("${appName}:package${flavorNameCapitalized}ReleaseWithDevMenu")) {
+          replaceSoTaskReleaseWithDevMenu.dependsOn(
+              task.getByPath("${appName}:merge${flavorNameCapitalized}ReleaseWithDevMenuNativeLibs"),
+              task.getByPath("${appName}:strip${flavorNameCapitalized}ReleaseWithDevMenuDebugSymbols")
+          )
+          tasks.getByPath("${appName}:package${flavorNameCapitalized}ReleaseWithDevMenu").dependsOn(replaceSoTaskReleaseWithDevMenu)
+        }
       }
     }
   }
@@ -132,9 +139,24 @@ def reanimatedVersion = minorCopy
 // end of reanimated v2
 
 buildscript {
+  def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
+  if (expoModulesCorePlugin.exists()) {
+    apply from: expoModulesCorePlugin
+    applyKotlinExpoModulesCorePlugin()
+  }
+
   // Simple helper that allows the root project to override versions declared by this library.
   ext.safeExtGet = { prop, fallback ->
     rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
+  }
+
+  // Ensures backward compatibility
+  ext.getKotlinVersion = {
+    if (ext.has("kotlinVersion")) {
+      ext.kotlinVersion()
+    } else {
+      ext.safeExtGet("kotlinVersion", "1.6.10")
+    }
   }
 
   repositories {
@@ -142,13 +164,8 @@ buildscript {
   }
 
   dependencies {
-    classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${safeExtGet('kotlinVersion', '1.6.10')}")
+    classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${getKotlinVersion()}")
   }
-}
-
-// Upload android library to maven with javadoc and android sources
-configurations {
-  deployerJars
 }
 
 // Creating sources with comments
@@ -157,33 +174,40 @@ task androidSourcesJar(type: Jar) {
   from android.sourceSets.main.java.srcDirs
 }
 
-// Put the androidSources and javadoc to the artifacts
-artifacts {
-  archives androidSourcesJar
-}
-
-uploadArchives {
-  repositories {
-    mavenDeployer {
-      configuration = configurations.deployerJars
-      repository(url: mavenLocal().url)
+afterEvaluate {
+  publishing {
+    publications {
+      release(MavenPublication) {
+        from components.release
+        // Add additional sourcesJar to artifacts
+        artifact(androidSourcesJar)
+      }
+    }
+    repositories {
+      maven {
+        url = mavenLocal().url
+      }
     }
   }
 }
 
 android {
-  compileSdkVersion safeExtGet("compileSdkVersion", 30)
+  compileSdkVersion safeExtGet("compileSdkVersion", 31)
 
   compileOptions {
-    sourceCompatibility JavaVersion.VERSION_1_8
-    targetCompatibility JavaVersion.VERSION_1_8
+    sourceCompatibility JavaVersion.VERSION_11
+    targetCompatibility JavaVersion.VERSION_11
+  }
+
+  kotlinOptions {
+    jvmTarget = JavaVersion.VERSION_11.majorVersion
   }
 
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 21)
-    targetSdkVersion safeExtGet("targetSdkVersion", 30)
+    targetSdkVersion safeExtGet("targetSdkVersion", 31)
     versionCode 10
-    versionName '0.9.1'
+    versionName '0.10.2'
   }
   lintOptions {
     abortOnError false
@@ -197,11 +221,18 @@ android {
   }
 
   sourceSets {
-    main {
+    debug {
       jniLibs.srcDir "$reanimatedPath/$reanimatedVersion-$engine/jni"
       java {
         srcDirs += ['../vendored/react-native-gesture-handler/android/']
         srcDirs += ['../vendored/react-native-safe-area-context/android/']
+
+        def expoPackageVersion = getExpoPackageVersion()
+        if (expoPackageVersion >= versionToNumber(45, 0, 0)) {
+          srcDirs += "src/expo-45"
+        } else {
+          srcDirs += "src/expo-44"
+        }
       }
     }
 
@@ -238,8 +269,10 @@ repositories {
 
 dependencies {
   implementation project(':expo-modules-core')
+  implementation project(":expo-manifests")
 
-  implementation files("${reanimatedPath}/${minorCopy}-${engine}/classes.jar")
+  debugImplementation files("${reanimatedPath}/${minorCopy}-${engine}/classes.jar")
+  releaseWithDevMenuImplementation files("${reanimatedPath}/${minorCopy}-${engine}/classes.jar")
 
   implementation project(":expo-dev-menu-interface")
 
@@ -256,7 +289,7 @@ dependencies {
   api "androidx.appcompat:appcompat:1.1.0"
   api "androidx.lifecycle:lifecycle-extensions:2.2.0"
 
-  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${safeExtGet('kotlinVersion', '1.6.10')}"
+  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
   implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.7'
   implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.5'
 
@@ -265,5 +298,27 @@ dependencies {
   testImplementation "com.google.truth:truth:1.1.2"
   testImplementation "org.robolectric:robolectric:4.3.1"
   testImplementation 'com.squareup.okhttp3:mockwebserver:4.3.1'
-  testImplementation 'androidx.test:core:1.3.0'
+  testImplementation 'androidx.test:core:1.4.0'
+}
+
+def versionToNumber(major, minor, patch) {
+  return patch * 100 + minor * 10000 + major * 1000000
+}
+
+def getNodeModulesPackageVersion(packageName, overridePropName) {
+  def nodeModulesVersion = ["node", "-e", "console.log(require('$packageName/package.json').version);"].execute([], projectDir).text.trim()
+  def version = safeExtGet(overridePropName, nodeModulesVersion)
+
+  def coreVersion = version.split("-")[0]
+  def (major, minor, patch) = coreVersion.tokenize('.').collect { it.toInteger() }
+
+  return versionToNumber(
+      major,
+      minor,
+      patch
+  )
+}
+
+def getExpoPackageVersion() {
+  return getNodeModulesPackageVersion("expo", "expoPackageVersion")
 }

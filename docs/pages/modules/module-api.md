@@ -117,11 +117,17 @@ constants {
 ```
 
 ```kotlin
+// Passed as arguments
 constants(
-  mapOf(
+  "PI" to kotlin.math.PI
+)
+
+// or returned by the closure
+constants {
+  return@constants mapOf(
     "PI" to kotlin.math.PI
   )
-)
+}
 ```
 
 </CodeBlocksTable>
@@ -135,7 +141,7 @@ Defines a native function that will be exported to JavaScript.
 - **name**: `String` — Name of the function that you'll call from JavaScript.
 - **body**: `(args...) -> ReturnType` — The closure to run when the function is called.
 
-All functions return a `Promise` to JavaScript and are asychronous from the perspective of the JavaScript runtime. However, if the type of the last argument is `Promise`, the function is considered to be asynchronous on the native side and it will wait for the promise to be resolved or rejected before the response is passed back to JavaScript. Otherwise, the function is immediately resolved with the returned value or rejected if it throws an error. Note that this is different than synchronous/asynchronous calls in JavaScript — at this moment all functions are _asynchronous_ from the JavaScript perspective.
+All functions return a `Promise` to JavaScript and are asynchronous from the perspective of the JavaScript runtime. However, if the type of the last argument is `Promise`, the function is considered to be asynchronous on the native side and it will wait for the promise to be resolved or rejected before the response is passed back to JavaScript. Otherwise, the function is immediately resolved with the returned value or rejected if it throws an error. Note that this is different than synchronous/asynchronous calls in JavaScript — at this moment all functions are _asynchronous_ from the JavaScript perspective.
 
 The function can receive up to 8 arguments (including the promise). This is due to the limitations of generics in both Swift and Kotlin, because this component must be implemented separately for each number of arguments.
 
@@ -464,10 +470,10 @@ class MyModule : Module() {
 
 For more examples from real modules, you can refer to Expo modules that already use this API on GitHub:
 
-- `expo-cellular` ([Swift](https://github.com/expo/expo/blob/master/packages/expo-cellular/ios/CellularModule.swift), [Kotlin](https://github.com/expo/expo/blob/master/packages/expo-cellular/android/src/main/java/expo/modules/cellular/CellularModule.kt))
-- `expo-linear-gradient` ([Swift](https://github.com/expo/expo/blob/master/packages/expo-linear-gradient/ios/LinearGradientModule.swift)), [Kotlin](https://github.com/expo/expo/blob/master/packages/expo-linear-gradient/android/src/main/java/expo/modules/lineargradient/LinearGradientModule.kt)
-- `expo-haptics` ([Swift](https://github.com/expo/expo/blob/master/packages/expo-haptics/ios/HapticsModule.swift))
-- `expo-clipboard` ([Swift](https://github.com/expo/expo/blob/master/packages/expo-clipboard/ios/EXClipboard/ClipboardModule.swift))
-- `expo-localization` ([Swift](https://github.com/expo/expo/blob/master/packages/expo-localization/ios/LocalizationModule.swift))
-- `expo-system-ui` ([Swift](https://github.com/expo/expo/blob/master/packages/expo-system-ui/ios/ExpoSystemUI/ExpoSystemUIModule.swift))
-- `expo-image-manipulator` ([Swift](https://github.com/expo/expo/blob/master/packages/expo-image-manipulator/ios/ImageManipulatorModule.swift))
+- `expo-cellular` ([Swift](https://github.com/expo/expo/tree/main/packages/expo-cellular/ios/CellularModule.swift), [Kotlin](https://github.com/expo/expo/tree/main/packages/expo-cellular/android/src/main/java/expo/modules/cellular/CellularModule.kt))
+- `expo-linear-gradient` ([Swift](https://github.com/expo/expo/tree/main/packages/expo-linear-gradient/ios/LinearGradientModule.swift), [Kotlin](https://github.com/expo/expo/tree/main/packages/expo-linear-gradient/android/src/main/java/expo/modules/lineargradient/LinearGradientModule.kt))
+- `expo-haptics` ([Swift](https://github.com/expo/expo/tree/main/packages/expo-haptics/ios/HapticsModule.swift))
+- `expo-clipboard` ([Swift](https://github.com/expo/expo/tree/main/packages/expo-clipboard/ios/ClipboardModule.swift), [Kotlin](https://github.com/expo/expo/tree/main/packages/expo-clipboard/android/src/main/java/expo/modules/clipboard/ClipboardModule.kt))
+- `expo-localization` ([Swift](https://github.com/expo/expo/tree/main/packages/expo-localization/ios/LocalizationModule.swift))
+- `expo-system-ui` ([Swift](https://github.com/expo/expo/tree/main/packages/expo-system-ui/ios/ExpoSystemUI/ExpoSystemUIModule.swift))
+- `expo-image-manipulator` ([Swift](https://github.com/expo/expo/tree/main/packages/expo-image-manipulator/ios/ImageManipulatorModule.swift))

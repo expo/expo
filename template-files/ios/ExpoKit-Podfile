@@ -22,12 +22,13 @@ target 'ExpoKitApp' do
       'expo-in-app-purchases',
       'expo-payments-stripe',
       'expo-module-template',
-      'expo-image'
+      'expo-image',
+      'expo-dev-menu',
+      'expo-dev-menu-interface',
+      'expo-dev-launcher',
+      'expo-dev-client'
     ],
   )
-
-  # Pods that are not expo modules
-  pod 'EXRandom', path: '../../../packages/expo-random/ios'
 
   # Install React Native and its dependencies
   require_relative '../node_modules/react-native/scripts/react_native_pods'
@@ -42,6 +43,9 @@ target 'ExpoKitApp' do
   post_install do |installer|
     installer.pods_project.main_group.tab_width = '2';
     installer.pods_project.main_group.indent_width = '2';
+
+    # Workaround build error for Folly
+    __apply_Xcode_12_5_M1_post_install_workaround(installer) if installer.pods_project
 
     installer.target_installation_results.pod_target_installation_results
       .each do |pod_name, target_installation_result|
@@ -69,7 +73,7 @@ target 'ExpoKitApp' do
 
 
       target_installation_result.native_target.build_configurations.each do |config|
-        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '11.0'
+        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '12.0'
       end
 
 
@@ -77,7 +81,7 @@ target 'ExpoKitApp' do
       # projects which don't reference ExponentCPP.
       if pod_name.start_with?('React')
         target_installation_result.native_target.build_configurations.each do |config|
-          config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '11.0'
+          config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '12.0'
           config.build_settings['HEADER_SEARCH_PATHS'] ||= ['$(inherited)']
         end
       end

@@ -10,11 +10,7 @@ import com.google.android.gms.ads.AdError;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.FullScreenContentCallback;
 import com.google.android.gms.ads.LoadAdError;
-import com.google.android.gms.ads.MobileAds;
-import com.google.android.gms.ads.RequestConfiguration;
-import com.google.android.gms.ads.rewarded.RewardItem;
 import com.google.android.gms.ads.rewarded.RewardedAd;
-import com.google.android.gms.ads.rewarded.RewardedAdCallback;
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
 
 import expo.modules.core.ExportedModule;
@@ -25,12 +21,7 @@ import expo.modules.core.interfaces.ActivityProvider;
 import expo.modules.core.interfaces.ExpoMethod;
 import expo.modules.core.interfaces.services.EventEmitter;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 public class AdMobRewardedVideoAdModule extends ExportedModule {
   private RewardedAd mRewardedAd;
@@ -55,7 +46,8 @@ public class AdMobRewardedVideoAdModule extends ExportedModule {
     }
 
     @Override
-    public @NonNull String toString() {
+    public @NonNull
+    String toString() {
       return mName;
     }
   }
@@ -91,99 +83,82 @@ public class AdMobRewardedVideoAdModule extends ExportedModule {
 
   @ExpoMethod
   public void requestAd(final ReadableArguments additionalRequestParams, final Promise promise) {
-    new Handler(Looper.getMainLooper()).post(new Runnable() {
-      @Override
-      public void run() {
-        if (mRewardedAd != null) {
-          promise.reject("E_AD_ALREADY_LOADED", "Ad is already loaded.", null);
-          return;
-        }
+    new Handler(Looper.getMainLooper()).post(() -> {
+      if (mRewardedAd != null) {
+        promise.reject("E_AD_ALREADY_LOADED", "Ad is already loaded.", null);
+        return;
+      }
 
-        mRequestAdPromise = promise;
+      mRequestAdPromise = promise;
 
-        String testDeviceID = AdMobModule.getTestDeviceID();
-        @Nullable List<String> testDevicesIds = testDeviceID == null ? null : new ArrayList<>(Collections.singletonList(testDeviceID));
-        RequestConfiguration requestConfiguration = new RequestConfiguration.Builder().setTestDeviceIds(testDevicesIds).build();
-        MobileAds.setRequestConfiguration(requestConfiguration);
-
-        AdRequest adRequest = new AdRequest.Builder()
+      AdRequest adRequest = new AdRequest.Builder()
           .addNetworkExtrasBundle(AdMobAdapter.class, additionalRequestParams.toBundle())
           .build();
 
-        mRewardedAd = new RewardedAd(mActivityProvider.getCurrentActivity(), mAdUnitID);
+      RewardedAd.load(mActivityProvider.getCurrentActivity(), mAdUnitID, adRequest, new RewardedAdLoadCallback() {
+        @Override
+        public void onAdLoaded(@NonNull RewardedAd rewardedAd) {
+          mRewardedAd = rewardedAd;
 
-        mRewardedAd.loadAd(adRequest, new RewardedAdLoadCallback() {
-          @Override
-          public void onRewardedAdLoaded() {
-            sendEvent(Event.DID_LOAD);
-            mRequestAdPromise.resolve(null);
-            mRequestAdPromise = null;
-          }
+          mRewardedAd.setFullScreenContentCallback(new FullScreenContentCallback() {
+            @Override
+            public void onAdFailedToShowFullScreenContent(@NonNull AdError adError) {
+              sendEvent(Event.DID_FAIL_TO_LOAD, AdMobUtils.createEventForAdFailedToLoad(adError));
+              mShowAdPromise.reject("E_AD_SHOW_FAILED", adError.getMessage());
+              mRewardedAd = null;
+              mShowAdPromise = null;
+            }
 
-          @Override
-          public void onRewardedAdFailedToLoad(LoadAdError loadAdError) {
-            sendEvent(Event.DID_FAIL_TO_LOAD, AdMobUtils.createEventForAdFailedToLoad(loadAdError));
-            mRewardedAd = null;
-            mRequestAdPromise.reject("E_AD_REQUEST_FAILED", loadAdError.getMessage());
-            mRequestAdPromise = null;
-          }
-        });
-      }
+            @Override
+            public void onAdShowedFullScreenContent() {
+              sendEvent(Event.DID_PRESENT);
+              mShowAdPromise.resolve(null);
+              mShowAdPromise = null;
+            }
+
+            @Override
+            public void onAdDismissedFullScreenContent() {
+              sendEvent(Event.DID_DISMISS);
+              mRewardedAd = null;
+            }
+          });
+
+          sendEvent(Event.DID_LOAD);
+          mRequestAdPromise.resolve(null);
+          mRequestAdPromise = null;
+        }
+
+        @Override
+        public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+          sendEvent(Event.DID_FAIL_TO_LOAD, AdMobUtils.createEventForAdFailedToLoad(loadAdError));
+          mRewardedAd = null;
+          mRequestAdPromise.reject("E_AD_REQUEST_FAILED", loadAdError.getMessage());
+          mRequestAdPromise = null;
+        }
+      });
     });
   }
 
   @ExpoMethod
   public void showAd(final Promise promise) {
-    new Handler(Looper.getMainLooper()).post(new Runnable() {
-      @Override
-      public void run() {
-        if (mRewardedAd == null || !mRewardedAd.isLoaded()) {
-          promise.reject("E_AD_NOT_READY", "Ad is not ready.", null);
-          return;
-        }
-
-        mShowAdPromise = promise;
-        mRewardedAd.show(mActivityProvider.getCurrentActivity(), new RewardedAdCallback() {
-          @Override
-          public void onUserEarnedReward(@NonNull RewardItem rewardItem) {
-            Bundle reward = new Bundle();
-            reward.putInt("amount", rewardItem.getAmount());
-            reward.putString("type", rewardItem.getType());
-            sendEvent(Event.DID_REWARD, reward);
-          }
-
-          @Override
-          public void onRewardedAdOpened() {
-            sendEvent(Event.DID_PRESENT);
-            mShowAdPromise.resolve(null);
-            mShowAdPromise = null;
-          }
-
-          @Override
-          public void onRewardedAdClosed() {
-            sendEvent(Event.DID_DISMISS);
-            mRewardedAd = null;
-          }
-
-          @Override
-          public void onRewardedAdFailedToShow(AdError adError) {
-            sendEvent(Event.DID_FAIL_TO_LOAD, AdMobUtils.createEventForAdFailedToLoad(adError));
-            mShowAdPromise.reject("E_AD_SHOW_FAILED", adError.getMessage());
-            mRewardedAd = null;
-            mShowAdPromise = null;
-          }
-        });
+    new Handler(Looper.getMainLooper()).post(() -> {
+      if (mRewardedAd == null) {
+        promise.reject("E_AD_NOT_READY", "Ad is not ready.", null);
+        return;
       }
+
+      mShowAdPromise = promise;
+      mRewardedAd.show(mActivityProvider.getCurrentActivity(), rewardItem -> {
+        Bundle reward = new Bundle();
+        reward.putInt("amount", rewardItem.getAmount());
+        reward.putString("type", rewardItem.getType());
+        sendEvent(Event.DID_REWARD, reward);
+      });
     });
   }
 
   @ExpoMethod
   public void getIsReady(final Promise promise) {
-    new Handler(Looper.getMainLooper()).post(new Runnable() {
-      @Override
-      public void run() {
-        promise.resolve(mRewardedAd != null && mRewardedAd.isLoaded());
-      }
-    });
+    new Handler(Looper.getMainLooper()).post(() -> promise.resolve(mRewardedAd != null));
   }
 }

@@ -7,7 +7,7 @@ on:
         description: 'Number of the pull request to review'
         required: true
   pull_request_target:
-    branches: [master, sdk-*]
+    branches: [main, sdk-*]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.inputs.pullNumber || github.event.number }}
@@ -15,10 +15,11 @@ concurrency:
 
 jobs:
   code_review:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
+    timeout-minutes: 30
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: ♻️ Restore node modules in tools
         uses: actions/cache@v2
         id: tools-modules-cache

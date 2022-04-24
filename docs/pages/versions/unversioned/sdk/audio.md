@@ -1,6 +1,6 @@
 ---
 title: Audio
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-av'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-av'
 packageName: 'expo-av'
 ---
 
@@ -340,6 +340,13 @@ On the `soundObject` reference, the following API is provided:
 
   - **onMetadataUpdate (_function_)** -- A function taking a single object of type `AVMetadata` (described below) as a parameter.
 
+- `soundObject.setOnAudioSampleReceived(callback)`
+  Sets a function to be called during playback, receiving the audio sample as parameter.
+
+  #### Parameters
+
+  - **callback (_function_)** - A function taking a single object of type `AudioSample` (described below) as a parameter.
+
 The rest of the API for `Audio.Sound` is the same as the imperative playback API for `Video`-- see the [AV documentation](av.md) for further information:
 
 - `soundObject.loadAsync(source, initialStatus = {}, downloadFirst = true)`
@@ -377,6 +384,14 @@ The rest of the API for `Audio.Sound` is the same as the imperative playback API
 Object passed to the `onMetadataUpdate` function. It has the following keys:
 
 - `title`: a string with the title of the sound object. This key is optional.
+
+## `AudioSample`
+
+Object passed to the `onAudioSampleReceived` function. Represents a single sample from an audio source. The sample contains all frames (PCM Buffer values) for each channel of the audio, so if the audio is _stereo_ (interleaved), there will be two channels, one for left and one for right audio.
+
+- `channels` - an array representing the data from each channel in PCM Buffer format. Array elements are objects in the following format: `{ frames: number[] }`, where each frame is a number in PCM Buffer format (`-1` to `1` range).
+- `timestamp` - a number representing the timestamp of the current sample in seconds, relative to the audio track's timeline.
+  > **Known issue:** When using the `ExoPlayer` Android implementation, the timestamp is always `-1`.
 
 ## Recording sounds
 
@@ -476,6 +491,7 @@ A static convenience method to construct and start a recording is also provided:
   - `isRecording` : a boolean describing if the `Recording` is currently recording.
   - `durationMillis` : the current duration of the recorded audio.
   - `metering` : a number that's the most recent reading of the loudness in dB. The value ranges from –160 dBFS, indicating minimum power, to 0 dBFS, indicating maximum power. Present or not based on Recording options. See `RecordingOptions` for more information.
+  - `mediaServicesDidReset` : (iOS only) a boolean indictating whether media services were reset during recording. This may occur if the active input ceases to be available during recording (example: airpods are the active input and they run out of batteries during recording.)
 
   After `stopAndUnloadAsync()` is called, the `status` will be as follows:
 
@@ -513,11 +529,33 @@ A static convenience method to construct and start a recording is also provided:
 
   A `Promise` that is fulfilled when the recorder is loaded and prepared, or rejects if this failed. If another `Recording` exists in your experience that is currently prepared to record, the `Promise` will reject. If the `RecordingOptions` provided are invalid, the `Promise` will also reject. The promise is resolved with the `status` of the recording (see `getStatusAsync()` for details).
 
-- `recordingInstance.isPreparedToRecord()`
+- `recordingInstance.getAvailableInputs()`
+
+  Returns a list of available recording inputs. This method can only be called if the `Recording` has been prepared.
 
   #### Returns
 
-  A `boolean` that is true if and only if the `Recording` is prepared to record.
+  A `Promise` that is fulfilled with an array of `RecordingInput` objects with `name`, `uid` and `type` params.
+
+- `recordingInstance.getCurrentInput()`
+
+  Returns a the currently-selected recording input. This method can only be called if the `Recording` has been prepared.
+
+  #### Returns
+
+  A `Promise` that is fulfilled with a `RecordingInput` objects with `name`, `uid` and `type` params.
+
+- `recordingInstance.setInput(inputUid)`
+
+  Sets the current recording input.
+
+  #### Parameters
+
+  - **inputUid (_string_)** -- The uid of a `RecordingInput`.
+
+  #### Returns
+
+  A `Promise` that is resolved if successful or rejected if not.
 
 - `recordingInstance.startAsync()`
 

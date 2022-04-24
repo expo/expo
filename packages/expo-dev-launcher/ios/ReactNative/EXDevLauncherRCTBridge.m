@@ -19,7 +19,7 @@
 - (RCTDevSettings *)devSettings
 {
   //  uncomment below to enable fast refresh for development builds of DevLauncher
-  // return super.devSettings;
+//   return super.devSettings;
  return nil;
 }
 
@@ -33,6 +33,10 @@
   NSArray<NSString *> *allowedModules = @[@"RCT", @"DevMenu"];
   NSArray<Class> *filteredModuleList = [modules filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id  _Nullable clazz, NSDictionary<NSString *,id> * _Nullable bindings) {
     if ([clazz conformsToProtocol:@protocol(DevMenuExtensionProtocol)]) {
+      return true;
+    }
+    
+    if ([clazz conformsToProtocol:@protocol(EXDevExtensionProtocol)]) {
       return true;
     }
     

@@ -40,6 +40,8 @@ typedef NS_OPTIONS(NSUInteger, EXAudioRecordingOptionBitRateStrategy)
 - (AVAudioSessionCategoryOptions)activeCategoryOptions;
 - (NSError *)setActive:(BOOL)active forModule:(id)module;
 - (NSError *)setCategory:(NSString *)category withOptions:(AVAudioSessionCategoryOptions)options forModule:(id)module;
+- (AVAudioSessionPortDescription *) activeInput;
+- (NSError *)setActiveInput:(AVAudioSessionPortDescription *)activeInput;
 
 @end
 

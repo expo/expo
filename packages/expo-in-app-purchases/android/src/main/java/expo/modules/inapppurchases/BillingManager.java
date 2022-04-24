@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.util.Log;
 
 import com.android.billingclient.api.AcknowledgePurchaseParams;
 import com.android.billingclient.api.AcknowledgePurchaseResponseListener;
@@ -35,6 +36,7 @@ import java.util.Set;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import expo.modules.core.Promise;
+import expo.modules.core.arguments.ReadableArguments;
 import expo.modules.core.interfaces.services.EventEmitter;
 
 /**
@@ -134,7 +136,13 @@ public class BillingManager implements PurchasesUpdatedListener {
   /**
    * Start a purchase or subscription replace flow
    */
-  public void purchaseItemAsync(final String skuId, @Nullable final String oldPurchaseToken, final Promise promise) {
+  public void purchaseItemAsync(final String skuId, @Nullable final ReadableArguments details, final Promise promise) {
+    String oldPurchaseToken = details.getString("oldPurchaseToken");
+    ReadableArguments accountIdentifiers = details.getArguments("accountIdentifiers");
+    String obfuscatedAccountId = accountIdentifiers.getString("obfuscatedAccountId");
+    String obfuscatedProfileId = accountIdentifiers.getString("obfuscatedProfileId");
+    Boolean isVrPurchaseFlow = details.getBoolean("isVrPurchaseFlow");
+
     Runnable purchaseFlowRequest = new Runnable() {
       @Override
       public void run() {
@@ -144,13 +152,26 @@ public class BillingManager implements PurchasesUpdatedListener {
           return;
         }
 
-        BillingFlowParams.Builder purchaseParams = BillingFlowParams.newBuilder()
-          .setSkuDetails(skuDetails);
+        BillingFlowParams.Builder purchaseParams = BillingFlowParams.newBuilder().setSkuDetails(skuDetails);
+
         if (oldPurchaseToken != null) {
           purchaseParams.setSubscriptionUpdateParams(
             BillingFlowParams.SubscriptionUpdateParams.newBuilder().setOldSkuPurchaseToken(oldPurchaseToken).build()
           );
         }
+
+        /**
+         * For Android billing to work without a 'Something went wrong on our end. Please try again.'
+         * error, we must provide BOTH obfuscatedAccountId and obfuscatedProfileId.
+         */
+        if (obfuscatedAccountId != null && obfuscatedProfileId != null) {
+          purchaseParams.setObfuscatedAccountId(obfuscatedAccountId);
+          purchaseParams.setObfuscatedProfileId(obfuscatedProfileId);
+        }
+
+        // false will be the default, unless true is passed
+        purchaseParams.setVrPurchaseFlow(isVrPurchaseFlow);
+
         mBillingClient.launchBillingFlow(mActivity, purchaseParams.build());
       }
     };
@@ -258,7 +279,7 @@ public class BillingManager implements PurchasesUpdatedListener {
   }
 
   /**
-   * Query both in app purchases and subscriptions and deliver the result in a formalized way 
+   * Query both in app purchases and subscriptions and deliver the result in a formalized way
    * through a listener
    */
   public void queryPurchases(final Promise promise) {

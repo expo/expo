@@ -1,6 +1,6 @@
 {
   "name": "expo",
-  "version": "44.0.0-beta.1",
+  "version": "45.0.0-beta.4",
   "description": "The Expo SDK",
   "main": "build/Expo.js",
   "module": "build/Expo.js",
@@ -10,13 +10,12 @@
     "*.fx.web.js"
   ],
   "bin": {
-    "expo": "build/bin/cli.js"
+    "expo": "bin/cli.js"
   },
   "files": [
     "android",
     "bin",
     "build",
-    "build-cli",
     "ios",
     "scripts",
     "tools",
@@ -29,15 +28,11 @@
     "tsconfig.base.json"
   ],
   "scripts": {
-    "build:cli": "taskr",
-    "prepare:cli": "taskr release",
     "build": "expo-module build",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
-    "test:cli": "jest --config jest.cli.config.js",
-    "test:cli:e2e": "cross-env E2E=1 jest --config jest.cli.config.js",
-    "prepublishOnly": "npm run prepare:cli && expo-module prepublishOnly",
+    "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"
   },
   "jest": {
@@ -56,57 +51,41 @@
   "bugs": {
     "url": "https://github.com/expo/expo/issues"
   },
-  "homepage": "https://github.com/expo/expo/tree/master/packages/expo",
+  "homepage": "https://github.com/expo/expo/tree/main/packages/expo",
   "dependencies": {
     "@babel/runtime": "^7.14.0",
-    "@expo/config": "^6.0.15",
-    "@expo/config-plugins": "^4.0.15",
-    "@expo/metro-config": "~0.3.7",
-    "@expo/prebuild-config": "^3.0.15",
-    "@expo/vector-icons": "^12.0.4",
-    "babel-preset-expo": "~9.0.1",
-    "chalk": "^4.0.0",
+    "@expo/cli": "0.0.0",
+    "@expo/vector-icons": "^13.0.0",
+    "babel-preset-expo": "~9.1.0",
     "cross-spawn": "^6.0.5",
-    "expo-application": "~4.0.1",
-    "expo-asset": "~8.4.5",
-    "expo-constants": "~13.0.0",
-    "expo-file-system": "~13.2.0",
-    "expo-font": "~10.0.4",
-    "expo-keep-awake": "~10.0.1",
-    "expo-modules-autolinking": "0.5.5",
-    "expo-modules-core": "0.6.1",
-    "fbemitter": "^2.1.1",
+    "expo-application": "~4.1.0",
+    "expo-asset": "~8.5.0",
+    "expo-constants": "~13.1.0",
+    "expo-file-system": "~14.0.0",
+    "expo-font": "~10.1.0",
+    "expo-keep-awake": "~10.1.0",
+    "expo-modules-autolinking": "0.7.0",
+    "expo-modules-core": "0.9.0",
+    "fbemitter": "^3.0.0",
     "getenv": "^1.0.0",
     "invariant": "^2.2.4",
     "md5-file": "^3.2.3",
-    "pretty-format": "^26.5.2",
-    "uuid": "^3.4.0"
+    "node-fetch": "^2.6.7",
+    "pretty-format": "^26.5.2"
   },
   "optionalDependencies": {
-    "expo-error-recovery": "~3.0.4"
-  },
-  "taskr": {
-    "requires": [
-      "./taskfile-swc.js"
-    ]
+    "expo-error-recovery": "~3.1.0"
   },
   "devDependencies": {
-    "@swc/core": "^1.2.126",
-    "@taskr/clear": "1.1.0",
-    "@taskr/esnext": "1.1.0",
-    "@taskr/watch": "1.1.0",
     "@types/fbemitter": "^2.0.32",
     "@types/invariant": "^2.2.33",
     "@types/react": "~17.0.21",
-    "@types/react-native": "~0.64.12",
+    "@types/react-native": "~0.66.13",
     "@types/react-test-renderer": "^17.0.1",
     "@types/uuid": "^3.4.7",
-    "arg": "4.1.0",
-    "cross-env": "^7.0.3",
     "expo-module-scripts": "^2.0.0",
-    "react": "17.0.1",
-    "react-dom": "17.0.1",
-    "react-native": "0.64.3",
-    "taskr": "1.1.0"
+    "react": "17.0.2",
+    "react-dom": "17.0.2",
+    "react-native": "0.68.1"
   }
 }

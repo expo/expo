@@ -1,9 +1,9 @@
 import fs from 'fs-extra';
 import parseDiff from 'parse-diff';
-import { join } from 'path';
+import { join, relative } from 'path';
 
-import { spawnAsync, SpawnResult, SpawnOptions } from './Utils';
 import { EXPO_DIR } from './Constants';
+import { spawnAsync, SpawnResult, SpawnOptions } from './Utils';
 
 export type GitPullOptions = {
   rebase?: boolean;
@@ -97,7 +97,7 @@ export class GitDirectory {
     try {
       await this.runAsync(args, options);
       return true;
-    } catch (error) {
+    } catch {
       return false;
     }
   }
@@ -409,6 +409,14 @@ export class GitDirectory {
   }
 
   /**
+   * Reads a file content from a given ref.
+   */
+  async readFileAsync(ref: string, path): Promise<string> {
+    const { stdout } = await this.runAsync(['show', `${ref}:${relative(EXPO_DIR, path)}`]);
+    return stdout;
+  }
+
+  /**
    * Clones the repository but in a shallow way, which means
    * it downloads just one commit instead of the entire repository.
    * Returns `GitDirectory` instance of the cloned repository.
@@ -416,7 +424,7 @@ export class GitDirectory {
   static async shallowCloneAsync(
     directory: string,
     remoteUrl: string,
-    ref: string = 'master'
+    ref: string = 'main'
   ): Promise<GitDirectory> {
     const git = new GitDirectory(directory);
 

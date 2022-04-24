@@ -1,6 +1,6 @@
 ---
 title: SQLite
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-sqlite'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-sqlite'
 packageName: 'expo-sqlite'
 ---
 
@@ -28,11 +28,9 @@ const { getDefaultConfig } = require('expo/metro-config');
 
 const defaultConfig = getDefaultConfig(__dirname);
 
-module.exports = {
-  resolver: {
-    assetExts: [...defaultConfig.resolver.assetExts, 'db'],
-  },
-};
+defaultConfig.resolver.assetExts.push('db');
+
+module.exports = defaultConfig;
 ```
 
 - Use the following function (or similar) to open your database:

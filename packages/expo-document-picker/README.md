@@ -4,12 +4,12 @@ Provides access to the system's UI for selecting documents from the available pr
 
 # API documentation
 
-- [Documentation for the master branch](https://github.com/expo/expo/blob/master/docs/pages/versions/unversioned/sdk/document-picker.md)
-- [Documentation for the latest stable release](https://docs.expo.io/versions/latest/sdk/document-picker/)
+- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/document-picker.md)
+- [Documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/document-picker/)
 
 # Installation in managed Expo projects
 
-For [managed](https://docs.expo.io/versions/latest/introduction/managed-vs-bare/) Expo projects, please follow the installation instructions in the [API documentation for the latest stable release](https://docs.expo.io/versions/latest/sdk/document-picker/).
+For [managed](https://docs.expo.dev/versions/latest/introduction/managed-vs-bare/) Expo projects, please follow the installation instructions in the [API documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/document-picker/).
 
 # Installation in bare React Native projects
 
@@ -31,7 +31,7 @@ No additional set up necessary.
 
 ### Plugin
 
-In order to enable Apple iCloud storage in managed EAS builds, you'll need to define the `appleTeamId` property in the config plugin:
+You can change the `com.apple.developer.icloud-container-environment` entitlement using the `iCloudContainerEnvironment` property.
 
 `app.json`
 
@@ -41,18 +41,11 @@ In order to enable Apple iCloud storage in managed EAS builds, you'll need to de
     "usesIcloudStorage": true,
     "bundleIdentifier": "com.yourname.yourapp"
   },
-  "plugins": [
-    [
-      "expo-document-picker",
-      {
-        "appleTeamId": "YOUR_TEAM_ID"
-      }
-    ]
-  ]
+  "plugins": ["expo-document-picker"]
 }
 ```
 
-> Running `expo prebuild` will generate a the native project locally with the applied changes in your iOS Entitlements file.
+> Running `expo prebuild` will generate the [native project locally](https://docs.expo.io/workflow/customizing/) with the applied changes in your iOS Entitlements file.
 
 # Contributing
 

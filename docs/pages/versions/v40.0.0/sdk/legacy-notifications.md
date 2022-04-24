@@ -10,17 +10,17 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 The `Notifications` API from **`expo`** provides access to remote notifications (also known as push notifications) and local notifications (scheduling and immediate) related functions.
 
-<PlatformsSection title="Push notifications Platform Compatibility" android ios web={{ pending: 'https://github.com/expo/expo/issues/6895' }} />
+<PlatformsSection title="Push notifications Platform Compatibility" android ios />
 
-<PlatformsSection title="Local notifications Platform Compatibility" android emulator ios simulator web={{ pending: 'https://github.com/expo/expo/issues/6895' }} />
+<PlatformsSection title="Local notifications Platform Compatibility" android emulator ios simulator />
 
 > ⚠️ **Important Android limitation:** Local notifications are cleared when an Android device is restarted. ([See the feature request](https://expo.canny.io/feature-requests/p/keep-scheduled-notifications-after-reboot)).
 
 ## Installation
 
-This API is pre-installed in [managed](../../../introduction/managed-vs-bare.md#managed-workflow) apps. See the [expo-notifications README](https://github.com/expo/expo/tree/master/packages/expo-notifications) for information on how to integrate notifications into bare React Native apps.
+This API is pre-installed in [managed](../../../introduction/managed-vs-bare.md#managed-workflow) apps. See the [expo-notifications README](https://github.com/expo/expo/tree/main/packages/expo-notifications) for information on how to integrate notifications into bare React Native apps.
 
-> 💡 Please note that the [new `expo-notifications` library](https://github.com/expo/expo/tree/master/packages/expo-notifications) has a different API from the legacy Notifications API explained on this page. This API is deprecated and will be removed in SDK 41. [Here's a guide to help make the transition to the new library as easy as possible](https://github.com/expo/fyi/blob/master/LegacyNotifications-to-ExpoNotifications.md).
+> 💡 Please note that the [new `expo-notifications` library](https://github.com/expo/expo/tree/main/packages/expo-notifications) has a different API from the legacy Notifications API explained on this page. This API is deprecated and will be removed in SDK 41. [Here's a guide to help make the transition to the new library as easy as possible](https://github.com/expo/fyi/blob/master/LegacyNotifications-to-ExpoNotifications.md).
 
 ## API
 
@@ -392,5 +392,5 @@ An object used to describe an Android notification channel that you would like t
 ## Error Codes
 
 | Code                                      | Description                                                           |
-| ----------------------------------------- | --------------------------------------------------------------------- |
-| E_NOTIFICATIONS_TOKEN_REGISTRATION_FAILED | The device was unable to register for remote notifications with Expo. |  |
+| ----------------------------------------- | --------------------------------------------------------------------- | --- |
+| E_NOTIFICATIONS_TOKEN_REGISTRATION_FAILED | The device was unable to register for remote notifications with Expo. |     |

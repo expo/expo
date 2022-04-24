@@ -1,6 +1,6 @@
 ---
 title: Constants
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-constants'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-constants'
 packageName: 'expo-constants'
 ---
 

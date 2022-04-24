@@ -26,10 +26,15 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) RCTBridge *launcherBridge;
 @property (nonatomic, strong) EXDevLauncherPendingDeepLinkRegistry *pendingDeepLinkRegistry;
 @property (nonatomic, strong) id<EXUpdatesExternalInterface> updatesInterface;
+@property (nonatomic, readonly, assign) BOOL isStarted;
 
 + (instancetype)sharedInstance;
 
 - (void)startWithWindow:(UIWindow *)window delegate:(id<EXDevLauncherControllerDelegate>)delegate launchOptions:(NSDictionary * _Nullable)launchOptions;
+
+- (void)autoSetupPrepare:(id<EXDevLauncherControllerDelegate>)delegate launchOptions:(NSDictionary * _Nullable)launchOptions;
+
+- (void)autoSetupStart:(UIWindow *)window;
 
 - (NSURL *)sourceUrl;
 
@@ -38,6 +43,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)onDeepLink:(NSURL *)url options:(NSDictionary *)options;
 
 - (void)loadApp:(NSURL *)url onSuccess:(void (^ _Nullable)(void))onSuccess onError:(void (^ _Nullable)(NSError *error))onError;
+
+- (void)loadApp:(NSURL *)expoUrl withProjectUrl:(NSURL  * _Nullable)projectUrl onSuccess:(void (^ _Nullable)(void))onSuccess onError:(void (^ _Nullable)(NSError *error))onError;
 
 - (NSDictionary *)recentlyOpenedApps;
 
@@ -48,6 +55,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSURL * _Nullable)appManifestURL;
 
 - (BOOL)isAppRunning;
+
+- (BOOL)isStarted;
 
 - (UIWindow * _Nullable)currentWindow;
 
@@ -60,6 +69,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSDictionary *)getBuildInfo;
 
 - (void)copyToClipboard:(NSString *)content;
+
+- (NSDictionary *)getUpdatesConfig;
 
 @end
 

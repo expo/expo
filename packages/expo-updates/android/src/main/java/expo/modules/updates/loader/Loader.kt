@@ -71,6 +71,7 @@ abstract class Loader protected constructor(
   )
 
   protected abstract fun loadAsset(
+    context: Context,
     assetEntity: AssetEntity,
     updatesDirectory: File?,
     configuration: UpdatesConfiguration,
@@ -223,7 +224,7 @@ abstract class Loader protected constructor(
       }
 
       loadAsset(
-        assetEntity, updatesDirectory, configuration,
+        context, assetEntity, updatesDirectory, configuration,
         object : AssetDownloadCallback {
           override fun onFailure(e: Exception, assetEntity: AssetEntity) {
             val identifier = if (assetEntity.hash != null) "hash " + UpdatesUtils.bytesToHex(

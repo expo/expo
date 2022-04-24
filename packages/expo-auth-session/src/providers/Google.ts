@@ -35,6 +35,7 @@ export const discovery: DiscoveryDocument = {
   userInfoEndpoint: 'https://openidconnect.googleapis.com/v1/userinfo',
 };
 
+// @needsAudit
 export interface GoogleAuthRequestConfig extends ProviderAuthRequestConfig {
   /**
    * If the user's email address is known ahead of time, it can be supplied to be the default option.
@@ -42,7 +43,8 @@ export interface GoogleAuthRequestConfig extends ProviderAuthRequestConfig {
    */
   loginHint?: string;
   /**
-   * When `true`, the service will allow the user to switch between accounts (if possible). Defaults to `false`.
+   * When `true`, the service will allow the user to switch between accounts (if possible).
+   * @default false.
    */
   selectAccount?: boolean;
   /**
@@ -107,11 +109,19 @@ export interface GoogleAuthRequestConfig extends ProviderAuthRequestConfig {
   /**
    * Should the hook automatically exchange the response code for an authentication token.
    *
-   * Defaults to true on installed apps (iOS, Android) when `ResponseType.Code` is used (default).
+   * Defaults to `true` on installed apps (iOS, Android) when `ResponseType.Code` is used (default).
    */
   shouldAutoExchangeCode?: boolean;
+  /**
+   * Language code ISO 3166-1 alpha-2 region code, such as 'it' or 'pt-PT'.
+   */
+  language?: string;
 }
 
+// @needsAudit
+/**
+ * Extends [`AuthRequest`](#authrequest) and accepts [`GoogleAuthRequestConfig`](#googleauthrequestconfig) in the constructor.
+ */
 class GoogleAuthRequest extends AuthRequest {
   nonce?: string;
 
@@ -178,7 +188,7 @@ class GoogleAuthRequest extends AuthRequest {
  *
  * The id token can be retrieved with `response.params.id_token`.
  *
- * - [Get Started](https://docs.expo.io/guides/authentication/#google)
+ * - [Get Started](https://docs.expo.dev/guides/authentication/#google)
  *
  * @param config
  * @param redirectUriOptions
@@ -215,7 +225,7 @@ export function useIdTokenAuthRequest(
  * Returns a loaded request, a response, and a prompt method.
  * When the prompt method completes, then the response will be fulfilled.
  *
- * - [Get Started](https://docs.expo.io/guides/authentication/#google)
+ * - [Get Started](https://docs.expo.dev/guides/authentication/#google)
  *
  * @param config
  * @param redirectUriOptions

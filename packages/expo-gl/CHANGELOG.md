@@ -8,9 +8,34 @@
 
 ### 🐛 Bug fixes
 
-- Fix segfault in iOS draw loop. ([#15653](https://github.com/expo/expo/pull/15653) by [@wkozyra95](https://github.com/wkozyra95))
-
 ### 💡 Others
+
+## 11.2.2 — 2022-04-21
+
+### 🐛 Bug fixes
+
+- Fix import errors when option `inlineRequires` is enabled in `metro.config.js`. ([#17141](https://github.com/expo/expo/pull/17141) by [@wkozyra95](https://github.com/wkozyra95))
+
+## 11.2.1 — 2022-04-20
+
+_This version does not introduce any user-facing changes._
+
+## 11.2.0 — 2022-04-18
+
+### 🐛 Bug fixes
+
+- Fix support for React Native 0.68 by building `expo-gl-cpp` from source. ([#17060](https://github.com/expo/expo/pull/17060) by [@wkozyra95](https://github.com/wkozyra95))
+
+### ⚠️ Notices
+
+- On Android bump `compileSdkVersion` to `31`, `targetSdkVersion` to `31` and `Java` version to `11`. ([#16941](https://github.com/expo/expo/pull/16941) by [@bbarthec](https://github.com/bbarthec))
+
+## 11.1.2 - 2022-02-01
+
+### 🐛 Bug fixes
+
+- Fix segfault in iOS draw loop. ([#15653](https://github.com/expo/expo/pull/15653) by [@wkozyra95](https://github.com/wkozyra95))
+- Fix `Plugin with id 'maven' not found` build error from Android Gradle 7. ([#16080](https://github.com/expo/expo/pull/16080) by [@kudo](https://github.com/kudo))
 
 ## 11.1.1 — 2021-12-08
 

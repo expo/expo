@@ -1,6 +1,6 @@
 ---
 title: LocalAuthentication
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-local-authentication'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-local-authentication'
 packageName: 'expo-local-authentication'
 ---
 
@@ -10,7 +10,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 **`expo-local-authentication`** allows you to use FaceID and TouchID (iOS) or the Biometric Prompt (Android) to authenticate the user with a face or fingerprint scan.
 
-<PlatformsSection android emulator ios simulator web={{ pending: 'https://github.com/expo/expo/issues/4045' }} />
+<PlatformsSection android emulator ios simulator />
 
 ## Installation
 

@@ -29,19 +29,22 @@ class DevMenuTaskInfo extends React.PureComponent<Props, any> {
     const taskUrl = task.manifestUrl ? FriendlyUrls.toFriendlyString(task.manifestUrl) : '';
     const manifest = task.manifestString && JSON.parse(task.manifestString);
     const iconUrl = manifest && manifest.iconUrl;
-    const taskName = manifest && manifest.name;
+    const taskName = manifest && (manifest.name ?? manifest.extra.expoClient.name);
     const taskNameStyles = taskName ? styles.taskName : [styles.taskName, { color: '#c5c6c7' }];
     const sdkVersion = manifest && manifest.sdkVersion;
 
     return (
       <View style={styles.taskMetaRow}>
-        <View style={styles.taskIconColumn}>
-          {iconUrl ? (
-            <Image source={{ uri: iconUrl }} style={styles.taskIcon} />
-          ) : (
-            <View style={[styles.taskIcon, { backgroundColor: '#eee' }]} />
-          )}
-        </View>
+        {!manifest?.metadata?.branchName ? (
+          // EAS Updates don't have icons
+          <View style={styles.taskIconColumn}>
+            {iconUrl ? (
+              <Image source={{ uri: iconUrl }} style={styles.taskIcon} />
+            ) : (
+              <View style={[styles.taskIcon, { backgroundColor: '#eee' }]} />
+            )}
+          </View>
+        ) : null}
         <View style={styles.taskInfoColumn}>
           <StyledText style={taskNameStyles} numberOfLines={1} lightColor="#595c68">
             {taskName ? taskName : 'Untitled Experience'}
@@ -72,7 +75,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   taskIconColumn: {
-    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },

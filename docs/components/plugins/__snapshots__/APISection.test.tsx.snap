@@ -3,7 +3,7 @@
 exports[`APISection expo-apple-authentication 1`] = `
 <div>
   <h2
-    class="css-1v5aebx-h2-h2-STYLES_H2"
+    class="css-et60wy-h2-h2-STYLES_H2"
     data-heading="true"
   >
     <div
@@ -55,7 +55,7 @@ exports[`APISection expo-apple-authentication 1`] = `
   </h2>
   <div>
     <h3
-      class="css-icxoph-h3-h3-STYLES_H3"
+      class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
     >
       <div
@@ -73,7 +73,7 @@ exports[`APISection expo-apple-authentication 1`] = `
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               AppleAuthenticationButton
             </code>
@@ -110,17 +110,17 @@ exports[`APISection expo-apple-authentication 1`] = `
       </div>
     </h3>
     <p
-      class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+      class="css-101h856-paragraph-STYLES_PARAGRAPH"
       data-text="true"
     >
       <strong
-        class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+        class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
       >
         Type:
       </strong>
        
       <code
-        class="inline css-nuv12a-STYLES_INLINE_CODE"
+        class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
       >
         React.FC
         &lt;
@@ -136,7 +136,7 @@ exports[`APISection expo-apple-authentication 1`] = `
       </code>
     </p>
     <p
-      class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+      class="css-101h856-paragraph-STYLES_PARAGRAPH"
       data-text="true"
     >
       This component displays the proprietary "Sign In with Apple" / "Continue with Apple" button on
@@ -145,7 +145,7 @@ authentication process instead of a custom button. Limited customization of the 
 available via the provided properties.
     </p>
     <p
-      class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+      class="css-101h856-paragraph-STYLES_PARAGRAPH"
       data-text="true"
     >
       You should only attempt to render this if 
@@ -154,7 +154,7 @@ available via the provided properties.
         href="/#isavailableasync"
       >
         <code
-          class="inline css-nuv12a-STYLES_INLINE_CODE"
+          class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
         >
           AppleAuthentication.isAvailableAsync()
         </code>
@@ -162,14 +162,14 @@ available via the provided properties.
       
 resolves to 
       <code
-        class="inline css-nuv12a-STYLES_INLINE_CODE"
+        class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
       >
         true
       </code>
       . This component will render nothing if it is not available, and you will get
 a warning in development mode (
       <code
-        class="inline css-nuv12a-STYLES_INLINE_CODE"
+        class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
       >
         __DEV__ === true
       </code>
@@ -178,45 +178,45 @@ a warning in development mode (
     
 
     <p
-      class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+      class="css-101h856-paragraph-STYLES_PARAGRAPH"
       data-text="true"
     >
       The properties of this component extend from 
       <code
-        class="inline css-nuv12a-STYLES_INLINE_CODE"
+        class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
       >
         View
       </code>
       ; however, you should not attempt to set
 
       <code
-        class="inline css-nuv12a-STYLES_INLINE_CODE"
+        class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
       >
         backgroundColor
       </code>
        or 
       <code
-        class="inline css-nuv12a-STYLES_INLINE_CODE"
+        class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
       >
         borderRadius
       </code>
        with the 
       <code
-        class="inline css-nuv12a-STYLES_INLINE_CODE"
+        class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
       >
         style
       </code>
        property. This will not work and is against
 the App Store Guidelines. Instead, you should use the 
       <code
-        class="inline css-nuv12a-STYLES_INLINE_CODE"
+        class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
       >
         buttonStyle
       </code>
        property to choose one of the
 predefined color styles and the 
       <code
-        class="inline css-nuv12a-STYLES_INLINE_CODE"
+        class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
       >
         cornerRadius
       </code>
@@ -226,14 +226,14 @@ button.
     
 
     <p
-      class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+      class="css-101h856-paragraph-STYLES_PARAGRAPH"
       data-text="true"
     >
       Make sure to attach height and width via the style props as without these styles, the button will
 not appear on the screen.
     </p>
     <blockquote
-      class="css-e76wiv-paragraph-STYLES_BLOCKQUOTE"
+      class="css-13jwbau-paragraph-STYLES_BLOCKQUOTE"
       data-text="true"
     >
       <div>
@@ -257,7 +257,7 @@ not appear on the screen.
       </div>
       <div>
         <strong
-          class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+          class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
         >
           See: 
         </strong>
@@ -276,7 +276,7 @@ for more details.
       </div>
     </blockquote>
     <h3
-      class="css-icxoph-h3-h3-STYLES_H3"
+      class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
     >
       <div
@@ -294,7 +294,7 @@ for more details.
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               AppleAuthenticationButtonProps
             </code>
@@ -333,20 +333,66 @@ for more details.
     <br />
     <div>
       <ul
-        class="css-1a9yu92-paragraph-STYLES_UNORDERED_LIST-UL"
+        class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
         data-text="true"
       >
         <li
-          class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
+          class="docs-list-item css-1jvmp7m-STYLES_LIST_ITEM-STYLE_PROP_LIST-PROP_LIST_ELEMENT_STYLE-LI"
         >
           <h4
-            class="css-1j2s5xo-h4-h4-STYLES_H4"
+            class="  css-838f5l-h4-h4-STYLES_H4"
+            data-components-heading="true"
             data-heading="true"
           >
-            buttonStyle
+            <div
+              class="css-1rh3o5q-STYLES_PERMALINK"
+            >
+              <span
+                class="css-zonpcr-STYLES_PERMALINK_TARGET"
+                id="buttonstyle"
+              />
+              <a
+                class="css-15lh5hg-STYLES_PERMALINK_LINK"
+                href="#buttonstyle"
+              >
+                <span
+                  class="css-1icvi79-STYLED_PERMALINK_CONTENT"
+                >
+                  buttonStyle
+                </span>
+                <span
+                  class="css-10vdcw8-STYLES_PERMALINK_ICON"
+                >
+                  <svg
+                    aria-label="permalink"
+                    class="anchor-icon"
+                    fill="none"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    width="24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                      stroke="#9B9B9B"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    />
+                    <path
+                      d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                      stroke="#9B9B9B"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    />
+                  </svg>
+                </span>
+              </a>
+            </div>
           </h4>
           <p
-            class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+            class="css-101h856-paragraph-STYLES_PARAGRAPH"
             data-text="true"
           >
             <span
@@ -356,7 +402,7 @@ for more details.
             </span>
              
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               <a
                 class="css-12zqqiz-STYLES_EXTERNAL_LINK"
@@ -367,23 +413,72 @@ for more details.
             </code>
           </p>
           <p
-            class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+            class="css-101h856-paragraph-STYLES_PARAGRAPH"
             data-text="true"
           >
             The Apple-defined color scheme to use to display the button.
           </p>
+          <hr
+            class="css-bxzs19-STYLES_DIVIDER"
+          />
         </li>
         <li
-          class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
+          class="docs-list-item css-1jvmp7m-STYLES_LIST_ITEM-STYLE_PROP_LIST-PROP_LIST_ELEMENT_STYLE-LI"
         >
           <h4
-            class="css-1j2s5xo-h4-h4-STYLES_H4"
+            class="  css-838f5l-h4-h4-STYLES_H4"
+            data-components-heading="true"
             data-heading="true"
           >
-            buttonType
+            <div
+              class="css-1rh3o5q-STYLES_PERMALINK"
+            >
+              <span
+                class="css-zonpcr-STYLES_PERMALINK_TARGET"
+                id="buttontype"
+              />
+              <a
+                class="css-15lh5hg-STYLES_PERMALINK_LINK"
+                href="#buttontype"
+              >
+                <span
+                  class="css-1icvi79-STYLED_PERMALINK_CONTENT"
+                >
+                  buttonType
+                </span>
+                <span
+                  class="css-10vdcw8-STYLES_PERMALINK_ICON"
+                >
+                  <svg
+                    aria-label="permalink"
+                    class="anchor-icon"
+                    fill="none"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    width="24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                      stroke="#9B9B9B"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    />
+                    <path
+                      d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                      stroke="#9B9B9B"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    />
+                  </svg>
+                </span>
+              </a>
+            </div>
           </h4>
           <p
-            class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+            class="css-101h856-paragraph-STYLES_PARAGRAPH"
             data-text="true"
           >
             <span
@@ -393,7 +488,7 @@ for more details.
             </span>
              
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               <a
                 class="css-12zqqiz-STYLES_EXTERNAL_LINK"
@@ -404,23 +499,72 @@ for more details.
             </code>
           </p>
           <p
-            class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+            class="css-101h856-paragraph-STYLES_PARAGRAPH"
             data-text="true"
           >
             The type of button text to display ("Sign In with Apple" vs. "Continue with Apple").
           </p>
+          <hr
+            class="css-bxzs19-STYLES_DIVIDER"
+          />
         </li>
         <li
-          class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
+          class="docs-list-item css-1jvmp7m-STYLES_LIST_ITEM-STYLE_PROP_LIST-PROP_LIST_ELEMENT_STYLE-LI"
         >
           <h4
-            class="css-1j2s5xo-h4-h4-STYLES_H4"
+            class="  css-838f5l-h4-h4-STYLES_H4"
+            data-components-heading="true"
             data-heading="true"
           >
-            cornerRadius
+            <div
+              class="css-1rh3o5q-STYLES_PERMALINK"
+            >
+              <span
+                class="css-zonpcr-STYLES_PERMALINK_TARGET"
+                id="cornerradius"
+              />
+              <a
+                class="css-15lh5hg-STYLES_PERMALINK_LINK"
+                href="#cornerradius"
+              >
+                <span
+                  class="css-1icvi79-STYLED_PERMALINK_CONTENT"
+                >
+                  cornerRadius
+                </span>
+                <span
+                  class="css-10vdcw8-STYLES_PERMALINK_ICON"
+                >
+                  <svg
+                    aria-label="permalink"
+                    class="anchor-icon"
+                    fill="none"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    width="24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                      stroke="#9B9B9B"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    />
+                    <path
+                      d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                      stroke="#9B9B9B"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    />
+                  </svg>
+                </span>
+              </a>
+            </div>
           </h4>
           <p
-            class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+            class="css-101h856-paragraph-STYLES_PARAGRAPH"
             data-text="true"
           >
             <span
@@ -435,36 +579,85 @@ for more details.
             </span>
              
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               number
             </code>
           </p>
           <p
-            class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+            class="css-101h856-paragraph-STYLES_PARAGRAPH"
             data-text="true"
           >
             The border radius to use when rendering the button. This works similarly to
 
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               style.borderRadius
             </code>
              in other Views.
           </p>
+          <hr
+            class="css-bxzs19-STYLES_DIVIDER"
+          />
         </li>
         <li
-          class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
+          class="docs-list-item css-1jvmp7m-STYLES_LIST_ITEM-STYLE_PROP_LIST-PROP_LIST_ELEMENT_STYLE-LI"
         >
           <h4
-            class="css-1j2s5xo-h4-h4-STYLES_H4"
+            class="  css-838f5l-h4-h4-STYLES_H4"
+            data-components-heading="true"
             data-heading="true"
           >
-            style
+            <div
+              class="css-1rh3o5q-STYLES_PERMALINK"
+            >
+              <span
+                class="css-zonpcr-STYLES_PERMALINK_TARGET"
+                id="style"
+              />
+              <a
+                class="css-15lh5hg-STYLES_PERMALINK_LINK"
+                href="#style"
+              >
+                <span
+                  class="css-1icvi79-STYLED_PERMALINK_CONTENT"
+                >
+                  style
+                </span>
+                <span
+                  class="css-10vdcw8-STYLES_PERMALINK_ICON"
+                >
+                  <svg
+                    aria-label="permalink"
+                    class="anchor-icon"
+                    fill="none"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    width="24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                      stroke="#9B9B9B"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    />
+                    <path
+                      d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                      stroke="#9B9B9B"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    />
+                  </svg>
+                </span>
+              </a>
+            </div>
           </h4>
           <p
-            class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+            class="css-101h856-paragraph-STYLES_PARAGRAPH"
             data-text="true"
           >
             <span
@@ -479,7 +672,7 @@ for more details.
             </span>
              
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               StyleProp
               &lt;
@@ -495,7 +688,7 @@ for more details.
                 <span>
                   <a
                     class="css-12zqqiz-STYLES_EXTERNAL_LINK"
-                    href="/react-native/view-style-props"
+                    href="/versions/latest/react-native/view-style-props"
                   >
                     ViewStyle
                   </a>
@@ -516,36 +709,85 @@ for more details.
             </code>
           </p>
           <p
-            class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+            class="css-101h856-paragraph-STYLES_PARAGRAPH"
             data-text="true"
           >
             The custom style to apply to the button. Should not include 
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               backgroundColor
             </code>
              or 
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               borderRadius
             </code>
             
 properties.
           </p>
+          <hr
+            class="css-bxzs19-STYLES_DIVIDER"
+          />
         </li>
         <li
-          class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
+          class="docs-list-item css-1jvmp7m-STYLES_LIST_ITEM-STYLE_PROP_LIST-PROP_LIST_ELEMENT_STYLE-LI"
         >
           <h4
-            class="css-1j2s5xo-h4-h4-STYLES_H4"
+            class="  css-838f5l-h4-h4-STYLES_H4"
+            data-components-heading="true"
             data-heading="true"
           >
-            onPress
+            <div
+              class="css-1rh3o5q-STYLES_PERMALINK"
+            >
+              <span
+                class="css-zonpcr-STYLES_PERMALINK_TARGET"
+                id="onpress"
+              />
+              <a
+                class="css-15lh5hg-STYLES_PERMALINK_LINK"
+                href="#onpress"
+              >
+                <span
+                  class="css-1icvi79-STYLED_PERMALINK_CONTENT"
+                >
+                  onPress
+                </span>
+                <span
+                  class="css-10vdcw8-STYLES_PERMALINK_ICON"
+                >
+                  <svg
+                    aria-label="permalink"
+                    class="anchor-icon"
+                    fill="none"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    width="24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                      stroke="#9B9B9B"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    />
+                    <path
+                      d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                      stroke="#9B9B9B"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    />
+                  </svg>
+                </span>
+              </a>
+            </div>
           </h4>
           <p
-            class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+            class="css-101h856-paragraph-STYLES_PARAGRAPH"
             data-text="true"
           >
             <span
@@ -555,7 +797,7 @@ properties.
             </span>
              
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               (
               
@@ -564,7 +806,7 @@ properties.
             </code>
           </p>
           <p
-            class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+            class="css-101h856-paragraph-STYLES_PARAGRAPH"
             data-text="true"
           >
             The method to call when the user presses the button. You should call 
@@ -573,7 +815,7 @@ properties.
               href="/#isavailableasync"
             >
               <code
-                class="inline css-nuv12a-STYLES_INLINE_CODE"
+                class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
               >
                 AppleAuthentication.signInAsync
               </code>
@@ -581,27 +823,76 @@ properties.
             
 in here.
           </p>
+          <hr
+            class="css-bxzs19-STYLES_DIVIDER"
+          />
         </li>
       </ul>
       <h4
-        class="css-1j2s5xo-h4-h4-STYLES_H4"
+        class="  css-838f5l-h4-h4-STYLES_H4"
+        data-components-heading="true"
         data-heading="true"
       >
-        Inherited Props
+        <div
+          class="css-1rh3o5q-STYLES_PERMALINK"
+        >
+          <span
+            class="css-zonpcr-STYLES_PERMALINK_TARGET"
+            id="inherited-props"
+          />
+          <a
+            class="css-15lh5hg-STYLES_PERMALINK_LINK"
+            href="#inherited-props"
+          >
+            <span
+              class="css-1icvi79-STYLED_PERMALINK_CONTENT"
+            >
+              Inherited Props
+            </span>
+            <span
+              class="css-10vdcw8-STYLES_PERMALINK_ICON"
+            >
+              <svg
+                aria-label="permalink"
+                class="anchor-icon"
+                fill="none"
+                height="24"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                  stroke="#9B9B9B"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+                <path
+                  d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                  stroke="#9B9B9B"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+              </svg>
+            </span>
+          </a>
+        </div>
       </h4>
       <ul
-        class="css-1a9yu92-paragraph-STYLES_UNORDERED_LIST-UL"
+        class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
         data-text="true"
       >
         <li
-          class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
+          class="docs-list-item css-xdejd6-STYLES_LIST_ITEM-LI"
         >
           <code
-            class="inline css-nuv12a-STYLES_INLINE_CODE"
+            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
           >
             <a
               class="css-12zqqiz-STYLES_EXTERNAL_LINK"
-              href="/react-native/view#props"
+              href="/versions/latest/react-native/view#props"
             >
               ViewProps
             </a>
@@ -611,7 +902,7 @@ in here.
     </div>
   </div>
   <h2
-    class="css-1v5aebx-h2-h2-STYLES_H2"
+    class="css-et60wy-h2-h2-STYLES_H2"
     data-heading="true"
   >
     <div
@@ -663,7 +954,7 @@ in here.
   </h2>
   <div>
     <h3
-      class="css-icxoph-h3-h3-STYLES_H3"
+      class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
     >
       <div
@@ -681,7 +972,7 @@ in here.
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-ni28os-STYLES_INLINE_CODE-STYLES_NOT_EXPOSED_HEADER-InlineCode"
             >
               getCredentialStateAsync(user)
             </code>
@@ -718,7 +1009,7 @@ in here.
       </div>
     </h3>
     <h4
-      class="  css-1j2s5xo-h4-h4-STYLES_H4"
+      class="  css-838f5l-h4-h4-STYLES_H4"
       data-components-heading="true"
       data-heading="true"
     >
@@ -770,19 +1061,19 @@ in here.
       </div>
     </h4>
     <ul
-      class="css-1a9yu92-paragraph-STYLES_UNORDERED_LIST-UL"
+      class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
       data-text="true"
     >
       <li
-        class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
+        class="docs-list-item css-xdejd6-STYLES_LIST_ITEM-LI"
       >
         <strong
-          class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+          class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
         >
           user
            (
           <code
-            class="inline css-nuv12a-STYLES_INLINE_CODE"
+            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
           >
             string
           </code>
@@ -797,7 +1088,7 @@ This should come from the user field of an
             href="/#appleauthenticationcredentialstate"
           >
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               AppleAuthenticationCredential
             </code>
@@ -807,7 +1098,7 @@ This should come from the user field of an
       </li>
     </ul>
     <p
-      class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+      class="css-101h856-paragraph-STYLES_PARAGRAPH"
       data-text="true"
     >
       Queries the current state of a user credential, to determine if it is still valid or if it has been revoked.
@@ -815,7 +1106,7 @@ This should come from the user field of an
     
 
     <blockquote
-      class="css-e76wiv-paragraph-STYLES_BLOCKQUOTE"
+      class="css-13jwbau-paragraph-STYLES_BLOCKQUOTE"
       data-text="true"
     >
       <div>
@@ -841,7 +1132,7 @@ This should come from the user field of an
         
 
         <strong
-          class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+          class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
         >
           Note:
         </strong>
@@ -852,7 +1143,7 @@ This should come from the user field of an
     </blockquote>
     <div>
       <h4
-        class="  css-1j2s5xo-h4-h4-STYLES_H4"
+        class="  css-838f5l-h4-h4-STYLES_H4"
         data-components-heading="true"
         data-heading="true"
       >
@@ -904,14 +1195,14 @@ This should come from the user field of an
         </div>
       </h4>
       <ul
-        class="css-1a9yu92-paragraph-STYLES_UNORDERED_LIST-UL"
+        class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
         data-text="true"
       >
         <li
-          class="docs-list-item css-npeppb-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
+          class="docs-list-item css-1wwpkbk-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
         >
           <code
-            class="inline css-nuv12a-STYLES_INLINE_CODE"
+            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
           >
             <a
               class="css-12zqqiz-STYLES_EXTERNAL_LINK"
@@ -934,7 +1225,7 @@ This should come from the user field of an
         </li>
       </ul>
       <p
-        class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+        class="css-101h856-paragraph-STYLES_PARAGRAPH"
         data-text="true"
       >
         A promise that fulfills with an 
@@ -943,7 +1234,7 @@ This should come from the user field of an
           href="/#appleauthenticationcredentialstate"
         >
           <code
-            class="inline css-nuv12a-STYLES_INLINE_CODE"
+            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
           >
             AppleAuthenticationCredentialState
           </code>
@@ -956,7 +1247,7 @@ value depending on the state of the credential.
   </div>
   <div>
     <h3
-      class="css-icxoph-h3-h3-STYLES_H3"
+      class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
     >
       <div
@@ -974,7 +1265,7 @@ value depending on the state of the credential.
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-ni28os-STYLES_INLINE_CODE-STYLES_NOT_EXPOSED_HEADER-InlineCode"
             >
               isAvailableAsync()
             </code>
@@ -1011,14 +1302,14 @@ value depending on the state of the credential.
       </div>
     </h3>
     <p
-      class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+      class="css-101h856-paragraph-STYLES_PARAGRAPH"
       data-text="true"
     >
       Determine if the current device's operating system supports Apple authentication.
     </p>
     <div>
       <h4
-        class="  css-1j2s5xo-h4-h4-STYLES_H4"
+        class="  css-838f5l-h4-h4-STYLES_H4"
         data-components-heading="true"
         data-heading="true"
       >
@@ -1070,14 +1361,14 @@ value depending on the state of the credential.
         </div>
       </h4>
       <ul
-        class="css-1a9yu92-paragraph-STYLES_UNORDERED_LIST-UL"
+        class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
         data-text="true"
       >
         <li
-          class="docs-list-item css-npeppb-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
+          class="docs-list-item css-1wwpkbk-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
         >
           <code
-            class="inline css-nuv12a-STYLES_INLINE_CODE"
+            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
           >
             <a
               class="css-12zqqiz-STYLES_EXTERNAL_LINK"
@@ -1095,18 +1386,18 @@ value depending on the state of the credential.
         </li>
       </ul>
       <p
-        class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+        class="css-101h856-paragraph-STYLES_PARAGRAPH"
         data-text="true"
       >
         A promise that fulfills with 
         <code
-          class="inline css-nuv12a-STYLES_INLINE_CODE"
+          class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
         >
           true
         </code>
          if the system supports Apple authentication, and 
         <code
-          class="inline css-nuv12a-STYLES_INLINE_CODE"
+          class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
         >
           false
         </code>
@@ -1117,7 +1408,7 @@ value depending on the state of the credential.
   </div>
   <div>
     <h3
-      class="css-icxoph-h3-h3-STYLES_H3"
+      class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
     >
       <div
@@ -1135,7 +1426,7 @@ value depending on the state of the credential.
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-ni28os-STYLES_INLINE_CODE-STYLES_NOT_EXPOSED_HEADER-InlineCode"
             >
               refreshAsync(options)
             </code>
@@ -1172,7 +1463,7 @@ value depending on the state of the credential.
       </div>
     </h3>
     <h4
-      class="  css-1j2s5xo-h4-h4-STYLES_H4"
+      class="  css-838f5l-h4-h4-STYLES_H4"
       data-components-heading="true"
       data-heading="true"
     >
@@ -1224,19 +1515,19 @@ value depending on the state of the credential.
       </div>
     </h4>
     <ul
-      class="css-1a9yu92-paragraph-STYLES_UNORDERED_LIST-UL"
+      class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
       data-text="true"
     >
       <li
-        class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
+        class="docs-list-item css-xdejd6-STYLES_LIST_ITEM-LI"
       >
         <strong
-          class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+          class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
         >
           options
            (
           <code
-            class="inline css-nuv12a-STYLES_INLINE_CODE"
+            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
           >
             <a
               class="css-12zqqiz-STYLES_EXTERNAL_LINK"
@@ -1255,7 +1546,7 @@ value depending on the state of the credential.
             href="/#appleauthenticationrefreshoptions"
           >
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               AppleAuthenticationRefreshOptions
             </code>
@@ -1265,7 +1556,7 @@ value depending on the state of the credential.
       </li>
     </ul>
     <p
-      class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+      class="css-101h856-paragraph-STYLES_PARAGRAPH"
       data-text="true"
     >
       An operation that refreshes the logged-in user’s credentials.
@@ -1273,7 +1564,7 @@ Calling this method will show the sign in modal before actually refreshing the u
     </p>
     <div>
       <h4
-        class="  css-1j2s5xo-h4-h4-STYLES_H4"
+        class="  css-838f5l-h4-h4-STYLES_H4"
         data-components-heading="true"
         data-heading="true"
       >
@@ -1325,14 +1616,14 @@ Calling this method will show the sign in modal before actually refreshing the u
         </div>
       </h4>
       <ul
-        class="css-1a9yu92-paragraph-STYLES_UNORDERED_LIST-UL"
+        class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
         data-text="true"
       >
         <li
-          class="docs-list-item css-npeppb-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
+          class="docs-list-item css-1wwpkbk-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
         >
           <code
-            class="inline css-nuv12a-STYLES_INLINE_CODE"
+            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
           >
             <a
               class="css-12zqqiz-STYLES_EXTERNAL_LINK"
@@ -1355,7 +1646,7 @@ Calling this method will show the sign in modal before actually refreshing the u
         </li>
       </ul>
       <p
-        class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+        class="css-101h856-paragraph-STYLES_PARAGRAPH"
         data-text="true"
       >
         A promise that fulfills with an 
@@ -1364,7 +1655,7 @@ Calling this method will show the sign in modal before actually refreshing the u
           href="/#appleauthenticationcredential"
         >
           <code
-            class="inline css-nuv12a-STYLES_INLINE_CODE"
+            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
           >
             AppleAuthenticationCredential
           </code>
@@ -1372,7 +1663,7 @@ Calling this method will show the sign in modal before actually refreshing the u
         
 object after a successful authentication, and rejects with 
         <code
-          class="inline css-nuv12a-STYLES_INLINE_CODE"
+          class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
         >
           ERR_CANCELED
         </code>
@@ -1384,7 +1675,7 @@ refresh operation.
   </div>
   <div>
     <h3
-      class="css-icxoph-h3-h3-STYLES_H3"
+      class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
     >
       <div
@@ -1402,7 +1693,7 @@ refresh operation.
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-ni28os-STYLES_INLINE_CODE-STYLES_NOT_EXPOSED_HEADER-InlineCode"
             >
               signInAsync(options)
             </code>
@@ -1439,7 +1730,7 @@ refresh operation.
       </div>
     </h3>
     <h4
-      class="  css-1j2s5xo-h4-h4-STYLES_H4"
+      class="  css-838f5l-h4-h4-STYLES_H4"
       data-components-heading="true"
       data-heading="true"
     >
@@ -1491,20 +1782,20 @@ refresh operation.
       </div>
     </h4>
     <ul
-      class="css-1a9yu92-paragraph-STYLES_UNORDERED_LIST-UL"
+      class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
       data-text="true"
     >
       <li
-        class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
+        class="docs-list-item css-xdejd6-STYLES_LIST_ITEM-LI"
       >
         <strong
-          class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+          class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
         >
           options
           ?
            (
           <code
-            class="inline css-nuv12a-STYLES_INLINE_CODE"
+            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
           >
             <a
               class="css-12zqqiz-STYLES_EXTERNAL_LINK"
@@ -1523,7 +1814,7 @@ refresh operation.
             href="/#appleauthenticationsigninoptions"
           >
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               AppleAuthenticationSignInOptions
             </code>
@@ -1533,14 +1824,14 @@ refresh operation.
       </li>
     </ul>
     <p
-      class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+      class="css-101h856-paragraph-STYLES_PARAGRAPH"
       data-text="true"
     >
       Sends a request to the operating system to initiate the Apple authentication flow, which will
 present a modal to the user over your app and allow them to sign in.
     </p>
     <p
-      class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+      class="css-101h856-paragraph-STYLES_PARAGRAPH"
       data-text="true"
     >
       You can request access to the user's full name and email address in this method, which allows you
@@ -1550,7 +1841,7 @@ of these options at runtime.
     
 
     <p
-      class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+      class="css-101h856-paragraph-STYLES_PARAGRAPH"
       data-text="true"
     >
       Additionally, you will only receive Apple Authentication Credentials the first time users sign
@@ -1569,7 +1860,7 @@ You can use
         href="/#appleauthenticationcredential"
       >
         <code
-          class="inline css-nuv12a-STYLES_INLINE_CODE"
+          class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
         >
           AppleAuthenticationCredential.user
         </code>
@@ -1579,7 +1870,7 @@ the user, since this remains the same for apps released by the same developer.
     </p>
     <div>
       <h4
-        class="  css-1j2s5xo-h4-h4-STYLES_H4"
+        class="  css-838f5l-h4-h4-STYLES_H4"
         data-components-heading="true"
         data-heading="true"
       >
@@ -1631,14 +1922,14 @@ the user, since this remains the same for apps released by the same developer.
         </div>
       </h4>
       <ul
-        class="css-1a9yu92-paragraph-STYLES_UNORDERED_LIST-UL"
+        class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
         data-text="true"
       >
         <li
-          class="docs-list-item css-npeppb-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
+          class="docs-list-item css-1wwpkbk-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
         >
           <code
-            class="inline css-nuv12a-STYLES_INLINE_CODE"
+            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
           >
             <a
               class="css-12zqqiz-STYLES_EXTERNAL_LINK"
@@ -1661,7 +1952,7 @@ the user, since this remains the same for apps released by the same developer.
         </li>
       </ul>
       <p
-        class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+        class="css-101h856-paragraph-STYLES_PARAGRAPH"
         data-text="true"
       >
         A promise that fulfills with an 
@@ -1670,7 +1961,7 @@ the user, since this remains the same for apps released by the same developer.
           href="/#appleauthenticationcredential"
         >
           <code
-            class="inline css-nuv12a-STYLES_INLINE_CODE"
+            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
           >
             AppleAuthenticationCredential
           </code>
@@ -1678,7 +1969,7 @@ the user, since this remains the same for apps released by the same developer.
         
 object after a successful authentication, and rejects with 
         <code
-          class="inline css-nuv12a-STYLES_INLINE_CODE"
+          class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
         >
           ERR_CANCELED
         </code>
@@ -1690,7 +1981,7 @@ sign-in operation.
   </div>
   <div>
     <h3
-      class="css-icxoph-h3-h3-STYLES_H3"
+      class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
     >
       <div
@@ -1708,7 +1999,7 @@ sign-in operation.
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-ni28os-STYLES_INLINE_CODE-STYLES_NOT_EXPOSED_HEADER-InlineCode"
             >
               signOutAsync(options)
             </code>
@@ -1745,7 +2036,7 @@ sign-in operation.
       </div>
     </h3>
     <h4
-      class="  css-1j2s5xo-h4-h4-STYLES_H4"
+      class="  css-838f5l-h4-h4-STYLES_H4"
       data-components-heading="true"
       data-heading="true"
     >
@@ -1797,19 +2088,19 @@ sign-in operation.
       </div>
     </h4>
     <ul
-      class="css-1a9yu92-paragraph-STYLES_UNORDERED_LIST-UL"
+      class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
       data-text="true"
     >
       <li
-        class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
+        class="docs-list-item css-xdejd6-STYLES_LIST_ITEM-LI"
       >
         <strong
-          class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+          class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
         >
           options
            (
           <code
-            class="inline css-nuv12a-STYLES_INLINE_CODE"
+            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
           >
             <a
               class="css-12zqqiz-STYLES_EXTERNAL_LINK"
@@ -1828,7 +2119,7 @@ sign-in operation.
             href="/#appleauthenticationsignoutoptions"
           >
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               AppleAuthenticationSignOutOptions
             </code>
@@ -1838,14 +2129,14 @@ sign-in operation.
       </li>
     </ul>
     <p
-      class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+      class="css-101h856-paragraph-STYLES_PARAGRAPH"
       data-text="true"
     >
       An operation that ends the authenticated session.
 Calling this method will show the sign in modal before actually signing the user out.
     </p>
     <p
-      class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+      class="css-101h856-paragraph-STYLES_PARAGRAPH"
       data-text="true"
     >
       It is not recommended to use this method to sign out the user as it works counterintuitively.
@@ -1856,7 +2147,7 @@ from using
         href="/#signinasync"
       >
         <code
-          class="inline css-nuv12a-STYLES_INLINE_CODE"
+          class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
         >
           signInAsync
         </code>
@@ -1867,7 +2158,7 @@ from using
         href="/#refreshasync"
       >
         <code
-          class="inline css-nuv12a-STYLES_INLINE_CODE"
+          class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
         >
           refreshAsync
         </code>
@@ -1876,7 +2167,7 @@ from using
     </p>
     <div>
       <h4
-        class="  css-1j2s5xo-h4-h4-STYLES_H4"
+        class="  css-838f5l-h4-h4-STYLES_H4"
         data-components-heading="true"
         data-heading="true"
       >
@@ -1928,14 +2219,14 @@ from using
         </div>
       </h4>
       <ul
-        class="css-1a9yu92-paragraph-STYLES_UNORDERED_LIST-UL"
+        class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
         data-text="true"
       >
         <li
-          class="docs-list-item css-npeppb-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
+          class="docs-list-item css-1wwpkbk-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
         >
           <code
-            class="inline css-nuv12a-STYLES_INLINE_CODE"
+            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
           >
             <a
               class="css-12zqqiz-STYLES_EXTERNAL_LINK"
@@ -1958,7 +2249,7 @@ from using
         </li>
       </ul>
       <p
-        class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+        class="css-101h856-paragraph-STYLES_PARAGRAPH"
         data-text="true"
       >
         A promise that fulfills with an 
@@ -1967,7 +2258,7 @@ from using
           href="/#appleauthenticationcredential"
         >
           <code
-            class="inline css-nuv12a-STYLES_INLINE_CODE"
+            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
           >
             AppleAuthenticationCredential
           </code>
@@ -1975,7 +2266,7 @@ from using
         
 object after a successful authentication, and rejects with 
         <code
-          class="inline css-nuv12a-STYLES_INLINE_CODE"
+          class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
         >
           ERR_CANCELED
         </code>
@@ -1985,7 +2276,7 @@ sign-out operation.
     </div>
   </div>
   <h2
-    class="css-1v5aebx-h2-h2-STYLES_H2"
+    class="css-et60wy-h2-h2-STYLES_H2"
     data-heading="true"
   >
     <div
@@ -2037,7 +2328,7 @@ sign-out operation.
   </h2>
   <div>
     <h3
-      class="css-icxoph-h3-h3-STYLES_H3"
+      class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
     >
       <div
@@ -2055,7 +2346,7 @@ sign-out operation.
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-ni28os-STYLES_INLINE_CODE-STYLES_NOT_EXPOSED_HEADER-InlineCode"
             >
               addRevokeListener(listener)
             </code>
@@ -2092,7 +2383,7 @@ sign-out operation.
       </div>
     </h3>
     <h4
-      class="  css-1j2s5xo-h4-h4-STYLES_H4"
+      class="  css-838f5l-h4-h4-STYLES_H4"
       data-components-heading="true"
       data-heading="true"
     >
@@ -2144,19 +2435,19 @@ sign-out operation.
       </div>
     </h4>
     <ul
-      class="css-1a9yu92-paragraph-STYLES_UNORDERED_LIST-UL"
+      class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
       data-text="true"
     >
       <li
-        class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
+        class="docs-list-item css-xdejd6-STYLES_LIST_ITEM-LI"
       >
         <strong
-          class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+          class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
         >
           listener
            (
           <code
-            class="inline css-nuv12a-STYLES_INLINE_CODE"
+            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
           >
             () =&gt;
              
@@ -2168,7 +2459,7 @@ sign-out operation.
     </ul>
     <div>
       <h4
-        class="  css-1j2s5xo-h4-h4-STYLES_H4"
+        class="  css-838f5l-h4-h4-STYLES_H4"
         data-components-heading="true"
         data-heading="true"
       >
@@ -2220,14 +2511,14 @@ sign-out operation.
         </div>
       </h4>
       <ul
-        class="css-1a9yu92-paragraph-STYLES_UNORDERED_LIST-UL"
+        class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
         data-text="true"
       >
         <li
-          class="docs-list-item css-npeppb-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
+          class="docs-list-item css-1wwpkbk-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
         >
           <code
-            class="inline css-nuv12a-STYLES_INLINE_CODE"
+            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
           >
             <a
               class="css-12zqqiz-STYLES_EXTERNAL_LINK"
@@ -2241,7 +2532,7 @@ sign-out operation.
     </div>
   </div>
   <h2
-    class="css-1v5aebx-h2-h2-STYLES_H2"
+    class="css-et60wy-h2-h2-STYLES_H2"
     data-heading="true"
   >
     <div
@@ -2293,7 +2584,7 @@ sign-out operation.
   </h2>
   <div>
     <h3
-      class="css-icxoph-h3-h3-STYLES_H3"
+      class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
     >
       <div
@@ -2311,7 +2602,7 @@ sign-out operation.
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               AppleAuthenticationCredential
               
@@ -2349,7 +2640,7 @@ sign-out operation.
       </div>
     </h3>
     <p
-      class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+      class="css-101h856-paragraph-STYLES_PARAGRAPH"
       data-text="true"
     >
       The object type returned from a successful call to 
@@ -2358,7 +2649,7 @@ sign-out operation.
         href="/#appleauthenticationsigninasyncoptions"
       >
         <code
-          class="inline css-nuv12a-STYLES_INLINE_CODE"
+          class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
         >
           AppleAuthentication.signInAsync()
         </code>
@@ -2370,7 +2661,7 @@ sign-out operation.
         href="/#appleauthenticationrefreshasyncoptions"
       >
         <code
-          class="inline css-nuv12a-STYLES_INLINE_CODE"
+          class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
         >
           AppleAuthentication.refreshAsync()
         </code>
@@ -2381,7 +2672,7 @@ sign-out operation.
         href="/#appleauthenticationsignoutasyncoptions"
       >
         <code
-          class="inline css-nuv12a-STYLES_INLINE_CODE"
+          class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
         >
           AppleAuthentication.signOutAsync()
         </code>
@@ -2390,7 +2681,7 @@ sign-out operation.
 which contains all of the pertinent user and credential information.
     </p>
     <blockquote
-      class="css-e76wiv-paragraph-STYLES_BLOCKQUOTE"
+      class="css-13jwbau-paragraph-STYLES_BLOCKQUOTE"
       data-text="true"
     >
       <div>
@@ -2414,7 +2705,7 @@ which contains all of the pertinent user and credential information.
       </div>
       <div>
         <strong
-          class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+          class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
         >
           See: 
         </strong>
@@ -2450,14 +2741,14 @@ for more details.
         <tr>
           <td>
             <strong
-              class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+              class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
             >
               authorizationCode
             </strong>
           </td>
           <td>
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               <span>
                 string
@@ -2473,7 +2764,7 @@ for more details.
               A short-lived session token used by your app for proof of authorization when interacting with
 the app's server counterpart. Unlike 
               <code
-                class="inline css-nuv12a-STYLES_INLINE_CODE"
+                class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
               >
                 user
               </code>
@@ -2484,14 +2775,14 @@ the app's server counterpart. Unlike
         <tr>
           <td>
             <strong
-              class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+              class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
             >
               email
             </strong>
           </td>
           <td>
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               <span>
                 string
@@ -2506,7 +2797,7 @@ the app's server counterpart. Unlike
             <span>
               The user's email address. Might not be present if you didn't request the 
               <code
-                class="inline css-nuv12a-STYLES_INLINE_CODE"
+                class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
               >
                 EMAIL
               </code>
@@ -2520,14 +2811,14 @@ an Apple domain.
         <tr>
           <td>
             <strong
-              class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+              class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
             >
               fullName
             </strong>
           </td>
           <td>
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               <span>
                 <a
@@ -2547,19 +2838,19 @@ an Apple domain.
             <span>
               The user's name. May be 
               <code
-                class="inline css-nuv12a-STYLES_INLINE_CODE"
+                class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
               >
                 null
               </code>
                or contain 
               <code
-                class="inline css-nuv12a-STYLES_INLINE_CODE"
+                class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
               >
                 null
               </code>
                values if you didn't request the 
               <code
-                class="inline css-nuv12a-STYLES_INLINE_CODE"
+                class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
               >
                 FULL_NAME
               </code>
@@ -2572,14 +2863,14 @@ your app.
         <tr>
           <td>
             <strong
-              class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+              class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
             >
               identityToken
             </strong>
           </td>
           <td>
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               <span>
                 string
@@ -2599,14 +2890,14 @@ your app.
         <tr>
           <td>
             <strong
-              class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+              class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
             >
               realUserStatus
             </strong>
           </td>
           <td>
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               <a
                 class="css-12zqqiz-STYLES_EXTERNAL_LINK"
@@ -2625,14 +2916,14 @@ your app.
         <tr>
           <td>
             <strong
-              class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+              class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
             >
               state
             </strong>
           </td>
           <td>
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               <span>
                 string
@@ -2647,7 +2938,7 @@ your app.
             <span>
               An arbitrary string that your app provided as 
               <code
-                class="inline css-nuv12a-STYLES_INLINE_CODE"
+                class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
               >
                 state
               </code>
@@ -2655,14 +2946,14 @@ your app.
 credential. Used to verify that the response was from the request you made. Can be used to
 avoid replay attacks. If you did not provide 
               <code
-                class="inline css-nuv12a-STYLES_INLINE_CODE"
+                class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
               >
                 state
               </code>
                when making the sign-in request, this field
 will be 
               <code
-                class="inline css-nuv12a-STYLES_INLINE_CODE"
+                class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
               >
                 null
               </code>
@@ -2673,14 +2964,14 @@ will be
         <tr>
           <td>
             <strong
-              class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+              class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
             >
               user
             </strong>
           </td>
           <td>
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               string
             </code>
@@ -2699,7 +2990,7 @@ developers.
   </div>
   <div>
     <h3
-      class="css-icxoph-h3-h3-STYLES_H3"
+      class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
     >
       <div
@@ -2717,7 +3008,7 @@ developers.
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               AppleAuthenticationFullName
               
@@ -2755,13 +3046,13 @@ developers.
       </div>
     </h3>
     <p
-      class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+      class="css-101h856-paragraph-STYLES_PARAGRAPH"
       data-text="true"
     >
       An object representing the tokenized portions of the user's full name. Any of all of the fields
 may be 
       <code
-        class="inline css-nuv12a-STYLES_INLINE_CODE"
+        class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
       >
         null
       </code>
@@ -2785,14 +3076,14 @@ may be
         <tr>
           <td>
             <strong
-              class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+              class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
             >
               familyName
             </strong>
           </td>
           <td>
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               <span>
                 string
@@ -2810,14 +3101,14 @@ may be
         <tr>
           <td>
             <strong
-              class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+              class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
             >
               givenName
             </strong>
           </td>
           <td>
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               <span>
                 string
@@ -2835,14 +3126,14 @@ may be
         <tr>
           <td>
             <strong
-              class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+              class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
             >
               middleName
             </strong>
           </td>
           <td>
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               <span>
                 string
@@ -2860,14 +3151,14 @@ may be
         <tr>
           <td>
             <strong
-              class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+              class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
             >
               namePrefix
             </strong>
           </td>
           <td>
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               <span>
                 string
@@ -2885,14 +3176,14 @@ may be
         <tr>
           <td>
             <strong
-              class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+              class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
             >
               nameSuffix
             </strong>
           </td>
           <td>
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               <span>
                 string
@@ -2910,14 +3201,14 @@ may be
         <tr>
           <td>
             <strong
-              class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+              class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
             >
               nickname
             </strong>
           </td>
           <td>
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               <span>
                 string
@@ -2937,7 +3228,7 @@ may be
   </div>
   <div>
     <h3
-      class="css-icxoph-h3-h3-STYLES_H3"
+      class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
     >
       <div
@@ -2955,7 +3246,7 @@ may be
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               AppleAuthenticationRefreshOptions
               
@@ -2993,7 +3284,7 @@ may be
       </div>
     </h3>
     <p
-      class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+      class="css-101h856-paragraph-STYLES_PARAGRAPH"
       data-text="true"
     >
       The options you can supply when making a call to 
@@ -3002,7 +3293,7 @@ may be
         href="/#appleauthenticationrefreshasyncoptions"
       >
         <code
-          class="inline css-nuv12a-STYLES_INLINE_CODE"
+          class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
         >
           AppleAuthentication.refreshAsync()
         </code>
@@ -3011,7 +3302,7 @@ may be
 You must include the ID string of the user whose credentials you'd like to refresh.
     </p>
     <blockquote
-      class="css-e76wiv-paragraph-STYLES_BLOCKQUOTE"
+      class="css-13jwbau-paragraph-STYLES_BLOCKQUOTE"
       data-text="true"
     >
       <div>
@@ -3035,7 +3326,7 @@ You must include the ID string of the user whose credentials you'd like to refre
       </div>
       <div>
         <strong
-          class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+          class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
         >
           See: 
         </strong>
@@ -3071,7 +3362,7 @@ for more details.
         <tr>
           <td>
             <strong
-              class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+              class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
             >
               requestedScopes
             </strong>
@@ -3084,7 +3375,7 @@ for more details.
           </td>
           <td>
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               <a
                 class="css-12zqqiz-STYLES_EXTERNAL_LINK"
@@ -3101,7 +3392,7 @@ for more details.
 choose to deny your app access to any scope at the time of logging in. You will still need to
 handle 
               <code
-                class="inline css-nuv12a-STYLES_INLINE_CODE"
+                class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
               >
                 null
               </code>
@@ -3109,13 +3400,13 @@ handle
 will only be provided to you the first time each user signs into your app; in subsequent
 requests they will be 
               <code
-                class="inline css-nuv12a-STYLES_INLINE_CODE"
+                class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
               >
                 null
               </code>
               . Defaults to 
               <code
-                class="inline css-nuv12a-STYLES_INLINE_CODE"
+                class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
               >
                 []
               </code>
@@ -3126,7 +3417,7 @@ requests they will be
         <tr>
           <td>
             <strong
-              class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+              class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
             >
               state
             </strong>
@@ -3139,7 +3430,7 @@ requests they will be
           </td>
           <td>
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               string
             </code>
@@ -3164,14 +3455,14 @@ OAuth 2.0 protocol
         <tr>
           <td>
             <strong
-              class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+              class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
             >
               user
             </strong>
           </td>
           <td>
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               string
             </code>
@@ -3185,7 +3476,7 @@ OAuth 2.0 protocol
   </div>
   <div>
     <h3
-      class="css-icxoph-h3-h3-STYLES_H3"
+      class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
     >
       <div
@@ -3203,7 +3494,7 @@ OAuth 2.0 protocol
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               AppleAuthenticationSignInOptions
               
@@ -3241,7 +3532,7 @@ OAuth 2.0 protocol
       </div>
     </h3>
     <p
-      class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+      class="css-101h856-paragraph-STYLES_PARAGRAPH"
       data-text="true"
     >
       The options you can supply when making a call to 
@@ -3250,7 +3541,7 @@ OAuth 2.0 protocol
         href="/#appleauthenticationsigninasyncoptions"
       >
         <code
-          class="inline css-nuv12a-STYLES_INLINE_CODE"
+          class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
         >
           AppleAuthentication.signInAsync()
         </code>
@@ -3259,7 +3550,7 @@ OAuth 2.0 protocol
 None of these options are required.
     </p>
     <blockquote
-      class="css-e76wiv-paragraph-STYLES_BLOCKQUOTE"
+      class="css-13jwbau-paragraph-STYLES_BLOCKQUOTE"
       data-text="true"
     >
       <div>
@@ -3283,7 +3574,7 @@ None of these options are required.
       </div>
       <div>
         <strong
-          class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+          class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
         >
           See: 
         </strong>
@@ -3319,7 +3610,7 @@ for more details.
         <tr>
           <td>
             <strong
-              class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+              class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
             >
               nonce
             </strong>
@@ -3332,7 +3623,7 @@ for more details.
           </td>
           <td>
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               string
             </code>
@@ -3355,7 +3646,7 @@ for more details.
         <tr>
           <td>
             <strong
-              class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+              class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
             >
               requestedScopes
             </strong>
@@ -3368,7 +3659,7 @@ for more details.
           </td>
           <td>
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               <a
                 class="css-12zqqiz-STYLES_EXTERNAL_LINK"
@@ -3385,7 +3676,7 @@ for more details.
 choose to deny your app access to any scope at the time of logging in. You will still need to
 handle 
               <code
-                class="inline css-nuv12a-STYLES_INLINE_CODE"
+                class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
               >
                 null
               </code>
@@ -3393,13 +3684,13 @@ handle
 will only be provided to you the first time each user signs into your app; in subsequent
 requests they will be 
               <code
-                class="inline css-nuv12a-STYLES_INLINE_CODE"
+                class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
               >
                 null
               </code>
               . Defaults to 
               <code
-                class="inline css-nuv12a-STYLES_INLINE_CODE"
+                class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
               >
                 []
               </code>
@@ -3410,7 +3701,7 @@ requests they will be
         <tr>
           <td>
             <strong
-              class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+              class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
             >
               state
             </strong>
@@ -3423,7 +3714,7 @@ requests they will be
           </td>
           <td>
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               string
             </code>
@@ -3450,7 +3741,7 @@ OAuth 2.0 protocol
   </div>
   <div>
     <h3
-      class="css-icxoph-h3-h3-STYLES_H3"
+      class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
     >
       <div
@@ -3468,7 +3759,7 @@ OAuth 2.0 protocol
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               AppleAuthenticationSignOutOptions
               
@@ -3506,7 +3797,7 @@ OAuth 2.0 protocol
       </div>
     </h3>
     <p
-      class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+      class="css-101h856-paragraph-STYLES_PARAGRAPH"
       data-text="true"
     >
       The options you can supply when making a call to 
@@ -3515,7 +3806,7 @@ OAuth 2.0 protocol
         href="/#appleauthenticationsignoutasyncoptions"
       >
         <code
-          class="inline css-nuv12a-STYLES_INLINE_CODE"
+          class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
         >
           AppleAuthentication.signOutAsync()
         </code>
@@ -3524,7 +3815,7 @@ OAuth 2.0 protocol
 You must include the ID string of the user to sign out.
     </p>
     <blockquote
-      class="css-e76wiv-paragraph-STYLES_BLOCKQUOTE"
+      class="css-13jwbau-paragraph-STYLES_BLOCKQUOTE"
       data-text="true"
     >
       <div>
@@ -3548,7 +3839,7 @@ You must include the ID string of the user to sign out.
       </div>
       <div>
         <strong
-          class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+          class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
         >
           See: 
         </strong>
@@ -3584,7 +3875,7 @@ for more details.
         <tr>
           <td>
             <strong
-              class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+              class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
             >
               state
             </strong>
@@ -3597,7 +3888,7 @@ for more details.
           </td>
           <td>
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               string
             </code>
@@ -3622,14 +3913,14 @@ OAuth 2.0 protocol
         <tr>
           <td>
             <strong
-              class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+              class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
             >
               user
             </strong>
           </td>
           <td>
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               string
             </code>
@@ -3643,7 +3934,7 @@ OAuth 2.0 protocol
   </div>
   <div>
     <h3
-      class="css-icxoph-h3-h3-STYLES_H3"
+      class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
     >
       <div
@@ -3661,7 +3952,7 @@ OAuth 2.0 protocol
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               Subscription
               
@@ -3716,14 +4007,14 @@ OAuth 2.0 protocol
         <tr>
           <td>
             <strong
-              class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+              class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
             >
               remove
             </strong>
           </td>
           <td>
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               (
               
@@ -3741,7 +4032,7 @@ OAuth 2.0 protocol
     </table>
   </div>
   <h2
-    class="css-1v5aebx-h2-h2-STYLES_H2"
+    class="css-et60wy-h2-h2-STYLES_H2"
     data-heading="true"
   >
     <div
@@ -3793,7 +4084,7 @@ OAuth 2.0 protocol
   </h2>
   <div>
     <h3
-      class="css-icxoph-h3-h3-STYLES_H3"
+      class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
     >
       <div
@@ -3811,7 +4102,7 @@ OAuth 2.0 protocol
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               AppleAuthenticationButtonStyle
             </code>
@@ -3848,7 +4139,7 @@ OAuth 2.0 protocol
       </div>
     </h3>
     <p
-      class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+      class="css-101h856-paragraph-STYLES_PARAGRAPH"
       data-text="true"
     >
       An enum whose values control which pre-defined color scheme to use when rendering an 
@@ -3857,7 +4148,7 @@ OAuth 2.0 protocol
         href="/#appleauthenticationappleauthenticationbutton"
       >
         <code
-          class="inline css-nuv12a-STYLES_INLINE_CODE"
+          class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
         >
           AppleAuthenticationButton
         </code>
@@ -3865,77 +4156,107 @@ OAuth 2.0 protocol
       .
     </p>
     <ul
-      class="css-1a9yu92-paragraph-STYLES_UNORDERED_LIST-UL"
+      class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
       data-text="true"
     >
       <li
-        class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
+        class="docs-list-item css-xdejd6-STYLES_LIST_ITEM-LI"
       >
-        <code
-          class="inline css-nuv12a-STYLES_INLINE_CODE"
+        <span
+          class="css-1aaoyoh-renderEnum"
         >
-          AppleAuthenticationButtonStyle
-          .
-          WHITE
-        </code>
-         : 
-        <code
-          class="inline css-nuv12a-STYLES_INLINE_CODE"
-        >
-          0
-        </code>
+          <code
+            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+          >
+            WHITE
+          </code>
+        </span>
          - 
         <span>
           White button with black text.
         </span>
+        <p
+          class="css-101h856-paragraph-STYLES_PARAGRAPH"
+          data-text="true"
+        >
+          <code
+            class="inline css-mcdrx3-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
+          >
+            AppleAuthenticationButtonStyle
+            .
+            WHITE
+             ＝ 
+            0
+          </code>
+        </p>
       </li>
       <li
-        class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
+        class="docs-list-item css-xdejd6-STYLES_LIST_ITEM-LI"
       >
-        <code
-          class="inline css-nuv12a-STYLES_INLINE_CODE"
+        <span
+          class="css-1aaoyoh-renderEnum"
         >
-          AppleAuthenticationButtonStyle
-          .
-          WHITE_OUTLINE
-        </code>
-         : 
-        <code
-          class="inline css-nuv12a-STYLES_INLINE_CODE"
-        >
-          1
-        </code>
+          <code
+            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+          >
+            WHITE_OUTLINE
+          </code>
+        </span>
          - 
         <span>
           White button with a black outline and black text.
         </span>
+        <p
+          class="css-101h856-paragraph-STYLES_PARAGRAPH"
+          data-text="true"
+        >
+          <code
+            class="inline css-mcdrx3-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
+          >
+            AppleAuthenticationButtonStyle
+            .
+            WHITE_OUTLINE
+             ＝ 
+            1
+          </code>
+        </p>
       </li>
       <li
-        class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
+        class="docs-list-item css-xdejd6-STYLES_LIST_ITEM-LI"
       >
-        <code
-          class="inline css-nuv12a-STYLES_INLINE_CODE"
+        <span
+          class="css-1aaoyoh-renderEnum"
         >
-          AppleAuthenticationButtonStyle
-          .
-          BLACK
-        </code>
-         : 
-        <code
-          class="inline css-nuv12a-STYLES_INLINE_CODE"
-        >
-          2
-        </code>
+          <code
+            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+          >
+            BLACK
+          </code>
+        </span>
          - 
         <span>
           Black button with white text.
         </span>
+        <p
+          class="css-101h856-paragraph-STYLES_PARAGRAPH"
+          data-text="true"
+        >
+          <code
+            class="inline css-mcdrx3-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
+          >
+            AppleAuthenticationButtonStyle
+            .
+            BLACK
+             ＝ 
+            2
+          </code>
+        </p>
       </li>
     </ul>
   </div>
   <div>
     <h3
-      class="css-icxoph-h3-h3-STYLES_H3"
+      class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
     >
       <div
@@ -3953,7 +4274,7 @@ OAuth 2.0 protocol
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               AppleAuthenticationButtonType
             </code>
@@ -3990,7 +4311,7 @@ OAuth 2.0 protocol
       </div>
     </h3>
     <p
-      class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+      class="css-101h856-paragraph-STYLES_PARAGRAPH"
       data-text="true"
     >
       An enum whose values control which pre-defined text to use when rendering an 
@@ -3999,7 +4320,7 @@ OAuth 2.0 protocol
         href="/#appleauthenticationappleauthenticationbutton"
       >
         <code
-          class="inline css-nuv12a-STYLES_INLINE_CODE"
+          class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
         >
           AppleAuthenticationButton
         </code>
@@ -4007,67 +4328,83 @@ OAuth 2.0 protocol
       .
     </p>
     <ul
-      class="css-1a9yu92-paragraph-STYLES_UNORDERED_LIST-UL"
+      class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
       data-text="true"
     >
       <li
-        class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
+        class="docs-list-item css-xdejd6-STYLES_LIST_ITEM-LI"
       >
-        <code
-          class="inline css-nuv12a-STYLES_INLINE_CODE"
+        <span
+          class="css-1aaoyoh-renderEnum"
         >
-          AppleAuthenticationButtonType
-          .
-          SIGN_IN
-        </code>
-         : 
-        <code
-          class="inline css-nuv12a-STYLES_INLINE_CODE"
-        >
-          0
-        </code>
+          <code
+            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+          >
+            SIGN_IN
+          </code>
+        </span>
          - 
         <span>
           "Sign in with Apple"
         </span>
+        <p
+          class="css-101h856-paragraph-STYLES_PARAGRAPH"
+          data-text="true"
+        >
+          <code
+            class="inline css-mcdrx3-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
+          >
+            AppleAuthenticationButtonType
+            .
+            SIGN_IN
+             ＝ 
+            0
+          </code>
+        </p>
       </li>
       <li
-        class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
+        class="docs-list-item css-xdejd6-STYLES_LIST_ITEM-LI"
       >
-        <code
-          class="inline css-nuv12a-STYLES_INLINE_CODE"
+        <span
+          class="css-1aaoyoh-renderEnum"
         >
-          AppleAuthenticationButtonType
-          .
-          CONTINUE
-        </code>
-         : 
-        <code
-          class="inline css-nuv12a-STYLES_INLINE_CODE"
-        >
-          1
-        </code>
+          <code
+            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+          >
+            CONTINUE
+          </code>
+        </span>
          - 
         <span>
           "Continue with Apple"
         </span>
+        <p
+          class="css-101h856-paragraph-STYLES_PARAGRAPH"
+          data-text="true"
+        >
+          <code
+            class="inline css-mcdrx3-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
+          >
+            AppleAuthenticationButtonType
+            .
+            CONTINUE
+             ＝ 
+            1
+          </code>
+        </p>
       </li>
       <li
-        class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
+        class="docs-list-item css-xdejd6-STYLES_LIST_ITEM-LI"
       >
-        <code
-          class="inline css-nuv12a-STYLES_INLINE_CODE"
+        <span
+          class="css-1aaoyoh-renderEnum"
         >
-          AppleAuthenticationButtonType
-          .
-          SIGN_UP
-        </code>
-         : 
-        <code
-          class="inline css-nuv12a-STYLES_INLINE_CODE"
-        >
-          2
-        </code>
+          <code
+            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+          >
+            SIGN_UP
+          </code>
+        </span>
          - 
         <span>
           "Sign up with Apple" 
@@ -4075,12 +4412,26 @@ OAuth 2.0 protocol
             (requires iOS 13.2 or higher)
           </em>
         </span>
+        <p
+          class="css-101h856-paragraph-STYLES_PARAGRAPH"
+          data-text="true"
+        >
+          <code
+            class="inline css-mcdrx3-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
+          >
+            AppleAuthenticationButtonType
+            .
+            SIGN_UP
+             ＝ 
+            2
+          </code>
+        </p>
       </li>
     </ul>
   </div>
   <div>
     <h3
-      class="css-icxoph-h3-h3-STYLES_H3"
+      class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
     >
       <div
@@ -4098,7 +4449,7 @@ OAuth 2.0 protocol
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               AppleAuthenticationCredentialState
             </code>
@@ -4135,7 +4486,7 @@ OAuth 2.0 protocol
       </div>
     </h3>
     <p
-      class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+      class="css-101h856-paragraph-STYLES_PARAGRAPH"
       data-text="true"
     >
       An enum whose values specify state of the credential when checked with 
@@ -4144,7 +4495,7 @@ OAuth 2.0 protocol
         href="/#appleauthenticationgetcredentialstateasyncuser"
       >
         <code
-          class="inline css-nuv12a-STYLES_INLINE_CODE"
+          class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
         >
           AppleAuthentication.getCredentialStateAsync()
         </code>
@@ -4152,7 +4503,7 @@ OAuth 2.0 protocol
       .
     </p>
     <blockquote
-      class="css-e76wiv-paragraph-STYLES_BLOCKQUOTE"
+      class="css-13jwbau-paragraph-STYLES_BLOCKQUOTE"
       data-text="true"
     >
       <div>
@@ -4176,7 +4527,7 @@ OAuth 2.0 protocol
       </div>
       <div>
         <strong
-          class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+          class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
         >
           See: 
         </strong>
@@ -4195,82 +4546,122 @@ for more details.
       </div>
     </blockquote>
     <ul
-      class="css-1a9yu92-paragraph-STYLES_UNORDERED_LIST-UL"
+      class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
       data-text="true"
     >
       <li
-        class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
+        class="docs-list-item css-xdejd6-STYLES_LIST_ITEM-LI"
       >
-        <code
-          class="inline css-nuv12a-STYLES_INLINE_CODE"
+        <span
+          class="css-1aaoyoh-renderEnum"
         >
-          AppleAuthenticationCredentialState
-          .
-          REVOKED
-        </code>
-         : 
-        <code
-          class="inline css-nuv12a-STYLES_INLINE_CODE"
+          <code
+            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+          >
+            REVOKED
+          </code>
+        </span>
+        <p
+          class="css-101h856-paragraph-STYLES_PARAGRAPH"
+          data-text="true"
         >
-          0
-        </code>
+          <code
+            class="inline css-mcdrx3-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
+          >
+            AppleAuthenticationCredentialState
+            .
+            REVOKED
+             ＝ 
+            0
+          </code>
+        </p>
       </li>
       <li
-        class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
+        class="docs-list-item css-xdejd6-STYLES_LIST_ITEM-LI"
       >
-        <code
-          class="inline css-nuv12a-STYLES_INLINE_CODE"
+        <span
+          class="css-1aaoyoh-renderEnum"
         >
-          AppleAuthenticationCredentialState
-          .
-          AUTHORIZED
-        </code>
-         : 
-        <code
-          class="inline css-nuv12a-STYLES_INLINE_CODE"
+          <code
+            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+          >
+            AUTHORIZED
+          </code>
+        </span>
+        <p
+          class="css-101h856-paragraph-STYLES_PARAGRAPH"
+          data-text="true"
         >
-          1
-        </code>
+          <code
+            class="inline css-mcdrx3-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
+          >
+            AppleAuthenticationCredentialState
+            .
+            AUTHORIZED
+             ＝ 
+            1
+          </code>
+        </p>
       </li>
       <li
-        class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
+        class="docs-list-item css-xdejd6-STYLES_LIST_ITEM-LI"
       >
-        <code
-          class="inline css-nuv12a-STYLES_INLINE_CODE"
+        <span
+          class="css-1aaoyoh-renderEnum"
         >
-          AppleAuthenticationCredentialState
-          .
-          NOT_FOUND
-        </code>
-         : 
-        <code
-          class="inline css-nuv12a-STYLES_INLINE_CODE"
+          <code
+            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+          >
+            NOT_FOUND
+          </code>
+        </span>
+        <p
+          class="css-101h856-paragraph-STYLES_PARAGRAPH"
+          data-text="true"
         >
-          2
-        </code>
+          <code
+            class="inline css-mcdrx3-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
+          >
+            AppleAuthenticationCredentialState
+            .
+            NOT_FOUND
+             ＝ 
+            2
+          </code>
+        </p>
       </li>
       <li
-        class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
+        class="docs-list-item css-xdejd6-STYLES_LIST_ITEM-LI"
       >
-        <code
-          class="inline css-nuv12a-STYLES_INLINE_CODE"
+        <span
+          class="css-1aaoyoh-renderEnum"
         >
-          AppleAuthenticationCredentialState
-          .
-          TRANSFERRED
-        </code>
-         : 
-        <code
-          class="inline css-nuv12a-STYLES_INLINE_CODE"
+          <code
+            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+          >
+            TRANSFERRED
+          </code>
+        </span>
+        <p
+          class="css-101h856-paragraph-STYLES_PARAGRAPH"
+          data-text="true"
         >
-          3
-        </code>
+          <code
+            class="inline css-mcdrx3-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
+          >
+            AppleAuthenticationCredentialState
+            .
+            TRANSFERRED
+             ＝ 
+            3
+          </code>
+        </p>
       </li>
     </ul>
   </div>
   <div>
     <h3
-      class="css-icxoph-h3-h3-STYLES_H3"
+      class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
     >
       <div
@@ -4288,7 +4679,7 @@ for more details.
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               AppleAuthenticationOperation
             </code>
@@ -4325,86 +4716,126 @@ for more details.
       </div>
     </h3>
     <ul
-      class="css-1a9yu92-paragraph-STYLES_UNORDERED_LIST-UL"
+      class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
       data-text="true"
     >
       <li
-        class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
+        class="docs-list-item css-xdejd6-STYLES_LIST_ITEM-LI"
       >
-        <code
-          class="inline css-nuv12a-STYLES_INLINE_CODE"
+        <span
+          class="css-1aaoyoh-renderEnum"
         >
-          AppleAuthenticationOperation
-          .
-          IMPLICIT
-        </code>
-         : 
-        <code
-          class="inline css-nuv12a-STYLES_INLINE_CODE"
-        >
-          0
-        </code>
+          <code
+            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+          >
+            IMPLICIT
+          </code>
+        </span>
          - 
         <span>
           An operation that depends on the particular kind of credential provider.
         </span>
+        <p
+          class="css-101h856-paragraph-STYLES_PARAGRAPH"
+          data-text="true"
+        >
+          <code
+            class="inline css-mcdrx3-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
+          >
+            AppleAuthenticationOperation
+            .
+            IMPLICIT
+             ＝ 
+            0
+          </code>
+        </p>
       </li>
       <li
-        class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
+        class="docs-list-item css-xdejd6-STYLES_LIST_ITEM-LI"
       >
-        <code
-          class="inline css-nuv12a-STYLES_INLINE_CODE"
+        <span
+          class="css-1aaoyoh-renderEnum"
         >
-          AppleAuthenticationOperation
-          .
-          LOGIN
-        </code>
-         : 
-        <code
-          class="inline css-nuv12a-STYLES_INLINE_CODE"
+          <code
+            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+          >
+            LOGIN
+          </code>
+        </span>
+        <p
+          class="css-101h856-paragraph-STYLES_PARAGRAPH"
+          data-text="true"
         >
-          1
-        </code>
+          <code
+            class="inline css-mcdrx3-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
+          >
+            AppleAuthenticationOperation
+            .
+            LOGIN
+             ＝ 
+            1
+          </code>
+        </p>
       </li>
       <li
-        class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
+        class="docs-list-item css-xdejd6-STYLES_LIST_ITEM-LI"
       >
-        <code
-          class="inline css-nuv12a-STYLES_INLINE_CODE"
+        <span
+          class="css-1aaoyoh-renderEnum"
         >
-          AppleAuthenticationOperation
-          .
-          REFRESH
-        </code>
-         : 
-        <code
-          class="inline css-nuv12a-STYLES_INLINE_CODE"
+          <code
+            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+          >
+            REFRESH
+          </code>
+        </span>
+        <p
+          class="css-101h856-paragraph-STYLES_PARAGRAPH"
+          data-text="true"
         >
-          2
-        </code>
+          <code
+            class="inline css-mcdrx3-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
+          >
+            AppleAuthenticationOperation
+            .
+            REFRESH
+             ＝ 
+            2
+          </code>
+        </p>
       </li>
       <li
-        class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
+        class="docs-list-item css-xdejd6-STYLES_LIST_ITEM-LI"
       >
-        <code
-          class="inline css-nuv12a-STYLES_INLINE_CODE"
+        <span
+          class="css-1aaoyoh-renderEnum"
         >
-          AppleAuthenticationOperation
-          .
-          LOGOUT
-        </code>
-         : 
-        <code
-          class="inline css-nuv12a-STYLES_INLINE_CODE"
+          <code
+            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+          >
+            LOGOUT
+          </code>
+        </span>
+        <p
+          class="css-101h856-paragraph-STYLES_PARAGRAPH"
+          data-text="true"
         >
-          3
-        </code>
+          <code
+            class="inline css-mcdrx3-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
+          >
+            AppleAuthenticationOperation
+            .
+            LOGOUT
+             ＝ 
+            3
+          </code>
+        </p>
       </li>
     </ul>
   </div>
   <div>
     <h3
-      class="css-icxoph-h3-h3-STYLES_H3"
+      class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
     >
       <div
@@ -4422,7 +4853,7 @@ for more details.
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               AppleAuthenticationScope
             </code>
@@ -4459,7 +4890,7 @@ for more details.
       </div>
     </h3>
     <p
-      class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+      class="css-101h856-paragraph-STYLES_PARAGRAPH"
       data-text="true"
     >
       An enum whose values specify scopes you can request when calling 
@@ -4468,7 +4899,7 @@ for more details.
         href="/#appleauthenticationsigninasyncoptions"
       >
         <code
-          class="inline css-nuv12a-STYLES_INLINE_CODE"
+          class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
         >
           AppleAuthentication.signInAsync()
         </code>
@@ -4476,7 +4907,7 @@ for more details.
       .
     </p>
     <blockquote
-      class="css-e76wiv-paragraph-STYLES_BLOCKQUOTE"
+      class="css-13jwbau-paragraph-STYLES_BLOCKQUOTE"
       data-text="true"
     >
       <div>
@@ -4508,7 +4939,7 @@ You will still need to handle null values for any fields you request.
       </div>
     </blockquote>
     <blockquote
-      class="css-e76wiv-paragraph-STYLES_BLOCKQUOTE"
+      class="css-13jwbau-paragraph-STYLES_BLOCKQUOTE"
       data-text="true"
     >
       <div>
@@ -4532,7 +4963,7 @@ You will still need to handle null values for any fields you request.
       </div>
       <div>
         <strong
-          class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+          class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
         >
           See: 
         </strong>
@@ -4551,48 +4982,68 @@ for more details.
       </div>
     </blockquote>
     <ul
-      class="css-1a9yu92-paragraph-STYLES_UNORDERED_LIST-UL"
+      class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
       data-text="true"
     >
       <li
-        class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
+        class="docs-list-item css-xdejd6-STYLES_LIST_ITEM-LI"
       >
-        <code
-          class="inline css-nuv12a-STYLES_INLINE_CODE"
+        <span
+          class="css-1aaoyoh-renderEnum"
         >
-          AppleAuthenticationScope
-          .
-          FULL_NAME
-        </code>
-         : 
-        <code
-          class="inline css-nuv12a-STYLES_INLINE_CODE"
+          <code
+            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+          >
+            FULL_NAME
+          </code>
+        </span>
+        <p
+          class="css-101h856-paragraph-STYLES_PARAGRAPH"
+          data-text="true"
         >
-          0
-        </code>
+          <code
+            class="inline css-mcdrx3-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
+          >
+            AppleAuthenticationScope
+            .
+            FULL_NAME
+             ＝ 
+            0
+          </code>
+        </p>
       </li>
       <li
-        class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
+        class="docs-list-item css-xdejd6-STYLES_LIST_ITEM-LI"
       >
-        <code
-          class="inline css-nuv12a-STYLES_INLINE_CODE"
+        <span
+          class="css-1aaoyoh-renderEnum"
         >
-          AppleAuthenticationScope
-          .
-          EMAIL
-        </code>
-         : 
-        <code
-          class="inline css-nuv12a-STYLES_INLINE_CODE"
+          <code
+            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+          >
+            EMAIL
+          </code>
+        </span>
+        <p
+          class="css-101h856-paragraph-STYLES_PARAGRAPH"
+          data-text="true"
         >
-          1
-        </code>
+          <code
+            class="inline css-mcdrx3-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
+          >
+            AppleAuthenticationScope
+            .
+            EMAIL
+             ＝ 
+            1
+          </code>
+        </p>
       </li>
     </ul>
   </div>
   <div>
     <h3
-      class="css-icxoph-h3-h3-STYLES_H3"
+      class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
     >
       <div
@@ -4610,7 +5061,7 @@ for more details.
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               AppleAuthenticationUserDetectionStatus
             </code>
@@ -4647,13 +5098,13 @@ for more details.
       </div>
     </h3>
     <p
-      class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+      class="css-101h856-paragraph-STYLES_PARAGRAPH"
       data-text="true"
     >
       An enum whose values specify the system's best guess for how likely the current user is a real person.
     </p>
     <blockquote
-      class="css-e76wiv-paragraph-STYLES_BLOCKQUOTE"
+      class="css-13jwbau-paragraph-STYLES_BLOCKQUOTE"
       data-text="true"
     >
       <div>
@@ -4677,7 +5128,7 @@ for more details.
       </div>
       <div>
         <strong
-          class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+          class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
         >
           See: 
         </strong>
@@ -4696,71 +5147,101 @@ for more details.
       </div>
     </blockquote>
     <ul
-      class="css-1a9yu92-paragraph-STYLES_UNORDERED_LIST-UL"
+      class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
       data-text="true"
     >
       <li
-        class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
+        class="docs-list-item css-xdejd6-STYLES_LIST_ITEM-LI"
       >
-        <code
-          class="inline css-nuv12a-STYLES_INLINE_CODE"
+        <span
+          class="css-1aaoyoh-renderEnum"
         >
-          AppleAuthenticationUserDetectionStatus
-          .
-          UNSUPPORTED
-        </code>
-         : 
-        <code
-          class="inline css-nuv12a-STYLES_INLINE_CODE"
-        >
-          0
-        </code>
+          <code
+            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+          >
+            UNSUPPORTED
+          </code>
+        </span>
          - 
         <span>
           The system does not support this determination and there is no data.
         </span>
+        <p
+          class="css-101h856-paragraph-STYLES_PARAGRAPH"
+          data-text="true"
+        >
+          <code
+            class="inline css-mcdrx3-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
+          >
+            AppleAuthenticationUserDetectionStatus
+            .
+            UNSUPPORTED
+             ＝ 
+            0
+          </code>
+        </p>
       </li>
       <li
-        class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
+        class="docs-list-item css-xdejd6-STYLES_LIST_ITEM-LI"
       >
-        <code
-          class="inline css-nuv12a-STYLES_INLINE_CODE"
+        <span
+          class="css-1aaoyoh-renderEnum"
         >
-          AppleAuthenticationUserDetectionStatus
-          .
-          UNKNOWN
-        </code>
-         : 
-        <code
-          class="inline css-nuv12a-STYLES_INLINE_CODE"
-        >
-          1
-        </code>
+          <code
+            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+          >
+            UNKNOWN
+          </code>
+        </span>
          - 
         <span>
           The system has not determined whether the user might be a real person.
         </span>
+        <p
+          class="css-101h856-paragraph-STYLES_PARAGRAPH"
+          data-text="true"
+        >
+          <code
+            class="inline css-mcdrx3-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
+          >
+            AppleAuthenticationUserDetectionStatus
+            .
+            UNKNOWN
+             ＝ 
+            1
+          </code>
+        </p>
       </li>
       <li
-        class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
+        class="docs-list-item css-xdejd6-STYLES_LIST_ITEM-LI"
       >
-        <code
-          class="inline css-nuv12a-STYLES_INLINE_CODE"
+        <span
+          class="css-1aaoyoh-renderEnum"
         >
-          AppleAuthenticationUserDetectionStatus
-          .
-          LIKELY_REAL
-        </code>
-         : 
-        <code
-          class="inline css-nuv12a-STYLES_INLINE_CODE"
-        >
-          2
-        </code>
+          <code
+            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+          >
+            LIKELY_REAL
+          </code>
+        </span>
          - 
         <span>
           The user appears to be a real person.
         </span>
+        <p
+          class="css-101h856-paragraph-STYLES_PARAGRAPH"
+          data-text="true"
+        >
+          <code
+            class="inline css-mcdrx3-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
+          >
+            AppleAuthenticationUserDetectionStatus
+            .
+            LIKELY_REAL
+             ＝ 
+            2
+          </code>
+        </p>
       </li>
     </ul>
   </div>
@@ -4770,7 +5251,7 @@ for more details.
 exports[`APISection expo-barcode-scanner 1`] = `
 <div>
   <h2
-    class="css-1v5aebx-h2-h2-STYLES_H2"
+    class="css-et60wy-h2-h2-STYLES_H2"
     data-heading="true"
   >
     <div
@@ -4822,7 +5303,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
   </h2>
   <div>
     <h3
-      class="css-icxoph-h3-h3-STYLES_H3"
+      class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
     >
       <div
@@ -4840,7 +5321,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               BarCodeScanner
             </code>
@@ -4877,17 +5358,17 @@ exports[`APISection expo-barcode-scanner 1`] = `
       </div>
     </h3>
     <p
-      class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+      class="css-101h856-paragraph-STYLES_PARAGRAPH"
       data-text="true"
     >
       <strong
-        class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+        class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
       >
         Type:
       </strong>
        
       <code
-        class="inline css-nuv12a-STYLES_INLINE_CODE"
+        class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
       >
         Component
         &lt;
@@ -4903,7 +5384,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
       </code>
     </p>
     <h3
-      class="css-icxoph-h3-h3-STYLES_H3"
+      class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
     >
       <div
@@ -4921,7 +5402,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               BarCodeScannerProps
             </code>
@@ -4960,20 +5441,66 @@ exports[`APISection expo-barcode-scanner 1`] = `
     <br />
     <div>
       <ul
-        class="css-1a9yu92-paragraph-STYLES_UNORDERED_LIST-UL"
+        class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
         data-text="true"
       >
         <li
-          class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
+          class="docs-list-item css-1jvmp7m-STYLES_LIST_ITEM-STYLE_PROP_LIST-PROP_LIST_ELEMENT_STYLE-LI"
         >
           <h4
-            class="css-1j2s5xo-h4-h4-STYLES_H4"
+            class="  css-838f5l-h4-h4-STYLES_H4"
+            data-components-heading="true"
             data-heading="true"
           >
-            barCodeTypes
+            <div
+              class="css-1rh3o5q-STYLES_PERMALINK"
+            >
+              <span
+                class="css-zonpcr-STYLES_PERMALINK_TARGET"
+                id="barcodetypes"
+              />
+              <a
+                class="css-15lh5hg-STYLES_PERMALINK_LINK"
+                href="#barcodetypes"
+              >
+                <span
+                  class="css-1icvi79-STYLED_PERMALINK_CONTENT"
+                >
+                  barCodeTypes
+                </span>
+                <span
+                  class="css-10vdcw8-STYLES_PERMALINK_ICON"
+                >
+                  <svg
+                    aria-label="permalink"
+                    class="anchor-icon"
+                    fill="none"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    width="24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                      stroke="#9B9B9B"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    />
+                    <path
+                      d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                      stroke="#9B9B9B"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    />
+                  </svg>
+                </span>
+              </a>
+            </div>
           </h4>
           <p
-            class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+            class="css-101h856-paragraph-STYLES_PARAGRAPH"
             data-text="true"
           >
             <span
@@ -4988,25 +5515,25 @@ exports[`APISection expo-barcode-scanner 1`] = `
             </span>
              
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               string[]
             </code>
           </p>
           <p
-            class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+            class="css-101h856-paragraph-STYLES_PARAGRAPH"
             data-text="true"
           >
             An array of bar code types. Usage: 
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               BarCodeScanner.Constants.BarCodeType.&lt;codeType&gt;
             </code>
              where
 
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               codeType
             </code>
@@ -5022,29 +5549,78 @@ code types. It is recommended to provide only the bar code formats you expect to
 minimize battery usage.
           </p>
           <p
-            class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+            class="css-101h856-paragraph-STYLES_PARAGRAPH"
             data-text="true"
           >
             For example: 
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               barCodeTypes={[BarCodeScanner.Constants.BarCodeType.qr]}
             </code>
             .
           </p>
+          <hr
+            class="css-bxzs19-STYLES_DIVIDER"
+          />
         </li>
         <li
-          class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
+          class="docs-list-item css-1jvmp7m-STYLES_LIST_ITEM-STYLE_PROP_LIST-PROP_LIST_ELEMENT_STYLE-LI"
         >
           <h4
-            class="css-1j2s5xo-h4-h4-STYLES_H4"
+            class="  css-838f5l-h4-h4-STYLES_H4"
+            data-components-heading="true"
             data-heading="true"
           >
-            onBarCodeScanned
+            <div
+              class="css-1rh3o5q-STYLES_PERMALINK"
+            >
+              <span
+                class="css-zonpcr-STYLES_PERMALINK_TARGET"
+                id="onbarcodescanned"
+              />
+              <a
+                class="css-15lh5hg-STYLES_PERMALINK_LINK"
+                href="#onbarcodescanned"
+              >
+                <span
+                  class="css-1icvi79-STYLED_PERMALINK_CONTENT"
+                >
+                  onBarCodeScanned
+                </span>
+                <span
+                  class="css-10vdcw8-STYLES_PERMALINK_ICON"
+                >
+                  <svg
+                    aria-label="permalink"
+                    class="anchor-icon"
+                    fill="none"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    width="24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                      stroke="#9B9B9B"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    />
+                    <path
+                      d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                      stroke="#9B9B9B"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    />
+                  </svg>
+                </span>
+              </a>
+            </div>
           </h4>
           <p
-            class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+            class="css-101h856-paragraph-STYLES_PARAGRAPH"
             data-text="true"
           >
             <span
@@ -5059,7 +5635,7 @@ minimize battery usage.
             </span>
              
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               <a
                 class="css-12zqqiz-STYLES_EXTERNAL_LINK"
@@ -5070,7 +5646,7 @@ minimize battery usage.
             </code>
           </p>
           <p
-            class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+            class="css-101h856-paragraph-STYLES_PARAGRAPH"
             data-text="true"
           >
             A callback that is invoked when a bar code has been successfully scanned. The callback is
@@ -5086,7 +5662,7 @@ provided with an
           
 
           <blockquote
-            class="css-e76wiv-paragraph-STYLES_BLOCKQUOTE"
+            class="css-13jwbau-paragraph-STYLES_BLOCKQUOTE"
             data-text="true"
           >
             <div>
@@ -5112,19 +5688,19 @@ provided with an
               
 
               <strong
-                class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+                class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
               >
                 Note:
               </strong>
                Passing 
               <code
-                class="inline css-nuv12a-STYLES_INLINE_CODE"
+                class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
               >
                 undefined
               </code>
                to the 
               <code
-                class="inline css-nuv12a-STYLES_INLINE_CODE"
+                class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
               >
                 onBarCodeScanned
               </code>
@@ -5135,18 +5711,67 @@ data has been retrieved.
 
             </div>
           </blockquote>
+          <hr
+            class="css-bxzs19-STYLES_DIVIDER"
+          />
         </li>
         <li
-          class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
+          class="docs-list-item css-1jvmp7m-STYLES_LIST_ITEM-STYLE_PROP_LIST-PROP_LIST_ELEMENT_STYLE-LI"
         >
           <h4
-            class="css-1j2s5xo-h4-h4-STYLES_H4"
+            class="  css-838f5l-h4-h4-STYLES_H4"
+            data-components-heading="true"
             data-heading="true"
           >
-            type
+            <div
+              class="css-1rh3o5q-STYLES_PERMALINK"
+            >
+              <span
+                class="css-zonpcr-STYLES_PERMALINK_TARGET"
+                id="type"
+              />
+              <a
+                class="css-15lh5hg-STYLES_PERMALINK_LINK"
+                href="#type"
+              >
+                <span
+                  class="css-1icvi79-STYLED_PERMALINK_CONTENT"
+                >
+                  type
+                </span>
+                <span
+                  class="css-10vdcw8-STYLES_PERMALINK_ICON"
+                >
+                  <svg
+                    aria-label="permalink"
+                    class="anchor-icon"
+                    fill="none"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    width="24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                      stroke="#9B9B9B"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    />
+                    <path
+                      d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                      stroke="#9B9B9B"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    />
+                  </svg>
+                </span>
+              </a>
+            </div>
           </h4>
           <p
-            class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+            class="css-101h856-paragraph-STYLES_PARAGRAPH"
             data-text="true"
           >
             <span
@@ -5161,7 +5786,7 @@ data has been retrieved.
             </span>
              
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               <span>
                 'front'
@@ -5183,7 +5808,7 @@ data has been retrieved.
               </span>
                
               <code
-                class="inline css-nuv12a-STYLES_INLINE_CODE"
+                class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
               >
                 Type.back
 
@@ -5191,57 +5816,106 @@ data has been retrieved.
             </span>
           </p>
           <p
-            class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+            class="css-101h856-paragraph-STYLES_PARAGRAPH"
             data-text="true"
           >
             Camera facing. Use one of 
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               BarCodeScanner.Constants.Type
             </code>
             . Use either 
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               Type.front
             </code>
              or 
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               Type.back
             </code>
             .
 Same as 
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               Camera.Constants.Type
             </code>
             .
           </p>
+          <hr
+            class="css-bxzs19-STYLES_DIVIDER"
+          />
         </li>
       </ul>
       <h4
-        class="css-1j2s5xo-h4-h4-STYLES_H4"
+        class="  css-838f5l-h4-h4-STYLES_H4"
+        data-components-heading="true"
         data-heading="true"
       >
-        Inherited Props
+        <div
+          class="css-1rh3o5q-STYLES_PERMALINK"
+        >
+          <span
+            class="css-zonpcr-STYLES_PERMALINK_TARGET"
+            id="inherited-props"
+          />
+          <a
+            class="css-15lh5hg-STYLES_PERMALINK_LINK"
+            href="#inherited-props"
+          >
+            <span
+              class="css-1icvi79-STYLED_PERMALINK_CONTENT"
+            >
+              Inherited Props
+            </span>
+            <span
+              class="css-10vdcw8-STYLES_PERMALINK_ICON"
+            >
+              <svg
+                aria-label="permalink"
+                class="anchor-icon"
+                fill="none"
+                height="24"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                  stroke="#9B9B9B"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+                <path
+                  d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                  stroke="#9B9B9B"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+              </svg>
+            </span>
+          </a>
+        </div>
       </h4>
       <ul
-        class="css-1a9yu92-paragraph-STYLES_UNORDERED_LIST-UL"
+        class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
         data-text="true"
       >
         <li
-          class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
+          class="docs-list-item css-xdejd6-STYLES_LIST_ITEM-LI"
         >
           <code
-            class="inline css-nuv12a-STYLES_INLINE_CODE"
+            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
           >
             <a
               class="css-12zqqiz-STYLES_EXTERNAL_LINK"
-              href="/react-native/view#props"
+              href="/versions/latest/react-native/view#props"
             >
               ViewProps
             </a>
@@ -5251,7 +5925,7 @@ Same as
     </div>
   </div>
   <h2
-    class="css-1v5aebx-h2-h2-STYLES_H2"
+    class="css-et60wy-h2-h2-STYLES_H2"
     data-heading="true"
   >
     <div
@@ -5303,7 +5977,7 @@ Same as
   </h2>
   <div>
     <h3
-      class="css-icxoph-h3-h3-STYLES_H3"
+      class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
     >
       <div
@@ -5321,7 +5995,7 @@ Same as
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-ni28os-STYLES_INLINE_CODE-STYLES_NOT_EXPOSED_HEADER-InlineCode"
             >
               usePermissions
             </code>
@@ -5358,7 +6032,7 @@ Same as
       </div>
     </h3>
     <h4
-      class="  css-1j2s5xo-h4-h4-STYLES_H4"
+      class="  css-838f5l-h4-h4-STYLES_H4"
       data-components-heading="true"
       data-heading="true"
     >
@@ -5410,20 +6084,20 @@ Same as
       </div>
     </h4>
     <ul
-      class="css-1a9yu92-paragraph-STYLES_UNORDERED_LIST-UL"
+      class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
       data-text="true"
     >
       <li
-        class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
+        class="docs-list-item css-xdejd6-STYLES_LIST_ITEM-LI"
       >
         <strong
-          class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+          class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
         >
           options
           ?
            (
           <code
-            class="inline css-nuv12a-STYLES_INLINE_CODE"
+            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
           >
             <a
               class="css-12zqqiz-STYLES_EXTERNAL_LINK"
@@ -5442,7 +6116,7 @@ Same as
       </li>
     </ul>
     <p
-      class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+      class="css-101h856-paragraph-STYLES_PARAGRAPH"
       data-text="true"
     >
       Create a new permission hook with the permission methods built-in.
@@ -5450,7 +6124,7 @@ This can be used to quickly create specific permission hooks in every module.
     </p>
     <div>
       <h4
-        class="  css-1j2s5xo-h4-h4-STYLES_H4"
+        class="  css-838f5l-h4-h4-STYLES_H4"
         data-components-heading="true"
         data-heading="true"
       >
@@ -5502,14 +6176,14 @@ This can be used to quickly create specific permission hooks in every module.
         </div>
       </h4>
       <ul
-        class="css-1a9yu92-paragraph-STYLES_UNORDERED_LIST-UL"
+        class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
         data-text="true"
       >
         <li
-          class="docs-list-item css-npeppb-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
+          class="docs-list-item css-1wwpkbk-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
         >
           <code
-            class="inline css-nuv12a-STYLES_INLINE_CODE"
+            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
           >
             [
             <span>
@@ -5561,7 +6235,7 @@ This can be used to quickly create specific permission hooks in every module.
     </div>
   </div>
   <h2
-    class="css-1v5aebx-h2-h2-STYLES_H2"
+    class="css-et60wy-h2-h2-STYLES_H2"
     data-heading="true"
   >
     <div
@@ -5613,7 +6287,7 @@ This can be used to quickly create specific permission hooks in every module.
   </h2>
   <div>
     <h3
-      class="css-icxoph-h3-h3-STYLES_H3"
+      class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
     >
       <div
@@ -5631,7 +6305,7 @@ This can be used to quickly create specific permission hooks in every module.
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-ni28os-STYLES_INLINE_CODE-STYLES_NOT_EXPOSED_HEADER-InlineCode"
             >
               BarCodeScanner.
               getPermissionsAsync()
@@ -5669,14 +6343,14 @@ This can be used to quickly create specific permission hooks in every module.
       </div>
     </h3>
     <p
-      class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+      class="css-101h856-paragraph-STYLES_PARAGRAPH"
       data-text="true"
     >
       Checks user's permissions for accessing the camera.
     </p>
     <div>
       <h4
-        class="  css-1j2s5xo-h4-h4-STYLES_H4"
+        class="  css-838f5l-h4-h4-STYLES_H4"
         data-components-heading="true"
         data-heading="true"
       >
@@ -5728,14 +6402,14 @@ This can be used to quickly create specific permission hooks in every module.
         </div>
       </h4>
       <ul
-        class="css-1a9yu92-paragraph-STYLES_UNORDERED_LIST-UL"
+        class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
         data-text="true"
       >
         <li
-          class="docs-list-item css-npeppb-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
+          class="docs-list-item css-1wwpkbk-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
         >
           <code
-            class="inline css-nuv12a-STYLES_INLINE_CODE"
+            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
           >
             <a
               class="css-12zqqiz-STYLES_EXTERNAL_LINK"
@@ -5758,7 +6432,7 @@ This can be used to quickly create specific permission hooks in every module.
         </li>
       </ul>
       <p
-        class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+        class="css-101h856-paragraph-STYLES_PARAGRAPH"
         data-text="true"
       >
         Return a promise that fulfills to an object of type 
@@ -5767,7 +6441,7 @@ This can be used to quickly create specific permission hooks in every module.
           href="/#permissionresponse"
         >
           <code
-            class="inline css-nuv12a-STYLES_INLINE_CODE"
+            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
           >
             PermissionResponse
           </code>
@@ -5779,7 +6453,7 @@ This can be used to quickly create specific permission hooks in every module.
   </div>
   <div>
     <h3
-      class="css-icxoph-h3-h3-STYLES_H3"
+      class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
     >
       <div
@@ -5797,7 +6471,7 @@ This can be used to quickly create specific permission hooks in every module.
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-ni28os-STYLES_INLINE_CODE-STYLES_NOT_EXPOSED_HEADER-InlineCode"
             >
               BarCodeScanner.
               requestPermissionsAsync()
@@ -5835,24 +6509,24 @@ This can be used to quickly create specific permission hooks in every module.
       </div>
     </h3>
     <p
-      class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+      class="css-101h856-paragraph-STYLES_PARAGRAPH"
       data-text="true"
     >
       Asks the user to grant permissions for accessing the camera.
     </p>
     <p
-      class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+      class="css-101h856-paragraph-STYLES_PARAGRAPH"
       data-text="true"
     >
       On iOS this will require apps to specify the 
       <code
-        class="inline css-nuv12a-STYLES_INLINE_CODE"
+        class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
       >
         NSCameraUsageDescription
       </code>
        entry in the 
       <code
-        class="inline css-nuv12a-STYLES_INLINE_CODE"
+        class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
       >
         Info.plist
       </code>
@@ -5860,7 +6534,7 @@ This can be used to quickly create specific permission hooks in every module.
     </p>
     <div>
       <h4
-        class="  css-1j2s5xo-h4-h4-STYLES_H4"
+        class="  css-838f5l-h4-h4-STYLES_H4"
         data-components-heading="true"
         data-heading="true"
       >
@@ -5912,14 +6586,14 @@ This can be used to quickly create specific permission hooks in every module.
         </div>
       </h4>
       <ul
-        class="css-1a9yu92-paragraph-STYLES_UNORDERED_LIST-UL"
+        class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
         data-text="true"
       >
         <li
-          class="docs-list-item css-npeppb-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
+          class="docs-list-item css-1wwpkbk-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
         >
           <code
-            class="inline css-nuv12a-STYLES_INLINE_CODE"
+            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
           >
             <a
               class="css-12zqqiz-STYLES_EXTERNAL_LINK"
@@ -5942,7 +6616,7 @@ This can be used to quickly create specific permission hooks in every module.
         </li>
       </ul>
       <p
-        class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+        class="css-101h856-paragraph-STYLES_PARAGRAPH"
         data-text="true"
       >
         Return a promise that fulfills to an object of type 
@@ -5951,7 +6625,7 @@ This can be used to quickly create specific permission hooks in every module.
           href="/#permissionresponse"
         >
           <code
-            class="inline css-nuv12a-STYLES_INLINE_CODE"
+            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
           >
             PermissionResponse
           </code>
@@ -5963,7 +6637,7 @@ This can be used to quickly create specific permission hooks in every module.
   </div>
   <div>
     <h3
-      class="css-icxoph-h3-h3-STYLES_H3"
+      class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
     >
       <div
@@ -5981,7 +6655,7 @@ This can be used to quickly create specific permission hooks in every module.
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-ni28os-STYLES_INLINE_CODE-STYLES_NOT_EXPOSED_HEADER-InlineCode"
             >
               BarCodeScanner.
               scanFromURLAsync(url, barCodeTypes)
@@ -6019,7 +6693,7 @@ This can be used to quickly create specific permission hooks in every module.
       </div>
     </h3>
     <h4
-      class="  css-1j2s5xo-h4-h4-STYLES_H4"
+      class="  css-838f5l-h4-h4-STYLES_H4"
       data-components-heading="true"
       data-heading="true"
     >
@@ -6071,19 +6745,19 @@ This can be used to quickly create specific permission hooks in every module.
       </div>
     </h4>
     <ul
-      class="css-1a9yu92-paragraph-STYLES_UNORDERED_LIST-UL"
+      class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
       data-text="true"
     >
       <li
-        class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
+        class="docs-list-item css-xdejd6-STYLES_LIST_ITEM-LI"
       >
         <strong
-          class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+          class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
         >
           url
            (
           <code
-            class="inline css-nuv12a-STYLES_INLINE_CODE"
+            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
           >
             string
           </code>
@@ -6095,15 +6769,15 @@ This can be used to quickly create specific permission hooks in every module.
         </span>
       </li>
       <li
-        class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
+        class="docs-list-item css-xdejd6-STYLES_LIST_ITEM-LI"
       >
         <strong
-          class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+          class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
         >
           barCodeTypes
            (
           <code
-            class="inline css-nuv12a-STYLES_INLINE_CODE"
+            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
           >
             string[]
           </code>
@@ -6117,7 +6791,7 @@ the platform.
         
 
         <blockquote
-          class="css-e76wiv-paragraph-STYLES_BLOCKQUOTE"
+          class="css-13jwbau-paragraph-STYLES_BLOCKQUOTE"
           data-text="true"
         >
           <div>
@@ -6143,7 +6817,7 @@ the platform.
             
 
             <strong
-              class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+              class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
             >
               Note:
             </strong>
@@ -6155,14 +6829,14 @@ the platform.
       </li>
     </ul>
     <p
-      class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+      class="css-101h856-paragraph-STYLES_PARAGRAPH"
       data-text="true"
     >
       Scan bar codes from the image given by the URL.
     </p>
     <div>
       <h4
-        class="  css-1j2s5xo-h4-h4-STYLES_H4"
+        class="  css-838f5l-h4-h4-STYLES_H4"
         data-components-heading="true"
         data-heading="true"
       >
@@ -6214,14 +6888,14 @@ the platform.
         </div>
       </h4>
       <ul
-        class="css-1a9yu92-paragraph-STYLES_UNORDERED_LIST-UL"
+        class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
         data-text="true"
       >
         <li
-          class="docs-list-item css-npeppb-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
+          class="docs-list-item css-1wwpkbk-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
         >
           <code
-            class="inline css-nuv12a-STYLES_INLINE_CODE"
+            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
           >
             <a
               class="css-12zqqiz-STYLES_EXTERNAL_LINK"
@@ -6245,12 +6919,12 @@ the platform.
         </li>
       </ul>
       <p
-        class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+        class="css-101h856-paragraph-STYLES_PARAGRAPH"
         data-text="true"
       >
         A possibly empty array of objects of the 
         <code
-          class="inline css-nuv12a-STYLES_INLINE_CODE"
+          class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
         >
           BarCodeScannerResult
         </code>
@@ -6261,7 +6935,7 @@ code.
     </div>
   </div>
   <h2
-    class="css-1v5aebx-h2-h2-STYLES_H2"
+    class="css-et60wy-h2-h2-STYLES_H2"
     data-heading="true"
   >
     <div
@@ -6313,7 +6987,7 @@ code.
   </h2>
   <div>
     <h3
-      class="css-icxoph-h3-h3-STYLES_H3"
+      class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
     >
       <div
@@ -6331,7 +7005,7 @@ code.
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               BarCodeBounds
               
@@ -6386,14 +7060,14 @@ code.
         <tr>
           <td>
             <strong
-              class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+              class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
             >
               origin
             </strong>
           </td>
           <td>
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               <a
                 class="css-12zqqiz-STYLES_EXTERNAL_LINK"
@@ -6412,14 +7086,14 @@ code.
         <tr>
           <td>
             <strong
-              class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+              class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
             >
               size
             </strong>
           </td>
           <td>
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               <a
                 class="css-12zqqiz-STYLES_EXTERNAL_LINK"
@@ -6440,7 +7114,7 @@ code.
   </div>
   <div>
     <h3
-      class="css-icxoph-h3-h3-STYLES_H3"
+      class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
     >
       <div
@@ -6458,7 +7132,7 @@ code.
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               BarCodeEvent
             </code>
@@ -6495,11 +7169,11 @@ code.
       </div>
     </h3>
     <p
-      class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+      class="css-101h856-paragraph-STYLES_PARAGRAPH"
       data-text="true"
     >
       <code
-        class="inline css-nuv12a-STYLES_INLINE_CODE"
+        class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
       >
         <a
           class="css-12zqqiz-STYLES_EXTERNAL_LINK"
@@ -6529,7 +7203,7 @@ code.
         <tr>
           <td>
             <strong
-              class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+              class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
             >
               target
             </strong>
@@ -6542,7 +7216,7 @@ code.
           </td>
           <td>
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               number
             </code>
@@ -6556,7 +7230,7 @@ code.
   </div>
   <div>
     <h3
-      class="css-icxoph-h3-h3-STYLES_H3"
+      class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
     >
       <div
@@ -6574,7 +7248,7 @@ code.
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               BarCodeEventCallbackArguments
               
@@ -6629,14 +7303,14 @@ code.
         <tr>
           <td>
             <strong
-              class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+              class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
             >
               nativeEvent
             </strong>
           </td>
           <td>
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               <a
                 class="css-12zqqiz-STYLES_EXTERNAL_LINK"
@@ -6655,7 +7329,7 @@ code.
   </div>
   <div>
     <h3
-      class="css-icxoph-h3-h3-STYLES_H3"
+      class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
     >
       <div
@@ -6673,7 +7347,7 @@ code.
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               BarCodePoint
               
@@ -6711,7 +7385,7 @@ code.
       </div>
     </h3>
     <p
-      class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+      class="css-101h856-paragraph-STYLES_PARAGRAPH"
       data-text="true"
     >
       Those coordinates are represented in the coordinate space of the barcode source (e.g. when you
@@ -6735,14 +7409,14 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
         <tr>
           <td>
             <strong
-              class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+              class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
             >
               x
             </strong>
           </td>
           <td>
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               number
             </code>
@@ -6751,7 +7425,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
             <span>
               The 
               <code
-                class="inline css-nuv12a-STYLES_INLINE_CODE"
+                class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
               >
                 x
               </code>
@@ -6762,14 +7436,14 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
         <tr>
           <td>
             <strong
-              class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+              class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
             >
               y
             </strong>
           </td>
           <td>
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               number
             </code>
@@ -6778,7 +7452,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
             <span>
               The 
               <code
-                class="inline css-nuv12a-STYLES_INLINE_CODE"
+                class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
               >
                 y
               </code>
@@ -6791,7 +7465,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
   </div>
   <div>
     <h3
-      class="css-icxoph-h3-h3-STYLES_H3"
+      class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
     >
       <div
@@ -6809,7 +7483,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               BarCodeScannedCallback
               ()
@@ -6848,7 +7522,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
     </h3>
     <div>
       <h4
-        class="  css-1j2s5xo-h4-h4-STYLES_H4"
+        class="  css-838f5l-h4-h4-STYLES_H4"
         data-components-heading="true"
         data-heading="true"
       >
@@ -6900,19 +7574,19 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
         </div>
       </h4>
       <ul
-        class="css-1a9yu92-paragraph-STYLES_UNORDERED_LIST-UL"
+        class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
         data-text="true"
       >
         <li
-          class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
+          class="docs-list-item css-xdejd6-STYLES_LIST_ITEM-LI"
         >
           <strong
-            class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+            class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
           >
             params
              (
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               <a
                 class="css-12zqqiz-STYLES_EXTERNAL_LINK"
@@ -6929,7 +7603,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
   </div>
   <div>
     <h3
-      class="css-icxoph-h3-h3-STYLES_H3"
+      class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
     >
       <div
@@ -6947,7 +7621,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               BarCodeScannerResult
               
@@ -6985,7 +7659,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
       </div>
     </h3>
     <blockquote
-      class="css-e76wiv-paragraph-STYLES_BLOCKQUOTE"
+      class="css-13jwbau-paragraph-STYLES_BLOCKQUOTE"
       data-text="true"
     >
       <div>
@@ -7011,31 +7685,31 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
         
 
         <strong
-          class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+          class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
         >
           Note:
         </strong>
          
         <code
-          class="inline css-nuv12a-STYLES_INLINE_CODE"
+          class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
         >
           bounds
         </code>
          and 
         <code
-          class="inline css-nuv12a-STYLES_INLINE_CODE"
+          class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
         >
           cornerPoints
         </code>
          are not always available. On iOS, for 
         <code
-          class="inline css-nuv12a-STYLES_INLINE_CODE"
+          class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
         >
           code39
         </code>
          and 
         <code
-          class="inline css-nuv12a-STYLES_INLINE_CODE"
+          class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
         >
           pdf417
         </code>
@@ -7064,7 +7738,7 @@ For some types, they will represent the area used by the scanner.
         <tr>
           <td>
             <strong
-              class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+              class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
             >
               bounds
             </strong>
@@ -7077,7 +7751,7 @@ For some types, they will represent the area used by the scanner.
           </td>
           <td>
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               <a
                 class="css-12zqqiz-STYLES_EXTERNAL_LINK"
@@ -7103,7 +7777,7 @@ For some types, they will represent the area used by the scanner.
         <tr>
           <td>
             <strong
-              class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+              class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
             >
               cornerPoints
             </strong>
@@ -7116,7 +7790,7 @@ For some types, they will represent the area used by the scanner.
           </td>
           <td>
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               <a
                 class="css-12zqqiz-STYLES_EXTERNAL_LINK"
@@ -7136,14 +7810,14 @@ For some types, they will represent the area used by the scanner.
         <tr>
           <td>
             <strong
-              class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+              class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
             >
               data
             </strong>
           </td>
           <td>
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               string
             </code>
@@ -7157,14 +7831,14 @@ For some types, they will represent the area used by the scanner.
         <tr>
           <td>
             <strong
-              class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+              class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
             >
               type
             </strong>
           </td>
           <td>
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               string
             </code>
@@ -7180,7 +7854,7 @@ For some types, they will represent the area used by the scanner.
   </div>
   <div>
     <h3
-      class="css-icxoph-h3-h3-STYLES_H3"
+      class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
     >
       <div
@@ -7198,7 +7872,7 @@ For some types, they will represent the area used by the scanner.
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               BarCodeSize
               
@@ -7253,14 +7927,14 @@ For some types, they will represent the area used by the scanner.
         <tr>
           <td>
             <strong
-              class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+              class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
             >
               height
             </strong>
           </td>
           <td>
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               number
             </code>
@@ -7274,14 +7948,14 @@ For some types, they will represent the area used by the scanner.
         <tr>
           <td>
             <strong
-              class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+              class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
             >
               width
             </strong>
           </td>
           <td>
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               number
             </code>
@@ -7297,7 +7971,7 @@ For some types, they will represent the area used by the scanner.
   </div>
   <div>
     <h3
-      class="css-icxoph-h3-h3-STYLES_H3"
+      class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
     >
       <div
@@ -7315,7 +7989,7 @@ For some types, they will represent the area used by the scanner.
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               PermissionHookOptions
             </code>
@@ -7352,14 +8026,14 @@ For some types, they will represent the area used by the scanner.
       </div>
     </h3>
     <p
-      class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+      class="css-101h856-paragraph-STYLES_PARAGRAPH"
       data-text="true"
     >
       Acceptable values are:
        
       <span>
         <code
-          class="inline css-nuv12a-STYLES_INLINE_CODE"
+          class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
         >
           PermissionHookBehavior
         </code>
@@ -7367,7 +8041,7 @@ For some types, they will represent the area used by the scanner.
       </span>
       <span>
         <code
-          class="inline css-nuv12a-STYLES_INLINE_CODE"
+          class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
         >
           Options
         </code>
@@ -7376,7 +8050,7 @@ For some types, they will represent the area used by the scanner.
     </p>
   </div>
   <h2
-    class="css-1v5aebx-h2-h2-STYLES_H2"
+    class="css-et60wy-h2-h2-STYLES_H2"
     data-heading="true"
   >
     <div
@@ -7428,7 +8102,7 @@ For some types, they will represent the area used by the scanner.
   </h2>
   <div>
     <h3
-      class="css-icxoph-h3-h3-STYLES_H3"
+      class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
     >
       <div
@@ -7446,7 +8120,7 @@ For some types, they will represent the area used by the scanner.
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               PermissionResponse
             </code>
@@ -7500,7 +8174,7 @@ For some types, they will represent the area used by the scanner.
         <tr>
           <td>
             <strong
-              class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+              class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
             >
               canAskAgain
               
@@ -7508,7 +8182,7 @@ For some types, they will represent the area used by the scanner.
           </td>
           <td>
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               boolean
             </code>
@@ -7520,7 +8194,7 @@ For some types, they will represent the area used by the scanner.
         <tr>
           <td>
             <strong
-              class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+              class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
             >
               expires
               
@@ -7528,7 +8202,7 @@ For some types, they will represent the area used by the scanner.
           </td>
           <td>
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               <a
                 class="css-12zqqiz-STYLES_EXTERNAL_LINK"
@@ -7545,7 +8219,7 @@ For some types, they will represent the area used by the scanner.
         <tr>
           <td>
             <strong
-              class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+              class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
             >
               granted
               
@@ -7553,7 +8227,7 @@ For some types, they will represent the area used by the scanner.
           </td>
           <td>
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               boolean
             </code>
@@ -7565,7 +8239,7 @@ For some types, they will represent the area used by the scanner.
         <tr>
           <td>
             <strong
-              class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+              class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
             >
               status
               
@@ -7573,7 +8247,7 @@ For some types, they will represent the area used by the scanner.
           </td>
           <td>
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               <a
                 class="css-12zqqiz-STYLES_EXTERNAL_LINK"
@@ -7591,7 +8265,7 @@ For some types, they will represent the area used by the scanner.
     </table>
   </div>
   <h2
-    class="css-1v5aebx-h2-h2-STYLES_H2"
+    class="css-et60wy-h2-h2-STYLES_H2"
     data-heading="true"
   >
     <div
@@ -7643,7 +8317,7 @@ For some types, they will represent the area used by the scanner.
   </h2>
   <div>
     <h3
-      class="css-icxoph-h3-h3-STYLES_H3"
+      class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
     >
       <div
@@ -7661,7 +8335,7 @@ For some types, they will represent the area used by the scanner.
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               PermissionStatus
             </code>
@@ -7698,59 +8372,89 @@ For some types, they will represent the area used by the scanner.
       </div>
     </h3>
     <ul
-      class="css-1a9yu92-paragraph-STYLES_UNORDERED_LIST-UL"
+      class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
       data-text="true"
     >
       <li
-        class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
+        class="docs-list-item css-xdejd6-STYLES_LIST_ITEM-LI"
       >
-        <code
-          class="inline css-nuv12a-STYLES_INLINE_CODE"
+        <span
+          class="css-1aaoyoh-renderEnum"
         >
-          PermissionStatus
-          .
-          DENIED
-        </code>
-         : 
-        <code
-          class="inline css-nuv12a-STYLES_INLINE_CODE"
+          <code
+            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+          >
+            DENIED
+          </code>
+        </span>
+        <p
+          class="css-101h856-paragraph-STYLES_PARAGRAPH"
+          data-text="true"
         >
-          "denied"
-        </code>
+          <code
+            class="inline css-mcdrx3-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
+          >
+            PermissionStatus
+            .
+            DENIED
+             ＝ 
+            "denied"
+          </code>
+        </p>
       </li>
       <li
-        class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
+        class="docs-list-item css-xdejd6-STYLES_LIST_ITEM-LI"
       >
-        <code
-          class="inline css-nuv12a-STYLES_INLINE_CODE"
+        <span
+          class="css-1aaoyoh-renderEnum"
         >
-          PermissionStatus
-          .
-          GRANTED
-        </code>
-         : 
-        <code
-          class="inline css-nuv12a-STYLES_INLINE_CODE"
+          <code
+            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+          >
+            GRANTED
+          </code>
+        </span>
+        <p
+          class="css-101h856-paragraph-STYLES_PARAGRAPH"
+          data-text="true"
         >
-          "granted"
-        </code>
+          <code
+            class="inline css-mcdrx3-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
+          >
+            PermissionStatus
+            .
+            GRANTED
+             ＝ 
+            "granted"
+          </code>
+        </p>
       </li>
       <li
-        class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
+        class="docs-list-item css-xdejd6-STYLES_LIST_ITEM-LI"
       >
-        <code
-          class="inline css-nuv12a-STYLES_INLINE_CODE"
+        <span
+          class="css-1aaoyoh-renderEnum"
         >
-          PermissionStatus
-          .
-          UNDETERMINED
-        </code>
-         : 
-        <code
-          class="inline css-nuv12a-STYLES_INLINE_CODE"
+          <code
+            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+          >
+            UNDETERMINED
+          </code>
+        </span>
+        <p
+          class="css-101h856-paragraph-STYLES_PARAGRAPH"
+          data-text="true"
         >
-          "undetermined"
-        </code>
+          <code
+            class="inline css-mcdrx3-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
+          >
+            PermissionStatus
+            .
+            UNDETERMINED
+             ＝ 
+            "undetermined"
+          </code>
+        </p>
       </li>
     </ul>
   </div>
@@ -7760,7 +8464,7 @@ For some types, they will represent the area used by the scanner.
 exports[`APISection expo-pedometer 1`] = `
 <div>
   <h2
-    class="css-1v5aebx-h2-h2-STYLES_H2"
+    class="css-et60wy-h2-h2-STYLES_H2"
     data-heading="true"
   >
     <div
@@ -7812,7 +8516,7 @@ exports[`APISection expo-pedometer 1`] = `
   </h2>
   <div>
     <h3
-      class="css-icxoph-h3-h3-STYLES_H3"
+      class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
     >
       <div
@@ -7830,7 +8534,7 @@ exports[`APISection expo-pedometer 1`] = `
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-ni28os-STYLES_INLINE_CODE-STYLES_NOT_EXPOSED_HEADER-InlineCode"
             >
               getPermissionsAsync()
             </code>
@@ -7868,7 +8572,7 @@ exports[`APISection expo-pedometer 1`] = `
     </h3>
     <div>
       <h4
-        class="  css-1j2s5xo-h4-h4-STYLES_H4"
+        class="  css-838f5l-h4-h4-STYLES_H4"
         data-components-heading="true"
         data-heading="true"
       >
@@ -7920,14 +8624,14 @@ exports[`APISection expo-pedometer 1`] = `
         </div>
       </h4>
       <ul
-        class="css-1a9yu92-paragraph-STYLES_UNORDERED_LIST-UL"
+        class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
         data-text="true"
       >
         <li
-          class="docs-list-item css-npeppb-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
+          class="docs-list-item css-1wwpkbk-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
         >
           <code
-            class="inline css-nuv12a-STYLES_INLINE_CODE"
+            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
           >
             <a
               class="css-12zqqiz-STYLES_EXTERNAL_LINK"
@@ -7954,7 +8658,7 @@ exports[`APISection expo-pedometer 1`] = `
   </div>
   <div>
     <h3
-      class="css-icxoph-h3-h3-STYLES_H3"
+      class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
     >
       <div
@@ -7972,7 +8676,7 @@ exports[`APISection expo-pedometer 1`] = `
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-ni28os-STYLES_INLINE_CODE-STYLES_NOT_EXPOSED_HEADER-InlineCode"
             >
               getStepCountAsync(start, end)
             </code>
@@ -8009,7 +8713,7 @@ exports[`APISection expo-pedometer 1`] = `
       </div>
     </h3>
     <h4
-      class="  css-1j2s5xo-h4-h4-STYLES_H4"
+      class="  css-838f5l-h4-h4-STYLES_H4"
       data-components-heading="true"
       data-heading="true"
     >
@@ -8061,19 +8765,19 @@ exports[`APISection expo-pedometer 1`] = `
       </div>
     </h4>
     <ul
-      class="css-1a9yu92-paragraph-STYLES_UNORDERED_LIST-UL"
+      class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
       data-text="true"
     >
       <li
-        class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
+        class="docs-list-item css-xdejd6-STYLES_LIST_ITEM-LI"
       >
         <strong
-          class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+          class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
         >
           start
            (
           <code
-            class="inline css-nuv12a-STYLES_INLINE_CODE"
+            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
           >
             <a
               class="css-12zqqiz-STYLES_EXTERNAL_LINK"
@@ -8091,15 +8795,15 @@ exports[`APISection expo-pedometer 1`] = `
         </span>
       </li>
       <li
-        class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
+        class="docs-list-item css-xdejd6-STYLES_LIST_ITEM-LI"
       >
         <strong
-          class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+          class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
         >
           end
            (
           <code
-            class="inline css-nuv12a-STYLES_INLINE_CODE"
+            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
           >
             <a
               class="css-12zqqiz-STYLES_EXTERNAL_LINK"
@@ -8118,14 +8822,14 @@ exports[`APISection expo-pedometer 1`] = `
       </li>
     </ul>
     <p
-      class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+      class="css-101h856-paragraph-STYLES_PARAGRAPH"
       data-text="true"
     >
       Get the step count between two dates.
     </p>
     <div>
       <h4
-        class="  css-1j2s5xo-h4-h4-STYLES_H4"
+        class="  css-838f5l-h4-h4-STYLES_H4"
         data-components-heading="true"
         data-heading="true"
       >
@@ -8177,14 +8881,14 @@ exports[`APISection expo-pedometer 1`] = `
         </div>
       </h4>
       <ul
-        class="css-1a9yu92-paragraph-STYLES_UNORDERED_LIST-UL"
+        class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
         data-text="true"
       >
         <li
-          class="docs-list-item css-npeppb-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
+          class="docs-list-item css-1wwpkbk-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
         >
           <code
-            class="inline css-nuv12a-STYLES_INLINE_CODE"
+            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
           >
             <a
               class="css-12zqqiz-STYLES_EXTERNAL_LINK"
@@ -8207,7 +8911,7 @@ exports[`APISection expo-pedometer 1`] = `
         </li>
       </ul>
       <p
-        class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+        class="css-101h856-paragraph-STYLES_PARAGRAPH"
         data-text="true"
       >
         Returns a promise that fulfills with a 
@@ -8216,7 +8920,7 @@ exports[`APISection expo-pedometer 1`] = `
           href="/#pedometerresult"
         >
           <code
-            class="inline css-nuv12a-STYLES_INLINE_CODE"
+            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
           >
             PedometerResult
           </code>
@@ -8226,7 +8930,7 @@ exports[`APISection expo-pedometer 1`] = `
       
 
       <p
-        class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+        class="css-101h856-paragraph-STYLES_PARAGRAPH"
         data-text="true"
       >
         As 
@@ -8242,7 +8946,7 @@ exports[`APISection expo-pedometer 1`] = `
       
 
       <blockquote
-        class="css-e76wiv-paragraph-STYLES_BLOCKQUOTE"
+        class="css-13jwbau-paragraph-STYLES_BLOCKQUOTE"
         data-text="true"
       >
         <div>
@@ -8278,7 +8982,7 @@ a start date that is more than seven days in the past returns only the available
   </div>
   <div>
     <h3
-      class="css-icxoph-h3-h3-STYLES_H3"
+      class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
     >
       <div
@@ -8296,7 +9000,7 @@ a start date that is more than seven days in the past returns only the available
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-ni28os-STYLES_INLINE_CODE-STYLES_NOT_EXPOSED_HEADER-InlineCode"
             >
               isAvailableAsync()
             </code>
@@ -8333,14 +9037,14 @@ a start date that is more than seven days in the past returns only the available
       </div>
     </h3>
     <p
-      class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+      class="css-101h856-paragraph-STYLES_PARAGRAPH"
       data-text="true"
     >
       Returns whether the pedometer is enabled on the device.
     </p>
     <div>
       <h4
-        class="  css-1j2s5xo-h4-h4-STYLES_H4"
+        class="  css-838f5l-h4-h4-STYLES_H4"
         data-components-heading="true"
         data-heading="true"
       >
@@ -8392,14 +9096,14 @@ a start date that is more than seven days in the past returns only the available
         </div>
       </h4>
       <ul
-        class="css-1a9yu92-paragraph-STYLES_UNORDERED_LIST-UL"
+        class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
         data-text="true"
       >
         <li
-          class="docs-list-item css-npeppb-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
+          class="docs-list-item css-1wwpkbk-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
         >
           <code
-            class="inline css-nuv12a-STYLES_INLINE_CODE"
+            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
           >
             <a
               class="css-12zqqiz-STYLES_EXTERNAL_LINK"
@@ -8417,12 +9121,12 @@ a start date that is more than seven days in the past returns only the available
         </li>
       </ul>
       <p
-        class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+        class="css-101h856-paragraph-STYLES_PARAGRAPH"
         data-text="true"
       >
         Returns a promise that fulfills with a 
         <code
-          class="inline css-nuv12a-STYLES_INLINE_CODE"
+          class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
         >
           boolean
         </code>
@@ -8434,7 +9138,7 @@ available on this device.
   </div>
   <div>
     <h3
-      class="css-icxoph-h3-h3-STYLES_H3"
+      class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
     >
       <div
@@ -8452,7 +9156,7 @@ available on this device.
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-ni28os-STYLES_INLINE_CODE-STYLES_NOT_EXPOSED_HEADER-InlineCode"
             >
               requestPermissionsAsync()
             </code>
@@ -8490,7 +9194,7 @@ available on this device.
     </h3>
     <div>
       <h4
-        class="  css-1j2s5xo-h4-h4-STYLES_H4"
+        class="  css-838f5l-h4-h4-STYLES_H4"
         data-components-heading="true"
         data-heading="true"
       >
@@ -8542,14 +9246,14 @@ available on this device.
         </div>
       </h4>
       <ul
-        class="css-1a9yu92-paragraph-STYLES_UNORDERED_LIST-UL"
+        class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
         data-text="true"
       >
         <li
-          class="docs-list-item css-npeppb-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
+          class="docs-list-item css-1wwpkbk-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
         >
           <code
-            class="inline css-nuv12a-STYLES_INLINE_CODE"
+            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
           >
             <a
               class="css-12zqqiz-STYLES_EXTERNAL_LINK"
@@ -8576,7 +9280,7 @@ available on this device.
   </div>
   <div>
     <h3
-      class="css-icxoph-h3-h3-STYLES_H3"
+      class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
     >
       <div
@@ -8594,7 +9298,7 @@ available on this device.
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-ni28os-STYLES_INLINE_CODE-STYLES_NOT_EXPOSED_HEADER-InlineCode"
             >
               watchStepCount(callback)
             </code>
@@ -8631,7 +9335,7 @@ available on this device.
       </div>
     </h3>
     <h4
-      class="  css-1j2s5xo-h4-h4-STYLES_H4"
+      class="  css-838f5l-h4-h4-STYLES_H4"
       data-components-heading="true"
       data-heading="true"
     >
@@ -8683,19 +9387,19 @@ available on this device.
       </div>
     </h4>
     <ul
-      class="css-1a9yu92-paragraph-STYLES_UNORDERED_LIST-UL"
+      class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
       data-text="true"
     >
       <li
-        class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
+        class="docs-list-item css-xdejd6-STYLES_LIST_ITEM-LI"
       >
         <strong
-          class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+          class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
         >
           callback
            (
           <code
-            class="inline css-nuv12a-STYLES_INLINE_CODE"
+            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
           >
             <a
               class="css-12zqqiz-STYLES_EXTERNAL_LINK"
@@ -8715,7 +9419,7 @@ provided with a single argument that is
             href="/#pedometerresult"
           >
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               PedometerResult
             </code>
@@ -8725,14 +9429,14 @@ provided with a single argument that is
       </li>
     </ul>
     <p
-      class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+      class="css-101h856-paragraph-STYLES_PARAGRAPH"
       data-text="true"
     >
       Subscribe to pedometer updates.
     </p>
     <div>
       <h4
-        class="  css-1j2s5xo-h4-h4-STYLES_H4"
+        class="  css-838f5l-h4-h4-STYLES_H4"
         data-components-heading="true"
         data-heading="true"
       >
@@ -8784,14 +9488,14 @@ provided with a single argument that is
         </div>
       </h4>
       <ul
-        class="css-1a9yu92-paragraph-STYLES_UNORDERED_LIST-UL"
+        class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
         data-text="true"
       >
         <li
-          class="docs-list-item css-npeppb-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
+          class="docs-list-item css-1wwpkbk-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
         >
           <code
-            class="inline css-nuv12a-STYLES_INLINE_CODE"
+            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
           >
             <a
               class="css-12zqqiz-STYLES_EXTERNAL_LINK"
@@ -8803,7 +9507,7 @@ provided with a single argument that is
         </li>
       </ul>
       <p
-        class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+        class="css-101h856-paragraph-STYLES_PARAGRAPH"
         data-text="true"
       >
         Returns a 
@@ -8812,7 +9516,7 @@ provided with a single argument that is
           href="/#subscription"
         >
           <code
-            class="inline css-nuv12a-STYLES_INLINE_CODE"
+            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
           >
             Subscription
           </code>
@@ -8820,7 +9524,7 @@ provided with a single argument that is
          that enables you to call
 
         <code
-          class="inline css-nuv12a-STYLES_INLINE_CODE"
+          class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
         >
           remove()
         </code>
@@ -8829,7 +9533,7 @@ provided with a single argument that is
     </div>
   </div>
   <h2
-    class="css-1v5aebx-h2-h2-STYLES_H2"
+    class="css-et60wy-h2-h2-STYLES_H2"
     data-heading="true"
   >
     <div
@@ -8881,7 +9585,7 @@ provided with a single argument that is
   </h2>
   <div>
     <h3
-      class="css-icxoph-h3-h3-STYLES_H3"
+      class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
     >
       <div
@@ -8899,7 +9603,7 @@ provided with a single argument that is
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               PedometerResult
               
@@ -8954,14 +9658,14 @@ provided with a single argument that is
         <tr>
           <td>
             <strong
-              class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+              class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
             >
               steps
             </strong>
           </td>
           <td>
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               number
             </code>
@@ -8977,7 +9681,7 @@ provided with a single argument that is
   </div>
   <div>
     <h3
-      class="css-icxoph-h3-h3-STYLES_H3"
+      class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
     >
       <div
@@ -8995,7 +9699,7 @@ provided with a single argument that is
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               PedometerUpdateCallback
               ()
@@ -9034,7 +9738,7 @@ provided with a single argument that is
     </h3>
     <div>
       <h4
-        class="  css-1j2s5xo-h4-h4-STYLES_H4"
+        class="  css-838f5l-h4-h4-STYLES_H4"
         data-components-heading="true"
         data-heading="true"
       >
@@ -9086,19 +9790,19 @@ provided with a single argument that is
         </div>
       </h4>
       <ul
-        class="css-1a9yu92-paragraph-STYLES_UNORDERED_LIST-UL"
+        class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
         data-text="true"
       >
         <li
-          class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
+          class="docs-list-item css-xdejd6-STYLES_LIST_ITEM-LI"
         >
           <strong
-            class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+            class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
           >
             result
              (
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               <a
                 class="css-12zqqiz-STYLES_EXTERNAL_LINK"
@@ -9115,7 +9819,7 @@ provided with a single argument that is
   </div>
   <div>
     <h3
-      class="css-icxoph-h3-h3-STYLES_H3"
+      class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
     >
       <div
@@ -9133,7 +9837,7 @@ provided with a single argument that is
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               PermissionExpiration
             </code>
@@ -9170,14 +9874,14 @@ provided with a single argument that is
       </div>
     </h3>
     <p
-      class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+      class="css-101h856-paragraph-STYLES_PARAGRAPH"
       data-text="true"
     >
       Acceptable values are:
        
       <span>
         <code
-          class="inline css-nuv12a-STYLES_INLINE_CODE"
+          class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
         >
           'never'
         </code>
@@ -9185,7 +9889,7 @@ provided with a single argument that is
       </span>
       <span>
         <code
-          class="inline css-nuv12a-STYLES_INLINE_CODE"
+          class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
         >
           number
         </code>
@@ -9195,7 +9899,7 @@ provided with a single argument that is
   </div>
   <div>
     <h3
-      class="css-icxoph-h3-h3-STYLES_H3"
+      class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
     >
       <div
@@ -9213,7 +9917,7 @@ provided with a single argument that is
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               Subscription
               
@@ -9268,14 +9972,14 @@ provided with a single argument that is
         <tr>
           <td>
             <strong
-              class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+              class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
             >
               remove
             </strong>
           </td>
           <td>
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               () =&gt;
                
@@ -9292,7 +9996,7 @@ provided with a single argument that is
     </table>
   </div>
   <h2
-    class="css-1v5aebx-h2-h2-STYLES_H2"
+    class="css-et60wy-h2-h2-STYLES_H2"
     data-heading="true"
   >
     <div
@@ -9344,7 +10048,7 @@ provided with a single argument that is
   </h2>
   <div>
     <h3
-      class="css-icxoph-h3-h3-STYLES_H3"
+      class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
     >
       <div
@@ -9362,7 +10066,7 @@ provided with a single argument that is
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               PermissionResponse
             </code>
@@ -9416,7 +10120,7 @@ provided with a single argument that is
         <tr>
           <td>
             <strong
-              class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+              class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
             >
               canAskAgain
               
@@ -9424,7 +10128,7 @@ provided with a single argument that is
           </td>
           <td>
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               boolean
             </code>
@@ -9436,7 +10140,7 @@ provided with a single argument that is
         <tr>
           <td>
             <strong
-              class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+              class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
             >
               expires
               
@@ -9444,7 +10148,7 @@ provided with a single argument that is
           </td>
           <td>
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               <a
                 class="css-12zqqiz-STYLES_EXTERNAL_LINK"
@@ -9461,7 +10165,7 @@ provided with a single argument that is
         <tr>
           <td>
             <strong
-              class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+              class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
             >
               granted
               
@@ -9469,7 +10173,7 @@ provided with a single argument that is
           </td>
           <td>
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               boolean
             </code>
@@ -9481,7 +10185,7 @@ provided with a single argument that is
         <tr>
           <td>
             <strong
-              class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+              class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
             >
               status
               
@@ -9489,7 +10193,7 @@ provided with a single argument that is
           </td>
           <td>
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               <a
                 class="css-12zqqiz-STYLES_EXTERNAL_LINK"
@@ -9507,7 +10211,7 @@ provided with a single argument that is
     </table>
   </div>
   <h2
-    class="css-1v5aebx-h2-h2-STYLES_H2"
+    class="css-et60wy-h2-h2-STYLES_H2"
     data-heading="true"
   >
     <div
@@ -9559,7 +10263,7 @@ provided with a single argument that is
   </h2>
   <div>
     <h3
-      class="css-icxoph-h3-h3-STYLES_H3"
+      class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
     >
       <div
@@ -9577,7 +10281,7 @@ provided with a single argument that is
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               PermissionStatus
             </code>
@@ -9614,59 +10318,89 @@ provided with a single argument that is
       </div>
     </h3>
     <ul
-      class="css-1a9yu92-paragraph-STYLES_UNORDERED_LIST-UL"
+      class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
       data-text="true"
     >
       <li
-        class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
+        class="docs-list-item css-xdejd6-STYLES_LIST_ITEM-LI"
       >
-        <code
-          class="inline css-nuv12a-STYLES_INLINE_CODE"
+        <span
+          class="css-1aaoyoh-renderEnum"
         >
-          PermissionStatus
-          .
-          DENIED
-        </code>
-         : 
-        <code
-          class="inline css-nuv12a-STYLES_INLINE_CODE"
+          <code
+            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+          >
+            DENIED
+          </code>
+        </span>
+        <p
+          class="css-101h856-paragraph-STYLES_PARAGRAPH"
+          data-text="true"
         >
-          "denied"
-        </code>
+          <code
+            class="inline css-mcdrx3-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
+          >
+            PermissionStatus
+            .
+            DENIED
+             ＝ 
+            "denied"
+          </code>
+        </p>
       </li>
       <li
-        class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
+        class="docs-list-item css-xdejd6-STYLES_LIST_ITEM-LI"
       >
-        <code
-          class="inline css-nuv12a-STYLES_INLINE_CODE"
+        <span
+          class="css-1aaoyoh-renderEnum"
         >
-          PermissionStatus
-          .
-          GRANTED
-        </code>
-         : 
-        <code
-          class="inline css-nuv12a-STYLES_INLINE_CODE"
+          <code
+            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+          >
+            GRANTED
+          </code>
+        </span>
+        <p
+          class="css-101h856-paragraph-STYLES_PARAGRAPH"
+          data-text="true"
         >
-          "granted"
-        </code>
+          <code
+            class="inline css-mcdrx3-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
+          >
+            PermissionStatus
+            .
+            GRANTED
+             ＝ 
+            "granted"
+          </code>
+        </p>
       </li>
       <li
-        class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
+        class="docs-list-item css-xdejd6-STYLES_LIST_ITEM-LI"
       >
-        <code
-          class="inline css-nuv12a-STYLES_INLINE_CODE"
+        <span
+          class="css-1aaoyoh-renderEnum"
         >
-          PermissionStatus
-          .
-          UNDETERMINED
-        </code>
-         : 
-        <code
-          class="inline css-nuv12a-STYLES_INLINE_CODE"
+          <code
+            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+          >
+            UNDETERMINED
+          </code>
+        </span>
+        <p
+          class="css-101h856-paragraph-STYLES_PARAGRAPH"
+          data-text="true"
         >
-          "undetermined"
-        </code>
+          <code
+            class="inline css-mcdrx3-STYLES_INLINE_CODE-STYLES_ENUM_VALUE-InlineCode"
+          >
+            PermissionStatus
+            .
+            UNDETERMINED
+             ＝ 
+            "undetermined"
+          </code>
+        </p>
       </li>
     </ul>
   </div>
@@ -9676,7 +10410,7 @@ provided with a single argument that is
 exports[`APISection no data 1`] = `
 <div>
   <p
-    class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+    class="css-101h856-paragraph-STYLES_PARAGRAPH"
     data-text="true"
   >
     No API data file found, sorry!

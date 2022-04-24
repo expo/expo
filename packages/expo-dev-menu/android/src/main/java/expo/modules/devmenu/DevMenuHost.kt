@@ -3,11 +3,17 @@ package expo.modules.devmenu
 import android.app.Application
 import android.content.Context
 import android.util.Log
+import com.facebook.hermes.reactexecutor.HermesExecutorFactory
 import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactNativeHost
+import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.JSIModulePackage
+import com.facebook.react.bridge.JavaScriptExecutorFactory
 import com.facebook.react.devsupport.DevServerHelper
+import com.facebook.react.jscexecutor.JSCExecutorFactory
+import com.facebook.react.modules.systeminfo.AndroidInfoHelpers
 import com.facebook.react.shell.MainReactPackage
+import com.facebook.soloader.SoLoader
 import expo.modules.devmenu.react.DevMenuReactInternalSettings
 import java.io.BufferedReader
 import java.io.FileNotFoundException
@@ -17,13 +23,30 @@ import java.io.InputStreamReader
  */
 class DevMenuHost(application: Application) : ReactNativeHost(application) {
 
-  override fun getPackages() = listOf(
-    MainReactPackage(null),
-    DevMenuPackage(),
-    getVendoredPackage("com.swmansion.reanimated.ReanimatedPackage"),
-    getVendoredPackage("com.swmansion.gesturehandler.react.RNGestureHandlerPackage"),
-    getVendoredPackage("com.th3rdwave.safeareacontext.SafeAreaContextPackage"),
-  )
+  override fun getPackages(): List<ReactPackage> {
+    val packages = mutableListOf<ReactPackage>(
+      MainReactPackage(null),
+      DevMenuPackage(),
+      getVendoredPackage("com.swmansion.reanimated.ReanimatedPackage"),
+      getVendoredPackage("com.swmansion.gesturehandler.react.RNGestureHandlerPackage"),
+      getVendoredPackage("com.th3rdwave.safeareacontext.SafeAreaContextPackage"),
+    )
+
+    try {
+      val devLauncherPackage = Class.forName("expo.modules.devlauncher.DevLauncherPackage")
+
+      if (devLauncherPackage != null) {
+        val pkg = devLauncherPackage.getConstructor().newInstance() as ReactPackage
+        packages.add(pkg)
+      }
+    } catch (e: ClassNotFoundException) {
+      // dev launcher is not installed in this project
+    }
+
+
+    return packages
+  }
+
 
   override fun getJSIModulePackage(): JSIModulePackage {
     return getVendoredJNIPackage("com.swmansion.reanimated.ReanimatedJSIModulePackage")
@@ -36,6 +59,14 @@ class DevMenuHost(application: Application) : ReactNativeHost(application) {
   override fun getJSMainModuleName() = "index"
 
   fun getContext(): Context = super.getApplication()
+
+  override fun getJavaScriptExecutorFactory(): JavaScriptExecutorFactory? {
+    SoLoader.init(application.applicationContext, /* native exopackage */ false)
+    if (SoLoader.getLibraryPath("libjsc.so") != null) {
+      return JSCExecutorFactory(application.packageName, AndroidInfoHelpers.getFriendlyDeviceName())
+    }
+    return HermesExecutorFactory()
+  }
 
   override fun createReactInstanceManager(): ReactInstanceManager {
     val reactInstanceManager = super.createReactInstanceManager()

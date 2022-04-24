@@ -10,6 +10,34 @@
 
 ### 💡 Others
 
+## 0.9.1 — 2022-04-21
+
+_This version does not introduce any user-facing changes._
+
+## 0.9.0 — 2022-04-20
+
+### 🐛 Bug fixes
+
+- Removed the unused `jcenter()` maven dependencies. ([#16846](https://github.com/expo/expo/pull/16846) by [@kudo](https://github.com/kudo))
+
+### ⚠️ Notices
+
+- On Android bump `compileSdkVersion` to `31`, `targetSdkVersion` to `31` and `Java` version to `11`. ([#16941](https://github.com/expo/expo/pull/16941) by [@bbarthec](https://github.com/bbarthec))
+
+## 0.8.4 — 2022-02-07
+
+_This version does not introduce any user-facing changes._
+
+## 0.8.3 — 2022-02-01
+
+### 🐛 Bug fixes
+
+- Fix `Plugin with id 'maven' not found` build error from Android Gradle 7. ([#16080](https://github.com/expo/expo/pull/16080) by [@kudo](https://github.com/kudo))
+
+## 0.8.2 — 2022-01-18
+
+_This version does not introduce any user-facing changes._
+
 ## 0.8.1 — 2022-01-17
 
 _This version does not introduce any user-facing changes._

@@ -1,9 +1,9 @@
+import spawnAsync from '@expo/spawn-async';
 import aws from 'aws-sdk';
 import { SpawnOptions } from 'child_process';
 import fse from 'fs-extra';
 import os from 'os';
 import path from 'path';
-import spawnAsync from '@expo/spawn-async';
 
 export const S3_BUCKET = 'exp-artifacts';
 export const S3_URL = `s3://${S3_BUCKET}`;
@@ -12,7 +12,7 @@ export const S3_WEBSITE_PATH = `build-artifacts.exp.host`;
 export async function addRedirectAsync(from: string, to: string): Promise<void> {
   from = from.replace(new RegExp(`^s3:\/\/${S3_BUCKET}\/?`), '');
 
-  let s3 = await _s3ClientAsync();
+  const s3 = await _s3ClientAsync();
   await s3
     .putObject({
       Bucket: S3_BUCKET,
@@ -37,7 +37,7 @@ export async function getCachedArtifactAsync(
 ) {
   try {
     await downloadAsync(key, destFile, options);
-  } catch (e) {
+  } catch {
     await createArtifactAsync();
   }
 }
@@ -47,9 +47,9 @@ export async function uploadAsync(
   key: string,
   options: { [key: string]: any } = {}
 ): Promise<string> {
-  let file = fse.createReadStream(sourceFile);
+  const file = fse.createReadStream(sourceFile);
 
-  let s3 = await _s3ClientAsync();
+  const s3 = await _s3ClientAsync();
   await s3
     .putObject({
       Bucket: S3_BUCKET,
@@ -68,7 +68,7 @@ export async function downloadAsync(
   destFile: string,
   options: { [key: string]: any } = {}
 ): Promise<void> {
-  let s3 = await _s3ClientAsync();
+  const s3 = await _s3ClientAsync();
   return new Promise<void>((resolve, reject) => {
     const file = fse.createWriteStream(destFile);
 
@@ -97,7 +97,7 @@ export async function downloadAsync(
 }
 
 export async function downloadFromRedirectAsync(s3Path: string, dest: string): Promise<void> {
-  let s3 = await _s3ClientAsync();
+  const s3 = await _s3ClientAsync();
 
   const { WebsiteRedirectLocation: redirect } = await s3
     .headObject({
@@ -111,13 +111,13 @@ export async function downloadFromRedirectAsync(s3Path: string, dest: string): P
   }
 
   return new Promise<void>((resolve, reject) => {
-    let reader = s3
+    const reader = s3
       .getObject({
         Bucket: S3_BUCKET,
         Key: s3Path,
       })
       .createReadStream();
-    let file = fse.createWriteStream(dest);
+    const file = fse.createWriteStream(dest);
 
     file
       .on('error', (e) => {
@@ -166,10 +166,10 @@ export async function uploadDirectoriesAsync(
   key: string,
   directories: { source: string; destination: string; isFile?: boolean }[]
 ): Promise<void> {
-  let dirname = await fse.mkdtemp(path.join(os.tmpdir(), '-pt-upload'));
+  const dirname = await fse.mkdtemp(path.join(os.tmpdir(), '-pt-upload'));
   const tmpDir = path.join(dirname, 'upload-directories-tmp');
   const tmpTarGz = path.join(dirname, 'upload-directories-tmp-targz.tar.gz');
-  let spawnOptions: SpawnOptions = {
+  const spawnOptions: SpawnOptions = {
     stdio: 'inherit',
     cwd: dirname,
   };
@@ -177,7 +177,7 @@ export async function uploadDirectoriesAsync(
   await spawnAsync('mkdir', ['-p', tmpDir], spawnOptions);
 
   const excludeFile = path.join(dirname, 'excludeFile.txt');
-  for (let directory of directories) {
+  for (const directory of directories) {
     if (directory.isFile) {
       await spawnAsync(
         'cp',
@@ -187,14 +187,14 @@ export async function uploadDirectoriesAsync(
     } else {
       await spawnAsync('mkdir', ['-p', path.join(tmpDir, directory.destination)], spawnOptions);
       // Exclude files that are not tracked in git
-      let gitCommand = await spawnAsync(
+      const gitCommand = await spawnAsync(
         'git',
         ['-C', '.', 'ls-files', '--exclude-standard', '-oi', '--directory'],
         {
           cwd: directory.source,
         }
       );
-      let gitCommandOutput = gitCommand.stdout.toString();
+      const gitCommandOutput = gitCommand.stdout.toString();
       await fse.writeFile(excludeFile, gitCommandOutput);
       await spawnAsync(
         'rsync',
@@ -219,8 +219,8 @@ export async function uploadDirectoriesAsync(
     spawnOptions
   );
 
-  let s3 = await _s3ClientAsync();
-  let file = fse.createReadStream(tmpTarGz);
+  const s3 = await _s3ClientAsync();
+  const file = fse.createReadStream(tmpTarGz);
   await s3
     .putObject({
       Bucket: bucket,

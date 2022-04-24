@@ -1,6 +1,6 @@
 ---
 title: AV
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-av'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-av'
 packageName: 'expo-av'
 ---
 
@@ -27,11 +27,9 @@ import { Audio, Video } from 'expo-av';
 
 ## Usage
 
-### Construction and obtaining a reference
-
 In this page, we reference operations on `playbackObject`s. Here is an example of obtaining access to the reference for both sound and video:
 
-#### Example: `Audio.Sound`
+### Example: `Audio.Sound`
 
 ```javascript
 await Audio.setAudioModeAsync({ playsInSilentModeIOS: true });
@@ -47,7 +45,7 @@ const { sound: playbackObject } = await Audio.Sound.createAsync(
 
 See the [audio documentation](audio.md) for further information on `Audio.Sound.createAsync()`.
 
-#### Example: `Video`
+### Example: `Video`
 
 ```javascript
 ...
@@ -70,6 +68,8 @@ render() {
 }
 ...
 ```
+
+See the [video documentation](video.md) for further information.
 
 ## Playback API
 
@@ -328,7 +328,7 @@ If precision is important, you can specify the tolerance with which the player w
 
 ## Example usage
 
-#### Example: `setOnPlaybackStatusUpdate()`
+### Example: `setOnPlaybackStatusUpdate()`
 
 ```javascript
 _onPlaybackStatusUpdate = playbackStatus => {
@@ -364,7 +364,7 @@ playbackObject.setOnPlaybackStatusUpdate(this._onPlaybackStatusUpdate);
 ...
 ```
 
-#### Example: Loop media exactly 20 times
+### Example: Loop media exactly 20 times
 
 ```javascript
 const N = 20;

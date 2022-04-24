@@ -22,7 +22,7 @@ When updates are served through the updates service, they are compressed with gz
 
 The way to think about publishing an update to your Expo app is like publishing a new version of your website. In fact, when you publish an update to your Expo web app, you're publishing a new version of your site. Regardless of the underlying platform, Expo updates are downloaded by users running your app on Android, iOS, and the web and the smaller your update, the faster and more reliably your users will be able to download them and use up less of their data plans on cell connections.
 
-Expo's current updates service is designed to accomodate updates, which comprise JS code and assets, around 50 MiB. Many well-engineered production apps use far less than this, which contributes to better user experiences.
+Expo's current updates service is designed to accommodate updates, which comprise JS code and assets, around 50 MiB. Many well-engineered production apps use far less than this, which contributes to better user experiences.
 
 Below are a couple of general techniques that help reduce the size of updates. Many of them are also techniques to optimize websites since both Expo updates and websites are served over the web.
 
@@ -30,7 +30,7 @@ Below are a couple of general techniques that help reduce the size of updates. M
 
 Many images can be reduced by more than 30% in size if they haven't been previously optimized. One simple way to optimize images is to resize them to the dimensions your app actually uses; if your image dimensions are 4032x3024 but your app only needs to display a 400x300 image, downsizing your image with a good interpolation algorithm like bicubic sharpening will greatly reduce your image's size.
 
-Another way to optimize images is to re-encode them using an optimizer like [expo-optimize](https://github.com/expo/expo-cli/tree/master/packages/expo-optimize#-welcome-to-expo-optimize), which optimizes all compatible images in you Expo project:
+Another way to optimize images is to re-encode them using an optimizer like [expo-optimize](https://github.com/expo/expo-cli/tree/main/packages/expo-optimize#-welcome-to-expo-optimize), which optimizes all compatible images in you Expo project:
 
 ```
 npm install -g sharp-cli

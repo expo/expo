@@ -190,13 +190,13 @@ Assign a distinct scheme to every build profile in **eas.json**:
     "development": {
       "ios": {
         "buildConfiguration": "Debug",
-        "scheme": "myapp"
+        "scheme": "myapp-dev"
       }
     },
     "production": {
       "ios": {
         "buildConfiguration": "Release",
-        "scheme": "myapp-dev"
+        "scheme": "myapp"
       }
     }
   }
@@ -252,7 +252,7 @@ By default, the newly created target has separate **Info.plist** file (in our ca
 To change the display name:
 - Open **Info.plist** and add key `Bundle display name` with value `$(DISPLAY_NAME)`.
 - Open `Build Settings` for both targets and find `User-Defined` section.
-- Add key `DISIPLAY_NAME` with the name you want to use for that target.
+- Add key `DISPLAY_NAME` with the name you want to use for that target.
 
 To change the app icon:
 - Create a new image set (you can create it from the existing image set for the current icon, it's usually named `AppIcon`)

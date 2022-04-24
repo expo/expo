@@ -19,7 +19,7 @@ public final class ComponentData: RCTComponentData {
   @objc
   public init(viewModule: ViewModuleWrapper, managerClass: ViewModuleWrapper.Type, bridge: RCTBridge) {
     self.moduleHolder = viewModule.wrappedModuleHolder
-    super.init(managerClass: managerClass, bridge: bridge)
+    super.init(managerClass: managerClass, bridge: bridge, eventDispatcher: bridge.eventDispatcher())
   }
 
   // MARK: RCTComponentData
