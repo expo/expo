@@ -16,8 +16,7 @@ function isSelfHostedIndex(obj: any): obj is SelfHostedIndex {
   return !!obj.sdkVersion;
 }
 
-// put index.jsons into memory
-async function putJsonInMemory(indexPath: string) {
+async function readSelfHostedIndexFilesAsync(indexPath: string): Promise<SelfHostedIndex[]> {
   const index = await JsonFile.readAsync(indexPath);
 
   if (!isSelfHostedIndex(index)) {
@@ -84,39 +83,29 @@ async function mergePlatformIndexFilesAsync(
   { fileName, sourceDirs, outputDir }: { fileName: string; sourceDirs: string[]; outputDir: string }
 ) {
   // merge files from bundles and assets
-  const indexes = (
+  const indexFiles = (
     await Promise.all(
-      sourceDirs.map((sourceDir) => putJsonInMemory(path.resolve(projectRoot, sourceDir, fileName)))
+      sourceDirs.map((sourceDir) =>
+        readSelfHostedIndexFilesAsync(path.resolve(projectRoot, sourceDir, fileName))
+      )
     )
   ).flat();
 
-  // Save the json arrays to disk
-  await writeArtifactSafelyAsync(
-    path.join(projectRoot, outputDir, fileName),
-    JSON.stringify(getSortedIndex(indexes))
-  );
+  const artifactDirectory = path.join(projectRoot, outputDir);
+  const artifactPath = path.join(artifactDirectory, fileName);
+
+  await fs.promises.mkdir(artifactDirectory, { recursive: true });
+  await fs.promises.writeFile(artifactPath, JSON.stringify(getSortedIndex(indexFiles)));
 }
 
 // sort indexes by descending sdk value
-function getSortedIndex(indexes: SelfHostedIndex[]): SelfHostedIndex[] {
-  return indexes.sort((index1: SelfHostedIndex, index2: SelfHostedIndex) => {
-    if (semver.eq(index1.sdkVersion, index2.sdkVersion)) {
+function getSortedIndex(indexFiles: SelfHostedIndex[]): SelfHostedIndex[] {
+  return indexFiles.sort((a: SelfHostedIndex, b: SelfHostedIndex) => {
+    if (semver.eq(a.sdkVersion, b.sdkVersion)) {
       Log.error(
-        `Encountered multiple index.json with the same SDK version ${index1.sdkVersion}. This could result in undefined behavior.`
+        `Encountered multiple index.json with the same SDK version ${a.sdkVersion}. This could result in undefined behavior.`
       );
     }
-    return semver.gte(index1.sdkVersion, index2.sdkVersion) ? -1 : 1;
+    return semver.gte(a.sdkVersion, b.sdkVersion) ? -1 : 1;
   });
-}
-
-// TODO: Remove this unrelated stuff..
-export async function writeArtifactSafelyAsync(
-  artifactPath: string,
-  artifact: string | Uint8Array
-) {
-  if (fs.existsSync(path.dirname(artifactPath))) {
-    await fs.promises.writeFile(artifactPath, artifact);
-  } else {
-    Log.warn(`Could not write artifact ${artifactPath} because the directory does not exist.`);
-  }
 }

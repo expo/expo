@@ -32,20 +32,15 @@ export async function saveAssetsAsync(projectRoot: string, assets: Asset[], outp
   const paths = collectAssetPaths(assets);
 
   // save files one chunk at a time
-  const keyChunks = chunk(Object.keys(paths), 5);
+  const keyChunks = chunk(Object.entries(paths), 5);
   for (const keys of keyChunks) {
-    const promises = [];
-    for (const key of keys) {
-      const pathName = paths[key];
-
-      logAssetTask(projectRoot, 'saving', pathName);
-
-      const assetPath = path.resolve(outputDir, 'assets', key);
-
-      // copy file over to assetPath
-      promises.push(copyAsync(pathName, assetPath));
-    }
-    await Promise.all(promises);
+    await Promise.all(
+      keys.map(([key, pathName]) => {
+        logAssetTask(projectRoot, 'saving', pathName);
+        // copy file over to assetPath
+        return copyAsync(pathName, path.resolve(outputDir, 'assets', key));
+      })
+    );
   }
   Log.log('Files successfully saved.');
 }

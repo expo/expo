@@ -1,4 +1,5 @@
 import { ExpoAppManifest } from '@expo/config';
+import { ModPlatform } from '@expo/config-plugins';
 import { BundleOutput } from '@expo/dev-server';
 import minimatch from 'minimatch';
 import path from 'path';
@@ -8,29 +9,18 @@ import { resolveGoogleServicesFile } from '../../start/server/middleware/resolve
 import { uniqBy } from '../../utils/array';
 import { Asset, saveAssetsAsync } from './saveAssets';
 
-type BundlesByPlatform = { android?: BundleOutput; ios?: BundleOutput };
-
-type ExportAssetsOptions = {
-  projectRoot: string;
-  exp: ExpoAppManifest;
-  bundles: BundlesByPlatform;
-  outputDir: string;
-};
-
 /**
- * Configures exp, preparing it for asset export
+ * Resolves the assetBundlePatterns from the manifest and returns a list of assets to bundle.
  *
  * @modifies {exp}
  */
-async function updateManifestWithAssets(
+export async function resolveAssetBundlePatternsAsync(
   projectRoot: string,
-  exp: ExpoAppManifest,
+  exp: Pick<ExpoAppManifest, 'bundledAssets' | 'assetBundlePatterns'>,
   assets: Asset[]
 ) {
-  // Add google services file if it exists
-  await resolveGoogleServicesFile(projectRoot, exp);
-
-  if (!exp.assetBundlePatterns) {
+  if (!exp.assetBundlePatterns?.length || !assets.length) {
+    delete exp.assetBundlePatterns;
     return exp;
   }
   // Convert asset patterns to a list of asset strings that match them.
@@ -41,53 +31,75 @@ async function updateManifestWithAssets(
   const fullPatterns: string[] = exp.assetBundlePatterns.map((p: string) =>
     path.join(projectRoot, p)
   );
-  // Only log the patterns in debug mode, if they aren't already defined in the app.json, then all files will be targeted.
-  Log.log('\nProcessing asset bundle patterns:');
-  fullPatterns.forEach((p) => Log.log('- ' + p));
+
+  logPatterns(fullPatterns);
+
+  const allBundledAssets = assets
+    .map((asset) => {
+      const shouldBundle = shouldBundleAsset(asset, fullPatterns);
+      if (shouldBundle) {
+        Log.debug(`${shouldBundle ? 'Include' : 'Exclude'} asset ${asset.files?.[0]}`);
+        return asset.fileHashes.map(
+          (hash) => 'asset_' + hash + ('type' in asset && asset.type ? '.' + asset.type : '')
+        );
+      }
+      return [];
+    })
+    .flat();
 
   // The assets returned by the RN packager has duplicates so make sure we
   // only bundle each once.
-  const bundledAssets = new Set<string>();
-  for (const asset of assets) {
-    const file = asset.files && asset.files[0];
-    const shouldBundle =
-      '__packager_asset' in asset &&
-      asset.__packager_asset &&
-      file &&
-      fullPatterns.some((p: string) => minimatch(file, p));
-    Log.debug(`${shouldBundle ? 'Include' : 'Exclude'} asset ${file}`);
-    if (shouldBundle) {
-      asset.fileHashes.forEach((hash) =>
-        bundledAssets.add('asset_' + hash + ('type' in asset && asset.type ? '.' + asset.type : ''))
-      );
-    }
-  }
-  exp.bundledAssets = [...bundledAssets];
+  exp.bundledAssets = [...new Set(allBundledAssets)];
   delete exp.assetBundlePatterns;
 
   return exp;
 }
 
-export async function exportAssetsAsync({
-  projectRoot,
-  exp,
-  outputDir,
-  bundles,
-}: ExportAssetsOptions) {
+function logPatterns(patterns: string[]) {
+  // Only log the patterns in debug mode, if they aren't already defined in the app.json, then all files will be targeted.
+  Log.log('\nProcessing asset bundle patterns:');
+  patterns.forEach((p) => Log.log('- ' + p));
+}
+
+function shouldBundleAsset(asset: Asset, patterns: string[]) {
+  const file = asset.files?.[0];
+  return !!(
+    '__packager_asset' in asset &&
+    asset.__packager_asset &&
+    file &&
+    patterns.some((pattern) => minimatch(file, pattern))
+  );
+}
+
+export async function exportAssetsAsync(
+  projectRoot: string,
+  {
+    exp,
+    outputDir,
+    bundles,
+  }: {
+    exp: ExpoAppManifest;
+    bundles: Partial<Record<ModPlatform, BundleOutput>>;
+    outputDir: string;
+  }
+) {
   const assets: Asset[] = uniqBy(
     Object.values(bundles).flatMap((bundle) => bundle!.assets),
     (asset) => asset.hash
   );
 
-  if (assets.length > 0 && assets[0].fileHashes) {
+  if (assets[0]?.fileHashes) {
     Log.log('Saving assets');
     await saveAssetsAsync(projectRoot, assets, outputDir);
   } else {
     Log.log('No assets to upload, skipped.');
   }
 
+  // Add google services file if it exists
+  await resolveGoogleServicesFile(projectRoot, exp);
+
   // Updates the manifest to reflect additional asset bundling + configs
-  await updateManifestWithAssets(projectRoot, exp, assets);
+  await resolveAssetBundlePatternsAsync(projectRoot, exp, assets);
 
   return { exp, assets };
 }

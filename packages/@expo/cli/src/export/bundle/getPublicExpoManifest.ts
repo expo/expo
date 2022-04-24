@@ -11,12 +11,13 @@ function assertUnversioned(sdkVersion?: string) {
   }
 }
 
+/** Get the public Expo manifest from the local project config. */
 export async function getPublicExpoManifestAsync(projectRoot: string): Promise<ExpoAppManifest> {
   // Read the config in public mode which strips the `hooks`.
   const { exp } = getConfig(projectRoot, {
     isPublicConfig: true,
     // This shouldn't be needed since the CLI is vendored in `expo`.
-    skipSDKVersionRequirement: false,
+    skipSDKVersionRequirement: true,
   });
 
   assertUnversioned(exp.sdkVersion);

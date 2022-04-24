@@ -43,6 +43,8 @@ export function printBundleSizes(bundles: Partial<Record<Platform, BundleOutput>
     )}}`
   );
   Log.log();
+
+  return files;
 }
 
 export function createFilesTable(files: [string, string | Uint8Array][]): string {

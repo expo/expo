@@ -1,17 +1,12 @@
 import { BundleOutput } from '@expo/dev-server';
+import JsonFile, { JSONObject } from '@expo/json-file';
 import crypto from 'crypto';
 import fs from 'fs';
 import path from 'path';
 
 import * as Log from '../../log';
-import { ensureDirectoryAsync } from '../../utils/dir';
 import { createMetadataJson } from './createMetadataJson';
 import { Asset } from './saveAssets';
-
-async function writeAsync(folder: string, fileName: string, contents: any) {
-  await ensureDirectoryAsync(folder);
-  await fs.promises.writeFile(path.join(folder, fileName), contents);
-}
 
 export async function writeDebugHtmlAsync({
   outputDir,
@@ -30,7 +25,9 @@ export async function writeDebugHtmlAsync({
       You can see a red colored folder containing the original source code from your bundle.
       `;
 
-  await writeAsync(outputDir, 'debug.html', debugHtml);
+  await fs.promises.writeFile(path.join(outputDir, 'debug.html'), debugHtml);
+
+  return debugHtml;
 }
 
 /**
@@ -67,7 +64,7 @@ export async function writeBundlesAsync({
 
     hashes[platform] = hash;
     fileNames[platform] = fileName;
-    await writeAsync(outputDir, fileName, bundle);
+    await fs.promises.writeFile(path.join(outputDir, fileName), bundle);
   }
 
   return { hashes, fileNames };
@@ -93,7 +90,7 @@ export async function writeSourceMapsAsync({
       const hash =
         hashes?.[platform] ?? createBundleHash(bundle.hermesBytecodeBundle ?? bundle.code);
       const mapName = `${platform}-${hash}.map`;
-      await writeAsync(outputDir, mapName, sourceMap);
+      await fs.promises.writeFile(path.join(outputDir, mapName), sourceMap);
 
       const jsBundleFileName = fileNames?.[platform] ?? createBundleFileName({ platform, hash });
       const jsPath = path.join(outputDir, jsBundleFileName);
@@ -121,11 +118,12 @@ export async function writeMetadataJsonAsync({
   bundles: Record<string, Pick<BundleOutput, 'assets'>>;
   fileNames: Record<string, string>;
 }) {
-  const metadata = createMetadataJson({
+  const contents = createMetadataJson({
     bundles,
     fileNames,
   });
-  await writeAsync(outputDir, 'metadata.json', JSON.stringify(metadata));
+  await fs.promises.writeFile(path.join(outputDir, 'metadata.json'), JSON.stringify(contents));
+  return contents;
 }
 
 export async function writeAssetMapAsync({
@@ -137,8 +135,6 @@ export async function writeAssetMapAsync({
 }) {
   // Convert the assets array to a k/v pair where the asset hash is the key and the asset is the value.
   const contents = Object.fromEntries(assets.map((asset) => [asset.hash, asset]));
-
-  await writeAsync(outputDir, 'assetmap.json', JSON.stringify(contents));
-
+  await fs.promises.writeFile(path.join(outputDir, 'assetmap.json'), JSON.stringify(contents));
   return contents;
 }

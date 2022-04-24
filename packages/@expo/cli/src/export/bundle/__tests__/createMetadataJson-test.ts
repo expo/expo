@@ -8,7 +8,7 @@ describe(createMetadataJson, () => {
       },
       bundles: {
         ios: {
-          assets: [{ type: 'image', fileHashes: ['foobar', 'other'] }],
+          assets: [{ type: 'image', fileHashes: ['foobar', 'other'] } as any],
         },
       },
     });

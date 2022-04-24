@@ -83,7 +83,7 @@ describe(writeAssetMapAsync, () => {
 
     const results = await writeAssetMapAsync({
       outputDir: projectRoot,
-      assets: [{ hash: 'alpha' }, { hash: 'beta' }],
+      assets: [{ hash: 'alpha' }, { hash: 'beta' }] as any,
     });
 
     expect(results).toStrictEqual({

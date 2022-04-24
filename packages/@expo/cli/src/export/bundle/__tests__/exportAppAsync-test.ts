@@ -2,78 +2,32 @@ import { vol } from 'memfs';
 
 import { exportAppAsync } from '../exportAppAsync';
 
-jest.mock('xdl', () => ({
-  Project: {
-    getPublishExpConfigAsync: () =>
-      Promise.resolve({
-        exp: {
-          name: 'my-app',
-          slug: 'my-app',
-        },
-        pkg: { dependencies: { expo: '43.0.0' } },
-        hooks: {
-          postExport: [],
-        },
-      }),
-    createBundlesAsync: (projectRoot, options, { platforms }: { platforms: string[] }) =>
-      Promise.resolve(
-        platforms.reduce(
-          (prev, platform) => ({
-            ...prev,
-            [platform]: {
-              code: `var foo = true;`,
-              map: `${platform}_map`,
-              assets: [
-                {
-                  hash: 'alpha',
-                  type: 'image',
-                  fileHashes: ['foobar', 'other'],
-                },
-                {
-                  hash: 'beta',
-                  type: 'font',
-                  fileHashes: ['betabar'],
-                },
-              ],
-            },
-          }),
-          {}
-        )
-      ),
-    prepareHooks: jest.fn(() => []),
-    runHook: jest.fn(async () => {}),
-  },
-  UserManager: {
-    getCurrentUsernameAsync() {
-      return 'bacon';
-    },
-  },
+jest.mock('../../../log');
 
-  printBundleSizes: jest.fn(),
-
-  Env: {
-    shouldUseDevServer() {
-      return true;
-    },
-  },
-  ProjectAssets: {
-    exportAssetsAsync: jest.fn(() =>
-      Promise.resolve({
-        assets: [
-          {
-            hash: 'alpha',
-            type: 'image',
-            fileHashes: ['foobar', 'other'],
+jest.mock('../createBundles', () => ({
+  createBundlesAsync: jest.fn(
+    async (projectRoot, options, { platforms }: { platforms: string[] }) =>
+      platforms.reduce(
+        (prev, platform) => ({
+          ...prev,
+          [platform]: {
+            code: `var foo = true;`,
+            map: `${platform}_map`,
+            assets: [
+              {
+                __packager_asset: true,
+                files: ['/icon.png'],
+                hash: '4e3f888fc8475f69fd5fa32f1ad5216a',
+                name: 'icon',
+                type: 'png',
+                fileHashes: ['4e3f888fc8475f69fd5fa32f1ad5216a'],
+              },
+            ],
           },
-          {
-            hash: 'beta',
-            type: 'font',
-            fileHashes: ['betabar'],
-          },
-        ],
-      })
-    ),
-  },
+        }),
+        {}
+      )
+  ),
 }));
 
 describe(exportAppAsync, () => {
@@ -81,32 +35,36 @@ describe(exportAppAsync, () => {
     vol.reset();
   });
 
-  it(`exports an app with experimental bundling`, async () => {
+  it(`exports an app`, async () => {
     const outputDir = '/dist/';
 
-    const { Project } = require('xdl');
+    vol.fromJSON(
+      {
+        'icon.png': 'icon',
+        'package.json': JSON.stringify({ dependencies: { expo: '44.0.0' } }),
+      },
+      '/'
+    );
 
-    Project.prepareHooks = jest.fn();
     await exportAppAsync('/', {
       outputDir,
       platforms: ['ios'],
-      isDev: false,
+      dev: false,
       dumpAssetmap: true,
       dumpSourcemap: true,
-      publishOptions: {},
+      clear: false,
+      // publishOptions: {},
     });
-
-    expect(Project.prepareHooks).not.toBeCalled();
 
     expect(vol.toJSON()).toStrictEqual({
       '/dist/debug.html': expect.stringMatching(/<script/),
       '/dist/assetmap.json': expect.any(String),
-      '/dist/assets': null,
+      '/dist/assets/4e3f888fc8475f69fd5fa32f1ad5216a': 'icon',
       '/dist/bundles/ios-4fe3891dcaca43901bd8797db78405e4.js':
         expect.stringMatching(/sourceMappingURL/),
       '/dist/metadata.json': expect.stringContaining('"fileMetadata"'),
       '/dist/bundles/ios-4fe3891dcaca43901bd8797db78405e4.map': 'ios_map',
-      '/dist/ios-index.json': expect.stringContaining('"name":"my-app"'),
+      '/icon.png': 'icon',
       '/package.json': expect.any(String),
     });
   });

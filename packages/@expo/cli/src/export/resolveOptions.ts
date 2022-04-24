@@ -1,8 +1,10 @@
-import assert from 'assert';
+import { ModPlatform } from '@expo/config-plugins';
+
+import { resolvePlatformOption } from '../prebuild/resolveOptions';
 
 export type Options = {
   outputDir: string;
-  platform: 'all' | 'ios' | 'android';
+  platforms: ModPlatform[];
   mergeSrcUrl: string[];
   mergeSrcDir: string[];
   maxWorkers?: number;
@@ -13,15 +15,12 @@ export type Options = {
   dumpSourcemap: boolean;
 };
 
-export async function resolveOptionsAsync(projectRoot: string, args: any): Promise<Options> {
-  const platform = args['--platform'] ?? 'all';
-  if (platform) {
-    assert.match(platform, /^(all|android|ios)$/);
-  }
+export async function resolveOptionsAsync(args: any): Promise<Options> {
+  const platforms = resolvePlatformOption(args['--platform'] ?? 'all', { loose: true });
 
   return {
     outputDir: args['--output-dir'] ?? 'dist',
-    platform,
+    platforms,
     mergeSrcUrl: args['--merge-src-url'] ?? [],
     mergeSrcDir: args['--merge-src-dir'] ?? [],
     clear: !!args['--clear'],

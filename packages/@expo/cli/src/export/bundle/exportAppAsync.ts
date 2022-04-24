@@ -1,7 +1,6 @@
 import path from 'path';
 
 import * as Log from '../../log';
-import { resolvePlatformOption } from '../../prebuild/resolveOptions';
 import { ensureDirectoryAsync } from '../../utils/dir';
 import { Options } from '../resolveOptions';
 import { createBundlesAsync } from './createBundles';
@@ -15,8 +14,6 @@ import {
   writeMetadataJsonAsync,
   writeSourceMapsAsync,
 } from './writeContents';
-
-export const ANONYMOUS_USERNAME = 'anonymous';
 
 /**
  * The structure of the outputDir will be:
@@ -32,31 +29,31 @@ export const ANONYMOUS_USERNAME = 'anonymous';
  */
 export async function exportAppAsync(
   projectRoot: string,
-  options: Pick<
-    Options,
-    'dumpAssetmap' | 'dumpSourcemap' | 'dev' | 'clear' | 'outputDir' | 'platform'
-  >
+  {
+    platforms,
+    outputDir,
+    clear,
+    dev,
+    dumpAssetmap,
+    dumpSourcemap,
+  }: Pick<Options, 'dumpAssetmap' | 'dumpSourcemap' | 'dev' | 'clear' | 'outputDir' | 'platforms'>
 ): Promise<void> {
-  const platforms = resolvePlatformOption(options.platform, { loose: true });
-
   const exp = await getPublicExpoManifestAsync(projectRoot);
 
-  const absoluteOutputDir = path.resolve(projectRoot, options.outputDir);
+  const absoluteOutputDir = path.resolve(projectRoot, outputDir);
+
   const assetPathToWrite = path.resolve(absoluteOutputDir, 'assets');
   const bundlesPathToWrite = path.resolve(absoluteOutputDir, 'bundles');
 
-  await Promise.all([
-    ensureDirectoryAsync(assetPathToWrite),
-    ensureDirectoryAsync(bundlesPathToWrite),
-  ]);
+  await Promise.all([assetPathToWrite, bundlesPathToWrite].map(ensureDirectoryAsync));
 
   // Run metro bundler and create the JS bundles/source maps.
   const bundles = await createBundlesAsync(
     projectRoot,
-    { resetCache: !!options.clear },
+    { resetCache: !!clear },
     {
       platforms,
-      dev: options.dev,
+      dev,
       useDevServer: true,
       // TODO: Disable source map generation if we aren't outputting them.
     }
@@ -70,20 +67,19 @@ export async function exportAppAsync(
 
   Log.log('Finished saving JS Bundles');
 
-  const { assets } = await exportAssetsAsync({
-    projectRoot,
+  const { assets } = await exportAssetsAsync(projectRoot, {
     exp,
     outputDir: absoluteOutputDir,
     bundles,
   });
 
-  if (options.dumpAssetmap) {
+  if (dumpAssetmap) {
     Log.log('Dumping asset map');
     await writeAssetMapAsync({ outputDir: absoluteOutputDir, assets });
   }
 
   // build source maps
-  if (options.dumpSourcemap) {
+  if (dumpSourcemap) {
     await writeSourceMapsAsync({
       bundles,
       hashes,
@@ -99,5 +95,5 @@ export async function exportAppAsync(
   }
 
   // Generate a `metadata.json` and the export is complete.
-  await writeMetadataJsonAsync({ outputDir: options.outputDir, bundles, fileNames });
+  await writeMetadataJsonAsync({ outputDir, bundles, fileNames });
 }

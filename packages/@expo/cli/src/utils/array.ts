@@ -28,7 +28,7 @@ export function uniqBy<T>(array: T[], key: (item: T) => string): T[] {
 }
 
 /** `lodash.chunk` */
-export function chunk(array: any[], size: number): any[][] {
+export function chunk<T>(array: T[], size: number): T[][] {
   const chunked = [];
   let index = 0;
   while (index < array.length) {

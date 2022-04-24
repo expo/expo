@@ -11,26 +11,25 @@ type FileMetadata = {
   [key in BundlePlatform]: PlatformMetadata;
 };
 
-type Metadata = {
-  version: 0;
-  bundler: 'metro';
-  fileMetadata: FileMetadata;
-};
-
 export function createMetadataJson({
   bundles,
   fileNames,
 }: {
   bundles: Partial<Record<BundlePlatform, Pick<BundleOutput, 'assets'>>>;
   fileNames: Record<string, string>;
-}): Metadata {
+}): {
+  version: 0;
+  bundler: 'metro';
+  fileMetadata: FileMetadata;
+} {
   // Build metadata.json
   return {
     version: 0,
     bundler: 'metro',
     fileMetadata: Object.entries(bundles).reduce<Record<string, Partial<PlatformMetadata>>>(
-      (metadata, [platform, bundle]) => {
-        metadata[platform] = {
+      (metadata, [platform, bundle]) => ({
+        ...metadata,
+        [platform]: {
           // Get the filename for each platform's bundle.
           bundle: path.join('bundles', fileNames[platform]!),
           // Collect all of the assets and convert them to the serial format.
@@ -43,10 +42,8 @@ export function createMetadataJson({
               }))
             )
             .flat(),
-        };
-
-        return metadata;
-      },
+        },
+      }),
       {}
     ) as FileMetadata,
   };

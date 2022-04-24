@@ -45,13 +45,11 @@ export async function createBundlesAsync(
   );
 
   // { ios: bundle, android: bundle }
-  const results: Record<string, BundleOutput> = {};
-
-  for (let index = 0; index < bundleOptions.platforms.length; index++) {
-    const platform = bundleOptions.platforms[index];
-    const bundle = bundles[index];
-    results[platform] = bundle;
-  }
-
-  return results;
+  return bundleOptions.platforms.reduce<Record<string, BundleOutput>>(
+    (prev, platform, index) => ({
+      ...prev,
+      [platform]: bundles[index],
+    }),
+    {}
+  );
 }
