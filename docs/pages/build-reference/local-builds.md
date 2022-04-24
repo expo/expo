@@ -2,7 +2,7 @@
 title: Running builds on your own infrastructure
 ---
 
-You can run the same build process as we run on the EAS Build servers directly on your machine with the `--local` flag.
+You can run the same build process that we run on the EAS Build servers directly on your machine with the `--local` flag.
 
 `eas build --platform android --local` or `eas build --platform ios --local`
 
@@ -11,7 +11,7 @@ You can run the same build process as we run on the EAS Build servers directly o
 You need to be authenticated with Expo:
 
 - Run `eas login`,
-- or set `EXPO_TOKEN` ([learn more on the token-base authentication](/accounts/programmatic-access.md)).
+- or set `EXPO_TOKEN` ([learn more about token-based authentication](/accounts/programmatic-access.md)).
 
 ## Use cases for local builds
 
@@ -22,7 +22,7 @@ You need to be authenticated with Expo:
 
 ## Using local builds for debugging
 
-If you encounter build failures on EAS servers and you're unable to determine the cause from inspecting the logs, you may find it helpful to debug the issue locally. To simplify that process we support few environment variables to configure the local build process.
+If you encounter build failures on EAS servers and you're unable to determine the cause from inspecting the logs, you may find it helpful to debug the issue locally. To simplify that process we support a number of environment variables to configure the local build process.
 
 - `EAS_LOCAL_BUILD_SKIP_CLEANUP=1` - Set this to disable cleaning up the working directory after the build process is finished.
 - `EAS_LOCAL_BUILD_WORKINGDIR` - Specify the working directory for the build process, by default it's somewhere (it's platform dependent) in `/tmp` folder.
