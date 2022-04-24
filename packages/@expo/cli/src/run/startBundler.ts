@@ -6,7 +6,6 @@ import { startInterfaceAsync } from '../start/interface/startInterface';
 import { DevServerManager } from '../start/server/DevServerManager';
 import { env } from '../utils/env';
 
-// TODO: Maybe combine with `startAsync`
 export async function startBundlerAsync(
   projectRoot: string,
   {
