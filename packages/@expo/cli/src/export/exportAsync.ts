@@ -8,9 +8,12 @@ import { Options } from './resolveOptions';
 export async function exportAsync(projectRoot: string, options: Options) {
   // Ensure the output directory is created
   const outputPath = path.resolve(projectRoot, options.outputDir);
+  // Delete the output directory if it exists
   await removeAsync(outputPath);
+  // Create the output directory
   await ensureDirectoryAsync(outputPath);
 
+  // Export the app
   await exportAppAsync(projectRoot, options);
 
   // Final notes

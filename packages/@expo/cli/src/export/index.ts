@@ -21,8 +21,8 @@ export const expoExport: Command = async (argv) => {
       // Aliases
       '-h': '--help',
       '-q': '--quiet',
-      '-s': '--dump-sourcemap',
-      '-d': '--dump-assetmap',
+      // '-s': '--dump-sourcemap',
+      // '-d': '--dump-assetmap',
       '-c': '--clear',
     },
     argv
@@ -45,9 +45,9 @@ export const expoExport: Command = async (argv) => {
     --dev                         Configure static files for developing locally using a non-https server
     --output-dir <path>           The directory to export the static files to (default: dist)
     --max-workers <number>        Maximum number of tasks to allow Metro to spawn
+    --dump-assetmap               Dump the asset map for further processing
+    --dump-sourcemap              Dump the source map for debugging the JS bundle
     -c, --clear                   Clear the Metro bundler cache
-    -d, --dump-assetmap           Dump the asset map for further processing
-    -s, --dump-sourcemap          Dump the source map for debugging the JS bundle
     -q, --quiet                   Suppress verbose output
     -h, --help                    Output usage information
 `,
