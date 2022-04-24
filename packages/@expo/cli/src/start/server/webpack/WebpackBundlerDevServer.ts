@@ -15,7 +15,6 @@ import { getIpAddress } from '../../../utils/ip';
 import { choosePortAsync } from '../../../utils/port';
 import { ensureDotExpoProjectDirectoryInitialized } from '../../project/dotExpo';
 import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
-import { UrlCreator } from '../UrlCreator';
 import {
   importExpoWebpackConfigFromProject,
   importWebpackDevServerFromProject,
@@ -175,22 +174,17 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
 
     await this.stopAsync();
 
-    const { resetDevServer, https, mode } = options;
-
-    const port = await this.getAvailablePortAsync({
+    options.port = await this.getAvailablePortAsync({
       defaultPort: options.port,
     });
+    const { resetDevServer, https, port, mode } = options;
 
-    this.urlCreator = new UrlCreator(
-      {
+    this.urlCreator = this.getUrlCreator({
+      port,
+      location: {
         scheme: https ? 'https' : 'http',
-        ...options.location,
       },
-      {
-        port,
-        getTunnelUrl: this.getTunnelUrl.bind(this),
-      }
-    );
+    });
 
     Log.debug('Starting webpack on port: ' + port);
 
