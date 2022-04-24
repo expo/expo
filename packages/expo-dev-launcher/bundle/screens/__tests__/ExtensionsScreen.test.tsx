@@ -1,11 +1,10 @@
+import { getCompatibleBranchMessage } from '../../components/EmptyBranchesMessage';
 import { UserData } from '../../functions/getUserProfileAsync';
+import * as DevLauncher from '../../native-modules/DevLauncherInternal';
 import { queryClient } from '../../providers/QueryProvider';
 import { Update } from '../../queries/useUpdatesForBranch';
 import { render, waitFor, act, fireEvent, mockGraphQLResponse } from '../../test-utils';
 import { ExtensionsScreen } from '../ExtensionsScreen';
-
-import * as DevLauncher from '../../native-modules/DevLauncherInternal';
-import { getCompatibleBranchMessage } from '../../components/EmptyBranchesMessage';
 
 jest.mock('../../native-modules/DevLauncherInternal', () => {
   const originalMock = jest.requireActual('../../native-modules/__mocks__/DevLauncherInternal');
@@ -118,6 +117,7 @@ describe('<ExtensionsScreen />', () => {
       message: 'Hello joe',
       runtimeVersion: '1',
       createdAt: new Date().toISOString(),
+      manifestPermalink: '123',
     };
 
     mockBranchResponse({
@@ -150,6 +150,7 @@ describe('<ExtensionsScreen />', () => {
       message: 'Hello joe',
       runtimeVersion: '1',
       createdAt: new Date().toISOString(),
+      manifestPermalink: '123',
     };
 
     mockBranchResponse({
@@ -183,12 +184,13 @@ describe('<ExtensionsScreen />', () => {
           message: '123',
           createdAt: '123',
           runtimeVersion: '123',
+          manifestPermalink: '123',
         },
       ],
       compatibleUpdates: [],
     });
 
-    const { getByText, debug } = renderAuthenticatedScreen({ mockNavigation });
+    const { getByText } = renderAuthenticatedScreen({ mockNavigation });
 
     await act(async () => {
       await waitFor(() => getByText(getCompatibleBranchMessage(1)));
@@ -226,6 +228,7 @@ function renderAuthenticatedScreen({ mockNavigation }) {
     profilePhoto: '123',
     email: 'hello@joe.ca',
     accounts: [],
+    isExpoAdmin: true,
   };
 
   return render(<ExtensionsScreen navigation={mockNavigation} />, {

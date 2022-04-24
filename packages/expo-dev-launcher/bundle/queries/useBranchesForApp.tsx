@@ -31,6 +31,7 @@ const query = gql`
             message
             runtimeVersion
             createdAt
+            manifestPermalink
           }
         }
       }

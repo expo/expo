@@ -10,6 +10,14 @@
 
 ### 💡 Others
 
+## 2.2.1 — 2022-04-22
+
+### 🐛 Bug fixes
+
+- Stop prebuilding xcframework. ([#17161](https://github.com/expo/expo/pull/17161) by [@wschurman](https://github.com/wschurman))
+
+## 2.2.0 — 2022-04-18
+
 ### ⚠️ Notices
 
 - On Android bump `compileSdkVersion` to `31`, `targetSdkVersion` to `31` and `Java` version to `11`. ([#16941](https://github.com/expo/expo/pull/16941) by [@bbarthec](https://github.com/bbarthec))

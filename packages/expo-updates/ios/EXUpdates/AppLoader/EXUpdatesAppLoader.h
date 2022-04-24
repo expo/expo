@@ -17,6 +17,7 @@ typedef void (^EXUpdatesAppLoaderErrorBlock)(NSError *error);
 - (instancetype)initWithConfig:(EXUpdatesConfig *)config
                       database:(EXUpdatesDatabase *)database
                      directory:(NSURL *)directory
+                launchedUpdate:(nullable EXUpdatesUpdate *)launchedUpdate
                completionQueue:(dispatch_queue_t)completionQueue;
 
 /**

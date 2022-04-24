@@ -26,14 +26,14 @@ concurrency:
 
 jobs:
   web:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     steps:
       - name: ⬢ Setup Node
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: '14.17'
       - name: 👀 Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           submodules: true
       - name: ♻️ Restore workspace node modules
@@ -48,7 +48,6 @@ jobs:
             home/node_modules
             packages/*/node_modules
             packages/@expo/*/node_modules
-            packages/@unimodules/*/node_modules
             react-native-lab/react-native/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('yarn.lock') }}
       - name: 🧶 Install node modules in root dir
@@ -72,7 +71,7 @@ jobs:
     runs-on: macos-11
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           submodules: true
       - name: 🔨 Switch to Xcode 13.0
@@ -99,7 +98,6 @@ jobs:
             home/node_modules
             packages/*/node_modules
             packages/@expo/*/node_modules
-            packages/@unimodules/*/node_modules
             react-native-lab/react-native/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('yarn.lock') }}
       - name: 🧶 Install node modules in root dir
@@ -137,7 +135,7 @@ jobs:
         working-directory: apps/bare-expo
       - name: Store images of build failures
         if: always()
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: bare-expo-artifacts
           path: apps/bare-expo/artifacts
@@ -160,15 +158,15 @@ jobs:
       GRADLE_OPTS: -Dorg.gradle.jvmargs=-Xmx4096m -XX:MaxMetaspaceSize=2048m
     steps:
       - name: ⬢ Setup Node
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: '14.17'
       - name: 👀 Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           submodules: true
       - name: 🔨 Use JDK 11
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: '11'
@@ -188,7 +186,6 @@ jobs:
             home/node_modules
             packages/*/node_modules
             packages/@expo/*/node_modules
-            packages/@unimodules/*/node_modules
             react-native-lab/react-native/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('yarn.lock') }}
       - name: 🧶 Install node modules in root dir
@@ -221,7 +218,7 @@ jobs:
           working-directory: ./apps/bare-expo
       - name: Store images of build failures
         if: always()
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: bare-expo-artifacts
           path: apps/bare-expo/artifacts

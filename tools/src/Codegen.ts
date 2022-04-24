@@ -26,9 +26,12 @@ export interface ReactNativeCodegenParameters {
 
   // keep the intermediate schema.json (default is false)
   keepIntermediateSchema?: boolean;
+
+  // the base dir name for output generated code (default is `name`)
+  outputDirBaseName?: string;
 }
 
-export async function runReactNativeCodegen(params: ReactNativeCodegenParameters) {
+export async function runReactNativeCodegenAsync(params: ReactNativeCodegenParameters) {
   const genSchemaScript = path.join(
     params.codegenPkgRoot,
     'lib',
@@ -39,10 +42,11 @@ export async function runReactNativeCodegen(params: ReactNativeCodegenParameters
   const genCodeScript = path.join(params.reactNativeRoot, 'scripts', 'generate-specs-cli.js');
 
   const schemaOutputPath = path.join(params.outputDir, 'schema.json');
+  const outputDirBaseName = params.outputDirBaseName ?? params.name;
   const codegenOutputDir =
     params.type === 'components'
-      ? path.join(params.outputDir, 'react', 'renderer', 'components', params.name)
-      : path.join(params.outputDir, params.name);
+      ? path.join(params.outputDir, 'react', 'renderer', 'components', outputDirBaseName)
+      : path.join(params.outputDir, outputDirBaseName);
   await fs.ensureDir(params.outputDir);
 
   // generate schema.json from js & flow types

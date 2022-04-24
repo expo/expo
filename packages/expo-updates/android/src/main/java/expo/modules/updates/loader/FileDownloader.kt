@@ -7,9 +7,6 @@ import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.UpdatesUtils
 import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.launcher.NoDatabaseLauncher
-import expo.modules.updates.manifest.ManifestFactory
-import expo.modules.updates.manifest.ManifestHeaderData
-import expo.modules.updates.manifest.UpdateManifest
 import expo.modules.updates.selectionpolicy.SelectionPolicies
 import okhttp3.*
 import org.json.JSONArray
@@ -27,6 +24,9 @@ import expo.modules.easclient.EASClientID
 import okhttp3.Headers.Companion.toHeaders
 import expo.modules.jsonutils.getNullable
 import expo.modules.updates.codesigning.ValidationResult
+import expo.modules.updates.db.UpdatesDatabase
+import expo.modules.updates.db.entity.UpdateEntity
+import expo.modules.updates.manifest.*
 import java.security.cert.CertificateException
 
 open class FileDownloader(private val client: OkHttpClient) {
@@ -331,7 +331,7 @@ open class FileDownloader(private val client: OkHttpClient) {
             override fun onSuccess(file: File, hash: ByteArray) {
               // base64url - https://datatracker.ietf.org/doc/html/rfc4648#section-5
               val hashBase64String = Base64.encodeToString(hash, Base64.URL_SAFE or Base64.NO_PADDING or Base64.NO_WRAP)
-              val expectedAssetHash = asset.expectedHash?.toLowerCase(Locale.ROOT)
+              val expectedAssetHash = asset.expectedHash
               if (expectedAssetHash != null && expectedAssetHash != hashBase64String) {
                 callback.onFailure(Exception("Asset hash invalid: ${asset.key}; expectedHash: $expectedAssetHash; actualHash: $hashBase64String"), asset)
                 return
@@ -567,6 +567,25 @@ open class FileDownloader(private val client: OkHttpClient) {
 
     private fun getCacheDirectory(context: Context): File {
       return File(context.cacheDir, "okhttp")
+    }
+
+    fun getExtraHeaders(
+      database: UpdatesDatabase,
+      configuration: UpdatesConfiguration,
+      launchedUpdate: UpdateEntity?,
+      embeddedUpdate: UpdateEntity?
+    ): JSONObject {
+      val extraHeaders =
+        ManifestMetadata.getServerDefinedHeaders(database, configuration) ?: JSONObject()
+
+      launchedUpdate?.let {
+        extraHeaders.put("Expo-Current-Update-ID", it.id.toString().lowercase())
+      }
+      embeddedUpdate?.let {
+        extraHeaders.put("Expo-Embedded-Update-ID", it.id.toString().lowercase())
+      }
+
+      return extraHeaders
     }
   }
 }

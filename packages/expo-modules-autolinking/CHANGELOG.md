@@ -2,10 +2,18 @@
 
 ## Unpublished
 
+### 🛠 Breaking changes
+
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.7.0 — 2022-04-18
+
 - Update require logic to find transitive deps that would not be hoisted at the top of the monorepo ([#16419](https://github.com/expo/expo/pull/16419) by [@Titozzz](https://github.com/Titozzz))
 - Fix `cannot cast object 'ExpoAutolinkingManager@' with class 'ExpoAutolinkingManager' to class 'ExpoAutolinkingManager'` on Android when a project is using `buildSrc`. ([#16545](https://github.com/expo/expo/pull/16545) by [@lukmccall](https://github.com/lukmccall))
-
-### 🛠 Breaking changes
 
 ### 🎉 New features
 
@@ -15,8 +23,6 @@
 ### 🐛 Bug fixes
 
 - Fixed `expo_patch_react_imports!` not work when the app project is in a folder with spaces. ([#16794](https://github.com/expo/expo/pull/16794) by [@Kudo](https://github.com/Kudo))
-
-### 💡 Others
 
 ## 0.6.0 — 2022-01-26
 

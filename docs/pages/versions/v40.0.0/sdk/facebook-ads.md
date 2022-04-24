@@ -61,7 +61,7 @@ FacebookAds.InterstitialAdManager.showAd(placementId)
   .catch(error => {});
 ```
 
-The method returns a promise that will be rejected when an error occurs during a call (e.g. no fill from ad server or network error) and resolved when the user either dimisses or interacts with the displayed ad.
+The method returns a promise that will be rejected when an error occurs during a call (e.g. no fill from ad server or network error) and resolved when the user either dismisses or interacts with the displayed ad.
 
 ### Native Ads
 

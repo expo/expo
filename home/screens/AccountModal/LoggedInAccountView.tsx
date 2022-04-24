@@ -3,8 +3,9 @@ import { useNavigation } from '@react-navigation/native';
 import { SectionHeader } from 'components/SectionHeader';
 import { Text, View, Image, useExpoTheme, Row, Spacer, Divider } from 'expo-dev-client-components';
 import React from 'react';
-import { TouchableOpacity, FlatList } from 'react-native-gesture-handler';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
+import { FlatList } from '../../components/FlatList';
 import { Home_CurrentUserQuery } from '../../graphql/types';
 import { useDispatch } from '../../redux/Hooks';
 import SessionActions from '../../redux/SessionActions';

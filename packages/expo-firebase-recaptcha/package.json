@@ -1,6 +1,6 @@
 {
   "name": "expo-firebase-recaptcha",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "reCAPTCHA components for Firebase phone authentication",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -37,7 +37,7 @@
     "expo-module-scripts": "^2.0.0"
   },
   "dependencies": {
-    "expo-firebase-core": "~4.1.0"
+    "expo-firebase-core": "~5.0.0"
   },
   "peerDependencies": {
     "react-native-webview": "*"

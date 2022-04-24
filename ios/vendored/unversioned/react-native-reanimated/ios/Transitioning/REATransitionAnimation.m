@@ -1,6 +1,5 @@
+#import <RNReanimated/REATransitionAnimation.h>
 #import <UIKit/UIKit.h>
-
-#import "REATransitionAnimation.h"
 
 #define DEFAULT_DURATION 0.25
 

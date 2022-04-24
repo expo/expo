@@ -3,7 +3,7 @@ import fs from 'fs';
 import schemaDerefSync from 'json-schema-deref-sync';
 import path from 'path';
 
-import { EXPO_UNIVERSE_DIR } from '../utils/env';
+import { env } from '../utils/env';
 import { CommandError } from '../utils/errors';
 import { createCachedFetch } from './rest/client';
 
@@ -48,11 +48,17 @@ export async function getAssetSchemasAsync(sdkVersion: string = 'UNVERSIONED'): 
 }
 
 async function getSchemaJSONAsync(sdkVersion: string): Promise<{ schema: Schema }> {
-  if (EXPO_UNIVERSE_DIR) {
+  if (env.EXPO_UNIVERSE_DIR) {
     return JSON.parse(
       fs
         .readFileSync(
-          path.join(EXPO_UNIVERSE_DIR, 'server', 'www', 'xdl-schemas', 'UNVERSIONED-schema.json')
+          path.join(
+            env.EXPO_UNIVERSE_DIR,
+            'server',
+            'www',
+            'xdl-schemas',
+            'UNVERSIONED-schema.json'
+          )
         )
         .toString()
     );

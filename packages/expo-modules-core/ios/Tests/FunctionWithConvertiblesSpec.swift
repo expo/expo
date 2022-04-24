@@ -17,7 +17,7 @@ class FunctionWithConvertiblesSpec: ExpoSpec {
       let height = 592.1
 
       mockModuleHolder(appContext) {
-        function(functionName) { (point: CGPoint, size: CGSize, vector: CGVector, rect: CGRect) in
+        AsyncFunction(functionName) { (point: CGPoint, size: CGSize, vector: CGVector, rect: CGRect) in
           expect(point.x) == x
           expect(point.y) == y
           expect(size.width) == width
@@ -47,7 +47,7 @@ class FunctionWithConvertiblesSpec: ExpoSpec {
       }
 
       mockModuleHolder(appContext) {
-        function(functionName) { (color1: CGColor, color2: CGColor, color3: CGColor, color4: CGColor) in
+        AsyncFunction(functionName) { (color1: CGColor, color2: CGColor, color3: CGColor, color4: CGColor) in
           testColorComponents(color1, 0x2A, 0x4B, 0x5D, 0xFF)
           testColorComponents(color2, 0x11, 0xFF, 0x00, 0xDD)
           testColorComponents(color3, 0x66, 0x00, 0xCC, 0xAA)

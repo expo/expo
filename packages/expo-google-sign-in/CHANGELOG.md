@@ -8,12 +8,17 @@
 
 ### 🐛 Bug fixes
 
-- Added `@expo/config-plugins` dependency ([#15621](https://github.com/expo/expo/pull/15621) by [@EvanBacon](https://github.com/EvanBacon))
-
 ### 💡 Others
+
+## 10.2.0 — 2022-04-18
+
+### 🐛 Bug fixes
+
+- Added `@expo/config-plugins` dependency ([#15621](https://github.com/expo/expo/pull/15621) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### ⚠️ Notices
 
+- On Android added `com.google.android.gms:play-services-fitness` dependency. ([#17002](https://github.com/expo/expo/pull/17002) by [@bbarthec](https://github.com/bbarthec))
 - On Android bump `compileSdkVersion` to `31`, `targetSdkVersion` to `31` and `Java` version to `11`. ([#16941](https://github.com/expo/expo/pull/16941) by [@bbarthec](https://github.com/bbarthec))
 
 ## 10.1.1 - 2022-02-01

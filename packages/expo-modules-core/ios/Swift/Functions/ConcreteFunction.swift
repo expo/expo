@@ -5,12 +5,10 @@ public class ConcreteFunction<Args, ReturnType>: AnyFunction {
 
   public let name: String
 
-  public var takesPromise: Bool {
-    return argTypes.last is PromiseArgumentType
-  }
+  public var takesPromise: Bool
 
   public var argumentsCount: Int {
-    return argTypes.count - (takesPromise ? 1 : 0)
+    return argumentTypes.count
   }
 
   public var queue: DispatchQueue?
@@ -19,7 +17,7 @@ public class ConcreteFunction<Args, ReturnType>: AnyFunction {
 
   let closure: ClosureType
 
-  let argTypes: [AnyArgumentType]
+  public let argumentTypes: [AnyArgumentType]
 
   init(
     _ name: String,
@@ -27,8 +25,11 @@ public class ConcreteFunction<Args, ReturnType>: AnyFunction {
     _ closure: @escaping ClosureType
   ) {
     self.name = name
-    self.argTypes = argTypes
+    self.takesPromise = argTypes.last is PromiseArgumentType
     self.closure = closure
+
+    // Drop the last argument type if it's the `Promise`.
+    self.argumentTypes = takesPromise ? argTypes.dropLast(1) : argTypes
 
     // This is temporary solution to keep backwards compatibility for existing functions — they all end with "Async".
     // `function` component that we've used so far was async by default, but we decided to replace it with `asyncFunction`
@@ -36,19 +37,21 @@ public class ConcreteFunction<Args, ReturnType>: AnyFunction {
     self.isAsync = name.hasSuffix("Async")
   }
 
+  /**
+   Calls the function with given arguments.
+   - Parameters:
+     - args: An array of arguments to pass to the function. The arguments must be of the same type as in the underlying ``closure``.
+     - promise: A promise to resolve or reject by the async ``closure`` when it finishes execution.
+   - ToDo: Make it internal.
+   */
   public func call(args: [Any], promise: Promise) {
-    let takesPromise = self.takesPromise
+    // Add promise to the array of arguments if necessary.
+    let arguments = takesPromise ? args + [promise] : args
     let returnedValue: ReturnType?
 
     do {
-      var finalArgs = try castArguments(args)
-
-      if takesPromise {
-        finalArgs.append(promise)
-      }
-
-      let tuple = try Conversions.toTuple(finalArgs) as! Args
-      returnedValue = try closure(tuple)
+      let argumentsTuple = try Conversions.toTuple(arguments) as! Args
+      returnedValue = try closure(argumentsTuple)
     } catch let error as CodedError {
       promise.reject(FunctionCallException(name).causedBy(error))
       return
@@ -61,28 +64,24 @@ public class ConcreteFunction<Args, ReturnType>: AnyFunction {
     }
   }
 
+  /**
+   Calls the function synchronously with given arguments.
+   - Parameters:
+     - args: An array of arguments to pass to the function. The arguments must be of the same type as in the underlying ``closure``.
+   - Returns: A value returned by the called function when succeeded or an error when it failed.
+   - ToDo: Make it internal.
+   */
   public func callSync(args: [Any]) -> Any {
     if takesPromise {
-      var result: Any?
-      let semaphore = DispatchSemaphore(value: 0)
-
-      let promise = Promise {
-        result = $0
-        semaphore.signal()
-      } rejecter: { _ in
-        semaphore.signal()
-      }
-      call(args: args, promise: promise)
-      semaphore.wait()
-      return result as Any
-    } else {
-      do {
-        let finalArgs = try castArguments(args)
-        let tuple = try Conversions.toTuple(finalArgs) as! Args
-        return try closure(tuple)
-      } catch let error {
-        return error
-      }
+      // Using `Promise` in the synchronous function is prohibited. Probably should throw an exception here,
+      // but for now let's return nil until we split async and sync functions.
+      return Optional<Any>.none as Any
+    }
+    do {
+      let argumentsTuple = try Conversions.toTuple(args) as! Args
+      return try closure(argumentsTuple)
+    } catch let error {
+      return error
     }
   }
 
@@ -94,38 +93,6 @@ public class ConcreteFunction<Args, ReturnType>: AnyFunction {
   public func runSynchronously() -> Self {
     self.isAsync = false
     return self
-  }
-
-  private func argumentType(atIndex index: Int) -> AnyArgumentType? {
-    return (0..<argTypes.count).contains(index) ? argTypes[index] : nil
-  }
-
-  private func castArguments(_ args: [Any]) throws -> [Any] {
-    if args.count != argumentsCount {
-      throw InvalidArgsNumberException((received: args.count, expected: argumentsCount))
-    }
-    return try args.enumerated().map { index, arg in
-      let expectedType = argumentType(atIndex: index)
-
-      do {
-        // It's safe to unwrap since the arguments count matches.
-        return try expectedType!.cast(unpackIfJavaScriptValue(arg))
-      } catch {
-        throw ArgumentCastException((index: index, type: expectedType!)).causedBy(error)
-      }
-    }
-  }
-}
-
-internal class InvalidArgsNumberException: GenericException<(received: Int, expected: Int)> {
-  override var reason: String {
-    "Received \(param.received) arguments, but \(param.expected) was expected"
-  }
-}
-
-internal class ArgumentCastException: GenericException<(index: Int, type: AnyArgumentType)> {
-  override var reason: String {
-    "Argument at index '\(param.index)' couldn't be cast to type \(param.type.description)"
   }
 }
 

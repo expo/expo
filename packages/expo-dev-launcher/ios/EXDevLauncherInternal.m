@@ -84,6 +84,19 @@ NSString *ON_NEW_DEEP_LINK_EVENT = @"expo.modules.devlauncher.onnewdeeplink";
   [self sendEventWithName:ON_NEW_DEEP_LINK_EVENT body:deepLink.absoluteString];
 }
 
+- (NSURL *)sanitizeUrlString:(NSString *)urlString;
+{
+  NSString *sanitizedUrl = [urlString stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+  
+  NSURL *url = [NSURL URLWithString:sanitizedUrl];
+
+  if ([EXDevLauncherURLHelper isDevLauncherURL:url]) {
+    url = [EXDevLauncherURLHelper getAppURLFromDevLauncherURL:url];
+  }
+  
+  return url;
+}
+
 RCT_EXPORT_METHOD(getPendingDeepLink:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject)
 {
@@ -100,20 +113,35 @@ RCT_EXPORT_METHOD(loadApp:(NSString *)urlString
                   resolver:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject)
 {
-  NSString *sanitizedUrl = [urlString stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-
+  NSURL *url = [self sanitizeUrlString:urlString];
   EXDevLauncherController *controller = [EXDevLauncherController sharedInstance];
-  NSURL *url = [NSURL URLWithString:sanitizedUrl];
-
-  if ([EXDevLauncherURLHelper isDevLauncherURL:url]) {
-    url = [EXDevLauncherURLHelper getAppURLFromDevLauncherURL:url];
-  }
 
   if (!url) {
     return reject(@"ERR_DEV_LAUNCHER_INVALID_URL", @"Cannot parse the provided url.", nil);
   }
   
   [controller loadApp:url onSuccess:^{
+    resolve(nil);
+  } onError:^(NSError *error) {
+    reject(@"ERR_DEV_LAUNCHER_CANNOT_LOAD_APP", error.localizedDescription, error);
+  }];
+}
+
+RCT_EXPORT_METHOD(loadUpdate:(NSString *)updateUrlString
+                  projectUrlString:(NSString *)projectUrlString
+                  resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject)
+{
+  EXDevLauncherController *controller = [EXDevLauncherController sharedInstance];
+  
+  NSURL *updatesUrl = [self sanitizeUrlString:updateUrlString];
+  NSURL *projectUrl = [self sanitizeUrlString:projectUrlString];
+  
+  if (!updatesUrl) {
+    return reject(@"ERR_DEV_LAUNCHER_INVALID_URL", @"Cannot parse the provided url.", nil);
+  }
+  
+  [controller loadApp:updatesUrl withProjectUrl:projectUrl onSuccess:^{
     resolve(nil);
   } onError:^(NSError *error) {
     reject(@"ERR_DEV_LAUNCHER_CANNOT_LOAD_APP", error.localizedDescription, error);

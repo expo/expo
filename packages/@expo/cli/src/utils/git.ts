@@ -2,11 +2,11 @@ import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
 
 import * as Log from '../log';
-import { CI, EXPO_NO_GIT_STATUS } from './env';
+import { env } from './env';
 import { confirmAsync } from './prompts';
 
 export async function maybeBailOnGitStatusAsync(): Promise<boolean> {
-  if (EXPO_NO_GIT_STATUS) {
+  if (env.EXPO_NO_GIT_STATUS) {
     Log.warn(
       'Git status is dirty but the command will continue because EXPO_NO_GIT_STATUS is enabled...'
     );
@@ -16,7 +16,7 @@ export async function maybeBailOnGitStatusAsync(): Promise<boolean> {
 
   // Give people a chance to bail out if git working tree is dirty
   if (!isGitStatusClean) {
-    if (CI) {
+    if (env.CI) {
       Log.warn(
         `Git status is dirty but the command will continue because the terminal is not interactive.`
       );

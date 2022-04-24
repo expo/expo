@@ -26,18 +26,37 @@ We can configure GitHub Actions to run on any GitHub event. One of the most comm
                echo "You must provide an EXPO_TOKEN secret linked to this project's Expo account in this repo's secrets. Learn more: https://docs.expo.dev/eas-update/github-actions"
                exit 1
              fi
-         - uses: actions/checkout@v2
-         - uses: actions/setup-node@v2
+
+         - name: Checkout repository
+           uses: actions/checkout@v2
+
+         - name: Setup Node
+           uses: actions/setup-node@v2
            with:
              node-version: 16.x
              cache: yarn
-         - uses: expo/expo-github-action@v7
+
+         - name: Setup Expo
+           uses: expo/expo-github-action@v7
            with:
              expo-version: latest
              eas-version: latest
              token: ${{ secrets.EXPO_TOKEN }}
+
+         - name: Find yarn cache
+           id: yarn-cache-path
+           run: echo "::set-output name=dir::$(yarn cache dir)"
+
+         - name: Restore cache
+           uses: actions/cache@v2
+           with:
+             path: ${{ steps.yarn-cache-path.outputs.dir }}
+             key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+             restore-keys: ${{ runner.os }}-yarn-
+
          - name: Install dependencies
-           run: yarn install
+           run: yarn install --immutable
+
          - name: Publish update
            run: eas update --auto
    ```

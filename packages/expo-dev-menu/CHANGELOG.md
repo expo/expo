@@ -6,6 +6,22 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.10.2 — 2022-04-21
+
+_This version does not introduce any user-facing changes._
+
+## 0.10.1 — 2022-04-21
+
+_This version does not introduce any user-facing changes._
+
+## 0.10.0 — 2022-04-20
+
+### 🎉 New features
+
 - Add unit tests for react app. ([#16005](https://github.com/expo/expo/pull/16005) by [@ajsmth](https://github.com/ajsmth))
 - Add expo-modules automatic setup on Android. ([#16441](https://github.com/expo/expo/pull/16441) by [@esamelson](https://github.com/esamelson))
 - Remove regex-based config plugin mods in SDK 45+ projects. ([#16495](https://github.com/expo/expo/pull/16495) by [@esamelson](https://github.com/esamelson))

@@ -44,7 +44,9 @@ open class ReactNativeHostWrapperBase(
   }
 
   override fun getJavaScriptExecutorFactory(): JavaScriptExecutorFactory? {
-    return invokeDelegateMethod("getJavaScriptExecutorFactory")
+    return reactNativeHostHandlers.asSequence()
+      .mapNotNull { it.javaScriptExecutorFactory }
+      .firstOrNull() ?: invokeDelegateMethod("getJavaScriptExecutorFactory")
   }
 
   @Suppress("DEPRECATION")
@@ -74,7 +76,9 @@ open class ReactNativeHostWrapperBase(
   }
 
   override fun getUseDeveloperSupport(): Boolean {
-    return host.useDeveloperSupport
+    return reactNativeHostHandlers.asSequence()
+      .mapNotNull { it.useDeveloperSupport }
+      .firstOrNull() ?: host.useDeveloperSupport
   }
 
   override fun getPackages(): MutableList<ReactPackage> {

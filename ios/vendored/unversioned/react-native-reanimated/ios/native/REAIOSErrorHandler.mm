@@ -1,5 +1,5 @@
-#include "REAIOSErrorHandler.h"
 #import <Foundation/Foundation.h>
+#import <RNReanimated/REAIOSErrorHandler.h>
 #import <React/RCTLog.h>
 
 namespace reanimated {

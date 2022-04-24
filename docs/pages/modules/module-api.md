@@ -141,7 +141,7 @@ Defines a native function that will be exported to JavaScript.
 - **name**: `String` — Name of the function that you'll call from JavaScript.
 - **body**: `(args...) -> ReturnType` — The closure to run when the function is called.
 
-All functions return a `Promise` to JavaScript and are asychronous from the perspective of the JavaScript runtime. However, if the type of the last argument is `Promise`, the function is considered to be asynchronous on the native side and it will wait for the promise to be resolved or rejected before the response is passed back to JavaScript. Otherwise, the function is immediately resolved with the returned value or rejected if it throws an error. Note that this is different than synchronous/asynchronous calls in JavaScript — at this moment all functions are _asynchronous_ from the JavaScript perspective.
+All functions return a `Promise` to JavaScript and are asynchronous from the perspective of the JavaScript runtime. However, if the type of the last argument is `Promise`, the function is considered to be asynchronous on the native side and it will wait for the promise to be resolved or rejected before the response is passed back to JavaScript. Otherwise, the function is immediately resolved with the returned value or rejected if it throws an error. Note that this is different than synchronous/asynchronous calls in JavaScript — at this moment all functions are _asynchronous_ from the JavaScript perspective.
 
 The function can receive up to 8 arguments (including the promise). This is due to the limitations of generics in both Swift and Kotlin, because this component must be implemented separately for each number of arguments.
 

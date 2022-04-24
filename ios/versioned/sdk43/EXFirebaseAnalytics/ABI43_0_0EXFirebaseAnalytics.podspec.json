@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "Firebase/Core": [
-      "7.7.0"
+      "8.14.0"
     ],
     "ABI43_0_0ExpoModulesCore": [],
     "ABI43_0_0EXFirebaseCore": []

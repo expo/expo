@@ -1,6 +1,6 @@
 {
   "name": "create-expo-module",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "The script to create the Expo module",
   "main": "build/create-expo-module.js",
   "types": "build/create-expo-module.d.ts",

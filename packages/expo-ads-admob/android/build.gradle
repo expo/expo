@@ -3,7 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'maven-publish'
 
 group = 'host.exp.exponent'
-version = '12.0.0'
+version = '13.0.0'
 
 buildscript {
   def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
@@ -74,7 +74,7 @@ android {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 31)
     versionCode 26
-    versionName "12.0.0"
+    versionName "13.0.0"
   }
   lintOptions {
     abortOnError false
@@ -83,7 +83,17 @@ android {
 
 dependencies {
   implementation project(':expo-modules-core')
-  api 'com.google.android.gms:play-services-ads:19.4.0'
+  implementation 'com.google.android.gms:play-services-ads:20.5.0'
+  // For apps targeting Android 12, add WorkManager dependency.
+  // See more at https://developers.google.com/admob/android/rel-notes
+  constraints {
+    implementation('androidx.work:work-runtime:2.7.0') {
+      because '''androidx.work:work-runtime:2.1.0 pulled from
+      play-services-ads has a bug using PendingIntent without
+      FLAG_IMMUTABLE or FLAG_MUTABLE and will fail in Apps
+      targeting S+.'''
+    }
+  }
 
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
 }

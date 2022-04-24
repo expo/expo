@@ -46,7 +46,7 @@ describe('codesigning:configure', () => {
       {
         'package.json': JSON.stringify({ dependencies: { expo: '40.0.0' } }),
         'app.json': JSON.stringify({ name: 'test', slug: 'wat', sdkVersion: '40.0.0' }),
-        'keys/certificate.pem': certificatePEM,
+        'certificates/certificate.pem': certificatePEM,
         'keys/private-key.pem': keyPairPEM.privateKeyPEM,
         'keys/public-key.pem': keyPairPEM.publicKeyPEM,
         'node_modules/expo/package.json': expoPackageJson,
@@ -57,10 +57,15 @@ describe('codesigning:configure', () => {
     const configBefore = getConfig(projectRoot);
     expect((configBefore.exp.updates as any)?.codeSigningCertificate).toBeUndefined();
 
-    await configureCodeSigningAsync(projectRoot, { input: 'keys' });
+    await configureCodeSigningAsync(projectRoot, {
+      certificateInput: 'certificates',
+      keyInput: 'keys',
+    });
 
     const config = getConfig(projectRoot);
-    expect((config.exp.updates as any).codeSigningCertificate).toEqual('./keys/certificate.pem');
+    expect((config.exp.updates as any).codeSigningCertificate).toEqual(
+      './certificates/certificate.pem'
+    );
     expect((config.exp.updates as any).codeSigningMetadata).toMatchObject({
       keyid: 'main',
       alg: 'rsa-v1_5-sha256',
@@ -85,7 +90,7 @@ describe('codesigning:configure', () => {
       {
         'package.json': JSON.stringify({ dependencies: { expo: '40.0.0' } }),
         'app.json': JSON.stringify({ name: 'test', slug: 'wat', sdkVersion: '40.0.0' }),
-        'keys/certificate.pem': invalidCertificatePEM,
+        'certificates/certificate.pem': invalidCertificatePEM,
         'keys/private-key.pem': invalidPrivateKeyPEM,
         'keys/public-key.pem': invalidPublicKeyPEM,
         'node_modules/expo/package.json': expoPackageJson,
@@ -96,9 +101,9 @@ describe('codesigning:configure', () => {
     const configBefore = getConfig(projectRoot);
     expect((configBefore.exp.updates as any)?.codeSigningCertificate).toBeUndefined();
 
-    await expect(configureCodeSigningAsync(projectRoot, { input: 'keys' })).rejects.toThrow(
-      'Certificate validity expired'
-    );
+    await expect(
+      configureCodeSigningAsync(projectRoot, { certificateInput: 'certificates', keyInput: 'keys' })
+    ).rejects.toThrow('Certificate validity expired');
 
     const config = getConfig(projectRoot);
     expect((config.exp.updates as any)?.codeSigningCertificate).toBeUndefined();

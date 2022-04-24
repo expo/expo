@@ -1,6 +1,6 @@
 {
   "name": "expo",
-  "version": "44.0.0-beta.1",
+  "version": "45.0.0-beta.4",
   "description": "The Expo SDK",
   "main": "build/Expo.js",
   "module": "build/Expo.js",
@@ -9,6 +9,9 @@
     "*.fx.js",
     "*.fx.web.js"
   ],
+  "bin": {
+    "expo": "bin/cli.js"
+  },
   "files": [
     "android",
     "bin",
@@ -52,24 +55,26 @@
   "dependencies": {
     "@babel/runtime": "^7.14.0",
     "@expo/cli": "0.0.0",
-    "@expo/vector-icons": "^12.0.4",
-    "babel-preset-expo": "~9.0.1",
-    "expo-application": "~4.0.1",
-    "expo-asset": "~8.4.5",
-    "expo-constants": "~13.0.0",
-    "expo-file-system": "~13.2.0",
-    "expo-font": "~10.0.4",
-    "expo-keep-awake": "~10.0.1",
-    "expo-modules-autolinking": "0.6.0",
-    "expo-modules-core": "0.7.0",
+    "@expo/vector-icons": "^13.0.0",
+    "babel-preset-expo": "~9.1.0",
+    "cross-spawn": "^6.0.5",
+    "expo-application": "~4.1.0",
+    "expo-asset": "~8.5.0",
+    "expo-constants": "~13.1.0",
+    "expo-file-system": "~14.0.0",
+    "expo-font": "~10.1.0",
+    "expo-keep-awake": "~10.1.0",
+    "expo-modules-autolinking": "0.7.0",
+    "expo-modules-core": "0.9.0",
     "fbemitter": "^3.0.0",
+    "getenv": "^1.0.0",
     "invariant": "^2.2.4",
     "md5-file": "^3.2.3",
     "node-fetch": "^2.6.7",
     "pretty-format": "^26.5.2"
   },
   "optionalDependencies": {
-    "expo-error-recovery": "~3.0.4"
+    "expo-error-recovery": "~3.1.0"
   },
   "devDependencies": {
     "@types/fbemitter": "^2.0.32",
@@ -81,6 +86,6 @@
     "expo-module-scripts": "^2.0.0",
     "react": "17.0.2",
     "react-dom": "17.0.2",
-    "react-native": "0.68.0"
+    "react-native": "0.68.1"
   }
 }

@@ -6,6 +6,18 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.11.1 — 2022-04-21
+
+_This version does not introduce any user-facing changes._
+
+## 0.11.0 — 2022-04-20
+
+### 🎉 New features
+
 - Add expo-modules and ReactDelegate-based automatic setup on iOS. ([#16190](https://github.com/expo/expo/pull/16190) by [@esamelson](https://github.com/esamelson))
 - Add support for auto-setup with updates integration on iOS. ([#16230](https://github.com/expo/expo/pull/16230) by [@esamelson](https://github.com/esamelson))
 - Send uncaught exceptions to the bundler server if possible. ([#15938](https://github.com/expo/expo/pull/15938) & [#15964](https://github.com/expo/expo/pull/15964) by [@lukmccall](https://github.com/lukmccall))
@@ -21,6 +33,9 @@
 
 - Fix `androidNavigationBar` app.json config settings having no effect at runtime ([#15030](https://github.com/expo/expo/issues/15030)). ([#16711](https://github.com/expo/expo/pull/16711) by [@esamelson](https://github.com/esamelson))
 - Removed the unused `jcenter()` maven dependencies. ([#16846](https://github.com/expo/expo/pull/16846) by [@kudo](https://github.com/kudo))
+- Fix app not appearing after deeplinking from cold boot on iOS. ([#17010](https://github.com/expo/expo/pull/17010) by [@ajsmth](https://github.com/ajsmth))
+- Fix `RCTStatusBarManager module requires that the UIViewControllerBasedStatusBarAppearance to be false.` on iOS. ([#17022](https://github.com/expo/expo/pull/17022) by [@lukmccall](https://github.com/lukmccall))
+- Fix loading published projects on Android. ([#17069](https://github.com/expo/expo/pull/17069) by [@esamelson](https://github.com/esamelson))
 
 ### 💡 Others
 
@@ -30,6 +45,8 @@
 - Compatibility with expo-dev-menu auto-setup on iOS. ([#16496](https://github.com/expo/expo/pull/16496) by [@esamelson](https://github.com/esamelson))
 - Remove initialization side effects. ([#16522](https://github.com/expo/expo/pull/16522) by [@esamelson](https://github.com/esamelson))
 - Use expo-manifests `logUrl` getter instead of accessing raw JSON. ([#16709](https://github.com/expo/expo/pull/16709) by [@esamelson](https://github.com/esamelson))
+- Add ability for to launch a specific update through expo-updates-interface. ([#16865](https://github.com/expo/expo/pull/16865) by [@esamelson](https://github.com/esamelson))
+- Remove config plugin for better error handling in index.js ([#17025](https://github.com/expo/expo/pull/17025) by [@lukmccall](https://github.com/lukmccall))
 
 ### ⚠️ Notices
 

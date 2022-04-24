@@ -8,6 +8,7 @@ import { mockExpoRootChain, mockSelfSigned } from './fixtures/certificates';
 const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
   fn as jest.MockedFunction<T>;
 
+jest.mock('../../log');
 jest.mock('@expo/code-signing-certificates', () => ({
   ...(jest.requireActual(
     '@expo/code-signing-certificates'
@@ -30,6 +31,13 @@ jest.mock('../../api/getExpoGoIntermediateCertificate', () => ({
   getExpoGoIntermediateCertificateAsync: jest.fn(
     () => mockExpoRootChain.expoGoIntermediateCertificate
   ),
+}));
+
+// Mock the CLI global to prevent side-effects in other tests.
+jest.mock('../../api/settings', () => ({
+  APISettings: {
+    isOffline: true,
+  },
 }));
 
 beforeEach(() => {
@@ -145,31 +153,45 @@ describe(getCodeSigningInfoAsync, () => {
   describe('non expo-root certificate keyid requested', () => {
     it('normal case gets the configured certificate', async () => {
       vol.fromJSON({
-        'keys/cert.pem': mockSelfSigned.certificate,
+        'certs/cert.pem': mockSelfSigned.certificate,
         'keys/private-key.pem': mockSelfSigned.privateKey,
       });
 
       const result = await getCodeSigningInfoAsync(
         {
           updates: {
-            codeSigningCertificate: 'keys/cert.pem',
+            codeSigningCertificate: 'certs/cert.pem',
             codeSigningMetadata: { keyid: 'test', alg: 'rsa-v1_5-sha256' },
           },
         } as any,
         'keyid="test", alg="rsa-v1_5-sha256"',
-        undefined
+        'keys/private-key.pem'
       );
       expect(result).toMatchSnapshot();
+    });
+
+    it('throws when private key path is not supplied', async () => {
+      await expect(
+        getCodeSigningInfoAsync(
+          {
+            updates: { codeSigningCertificate: 'certs/cert.pem' },
+          } as any,
+          'keyid="test", alg="rsa-v1_5-sha256"',
+          undefined
+        )
+      ).rejects.toThrowError(
+        'Must specify --private-key-path argument to sign development manifest for requested code signing key'
+      );
     });
 
     it('throws when it cannot generate the requested keyid due to no code signing configuration in app.json', async () => {
       await expect(
         getCodeSigningInfoAsync(
           {
-            updates: { codeSigningCertificate: 'keys/cert.pem' },
+            updates: { codeSigningCertificate: 'certs/cert.pem' },
           } as any,
           'keyid="test", alg="rsa-v1_5-sha256"',
-          undefined
+          'keys/private-key.pem'
         )
       ).rejects.toThrowError(
         'Must specify "codeSigningMetadata" under the "updates" field of your app config file to use EAS code signing'
@@ -181,12 +203,12 @@ describe(getCodeSigningInfoAsync, () => {
         getCodeSigningInfoAsync(
           {
             updates: {
-              codeSigningCertificate: 'keys/cert.pem',
+              codeSigningCertificate: 'certs/cert.pem',
               codeSigningMetadata: { keyid: 'test2', alg: 'rsa-v1_5-sha256' },
             },
           } as any,
           'keyid="test", alg="rsa-v1_5-sha256"',
-          undefined
+          'keys/private-key.pem'
         )
       ).rejects.toThrowError('keyid mismatch: client=test, project=test2');
 
@@ -194,12 +216,12 @@ describe(getCodeSigningInfoAsync, () => {
         getCodeSigningInfoAsync(
           {
             updates: {
-              codeSigningCertificate: 'keys/cert.pem',
+              codeSigningCertificate: 'certs/cert.pem',
               codeSigningMetadata: { keyid: 'test', alg: 'fake' },
             },
           } as any,
           'keyid="test", alg="fake2"',
-          undefined
+          'keys/private-key.pem'
         )
       ).rejects.toThrowError('"alg" field mismatch (client=fake2, project=fake)');
     });
@@ -209,14 +231,14 @@ describe(getCodeSigningInfoAsync, () => {
         getCodeSigningInfoAsync(
           {
             updates: {
-              codeSigningCertificate: 'keys/cert.pem',
+              codeSigningCertificate: 'certs/cert.pem',
               codeSigningMetadata: { keyid: 'test', alg: 'rsa-v1_5-sha256' },
             },
           } as any,
           'keyid="test", alg="rsa-v1_5-sha256"',
-          undefined
+          'keys/private-key.pem'
         )
-      ).rejects.toThrowError('Code signing certificate cannot be read from path: keys/cert.pem');
+      ).rejects.toThrowError('Code signing certificate cannot be read from path: certs/cert.pem');
     });
   });
 });
