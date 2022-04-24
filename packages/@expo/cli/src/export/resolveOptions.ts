@@ -8,7 +8,6 @@ export type Options = {
   maxWorkers?: number;
   dev: boolean;
   clear: boolean;
-  quiet: boolean;
   dumpAssetmap: boolean;
   dumpSourcemap: boolean;
 };
@@ -20,7 +19,6 @@ export async function resolveOptionsAsync(args: any): Promise<Options> {
     outputDir: args['--output-dir'] ?? 'dist',
     platforms,
     clear: !!args['--clear'],
-    quiet: !!args['--quiet'],
     dev: !!args['--dev'],
     maxWorkers: args['--max-workers'],
     dumpAssetmap: !!args['--dump-assetmap'],

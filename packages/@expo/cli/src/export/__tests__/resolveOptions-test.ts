@@ -13,7 +13,6 @@ describe(resolveOptionsAsync, () => {
         '--output-dir': 'foobar',
         '--platform': 'android',
         '--clear': true,
-        '--quiet': true,
         '--dev': true,
         '--dump-assetmap': true,
         '--dump-sourcemap': true,
@@ -27,7 +26,6 @@ describe(resolveOptionsAsync, () => {
       maxWorkers: 2,
       outputDir: 'foobar',
       platform: 'android',
-      quiet: true,
     });
   });
 
@@ -40,7 +38,6 @@ describe(resolveOptionsAsync, () => {
       maxWorkers: undefined,
       outputDir: 'dist',
       platform: 'all',
-      quiet: false,
     });
   });
 });

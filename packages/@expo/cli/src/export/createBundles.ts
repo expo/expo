@@ -9,7 +9,6 @@ export type PublishOptions = {
   target?: ProjectTarget;
   resetCache?: boolean;
   maxWorkers?: number;
-  quiet?: boolean;
 };
 
 // TODO: Reduce layers of indirection
@@ -35,7 +34,7 @@ export async function createBundlesAsync(
           Log.error(message);
         },
       } as any,
-      quiet: publishOptions.quiet,
+      quiet: false,
     },
     bundleOptions.platforms.map((platform: Platform) => ({
       platform,

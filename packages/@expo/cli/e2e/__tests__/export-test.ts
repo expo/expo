@@ -58,7 +58,6 @@ it('runs `npx expo export --help`', async () => {
         --dump-assetmap               Dump the asset map for further processing
         --dump-sourcemap              Dump the source map for debugging the JS bundle
         -c, --clear                   Clear the Metro bundler cache
-        -q, --quiet                   Suppress verbose output
         -h, --help                    Output usage information
     "
   `);

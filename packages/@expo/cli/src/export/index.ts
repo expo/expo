@@ -15,12 +15,10 @@ export const expoExport: Command = async (argv) => {
       '--dump-assetmap': Boolean,
       '--dev': Boolean,
       '--dump-sourcemap': Boolean,
-      '--quiet': Boolean,
       '--max-workers': Number,
       '--output-dir': String,
       // Aliases
       '-h': '--help',
-      '-q': '--quiet',
       // '-s': '--dump-sourcemap',
       // '-d': '--dump-assetmap',
       '-c': '--clear',
@@ -48,7 +46,6 @@ export const expoExport: Command = async (argv) => {
     --dump-assetmap               Dump the asset map for further processing
     --dump-sourcemap              Dump the source map for debugging the JS bundle
     -c, --clear                   Clear the Metro bundler cache
-    -q, --quiet                   Suppress verbose output
     -h, --help                    Output usage information
 `,
       0
