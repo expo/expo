@@ -1,4 +1,4 @@
-import { DeviceManager } from '../../start/platforms/DeviceManager';
+import { AndroidDeviceManager } from '../../start/platforms/android/AndroidDeviceManager';
 import { BundlerProps, resolveBundlerPropsAsync } from '../resolveBundlerProps';
 import { resolveDeviceAsync } from './resolveDevice';
 import { GradleProps, resolveGradleProps } from './resolveGradleProps';
@@ -18,7 +18,7 @@ export type ResolvedOptions = GradleProps &
   LaunchProps & {
     variant: string;
     buildCache: boolean;
-    device: DeviceManager<any>;
+    device: AndroidDeviceManager;
     install: boolean;
   };
 

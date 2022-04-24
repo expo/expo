@@ -129,7 +129,8 @@ export class PlatformManager<
     resolveSettings: Partial<IResolveDeviceProps> = {}
   ): Promise<{ url: string }> {
     Log.debug(
-      `open (runtime: ${options.runtime}, platform: ${this.props.platform}, device: ${resolveSettings.device}, shouldPrompt: ${resolveSettings.shouldPrompt})`
+      `open (runtime: ${options.runtime}, platform: ${this.props.platform}, device: %O, shouldPrompt: ${resolveSettings.shouldPrompt})`,
+      resolveSettings.device
     );
     if (options.runtime === 'expo') {
       return this.openProjectInExpoGoAsync(resolveSettings);

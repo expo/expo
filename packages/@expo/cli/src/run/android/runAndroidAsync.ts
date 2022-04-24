@@ -1,8 +1,8 @@
-import { getConfig } from '@expo/config';
 import path from 'path';
 
 import { Log } from '../../log';
 import { assembleAsync, installAsync } from '../../start/platforms/android/gradle';
+import { getSchemesForAndroidAsync } from '../../utils/scheme';
 import { ensureNativeProjectAsync } from '../ensureNativeProject';
 import { logProjectLogsLocation } from '../hints';
 import { startBundlerAsync } from '../startBundler';
@@ -39,8 +39,10 @@ export async function runAndroidAsync(projectRoot: string, { install, ...options
     'emulator',
     {
       applicationId: props.packageName,
+      // If a scheme is specified then use that instead of the package name.
+      scheme: (await getSchemesForAndroidAsync(projectRoot))?.[0],
     },
-    { device: props.device }
+    { device: props.device.device }
   );
 
   if (props.shouldStartBundler) {
