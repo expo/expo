@@ -1,3 +1,4 @@
+import { getConfig } from '@expo/config';
 import path from 'path';
 
 import { Log } from '../../log';
@@ -30,7 +31,6 @@ export async function runAndroidAsync(projectRoot: string, { install, ...options
   const manager = await startBundlerAsync(projectRoot, {
     port: props.port,
     headless: !props.shouldStartBundler,
-    platforms: ['android'],
   });
 
   await installAppAsync(androidProjectRoot, props);

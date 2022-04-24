@@ -16,6 +16,14 @@ jest.mock('../../utils/env', () => ({
   },
 }));
 
+jest.mock('@expo/config', () => ({
+  getConfig: jest.fn(() => ({
+    exp: {
+      platforms: ['ios', 'android'],
+    },
+  })),
+}));
+
 jest.mock('../../start/interface/startInterface', () => ({
   startInterfaceAsync: jest.fn(),
 }));
@@ -26,7 +34,6 @@ describe(startBundlerAsync, () => {
   it(`starts in headless mode`, async () => {
     const manager = await startBundlerAsync('/', {
       headless: true,
-      platforms: ['android'],
       port: 3000,
     });
 
@@ -47,7 +54,6 @@ describe(startBundlerAsync, () => {
   it(`starts a server`, async () => {
     const manager = await startBundlerAsync('/', {
       headless: false,
-      platforms: ['ios'],
       port: 3000,
     });
 

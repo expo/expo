@@ -1,4 +1,4 @@
-import { ExpoConfig } from '@expo/config';
+import { getConfig } from '@expo/config';
 import chalk from 'chalk';
 
 import * as Log from '../log';
@@ -12,10 +12,8 @@ export async function startBundlerAsync(
   {
     port,
     headless,
-    platforms,
   }: {
     port: number;
-    platforms: ExpoConfig['platforms'];
     headless?: boolean;
   }
 ): Promise<DevServerManager> {
@@ -38,8 +36,14 @@ export async function startBundlerAsync(
 
   // Present the Terminal UI.
   if (!headless && !env.CI) {
+    // Only read the config if we are going to use the results.
+    const { exp } = getConfig(projectRoot, {
+      // We don't need very many fields here, just use the lightest possible read.
+      skipSDKVersionRequirement: true,
+      skipPlugins: true,
+    });
     await startInterfaceAsync(devServerManager, {
-      platforms,
+      platforms: exp.platforms ?? [],
     });
   } else {
     // Display the server location in CI...
