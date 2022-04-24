@@ -7,7 +7,6 @@ import { Command } from '../../../bin/cli';
 import * as Log from '../../log';
 import { assertWithOptionsArgs } from '../../utils/args';
 import { logCmdError } from '../../utils/errors';
-import { resolveStringOrBooleanArgsAsync } from '../../utils/resolveArgs';
 
 export const expoRunAndroid: Command = async (argv) => {
   const rawArgsMap: arg.Spec = {
@@ -35,25 +34,26 @@ export const expoRunAndroid: Command = async (argv) => {
   if (args['--help']) {
     Log.exit(
       chalk`
-      {bold Description}
-        Run the Android app binary locally
+  {bold Description}
+    Run the native Android app locally
 
-      {bold Usage}
-        $ npx expo run:android
+  {bold Usage}
+    $ npx expo run:android <dir>
 
-      Options 
-        --no-build-cache       Clear the native build cache
-        --no-install           Skip installing dependencies
-        --no-bundler           Skip starting the bundler
-        --variant <name>       Build variant. {dim Default: debug}
-        -d, --device [device]  Device name to run the app on
-        -p, --port <port>      Port to start the dev server on. {dim Default: 8081}
-        -h, --help             Output usage information
-    `,
+  {bold Options} 
+    --no-build-cache       Clear the native build cache
+    --no-install           Skip installing dependencies
+    --no-bundler           Skip starting the bundler
+    --variant <name>       Build variant. {dim Default: debug}
+    -d, --device [device]  Device name to run the app on
+    -p, --port <port>      Port to start the dev server on. {dim Default: 8081}
+    -h, --help             Output usage information
+`,
       0
     );
   }
 
+  const { resolveStringOrBooleanArgsAsync } = await import('../../utils/resolveArgs');
   const parsed = await resolveStringOrBooleanArgsAsync(argv ?? [], rawArgsMap, {
     '--device': Boolean,
     '-d': '--device',
