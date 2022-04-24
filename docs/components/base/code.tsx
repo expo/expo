@@ -114,7 +114,9 @@ export class Code extends React.Component<Props> {
         /<span class="token comment">&lt;!-- @info (.*?)--><\/span>\s*/g,
         (match, content) => {
           return content
-            ? `<span class="code-annotation with-tooltip" data-tippy-content="${this.escapeHtml(content)}">`
+            ? `<span class="code-annotation with-tooltip" data-tippy-content="${this.escapeHtml(
+                content
+              )}">`
             : '<span class="code-annotation">';
         }
       )
@@ -133,7 +135,9 @@ export class Code extends React.Component<Props> {
     return value
       .replace(/<span class="token comment"># @info (.*?)#<\/span>\s*/g, (match, content) => {
         return content
-          ? `<span class="code-annotation with-tooltip" data-tippy-content="${this.escapeHtml(content)}">`
+          ? `<span class="code-annotation with-tooltip" data-tippy-content="${this.escapeHtml(
+              content
+            )}">`
           : '<span class="code-annotation">';
       })
       .replace(/<span class="token comment"># @hide (.*?)#<\/span>\s*/g, (match, content) => {
@@ -148,7 +152,9 @@ export class Code extends React.Component<Props> {
     return value
       .replace(/<span class="token comment">\/\* @info (.*?)\*\/<\/span>\s*/g, (match, content) => {
         return content
-          ? `<span class="code-annotation with-tooltip" data-tippy-content="${this.escapeHtml(content)}">`
+          ? `<span class="code-annotation with-tooltip" data-tippy-content="${this.escapeHtml(
+              content
+            )}">`
           : '<span class="code-annotation">';
       })
       .replace(/<span class="token comment">\/\* @hide (.*?)\*\/<\/span>\s*/g, (match, content) => {
