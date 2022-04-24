@@ -9,6 +9,7 @@
     "postinstall": "expo-yarn-workspaces postinstall",
     "build:web": "expo build:web --no-pwa",
     "web": "expo start:web --https",
+    "eject": "SDK_VERSION=43.0.0 expo prebuild",
     "lint": "eslint .",
     "tsc": "tsc --noEmit -p ./tsconfig.json",
     "start": "expo start",
