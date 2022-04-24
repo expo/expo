@@ -51,13 +51,13 @@ it('runs `npx expo export --help`', async () => {
       Defaults to the current working directory.
 
       Options
-        --platform <all|android|ios>  Platforms: android, ios, all (default: all)
+        --platform <all|android|ios>  Platforms: android, ios, all. Default: all
         --dev                         Configure static files for developing locally using a non-https server
-        --output-dir <path>           The directory to export the static files to (default: dist)
-        --max-workers <number>        Maximum number of tasks to allow Metro to spawn
+        --output-dir <path>           The directory to export the static files to. Default: dist
+        --max-workers <number>        Maximum number of tasks to allow the bundler to spawn
         --dump-assetmap               Dump the asset map for further processing
         --dump-sourcemap              Dump the source map for debugging the JS bundle
-        -c, --clear                   Clear the Metro bundler cache
+        -c, --clear                   Clear the bundler cache
         -h, --help                    Output usage information
     "
   `);
@@ -184,21 +184,19 @@ it(
     });
 
     // If this changes then everything else probably changed as well.
-    expect(files).toMatchInlineSnapshot(`
-      Array [
-        "assetmap.json",
-        "assets/2f334f6c7ca5b2a504bdf8acdee104f3",
-        "assets/3858f62230ac3c915f300c664312c63f",
-        "assets/9ce7db807e4147e00df372d053c154c2",
-        "assets/fb960eb5e4eb49ec8786c7f6c4a57ce2",
-        "bundles/android-61cfeac58789e1cf30052ed484f433a0.js",
-        "bundles/android-61cfeac58789e1cf30052ed484f433a0.map",
-        "bundles/ios-c2c09fa792f712d8e8edd90d20c2b870.js",
-        "bundles/ios-c2c09fa792f712d8e8edd90d20c2b870.map",
-        "debug.html",
-        "metadata.json",
-      ]
-    `);
+    expect(files).toEqual([
+      'assetmap.json',
+      'assets/2f334f6c7ca5b2a504bdf8acdee104f3',
+      'assets/3858f62230ac3c915f300c664312c63f',
+      'assets/9ce7db807e4147e00df372d053c154c2',
+      'assets/fb960eb5e4eb49ec8786c7f6c4a57ce2',
+      expect.stringMatching(/bundles\/android-[\w\d]+\.js/),
+      expect.stringMatching(/bundles\/android-[\w\d]+\.map/),
+      expect.stringMatching(/bundles\/ios-[\w\d]+\.js/),
+      expect.stringMatching(/bundles\/ios-[\w\d]+\.map/),
+      'debug.html',
+      'metadata.json',
+    ]);
   },
   // Could take 45s depending on how fast npm installs
   60 * 1000

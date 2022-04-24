@@ -2,11 +2,11 @@ import path from 'path';
 
 import * as Log from '../log';
 import { ensureDirectoryAsync } from '../utils/dir';
-import { Options } from './resolveOptions';
 import { createBundlesAsync } from './createBundles';
 import { exportAssetsAsync } from './exportAssets';
 import { getPublicExpoManifestAsync } from './getPublicExpoManifest';
 import { printBundleSizes } from './printBundleSizes';
+import { Options } from './resolveOptions';
 import {
   writeAssetMapAsync,
   writeBundlesAsync,

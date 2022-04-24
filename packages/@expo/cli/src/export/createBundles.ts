@@ -44,7 +44,7 @@ export async function createBundlesAsync(
   );
 
   // { ios: bundle, android: bundle }
-  return bundleOptions.platforms.reduce<Record<string, BundleOutput>>(
+  return bundleOptions.platforms.reduce<Partial<Record<Platform, BundleOutput>>>(
     (prev, platform, index) => ({
       ...prev,
       [platform]: bundles[index],

@@ -39,13 +39,13 @@ export const expoExport: Command = async (argv) => {
   Defaults to the current working directory.
 
   {bold Options}
-    --platform <all|android|ios>  Platforms: android, ios, all (default: all)
+    --platform <all|android|ios>  Platforms: android, ios, all. {dim Default: all}
     --dev                         Configure static files for developing locally using a non-https server
-    --output-dir <path>           The directory to export the static files to (default: dist)
-    --max-workers <number>        Maximum number of tasks to allow Metro to spawn
+    --output-dir <path>           The directory to export the static files to. {dim Default: dist}
+    --max-workers <number>        Maximum number of tasks to allow the bundler to spawn
     --dump-assetmap               Dump the asset map for further processing
     --dump-sourcemap              Dump the source map for debugging the JS bundle
-    -c, --clear                   Clear the Metro bundler cache
+    -c, --clear                   Clear the bundler cache
     -h, --help                    Output usage information
 `,
       0
