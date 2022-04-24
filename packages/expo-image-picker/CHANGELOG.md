@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [plugin] Added ability to disable permissions. ([#17168](https://github.com/expo/expo/pull/17168) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
