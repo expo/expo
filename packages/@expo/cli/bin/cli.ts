@@ -8,6 +8,7 @@ export type Command = (argv?: string[]) => void;
 
 const commands: { [command: string]: () => Promise<Command> } = {
   // Add a new command here
+  'run:android': () => import('../src/run/android').then((i) => i.expoRunAndroid),
   start: () => import('../src/start').then((i) => i.expoStart),
   prebuild: () => import('../src/prebuild').then((i) => i.expoPrebuild),
   config: () => import('../src/config').then((i) => i.expoConfig),

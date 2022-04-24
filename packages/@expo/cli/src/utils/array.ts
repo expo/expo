@@ -13,3 +13,11 @@ export function intersecting<T>(a: T[], b: T[]): T[] {
   const [c, d] = a.length > b.length ? [a, b] : [b, a];
   return c.filter((value) => d.includes(value));
 }
+
+export function replaceValue<T>(values: T[], original: T, replacement: T): T[] {
+  const index = values.indexOf(original);
+  if (index > -1) {
+    values[index] = replacement;
+  }
+  return values;
+}
