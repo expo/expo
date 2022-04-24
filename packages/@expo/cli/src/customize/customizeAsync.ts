@@ -15,40 +15,39 @@ type DestinationResolutionProps = {
   webStaticPath: string;
 };
 
-const templates: Record<
-  string,
+const templates: {
+  file: string;
+  dependencies: string[];
+  destination: (props: DestinationResolutionProps) => string;
+}[] = [
   {
-    file: string;
-    dependencies: string[];
-    destination: (props: DestinationResolutionProps) => string;
-  }
-> = {
-  'babel.config.js': {
     file: require.resolve('@expo/cli/static/template/babel.config.js'),
     destination: () => 'babel.config.js',
     dependencies: ['babel-preset-expo'],
   },
-  'webpack.config.js': {
+  {
     dependencies: ['@expo/webpack-config'],
     destination: () => 'webpack.config.js',
     file: require.resolve('@expo/cli/static/template/webpack.config.js'),
   },
-  'metro.config.js': {
+  {
     dependencies: ['@expo/metro-config'],
     destination: () => 'metro.config.js',
     file: require.resolve('@expo/cli/static/template/metro.config.js'),
   },
-  'web/serve.json': {
+  {
     dependencies: [],
+    // web/serve.json
     destination: ({ webStaticPath }) => webStaticPath + '/serve.json',
     file: require.resolve('@expo/cli/static/template/serve.json'),
   },
-  'web/index.html': {
+  {
     dependencies: [],
+    // web/index.html
     destination: ({ webStaticPath }) => webStaticPath + '/index.html',
     file: require.resolve('@expo/cli/static/template/index.html'),
   },
-};
+];
 
 export async function customizeAsync(files: string[], options: Options, extras: any[]) {
   // Locate the project root based on the process current working directory.
@@ -65,34 +64,42 @@ export async function customizeAsync(files: string[], options: Options, extras: 
     webStaticPath: exp.web?.staticPath ?? 'web',
   };
 
-  const values = [];
+  const values: { title: string; value: number; description: string }[] = [];
 
-  for (const [file, template] of Object.entries(templates)) {
+  templates.forEach((template, index) => {
     const destination = template.destination(props);
     const localProjectFile = path.resolve(projectRoot, destination);
     const exists = fs.existsSync(localProjectFile);
 
     values.push({
       title: destination,
-      value: file,
+      value: index,
       description: exists ? chalk.red('This will overwrite the existing file') : '',
     });
-  }
+  });
 
   if (files.length) {
-    const valid = files.filter((file) => !!templates[file]);
+    const valid = files.filter(
+      (file) => !!templates.find((template) => template.destination(props) === file)
+    );
 
     if (valid.length !== files.length) {
-      const diff = files.filter((file) => !templates[file]);
+      const diff = files.filter(
+        (file) => !templates.find((template) => template.destination(props) === file)
+      );
       throw new CommandError(
-        `Invalid files: ${diff.join(', ')}. Allowed: ${Object.keys(templates).join(', ')}`
+        `Invalid files: ${diff.join(', ')}. Allowed: ${templates
+          .map((template) => template.destination(props))
+          .join(', ')}`
       );
     }
 
     Log.log(`Generating: ${valid.join(', ')}`);
     return generateAsync({
       projectRoot,
-      answer: files,
+      answer: files.map((file) => {
+        return templates.findIndex((template) => template.destination(props) === file);
+      }),
       props,
       extras,
     });
@@ -126,7 +133,7 @@ async function generateAsync({
   extras,
 }: {
   projectRoot: string;
-  answer: string[];
+  answer: number[];
   props: DestinationResolutionProps;
   extras: any[];
 }) {
