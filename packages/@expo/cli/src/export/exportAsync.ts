@@ -2,7 +2,7 @@ import path from 'path';
 
 import * as Log from '../log';
 import { ensureDirectoryAsync, removeAsync } from '../utils/dir';
-import { exportAppAsync } from './bundle/exportAppAsync';
+import { exportAppAsync } from './bundle/exportApp';
 import { Options } from './resolveOptions';
 
 export async function exportAsync(projectRoot: string, options: Options) {

@@ -4,13 +4,6 @@ import { env } from '../../utils/env';
 import { CommandError } from '../../utils/errors';
 import { getResolvedLocalesAsync } from './getResolvedLocales';
 
-function assertUnversioned(sdkVersion?: string) {
-  // Only allow projects to be published with UNVERSIONED if a correct token is set in env
-  if (sdkVersion === 'UNVERSIONED' && !env.EXPO_SKIP_MANIFEST_VALIDATION_TOKEN) {
-    throw new CommandError('INVALID_OPTIONS', 'Cannot publish with sdkVersion UNVERSIONED.');
-  }
-}
-
 /** Get the public Expo manifest from the local project config. */
 export async function getPublicExpoManifestAsync(projectRoot: string): Promise<ExpoAppManifest> {
   // Read the config in public mode which strips the `hooks`.
@@ -20,7 +13,10 @@ export async function getPublicExpoManifestAsync(projectRoot: string): Promise<E
     skipSDKVersionRequirement: true,
   });
 
-  assertUnversioned(exp.sdkVersion);
+  // Only allow projects to be published with UNVERSIONED if a correct token is set in env
+  if (exp.sdkVersion === 'UNVERSIONED' && !env.EXPO_SKIP_MANIFEST_VALIDATION_TOKEN) {
+    throw new CommandError('INVALID_OPTIONS', 'Cannot publish with sdkVersion UNVERSIONED.');
+  }
 
   return {
     ...exp,

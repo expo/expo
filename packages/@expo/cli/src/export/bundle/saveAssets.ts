@@ -27,18 +27,20 @@ function collectAssetPaths(assets: Asset[]): Record<string, string> {
   return paths;
 }
 
-export async function saveAssetsAsync(projectRoot: string, assets: Asset[], outputDir: string) {
+export async function saveAssetsAsync(
+  projectRoot: string,
+  { assets, outputDir }: { assets: Asset[]; outputDir: string }
+) {
   // Collect paths by key, also effectively handles duplicates in the array
   const paths = collectAssetPaths(assets);
 
   // save files one chunk at a time
-  const keyChunks = chunk(Object.entries(paths), 5);
-  for (const keys of keyChunks) {
+  for (const keys of chunk(Object.entries(paths), 5)) {
     await Promise.all(
       keys.map(([key, pathName]) => {
         logAssetTask(projectRoot, 'saving', pathName);
         // copy file over to assetPath
-        return copyAsync(pathName, path.resolve(outputDir, 'assets', key));
+        return copyAsync(pathName, path.join(outputDir, 'assets', key));
       })
     );
   }

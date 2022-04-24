@@ -1,6 +1,6 @@
 import { vol } from 'memfs';
 
-import { exportAppAsync } from '../exportAppAsync';
+import { exportAppAsync } from '../exportApp';
 
 jest.mock('../../../log');
 
