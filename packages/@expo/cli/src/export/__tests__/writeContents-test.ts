@@ -9,12 +9,12 @@ import {
 } from '../writeContents';
 
 describe(writeDebugHtmlAsync, () => {
-  afterAll(() => {
+  afterEach(() => {
     vol.reset();
   });
 
   it(`creates a debug html file`, async () => {
-    const projectRoot = '/test/';
+    const projectRoot = '/';
     await writeDebugHtmlAsync({
       outputDir: projectRoot,
       fileNames: { ios: 'index.ios.js', android: 'index.android.js', windows: 'index.windows.js' },
@@ -24,11 +24,11 @@ describe(writeDebugHtmlAsync, () => {
 });
 
 describe(writeBundlesAsync, () => {
-  afterAll(() => {
+  afterEach(() => {
     vol.reset();
   });
   it(`writes JS bundles to disk`, async () => {
-    const projectRoot = '/test/';
+    const projectRoot = '/';
 
     const contents = `var foo = true;`;
     const results = await writeBundlesAsync({
@@ -53,7 +53,7 @@ describe(writeBundlesAsync, () => {
     expect(vol.readFileSync(path.join(projectRoot, results.fileNames.ios), 'utf8')).toBe(contents);
   });
   it(`writes hbc bundles to disk`, async () => {
-    const projectRoot = '/test/';
+    const projectRoot = '/';
     const contents = Uint8Array.from([1, 2, 3]);
     const results = await writeBundlesAsync({
       outputDir: projectRoot,
@@ -75,11 +75,11 @@ describe(writeBundlesAsync, () => {
 });
 
 describe(writeAssetMapAsync, () => {
-  afterAll(() => {
+  afterEach(() => {
     vol.reset();
   });
   it(`writes asset map to disk`, async () => {
-    const projectRoot = '/test/';
+    const projectRoot = '/';
 
     const results = await writeAssetMapAsync({
       outputDir: projectRoot,
@@ -98,12 +98,12 @@ describe(writeAssetMapAsync, () => {
 });
 
 describe(writeSourceMapsAsync, () => {
-  afterAll(() => {
+  afterEach(() => {
     vol.reset();
   });
 
   it(`writes source maps to disk`, async () => {
-    const projectRoot = '/test/';
+    const projectRoot = '/';
 
     // User wrote this
     const contents = `var foo = true;\ninvalid-source-map-comment`;

@@ -3,7 +3,7 @@ import { resolveOptionsAsync } from '../resolveOptions';
 describe(resolveOptionsAsync, () => {
   it(`asserts invalid platform`, async () => {
     await expect(resolveOptionsAsync({ '--platform': 'foobar' })).rejects.toThrow(
-      /^The input did not match the regular expression/
+      /^Unsupported platform "foobar"\./
     );
   });
 
@@ -25,7 +25,7 @@ describe(resolveOptionsAsync, () => {
       dumpSourcemap: true,
       maxWorkers: 2,
       outputDir: 'foobar',
-      platform: 'android',
+      platforms: ['android'],
     });
   });
 
@@ -37,7 +37,7 @@ describe(resolveOptionsAsync, () => {
       dumpSourcemap: false,
       maxWorkers: undefined,
       outputDir: 'dist',
-      platform: 'all',
+      platforms: ['android', 'ios'],
     });
   });
 });
