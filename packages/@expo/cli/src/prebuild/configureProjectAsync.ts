@@ -4,7 +4,7 @@ import { getPrebuildConfigAsync } from '@expo/prebuild-config';
 
 import { logConfig } from '../config/configAsync';
 import * as Log from '../log';
-import { EXPO_DEBUG } from '../utils/env';
+import { env } from '../utils/env';
 import {
   getOrPromptForBundleIdentifier,
   getOrPromptForPackage,
@@ -45,7 +45,7 @@ export async function configureProjectAsync(
     assertMissingModProviders: false,
   });
 
-  if (EXPO_DEBUG) {
+  if (env.EXPO_DEBUG) {
     Log.log();
     Log.log('Evaluated config:');
     logConfig(config);

@@ -6,6 +6,14 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 3.1.0 — 2022-04-18
+
+### 🎉 New features
+
 - `addEventListener` returns `EmitterSubscription` rather than `void` ([#17014](https://github.com/expo/expo/pull/17014) by [@frankcalise](https://github.com/frankcalise))
 
 ### 🐛 Bug fixes
@@ -14,6 +22,8 @@
 - `useURL` hook now cleans up `addEventListener` via `remove` rather than `removeEventListener` ([#17014](https://github.com/expo/expo/pull/17014) by [@frankcalise](https://github.com/frankcalise))
 
 ### 💡 Others
+
+- Export public `Schemes` methods in main file. ([#17058](https://github.com/expo/expo/pull/17058) by [@Simek](https://github.com/Simek))
 
 ## 3.0.0 — 2021-12-03
 

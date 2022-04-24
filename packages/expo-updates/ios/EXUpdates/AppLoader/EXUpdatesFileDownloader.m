@@ -670,6 +670,27 @@ certificateChainFromManifestResponse:(nullable NSString *)certificateChainFromMa
   }
 }
 
++ (NSDictionary *)extraHeadersWithDatabase:(EXUpdatesDatabase *)database
+                                    config:(EXUpdatesConfig *)config
+                            launchedUpdate:(nullable EXUpdatesUpdate *)launchedUpdate
+                            embeddedUpdate:(nullable EXUpdatesUpdate *)embeddedUpdate
+{
+  NSError *headersError;
+  NSMutableDictionary *extraHeaders = [database serverDefinedHeadersWithScopeKey:config.scopeKey error:&headersError].mutableCopy ?: [NSMutableDictionary new];
+  if (headersError) {
+    NSLog(@"Error selecting serverDefinedHeaders from database: %@", headersError.localizedDescription);
+  }
+
+  if (launchedUpdate) {
+    extraHeaders[@"Expo-Current-Update-ID"] = launchedUpdate.updateId.UUIDString.lowercaseString;
+  }
+  if (embeddedUpdate) {
+    extraHeaders[@"Expo-Embedded-Update-ID"] = embeddedUpdate.updateId.UUIDString.lowercaseString;
+  }
+
+  return extraHeaders.copy;
+}
+
 #pragma mark - NSURLSessionTaskDelegate
 
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task willPerformHTTPRedirection:(NSHTTPURLResponse *)response newRequest:(NSURLRequest *)request completionHandler:(void (^)(NSURLRequest *))completionHandler

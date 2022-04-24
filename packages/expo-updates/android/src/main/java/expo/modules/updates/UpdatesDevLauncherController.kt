@@ -52,7 +52,8 @@ class UpdatesDevLauncherController : UpdatesInterface {
       updatesConfiguration,
       databaseHolder.database,
       controller.fileDownloader,
-      controller.updatesDirectory
+      controller.updatesDirectory,
+      null
     )
     loader.start(object : Loader.LoaderCallback {
       override fun onFailure(e: Exception) {

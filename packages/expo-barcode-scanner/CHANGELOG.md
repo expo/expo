@@ -6,9 +6,15 @@
 
 ### 🎉 New features
 
-- On iOS 15.4+ added support for `Codabar` barcode type. ([#16703](https://github.com/expo/expo/pull/16703) by [@7nohe](https://github.com/7nohe))
-
 ### 🐛 Bug fixes
+
+### 💡 Others
+
+## 11.3.0 — 2022-04-18
+
+### 🎉 New features
+
+- On iOS 15.4+ added support for `Codabar` barcode type. ([#16703](https://github.com/expo/expo/pull/16703) by [@7nohe](https://github.com/7nohe))
 
 ### 💡 Others
 

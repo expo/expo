@@ -1,4 +1,4 @@
-import { EXPO_BETA } from '../utils/env';
+import { env } from '../utils/env';
 import { CommandError } from '../utils/errors';
 import { pickBy } from '../utils/obj';
 import { createCachedFetch } from './rest/client';
@@ -70,6 +70,6 @@ export async function getReleasedVersionsAsync({
   const { sdkVersions } = await getVersionsAsync({ skipCache });
   return pickBy(
     sdkVersions,
-    (data, _sdkVersionString) => !!data.releaseNoteUrl || (EXPO_BETA && data.beta)
+    (data, _sdkVersionString) => !!data.releaseNoteUrl || (env.EXPO_BETA && data.beta)
   );
 }

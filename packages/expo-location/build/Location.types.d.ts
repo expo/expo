@@ -241,6 +241,11 @@ export declare type LocationObject = {
      * The time at which this position information was obtained, in milliseconds since epoch.
      */
     timestamp: number;
+    /**
+     * Whether the location coordinates is mocked or not.
+     * @platform android
+     */
+    mocked?: boolean;
 };
 /**
  * Type representing the location GPS related data.

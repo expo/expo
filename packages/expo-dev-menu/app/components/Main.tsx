@@ -25,6 +25,7 @@ import { useAppInfo } from '../hooks/useAppInfo';
 import { useBottomSheet } from '../hooks/useBottomSheet';
 import { useClipboard } from '../hooks/useClipboard';
 import { useDevSettings } from '../hooks/useDevSettings';
+import { isDevLauncherInstalled } from '../native-modules/DevLauncher';
 import { GestureHandlerTouchableWrapper } from './GestureHandlerTouchableWrapper';
 
 export function Main() {
@@ -120,7 +121,7 @@ export function Main() {
       {Boolean(appInfo.hostUrl) && (
         <>
           <View bg="default" padding="medium">
-            <Text color="secondary">Connected to local server</Text>
+            <Text color="secondary">Connected to:</Text>
 
             <Spacer.Vertical size="small" />
 
@@ -141,13 +142,15 @@ export function Main() {
       )}
 
       <Row padding="small">
-        <View flex="1">
-          <ActionButton
-            icon={<HomeFilledIcon />}
-            label="Go home"
-            onPress={actions.navigateToLauncher}
-          />
-        </View>
+        {isDevLauncherInstalled && (
+          <View flex="1">
+            <ActionButton
+              icon={<HomeFilledIcon />}
+              label="Go home"
+              onPress={actions.navigateToLauncher}
+            />
+          </View>
+        )}
 
         <Spacer.Horizontal size="medium" />
 

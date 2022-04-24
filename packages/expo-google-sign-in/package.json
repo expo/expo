@@ -1,6 +1,6 @@
 {
   "name": "expo-google-sign-in",
-  "version": "10.1.0",
+  "version": "10.2.0",
   "description": "Enables native Google authentication features in your app!",
   "main": "build/GoogleSignIn.js",
   "types": "build/GoogleSignIn.d.ts",

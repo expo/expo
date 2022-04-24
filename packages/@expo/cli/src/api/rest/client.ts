@@ -3,7 +3,7 @@ import { JSONValue } from '@expo/json-file';
 import fetchInstance from 'node-fetch';
 import path from 'path';
 
-import { EXPO_BETA, env } from '../../utils/env';
+import { env } from '../../utils/env';
 import { getExpoApiBaseUrl } from '../endpoint';
 import UserSettings from '../user/UserSettings';
 import { FileSystemCache } from './cache/FileSystemCache';
@@ -109,7 +109,7 @@ export function createCachedFetch({
   skipCache?: boolean;
 }): FetchLike {
   // Disable all caching in EXPO_BETA.
-  if (skipCache || EXPO_BETA || env.EXPO_NO_CACHE) {
+  if (skipCache || env.EXPO_BETA || env.EXPO_NO_CACHE) {
     return fetch ?? fetchWithCredentials;
   }
 

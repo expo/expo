@@ -51,8 +51,14 @@ class ExponentIntentService : IntentService("ExponentIntentService") {
 
   private fun handleActionReloadExperience(manifestUrl: String) {
     kernel.reloadVisibleExperience(manifestUrl)
-    val intent = Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS)
-    sendBroadcast(intent)
+
+    // Application can't close system dialogs on Android 31 or higher.
+    // See https://developer.android.com/about/versions/12/behavior-changes-all#close-system-dialogs
+    if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.S) {
+      val intent = Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS)
+      sendBroadcast(intent)
+    }
+
     Analytics.logEventWithManifestUrl(Analytics.AnalyticsEvent.RELOAD_EXPERIENCE, manifestUrl)
     stopSelf()
   }

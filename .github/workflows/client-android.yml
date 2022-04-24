@@ -37,7 +37,7 @@ concurrency:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     env:
       GRADLE_OPTS: -Dorg.gradle.jvmargs=-Xmx2048m -XX:MaxMetaspaceSize=1024m
     steps:
@@ -62,7 +62,6 @@ jobs:
             home/node_modules
             packages/*/node_modules
             packages/@expo/*/node_modules
-            packages/@unimodules/*/node_modules
             react-native-lab/react-native/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('yarn.lock') }}
       - run: echo "$(pwd)/bin" >> $GITHUB_PATH
@@ -152,6 +151,7 @@ jobs:
         env:
           AWS_ACCESS_KEY_ID: AKIAJ3SWUQ4QLNQC7FXA
           AWS_SECRET_ACCESS_KEY: ${{ secrets.android_client_build_aws_secret_key }}
+          AWS_DEFAULT_REGION: 'us-east-1'
           EXPO_VERSIONS_SECRET: ${{ secrets.expo_versions_secret }}
       - name: 📤 Upload APK to Google Play and release to production
         if: ${{ github.event.inputs.releaseGooglePlay == 'release-google-play' }}

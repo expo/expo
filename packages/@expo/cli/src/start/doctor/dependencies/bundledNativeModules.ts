@@ -16,31 +16,30 @@ export type BundledNativeModules = Record<string, string>;
  *    or there's a downtime, reads the local .json file from the "expo" package.
  * - For UNVERSIONED, returns the local .json file contents.
  */
-export async function getBundledNativeModulesAsync(
+export async function getVersionedNativeModulesAsync(
   projectRoot: string,
   sdkVersion: string
 ): Promise<BundledNativeModules> {
-  if (sdkVersion === 'UNVERSIONED' || APISettings.isOffline) {
-    return await getBundledNativeModulesFromExpoPackageAsync(projectRoot);
-  } else {
+  if (sdkVersion !== 'UNVERSIONED' && !APISettings.isOffline) {
     try {
+      Log.debug('Fetching bundled native modules from the server...');
       return await getNativeModuleVersionsAsync(sdkVersion);
     } catch {
       Log.warn(
         chalk`Unable to reach Expo servers. Falling back to using the cached dependency map ({bold bundledNativeModules.json}) from the package "{bold expo}" installed in your project.`
       );
-      return await getBundledNativeModulesFromExpoPackageAsync(projectRoot);
     }
   }
+
+  Log.debug('Fetching bundled native modules from the local JSON file...');
+  return await getBundledNativeModulesAsync(projectRoot);
 }
 
 /**
  * Get the legacy static `bundledNativeModules.json` file
  * that's shipped with the version of `expo` that the project has installed.
  */
-async function getBundledNativeModulesFromExpoPackageAsync(
-  projectRoot: string
-): Promise<BundledNativeModules> {
+async function getBundledNativeModulesAsync(projectRoot: string): Promise<BundledNativeModules> {
   // TODO: Revisit now that this code is in the `expo` package.
   const bundledNativeModulesPath = resolveFrom.silent(
     projectRoot,
@@ -49,9 +48,7 @@ async function getBundledNativeModulesFromExpoPackageAsync(
   if (!bundledNativeModulesPath) {
     Log.log();
     throw new CommandError(
-      `The dependency map ${chalk.bold(
-        `expo/bundledNativeModules.json`
-      )} cannot be found, please ensure you have the package "${chalk.bold`expo`}" installed in your project.\n`
+      chalk`The dependency map {bold expo/bundledNativeModules.json} cannot be found, please ensure you have the package "{bold expo}" installed in your project.`
     );
   }
   return await JsonFile.readAsync<BundledNativeModules>(bundledNativeModulesPath);

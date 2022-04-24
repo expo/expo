@@ -26,7 +26,7 @@ concurrency:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     timeout-minutes: 60
     env:
       ORG_GRADLE_PROJECT_reactNativeArchitectures: x86
@@ -57,7 +57,6 @@ jobs:
             home/node_modules
             packages/*/node_modules
             packages/@expo/*/node_modules
-            packages/@unimodules/*/node_modules
             react-native-lab/react-native/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('yarn.lock') }}
       - name: 🧶 Install node modules in root dir

@@ -8,7 +8,7 @@ import path from 'path';
 import * as Log from '../log';
 import { hashForDependencyMap } from '../prebuild/updatePackageJson';
 import { ensureDirectoryAsync } from './dir';
-import { EXPO_DEBUG } from './env';
+import { env } from './env';
 import { AbortCommandError } from './errors';
 import { logNewSection } from './ora';
 
@@ -77,7 +77,7 @@ export async function installCocoaPodsAsync(projectRoot: string): Promise<boolea
 
   const packageManager = new PackageManager.CocoaPodsPackageManager({
     cwd: path.join(projectRoot, 'ios'),
-    silent: !EXPO_DEBUG,
+    silent: !env.EXPO_DEBUG,
   });
 
   if (!(await packageManager.isCLIInstalledAsync())) {
