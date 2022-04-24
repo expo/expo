@@ -55,7 +55,7 @@ class Env {
   get RCT_METRO_PORT() {
     return int('RCT_METRO_PORT', 0);
   }
-  /** TODO */
+  /** Skip validating the manifest during `export`. */
   get EXPO_SKIP_MANIFEST_VALIDATION_TOKEN(): boolean {
     return !!string('EXPO_SKIP_MANIFEST_VALIDATION_TOKEN');
   }
