@@ -29,7 +29,7 @@ const STYLES_CODE_BLOCK = css`
       ${theme.highlight.emphasis} 0px 0px 10px, ${theme.highlight.emphasis} 0px 0px 10px;
   }
 
-  .code-annotation:hover {
+  .code-annotation.with-tooltip:hover {
     cursor: pointer;
     animation: none;
     opacity: 0.8;
@@ -93,7 +93,7 @@ export class Code extends React.Component<Props> {
   }
 
   private runTippy() {
-    tippy('.code-annotation', {
+    tippy('.code-annotation.with-tooltip', {
       allowHTML: true,
       theme: 'expo',
       placement: 'top',
@@ -114,7 +114,7 @@ export class Code extends React.Component<Props> {
         /<span class="token comment">&lt;!-- @info (.*?)--><\/span>\s*/g,
         (match, content) => {
           return content
-            ? `<span class="code-annotation" data-tippy-content="${this.escapeHtml(content)}">`
+            ? `<span class="code-annotation with-tooltip" data-tippy-content="${this.escapeHtml(content)}">`
             : '<span class="code-annotation">';
         }
       )
@@ -133,7 +133,7 @@ export class Code extends React.Component<Props> {
     return value
       .replace(/<span class="token comment"># @info (.*?)#<\/span>\s*/g, (match, content) => {
         return content
-          ? `<span class="code-annotation" data-tippy-content="${this.escapeHtml(content)}">`
+          ? `<span class="code-annotation with-tooltip" data-tippy-content="${this.escapeHtml(content)}">`
           : '<span class="code-annotation">';
       })
       .replace(/<span class="token comment"># @hide (.*?)#<\/span>\s*/g, (match, content) => {
@@ -148,7 +148,7 @@ export class Code extends React.Component<Props> {
     return value
       .replace(/<span class="token comment">\/\* @info (.*?)\*\/<\/span>\s*/g, (match, content) => {
         return content
-          ? `<span class="code-annotation" data-tippy-content="${this.escapeHtml(content)}">`
+          ? `<span class="code-annotation with-tooltip" data-tippy-content="${this.escapeHtml(content)}">`
           : '<span class="code-annotation">';
       })
       .replace(/<span class="token comment">\/\* @hide (.*?)\*\/<\/span>\s*/g, (match, content) => {
