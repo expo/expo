@@ -1,1 +1,1 @@
-https://docs.expo.io
+https://docs.expo.dev
