@@ -87,7 +87,7 @@ export function ExtensionsScreen({ navigation }: ExtensionsScreenProps) {
                       size="small"
                       style={{ textDecorationLine: 'underline' }}
                       onPress={() =>
-                        Linking.openURL(`https://docss.expo.dev/development/extensions/`)
+                        Linking.openURL(`https://docs.expo.dev/development/extensions/`)
                       }
                       accessibilityRole="link">
                       Learn more.
@@ -188,9 +188,7 @@ export function ExtensionsScreen({ navigation }: ExtensionsScreenProps) {
                   <Text
                     size="small"
                     style={{ textDecorationLine: 'underline' }}
-                    onPress={() =>
-                      Linking.openURL(`https://docss.expo.dev/development/extensions/`)
-                    }
+                    onPress={() => Linking.openURL(`https://docs.expo.dev/development/extensions/`)}
                     accessibilityRole="link">
                     Learn more.
                   </Text>

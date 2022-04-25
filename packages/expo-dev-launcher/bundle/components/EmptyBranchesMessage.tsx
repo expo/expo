@@ -70,12 +70,12 @@ export function EmptyBranchesMessage({
     <View padding="medium" rounded="large" bg="default">
       <View>
         <View>
-          <Heading>This app has no published branches yet.</Heading>
+          <Heading>This app has no published updates yet.</Heading>
           <Spacer.Vertical size="small" />
 
           <Spacer.Vertical size="small" />
           <Text color="secondary" size="small">
-            Branches allow you to deliver code to builds through EAS Update.
+            Updates allow you to deliver code directly to your users.
           </Text>
 
           <View py="medium" align="centered">
