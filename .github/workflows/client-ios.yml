@@ -51,17 +51,8 @@ jobs:
           submodules: true
       - name: 🔨 Switch to Xcode 13.0
         run: sudo xcode-select --switch /Applications/Xcode_13.0.app
-      - name: 🍺 Install git-crypt
-        run: brew install git-crypt
       - name: 🔓 Decrypt secrets if possible
-        env:
-          GIT_CRYPT_KEY_BASE64: ${{ secrets.GIT_CRYPT_KEY_BASE64 }}
-        run: |
-          if [[ ${GIT_CRYPT_KEY_BASE64:-unset} = unset ]]; then
-            echo 'git-crypt key not present in environment'
-          else
-            git crypt unlock <(echo $GIT_CRYPT_KEY_BASE64 | base64 --decode)
-          fi
+        uses: ./.github/actions/expo-git-decrypt
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: 💎 Setup Ruby and install gems

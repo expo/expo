@@ -35,17 +35,8 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
-      - name: 🐙 Install git-crypt
-        run: sudo apt-get install git-crypt
       - name: 🔓 Decrypt secrets if possible
-        env:
-          GIT_CRYPT_KEY_BASE64: ${{ secrets.GIT_CRYPT_KEY_BASE64 }}
-        run: |
-          if [ -z "${GIT_CRYPT_KEY_BASE64}" ]; then
-            echo 'git-crypt key not present in environment'
-          else
-            git crypt unlock <(echo $GIT_CRYPT_KEY_BASE64 | base64 --decode)
-          fi
+        uses: ./.github/actions/expo-git-decrypt
       - name: ♻️ Restore Gradle caches
         uses: actions/cache@v2
         with:
