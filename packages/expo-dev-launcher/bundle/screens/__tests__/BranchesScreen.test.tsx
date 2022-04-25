@@ -167,8 +167,8 @@ describe('<BranchesScreen />', () => {
     const { getByText, queryByText } = render(<BranchesScreen navigation={mockNavigation} />);
 
     await act(async () => {
-      expect(queryByText(/no published branches yet/i)).toBe(null);
-      await waitFor(() => getByText(/no published branches yet/i));
+      expect(queryByText(/no published updates yet/i)).toBe(null);
+      await waitFor(() => getByText(/no published updates yet/i));
     });
   });
 

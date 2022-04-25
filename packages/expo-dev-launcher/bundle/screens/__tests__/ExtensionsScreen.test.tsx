@@ -229,7 +229,7 @@ describe('<ExtensionsScreen />', () => {
     const { getByText } = renderAuthenticatedScreen({ mockNavigation });
 
     await act(async () => {
-      await waitFor(() => getByText(/no published branches yet/i));
+      await waitFor(() => getByText(/no published updates yet/i));
     });
   });
 
