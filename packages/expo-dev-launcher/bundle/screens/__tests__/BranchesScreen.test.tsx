@@ -56,6 +56,7 @@ describe('<BranchesScreen />', () => {
       message: 'Test update',
       runtimeVersion: '1',
       createdAt: new Date().toISOString(),
+      manifestPermalink: '123',
     };
 
     mockBranchResponse({
@@ -67,7 +68,7 @@ describe('<BranchesScreen />', () => {
     const { queryByText, getByText } = render(<BranchesScreen navigation={mockNavigation} />);
 
     await act(async () => {
-      await waitFor(() => getByText(/recently updated/i));
+      await waitFor(() => getByText(/testBranch/i));
       expect(queryByText(/testBranch/i)).not.toBe(null);
       expect(queryByText(/test update/i)).not.toBe(null);
     });
@@ -83,6 +84,7 @@ describe('<BranchesScreen />', () => {
       message: 'Test update',
       runtimeVersion: '1',
       createdAt: new Date().toISOString(),
+      manifestPermalink: '123',
     };
 
     mockBranchResponse({
@@ -94,7 +96,7 @@ describe('<BranchesScreen />', () => {
     const { queryByText, getByText } = render(<BranchesScreen navigation={mockNavigation} />);
 
     await act(async () => {
-      await waitFor(() => getByText(/recently updated/i));
+      await waitFor(() => getByText(/test update/i));
       expect(queryByText(/Test update/i)).not.toBe(null);
       expect(mockNavigation.navigate).not.toHaveBeenCalledTimes(1);
 
@@ -115,6 +117,7 @@ describe('<BranchesScreen />', () => {
       message: 'Test update',
       runtimeVersion: '1',
       createdAt: new Date().toISOString(),
+      manifestPermalink: '123',
     };
 
     const compatibleBranch: Branch = {
@@ -177,7 +180,15 @@ describe('<BranchesScreen />', () => {
     const incompatibleBranch: Branch = {
       id: '2',
       name: 'Incompatible branch',
-      updates: [{ id: '1', createdAt: '123', message: '321', runtimeVersion: '123' }],
+      updates: [
+        {
+          id: '1',
+          createdAt: '123',
+          message: '321',
+          runtimeVersion: '123',
+          manifestPermalink: '123',
+        },
+      ],
     };
 
     mockGraphQLResponse({

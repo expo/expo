@@ -78,11 +78,11 @@ describe('<ExtensionsScreen />', () => {
 
     DevLauncher.updatesConfig.usesEASUpdates = false;
 
-    const { getByText } = render(<ExtensionsScreen navigation={mockNavigation} />);
+    const { getByText, getAllByText } = render(<ExtensionsScreen navigation={mockNavigation} />);
 
     await act(async () => {
       await waitFor(() => getByText(/extensions allow you to customize your development build/i));
-      await waitFor(() => getByText(/learn more/i));
+      await waitFor(() => getAllByText(/learn more/i));
     });
   });
 
@@ -153,11 +153,27 @@ describe('<ExtensionsScreen />', () => {
       manifestPermalink: '123',
     };
 
-    mockBranchResponse({
-      branchName: 'testBranch',
-      updates: [testUpdate],
-      compatibleUpdates: [testUpdate],
+    mockGraphQLResponse({
+      app: {
+        byId: {
+          updateBranches: [
+            {
+              id: '1',
+              name: 'testBranch1',
+              compatibleUpdates: [testUpdate],
+              updates: [testUpdate],
+            },
+            {
+              id: '2',
+              name: 'testBranch2',
+              compatibleUpdates: [testUpdate],
+              updates: [testUpdate],
+            },
+          ],
+        },
+      },
     });
+
 
     const { getByText } = renderAuthenticatedScreen({ mockNavigation });
 
