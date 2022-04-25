@@ -13,8 +13,8 @@ const val moduleName = "ExpoCellular"
 
 class CellularModule : Module() {
   override fun definition() = ModuleDefinition {
-    name(moduleName)
-    constants {
+    Name(moduleName)
+    Constants {
       val telephonyManager = telephonyManager()
       mapOf(
         "allowsVoip" to SipManager.isVoipSupported(context),
@@ -25,7 +25,7 @@ class CellularModule : Module() {
       )
     }
 
-    function("getCellularGenerationAsync") {
+    AsyncFunction("getCellularGenerationAsync" ) {
       try {
         getCurrentGeneration()
       } catch (e: SecurityException) {
@@ -34,23 +34,23 @@ class CellularModule : Module() {
       }
     }
 
-    function("allowsVoipAsync") {
+    AsyncFunction("allowsVoipAsync" ) {
       SipManager.isVoipSupported(context)
     }
 
-    function("getIsoCountryCodeAsync") {
+    AsyncFunction("getIsoCountryCodeAsync" ) {
       telephonyManager()?.simCountryIso
     }
 
-    function("getCarrierNameAsync") {
+    AsyncFunction("getCarrierNameAsync" ) {
       telephonyManager()?.simOperatorName
     }
 
-    function("getMobileCountryCodeAsync") {
+    AsyncFunction("getMobileCountryCodeAsync" ) {
       telephonyManager()?.simOperator?.substring(0, 3)
     }
 
-    function("getMobileNetworkCodeAsync") {
+    AsyncFunction("getMobileNetworkCodeAsync" ) {
       telephonyManager()?.simOperator?.substring(3)
     }
   }
