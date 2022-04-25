@@ -1,11 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.withBuildProperties = void 0;
-const config_plugins_1 = require("@expo/config-plugins");
 const android_1 = require("./android");
 const ios_1 = require("./ios");
 const pluginConfig_1 = require("./pluginConfig");
-const pkg = require('expo-build-properties/package.json');
 /**
  * Config plugin to customize native Android or iOS build properties for managed apps
  * @param config ExpoConfig
@@ -21,4 +19,4 @@ const withBuildProperties = (config, props) => {
     return config;
 };
 exports.withBuildProperties = withBuildProperties;
-exports.default = (0, config_plugins_1.createRunOncePlugin)(exports.withBuildProperties, pkg.name, pkg.version);
+exports.default = exports.withBuildProperties;

@@ -7,5 +7,4 @@ import { PluginConfigType } from './pluginConfig';
  * @ignore
  */
 export declare const withBuildProperties: ConfigPlugin<PluginConfigType>;
-declare const _default: ConfigPlugin<PluginConfigType>;
-export default _default;
+export default withBuildProperties;
