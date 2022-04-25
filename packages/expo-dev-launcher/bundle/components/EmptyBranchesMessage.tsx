@@ -86,7 +86,7 @@ export function EmptyBranchesMessage({
               }>
               <View px="2.5" py="2">
                 <Button.Text weight="medium" color="tertiary">
-                  Create a branch
+                  Publish an update
                 </Button.Text>
               </View>
             </Button.ScaleOnPressContainer>
