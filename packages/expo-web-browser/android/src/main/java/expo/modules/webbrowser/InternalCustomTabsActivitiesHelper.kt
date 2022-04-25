@@ -49,8 +49,8 @@ internal class InternalCustomTabsActivitiesHelper : CustomTabsActivitiesHelper {
 
   override val defaultCustomTabsResolvingActivity: String?
     get() {
-        val info = packageManager.resolveActivity(createDefaultCustomTabsIntent(), 0)
-        return info?.activityInfo?.packageName
+      val info = packageManager.resolveActivity(createDefaultCustomTabsIntent(), 0)
+      return info?.activityInfo?.packageName
     }
 
   @Throws(CurrentActivityNotFoundException::class)
