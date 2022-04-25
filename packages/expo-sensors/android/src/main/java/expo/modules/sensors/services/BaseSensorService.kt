@@ -31,16 +31,15 @@ abstract class BaseSensorService internal constructor(reactContext: Context?) : 
 
   private fun hasHighSamplingRateSensorsPermission(): Boolean {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
-      return false
+      return true
     }
 
-    try {
+    return try {
       context.packageManager.getPackageInfo(context.packageName, PackageManager.GET_PERMISSIONS)?.run {
-        return requestedPermissions.contains(Manifest.permission.HIGH_SAMPLING_RATE_SENSORS)
-      }
-      return false
+        requestedPermissions.contains(Manifest.permission.HIGH_SAMPLING_RATE_SENSORS)
+      } ?: false
     } catch (e: PackageManager.NameNotFoundException) {
-      return false
+      false
     }
   }
 }
