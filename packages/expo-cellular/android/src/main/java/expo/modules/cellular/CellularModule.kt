@@ -25,7 +25,7 @@ class CellularModule : Module() {
       )
     }
 
-    AsyncFunction("getCellularGenerationAsync" ) {
+    AsyncFunction("getCellularGenerationAsync") {
       try {
         getCurrentGeneration()
       } catch (e: SecurityException) {
@@ -34,23 +34,23 @@ class CellularModule : Module() {
       }
     }
 
-    AsyncFunction("allowsVoipAsync" ) {
+    AsyncFunction("allowsVoipAsync") {
       SipManager.isVoipSupported(context)
     }
 
-    AsyncFunction("getIsoCountryCodeAsync" ) {
+    AsyncFunction("getIsoCountryCodeAsync") {
       telephonyManager()?.simCountryIso
     }
 
-    AsyncFunction("getCarrierNameAsync" ) {
+    AsyncFunction("getCarrierNameAsync") {
       telephonyManager()?.simOperatorName
     }
 
-    AsyncFunction("getMobileCountryCodeAsync" ) {
+    AsyncFunction("getMobileCountryCodeAsync") {
       telephonyManager()?.simOperator?.substring(0, 3)
     }
 
-    AsyncFunction("getMobileNetworkCodeAsync" ) {
+    AsyncFunction("getMobileNetworkCodeAsync") {
       telephonyManager()?.simOperator?.substring(3)
     }
   }

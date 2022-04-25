@@ -45,7 +45,7 @@ private class TestModule_2 : Module() {
     AsyncFunction("f1") {
       throw TestException()
     }
-    AsyncFunction("f2" ) { arg1: Int ->
+    AsyncFunction("f2") { arg1: Int ->
       arg1
     }
     ViewManager {

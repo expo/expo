@@ -44,7 +44,7 @@ class ClipboardModule : Module() {
     Name(moduleName)
 
     // region Strings
-    AsyncFunction("getStringAsync" ) { options: GetStringOptions ->
+    AsyncFunction("getStringAsync") { options: GetStringOptions ->
       val item = clipboardManager.firstItem
       when (options.preferredFormat) {
         StringFormat.PLAIN -> item?.coerceToPlainText(context)
@@ -52,7 +52,7 @@ class ClipboardModule : Module() {
       } ?: ""
     }
 
-    AsyncFunction("setStringAsync" ) { content: String, options: SetStringOptions ->
+    AsyncFunction("setStringAsync") { content: String, options: SetStringOptions ->
       val clip = when (options.inputFormat) {
         StringFormat.PLAIN -> ClipData.newPlainText(null, content)
         StringFormat.HTML -> {
@@ -65,7 +65,7 @@ class ClipboardModule : Module() {
       return@AsyncFunction true
     }
 
-    AsyncFunction("hasStringAsync" ) {
+    AsyncFunction("hasStringAsync") {
       clipboardManager
         .primaryClipDescription
         ?.hasTextContent
@@ -74,7 +74,7 @@ class ClipboardModule : Module() {
     // endregion
 
     // region Images
-    AsyncFunction("getImageAsync" ) { options: GetImageOptions, promise: Promise ->
+    AsyncFunction("getImageAsync") { options: GetImageOptions, promise: Promise ->
       val imageUri = clipboardManager
         .takeIf { clipboardHasItemWithType("image/*") }
         ?.firstItem
@@ -100,7 +100,7 @@ class ClipboardModule : Module() {
       }
     }
 
-    AsyncFunction("setImageAsync" ) { imageData: String, promise: Promise ->
+    AsyncFunction("setImageAsync") { imageData: String, promise: Promise ->
       val exceptionHandler = CoroutineExceptionHandler { _, err ->
         err.printStackTrace()
         val rejectionCause = when (err) {
@@ -117,7 +117,7 @@ class ClipboardModule : Module() {
       }
     }
 
-    AsyncFunction("hasImageAsync" ) {
+    AsyncFunction("hasImageAsync") {
       clipboardManager.primaryClipDescription?.hasMimeType("image/*") == true
     }
     //endregion
