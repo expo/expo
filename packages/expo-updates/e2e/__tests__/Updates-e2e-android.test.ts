@@ -25,8 +25,8 @@ const ADB_PATH = (function () {
 
 // Keep in sync with the manifest in .github/workflows/updates-e2e.yml
 const RUNTIME_VERSION = '1.0.0';
-const EXPORT_PUBLIC_URL = 'https://expo.dev/dummy-url';
-const BUNDLE_DIST_PATH = process.env.TEST_BUNDLE_DIST_PATH;
+const EXPORT_PUBLIC_URL = 'https://u.expo.dev/dummy-url';
+const UPDATE_DIST_PATH = process.env.TEST_UPDATE_DIST_PATH;
 let bundlePath: string | null = null;
 
 const PACKAGE_NAME = 'dev.expo.updatese2e';
@@ -55,9 +55,9 @@ async function stopApplication(packageName: string) {
 
 function findBundlePath(): string {
   if (!bundlePath) {
-    const androidClassicManifest = require(path.join(BUNDLE_DIST_PATH, 'android-index.json'));
+    const androidClassicManifest = require(path.join(UPDATE_DIST_PATH, 'android-index.json'));
     const { bundleUrl }: { bundleUrl: string } = androidClassicManifest;
-    bundlePath = path.join(BUNDLE_DIST_PATH, bundleUrl.replace(EXPORT_PUBLIC_URL, ''));
+    bundlePath = path.join(UPDATE_DIST_PATH, bundleUrl.replace(EXPORT_PUBLIC_URL, ''));
   }
   return bundlePath;
 }
@@ -119,11 +119,11 @@ test('downloads and runs update, and updates current-update-id header', async ()
   const hash = await copyBundleToStaticFolder('bundle1.js', 'test-update-1');
   const manifest = {
     id: uuid(),
-    createdAt: new Date().getTime(),
+    createdAt: new Date().toISOString(),
     runtimeVersion: RUNTIME_VERSION,
     launchAsset: {
       hash,
-      key: '801599597d77b3522bf40c7021eb0313',
+      key: 'test-update-1-key',
       contentType: 'application/javascript',
       url: `http://${SERVER_HOST}:${SERVER_PORT}/static/bundle1.js`,
     },
