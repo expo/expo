@@ -68,6 +68,8 @@ jobs:
         run: yarn install --frozen-lockfile
       - name: 🔓 Decrypt secrets if possible
         uses: ./.github/actions/expo-git-decrypt
+        with:
+          key: ${{ secrets.GIT_CRYPT_KEY_BASE64 }}
       - name: 🔎 Check which flavor to build
         id: flavor
         uses: dorny/paths-filter@v2

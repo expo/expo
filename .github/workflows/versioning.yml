@@ -27,6 +27,8 @@ jobs:
         run: sudo xcode-select --switch /Applications/Xcode_13.0.app
       - name: 🔓 Decrypt secrets if possible
         uses: ./.github/actions/expo-git-decrypt
+        with:
+          key: ${{ secrets.GIT_CRYPT_KEY_BASE64 }}
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: 💎 Setup Ruby and install gems
@@ -60,7 +62,7 @@ jobs:
           AWS_DEFAULT_REGION: 'us-east-1'
       - name: 🗑 Removing SDK version
         run: expotools remove-sdk-version --platform ios --sdkVersion latest
-      - name: 🐙 Git working dir is clean
+      - name: 🧐 Ensure that Git working dir is clean
         run: git diff --exit-code
       - name: 🔔 Notify on Slack
         uses: 8398a7/action-slack@v3

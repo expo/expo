@@ -37,6 +37,8 @@ jobs:
           bundler-cache: true
       - name: 🔓 Decrypt secrets if possible
         uses: ./.github/actions/expo-git-decrypt
+        with:
+          key: ${{ secrets.GIT_CRYPT_KEY_BASE64 }}
       - name: ♻️ Restore Gradle caches
         uses: actions/cache@v2
         with:
