@@ -244,11 +244,11 @@ jobs:
         id: test-app-path
         working-directory: ../updates-e2e/ios/build/Build/Products/Release-iphonesimulator/
         run: echo "::set-output name=dir::$(pwd)"
-      - name: Export update bundle for test server to host
+      - name: Export update for test server to host
         working-directory: ../updates-e2e
-        run: expo export --public-url https://expo.dev/dummy-url --platform ios
-      - name: Get test bundle dist path
-        id: test-bundle-dist-path
+        run: expo export --public-url https://u.expo.dev/dummy-url --platform ios
+      - name: Get test update dist path
+        id: test-update-dist-path
         working-directory: ../updates-e2e/dist
         run: echo "::set-output name=dir::$(pwd)"
       - name: Start simulator
@@ -259,7 +259,7 @@ jobs:
       - name: Run tests
         env:
           TEST_APP_PATH: '${{ steps.test-app-path.outputs.dir }}/updatese2e.app'
-          TEST_BUNDLE_DIST_PATH: '${{ steps.test-bundle-dist-path.outputs.dir }}'
+          TEST_UPDATE_DIST_PATH: '${{ steps.test-update-dist-path.outputs.dir }}'
         timeout-minutes: 30
         working-directory: packages/expo-updates
         run: yarn test --config e2e/jest.config.ios.js
