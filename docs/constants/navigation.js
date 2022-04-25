@@ -285,6 +285,7 @@ const featurePreview = [
     makePage('development/installation.md'),
     makePage('development/development-workflows.md'),
     makePage('development/extending-the-dev-menu.md'),
+    makePage('development/extensions.md'),
     makePage('development/compatibility.md'),
     makePage('development/upgrading.md'),
     makePage('development/troubleshooting.md'),
