@@ -8,10 +8,10 @@ import java.util.ArrayList
 
 interface CustomTabsActivitiesHelper : InternalModule {
   @get:Throws(PackageManagerNotFoundException::class, CurrentActivityNotFoundException::class)
-  val customTabsResolvingActivities: ArrayList<String?>
+  val customTabsResolvingActivities: ArrayList<String>
 
   @get:Throws(PackageManagerNotFoundException::class, CurrentActivityNotFoundException::class)
-  val customTabsResolvingServices: ArrayList<String?>
+  val customTabsResolvingServices: ArrayList<String>
 
   @Throws(PackageManagerNotFoundException::class, CurrentActivityNotFoundException::class)
   fun getPreferredCustomTabsResolvingActivity(packages: List<String?>?): String?

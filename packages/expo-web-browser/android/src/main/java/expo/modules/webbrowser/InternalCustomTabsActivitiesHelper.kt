@@ -27,17 +27,16 @@ internal class InternalCustomTabsActivitiesHelper : CustomTabsActivitiesHelper {
   override fun getExportedInterfaces(): List<Class<*>?> =
     listOf(CustomTabsActivitiesHelper::class.java)
 
-
   @Throws(PackageManagerNotFoundException::class, CurrentActivityNotFoundException::class)
   override fun canResolveIntent(intent: Intent): Boolean = getResolvingActivities(intent).isNotEmpty()
 
-  override val customTabsResolvingActivities: ArrayList<String?>
+  override val customTabsResolvingActivities: ArrayList<String>
     get() = getResolvingActivities(createDefaultCustomTabsIntent())
       .mapToDistinctArrayList { resolveInfo: ResolveInfo ->
         resolveInfo.activityInfo.packageName
       }
 
-  override val customTabsResolvingServices: ArrayList<String?>
+  override val customTabsResolvingServices: ArrayList<String>
     get() = packageManager.queryIntentServices(createDefaultCustomTabsServiceIntent(), 0)
       .mapToDistinctArrayList { resolveInfo: ResolveInfo ->
         resolveInfo.serviceInfo.packageName
