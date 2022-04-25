@@ -22,7 +22,8 @@ jobs:
   build:
     runs-on: macos-11
     steps:
-      - uses: actions/checkout@v3
+      - name: 👀 Checkout
+        uses: actions/checkout@v3
         with:
           submodules: true
       - name: 🔨 Switch to Xcode 13.0

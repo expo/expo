@@ -41,7 +41,7 @@ jobs:
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: 🧶 Yarn install
-        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
+        if: steps.expo-caches.outputs.yarn-docs-hit != 'true'
         run: yarn install --frozen-lockfile
       - name: 🧪 Run Docs tests
         run: yarn test

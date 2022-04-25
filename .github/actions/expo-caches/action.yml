@@ -3,62 +3,62 @@ description: 'Composite action to perform cache related tasks.'
 
 inputs:
   yarn-workspace:
-    description: ''
+    description: 'Restore yarn workspace cache'
     required: false
   yarn-tools:
-    description: ''
+    description: 'Restore yarn /tools cache'
     required: false
   yarn-docs:
-    description: ''
+    description: 'Restore yarn /docs cache'
     required: false
   ios-pods:
-    description: ''
+    description: 'Restore /ios pods cache'
     required: false
   bare-expo-pods:
-    description: ''
+    description: 'Restore /apps/bare-expo/ios pods cache'
     required: false
   gradle:
-    description: ''
+    description: 'Restore Gradle cache'
     required: false
   avd:
-    description: ''
+    description: 'Restore AVD cache'
     required: false
   avd-api:
-    description: ''
+    description: 'API version used in AVD'
     default: '29'
     required: false
   ndk:
-    description: ''
+    description: 'Restore NDK cache'
     required: false
   ndk-version:
-    description: ''
+    description: 'NDK version used'
     default: '21.4.7075529'
     required: false
   git-lfs:
-    description: ''
+    description: 'Restore Git LFS cache'
     required: false
 
 outputs:
   yarn-workspace-hit:
-    description: ''
+    description: 'Returns true, if yarn workspace cache is up-to-date'
     value: steps.workspace-modules-cache.outputs.cache-hit
   yarn-tools-hit:
-    description: ''
+    description: 'Returns true, if yarn /tools cache is up-to-date'
     value: steps.tools-modules-cache.outputs.cache-hit
   yarn-docs-hit:
-    description: ''
+    description: 'Returns true, if yarn /docs cache is up-to-date'
     value: steps.docs-modules-cache.outputs.cache-hit
   ios-pods-hit:
-    description: ''
+    description: 'Returns true, if /ios pods cache is up-to-date'
     value: steps.ios-pods-cache.outputs.cache-hit
   bare-expo-pods-hit:
-    description: ''
+    description: 'Returns true, if /apps/bare-expo/ios pods cache is up-to-date'
     value: steps.bare-expo-pods-cache.outputs.cache-hit
   avd-hit:
-    description: ''
+    description: 'Returns true, if AVD cache is up-to-date'
     value: steps.avd-cache.outputs.cache-hit
   git-lfs-hit:
-    description: ''
+    description: 'Returns true, if Git LFS cache is up-to-date'
     value: steps.git-lfs-cache.outputs.cache-hit
 
 runs:
