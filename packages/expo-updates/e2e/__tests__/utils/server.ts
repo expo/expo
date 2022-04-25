@@ -60,13 +60,13 @@ app.get('/update', (req: any, res: any) => {
     }
     res.json(manifestToServe);
   } else {
-    res.send('No update available');
+    res.status(404).send('No update available');
   }
 });
 
-export function serveManifest(manifest: any, headers?: any) {
+export function serveManifest(manifest: any, headers: any = null) {
   manifestToServe = manifest;
-  manifestHeadersToServe = headers ?? null;
+  manifestHeadersToServe = headers;
 }
 
 export async function waitForUpdateRequest(timeout: number) {

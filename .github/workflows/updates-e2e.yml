@@ -127,17 +127,17 @@ jobs:
         id: test-apk-path
         working-directory: ../updates-e2e/android/app/build/outputs/apk/release
         run: echo "::set-output name=dir::$(pwd)"
-      - name: Export update bundle for test server to host
+      - name: Export update for test server to host
         working-directory: ../updates-e2e
-        run: expo export --public-url https://expo.dev/dummy-url --platform android
-      - name: Get test bundle dist path
-        id: test-bundle-dist-path
+        run: expo export --public-url https://u.expo.dev/dummy-url --platform android
+      - name: Get test update dist path
+        id: test-update-dist-path
         working-directory: ../updates-e2e/dist
         run: echo "::set-output name=dir::$(pwd)"
       - name: Run tests
         env:
           TEST_APK_PATH: '${{ steps.test-apk-path.outputs.dir }}/app-release.apk'
-          TEST_BUNDLE_DIST_PATH: '${{ steps.test-bundle-dist-path.outputs.dir }}'
+          TEST_UPDATE_DIST_PATH: '${{ steps.test-bundle-dist-path.outputs.dir }}'
         timeout-minutes: 30
         uses: reactivecircus/android-emulator-runner@v2
         with:

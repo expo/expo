@@ -23,6 +23,7 @@ const ADB_PATH = (function () {
   return 'adb';
 })();
 
+// Keep in sync with the manifest in .github/workflows/updates-e2e.yml
 const RUNTIME_VERSION = '1.0.0';
 const EXPORT_PUBLIC_URL = 'https://expo.dev/dummy-url';
 const BUNDLE_DIST_PATH = process.env.TEST_BUNDLE_DIST_PATH;
