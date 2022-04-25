@@ -110,7 +110,7 @@ jobs:
             echo $ANDROID_KEYSTORE_B64 | base64 -d > android/app/release-key.jks
             fastlane android build build_type:$BUILD_TYPE flavor:$FLAVOR aab:$IS_APP_BUNDLE
           fi
-      - name: 💾 Upload APK artifact
+      - name: 📤 Upload APK artifact
         uses: actions/upload-artifact@v3
         with:
           name: android-apk

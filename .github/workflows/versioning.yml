@@ -3,7 +3,7 @@ name: Versioning Expo Go
 on:
   workflow_dispatch: {}
   schedule:
-    - cron: '0 5 * * SUN' # 5am UTC time on each Sunday
+    - cron: '0 5 * * SUN' # 5AM UTC time on each Sunday
   pull_request:
     paths:
       - .github/workflows/versioning.yml

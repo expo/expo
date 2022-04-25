@@ -7,8 +7,7 @@ on:
         description: 'type "release-simulator" to confirm upload'
         required: false
   schedule:
-    # 5:20 AM UTC time on every Monday, Wednesday and Friday
-    - cron: '20 5 * * 1,3,5'
+    - cron: '20 5 * * 1,3,5' # 5:20 AM UTC time on every Monday, Wednesday and Friday
   pull_request:
     paths:
       - .github/workflows/client-ios.yml

@@ -7,7 +7,7 @@ on:
         description: 'type "upload" to confirm upload to S3'
         required: false
   schedule:
-    - cron: '20 5 * * 2,4,6'
+    - cron: '20 5 * * 2,4,6' # 5:20 AM UTC time on every Tuesday, Thursday and Saturday
   pull_request:
     paths:
       - .github/workflows/shell-app-ios.yml

@@ -35,38 +35,35 @@ jobs:
     runs-on: ubuntu-20.04
     env:
       UPDATES_PORT: 4747
+    strategy:
+      matrix:
+        api-level: [ 29 ]
     steps:
+      - name: 👀 Checkout
+        uses: actions/checkout@v3
       - name: ⬢ Setup Node
         uses: actions/setup-node@v3
         with:
           node-version: '14.17'
-      - name: Check out repository
-        uses: actions/checkout@v3
-        with:
-          submodules: false
       - name: 🔨 Use JDK 11
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: '11'
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-      - uses: actions/cache@v2
+      - name: ➕ Add `bin` to GITHUB_PATH
+        run: echo "$(pwd)/bin" >> $GITHUB_PATH
+      - name: ♻️ Restore caches
+        uses: ./.github/actions/expo-caches
+        id: expo-caches
         with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-      - run: yarn install --frozen-lockfile
-      - uses: actions/cache@v2
-        with:
-          path: ~/.gradle/caches
-          key: ${{ runner.os }}-gradle-${{ hashFiles('android/*.gradle*') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
-      - run: yarn global add expo-cli
-      - run: echo "$(yarn global bin)" >> $GITHUB_PATH
+          yarn-workspace: 'true'
+          avd: 'true'
+          avd-api: ${{ matrix.api-level }}
+      - name: 🧶 Yarn install
+        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
+        run: yarn install --frozen-lockfile
+      - name: 🔧 Install Expo CLI
+        run: yarn global add expo-cli
       - name: Init new expo app
         working-directory: ../
         run: expo-cli init updates-e2e --yes
@@ -127,13 +124,15 @@ jobs:
         id: test-apk-path
         working-directory: ../updates-e2e/android/app/build/outputs/apk/release
         run: echo "::set-output name=dir::$(pwd)"
-      - name: Run tests
+      - name: 🧪 Run tests
         env:
           TEST_APK_PATH: '${{ steps.test-apk-path.outputs.dir }}/app-release.apk'
         timeout-minutes: 30
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 29
-          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -no-snapshot-save
+          api-level: ${{ matrix.api-level }}
+          avd-name: avd-${{ matrix.api-level }}
+          arch: x86_64
+          force-avd-creation: false
           script: yarn test --config e2e/jest.config.js
           working-directory: packages/expo-updates
