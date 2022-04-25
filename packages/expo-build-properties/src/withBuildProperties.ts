@@ -10,7 +10,7 @@ const pkg = require('expo-build-properties/package.json');
 /**
  * Config plugin to customize native Android or iOS build properties for managed apps
  */
-const withBuildProperties: ConfigPlugin<any> = (config, props) => {
+export const withBuildProperties: ConfigPlugin<any> = (config, props) => {
   const pluginConfig = validateConfig(props || {});
 
   config = withAndroidBuildProperties(config, pluginConfig);
