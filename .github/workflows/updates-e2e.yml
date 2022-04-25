@@ -137,7 +137,7 @@ jobs:
       - name: Run tests
         env:
           TEST_APK_PATH: '${{ steps.test-apk-path.outputs.dir }}/app-release.apk'
-          TEST_UPDATE_DIST_PATH: '${{ steps.test-bundle-dist-path.outputs.dir }}'
+          TEST_UPDATE_DIST_PATH: '${{ steps.test-update-dist-path.outputs.dir }}'
         timeout-minutes: 30
         uses: reactivecircus/android-emulator-runner@v2
         with:
