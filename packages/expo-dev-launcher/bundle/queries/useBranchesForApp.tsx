@@ -1,6 +1,7 @@
 import format from 'date-fns/format';
 import { gql } from 'graphql-request';
 import * as React from 'react';
+import { Platform } from 'react-native';
 import { useInfiniteQuery } from 'react-query';
 
 import { apiClient } from '../apiClient';
@@ -11,7 +12,13 @@ import { useToastStack } from '../providers/ToastStackProvider';
 import { primeCacheWithUpdates, Update } from './useUpdatesForBranch';
 
 const query = gql`
-  query getBranches($appId: String!, $offset: Int!, $limit: Int!, $runtimeVersion: String!) {
+  query getBranches(
+    $appId: String!
+    $offset: Int!
+    $limit: Int!
+    $runtimeVersion: String!
+    $platform: AppPlatform!
+  ) {
     app {
       byId(appId: $appId) {
         updateBranches(offset: $offset, limit: $limit) {
@@ -21,12 +28,12 @@ const query = gql`
           compatibleUpdates: updates(
             offset: 0
             limit: 1
-            filter: { runtimeVersions: [$runtimeVersion] }
+            filter: { runtimeVersions: [$runtimeVersion], platform: $platform }
           ) {
             id
           }
 
-          updates: updates(offset: 0, limit: $limit) {
+          updates: updates(offset: 0, limit: $limit, filter: { platform: $platform }) {
             id
             message
             runtimeVersion
@@ -63,6 +70,7 @@ function getBranchesAsync({
       offset,
       limit: pageSize,
       runtimeVersion,
+      platform: Platform.OS.toUpperCase(),
     };
 
     const branches: Branch[] = [];
@@ -78,7 +86,7 @@ function getBranchesAsync({
           updates: updateBranch.updates.map((update) => {
             return {
               ...update,
-              createdAt: format(new Date(update.createdAt), 'MMMM d, yyyy, h:ma'),
+              createdAt: format(new Date(update.createdAt), 'MMMM d, yyyy, h:mma'),
             };
           }),
         };
@@ -118,6 +126,7 @@ export function useBranchesForApp(appId: string) {
   const { runtimeVersion } = useBuildInfo();
   const toastStack = useToastStack();
   const { queryOptions } = useQueryOptions();
+  const isEnabled = appId != null;
 
   const query = useInfiniteQuery(
     ['branches', appId, queryOptions.pageSize],
@@ -130,9 +139,9 @@ export function useBranchesForApp(appId: string) {
       });
     },
     {
-      retry: appId !== '',
+      retry: isEnabled,
       refetchOnMount: false,
-      enabled: appId !== '',
+      enabled: isEnabled,
       getNextPageParam: (lastPage, pages) => {
         if (lastPage.branches.length < queryOptions.pageSize) {
           return undefined;
