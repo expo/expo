@@ -44,6 +44,7 @@ Next, this is what happens when EAS Build picks up your request:
 
 1. Run the `eas-build-pre-upload-artifacts` script from package.json if defined.
 1. Store a cache of files and directories defined in the build profile. Subsequent builds will restore this cache. ([Learn more](../build/eas-json/).)
+1. Delete the uploaded project tarball from the private AWS S3 bucket.
 1. Upload the build artifact to AWS S3.
 
    - The artifact path can be configured in **eas.json** at `builds.android.PROFILE_NAME.artifactPath`. It defaults to `android/app/build/outputs/**/*.{apk,aab}`. We're using the [fast-glob](https://github.com/mrmlnc/fast-glob#pattern-syntax) package for pattern matching.
