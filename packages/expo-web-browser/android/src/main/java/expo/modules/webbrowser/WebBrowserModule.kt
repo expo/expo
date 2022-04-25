@@ -81,6 +81,7 @@ class WebBrowserModule(context: Context?) : ExportedModule(context) {
   fun mayInitWithUrlAsync(url: String?, packageName: String?, promise: Promise) {
     try {
       val resolvedPackageName = givenOrPreferredPackageName(packageName)
+      // TODO (barthap): This might throw NPE when url is null
       connectionHelper.mayInitWithUrl(resolvedPackageName, Uri.parse(url))
       val result = Bundle().apply {
         putString(SERVICE_PACKAGE_KEY, resolvedPackageName)
