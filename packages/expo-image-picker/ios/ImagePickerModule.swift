@@ -22,9 +22,9 @@ enum OperationType {
 public class ImagePickerModule: Module, OnMediaPickingResultHandler {
   public func definition() -> ModuleDefinition {
     // TODO: (@bbarthec) change to "ExpoImagePicker" and propagate to other platforms
-    name("ExponentImagePicker")
+    Name("ExponentImagePicker")
 
-    onCreate {
+    OnCreate {
       self.appContext?.permissions?.register([
         CameraPermissionRequester(),
         MediaLibraryPermissionRequester(),
@@ -32,23 +32,23 @@ public class ImagePickerModule: Module, OnMediaPickingResultHandler {
       ])
     }
 
-    function("getCameraPermissionsAsync", { (promise: Promise) in
+    AsyncFunction("getCameraPermissionsAsync", { (promise: Promise) in
       self.handlePermissionRequest(requesterClass: CameraPermissionRequester.self, operationType: .get, promise: promise)
     })
 
-    function("getMediaLibraryPermissionsAsync", { (writeOnly: Bool, promise: Promise) in
+    AsyncFunction("getMediaLibraryPermissionsAsync", { (writeOnly: Bool, promise: Promise) in
       self.handlePermissionRequest(requesterClass: self.getMediaLibraryPermissionRequester(writeOnly), operationType: .get, promise: promise)
     })
 
-    function("requestCameraPermissionsAsync", { (promise: Promise) in
+    AsyncFunction("requestCameraPermissionsAsync", { (promise: Promise) in
       self.handlePermissionRequest(requesterClass: CameraPermissionRequester.self, operationType: .ask, promise: promise)
     })
 
-    function("requestMediaLibraryPermissionsAsync", { (writeOnly: Bool, promise: Promise) in
+    AsyncFunction("requestMediaLibraryPermissionsAsync", { (writeOnly: Bool, promise: Promise) in
       self.handlePermissionRequest(requesterClass: self.getMediaLibraryPermissionRequester(writeOnly), operationType: .ask, promise: promise)
     })
 
-    function("launchCameraAsync", { (options: ImagePickerOptions, promise: Promise) -> Void in
+    AsyncFunction("launchCameraAsync", { (options: ImagePickerOptions, promise: Promise) -> Void in
       guard let permissions = self.appContext?.permissions else {
         return promise.reject(PermissionsModuleNotFoundException())
       }
@@ -58,11 +58,13 @@ public class ImagePickerModule: Module, OnMediaPickingResultHandler {
       }
 
       self.launchImagePicker(sourceType: .camera, options: options, promise: promise)
-    }).runOnQueue(DispatchQueue.main)
+    })
+    .runOnQueue(DispatchQueue.main)
 
-    function("launchImageLibraryAsync", { (options: ImagePickerOptions, promise: Promise) in
+    AsyncFunction("launchImageLibraryAsync", { (options: ImagePickerOptions, promise: Promise) in
       self.launchImagePicker(sourceType: .photoLibrary, options: options, promise: promise)
-    }).runOnQueue(DispatchQueue.main)
+    })
+    .runOnQueue(DispatchQueue.main)
   }
 
   private var currentPickingContext: PickingContext?
