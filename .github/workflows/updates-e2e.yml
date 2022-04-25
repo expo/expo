@@ -34,7 +34,7 @@ jobs:
   android:
     runs-on: ubuntu-20.04
     env:
-      UPDATES_HOST: 10.0.2.2
+      UPDATES_HOST: 10.0.2.2 # special IP that Android emulators map to host machine's localhost
       UPDATES_PORT: 4747
     steps:
       - name: ⬢ Setup Node

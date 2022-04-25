@@ -1,9 +1,9 @@
 import { setTimeout } from 'timers/promises';
 import uuid from 'uuid/v4';
 
-import { copyBundleToStaticFolder } from './utils/bundle';
 import * as Server from './utils/server';
 import * as Simulator from './utils/simulator';
+import { copyBundleToStaticFolder } from './utils/update';
 
 const SERVER_HOST = process.env.UPDATES_HOST;
 const SERVER_PORT = parseInt(process.env.UPDATES_PORT, 10);

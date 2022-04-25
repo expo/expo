@@ -5,7 +5,11 @@ const ADB_PATH = (function () {
   if (process.env.ADB_PATH) {
     return process.env.ADB_PATH;
   }
+  if (process.env.ANDROID_HOME) {
+    return path.join(process.env.ANDROID_HOME, 'platform-tools', 'adb');
+  }
   if (process.env.ANDROID_SDK_ROOT) {
+    // deprecated version of ANDROID_HOME
     return path.join(process.env.ANDROID_SDK_ROOT, 'platform-tools', 'adb');
   }
   if (process.env.HOME) {
