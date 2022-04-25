@@ -20,11 +20,13 @@ jobs:
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v3
+      - name: ➕ Add `bin` to GITHUB_PATH
+        run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
         with:
           yarn-tools: 'true'
       - name: 🔬 Reviewing a pull request
-        run: bin/expotools code-review --pr ${{ github.event.inputs.pullNumber || github.event.number }}
+        run: expotools code-review --pr ${{ github.event.inputs.pullNumber || github.event.number }}
         env:
           GITHUB_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}

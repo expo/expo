@@ -14,15 +14,22 @@ inputs:
   bare-expo-pods:
     description: ''
     required: false
-  avd:
+  gradle:
     description: ''
     required: false
-  gradle:
+  avd:
     description: ''
     required: false
   avd-api:
     description: ''
     default: '29'
+    required: false
+  ndk:
+    description: ''
+    required: false
+  ndk-version:
+    description: ''
+    default: '21.4.7075529'
     required: false
   git-lfs:
     description: ''
@@ -95,7 +102,7 @@ runs:
         key: ${{ runner.os }}-bare-expo-pods-${{ hashFiles('apps/bare-expo/ios/Podfile.lock') }}
 
     - name: ♻️ Restore Gradle cache
-      if: inputs.avd == 'true' || inputs.gradle == 'true'
+      if: inputs.avd == 'true' || inputs.ndk == 'true' || inputs.gradle == 'true'
       uses: gradle/gradle-build-action@v2
 
     - name: ♻️ Restore AVD cache
@@ -115,6 +122,18 @@ runs:
         arch: x86_64
         force-avd-creation: false
         script: echo "Generated AVD snapshot for caching."
+
+    - name: ♻️ Restore Android NDK from cache
+      if: inputs.ndk == 'true'
+      uses: actions/cache@v2
+      id: cache-android-ndk
+      with:
+        path: /usr/local/lib/android/sdk/ndk/${{ inputs.ndk-version }}/
+        key: ${{ runner.os }}-ndk-${{ inputs.ndk-version }}
+    - name: 🛠 Install NDK if cache not present
+      if: inputs.ndk == 'true' && steps.cache-android-ndk.outputs.cache-hit != 'true'
+      shell: bash
+      run: sudo $ANDROID_SDK_ROOT/tools/bin/sdkmanager --install "ndk;${{ inputs.ndk-version }}"
 
     - name: 🔍️ Get cache key of Git LFS files
       if: inputs.git-lfs == 'true'

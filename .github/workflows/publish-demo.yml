@@ -36,8 +36,6 @@ jobs:
           git-lfs: 'true'
       - name: 🚚 Pull Git LFS files
         run: git lfs pull
-      - name: 🔧 Install Expo CLI v3
-        run: yarn global add expo-cli@3
 
       #  Setup Expo CLI action
       # - name: Setup Expo
@@ -51,6 +49,8 @@ jobs:
       - name: 🧶 Install workspace node modules
         if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
+      - name: 🔧 Install Expo CLI v3
+        run: yarn global add expo-cli@3
 
       # - name: Publish Expo app
       #   working-directory: ./apps/native-component-list
