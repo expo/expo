@@ -40,6 +40,9 @@ const schema = {
         },
     },
 };
+/**
+ * @ignore
+ */
 function validateConfig(config) {
     const validate = new ajv_1.default().compile(schema);
     if (!validate(config)) {
