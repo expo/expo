@@ -39,13 +39,15 @@ jobs:
     runs-on: macos-11
     timeout-minutes: 60
     steps:
-      - uses: actions/checkout@v3
+      - name: 👀 Checkout
+        uses: actions/checkout@v3
         with:
           submodules: true
       - name: 🔨 Switch to Xcode 13.0
         run: sudo xcode-select --switch /Applications/Xcode_13.0.app
-      - run: brew install git-crypt
-      - name: decrypt secrets if possible
+      - name: 🍺 Install git-crypt
+        run: brew install git-crypt
+      - name: 🔓 Decrypt secrets if possible
         env:
           GIT_CRYPT_KEY_BASE64: ${{ secrets.GIT_CRYPT_KEY_BASE64 }}
         run: |
@@ -54,48 +56,31 @@ jobs:
           else
             git crypt unlock <(echo $GIT_CRYPT_KEY_BASE64 | base64 --decode)
           fi
-      - run: echo "$(pwd)/bin" >> $GITHUB_PATH
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-      - name: ♻️ Restore yarn cache
-        uses: actions/cache@v2
-        with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-      - name: 🧶 Yarn install
-        run: yarn install --frozen-lockfile
-      - name: ♻️ Restore tools/node_modules from cache
-        uses: actions/cache@v2
-        with:
-          path: 'tools/node_modules'
-          key: ${{ runner.os }}-modules-${{ hashFiles('tools/yarn.lock') }}
-      - run: expotools ios-generate-dynamic-macros
-      - uses: ruby/setup-ruby@v1
+      - name: ➕ Add `bin` to GITHUB_PATH
+        run: echo "$(pwd)/bin" >> $GITHUB_PATH
+      - name: 💎 Setup Ruby and install gems
+        uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
-      - name: Restore ios/Pods from cache
-        uses: actions/cache@v2
-        id: pods-cache
+      - name: ♻️ Restore caches
+        uses: ./.github/actions/expo-caches
+        id: expo-caches
         with:
-          path: 'ios/Pods'
-          key: ${{ runner.os }}-pods-${{ hashFiles('ios/Podfile.lock') }}
-          # restore-keys: |
-          #   ${{ runner.os }}-pods-
+          yarn-workspace: 'true'
+          yarn-tools: 'true'
+          ios-pods: 'true'
+          bare-expo-pods: 'true'
+      - name: 🧶 Yarn install
+        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
+        run: yarn install --frozen-lockfile
+      - name: 🏭 Generating dynamic macros
+        run: expotools ios-generate-dynamic-macros
       - name: 🥥 Install CocoaPods in `ios`
+        if: steps.expo-caches.outputs.ios-pods-hit != 'true'
         run: pod install
         working-directory: ios
-      - name: Restore apps/bare-expo/ios/Pods from cache
-        uses: actions/cache@v2
-        id: pods-cache-bare-expo
-        with:
-          path: 'apps/bare-expo/ios/Pods'
-          key: ${{ runner.os }}-pods-${{ hashFiles('apps/bare-expo/ios/Podfile.lock') }}
-          # restore-keys: |
-          #   ${{ runner.os }}-pods-
       - name: 🥥 Install CocoaPods in `apps/bare-expo/ios`
+        if: steps.expo-caches.outputs.bare-expo-pods-hit != 'true'
         run: pod install
         working-directory: apps/bare-expo/ios
       - name: Run native iOS unit tests

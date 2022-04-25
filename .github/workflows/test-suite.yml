@@ -44,6 +44,8 @@ jobs:
       - name: 🧶 Install node modules in root dir
         if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
+      - name: 🔧 Install Expo CLI
+        run: yarn global add expo-cli
       - name: 🧪 Run Web tests
         run: yarn test:web
         working-directory: apps/bare-expo
@@ -85,7 +87,7 @@ jobs:
         with:
           yarn-workspace: 'true'
           yarn-tools: 'true'
-          ios-pods: 'true'
+          bare-expo-pods: 'true'
       - name: 🧶 Install node modules in root dir
         if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
@@ -154,9 +156,9 @@ jobs:
           distribution: 'temurin'
           java-version: '11'
       - name: 🍺 Install required tools
-        run: |
-          brew install watchman
-          echo "$(pwd)/bin" >> $GITHUB_PATH
+        run: brew install watchman
+      - name: ➕ Add `bin` to GITHUB_PATH
+        run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
         id: expo-caches
@@ -165,7 +167,8 @@ jobs:
           yarn-tools: 'true'
           avd: 'true'
           avd-api: ${{ matrix.api-level }}
-      - name: 🧶 Install node modules in root dir
+      - name: 🧶 Install workspace node modules
+        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
       - name: ⚛️ Display React Native config
         run: yarn react-native config

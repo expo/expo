@@ -81,6 +81,8 @@ jobs:
         if: steps.expo-caches.outputs.yarn-tools-hit != 'true'
         run: yarn install --frozen-lockfile
         working-directory: tools
+      - name: 🔧 Install Expo CLI
+        run: yarn global add expo-cli
       - name: 🦴 Publish dogfood Home
         run: bin/expotools publish-dogfood-home
         env:

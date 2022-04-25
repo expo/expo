@@ -11,6 +11,9 @@ inputs:
   ios-pods:
     description: ''
     required: false
+  bare-expo-pods:
+    description: ''
+    required: false
   avd:
     description: ''
     required: false
@@ -32,6 +35,9 @@ outputs:
   ios-pods-hit:
     description: ''
     value: steps.ios-pods-cache.outputs.cache-hit
+  bare-expo-pods-hit:
+    description: ''
+    value: steps.bare-expo-pods-cache.outputs.cache-hit
   avd-hit:
     description: ''
     value: steps.avd-cache.outputs.cache-hit
@@ -73,6 +79,14 @@ runs:
       with:
         path: 'ios/Pods'
         key: ${{ runner.os }}-ios-pods-${{ hashFiles('ios/Podfile.lock') }}
+
+    - name: ♻️ Restore apps/bare-expo/ios/Pods from cache
+      if: inputs.bare-expo-pods == 'true'
+      uses: actions/cache@v2
+      id: bare-expo-pods-cache
+      with:
+        path: 'apps/bare-expo/ios/Pods'
+        key: ${{ runner.os }}-bare-expo-pods-${{ hashFiles('apps/bare-expo/ios/Podfile.lock') }}
 
     - name: ♻️ Restore Gradle cache
       if: inputs.avd == 'true' || inputs.gradle == 'true'
