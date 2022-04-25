@@ -1,1 +1,1 @@
-module.exports = require('./plugin/build/withBuildProperties');
+module.exports = require('./build/withBuildProperties');
