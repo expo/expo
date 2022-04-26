@@ -15,6 +15,8 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 <APIInstallSection href="https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/installation" />
 
+> If you are using EAS Build to build your app or building locally (including development builds with `expo-dev-client`), you must also follow the [additional installation instructions](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/installation).
+
 After the installation completed, add the Babel plugin to **babel.config.js**:
 
 ```jsx
