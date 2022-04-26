@@ -1,0 +1,74 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "host.exp.exponent",
+    "module": "expo-linear-gradient",
+    "version": "11.3.0",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "7.3.3"
+    }
+  },
+  "variants": [
+    {
+      "name": "releaseApiPublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-api"
+      },
+      "files": [
+        {
+          "name": "expo-linear-gradient-11.3.0.aar",
+          "url": "expo-linear-gradient-11.3.0.aar",
+          "size": 25754,
+          "sha512": "5ccbe54fe1782ec1009e7204a13054014f8d83bad5bd31d90b7d2d2441abe9dcd005ff95ec0768fdd13d1572b4b9f092ebc3d2e1411aa411c7057202b3d4c02f",
+          "sha256": "5d5789aca55a5bc590746b7d9b20fe9af65d0b7df5f420e7ff962d103458f4f2",
+          "sha1": "a0186c07024c6119c576a0124bc22055d7b5bbf0",
+          "md5": "134334b9d413c13196cd9e59fdc7745c"
+        }
+      ]
+    },
+    {
+      "name": "releaseRuntimePublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "dependencies": [
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-modules-core",
+          "version": {
+            "requires": "0.9.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib-jdk7",
+          "version": {
+            "requires": "1.6.10"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "expo-linear-gradient-11.3.0.aar",
+          "url": "expo-linear-gradient-11.3.0.aar",
+          "size": 25754,
+          "sha512": "5ccbe54fe1782ec1009e7204a13054014f8d83bad5bd31d90b7d2d2441abe9dcd005ff95ec0768fdd13d1572b4b9f092ebc3d2e1411aa411c7057202b3d4c02f",
+          "sha256": "5d5789aca55a5bc590746b7d9b20fe9af65d0b7df5f420e7ff962d103458f4f2",
+          "sha1": "a0186c07024c6119c576a0124bc22055d7b5bbf0",
+          "md5": "134334b9d413c13196cd9e59fdc7745c"
+        }
+      ]
+    }
+  ]
+}

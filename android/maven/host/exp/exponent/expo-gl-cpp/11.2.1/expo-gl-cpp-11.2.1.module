@@ -1,0 +1,67 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "host.exp.exponent",
+    "module": "expo-gl-cpp",
+    "version": "11.2.1",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "7.3.3"
+    }
+  },
+  "variants": [
+    {
+      "name": "releaseApiPublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-api"
+      },
+      "files": [
+        {
+          "name": "expo-gl-cpp-11.2.1.aar",
+          "url": "expo-gl-cpp-11.2.1.aar",
+          "size": 1957488,
+          "sha512": "1f0b6ac9f7d306ea7ea413988b67bdb1ba2094a54f7a76ac3d69278da8bdabcff1bd1b7299e054104624dce5379fe169e58c2f63526808a89439591a657bf6f6",
+          "sha256": "3abdc64aa9f2d46c75a970e9277653a33859207f6a79a8593df46ae7f7961b29",
+          "sha1": "4b90a42c563101b9b4508816978e0d4158de2aa9",
+          "md5": "3a78887e513b0fec798c039e9c33e9c8"
+        }
+      ]
+    },
+    {
+      "name": "releaseRuntimePublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib-jdk7",
+          "version": {
+            "requires": "1.6.10"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "expo-gl-cpp-11.2.1.aar",
+          "url": "expo-gl-cpp-11.2.1.aar",
+          "size": 1957488,
+          "sha512": "1f0b6ac9f7d306ea7ea413988b67bdb1ba2094a54f7a76ac3d69278da8bdabcff1bd1b7299e054104624dce5379fe169e58c2f63526808a89439591a657bf6f6",
+          "sha256": "3abdc64aa9f2d46c75a970e9277653a33859207f6a79a8593df46ae7f7961b29",
+          "sha1": "4b90a42c563101b9b4508816978e0d4158de2aa9",
+          "md5": "3a78887e513b0fec798c039e9c33e9c8"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,130 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "host.exp.exponent",
+    "module": "expo-analytics-segment",
+    "version": "11.2.0",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "7.3.3"
+    }
+  },
+  "variants": [
+    {
+      "name": "releaseApiPublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-api"
+      },
+      "dependencies": [
+        {
+          "group": "com.segment.analytics.android",
+          "module": "analytics",
+          "version": {
+            "requires": "4.9.4"
+          }
+        },
+        {
+          "group": "com.segment.analytics.android.integrations",
+          "module": "firebase",
+          "version": {
+            "requires": "2.+"
+          },
+          "excludes": [
+            {
+              "group": "*",
+              "module": "*"
+            }
+          ],
+          "thirdPartyCompatibility": {
+            "artifactSelector": {
+              "name": "firebase",
+              "type": "aar",
+              "extension": "aar"
+            }
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "expo-analytics-segment-11.2.0.aar",
+          "url": "expo-analytics-segment-11.2.0.aar",
+          "size": 22609,
+          "sha512": "8ebd4ef9d5aebfd8a6c1c9c4a2ac1c07f08d565f820d3c4d3d98afc893848d2639fc7692057014c5fb3ca56b13910bf1c1f11a9079485955a9ca0e5d86024c88",
+          "sha256": "62a7768d7d54d3b3594faca7ea259a62e8118a6255e3fab6d27528432ab99da9",
+          "sha1": "9d7d3a707117792ae00eacf1f1f30b113e35d607",
+          "md5": "58f5661b130d2c44aee137c85ce88be5"
+        }
+      ]
+    },
+    {
+      "name": "releaseRuntimePublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "dependencies": [
+        {
+          "group": "com.segment.analytics.android",
+          "module": "analytics",
+          "version": {
+            "requires": "4.9.4"
+          }
+        },
+        {
+          "group": "com.segment.analytics.android.integrations",
+          "module": "firebase",
+          "version": {
+            "requires": "2.+"
+          },
+          "excludes": [
+            {
+              "group": "*",
+              "module": "*"
+            }
+          ],
+          "thirdPartyCompatibility": {
+            "artifactSelector": {
+              "name": "firebase",
+              "type": "aar",
+              "extension": "aar"
+            }
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-modules-core",
+          "version": {
+            "requires": "0.9.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib-jdk7",
+          "version": {
+            "requires": "1.6.10"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "expo-analytics-segment-11.2.0.aar",
+          "url": "expo-analytics-segment-11.2.0.aar",
+          "size": 22609,
+          "sha512": "8ebd4ef9d5aebfd8a6c1c9c4a2ac1c07f08d565f820d3c4d3d98afc893848d2639fc7692057014c5fb3ca56b13910bf1c1f11a9079485955a9ca0e5d86024c88",
+          "sha256": "62a7768d7d54d3b3594faca7ea259a62e8118a6255e3fab6d27528432ab99da9",
+          "sha1": "9d7d3a707117792ae00eacf1f1f30b113e35d607",
+          "md5": "58f5661b130d2c44aee137c85ce88be5"
+        }
+      ]
+    }
+  ]
+}

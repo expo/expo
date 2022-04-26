@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+  <groupId>host.exp.exponent</groupId>
+  <artifactId>expo-store-review</artifactId>
+  <versioning>
+    <latest>5.2.0</latest>
+    <release>5.2.0</release>
+    <versions>
+      <version>5.2.0</version>
+    </versions>
+    <lastUpdated>20220425200748</lastUpdated>
+  </versioning>
+</metadata>

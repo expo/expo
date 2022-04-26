@@ -1,0 +1,118 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "host.exp.exponent",
+    "module": "expo-barcode-scanner",
+    "version": "11.3.0",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "7.3.3"
+    }
+  },
+  "variants": [
+    {
+      "name": "releaseApiPublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-api"
+      },
+      "dependencies": [
+        {
+          "group": "com.google.android.gms",
+          "module": "play-services-vision",
+          "version": {
+            "requires": "19.0.0"
+          }
+        },
+        {
+          "group": "com.google.zxing",
+          "module": "core",
+          "version": {
+            "requires": "3.3.3"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "expo-barcode-scanner-11.3.0.aar",
+          "url": "expo-barcode-scanner-11.3.0.aar",
+          "size": 84878,
+          "sha512": "521e6e3a9afc800c96d2a94342226fd8238fb50d9c11e0f52bb7d294d994845d7d69ab1132c55c7e7c4d993f215c361a9a1e01f24a96ecfe3fa5e80181aa1939",
+          "sha256": "e623d5efd96b6aadf3be6c1e636e74a5410ba0fbc73271abfd5bb1322fe31272",
+          "sha1": "c852415e176414ec1835dc4e726581778bba1e96",
+          "md5": "3c463382f54a91e6cccef3c0e685dcfb"
+        }
+      ]
+    },
+    {
+      "name": "releaseRuntimePublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "dependencies": [
+        {
+          "group": "com.google.android.gms",
+          "module": "play-services-vision",
+          "version": {
+            "requires": "19.0.0"
+          }
+        },
+        {
+          "group": "com.google.zxing",
+          "module": "core",
+          "version": {
+            "requires": "3.3.3"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-modules-core",
+          "version": {
+            "requires": "0.9.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib-jdk7",
+          "version": {
+            "requires": "1.6.10"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlinx",
+          "module": "kotlinx-coroutines-core",
+          "version": {
+            "requires": "1.4.3"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlinx",
+          "module": "kotlinx-coroutines-android",
+          "version": {
+            "requires": "1.4.1"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "expo-barcode-scanner-11.3.0.aar",
+          "url": "expo-barcode-scanner-11.3.0.aar",
+          "size": 84878,
+          "sha512": "521e6e3a9afc800c96d2a94342226fd8238fb50d9c11e0f52bb7d294d994845d7d69ab1132c55c7e7c4d993f215c361a9a1e01f24a96ecfe3fa5e80181aa1939",
+          "sha256": "e623d5efd96b6aadf3be6c1e636e74a5410ba0fbc73271abfd5bb1322fe31272",
+          "sha1": "c852415e176414ec1835dc4e726581778bba1e96",
+          "md5": "3c463382f54a91e6cccef3c0e685dcfb"
+        }
+      ]
+    }
+  ]
+}

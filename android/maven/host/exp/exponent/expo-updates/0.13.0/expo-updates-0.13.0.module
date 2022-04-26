@@ -1,0 +1,186 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "host.exp.exponent",
+    "module": "expo-updates",
+    "version": "0.13.0",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "7.3.3"
+    }
+  },
+  "variants": [
+    {
+      "name": "releaseApiPublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-api"
+      },
+      "files": [
+        {
+          "name": "expo-updates-0.13.0.aar",
+          "url": "expo-updates-0.13.0.aar",
+          "size": 357204,
+          "sha512": "1c8fba9b0f75d0f39ad4fd6816797ccd6ab6d298bc3492ee3c5cb7934b3337925abea9ddcd83cad8be8c98339cdfaea494bf91e9280a78ca0450f3840ca14ee1",
+          "sha256": "90186a125d247ba4a2a031e87be072a6a648b34ace36245f5cf9dceaa203e268",
+          "sha1": "350a2b03dcbeab0a561f3f89e5c174b56befd833",
+          "md5": "fd413cced4d715493bb0eb8e51e8b024"
+        }
+      ]
+    },
+    {
+      "name": "releaseRuntimePublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "dependencies": [
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-modules-core",
+          "version": {
+            "requires": "0.9.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-structured-headers",
+          "version": {
+            "requires": "2.2.1"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-updates-interface",
+          "version": {
+            "requires": "0.6.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-manifests",
+          "version": {
+            "requires": "0.3.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-json-utils",
+          "version": {
+            "requires": "0.3.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-eas-client",
+          "version": {
+            "requires": "0.2.1"
+          }
+        },
+        {
+          "group": "com.facebook.react",
+          "module": "react-native",
+          "version": {
+            "requires": "+"
+          }
+        },
+        {
+          "group": "androidx.room",
+          "module": "room-runtime",
+          "version": {
+            "requires": "2.4.2"
+          }
+        },
+        {
+          "group": "com.squareup.okhttp3",
+          "module": "okhttp",
+          "version": {
+            "requires": "4.9.2"
+          }
+        },
+        {
+          "group": "com.squareup.okhttp3",
+          "module": "okhttp-urlconnection",
+          "version": {
+            "requires": "4.9.2"
+          }
+        },
+        {
+          "group": "com.squareup.okio",
+          "module": "okio",
+          "version": {
+            "requires": "2.9.0"
+          }
+        },
+        {
+          "group": "commons-codec",
+          "module": "commons-codec",
+          "version": {
+            "requires": "1.10"
+          }
+        },
+        {
+          "group": "commons-io",
+          "module": "commons-io",
+          "version": {
+            "requires": "2.6"
+          }
+        },
+        {
+          "group": "commons-fileupload",
+          "module": "commons-fileupload",
+          "version": {
+            "requires": "1.4"
+          }
+        },
+        {
+          "group": "org.apache.commons",
+          "module": "commons-lang3",
+          "version": {
+            "requires": "3.9"
+          }
+        },
+        {
+          "group": "org.bouncycastle",
+          "module": "bcutil-jdk15to18",
+          "version": {
+            "requires": "1.70"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib-jdk7",
+          "version": {
+            "requires": "1.6.10"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-reflect",
+          "version": {
+            "requires": "1.6.10"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "expo-updates-0.13.0.aar",
+          "url": "expo-updates-0.13.0.aar",
+          "size": 357204,
+          "sha512": "1c8fba9b0f75d0f39ad4fd6816797ccd6ab6d298bc3492ee3c5cb7934b3337925abea9ddcd83cad8be8c98339cdfaea494bf91e9280a78ca0450f3840ca14ee1",
+          "sha256": "90186a125d247ba4a2a031e87be072a6a648b34ace36245f5cf9dceaa203e268",
+          "sha1": "350a2b03dcbeab0a561f3f89e5c174b56befd833",
+          "md5": "fd413cced4d715493bb0eb8e51e8b024"
+        }
+      ]
+    }
+  ]
+}

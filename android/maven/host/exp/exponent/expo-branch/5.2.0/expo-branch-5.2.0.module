@@ -1,0 +1,104 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "host.exp.exponent",
+    "module": "expo-branch",
+    "version": "5.2.0",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "7.3.3"
+    }
+  },
+  "variants": [
+    {
+      "name": "releaseApiPublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-api"
+      },
+      "dependencies": [
+        {
+          "group": "io.branch.sdk.android",
+          "module": "library",
+          "version": {
+            "requires": "5.0.3"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "expo-branch-5.2.0.aar",
+          "url": "expo-branch-5.2.0.aar",
+          "size": 49888,
+          "sha512": "0469d6aa7b83550ba78257bf0ff591c9ec26c96cf335b63a5e7732cc34ccae948dccce2608a3291c49aa7384478ce520d1b77a8095fb08e256092ea5ccfedc75",
+          "sha256": "08bf6ba13199cb64382cbf9c0354ebabc5e7848ddf21ffdd8305e1d45e2ec976",
+          "sha1": "27ab39f8a83fedaee912f1a9e1efbd523048bd29",
+          "md5": "62029b88fa88ecb80f7482b9380407ea"
+        }
+      ]
+    },
+    {
+      "name": "releaseRuntimePublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "dependencies": [
+        {
+          "group": "io.branch.sdk.android",
+          "module": "library",
+          "version": {
+            "requires": "5.0.3"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-modules-core",
+          "version": {
+            "requires": "0.9.0"
+          }
+        },
+        {
+          "group": "com.facebook.react",
+          "module": "react-native",
+          "version": {
+            "requires": "+"
+          }
+        },
+        {
+          "group": "androidx.localbroadcastmanager",
+          "module": "localbroadcastmanager",
+          "version": {
+            "requires": "1.0.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib-jdk7",
+          "version": {
+            "requires": "1.6.10"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "expo-branch-5.2.0.aar",
+          "url": "expo-branch-5.2.0.aar",
+          "size": 49888,
+          "sha512": "0469d6aa7b83550ba78257bf0ff591c9ec26c96cf335b63a5e7732cc34ccae948dccce2608a3291c49aa7384478ce520d1b77a8095fb08e256092ea5ccfedc75",
+          "sha256": "08bf6ba13199cb64382cbf9c0354ebabc5e7848ddf21ffdd8305e1d45e2ec976",
+          "sha1": "27ab39f8a83fedaee912f1a9e1efbd523048bd29",
+          "md5": "62029b88fa88ecb80f7482b9380407ea"
+        }
+      ]
+    }
+  ]
+}

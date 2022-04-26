@@ -1,0 +1,104 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "host.exp.exponent",
+    "module": "expo-facebook",
+    "version": "12.2.0",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "7.3.3"
+    }
+  },
+  "variants": [
+    {
+      "name": "releaseApiPublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-api"
+      },
+      "dependencies": [
+        {
+          "group": "com.facebook.android",
+          "module": "facebook-core",
+          "version": {
+            "requires": "9.0.0"
+          }
+        },
+        {
+          "group": "com.facebook.android",
+          "module": "facebook-login",
+          "version": {
+            "requires": "9.0.0"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "expo-facebook-12.2.0.aar",
+          "url": "expo-facebook-12.2.0.aar",
+          "size": 31750,
+          "sha512": "02e3528de34d7d9335b3ed1353c0930425cb507210c2d40176da15954191281a408fb7c842f45b3ee246c6b6853f294bf4e951fcd8e8f786c7e7d9f2a0ccf054",
+          "sha256": "a06922ebb24b6c54b63a514d11b9b5b024c161a9fdd790cf86105927bfa99a6b",
+          "sha1": "d8823ac7d38bc8ba6f5df4470f802f1335791684",
+          "md5": "9efe696f8f920e6a54cff51014b74b37"
+        }
+      ]
+    },
+    {
+      "name": "releaseRuntimePublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "dependencies": [
+        {
+          "group": "com.facebook.android",
+          "module": "facebook-core",
+          "version": {
+            "requires": "9.0.0"
+          }
+        },
+        {
+          "group": "com.facebook.android",
+          "module": "facebook-login",
+          "version": {
+            "requires": "9.0.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-modules-core",
+          "version": {
+            "requires": "0.9.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib-jdk7",
+          "version": {
+            "requires": "1.6.10"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "expo-facebook-12.2.0.aar",
+          "url": "expo-facebook-12.2.0.aar",
+          "size": 31750,
+          "sha512": "02e3528de34d7d9335b3ed1353c0930425cb507210c2d40176da15954191281a408fb7c842f45b3ee246c6b6853f294bf4e951fcd8e8f786c7e7d9f2a0ccf054",
+          "sha256": "a06922ebb24b6c54b63a514d11b9b5b024c161a9fdd790cf86105927bfa99a6b",
+          "sha1": "d8823ac7d38bc8ba6f5df4470f802f1335791684",
+          "md5": "9efe696f8f920e6a54cff51014b74b37"
+        }
+      ]
+    }
+  ]
+}

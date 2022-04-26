@@ -1,0 +1,83 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "host.exp.exponent",
+    "module": "unimodules-app-loader",
+    "version": "3.1.0",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "7.3.3"
+    }
+  },
+  "variants": [
+    {
+      "name": "releaseApiPublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-api"
+      },
+      "dependencies": [
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-modules-core",
+          "version": {
+            "requires": "0.9.0"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "unimodules-app-loader-3.1.0.aar",
+          "url": "unimodules-app-loader-3.1.0.aar",
+          "size": 14247,
+          "sha512": "2fef7dce0bb1127a03db10fd63353365104beecc8ac284874e40b0218195629010e3d05a5f01c26d4353e4d0155ed07a6cee348a9b9bb290c626278ef40ae67c",
+          "sha256": "b74002d731eec31f074e263b5f0a009f002e35034c28d52265e834e547a52fe0",
+          "sha1": "2ae00682c7bc0d2547ea310f33c523078aecd727",
+          "md5": "0b724354bd8a231b4f2aea4539321151"
+        }
+      ]
+    },
+    {
+      "name": "releaseRuntimePublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "dependencies": [
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-modules-core",
+          "version": {
+            "requires": "0.9.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib-jdk7",
+          "version": {
+            "requires": "1.6.10"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "unimodules-app-loader-3.1.0.aar",
+          "url": "unimodules-app-loader-3.1.0.aar",
+          "size": 14247,
+          "sha512": "2fef7dce0bb1127a03db10fd63353365104beecc8ac284874e40b0218195629010e3d05a5f01c26d4353e4d0155ed07a6cee348a9b9bb290c626278ef40ae67c",
+          "sha256": "b74002d731eec31f074e263b5f0a009f002e35034c28d52265e834e547a52fe0",
+          "sha1": "2ae00682c7bc0d2547ea310f33c523078aecd727",
+          "md5": "0b724354bd8a231b4f2aea4539321151"
+        }
+      ]
+    }
+  ]
+}

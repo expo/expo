@@ -1,0 +1,74 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "host.exp.exponent",
+    "module": "expo-font",
+    "version": "10.1.0",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "7.3.3"
+    }
+  },
+  "variants": [
+    {
+      "name": "releaseApiPublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-api"
+      },
+      "files": [
+        {
+          "name": "expo-font-10.1.0.aar",
+          "url": "expo-font-10.1.0.aar",
+          "size": 21949,
+          "sha512": "b7a91126bac6317966e269b8ea3035d0371fd0f8a95bbc764392d316e5560823f9c623293a7248ec227fc165435b3df39dff70af2ae44b7ecb3bc02d81b399e0",
+          "sha256": "c188ca202bebec754dc9976cd4ce51bfd4eaff0da603869ffd0e77363ec6309a",
+          "sha1": "a2f4b2afde653dfaef84aa27199d982b044d983b",
+          "md5": "efe1212f0af7cd4f8987374c3d9ab367"
+        }
+      ]
+    },
+    {
+      "name": "releaseRuntimePublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "dependencies": [
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-modules-core",
+          "version": {
+            "requires": "0.9.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib-jdk7",
+          "version": {
+            "requires": "1.6.10"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "expo-font-10.1.0.aar",
+          "url": "expo-font-10.1.0.aar",
+          "size": 21949,
+          "sha512": "b7a91126bac6317966e269b8ea3035d0371fd0f8a95bbc764392d316e5560823f9c623293a7248ec227fc165435b3df39dff70af2ae44b7ecb3bc02d81b399e0",
+          "sha256": "c188ca202bebec754dc9976cd4ce51bfd4eaff0da603869ffd0e77363ec6309a",
+          "sha1": "a2f4b2afde653dfaef84aa27199d982b044d983b",
+          "md5": "efe1212f0af7cd4f8987374c3d9ab367"
+        }
+      ]
+    }
+  ]
+}

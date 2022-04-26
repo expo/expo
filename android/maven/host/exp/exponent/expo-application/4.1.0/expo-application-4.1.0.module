@@ -1,0 +1,81 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "host.exp.exponent",
+    "module": "expo-application",
+    "version": "4.1.0",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "7.3.3"
+    }
+  },
+  "variants": [
+    {
+      "name": "releaseApiPublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-api"
+      },
+      "files": [
+        {
+          "name": "expo-application-4.1.0.aar",
+          "url": "expo-application-4.1.0.aar",
+          "size": 21605,
+          "sha512": "30cd80c2adc7b48a3f13afa44b109e95ae74da52c9e8af2b0f313d559b26006f8627ea2bd85b5db50572d3920125f5234f1ca11617717f35cba17316fb02f9d2",
+          "sha256": "245986e892e1b304cfe52dcf86972d28659909e5b35250ffa36edadcbec49312",
+          "sha1": "20e4f26a8454f33ea4b55de0b3e8cce9096ad459",
+          "md5": "42d9a3cf296053662dbcb173ccbd2f9a"
+        }
+      ]
+    },
+    {
+      "name": "releaseRuntimePublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "dependencies": [
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-modules-core",
+          "version": {
+            "requires": "0.9.0"
+          }
+        },
+        {
+          "group": "com.android.installreferrer",
+          "module": "installreferrer",
+          "version": {
+            "requires": "1.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib-jdk7",
+          "version": {
+            "requires": "1.6.10"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "expo-application-4.1.0.aar",
+          "url": "expo-application-4.1.0.aar",
+          "size": 21605,
+          "sha512": "30cd80c2adc7b48a3f13afa44b109e95ae74da52c9e8af2b0f313d559b26006f8627ea2bd85b5db50572d3920125f5234f1ca11617717f35cba17316fb02f9d2",
+          "sha256": "245986e892e1b304cfe52dcf86972d28659909e5b35250ffa36edadcbec49312",
+          "sha1": "20e4f26a8454f33ea4b55de0b3e8cce9096ad459",
+          "md5": "42d9a3cf296053662dbcb173ccbd2f9a"
+        }
+      ]
+    }
+  ]
+}

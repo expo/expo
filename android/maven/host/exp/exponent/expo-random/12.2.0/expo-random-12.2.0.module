@@ -1,0 +1,74 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "host.exp.exponent",
+    "module": "expo-random",
+    "version": "12.2.0",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "7.3.3"
+    }
+  },
+  "variants": [
+    {
+      "name": "releaseApiPublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-api"
+      },
+      "files": [
+        {
+          "name": "expo-random-12.2.0.aar",
+          "url": "expo-random-12.2.0.aar",
+          "size": 17490,
+          "sha512": "00d7ff50b26a748e4eecc66e33bcc520a5fed89506bc4ab98d78fec71ef1c50efb893f9a7d5101fb7008075f94a747661b996e00617ffbd0137bfe6f82bcd982",
+          "sha256": "6a968f6f4205ae458fa2876e3798c628105adaa0345848b4c681f98d30b3d244",
+          "sha1": "030d66dc6c334df7eec6b0d568377c2aed5e39e4",
+          "md5": "b091ad2d0656dbab3a30955ce712f3b0"
+        }
+      ]
+    },
+    {
+      "name": "releaseRuntimePublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "dependencies": [
+        {
+          "group": "com.facebook.react",
+          "module": "react-native",
+          "version": {
+            "requires": "+"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib-jdk7",
+          "version": {
+            "requires": "1.6.10"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "expo-random-12.2.0.aar",
+          "url": "expo-random-12.2.0.aar",
+          "size": 17490,
+          "sha512": "00d7ff50b26a748e4eecc66e33bcc520a5fed89506bc4ab98d78fec71ef1c50efb893f9a7d5101fb7008075f94a747661b996e00617ffbd0137bfe6f82bcd982",
+          "sha256": "6a968f6f4205ae458fa2876e3798c628105adaa0345848b4c681f98d30b3d244",
+          "sha1": "030d66dc6c334df7eec6b0d568377c2aed5e39e4",
+          "md5": "b091ad2d0656dbab3a30955ce712f3b0"
+        }
+      ]
+    }
+  ]
+}

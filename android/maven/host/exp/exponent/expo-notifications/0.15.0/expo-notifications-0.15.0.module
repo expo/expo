@@ -1,0 +1,186 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "host.exp.exponent",
+    "module": "expo-notifications",
+    "version": "0.15.0",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "7.3.3"
+    }
+  },
+  "variants": [
+    {
+      "name": "releaseApiPublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-api"
+      },
+      "dependencies": [
+        {
+          "group": "androidx.core",
+          "module": "core",
+          "version": {
+            "requires": "1.5.0"
+          }
+        },
+        {
+          "group": "androidx.lifecycle",
+          "module": "lifecycle-runtime",
+          "version": {
+            "requires": "2.2.0"
+          }
+        },
+        {
+          "group": "androidx.lifecycle",
+          "module": "lifecycle-process",
+          "version": {
+            "requires": "2.2.0"
+          }
+        },
+        {
+          "group": "androidx.lifecycle",
+          "module": "lifecycle-common-java8",
+          "version": {
+            "requires": "2.2.0"
+          }
+        },
+        {
+          "group": "com.google.firebase",
+          "module": "firebase-messaging",
+          "version": {
+            "requires": "21.1.0"
+          }
+        },
+        {
+          "group": "me.leolin",
+          "module": "ShortcutBadger",
+          "version": {
+            "requires": "1.1.22"
+          },
+          "excludes": [
+            {
+              "group": "*",
+              "module": "*"
+            }
+          ],
+          "thirdPartyCompatibility": {
+            "artifactSelector": {
+              "name": "ShortcutBadger",
+              "type": "aar",
+              "extension": "aar"
+            }
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "expo-notifications-0.15.0.aar",
+          "url": "expo-notifications-0.15.0.aar",
+          "size": 206227,
+          "sha512": "87a3e8de836314997c5e3e1fda8eadee3e891412f312100ca89d915584b2ea3fec849e53363508d665d2b7a38632c748cbbd028814a317313aa108f070c909d4",
+          "sha256": "d30a6a2ff2d63afbcfe6a6fd099e7de0f6f27bca2eef627b3eb9f66427c4f0a2",
+          "sha1": "728c775949bf58e4d8176f85a8f62634293e487a",
+          "md5": "55f6f451620c92ed7e123cdc2ada67f6"
+        }
+      ]
+    },
+    {
+      "name": "releaseRuntimePublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "dependencies": [
+        {
+          "group": "androidx.core",
+          "module": "core",
+          "version": {
+            "requires": "1.5.0"
+          }
+        },
+        {
+          "group": "androidx.lifecycle",
+          "module": "lifecycle-runtime",
+          "version": {
+            "requires": "2.2.0"
+          }
+        },
+        {
+          "group": "androidx.lifecycle",
+          "module": "lifecycle-process",
+          "version": {
+            "requires": "2.2.0"
+          }
+        },
+        {
+          "group": "androidx.lifecycle",
+          "module": "lifecycle-common-java8",
+          "version": {
+            "requires": "2.2.0"
+          }
+        },
+        {
+          "group": "com.google.firebase",
+          "module": "firebase-messaging",
+          "version": {
+            "requires": "21.1.0"
+          }
+        },
+        {
+          "group": "me.leolin",
+          "module": "ShortcutBadger",
+          "version": {
+            "requires": "1.1.22"
+          },
+          "excludes": [
+            {
+              "group": "*",
+              "module": "*"
+            }
+          ],
+          "thirdPartyCompatibility": {
+            "artifactSelector": {
+              "name": "ShortcutBadger",
+              "type": "aar",
+              "extension": "aar"
+            }
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-modules-core",
+          "version": {
+            "requires": "0.9.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib-jdk7",
+          "version": {
+            "requires": "1.6.10"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "expo-notifications-0.15.0.aar",
+          "url": "expo-notifications-0.15.0.aar",
+          "size": 206227,
+          "sha512": "87a3e8de836314997c5e3e1fda8eadee3e891412f312100ca89d915584b2ea3fec849e53363508d665d2b7a38632c748cbbd028814a317313aa108f070c909d4",
+          "sha256": "d30a6a2ff2d63afbcfe6a6fd099e7de0f6f27bca2eef627b3eb9f66427c4f0a2",
+          "sha1": "728c775949bf58e4d8176f85a8f62634293e487a",
+          "md5": "55f6f451620c92ed7e123cdc2ada67f6"
+        }
+      ]
+    }
+  ]
+}

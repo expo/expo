@@ -1,0 +1,95 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "host.exp.exponent",
+    "module": "expo-system-ui",
+    "version": "1.2.0",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "7.3.3"
+    }
+  },
+  "variants": [
+    {
+      "name": "releaseApiPublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-api"
+      },
+      "files": [
+        {
+          "name": "expo-system-ui-1.2.0.aar",
+          "url": "expo-system-ui-1.2.0.aar",
+          "size": 26563,
+          "sha512": "a8cde0cad726d04be2dd4cb66c22ccadbb6cc60a62fa9e7def2e286197dd6f5bcf7f05495b35a1115e8f96aafbc2af98eb744b1bf45ff91a62c65260ede850e9",
+          "sha256": "876328f23817c27b969a6f7bc0123f948210bb974b30e415b0b4e59c71725ab5",
+          "sha1": "51229d4b49f33bdfe1220efaf283875ae93ed7db",
+          "md5": "d0e0a74b509d6d408465a03165008c38"
+        }
+      ]
+    },
+    {
+      "name": "releaseRuntimePublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "dependencies": [
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-modules-core",
+          "version": {
+            "requires": "0.9.0"
+          }
+        },
+        {
+          "group": "com.facebook.react",
+          "module": "react-native",
+          "version": {
+            "requires": "+"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib-jdk7",
+          "version": {
+            "requires": "1.6.10"
+          }
+        },
+        {
+          "group": "androidx.core",
+          "module": "core",
+          "version": {
+            "requires": "1.6.0"
+          }
+        },
+        {
+          "group": "androidx.appcompat",
+          "module": "appcompat",
+          "version": {
+            "requires": "1.2.0"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "expo-system-ui-1.2.0.aar",
+          "url": "expo-system-ui-1.2.0.aar",
+          "size": 26563,
+          "sha512": "a8cde0cad726d04be2dd4cb66c22ccadbb6cc60a62fa9e7def2e286197dd6f5bcf7f05495b35a1115e8f96aafbc2af98eb744b1bf45ff91a62c65260ede850e9",
+          "sha256": "876328f23817c27b969a6f7bc0123f948210bb974b30e415b0b4e59c71725ab5",
+          "sha1": "51229d4b49f33bdfe1220efaf283875ae93ed7db",
+          "md5": "d0e0a74b509d6d408465a03165008c38"
+        }
+      ]
+    }
+  ]
+}

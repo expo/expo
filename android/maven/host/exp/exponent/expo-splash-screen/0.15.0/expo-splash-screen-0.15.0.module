@@ -1,0 +1,95 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "host.exp.exponent",
+    "module": "expo-splash-screen",
+    "version": "0.15.0",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "7.3.3"
+    }
+  },
+  "variants": [
+    {
+      "name": "releaseApiPublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-api"
+      },
+      "files": [
+        {
+          "name": "expo-splash-screen-0.15.0.aar",
+          "url": "expo-splash-screen-0.15.0.aar",
+          "size": 53605,
+          "sha512": "0b15b3110187e96858a0052ba017627e4f7d3b7bc8fc3a24bca53f258032bda1b90a9f215130ae46e6651630968090c3be66fd64eecf4cf99db983f39f9690f5",
+          "sha256": "658d8b04c0bd1506cf319a7cd6c0cf7d535be8c593fd843b1a21b8f7bd57a00e",
+          "sha1": "90876edd3d3646a8c8ec3ca03d579d09150fa673",
+          "md5": "01ac7ac8b32ff9fb9349f771ec0833b4"
+        }
+      ]
+    },
+    {
+      "name": "releaseRuntimePublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "dependencies": [
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-modules-core",
+          "version": {
+            "requires": "0.9.0"
+          }
+        },
+        {
+          "group": "com.facebook.react",
+          "module": "react-native",
+          "version": {
+            "requires": "+"
+          }
+        },
+        {
+          "group": "androidx.appcompat",
+          "module": "appcompat",
+          "version": {
+            "requires": "1.2.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib-jdk7",
+          "version": {
+            "requires": "1.6.10"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-reflect",
+          "version": {
+            "requires": "1.6.10"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "expo-splash-screen-0.15.0.aar",
+          "url": "expo-splash-screen-0.15.0.aar",
+          "size": 53605,
+          "sha512": "0b15b3110187e96858a0052ba017627e4f7d3b7bc8fc3a24bca53f258032bda1b90a9f215130ae46e6651630968090c3be66fd64eecf4cf99db983f39f9690f5",
+          "sha256": "658d8b04c0bd1506cf319a7cd6c0cf7d535be8c593fd843b1a21b8f7bd57a00e",
+          "sha1": "90876edd3d3646a8c8ec3ca03d579d09150fa673",
+          "md5": "01ac7ac8b32ff9fb9349f771ec0833b4"
+        }
+      ]
+    }
+  ]
+}

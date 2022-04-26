@@ -1,0 +1,104 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "host.exp.exponent",
+    "module": "expo-document-picker",
+    "version": "10.2.0",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "7.3.3"
+    }
+  },
+  "variants": [
+    {
+      "name": "releaseApiPublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-api"
+      },
+      "dependencies": [
+        {
+          "group": "androidx.annotation",
+          "module": "annotation",
+          "version": {
+            "requires": "1.0.0"
+          }
+        },
+        {
+          "group": "commons-io",
+          "module": "commons-io",
+          "version": {
+            "requires": "2.6"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "expo-document-picker-10.2.0.aar",
+          "url": "expo-document-picker-10.2.0.aar",
+          "size": 31343,
+          "sha512": "fd7ba462284c2db8713f17eda3fadebbc89fa631a166380a5d87888ff95329e3acf269959d0c5b57f115dd34880e538f71ecae61050ee5b127b9d5c67ecefc3b",
+          "sha256": "c6cce9f2fe00741730c2ec3eb3bae7aa8078a30ff2cb03f20256c4ac588f6466",
+          "sha1": "f453272d50e1fd37272c24646f7e9834f00c5cfe",
+          "md5": "6b0c02f54fd2920fa5c80db29db5770c"
+        }
+      ]
+    },
+    {
+      "name": "releaseRuntimePublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "dependencies": [
+        {
+          "group": "androidx.annotation",
+          "module": "annotation",
+          "version": {
+            "requires": "1.0.0"
+          }
+        },
+        {
+          "group": "commons-io",
+          "module": "commons-io",
+          "version": {
+            "requires": "2.6"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-modules-core",
+          "version": {
+            "requires": "0.9.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib-jdk7",
+          "version": {
+            "requires": "1.6.10"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "expo-document-picker-10.2.0.aar",
+          "url": "expo-document-picker-10.2.0.aar",
+          "size": 31343,
+          "sha512": "fd7ba462284c2db8713f17eda3fadebbc89fa631a166380a5d87888ff95329e3acf269959d0c5b57f115dd34880e538f71ecae61050ee5b127b9d5c67ecefc3b",
+          "sha256": "c6cce9f2fe00741730c2ec3eb3bae7aa8078a30ff2cb03f20256c4ac588f6466",
+          "sha1": "f453272d50e1fd37272c24646f7e9834f00c5cfe",
+          "md5": "6b0c02f54fd2920fa5c80db29db5770c"
+        }
+      ]
+    }
+  ]
+}

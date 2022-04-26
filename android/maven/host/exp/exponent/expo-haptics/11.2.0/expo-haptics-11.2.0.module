@@ -1,0 +1,90 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "host.exp.exponent",
+    "module": "expo-haptics",
+    "version": "11.2.0",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "7.3.3"
+    }
+  },
+  "variants": [
+    {
+      "name": "releaseApiPublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-api"
+      },
+      "dependencies": [
+        {
+          "group": "androidx.annotation",
+          "module": "annotation",
+          "version": {
+            "requires": "1.0.0"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "expo-haptics-11.2.0.aar",
+          "url": "expo-haptics-11.2.0.aar",
+          "size": 23120,
+          "sha512": "3a6de2d2073ac5933c891ca9d69dbec04434b6926fcc77728e5764a5c4a44f910c835a9999fdd365d8d9e49d59e115d5194016142b8730f5b7b4504349db79fe",
+          "sha256": "f20c127f8d8f2f5877227f748dfec92086bdacd67de841ea664ebc3ff23cf883",
+          "sha1": "79f6fb015c537de4c49d7f4511e809fa0e487b24",
+          "md5": "f6854d2a21fbccb9ae7e9b0dacf0bff1"
+        }
+      ]
+    },
+    {
+      "name": "releaseRuntimePublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "dependencies": [
+        {
+          "group": "androidx.annotation",
+          "module": "annotation",
+          "version": {
+            "requires": "1.0.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-modules-core",
+          "version": {
+            "requires": "0.9.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib-jdk7",
+          "version": {
+            "requires": "1.6.10"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "expo-haptics-11.2.0.aar",
+          "url": "expo-haptics-11.2.0.aar",
+          "size": 23120,
+          "sha512": "3a6de2d2073ac5933c891ca9d69dbec04434b6926fcc77728e5764a5c4a44f910c835a9999fdd365d8d9e49d59e115d5194016142b8730f5b7b4504349db79fe",
+          "sha256": "f20c127f8d8f2f5877227f748dfec92086bdacd67de841ea664ebc3ff23cf883",
+          "sha1": "79f6fb015c537de4c49d7f4511e809fa0e487b24",
+          "md5": "f6854d2a21fbccb9ae7e9b0dacf0bff1"
+        }
+      ]
+    }
+  ]
+}

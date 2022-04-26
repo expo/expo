@@ -1,0 +1,90 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "host.exp.exponent",
+    "module": "expo-ads-facebook",
+    "version": "11.2.0",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "7.3.3"
+    }
+  },
+  "variants": [
+    {
+      "name": "releaseApiPublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-api"
+      },
+      "dependencies": [
+        {
+          "group": "com.facebook.android",
+          "module": "audience-network-sdk",
+          "version": {
+            "requires": "6.5.0"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "expo-ads-facebook-11.2.0.aar",
+          "url": "expo-ads-facebook-11.2.0.aar",
+          "size": 45331,
+          "sha512": "dbac3dae5470cb9a43370fe62da47680aab4094892ea95f32148bd23ca03cbf99873222f658271f7fedf88e6e03323ca185621a58da63de5f941a3ff74d28436",
+          "sha256": "b9886cfa3adc038320356cdc552b12fa8ab202e300ecb1dda154eed541e18e42",
+          "sha1": "1e515bf49ae047336c0e896acd24774fec1b0f74",
+          "md5": "1e9f4bd099907006dbd9d1ffb9291bb8"
+        }
+      ]
+    },
+    {
+      "name": "releaseRuntimePublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "dependencies": [
+        {
+          "group": "com.facebook.android",
+          "module": "audience-network-sdk",
+          "version": {
+            "requires": "6.5.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-modules-core",
+          "version": {
+            "requires": "0.9.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib-jdk7",
+          "version": {
+            "requires": "1.6.10"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "expo-ads-facebook-11.2.0.aar",
+          "url": "expo-ads-facebook-11.2.0.aar",
+          "size": 45331,
+          "sha512": "dbac3dae5470cb9a43370fe62da47680aab4094892ea95f32148bd23ca03cbf99873222f658271f7fedf88e6e03323ca185621a58da63de5f941a3ff74d28436",
+          "sha256": "b9886cfa3adc038320356cdc552b12fa8ab202e300ecb1dda154eed541e18e42",
+          "sha1": "1e515bf49ae047336c0e896acd24774fec1b0f74",
+          "md5": "1e9f4bd099907006dbd9d1ffb9291bb8"
+        }
+      ]
+    }
+  ]
+}

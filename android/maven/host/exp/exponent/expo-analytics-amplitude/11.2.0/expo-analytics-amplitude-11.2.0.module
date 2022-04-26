@@ -1,0 +1,90 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "host.exp.exponent",
+    "module": "expo-analytics-amplitude",
+    "version": "11.2.0",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "7.3.3"
+    }
+  },
+  "variants": [
+    {
+      "name": "releaseApiPublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-api"
+      },
+      "dependencies": [
+        {
+          "group": "com.amplitude",
+          "module": "android-sdk",
+          "version": {
+            "requires": "2.23.2"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "expo-analytics-amplitude-11.2.0.aar",
+          "url": "expo-analytics-amplitude-11.2.0.aar",
+          "size": 19004,
+          "sha512": "f3cecb1c1ca64c3c5dbf6e826159e98240de7a5975b0a423b9f053649f9215ce83f7119d539f8868dbecee3f6d48858c8cbf71b50ea3ebc2a4ea5c5251ac09af",
+          "sha256": "78468fe6b09ac88d74ece2cc098be7ba632723a6f8a63598fa28b19434b03f42",
+          "sha1": "2468fa870448b84771589339160993df3e5db1cb",
+          "md5": "21962a0900092ff626ed9f4fcb04ca85"
+        }
+      ]
+    },
+    {
+      "name": "releaseRuntimePublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "dependencies": [
+        {
+          "group": "com.amplitude",
+          "module": "android-sdk",
+          "version": {
+            "requires": "2.23.2"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-modules-core",
+          "version": {
+            "requires": "0.9.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib-jdk7",
+          "version": {
+            "requires": "1.6.10"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "expo-analytics-amplitude-11.2.0.aar",
+          "url": "expo-analytics-amplitude-11.2.0.aar",
+          "size": 19004,
+          "sha512": "f3cecb1c1ca64c3c5dbf6e826159e98240de7a5975b0a423b9f053649f9215ce83f7119d539f8868dbecee3f6d48858c8cbf71b50ea3ebc2a4ea5c5251ac09af",
+          "sha256": "78468fe6b09ac88d74ece2cc098be7ba632723a6f8a63598fa28b19434b03f42",
+          "sha1": "2468fa870448b84771589339160993df3e5db1cb",
+          "md5": "21962a0900092ff626ed9f4fcb04ca85"
+        }
+      ]
+    }
+  ]
+}

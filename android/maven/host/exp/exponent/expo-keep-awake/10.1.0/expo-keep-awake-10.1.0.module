@@ -1,0 +1,74 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "host.exp.exponent",
+    "module": "expo-keep-awake",
+    "version": "10.1.0",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "7.3.3"
+    }
+  },
+  "variants": [
+    {
+      "name": "releaseApiPublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-api"
+      },
+      "files": [
+        {
+          "name": "expo-keep-awake-10.1.0.aar",
+          "url": "expo-keep-awake-10.1.0.aar",
+          "size": 25317,
+          "sha512": "71e261c19b753d1c8a5fbbca10befb91c0fea9b2a3319c267add4c736c3959c40cf5de45a926168a1d05d899148dce74848b7ee34f59efe93b7d3904f5b3adec",
+          "sha256": "72e4c499202214c6f84a11868c17cda6f83119e1c99fb47211318cfacce9778e",
+          "sha1": "6fd3cd5bc782b32aacfc7ae2f502f5806dffb11c",
+          "md5": "a318a32ac83961e860fcf5fdea0c0cf8"
+        }
+      ]
+    },
+    {
+      "name": "releaseRuntimePublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "dependencies": [
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-modules-core",
+          "version": {
+            "requires": "0.9.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib-jdk7",
+          "version": {
+            "requires": "1.6.10"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "expo-keep-awake-10.1.0.aar",
+          "url": "expo-keep-awake-10.1.0.aar",
+          "size": 25317,
+          "sha512": "71e261c19b753d1c8a5fbbca10befb91c0fea9b2a3319c267add4c736c3959c40cf5de45a926168a1d05d899148dce74848b7ee34f59efe93b7d3904f5b3adec",
+          "sha256": "72e4c499202214c6f84a11868c17cda6f83119e1c99fb47211318cfacce9778e",
+          "sha1": "6fd3cd5bc782b32aacfc7ae2f502f5806dffb11c",
+          "md5": "a318a32ac83961e860fcf5fdea0c0cf8"
+        }
+      ]
+    }
+  ]
+}

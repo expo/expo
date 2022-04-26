@@ -1,0 +1,1049 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "host.exp.exponent",
+    "module": "expo",
+    "version": "45.0.0-beta.4",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "7.3.3"
+    }
+  },
+  "variants": [
+    {
+      "name": "releaseApiPublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-api"
+      },
+      "dependencies": [
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-modules-core",
+          "version": {
+            "requires": "0.9.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-ads-admob",
+          "version": {
+            "requires": "13.0.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-ads-facebook",
+          "version": {
+            "requires": "11.2.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-analytics-amplitude",
+          "version": {
+            "requires": "11.2.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-analytics-segment",
+          "version": {
+            "requires": "11.2.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-application",
+          "version": {
+            "requires": "4.1.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-av",
+          "version": {
+            "requires": "11.2.1"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-background-fetch",
+          "version": {
+            "requires": "10.2.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-barcode-scanner",
+          "version": {
+            "requires": "11.3.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-battery",
+          "version": {
+            "requires": "6.2.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-branch",
+          "version": {
+            "requires": "5.2.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-brightness",
+          "version": {
+            "requires": "10.2.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-calendar",
+          "version": {
+            "requires": "10.2.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-camera",
+          "version": {
+            "requires": "12.2.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-cellular",
+          "version": {
+            "requires": "4.2.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-clipboard",
+          "version": {
+            "requires": "3.0.1"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-constants",
+          "version": {
+            "requires": "13.1.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-contacts",
+          "version": {
+            "requires": "10.2.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-crypto",
+          "version": {
+            "requires": "10.2.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-device",
+          "version": {
+            "requires": "4.2.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-document-picker",
+          "version": {
+            "requires": "10.2.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-eas-client",
+          "version": {
+            "requires": "0.2.1"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-error-recovery",
+          "version": {
+            "requires": "3.1.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-face-detector",
+          "version": {
+            "requires": "11.2.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-facebook",
+          "version": {
+            "requires": "12.2.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-file-system",
+          "version": {
+            "requires": "14.0.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-firebase-analytics",
+          "version": {
+            "requires": "7.0.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-firebase-core",
+          "version": {
+            "requires": "5.0.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-font",
+          "version": {
+            "requires": "10.1.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-gl",
+          "version": {
+            "requires": "11.2.2"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-gl-cpp",
+          "version": {
+            "requires": "11.2.1"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-google-sign-in",
+          "version": {
+            "requires": "10.2.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-haptics",
+          "version": {
+            "requires": "11.2.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-image-loader",
+          "version": {
+            "requires": "3.2.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-image-manipulator",
+          "version": {
+            "requires": "10.3.1"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-image-picker",
+          "version": {
+            "requires": "13.0.1"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-in-app-purchases",
+          "version": {
+            "requires": "13.0.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-intent-launcher",
+          "version": {
+            "requires": "10.2.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-json-utils",
+          "version": {
+            "requires": "0.3.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-keep-awake",
+          "version": {
+            "requires": "10.1.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-linear-gradient",
+          "version": {
+            "requires": "11.3.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-local-authentication",
+          "version": {
+            "requires": "12.2.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-localization",
+          "version": {
+            "requires": "13.0.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-location",
+          "version": {
+            "requires": "14.2.1"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-mail-composer",
+          "version": {
+            "requires": "11.2.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-manifests",
+          "version": {
+            "requires": "0.3.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-media-library",
+          "version": {
+            "requires": "14.1.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-navigation-bar",
+          "version": {
+            "requires": "1.2.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-network",
+          "version": {
+            "requires": "4.2.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-notifications",
+          "version": {
+            "requires": "0.15.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-permissions",
+          "version": {
+            "requires": "13.2.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-print",
+          "version": {
+            "requires": "11.2.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-screen-capture",
+          "version": {
+            "requires": "4.2.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-screen-orientation",
+          "version": {
+            "requires": "4.2.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-secure-store",
+          "version": {
+            "requires": "11.2.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-sensors",
+          "version": {
+            "requires": "11.2.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-sharing",
+          "version": {
+            "requires": "10.2.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-sms",
+          "version": {
+            "requires": "10.2.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-speech",
+          "version": {
+            "requires": "10.2.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-splash-screen",
+          "version": {
+            "requires": "0.15.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-sqlite",
+          "version": {
+            "requires": "10.2.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-store-review",
+          "version": {
+            "requires": "5.2.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-structured-headers",
+          "version": {
+            "requires": "2.2.1"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-system-ui",
+          "version": {
+            "requires": "1.2.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-task-manager",
+          "version": {
+            "requires": "10.2.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-updates",
+          "version": {
+            "requires": "0.13.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-video-thumbnails",
+          "version": {
+            "requires": "6.3.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-web-browser",
+          "version": {
+            "requires": "10.2.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "unimodules-app-loader",
+          "version": {
+            "requires": "3.1.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib-jdk8",
+          "version": {
+            "requires": "1.6.10"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "expo-45.0.0-beta.4.aar",
+          "url": "expo-45.0.0-beta.4.aar",
+          "size": 59796,
+          "sha512": "8173f531efd18cc808b928b5883a03f0d43d7ad114d1ee027eb5f902ffac1fe6047c8438ddf60a99314945eab26e8e9dd61670c3333c9d056ee928ed6147849c",
+          "sha256": "e6c28885a957a2bb15bcfd961c0c98842c604bfc5c2e10b56f974e1f21becd83",
+          "sha1": "b78fd44a8f812c11abff608b737a67b688351fc5",
+          "md5": "2432680765d59a2120c101fa1fa64cd2"
+        }
+      ]
+    },
+    {
+      "name": "releaseRuntimePublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "dependencies": [
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-modules-core",
+          "version": {
+            "requires": "0.9.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-ads-admob",
+          "version": {
+            "requires": "13.0.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-ads-facebook",
+          "version": {
+            "requires": "11.2.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-analytics-amplitude",
+          "version": {
+            "requires": "11.2.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-analytics-segment",
+          "version": {
+            "requires": "11.2.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-application",
+          "version": {
+            "requires": "4.1.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-av",
+          "version": {
+            "requires": "11.2.1"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-background-fetch",
+          "version": {
+            "requires": "10.2.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-barcode-scanner",
+          "version": {
+            "requires": "11.3.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-battery",
+          "version": {
+            "requires": "6.2.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-branch",
+          "version": {
+            "requires": "5.2.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-brightness",
+          "version": {
+            "requires": "10.2.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-calendar",
+          "version": {
+            "requires": "10.2.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-camera",
+          "version": {
+            "requires": "12.2.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-cellular",
+          "version": {
+            "requires": "4.2.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-clipboard",
+          "version": {
+            "requires": "3.0.1"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-constants",
+          "version": {
+            "requires": "13.1.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-contacts",
+          "version": {
+            "requires": "10.2.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-crypto",
+          "version": {
+            "requires": "10.2.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-device",
+          "version": {
+            "requires": "4.2.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-document-picker",
+          "version": {
+            "requires": "10.2.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-eas-client",
+          "version": {
+            "requires": "0.2.1"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-error-recovery",
+          "version": {
+            "requires": "3.1.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-face-detector",
+          "version": {
+            "requires": "11.2.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-facebook",
+          "version": {
+            "requires": "12.2.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-file-system",
+          "version": {
+            "requires": "14.0.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-firebase-analytics",
+          "version": {
+            "requires": "7.0.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-firebase-core",
+          "version": {
+            "requires": "5.0.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-font",
+          "version": {
+            "requires": "10.1.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-gl",
+          "version": {
+            "requires": "11.2.2"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-gl-cpp",
+          "version": {
+            "requires": "11.2.1"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-google-sign-in",
+          "version": {
+            "requires": "10.2.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-haptics",
+          "version": {
+            "requires": "11.2.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-image-loader",
+          "version": {
+            "requires": "3.2.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-image-manipulator",
+          "version": {
+            "requires": "10.3.1"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-image-picker",
+          "version": {
+            "requires": "13.0.1"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-in-app-purchases",
+          "version": {
+            "requires": "13.0.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-intent-launcher",
+          "version": {
+            "requires": "10.2.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-json-utils",
+          "version": {
+            "requires": "0.3.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-keep-awake",
+          "version": {
+            "requires": "10.1.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-linear-gradient",
+          "version": {
+            "requires": "11.3.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-local-authentication",
+          "version": {
+            "requires": "12.2.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-localization",
+          "version": {
+            "requires": "13.0.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-location",
+          "version": {
+            "requires": "14.2.1"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-mail-composer",
+          "version": {
+            "requires": "11.2.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-manifests",
+          "version": {
+            "requires": "0.3.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-media-library",
+          "version": {
+            "requires": "14.1.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-navigation-bar",
+          "version": {
+            "requires": "1.2.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-network",
+          "version": {
+            "requires": "4.2.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-notifications",
+          "version": {
+            "requires": "0.15.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-permissions",
+          "version": {
+            "requires": "13.2.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-print",
+          "version": {
+            "requires": "11.2.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-screen-capture",
+          "version": {
+            "requires": "4.2.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-screen-orientation",
+          "version": {
+            "requires": "4.2.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-secure-store",
+          "version": {
+            "requires": "11.2.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-sensors",
+          "version": {
+            "requires": "11.2.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-sharing",
+          "version": {
+            "requires": "10.2.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-sms",
+          "version": {
+            "requires": "10.2.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-speech",
+          "version": {
+            "requires": "10.2.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-splash-screen",
+          "version": {
+            "requires": "0.15.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-sqlite",
+          "version": {
+            "requires": "10.2.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-store-review",
+          "version": {
+            "requires": "5.2.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-structured-headers",
+          "version": {
+            "requires": "2.2.1"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-system-ui",
+          "version": {
+            "requires": "1.2.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-task-manager",
+          "version": {
+            "requires": "10.2.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-updates",
+          "version": {
+            "requires": "0.13.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-video-thumbnails",
+          "version": {
+            "requires": "6.3.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-web-browser",
+          "version": {
+            "requires": "10.2.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "unimodules-app-loader",
+          "version": {
+            "requires": "3.1.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib-jdk8",
+          "version": {
+            "requires": "1.6.10"
+          }
+        },
+        {
+          "group": "com.facebook.react",
+          "module": "react-native",
+          "version": {
+            "requires": "+"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "expo-45.0.0-beta.4.aar",
+          "url": "expo-45.0.0-beta.4.aar",
+          "size": 59796,
+          "sha512": "8173f531efd18cc808b928b5883a03f0d43d7ad114d1ee027eb5f902ffac1fe6047c8438ddf60a99314945eab26e8e9dd61670c3333c9d056ee928ed6147849c",
+          "sha256": "e6c28885a957a2bb15bcfd961c0c98842c604bfc5c2e10b56f974e1f21becd83",
+          "sha1": "b78fd44a8f812c11abff608b737a67b688351fc5",
+          "md5": "2432680765d59a2120c101fa1fa64cd2"
+        }
+      ]
+    }
+  ]
+}

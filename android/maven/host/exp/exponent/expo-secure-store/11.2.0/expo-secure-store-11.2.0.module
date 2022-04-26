@@ -1,0 +1,90 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "host.exp.exponent",
+    "module": "expo-secure-store",
+    "version": "11.2.0",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "7.3.3"
+    }
+  },
+  "variants": [
+    {
+      "name": "releaseApiPublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-api"
+      },
+      "dependencies": [
+        {
+          "group": "androidx.biometric",
+          "module": "biometric",
+          "version": {
+            "requires": "1.1.0"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "expo-secure-store-11.2.0.aar",
+          "url": "expo-secure-store-11.2.0.aar",
+          "size": 43502,
+          "sha512": "6575b271b864d926c399cf233328cc08f157b03c362c14cc950ac18a7fcde26fce41e0b0df8632ef2c4feb33ae64042b486cc97262c48d39797dc4d4274871cb",
+          "sha256": "f80b42865a9ab222161add14bed6c60b4145694cb7150800554442e924a40963",
+          "sha1": "5ff453098ea55df29f8be69115bfc134f9f24ac5",
+          "md5": "bf4d5496d7eb007dfc7452ad83c424e7"
+        }
+      ]
+    },
+    {
+      "name": "releaseRuntimePublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "dependencies": [
+        {
+          "group": "androidx.biometric",
+          "module": "biometric",
+          "version": {
+            "requires": "1.1.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-modules-core",
+          "version": {
+            "requires": "0.9.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib-jdk7",
+          "version": {
+            "requires": "1.6.10"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "expo-secure-store-11.2.0.aar",
+          "url": "expo-secure-store-11.2.0.aar",
+          "size": 43502,
+          "sha512": "6575b271b864d926c399cf233328cc08f157b03c362c14cc950ac18a7fcde26fce41e0b0df8632ef2c4feb33ae64042b486cc97262c48d39797dc4d4274871cb",
+          "sha256": "f80b42865a9ab222161add14bed6c60b4145694cb7150800554442e924a40963",
+          "sha1": "5ff453098ea55df29f8be69115bfc134f9f24ac5",
+          "md5": "bf4d5496d7eb007dfc7452ad83c424e7"
+        }
+      ]
+    }
+  ]
+}

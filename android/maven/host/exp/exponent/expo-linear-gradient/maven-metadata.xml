@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+  <groupId>host.exp.exponent</groupId>
+  <artifactId>expo-linear-gradient</artifactId>
+  <versioning>
+    <latest>11.3.0</latest>
+    <release>11.3.0</release>
+    <versions>
+      <version>11.3.0</version>
+    </versions>
+    <lastUpdated>20220425200636</lastUpdated>
+  </versioning>
+</metadata>

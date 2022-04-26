@@ -1,0 +1,74 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "host.exp.exponent",
+    "module": "expo-screen-orientation",
+    "version": "4.2.0",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "7.3.3"
+    }
+  },
+  "variants": [
+    {
+      "name": "releaseApiPublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-api"
+      },
+      "files": [
+        {
+          "name": "expo-screen-orientation-4.2.0.aar",
+          "url": "expo-screen-orientation-4.2.0.aar",
+          "size": 21360,
+          "sha512": "7647d478ca62130a67b89a0e57a78d985b4fb48143a200e4f2ec7e553a7a871a04f22d1b34e21f30122ca3f8546a06b2795cb91c3ecddacfbc21a3f14ab8b5e7",
+          "sha256": "e9a58b99ba3d6917319575c15e1f26cd9a4ed73ec560eca850ecfd3db380c3ec",
+          "sha1": "22594aafabf17339ce80c0570eb4d8f651fb4ad6",
+          "md5": "ed296725e884db2f70361e8bbc9cea06"
+        }
+      ]
+    },
+    {
+      "name": "releaseRuntimePublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "dependencies": [
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-modules-core",
+          "version": {
+            "requires": "0.9.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib-jdk7",
+          "version": {
+            "requires": "1.6.10"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "expo-screen-orientation-4.2.0.aar",
+          "url": "expo-screen-orientation-4.2.0.aar",
+          "size": 21360,
+          "sha512": "7647d478ca62130a67b89a0e57a78d985b4fb48143a200e4f2ec7e553a7a871a04f22d1b34e21f30122ca3f8546a06b2795cb91c3ecddacfbc21a3f14ab8b5e7",
+          "sha256": "e9a58b99ba3d6917319575c15e1f26cd9a4ed73ec560eca850ecfd3db380c3ec",
+          "sha1": "22594aafabf17339ce80c0570eb4d8f651fb4ad6",
+          "md5": "ed296725e884db2f70361e8bbc9cea06"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,97 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "host.exp.exponent",
+    "module": "expo-google-sign-in",
+    "version": "10.2.0",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "7.3.3"
+    }
+  },
+  "variants": [
+    {
+      "name": "releaseApiPublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-api"
+      },
+      "dependencies": [
+        {
+          "group": "com.google.android.gms",
+          "module": "play-services-auth",
+          "version": {
+            "requires": "17.0.0"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "expo-google-sign-in-10.2.0.aar",
+          "url": "expo-google-sign-in-10.2.0.aar",
+          "size": 31934,
+          "sha512": "b6b041158f739c1b3ce761ab24bf219419752dd6cf59260dc68197d4b5001a82de6fb658ed4808f59fb5a45ec698c367899a5a69ad87dce22929b862c23f6401",
+          "sha256": "94f86357a8f0845cec67870cba0fde9b3b278adfc3e01f75748b15316ae2b46f",
+          "sha1": "817ce8758132f344a27779bdb602f5cce4c6d0de",
+          "md5": "bffa74aeb1a532b0d68f044e3793b3a7"
+        }
+      ]
+    },
+    {
+      "name": "releaseRuntimePublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "dependencies": [
+        {
+          "group": "com.google.android.gms",
+          "module": "play-services-auth",
+          "version": {
+            "requires": "17.0.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-modules-core",
+          "version": {
+            "requires": "0.9.0"
+          }
+        },
+        {
+          "group": "com.google.android.gms",
+          "module": "play-services-fitness",
+          "version": {
+            "requires": "21.0.1"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib-jdk7",
+          "version": {
+            "requires": "1.6.10"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "expo-google-sign-in-10.2.0.aar",
+          "url": "expo-google-sign-in-10.2.0.aar",
+          "size": 31934,
+          "sha512": "b6b041158f739c1b3ce761ab24bf219419752dd6cf59260dc68197d4b5001a82de6fb658ed4808f59fb5a45ec698c367899a5a69ad87dce22929b862c23f6401",
+          "sha256": "94f86357a8f0845cec67870cba0fde9b3b278adfc3e01f75748b15316ae2b46f",
+          "sha1": "817ce8758132f344a27779bdb602f5cce4c6d0de",
+          "md5": "bffa74aeb1a532b0d68f044e3793b3a7"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,90 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "host.exp.exponent",
+    "module": "expo-sharing",
+    "version": "10.2.0",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "7.3.3"
+    }
+  },
+  "variants": [
+    {
+      "name": "releaseApiPublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-api"
+      },
+      "dependencies": [
+        {
+          "group": "androidx.legacy",
+          "module": "legacy-support-v4",
+          "version": {
+            "requires": "1.0.0"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "expo-sharing-10.2.0.aar",
+          "url": "expo-sharing-10.2.0.aar",
+          "size": 27165,
+          "sha512": "3a889586ff37e29c39d385f997f74b44e21682cb23075c5ee8349eb11c5dd9a2d85db7ef8b99d0f92241a77eb7539ad9b5d92e730f855983ad2efc47959563f7",
+          "sha256": "2f5a3897aa9bbdd55991e80a75696c096352aa6722eab59bfb13ad516870dd0b",
+          "sha1": "aee7a43b53e966c7b863e514d3f56660ba433483",
+          "md5": "802658c3fc9db4fe9b7e962a29a51333"
+        }
+      ]
+    },
+    {
+      "name": "releaseRuntimePublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "dependencies": [
+        {
+          "group": "androidx.legacy",
+          "module": "legacy-support-v4",
+          "version": {
+            "requires": "1.0.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-modules-core",
+          "version": {
+            "requires": "0.9.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib-jdk7",
+          "version": {
+            "requires": "1.6.10"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "expo-sharing-10.2.0.aar",
+          "url": "expo-sharing-10.2.0.aar",
+          "size": 27165,
+          "sha512": "3a889586ff37e29c39d385f997f74b44e21682cb23075c5ee8349eb11c5dd9a2d85db7ef8b99d0f92241a77eb7539ad9b5d92e730f855983ad2efc47959563f7",
+          "sha256": "2f5a3897aa9bbdd55991e80a75696c096352aa6722eab59bfb13ad516870dd0b",
+          "sha1": "aee7a43b53e966c7b863e514d3f56660ba433483",
+          "md5": "802658c3fc9db4fe9b7e962a29a51333"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,74 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "host.exp.exponent",
+    "module": "expo-error-recovery",
+    "version": "3.1.0",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "7.3.3"
+    }
+  },
+  "variants": [
+    {
+      "name": "releaseApiPublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-api"
+      },
+      "files": [
+        {
+          "name": "expo-error-recovery-3.1.0.aar",
+          "url": "expo-error-recovery-3.1.0.aar",
+          "size": 17507,
+          "sha512": "626c659822d4347f0738dd4249a400ff4358e378db237d3efc32a311c9727a78fe347517db73091bf7f94c9866f53fcc342b379f838e919514f763ce388230ef",
+          "sha256": "678902b7e7e91da350ebb1e20ed58fc5ae8abe2f921eb8b9762da98607ca0497",
+          "sha1": "958f5358eefcc207e2636ccbefd06a4cb1b9669c",
+          "md5": "102646eba6d92388b65e3721e2b969ee"
+        }
+      ]
+    },
+    {
+      "name": "releaseRuntimePublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "dependencies": [
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-modules-core",
+          "version": {
+            "requires": "0.9.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib-jdk7",
+          "version": {
+            "requires": "1.6.10"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "expo-error-recovery-3.1.0.aar",
+          "url": "expo-error-recovery-3.1.0.aar",
+          "size": 17507,
+          "sha512": "626c659822d4347f0738dd4249a400ff4358e378db237d3efc32a311c9727a78fe347517db73091bf7f94c9866f53fcc342b379f838e919514f763ce388230ef",
+          "sha256": "678902b7e7e91da350ebb1e20ed58fc5ae8abe2f921eb8b9762da98607ca0497",
+          "sha1": "958f5358eefcc207e2636ccbefd06a4cb1b9669c",
+          "md5": "102646eba6d92388b65e3721e2b969ee"
+        }
+      ]
+    }
+  ]
+}

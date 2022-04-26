@@ -1,0 +1,90 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "host.exp.exponent",
+    "module": "expo-mail-composer",
+    "version": "11.2.0",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "7.3.3"
+    }
+  },
+  "variants": [
+    {
+      "name": "releaseApiPublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-api"
+      },
+      "dependencies": [
+        {
+          "group": "androidx.appcompat",
+          "module": "appcompat",
+          "version": {
+            "requires": "1.2.0"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "expo-mail-composer-11.2.0.aar",
+          "url": "expo-mail-composer-11.2.0.aar",
+          "size": 27308,
+          "sha512": "0bccd11b05dfa43d8e3c090ad9afa17d525012891ec38a56a4b65134c969b0bf51c220ee1f76d6b9bc8b898aa4da2e2490cf65b59708984a822ece2dfee98e39",
+          "sha256": "ff9e3ab9bb233cb0993a8fc4e52de3bcbfbd82a1d2fa201e83a3b8d7e472512d",
+          "sha1": "44846f8bb7056611e36891e7b6b4d754303f7095",
+          "md5": "269835989eb7658b42b7bb61712ae924"
+        }
+      ]
+    },
+    {
+      "name": "releaseRuntimePublication",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.libraryelements": "aar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "dependencies": [
+        {
+          "group": "androidx.appcompat",
+          "module": "appcompat",
+          "version": {
+            "requires": "1.2.0"
+          }
+        },
+        {
+          "group": "host.exp.exponent",
+          "module": "expo-modules-core",
+          "version": {
+            "requires": "0.9.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib-jdk7",
+          "version": {
+            "requires": "1.6.10"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "expo-mail-composer-11.2.0.aar",
+          "url": "expo-mail-composer-11.2.0.aar",
+          "size": 27308,
+          "sha512": "0bccd11b05dfa43d8e3c090ad9afa17d525012891ec38a56a4b65134c969b0bf51c220ee1f76d6b9bc8b898aa4da2e2490cf65b59708984a822ece2dfee98e39",
+          "sha256": "ff9e3ab9bb233cb0993a8fc4e52de3bcbfbd82a1d2fa201e83a3b8d7e472512d",
+          "sha1": "44846f8bb7056611e36891e7b6b4d754303f7095",
+          "md5": "269835989eb7658b42b7bb61712ae924"
+        }
+      ]
+    }
+  ]
+}
