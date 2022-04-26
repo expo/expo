@@ -25,7 +25,7 @@ android {
     minSdkVersion safeExtGet('minSdkVersion', 21)
     targetSdkVersion safeExtGet('targetSdkVersion', 30)
     versionCode 9
-    versionName "0.10.4"
+    versionName "0.10.5"
   }
 
   lintOptions {
