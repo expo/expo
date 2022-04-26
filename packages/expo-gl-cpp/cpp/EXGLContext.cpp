@@ -13,17 +13,35 @@ void EXGLContext::prepareContext(jsi::Runtime &runtime, std::function<void(void)
     createWebGLRenderer(runtime, this, viewport, runtime.global());
     tryRegisterOnJSRuntimeDestroy(runtime);
 
-    jsi::Value workletRuntimeValue = runtime.global().getProperty(runtime, "_WORKLET_RUNTIME");
-    if (workletRuntimeValue.isNumber()) {
-      jsi::Runtime &workletRuntime = *reinterpret_cast<jsi::Runtime *>(
-          static_cast<uintptr_t>(workletRuntimeValue.getNumber()));
-      createWebGLRenderer(
-          workletRuntime, this, viewport, workletRuntime.global().getPropertyAsObject(workletRuntime, "global"));
-      tryRegisterOnJSRuntimeDestroy(workletRuntime);
-    }
+    maybePrepareWorkletContext(runtime, viewport);
   } catch (const std::runtime_error &err) {
     EXGLSysLog("Failed to setup EXGLContext [%s]", err.what());
   }
+}
+
+void EXGLContext::maybePrepareWorkletContext(jsi::Runtime &runtime, initGlesContext viewport) {
+  jsi::Value workletRuntimeValue = runtime.global().getProperty(runtime, "_WORKLET_RUNTIME");
+  if (!workletRuntimeValue.isObject()) {
+    return;
+  }
+  jsi::Object workletRuntimeObject = workletRuntimeValue.getObject(runtime);
+  if (!workletRuntimeObject.isArrayBuffer(runtime)) {
+    return;
+  }
+  size_t pointerSize = sizeof(void *);
+  jsi::ArrayBuffer workletRuntimeArrayBuffer = workletRuntimeObject.getArrayBuffer(runtime);
+  if (workletRuntimeArrayBuffer.size(runtime) != pointerSize) {
+    return;
+  }
+  uintptr_t rawWorkletRuntimePointer =
+      *reinterpret_cast<uintptr_t*>(workletRuntimeArrayBuffer.data(runtime));
+  jsi::Runtime &workletRuntime = *reinterpret_cast<jsi::Runtime *>(rawWorkletRuntimePointer);
+  createWebGLRenderer(
+      workletRuntime,
+      this,
+      viewport,
+      workletRuntime.global().getPropertyAsObject(workletRuntime, "global"));
+  tryRegisterOnJSRuntimeDestroy(workletRuntime);
 }
 
 void EXGLContext::endNextBatch() noexcept {
