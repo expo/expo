@@ -409,6 +409,7 @@ open class DevMenuManager: NSObject {
     if DevMenuManager.fontsWereLoaded {
        return
     }
+    DevMenuManager.fontsWereLoaded = true
 
     let fonts = [
       "Inter-Black",
@@ -430,8 +431,5 @@ open class DevMenuManager: NSObject {
       var error: Unmanaged<CFError>?
       CTFontManagerRegisterGraphicsFont(font!, &error)
     }
-    
-    DevMenuManager.fontsWereLoaded = true
-    return
   }
 }

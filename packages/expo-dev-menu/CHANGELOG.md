@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix error on summoning dev-menu first time, that leads to the application freeze.
+
 ### 💡 Others
 
 ## 0.10.3 — 2022-04-25

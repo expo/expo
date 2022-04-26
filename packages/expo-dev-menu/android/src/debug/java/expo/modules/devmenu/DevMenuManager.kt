@@ -224,19 +224,19 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
     Log.i(DEV_MENU_TAG, "Delegate's context was loaded.")
 
     maybeInitDevMenuHost(reactContext.currentActivity?.application
-        ?: reactContext.applicationContext as Application)
+      ?: reactContext.applicationContext as Application)
     maybeStartDetectors(devMenuHost.getContext())
     preferences = (testInterceptor.overrideSettings()
-        ?: if (reactContext.hasNativeModule(DevMenuPreferences::class.java)) {
-          reactContext.getNativeModule(DevMenuPreferences::class.java)!!
-        } else {
-          DevMenuDefaultPreferences()
-        }).also {
-          shouldLaunchDevMenuOnStart = canLaunchDevMenuOnStart && (it.showsAtLaunch || !it.isOnboardingFinished)
-          if (shouldLaunchDevMenuOnStart) {
-            reactContext.addLifecycleEventListener(this)
-          }
-        }
+      ?: if (reactContext.hasNativeModule(DevMenuPreferences::class.java)) {
+        reactContext.getNativeModule(DevMenuPreferences::class.java)!!
+      } else {
+        DevMenuDefaultPreferences()
+      }).also {
+      shouldLaunchDevMenuOnStart = canLaunchDevMenuOnStart && (it.showsAtLaunch || !it.isOnboardingFinished)
+      if (shouldLaunchDevMenuOnStart) {
+        reactContext.addLifecycleEventListener(this)
+      }
+    }
   }
 
   fun getAppInfo(): Bundle {
@@ -260,6 +260,7 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
     if (fontsWereLoaded) {
       return
     }
+    fontsWereLoaded = true
 
     val fonts = arrayOf(
       "Inter-Black",
@@ -279,8 +280,6 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
       val font = Typeface.createFromAsset(assets, "$familyName.otf")
       ReactFontManager.getInstance().setTypeface(familyName, Typeface.NORMAL, font)
     }
-
-    fontsWereLoaded = true
   }
 
   //endregion
