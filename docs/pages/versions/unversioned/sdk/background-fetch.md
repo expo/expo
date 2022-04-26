@@ -4,7 +4,7 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-background-
 packageName: 'expo-background-fetch'
 ---
 
-import {APIInstallSection} from '~/components/plugins/InstallSection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
 import ImageSpotlight from '~/components/plugins/ImageSpotlight'
