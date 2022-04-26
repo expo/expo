@@ -66,4 +66,4 @@ Add an event handler that is fired when appearance preferences change.
 static removeChangeListener(listener)
 ```
 
-Remove an event handler.
+> **Deprecated.** Use the `remove()` method on the event subscription returned by `addChangeListener()`.

@@ -107,89 +107,89 @@ export default App;
 
 If true, doesn't play Android system sound on press.
 
-| Type    | Required | Default |
-| ------- | -------- | ------- |
-| boolean | No       | `false` |
+| Type    | Default |
+| ------- | ------- |
+| boolean | `false` |
 
 ### `android_ripple` **(Android)**
 
 Enables the Android ripple effect and configures its properties.
 
-| Type                          | Required |
-| ----------------------------- | -------- |
-| [RippleConfig](#rippleconfig) | No       |
+| Type                          |
+| ----------------------------- |
+| [RippleConfig](#rippleconfig) |
 
 ### `children`
 
 Either children or a function that receives a boolean reflecting whether the component is currently pressed.
 
-| Type                        | Required |
-| --------------------------- | -------- |
-| [React Node](react-node.md) | No       |
+| Type                        |
+| --------------------------- |
+| [React Node](react-node.md) |
 
 ### `unstable_pressDelay`
 
 Duration (in milliseconds) to wait after press down before calling `onPressIn`.
 
-| Type   | Required |
-| ------ | -------- |
-| number | No       |
+| Type   |
+| ------ |
+| number |
 
 ### `delayLongPress`
 
 Duration (in milliseconds) from `onPressIn` before `onLongPress` is called.
 
-| Type   | Required | Default |
-| ------ | -------- | ------- |
-| number | No       | `500`   |
+| Type   | Default |
+| ------ | ------- |
+| number | `500`   |
 
 ### `disabled`
 
 Whether the press behavior is disabled.
 
-| Type    | Required | Default |
-| ------- | -------- | ------- |
-| boolean | No       | `false` |
+| Type    | Default |
+| ------- | ------- |
+| boolean | `false` |
 
 ### `hitSlop`
 
 Sets additional distance outside of element in which a press can be detected.
 
-| Type                      | Required |
-| ------------------------- | -------- |
-| [Rect](rect.md) or number | No       |
+| Type                      |
+| ------------------------- |
+| [Rect](rect.md) or number |
 
 ### `onLongPress`
 
 Called if the time after `onPressIn` lasts longer than 500 milliseconds. This time period can be customized with [`delayLongPress`](#delaylongpress).
 
-| Type                        | Required |
-| --------------------------- | -------- |
-| [PressEvent](pressevent.md) | No       |
+| Type |
+| --------------------------------------------------- |
+| ({ nativeEvent: [PressEvent](pressevent.md) }) => void |
 
 ### `onPress`
 
 Called after `onPressOut`.
 
-| Type                        | Required |
-| --------------------------- | -------- |
-| [PressEvent](pressevent.md) | No       |
+| Type |
+| --------------------------------------------------- |
+| ({ nativeEvent: [PressEvent](pressevent.md) }) => void |
 
 ### `onPressIn`
 
 Called immediately when a touch is engaged, before `onPressOut` and `onPress`.
 
-| Type                        | Required |
-| --------------------------- | -------- |
-| [PressEvent](pressevent.md) | No       |
+| Type |
+| --------------------------------------------------- |
+| ({ nativeEvent: [PressEvent](pressevent.md) }) => void |
 
 ### `onPressOut`
 
 Called when a touch is released.
 
-| Type                        | Required |
-| --------------------------- | -------- |
-| [PressEvent](pressevent.md) | No       |
+| Type |
+| --------------------------------------------------- |
+| ({ nativeEvent: [PressEvent](pressevent.md) }) => void |
 
 ### `pressRetentionOffset`
 
@@ -203,17 +203,17 @@ Additional distance outside of this view in which a touch is considered a press 
 
 Either view styles or a function that receives a boolean reflecting whether the component is currently pressed and returns view styles.
 
-| Type                              | Required |
-| --------------------------------- | -------- |
-| [View Style](view-style-props.md) | No       |
+| Type                           |
+| ------------------------------ |
+| [View Style](view-style-props) |
 
 ### `testOnly_pressed`
 
 Used only for documentation or testing (e.g. snapshot testing).
 
-| Type    | Required | Default |
-| ------- | -------- | ------- |
-| boolean | No       | `false` |
+| Type    | Default |
+| ------- | ------- |
+| boolean | `false` |
 
 ## Type Definitions
 
@@ -227,8 +227,9 @@ Ripple effect configuration for the `android_ripple` property.
 
 **Properties:**
 
-| Name       | Type                                              | Required | Description                                         |
-| ---------- | ------------------------------------------------- | -------- | --------------------------------------------------- |
-| color      | [color](https://reactnative.dev/docs/0.64/colors) | No       | Defines the color of the ripple effect.             |
-| borderless | boolean                                           | No       | Defines if ripple effect should not include border. |
-| radius     | number                                            | No       | Defines the radius of the ripple effect.            |
+| Name       | Type                                         | Required | Description                                                                                                                                                                                                                                                  |
+| ---------- | -------------------------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| color      | [color](https://reactnative.dev/docs/colors) | No       | Defines the color of the ripple effect.                                                                                                                                                                                                                      |
+| borderless | boolean                                      | No       | Defines if ripple effect should not include border.                                                                                                                                                                                                          |
+| radius     | number                                       | No       | Defines the radius of the ripple effect.                                                                                                                                                                                                                     |
+| foreground | boolean                                      | No       | Set to true to add the ripple effect to the foreground of the view, instead of the background. This is useful if one of your child views has a background of its own, or you're e.g. displaying images, and you don't want the ripple to be covered by them. |

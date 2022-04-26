@@ -8,59 +8,65 @@ Sometimes it's useful to know whether or not the device has a screen reader that
 ## Example
 
 ```js
-import React, { useState, useEffect } from 'react';
-import { AccessibilityInfo, View, Text, StyleSheet } from 'react-native';
+import React, { useState, useEffect } from "react";
+import { AccessibilityInfo, View, Text, StyleSheet } from "react-native";
 
 const App = () => {
   const [reduceMotionEnabled, setReduceMotionEnabled] = useState(false);
   const [screenReaderEnabled, setScreenReaderEnabled] = useState(false);
 
   useEffect(() => {
-    AccessibilityInfo.addEventListener('reduceMotionChanged', handleReduceMotionToggled);
-    AccessibilityInfo.addEventListener('screenReaderChanged', handleScreenReaderToggled);
+    const reduceMotionChangedSubscription = AccessibilityInfo.addEventListener(
+      "reduceMotionChanged",
+      reduceMotionEnabled => {
+        setReduceMotionEnabled(reduceMotionEnabled);
+      }
+    );
+    const screenReaderChangedSubscription = AccessibilityInfo.addEventListener(
+      "screenReaderChanged",
+      screenReaderEnabled => {
+        setScreenReaderEnabled(screenReaderEnabled);
+      }
+    );
 
-    AccessibilityInfo.isReduceMotionEnabled().then(reduceMotionEnabled => {
-      setReduceMotionEnabled(reduceMotionEnabled);
-    });
-    AccessibilityInfo.isScreenReaderEnabled().then(screenReaderEnabled => {
-      setScreenReaderEnabled(screenReaderEnabled);
-    });
+    AccessibilityInfo.isReduceMotionEnabled().then(
+      reduceMotionEnabled => {
+        setReduceMotionEnabled(reduceMotionEnabled);
+      }
+    );
+    AccessibilityInfo.isScreenReaderEnabled().then(
+      screenReaderEnabled => {
+        setScreenReaderEnabled(screenReaderEnabled);
+      }
+    );
 
     return () => {
-      AccessibilityInfo.removeEventListener('reduceMotionChanged', handleReduceMotionToggled);
-      AccessibilityInfo.removeEventListener('screenReaderChanged', handleScreenReaderToggled);
+      reduceMotionChangedSubscription.remove();
+      screenReaderChangedSubscription.remove();
     };
   }, []);
-
-  const handleReduceMotionToggled = reduceMotionEnabled => {
-    setReduceMotionEnabled(reduceMotionEnabled);
-  };
-
-  const handleScreenReaderToggled = screenReaderEnabled => {
-    setScreenReaderEnabled(screenReaderEnabled);
-  };
 
   return (
     <View style={styles.container}>
       <Text style={styles.status}>
-        The reduce motion is {reduceMotionEnabled ? 'enabled' : 'disabled'}.
+        The reduce motion is {reduceMotionEnabled ? "enabled" : "disabled"}.
       </Text>
       <Text style={styles.status}>
-        The screen reader is {screenReaderEnabled ? 'enabled' : 'disabled'}.
+        The screen reader is {screenReaderEnabled ? "enabled" : "disabled"}.
       </Text>
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center"
   },
   status: {
-    margin: 30,
-  },
+    margin: 30
+  }
 });
 
 export default App;
@@ -97,6 +103,24 @@ static announceForAccessibility(announcement)
 ```
 
 Post a string to be announced by the screen reader.
+
+### `announceForAccessibilityWithOptions()`
+
+```jsx
+static announceForAccessibilityWithOptions(announcement, options)
+```
+
+Post a string to be announced by the screen reader with modification options. By default announcements will interrupt any existing speech, but on iOS they can be queued behind existing speech by setting `queue` to `true` in the options object.
+
+### `getRecommendedTimeoutMillis()` **(Android)**
+
+```jsx
+static getRecommendedTimeoutMillis(originalTimeout)
+```
+
+Gets the timeout in millisecond that the user needs.  
+This value is set in "Time to take action (Accessibility timeout)" of "Accessibility" settings.
+
 
 ### `isBoldTextEnabled()` **(iOS)**
 
@@ -152,7 +176,7 @@ Query whether a screen reader is currently enabled. Returns a promise which reso
 static removeEventListener(eventName, handler)
 ```
 
-Remove an event handler.
+> **Deprecated.** Use the `remove()` method on the event subscription returned by `addEventListener()`.
 
 ### `setAccessibilityFocus()`
 

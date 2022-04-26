@@ -96,9 +96,9 @@ This is a convenience wrapper around [`<VirtualizedList>`](virtualizedlist.md), 
 
 ## Props
 
-### [ScrollView Props](scrollview.md#props)
+### [VirtualizedList Props](virtualizedlist.md#props)
 
-Inherits [ScrollView Props](scrollview.md#props).
+Inherits [VirtualizedList Props](virtualizedlist.md#props).
 
 ---
 
@@ -374,7 +374,7 @@ An object that identifies the data to be rendered for a given section.
 
 | Name                   | Type               | Description                                                                                                                                              |
 | ---------------------- | ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| data **(Required)**    | array              | The data for rendering items in this section. Array of objects, much like [`FlatList`'s data prop](flatlist.md#data).                                    |
+| data **(Required)**    | array              | The data for rendering items in this section. Array of objects, much like [`FlatList`'s data prop](flatlist.md#required-data).                           |
 | key                    | string             | Optional key to keep track of section re-ordering. If you don't plan on re-ordering sections, the array index will be used by default.                   |
 | renderItem             | function           | Optionally define an arbitrary item renderer for this section, overriding the default [`renderItem`](#renderitem) for the list.                          |
 | ItemSeparatorComponent | component, element | Optionally define an arbitrary item separator for this section, overriding the default [`ItemSeparatorComponent`](#itemseparatorcomponent) for the list. |

@@ -111,6 +111,16 @@ Controls whether iOS should automatically adjust the content inset for scroll vi
 
 ---
 
+### `automaticallyAdjustsScrollIndicatorInsets` **(iOS)**
+
+Controls whether iOS should automatically adjust the scroll indicator insets. See Apple's [documentation on the property](https://developer.apple.com/documentation/uikit/uiscrollview/3198043-automaticallyadjustsscrollindica).
+
+| Type | Default |
+| ---- | ------- |
+| bool | `true`  |
+
+---
+
 ### `bounces` **(iOS)**
 
 When true, the scroll view bounces when it reaches the end of the content if the content is larger than the scroll view along the axis of the scroll direction. When `false`, it disables all bouncing even if the `alwaysBounce*` props are `true`.
@@ -676,6 +686,16 @@ Use in conjunction with `snapToOffsets`. By default, the beginning of the list c
 
 ---
 
+### `stickyHeaderHiddenOnScroll`
+
+When set to `true`, sticky header will be hidden when scrolling down the list, and it will dock at the top of the list when scrolling up.
+
+| Type | Default |
+| ---- | ------- |
+| bool | `false` |
+
+---
+
 ### `stickyHeaderIndices`
 
 An array of child indices determining which children get docked to the top of the screen when scrolling. For example, passing `stickyHeaderIndices={[0]}` will cause the first child to be fixed to the top of the scroll view. You can also use like [x,y,z] to make multiple items sticky when they are at the top. This property is not supported in conjunction with `horizontal={true}`.
@@ -731,19 +751,9 @@ Scrolls to a given x, y offset, either immediately, with a smooth animation.
 ### `scrollToEnd()`
 
 ```js
-scrollToEnd(([options]: { animated: boolean, duration: number }));
+scrollToEnd(([options]: { animated: boolean }));
 ```
 
 If this is a vertical ScrollView scrolls to the bottom. If this is a horizontal ScrollView scrolls to the right.
 
-Use `scrollToEnd({ animated: true })` for smooth animated scrolling, `scrollToEnd({ animated: false })` for immediate scrolling. For Android, you may specify a duration, e.g. `scrollToEnd({ duration: 500 })` for a controlled duration scroll. If no options are passed, `animated` defaults to `true`.
-
----
-
-### `scrollWithoutAnimationTo()`
-
-```js
-scrollWithoutAnimationTo(y, x);
-```
-
-Deprecated, use `scrollTo` instead.
+Use `scrollToEnd({ animated: true })` for smooth animated scrolling, `scrollToEnd({ animated: false })` for immediate scrolling. If no options are passed, `animated` defaults to `true`.

@@ -181,7 +181,7 @@ export default App;
 
 ### `aspectRatio`
 
-Aspect ratio controls the size of the undefined dimension of a node. Aspect ratio is a non-standard property only available in React Native and not CSS.
+Aspect ratio controls the size of the undefined dimension of a node. See https://developer.mozilla.org/en-US/docs/Web/CSS/aspect-ratio for more details.
 
 - On a node with a set width/height, aspect ratio controls the size of the unset dimension
 - On a node with a set flex basis, aspect ratio controls the size of the node in the cross axis if unset
@@ -367,7 +367,7 @@ When `flex` is -1, the component is normally sized according to `width` and `hei
 
 [`flexShrink`](layout-props.md#flexshrink) describes how to shrink children along the main axis in the case in which the total size of the children overflows the size of the container on the main axis. `flexShrink` is very similar to `flexGrow` and can be thought of in the same way if any overflowing size is considered to be negative remaining space. These two properties also work well together by allowing children to grow and shrink as needed.
 
-`flexShrink` accepts any floating point value >= 0, with 1 being the default value. A container will shrink its children weighted by the children’s `flexShrink` values.
+`flexShrink` accepts any floating point value >= 0, with 0 being the default value. A container will shrink its children weighted by the children’s `flexShrink` values.
 
 | Type   | Required |
 | ------ | -------- |

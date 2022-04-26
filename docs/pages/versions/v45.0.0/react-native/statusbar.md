@@ -3,7 +3,7 @@ id: statusbar
 title: StatusBar
 ---
 
-Component to control the app status bar.
+Component to control the app's status bar. The status bar is the zone, typically at the top of the screen, that displays the current time, WiFi and cellular network information, battery level and/or other status icons.
 
 ### Usage with Navigator
 
