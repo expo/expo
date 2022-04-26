@@ -1,73 +1,101 @@
 fastlane documentation
-================
+----
+
 # Installation
 
 Make sure you have the latest version of the Xcode command line tools installed:
 
-```
+```sh
 xcode-select --install
 ```
 
-Install _fastlane_ using
-```
-[sudo] gem install fastlane -NV
-```
-or alternatively using `brew install fastlane`
+For _fastlane_ installation instructions, see [Installing _fastlane_](https://docs.fastlane.tools/#installing-fastlane)
 
 # Available Actions
+
 ## iOS
+
 ### ios prepare_schemes
+
+```sh
+[bundle exec] fastlane ios prepare_schemes
 ```
-fastlane ios prepare_schemes
-```
+
+
 
 ### ios test_module
+
+```sh
+[bundle exec] fastlane ios test_module
 ```
-fastlane ios test_module
-```
+
+
 
 ### ios test
+
+```sh
+[bundle exec] fastlane ios test
 ```
-fastlane ios test
-```
+
+
 
 ### ios create_simulator_build
+
+```sh
+[bundle exec] fastlane ios create_simulator_build
 ```
-fastlane ios create_simulator_build
-```
+
+
 
 ### ios create_expo_client_build
-```
-fastlane ios create_expo_client_build
+
+```sh
+[bundle exec] fastlane ios create_expo_client_build
 ```
 
+
+
 ### ios release
+
+```sh
+[bundle exec] fastlane ios release
 ```
-fastlane ios release
-```
+
 
 
 ----
 
+
 ## Android
+
 ### android start
+
+```sh
+[bundle exec] fastlane android start
 ```
-fastlane android start
-```
+
+
 
 ### android build
-```
-fastlane android build
+
+```sh
+[bundle exec] fastlane android build
 ```
 
+
+
 ### android prod_release
+
+```sh
+[bundle exec] fastlane android prod_release
 ```
-fastlane android prod_release
-```
+
 
 
 ----
 
 This README.md is auto-generated and will be re-generated every time [_fastlane_](https://fastlane.tools) is run.
-More information about fastlane can be found on [fastlane.tools](https://fastlane.tools).
-The documentation of fastlane can be found on [docs.fastlane.tools](https://docs.fastlane.tools).
+
+More information about _fastlane_ can be found on [fastlane.tools](https://fastlane.tools).
+
+The documentation of _fastlane_ can be found on [docs.fastlane.tools](https://docs.fastlane.tools).
