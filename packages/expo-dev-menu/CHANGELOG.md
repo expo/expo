@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fix error on summoning dev-menu first time, that leads to the application freeze. ([#17215](https://github.com/expo/expo/pull/17215) by [@lukmccall](https://github.com/lukmccall))
-
 ### 💡 Others
+
+## 0.10.4 — 2022-04-26
+
+### 🐛 Bug fixes
+
+- Fix error on summoning dev-menu first time, that leads to the application freeze. ([#17215](https://github.com/expo/expo/pull/17215) by [@lukmccall](https://github.com/lukmccall))
 
 ## 0.10.3 — 2022-04-25
 
