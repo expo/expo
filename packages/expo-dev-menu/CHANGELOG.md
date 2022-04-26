@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix error on summoning dev-menu first time, that leads to the application freeze.
+- Fix error on summoning dev-menu first time, that leads to the application freeze. ([#17215](https://github.com/expo/expo/pull/17215) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 
