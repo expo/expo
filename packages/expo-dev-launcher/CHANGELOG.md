@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix the error screen sometimes not showing on iOS.
+
 ### 💡 Others
 
 ## 0.11.2 — 2022-04-25
