@@ -64,6 +64,10 @@ outputs:
 runs:
   using: 'composite'
   steps:
+    - name: 🔍️ Get yarn cache directory path
+      id: yarn-cache-dir-path
+      run: echo "::set-output name=dir::$(yarn cache dir)"
+      shell: bash
     - name: ♻️ Restore workspace node modules
       if: inputs.yarn-workspace == 'true'
       uses: actions/cache@v2
@@ -72,6 +76,7 @@ runs:
         # See "workspaces" → "packages" in the root package.json for the source of truth of
         # which node_modules are affected by the root yarn.lock
         path: |
+          ${{ steps.yarn-cache-dir-path.outputs.dir }}
           node_modules
           apps/*/node_modules
           home/node_modules
@@ -98,21 +103,12 @@ runs:
       with:
         path: docs/node_modules
         key: ${{ runner.os }}-docs-modules-${{ hashFiles('docs/yarn.lock') }}
-    - name: 🔍️ Check if Next related files have been changed
-      if: inputs.yarn-docs == 'true'
-      uses: dorny/paths-filter@v2
-      id: changes
-      with:
-        filters: |
-          changed:
-            - 'docs/yarn.lock'
-            - 'docs/next.config.js'
     - name: ♻️ Restore Docs Next cache
-      if: inputs.yarn-docs == 'true' && steps.changes.outputs.changed == 'false'
+      if: inputs.yarn-docs == 'true' && steps.docs-modules-cache.outputs.cache-hit == 'true'
       uses: actions/cache@v2
       with:
         path: docs/.next/cache
-        key: docs-next-${{ hashFiles('docs/yarn.lock') }}-next-${{ hashFiles('docs/next.config.js') }}
+        key: ${{ runner.os }}-docs-next-${{ hashFiles('docs/yarn.lock') }}-${{ hashFiles('docs/next.config.js') }}
 
     - name: ♻️ Restore ios/Pods from cache
       if: inputs.ios-pods == 'true'
