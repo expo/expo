@@ -10,6 +10,18 @@
 
 ### 💡 Others
 
+## 0.10.3 — 2022-04-25
+
+_This version does not introduce any user-facing changes._
+
+## 0.10.2 — 2022-04-21
+
+_This version does not introduce any user-facing changes._
+
+## 0.10.1 — 2022-04-21
+
+_This version does not introduce any user-facing changes._
+
 ## 0.10.0 — 2022-04-20
 
 ### 🎉 New features

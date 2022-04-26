@@ -163,7 +163,7 @@ export abstract class BundlerDevServer {
     // Must come after ngrok (`startTunnelAsync`) setup.
 
     if (this.devSession) {
-      this.devSession.stop();
+      this.devSession.stopNotifying();
     }
 
     this.devSession = new DevelopmentSession(
@@ -209,8 +209,8 @@ export abstract class BundlerDevServer {
 
   /** Stop the running dev server instance. */
   async stopAsync() {
-    // Stop the dev session timer.
-    this.devSession?.stop();
+    // Stop the dev session timer and tell Expo API to remove dev session.
+    await this.devSession?.closeAsync();
 
     // Stop ngrok if running.
     await this.ngrok?.stopAsync().catch((e) => {
