@@ -50,7 +50,9 @@ export class Sound {
     _updateAudioSampleReceivedCallback() {
         if (global.__EXAV_setOnAudioSampleReceivedCallback == null) {
             if (Platform.OS === 'ios' || Platform.OS === 'android') {
-                throw new Error('Failed to set Audio Sample Buffer callback! The JSI function seems to not be installed correctly.');
+                throw new Error('expo-av: Failed to set up Audio Sample Buffer callback. ' +
+                    "Do you have 'Remote Debugging' enabled in your app's Developer Menu (https://docs.expo.dev/workflow/debugging)? " +
+                    'Audio Sample Buffer callbacks are not supported while using Remote Debugging, you will need to disable it to use them.');
             }
             else {
                 throw new UnavailabilityError('expo-av', 'setOnAudioSampleReceived');
