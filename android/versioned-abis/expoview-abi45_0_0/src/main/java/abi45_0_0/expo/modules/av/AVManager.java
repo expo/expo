@@ -180,7 +180,10 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
       uiManager.registerLifecycleEventListener(this);
       uiManager.runOnClientCodeQueueThread(() -> {
         final JavaScriptContextProvider jsContextProvider = mModuleRegistry.getModule(JavaScriptContextProvider.class);
-        installJSIBindings(jsContextProvider.getJavaScriptContextRef(), jsContextProvider.getJSCallInvokerHolder());
+        final long jsContextRef = jsContextProvider.getJavaScriptContextRef();
+        if (jsContextRef != 0) {
+          installJSIBindings(jsContextRef, jsContextProvider.getJSCallInvokerHolder());
+        }
       });
     }
   }
