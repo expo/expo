@@ -48,7 +48,7 @@ Once you have registered all of the iOS devices you would like to develop on, yo
 
 </Tabs>
 
-and installing the resulting build on your device.
+and installing the resulting build on your device via the build page on https://expo.dev.
 
 
 ## Developing your app
