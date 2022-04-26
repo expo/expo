@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix the error screen sometimes not showing on iOS. ([#17216](https://github.com/expo/expo/pull/17216) by [@lukmccall](https://github.com/lukmccall))
+
 ### 💡 Others
 
 ## 0.11.2 — 2022-04-25
