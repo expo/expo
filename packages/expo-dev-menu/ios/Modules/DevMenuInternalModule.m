@@ -16,6 +16,7 @@ RCT_EXTERN_METHOD(hideMenu)
 RCT_EXTERN_METHOD(setOnboardingFinished:(BOOL)finished)
 RCT_EXTERN_METHOD(openDevMenuFromReactNative)
 RCT_EXTERN_METHOD(onScreenChangeAsync:(NSString *)currentScreen resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject)
+RCT_EXTERN_METHOD(loadFontsAsync:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject)
 
 RCT_EXPORT_METHOD(copyToClipboardAsync:(NSString *)content
                   resolver:(RCTPromiseResolveBlock)resolve
