@@ -4,7 +4,7 @@ sidebar_title: Development and Production
 ---
 
 import Video from '~/components/plugins/Video'
-import TerminalBlock from '~/components/plugins/TerminalBlock';
+import { Terminal } from '~/ui/components/Snippet';
 
 Your project will always run in one of two modes: development or production. By default, running your project locally with `expo start` runs it in development mode, whereas a published project (via `expo publish`), or any standalone apps, will run in production mode.
 
@@ -47,6 +47,6 @@ Production mode is most useful for two things:
 
 The easiest way to simulate how your project will run on end users' devices is with the command
 
-<TerminalBlock cmd={['expo start --no-dev --minify']} />
+<Terminal cmd={['$ expo start --no-dev --minify']} cmdCopy="expo start --no-dev --minify" />
 
 Besides running in production mode (which tells the Metro bundler to set the `__DEV__` environment variable to `false`, among a few other things) the `--minify` flag will minify your app, meaning it will get rid of any unnecessary data (comments, formatting, unused code). If you're getting an error or crash in your standalone app, running your project with this command can save you a lot of time in finding the root cause.

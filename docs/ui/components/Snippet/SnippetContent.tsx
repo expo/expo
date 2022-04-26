@@ -1,5 +1,5 @@
 import { css } from '@emotion/react';
-import { borderRadius, theme } from '@expo/styleguide';
+import { borderRadius, theme, spacing } from '@expo/styleguide';
 import React, { PropsWithChildren } from 'react';
 
 type SnippetContentProps = PropsWithChildren<{
@@ -22,7 +22,7 @@ const contentStyle = css`
   border: 1px solid ${theme.border.default};
   border-bottom-left-radius: ${borderRadius.medium}px;
   border-bottom-right-radius: ${borderRadius.medium}px;
-  padding: 1rem;
+  padding: ${spacing[4]}px;
   overflow-x: auto;
 
   code {

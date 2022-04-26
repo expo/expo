@@ -1,4 +1,5 @@
 import { css, SerializedStyles } from '@emotion/react';
+import { spacing } from '@expo/styleguide';
 import React, { PropsWithChildren } from 'react';
 
 type SnippetProps = {
@@ -12,5 +13,5 @@ export const Snippet = ({ children, style }: PropsWithChildren<SnippetProps>) =>
 const containerStyle = css`
   display: flex;
   flex-direction: column;
-  margin-bottom: 1ch;
+  margin-bottom: ${spacing[4]}px;
 `;

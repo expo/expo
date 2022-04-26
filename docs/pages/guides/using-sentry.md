@@ -3,7 +3,7 @@ title: Using Sentry
 ---
 
 import PlatformsSection from '~/components/plugins/PlatformsSection';
-import TerminalBlock from '~/components/plugins/TerminalBlock';
+import { Terminal } from '~/ui/components/Snippet';
 
 [Sentry](http://getsentry.com/) is a crash reporting platform that provides you with "real-time insight into production deployments with info to reproduce and fix crashes".
 
@@ -42,13 +42,16 @@ Once you have each of these: organization name, project name, DSN, and auth toke
 
 In your project directory, run:
 
-<TerminalBlock cmd={['expo install sentry-expo']} />
+<Terminal cmd={['$ expo install sentry-expo']} cmdCopy="expo install sentry-expo" />
 
 > If you're using SDK 39 or lower, run `yarn add sentry-expo@~3.0.0`
 
 `sentry-expo` also requires some additional dependencies, otherwise it won't work properly. To install them, run:
 
-<TerminalBlock cmd={['expo install expo-application expo-constants expo-device expo-updates @sentry/react-native']} />
+<Terminal 
+  cmd={['$ expo install expo-application expo-constants expo-device expo-updates @sentry/react-native']}
+  cmdCopy="expo install expo-application expo-constants expo-device expo-updates @sentry/react-native"
+/>
 
 ### Step 2: Code
 

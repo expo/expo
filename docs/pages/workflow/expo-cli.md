@@ -3,7 +3,7 @@ title: Expo CLI
 maxHeadingDepth: 4
 ---
 
-import TerminalBlock from '~/components/plugins/TerminalBlock';
+import { Terminal } from '~/ui/components/Snippet';
 
 Expo CLI is a command line app that is the main interface between a developer and Expo tools. You'll use it for a variety of tasks, such as:
 
@@ -17,7 +17,7 @@ You may use the CLI in your terminal or use the web based interface (it opens au
 
 ## Installation
 
-<TerminalBlock cmd={['npm install -g expo-cli']} />
+<Terminal cmd={['$ npm install -g expo-cli']} cmdCopy="npm install -g expo-cli" />
 
 ## Checking CLI Version
 
@@ -27,7 +27,7 @@ Run `expo --version` to determine what version you are currently working with.
 
 The commands listed below are derived from the latest version of Expo CLI. You can view the list of commands available with your version in your terminal using `expo --help`. To learn more about a specific command and its options use `expo [command] --help`.
 
-<TerminalBlock cmd={[`# Usage: expo [command] [options]`]} />
+<Terminal cmd={[`# Usage: expo [command] [options]`]} />
 
 <!-- BEGIN GENERATED BLOCK. DO NOT MODIFY MANUALLY. https://github.com/expo/expo-cli/blob/main/packages/expo-cli/scripts/introspect.ts -->
 

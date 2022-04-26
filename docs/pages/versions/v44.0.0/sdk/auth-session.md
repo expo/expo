@@ -7,9 +7,9 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 import InstallSection from '~/components/plugins/InstallSection';
 
 import { SocialGrid, SocialGridItem, CreateAppButton } from '~/components/plugins/AuthSessionElements';
-import TerminalBlock from '~/components/plugins/TerminalBlock';
 import SnackInline from '~/components/plugins/SnackInline';
 import { InlineCode } from '~/components/base/code';
+import { Terminal } from '~/ui/components/Snippet';
 
 `AuthSession` is the easiest way to add web browser based authentication (for example, browser-based OAuth flows) to your app, built on top of [WebBrowser](webbrowser.md), [Crypto](crypto.md), and [Random](random.md). If you would like to understand how it does this, read this document from top to bottom. If you just want to use it, jump to the [Authentication Guide](../../../guides/authentication.md).
 
@@ -27,26 +27,26 @@ In **bare-workflow** you can use the [`uri-scheme` package][n-uri-scheme] to eas
 
 To make your native app handle `mycoolredirect://` simply run:
 
-<TerminalBlock cmd={['npx uri-scheme add mycoolredirect']} />
+<Terminal cmd={['$ npx uri-scheme add mycoolredirect']} cmdCopy="npx uri-scheme add mycoolredirect" />
 
 <br />
 
 You should now be able to see a list of all your project's schemes by running:
 
-<TerminalBlock cmd={['npx uri-scheme list']} />
+<Terminal cmd={['$ npx uri-scheme list']} cmdCopy="npx uri-scheme list" />
 
 <br />
 
 You can test it to ensure it works like this:
 
-<TerminalBlock cmd={[
+<Terminal cmd={[
 '# Rebuild the native apps, be sure to use an emulator',
-'yarn ios',
 'yarn android',
+'yarn ios',
 '',
 '# Open a URI scheme',
 'npx uri-scheme open mycoolredirect://some/redirect'
-]} />
+]} cmdCopy="yarn android && yarn ios && npx uri-scheme open mycoolredirect://some/redirect" />
 
 ### Usage in standalone apps
 

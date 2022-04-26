@@ -4,7 +4,7 @@ sidebar_title: Using SVGs
 ---
 
 import SnackEmbed from '~/components/plugins/SnackEmbed';
-import TerminalBlock from '~/components/plugins/TerminalBlock';
+import { Terminal } from '~/ui/components/Snippet';
 
 SVGs (Scalable Vector Graphics) are a great way to present icons and other visual elements in a flexible, crisp, and performant way. Using SVGs on the web is straightforward, since we can copy an SVG and place it inline in an HTML file. This works because browsers understand how to parse and present SVGs. Expo does not understand how to parse and present SVG out of the box on Android and iOS, so we'll need to use a React Native package and an SVG converter to do so.
 
@@ -38,7 +38,7 @@ To automate this process, React-SVGR also [provides a CLI](https://react-svgr.co
 
 Once we have a compatible SVG, we'll need to add [react-native-svg](https://github.com/react-native-svg/react-native-svg) to our project. We can do so with:
 
-<TerminalBlock cmd={['expo install react-native-svg']} />
+<Terminal cmd={['$ expo install react-native-svg']} cmdCopy="expo install react-native-svg" />
 
 Then we can add code like the following to our project:
 

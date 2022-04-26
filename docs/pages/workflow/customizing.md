@@ -2,13 +2,19 @@
 title: Adding custom native code
 ---
 
-import TerminalBlock from '~/components/plugins/TerminalBlock';
+import { Terminal } from '~/ui/components/Snippet';
 
 The Expo Go app enables you to move quickly by building on a feature rich native runtime that is well suited for developing many types of apps. If you want to use custom native code that isn't already in the Expo Go app, you will need to generate the native iOS and Android projects that are typically hidden in the managed workflow, then build and run them.
 
 You can do this in a single command on each platform:
 
-<TerminalBlock cmd={['# Build your native iOS project', 'expo run:ios', '', '# Build your native Android project', 'expo run:android']} />
+<Terminal cmd={[
+  '# Build your native Android project',
+  '$ expo run:android',
+  '',
+  '# Build your native iOS project',
+  '$ expo run:ios'
+]} cmdCopy="expo run:android && expo run:ios" />
 
 > Run commands were introduced in SDK 41, prebuilding and running in earlier SDKs may not work as well.
 
@@ -45,4 +51,10 @@ Once you have customized the native code in your project, you can use the [`expo
 
 The classic `expo build` command does not support custom native code. When you're ready to ship your app, you can [build it with EAS Build](/build/introduction) or archive and sign it locally.
 
-<TerminalBlock cmd={['# Install the CLI', 'npm i -g eas-cli', '', '# Build your app!', 'eas build -p all']} />
+<Terminal cmd={[
+  '# Install the CLI',
+  '$ npm i -g eas-cli',
+  '',
+  '# Build your app!',
+  '$ eas build -p all'
+]} cmdCopy="npm i -g eas-cli && eas build -p all" />

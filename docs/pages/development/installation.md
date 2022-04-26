@@ -4,15 +4,15 @@ sidebar_title: Bare React Native Installation
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';
-import TerminalBlock from '~/components/plugins/TerminalBlock';
 import ConfigurationDiff from '~/components/plugins/ConfigurationDiff';
 import { Tab, Tabs } from '~/components/plugins/Tabs';
+import { Terminal } from '~/ui/components/Snippet';
 
 The installation steps on this page are only required to add the `expo-dev-client` library to a React Native or Bare project. To add a the `expo-dev-client` library to an existing managed project, see our [Getting Started guide](getting-started.md).
 
 If you're just starting your project, you can create a new project from our template with:
 
-<TerminalBlock cmd={["npx crna -t with-dev-client"]} />
+<Terminal cmd={["$ npx crna -t with-dev-client"]} cmdCopy="npx crna -t with-dev-client" />
 
 If you have an existing project, you'll need to [install the package and make a few changes](installation.md) to your **AppDelegate.m**, **MainActivity.java** and **MainApplication.java**.
 
