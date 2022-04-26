@@ -76,3 +76,7 @@ export async function copyToClipboardAsync(content: string) {
 export async function setOnboardingFinishedAsync(isFinished: boolean) {
   return await DevMenu.setOnboardingFinished(isFinished);
 }
+
+export async function loadFontsAsync() {
+  return await DevMenu.loadFontsAsync();
+}
