@@ -8,10 +8,14 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 11.2.2 — 2022-04-27
+
+### 🐛 Bug fixes
+
 - Fixed displaying warning about `Sound.setOnAudioSampleReceived` unavailable when debugging remotely. ([#17210](https://github.com/expo/expo/pull/17210) by [@barthap](https://github.com/barthap))
 - Fixed crash when remote debugging is enabled on Android. ([#17212](https://github.com/expo/expo/pull/17212) by [@barthap](https://github.com/barthap))
-
-### 💡 Others
 
 ## 11.2.1 — 2022-04-20
 

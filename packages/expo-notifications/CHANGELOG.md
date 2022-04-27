@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 0.15.1 — 2022-04-27
+
+### 💡 Others
+
 - Remove badge deadcode ([#17205](https://github.com/expo/expo/pull/17205) by [@wschurman](https://github.com/wschurman))
 
 ## 0.15.0 — 2022-04-18
