@@ -1,5 +1,5 @@
-#import "REASnapshot.h"
 #import <Foundation/Foundation.h>
+#import <RNReanimated/REASnapshot.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

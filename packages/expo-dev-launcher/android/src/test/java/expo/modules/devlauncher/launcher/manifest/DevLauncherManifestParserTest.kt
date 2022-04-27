@@ -63,6 +63,15 @@ internal class DevLauncherManifestParserTest {
     Truth.assertThat(manifestParser.isManifestUrl()).isTrue()
 
     server.enqueue(MockResponse().setResponseCode(200)
+      .setHeader("Content-Type", "multipart/mixed"))
+    Truth.assertThat(manifestParser.isManifestUrl()).isTrue()
+
+    // content-type from EAS Update manifest
+    server.enqueue(MockResponse().setResponseCode(200)
+      .setHeader("Content-Type", "text/plain; charset=utf-8"))
+    Truth.assertThat(manifestParser.isManifestUrl()).isTrue()
+
+    server.enqueue(MockResponse().setResponseCode(200)
         .setHeader("Content-Type", "application/javascript"))
     Truth.assertThat(manifestParser.isManifestUrl()).isFalse()
 

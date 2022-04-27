@@ -95,16 +95,10 @@ ABI44_0_0EX_EXPORT_METHOD_AS(setCurrentScreen,
                     screenClass:(NSString *)screenClassOverview
                     resolver:(ABI44_0_0EXPromiseResolveBlock)resolve
                     rejecter:(ABI44_0_0EXPromiseRejectBlock)reject) {
-  if ([self getAppOrReject:reject] == nil) return;
-  [ABI44_0_0EXUtilities performSynchronouslyOnMainThread:^{
-    @try {
-      [FIRAnalytics setScreenName:screenName screenClass:screenClassOverview];
-      resolve([NSNull null]);
-    } @catch (NSException *exception) {
-      [self reject:reject withException:exception];
-      return;
-    }
-  }];
+  [self logEvent:@"screen view"
+      parameters:@{ @"screen name": screenName, @"screen class": screenClassOverview }
+        resolver:resolve
+        rejecter:reject];
 }
 
 ABI44_0_0EX_EXPORT_METHOD_AS(setSessionTimeoutDuration,

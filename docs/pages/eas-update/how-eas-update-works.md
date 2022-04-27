@@ -48,7 +48,7 @@ Like builds, every update on a branch includes a target runtime version and targ
 - The runtime version of the build and the target runtime version of an update must match exactly.
 - A channel can be linked to any branch. By default, a channel is linked to a branch of the same name.
 
-Let's focus on that last point. Every build has a channel, and we, as developers, can link that channel to any branch, which will make its most recent compatible update available on the branch to the linked channel. To simplify this linking, by default we auto-link channelse to branches of the same name. For instance, if we created builds with the channel named "production", we could publish updates to a branch named "production" and our builds would get the updates from the branch named "production", even though we did not manually link anything.
+Let's focus on that last point. Every build has a channel, and we, as developers, can link that channel to any branch, which will make its most recent compatible update available on the branch to the linked channel. To simplify this linking, by default we auto-link channels to branches of the same name. For instance, if we created builds with the channel named "production", we could publish updates to a branch named "production" and our builds would get the updates from the branch named "production", even though we did not manually link anything.
 
 <ImageSpotlight alt={`Channel "production" linked to branch "production" by default`} src="/static/images/eas-update/default-link.png" />
 

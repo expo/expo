@@ -70,8 +70,15 @@ public final class ModuleHolder {
       }
       let queue = function.queue ?? DispatchQueue.global(qos: .default)
 
+      // Given arguments can be:
+      // - Swift primitives when invoked through the bridge and in unit tests
+      // - `JavaScriptValue`s when the function is called through the JSI
+      // The latter need to be unpacked to Swift primitives on the JS thread,
+      // so we do the casting before the function call is scheduled on the queue.
+      let arguments = try castArguments(args, toTypes: function.argumentTypes)
+
       queue.async {
-        function.call(args: args, promise: promise)
+        function.call(args: arguments, promise: promise)
       }
     } catch let error as CodedError {
       promise.reject(error)
@@ -91,10 +98,15 @@ public final class ModuleHolder {
 
   @discardableResult
   func callSync(function functionName: String, args: [Any]) -> Any? {
-    if let function = definition.functions[functionName] {
-      return function.callSync(args: args)
+    guard let function = definition.functions[functionName] else {
+      return nil
     }
-    return nil
+    do {
+      let arguments = try castArguments(args, toTypes: function.argumentTypes)
+      return function.callSync(args: arguments)
+    } catch {
+      return error
+    }
   }
 
   // MARK: JavaScript Module Object
@@ -113,7 +125,7 @@ public final class ModuleHolder {
 
     // Fill in with constants
     for (key, value) in getConstants() {
-      object[key] = value
+      object.setProperty(key, value: value)
     }
 
     // Fill in with functions

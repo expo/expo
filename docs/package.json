@@ -1,6 +1,7 @@
 {
   "name": "expo-docs",
   "version": "44.0.0",
+  "betaVersion": "45.0.0",
   "private": true,
   "scripts": {
     "dev": "rimraf .next/preval && next dev -p 3002",
@@ -31,6 +32,7 @@
     "@mdx-js/runtime": "^1.6.22",
     "@reach/tabs": "^0.15.0",
     "@sentry/browser": "^5.6.1",
+    "date-fns": "^2.28.0",
     "docsearch.js": "^2.5.2",
     "emoji-regex": "^9.2.2",
     "front-matter": "^2.3.0",

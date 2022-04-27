@@ -4,5 +4,5 @@
 
 #import <GoogleMobileAds/GoogleMobileAds.h>
 
-@interface ABI43_0_0EXAdsAdMobInterstitial : ABI43_0_0EXExportedModule <ABI43_0_0EXEventEmitter, ABI43_0_0EXModuleRegistryConsumer, GADInterstitialDelegate>
+@interface ABI43_0_0EXAdsAdMobInterstitial : ABI43_0_0EXExportedModule <ABI43_0_0EXEventEmitter, ABI43_0_0EXModuleRegistryConsumer, GADFullScreenContentDelegate>
 @end

@@ -92,7 +92,7 @@ function generateREADME() {
     }
     readme = replaceAll('docName', docName, readme);
     if (isAndroid) {
-      const androidPackages = glob.sync('android/**/*Package.java');
+      const androidPackages = glob.sync('android/src/**/*Package.{java,kt}');
       let androidPackage;
       let androidPackagePath = 'expo.modules.yourModule.YourPackage';
       let androidPackageName = 'YourPackage';

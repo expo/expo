@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 3.6.0 — 2022-04-18
+
+### 💡 Others
+
 - Export provider specific config types: `FacebookAuthRequestConfig` and `GoogleAuthRequestConfig`. ([#16223](https://github.com/expo/expo/pull/16223) by [@Simek](https://github.com/Simek))
 - Add missing `language` field to the `GoogleAuthRequestConfig`. ([#16223](https://github.com/expo/expo/pull/16223) by [@Simek](https://github.com/Simek))
 

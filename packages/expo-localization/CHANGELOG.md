@@ -4,15 +4,25 @@
 
 ### 🛠 Breaking changes
 
-- Guess the device language on iOS rather than using the app-specific language. ([#15807](https://github.com/expo/expo/pull/15807) by [@EvanBacon](https://github.com/EvanBacon))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
-- Exception in HostObject::get for prop 'NativeUnimoduleProxy': java.lang.NullPointerException ([#16316](https://github.com/expo/expo/pull/16316) by [@nomi9995](https://github.com/nomi9995))
-
 ### 💡 Others
+
+## 13.0.0 — 2022-04-18
+
+### 🛠 Breaking changes
+
+- Guess the device language on iOS rather than using the app-specific language. ([#15807](https://github.com/expo/expo/pull/15807) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 🎉 New features
+
+- Use JSI host object instead of the bridge module for communication between JavaScript and native code. ([#16972](https://github.com/expo/expo/pull/16972) by [@tsapeta](https://github.com/tsapeta))
+
+### 🐛 Bug fixes
+
+- Exception in HostObject::get for prop 'NativeUnimoduleProxy': java.lang.NullPointerException ([#16316](https://github.com/expo/expo/pull/16316) by [@nomi9995](https://github.com/nomi9995))
 
 ### ⚠️ Notices
 

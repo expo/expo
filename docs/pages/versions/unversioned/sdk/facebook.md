@@ -10,6 +10,8 @@ import APISection from '~/components/plugins/APISection';
 import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
+> **Deprecated.** This module will be removed in SDK 46. There will be no replacement that works with the classic build service (`expo build`) because [the classic build service has been superseded by **EAS Build**](https://blog.expo.dev/turtle-goes-out-to-sea-d334db2a6b60). With **EAS Build**, you should use [react-native-fbsdk-next](https://github.com/thebergamo/react-native-fbsdk-next/#expo-installation) instead.
+
 **`expo-facebook`** provides Facebook integration, such as logging in through Facebook, for React Native apps. Expo exposes a minimal native API since you can access Facebook's [Graph API](https://developers.facebook.com/docs/graph-api) directly through HTTP (using [fetch](https://reactnative.dev/docs/network.html#fetch), for example).
 
 <PlatformsSection android emulator ios simulator />

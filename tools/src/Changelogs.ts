@@ -1,7 +1,6 @@
 import assert from 'assert';
 import fs from 'fs-extra';
 import semver from 'semver';
-import semverRegex from 'semver-regex';
 
 import * as Markdown from './Markdown';
 import { execAll } from './Utils';
@@ -146,7 +145,7 @@ export class Changelog {
       try {
         const markdown = await fs.readFile(this.filePath, 'utf8');
         this.tokens = Markdown.lexify(markdown);
-      } catch (error) {
+      } catch {
         this.tokens = [];
       }
     }
@@ -545,7 +544,7 @@ export class MemChangelog extends Changelog {
     if (!this.tokens) {
       try {
         this.tokens = Markdown.lexify(this.content);
-      } catch (error) {
+      } catch {
         this.tokens = [];
       }
     }
@@ -568,7 +567,7 @@ function parseVersion(text: string): string | null {
   if (text === UNPUBLISHED_VERSION_NAME) {
     return text;
   }
-  const match = semverRegex().exec(text);
+  const match = /(\d+\.\d+\.\d+)([-+][\w\.]+)?/.exec(text);
   return match?.[0] ?? null;
 }
 

@@ -23,14 +23,14 @@ concurrency:
 
 jobs:
   docs:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     steps:
       - name: Install Node 14
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: '14.17'
       - name: Check out repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           submodules: true
       - name: Get yarn cache directory path
@@ -81,6 +81,7 @@ jobs:
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: 'us-east-2'
       - name: 🔔 Notify on Slack
         uses: 8398a7/action-slack@v3
         if: failure() && github.event.ref == 'refs/heads/main'

@@ -3,7 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'maven-publish'
 
 group = 'host.exp.exponent'
-version = '6.0.0'
+version = '7.0.0'
 
 buildscript {
   def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
@@ -74,7 +74,7 @@ android {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 31)
     versionCode 15
-    versionName '6.0.0'
+    versionName '7.0.0'
   }
   lintOptions {
     abortOnError false
@@ -91,9 +91,9 @@ dependencies {
   // project :expo > host.exp.exponent:expo-firebase-analytics:X.X.X
   // project :expo > host.exp.exponent:expo-firebase-core:X.X.X
   // api platform("com.google.firebase:firebase-bom:24.1.0")
-  api 'com.google.firebase:firebase-core:17.2.1'
-  api 'com.google.firebase:firebase-common:19.0.0'
-  api 'com.google.firebase:firebase-analytics:17.2.1'
+  api 'com.google.firebase:firebase-core:20.1.2'
+  api 'com.google.firebase:firebase-common:20.1.0'
+  api 'com.google.firebase:firebase-analytics:20.1.2'
 
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
 }

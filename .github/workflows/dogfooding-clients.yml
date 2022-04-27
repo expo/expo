@@ -9,13 +9,13 @@ concurrency:
 
 jobs:
   build-android:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           submodules: true
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
           node-version: '14.17'
       - name: Get yarn cache directory path
@@ -90,13 +90,13 @@ jobs:
             bin/fastlane android build build_type:$BUILD_TYPE flavor:$FLAVOR
           fi
       - name: 💾 Upload APK artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: android-apk
           path: android/app/build/outputs/apk
       - name: 💾 Store daemon logs for debugging crashes
         if: failure()
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: gradle-daemon-logs
           path: ~/.gradle/daemon

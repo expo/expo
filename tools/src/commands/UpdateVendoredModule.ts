@@ -5,6 +5,7 @@ import inquirer from 'inquirer';
 import os from 'os';
 import path from 'path';
 
+import { runReactNativeCodegenAsync } from '../Codegen';
 import { EXPO_DIR } from '../Constants';
 import { GitDirectory } from '../Git';
 import logger from '../Logger';
@@ -19,7 +20,6 @@ import {
 import vendoredModulesConfig from '../vendoring/config';
 import { legacyVendorModuleAsync } from '../vendoring/legacy';
 import { VendoringModuleConfig, VendoringTargetConfig } from '../vendoring/types';
-import { runReactNativeCodegen } from '../Codegen';
 
 type ActionOptions = {
   list: boolean;
@@ -254,7 +254,7 @@ async function runCodegenIfNeeded(
 
   await Promise.all(
     fabricDisabledLibs.map((lib) =>
-      runReactNativeCodegen({
+      runReactNativeCodegenAsync({
         reactNativeRoot,
         codegenPkgRoot,
         outputDir: path.join(sourceDirectory, platform),

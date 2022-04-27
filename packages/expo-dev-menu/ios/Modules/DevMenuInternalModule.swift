@@ -1,5 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
+
 import SafariServices
+import React
 
 @objc(DevMenuInternalModule)
 public class DevMenuInternalModule: NSObject, RCTBridgeModule {
@@ -59,6 +61,12 @@ public class DevMenuInternalModule: NSObject, RCTBridgeModule {
       return reject("ERR_DEVMENU_ACTION_FAILED", "Callable ID not provided.", nil)
     }
     manager.dispatchCallable(withId: callableId, args: args)
+    resolve(nil)
+  }
+  
+  @objc
+  func loadFontsAsync(_ resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
+    manager.loadFonts()
     resolve(nil)
   }
 

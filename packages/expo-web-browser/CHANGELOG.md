@@ -6,13 +6,17 @@
 
 ### 🎉 New features
 
-- Native module on iOS is now written in Swift using the new API. ([#16201](https://github.com/expo/expo/pull/16201) by [@tsapeta](https://github.com/tsapeta))
-- Add `presentationStyle` option to customize browser window appearance on iOS. ([#16919](https://github.com/expo/expo/pull/16919) by [@barthap](https://github.com/barthap))
-- Add `preferEphemeralSession` option to `openAuthSessionAsync` to ask for a private auth session on iOS. ([#16926](https://github.com/expo/expo/pull/16926) by [@barthap](https://github.com/barthap))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 10.2.0 — 2022-04-18
+
+### 🎉 New features
+
+- Native module on iOS is now written in Swift using the new API. ([#16201](https://github.com/expo/expo/pull/16201) by [@tsapeta](https://github.com/tsapeta))
+- Add `presentationStyle` option to customize browser window appearance on iOS. ([#16919](https://github.com/expo/expo/pull/16919) by [@barthap](https://github.com/barthap))
+- Add `preferEphemeralSession` option to `openAuthSessionAsync` to ask for a private auth session on iOS. ([#16926](https://github.com/expo/expo/pull/16926) by [@barthap](https://github.com/barthap))
 
 ### ⚠️ Notices
 

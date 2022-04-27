@@ -366,13 +366,15 @@ export async function getListOfPackagesAsync(): Promise<Package[]> {
       cwd: PACKAGES_DIR,
       ignore: ['**/example/**', '**/node_modules/**'],
     });
-    cachedPackages = paths.map((packageJsonPath) => {
-      const fullPackageJsonPath = path.join(PACKAGES_DIR, packageJsonPath);
-      const packagePath = path.dirname(fullPackageJsonPath);
-      const packageJson = require(fullPackageJsonPath);
+    cachedPackages = paths
+      .map((packageJsonPath) => {
+        const fullPackageJsonPath = path.join(PACKAGES_DIR, packageJsonPath);
+        const packagePath = path.dirname(fullPackageJsonPath);
+        const packageJson = require(fullPackageJsonPath);
 
-      return new Package(packagePath, packageJson);
-    });
+        return new Package(packagePath, packageJson);
+      })
+      .filter((pkg) => !!pkg.packageName);
   }
   return cachedPackages;
 }
@@ -383,7 +385,7 @@ function readExpoModuleConfigJson(dir: string) {
   const unimoduleJsonPath = path.join(dir, 'unimodule.json');
   try {
     return require(expoModuleConfigJsonExists ? expoModuleConfigJsonPath : unimoduleJsonPath);
-  } catch (error) {
+  } catch {
     return null;
   }
 }

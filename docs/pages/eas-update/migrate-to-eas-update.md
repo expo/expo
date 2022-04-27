@@ -83,7 +83,7 @@ The changes above affect the native code layer inside builds, which means we'll 
 
 ## Developing locally
 
-EAS Update uses a [modern manifest format](/technical-specs/expo-updates-0). When you have a EAS Update url in your app config at `updates.url`, Expo CLI will automatically serve the correct manifest format for your project. This will ensure that the code you develop locally will work as an update when published later. You can start a localy development session just like before, with:
+EAS Update uses a [modern manifest format](/technical-specs/expo-updates-0). When you have a EAS Update url in your app config at `updates.url`, Expo CLI will automatically serve the correct manifest format for your project. This will ensure that the code you develop locally will work as an update when published later. You can start a locally development session just like before, with:
 
 ```bash
 yarn start

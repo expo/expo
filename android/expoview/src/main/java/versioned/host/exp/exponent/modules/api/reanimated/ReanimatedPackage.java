@@ -5,6 +5,7 @@ import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_M
 
 import com.facebook.react.ReactApplication;
 import com.facebook.react.ReactInstanceManager;
+import com.facebook.react.ReactPackage;
 import com.facebook.react.TurboReactPackage;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -19,7 +20,7 @@ import com.facebook.systrace.Systrace;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ReanimatedPackage extends TurboReactPackage {
+public class ReanimatedPackage extends TurboReactPackage implements ReactPackage {
 
   @Override
   public NativeModule getModule(String name, ReactApplicationContext reactContext) {
@@ -66,10 +67,7 @@ public class ReanimatedPackage extends TurboReactPackage {
   private UIManagerModule createUIManager(final ReactApplicationContext reactContext) {
     ReactMarker.logMarker(CREATE_UI_MANAGER_MODULE_START);
     Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "createUIManagerModule");
-    final ReactInstanceManager reactInstanceManager =
-        ((ReactApplication) reactContext.getApplicationContext())
-            .getReactNativeHost()
-            .getReactInstanceManager();
+    final ReactInstanceManager reactInstanceManager = getReactInstanceManager(reactContext);
     int minTimeLeftInFrameForNonBatchedOperationMs = -1;
     try {
       return new ReanimatedUIManager(
@@ -80,5 +78,19 @@ public class ReanimatedPackage extends TurboReactPackage {
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
       ReactMarker.logMarker(CREATE_UI_MANAGER_MODULE_END);
     }
+  }
+
+  /**
+   * Get the {@link ReactInstanceManager} used by this app. By default, assumes {@link
+   * ReactApplicationContext#getApplicationContext()} is an instance of {@link ReactApplication} and
+   * calls {@link ReactApplication#getReactNativeHost().getReactInstanceManager()}. Override this
+   * method if your application class does not implement {@code ReactApplication} or you simply have
+   * a different mechanism for storing a {@code ReactInstanceManager}, e.g. as a static field
+   * somewhere.
+   */
+  public ReactInstanceManager getReactInstanceManager(ReactApplicationContext reactContext) {
+    return ((ReactApplication) reactContext.getApplicationContext())
+        .getReactNativeHost()
+        .getReactInstanceManager();
   }
 }

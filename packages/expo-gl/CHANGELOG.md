@@ -10,6 +10,28 @@
 
 ### 💡 Others
 
+## 11.3.0 — 2022-04-27
+
+### 🐛 Bug fixes
+
+- Fix crash on android 11 by packaging worklet `jsi:Runtime*` inside ArrayBuffer. ([#17194](https://github.com/expo/expo/pull/17194) by [@wkozyra95](https://github.com/wkozyra95))
+
+## 11.2.2 — 2022-04-21
+
+### 🐛 Bug fixes
+
+- Fix import errors when option `inlineRequires` is enabled in `metro.config.js`. ([#17141](https://github.com/expo/expo/pull/17141) by [@wkozyra95](https://github.com/wkozyra95))
+
+## 11.2.1 — 2022-04-20
+
+_This version does not introduce any user-facing changes._
+
+## 11.2.0 — 2022-04-18
+
+### 🐛 Bug fixes
+
+- Fix support for React Native 0.68 by building `expo-gl-cpp` from source. ([#17060](https://github.com/expo/expo/pull/17060) by [@wkozyra95](https://github.com/wkozyra95))
+
 ### ⚠️ Notices
 
 - On Android bump `compileSdkVersion` to `31`, `targetSdkVersion` to `31` and `Java` version to `11`. ([#16941](https://github.com/expo/expo/pull/16941) by [@bbarthec](https://github.com/bbarthec))

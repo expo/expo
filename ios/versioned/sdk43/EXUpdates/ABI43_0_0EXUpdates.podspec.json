@@ -1,6 +1,6 @@
 {
   "name": "ABI43_0_0EXUpdates",
-  "version": "0.10.1",
+  "version": "0.12.0",
   "summary": "Fetches and manages remotely-hosted assets and updates to your app's JS bundle.",
   "description": "Fetches and manages remotely-hosted assets and updates to your app's JS bundle.",
   "license": "MIT",
@@ -9,27 +9,47 @@
   "platforms": {
     "ios": "12.0"
   },
+  "swift_versions": "5.4",
   "source": {
     "git": "https://github.com/expo/expo.git"
   },
   "static_framework": true,
   "dependencies": {
+    "ASN1Decoder": [
+      "~> 1.8"
+    ],
     "ABI43_0_0ExpoModulesCore": [],
     "ABI43_0_0React-Core": [],
     "ABI43_0_0EXStructuredHeaders": [],
     "ABI43_0_0EXUpdatesInterface": [],
-    "ABI43_0_0EXManifests": []
+    "ABI43_0_0EXManifests": [],
+    "ABI43_0_0EASClient": []
   },
   "pod_target_xcconfig": {
     "GCC_TREAT_INCOMPATIBLE_POINTER_TYPE_WARNINGS_AS_ERRORS": "YES",
-    "GCC_TREAT_IMPLICIT_FUNCTION_DECLARATIONS_AS_ERRORS": "YES"
+    "GCC_TREAT_IMPLICIT_FUNCTION_DECLARATIONS_AS_ERRORS": "YES",
+    "DEFINES_MODULE": "YES",
+    "SWIFT_COMPILATION_MODE": "wholemodule"
   },
-  "source_files": "EXUpdates/**/*.{h,m}",
+  "source_files": "EXUpdates/**/*.{h,m,swift}",
   "testspecs": [
     {
       "name": "Tests",
       "test_type": "unit",
-      "source_files": "Tests/*.{h,m,swift}"
+      "source_files": "Tests/*.{h,m,swift}",
+      "resources": "Tests/Support/**/*",
+      "dependencies": {
+        "OCMockito": [
+          "~> 6.0"
+        ]
+      },
+      "pod_target_xcconfig": {
+        "GCC_TREAT_INCOMPATIBLE_POINTER_TYPE_WARNINGS_AS_ERRORS": "YES",
+        "GCC_TREAT_IMPLICIT_FUNCTION_DECLARATIONS_AS_ERRORS": "YES",
+        "DEFINES_MODULE": "YES",
+        "SWIFT_COMPILATION_MODE": "wholemodule"
+      }
     }
-  ]
+  ],
+  "swift_version": "5.4"
 }

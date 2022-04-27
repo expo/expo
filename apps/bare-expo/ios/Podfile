@@ -84,7 +84,6 @@ abstract_target 'BareExpoMain' do
   target 'BareExpoTests' do
     inherit! :search_paths
 
-    pod 'Quick', :podspec => './../../../ios/Quick.podspec'
     pod 'Nimble', :podspec => './../../../ios/Nimble.podspec'
   end
 end

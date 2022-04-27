@@ -2,9 +2,9 @@
 title: Troubleshooting build errors and crashes
 ---
 
-> This document is under active development; the topic it covers is expansive and finding the right way to explain how to troubleshoot issues will take some trial and error. Your suggestions for improvements are welcome as pull requests.
+import { Terminal } from '~/ui/components/Snippet';
 
-import TerminalBlock from '~/components/plugins/TerminalBlock';
+> This document is under active development; the topic it covers is expansive and finding the right way to explain how to troubleshoot issues will take some trial and error. Your suggestions for improvements are welcome as pull requests.
 
 When something goes wrong, it probably will go wrong in one of two ways: 1) your build will fail, or 2) the build will succeed but encounter a runtime error, eg: it crashes or hangs when you run it.
 
@@ -26,7 +26,7 @@ Regardless of the phase, **it's common to see log entries prefixed with `[stderr
 
 For example, you might see something like this on your Android builds:
 
-<TerminalBlock cmd={[
+<Terminal cmd={[
 `[stderr] Note: /build/workingdir/build/app/node_modules/@react-native-async-storage/async-storage/android/src/main/java/com/reactnativecommunity/asyncstorage/AsyncStorageModule.java uses or overrides a deprecated API.`,
 `[stderr] Note: Recompile with -Xlint:deprecation for details.`
 ]} />
@@ -35,7 +35,7 @@ While you may or may not be interested in following up on that warning, it is no
 
 A good path forward is to **determine if the build failed due to a native or JavaScript error**. When your build fails due to a JavaScript build error, you will usually see something like this:
 
-<TerminalBlock cmd={[
+<Terminal cmd={[
 `❌ Metro encountered an error:`,
 `Unable to resolve module ./src/Routes from /Users/expo/workingdir/build/App.js`,
 ]} />
@@ -83,11 +83,17 @@ If the logs weren't enough to immediately help you understand and fix the root c
 
 - Relevant Build tool versions (eg: Xcode, Node, npm, Yarn) are the same in both environments. [Learn more](/build/eas-json.md#configuring-your-build-tools).
 - Relevant environment variables are the same in both environments. [Learn more](/build-reference/variables.md).
-- The archive that is uploaded to EAS Build includes the same relevant source files. [Learn more](https://github.com/expo/fyi/blob/master/eas-build-archive.md).
+- The archive that is uploaded to EAS Build includes the same relevant source files. [Learn more](https://expo.fyi/eas-build-archive).
 
 You can verify that your project builds on your local machine with the `expo run` commands with variant/configuration flags set to release to most faithfully reproduce what executes on EAS Build. (Learn more about the [iOS build process](/build-reference/ios-builds.md) and [Android build process](/build-reference/android-builds.md)).
 
-<TerminalBlock cmd={['# Locally compile and run the Android app in release mode', 'expo run:android --variant release', '', '# Locally compile and run the iOS app in release mode', 'expo run:ios --configuration Release']} />
+<Terminal cmd={[
+  '# Locally compile and run the Android app in release mode',
+  '$ expo run:android --variant release',
+  '',
+  '# Locally compile and run the iOS app in release mode',
+  '$ expo run:ios --configuration Release'
+]} />
 
 > In managed projects, these commands will run `expo prebuild` to generate native projects &mdash; you likely want to [clean up the changes](https://expo.fyi/prebuild-cleanup) once you are done troubleshooting.
 

@@ -295,13 +295,13 @@ RCT_EXPORT_METHOD(callMethod:(NSString *)moduleName methodNameOrKey:(id)methodNa
   // Register the view managers as additional modules.
   [self registerAdditionalModuleClasses:additionalModuleClasses inBridge:bridge];
 
+  // Get the instance of `EXReactEventEmitter` bridge module and give it access to the interop bridge.
+  EXReactNativeEventEmitter *eventEmitter = [bridge moduleForClass:[EXReactNativeEventEmitter class]];
+  [eventEmitter setSwiftInteropBridge:_swiftInteropBridge];
+
   // As the last step, when the registry is owned,
   // register the event emitter and initialize the registry.
   if (ownsModuleRegistry) {
-    // Get the newly created instance of `EXReactEventEmitter` bridge module,
-    // pass event names supported by Swift modules and register it in legacy modules registry.
-    EXReactNativeEventEmitter *eventEmitter = [bridge moduleForClass:[EXReactNativeEventEmitter class]];
-    [eventEmitter setSwiftInteropBridge:_swiftInteropBridge];
     [_exModuleRegistry registerInternalModule:eventEmitter];
 
     // Let the modules consume the registry :)

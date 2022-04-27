@@ -2,9 +2,8 @@ import { css } from '@emotion/react';
 import { theme, typography } from '@expo/styleguide';
 import * as React from 'react';
 
-import TerminalBlock from './TerminalBlock';
-
 import { usePageMetadata } from '~/providers/page-metadata';
+import { Terminal } from '~/ui/components/Snippet';
 
 const STYLES_P = css`
   line-height: 1.8rem;
@@ -43,11 +42,11 @@ const getPackageLink = (packageNames: string) =>
 const InstallSection: React.FC<Props> = ({
   packageName,
   hideBareInstructions = false,
-  cmd = [`expo install ${packageName}`],
+  cmd = [`$ expo install ${packageName}`],
   href = getPackageLink(packageName),
 }) => (
   <div>
-    <TerminalBlock cmd={cmd} />
+    <Terminal cmd={cmd} cmdCopy={cmd[0].slice(2)} />
     {hideBareInstructions ? null : (
       <p css={STYLES_P}>
         If you're installing this in a{' '}

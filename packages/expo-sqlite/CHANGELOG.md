@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 10.2.0 — 2022-04-18
+
+### 🎉 New features
+
+- Added `closeAsync` and `deleteAsync` methods. ([#16831](https://github.com/expo/expo/pull/16831) by [@kudo](https://github.com/kudo))
+
 ### ⚠️ Notices
 
 - On Android bump `compileSdkVersion` to `31`, `targetSdkVersion` to `31` and `Java` version to `11`. ([#16941](https://github.com/expo/expo/pull/16941) by [@bbarthec](https://github.com/bbarthec))

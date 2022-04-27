@@ -4,6 +4,30 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 13.1.1 — 2022-04-27
+
+_This version does not introduce any user-facing changes._
+
+## 13.1.0 — 2022-04-25
+
+### 🎉 New features
+
+- [plugin] Added ability to disable permissions. ([#17168](https://github.com/expo/expo/pull/17168) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 13.0.1 — 2022-04-20
+
+_This version does not introduce any user-facing changes._
+
+## 13.0.0 — 2022-04-18
+
+### 🛠 Breaking changes
+
 - On Android migrated cropping library from `com.theartofdev.edmodo:android-image-cropper@2.8.0` (available from `jcenter()`) to `com.github.CanHub:Android-Image-Cropper@1.1.1` (available from `jitpack.io`). ([#11647](https://github.com/expo/expo/pull/11647) by [@bbarthec](https://github.com/bbarthec))
 
 ### 🎉 New features
@@ -12,6 +36,7 @@
 
 ### 🐛 Bug fixes
 
+- Fixed crashes on Android after image is picked by adding missing dependency `expo-image-loader`. ([#17019](https://github.com/expo/expo/pull/17019) by [@M1ST4KE](https://github.com/M1ST4KE))
 - Fix failure on Android when `allowsEditing` is `true` and non-jpeg file picked. ([#16615](https://github.com/expo/expo/pull/16615) by [@mnightingale](https://github.com/mnightingale))
 
 ### ⚠ Notices

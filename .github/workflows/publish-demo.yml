@@ -18,9 +18,9 @@ concurrency:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           submodules: true
       - name: Get cache key of git lfs files
@@ -31,7 +31,7 @@ jobs:
           path: .git/lfs
           key: ${{ steps.git-lfs.outputs.sha256 }}
       - run: git lfs pull
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
           node-version: '14.17'
       - run: yarn global add expo-cli@3

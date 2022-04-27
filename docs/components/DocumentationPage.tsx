@@ -4,6 +4,8 @@ import some from 'lodash/some';
 import Router, { NextRouter } from 'next/router';
 import * as React from 'react';
 
+import { AppJSBanner } from './AppJSBanner.tsx';
+
 import * as Utilities from '~/common/utilities';
 import * as WindowUtils from '~/common/window';
 import DocumentationFooter from '~/components/DocumentationFooter';
@@ -239,7 +241,7 @@ class DocumentationPageWithApiVersion extends React.Component<Props, State> {
         isMobileSearchActive={this.state.isMobileSearchActive}
         onContentScroll={handleContentScroll}
         sidebarScrollPosition={sidebarScrollPosition}>
-        <Head title={`${this.props.title} - Expo Documentation`}>
+        <Head title={this.props.title}>
           {algoliaTag !== null && <meta name="docsearch:version" content={algoliaTag} />}
           <meta property="og:title" content={`${this.props.title} - Expo Documentation`} />
           <meta property="og:type" content="website" />
@@ -278,6 +280,7 @@ class DocumentationPageWithApiVersion extends React.Component<Props, State> {
 
         {!this.state.isMenuActive ? (
           <div css={STYLES_DOCUMENT}>
+            <AppJSBanner />
             <H1>{this.props.title}</H1>
             {this.props.children}
             <DocumentationFooter

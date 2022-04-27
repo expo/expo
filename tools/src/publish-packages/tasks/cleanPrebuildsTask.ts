@@ -1,8 +1,7 @@
 import logger from '../../Logger';
 import { Task } from '../../TasksRunner';
-import { Parcel, TaskArgs } from '../types';
-
 import { canPrebuildPackage, cleanFrameworksAsync } from '../../prebuilds/Prebuilder';
+import { Parcel, TaskArgs } from '../types';
 
 /**
  * Cleans up after building prebuilds and publishing them.

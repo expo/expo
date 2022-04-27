@@ -14,14 +14,13 @@ EX_EXPORT_MODULE(ExpoAdsAdMobBannerView);
 - (NSArray<NSString *> *)supportedEvents
 {
   return @[
-           @"onAdViewDidDismissScreen",
-           @"onAdViewDidReceiveAd",
-           @"onAdViewWillDismissScreen",
-           @"onAdViewWillLeaveApplication",
-           @"onAdViewWillPresentScreen",
-           @"onDidFailToReceiveAdWithError",
-           @"onSizeChange",
-           ];
+    @"onSizeChange",
+    @"onAdViewDidReceiveAd",
+    @"onDidFailToReceiveAdWithError",
+    @"onAdViewWillPresentScreen",
+    @"onAdViewWillDismissScreen",
+    @"onAdViewDidDismissScreen",
+  ];
 }
 
 - (UIView *)view

@@ -44,17 +44,19 @@ export function SnacksSection({ snacks, showMore, accountName }: Props) {
         );
       })}
       {showMore && (
-        <TouchableOpacity onPress={onSeeAllSnacksPress}>
-          <View padding="medium" bg="default" border="default" roundedBottom="large">
-            <Row align="center" justify="between">
-              <Text type="InterRegular">See all snacks</Text>
-              <ChevronDownIcon
-                style={{ transform: [{ rotate: '-90deg' }] }}
-                color={theme.icon.secondary}
-              />
-            </Row>
-          </View>
-        </TouchableOpacity>
+        <View border="default" roundedBottom="large">
+          <TouchableOpacity onPress={onSeeAllSnacksPress}>
+            <View padding="medium" bg="default" roundedBottom="large">
+              <Row align="center" justify="between">
+                <Text type="InterRegular">See all snacks</Text>
+                <ChevronDownIcon
+                  style={{ transform: [{ rotate: '-90deg' }] }}
+                  color={theme.icon.secondary}
+                />
+              </Row>
+            </View>
+          </TouchableOpacity>
+        </View>
       )}
     </View>
   );

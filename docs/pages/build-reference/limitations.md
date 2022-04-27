@@ -21,7 +21,7 @@ Build jobs for Android install npm and Maven dependencies from a local cache. Bu
 
 Intermediate artifacts like `node_modules` directories are not cached and restored (eg: based on `yarn.lock` or `package-lock.json`), but if you commit them to your git repository then they will be uploaded to build servers.
 
-[Learn more about dependendy caching](./caching.md).
+[Learn more about dependency caching](./caching.md).
 
 </p>
 </details>

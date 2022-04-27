@@ -48,7 +48,7 @@ Post.defaultProps = {
 
 In the bare workflow, you don't have access to the manifest via the [`expo-constants`](../versions/latest/sdk/constants.md) module. You can still use environment variables using another method, a Babel plugin. This approach replaces all references to `process.env.VARNAME` with the variable contents, and works in both Bare and Managed Workflows.
 
-To set this up, we need to install the [`babel-plugin-transform-inline-environment-variables`](https://github.com/babel/website/blob/master/docs/plugin-transform-inline-environment-variables.md) plugin. After adding this to your dev dependencies, we need to tell Babel to use this plugin. Below you can see a modifed **babel.config.js** with this plugin enabled.
+To set this up, we need to install the [`babel-plugin-transform-inline-environment-variables`](https://github.com/babel/website/blob/master/docs/plugin-transform-inline-environment-variables.md) plugin. After adding this to your dev dependencies, we need to tell Babel to use this plugin. Below you can see a modified **babel.config.js** with this plugin enabled.
 
 ```js
 module.exports = function (api) {

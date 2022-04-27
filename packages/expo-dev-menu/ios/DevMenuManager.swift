@@ -1,5 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
+import React
 import EXDevMenuInterface
 import EXManifests
 import CoreGraphics
@@ -408,6 +409,7 @@ open class DevMenuManager: NSObject {
     if DevMenuManager.fontsWereLoaded {
        return
     }
+    DevMenuManager.fontsWereLoaded = true
 
     let fonts = [
       "Inter-Black",
@@ -429,8 +431,5 @@ open class DevMenuManager: NSObject {
       var error: Unmanaged<CFError>?
       CTFontManagerRegisterGraphicsFont(font!, &error)
     }
-    
-    DevMenuManager.fontsWereLoaded = true
-    return
   }
 }

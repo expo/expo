@@ -1,26 +1,29 @@
 /* eslint-env jest */
 import JsonFile from '@expo/json-file';
+import execa from 'execa';
 import fs from 'fs/promises';
 import klawSync from 'klaw-sync';
 import path from 'path';
-import execa from 'execa';
 
 import {
   execute,
   projectRoot,
-  getRoot,
   getLoadedModulesAsync,
   bin,
   setupTestProjectAsync,
+  installAsync,
 } from './utils';
 
 const originalForceColor = process.env.FORCE_COLOR;
+const originalCI = process.env.CI;
 beforeAll(async () => {
   await fs.mkdir(projectRoot, { recursive: true });
   process.env.FORCE_COLOR = '0';
+  process.env.CI = '1';
 });
 afterAll(() => {
   process.env.FORCE_COLOR = originalForceColor;
+  process.env.CI = originalCI;
 });
 
 it('loads expected modules by default', async () => {
@@ -49,6 +52,8 @@ it('runs `npx install install --help`', async () => {
         $ npx expo install [packages...] [options]
 
       Options
+        --check     Check which installed packages need to be updated.
+        --fix       Automatically update any invalid package versions.
         --npm       Use npm to install dependencies. Default when package-lock.json exists
         --yarn      Use Yarn to install dependencies. Default when yarn.lock exists
         -h, --help  Output usage information
@@ -96,6 +101,74 @@ it(
     ]);
 
     expect(files).toStrictEqual(['App.js', 'app.json', 'package.json', 'yarn.lock']);
+  },
+  // Could take 45s depending on how fast npm installs
+  60 * 1000
+);
+
+it(
+  'runs `npx expo install --check` fails',
+  async () => {
+    const projectRoot = await setupTestProjectAsync('install-check-fail', 'with-blank');
+    await installAsync(projectRoot, ['add', 'expo-sms@1.0.0', 'expo-auth-session@1.0.0']);
+
+    let pkg = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
+    // Added expected package
+    expect(pkg.dependencies['expo-sms']).toBe('1.0.0');
+
+    try {
+      await execa('node', [bin, 'install', '--check'], { cwd: projectRoot });
+      throw new Error('SHOULD NOT HAPPEN');
+    } catch (error) {
+      expect(error.stderr).toMatch(/expo-auth-session@1\.0\.0 - expected version: ~3\.5\.0/);
+      expect(error.stderr).toMatch(/expo-sms@1\.0\.0 - expected version: ~10\.1\.0/);
+      expect(error.stderr).toMatch(
+        /npx expo install expo-auth-session@~3\.5\.0 expo-sms@~10\.1\.0/
+      );
+    }
+
+    await expect(
+      execa('node', [bin, 'install', 'expo-sms', '--check'], { cwd: projectRoot })
+    ).rejects.toThrowError(/expo-sms@1\.0\.0 - expected version: ~10\.1\.0/);
+
+    // Check doesn't fix packages
+    pkg = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
+    // Added expected package
+    expect(pkg.dependencies['expo-sms']).toBe('1.0.0');
+  },
+  // Could take 45s depending on how fast npm installs
+  60 * 1000
+);
+
+it(
+  'runs `npx expo install --fix` fails',
+  async () => {
+    const projectRoot = await setupTestProjectAsync('install-fix-fail', 'with-blank');
+    await installAsync(projectRoot, ['add', 'expo-sms@1.0.0', 'expo-auth-session@1.0.0']);
+
+    await execa('node', [bin, 'install', '--fix', 'expo-sms'], { cwd: projectRoot });
+
+    // Ensure the versions are invalid
+    await expect(
+      execa('node', [bin, 'install', '--check'], { cwd: projectRoot })
+    ).rejects.toThrow();
+
+    // Check doesn't fix packages
+    let pkg = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
+    // Added expected package
+    expect(pkg.dependencies['expo-sms']).toBe('~10.1.0');
+
+    // Didn't fix expo-auth-session since we didn't pass it in
+    expect(pkg.dependencies['expo-auth-session']).toBe('1.0.0');
+
+    // Fix all versions
+    await execa('node', [bin, 'install', '--fix'], { cwd: projectRoot });
+
+    // Check that the versions are fixed
+    pkg = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
+
+    // Didn't fix expo-auth-session since we didn't pass it in
+    expect(pkg.dependencies['expo-auth-session']).toBe('~3.5.0');
   },
   // Could take 45s depending on how fast npm installs
   60 * 1000

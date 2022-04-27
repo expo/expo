@@ -5,7 +5,7 @@ import {
   ThemeProvider,
 } from 'expo-dev-client-components';
 import * as React from 'react';
-import { StatusBar, useColorScheme } from 'react-native';
+import { useColorScheme } from 'react-native';
 
 import { UserData } from '../functions/getUserProfileAsync';
 import { BuildInfo, CrashReport } from '../native-modules/DevLauncherInternal';
@@ -46,7 +46,6 @@ export function AppProviders({
 }: AppProvidersProps) {
   const theme = useColorScheme();
   const isDark = theme === 'dark';
-  const statusBarContent = isDark ? 'light-content' : 'dark-content';
 
   return (
     <QueryProvider>
@@ -63,7 +62,6 @@ export function AppProviders({
                           <PendingDeepLinkProvider initialPendingDeepLink={initialPendingDeepLink}>
                             <NavigationContainer
                               theme={isDark ? darkNavigationTheme : lightNavigationTheme}>
-                              <StatusBar barStyle={statusBarContent} />
                               {children}
                             </NavigationContainer>
                           </PendingDeepLinkProvider>

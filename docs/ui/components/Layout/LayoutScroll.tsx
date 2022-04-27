@@ -5,7 +5,7 @@ import React, { forwardRef, HTMLAttributes, PropsWithChildren } from 'react';
 type LayoutScrollProps = PropsWithChildren<
   HTMLAttributes<HTMLDivElement> & {
     /**
-     * If the scroll container should smoothly scroll when scrolled programatically.
+     * If the scroll container should smoothly scroll when scrolled programmatically.
      */
     smoothScroll?: boolean;
     /**

@@ -45,7 +45,7 @@ jobs:
     runs-on: macos-11
     steps:
       - name: 👀 Checkout a ref for the event
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           submodules: true
       - name: 🔨 Switch to Xcode 13.0
@@ -74,7 +74,6 @@ jobs:
             home/node_modules
             packages/*/node_modules
             packages/@expo/*/node_modules
-            packages/@unimodules/*/node_modules
             react-native-lab/react-native/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('yarn.lock') }}
       - name: 🧶 Yarn install
@@ -119,19 +118,21 @@ jobs:
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: 'us-east-1'
           IS_VERSIONED_FLAVOR: ${{ github.event_name == 'schedule' || steps.flavor.outputs.versioned == 'true' }}
       - name: 💾 Save test results
         if: always()
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: fastlane-logs
           path: ~/Library/Logs/fastlane
-      - name: 🏗 Build Expo Go for simulator
+      - name: 🚚 Release the simulator build
         run: expotools client-build --platform ios --release # should only upload already-built app
         if: ${{ github.event.inputs.releaseSimulator == 'release-simulator' }}
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: 'us-east-1'
           EXPO_VERSIONS_SECRET: ${{ secrets.EXPO_VERSIONS_SECRET }}
       - name: 🔔 Notify on Slack
         uses: 8398a7/action-slack@v3

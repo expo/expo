@@ -10,6 +10,14 @@
 
 ### 💡 Others
 
+## 13.1.0 — 2022-04-18
+
+### 🐛 Bug fixes
+
+- Fixed iOS script phase build error when `extendedglob` is enabled in zsh config. ([#17024](https://github.com/expo/expo/pull/17024) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
 - Updated `@expo/config` from `6.0.6` to `6.0.14` ([#15621](https://github.com/expo/expo/pull/15621) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### ⚠️ Notices
