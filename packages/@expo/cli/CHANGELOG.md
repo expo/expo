@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Unify help prompts.
+- Unify help prompts. ([#17223](https://github.com/expo/expo/pull/17223) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
