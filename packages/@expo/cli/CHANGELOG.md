@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Unify help prompts.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
@@ -43,7 +45,7 @@
 - Skip font parsing on prebuild. ([#17184](https://github.com/expo/expo/pull/17184) by [@EvanBacon](https://github.com/EvanBacon))
 - [ci] Fix `typecheck`. ([#17145](https://github.com/expo/expo/pull/17145) by [@EvanBacon](https://github.com/EvanBacon))
 - [ci] Fix `typecheck`. ([#17145](https://github.com/expo/expo/pull/17145) by
-[@EvanBacon](https://github.com/EvanBacon))
+  [@EvanBacon](https://github.com/EvanBacon))
 - Close development session when CLI is stopped ([#17170](https://github.com/expo/expo/pull/17170) by [@FiberJW](https://github.com/FiberJW))
 
 ### 💡 Others
