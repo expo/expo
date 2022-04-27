@@ -1059,7 +1059,7 @@ The schedulable notification trigger you would like to check next trigger date f
 
 #### Returns
 
-If the return value is `null`, the notification won't be triggered. Otherwise, the return value is the UNIX timestamp in milliseconds at which the notification will be triggered.
+If the return value is `null`, the notification won't be triggered. Otherwise, the return value is the Unix timestamp in milliseconds at which the notification will be triggered.
 
 #### Examples
 
@@ -1718,7 +1718,7 @@ export type ChannelAwareTriggerInput = {
 
 #### `DateTriggerInput`
 
-A trigger that will cause the notification to be delivered once at the specified `Date`. If you pass in a `number` it will be interpreted as a UNIX timestamp.
+A trigger that will cause the notification to be delivered once at the specified `Date`. If you pass in a `number` it will be interpreted as a Unix timestamp.
 
 ```ts
 export type DateTriggerInput = Date | number | { channelId?: string; date: Date | number };

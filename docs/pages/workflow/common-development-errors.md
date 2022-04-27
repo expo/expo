@@ -50,4 +50,4 @@ Here you will find a list of errors that are commonly encountered by developers 
 
 - It is possible caches may be preventing you from seeing the current state of your application.
 
-- Clear all caches associated with your project in [UNIX-like](../troubleshooting/clear-cache-macos-linux/) or [Windows](../troubleshooting/clear-cache-windows/) systems.
+- Clear all caches associated with your project in [Unix-like](../troubleshooting/clear-cache-macos-linux/) or [Windows](../troubleshooting/clear-cache-windows/) systems.

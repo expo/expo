@@ -44,7 +44,7 @@ If it still doesn't work, it may be due to the router configuration &mdash; this
 If you are using a simulator or emulator, you may find the following Expo CLI keyboard shortcuts to be useful:
 
 - Pressing `i` will open in an [iOS simulator](../workflow/ios-simulator.md).
-- Pressing `a` will open in an [Android emulator or connected device](../workflow/android-studio-emulator.md).
+- Pressing `a` will open in an [Android Emulator or connected device](../workflow/android-studio-emulator.md).
 - Pressing `w` will open in your browser. Expo supports all major browsers.
 
 </p>

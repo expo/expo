@@ -39,7 +39,7 @@ Please note that if you override the `gradleCommand` on Android, you should ensu
 
 ### iOS
 
-The configuration above tells EAS Build that you would like to use ad hoc distribution, which is available for all paid Apple developer accounts. It is not available for free accounts.
+The configuration above tells EAS Build that you would like to use ad hoc distribution, which is available for all paid Apple Developer accounts. It is not available for free accounts.
 
 <div style={{marginTop: -10}} />
 
@@ -93,7 +93,7 @@ The next step is to generate or update the provisioning profile. When you procee
 <details><summary><h4>🏙 Are you setting up enterprise provisioning?</h4></summary>
 <p>
 
-Apple Enterprise Program membership costs $299 USD per year and [not all organizations will be eligible](https://developer.apple.com/programs/enterprise/), so you will likely be using ad hoc provisioning, which works with any normal paid Apple developer account.
+Apple Enterprise Program membership costs $299 USD per year and [not all organizations will be eligible](https://developer.apple.com/programs/enterprise/), so you will likely be using ad hoc provisioning, which works with any normal paid Apple Developer account.
 
 If you have an [Apple Developer Enterprise Program membership](https://developer.apple.com/programs/enterprise/) users can install your app to their device without pre-registering their UDID; they just need to install the profile to their device and they can then access existing builds. You will need to sign in using your Apple Developer Enterprise account during the `eas build` process to set up the correct provisioning.
 
