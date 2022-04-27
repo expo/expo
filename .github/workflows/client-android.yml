@@ -37,7 +37,8 @@ concurrency:
 
 jobs:
   build:
-    runs-on: ubuntu-20.04
+    # runs-on: ubuntu-20.04
+    runs-on: macos-11
     env:
       GRADLE_OPTS: -Dorg.gradle.jvmargs=-Xmx2048m -XX:MaxMetaspaceSize=1024m
     steps:
