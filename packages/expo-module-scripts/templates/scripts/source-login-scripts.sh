@@ -14,7 +14,7 @@ NVM_SH_FILE=$NVM_DIR/nvm.sh
 # first attempt to source via nvm and fallback to sourcing via zsh or bash
 if test -f "$NVM_SH_FILE"; then
   source $NVM_SH_FILE
-else if [[ "$current_shell" == zsh ]]; then
+elif [[ "$current_shell" == zsh ]]; then
    # Zsh's setup script order is:
    #   /etc/zshenv
    #   ~/.zshenv
