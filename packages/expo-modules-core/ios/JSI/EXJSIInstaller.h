@@ -9,7 +9,7 @@
 @interface EXJavaScriptRuntimeManager : NSObject
 
 /**
- Gets the JS runtime from given bridge. May return `nil` when
+ Gets the JS runtime from the given bridge. May return `nil` when
  the runtime is not available yet or the remote debugging is enabled.
  */
 + (nullable EXJavaScriptRuntime *)runtimeFromBridge:(nonnull RCTBridge *)bridge NS_SWIFT_NAME(runtime(fromBridge:));

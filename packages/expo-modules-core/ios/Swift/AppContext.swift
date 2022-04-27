@@ -302,7 +302,7 @@ public final class AppContext: NSObject {
 
     // Post an event to the registry only if it was already created.
     // If we let it to lazy-load here, that would crash since the module registry
-    // has a weak reference the app context which is being deallocated.
+    // has a weak reference to the app context which is being deallocated.
     if isModuleRegistryInitialized {
       moduleRegistry.post(event: .appContextDestroys)
     }

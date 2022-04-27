@@ -43,7 +43,7 @@ static NSString *expoModulesHostObjectPropertyName = @"ExpoModules";
   std::shared_ptr<expo::ExpoModulesHostObject> hostObjectPtr = std::make_shared<expo::ExpoModulesHostObject>(appContext);
   EXJavaScriptObject *hostObject = [runtime createHostObject:hostObjectPtr];
 
-  // Define the ExpoModules object as non-configurable, read-only and enumerable property.
+  // Define the ExpoModules object as a non-configurable, read-only and enumerable property.
   [global defineProperty:expoModulesHostObjectPropertyName
                    value:hostObject
                  options:EXJavaScriptObjectPropertyDescriptorEnumerable];

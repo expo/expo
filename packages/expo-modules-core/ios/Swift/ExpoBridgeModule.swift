@@ -15,7 +15,7 @@ public final class ExpoBridgeModule: NSObject, RCTBridgeModule {
   public let appContext: AppContext
 
   /**
-   The initializer used by React Native when it loads bridge modules.
+   The initializer that is used by React Native when it loads bridge modules.
    In this scenario, we create an `AppContext` that manages the
    architecture of Expo modules and the app itself.
    */
