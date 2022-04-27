@@ -7,13 +7,11 @@
 #import <ExpoModulesCore/EXViewManagerAdapterClassesRegistry.h>
 #import <ExpoModulesCore/EXModuleRegistryHolderReactModule.h>
 #import <ExpoModulesCore/EXReactNativeEventEmitter.h>
-#import <ExpoModulesCore/Swift.h>
 
 @interface EXModuleRegistryAdapter ()
 
 @property (nonatomic, strong) EXModuleRegistryProvider *moduleRegistryProvider;
 @property (nonatomic, strong) EXViewManagerAdapterClassesRegistry *viewManagersClassesRegistry;
-@property (nonatomic, strong, nullable) ModulesProvider *swiftModulesProvider;
 
 @end
 
@@ -73,15 +71,6 @@
   // Here is our last call for finalizing initialization.
   [moduleRegistry initialize];
   return extraModules;
-}
-
-- (nullable SwiftInteropBridge *)swiftInteropBridgeModulesRegistry:(EXModuleRegistry *)moduleRegistry
-{
-  if (_swiftModulesProvider) {
-    return [[SwiftInteropBridge alloc] initWithModulesProvider:_swiftModulesProvider legacyModuleRegistry:moduleRegistry];
-  } else {
-    return nil;
-  }
 }
 
 @end

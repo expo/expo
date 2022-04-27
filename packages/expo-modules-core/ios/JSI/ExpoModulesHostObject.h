@@ -7,13 +7,13 @@
 
 namespace jsi = facebook::jsi;
 
-@class SwiftInteropBridge;
+@class EXAppContext;
 
 namespace expo {
 
 class JSI_EXPORT ExpoModulesHostObject : public jsi::HostObject {
 public:
-  ExpoModulesHostObject(SwiftInteropBridge *interopBridge);
+  ExpoModulesHostObject(EXAppContext *appContext);
 
   virtual ~ExpoModulesHostObject();
 
@@ -24,7 +24,7 @@ public:
   std::vector<jsi::PropNameID> getPropertyNames(jsi::Runtime &rt) override;
 
 private:
-  SwiftInteropBridge *swiftInterop;
+  EXAppContext *appContext;
 
 }; // class ExpoModulesHostObject
 

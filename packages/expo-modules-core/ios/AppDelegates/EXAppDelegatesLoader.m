@@ -3,7 +3,6 @@
 #import <ExpoModulesCore/EXLegacyAppDelegateWrapper.h>
 
 #import <ExpoModulesCore/EXAppDelegatesLoader.h>
-#import <ExpoModulesCore/EXNativeModulesProxy.h>
 #import <ExpoModulesCore/Swift.h>
 
 // Make the legacy wrapper conform to the protocol for subscribers.
@@ -17,7 +16,7 @@
 // and before any code is executed, so we switch back to Objective-C just to do this one thing.
 + (void)load
 {
-  ModulesProvider *modulesProvider = [EXNativeModulesProxy getExpoModulesProvider];
+  ModulesProvider *modulesProvider = [EXAppContext modulesProviderWithName:@"ExpoModulesProvider"];
   [EXExpoAppDelegate registerSubscriber:[[EXLegacyAppDelegateWrapper alloc] init]];
   [EXExpoAppDelegate registerSubscribersFromModulesProvider:modulesProvider];
   [EXExpoAppDelegate registerReactDelegateHandlersFromModulesProvider:modulesProvider];
