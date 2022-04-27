@@ -11,6 +11,7 @@ const commands: { [command: string]: () => Promise<Command> } = {
   start: () => import('../src/start').then((i) => i.expoStart),
   prebuild: () => import('../src/prebuild').then((i) => i.expoPrebuild),
   config: () => import('../src/config').then((i) => i.expoConfig),
+  export: () => import('../src/export').then((i) => i.expoExport),
 
   // Auxiliary commands
   install: () => import('../src/install').then((i) => i.expoInstall),

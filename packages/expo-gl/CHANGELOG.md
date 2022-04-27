@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 11.3.0 — 2022-04-27
+
+### 🐛 Bug fixes
+
+- Fix crash on android 11 by packaging worklet `jsi:Runtime*` inside ArrayBuffer. ([#17194](https://github.com/expo/expo/pull/17194) by [@wkozyra95](https://github.com/wkozyra95))
+
 ## 11.2.2 — 2022-04-21
 
 ### 🐛 Bug fixes

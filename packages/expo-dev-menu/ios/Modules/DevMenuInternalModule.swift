@@ -63,6 +63,12 @@ public class DevMenuInternalModule: NSObject, RCTBridgeModule {
     manager.dispatchCallable(withId: callableId, args: args)
     resolve(nil)
   }
+  
+  @objc
+  func loadFontsAsync(_ resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
+    manager.loadFonts()
+    resolve(nil)
+  }
 
   @objc
   func hideMenu() {
