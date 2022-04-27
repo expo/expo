@@ -12,6 +12,12 @@ const Stack = createStackNavigator();
 export const Screens = [
   {
     getComponent() {
+      return optionalRequire(() => require('../screens/ExpoModulesScreen'));
+    },
+    name: 'ExpoModules',
+  },
+  {
+    getComponent() {
       return optionalRequire(() => require('../screens/StatusBarScreen'));
     },
     name: 'StatusBar',
