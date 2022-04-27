@@ -36,12 +36,25 @@ export function LoggedOutAccountView({ refetch }: Props) {
   });
 
   React.useEffect(() => {
-    // after logging in, wait for redux action to dispatch, refetch with new sessionSecret, then dismiss modal
-    if (isFinishedAuthenticating && sessionSecretExists) {
-      refetch().then(() => {
-        navigation.goBack();
-      });
+    async function refetchThenGoBackAsync() {
+      // after logging in, wait for redux action to dispatch, refetch with new sessionSecret, then dismiss modal
+      if (isFinishedAuthenticating && sessionSecretExists) {
+        try {
+          await refetch();
+        } finally {
+          // in the case that it rejects, we still want to dismiss the modal
+
+          // if it's an internet issue, the user will be able to try to refresh the homepage
+
+          // if it's an issue with the sessionSecret being invalid, the user will be able to try to
+          // log in again and rewrite the sessionSecret
+
+          navigation.goBack();
+        }
+      }
     }
+
+    refetchThenGoBackAsync();
   }, [isFinishedAuthenticating, sessionSecretExists]);
 
   React.useEffect(() => {
