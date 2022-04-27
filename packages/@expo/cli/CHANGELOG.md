@@ -15,7 +15,7 @@
 
 ### 💡 Others
 
-- Downgrade `fs-extra` to `8.1.0`.
+- Downgrade `fs-extra` to `8.1.0`. ([#17234](https://github.com/expo/expo/pull/17234) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 0.1.0 — 2022-04-25
 
