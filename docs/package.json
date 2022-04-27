@@ -1,6 +1,7 @@
 {
   "name": "expo-docs",
   "version": "44.0.0",
+  "betaVersion": "45.0.0",
   "private": true,
   "scripts": {
     "dev": "rimraf .next/preval && next dev -p 3002",

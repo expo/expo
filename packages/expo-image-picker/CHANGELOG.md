@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 13.1.1 — 2022-04-27
+
+_This version does not introduce any user-facing changes._
+
+## 13.1.0 — 2022-04-25
+
+### 🎉 New features
+
+- [plugin] Added ability to disable permissions. ([#17168](https://github.com/expo/expo/pull/17168) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 13.0.1 — 2022-04-20
 
 _This version does not introduce any user-facing changes._

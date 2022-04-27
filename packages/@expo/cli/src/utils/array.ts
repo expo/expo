@@ -21,3 +21,26 @@ export function replaceValue<T>(values: T[], original: T, replacement: T): T[] {
   }
   return values;
 }
+
+/** lodash.uniqBy */
+export function uniqBy<T>(array: T[], key: (item: T) => string): T[] {
+  const seen: { [key: string]: boolean } = {};
+  return array.filter((item) => {
+    const k = key(item);
+    if (seen[k]) {
+      return false;
+    }
+    seen[k] = true;
+    return true;
+  });
+}
+
+/** `lodash.chunk` */
+export function chunk<T>(array: T[], size: number): T[][] {
+  const chunked = [];
+  let index = 0;
+  while (index < array.length) {
+    chunked.push(array.slice(index, (index += size)));
+  }
+  return chunked;
+}

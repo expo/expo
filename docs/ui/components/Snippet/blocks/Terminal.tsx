@@ -60,16 +60,21 @@ function cmdMapper(line: string, index: number) {
   if (line.startsWith('$')) {
     return (
       <div key={key}>
-        <CODE css={[codeStyle, unselectableStyle, { color: darkTheme.text.secondary }]}>
+        <CODE
+          css={[
+            codeStyle,
+            unselectableStyle,
+            { display: 'inline', color: darkTheme.text.secondary },
+          ]}>
           →&nbsp;
         </CODE>
-        <CODE css={[codeStyle, { display: 'inline' }]}>{line.substring(1).trim()}</CODE>
+        <CODE css={codeStyle}>{line.substring(1).trim()}</CODE>
       </div>
     );
   }
 
   return (
-    <CODE key={key} css={codeStyle}>
+    <CODE key={key} css={[codeStyle, { display: 'inherit' }]}>
       {line}
     </CODE>
   );

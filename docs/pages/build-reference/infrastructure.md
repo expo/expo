@@ -125,7 +125,22 @@ When selecting an image for the build you can use the full name provided below o
   enableImmutableInstalls: false
   ```
 
-#### Image `macos-monterey-12.1-xcode-13.2` (alias `latest`)
+#### Image `macos-monterey-12.3-xcode-13.3` (alias `latest`)
+
+<details><summary>Details</summary>
+
+- macOS Monterey 12.3.1
+- Xcode 13.3.1 (13E500a)
+- Node.js 16.13.2
+- Yarn 1.22.17
+- npm 8.1.2
+- fastlane 2.205.2
+- CocoaPods 1.11.3
+- Ruby 2.7
+
+</details>
+
+#### Image `macos-monterey-12.1-xcode-13.2`
 
 <details><summary>Details</summary>
 
