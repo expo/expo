@@ -87,6 +87,7 @@
     "eslint-config-next": "^10.2.3",
     "eslint-config-universe": "^10.0.0",
     "eslint-plugin-lodash": "^7.3.0",
+    "eslint-plugin-no-storage": "^1.0.2",
     "http-server": "^0.12.3",
     "jest": "^27.4.7",
     "js-yaml": "^4.1.0",

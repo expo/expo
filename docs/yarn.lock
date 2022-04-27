@@ -3696,6 +3696,11 @@ eslint-plugin-lodash@^7.3.0:
   dependencies:
     lodash "^4.17.21"
 
+eslint-plugin-no-storage@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-no-storage/-/eslint-plugin-no-storage-1.0.2.tgz#b32b2f00c4084f8e70c6c4ea79704ffe28b6caad"
+  integrity sha1-sysvAMQIT45wxsTqeXBP/ii2yq0=
+
 eslint-plugin-node@^11.1.0:
   version "11.1.0"
   resolved "https://registry.yarnpkg.com/eslint-plugin-node/-/eslint-plugin-node-11.1.0.tgz#c95544416ee4ada26740a30474eefc5402dc671d"
