@@ -50,7 +50,7 @@
     "@expo/osascript": "^2.0.31",
     "@expo/package-manager": "~0.0.52",
     "@expo/plist": "^0.0.18",
-    "@expo/prebuild-config": "~3.1.4",
+    "@expo/prebuild-config": "~4.0.0",
     "@expo/rudder-sdk-node": "1.1.1",
     "@expo/spawn-async": "1.5.0",
     "@urql/core": "2.3.6",
