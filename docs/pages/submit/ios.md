@@ -67,7 +67,7 @@ You must do the following:
 
 - Provide the archive source (`--latest`, `--id`, `--path`, or `--url`).
 - Make sure that the iOS Bundle Identifier is present in your [app config file](/workflow/configuration.md).
-- Set the ASC App ID (`ascAppId` in **eas.json**). The ASC App ID is required to skip the Apple developer log-in process, which will likely not be possible on CI due to the 2FA prompt.
+- Set the ASC App ID (`ascAppId` in **eas.json**). The ASC App ID is required to skip the Apple Developer log-in process, which will likely not be possible on CI due to the 2FA prompt.
 - Set up your App Store Connect API Key with EAS Servers. You can check the state of your credentials by running `eas credentials` or by running `eas submit -p ios` interactively.
   <details><summary><h4>🔐 Do you want to use your own credentials?</h4></summary>
   <p>

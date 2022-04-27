@@ -226,7 +226,7 @@ Below is a screenshot showing the request of a successful update manfiest reques
 
 When building a project into an app, there can be multiple steps that alter the output of `expo prebuild`. After making a build, it is possible to open the build's contents and inspect native files to see its final configuration.
 
-Here are the steps for inspecting an iOS simulator build on MacOS:
+Here are the steps for inspecting an iOS simulator build on macOS:
 
 1. Create an iOS simulator build of the app using EAS Build. This is done by adding `"ios": { "simulator": true }` to a build profile.
 2. Once the build is finished, download the result and unzip it.

@@ -78,7 +78,7 @@ The first time you connect to the repl, you'll need to create a Leiningen nREPL 
 
 Once this is done, you can connect to the REPL.
 
-In Intellij make sure your REPL config is selected and click the green **play** button to start your REPL.
+In IntelliJ make sure your REPL config is selected and click the green **play** button to start your REPL.
 
 Run `(start-figwheel)` in the connected REPL.
 

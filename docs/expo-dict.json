@@ -1,0 +1,10 @@
+{
+  "android emulator": "Android Emulator",
+  "apple developer": "Apple Developer",
+  "eas": "EAS",
+  "expo go": "Expo Go",
+  "expo sdk": "Expo SDK",
+  "ios simulator": "iOS Simulator",
+  "react navigation": "React Navigation",
+  "unix": "Unix"
+}

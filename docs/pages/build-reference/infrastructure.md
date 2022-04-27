@@ -85,7 +85,7 @@ When selecting an image for the build you can use the full name provided below o
 - NDK 19.2.5345600
 - Node.js 16.13.2
 - Yarn 1.22.17
-- Npm 8.1.2
+- npm 8.1.2
 - Java 11
 
 </details>
@@ -98,7 +98,7 @@ When selecting an image for the build you can use the full name provided below o
 - NDK 19.2.5345600
 - Node.js 16.13.2
 - Yarn 1.22.17
-- Npm 8.1.2
+- npm 8.1.2
 - Java 8
 
 </details>

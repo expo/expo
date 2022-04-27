@@ -373,7 +373,7 @@ Extends [`GoogleAuthData`](#googleauthdata), manages the user tokens.
 - `accessTokenExpirationDate: ?number;`
 - `refreshToken: ?string;`
 - `idToken: ?string;`
-- `idTokenExpirationDate: ?number;` | UNIX time in milliseconds
+- `idTokenExpirationDate: ?number;` | Unix time in milliseconds
 
 ## Constants
 

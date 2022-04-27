@@ -25,42 +25,42 @@ If a capability is enabled for your app remotely, but not present in the native 
 EAS Build will only enable capabilities that it has built-in support for, any unsupported entitlements must be manually enabled via [Apple Developer Portal][apple-dev-portal].
 
 | Capability                       | Supported |
-| -------------------------------- | --------- |
-| HomeKit                          | ✅        |
-| Hotspot                          | ✅        |
-| Multipath                        | ✅        |
-| SiriKit                          | ✅        |
-| Wireless Accessory Configuration | ✅        |
-| Extended Virtual Address Space   | ✅        |
-| Access WiFi Information          | ✅        |
-| Associated Domains               | ✅        |
-| AutoFill Credential Provider     | ✅        |
-| HealthKit                        | ✅        |
-| Game Center                      | ✅        |
-| ClassKit                         | ✅        |
-| Data Protection                  | ✅        |
-| Inter-App Audio                  | ✅        |
-| Network Extensions               | ✅        |
-| NFC Tag Reading                  | ✅        |
-| Personal VPN                     | ✅        |
-| Push Notifications               | ✅        |
-| Wallet                           | ✅        |
-| Sign In with Apple               | ✅        |
-| Fonts                            | ✅        |
-| In-App Purchase                  | ✅        |
-| Communication Notifications      | ✅        |
-| Time Sensitive Notifications     | ✅        |
-| Group Activities                 | ✅        |
-| Family Controls                  | ✅        |
+|----------------------------------|-----------|
+| HomeKit                          | ✅         |
+| Hotspot                          | ✅         |
+| Multipath                        | ✅         |
+| SiriKit                          | ✅         |
+| Wireless Accessory Configuration | ✅         |
+| Extended Virtual Address Space   | ✅         |
+| Access Wi-Fi Information         | ✅         |
+| Associated Domains               | ✅         |
+| AutoFill Credential Provider     | ✅         |
+| HealthKit                        | ✅         |
+| Game Center                      | ✅         |
+| ClassKit                         | ✅         |
+| Data Protection                  | ✅         |
+| Inter-App Audio                  | ✅         |
+| Network Extensions               | ✅         |
+| NFC Tag Reading                  | ✅         |
+| Personal VPN                     | ✅         |
+| Push Notifications               | ✅         |
+| Wallet                           | ✅         |
+| Sign In with Apple               | ✅         |
+| Fonts                            | ✅         |
+| In-App Purchase                  | ✅         |
+| Communication Notifications      | ✅         |
+| Time Sensitive Notifications     | ✅         |
+| Group Activities                 | ✅         |
+| Family Controls                  | ✅         |
 | Apple Pay Payment Processing     | Partial   |
 | iCloud                           | Partial   |
 | App Groups                       | Partial   |
-| App Attest                       | ❌        |
-| FileProvider TestingMode         | ❌        |
-| HLS Interstitial Previews        | ❌        |
-| Low Latency HLS                  | ❌        |
-| MDM Managed Associated Domains   | ❌        |
-| HealthKit Estimate Recalibration | ❌        |
+| App Attest                       | ❌         |
+| FileProvider TestingMode         | ❌         |
+| HLS Interstitial Previews        | ❌         |
+| Low Latency HLS                  | ❌         |
+| MDM Managed Associated Domains   | ❌         |
+| HealthKit Estimate Recalibration | ❌         |
 
 The unsupported capabilities either don't support iOS, or they don't have a corresponding entitlement value.
 

@@ -7,7 +7,7 @@ import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
 
-Expo includes support for [Lottie](https://airbnb.design/lottie/), the animation library from AirBnB.
+Expo includes support for [Lottie](https://airbnb.design/lottie/), the animation library from Airbnb.
 
 <PlatformsSection android emulator ios simulator />
 

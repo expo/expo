@@ -275,7 +275,7 @@ module.exports = function (api) {
 - AdMob [method name changes](https://github.com/expo/expo/commit/e3f021436785959d4b224859fe0343f88c4774d8). `requestAd` to `requestAdAsync`, `showAd` to `showAdAsync`, `isReady` to `getIsReadyAsync`.
 - On iOS, Contacts `urls` was renamed to `urlAddresses` to match Android. [Related commit](https://github.com/expo/expo/commit/18f542f1de549d132438c53af1c955e7f1cf6286).
 - On iOS, calling `Notifications.getExpoPushToken()` will throw an error if you don’t have permission to send notifications. We recommend call `Permissions.getAsync(Permissions.NOTIFICATIONS)` and, if needed and you haven’t asked before, `Permissions.askAsync(Permissions.NOTIFICATIONS)` before getting push token.
-- React native 0.53.0 removed the TextInput autoGrow prop. [Commit](https://github.com/facebook/react-native/commit/dabb78b1278d922e18b2a84059460689da12578b#diff-b48972356bc8dca4a00747d002fc3dd5).
+- React Native 0.53.0 removed the TextInput autoGrow prop. [Commit](https://github.com/facebook/react-native/commit/dabb78b1278d922e18b2a84059460689da12578b#diff-b48972356bc8dca4a00747d002fc3dd5).
 
 ## SDK 25 [DEPRECATED]
 

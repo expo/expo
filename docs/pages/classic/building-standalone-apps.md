@@ -130,7 +130,7 @@ If you plan on providing your own certificates, we recommend creating them in th
 
 #### Enterprise distribution
 
-The Expo build service supports both normal App Store distribution as well as enterprise distribution. To use the latter, you must be a member of the ["Apple Developer Enterprise Program"](https://developer.apple.com/programs/enterprise/). Only normal Apple developer accounts can build apps that can be submitted to the Apple App Store, and only enterprise developer accounts can build apps that can be distributed using enterprise distribution methods. When you call `expo build:ios`, you just need to choose the correct team, it will be labeled `(In-House)`.
+The Expo build service supports both normal App Store distribution as well as enterprise distribution. To use the latter, you must be a member of the ["Apple Developer Enterprise Program"](https://developer.apple.com/programs/enterprise/). Only normal Apple Developer accounts can build apps that can be submitted to the Apple App Store, and only enterprise developer accounts can build apps that can be distributed using enterprise distribution methods. When you call `expo build:ios`, you just need to choose the correct team, it will be labeled `(In-House)`.
 
 #### Adhoc distribution
 
@@ -161,7 +161,7 @@ When one of our building machines is free, it'll start building your app. You ca
 
 ### Android
 
-- **To run it on your Android emulator**, first build your project with the apk flag by running `expo build:android -t apk`, and you can drag and drop the **.apk** into the emulator.
+- **To run it on your Android Emulator**, first build your project with the apk flag by running `expo build:android -t apk`, and you can drag and drop the **.apk** into the emulator.
 - **To run it on your Android device**, make sure you have the Android platform tools installed along with `adb`, then just run `adb install app-filename.apk` with [USB debugging enabled on your device](https://developer.android.com/studio/run/device.html#device-developer-options) and the device plugged in.
 
 ### iOS
