@@ -2007,7 +2007,7 @@ PODS:
     - ExpoModulesCore
   - EXSpeech (10.2.0):
     - ExpoModulesCore
-  - EXSplashScreen (0.15.0):
+  - EXSplashScreen (0.15.1):
     - ExpoModulesCore
     - React-Core
   - EXSQLite (10.2.0):
@@ -4387,7 +4387,7 @@ SPEC CHECKSUMS:
   EXSharing: b058aa8e8993ac63d809c686df7695203a810123
   EXSMS: 26f6d61a00a3a3fb125a233d81b1d3ab48303cef
   EXSpeech: b151148a873cacbd87518b2bda92dd667c94c73c
-  EXSplashScreen: 8a3b224b8432cba0b3081e4235956acd671666f1
+  EXSplashScreen: 0878feea1af33fda72d84c17787989b245f60275
   EXSQLite: 2b9accd925438293f9f39e0a57a08cca13bdffb2
   EXStoreReview: e61fbd500624ee7363ab134ee247cff380a8b254
   EXStructuredHeaders: 5d86829469399370a9fc7cb1e4391b09de87681d
