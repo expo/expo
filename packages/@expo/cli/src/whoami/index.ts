@@ -1,9 +1,6 @@
 #!/usr/bin/env node
-import chalk from 'chalk';
-
 import { Command } from '../../bin/cli';
-import * as Log from '../log';
-import { assertArgs } from '../utils/args';
+import { assertArgs, printHelp } from '../utils/args';
 import { logCmdError } from '../utils/errors';
 
 export const expoWhoami: Command = async (argv) => {
@@ -18,18 +15,10 @@ export const expoWhoami: Command = async (argv) => {
   );
 
   if (args['--help']) {
-    Log.exit(
-      chalk`
-      {bold Description}
-        Show the currently authenticated username
-
-      {bold Usage}
-        $ npx expo whoami
-
-      Options
-      -h, --help    Output usage information
-    `,
-      0
+    printHelp(
+      `Show the currently authenticated username`,
+      `npx expo whoami`,
+      `-h, --help    Usage info`
     );
   }
 
