@@ -15,10 +15,11 @@ export const GridCell = ({
   md,
   lg,
   xl,
+  xxl,
   style,
   css,
 }: PropsWithChildren<GridCellProps>) => (
-  <Col css={[cellWrapperStyle, css]} sm={sm} md={md} lg={lg} xl={xl}>
+  <Col css={[cellWrapperStyle, css]} sm={sm} md={md} lg={lg} xl={xl} xxl={xxl}>
     <div css={cellStyle} style={style}>
       {children}
     </div>
@@ -37,10 +38,11 @@ export const APIGridCell = ({
   link,
   style,
   sm = 6,
-  md = 3,
+  md = 6,
+  lg = 6,
   xl = 3,
 }: APIGridCellProps) => (
-  <Col css={cellWrapperStyle} md={md} sm={sm} xl={xl}>
+  <Col css={cellWrapperStyle} md={md} sm={sm} lg={lg} xl={xl}>
     <a href={link} css={[cellStyle, cellAPIStyle, cellHoverStyle]} style={style}>
       <div css={cellIconWrapperStyle}>{icon}</div>
       <div css={cellTitleWrapperStyle}>

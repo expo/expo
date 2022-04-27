@@ -1,9 +1,10 @@
 import { css } from '@emotion/react';
 import { spacing, theme, typography, useTheme } from '@expo/styleguide';
+import { useRouter } from 'next/router';
 import React, { PropsWithChildren } from 'react';
 import { Container, Row } from 'react-grid-system';
 
-import { Header } from '~/ui/components/Header';
+import DocumentationPage from '~/components/DocumentationPage';
 import { APIGridCell, CommunityGridCell, GridCell, HomeButton } from '~/ui/components/Home';
 import {
   APICameraIcon,
@@ -16,7 +17,6 @@ import {
   SnackImage,
   WhyImage,
 } from '~/ui/components/Home/resources';
-import { Layout } from '~/ui/components/Layout';
 import { Spacer } from '~/ui/components/Separator';
 import { Terminal } from '~/ui/components/Snippet';
 import { H1, H2, H3, P } from '~/ui/components/Text';
@@ -44,10 +44,11 @@ const Description = ({ children }: PropsWithChildren<object>) => (
 );
 
 const Home = () => {
+  const router = useRouter();
   const { themeName } = useTheme();
   const { palette, button, background } = theme;
   return (
-    <Layout header={<Header />}>
+    <DocumentationPage router={router} tocVisible={false} hideFromSearch>
       <H1 style={{ marginBottom: 8, fontFamily: typography.fontStacks.black, fontWeight: '900' }}>
         Create amazing apps that run everywhere
       </H1>
@@ -58,7 +59,8 @@ const Home = () => {
       <CellContainer>
         <Row>
           <GridCell
-            md={4}
+            xl={4}
+            lg={12}
             style={{
               backgroundColor: background.secondary,
               backgroundImage: 'url("/static/images/home/QuickStartPattern.svg")',
@@ -88,7 +90,8 @@ const Home = () => {
             />
           </GridCell>
           <GridCell
-            md={8}
+            xl={8}
+            lg={12}
             style={{
               backgroundColor: palette.primary['100'],
               borderColor: palette.primary[themeName === 'dark' ? '300' : '200'],
@@ -125,8 +128,9 @@ const Home = () => {
       <CellContainer>
         <Row>
           <GridCell
-            lg={4}
-            md={6}
+            xxl={4}
+            xl={6}
+            lg={6}
             style={{ backgroundColor: palette.blue['000'], borderColor: palette.blue['200'] }}>
             <SnackImage />
             <H3 style={{ color: palette.blue['900'], marginBottom: spacing[1.5] }}>
@@ -145,8 +149,9 @@ const Home = () => {
             </HomeButton>
           </GridCell>
           <GridCell
-            lg={4}
-            md={6}
+            xxl={4}
+            xl={6}
+            lg={6}
             style={{
               backgroundColor: palette.orange['100'],
               borderColor: palette.orange[themeName === 'dark' ? '300' : '200'],
@@ -165,8 +170,9 @@ const Home = () => {
             </HomeButton>
           </GridCell>
           <GridCell
-            lg={4}
-            md={6}
+            xxl={4}
+            xl={6}
+            lg={6}
             style={{ backgroundColor: palette.green['000'], borderColor: palette.green['200'] }}>
             <WhyImage />
             <H3 style={{ color: palette.green['900'], marginBottom: spacing[1.5] }}>
@@ -255,7 +261,7 @@ const Home = () => {
           />
         </Row>
       </CellContainer>
-    </Layout>
+    </DocumentationPage>
   );
 };
 
