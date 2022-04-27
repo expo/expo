@@ -50,6 +50,7 @@
     "react-diff-view": "^2.4.7",
     "react-dom": "^17.0.2",
     "react-feather": "^2.0.9",
+    "react-grid-system": "^8.1.3",
     "react-markdown": "^6.0.3",
     "react-player": "^1.11.1",
     "react-visibility-sensor": "^5.1.1",
