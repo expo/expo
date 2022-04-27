@@ -49,14 +49,24 @@ const isSubcommand = Boolean(commands[args._[0]]);
 
 // Handle `--help` flag
 if (!isSubcommand && args['--help']) {
-  const { login, logout, whoami, register, start, install, config, ...others } = commands;
+  const {
+    login,
+    logout,
+    whoami,
+    register,
+    start,
+    install,
+    export: _export,
+    config,
+    ...others
+  } = commands;
 
   console.log(chalk`
   {bold Usage}
     {dim $} npx expo <command>
 
   {bold Commands}
-    ${Object.keys({ start, install, config, ...others }).join(', ')}
+    ${Object.keys({ start, install, export: _export, config, ...others }).join(', ')}
     {dim ${Object.keys({ login, logout, whoami, register }).join(', ')}}
 
   {bold Options}
