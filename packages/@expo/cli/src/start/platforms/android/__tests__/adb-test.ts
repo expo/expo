@@ -3,6 +3,7 @@ import {
   Device,
   getAdbNameForDeviceIdAsync,
   getAttachedDevicesAsync,
+  getDeviceABIsAsync,
   getPropertyDataForDeviceAsync,
   getServer,
   isBootAnimationCompleteAsync,
@@ -235,5 +236,14 @@ describe(getPropertyDataForDeviceAsync, () => {
       'wifi.direct.interface': 'p2p-dev-wlan0',
       'wifi.interface': 'wlan0',
     });
+  });
+});
+
+describe(getDeviceABIsAsync, () => {
+  it(`returns a list of device ABIs`, async () => {
+    asMock(getServer().getFileOutputAsync).mockResolvedValueOnce(
+      ['x86,armeabi-v7a,armeabi', ''].join('\n')
+    );
+    await expect(isBootAnimationCompleteAsync()).resolves.toBe(false);
   });
 });

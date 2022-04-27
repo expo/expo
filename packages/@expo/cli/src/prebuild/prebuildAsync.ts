@@ -39,7 +39,7 @@ export async function prebuildAsync(
   projectRoot: string,
   options: {
     /** Should install node modules and cocoapods. */
-    install: boolean;
+    install?: boolean;
     /** List of platforms to prebuild. */
     platforms: ModPlatform[];
     /** Should delete the native folders before attempting to prebuild. */
@@ -125,7 +125,7 @@ export async function prebuildAsync(
 
   return {
     packageManager,
-    nodeInstall: options.install,
+    nodeInstall: !!options.install,
     podInstall: !podsInstalled,
     platforms: options.platforms,
     hasNewProjectFiles,

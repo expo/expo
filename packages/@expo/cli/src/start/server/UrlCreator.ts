@@ -20,7 +20,7 @@ interface UrlComponents {
 }
 export class UrlCreator {
   constructor(
-    private defaults: CreateURLOptions,
+    private defaults: CreateURLOptions | undefined,
     private bundlerInfo: { port: number; getTunnelUrl?: () => string | null }
   ) {}
 
@@ -35,7 +35,7 @@ export class UrlCreator {
 
   /** Create a URI for launching in a native dev client. Returns `null` when no `scheme` can be resolved. */
   public constructDevClientUrl(options?: CreateURLOptions): null | string {
-    const protocol = options?.scheme || this.defaults.scheme;
+    const protocol = options?.scheme || this.defaults?.scheme;
 
     if (
       !protocol ||

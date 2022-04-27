@@ -18,6 +18,7 @@ function getUnixPID(port: number | string): string {
 
 /** Activate the Emulator window on macOS. */
 export async function activateWindowAsync(device: Pick<Device, 'type' | 'pid'>): Promise<boolean> {
+  Log.debug(`Activating window for device (pid: ${device.pid}, type: ${device.type})`);
   if (
     // only mac is supported for now.
     process.platform !== 'darwin' ||
@@ -38,6 +39,7 @@ export async function activateWindowAsync(device: Pick<Device, 'type' | 'pid'>):
   if (!pid) {
     return false;
   }
+  Log.debug(`Activate window for pid:`, pid);
   try {
     await osascript.execAsync(`
     tell application "System Events"

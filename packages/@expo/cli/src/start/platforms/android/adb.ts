@@ -6,6 +6,20 @@ import { CommandError } from '../../../utils/errors';
 import { learnMore } from '../../../utils/link';
 import { ADBServer } from './ADBServer';
 
+export enum DeviceABI {
+  // The arch specific android target platforms are soft-deprecated.
+  // Instead of using TargetPlatform as a combination arch + platform
+  // the code will be updated to carry arch information in [DarwinArch]
+  // and [AndroidArch].
+  arm = 'arm',
+  arm64 = 'arm64',
+  x64 = 'x64',
+  x86 = 'x86',
+  armeabiV7a = 'armeabi-v7a',
+  armeabi = 'armeabi',
+  universal = 'universal',
+}
+
 /** Represents a connected Android device. */
 export type Device = {
   /** Process ID. */
@@ -25,6 +39,14 @@ type DeviceContext = Pick<Device, 'pid'>;
 type DeviceProperties = Record<string, string>;
 
 const CANT_START_ACTIVITY_ERROR = 'Activity not started, unable to resolve Intent';
+// http://developer.android.com/ndk/guides/abis.html
+const PROP_CPU_NAME = 'ro.product.cpu.abi';
+
+const PROP_CPU_ABI_LIST_NAME = 'ro.product.cpu.abilist';
+
+// Can sometimes be null
+// http://developer.android.com/ndk/guides/abis.html
+const PROP_BOOT_ANIMATION_STATE = 'init.svc.bootanim';
 
 let _server: ADBServer | null;
 
@@ -271,10 +293,6 @@ export async function isDeviceBootedAsync({
   return devices.find((device) => device.name === name) ?? null;
 }
 
-// Can sometimes be null
-// http://developer.android.com/ndk/guides/abis.html
-const PROP_BOOT_ANIMATION_STATE = 'init.svc.bootanim';
-
 /**
  * Returns true when a device's splash screen animation has stopped.
  * This can be used to detect when a device is fully booted and ready to use.
@@ -288,6 +306,24 @@ export async function isBootAnimationCompleteAsync(pid?: string): Promise<boolea
   } catch {
     return false;
   }
+}
+
+/** Get a list of ABIs for the provided device. */
+export async function getDeviceABIsAsync(
+  device: Pick<Device, 'name' | 'pid'>
+): Promise<DeviceABI[]> {
+  const cpuAbiList = (await getPropertyDataForDeviceAsync(device, PROP_CPU_ABI_LIST_NAME))[
+    PROP_CPU_ABI_LIST_NAME
+  ];
+
+  if (cpuAbiList) {
+    return cpuAbiList.trim().split(',') as DeviceABI[];
+  }
+
+  const abi = (await getPropertyDataForDeviceAsync(device, PROP_CPU_NAME))[
+    PROP_CPU_NAME
+  ] as DeviceABI;
+  return [abi];
 }
 
 export async function getPropertyDataForDeviceAsync(
@@ -304,11 +340,18 @@ export async function getPropertyDataForDeviceAsync(
     // [wifi.interface]: [wlan0]
 
     if (prop) {
+      Log.debug(
+        `[ADB] property data: (device pid: ${device.pid}, prop: ${prop}, data: ${results})`
+      );
       return {
         [prop]: results,
       };
     }
-    return parseAdbDeviceProperties(results);
+    const props = parseAdbDeviceProperties(results);
+
+    Log.debug(`[ADB] parsed data:`, props);
+
+    return props;
   } catch (error: any) {
     // TODO: Ensure error has message and not stderr
     throw new CommandError(`Failed to get properties for device (${device.pid}): ${error.message}`);
