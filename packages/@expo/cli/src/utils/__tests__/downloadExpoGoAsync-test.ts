@@ -35,7 +35,7 @@ describe(downloadExpoGoAsync, () => {
       .get('/Exponent-2.23.2.tar.gz')
       .reply(200, '...');
 
-    await downloadExpoGoAsync('ios', { sdkVersion: '45.0.0' });
+    await downloadExpoGoAsync('ios', { sdkVersion: '44.0.0' });
 
     const generatedOutput = '/home/.expo/ios-simulator-app-cache/Exponent-2.23.2.tar.app';
 
@@ -69,7 +69,7 @@ describe(downloadExpoGoAsync, () => {
       .get('/Exponent-2.23.2.apk')
       .reply(200, '...');
 
-    await downloadExpoGoAsync('android', { sdkVersion: '45.0.0' });
+    await downloadExpoGoAsync('android', { sdkVersion: '44.0.0' });
 
     const generatedOutput = '/home/.expo/android-apk-cache/Exponent-2.23.2.apk';
 
@@ -103,7 +103,7 @@ describe(downloadExpoGoAsync, () => {
       .get('/Exponent-2.23.2.apk')
       .reply(500, 'something went wrong');
 
-    await expect(downloadExpoGoAsync('android', { sdkVersion: '45.0.0' })).rejects.toThrow(
+    await expect(downloadExpoGoAsync('android', { sdkVersion: '44.0.0' })).rejects.toThrow(
       /Unexpected response: Internal Server Error\. From url: https:\/\/d1ahtucjixef4r\.cloudfront\.net\/Exponent-2\.23\.2\.apk/
     );
     const generatedOutput = '/home/.expo/android-apk-cache/Exponent-2.23.2.apk';
