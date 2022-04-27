@@ -23,21 +23,5 @@ it('runs `npx expo -v`', async () => {
 
 it('runs `npx expo --help`', async () => {
   const results = await execute('--help');
-  expect(results.stdout).toMatchInlineSnapshot(`
-    "
-      Usage
-        $ npx expo <command>
-
-      Commands
-        start, install, config, prebuild
-        login, logout, whoami, register
-
-      Options
-        --version, -v   Version number
-        --help, -h      Usage info
-
-      For more info run a command with the --help flag
-        $ npx expo start --help
-    "
-  `);
+  expect(results.stdout).toMatchInlineSnapshot();
 });
