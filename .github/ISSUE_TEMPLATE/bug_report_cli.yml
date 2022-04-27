@@ -1,14 +1,49 @@
 name: "\U0001F41B CLI Bug Report"
-description: 'You want to report an issue with Expo CLI, our command line tool'
-labels: ['stale', 'pending closure']
+description: 'Report a reproducible bug in the versioned Expo CLI (npx expo)'
+labels: ['needs review', 'CLI']
 body:
   - type: markdown
     attributes:
-      value: This is not the repository for Expo CLI. Please post this issue in the https://github.com/expo/expo-cli repo instead.
-  - type: dropdown
+      value: Thanks for taking the time to file a bug report! Please fill out this form as completely as possible.
+  - type: markdown
     attributes:
-      label: Do you understand that any Expo CLI issues opened in the core Expo repository will be closed?
-      options:
-        - 'Yes'
+      value: If you leave out sections there is a high likelihood your issue will be closed. If you have a question, not a bug report, please post it on our [forums](https://forums.expo.dev/) instead.
+  - type: textarea
+    attributes:
+      label: Summary
+      description: Describe the issue in 1 or 2 sentences
+      placeholder: Clearly describe what the expected behavior is vs. what is actually happening. This should be as short as possible, while still communicating all the necessary information. If your summary is simply 'my device cannot connect to wifi', then you need to continue debugging yourself and provide more information.
     validations:
       required: true
+  - type: dropdown
+    attributes:
+      label: What platform(s) does this occur on?
+      multiple: true
+      options:
+        - Android
+        - iOS
+        - Web
+    validations:
+      required: false
+  - type: input
+    attributes:
+      label: SDK Version
+      description: What version of the Expo SDK are you using?
+  - type: textarea
+    attributes:
+      label: Environment
+      placeholder: Run `npx expo-env-info` and paste the output here
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Reproducible demo
+      description: 'This should include as little code as possible, do not link your entire project. If a reproducible demo is not provided, it is very likely your issue will be closed. Read [here more guidance](https://stackoverflow.com/help/mcve).'
+    validations:
+      required: true
+  - type: markdown
+    attributes:
+      value: Please make sure contributors can run your code and follow the steps your provided in order to reproduce the bug.
+  - type: markdown
+    attributes:
+      value: "**Realize that it is up to you to debug your code and be as certain as possible that the bug is with Expo, not with your own app.** [Here's an excellent guide to debugging you can follow](https://gist.github.com/brentvatne/5ac00cba0c70b7a06b89a56787d6bc4a)."
