@@ -5,18 +5,18 @@ import expo.modules.kotlin.modules.ModuleDefinition
 
 class <%- project.name %>Module : Module() {
   override fun definition() = ModuleDefinition {
-    name("<%- project.name %>")
+    Name("<%- project.name %>")
 
-    function("helloAsync") { options: Map<String, String> ->
+    AsyncFunction("helloAsync") { options: Map<String, String> ->
       println("Hello 👋")
     }
 
-    viewManager {
-      view { context -> 
+    ViewManager {
+      View { context -> 
         <%- project.name %>View(context) 
       }
 
-      prop("name") { view: <%- project.name %>View, prop: String ->
+      Prop("name") { view: <%- project.name %>View, prop: String ->
         println(prop)
       }
     }
