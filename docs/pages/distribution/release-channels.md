@@ -3,7 +3,7 @@ title: Release channels
 ---
 
 import { InlineCode } from '~/components/base/code';
-import TerminalBlock from '~/components/plugins/TerminalBlock';
+import { Terminal } from '~/ui/components/Snippet';
 
 > Release channels are used for our Classic Updates service. As of Dec 2021, we started previewing the next generation of our updates service: EAS Update. [Learn more](/eas-update).
 
@@ -18,7 +18,10 @@ Use release channels in Expo to send out different versions of your application 
 
 Publish your update on a release channel by running:
 
-<TerminalBlock cmd={['# Publish to release channel <your-channel>', 'expo publish --release-channel <your-channel>']} />
+<Terminal cmd={[
+  '# Publish to release channel <your-channel>',
+  '$ expo publish --release-channel <your-channel>'
+]} cmdCopy="expo publish --release-channel <your-channel>" />
 
 Your team can see this release channel in the Expo Go app with a parameterized URL `https://exp.host/@username/yourApp?release-channel=<your-release-channel>`. If you do not specify a release channel, you will publish to the `default` channel.
 
@@ -105,7 +108,7 @@ Environment variables don't exist explicitly, but you can utilize release channe
 
 Say you have a workflow of releasing builds like this:
 
-<TerminalBlock cmd={[
+<Terminal cmd={[
 '# Publish to release channel prod-v1',
 'expo publish --release-channel prod-v1',
 '',
