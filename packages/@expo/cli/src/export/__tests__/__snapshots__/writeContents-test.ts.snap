@@ -1,0 +1,11 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`writeDebugHtmlAsync creates a debug html file 1`] = `
+"
+      <script src=\\"bundles/index.ios.js\\"></script>
+      <script src=\\"bundles/index.android.js\\"></script>
+      <script src=\\"bundles/index.windows.js\\"></script>
+      Open up this file in Chrome. In the JavaScript developer console, navigate to the Source tab.
+      You can see a red colored folder containing the original source code from your bundle.
+      "
+`;

@@ -1,0 +1,13 @@
+{
+    "expo": {
+        "assetBundlePatterns": [
+            "assets/*.ttf"
+        ],
+        "android": {
+            "package": "com.example.minimal"
+        },
+        "ios": {
+            "bundleIdentifier": "com.example.minimal"
+        }
+    }
+}
