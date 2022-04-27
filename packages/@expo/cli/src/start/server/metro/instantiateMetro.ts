@@ -45,13 +45,10 @@ export async function instantiateMetroAsync(
     attachToServer,
 
     // New
-    // @ts-expect-error: new API
     websocketEndpoints,
-    // @ts-expect-error: new API
     eventsSocketEndpoint,
-    // @ts-expect-error: new API
     messageSocketEndpoint,
-  } = createDevServerMiddleware({
+  } = createDevServerMiddleware(projectRoot, {
     port: metroConfig.server.port,
     watchFolders: metroConfig.watchFolders,
   });
