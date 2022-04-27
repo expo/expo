@@ -36,13 +36,13 @@ export function LoggedOutAccountView({ refetch }: Props) {
   });
 
   React.useEffect(() => {
-    // wait for redux action to dispatch, refetch with new sessionSecret, then dismiss modal
-    if (sessionSecretExists && isFinishedAuthenticating) {
+    // after logging in, wait for redux action to dispatch, refetch with new sessionSecret, then dismiss modal
+    if (isFinishedAuthenticating && sessionSecretExists) {
       refetch().then(() => {
         navigation.goBack();
       });
     }
-  }, [sessionSecretExists, isFinishedAuthenticating]);
+  }, [isFinishedAuthenticating, sessionSecretExists]);
 
   React.useEffect(() => {
     mounted.current = true;
