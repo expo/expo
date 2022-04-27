@@ -755,7 +755,7 @@ project.afterEvaluate {
     packageNdkLibs.dependsOn nativeBuildTask
   }
 
-  // Workaround for AGP 7 local lint aar task with errors from a library project owning another aars.
+  // Workaround for AGP 7 local lint aar task with errors from a library project owning other aars.
   // In our case, it's the expoview (library project) owning hermes aar
   // ```
   // Error while evaluating property 'hasLocalAarDeps' of task ':expoview:bundleVersionedReleaseLocalLintAar'
