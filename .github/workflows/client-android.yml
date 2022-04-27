@@ -78,7 +78,7 @@ jobs:
         with:
           bundler-cache: true
       - name: 🐙 Install git-crypt
-        run: brew install git-crypt
+        run: sudo apt-get install git-crypt
       - name: 🔓 Decrypt secrets if possible
         env:
           GIT_CRYPT_KEY_BASE64: ${{ secrets.GIT_CRYPT_KEY_BASE64 }}
