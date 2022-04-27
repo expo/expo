@@ -41,24 +41,22 @@ it('runs `npx expo export --help`', async () => {
   const results = await execute('export', '--help');
   expect(results.stdout).toMatchInlineSnapshot(`
     "
-      Description
+      Info
         Export the static files of the app for hosting it on a web server
 
       Usage
-        $ npx expo export <path>
-
-      <dir> is the directory of the Expo project.
-      Defaults to the current working directory.
+        $ npx expo export <dir>
 
       Options
+        <dir>                         Directory of the Expo project. Default: Current working directory
         --platform <all|android|ios>  Platforms: android, ios, all. Default: all
         --dev                         Configure static files for developing locally using a non-https server
-        --output-dir <path>           The directory to export the static files to. Default: dist
+        --output-dir <dir>            The directory to export the static files to. Default: dist
         --max-workers <number>        Maximum number of tasks to allow the bundler to spawn
         --dump-assetmap               Dump the asset map for further processing
         --dump-sourcemap              Dump the source map for debugging the JS bundle
         -c, --clear                   Clear the bundler cache
-        -h, --help                    Output usage information
+        -h, --help                    Usage info
     "
   `);
 });

@@ -2,8 +2,7 @@
 import chalk from 'chalk';
 
 import { Command } from '../../bin/cli';
-import * as Log from '../log';
-import { assertArgs, getProjectRoot } from '../utils/args';
+import { assertArgs, getProjectRoot, printHelp } from '../utils/args';
 
 export const expoConfig: Command = async (argv) => {
   const args = assertArgs(
@@ -21,24 +20,16 @@ export const expoConfig: Command = async (argv) => {
   );
 
   if (args['--help']) {
-    Log.exit(
-      chalk`
-      {bold Description}
-        Show the project config
-
-      {bold Usage}
-        $ npx expo config <dir>
-
-      <dir> is the directory of the Expo project.
-      Defaults to the current working directory.
-
-      Options
-      --full                                   Include all project config data
-      --json                                   Output in JSON format
-      -t, --type <public|prebuild|introspect>  Type of config to show
-      -h, --help                               Output usage information
-    `,
-      0
+    printHelp(
+      `Show the project config`,
+      chalk`npx expo config {dim <dir>}`,
+      [
+        chalk`<dir>                                    Directory of the Expo project. {dim Default: Current working directory}`,
+        `--full                                   Include all project config data`,
+        `--json                                   Output in JSON format`,
+        `-t, --type <public|prebuild|introspect>  Type of config to show`,
+        `-h, --help                               Usage info`,
+      ].join('\n')
     );
   }
 
