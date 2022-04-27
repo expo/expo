@@ -4,6 +4,7 @@
 #import <EXNotifications/EXPushTokenManager.h>
 
 #import <ExpoModulesCore/EXEventEmitterService.h>
+#import <React/RCTBridge.h>
 
 static NSString * const onDevicePushTokenEventName = @"onDevicePushToken";
 
@@ -51,6 +52,8 @@ EX_EXPORT_METHOD_AS(getDevicePushTokenAsync,
 {
   _eventEmitter = [moduleRegistry getModuleImplementingProtocol:@protocol(EXEventEmitterService)];
   _pushTokenManager = [moduleRegistry getSingletonModuleForName:@"PushTokenManager"];
+
+  [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(stopObserving) name:RCTBridgeWillReloadNotification object:nil];
 }
 
 # pragma mark - EXEventEmitter
