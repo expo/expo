@@ -32,21 +32,19 @@ it('runs `npx expo config --help`', async () => {
   const results = await execute('config', '--help');
   expect(results.stdout).toMatchInlineSnapshot(`
     "
-          Description
-            Show the project config
+      Info
+        Show the project config
 
-          Usage
-            $ npx expo config <dir>
+      Usage
+        $ npx expo config <dir>
 
-          <dir> is the directory of the Expo project.
-          Defaults to the current working directory.
-
-          Options
-          --full                                   Include all project config data
-          --json                                   Output in JSON format
-          -t, --type <public|prebuild|introspect>  Type of config to show
-          -h, --help                               Output usage information
-        "
+      Options
+        <dir>                                    Directory of the Expo project. Default: Current working directory
+        --full                                   Include all project config data
+        --json                                   Output in JSON format
+        -t, --type <public|prebuild|introspect>  Type of config to show
+        -h, --help                               Usage info
+    "
   `);
 });
 

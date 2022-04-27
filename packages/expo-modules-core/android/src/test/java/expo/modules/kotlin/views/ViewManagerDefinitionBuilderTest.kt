@@ -14,7 +14,7 @@ class ViewManagerDefinitionBuilderTest {
   fun `builder should fail without view factory`() {
     val builder = ViewManagerDefinitionBuilder()
       .apply {
-        prop("only-prop") { _: View, _: Int -> }
+        Prop("only-prop") { _: View, _: Int -> }
       }
 
     try {
@@ -32,13 +32,13 @@ class ViewManagerDefinitionBuilderTest {
 
     val definition = ViewManagerDefinitionBuilder()
       .apply {
-        view {
+        View {
           viewFactoryCalls++
           mockk<ListView>()
         }
 
-        prop<ListView, Int>("p1") { _, _ -> p1Calls++ }
-        prop<ListView, Int>("p2") { _, _ -> p2Calls++ }
+        Prop<ListView, Int>("p1") { _, _ -> p1Calls++ }
+        Prop<ListView, Int>("p2") { _, _ -> p2Calls++ }
       }
       .build()
 

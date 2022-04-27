@@ -48,7 +48,7 @@ With that information, you should be able to identify where the error is coming 
 
 ### My app crashes on certain (older) devices
 
-This might indicate that there is a performance issue. You likely need to run your app through a profiler to get a better idea of what processes are killing the app, and [React Native provides some great documentation for this](https://reactnative.dev/docs/profiling). We also recommend using [React Devtools](https://www.npmjs.com/package/react-devtools) and the included profiler, which makes it super easy to identify performance sinks in your app.
+This might indicate that there is a performance issue. You likely need to run your app through a profiler to get a better idea of what processes are killing the app, and [React Native provides some great documentation for this](https://reactnative.dev/docs/profiling). We also recommend using [React DevTools](https://www.npmjs.com/package/react-devtools) and the included profiler, which makes it super easy to identify performance sinks in your app.
 
 ## Stuck?
 
@@ -145,7 +145,7 @@ npm install -g react-devtools
 
 (if you don't want to install it globally, run `npm install --dev react-devtools` to install it as a project dependency).
 
-After running `expo start` in your project's root directory, use a separate terminal tab to run `react-devtools`. This will open up the React Devtools console (for it to connect, you need to select `Debug remote JS` from the Developer Menu in the Expo Go app). From this console, you can search for your React components at the top, or open up the Developer Menu and enable the Element Inspector. Once you do that, you can tap on any element on screen and React DevTools will automatically find and display that element in the tree. From there, you can inspect the elements state, props, etc.
+After running `expo start` in your project's root directory, use a separate terminal tab to run `react-devtools`. This will open up the React DevTools console (for it to connect, you need to select `Debug remote JS` from the Developer Menu in the Expo Go app). From this console, you can search for your React components at the top, or open up the Developer Menu and enable the Element Inspector. Once you do that, you can tap on any element on screen and React DevTools will automatically find and display that element in the tree. From there, you can inspect the elements state, props, etc.
 
 <Video file="debugging/react-devtools.mp4" />
 
