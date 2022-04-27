@@ -57,7 +57,7 @@ export const View = create(RNView, {
       '0': { opacity: 0 },
     },
 
-    absolute: {
+    inset: {
       top: {
         position: 'absolute',
         top: 0,
@@ -72,7 +72,7 @@ export const View = create(RNView, {
         right: 0,
       },
 
-      all: {
+      full: {
         position: 'absolute',
         top: 0,
         left: 0,

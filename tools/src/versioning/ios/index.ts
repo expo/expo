@@ -7,6 +7,7 @@ import inquirer from 'inquirer';
 import path from 'path';
 import semver from 'semver';
 
+import { runReactNativeCodegenAsync } from '../../Codegen';
 import { EXPO_DIR, IOS_DIR, VERSIONED_RN_IOS_DIR } from '../../Constants';
 import logger from '../../Logger';
 import { getListOfPackagesAsync, Package } from '../../Packages';
@@ -22,7 +23,6 @@ import {
   MODULES_PROVIDER_POD_NAME,
   versionExpoModulesProviderAsync,
 } from './versionExpoModulesProvider';
-import { runReactNativeCodegenAsync } from './versionReactNative';
 import {
   versionVendoredModulesAsync,
   removeVersionedVendoredModulesAsync,
@@ -222,11 +222,17 @@ async function generateVersionedReactNativeAsync(versionName: string): Promise<v
   await Promise.all(jsFiles.map((jsFile) => fs.remove(jsFile)));
 
   console.log('Running react-native-codegen');
-  await runReactNativeCodegenAsync(
-    path.join(EXPO_DIR, RELATIVE_RN_PATH),
-    versionedReactNativePath,
-    versionName
-  );
+  await runReactNativeCodegenAsync({
+    reactNativeRoot: path.join(EXPO_DIR, RELATIVE_RN_PATH),
+    codegenPkgRoot: path.join(EXPO_DIR, RELATIVE_RN_PATH, 'packages', 'react-native-codegen'),
+    outputDir: path.join(versionedReactNativePath, 'codegen', 'ios'),
+    outputDirBaseName: `${versionName}FBReactNativeSpec`,
+    name: 'FBReactNativeSpec',
+    type: 'modules',
+    platform: 'ios',
+    jsSrcsDir: path.join(EXPO_DIR, RELATIVE_RN_PATH, 'Libraries'),
+    keepIntermediateSchema: true,
+  });
 
   console.log(
     `Copying cpp libraries from ${chalk.magenta(path.join(RELATIVE_RN_PATH, 'ReactCommon'))} ...`
@@ -327,7 +333,7 @@ async function generateReactNativePodScriptAsync(
   targetSource = targetSource
     .replace(
       "$CODEGEN_OUTPUT_DIR = 'build/generated/ios'",
-      `$CODEGEN_OUTPUT_DIR = 'build/${versionName}/generated/ios'`
+      `$CODEGEN_OUTPUT_DIR = '${path.relative(IOS_DIR, versionedReactNativePath)}/codegen/ios'`
     )
     .replace(/\$(CODEGEN_OUTPUT_DIR)\b/g, `$${versionName}$1`)
     .replace(/\b(React-Codegen)\b/g, `${versionName}$1`)
@@ -907,11 +913,6 @@ export async function addVersionAsync(versionNumber: string, packages: Package[]
   // Namespace the new React clone
   console.log('Namespacing/transforming files...');
   await transformReactNativeAsync(newVersionPath, versionName, versionedPodNames);
-  await transformReactNativeAsync(
-    path.join(IOS_DIR, 'build', versionName, 'generated', 'ios'),
-    versionName,
-    versionedPodNames
-  );
 
   // Generate Ruby scripts with versioned dependencies and postinstall actions that will be evaluated in the Expo client's Podfile.
   console.log('Adding dependency to root Podfile...');

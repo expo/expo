@@ -3,6 +3,7 @@ package expo.modules.devlauncher
 import android.app.Application
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import androidx.annotation.UiThread
 import com.facebook.react.ReactActivity
@@ -92,7 +93,11 @@ class DevLauncherController private constructor()
 
   private var appIsLoading = false
 
-  override suspend fun loadApp(url: Uri, mainActivity: ReactActivity?) {
+  private fun isEASUpdateURL(url: Uri): Boolean {
+    return url.host.equals("u.expo.dev")
+  }
+
+  override suspend fun loadApp(url: Uri, projectUrl: Uri?, mainActivity: ReactActivity?) {
     synchronized(this) {
       if (appIsLoading) {
         return
@@ -104,13 +109,23 @@ class DevLauncherController private constructor()
       ensureHostWasCleared(appHost, activityToBeInvalidated = mainActivity)
 
       val parsedUrl = replaceEXPScheme(url, "http")
+      var parsedProjectUrl = projectUrl ?: url
+
+      val isEASUpdate = isEASUpdateURL(url)
+
+      // default to the EXPO_UPDATE_URL value configured in AndroidManifest.xml when project url is unspecified for an EAS update
+      if (isEASUpdate && projectUrl == null) {
+        val projectUrlString = appHost.reactInstanceManager?.currentReactContext?.let { getMetadataValue(it, "expo.modules.updates.EXPO_UPDATE_URL") }
+        parsedProjectUrl = Uri.parse(projectUrlString)
+      }
+
       val manifestParser = DevLauncherManifestParser(httpClient, parsedUrl, installationIDHelper.getOrCreateInstallationID(context))
       val appIntent = createAppIntent()
 
       internalUpdatesInterface?.reset()
 
       val appLoaderFactory = get<DevLauncherAppLoaderFactoryInterface>()
-      val appLoader = appLoaderFactory.createAppLoader(parsedUrl, manifestParser)
+      val appLoader = appLoaderFactory.createAppLoader(parsedUrl, parsedProjectUrl, manifestParser)
       useDeveloperSupport = appLoaderFactory.shouldUseDeveloperSupport()
       manifest = appLoaderFactory.getManifest()
       manifestURL = parsedUrl
@@ -140,6 +155,10 @@ class DevLauncherController private constructor()
       }
       throw e
     }
+  }
+
+  override suspend fun loadApp(url: Uri, mainActivity: ReactActivity?) {
+    loadApp(url, null, mainActivity)
   }
 
   override fun onAppLoaded(context: ReactContext) {
@@ -304,6 +323,24 @@ class DevLauncherController private constructor()
     private var sErrorHandlerWasInitialized = false
     private var sLauncherClass: Class<*>? = null
     internal var sAdditionalPackages: List<ReactPackage>? = null
+
+    @JvmStatic
+    fun getMetadataValue(reactApplicationContext: ReactContext, key: String): String {
+      val packageManager = reactApplicationContext.packageManager
+      val packageName = reactApplicationContext.packageName
+      val applicationInfo = packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA)
+      var metaDataValue = ""
+
+      if (applicationInfo.metaData != null) {
+        val value = applicationInfo.metaData.get(key)
+
+        if (value != null) {
+          metaDataValue = value.toString()
+        }
+      }
+
+      return metaDataValue
+    }
 
     @JvmStatic
     fun wasInitialized() =

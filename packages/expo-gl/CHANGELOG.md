@@ -8,7 +8,19 @@
 
 ### 🐛 Bug fixes
 
+- Fix crash on android 11 by packaging worklet `jsi:Runtime*` inside ArrayBuffer. ([#17194](https://github.com/expo/expo/pull/17194) by [@wkozyra95](https://github.com/wkozyra95))
+
 ### 💡 Others
+
+## 11.2.2 — 2022-04-21
+
+### 🐛 Bug fixes
+
+- Fix import errors when option `inlineRequires` is enabled in `metro.config.js`. ([#17141](https://github.com/expo/expo/pull/17141) by [@wkozyra95](https://github.com/wkozyra95))
+
+## 11.2.1 — 2022-04-20
+
+_This version does not introduce any user-facing changes._
 
 ## 11.2.0 — 2022-04-18
 

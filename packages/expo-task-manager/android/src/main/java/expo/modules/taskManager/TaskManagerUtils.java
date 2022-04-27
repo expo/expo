@@ -44,9 +44,7 @@ public class TaskManagerUtils implements TaskManagerUtilsInterface {
 
   @Override
   public PendingIntent createTaskIntent(Context context, TaskInterface task) {
-    // We're defaulting to the behaviour prior API 31 (mutable) even though Android recommends immutability
-    int mutableFlag = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S ? PendingIntent.FLAG_MUTABLE : 0;
-    return createTaskIntent(context, task, PendingIntent.FLAG_UPDATE_CURRENT | mutableFlag);
+    return createTaskIntent(context, task, PendingIntent.FLAG_UPDATE_CURRENT);
   }
 
   @Override
@@ -188,7 +186,9 @@ public class TaskManagerUtils implements TaskManagerUtilsInterface {
 
     intent.setData(dataUri);
 
-    return PendingIntent.getBroadcast(context, PENDING_INTENT_REQUEST_CODE, intent, flags);
+    // We're defaulting to the behaviour prior API 31 (mutable) even though Android recommends immutability
+    int mutableFlag = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S ? PendingIntent.FLAG_MUTABLE : 0;
+    return PendingIntent.getBroadcast(context, PENDING_INTENT_REQUEST_CODE, intent, flags | mutableFlag);
   }
 
   private PendingIntent createTaskIntent(Context context, TaskInterface task, int flags) {

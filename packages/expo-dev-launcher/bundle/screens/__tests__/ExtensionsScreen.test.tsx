@@ -1,11 +1,10 @@
+import { getCompatibleBranchMessage } from '../../components/EmptyBranchesMessage';
 import { UserData } from '../../functions/getUserProfileAsync';
+import * as DevLauncher from '../../native-modules/DevLauncherInternal';
 import { queryClient } from '../../providers/QueryProvider';
 import { Update } from '../../queries/useUpdatesForBranch';
 import { render, waitFor, act, fireEvent, mockGraphQLResponse } from '../../test-utils';
 import { ExtensionsScreen } from '../ExtensionsScreen';
-
-import * as DevLauncher from '../../native-modules/DevLauncherInternal';
-import { getCompatibleBranchMessage } from '../../components/EmptyBranchesMessage';
 
 jest.mock('../../native-modules/DevLauncherInternal', () => {
   const originalMock = jest.requireActual('../../native-modules/__mocks__/DevLauncherInternal');
@@ -79,11 +78,11 @@ describe('<ExtensionsScreen />', () => {
 
     DevLauncher.updatesConfig.usesEASUpdates = false;
 
-    const { getByText } = render(<ExtensionsScreen navigation={mockNavigation} />);
+    const { getByText, getAllByText } = render(<ExtensionsScreen navigation={mockNavigation} />);
 
     await act(async () => {
       await waitFor(() => getByText(/extensions allow you to customize your development build/i));
-      await waitFor(() => getByText(/learn more/i));
+      await waitFor(() => getAllByText(/learn more/i));
     });
   });
 
@@ -118,6 +117,7 @@ describe('<ExtensionsScreen />', () => {
       message: 'Hello joe',
       runtimeVersion: '1',
       createdAt: new Date().toISOString(),
+      manifestPermalink: '123',
     };
 
     mockBranchResponse({
@@ -150,13 +150,30 @@ describe('<ExtensionsScreen />', () => {
       message: 'Hello joe',
       runtimeVersion: '1',
       createdAt: new Date().toISOString(),
+      manifestPermalink: '123',
     };
 
-    mockBranchResponse({
-      branchName: 'testBranch',
-      updates: [testUpdate],
-      compatibleUpdates: [testUpdate],
+    mockGraphQLResponse({
+      app: {
+        byId: {
+          updateBranches: [
+            {
+              id: '1',
+              name: 'testBranch1',
+              compatibleUpdates: [testUpdate],
+              updates: [testUpdate],
+            },
+            {
+              id: '2',
+              name: 'testBranch2',
+              compatibleUpdates: [testUpdate],
+              updates: [testUpdate],
+            },
+          ],
+        },
+      },
     });
+
 
     const { getByText } = renderAuthenticatedScreen({ mockNavigation });
 
@@ -183,12 +200,13 @@ describe('<ExtensionsScreen />', () => {
           message: '123',
           createdAt: '123',
           runtimeVersion: '123',
+          manifestPermalink: '123',
         },
       ],
       compatibleUpdates: [],
     });
 
-    const { getByText, debug } = renderAuthenticatedScreen({ mockNavigation });
+    const { getByText } = renderAuthenticatedScreen({ mockNavigation });
 
     await act(async () => {
       await waitFor(() => getByText(getCompatibleBranchMessage(1)));
@@ -211,7 +229,7 @@ describe('<ExtensionsScreen />', () => {
     const { getByText } = renderAuthenticatedScreen({ mockNavigation });
 
     await act(async () => {
-      await waitFor(() => getByText(/no published branches yet/i));
+      await waitFor(() => getByText(/no published updates yet/i));
     });
   });
 
@@ -226,6 +244,7 @@ function renderAuthenticatedScreen({ mockNavigation }) {
     profilePhoto: '123',
     email: 'hello@joe.ca',
     accounts: [],
+    isExpoAdmin: true,
   };
 
   return render(<ExtensionsScreen navigation={mockNavigation} />, {

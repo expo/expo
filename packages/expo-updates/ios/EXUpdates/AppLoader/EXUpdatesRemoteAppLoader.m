@@ -4,6 +4,7 @@
 #import <EXUpdates/EXUpdatesCrypto.h>
 #import <EXUpdates/EXUpdatesEmbeddedAppLoader.h>
 #import <EXUpdates/EXUpdatesFileDownloader.h>
+#import <EXUpdates/EXUpdatesUtils.h>
 #import <ExpoModulesCore/EXUtilities.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -104,7 +105,15 @@ static NSString * const EXUpdatesRemoteAppLoaderErrorDomain = @"EXUpdatesRemoteA
                                 extraHeaders:asset.extraRequestHeaders ?: @{}
                                 successBlock:^(NSData *data, NSURLResponse *response) {
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-          [self handleAssetDownloadWithData:data response:response asset:asset];
+          NSString *hashBase64String = [EXUpdatesUtils base64UrlEncodedSHA256WithData:data];
+          if (asset.expectedHash && ![asset.expectedHash isEqualToString:hashBase64String]) {
+            NSError *error = [NSError errorWithDomain:EXUpdatesRemoteAppLoaderErrorDomain
+                                                 code:1016
+                                             userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithFormat:@"Asset hash invalid: %@; expectedHash: %@; actualHash: %@", asset.key, asset.expectedHash, hashBase64String]}];
+            [self handleAssetDownloadWithError:error asset:asset];
+          } else {
+            [self handleAssetDownloadWithData:data response:response asset:asset];
+          }
         });
       }
                                   errorBlock:^(NSError *error) {

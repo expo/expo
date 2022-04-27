@@ -1,6 +1,7 @@
 import format from 'date-fns/format';
 import { gql } from 'graphql-request';
 import React from 'react';
+import { Platform } from 'react-native';
 import { useInfiniteQuery } from 'react-query';
 
 import { apiClient } from '../apiClient';
@@ -14,18 +15,26 @@ export type Update = {
   message: string;
   runtimeVersion: string;
   createdAt: string;
+  manifestPermalink: string;
 };
 
 const query = gql`
-  query getUpdates($appId: String!, $branchName: String!, $offset: Int!, $limit: Int!) {
+  query getUpdates(
+    $appId: String!
+    $branchName: String!
+    $offset: Int!
+    $limit: Int!
+    $platform: AppPlatform!
+  ) {
     app {
       byId(appId: $appId) {
         updateBranchByName(name: $branchName) {
-          updates(offset: $offset, limit: $limit) {
+          updates(offset: $offset, limit: $limit, filter: { platform: $platform }) {
             id
             message
             runtimeVersion
             createdAt
+            manifestPermalink
           }
         }
       }
@@ -40,7 +49,13 @@ function getUpdatesForBranchAsync(
   pageSize: number
 ) {
   const offset = (page - 1) * pageSize;
-  const variables = { appId, branchName, offset, limit: pageSize };
+  const variables = {
+    appId,
+    branchName,
+    offset,
+    limit: pageSize,
+    platform: Platform.OS.toUpperCase(),
+  };
 
   return apiClient.request(query, variables).then((response) => {
     const updateBranch = response.app.byId.updateBranchByName;
@@ -48,7 +63,7 @@ function getUpdatesForBranchAsync(
     const updates: Update[] = updateBranch.updates.map((update) => {
       return {
         ...update,
-        createdAt: format(new Date(update.createdAt), 'MMMM d, yyyy, h:ma'),
+        createdAt: format(new Date(update.createdAt), 'MMMM d, yyyy, h:mma'),
       };
     });
 

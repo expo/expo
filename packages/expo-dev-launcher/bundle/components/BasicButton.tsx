@@ -1,34 +1,65 @@
 import { View, Button, Row, scale } from 'expo-dev-client-components';
 import * as React from 'react';
+import { StyleSheet } from 'react-native';
+
+import { ActivityIndicator } from '../components/ActivityIndicator';
 
 type ButtonProps = React.ComponentProps<typeof Button.ScaleOnPressContainer>;
 
 type BasicButtonProps = ButtonProps & {
   label: string;
   type?: ButtonProps['bg'];
+  size?: 'medium' | 'small';
+  isLoading?: boolean;
+  onPress?: () => void;
+};
+
+const sizeMap: Record<'medium' | 'small', any> = {
+  medium: {
+    px: '3',
+    py: '2',
+  },
+  small: {
+    px: '2',
+    py: '1',
+  },
 };
 
 export function BasicButton({
   label,
   type = 'tertiary',
-  py = '2',
-  px = '3',
+  size = 'medium',
   children,
+  isLoading,
   ...props
 }: BasicButtonProps) {
   return (
     <View align="start">
-      <Button.ScaleOnPressContainer bg={type} {...props}>
-        <View py={py} px={px}>
-          <Row align="center" style={{ minHeight: scale.large }}>
-            <Button.Text weight="medium" color={type as any}>
-              {label}
-            </Button.Text>
+      <View>
+        <View opacity={isLoading ? '0.5' : '1'}>
+          <Button.ScaleOnPressContainer bg={type} {...props}>
+            <View {...sizeMap[size]}>
+              <Row align="center" style={{ minHeight: scale.large }}>
+                <Button.Text weight="medium" color={type as any} size={size}>
+                  {label}
+                </Button.Text>
 
-            {children}
-          </Row>
+                {children}
+              </Row>
+            </View>
+          </Button.ScaleOnPressContainer>
         </View>
-      </Button.ScaleOnPressContainer>
+        {isLoading && (
+          <View
+            style={{
+              ...StyleSheet.absoluteFillObject,
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}>
+            <ActivityIndicator size="small" />
+          </View>
+        )}
+      </View>
     </View>
   );
 }

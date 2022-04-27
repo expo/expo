@@ -6,15 +6,29 @@
 
 ### 🎉 New features
 
-- Add `ReactNativeHostHandler.getUseDeveloperSupport()` to allow `expo-dev-launcher` to override this value at runtime. ([#17069](https://github.com/expo/expo/pull/17069) by [@esamelson](https://github.com/esamelson))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
 
-## 45.0.0-beta.1 — 2022-04-18
+## 45.0.0-beta.5 — 2022-04-25
+
+### 🐛 Bug fixes
+
+- Fix `Overwriting fontFamily style attribute preprocessor` warning when startup. ([#17138](https://github.com/expo/expo/pull/17138) by [@Kudo](https://github.com/Kudo))
+
+## 45.0.0-beta.4 — 2022-04-21
 
 _This version does not introduce any user-facing changes._
+
+## 45.0.0-beta.3 — 2022-04-21
+
+_This version does not introduce any user-facing changes._
+
+## 45.0.0-beta.2 — 2022-04-20
+
+### 🎉 New features
+
+- Add `ReactNativeHostHandler.getUseDeveloperSupport()` to allow `expo-dev-launcher` to override this value at runtime. ([#17069](https://github.com/expo/expo/pull/17069) by [@esamelson](https://github.com/esamelson))
 
 ## 45.0.0-beta.1 — 2022-04-18
 

@@ -12,16 +12,13 @@ import {
   useExpoPalette,
 } from 'expo-dev-client-components';
 import * as React from 'react';
-import { Linking } from 'react-native';
+import { Animated, Linking } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 
 import { BasicButton } from '../components/BasicButton';
 import { EASUpdateRow } from '../components/EASUpdatesRows';
 import { FlatList } from '../components/FlatList';
-import { LoadMoreButton } from '../components/LoadMoreButton';
-import { Toasts } from '../components/Toasts';
-import { useBuildInfo } from '../providers/BuildInfoProvider';
-import { useToastStack } from '../providers/ToastStackProvider';
+import { useOnUpdatePress } from '../hooks/useOnUpdatePress';
 import { useUpdatesConfig } from '../providers/UpdatesConfigProvider';
 import { useChannelsForApp } from '../queries/useChannelsForApp';
 import { Update, useUpdatesForBranch } from '../queries/useUpdatesForBranch';
@@ -33,9 +30,9 @@ type UpdatesScreenProps = {
 };
 
 export function UpdatesScreen({ route }: UpdatesScreenProps) {
-  const { runtimeVersion } = useBuildInfo();
+  const { runtimeVersion } = useUpdatesConfig();
   const { branchName } = route.params;
-  const toastStack = useToastStack();
+  const [hasPressedLoadMore, setHasPressedLoadMore] = React.useState(false);
 
   const {
     data: updates,
@@ -47,28 +44,12 @@ export function UpdatesScreen({ route }: UpdatesScreenProps) {
     isFetchingNextPage,
   } = useUpdatesForBranch(branchName);
 
-  const onUpdatePress = React.useCallback(
-    (update: Update) => {
-      const isCompatible = update.runtimeVersion === runtimeVersion;
+  function onLoadMorePress() {
+    setHasPressedLoadMore(true);
+    fetchNextPage();
+  }
 
-      if (
-        !isCompatible &&
-        // prevent multiple taps bringing up multiple of the same toast
-        toastStack.getItems().filter((i) => i.status === 'pushing' || i.status === 'settled')
-          .length === 0
-      ) {
-        toastStack.push(
-          () => (
-            <Toasts.Warning>
-              {`To run this update, you need a compatible development build with runtime version ${update.runtimeVersion}.`}
-            </Toasts.Warning>
-          ),
-          { durationMs: 10000 }
-        );
-      }
-    },
-    [runtimeVersion, branchName]
-  );
+  const { onUpdatePress, loadingUpdateId } = useOnUpdatePress();
 
   function Header() {
     if (updates.length === 0) {
@@ -86,7 +67,20 @@ export function UpdatesScreen({ route }: UpdatesScreenProps) {
 
   function Footer() {
     if (hasNextPage) {
-      return <LoadMoreButton isLoading={isFetchingNextPage} onPress={fetchNextPage} />;
+      return (
+        <View align="centered" mt="large">
+          <BasicButton
+            label="Load More"
+            isLoading={isFetchingNextPage}
+            onPress={onLoadMorePress}
+            size="small"
+          />
+        </View>
+      );
+    }
+
+    if (updates.length > 0 && hasPressedLoadMore) {
+      return <EndReachedMessage />;
     }
 
     return null;
@@ -125,23 +119,17 @@ export function UpdatesScreen({ route }: UpdatesScreenProps) {
     const isLast = index === updates.length - 1;
 
     const isCompatibleUpdate = update.runtimeVersion === runtimeVersion;
+    const isLoading = update.id === loadingUpdateId;
 
     return (
       <View px="medium" opacity={isCompatibleUpdate ? '1' : '0.5'}>
-        <Button.ScaleOnPressContainer
-          bg="default"
+        <EASUpdateRow
+          update={update}
+          isFirst={isFirst}
+          isLast={isLast}
+          isLoading={isLoading}
           onPress={() => onUpdatePress(update)}
-          roundedBottom={isLast ? 'large' : 'none'}
-          roundedTop={isFirst ? 'large' : 'none'}>
-          <View
-            bg="default"
-            roundedTop={isFirst ? 'large' : 'none'}
-            roundedBottom={isLast ? 'large' : 'none'}
-            py="small"
-            px="small">
-            <EASUpdateRow update={update} />
-          </View>
-        </Button.ScaleOnPressContainer>
+        />
         {!isLast && <Divider />}
       </View>
     );
@@ -160,7 +148,7 @@ export function UpdatesScreen({ route }: UpdatesScreenProps) {
         onRefresh={() => refetch()}
         ListHeaderComponent={Header}
         data={updates}
-        extraData={{ length: updates.length }}
+        extraData={{ length: updates.length, loadingUpdateId }}
         renderItem={renderUpdate}
         keyExtractor={(item) => item.id}
         ListFooterComponent={Footer}
@@ -177,7 +165,7 @@ type BranchDetailsHeaderProps = {
 };
 
 function BranchDetailsHeader({ branchName, updates, onOpenPress }: BranchDetailsHeaderProps) {
-  const { appId } = useUpdatesConfig();
+  const { appId, runtimeVersion } = useUpdatesConfig();
   const { data: channels } = useChannelsForApp(appId);
 
   const availableChannels: string[] = [];
@@ -189,6 +177,8 @@ function BranchDetailsHeader({ branchName, updates, onOpenPress }: BranchDetails
   });
 
   const hasUpdates = updates.length > 0;
+  const latestUpdate = updates[0];
+  const isLatestUpdateCompatible = latestUpdate?.runtimeVersion === runtimeVersion;
 
   return (
     <View bg="default" px="medium" py="medium">
@@ -202,7 +192,11 @@ function BranchDetailsHeader({ branchName, updates, onOpenPress }: BranchDetails
         </View>
 
         <Spacer.Horizontal />
-        {hasUpdates && <BasicButton label="Open Latest" onPress={onOpenPress} py="1.5" px="2" />}
+        {hasUpdates && (
+          <View opacity={isLatestUpdateCompatible ? '1' : '0.75'}>
+            <BasicButton label="Open Latest" onPress={onOpenPress} size="small" />
+          </View>
+        )}
       </Row>
       {availableChannels.length > 0 && (
         <>
@@ -249,5 +243,28 @@ function AvailableChannelsList({ channels }) {
         </ScrollView>
       </Row>
     </View>
+  );
+}
+
+function EndReachedMessage() {
+  const animatedValue = React.useRef(new Animated.Value(1));
+
+  React.useEffect(() => {
+    Animated.timing(animatedValue.current, {
+      toValue: 0,
+      duration: 800,
+      delay: 800,
+      useNativeDriver: true,
+    }).start();
+  }, []);
+
+  return (
+    <Animated.View style={{ opacity: animatedValue.current }}>
+      <View mt="medium">
+        <Text align="center" size="small" color="secondary">
+          There are no more updates for this branch!
+        </Text>
+      </View>
+    </Animated.View>
   );
 }
