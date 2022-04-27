@@ -59,6 +59,8 @@ if (!isSubcommand && args['--help']) {
     install,
     export: _export,
     config,
+    prebuild,
+    'run:android': runAndroid,
     ...others
   } = commands;
 
@@ -68,6 +70,7 @@ if (!isSubcommand && args['--help']) {
 
   {bold Commands}
     ${Object.keys({ start, install, export: _export, config, ...others }).join(', ')}
+    ${Object.keys({ 'run:android': runAndroid, prebuild }).join(', ')}
     {dim ${Object.keys({ login, logout, whoami, register }).join(', ')}}
 
   {bold Options}
