@@ -3,7 +3,7 @@ import chalk from 'chalk';
 
 import { Command } from '../../bin/cli';
 import * as Log from '../log';
-import { assertArgs, getProjectRoot } from '../utils/args';
+import { assertArgs, getProjectRoot, printHelp } from '../utils/args';
 import { logCmdError } from '../utils/errors';
 
 export const expoStart: Command = async (argv) => {
@@ -42,46 +42,38 @@ export const expoStart: Command = async (argv) => {
   );
 
   if (args['--help']) {
-    Log.exit(
-      chalk`
-  {bold Description}
-    Start a local dev server for the app
-
-  {bold Usage}
-    $ npx expo start <dir>
-
-  <dir> is the directory of the Expo project.
-  Defaults to the current working directory.
-
-  {bold Options}
-    -a, --android                          Opens your app in Expo Go on a connected Android device
-    -i, --ios                              Opens your app in Expo Go in a currently running iOS simulator on your computer
-    -w, --web                              Opens your app in a web browser
-
-    -c, --clear                            Clear the bundler cache
-    --max-workers <num>                    Maximum number of tasks to allow Metro to spawn
-    --no-dev                               Bundle in production mode
-    --minify                               Minify JavaScript
-
-    -m, --host <mode>                      lan, tunnel, localhost. Dev server hosting type. Default: lan.
-                                           - lan: Use the local network
-                                           - tunnel: Use any network by tunnel through ngrok
-                                           - localhost: Connect to the dev server over localhost
-    --tunnel                               Same as --host tunnel
-    --lan                                  Same as --host lan
-    --localhost                            Same as --host localhost
-
-    --offline                              Skip network requests and use anonymous manifest signatures
-    --https                                Start the dev server with https protocol
-    --scheme <scheme>                      Custom URI protocol to use when launching an app
-    -p, --port <port>                      Port to start the dev server on (does not apply to web or tunnel). Default: 19000
-
-    --dev-client                           Experimental: Starts the bundler for use with the expo-development-client
-    --force-manifest-type <manifest-type>  Override auto detection of manifest type
-    --private-key-path <path>              Path to private key for code signing. Default: "private-key.pem" in the same directory as the certificate specified by the expo-updates configuration in app.json.
-    -h, --help                             output usage information
-`,
-      0
+    printHelp(
+      `Start a local dev server for the app`,
+      chalk`npx expo start {dim <dir>}`,
+      [
+        chalk`<dir>                                  Directory of the Expo project. {dim Default: Current working directory}`,
+        `-a, --android                          Opens your app in Expo Go on a connected Android device`,
+        `-i, --ios                              Opens your app in Expo Go in a currently running iOS simulator on your computer`,
+        `-w, --web                              Opens your app in a web browser`,
+        ``,
+        `-c, --clear                            Clear the bundler cache`,
+        `--max-workers <num>                    Maximum number of tasks to allow Metro to spawn`,
+        `--no-dev                               Bundle in production mode`,
+        `--minify                               Minify JavaScript`,
+        ``,
+        chalk`-m, --host <mode>                      Dev server hosting type. {dim Default: lan}`,
+        chalk`                                       {bold lan}: Use the local network`,
+        chalk`                                       {bold tunnel}: Use any network by tunnel through ngrok`,
+        chalk`                                       {bold localhost}: Connect to the dev server over localhost`,
+        `--tunnel                               Same as --host tunnel`,
+        `--lan                                  Same as --host lan`,
+        `--localhost                            Same as --host localhost`,
+        ``,
+        `--offline                              Skip network requests and use anonymous manifest signatures`,
+        `--https                                Start the dev server with https protocol`,
+        `--scheme <scheme>                      Custom URI protocol to use when launching an app`,
+        chalk`-p, --port <port>                      Port to start the dev server on (does not apply to web or tunnel). {dim Default: 19000}`,
+        ``,
+        chalk`--dev-client                           {yellow Experimental:} Starts the bundler for use with the expo-development-client`,
+        `--force-manifest-type <manifest-type>  Override auto detection of manifest type`,
+        `--private-key-path <path>              Path to private key for code signing. Default: "private-key.pem" in the same directory as the certificate specified by the expo-updates configuration in app.json.`,
+        `-h, --help                             Usage info`,
+      ].join('\n')
     );
   }
 

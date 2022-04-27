@@ -2,8 +2,7 @@
 import chalk from 'chalk';
 
 import { Command } from '../../bin/cli';
-import * as Log from '../log';
-import { assertWithOptionsArgs } from '../utils/args';
+import { assertWithOptionsArgs, printHelp } from '../utils/args';
 
 export const expoInstall: Command = async (argv) => {
   const args = assertWithOptionsArgs(
@@ -21,26 +20,23 @@ export const expoInstall: Command = async (argv) => {
   );
 
   if (args['--help']) {
-    Log.exit(
-      chalk`
-  {bold Description}
-    Install a module or other package to a project
-
-  {bold Usage}
-    $ npx expo install {dim [packages...] [options]}
-
-  {bold Options}
-    --check     Check which installed packages need to be updated.
-    --fix       Automatically update any invalid package versions.
-    --npm       Use npm to install dependencies. {dim Default when package-lock.json exists}
-    --yarn      Use Yarn to install dependencies. {dim Default when yarn.lock exists}
-    -h, --help  Output usage information
-
-  Additional options can be passed to the underlying install command by using {bold --}
-    $ expo install react -- --verbose
-    {dim >} yarn add react --verbose
-    `,
-      0
+    printHelp(
+      `Install a module or other package to a project`,
+      `npx expo install`,
+      [
+        `--check     Check which installed packages need to be updated`,
+        `--fix       Automatically update any invalid package versions`,
+        chalk`--npm       Use npm to install dependencies. {dim Default when package-lock.json exists}`,
+        chalk`--yarn      Use Yarn to install dependencies. {dim Default when yarn.lock exists}`,
+        `-h, --help  Usage info`,
+      ].join('\n'),
+      [
+        '',
+        chalk`  Additional options can be passed to the underlying install command by using {bold --}`,
+        chalk`    {dim $} npx expo install react -- --verbose`,
+        chalk`    {dim >} yarn add react --verbose`,
+        '',
+      ].join('\n')
     );
   }
 

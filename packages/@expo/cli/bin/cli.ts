@@ -48,20 +48,23 @@ const isSubcommand = Boolean(commands[args._[0]]);
 
 // Handle `--help` flag
 if (!isSubcommand && args['--help']) {
+  const { login, logout, whoami, register, start, install, config, ...others } = commands;
+
   console.log(chalk`
-    {bold Usage}
-      {bold $} npx expo <command>
+  {bold Usage}
+    {dim $} npx expo <command>
 
-    {bold Available commands}
-      ${Object.keys(commands).sort().join(', ')}
+  {bold Commands}
+    ${Object.keys({ start, install, config, ...others }).join(', ')}
+    {dim ${Object.keys({ login, logout, whoami, register }).join(', ')}}
 
-    {bold Options}
-      --version, -v   Version number
-      --help, -h      Displays this message
+  {bold Options}
+    --version, -v   Version number
+    --help, -h      Usage info
 
-    For more information run a command with the --help flag
-      {bold $} expo start --help
-  `);
+  For more info run a command with the {bold --help} flag
+    {dim $} npx expo start --help
+`);
   process.exit(0);
 }
 
