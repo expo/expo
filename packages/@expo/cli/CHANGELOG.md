@@ -15,6 +15,8 @@
 
 ### 💡 Others
 
+- Downgrade `fs-extra` to `8.1.0`.
+
 ## 0.1.0 — 2022-04-25
 
 ### 🎉 New features

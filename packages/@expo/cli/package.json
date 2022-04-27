@@ -63,7 +63,7 @@
     "env-editor": "^0.4.1",
     "form-data": "^3.0.1",
     "freeport-async": "2.0.0",
-    "fs-extra": "9.0.0",
+    "fs-extra": "~8.1.0",
     "getenv": "^1.0.0",
     "graphql": "15.8.0",
     "graphql-tag": "^2.10.1",
