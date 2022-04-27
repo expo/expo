@@ -9,9 +9,9 @@ final public class WebBrowserModule: Module {
   private var currentAuthSession: WebAuthSession?
 
   public func definition() -> ModuleDefinition {
-    name("ExpoWebBrowser")
+    Name("ExpoWebBrowser")
 
-    function("openBrowserAsync") { (url: URL, options: WebBrowserOptions, promise: Promise) throws in
+    AsyncFunction("openBrowserAsync") { (url: URL, options: WebBrowserOptions, promise: Promise) throws in
       guard self.currentWebBrowserSession?.isOpen != true else {
         throw WebBrowserAlreadyOpenException()
       }
@@ -20,7 +20,7 @@ final public class WebBrowserModule: Module {
     }
     .runOnQueue(.main)
 
-    function("dismissBrowser") {
+    AsyncFunction("dismissBrowser") {
       self.currentWebBrowserSession?.dismiss()
       self.currentWebBrowserSession = nil
     }
@@ -28,7 +28,7 @@ final public class WebBrowserModule: Module {
 
     // MARK: - AuthSession
 
-    function("openAuthSessionAsync") { (authUrl: URL, redirectUrl: URL, options: AuthSessionOptions, promise: Promise) throws in
+    AsyncFunction("openAuthSessionAsync") { (authUrl: URL, redirectUrl: URL, options: AuthSessionOptions, promise: Promise) throws in
       guard self.currentAuthSession?.isOpen != true else {
         throw WebBrowserAlreadyOpenException()
       }
@@ -37,7 +37,7 @@ final public class WebBrowserModule: Module {
     }
     .runOnQueue(.main)
 
-    function("dismissAuthSession") {
+    AsyncFunction("dismissAuthSession") {
       self.currentAuthSession?.dismiss()
       self.currentAuthSession = nil
     }
@@ -45,9 +45,9 @@ final public class WebBrowserModule: Module {
 
     // MARK: - Stubs for jest-expo-mock-generator
 
-    function("warmUpAsync") {}
-    function("coolDownAsync") {}
-    function("mayInitWithUrlAsync") {}
-    function("getCustomTabsSupportingBrowsers") {}
+    AsyncFunction("warmUpAsync") {}
+    AsyncFunction("coolDownAsync") {}
+    AsyncFunction("mayInitWithUrlAsync") {}
+    AsyncFunction("getCustomTabsSupportingBrowsers") {}
   }
 }

@@ -5,13 +5,13 @@ import ExpoModulesCore
 
 public class LocalizationModule: Module {
   public func definition() -> ModuleDefinition {
-    name("ExpoLocalization")
+    Name("ExpoLocalization")
 
-    constants {
+    Constants {
       return Self.getCurrentLocalization()
     }
 
-    function("getLocalizationAsync") {
+    AsyncFunction("getLocalizationAsync") {
       return Self.getCurrentLocalization()
     }
   }

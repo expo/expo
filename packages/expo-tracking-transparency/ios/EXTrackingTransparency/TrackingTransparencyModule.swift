@@ -2,13 +2,13 @@ import ExpoModulesCore
 
 public class TrackingTransparencyModule: Module {
   public func definition() -> ModuleDefinition {
-    name("ExpoTrackingTransparency")
+    Name("ExpoTrackingTransparency")
 
-    onCreate {
+    OnCreate {
       EXPermissionsMethodsDelegate.register([EXTrackingPermissionRequester()], withPermissionsManager: self.appContext?.permissions)
     }
 
-    function("getPermissionsAsync") { (promise: Promise) in
+    AsyncFunction("getPermissionsAsync") { (promise: Promise) in
       EXPermissionsMethodsDelegate.getPermissionWithPermissionsManager(
         self.appContext?.permissions,
         withRequester: EXTrackingPermissionRequester.self,
@@ -17,7 +17,7 @@ public class TrackingTransparencyModule: Module {
       )
     }
 
-    function("requestPermissionsAsync") { (promise: Promise) in
+    AsyncFunction("requestPermissionsAsync") { (promise: Promise) in
       EXPermissionsMethodsDelegate.askForPermission(
         withPermissionsManager: self.appContext?.permissions,
         withRequester: EXTrackingPermissionRequester.self,

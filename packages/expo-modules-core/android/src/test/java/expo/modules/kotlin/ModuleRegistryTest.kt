@@ -10,13 +10,13 @@ import java.lang.ref.WeakReference
 
 class M1 : Module() {
   override fun definition() = ModuleDefinition {
-    name("m1")
+    Name("m1")
   }
 }
 
 class M2 : Module() {
   override fun definition() = ModuleDefinition {
-    name("m2")
+    Name("m2")
   }
 }
 

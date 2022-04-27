@@ -5,12 +5,11 @@ import ExpoModulesCore
 
 public class CryptoModule: Module {
   public func definition() -> ModuleDefinition {
-    name("ExpoCrypto")
+    Name("ExpoCrypto")
 
-    function("digestStringAsync", digestString)
+    AsyncFunction("digestStringAsync", digestString)
 
-    function("digestString", digestString)
-      .runSynchronously()
+    Function("digestString", digestString)
   }
 }
 

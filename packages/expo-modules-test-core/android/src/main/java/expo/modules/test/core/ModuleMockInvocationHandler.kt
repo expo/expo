@@ -22,11 +22,11 @@ class TestCodedException(
  * exported function or to the module controller if the method doesn't exist in the module definition.
  *
  * Methods mapping:
- *   function("name") { args: ArgsType -> return ReturnType } can be invoked using one of the following methods mapping rules:
+ *   AsyncFunction("name") { args: ArgsType -> return ReturnType } can be invoked using one of the following methods mapping rules:
  *     - [non-promise mapping] fun ModuleTestInterface.name(args: ArgsType): ReturnType
  *     - [promise mapping] fun ModuleTestInterface.name(args: ArgsType, promise: Promise): Unit
  *
- *   function("name") { args: ArgsType, promise: Promise -> promise.resolve(ReturnType) } can be invoked using one of the following methods mapping rules:
+ *   AsyncFunction("name") { args: ArgsType, promise: Promise -> promise.resolve(ReturnType) } can be invoked using one of the following methods mapping rules:
  *     - [non-promise mapping] fun ModuleTestInterface.name(args: ArgsType): ReturnType
  *     - [promise mapping] fun ModuleTestInterface.name(args: ArgsType, promise: Promise): Unit
  *

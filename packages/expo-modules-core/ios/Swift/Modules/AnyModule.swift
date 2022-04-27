@@ -16,8 +16,8 @@ public protocol AnyModule: AnyObject, AnyArgument {
 
    ```
    public func definition() -> ModuleDefinition {
-     name("MyModule")
-     function("myFunction") { (a: String, b: String) in
+     Name("MyModule")
+     AsyncFunction("myFunction") { (a: String, b: String) in
        "\(a) \(b)"
      }
    }
@@ -37,7 +37,7 @@ public protocol AnyModule: AnyObject, AnyArgument {
    just specify an argument of type `Promise` as the last one and use its `resolve` or `reject` functions.
 
    ```
-   function("myFunction") { (promise: Promise) in
+   AsyncFunction("myFunction") { (promise: Promise) in
      DispatchQueue.main.async {
        promise.resolve("return value obtained in async callback")
      }
