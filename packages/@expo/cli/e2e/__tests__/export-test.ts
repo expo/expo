@@ -187,5 +187,5 @@ it(
     ]);
   },
   // Could take 45s depending on how fast npm installs
-  80 * 1000
+  120 * 1000
 );
