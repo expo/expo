@@ -2,7 +2,6 @@
 import chalk from 'chalk';
 
 import { Command } from '../../bin/cli';
-import * as Log from '../log';
 import { assertArgs, getProjectRoot, printHelp } from '../utils/args';
 import { logCmdError } from '../utils/errors';
 
