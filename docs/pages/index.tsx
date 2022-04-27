@@ -184,7 +184,8 @@ const Home = () => {
               using Expo.
             </P>
             <HomeButton
-              style={{ backgroundColor: palette.green['700'], color: palette.green['000'] }}>
+              style={{ backgroundColor: palette.green['700'], color: palette.green['000'] }}
+              href="/introduction/faq">
               Read
             </HomeButton>
           </GridCell>
