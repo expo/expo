@@ -6,6 +6,14 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.1.1 — 2022-04-27
+
+### 🎉 New features
+
 - Unify help prompts. ([#17223](https://github.com/expo/expo/pull/17223) by [@EvanBacon](https://github.com/EvanBacon))
 - Added `expo run:android` command. ([#17187](https://github.com/expo/expo/pull/17187) by [@EvanBacon](https://github.com/EvanBacon))
 
@@ -51,7 +59,7 @@
 - Skip font parsing on prebuild. ([#17184](https://github.com/expo/expo/pull/17184) by [@EvanBacon](https://github.com/EvanBacon))
 - [ci] Fix `typecheck`. ([#17145](https://github.com/expo/expo/pull/17145) by [@EvanBacon](https://github.com/EvanBacon))
 - [ci] Fix `typecheck`. ([#17145](https://github.com/expo/expo/pull/17145) by
-  [@EvanBacon](https://github.com/EvanBacon))
+[@EvanBacon](https://github.com/EvanBacon))
 - Close development session when CLI is stopped ([#17170](https://github.com/expo/expo/pull/17170) by [@FiberJW](https://github.com/FiberJW))
 
 ### 💡 Others
