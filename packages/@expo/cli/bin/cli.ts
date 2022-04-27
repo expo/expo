@@ -8,6 +8,7 @@ export type Command = (argv?: string[]) => void;
 
 const commands: { [command: string]: () => Promise<Command> } = {
   // Add a new command here
+  'run:android': () => import('../src/run/android').then((i) => i.expoRunAndroid),
   start: () => import('../src/start').then((i) => i.expoStart),
   prebuild: () => import('../src/prebuild').then((i) => i.expoPrebuild),
   config: () => import('../src/config').then((i) => i.expoConfig),
@@ -58,6 +59,8 @@ if (!isSubcommand && args['--help']) {
     install,
     export: _export,
     config,
+    prebuild,
+    'run:android': runAndroid,
     ...others
   } = commands;
 
@@ -67,6 +70,7 @@ if (!isSubcommand && args['--help']) {
 
   {bold Commands}
     ${Object.keys({ start, install, export: _export, config, ...others }).join(', ')}
+    ${Object.keys({ 'run:android': runAndroid, prebuild }).join(', ')}
     {dim ${Object.keys({ login, logout, whoami, register }).join(', ')}}
 
   {bold Options}

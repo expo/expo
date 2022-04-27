@@ -15,7 +15,6 @@ import { getIpAddress } from '../../../utils/ip';
 import { choosePortAsync } from '../../../utils/port';
 import { ensureDotExpoProjectDirectoryInitialized } from '../../project/dotExpo';
 import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
-import { UrlCreator } from '../UrlCreator';
 import {
   importExpoWebpackConfigFromProject,
   importWebpackDevServerFromProject,
@@ -166,29 +165,26 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
     }
   }
 
-  async startAsync(options: BundlerStartOptions): Promise<DevServerInstance> {
+  protected async startImplementationAsync(
+    options: BundlerStartOptions
+  ): Promise<DevServerInstance> {
     // Do this first to fail faster.
     const webpack = importWebpackFromProject(this.projectRoot);
     const WebpackDevServer = importWebpackDevServerFromProject(this.projectRoot);
 
     await this.stopAsync();
 
-    const { resetDevServer, https, mode } = options;
-
-    const port = await this.getAvailablePortAsync({
+    options.port = await this.getAvailablePortAsync({
       defaultPort: options.port,
     });
+    const { resetDevServer, https, port, mode } = options;
 
-    this.urlCreator = new UrlCreator(
-      {
+    this.urlCreator = this.getUrlCreator({
+      port,
+      location: {
         scheme: https ? 'https' : 'http',
-        ...options.location,
       },
-      {
-        port,
-        getTunnelUrl: this.getTunnelUrl.bind(this),
-      }
-    );
+    });
 
     Log.debug('Starting webpack on port: ' + port);
 
@@ -266,7 +262,7 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
     const _host = getIpAddress();
     const protocol = https ? 'https' : 'http';
 
-    this.setInstance({
+    return {
       // Server instance
       server,
       // URL Info
@@ -281,11 +277,7 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
       messageSocket: {
         broadcast: this.broadcastMessage,
       },
-    });
-
-    await this.postStartAsync(options);
-
-    return this.instance!;
+    };
   }
 
   /** Load the Webpack config. Exposed for testing. */
