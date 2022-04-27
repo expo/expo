@@ -129,7 +129,7 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
 
     const { createDevServerMiddleware } = await import('../middleware/createDevServerMiddleware');
 
-    const nativeMiddleware = createDevServerMiddleware({
+    const nativeMiddleware = createDevServerMiddleware(this.projectRoot, {
       port,
       watchFolders: [this.projectRoot],
     });
