@@ -2,7 +2,7 @@ import { getExpoHomeDirectory } from '@expo/config/build/getUserState';
 import path from 'path';
 import ProgressBar from 'progress';
 
-import { getReleasedVersionsAsync, getVersionsAsync, SDKVersion } from '../api/getVersions';
+import { getReleasedVersionsAsync, SDKVersion } from '../api/getVersions';
 import * as Log from '../log';
 import { downloadAppAsync } from './downloadAppAsync';
 import { CommandError } from './errors';
