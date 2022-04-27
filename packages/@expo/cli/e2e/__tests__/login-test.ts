@@ -35,18 +35,18 @@ it('runs `npx expo login --help`', async () => {
   const results = await execute('login', '--help');
   expect(results.stdout).toMatchInlineSnapshot(`
     "
-          Description
-            Log in to an Expo account
+      Info
+        Log in to an Expo account
 
-          Usage
-            $ npx expo login
+      Usage
+        $ npx expo login
 
-          Options
-          -u, --username <string>  Username
-          -p, --password <string>  Password
-          --otp <string>           One-time password from your 2FA device
-          -h, --help               Output usage information
-        "
+      Options
+        -u, --username <string>  Username
+        -p, --password <string>  Password
+        --otp <string>           One-time password from your 2FA device
+        -h, --help               Usage info
+    "
   `);
 });
 

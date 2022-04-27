@@ -45,23 +45,23 @@ it('runs `npx install install --help`', async () => {
   const results = await execute('install', '--help');
   expect(results.stdout).toMatchInlineSnapshot(`
     "
-      Description
+      Info
         Install a module or other package to a project
 
       Usage
-        $ npx expo install [packages...] [options]
+        $ npx expo install
 
       Options
-        --check     Check which installed packages need to be updated.
-        --fix       Automatically update any invalid package versions.
+        --check     Check which installed packages need to be updated
+        --fix       Automatically update any invalid package versions
         --npm       Use npm to install dependencies. Default when package-lock.json exists
         --yarn      Use Yarn to install dependencies. Default when yarn.lock exists
-        -h, --help  Output usage information
+        -h, --help  Usage info
 
       Additional options can be passed to the underlying install command by using --
-        $ expo install react -- --verbose
+        $ npx expo install react -- --verbose
         > yarn add react --verbose
-        "
+    "
   `);
 });
 

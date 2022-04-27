@@ -1,6 +1,7 @@
 // Common utilities for interacting with `args` library.
 // These functions should be used by every command.
 import arg from 'arg';
+import chalk from 'chalk';
 import { existsSync } from 'fs';
 import { resolve } from 'path';
 
@@ -46,4 +47,20 @@ export function assertWithOptionsArgs(
     // Otherwise rethrow the error.
     throw error;
   }
+}
+
+export function printHelp(info: string, usage: string, options: string, extra: string = ''): never {
+  Log.exit(
+    chalk`
+  {bold Info}
+    ${info}
+
+  {bold Usage}
+    {dim $} ${usage}
+
+  {bold Options}
+    ${options.split('\n').join('\n    ')}
+` + extra,
+    0
+  );
 }

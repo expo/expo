@@ -1,9 +1,6 @@
 #!/usr/bin/env node
-import chalk from 'chalk';
-
 import { Command } from '../../bin/cli';
-import * as Log from '../log';
-import { assertArgs } from '../utils/args';
+import { assertArgs, printHelp } from '../utils/args';
 import { logCmdError } from '../utils/errors';
 
 export const expoRegister: Command = async (argv) => {
@@ -18,18 +15,11 @@ export const expoRegister: Command = async (argv) => {
   );
 
   if (args['--help']) {
-    Log.exit(
-      chalk`
-      {bold Description}
-        Sign up for a new Expo account
-
-      {bold Usage}
-        $ npx expo register
-
-      Options
-      -h, --help    Output usage information
-    `,
-      0
+    printHelp(
+      `Sign up for a new Expo account`,
+      `npx expo register`,
+      // Options
+      `-h, --help    Usage info`
     );
   }
 

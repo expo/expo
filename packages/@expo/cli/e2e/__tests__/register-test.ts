@@ -35,15 +35,15 @@ it('runs `npx expo register --help`', async () => {
   const results = await execute('register', '--help');
   expect(results.stdout).toMatchInlineSnapshot(`
     "
-          Description
-            Sign up for a new Expo account
+      Info
+        Sign up for a new Expo account
 
-          Usage
-            $ npx expo register
+      Usage
+        $ npx expo register
 
-          Options
-          -h, --help    Output usage information
-        "
+      Options
+        -h, --help    Usage info
+    "
   `);
 });
 
