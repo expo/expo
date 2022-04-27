@@ -8,7 +8,12 @@ run();
 function run() {
   // Use new beta CLI.
   if (boolish('EXPO_USE_BETA_CLI', false)) {
-    return spawn(require.resolve('@expo/cli'), process.argv.slice(2), { stdio: 'inherit' });
+    return spawn(require.resolve('@expo/cli'), process.argv.slice(2), { stdio: 'inherit' }).on(
+      'exit',
+      (code) => {
+        process.exit(code);
+      }
+    );
   }
 
   spawn('expo-cli', process.argv.slice(2), { stdio: 'inherit' })
