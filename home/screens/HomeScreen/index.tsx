@@ -9,7 +9,7 @@ import { useDispatch, useSelector } from '../../redux/Hooks';
 import { HistoryList } from '../../types';
 import { useAccountName } from '../../utils/AccountNameContext';
 import { useInitialData } from '../../utils/InitialDataContext';
-import isUserAuthenticated from '../../utils/isUserAuthenticated';
+import hasSessionSecret from '../../utils/hasSessionSecret';
 import { HomeScreenView } from './HomeScreenView';
 
 type NavigationProps = StackScreenProps<HomeStackRoutes, 'Home'> & {
@@ -40,7 +40,7 @@ export function HomeScreen(props: NavigationProps) {
       return {
         recentHistory: history.take(10) as HistoryList,
         allHistory: history as HistoryList,
-        isAuthenticated: isUserAuthenticated(data.session),
+        isAuthenticated: hasSessionSecret(data.session),
       };
     }, [])
   );
