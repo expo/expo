@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Remove hanging `emulator` process on exit.
+- Remove hanging `emulator` process on exit. ([#17273](https://github.com/expo/expo/pull/17273) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix bug where autocomplete prompts crash when escape characters are used. ([#17271](https://github.com/expo/expo/pull/17271) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
