@@ -50,6 +50,7 @@
 @property (nonatomic, strong) EXDevLauncherRecentlyOpenedAppsRegistry *recentlyOpenedAppsRegistry;
 @property (nonatomic, strong) EXManifestsManifest *manifest;
 @property (nonatomic, strong) NSURL *manifestURL;
+@property (nonatomic, strong) NSURL *possibleManifestURL;
 @property (nonatomic, strong) EXDevLauncherErrorManager *errorManager;
 @property (nonatomic, strong) EXDevLauncherInstallationIDHelper *installationIDHelper;
 @property (nonatomic, assign) BOOL isStarted;
@@ -140,6 +141,14 @@
 - (NSURL * _Nullable)appManifestURL
 {
   return self.manifestURL;
+}
+
+- (nullable NSURL *)appManifestURLWithFallback
+{
+  if (_manifestURL) {
+    return _manifestURL;
+  }
+  return _possibleManifestURL;
 }
 
 - (UIWindow *)currentWindow
@@ -318,6 +327,7 @@
 
 - (void)loadApp:(NSURL *)expoUrl withProjectUrl:(NSURL * _Nullable)projectUrl onSuccess:(void (^ _Nullable)(void))onSuccess onError:(void (^ _Nullable)(NSError *error))onError
 {
+  _possibleManifestURL = expoUrl;
   BOOL isEASUpdate = [self isEASUpdateURL:expoUrl];
   
   // an update url requires a matching projectUrl
@@ -425,6 +435,7 @@
 {
   self.manifest = manifest;
   self.manifestURL = appUrl;
+  _possibleManifestURL = nil;
   __block UIInterfaceOrientation orientation = [EXDevLauncherManifestHelper exportManifestOrientation:manifest.orientation];
   __block UIColor *backgroundColor = [EXDevLauncherManifestHelper hexStringToColor:manifest.iosOrRootBackgroundColor];
   
