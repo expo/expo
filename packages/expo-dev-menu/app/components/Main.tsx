@@ -25,6 +25,7 @@ import { useAppInfo } from '../hooks/useAppInfo';
 import { useBottomSheet } from '../hooks/useBottomSheet';
 import { useClipboard } from '../hooks/useClipboard';
 import { useDevSettings } from '../hooks/useDevSettings';
+import { isDevLauncherInstalled } from '../native-modules/DevLauncher';
 import { GestureHandlerTouchableWrapper } from './GestureHandlerTouchableWrapper';
 
 export function Main() {
@@ -81,7 +82,6 @@ export function Main() {
 
             <View>
               <Heading weight="bold">{appInfo.appName}</Heading>
-              <Spacer.Vertical size="tiny" />
               {Boolean(appInfo.runtimeVersion) && (
                 <>
                   <Text size="small" color="secondary">
@@ -120,15 +120,15 @@ export function Main() {
       {Boolean(appInfo.hostUrl) && (
         <>
           <View bg="default" padding="medium">
-            <Text color="secondary">Connected to local server</Text>
+            <Text color="secondary">Connected to:</Text>
 
             <Spacer.Vertical size="small" />
 
             <Row align="center">
               <StatusIndicator style={{ width: 10, height: 10 }} status="success" />
-              <Spacer.Horizontal size="tiny" />
+              <Spacer.Horizontal size="small" />
               <View flex="1">
-                <Text type="mono" numberOfLines={1} size="small">
+                <Text type="mono" numberOfLines={2} size="small">
                   {appInfo.hostUrl}
                 </Text>
               </View>
@@ -141,13 +141,15 @@ export function Main() {
       )}
 
       <Row padding="small">
-        <View flex="1">
-          <ActionButton
-            icon={<HomeFilledIcon />}
-            label="Go home"
-            onPress={actions.navigateToLauncher}
-          />
-        </View>
+        {isDevLauncherInstalled && (
+          <View flex="1">
+            <ActionButton
+              icon={<HomeFilledIcon />}
+              label="Go home"
+              onPress={actions.navigateToLauncher}
+            />
+          </View>
+        )}
 
         <Spacer.Horizontal size="medium" />
 

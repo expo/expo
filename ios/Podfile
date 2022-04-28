@@ -88,7 +88,7 @@ abstract_target 'Expo Go' do
         config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)']
         config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'RCT_DEV=1'
         config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'RCT_ENABLE_INSPECTOR=0'
-        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'ENABLE_PACKAGER_CONNECTION=0'
+        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'RCT_DEV_SETTINGS_ENABLE_PACKAGER_CONNECTION=0'
       end
     end
   end
@@ -110,7 +110,10 @@ abstract_target 'Expo Go' do
   end
 
   target 'Tests' do
-    inherit! :search_paths
+    # `ExpoModulesTestCore` has implicit dependency to `React-Core` which has a resource bundle.
+    # To prevent CocoaPods generating new `React-Core` resource bundle and the strange `React-Core-60309c9c` target,
+    # this test target should inherit all properties from parents.
+    inherit! :complete
 
     pod 'ExpoModulesTestCore', :path => "../packages/expo-modules-test-core/ios"
     pod 'Nimble', :podspec => './Nimble.podspec'

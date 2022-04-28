@@ -331,7 +331,7 @@ open class FileDownloader(private val client: OkHttpClient) {
             override fun onSuccess(file: File, hash: ByteArray) {
               // base64url - https://datatracker.ietf.org/doc/html/rfc4648#section-5
               val hashBase64String = Base64.encodeToString(hash, Base64.URL_SAFE or Base64.NO_PADDING or Base64.NO_WRAP)
-              val expectedAssetHash = asset.expectedHash?.toLowerCase(Locale.ROOT)
+              val expectedAssetHash = asset.expectedHash
               if (expectedAssetHash != null && expectedAssetHash != hashBase64String) {
                 callback.onFailure(Exception("Asset hash invalid: ${asset.key}; expectedHash: $expectedAssetHash; actualHash: $hashBase64String"), asset)
                 return

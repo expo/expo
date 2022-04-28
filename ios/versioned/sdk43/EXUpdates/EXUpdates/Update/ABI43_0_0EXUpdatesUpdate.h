@@ -2,19 +2,46 @@
 
 #import <ABI43_0_0EXUpdates/ABI43_0_0EXUpdatesAsset.h>
 #import <ABI43_0_0EXUpdates/ABI43_0_0EXUpdatesConfig.h>
+#import <ABI43_0_0EXUpdates/ABI43_0_0EXUpdatesManifestHeaders.h>
 #import <ABI43_0_0EXManifests/ABI43_0_0EXManifestsManifest.h>
 
 @class ABI43_0_0EXUpdatesDatabase;
 
 NS_ASSUME_NONNULL_BEGIN
 
+/**
+ * Download status that indicates whether or under what conditions an
+ * update is able to be launched.
+ *
+ * It's important that the integer value of each status stays constant across
+ * all versions of this library since they are stored in SQLite on user devices.
+ */
 typedef NS_ENUM(NSInteger, ABI43_0_0EXUpdatesUpdateStatus) {
-  ABI43_0_0EXUpdatesUpdateStatusFailed = 0,
+  ABI43_0_0EXUpdatesUpdateStatus0_Unused = 0,
+  /**
+   * The update has been fully downloaded and is ready to launch.
+   */
   ABI43_0_0EXUpdatesUpdateStatusReady = 1,
-  ABI43_0_0EXUpdatesUpdateStatusLaunchable = 2,
+  ABI43_0_0EXUpdatesUpdateStatus2_Unused = 2,
+  /**
+   * The update manifest has been download from the server but not all
+   * assets have finished downloading successfully.
+   */
   ABI43_0_0EXUpdatesUpdateStatusPending = 3,
-  ABI43_0_0EXUpdatesUpdateStatusUnused = 4,
+  ABI43_0_0EXUpdatesUpdateStatus4_Unused = 4,
+  /**
+   * The update has been partially loaded (copied) from its location
+   * embedded in the app bundle, but not all assets have been copied
+   * successfully. The update may be able to be launched directly from
+   * its embedded location unless a new binary version with a new
+   * embedded update has been installed.
+   */
   ABI43_0_0EXUpdatesUpdateStatusEmbedded = 5,
+  /**
+   * The update manifest has been downloaded and indicates that the
+   * update is being served from a developer tool. It can be launched by a
+   * host application that can run a development bundle.
+   */
   ABI43_0_0EXUpdatesUpdateStatusDevelopment = 6
 };
 
@@ -36,6 +63,8 @@ typedef NS_ENUM(NSInteger, ABI43_0_0EXUpdatesUpdateStatus) {
 
 @property (nonatomic, assign) ABI43_0_0EXUpdatesUpdateStatus status;
 @property (nonatomic, strong) NSDate *lastAccessed;
+@property (nonatomic, assign) NSInteger successfulLaunchCount;
+@property (nonatomic, assign) NSInteger failedLaunchCount;
 
 + (instancetype)updateWithId:(NSUUID *)updateId
                     scopeKey:(NSString *)scopeKey
@@ -48,7 +77,8 @@ typedef NS_ENUM(NSInteger, ABI43_0_0EXUpdatesUpdateStatus) {
                     database:(ABI43_0_0EXUpdatesDatabase *)database;
 
 + (instancetype)updateWithManifest:(NSDictionary *)manifest
-                          response:(nullable NSURLResponse *)response
+                   manifestHeaders:(ABI43_0_0EXUpdatesManifestHeaders *)manifestHeaders
+                        extensions:(NSDictionary *)extensions
                             config:(ABI43_0_0EXUpdatesConfig *)config
                           database:(ABI43_0_0EXUpdatesDatabase *)database
                              error:(NSError **)error;

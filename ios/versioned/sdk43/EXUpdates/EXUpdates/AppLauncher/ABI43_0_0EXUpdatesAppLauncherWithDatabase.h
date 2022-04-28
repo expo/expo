@@ -5,7 +5,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef void (^ABI43_0_0EXUpdatesAppLauncherCompletionBlock)(NSError * _Nullable error, BOOL success);
 typedef void (^ABI43_0_0EXUpdatesAppLauncherUpdateCompletionBlock)(NSError * _Nullable error, ABI43_0_0EXUpdatesUpdate * _Nullable launchableUpdate);
 
 @interface ABI43_0_0EXUpdatesAppLauncherWithDatabase : NSObject <ABI43_0_0EXUpdatesAppLauncher>

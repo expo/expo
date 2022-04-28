@@ -52,7 +52,7 @@ const HIDDEN_ON_DESKTOP = css`
 
 type Props = React.PropsWithChildren<{
   router: NextRouter;
-  title: string;
+  title?: string;
   sourceCodeUrl?: string;
   tocVisible: boolean;
   /** If the page should not show up in the Algolia Docsearch results */
@@ -229,6 +229,24 @@ class DocumentationPageWithApiVersion extends React.Component<Props, State> {
     const sidebarRight = <DocumentationSidebarRight ref={this.sidebarRightRef} />;
 
     const algoliaTag = this.getAlgoliaTag();
+    const title = this.props.title
+      ? `${this.props.title} - Expo Documentation`
+      : `Expo Documentation`;
+
+    const pageContent = (
+      <>
+        {this.props.title && <H1>{this.props.title}</H1>}
+        <AppJSBanner />
+        {this.props.children}
+        {this.props.title && (
+          <DocumentationFooter
+            router={this.props.router}
+            title={this.props.title}
+            sourceCodeUrl={this.props.sourceCodeUrl}
+          />
+        )}
+      </>
+    );
 
     return (
       <DocumentationNestedScrollLayout
@@ -241,9 +259,9 @@ class DocumentationPageWithApiVersion extends React.Component<Props, State> {
         isMobileSearchActive={this.state.isMobileSearchActive}
         onContentScroll={handleContentScroll}
         sidebarScrollPosition={sidebarScrollPosition}>
-        <Head title={this.props.title}>
+        <Head title={title}>
           {algoliaTag !== null && <meta name="docsearch:version" content={algoliaTag} />}
-          <meta property="og:title" content={`${this.props.title} - Expo Documentation`} />
+          <meta property="og:title" content={title} />
           <meta property="og:type" content="website" />
           <meta property="og:image" content="https://docs.expo.dev/static/images/og.png" />
           <meta property="og:image:url" content="https://docs.expo.dev/static/images/og.png" />
@@ -260,7 +278,7 @@ class DocumentationPageWithApiVersion extends React.Component<Props, State> {
 
           <meta name="twitter:site" content="@expo" />
           <meta name="twitter:card" content="summary" />
-          <meta property="twitter:title" content={`${this.props.title} - Expo Documentation`} />
+          <meta property="twitter:title" content={title} />
           <meta
             name="twitter:description"
             content="Expo is an open-source platform for making universal native apps for Android, iOS, and the web with JavaScript and React."
@@ -279,27 +297,10 @@ class DocumentationPageWithApiVersion extends React.Component<Props, State> {
         </Head>
 
         {!this.state.isMenuActive ? (
-          <div css={STYLES_DOCUMENT}>
-            <AppJSBanner />
-            <H1>{this.props.title}</H1>
-            {this.props.children}
-            <DocumentationFooter
-              router={this.props.router}
-              title={this.props.title}
-              sourceCodeUrl={this.props.sourceCodeUrl}
-            />
-          </div>
+          <div css={STYLES_DOCUMENT}>{pageContent}</div>
         ) : (
           <div>
-            <div css={[STYLES_DOCUMENT, HIDDEN_ON_MOBILE]}>
-              <H1>{this.props.title}</H1>
-              {this.props.children}
-              <DocumentationFooter
-                router={this.props.router}
-                title={this.props.title}
-                sourceCodeUrl={this.props.sourceCodeUrl}
-              />
-            </div>
+            <div css={[STYLES_DOCUMENT, HIDDEN_ON_MOBILE]}>{pageContent}</div>
             <div css={HIDDEN_ON_DESKTOP}>
               <DocumentationSidebar router={this.props.router} routes={routes} />
             </div>

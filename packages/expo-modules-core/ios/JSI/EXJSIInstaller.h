@@ -1,29 +1,23 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
-#ifdef __cplusplus
+#import <React/RCTBridge.h>
 
-#import <jsi/jsi.h>
-#import <ReactCommon/RCTTurboModule.h>
-
-#import <ExpoModulesCore/EXNativeModulesProxy.h>
-
-using namespace facebook;
-using namespace react;
-
-namespace expo {
-
-void installRuntimeObjects(jsi::Runtime &runtime, std::shared_ptr<CallInvoker> callInvoker, EXNativeModulesProxy *nativeModulesProxy);
-
-} // namespace expo
-
-#endif
-
-#import <ExpoModulesCore/EXJavaScriptRuntime.h>
-
-@class SwiftInteropBridge;
+// Swift classes need forward-declaration in the headers.
+@class EXAppContext;
+@class EXJavaScriptRuntime;
 
 @interface EXJavaScriptRuntimeManager : NSObject
 
-+ (void)installExpoModulesToRuntime:(nonnull EXJavaScriptRuntime *)runtime withSwiftInterop:(nonnull SwiftInteropBridge *)swiftInterop;
+/**
+ Gets the JS runtime from the given bridge. May return `nil` when
+ the runtime is not available yet or the remote debugging is enabled.
+ */
++ (nullable EXJavaScriptRuntime *)runtimeFromBridge:(nonnull RCTBridge *)bridge NS_SWIFT_NAME(runtime(fromBridge:));
+
+/**
+ Installs ExpoModules host object in the runtime of the given app context.
+ Returns a bool value whether the installation succeeded.
+ */
++ (BOOL)installExpoModulesHostObject:(nonnull EXAppContext *)appContext;
 
 @end

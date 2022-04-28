@@ -1,4 +1,4 @@
-name: docs
+name: Docs Website
 
 defaults:
   run:
@@ -25,50 +25,42 @@ jobs:
   docs:
     runs-on: ubuntu-20.04
     steps:
-      - name: Install Node 14
-        uses: actions/setup-node@v3
-        with:
-          node-version: '14.17'
-      - name: Check out repository
+      - name: 👀 Checkout
         uses: actions/checkout@v3
         with:
           submodules: true
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-      - uses: actions/cache@v2
+      - name: ⬢ Setup Node
+        uses: actions/setup-node@v3
         with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('docs/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-      - run: yarn install --frozen-lockfile
-      - run: yarn test
-      - run: yarn lint --max-warnings 0
+          node-version: '14.17'
+      - name: ♻️ Restore caches
+        uses: ./.github/actions/expo-caches
+        id: expo-caches
+        with:
+          yarn-docs: 'true'
+      - name: ➕ Add `bin` to GITHUB_PATH
+        run: echo "$(pwd)/bin" >> $GITHUB_PATH
+      - name: 🧶 Yarn install
+        if: steps.expo-caches.outputs.yarn-docs-hit != 'true'
+        run: yarn install --frozen-lockfile
+      - name: 🧪 Run Docs tests
+        run: yarn test
+      - name: 🚨 Lint Docs app
+        run: yarn lint --max-warnings 0
+      - name: 🚸 Lint Docs content
+        run: yarn lint-case
       - run: yarn danger ci
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Check if `docs/yarn.lock` has been changed
-        uses: dorny/paths-filter@v2
-        id: changes
-        with:
-          filters: |
-            lock:
-              - 'docs/yarn.lock'
-      - name: Cache Next folder
-        if: steps.changes.outputs.lock == 'false'
-        uses: actions/cache@v2
-        with:
-          path: docs/.next/cache
-          key: docs-next-${{ hashFiles('docs/yarn.lock') }}-next-${{ hashFiles('docs/next.config.js') }}
-      - run: yarn export
+      - name: 🏗️ Build Docs website for deploy
+        run: yarn export
         timeout-minutes: 20
         env:
           USE_ESBUILD: 1
       # TODO(cedric): If we have time, we should make sure all links are valid and connected to a proper header
       # - name: lint links
       #   run: yarn lint-links --quiet
-      - name: test links (legacy)
+      - name: ✅ Test links (legacy)
         run: |
           yarn export-server &
           while ! nc -z localhost 8000; do
@@ -76,8 +68,9 @@ jobs:
           done
           yarn test-links http://127.0.0.1:8000
         timeout-minutes: 1
-      - run: ./deploy.sh
+      - name: 🚀 Deploy Docs website
         if: ${{ github.event.ref == 'refs/heads/main' }}
+        run: ./deploy.sh
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}

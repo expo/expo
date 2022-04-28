@@ -8,9 +8,15 @@
 
 ### 🐛 Bug fixes
 
-- Fixed `setStringAsync` crashing when setting HTML content on web. ([#17115](https://github.com/expo/expo/pull/17115) by [@barthap](https://github.com/barthap))
-
 ### 💡 Others
+
+- Migrated Expo modules definitions to the new naming convention. ([#17193](https://github.com/expo/expo/pull/17193) by [@tsapeta](https://github.com/tsapeta))
+
+## 3.0.1 — 2022-04-20
+
+### 🐛 Bug fixes
+
+- Fixed `setStringAsync` crashing when setting HTML content on web. ([#17115](https://github.com/expo/expo/pull/17115) by [@barthap](https://github.com/barthap))
 
 ## 3.0.0 — 2022-04-18
 

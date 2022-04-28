@@ -162,8 +162,12 @@ std::shared_ptr<NativeReanimatedModule> createReanimatedModule(
     scrollTo(viewTag, uiManager, x, y, animated);
   };
 
-  id<RNGestureHandlerStateManager> gestureHandlerStateManager = [bridge moduleForName:@"RNGestureHandlerModule"];
-  auto setGestureStateFunction = [gestureHandlerStateManager](int handlerTag, int newState) {
+  id<RNGestureHandlerStateManager> gestureHandlerStateManager = nil;
+  auto setGestureStateFunction = [gestureHandlerStateManager, bridge](int handlerTag, int newState) mutable {
+    if (gestureHandlerStateManager == nil) {
+      gestureHandlerStateManager = [bridge moduleForName:@"RNGestureHandlerModule"];
+    }
+
     setGestureState(gestureHandlerStateManager, handlerTag, newState);
   };
 

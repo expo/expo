@@ -25,7 +25,7 @@ Sometimes you'll be able to tell exactly what's wrong just by the [stacktrace](.
   - This should narrow down the possible sources of the error, and provide you with more information to search the internet for others who have had the same problem
 - Use breakpoints (or `console.log`s) to check and make sure a certain piece of code is being run, or that a variable has a certain value. Using `console.log` for debugging isn't considered the best practice, but it's fast, easy, and oftentimes provides some illuminating information
 
-If you are able to simplify your code as much as possible, tracking down the source of an error gets exponentially easier. That's exactly why so many open source repos require a [minimal reproducible demo](https://stackoverflow.com/help/minimal-reproducible-example) in their bug reports- it ensures you have isolated the issue and identified exactly where the problem lies! If your app is too large and complex to do that, try and extract the functionality you're trying to add to it's own blank `expo init` project, and go from there.
+If you are able to simplify your code as much as possible, tracking down the source of an error gets exponentially easier. That's exactly why so many open source repos require a [minimal reproducible demo](https://stackoverflow.com/help/minimal-reproducible-example) in their bug reports- it ensures you have isolated the issue and identified exactly where the problem lies! If your app is too large and complex to do that, try and extract the functionality you're trying to add to its own blank `expo init` project, and go from there.
 
 ## Production errors
 
@@ -48,7 +48,7 @@ With that information, you should be able to identify where the error is coming 
 
 ### My app crashes on certain (older) devices
 
-This might indicate that there is a performance issue. You likely need to run your app through a profiler to get a better idea of what processes are killing the app, and [React Native provides some great documentation for this](https://reactnative.dev/docs/profiling). We also recommend using [React Devtools](https://www.npmjs.com/package/react-devtools) and the included profiler, which makes it super easy to identify performance sinks in your app.
+This might indicate that there is a performance issue. You likely need to run your app through a profiler to get a better idea of what processes are killing the app, and [React Native provides some great documentation for this](https://reactnative.dev/docs/profiling). We also recommend using [React DevTools](https://www.npmjs.com/package/react-devtools) and the included profiler, which makes it super easy to identify performance sinks in your app.
 
 ## Stuck?
 
@@ -145,7 +145,7 @@ npm install -g react-devtools
 
 (if you don't want to install it globally, run `npm install --dev react-devtools` to install it as a project dependency).
 
-After running `expo start` in your project's root directory, use a separate terminal tab to run `react-devtools`. This will open up the React Devtools console (for it to connect, you need to select `Debug remote JS` from the Developer Menu in the Expo Go app). From this console, you can search for your React components at the top, or open up the Developer Menu and enable the Element Inspector. Once you do that, you can tap on any element on screen and React DevTools will automatically find and display that element in the tree. From there, you can inspect the elements state, props, etc.
+After running `expo start` in your project's root directory, use a separate terminal tab to run `react-devtools`. This will open up the React DevTools console (for it to connect, you need to select `Debug remote JS` from the Developer Menu in the Expo Go app). From this console, you can search for your React components at the top, or open up the Developer Menu and enable the Element Inspector. Once you do that, you can tap on any element on screen and React DevTools will automatically find and display that element in the tree. From there, you can inspect the elements state, props, etc.
 
 <Video file="debugging/react-devtools.mp4" />
 

@@ -68,13 +68,13 @@
         "binaryPath": "android/app/build/outputs/apk/debug/app-debug.apk",
         "build": "cd android && ./gradlew :app:assembleDebug :app:assembleAndroidTest -DtestBuildType=debug && cd ..",
         "type": "android.emulator",
-        "name": "bare-expo"
+        "name": "avd-29"
       },
       "android.emu.release": {
         "binaryPath": "android/app/build/outputs/apk/release/app-release.apk",
         "build": "cd android && ./gradlew :app:assembleRelease :app:assembleAndroidTest -DtestBuildType=release && cd ..",
         "type": "android.emulator",
-        "name": "bare-expo"
+        "name": "avd-29"
       }
     },
     "runner-config": "./e2e/jest.config.json",
@@ -101,7 +101,7 @@
     "@react-native-segmented-control/segmented-control": "2.4.0",
     "expo": "~45.0.0-beta.1",
     "expo-camera": "~12.2.0",
-    "expo-dev-client": "~0.8.0",
+    "expo-dev-client": "~0.9.0",
     "expo-error-recovery": "~3.1.0",
     "expo-face-detector": "~11.2.0",
     "expo-image": "~0.2.0",
@@ -113,7 +113,7 @@
     "react-dom": "17.0.2",
     "react-native": "0.68.1",
     "react-native-gesture-handler": "~2.2.0",
-    "react-native-reanimated": "~2.7.0",
+    "react-native-reanimated": "~2.8.0",
     "react-native-safe-area-context": "4.2.4",
     "react-native-screens": "~3.11.1",
     "react-native-shared-element": "0.8.4",
