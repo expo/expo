@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 45.0.0-beta.9 — 2022-04-28
+
+_This version does not introduce any user-facing changes._
+
 ## 45.0.0-beta.8 — 2022-04-27
 
 _This version does not introduce any user-facing changes._
