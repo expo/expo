@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import { SNACK_URL } from '../../common/snack';
 
-type Props = {
+type Props = React.PropsWithChildren<{
   snackId?: string;
   name?: string;
   description?: string;
@@ -10,10 +10,9 @@ type Props = {
   preview?: boolean;
   theme?: string;
   style?: React.CSSProperties;
-  children?: string;
-};
+}>;
 
-const SnackEmbed: React.FC<Props> = ({
+const SnackEmbed = ({
   snackId,
   name,
   description,
@@ -22,7 +21,7 @@ const SnackEmbed: React.FC<Props> = ({
   theme,
   style,
   children,
-}) => {
+}: Props) => {
   React.useEffect(() => {
     let script = document.getElementById('snack') as HTMLScriptElement;
     // inject script if it hasn't been loaded by a previous page
