@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- add missing `pretty-bytes` dependency. ([#17235](https://github.com/expo/expo/pull/17235) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 💡 Others
 
 ## 0.1.2 — 2022-04-27
@@ -63,7 +65,7 @@ _This version does not introduce any user-facing changes._
 - Skip font parsing on prebuild. ([#17184](https://github.com/expo/expo/pull/17184) by [@EvanBacon](https://github.com/EvanBacon))
 - [ci] Fix `typecheck`. ([#17145](https://github.com/expo/expo/pull/17145) by [@EvanBacon](https://github.com/EvanBacon))
 - [ci] Fix `typecheck`. ([#17145](https://github.com/expo/expo/pull/17145) by
-[@EvanBacon](https://github.com/EvanBacon))
+  [@EvanBacon](https://github.com/EvanBacon))
 - Close development session when CLI is stopped ([#17170](https://github.com/expo/expo/pull/17170) by [@FiberJW](https://github.com/FiberJW))
 
 ### 💡 Others
