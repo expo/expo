@@ -6,7 +6,6 @@ import path from 'path';
 import { Command } from '../../../bin/cli';
 import { assertWithOptionsArgs, printHelp } from '../../utils/args';
 import { logCmdError } from '../../utils/errors';
-import { resolveStringOrBooleanArgsAsync } from '../../utils/resolveArgs';
 import { XcodeConfiguration } from './XcodeBuild.types';
 
 export const expoRunIos: Command = async (argv) => {
@@ -56,6 +55,7 @@ export const expoRunIos: Command = async (argv) => {
     );
   }
 
+  const { resolveStringOrBooleanArgsAsync } = await import('../../utils/resolveArgs');
   const parsed = await resolveStringOrBooleanArgsAsync(argv ?? [], rawArgsMap, {
     '--scheme': Boolean,
     '--device': Boolean,
