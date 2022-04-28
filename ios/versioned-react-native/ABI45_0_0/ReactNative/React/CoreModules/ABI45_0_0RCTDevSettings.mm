@@ -32,7 +32,7 @@ static NSString *const kABI45_0_0RCTDevSettingIsPerfMonitorShown = @"ABI45_0_0RC
 
 static NSString *const kABI45_0_0RCTDevSettingsUserDefaultsKey = @"ABI45_0_0RCTDevMenu";
 
-#if ABI45_0_0RCT_DEV_SETTINGS_ABI45_0_0ENABLE_PACKAGER_CONNECTION
+#if ABI45_0_0RCT_DEV_SETTINGS_ENABLE_PACKAGER_CONNECTION
 #import <ABI45_0_0React/ABI45_0_0RCTPackagerClient.h>
 #import <ABI45_0_0React/ABI45_0_0RCTPackagerConnection.h>
 #endif
@@ -114,14 +114,14 @@ void ABI45_0_0RCTDevSettingsSetEnabled(BOOL enabled)
 
 @end
 
-#if ABI45_0_0RCT_DEV_SETTINGS_ABI45_0_0ENABLE_PACKAGER_CONNECTION
+#if ABI45_0_0RCT_DEV_SETTINGS_ENABLE_PACKAGER_CONNECTION
 static ABI45_0_0RCTHandlerToken reloadToken;
 static std::atomic<int> numInitializedModules{0};
 #endif
 
 @interface ABI45_0_0RCTDevSettings () <ABI45_0_0RCTBridgeModule, ABI45_0_0RCTInvalidating, ABI45_0_0NativeDevSettingsSpec, ABI45_0_0RCTDevSettingsInspectable> {
   BOOL _isJSLoaded;
-#if ABI45_0_0RCT_DEV_SETTINGS_ABI45_0_0ENABLE_PACKAGER_CONNECTION
+#if ABI45_0_0RCT_DEV_SETTINGS_ENABLE_PACKAGER_CONNECTION
   ABI45_0_0RCTHandlerToken _bridgeExecutorOverrideToken;
 #endif
 }
@@ -174,7 +174,7 @@ ABI45_0_0RCT_EXPORT_MODULE()
 
 - (void)initialize
 {
-#if ABI45_0_0RCT_DEV_SETTINGS_ABI45_0_0ENABLE_PACKAGER_CONNECTION
+#if ABI45_0_0RCT_DEV_SETTINGS_ENABLE_PACKAGER_CONNECTION
   if (self.bridge) {
     ABI45_0_0RCTBridge *__weak weakBridge = self.bridge;
     _bridgeExecutorOverrideToken = [[ABI45_0_0RCTPackagerConnection sharedPackagerConnection]
@@ -238,7 +238,7 @@ ABI45_0_0RCT_EXPORT_MODULE()
 - (void)invalidate
 {
   [super invalidate];
-#if ABI45_0_0RCT_DEV_SETTINGS_ABI45_0_0ENABLE_PACKAGER_CONNECTION
+#if ABI45_0_0RCT_DEV_SETTINGS_ENABLE_PACKAGER_CONNECTION
   if (self.bridge) {
     [[ABI45_0_0RCTPackagerConnection sharedPackagerConnection] removeHandler:_bridgeExecutorOverrideToken];
   }
@@ -456,7 +456,7 @@ ABI45_0_0RCT_EXPORT_METHOD(addMenuItem : (NSString *)title)
 
 - (void)addHandler:(id<ABI45_0_0RCTPackagerClientMethod>)handler forPackagerMethod:(NSString *)name
 {
-#if ABI45_0_0RCT_DEV_SETTINGS_ABI45_0_0ENABLE_PACKAGER_CONNECTION
+#if ABI45_0_0RCT_DEV_SETTINGS_ENABLE_PACKAGER_CONNECTION
   [[ABI45_0_0RCTPackagerConnection sharedPackagerConnection] addHandler:handler forMethod:name];
 #endif
 }

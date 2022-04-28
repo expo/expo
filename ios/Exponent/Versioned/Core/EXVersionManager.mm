@@ -137,7 +137,9 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
 #if DEBUG || RCT_DEV
   if ([self _isDevModeEnabledForBridge:bridge]) {
     // Set the bundle url for the packager connection manually
-    [[RCTPackagerConnection sharedPackagerConnection] reconnect:[bridge bundleURL].absoluteString];
+    NSURL *bundleURL = [bridge bundleURL];
+    NSString *packagerServerHostPort = [NSString stringWithFormat:@"%@:%@", bundleURL.host, bundleURL.port];
+    [[RCTPackagerConnection sharedPackagerConnection] reconnect:packagerServerHostPort];
   }
 #endif
 
