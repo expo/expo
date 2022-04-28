@@ -13,3 +13,34 @@ export function intersecting<T>(a: T[], b: T[]): T[] {
   const [c, d] = a.length > b.length ? [a, b] : [b, a];
   return c.filter((value) => d.includes(value));
 }
+
+export function replaceValue<T>(values: T[], original: T, replacement: T): T[] {
+  const index = values.indexOf(original);
+  if (index > -1) {
+    values[index] = replacement;
+  }
+  return values;
+}
+
+/** lodash.uniqBy */
+export function uniqBy<T>(array: T[], key: (item: T) => string): T[] {
+  const seen: { [key: string]: boolean } = {};
+  return array.filter((item) => {
+    const k = key(item);
+    if (seen[k]) {
+      return false;
+    }
+    seen[k] = true;
+    return true;
+  });
+}
+
+/** `lodash.chunk` */
+export function chunk<T>(array: T[], size: number): T[][] {
+  const chunked = [];
+  let index = 0;
+  while (index < array.length) {
+    chunked.push(array.slice(index, (index += size)));
+  }
+  return chunked;
+}

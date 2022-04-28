@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 45.0.0-beta.7 — 2022-04-27
+
+### 🐛 Bug fixes
+
+- Forward CLI exit code to process. ([#17189](https://github.com/expo/expo/pull/17189) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 45.0.0-beta.6 — 2022-04-27
+
+_This version does not introduce any user-facing changes._
+
 ## 45.0.0-beta.5 — 2022-04-25
 
 ### 🐛 Bug fixes

@@ -63,7 +63,7 @@ In order to access the `ssid` property (available under `state.details.ssid`), t
   }
 ```
 
-- Check the **Access WiFi Information** box in your app's App Identifier, [which can be found here](https://developer.apple.com/account/resources/identifiers/list)
+- Check the **Access Wi-Fi Information** box in your app's App Identifier, [which can be found here](https://developer.apple.com/account/resources/identifiers/list)
 
 - Rebuild your app with `expo build:ios`
 
