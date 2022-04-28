@@ -182,7 +182,7 @@ Synchronously detect if the font for `fontFamily` has finished loading.
 
 #### Returns
 
-`true` if the the font has fully loaded.
+`true` if the font has fully loaded.
 
 ### `Font.isLoading(fontFamily)`
 
@@ -194,7 +194,7 @@ Synchronously detect if the font for `fontFamily` is still being loaded
 
 #### Returns
 
-`true` if the the font is still loading.
+`true` if the font is still loading.
 
 ## Types
 

@@ -2,11 +2,11 @@
 title: Configuring Updates
 ---
 
-> This guide is four our Classic Updates service. As of Dec 2021, we started previewing the next generation of our updates service: EAS Update. [Learn more](/eas-update).
+> This guide is for our Classic Updates service. As of Dec 2021, we started previewing the next generation of our updates service: EAS Update. [Learn more](/eas-update).
 
 Expo provides various settings to configure how your app receives updates. Updates allow you to publish a new version of your app JavaScript and assets without building a new version of your app and re-submitting to app stores. ([Read more about the limitations](../workflow/publishing.md)).
 
-To create an update of your app, run `expo publish`. If you're using release channels, specify one with `--release-channel <channel-name>` option. **Please note**- if you wish to update the SDK version of your app, or make [any of the these changes](../workflow/publishing.md#some-native-configuration-cant-be-updated-by), you'll need to rebuild your app with `eas build` (or `expo build` if you are using the classic build service) and upload the binary file to the appropriate app store ([see the docs here](/build/setup.md)).
+To create an update of your app, run `expo publish`. If you're using release channels, specify one with `--release-channel <channel-name>` option. **Please note**- if you wish to update the SDK version of your app, or make [any of these changes](../workflow/publishing.md#some-native-configuration-cant-be-updated-by), you'll need to rebuild your app with `eas build` (or `expo build` if you are using the classic build service) and upload the binary file to the appropriate app store ([see the docs here](/build/setup.md)).
 
 Updates are controlled by the [`updates` settings in app.json](../workflow/configuration.md#updates), which handle the initial app load, and the [Updates SDK module](../versions/latest/sdk/updates.md), which allows you to fetch updates asynchronously from your JS.
 

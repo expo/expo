@@ -35,7 +35,7 @@ Check out the source if you would like to implement it in another language.
 
 ## Implementing push notifications reliably
 
-Push notifications travel through several systems from your server to recipient devices. Notifications are delivered most of the the time but occasionally there are issues with systems along the way and the network connections between them. Handling outages and errors will help your push notifications arrive at their destinations more reliably.
+Push Notifications travel through several systems from your server to recipient devices. Notifications are delivered most of the time but occasionally there are issues with systems along the way and the network connections between them. Handling outages and errors will help your push notifications arrive at their destinations more reliably.
 
 ### Limit concurrent connections
 
