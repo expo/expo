@@ -1,5 +1,4 @@
 import chalk from 'chalk';
-import { Log } from '../../../log';
 
 import { createSelectionFilter, promptAsync } from '../../../utils/prompts';
 import { getBestSimulatorAsync } from './getBestSimulator';
