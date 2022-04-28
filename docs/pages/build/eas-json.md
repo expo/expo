@@ -161,7 +161,7 @@ If you are using the Expo managed workflow, EAS Build will pick the appropriate 
 
 ## Environment variables
 
-You can configure environment variables on your build profiles using the `"env"` field. These environment variable those will be used to evaluate **app.config.js** locally when you run `eas build`, and they will also be set on the EAS Build worker.
+You can configure environment variables on your build profiles using the `"env"` field. These environment variable will be used to evaluate **app.config.js** locally when you run `eas build`, and they will also be set on the EAS Build worker.
 
 ```json
 {

@@ -56,7 +56,7 @@ Inside **eas.json**, we'll want to add `channel` properties to each build profil
 Inside **AndroidManifest.xml**, we'll see the following additions:
 
 ```xml
-<meta-data android:name="expo.modules.updates.EXPO_UPDATE_URL" android:value="<https://u.expo.dev/your-project-id>"/>
+<meta-data android:name="expo.modules.updates.EXPO_UPDATE_URL" android:value="https://u.expo.dev/your-project-id"/>
 <meta-data android:name="expo.modules.updates.EXPO_RUNTIME_VERSION" android:value="1.0.0"/>
 ```
 
@@ -68,7 +68,7 @@ Inside **Expo.plist**, we'll see the following additions:
 <key>EXUpdatesRuntimeVersion</key>
 <string>1.0.0</string>
 <key>EXUpdatesURL</key>
-<string><https://u.expo.dev/your-project-id></string>
+<string>https://u.expo.dev/your-project-id</string>
 ```
 
 The `EXUpdatesURL` value should contain your project's ID.

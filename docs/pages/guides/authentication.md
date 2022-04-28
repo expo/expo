@@ -7,7 +7,6 @@ import InstallSection from '~/components/plugins/InstallSection';
 
 import { SocialGrid, SocialGridItem, CreateAppButton } from '~/components/plugins/AuthSessionElements';
 import { Tab, Tabs } from '~/components/plugins/Tabs';
-import TerminalBlock from '~/components/plugins/TerminalBlock';
 import SnackInline from '~/components/plugins/SnackInline';
 
 Expo can be used to login to many popular providers on iOS, Android, and web! Most of these guides utilize the pure JS [`AuthSession` API](/versions/latest/sdk/auth-session), refer to those docs for more information on the API.
@@ -388,7 +387,7 @@ export default function App() {
       // For usage in managed apps using the proxy
       redirectUri: makeRedirectUri({
         /* @info The URI <code>[scheme]://</code> to be used in bare and standalone. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
-        scheme: 'your.app'
+        scheme: 'your.app',
         /* @end */
         useProxy,
       }),
