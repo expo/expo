@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix bug where autocomplete prompts crash when escape characters are used.
+- Fix bug where autocomplete prompts crash when escape characters are used. ([#17271](https://github.com/expo/expo/pull/17271) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 
