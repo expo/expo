@@ -10,10 +10,10 @@ EAS Update is the next generation of Expo's updates service. If you're using Cla
 
 EAS Update requires the following versions or greater:
 
-- Expo CLI 5.0.0
-- EAS CLI 0.41.1
-- Expo SDK 44.0.1
-- expo-updates 0.11.2
+- Expo CLI >= 5.3.0
+- EAS CLI >= 0.50.0
+- Expo SDK >= 45.0.0
+- expo-updates >= 0.13.0
 
 ## Install Expo CLI and EAS CLI
 
@@ -36,7 +36,7 @@ You'll need to make the following changes to your project:
 1. Install the latest `expo-updates` library with:
 
    ```bash
-   yarn add expo-updates@0.11.2
+   yarn add expo-updates
    ```
 
 2. Initialize your project with EAS Update:
@@ -55,7 +55,7 @@ You'll need to make the following changes to your project:
    eas build:configure
    ```
 
-5. To allow updates to apply to builds built with EAS, update your EAS build profiles in **eas.json** to include channel properties. These channels should replace any `releaseChannel` properties. We find it convenient to name the `channel` after the profile's name. For instance, the `preview` profile has a `channel` named `"preview"` and the `production` profile has a `channel` named `"production"`.
+5. To allow updates to apply to builds built with EAS, update your EAS build profiles in **eas.json** to include `channel` properties. These channels should replace any `releaseChannel` properties. We find it convenient to name the `channel` after the profile's name. For instance, the `preview` profile has a `channel` named `"preview"` and the `production` profile has a `channel` named `"production"`.
 
 ```json
 {
