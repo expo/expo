@@ -9,7 +9,7 @@ EAS Build is a new service and we plan to address many of the current limitation
 <details><summary><h4>Fixed memory and CPU limits on build worker servers.</h4></summary>
 <p>
 
-The ["Server infrastructure" reference](../server-infrastructure.md) contains the most up-to-date information about the current specifications of the Android (Ubuntu) and iOS  (macOS) build servers. You may find that the resources available are not sufficient to build your app if your build process requires more than 12GB RAM. In the future we will be adding more powerful configurations to increase memory limits and speed up build times.
+The ["Server infrastructure" reference](./infrastructure.md) contains the most up-to-date information about the current specifications of the Android (Ubuntu) and iOS  (macOS) build servers. You may find that the resources available are not sufficient to build your app if your build process requires more than 12GB RAM. In the future we will be adding more powerful configurations to increase memory limits and speed up build times.
 
 </p>
 </details>
