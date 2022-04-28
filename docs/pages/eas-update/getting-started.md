@@ -120,7 +120,7 @@ eas update --branch preview --message "Updating the app"
 
 Once the update is built and uploaded to EAS and the command completes, force close and reopen your app up to two times to download and view the update.
 
-> ⚠️ While EAS Update is in "preview" we are only allowing up to 300 assets to be uploaded in a single publish.
+> ⚠️ While EAS Update is in "preview" we are only allowing up to 400 assets to be uploaded in a single publish.
 
 ## Next
 
