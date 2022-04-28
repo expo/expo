@@ -243,7 +243,7 @@ Sometimes a scrollview takes up more space than its content fills. When this is 
 
 ### `fadingEdgeLength`
 
-Fades out the edges of the the scroll content.
+Fades out the edges of the scroll content.
 
 If the value is greater than 0, the fading edges will be set accordingly to the current scroll direction and position, indicating if there is more content to show.
 
