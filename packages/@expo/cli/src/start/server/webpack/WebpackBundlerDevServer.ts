@@ -15,7 +15,6 @@ import { getIpAddress } from '../../../utils/ip';
 import { choosePortAsync } from '../../../utils/port';
 import { ensureDotExpoProjectDirectoryInitialized } from '../../project/dotExpo';
 import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
-import { UrlCreator } from '../UrlCreator';
 import {
   importExpoWebpackConfigFromProject,
   importWebpackDevServerFromProject,
@@ -130,7 +129,7 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
 
     const { createDevServerMiddleware } = await import('../middleware/createDevServerMiddleware');
 
-    const nativeMiddleware = createDevServerMiddleware({
+    const nativeMiddleware = createDevServerMiddleware(this.projectRoot, {
       port,
       watchFolders: [this.projectRoot],
     });
@@ -175,140 +174,17 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
 
     await this.stopAsync();
 
-    const { resetDevServer, https, mode } = options;
-
-    const port = await this.getAvailablePortAsync({
+    options.port = await this.getAvailablePortAsync({
       defaultPort: options.port,
     });
+    const { resetDevServer, https, port, mode } = options;
 
-    this.urlCreator = new UrlCreator(
-      {
-        scheme: https ? 'https' : 'http',
-        ...options.location,
-      },
-      {
-        port,
-        getTunnelUrl: this.getTunnelUrl.bind(this),
-      }
-    );
-
-    Log.debug('Starting webpack on port: ' + port);
-
-    if (resetDevServer) {
-      await clearWebProjectCacheAsync(this.projectRoot, mode);
-    }
-
-    if (https) {
-      Log.debug('Configuring TLS to enable HTTPS support');
-      await ensureEnvironmentSupportsTLSAsync(this.projectRoot).catch((error) => {
-        Log.error(`Error creating TLS certificates: ${error}`);
-      });
-    }
-
-    const config = await this.loadConfigAsync(options);
-
-    Log.log(chalk`Starting Webpack on port ${port} in {underline ${mode}} mode.`);
-
-    // Create a webpack compiler that is configured with custom messages.
-    const compiler = webpack(config);
-
-    let nativeMiddleware: Awaited<ReturnType<typeof this.createNativeDevServerMiddleware>> | null =
-      null;
-    if (config.devServer?.before) {
-      // Create the middleware required for interacting with a native runtime (Expo Go, or a development build).
-      nativeMiddleware = await this.createNativeDevServerMiddleware({
-        port,
-        compiler,
-        options,
-      });
-      // Inject the native manifest middleware.
-      const originalBefore = config.devServer.before.bind(config.devServer.before);
-      config.devServer.before = (
-        app: Application,
-        server: WebpackDevServer,
-        compiler: webpack.Compiler
-      ) => {
-        originalBefore(app, server, compiler);
-
-        if (nativeMiddleware?.middleware) {
-          app.use(nativeMiddleware.middleware);
-        }
-      };
-    }
-    const { attachNativeDevServerMiddlewareToDevServer } = this;
-
-    const server = new WebpackDevServer(
-      // @ts-expect-error: type mismatch -- Webpack types aren't great.
-      compiler,
-      config.devServer
-    );
-    // Launch WebpackDevServer.
-    server.listen(port, WEB_HOST, function (this: http.Server, error) {
-      if (nativeMiddleware) {
-        attachNativeDevServerMiddlewareToDevServer({
-          server: this,
-          ...nativeMiddleware,
-        });
-      }
-      if (error) {
-        Log.error(error.message);
-      }
-    });
-
-    // Extend the close method to ensure that we clean up the local info.
-    const originalClose = server.close.bind(server);
-
-    server.close = (callback?: (err?: Error) => void) => {
-      return originalClose((err?: Error) => {
-        this.instance = null;
-        callback?.(err);
-      });
-    };
-
-    const _host = getIpAddress();
-    const protocol = https ? 'https' : 'http';
-
-    return {
-      // Server instance
-      server,
-      // URL Info
+    this.urlCreator = this.getUrlCreator({
+      port,
       location: {
-        url: `${protocol}://${_host}:${port}`,
-        port,
-        protocol,
-        host: _host,
-      },
-      middleware: nativeMiddleware?.middleware,
-      // Match the native protocol.
-      messageSocket: {
-        broadcast: this.broadcastMessage,
-      },
-    };
-  }
-
-  async startAsync(options: BundlerStartOptions): Promise<DevServerInstance> {
-    // Do this first to fail faster.
-    const webpack = importWebpackFromProject(this.projectRoot);
-    const WebpackDevServer = importWebpackDevServerFromProject(this.projectRoot);
-
-    await this.stopAsync();
-
-    const { resetDevServer, https, mode } = options;
-
-    const port = await this.getAvailablePortAsync({
-      defaultPort: options.port,
-    });
-
-    this.urlCreator = new UrlCreator(
-      {
         scheme: https ? 'https' : 'http',
-        ...options.location,
       },
-      {
-        port,
-        getTunnelUrl: this.getTunnelUrl.bind(this),
-      }
-    );
+    });
 
     Log.debug('Starting webpack on port: ' + port);
 
@@ -386,7 +262,7 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
     const _host = getIpAddress();
     const protocol = https ? 'https' : 'http';
 
-    this.setInstance({
+    return {
       // Server instance
       server,
       // URL Info
@@ -401,11 +277,7 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
       messageSocket: {
         broadcast: this.broadcastMessage,
       },
-    });
-
-    await this.postStartAsync(options);
-
-    return this.instance!;
+    };
   }
 
   /** Load the Webpack config. Exposed for testing. */

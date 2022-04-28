@@ -27,6 +27,7 @@ export class ExpoGoInstaller<IDevice> {
       return true;
     }
     const version = await this._getExpectedClientVersionAsync();
+    Log.debug(`Expected Expo Go version: ${version}, installed version: ${installedVersion}`);
     return version ? semver.lt(installedVersion, version) : true;
   }
 
@@ -76,7 +77,7 @@ export class ExpoGoInstaller<IDevice> {
 
     if (shouldInstall) {
       // Download the Expo Go app from the Expo servers.
-      const binaryPath = await downloadExpoGoAsync(this.platform);
+      const binaryPath = await downloadExpoGoAsync(this.platform, { sdkVersion: this.sdkVersion });
       // Install the app on the device.
       const ora = logNewSection(`Installing Expo Go on ${deviceManager.name}`);
       try {

@@ -44,8 +44,9 @@
 {
   NSMutableSet<NSString *> *eventsAccumulator = [NSMutableSet set];
 
-  if (_swiftInteropBridge) {
-    [eventsAccumulator addObjectsFromArray:[_swiftInteropBridge getSupportedEvents]];
+  // Backwards compatibility for the new architecture
+  if (_appContext) {
+    [eventsAccumulator addObjectsFromArray:[_appContext getSupportedEvents]];
   }
   for (EXExportedModule *exportedModule in [_exModuleRegistry getAllExportedModules]) {
     if ([exportedModule conformsToProtocol:@protocol(EXEventEmitter)]) {
@@ -60,10 +61,12 @@ RCT_EXPORT_METHOD(addProxiedListener:(NSString *)moduleName eventName:(NSString 
 {
   [self addListener:eventName];
 
-  if ([_swiftInteropBridge hasModule:moduleName]) {
-    [_swiftInteropBridge modifyEventListenersCount:moduleName count:1];
+  // Backwards compatibility for the new architecture
+  if ([_appContext hasModule:moduleName]) {
+    [_appContext modifyEventListenersCount:moduleName count:1];
     return;
   }
+
   // Validate module
   EXExportedModule *module = [_exModuleRegistry getExportedModuleForName:moduleName];
 
@@ -101,10 +104,12 @@ RCT_EXPORT_METHOD(removeProxiedListeners:(NSString *)moduleName count:(double)co
 {
   [self removeListeners:count];
 
-  if ([_swiftInteropBridge hasModule:moduleName]) {
-    [_swiftInteropBridge modifyEventListenersCount:moduleName count:-count];
+  // Backwards compatibility for the new architecture
+  if ([_appContext hasModule:moduleName]) {
+    [_appContext modifyEventListenersCount:moduleName count:-count];
     return;
   }
+
   // Validate module
   EXExportedModule *module = [_exModuleRegistry getExportedModuleForName:moduleName];
 

@@ -3,17 +3,23 @@ title: Create a new app
 sidebar_title: Create a new app
 ---
 
-import TerminalBlock from '~/components/plugins/TerminalBlock';
+import { Terminal } from '~/ui/components/Snippet';
 
-At this point we should have Expo CLI installed on our development machine and the Expo Go app on an iOS or Android physical device or emulator. If not, go back to the [Installation](../get-started/installation.md) guide before proceeding.
+At this point we should have Expo CLI installed on our development machine and the Expo Go app on an iOS or Android physical device or emulator. If not, go back to the [Installation](/get-started/installation.md) guide before proceeding.
 
 ## Initializing the project
 
-<TerminalBlock cmd={['# Create a project named my-app. Select the "blank" template when prompted', 'expo init my-app', '', '# Navigate to the project directory', 'cd my-app']} />
+<Terminal cmd={[
+  '# Create a project named my-app. Select the "blank" template when prompted',
+  '$ expo init my-app',
+  '',
+  '# Navigate to the project directory',
+  '$ cd my-app'
+]} cmdCopy="expo init my-app && cd my-app" />
 
 ## Starting the development server
 
-<TerminalBlock cmd={['expo start']} />
+<Terminal cmd={['$ expo start']} cmdCopy="expo start" />
 
 When you run `expo start` (or `npm start`), Expo CLI starts Metro Bundler, which is an HTTP server that compiles the JavaScript code of our app using [Babel](https://babeljs.io/) and serves it to the Expo app. It also pops up Expo Dev Tools, a graphical interface for Expo CLI.
 
@@ -44,7 +50,7 @@ If it still doesn't work, it may be due to the router configuration &mdash; this
 If you are using a simulator or emulator, you may find the following Expo CLI keyboard shortcuts to be useful:
 
 - Pressing `i` will open in an [iOS simulator](../workflow/ios-simulator.md).
-- Pressing `a` will open in an [Android emulator or connected device](../workflow/android-studio-emulator.md).
+- Pressing `a` will open in an [Android Emulator or connected device](../workflow/android-studio-emulator.md).
 - Pressing `w` will open in your browser. Expo supports all major browsers.
 
 </p>
@@ -62,7 +68,7 @@ Expo Go is configured by default to automatically reload the app whenever a file
 - First, make sure you have [development mode enabled in Expo CLI](../workflow/development-mode.md#development-mode).
 - Next, close the app and reopen it.
 - Once the app is open again, shake your device to reveal the developer menu. If you are using an emulator, press `⌘+d` for iOS or `ctrl+m` for Android.
-- If you see `Enable Fast Refresh`, press it. If you see `Disable Fast Refresh`, then dismiss the developer menu. Now try making another change.<br/><br/>
+- If you see `Enable Fast Refresh`, press it. If you see `Disable Fast Refresh`, then dismiss the developer menu. Now try making another change.
 
   ![In-app developer menu](/static/images/developer-menu.png)
 

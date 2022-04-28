@@ -543,10 +543,19 @@ ABI44_0_0RCT_EXTERN void ABI44_0_0EXRegisterScopedModule(Class, ...);
     }
     ABI44_0_0EX_ENSURE_STRONGIFY(self);
     auto reanimatedModule = ABI44_0_0reanimated::createReanimatedModule(bridge, bridge.jsCallInvoker);
+    auto workletRuntimeValue = runtime
+        .global()
+        .getProperty(runtime, "ArrayBuffer")
+        .asObject(runtime)
+        .asFunction(runtime)
+        .callAsConstructor(runtime, {static_cast<double>(sizeof(void*))});
+    uintptr_t* workletRuntimeData = reinterpret_cast<uintptr_t*>(
+        workletRuntimeValue.getObject(runtime).getArrayBuffer(runtime).data(runtime));
+    workletRuntimeData[0] = reinterpret_cast<uintptr_t>(reanimatedModule->runtime.get());
     runtime.global().setProperty(
         runtime,
         "_WORKLET_RUNTIME",
-        static_cast<double>(reinterpret_cast<std::uintptr_t>(reanimatedModule->runtime.get())));
+        workletRuntimeValue);
 
     runtime.global().setProperty(
          runtime,

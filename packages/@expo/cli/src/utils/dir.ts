@@ -13,3 +13,7 @@ export const ensureDirectoryAsync = (path: string) => fs.promises.mkdir(path, { 
 export const ensureDirectory = (path: string) => fs.mkdirSync(path, { recursive: true });
 
 export const copySync = fs.copySync;
+
+export const copyAsync = fs.copy;
+
+export const removeAsync = fs.remove;

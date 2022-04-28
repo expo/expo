@@ -109,6 +109,6 @@ describe(assertDuplicateArgs, () => {
   it(`asserts duplicate arguments`, () => {
     expect(() =>
       assertDuplicateArgs(['--device', '--bar', '--device'], [['--device', '-d']])
-    ).toThrowErrorMatchingSnapshot();
+    ).toThrowErrorMatchingInlineSnapshot(`"Can only provide one instance of --device or -d"`);
   });
 });

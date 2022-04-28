@@ -365,7 +365,7 @@ export abstract class BundlerDevServer {
     const runtime = this.isTargetingNative() ? (this.isDevClient ? 'custom' : 'expo') : 'web';
     if (runtime !== 'custom') {
       throw new CommandError(
-        `dev server cannot open custom runtimes either because it does not target native platforms or because it is not targetting dev clients. (target: ${runtime})`
+        `dev server cannot open custom runtimes either because it does not target native platforms or because it is not targeting dev clients. (target: ${runtime})`
       );
     }
 
