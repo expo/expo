@@ -71,7 +71,8 @@
     "invariant": "^2.2.4",
     "md5-file": "^3.2.3",
     "node-fetch": "^2.6.7",
-    "pretty-format": "^26.5.2"
+    "pretty-format": "^26.5.2",
+    "uuid": "^3.4.0"
   },
   "optionalDependencies": {
     "expo-error-recovery": "~3.1.0"
