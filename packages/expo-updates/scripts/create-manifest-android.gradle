@@ -3,7 +3,7 @@
 import org.apache.tools.ant.taskdefs.condition.Os
 import org.gradle.util.GradleVersion
 
-def expoUpdatesDir = ["node", "-e", "console.log(require('path').dirname(require.resolve('expo-updates/package.json')));"].execute([], projectDir).text.trim()
+def expoUpdatesDir = ['node', '-e', "console.log(require('path').dirname(require.resolve('expo-updates/package.json')));"].execute(null, projectDir).text.trim()
 
 // From a library project role to reference app project settings such as `targetName.toLowerCase().contains("release")`,
 // we extract the `appProject` from all projects here.
