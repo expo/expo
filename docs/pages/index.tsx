@@ -68,9 +68,15 @@ const Home = () => {
               minHeight: 250,
             }}>
             <div
+              css={baseGradientStyle}
+              style={{
+                background: `linear-gradient(${background.secondary} 15%, #21262d00 100%)`,
+              }}
+            />
+            <div
               css={{
                 position: 'relative',
-                zIndex: 10,
+                zIndex: 1,
               }}>
               <H2>
                 <QuickStartIcon /> Quick Start
@@ -82,12 +88,6 @@ const Home = () => {
                 cmdCopy="npm install --global expo-cli && expo init my-project"
               />
             </div>
-            <div
-              css={baseGradientStyle}
-              style={{
-                background: `linear-gradient(${background.secondary} 15%, #21262d00 100%)`,
-              }}
-            />
           </GridCell>
           <GridCell
             xl={8}
@@ -106,7 +106,7 @@ const Home = () => {
               }}
             />
             <DevicesImage />
-            <H2 style={{ color: palette.primary['900'], zIndex: 10, position: 'relative' }}>
+            <H2 style={{ color: palette.primary['900'], zIndex: 1, position: 'relative' }}>
               Create a universal Android, iOS,
               <br />
               and web photo sharing app

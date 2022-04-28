@@ -9,7 +9,7 @@ export const DevicesImage = () => (
       right: 0;
       bottom: 0;
       max-width: 60%;
-      z-index: 10;
+      z-index: 1;
       
       @media screen and (max-width: ${breakpoints.medium}px) {
         bottom: -16px;
