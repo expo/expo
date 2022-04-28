@@ -8,6 +8,7 @@
 
 ### 🐛 Bug fixes
 
+- Remove hanging `emulator` process on exit.
 - Fix bug where autocomplete prompts crash when escape characters are used. ([#17271](https://github.com/expo/expo/pull/17271) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
@@ -16,7 +17,6 @@
 
 ### 🐛 Bug fixes
 
-- Remove hanging `emulator` process on exit.
 - add missing `pretty-bytes` dependency. ([#17235](https://github.com/expo/expo/pull/17235) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 0.1.2 — 2022-04-27
