@@ -1,9 +1,11 @@
 import spawnAsync from '@expo/spawn-async';
 import { execFileSync } from 'child_process';
+import path from 'path';
 
 import * as Log from '../../../log';
 import { AbortCommandError } from '../../../utils/errors';
 import { installExitHooks } from '../../../utils/exit';
+import { resolveSdkRoot } from './AndroidSdk';
 
 const BEGINNING_OF_ADB_ERROR_MESSAGE = 'error: ';
 
@@ -17,11 +19,12 @@ export class ADBServer {
 
   /** Returns the command line reference to ADB. */
   getAdbExecutablePath(): string {
-    // https://developer.android.com/studio/command-line/variables
-    // TODO: Add ANDROID_SDK_ROOT support as well https://github.com/expo/expo/pull/16516#discussion_r820037917
-    if (process.env.ANDROID_HOME) {
-      return `${process.env.ANDROID_HOME}/platform-tools/adb`;
+    const sdkRoot = resolveSdkRoot();
+    if (sdkRoot) {
+      return path.join(sdkRoot, 'platform-tools', 'adb');
     }
+
+    Log.debug('No SDK found in ANDROID_HOME, ANDROID_SDK_ROOT, or default location. Falling back to global adb executable');
     return 'adb';
   }
 
