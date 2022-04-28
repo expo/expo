@@ -137,7 +137,9 @@ ABI45_0_0RCT_EXTERN void ABI45_0_0EXRegisterScopedModule(Class, ...);
 #if DEBUG || ABI45_0_0RCT_DEV
   if ([self _isDevModeEnabledForBridge:bridge]) {
     // Set the bundle url for the packager connection manually
-    [[ABI45_0_0RCTPackagerConnection sharedPackagerConnection] reconnect:[bridge bundleURL].absoluteString];
+    NSURL *bundleURL = [bridge bundleURL];
+    NSString *packagerServerHostPort = [NSString stringWithFormat:@"%@:%@", bundleURL.host, bundleURL.port];
+    [[ABI45_0_0RCTPackagerConnection sharedPackagerConnection] reconnect:packagerServerHostPort];
   }
 #endif
 
