@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 
-import { promptAsync } from '../../../utils/prompts';
+import { createSelectionFilter, promptAsync } from '../../../utils/prompts';
 import { getBestSimulatorAsync } from './getBestSimulator';
 import { Device } from './simctl';
 
@@ -52,10 +52,7 @@ async function promptAppleDeviceInternalAsync(devices: Device[]): Promise<string
         value: item.udid,
       };
     }),
-    suggest: (input: any, choices: any) => {
-      const regex = new RegExp(input, 'i');
-      return choices.filter((choice: any) => regex.test(choice.title));
-    },
+    suggest: createSelectionFilter(),
   });
 
   return value;

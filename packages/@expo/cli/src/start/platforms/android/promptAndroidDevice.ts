@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 
 import { AbortCommandError } from '../../../utils/errors';
-import { promptAsync } from '../../../utils/prompts';
+import { createSelectionFilter, promptAsync } from '../../../utils/prompts';
 import { Device, logUnauthorized } from './adb';
 
 function nameStyleForDevice(device: Device): (name: string) => string {
@@ -34,10 +34,7 @@ export async function promptForDeviceAsync(devices: Device[]): Promise<Device> {
         value: item.name,
       };
     }),
-    suggest: (input: any, choices: any) => {
-      const regex = new RegExp(input, 'i');
-      return choices.filter((choice: any) => regex.test(choice.title));
-    },
+    suggest: createSelectionFilter(),
   });
 
   const device = devices.find(({ name }) => name === value);

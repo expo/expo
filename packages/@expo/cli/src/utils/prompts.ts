@@ -133,3 +133,19 @@ export function resumeInteractions(options: Omit<InteractionOptions, 'pause'> = 
     listener({ pause: false, ...options });
   }
 }
+
+export function createSelectionFilter(): (input: any, choices: Choice[]) => Promise<any> {
+  function escapeRegex(string: string) {
+    return string.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
+  }
+
+  return async (input: any, choices: Choice[]) => {
+    try {
+      const regex = new RegExp(escapeRegex(input), 'i');
+      return choices.filter((choice: any) => regex.test(choice.title));
+    } catch (error: any) {
+      Log.debug('Error filtering choices', error);
+      return [];
+    }
+  };
+}
