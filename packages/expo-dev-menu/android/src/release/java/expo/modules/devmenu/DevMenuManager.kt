@@ -114,6 +114,10 @@ object DevMenuManager : DevMenuManagerInterface {
     throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
   }
 
+  fun loadFonts(applicationContext: ReactApplicationContext) {
+    throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
+  }
+
   override val coroutineScope: CoroutineScope
     get() = throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
 }

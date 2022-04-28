@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix `unresolved reference: loadFonts` in the release build on Android.
+
 ### 💡 Others
 
 ## 0.10.4 — 2022-04-26
