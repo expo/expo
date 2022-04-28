@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix `unresolved reference: loadFonts` in the release build on Android.
+- Fix `unresolved reference: loadFonts` in the release build on Android. ([#17241](https://github.com/expo/expo/pull/17241) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 
