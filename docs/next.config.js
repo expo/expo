@@ -104,24 +104,18 @@ module.exports = {
     }
     const pathMap = Object.assign(
       ...Object.entries(defaultPathMap).map(([pathname, page]) => {
-        if (pathname.match(/\/v[1-9][^/]*$/)) {
-          // ends in "/v<version>"
-          pathname += '/index.html'; // TODO: find out why we need to do this
-        }
         if (pathname.match(/unversioned/)) {
+          // Remove unversioned pages from the exported site
           return {};
         } else {
-          // hide versions greater than the package.json version number
+          // Remove newer unreleased versions from the exported side
           const versionMatch = pathname.match(/\/v(\d\d\.\d\.\d)\//);
-          if (
-            versionMatch &&
-            versionMatch[1] &&
-            semver.gt(versionMatch[1], betaVersion || version)
-          ) {
+          if (versionMatch?.[1] && semver.gt(versionMatch[1], betaVersion || version)) {
             return {};
           }
-          return { [pathname]: page };
         }
+
+        return { [pathname]: page };
       })
     );
 
