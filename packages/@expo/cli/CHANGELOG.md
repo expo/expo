@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- add missing `pretty-bytes` dependency.
+- add missing `pretty-bytes` dependency. ([#17235](https://github.com/expo/expo/pull/17235) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 
