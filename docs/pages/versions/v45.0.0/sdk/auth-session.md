@@ -9,7 +9,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 import {APIInstallSection} from '~/components/plugins/InstallSection';
 
 import { SocialGrid, SocialGridItem, CreateAppButton } from '~/components/plugins/AuthSessionElements';
-import TerminalBlock from '~/components/plugins/TerminalBlock';
+import { Terminal } from '~/ui/components/Snippet';
 import SnackInline from '~/components/plugins/SnackInline';
 import { InlineCode } from '~/components/base/code';
 
@@ -29,25 +29,25 @@ In **bare-workflow** you can use the [`uri-scheme` package][n-uri-scheme] to eas
 
 To make your native app handle `mycoolredirect://` simply run:
 
-<TerminalBlock cmd={['npx uri-scheme add mycoolredirect']} />
+<Terminal cmd={['$ npx uri-scheme add mycoolredirect']} cmdCopy="npx uri-scheme add mycoolredirect" />
 
 <br />
 
 You should now be able to see a list of all your project's schemes by running:
 
-<TerminalBlock cmd={['npx uri-scheme list']} />
+<Terminal cmd={['$ npx uri-scheme list']} cmdCopy="npx uri-scheme list" />
 
 <br />
 
 You can test it to ensure it works like this:
 
-<TerminalBlock cmd={[
-'# Rebuild the native apps, be sure to use an emulator',
-'yarn ios',
-'yarn android',
+<Terminal cmd={[
+'# Rebuild the native apps, be sure to use an emulated device',
+'$ yarn ios',
+'$ yarn android',
 '',
 '# Open a URI scheme',
-'npx uri-scheme open mycoolredirect://some/redirect'
+'$ npx uri-scheme open mycoolredirect://some/redirect'
 ]} />
 
 ### Usage in standalone apps
