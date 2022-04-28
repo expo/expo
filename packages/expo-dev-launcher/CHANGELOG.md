@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix crash on initial deep link ([#17268](https://github.com/expo/expo/pull/17268) by [@ajsmth](https://github.com/ajsmth))
+
 ### 💡 Others
 
 ## 0.11.3 — 2022-04-26
