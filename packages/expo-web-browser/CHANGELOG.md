@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix popup being blocked by Safari. ([#17222](https://github.com/expo/expo/pull/17222) by [@sreuter](https://github.com/sreuter))
+- On Web fix popup being blocked by Safari. ([#17222](https://github.com/expo/expo/pull/17222) by [@sreuter](https://github.com/sreuter))
 
 ### 💡 Others
 
