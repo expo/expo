@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix remote debugging crashing the application on iOS.
+
 ### 💡 Others
 
 ## 0.11.3 — 2022-04-26
