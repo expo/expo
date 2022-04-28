@@ -26,25 +26,28 @@ jobs:
   build:
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v3
+      - name: 👀 Checkout
+        uses: actions/checkout@v3
         with:
           submodules: true
-      - uses: actions/setup-node@v3
+      - name: ⬢ Setup Node
+        uses: actions/setup-node@v3
         with:
           node-version: '14.17'
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-      - uses: actions/cache@v2
+      - name: ♻️ Restore caches
+        uses: ./.github/actions/expo-caches
+        id: expo-caches
         with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-      - run: yarn install --frozen-lockfile
-      - run: yarn tsc
+          yarn-workspace: 'true'
+          yarn-tools: 'true'
+      - name: 🧶 Install workspace node modules
+        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
+        run: yarn install --frozen-lockfile
+      - name: 🛠 Compile NCL sources
+        run: yarn tsc
         working-directory: apps/native-component-list
-      - run: yarn lint --max-warnings 0
+      - name: 🚨 Lint NCL app
+        run: yarn lint --max-warnings 0
         working-directory: apps/native-component-list
       - name: 🔔 Notify on Slack
         uses: 8398a7/action-slack@v3

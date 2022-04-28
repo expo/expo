@@ -50,50 +50,26 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '11'
-      - name: ♻️ Restore workspace node modules
-        uses: actions/cache@v2
-        id: node-modules-cache
-        with:
-          path: |
-            # See "workspaces" → "packages" in the root package.json for the source of truth of
-            # which node_modules are affected by the root yarn.lock
-            node_modules
-            apps/*/node_modules
-            home/node_modules
-            packages/*/node_modules
-            packages/@expo/*/node_modules
-            react-native-lab/react-native/node_modules
-          key: ${{ runner.os }}-modules-${{ hashFiles('yarn.lock') }}
-      - run: echo "$(pwd)/bin" >> $GITHUB_PATH
-      - name: ♻️ Restore node modules in tools
-        uses: actions/cache@v2
-        with:
-          path: tools/node_modules
-          key: ${{ runner.os }}-tools-modules-${{ hashFiles('tools/yarn.lock') }}
-      - name: 🧶 Yarn install
-        run: yarn install --frozen-lockfile
       - name: 💎 Setup Ruby and install gems
         uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
-      - name: 🐙 Install git-crypt
-        run: sudo apt-get install git-crypt
-      - name: 🔓 Decrypt secrets if possible
-        env:
-          GIT_CRYPT_KEY_BASE64: ${{ secrets.GIT_CRYPT_KEY_BASE64 }}
-        run: |
-          if [ -z "${GIT_CRYPT_KEY_BASE64}" ]; then
-            echo 'git-crypt key not present in environment'
-          else
-            git crypt unlock <(echo $GIT_CRYPT_KEY_BASE64 | base64 --decode)
-          fi
-      - name: ♻️ Restore Gradle caches
-        uses: actions/cache@v2
+      - name: ♻️ Restore caches
+        uses: ./.github/actions/expo-caches
+        id: expo-caches
         with:
-          path: ~/.gradle/caches
-          key: ${{ runner.os }}-gradle-${{ hashFiles('android/*.gradle*') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
+          yarn-workspace: 'true'
+          yarn-tools: 'true'
+          gradle: 'true'
+      - name: ➕ Add `bin` to GITHUB_PATH
+        run: echo "$(pwd)/bin" >> $GITHUB_PATH
+      - name: 🧶 Yarn install
+        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
+        run: yarn install --frozen-lockfile
+      - name: 🔓 Decrypt secrets if possible
+        uses: ./.github/actions/expo-git-decrypt
+        with:
+          key: ${{ secrets.GIT_CRYPT_KEY_BASE64 }}
       - name: 🔎 Check which flavor to build
         id: flavor
         uses: dorny/paths-filter@v2
@@ -128,13 +104,13 @@ jobs:
           echo "Building with $FLAVOR flavor"
           if [ -z "$ANDROID_KEYSTORE_B64" ]; then
             echo "External build detected, APK will not be signed"
-            bin/fastlane android build build_type:$BUILD_TYPE flavor:$FLAVOR sign:false
+            fastlane android build build_type:$BUILD_TYPE flavor:$FLAVOR sign:false
           else
             echo "Internal build detected, APK will be signed"
             echo $ANDROID_KEYSTORE_B64 | base64 -d > android/app/release-key.jks
-            bin/fastlane android build build_type:$BUILD_TYPE flavor:$FLAVOR aab:$IS_APP_BUNDLE
+            fastlane android build build_type:$BUILD_TYPE flavor:$FLAVOR aab:$IS_APP_BUNDLE
           fi
-      - name: 💾 Upload APK artifact
+      - name: 📤 Upload APK artifact
         uses: actions/upload-artifact@v3
         with:
           name: android-apk
@@ -147,7 +123,7 @@ jobs:
           path: ~/.gradle/daemon
       - name: 📤 Upload APK to S3 and update staging versions endpoint
         if: ${{ github.event.inputs.releaseAPK == 'release-apk' }}
-        run: bin/expotools client-build --platform android --release
+        run: expotools client-build --platform android --release
         env:
           AWS_ACCESS_KEY_ID: AKIAJ3SWUQ4QLNQC7FXA
           AWS_SECRET_ACCESS_KEY: ${{ secrets.android_client_build_aws_secret_key }}
@@ -155,7 +131,7 @@ jobs:
           EXPO_VERSIONS_SECRET: ${{ secrets.expo_versions_secret }}
       - name: 📤 Upload APK to Google Play and release to production
         if: ${{ github.event.inputs.releaseGooglePlay == 'release-google-play' }}
-        run: bin/fastlane android prod_release
+        run: fastlane android prod_release
         env:
           SUPPLY_JSON_KEY_DATA: ${{ secrets.SUPPLY_JSON_KEY_DATA }}
       - name: 🔔 Notify on Slack

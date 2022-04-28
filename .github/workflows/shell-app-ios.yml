@@ -7,7 +7,7 @@ on:
         description: 'type "upload" to confirm upload to S3'
         required: false
   schedule:
-    - cron: '20 5 * * 2,4,6'
+    - cron: '20 5 * * 2,4,6' # 5:20 AM UTC time on every Tuesday, Thursday and Saturday
   pull_request:
     paths:
       - .github/workflows/shell-app-ios.yml
@@ -22,40 +22,29 @@ jobs:
   build:
     runs-on: macos-11
     steps:
-      - uses: actions/checkout@v3
+      - name: 👀 Checkout
+        uses: actions/checkout@v3
         with:
           submodules: true
       - name: 🔨 Switch to Xcode 13.0
         run: sudo xcode-select --switch /Applications/Xcode_13.0.app
-      - name: 🍺 Setup
-        run: |
-          echo "$(pwd)/bin" >> $GITHUB_PATH
-          echo "EXPO_ROOT_DIR=$(pwd)" >> $GITHUB_ENV
+      - name: ➕ Add `EXPO_ROOT_DIR` to GITHUB_ENV
+        run: echo "EXPO_ROOT_DIR=$(pwd)" >> $GITHUB_ENV
+      - name: ➕ Add `bin` to GITHUB_PATH
+        run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: 💎 Setup Ruby and install gems
         uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
-      - name: ♻️ Restore workspace node modules
-        uses: actions/cache@v2
-        id: node-modules-cache
+      - name: ♻️ Restore caches
+        uses: ./.github/actions/expo-caches
+        id: expo-caches
         with:
-          path: |
-            # See "workspaces" → "packages" in the root package.json for the source of truth of
-            # which node_modules are affected by the root yarn.lock
-            node_modules
-            apps/*/node_modules
-            home/node_modules
-            packages/*/node_modules
-            packages/@expo/*/node_modules
-            react-native-lab/react-native/node_modules
-          key: ${{ runner.os }}-modules-${{ hashFiles('yarn.lock') }}
+          yarn-workspace: 'true'
+          yarn-tools: 'true'
       - name: 🧶 Yarn install
+        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
-      - name: ♻️ Restore tools/node_modules from cache
-        uses: actions/cache@v2
-        with:
-          path: 'tools/node_modules'
-          key: ${{ runner.os }}-modules-${{ hashFiles('tools/yarn.lock') }}
       - name: 🍏 Generate dynamic macros
         run: expotools ios-generate-dynamic-macros
       - name: 📦 Build iOS shell app for real devices
