@@ -1,21 +1,39 @@
 import { IOSConfig } from '@expo/config-plugins';
 import chalk from 'chalk';
+import path from 'path';
 
 import * as Log from '../../../log';
 import { CommandError } from '../../../utils/errors';
+import { profile } from '../../../utils/profile';
 import { selectAsync } from '../../../utils/prompts';
-import { XcodeConfiguration } from '../XcodeBuild.types';
+import { Options, ProjectInfo, XcodeConfiguration } from '../XcodeBuild.types';
+
+type NativeSchemeProps = {
+  name: string;
+  osType?: string;
+};
+
+export async function resolveNativeSchemePropsAsync(
+  projectRoot: string,
+  options: Pick<Options, 'scheme' | 'configuration'>,
+  xcodeProject: ProjectInfo
+): Promise<NativeSchemeProps> {
+  return (
+    (await promptOrQueryNativeSchemeAsync(projectRoot, options)) ??
+    getDefaultNativeScheme(projectRoot, options, xcodeProject)
+  );
+}
 
 /** Resolve the native iOS build `scheme` for a given `configuration`. If the `scheme` isn't provided then the user will be prompted to select one. */
-export async function resolveNativeSchemeAsync(
+export async function promptOrQueryNativeSchemeAsync(
   projectRoot: string,
   { scheme, configuration }: { scheme?: string | boolean; configuration?: XcodeConfiguration }
-): Promise<{ name: string; osType?: string } | null> {
+): Promise<NativeSchemeProps | null> {
   const schemes = IOSConfig.BuildScheme.getRunnableSchemesFromXcodeproj(projectRoot, {
     configuration,
   });
   if (!schemes.length) {
-    throw new CommandError('BAD_ARGS', 'No native iOS build schemes found');
+    throw new CommandError('IOS_MALFORMED', 'No native iOS build schemes found');
   }
 
   if (scheme === true) {
@@ -43,4 +61,28 @@ export async function resolveNativeSchemeAsync(
   }
   // Attempt to match the schemes up so we can open the correct simulator
   return scheme ? schemes.find(({ name }) => name === scheme) || { name: scheme } : null;
+}
+
+export function getDefaultNativeScheme(
+  projectRoot: string,
+  options: Pick<Options, 'configuration'>,
+  xcodeProject: ProjectInfo
+): NativeSchemeProps {
+  // If the resolution failed then we should just use the first runnable scheme that
+  // matches the provided configuration.
+  const resolvedScheme = profile(IOSConfig.BuildScheme.getRunnableSchemesFromXcodeproj)(
+    projectRoot,
+    {
+      configuration: options.configuration,
+    }
+  )[0];
+
+  // If we couldn't find the scheme, then we'll guess at it,
+  // this is needed for cases where the native code hasn't been generated yet.
+  if (resolvedScheme) {
+    return resolvedScheme;
+  }
+  return {
+    name: path.basename(xcodeProject.name, path.extname(xcodeProject.name)),
+  };
 }

@@ -82,6 +82,7 @@ export class PlatformManager<
         .map(([k, v]) => `${k}: ${v}`)
         .join(', ')})`
     );
+
     let url = this.props.getCustomRuntimeUrl({ scheme: props.scheme });
     // TODO: It's unclear why we do application id validation when opening with a URL
     const applicationId = props.applicationId ?? (await this._getAppIdResolver().getAppIdAsync());

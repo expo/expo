@@ -33,12 +33,6 @@ export function assertArgs(schema: arg.Spec, argv?: string[]): arg.Result<arg.Sp
   return assertWithOptionsArgs(schema, { argv });
 }
 
-export function isBoolOrString(value: any, argName: string, previousValue: any) {
-  console.log('do:', value, argName, previousValue);
-  /* `value` is always `true` */
-  return 'na ' + (previousValue || 'batman!');
-}
-
 export function assertWithOptionsArgs(
   schema: arg.Spec,
   options: arg.Options

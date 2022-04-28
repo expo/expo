@@ -2,7 +2,7 @@ import chalk from 'chalk';
 
 import * as Log from '../../../../log';
 import { selectAsync } from '../../../../utils/prompts';
-import * as Security from '../../Security';
+import * as Security from '../Security';
 import {
   resolveCertificateSigningIdentityAsync,
   selectDevelopmentTeamAsync,
@@ -15,7 +15,9 @@ const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T
   fn as jest.MockedFunction<T>;
 
 jest.mock('../../../../utils/env', () => ({
-  CI: false,
+  env: {
+    CI: false,
+  },
 }));
 
 jest.mock('../settings', () => ({
@@ -23,7 +25,7 @@ jest.mock('../settings', () => ({
   setLastDeveloperCodeSigningIdAsync: jest.fn(),
 }));
 
-jest.mock('../../Security', () => ({
+jest.mock('../Security', () => ({
   resolveCertificateSigningInfoAsync: jest.fn(),
   resolveIdentitiesAsync: jest.fn(),
 }));

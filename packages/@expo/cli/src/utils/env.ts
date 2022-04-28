@@ -5,10 +5,6 @@ import { boolish, int, string } from 'getenv';
 // TODO: EXPO_CLI_USERNAME, EXPO_CLI_PASSWORD
 
 class Env {
-  /** Is running in non-interactive CI mode */
-  get CI() {
-    return boolish('CI', false);
-  }
   /** Enable profiling metrics */
   get EXPO_PROFILE() {
     return boolish('EXPO_PROFILE', false);
@@ -32,6 +28,11 @@ class Env {
   /** Enable local API environment */
   get EXPO_LOCAL() {
     return boolish('EXPO_LOCAL', false);
+  }
+
+  /** Is running in non-interactive CI mode */
+  get CI() {
+    return boolish('CI', false);
   }
 
   /** Disable telemetry (analytics) */

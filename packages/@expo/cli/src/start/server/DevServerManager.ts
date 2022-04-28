@@ -121,9 +121,7 @@ export class DevServerManager {
     for (const { type, options } of startOptions) {
       const BundlerDevServerClass = await BUNDLERS[type]();
       const server = new BundlerDevServerClass(this.projectRoot, !!options?.devClient);
-
       await server.startAsync(options ?? this.options);
-
       devServers.push(server);
     }
 

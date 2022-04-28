@@ -20,5 +20,8 @@ export async function ensureNativeProjectAsync(
       install: !!install,
       platforms: [platform],
     });
+  } else {
+    return true;
   }
+  return false;
 }

@@ -2,6 +2,7 @@ import chalk from 'chalk';
 import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
 import path from 'path';
 import wrapAnsi from 'wrap-ansi';
+import { EOL } from 'os';
 
 import * as Log from '../../../log';
 import { CommandError } from '../../../utils/errors';
@@ -141,12 +142,23 @@ export class SimulatorLogStreamer {
     ]);
 
     this.childProcess.stdout.on('data', (data: Buffer) => {
-      const simLog = parseMessageJson(data);
-      if (!simLog) {
-        return;
-      }
+      // Sometimes more than one chunk comes at a time, here we split by system newline,
+      // then trim and filter.
+      const strings = data
+        .toString()
+        .split(EOL)
+        .map((value) => value.trim())
+        // This filters out the first log which says something like:
+        // Filtering the log data using "process BEGINSWITH[cd] "my-app" AND type == 1024"
+        .filter((value) => value.startsWith('{'));
 
-      onMessage(simLog);
+      strings.forEach((str) => {
+        const simLog = parseMessageJson(str);
+        if (!simLog) {
+          return;
+        }
+        onMessage(simLog);
+      });
     });
 
     this.childProcess.on('error', ({ message }) => {
@@ -174,7 +186,7 @@ export class SimulatorLogStreamer {
   }
 }
 
-function parseMessageJson(data: Buffer) {
+function parseMessageJson(data: string) {
   const stringData = data.toString();
   try {
     return JSON.parse(stringData) as SimControlLog;

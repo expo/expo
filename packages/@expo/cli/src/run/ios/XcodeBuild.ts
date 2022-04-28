@@ -7,8 +7,9 @@ import path from 'path';
 
 import * as Log from '../../log';
 import { ensureDirectory } from '../../utils/dir';
-import { EXPO_DEBUG } from '../../utils/env';
+import { env } from '../../utils/env';
 import { AbortCommandError, CommandError } from '../../utils/errors';
+import { getUserTerminal } from '../../utils/terminal';
 import { BuildProps, ProjectInfo } from './XcodeBuild.types';
 import { ensureDeviceIsCodeSignedForDeploymentAsync } from './codeSigning/configureCodeSigning';
 
@@ -237,7 +238,7 @@ async function spawnXcodeBuildWithFormat(
 
   const formatter = ExpoRunFormatter.create(projectRoot, {
     xcodeProject,
-    isDebug: EXPO_DEBUG,
+    isDebug: env.EXPO_DEBUG,
   });
 
   const results = await spawnXcodeBuildWithFlush(args, options, {
@@ -269,11 +270,16 @@ async function spawnXcodeBuildWithFormat(
 export async function buildAsync(props: BuildProps): Promise<string> {
   const args = await getXcodeBuildArgsAsync(props);
 
-  const { projectRoot, xcodeProject, shouldSkipInitialBundling, terminal, port } = props;
+  const { projectRoot, xcodeProject, shouldSkipInitialBundling, port } = props;
 
   const { code, results, formatter, error } = await spawnXcodeBuildWithFormat(
     args,
-    getProcessOptions({ packager: false, shouldSkipInitialBundling, terminal, port }),
+    getProcessOptions({
+      packager: false,
+      terminal: getUserTerminal(),
+      shouldSkipInitialBundling,
+      port,
+    }),
     {
       projectRoot,
       xcodeProject,

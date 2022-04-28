@@ -1,3 +1,5 @@
+import { BundlerProps } from '../resolveBundlerProps';
+
 export type XcodeConfiguration = 'Debug' | 'Release';
 
 export type Options = {
@@ -14,7 +16,7 @@ export type Options = {
   /** Should install missing dependencies before building. */
   install?: boolean;
   /** Should use derived data for builds. */
-  buildCache: boolean;
+  buildCache?: boolean;
 };
 
 export type ProjectInfo = {
@@ -32,12 +34,7 @@ export type BuildProps = {
   configuration: XcodeConfiguration;
   /** Disable the initial bundling from the native script. */
   shouldSkipInitialBundling: boolean;
-  /** Skip opening the bundler from the native script. */
-  shouldStartBundler: boolean;
   /** Should use derived data for builds. */
   buildCache: boolean;
-  terminal?: string;
-  /** Port to start the dev server. */
-  port: number;
   scheme: string;
-};
+} & BundlerProps;

@@ -4,8 +4,7 @@ import chalk from 'chalk';
 import path from 'path';
 
 import { Command } from '../../../bin/cli';
-import * as Log from '../../log';
-import { assertWithOptionsArgs } from '../../utils/args';
+import { assertWithOptionsArgs, printHelp } from '../../utils/args';
 import { logCmdError } from '../../utils/errors';
 import { resolveStringOrBooleanArgsAsync } from '../../utils/resolveArgs';
 import { XcodeConfiguration } from './XcodeBuild.types';
@@ -35,25 +34,25 @@ export const expoRunIos: Command = async (argv) => {
   // '--scheme': String,
 
   if (args['--help']) {
-    Log.exit(
-      chalk`
-      {bold Description}
-        Run the iOS app binary locally
-
-      {bold Usage}
-        $ npx expo run:ios
-
-      Options 
-        --no-build-cache                 Clear the native derived data before building
-        --no-install                     Skip installing dependencies
-        --no-bundler                     Skip starting the Metro bundler
-        --scheme [scheme]                Scheme to build
-        --configuration <configuration>  Xcode configuration to use. Debug or Release. Default: Debug
-        -d, --device [device]            Device name or UDID to build the app on
-        -p, --port <port>                Port to start the Metro bundler on. Default: 8081
-        -h, --help                       Output usage information
-    `,
-      0
+    printHelp(
+      `Run the iOS app binary locally`,
+      `npx expo run:ios`,
+      [
+        `--no-build-cache                 Clear the native derived data before building`,
+        `--no-install                     Skip installing dependencies`,
+        `--no-bundler                     Skip starting the Metro bundler`,
+        `--scheme [scheme]                Scheme to build`,
+        chalk`--configuration <configuration>  Xcode configuration to use. Debug or Release. {dim Default: Debug}`,
+        `-d, --device [device]            Device name or UDID to build the app on`,
+        chalk`-p, --port <port>                Port to start the Metro bundler on. {dim Default: 8081}`,
+        `-h, --help                       Usage info`,
+      ].join('\n'),
+      [
+        '',
+        chalk`  Build for production (unsigned) with the {bold Release} configuration:`,
+        chalk`    {dim $} npx expo run:ios --configuration Release`,
+        '',
+      ].join('\n')
     );
   }
 

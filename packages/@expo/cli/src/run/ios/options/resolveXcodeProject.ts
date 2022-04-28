@@ -16,6 +16,7 @@ function findXcodeProjectPaths(
   });
 }
 
+/** Return the path and type of Xcode project in the given folder. */
 export function resolveXcodeProject(projectRoot: string): ProjectInfo {
   let paths = findXcodeProjectPaths(projectRoot, 'xcworkspace');
   if (paths.length) {
@@ -31,5 +32,8 @@ export function resolveXcodeProject(projectRoot: string): ProjectInfo {
   if (paths.length) {
     return { name: paths[0], isWorkspace: false };
   }
-  throw new CommandError('BAD_ARGS', `Xcode project not found in project: ${projectRoot}`);
+  throw new CommandError(
+    'IOS_MALFORMED',
+    `Xcode project not found in project: ${projectRoot}. You can generate a project with \`npx expo prebuild\``
+  );
 }

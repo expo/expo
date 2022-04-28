@@ -6,16 +6,43 @@ import { XcodeDeveloperDiskImagePrerequisite } from '../../../start/doctor/apple
 import { delayAsync } from '../../../utils/delay';
 import { CommandError } from '../../../utils/errors';
 import { installExitHooks } from '../../../utils/exit';
+import { ClientManager } from './ClientManager';
 import { IPLookupResult, OnInstallProgressCallback } from './client/InstallationProxyClient';
 import { DeviceValues, LockdowndClient } from './client/LockdowndClient';
 import { UsbmuxdClient } from './client/UsbmuxdClient';
-import { ClientManager } from './ClientManager';
 import { AFC_STATUS, AFCError } from './protocol/AFCProtocol';
 
 const debug = Debug('expo:apple-device');
 
+// NOTE(EvanBacon): I have a feeling this shape will change with new iOS versions (tested against iOS 15).
+export interface ConnectedDevice {
+  /** @example `00008101-001964A22629003A` */
+  udid: string;
+  /** @example `Evan's phone` */
+  name: string;
+  /** @example `iPhone13,4` */
+  model: string;
+  /** @example `device` */
+  deviceType: 'device' | 'catalyst';
+  /** @example `15.4.1` */
+  osVersion: string;
+}
+
+export async function getConnectedDevicesAsync(): Promise<ConnectedDevice[]> {
+  const results = await getConnectedDeviceValuesAsync();
+  // TODO: Add support for osType (ipad, watchos, etc)
+  return results.map((device) => ({
+    // TODO: Better name
+    name: device.DeviceName ?? device.ProductType ?? 'unknown ios device',
+    model: device.ProductType,
+    osVersion: device.ProductVersion,
+    deviceType: 'device',
+    udid: device.UniqueDeviceID,
+  }));
+}
+
 /** @returns a list of physically connected Apple devices. */
-export async function getConnectedDevices(): Promise<DeviceValues[]> {
+export async function getConnectedDeviceValuesAsync(): Promise<DeviceValues[]> {
   const client = new UsbmuxdClient(UsbmuxdClient.connectUsbmuxdSocket());
   const devices = await client.getDevices();
   client.socket.end();
