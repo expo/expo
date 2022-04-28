@@ -86,11 +86,6 @@ export default {
         if (!Platform.isDOMAvailable)
             return { type: WebBrowserResultType.CANCEL };
         redirectUrl = redirectUrl ?? getRedirectUrlFromUrlOrGenerate(url);
-        const state = await getStateFromUrlOrGenerateAsync(url);
-        // Save handle for session
-        window.localStorage.setItem(getHandle(), state);
-        // Save redirect Url for further verification
-        window.localStorage.setItem(getRedirectUrlHandle(state), redirectUrl);
         if (popupWindow == null || popupWindow?.closed) {
             const features = getPopupFeaturesString(openOptions?.windowFeatures);
             popupWindow = window.open(url, openOptions?.windowName, features);
@@ -104,6 +99,11 @@ export default {
                 throw new CodedError('ERR_WEB_BROWSER_BLOCKED', 'Popup window was blocked by the browser or failed to open. This can happen in mobile browsers when the window.open() method was invoked too long after a user input was fired.');
             }
         }
+        const state = await getStateFromUrlOrGenerateAsync(url);
+        // Save handle for session
+        window.localStorage.setItem(getHandle(), state);
+        // Save redirect Url for further verification
+        window.localStorage.setItem(getRedirectUrlHandle(state), redirectUrl);
         return new Promise(async (resolve) => {
             // Create a listener for messages sent from the popup
             const listener = (event) => {
