@@ -9,6 +9,8 @@ import {
 } from './Clipboard.types';
 import ExpoClipboard from './ExpoClipboard';
 
+// dummy again, revert me
+
 const emitter = new EventEmitter(ExpoClipboard);
 
 const onClipboardEventName = 'onClipboardChanged';
