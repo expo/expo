@@ -1,6 +1,6 @@
 {
   "name": "expo",
-  "version": "45.0.0-beta.7",
+  "version": "45.0.0-beta.9",
   "description": "The Expo SDK",
   "main": "build/Expo.js",
   "module": "build/Expo.js",
@@ -54,7 +54,7 @@
   "homepage": "https://github.com/expo/expo/tree/main/packages/expo",
   "dependencies": {
     "@babel/runtime": "^7.14.0",
-    "@expo/cli": "0.1.1",
+    "@expo/cli": "0.1.3",
     "@expo/vector-icons": "^13.0.0",
     "babel-preset-expo": "~9.1.0",
     "cross-spawn": "^6.0.5",
@@ -71,7 +71,8 @@
     "invariant": "^2.2.4",
     "md5-file": "^3.2.3",
     "node-fetch": "^2.6.7",
-    "pretty-format": "^26.5.2"
+    "pretty-format": "^26.5.2",
+    "uuid": "^3.4.0"
   },
   "optionalDependencies": {
     "expo-error-recovery": "~3.1.0"

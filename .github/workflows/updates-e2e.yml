@@ -36,38 +36,35 @@ jobs:
     env:
       UPDATES_HOST: 10.0.2.2 # special IP that Android emulators map to host machine's localhost
       UPDATES_PORT: 4747
+    strategy:
+      matrix:
+        api-level: [ 29 ]
     steps:
+      - name: 👀 Checkout
+        uses: actions/checkout@v3
       - name: ⬢ Setup Node
         uses: actions/setup-node@v3
         with:
           node-version: '14.17'
-      - name: Check out repository
-        uses: actions/checkout@v3
-        with:
-          submodules: false
       - name: 🔨 Use JDK 11
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: '11'
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-      - uses: actions/cache@v2
+      - name: ➕ Add `bin` to GITHUB_PATH
+        run: echo "$(yarn global bin)" >> $GITHUB_PATH
+      - name: ♻️ Restore caches
+        uses: ./.github/actions/expo-caches
+        id: expo-caches
         with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-      - run: yarn install --frozen-lockfile
-      - uses: actions/cache@v2
-        with:
-          path: ~/.gradle/caches
-          key: ${{ runner.os }}-gradle-${{ hashFiles('android/*.gradle*') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
-      - run: yarn global add expo-cli
-      - run: echo "$(yarn global bin)" >> $GITHUB_PATH
+          yarn-workspace: 'true'
+          avd: 'true'
+          avd-api: ${{ matrix.api-level }}
+      - name: 🧶 Yarn install
+        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
+        run: yarn install --frozen-lockfile
+      - name: 🔧 Install Expo CLI
+        run: yarn global add expo-cli
       - name: Init new expo app
         working-directory: ../
         run: expo-cli init updates-e2e --yes
@@ -104,7 +101,7 @@ jobs:
         run: echo "{\"name\":\"updates-e2e\",\"runtimeVersion\":\"1.0.0\",\"plugins\":[\"expo-updates\"],\"android\":{\"package\":\"dev.expo.updatese2e\"},\"ios\":{\"bundleIdentifier\":\"dev.expo.updatese2e\"},\"updates\":{\"url\":\"http://$UPDATES_HOST:$UPDATES_PORT/update\"}}" > app.config.json
       - name: Pack latest bare-minimum template as tarball for expo prebuild
         working-directory: templates/expo-template-bare-minimum
-        run: npm pack --pack-destination ../../../updates-e2e/
+        run: echo "$PWD" && npm pack --pack-destination ../../../updates-e2e/
       - name: Prebuild
         working-directory: ../updates-e2e
         run: expo-cli prebuild --template expo-template-bare-minimum-*.tgz
@@ -135,15 +132,17 @@ jobs:
         id: test-update-dist-path
         working-directory: ../updates-e2e/dist
         run: echo "::set-output name=dir::$(pwd)"
-      - name: Run tests
+      - name: 🧪 Run tests
         env:
           TEST_APK_PATH: '${{ steps.test-apk-path.outputs.dir }}/app-release.apk'
           TEST_UPDATE_DIST_PATH: '${{ steps.test-update-dist-path.outputs.dir }}'
         timeout-minutes: 30
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 29
-          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -no-snapshot-save
+          api-level: ${{ matrix.api-level }}
+          avd-name: avd-${{ matrix.api-level }}
+          arch: x86_64
+          force-avd-creation: false
           script: yarn test --config e2e/jest.config.android.js
           working-directory: packages/expo-updates
 
@@ -154,25 +153,22 @@ jobs:
       UPDATES_HOST: localhost
       UPDATES_PORT: 4747
     steps:
-      - uses: actions/checkout@v3
-        with:
-          submodules: false
+      - name: 👀 Checkout
+        uses: actions/checkout@v3
       - name: 🔨 Switch to Xcode 13.0
         run: sudo xcode-select --switch /Applications/Xcode_13.0.app
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-      - name: ♻️ Restore yarn cache
-        uses: actions/cache@v2
+      - name: ➕ Add `bin` to GITHUB_PATH
+        run: echo "$(yarn global bin)" >> $GITHUB_PATH
+      - name: ♻️ Restore caches
+        uses: ./.github/actions/expo-caches
+        id: expo-caches
         with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
+          yarn-workspace: 'true'
       - name: 🧶 Yarn install
+        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
-      - run: yarn global add expo-cli
-      - run: echo "$(yarn global bin)" >> $GITHUB_PATH
+      - name: 🔧 Install Expo CLI
+        run: yarn global add expo-cli
       - name: Init new expo app
         working-directory: ../
         run: expo-cli init updates-e2e --yes
@@ -258,7 +254,7 @@ jobs:
           xcrun simctl list devices -j \
           | jq -rc '[ .[] | .[] | .[] | select( .name | contains( "iPhone" ) ) | select( .isAvailable == true ) ] | last.udid ' \
           | xargs open -a Simulator --args -CurrentDeviceUDID
-      - name: Run tests
+      - name: 🧪 Run tests
         env:
           TEST_APP_PATH: '${{ steps.test-app-path.outputs.dir }}/updatese2e.app'
           TEST_UPDATE_DIST_PATH: '${{ steps.test-update-dist-path.outputs.dir }}'

@@ -1949,7 +1949,7 @@ PODS:
     - ExpoModulesCore
   - EXPermissions (13.2.0):
     - ExpoModulesCore
-  - Expo (45.0.0-beta.7):
+  - Expo (45.0.0-beta.9):
     - ExpoModulesCore
   - ExpoCellular (4.2.0):
     - ExpoModulesCore
@@ -2007,7 +2007,7 @@ PODS:
     - ExpoModulesCore
   - EXSpeech (10.2.0):
     - ExpoModulesCore
-  - EXSplashScreen (0.15.0):
+  - EXSplashScreen (0.15.1):
     - ExpoModulesCore
     - React-Core
   - EXSQLite (10.2.0):
@@ -4363,7 +4363,7 @@ SPEC CHECKSUMS:
   EXNetwork: 116e5ec043168904c1f24a2e96a8361063e57d26
   EXNotifications: 6164d98ce54326bd5f7c09ef0717a500e9820cf9
   EXPermissions: 3dbb869e7f96a5711314f73d48ddc2f28009a7f6
-  Expo: 8d47b3c454064f56784011f1dd03e3d845a18127
+  Expo: 8af09aaa24c023d55160118554032b178fad1871
   ExpoCellular: b5daa3b732c0c9841979c39988062e50e70dc053
   ExpoClipboard: e2dda22be0524595a5eeead51665f60729829123
   ExpoCrypto: d0d0f3e20875dc450b4ec88f0fb608da5c2c6c17
@@ -4387,7 +4387,7 @@ SPEC CHECKSUMS:
   EXSharing: b058aa8e8993ac63d809c686df7695203a810123
   EXSMS: 26f6d61a00a3a3fb125a233d81b1d3ab48303cef
   EXSpeech: b151148a873cacbd87518b2bda92dd667c94c73c
-  EXSplashScreen: 8a3b224b8432cba0b3081e4235956acd671666f1
+  EXSplashScreen: 0878feea1af33fda72d84c17787989b245f60275
   EXSQLite: 2b9accd925438293f9f39e0a57a08cca13bdffb2
   EXStoreReview: e61fbd500624ee7363ab134ee247cff380a8b254
   EXStructuredHeaders: 5d86829469399370a9fc7cb1e4391b09de87681d
@@ -4478,6 +4478,6 @@ SPEC CHECKSUMS:
   Yoga: 17cd9a50243093b547c1e539c749928dd68152da
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 57afe4997fe29696cc7ef7637083c7323007ea22
+PODFILE CHECKSUM: 6dabe95cbe1bb677756539dabe50e48e996a3bc2
 
 COCOAPODS: 1.11.2

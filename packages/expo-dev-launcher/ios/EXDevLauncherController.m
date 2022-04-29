@@ -13,6 +13,7 @@
 #import "EXDevLauncherRCTBridge.h"
 #import "EXDevLauncherManifestParser.h"
 #import "EXDevLauncherLoadingView.h"
+#import "EXDevLauncherRCTDevSettings.h"
 #import "EXDevLauncherInternal.h"
 #import "EXDevLauncherUpdatesHelper.h"
 #import "EXDevLauncherAuth.h"
@@ -89,6 +90,7 @@
   [modules addObject:[RCTDevMenu new]];
   [modules addObject:[RCTAsyncLocalStorage new]];
   [modules addObject:[EXDevLauncherLoadingView new]];
+  [modules addObject:[EXDevLauncherRCTDevSettings new]];
   [modules addObject:[EXDevLauncherInternal new]];
   [modules addObject:[EXDevLauncherAuth new]];
   
@@ -292,7 +294,7 @@
   return true;
 }
 
-- (NSURL *)sourceUrl
+- (nullable NSURL *)sourceUrl
 {
   if (_shouldPreferUpdatesInterfaceSourceUrl && _updatesInterface && _updatesInterface.launchAssetURL) {
     return _updatesInterface.launchAssetURL;

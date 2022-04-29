@@ -112,9 +112,9 @@ Before the build can start, we'll need to generate or provide app signing creden
 
 ## 5. Wait for the build to complete
 
-By default, the `eas build` command will wait for your build to complete; but, you can interrupt it if you prefer not to wait. Monitor the progress and read the logs by following the link to the build details page. You can also find this page by visting [your build dashboard](https://expo.dev/builds) or running the `eas build:list` command. If your build is on behalf of an organization that you are a member of, you will find the build details on [the build dashboard for that account](https://expo.dev/accounts/[account]/builds).
+By default, the `eas build` command will wait for your build to complete; but, you can interrupt it if you prefer not to wait. Monitor the progress and read the logs by following the link to the build details page. You can also find this page by visiting [your build dashboard](https://expo.dev/builds) or running the `eas build:list` command. If your build is on behalf of an organization that you are a member of, you will find the build details on [the build dashboard for that account](https://expo.dev/accounts/[account]/builds).
 
-> **Did your build fail?** Double check that you followed any applicable instructions in the [the configuration step](#3-configure-the-project) and the refer to the [troubleshooting guide](/build-reference/troubleshooting.md) if needed.
+> **Did your build fail?** Double check that you followed any applicable instructions in the [configuration step](#3-configure-the-project) and refer to the [troubleshooting guide](/build-reference/troubleshooting.md) if needed.
 
 ## 6. Deploy the build
 

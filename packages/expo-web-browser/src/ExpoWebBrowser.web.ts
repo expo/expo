@@ -119,13 +119,6 @@ export default {
 
     redirectUrl = redirectUrl ?? getRedirectUrlFromUrlOrGenerate(url);
 
-    const state = await getStateFromUrlOrGenerateAsync(url);
-
-    // Save handle for session
-    window.localStorage.setItem(getHandle(), state);
-    // Save redirect Url for further verification
-    window.localStorage.setItem(getRedirectUrlHandle(state), redirectUrl);
-
     if (popupWindow == null || popupWindow?.closed) {
       const features = getPopupFeaturesString(openOptions?.windowFeatures);
       popupWindow = window.open(url, openOptions?.windowName, features);
@@ -141,6 +134,13 @@ export default {
         );
       }
     }
+
+    const state = await getStateFromUrlOrGenerateAsync(url);
+
+    // Save handle for session
+    window.localStorage.setItem(getHandle(), state);
+    // Save redirect Url for further verification
+    window.localStorage.setItem(getRedirectUrlHandle(state), redirectUrl);
 
     return new Promise(async (resolve) => {
       // Create a listener for messages sent from the popup

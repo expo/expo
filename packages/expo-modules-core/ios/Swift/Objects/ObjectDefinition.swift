@@ -3,7 +3,7 @@
 /**
  Base class for other definitions representing an object, such as `ModuleDefinition`.
  */
-public class ObjectDefinition: AnyDefinition {
+public class ObjectDefinition: AnyDefinition, JavaScriptObjectBuilder {
   /**
    A dictionary of functions defined by the object.
    */
@@ -26,5 +26,34 @@ public class ObjectDefinition: AnyDefinition {
 
     self.constants = definitions
       .compactMap { $0 as? ConstantsDefinition }
+  }
+
+  /**
+   Merges all `constants` definitions into one dictionary.
+   */
+  func getConstants() -> [String: Any?] {
+    return constants.reduce(into: [String: Any?]()) { dict, definition in
+      dict.merge(definition.body()) { $1 }
+    }
+  }
+
+  // MARK: - JavaScriptObjectBuilder
+
+  public func build(inRuntime runtime: JavaScriptRuntime) -> JavaScriptObject {
+    let object = runtime.createObject()
+    decorate(object: object, inRuntime: runtime)
+    return object
+  }
+
+  public func decorate(object: JavaScriptObject, inRuntime runtime: JavaScriptRuntime) {
+    // Decorate with constants
+    for (key, value) in getConstants() {
+      object.setProperty(key, value: value)
+    }
+
+    // Decorate with functions
+    for fn in functions.values {
+      object.setProperty(fn.name, value: fn.build(inRuntime: runtime))
+    }
   }
 }

@@ -64,7 +64,10 @@ Learn how to configure the native projects in the [installation instructions in 
 
 </ConfigPluginExample>
 
-<!-- look in the plugin directory for the library and see what the options are, then fill in the below table as needed. here's an example plugin: https://git.io/JKlrN -->
+<!-- 
+  Look in the plugin directory for the library and see what the options are, then fill in the below table as needed. 
+  Here's an example plugin: https://github.com/expo/expo/blob/main/packages/expo-image-picker/plugin/src/withImagePicker.ts#L70-L73
+-->
 
 <ConfigPluginProperties properties={[
 { name: 'photosPermission', platform: 'ios', description: 'A string to set the NSPhotoLibraryUsageDescription permission message.', default: '"Allow $(PRODUCT_NAME) to access your photos"' },

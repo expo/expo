@@ -8,6 +8,9 @@
 
 ### 🐛 Bug fixes
 
+- Fix `unresolved reference: loadFonts` in the release build on Android. ([#17241](https://github.com/expo/expo/pull/17241) by [@lukmccall](https://github.com/lukmccall))
+- Fix remote debugging crashing the application on iOS. ([#17248](https://github.com/expo/expo/pull/17248) by [@lukmccall](https://github.com/lukmccall))
+
 ### 💡 Others
 
 ## 0.10.4 — 2022-04-26
