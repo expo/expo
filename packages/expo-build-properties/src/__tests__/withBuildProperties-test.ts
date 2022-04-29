@@ -32,7 +32,7 @@ jest.mock('@expo/config-plugins/build/plugins/ios-plugins', () => {
 describe(withBuildProperties, () => {
   it('should generate new build properties', async () => {
     const pluginProps: PluginConfigType = {
-      android: { compileSdkVersion: 31, targetSdkVersion: 30 },
+      android: { compileSdkVersion: 31, targetSdkVersion: 32 },
       ios: { useFrameworks: 'static' },
     };
 
@@ -53,7 +53,7 @@ describe(withBuildProperties, () => {
     expect(androidModResults).toContainEqual({
       type: 'property',
       key: 'android.targetSdkVersion',
-      value: '30',
+      value: '32',
     });
 
     const { modResults: iosModResults } = await compileMockModWithResultsAsync(

@@ -1,4 +1,20 @@
 import Ajv, { JSONSchemaType } from 'ajv';
+import semver from 'semver';
+
+/**
+ * The minimal supported versions. These values should align to SDK
+ * @ignore
+ */
+const EXPO_SDK_MINIMAL_SUPPORTED_VERSIONS = {
+  android: {
+    compileSdkVersion: 31,
+    targetSdkVersion: 31,
+    kotlinVersion: '1.6.10',
+  },
+  ios: {
+    deploymentTarget: '12.0',
+  },
+};
 
 /**
  * Configuration for `expo-build-properties` passing from `app.json` or `app.config.js`
@@ -101,6 +117,56 @@ const schema: JSONSchemaType<PluginConfigType> = {
 };
 
 /**
+ * Check versions to meet expo minimal supported versions.
+ * Will throw error message whenever there are invalid versions.
+ * For the implementation, we check items one by one because ajv does not well support custom error message.
+ *
+ * @param config the validated config passed from ajv
+ * @ignore
+ */
+function maybeThrowInvalidVersions(config: PluginConfigType) {
+  const checkItems = [
+    {
+      name: 'android.compileSdkVersion',
+      configVersion: config.android?.compileSdkVersion,
+      minimalVersion: EXPO_SDK_MINIMAL_SUPPORTED_VERSIONS.android.compileSdkVersion,
+    },
+    {
+      name: 'android.targetSdkVersion',
+      configVersion: config.android?.targetSdkVersion,
+      minimalVersion: EXPO_SDK_MINIMAL_SUPPORTED_VERSIONS.android.targetSdkVersion,
+    },
+    {
+      name: 'android.kotlinVersion',
+      configVersion: config.android?.kotlinVersion,
+      minimalVersion: EXPO_SDK_MINIMAL_SUPPORTED_VERSIONS.android.kotlinVersion,
+    },
+    {
+      name: 'ios.deploymentTarget',
+      configVersion: config.ios?.deploymentTarget,
+      minimalVersion: EXPO_SDK_MINIMAL_SUPPORTED_VERSIONS.ios.deploymentTarget,
+    },
+  ];
+
+  for (const { name, configVersion, minimalVersion } of checkItems) {
+    if (
+      typeof configVersion === 'number' &&
+      typeof minimalVersion === 'number' &&
+      configVersion < minimalVersion
+    ) {
+      throw new Error(`\`${name}\` needs to be at least version ${minimalVersion}.`);
+    }
+    if (
+      typeof configVersion === 'string' &&
+      typeof minimalVersion === 'string' &&
+      semver.lt(semver.coerce(configVersion) ?? '0.0.0', semver.coerce(minimalVersion) ?? '0.0.0')
+    ) {
+      throw new Error(`\`${name}\` needs to be at least version ${minimalVersion}.`);
+    }
+  }
+}
+
+/**
  * @ignore
  */
 export function validateConfig(config: any): PluginConfigType {
@@ -108,5 +174,7 @@ export function validateConfig(config: any): PluginConfigType {
   if (!validate(config)) {
     throw new Error('Invalid expo-build-properties config: ' + JSON.stringify(validate.errors));
   }
+
+  maybeThrowInvalidVersions(config);
   return config;
 }
