@@ -6,6 +6,8 @@ import { CommandError } from '../../../utils/errors';
 import { learnMore } from '../../../utils/link';
 import { ADBServer } from './ADBServer';
 
+const debug = require('debug')('expo:start:platforms:android:adb') as typeof console.log;
+
 export enum DeviceABI {
   // The arch specific android target platforms are soft-deprecated.
   // Instead of using TargetPlatform as a combination arch + platform
@@ -340,16 +342,14 @@ export async function getPropertyDataForDeviceAsync(
     // [wifi.interface]: [wlan0]
 
     if (prop) {
-      Log.debug(
-        `[ADB] property data: (device pid: ${device.pid}, prop: ${prop}, data: ${results})`
-      );
+      debug(`Property data: (device pid: ${device.pid}, prop: ${prop}, data: ${results})`);
       return {
         [prop]: results,
       };
     }
     const props = parseAdbDeviceProperties(results);
 
-    Log.debug(`[ADB] parsed data:`, props);
+    debug(`Parsed data:`, props);
 
     return props;
   } catch (error: any) {
