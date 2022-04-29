@@ -294,7 +294,7 @@
   return true;
 }
 
-- (NSURL *)sourceUrl
+- (nullable NSURL *)sourceUrl
 {
   if (_shouldPreferUpdatesInterfaceSourceUrl && _updatesInterface && _updatesInterface.launchAssetURL) {
     return _updatesInterface.launchAssetURL;
