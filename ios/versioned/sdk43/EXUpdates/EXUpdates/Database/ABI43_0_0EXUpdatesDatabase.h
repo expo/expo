@@ -28,6 +28,8 @@ typedef NS_ENUM(NSInteger, ABI43_0_0EXUpdatesDatabaseHashType) {
 - (void)mergeAsset:(ABI43_0_0EXUpdatesAsset *)asset withExistingEntry:(ABI43_0_0EXUpdatesAsset *)existingAsset error:(NSError ** _Nullable)error;
 - (void)markUpdateFinished:(ABI43_0_0EXUpdatesUpdate *)update error:(NSError ** _Nullable)error;
 - (void)markUpdateAccessed:(ABI43_0_0EXUpdatesUpdate *)update error:(NSError ** _Nullable)error;
+- (void)incrementSuccessfulLaunchCountForUpdate:(ABI43_0_0EXUpdatesUpdate *)update error:(NSError ** _Nullable)error;
+- (void)incrementFailedLaunchCountForUpdate:(ABI43_0_0EXUpdatesUpdate *)update error:(NSError ** _Nullable)error;
 - (void)setScopeKey:(NSString *)scopeKey onUpdate:(ABI43_0_0EXUpdatesUpdate *)update error:(NSError ** _Nullable)error;
 - (void)markMissingAssets:(NSArray<ABI43_0_0EXUpdatesAsset *> *)assets error:(NSError ** _Nullable)error;
 
@@ -50,9 +52,11 @@ typedef NS_ENUM(NSInteger, ABI43_0_0EXUpdatesDatabaseHashType) {
 
 - (nullable NSDictionary *)serverDefinedHeadersWithScopeKey:(NSString *)scopeKey error:(NSError ** _Nullable)error;
 - (nullable NSDictionary *)manifestFiltersWithScopeKey:(NSString *)scopeKey error:(NSError ** _Nullable)error;
+- (nullable NSDictionary *)staticBuildDataWithScopeKey:(NSString *)scopeKey error:(NSError ** _Nullable)error;
 - (void)setServerDefinedHeaders:(NSDictionary *)serverDefinedHeaders withScopeKey:(NSString *)scopeKey error:(NSError ** _Nullable)error;
 - (void)setManifestFilters:(NSDictionary *)manifestFilters withScopeKey:(NSString *)scopeKey error:(NSError ** _Nullable)error;
 - (void)setMetadataWithManifest:(ABI43_0_0EXUpdatesUpdate *)updateManifest error:(NSError ** _Nullable)error;
+- (void)setStaticBuildData:(NSDictionary *)staticBuildData withScopeKey:(NSString *)scopeKey error:(NSError ** _Nullable)error;
 
 @end
 

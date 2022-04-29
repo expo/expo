@@ -1,8 +1,7 @@
-import { ConfigPlugin, WarningAggregator, withEntitlementsPlist } from '@expo/config-plugins';
+import { ConfigPlugin, withEntitlementsPlist } from '@expo/config-plugins';
 import { ExpoConfig } from '@expo/config-types';
 
 export type IosProps = {
-  appleTeamId?: string;
   /**
    * Sets the `com.apple.developer.icloud-container-environment` entitlement which is read by EAS CLI to set
    * the `iCloudContainerEnvironment` in the `xcodebuild` `exportOptionsPlist`.
@@ -14,28 +13,21 @@ export type IosProps = {
 
 export const withDocumentPickerIOS: ConfigPlugin<IosProps> = (
   config,
-  { appleTeamId, iCloudContainerEnvironment }
+  { iCloudContainerEnvironment } = {}
 ) => {
   return withEntitlementsPlist(config, (config) => {
-    if (appleTeamId) {
-      config.modResults = setICloudEntitlements(
-        config,
-        { appleTeamId, iCloudContainerEnvironment },
-        config.modResults
-      );
-    } else {
-      WarningAggregator.addWarningIOS(
-        'expo-document-picker',
-        'Cannot configure iOS entitlements because neither the appleTeamId property, nor the environment variable EXPO_APPLE_TEAM_ID were defined.'
-      );
-    }
+    config.modResults = setICloudEntitlements(
+      config,
+      { iCloudContainerEnvironment },
+      config.modResults
+    );
     return config;
   });
 };
 
 export function setICloudEntitlements(
   config: Pick<ExpoConfig, 'ios'>,
-  { appleTeamId, iCloudContainerEnvironment }: IosProps,
+  { iCloudContainerEnvironment }: IosProps,
   { 'com.apple.developer.icloud-container-environment': _env, ...entitlements }: Record<string, any>
 ): Record<string, any> {
   if (config.ios?.usesIcloudStorage) {
@@ -44,13 +36,15 @@ export function setICloudEntitlements(
     entitlements['com.apple.developer.icloud-container-environment'] = iCloudContainerEnvironment;
 
     entitlements['com.apple.developer.icloud-container-identifiers'] = [
-      'iCloud.' + config.ios.bundleIdentifier,
+      `iCloud.${config.ios.bundleIdentifier}`,
     ];
     entitlements['com.apple.developer.ubiquity-container-identifiers'] = [
-      'iCloud.' + config.ios.bundleIdentifier,
+      `iCloud.${config.ios.bundleIdentifier}`,
     ];
-    entitlements['com.apple.developer.ubiquity-kvstore-identifier'] =
-      appleTeamId + '.' + config.ios.bundleIdentifier;
+    entitlements[
+      'com.apple.developer.ubiquity-kvstore-identifier'
+    ] = `$(TeamIdentifierPrefix)${config.ios.bundleIdentifier}`;
+
     entitlements['com.apple.developer.icloud-services'] = ['CloudDocuments'];
   }
   return entitlements;

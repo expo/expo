@@ -10,6 +10,17 @@
 
 ### 💡 Others
 
+## 0.13.0 — 2022-04-21
+
+### 🐛 Bug fixes
+
+- Fix asset hash validation. ([#17152](https://github.com/expo/expo/pull/17152) by [@wschurman](https://github.com/wschurman))
+
+### 💡 Others
+
+- Add current and embedded update headers to manifest requests. ([#17033](https://github.com/expo/expo/pull/17033) by [@esamelson](https://github.com/esamelson))
+- Fix return value in AppDelegateSubscriber (used with expo-dev-client). ([#17111](https://github.com/expo/expo/pull/17111) by [@esamelson](https://github.com/esamelson))
+
 ## 0.12.0 — 2022-04-18
 
 ### 🛠 Breaking changes

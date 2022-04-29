@@ -2,6 +2,7 @@
 
 #import <ABI44_0_0EXUpdates/ABI44_0_0EXUpdatesAsset.h>
 #import <ABI44_0_0EXUpdates/ABI44_0_0EXUpdatesConfig.h>
+#import <ABI44_0_0EXUpdates/ABI44_0_0EXUpdatesManifestHeaders.h>
 #import <ABI44_0_0EXManifests/ABI44_0_0EXManifestsManifest.h>
 
 @class ABI44_0_0EXUpdatesDatabase;
@@ -76,7 +77,8 @@ typedef NS_ENUM(NSInteger, ABI44_0_0EXUpdatesUpdateStatus) {
                     database:(ABI44_0_0EXUpdatesDatabase *)database;
 
 + (instancetype)updateWithManifest:(NSDictionary *)manifest
-                          response:(nullable NSURLResponse *)response
+                   manifestHeaders:(ABI44_0_0EXUpdatesManifestHeaders *)manifestHeaders
+                        extensions:(NSDictionary *)extensions
                             config:(ABI44_0_0EXUpdatesConfig *)config
                           database:(ABI44_0_0EXUpdatesDatabase *)database
                              error:(NSError **)error;

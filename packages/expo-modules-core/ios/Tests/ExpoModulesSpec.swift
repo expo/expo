@@ -7,7 +7,6 @@ import ExpoModulesTestCore
 class ExpoModulesSpec: ExpoSpec {
   override func spec() {
     let appContext = AppContext.create()
-    let interopBridge = SwiftInteropBridge(appContext: appContext)
     let runtime = appContext.runtime
     let testModuleName = "TestModule"
     let testFunctionName = "testFunction"
@@ -17,15 +16,12 @@ class ExpoModulesSpec: ExpoSpec {
     ]
 
     beforeSuite {
-      try! appContext.installExpoModulesHostObject(interopBridge)
-
       appContext.moduleRegistry.register(holder: mockModuleHolder(appContext) {
-        $0.name(testModuleName)
+        Name(testModuleName)
 
-        constants(constantsDict)
+        Constants(constantsDict)
 
-        function(testFunctionName) { Double.pi }
-          .runSynchronously()
+        Function(testFunctionName) { Double.pi }
       })
     }
 

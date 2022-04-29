@@ -40,7 +40,15 @@ export async function instantiateMetroAsync(
 
   const metroConfig = await ExpoMetroConfig.loadAsync(projectRoot, { reporter, ...options });
 
-  const { middleware, attachToServer } = createDevServerMiddleware({
+  const {
+    middleware,
+    attachToServer,
+
+    // New
+    websocketEndpoints,
+    eventsSocketEndpoint,
+    messageSocketEndpoint,
+  } = createDevServerMiddleware(projectRoot, {
     port: metroConfig.server.port,
     watchFolders: metroConfig.watchFolders,
   });
@@ -57,14 +65,27 @@ export async function instantiateMetroAsync(
   const server = await Metro.runServer(metroConfig, {
     // @ts-expect-error: TODO: Update the types.
     hmrEnabled: true,
+    websocketEndpoints,
   });
 
-  const { messageSocket, eventsSocket } = attachToServer(server);
-  reportEvent = eventsSocket.reportEvent;
+  if (attachToServer) {
+    // Expo SDK 44 and lower
+    const { messageSocket, eventsSocket } = attachToServer(server);
+    reportEvent = eventsSocket.reportEvent;
 
-  return {
-    server,
-    middleware,
-    messageSocket,
-  };
+    return {
+      server,
+      middleware,
+      messageSocket,
+    };
+  } else {
+    // RN +68 -- Expo SDK +45
+    reportEvent = eventsSocketEndpoint.reportEvent;
+
+    return {
+      server,
+      middleware,
+      messageSocket: messageSocketEndpoint,
+    };
+  }
 }

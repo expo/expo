@@ -3,14 +3,11 @@ package expo.modules.devmenu.modules.internals
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
-import android.content.pm.PackageManager
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.ReadableMap
-import com.facebook.react.devsupport.DevInternalSettings
 import expo.modules.devmenu.DevMenuManager
-import expo.modules.devmenu.devtools.DevMenuDevToolsDelegate
 import expo.modules.devmenu.modules.DevMenuInternalMenuControllerModuleInterface
 import kotlinx.coroutines.launch
 

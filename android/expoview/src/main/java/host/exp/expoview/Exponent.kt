@@ -13,7 +13,6 @@ import android.os.StrictMode.ThreadPolicy
 import android.os.UserManager
 import com.facebook.common.internal.ByteStreams
 import com.facebook.drawee.backends.pipeline.Fresco
-import com.facebook.stetho.Stetho
 import com.raizlabs.android.dbflow.config.DatabaseConfig
 import com.raizlabs.android.dbflow.config.FlowConfig
 import com.raizlabs.android.dbflow.config.FlowManager
@@ -452,10 +451,6 @@ class Exponent private constructor(val context: Context, val application: Applic
         )
         .build()
     )
-
-    if (ExpoViewBuildConfig.DEBUG) {
-      Stetho.initializeWithDefaults(context)
-    }
 
     if (!ExpoViewBuildConfig.DEBUG) {
       // There are a few places in RN code that throw NetworkOnMainThreadException.

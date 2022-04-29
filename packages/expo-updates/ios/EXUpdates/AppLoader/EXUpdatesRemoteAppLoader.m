@@ -2,7 +2,9 @@
 
 #import <EXUpdates/EXUpdatesRemoteAppLoader.h>
 #import <EXUpdates/EXUpdatesCrypto.h>
+#import <EXUpdates/EXUpdatesEmbeddedAppLoader.h>
 #import <EXUpdates/EXUpdatesFileDownloader.h>
+#import <EXUpdates/EXUpdatesUtils.h>
 #import <ExpoModulesCore/EXUtilities.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -22,9 +24,10 @@ static NSString * const EXUpdatesRemoteAppLoaderErrorDomain = @"EXUpdatesRemoteA
 - (instancetype)initWithConfig:(EXUpdatesConfig *)config
                       database:(EXUpdatesDatabase *)database
                      directory:(NSURL *)directory
+                launchedUpdate:(nullable EXUpdatesUpdate *)launchedUpdate
                completionQueue:(dispatch_queue_t)completionQueue
 {
-  if (self = [super initWithConfig:config database:database directory:directory completionQueue:completionQueue]) {
+  if (self = [super initWithConfig:config database:database directory:directory launchedUpdate:launchedUpdate completionQueue:completionQueue]) {
     _downloader = [[EXUpdatesFileDownloader alloc] initWithUpdatesConfig:self.config];
     _completionQueue = completionQueue;
   }
@@ -65,11 +68,11 @@ static NSString * const EXUpdatesRemoteAppLoaderErrorDomain = @"EXUpdatesRemoteA
   };
 
   dispatch_async(self.database.databaseQueue, ^{
-    NSError *headersError;
-    NSDictionary *extraHeaders = [self.database serverDefinedHeadersWithScopeKey:self.config.scopeKey error:&headersError];
-    if (headersError) {
-      NSLog(@"Error selecting serverDefinedHeaders from database: %@", headersError.localizedDescription);
-    }
+    EXUpdatesUpdate *embeddedUpdate = [EXUpdatesEmbeddedAppLoader embeddedManifestWithConfig:self.config database:self.database];
+    NSDictionary *extraHeaders = [EXUpdatesFileDownloader extraHeadersWithDatabase:self.database
+                                                                            config:self.config
+                                                                    launchedUpdate:self.launchedUpdate
+                                                                    embeddedUpdate:embeddedUpdate];
     [self->_downloader downloadManifestFromURL:url withDatabase:self.database extraHeaders:extraHeaders successBlock:^(EXUpdatesUpdate *update) {
       self->_remoteUpdate = update;
       [self startLoadingFromManifest:update];
@@ -102,7 +105,15 @@ static NSString * const EXUpdatesRemoteAppLoaderErrorDomain = @"EXUpdatesRemoteA
                                 extraHeaders:asset.extraRequestHeaders ?: @{}
                                 successBlock:^(NSData *data, NSURLResponse *response) {
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-          [self handleAssetDownloadWithData:data response:response asset:asset];
+          NSString *hashBase64String = [EXUpdatesUtils base64UrlEncodedSHA256WithData:data];
+          if (asset.expectedHash && ![asset.expectedHash isEqualToString:hashBase64String]) {
+            NSError *error = [NSError errorWithDomain:EXUpdatesRemoteAppLoaderErrorDomain
+                                                 code:1016
+                                             userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithFormat:@"Asset hash invalid: %@; expectedHash: %@; actualHash: %@", asset.key, asset.expectedHash, hashBase64String]}];
+            [self handleAssetDownloadWithError:error asset:asset];
+          } else {
+            [self handleAssetDownloadWithData:data response:response asset:asset];
+          }
         });
       }
                                   errorBlock:^(NSError *error) {

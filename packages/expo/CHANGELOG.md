@@ -10,6 +10,44 @@
 
 ### 💡 Others
 
+## 45.0.0-beta.9 — 2022-04-28
+
+_This version does not introduce any user-facing changes._
+
+## 45.0.0-beta.8 — 2022-04-27
+
+_This version does not introduce any user-facing changes._
+
+## 45.0.0-beta.7 — 2022-04-27
+
+### 🐛 Bug fixes
+
+- Forward CLI exit code to process. ([#17189](https://github.com/expo/expo/pull/17189) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 45.0.0-beta.6 — 2022-04-27
+
+_This version does not introduce any user-facing changes._
+
+## 45.0.0-beta.5 — 2022-04-25
+
+### 🐛 Bug fixes
+
+- Fix `Overwriting fontFamily style attribute preprocessor` warning when startup. ([#17138](https://github.com/expo/expo/pull/17138) by [@Kudo](https://github.com/Kudo))
+
+## 45.0.0-beta.4 — 2022-04-21
+
+_This version does not introduce any user-facing changes._
+
+## 45.0.0-beta.3 — 2022-04-21
+
+_This version does not introduce any user-facing changes._
+
+## 45.0.0-beta.2 — 2022-04-20
+
+### 🎉 New features
+
+- Add `ReactNativeHostHandler.getUseDeveloperSupport()` to allow `expo-dev-launcher` to override this value at runtime. ([#17069](https://github.com/expo/expo/pull/17069) by [@esamelson](https://github.com/esamelson))
+
 ## 45.0.0-beta.1 — 2022-04-18
 
 ### 🎉 New features

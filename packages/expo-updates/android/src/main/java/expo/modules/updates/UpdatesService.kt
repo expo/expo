@@ -14,6 +14,8 @@ import java.io.File
 /* ktlint-disable no-unused-imports */
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.UpdatesController
+import expo.modules.updates.manifest.EmbeddedManifest
+
 /* ktlint-enable no-unused-imports */
 
 open class UpdatesService(protected var context: Context) : InternalModule, UpdatesInterface {
@@ -40,6 +42,8 @@ open class UpdatesService(protected var context: Context) : InternalModule, Upda
     return configuration.isEnabled && launchedUpdate != null
   }
 
+  override val embeddedUpdate: UpdateEntity?
+    get() = EmbeddedManifest.get(context, configuration)?.updateEntity
   override val launchedUpdate: UpdateEntity?
     get() = UpdatesController.instance.launchedUpdate
   override val localAssetFiles: Map<AssetEntity, String>?

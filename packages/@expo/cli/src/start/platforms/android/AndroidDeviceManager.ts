@@ -16,6 +16,16 @@ import { promptForDeviceAsync } from './promptAndroidDevice';
 const EXPO_GO_APPLICATION_IDENTIFIER = 'host.exp.exponent';
 
 export class AndroidDeviceManager extends DeviceManager<AndroidDebugBridge.Device> {
+  static async resolveFromNameAsync(name: string): Promise<AndroidDeviceManager> {
+    const devices = await getDevicesAsync();
+    const device = devices.find((device) => device.name === name);
+
+    if (!device) {
+      throw new CommandError('Could not find device with name: ' + name);
+    }
+    return AndroidDeviceManager.resolveAsync({ device, shouldPrompt: false });
+  }
+
   static async resolveAsync({
     device,
     shouldPrompt,
@@ -57,7 +67,7 @@ export class AndroidDeviceManager extends DeviceManager<AndroidDebugBridge.Devic
       this.device = await startDeviceAsync(this.device);
     }
 
-    if (!this.device.isAuthorized) {
+    if (this.device.isAuthorized === false) {
       AndroidDebugBridge.logUnauthorized(this.device);
       return null;
     }

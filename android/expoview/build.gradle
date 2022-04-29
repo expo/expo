@@ -295,6 +295,9 @@ dependencies {
   // Versioned react native
   // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
   // THIS COMMENT IS USED BY android-build-aar.sh DO NOT MODIFY
+  // BEGIN_SDK_45
+  versionedApi 'host.exp:reactandroid-abi45_0_0:1.0.0'
+  // END_SDK_45
   // BEGIN_SDK_44
   versionedApi 'host.exp:reactandroid-abi44_0_0:1.0.0'
   // END_SDK_44
@@ -306,24 +309,26 @@ dependencies {
   // WHEN_DISTRIBUTING_REMOVE_TO_HERE
 
   // React native dependencies
+  api 'androidx.appcompat:appcompat:1.2.0'
+  api 'androidx.autofill:autofill:1.1.0'
   api 'androidx.swiperefreshlayout:swiperefreshlayout:1.0.0'
-  api 'com.facebook.fresco:fresco:2.0.0'
-  api 'com.facebook.fresco:animated-gif:2.0.0'
-  api 'com.facebook.fresco:animated-webp:2.0.0'
-  api 'com.facebook.fresco:webpsupport:2.0.0'
-  api 'com.facebook.fresco:imagepipeline-okhttp3:2.0.0'
-  api 'com.facebook.stetho:stetho:1.3.1' // do we need this?
-  api 'com.facebook.stetho:stetho-okhttp3:1.3.1' // do we need this?
-  compileOnly 'com.facebook.soloader:soloader:0.8.2'
+  api 'com.facebook.fbjni:fbjni-java-only:0.2.2'
+  api 'com.facebook.fresco:fresco:2.5.0'
+  api 'com.facebook.fresco:animated-gif:2.5.0'
+  api 'com.facebook.fresco:animated-webp:2.5.0'
+  api 'com.facebook.fresco:webpsupport:2.5.0'
+  api 'com.facebook.fresco:imagepipeline-okhttp3:2.5.0'
+  api 'com.facebook.fresco:ui-common:2.5.0'
+  api 'com.facebook.infer.annotation:infer-annotation:0.18.0'
+  api 'com.facebook.soloader:soloader:0.10.3'
+  api 'com.facebook.yoga:proguard-annotations:1.19.0'
   api 'com.google.code.findbugs:jsr305:3.0.2'
-  api 'com.squareup.okhttp3:okhttp:3.12.1'
-  api 'com.squareup.okhttp3:okhttp-urlconnection:3.12.1'
-  api 'com.squareup.okio:okio:1.15.0'
-  api 'com.facebook.infer.annotation:infer-annotation:0.11.2'
+  api 'com.squareup.okhttp3:okhttp-urlconnection:4.9.2'
+  api 'com.squareup.okhttp3:okhttp:4.9.2'
+  api 'com.squareup.okio:okio:2.9.0'
   api 'javax.inject:javax.inject:1'
 
   // Our dependencies
-  api "androidx.appcompat:appcompat:1.2.0"
   compileOnly 'org.glassfish:javax.annotation:3.1.1'
   api 'de.greenrobot:eventbus:2.4.0'
   api "androidx.room:room-runtime:2.1.0"
@@ -744,18 +749,31 @@ task extractSOFiles {
 }
 
 project.afterEvaluate {
-  def nativeBuildTask = tasks.findByName("externalNativeBuildRelease")
+  def nativeBuildTask = tasks.findByName("copyUnversionedReleaseJniLibsProjectOnly")  // for expoview
+                        ?: tasks.findByName("copyReleaseJniLibsProjectOnly") // for expoview-${abiName}
   if (nativeBuildTask) {
     packageNdkLibs.dependsOn nativeBuildTask
   }
+
+  // Workaround for AGP 7 local lint aar task with errors from a library project owning other aars.
+  // In our case, it's the expoview (library project) owning hermes aar
+  // ```
+  // Error while evaluating property 'hasLocalAarDeps' of task ':expoview:bundleVersionedReleaseLocalLintAar'
+  //   > Direct local .aar file dependencies are not supported when building an AAR.
+  //     The resulting AAR would be broken because the classes and Android resources from any local .aar file dependencies would not be packaged in the resulting AAR.
+  //     Previous versions of the Android Gradle Plugin produce broken AARs in this case too (despite not throwing this error).
+  //     The following direct local .aar file dependencies of the :expoview project caused this error:
+  //     /home/runner/work/expo/expo/node_modules/hermes-engine/android/hermes-release.aar
+  // ```
+  // For the workaround, we just pretend we don't have local aar dependencies.
+  tasks.findByName("bundleVersionedReleaseLocalLintAar")?.localAarDeps?.setFrom([])
+  tasks.findByName("bundleUnversionedReleaseLocalLintAar")?.localAarDeps?.setFrom([])
 }
 
 task packageNdkLibs(type: Copy) {
-  from("$buildDir/reanimated-ndk/all")
-  include("**/lib*reanimated*.so")
-  if (REACT_VERSION < 64) {
-    include("**/lib*turbomodulejsijni*.so")
-  }
+  from("$buildDir/intermediates/library_jni/unversionedRelease/jni") // for expoview
+  from("$buildDir/intermediates/library_jni/release/jni") // for expoview-${abiName}
+  include("**/libreanimated*.so")
   into("$projectDir/src/main/jniLibs")
 }
 

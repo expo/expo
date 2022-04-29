@@ -36,8 +36,11 @@ class DevMenuDevOptionsDelegate {
       return
     }
 
+    DevMenuManager.shared.hideMenu()
+    
     DispatchQueue.main.async {
       devSettings.isDebuggingRemotely = !devSettings.isDebuggingRemotely
+      (DevMenuManager.shared.window?.rootViewController as? DevMenuViewController)?.updateProps() // We have to force props to reflect changes on the UI
     }
   }
 
