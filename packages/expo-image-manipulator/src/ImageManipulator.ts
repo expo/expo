@@ -4,8 +4,6 @@ import ExpoImageManipulator from './ExpoImageManipulator';
 import { Action, ImageResult, SaveFormat, SaveOptions } from './ImageManipulator.types';
 import { validateArguments } from './validators';
 
-// Dummy change, Revert me
-
 // @needsAudit
 /**
  * Manipulate the image provided via `uri`. Available modifications are rotating, flipping (mirroring),
