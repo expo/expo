@@ -9,7 +9,6 @@ import { PluginConfigType, validateConfig } from './pluginConfig';
  *
  * @param config ExpoConfig
  * @param props Configuration for the config plugin
- * @ignore
  */
 export const withBuildProperties: ConfigPlugin<PluginConfigType> = (config, props) => {
   const pluginConfig = validateConfig(props || {});
