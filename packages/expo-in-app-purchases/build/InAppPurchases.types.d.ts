@@ -248,7 +248,7 @@ export declare type IAPPurchaseHistoryOptions = {
     /**
      * __Android Only.__ A boolean that indicates whether or not you want to make a network request
      * to sync expired/consumed purchases and those on other devices.
-     * @default `true`.
+     *
      * - If set to `true`, this method returns purchase details **only** for the user's currently
      *   owned items (active subscriptions and non-consumed one-time purchases). If set to `false`, it
      *   will make a network request and return the most recent purchase made by the user for each
@@ -257,6 +257,8 @@ export declare type IAPPurchaseHistoryOptions = {
      *   Android returns a [`PurchaseHistoryRecord`](https://developer.android.com/reference/com/android/billingclient/api/PurchaseHistoryRecord)
      *   which only contains the purchase time, purchase token, and product ID, rather than all of the
      *   attributes found in the [`InAppPurchase`](#inapppurchase) type.
+     *
+     *  @default true
      */
     useGooglePlayCache: boolean;
 };

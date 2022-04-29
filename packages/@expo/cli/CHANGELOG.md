@@ -8,9 +8,15 @@
 
 ### 🐛 Bug fixes
 
-- add missing `pretty-bytes` dependency. ([#17235](https://github.com/expo/expo/pull/17235) by [@EvanBacon](https://github.com/EvanBacon))
+- Fix bug where autocomplete prompts crash when escape characters are used. ([#17271](https://github.com/expo/expo/pull/17271) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
+
+## 0.1.3 — 2022-04-28
+
+### 🐛 Bug fixes
+
+- add missing `pretty-bytes` dependency. ([#17235](https://github.com/expo/expo/pull/17235) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 0.1.2 — 2022-04-27
 

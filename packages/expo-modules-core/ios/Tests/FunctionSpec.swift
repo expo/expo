@@ -14,7 +14,9 @@ class FunctionSpec: ExpoSpec {
             return returnValue
           }
         }
-        .call(function: functionName, args: []) { value, _ in
+        .call(function: functionName, args: []) { result in
+          let value = try! result.get()
+
           expect(value).notTo(beNil())
           expect(value).to(beAKindOf(T.self))
           expect(value as? T).to(equal(returnValue))
@@ -95,7 +97,9 @@ class FunctionSpec: ExpoSpec {
               return a.property
             }
           }
-          .call(function: functionName, args: [dict]) { value, _ in
+          .call(function: functionName, args: [dict]) { result in
+            let value = try! result.get()
+
             expect(value).notTo(beNil())
             expect(value).to(beAKindOf(String.self))
             expect(value).to(be(dict["property"]))
@@ -111,7 +115,8 @@ class FunctionSpec: ExpoSpec {
               return a.customKeyProperty
             }
           }
-          .call(function: functionName, args: [dict]) { value, _ in
+          .call(function: functionName, args: [dict]) { result in
+            let value = try! result.get()
             expect(value).notTo(beNil())
             expect(value).to(beAKindOf(String.self))
             expect(value).to(be(dict["propertyWithCustomKey"]))
@@ -127,7 +132,9 @@ class FunctionSpec: ExpoSpec {
               return a.toDictionary()
             }
           }
-          .call(function: functionName, args: [dict]) { value, _ in
+          .call(function: functionName, args: [dict]) { result in
+            let value = try! result.get()
+
             expect(value).notTo(beNil())
             expect(value).to(beAKindOf(Record.Dict.self))
 
@@ -149,9 +156,14 @@ class FunctionSpec: ExpoSpec {
           }
         }
         // Function expects one argument, let's give it more.
-        .call(function: functionName, args: [1, 2]) { _, error in
-          expect(error).notTo(beNil())
-          expect(error).to(beAKindOf(InvalidArgsNumberException.self))
+        .call(function: functionName, args: [1, 2]) { result in
+          switch result {
+          case .failure(let error):
+            expect(error).notTo(beNil())
+            expect(error).to(beAKindOf(InvalidArgsNumberException.self))
+          case .success(_):
+            fail()
+          }
           done()
         }
       }
@@ -165,10 +177,15 @@ class FunctionSpec: ExpoSpec {
           }
         }
         // Function expects a string, let's give it a number.
-        .call(function: functionName, args: [1]) { value, error in
-          expect(error).notTo(beNil())
-          expect(error).to(beAKindOf(ArgumentCastException.self))
-          expect((error as! Exception).isCausedBy(Conversions.CastingException<String>.self)) == true
+        .call(function: functionName, args: [1]) { result in
+          switch result {
+          case .failure(let error):
+            expect(error).notTo(beNil())
+            expect(error).to(beAKindOf(ArgumentCastException.self))
+            expect(error.isCausedBy(Conversions.CastingException<String>.self)) == true
+          case .success(_):
+            fail()
+          }
           done()
         }
       }
