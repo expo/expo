@@ -9,6 +9,8 @@ import {
 } from './Clipboard.types';
 import ExpoClipboard from './ExpoClipboard';
 
+// Dummy change, Revert me
+
 const emitter = new EventEmitter(ExpoClipboard);
 
 const onClipboardEventName = 'onClipboardChanged';
