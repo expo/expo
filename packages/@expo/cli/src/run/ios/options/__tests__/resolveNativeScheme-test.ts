@@ -1,6 +1,7 @@
-import { promptOrQueryNativeSchemeAsync } from '../resolveNativeScheme';
 import { IOSConfig } from '@expo/config-plugins';
+
 import { selectAsync } from '../../../../utils/prompts';
+import { promptOrQueryNativeSchemeAsync } from '../resolveNativeScheme';
 
 const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
   fn as jest.MockedFunction<T>;

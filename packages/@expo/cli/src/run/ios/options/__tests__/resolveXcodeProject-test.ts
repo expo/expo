@@ -1,5 +1,6 @@
-import { resolveXcodeProject } from '../resolveXcodeProject';
 import { vol } from 'memfs';
+
+import { resolveXcodeProject } from '../resolveXcodeProject';
 
 describe(resolveXcodeProject, () => {
   afterEach(() => vol.reset());

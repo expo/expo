@@ -1,8 +1,8 @@
 import chalk from 'chalk';
 import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
+import { EOL } from 'os';
 import path from 'path';
 import wrapAnsi from 'wrap-ansi';
-import { EOL } from 'os';
 
 import * as Log from '../../../log';
 import { CommandError } from '../../../utils/errors';
@@ -190,7 +190,7 @@ function parseMessageJson(data: string) {
   const stringData = data.toString();
   try {
     return JSON.parse(stringData) as SimControlLog;
-  } catch (e) {
+  } catch {
     Log.debug('Failed to parse simctl JSON message:\n' + stringData);
   }
   return null;

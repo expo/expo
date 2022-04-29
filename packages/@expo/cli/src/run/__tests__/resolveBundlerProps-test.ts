@@ -1,6 +1,6 @@
 import { vol } from 'memfs';
-import { resolvePortAsync } from '../../utils/port';
 
+import { resolvePortAsync } from '../../utils/port';
 import { resolveBundlerPropsAsync } from '../resolveBundlerProps';
 
 const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>

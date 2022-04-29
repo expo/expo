@@ -1,5 +1,4 @@
 import path from 'path';
-import { ensureDeviceIsCodeSignedForDeploymentAsync } from '../codeSigning/configureCodeSigning';
 
 import {
   extractEnvVariableFromBuild,
@@ -7,6 +6,7 @@ import {
   getXcodeBuildArgsAsync,
   _assertXcodeBuildResults,
 } from '../XcodeBuild';
+import { ensureDeviceIsCodeSignedForDeploymentAsync } from '../codeSigning/configureCodeSigning';
 
 jest.mock('../codeSigning/configureCodeSigning');
 

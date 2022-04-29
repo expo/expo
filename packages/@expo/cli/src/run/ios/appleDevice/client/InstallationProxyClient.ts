@@ -9,9 +9,9 @@ import Debug from 'debug';
 import { Socket } from 'net';
 
 import { LockdownProtocolClient } from '../protocol/LockdownProtocol';
+import type { LockdownCommand, LockdownResponse } from '../protocol/LockdownProtocol';
 import { ResponseError, ServiceClient } from './ServiceClient';
 
-import type { LockdownCommand, LockdownResponse } from '../protocol/LockdownProtocol';
 const debug = Debug('expo:apple-device:client:installation_proxy');
 
 export type OnInstallProgressCallback = (props: {
