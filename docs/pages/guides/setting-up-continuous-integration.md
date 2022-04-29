@@ -218,7 +218,7 @@ After this, we need to authenticate at Expo and "publish" a new build.
 To interact with the Expo API, we need to install the Expo CLI.
 You can use an environment with this library preinstalled, or you can add it to the project as a development dependency.
 The latter is the easiest way but might increase the installation time.
-For vendors that charge you per minute, it might we worth creating a prebuilt environment.
+For vendors that charge you per minute, it might be worth creating a prebuilt environment.
 
 To install the Expo CLI into your project, you can execute this script.
 

@@ -86,12 +86,14 @@ export class ADBServer {
 
     await this.startAsync();
 
-    return await this.resolveAdbPromise(
+    const results = await this.resolveAdbPromise(
       execFileSync(adb, args, {
         encoding: 'latin1',
         stdio: 'pipe',
       })
     );
+    Log.debug('[ADB] File output:\n', results);
+    return results;
   }
 
   /** Formats error info. */

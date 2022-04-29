@@ -1,7 +1,10 @@
 import { ExpoConfig, getConfig } from '@expo/config';
 
 import { APISettings } from '../../api/settings';
-import { updateDevelopmentSessionAsync } from '../../api/updateDevelopmentSession';
+import {
+  closeDevelopmentSessionAsync,
+  updateDevelopmentSessionAsync,
+} from '../../api/updateDevelopmentSession';
 import { getUserAsync } from '../../api/user/user';
 import * as ProjectDevices from '../project/devices';
 
@@ -43,7 +46,7 @@ export class DevelopmentSession {
   }): Promise<void> {
     if (APISettings.isOffline) {
       debug('Development session will not ping because the server is offline.');
-      this.stop();
+      this.stopNotifying();
       return;
     }
 
@@ -53,7 +56,7 @@ export class DevelopmentSession {
       debug(
         'Development session will not ping because the user is not authenticated and there are no devices.'
       );
-      this.stop();
+      this.stopNotifying();
       return;
     }
 
@@ -67,7 +70,7 @@ export class DevelopmentSession {
       });
     }
 
-    this.stop();
+    this.stopNotifying();
 
     this.timeout = setTimeout(() => this.startAsync({ exp, runtime }), UPDATE_FREQUENCY);
   }
@@ -79,10 +82,27 @@ export class DevelopmentSession {
   }
 
   /** Stop notifying the Expo servers that the development session is running. */
-  public stop() {
+  public stopNotifying() {
     if (this.timeout) {
       clearTimeout(this.timeout);
     }
     this.timeout = null;
+  }
+
+  public async closeAsync(): Promise<void> {
+    this.stopNotifying();
+
+    const deviceIds = await this.getDeviceInstallationIdsAsync();
+
+    if (!(await isAuthenticatedAsync()) && !deviceIds?.length) {
+      return;
+    }
+
+    if (this.url) {
+      await closeDevelopmentSessionAsync({
+        url: this.url,
+        deviceIds,
+      });
+    }
   }
 }

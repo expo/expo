@@ -80,32 +80,6 @@
   });
 }
 
-#pragma mark - Functions
-
-- (void)setAsyncFunction:(nonnull NSString *)name
-               argsCount:(NSInteger)argsCount
-                   block:(nonnull JSAsyncFunctionBlock)block
-{
-  if (!_runtime) {
-    NSLog(@"Cannot set '%@' async function when the EXJavaScript runtime is no longer available.", name);
-    return;
-  }
-  jsi::Function function = [_runtime createAsyncFunction:name argsCount:argsCount block:block];
-  _jsObjectPtr->setProperty(*[_runtime get], [name UTF8String], function);
-}
-
-- (void)setSyncFunction:(nonnull NSString *)name
-              argsCount:(NSInteger)argsCount
-                  block:(nonnull JSSyncFunctionBlock)block
-{
-  if (!_runtime) {
-    NSLog(@"Cannot set '%@' sync function when the EXJavaScript runtime is no longer available.", name);
-    return;
-  }
-  jsi::Function function = [_runtime createSyncFunction:name argsCount:argsCount block:block];
-  _jsObjectPtr->setProperty(*[_runtime get], [name UTF8String], function);
-}
-
 #pragma mark - Private helpers
 
 - (jsi::Object)preparePropertyDescriptorWithOptions:(EXJavaScriptObjectPropertyDescriptor)options

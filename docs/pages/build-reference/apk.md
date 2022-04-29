@@ -41,13 +41,13 @@ Now, to run your build run `eas build -p android --profile preview`. Remember th
 
 ### Emulator ("Virtual device")
 
-> If you haven't installed or run an Android emulator before, follow the [Android Studio emulator guide](/workflow/android-studio-emulator.md) before proceeding.
+> If you haven't installed or run an Android Emulator before, follow the [Android Studio emulator guide](/workflow/android-studio-emulator.md) before proceeding.
 
 - Once your build is completed, download the APK from the build details page or the link provided when `eas build` is done.
 - Open up your emulator.
 - Drag the APK file into the emulator.
 - The app will be installed in a few seconds. When it's complete, navigate to the app launcher, find the app icon and open it.
-- You can share this build, it will run on any Android emulator or device.
+- You can share this build, it will run on any Android Emulator or device.
 
 ### Physical device
 

@@ -8,7 +8,11 @@
 
 ### 🐛 Bug fixes
 
+- On Web fix popup being blocked by Safari. ([#17222](https://github.com/expo/expo/pull/17222) by [@sreuter](https://github.com/sreuter))
+
 ### 💡 Others
+
+- Migrated Expo modules definitions to the new naming convention. ([#17193](https://github.com/expo/expo/pull/17193) by [@tsapeta](https://github.com/tsapeta))
 
 ## 10.2.0 — 2022-04-18
 

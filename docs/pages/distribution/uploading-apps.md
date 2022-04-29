@@ -70,7 +70,7 @@ Start by creating an app profile in App Store Connect, if you haven't already:
 
 #### Uploading with Transporter
 
-In order to see your app on Testflight, you will first need to submit your build to Apple using **Transporter** (previously known as Application Loader), available on the App Store ([link](https://apps.apple.com/app/transporter/id1450874784)). In order to do this:
+In order to see your app on TestFlight, you will first need to submit your build to Apple using **Transporter** (previously known as Application Loader), available on the App Store ([link](https://apps.apple.com/app/transporter/id1450874784)). In order to do this:
 
 1. Make sure you have logged into App Store Connect with your Apple ID and accepted any terms and agreements.
 2. Download Transporter from the [App Store](https://apps.apple.com/app/transporter/id1450874784).

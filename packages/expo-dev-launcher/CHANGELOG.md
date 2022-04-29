@@ -8,7 +8,24 @@
 
 ### 🐛 Bug fixes
 
+- Fix crash on initial deep link ([#17268](https://github.com/expo/expo/pull/17268) by [@ajsmth](https://github.com/ajsmth))
+- Fix remote debugging crashing the application on iOS. ([#17248](https://github.com/expo/expo/pull/17248) by [@lukmccall](https://github.com/lukmccall))
+
 ### 💡 Others
+
+## 0.11.3 — 2022-04-26
+
+### 🐛 Bug fixes
+
+- Fix the error screen sometimes not showing on iOS. ([#17216](https://github.com/expo/expo/pull/17216) by [@lukmccall](https://github.com/lukmccall))
+
+## 0.11.2 — 2022-04-25
+
+_This version does not introduce any user-facing changes._
+
+## 0.11.1 — 2022-04-21
+
+_This version does not introduce any user-facing changes._
 
 ## 0.11.0 — 2022-04-20
 

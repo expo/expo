@@ -8,6 +8,7 @@ import { promisify } from 'util';
 import { createCachedFetch } from '../api/rest/client';
 import { FetchLike, ProgressCallback } from '../api/rest/client.types';
 import { wrapFetchWithProgress } from '../api/rest/wrapFetchWithProgress';
+import { Log } from '../log';
 import { ensureDirectoryAsync } from './dir';
 import { CommandError } from './errors';
 import { extractAsync } from './tar';
@@ -74,6 +75,8 @@ export async function downloadAppAsync({
     // would corrupt the file causing tar to fail with `TAR_BAD_ARCHIVE`.
     const tmpPath = temporary.file({ name: path.basename(outputPath) });
     await downloadAsync({ url, outputPath: tmpPath, cacheDirectory, onProgress });
+    Log.debug(`Extracting ${tmpPath} to ${outputPath}`);
+    await ensureDirectoryAsync(outputPath);
     await extractAsync(tmpPath, outputPath);
   } else {
     await ensureDirectoryAsync(path.dirname(outputPath));

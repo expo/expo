@@ -243,7 +243,7 @@ describe('getManifestMiddlewareAsync', () => {
   });
   it(`asserts server is not running`, async () => {
     await expect(server['getManifestMiddlewareAsync']()).rejects.toThrow(
-      /Dev server is not running/
+      /Dev server instance not found/
     );
   });
 });

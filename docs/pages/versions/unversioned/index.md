@@ -4,15 +4,13 @@ hideTOC: true
 ---
 
 import VersionedRedirectNotification from '~/components/plugins/VersionedRedirectNotification';
-import TerminalBlock from '~/components/plugins/TerminalBlock';
+import { Terminal } from '~/ui/components/Snippet';
 
 <VersionedRedirectNotification />
 
 The Expo SDK provides access to device and system functionality such as contacts, camera, and GPS location. You install modules from the Expo SDK using `expo-cli` with the `expo install` command:
 
-<TerminalBlock cmd={['expo install expo-camera expo-contacts expo-sensors']} />
-
-<br />
+<Terminal  cmd={['$ expo install expo-camera expo-contacts expo-sensors']} cmdCopy="expo install expo-camera expo-contacts expo-sensors" />
 
 You can import modules from it in your JavaScript code as follows:
 
@@ -34,11 +32,10 @@ Every quarter there is a new Expo SDK release that typically updates to the late
 
 | Expo SDK Version | React Native Version |
 | ---------------- | -------------------- |
+| 45.0.0           |        0.68.1        |
 | 44.0.0           |        0.64.3        |
 | 43.0.0           |        0.64.3        |
 | 42.0.0           |        0.63.3        |
-| 41.0.0           |        0.63.3        |
-| 40.0.0           |        0.63.3        |
 
 ### Support for other React Native versions
 

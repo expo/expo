@@ -63,7 +63,7 @@ export default function App() {
       /* @hide */
       if (Platform.OS === 'android' && !Constants.isDevice) {
         setErrorMsg(
-          'Oops, this will not work on Snack in an Android emulator. Try it on your device!'
+          'Oops, this will not work on Snack in an Android Emulator. Try it on your device!'
         );
         return;
       }

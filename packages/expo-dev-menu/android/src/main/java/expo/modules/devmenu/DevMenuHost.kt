@@ -6,6 +6,7 @@ import android.util.Log
 import com.facebook.hermes.reactexecutor.HermesExecutorFactory
 import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactNativeHost
+import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.JSIModulePackage
 import com.facebook.react.bridge.JavaScriptExecutorFactory
 import com.facebook.react.devsupport.DevServerHelper
@@ -22,13 +23,30 @@ import java.io.InputStreamReader
  */
 class DevMenuHost(application: Application) : ReactNativeHost(application) {
 
-  override fun getPackages() = listOf(
-    MainReactPackage(null),
-    DevMenuPackage(),
-    getVendoredPackage("com.swmansion.reanimated.ReanimatedPackage"),
-    getVendoredPackage("com.swmansion.gesturehandler.react.RNGestureHandlerPackage"),
-    getVendoredPackage("com.th3rdwave.safeareacontext.SafeAreaContextPackage"),
-  )
+  override fun getPackages(): List<ReactPackage> {
+    val packages = mutableListOf<ReactPackage>(
+      MainReactPackage(null),
+      DevMenuPackage(),
+      getVendoredPackage("com.swmansion.reanimated.ReanimatedPackage"),
+      getVendoredPackage("com.swmansion.gesturehandler.react.RNGestureHandlerPackage"),
+      getVendoredPackage("com.th3rdwave.safeareacontext.SafeAreaContextPackage"),
+    )
+
+    try {
+      val devLauncherPackage = Class.forName("expo.modules.devlauncher.DevLauncherPackage")
+
+      if (devLauncherPackage != null) {
+        val pkg = devLauncherPackage.getConstructor().newInstance() as ReactPackage
+        packages.add(pkg)
+      }
+    } catch (e: ClassNotFoundException) {
+      // dev launcher is not installed in this project
+    }
+
+
+    return packages
+  }
+
 
   override fun getJSIModulePackage(): JSIModulePackage {
     return getVendoredJNIPackage("com.swmansion.reanimated.ReanimatedJSIModulePackage")

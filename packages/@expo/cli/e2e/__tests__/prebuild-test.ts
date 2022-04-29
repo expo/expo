@@ -47,25 +47,22 @@ it('runs `npx expo prebuild --help`', async () => {
   const results = await execute('prebuild', '--help');
   expect(results.stdout).toMatchInlineSnapshot(`
     "
-          Description
-            Create native iOS and Android project files before building natively.
+      Info
+        Create native iOS and Android project files for building natively
 
-          Usage
-            $ npx expo prebuild <dir>
+      Usage
+        $ npx expo prebuild <dir>
 
-          <dir> is the directory of the Expo project.
-          Defaults to the current working directory.
-
-          Options
-          --no-install                             Skip installing npm packages and CocoaPods.
-          --clean                                  Delete the native folders and regenerate them before applying changes
-          --npm                                    Use npm to install dependencies. (default when Yarn is not installed)
-          --template <template>                    Project template to clone from. File path pointing to a local tar file or a github repo
-          -p, --platform <all|android|ios>         Platforms to sync: ios, android, all. Default: all
-          --skip-dependency-update <dependencies>  Preserves versions of listed packages in package.json (comma separated list)
-          -h, --help                               Output usage information
-
-        "
+      Options
+        <dir>                                    Directory of the Expo project. Default: Current working directory
+        --no-install                             Skip installing npm packages and CocoaPods
+        --clean                                  Delete the native folders and regenerate them before applying changes
+        --npm                                    Use npm to install dependencies. Default when Yarn is not installed
+        --template <template>                    Project template to clone from. File path pointing to a local tar file or a github repo
+        -p, --platform <all|android|ios>         Platforms to sync: ios, android, all. Default: all
+        --skip-dependency-update <dependencies>  Preserves versions of listed packages in package.json (comma separated list)
+        -h, --help                               Usage info
+    "
   `);
 });
 

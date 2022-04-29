@@ -1,4 +1,5 @@
 import { borderRadius, spacing } from '@expo/styleguide-native';
+import { useNavigation } from '@react-navigation/native';
 import { View, Text, Spacer, useExpoTheme } from 'expo-dev-client-components';
 import * as WebBrowser from 'expo-web-browser';
 import * as React from 'react';
@@ -8,17 +9,53 @@ import url from 'url';
 import Analytics from '../../api/Analytics';
 import ApolloClient from '../../api/ApolloClient';
 import Config from '../../api/Config';
-import { useDispatch } from '../../redux/Hooks';
+import { useDispatch, useSelector } from '../../redux/Hooks';
 import SessionActions from '../../redux/SessionActions';
 import { useAccountName } from '../../utils/AccountNameContext';
+import hasSessionSecret from '../../utils/hasSessionSecret';
 
-export function LoggedOutAccountView() {
+type Props = {
+  refetch: () => Promise<void>;
+};
+
+export function LoggedOutAccountView({ refetch }: Props) {
   const dispatch = useDispatch();
   const [isAuthenticating, setIsAuthenticating] = React.useState(false);
+  const [isFinishedAuthenticating, setIsFinishedAuthenticating] = React.useState(false);
   const [authenticationError, setAuthenticationError] = React.useState<string | null>(null);
   const mounted = React.useRef<boolean | null>(true);
   const theme = useExpoTheme();
   const { setAccountName } = useAccountName();
+  const navigation = useNavigation();
+
+  const { sessionSecretExists } = useSelector((data) => {
+    const sessionSecretExists = hasSessionSecret(data.session);
+    return {
+      sessionSecretExists,
+    };
+  });
+
+  React.useEffect(() => {
+    async function refetchThenGoBackAsync() {
+      // after logging in, wait for redux action to dispatch, refetch with new sessionSecret, then dismiss modal
+      if (isFinishedAuthenticating && sessionSecretExists) {
+        try {
+          await refetch();
+        } finally {
+          // in the case that it rejects, we still want to dismiss the modal
+
+          // if it's an internet issue, the user will be able to try to refresh the homepage
+
+          // if it's an issue with the sessionSecret being invalid, the user will be able to try to
+          // log in again and rewrite the sessionSecret
+
+          navigation.goBack();
+        }
+      }
+    }
+
+    refetchThenGoBackAsync();
+  }, [isFinishedAuthenticating, sessionSecretExists]);
 
   React.useEffect(() => {
     mounted.current = true;
@@ -84,6 +121,7 @@ export function LoggedOutAccountView() {
           })
         );
         setAccountName(usernameOrEmail);
+        setIsFinishedAuthenticating(true);
       }
     } catch (e) {
       // TODO(wschurman): Put this into Sentry
