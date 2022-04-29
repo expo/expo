@@ -64,7 +64,7 @@ export interface GetStringOptions {
   /**
    * The target format of the clipboard string to be converted to, if possible.
    *
-   * @default `StringFormat.PLAIN_TEXT`
+   * @default StringFormat.PLAIN_TEXT
    */
   preferredFormat?: StringFormat;
 }
@@ -74,7 +74,7 @@ export interface SetStringOptions {
    * The input format of the provided string.
    * Adjusting this option can help other applications interpret copied string properly.
    *
-   * @default `StringFormat.PLAIN_TEXT`
+   * @default StringFormat.PLAIN_TEXT
    */
   inputFormat?: StringFormat;
 }
