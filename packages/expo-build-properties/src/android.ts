@@ -1,4 +1,9 @@
 import { AndroidConfig, ConfigPlugin, withDangerousMod } from '@expo/config-plugins';
+import {
+  mergeContents,
+  removeContents,
+  MergeResults,
+} from '@expo/config-plugins/build/utils/generateCode';
 import fs from 'fs';
 import path from 'path';
 
@@ -51,20 +56,55 @@ export const withAndroidProguardRules: ConfigPlugin<PluginConfigType> = (config,
   return withDangerousMod(config, [
     'android',
     async (config) => {
-      const extraProguardRules = props.android?.extraProguardRules;
-      if (!extraProguardRules) {
-        return config;
-      }
-
+      const extraProguardRules = props.android?.extraProguardRules ?? null;
       const proguardRulesFile = path.join(
         config.modRequest.platformProjectRoot,
         'app',
         'proguard-rules.pro'
       );
-      let contents = await fs.promises.readFile(proguardRulesFile, 'utf8');
-      contents += `\n${extraProguardRules}`;
-      await fs.promises.writeFile(proguardRulesFile, contents);
+
+      const contents = await fs.promises.readFile(proguardRulesFile, 'utf8');
+      const newContents = updateAndroidProguardRules(contents, extraProguardRules);
+      if (newContents) {
+        await fs.promises.writeFile(proguardRulesFile, newContents);
+      }
       return config;
     },
   ]);
 };
+
+/**
+ * Update `newProguardRules` to original `proguard-rules.pro` contents if needed
+ *
+ * @param contents the original `proguard-rules.pro` contents
+ * @param newProguardRules new proguard rules to add. If the value is null, the generated proguard rules will be cleanup
+ * @returns return string when results is updated or return null when nothing changed.
+ */
+export function updateAndroidProguardRules(
+  contents: string,
+  newProguardRules: string | null
+): string | null {
+  const mergeTag = 'expo-build-properties';
+
+  let mergeResults: MergeResults;
+  if (newProguardRules) {
+    mergeResults = mergeContents({
+      tag: mergeTag,
+      src: contents,
+      newSrc: newProguardRules,
+      anchor: /^/,
+      offset: contents.length,
+      comment: '#',
+    });
+  } else {
+    mergeResults = removeContents({
+      tag: mergeTag,
+      src: contents,
+    });
+  }
+
+  if (mergeResults.didMerge || mergeResults.didClear) {
+    return mergeResults.contents;
+  }
+  return null;
+}
