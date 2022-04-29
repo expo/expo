@@ -42,7 +42,9 @@ describe('getAdbExecutablePath', () => {
   it('warns if Android SDK is not found', () => {
     process.env.ANDROID_HOME = '/Users/user/android';
     new ADBServer().getAdbExecutablePath();
-    expect(Log.warn).toBeCalledWith(expect.stringContaining('Failed to resolve the Android SDK path'));
+    expect(Log.warn).toBeCalledWith(
+      expect.stringContaining('Failed to resolve the Android SDK path')
+    );
   });
 });
 

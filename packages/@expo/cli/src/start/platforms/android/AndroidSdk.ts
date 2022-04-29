@@ -1,7 +1,7 @@
 import assert from 'assert';
 import fs from 'fs';
-import path from 'path';
 import os from 'os';
+import path from 'path';
 
 /**
  * The default Android SDK locations per platform.
@@ -9,7 +9,7 @@ import os from 'os';
  * @see https://developer.android.com/studio/intro/studio-config#optimize-studio-windows
  */
 const ANDROID_DEFAULT_LOCATION: Readonly<Partial<Record<NodeJS.Platform, string>>> = {
-  darwin: path.join(os.homedir(), 'Library', 'Android', 'sdk'), 
+  darwin: path.join(os.homedir(), 'Library', 'Android', 'sdk'),
   linux: path.join(os.homedir(), 'Android', 'sdk'),
   win32: path.join(os.homedir(), 'AppData', 'Local', 'Android', 'Sdk'),
 };
@@ -41,7 +41,7 @@ export function assertSdkRoot() {
     assert(
       fs.existsSync(defaultLocation),
       `Failed to resolve the Android SDK path. Default install location not found: ${defaultLocation}. Use ANDROID_HOME to set the Android SDK location.`
-    )
+    );
     return defaultLocation;
   }
 
