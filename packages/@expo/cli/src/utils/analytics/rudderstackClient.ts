@@ -1,4 +1,5 @@
 import RudderAnalytics from '@expo/rudder-sdk-node';
+import * as ciInfo from 'ci-info';
 import os from 'os';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -97,11 +98,13 @@ function ensureIdentified(): void {
   identified = true;
 }
 
-function getContext(): Record<string, any> {
+/** Exposed for testing only */
+export function getContext(): Record<string, any> {
   const platform = PLATFORM_TO_ANALYTICS_PLATFORM[os.platform()] || os.platform();
   return {
     os: { name: platform, version: os.release() },
     device: { type: platform, model: platform },
     app: { name: 'expo', version: process.env.__EXPO_VERSION },
+    ci: ciInfo.isCI ? { name: ciInfo.name, isPr: ciInfo.isPR } : undefined,
   };
 }
