@@ -15,7 +15,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 ## Installation
 
-> **Note:** To use this config plugin, your apps must be a managed app and build by either [EAS Build](/build/introduction.md) or `expo run:[android|ios]`.
+> **Note:** To use this config plugin, your apps must be a managed app and build by either [EAS Build](/build/introduction.md) or `expo run:[android|ios]`. This package has no effect on project's built with the classic `expo build:android` or `expo build:ios` commands, or when running in the Expo Go app.
 
 <APIInstallSection hideBareInstructions={true} />
 
