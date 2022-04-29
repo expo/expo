@@ -1,11 +1,13 @@
 import spawnAsync from '@expo/spawn-async';
 import { execFileSync } from 'child_process';
+import { vol } from 'memfs';
 
 import * as Log from '../../../../log';
 import { AbortCommandError } from '../../../../utils/errors';
 import { installExitHooks } from '../../../../utils/exit';
 import { ADBServer } from '../ADBServer';
 
+jest.mock('fs', () => jest.requireActual('memfs').fs);
 jest.mock('../../../../log');
 jest.mock('../../../../utils/exit', () => ({
   installExitHooks: jest.fn(),
@@ -20,6 +22,8 @@ beforeEach(() => {
   delete process.env.ANDROID_HOME;
 });
 
+afterEach(() => vol.reset());
+
 afterAll(() => {
   process.env = env;
 });
@@ -30,9 +34,15 @@ describe('getAdbExecutablePath', () => {
     expect(adbPath).toEqual('adb');
   });
   it(`returns the user defined adb path`, () => {
+    vol.fromJSON({ '/Users/user/android/file': '' });
     process.env.ANDROID_HOME = '/Users/user/android';
     const adbPath = new ADBServer().getAdbExecutablePath();
     expect(adbPath).toEqual('/Users/user/android/platform-tools/adb');
+  });
+  it('warns if Android SDK is not found', () => {
+    process.env.ANDROID_HOME = '/Users/user/android';
+    new ADBServer().getAdbExecutablePath();
+    expect(Log.warn).toBeCalledWith(expect.stringContaining('Failed to resolve the Android SDK path'));
   });
 });
 

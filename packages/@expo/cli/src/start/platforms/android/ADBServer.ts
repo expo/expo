@@ -1,11 +1,10 @@
 import spawnAsync from '@expo/spawn-async';
 import { execFileSync } from 'child_process';
-import path from 'path';
 
 import * as Log from '../../../log';
 import { AbortCommandError } from '../../../utils/errors';
 import { installExitHooks } from '../../../utils/exit';
-import { resolveSdkRoot } from './AndroidSdk';
+import { assertSdkRoot } from './AndroidSdk';
 
 const BEGINNING_OF_ADB_ERROR_MESSAGE = 'error: ';
 
@@ -19,12 +18,16 @@ export class ADBServer {
 
   /** Returns the command line reference to ADB. */
   getAdbExecutablePath(): string {
-    const sdkRoot = resolveSdkRoot();
-    if (sdkRoot) {
-      return path.join(sdkRoot, 'platform-tools', 'adb');
+    try {
+      const sdkRoot = assertSdkRoot();
+      if (sdkRoot) {
+        return `${sdkRoot}/platform-tools/adb`;
+      }
+    } catch (error: any) {
+      Log.warn(error.message);
     }
 
-    Log.debug('No SDK found in ANDROID_HOME, ANDROID_SDK_ROOT, or default location. Falling back to global adb executable');
+    Log.debug('Failed to resolve the Android SDK path, falling back to global adb executable');
     return 'adb';
   }
 

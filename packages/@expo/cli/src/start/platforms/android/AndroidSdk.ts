@@ -1,3 +1,4 @@
+import assert from 'assert';
 import fs from 'fs';
 import path from 'path';
 import os from 'os';
@@ -14,24 +15,35 @@ const ANDROID_DEFAULT_LOCATION: Readonly<Partial<Record<NodeJS.Platform, string>
 };
 
 /**
- * Resolve the root folder where the Android SDK has been installed.
+ * Resolve and validate the root folder where the Android SDK has been installed.
  * This checks both `ANDROID_HOME`, `ANDROID_SDK_ROOT`, and the default path for the current platform.
  * @see https://developer.android.com/studio/command-line/variables
  */
-export function resolveSdkRoot() {
-  if (process.env.ANDROID_HOME && fs.existsSync(process.env.ANDROID_HOME)) {
+export function assertSdkRoot() {
+  if (process.env.ANDROID_HOME) {
+    assert(
+      fs.existsSync(process.env.ANDROID_HOME),
+      `Failed to resolve the Android SDK path. ANDROID_HOME is set to a non-existing path: ${process.env.ANDROID_HOME}`
+    );
     return process.env.ANDROID_HOME;
   }
 
-  if (process.env.ANDROID_SDK_ROOT && fs.existsSync(process.env.ANDROID_SDK_ROOT)) {
+  if (process.env.ANDROID_SDK_ROOT) {
+    assert(
+      fs.existsSync(process.env.ANDROID_SDK_ROOT),
+      `Failed to resolve the Android SDK path. Deprecated ANDROID_SDK_ROOT is set to a non-existing path: ${process.env.ANDROID_SDK_ROOT}. Use ANDROID_HOME instead.`
+    );
     return process.env.ANDROID_SDK_ROOT;
   }
 
   const defaultLocation = ANDROID_DEFAULT_LOCATION[process.platform];
-  if (defaultLocation && fs.existsSync(defaultLocation)) {
+  if (defaultLocation) {
+    assert(
+      fs.existsSync(defaultLocation),
+      `Failed to resolve the Android SDK path. Default install location not found: ${defaultLocation}. Use ANDROID_HOME to set the Android SDK location.`
+    )
     return defaultLocation;
   }
 
   return null;
 }
-
