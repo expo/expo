@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- validate Android SDK configuration before using ([#17259](https://github.com/expo/expo/pull/17259) by [@byCedric](https://github.com/byCedric))
+
 ### 🐛 Bug fixes
 
 - add missing `pretty-bytes` dependency. ([#17235](https://github.com/expo/expo/pull/17235) by [@EvanBacon](https://github.com/EvanBacon))
