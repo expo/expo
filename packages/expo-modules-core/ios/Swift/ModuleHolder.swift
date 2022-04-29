@@ -56,9 +56,7 @@ public final class ModuleHolder {
    Merges all `constants` definitions into one dictionary.
    */
   func getConstants() -> [String: Any?] {
-    return definition.constants.reduce(into: [String: Any?]()) { dict, definition in
-      dict.merge(definition.body()) { $1 }
-    }
+    return definition.getConstants()
   }
 
   // MARK: Calling functions
@@ -97,22 +95,7 @@ public final class ModuleHolder {
     guard let runtime = appContext?.runtime else {
       return nil
     }
-    let object = runtime.createObject()
-
-    // Fill in with constants
-    for (key, value) in getConstants() {
-      object.setProperty(key, value: value)
-    }
-
-    // Fill in with functions
-    for fn in definition.functions.values {
-      if fn is AnyAsyncFunctionComponent {
-        object.setProperty(fn.name, value: runtime.createAsyncFunction(fn.name, argsCount: fn.argumentsCount, block: createAsyncFunctionBlock(holder: self, name: fn.name)))
-      } else {
-        object.setProperty(fn.name, value: runtime.createSyncFunction(fn.name, argsCount: fn.argumentsCount, block: createSyncFunctionBlock(holder: self, name: fn.name)))
-      }
-    }
-    return object
+    return definition.build(inRuntime: runtime)
   }
 
   // MARK: Listening to native events

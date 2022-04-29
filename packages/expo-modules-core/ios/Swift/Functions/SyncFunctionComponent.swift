@@ -5,11 +5,10 @@
  */
 public protocol AnySyncFunctionComponent: AnyFunction {
   /**
-   Calls the function just like `call(args:callback:)` but synchronously.
+   Calls the function synchronously with given arguments.
    - Parameters:
-     - args: An array of arguments to pass to the function.
-   - Returns: A value returned by the called function when succeeded.
-   - Throws: Some `Exception` whenever the function call fails.
+     - args: An array of arguments to pass to the function. The arguments must be of the same type as in the underlying closure.
+   - Returns: A value returned by the called function when succeeded or an error when it failed.
    */
   func call(args: [Any]) throws -> Any
 }
@@ -56,13 +55,28 @@ internal final class SyncFunctionComponent<Args, ReturnType>: AnySyncFunctionCom
 
   func call(args: [Any]) throws -> Any {
     do {
-      let arguments = try castArguments(args, toTypes: argumentTypes)
-      let argumentsTuple = try Conversions.toTuple(arguments) as! Args
+      let argumentsTuple = try Conversions.toTuple(args) as! Args
       return try body(argumentsTuple)
     } catch let error as Exception {
       throw FunctionCallException(name).causedBy(error)
     } catch {
       throw UnexpectedException(error)
+    }
+  }
+
+  // MARK: - JavaScriptObjectBuilder
+
+  func build(inRuntime runtime: JavaScriptRuntime) -> JavaScriptObject {
+    return runtime.createSyncFunction(name, argsCount: argumentsCount) { [weak self, name] args in
+      guard let self = self else {
+        return NativeFunctionUnavailableException(name)
+      }
+      do {
+        let arguments = try castArguments(args, toTypes: self.argumentTypes)
+        return try self.call(args: arguments)
+      } catch {
+        return error
+      }
     }
   }
 }

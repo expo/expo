@@ -6,7 +6,7 @@ public typealias FunctionCallResult = Result<Any, Exception>
 /**
  A protocol for any type-erased function.
  */
-public protocol AnyFunction: AnyDefinition {
+public protocol AnyFunction: AnyDefinition, JavaScriptObjectBuilder {
   /**
    Name of the function. JavaScript refers to the function by this name.
    */

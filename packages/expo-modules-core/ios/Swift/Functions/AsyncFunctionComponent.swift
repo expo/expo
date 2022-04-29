@@ -96,11 +96,38 @@ internal final class AsyncFunctionComponent<Args, ReturnType>: AnyAsyncFunctionC
     }
   }
 
+  // MARK: - JavaScriptObjectBuilder
+
+  func build(inRuntime runtime: JavaScriptRuntime) -> JavaScriptObject {
+    return runtime.createAsyncFunction(name, argsCount: argumentsCount) { [weak self, name] args, resolve, reject in
+      guard let self = self else {
+        let exception = NativeFunctionUnavailableException(name)
+        return reject(exception.code, exception.description, nil)
+      }
+      self.call(args: args) { result in
+        switch result {
+        case .failure(let error):
+          reject(error.code, error.description, nil)
+        case .success(let value):
+          resolve(value)
+        }
+      }
+    }
+  }
+
   // MARK: - AnyAsyncFunctionComponent
 
   public func runOnQueue(_ queue: DispatchQueue?) -> Self {
     self.queue = queue
     return self
+  }
+}
+
+// MARK: - Exceptions
+
+internal final class NativeFunctionUnavailableException: GenericException<String> {
+  override var reason: String {
+    return "Native function '\(param)' is no longer available in memory"
   }
 }
 
