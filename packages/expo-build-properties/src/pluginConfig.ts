@@ -17,7 +17,7 @@ const EXPO_SDK_MINIMAL_SUPPORTED_VERSIONS = {
 };
 
 /**
- * Configuration for `expo-build-properties` passing from `app.json` or `app.config.js`
+ * Configuration for `expo-build-properties`
  */
 export interface PluginConfigType {
   android?: PluginConfigTypeAndroid;

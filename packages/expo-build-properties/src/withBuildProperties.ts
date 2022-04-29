@@ -6,8 +6,9 @@ import { PluginConfigType, validateConfig } from './pluginConfig';
 
 /**
  * Config plugin to customize native Android or iOS build properties for managed apps
+ *
  * @param config ExpoConfig
- * @param props `PluginConfig` from app.json or app.config.js
+ * @param props Configuration for the config plugin
  * @ignore
  */
 export const withBuildProperties: ConfigPlugin<PluginConfigType> = (config, props) => {
