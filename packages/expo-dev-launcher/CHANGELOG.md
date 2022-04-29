@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix remote debugging crashing the application on iOS.
+- Fix remote debugging crashing the application on iOS. ([#17248](https://github.com/expo/expo/pull/17248) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 
