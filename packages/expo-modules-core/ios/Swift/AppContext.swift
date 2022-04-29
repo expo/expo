@@ -29,7 +29,7 @@ public final class AppContext: NSObject {
    The legacy module registry with modules written in the old-fashioned way.
    */
   @objc
-  public var legacyModuleRegistry: EXModuleRegistry?
+  public weak var legacyModuleRegistry: EXModuleRegistry?
 
   /**
    React bridge of the context's app. Can be `nil` when the bridge
