@@ -1229,7 +1229,7 @@
     node-forge "^1.2.1"
     nullthrows "^1.1.1"
 
-"@expo/config-plugins@4.1.4", "@expo/config-plugins@^4.0.14", "@expo/config-plugins@^4.1.2", "@expo/config-plugins@~4.1.4":
+"@expo/config-plugins@4.1.4", "@expo/config-plugins@^4.0.14", "@expo/config-plugins@~4.1.4":
   version "4.1.4"
   resolved "https://registry.yarnpkg.com/@expo/config-plugins/-/config-plugins-4.1.4.tgz#08e1a6314dc0f96cd165a748b5997b5ec75a84d0"
   integrity sha512-fkOjXnSieQfVSWVLKhst0DnCAyeHksvWky1CldFCQllhDB1HHBiP09Z8pamVB783n3qr/1HNZiSp6k2iUcaSoA==
