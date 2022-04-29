@@ -29,6 +29,7 @@
   "expo-blur": "~11.1.0",
   "expo-branch": "~5.2.0",
   "expo-brightness": "~10.2.0",
+  "expo-build-properties": "~0.1.0",
   "expo-calendar": "~10.2.0",
   "expo-camera": "~12.2.0",
   "expo-cellular": "~4.2.0",
