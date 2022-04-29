@@ -46,10 +46,21 @@ function updateDeploymentTargetXcodeProject(
   project: XcodeProject,
   deploymentTarget: string
 ): XcodeProject {
-  const configurations: Record<string, any> = project.pbxXCBuildConfigurationSection();
-  for (const { buildSettings } of Object.values(configurations ?? {})) {
-    if (buildSettings?.IPHONEOS_DEPLOYMENT_TARGET) {
-      buildSettings.IPHONEOS_DEPLOYMENT_TARGET = deploymentTarget;
+  const { Target } = IOSConfig;
+  const targetBuildConfigListIds = Target.getNativeTargets(project)
+    .filter(([_, target]) => Target.isTargetOfType(target, Target.TargetType.APPLICATION))
+    .map(([_, target]) => target.buildConfigurationList);
+
+  for (const buildConfigListId of targetBuildConfigListIds) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    for (const [_, configurations] of IOSConfig.XcodeUtils.getBuildConfigurationsForListId(
+      project,
+      buildConfigListId
+    )) {
+      const { buildSettings } = configurations;
+      if (buildSettings?.IPHONEOS_DEPLOYMENT_TARGET) {
+        buildSettings.IPHONEOS_DEPLOYMENT_TARGET = deploymentTarget;
+      }
     }
   }
   return project;
