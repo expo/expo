@@ -1,3 +1,6 @@
+// As we need to use localStorage here but want to prevent further use, implement the
+// ESLint rule no-storage/no-browser-storage but ignore this file, in particular.
+/* eslint-disable no-storage/no-browser-storage */
 import { Event } from '@sentry/types';
 /*
  * Error logging filtering - prevent users from submitting errors we do not care about,
@@ -7,10 +10,6 @@ import { Event } from '@sentry/types';
 
 // These exact error messages may be different depending on the browser!
 const ERRORS_TO_DISCARD = [
-  // Filter out errors from extensions
-  'chrome-extension://',
-  'moz-extension://',
-  'safari-extension://',
   // This error only appears in Safari
   "undefined is not an object (evaluating 'window.__pad.performLoop')",
   // This error appears in Firefox related to local storage and flooded our Sentry bandwidth
