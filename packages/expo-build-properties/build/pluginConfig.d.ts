@@ -1,5 +1,5 @@
 /**
- * Configuration for `expo-build-properties` passing from `app.json` or `app.config.js`
+ * Configuration for `expo-build-properties`
  */
 export interface PluginConfigType {
     android?: PluginConfigTypeAndroid;
@@ -28,7 +28,11 @@ export interface PluginConfigTypeAndroid {
  * Config for iOS native build properties
  */
 export interface PluginConfigTypeIos {
-    /** Override the default iOS *Deployment Target* version in app project and CocoaPods projects */
+    /**
+     * Override the default iOS *Deployment Target* version in the following projects:
+     *  - in CocoaPods projects
+     *  - `PBXNativeTarget` with `com.apple.product-type.application` productType in the app project
+     */
     deploymentTarget?: string;
     /** Enable [`use_frameworks!`](https://guides.cocoapods.org/syntax/podfile.html#use_frameworks_bang) in `Podfile` */
     useFrameworks?: 'static' | 'dynamic';

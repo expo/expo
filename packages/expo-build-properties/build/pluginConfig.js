@@ -5,6 +5,21 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.validateConfig = void 0;
 const ajv_1 = __importDefault(require("ajv"));
+const semver_1 = __importDefault(require("semver"));
+/**
+ * The minimal supported versions. These values should align to SDK
+ * @ignore
+ */
+const EXPO_SDK_MINIMAL_SUPPORTED_VERSIONS = {
+    android: {
+        compileSdkVersion: 31,
+        targetSdkVersion: 31,
+        kotlinVersion: '1.6.10',
+    },
+    ios: {
+        deploymentTarget: '12.0',
+    },
+};
 const schema = {
     type: 'object',
     properties: {
@@ -41,6 +56,51 @@ const schema = {
     },
 };
 /**
+ * Check versions to meet expo minimal supported versions.
+ * Will throw error message whenever there are invalid versions.
+ * For the implementation, we check items one by one because ajv does not well support custom error message.
+ *
+ * @param config the validated config passed from ajv
+ * @ignore
+ */
+function maybeThrowInvalidVersions(config) {
+    var _a, _b, _c, _d, _e, _f;
+    const checkItems = [
+        {
+            name: 'android.compileSdkVersion',
+            configVersion: (_a = config.android) === null || _a === void 0 ? void 0 : _a.compileSdkVersion,
+            minimalVersion: EXPO_SDK_MINIMAL_SUPPORTED_VERSIONS.android.compileSdkVersion,
+        },
+        {
+            name: 'android.targetSdkVersion',
+            configVersion: (_b = config.android) === null || _b === void 0 ? void 0 : _b.targetSdkVersion,
+            minimalVersion: EXPO_SDK_MINIMAL_SUPPORTED_VERSIONS.android.targetSdkVersion,
+        },
+        {
+            name: 'android.kotlinVersion',
+            configVersion: (_c = config.android) === null || _c === void 0 ? void 0 : _c.kotlinVersion,
+            minimalVersion: EXPO_SDK_MINIMAL_SUPPORTED_VERSIONS.android.kotlinVersion,
+        },
+        {
+            name: 'ios.deploymentTarget',
+            configVersion: (_d = config.ios) === null || _d === void 0 ? void 0 : _d.deploymentTarget,
+            minimalVersion: EXPO_SDK_MINIMAL_SUPPORTED_VERSIONS.ios.deploymentTarget,
+        },
+    ];
+    for (const { name, configVersion, minimalVersion } of checkItems) {
+        if (typeof configVersion === 'number' &&
+            typeof minimalVersion === 'number' &&
+            configVersion < minimalVersion) {
+            throw new Error(`\`${name}\` needs to be at least version ${minimalVersion}.`);
+        }
+        if (typeof configVersion === 'string' &&
+            typeof minimalVersion === 'string' &&
+            semver_1.default.lt((_e = semver_1.default.coerce(configVersion)) !== null && _e !== void 0 ? _e : '0.0.0', (_f = semver_1.default.coerce(minimalVersion)) !== null && _f !== void 0 ? _f : '0.0.0')) {
+            throw new Error(`\`${name}\` needs to be at least version ${minimalVersion}.`);
+        }
+    }
+}
+/**
  * @ignore
  */
 function validateConfig(config) {
@@ -48,6 +108,7 @@ function validateConfig(config) {
     if (!validate(config)) {
         throw new Error('Invalid expo-build-properties config: ' + JSON.stringify(validate.errors));
     }
+    maybeThrowInvalidVersions(config);
     return config;
 }
 exports.validateConfig = validateConfig;

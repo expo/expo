@@ -29,10 +29,17 @@ const withIosDeploymentTargetXcodeProject = (config, props) => {
     });
 };
 function updateDeploymentTargetXcodeProject(project, deploymentTarget) {
-    const configurations = project.pbxXCBuildConfigurationSection();
-    for (const { buildSettings } of Object.values(configurations !== null && configurations !== void 0 ? configurations : {})) {
-        if (buildSettings === null || buildSettings === void 0 ? void 0 : buildSettings.IPHONEOS_DEPLOYMENT_TARGET) {
-            buildSettings.IPHONEOS_DEPLOYMENT_TARGET = deploymentTarget;
+    const { Target } = config_plugins_1.IOSConfig;
+    const targetBuildConfigListIds = Target.getNativeTargets(project)
+        .filter(([_, target]) => Target.isTargetOfType(target, Target.TargetType.APPLICATION))
+        .map(([_, target]) => target.buildConfigurationList);
+    for (const buildConfigListId of targetBuildConfigListIds) {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        for (const [_, configurations] of config_plugins_1.IOSConfig.XcodeUtils.getBuildConfigurationsForListId(project, buildConfigListId)) {
+            const { buildSettings } = configurations;
+            if (buildSettings === null || buildSettings === void 0 ? void 0 : buildSettings.IPHONEOS_DEPLOYMENT_TARGET) {
+                buildSettings.IPHONEOS_DEPLOYMENT_TARGET = deploymentTarget;
+            }
         }
     }
     return project;

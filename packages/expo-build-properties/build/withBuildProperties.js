@@ -6,9 +6,9 @@ const ios_1 = require("./ios");
 const pluginConfig_1 = require("./pluginConfig");
 /**
  * Config plugin to customize native Android or iOS build properties for managed apps
+ *
  * @param config ExpoConfig
- * @param props `PluginConfig` from app.json or app.config.js
- * @ignore
+ * @param props Configuration for the config plugin
  */
 const withBuildProperties = (config, props) => {
     const pluginConfig = (0, pluginConfig_1.validateConfig)(props || {});
