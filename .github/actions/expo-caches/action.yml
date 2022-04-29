@@ -25,7 +25,7 @@ inputs:
     required: false
   avd-api:
     description: 'API version used in AVD'
-    default: '29'
+    default: '31'
     required: false
   ndk:
     description: 'Restore NDK cache'

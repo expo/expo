@@ -38,7 +38,7 @@ jobs:
       UPDATES_PORT: 4747
     strategy:
       matrix:
-        api-level: [ 29 ]
+        api-level: [ 31 ]
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v3

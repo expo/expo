@@ -33,7 +33,7 @@ jobs:
       GRADLE_OPTS: -Dorg.gradle.jvmargs=-Xmx2048m -XX:MaxMetaspaceSize=1024m
     strategy:
       matrix:
-        api-level: [29]
+        api-level: [31]
     steps:
       - name: ⬢ Setup Node
         uses: actions/setup-node@v3
