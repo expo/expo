@@ -1,17 +1,12 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
 #import <Foundation/Foundation.h>
-#import <React/RCTBridgeModule.h>
 
 #ifdef __cplusplus
 #import <jsi/jsi.h>
-#import <ReactCommon/CallInvoker.h>
 
 namespace jsi = facebook::jsi;
 #endif // __cplusplus
-
-typedef void (^JSAsyncFunctionBlock)(NSArray * _Nonnull, RCTPromiseResolveBlock _Nonnull, RCTPromiseRejectBlock _Nonnull);
-typedef id _Nullable (^JSSyncFunctionBlock)(NSArray * _Nonnull);
 
 @class EXJavaScriptRuntime;
 @class EXJavaScriptValue;
@@ -77,21 +72,5 @@ NS_SWIFT_NAME(JavaScriptObject)
  Defines a new property or modifies an existing property on the object. Calls `Object.defineProperty` under the hood.
  */
 - (void)defineProperty:(nonnull NSString *)name value:(nullable id)value options:(EXJavaScriptObjectPropertyDescriptor)options;
-
-#pragma mark - Functions
-
-/**
- Sets given function block on the object as a host function returning a promise.
- */
-- (void)setAsyncFunction:(nonnull NSString *)key
-               argsCount:(NSInteger)argsCount
-                   block:(nonnull JSAsyncFunctionBlock)block;
-
-/**
- Sets given synchronous function block as a host function on the object.
- */
-- (void)setSyncFunction:(nonnull NSString *)name
-              argsCount:(NSInteger)argsCount
-                  block:(nonnull JSSyncFunctionBlock)block;
 
 @end

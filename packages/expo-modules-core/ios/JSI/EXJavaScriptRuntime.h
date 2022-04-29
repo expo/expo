@@ -2,6 +2,7 @@
 
 #import <ExpoModulesCore/EXJavaScriptValue.h>
 #import <ExpoModulesCore/EXJavaScriptObject.h>
+#import <React/RCTBridgeModule.h>
 
 #ifdef __cplusplus
 #import <ReactCommon/CallInvoker.h>
@@ -12,6 +13,9 @@ namespace react = facebook::react;
 
 @class EXJavaScriptValue;
 @class EXJavaScriptObject;
+
+typedef void (^JSAsyncFunctionBlock)(NSArray * _Nonnull, RCTPromiseResolveBlock _Nonnull, RCTPromiseRejectBlock _Nonnull);
+typedef id _Nullable (^JSSyncFunctionBlock)(NSArray * _Nonnull);
 
 #ifdef __cplusplus
 typedef jsi::Value (^JSHostFunctionBlock)(jsi::Runtime &runtime, std::shared_ptr<react::CallInvoker> callInvoker, NSArray<EXJavaScriptValue *> * _Nonnull arguments);
@@ -44,13 +48,6 @@ NS_SWIFT_NAME(JavaScriptRuntime)
  */
 - (nonnull EXJavaScriptObject *)createHostObject:(std::shared_ptr<jsi::HostObject>)jsiHostObjectPtr;
 
-- (jsi::Function)createSyncFunction:(nonnull NSString *)name
-                          argsCount:(NSInteger)argsCount
-                              block:(nonnull JSSyncFunctionBlock)block;
-
-- (jsi::Function)createAsyncFunction:(nonnull NSString *)name
-                           argsCount:(NSInteger)argsCount
-                               block:(nonnull JSAsyncFunctionBlock)block;
 #endif // __cplusplus
 
 /**
@@ -62,6 +59,25 @@ NS_SWIFT_NAME(JavaScriptRuntime)
  Creates a new object for use in Swift.
  */
 - (nonnull EXJavaScriptObject *)createObject;
+
+/**
+ Creates a synchronous host function that runs given block when it's called.
+ The value returned by the block is synchronously returned to JS.
+ \return A JavaScript function represented as a `JavaScriptObject`.
+ */
+- (nonnull EXJavaScriptObject *)createSyncFunction:(nonnull NSString *)name
+                                         argsCount:(NSInteger)argsCount
+                                             block:(nonnull JSSyncFunctionBlock)block;
+
+/**
+ Creates an asynchronous host function that runs given block when it's called.
+ The block receives a resolver that you should call when the asynchronous operation
+ succeeds and a rejecter to call whenever it fails.
+ \return A JavaScript function represented as a `JavaScriptObject`.
+ */
+- (nonnull EXJavaScriptObject *)createAsyncFunction:(nonnull NSString *)name
+                                          argsCount:(NSInteger)argsCount
+                                              block:(nonnull JSAsyncFunctionBlock)block;
 
 #pragma mark - Script evaluation
 

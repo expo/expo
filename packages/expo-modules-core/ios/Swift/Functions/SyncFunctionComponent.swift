@@ -1,17 +1,69 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
 /**
- Represents a function that can only be called synchronously.
- - ToDo: Move some synchronous logic from `ConcreteFunction` (like `call(args:)`) to this class and drop the `isAsync` property.
+ Type-erased protocol for synchronous functions.
  */
-internal final class SyncFunctionComponent<Args, ReturnType>: ConcreteFunction<Args, ReturnType> {
-  override init(
-    _ name: String,
-    argTypes: [AnyArgumentType],
-    _ closure: @escaping ConcreteFunction<Args, ReturnType>.ClosureType
-  ) {
-    super.init(name, argTypes: argTypes, closure)
-    self.isAsync = false
+public protocol AnySyncFunctionComponent: AnyFunction {
+  /**
+   Calls the function just like `call(args:callback:)` but synchronously.
+   - Parameters:
+     - args: An array of arguments to pass to the function.
+   - Returns: A value returned by the called function when succeeded.
+   - Throws: Some `Exception` whenever the function call fails.
+   */
+  func call(args: [Any]) throws -> Any
+}
+
+/**
+ Represents a function that can only be called synchronously.
+ */
+internal final class SyncFunctionComponent<Args, ReturnType>: AnySyncFunctionComponent {
+  typealias ClosureType = (Args) throws -> ReturnType
+
+  /**
+   The underlying closure to run when the function is called.
+   */
+  let body: ClosureType
+
+  init(_ name: String, argTypes: [AnyArgumentType], _ body: @escaping ClosureType) {
+    self.name = name
+    self.argumentTypes = argTypes
+    self.body = body
+  }
+
+  // MARK: - AnyFunction
+
+  let name: String
+
+  let argumentTypes: [AnyArgumentType]
+
+  var argumentsCount: Int {
+    return argumentTypes.count
+  }
+
+  func call(args: [Any], callback: (FunctionCallResult) -> ()) {
+    do {
+      let result = try call(args: args)
+      callback(.success(result))
+    } catch let error as Exception {
+      callback(.failure(error))
+    } catch {
+      callback(.failure(UnexpectedException(error)))
+    }
+  }
+
+  // MARK: - AnySyncFunctionComponent
+
+  func call(args: [Any]) throws -> Any {
+    do {
+      let arguments = try castArguments(args, toTypes: argumentTypes)
+      let argumentsTuple = try Conversions.toTuple(arguments) as! Args
+      return try body(argumentsTuple)
+    } catch let error as Exception {
+      throw FunctionCallException(name).causedBy(error)
+    } catch {
+      throw UnexpectedException(error)
+    }
   }
 }
 

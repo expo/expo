@@ -14,11 +14,12 @@ internal func createAsyncFunctionBlock(holder: ModuleHolder, name functionName: 
       reject(exception.code, exception.description, exception)
       return
     }
-    holder.call(function: functionName, args: args) { result, error in
-      if let error = error {
-        reject(error.code, error.description, error)
-      } else {
-        resolve(result)
+    holder.call(function: functionName, args: args) { result in
+      switch result {
+      case .failure(let error):
+        reject(error.code, error.description, nil)
+      case .success(let value):
+        resolve(value)
       }
     }
   }
@@ -78,6 +79,8 @@ internal func castArguments(_ arguments: [Any], toTypes argumentTypes: [AnyArgum
   }
 }
 
+// MARK: - Exceptions
+
 internal class InvalidArgsNumberException: GenericException<(received: Int, expected: Int)> {
   override var reason: String {
     "Received \(param.received) arguments, but \(param.expected) was expected"
@@ -89,8 +92,6 @@ internal class ArgumentCastException: GenericException<(index: Int, type: AnyArg
     "Argument at index '\(param.index)' couldn't be cast to type \(param.type.description)"
   }
 }
-
-// MARK: - Exceptions
 
 private class ModuleUnavailableException: GenericException<String> {
   override var reason: String {
