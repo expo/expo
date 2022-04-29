@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- On Android, fix the `badge count number` not being read from the notification payload content. ([#17171](https://github.com/expo/expo/pull/17171) by [@danstepanov](https://github.com/danstepanov))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
