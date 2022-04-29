@@ -1,9 +1,7 @@
+import { asMock } from '../../../__tests__/asMock';
 import { AbortCommandError } from '../../../utils/errors';
 import { DevServerManager } from '../DevServerManager';
 import { openPlatformsAsync } from '../openPlatforms';
-
-const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
-  fn as jest.MockedFunction<T>;
 
 function createDevServerManager() {
   return {
