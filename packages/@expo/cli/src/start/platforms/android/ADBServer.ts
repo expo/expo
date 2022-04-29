@@ -92,7 +92,7 @@ export class ADBServer {
         stdio: 'pipe',
       })
     );
-    Log.debug('[ADB] File output:\n', results);
+    debug('[ADB] File output:\n', results);
     return results;
   }
 

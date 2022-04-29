@@ -145,7 +145,7 @@ export function createSelectionFilter(): (input: any, choices: Choice[]) => Prom
       const regex = new RegExp(escapeRegex(input), 'i');
       return choices.filter((choice: any) => regex.test(choice.title));
     } catch (error: any) {
-      Log.debug('Error filtering choices', error);
+      debug('Error filtering choices', error);
       return [];
     }
   };

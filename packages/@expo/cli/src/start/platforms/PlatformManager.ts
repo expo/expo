@@ -1,7 +1,6 @@
 import { getConfig } from '@expo/config';
 import assert from 'assert';
 
-import * as Log from '../../log';
 import { logEvent } from '../../utils/analytics/rudderstackClient';
 import { CommandError, UnimplementedError } from '../../utils/errors';
 import { learnMore } from '../../utils/link';
@@ -79,7 +78,7 @@ export class PlatformManager<
     resolveSettings: Partial<IResolveDeviceProps> = {},
     props: Partial<IOpenInCustomProps> = {}
   ): Promise<{ url: string }> {
-    Log.debug(
+    debug(
       `open custom (${Object.entries(props)
         .map(([k, v]) => `${k}: ${v}`)
         .join(', ')})`

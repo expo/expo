@@ -1,9 +1,10 @@
 import fs from 'fs';
 import path from 'path';
 
-import * as Log from '../../log';
 import { Device, DeviceABI, getDeviceABIsAsync } from '../../start/platforms/android/adb';
 import { GradleProps } from './resolveGradleProps';
+
+const debug = require('debug')('expo:run:android:resolveInstallApkName') as typeof console.log;
 
 export async function resolveInstallApkNameAsync(
   device: Pick<Device, 'name' | 'pid'>,
@@ -12,14 +13,14 @@ export async function resolveInstallApkNameAsync(
   const availableCPUs = await getDeviceABIsAsync(device);
   availableCPUs.push(DeviceABI.universal);
 
-  Log.debug('Supported ABIs: ' + availableCPUs.join(', '));
-  Log.debug('Searching for APK: ' + apkVariantDirectory);
+  debug('Supported ABIs: ' + availableCPUs.join(', '));
+  debug('Searching for APK: ' + apkVariantDirectory);
 
   // Check for cpu specific builds first
   for (const availableCPU of availableCPUs) {
     const apkName = getApkFileName(appName, buildType, flavors, availableCPU);
     const apkPath = path.join(apkVariantDirectory, apkName);
-    Log.debug('Checking for APK at:', apkPath);
+    debug('Checking for APK at:', apkPath);
     if (fs.existsSync(apkPath)) {
       return apkName;
     }
@@ -28,7 +29,7 @@ export async function resolveInstallApkNameAsync(
   // Otherwise use the default apk named after the variant: app-debug.apk
   const apkName = getApkFileName(appName, buildType, flavors);
   const apkPath = path.join(apkVariantDirectory, apkName);
-  Log.debug('Checking for fallback APK at:', apkPath);
+  debug('Checking for fallback APK at:', apkPath);
   if (fs.existsSync(apkPath)) {
     return apkName;
   }
