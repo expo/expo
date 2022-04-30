@@ -92,7 +92,7 @@
     "cross-env": "^5.2.0",
     "danger": "^9.2.10",
     "eslint": "^8.6.0",
-    "eslint-config-next": "^10.2.3",
+    "eslint-config-next": "^12.1.5",
     "eslint-config-universe": "^10.0.0",
     "eslint-plugin-lodash": "^7.3.0",
     "http-server": "^0.12.3",
