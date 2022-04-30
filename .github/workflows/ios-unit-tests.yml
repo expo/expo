@@ -15,6 +15,7 @@ on:
       - fastlane/**
       - Gemfile.lock
       - .ruby-version
+      - '!packages/@expo/cli/**'
   push:
     branches: [main]
     paths:
@@ -29,6 +30,7 @@ on:
       - fastlane/**
       - Gemfile.lock
       - .ruby-version
+      - '!packages/@expo/cli/**'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
