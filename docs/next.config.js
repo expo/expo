@@ -65,7 +65,7 @@ module.exports = {
     });
 
     // Fix inline or browser MDX usage: https://mdxjs.com/getting-started/webpack#running-mdx-in-the-browser
-    config.resolve.fallback = { fs: false };
+    config.resolve.fallback = { fs: false, path: require.resolve('path-browserify') };
 
     return config;
   },
