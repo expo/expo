@@ -4,14 +4,12 @@ import path from 'path';
 import { Stream } from 'stream';
 import { promisify } from 'util';
 
+import { asMock } from '../../../__tests__/asMock';
 import * as Log from '../../../log';
 import { wrapFetchWithProgress } from '../wrapFetchWithProgress';
 
 const fs = jest.requireActual('fs') as typeof import('fs');
 const pipeline = promisify(Stream.pipeline);
-
-const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
-  fn as jest.MockedFunction<T>;
 
 jest.mock(`../../../log`);
 

@@ -1,3 +1,4 @@
+import { asMock } from '../../../__tests__/asMock';
 import { promptAsync } from '../../../utils/prompts';
 import { ApiV2Error } from '../../rest/client';
 import { showLoginPromptAsync } from '../actions';
@@ -15,8 +16,6 @@ jest.mock('../../rest/client', () => {
 jest.mock('../otp');
 jest.mock('../user');
 
-const asMock = (fn: any): jest.Mock => fn;
-
 beforeEach(() => {
   asMock(promptAsync).mockClear();
   asMock(promptAsync).mockImplementation(() => {
@@ -29,8 +28,8 @@ beforeEach(() => {
 describe(showLoginPromptAsync, () => {
   it('prompts for OTP when 2FA is enabled', async () => {
     asMock(promptAsync)
-      .mockImplementationOnce(() => ({ username: 'hello', password: 'world' }))
-      .mockImplementationOnce(() => ({ otp: '123456' }))
+      .mockImplementationOnce(async () => ({ username: 'hello', password: 'world' }))
+      .mockImplementationOnce(async () => ({ otp: '123456' }))
       .mockImplementation(() => {
         throw new Error("shouldn't happen");
       });
@@ -52,7 +51,7 @@ describe(showLoginPromptAsync, () => {
           },
         });
       })
-      .mockImplementation(() => {});
+      .mockImplementation(async () => {});
 
     await showLoginPromptAsync();
 
@@ -73,7 +72,7 @@ describe(showLoginPromptAsync, () => {
     asMock(promptAsync).mockImplementation(() => {
       throw new Error("shouldn't happen");
     });
-    asMock(loginAsync).mockImplementation(() => {});
+    asMock(loginAsync).mockImplementation(async () => {});
 
     await showLoginPromptAsync({ username: 'hello', password: 'world' });
   });

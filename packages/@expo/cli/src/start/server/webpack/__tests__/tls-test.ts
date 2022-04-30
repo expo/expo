@@ -1,13 +1,11 @@
 import { certificateFor } from '@expo/devcert';
 import { vol } from 'memfs';
 
+import { asMock } from '../../../../__tests__/asMock';
 import * as Log from '../../../../log';
 import { ensureEnvironmentSupportsTLSAsync, getTLSCertAsync } from '../tls';
 
 jest.mock('../../../../log');
-
-const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
-  fn as jest.MockedFunction<T>;
 
 const originalEnv = process.env;
 
