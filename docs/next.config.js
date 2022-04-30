@@ -34,8 +34,6 @@ module.exports = {
   pageExtensions: ['js', 'jsx', 'ts', 'tsx', 'md', 'mdx'],
   // Next 11 does not support ESLint v8, enable it when we upgrade to 12
   eslint: { ignoreDuringBuilds: true },
-  // Keep using webpack 4, webpack 5 causes some issues. See: https://github.com/expo/expo/pull/12794
-  webpack5: false,
   webpack: (config, options) => {
     // Add preval support for `constants/*` only and move it to the `.next/preval` cache.
     // It's to prevent over-usage and separate the cache to allow manually invalidation.
@@ -81,10 +79,7 @@ module.exports = {
     });
 
     // Fix inline or browser MDX usage: https://mdxjs.com/getting-started/webpack#running-mdx-in-the-browser
-    // Webpack 4
-    config.node = { fs: 'empty' };
-    // Webpack 5
-    // config.resolve.fallback = { fs: false, path: require.resolve('path-browserify') };
+    config.resolve.fallback = { fs: false };
 
     // Add the esbuild plugin only when using esbuild
     if (enableEsbuild) {
