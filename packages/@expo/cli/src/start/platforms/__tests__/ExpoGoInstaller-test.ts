@@ -1,4 +1,5 @@
-import { getVersionsAsync, Versions } from '../../../api/getVersions';
+import { asMock } from '../../../__tests__/asMock';
+import { getVersionsAsync, SDKVersion, Versions } from '../../../api/getVersions';
 import { downloadExpoGoAsync } from '../../../utils/downloadExpoGoAsync';
 import { confirmAsync } from '../../../utils/prompts';
 import { ExpoGoInstaller } from '../ExpoGoInstaller';
@@ -14,9 +15,6 @@ beforeEach(() => {
   // Reset global memo...
   ExpoGoInstaller.cache = {};
 });
-
-const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
-  fn as jest.MockedFunction<T>;
 
 function createInstaller(platform: 'ios' | 'android') {
   return new ExpoGoInstaller(platform, 'host.fake.expo', '44.0.0');
@@ -42,7 +40,7 @@ describe('_getExpectedClientVersionAsync', () => {
         sdkVersions: {
           '44.0.0': {
             androidClientVersion: '1.0.0',
-          },
+          } as SDKVersion,
         },
       });
       await expect(createInstaller('android')._getExpectedClientVersionAsync()).resolves.toBe(
@@ -66,7 +64,7 @@ describe('_getExpectedClientVersionAsync', () => {
         sdkVersions: {
           '44.0.0': {
             iosClientVersion: '1.0.0',
-          },
+          } as SDKVersion,
         },
       });
 
