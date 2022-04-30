@@ -3,10 +3,10 @@
 exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
 <div>
   <table
-    class="css-qctutf-STYLES_TABLE"
+    class="css-4znl0-AppConfigSchemaPropertiesTable"
   >
     <thead
-      class="css-1plmxco-STYLES_HEAD"
+      class="css-h3cfcw-AppConfigSchemaPropertiesTable"
     >
       <tr>
         <td>
@@ -25,31 +25,31 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             style="margin-left: 0px; display: block; list-style-type: circle; overflow-x: visible;"
           >
             <div
-              class=" css-pb2q8c-paragraph-STYLES_PARAGRAPH_DIV"
+              class=" css-goddgh-PDIV"
               data-text="true"
             >
               <div
-                class="css-1rh3o5q-STYLES_PERMALINK"
+                class="css-cssveg"
               >
                 <span
-                  class="css-zonpcr-STYLES_PERMALINK_TARGET"
+                  class="css-9aqeco"
                   id="name"
                 />
                 <a
-                  class="css-15lh5hg-STYLES_PERMALINK_LINK"
+                  class="css-1t5v929"
                   href="#name"
                 >
                   <span
-                    class="css-1icvi79-STYLED_PERMALINK_CONTENT"
+                    class="css-1wnvjz2"
                   >
                     <code
-                      class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+                      class="inline css-1msevpm-InlineCode"
                     >
                       name
                     </code>
                   </span>
                   <span
-                    class="css-10vdcw8-STYLES_PERMALINK_ICON"
+                    class="css-1byp57e"
                   >
                     <svg
                       aria-label="permalink"
@@ -82,28 +82,28 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </div>
         </td>
         <td
-          class="css-1pd7e0y-STYLES_DESCRIPTION_CELL"
+          class="css-t1v1gp-AppConfigSchemaPropertiesTable"
         >
           <div
-            class=" css-pb2q8c-paragraph-STYLES_PARAGRAPH_DIV"
+            class=" css-goddgh-PDIV"
             data-text="true"
           >
             <strong
-              class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
+              class="css-1g2v0mq-B"
             >
               (string)
             </strong>
              - Name of your app.
             <details
-              class="css-lkrdcy-STYLES_DETAILS"
+              class="css-iayai0-BareWorkflowDetails"
             >
               <summary
-                class="css-gqo6ad-STYLES_SUMMARY"
+                class="css-6kgfkr-BareWorkflowDetails"
               >
                 Bare Workflow
               </summary>
               <div
-                class="css-1b7jivh-STYLES_CONTENTS"
+                class="css-tn15in-BareWorkflowDetails"
               >
                 Edit the 'Display Name' field in Xcode
               </div>
@@ -118,31 +118,31 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             style="margin-left: 0px; display: block; list-style-type: circle; overflow-x: visible;"
           >
             <div
-              class=" css-pb2q8c-paragraph-STYLES_PARAGRAPH_DIV"
+              class=" css-goddgh-PDIV"
               data-text="true"
             >
               <div
-                class="css-1rh3o5q-STYLES_PERMALINK"
+                class="css-cssveg"
               >
                 <span
-                  class="css-zonpcr-STYLES_PERMALINK_TARGET"
+                  class="css-9aqeco"
                   id="androidnavigationbar"
                 />
                 <a
-                  class="css-15lh5hg-STYLES_PERMALINK_LINK"
+                  class="css-1t5v929"
                   href="#androidnavigationbar"
                 >
                   <span
-                    class="css-1icvi79-STYLED_PERMALINK_CONTENT"
+                    class="css-1wnvjz2"
                   >
                     <code
-                      class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+                      class="inline css-1msevpm-InlineCode"
                     >
                       androidNavigationBar
                     </code>
                   </span>
                   <span
-                    class="css-10vdcw8-STYLES_PERMALINK_ICON"
+                    class="css-1byp57e"
                   >
                     <svg
                       aria-label="permalink"
@@ -175,42 +175,42 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </div>
         </td>
         <td
-          class="css-1pd7e0y-STYLES_DESCRIPTION_CELL"
+          class="css-t1v1gp-AppConfigSchemaPropertiesTable"
         >
           <div
-            class=" css-pb2q8c-paragraph-STYLES_PARAGRAPH_DIV"
+            class=" css-goddgh-PDIV"
             data-text="true"
           >
             <strong
-              class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
+              class="css-1g2v0mq-B"
             >
               (object)
             </strong>
              - Configuration for the bottom navigation bar on Android.
             <details
-              class="css-lkrdcy-STYLES_DETAILS"
+              class="css-xpbkyy-ExpoKitDetails"
             >
               <summary
-                class="css-gqo6ad-STYLES_SUMMARY"
+                class="css-16wd9sq-ExpoKitDetails"
               >
                 ExpoKit
               </summary>
               <div
-                class="css-1b7jivh-STYLES_CONTENTS"
+                class="css-xz26xk-ExpoKitDetails"
               >
                 Set this property using AppConstants.java.
               </div>
             </details>
             <details
-              class="css-lkrdcy-STYLES_DETAILS"
+              class="css-iayai0-BareWorkflowDetails"
             >
               <summary
-                class="css-gqo6ad-STYLES_SUMMARY"
+                class="css-6kgfkr-BareWorkflowDetails"
               >
                 Bare Workflow
               </summary>
               <div
-                class="css-1b7jivh-STYLES_CONTENTS"
+                class="css-tn15in-BareWorkflowDetails"
               >
                 Set this property using just Xcode
               </div>
@@ -225,31 +225,31 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             style="margin-left: 32px; display: list-item; list-style-type: default; overflow-x: visible;"
           >
             <div
-              class=" css-pb2q8c-paragraph-STYLES_PARAGRAPH_DIV"
+              class=" css-goddgh-PDIV"
               data-text="true"
             >
               <div
-                class="css-1rh3o5q-STYLES_PERMALINK"
+                class="css-cssveg"
               >
                 <span
-                  class="css-zonpcr-STYLES_PERMALINK_TARGET"
+                  class="css-9aqeco"
                   id="visible"
                 />
                 <a
-                  class="css-15lh5hg-STYLES_PERMALINK_LINK"
+                  class="css-1t5v929"
                   href="#visible"
                 >
                   <span
-                    class="css-1icvi79-STYLED_PERMALINK_CONTENT"
+                    class="css-1wnvjz2"
                   >
                     <code
-                      class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+                      class="inline css-1msevpm-InlineCode"
                     >
                       visible
                     </code>
                   </span>
                   <span
-                    class="css-10vdcw8-STYLES_PERMALINK_ICON"
+                    class="css-1byp57e"
                   >
                     <svg
                       aria-label="permalink"
@@ -282,28 +282,28 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </div>
         </td>
         <td
-          class="css-1pd7e0y-STYLES_DESCRIPTION_CELL"
+          class="css-t1v1gp-AppConfigSchemaPropertiesTable"
         >
           <div
-            class=" css-pb2q8c-paragraph-STYLES_PARAGRAPH_DIV"
+            class=" css-goddgh-PDIV"
             data-text="true"
           >
             <strong
-              class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
+              class="css-1g2v0mq-B"
             >
               (enum)
             </strong>
              - Determines how and when the navigation bar is shown.
             <details
-              class="css-lkrdcy-STYLES_DETAILS"
+              class="css-xpbkyy-ExpoKitDetails"
             >
               <summary
-                class="css-gqo6ad-STYLES_SUMMARY"
+                class="css-16wd9sq-ExpoKitDetails"
               >
                 ExpoKit
               </summary>
               <div
-                class="css-1b7jivh-STYLES_CONTENTS"
+                class="css-xz26xk-ExpoKitDetails"
               >
                 Set this property using Xcode.
               </div>
@@ -318,31 +318,31 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             style="margin-left: 64px; display: list-item; list-style-type: circle; overflow-x: visible;"
           >
             <div
-              class=" css-pb2q8c-paragraph-STYLES_PARAGRAPH_DIV"
+              class=" css-goddgh-PDIV"
               data-text="true"
             >
               <div
-                class="css-1rh3o5q-STYLES_PERMALINK"
+                class="css-cssveg"
               >
                 <span
-                  class="css-zonpcr-STYLES_PERMALINK_TARGET"
+                  class="css-9aqeco"
                   id="always"
                 />
                 <a
-                  class="css-15lh5hg-STYLES_PERMALINK_LINK"
+                  class="css-1t5v929"
                   href="#always"
                 >
                   <span
-                    class="css-1icvi79-STYLED_PERMALINK_CONTENT"
+                    class="css-1wnvjz2"
                   >
                     <code
-                      class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+                      class="inline css-1msevpm-InlineCode"
                     >
                       always
                     </code>
                   </span>
                   <span
-                    class="css-10vdcw8-STYLES_PERMALINK_ICON"
+                    class="css-1byp57e"
                   >
                     <svg
                       aria-label="permalink"
@@ -375,14 +375,14 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </div>
         </td>
         <td
-          class="css-1pd7e0y-STYLES_DESCRIPTION_CELL"
+          class="css-t1v1gp-AppConfigSchemaPropertiesTable"
         >
           <div
-            class=" css-pb2q8c-paragraph-STYLES_PARAGRAPH_DIV"
+            class=" css-goddgh-PDIV"
             data-text="true"
           >
             <strong
-              class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
+              class="css-1g2v0mq-B"
             >
               (boolean)
             </strong>
@@ -397,31 +397,31 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             style="margin-left: 32px; display: list-item; list-style-type: default; overflow-x: visible;"
           >
             <div
-              class=" css-pb2q8c-paragraph-STYLES_PARAGRAPH_DIV"
+              class=" css-goddgh-PDIV"
               data-text="true"
             >
               <div
-                class="css-1rh3o5q-STYLES_PERMALINK"
+                class="css-cssveg"
               >
                 <span
-                  class="css-zonpcr-STYLES_PERMALINK_TARGET"
+                  class="css-9aqeco"
                   id="backgroundcolor"
                 />
                 <a
-                  class="css-15lh5hg-STYLES_PERMALINK_LINK"
+                  class="css-1t5v929"
                   href="#backgroundcolor"
                 >
                   <span
-                    class="css-1icvi79-STYLED_PERMALINK_CONTENT"
+                    class="css-1wnvjz2"
                   >
                     <code
-                      class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+                      class="inline css-1msevpm-InlineCode"
                     >
                       backgroundColor
                     </code>
                   </span>
                   <span
-                    class="css-10vdcw8-STYLES_PERMALINK_ICON"
+                    class="css-1byp57e"
                   >
                     <svg
                       aria-label="permalink"
@@ -454,26 +454,26 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </div>
         </td>
         <td
-          class="css-1pd7e0y-STYLES_DESCRIPTION_CELL"
+          class="css-t1v1gp-AppConfigSchemaPropertiesTable"
         >
           <div
-            class=" css-pb2q8c-paragraph-STYLES_PARAGRAPH_DIV"
+            class=" css-goddgh-PDIV"
             data-text="true"
           >
             <strong
-              class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
+              class="css-1g2v0mq-B"
             >
               (string)
             </strong>
              - Specifies the background color of the navigation bar. 
           </div>
           <div
-            class=" css-pb2q8c-paragraph-STYLES_PARAGRAPH_DIV"
+            class=" css-goddgh-PDIV"
             data-text="true"
           >
             6 character long hex color string, eg: 
             <code
-              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+              class="inline css-1msevpm-InlineCode"
             >
               '#000000'
             </code>
@@ -487,31 +487,31 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             style="margin-left: 0px; display: block; list-style-type: circle; overflow-x: visible;"
           >
             <div
-              class=" css-pb2q8c-paragraph-STYLES_PARAGRAPH_DIV"
+              class=" css-goddgh-PDIV"
               data-text="true"
             >
               <div
-                class="css-1rh3o5q-STYLES_PERMALINK"
+                class="css-cssveg"
               >
                 <span
-                  class="css-zonpcr-STYLES_PERMALINK_TARGET"
+                  class="css-9aqeco"
                   id="intentfilters"
                 />
                 <a
-                  class="css-15lh5hg-STYLES_PERMALINK_LINK"
+                  class="css-1t5v929"
                   href="#intentfilters"
                 >
                   <span
-                    class="css-1icvi79-STYLED_PERMALINK_CONTENT"
+                    class="css-1wnvjz2"
                   >
                     <code
-                      class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+                      class="inline css-1msevpm-InlineCode"
                     >
                       intentFilters
                     </code>
                   </span>
                   <span
-                    class="css-10vdcw8-STYLES_PERMALINK_ICON"
+                    class="css-1byp57e"
                   >
                     <svg
                       aria-label="permalink"
@@ -544,35 +544,35 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </div>
         </td>
         <td
-          class="css-1pd7e0y-STYLES_DESCRIPTION_CELL"
+          class="css-t1v1gp-AppConfigSchemaPropertiesTable"
         >
           <div
-            class=" css-pb2q8c-paragraph-STYLES_PARAGRAPH_DIV"
+            class=" css-goddgh-PDIV"
             data-text="true"
           >
             <strong
-              class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
+              class="css-1g2v0mq-B"
             >
               (array)
             </strong>
              - Configuration for setting an array of custom intent filters in Android manifest.
             <details
-              class="css-lkrdcy-STYLES_DETAILS"
+              class="css-iayai0-BareWorkflowDetails"
             >
               <summary
-                class="css-gqo6ad-STYLES_SUMMARY"
+                class="css-6kgfkr-BareWorkflowDetails"
               >
                 Bare Workflow
               </summary>
               <div
-                class="css-1b7jivh-STYLES_CONTENTS"
+                class="css-tn15in-BareWorkflowDetails"
               >
                 This is set in AndroidManifest.xml directly.
               </div>
             </details>
           </div>
           <blockquote
-            class="css-13jwbau-paragraph-STYLES_BLOCKQUOTE"
+            class="css-snvjit-Quote"
             data-text="true"
           >
             <div>
@@ -596,7 +596,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             </div>
             <div>
               <div
-                class=" css-pb2q8c-paragraph-STYLES_PARAGRAPH_DIV"
+                class=" css-goddgh-PDIV"
                 data-text="true"
               >
                  
@@ -617,31 +617,31 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             style="margin-left: 32px; display: list-item; list-style-type: default; overflow-x: visible;"
           >
             <div
-              class=" css-pb2q8c-paragraph-STYLES_PARAGRAPH_DIV"
+              class=" css-goddgh-PDIV"
               data-text="true"
             >
               <div
-                class="css-1rh3o5q-STYLES_PERMALINK"
+                class="css-cssveg"
               >
                 <span
-                  class="css-zonpcr-STYLES_PERMALINK_TARGET"
+                  class="css-9aqeco"
                   id="autoverify"
                 />
                 <a
-                  class="css-15lh5hg-STYLES_PERMALINK_LINK"
+                  class="css-1t5v929"
                   href="#autoverify"
                 >
                   <span
-                    class="css-1icvi79-STYLED_PERMALINK_CONTENT"
+                    class="css-1wnvjz2"
                   >
                     <code
-                      class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+                      class="inline css-1msevpm-InlineCode"
                     >
                       autoVerify
                     </code>
                   </span>
                   <span
-                    class="css-10vdcw8-STYLES_PERMALINK_ICON"
+                    class="css-1byp57e"
                   >
                     <svg
                       aria-label="permalink"
@@ -674,14 +674,14 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </div>
         </td>
         <td
-          class="css-1pd7e0y-STYLES_DESCRIPTION_CELL"
+          class="css-t1v1gp-AppConfigSchemaPropertiesTable"
         >
           <div
-            class=" css-pb2q8c-paragraph-STYLES_PARAGRAPH_DIV"
+            class=" css-goddgh-PDIV"
             data-text="true"
           >
             <strong
-              class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
+              class="css-1g2v0mq-B"
             >
               (boolean)
             </strong>
@@ -696,31 +696,31 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             style="margin-left: 32px; display: list-item; list-style-type: default; overflow-x: visible;"
           >
             <div
-              class=" css-pb2q8c-paragraph-STYLES_PARAGRAPH_DIV"
+              class=" css-goddgh-PDIV"
               data-text="true"
             >
               <div
-                class="css-1rh3o5q-STYLES_PERMALINK"
+                class="css-cssveg"
               >
                 <span
-                  class="css-zonpcr-STYLES_PERMALINK_TARGET"
+                  class="css-9aqeco"
                   id="data"
                 />
                 <a
-                  class="css-15lh5hg-STYLES_PERMALINK_LINK"
+                  class="css-1t5v929"
                   href="#data"
                 >
                   <span
-                    class="css-1icvi79-STYLED_PERMALINK_CONTENT"
+                    class="css-1wnvjz2"
                   >
                     <code
-                      class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+                      class="inline css-1msevpm-InlineCode"
                     >
                       data
                     </code>
                   </span>
                   <span
-                    class="css-10vdcw8-STYLES_PERMALINK_ICON"
+                    class="css-1byp57e"
                   >
                     <svg
                       aria-label="permalink"
@@ -753,14 +753,14 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </div>
         </td>
         <td
-          class="css-1pd7e0y-STYLES_DESCRIPTION_CELL"
+          class="css-t1v1gp-AppConfigSchemaPropertiesTable"
         >
           <div
-            class=" css-pb2q8c-paragraph-STYLES_PARAGRAPH_DIV"
+            class=" css-goddgh-PDIV"
             data-text="true"
           >
             <strong
-              class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
+              class="css-1g2v0mq-B"
             >
               (array || object)
             </strong>
@@ -774,31 +774,31 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             style="margin-left: 64px; display: list-item; list-style-type: circle; overflow-x: visible;"
           >
             <div
-              class=" css-pb2q8c-paragraph-STYLES_PARAGRAPH_DIV"
+              class=" css-goddgh-PDIV"
               data-text="true"
             >
               <div
-                class="css-1rh3o5q-STYLES_PERMALINK"
+                class="css-cssveg"
               >
                 <span
-                  class="css-zonpcr-STYLES_PERMALINK_TARGET"
+                  class="css-9aqeco"
                   id="host"
                 />
                 <a
-                  class="css-15lh5hg-STYLES_PERMALINK_LINK"
+                  class="css-1t5v929"
                   href="#host"
                 >
                   <span
-                    class="css-1icvi79-STYLED_PERMALINK_CONTENT"
+                    class="css-1wnvjz2"
                   >
                     <code
-                      class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+                      class="inline css-1msevpm-InlineCode"
                     >
                       host
                     </code>
                   </span>
                   <span
-                    class="css-10vdcw8-STYLES_PERMALINK_ICON"
+                    class="css-1byp57e"
                   >
                     <svg
                       aria-label="permalink"
@@ -831,14 +831,14 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </div>
         </td>
         <td
-          class="css-1pd7e0y-STYLES_DESCRIPTION_CELL"
+          class="css-t1v1gp-AppConfigSchemaPropertiesTable"
         >
           <div
-            class=" css-pb2q8c-paragraph-STYLES_PARAGRAPH_DIV"
+            class=" css-goddgh-PDIV"
             data-text="true"
           >
             <strong
-              class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
+              class="css-1g2v0mq-B"
             >
               (string)
             </strong>
