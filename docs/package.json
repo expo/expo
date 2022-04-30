@@ -20,6 +20,13 @@
     "schema-sync": "node --async-stack-traces --unhandled-rejections=strict ./scripts/schema-sync.js",
     "remove-version": "node --unhandled-rejections=strict ./scripts/remove-version.js"
   },
+  "resolutions": {
+    "@babel/core": "^7.17.10",
+    "@babel/helper-plugin-utils": "^7.16.7",
+    "@babel/plugin-syntax-jsx": "^7.16.7",
+    "@babel/plugin-syntax-object-rest-spread": "^7.8.3",
+    "@babel/plugin-proposal-object-rest-spread": "^7.17.3"
+  },
   "dependencies": {
     "@emotion/react": "^11.4.0",
     "@expo/spawn-async": "^1.5.0",
@@ -56,7 +63,11 @@
   },
   "devDependencies": {
     "@apidevtools/json-schema-ref-parser": "^9.0.9",
-    "@babel/core": "^7.13.14",
+    "@babel/core": "^7.17.10",
+    "@babel/helper-plugin-utils": "^7.16.7",
+    "@babel/plugin-syntax-jsx": "^7.16.7",
+    "@babel/plugin-syntax-object-rest-spread": "^7.8.3",
+    "@babel/plugin-proposal-object-rest-spread": "^7.17.3",
     "@emotion/babel-preset-css-prop": "^11.2.0",
     "@emotion/jest": "^11.7.1",
     "@testing-library/jest-dom": "5.11.0",
