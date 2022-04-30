@@ -22,6 +22,7 @@ const createHeading: CreateHeading =
   ({ children, ...props }) => {
     return (
       <Permalink nestingLevel={defaultLevel} additionalProps={{ sidebarType: type, ...props }}>
+        {/* @ts-ignore */}
         <Component>{children}</Component>
       </Permalink>
     );

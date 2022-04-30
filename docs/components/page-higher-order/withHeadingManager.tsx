@@ -9,6 +9,7 @@ const withHeadingManager =
   (props: P) =>
     (
       <HeadingsContext.Consumer>
+        {/* @ts-ignore */}
         {headingManager => <Component headingManager={headingManager!} {...props} />}
       </HeadingsContext.Consumer>
     );

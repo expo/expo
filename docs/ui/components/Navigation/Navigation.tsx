@@ -56,6 +56,7 @@ function navigationRenderer(
   const isActive = activeRoutes[route.type] === route;
   const hasChildren = route.type !== 'page' && route.children.length;
   return (
+    // @ts-ignore
     <Component key={routeKey} route={route} isActive={isActive}>
       {hasChildren && route.children.map(nested => navigationRenderer(nested, activeRoutes))}
     </Component>

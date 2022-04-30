@@ -83,7 +83,7 @@ const STYLES_BLOCKQUOTE = css`
   table & {
     margin: 0.5rem 0;
 
-    &:first-child {
+    &:first-of-type {
       margin-top: 0;
     }
 

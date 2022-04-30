@@ -23,7 +23,7 @@ const STYLES_UNORDERED_LIST = css`
     margin: 0.5rem 1rem;
     line-height: 125%;
 
-    &:first-child {
+    &::first-of-type {
       margin-top: 0;
     }
 

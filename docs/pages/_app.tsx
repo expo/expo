@@ -33,7 +33,9 @@ export default function App({ Component, pageProps }: AppProps) {
   return (
     <AnalyticsProvider>
       <ThemeProvider>
+        {/* @ts-ignore */}
         <MDXProvider components={rootMarkdownComponents}>
+          {/* @ts-ignore */}
           <Component {...pageProps} />
         </MDXProvider>
       </ThemeProvider>
