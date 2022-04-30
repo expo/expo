@@ -1,6 +1,5 @@
 /* eslint-disable import/order */
 const { copySync, removeSync } = require('fs-extra');
-const merge = require('lodash/merge');
 const { join } = require('path');
 const semver = require('semver');
 const { info: logInfo } = require('next/dist/build/output/log');
@@ -30,15 +29,17 @@ module.exports = {
     // It's to prevent over-usage and separate the cache to allow manually invalidation.
     // See: https://github.com/kentcdodds/babel-plugin-preval/issues/19
     config.module.rules.push({
-      test: /.jsx?$/,
+      test: /.js$/,
       include: [join(__dirname, 'constants')],
-      use: merge({}, options.defaultLoaders.babel, {
+      use: {
+        loader: 'babel-loader',
         options: {
           // Keep this path in sync with package.json and other scripts that clear the cache
           cacheDirectory: '.next/preval',
           plugins: ['preval'],
+          presets: ['next/babel'],
         },
-      }),
+      },
     });
 
     // Add support for MDX with our custom loader and esbuild
