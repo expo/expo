@@ -2,12 +2,10 @@
 import { execAsync } from '@expo/osascript';
 import { execFileSync } from 'child_process';
 
+import { asMock } from '../../../../__tests__/asMock';
 import { activateWindowAsync } from '../activateWindow';
 
 const platform = process.platform;
-
-const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
-  fn as jest.MockedFunction<T>;
 
 function mockPlatform(value: typeof process.platform) {
   Object.defineProperty(process, 'platform', {

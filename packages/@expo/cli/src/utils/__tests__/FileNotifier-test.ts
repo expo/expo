@@ -1,12 +1,11 @@
 import { fs, vol } from 'memfs';
 
+import { asMock } from '../../__tests__/asMock';
 import * as Log from '../../log';
 import { FileNotifier } from '../FileNotifier';
 
 jest.mock('../../log');
 
-const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
-  fn as jest.MockedFunction<T>;
 const originalCwd = process.cwd();
 
 beforeEach(() => {

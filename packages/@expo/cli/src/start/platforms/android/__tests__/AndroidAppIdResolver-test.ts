@@ -1,6 +1,7 @@
 import { getConfig } from '@expo/config';
 import { AndroidConfig } from '@expo/config-plugins';
 
+import { asMock } from '../../../../__tests__/asMock';
 import { AndroidAppIdResolver } from '../AndroidAppIdResolver';
 
 jest.mock('@expo/config-plugins', () => ({
@@ -23,9 +24,6 @@ jest.mock('@expo/config', () => ({
     },
   })),
 }));
-
-const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
-  fn as jest.MockedFunction<T>;
 
 // Most cases are tested in the superclass.
 

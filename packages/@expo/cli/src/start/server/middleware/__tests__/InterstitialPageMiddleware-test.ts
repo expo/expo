@@ -2,6 +2,7 @@ import { getConfig, getNameFromConfig } from '@expo/config';
 import { getRuntimeVersionNullable } from '@expo/config-plugins/build/utils/Updates';
 import { vol } from 'memfs';
 
+import { asMock } from '../../../../__tests__/asMock';
 import { InterstitialPageMiddleware } from '../InterstitialPageMiddleware';
 import { ServerRequest, ServerResponse } from '../server.types';
 
@@ -22,9 +23,6 @@ jest.mock('@expo/config-plugins/build/utils/Updates', () => ({
 }));
 
 const asReq = (req: Partial<ServerRequest>) => req as ServerRequest;
-
-const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
-  fn as jest.MockedFunction<T>;
 
 const originalCwd = process.cwd();
 

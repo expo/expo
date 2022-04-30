@@ -1,10 +1,8 @@
 import spawnAsync from '@expo/spawn-async';
 import { execSync } from 'child_process';
 
+import { asMock } from '../../../../__tests__/asMock';
 import { getBestUnbootedSimulatorAsync } from '../getBestSimulator';
-
-const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
-  fn as jest.MockedFunction<T>;
 
 beforeEach(() => {
   asMock(spawnAsync).mockResolvedValueOnce({

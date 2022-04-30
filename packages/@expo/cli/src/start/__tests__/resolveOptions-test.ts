@@ -1,7 +1,6 @@
+import { asMock } from '../../__tests__/asMock';
 import { resolvePortAsync } from '../../utils/port';
 import { resolveHostType, resolvePortsAsync } from '../resolveOptions';
-
-const asMock = (fn: any): jest.Mock => fn as jest.Mock;
 
 jest.mock('../../utils/port', () => {
   return {
@@ -35,9 +34,14 @@ describe(resolveHostType, () => {
 
 describe(resolvePortsAsync, () => {
   beforeEach(() => {
-    asMock(resolvePortAsync).mockImplementation((root, { defaultPort, fallbackPort }) =>
-      Promise.resolve(defaultPort ?? fallbackPort)
-    );
+    asMock(resolvePortAsync).mockImplementation(async (root, { defaultPort, fallbackPort }) => {
+      if (typeof defaultPort === 'string' && defaultPort) {
+        return parseInt(defaultPort, 10);
+      } else if (typeof defaultPort === 'number' && defaultPort) {
+        return defaultPort;
+      }
+      return fallbackPort;
+    });
   });
   it(`resolves default port for metro`, async () => {
     await expect(resolvePortsAsync('/noop', {}, { webOnly: false })).resolves.toStrictEqual({

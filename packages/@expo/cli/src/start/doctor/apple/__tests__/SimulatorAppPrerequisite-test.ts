@@ -1,10 +1,8 @@
 import { execAsync } from '@expo/osascript';
 import spawnAsync from '@expo/spawn-async';
 
+import { asMock } from '../../../../__tests__/asMock';
 import { SimulatorAppPrerequisite } from '../SimulatorAppPrerequisite';
-
-const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
-  fn as jest.MockedFunction<T>;
 
 jest.mock(`../../../../log`);
 

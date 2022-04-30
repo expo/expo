@@ -1,5 +1,6 @@
 import { vol } from 'memfs';
 
+import { asMock } from '../../../__tests__/asMock';
 import { NgrokInstance } from '../../doctor/ngrok/NgrokResolver';
 import { startAdbReverseAsync } from '../../platforms/android/adbReverse';
 import { AsyncNgrok } from '../AsyncNgrok';
@@ -28,9 +29,6 @@ jest.mock('../../platforms/android/adbReverse', () => ({
   startAdbReverseAsync: jest.fn(async () => true),
 }));
 jest.mock('../../../utils/exit');
-
-const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
-  fn as jest.MockedFunction<T>;
 
 function createNgrokInstance() {
   const projectRoot = '/';

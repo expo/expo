@@ -1,9 +1,7 @@
 import spawnAsync from '@expo/spawn-async';
 
+import { asMock } from '../../../../__tests__/asMock';
 import { xcrunAsync } from '../xcrun';
-
-const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
-  fn as jest.MockedFunction<T>;
 
 it(`throws on invalid license`, async () => {
   // Mock Simulator.app installed for CI

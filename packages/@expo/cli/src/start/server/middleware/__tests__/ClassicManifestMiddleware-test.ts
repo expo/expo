@@ -1,3 +1,4 @@
+import { asMock } from '../../../../__tests__/asMock';
 import { APISettings } from '../../../../api/settings';
 import { signClassicExpoGoManifestAsync } from '../../../../api/signManifest';
 import { getUserAsync } from '../../../../api/user/user';
@@ -36,9 +37,6 @@ jest.mock('../resolveEntryPoint', () => ({
 }));
 
 const asReq = (req: Partial<ServerRequest>) => req as ServerRequest;
-
-const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
-  fn as jest.MockedFunction<T>;
 
 beforeEach(() => {
   APISettings.isOffline = false;

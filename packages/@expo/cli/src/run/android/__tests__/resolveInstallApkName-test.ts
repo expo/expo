@@ -1,10 +1,8 @@
 import { vol } from 'memfs';
 
+import { asMock } from '../../../__tests__/asMock';
 import { DeviceABI, getDeviceABIsAsync } from '../../../start/platforms/android/adb';
 import { resolveInstallApkNameAsync } from '../resolveInstallApkName';
-
-const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
-  fn as jest.MockedFunction<T>;
 
 jest.mock('../../../start/platforms/android/adb', () => ({
   DeviceABI: jest.requireActual('../../../start/platforms/android/adb').DeviceABI,

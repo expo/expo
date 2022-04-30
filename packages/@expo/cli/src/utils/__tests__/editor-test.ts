@@ -1,10 +1,8 @@
 import spawnAsync from '@expo/spawn-async';
 import editors from 'env-editor';
 
+import { asMock } from '../../__tests__/asMock';
 import { guessEditor, openInEditorAsync } from '../editor';
-
-const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
-  fn as jest.MockedFunction<T>;
 
 jest.mock('../../log');
 

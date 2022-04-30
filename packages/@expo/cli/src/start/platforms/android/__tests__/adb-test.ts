@@ -1,3 +1,4 @@
+import { asMock } from '../../../../__tests__/asMock';
 import { CommandError } from '../../../../utils/errors';
 import {
   Device,
@@ -19,9 +20,6 @@ jest.mock('../ADBServer', () => ({
     getFileOutputAsync: jest.fn(async () => ''),
   })),
 }));
-
-const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
-  fn as jest.MockedFunction<T>;
 
 const asDevice = (device: Partial<Device>): Device => device as Device;
 

@@ -1,14 +1,12 @@
 import { vol } from 'memfs';
 
+import { asMock } from '../../../../__tests__/asMock';
 import {
   collectMissingPackages,
   getMissingPackagesAsync,
   versionSatisfiesRequiredPackage,
 } from '../getMissingPackages';
 import { getCombinedKnownVersionsAsync } from '../getVersionedPackages';
-
-const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
-  fn as jest.MockedFunction<T>;
 
 jest.mock('../getVersionedPackages', () => ({
   getCombinedKnownVersionsAsync: jest.fn(() => []),
