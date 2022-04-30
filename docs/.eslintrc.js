@@ -5,5 +5,6 @@ module.exports = {
   rules: {
     'lodash/import-scope': [2, 'method'],
     '@next/next/no-img-element': 0,
+    'react/jsx-curly-brace-presence': [1, { propElementValues: 'ignore' }],
   },
 };

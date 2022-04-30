@@ -28,7 +28,7 @@ export function AnalyticsProvider(props: AnalyticsProps) {
         strategy="lazyOnload"
         src={`https://www.googletagmanager.com/gtag/js?id=${MEASUREMENT_ID}`}
       />
-      <Script strategy="lazyOnload">{`
+      <Script id="gtag-datalayer" strategy="lazyOnload">{`
         window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}
         gtag('js', new Date());
