@@ -79,7 +79,6 @@
     "case-police": "^0.5.3",
     "cross-env": "^5.2.0",
     "danger": "^9.2.10",
-    "esbuild-loader": "^2.13.1",
     "eslint": "^8.6.0",
     "eslint-config-next": "^10.2.3",
     "eslint-config-universe": "^10.0.0",

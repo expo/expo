@@ -3,7 +3,6 @@ const { copySync, removeSync } = require('fs-extra');
 const merge = require('lodash/merge');
 const { join } = require('path');
 const semver = require('semver');
-const { ESBuildMinifyPlugin } = require('esbuild-loader');
 const { info: logInfo } = require('next/dist/build/output/log');
 
 const navigation = require('./constants/navigation');
@@ -12,14 +11,6 @@ const { version, betaVersion } = require('./package.json');
 
 // To generate a sitemap, we need context about the supported versions and navigational data
 const createSitemap = require('./scripts/create-sitemap');
-
-// Determine if we are using esbuild for MDX transpiling
-const enableEsbuild = !!process.env.USE_ESBUILD;
-logInfo(
-  enableEsbuild
-    ? 'Using esbuild for MDX files, USE_ESBUILD set to true'
-    : 'Using babel for MDX files, USE_ESBUILD not set'
-);
 
 // Prepare the latest version by copying the actual exact latest version
 const vLatest = join('pages', 'versions', `v${version}/`);
@@ -52,17 +43,9 @@ module.exports = {
 
     // Add support for MDX with our custom loader and esbuild
     config.module.rules.push({
-      test: /.mdx?$/, // load both .md and .mdx files
+      test: /.mdx?$/,
       use: [
-        !enableEsbuild
-          ? options.defaultLoaders.babel
-          : {
-              loader: 'esbuild-loader',
-              options: {
-                loader: 'tsx',
-                target: 'es2017',
-              },
-            },
+        options.defaultLoaders.babel,
         {
           loader: '@mdx-js/loader',
           options: {
@@ -80,15 +63,6 @@ module.exports = {
 
     // Fix inline or browser MDX usage: https://mdxjs.com/getting-started/webpack#running-mdx-in-the-browser
     config.resolve.fallback = { fs: false };
-
-    // Add the esbuild plugin only when using esbuild
-    if (enableEsbuild) {
-      config.optimization.minimizer = [
-        new ESBuildMinifyPlugin({
-          target: 'es2017',
-        }),
-      ];
-    }
 
     return config;
   },
