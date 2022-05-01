@@ -144,6 +144,7 @@ runs:
       uses: reactivecircus/android-emulator-runner@v2
       with:
         api-level: ${{ inputs.avd-api }}
+        avd-name: avd-${{ matrix.api-level }}
         arch: x86_64
         force-avd-creation: false
         script: echo "Generated AVD snapshot for caching."
