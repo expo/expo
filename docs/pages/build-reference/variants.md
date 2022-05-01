@@ -239,6 +239,17 @@ Configure a scheme for the new target:
 
 <ImageSpotlight alt="Xcode scheme list" src="/static/images/eas-build/variants/2-scheme-list.png" style={{maxWidth: 720}} />
 
+Sometimes, the changes to your podfile create a situation in which the initial `ExpoModulesProvider.swift` file is still referenced in your targets. An attempt to build will result in this error : `error: Build input file cannot be found: '/<path-to-file>/ExpoModulesProvider.swift' (in target '<target-name>' from project '<project-name>' )`
+
+To fix this, you have to remove the incorrectly referenced file:
+- Click on the old target.
+- Go to `Build Phases` tab.
+- Find `Compile Sources` section.
+- There will be two `ExpoModulesProvider.swift` files.
+- Find the file with a path that does not contain the name of your abstract target.
+- Delete it by selecting it and clicking on the `-` icon
+- Repeat the steps for the new target.
+
 By default, the newly created target has separate **Info.plist** file (in our case it's **ios/myapp copy-Info.plist**). To simplify your project we recommend using the same file for all targets:
 - Delete **./ios/myapp copy-Info.plist**.
 - Click on the new target.
