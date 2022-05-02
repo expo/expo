@@ -9,12 +9,12 @@
 
 current_shell=$(ps -cp "$$" -o comm='' | sed 's/^-//')
 
-export NVM_DIR=$HOME/.nvm;
-NVM_SH_FILE=$NVM_DIR/nvm.sh
-# first attempt to source via nvm and fallback to sourcing via zsh or bash
-if test -f "$NVM_SH_FILE"; then
-  source $NVM_SH_FILE
-elif [[ "$current_shell" == zsh ]]; then
+# attempt to source via nvm
+if test -f "$HOME/.nvm/nvm.sh"; then
+  source "$HOME/.nvm/nvm.sh"
+fi
+
+if [[ "$current_shell" == zsh ]]; then
    # Zsh's setup script order is:
    #   /etc/zshenv
    #   ~/.zshenv
