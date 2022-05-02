@@ -50,6 +50,7 @@
 @property (nonatomic, strong) EXDevLauncherRecentlyOpenedAppsRegistry *recentlyOpenedAppsRegistry;
 @property (nonatomic, strong) EXManifestsManifest *manifest;
 @property (nonatomic, strong) NSURL *manifestURL;
+@property (nonatomic, strong) NSURL *possibleManifestURL;
 @property (nonatomic, strong) EXDevLauncherErrorManager *errorManager;
 @property (nonatomic, strong) EXDevLauncherInstallationIDHelper *installationIDHelper;
 @property (nonatomic, assign) BOOL isStarted;
@@ -140,6 +141,14 @@
 - (NSURL * _Nullable)appManifestURL
 {
   return self.manifestURL;
+}
+
+- (nullable NSURL *)appManifestURLWithFallback
+{
+  if (_manifestURL) {
+    return _manifestURL;
+  }
+  return _possibleManifestURL;
 }
 
 - (UIWindow *)currentWindow
@@ -316,8 +325,16 @@
   [self loadApp:url withProjectUrl:nil onSuccess:onSuccess onError:onError];
 }
 
+/**
+ * This method is the external entry point into loading an app with the dev launcher (e.g. via the
+ * dev launcher UI or a deep link). It takes a URL, determines what type of server it points to
+ * (react-native-cli, expo-cli, or published project), downloads a manifest if there is one,
+ * downloads all the project's assets (via expo-updates) in the case of a published project, and
+ * then calls `_initAppWithUrl:bundleUrl:manifest:` if successful.
+ */
 - (void)loadApp:(NSURL *)expoUrl withProjectUrl:(NSURL * _Nullable)projectUrl onSuccess:(void (^ _Nullable)(void))onSuccess onError:(void (^ _Nullable)(NSError *error))onError
 {
+  _possibleManifestURL = expoUrl;
   BOOL isEASUpdate = [self isEASUpdateURL:expoUrl];
   
   // an update url requires a matching projectUrl
@@ -421,10 +438,18 @@
   }];
 }
 
+/**
+ * Internal helper method for this class, which takes a bundle URL and (optionally) a manifest and
+ * launches the app in the bridge and UI.
+ *
+ * The bundle URL may point to a locally downloaded file (for published projects) or a remote
+ * packager server (for locally hosted projects in development).
+ */
 - (void)_initAppWithUrl:(NSURL *)appUrl bundleUrl:(NSURL *)bundleUrl manifest:(EXManifestsManifest * _Nullable)manifest
 {
   self.manifest = manifest;
   self.manifestURL = appUrl;
+  _possibleManifestURL = nil;
   __block UIInterfaceOrientation orientation = [EXDevLauncherManifestHelper exportManifestOrientation:manifest.orientation];
   __block UIColor *backgroundColor = [EXDevLauncherManifestHelper hexStringToColor:manifest.iosOrRootBackgroundColor];
   

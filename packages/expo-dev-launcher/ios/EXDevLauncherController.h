@@ -54,6 +54,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSURL * _Nullable)appManifestURL;
 
+- (nullable NSURL *)appManifestURLWithFallback;
+
 - (BOOL)isAppRunning;
 
 - (BOOL)isStarted;
