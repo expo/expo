@@ -1,4 +1,5 @@
 import format from 'date-fns/format';
+import { Text } from 'expo-dev-client-components';
 import { gql } from 'graphql-request';
 import * as React from 'react';
 import { Platform } from 'react-native';
@@ -52,7 +53,7 @@ export type Branch = {
   updates: Update[];
 };
 
-function getBranchesAsync({
+async function getBranchesAsync({
   appId,
   page = 1,
   runtimeVersion,
@@ -76,43 +77,52 @@ function getBranchesAsync({
     const branches: Branch[] = [];
     const incompatibleBranches: Branch[] = [];
 
-    return apiClient.request(query, variables).then((response) => {
-      const updateBranches = response.app.byId.updateBranches;
+    console.log({ variables });
 
-      updateBranches.forEach((updateBranch) => {
-        const branch: Branch = {
-          id: updateBranch.id,
-          name: updateBranch.name,
-          updates: updateBranch.updates.map((update) => {
-            return {
-              ...update,
-              createdAt: format(new Date(update.createdAt), 'MMMM d, yyyy, h:mma'),
-            };
-          }),
+    return apiClient
+      .request(query, variables)
+      .then((response) => {
+        console.log({ response });
+        const updateBranches = response.app.byId.updateBranches;
+        updateBranches.forEach((updateBranch) => {
+          const branch: Branch = {
+            id: updateBranch.id,
+            name: updateBranch.name,
+            updates: updateBranch.updates.map((update) => {
+              return {
+                ...update,
+                createdAt: format(new Date(update.createdAt), 'MMMM d, yyyy, h:mma'),
+              };
+            }),
+          };
+
+          const hasNoUpdates = updateBranch.updates.length === 0;
+          const isCompatible = hasNoUpdates || updateBranch.compatibleUpdates.length > 0;
+
+          if (isCompatible) {
+            branches.push(branch);
+          } else {
+            incompatibleBranches.push(branch);
+          }
+
+          // side-effect: prime the cache with branches
+          primeCacheWithBranch(appId, branch);
+
+          // side-effect: prime the cache with the first paginated updates for a branch
+          primeCacheWithUpdates(appId, branch.name, branch.updates);
+        });
+
+        return {
+          branches,
+          incompatibleBranches,
+          page,
         };
-
-        const hasNoUpdates = updateBranch.updates.length === 0;
-        const isCompatible = hasNoUpdates || updateBranch.compatibleUpdates.length > 0;
-
-        if (isCompatible) {
-          branches.push(branch);
-        } else {
-          incompatibleBranches.push(branch);
-        }
-
-        // side-effect: prime the cache with branches
-        primeCacheWithBranch(appId, branch);
-
-        // side-effect: prime the cache with the first paginated updates for a branch
-        primeCacheWithUpdates(appId, branch.name, branch.updates);
+      })
+      .catch((error) => {
+        console.log('CAUGHT ERROR: ', { error });
+        // console.log({ error });
+        throw new Error(error);
       });
-
-      return {
-        branches,
-        incompatibleBranches,
-        page,
-      };
-    });
   }
 
   return {
@@ -139,7 +149,7 @@ export function useBranchesForApp(appId: string) {
       });
     },
     {
-      retry: isEnabled,
+      retry: 3,
       refetchOnMount: false,
       enabled: isEnabled,
       getNextPageParam: (lastPage, pages) => {
@@ -154,9 +164,23 @@ export function useBranchesForApp(appId: string) {
 
   React.useEffect(() => {
     if (query.error) {
-      toastStack.push(() => (
-        <Toasts.Error>Something went wrong trying to fetch branches for this app</Toasts.Error>
-      ));
+      const doesNotHaveErrorShowing =
+        toastStack.getItems().filter((i) => i.status === 'pushing' || i.status === 'settled')
+          .length === 0;
+
+      // @ts-ignore
+      const errorMessage = query.error.message;
+
+      if (doesNotHaveErrorShowing) {
+        toastStack.push(() => (
+          <Toasts.Error>
+            <Text color="error" size="small">
+              {errorMessage?.slice(0, 80) ||
+                `Something went wrong trying to fetch branches for this app`}
+            </Text>
+          </Toasts.Error>
+        ));
+      }
     }
   }, [query.error]);
 
