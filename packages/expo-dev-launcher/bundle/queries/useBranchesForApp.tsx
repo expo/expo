@@ -53,7 +53,7 @@ export type Branch = {
   updates: Update[];
 };
 
-async function getBranchesAsync({
+function getBranchesAsync({
   appId,
   page = 1,
   runtimeVersion,
@@ -77,52 +77,42 @@ async function getBranchesAsync({
     const branches: Branch[] = [];
     const incompatibleBranches: Branch[] = [];
 
-    console.log({ variables });
-
-    return apiClient
-      .request(query, variables)
-      .then((response) => {
-        console.log({ response });
-        const updateBranches = response.app.byId.updateBranches;
-        updateBranches.forEach((updateBranch) => {
-          const branch: Branch = {
-            id: updateBranch.id,
-            name: updateBranch.name,
-            updates: updateBranch.updates.map((update) => {
-              return {
-                ...update,
-                createdAt: format(new Date(update.createdAt), 'MMMM d, yyyy, h:mma'),
-              };
-            }),
-          };
-
-          const hasNoUpdates = updateBranch.updates.length === 0;
-          const isCompatible = hasNoUpdates || updateBranch.compatibleUpdates.length > 0;
-
-          if (isCompatible) {
-            branches.push(branch);
-          } else {
-            incompatibleBranches.push(branch);
-          }
-
-          // side-effect: prime the cache with branches
-          primeCacheWithBranch(appId, branch);
-
-          // side-effect: prime the cache with the first paginated updates for a branch
-          primeCacheWithUpdates(appId, branch.name, branch.updates);
-        });
-
-        return {
-          branches,
-          incompatibleBranches,
-          page,
+    return apiClient.request(query, variables).then((response) => {
+      const updateBranches = response.app.byId.updateBranches;
+      updateBranches.forEach((updateBranch) => {
+        const branch: Branch = {
+          id: updateBranch.id,
+          name: updateBranch.name,
+          updates: updateBranch.updates.map((update) => {
+            return {
+              ...update,
+              createdAt: format(new Date(update.createdAt), 'MMMM d, yyyy, h:mma'),
+            };
+          }),
         };
-      })
-      .catch((error) => {
-        console.log('CAUGHT ERROR: ', { error });
-        // console.log({ error });
-        throw new Error(error);
+
+        const hasNoUpdates = updateBranch.updates.length === 0;
+        const isCompatible = hasNoUpdates || updateBranch.compatibleUpdates.length > 0;
+
+        if (isCompatible) {
+          branches.push(branch);
+        } else {
+          incompatibleBranches.push(branch);
+        }
+
+        // side-effect: prime the cache with branches
+        primeCacheWithBranch(appId, branch);
+
+        // side-effect: prime the cache with the first paginated updates for a branch
+        primeCacheWithUpdates(appId, branch.name, branch.updates);
       });
+
+      return {
+        branches,
+        incompatibleBranches,
+        page,
+      };
+    });
   }
 
   return {
