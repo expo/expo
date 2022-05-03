@@ -34,6 +34,7 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-barcode-scanner': ['BarCodeScanner.tsx'],
   'expo-blur': ['index.ts'],
   'expo-brightness': ['Brightness.ts'],
+  'expo-build-properties': [['withBuildProperties.ts', 'pluginConfig.ts']],
   'expo-calendar': ['Calendar.ts'],
   'expo-camera': ['index.ts'],
   'expo-cellular': ['Cellular.ts'],
