@@ -8,8 +8,16 @@ import { getDevSessionsAsync } from '../getDevSessionsAsync';
 import { getInitialData } from '../getInitialData';
 import { restoreUserAsync } from '../restoreUserAsync';
 
-jest.mock('../restoreUserAsync');
-jest.mock('../getDevSessionsAsync');
+jest.mock('../restoreUserAsync', () => {
+  return {
+    restoreUserAsync: jest.fn().mockResolvedValue(null),
+  };
+});
+jest.mock('../getDevSessionsAsync', () => {
+  return {
+    getDevSessionsAsync: jest.fn().mockResolvedValue([]),
+  };
+});
 
 const mockRestoreUserAsync = restoreUserAsync as jest.Mock;
 
