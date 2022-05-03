@@ -13,6 +13,7 @@ on:
       - packages/expo-updates/**
       - packages/expo/android/**
       - packages/expo/ios/**
+      - templates/expo-template-bare-minimum/**
   push:
     branches: [main, 'sdk-*']
     paths:
@@ -25,6 +26,7 @@ on:
       - packages/expo-updates/**
       - packages/expo/android/**
       - packages/expo/ios/**
+      - templates/expo-template-bare-minimum/**
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
@@ -113,7 +115,7 @@ jobs:
         run: sed -i -e "s/UPDATES_HOST/$UPDATES_HOST/" ./App.js && sed -i -e "s/UPDATES_PORT/$UPDATES_PORT/" ./App.js
       - name: Assemble release APK
         working-directory: ../updates-e2e/android
-        run: ./gradlew assembleRelease
+        run: ./gradlew assembleRelease --stacktrace
       - name: Copy APK to working directory
         run: cp -R ../updates-e2e/android/app/build/outputs/apk artifact
       - name: Upload test APK artifact
