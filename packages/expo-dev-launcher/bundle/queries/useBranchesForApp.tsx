@@ -1,4 +1,5 @@
 import format from 'date-fns/format';
+import { Text } from 'expo-dev-client-components';
 import { gql } from 'graphql-request';
 import * as React from 'react';
 import { Platform } from 'react-native';
@@ -78,7 +79,6 @@ function getBranchesAsync({
 
     return apiClient.request(query, variables).then((response) => {
       const updateBranches = response.app.byId.updateBranches;
-
       updateBranches.forEach((updateBranch) => {
         const branch: Branch = {
           id: updateBranch.id,
@@ -139,7 +139,7 @@ export function useBranchesForApp(appId: string) {
       });
     },
     {
-      retry: isEnabled,
+      retry: 3,
       refetchOnMount: false,
       enabled: isEnabled,
       getNextPageParam: (lastPage, pages) => {
@@ -154,9 +154,22 @@ export function useBranchesForApp(appId: string) {
 
   React.useEffect(() => {
     if (query.error) {
-      toastStack.push(() => (
-        <Toasts.Error>Something went wrong trying to fetch branches for this app</Toasts.Error>
-      ));
+      const doesNotHaveErrorShowing =
+        toastStack.getItems().filter((i) => i.status === 'pushing' || i.status === 'settled')
+          .length === 0;
+
+      // @ts-ignore
+      const errorMessage = query.error.message;
+
+      if (doesNotHaveErrorShowing) {
+        toastStack.push(() => (
+          <Toasts.Error>
+            <Text color="error" size="small">
+              {errorMessage || `Something went wrong trying to fetch branches for this app`}
+            </Text>
+          </Toasts.Error>
+        ));
+      }
     }
   }, [query.error]);
 
