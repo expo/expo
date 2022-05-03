@@ -11,16 +11,21 @@ export async function startBundlerAsync(
   {
     port,
     headless,
+    scheme,
   }: {
     port: number;
     headless?: boolean;
+    scheme?: string;
   }
 ): Promise<DevServerManager> {
   const options = {
     port,
     headless,
     devClient: true,
-    location: {},
+
+    location: {
+      scheme,
+    },
   };
 
   const devServerManager = new DevServerManager(projectRoot, options);

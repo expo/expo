@@ -1,10 +1,30 @@
 import spawnAsync from '@expo/spawn-async';
 
-import { asMock } from '../../../../__tests__/asMock';
 import * as Log from '../../../../log';
-import { getContainerPathAsync, getDevicesAsync, getInfoPlistValueAsync } from '../simctl';
+import {
+  getContainerPathAsync,
+  getDevicesAsync,
+  getInfoPlistValueAsync,
+  isOSType,
+} from '../simctl';
 
 jest.mock(`../../../../log`);
+
+const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
+  fn as jest.MockedFunction<T>;
+
+describe(isOSType, () => {
+  it(`returns true for iOS`, () => {
+    expect(isOSType('iOS')).toBe(true);
+  });
+  it(`returns false for number`, () => {
+    expect(isOSType(1)).toBe(false);
+  });
+  it(`returns true and warns for an unknown string`, () => {
+    expect(isOSType('foobar')).toBe(true);
+    expect(Log.warn).toHaveBeenCalledWith(expect.stringContaining('foobar'));
+  });
+});
 
 describe(getDevicesAsync, () => {
   it(`returns a list of malformed devices`, async () => {

@@ -6,14 +6,18 @@ import { xcrunAsync } from './xcrun';
 
 type DeviceState = 'Shutdown' | 'Booted';
 
-type OSType = 'iOS' | 'tvOS' | 'watchOS' | 'macOS';
+export type OSType = 'iOS' | 'tvOS' | 'watchOS' | 'macOS';
 
 export type Device = {
   availabilityError?: 'runtime profile not found';
   /** '/Users/name/Library/Developer/CoreSimulator/Devices/00E55DC0-0364-49DF-9EC6-77BE587137D4/data' */
   dataPath: string;
+  /** @example `2811236352` */
+  dataPathSize?: number;
   /** '/Users/name/Library/Logs/CoreSimulator/00E55DC0-0364-49DF-9EC6-77BE587137D4' */
   logPath: string;
+  /** @example `479232` */
+  logPathSize?: number;
   /** '00E55DC0-0364-49DF-9EC6-77BE587137D4' */
   udid: string;
   /** 'com.apple.CoreSimulator.SimRuntime.iOS-15-1' */
@@ -40,6 +44,17 @@ type SimulatorDeviceList = {
 };
 
 type DeviceContext = Pick<Device, 'udid'>;
+
+/** Returns true if the given value is an `OSType`, if we don't recognize the value we continue anyways but warn. */
+export function isOSType(value: any): value is OSType {
+  if (!value || typeof value !== 'string') return false;
+
+  const knownTypes = ['iOS', 'tvOS', 'watchOS', 'macOS'];
+  if (!knownTypes.includes(value)) {
+    Log.warn(`Unknown OS type: ${value}. Expected one of: ${knownTypes.join(', ')}`);
+  }
+  return true;
+}
 
 /**
  * Returns the local path for the installed tar.app. Returns null when the app isn't installed.

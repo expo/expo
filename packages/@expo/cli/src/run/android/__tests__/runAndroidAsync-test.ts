@@ -7,11 +7,7 @@ import { runAndroidAsync } from '../runAndroidAsync';
 
 jest.mock('../../../log');
 
-jest.mock('../../../utils/port', () => ({
-  resolvePortAsync: jest.fn(
-    async (root, { defaultPort, fallbackPort }) => defaultPort ?? fallbackPort
-  ),
-}));
+jest.mock('../../../utils/port');
 
 jest.mock('../../../start/platforms/android/gradle', () => ({
   assembleAsync: jest.fn(async () => {}),
