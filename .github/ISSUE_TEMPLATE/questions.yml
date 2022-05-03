@@ -1,6 +1,6 @@
 name: '❓ Questions and discussions'
 description: 'You have a question about Expo or want to discuss some aspects of Expo'
-labels: ['stale', 'pending closure']
+labels: ['invalid issue: question']
 body:
   - type: markdown
     attributes:
