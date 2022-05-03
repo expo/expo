@@ -19,24 +19,24 @@ The `expo-updates` library supports end-to-end code signing. Code signing allows
 1. Generate a private key and corresponding code signing certificate for your app:
 
     ```bash
-    yarn expo-updates codesigning:generate \
+    npx expo-updates codesigning:generate \
       --key-output-directory keys \
       --certificate-output-directory certs \
       --certificate-validity-duration-years 10 \
       --certificate-common-name "My App"
     ```
 
-    The generated private key should be kept private and secure.
+    The generated private key must be kept private and secure.
 
 2. Configure your app's builds to use code signing:
 
     ```bash
-    yarn expo-updates codesigning:configure \
+    npx expo-updates codesigning:configure \
       --certificate-input-directory certs \
       --key-input-directory keys
     ```
 
-    After this step, a new build (with a new runtime version) should be created. The code signing certificate will be embedded in this new build.
+    After this step, create a new build with a new runtime version. The code signing certificate will be embedded in this new build.
 
 3. Publish a signed update for your app:
 
