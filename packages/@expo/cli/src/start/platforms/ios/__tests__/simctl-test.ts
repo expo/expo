@@ -2,10 +2,10 @@ import spawnAsync from '@expo/spawn-async';
 
 import * as Log from '../../../../log';
 import {
-  isOSType,
   getContainerPathAsync,
   getDevicesAsync,
   getInfoPlistValueAsync,
+  isOSType,
 } from '../simctl';
 
 jest.mock(`../../../../log`);

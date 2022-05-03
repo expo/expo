@@ -3,13 +3,12 @@ import nock from 'nock';
 import { FetchError } from 'node-fetch';
 import { URLSearchParams } from 'url';
 
+import { asMock } from '../../../__tests__/asMock';
 import { getExpoApiBaseUrl } from '../../endpoint';
 import UserSettings from '../../user/UserSettings';
 import { ApiV2Error, fetchAsync } from '../client';
 
 jest.mock('../../user/UserSettings');
-
-const asMock = (fn: any): jest.Mock => fn;
 
 it('converts Expo APIv2 error to ApiV2Error', async () => {
   const scope = nock(getExpoApiBaseUrl())
@@ -127,7 +126,12 @@ it('makes an authenticated request with access token', async () => {
 });
 
 it('makes an authenticated request with session secret', async () => {
-  asMock(UserSettings.getSession).mockClear().mockReturnValue({ sessionSecret: 'my-secret-token' });
+  asMock(UserSettings.getSession).mockClear().mockReturnValue({
+    sessionSecret: 'my-secret-token',
+    userId: '',
+    username: '',
+    currentConnection: 'Username-Password-Authentication',
+  });
   asMock(UserSettings.getAccessToken).mockReturnValue(null);
 
   nock(getExpoApiBaseUrl())
@@ -142,7 +146,12 @@ it('makes an authenticated request with session secret', async () => {
 
 it('only uses access token when both authentication methods are available', async () => {
   asMock(UserSettings.getAccessToken).mockClear().mockReturnValue('my-access-token');
-  asMock(UserSettings.getSession).mockClear().mockReturnValue({ sessionSecret: 'my-secret-token' });
+  asMock(UserSettings.getSession).mockClear().mockReturnValue({
+    sessionSecret: 'my-secret-token',
+    userId: '',
+    username: '',
+    currentConnection: 'Username-Password-Authentication',
+  });
 
   nock(getExpoApiBaseUrl())
     .matchHeader('authorization', (val) => val.length === 1 && val[0] === 'Bearer my-access-token')

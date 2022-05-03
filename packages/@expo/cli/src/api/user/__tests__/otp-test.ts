@@ -1,5 +1,6 @@
 import nock from 'nock';
 
+import { asMock } from '../../../__tests__/asMock';
 import * as Log from '../../../log';
 import { promptAsync, selectAsync } from '../../../utils/prompts';
 import { getExpoApiBaseUrl } from '../../endpoint';
@@ -9,8 +10,6 @@ import { loginAsync } from '../user';
 jest.mock('../../../utils/prompts');
 jest.mock('../user');
 jest.mock('../../../log');
-
-const asMock = (fn: any): jest.Mock => fn;
 
 beforeEach(() => {
   asMock(promptAsync).mockImplementation(() => {
@@ -26,7 +25,7 @@ beforeEach(() => {
 describe(retryUsernamePasswordAuthWithOTPAsync, () => {
   it('shows SMS OTP prompt when SMS is primary and code was automatically sent', async () => {
     asMock(promptAsync)
-      .mockImplementationOnce(() => ({ otp: 'hello' }))
+      .mockImplementationOnce(async () => ({ otp: 'hello' }))
       .mockImplementation(() => {
         throw new Error("shouldn't happen");
       });
@@ -52,7 +51,7 @@ describe(retryUsernamePasswordAuthWithOTPAsync, () => {
 
   it('shows authenticator OTP prompt when authenticator is primary', async () => {
     asMock(promptAsync)
-      .mockImplementationOnce(() => ({ otp: 'hello' }))
+      .mockImplementationOnce(async () => ({ otp: 'hello' }))
       .mockImplementation(() => {
         throw new Error("shouldn't happen");
       });
@@ -75,15 +74,15 @@ describe(retryUsernamePasswordAuthWithOTPAsync, () => {
 
   it('shows menu when user bails on primary', async () => {
     asMock(promptAsync)
-      .mockImplementationOnce(() => ({ otp: null }))
-      .mockImplementationOnce(() => ({ otp: 'hello' })) // second time it is prompted after selecting backup code
+      .mockImplementationOnce(async () => ({ otp: null }))
+      .mockImplementationOnce(async () => ({ otp: 'hello' })) // second time it is prompted after selecting backup code
       .mockImplementation(() => {
         throw new Error("shouldn't happen");
       });
 
     asMock(selectAsync)
-      .mockImplementationOnce(() => -1)
-      .mockImplementation(() => {
+      .mockImplementationOnce(async () => -1)
+      .mockImplementation(async () => {
         throw new Error("shouldn't happen");
       });
 
@@ -111,7 +110,7 @@ describe(retryUsernamePasswordAuthWithOTPAsync, () => {
 
   it('shows a warning when when user bails on primary and does not have any secondary set up', async () => {
     asMock(promptAsync)
-      .mockImplementationOnce(() => ({ otp: null }))
+      .mockImplementationOnce(async () => ({ otp: null }))
       .mockImplementation(() => {
         throw new Error("shouldn't happen");
       });
@@ -135,15 +134,15 @@ describe(retryUsernamePasswordAuthWithOTPAsync, () => {
 
   it('prompts for authenticator OTP when user selects authenticator secondary', async () => {
     asMock(promptAsync)
-      .mockImplementationOnce(() => ({ otp: null }))
-      .mockImplementationOnce(() => ({ otp: 'hello' })) // second time it is prompted after selecting backup code
+      .mockImplementationOnce(async () => ({ otp: null }))
+      .mockImplementationOnce(async () => ({ otp: 'hello' })) // second time it is prompted after selecting backup code
       .mockImplementation(() => {
         throw new Error("shouldn't happen");
       });
 
     asMock(selectAsync)
-      .mockImplementationOnce(() => -1)
-      .mockImplementation(() => {
+      .mockImplementationOnce(async () => -1)
+      .mockImplementation(async () => {
         throw new Error("shouldn't happen");
       });
 
@@ -170,15 +169,15 @@ describe(retryUsernamePasswordAuthWithOTPAsync, () => {
 
   it('requests SMS OTP and prompts for SMS OTP when user selects SMS secondary', async () => {
     asMock(promptAsync)
-      .mockImplementationOnce(() => ({ otp: null }))
-      .mockImplementationOnce(() => ({ otp: 'hello' })) // second time it is prompted after selecting backup code
+      .mockImplementationOnce(async () => ({ otp: null }))
+      .mockImplementationOnce(async () => ({ otp: 'hello' })) // second time it is prompted after selecting backup code
       .mockImplementation(() => {
         throw new Error("shouldn't happen");
       });
 
     asMock(selectAsync)
-      .mockImplementationOnce(() => 0)
-      .mockImplementation(() => {
+      .mockImplementationOnce(async () => 0)
+      .mockImplementation(async () => {
         throw new Error("shouldn't happen");
       });
 
@@ -214,14 +213,14 @@ describe(retryUsernamePasswordAuthWithOTPAsync, () => {
 
   it('exits when user bails on primary and backup', async () => {
     asMock(promptAsync)
-      .mockImplementationOnce(() => ({ otp: null }))
+      .mockImplementationOnce(async () => ({ otp: null }))
       .mockImplementation(() => {
         throw new Error("shouldn't happen");
       });
 
     asMock(selectAsync)
-      .mockImplementationOnce(() => -2)
-      .mockImplementation(() => {
+      .mockImplementationOnce(async () => -2)
+      .mockImplementation(async () => {
         throw new Error("shouldn't happen");
       });
 

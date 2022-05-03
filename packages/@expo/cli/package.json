@@ -59,6 +59,7 @@
     "bplist-parser": "^0.3.1",
     "cacache": "^15.3.0",
     "chalk": "^4.0.0",
+    "ci-info": "^3.3.0",
     "env-editor": "^0.4.1",
     "form-data": "^3.0.1",
     "freeport-async": "2.0.0",
