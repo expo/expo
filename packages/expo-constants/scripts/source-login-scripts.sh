@@ -9,6 +9,11 @@
 
 current_shell=$(ps -cp "$$" -o comm='' | sed 's/^-//')
 
+# attempt to source via nvm
+if test -f "$HOME/.nvm/nvm.sh"; then
+  source "$HOME/.nvm/nvm.sh"
+fi
+
 if [[ "$current_shell" == zsh ]]; then
    # Zsh's setup script order is:
    #   /etc/zshenv
