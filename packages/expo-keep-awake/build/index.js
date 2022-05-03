@@ -38,7 +38,7 @@ export function useKeepAwake(tag = ExpoKeepAwakeTag, options) {
  * @param tag *Optional* - Tag to lock screen sleep prevention. If not provided, the default tag is used.
  */
 export async function activateKeepAwake(tag = ExpoKeepAwakeTag) {
-    await ExpoKeepAwake?.activate(tag);
+    await ExpoKeepAwake.activate?.(tag);
 }
 // @needsAudit
 /**
@@ -48,6 +48,6 @@ export async function activateKeepAwake(tag = ExpoKeepAwakeTag) {
  * the default tag is used.
  */
 export async function deactivateKeepAwake(tag = ExpoKeepAwakeTag) {
-    await ExpoKeepAwake?.deactivate(tag);
+    await ExpoKeepAwake.deactivate?.(tag);
 }
 //# sourceMappingURL=index.js.map

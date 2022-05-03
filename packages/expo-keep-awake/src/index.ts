@@ -47,7 +47,7 @@ export function useKeepAwake(
  */
 
 export async function activateKeepAwake(tag: string = ExpoKeepAwakeTag): Promise<void> {
-  await ExpoKeepAwake?.activate(tag);
+  await ExpoKeepAwake.activate?.(tag);
 }
 
 // @needsAudit
@@ -58,5 +58,5 @@ export async function activateKeepAwake(tag: string = ExpoKeepAwakeTag): Promise
  * the default tag is used.
  */
 export async function deactivateKeepAwake(tag: string = ExpoKeepAwakeTag): Promise<void> {
-  await ExpoKeepAwake?.deactivate(tag);
+  await ExpoKeepAwake.deactivate?.(tag);
 }
