@@ -30,7 +30,7 @@ it('runs `npx expo --help`', async () => {
 
     Commands
       start, install, export, config
-      run:android, prebuild
+      run:ios, run:android, prebuild
       login, logout, whoami, register
 
     Options

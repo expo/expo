@@ -3,11 +3,7 @@ import { vol } from 'memfs';
 import rnFixture from '../../../prebuild/__tests__/fixtures/react-native-project';
 import { resolveOptionsAsync } from '../resolveOptions';
 
-jest.mock('../../../utils/port', () => ({
-  resolvePortAsync: jest.fn(
-    async (root, { defaultPort, fallbackPort }) => defaultPort ?? fallbackPort
-  ),
-}));
+jest.mock('../../../utils/port');
 
 jest.mock('../resolveDevice', () => ({
   resolveDeviceAsync: jest.fn(async () => ({

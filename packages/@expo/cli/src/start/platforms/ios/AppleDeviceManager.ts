@@ -72,7 +72,7 @@ export class AppleDeviceManager extends DeviceManager<SimControl.Device> {
     device,
     shouldPrompt,
   }: BaseResolveDeviceProps<
-    Pick<SimControl.Device, 'udid' | 'osType'>
+    Partial<Pick<SimControl.Device, 'udid' | 'osType'>>
   > = {}): Promise<AppleDeviceManager> {
     if (shouldPrompt) {
       const devices = await getSelectableSimulatorsAsync(device);
@@ -115,9 +115,13 @@ export class AppleDeviceManager extends DeviceManager<SimControl.Device> {
     } catch (error: any) {
       let errorMessage = `Couldn't open iOS app with ID "${appId}" on device "${this.name}".`;
       if (error instanceof CommandError && error.code === 'APP_NOT_INSTALLED') {
-        errorMessage += `\nThe app might not be installed, try installing it with: ${chalk.bold(
-          `expo run:ios -d ${this.device.udid}`
-        )}`;
+        if (appId === EXPO_GO_BUNDLE_IDENTIFIER) {
+          errorMessage = `Couldn't open Expo Go app on device "${this.name}". Please install.`;
+        } else {
+          errorMessage += `\nThe app might not be installed, try installing it with: ${chalk.bold(
+            `expo run:ios -d ${this.device.udid}`
+          )}`;
+        }
       }
       if (error.stderr) {
         errorMessage += chalk.gray(`\n${error.stderr}`);

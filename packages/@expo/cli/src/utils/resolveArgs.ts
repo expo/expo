@@ -29,7 +29,7 @@ export async function resolveStringOrBooleanArgsAsync(
   args = collapseAliases(extraArgs, args);
 
   // Resolve all of the string or boolean arguments and the project root.
-  return _resolveStringOrBooleanArgs(extraArgs, args);
+  return _resolveStringOrBooleanArgs({ ...rawMap, ...extraArgs }, args);
 }
 
 export function _resolveStringOrBooleanArgs(arg: Spec, args: string[]) {
