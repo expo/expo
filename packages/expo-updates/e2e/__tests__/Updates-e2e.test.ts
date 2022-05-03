@@ -1,3 +1,7 @@
+import crypto from 'crypto';
+import fs from 'fs';
+import path from 'path';
+import { Dictionary, serializeDictionary } from 'structured-headers';
 import { setTimeout } from 'timers/promises';
 import uuid from 'uuid/v4';
 
@@ -12,6 +16,27 @@ const SERVER_PORT = parseInt(process.env.UPDATES_PORT, 10);
 const RUNTIME_VERSION = '1.0.0';
 
 const TIMEOUT_BIAS = process.env.CI ? 10 : 1;
+
+async function getPrivateKeyAsync() {
+  const privateKeyPath = process.env.TEST_PRIVATE_KEY_PATH;
+  const pemBuffer = fs.readFileSync(path.resolve(privateKeyPath));
+  return pemBuffer.toString('utf8');
+}
+
+function signRSASHA256(data: string, privateKey: string) {
+  const sign = crypto.createSign('RSA-SHA256');
+  sign.update(data, 'utf8');
+  sign.end();
+  return sign.sign(privateKey, 'base64');
+}
+
+function convertToDictionaryItemsRepresentation(obj: { [key: string]: string }): Dictionary {
+  return new Map(
+    Object.entries(obj).map(([k, v]) => {
+      return [k, [v, new Map()]];
+    })
+  );
+}
 
 beforeEach(async () => {});
 
@@ -70,8 +95,17 @@ test('downloads and runs update, and updates current-update-id header', async ()
     extra: {},
   };
 
+  const privateKey = await getPrivateKeyAsync();
+  const manifestString = JSON.stringify(manifest);
+  const hashSignature = signRSASHA256(manifestString, privateKey);
+  const dictionary = convertToDictionaryItemsRepresentation({
+    sig: hashSignature,
+    keyid: 'main',
+  });
+  const signature = serializeDictionary(dictionary);
+
   Server.start(SERVER_PORT);
-  Server.serveManifest(manifest, { 'expo-protocol-version': '0' });
+  Server.serveManifest(manifest, { 'expo-protocol-version': '0', 'expo-signature': signature });
   await Simulator.installApp();
   await Simulator.startApp();
   const firstRequest = await Server.waitForUpdateRequest(10000 * TIMEOUT_BIAS);
