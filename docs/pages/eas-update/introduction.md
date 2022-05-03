@@ -8,7 +8,7 @@ import Head from '~/components/Head'
 
 > ⚠️ EAS Update is in "preview", meaning that we may still make breaking developer-facing changes. With that, EAS Update is ready for production apps. While we do not intend to make end-user facing changes, we may require you to make new builds of your project before EAS Update is publicly available. Read through the [known issues](/eas-update/known-issues) to ensure EAS Update is ready for your project.
 
-> EAS Update is currently only available to users subscribed to the Legacy Priority, EAS Production, or EAS Enterprise plans. [Sign up](https://expo.dev/pricing).
+> EAS Update is currently only available to accounts subscribed to the Legacy Priority, EAS Production, or EAS Enterprise plans. [Sign up](https://expo.dev/pricing).
 
 **EAS Update** is a hosted service that serves updates for projects using the `expo-updates` library.
 
