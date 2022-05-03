@@ -93,7 +93,7 @@ The following files are required for a TypeScript plugin:
     ╰── src/index.ts ➡️ The TypeScript entry point for your plugin
 ```
 
-Create a `app.plugin.js` (the entry point for a config plugin):
+Create an `app.plugin.js` (the entry point for a config plugin):
 
 ```js
 module.exports = require('./plugin/build');
