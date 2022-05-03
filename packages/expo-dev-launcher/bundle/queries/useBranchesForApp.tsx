@@ -165,8 +165,7 @@ export function useBranchesForApp(appId: string) {
         toastStack.push(() => (
           <Toasts.Error>
             <Text color="error" size="small">
-              {errorMessage?.slice(0, 80) ||
-                `Something went wrong trying to fetch branches for this app`}
+              {errorMessage || `Something went wrong trying to fetch branches for this app`}
             </Text>
           </Toasts.Error>
         ));
