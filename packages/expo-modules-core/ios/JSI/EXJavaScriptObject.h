@@ -69,6 +69,11 @@ NS_SWIFT_NAME(JavaScriptObject)
 - (void)setProperty:(nonnull NSString *)name value:(nullable id)value;
 
 /**
+ Defines a new property or modifies an existing property on the object using the property descriptor.
+ */
+- (void)defineProperty:(nonnull NSString *)name descriptor:(nonnull EXJavaScriptObject *)descriptor;
+
+/**
  Defines a new property or modifies an existing property on the object. Calls `Object.defineProperty` under the hood.
  */
 - (void)defineProperty:(nonnull NSString *)name value:(nullable id)value options:(EXJavaScriptObjectPropertyDescriptor)options;
