@@ -28,6 +28,7 @@ If you'd like to see more, you can [open a PR](https://github.com/expo/expo/edit
   <SocialGridItem title="IdentityServer 4" protocol={['OAuth 2', 'OpenID']} href="#identityserver-4" image="/static/images/sdk/auth-session/identity4.png" />
   <SocialGridItem title="Azure" protocol={['OAuth 2', 'OpenID']} href="#azure" image="/static/images/sdk/auth-session/azure.png" />
   <SocialGridItem title="Apple" protocol={['iOS Only']} href="/versions/latest/sdk/apple-authentication" image="/static/images/sdk/auth-session/apple.png" />
+  <SocialGridItem title="Clerk" protocol={['User management']} href="#clerk" image="/static/images/sdk/auth-session/clerk.png" />
   <SocialGridItem title="Coinbase" protocol={['OAuth 2']} href="#coinbase" image="/static/images/sdk/auth-session/coinbase.png" />
   <SocialGridItem title="Dropbox" protocol={['OAuth 2']} href="#dropbox" image="/static/images/sdk/auth-session/dropbox.png" />
   <SocialGridItem title="Facebook" protocol={['OAuth 2']} href="#facebook" image="/static/images/sdk/auth-session/facebook.png" />
@@ -161,6 +162,51 @@ export default function App() {
 
 <!-- End Azure -->
 
+### Clerk
+
+<CreateAppButton name="Clerk" href="https://dashboard.clerk.dev/sign-up" />
+
+| Website                    | Provider                                | PKCE      | Auto Discovery |
+| -------------------------- | --------------------------------------- | --------- | -------------- |
+| [Get Your Config][c-clerk] | Password, Passwordless, OAuth 2.0, Web3 | Supported | Not Available  |
+
+[c-clerk]: https://dashboard.clerk.dev/apps/new
+
+[Clerk](https://clerk.dev?utm_source=expo&utm_medium=expo_docs) allows you to add passwords, magic links, social sign-in, multifactor, and more to your native application in minutes. Looking for a quickstart? We created a [demo app](https://github.com/clerkinc/clerk-expo-starter) to show you how to add Clerk to your project.
+
+- Create a Clerk Application in Clerk Dashboard before. For more information, check out our [setup your application guide](https://clerk.dev/docs/how-to/set-up-your-application).
+- Install Clerk to your project `npm install @clerk/clerk-expo`
+- Clerk requires your application to be wrapped in the `<ClerkProvider/>` context and passed your Frontend API as the `frontendApi` prop.
+
+<!-- prettier-ignore -->
+```tsx
+import React from "react";
+import { Text } from "react-native";
+import { SafeAreaProvider } from "react-native-safe-area-context";
+import { ClerkProvider } from "@clerk/clerk-expo";
+
+import * as SecureStore from "expo-secure-store";
+
+const tokenCache = {
+  getToken(key: string) {
+    return SecureStore.getItemAsync(key);
+  },
+  saveToken(key: string, value: string) {
+    return SecureStore.setItemAsync(key, value);
+  }
+};
+
+export default function App() {
+  return (
+    <ClerkProvider frontendApi="clerk.[your-domain-goes-here]" tokenCache={tokenCache}>
+      <SafeAreaProvider>
+        <Text>Hello world!</Text>
+      </SafeAreaProvider>
+    </ClerkProvider>
+  );
+}
+```
+
 ### Coinbase
 
 <CreateAppButton name="Coinbase" href="https://www.coinbase.com/oauth/applications/new" />
@@ -214,7 +260,7 @@ const discovery = {
 
 const redirectUri = makeRedirectUri({
   /* @info The URI <code>[scheme]://</code> to be used in bare and standalone. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
-  scheme: 'your.app'  
+  scheme: 'your.app'
 /* @end */});
 
 const CLIENT_ID = "CLIENT_ID";
@@ -1757,7 +1803,6 @@ export default function App() {
 </Tab>
 
 <Tab>
-
 
 <!-- prettier-ignore -->
 ```tsx
