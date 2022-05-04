@@ -7,6 +7,13 @@ class DeferredClientActionsQueue<T> {
   private val actions: Queue<Consumer<T>> = LinkedList()
   private var client: T? = null
 
+  fun setClient(client: T) {
+    this.client = client
+    executeQueuedActions()
+  }
+
+  fun hasClient(): Boolean = client != null
+
   fun executeOrQueueAction(action: Consumer<T>) {
     if (client != null) {
       action.apply(client)
@@ -15,17 +22,10 @@ class DeferredClientActionsQueue<T> {
     }
   }
 
-  fun setClient(client: T) {
-    this.client = client
-    executeQueuedActions()
-  }
-
   fun clear() {
     client = null
     actions.clear()
   }
-
-  fun hasClient(): Boolean = client != null
 
   private fun executeQueuedActions() {
     if (client == null) {

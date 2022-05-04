@@ -75,11 +75,10 @@ internal class InternalCustomTabsActivitiesHelper : CustomTabsActivitiesHelper {
     }
 
   private fun createDefaultCustomTabsIntent(): Intent {
-    val builder = CustomTabsIntent.Builder()
-    val customTabsIntent = builder.build()
-    val intent = customTabsIntent.intent
-    intent.data = Uri.parse(DUMMY_URL)
-    return intent
+    val customTabsIntent = CustomTabsIntent.Builder().build()
+    return customTabsIntent.intent.apply {
+      data = Uri.parse(DUMMY_URL)
+    }
   }
 
   private fun createDefaultCustomTabsServiceIntent() = Intent().apply {

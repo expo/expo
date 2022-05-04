@@ -7,21 +7,38 @@ import android.content.Intent
 import java.util.ArrayList
 
 interface CustomTabsActivitiesHelper : InternalModule {
-  @get:Throws(PackageManagerNotFoundException::class, CurrentActivityNotFoundException::class)
+  /**
+   * @throws PackageManagerNotFoundException
+   * @throws CurrentActivityNotFoundException
+   */
   val customTabsResolvingActivities: ArrayList<String>
 
-  @get:Throws(PackageManagerNotFoundException::class, CurrentActivityNotFoundException::class)
+  /**
+   * @throws PackageManagerNotFoundException
+   * @throws CurrentActivityNotFoundException
+   */
   val customTabsResolvingServices: ArrayList<String>
 
-  @Throws(PackageManagerNotFoundException::class, CurrentActivityNotFoundException::class)
+  /**
+   * @throws PackageManagerNotFoundException
+   * @throws CurrentActivityNotFoundException
+   */
   fun getPreferredCustomTabsResolvingActivity(packages: List<String?>?): String?
 
-  @get:Throws(PackageManagerNotFoundException::class, CurrentActivityNotFoundException::class)
+  /**
+   * @throws PackageManagerNotFoundException
+   * @throws CurrentActivityNotFoundException
+   */
   val defaultCustomTabsResolvingActivity: String?
 
-  @Throws(CurrentActivityNotFoundException::class)
+  /**
+   * @throws CurrentActivityNotFoundException
+   */
   fun startCustomTabs(intent: Intent)
 
-  @Throws(PackageManagerNotFoundException::class, CurrentActivityNotFoundException::class)
+  /**
+   * @throws PackageManagerNotFoundException
+   * @throws CurrentActivityNotFoundException
+   */
   fun canResolveIntent(intent: Intent): Boolean
 }

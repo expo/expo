@@ -73,10 +73,12 @@ class InternalCustomTabsConnectionHelper internal constructor(
   // endregion
 
   private fun ensureSession() {
-    if (!sessionActions.hasClient()) {
-      clientActions.executeOrQueueAction { client: CustomTabsClient ->
-        sessionActions.setClient(client.newSession(null))
-      }
+    if (sessionActions.hasClient()) {
+      return
+    }
+
+    clientActions.executeOrQueueAction { client: CustomTabsClient ->
+      sessionActions.setClient(client.newSession(null))
     }
   }
 
