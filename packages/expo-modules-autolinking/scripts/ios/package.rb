@@ -33,12 +33,16 @@ module Expo
     # Class names of the modules that need to be included in the generated modules provider.
     attr_reader :modules
 
+    # Whether this module should only be added to the debug configuration.
+    attr_reader :debugOnly
+    
     def initialize(json)
       @name = json['packageName']
       @version = json['packageVersion']
       @pods = json['pods'].map { |pod| PackagePod.new(pod) }
       @flags = json.fetch('flags', {})
       @modules = json.fetch('modules', [])
+      @debugOnly = json['debugOnly']
     end
 
   end # class Package

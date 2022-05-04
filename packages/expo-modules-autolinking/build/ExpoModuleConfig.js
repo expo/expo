@@ -59,6 +59,13 @@ class ExpoModuleConfig {
         return arrayize((_a = this.rawConfig.ios) === null || _a === void 0 ? void 0 : _a.swiftModuleName);
     }
     /**
+     * Returns whether this module will be added only to the debug configuration
+     */
+    iosDebugOnly() {
+        var _a, _b;
+        return (_b = (_a = this.rawConfig.ios) === null || _a === void 0 ? void 0 : _a.debugOnly) !== null && _b !== void 0 ? _b : false;
+    }
+    /**
      * Returns a list of names of Kotlin native modules classes to put to the generated package provider file.
      */
     androidModules() {

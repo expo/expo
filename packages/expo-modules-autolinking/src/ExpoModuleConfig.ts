@@ -59,6 +59,13 @@ export class ExpoModuleConfig {
   }
 
   /**
+   * Returns whether this module will be added only to the debug configuration
+   */
+  iosDebugOnly(): boolean {
+    return this.rawConfig.ios?.debugOnly ?? false;
+  }
+
+  /**
    * Returns a list of names of Kotlin native modules classes to put to the generated package provider file.
    */
   androidModules() {
