@@ -12,6 +12,7 @@
 - Fix remote debugging crashing the application on iOS. ([#17248](https://github.com/expo/expo/pull/17248) by [@lukmccall](https://github.com/lukmccall))
 - Fix reload button on iOS native error screen in certain cases. ([#17272](https://github.com/expo/expo/pull/17272) by [@esamelson](https://github.com/esamelson))
 - Fix infinite query refetching on extensions panel. ([#17314](https://github.com/expo/expo/pull/17314) by [@ajsmth](https://github.com/ajsmth))
+- Fix airplane mode hanging on splash screen. ([#17325](https://github.com/expo/expo/pull/17325) by [@ajsmth](https://github.com/ajsmth))
 
 ### 💡 Others
 
