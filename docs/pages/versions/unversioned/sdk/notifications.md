@@ -99,9 +99,11 @@ Learn how push notification credentials can be automatically generated or upload
 
 ### Android
 
-On Android, this module requires permission to subscribe to device boot. It's used to setup scheduled notifications when the device (re)starts. The `RECEIVE_BOOT_COMPLETED` permission is added automatically through the library **AndroidManifest.xml**.
+- On Android, this module requires permission to subscribe to device boot. It's used to setup scheduled notifications when the device (re)starts. The `RECEIVE_BOOT_COMPLETED` permission is added automatically through the library **AndroidManifest.xml**.
 
-<AndroidPermissions permissions={['RECEIVE_BOOT_COMPLETED']} />
+- Starting from Android 12 (API level 31), this module requires the `SCHEDULE_EXACT_ALARM` permission for `scheduleNotificationAsync` to schedule notifications from a precise timer. If you need a precise time for `scheduleNotificationAsync` notifications, please add `<uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>` to **AndroidManifest.xml**.
+
+<AndroidPermissions permissions={['RECEIVE_BOOT_COMPLETED', 'SCHEDULE_EXACT_ALARM']} />
 
 ### iOS
 
