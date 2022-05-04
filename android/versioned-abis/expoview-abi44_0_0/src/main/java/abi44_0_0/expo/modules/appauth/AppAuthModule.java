@@ -5,6 +5,8 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
+
 import androidx.annotation.Nullable;
 
 import net.openid.appauth.AppAuthConfiguration;
@@ -327,7 +329,9 @@ public class AppAuthModule extends ExportedModule {
 
       AuthorizationRequest authorizationRequest = authReqBuilder.build();
       int hash = authorizationRequest.hashCode();
-      PendingIntent pendingIntent = PendingIntent.getActivity(activity, hash, postAuthIntent, 0);
+      // We're defaulting to the behaviour prior API 31 (mutable) even though Android recommends immutability
+      int mutableFlag = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S ? PendingIntent.FLAG_MUTABLE : 0;
+      PendingIntent pendingIntent = PendingIntent.getActivity(activity, hash, postAuthIntent, mutableFlag);
       AuthorizationService authorizationService = new AuthorizationService(activity, authConfig);
       authorizationService.performAuthorizationRequest(authorizationRequest, pendingIntent, pendingIntent);
     } catch (Exception e) {
