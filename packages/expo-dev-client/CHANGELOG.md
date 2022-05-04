@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix `no such module 'EXDevLauncher'` when compiling the release build on IOS.
+- Fix `no such module 'EXDevLauncher'` when compiling the release build on iOS. ([#17332](https://github.com/expo/expo/pull/17332) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 
