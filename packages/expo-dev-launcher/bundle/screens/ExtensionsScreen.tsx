@@ -43,7 +43,7 @@ export function ExtensionsScreen({ navigation }: ExtensionsScreenProps) {
     incompatibleBranches,
     isRefreshing,
     refetch,
-  } = useBranchesForApp(appId);
+  } = useBranchesForApp(appId, isAuthenticated);
 
   const throttledRefreshing = useThrottle(isRefreshing, 1000);
 
@@ -139,7 +139,7 @@ export function ExtensionsScreen({ navigation }: ExtensionsScreenProps) {
             </View>
           )}
 
-          {usesEASUpdates && !isAuthenticated && !hasError && (
+          {usesEASUpdates && !isAuthenticated && (
             <View>
               <Spacer.Vertical size="medium" />
               <View mx="medium" padding="medium" bg="default" rounded="large">
@@ -182,24 +182,22 @@ export function ExtensionsScreen({ navigation }: ExtensionsScreenProps) {
           )}
 
           {compatibleExtensions.length > 0 && (
-            <>
-              <View px="xl">
-                <Text size="small" color="secondary">
-                  Extensions allow you to customize your development build with additional
-                  capabilities.{' '}
-                  <Text
-                    size="small"
-                    style={{ textDecorationLine: 'underline' }}
-                    onPress={() => Linking.openURL(`https://docs.expo.dev/development/extensions/`)}
-                    accessibilityRole="link">
-                    Learn more.
-                  </Text>
+            <View px="xl">
+              <Text size="small" color="secondary">
+                Extensions allow you to customize your development build with additional
+                capabilities.{' '}
+                <Text
+                  size="small"
+                  style={{ textDecorationLine: 'underline' }}
+                  onPress={() => Linking.openURL(`https://docs.expo.dev/development/extensions/`)}
+                  accessibilityRole="link">
+                  Learn more.
                 </Text>
-              </View>
-            </>
+              </Text>
+            </View>
           )}
 
-          {isLoading && (
+          {isLoading && isAuthenticated && (
             <View
               mt="medium"
               inset="full"
