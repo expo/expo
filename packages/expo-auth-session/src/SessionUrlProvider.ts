@@ -25,7 +25,11 @@ export class SessionUrlProvider {
     });
   }
 
-  getStartUrl(authUrl: string, returnUrl: string): string {
+  getStartUrl(
+    authUrl: string,
+    returnUrl: string,
+    proxyProjectIdOverride: string | undefined
+  ): string {
     if (Platform.OS === 'web' && !Platform.isDOMAvailable) {
       // Return nothing in SSR envs
       return '';
@@ -35,13 +39,13 @@ export class SessionUrlProvider {
       returnUrl,
     });
 
-    return `${this.getRedirectUrl()}/start?${queryString}`;
+    return `${this.getRedirectUrl({ proxyProjectIdOverride })}/start?${queryString}`;
   }
 
-  getRedirectUrl(urlPath?: string): string {
+  getRedirectUrl(options: { proxyProjectIdOverride?: string; urlPath?: string }): string {
     if (Platform.OS === 'web') {
       if (Platform.isDOMAvailable) {
-        return [window.location.origin, urlPath].filter(Boolean).join('/');
+        return [window.location.origin, options.urlPath].filter(Boolean).join('/');
       } else {
         // Return nothing in SSR envs
         return '';
@@ -49,6 +53,7 @@ export class SessionUrlProvider {
     }
 
     const legacyExpoProjectId =
+      options.proxyProjectIdOverride ||
       Constants.manifest?.originalFullName ||
       Constants.manifest2?.extra?.expoClient?.originalFullName ||
       Constants.manifest?.id;
@@ -64,6 +69,13 @@ export class SessionUrlProvider {
             ' Please report this as a bug with the contents of `expo config --type public`.';
         }
       }
+
+      if (Constants.manifest2) {
+        nextSteps =
+          ' The AuthSession proxy has been deprecated for modern applications. Prefer AuthRequest (with the useProxy option set to false) in combination with an Expo Development Client build of your application.' +
+          ' To continue using the AuthSession proxy during the transition, specify the project ID using the proxyProjectIdOverride option.';
+      }
+
       throw new Error(
         'Cannot use AuthSession proxy because the project ID is not defined.' + nextSteps
       );

@@ -3,8 +3,11 @@ export declare class SessionUrlProvider {
     private static readonly BASE_URL;
     private static readonly SESSION_PATH;
     getDefaultReturnUrl(urlPath?: string, options?: Omit<Linking.CreateURLOptions, 'queryParams'>): string;
-    getStartUrl(authUrl: string, returnUrl: string): string;
-    getRedirectUrl(urlPath?: string): string;
+    getStartUrl(authUrl: string, returnUrl: string, proxyProjectIdOverride: string | undefined): string;
+    getRedirectUrl(options: {
+        proxyProjectIdOverride?: string;
+        urlPath?: string;
+    }): string;
     private static getHostAddressQueryParams;
     private static warnIfAnonymous;
     private static removeScheme;

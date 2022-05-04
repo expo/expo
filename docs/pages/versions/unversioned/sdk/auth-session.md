@@ -79,11 +79,13 @@ The typical flow for browser-based authentication in mobile apps is as follows:
 
 ## What `auth.expo.io` does for you
 
+> **Deprecated.** The `AuthSession` proxy (`auth.expo.io`) and thus using `AuthSession` in Expo Go have been deprecated. Prefer `AuthRequest` (with `useProxy` set to false) as desribed in the [Authentication Guide](../../../guides/authentication.md) in combination with a [development client](https://docs.expo.dev/development/introduction/) build of your application for `AuthSession` development.
+
 > The `auth.expo.io` proxy is only used when `startAsync` is called, or when `useProxy: true` is passed to the `promptAsync()` method of an `AuthRequest`.
 
 ### It reduces boilerplate
 
-`AuthSession` handles most of the app-side responsibilities for you:
+The `AuthSession` proxy handles most of the app-side responsibilities for you:
 
 - It opens the sign in URL for your authentication provider (`authUrl`, you must provide it) in a web browser that shares cookies with your system browser.
 - It handles success redirects and extracts all of the data encoded in the URL.
@@ -183,7 +185,7 @@ A [`DiscoveryDocument`](#discoverydocument) object containing the discovery URLs
 
 ## Usage in the bare React Native app
 
-In managed apps, `AuthSession` uses Expo servers to create a proxy between your application and the auth provider. If you'd like, you can also create your own proxy service.
+Previously, `AuthSession` used Expo servers to create a proxy between your application and the auth provider (note: deprecated). If you'd like, you can also create your own proxy service.
 
 ### Proxy Service
 

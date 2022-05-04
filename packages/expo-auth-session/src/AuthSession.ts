@@ -1,7 +1,11 @@
 import Constants, { ExecutionEnvironment } from 'expo-constants';
 import * as Linking from 'expo-linking';
 import { Platform } from 'expo-modules-core';
-import { dismissAuthSession, openAuthSessionAsync } from 'expo-web-browser';
+import {
+  dismissAuthSession,
+  openAuthSessionAsync,
+  WebBrowserAuthSessionResult,
+} from 'expo-web-browser';
 
 import { AuthRequest } from './AuthRequest';
 import {
@@ -32,11 +36,14 @@ let _authLock = false;
 
 // @needsAudit
 /**
- * Initiate an authentication session with the given options. Only one `AuthSession` can be active at any given time in your application.
+ * Initiate a proxied authentication session with the given options. Only one `AuthSession` can be active at any given time in your application.
  * If you attempt to open a second session while one is still in progress, the second session will return a value to indicate that `AuthSession` is locked.
  *
  * @param options An object of type `AuthSessionOptions`.
  * @return Returns a Promise that resolves to an `AuthSessionResult` object.
+ *
+ * @deprecated The auth.expo.io proxy and thus using AuthSession in Expo Go have been deprecated. Prefer `AuthRequest` (with `useProxy` set to false)
+ *             in combination with an Expo Development Client build of your application.
  */
 export async function startAsync(options: AuthSessionOptions): Promise<AuthSessionResult> {
   const authUrl = options.authUrl;
@@ -59,13 +66,17 @@ export async function startAsync(options: AuthSessionOptions): Promise<AuthSessi
   }
 
   const returnUrl = options.returnUrl || sessionUrlProvider.getDefaultReturnUrl();
-  const startUrl = sessionUrlProvider.getStartUrl(authUrl, returnUrl);
+  const startUrl = sessionUrlProvider.getStartUrl(
+    authUrl,
+    returnUrl,
+    options.proxyProjectIdOverride
+  );
   const showInRecents = options.showInRecents || false;
 
   // About to start session, set lock
   _authLock = true;
 
-  let result;
+  let result: WebBrowserAuthSessionResult;
   try {
     result = await _openWebBrowserAsync(startUrl, returnUrl, showInRecents);
   } finally {
@@ -77,8 +88,8 @@ export async function startAsync(options: AuthSessionOptions): Promise<AuthSessi
   if (!result) {
     throw new Error('Unexpected missing AuthSession result');
   }
-  if (!result.url) {
-    if (result.type) {
+  if (!('url' in result)) {
+    if ('type' in result) {
       return result;
     } else {
       throw new Error('Unexpected AuthSession result with missing type');
@@ -124,9 +135,10 @@ export const getDefaultReturnUrl = sessionUrlProvider.getDefaultReturnUrl;
  * ```
  *
  * @deprecated Use `makeRedirectUri({ path, useProxy })` instead.
+ *             This has also been deprecated as part of the auth.expo.io proxy and expo-auth-session in Expo Go deprecations.
  */
 export function getRedirectUrl(path?: string): string {
-  return sessionUrlProvider.getRedirectUrl(path);
+  return sessionUrlProvider.getRedirectUrl({ urlPath: path });
 }
 
 // @needsAudit
@@ -179,6 +191,7 @@ export function makeRedirectUri({
   path,
   preferLocalhost,
   useProxy,
+  proxyProjectIdOverride,
 }: AuthSessionRedirectUriOptions = {}): string {
   if (
     Platform.OS !== 'web' &&
@@ -211,7 +224,7 @@ export function makeRedirectUri({
     return url;
   }
   // Attempt to use the proxy
-  return sessionUrlProvider.getRedirectUrl(path);
+  return sessionUrlProvider.getRedirectUrl({ urlPath: path, proxyProjectIdOverride });
 }
 
 // @needsAudit
@@ -234,7 +247,6 @@ export async function loadAsync(
 }
 
 async function _openWebBrowserAsync(startUrl: string, returnUrl: string, showInRecents: boolean) {
-  // $FlowIssue: Flow thinks the awaited result can be a promise
   const result = await openAuthSessionAsync(startUrl, returnUrl, { showInRecents });
   if (result.type === 'cancel' || result.type === 'dismiss') {
     return { type: result.type };

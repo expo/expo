@@ -126,7 +126,7 @@ export class AuthRequest {
         let returnUrl = this.redirectUri;
         if (options.useProxy) {
             returnUrl = sessionUrlProvider.getDefaultReturnUrl(proxyOptions?.path, proxyOptions);
-            startUrl = sessionUrlProvider.getStartUrl(url, returnUrl);
+            startUrl = sessionUrlProvider.getStartUrl(url, returnUrl, options.proxyProjectIdOverride);
         }
         // Prevent multiple sessions from running at the same time, WebBrowser doesn't
         // support it this makes the behavior predictable.

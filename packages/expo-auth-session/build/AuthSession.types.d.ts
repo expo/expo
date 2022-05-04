@@ -18,6 +18,13 @@ export declare type AuthSessionOptions = {
      * @platform android
      */
     showInRecents?: boolean;
+    /**
+     * Override project ID for the \`auth.expo.io\` proxy. Should only be used in when transitioning away from the proxy.
+     *
+     * @deprecated The auth.expo.io proxy and thus using AuthSession in Expo Go have been deprecated. Prefer `AuthRequest` (with `useProxy` set to false)
+     *             in combination with an Expo Development Client build of your application.
+     */
+    proxyProjectIdOverride?: string;
 };
 /**
  * Object returned after an auth request has completed.
@@ -32,7 +39,7 @@ export declare type AuthSessionResult = {
     /**
      * How the auth completed.
      */
-    type: 'cancel' | 'dismiss' | 'locked';
+    type: 'cancel' | 'dismiss' | 'opened' | 'locked';
 } | {
     /**
      * How the auth completed.
@@ -89,8 +96,18 @@ export declare type AuthSessionRedirectUriOptions = {
      * This is useful for testing managed native apps that require a custom URI scheme.
      *
      * @default false
+     *
+     * @deprecated The auth.expo.io proxy and thus using AuthSession in Expo Go have been deprecated. Prefer `AuthRequest` (with `useProxy` set to false)
+     *             in combination with an Expo Development Client build of your application.
      */
     useProxy?: boolean;
+    /**
+     * Override project ID for the \`auth.expo.io\` proxy. Should only be used in when transitioning away from the proxy.
+     *
+     * @deprecated The auth.expo.io proxy and thus using AuthSession in Expo Go have been deprecated. Prefer `AuthRequest` (with `useProxy` set to false)
+     *             in combination with an Expo Development Client build of your application.
+     */
+    proxyProjectIdOverride?: string;
     /**
      * Attempt to convert the Expo server IP address to localhost.
      * This is useful for testing when your IP changes often, this will only work for iOS simulator.

@@ -6,13 +6,13 @@ import { SessionUrlProvider } from '../SessionUrlProvider';
 
 const managedSessionUrlProvider = new SessionUrlProvider();
 
-function applyMocks() {
+function applyClassicManifestMocks() {
   mockProperty(Constants.manifest, 'originalFullName', '@example/abc');
   mockProperty(Constants.manifest, 'scheme', 'my-app');
 }
 
 beforeEach(() => {
-  applyMocks();
+  applyClassicManifestMocks();
 });
 
 afterEach(() => {
@@ -23,11 +23,30 @@ describe('getStartUrl', () => {
   it(`returns the correct start URL from getStartUrl`, () => {
     const authUrl = 'https://signin.com';
     const returnUrl = 'exp://exp.host/@example/abc+';
-    const result = managedSessionUrlProvider.getStartUrl(authUrl, returnUrl);
+    const result = managedSessionUrlProvider.getStartUrl(
+      authUrl,
+      returnUrl,
+      /* proxyProjectIdOverride */ undefined
+    );
     expect(result).toEqual(
       Platform.select({
         default:
           'https://auth.expo.io/@example/abc/start?authUrl=https%3A%2F%2Fsignin.com&returnUrl=exp%3A%2F%2Fexp.host%2F%40example%2Fabc%2B',
+        web: Platform.isDOMAvailable
+          ? 'http://localhost/start?authUrl=https%3A%2F%2Fsignin.com&returnUrl=exp%3A%2F%2Fexp.host%2F%40example%2Fabc%2B'
+          : '',
+      })
+    );
+  });
+
+  it('returns correct start URL when proxyProjectIdOverride is supplied', () => {
+    const authUrl = 'https://signin.com';
+    const returnUrl = 'exp://exp.host/@example/abc+';
+    const result = managedSessionUrlProvider.getStartUrl(authUrl, returnUrl, '@hello/world');
+    expect(result).toEqual(
+      Platform.select({
+        default:
+          'https://auth.expo.io/@hello/world/start?authUrl=https%3A%2F%2Fsignin.com&returnUrl=exp%3A%2F%2Fexp.host%2F%40example%2Fabc%2B',
         web: Platform.isDOMAvailable
           ? 'http://localhost/start?authUrl=https%3A%2F%2Fsignin.com&returnUrl=exp%3A%2F%2Fexp.host%2F%40example%2Fabc%2B'
           : '',
@@ -57,7 +76,7 @@ describe(`getRedirectUrl`, () => {
       afterEach(() => (console.warn = originalWarn));
 
       it(`checks return url`, () => {
-        expect(managedSessionUrlProvider.getRedirectUrl()).toEqual(
+        expect(managedSessionUrlProvider.getRedirectUrl({})).toEqual(
           Platform.select({
             default: 'https://auth.expo.io/@example/abc',
             web: Platform.isDOMAvailable ? 'http://localhost' : '',
@@ -78,7 +97,7 @@ describe(`getRedirectUrl`, () => {
             [ExecutionEnvironment.Standalone]:
               /Cannot use AuthSession proxy because the project ID is not defined./,
           };
-          expect(() => managedSessionUrlProvider.getRedirectUrl()).toThrowError(
+          expect(() => managedSessionUrlProvider.getRedirectUrl({})).toThrowError(
             errorName[execution]
           );
         });
