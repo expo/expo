@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add `ios.debugOnly` to module config.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
