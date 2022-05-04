@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix `no such module 'EXDevLauncher'` when compiling the release build on IOS.
+
 ### 💡 Others
 
 ## 0.9.3 — 2022-04-26
