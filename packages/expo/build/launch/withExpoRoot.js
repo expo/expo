@@ -2,7 +2,7 @@ import * as React from 'react';
 import { attachRecoveredProps } from './RecoveryProps';
 // This hook can be optionally imported because __DEV__ never changes during runtime.
 // Using __DEV__ like this enables tree shaking to remove the hook in production.
-let useDevKeepAwake;
+let useDevKeepAwake = () => { };
 if (__DEV__) {
     try {
         // Optionally import expo-keep-awake

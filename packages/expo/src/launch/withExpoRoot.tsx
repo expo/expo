@@ -5,7 +5,7 @@ import { InitialProps } from './withExpoRoot.types';
 
 // This hook can be optionally imported because __DEV__ never changes during runtime.
 // Using __DEV__ like this enables tree shaking to remove the hook in production.
-let useDevKeepAwake: (tag?: string) => void;
+let useDevKeepAwake: (tag?: string) => void = () => {};
 
 if (__DEV__) {
   try {
