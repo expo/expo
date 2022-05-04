@@ -18,7 +18,7 @@ const easDirectories = ['eas', 'build', 'app-signing', 'build-reference', 'submi
 /** Private preview section which isn't linked in the documentation */
 const previewDirectories = ['preview'];
 /** Public preview section which is linked under `Feature Preview` */
-const featurePreviewDirectories = ['feature-preview', 'development', 'eas-update'];
+const featurePreviewDirectories = ['feature-preview', 'eas-update'];
 /** All other unlisted directories */
 const generalDirectories = fs
   .readdirSync(PAGES_DIR, { withFileTypes: true })
@@ -104,6 +104,19 @@ const general = [
       makePage('distribution/security.md'),
       makePage('distribution/optimizing-updates.md'),
       makePage('distribution/publishing-websites.md'),
+    ]),
+  ]),
+  makeSection('Development Builds', [
+    makeGroup('Development Builds', [
+      makePage('development/introduction.md'),
+      makePage('development/getting-started.md'),
+      makePage('development/build.md'),
+      makePage('development/installation.md'),
+      makePage('development/development-workflows.md'),
+      makePage('development/extensions.md'),
+      makePage('development/compatibility.md'),
+      makePage('development/upgrading.md'),
+      makePage('development/troubleshooting.md'),
     ]),
   ]),
   makeSection('Assorted Guides', [
@@ -311,19 +324,6 @@ const preview = [
 ];
 
 const featurePreview = [
-  makeSection('Development Builds', [
-    makeGroup('Development Builds', [
-      makePage('development/introduction.md'),
-      makePage('development/getting-started.md'),
-      makePage('development/build.md'),
-      makePage('development/installation.md'),
-      makePage('development/development-workflows.md'),
-      makePage('development/extensions.md'),
-      makePage('development/compatibility.md'),
-      makePage('development/upgrading.md'),
-      makePage('development/troubleshooting.md'),
-    ]),
-  ]),
   makeSection('EAS Update', [
     makeGroup('EAS Update', [
       makePage('eas-update/introduction.md'),
