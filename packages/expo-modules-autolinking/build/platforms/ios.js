@@ -101,15 +101,15 @@ ${generateDebugOnlyImportList(debugOnlySwiftModules)}
 @objc(${className})
 public class ${className}: ModulesProvider {
   public override func getModuleClasses() -> [AnyModule.Type] {
-    ${generateModuleClasses(modulesClassNames, debugOnlyModulesClassNames)}
+${generateModuleClasses(modulesClassNames, debugOnlyModulesClassNames)}
   }
 
   public override func getAppDelegateSubscribers() -> [ExpoAppDelegateSubscriber.Type] {
-    ${generateModuleClasses(appDelegateSubscribers, debugOnlyAppDelegateSubscribers)}
+${generateModuleClasses(appDelegateSubscribers, debugOnlyAppDelegateSubscribers)}
   }
 
   public override func getReactDelegateHandlers() -> [ExpoReactDelegateHandlerTupleType] {
-    ${generateReactDelegateHandlers(reactDelegateHandlerModules, debugOnlyReactDelegateHandlerModules)}
+${generateReactDelegateHandlers(reactDelegateHandlerModules, debugOnlyReactDelegateHandlerModules)}
   }
 }
 `;
@@ -126,11 +126,12 @@ function generateDebugOnlyImportList(swiftModules) {
         .join('')}#endif\n`;
 }
 function generateModuleClasses(classNames, debugOnlyClassName) {
+    const commonClassNames = formatArrayOfClassNames(classNames);
     if (debugOnlyClassName.length > 0) {
-        return `#if DEBUG\n${indent.repeat(2)}return ${formatArrayOfClassNames(classNames.concat(debugOnlyClassName))}\n${indent.repeat(2)}#else\n${indent.repeat(2)}return ${formatArrayOfClassNames(classNames)}\n${indent.repeat(2)}#endif`;
+        return `#if DEBUG\n${indent.repeat(2)}return ${formatArrayOfClassNames(classNames.concat(debugOnlyClassName))}\n#else\n${indent.repeat(2)}return ${commonClassNames}\n#endif`;
     }
     else {
-        return `return ${formatArrayOfClassNames(classNames)}`;
+        return `${indent.repeat(2)}return ${commonClassNames}`;
     }
 }
 /**
@@ -141,11 +142,12 @@ function formatArrayOfClassNames(classNames) {
 ${indent.repeat(2)}]`;
 }
 function generateReactDelegateHandlers(module, debugOnlyModules) {
+    const commonModules = formatArrayOfReactDelegateHandler(module);
     if (debugOnlyModules.length > 0) {
-        return `#if DEBUG\n${indent.repeat(2)}return ${formatArrayOfReactDelegateHandler(module.concat(debugOnlyModules))}\n${indent.repeat(2)}#else\n${indent.repeat(2)}return ${formatArrayOfReactDelegateHandler(module)}\n${indent.repeat(2)}#endif`;
+        return `#if DEBUG\n${indent.repeat(2)}return ${formatArrayOfReactDelegateHandler(module.concat(debugOnlyModules))}\n#else\n${indent.repeat(2)}return ${commonModules}\n#endif`;
     }
     else {
-        return `return ${formatArrayOfReactDelegateHandler(module)}`;
+        return `${indent.repeat(2)}return ${commonModules}`;
     }
 }
 /**
