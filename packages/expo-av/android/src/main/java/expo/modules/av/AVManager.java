@@ -125,12 +125,7 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
       @Override
       public void onReceive(Context context, Intent intent) {
         if (AudioManager.ACTION_AUDIO_BECOMING_NOISY.equals(intent.getAction())) {
-          getUIManager().runOnNativeModulesQueueThread(new Runnable() {
-            @Override
-            public void run() {
-              abandonAudioFocus();
-            }
-          });
+          abandonAudioFocus();
         }
       }
     };
@@ -211,38 +206,34 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
 
   @Override
   public void onHostResume() {
-    getUIManager().runOnNativeModulesQueueThread(() -> {
-      if (mAppIsPaused) {
-        mAppIsPaused = false;
-        if (!mStaysActiveInBackground) {
-          for (final AudioEventHandler handler : getAllRegisteredAudioEventHandlers()) {
-            handler.onResume();
-          }
-          if (mShouldRouteThroughEarpiece) {
-            updatePlaySoundThroughEarpiece(true);
-          }
+    if (mAppIsPaused) {
+      mAppIsPaused = false;
+      if (!mStaysActiveInBackground) {
+        for (final AudioEventHandler handler : getAllRegisteredAudioEventHandlers()) {
+          handler.onResume();
+        }
+        if (mShouldRouteThroughEarpiece) {
+          updatePlaySoundThroughEarpiece(true);
         }
       }
-    });
+    }
   }
 
   @Override
   public void onHostPause() {
-    getUIManager().runOnNativeModulesQueueThread(() -> {
-      if (!mAppIsPaused) {
-        mAppIsPaused = true;
-        if (!mStaysActiveInBackground) {
-          for (final AudioEventHandler handler : getAllRegisteredAudioEventHandlers()) {
-            handler.onPause();
-          }
-          abandonAudioFocus();
+    if (!mAppIsPaused) {
+      mAppIsPaused = true;
+      if (!mStaysActiveInBackground) {
+        for (final AudioEventHandler handler : getAllRegisteredAudioEventHandlers()) {
+          handler.onPause();
+        }
+        abandonAudioFocus();
 
-          if (mShouldRouteThroughEarpiece) {
-            updatePlaySoundThroughEarpiece(false);
-          }
+        if (mShouldRouteThroughEarpiece) {
+          updatePlaySoundThroughEarpiece(false);
         }
       }
-    });
+    }
   }
 
   @Override
@@ -252,24 +243,22 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
       mIsRegistered = false;
     }
 
-    getUIManager().runOnNativeModulesQueueThread(() -> {
-      // remove all remaining sounds
-      Iterator<PlayerData> iter = mSoundMap.values().iterator();
-      while (iter.hasNext()) {
-        final PlayerData data = iter.next();
-        iter.remove();
-        if (data != null) {
-          data.release();
-        }
+    // remove all remaining sounds
+    Iterator<PlayerData> iter = mSoundMap.values().iterator();
+    while (iter.hasNext()) {
+      final PlayerData data = iter.next();
+      iter.remove();
+      if (data != null) {
+        data.release();
       }
+    }
 
-      for (final VideoView videoView : mVideoViewSet) {
-        videoView.unloadPlayerAndMediaController();
-      }
+    for (final VideoView videoView : mVideoViewSet) {
+      videoView.unloadPlayerAndMediaController();
+    }
 
-      removeAudioRecorder();
-      abandonAudioFocus();
-    });
+    removeAudioRecorder();
+    abandonAudioFocus();
   }
 
   // Global audio state control API
@@ -433,69 +422,79 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
 
   @Override
   public void loadForSound(final ReadableArguments source, final ReadableArguments status, final Promise promise) {
-    final int key = mSoundMapKeyCount++;
-    final PlayerData data = PlayerData.createUnloadedPlayerData(this, mContext, source, status.toBundle());
-    data.setErrorListener(new PlayerData.ErrorListener() {
-      @Override
-      public void onError(final String error) {
-        removeSoundForKey(key);
-      }
-    });
-    mSoundMap.put(key, data);
-    data.load(status.toBundle(), new PlayerData.LoadCompletionListener() {
-      @Override
-      public void onLoadSuccess(final Bundle status) {
-        promise.resolve(Arrays.asList(key, status));
-      }
+    getUIManager().runOnUiQueueThread(() -> {
+      final int key = mSoundMapKeyCount++;
+      final PlayerData data = PlayerData.createUnloadedPlayerData(this, mContext, source, status.toBundle());
+      data.setErrorListener(new PlayerData.ErrorListener() {
+        @Override
+        public void onError(final String error) {
+          removeSoundForKey(key);
+        }
+      });
+      mSoundMap.put(key, data);
+      data.load(status.toBundle(), new PlayerData.LoadCompletionListener() {
+        @Override
+        public void onLoadSuccess(final Bundle status) {
+          promise.resolve(Arrays.asList(key, status));
+        }
 
-      @Override
-      public void onLoadError(final String error) {
-        mSoundMap.remove(key);
-        promise.reject("E_LOAD_ERROR", error, null);
-      }
-    });
+        @Override
+        public void onLoadError(final String error) {
+          mSoundMap.remove(key);
+          promise.reject("E_LOAD_ERROR", error, null);
+        }
+      });
 
-    data.setStatusUpdateListener(new PlayerData.StatusUpdateListener() {
-      @Override
-      public void onStatusUpdate(final Bundle status) {
-        Bundle payload = new Bundle();
-        payload.putInt("key", key);
-        payload.putBundle("status", status);
-        sendEvent("didUpdatePlaybackStatus", payload);
-      }
+      data.setStatusUpdateListener(new PlayerData.StatusUpdateListener() {
+        @Override
+        public void onStatusUpdate(final Bundle status) {
+          Bundle payload = new Bundle();
+          payload.putInt("key", key);
+          payload.putBundle("status", status);
+          sendEvent("didUpdatePlaybackStatus", payload);
+        }
+      });
     });
   }
 
   @Override
   public void unloadForSound(final Integer key, final Promise promise) {
-    if (tryGetSoundForKey(key, promise) != null) {
-      removeSoundForKey(key);
-      promise.resolve(PlayerData.getUnloadedStatus());
-    } // Otherwise, tryGetSoundForKey has already rejected the promise.
+    getUIManager().runOnUiQueueThread(() -> {
+      if (tryGetSoundForKey(key, promise) != null) {
+        removeSoundForKey(key);
+        promise.resolve(PlayerData.getUnloadedStatus());
+      } // Otherwise, tryGetSoundForKey has already rejected the promise.
+    });
   }
 
   @Override
   public void setStatusForSound(final Integer key, final ReadableArguments status, final Promise promise) {
-    final PlayerData data = tryGetSoundForKey(key, promise);
-    if (data != null) {
-      data.setStatus(status.toBundle(), promise);
-    } // Otherwise, tryGetSoundForKey has already rejected the promise.
+    getUIManager().runOnUiQueueThread(() -> {
+      final PlayerData data = tryGetSoundForKey(key, promise);
+      if (data != null) {
+        data.setStatus(status.toBundle(), promise);
+      } // Otherwise, tryGetSoundForKey has already rejected the promise.
+    });
   }
 
   @Override
   public void replaySound(final Integer key, final ReadableArguments status, final Promise promise) {
-    final PlayerData data = tryGetSoundForKey(key, promise);
-    if (data != null) {
-      data.setStatus(status.toBundle(), promise);
-    } // Otherwise, tryGetSoundForKey has already rejected the promise.
+    getUIManager().runOnUiQueueThread(() -> {
+      final PlayerData data = tryGetSoundForKey(key, promise);
+      if (data != null) {
+        data.setStatus(status.toBundle(), promise);
+      } // Otherwise, tryGetSoundForKey has already rejected the promise.
+    });
   }
 
   @Override
   public void getStatusForSound(final Integer key, final Promise promise) {
-    final PlayerData data = tryGetSoundForKey(key, promise);
-    if (data != null) {
-      promise.resolve(data.getStatus());
-    } // Otherwise, tryGetSoundForKey has already rejected the promise.
+    getUIManager().runOnUiQueueThread(() -> {
+      final PlayerData data = tryGetSoundForKey(key, promise);
+      if (data != null) {
+        promise.resolve(data.getStatus());
+      } // Otherwise, tryGetSoundForKey has already rejected the promise.
+    });
   }
 
   // Unified playback API - Video

@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- On Android fix `Video` component crashes when activity loses focus due to accessing player from the wrong thread. ([#17280](https://github.com/expo/expo/pull/17280) by [@mnightingale](https://github.com/mnightingale))
+
 ### 💡 Others
 
 ## 11.2.2 — 2022-04-27
