@@ -52,23 +52,17 @@ export async function androidNativeUnitTests({
   const packageNamesFilter = packages ? packages.split(',') : [];
 
   const androidPackages = await filterAsync(allPackages, async (pkg) => {
-    const pkgSlug = pkg.packageSlug;
-
     if (packageNamesFilter.length > 0 && !packageNamesFilter.includes(pkg.packageName)) {
       return false;
     }
 
     let includesTests;
-    if (type === 'instrumented') {
-      includesTests =
-        pkg.isSupportedOnPlatform('android') &&
-        (await pkg.hasNativeInstrumentationTestsAsync('android')) &&
-        !excludedInTests.includes(pkgSlug);
-    } else {
-      includesTests =
-        pkg.isSupportedOnPlatform('android') &&
-        (await pkg.hasNativeTestsAsync('android')) &&
-        !excludedInTests.includes(pkgSlug);
+    if (pkg.isSupportedOnPlatform('android') && !excludedInTests.includes(pkg.packageSlug)) {
+      if (type === 'instrumented') {
+        includesTests = await pkg.hasNativeInstrumentationTestsAsync('android');
+      } else {
+        includesTests = await pkg.hasNativeTestsAsync('android');
+      }
     }
 
     if (!includesTests && packageNamesFilter.includes(pkg.packageName)) {

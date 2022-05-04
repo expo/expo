@@ -21,13 +21,13 @@ Common situations where Organizations are useful:
 
 |                                                                     | Personal Accounts | Organization |
 | ------------------------------------------------------------------- | ----------------- | ------------ |
-| **Create Projects**                                                 | X                 | X            |
-| **Build projects to submit to App Store and Play Store**            | X                 | X            |
-| **Release bug fixes with updates**                                  | X                 | X            |
-| **Transfer control of individual projects to another user**         | Beta              | Beta         |
-| **Transfer control of all projects to another user**                |                   | X            |
-| **Programmatic access with limited privileges**                     |                   | X            |
-| **Designate multiple users who have complete control of a project** |                   | X            |
+| **Create Projects**                                                 | ✅                 | ✅            |
+| **Build projects to submit to App Store and Play Store**            | ✅                 | ✅            |
+| **Release bug fixes with updates**                                  | ✅                 | ✅            |
+| **Transfer control of individual projects to another user**         | ✅                 | ✅
+| **Transfer control of all projects to another user**                |                   | ✅            |
+| **Programmatic access with limited privileges**                     |                   | ✅            |
+| **Designate multiple users who have complete control of a project** |                   | ✅            |
 
 ### Creating New Organizations
 
@@ -48,35 +48,22 @@ We have taken a lot of care to make sure that all of the functionality that you 
 - You can continue to deliver updates and push notifications to your users.
 - You will still be able to use any iOS or Android credentials stored on Expo's servers.
 - Any integrations using your personal access token or webhooks will continue to operate.
-- Your subscription to Developer Services will continue without interruption.
+- Your EAS subscription will continue without interruption.
 - Your production apps will continue to operate without interruption.
 
 ### Renaming an Account
 
-> ⚠️ This feature is in private beta and supported only if your projects are on SDK 43 or newer. Please upgrade your SDK if necessary and email secure@expo.dev answering the following questions to join the waitlist.
+Accounts may be renamed a limited number of times. Simply visit [the account settings page](https://expo.dev/accounts/[account]/settings) and follow the prompts under **Rename Account**.
 
-1. What is the name of the Personal Account or Organization Account you would like to rename?<br/>
-2. Do your project(s) on this account use push notifications?<br/>
-3. Can you confirm that your project(s) are on SDK 43 or newer?<br/>
-
-> 💡 If, after you are granted access to this feature, you aren't happy with the name you chose for your account, you may choose a new name a limited number of times. Simply visit [the account settings page](https://expo.dev/accounts/[account]/settings) and follow the prompts under **Rename Account**.
+Some caveats:
+- New publishes for projects belonging to renamed accounts must be on SDK 43 or higher.
 
 ### Transferring Projects Between Accounts
 
-> ⚠️ This feature is in private beta and supported only for projects on SDK 43 or newer. Please upgrade your SDK if necessary and email secure@expo.dev including the following in your email and you will be added to the waitlist.
+Projects may be renamed a limited number of times. Simply visit [the project settings page](https://expo.dev/accounts/[account]/projects/[project]/settings) and follow the prompts under **Transfer project**.
 
-Account name (source)<br/>
-Account type: Personal/Organization<br/>
-Are you an Owner? yes/no<br/>
+Some caveats:
+- The person performing the transfer must have "Owner" role on both the source and destination accounts.
+- New publishes for renamed project must be on SDK 43 or higher.
 
-Account name (destination)<br/>
-Account type: Personal/Organization<br/>
-Are you an Owner? yes/no<br/>
-
-(the following for each project)<br/>
-
-Project: slug<br/>
-Currently uses Push Notifications? yes/no<br/>
-Upgraded to SDK 43 or newer? yes/no<br/>
-
-> 💡 If it is your case where a project on your Personal or Organization Account (`source`) is sold/given to another company/person (receiving party) and you need to transfer the project to their Account (`destination`) where the receiving party does not want to grant you Owner access to said `destination` Account, you can create a new Organization Account (`escrow`) to complete the transfer from while safely sharing Owner access on the `escrow` Account.
+> 💡 In the case where a project on your Personal or Organization Account (`source`) is sold/given to another company/person (receiving party) and the receiving party does not want to grant you Owner access to their `destination` account, you can create a new Organization Account (`escrow`), grant the receiving party Owner access, and transfer the project to the `escrow` account. The receiving party then can transfer it to the `destination` account from the `escrow` account.

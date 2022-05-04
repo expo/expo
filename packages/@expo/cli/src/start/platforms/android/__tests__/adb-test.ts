@@ -1,8 +1,10 @@
+import { asMock } from '../../../../__tests__/asMock';
 import { CommandError } from '../../../../utils/errors';
 import {
   Device,
   getAdbNameForDeviceIdAsync,
   getAttachedDevicesAsync,
+  getDeviceABIsAsync,
   getPropertyDataForDeviceAsync,
   getServer,
   isBootAnimationCompleteAsync,
@@ -18,9 +20,6 @@ jest.mock('../ADBServer', () => ({
     getFileOutputAsync: jest.fn(async () => ''),
   })),
 }));
-
-const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
-  fn as jest.MockedFunction<T>;
 
 const asDevice = (device: Partial<Device>): Device => device as Device;
 
@@ -235,5 +234,14 @@ describe(getPropertyDataForDeviceAsync, () => {
       'wifi.direct.interface': 'p2p-dev-wlan0',
       'wifi.interface': 'wlan0',
     });
+  });
+});
+
+describe(getDeviceABIsAsync, () => {
+  it(`returns a list of device ABIs`, async () => {
+    asMock(getServer().getFileOutputAsync).mockResolvedValueOnce(
+      ['x86,armeabi-v7a,armeabi', ''].join('\n')
+    );
+    await expect(isBootAnimationCompleteAsync()).resolves.toBe(false);
   });
 });

@@ -35,6 +35,13 @@ To use version `11.2.0` or newer of `expo-gl` you will need to use at least vers
 | >=9.0.0 && <11.2.0 | >=0.63.1 &&  <0.65.0 |
 | >=11.2.0           | >=0.68.0             |
 
+To use reanimated worklets you will need compatible version of `react-native-reanimated`.
+
+| expo-gl            | react-native-reanimated |
+| ------------------ | ----------------------- |
+| <11.3.0            | <=2.8.0                 |
+| >=11.3.0           | >2.8.0                  |
+
 ### Configure for iOS
 
 Run `npx pod-install` after installing the npm package.

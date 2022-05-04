@@ -33,15 +33,15 @@ it('runs `npx expo logout --help`', async () => {
   const results = await execute('logout', '--help');
   expect(results.stdout).toMatchInlineSnapshot(`
     "
-          Description
-            Log out of an Expo account
+      Info
+        Log out of an Expo account
 
-          Usage
-            $ npx expo logout
+      Usage
+        $ npx expo logout
 
-          Options
-          -h, --help    Output usage information
-        "
+      Options
+        -h, --help    Usage info
+    "
   `);
 });
 

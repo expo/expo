@@ -12,6 +12,7 @@ import {
   Heading,
 } from 'expo-dev-client-components';
 import * as React from 'react';
+import { Linking, RefreshControl } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 
 import { ActivityIndicator } from '../components/ActivityIndicator';
@@ -19,9 +20,11 @@ import { AppHeader } from '../components/AppHeader';
 import { EASBranchRow, EASEmptyBranchRow } from '../components/EASUpdatesRows';
 import { EmptyBranchesMessage } from '../components/EmptyBranchesMessage';
 import { ListButton } from '../components/ListButton';
+import { useThrottle } from '../hooks/useDebounce';
+import { useOnUpdatePress } from '../hooks/useOnUpdatePress';
 import { useUpdatesConfig } from '../providers/UpdatesConfigProvider';
 import { useUser, useUserActions } from '../providers/UserContextProvider';
-import { useBranchesForApp } from '../queries/useBranchesForApp';
+import { Branch, useBranchesForApp } from '../queries/useBranchesForApp';
 import { ExtensionsStackParamList } from './ExtensionsStack';
 
 type ExtensionsScreenProps = {
@@ -31,8 +34,18 @@ type ExtensionsScreenProps = {
 export function ExtensionsScreen({ navigation }: ExtensionsScreenProps) {
   const { isAuthenticated } = useUser();
   const actions = useUserActions();
+  const { usesEASUpdates, appId } = useUpdatesConfig();
+  const {
+    isLoading,
+    error,
+    data: branches,
+    emptyBranches,
+    incompatibleBranches,
+    isRefreshing,
+    refetch,
+  } = useBranchesForApp(appId);
 
-  const { usesEASUpdates } = useUpdatesConfig();
+  const throttledRefreshing = useThrottle(isRefreshing, 1000);
 
   function onLoginPress() {
     actions.login('login');
@@ -43,15 +56,22 @@ export function ExtensionsScreen({ navigation }: ExtensionsScreenProps) {
   }
 
   const compatibleExtensions: string[] = [];
+  const hasError = error != null && !isLoading;
 
-  if (usesEASUpdates) {
+  if (usesEASUpdates && !hasError) {
     compatibleExtensions.push('EASUpdates');
   }
 
   return (
     <View>
       <AppHeader navigation={navigation} />
-      <ScrollView contentContainerStyle={{ paddingBottom: scale['48'] }}>
+      <ScrollView
+        contentContainerStyle={{ paddingBottom: scale['48'] }}
+        refreshControl={
+          appId != null ? (
+            <RefreshControl refreshing={throttledRefreshing} onRefresh={() => refetch()} />
+          ) : null
+        }>
         <View flex="1">
           {compatibleExtensions.length === 0 && (
             <>
@@ -64,35 +84,63 @@ export function ExtensionsScreen({ navigation }: ExtensionsScreenProps) {
                 <View px="small">
                   <Text size="small" align="center">
                     Extensions allow you to customize your development build with additional
-                    capabilities.
+                    capabilities.{' '}
+                    <Text
+                      size="small"
+                      style={{ textDecorationLine: 'underline' }}
+                      onPress={() =>
+                        Linking.openURL(`https://docs.expo.dev/development/extensions/`)
+                      }
+                      accessibilityRole="link">
+                      Learn more.
+                    </Text>
                   </Text>
-                </View>
 
-                <Spacer.Vertical size="small" />
+                  {/* <Spacer.Vertical size="small" />
 
-                <View align="centered">
-                  <Button.ScaleOnPressContainer bg="ghost" rounded="small">
-                    <View border="default" px="small" py="2" rounded="small">
-                      <Button.Text color="ghost" weight="semibold" size="small">
-                        Learn More
-                      </Button.Text>
-                    </View>
-                  </Button.ScaleOnPressContainer>
+                  <View align="centered">
+                    <Button.ScaleOnPressContainer bg="ghost" rounded="small">
+                      <View border="default" px="small" py="2" rounded="small">
+                        <Button.Text color="ghost" weight="semibold" size="small">
+                          Learn More
+                        </Button.Text>
+                      </View>
+                    </Button.ScaleOnPressContainer>
+                  </View> */}
+
+                  <Spacer.Vertical size="medium" />
+
+                  <Text size="small" align="center">
+                    If you would like to extend the display on this screen{' '}
+                    <Text
+                      size="small"
+                      style={{ textDecorationLine: 'underline' }}
+                      onPress={() => Linking.openURL(`https://expo.canny.io/feature-requests`)}
+                      accessibilityRole="link">
+                      let us know about your use case
+                    </Text>
+                  </Text>
                 </View>
               </View>
             </>
           )}
 
-          {usesEASUpdates && isAuthenticated && (
-            <>
+          {usesEASUpdates && isAuthenticated && !hasError && (
+            <View>
               <Spacer.Vertical size="medium" />
-              <EASUpdatesPreview navigation={navigation} />
+              <EASUpdatesPreview
+                navigation={navigation}
+                isLoading={isLoading}
+                branches={branches}
+                emptyBranches={emptyBranches}
+                incompatibleBranches={incompatibleBranches}
+              />
               <Spacer.Vertical size="medium" />
-            </>
+            </View>
           )}
 
-          {usesEASUpdates && !isAuthenticated && (
-            <>
+          {usesEASUpdates && !isAuthenticated && !hasError && (
+            <View>
               <Spacer.Vertical size="medium" />
               <View mx="medium" padding="medium" bg="default" rounded="large">
                 <Text color="secondary" size="small">
@@ -130,7 +178,7 @@ export function ExtensionsScreen({ navigation }: ExtensionsScreenProps) {
                 </View>
               </View>
               <Spacer.Vertical size="medium" />
-            </>
+            </View>
           )}
 
           {compatibleExtensions.length > 0 && (
@@ -139,12 +187,28 @@ export function ExtensionsScreen({ navigation }: ExtensionsScreenProps) {
                 <Text size="small" color="secondary">
                   Extensions allow you to customize your development build with additional
                   capabilities.{' '}
-                  {/* <Text size="small" color="secondary">
+                  <Text
+                    size="small"
+                    style={{ textDecorationLine: 'underline' }}
+                    onPress={() => Linking.openURL(`https://docs.expo.dev/development/extensions/`)}
+                    accessibilityRole="link">
                     Learn more.
-                  </Text> */}
+                  </Text>
                 </Text>
               </View>
             </>
+          )}
+
+          {isLoading && (
+            <View
+              mt="medium"
+              inset="full"
+              align="centered"
+              mx="medium"
+              rounded="large"
+              bg="default">
+              <ActivityIndicator />
+            </View>
           )}
         </View>
       </ScrollView>
@@ -152,27 +216,29 @@ export function ExtensionsScreen({ navigation }: ExtensionsScreenProps) {
   );
 }
 
-function EASUpdatesPreview({ navigation }: ExtensionsScreenProps) {
-  const { appId } = useUpdatesConfig();
-  const {
-    isLoading,
-    data: branches,
-    emptyBranches,
-    incompatibleBranches,
-  } = useBranchesForApp(appId);
+type EASUpdatesPreviewProps = ExtensionsScreenProps & {
+  isLoading: boolean;
+  branches: Branch[];
+  emptyBranches: Branch[];
+  incompatibleBranches: Branch[];
+};
+
+function EASUpdatesPreview({
+  navigation,
+  isLoading,
+  branches,
+  emptyBranches,
+  incompatibleBranches,
+}: EASUpdatesPreviewProps) {
+  const { loadingUpdateId, onUpdatePress } = useOnUpdatePress();
 
   function onSeeAllBranchesPress() {
     navigation.navigate('Branches');
   }
 
-  if (isLoading) {
-    return (
-      <View height="44" align="centered" mx="medium" rounded="large" bg="default">
-        <ActivityIndicator />
-      </View>
-    );
-  }
+  const branchCount = branches.length + emptyBranches.length;
 
+  // only empty branches (which technically are compatible)
   if (branches.length === 0 && emptyBranches.length > 0) {
     return (
       <View mx="medium">
@@ -194,27 +260,30 @@ function EASUpdatesPreview({ navigation }: ExtensionsScreenProps) {
                 isLast={isLast}
                 navigation={navigation}
               />
-              <Divider />
+              {!isLast && <Divider />}
             </View>
           );
         })}
-        <Button.ScaleOnPressContainer
-          onPress={onSeeAllBranchesPress}
-          bg="default"
-          roundedTop="none"
-          roundedBottom="large">
-          <View bg="default" py="small" px="small" roundedTop="none" roundedBottom="large">
-            <Row>
-              <Text size="medium">See all branches</Text>
-              <Spacer.Horizontal />
-              <ChevronRightIcon />
-            </Row>
-          </View>
-        </Button.ScaleOnPressContainer>
+        {emptyBranches.length > 1 && (
+          <Button.ScaleOnPressContainer
+            onPress={onSeeAllBranchesPress}
+            bg="default"
+            roundedTop="none"
+            roundedBottom="large">
+            <View bg="default" py="small" px="small" roundedTop="none" roundedBottom="large">
+              <Row>
+                <Text size="medium">See all branches</Text>
+                <Spacer.Horizontal />
+                <ChevronRightIcon />
+              </Row>
+            </View>
+          </Button.ScaleOnPressContainer>
+        )}
       </View>
     );
   }
 
+  // no compatiable branches
   if (branches.length === 0) {
     return (
       <View mx="medium">
@@ -229,6 +298,7 @@ function EASUpdatesPreview({ navigation }: ExtensionsScreenProps) {
     );
   }
 
+  // some compatible branches, possible some empty branches
   return (
     <View>
       <View mx="medium">
@@ -237,18 +307,27 @@ function EASUpdatesPreview({ navigation }: ExtensionsScreenProps) {
             EAS Updates
           </Heading>
         </View>
-        {branches?.slice(0, 2).map((branch, index) => {
+        {branches?.slice(0, 2).map((branch, index, arr) => {
           const isFirst = index === 0;
+          const isLast = index === arr.length - 1 && branchCount <= 1;
+          const isLoading = branch.updates[0]?.id === loadingUpdateId;
 
           return (
             <View key={branch.name}>
-              <EASBranchRow branch={branch} isFirst={isFirst} navigation={navigation} />
+              <EASBranchRow
+                branch={branch}
+                isFirst={isFirst}
+                isLast={isLast}
+                navigation={navigation}
+                isLoading={isLoading}
+                onUpdatePress={onUpdatePress}
+              />
               <Divider />
             </View>
           );
         })}
 
-        {branches?.length > 0 && (
+        {branchCount > 1 && (
           <ListButton onPress={onSeeAllBranchesPress} isLast>
             <Row>
               <Text size="medium">See all branches</Text>

@@ -174,3 +174,5 @@ Subscribe for updates to the accelerometer.
 
 - **intervalMs (_number_)** Desired interval in milliseconds between
   accelerometer updates.
+
+  > Starting in Android 12 (API level 31), the system has a 200ms limit for each sensor updates. If you need a update interval less than 200ms, you should add `<uses-permission android:name="android.permission.HIGH_SAMPLING_RATE_SENSORS"/>` to **AndroidManifest.xml**.

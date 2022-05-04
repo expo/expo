@@ -1,11 +1,9 @@
 import * as PackageManager from '@expo/package-manager';
 
+import { asMock } from '../../../../__tests__/asMock';
 import { delayAsync } from '../../../../utils/delay';
 import { confirmAsync } from '../../../../utils/prompts';
 import { ExternalModule, ExternalModuleVersionError } from '../ExternalModule';
-
-const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
-  fn as jest.MockedFunction<T>;
 
 jest.mock('../../../../utils/prompts');
 jest.mock('../../../../log');

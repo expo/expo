@@ -8,7 +8,7 @@ export default function App() {
   useEffect(async () => {
     for (let i = 0; i < RETRY_COUNT; i++) {
       try {
-        const response = await fetch('http://10.0.2.2:UPDATES_PORT/notify/test');
+        const response = await fetch('http://UPDATES_HOST:UPDATES_PORT/notify/test');
         if (response.status === 200) {
           break;
         }

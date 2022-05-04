@@ -82,7 +82,6 @@ export function Main() {
 
             <View>
               <Heading weight="bold">{appInfo.appName}</Heading>
-              <Spacer.Vertical size="tiny" />
               {Boolean(appInfo.runtimeVersion) && (
                 <>
                   <Text size="small" color="secondary">
@@ -127,9 +126,9 @@ export function Main() {
 
             <Row align="center">
               <StatusIndicator style={{ width: 10, height: 10 }} status="success" />
-              <Spacer.Horizontal size="tiny" />
+              <Spacer.Horizontal size="small" />
               <View flex="1">
-                <Text type="mono" numberOfLines={1} size="small">
+                <Text type="mono" numberOfLines={2} size="small">
                   {appInfo.hostUrl}
                 </Text>
               </View>

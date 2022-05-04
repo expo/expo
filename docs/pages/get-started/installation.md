@@ -2,7 +2,7 @@
 title: Installation
 ---
 
-import TerminalBlock from '~/components/plugins/TerminalBlock';
+import { Terminal } from '~/ui/components/Snippet';
 
 There are two tools that you need to develop apps with Expo: a command line app called Expo CLI to initialize and serve your project and a mobile client app called Expo Go to open it on iOS and Android. Any web browser will work for opening the project on the web.
 
@@ -22,14 +22,17 @@ Expo CLI is a command line app that is the main interface between a developer an
 
 ### Recommended Tools
 
-- [VSCode Editor](https://code.visualstudio.com/download)
-  - [VSCode Expo Extension](https://marketplace.visualstudio.com/items?itemName=byCedric.vscode-expo) for **app.json** debugging and autocomplete.
+- [VS Code Editor](https://code.visualstudio.com/download)
+  - [VS Code Expo Extension](https://marketplace.visualstudio.com/items?itemName=byCedric.vscode-expo) for **app.json** debugging and autocomplete.
 - [Yarn](https://classic.yarnpkg.com/en/docs/install)
-- Windows users: [PowerShell](https://docs.microsoft.com/en-us/powershell/scripting/install/installing-powershell-core-on-windows), Bash via WSL, or the VSCode terminal.
+- Windows users: [PowerShell](https://docs.microsoft.com/en-us/powershell/scripting/install/installing-powershell-core-on-windows), Bash via WSL, or the VS Code terminal.
 
 ### Installing Expo CLI
 
-<TerminalBlock cmd={['# Install the command line tools', 'npm install --global expo-cli']} />
+<Terminal cmd={[
+  '# Install the command line tools',
+  '$ npm install --global expo-cli'
+]} cmdCopy="npm install --global expo-cli" />
 
 Verify that the installation was successful by running `expo whoami`. You're not logged in yet, so you will see "Not logged in". You can create an account by running `expo register` if you like, or if you have one already run `expo login`, but you also don't need an account to get started.
 
@@ -44,7 +47,7 @@ The fastest way to get up and running is to use the Expo Go app on your iOS or A
 
 When the Expo Go app is finished installing, open it up. If you created an account with `expo-cli` then you can sign in here on the "Profile" tab. This will make it easier for you to open projects in the client when you have them open in development &mdash; they will appear automatically in the "Projects" tab of the client app.
 
-> 👉 It's often useful to be able to run your app directly on your computer instead of on a separate physical device. If you would like to set this up, you can learn more about [installing the iOS Simulator (macOS only)](../workflow/ios-simulator.md) and [installing an Android emulator](../workflow/android-studio-emulator.md).
+> 👉 It's often useful to be able to run your app directly on your computer instead of on a separate physical device. If you would like to set this up, you can learn more about [installing the iOS Simulator (macOS only)](../workflow/ios-simulator.md) and [installing an Android Emulator](../workflow/android-studio-emulator.md).
 
 ## Up next
 

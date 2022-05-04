@@ -24,7 +24,7 @@ Now we just run `yarn start` (or `npm start` if you prefer that package manager)
 
 ## Open the project with the Expo Go app on iOS or Android, or in your web browser
 
-To run the app we don’t need to build any native code because it runs in the [Expo Go](https://expo.dev/tools#client), and the CLI will automatically install it for us in the [iOS simulator](../workflow/ios-simulator.md) or on any connected [Android emulator](../workflow/android-studio-emulator.md) or device. You can also download it from the App Store and Play Store.
+To run the app we don’t need to build any native code because it runs in the [Expo Go](https://expo.dev/tools#client), and the CLI will automatically install it for us in the [iOS simulator](../workflow/ios-simulator.md) or on any connected [Android Emulator](../workflow/android-studio-emulator.md) or device. You can also download it from the App Store and Play Store.
 
 <Video file="exploring-managed/open.mp4" />
 
@@ -88,7 +88,7 @@ Before we run the build, we need to set a `bundleIdentifier` in **app.json** (["
 
 <Video file="exploring-managed/bundleid.mp4" />
 
-Now when we run `expo build:ios` it will kick off a build with the Expo build service. We will be prompted to enter our Apple developer credentials, and then we’ll just hit enter a couple of times to let Expo handle the distribution certificate, push key, and provisioning profile. You can also provide all of this yourself, which you might want to do if you are moving an existing app to the managed workflow. ([Concerned about security?](../distribution/security.md))
+Now when we run `expo build:ios` it will kick off a build with the Expo build service. We will be prompted to enter our Apple Developer credentials, and then we’ll just hit enter a couple of times to let Expo handle the distribution certificate, push key, and provisioning profile. You can also provide all of this yourself, which you might want to do if you are moving an existing app to the managed workflow. ([Concerned about security?](../distribution/security.md))
 
 <Video file="exploring-managed/buildios.mp4" spaceAfter={30} />
 

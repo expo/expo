@@ -8,10 +8,10 @@ Setting up EAS Update allows you to push critical bug fixes and improvements tha
 
 EAS Update requires the following versions or greater:
 
-- Expo CLI 5.0.0
-- EAS CLI 0.41.1
-- Expo SDK 44.0.1
-- expo-updates 0.11.2
+- Expo CLI >= 5.3.0
+- EAS CLI >= 0.50.0
+- Expo SDK >= 45.0.0
+- expo-updates >= 0.13.0
 
 ## Install Expo CLI and EAS CLI
 
@@ -120,7 +120,7 @@ eas update --branch preview --message "Updating the app"
 
 Once the update is built and uploaded to EAS and the command completes, force close and reopen your app up to two times to download and view the update.
 
-> ⚠️ While EAS Update is in "preview" we are only allowing up to 300 assets to be uploaded in a single publish.
+> ⚠️ While EAS Update is in "preview" we are only allowing up to 400 assets to be uploaded in a single publish.
 
 ## Next
 
