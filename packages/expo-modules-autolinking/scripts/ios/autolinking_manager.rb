@@ -44,7 +44,8 @@ module Expo
 
             pod_options = {
               :path => podspec_dir_path,
-              :testspecs => tests.include?(package.name) ? ['Tests'] : []
+              :testspecs => tests.include?(package.name) ? ['Tests'] : [],
+              :configuration => package.debugOnly ? ['Debug'] : [] # An empty array means all configurations
             }.merge(global_flags, package.flags)
 
             # Install the pod.
@@ -62,6 +63,7 @@ module Expo
 
     # Spawns `expo-module-autolinking generate-package-list` command.
     public def generate_package_list(target_name, target_path)
+      puts target_path
       Process.wait IO.popen(generate_package_list_command_args(target_path)).pid
     end
 

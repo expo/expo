@@ -9,6 +9,8 @@ import {
   SearchOptions,
 } from '../types';
 
+const indent = '  ';
+
 async function findPodspecFiles(revision: PackageRevision): Promise<string[]> {
   const configPodspecPaths = revision.config?.iosPodspecPaths();
   if (configPodspecPaths && configPodspecPaths.length) {
@@ -62,6 +64,7 @@ export async function resolveModuleAsync(
     modules: revision.config?.iosModules() ?? [],
     appDelegateSubscribers: revision.config?.iosAppDelegateSubscribers() ?? [],
     reactDelegateHandlers: revision.config?.iosReactDelegateHandlers() ?? [],
+    debugOnly: revision.config?.iosDebugOnly() ?? false,
   };
 }
 
@@ -85,25 +88,45 @@ async function generatePackageListFileContentAsync(
   modules: ModuleDescriptorIos[],
   className: string
 ): Promise<string> {
-  const modulesToImport = modules.filter(
+  const iosModules = modules.filter(
     (module) =>
       module.modules.length ||
       module.appDelegateSubscribers.length ||
       module.reactDelegateHandlers.length
   );
+
+  const modulesToImport = iosModules.filter((module) => !module.debugOnly);
+  const debugOnlyModules = iosModules.filter((module) => module.debugOnly);
+
   const swiftModules = ([] as string[])
     .concat(...modulesToImport.map((module) => module.swiftModuleNames))
+    .filter(Boolean);
+
+  const debugOnlySwiftModules = ([] as string[])
+    .concat(...debugOnlyModules.map((module) => module.swiftModuleNames))
     .filter(Boolean);
 
   const modulesClassNames = ([] as string[])
     .concat(...modulesToImport.map((module) => module.modules))
     .filter(Boolean);
 
+  const debugOnlyModulesClassNames = ([] as string[])
+    .concat(...debugOnlyModules.map((module) => module.modules))
+    .filter(Boolean);
+
   const appDelegateSubscribers = ([] as string[]).concat(
     ...modulesToImport.map((module) => module.appDelegateSubscribers)
   );
 
+  const debugOnlyAppDelegateSubscribers = ([] as string[]).concat(
+    ...debugOnlyModules.map((module) => module.appDelegateSubscribers)
+  );
+
   const reactDelegateHandlerModules = modulesToImport.filter(
+    (module) => !!module.reactDelegateHandlers.length
+  );
+
+  const debugOnlyReactDelegateHandlerModules = debugOnlyModules.filter(
     (module) => !!module.reactDelegateHandlers.length
   );
 
@@ -115,44 +138,96 @@ async function generatePackageListFileContentAsync(
  */
 
 import ExpoModulesCore
-${swiftModules.map((moduleName) => `import ${moduleName}\n`).join('')}
+${generateCommonImportList(swiftModules)}
+${generateDebugOnlyImportList(debugOnlySwiftModules)}
 @objc(${className})
 public class ${className}: ModulesProvider {
   public override func getModuleClasses() -> [AnyModule.Type] {
-    return ${formatArrayOfClassNames(modulesClassNames)}
+    ${generateModuleClasses(modulesClassNames, debugOnlyModulesClassNames)}
   }
 
   public override func getAppDelegateSubscribers() -> [ExpoAppDelegateSubscriber.Type] {
-    return ${formatArrayOfClassNames(appDelegateSubscribers)}
+    ${generateModuleClasses(appDelegateSubscribers, debugOnlyAppDelegateSubscribers)}
   }
 
   public override func getReactDelegateHandlers() -> [ExpoReactDelegateHandlerTupleType] {
-    return ${formatArrayOfReactDelegateHandler(reactDelegateHandlerModules)}
+    ${generateReactDelegateHandlers(
+      reactDelegateHandlerModules,
+      debugOnlyReactDelegateHandlerModules
+    )}
   }
 }
 `;
 }
 
+function generateCommonImportList(swiftModules: string[]): string {
+  return swiftModules.map((moduleName) => `import ${moduleName}\n`).join('');
+}
+
+function generateDebugOnlyImportList(swiftModules: string[]): string {
+  if (!swiftModules.length) {
+    return '';
+  }
+
+  return `#if DEBUG\n${swiftModules
+    .map((moduleName) => `  import ${moduleName}\n`)
+    .join('')}#endif\n`;
+}
+
+function generateModuleClasses(classNames: string[], debugOnlyClassName: string[]): string {
+  if (debugOnlyClassName.length > 0) {
+    return `#if DEBUG\n${indent.repeat(3)}return ${formatArrayOfClassNames(
+      classNames.concat(debugOnlyClassName),
+      1
+    )}\n${indent.repeat(2)}#else\n${indent.repeat(3)}return ${formatArrayOfClassNames(
+      classNames,
+      1
+    )}\n${indent.repeat(2)}#endif`;
+  } else {
+    return `return ${formatArrayOfClassNames(classNames)}`;
+  }
+}
+
 /**
  * Formats an array of class names to Swift's array containing these classes.
  */
-function formatArrayOfClassNames(classNames: string[]): string {
-  const indent = '  ';
-  return `[${classNames.map((className) => `\n${indent.repeat(3)}${className}.self`).join(',')}
-${indent.repeat(2)}]`;
+function formatArrayOfClassNames(classNames: string[], additionalIndent: number = 0): string {
+  return `[${classNames
+    .map((className) => `\n${indent.repeat(additionalIndent + 3)}${className}.self`)
+    .join(',')}
+${indent.repeat(additionalIndent + 2)}]`;
+}
+
+function generateReactDelegateHandlers(
+  module: ModuleDescriptorIos[],
+  debugOnlyModules: ModuleDescriptorIos[]
+): string {
+  if (debugOnlyModules.length > 0) {
+    return `#if DEBUG\n${indent.repeat(3)}return ${formatArrayOfReactDelegateHandler(
+      module.concat(debugOnlyModules),
+      1
+    )}\n${indent.repeat(2)}#else\n${indent.repeat(3)}return ${formatArrayOfReactDelegateHandler(
+      module,
+      1
+    )}\n${indent.repeat(2)}#endif`;
+  } else {
+    return `return ${formatArrayOfReactDelegateHandler(module)}`;
+  }
 }
 
 /**
  * Formats an array of modules to Swift's array containing ReactDelegateHandlers
  */
-export function formatArrayOfReactDelegateHandler(modules: ModuleDescriptorIos[]): string {
+export function formatArrayOfReactDelegateHandler(
+  modules: ModuleDescriptorIos[],
+  additionalIndent: number = 0
+): string {
   const values: string[] = [];
   for (const module of modules) {
     for (const handler of module.reactDelegateHandlers) {
       values.push(`(packageName: "${module.packageName}", handler: ${handler}.self)`);
     }
   }
-  const indent = '  ';
-  return `[${values.map((value) => `\n${indent.repeat(3)}${value}`).join(',')}
-${indent.repeat(2)}]`;
+  return `[${values.map((value) => `\n${indent.repeat(additionalIndent + 3)}${value}`).join(',')}
+${indent.repeat(additionalIndent + 2)}]`;
 }
