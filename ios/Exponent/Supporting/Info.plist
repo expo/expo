@@ -94,11 +94,11 @@
 	<key>NSLocalNetworkUsageDescription</key>
 	<string>Expo Go needs access to your local network to load projects from your development server</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>Allow Expo projects to use your location</string>
+	<string>The app accesses location to display diagnostic data</string>
 	<key>NSLocationAlwaysUsageDescription</key>
-	<string>Allow Expo projects to use your location</string>
+	<string>The app accesses location to display diagnostic data</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Allow Expo projects to use your location</string>
+	<string>The app accesses location to display diagnostic data</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Allow Expo projects to access your microphone</string>
 	<key>NSMotionUsageDescription</key>
