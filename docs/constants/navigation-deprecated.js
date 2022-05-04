@@ -257,47 +257,51 @@ const eas = [
     [makeGroup('EAS', [makePage('eas/index.md'), makePage('eas/webhooks.md')], './pages/eas/')],
     { collapsed: false }
   ),
-  makeSection('EAS Build', [
-    makeGroup(
-      'Start Building',
-      [
-        makePage('build/introduction.md'),
-        makePage('build/setup.md'),
-        makePage('build/eas-json.md'),
-        makePage('build/internal-distribution.md'),
-        makePage('build/automating-submissions.md'),
-        makePage('build/updates.md'),
-        makePage('build/building-on-ci.md'),
-      ],
-      './pages/build/'
-    ),
-    makeGroup('App Signing', [
-      makePage('app-signing/app-credentials.md'),
-      makePage('app-signing/managed-credentials.md'),
-      makePage('app-signing/local-credentials.md'),
-      makePage('app-signing/existing-credentials.md'),
-      makePage('app-signing/syncing-credentials.md'),
-    ]),
-    makeGroup('Reference', [
-      makePage('build-reference/eas-json.md'),
-      makePage('build-reference/migrating.md'),
-      makePage('build-reference/how-tos.md'),
-      makePage('build-reference/private-npm-packages.md'),
-      makePage('build-reference/variables.md'),
-      makePage('build-reference/apk.md'),
-      makePage('build-reference/simulators.md'),
-      makePage('build-reference/troubleshooting.md'),
-      makePage('build-reference/local-builds.md'),
-      makePage('build-reference/variants.md'),
-      makePage('build-reference/caching.md'),
-      makePage('build-reference/android-builds.md'),
-      makePage('build-reference/ios-builds.md'),
-      makePage('build-reference/limitations.md'),
-      makePage('build-reference/build-configuration.md'),
-      makePage('build-reference/infrastructure.md'),
-      makePage('build-reference/ios-capabilities.md'),
-    ]),
-  ]),
+  makeSection(
+    'EAS Build',
+    [
+      makeGroup(
+        'Start Building',
+        [
+          makePage('build/introduction.md'),
+          makePage('build/setup.md'),
+          makePage('build/eas-json.md'),
+          makePage('build/internal-distribution.md'),
+          makePage('build/automating-submissions.md'),
+          makePage('build/updates.md'),
+          makePage('build/building-on-ci.md'),
+        ],
+        './pages/build/'
+      ),
+      makeGroup('App Signing', [
+        makePage('app-signing/app-credentials.md'),
+        makePage('app-signing/managed-credentials.md'),
+        makePage('app-signing/local-credentials.md'),
+        makePage('app-signing/existing-credentials.md'),
+        makePage('app-signing/syncing-credentials.md'),
+      ]),
+      makeGroup('Reference', [
+        makePage('build-reference/eas-json.md'),
+        makePage('build-reference/migrating.md'),
+        makePage('build-reference/how-tos.md'),
+        makePage('build-reference/private-npm-packages.md'),
+        makePage('build-reference/variables.md'),
+        makePage('build-reference/apk.md'),
+        makePage('build-reference/simulators.md'),
+        makePage('build-reference/troubleshooting.md'),
+        makePage('build-reference/local-builds.md'),
+        makePage('build-reference/variants.md'),
+        makePage('build-reference/caching.md'),
+        makePage('build-reference/android-builds.md'),
+        makePage('build-reference/ios-builds.md'),
+        makePage('build-reference/limitations.md'),
+        makePage('build-reference/build-configuration.md'),
+        makePage('build-reference/infrastructure.md'),
+        makePage('build-reference/ios-capabilities.md'),
+      ]),
+    ],
+    { collapsed: false }
+  ),
   makeSection(
     'EAS Submit',
     [
