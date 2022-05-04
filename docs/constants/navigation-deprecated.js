@@ -39,35 +39,39 @@ const generalDirectories = fs
 // --- Navigation ---
 
 const starting = [
-  makeSection('The Basics', [
-    makeGroup('Get Started', [
-      makePage('get-started/installation.md'),
-      makePage('get-started/create-a-new-app.md'),
-      makePage('get-started/errors.md'),
-    ]),
-    makeGroup('Tutorial', [
-      makePage('tutorial/planning.md'),
-      makePage('tutorial/text.md'),
-      makePage('tutorial/image.md'),
-      makePage('tutorial/button.md'),
-      makePage('tutorial/image-picker.md'),
-      makePage('tutorial/sharing.md'),
-      makePage('tutorial/platform-differences.md'),
-      makePage('tutorial/configuration.md'),
-      makePage('tutorial/follow-up.md'),
-    ]),
-    makeGroup('Conceptual Overview', [
-      makePage('introduction/managed-vs-bare.md'),
-      makePage('introduction/walkthrough.md'),
-      makePage('introduction/why-not-expo.md'),
-      makePage('introduction/faq.md'),
-    ]),
-    makeGroup('Next Steps', [
-      makePage('next-steps/using-the-documentation.md'),
-      makePage('next-steps/community.md'),
-      makePage('next-steps/additional-resources.md'),
-    ]),
-  ]),
+  makeSection(
+    'The Basics',
+    [
+      makeGroup('Get Started', [
+        makePage('get-started/installation.md'),
+        makePage('get-started/create-a-new-app.md'),
+        makePage('get-started/errors.md'),
+      ]),
+      makeGroup('Tutorial', [
+        makePage('tutorial/planning.md'),
+        makePage('tutorial/text.md'),
+        makePage('tutorial/image.md'),
+        makePage('tutorial/button.md'),
+        makePage('tutorial/image-picker.md'),
+        makePage('tutorial/sharing.md'),
+        makePage('tutorial/platform-differences.md'),
+        makePage('tutorial/configuration.md'),
+        makePage('tutorial/follow-up.md'),
+      ]),
+      makeGroup('Conceptual Overview', [
+        makePage('introduction/managed-vs-bare.md'),
+        makePage('introduction/walkthrough.md'),
+        makePage('introduction/why-not-expo.md'),
+        makePage('introduction/faq.md'),
+      ]),
+      makeGroup('Next Steps', [
+        makePage('next-steps/using-the-documentation.md'),
+        makePage('next-steps/community.md'),
+        makePage('next-steps/additional-resources.md'),
+      ]),
+    ],
+    { collapsed: false }
+  ),
 ];
 
 const general = [
@@ -168,15 +172,6 @@ const general = [
       makePage('guides/using-preact.md'),
     ]),
   ]),
-  makeSection('Expo Modules', [
-    makeGroup('Expo Modules', [
-      makePage('modules/overview.md'),
-      makePage('modules/module-api.md'),
-      makePage('modules/android-lifecycle-listeners.md'),
-      makePage('modules/appdelegate-subscribers.md'),
-      makePage('modules/module-config.md'),
-    ]),
-  ]),
   makeSection('Expo Accounts', [
     makeGroup('Expo Accounts', [
       makePage('accounts/account-types.md'),
@@ -217,54 +212,51 @@ const general = [
     makeGroup('Classic Services', sortAlphabetical(pagesFromDir('classic'))),
   ]),
   makeSection('UI Programming', [
-    makeGroup(
-      'UI Programming',
-      [
-        makePage('ui-programming/image-background.md'),
-        makePage('ui-programming/implementing-a-checkbox.md'),
-        makePage('ui-programming/z-index.md'),
-        makePage('ui-programming/using-svgs.md'),
-        makePage('ui-programming/react-native-toast.md'),
-        makePage('ui-programming/react-native-styling-buttons.md'),
-      ],
-      { collapsed: true }
-    ),
+    makeGroup('UI Programming', [
+      makePage('ui-programming/image-background.md'),
+      makePage('ui-programming/implementing-a-checkbox.md'),
+      makePage('ui-programming/z-index.md'),
+      makePage('ui-programming/using-svgs.md'),
+      makePage('ui-programming/react-native-toast.md'),
+      makePage('ui-programming/react-native-styling-buttons.md'),
+    ]),
   ]),
-  makeSection(
-    'Regulatory Compliance',
-    [makeGroup('Regulatory Compliance', sortAlphabetical(pagesFromDir('regulatory-compliance')))],
-    { collapsed: true }
-  ),
-  makeSection(
-    'Technical Specs',
-    [
-      makeGroup('Technical Specs', [
-        makePage('technical-specs/expo-updates-0.md'),
-        makePage('technical-specs/expo-sfv-0.md'),
-      ]),
-    ],
-    { collapsed: true }
-  ),
-  makeSection(
-    'Deprecated',
-    [
-      makeGroup('ExpoKit', [
-        makePage('expokit/overview.md'),
-        makePage('expokit/eject.md'),
-        makePage('expokit/expokit.md'),
-        makePage('expokit/advanced-expokit-topics.md'),
-        makePage('expokit/universal-modules-and-expokit.md'),
-      ]),
-      makeGroup('Archived', sortAlphabetical(pagesFromDir('archived'))),
-    ],
-    { collapsed: true }
-  ),
+  makeSection('Expo Module API (Alpha)', [
+    makeGroup('Expo Module API (Alpha)', [
+      makePage('modules/overview.md'),
+      makePage('modules/module-api.md'),
+      makePage('modules/android-lifecycle-listeners.md'),
+      makePage('modules/appdelegate-subscribers.md'),
+      makePage('modules/module-config.md'),
+    ]),
+  ]),
+  makeSection('Regulatory Compliance', [
+    makeGroup('Regulatory Compliance', sortAlphabetical(pagesFromDir('regulatory-compliance'))),
+  ]),
+  makeSection('Technical Specs', [
+    makeGroup('Technical Specs', [
+      makePage('technical-specs/expo-updates-0.md'),
+      makePage('technical-specs/expo-sfv-0.md'),
+    ]),
+  ]),
+  makeSection('Deprecated', [
+    makeGroup('ExpoKit', [
+      makePage('expokit/overview.md'),
+      makePage('expokit/eject.md'),
+      makePage('expokit/expokit.md'),
+      makePage('expokit/advanced-expokit-topics.md'),
+      makePage('expokit/universal-modules-and-expokit.md'),
+    ]),
+    makeGroup('Archived', sortAlphabetical(pagesFromDir('archived'))),
+  ]),
 ];
 
 const eas = [
-  makeSection('EAS', [
-    makeGroup('EAS', [makePage('eas/index.md'), makePage('eas/webhooks.md')], './pages/eas/'),
-  ]),
+  makeSection(
+    'EAS',
+    [makeGroup('EAS', [makePage('eas/index.md'), makePage('eas/webhooks.md')], './pages/eas/')],
+    { collapsed: false }
+  ),
   makeSection('EAS Build', [
     makeGroup(
       'Start Building',
@@ -306,15 +298,19 @@ const eas = [
       makePage('build-reference/ios-capabilities.md'),
     ]),
   ]),
-  makeSection('EAS Submit', [
-    makeGroup('EAS Submit', [
-      makePage('submit/introduction.md'),
-      makePage('submit/eas-json.md'),
-      makePage('submit/android.md'),
-      makePage('submit/ios.md'),
-      makePage('submit/classic-builds.md'),
-    ]),
-  ]),
+  makeSection(
+    'EAS Submit',
+    [
+      makeGroup('EAS Submit', [
+        makePage('submit/introduction.md'),
+        makePage('submit/eas-json.md'),
+        makePage('submit/android.md'),
+        makePage('submit/ios.md'),
+        makePage('submit/classic-builds.md'),
+      ]),
+    ],
+    { collapsed: false }
+  ),
 ];
 
 const preview = [
@@ -324,43 +320,55 @@ const preview = [
 ];
 
 const featurePreview = [
-  makeSection('EAS Update', [
-    makeGroup('EAS Update', [
-      makePage('eas-update/introduction.md'),
-      makePage('eas-update/getting-started.md'),
-      makePage('eas-update/github-actions.md'),
-      makePage('eas-update/developing-with-eas-update.md'),
-      makePage('eas-update/how-eas-update-works.md'),
-      makePage('eas-update/deployment-patterns.md'),
-      makePage('eas-update/debug-updates.md'),
-      makePage('eas-update/eas-update-and-eas-cli.md'),
-      makePage('eas-update/optimize-assets.md'),
-      makePage('eas-update/custom-updates-server.md'),
-      makePage('eas-update/migrate-to-eas-update.md'),
-      makePage('eas-update/bare-react-native.md'),
-      makePage('eas-update/runtime-versions.md'),
-      makePage('eas-update/environment-variables.md'),
-      makePage('eas-update/expo-dev-client.md'),
-      makePage('eas-update/known-issues.md'),
-      makePage('eas-update/faq.md'),
-    ]),
-  ]),
+  makeSection(
+    'EAS Update',
+    [
+      makeGroup('EAS Update', [
+        makePage('eas-update/introduction.md'),
+        makePage('eas-update/getting-started.md'),
+        makePage('eas-update/github-actions.md'),
+        makePage('eas-update/developing-with-eas-update.md'),
+        makePage('eas-update/how-eas-update-works.md'),
+        makePage('eas-update/deployment-patterns.md'),
+        makePage('eas-update/debug-updates.md'),
+        makePage('eas-update/eas-update-and-eas-cli.md'),
+        makePage('eas-update/optimize-assets.md'),
+        makePage('eas-update/custom-updates-server.md'),
+        makePage('eas-update/migrate-to-eas-update.md'),
+        makePage('eas-update/bare-react-native.md'),
+        makePage('eas-update/runtime-versions.md'),
+        makePage('eas-update/environment-variables.md'),
+        makePage('eas-update/expo-dev-client.md'),
+        makePage('eas-update/known-issues.md'),
+        makePage('eas-update/faq.md'),
+      ]),
+    ],
+    { collapsed: false }
+  ),
 ];
 
 const reference = VERSIONS.reduce(
   (all, version) => ({
     ...all,
     [version]: [
-      makeSection('Configuration Files', [
-        makeGroup('Configuration Files', pagesFromDir(`versions/${version}/config`)),
-      ]),
-      makeSection('Expo SDK', [makeGroup('Expo SDK', pagesFromDir(`versions/${version}/sdk`))]),
-      makeSection('React Native', [
-        makeGroup(
-          'React Native',
-          sortLegacyReactNative(pagesFromDir(`versions/${version}/react-native`))
-        ),
-      ]),
+      makeSection(
+        'Configuration Files',
+        [makeGroup('Configuration Files', pagesFromDir(`versions/${version}/config`))],
+        { collapsed: false }
+      ),
+      makeSection('Expo SDK', [makeGroup('Expo SDK', pagesFromDir(`versions/${version}/sdk`))], {
+        collapsed: false,
+      }),
+      makeSection(
+        'React Native',
+        [
+          makeGroup(
+            'React Native',
+            sortLegacyReactNative(pagesFromDir(`versions/${version}/react-native`))
+          ),
+        ],
+        { collapsed: false }
+      ),
     ],
   }),
   {}
@@ -384,7 +392,7 @@ module.exports = {
 // --- MDX methods ---
 
 function makeSection(name, children = [], props = {}) {
-  return make('section', { name, ...props }, children);
+  return make('section', { name, ...{ collapsed: true, ...props } }, children);
 }
 
 function makeGroup(name, children = [], props = {}) {
