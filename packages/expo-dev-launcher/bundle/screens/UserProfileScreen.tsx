@@ -11,7 +11,7 @@ import {
   XIcon,
 } from 'expo-dev-client-components';
 import * as React from 'react';
-import { ActivityIndicator } from 'react-native';
+import { ActivityIndicator, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { LogoutConfirmationModal } from '../components/LogoutConfirmationModal';
@@ -60,8 +60,8 @@ export function UserProfileScreen({ navigation }) {
   const isAuthenticated = userData != null;
 
   return (
-    <SafeAreaView>
-      <View>
+    <SafeAreaView style={{ flex: 1 }}>
+      <ScrollView style={{ flex: 1 }}>
         <View>
           <AccountScreenHeader onClosePress={onClosePress} />
 
@@ -84,7 +84,7 @@ export function UserProfileScreen({ navigation }) {
             )}
           </View>
         </View>
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
