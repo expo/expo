@@ -122,11 +122,11 @@ function getBranchesAsync({
   };
 }
 
-export function useBranchesForApp(appId: string) {
+export function useBranchesForApp(appId: string, isAuthenticated: boolean) {
   const { runtimeVersion } = useBuildInfo();
   const toastStack = useToastStack();
   const { queryOptions } = useQueryOptions();
-  const isEnabled = appId != null;
+  const isEnabled = appId != null && isAuthenticated;
 
   const query = useInfiniteQuery(
     ['branches', appId, queryOptions.pageSize],
@@ -141,7 +141,7 @@ export function useBranchesForApp(appId: string) {
     {
       retry: 3,
       refetchOnMount: false,
-      enabled: isEnabled,
+      enabled: !!isEnabled,
       getNextPageParam: (lastPage, pages) => {
         if (lastPage.branches.length < queryOptions.pageSize) {
           return undefined;
@@ -153,7 +153,7 @@ export function useBranchesForApp(appId: string) {
   );
 
   React.useEffect(() => {
-    if (query.error) {
+    if (query.error && isAuthenticated) {
       const doesNotHaveErrorShowing =
         toastStack.getItems().filter((i) => i.status === 'pushing' || i.status === 'settled')
           .length === 0;
@@ -171,7 +171,7 @@ export function useBranchesForApp(appId: string) {
         ));
       }
     }
-  }, [query.error]);
+  }, [query.error, isAuthenticated]);
 
   const branches =
     query.data?.pages
