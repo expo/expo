@@ -11,4 +11,4 @@ export declare function generatePackageListAsync(modules: ModuleDescriptorIos[],
 /**
  * Formats an array of modules to Swift's array containing ReactDelegateHandlers
  */
-export declare function formatArrayOfReactDelegateHandler(modules: ModuleDescriptorIos[], additionalIndent?: number): string;
+export declare function formatArrayOfReactDelegateHandler(modules: ModuleDescriptorIos[]): string;

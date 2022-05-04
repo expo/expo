@@ -122,12 +122,12 @@ function generateDebugOnlyImportList(swiftModules) {
         return '';
     }
     return `#if DEBUG\n${swiftModules
-        .map((moduleName) => `  import ${moduleName}\n`)
+        .map((moduleName) => `import ${moduleName}\n`)
         .join('')}#endif\n`;
 }
 function generateModuleClasses(classNames, debugOnlyClassName) {
     if (debugOnlyClassName.length > 0) {
-        return `#if DEBUG\n${indent.repeat(3)}return ${formatArrayOfClassNames(classNames.concat(debugOnlyClassName), 1)}\n${indent.repeat(2)}#else\n${indent.repeat(3)}return ${formatArrayOfClassNames(classNames, 1)}\n${indent.repeat(2)}#endif`;
+        return `#if DEBUG\n${indent.repeat(2)}return ${formatArrayOfClassNames(classNames.concat(debugOnlyClassName))}\n${indent.repeat(2)}#else\n${indent.repeat(2)}return ${formatArrayOfClassNames(classNames)}\n${indent.repeat(2)}#endif`;
     }
     else {
         return `return ${formatArrayOfClassNames(classNames)}`;
@@ -136,15 +136,13 @@ function generateModuleClasses(classNames, debugOnlyClassName) {
 /**
  * Formats an array of class names to Swift's array containing these classes.
  */
-function formatArrayOfClassNames(classNames, additionalIndent = 0) {
-    return `[${classNames
-        .map((className) => `\n${indent.repeat(additionalIndent + 3)}${className}.self`)
-        .join(',')}
-${indent.repeat(additionalIndent + 2)}]`;
+function formatArrayOfClassNames(classNames) {
+    return `[${classNames.map((className) => `\n${indent.repeat(3)}${className}.self`).join(',')}
+${indent.repeat(2)}]`;
 }
 function generateReactDelegateHandlers(module, debugOnlyModules) {
     if (debugOnlyModules.length > 0) {
-        return `#if DEBUG\n${indent.repeat(3)}return ${formatArrayOfReactDelegateHandler(module.concat(debugOnlyModules), 1)}\n${indent.repeat(2)}#else\n${indent.repeat(3)}return ${formatArrayOfReactDelegateHandler(module, 1)}\n${indent.repeat(2)}#endif`;
+        return `#if DEBUG\n${indent.repeat(2)}return ${formatArrayOfReactDelegateHandler(module.concat(debugOnlyModules))}\n${indent.repeat(2)}#else\n${indent.repeat(2)}return ${formatArrayOfReactDelegateHandler(module)}\n${indent.repeat(2)}#endif`;
     }
     else {
         return `return ${formatArrayOfReactDelegateHandler(module)}`;
@@ -153,15 +151,15 @@ function generateReactDelegateHandlers(module, debugOnlyModules) {
 /**
  * Formats an array of modules to Swift's array containing ReactDelegateHandlers
  */
-function formatArrayOfReactDelegateHandler(modules, additionalIndent = 0) {
+function formatArrayOfReactDelegateHandler(modules) {
     const values = [];
     for (const module of modules) {
         for (const handler of module.reactDelegateHandlers) {
             values.push(`(packageName: "${module.packageName}", handler: ${handler}.self)`);
         }
     }
-    return `[${values.map((value) => `\n${indent.repeat(additionalIndent + 3)}${value}`).join(',')}
-${indent.repeat(additionalIndent + 2)}]`;
+    return `[${values.map((value) => `\n${indent.repeat(3)}${value}`).join(',')}
+${indent.repeat(2)}]`;
 }
 exports.formatArrayOfReactDelegateHandler = formatArrayOfReactDelegateHandler;
 //# sourceMappingURL=ios.js.map
