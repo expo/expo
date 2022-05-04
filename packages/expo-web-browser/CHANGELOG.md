@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Rewritten Android code to Kotlin. ([#17195](https://github.com/expo/expo/pull/17195) by [@barthap](https://github.com/barthap))
+
 ## 10.2.0 — 2022-04-18
 
 ### 🎉 New features
