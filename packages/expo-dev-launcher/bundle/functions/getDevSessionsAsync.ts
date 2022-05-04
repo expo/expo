@@ -29,7 +29,7 @@ export async function getDevSessionsAsync({
     devSessions = devSessions.concat(sessions);
   }
 
-  if (!devSessions.length) {
+  if (!devSessions.length && !isDevice) {
     const localPackagers = await getLocalPackagersAsync();
     devSessions = devSessions.concat(localPackagers);
   }
