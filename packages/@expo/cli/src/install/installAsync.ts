@@ -20,6 +20,7 @@ export async function installAsync(
   const packageManager = PackageManager.createForProject(projectRoot, {
     npm: options.npm,
     yarn: options.yarn,
+    pnpm: options.pnpm,
     log: Log.log,
   });
 
@@ -63,7 +64,10 @@ export async function installPackagesAsync(
      */
     packages: string[];
     /** Package manager to use when installing the versioned packages. */
-    packageManager: PackageManager.NpmPackageManager | PackageManager.YarnPackageManager;
+    packageManager:
+      | PackageManager.NpmPackageManager
+      | PackageManager.YarnPackageManager
+      | PackageManager.PnpmPackageManager;
     /**
      * SDK to version `packages` for.
      * @example '44.0.0'
