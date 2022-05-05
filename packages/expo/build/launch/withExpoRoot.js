@@ -6,8 +6,8 @@ let useDevKeepAwake = () => { };
 if (__DEV__) {
     try {
         // Optionally import expo-keep-awake
-        const { useKeepAwake } = require('expo-keep-awake');
-        useDevKeepAwake = useKeepAwake;
+        const { useKeepAwake, ExpoKeepAwakeTag } = require('expo-keep-awake');
+        useDevKeepAwake = () => useKeepAwake(ExpoKeepAwakeTag, { suppressDeactivateWarnings: true });
     }
     catch { }
 }
