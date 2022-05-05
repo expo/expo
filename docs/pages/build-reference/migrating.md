@@ -30,6 +30,11 @@ Configuring the resizeMode or positioning of the splash screen with `splash` (or
 
 This often results in massive reductions in app size; managed apps built with EAS Build can be in the order of 10x smaller than the same app built with `expo build` ([learn why](https://blog.expo.dev/expo-managed-workflow-in-2021-5b887bbf7dbb)). The tradeoff here is that you need to be careful when publishing updates in order to avoid publishing an incompatible JavaScript bundle. Learn more in [updates](/build/updates.md).
 
+### Only files in your project folder that are not gitignored are uploaded to the build server
+
+EAS Build uses a different mechanism to determine which of your project files to upload to the server. Read more: ["How projects are uploaded to EAS Build
+"](https://expo.fyi/eas-build-archive).
+
 ### The `--config` flag is not supported
 
 You may be using `expo build:[ios|android] --config app.production.json` to switch app configuration files used by your project &mdash; this is not supported in EAS Build, but it's easy to migrate to an alternative. Read more: ["Migrating away from the `--config` flag in Expo CLI"](https://expo.fyi/config-flag-migration).
