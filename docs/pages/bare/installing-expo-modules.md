@@ -19,12 +19,14 @@ If you have an existing project without Expo modules installed (perhaps created 
 
 Aside from initializing a new project with `expo-cli`, the easiest way to get up and running is with the `install-expo-modules` command.
 
-<InstallSection packageName="expo" cmd={["# Install and configure the expo package automatically", "npx install-expo-modules"]} hideBareInstructions />
+<InstallSection packageName="expo" cmd={["# Install and configure the expo package automatically", "npx install-expo-modules@latest"]} hideBareInstructions />
 
 - ✅ **When the command succeeds**, you will be able to add any Expo module in your app! Proceed to [Usage](#usage) for more information.
 - ❌ **If the command fails**, please follow the manual installation instructions. Updating code programmatically can be tricky, and if your project deviates significantly from a default React Native project, then you need to perform manual installation and adapt the instructions here to your codebase.
 
 ## Manual installation
+
+The following instructions apply to installing the latest version of Expo modules in React Native 0.68.
 
 <InstallSection packageName="expo" cmd={["npm install expo"]} hideBareInstructions />
 
