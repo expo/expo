@@ -11,6 +11,7 @@ public extension JavaScriptRuntime {
    - Throws: `JavaScriptEvalException` when evaluated code has invalid syntax or throws an error.
    - Note: It wraps the original `evaluateScript` to better handle and rethrow exceptions.
    */
+  @discardableResult
   func eval(_ source: String) throws -> JavaScriptValue {
     do {
       var result: JavaScriptValue?
