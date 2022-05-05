@@ -136,7 +136,7 @@ test('downloads and runs update, and updates current-update-id header', async ()
   expect(secondRequest.headers['expo-current-update-id']).toEqual(manifest.id);
 });
 
-// important for billing accuracy
+// important for usage accuracy
 test('does not download any assets for an older update', async () => {
   jest.setTimeout(300000 * TIMEOUT_BIAS);
   const bundleFilename = 'bundle-old.js';
