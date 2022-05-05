@@ -7,7 +7,7 @@
 ### 🎉 New features
 
 - Add CI context to telemetry to help determine support on used CI providers ([#17284](https://github.com/expo/expo/pull/17284) by [@byCedric](https://github.com/byCedric))
-- Added `export:web` command.
+- Added `export:web` command. ([#17363](https://github.com/expo/expo/pull/17363) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
