@@ -30,12 +30,17 @@ target 'ExpoKitApp' do
     ],
   )
 
+  pod 'Amplitude', :modular_headers => true
+  pod 'CocoaLumberjack', :modular_headers => true
+  pod 'Google-Maps-iOS-Utils', :modular_headers => true
+  pod 'JKBigInteger', :modular_headers => true, :podspec => '../../../ios/vendored/common/JKBigInteger.podspec.json'
+  pod 'MBProgressHUD', :modular_headers => true
+
   # Install React Native and its dependencies
   require_relative '../node_modules/react-native/scripts/react_native_pods'
   use_react_native!(production: true)
 
   # Install vendored pods.
-  pod 'JKBigInteger', :podspec => '../../../ios/vendored/common/JKBigInteger.podspec.json'
   require_relative '../../../ios/podfile_helpers.rb'
   excluded_pods = ['stripe-react-native']
   use_pods!('../../../ios/vendored/unversioned/**/*.podspec.json', nil, excluded_pods)
