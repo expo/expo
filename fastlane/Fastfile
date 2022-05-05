@@ -308,7 +308,7 @@ platform :android do
     supply(
       package_name: "host.exp.exponent",
       metadata_path: "./fastlane/android/metadata",
-      apk: "./android/app/build/outputs/bundle/versionedRelease/app-versioned-release.aab",
+      aab: "./android/app/build/outputs/bundle/versionedRelease/app-versioned-release.aab",
       track: "production",
       skip_upload_images: true,
       skip_upload_screenshots: true
