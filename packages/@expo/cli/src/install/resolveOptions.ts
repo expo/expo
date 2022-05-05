@@ -8,6 +8,8 @@ export type Options = Pick<PackageManager.CreateForProjectOptions, 'npm' | 'pnpm
   check?: boolean;
   /** Should the dependencies be fixed automatically. */
   fix?: boolean;
+  /** Should disable install output, used for commands like `prebuild` that run install internally. */
+  silent?: boolean;
 };
 
 function resolveOptions(options: Options): Options {
