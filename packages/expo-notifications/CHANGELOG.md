@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+### ⚠️ Notices
+
+- Fixed exception on Android 12+ devices for missing `SCHEDULE_EXACT_ALARM` permission. If `scheduleNotificationAsync` needs a precise timer, the `SCHEDULE_EXACT_ALARM` should be explicitly added to **AndroidManifest.xml**. ([#17334](https://github.com/expo/expo/pull/17334) by [@kudo](https://github.com/kudo))
+
 ## 0.15.1 — 2022-04-27
 
 ### 💡 Others
