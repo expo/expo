@@ -9,18 +9,31 @@ import reviewChangelogEntries from './reviewers/reviewChangelogEntries';
 import reviewForbiddenFiles from './reviewers/reviewForbiddenFiles';
 import { ReviewEvent, ReviewComment, ReviewInput, ReviewOutput, ReviewStatus } from './types';
 
+const DISABLE_CHANGELOG_MAGIC_COMMENT = '<!-- disable:changelog-checks -->';
+
 /**
  * An array with functions whose purpose is to check and review the diff.
  */
-const REVIEWERS = [checkMissingChangelogs, reviewChangelogEntries, reviewForbiddenFiles];
+const REVIEWERS = [
+  {
+    action: checkMissingChangelogs,
+    magicCommentToDisable: DISABLE_CHANGELOG_MAGIC_COMMENT,
+  },
+  {
+    action: reviewChangelogEntries,
+    magicCommentToDisable: DISABLE_CHANGELOG_MAGIC_COMMENT,
+  },
+  {
+    action: reviewForbiddenFiles,
+    magicCommentToDisable: null,
+  },
+];
 
 enum Label {
   PASSED_CHECKS = 'bot: passed checks',
   SUGGESTIONS = 'bot: suggestions',
   NEEDS_CHANGES = 'bot: needs changes',
 }
-
-const BOT_DISABLE_MAGIC_COMMENT = '<!-- disable:changelog-checks -->';
 
 /**
  * Goes through the changes included in given pull request and checks if they meet basic requirements.
@@ -36,61 +49,56 @@ export async function reviewPullRequestAsync(prNumber: number) {
     depth: pr.commits + 1,
   });
 
-  const isReviewDisabled = pr.body?.includes(BOT_DISABLE_MAGIC_COMMENT);
+  // Get the diff of the pull request.
+  const diff = await GitHub.getPullRequestDiffAsync(prNumber);
+
+  const input: ReviewInput = {
+    pullRequest: pr,
+    diff,
+  };
+
+  // Run all the checks asynchronously and collects their outputs.
+  logger.info('🕵️‍♀️  Reviewing changes');
+  const reviewActions = REVIEWERS.filter(
+    ({ magicCommentToDisable }) =>
+      !magicCommentToDisable || pr.body?.includes(magicCommentToDisable) === false
+  ).map(({ action }) => action(input));
+  const outputs = (await Promise.all(reviewActions)).filter(Boolean) as ReviewOutput[];
+
+  // Only active (non-passive) outputs will be reported in the review body.
+  const activeOutputs = outputs.filter(
+    (output) => output.title && output.body && output.status !== ReviewStatus.PASSIVE
+  );
+
+  // Gather comments that will be part of the review.
+  const reviewComments = getReviewCommentsFromOutputs(outputs);
 
   // Get lists of existing reports and reviews. We'll delete them once the new ones are submitted.
   const outdatedReports = await findExistingReportsAsync(prNumber, user.id);
   const outdatedReviews = await findExistingReviewsAsync(prNumber, user.id);
 
-  if (!isReviewDisabled) {
-    // Get the diff of the pull request.
-    const diff = await GitHub.getPullRequestDiffAsync(prNumber);
+  // Submit a report if there is any non-passive output.
+  if (activeOutputs.length > 0) {
+    const report = generateReportFromOutputs(activeOutputs, pr.head.sha);
+    await submitReportAsync(pr.number, report);
+  }
 
-    const input: ReviewInput = {
-      pullRequest: pr,
-      diff,
-    };
+  // Submit a review if there is any review comment (usually suggestion).
+  if (reviewComments.length > 0) {
+    await submitReviewWithCommentsAsync(pr.number, reviewComments);
+  }
 
-    // Run all the checks asynchronously and collects their outputs.
-    logger.info('🕵️‍♀️  Reviewing changes');
-    const outputs = (await Promise.all(REVIEWERS.map((reviewer) => reviewer(input)))).filter(
-      Boolean
-    ) as ReviewOutput[];
-
-    // Only active (non-passive) outputs will be reported in the review body.
-    const activeOutputs = outputs.filter(
-      (output) => output.title && output.body && output.status !== ReviewStatus.PASSIVE
+  // Log the success if there is nothing to complain.
+  if (!activeOutputs.length && !reviewComments.length) {
+    logger.success(
+      '🥳 Everything looks good to me! There is no need to submit a report nor a review.'
     );
-
-    // Gather comments that will be part of the review.
-    const reviewComments = getReviewCommentsFromOutputs(outputs);
-
-    // Submit a report if there is any non-passive output.
-    if (activeOutputs.length > 0) {
-      const report = generateReportFromOutputs(activeOutputs, pr.head.sha);
-      await submitReportAsync(pr.number, report);
-    }
-
-    // Submit a review if there is any review comment (usually suggestion).
-    if (reviewComments.length > 0) {
-      await submitReviewWithCommentsAsync(pr.number, reviewComments);
-    }
-
-    // Log the success if there is nothing to complain.
-    if (!activeOutputs.length && !reviewComments.length) {
-      logger.success(
-        '🥳 Everything looks good to me! There is no need to submit a report nor a review.'
-      );
-    }
-
-    await updateLabelsAsync(pr, getLabelFromOutputs(activeOutputs));
-  } else {
-    logger.info('Skipped review, because magic comment is present.');
   }
 
   // Delete outdated reports and reviews and update labels.
   await deleteOutdatedReportsAsync(outdatedReports);
   await deleteOutdatedReviewsAsync(pr.number, outdatedReviews);
+  await updateLabelsAsync(pr, getLabelFromOutputs(activeOutputs));
 
   logger.success("🥳 I'm done!");
 }
