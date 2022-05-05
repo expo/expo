@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fixed Android 12+ runtime crash caused by `PendingIntent` misconfiguration. ([#17333](https://github.com/expo/expo/pull/17333) by [@kudo](https://github.com/kudo))
-
 ### 💡 Others
+
+## 0.15.2 — 2022-05-05
+
+### 🐛 Bug fixes
+
+- Fixed Android 12+ runtime crash caused by `PendingIntent` misconfiguration. ([#17333](https://github.com/expo/expo/pull/17333) by [@kudo](https://github.com/kudo))
 
 ### ⚠️ Notices
 

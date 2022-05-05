@@ -1,6 +1,6 @@
 {
   "name": "expo-apple-authentication",
-  "version": "4.2.0",
+  "version": "4.2.1",
   "description": "A unimodule that provides SignIn With Apple",
   "main": "build/index.js",
   "types": "build/index.d.ts",

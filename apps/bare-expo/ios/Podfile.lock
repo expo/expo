@@ -18,7 +18,7 @@ PODS:
     - ExpoModulesCore
   - EXApplication (4.1.0):
     - ExpoModulesCore
-  - EXAV (11.2.2):
+  - EXAV (11.2.3):
     - ExpoModulesCore
     - React-runtimeexecutor
     - ReactCommon
@@ -39,7 +39,7 @@ PODS:
     - ExpoModulesCore
   - EXCamera (12.2.0):
     - ExpoModulesCore
-  - EXConstants (13.1.0):
+  - EXConstants (13.1.1):
     - ExpoModulesCore
   - EXContacts (10.2.0):
     - ExpoModulesCore
@@ -92,7 +92,7 @@ PODS:
   - EXJSONUtils (0.3.0)
   - EXLocalAuthentication (12.2.0):
     - ExpoModulesCore
-  - EXLocation (14.2.1):
+  - EXLocation (14.2.2):
     - ExpoModulesCore
   - EXMailComposer (11.2.0):
     - ExpoModulesCore
@@ -103,11 +103,11 @@ PODS:
     - React-Core
   - EXNetwork (4.2.0):
     - ExpoModulesCore
-  - EXNotifications (0.15.1):
+  - EXNotifications (0.15.2):
     - ExpoModulesCore
   - EXPermissions (13.2.0):
     - ExpoModulesCore
-  - Expo (45.0.0-beta.9):
+  - Expo (45.0.0):
     - ExpoModulesCore
   - expo-dev-client (0.9.4):
     - EXManifests
@@ -221,13 +221,13 @@ PODS:
     - ExpoModulesCore
   - ExpoImagePicker (13.1.1):
     - ExpoModulesCore
-  - ExpoKeepAwake (10.1.0):
+  - ExpoKeepAwake (10.1.1):
     - ExpoModulesCore
   - ExpoLinearGradient (11.3.0):
     - ExpoModulesCore
   - ExpoLocalization (13.0.0):
     - ExpoModulesCore
-  - ExpoModulesCore (0.9.0):
+  - ExpoModulesCore (0.9.1):
     - React-Core
     - ReactCommon/turbomodule/core
   - ExpoRandom (12.2.0):
@@ -1351,7 +1351,7 @@ SPEC CHECKSUMS:
   EASClient: 93565f4d024559b75eac62bc7d50acaa354614f6
   EXAmplitude: 96d6a3f9c2cff499261fc28c952c03b55f7584f9
   EXApplication: d6562af1204162e0ac46d341a7d4e5dc720b33de
-  EXAV: 1a0badef09dd0d52e96ea1704459cbc3d1f20e9c
+  EXAV: 6cc1a65da913aefae048fc1bfb2116a18b0a639b
   EXBackgroundFetch: f60cb23007beca0892997682d8ca40aca1e0c92e
   EXBarCodeScanner: eea8f38bedf1eae15d8f8bea89887a71762fd275
   EXBattery: 282a943ee063a035c3dcbb8c4081193a6f02be44
@@ -1359,7 +1359,7 @@ SPEC CHECKSUMS:
   EXBrightness: 2a5e81b350838cad814730c10ab845c7afc45a11
   EXCalendar: c521fdd13d7b66b436123e4501db32f4b3ffe959
   EXCamera: b22e1d758c0e7fbcfee58dc23164ed024679d09b
-  EXConstants: 4c0c0c3f445d9c369de34b9545aaf4e1526391b3
+  EXConstants: fdbe52259365b6a6faaa5e99a3b82cfa6bc2eb61
   EXContacts: 3cc27f68eb7ff4e7ab1a26e34c33297ae4307bfa
   EXDevice: 0115b360059ccd32c1701744e374e3259ffbdd3c
   EXDocumentPicker: cd34632ff465bfef63c9ff92b05b747665e21996
@@ -1378,14 +1378,14 @@ SPEC CHECKSUMS:
   EXInAppPurchases: 09c6d7114577590c9d010bf6e8cdaca3e7bae261
   EXJSONUtils: 2a74b8f40f1523cc3f92af99c91aa78201737a77
   EXLocalAuthentication: 7f37b242eae73f9acf111d39bdee3f1379e68902
-  EXLocation: f40d82e745a66deac2e649b496098064008e0973
+  EXLocation: 33ef939f8a351dd44eaaeb391ee87a102573a596
   EXMailComposer: 2e5fdf265f3a1d5d5ef03724ce361cdedb0f546f
   EXManifests: 0c6134b7b6f3236a93a778c3f44ba1cfb3f9fa3d
   EXMediaLibrary: 5d0e1b78268c90f7dd8a83ee3be26e01c4fd6c1f
   EXNetwork: 116e5ec043168904c1f24a2e96a8361063e57d26
-  EXNotifications: 6164d98ce54326bd5f7c09ef0717a500e9820cf9
+  EXNotifications: 43ef917067a8c1cc977c7976e43df63d582c7c4d
   EXPermissions: 3dbb869e7f96a5711314f73d48ddc2f28009a7f6
-  Expo: 8af09aaa24c023d55160118554032b178fad1871
+  Expo: c9946016d7453c44b71ed0c8282089b22aefd3ad
   expo-dev-client: 2f8f514ad316c0c47592a993dac5b75895d91b1f
   expo-dev-launcher: e923411f7d115b3e2d0449d32831d043d3d1f580
   expo-dev-menu: fc29a6825ed297b329af258682ba2dae7e7c1033
@@ -1396,10 +1396,10 @@ SPEC CHECKSUMS:
   ExpoHaptics: ad58ec96a25e57579c14a47c7d71f0de0de8656a
   ExpoImageManipulator: b55580bbc7b10099c7707949903e7176a8542ee8
   ExpoImagePicker: d9d6b4f29db437fc7796f13cee5f133f5b4b5f7c
-  ExpoKeepAwake: 6f23558b054e4d0c04535f7d70c3fe6a2025d8f7
+  ExpoKeepAwake: c0c494b442ecd8122974c13b93ccfb57bd408e88
   ExpoLinearGradient: 0debcf7d6cd7fea3050c218544f0db2de9a64f42
   ExpoLocalization: 8f619bb6eec64575cd5220bfabbd7b4e2d6f33f8
-  ExpoModulesCore: 4093531a41eb8b2e3b508ee519afbd84b09de727
+  ExpoModulesCore: 5597629698cc026bd3dff1ef182fe2cc67c31084
   ExpoRandom: 14df0976aa363a71a730ceb7655250f3047c0e42
   ExpoSystemUI: 6175204b809d9598d56e5a711480415d28c9fb5b
   ExpoWebBrowser: 818c519c3519cdd79780228039938fbd8236c885

@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Improved support of nvm sourcing in iOS shell scripts. ([#17109](https://github.com/expo/expo/pull/17109) by [@liamronancb](https://github.com/liamronancb))
-
 ### 💡 Others
+
+## 0.13.1 — 2022-05-05
+
+### 🐛 Bug fixes
+
+- Improved support of nvm sourcing in iOS shell scripts. ([#17109](https://github.com/expo/expo/pull/17109) by [@liamronancb](https://github.com/liamronancb))
 
 ## 0.13.0 — 2022-04-21
 
