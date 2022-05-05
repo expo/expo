@@ -7,20 +7,10 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.net.Uri
-import android.os.Bundle
-import android.os.Parcel
-import android.os.Parcelable
-import android.os.ResultReceiver
+import android.os.*
 import android.util.Log
 import androidx.core.app.RemoteInput
-import expo.modules.notifications.notifications.model.Notification
-import expo.modules.notifications.notifications.model.NotificationAction
-import expo.modules.notifications.notifications.model.NotificationBehavior
-import expo.modules.notifications.notifications.model.NotificationCategory
-import expo.modules.notifications.notifications.model.NotificationRequest
-import expo.modules.notifications.notifications.model.NotificationResponse
-import expo.modules.notifications.notifications.model.TextInputNotificationAction
-import expo.modules.notifications.notifications.model.TextInputNotificationResponse
+import expo.modules.notifications.notifications.model.*
 import expo.modules.notifications.service.delegates.ExpoCategoriesDelegate
 import expo.modules.notifications.service.delegates.ExpoHandlingDelegate
 import expo.modules.notifications.service.delegates.ExpoPresentationDelegate
@@ -424,11 +414,13 @@ open class NotificationsService : BroadcastReceiver() {
         intent.putExtra(IDENTIFIER_KEY, identifier)
       }
 
+      // We're defaulting to the behaviour prior API 31 (mutable) even though Android recommends immutability
+      val mutableFlag = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) PendingIntent.FLAG_MUTABLE else 0
       return PendingIntent.getBroadcast(
         context,
         intent.component?.className?.hashCode() ?: NotificationsService::class.java.hashCode(),
         intent,
-        PendingIntent.FLAG_UPDATE_CURRENT
+        PendingIntent.FLAG_UPDATE_CURRENT or mutableFlag
       )
     }
 
@@ -458,11 +450,13 @@ open class NotificationsService : BroadcastReceiver() {
         intent.putExtra(NOTIFICATION_ACTION_KEY, action as Parcelable)
       }
 
+      // We're defaulting to the behaviour prior API 31 (mutable) even though Android recommends immutability
+      val mutableFlag = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) PendingIntent.FLAG_MUTABLE else 0
       return PendingIntent.getBroadcast(
         context,
         intent.component?.className?.hashCode() ?: NotificationsService::class.java.hashCode(),
         intent,
-        PendingIntent.FLAG_UPDATE_CURRENT
+        PendingIntent.FLAG_UPDATE_CURRENT or mutableFlag
       )
     }
 
