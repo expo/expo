@@ -278,7 +278,7 @@ export async function getAdbNameForDeviceIdAsync(device: DeviceContext): Promise
     throw new CommandError('EMULATOR_NOT_FOUND', results);
   }
 
-  return results.trim().split(/\r?\n/).shift() ?? null;
+  return sanitizeAdbDeviceName(results) ?? null;
 }
 
 export async function isDeviceBootedAsync({
@@ -365,4 +365,15 @@ function parseAdbDeviceProperties(devicePropertiesString: string) {
     properties[match[1]] = match[2];
   }
   return properties;
+}
+
+/**
+ * Sanitize the ADB device name to only get the actual device name.
+ * On Windows, we need to do \r, \n, and \r\n filtering to get the name.
+ */
+export function sanitizeAdbDeviceName(deviceName: string) {
+  return deviceName
+    .trim()
+    .split(/[\r\n]+/)
+    .shift();
 }
