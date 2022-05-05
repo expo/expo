@@ -15,7 +15,7 @@ The EAS Updates extension provides the ability to view and load published update
 It's now available for all development clients `v0.9.0` and above. In order to install it, you'll need the most recent publish of expo updates from npm:
 
 ```
-expo install expo-dev-client@next expo-updates@next
+expo install expo-dev-client@0.9 expo-updates@next
 ```
 
 #### Configure EAS Update
