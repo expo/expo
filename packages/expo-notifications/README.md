@@ -47,6 +47,8 @@ In order to be able to receive push notifications on the device ensure that your
 
 This module requires permission to subscribe to device boot. It's used to setup the scheduled notifications right after the device (re)starts. The `RECEIVE_BOOT_COMPLETED` permission is added automatically.
 
+**Note:** Starting from Android 12 (API level 31), to schedule the notification that triggers at the exact time, you need to add `<uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>` to **AndroidManifest.xml**. You can read more about the exact alarm permission [here](https://developer.android.com/about/versions/12/behavior-changes-12#exact-alarm-permission).
+
 <details><summary><strong>Expand to view how the notification icon and the default color can be customized in a plain React Native app</strong></summary> <p>
 
 - **To customize the icon**:
