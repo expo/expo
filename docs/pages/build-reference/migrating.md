@@ -32,7 +32,7 @@ This often results in massive reductions in app size; managed apps built with EA
 
 ### Only files in your project folder that are not gitignored are uploaded to the build server
 
-EAS Build uses a different mechanism to determine which of your project files to upload to the server. Read more: ["How projects are uploaded to EAS Build
+Because EAS Build builds your full app, both the native part and the JavaScript part, on the server, it uses a different mechanism to upload your project files to the server than classic builds. Read more: ["How projects are uploaded to EAS Build
 "](https://expo.fyi/eas-build-archive).
 
 ### The `--config` flag is not supported
