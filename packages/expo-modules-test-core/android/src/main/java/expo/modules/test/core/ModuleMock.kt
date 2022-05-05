@@ -1,5 +1,6 @@
 package expo.modules.test.core
 
+import android.content.Context
 import android.os.Bundle
 import androidx.test.core.app.ApplicationProvider
 import com.facebook.react.bridge.ReactApplicationContext
@@ -22,15 +23,10 @@ class ModuleMock {
       customAppContext: AppContext? = null,
       customEventEmitter: EventEmitter? = null,
     ): Triple<T, AppContext, EventEmitter> {
-      val context = ReactApplicationContext(ApplicationProvider.getApplicationContext())
-      val appContext = customAppContext ?: AppContext(
-        modulesProvider = mockk(relaxed = true),
-        legacyModuleRegistry = mockk(relaxed = true),
-        reactContextHolder = WeakReference(context)
-      )
-
+      val appContext = prepareMockAppContext(customAppContext)
       val eventEmitter: EventEmitter = customEventEmitter ?: mockk(relaxed = true)
 
+      // prepare module spy
       val moduleSpy = spyk(module)
       every { moduleSpy getProperty "appContext" } returns appContext
       every { moduleSpy.sendEvent(any(), any()) } answers { call ->
@@ -83,4 +79,20 @@ class ModuleMock {
       block.invoke(holder)
     }
   }
+}
+
+private fun prepareMockAppContext(customAppContext: AppContext?): AppContext {
+  val reactContext = ReactApplicationContext(ApplicationProvider.getApplicationContext<Context>())
+  val appContext = customAppContext ?: AppContext(
+    modulesProvider = mockk(relaxed = true),
+    legacyModuleRegistry = mockk(relaxed = true),
+    reactContextHolder = WeakReference(reactContext)
+  )
+
+  // as AppContext holds only weak reference to Android Context which can be destroyed too early
+  // we need to override it to return actual strong reference (held by mockk internals)
+  val appContextSpy = spyk(appContext)
+  every { appContextSpy getProperty "reactContext" } returns reactContext
+
+  return appContextSpy
 }
