@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Android: Warnings about `new NativeEventEmitter()` no longer appear when using React Native v0.65+. ([#17343](https://github.com/expo/expo/pull/17343) by [@chrisbobbe](https://github.com/chrisbobbe))
+
 ### 💡 Others
 
 ## 4.2.0 — 2022-04-18
