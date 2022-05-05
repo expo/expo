@@ -109,21 +109,21 @@ PODS:
     - ExpoModulesCore
   - Expo (45.0.0-beta.9):
     - ExpoModulesCore
-  - expo-dev-client (0.9.3):
+  - expo-dev-client (0.9.4):
     - EXManifests
     - expo-dev-launcher
     - expo-dev-menu
     - expo-dev-menu-interface
     - EXUpdatesInterface
-  - expo-dev-launcher (0.11.3):
+  - expo-dev-launcher (0.11.4):
     - EXManifests
-    - expo-dev-launcher/Main (= 0.11.3)
+    - expo-dev-launcher/Main (= 0.11.4)
     - expo-dev-menu
     - expo-dev-menu-interface
     - ExpoModulesCore
     - EXUpdatesInterface
     - React-Core
-  - expo-dev-launcher/Main (0.11.3):
+  - expo-dev-launcher/Main (0.11.4):
     - EXManifests
     - expo-dev-launcher/Unsafe
     - expo-dev-menu
@@ -131,7 +131,7 @@ PODS:
     - ExpoModulesCore
     - EXUpdatesInterface
     - React-Core
-  - expo-dev-launcher/Tests (0.11.3):
+  - expo-dev-launcher/Tests (0.11.4):
     - EXManifests
     - expo-dev-menu
     - expo-dev-menu-interface
@@ -144,27 +144,27 @@ PODS:
     - React-Core
     - React-CoreModules
     - React-hermes
-  - expo-dev-launcher/Unsafe (0.11.3):
+  - expo-dev-launcher/Unsafe (0.11.4):
     - EXManifests
     - expo-dev-menu
     - expo-dev-menu-interface
     - ExpoModulesCore
     - EXUpdatesInterface
     - React-Core
-  - expo-dev-menu (0.10.4):
-    - expo-dev-menu/Main (= 0.10.4)
+  - expo-dev-menu (0.10.5):
+    - expo-dev-menu/Main (= 0.10.5)
   - expo-dev-menu-interface (0.6.0)
   - expo-dev-menu-interface/Tests (0.6.0):
     - Nimble
     - Quick
-  - expo-dev-menu/GestureHandler (0.10.4)
-  - expo-dev-menu/Main (0.10.4):
+  - expo-dev-menu/GestureHandler (0.10.5)
+  - expo-dev-menu/Main (0.10.5):
     - EXManifests
     - expo-dev-menu-interface
     - expo-dev-menu/Vendored
     - ExpoModulesCore
     - React-Core
-  - expo-dev-menu/Reanimated (0.10.4):
+  - expo-dev-menu/Reanimated (0.10.5):
     - DoubleConversion
     - FBLazyVector
     - FBReactNativeSpec
@@ -192,19 +192,19 @@ PODS:
     - React-RCTVibration
     - ReactCommon/turbomodule/core
     - Yoga
-  - expo-dev-menu/SafeAreaView (0.10.4)
-  - expo-dev-menu/Tests (0.10.4):
+  - expo-dev-menu/SafeAreaView (0.10.5)
+  - expo-dev-menu/Tests (0.10.5):
     - hermes-engine
     - Nimble
     - Quick
     - React-CoreModules
     - React-hermes
-  - expo-dev-menu/UITests (0.10.4):
+  - expo-dev-menu/UITests (0.10.5):
     - hermes-engine
     - React
     - React-CoreModules
     - React-hermes
-  - expo-dev-menu/Vendored (0.10.4):
+  - expo-dev-menu/Vendored (0.10.5):
     - expo-dev-menu/GestureHandler
     - expo-dev-menu/Reanimated
     - expo-dev-menu/SafeAreaView
@@ -1386,9 +1386,9 @@ SPEC CHECKSUMS:
   EXNotifications: 6164d98ce54326bd5f7c09ef0717a500e9820cf9
   EXPermissions: 3dbb869e7f96a5711314f73d48ddc2f28009a7f6
   Expo: 8af09aaa24c023d55160118554032b178fad1871
-  expo-dev-client: d69a03f036fb368c6f2d1631d070fa83f6681aa3
-  expo-dev-launcher: 818596626c636932b00171696bbd6fe3b3d623b1
-  expo-dev-menu: b7a5b6bd8128fda1ef78fd63033b6249f0e0777d
+  expo-dev-client: 2f8f514ad316c0c47592a993dac5b75895d91b1f
+  expo-dev-launcher: e923411f7d115b3e2d0449d32831d043d3d1f580
+  expo-dev-menu: fc29a6825ed297b329af258682ba2dae7e7c1033
   expo-dev-menu-interface: b0e5958c56dc420517e8d8769f009536fbbb5935
   ExpoCellular: b5daa3b732c0c9841979c39988062e50e70dc053
   ExpoClipboard: e2dda22be0524595a5eeead51665f60729829123
