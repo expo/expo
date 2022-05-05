@@ -70,7 +70,7 @@ const starting = [
         makePage('next-steps/additional-resources.md'),
       ]),
     ],
-    { collapsed: false }
+    { expanded: true }
   ),
 ];
 
@@ -255,7 +255,7 @@ const eas = [
   makeSection(
     'EAS',
     [makeGroup('EAS', [makePage('eas/index.md'), makePage('eas/webhooks.md')], './pages/eas/')],
-    { collapsed: false }
+    { expanded: true }
   ),
   makeSection(
     'EAS Build',
@@ -300,7 +300,7 @@ const eas = [
         makePage('build-reference/ios-capabilities.md'),
       ]),
     ],
-    { collapsed: false }
+    { expanded: true }
   ),
   makeSection(
     'EAS Submit',
@@ -313,7 +313,7 @@ const eas = [
         makePage('submit/classic-builds.md'),
       ]),
     ],
-    { collapsed: false }
+    { expanded: true }
   ),
 ];
 
@@ -347,7 +347,7 @@ const featurePreview = [
         makePage('eas-update/faq.md'),
       ]),
     ],
-    { collapsed: false }
+    { expanded: true }
   ),
 ];
 
@@ -358,10 +358,10 @@ const reference = VERSIONS.reduce(
       makeSection(
         'Configuration Files',
         [makeGroup('Configuration Files', pagesFromDir(`versions/${version}/config`))],
-        { collapsed: false }
+        { expanded: true }
       ),
       makeSection('Expo SDK', [makeGroup('Expo SDK', pagesFromDir(`versions/${version}/sdk`))], {
-        collapsed: false,
+        expanded: true,
       }),
       makeSection(
         'React Native',
@@ -371,7 +371,7 @@ const reference = VERSIONS.reduce(
             sortLegacyReactNative(pagesFromDir(`versions/${version}/react-native`))
           ),
         ],
-        { collapsed: false }
+        { expanded: true }
       ),
     ],
   }),
@@ -396,7 +396,7 @@ module.exports = {
 // --- MDX methods ---
 
 function makeSection(name, children = [], props = {}) {
-  return make('section', { name, ...{ collapsed: true, ...props } }, children);
+  return make('section', { name, ...{ expanded: false, ...props } }, children);
 }
 
 function makeGroup(name, children = [], props = {}) {
