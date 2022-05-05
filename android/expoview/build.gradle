@@ -7,7 +7,7 @@ apply plugin: 'kotlin-kapt'
 // WHEN_VERSIONING_REMOVE_FROM_HERE
 //maven repository info
 group = 'host.exp.exponent'
-version = '44.0.0'
+version = '45.0.0'
 
 // Creating sources with comments
 task androidSourcesJar(type: Jar) {
@@ -274,7 +274,7 @@ dependencies {
   api 'org.webkit:android-jsc:r245459' // needs to be before react-native
 
   /* UNCOMMENT WHEN DISTRIBUTING
-  api 'com.facebook.react:react-native:44.0.0'
+  api 'com.facebook.react:react-native:45.0.0'
   compileOnly project(':expo')
   compileOnly project(':expo-random')
   END UNCOMMENT WHEN DISTRIBUTING */
