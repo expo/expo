@@ -92,6 +92,13 @@ class SelectionPolicyFilterAwareTest {
   }
 
   @Test
+  fun testShouldLoadNewUpdate_NormalCase_OlderUpdate() {
+    // this could happen if the embedded update is newer than the most recently published update
+    val actual = selectionPolicy.shouldLoadNewUpdate(updateRollout1, updateRollout2, manifestFilters)
+    Assert.assertFalse(actual)
+  }
+
+  @Test
   fun testShouldLoadNewUpdate_NoneMatchingFilters() {
     // should choose to load an older update if the current update doesn't match the manifest filters
     val actual = selectionPolicy.shouldLoadNewUpdate(updateRollout1, updateDefault2, manifestFilters)

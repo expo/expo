@@ -9,6 +9,7 @@ let notifyString: string | null = null;
 let updateRequest: any = null;
 let manifestToServe: any = null;
 let manifestHeadersToServe: any = null;
+let requestedStaticFiles: string[] = [];
 
 export function start(port: number) {
   if (!server) {
@@ -25,8 +26,19 @@ export function stop() {
   updateRequest = null;
   manifestToServe = null;
   manifestHeadersToServe = null;
+  requestedStaticFiles = [];
 }
 
+export function consumeRequestedStaticFiles() {
+  const returnArray = requestedStaticFiles;
+  requestedStaticFiles = [];
+  return returnArray;
+}
+
+app.use('/static', (req: any, res: any, next: any) => {
+  requestedStaticFiles.push(path.basename(req.url));
+  next();
+});
 app.use('/static', express.static(path.resolve(__dirname, '..', '.static')));
 
 app.get('/notify/:string', (req: any, res: any) => {
