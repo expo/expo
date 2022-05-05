@@ -37,7 +37,7 @@
     "preset": "expo-module-scripts/ios"
   },
   "dependencies": {
-    "@expo/config-plugins": "^4.0.14",
+    "@expo/config-plugins": "^4.1.4",
     "@expo/image-utils": "^0.3.18",
     "@ide/backoff": "^1.0.0",
     "abort-controller": "^3.0.0",
