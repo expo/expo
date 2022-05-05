@@ -122,7 +122,7 @@ Now that we have set up our build profile and app signing, running a build for i
   '$ eas build --profile preview --platform all'
 ]} cmdCopy="eas build --profile preview --platform all" />
 
-> If you're using ad hoc provisioning but you haven't registered any devices yet, you'll be asked to register them now (or exit the current command and run `eas device:add` again). The build command will wait for the new device to register. Scan the QR code that is presented in the terminal and follow the instructions on that page to register your device. When you're done, return to the terminal and continue.
+> If you're using ad hoc provisioning but you haven't registered any devices yet, you'll be asked to register them now (or exit the current command and run `eas device:create` again). The build command will wait for the new device to register. Scan the QR code that is presented in the terminal and follow the instructions on that page to register your device. When you're done, return to the terminal and continue.
 
 When the build completes, you will be given a URL that you can share with your team to download and install the app.
 
