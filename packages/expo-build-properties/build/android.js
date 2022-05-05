@@ -42,6 +42,10 @@ exports.withAndroidBuildProperties = createBuildGradlePropsConfigPlugin([
         propName: 'android.packagingOptions.doNotStrip',
         propValueGetter: (config) => { var _a, _b, _c; return (_c = (_b = (_a = config.android) === null || _a === void 0 ? void 0 : _a.packagingOptions) === null || _b === void 0 ? void 0 : _b.doNotStrip) === null || _c === void 0 ? void 0 : _c.join(','); },
     },
+    {
+        propName: 'android.enableProguardInReleaseBuilds',
+        propValueGetter: (config) => { var _a, _b; return (_b = (_a = config.android) === null || _a === void 0 ? void 0 : _a.enableProguardInReleaseBuilds) === null || _b === void 0 ? void 0 : _b.toString(); },
+    },
 ], 'withAndroidBuildProperties');
 /**
  * Appends `props.android.extraProguardRules` content into `android/app/proguard-rules.pro`

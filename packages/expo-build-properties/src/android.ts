@@ -45,6 +45,10 @@ export const withAndroidBuildProperties = createBuildGradlePropsConfigPlugin<Plu
       propName: 'android.packagingOptions.doNotStrip',
       propValueGetter: (config) => config.android?.packagingOptions?.doNotStrip?.join(','),
     },
+    {
+      propName: 'android.enableProguardInReleaseBuilds',
+      propValueGetter: (config) => config.android?.enableProguardInReleaseBuilds?.toString(),
+    },
   ],
   'withAndroidBuildProperties'
 );
