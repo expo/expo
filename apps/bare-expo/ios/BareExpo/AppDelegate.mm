@@ -11,8 +11,11 @@
 #import <React/RCTAppSetupUtils.h>
 
 #import <ExpoModulesCore-Swift.h>
+
+#if DEBUG
 #import <EXDevLauncher/EXDevLauncherController.h>
 #import <EXDevLauncher-Swift.h>
+#endif
 
 #if RCT_NEW_ARCH_ENABLED
 #import <React/CoreModulesPlugins.h>
@@ -37,13 +40,15 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-  BOOL useDevClient = NO;
-
   RCTAppSetupPrepareApp(application);
+
+#if DEBUG
+  BOOL useDevClient = YES;
 
   if (!useDevClient) {
     ExpoDevLauncherReactDelegateHandler.enableAutoSetup = NO;
   }
+#endif
 
   RCTBridge *bridge = [self.reactDelegate createBridgeWithDelegate:self launchOptions:launchOptions];
 
