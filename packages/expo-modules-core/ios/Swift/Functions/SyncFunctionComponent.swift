@@ -55,7 +55,8 @@ internal final class SyncFunctionComponent<Args, ReturnType>: AnySyncFunctionCom
 
   func call(args: [Any]) throws -> Any {
     do {
-      let argumentsTuple = try Conversions.toTuple(args) as! Args
+      let arguments = try castArguments(args, toTypes: argumentTypes)
+      let argumentsTuple = try Conversions.toTuple(arguments) as! Args
       return try body(argumentsTuple)
     } catch let error as Exception {
       throw FunctionCallException(name).causedBy(error)
@@ -72,8 +73,7 @@ internal final class SyncFunctionComponent<Args, ReturnType>: AnySyncFunctionCom
         return NativeFunctionUnavailableException(name)
       }
       do {
-        let arguments = try castArguments(args, toTypes: self.argumentTypes)
-        return try self.call(args: arguments)
+        return try self.call(args: args)
       } catch {
         return error
       }

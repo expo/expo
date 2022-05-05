@@ -15,6 +15,11 @@ public class ObjectDefinition: AnyDefinition, JavaScriptObjectBuilder {
   let constants: [ConstantsDefinition]
 
   /**
+   A map of dynamic properties defined by the object.
+   */
+  let properties: [String: PropertyComponent]
+
+  /**
    Default initializer receiving children definitions from the result builder.
    */
   init(definitions: [AnyDefinition]) {
@@ -26,6 +31,12 @@ public class ObjectDefinition: AnyDefinition, JavaScriptObjectBuilder {
 
     self.constants = definitions
       .compactMap { $0 as? ConstantsDefinition }
+
+    self.properties = definitions
+      .compactMap { $0 as? PropertyComponent }
+      .reduce(into: [String: PropertyComponent]()) { dict, property in
+        dict[property.name] = property
+      }
   }
 
   /**
@@ -46,14 +57,29 @@ public class ObjectDefinition: AnyDefinition, JavaScriptObjectBuilder {
   }
 
   public func decorate(object: JavaScriptObject, inRuntime runtime: JavaScriptRuntime) {
-    // Decorate with constants
+    decorateWithConstants(runtime: runtime, object: object)
+    decorateWithFunctions(runtime: runtime, object: object)
+    decorateWithProperties(runtime: runtime, object: object)
+  }
+
+  // MARK: - Internals
+
+  internal func decorateWithConstants(runtime: JavaScriptRuntime, object: JavaScriptObject) {
     for (key, value) in getConstants() {
       object.setProperty(key, value: value)
     }
+  }
 
-    // Decorate with functions
+  internal func decorateWithFunctions(runtime: JavaScriptRuntime, object: JavaScriptObject) {
     for fn in functions.values {
       object.setProperty(fn.name, value: fn.build(inRuntime: runtime))
+    }
+  }
+
+  internal func decorateWithProperties(runtime: JavaScriptRuntime, object: JavaScriptObject) {
+    for property in properties.values {
+      let descriptor = property.buildDescriptor(inRuntime: runtime, withCaller: object)
+      object.defineProperty(property.name, descriptor: descriptor)
     }
   }
 }
