@@ -16,6 +16,7 @@ export const expoExport: Command = async (argv) => {
       '--dump-sourcemap': Boolean,
       '--max-workers': Number,
       '--output-dir': String,
+      '--platform': String,
       // Aliases
       '-h': '--help',
       // '-s': '--dump-sourcemap',
