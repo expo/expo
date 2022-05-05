@@ -13,6 +13,7 @@ on:
       - packages/expo-updates/**
       - packages/expo/android/**
       - packages/expo/ios/**
+      - templates/expo-template-bare-minimum/**
   push:
     branches: [main, 'sdk-*']
     paths:
@@ -25,6 +26,7 @@ on:
       - packages/expo-updates/**
       - packages/expo/android/**
       - packages/expo/ios/**
+      - templates/expo-template-bare-minimum/**
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
@@ -38,7 +40,7 @@ jobs:
       UPDATES_PORT: 4747
     strategy:
       matrix:
-        api-level: [ 29 ]
+        api-level: [31]
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v3
@@ -63,6 +65,9 @@ jobs:
       - name: 🧶 Yarn install
         if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
+      - name: Build expo-updates CLI
+        working-directory: packages/expo-updates
+        run: yarn build:cli
       - name: 🔧 Install Expo CLI
         run: yarn global add expo-cli
       - name: Init new expo app
@@ -99,6 +104,12 @@ jobs:
       - name: Setup app.config.json
         working-directory: ../updates-e2e
         run: echo "{\"name\":\"updates-e2e\",\"runtimeVersion\":\"1.0.0\",\"plugins\":[\"expo-updates\"],\"android\":{\"package\":\"dev.expo.updatese2e\"},\"ios\":{\"bundleIdentifier\":\"dev.expo.updatese2e\"},\"updates\":{\"url\":\"http://$UPDATES_HOST:$UPDATES_PORT/update\"}}" > app.config.json
+      - name: Generate code signing
+        working-directory: ../updates-e2e
+        run: yarn expo-updates codesigning:generate --key-output-directory keys --certificate-output-directory certs --certificate-validity-duration-years 1 --certificate-common-name "E2E Test App"
+      - name: Configure code signing
+        working-directory: ../updates-e2e
+        run: yarn expo-updates codesigning:configure --certificate-input-directory certs --key-input-directory keys
       - name: Pack latest bare-minimum template as tarball for expo prebuild
         working-directory: templates/expo-template-bare-minimum
         run: echo "$PWD" && npm pack --pack-destination ../../../updates-e2e/
@@ -113,7 +124,7 @@ jobs:
         run: sed -i -e "s/UPDATES_HOST/$UPDATES_HOST/" ./App.js && sed -i -e "s/UPDATES_PORT/$UPDATES_PORT/" ./App.js
       - name: Assemble release APK
         working-directory: ../updates-e2e/android
-        run: ./gradlew assembleRelease
+        run: ./gradlew assembleRelease --stacktrace
       - name: Copy APK to working directory
         run: cp -R ../updates-e2e/android/app/build/outputs/apk artifact
       - name: Upload test APK artifact
@@ -132,10 +143,15 @@ jobs:
         id: test-update-dist-path
         working-directory: ../updates-e2e/dist
         run: echo "::set-output name=dir::$(pwd)"
+      - name: Get test code signing private key path
+        id: test-code-signing-private-key-path
+        working-directory: ../updates-e2e/keys
+        run: echo "::set-output name=dir::$(pwd)/private-key.pem"
       - name: 🧪 Run tests
         env:
           TEST_APK_PATH: '${{ steps.test-apk-path.outputs.dir }}/app-release.apk'
           TEST_UPDATE_DIST_PATH: '${{ steps.test-update-dist-path.outputs.dir }}'
+          TEST_PRIVATE_KEY_PATH: '${{ steps.test-code-signing-private-key-path.outputs.dir }}'
         timeout-minutes: 30
         uses: reactivecircus/android-emulator-runner@v2
         with:
@@ -167,6 +183,9 @@ jobs:
       - name: 🧶 Yarn install
         if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
+      - name: Build expo-updates CLI
+        working-directory: packages/expo-updates
+        run: yarn build:cli
       - name: 🔧 Install Expo CLI
         run: yarn global add expo-cli
       - name: Init new expo app
@@ -203,6 +222,12 @@ jobs:
       - name: Setup app.config.json
         working-directory: ../updates-e2e
         run: echo "{\"name\":\"updates-e2e\",\"runtimeVersion\":\"1.0.0\",\"plugins\":[\"expo-updates\"],\"android\":{\"package\":\"dev.expo.updatese2e\"},\"ios\":{\"bundleIdentifier\":\"dev.expo.updatese2e\"},\"updates\":{\"url\":\"http://$UPDATES_HOST:$UPDATES_PORT/update\"}}" > app.config.json
+      - name: Generate code signing
+        working-directory: ../updates-e2e
+        run: yarn expo-updates codesigning:generate --key-output-directory keys --certificate-output-directory certs --certificate-validity-duration-years 1 --certificate-common-name "E2E Test App"
+      - name: Configure code signing
+        working-directory: ../updates-e2e
+        run: yarn expo-updates codesigning:configure --certificate-input-directory certs --key-input-directory keys
       - name: Pack latest bare-minimum template as tarball for expo prebuild
         working-directory: templates/expo-template-bare-minimum
         run: npm pack --pack-destination ../../../updates-e2e/
@@ -249,6 +274,10 @@ jobs:
         id: test-update-dist-path
         working-directory: ../updates-e2e/dist
         run: echo "::set-output name=dir::$(pwd)"
+      - name: Get test code signing private key path
+        id: test-code-signing-private-key-path
+        working-directory: ../updates-e2e/keys
+        run: echo "::set-output name=dir::$(pwd)/private-key.pem"
       - name: Start simulator
         run: |
           xcrun simctl list devices -j \
@@ -258,6 +287,7 @@ jobs:
         env:
           TEST_APP_PATH: '${{ steps.test-app-path.outputs.dir }}/updatese2e.app'
           TEST_UPDATE_DIST_PATH: '${{ steps.test-update-dist-path.outputs.dir }}'
+          TEST_PRIVATE_KEY_PATH: '${{ steps.test-code-signing-private-key-path.outputs.dir }}'
         timeout-minutes: 30
         working-directory: packages/expo-updates
         run: yarn test --config e2e/jest.config.ios.js

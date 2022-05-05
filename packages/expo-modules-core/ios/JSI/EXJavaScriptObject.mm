@@ -62,6 +62,21 @@
   _jsObjectPtr->setProperty(*[_runtime get], [name UTF8String], jsiValue);
 }
 
+- (void)defineProperty:(nonnull NSString *)name descriptor:(nonnull EXJavaScriptObject *)descriptor
+{
+  jsi::Runtime *runtime = [_runtime get];
+  jsi::Object global = runtime->global();
+  jsi::Object objectClass = global.getPropertyAsObject(*runtime, "Object");
+  jsi::Function definePropertyFunction = objectClass.getPropertyAsFunction(*runtime, "defineProperty");
+
+  // This call is basically the same as `Object.defineProperty(object, name, descriptor)` in JS
+  definePropertyFunction.callWithThis(*runtime, objectClass, {
+    jsi::Value(*runtime, *_jsObjectPtr.get()),
+    jsi::String::createFromUtf8(*runtime, [name UTF8String]),
+    std::move(*[descriptor get]),
+  });
+}
+
 - (void)defineProperty:(nonnull NSString *)name value:(nullable id)value options:(EXJavaScriptObjectPropertyDescriptor)options
 {
   jsi::Runtime *runtime = [_runtime get];
@@ -78,32 +93,6 @@
     jsi::String::createFromUtf8(*runtime, [name UTF8String]),
     std::move(descriptor),
   });
-}
-
-#pragma mark - Functions
-
-- (void)setAsyncFunction:(nonnull NSString *)name
-               argsCount:(NSInteger)argsCount
-                   block:(nonnull JSAsyncFunctionBlock)block
-{
-  if (!_runtime) {
-    NSLog(@"Cannot set '%@' async function when the EXJavaScript runtime is no longer available.", name);
-    return;
-  }
-  jsi::Function function = [_runtime createAsyncFunction:name argsCount:argsCount block:block];
-  _jsObjectPtr->setProperty(*[_runtime get], [name UTF8String], function);
-}
-
-- (void)setSyncFunction:(nonnull NSString *)name
-              argsCount:(NSInteger)argsCount
-                  block:(nonnull JSSyncFunctionBlock)block
-{
-  if (!_runtime) {
-    NSLog(@"Cannot set '%@' sync function when the EXJavaScript runtime is no longer available.", name);
-    return;
-  }
-  jsi::Function function = [_runtime createSyncFunction:name argsCount:argsCount block:block];
-  _jsObjectPtr->setProperty(*[_runtime get], [name UTF8String], function);
 }
 
 #pragma mark - Private helpers

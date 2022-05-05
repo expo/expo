@@ -18,7 +18,7 @@ module.exports = {
     emulator: {
       type: 'android.emulator',
       device: {
-        avdName: 'avd-29',
+        avdName: 'avd-31',
       },
     },
     simulator: {

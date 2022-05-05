@@ -8,7 +8,17 @@
 
 ### 🐛 Bug fixes
 
+- Fixed `Unable to deactivate keep awake. However, it probably is deactivated already` unhandled promise rejection warning when resuming apps on Android. ([#17319](https://github.com/expo/expo/pull/17319) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
+
+## 45.0.0-beta.9 — 2022-04-28
+
+_This version does not introduce any user-facing changes._
+
+## 45.0.0-beta.8 — 2022-04-27
+
+_This version does not introduce any user-facing changes._
 
 ## 45.0.0-beta.7 — 2022-04-27
 

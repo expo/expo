@@ -10,7 +10,7 @@ export function logDeviceArgument(id: string) {
 
 export function logProjectLogsLocation() {
   Log.log(
-    chalk`› Logs for your project will appear below.${
+    chalk`\n› Logs for your project will appear below.${
       env.CI ? '' : chalk.dim(` Press Ctrl+C to exit.`)
     }`
   );

@@ -219,7 +219,9 @@ class ExponentNotificationManager(private val context: Context) {
       putExtra(KernelConstants.NOTIFICATION_OBJECT_KEY, details)
     }
 
-    val pendingIntent = PendingIntent.getBroadcast(context, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+    // We're defaulting to the behaviour prior API 31 (mutable) even though Android recommends immutability
+    val mutableFlag = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) PendingIntent.FLAG_MUTABLE else 0
+    val pendingIntent = PendingIntent.getBroadcast(context, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT or mutableFlag)
     val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
     if (interval != null) {
       alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, time, interval, pendingIntent)
@@ -244,7 +246,9 @@ class ExponentNotificationManager(private val context: Context) {
       type = experienceKey.scopeKey
       action = id.toString()
     }
-    val pendingIntent = PendingIntent.getBroadcast(context, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+    // We're defaulting to the behaviour prior API 31 (mutable) even though Android recommends immutability
+    val mutableFlag = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) PendingIntent.FLAG_MUTABLE else 0
+    val pendingIntent = PendingIntent.getBroadcast(context, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT or mutableFlag)
     val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
     alarmManager.cancel(pendingIntent)
     cancel(experienceKey, id)

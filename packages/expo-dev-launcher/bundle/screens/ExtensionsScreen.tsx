@@ -37,12 +37,13 @@ export function ExtensionsScreen({ navigation }: ExtensionsScreenProps) {
   const { usesEASUpdates, appId } = useUpdatesConfig();
   const {
     isLoading,
+    error,
     data: branches,
     emptyBranches,
     incompatibleBranches,
     isRefreshing,
     refetch,
-  } = useBranchesForApp(appId);
+  } = useBranchesForApp(appId, isAuthenticated);
 
   const throttledRefreshing = useThrottle(isRefreshing, 1000);
 
@@ -55,8 +56,9 @@ export function ExtensionsScreen({ navigation }: ExtensionsScreenProps) {
   }
 
   const compatibleExtensions: string[] = [];
+  const hasError = error != null && !isLoading;
 
-  if (usesEASUpdates) {
+  if (usesEASUpdates && !hasError) {
     compatibleExtensions.push('EASUpdates');
   }
 
@@ -123,8 +125,8 @@ export function ExtensionsScreen({ navigation }: ExtensionsScreenProps) {
             </>
           )}
 
-          {usesEASUpdates && isAuthenticated && (
-            <>
+          {usesEASUpdates && isAuthenticated && !hasError && (
+            <View>
               <Spacer.Vertical size="medium" />
               <EASUpdatesPreview
                 navigation={navigation}
@@ -134,11 +136,11 @@ export function ExtensionsScreen({ navigation }: ExtensionsScreenProps) {
                 incompatibleBranches={incompatibleBranches}
               />
               <Spacer.Vertical size="medium" />
-            </>
+            </View>
           )}
 
           {usesEASUpdates && !isAuthenticated && (
-            <>
+            <View>
               <Spacer.Vertical size="medium" />
               <View mx="medium" padding="medium" bg="default" rounded="large">
                 <Text color="secondary" size="small">
@@ -176,25 +178,35 @@ export function ExtensionsScreen({ navigation }: ExtensionsScreenProps) {
                 </View>
               </View>
               <Spacer.Vertical size="medium" />
-            </>
+            </View>
           )}
 
           {compatibleExtensions.length > 0 && (
-            <>
-              <View px="xl">
-                <Text size="small" color="secondary">
-                  Extensions allow you to customize your development build with additional
-                  capabilities.{' '}
-                  <Text
-                    size="small"
-                    style={{ textDecorationLine: 'underline' }}
-                    onPress={() => Linking.openURL(`https://docs.expo.dev/development/extensions/`)}
-                    accessibilityRole="link">
-                    Learn more.
-                  </Text>
+            <View px="xl">
+              <Text size="small" color="secondary">
+                Extensions allow you to customize your development build with additional
+                capabilities.{' '}
+                <Text
+                  size="small"
+                  style={{ textDecorationLine: 'underline' }}
+                  onPress={() => Linking.openURL(`https://docs.expo.dev/development/extensions/`)}
+                  accessibilityRole="link">
+                  Learn more.
                 </Text>
-              </View>
-            </>
+              </Text>
+            </View>
+          )}
+
+          {isLoading && isAuthenticated && (
+            <View
+              mt="medium"
+              inset="full"
+              align="centered"
+              mx="medium"
+              rounded="large"
+              bg="default">
+              <ActivityIndicator />
+            </View>
           )}
         </View>
       </ScrollView>
@@ -220,14 +232,6 @@ function EASUpdatesPreview({
 
   function onSeeAllBranchesPress() {
     navigation.navigate('Branches');
-  }
-
-  if (isLoading) {
-    return (
-      <View height="44" align="centered" mx="medium" rounded="large" bg="default">
-        <ActivityIndicator />
-      </View>
-    );
   }
 
   const branchCount = branches.length + emptyBranches.length;

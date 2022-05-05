@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add `ios.debugOnly` to module config. ([#17331](https://github.com/expo/expo/pull/17331) by [@lukmccall](https://github.com/lukmccall))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

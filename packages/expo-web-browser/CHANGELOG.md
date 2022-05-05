@@ -13,6 +13,7 @@
 ### 💡 Others
 
 - Migrated Expo modules definitions to the new naming convention. ([#17193](https://github.com/expo/expo/pull/17193) by [@tsapeta](https://github.com/tsapeta))
+- Rewritten Android code to Kotlin. ([#17195](https://github.com/expo/expo/pull/17195) by [@barthap](https://github.com/barthap))
 
 ## 10.2.0 — 2022-04-18
 

@@ -6,12 +6,17 @@
 
 ### 🎉 New features
 
+- Introduce dynamic properties in the Sweet API on iOS. ([#17318](https://github.com/expo/expo/pull/17318) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🐛 Bug fixes
+
+- Fix modules have not been deallocated during the application reload on iOS. ([#17285](https://github.com/expo/expo/pull/17285) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 
 - Migrated Expo modules definitions to the new naming convention. ([#17193](https://github.com/expo/expo/pull/17193) by [@tsapeta](https://github.com/tsapeta))
 - Refactored Expo modules registration and the `AppContext` on iOS. ([#17225](https://github.com/expo/expo/pull/17225) by [@tsapeta](https://github.com/tsapeta))
+- Split the implementation of async and sync functions on iOS. ([#17188](https://github.com/expo/expo/pull/17188) by [@tsapeta](https://github.com/tsapeta))
 
 ## 0.9.0 — 2022-04-21
 

@@ -8,7 +8,11 @@
 
 ### 🐛 Bug fixes
 
+- Improved support of nvm sourcing in iOS shell scripts. ([#17109](https://github.com/expo/expo/pull/17109) by [@liamronancb](https://github.com/liamronancb))
+
 ### 💡 Others
+
+- (cli) Fix help command parsing. ([#17293](https://github.com/expo/expo/pull/17293) by [@wschurman](https://github.com/wschurman))
 
 ## 0.13.0 — 2022-04-21
 

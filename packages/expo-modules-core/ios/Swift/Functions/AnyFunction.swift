@@ -1,18 +1,16 @@
-import Dispatch
+/**
+ An alias to `Result<Any, Exception>` which can be passed to the function callback.
+ */
+public typealias FunctionCallResult = Result<Any, Exception>
 
 /**
  A protocol for any type-erased function.
  */
-public protocol AnyFunction: AnyDefinition {
+public protocol AnyFunction: AnyDefinition, JavaScriptObjectBuilder {
   /**
    Name of the function. JavaScript refers to the function by this name.
    */
   var name: String { get }
-
-  /**
-   Bool value indicating whether the function takes promise as the last argument.
-   */
-  var takesPromise: Bool { get }
 
   /**
    An array of argument types that the function takes. If the last type is `Promise`, it's not included.
@@ -25,33 +23,28 @@ public protocol AnyFunction: AnyDefinition {
   var argumentsCount: Int { get }
 
   /**
-   Dispatch queue on which each function's call is run.
+   Calls the function with given arguments and returns a result through the callback block.
+   - Parameters:
+     - args: An array of arguments to pass to the function. They could be Swift primitives
+      when invoked through the bridge and in unit tests or `JavaScriptValue`s
+      when the function is called through the JSI
+     - callback: A callback that receives a result of the function execution.
    */
-  var queue: DispatchQueue? { get }
+  func call(args: [Any], callback: @escaping (FunctionCallResult) -> ())
+}
 
+extension AnyFunction {
   /**
-   Whether the function needs to be called asynchronously from JavaScript.
+   Calls the function just like `call(args:callback:)` but with an empty callback.
+   Might be useful when you only want to call the function but don't care about the result.
    */
-  var isAsync: Bool { get }
+  func call(args: [Any]) {
+    call(args: args, callback: { _ in })
+  }
+}
 
-  /**
-   Calls the function on given module with arguments and a promise.
-   */
-  func call(args: [Any], promise: Promise)
-
-  /**
-   Synchronously calls the function with given arguments. If the function takes a promise,
-   the current thread will be locked until the promise rejects or resolves with the return value.
-   */
-  func callSync(args: [Any]) -> Any
-
-  /**
-   Specifies on which queue the function should run.
-   */
-  func runOnQueue(_ queue: DispatchQueue?) -> Self
-
-  /**
-   Makes the JavaScript function synchronous.
-   */
-  func runSynchronously() -> Self
+internal class FunctionCallException: GenericException<String> {
+  override var reason: String {
+    "Calling the '\(param)' function has failed"
+  }
 }

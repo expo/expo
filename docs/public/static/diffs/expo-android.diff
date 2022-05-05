@@ -2,25 +2,21 @@ diff --git a/android/app/src/main/java/com/myapp/MainActivity.java b/android/app
 index 557797a..2ccae2e 100644
 --- a/android/app/src/main/java/com/myapp/MainActivity.java
 +++ b/android/app/src/main/java/com/myapp/MainActivity.java
-@@ -1,4 +1,6 @@
+@@ -1,4 +1,5 @@
  package com.myapp;
 +import expo.modules.ReactActivityDelegateWrapper;
-+import com.facebook.react.ReactActivityDelegate;
  
  import com.facebook.react.ReactActivity;
- 
-@@ -12,4 +14,11 @@ public class MainActivity extends ReactActivity {
-   protected String getMainComponentName() {
-     return "Example";
+ import com.facebook.react.ReactActivityDelegate;
+@@ -21,7 +22,7 @@ public class MainActivity extends ReactActivity {
+    */
+   @Override
+   protected ReactActivityDelegate createReactActivityDelegate() {
+-    return new MainActivityDelegate(this, getMainComponentName());
++    return new ReactActivityDelegateWrapper(this, new MainActivityDelegate(this, getMainComponentName()));
    }
-+
-+  @Override
-+  protected ReactActivityDelegate createReactActivityDelegate() {
-+    return new ReactActivityDelegateWrapper(this,
-+      new ReactActivityDelegate(this, getMainComponentName())
-+    );
-+  }
- }
+ 
+   public static class MainActivityDelegate extends ReactActivityDelegate {
 diff --git a/android/app/src/main/java/com/myapp/MainApplication.java b/android/app/src/main/java/com/myapp/MainApplication.java
 index fd8ec88..73cbea8 100644
 --- a/android/app/src/main/java/com/myapp/MainApplication.java
@@ -33,7 +29,7 @@ index fd8ec88..73cbea8 100644
  
  import android.app.Application;
  import android.content.Context;
-@@ -14,7 +17,7 @@ import java.util.List;
+@@ -16,7 +19,7 @@ import java.util.List;
  public class MainApplication extends Application implements ReactApplication {
  
    private final ReactNativeHost mReactNativeHost =
@@ -42,24 +38,28 @@ index fd8ec88..73cbea8 100644
          @Override
          public boolean getUseDeveloperSupport() {
            return BuildConfig.DEBUG;
-@@ -33,7 +36,7 @@ public class MainApplication extends Application implements ReactApplication {
+@@ -35,10 +38,10 @@ public class MainApplication extends Application implements ReactApplication {
          protected String getJSMainModuleName() {
            return "index";
          }
 -      };
 +      });
  
+   private final ReactNativeHost mNewArchitectureNativeHost =
+-      new MainApplicationReactNativeHost(this);
++      new ReactNativeHostWrapper(this, new MainApplicationReactNativeHost(this));
+ 
    @Override
    public ReactNativeHost getReactNativeHost() {
-@@ -45,6 +48,7 @@ public class MainApplication extends Application implements ReactApplication {
-     super.onCreate();
+@@ -56,6 +59,7 @@ public class MainApplication extends Application implements ReactApplication {
+     ReactFeatureFlags.useTurboModules = BuildConfig.IS_NEW_ARCHITECTURE_ENABLED;
      SoLoader.init(this, /* native exopackage */ false);
      initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
 +    ApplicationLifecycleDispatcher.onApplicationCreate(this);
    }
  
    /**
-@@ -77,4 +81,10 @@ public class MainApplication extends Application implements ReactApplication {
+@@ -88,4 +92,10 @@ public class MainApplication extends Application implements ReactApplication {
        }
      }
    }
@@ -74,10 +74,10 @@ diff --git a/android/settings.gradle b/android/settings.gradle
 index 47725a0..e787ab1 100644
 --- a/android/settings.gradle
 +++ b/android/settings.gradle
-@@ -1,3 +1,6 @@
- rootProject.name = 'Example'
- apply from: file("../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesSettingsGradle(settings)
- include ':app'
+@@ -7,3 +7,6 @@ if (settings.hasProperty("newArchEnabled") && settings.newArchEnabled == "true")
+     include(":ReactAndroid")
+     project(":ReactAndroid").projectDir = file('../node_modules/react-native/ReactAndroid')
+ }
 +
 +apply from: new File(["node", "--print", "require.resolve('expo/package.json')"].execute(null, rootDir).text.trim(), "../scripts/autolinking.gradle")
 +useExpoModules()

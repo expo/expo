@@ -9,6 +9,7 @@ import { FlatList } from '../components/FlatList';
 import { getRecentRuntime } from '../functions/getRecentRuntime';
 import { useOnUpdatePress } from '../hooks/useOnUpdatePress';
 import { useUpdatesConfig } from '../providers/UpdatesConfigProvider';
+import { useUser } from '../providers/UserContextProvider';
 import { Branch, useBranchesForApp } from '../queries/useBranchesForApp';
 import { ExtensionsStackParamList } from './ExtensionsStack';
 
@@ -18,6 +19,7 @@ type BranchesScreenProps = {
 
 export function BranchesScreen({ navigation }: BranchesScreenProps) {
   const { appId } = useUpdatesConfig();
+  const { isAuthenticated } = useUser();
   const {
     data: branches,
     emptyBranches,
@@ -28,7 +30,7 @@ export function BranchesScreen({ navigation }: BranchesScreenProps) {
     fetchNextPage,
     hasNextPage,
     refetch,
-  } = useBranchesForApp(appId);
+  } = useBranchesForApp(appId, isAuthenticated);
 
   const { loadingUpdateId, onUpdatePress } = useOnUpdatePress();
 

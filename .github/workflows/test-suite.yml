@@ -140,7 +140,7 @@ jobs:
       GRADLE_OPTS: -Dorg.gradle.jvmargs=-Xmx4096m -XX:MaxMetaspaceSize=2048m
     strategy:
       matrix:
-        api-level: [29]
+        api-level: [31]
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v3

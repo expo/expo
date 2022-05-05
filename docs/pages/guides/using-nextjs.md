@@ -7,7 +7,7 @@ sidebar_title: Using Next.js
 
 [Next.js][nextjs] is a React framework that provides simple page-based routing as well as server-side rendering. To use Next.js with Expo for web we recommend that you use a library called [`@expo/next-adapter`][next-adapter] to handle the configuration and integration of the tools.
 
-Using Expo with Next.js means you can share all of your existing components and APIs across your mobile and web. Next.js has it's own Webpack config so **you'll need to start your web projects with the `next-cli` and not with `expo start:web`.**
+Using Expo with Next.js means you can share all of your existing components and APIs across your mobile and web. Next.js has its own Webpack config so **you'll need to start your web projects with the `next-cli` and not with `expo start:web`.**
 
 > 💡 Next.js can only be used with Expo for web, this doesn't provide Server-Side Rendering (SSR) for native apps.
 
@@ -172,7 +172,7 @@ By default Next.js won't load your statically imported images (images that you i
 - Install the plugin - `yarn add next-images`
   - [`next-images`][next-images] injects a Webpack loader to handle images.
   - [`next-optimized-images`][next-optimized-images] is another good solution that you could check out.
-- Wrap your Next.js configuration object with the the image method and the Expo method in your **next.config.js**:
+- Wrap your Next.js configuration object with the image method and the Expo method in your **next.config.js**:
 
   ```js
   const { withExpo } = require('@expo/next-adapter');

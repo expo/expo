@@ -34,8 +34,13 @@ class DevMenuAppInstance: DevMenuBaseAppInstance, RCTBridgeDelegate {
     // It will be EXDevMenuApp.ios.js in our case.
     // To let Hermes aware target bundle, we try to reload here as a workaround solution.
     // See https://github.com/facebook/react-native/blob/ec614c16b331bf3f793fda5780fa273d181a8492/ReactCommon/hermes/inspector/Inspector.cpp#L291
-    if let appBridge = manager.currentBridge {
-      appBridge.requestReload()
+    if let appBridge = manager.currentBridge,
+       let batchedBridge = appBridge.batched {
+      if (batchedBridge.bridgeDescription?.contains("Hermes") == true) {
+        batchedBridge.dispatchBlock({
+          appBridge.requestReload()
+        }, queue: RCTJSThread)
+      }
     }
   }
 
@@ -65,6 +70,7 @@ class DevMenuAppInstance: DevMenuBaseAppInstance, RCTBridgeDelegate {
     var modules: [RCTBridgeModule] = [DevMenuInternalModule(manager: manager)]
     modules.append(contentsOf: DevMenuVendoredModulesUtils.vendoredModules())
     modules.append(DevMenuLoadingView.init())
+    modules.append(DevMenuRCTDevSettings.init())
     return modules
   }
 

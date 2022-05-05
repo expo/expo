@@ -4,6 +4,8 @@ import { spawn } from 'child_process';
 import os from 'os';
 
 import * as Log from '../../../log';
+import { AbortCommandError } from '../../../utils/errors';
+import { installExitHooks } from '../../../utils/exit';
 import { Device, getAttachedDevicesAsync, isBootAnimationCompleteAsync } from './adb';
 
 export const EMULATOR_MAX_WAIT_TIMEOUT = 60 * 1000 * 3;
@@ -95,12 +97,19 @@ export async function startDeviceAsync(
     const stopWaiting = () => {
       clearTimeout(maxTimer);
       clearInterval(waitTimer);
+      removeExitHook();
     };
 
     const stopWaitingAndReject = (message: string) => {
       stopWaiting();
       reject(new Error(message));
     };
+
+    const removeExitHook = installExitHooks((signal) => {
+      stopWaiting();
+      emulatorProcess.kill(signal);
+      reject(new AbortCommandError());
+    });
 
     emulatorProcess.on('error', ({ message }) => stopWaitingAndReject(message));
 

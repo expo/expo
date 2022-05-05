@@ -2,6 +2,7 @@ import spawnAsync from '@expo/spawn-async';
 import { execFileSync } from 'child_process';
 import { vol } from 'memfs';
 
+import { asMock } from '../../../../__tests__/asMock';
 import * as Log from '../../../../log';
 import { AbortCommandError } from '../../../../utils/errors';
 import { installExitHooks } from '../../../../utils/exit';
@@ -12,9 +13,6 @@ jest.mock('../../../../log');
 jest.mock('../../../../utils/exit', () => ({
   installExitHooks: jest.fn(),
 }));
-
-const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
-  fn as jest.MockedFunction<T>;
 
 const env = process.env;
 

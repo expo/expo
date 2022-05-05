@@ -29,7 +29,7 @@ public final class AppContext: NSObject {
    The legacy module registry with modules written in the old-fashioned way.
    */
   @objc
-  public var legacyModuleRegistry: EXModuleRegistry?
+  public weak var legacyModuleRegistry: EXModuleRegistry?
 
   /**
    React bridge of the context's app. Can be `nil` when the bridge
@@ -231,10 +231,11 @@ public final class AppContext: NSObject {
   ) {
     moduleRegistry
       .get(moduleHolderForName: moduleName)?
-      .call(function: functionName, args: args) { value, error in
-        if let error = error {
+      .call(function: functionName, args: args) { result in
+        switch result {
+        case .failure(let error):
           reject(error.code, error.description, error)
-        } else {
+        case .success(let value):
           resolve(value)
         }
       }

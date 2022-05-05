@@ -1,4 +1,5 @@
 import format from 'date-fns/format';
+import { Text } from 'expo-dev-client-components';
 import { gql } from 'graphql-request';
 import * as React from 'react';
 import { Platform } from 'react-native';
@@ -78,7 +79,6 @@ function getBranchesAsync({
 
     return apiClient.request(query, variables).then((response) => {
       const updateBranches = response.app.byId.updateBranches;
-
       updateBranches.forEach((updateBranch) => {
         const branch: Branch = {
           id: updateBranch.id,
@@ -122,11 +122,11 @@ function getBranchesAsync({
   };
 }
 
-export function useBranchesForApp(appId: string) {
+export function useBranchesForApp(appId: string, isAuthenticated: boolean) {
   const { runtimeVersion } = useBuildInfo();
   const toastStack = useToastStack();
   const { queryOptions } = useQueryOptions();
-  const isEnabled = appId != null;
+  const isEnabled = appId != null && isAuthenticated;
 
   const query = useInfiniteQuery(
     ['branches', appId, queryOptions.pageSize],
@@ -139,9 +139,9 @@ export function useBranchesForApp(appId: string) {
       });
     },
     {
-      retry: isEnabled,
+      retry: 3,
       refetchOnMount: false,
-      enabled: isEnabled,
+      enabled: !!isEnabled,
       getNextPageParam: (lastPage, pages) => {
         if (lastPage.branches.length < queryOptions.pageSize) {
           return undefined;
@@ -153,12 +153,25 @@ export function useBranchesForApp(appId: string) {
   );
 
   React.useEffect(() => {
-    if (query.error) {
-      toastStack.push(() => (
-        <Toasts.Error>Something went wrong trying to fetch branches for this app</Toasts.Error>
-      ));
+    if (query.error && isAuthenticated) {
+      const doesNotHaveErrorShowing =
+        toastStack.getItems().filter((i) => i.status === 'pushing' || i.status === 'settled')
+          .length === 0;
+
+      // @ts-ignore
+      const errorMessage = query.error.message;
+
+      if (doesNotHaveErrorShowing) {
+        toastStack.push(() => (
+          <Toasts.Error>
+            <Text color="error" size="small">
+              {errorMessage || `Something went wrong trying to fetch branches for this app`}
+            </Text>
+          </Toasts.Error>
+        ));
+      }
     }
-  }, [query.error]);
+  }, [query.error, isAuthenticated]);
 
   const branches =
     query.data?.pages
