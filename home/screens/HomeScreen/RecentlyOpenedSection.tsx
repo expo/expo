@@ -33,6 +33,11 @@ export function RecentlyOpenedSection({ recentHistory }: Props) {
               onPress={() => {
                 Linking.openURL(project.url);
               }}
+              releaseChannel={
+                project.manifest && 'releaseChannel' in project.manifest
+                  ? project.manifest.releaseChannel
+                  : undefined
+              }
             />
             {i < recentHistory.count() - 1 && <Divider style={{ height: 1 }} />}
           </Fragment>
