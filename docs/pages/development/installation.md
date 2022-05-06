@@ -32,7 +32,7 @@ Add the `expo-dev-client` library to your package.json.
 
 ### 🍏 iOS
 
-<Tabs tabs={["SDK 45", "SDK below 45"]}>
+<Tabs tabs={["SDK 45+", "SDK below 45"]}>
 
 <Tab >
 
@@ -76,15 +76,25 @@ See the [uri-scheme package](https://www.npmjs.com/package/uri-scheme) for more 
 
 ### 🍏 iOS
 
-Make the following changes to allow the `expo-dev-client` library to control project initialization in the **DEBUG** mode.
-
-<Tabs tabs={["With Expo modules", "With unimodules"]}>
+<Tabs tabs={["SDK 45+/expo-modules-core@0.9.1+", "With Expo modules", "With unimodules"]}>
 
 <Tab >
+
+No additional changes are needed to configure the package on iOS. 🎉
+
+</Tab >
+
+<Tab >
+
+Make the following changes to allow the `expo-dev-client` library to control project initialization in the **DEBUG** mode.
+
 <ConfigurationDiff source="/static/diffs/client/app-delegate-expo-modules.diff" />
 </Tab>
 
 <Tab >
+
+Make the following changes to allow the `expo-dev-client` library to control project initialization in the **DEBUG** mode.
+
 <ConfigurationDiff source="/static/diffs/client/app-delegate.diff" />
 </Tab>
 
@@ -92,15 +102,25 @@ Make the following changes to allow the `expo-dev-client` library to control pro
 
 ### 🤖 Android
 
-Make the following changes to allow the `expo-dev-client` library to control project initialization in the **DEBUG** mode.
-
-<Tabs tabs={["With Expo modules", "With unimodules"]}>
+<Tabs tabs={["SDK 45+/expo-modules-core@0.9.1+", "With Expo modules", "With unimodules"]}>
 
 <Tab >
+
+No additional changes are needed to configure the package on Android. 🎉
+
+</Tab >
+
+<Tab >
+
+Make the following changes to allow the `expo-dev-client` library to control project initialization in the **DEBUG** mode.
+
 <ConfigurationDiff source="/static/diffs/client/main-activity-and-application-expo-modules.diff" />
 </Tab>
 
 <Tab >
+
+Make the following changes to allow the `expo-dev-client` library to control project initialization in the **DEBUG** mode.
+
 <ConfigurationDiff source="/static/diffs/client/main-activity-and-application.diff" />
 </Tab>
 
