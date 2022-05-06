@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix debug-only modules weren't installed if the `DEBUG` flag wasn't present in `OTHER_SWIFT_FLAGS`. ([#17383](https://github.com/expo/expo/pull/17383) by [@lukmccall](https://github.com/lukmccall))
+
 ### 💡 Others
 
 ## 0.7.1 — 2022-05-05
