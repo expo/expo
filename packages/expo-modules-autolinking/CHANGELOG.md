@@ -11,6 +11,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix debug only modules weren't installed if the `DEBUG` flag wasn't present in `OTHER_SWIFT_FLAGS`.
+
 ### 💡 Others
 
 ## 0.7.0 — 2022-04-18
