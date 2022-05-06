@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Setting `EXPO_CONFIGURATION_DEBUG` or `EXPO_CONFIGURATION_RELEASE` Swift flags on project targets. ([#17378](https://github.com/expo/expo/pull/17378) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
