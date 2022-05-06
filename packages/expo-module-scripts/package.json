@@ -41,7 +41,7 @@
     "jest-expo-enzyme": "^1.2.3",
     "jest-watch-typeahead": "0.6.4",
     "ts-jest": "~26.3.0",
-    "typescript": "^4.3.5"
+    "typescript": "^4.6.4"
   },
   "gitHead": "4e13b3cb88d9205f14bee7764038ab2dd9ef1fbd"
 }
