@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix dev menu will reload the application when open for the first time while using Hermes.
+- Fix dev menu will reload the application when open for the first time while using Hermes. ([#17377](https://github.com/expo/expo/pull/17377) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 
