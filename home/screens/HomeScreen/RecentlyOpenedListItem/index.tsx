@@ -61,6 +61,7 @@ export function RecentlyOpenedListItem({
                 paddingHorizontal: 8,
                 flexDirection: 'row',
                 alignItems: 'center',
+                alignSelf: 'flex-start',
               }}>
               <Text
                 type="InterRegular"
