@@ -32,16 +32,19 @@ Add the `expo-dev-client` library to your package.json.
 
 ### 🍏 iOS
 
-<Tabs tabs={["SDK 45+", "SDK below 45"]}>
+<Tabs tabs={["SDK 45", "SDK below 45"]}>
 
 <Tab >
+
 Make sure that your project is configured to deploy on an iOS version _above 10_.
 To do that, open Xcode and go to General > Deployment Info, and select an iOS version of at least 11.0.
 
 <img src="/static/images/client/check_ios_version.png" style={{maxWidth: "100%" }}/>
+
 </Tab >
 
 <Tab >
+
 Add the following lines to your **Podfile**:
 
 <ConfigurationDiff source="/static/diffs/client/podfile.diff" />
@@ -54,6 +57,7 @@ Also, make sure that your project is configured to deploy on an iOS version _abo
 To do that, open Xcode and go to General > Deployment Info, and select an iOS version of at least 11.0.
 
 <img src="/static/images/client/check_ios_version.png" style={{maxWidth: "100%" }}/>
+
 </Tab >
 
 </Tabs >
