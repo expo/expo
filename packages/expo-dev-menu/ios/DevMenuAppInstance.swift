@@ -17,7 +17,6 @@ class DevMenuAppInstance: DevMenuBaseAppInstance, RCTBridgeDelegate {
     super.init()
 
     self.bridge = DevMenuRCTBridge.init(delegate: self, launchOptions: nil)
-    fixChromeDevTools()
   }
 
   init(manager: DevMenuManager, bridge: RCTBridge) {
@@ -26,22 +25,6 @@ class DevMenuAppInstance: DevMenuBaseAppInstance, RCTBridgeDelegate {
     super.init()
 
     self.bridge = bridge
-    fixChromeDevTools()
-  }
-
-  private func fixChromeDevTools() {
-    // Hermes inspector will use latest executed script for Chrome DevTools Protocol.
-    // It will be EXDevMenuApp.ios.js in our case.
-    // To let Hermes aware target bundle, we try to reload here as a workaround solution.
-    // See https://github.com/facebook/react-native/blob/ec614c16b331bf3f793fda5780fa273d181a8492/ReactCommon/hermes/inspector/Inspector.cpp#L291
-    if let appBridge = manager.currentBridge,
-       let batchedBridge = appBridge.batched {
-      if (batchedBridge.bridgeDescription?.contains("Hermes") == true) {
-        batchedBridge.dispatchBlock({
-          appBridge.requestReload()
-        }, queue: RCTJSThread)
-      }
-    }
   }
 
   /**
