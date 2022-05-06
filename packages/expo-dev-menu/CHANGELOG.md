@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix dev menu will reload the application when open for the first time while using Hermes.
+
 ### 💡 Others
 
 ## 0.10.5 — 2022-05-05
