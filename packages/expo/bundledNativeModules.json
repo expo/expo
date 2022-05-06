@@ -36,7 +36,7 @@
   "expo-constants": "~13.1.0",
   "expo-contacts": "~10.2.0",
   "expo-crypto": "~10.2.0",
-  "expo-dev-client": "~0.9.4",
+  "expo-dev-client": "~0.9.5",
   "expo-device": "~4.2.0",
   "expo-document-picker": "~10.2.1",
   "expo-error-recovery": "~3.1.0",
