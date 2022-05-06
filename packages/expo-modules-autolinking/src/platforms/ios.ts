@@ -158,7 +158,7 @@ ${generateReactDelegateHandlers(reactDelegateHandlerModules, debugOnlyReactDeleg
 }
 
 function generateCommonImportList(swiftModules: string[]): string {
-  return swiftModules.map((moduleName) => `import ${moduleName}\n`).join('');
+  return swiftModules.map((moduleName) => `import ${moduleName}`).join('\n');
 }
 
 function generateDebugOnlyImportList(swiftModules: string[]): string {
@@ -166,17 +166,22 @@ function generateDebugOnlyImportList(swiftModules: string[]): string {
     return '';
   }
 
-  return `#if DEBUG\n${swiftModules
-    .map((moduleName) => `import ${moduleName}\n`)
-    .join('')}#endif\n`;
+  return (
+    wrapInDebugConfigurationCheck(
+      0,
+      swiftModules.map((moduleName) => `import ${moduleName}`).join('\n')
+    ) + '\n'
+  );
 }
 
 function generateModuleClasses(classNames: string[], debugOnlyClassName: string[]): string {
   const commonClassNames = formatArrayOfClassNames(classNames);
   if (debugOnlyClassName.length > 0) {
-    return `#if DEBUG\n${indent.repeat(2)}return ${formatArrayOfClassNames(
-      classNames.concat(debugOnlyClassName)
-    )}\n#else\n${indent.repeat(2)}return ${commonClassNames}\n#endif`;
+    return wrapInDebugConfigurationCheck(
+      2,
+      `return ${formatArrayOfClassNames(classNames.concat(debugOnlyClassName))}`,
+      `return ${commonClassNames}`
+    );
   } else {
     return `${indent.repeat(2)}return ${commonClassNames}`;
   }
@@ -196,9 +201,11 @@ function generateReactDelegateHandlers(
 ): string {
   const commonModules = formatArrayOfReactDelegateHandler(module);
   if (debugOnlyModules.length > 0) {
-    return `#if DEBUG\n${indent.repeat(2)}return ${formatArrayOfReactDelegateHandler(
-      module.concat(debugOnlyModules)
-    )}\n#else\n${indent.repeat(2)}return ${commonModules}\n#endif`;
+    return wrapInDebugConfigurationCheck(
+      2,
+      `return ${formatArrayOfReactDelegateHandler(module.concat(debugOnlyModules))}`,
+      `return ${commonModules}`
+    );
   } else {
     return `${indent.repeat(2)}return ${commonModules}`;
   }
@@ -216,4 +223,22 @@ export function formatArrayOfReactDelegateHandler(modules: ModuleDescriptorIos[]
   }
   return `[${values.map((value) => `\n${indent.repeat(3)}${value}`).join(',')}
 ${indent.repeat(2)}]`;
+}
+
+function wrapInDebugConfigurationCheck(
+  indentationLevel: number,
+  debugBlock: string,
+  releaseBlock: string | null = null
+) {
+  if (releaseBlock) {
+    return `${indent.repeat(indentationLevel)}#if EXPO_CONFIGURATION_DEBUG\n${indent.repeat(
+      indentationLevel
+    )}${debugBlock}\n${indent.repeat(indentationLevel)}#else\n${indent.repeat(
+      indentationLevel
+    )}${releaseBlock}\n${indent.repeat(indentationLevel)}#endif`;
+  }
+
+  return `${indent.repeat(indentationLevel)}#if EXPO_CONFIGURATION_DEBUG\n${indent.repeat(
+    indentationLevel
+  )}${debugBlock}\n${indent.repeat(indentationLevel)}#endif`;
 }

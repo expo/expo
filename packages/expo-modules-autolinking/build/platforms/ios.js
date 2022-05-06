@@ -115,20 +115,18 @@ ${generateReactDelegateHandlers(reactDelegateHandlerModules, debugOnlyReactDeleg
 `;
 }
 function generateCommonImportList(swiftModules) {
-    return swiftModules.map((moduleName) => `import ${moduleName}\n`).join('');
+    return swiftModules.map((moduleName) => `import ${moduleName}`).join('\n');
 }
 function generateDebugOnlyImportList(swiftModules) {
     if (!swiftModules.length) {
         return '';
     }
-    return `#if DEBUG\n${swiftModules
-        .map((moduleName) => `import ${moduleName}\n`)
-        .join('')}#endif\n`;
+    return (wrapInDebugConfigurationCheck(0, swiftModules.map((moduleName) => `import ${moduleName}`).join('\n')) + '\n');
 }
 function generateModuleClasses(classNames, debugOnlyClassName) {
     const commonClassNames = formatArrayOfClassNames(classNames);
     if (debugOnlyClassName.length > 0) {
-        return `#if DEBUG\n${indent.repeat(2)}return ${formatArrayOfClassNames(classNames.concat(debugOnlyClassName))}\n#else\n${indent.repeat(2)}return ${commonClassNames}\n#endif`;
+        return wrapInDebugConfigurationCheck(2, `return ${formatArrayOfClassNames(classNames.concat(debugOnlyClassName))}`, `return ${commonClassNames}`);
     }
     else {
         return `${indent.repeat(2)}return ${commonClassNames}`;
@@ -144,7 +142,7 @@ ${indent.repeat(2)}]`;
 function generateReactDelegateHandlers(module, debugOnlyModules) {
     const commonModules = formatArrayOfReactDelegateHandler(module);
     if (debugOnlyModules.length > 0) {
-        return `#if DEBUG\n${indent.repeat(2)}return ${formatArrayOfReactDelegateHandler(module.concat(debugOnlyModules))}\n#else\n${indent.repeat(2)}return ${commonModules}\n#endif`;
+        return wrapInDebugConfigurationCheck(2, `return ${formatArrayOfReactDelegateHandler(module.concat(debugOnlyModules))}`, `return ${commonModules}`);
     }
     else {
         return `${indent.repeat(2)}return ${commonModules}`;
@@ -164,4 +162,10 @@ function formatArrayOfReactDelegateHandler(modules) {
 ${indent.repeat(2)}]`;
 }
 exports.formatArrayOfReactDelegateHandler = formatArrayOfReactDelegateHandler;
+function wrapInDebugConfigurationCheck(indentationLevel, debugBlock, releaseBlock = null) {
+    if (releaseBlock) {
+        return `${indent.repeat(indentationLevel)}#if EXPO_CONFIGURATION_DEBUG\n${indent.repeat(indentationLevel)}${debugBlock}\n${indent.repeat(indentationLevel)}#else\n${indent.repeat(indentationLevel)}${releaseBlock}\n${indent.repeat(indentationLevel)}#endif`;
+    }
+    return `${indent.repeat(indentationLevel)}#if EXPO_CONFIGURATION_DEBUG\n${indent.repeat(indentationLevel)}${debugBlock}\n${indent.repeat(indentationLevel)}#endif`;
+}
 //# sourceMappingURL=ios.js.map
