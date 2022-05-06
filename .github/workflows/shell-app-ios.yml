@@ -26,8 +26,8 @@ jobs:
         uses: actions/checkout@v3
         with:
           submodules: true
-      - name: 🔨 Switch to Xcode 13.0
-        run: sudo xcode-select --switch /Applications/Xcode_13.0.app
+      - name: 🔨 Switch to Xcode 13.2.1
+        run: sudo xcode-select --switch /Applications/Xcode_13.2.1.app
       - name: ➕ Add `EXPO_ROOT_DIR` to GITHUB_ENV
         run: echo "EXPO_ROOT_DIR=$(pwd)" >> $GITHUB_ENV
       - name: ➕ Add `bin` to GITHUB_PATH
