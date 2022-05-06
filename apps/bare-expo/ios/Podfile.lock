@@ -109,21 +109,21 @@ PODS:
     - ExpoModulesCore
   - Expo (45.0.0):
     - ExpoModulesCore
-  - expo-dev-client (0.9.4):
+  - expo-dev-client (0.9.5):
     - EXManifests
     - expo-dev-launcher
     - expo-dev-menu
     - expo-dev-menu-interface
     - EXUpdatesInterface
-  - expo-dev-launcher (0.11.4):
+  - expo-dev-launcher (0.11.5):
     - EXManifests
-    - expo-dev-launcher/Main (= 0.11.4)
+    - expo-dev-launcher/Main (= 0.11.5)
     - expo-dev-menu
     - expo-dev-menu-interface
     - ExpoModulesCore
     - EXUpdatesInterface
     - React-Core
-  - expo-dev-launcher/Main (0.11.4):
+  - expo-dev-launcher/Main (0.11.5):
     - EXManifests
     - expo-dev-launcher/Unsafe
     - expo-dev-menu
@@ -131,7 +131,7 @@ PODS:
     - ExpoModulesCore
     - EXUpdatesInterface
     - React-Core
-  - expo-dev-launcher/Tests (0.11.4):
+  - expo-dev-launcher/Tests (0.11.5):
     - EXManifests
     - expo-dev-menu
     - expo-dev-menu-interface
@@ -144,7 +144,7 @@ PODS:
     - React-Core
     - React-CoreModules
     - React-hermes
-  - expo-dev-launcher/Unsafe (0.11.4):
+  - expo-dev-launcher/Unsafe (0.11.5):
     - EXManifests
     - expo-dev-menu
     - expo-dev-menu-interface
@@ -1386,8 +1386,8 @@ SPEC CHECKSUMS:
   EXNotifications: 43ef917067a8c1cc977c7976e43df63d582c7c4d
   EXPermissions: 3dbb869e7f96a5711314f73d48ddc2f28009a7f6
   Expo: c9946016d7453c44b71ed0c8282089b22aefd3ad
-  expo-dev-client: 2f8f514ad316c0c47592a993dac5b75895d91b1f
-  expo-dev-launcher: e923411f7d115b3e2d0449d32831d043d3d1f580
+  expo-dev-client: 4a518a938142db4746d28222eb89896e499b73ae
+  expo-dev-launcher: 94f58b94b02243d44b0f2ef54535024da5148dbf
   expo-dev-menu: 98a4747848d220aa432cc4c527e19ba1b3a52208
   expo-dev-menu-interface: b0e5958c56dc420517e8d8769f009536fbbb5935
   ExpoCellular: b5daa3b732c0c9841979c39988062e50e70dc053
