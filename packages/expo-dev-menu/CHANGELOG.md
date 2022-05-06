@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fix dev menu will reload the application when open for the first time while using Hermes. ([#17377](https://github.com/expo/expo/pull/17377) by [@lukmccall](https://github.com/lukmccall))
-
 ### 💡 Others
+
+## 0.10.6 — 2022-05-06
+
+### 🐛 Bug fixes
+
+- Fix dev menu will reload the application when open for the first time while using Hermes. ([#17377](https://github.com/expo/expo/pull/17377) by [@lukmccall](https://github.com/lukmccall))
 
 ## 0.10.5 — 2022-05-05
 

@@ -151,20 +151,20 @@ PODS:
     - ExpoModulesCore
     - EXUpdatesInterface
     - React-Core
-  - expo-dev-menu (0.10.5):
-    - expo-dev-menu/Main (= 0.10.5)
+  - expo-dev-menu (0.10.6):
+    - expo-dev-menu/Main (= 0.10.6)
   - expo-dev-menu-interface (0.6.0)
   - expo-dev-menu-interface/Tests (0.6.0):
     - Nimble
     - Quick
-  - expo-dev-menu/GestureHandler (0.10.5)
-  - expo-dev-menu/Main (0.10.5):
+  - expo-dev-menu/GestureHandler (0.10.6)
+  - expo-dev-menu/Main (0.10.6):
     - EXManifests
     - expo-dev-menu-interface
     - expo-dev-menu/Vendored
     - ExpoModulesCore
     - React-Core
-  - expo-dev-menu/Reanimated (0.10.5):
+  - expo-dev-menu/Reanimated (0.10.6):
     - DoubleConversion
     - FBLazyVector
     - FBReactNativeSpec
@@ -192,19 +192,19 @@ PODS:
     - React-RCTVibration
     - ReactCommon/turbomodule/core
     - Yoga
-  - expo-dev-menu/SafeAreaView (0.10.5)
-  - expo-dev-menu/Tests (0.10.5):
+  - expo-dev-menu/SafeAreaView (0.10.6)
+  - expo-dev-menu/Tests (0.10.6):
     - hermes-engine
     - Nimble
     - Quick
     - React-CoreModules
     - React-hermes
-  - expo-dev-menu/UITests (0.10.5):
+  - expo-dev-menu/UITests (0.10.6):
     - hermes-engine
     - React
     - React-CoreModules
     - React-hermes
-  - expo-dev-menu/Vendored (0.10.5):
+  - expo-dev-menu/Vendored (0.10.6):
     - expo-dev-menu/GestureHandler
     - expo-dev-menu/Reanimated
     - expo-dev-menu/SafeAreaView
@@ -1388,7 +1388,7 @@ SPEC CHECKSUMS:
   Expo: c9946016d7453c44b71ed0c8282089b22aefd3ad
   expo-dev-client: 2f8f514ad316c0c47592a993dac5b75895d91b1f
   expo-dev-launcher: e923411f7d115b3e2d0449d32831d043d3d1f580
-  expo-dev-menu: fc29a6825ed297b329af258682ba2dae7e7c1033
+  expo-dev-menu: 98a4747848d220aa432cc4c527e19ba1b3a52208
   expo-dev-menu-interface: b0e5958c56dc420517e8d8769f009536fbbb5935
   ExpoCellular: b5daa3b732c0c9841979c39988062e50e70dc053
   ExpoClipboard: e2dda22be0524595a5eeead51665f60729829123
@@ -1430,7 +1430,7 @@ SPEC CHECKSUMS:
   FirebaseCoreDiagnostics: fd0c8490f34287229c1d6c103d3a55f81ec85712
   FirebaseInstallations: 7d1d967a307c12f1aadd76844fc321cef699b1ce
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
-  glog: 85ecdd10ee8d8ec362ef519a6a45ff9aa27b2e85
+  glog: 476ee3e89abb49e07f822b48323c51c57124b572
   GoogleAppMeasurement: 71156240babd3cc6ced03e0d54816f01a880c730
   GoogleDataTransport: 629c20a4d363167143f30ea78320d5a7eb8bd940
   GoogleMLKit: 755661c46990a85e42278015f26400286d98ad95
@@ -1453,7 +1453,7 @@ SPEC CHECKSUMS:
   PromisesObjC: 99b6f43f9e1044bd87a95a60beff28c2c44ddb72
   Protobuf: 66e2f3b26a35e4cc379831f4ced538274ee4b923
   Quick: f58aae30d750b27918005b93d870c187353a7bf0
-  RCT-Folly: 803a9cfd78114b2ec0f140cfa6fa2a6bafb2d685
+  RCT-Folly: 4d8508a426467c48885f1151029bc15fa5d7b3b8
   RCTRequired: 00581111c53531e39e3c6346ef0d2c0cf52a5a37
   RCTTypeSafety: 07e03ee7800e7dd65cba8e52ad0c2edb06c96604
   React: e61f4bf3c573d0c61c56b53dc3eb1d9daf0768a0
