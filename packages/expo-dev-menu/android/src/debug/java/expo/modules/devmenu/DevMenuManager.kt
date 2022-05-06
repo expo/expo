@@ -58,7 +58,7 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
   internal var delegate: DevMenuDelegateInterface? = null
   private var extensionSettings: DevMenuExtensionSettingsInterface = DevMenuDefaultExtensionSettings(this)
   private var shouldLaunchDevMenuOnStart: Boolean = false
-  private lateinit var devMenuHost: DevMenuHost
+  private var devMenuHost: DevMenuHost? = null
   private var currentReactInstanceManager: WeakReference<ReactInstanceManager?> = WeakReference(null)
   private var currentScreenName: String? = null
   private val expoApiClient = DevMenuExpoApiClient()
@@ -81,7 +81,7 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
     get() = delegateReactContext?.currentActivity
 
   private val hostReactContext: ReactContext?
-    get() = devMenuHost.reactInstanceManager.currentReactContext
+    get() = devMenuHost?.reactInstanceManager?.currentReactContext
 
   private val hostActivity: Activity?
     get() = hostReactContext?.currentActivity
@@ -170,10 +170,10 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
 
   @Suppress("UNCHECKED_CAST")
   private fun maybeInitDevMenuHost(application: Application) {
-    if (!this::devMenuHost.isInitialized) {
+    if (devMenuHost == null) {
       devMenuHost = DevMenuHost(application)
       UiThreadUtil.runOnUiThread {
-        devMenuHost.reactInstanceManager.createReactContextInBackground()
+        devMenuHost!!.reactInstanceManager.createReactContextInBackground()
 
         if (currentReactInstanceManager.get()?.jsExecutorName?.contains("Hermes") == true) {
           // We have to switch thread to js queue to unload the event loop, otherwise, the app will crash.
@@ -228,20 +228,13 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
   private fun handleLoadedDelegateContext(reactContext: ReactContext) {
     Log.i(DEV_MENU_TAG, "Delegate's context was loaded.")
 
-    maybeInitDevMenuHost(reactContext.currentActivity?.application
-      ?: reactContext.applicationContext as Application)
-    maybeStartDetectors(devMenuHost.getContext())
+    maybeStartDetectors(reactContext.applicationContext)
     preferences = (testInterceptor.overrideSettings()
       ?: if (reactContext.hasNativeModule(DevMenuPreferences::class.java)) {
         reactContext.getNativeModule(DevMenuPreferences::class.java)!!
       } else {
         DevMenuDefaultPreferences()
-      }).also {
-      shouldLaunchDevMenuOnStart = canLaunchDevMenuOnStart && (it.showsAtLaunch || !it.isOnboardingFinished)
-      if (shouldLaunchDevMenuOnStart) {
-        reactContext.addLifecycleEventListener(this)
-      }
-    }
+      })
   }
 
   fun getAppInfo(): Bundle {
@@ -354,6 +347,8 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
   //region DevMenuManagerProtocol
 
   override fun openMenu(activity: Activity, screen: String?) {
+    maybeInitDevMenuHost(activity.application)
+
     setCurrentScreen(null)
 
     activity.startActivity(Intent(activity, DevMenuActivity::class.java))
@@ -479,7 +474,7 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
 
   override fun getSettings(): DevMenuPreferencesInterface? = preferences
 
-  override fun getMenuHost(): ReactNativeHost = devMenuHost
+  override fun getMenuHost(): ReactNativeHost = devMenuHost!!
 
   override fun getExpoApiClient(): DevMenuExpoApiClientInterface = expoApiClient
 
