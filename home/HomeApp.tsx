@@ -188,7 +188,7 @@ export default function HomeApp() {
   }
 
   let theme = !preferredAppearance ? colorScheme : preferredAppearance;
-  if (theme === undefined) {
+  if (theme === undefined || theme === null || (theme !== 'dark' && theme !== 'light')) {
     theme = 'light';
   }
 
