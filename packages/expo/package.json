@@ -1,6 +1,6 @@
 {
   "name": "expo",
-  "version": "45.0.0",
+  "version": "45.0.1",
   "description": "The Expo SDK",
   "main": "build/Expo.js",
   "module": "build/Expo.js",
@@ -64,7 +64,7 @@
     "expo-file-system": "~14.0.0",
     "expo-font": "~10.1.0",
     "expo-keep-awake": "~10.1.1",
-    "expo-modules-autolinking": "0.7.1",
+    "expo-modules-autolinking": "0.8.0",
     "expo-modules-core": "0.9.1",
     "fbemitter": "^3.0.0",
     "getenv": "^1.0.0",
