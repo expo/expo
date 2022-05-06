@@ -18,7 +18,7 @@ export class SessionUrlProvider {
             isTripleSlashed: options?.isTripleSlashed,
         });
     }
-    getStartUrl(authUrl, returnUrl, proxyProjectIdOverride) {
+    getStartUrl(authUrl, returnUrl, projectNameForProxy) {
         if (Platform.OS === 'web' && !Platform.isDOMAvailable) {
             // Return nothing in SSR envs
             return '';
@@ -27,7 +27,7 @@ export class SessionUrlProvider {
             authUrl,
             returnUrl,
         });
-        return `${this.getRedirectUrl({ proxyProjectIdOverride })}/start?${queryString}`;
+        return `${this.getRedirectUrl({ projectNameForProxy })}/start?${queryString}`;
     }
     getRedirectUrl(options) {
         if (Platform.OS === 'web') {
@@ -39,11 +39,11 @@ export class SessionUrlProvider {
                 return '';
             }
         }
-        const legacyExpoProjectId = options.proxyProjectIdOverride ||
+        const legacyExpoProjectFullName = options.projectNameForProxy ||
             Constants.manifest?.originalFullName ||
             Constants.manifest2?.extra?.expoClient?.originalFullName ||
             Constants.manifest?.id;
-        if (!legacyExpoProjectId) {
+        if (!legacyExpoProjectFullName) {
             let nextSteps = '';
             if (__DEV__) {
                 if (Constants.executionEnvironment === ExecutionEnvironment.Bare) {
@@ -57,14 +57,14 @@ export class SessionUrlProvider {
             }
             if (Constants.manifest2) {
                 nextSteps =
-                    ' The AuthSession proxy has been deprecated for modern applications. Prefer AuthRequest (with the useProxy option set to false) in combination with an Expo Development Client build of your application.' +
-                        ' To continue using the AuthSession proxy during the transition, specify the project ID using the proxyProjectIdOverride option.';
+                    ' Prefer AuthRequest (with the useProxy option set to false) in combination with an Expo Development Client build of your application.' +
+                        ' To continue using the AuthSession proxy, specify the project full name (@owner/slug) using the projectNameForProxy option.';
             }
-            throw new Error('Cannot use AuthSession proxy because the project ID is not defined.' + nextSteps);
+            throw new Error('Cannot use the AuthSession proxy because the project full name is not defined.' + nextSteps);
         }
-        const redirectUrl = `${SessionUrlProvider.BASE_URL}/${legacyExpoProjectId}`;
+        const redirectUrl = `${SessionUrlProvider.BASE_URL}/${legacyExpoProjectFullName}`;
         if (__DEV__) {
-            SessionUrlProvider.warnIfAnonymous(legacyExpoProjectId, redirectUrl);
+            SessionUrlProvider.warnIfAnonymous(legacyExpoProjectFullName, redirectUrl);
             // TODO: Verify with the dev server that the manifest is up to date.
         }
         return redirectUrl;

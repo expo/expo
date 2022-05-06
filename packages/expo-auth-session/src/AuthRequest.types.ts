@@ -82,17 +82,12 @@ export type AuthRequestPromptOptions = Omit<WebBrowserOpenOptions, 'windowFeatur
   /**
    * Should the authentication request use the Expo proxy service `auth.expo.io`.
    * @default false
-   * @deprecated The auth.expo.io proxy and thus using AuthSession in Expo Go have been deprecated. Prefer `AuthRequest` (with `useProxy` set to false)
-   *             in combination with an Expo Development Client build of your application.
    */
   useProxy?: boolean;
   /**
-   * Override project ID for the \`auth.expo.io\` proxy. Should only be used in when transitioning away from the proxy.
-   *
-   * @deprecated The auth.expo.io proxy and thus using AuthSession in Expo Go have been deprecated. Prefer `AuthRequest` (with `useProxy` set to false)
-   *             in combination with an Expo Development Client build of your application.
+   * Project name to use for the \`auth.expo.io\` proxy when `useProxy` is true.
    */
-  proxyProjectIdOverride?: string;
+  projectNameForProxy?: string;
   /**
    * URL options to be used when creating the redirect URL for the auth proxy.
    */

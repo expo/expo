@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Deprecate auth proxy. ([#17327](https://github.com/expo/expo/pull/17327) by [@wschurman](https://github.com/wschurman))
+- Add projectNameForProxy option. ([#17327](https://github.com/expo/expo/pull/17327) by [@wschurman](https://github.com/wschurman))
 
 ### 🐛 Bug fixes
 

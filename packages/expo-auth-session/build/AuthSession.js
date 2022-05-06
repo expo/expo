@@ -16,9 +16,6 @@ let _authLock = false;
  *
  * @param options An object of type `AuthSessionOptions`.
  * @return Returns a Promise that resolves to an `AuthSessionResult` object.
- *
- * @deprecated The auth.expo.io proxy and thus using AuthSession in Expo Go have been deprecated. Prefer `AuthRequest` (with `useProxy` set to false)
- *             in combination with an Expo Development Client build of your application.
  */
 export async function startAsync(options) {
     const authUrl = options.authUrl;
@@ -35,7 +32,7 @@ export async function startAsync(options) {
         return { type: 'locked' };
     }
     const returnUrl = options.returnUrl || sessionUrlProvider.getDefaultReturnUrl();
-    const startUrl = sessionUrlProvider.getStartUrl(authUrl, returnUrl, options.proxyProjectIdOverride);
+    const startUrl = sessionUrlProvider.getStartUrl(authUrl, returnUrl, options.projectNameForProxy);
     const showInRecents = options.showInRecents || false;
     // About to start session, set lock
     _authLock = true;
@@ -94,7 +91,6 @@ export const getDefaultReturnUrl = sessionUrlProvider.getDefaultReturnUrl;
  * ```
  *
  * @deprecated Use `makeRedirectUri({ path, useProxy })` instead.
- *             This has also been deprecated as part of the auth.expo.io proxy and expo-auth-session in Expo Go deprecations.
  */
 export function getRedirectUrl(path) {
     return sessionUrlProvider.getRedirectUrl({ urlPath: path });
@@ -141,7 +137,7 @@ export function getRedirectUrl(path) {
  * // Web prod: https://yourwebsite.com
  * ```
  */
-export function makeRedirectUri({ native, scheme, isTripleSlashed, queryParams, path, preferLocalhost, useProxy, proxyProjectIdOverride, } = {}) {
+export function makeRedirectUri({ native, scheme, isTripleSlashed, queryParams, path, preferLocalhost, useProxy, projectNameForProxy, } = {}) {
     if (Platform.OS !== 'web' &&
         native &&
         [ExecutionEnvironment.Standalone, ExecutionEnvironment.Bare].includes(Constants.executionEnvironment)) {
@@ -165,7 +161,7 @@ export function makeRedirectUri({ native, scheme, isTripleSlashed, queryParams, 
         return url;
     }
     // Attempt to use the proxy
-    return sessionUrlProvider.getRedirectUrl({ urlPath: path, proxyProjectIdOverride });
+    return sessionUrlProvider.getRedirectUrl({ urlPath: path, projectNameForProxy });
 }
 // @needsAudit
 /**

@@ -91,11 +91,11 @@ describe(`getRedirectUrl`, () => {
 
           const errorName = {
             [ExecutionEnvironment.StoreClient]:
-              /Cannot use AuthSession proxy because the project ID is not defined. Please report this as a bug/,
+              /Cannot use the AuthSession proxy because the project full name is not defined. Please report this as a bug/,
             [ExecutionEnvironment.Bare]:
-              /Cannot use AuthSession proxy because the project ID is not defined. Please ensure you have the latest/,
+              /Cannot use the AuthSession proxy because the project full name is not defined. Please ensure you have the latest/,
             [ExecutionEnvironment.Standalone]:
-              /Cannot use AuthSession proxy because the project ID is not defined./,
+              /Cannot use the AuthSession proxy because the project full name is not defined./,
           };
           expect(() => managedSessionUrlProvider.getRedirectUrl({})).toThrowError(
             errorName[execution]

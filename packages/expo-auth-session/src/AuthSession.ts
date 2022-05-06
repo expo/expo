@@ -41,9 +41,6 @@ let _authLock = false;
  *
  * @param options An object of type `AuthSessionOptions`.
  * @return Returns a Promise that resolves to an `AuthSessionResult` object.
- *
- * @deprecated The auth.expo.io proxy and thus using AuthSession in Expo Go have been deprecated. Prefer `AuthRequest` (with `useProxy` set to false)
- *             in combination with an Expo Development Client build of your application.
  */
 export async function startAsync(options: AuthSessionOptions): Promise<AuthSessionResult> {
   const authUrl = options.authUrl;
@@ -66,11 +63,7 @@ export async function startAsync(options: AuthSessionOptions): Promise<AuthSessi
   }
 
   const returnUrl = options.returnUrl || sessionUrlProvider.getDefaultReturnUrl();
-  const startUrl = sessionUrlProvider.getStartUrl(
-    authUrl,
-    returnUrl,
-    options.proxyProjectIdOverride
-  );
+  const startUrl = sessionUrlProvider.getStartUrl(authUrl, returnUrl, options.projectNameForProxy);
   const showInRecents = options.showInRecents || false;
 
   // About to start session, set lock
@@ -135,7 +128,6 @@ export const getDefaultReturnUrl = sessionUrlProvider.getDefaultReturnUrl;
  * ```
  *
  * @deprecated Use `makeRedirectUri({ path, useProxy })` instead.
- *             This has also been deprecated as part of the auth.expo.io proxy and expo-auth-session in Expo Go deprecations.
  */
 export function getRedirectUrl(path?: string): string {
   return sessionUrlProvider.getRedirectUrl({ urlPath: path });
@@ -191,7 +183,7 @@ export function makeRedirectUri({
   path,
   preferLocalhost,
   useProxy,
-  proxyProjectIdOverride,
+  projectNameForProxy,
 }: AuthSessionRedirectUriOptions = {}): string {
   if (
     Platform.OS !== 'web' &&
@@ -224,7 +216,7 @@ export function makeRedirectUri({
     return url;
   }
   // Attempt to use the proxy
-  return sessionUrlProvider.getRedirectUrl({ urlPath: path, proxyProjectIdOverride });
+  return sessionUrlProvider.getRedirectUrl({ urlPath: path, projectNameForProxy });
 }
 
 // @needsAudit

@@ -164,7 +164,7 @@ export class AuthRequest implements Omit<AuthRequestConfig, 'state'> {
     let returnUrl: string = this.redirectUri;
     if (options.useProxy) {
       returnUrl = sessionUrlProvider.getDefaultReturnUrl(proxyOptions?.path, proxyOptions);
-      startUrl = sessionUrlProvider.getStartUrl(url, returnUrl, options.proxyProjectIdOverride);
+      startUrl = sessionUrlProvider.getStartUrl(url, returnUrl, options.projectNameForProxy);
     }
     // Prevent multiple sessions from running at the same time, WebBrowser doesn't
     // support it this makes the behavior predictable.

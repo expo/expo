@@ -10,9 +10,6 @@ import { generateHexStringAsync } from './PKCE';
  *
  * @param options An object of type `AuthSessionOptions`.
  * @return Returns a Promise that resolves to an `AuthSessionResult` object.
- *
- * @deprecated The auth.expo.io proxy and thus using AuthSession in Expo Go have been deprecated. Prefer `AuthRequest` (with `useProxy` set to false)
- *             in combination with an Expo Development Client build of your application.
  */
 export declare function startAsync(options: AuthSessionOptions): Promise<AuthSessionResult>;
 /**
@@ -37,7 +34,6 @@ export declare const getDefaultReturnUrl: (urlPath?: string | undefined, options
  * ```
  *
  * @deprecated Use `makeRedirectUri({ path, useProxy })` instead.
- *             This has also been deprecated as part of the auth.expo.io proxy and expo-auth-session in Expo Go deprecations.
  */
 export declare function getRedirectUrl(path?: string): string;
 /**
@@ -81,7 +77,7 @@ export declare function getRedirectUrl(path?: string): string;
  * // Web prod: https://yourwebsite.com
  * ```
  */
-export declare function makeRedirectUri({ native, scheme, isTripleSlashed, queryParams, path, preferLocalhost, useProxy, proxyProjectIdOverride, }?: AuthSessionRedirectUriOptions): string;
+export declare function makeRedirectUri({ native, scheme, isTripleSlashed, queryParams, path, preferLocalhost, useProxy, projectNameForProxy, }?: AuthSessionRedirectUriOptions): string;
 /**
  * Build an `AuthRequest` and load it before returning.
  *
