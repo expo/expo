@@ -30,7 +30,7 @@ Configuring the resizeMode or positioning of the splash screen with `splash` (or
 
 This often results in massive reductions in app size; managed apps built with EAS Build can be in the order of 10x smaller than the same app built with `expo build` ([learn why](https://blog.expo.dev/expo-managed-workflow-in-2021-5b887bbf7dbb)). The tradeoff here is that you need to be careful when publishing updates in order to avoid publishing an incompatible JavaScript bundle. Learn more in [updates](/build/updates.md).
 
-### Only files in your project folder that are not gitignored are uploaded to the build server
+### Only files in your project folder that are not ignored in Git are uploaded to the build server
 
  EAS Build builds your app like other CI services — in short, the entire project is uploaded securely to the cloud, then it is downloaded by a build server, the dependencies are installed, and the build is run ([learn more](/build-reference/ios-builds)). Everything needed to build your app must be included in the project that is uploaded. The default mechanism for packaging your project is roughly equivalent to `git clone --depth 1`, and so anything that is in your `.gitignore` will not be uploaded (learn more in ["How projects are uploaded to EAS Build"](https://expo.fyi/eas-build-archive)).
  
