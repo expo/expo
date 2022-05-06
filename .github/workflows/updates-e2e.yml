@@ -40,7 +40,7 @@ jobs:
       UPDATES_PORT: 4747
     strategy:
       matrix:
-        api-level: [31]
+        api-level: [29]
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v3
@@ -152,7 +152,7 @@ jobs:
           TEST_APK_PATH: '${{ steps.test-apk-path.outputs.dir }}/app-release.apk'
           TEST_UPDATE_DIST_PATH: '${{ steps.test-update-dist-path.outputs.dir }}'
           TEST_PRIVATE_KEY_PATH: '${{ steps.test-code-signing-private-key-path.outputs.dir }}'
-        timeout-minutes: 60
+        timeout-minutes: 30
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: ${{ matrix.api-level }}
