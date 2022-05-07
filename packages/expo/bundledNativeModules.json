@@ -50,7 +50,6 @@
   "expo-gl": "~11.3.0",
   "expo-gl-cpp": "~11.3.0",
   "expo-google-app-auth": "~8.3.0",
-  "expo-google-sign-in": "~10.2.0",
   "expo-haptics": "~11.2.0",
   "expo-image-loader": "~3.2.0",
   "expo-image-manipulator": "~10.3.1",
