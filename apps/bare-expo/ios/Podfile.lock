@@ -75,9 +75,6 @@ PODS:
     - ExpoModulesCore
   - EXGL_CPP (11.3.0):
     - React-jsi
-  - EXGoogleSignIn (10.2.0):
-    - ExpoModulesCore
-    - GoogleSignIn (~> 5.0.2)
   - EXImage (0.2.2):
     - React-Core
     - SDWebImage (~> 5.0)
@@ -1368,7 +1365,6 @@ SPEC CHECKSUMS:
   EXFont: 04235cc22e6fef86028feb67db452978dc6f240f
   EXGL: d2cb2f86eeb5057cb058ff5010224294b66492d8
   EXGL_CPP: 0e91a0dbaa2b4d9d9a2c34ab903ee7ea471e9efb
-  EXGoogleSignIn: d4ec785c6d98732a47824257c04a3415cfbd8986
   EXImage: b41d1f72f0565a9f62ab0c6dde0d4d6d3c68c226
   EXImageLoader: b88e053d760f85a82405b1db2de4abf11978fc9f
   EXInAppPurchases: 09c6d7114577590c9d010bf6e8cdaca3e7bae261
