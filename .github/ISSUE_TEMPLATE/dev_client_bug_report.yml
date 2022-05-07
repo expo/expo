@@ -42,7 +42,7 @@ body:
   - type: textarea
     attributes:
       label: Environment
-      placeholder: Run `expo diagnostics` and paste the output here
+      placeholder: Run `npx expo-env-info` and paste the output here
     validations:
       required: true
   - type: textarea
