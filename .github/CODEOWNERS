@@ -40,7 +40,6 @@
 /packages/expo-font                             @tsapeta
 /packages/expo-gl-cpp                           @tsapeta @bbarthec
 /packages/expo-gl                               @tsapeta @bbarthec
-/packages/expo-google-sign-in                   @EvanBacon
 /packages/expo-haptics                          @bbarthec
 /packages/expo-image                            @bbarthec @barthap
 /packages/expo-image-manipulator                @bbarthec

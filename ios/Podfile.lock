@@ -2975,7 +2975,6 @@ DEPENDENCIES:
   - EXFont (from `../packages/expo-font/ios`)
   - EXGL (from `../packages/expo-gl/ios`)
   - EXGL_CPP (from `../packages/expo-gl-cpp/cpp`)
-  - EXGoogleSignIn (from `../packages/expo-google-sign-in/ios`)
   - EXImageLoader (from `../packages/expo-image-loader/ios`)
   - EXJSONUtils (from `../packages/expo-json-utils/ios`)
   - EXJSONUtils/Tests (from `../packages/expo-json-utils/ios`)
@@ -3828,8 +3827,6 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-gl/ios"
   EXGL_CPP:
     :path: "../packages/expo-gl-cpp/cpp"
-  EXGoogleSignIn:
-    :path: "../packages/expo-google-sign-in/ios"
   EXImageLoader:
     :path: "../packages/expo-image-loader/ios"
   EXJSONUtils:

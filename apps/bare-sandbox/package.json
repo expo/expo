@@ -70,7 +70,6 @@
         "expo-gl",
         "expo-gl-cpp",
         "expo-updates",
-        "expo-google-sign-in",
         "expo-haptics",
         "expo-image-loader",
         "expo-image-manipulator",

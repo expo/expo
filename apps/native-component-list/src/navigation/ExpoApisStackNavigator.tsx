@@ -178,13 +178,6 @@ export const Screens = [
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/GoogleSignInScreen'));
-    },
-    name: 'GoogleSignIn',
-    options: { title: 'Native Google Sign-In' },
-  },
-  {
-    getComponent() {
       return optionalRequire(() => require('../screens/HapticsScreen'));
     },
     name: 'Haptics',
