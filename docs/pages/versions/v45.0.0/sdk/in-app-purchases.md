@@ -48,7 +48,7 @@ For more information, see Apple's workflow for configuring In-App Purchases [her
 
 ### Android
 
-On Android, you must first create an entry for your app and upload a release APK in the [Google Play Console](https://developer.android.com/distribute/console/). From there, you can configure your in-app purchases and their details under `Store Presence > In-app products`.
+On Android, you must first create an entry for your app and upload a release APK in the [Google Play Console](https://developer.android.com/distribute/console/). From there, you can configure your in-app purchases and their details under `Monetise > Products > In-app products`.
 
 Then to test your purchases, you must publish your app to a closed or open testing track in Google Play. Note that it may take a few hours for the app to be available for testers. Ensure the testers you invite (including yourself) opt in to your app's test. On your test’s opt-in URL, your testers will get an explanation of what it means to be a tester and a link to opt-in. At this point, they're all set and can start making purchases once they download your app or build from source. For more information on testing, follow [these instructions](https://developer.android.com/google/play/billing/billing_testing).
 
