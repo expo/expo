@@ -34,7 +34,7 @@ function AudioDiagnostic({
   return (
     <DiagnosticButton
       title="Audio"
-      description={`On iOS you can play audio ${
+      description={`On iOS you can play audio${
         !Environment.IsIOSRestrictedBuild ? ` in the foreground and background` : ``
       }, choose whether it plays when the device is on silent, and set how the audio interacts with audio from other apps. This diagnostic allows you to see the available options.`}
       onPress={() => navigation.navigate('Audio', {})}
