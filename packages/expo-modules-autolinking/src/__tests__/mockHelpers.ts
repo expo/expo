@@ -1,4 +1,5 @@
 import minimatch from 'minimatch';
+import path from 'path';
 
 export function registerGlobMock(globFunction: Function, files: string[], cwd: string) {
   (globFunction as jest.MockedFunction<any>).mockImplementation((patterns, inputOptions) => {
@@ -8,10 +9,7 @@ export function registerGlobMock(globFunction: Function, files: string[], cwd: s
     // E.g. inputCwd='/path/to/expo' and cwd='/path/to',
     // -> `prefix`: 'expo/'
     // -> glob pattern would like something like `expo/*/*`
-    let prefix = '';
-    if (inputCwd.startsWith(`${cwd}/`)) {
-      prefix = `${inputCwd.substring(cwd.length + 1)}/`;
-    }
+    const prefix = path.relative(inputCwd, cwd);
 
     const patternList = Array.isArray(patterns) ? patterns : [patterns];
     return files
