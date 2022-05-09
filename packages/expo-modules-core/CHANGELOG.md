@@ -11,6 +11,7 @@
 ### 🐛 Bug fixes
 
 - Fix modules have not been deallocated during the application reload on iOS. ([#17285](https://github.com/expo/expo/pull/17285) by [@lukmccall](https://github.com/lukmccall))
+- Fix view props weren't recognized in the bare workflow on iOS.
 
 ### 💡 Others
 
