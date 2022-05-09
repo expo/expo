@@ -112,7 +112,11 @@ You are free to use any native Firebase packages such as [react-native-firebase]
   - Be sure to enable **'Copy items if needed'**.
 
 - Initialize the default Firebase app by opening the AppDelegate file in your project `ios/{projectName}/AppDelegate.m`.
-- At the top of the file:
+- If you're using Expo SDK 45 or later, add the following to the top of the file:
+  ```objc
+  #import <Firebase/Firebase.h>
+  ```
+- For versions prior to Expo SDK 45, add the following to the top of the file:
   ```objc
   @import Firebase;
   ```
