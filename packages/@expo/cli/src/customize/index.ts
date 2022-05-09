@@ -2,8 +2,7 @@
 import chalk from 'chalk';
 
 import { Command } from '../../bin/cli';
-import * as Log from '../log';
-import { assertWithOptionsArgs } from '../utils/args';
+import { assertWithOptionsArgs, printHelp } from '../utils/args';
 
 export const expoCustomize: Command = async (argv) => {
   const args = assertWithOptionsArgs(
@@ -21,18 +20,14 @@ export const expoCustomize: Command = async (argv) => {
   );
 
   if (args['--help']) {
-    Log.exit(
-      chalk`
-  {bold Description}
-    Generate static files for the app
-
-  {bold Usage}
-    $ npx expo customize {dim [files...] [options]}
-
-  {bold Options}
-    -h, --help  Output usage information
-    `,
-      0
+    printHelp(
+      `Generate static project files`,
+      chalk`npx expo customize {dim [files...] -- [options]}`,
+      [
+        chalk`[files...]  List of files to generate`,
+        chalk`[options]   Options to pass to the install command`,
+        `-h, --help  Usage info`,
+      ].join('\n')
     );
   }
 
