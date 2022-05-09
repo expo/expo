@@ -1,6 +1,6 @@
 {
   "name": "expo-stories",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "bin": "bin/index.js",
   "types": "build/types/index.d.ts",
   "license": "MIT",
