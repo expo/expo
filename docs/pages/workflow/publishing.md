@@ -25,8 +25,7 @@ here](how-expo-works.md#publishingdeploying-an-expo-app-in-production)).
 
 ## How to publish
 
-To publish a project, click the Publish button in Expo Dev Tools. (It’s in the left side bar.) If you're using command line, run
-`expo publish`. No setup is required, go ahead and create a new project
+To publish a project, run `expo publish`. No setup is required, go ahead and create a new project
 and publish it without any changes and you will see that it works.
 
 When you do this, the bundler will minify all your code and generate
