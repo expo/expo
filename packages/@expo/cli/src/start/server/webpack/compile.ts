@@ -8,7 +8,7 @@ import { formatWebpackMessages } from './formatWebpackMessages';
 
 /** Run the `webpack` compiler and format errors/warnings. */
 export async function compileAsync(compiler: webpack.Compiler) {
-  const stats = await promisify(compiler.run)();
+  const stats = await promisify(compiler.run.bind(compiler))();
   const { errors, warnings } = formatWebpackMessages(
     stats.toJson({ all: false, warnings: true, errors: true })
   );
