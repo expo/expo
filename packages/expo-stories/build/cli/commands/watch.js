@@ -45,47 +45,53 @@ var addStoriesAsync_1 = require("../addStoriesAsync");
 var removeStoryAsync_1 = require("../removeStoryAsync");
 function watchAsync(config) {
     return __awaiter(this, void 0, void 0, function () {
-        var watchRoot, watcher;
+        var watchRoots, projectRoot, _loop_1, _i, watchRoots_1, watchRoot;
         return __generator(this, function (_a) {
-            watchRoot = config.watchRoot;
-            watcher = (0, sane_1.default)(watchRoot, {
-                glob: ['**/*.stories.tsx', '**/*.stories.js', '**/*.stories.ts', '**/*.stories.jsx'],
-                ignored: ['node_modules'],
-                watchman: true,
-            });
-            // fast refresh will capture any changes to a file
-            // any other listeners would need to go through websockets
-            // watcher.on('change', relPath => {
-            // });
-            watcher.on('add', function (relPath) {
-                return __awaiter(this, void 0, void 0, function () {
-                    return __generator(this, function (_a) {
-                        switch (_a.label) {
-                            case 0: return [4 /*yield*/, (0, addStoriesAsync_1.addStoriesAsync)([relPath], config)];
-                            case 1:
-                                _a.sent();
-                                console.log("Added ".concat(relPath, " file to stories"));
-                                return [2 /*return*/];
-                        }
+            watchRoots = config.watchRoots, projectRoot = config.projectRoot;
+            _loop_1 = function (watchRoot) {
+                var watcher = (0, sane_1.default)(watchRoot, {
+                    glob: ['**/*.stories.tsx', '**/*.stories.js', '**/*.stories.ts', '**/*.stories.jsx'],
+                    ignored: ['node_modules'],
+                    watchman: true,
+                });
+                // fast refresh will capture any changes to a file
+                // any other listeners would need to go through websockets
+                // watcher.on('change', relPath => {
+                // });
+                watcher.on('add', function (relPath) {
+                    return __awaiter(this, void 0, void 0, function () {
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0: return [4 /*yield*/, (0, addStoriesAsync_1.addStoriesAsync)([relPath], { watchRoot: watchRoot, projectRoot: projectRoot })];
+                                case 1:
+                                    _a.sent();
+                                    console.log("Added ".concat(relPath, " file to stories"));
+                                    return [2 /*return*/];
+                            }
+                        });
                     });
                 });
-            });
-            watcher.on('delete', function (relPath) {
-                return __awaiter(this, void 0, void 0, function () {
-                    return __generator(this, function (_a) {
-                        switch (_a.label) {
-                            case 0: return [4 /*yield*/, (0, removeStoryAsync_1.removeStoryAsync)(relPath, config)];
-                            case 1:
-                                _a.sent();
-                                console.log("Removed ".concat(relPath, " file from stories"));
-                                return [2 /*return*/];
-                        }
+                watcher.on('delete', function (relPath) {
+                    return __awaiter(this, void 0, void 0, function () {
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0: return [4 /*yield*/, (0, removeStoryAsync_1.removeStoryAsync)(relPath, { watchRoot: watchRoot, projectRoot: projectRoot })];
+                                case 1:
+                                    _a.sent();
+                                    console.log("Removed ".concat(relPath, " file from stories"));
+                                    return [2 /*return*/];
+                            }
+                        });
                     });
                 });
-            });
-            watcher.on('ready', function () {
-                console.log("Watching for changes in ".concat(config.watchRoot));
-            });
+                watcher.on('ready', function () {
+                    console.log("Watching for changes in ".concat(watchRoot));
+                });
+            };
+            for (_i = 0, watchRoots_1 = watchRoots; _i < watchRoots_1.length; _i++) {
+                watchRoot = watchRoots_1[_i];
+                _loop_1(watchRoot);
+            }
             return [2 /*return*/];
         });
     });

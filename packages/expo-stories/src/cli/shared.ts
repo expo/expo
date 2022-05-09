@@ -6,7 +6,7 @@ export const storiesDirName = '__generated__/stories';
 
 export const defaultConfig: StoryOptions = {
   projectRoot: process.cwd(),
-  watchRoot: process.cwd(),
+  watchRoots: [process.cwd()],
 };
 
 export function getManifestFilePath(projectRoot: string) {
@@ -29,8 +29,8 @@ export function getStories(config: StoryOptions) {
   return stories;
 }
 
-export function getStoriesDir(config: StoryOptions) {
-  const storiesDir = path.resolve(config.projectRoot, storiesDirName);
+export function getStoriesDir({ projectRoot }: { projectRoot: string }) {
+  const storiesDir = path.resolve(projectRoot, storiesDirName);
   return storiesDir;
 }
 

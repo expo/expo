@@ -1,6 +1,6 @@
 export interface StoryOptions {
     projectRoot: string;
-    watchRoot: string;
+    watchRoots: string[];
 }
 export declare type StoryManifest = {
     files: Record<string, StoryFile>;
