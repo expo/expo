@@ -1,6 +1,6 @@
 import fse from 'fs-extra';
 
-import { StoryOptions, StoryManifest } from '../types';
+import { StoryManifest } from '../types';
 import { getManifestFilePath } from './shared';
 
 export async function saveManifestAsync(

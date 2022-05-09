@@ -1,11 +1,11 @@
 import fse from 'fs-extra';
 import path from 'path';
 
-import { StoryOptions, StoryFile } from '../types';
+import { StoryFile } from '../types';
 import { getStoriesDir, getStoryManifest } from './shared';
 
-export async function writeStoriesAsync(config: { watchRoot: string; projectRoot: string }) {
-  const { projectRoot, watchRoot } = config;
+export async function writeStoriesAsync(config: { projectRoot: string }) {
+  const { projectRoot } = config;
   const storyManifest = getStoryManifest(projectRoot);
   const stories = Object.keys(storyManifest.files).map((id) => storyManifest.files[id]);
 

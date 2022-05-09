@@ -16,7 +16,9 @@ function getStatusEmoji(status) {
 }
 function SpecResult(_a) {
     var _b = _a.status, status = _b === void 0 ? Statuses_1.default.Running : _b, description = _a.description, failedExpectations = _a.failedExpectations;
-    var renderExpectations = react_1.default.useMemo(function () { return function (e, i) { return (react_1.default.createElement(react_native_1.Text, { testID: "test_suite_text_spec_exception", key: i }, e.get('message'))); }; }, []);
+    var renderExpectations = react_1.default.useMemo(function () { return function (e, i) {
+        return (react_1.default.createElement(react_native_1.Text, { testID: "test_suite_text_spec_exception", key: i }, e.get('message')));
+    }; }, []);
     var borderColor = Colors_1.default[status];
     var message = "".concat(getStatusEmoji(status), " ").concat(description, " (").concat(status, ")");
     return (react_1.default.createElement(react_native_1.View, { testID: "test_suite_view_spec_container", style: [

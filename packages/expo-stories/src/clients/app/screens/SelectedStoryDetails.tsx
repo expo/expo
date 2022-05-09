@@ -17,13 +17,13 @@ const storiesById = getByStoryId(stories);
 
 export function SelectedStoriesDetail({ route }: SelectedStoriesDetailProps) {
   const { selectedStoryIds = [] } = route.params || {};
-  const selectedStories = selectedStoryIds.map(storyId => storiesById[storyId]);
+  const selectedStories = selectedStoryIds.map((storyId) => storiesById[storyId]);
 
   return (
     <View style={StyleSheet.absoluteFill}>
       <SafeAreaView style={styles.flexContainer}>
         <ScrollView style={styles.flexContainer}>
-          {selectedStories.map(story => {
+          {selectedStories.map((story) => {
             return (
               <View key={`${story.id}`} style={styles.storyRow}>
                 {React.createElement(story.component)}

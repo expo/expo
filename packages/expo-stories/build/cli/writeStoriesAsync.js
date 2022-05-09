@@ -45,11 +45,11 @@ var path_1 = __importDefault(require("path"));
 var shared_1 = require("./shared");
 function writeStoriesAsync(config) {
     return __awaiter(this, void 0, void 0, function () {
-        var projectRoot, watchRoot, storyManifest, stories, template, storiesDir, writeRequiresPath;
+        var projectRoot, storyManifest, stories, template, storiesDir, writeRequiresPath;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    projectRoot = config.projectRoot, watchRoot = config.watchRoot;
+                    projectRoot = config.projectRoot;
                     storyManifest = (0, shared_1.getStoryManifest)(projectRoot);
                     stories = Object.keys(storyManifest.files).map(function (id) { return storyManifest.files[id]; });
                     template = "\n      const storiesToExport = {}\n      ".concat(stories.map(function (story) { return generateTemplateForStory(story); }).join(''), "\n      module.exports = storiesToExport\n    ");
