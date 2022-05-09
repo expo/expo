@@ -36,11 +36,12 @@ export function createMetadataJson({
           assets: bundle.assets
             .map((asset) =>
               // Each asset has multiple hashes which we convert and then flatten.
-              asset.fileHashes.map((hash) => ({
+              asset.fileHashes?.map((hash) => ({
                 path: path.join('assets', hash),
                 ext: asset.type,
               }))
             )
+            .filter(Boolean)
             .flat(),
         },
       }),
