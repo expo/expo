@@ -60,7 +60,7 @@ jobs:
           author_name: Home app
 
   publish-dogfood-home:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: ${{ false }} && github.event_name == 'push' && github.ref == 'refs/heads/main'
     needs: build
     runs-on: ubuntu-20.04
     steps:
