@@ -61,7 +61,7 @@ export async function reviewPullRequestAsync(prNumber: number) {
   logger.info('🕵️‍♀️  Reviewing changes');
   const reviewActions = REVIEWERS.filter(
     ({ magicCommentToDisable }) =>
-      !magicCommentToDisable || pr.body?.includes(magicCommentToDisable) === false
+      !magicCommentToDisable || !pr.body?.includes(magicCommentToDisable)
   ).map(({ action }) => action(input));
   const outputs = (await Promise.all(reviewActions)).filter(Boolean) as ReviewOutput[];
 
