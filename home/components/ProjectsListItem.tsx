@@ -35,6 +35,8 @@ export function ProjectsListItem({ imageURL, name, subtitle, sdkVersion, id, fir
     navigation.push('ProjectDetails', { id });
   }
 
+  const showSubtitle = subtitle && name.toLowerCase() !== subtitle.toLowerCase();
+
   return (
     <View
       border="default"
@@ -62,9 +64,9 @@ export function ProjectsListItem({ imageURL, name, subtitle, sdkVersion, id, fir
                   numberOfLines={1}>
                   {name}
                 </Text>
-                {subtitle ? (
+                {showSubtitle ? (
                   <>
-                    <Spacer.Vertical size="tiny" />
+                    <Spacer.Vertical size="micro" />
                     <Text
                       type="InterRegular"
                       size="small"
@@ -77,7 +79,7 @@ export function ProjectsListItem({ imageURL, name, subtitle, sdkVersion, id, fir
                 ) : null}
                 {sdkVersionNumber ? (
                   <>
-                    <Spacer.Vertical size="tiny" />
+                    <Spacer.Vertical size="micro" />
                     <Text
                       type="InterRegular"
                       size="small"
