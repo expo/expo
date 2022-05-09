@@ -44,19 +44,28 @@ var glob_1 = __importDefault(require("glob"));
 var addStoriesAsync_1 = require("../addStoriesAsync");
 function buildAsync(config) {
     return __awaiter(this, void 0, void 0, function () {
-        var watchRoot, relPaths;
+        var watchRoots, projectRoot, _i, watchRoots_1, watchRoot, relPaths;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    watchRoot = config.watchRoot;
+                    watchRoots = config.watchRoots, projectRoot = config.projectRoot;
+                    _i = 0, watchRoots_1 = watchRoots;
+                    _a.label = 1;
+                case 1:
+                    if (!(_i < watchRoots_1.length)) return [3 /*break*/, 4];
+                    watchRoot = watchRoots_1[_i];
                     relPaths = glob_1.default.sync('**/*.stories.{tsx,ts,js,jsx}', {
                         cwd: watchRoot,
                         ignore: ['**/node_modules/**', '**/ios/**', '**/android/**'],
                     });
-                    return [4 /*yield*/, (0, addStoriesAsync_1.addStoriesAsync)(relPaths, config)];
-                case 1:
+                    return [4 /*yield*/, (0, addStoriesAsync_1.addStoriesAsync)(relPaths, { watchRoot: watchRoot, projectRoot: projectRoot })];
+                case 2:
                     _a.sent();
-                    return [2 /*return*/];
+                    _a.label = 3;
+                case 3:
+                    _i++;
+                    return [3 /*break*/, 1];
+                case 4: return [2 /*return*/];
             }
         });
     });
