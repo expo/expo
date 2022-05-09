@@ -244,7 +244,7 @@ RCT_EXPORT_METHOD(callMethod:(NSString *)moduleName methodNameOrKey:(id)methodNa
     // Otherwise, React Native may treat these props as invalid in subclassing views.
     [additionalModuleClasses addObject:[EXViewManagerAdapter class]];
     // Also, we have to register component data for the View Adapter.
-    // Otherwise, it won't be recognised by the UIManager.
+    // Otherwise, it won't be recognized by the UIManager.
     [self registerLegacyComponentData:[EXViewManagerAdapter class] inBridge:bridge];
 
     // Some modules might need access to the bridge.
