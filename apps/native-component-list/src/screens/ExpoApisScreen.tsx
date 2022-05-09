@@ -55,6 +55,7 @@ const screens = [
   'FirebaseRecaptcha',
   'Font',
   'Errors',
+  'ExpoModules',
   'Geocoding',
   'GoogleSignIn',
   'Haptics',

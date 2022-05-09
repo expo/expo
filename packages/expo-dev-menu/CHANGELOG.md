@@ -10,6 +10,30 @@
 
 ### 💡 Others
 
+## 0.10.6 — 2022-05-06
+
+### 🐛 Bug fixes
+
+- Fix dev menu will reload the application when open for the first time while using Hermes. ([#17377](https://github.com/expo/expo/pull/17377) by [@lukmccall](https://github.com/lukmccall))
+
+## 0.10.5 — 2022-05-05
+
+### 🐛 Bug fixes
+
+- Fix `unresolved reference: loadFonts` in the release build on Android. ([#17241](https://github.com/expo/expo/pull/17241) by [@lukmccall](https://github.com/lukmccall))
+- Fix remote debugging crashing the application on iOS. ([#17248](https://github.com/expo/expo/pull/17248) by [@lukmccall](https://github.com/lukmccall))
+- Fix crashes when the app was launched from a deep link and the react-native-reanimated were installed on Android. ([#17282](https://github.com/expo/expo/pull/17282) by [@lukmccall](https://github.com/lukmccall))
+
+## 0.10.4 — 2022-04-26
+
+### 🐛 Bug fixes
+
+- Fix error on summoning dev-menu first time, that leads to the application freeze. ([#17215](https://github.com/expo/expo/pull/17215) by [@lukmccall](https://github.com/lukmccall))
+
+## 0.10.3 — 2022-04-25
+
+_This version does not introduce any user-facing changes._
+
 ## 0.10.2 — 2022-04-21
 
 _This version does not introduce any user-facing changes._

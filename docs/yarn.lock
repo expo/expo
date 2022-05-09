@@ -580,10 +580,10 @@
   dependencies:
     cross-spawn "^6.0.5"
 
-"@expo/styleguide@^4.0.1":
-  version "4.0.1"
-  resolved "https://registry.yarnpkg.com/@expo/styleguide/-/styleguide-4.0.1.tgz#10aa2fa3dd997fe39c5498b4e08dfa984b72a0e6"
-  integrity sha512-sd50snb960bPBk+RP9SWLjGl+9yoAZwT9p1WKXii4TcYwlebNH9CjPOihoZ5Imc5Z1a/KTWlwP9vruzc3BsbYA==
+"@expo/styleguide@^4.0.4":
+  version "4.0.4"
+  resolved "https://registry.yarnpkg.com/@expo/styleguide/-/styleguide-4.0.4.tgz#b0a124095e8b51b68a619d75bef3877f2c37e5c2"
+  integrity sha512-ph3S6lQdEXSjhims9YQGf1C9R5cKfRqwSbesJIClVdmJ+yPcYkid+s+gTDBMpe3l0x49OQirwAkj4bNJ3fCFbQ==
 
 "@hapi/accept@5.0.2":
   version "5.0.2"
@@ -2564,6 +2564,11 @@ caniuse-lite@^1.0.30001202, caniuse-lite@^1.0.30001219, caniuse-lite@^1.0.300012
   version "1.0.30001301"
   resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001301.tgz#ebc9086026534cab0dab99425d9c3b4425e5f450"
   integrity sha512-csfD/GpHMqgEL3V3uIgosvh+SVIQvCh43SNu9HRbP1lnxkKm1kjDG4f32PP571JplkLjfS+mg2p1gxR7MYrrIA==
+
+case-police@^0.5.3:
+  version "0.5.3"
+  resolved "https://registry.yarnpkg.com/case-police/-/case-police-0.5.3.tgz#9970c3bf36fd64977169aa0a5aafcf121283cb70"
+  integrity sha512-QJOOIiCXHc75CapeRmImeRYP3B5bm0gEJ8JaSp9RKwdcETgASC1+ce48KhrStSW91t5ypTAHpC27W7qAGBTsRQ==
 
 caseless@~0.12.0:
   version "0.12.0"
@@ -7322,7 +7327,7 @@ prop-types@15.7.2:
     object-assign "^4.1.1"
     react-is "^16.8.1"
 
-prop-types@^15.7.2:
+prop-types@^15.7.2, prop-types@^15.8.0:
   version "15.8.1"
   resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.8.1.tgz#67d87bf1a694f48435cf332c24af10214a3140b5"
   integrity sha512-oj87CgZICdulUohogVAR7AjlC0327U4el4L6eAvOqCeudMDVU0NThNaV+b9Df4dXgSP1gXMTnPdhfe/2qDH5cg==
@@ -7514,6 +7519,13 @@ react-feather@^2.0.9:
   integrity sha512-yMfCGRkZdXwIs23Zw/zIWCJO3m3tlaUvtHiXlW+3FH7cIT6fiK1iJ7RJWugXq7Fso8ZaQyUm92/GOOHXvkiVUw==
   dependencies:
     prop-types "^15.7.2"
+
+react-grid-system@^8.1.3:
+  version "8.1.3"
+  resolved "https://registry.yarnpkg.com/react-grid-system/-/react-grid-system-8.1.3.tgz#634f21046aff7eaf7fc0f4c559c438cb237a2b98"
+  integrity sha512-v4UtoSTNvrpB/ZlbWo3N3vvMn4BCk8/EI4csJeIbioIRU+rxsf54FSZaUz0TQOKv1FyDOJkR88Vs8gN7TFXvIA==
+  dependencies:
+    prop-types "^15.8.0"
 
 react-is@17.0.2, "react-is@^16.12.0 || ^17.0.0", react-is@^17.0.0, react-is@^17.0.1, react-is@^17.0.2:
   version "17.0.2"

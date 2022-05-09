@@ -1861,7 +1861,7 @@ PODS:
     - ExpoModulesCore
   - EXApplication (4.1.0):
     - ExpoModulesCore
-  - EXAV (11.2.1):
+  - EXAV (11.2.2):
     - ExpoModulesCore
     - React-runtimeexecutor
     - ReactCommon
@@ -1892,7 +1892,7 @@ PODS:
     - ExpoModulesCore
   - EXDevice (4.2.0):
     - ExpoModulesCore
-  - EXDocumentPicker (10.2.0):
+  - EXDocumentPicker (10.2.1):
     - ExpoModulesCore
   - EXErrorRecovery (3.1.0):
     - ExpoModulesCore
@@ -1917,10 +1917,10 @@ PODS:
     - Firebase/Core (= 8.14.0)
   - EXFont (10.1.0):
     - ExpoModulesCore
-  - EXGL (11.2.2):
+  - EXGL (11.3.0):
     - EXGL_CPP
     - ExpoModulesCore
-  - EXGL_CPP (11.2.1):
+  - EXGL_CPP (11.3.0):
     - React-jsi
   - EXGoogleSignIn (10.2.0):
     - ExpoModulesCore
@@ -1945,11 +1945,11 @@ PODS:
     - React-Core
   - EXNetwork (4.2.0):
     - ExpoModulesCore
-  - EXNotifications (0.15.0):
+  - EXNotifications (0.15.1):
     - ExpoModulesCore
   - EXPermissions (13.2.0):
     - ExpoModulesCore
-  - Expo (45.0.0-beta.4):
+  - Expo (45.0.0-beta.9):
     - ExpoModulesCore
   - ExpoCellular (4.2.0):
     - ExpoModulesCore
@@ -1962,7 +1962,7 @@ PODS:
   - ExpoImageManipulator (10.3.1):
     - EXImageLoader
     - ExpoModulesCore
-  - ExpoImagePicker (13.0.1):
+  - ExpoImagePicker (13.1.1):
     - ExpoModulesCore
   - ExpoKeepAwake (10.1.0):
     - ExpoModulesCore
@@ -1999,7 +1999,7 @@ PODS:
   - EXSegment (11.2.0):
     - Analytics (= 4.0.4)
     - ExpoModulesCore
-  - EXSensors (11.2.0):
+  - EXSensors (11.3.0):
     - ExpoModulesCore
   - EXSharing (10.2.0):
     - ExpoModulesCore
@@ -2007,7 +2007,7 @@ PODS:
     - ExpoModulesCore
   - EXSpeech (10.2.0):
     - ExpoModulesCore
-  - EXSplashScreen (0.15.0):
+  - EXSplashScreen (0.15.1):
     - ExpoModulesCore
     - React-Core
   - EXSQLite (10.2.0):
@@ -2016,7 +2016,7 @@ PODS:
     - ExpoModulesCore
   - EXStructuredHeaders (2.2.1)
   - EXStructuredHeaders/Tests (2.2.1)
-  - EXTaskManager (10.2.0):
+  - EXTaskManager (10.2.1):
     - ExpoModulesCore
     - UMAppLoader
   - EXTrackingTransparency (2.2.0):
@@ -2444,6 +2444,12 @@ PODS:
     - React-Core
   - react-native-pager-view (5.4.15):
     - React-Core
+  - react-native-safe-area-context (4.2.4):
+    - RCT-Folly
+    - RCTRequired
+    - RCTTypeSafety
+    - React
+    - ReactCommon/turbomodule/core
   - react-native-segmented-control (2.4.0):
     - React-Core
   - react-native-webview (11.18.1):
@@ -2969,7 +2975,6 @@ DEPENDENCIES:
   - EXFont (from `../packages/expo-font/ios`)
   - EXGL (from `../packages/expo-gl/ios`)
   - EXGL_CPP (from `../packages/expo-gl-cpp/cpp`)
-  - EXGoogleSignIn (from `../packages/expo-google-sign-in/ios`)
   - EXImageLoader (from `../packages/expo-image-loader/ios`)
   - EXJSONUtils (from `../packages/expo-json-utils/ios`)
   - EXJSONUtils/Tests (from `../packages/expo-json-utils/ios`)
@@ -3044,6 +3049,7 @@ DEPENDENCIES:
   - React-logger (from `../react-native-lab/react-native/ReactCommon/logger`)
   - "react-native-netinfo (from `./vendored/unversioned/@react-native-community/netinfo`)"
   - react-native-pager-view (from `./vendored/unversioned/react-native-pager-view`)
+  - react-native-safe-area-context (from `./vendored/unversioned/react-native-safe-area-context`)
   - "react-native-segmented-control (from `./vendored/unversioned/@react-native-segmented-control/segmented-control`)"
   - react-native-webview (from `./vendored/unversioned/react-native-webview`)
   - React-perflogger (from `../react-native-lab/react-native/ReactCommon/reactperflogger`)
@@ -3821,8 +3827,6 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-gl/ios"
   EXGL_CPP:
     :path: "../packages/expo-gl-cpp/cpp"
-  EXGoogleSignIn:
-    :path: "../packages/expo-google-sign-in/ios"
   EXImageLoader:
     :path: "../packages/expo-image-loader/ios"
   EXJSONUtils:
@@ -3951,6 +3955,8 @@ EXTERNAL SOURCES:
     :path: "./vendored/unversioned/@react-native-community/netinfo"
   react-native-pager-view:
     :path: "./vendored/unversioned/react-native-pager-view"
+  react-native-safe-area-context:
+    :path: "./vendored/unversioned/react-native-safe-area-context"
   react-native-segmented-control:
     :path: "./vendored/unversioned/@react-native-segmented-control/segmented-control"
   react-native-webview:
@@ -4330,7 +4336,7 @@ SPEC CHECKSUMS:
   EXAmplitude: 96d6a3f9c2cff499261fc28c952c03b55f7584f9
   EXAppleAuthentication: 4751aee44f2e9e1863fa3d147d7f54a91d6a8cc9
   EXApplication: d6562af1204162e0ac46d341a7d4e5dc720b33de
-  EXAV: 4722e688623979b9dd9eb9e5bcccbe7042be736f
+  EXAV: 1a0badef09dd0d52e96ea1704459cbc3d1f20e9c
   EXBackgroundFetch: f60cb23007beca0892997682d8ca40aca1e0c92e
   EXBarCodeScanner: eea8f38bedf1eae15d8f8bea89887a71762fd275
   EXBattery: 282a943ee063a035c3dcbb8c4081193a6f02be44
@@ -4342,7 +4348,7 @@ SPEC CHECKSUMS:
   EXConstants: 4c0c0c3f445d9c369de34b9545aaf4e1526391b3
   EXContacts: 3cc27f68eb7ff4e7ab1a26e34c33297ae4307bfa
   EXDevice: 0115b360059ccd32c1701744e374e3259ffbdd3c
-  EXDocumentPicker: 5efed7743d2a23696f3c6a6fe250c0a81b08f897
+  EXDocumentPicker: cd34632ff465bfef63c9ff92b05b747665e21996
   EXErrorRecovery: 3ce46e5d42e53c0371ff048a7f0cbc959968ef4a
   EXFacebook: 697b31e632ed30248585736c178eb7a1177cc14a
   EXFaceDetector: 52c018b3ee24b9f226809a3a99184a173d1f0db5
@@ -4350,8 +4356,8 @@ SPEC CHECKSUMS:
   EXFirebaseAnalytics: aeefc63f92277313c3ee86da6a7ecf892f345ed1
   EXFirebaseCore: bdfa87df74fa1b74a6b38957561456aabad28a4f
   EXFont: 04235cc22e6fef86028feb67db452978dc6f240f
-  EXGL: f84d22778dd933164d0a739cc4868ad93e688594
-  EXGL_CPP: 9c41650d987c2aa6e999740bf8803e445cb9e195
+  EXGL: d2cb2f86eeb5057cb058ff5010224294b66492d8
+  EXGL_CPP: 0e91a0dbaa2b4d9d9a2c34ab903ee7ea471e9efb
   EXGoogleSignIn: d4ec785c6d98732a47824257c04a3415cfbd8986
   EXImageLoader: b88e053d760f85a82405b1db2de4abf11978fc9f
   EXJSONUtils: 2a74b8f40f1523cc3f92af99c91aa78201737a77
@@ -4361,15 +4367,15 @@ SPEC CHECKSUMS:
   EXManifests: 0c6134b7b6f3236a93a778c3f44ba1cfb3f9fa3d
   EXMediaLibrary: 5d0e1b78268c90f7dd8a83ee3be26e01c4fd6c1f
   EXNetwork: 116e5ec043168904c1f24a2e96a8361063e57d26
-  EXNotifications: e0031e6cf1d018b8a09a1f7790faef25ccbf107e
+  EXNotifications: 6164d98ce54326bd5f7c09ef0717a500e9820cf9
   EXPermissions: 3dbb869e7f96a5711314f73d48ddc2f28009a7f6
-  Expo: d6f2f2ef666a2d48dc6f7680d5fe7e28034b4a96
+  Expo: 8af09aaa24c023d55160118554032b178fad1871
   ExpoCellular: b5daa3b732c0c9841979c39988062e50e70dc053
   ExpoClipboard: e2dda22be0524595a5eeead51665f60729829123
   ExpoCrypto: d0d0f3e20875dc450b4ec88f0fb608da5c2c6c17
   ExpoHaptics: ad58ec96a25e57579c14a47c7d71f0de0de8656a
   ExpoImageManipulator: b55580bbc7b10099c7707949903e7176a8542ee8
-  ExpoImagePicker: d7a3329544ca45a43aa8ac81b66ba22352e65eab
+  ExpoImagePicker: d9d6b4f29db437fc7796f13cee5f133f5b4b5f7c
   ExpoKeepAwake: 6f23558b054e4d0c04535f7d70c3fe6a2025d8f7
   ExpoLinearGradient: 0debcf7d6cd7fea3050c218544f0db2de9a64f42
   ExpoLocalization: 8f619bb6eec64575cd5220bfabbd7b4e2d6f33f8
@@ -4383,15 +4389,15 @@ SPEC CHECKSUMS:
   EXScreenOrientation: e3c072fb0add472a3037482ea43ccbade9b88a25
   EXSecureStore: aaae919d83aec2faf031e99398807edac0313285
   EXSegment: e05f11265384090c219ea8c450f14906caad7859
-  EXSensors: de04e582a639068fcbce91e3193976af28576d5d
+  EXSensors: 158b3487409f0e7fdebfe9c1f0b7509a81a3af07
   EXSharing: b058aa8e8993ac63d809c686df7695203a810123
   EXSMS: 26f6d61a00a3a3fb125a233d81b1d3ab48303cef
   EXSpeech: b151148a873cacbd87518b2bda92dd667c94c73c
-  EXSplashScreen: 8a3b224b8432cba0b3081e4235956acd671666f1
+  EXSplashScreen: 0878feea1af33fda72d84c17787989b245f60275
   EXSQLite: 2b9accd925438293f9f39e0a57a08cca13bdffb2
   EXStoreReview: e61fbd500624ee7363ab134ee247cff380a8b254
   EXStructuredHeaders: 5d86829469399370a9fc7cb1e4391b09de87681d
-  EXTaskManager: 59126789151b2cbc8b0605aac233675b56531eb0
+  EXTaskManager: 80829d015808bbac6a292f9a3b7adf801c72cce6
   EXTrackingTransparency: e6193655ba7c4cf6c1493162b87c766a780f1f11
   EXUpdates: a98894060512391cbc8a0ee48336fb57f2a8eedd
   EXUpdatesInterface: 0b101ace1dbfa0f64260a5df31c71d03c66cca54
@@ -4451,6 +4457,7 @@ SPEC CHECKSUMS:
   React-logger: f79dd3cc0f9b44f5611c6c7862badd891a862cf8
   react-native-netinfo: e922cb2e3eaf9ccdf16b8d4744a89657377aa4a1
   react-native-pager-view: b1914469643f40042e65d78cbf3d3dfebd6fb0d9
+  react-native-safe-area-context: f98b0b16d1546d208fc293b4661e3f81a895afd9
   react-native-segmented-control: 06607462630512ff8eef652ec560e6235a30cc3e
   react-native-webview: 0b7bd2bffced115aefd393e1841babd9b9a557b1
   React-perflogger: 30ab8d6db10e175626069e742eead3ebe8f24fd5
@@ -4478,6 +4485,6 @@ SPEC CHECKSUMS:
   Yoga: 17cd9a50243093b547c1e539c749928dd68152da
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 57afe4997fe29696cc7ef7637083c7323007ea22
+PODFILE CHECKSUM: 6dabe95cbe1bb677756539dabe50e48e996a3bc2
 
 COCOAPODS: 1.11.2

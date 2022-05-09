@@ -2,7 +2,7 @@
 title: Internal distribution
 ---
 
-import TerminalBlock from '~/components/plugins/TerminalBlock';
+import { Terminal } from '~/ui/components/Snippet';
 import { theme } from '@expo/styleguide'
 
 Uploading your app to TestFlight and Google Play beta can be time consuming (e.g. waiting for the build to run through static analysis before becoming available to testers) and limiting (e.g. TestFlight can only have one active build at a time). Both Android and iOS provide alternative mechanisms to distribute apps directly to testers, so they can download and install them to physical devices directly from a web browser as soon as the builds are completed.
@@ -10,8 +10,6 @@ Uploading your app to TestFlight and Google Play beta can be time consuming (e.g
 EAS Build can help you with this by providing sharable URLs for your builds with instructions on how to get them running, so you can share a single URL with a teammate that'll include all of the information they need to test the app.
 
 > 😅 Installing an app on iOS is a bit trickier than on Android, but it's possible thanks to ad hoc and enterprise provisioning profiles. We'll talk more about this later in this doc.
-
-<div style={{marginTop: 30}} />
 
 <h1>Setting up internal distribution</h1>
 
@@ -39,9 +37,7 @@ Please note that if you override the `gradleCommand` on Android, you should ensu
 
 ### iOS
 
-The configuration above tells EAS Build that you would like to use ad hoc distribution, which is available for all paid Apple developer accounts. It is not available for free accounts.
-
-<div style={{marginTop: -10}} />
+The configuration above tells EAS Build that you would like to use ad hoc distribution, which is available for all paid Apple Developer accounts. It is not available for free accounts.
 
 <details><summary><h4>🏙 Do you have an Apple Developer Enterprise Program membership?</h4></summary>
 <p>
@@ -84,7 +80,10 @@ Apps signed with an ad hoc provisioning profile can be installed by any iOS devi
 
 Setting up ad hoc provisioning consists of two steps. In the first step, you'll register devices that you want to be able to install your app. Run the following command to generate a URL (and QR code, for convenience) that you can open on your devices, and then follow the instructions on the registration page.
 
-<TerminalBlock cmd={['# Register Apple Devices for internal distribution', 'eas device:create']} />
+<Terminal cmd={[
+  '# Register Apple Devices for internal distribution',
+  '$ eas device:create'
+]} cmdCopy="eas device:create" />
 
 You can register new devices at any time, but builds that were created before the device was registered will not run on newly registered devices; only builds that are created after the device is registered will be installable.
 
@@ -93,7 +92,7 @@ The next step is to generate or update the provisioning profile. When you procee
 <details><summary><h4>🏙 Are you setting up enterprise provisioning?</h4></summary>
 <p>
 
-Apple Enterprise Program membership costs $299 USD per year and [not all organizations will be eligible](https://developer.apple.com/programs/enterprise/), so you will likely be using ad hoc provisioning, which works with any normal paid Apple developer account.
+Apple Enterprise Program membership costs $299 USD per year and [not all organizations will be eligible](https://developer.apple.com/programs/enterprise/), so you will likely be using ad hoc provisioning, which works with any normal paid Apple Developer account.
 
 If you have an [Apple Developer Enterprise Program membership](https://developer.apple.com/programs/enterprise/) users can install your app to their device without pre-registering their UDID; they just need to install the profile to their device and they can then access existing builds. You will need to sign in using your Apple Developer Enterprise account during the `eas build` process to set up the correct provisioning.
 
@@ -104,8 +103,6 @@ If you distribute your app both through enterprise provisioning and the App Stor
 
 </p>
 </details>
-
-<div style={{marginTop: -20}} />
 
 <details><summary><h4>🔐 Are you using manual local credentials?</h4></summary>
 <p>
@@ -120,9 +117,12 @@ If so, make sure to point your **credentials.json** to an ad hoc or enterprise p
 
 Now that we have set up our build profile and app signing, running a build for internal distribution is just like any other build.
 
-<TerminalBlock cmd={['# Create iOS and Android builds for internal distribution', 'eas build --profile preview --platform all']} />
+<Terminal cmd={[
+  '# Create iOS and Android builds for internal distribution',
+  '$ eas build --profile preview --platform all'
+]} cmdCopy="eas build --profile preview --platform all" />
 
-> If you're using ad hoc provisioning but you haven't registered any devices yet, you'll be asked to register them now (or exit the current command and run `eas device:add` again). The build command will wait for the new device to register. Scan the QR code that is presented in the terminal and follow the instructions on that page to register your device. When you're done, return to the terminal and continue.
+> If you're using ad hoc provisioning but you haven't registered any devices yet, you'll be asked to register them now (or exit the current command and run `eas device:create` again). The build command will wait for the new device to register. Scan the QR code that is presented in the terminal and follow the instructions on that page to register your device. When you're done, return to the terminal and continue.
 
 When the build completes, you will be given a URL that you can share with your team to download and install the app.
 
@@ -130,7 +130,7 @@ When the build completes, you will be given a URL that you can share with your t
 
 Press the "Install" button on the build page and follow the instructions presented in the modal.
 
-## 5. Automation on CI (_optional_)
+## 5. Automation on CI (optional)
 
 It's possible to run internal distribution builds non-interactively in CI using the `--non-interactive` flag; however, if you are using ad hoc provisioning on iOS you will not be able to add new devices to your provisioning profile when using this flag. After registering a device through `eas device:create`, you need to run `eas build` interactively and authenticate with Apple in order for EAS to add the device to your provisioning profile. [Learn more about triggering builds from CI](/build/building-on-ci.md).
 

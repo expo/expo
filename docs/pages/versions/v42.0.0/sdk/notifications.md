@@ -1718,7 +1718,7 @@ export type ChannelAwareTriggerInput = {
 
 #### `DateTriggerInput`
 
-A trigger that will cause the notification to be delivered once at the specified `Date`. If you pass in a `number` it will be interpreted as a UNIX timestamp.
+A trigger that will cause the notification to be delivered once at the specified `Date`. If you pass in a `number` it will be interpreted as a Unix timestamp.
 
 ```ts
 export type DateTriggerInput = Date | number | { channelId?: string; date: Date | number };

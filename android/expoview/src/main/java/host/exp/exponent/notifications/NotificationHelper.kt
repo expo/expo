@@ -500,7 +500,9 @@ object NotificationHelper {
               intent.putExtra(KernelConstants.NOTIFICATION_KEY, body) // deprecated
               intent.putExtra(KernelConstants.NOTIFICATION_OBJECT_KEY, notificationEvent.toJSONObject(null).toString())
 
-              val contentIntent = PendingIntent.getActivity(context, id, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+              // We're defaulting to the behaviour prior API 31 (mutable) even though Android recommends immutability
+              val mutableFlag = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) PendingIntent.FLAG_MUTABLE else 0
+              val contentIntent = PendingIntent.getActivity(context, id, intent, PendingIntent.FLAG_UPDATE_CURRENT or mutableFlag)
               builder.setContentIntent(contentIntent)
 
               if (data.containsKey("categoryId")) {

@@ -8,7 +8,19 @@
 
 ### 🐛 Bug fixes
 
+- Fixed Android 12+ runtime crash caused by `PendingIntent` misconfiguration. ([#17333](https://github.com/expo/expo/pull/17333) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
+
+### ⚠️ Notices
+
+- Fixed exception on Android 12+ devices for missing `SCHEDULE_EXACT_ALARM` permission. If `scheduleNotificationAsync` needs a precise timer, the `SCHEDULE_EXACT_ALARM` should be explicitly added to **AndroidManifest.xml**. ([#17334](https://github.com/expo/expo/pull/17334) by [@kudo](https://github.com/kudo))
+
+## 0.15.1 — 2022-04-27
+
+### 💡 Others
+
+- Remove badge deadcode ([#17205](https://github.com/expo/expo/pull/17205) by [@wschurman](https://github.com/wschurman))
 
 ## 0.15.0 — 2022-04-18
 

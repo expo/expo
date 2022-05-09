@@ -7,7 +7,7 @@ apply plugin: 'kotlin-kapt'
 // WHEN_VERSIONING_REMOVE_FROM_HERE
 //maven repository info
 group = 'host.exp.exponent'
-version = '44.0.0'
+version = '45.0.0'
 
 // Creating sources with comments
 task androidSourcesJar(type: Jar) {
@@ -274,7 +274,7 @@ dependencies {
   api 'org.webkit:android-jsc:r245459' // needs to be before react-native
 
   /* UNCOMMENT WHEN DISTRIBUTING
-  api 'com.facebook.react:react-native:44.0.0'
+  api 'com.facebook.react:react-native:45.0.0'
   compileOnly project(':expo')
   compileOnly project(':expo-random')
   END UNCOMMENT WHEN DISTRIBUTING */
@@ -754,6 +754,20 @@ project.afterEvaluate {
   if (nativeBuildTask) {
     packageNdkLibs.dependsOn nativeBuildTask
   }
+
+  // Workaround for AGP 7 local lint aar task with errors from a library project owning other aars.
+  // In our case, it's the expoview (library project) owning hermes aar
+  // ```
+  // Error while evaluating property 'hasLocalAarDeps' of task ':expoview:bundleVersionedReleaseLocalLintAar'
+  //   > Direct local .aar file dependencies are not supported when building an AAR.
+  //     The resulting AAR would be broken because the classes and Android resources from any local .aar file dependencies would not be packaged in the resulting AAR.
+  //     Previous versions of the Android Gradle Plugin produce broken AARs in this case too (despite not throwing this error).
+  //     The following direct local .aar file dependencies of the :expoview project caused this error:
+  //     /home/runner/work/expo/expo/node_modules/hermes-engine/android/hermes-release.aar
+  // ```
+  // For the workaround, we just pretend we don't have local aar dependencies.
+  tasks.findByName("bundleVersionedReleaseLocalLintAar")?.localAarDeps?.setFrom([])
+  tasks.findByName("bundleUnversionedReleaseLocalLintAar")?.localAarDeps?.setFrom([])
 }
 
 task packageNdkLibs(type: Copy) {

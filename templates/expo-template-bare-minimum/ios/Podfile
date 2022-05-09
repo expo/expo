@@ -2,16 +2,18 @@ require File.join(File.dirname(`node --print "require.resolve('expo/package.json
 require File.join(File.dirname(`node --print "require.resolve('react-native/package.json')"`), "scripts/react_native_pods")
 require File.join(File.dirname(`node --print "require.resolve('@react-native-community/cli-platform-ios/package.json')"`), "native_modules")
 
-platform :ios, '12.0'
-install! 'cocoapods',
-  :deterministic_uuids => false
-
 require 'json'
 podfile_properties = JSON.parse(File.read('./Podfile.properties.json')) rescue {}
+
+platform :ios, podfile_properties['ios.deploymentTarget'] || '12.0'
+install! 'cocoapods',
+  :deterministic_uuids => false
 
 target 'HelloWorld' do
   use_expo_modules!
   config = use_native_modules!
+
+  use_frameworks! :linkage => podfile_properties['ios.useFrameworks'].to_sym if podfile_properties['ios.useFrameworks']
 
   # Flags change depending on the env values.
   flags = get_default_flags()
@@ -25,13 +27,15 @@ target 'HelloWorld' do
   )
 
   # Uncomment to opt-in to using Flipper
+  # Note that if you have use_frameworks! enabled, Flipper will not work
   #
   # if !ENV['CI']
-  #   use_flipper!('Flipper' => '0.75.1', 'Flipper-Folly' => '2.5.3', 'Flipper-RSocket' => '1.3.1')
+  #   use_flipper!()
   # end
 
   post_install do |installer|
     react_native_post_install(installer)
+    __apply_Xcode_12_5_M1_post_install_workaround(installer)
   end
 
   post_integrate do |installer|

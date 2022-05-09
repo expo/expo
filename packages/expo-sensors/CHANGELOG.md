@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 11.3.0 — 2022-04-27
+
+### ⚠️ Notices
+
+- Fixed exception on Android S+ devices for missing `HIGH_SAMPLING_RATE_SENSORS` permission. If the sensor update interval needs to be lower than 200ms, `HIGH_SAMPLING_RATE_SENSORS` should be explicitly added to **AndroidManifest.xml**. ([#17177](https://github.com/expo/expo/pull/17177) by [@kudo](https://github.com/kudo))
+
 ## 11.2.0 — 2022-04-18
 
 ### 💡 Others

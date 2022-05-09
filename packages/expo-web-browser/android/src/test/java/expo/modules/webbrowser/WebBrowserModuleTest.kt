@@ -320,11 +320,9 @@ internal class WebBrowserModuleTest {
 
   private fun initialize(
     customTabsActivitiesHelper: CustomTabsActivitiesHelper = mockkCustomTabsActivitiesHelper(),
-    customTabsConnectionHelper: CustomTabsConnectionHelper? = null
+    customTabsConnectionHelper: CustomTabsConnectionHelper = mockkCustomTabsConnectionHelper()
   ) {
-    if (customTabsConnectionHelper != null) {
-      moduleRegistry.mockInternalModule(customTabsConnectionHelper)
-    }
+    moduleRegistry.mockInternalModule(customTabsConnectionHelper)
     moduleRegistry.mockInternalModule(customTabsActivitiesHelper)
     module.onCreate(moduleRegistry)
   }

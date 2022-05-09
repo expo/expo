@@ -8,9 +8,33 @@
 
 ### 🐛 Bug fixes
 
-- Fix `Overwriting fontFamily style attribute preprocessor` warning when startup. ([#17138](https://github.com/expo/expo/pull/17138) by [@Kudo](https://github.com/Kudo))
+- Fixed `Unable to deactivate keep awake. However, it probably is deactivated already` unhandled promise rejection warning when resuming apps on Android. ([#17319](https://github.com/expo/expo/pull/17319) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
+
+## 45.0.0-beta.9 — 2022-04-28
+
+_This version does not introduce any user-facing changes._
+
+## 45.0.0-beta.8 — 2022-04-27
+
+_This version does not introduce any user-facing changes._
+
+## 45.0.0-beta.7 — 2022-04-27
+
+### 🐛 Bug fixes
+
+- Forward CLI exit code to process. ([#17189](https://github.com/expo/expo/pull/17189) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 45.0.0-beta.6 — 2022-04-27
+
+_This version does not introduce any user-facing changes._
+
+## 45.0.0-beta.5 — 2022-04-25
+
+### 🐛 Bug fixes
+
+- Fix `Overwriting fontFamily style attribute preprocessor` warning when startup. ([#17138](https://github.com/expo/expo/pull/17138) by [@Kudo](https://github.com/Kudo))
 
 ## 45.0.0-beta.4 — 2022-04-21
 

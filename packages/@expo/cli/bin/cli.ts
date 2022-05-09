@@ -8,9 +8,12 @@ export type Command = (argv?: string[]) => void;
 
 const commands: { [command: string]: () => Promise<Command> } = {
   // Add a new command here
+  'run:ios': () => import('../src/run/ios').then((i) => i.expoRunIos),
+  'run:android': () => import('../src/run/android').then((i) => i.expoRunAndroid),
   start: () => import('../src/start').then((i) => i.expoStart),
   prebuild: () => import('../src/prebuild').then((i) => i.expoPrebuild),
   config: () => import('../src/config').then((i) => i.expoConfig),
+  export: () => import('../src/export').then((i) => i.expoExport),
 
   // Auxiliary commands
   install: () => import('../src/install').then((i) => i.expoInstall),
@@ -49,20 +52,37 @@ const isSubcommand = Boolean(commands[args._[0]]);
 
 // Handle `--help` flag
 if (!isSubcommand && args['--help']) {
+  const {
+    login,
+    logout,
+    whoami,
+    register,
+    start,
+    install,
+    export: _export,
+    config,
+    prebuild,
+    'run:ios': runIos,
+    'run:android': runAndroid,
+    ...others
+  } = commands;
+
   console.log(chalk`
-    {bold Usage}
-      {bold $} npx expo <command>
+  {bold Usage}
+    {dim $} npx expo <command>
 
-    {bold Available commands}
-      ${Object.keys(commands).sort().join(', ')}
+  {bold Commands}
+    ${Object.keys({ start, install, export: _export, config, ...others }).join(', ')}
+    ${Object.keys({ 'run:ios': runIos, 'run:android': runAndroid, prebuild }).join(', ')}
+    {dim ${Object.keys({ login, logout, whoami, register }).join(', ')}}
 
-    {bold Options}
-      --version, -v   Version number
-      --help, -h      Displays this message
+  {bold Options}
+    --version, -v   Version number
+    --help, -h      Usage info
 
-    For more information run a command with the --help flag
-      {bold $} expo start --help
-  `);
+  For more info run a command with the {bold --help} flag
+    {dim $} npx expo start --help
+`);
   process.exit(0);
 }
 

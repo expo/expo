@@ -12,6 +12,12 @@ const Stack = createStackNavigator();
 export const Screens = [
   {
     getComponent() {
+      return optionalRequire(() => require('../screens/ExpoModulesScreen'));
+    },
+    name: 'ExpoModules',
+  },
+  {
+    getComponent() {
       return optionalRequire(() => require('../screens/StatusBarScreen'));
     },
     name: 'StatusBar',
@@ -169,13 +175,6 @@ export const Screens = [
       return optionalRequire(() => require('../screens/FontScreen'));
     },
     name: 'Font',
-  },
-  {
-    getComponent() {
-      return optionalRequire(() => require('../screens/GoogleSignInScreen'));
-    },
-    name: 'GoogleSignIn',
-    options: { title: 'Native Google Sign-In' },
   },
   {
     getComponent() {

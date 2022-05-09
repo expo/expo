@@ -33,7 +33,7 @@ def getRNVersion() {
 ensureDependeciesWereEvaluated(project)
 
 group = 'host.exp.exponent'
-version = '45.0.0-beta.4'
+version = '45.0.0-beta.9'
 
 buildscript {
   def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
@@ -104,7 +104,7 @@ android {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 31)
     versionCode 1
-    versionName "45.0.0-beta.4"
+    versionName "45.0.0-beta.9"
     consumerProguardFiles("proguard-rules.pro")
   }
   lintOptions {

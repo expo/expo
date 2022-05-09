@@ -7,7 +7,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'maven-publish'
 
 group = 'host.exp.exponent'
-version = '0.10.2'
+version = '0.10.6'
 
 // reanimated v2
 def reactNativeFilePath = ["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim()
@@ -207,7 +207,7 @@ android {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 31)
     versionCode 10
-    versionName '0.10.2'
+    versionName '0.10.6'
   }
   lintOptions {
     abortOnError false

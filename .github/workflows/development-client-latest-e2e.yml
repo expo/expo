@@ -12,15 +12,19 @@ concurrency:
 jobs:
   detox_latest_e2e:
     runs-on: macos-11
+    strategy:
+      matrix:
+        api-level: [31]
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v3
+      - name: ➕ Add `bin` to GITHUB_PATH
+        run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: 🍺 Install required tools
         run: |
           brew tap wix/brew
           brew install applesimutils
           brew install watchman
-          echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: 💎 Setup Ruby and install gems
         uses: ruby/setup-ruby@v1
         with:
@@ -32,21 +36,22 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '11'
-      - name: 🤖 Set up android emulator
-        uses: reactivecircus/android-emulator-runner@v2
+      - name: ♻️ Restore caches
+        uses: ./.github/actions/expo-caches
+        id: expo-caches
         with:
-          api-level: 29
-          avd-name: DevClientEmulator
-          script: echo "expo is awesome"
+          yarn-workspace: 'true'
+          avd: 'true'
+          avd-api: ${{ matrix.api-level }}
       - name: 🧶 Install `expo-test-runner`
         run: |
           yarn global add expo-test-runner@$(cat package.json | grep '"expo-test-runner": "[0-9]*\.[0-9]*\.[0-9]*' | head -n 1 | awk '{print $2}' | sed 's/"//g; s/,//g')
         working-directory: packages/expo-dev-client
-      - name: 🏃‍♂️ Run tests
+      - name: 🧪 Run tests
         run: |
           yarn latest-e2e
         working-directory: packages/expo-dev-client
-      - name: Store artifacts of build failures
+      - name: 💾 Store artifacts of build failures
         if: failure()
         uses: actions/upload-artifact@v3
         with:

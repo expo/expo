@@ -49,7 +49,7 @@ We would like to point out [`transformIgnorePatterns`](https://jestjs.io/docs/co
 
 ## Unit Test
 
-We are going to write a simple test for **App.js** by creating it's own test file: **App.test.js**. Jest will identify this as a test and include it in the tests queue. There are other ways to [structure your tests](#structure-your-tests), but we will cover that later in this guide.
+We are going to write a simple test for **App.js** by creating its own test file: **App.test.js**. Jest will identify this as a test and include it in the tests queue. There are other ways to [structure your tests](#structure-your-tests), but we will cover that later in this guide.
 
 Our test will be the expected state of the `<App />` to have one child element:
 

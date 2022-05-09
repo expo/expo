@@ -1,1 +1,1 @@
-{"version":3,"file":"saveManifestAsync.d.ts","sourceRoot":"","sources":["../../src/cli/saveManifestAsync.ts"],"names":[],"mappings":"AAEA,OAAO,EAAE,YAAY,EAAE,aAAa,EAAE,MAAM,UAAU,CAAC;AAGvD,wBAAsB,iBAAiB,CAAC,aAAa,EAAE,aAAa,EAAE,MAAM,EAAE,YAAY,iBAOzF"}
+{"version":3,"file":"saveManifestAsync.d.ts","sourceRoot":"","sources":["../../src/cli/saveManifestAsync.ts"],"names":[],"mappings":"AAEA,OAAO,EAAE,aAAa,EAAE,MAAM,UAAU,CAAC;AAGzC,wBAAsB,iBAAiB,CACrC,aAAa,EAAE,aAAa,EAC5B,MAAM,EAAE;IAAE,SAAS,EAAE,MAAM,CAAC;IAAC,WAAW,EAAE,MAAM,CAAA;CAAE,iBAQnD"}
