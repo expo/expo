@@ -15,20 +15,26 @@ type DestinationResolutionProps = {
   webStaticPath: string;
 };
 
-const templates: {
+const TEMPLATES: {
+  /** Template file path to copy into the project. */
   file: string;
-  dependencies: string[];
+  /** Output location for the file in the user project. */
   destination: (props: DestinationResolutionProps) => string;
+  /** List of dependencies to install in the project. These are used inside of the template file. */
+  dependencies: string[];
 }[] = [
   {
     file: require.resolve('@expo/cli/static/template/babel.config.js'),
     destination: () => 'babel.config.js',
-    dependencies: ['babel-preset-expo'],
+    dependencies: [
+      // Even though this is installed in `expo`, we should add it for now.
+      'babel-preset-expo',
+    ],
   },
   {
-    dependencies: ['@expo/webpack-config'],
-    destination: () => 'webpack.config.js',
     file: require.resolve('@expo/cli/static/template/webpack.config.js'),
+    destination: () => 'webpack.config.js',
+    dependencies: ['@expo/webpack-config'],
   },
   {
     dependencies: ['@expo/metro-config'],
@@ -36,16 +42,16 @@ const templates: {
     file: require.resolve('@expo/cli/static/template/metro.config.js'),
   },
   {
-    dependencies: [],
+    file: require.resolve('@expo/cli/static/template/serve.json'),
     // web/serve.json
     destination: ({ webStaticPath }) => webStaticPath + '/serve.json',
-    file: require.resolve('@expo/cli/static/template/serve.json'),
+    dependencies: [],
   },
   {
-    dependencies: [],
+    file: require.resolve('@expo/cli/static/template/index.html'),
     // web/index.html
     destination: ({ webStaticPath }) => webStaticPath + '/index.html',
-    file: require.resolve('@expo/cli/static/template/index.html'),
+    dependencies: [],
   },
 ];
 
@@ -66,7 +72,7 @@ export async function customizeAsync(files: string[], options: Options, extras: 
 
   const values: { title: string; value: number; description: string }[] = [];
 
-  templates.forEach((template, index) => {
+  TEMPLATES.forEach((template, index) => {
     const destination = template.destination(props);
     const localProjectFile = path.resolve(projectRoot, destination);
     const exists = fs.existsSync(localProjectFile);
@@ -80,17 +86,17 @@ export async function customizeAsync(files: string[], options: Options, extras: 
 
   if (files.length) {
     const valid = files.filter(
-      (file) => !!templates.find((template) => template.destination(props) === file)
+      (file) => !!TEMPLATES.find((template) => template.destination(props) === file)
     );
 
     if (valid.length !== files.length) {
       const diff = files.filter(
-        (file) => !templates.find((template) => template.destination(props) === file)
+        (file) => !TEMPLATES.find((template) => template.destination(props) === file)
       );
       throw new CommandError(
-        `Invalid files: ${diff.join(', ')}. Allowed: ${templates
-          .map((template) => template.destination(props))
-          .join(', ')}`
+        `Invalid files: ${diff.join(', ')}. Allowed: ${TEMPLATES.map((template) =>
+          template.destination(props)
+        ).join(', ')}`
       );
     }
 
@@ -98,7 +104,7 @@ export async function customizeAsync(files: string[], options: Options, extras: 
     return generateAsync({
       projectRoot,
       answer: files.map((file) => {
-        return templates.findIndex((template) => template.destination(props) === file);
+        return TEMPLATES.findIndex((template) => template.destination(props) === file);
       }),
       props,
       extras,
@@ -140,7 +146,7 @@ async function generateAsync({
   // Copy files
   await Promise.all(
     answer.map((file) => {
-      const template = templates[file];
+      const template = TEMPLATES[file];
       const projectFilePath = path.resolve(projectRoot, template.destination(props));
       // copy the file from template
       return copyAsync(template.file, projectFilePath, { overwrite: true, recursive: true });
@@ -148,7 +154,7 @@ async function generateAsync({
   );
 
   // Install dependencies
-  const packages = answer.map((file) => templates[file].dependencies).flat();
+  const packages = answer.map((file) => TEMPLATES[file].dependencies).flat();
   if (packages.length) {
     Log.debug('Installing ' + packages.join(', '));
     await installAsync(packages, {}, ['--dev', ...extras]);
