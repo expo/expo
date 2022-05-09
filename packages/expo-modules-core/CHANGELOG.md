@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fix view props weren't recognized in the bare workflow on iOS. ([#17411](https://github.com/expo/expo/pull/17411) by [@lukmccall](https://github.com/lukmccall))
-
 ### 💡 Others
+
+## 0.9.2 — 2022-05-09
+
+### 🐛 Bug fixes
+
+- Fix view props weren't recognized in the bare workflow on iOS. ([#17411](https://github.com/expo/expo/pull/17411) by [@lukmccall](https://github.com/lukmccall))
 
 ## 0.9.1 — 2022-05-05
 

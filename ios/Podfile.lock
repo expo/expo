@@ -1970,10 +1970,10 @@ PODS:
     - ExpoModulesCore
   - ExpoLocalization (13.0.0):
     - ExpoModulesCore
-  - ExpoModulesCore (0.9.1):
+  - ExpoModulesCore (0.9.2):
     - React-Core
     - ReactCommon/turbomodule/core
-  - ExpoModulesCore/Tests (0.9.1):
+  - ExpoModulesCore/Tests (0.9.2):
     - ExpoModulesTestCore
     - React-Core
     - ReactCommon/turbomodule/core
@@ -4382,7 +4382,7 @@ SPEC CHECKSUMS:
   ExpoKeepAwake: c0c494b442ecd8122974c13b93ccfb57bd408e88
   ExpoLinearGradient: 0debcf7d6cd7fea3050c218544f0db2de9a64f42
   ExpoLocalization: 8f619bb6eec64575cd5220bfabbd7b4e2d6f33f8
-  ExpoModulesCore: 5597629698cc026bd3dff1ef182fe2cc67c31084
+  ExpoModulesCore: e4278a668e8c13c0269ed8b8a4200989deea2973
   ExpoModulesTestCore: 200e6d0280f7842d915eab63d0c6b298b4dff530
   ExpoRandom: 14df0976aa363a71a730ceb7655250f3047c0e42
   ExpoSystemUI: 6175204b809d9598d56e5a711480415d28c9fb5b

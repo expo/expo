@@ -65,7 +65,7 @@
     "expo-font": "~10.1.0",
     "expo-keep-awake": "~10.1.1",
     "expo-modules-autolinking": "0.8.0",
-    "expo-modules-core": "0.9.1",
+    "expo-modules-core": "0.9.2",
     "fbemitter": "^3.0.0",
     "getenv": "^1.0.0",
     "invariant": "^2.2.4",
