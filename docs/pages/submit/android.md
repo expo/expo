@@ -8,7 +8,7 @@ This guide outlines how to submit your app to the Google Play Store from your ow
 ## Prerequisites
 
 - A paid developer account is required &mdash; You can create a Google Play Developer account on the [Google Play Console sign-up page](https://play.google.com/apps/publish/signup/).
-- You have to create a [Google Service Account](https://cloud.google.com/iam/docs/creating-managing-service-accounts) and download its JSON private key.
+- You have to create a [Google Service Account](#creating-a-google-service-account) and download its JSON private key.
 - After that, you'll have to create an app on [Google Play Console](https://play.google.com/apps/publish/) and upload your app manually at least once.
 - You will also need to have EAS CLI installed and authenticated with your Expo account: `npm install -g eas-cli && eas login`.
 
