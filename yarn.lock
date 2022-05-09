@@ -9134,24 +9134,6 @@ expo-three@6.0.1:
     "@expo/browser-polyfill" "^0.1.1"
     expo-asset-utils "~3.0.0"
 
-expo-updates@~0.13.1:
-  version "0.13.1"
-  resolved "https://registry.yarnpkg.com/expo-updates/-/expo-updates-0.13.1.tgz#ffed4216eda6afbc15f06399115a5b9e649102a6"
-  integrity sha512-6GTqgAco3da/rk0/AvDRFmrWxEIxlmIs7vvoCWWxyvifLBlQAaU08+AdZH5RwdN3aUaIep70pnqlc67xe/y0og==
-  dependencies:
-    "@expo/code-signing-certificates" "0.0.1"
-    "@expo/config" "^6.0.14"
-    "@expo/config-plugins" "^4.0.14"
-    "@expo/metro-config" "~0.3.7"
-    arg "4.1.0"
-    expo-eas-client "~0.2.0"
-    expo-manifests "~0.3.0"
-    expo-structured-headers "~2.2.0"
-    expo-updates-interface "~0.6.0"
-    fbemitter "^3.0.0"
-    resolve-from "^5.0.0"
-    uuid "^3.4.0"
-
 express@4.16.4:
   version "4.16.4"
   resolved "https://registry.yarnpkg.com/express/-/express-4.16.4.tgz#fddef61926109e24c515ea97fd2f1bdbf62df12e"
