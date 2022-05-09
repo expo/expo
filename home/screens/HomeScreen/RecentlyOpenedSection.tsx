@@ -1,6 +1,7 @@
 import { Divider, View } from 'expo-dev-client-components';
 import React, { Fragment } from 'react';
 import { Linking } from 'react-native';
+import { normalizeUrl, toExp } from 'utils/UrlUtils';
 
 import { HistoryList } from '../../types';
 import { RecentlyOpenedListItem } from './RecentlyOpenedListItem';
@@ -31,7 +32,7 @@ export function RecentlyOpenedSection({ recentHistory }: Props) {
                 (project.manifest && 'name' in project.manifest ? project.manifest.name : undefined)
               }
               onPress={() => {
-                Linking.openURL(project.url);
+                Linking.openURL(toExp(normalizeUrl(project.url)));
               }}
               releaseChannel={
                 project.manifest && 'releaseChannel' in project.manifest

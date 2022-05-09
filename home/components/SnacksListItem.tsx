@@ -28,7 +28,7 @@ export function SnacksListItem({ description, isDraft, name, url, first, last }:
   const theme = useExpoTheme();
 
   const handlePressProject = () => {
-    Linking.openURL(UrlUtils.normalizeUrl(url));
+    Linking.openURL(UrlUtils.toExp(UrlUtils.normalizeUrl(url)));
   };
 
   const handleLongPressProject = () => {

@@ -58,7 +58,7 @@ export function DevelopmentServerListItem({
     if (experienceInfo) {
       navigation.navigate('Project', { id: experienceInfo.id });
     } else if (url) {
-      Linking.openURL(UrlUtils.normalizeUrl(url));
+      Linking.openURL(UrlUtils.toExp(UrlUtils.normalizeUrl(url)));
     }
   };
 
