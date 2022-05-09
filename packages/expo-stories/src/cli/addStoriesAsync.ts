@@ -1,12 +1,15 @@
 import fse from 'fs-extra';
 import path from 'path';
 
-import { StoryOptions, StoryFile, StoryManifest } from '../types';
+import { StoryFile, StoryManifest } from '../types';
 import { saveManifestAsync } from './saveManifestAsync';
 import { getStoryManifest, hashPath } from './shared';
 import { writeStoriesAsync } from './writeStoriesAsync';
 
-export async function addStoriesAsync(relPaths: string[], config: StoryOptions) {
+export async function addStoriesAsync(
+  relPaths: string[],
+  config: { watchRoot: string; projectRoot: string }
+) {
   const { watchRoot, projectRoot } = config;
 
   // 1. read story manifest
