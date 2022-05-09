@@ -9,7 +9,9 @@ export async function exportWebAsync(projectRoot: string, options: Options) {
 
   // Create a bundler interface
   const bundler = new WebpackBundlerDevServer(projectRoot, false);
-  Log.log(`Exporting the web app...`);
+
+  Log.log(`Exporting with Webpack...`);
+
   // Bundle the app
   await bundler.bundleAsync({
     mode: options.dev ? 'development' : 'production',

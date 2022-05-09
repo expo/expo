@@ -1,12 +1,14 @@
 import chalk from 'chalk';
+import { promisify } from 'util';
 import type webpack from 'webpack';
 
 import * as Log from '../../../log';
 import { CommandError } from '../../../utils/errors';
 import { formatWebpackMessages } from './formatWebpackMessages';
 
-export async function compileAsync(compiler: webpack.Compiler): Promise<any> {
-  const stats = await compilerRunAsync(compiler);
+/** Run the `webpack` compiler and format errors/warnings. */
+export async function compileAsync(compiler: webpack.Compiler) {
+  const stats = await promisify(compiler.run)();
   const { errors, warnings } = formatWebpackMessages(
     stats.toJson({ all: false, warnings: true, errors: true })
   );
@@ -25,17 +27,5 @@ export async function compileAsync(compiler: webpack.Compiler): Promise<any> {
     Log.log(chalk.green('Compiled successfully'));
   }
 
-  return warnings;
-}
-
-async function compilerRunAsync(compiler: webpack.Compiler): Promise<webpack.Stats> {
-  return new Promise((resolve, reject) =>
-    compiler.run((error, stats) => {
-      if (error) {
-        return reject(error);
-      } else {
-        return resolve(stats);
-      }
-    })
-  );
+  return { errors, warnings };
 }
