@@ -32,7 +32,7 @@ jobs:
       - name: ⬢ Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: '14.17'
+          node-version: 16.x
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
         id: expo-caches
