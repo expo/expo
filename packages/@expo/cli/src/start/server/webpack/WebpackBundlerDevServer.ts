@@ -4,7 +4,6 @@ import type { Application } from 'express';
 import fs from 'fs';
 import http from 'http';
 import * as path from 'path';
-import ProgressBar from 'progress';
 import resolveFrom from 'resolve-from';
 import type webpack from 'webpack';
 import type WebpackDevServer from 'webpack-dev-server';
