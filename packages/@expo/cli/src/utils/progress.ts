@@ -11,6 +11,10 @@ export function getProgressBar(): ProgressBar | null {
 }
 
 export function createProgressBar(barFormat: string, options: ProgressBar.ProgressBarOptions) {
+  if (process.stderr.clearLine == null) {
+    return null;
+  }
+
   const bar = new ProgressBar(barFormat, options);
 
   const logReal = console.log;

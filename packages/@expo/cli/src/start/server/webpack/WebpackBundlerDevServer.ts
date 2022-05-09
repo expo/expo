@@ -185,19 +185,16 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
       config.plugins = [];
     }
 
-    let bar: ProgressBar | null = null;
+    const bar = createProgressBar(chalk`{bold Web} Bundling Javascript [:bar] :percent`, {
+      width: 64,
+      total: 100,
+      clear: true,
+      complete: '=',
+      incomplete: ' ',
+    });
 
-    // NOTE(EvanBacon): Prevent breaking in CI.
-    if (process.stderr.clearLine != null) {
-      bar = createProgressBar(chalk`{bold Web} Bundling Javascript [:bar] :percent`, {
-        width: 64,
-        total: 100,
-        clear: true,
-        complete: '=',
-        incomplete: ' ',
-      });
-
-      // Add a progress bar to the webpack logger.
+    // NOTE(EvanBacon): Add a progress bar to the webpack logger if defined (e.g. not in CI).
+    if (bar != null) {
       config.plugins.push(
         new webpack.ProgressPlugin((percent: number) => {
           bar?.update(percent);
