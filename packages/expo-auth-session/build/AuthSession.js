@@ -1,7 +1,7 @@
 import Constants, { ExecutionEnvironment } from 'expo-constants';
 import * as Linking from 'expo-linking';
 import { Platform } from 'expo-modules-core';
-import { dismissAuthSession, openAuthSessionAsync } from 'expo-web-browser';
+import { dismissAuthSession, openAuthSessionAsync, } from 'expo-web-browser';
 import { AuthRequest } from './AuthRequest';
 import { CodeChallengeMethod, Prompt, ResponseType, } from './AuthRequest.types';
 import { fetchDiscoveryAsync, resolveDiscoveryAsync, } from './Discovery';
@@ -11,7 +11,7 @@ import sessionUrlProvider from './SessionUrlProvider';
 let _authLock = false;
 // @needsAudit
 /**
- * Initiate an authentication session with the given options. Only one `AuthSession` can be active at any given time in your application.
+ * Initiate a proxied authentication session with the given options. Only one `AuthSession` can be active at any given time in your application.
  * If you attempt to open a second session while one is still in progress, the second session will return a value to indicate that `AuthSession` is locked.
  *
  * @param options An object of type `AuthSessionOptions`.
@@ -32,7 +32,7 @@ export async function startAsync(options) {
         return { type: 'locked' };
     }
     const returnUrl = options.returnUrl || sessionUrlProvider.getDefaultReturnUrl();
-    const startUrl = sessionUrlProvider.getStartUrl(authUrl, returnUrl);
+    const startUrl = sessionUrlProvider.getStartUrl(authUrl, returnUrl, options.projectNameForProxy);
     const showInRecents = options.showInRecents || false;
     // About to start session, set lock
     _authLock = true;
@@ -48,8 +48,8 @@ export async function startAsync(options) {
     if (!result) {
         throw new Error('Unexpected missing AuthSession result');
     }
-    if (!result.url) {
-        if (result.type) {
+    if (!('url' in result)) {
+        if ('type' in result) {
             return result;
         }
         else {
@@ -93,7 +93,7 @@ export const getDefaultReturnUrl = sessionUrlProvider.getDefaultReturnUrl;
  * @deprecated Use `makeRedirectUri({ path, useProxy })` instead.
  */
 export function getRedirectUrl(path) {
-    return sessionUrlProvider.getRedirectUrl(path);
+    return sessionUrlProvider.getRedirectUrl({ urlPath: path });
 }
 // @needsAudit
 /**
@@ -137,7 +137,7 @@ export function getRedirectUrl(path) {
  * // Web prod: https://yourwebsite.com
  * ```
  */
-export function makeRedirectUri({ native, scheme, isTripleSlashed, queryParams, path, preferLocalhost, useProxy, } = {}) {
+export function makeRedirectUri({ native, scheme, isTripleSlashed, queryParams, path, preferLocalhost, useProxy, projectNameForProxy, } = {}) {
     if (Platform.OS !== 'web' &&
         native &&
         [ExecutionEnvironment.Standalone, ExecutionEnvironment.Bare].includes(Constants.executionEnvironment)) {
@@ -161,7 +161,7 @@ export function makeRedirectUri({ native, scheme, isTripleSlashed, queryParams, 
         return url;
     }
     // Attempt to use the proxy
-    return sessionUrlProvider.getRedirectUrl(path);
+    return sessionUrlProvider.getRedirectUrl({ urlPath: path, projectNameForProxy });
 }
 // @needsAudit
 /**
@@ -179,7 +179,6 @@ export async function loadAsync(config, issuerOrDiscovery) {
     return request;
 }
 async function _openWebBrowserAsync(startUrl, returnUrl, showInRecents) {
-    // $FlowIssue: Flow thinks the awaited result can be a promise
     const result = await openAuthSessionAsync(startUrl, returnUrl, { showInRecents });
     if (result.type === 'cancel' || result.type === 'dismiss') {
         return { type: result.type };
