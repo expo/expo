@@ -20,13 +20,13 @@ export function VideoSource() {
       <Container labelTop="Remote Video Source">
         <VideoPlayer
           source={{ uri: remoteUrl }}
-          renderControls={props => <PlayPauseStopControls {...props} />}
+          renderControls={(props) => <PlayPauseStopControls {...props} />}
         />
       </Container>
       <Container labelTop="Local Video Source">
         <VideoPlayer
           source={localVideo}
-          renderControls={props => <PlayPauseStopControls {...props} />}
+          renderControls={(props) => <PlayPauseStopControls {...props} />}
         />
       </Container>
     </>
@@ -41,7 +41,7 @@ export function VideoPlayback() {
   const [source, setSource] = React.useState<Asset | null>(null);
 
   React.useEffect(() => {
-    Asset.loadAsync(remoteUrl).then(asset => {
+    Asset.loadAsync(remoteUrl).then((asset) => {
       const [video] = asset;
       setSource(video);
     });
@@ -72,7 +72,10 @@ export function VideoPlayback() {
         },
       ].map(({ label, ControlsComponent }) => (
         <Container labelTop={label} key={label}>
-          <VideoPlayer source={source} renderControls={props => <ControlsComponent {...props} />} />
+          <VideoPlayer
+            source={source}
+            renderControls={(props) => <ControlsComponent {...props} />}
+          />
         </Container>
       ))}
     </>
