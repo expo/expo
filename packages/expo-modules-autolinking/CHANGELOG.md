@@ -12,7 +12,7 @@
 ### 🐛 Bug fixes
 
 - Fix debug-only modules weren't installed if the `DEBUG` flag wasn't present in `OTHER_SWIFT_FLAGS`. ([#17383](https://github.com/expo/expo/pull/17383) by [@lukmccall](https://github.com/lukmccall))
-- Fix ios build if project config name is other than RELEASE or DEBUG ([#17439](https://github.com/expo/expo/pull/17439) by [@uloco](https://github.com/uloco))
+- Fix iOS build if project config name is other than RELEASE or DEBUG ([#17439](https://github.com/expo/expo/pull/17439) by [@uloco](https://github.com/uloco))
 
 ### 💡 Others
 
