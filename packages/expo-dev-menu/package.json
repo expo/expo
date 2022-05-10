@@ -66,7 +66,7 @@
     "graphql": "^15.3.0",
     "graphql-tag": "^2.10.1",
     "react": "17.0.2",
-    "react-native": "0.68.1",
+    "react-native": "0.68.2",
     "url": "^0.11.0"
   },
   "peerDependencies": {
