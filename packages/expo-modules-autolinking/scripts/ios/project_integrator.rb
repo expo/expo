@@ -105,7 +105,12 @@ module Expo
     def self.set_autolinking_configuration(project)
       project.native_targets.each do |native_target|
         native_target.build_configurations.each do |build_configuration|
-          configuration_flag = "-D #{CONFIGURATION_FLAG_PREFIX}#{build_configuration.name.upcase}"
+          if build_configuration.name.upcase.include? "RELEASE"
+            build_variant = "RELEASE"
+          else
+            build_variant = "DEBUG"
+          end
+          configuration_flag = "-D #{CONFIGURATION_FLAG_PREFIX}#{build_variant}"
           build_settings = build_configuration.build_settings
 
           # For some targets it might be `nil` by default which is an equivalent to `$(inherited)`
