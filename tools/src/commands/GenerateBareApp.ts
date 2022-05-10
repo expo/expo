@@ -39,6 +39,7 @@ export async function action(
   await runExpoPrebuild({ projectDir });
   await updateRNVersion({ projectDir, rnVersion });
   await createMetroConfig({ workspaceRoot: EXPO_DIR, projectRoot: projectDir });
+  await createScripts({ projectDir });
 
   // reestablish symlinks - some might be wiped out from prebuild
   await symlinkPackages({ projectDir, packagesToSymlink });
@@ -274,6 +275,157 @@ module.exports = config;
     encoding: 'utf-8',
   });
 }
+
+async function createScripts({ projectDir }) {
+  const scriptsDir = path.resolve(projectDir, 'scripts');
+  await fs.mkdir(scriptsDir);
+
+  await fs.writeFile(
+    path.resolve(scriptsDir, 'addPackages.js'),
+    addPackagesScriptTemplate(projectDir),
+    {
+      encoding: 'utf-8',
+    }
+  );
+
+  await fs.writeFile(
+    path.resolve(scriptsDir, 'removePackages.js'),
+    removePackagesScriptTemplate(projectDir),
+    {
+      encoding: 'utf-8',
+    }
+  );
+
+  const pkgJsonPath = path.resolve(projectDir, 'package.json');
+  const pkgJson = await fs.readJSON(pkgJsonPath);
+  pkgJson.scripts['package:add'] = 'node scripts/addPackages.js';
+  pkgJson.scripts['package:remove'] = 'node scripts/removePackages.js';
+  pkgJson.scripts['clean'] =
+    'watchman watch-del-all &&  rm -fr $TMPDIR/metro-cache && rm $TMPDIR/haste-map-*';
+  pkgJson.scripts['ios'] = 'expo run:ios';
+  pkgJson.scripts['android'] = 'expo run:android';
+
+  await fs.writeJSON(pkgJsonPath, pkgJson);
+
+  console.log('Added package scripts!');
+}
+
+const addPackagesScriptTemplate = (projectDir: string) => `#!/usr/bin/env node
+
+const path = require("path");
+const fs = require("fs");
+
+const expoDirectory = "${EXPO_DIR}";
+const projectDirectory = "${projectDir}";
+
+function symlinkPackages(packageNames) {
+  const pkgJson = require(path.resolve(projectDirectory, "./package.json"));
+  const symlinks = pkgJson.expo.symlinks;
+
+  packageNames.forEach((packageName) => {
+    if (!symlinks.includes(packageName)) {
+      symlinks.push(packageName);
+    }
+  });
+
+  symlinks.forEach((packageName) => {
+    const pathToPackage = path.resolve(expoDirectory, "packages", packageName);
+
+    const nodeModulesPackage = path.resolve(
+      projectDirectory,
+      "node_modules",
+      packageName
+    );
+
+    const pkg = require(path.resolve(pathToPackage, "package.json"));
+    const version = pkg.version || "*";
+
+    pkgJson.dependencies[packageName] = version;
+
+    if (fs.existsSync(nodeModulesPackage)) {
+      fs.rmSync(nodeModulesPackage, { recursive: true });
+    }
+
+    fs.symlinkSync(pathToPackage, nodeModulesPackage);
+  });
+
+  fs.writeFileSync(
+    path.resolve(projectDirectory, "./package.json"),
+    JSON.stringify(pkgJson, null, 2),
+    { encoding: "utf-8" }
+  );
+
+  console.log('Symlinking packages complete');
+}
+
+const packageNames = process.argv.slice(2);
+symlinkPackages(packageNames);
+`;
+
+const removePackagesScriptTemplate = (projectDir: string) => `#!/usr/bin/env node
+
+const path = require("path");
+const fs = require("fs");
+
+const expoDirectory = "${EXPO_DIR}";
+const projectDirectory = "${projectDir}";
+
+function removePackages(packagesToRemove) {
+  const pkgJson = require(path.resolve(projectDirectory, "./package.json"));
+  const symlinks = pkgJson.expo.symlinks;
+  const nextSymlinks = [];
+
+  symlinks.forEach((packageName) => {
+    if (!packagesToRemove.includes(packageName)) {
+      nextSymlinks.push(packageName);
+    } else {
+      delete pkgJson.dependencies[packageName];
+
+      const nodeModulesPackage = path.resolve(
+        projectDirectory,
+        "node_modules",
+        packageName
+      );
+
+      fs.rmSync(nodeModulesPackage, { recursive: true });
+    }
+  });
+
+  nextSymlinks.forEach((packageName) => {
+    const pathToPackage = path.resolve(expoDirectory, "packages", packageName);
+
+    const nodeModulesPackage = path.resolve(
+      projectDirectory,
+      "node_modules",
+      packageName
+    );
+
+    const pkg = require(path.resolve(pathToPackage, "package.json"));
+    const version = pkg.version || "*";
+
+    pkgJson.dependencies[packageName] = version;
+
+    if (fs.existsSync(nodeModulesPackage)) {
+      fs.rmSync(nodeModulesPackage, { recursive: true });
+    }
+
+    fs.symlinkSync(pathToPackage, nodeModulesPackage);
+  });
+
+  pkgJson.expo.symlinks = nextSymlinks;
+
+  fs.writeFileSync(
+    path.resolve(projectDirectory, "./package.json"),
+    JSON.stringify(pkgJson, null, 2),
+    { encoding: "utf-8" }
+  );
+
+  console.log('Removing packages complete');
+}
+
+const packageNames = process.argv.slice(2);
+removePackages(packageNames);
+`;
 
 export default (program: Command) => {
   program
