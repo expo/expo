@@ -305,7 +305,7 @@ async function createScripts({ projectDir }) {
   pkgJson.scripts['ios'] = 'expo run:ios';
   pkgJson.scripts['android'] = 'expo run:android';
 
-  await fs.writeJSON(pkgJsonPath, pkgJson);
+  await fs.writeJSON(pkgJsonPath, pkgJson, { spaces: 2 });
 
   console.log('Added package scripts!');
 }
