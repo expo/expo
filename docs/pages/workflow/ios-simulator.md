@@ -21,7 +21,7 @@ Open Xcode, then choose "Preferences..." from the Xcode menu (or press ⌘+,). G
 
 ## Step 3: Try it out
 
-Run your app with `expo-cli` and press `i` from the command line. You may get a warning about needing to accept the Xcode license. Run the command that it suggests. Open your app again, success! Or no? If no, please seek help on StackOverflow, Google, or the [Expo-CLI section of the forums](https://forums.expo.dev/c/expo-cli). The troubleshooting tips below may be helpful too.
+Run your app with `expo-cli` and press `i` from the command line. You may get a warning about needing to accept the Xcode license. Run the command that it suggests. Open your app again, success! Or no? If no, please seek help on StackOverflow, Google, or the [Expo CLI section of the forums](https://forums.expo.dev/c/expo-cli). The troubleshooting tips below may be helpful too.
 
 <Video file="open-in-ios-simulator.mp4" />
 
