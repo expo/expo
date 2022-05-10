@@ -6,6 +6,16 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+- Fixed an infinite loop when the **package.json** is placed at the root path.
+
+### 💡 Others
+
+## 0.8.0 — 2022-05-06
+
+### 🎉 New features
+
 - Add `ios.debugOnly` to module config. ([#17331](https://github.com/expo/expo/pull/17331) by [@lukmccall](https://github.com/lukmccall))
 - Setting `EXPO_CONFIGURATION_DEBUG` or `EXPO_CONFIGURATION_RELEASE` Swift flags on project targets. ([#17378](https://github.com/expo/expo/pull/17378) by [@tsapeta](https://github.com/tsapeta))
 
