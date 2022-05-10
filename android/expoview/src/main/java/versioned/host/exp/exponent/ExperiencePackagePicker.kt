@@ -29,7 +29,6 @@ import expo.modules.firebase.analytics.FirebaseAnalyticsPackage
 import expo.modules.firebase.core.FirebaseCorePackage
 import expo.modules.font.FontLoaderPackage
 import expo.modules.gl.GLPackage
-import expo.modules.google.signin.GoogleSignInPackage
 import expo.modules.haptics.HapticsPackage
 import expo.modules.imageloader.ImageLoaderPackage
 import expo.modules.imagemanipulator.ImageManipulatorPackage
@@ -92,7 +91,6 @@ object ExperiencePackagePicker : ModulesProvider {
     FirebaseAnalyticsPackage(),
     FontLoaderPackage(),
     GLPackage(),
-    GoogleSignInPackage(),
     HapticsPackage(),
     ImageLoaderPackage(),
     ImageManipulatorPackage(),

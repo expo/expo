@@ -18,6 +18,10 @@ export declare type AuthSessionOptions = {
      * @platform android
      */
     showInRecents?: boolean;
+    /**
+     * Project name to use for the \`auth.expo.io\` proxy.
+     */
+    projectNameForProxy?: string;
 };
 /**
  * Object returned after an auth request has completed.
@@ -32,7 +36,7 @@ export declare type AuthSessionResult = {
     /**
      * How the auth completed.
      */
-    type: 'cancel' | 'dismiss' | 'locked';
+    type: 'cancel' | 'dismiss' | 'opened' | 'locked';
 } | {
     /**
      * How the auth completed.
@@ -91,6 +95,10 @@ export declare type AuthSessionRedirectUriOptions = {
      * @default false
      */
     useProxy?: boolean;
+    /**
+     * Project name to use for the \`auth.expo.io\` proxy when `useProxy` is true.
+     */
+    projectNameForProxy?: string;
     /**
      * Attempt to convert the Expo server IP address to localhost.
      * This is useful for testing when your IP changes often, this will only work for iOS simulator.

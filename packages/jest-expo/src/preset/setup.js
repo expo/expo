@@ -6,7 +6,6 @@
 
 const mockNativeModules = require('react-native/Libraries/BatchedBridge/NativeModules');
 
-const createMockConstants = require('./createMockConstants');
 const publicExpoModules = require('./expoModules');
 const internalExpoModules = require('./internalExpoModules');
 
@@ -105,15 +104,6 @@ Object.keys(mockNativeModules.NativeUnimoduleProxy.viewManagersMetadata).forEach
     });
   }
 );
-
-const modulesConstants = mockNativeModules.NativeUnimoduleProxy.modulesConstants;
-mockNativeModules.NativeUnimoduleProxy.modulesConstants = {
-  ...modulesConstants,
-  ExponentConstants: {
-    ...modulesConstants.ExponentConstants,
-    ...createMockConstants(),
-  },
-};
 
 try {
   jest.mock('expo-file-system', () => ({

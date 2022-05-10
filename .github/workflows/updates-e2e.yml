@@ -34,7 +34,8 @@ concurrency:
 
 jobs:
   android:
-    runs-on: ubuntu-20.04
+    runs-on: macos-11
+    timeout-minutes: 60
     env:
       UPDATES_HOST: 10.0.2.2 # special IP that Android emulators map to host machine's localhost
       UPDATES_PORT: 4747
@@ -171,8 +172,8 @@ jobs:
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v3
-      - name: 🔨 Switch to Xcode 13.0
-        run: sudo xcode-select --switch /Applications/Xcode_13.0.app
+      - name: 🔨 Switch to Xcode 13.2.1
+        run: sudo xcode-select --switch /Applications/Xcode_13.2.1.app
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(yarn global bin)" >> $GITHUB_PATH
       - name: ♻️ Restore caches
