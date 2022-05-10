@@ -3,6 +3,7 @@ title: Debugging
 ---
 
 import Video from '~/components/plugins/Video'
+import { Terminal } from '~/ui/components/Snippet';
 
 Whether you're developing your app locally, sending it out to select beta testers, or launching your app live to the app stores, you'll always find yourself debugging issues. It's useful to split errors out into two categories:
 
@@ -96,9 +97,10 @@ We'll give a quick look at it here, but check out their [documentation](https://
 
 You can install it via the [release page](https://github.com/jhen0409/react-native-debugger/releases), or if you're on macOS you can run:
 
-```sh
-brew install --cask react-native-debugger
-```
+<Terminal
+  cmdCopy="brew install react-native-debugger"
+  cmd={['$ brew install react-native-debugger']}
+/>
 
 ### Startup
 
@@ -138,10 +140,10 @@ You're now good to go! If you are experiencing any issues or want to learn more 
 
 React DevTools is a great way to get a look at each of your components' props and state. First, you'll need to run
 
-```sh
-npm install -g react-devtools
-# if you are using Expo SDK <= 37: npm install -g react-devtools@^3
-```
+<Terminal
+  cmdCopy="npm install -g react-devtools"
+  cmd={['# Install React DevTools with npm', '$ npm install -g react-devtools', '', '# If you are using Expo SDK <= 37: npm install -g react-devtools@^3']}
+/>
 
 (if you don't want to install it globally, run `npm install --dev react-devtools` to install it as a project dependency).
 
@@ -155,9 +157,9 @@ React DevTools can also be paired with remote debugging, allowing you to inspect
 
 You can debug Expo apps using the Chrome debugger tools. Rather than running your app's JavaScript on your phone, it will instead run it inside of a webworker in Chrome. You can then set breakpoints, inspect variables, execute code, etc, as you would when debugging a web app.
 
-- To ensure the best debugging experience, first change your host type in Expo Dev Tools to `LAN` or `localhost`. If you use `Tunnel` with debugging enabled, you are likely to experience so much latency that your app is unusable. While here, also ensure that `Development Mode` is checked.
+- To ensure the best debugging experience, first change your host type to `expo start --lan` or `expo start --localhost`. If you use `expo start --tunnel` with debugging enabled, you are likely to experience so much latency that your app is unusable.
 
-- If you are using `LAN`, make sure your device is on the same wifi network as your development machine. This may not work on some public networks. `localhost` will not work for iOS unless you are in the simulator, and it only work on Android if your device is connected to your machine via usb.
+- If you are using `expo start --lan`, make sure your device is on the same wifi network as your development machine. This may not work on some public networks. `expo start --localhost` will not work for iOS unless you are in the simulator, and it only work on Android if your device is connected to your machine via usb.
 
 - Open the app on your device, reveal the developer menu then tap on `Debug JS Remotely`. This should open up a Chrome tab with the URL `http://localhost:19000/debugger-ui`. From there, you can set breakpoints and interact through the JavaScript console. Shake the device and stop Chrome debugging when you're done.
 
@@ -165,7 +167,7 @@ You can debug Expo apps using the Chrome debugger tools. Rather than running you
 
 ### Troubleshooting localhost debugging
 
-When you start a project with Expo CLI and when you press `Run on Android device/emulator` in Expo Dev Tools (or `a` in the terminal), Expo CLI will automatically tell your device to forward `localhost:19000` to your development machine, as long as your device is plugged in or emulator is running. If you are using `localhost` for debugging and it isn't working, close the app and open it up again using `Open on Android`. Alternatively, you can use the following `adb` command if you have the Android developer tools installed: `adb reverse tcp:19000 tcp:19000`.
+When you run a project on your device with `expo start` or `expo run:android`, the Expo CLI automatically tells your device to forward `localhost:19000` to your development machine, as long as your device is plugged in or emulator is running. If you are using `localhost` for debugging and it isn't working, close the app and open it up again using `Open on Android`. Alternatively, you can use the following `adb` command if you have the Android developer tools installed: `adb reverse tcp:19000 tcp:19000`.
 
 ### Source maps and async functions
 

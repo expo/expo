@@ -28,10 +28,10 @@ it('runs `npx expo --help`', async () => {
       Usage
         $ npx expo <command>
 
-      Commands
-        start, install, export, config, customize
-        run:ios, run:android, prebuild
-        login, logout, whoami, register
+    Commands
+      start, install, export, config, customize, export:web
+      run:ios, run:android, prebuild
+      login, logout, whoami, register
 
       Options
         --version, -v   Version number

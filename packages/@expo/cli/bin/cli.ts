@@ -14,6 +14,7 @@ const commands: { [command: string]: () => Promise<Command> } = {
   prebuild: () => import('../src/prebuild').then((i) => i.expoPrebuild),
   config: () => import('../src/config').then((i) => i.expoConfig),
   export: () => import('../src/export').then((i) => i.expoExport),
+  'export:web': () => import('../src/export/web').then((i) => i.expoExportWeb),
 
   // Auxiliary commands
   install: () => import('../src/install').then((i) => i.expoInstall),
