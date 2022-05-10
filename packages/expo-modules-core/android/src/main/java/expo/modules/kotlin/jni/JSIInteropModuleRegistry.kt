@@ -2,7 +2,7 @@ package expo.modules.kotlin.jni
 
 import com.facebook.jni.HybridData
 import com.facebook.react.turbomodule.core.CallInvokerHolderImpl
-import com.facebook.react.turbomodule.core.interfaces.CallInvokerHolder
+import expo.modules.BuildConfig
 import expo.modules.kotlin.AppContext
 import java.lang.ref.WeakReference
 
@@ -34,7 +34,9 @@ class JSIInteropModuleRegistry(appContext: AppContext) {
 
   companion object {
     init {
-      System.loadLibrary("expo-modules-core")
+      if (BuildConfig.WERE_SO_FILES_PACKAGED) {
+        System.loadLibrary("expo-modules-core")
+      }
     }
   }
 }
