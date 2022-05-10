@@ -25,7 +25,7 @@ export function VideoPlayer({ renderControls, ...props }: VideoPlayerProps) {
     <View style={styles.container}>
       <Video
         onPlaybackStatusUpdate={setStatus}
-        ref={ref => setVideoRef(ref)}
+        ref={(ref) => setVideoRef(ref)}
         style={styles.videoStyles}
         {...props}
       />

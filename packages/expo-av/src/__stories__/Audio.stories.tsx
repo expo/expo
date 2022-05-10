@@ -20,11 +20,11 @@ export function AudioSources() {
       <Container labelTop="Remote Audio Source">
         <AudioPlayer
           source={{ uri: remoteUrl }}
-          renderControls={props => <PlayButton {...props} />}
+          renderControls={(props) => <PlayButton {...props} />}
         />
       </Container>
       <Container labelTop="Local Audio Source">
-        <AudioPlayer source={localAudio} renderControls={props => <PlayButton {...props} />} />
+        <AudioPlayer source={localAudio} renderControls={(props) => <PlayButton {...props} />} />
       </Container>
     </>
   );
@@ -62,7 +62,7 @@ export function AudioPlayback() {
         <Container labelTop={label} key={label}>
           <AudioPlayer
             source={{ uri: remoteUrl }}
-            renderControls={props => <ControlsComponent {...props} />}
+            renderControls={(props) => <ControlsComponent {...props} />}
           />
         </Container>
       ))}

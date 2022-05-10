@@ -42,17 +42,17 @@ export function AudioPlayer({ renderControls, source, ...props }: AudioPlayerPro
     if (source != null) {
       soundRef
         .loadAsync(source)
-        .then(playbackStatus => {
+        .then((playbackStatus) => {
           if (isMounted.current === true) {
             setStatus(playbackStatus);
           }
         })
-        .catch(error => {
+        .catch((error) => {
           console.log({ error });
         });
     }
 
-    soundRef.setOnPlaybackStatusUpdate(status => {
+    soundRef.setOnPlaybackStatusUpdate((status) => {
       if (isMounted.current === true) {
         setStatus(status);
       }
