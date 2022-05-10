@@ -3,6 +3,7 @@ title: Using Sentry
 ---
 
 import PlatformsSection from '~/components/plugins/PlatformsSection';
+import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
 
 [Sentry](http://getsentry.com/) is a crash reporting platform that provides you with "real-time insight into production deployments with info to reproduce and fix crashes".
@@ -113,8 +114,7 @@ The correct `authToken` value can be generated from the [Sentry API page ](https
 > SENTRY_PROJECT=myCoolProject expo publish
 > ```
 
-<details><summary><h4>Additional configuration options</h4></summary>
-<p>
+<Collapsible summary="Additional configuration options">
 
 In addition to the required config fields above, you can also provide these **optional** fields:
 
@@ -132,8 +132,7 @@ In addition to the required config fields above, you can also provide these **op
 > - release = SENTRY_RELEASE
 > - url = SENTRY_URL
 
-</p>
-</details>
+</Collapsible>
 
 #### Add the Config Plugin
 

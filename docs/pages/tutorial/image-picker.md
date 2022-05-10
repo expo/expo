@@ -9,15 +9,6 @@ So far we have been using code from React and React Native in our app. React giv
 
 > **`expo-image-picker`** provides access to the system's UI for selecting images and videos from the phone's library or taking a photo with the camera.
 
-<!-- <details><summary><h4>👉 Do you want to see a quick video preview of expo-image-picker in action? Click here 👈</h4></summary>
-
-<p>
-
-<Video file={"sdk/imagepicker.mp4"} />
-
-</p>
-</details> -->
-
 ## Installing expo-image-picker
 
 To use expo-image-picker in our project, we first need to install it.

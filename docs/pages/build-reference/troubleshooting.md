@@ -2,6 +2,7 @@
 title: Troubleshooting build errors and crashes
 ---
 
+import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
 
 > This document is under active development; the topic it covers is expansive and finding the right way to explain how to troubleshoot issues will take some trial and error. Your suggestions for improvements are welcome as pull requests.
@@ -50,8 +51,7 @@ If you are working on a managed app and the build error is a native error rather
 
 Armed with your error logs, you can often start to fix your build, or you can search the [forums](https://forums.expo.dev) and GitHub issues for related packages to dig deeper. Some common sources of problems are listed below.
 
-<details><summary><h4>📦 Are you using a monorepo?</h4></summary>
-<p>
+<Collapsible summary="📦 Are you using a monorepo?">
 
 Monorepos are incredibly useful but they do introduce their own set of problems. A monorepo that you have set up to work with `expo build` will not necessarily work with `eas build`.
 
@@ -60,12 +60,9 @@ With EAS Build, it's necessary to upload the entire monorepo to the build worker
 EAS Build is more like a typical CI service in that we need the source code, rather than a compiled JavaScript bundle and manifest. EAS Build has first-class support for Yarn workspaces, and [your success may vary when using other monorepo tools](/build-reference/limitations.md).
 <!-- TODO: link to monorepos guide when ready -->
 
-</p>
-</details>
+</Collapsible>
 
-<div style={{marginTop: -15}} />
-
-<details><summary><h4>💥 Out-of-memory (OOM) errors</h4></summary>
+<Collapsible summary="💥 Out-of-memory (OOM) errors">
 
 If your build fails with "Gradle build daemon disappeared unexpectedly (it may have been killed or may have crashed)" in your Gradle logs, this may be because the Node process responsible for bundling your app JavaScript was killed.
 
@@ -75,7 +72,7 @@ To determine how large your bundle is and to see a breakdown of where the size c
 
 It's not yet possible to increase memory limits on your build workers, [only one worker configuration is currently available](/build-reference/limitations.md).
 
-</details>
+</Collapsible>
 
 ## Verify that your project builds and runs locally
 
@@ -97,15 +94,13 @@ You can verify that your project builds on your local machine with the `expo run
 
 > In managed projects, these commands will run `expo prebuild` to generate native projects &mdash; you likely want to [clean up the changes](https://expo.fyi/prebuild-cleanup) once you are done troubleshooting.
 
-<details><summary><h4>💡 Don't have Xcode and Android Studio set up on your machine?</h4></summary>
-<p>
+<Collapsible summary="💡 Don't have Xcode and Android Studio set up on your machine?">
 
 **If you do not have native toolchains installed locally**, for example because you do not have an Apple computer and therefore cannot build an iOS app on your machine, it can be trickier to get to the bottom of build errors. The feedback loop of making small changes locally and then seeing the result on EAS Build is slower than doing the same steps locally, because the EAS Build worker must set up its environment, download your project, and install dependencies before starting the build.
 
 If you are willing and able to set up the appropriate native tools, then refer to the [React Native environment setup guide](https://reactnative.dev/docs/environment-setup).
 
-</p>
-</details>
+</Collapsible>
 
 If your native toolchains are installed correctly and you are unable to build and run your project in release mode on your local machine, it will not build on EAS Build. Fix the issues locally, then try again on EAS Build. The other advice in this doc may be useful to help you resolve the issue locally, but often this requires some knowledge of native tooling or judicious application of Google, StackOverflow, and GitHub Issues.
 
