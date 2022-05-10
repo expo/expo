@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix bug in isExpoHosted for new manifests. ([#17402](https://github.com/expo/expo/pull/17402) by [@wschurman](https://github.com/wschurman))
+
 ### 💡 Others
 
 ## 3.1.0 — 2022-04-18
