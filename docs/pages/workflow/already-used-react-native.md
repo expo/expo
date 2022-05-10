@@ -3,6 +3,7 @@ title: Already used React Native?
 ---
 
 import { InlineCode } from '~/components/base/code';
+import { Terminal } from '~/ui/components/Snippet';
 
 This guide is intended to give developers who have already used React Native a quick outline on some of the key concepts, resources, and differences they will encounter when using Expo.
 
@@ -10,7 +11,7 @@ You can use just about every part of the [Expo SDK](/versions/latest/) in any va
 
 ## Expo managed workflow
 
-The Expo managed workflow provides a _shared native runtime_ so you don't write native code, you focus on writing your React app in JavaScript. You don't have to worry about iOS or Android specific settings, or even opening up Xcode. Managed Expo projects have their own workflow including Expo CLI (a command line interface) and Expo Dev Tools (a web UI) to make developing and deploying easy.
+The Expo managed workflow provides a _shared native runtime_ so you don't write native code, you focus on writing your React app in JavaScript. You don't have to worry about iOS or Android specific settings, or even opening up Xcode. Managed Expo projects have their own workflow including Expo CLI (a command line interface) to make developing and deploying easy.
 
 - If you've ever upgraded React Native or a native module you'll appreciate Expo's ability to seamlessly do this for you by only changing the version number.
 
@@ -42,7 +43,7 @@ Since you write your code in JavaScript, we bundle it up and serve it from S3. E
 
 Apps are served from Expo CLI through a tunnel service by default (we currently use [ngrok](https://ngrok.com) for this) -- this means that you don't have to have your device connected to your computer, or to even be in the same room or country (or planet? I guess it should work from space) as the development machine and you can still live reload, use hot module reloading, enable remote JS debugging, and all of those things you can do normally with React Native. One caveat to this is that using a tunnel is a bit slower than using your LAN address or localhost, so if you can, you should use LAN or localhost. [See how to configure this in Expo CLI](../guides/how-expo-works.md).
 
-- Expo streams your device logs to Expo CLI and Expo Dev Tools so you don't need to run `adb logcat` or the iOS equivalent -- the `console.log / warn /error` messages from any device that is connected to your app will show up automatically in your terminal and Expo Dev Tools.
+- Expo streams your device logs to Expo CLI so you don't need to run `adb logcat` or the iOS equivalent -- the `console.log / warn /error` messages from any device that is connected to your app will show up automatically in your terminal.
 
 ## What Expo can't do
 
@@ -76,9 +77,17 @@ If you prefer to build your app on your own machine, you can [follow these steps
 
 When developing a managed Expo project, you have the option to use command line tools instead. Here are some of our friends' favorite commands and workflows:
 
-- `expo start -c --localhost --ios`
-  - start expo server, clear cache, load only on localhost and open on iOS simulator
-- `expo start --tunnel`
-  - start expo server (don't clear cache) and run expo on a tunnel so you can share it with anyone!
-- `expo send -s 2245551234`
-  - send a link to a friend's phone number so they can view on their phone exactly what I'm working on
+<Terminal
+  cmdCopy="expo start -c --localhost --ios"
+  cmd={['# start expo server, clear cache, load only on localhost and open on iOS simulator', '$ expo start -c --localhost --ios']}
+/>
+
+<Terminal
+  cmdCopy="expo start --tunnel"
+  cmd={['# start expo server (don\'t clear cache) and run expo on a tunnel so you can share it with anyone!', '$ expo start --tunnel']}
+/>
+
+<Terminal
+  cmdCopy="expo send -s example@domain.com"
+  cmd={['# send a link to a friend\'s email so they can view on their phone exactly what I\'m working on', '$ expo send -s example@domain.com']}
+/>

@@ -16,17 +16,9 @@ React Native includes some very useful tools for development: remote JavaScript 
 
 <Video file="dev-prod/devMode.mp4" />
 
-> **This comes at a cost: your app runs slower in development mode.** You can toggle it on and off from Expo Dev Tools and Expo CLI. When you switch it, just close and re-open your app for the change to take effect. **Any time you are testing the performance of your app, be sure to disable development mode**.
-
-### Toggling Development Mode in Expo Dev Tools
-
-To enable development mode, make sure the "Production mode" switch is turned off:
-
-<Video file="dev-prod/expoDevTools.mp4" />
-
-### Toggling Development Mode in Expo CLI
-
-In the terminal with your project running in Expo CLI (initiate this with `expo start`), press `p` to toggle production mode.
+> **This comes at a cost: your app runs slower in development mode.**
+>
+> You can toggle it on and off with the Expo CLI, see [production mode](#production-mode). When you switch it, just close and re-open your app for the change to take effect. **Any time you are testing the performance of your app, be sure to disable development mode**.
 
 ### Showing the Developer Menu
 

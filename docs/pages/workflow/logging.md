@@ -12,10 +12,6 @@ When you open an app that is being served from Expo CLI, the app will send logs 
 
 If you use our command line tool Expo CLI, bundler logs and app logs will both automatically stream as long as your project is running. To stop your project (and end the logs stream), terminate the process with `ctrl+C`.
 
-### Expo Dev Tools logs
-
-When you start a project with Expo CLI, it also opens Expo Dev Tools in your browser. Expo Dev Tools allows you to display many log windows side by side and to choose which logs to view from bundler logs and app logs from each connected device.
-
 ## Optional: Manually access device logs
 
 While it's usually not necessary, if you want to see logs for everything happening on your device, even the logs from other apps and the OS itself, you can use one of the following approaches.
