@@ -1976,7 +1976,7 @@ PODS:
     - ReactCommon/turbomodule/core
   - ExpoModulesTestCore (0.8.0):
     - ExpoModulesCore
-    - Nimble (~> 9.2.0)
+    - Nimble (~> 10.0.0)
     - Quick (~> 5.0.0)
   - ExpoRandom (12.2.0):
     - ExpoModulesCore
@@ -2223,7 +2223,7 @@ PODS:
     - nanopb/encode (= 2.30908.0)
   - nanopb/decode (2.30908.0)
   - nanopb/encode (2.30908.0)
-  - Nimble (9.2.1)
+  - Nimble (10.0.0)
   - OCHamcrest (8.0.0)
   - OCMockito (6.0.0):
     - OCHamcrest (~> 8.0)
@@ -3028,7 +3028,6 @@ DEPENDENCIES:
   - JKBigInteger (from `vendored/common/JKBigInteger.podspec.json`)
   - lottie-react-native (from `./vendored/unversioned/lottie-react-native`)
   - MBProgressHUD (~> 1.2.0)
-  - Nimble (from `./Nimble.podspec`)
   - RCT-Folly (from `../react-native-lab/react-native/third-party-podspecs/RCT-Folly.podspec`)
   - RCTRequired (from `../react-native-lab/react-native/Libraries/RCTRequired`)
   - RCTTypeSafety (from `../react-native-lab/react-native/Libraries/TypeSafety`)
@@ -3105,6 +3104,7 @@ SPEC REPOS:
     - MLKitFaceDetection
     - MLKitVision
     - nanopb
+    - Nimble
     - OCHamcrest
     - OCMockito
     - PromisesObjC
@@ -3920,8 +3920,6 @@ EXTERNAL SOURCES:
     :podspec: vendored/common/JKBigInteger.podspec.json
   lottie-react-native:
     :path: "./vendored/unversioned/lottie-react-native"
-  Nimble:
-    :podspec: "./Nimble.podspec"
   RCT-Folly:
     :podspec: "../react-native-lab/react-native/third-party-podspecs/RCT-Folly.podspec"
   RCTRequired:
@@ -4376,7 +4374,7 @@ SPEC CHECKSUMS:
   ExpoLinearGradient: 0debcf7d6cd7fea3050c218544f0db2de9a64f42
   ExpoLocalization: 8f619bb6eec64575cd5220bfabbd7b4e2d6f33f8
   ExpoModulesCore: 4093531a41eb8b2e3b508ee519afbd84b09de727
-  ExpoModulesTestCore: 200e6d0280f7842d915eab63d0c6b298b4dff530
+  ExpoModulesTestCore: 26a1add34ba44ad0f1b619d9356c4b0f10e4f0d2
   ExpoRandom: 14df0976aa363a71a730ceb7655250f3047c0e42
   ExpoSystemUI: 6175204b809d9598d56e5a711480415d28c9fb5b
   ExpoWebBrowser: 818c519c3519cdd79780228039938fbd8236c885
@@ -4432,7 +4430,7 @@ SPEC CHECKSUMS:
   MLKitFaceDetection: 617cb847441868a8bfd4b48d751c9b33c1104948
   MLKitVision: e87dc3f2e456a6ab32361ebd985e078dd2746143
   nanopb: a0ba3315591a9ae0a16a309ee504766e90db0c96
-  Nimble: d954d0accfd082f2225e62d71008440493e318f4
+  Nimble: 5316ef81a170ce87baf72dd961f22f89a602ff84
   OCHamcrest: a613690381f1dac7637c18962c10dbe8feca4bb5
   OCMockito: 780f04370226f81a9d972c97d1203864ef609f5b
   PromisesObjC: 99b6f43f9e1044bd87a95a60beff28c2c44ddb72
@@ -4481,6 +4479,6 @@ SPEC CHECKSUMS:
   Yoga: 17cd9a50243093b547c1e539c749928dd68152da
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 6dabe95cbe1bb677756539dabe50e48e996a3bc2
+PODFILE CHECKSUM: ce83406ea7bebcb1c572c4b64dbc00fad6bbf0ed
 
 COCOAPODS: 1.11.2

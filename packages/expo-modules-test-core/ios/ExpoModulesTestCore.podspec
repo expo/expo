@@ -20,5 +20,5 @@ Pod::Spec.new do |s|
 
   s.dependency 'ExpoModulesCore'
   s.dependency 'Quick', '~> 5.0.0'
-  s.dependency 'Nimble', '~> 9.2.0'
+  s.dependency 'Nimble', '~> 10.0.0'
 end
