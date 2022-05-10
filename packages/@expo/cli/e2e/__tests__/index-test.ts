@@ -29,7 +29,7 @@ it('runs `npx expo --help`', async () => {
       $ npx expo <command>
 
     Commands
-      start, install, export, config
+      start, install, export, config, export:web
       run:ios, run:android, prebuild
       login, logout, whoami, register
 

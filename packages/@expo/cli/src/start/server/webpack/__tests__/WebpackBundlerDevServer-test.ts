@@ -7,6 +7,10 @@ import { WebpackBundlerDevServer } from '../WebpackBundlerDevServer';
 jest.mock('../../../../log');
 jest.mock('../resolveFromProject');
 
+jest.mock('../compile', () => ({
+  compileAsync: jest.fn(),
+}));
+
 const originalCwd = process.cwd();
 
 beforeEach(() => {
@@ -25,6 +29,22 @@ async function getStartedDevServer(options: Partial<BundlerStartOptions> = {}) {
   await devServer.startAsync({ location: {}, ...options });
   return devServer;
 }
+
+describe('bundleAsync', () => {
+  it(`bundles in dev mode`, async () => {
+    const devServer = new WebpackBundlerDevServer('/', false);
+
+    devServer['clearWebProjectCacheAsync'] = jest.fn();
+    devServer['loadConfigAsync'] = jest.fn(async () => ({}));
+
+    await devServer.bundleAsync({ mode: 'development', clear: true });
+    expect(devServer['clearWebProjectCacheAsync']).toBeCalled();
+    expect(devServer['loadConfigAsync']).toHaveBeenCalledWith({
+      isImageEditingEnabled: true,
+      mode: 'development',
+    });
+  });
+});
 
 describe('startAsync', () => {
   it(`starts webpack`, async () => {
