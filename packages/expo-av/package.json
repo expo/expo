@@ -12,8 +12,7 @@
     "test": "expo-module test",
     "prepare": "expo-module prepare",
     "prepublishOnly": "expo-module prepublishOnly",
-    "expo-module": "expo-module",
-    "start:examples": "et run-stories"
+    "expo-module": "expo-module"
   },
   "keywords": [
     "expo",
