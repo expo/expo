@@ -4,7 +4,7 @@ describe(createInstallCommand, () => {
   it(`formats yarn`, () => {
     expect(
       createInstallCommand({
-        isYarn: true,
+        manager: 'yarn',
         packages: [
           { pkg: 'bacon', file: '', version: '~1.0.0' },
           { pkg: 'other', file: '' },
@@ -15,12 +15,23 @@ describe(createInstallCommand, () => {
   it(`formats npm`, () => {
     expect(
       createInstallCommand({
-        isYarn: false,
+        manager: 'npm',
         packages: [
           { pkg: '@other/pkg', file: '' },
           { pkg: 'bacon', file: '', version: '~1.0.0' },
         ],
       })
     ).toBe('npm install @other/pkg bacon@~1.0.0');
+  });
+  it(`formats pnpm`, () => {
+    expect(
+      createInstallCommand({
+        manager: 'pnpm',
+        packages: [
+          { pkg: '@other/pkg', file: '' },
+          { pkg: 'bacon', file: '', version: '~1.0.0' },
+        ],
+      })
+    ).toBe('pnpm install @other/pkg bacon@~1.0.0');
   });
 });
