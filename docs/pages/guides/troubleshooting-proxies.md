@@ -65,7 +65,7 @@ npm, git, Brew, Curl, and any other command line applications need proxy access 
 
 Open `~/.npmrc` and set:
 
-```
+```ini
 http_proxy=http://localhost:8888
 https_proxy=http://localhost:8888
 ```
@@ -74,18 +74,18 @@ https_proxy=http://localhost:8888
 
 Open `~/.gitconfig` and set
 
-```
+```ini
 [http]
- 	proxy = http://localhost:8888
+  proxy = http://localhost:8888
 [https]
-	proxy = http://localhost:8888
+  proxy = http://localhost:8888
 ```
 
 ### For Command line applications
 
 Depending on your shell, and config, Open `~/.bashrc`, `~/.bash_profile`, or `~/.zshrc` or wherever you set your shell variables, and set:
 
-```
+```bash
 export HTTP_PROXY="http://localhost:8888"
 export http_proxy="http://localhost:8888"
 export ALL_PROXY="http://localhost:8888"
