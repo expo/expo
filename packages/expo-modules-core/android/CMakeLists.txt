@@ -1,16 +1,15 @@
 cmake_minimum_required(VERSION 3.4.1)
 
 set(CMAKE_VERBOSE_MAKEFILE ON)
-set(CMAKE_CXX_STANDARD 14)
-set(CMAKE_CXX_FLAGS "-DFOLLY_NO_CONFIG=1 -DFOLLY_HAVE_CLOCK_GETTIME=1 -DFOLLY_HAVE_MEMRCHR=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_MOBILE=1 -O2 -frtti -fexceptions -Wall -fstack-protector-all")
+set(CMAKE_ANDROID_STL_TYPE c++_shared)
+set(CMAKE_CXX_STANDARD 17)
 set(PACKAGE_NAME "expo-modules-core")
 set(BUILD_DIR ${CMAKE_SOURCE_DIR}/build)
 
-if(${NATIVE_DEBUG})
+if (${NATIVE_DEBUG})
     set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -g")
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g")
-endif()
-
+endif ()
 
 set(SRC_DIR ${CMAKE_SOURCE_DIR}/src)
 file(GLOB sources_android "${SRC_DIR}/main/cpp/*.cpp")
@@ -95,6 +94,20 @@ find_library(
 #reactnativejni
 
 # linking
+
+target_compile_options(
+        ${PACKAGE_NAME}
+        PRIVATE -DFOLLY_NO_CONFIG=1
+        -DFOLLY_HAVE_CLOCK_GETTIME=1
+        -DFOLLY_HAVE_MEMRCHR=1
+        -DFOLLY_USE_LIBCPP=1
+        -DFOLLY_MOBILE=1
+        -O2
+        -frtti
+        -fexceptions
+        -Wall
+        -fstack-protector-all
+)
 
 target_link_libraries(
         ${PACKAGE_NAME}

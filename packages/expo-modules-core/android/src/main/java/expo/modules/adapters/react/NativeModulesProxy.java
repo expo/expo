@@ -92,7 +92,7 @@ public class NativeModulesProxy extends ReactContextBaseJavaModule {
   @Override
   public Map<String, Object> getConstants() {
     mModuleRegistry.ensureIsInitialized();
-    getKotlinInteropModuleRegistry().onPostCreate();
+    getKotlinInteropModuleRegistry().installJSIInterop();
 
     Collection<ExportedModule> exportedModules = mModuleRegistry.getAllExportedModules();
     Collection<ViewManager> viewManagers = mModuleRegistry.getAllViewManagers();

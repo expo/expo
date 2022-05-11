@@ -7,7 +7,6 @@ import android.content.Context
 import android.content.Intent
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.turbomodule.core.CallInvokerHolderImpl
-import expo.modules.BuildConfig
 import expo.modules.core.errors.ContextDestroyedException
 import expo.modules.core.interfaces.ActivityProvider
 import expo.modules.interfaces.barcodescanner.BarCodeScannerInterface
@@ -47,7 +46,7 @@ class AppContext(
   private val reactLifecycleDelegate = ReactLifecycleDelegate(this)
   // We postpone creating the `JSIInteropModuleRegistry` to not load so files in unit tests.
   private lateinit var jsiInterop: JSIInteropModuleRegistry
-  internal val moduleQueue = CoroutineScope(
+  internal val modulesQueue = CoroutineScope(
     newSingleThreadContext("ExpoModulesCoreQueue") +
       SupervisorJob() +
       CoroutineName("ExpoModulesCoreCoroutineQueue")
@@ -62,7 +61,7 @@ class AppContext(
     }
   }
 
-  fun onPostCreate() {
+  fun installJSIInterop() {
     jsiInterop = JSIInteropModuleRegistry(this)
     val reactContext = reactContextHolder.get() ?: return
     reactContext.javaScriptContextHolder?.get()?.let {
@@ -180,7 +179,7 @@ class AppContext(
     reactContextHolder.get()?.removeLifecycleEventListener(reactLifecycleDelegate)
     registry.post(EventName.MODULE_DESTROY)
     registry.cleanUp()
-    moduleQueue.cancel(ContextDestroyedException())
+    modulesQueue.cancel(ContextDestroyedException())
   }
 
   fun onHostResume() {

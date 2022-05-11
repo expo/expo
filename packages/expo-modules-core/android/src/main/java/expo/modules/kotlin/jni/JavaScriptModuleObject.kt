@@ -33,7 +33,7 @@ class JavaScriptModuleObject(moduleHolder: ModuleHolder) {
   fun callAsyncMethod(name: String, args: ReadableNativeArray, bridgePromise: Any) {
     val kotlinPromise = KPromiseWrapper(bridgePromise as Promise)
     moduleHolderRef.get()?.let { holder ->
-      holder.module.appContext.moduleQueue.launch {
+      holder.module.appContext.modulesQueue.launch {
         moduleHolderRef.get()?.call(name, args, kotlinPromise)
       }
     }
