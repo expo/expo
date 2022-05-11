@@ -50,7 +50,7 @@ class AppContext(
   internal val moduleQueue = CoroutineScope(
     newSingleThreadContext("ExpoModulesCoreQueue") +
       SupervisorJob() +
-      CoroutineName("ExpoModuleCoreCoroutineQueue")
+      CoroutineName("ExpoModulesCoreCoroutineQueue")
   )
 
   init {
