@@ -111,7 +111,7 @@ class KotlinInteropModuleRegistry(
     appContext.onDestroy()
   }
 
-  fun onPostCreate() {
-    appContext.onPostCreate()
+  fun installJSIInterop() {
+    appContext.installJSIInterop()
   }
 }

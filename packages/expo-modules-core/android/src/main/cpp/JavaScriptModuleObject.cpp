@@ -109,9 +109,7 @@ std::shared_ptr<jsi::Object> JavaScriptModuleObject::getJSIObject(jsi::Runtime &
 
 void JavaScriptModuleObject::registerSyncFunction(jni::alias_ref<jstring> name, jint args) {
   auto cName = name->toStdString();
-  methodsMetadata.emplace(std::piecewise_construct,
-                          std::forward_as_tuple(cName),
-                          std::forward_as_tuple(cName, args, false));
+  methodsMetadata.try_emplace(cName, cName, args, false);
 }
 
 void JavaScriptModuleObject::registerAsyncFunction(jni::alias_ref<jstring> name, jint args) {

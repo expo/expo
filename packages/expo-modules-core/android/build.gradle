@@ -51,7 +51,7 @@ def thirdPartyNdkDir = new File("$buildDir/third-party-ndk")
 def REACT_NATIVE_DIR = new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim()).parent
 def REACT_NATIVE_BUILD_FROM_SOURCE = findProject(":ReactAndroid") != null
 def REACT_NATIVE_SO_DIR = findProject(":ReactAndroid")
-  ? Paths.get(findProject(":ReactAndroid").getProjectDir().toString(), "build", "react-ndk", "exported")
+  ? Paths.get(findProject(":ReactAndroid").getProjectDir().toString(), "build", "intermediates", "library_*", "*", "jni")
   : "${buildDir}/react-native-0*/jni"
 
 def reactProperties = new Properties()
@@ -110,8 +110,7 @@ android {
     externalNativeBuild {
       cmake {
         abiFilters(*(System.getenv('NDK_ABI_FILTERS') ?: 'armeabi-v7a x86 arm64-v8a x86_64').split(' '))
-        arguments "-DANDROID_STL=c++_shared",
-          "-DREACT_NATIVE_DIR=${REACT_NATIVE_DIR}",
+        arguments "-DREACT_NATIVE_DIR=${REACT_NATIVE_DIR}",
           "-DREACT_NATIVE_SO_DIR=${REACT_NATIVE_SO_DIR}",
           "-DBOOST_VERSION=${BOOST_VERSION}"
       }
