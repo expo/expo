@@ -68,6 +68,11 @@ async function findDefaultPathsAsync(cwd: string): Promise<string[]> {
   while ((pkgJsonPath = await findUp('package.json', { cwd: dir }))) {
     dir = path.dirname(path.dirname(pkgJsonPath));
     paths.push(path.join(pkgJsonPath, '..', 'node_modules'));
+
+    // This stops the infinite loop when the package.json is placed at the root dir.
+    if (path.dirname(dir) === dir) {
+      break;
+    }
   }
   return paths;
 }
