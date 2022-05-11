@@ -120,6 +120,8 @@ You are free to use any native Firebase packages such as [react-native-firebase]
     ```objc
     @import Firebase;
     ```
+    
+  Note that following the upgrade to Expo SDK 45, your AppDelegate file will have the `.mm` extension as opposed to the `.m` extension.
 - At the top of the `didFinishLaunchingWithOptions` method:
   ```objc
   - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
