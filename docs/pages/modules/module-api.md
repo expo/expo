@@ -134,14 +134,14 @@ Constants {
 
 ### `Function`
 
-Defines a native synchronous function that will be exported to JavaScript. Synchronous means that when the function is executed in JavaScript, its native code is run on the same thread and is blocking further execution of the script until the native function returns.
+Defines a native synchronous function that will be exported to JavaScript. Synchronous means that when the function is executed in JavaScript, its native code is run on the same thread and blocks further execution of the script until the native function returns.
 
 #### Arguments
 
 - **name**: `String` — Name of the function that you'll call from JavaScript.
 - **body**: `(args...) -> ReturnType` — The closure to run when the function is called.
 
-The function can receive up to 8 arguments. This is due to the limitations of generics in both Swift and Kotlin, because this component must be implemented separately for each number of arguments.
+The function can receive up to 8 arguments. This is due to the limitations of generics in both Swift and Kotlin, because this component must be implemented separately for each arity.
 
 <CodeBlocksTable>
 
@@ -172,7 +172,7 @@ function getMessage() {
 
 ### `AsyncFunction`
 
-Defines a JavaScript function that always returns a `Promise` and whose native code is by default dispatched on the different thread that the JavaScript runtime runs on.
+Defines a JavaScript function that always returns a `Promise` and whose native code is by default dispatched on the different thread than the JavaScript runtime runs on.
 
 #### Arguments
 
@@ -375,7 +375,7 @@ Fundamentally, only primitive and serializable data can be passed back and forth
 
 ### Convertibles
 
-_Convertibles_ are native types that can be initialized from certain specific kinds of data received from JavaScript. Such types are allowed to be used as an argument type in `Function`'s body. As a good example, when the `CGPoint` type is used as a function argument type, its instance can be created from an array of two numbers (_x_, _y_) or a JavaScript object with numeric `x` and `y` properties.
+_Convertibles_ are native types that can be initialized from certain specific kinds of data received from JavaScript. Such types are allowed to be used as an argument type in `Function`'s body. For example, when the `CGPoint` type is used as a function argument type, its instance can be created from an array of two numbers `(_x_, _y_)` or a JavaScript object with numeric `x` and `y` properties.
 
 Some common iOS types from `CoreGraphics` and `UIKit` system frameworks are already made convertible.
 
