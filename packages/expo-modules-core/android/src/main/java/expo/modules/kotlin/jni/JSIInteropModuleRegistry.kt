@@ -2,7 +2,6 @@ package expo.modules.kotlin.jni
 
 import com.facebook.jni.HybridData
 import com.facebook.react.turbomodule.core.CallInvokerHolderImpl
-import com.facebook.react.turbomodule.core.interfaces.CallInvokerHolder
 import expo.modules.kotlin.AppContext
 import java.lang.ref.WeakReference
 

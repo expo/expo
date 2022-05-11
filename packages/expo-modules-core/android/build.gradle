@@ -39,6 +39,12 @@ buildscript {
   }
 }
 
+def isAndroidTest() {
+  Gradle gradle = getGradle()
+  String tskReqStr = gradle.getStartParameter().getTaskRequests().toString()
+  return tskReqStr.contains("AndroidTest")
+}
+
 def downloadsDir = new File("$buildDir/downloads")
 def thirdPartyNdkDir = new File("$buildDir/third-party-ndk")
 
@@ -95,6 +101,8 @@ android {
     versionCode 1
     versionName "0.7.0"
 
+    testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
     externalNativeBuild {
       cmake {
         abiFilters(*(System.getenv('NDK_ABI_FILTERS') ?: 'armeabi-v7a x86 arm64-v8a x86_64').split(' '))
@@ -118,8 +126,8 @@ android {
 
   packagingOptions {
     // Gradle will add cmake target dependencies into packaging.
-    // Theses files are intermediated linking files to build reanimated and should not be in final package.
-    excludes = [
+    // Theses files are intermediated linking files to build modules-core and should not be in final package.
+    def sharedLibraries = [
       "**/libc++_shared.so",
       "**/libreactnativejni.so",
       "**/libglog.so",
@@ -127,8 +135,17 @@ android {
       "**/libfbjni.so",
       "**/libfolly_json.so",
       "**/libhermes.so",
-      "**/libjsi.so",
+      "**/libjsi.so"
     ]
+
+    // In android (instrumental) tests, we want to package all so files to enable our JSI functionality.
+    // Otherwise, those files should be excluded, because will be loaded by the application.
+    if (isAndroidTest()) {
+      excludes = ["META-INF/MANIFEST.MF"]
+      pickFirsts = sharedLibraries
+    } else {
+      excludes = sharedLibraries
+    }
   }
 
   configurations {
@@ -145,7 +162,9 @@ android {
   }
 
   testOptions {
-    unitTests.all {
+    unitTests.includeAndroidResources = true
+
+    unitTests.all { test ->
       testLogging {
         outputs.upToDateWhen { false }
         events "passed", "failed", "skipped", "standardError"
@@ -190,6 +209,10 @@ dependencies {
     extractJNI(files(rnAAR))
   }
   // else - there is no prebuilt react-native.aar, this is most likely Expo Go
+
+  androidTestImplementation 'androidx.test:runner:1.4.0'
+  androidTestImplementation 'androidx.test:core:1.4.0'
+  androidTestImplementation 'androidx.test:rules:1.4.0'
 }
 
 /**
@@ -321,4 +344,3 @@ tasks.whenTaskAdded { task ->
     task.dependsOn(":ReactAndroid:packageReactNdkLibs")
   }
 }
-
