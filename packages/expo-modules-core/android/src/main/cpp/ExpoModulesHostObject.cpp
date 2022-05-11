@@ -15,15 +15,17 @@ ExpoModulesHostObject::ExpoModulesHostObject(JSIInteropModuleRegistry *installer
 jsi::Value ExpoModulesHostObject::get(jsi::Runtime &runtime, const jsi::PropNameID &name) {
   auto cName = name.utf8(runtime);
   auto module = installer->getModule(cName);
+  module->cthis()->jsiInteropModuleRegistry = installer;
   auto jsiObject = module->cthis()->getJSIObject(runtime);
   return jsi::Value(runtime, *jsiObject);
 }
 
 void ExpoModulesHostObject::set(jsi::Runtime &runtime, const jsi::PropNameID &name,
                                 const jsi::Value &value) {
-  std::string message("RuntimeError: Cannot override the host object for expo module '");
-  message += name.utf8(runtime);
-  throw jsi::JSError(runtime, message);
+  throw jsi::JSError(
+    runtime,
+    "RuntimeError: Cannot override the host object for expo module '" + name.utf8(runtime) + "'"
+  );
 }
 
 std::vector<jsi::PropNameID> ExpoModulesHostObject::getPropertyNames(jsi::Runtime &rt) {

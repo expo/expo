@@ -8,7 +8,7 @@ class AsyncFunction(
   name: String,
   argsType: Array<AnyType>,
   private val body: (args: Array<out Any?>) -> Any?
-) : AnyFunction(name, argsType) {
+) : AnyFunction(name, argsType, isSync = false) {
   override fun callSyncImplementation(holder: ModuleHolder, args: Array<out Any?>): Any? {
     return body(args)
   }

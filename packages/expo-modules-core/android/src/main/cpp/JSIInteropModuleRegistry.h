@@ -7,11 +7,14 @@
 
 #include <fbjni/fbjni.h>
 #include <jsi/jsi.h>
+#include <ReactCommon/CallInvokerHolder.h>
+#include <ReactCommon/CallInvoker.h>
 
 #include <memory>
 
 namespace jni = facebook::jni;
 namespace jsi = facebook::jsi;
+namespace react = facebook::react;
 
 namespace expo {
 class JSIInteropModuleRegistry : public jni::HybridClass<JSIInteropModuleRegistry> {
@@ -24,9 +27,16 @@ public:
 
   static void registerNatives();
 
-  void installJSI(jlong jsRuntimePointer);
+  void installJSI(
+    jlong jsRuntimePointer,
+    jni::alias_ref<react::CallInvokerHolder::javaobject> jsInvokerHolder,
+    jni::alias_ref<react::CallInvokerHolder::javaobject> nativeInvokerHolder
+  );
 
   jni::local_ref<JavaScriptModuleObject::javaobject> getModule(const std::string &moduleName) const;
+
+  std::shared_ptr<react::CallInvoker> jsInvoker;
+  std::shared_ptr<react::CallInvoker> nativeInvoker;
 
 private:
   friend HybridBase;
