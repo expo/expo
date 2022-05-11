@@ -4,7 +4,7 @@
   "description": "The Expo CLI",
   "main": "build/bin/cli",
   "bin": {
-    "expo": "build/bin/cli"
+    "expo-internal": "build/bin/cli"
   },
   "files": [
     "static",
