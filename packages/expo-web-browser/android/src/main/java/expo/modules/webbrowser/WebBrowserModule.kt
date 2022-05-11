@@ -7,6 +7,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.text.TextUtils
 import androidx.browser.customtabs.CustomTabsIntent
+import androidx.core.os.bundleOf
 import expo.modules.core.utilities.ifNull
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
@@ -40,18 +41,17 @@ class WebBrowserModule : Module() {
     AsyncFunction("warmUpAsync") { packageName: String? ->
       val resolvedPackageName = givenOrPreferredPackageName(packageName)
       connectionHelper.warmUp(resolvedPackageName)
-      val result = Bundle().apply {
-        putString(SERVICE_PACKAGE_KEY, resolvedPackageName)
-      }
-      return@AsyncFunction result
+      return@AsyncFunction
     }
 
     AsyncFunction("coolDownAsync") { packageName: String? ->
       val resolvedPackageName = givenOrPreferredPackageName(packageName)
-      val result = Bundle().apply {
-        if (connectionHelper.coolDown(resolvedPackageName)) {
-          putString(SERVICE_PACKAGE_KEY, resolvedPackageName)
-        }
+      val result = if (connectionHelper.coolDown(resolvedPackageName)) {
+        bundleOf(
+          SERVICE_PACKAGE_KEY to resolvedPackageName
+        )
+      } else {
+        Bundle()
       }
       return@AsyncFunction result
     }
@@ -59,10 +59,9 @@ class WebBrowserModule : Module() {
     AsyncFunction("mayInitWithUrlAsync") { url: String, packageName: String? ->
       val resolvedPackageName = givenOrPreferredPackageName(packageName)
       connectionHelper.mayInitWithUrl(resolvedPackageName, Uri.parse(url))
-      val result = Bundle().apply {
-        putString(SERVICE_PACKAGE_KEY, resolvedPackageName)
-      }
-      return@AsyncFunction result
+      return@AsyncFunction bundleOf(
+        SERVICE_PACKAGE_KEY to resolvedPackageName
+      )
     }
 
     // throws CurrentActivityNotFoundException
@@ -95,9 +94,9 @@ class WebBrowserModule : Module() {
 
       customTabsResolver.startCustomTabs(intent)
 
-      return@AsyncFunction Bundle().apply {
-        putString("type", "opened")
-      }
+      return@AsyncFunction bundleOf(
+        "type" to "opened"
+      )
     }
   }
 
