@@ -62,7 +62,6 @@ def BOOST_VERSION = reactProperties.getProperty("BOOST_VERSION")
 def DOUBLE_CONVERSION_VERSION = reactProperties.getProperty("DOUBLE_CONVERSION_VERSION")
 
 def reactNativeThirdParty = new File("$REACT_NATIVE_DIR/ReactAndroid/src/main/jni/third-party")
-def shouldPackSOFiles = isAndroidTest()
 
 // Creating sources with comments
 task androidSourcesJar(type: Jar) {
@@ -113,8 +112,6 @@ android {
           "-DBOOST_VERSION=${BOOST_VERSION}"
       }
     }
-
-    buildConfigField "boolean", "WERE_SO_FILES_PACKAGED", String.valueOf(shouldPackSOFiles)
   }
 
   externalNativeBuild {
@@ -141,7 +138,9 @@ android {
       "**/libjsi.so"
     ]
 
-    if (shouldPackSOFiles) {
+    // In android (instrumental) tests, we want to package all so files to enable our JSI functionality.
+    // Otherwise, those files should be excluded, because will be loaded by the application.
+    if (isAndroidTest()) {
       excludes = ["META-INF/MANIFEST.MF"]
       pickFirsts = sharedLibraries
     } else {
@@ -173,8 +172,6 @@ android {
         showExceptions true
         showStandardStreams true
       }
-
-      println(test)
     }
   }
 }
