@@ -2,11 +2,12 @@
 title: Webhooks
 ---
 
-import { InlineCode } from '~/components/base/code';
+import { ConfigClassic } from '~/components/plugins/ConfigSection';
+import { Collapsible } from '~/ui/components/Collapsible';
 
 EAS can alert you as soon as your build or submission has completed via a webhook. Webhooks need to be configured per-project, so if you want to be alerted for both `@johndoe/awesomeApp` and `@johndoe/coolApp`, you need to run `eas webhook:create` in each directory.
 
-<details><summary><strong>Are you using the classic build system?</strong> (<InlineCode>expo build:[android|ios]</InlineCode>)</summary> <p>
+<ConfigClassic>
 
 Webhooks function almost exactly the same for both EAS Build and the classic `expo build` system, _except_ that for `expo build` webhooks, you'll use `expo-cli` to interact with them, and **not** `eas-cli`. For `expo build` webhooks, you'll use:
 
@@ -15,8 +16,7 @@ Webhooks function almost exactly the same for both EAS Build and the classic `ex
 - `expo webhooks:remove [path]`: Delete a webhook
 - `expo webhooks:update [path]`: Update an existing webhook
 
-</p>
-</details>
+</ConfigClassic>
 
 After running `eas webhook:create`, you'll be prompted to choose the webhook event type (unless you provide the `--event BUILD|SUBMIT` parameter). Next, provide the webhook URL (or specify it with the `--url` flag) that handles HTTP POST requests. Additionally, you'll have to input a webhook signing secret, if you have not already provided it with the `--secret` flag. It must be at least 16 characters long, and it will be used to calculate the signature of the request body which we send as the value of the `expo-signature` HTTP header. You can use the signature to verify a webhook request is genuine (example code below).
 
@@ -30,7 +30,7 @@ You can always change your webhook URL and/or webhook secret using `eas webhook:
 
 ## Webhook payload
 
-<details><summary><strong>Build webhook payload</strong></summary><p>
+<Collapsible summary="Build webhook payload">
 
 The build webhook payload looks something like this:
 
@@ -94,9 +94,9 @@ The build webhook payload looks something like this:
 }
 ```
 
-</p></details>
+</Collapsible>
 
-<details><summary><strong>Submit webhook payload</strong></summary><p>
+<Collapsible summary="Submit webhook payload">
 
 The submit webhook payload looks something like this:
 
@@ -121,7 +121,7 @@ The submit webhook payload looks something like this:
 }
 ```
 
-</p></details>
+</Collapsible>
 
 ## Webhook server
 

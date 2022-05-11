@@ -4,6 +4,7 @@ sidebar_title: Build schema for eas.json
 ---
 
 import EasJsonPropertiesTable from '~/components/plugins/EasJsonPropertiesTable';
+import { Collapsible } from '~/ui/components/Collapsible';
 
 import commonSchema from '~/scripts/schemas/unversioned/eas-json-build-common-schema.js';
 import androidSchema from '~/scripts/schemas/unversioned/eas-json-build-android-schema.js';
@@ -15,8 +16,7 @@ This document is a reference that outlines the schema for the `"build"` key in *
 
 ## Examples
 
-<details>
-  <summary>A managed project with several profiles</summary>
+<Collapsible summary="A managed project with several profiles">
 
 ```json
 {
@@ -74,10 +74,9 @@ This document is a reference that outlines the schema for the `"build"` key in *
 }
 ```
 
-</details>
+</Collapsible>
 
-<details>
-  <summary>A bare project with several profiles</summary>
+<Collapsible summary="A bare project with several profiles">
 
 ```json
 {
@@ -131,7 +130,7 @@ This document is a reference that outlines the schema for the `"build"` key in *
 }
 ```
 
-</details>
+</Collapsible>
 
 ## Schema
 

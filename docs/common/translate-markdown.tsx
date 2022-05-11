@@ -4,11 +4,11 @@ import { AdditionalProps } from './headingManager';
 
 import Permalink from '~/components/Permalink';
 import { Code, InlineCode } from '~/components/base/code';
-import { ExpoKitDetails, BareWorkflowDetails } from '~/components/base/details';
 import { H1, H2, H3, H4 } from '~/components/base/headings';
 import Link from '~/components/base/link';
 import { UL, OL, LI } from '~/components/base/list';
 import { PDIV, B, Quote } from '~/components/base/paragraph';
+import { BareWorkflowCollapsible, ExpoKitCollapsible } from '~/ui/components/Collapsible';
 
 type Options = {
   customIconStyle?: React.CSSProperties;
@@ -52,8 +52,8 @@ export const code = Code;
 export const inlineCode = InlineCode;
 export const a = Link;
 export const blockquote = Quote;
-export const expokitDetails = ExpoKitDetails;
-export const bareworkflowDetails = BareWorkflowDetails;
+export const expokitDetails = ExpoKitCollapsible;
+export const bareworkflowDetails = BareWorkflowCollapsible;
 export const propertyAnchor = createPermalinkedComponent(PDIV, {
   baseNestingLevel: 3,
 });
