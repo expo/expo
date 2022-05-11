@@ -22,8 +22,13 @@ class ModuleHolder(val module: Module) {
     JavaScriptModuleObject(this).apply {
       definition
         .methods
-        .filter { (_, method) -> method.isSync }
-        .forEach { (name, method) -> registerSyncFunction(name, method.argsCount) }
+        .forEach { (name, method) ->
+          if (method.isSync) {
+            registerSyncFunction(name, method.argsCount)
+          } else {
+            registerAsyncFunction(name, method.argsCount)
+          }
+        }
     }
   }
 

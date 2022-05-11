@@ -24,12 +24,18 @@ void JSIInteropModuleRegistry::registerNatives() {
                  });
 }
 
-JSIInteropModuleRegistry::JSIInteropModuleRegistry(jni::alias_ref <jhybridobject> jThis)
+JSIInteropModuleRegistry::JSIInteropModuleRegistry(jni::alias_ref<jhybridobject> jThis)
   : javaPart_(jni::make_global(jThis)) {}
 
-void JSIInteropModuleRegistry::installJSI(jlong jsRuntimePointer) {
+void JSIInteropModuleRegistry::installJSI(
+  jlong jsRuntimePointer,
+  jni::alias_ref<react::CallInvokerHolder::javaobject> jsInvokerHolder,
+  jni::alias_ref<react::CallInvokerHolder::javaobject> nativeInvokerHolder
+) {
   auto runtime = reinterpret_cast<jsi::Runtime *>(jsRuntimePointer);
   runtimeHolder = std::make_unique<JavaScriptRuntime>(runtime);
+  jsInvoker = jsInvokerHolder->cthis()->getCallInvoker();
+  nativeInvoker = nativeInvokerHolder->cthis()->getCallInvoker();
 
   auto expoModules = std::make_shared<ExpoModulesHostObject>(this);
   auto expoModulesObject = jsi::Object::createFromHostObject(*runtime, expoModules);

@@ -7,6 +7,7 @@
 #include <fbjni/fbjni.h>
 #include <jsi/jsi.h>
 #include <react/jni/ReadableNativeArray.h>
+#include <jni/JCallback.h>
 
 #include <map>
 
@@ -15,6 +16,8 @@ namespace jsi = facebook::jsi;
 namespace react = facebook::react;
 
 namespace expo {
+class JSIInteropModuleRegistry;
+
 class JavaScriptModuleObject : public jni::HybridClass<JavaScriptModuleObject> {
 public:
   static auto constexpr
@@ -24,6 +27,11 @@ public:
   static jni::local_ref<jhybriddata> initHybrid(jni::alias_ref<jhybridobject> jThis);
 
   static void registerNatives();
+
+  /**
+   * Pointer to the module registry interop.
+   */
+  JSIInteropModuleRegistry *jsiInteropModuleRegistry;
 
   /**
    * Returns a cached instance of jsi::Object representing this module.
@@ -38,6 +46,12 @@ public:
    */
   void registerSyncFunction(jni::alias_ref<jstring> name, jint args);
 
+  /**
+   * Registers a async function.
+   * That function can be called via the `JavaScriptModuleObject.callAsyncMethod` method.
+   */
+  void registerAsyncFunction(jni::alias_ref<jstring> name, jint args);
+
   class HostObject : public jsi::HostObject {
   public:
     HostObject(JavaScriptModuleObject *);
@@ -50,6 +64,24 @@ public:
 
   private:
     JavaScriptModuleObject *jsModule;
+
+    jsi::Function createSyncFunctionCaller(
+      jsi::Runtime &runtime,
+      const std::string &name,
+      int argsNumber
+    );
+
+    jsi::Function createAsyncFunctionCaller(
+      jsi::Runtime &runtime,
+      const std::string &name,
+      int argsNumber
+    );
+
+    jsi::Function createPromiseBody(
+      jsi::Runtime &runtime,
+      const std::string &name,
+      folly::dynamic &&args
+    );
   };
 
 private:
@@ -62,8 +94,17 @@ private:
    */
   std::map<std::string, MethodMetadata> methodsMetadata;
 
-  inline jni::local_ref<react::ReadableNativeArray::javaobject>
-  callSyncMethod(jni::local_ref<jstring> &&name, react::ReadableNativeArray::javaobject &&args);
+
+  inline jni::local_ref<react::ReadableNativeArray::javaobject> callSyncMethod(
+    jni::local_ref<jstring> &&name,
+    react::ReadableNativeArray::javaobject &&args
+  );
+
+  inline void callAsyncMethod(
+    jni::local_ref<jstring> &&name,
+    react::ReadableNativeArray::javaobject &&args,
+    jobject promise
+  );
 
   explicit JavaScriptModuleObject(jni::alias_ref<jhybridobject> jThis)
     : javaPart_(jni::make_global(jThis)) {}
