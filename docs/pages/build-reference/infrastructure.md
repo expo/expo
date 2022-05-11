@@ -124,7 +124,7 @@ When selecting an image for the build you can use the full name provided below o
   enableImmutableInstalls: false
   ```
 
-#### Image `macos-monterey-12.3-xcode-13.3` (alias `latest`)
+#### Image `macos-monterey-12.3-xcode-13.3` (alias `default', `latest`)
 
 <details><summary>Details</summary>
 
@@ -154,7 +154,7 @@ When selecting an image for the build you can use the full name provided below o
 
 </details>
 
-#### Image `macos-big-sur-11.4-xcode-13.0` (alias `default`)
+#### Image `macos-big-sur-11.4-xcode-13.0`
 
 <details><summary>Details</summary>
 
