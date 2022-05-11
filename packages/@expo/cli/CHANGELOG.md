@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Change `expo` to `expo-internal` (DO NOT USE) for `@expo/cli`.
+
 ### 🎉 New features
 
 - Validate Android SDK configuration before using ([#17259](https://github.com/expo/expo/pull/17259) by [@byCedric](https://github.com/byCedric))
