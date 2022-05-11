@@ -8,9 +8,9 @@ import java.text.ParseException
 class JSIInteropModuleRegistryTest {
   @Test
   @Throws(ParseException::class)
-  fun checks_is_so_files_were_loaded() {
+  fun ensure_static_libs_loaded() {
     try {
-      // Using `JSIInteropModuleRegistry.Companion` ensures that so files will be loaded.
+      // Using `JSIInteropModuleRegistry.Companion` ensures that static libs will be loaded.
       JSIInteropModuleRegistry.Companion
     } catch (e: Exception) {
       Assert.fail("Couldn't load the `expo-modules-core` library: $e.")
