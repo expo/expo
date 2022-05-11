@@ -1,3 +1,4 @@
+import { asMock } from '../../../../__tests__/asMock';
 import * as Log from '../../../../log';
 import { getAttachedDevicesAsync, getServer } from '../adb';
 import { startAdbReverseAsync, stopAdbReverseAsync } from '../adbReverse';
@@ -17,9 +18,6 @@ jest.mock('../adb', () => {
 jest.mock('../../../../utils/exit', () => ({
   installExitHooks: jest.fn(),
 }));
-
-const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
-  fn as jest.MockedFunction<T>;
 
 describe(startAdbReverseAsync, () => {
   it(`reverses devices`, async () => {

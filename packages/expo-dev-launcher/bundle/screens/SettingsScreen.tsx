@@ -82,6 +82,8 @@ export function SettingsScreen() {
   return (
     <ScrollView testID="DevLauncherSettingsScreen" showsVerticalScrollIndicator={false}>
       <SafeAreaTop />
+      <Spacer.Vertical size="medium" />
+
       <View px="medium">
         <Heading size="large">Settings</Heading>
       </View>

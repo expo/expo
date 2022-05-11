@@ -1,7 +1,6 @@
 {
   "name": "expo-docs",
-  "version": "44.0.0",
-  "betaVersion": "45.0.0",
+  "version": "45.0.0",
   "private": true,
   "scripts": {
     "dev": "rimraf .next/preval && next dev -p 3002",
@@ -26,7 +25,7 @@
   "dependencies": {
     "@emotion/react": "^11.4.0",
     "@expo/spawn-async": "^1.5.0",
-    "@expo/styleguide": "^4.0.1",
+    "@expo/styleguide": "^4.0.4",
     "@mdx-js/loader": "^1.6.22",
     "@mdx-js/mdx": "^1.6.22",
     "@mdx-js/react": "^1.6.22",

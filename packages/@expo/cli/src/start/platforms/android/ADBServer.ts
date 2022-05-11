@@ -4,6 +4,7 @@ import { execFileSync } from 'child_process';
 import { Log } from '../../../log';
 import { AbortCommandError } from '../../../utils/errors';
 import { installExitHooks } from '../../../utils/exit';
+import { assertSdkRoot } from './AndroidSdk';
 
 const debug = require('debug')('expo:start:platforms:android:adbServer') as typeof console.log;
 
@@ -19,11 +20,16 @@ export class ADBServer {
 
   /** Returns the command line reference to ADB. */
   getAdbExecutablePath(): string {
-    // https://developer.android.com/studio/command-line/variables
-    // TODO: Add ANDROID_SDK_ROOT support as well https://github.com/expo/expo/pull/16516#discussion_r820037917
-    if (process.env.ANDROID_HOME) {
-      return `${process.env.ANDROID_HOME}/platform-tools/adb`;
+    try {
+      const sdkRoot = assertSdkRoot();
+      if (sdkRoot) {
+        return `${sdkRoot}/platform-tools/adb`;
+      }
+    } catch (error: any) {
+      Log.warn(error.message);
     }
+
+    Log.debug('Failed to resolve the Android SDK path, falling back to global adb executable');
     return 'adb';
   }
 

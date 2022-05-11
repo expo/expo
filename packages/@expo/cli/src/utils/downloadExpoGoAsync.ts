@@ -1,12 +1,11 @@
 import { getExpoHomeDirectory } from '@expo/config/build/getUserState';
 import path from 'path';
-import ProgressBar from 'progress';
 
 import { getReleasedVersionsAsync, SDKVersion } from '../api/getVersions';
 import { downloadAppAsync } from './downloadAppAsync';
 import { CommandError } from './errors';
 import { profile } from './profile';
-import { setProgressBar } from './progress';
+import { createProgressBar } from './progress';
 
 const debug = require('debug')('expo:utils:downloadExpoGo') as typeof console.log;
 
@@ -45,15 +44,13 @@ export async function downloadExpoGoAsync(
 ): Promise<string> {
   const { getFilePath, versionsKey, shouldExtractResults } = platformSettings[platform];
 
-  const bar = new ProgressBar('Downloading the Expo Go app [:bar] :percent :etas', {
+  const bar = createProgressBar('Downloading the Expo Go app [:bar] :percent :etas', {
     width: 64,
     total: 100,
     clear: true,
     complete: '=',
     incomplete: ' ',
   });
-  // TODO: Auto track progress
-  setProgressBar(bar);
 
   if (!url) {
     if (!sdkVersion) {
@@ -89,7 +86,6 @@ export async function downloadExpoGoAsync(
     });
     return outputPath;
   } finally {
-    bar.terminate();
-    setProgressBar(null);
+    bar?.terminate();
   }
 }

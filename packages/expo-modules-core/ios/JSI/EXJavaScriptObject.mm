@@ -62,6 +62,21 @@
   _jsObjectPtr->setProperty(*[_runtime get], [name UTF8String], jsiValue);
 }
 
+- (void)defineProperty:(nonnull NSString *)name descriptor:(nonnull EXJavaScriptObject *)descriptor
+{
+  jsi::Runtime *runtime = [_runtime get];
+  jsi::Object global = runtime->global();
+  jsi::Object objectClass = global.getPropertyAsObject(*runtime, "Object");
+  jsi::Function definePropertyFunction = objectClass.getPropertyAsFunction(*runtime, "defineProperty");
+
+  // This call is basically the same as `Object.defineProperty(object, name, descriptor)` in JS
+  definePropertyFunction.callWithThis(*runtime, objectClass, {
+    jsi::Value(*runtime, *_jsObjectPtr.get()),
+    jsi::String::createFromUtf8(*runtime, [name UTF8String]),
+    std::move(*[descriptor get]),
+  });
+}
+
 - (void)defineProperty:(nonnull NSString *)name value:(nullable id)value options:(EXJavaScriptObjectPropertyDescriptor)options
 {
   jsi::Runtime *runtime = [_runtime get];

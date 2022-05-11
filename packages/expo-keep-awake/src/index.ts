@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 
 import ExpoKeepAwake from './ExpoKeepAwake';
 
-const ExpoKeepAwakeTag = 'ExpoKeepAwakeDefaultTag';
+export const ExpoKeepAwakeTag = 'ExpoKeepAwakeDefaultTag';
 
 // @needsAudit
 /**
@@ -10,12 +10,29 @@ const ExpoKeepAwakeTag = 'ExpoKeepAwakeDefaultTag';
  * The optionally provided `tag` argument is used when activating and deactivating the keep-awake
  * feature. If unspecified, the default `tag` is used. See the documentation for `activateKeepAwake`
  * below to learn more about the `tag` argument.
- * @param tag *Optional*
+ *
+ * @param tag *Optional* - Tag to lock screen sleep prevention. If not provided, the default tag is used.
+ * @param options *Optional*
+ *   - `suppressDeactivateWarnings` *Optional* -
+ *      The call will throw an unhandled promise rejection on Android
+ *      when the original Activity is dead or deactivated.
+ *      Set the value to true for suppressing the uncaught exception.
  */
-export function useKeepAwake(tag: string = ExpoKeepAwakeTag): void {
+export function useKeepAwake(
+  tag: string = ExpoKeepAwakeTag,
+  options?: {
+    suppressDeactivateWarnings: boolean;
+  }
+): void {
   useEffect(() => {
     activateKeepAwake(tag);
-    return () => deactivateKeepAwake(tag);
+    return () => {
+      if (options?.suppressDeactivateWarnings) {
+        deactivateKeepAwake(tag).catch(() => {});
+      } else {
+        deactivateKeepAwake(tag);
+      }
+    };
   }, [tag]);
 }
 
@@ -29,8 +46,8 @@ export function useKeepAwake(tag: string = ExpoKeepAwakeTag): void {
  * @param tag *Optional* - Tag to lock screen sleep prevention. If not provided, the default tag is used.
  */
 
-export function activateKeepAwake(tag: string = ExpoKeepAwakeTag): void {
-  if (ExpoKeepAwake.activate) ExpoKeepAwake.activate(tag);
+export async function activateKeepAwake(tag: string = ExpoKeepAwakeTag): Promise<void> {
+  await ExpoKeepAwake.activate?.(tag);
 }
 
 // @needsAudit
@@ -40,6 +57,6 @@ export function activateKeepAwake(tag: string = ExpoKeepAwakeTag): void {
  * @param tag *Optional* - Tag to release the lock on screen sleep prevention. If not provided,
  * the default tag is used.
  */
-export function deactivateKeepAwake(tag: string = ExpoKeepAwakeTag): void {
-  if (ExpoKeepAwake.deactivate) ExpoKeepAwake.deactivate(tag);
+export async function deactivateKeepAwake(tag: string = ExpoKeepAwakeTag): Promise<void> {
+  await ExpoKeepAwake.deactivate?.(tag);
 }

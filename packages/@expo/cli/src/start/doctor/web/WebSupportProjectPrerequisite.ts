@@ -60,14 +60,6 @@ export class WebSupportProjectPrerequisite extends ProjectPrerequisite {
           { file: 'react-native-web/package.json', pkg: 'react-native-web', version: '~0.17.1' },
           { file: 'react-dom/package.json', pkg: 'react-dom', version: '^17.0.1' },
           // `webpack` and `webpack-dev-server` should be installed in the `@expo/webpack-config`
-          // package, but just in case we'll do the check now.
-          {
-            file: 'webpack-dev-server/package.json',
-            // https://github.com/expo/expo-cli/pull/4282
-            pkg: 'webpack-dev-server',
-            version: '~3.11.0',
-            dev: true,
-          },
           {
             file: '@expo/webpack-config/package.json',
             pkg: '@expo/webpack-config',

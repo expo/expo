@@ -23,7 +23,7 @@ jobs:
     runs-on: ubuntu-20.04
     strategy:
       matrix:
-        ndk-version: [ 21.4.7075529 ]
+        ndk-version: [21.4.7075529]
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v3

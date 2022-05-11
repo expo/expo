@@ -15,6 +15,7 @@ on:
       - fastlane/**
       - Gemfile.lock
       - .ruby-version
+      - '!packages/@expo/cli/**'
   push:
     branches: [main]
     paths:
@@ -29,6 +30,7 @@ on:
       - fastlane/**
       - Gemfile.lock
       - .ruby-version
+      - '!packages/@expo/cli/**'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
@@ -43,8 +45,8 @@ jobs:
         uses: actions/checkout@v3
         with:
           submodules: true
-      - name: 🔨 Switch to Xcode 13.0
-        run: sudo xcode-select --switch /Applications/Xcode_13.0.app
+      - name: 🔨 Switch to Xcode 13.2.1
+        run: sudo xcode-select --switch /Applications/Xcode_13.2.1.app
       - name: 🔓 Decrypt secrets if possible
         uses: ./.github/actions/expo-git-decrypt
         with:

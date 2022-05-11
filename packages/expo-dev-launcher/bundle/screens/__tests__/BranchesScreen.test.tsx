@@ -65,7 +65,7 @@ describe('<BranchesScreen />', () => {
       compatibleUpdates: [testUpdate],
     });
 
-    const { queryByText, getByText } = render(<BranchesScreen navigation={mockNavigation} />);
+    const { queryByText, getByText } = renderBranchesScreen(mockNavigation);
 
     await act(async () => {
       await waitFor(() => getByText(/testBranch/i));
@@ -93,7 +93,7 @@ describe('<BranchesScreen />', () => {
       compatibleUpdates: [testUpdate],
     });
 
-    const { queryByText, getByText } = render(<BranchesScreen navigation={mockNavigation} />);
+    const { queryByText, getByText } = renderBranchesScreen(mockNavigation);
 
     await act(async () => {
       await waitFor(() => getByText(/test update/i));
@@ -143,7 +143,7 @@ describe('<BranchesScreen />', () => {
       },
     });
 
-    const { getByText } = render(<BranchesScreen navigation={mockNavigation} />);
+    const { getByText } = renderBranchesScreen(mockNavigation);
     const incompatibleMessage = getIncompatibleBranchMessage(1);
 
     await act(async () => {
@@ -164,7 +164,7 @@ describe('<BranchesScreen />', () => {
       },
     });
 
-    const { getByText, queryByText } = render(<BranchesScreen navigation={mockNavigation} />);
+    const { getByText, queryByText } = renderBranchesScreen(mockNavigation);
 
     await act(async () => {
       expect(queryByText(/no published updates yet/i)).toBe(null);
@@ -199,7 +199,7 @@ describe('<BranchesScreen />', () => {
       },
     });
 
-    const { getByText, queryByText } = render(<BranchesScreen navigation={mockNavigation} />);
+    const { getByText, queryByText } = renderBranchesScreen(mockNavigation);
 
     await act(async () => {
       expect(queryByText(getCompatibleBranchMessage(1))).toBe(null);
@@ -210,3 +210,19 @@ describe('<BranchesScreen />', () => {
   test.todo('recent empty branches are visible in the footer');
   test.todo('eas updates shows error toast');
 });
+
+function renderBranchesScreen(mockNavigation: any) {
+  return render(<BranchesScreen navigation={mockNavigation} />, {
+    initialAppProviderProps: {
+      initialUserData: {
+        id: '123',
+        appCount: 10,
+        username: 'fakeUsername',
+        profilePhoto: '123',
+        email: 'hello@joe.ca',
+        isExpoAdmin: true,
+        accounts: [],
+      },
+    },
+  });
+}

@@ -30,6 +30,8 @@ export async function runAndroidAsync(projectRoot: string, { install, ...options
 
   const manager = await startBundlerAsync(projectRoot, {
     port: props.port,
+    // If a scheme is specified then use that instead of the package name.
+    scheme: (await getSchemesForAndroidAsync(projectRoot))?.[0],
     headless: !props.shouldStartBundler,
   });
 
@@ -39,8 +41,6 @@ export async function runAndroidAsync(projectRoot: string, { install, ...options
     'emulator',
     {
       applicationId: props.packageName,
-      // If a scheme is specified then use that instead of the package name.
-      scheme: (await getSchemesForAndroidAsync(projectRoot))?.[0],
     },
     { device: props.device.device }
   );

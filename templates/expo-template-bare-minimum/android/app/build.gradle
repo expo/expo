@@ -103,7 +103,7 @@ def enableSeparateBuildPerCPUArchitecture = false
 /**
  * Run Proguard to shrink the Java bytecode in release builds.
  */
-def enableProguardInReleaseBuilds = false
+def enableProguardInReleaseBuilds = (findProperty('android.enableProguardInReleaseBuilds') ?: false).toBoolean()
 
 /**
  * The preferred build flavor of JavaScriptCore.
@@ -167,8 +167,7 @@ android {
 
                     // Fix for windows limit on number of character in file paths and in command lines
                     if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-                        arguments "NDK_OUT=${rootProject.projectDir.getParent()}\\.cxx",
-                            "NDK_APP_SHORT_COMMANDS=true"
+                        arguments "NDK_APP_SHORT_COMMANDS=true"
                     }
                 }
             }

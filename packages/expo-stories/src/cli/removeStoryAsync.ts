@@ -1,11 +1,13 @@
 import path from 'path';
 
-import { StoryOptions } from '../types';
 import { saveManifestAsync } from './saveManifestAsync';
 import { getStoryManifest, hashPath } from './shared';
 import { writeStoriesAsync } from './writeStoriesAsync';
 
-export async function removeStoryAsync(relPath: string, config: StoryOptions) {
+export async function removeStoryAsync(
+  relPath: string,
+  config: { watchRoot: string; projectRoot: string }
+) {
   const { watchRoot, projectRoot } = config;
 
   // 1. retrieve saved story manifest

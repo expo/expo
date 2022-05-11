@@ -68,8 +68,8 @@ jobs:
         uses: actions/checkout@v3
         with:
           submodules: true
-      - name: 🔨 Switch to Xcode 13.0
-        run: sudo xcode-select --switch /Applications/Xcode_13.0.app
+      - name: 🔨 Switch to Xcode 13.2.1
+        run: sudo xcode-select --switch /Applications/Xcode_13.2.1.app
       - name: 🍺 Install required tools
         run: |
           brew tap wix/brew
@@ -140,7 +140,7 @@ jobs:
       GRADLE_OPTS: -Dorg.gradle.jvmargs=-Xmx4096m -XX:MaxMetaspaceSize=2048m
     strategy:
       matrix:
-        api-level: [29]
+        api-level: [31]
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v3

@@ -1,12 +1,10 @@
 import { vol } from 'memfs';
 
+import { asMock } from '../../__tests__/asMock';
 import { getProjectDevelopmentCertificateAsync } from '../../api/getProjectDevelopmentCertificate';
 import { APISettings } from '../../api/settings';
 import { getCodeSigningInfoAsync, signManifestString } from '../codesigning';
 import { mockExpoRootChain, mockSelfSigned } from './fixtures/certificates';
-
-const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
-  fn as jest.MockedFunction<T>;
 
 jest.mock('../../log');
 jest.mock('@expo/code-signing-certificates', () => ({

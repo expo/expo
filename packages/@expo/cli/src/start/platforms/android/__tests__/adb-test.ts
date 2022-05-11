@@ -1,3 +1,4 @@
+import { asMock } from '../../../../__tests__/asMock';
 import { CommandError } from '../../../../utils/errors';
 import {
   Device,
@@ -11,6 +12,7 @@ import {
   isPackageInstalledAsync,
   launchActivityAsync,
   openAppIdAsync,
+  sanitizeAdbDeviceName,
 } from '../adb';
 
 jest.mock('../ADBServer', () => ({
@@ -19,9 +21,6 @@ jest.mock('../ADBServer', () => ({
     getFileOutputAsync: jest.fn(async () => ''),
   })),
 }));
-
-const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
-  fn as jest.MockedFunction<T>;
 
 const asDevice = (device: Partial<Device>): Device => device as Device;
 
@@ -245,5 +244,23 @@ describe(getDeviceABIsAsync, () => {
       ['x86,armeabi-v7a,armeabi', ''].join('\n')
     );
     await expect(isBootAnimationCompleteAsync()).resolves.toBe(false);
+  });
+});
+
+describe(sanitizeAdbDeviceName, () => {
+  it(`returns the avd device name from single line`, () => {
+    expect(sanitizeAdbDeviceName('Pixel_3_API_28')).toBe('Pixel_3_API_28');
+  });
+
+  it(`returns the avd device name from multi line with LF`, () => {
+    expect(sanitizeAdbDeviceName(`Pixel_4_API_29\nOK`)).toBe('Pixel_4_API_29');
+  });
+
+  it(`returns the avd device name from multi line with CR LF`, () => {
+    expect(sanitizeAdbDeviceName(`Pixel_5_API_30\r\nOK`)).toBe('Pixel_5_API_30');
+  });
+
+  it(`returns the avd device name from multi line with CR`, () => {
+    expect(sanitizeAdbDeviceName(`Pixel_6_API_31\rOK`)).toBe('Pixel_6_API_31');
   });
 });

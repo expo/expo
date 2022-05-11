@@ -174,12 +174,6 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
       devMenuHost = DevMenuHost(application)
       UiThreadUtil.runOnUiThread {
         devMenuHost.reactInstanceManager.createReactContextInBackground()
-
-        // Hermes inspector will use latest executed script for Chrome DevTools Protocol.
-        // It will be EXDevMenuApp.android.js in our case.
-        // To let Hermes aware target bundle, we try to reload here as a workaround solution.
-        // @see <a href="https://github.com/facebook/react-native/blob/0.63-stable/ReactCommon/hermes/inspector/Inspector.cpp#L231>code here</a>
-        currentReactInstanceManager.get()?.devSupportManager?.handleReloadJS()
       }
     }
   }

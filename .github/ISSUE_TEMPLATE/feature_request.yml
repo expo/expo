@@ -1,6 +1,6 @@
 name: "\U0001F64B Feature Request"
 description: 'Want us to add something to Expo?'
-labels: ['stale', 'pending closure']
+labels: ['invalid issue: feature request']
 body:
   - type: markdown
     attributes:

@@ -25,7 +25,7 @@ inputs:
     required: false
   avd-api:
     description: 'API version used in AVD'
-    default: '29'
+    default: '31'
     required: false
   ndk:
     description: 'Restore NDK cache'
@@ -132,7 +132,7 @@ runs:
 
     - name: ♻️ Restore AVD cache
       if: inputs.avd == 'true'
-      uses: actions/cache@v3
+      uses: actions/cache@v2
       id: avd-cache
       with:
         path: |
@@ -144,6 +144,7 @@ runs:
       uses: reactivecircus/android-emulator-runner@v2
       with:
         api-level: ${{ inputs.avd-api }}
+        avd-name: avd-${{ matrix.api-level }}
         arch: x86_64
         force-avd-creation: false
         script: echo "Generated AVD snapshot for caching."
