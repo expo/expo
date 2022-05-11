@@ -17,7 +17,7 @@ When selecting an image for the build you can use the full name provided below o
 
 > **Note:**
 >
-> If you do not provide `image` in **eas.json** your build is going to use `default` image, but in some cases, we are selecting a more appropriate image based on SDK version or react-native version. You can check what image is used for a build in the "Spin up build environment" build logs section.
+> If you do not provide `image` in **eas.json**, your build will use `default` image. However, in some cases, we select a more appropriate image based on the Expo SDK version or React Native version. You can check what image is used for a build in the "Spin up build environment" build logs section.
 
 ## Android build server configurations
 
