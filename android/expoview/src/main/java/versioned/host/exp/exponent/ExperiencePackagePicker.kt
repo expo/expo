@@ -63,6 +63,7 @@ import expo.modules.systemui.SystemUIPackage
 import expo.modules.taskManager.TaskManagerPackage
 import expo.modules.updates.UpdatesPackage
 import expo.modules.videothumbnails.VideoThumbnailsPackage
+import expo.modules.webbrowser.WebBrowserModule
 import expo.modules.webbrowser.WebBrowserPackage
 
 object ExperiencePackagePicker : ModulesProvider {
@@ -145,5 +146,6 @@ object ExperiencePackagePicker : ModulesProvider {
     ClipboardModule::class.java,
     EASClientModule::class.java,
     LinearGradientModule::class.java,
+    WebBrowserModule::class.java,
   )
 }
