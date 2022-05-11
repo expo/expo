@@ -45,7 +45,7 @@ public class Logger {
   }
 
   /**
-   Used to log diagnostically helpful informations. As opposed to `trace`,
+   Used to log diagnostically helpful information. As opposed to `trace`,
    it is acceptable to commit these logs to the repository. Ignored in the release builds.
    */
   public func debug(_ items: Any...) {
@@ -53,7 +53,7 @@ public class Logger {
   }
 
   /**
-   For informations that should be logged under normal conditions such as successful initialization
+   For information that should be logged under normal conditions such as successful initialization
    and notable events that are not considered an error but might be useful for debugging purposes in the release builds.
    */
   public func info(_ items: Any...) {
@@ -68,7 +68,7 @@ public class Logger {
   }
 
   /**
-   Logs unwanted state that has impact on the currently running process, but the entire app can continue to run.
+   Logs unwanted state that has an impact on the currently running process, but the entire app can continue to run.
    */
   public func error(_ items: Any...) {
     log(type: .error, items)

@@ -16,7 +16,7 @@ public enum LogType: Int {
   case fatal = 7
 
   /**
-   The string used to prefix the messages of this log type.
+   The string that is used to prefix the messages of this log type.
    Logs in Xcode and Console apps are always with the white text,
    so we use colored circle emojis to distinguish different types of logs.
    */
