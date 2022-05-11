@@ -3,7 +3,7 @@
   "version": "45.0.0",
   "private": true,
   "scripts": {
-    "dev": "rimraf .next/preval && export NODE_OPTIONS=--openssl-legacy-provider && next dev -p 3002",
+    "dev": "rimraf .next/preval && next dev -p 3002",
     "build": "cross-env NODE_OPTIONS=--max-old-space-size=6144 next build",
     "export": "yarn run build && next export && yarn run export-issue-404",
     "export-issue-404": "echo \"🛠  Patching https://github.com/vercel/next.js/issues/16528\"; cp out/404/index.html out/404.html",
