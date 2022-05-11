@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+## 45.0.3 — 2022-05-11
+
 ### 📚 3rd party library updates
 
 - Update react-native dependency to 0.68.2. ([#17438](https://github.com/expo/expo/pull/17438) by [@kudo](https://github.com/kudo))
