@@ -1,7 +1,7 @@
 {
   "name": "expo-template-tabs",
   "description": "The Tab Navigation project template includes several example screens.",
-  "version": "45.0.2",
+  "version": "45.0.3",
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
     "start": "expo start",
