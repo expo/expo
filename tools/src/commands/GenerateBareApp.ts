@@ -39,6 +39,7 @@ export async function action(
   await runExpoPrebuild({ projectDir });
   await updateRNVersion({ projectDir, rnVersion });
   await createMetroConfig({ workspaceRoot: EXPO_DIR, projectRoot: projectDir });
+  await createScripts({ projectDir });
 
   // reestablish symlinks - some might be wiped out from prebuild
   await symlinkPackages({ projectDir, packagesToSymlink });
@@ -273,6 +274,27 @@ module.exports = config;
   return await fs.writeFile(path.resolve(projectRoot, 'metro.config.js'), template, {
     encoding: 'utf-8',
   });
+}
+
+async function createScripts({ projectDir }) {
+  const scriptsDir = path.resolve(projectDir, 'scripts');
+  await fs.mkdir(scriptsDir);
+
+  const scriptsToCopy = path.resolve(EXPO_DIR, 'template-files/generate-bare-app/scripts');
+  await fs.copy(scriptsToCopy, scriptsDir, { recursive: true });
+
+  const pkgJsonPath = path.resolve(projectDir, 'package.json');
+  const pkgJson = await fs.readJSON(pkgJsonPath);
+  pkgJson.scripts['package:add'] = `node scripts/addPackages.js ${EXPO_DIR} ${projectDir}`;
+  pkgJson.scripts['package:remove'] = `node scripts/removePackages.js ${EXPO_DIR} ${projectDir}`;
+  pkgJson.scripts['clean'] =
+    'watchman watch-del-all &&  rm -fr $TMPDIR/metro-cache && rm $TMPDIR/haste-map-*';
+  pkgJson.scripts['ios'] = 'expo run:ios';
+  pkgJson.scripts['android'] = 'expo run:android';
+
+  await fs.writeJSON(pkgJsonPath, pkgJson, { spaces: 2 });
+
+  console.log('Added package scripts!');
 }
 
 export default (program: Command) => {
