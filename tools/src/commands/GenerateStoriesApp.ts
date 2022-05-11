@@ -3,7 +3,7 @@ import spawnAsync from '@expo/spawn-async';
 import fs from 'fs-extra';
 import path from 'path';
 
-import { EXPO_DIR } from '../Constants';
+import { EXPO_DIR, PACKAGES_DIR } from '../Constants';
 import {
   GenerateBareAppOptions,
   action as generateBareApp,
@@ -27,11 +27,21 @@ async function addNativeDependencies({ projectDir }: { projectDir: string }) {
   const pkgPath = path.resolve(projectDir, 'package.json');
   const pkg = await fs.readJSON(pkgPath);
 
-  pkg.dependencies['react-native-safe-area-context'] = '4.2.4';
-  pkg.dependencies['react-native-screens'] = '~3.11.1';
-  pkg.dependencies['react-native-svg'] = '12.3.0';
-  pkg.dependencies['react-native-gesture-handler'] = '2.4.2';
-  pkg.dependencies['expo-stories'] = '1.0.1';
+  const bundledNativeModules = require(path.resolve(
+    PACKAGES_DIR,
+    'expo',
+    'bundledNativeModules.json'
+  ));
+
+  pkg.dependencies['react-native-safe-area-context'] =
+    bundledNativeModules['react-native-safe-area-context'];
+  pkg.dependencies['react-native-screens'] = bundledNativeModules['react-native-screens'];
+  pkg.dependencies['react-native-svg'] = bundledNativeModules['react-native-svg'];
+  pkg.dependencies['react-native-gesture-handler'] =
+    bundledNativeModules['react-native-gesture-handler'];
+
+  const storiesPkgJson = require(path.resolve(PACKAGES_DIR, 'expo-stories', 'package.json'));
+  pkg.dependencies['expo-stories'] = storiesPkgJson.version;
 
   await fs.outputJson(path.resolve(projectDir, 'package.json'), pkg, { spaces: 2 });
 

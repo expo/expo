@@ -199,7 +199,7 @@ export async function symlinkPackages({
     const expoPackagePath = path.resolve(PACKAGES_DIR, packageName);
 
     if (fs.existsSync(projectPackagePath)) {
-      fs.rmdirSync(projectPackagePath, { recursive: true });
+      fs.rmSync(projectPackagePath, { recursive: true });
     }
 
     fs.symlinkSync(expoPackagePath, projectPackagePath);
