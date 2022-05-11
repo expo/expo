@@ -10,4 +10,5 @@ export const TableHead = ({ children }: TableHeadProps) => (
 
 const tableHeadStyle = css({
   backgroundColor: theme.background.secondary,
+  borderBottom: `1px solid ${theme.border.default}`,
 });

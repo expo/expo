@@ -4,6 +4,7 @@ import { IOSPermission, iosPermissions, PermissionReference } from './data';
 
 import Permalink from '~/components/Permalink';
 import { InlineCode } from '~/components/base/code';
+import { Cell, HeaderCell, Row, Table, TableHead } from '~/ui/components/Table';
 
 type IOSPermissionsProps = {
   permissions: PermissionReference<IOSPermission>[];
@@ -13,30 +14,28 @@ export function IOSPermissions(props: IOSPermissionsProps) {
   const list = React.useMemo(() => getPermissions(props.permissions), [props.permissions]);
 
   return (
-    <table>
-      <thead>
-        <tr>
-          <th>Info.plist Key</th>
-          <th>Description</th>
-        </tr>
-      </thead>
+    <Table>
+      <TableHead>
+        <Row>
+          <HeaderCell>Info.plist Key</HeaderCell>
+          <HeaderCell>Description</HeaderCell>
+        </Row>
+      </TableHead>
       <tbody>
         {list.map(permission => (
-          <tr key={permission.name}>
-            <td>
+          <Row key={permission.name}>
+            <Cell>
               <Permalink id={`permission-${permission.name.toLowerCase()}`}>
                 <span>
                   <InlineCode>{permission.name}</InlineCode>
                 </span>
               </Permalink>
-            </td>
-            <td>
-              <p>{permission.description}</p>
-            </td>
-          </tr>
+            </Cell>
+            <Cell>{permission.description}</Cell>
+          </Row>
         ))}
       </tbody>
-    </table>
+    </Table>
   );
 }
 

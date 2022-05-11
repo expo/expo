@@ -58,7 +58,7 @@ export const renderMethod = (
         includePlatforms={false}
       />
       {resolveTypeName(type) !== 'undefined' ? (
-        <div>
+        <>
           <H4>Returns</H4>
           <UL>
             <LI returnType>
@@ -68,7 +68,7 @@ export const renderMethod = (
           {comment?.returns && (
             <ReactMarkdown components={mdComponents}>{comment.returns}</ReactMarkdown>
           )}
-        </div>
+        </>
       ) : null}
       {index !== undefined ? index + 1 !== dataLength && <hr /> : null}
     </div>

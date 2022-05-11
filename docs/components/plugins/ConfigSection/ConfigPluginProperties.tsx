@@ -3,6 +3,7 @@ import React, { PropsWithChildren } from 'react';
 import { InlineCode } from '~/components/base/code';
 import { B, P } from '~/components/base/paragraph';
 import { H3 } from '~/components/plugins/Headings';
+import { Cell, HeaderCell, Row, Table, TableHead } from '~/ui/components/Table';
 
 type Props = PropsWithChildren<{
   properties: PluginProperty[];
@@ -18,29 +19,29 @@ export const ConfigPluginProperties = ({ children, properties }: Props) => (
   <>
     <H3>Configurable properties</H3>
     {!!children && <P>{children}</P>}
-    <table>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Default</th>
-          <th>Description</th>
-        </tr>
-      </thead>
+    <Table>
+      <TableHead>
+        <Row>
+          <HeaderCell>Name</HeaderCell>
+          <HeaderCell>Default</HeaderCell>
+          <HeaderCell>Description</HeaderCell>
+        </Row>
+      </TableHead>
       <tbody>
         {properties.map(property => (
-          <tr key={property.name}>
-            <td>
+          <Row key={property.name}>
+            <Cell fitContent>
               <InlineCode>{property.name}</InlineCode>
-            </td>
-            <td>{!property.default ? '-' : <InlineCode>{property.default}</InlineCode>}</td>
-            <td>
+            </Cell>
+            <Cell>{!property.default ? '-' : <InlineCode>{property.default}</InlineCode>}</Cell>
+            <Cell>
               {!!property.platform && <B>{platformNames[property.platform]} only </B>}
               {property.description}
-            </td>
-          </tr>
+            </Cell>
+          </Row>
         ))}
       </tbody>
-    </table>
+    </Table>
   </>
 );
 
