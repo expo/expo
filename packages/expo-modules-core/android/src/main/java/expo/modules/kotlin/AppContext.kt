@@ -45,6 +45,7 @@ class AppContext(
     register(modulesProvider)
   }
   private val reactLifecycleDelegate = ReactLifecycleDelegate(this)
+  // We postpone creating the `JSIInteropModuleRegistry` to not load so files in unit tests.
   private lateinit var jsiInterop: JSIInteropModuleRegistry
   internal val moduleQueue = CoroutineScope(
     newSingleThreadContext("ExpoModulesCoreQueue") +
@@ -62,16 +63,14 @@ class AppContext(
   }
 
   fun onPostCreate() {
-    if (BuildConfig.WERE_SO_FILES_PACKAGED) {
-      jsiInterop = JSIInteropModuleRegistry(this)
-      val reactContext = reactContextHolder.get() ?: return
-      reactContext.javaScriptContextHolder?.get()?.let {
-        jsiInterop.installJSI(
-          it,
-          reactContext.catalystInstance.jsCallInvokerHolder as CallInvokerHolderImpl,
-          reactContext.catalystInstance.nativeCallInvokerHolder as CallInvokerHolderImpl
-        )
-      }
+    jsiInterop = JSIInteropModuleRegistry(this)
+    val reactContext = reactContextHolder.get() ?: return
+    reactContext.javaScriptContextHolder?.get()?.let {
+      jsiInterop.installJSI(
+        it,
+        reactContext.catalystInstance.jsCallInvokerHolder as CallInvokerHolderImpl,
+        reactContext.catalystInstance.nativeCallInvokerHolder as CallInvokerHolderImpl
+      )
     }
   }
 
