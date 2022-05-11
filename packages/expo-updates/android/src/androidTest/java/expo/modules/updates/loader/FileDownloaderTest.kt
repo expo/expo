@@ -203,4 +203,52 @@ class FileDownloaderTest {
     Assert.assertTrue(error!!.message!!.contains("Asset hash invalid"))
     Assert.assertFalse(didSucceed)
   }
+
+  @Test
+  fun test_downloadAsset_nullExpectedAssetHash() {
+    val configMap = mapOf<String, Any>(
+      UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY to Uri.parse("https://u.expo.dev/00000000-0000-0000-0000-000000000000"),
+      UpdatesConfiguration.UPDATES_CONFIGURATION_RUNTIME_VERSION_KEY to "1.0",
+    )
+
+    val config = UpdatesConfiguration(null, configMap)
+
+    val assetEntity = AssetEntity(UUID.randomUUID().toString(), "jpg").apply {
+      url = Uri.parse("https://example.com")
+      extraRequestHeaders = JSONObject().apply { put("expo-platform", "ios") }
+    }
+
+    val client = mockk<OkHttpClient>() {
+      every { newCall(any()) } returns mockk {
+        every { enqueue(any()) } answers {
+          firstArg<Callback>().onResponse(
+            mockk(),
+            mockk {
+              every { isSuccessful } returns true
+              every { body } returns ResponseBody.create("text/plain; charset=utf-8".toMediaTypeOrNull(), "hello")
+            }
+          )
+        }
+      }
+    }
+
+    var error: Exception? = null
+    var didSucceed = false
+
+    FileDownloader(client).downloadAsset(
+      assetEntity, File(context.cacheDir, "test"), config, context,
+      object : FileDownloader.AssetDownloadCallback {
+        override fun onFailure(e: Exception, assetEntity: AssetEntity) {
+          error = e
+        }
+
+        override fun onSuccess(assetEntity: AssetEntity, isNew: Boolean) {
+          didSucceed = true
+        }
+      }
+    )
+
+    Assert.assertNull(error)
+    Assert.assertTrue(didSucceed)
+  }
 }

@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Android: Allow null asset hash in new manifests. ([#17466](https://github.com/expo/expo/pull/17466) by [@wschurman](https://github.com/wschurman))
+
 ### 💡 Others
 
 ## 0.13.1 — 2022-05-05
