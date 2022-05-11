@@ -4,7 +4,7 @@
 
 ### 🛠 Breaking changes
 
-- Change `expo` to `expo-internal` (DO NOT USE) for `@expo/cli`.
+- Change `expo` to `expo-internal` (DO NOT USE) for `@expo/cli`. ([#17468](https://github.com/expo/expo/pull/17468) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🎉 New features
 
