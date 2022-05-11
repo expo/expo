@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fixed an infinite loop when the **package.json** is placed at the root path.
+- Fixed an infinite loop when the **package.json** is placed at the root path. ([#17440](https://github.com/expo/expo/pull/17440) by [@tsapeta](https://github.com/tsapeta))
 
 ### 💡 Others
 
