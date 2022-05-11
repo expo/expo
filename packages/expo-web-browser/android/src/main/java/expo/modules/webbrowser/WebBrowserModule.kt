@@ -12,53 +12,51 @@ import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import java.lang.IllegalArgumentException
 
-private const val BROWSER_PACKAGE_KEY = "browserPackage"
 private const val SERVICE_PACKAGE_KEY = "servicePackage"
 private const val BROWSER_PACKAGES_KEY = "browserPackages"
 private const val SERVICE_PACKAGES_KEY = "servicePackages"
 private const val PREFERRED_BROWSER_PACKAGE = "preferredBrowserPackage"
 private const val DEFAULT_BROWSER_PACKAGE = "defaultBrowserPackage"
-private const val SHOW_IN_RECENTS = "showInRecents"
-private const val CREATE_TASK = "createTask"
-private const val DEFAULT_SHARE_MENU_ITEM = "enableDefaultShareMenuItem"
-private const val TOOLBAR_COLOR_KEY = "toolbarColor"
-private const val SECONDARY_TOOLBAR_COLOR_KEY = "secondaryToolbarColor"
-private const val ERROR_CODE = "EXWebBrowser"
+
 private const val MODULE_NAME = "ExpoWebBrowser"
-private const val SHOW_TITLE_KEY = "showTitle"
-private const val ENABLE_BAR_COLLAPSING_KEY = "enableBarCollapsing"
-private const val NO_PREFERRED_PACKAGE_MSG = "Cannot determine preferred package without satisfying it."
 
 class WebBrowserModule : Module() {
   override fun definition() = ModuleDefinition {
     Name(MODULE_NAME)
 
     OnCreate {
-      val moduleRegistry = this@WebBrowserModule.appContext.legacyModuleRegistry
-      customTabsResolver = moduleRegistry.getModule(CustomTabsActivitiesHelper::class.java)
-      connectionHelper = moduleRegistry.getModule(CustomTabsConnectionHelper::class.java)
-    }
-
-    AsyncFunction("warmUpAsync") { packageName: String ->
-        val resolvedPackageName = givenOrPreferredPackageName(packageName)
-        connectionHelper.warmUp(resolvedPackageName)
-        val result = Bundle().apply {
-          putString(SERVICE_PACKAGE_KEY, resolvedPackageName)
+      customTabsResolver = CustomTabsActivitiesHelper(appContext.activityProvider)
+      connectionHelper = CustomTabsConnectionHelper(
+        requireNotNull(appContext.reactContext) {
+          "Cannot initialize WebBrowser, ReactContext is null"
         }
-        return@AsyncFunction result
+      )
     }
 
-    AsyncFunction("coolDownAsync") { packageName: String ->
+    OnActivityDestroys {
+      connectionHelper.destroy()
+    }
+
+    AsyncFunction("warmUpAsync") { packageName: String? ->
       val resolvedPackageName = givenOrPreferredPackageName(packageName)
+      connectionHelper.warmUp(resolvedPackageName)
       val result = Bundle().apply {
-          if (connectionHelper.coolDown(resolvedPackageName)) {
-            putString(SERVICE_PACKAGE_KEY, resolvedPackageName)
-          }
-        }
+        putString(SERVICE_PACKAGE_KEY, resolvedPackageName)
+      }
       return@AsyncFunction result
     }
 
-    AsyncFunction("mayInitWithUrlAsync") { url: String, packageName: String ->
+    AsyncFunction("coolDownAsync") { packageName: String? ->
+      val resolvedPackageName = givenOrPreferredPackageName(packageName)
+      val result = Bundle().apply {
+        if (connectionHelper.coolDown(resolvedPackageName)) {
+          putString(SERVICE_PACKAGE_KEY, resolvedPackageName)
+        }
+      }
+      return@AsyncFunction result
+    }
+
+    AsyncFunction("mayInitWithUrlAsync") { url: String, packageName: String? ->
       val resolvedPackageName = givenOrPreferredPackageName(packageName)
       connectionHelper.mayInitWithUrl(resolvedPackageName, Uri.parse(url))
       val result = Bundle().apply {
@@ -98,8 +96,8 @@ class WebBrowserModule : Module() {
       customTabsResolver.startCustomTabs(intent)
 
       return@AsyncFunction Bundle().apply {
-            putString("type", "opened")
-          }
+        putString("type", "opened")
+      }
     }
   }
 
@@ -159,12 +157,12 @@ class WebBrowserModule : Module() {
         customTabsResolver.getPreferredCustomTabsResolvingActivity(null)
       }
     } catch (ex: CurrentActivityNotFoundException) {
-      throw NoPreferredPackageFound(NO_PREFERRED_PACKAGE_MSG)
+      throw NoPreferredPackageFound()
     } catch (ex: PackageManagerNotFoundException) {
-      throw NoPreferredPackageFound(NO_PREFERRED_PACKAGE_MSG)
+      throw NoPreferredPackageFound()
     }
 
     return resolvedPackageName?.takeIf { it.isNotEmpty() }
-      ?: throw NoPreferredPackageFound(NO_PREFERRED_PACKAGE_MSG)
+      ?: throw NoPreferredPackageFound()
   }
 }
