@@ -109,7 +109,7 @@ jobs:
         run: echo "UPDATES_HOST=$(ifconfig -l | xargs -n1 ipconfig getifaddr)" >> $GITHUB_ENV
       - name: Setup app.config.json
         working-directory: ../updates-e2e
-        run: echo "{\"name\":\"updates-e2e\",\"runtimeVersion\":\"1.0.0\",\"plugins\":[\"expo-updates\"],\"android\":{\"package\":\"dev.expo.updatese2e\"},\"ios\":{\"bundleIdentifier\":\"dev.expo.updatese2e\"},\"updates\":{\"url\":\"http://${{ env.UPDATES_HOST }}:$UPDATES_PORT/update\"}}" > app.config.json
+        run: echo "{\"name\":\"updates-e2e\",\"runtimeVersion\":\"1.0.0\",\"plugins\":[\"expo-updates\"],\"android\":{\"package\":\"dev.expo.updatese2e\"},\"ios\":{\"bundleIdentifier\":\"dev.expo.updatese2e\"},\"updates\":{\"url\":\"http://$UPDATES_HOST:$UPDATES_PORT/update\"}}" > app.config.json
       - name: Generate code signing
         working-directory: ../updates-e2e
         run: yarn expo-updates codesigning:generate --key-output-directory keys --certificate-output-directory certs --certificate-validity-duration-years 1 --certificate-common-name "E2E Test App"
@@ -127,7 +127,7 @@ jobs:
         run: cp ../expo/packages/expo-updates/e2e/__tests__/fixtures/App.js .
       - name: Set host and port in App.js
         working-directory: ../updates-e2e
-        run: sed -i -e "s/UPDATES_HOST/${{ env.UPDATES_HOST }}/" ./App.js && sed -i -e "s/UPDATES_PORT/$UPDATES_PORT/" ./App.js
+        run: sed -i -e "s/UPDATES_HOST/$UPDATES_HOST/" ./App.js && sed -i -e "s/UPDATES_PORT/$UPDATES_PORT/" ./App.js
       - name: 🍏 Build release app
         working-directory: ../updates-e2e/ios
         run: xcodebuild -workspace updatese2e.xcworkspace -scheme updatese2e -configuration Release -destination "generic/platform=iOS Simulator" -derivedDataPath ./build build
@@ -172,7 +172,6 @@ jobs:
           TEST_APP_PATH: '${{ steps.test-app-path.outputs.dir }}/updatese2e.app'
           TEST_UPDATE_DIST_PATH: '${{ steps.test-update-dist-path.outputs.dir }}'
           TEST_PRIVATE_KEY_PATH: '${{ steps.test-code-signing-private-key-path.outputs.dir }}'
-          UPDATES_HOST: '${{ env.UPDATES_HOST }}' # not sure if this is needed?
         timeout-minutes: 30
         working-directory: packages/expo-updates
         run: yarn test --config e2e/jest.config.ios.js
@@ -181,7 +180,6 @@ jobs:
           TEST_APK_PATH: '${{ steps.test-apk-path.outputs.dir }}/app-release.apk'
           TEST_UPDATE_DIST_PATH: '${{ steps.test-update-dist-path.outputs.dir }}'
           TEST_PRIVATE_KEY_PATH: '${{ steps.test-code-signing-private-key-path.outputs.dir }}'
-          UPDATES_HOST: '${{ env.UPDATES_HOST }}' # not sure if this is needed?
         timeout-minutes: 30
         uses: reactivecircus/android-emulator-runner@v2
         with:
