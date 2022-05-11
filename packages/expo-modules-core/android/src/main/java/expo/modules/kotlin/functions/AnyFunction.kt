@@ -50,7 +50,7 @@ abstract class AnyFunction(
   internal open fun callSyncImplementation(holder: ModuleHolder, args: Array<out Any?>): Any? {
     throw UnsupportedOperationException("The sync call is not supported yet!")
   }
-  
+
   internal val argsCount get() = desiredArgsTypes.size
 
   @Throws(CodedException::class)
