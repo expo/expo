@@ -17,8 +17,7 @@ When selecting an image for the build you can use the full name provided below o
 
 > **Note:**
 >
-> - If you have a bare workflow project: your build is going to use the `default` image unless you provide `image` in **eas.json**.
-> - If you have a managed workflow project: your build is going to use an automatically chosen image, unless you provide `image` in **eas.json**.
+> If you do not provide `image` in **eas.json** your build is going to use `default` image, but in some cases, we are selecting a more appropriate image based on SDK version or react-native version. You can check what image is used for a build in the "Spin up build environment" build logs section.
 
 ## Android build server configurations
 
