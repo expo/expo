@@ -94,20 +94,49 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               (string)
             </strong>
              - Name of your app.
-            <details
-              class="css-lkrdcy-STYLES_DETAILS"
+            <div
+              class="css-n8bp3f-configDetailsStyle"
             >
-              <summary
-                class="css-gqo6ad-STYLES_SUMMARY"
+              <details
+                class="css-1gm7vyo-detailsStyle"
               >
-                Bare Workflow
-              </summary>
-              <div
-                class="css-1b7jivh-STYLES_CONTENTS"
-              >
-                Edit the 'Display Name' field in Xcode
-              </div>
-            </details>
+                <summary
+                  class="css-wamx7z-summaryStyle"
+                >
+                  <div
+                    class="css-17fddbt-markerWrapperStyle"
+                  >
+                    <svg
+                      class="css-uzday9-markerStyle"
+                      fill="none"
+                      height="16"
+                      role="img"
+                      size="16"
+                      viewBox="0 0 20 20"
+                      width="16"
+                    >
+                      <title>
+                        Triangle-down-icon
+                      </title>
+                      <path
+                        d="M16.993 6.667H3.227l6.883 6.883 6.883-6.883z"
+                        fill="var(--expo-theme-icon-default)"
+                      />
+                    </svg>
+                  </div>
+                  <span
+                    class="css-7o0bj4-baseTextStyle-HEADLINE-TextComponent"
+                  >
+                    Bare Workflow
+                  </span>
+                </summary>
+                <p
+                  class="css-167hun1-baseTextStyle-P-TextComponent-contentStyle"
+                >
+                  Edit the 'Display Name' field in Xcode
+                </p>
+              </details>
+            </div>
           </div>
         </td>
       </tr>
@@ -187,34 +216,92 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               (object)
             </strong>
              - Configuration for the bottom navigation bar on Android.
-            <details
-              class="css-lkrdcy-STYLES_DETAILS"
+            <div
+              class="css-n8bp3f-configDetailsStyle"
             >
-              <summary
-                class="css-gqo6ad-STYLES_SUMMARY"
+              <details
+                class="css-1gm7vyo-detailsStyle"
               >
-                ExpoKit
-              </summary>
-              <div
-                class="css-1b7jivh-STYLES_CONTENTS"
-              >
-                Set this property using AppConstants.java.
-              </div>
-            </details>
-            <details
-              class="css-lkrdcy-STYLES_DETAILS"
+                <summary
+                  class="css-wamx7z-summaryStyle"
+                >
+                  <div
+                    class="css-17fddbt-markerWrapperStyle"
+                  >
+                    <svg
+                      class="css-uzday9-markerStyle"
+                      fill="none"
+                      height="16"
+                      role="img"
+                      size="16"
+                      viewBox="0 0 20 20"
+                      width="16"
+                    >
+                      <title>
+                        Triangle-down-icon
+                      </title>
+                      <path
+                        d="M16.993 6.667H3.227l6.883 6.883 6.883-6.883z"
+                        fill="var(--expo-theme-icon-default)"
+                      />
+                    </svg>
+                  </div>
+                  <span
+                    class="css-7o0bj4-baseTextStyle-HEADLINE-TextComponent"
+                  >
+                    ExpoKit
+                  </span>
+                </summary>
+                <p
+                  class="css-167hun1-baseTextStyle-P-TextComponent-contentStyle"
+                >
+                  Set this property using AppConstants.java.
+                </p>
+              </details>
+            </div>
+            <div
+              class="css-n8bp3f-configDetailsStyle"
             >
-              <summary
-                class="css-gqo6ad-STYLES_SUMMARY"
+              <details
+                class="css-1gm7vyo-detailsStyle"
               >
-                Bare Workflow
-              </summary>
-              <div
-                class="css-1b7jivh-STYLES_CONTENTS"
-              >
-                Set this property using just Xcode
-              </div>
-            </details>
+                <summary
+                  class="css-wamx7z-summaryStyle"
+                >
+                  <div
+                    class="css-17fddbt-markerWrapperStyle"
+                  >
+                    <svg
+                      class="css-uzday9-markerStyle"
+                      fill="none"
+                      height="16"
+                      role="img"
+                      size="16"
+                      viewBox="0 0 20 20"
+                      width="16"
+                    >
+                      <title>
+                        Triangle-down-icon
+                      </title>
+                      <path
+                        d="M16.993 6.667H3.227l6.883 6.883 6.883-6.883z"
+                        fill="var(--expo-theme-icon-default)"
+                      />
+                    </svg>
+                  </div>
+                  <span
+                    class="css-7o0bj4-baseTextStyle-HEADLINE-TextComponent"
+                  >
+                    Bare Workflow
+                  </span>
+                </summary>
+                <p
+                  class="css-167hun1-baseTextStyle-P-TextComponent-contentStyle"
+                >
+                  Set this property using just Xcode
+                </p>
+              </details>
+            </div>
           </div>
         </td>
       </tr>
@@ -294,20 +381,49 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               (enum)
             </strong>
              - Determines how and when the navigation bar is shown.
-            <details
-              class="css-lkrdcy-STYLES_DETAILS"
+            <div
+              class="css-n8bp3f-configDetailsStyle"
             >
-              <summary
-                class="css-gqo6ad-STYLES_SUMMARY"
+              <details
+                class="css-1gm7vyo-detailsStyle"
               >
-                ExpoKit
-              </summary>
-              <div
-                class="css-1b7jivh-STYLES_CONTENTS"
-              >
-                Set this property using Xcode.
-              </div>
-            </details>
+                <summary
+                  class="css-wamx7z-summaryStyle"
+                >
+                  <div
+                    class="css-17fddbt-markerWrapperStyle"
+                  >
+                    <svg
+                      class="css-uzday9-markerStyle"
+                      fill="none"
+                      height="16"
+                      role="img"
+                      size="16"
+                      viewBox="0 0 20 20"
+                      width="16"
+                    >
+                      <title>
+                        Triangle-down-icon
+                      </title>
+                      <path
+                        d="M16.993 6.667H3.227l6.883 6.883 6.883-6.883z"
+                        fill="var(--expo-theme-icon-default)"
+                      />
+                    </svg>
+                  </div>
+                  <span
+                    class="css-7o0bj4-baseTextStyle-HEADLINE-TextComponent"
+                  >
+                    ExpoKit
+                  </span>
+                </summary>
+                <p
+                  class="css-167hun1-baseTextStyle-P-TextComponent-contentStyle"
+                >
+                  Set this property using Xcode.
+                </p>
+              </details>
+            </div>
           </div>
         </td>
       </tr>
@@ -556,20 +672,49 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               (array)
             </strong>
              - Configuration for setting an array of custom intent filters in Android manifest.
-            <details
-              class="css-lkrdcy-STYLES_DETAILS"
+            <div
+              class="css-n8bp3f-configDetailsStyle"
             >
-              <summary
-                class="css-gqo6ad-STYLES_SUMMARY"
+              <details
+                class="css-1gm7vyo-detailsStyle"
               >
-                Bare Workflow
-              </summary>
-              <div
-                class="css-1b7jivh-STYLES_CONTENTS"
-              >
-                This is set in AndroidManifest.xml directly.
-              </div>
-            </details>
+                <summary
+                  class="css-wamx7z-summaryStyle"
+                >
+                  <div
+                    class="css-17fddbt-markerWrapperStyle"
+                  >
+                    <svg
+                      class="css-uzday9-markerStyle"
+                      fill="none"
+                      height="16"
+                      role="img"
+                      size="16"
+                      viewBox="0 0 20 20"
+                      width="16"
+                    >
+                      <title>
+                        Triangle-down-icon
+                      </title>
+                      <path
+                        d="M16.993 6.667H3.227l6.883 6.883 6.883-6.883z"
+                        fill="var(--expo-theme-icon-default)"
+                      />
+                    </svg>
+                  </div>
+                  <span
+                    class="css-7o0bj4-baseTextStyle-HEADLINE-TextComponent"
+                  >
+                    Bare Workflow
+                  </span>
+                </summary>
+                <p
+                  class="css-167hun1-baseTextStyle-P-TextComponent-contentStyle"
+                >
+                  This is set in AndroidManifest.xml directly.
+                </p>
+              </details>
+            </div>
           </div>
           <blockquote
             class="css-13jwbau-paragraph-STYLES_BLOCKQUOTE"

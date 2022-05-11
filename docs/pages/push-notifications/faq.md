@@ -3,6 +3,8 @@ title: Push Notifications Troubleshooting & FAQ
 sidebar_title: Troubleshooting and FAQ
 ---
 
+import { Collapsible } from '~/ui/components/Collapsible';
+
 This is a collection of FAQs and common issues when setting up push notifications with Expo. This document covers the `expo-notifications` client-side library, as well as Expo's push notification service.
 
 ### How much does Expo's push notification service cost?
@@ -37,8 +39,8 @@ Push notifications have a lot of moving parts, so this can be due to a wide vari
 
 You can also narrow things even further by testing [local notifications](/versions/v40.0.0/sdk/notifications.md#schedulenotificationasyncnotificationrequest-notificationrequestinput-promisestring) in your app. This will ensure all of your client-side logic is correct, and narrow things down to the server side or app credentials.
 
-<details><summary><h4>See here for some quick terminal commands you can use to get the push receipt.</h4></summary>
-<p>
+<Collapsible summary="See here for some quick terminal commands you can use to get the push receipt">
+
 1. Send a notification:
 
 ```sh
@@ -59,8 +61,7 @@ curl -H "Content-Type: application/json" -X POST "https://exp.host/--/api/v2/pus
 }'
 ```
 
-</p>
-</details>
+</Collapsible>
 
 ### How often does the `ExpoPushToken` change?
 

@@ -9,6 +9,7 @@ import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permiss
 import APISection from '~/components/plugins/APISection';
 import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
+import { Collapsible } from '~/ui/components/Collapsible';
 
 > **Deprecated.** This module will be removed in SDK 46. There will be no replacement that works with the classic build service (`expo build`) because [the classic build service has been superseded by **EAS Build**](https://blog.expo.dev/turtle-goes-out-to-sea-d334db2a6b60). With **EAS Build** and [Development Builds](/development/introduction.md), you should use [react-native-fbsdk-next](https://github.com/thebergamo/react-native-fbsdk-next/#expo-installation) instead.
 
@@ -38,30 +39,25 @@ Expo Go from the Android Play Store will use the Facebook App ID that you provid
 
 Add your app's Bundle ID as a _Bundle ID_ in the app settings page pictured below. An easy way to test that this is set up correctly is to [run a simulator build](/build-reference/simulators.md).
 
-<div style={{marginTop: -10}} />
-
-<details><summary><strong>Screenshot of the Facebook developer page</strong></summary> <p>
+<Collapsible summary="Screenshot of the Facebook developer page">
 
 ![](/static/images/facebook-app-settings.png)
 
-</p>
-</details>
+</Collapsible>
 
 ### Android standalone app
 
-- [Build your standalone app](../../../distribution/building-standalone-apps.md#building-standalone-apps) for Android.
+- [Build your standalone app](/classic/building-standalone-apps) for Android.
 - Run `eas credentials`, select the profile that you would like to generate the SHA-1 Fingerprint for, and press return.
 - Take the resulting SHA1 Fingerprint and convert it to base64 (for example, [using base64.guru](https://base64.guru/converter/encode/hex)). The resulting base64 string is your "Facebook Key Hash".
 - Configure the Facebook Key Hash on the Facebook developer page pictured below.
 
-<div style={{marginTop: -10}} />
 
-<details><summary><strong>Screenshot of the Facebook developer page</strong></summary> <p>
+<Collapsible summary="Screenshot of the Facebook developer page">
 
 ![](/static/images/facebook-app-settings.png)
 
-</p>
-</details>
+</Collapsible>
 
 ## Configuration in app.json / app.config.js
 
@@ -71,7 +67,7 @@ Add your app's Bundle ID as a _Bundle ID_ in the app settings page pictured belo
   - `facebookAutoLogAppEventsEnabled`, defaults to Facebook's default policy (Only applies to standalone apps)
   - `facebookAdvertiserIDCollectionEnabled`, defaults to Facebook's default policy (Only applies to standalone apps)
 
-You can also configure `expo-facebook` using its built-in [config plugin](../../../guides/config-plugins.md) if you use config plugins in your project ([EAS Build](../../../build/introduction.md) or `expo run:[android|ios]`). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect.
+You can also configure `expo-facebook` using its built-in [config plugin](/guides/config-plugins.md) if you use config plugins in your project ([EAS Build](/build/introduction.md) or `expo run:[android|ios]`). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect.
 
 <ConfigClassic>
 

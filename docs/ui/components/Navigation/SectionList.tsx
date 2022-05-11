@@ -4,6 +4,7 @@ import React, { PropsWithChildren } from 'react';
 
 import { NavigationRenderProps } from '.';
 
+import { Collapsible } from '~/ui/components/Collapsible';
 import { CALLOUT } from '~/ui/components/Text';
 import { durations } from '~/ui/foundations/durations';
 import { ChevronDownIcon } from '~/ui/foundations/icons';
@@ -16,15 +17,19 @@ export function SectionList({ route, isActive, children }: SectionListProps) {
   }
 
   return (
-    <details css={detailsStyle} open={isActive || route.expanded}>
-      <summary css={summaryStyle}>
-        <ChevronDownIcon css={iconStyle} size={iconSize.small} />
-        <CALLOUT css={textStyle} tag="span">
-          {route.name}
-        </CALLOUT>
-      </summary>
-      <div>{children}</div>
-    </details>
+    <Collapsible
+      css={detailsStyle}
+      open={isActive || route.expanded}
+      summary={
+        <div css={summaryStyle}>
+          <ChevronDownIcon css={iconStyle} size={iconSize.small} />
+          <CALLOUT css={textStyle} tag="span">
+            {route.name}
+          </CALLOUT>
+        </div>
+      }>
+      {children}
+    </Collapsible>
   );
 }
 

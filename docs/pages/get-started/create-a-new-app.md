@@ -1,8 +1,8 @@
 ---
 title: Create a new app
-sidebar_title: Create a new app
 ---
 
+import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
 
 At this point we should have Expo CLI installed on our development machine and the Expo Go app on an iOS or Android physical device or emulator. If not, go back to the [Installation](/get-started/installation.md) guide before proceeding.
@@ -30,8 +30,7 @@ When you run `expo start` (or `npm start`), Expo CLI starts Metro Bundler, which
 - 🍎 On your iPhone or iPad, open the default Apple "Camera" app and scan the QR code you see in the terminal.
 - 🤖 On your Android device, press "Scan QR Code" on the "Projects" tab of the Expo Go app and scan the QR code you see in the terminal.
 
-<details><summary><h4>Is the app not loading on your device?</h4></summary>
-<p>
+<Collapsible summary="Is the app not loading on your device?">
 
 First, make sure that you are on the same wifi network on your computer and your device.
 
@@ -41,39 +40,34 @@ If it still doesn't work, it may be due to the router configuration &mdash; this
 
 > 🐢 Using the "Tunnel" connection type will make app reloads considerably slower than on "LAN" or "Local", so it's best to avoid tunnel when possible. You may want to install a simulator/emulator to speed up development if "Tunnel" is required for accessing your machine from another device on your network.
 
-</p>
-</details>
+</Collapsible>
 
-<details><summary><h4>Using a simulator or emulator?</h4></summary>
-<p>
+<Collapsible summary="Using a simulator or emulator?">
 
 If you are using a simulator or emulator, you may find the following Expo CLI keyboard shortcuts to be useful:
 
-- Pressing `i` will open in an [iOS simulator](../workflow/ios-simulator.md).
-- Pressing `a` will open in an [Android Emulator or connected device](../workflow/android-studio-emulator.md).
+- Pressing `i` will open in an [iOS simulator](/workflow/ios-simulator.md).
+- Pressing `a` will open in an [Android Emulator or connected device](/workflow/android-studio-emulator.md).
 - Pressing `w` will open in your browser. Expo supports all major browsers.
 
-</p>
-</details>
+</Collapsible>
 
 ## Making your first change
 
 Open up **App.js** and change the text to "Hello, world!". You should see it update on your device. This is great progress, we now have the Expo toolchain running on our machine and we are able to edit the source code for a project and see the changes live on our device!
 
-<details style={{paddingTop: 0}}><summary><h4>Are the changes not showing up on your device?</h4></summary>
-<p>
+<Collapsible summary="Are the changes not showing up on your device?">
 
 Expo Go is configured by default to automatically reload the app whenever a file is changed, but let's just make sure we go over the steps to enable it in case somehow things just aren't working.
 
-- First, make sure you have [development mode enabled in Expo CLI](../workflow/development-mode.md#development-mode).
+- First, make sure you have [development mode enabled in Expo CLI](/workflow/development-mode.md#development-mode).
 - Next, close the app and reopen it.
 - Once the app is open again, shake your device to reveal the developer menu. If you are using an emulator, press `⌘+d` for iOS or `ctrl+m` for Android.
 - If you see `Enable Fast Refresh`, press it. If you see `Disable Fast Refresh`, then dismiss the developer menu. Now try making another change.
 
   ![In-app developer menu](/static/images/developer-menu.png)
 
-</p>
-</details>
+</Collapsible>
 
 ## Up next
 

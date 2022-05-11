@@ -2,7 +2,7 @@
 title: Already used React Native?
 ---
 
-import { InlineCode } from '~/components/base/code';
+import { ConfigClassic } from '~/components/plugins/ConfigSection';
 import { Terminal } from '~/ui/components/Snippet';
 
 This guide is intended to give developers who have already used React Native a quick outline on some of the key concepts, resources, and differences they will encounter when using Expo.
@@ -53,14 +53,13 @@ Apps are served from Expo CLI through a tunnel service by default (we currently 
 
 When you're ready, you can run `eas build --auto-submit` using EAS CLI to both build your app and automatically upload the binary for distribution on the Apple App Store and Google Play Store.
 
-<details><summary><strong>Are you using the classic build system?</strong> (<InlineCode>expo build:[android|ios]</InlineCode>)</summary> <p>
+<ConfigClassic>
 
 If you are using the classic build system, you can run `expo build:ios` or `expo build:android` and Expo will build your app and output a link to the binary required for you to submit. Then you can use something like [Transporter](https://apps.apple.com/app/transporter/id1450874784) for iOS, or directly upload an APK for Android.
 
 If you prefer to build your app on your own machine, you can [follow these steps](https://github.com/expo/expo#standalone-apps).
 
-</p>
-</details>
+</ConfigClassic>
 
 ## Helpful Tools & Resources
 

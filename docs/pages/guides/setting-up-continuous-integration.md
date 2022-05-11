@@ -2,6 +2,9 @@
 title: Setting up Continuous Integration
 ---
 
+import { Collapsible } from '~/ui/components/Collapsible';
+import { Terminal } from '~/ui/components/Snippet';
+
 Continuous Integration (CI) and Continuous Delivery (CD) are concepts which can help you to build and deploy with confidence.
 It's the idea of automating as much as you can, like running tests or creating new releases.
 
@@ -25,13 +28,12 @@ Jest will handle snapshots more strictly.
 
 To summarize we will set up the CI to run the following two scripts.
 
-```sh
-$ npm ci
-$ npx jest --ci
-```
+<Terminal cmd={[
+  '$ npm ci',
+  '$ npx jest --ci'
+]} cmdCopy="npm ci && npx jest --ci" />
 
-<details><summary>Travis CI</summary>
-<p>
+<Collapsible summary="Travis CI">
 
 ```yaml
 ---
@@ -51,13 +53,9 @@ script:
 
 > Put this into `.travis.yml` in the root of your repository.
 
-<a href="https://travis-ci.com/byCedric/expo-guide-ci/builds/79027881" target="_blank">See it in action</a>
+</Collapsible>
 
-</p>
-</details>
-
-<details><summary>GitLab CI</summary>
-<p>
+<Collapsible summary="GitLab CI">
 
 ```yaml
 ---
@@ -78,13 +76,11 @@ jest-tests:
 
 > Put this into `.gitlab-ci.yml` in the root of your repository.
 
-<a href="https://gitlab.com/byCedric/expo-guide-ci/pipelines/25800111" target="_blank">See it in action</a>
+<p><a href="https://gitlab.com/byCedric/expo-guide-ci/pipelines/25800111" target="_blank">See it in action</a></p>
 
-</p>
-</details>
+</Collapsible>
 
-<details><summary>Bitbucket Pipelines</summary>
-<p>
+<Collapsible summary="Bitbucket Pipelines">
 
 ```yaml
 ---
@@ -105,10 +101,9 @@ pipelines:
 
 > Put this into `bitbucket-pipelines.yml` in the root of your repository.
 
-<a href="https://bitbucket.org/byCedric/expo-guide-ci/addon/pipelines/home#!/results/2" target="_blank">See it in action</a>
+<p><a href="https://bitbucket.org/byCedric/expo-guide-ci/addon/pipelines/home#!/results/2" target="_blank">See it in action</a></p>
 
-</p>
-</details>
+</Collapsible>
 
 ### Improving Jest performance
 
@@ -121,8 +116,7 @@ Luckily there is a relatively easy way to improve the speed of Jest; using the p
 There is no definitive way of telling how much it improves.
 Using the expo-cli tabs project as an example, it can speed up by a factor of 4x - 5x.
 
-<details><summary>Travis CI</summary>
-<p>
+<Collapsible summary="Travis CI">
 
 ```yaml
 ---
@@ -143,13 +137,9 @@ script:
 
 > Put this into `.travis.yml` in the root of your repository.
 
-<a href="https://travis-ci.com/byCedric/expo-guide-ci/builds/79027970" target="_blank">See it in action</a>
+</Collapsible>
 
-</p>
-</details>
-
-<details><summary>GitLab CI</summary>
-<p>
+<Collapsible summary="GitLab CI">
 
 ```yaml
 ---
@@ -171,13 +161,11 @@ jest-tests:
 
 > Put this into `.gitlab-ci.yml` in the root of your repository.
 
-<a href="https://gitlab.com/byCedric/expo-guide-ci/pipelines/25800165" target="_blank">See it in action</a>
+<p><a href="https://gitlab.com/byCedric/expo-guide-ci/pipelines/25800165" target="_blank">See it in action</a></p>
 
-</p>
-</details>
+</Collapsible>
 
-<details><summary>Bitbucket Pipelines</summary>
-<p>
+<Collapsible summary="Bitbucket Pipelines">
 
 ```yaml
 ---
@@ -200,10 +188,9 @@ pipelines:
 
 > Put this into `bitbucket-pipelines.yml` in the root of your repository.
 
-<a href="https://bitbucket.org/byCedric/expo-guide-ci/addon/pipelines/home#!/results/3" target="_blank">See it in action</a>
+<p><a href="https://bitbucket.org/byCedric/expo-guide-ci/addon/pipelines/home#!/results/3" target="_blank">See it in action</a></p>
 
-</p>
-</details>
+</Collapsible>
 
 ## Deploy to Expo
 
@@ -260,8 +247,7 @@ To create the builds, we will add this script to our configuration:
 $ npx expo publish --non-interactive
 ```
 
-<details><summary>Travis CI</summary>
-<p>
+<Collapsible summary="Travis CI">
 
 ```yaml
 ---
@@ -290,13 +276,11 @@ jobs:
 
 > Put this into `.travis.yml` in the root of your repository.
 
-<a href="https://travis-ci.com/byCedric/expo-guide-ci/builds/79032797" target="_blank">See it in action</a>
+<p><a href="https://travis-ci.com/byCedric/expo-guide-ci/builds/79032797" target="_blank">See it in action</a></p>
 
-</p>
-</details>
+</Collapsible>
 
-<details><summary>GitLab CI</summary>
-<p>
+<Collapsible summary="GitLab CI">
 
 ```yaml
 ---
@@ -325,13 +309,11 @@ expo-deployments:
 
 > Put this into `.gitlab-ci.yml` in the root of your repository.
 
-<a href="https://gitlab.com/byCedric/expo-guide-ci/pipelines/25806602" target="_blank">See it in action</a>
+<p><a href="https://gitlab.com/byCedric/expo-guide-ci/pipelines/25806602" target="_blank">See it in action</a></p>
 
-</p>
-</details>
+</Collapsible>
 
-<details><summary>Bitbucket Pipelines</summary>
-<p>
+<Collapsible summary="Bitbucket Pipelines">
 
 ```yaml
 ---
@@ -364,13 +346,11 @@ pipelines:
 
 > Put this into `bitbucket-pipelines.yml` in the root of your repository.
 
-<a href="https://bitbucket.org/byCedric/expo-guide-ci/addon/pipelines/home#!/results/11" target="_blank">See it in action</a>
+<p><a href="https://bitbucket.org/byCedric/expo-guide-ci/addon/pipelines/home#!/results/11" target="_blank">See it in action</a></p>
 
-</p>
-</details>
+</Collapsible>
 
-<details><summary>CircleCI</summary>
-<p>
+<Collapsible summary="CircleCI">
 
 ```yaml
 ---
@@ -421,8 +401,7 @@ workflows:
 
 > Put this into `.circleci/config.yml` in the root of your repository.
 
-</p>
-</details>
+</Collapsible>
 
 ## Next steps
 
@@ -432,7 +411,7 @@ Here are some extra links that might help you further.
 
 ### Useful subjects
 
-- [Release channels](../distribution/release-channels.md)
+- [Release channels](/distribution/release-channels.md)
 - [Creating your first build](/build/setup.md)
 - [Triggering builds from CI](/build/building-on-ci.md)
 - [Configuring Updates](configuring-updates.md)
