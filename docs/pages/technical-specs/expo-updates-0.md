@@ -108,7 +108,7 @@ type Manifest = {
 }
 
 type Asset = {
-  hash: string;
+  hash?: string;
   key: string;
   contentType: string;
   fileExtension?: string;
