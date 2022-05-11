@@ -11,6 +11,5 @@ class WebBrowserPackage : BasePackage() {
     InternalCustomTabsConnectionHelper(context)
   )
 
-  override fun createExportedModules(context: Context): List<ExportedModule> =
-    listOf(WebBrowserModule(context))
+  override fun createExportedModules(context: Context): List<ExportedModule> = emptyList()
 }

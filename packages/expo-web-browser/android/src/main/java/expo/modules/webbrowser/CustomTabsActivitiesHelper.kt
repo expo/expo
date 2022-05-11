@@ -1,7 +1,6 @@
 package expo.modules.webbrowser
 
 import expo.modules.core.interfaces.InternalModule
-import expo.modules.webbrowser.error.PackageManagerNotFoundException
 import expo.modules.core.errors.CurrentActivityNotFoundException
 import android.content.Intent
 import java.util.ArrayList

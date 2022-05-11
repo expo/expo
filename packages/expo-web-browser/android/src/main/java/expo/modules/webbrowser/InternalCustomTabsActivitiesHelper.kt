@@ -1,7 +1,6 @@
 package expo.modules.webbrowser
 
 import android.app.Activity
-import expo.modules.webbrowser.error.PackageManagerNotFoundException
 import expo.modules.core.errors.CurrentActivityNotFoundException
 import android.content.pm.ResolveInfo
 import android.content.Intent
