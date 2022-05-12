@@ -126,7 +126,7 @@ When selecting an image for the build you can use the full name provided below o
   enableImmutableInstalls: false
   ```
 
-#### Image `macos-monterey-12.3-xcode-13.3` (alias `default', `latest`)
+#### Image `macos-monterey-12.3-xcode-13.3` (alias `default`, `latest`)
 
 <Collapsible summary="Details">
 
