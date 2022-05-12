@@ -14,7 +14,7 @@ type CalloutProps = PropsWithChildren<{
 export const Callout = ({ type = 'info', icon, children, ...rest }: CalloutProps) => {
   const Icon = icon || getCalloutIcon(type);
   return (
-    <div css={[containerStyle, getCalloutColor(type)]} {...rest}>
+    <div css={[containerStyle, getCalloutColor(type)]} {...rest} data-testid="callout-container">
       <i css={iconStyle}>{typeof icon === 'string' ? icon : <Icon size={iconSize.small} />}</i>
       <div css={contentStyle}>{children}</div>
     </div>
