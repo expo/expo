@@ -132,6 +132,7 @@ When selecting an image for the build you can use the full name provided below o
 - Xcode 13.3.1 (13E500a)
 - Node.js 16.13.2
 - Yarn 1.22.17
+- pnpm 7.0.0
 - npm 8.1.2
 - fastlane 2.205.2
 - CocoaPods 1.11.3
@@ -147,6 +148,7 @@ When selecting an image for the build you can use the full name provided below o
 - Xcode 13.2.1 (13C100)
 - Node.js 16.13.2
 - Yarn 1.22.17
+- pnpm 7.0.0
 - npm 8.1.2
 - fastlane 2.201.0
 - CocoaPods 1.11.2
@@ -162,6 +164,7 @@ When selecting an image for the build you can use the full name provided below o
 - Xcode 13.0 (13A233)
 - Node.js 16.13.2
 - Yarn 1.22.17
+- pnpm 7.0.0
 - npm 8.1.2
 - fastlane 2.185.1
 - CocoaPods 1.10.1
@@ -177,6 +180,7 @@ When selecting an image for the build you can use the full name provided below o
 - Xcode 12.5 (12E5244e)
 - Node.js 16.13.2
 - Yarn 1.22.17
+- pnpm 7.0.0
 - npm 8.1.2
 - fastlane 2.185.1
 - CocoaPods 1.10.1
