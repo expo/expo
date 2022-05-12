@@ -56,6 +56,7 @@ it('runs `npx install install --help`', async () => {
         --fix       Automatically update any invalid package versions
         --npm       Use npm to install dependencies. Default when package-lock.json exists
         --yarn      Use Yarn to install dependencies. Default when yarn.lock exists
+        --pnpm      Use pnpm to install dependencies. Default when pnpm-lock.yaml exists
         -h, --help  Usage info
 
       Additional options can be passed to the underlying install command by using --
