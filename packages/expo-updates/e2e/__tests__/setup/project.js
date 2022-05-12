@@ -130,6 +130,11 @@ async function setupAsync(workingDir, repoRoot, runtimeVersion) {
     stdio: 'inherit',
   });
 
+  // copy exported update to artifacts
+  await fs.cp(path.join(projectRoot, 'dist'), path.join(process.env.ARTIFACTS_DEST, 'dist'), {
+    recursive: true,
+  });
+
   return projectRoot;
 }
 

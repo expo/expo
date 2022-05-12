@@ -40,6 +40,7 @@ jobs:
     timeout-minutes: 120
     env:
       UPDATES_PORT: 4747
+      EXPO_REPO_ROOT: ${{ env.GITHUB_WORKSPACE }}
     strategy:
       matrix:
         api-level: [31]
@@ -49,7 +50,7 @@ jobs:
       - name: ⬢ Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: '14.17'
+          node-version: '16'
       - name: 🔨 Switch to Xcode 13.2.1
         run: sudo xcode-select --switch /Applications/Xcode_13.2.1.app
       - name: 🔨 Use JDK 11
@@ -74,112 +75,27 @@ jobs:
         run: yarn build:cli
       - name: 🔧 Install Expo CLI
         run: yarn global add expo-cli
-      - name: Init new expo app
-        working-directory: ../
-        run: expo-cli init updates-e2e --yes
-      - name: Add yarn resolutions for local dependencies
-        working-directory: ../updates-e2e
-        run: |
-          # A jq filter to add a "resolutions" field
-          JQ_FILTER=$(cat << EOF
-            . + {
-              resolutions: {
-                "expo-application": "file:../expo/packages/expo-application",
-                "expo-constants": "file:../expo/packages/expo-constants",
-                "expo-eas-client": "file:../expo/packages/expo-eas-client",
-                "expo-error-recovery": "file:../expo/packages/expo-error-recovery",
-                "expo-file-system": "file:../expo/packages/expo-file-system",
-                "expo-font": "file:../expo/packages/expo-font",
-                "expo-json-utils": "file:../expo/packages/expo-json-utils",
-                "expo-keep-awake": "file:../expo/packages/expo-keep-awake",
-                "expo-manifests": "file:../expo/packages/expo-manifests",
-                "expo-modules-core": "file:../expo/packages/expo-modules-core",
-                "expo-structured-headers": "file:../expo/packages/expo-structured-headers",
-                "expo-updates-interface": "file:../expo/packages/expo-updates-interface"
-              }
-            }
-          EOF
-          )
-          jq "$JQ_FILTER" < package.json > new-package.json
-          mv new-package.json package.json
-      - name: Add local expo packages
-        working-directory: ../updates-e2e
-        run: yarn add file:../expo/packages/expo-updates file:../expo/packages/expo file:../expo/packages/expo-splash-screen file:../expo/packages/expo-status-bar
-      - name: Get local IP address
+      - name: 🌐 Get local IP address
         run: echo "UPDATES_HOST=$(ifconfig -l | xargs -n1 ipconfig getifaddr)" >> $GITHUB_ENV
-      - name: Setup app.config.json
-        working-directory: ../updates-e2e
-        run: echo "{\"name\":\"updates-e2e\",\"runtimeVersion\":\"1.0.0\",\"plugins\":[\"expo-updates\"],\"android\":{\"package\":\"dev.expo.updatese2e\"},\"ios\":{\"bundleIdentifier\":\"dev.expo.updatese2e\"},\"updates\":{\"url\":\"http://$UPDATES_HOST:$UPDATES_PORT/update\"}}" > app.config.json
-      - name: Generate code signing
-        working-directory: ../updates-e2e
-        run: yarn expo-updates codesigning:generate --key-output-directory keys --certificate-output-directory certs --certificate-validity-duration-years 1 --certificate-common-name "E2E Test App"
-      - name: Configure code signing
-        working-directory: ../updates-e2e
-        run: yarn expo-updates codesigning:configure --certificate-input-directory certs --key-input-directory keys
-      - name: Pack latest bare-minimum template as tarball for expo prebuild
-        working-directory: templates/expo-template-bare-minimum
-        run: echo "$PWD" && npm pack --pack-destination ../../../updates-e2e/
-      - name: Prebuild
-        working-directory: ../updates-e2e
-        run: expo-cli prebuild --template expo-template-bare-minimum-*.tgz
-      - name: Copy App.js from test fixtures
-        working-directory: ../updates-e2e
-        run: cp ../expo/packages/expo-updates/e2e/__tests__/fixtures/App.js .
-      - name: Set host and port in App.js
-        working-directory: ../updates-e2e
-        run: sed -i -e "s/UPDATES_HOST/$UPDATES_HOST/" ./App.js && sed -i -e "s/UPDATES_PORT/$UPDATES_PORT/" ./App.js
-      - name: 🍏 Build release app
-        working-directory: ../updates-e2e/ios
-        run: xcodebuild -workspace updatese2e.xcworkspace -scheme updatese2e -configuration Release -destination "generic/platform=iOS Simulator" -derivedDataPath ./build build
-      - name: 🍏 Copy app to working directory
-        run: cp -R ../updates-e2e/ios/build/Build/Products/Release-iphonesimulator/updatese2e.app artifact
-      - name: 🍏 Get test app path
-        id: test-app-path
-        working-directory: ../updates-e2e/ios/build/Build/Products/Release-iphonesimulator/
-        run: echo "::set-output name=dir::$(pwd)"
-      - name: 🤖 Assemble release APK
-        working-directory: ../updates-e2e/android
-        run: ./gradlew assembleRelease --stacktrace
-      - name: 🤖 Copy APK to working directory
-        run: cp -R ../updates-e2e/android/app/build/outputs/apk artifact
-      - name: 🤖 Get test APK path
-        id: test-apk-path
-        working-directory: ../updates-e2e/android/app/build/outputs/apk/release
-        run: echo "::set-output name=dir::$(pwd)"
-      - name: Upload test app artifacts
+      - name: 📦 Get artifacts path
+        run: mkdir -p artifact && echo "ARTIFACTS_DEST=$(pwd)/artifact" >> $GITHUB_ENV
+      - name: 🚀 Setup test project and build
+        run: node packages/expo-updates/e2e/__tests__/setup/index.js
+      - name: Upload test project artifacts
         uses: actions/upload-artifact@v3
         with:
           name: updates-e2e-artifacts
           path: artifact
-      - name: Export update for test server to host
-        working-directory: ../updates-e2e
-        run: expo export --public-url https://u.expo.dev/dummy-url
-      - name: Get test update dist path
-        id: test-update-dist-path
-        working-directory: ../updates-e2e/dist
-        run: echo "::set-output name=dir::$(pwd)"
-      - name: Get test code signing private key path
-        id: test-code-signing-private-key-path
-        working-directory: ../updates-e2e/keys
-        run: echo "::set-output name=dir::$(pwd)/private-key.pem"
-      - name: 🍏 Start simulator
+      - name: 🍏 Start iOS simulator
         run: |
           xcrun simctl list devices -j \
           | jq -rc '[ .[] | .[] | .[] | select( .name | contains( "iPhone" ) ) | select( .isAvailable == true ) ] | last.udid ' \
           | xargs open -a Simulator --args -CurrentDeviceUDID
-      - name: 🍏 Run tests
-        env:
-          TEST_APP_PATH: '${{ steps.test-app-path.outputs.dir }}/updatese2e.app'
-          TEST_UPDATE_DIST_PATH: '${{ steps.test-update-dist-path.outputs.dir }}'
-          TEST_PRIVATE_KEY_PATH: '${{ steps.test-code-signing-private-key-path.outputs.dir }}'
+      - name: 🍏 Run iOS tests
         timeout-minutes: 30
         working-directory: packages/expo-updates
         run: yarn test --config e2e/jest.config.ios.js
-      - name: 🤖 Start emulator and run tests
-        env:
-          TEST_APK_PATH: '${{ steps.test-apk-path.outputs.dir }}/app-release.apk'
-          TEST_UPDATE_DIST_PATH: '${{ steps.test-update-dist-path.outputs.dir }}'
-          TEST_PRIVATE_KEY_PATH: '${{ steps.test-code-signing-private-key-path.outputs.dir }}'
+      - name: 🤖 Start Android emulator and run tests
         timeout-minutes: 30
         uses: reactivecircus/android-emulator-runner@v2
         with:

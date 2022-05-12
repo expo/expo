@@ -13,10 +13,6 @@ const runtimeVersion = '1.0.0';
 
 (async function () {
   const projectRoot = await setupAsync(workingDir, repoRoot, runtimeVersion);
-
-  if (!fs.existsSync(artifactsDest)) {
-    fs.mkdirSync(artifactsDest, { recursive: true });
-  }
   await buildAndroidAsync(projectRoot, artifactsDest);
   await buildIosAsync(projectRoot, artifactsDest);
 })();
