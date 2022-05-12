@@ -63,7 +63,7 @@ You can access the release channel your update is published under with the `Upda
 
 ## Example Workflow
 
-Consider a situation where you have a Staging stack for testing on Expo Go, and a Production stack for pushing through TestFlight, then promoting to the AppStore.
+Consider a situation where you have a Staging stack for testing on Expo Go, and a Production stack for pushing through TestFlight, then promoting to the App Store.
 
 On the staging stack, run `expo publish --release-channel staging`. Your test users can see the staging version of your app by specifying the release channel in the query parameter of the URL (ie)`https://exp.host/@username/yourApp?release-channel=staging`, then opening the URL in their web browser, and finally scanning the QR code with the Expo Go app. Alternatively, they can open that URL directly on their mobile device.
 
