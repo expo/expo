@@ -149,7 +149,7 @@ Add `expo.plugins` to your project's `app.json` (or `app.config.js`) file:
 }
 ```
 
-If you directly edit your native `ios/` and `android/` directories (i.e. you have ejected your project, or have a bare workflow project), **you should not use the above `plugins` property**. Instead, use `yarn sentry-wizard -i reactNative -p ios android` to configure your native projects. This `sentry-wizard` command will add an extra:
+If you directly edit your native `ios/` and `android/` directories (i.e. you have ejected your project, or have a bare workflow project), **you should not use the above `plugins` property**. Instead, use `yarn sentry-wizard -i reactNative -p ios android` to configure your native projects. (If you are running Expo inside a Docker container or the wizard cannot otherwise open a port, you can interactively run the tool with `--skip-connect`.) This `sentry-wizard` command may add an extra:
 
 ```js
 import * as Sentry from '@sentry/react-native';
@@ -160,6 +160,8 @@ Sentry.init({
 ```
 
 to your root project file (usually **App.js**), so make sure you remove it (but keep the `sentry-expo` import and original `Sentry.init` call!)
+
+The Sentry configuration wizard will add `app/[ios|android]/sentry.properties` files to your project. These contain a sensitive `auth.token` value. If you use EAS Build, consider [scaffolding these files](https://github.com/expo/eas-cli/issues/228#issuecomment-861407074) with secrets/environment variables instead of committing the value to your repository.
 
 ## Sourcemaps
 
