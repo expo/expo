@@ -3,18 +3,19 @@ title: Working with Monorepos
 ---
 
 import { Terminal } from '~/ui/components/Snippet';
+import { Collapsible } from '~/ui/components/Collapsible';
 
 Monorepos, or _"monolithic repositories"_, are single repositories containing multiple apps or packages. It can help speed up development for larger projects, makes it easier to share code, and act as a single source of truth. This guide will set up a simple monorepo with an Expo project. We currently have first-class support for yarn workspaces. If you want to use another tool, make sure you know how to configure it.
 
 > ⚠️ Monorepos are not for everyone. It requires in-depth knowledge of the used tooling, adds more complexity, and often requires specific tooling configuration. You can get far with just a single repository.
 
-<details><summary>Using SDK older than 43?</summary>
+<Collapsible summary="Using SDK older than 43?">
 
 Setting up a monorepo was difficult before SDK 43. You had to implement your tooling or use [expo-yarn-workspaces](https://github.com/expo/expo/tree/main/packages/expo-yarn-workspaces). The yarn workspaces package symlinks all required dependencies back to the app **node_modules** folder. Although this works for most apps, it has some flaws. For example, it doesn't work well with multiple versions of the same package.
 
 We made some significant changes with Expo SDK 43 to improve support for monorepos. [The auto linker in the newer Expo modules](https://blog.expo.dev/whats-new-in-expo-modules-infrastructure-7a7cdda81ebc) now also look for packages in parent node_modules folders. None of our native files inside our template contain hardcoded paths to packages.
 
-</details>
+</Collapsible>
 
 ## Example monorepo
 

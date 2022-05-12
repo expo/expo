@@ -1,5 +1,6 @@
 import { getConfig } from '@expo/config';
 import * as PackageManager from '@expo/package-manager';
+import chalk from 'chalk';
 
 import * as Log from '../log';
 import { getVersionedPackagesAsync } from '../start/doctor/dependencies/getVersionedPackages';
@@ -20,7 +21,9 @@ export async function installAsync(
   const packageManager = PackageManager.createForProject(projectRoot, {
     npm: options.npm,
     yarn: options.yarn,
+    pnpm: options.pnpm,
     log: Log.log,
+    silent: options.silent,
   });
 
   if (options.check || options.fix) {
@@ -63,7 +66,10 @@ export async function installPackagesAsync(
      */
     packages: string[];
     /** Package manager to use when installing the versioned packages. */
-    packageManager: PackageManager.NpmPackageManager | PackageManager.YarnPackageManager;
+    packageManager:
+      | PackageManager.NpmPackageManager
+      | PackageManager.YarnPackageManager
+      | PackageManager.PnpmPackageManager;
     /**
      * SDK to version `packages` for.
      * @example '44.0.0'
@@ -82,7 +88,11 @@ export async function installPackagesAsync(
     sdkVersion,
   });
 
-  Log.log(`Installing ${versioning.messages.join(' and ')} using ${packageManager.name}.`);
+  Log.log(
+    chalk`\u203A Installing ${
+      versioning.messages.length ? versioning.messages.join(' and ') + ' ' : ''
+    }using {bold ${packageManager.name}}`
+  );
 
   await packageManager.addWithParametersAsync(versioning.packages, packageManagerArguments);
 

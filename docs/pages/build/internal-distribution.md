@@ -2,6 +2,7 @@
 title: Internal distribution
 ---
 
+import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
 import { theme } from '@expo/styleguide'
 
@@ -11,11 +12,9 @@ EAS Build can help you with this by providing sharable URLs for your builds with
 
 > 😅 Installing an app on iOS is a bit trickier than on Android, but it's possible thanks to ad hoc and enterprise provisioning profiles. We'll talk more about this later in this doc.
 
-<h1>Setting up internal distribution</h1>
+# Setting up internal distribution
 
 The following three steps will guide you through adding internal distribution to a project that is [already set up to build with EAS Build](setup.md). It will only take a few minutes in total to: configure the project, add a couple of test iOS devices to a provisioning profile, and start builds for Android and iOS.
-
-<div style={{marginTop: -10}} />
 
 ## 1. Configure a build profile
 
@@ -39,8 +38,7 @@ Please note that if you override the `gradleCommand` on Android, you should ensu
 
 The configuration above tells EAS Build that you would like to use ad hoc distribution, which is available for all paid Apple Developer accounts. It is not available for free accounts.
 
-<details><summary><h4>🏙 Do you have an Apple Developer Enterprise Program membership?</h4></summary>
-<p>
+<Collapsible summary="🏙 Do you have an Apple Developer Enterprise Program membership?">
 
 The following will only work if you have an Apple account with Apple Developer Enterprise Program membership. While using Enterprise provisioning, you can sign your app using a `universal` or `adhoc` provisioning profile. We recommend `universal` because it does not require you to register your devices with Apple, which is the main benefit of using Enterprise provisioning.
 
@@ -59,8 +57,7 @@ The following will only work if you have an Apple account with Apple Developer E
 }
 ```
 
-</p>
-</details>
+</Collapsible>
 
 ## 2. Configure app signing
 
@@ -89,29 +86,24 @@ You can register new devices at any time, but builds that were created before th
 
 The next step is to generate or update the provisioning profile. When you proceed to running a build, you will be guided through this process.
 
-<details><summary><h4>🏙 Are you setting up enterprise provisioning?</h4></summary>
-<p>
+<Collapsible summary="🏙 Are you setting up enterprise provisioning?">
 
 Apple Enterprise Program membership costs $299 USD per year and [not all organizations will be eligible](https://developer.apple.com/programs/enterprise/), so you will likely be using ad hoc provisioning, which works with any normal paid Apple Developer account.
 
 If you have an [Apple Developer Enterprise Program membership](https://developer.apple.com/programs/enterprise/) users can install your app to their device without pre-registering their UDID; they just need to install the profile to their device and they can then access existing builds. You will need to sign in using your Apple Developer Enterprise account during the `eas build` process to set up the correct provisioning.
 
 If you distribute your app both through enterprise provisioning and the App Store, you will need to have a distinct bundle identifier for each context. We recommend either:
-  
+
 - In managed projects, use **app.config.js** to dynamically switch identifiers.
 - In bare projects, create a separate `scheme` for each bundle identifier and specify the scheme name in separate build profiles.
 
-</p>
-</details>
+</Collapsible>
 
-<details><summary><h4>🔐 Are you using manual local credentials?</h4></summary>
-<p>
+<Collapsible summary="🔐 Are you using manual local credentials?">
 
 If so, make sure to point your **credentials.json** to an ad hoc or enterprise provisioning profile that you generate through the Apple Developer Portal (either update an existing credentials.json used for another type of distribution or replace it with a new one that points to the appropriate provisioning profile). Beware that EAS CLI does only a limited validation of your local credentials, and you will have to handle device UDID registration manually. Read more about [using local credentials](/app-signing/local-credentials.md).
 
-</p>
-</details>
-
+</Collapsible>
 
 ## 3. Run a build with the internal build profile
 

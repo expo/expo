@@ -21,7 +21,7 @@ export type DependenciesModificationResults = {
   hasNewDevDependencies: boolean;
 };
 
-/** Modifies the `package.json` with `_modifyPackageJson` and format/displays the results. */
+/** Modifies the `package.json` with `modifyPackageJson` and format/displays the results. */
 export async function updatePackageJSONAsync(
   projectRoot: string,
   {
@@ -40,7 +40,7 @@ export async function updatePackageJSONAsync(
 
   const templatePkg = getPackageJson(templateDirectory);
 
-  const results = _modifyPackageJson(projectRoot, {
+  const results = modifyPackageJson(projectRoot, {
     templatePkg,
     pkg,
     skipDependencyUpdate,
@@ -81,7 +81,7 @@ export async function updatePackageJSONAsync(
  * @param props.skipDependencyUpdate Array of dependencies to skip updating.
  * @returns
  */
-function _modifyPackageJson(
+function modifyPackageJson(
   projectRoot: string,
   {
     templatePkg,
@@ -143,12 +143,9 @@ export function updatePkgDependencies(
     ...pkg.dependencies,
   });
 
-  const requiredDependencies = [
-    'react',
-    'react-native-unimodules',
-    'react-native',
-    'expo-updates',
-  ].filter((depKey) => !!defaultDependencies[depKey]);
+  const requiredDependencies = ['expo', 'expo-splash-screen', 'react', 'react-native'].filter(
+    (depKey) => !!defaultDependencies[depKey]
+  );
 
   const symlinkedPackages: string[] = [];
 

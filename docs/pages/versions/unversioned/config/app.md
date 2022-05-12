@@ -16,4 +16,4 @@ For more general information on app configuration, such as the differences betwe
 
 ## Properties
 
-<AppConfigSchemaPropertiesTable schema={schema}/>
+<AppConfigSchemaPropertiesTable schema={schema} />

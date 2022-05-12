@@ -2,13 +2,17 @@ import { css } from '@emotion/react';
 import { borderRadius, iconSize, shadows, spacing, theme } from '@expo/styleguide';
 import React, { PropsWithChildren, ReactNode } from 'react';
 
-import { HEADLINE } from '~/ui/components/Text';
+import { HEADLINE, P } from '~/ui/components/Text';
 import { TriangleDownIcon } from '~/ui/foundations/icons';
 
 type CollapsibleProps = PropsWithChildren<{
-  /** The content of the collapsible summary */
+  /**
+   * The content of the collapsible summary.
+   */
   summary: ReactNode;
-  /** If the collapsible should be rendered "open" by default */
+  /**
+   * If the collapsible should be rendered "open" by default.
+   */
   open?: boolean;
   testID?: string;
 }>;
@@ -17,13 +21,29 @@ export function Collapsible({ summary, open, testID, children }: CollapsibleProp
   return (
     <details css={detailsStyle} open={open} data-testid={testID}>
       <summary css={summaryStyle}>
-        <TriangleDownIcon css={markerStyle} size={iconSize.small} />
-        <HEADLINE tag="span" css={headlineStyle}>
-          {summary}
-        </HEADLINE>
+        <div css={markerWrapperStyle}>
+          <TriangleDownIcon css={markerStyle} size={iconSize.small} />
+        </div>
+        <HEADLINE tag="span">{summary}</HEADLINE>
       </summary>
-      <div css={contentStyle}>{children}</div>
+      <P css={contentStyle}>{children}</P>
     </details>
+  );
+}
+
+export function ExpoKitCollapsible({ children }: CollapsibleProps) {
+  return (
+    <div css={configDetailsStyle}>
+      <Collapsible summary="ExpoKit">{children}</Collapsible>
+    </div>
+  );
+}
+
+export function BareWorkflowCollapsible({ children }: CollapsibleProps) {
+  return (
+    <div css={configDetailsStyle}>
+      <Collapsible summary="Bare Workflow">{children}</Collapsible>
+    </div>
   );
 }
 
@@ -33,9 +53,14 @@ const detailsStyle = css({
   border: `1px solid ${theme.border.default}`,
   borderRadius: borderRadius.medium,
   padding: 0,
+  marginBottom: spacing[3],
 
   '&[open]': {
     boxShadow: shadows.micro,
+  },
+
+  'h4 + &, li > &': {
+    marginTop: spacing[3],
   },
 });
 
@@ -49,20 +74,21 @@ const summaryStyle = css({
   padding: spacing[1.5],
   paddingRight: spacing[3],
   margin: 0,
-});
+  cursor: 'pointer',
 
-// TODO(cedric): remove this when we removed all `h4` tags in the MDX files
-const headlineStyle = css({
-  h4: {
-    display: 'inline',
-    margin: '0 !important',
-    padding: '0 !important',
+  '&:hover span': {
+    color: theme.text.secondary,
   },
 });
 
+const markerWrapperStyle = css({
+  alignSelf: 'baseline',
+  marginTop: 5,
+  marginLeft: spacing[1.5],
+  marginRight: spacing[2],
+});
+
 const markerStyle = css({
-  flexShrink: 0,
-  marginRight: spacing[1.5],
   transform: 'rotate(-90deg)',
   transition: `transform 200ms`,
 
@@ -70,48 +96,21 @@ const markerStyle = css({
 });
 
 const contentStyle = css({
-  padding: `${spacing[2]}px ${spacing[4]}px 0`,
+  padding: `${spacing[4]}px ${spacing[5]}px 0`,
 
   p: {
     marginLeft: 0,
   },
+
+  'pre > pre': {
+    marginTop: 0,
+  },
 });
 
-// TODO(cedric): remove everything below this line once we switch to MDX v2,
-// that won't support separate <details> and <summary> tags.
-// To implement this collapsible with MDX v1, without changing the pages, we need to add them separately to markdown.
+const configDetailsStyle = css({
+  marginTop: spacing[3],
 
-/** @deprecated please use `<Collapsible>` instead of `<DETAILS>` */
-export const DETAILS = ({
-  testID,
-  children,
-  ...rest
-}: PropsWithChildren<Omit<CollapsibleProps, 'summary'>>) => {
-  // Pull out the `<summary>` to style the content differently.
-  const childrenList = React.Children.toArray(children);
-  const summary = childrenList.find(node => nodeIsTag(node, 'summary'));
-  if (summary) {
-    childrenList.splice(childrenList.indexOf(summary), 1);
-  }
-
-  return (
-    <details css={detailsStyle} data-testid={testID} {...rest}>
-      {summary}
-      <div css={contentStyle}>{childrenList}</div>
-    </details>
-  );
-};
-
-/** @deprecated please use `<Collapsible>` instead of `<SUMMARY>` */
-export const SUMMARY = ({ testID, children }: PropsWithChildren<{ testID?: string }>) => (
-  <summary css={summaryStyle} data-testid={testID}>
-    <TriangleDownIcon css={markerStyle} size={iconSize.small} />
-    <HEADLINE tag="span" css={headlineStyle}>
-      {children}
-    </HEADLINE>
-  </summary>
-);
-
-function nodeIsTag(node: ReactNode, tag: string) {
-  return typeof node === 'object' ? (node as any).props?.originalType === tag : false;
-}
+  '& details[open]': {
+    paddingBottom: spacing[4],
+  },
+});
