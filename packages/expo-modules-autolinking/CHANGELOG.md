@@ -8,10 +8,14 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 0.8.1 — 2022-05-12
+
+### 🐛 Bug fixes
+
 - Fixed an infinite loop when the **package.json** is placed at the root path. ([#17440](https://github.com/expo/expo/pull/17440) by [@tsapeta](https://github.com/tsapeta))
 - Fix iOS build if project config name is other than RELEASE or DEBUG ([#17439](https://github.com/expo/expo/pull/17439) by [@uloco](https://github.com/uloco))
-
-### 💡 Others
 
 ## 0.8.0 — 2022-05-06
 

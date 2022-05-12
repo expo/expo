@@ -107,7 +107,7 @@ PODS:
     - ExpoModulesCore
   - EXPermissions (13.2.0):
     - ExpoModulesCore
-  - Expo (45.0.3):
+  - Expo (45.0.4):
     - ExpoModulesCore
   - expo-dev-client (0.9.5):
     - EXManifests
@@ -1347,7 +1347,7 @@ SPEC CHECKSUMS:
   AppAuth: 31bcec809a638d7bd2f86ea8a52bd45f6e81e7c7
   boost: a7c83b31436843459a1961bfd74b96033dc77234
   CocoaLumberjack: 543c79c114dadc3b1aba95641d8738b06b05b646
-  DoubleConversion: 5189b271737e1565bdce30deb4a08d647e3f5f54
+  DoubleConversion: 831926d9b8bf8166fd87886c4abab286c2422662
   EASClient: 93565f4d024559b75eac62bc7d50acaa354614f6
   EXAmplitude: 96d6a3f9c2cff499261fc28c952c03b55f7584f9
   EXApplication: d6562af1204162e0ac46d341a7d4e5dc720b33de
@@ -1385,7 +1385,7 @@ SPEC CHECKSUMS:
   EXNetwork: 116e5ec043168904c1f24a2e96a8361063e57d26
   EXNotifications: 43ef917067a8c1cc977c7976e43df63d582c7c4d
   EXPermissions: 3dbb869e7f96a5711314f73d48ddc2f28009a7f6
-  Expo: 353cd6d2154838c0c8bb1072d3ac89eb535a2ef4
+  Expo: 64d52669fa3b9342919b5b44b2b4f15f19b0cf76
   expo-dev-client: 4a518a938142db4746d28222eb89896e499b73ae
   expo-dev-launcher: 94f58b94b02243d44b0f2ef54535024da5148dbf
   expo-dev-menu: 98a4747848d220aa432cc4c527e19ba1b3a52208
@@ -1430,7 +1430,7 @@ SPEC CHECKSUMS:
   FirebaseCoreDiagnostics: fd0c8490f34287229c1d6c103d3a55f81ec85712
   FirebaseInstallations: 7d1d967a307c12f1aadd76844fc321cef699b1ce
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
-  glog: 3d02b25ca00c2d456734d0bcff864cbc62f6ae1a
+  glog: 476ee3e89abb49e07f822b48323c51c57124b572
   GoogleAppMeasurement: 71156240babd3cc6ced03e0d54816f01a880c730
   GoogleDataTransport: 629c20a4d363167143f30ea78320d5a7eb8bd940
   GoogleMLKit: 755661c46990a85e42278015f26400286d98ad95

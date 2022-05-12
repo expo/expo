@@ -1949,7 +1949,7 @@ PODS:
     - ExpoModulesCore
   - EXPermissions (13.2.0):
     - ExpoModulesCore
-  - Expo (45.0.3):
+  - Expo (45.0.4):
     - ExpoModulesCore
   - ExpoCellular (4.2.0):
     - ExpoModulesCore
@@ -4372,7 +4372,7 @@ SPEC CHECKSUMS:
   EXNetwork: 116e5ec043168904c1f24a2e96a8361063e57d26
   EXNotifications: 43ef917067a8c1cc977c7976e43df63d582c7c4d
   EXPermissions: 3dbb869e7f96a5711314f73d48ddc2f28009a7f6
-  Expo: 353cd6d2154838c0c8bb1072d3ac89eb535a2ef4
+  Expo: 64d52669fa3b9342919b5b44b2b4f15f19b0cf76
   ExpoCellular: b5daa3b732c0c9841979c39988062e50e70dc053
   ExpoClipboard: e2dda22be0524595a5eeead51665f60729829123
   ExpoCrypto: d0d0f3e20875dc450b4ec88f0fb608da5c2c6c17
