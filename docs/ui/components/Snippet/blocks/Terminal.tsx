@@ -26,7 +26,7 @@ export const Terminal = ({
 }: TerminalProps) => (
   <Snippet style={style}>
     <SnippetHeader alwaysDark title={title}>
-      {renderCopyButton(cmd, cmdCopy)}
+      {renderCopyButton({ cmd, cmdCopy })}
     </SnippetHeader>
     <SnippetContent alwaysDark hideOverflow={hideOverflow}>
       {cmd.map(cmdMapper)}
@@ -39,14 +39,14 @@ export const Terminal = ({
  * Currently, the implementation is simple, but we can add multiline support in the future.
  */
 function getDefaultCmdCopy(cmd: TerminalProps['cmd']) {
-  return cmd.length === 1 && !cmd[0].startsWith('#')
-    ? cmd[0].startsWith('$')
-      ? cmd[0].slice(2)
-      : cmd[0]
-    : undefined;
+  const validLines = cmd.filter(line => !line.startsWith('#') && line !== '');
+  if (validLines.length === 1) {
+    return validLines[0].startsWith('$') ? validLines[0].slice(2) : validLines[0];
+  }
+  return undefined;
 }
 
-function renderCopyButton(cmd: TerminalProps['cmd'], cmdCopy: TerminalProps['cmdCopy']) {
+function renderCopyButton({ cmd, cmdCopy }: TerminalProps) {
   const copyText = cmdCopy || getDefaultCmdCopy(cmd);
   return copyText && <CopyAction alwaysDark text={copyText} />;
 }
