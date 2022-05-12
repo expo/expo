@@ -20,7 +20,7 @@
 @property (nonatomic, weak) EXGLObjectManager *objectManager;
 @property (nonatomic, assign) BOOL isContextReady;
 @property (nonatomic, assign) BOOL wasPrepareCalled;
-@property (atomic) BOOL appIsBackground;
+@property (nonatomic) BOOL appIsBackgrounded;
 
 @end
 
@@ -37,7 +37,7 @@
     _eaglCtx = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES3] ?: [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
     _isContextReady = NO;
     _wasPrepareCalled = NO;
-    _appIsBackground = NO;
+    _appIsBackgrounded = NO;
   }
   return self;
 }
@@ -85,16 +85,16 @@
                                         object:nil];
 }
 
-- (void) onApplicationWillResignActive:(NSNotification *) note
+- (void)onApplicationWillResignActive:(NSNotification *)notification
 {
-  self->_appIsBackground = YES;
+  _appIsBackgrounded = YES;
   dispatch_sync(_glQueue, ^{
     glFinish();
   });
 }
 
-- (void) onApplicationDidBecomeActive:(NSNotification *) note {
-  _appIsBackground = NO;
+- (void)onApplicationDidBecomeActive:(NSNotification *)notification {
+  _appIsBackgrounded = NO;
   [self flush];
 }
 
@@ -142,7 +142,7 @@
 
 - (void)flush
 {
-  if (_appIsBackground) {
+  if (_appIsBackgrounded) {
       return;
   }
   [self runAsync:^{
@@ -156,13 +156,13 @@
 
 - (void)destroy
 {
+  [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidBecomeActiveNotification object:nil];
+  [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationWillResignActiveNotification object:nil];
+
   [self runAsync:^{
     if ([self.delegate respondsToSelector:@selector(glContextWillDestroy:)]) {
       [self.delegate glContextWillDestroy:self];
     }
-
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidBecomeActiveNotification object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationWillResignActiveNotification object:nil];
 
     // Flush all the stuff
     UEXGLContextFlush(self->_contextId);
