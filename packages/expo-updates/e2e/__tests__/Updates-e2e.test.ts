@@ -16,7 +16,7 @@ const RUNTIME_VERSION = '1.0.0';
 
 const TIMEOUT_BIAS = process.env.CI ? 10 : 1;
 
-const repoRoot = process.env.EXPO_REPO_ROOT;
+const repoRoot = process.env.EXPO_REPO_ROOT ?? process.env.GITHUB_WORKSPACE;
 if (!repoRoot) {
   throw new Error(
     'You must provide the path to the repo root in the EXPO_REPO_ROOT environment variable'

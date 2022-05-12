@@ -40,7 +40,6 @@ jobs:
     timeout-minutes: 120
     env:
       UPDATES_PORT: 4747
-      EXPO_REPO_ROOT: ${{ env.GITHUB_WORKSPACE }}
     strategy:
       matrix:
         api-level: [31]
