@@ -63,6 +63,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SLACK_WEBHOOK_URL: ${{ secrets.slack_webhook_dev_client }}
+          MATRIX_CONTEXT: ${{ toJson(matrix) }}
         with:
           channel: '#dev-clients'
           status: ${{ job.status }}
