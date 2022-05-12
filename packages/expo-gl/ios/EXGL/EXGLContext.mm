@@ -20,6 +20,7 @@
 @property (nonatomic, weak) EXGLObjectManager *objectManager;
 @property (nonatomic, assign) BOOL isContextReady;
 @property (nonatomic, assign) BOOL wasPrepareCalled;
+@property (nonatomic) BOOL appIsBackgrounded;
 
 @end
 
@@ -36,6 +37,7 @@
     _eaglCtx = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES3] ?: [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
     _isContextReady = NO;
     _wasPrepareCalled = NO;
+    _appIsBackgrounded = NO;
   }
   return self;
 }
@@ -71,6 +73,29 @@
 {
   self->_contextId = UEXGLContextCreate();
   [self->_objectManager saveContext:self];
+
+  // listen for foreground/background transitions
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                        selector:@selector(onApplicationDidBecomeActive:)
+                                        name:UIApplicationDidBecomeActiveNotification
+                                        object:nil];
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                        selector:@selector(onApplicationWillResignActive:)
+                                        name:UIApplicationWillResignActiveNotification
+                                        object:nil];
+}
+
+- (void)onApplicationWillResignActive:(NSNotification *)notification
+{
+  _appIsBackgrounded = YES;
+  dispatch_sync(_glQueue, ^{
+    glFinish();
+  });
+}
+
+- (void)onApplicationDidBecomeActive:(NSNotification *)notification {
+  _appIsBackgrounded = NO;
+  [self flush];
 }
 
 - (void)prepare:(void(^)(BOOL))callback
@@ -117,6 +142,9 @@
 
 - (void)flush
 {
+  if (_appIsBackgrounded) {
+      return;
+  }
   [self runAsync:^{
     UEXGLContextFlush(self->_contextId);
 
@@ -128,6 +156,9 @@
 
 - (void)destroy
 {
+  [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidBecomeActiveNotification object:nil];
+  [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationWillResignActiveNotification object:nil];
+
   [self runAsync:^{
     if ([self.delegate respondsToSelector:@selector(glContextWillDestroy:)]) {
       [self.delegate glContextWillDestroy:self];
