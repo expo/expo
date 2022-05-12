@@ -19,8 +19,7 @@ When selecting an image for the build you can use the full name provided below o
 
 > **Note:**
 >
-> - If you have a bare workflow project: your build is going to use the `default` image unless you provide `image` in **eas.json**.
-> - If you have a managed workflow project: your build is going to use an automatically chosen image, unless you provide `image` in **eas.json**.
+> If you do not provide `image` in **eas.json**, your build will use `default` image. However, in some cases, we select a more appropriate image based on the Expo SDK version or React Native version. You can check what image is used for a build in the "Spin up build environment" build logs section.
 
 ## Android build server configurations
 
@@ -127,7 +126,7 @@ When selecting an image for the build you can use the full name provided below o
   enableImmutableInstalls: false
   ```
 
-#### Image `macos-monterey-12.3-xcode-13.3` (alias `latest`)
+#### Image `macos-monterey-12.3-xcode-13.3` (alias `default', `latest`)
 
 <Collapsible summary="Details">
 
@@ -135,6 +134,7 @@ When selecting an image for the build you can use the full name provided below o
 - Xcode 13.3.1 (13E500a)
 - Node.js 16.13.2
 - Yarn 1.22.17
+- pnpm 7.0.0
 - npm 8.1.2
 - fastlane 2.205.2
 - CocoaPods 1.11.3
@@ -150,6 +150,7 @@ When selecting an image for the build you can use the full name provided below o
 - Xcode 13.2.1 (13C100)
 - Node.js 16.13.2
 - Yarn 1.22.17
+- pnpm 7.0.0
 - npm 8.1.2
 - fastlane 2.201.0
 - CocoaPods 1.11.2
@@ -157,7 +158,7 @@ When selecting an image for the build you can use the full name provided below o
 
 </Collapsible>
 
-#### Image `macos-big-sur-11.4-xcode-13.0` (alias `default`)
+#### Image `macos-big-sur-11.4-xcode-13.0`
 
 <Collapsible summary="Details">
 
@@ -165,6 +166,7 @@ When selecting an image for the build you can use the full name provided below o
 - Xcode 13.0 (13A233)
 - Node.js 16.13.2
 - Yarn 1.22.17
+- pnpm 7.0.0
 - npm 8.1.2
 - fastlane 2.185.1
 - CocoaPods 1.10.1
@@ -180,6 +182,7 @@ When selecting an image for the build you can use the full name provided below o
 - Xcode 12.5 (12E5244e)
 - Node.js 16.13.2
 - Yarn 1.22.17
+- pnpm 7.0.0
 - npm 8.1.2
 - fastlane 2.185.1
 - CocoaPods 1.10.1
