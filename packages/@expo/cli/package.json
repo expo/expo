@@ -45,7 +45,7 @@
     "@expo/json-file": "^8.2.35",
     "@expo/metro-config": "~0.3.16",
     "@expo/osascript": "^2.0.31",
-    "@expo/package-manager": "~0.0.52",
+    "@expo/package-manager": "~0.0.53",
     "@expo/plist": "^0.0.18",
     "@expo/prebuild-config": "~4.0.0",
     "@expo/rudder-sdk-node": "1.1.1",
