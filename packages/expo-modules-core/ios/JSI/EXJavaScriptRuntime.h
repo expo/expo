@@ -79,6 +79,13 @@ NS_SWIFT_NAME(JavaScriptRuntime)
                                           argsCount:(NSInteger)argsCount
                                               block:(nonnull JSAsyncFunctionBlock)block;
 
+#pragma mark - Classes
+
+typedef void (^ClassConstructorBlock)(EXJavaScriptObject * _Nonnull thisValue, NSArray<EXJavaScriptValue *> * _Nonnull arguments);
+
+- (nonnull EXJavaScriptObject *)createClass:(nonnull NSString *)name
+                                constructor:(nonnull ClassConstructorBlock)constructor;
+
 #pragma mark - Script evaluation
 
 /**

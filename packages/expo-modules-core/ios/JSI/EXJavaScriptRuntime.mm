@@ -111,6 +111,21 @@ using namespace facebook;
   }];
 }
 
+#pragma mark - Classes
+
+- (nonnull EXJavaScriptObject *)createClass:(nonnull NSString *)name
+                                constructor:(nonnull ClassConstructorBlock)constructor
+{
+  std::shared_ptr<jsi::Function> klass = expo::createClass(*_runtime, [name UTF8String], [self, constructor](jsi::Runtime &runtime, const jsi::Value &thisValue, jsi::Array args) {
+    std::shared_ptr<jsi::Object> thisPtr = std::make_shared<jsi::Object>(thisValue.asObject(runtime));
+    EXJavaScriptObject *caller = [[EXJavaScriptObject alloc] initWith:thisPtr runtime:self];
+    NSArray<EXJavaScriptValue *> *arguments = expo::convertJSIArrayToNSArray(runtime, args, self->_jsCallInvoker);
+
+    constructor(caller, arguments);
+  });
+  return [[EXJavaScriptObject alloc] initWith:klass runtime:self];
+}
+
 #pragma mark - Script evaluation
 
 - (nonnull EXJavaScriptValue *)evaluateScript:(nonnull NSString *)scriptSource
