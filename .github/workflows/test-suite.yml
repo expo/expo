@@ -203,6 +203,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SLACK_WEBHOOK_URL: ${{ secrets.slack_webhook_android }}
+          MATRIX_CONTEXT: ${{ toJson(matrix) }}
         with:
           channel: '#expo-android'
           status: ${{ job.status }}
