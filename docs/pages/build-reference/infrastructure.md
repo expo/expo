@@ -31,7 +31,7 @@ When selecting an image for the build you can use the full name provided below o
 - Maven cache deployed with Kubernetes. [Learn more](caching/#android-dependencies)
 - Global Gradle configuration in `~/.gradle/gradle.properties`:
 
-  ```jsx
+  ```ini
   org.gradle.jvmargs=-Xmx14g -XX:MaxPermSize=512m -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8
   org.gradle.parallel=true
   org.gradle.configureondemand=true
@@ -40,13 +40,13 @@ When selecting an image for the build you can use the full name provided below o
 
 - `~/.npmrc`
 
-  ```
+  ```ini
   registry=http://npm-cache-service.worker-infra-production.svc.cluster.local:4873
   ```
 
 - `~/.yarnrc.yml`
 
-  ```
+  ```yml
   unsafeHttpWhitelist:
     - "*"
   npmRegistryServer: "http://npm-cache-service.worker-infra-production.svc.cluster.local:4873"
@@ -114,13 +114,13 @@ When selecting an image for the build you can use the full name provided below o
 - npm cache. [Learn more](caching/#javascript-dependencies)
 - `~/.npmrc`
 
-  ```
+  ```ini
   registry=http://10.254.24.8:4873
   ```
 
 - `~/.yarnrc.yml`
 
-  ```
+  ```yml
   unsafeHttpWhitelist:
     - "*"
   npmRegistryServer: "registry=http://10.254.24.8:4873"
