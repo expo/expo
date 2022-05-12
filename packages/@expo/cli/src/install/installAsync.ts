@@ -10,12 +10,12 @@ import { Options } from './resolveOptions';
 
 export async function installAsync(
   packages: string[],
-  options: Options,
+  options: Options & { projectRoot?: string },
   packageManagerArguments: string[] = []
 ) {
   // Locate the project root based on the process current working directory.
   // This enables users to run `npx expo install` from a subdirectory of the project.
-  const projectRoot = findUpProjectRootOrAssert(process.cwd());
+  const projectRoot = options.projectRoot ?? findUpProjectRootOrAssert(process.cwd());
 
   // Resolve the package manager used by the project, or based on the provided arguments.
   const packageManager = PackageManager.createForProject(projectRoot, {
