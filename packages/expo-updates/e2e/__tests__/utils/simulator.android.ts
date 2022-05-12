@@ -18,9 +18,9 @@ const ADB_PATH = (function () {
   return 'adb';
 })();
 
-const APK_PATH = process.env.TEST_APK_PATH;
 const PACKAGE_NAME = 'dev.expo.updatese2e';
 const ACTIVITY_NAME = `${PACKAGE_NAME}/${PACKAGE_NAME}.MainActivity`;
+const APK_PATH = path.join(process.env.ARTIFACTS_DEST, 'android-release.apk');
 
 export const ExportedManifestFilename = 'android-index.json';
 

@@ -1,7 +1,8 @@
 import spawnAsync from '@expo/spawn-async';
+import path from 'path';
 
-const APP_PATH = process.env.TEST_APP_PATH;
 const BUNDLE_IDENTIFIER = 'dev.expo.updatese2e';
+const APP_PATH = path.join(process.env.ARTIFACTS_DEST, 'ios-release.app');
 
 export const ExportedManifestFilename = 'ios-index.json';
 
