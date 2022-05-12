@@ -26,13 +26,30 @@ export const Terminal = ({
 }: TerminalProps) => (
   <Snippet style={style}>
     <SnippetHeader alwaysDark title={title}>
-      {!!cmdCopy && <CopyAction alwaysDark text={cmdCopy} />}
+      {renderCopyButton(cmd, cmdCopy)}
     </SnippetHeader>
     <SnippetContent alwaysDark hideOverflow={hideOverflow}>
       {cmd.map(cmdMapper)}
     </SnippetContent>
   </Snippet>
 );
+
+/**
+ * This method attempts to naively generate the basic cmdCopy from the given cmd list.
+ * Currently, the implementation is simple, but we can add multiline support in the future.
+ */
+function getDefaultCmdCopy(cmd: TerminalProps['cmd']) {
+  return cmd.length === 1 && !cmd[0].startsWith('#')
+    ? cmd[0].startsWith('$')
+      ? cmd[0].slice(2)
+      : cmd[0]
+    : undefined;
+}
+
+function renderCopyButton(cmd: TerminalProps['cmd'], cmdCopy: TerminalProps['cmdCopy']) {
+  const copyText = cmdCopy || getDefaultCmdCopy(cmd);
+  return copyText && <CopyAction alwaysDark text={copyText} />;
+}
 
 /**
  * Map all provided lines and render the correct component.
