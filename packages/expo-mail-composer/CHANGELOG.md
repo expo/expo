@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Native module on iOS is now written in Swift using the new API and JSI.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
