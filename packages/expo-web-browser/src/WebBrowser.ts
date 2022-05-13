@@ -234,7 +234,8 @@ export function dismissBrowser(): void {
  * after a user interaction. If the event is blocked, an error with code [`ERR_WEB_BROWSER_BLOCKED`](#errwebbrowserblocked) will be thrown.
  *
  * @param url The url to open in the web browser. This should be a login page.
- * @param redirectUrl _Optional_ - The url to deep link back into your app. By default, this will be [`Constants.linkingUrl`](./constants/#expoconstantslinkinguri).
+ * @param redirectUrl _Optional_ - The url to deep link back into your app.
+ * By default, this will be set to output of [`Linking.createURL("")`](./linking/#linkingcreateurlpath-namedparameters).
  * @param options _Optional_ - An object extending the [`WebBrowserOpenOptions`](#webbrowseropenoptions).
  * If there is no native AuthSession implementation available (which is the case on Android)
  * these params will be used in the browser polyfill. If there is a native AuthSession implementation,
