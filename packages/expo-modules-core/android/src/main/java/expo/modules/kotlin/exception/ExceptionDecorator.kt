@@ -5,6 +5,8 @@ internal inline fun <T> exceptionDecorator(decoratorBlock: (e: CodedException) -
     block()
   } catch (e: CodedException) {
     throw decoratorBlock(e)
+  } catch (e: expo.modules.core.errors.CodedException) {
+    throw decoratorBlock(CodedException(e.code, e.message, e.cause))
   } catch (e: Throwable) {
     throw decoratorBlock(UnexpectedException(e))
   }
