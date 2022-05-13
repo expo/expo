@@ -21,7 +21,14 @@ class JSIInteropModuleRegistry(appContext: AppContext) {
     nativeInvokerHolder: CallInvokerHolderImpl
   )
 
-  // used from cpp codebase
+  /**
+   * Returns a `JavaScriptModuleObject` that is a bridge between [expo.modules.kotlin.modules.Module]
+   * and HostObject exported via JSI.
+   *
+   * This function will be called from the CPP implementation.
+   * It doesn't make sense to call it from Kotlin.
+   */
+  @Suppress("unused")
   fun getJavaScriptModuleObject(name: String): JavaScriptModuleObject? {
     return appContextHolder.get()?.registry?.getModuleHolder(name)?.jsObject
   }
