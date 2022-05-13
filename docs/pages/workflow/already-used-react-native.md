@@ -23,7 +23,7 @@ Managed Expo projects also offer updates and a push notification service.
 
 - If you've ever been in a situation where you find a spelling mistake in your app and have to wait for Apple to approve a change, you'll appreciate updates - these changes will appear as soon as you run `expo publish`! You aren't limited to text either, this applies to assets like images and configuration updates too!
 
-There's no need to re-build or redeploy your app to the App and Play store. It's like [Code Push](https://microsoft.github.io/code-push/) if you've used that before. There are a few limitations, however. [Read about those here](../workflow/publishing.md#limitations).
+There's no need to re-build or redeploy your app to the App Store and Play Store. It's like [Code Push](https://microsoft.github.io/code-push/) if you've used that before. There are a few limitations, however. [Read about those here](../workflow/publishing.md#limitations).
 
 Expo offers a shared configuration file we call a _manifest_.
 

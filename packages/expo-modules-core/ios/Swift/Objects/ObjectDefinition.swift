@@ -20,6 +20,11 @@ public class ObjectDefinition: AnyDefinition, JavaScriptObjectBuilder {
   let properties: [String: PropertyComponent]
 
   /**
+   A map of classes defined within the object.
+   */
+  let classes: [String: ClassComponent]
+
+  /**
    Default initializer receiving children definitions from the result builder.
    */
   init(definitions: [AnyDefinition]) {
@@ -36,6 +41,12 @@ public class ObjectDefinition: AnyDefinition, JavaScriptObjectBuilder {
       .compactMap { $0 as? PropertyComponent }
       .reduce(into: [String: PropertyComponent]()) { dict, property in
         dict[property.name] = property
+      }
+
+    self.classes = definitions
+      .compactMap { $0 as? ClassComponent }
+      .reduce(into: [String: ClassComponent]()) { dict, klass in
+        dict[klass.name] = klass
       }
   }
 
@@ -60,6 +71,7 @@ public class ObjectDefinition: AnyDefinition, JavaScriptObjectBuilder {
     decorateWithConstants(runtime: runtime, object: object)
     decorateWithFunctions(runtime: runtime, object: object)
     decorateWithProperties(runtime: runtime, object: object)
+    decorateWithClasses(runtime: runtime, object: object)
   }
 
   // MARK: - Internals
@@ -80,6 +92,12 @@ public class ObjectDefinition: AnyDefinition, JavaScriptObjectBuilder {
     for property in properties.values {
       let descriptor = property.buildDescriptor(inRuntime: runtime, withCaller: object)
       object.defineProperty(property.name, descriptor: descriptor)
+    }
+  }
+
+  internal func decorateWithClasses(runtime: JavaScriptRuntime, object: JavaScriptObject) {
+    for klass in classes.values {
+      object.setProperty(klass.name, value: klass.build(inRuntime: runtime))
     }
   }
 }

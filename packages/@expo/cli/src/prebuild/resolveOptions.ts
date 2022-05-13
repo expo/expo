@@ -8,6 +8,25 @@ import * as Log from '../log';
 import { CommandError } from '../utils/errors';
 import { validateUrl } from '../utils/url';
 
+export function resolvePackageManagerOptions(args: any) {
+  const managers: Record<string, boolean> = {
+    npm: args['--npm'],
+    yarn: args['--yarn'],
+    pnpm: args['--pnpm'],
+  };
+
+  if (
+    [managers.npm, managers.pnpm, managers.yarn, !!args['--no-install']].filter(Boolean).length > 1
+  ) {
+    throw new CommandError(
+      'BAD_ARGS',
+      'Specify at most one of: --no-install, --npm, --pnpm, --yarn'
+    );
+  }
+
+  return managers;
+}
+
 /** Resolves a template option as a URL or file path pointing to a tar file. */
 export function resolveTemplateOption(template: string) {
   if (validateUrl(template)) {
