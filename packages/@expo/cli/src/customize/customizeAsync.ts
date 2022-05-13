@@ -1,12 +1,9 @@
 import { getConfig } from '@expo/config';
 
 import { findUpProjectRootOrAssert } from '../utils/findUp';
-import {
-  DestinationResolutionProps,
-  queryAndGenerateAsync,
-  selectAndGenerateAsync,
-} from './generate';
+import { queryAndGenerateAsync, selectAndGenerateAsync } from './generate';
 import { Options } from './resolveOptions';
+import { DestinationResolutionProps } from './templates';
 
 export async function customizeAsync(files: string[], options: Options, extras: any[]) {
   // Locate the project root based on the process current working directory.
