@@ -5,22 +5,36 @@ import MobileCoreServices
 import ExpoModulesCore
 
 public class MailComposerModule: Module {
+  var currentSession: MailComposingSession?
+
   public func definition() -> ModuleDefinition {
     Name("ExpoMailComposer")
 
     AsyncFunction("isAvailableAsync", canSendMail)
 
-    AsyncFunction("composeAsync") { (options: MailComposeOptions, promise: Promise) in
+    AsyncFunction("composeAsync") { (options: MailComposerOptions, promise: Promise) in
       guard canSendMail() else {
         throw CannotSendMailException()
       }
+      guard self.currentSession == nil else {
+        throw UnfinishedSessionException()
+      }
       guard let appContext = self.appContext else {
-        throw CannotSendMailException()
+        throw AppContextLostException()
       }
 
-      let composingSession = MailComposingSession(appContext, promise)
-      try composingSession.compose(options: options)
-      composingSession.present()
+      let session = MailComposingSession(appContext)
+      try session.compose(options: options)
+
+      // This is important to retain the session until it finishes
+      self.currentSession = session
+
+      session.presentViewController { result in
+        promise.settle(with: result)
+
+        // Release the session so it can get deallocated
+        self.currentSession = nil
+      }
     }
     .runOnQueue(.main)
   }
@@ -28,22 +42,4 @@ public class MailComposerModule: Module {
 
 private func canSendMail() -> Bool {
   return MFMailComposeViewController.canSendMail()
-}
-
-internal class CannotSendMailException: Exception {
-  override var reason: String {
-    "Mail services are not available, make sure you're signed into the Mail app"
-  }
-}
-
-internal class FileSystemNotFoundException: Exception {
-  override var reason: String {
-    "FileSystem module not found, make sure 'expo-file-system' is linked correctly"
-  }
-}
-
-internal class FileSystemReadPermissionException: GenericException<String> {
-  override var reason: String {
-    "File '\(param)' is not readable"
-  }
 }

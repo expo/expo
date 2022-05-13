@@ -5,20 +5,21 @@ import MobileCoreServices
 import ExpoModulesCore
 
 internal final class MailComposingSession: NSObject, MFMailComposeViewControllerDelegate {
-  let appContext: AppContext
-  let promise: Promise
-  let composeController: MFMailComposeViewController
+  typealias ComposingCallback = (Result<[String: String], Exception>) -> ()
 
-  init(_ appContext: AppContext, _ promise: Promise) {
+  let appContext: AppContext
+  let composeController: MFMailComposeViewController
+  var callback: ComposingCallback?
+
+  init(_ appContext: AppContext) {
     self.appContext = appContext
-    self.promise = promise
     self.composeController = MFMailComposeViewController()
     super.init()
 
     self.composeController.mailComposeDelegate = self
   }
 
-  func compose(options: MailComposeOptions) throws {
+  func compose(options: MailComposerOptions) throws {
     composeController.setToRecipients(options.recipients)
     composeController.setCcRecipients(options.ccRecipients)
     composeController.setBccRecipients(options.bccRecipients)
@@ -40,25 +41,33 @@ internal final class MailComposingSession: NSObject, MFMailComposeViewController
     }
   }
 
-  func present() {
-    appContext.utilities?.currentViewController()?.present(composeController, animated: true)
+  func presentViewController(_ callback: @escaping ComposingCallback) {
+    guard let currentViewController = appContext.utilities?.currentViewController() else {
+      callback(.failure(MissingViewControllerException()))
+      return
+    }
+    self.callback = callback
+    currentViewController.present(composeController, animated: true)
   }
 
   // MARK: - MFMailComposeViewControllerDelegate
 
   func mailComposeController(_ controller: MFMailComposeViewController, didFinishWith result: MFMailComposeResult, error: Error?) {
-    composeController.dismiss(animated: true) { [promise] in
+    composeController.dismiss(animated: true) {
+      guard let callback = self.callback else {
+        return
+      }
       switch result {
       case .cancelled:
-        promise.resolve(["status": "cancelled"])
+        callback(.success(["status": "cancelled"]))
       case .saved:
-        promise.resolve(["status": "saved"])
+        callback(.success(["status": "saved"]))
       case .sent:
-        promise.resolve(["status": "sent"])
+        callback(.success(["status": "sent"]))
       case .failed:
-        promise.reject("ERR_MAIL_ERROR", "Something went wrong while trying to send the e-mail")
+        callback(.failure(SendingFailedException(error)))
       @unknown default:
-        promise.reject("ERR_UNKNOWN_RESULT", "Received unknown result: \(result)")
+        callback(.failure(UnknownResultException(result)))
       }
     }
   }

@@ -2,7 +2,7 @@
 
 import ExpoModulesCore
 
-internal struct MailComposeOptions: Record {
+internal struct MailComposerOptions: Record {
   @Field
   var recipients: [String]?
 
