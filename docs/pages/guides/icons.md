@@ -8,7 +8,7 @@ As trendy as it is these days, not every app has to use emoji for all icons 😳
 
 ## @expo/vector-icons
 
-This library is installed by default on the template project that get through `expo init` -- it is part of the `expo` package. It includes popular icon sets and you can browse all of the icons using [icons.expo.fyi](https://icons.expo.fyi).
+This library is installed by default on the template project that get through `npx create-expo-app` -- it is part of the `expo` package. It includes popular icon sets and you can browse all of the icons using [icons.expo.fyi](https://icons.expo.fyi).
 
 <SnackInline label='Vector icons' dependencies={['@expo/vector-icons']}>
 

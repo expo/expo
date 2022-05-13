@@ -58,7 +58,7 @@ Yarn and other tooling have a concept called _"workspaces"_. Every package and a
 
 Now that we have the basic monorepo structure set up, let's add our first app. Before we can create our app, we have to create the **apps/** folder. This folder can contain all separate apps or websites that belong to this monorepo. Inside this **apps/** folder, we can create a subfolder that contains the actual Expo app. 
 
-<Terminal cmd={["$ expo init apps/cool-app"]} cmdCopy="expo init apps/cool-app" />
+<Terminal cmd={["$ yarn create expo-app apps/cool-app"]} cmdCopy="yarn create expo-app apps/cool-app" />
 
 > If you have an existing app, you can copy all those files inside a subfolder.
 

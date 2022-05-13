@@ -17,11 +17,11 @@ If you have used Expo before, especially with the Managed workflow, [config plug
 
 <Terminal cmd={[
   "# Only if you don't already have a Managed Workflow project",
-  "$ expo init",
+  "$ npx create-expo-app",
   "",
   "# Install development client",
   "$ expo install expo-dev-client"
-]} cmdCopy="expo init && expo install expo-dev-client" />
+]} cmdCopy="npx create-expo-app && expo install expo-dev-client" />
 
 > You can also improve error messages to be helpful during the development process. To do so, add `import 'expo-dev-client';` to the top of your `App.{js|tsx}` file. [Learn more](installation.md#add-better-error-handlers).
 
@@ -107,7 +107,7 @@ then register the plugin in your `app.json`. Using this module will require new 
 
 > ⚠️ Because adding this module changes your native runtime, you'll need to generate a new development build before using it. If you forget to do so, you'll get an `Invariant Violation: Native module cannot be null.` error when you attempt to load your app.
 
-Once you've generated new builds with EAS build or the `expo run` commands, you can access the new capabilities in your app's code.
+Once you've generated new builds with EAS build or the `expo run:ios`/`expo run:android` commands, you can access the new capabilities in your app's code.
 
 Add the following code to your App.tsx, run `expo start --dev-client`, and load your JavaScript. Now you can convert speech to text in your app!
 

@@ -38,7 +38,7 @@ Managed Expo projects don't support custom native code, including third-party li
 
 In [our SDK](/versions/latest/), we give you a large set of commonly desired, high-quality native modules. We recommend doing as much in JavaScript as possible, since it can immediately deploy to all your users and work across both platforms, and will always continue to benefit from Expo SDK updates.
 
-However, if you need something custom that isn't possible with the native modules provided in the SDK, like on-the-fly video processing or low-level control over the Bluetooth radio to do a firmware update and [other features requested here](https://expo.canny.io/feature-requests), you can run `expo eject` and have full control over the underlying native projects.
+However, if you need something custom that isn't possible with the native modules provided in the SDK, like on-the-fly video processing or low-level control over the Bluetooth radio to do a firmware update and [other features requested here](https://expo.canny.io/feature-requests), you can run `expo prebuild` and have full control over the underlying native projects.
 
 </Collapsible>
 
@@ -52,7 +52,7 @@ When you're ready, you can create a standalone app (**.ipa** and **.apk**) for s
 
 <Collapsible summary="How do I get my existing React Native project running with Expo?">
 
-Right now, the easiest way to do this is to use `expo init` (with Expo CLI) to make a new project, and then copy over all your JavaScript source code from your existing project, and then `yarn add` the library dependencies you have.
+Right now, the easiest way to do this is to use `yarn create expo-app` to make a new project, and then copy over all your JavaScript source code from your existing project, and then `yarn add` the library dependencies you have.
 
 If you have similar native module dependencies to what is exposed through the Expo SDK, this process shouldn't take more than a few minutes (not including `npm install` time). Please feel free to ask us questions if you run into any issues.
 

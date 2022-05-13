@@ -96,7 +96,7 @@ Now check the following:
 - Does the README mention linking?
 - Is it built specifically for Node.js, the web, electron, or another platform?
 
-If you answered yes to any of these questions and the library is not part of the Expo SDK, this library may not be supported in Expo Go. You can go ahead and try it in a new project to be sure! Run `expo init` and add the library to the new project and try to use it. This is a great way to experiment with a library before including it in your project in all circumstances.
+If you answered yes to any of these questions and the library is not part of the Expo SDK, this library may not be supported in Expo Go. You can go ahead and try it in a new project to be sure! Run `npx create-expo-app` and add the library to the new project and try to use it. This is a great way to experiment with a library before including it in your project in all circumstances.
 
 Many libraries you can use with Expo and React Native will not be compatible with Expo Go or `expo build:ios|android`. If you need any of them to build your app, you can create a [development build](../development/introduction.md) for your project using [EAS Build](../build/introduction.md) or [eject to the bare workflow](../workflow/customizing.md).
 

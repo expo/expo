@@ -3,13 +3,13 @@ title: Updating your App
 sidebar_title: Updating your App
 ---
 
-The `expo-updates` unimodule provides a client-side implementation for loading updates in bare workflow apps. Updates allow you to deploy new JavaScript and assets to existing builds of your app without building a new binary.
+The `expo-updates` module provides a client-side implementation for loading updates in React Native apps. Updates allow you to deploy new JavaScript and assets to existing builds of your app without building a new binary.
 
 In this guide, an **update** refers to a single, atomic update, which may consist of a JavaScript bundle, other assets (such as images or fonts), and metadata about the update.
 
 ## Setup
 
-If possible, we highly recommend starting with a boilerplate project that has the `expo-updates` library already installed. Running `expo init` and choosing either of the bare workflow templates will give you such a template.
+If possible, we highly recommend starting with a boilerplate project that has the `expo-updates` library already installed, for example, by running: `npx create-expo-app -t bare-minimum`.
 
 To install the `expo-updates` module in an existing bare workflow app, follow the [installation instructions in the package README](https://github.com/expo/expo/tree/main/packages/expo-updates/README.md#installation).
 

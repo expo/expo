@@ -9,15 +9,16 @@ import { Terminal } from '~/ui/components/Snippet';
 
 Before you get started with a bare React Native project, make sure you set up your environment for [React Native CLI](https://reactnative.dev/docs/environment-setup).
 
-After this, let's get started with a bare project. Run `expo init` and choose one of the bare templates. We'll use the minimum template here.
+After this, let's get started with a bare project. Run `npx create-expo-app --template bare-minimum` (we'll use the native template here).
 
 <Terminal cmd={[
+  "# Create a new native project",
+  "$ npx create-expo-app --template bare-minimum",
+  "",
   "# If you don't have expo-cli yet, get it",
   "$ npm i -g expo-cli",
   "",
-  "# This is a shortcut to skip the UI for picking the template",
-  "$ expo init --template bare-minimum"
-]} cmdCopy="npm i -g expo-cli && expo init --template bare-minimum" />
+]} cmdCopy="npx create-expo-app --template bare-minimum && npm i -g expo-cli" />
 
 Next, let's get the project running. Go into your project directory and run `expo run:ios` or `expo run:android` &mdash; hurray! Your project is working.
 

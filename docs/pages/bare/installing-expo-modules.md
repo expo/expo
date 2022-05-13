@@ -11,7 +11,7 @@ In order to use Expo modules in your app, you will need to install and configure
 
 The `expo` package has a small footprint; it includes only a minimal set of packages that are needed in nearly every app and the module and autolinking infrastructure that other Expo SDK packages are built with. Once the `expo` package is installed and configured in your project, you can use `expo install` to add any other Expo module from the SDK.
 
-The easiest way to get started with Expo modules is to initialize a new bare workflow project with Expo CLI: `expo init --template bare-minimum`.
+The easiest way to get started with Expo modules is to initialize a new bare workflow project with: `npx create-expo-app --template bare-minimum`.
 
 If you have an existing project without Expo modules installed (perhaps created with `npx react-native init`), please follow the automatic or manual installation instructions below.
 

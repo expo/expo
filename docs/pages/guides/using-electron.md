@@ -20,7 +20,7 @@ To simplify this we created the package `@expo/electron-adapter` which wraps [`e
 
 ## 🏁 Setup
 
-- Create a new Expo project - `expo init`
+- Create a new Expo project - `yarn create expo-app`
 - Install - `yarn add -D @expo/electron-adapter`
 - Bootstrap Electron - `yarn expo-electron`
 
@@ -72,9 +72,6 @@ To simplify this we created the package `@expo/electron-adapter` which wraps [`e
 If you would like to help make Electron support in Expo better, please feel free to open a PR or submit an issue:
 
 - [Expo Electron Adapter](https://github.com/expo/expo-electron-adapter)
-
-If you want to add first-class electron support to any of the Unimodules then you can submit PRs to the expo/expo repo:
-
 - [Expo SDK packages][expo-packages]
 
 ## Learn more about Electron

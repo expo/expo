@@ -84,7 +84,7 @@ Usually libraries built specifically for other platforms will not work with Reac
 
 ### Determining Third-Party Library Compatibility
 
-Is it built specifically for Node.js, the web, electron, or another platform? If so, it may not work here. You can go ahead and try it in a new project to be sure! Run `expo init --template bare-minimum` and add the library to the new project and try to use it. This is a great way to experiment with a library before including it in your project in all circumstances.
+Is it built specifically for Node.js, the web, electron, or another platform? If so, it may not work here. You can go ahead and try it in a new project to be sure! Run `npx create-expo-app --template bare-minimum` and add the library to the new project and try to use it. This is a great way to experiment with a library before including it in your project in all circumstances.
 
 ### Installing a Third-Party Library
 

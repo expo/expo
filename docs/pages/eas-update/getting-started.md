@@ -34,10 +34,10 @@ EAS Update requires the following versions or greater:
 
 ## Create a project
 
-Create a project with Expo CLI by running:
+Create a project by running:
 
 ```bash
-expo init
+npx create-expo-app
 ```
 
 ## Configure your project
