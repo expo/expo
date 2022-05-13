@@ -45,10 +45,7 @@ import java.util.Map;
 
 public class ReactAndroidCodeTransformer {
 
-  private static final String REACT_COMMON_SOURCE_ROOT = "react-native-lab/react-native/ReactCommon";
-  private static final String REACT_COMMON_DEST_ROOT = "android/ReactCommon";
-  private static final String REACT_ANDROID_SOURCE_ROOT = "react-native-lab/react-native/ReactAndroid";
-  private static final String REACT_ANDROID_DEST_ROOT = "android/ReactAndroid";
+  private static final String REACT_ANDROID_DEST_ROOT = "react-native-lab/react-native/ReactAndroid";
   private static final String SOURCE_PATH = "src/main/java/com/facebook/react/";
 
   private static abstract class MethodVisitor {
@@ -297,19 +294,6 @@ public class ReactAndroidCodeTransformer {
     } catch (Exception e) {
       throw new IllegalArgumentException("Invalid args passed in, expected one argument -- SDK version.");
     }
-
-    // Don't want to mess up our original copy of ReactCommon and ReactAndroid if something goes wrong.
-    File reactCommonDestRoot = new File(projectRoot + REACT_COMMON_DEST_ROOT);
-    File reactAndroidDestRoot = new File(projectRoot + REACT_ANDROID_DEST_ROOT);
-
-    // Always remove
-    FileUtils.deleteDirectory(reactCommonDestRoot);
-    reactCommonDestRoot = new File(projectRoot + REACT_COMMON_DEST_ROOT);
-    FileUtils.deleteDirectory(reactAndroidDestRoot);
-    reactAndroidDestRoot = new File(projectRoot + REACT_ANDROID_DEST_ROOT);
-
-    FileUtils.copyDirectory(new File(projectRoot + REACT_COMMON_SOURCE_ROOT), reactCommonDestRoot);
-    FileUtils.copyDirectory(new File(projectRoot + REACT_ANDROID_SOURCE_ROOT), reactAndroidDestRoot);
 
     // Update maven publish information
     replaceInFile(new File(projectRoot + REACT_ANDROID_DEST_ROOT + "/build.gradle"),
