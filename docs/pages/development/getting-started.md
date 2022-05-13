@@ -16,12 +16,14 @@ Development builds of your app are Debug builds of your project that include the
 If you have used Expo before, especially with the Managed workflow, [config plugins](/guides/config-plugins.md) will let you customize your project from JavaScript without ever needing to directly modify Xcode or Android Studio projects.
 
 <Terminal cmd={[
-  "# Only if you don't already have a Managed Workflow project",
-  "$ npx create-expo-app",
-  "",
-  "# Install development client",
-  "$ expo install expo-dev-client"
-]} cmdCopy="npx create-expo-app && expo install expo-dev-client" />
+"# Only if you don't already have a Managed Workflow project",
+"$ npx create-expo-app my-app",
+"",
+"$ cd my-app",
+"",
+"# Install development client",
+"$ expo install expo-dev-client"
+]} cmdCopy="npx create-expo-app my-app && cd my-app && expo install expo-dev-client" />
 
 > You can also improve error messages to be helpful during the development process. To do so, add `import 'expo-dev-client';` to the top of your `App.{js|tsx}` file. [Learn more](installation.md#add-better-error-handlers).
 
@@ -54,7 +56,6 @@ Once you have registered all of the iOS devices you would like to develop on, yo
 </Tabs>
 
 and [installing the resulting build on your device](/build/internal-distribution.md).
-
 
 ## Developing your app
 
