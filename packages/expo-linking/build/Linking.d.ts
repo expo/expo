@@ -84,7 +84,6 @@ export declare function parseInitialURLAsync(): Promise<ParsedURL>;
 export declare function sendIntent(action: string, extras?: SendIntentExtras[]): Promise<void>;
 /**
  * Open the operating system settings app and displays the app’s custom settings, if it has any.
- * @platform ios
  */
 export declare function openSettings(): Promise<void>;
 /**
