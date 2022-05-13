@@ -12,15 +12,11 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 ## Installation
 
-This module is currently only available in the [bare](../../../introduction/managed-vs-bare.md#bare-workflow) workflow.
+<APIInstallSection hideBareInstructions />
+
+This module is currently only available in the [bare](/introduction/managed-vs-bare.md#bare-workflow) workflow.
 
 You must ensure that you have [installed and configured Expo modules](/bare/installing-expo-modules.md) before continuing.
-
-### Add the package to your dependencies
-
-```
-npm install expo-in-app-purchases
-```
 
 ### Configure for iOS
 

@@ -2,7 +2,8 @@
 title: How EAS Update works
 ---
 
-import ImageSpotlight from '~/components/plugins/ImageSpotlight'
+import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import { Terminal } from '~/ui/components/Snippet';
 
 EAS Update is a service that allows you to deliver small bug fixes and updates to your users immediately as you work on your next app store release. Making an update available to builds involves creating a link between a build and an update.
 
@@ -62,17 +63,13 @@ While this flow works for many developers, there's another flow we can accomplis
 
 Once testers verify that the update on the "version-2.0" EAS Update branch is ready for production, we can update the "production" channel so that it's linked to the "version-2.0" branch. To accomplish this, we could run:
 
-```bash
-eas channel:edit production --branch version-2.0
-```
+<Terminal cmd={['$ eas channel:edit production --branch version-2.0']} />
 
 <ImageSpotlight alt={`Channel "production" linked to branch "version-2.0", channel "staging" linked to branch "version-2.0"`} src="/static/images/eas-update/custom-link-2.png" />
 
 After this state, we'd be ready to start testing the "version-3.0" EAS Update branch. Similarly to the last step, we could link the "staging" channel to the "version-3.0" EAS Update branch with this command:
 
-```bash
-eas channel:edit staging --branch version-3.0
-```
+<Terminal cmd={['$ eas channel:edit staging --branch version-3.0']} />
 
 <ImageSpotlight alt={`Channel "production" linked to branch "version-2.0", channel "staging" linked to branch "version-3.0"`} src="/static/images/eas-update/custom-link-3.png" />
 
@@ -82,7 +79,7 @@ Now that we're familiar with the core concepts of EAS Update, let's talk about h
 
 When an Expo project that includes `expo-updates` is built the included native Android and iOS code is responsible for managing, fetching, parsing, and validating updates.
 
-When the library checks for updates and when it downloads them is [configurable](../../versions/latest/config/app.md#updates). By default the library will check for an update when it is opened. If an update newer than the current running update is found, it will download and run the newer update. If the library does not find a newer update, it will instead run the newest downloaded update, falling back to the update that was embedded inside the app at build time if none have been downloaded.
+When the library checks for updates and when it downloads them is [configurable](/versions/latest/config/app.md#updates). By default the library will check for an update when it is opened. If an update newer than the current running update is found, it will download and run the newer update. If the library does not find a newer update, it will instead run the newest downloaded update, falling back to the update that was embedded inside the app at build time if none have been downloaded.
 
 `expo-updates` downloads updates in two phases. First, it downloads the most recent update _manifest_, which contains information about the update including a list of assets (images, JavaScript bundles, font files, etc...) that are required to run the update. Second, the library downloads the assets specified in the manifest that is has not yet downloaded from prior updates. For instance, if an update contains a new image, the library will download the new image asset before running the update. To help end-users get updates quickly and reliably, updates should be kept as small as possible.
 

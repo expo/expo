@@ -2,7 +2,8 @@
 title: Migrating from Classic Updates to EAS Update
 ---
 
-import ImageSpotlight from '~/components/plugins/ImageSpotlight'
+import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import { Terminal } from '~/ui/components/Snippet';
 
 EAS Update is the next generation of Expo's updates service. If you're using Classic Updates, this guide will help you upgrade to EAS Update.
 
@@ -19,15 +20,11 @@ EAS Update requires the following versions or greater:
 
 1. Install EAS and Expo CLIs with:
 
-   ```bash
-   npm install --global eas-cli expo-cli
-   ```
+   <Terminal cmd={['$ npm install --global eas-cli expo-cli']} />
 
 2. Then, log in with your expo account:
 
-   ```bash
-   eas login
-   ```
+   <Terminal cmd={['$ eas login']} />
 
 ## Configure your project
 
@@ -35,15 +32,11 @@ You'll need to make the following changes to your project:
 
 1. Install the latest `expo-updates` library with:
 
-   ```bash
-   yarn add expo-updates
-   ```
+   <Terminal cmd={['$ yarn add expo-updates']} />
 
 2. Initialize your project with EAS Update:
 
-   ```bash
-   eas update:configure
-   ```
+   <Terminal cmd={['$ eas update:configure']} />
 
    After this command, you should have two a new fields in your app config (**app.json**/**app.config.js**) at `expo.updates.url` and `expo.runtimeVersion`.
 
@@ -51,9 +44,7 @@ You'll need to make the following changes to your project:
 
 4. Next, set your project up with EAS Build by running:
 
-   ```bash
-   eas build:configure
-   ```
+   <Terminal cmd={['$ eas build:configure']} />
 
 5. To allow updates to apply to builds built with EAS, update your EAS build profiles in **eas.json** to include `channel` properties. These channels should replace any `releaseChannel` properties. We find it convenient to name the `channel` after the profile's name. For instance, the `preview` profile has a `channel` named `"preview"` and the `production` profile has a `channel` named `"production"`.
 
@@ -85,13 +76,11 @@ The changes above affect the native code layer inside builds, which means we'll 
 
 EAS Update uses a [modern manifest format](/technical-specs/expo-updates-0). When you have a EAS Update url in your app config at `updates.url`, Expo CLI will automatically serve the correct manifest format for your project. This will ensure that the code you develop locally will work as an update when published later. You can start a locally development session just like before, with:
 
-```bash
-yarn start
-
-# or
-
-expo start
-```
+<Terminal cmd={[
+  '$ yarn start',
+  '# or',
+  '$ expo start',
+]} />
 
 ## Publishing an update
 
@@ -100,7 +89,7 @@ To publish an update, run:
 ```bash
 eas update --branch [branch-name] --message [message]
 
-# example
+# Example
 eas update --branch production --message "Fixes typo"
 ```
 

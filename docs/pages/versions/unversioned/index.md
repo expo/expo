@@ -10,7 +10,7 @@ import { Terminal } from '~/ui/components/Snippet';
 
 The Expo SDK provides access to device and system functionality such as contacts, camera, and GPS location. You install modules from the Expo SDK using `expo-cli` with the `expo install` command:
 
-<Terminal  cmd={['$ expo install expo-camera expo-contacts expo-sensors']} cmdCopy="expo install expo-camera expo-contacts expo-sensors" />
+<Terminal cmd={['$ expo install expo-camera expo-contacts expo-sensors']} />
 
 You can import modules from it in your JavaScript code as follows:
 

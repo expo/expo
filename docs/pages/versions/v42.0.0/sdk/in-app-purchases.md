@@ -11,15 +11,11 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 ## Installation
 
-This module is currently only available in the [bare](../../../introduction/managed-vs-bare.md#bare-workflow) workflow.
+<APIInstallSection hideBareInstructions />
+
+This module is currently only available in the [bare](/introduction/managed-vs-bare.md#bare-workflow) workflow.
 
 You must ensure that you have [installed and configured the `react-native-unimodules` package](https://github.com/expo/expo/tree/main/packages/react-native-unimodules) before continuing.
-
-### Add the package to your dependencies
-
-```
-npm install expo-in-app-purchases
-```
 
 ### Configure for iOS
 

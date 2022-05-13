@@ -10,13 +10,13 @@ Expo has first-class support for [TypeScript](https://www.typescriptlang.org/). 
 
 To get started, create a **tsconfig.json** in your project root:
 
-<Terminal cmd={['$ touch tsconfig.json']} cmdCopy="touch tsconfig.json" />
+<Terminal cmd={['$ touch tsconfig.json']} />
 
 Running `expo start` will prompt you to install the required dependencies (`typescript`, `@types/react`, `@types/react-native`), and automatically configure your **tsconfig.json**.
 
 Rename files to convert them to TypeScript. For example, you would rename **App.js** to **App.tsx**. Use the **.tsx** extension if the file includes React components (JSX). If the file did not include any JSX, you can use the **.ts** file extension.
 
-<Terminal cmd={['$ mv App.js App.tsx']} cmdCopy="mv App.js App.tsx" />
+<Terminal cmd={['$ mv App.js App.tsx']} />
 
 You can now run `yarn tsc` or `npx tsc` to typecheck the project.
 
@@ -76,7 +76,7 @@ When you create new source files in your project you should use the **.ts** exte
 
 You may find that you want to use TypeScript for the config files in your project, like the **webpack.config.js**, **metro.config.js**, or **app.config.js**. These will require a little extra setup. You can utilize the [`ts-node` require hook](https://github.com/TypeStrong/ts-node#programmatic) to _import_ TypeScript files into your JS config file, meaning any import can be TypeScript, but the root file will still need to be JavaScript.
 
-<Terminal cmd={['$ yarn add -D ts-node typescript']} cmdCopy="yarn add -D ts-node typescript" />
+<Terminal cmd={['$ yarn add -D ts-node typescript']} />
 
 ### webpack.config.js
 

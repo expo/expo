@@ -2,6 +2,8 @@
 title: Getting started
 ---
 
+import { Terminal } from '~/ui/components/Snippet';
+
 Setting up EAS Update allows you to push critical bug fixes and improvements that your users need right away.
 
 ## Prerequisites
@@ -15,20 +17,16 @@ EAS Update requires the following versions or greater:
 
 ## Install Expo CLI and EAS CLI
 
-1. Install EAS and Expo CLIs with:
+Install EAS and Expo CLIs by running:
 
-   ```bash
-   npm install --global eas-cli expo-cli
-   ```
+<Terminal cmd={['$ npm install --global eas-cli expo-cli']} />
 
 ## Create an Expo account
 
 1. Create an account at [https://expo.dev/signup](https://expo.dev/signup)
 2. Then, log in with EAS CLI:
 
-   ```bash
-   eas login
-   ```
+  <Terminal cmd={['$ eas login']} />
 
 3. After logging in, you can verify the logged-in account with `eas whoami`.
 
@@ -36,50 +34,42 @@ EAS Update requires the following versions or greater:
 
 Create a project with Expo CLI by running:
 
-```bash
-expo init
-```
+<Terminal cmd={['$ expo init']} />
 
 ## Configure your project
 
 1. Install the latest `expo-updates` library with:
 
-   ```bash
-   expo install expo-updates
-   ```
+  <Terminal cmd={['$ expo install expo-updates']} />
 
 2. Initialize your project with EAS Update:
 
-   ```bash
-   eas update:configure
-   ```
+  <Terminal cmd={['$ eas update:configure']} />
 
 3. To set up the configuration file for builds, run:
 
-   ```bash
-   eas build:configure
-   ```
+  <Terminal cmd={['$ eas build:configure']} />
 
-   This command will create a file named **eas.json**.
+  This command will create a file named **eas.json**.
 
 4. Inside the `preview` and `production` build profiles in **eas.json**, add a `channel` property for each:
 
-   ```json
-   {
-     "build": {
-        "preview": {
-          "channel": "preview"
-          ...
-        },
-        "production": {
-          "channel": "production"
-          ...
-        }
-     }
-   }
-   ```
+  ```json
+  {
+    "build": {
+      "preview": {
+        "channel": "preview",
+        // ...
+      },
+      "production": {
+        "channel": "production",
+        // ...
+      }
+    }
+  }
+  ```
 
-   The `channel` allows you to point updates at builds. For example, if we set up a GitHub Action to publish changes on merge, it will make it so that we can merge code into the "production" Git branch. Then, each commit will trigger a GitHub Action that will publish an update that will be available to builds with the channel "production".
+  The `channel` allows you to point updates at builds. For example, if we set up a GitHub Action to publish changes on merge, it will make it so that we can merge code into the "production" Git branch. Then, each commit will trigger a GitHub Action that will publish an update that will be available to builds with the channel "production".
 
 5. Optional: If your project is a bare React Native project, [read the doc](/eas-update/bare-react-native) on additional configuration you may need.
 
@@ -95,13 +85,11 @@ Once you have a build running on your device or in a simulator, we'll be ready t
 
 Once we've created a build, we're ready to iterate on our project. Start a local development server with:
 
-```bash
-yarn start
-
-# or
-
-expo start
-```
+<Terminal cmd={[
+  '$ yarn start',
+  '# or',
+  '$ expo start',
+]} />
 
 Then, make any desired changes to your project's JavaScript, styling, or image assets.
 

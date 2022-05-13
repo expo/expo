@@ -4,6 +4,7 @@ title: Using libraries
 
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import InstallSection from '~/components/plugins/InstallSection';
+import { Terminal } from '~/ui/components/Snippet';
 
 Every app is made up of some combination of React Native, Expo SDK, and third party libraries. It's important to understand how to use the libraries from each of these sources, and how to determine whether a third-party library will work in your project or not.
 
@@ -13,7 +14,7 @@ React Native provides a set of built-in primitives that most developers will nee
 
 To use a React Native library in your project, import it from the `react-native` package in your code:
 
-```js
+```jsx
 import * as React from 'react';
 import { Text, View } from 'react-native';
 
@@ -56,7 +57,7 @@ This section also lists all of the types, functions, and classes available. If y
 
 Now you can use the library in your project:
 
-```js
+```jsx
 import * as React from 'react';
 import { Text, View } from 'react-native';
 import * as Device from 'expo-device';
@@ -90,12 +91,8 @@ Is it built specifically for Node.js, the web, electron, or another platform? If
 
 Once you have determined if the library is compatible, use your preferred package manager to install it:
 
-```bash
-npm install @react-navigation/native
-```
+<Terminal cmd={['$ npm install @react-navigation/native']} />
 
 Be sure to follow the project website or README for any additional configuration and usage instructions. You can get to the README quickly using this command:
 
-```bash
-npx npm-home @react-navigation/native
-```
+<Terminal cmd={['$ npx npm-home @react-navigation/native']} />
