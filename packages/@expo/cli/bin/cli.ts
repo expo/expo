@@ -18,6 +18,7 @@ const commands: { [command: string]: () => Promise<Command> } = {
 
   // Auxiliary commands
   install: () => import('../src/install').then((i) => i.expoInstall),
+  aux: () => import('../src/aux').then((i) => i.expoAux),
 
   // Auth
   login: () => import('../src/login').then((i) => i.expoLogin),
@@ -64,6 +65,8 @@ if (!isSubcommand && args['--help']) {
     prebuild,
     'run:ios': runIos,
     'run:android': runAndroid,
+    // Don't add aux to the help message
+    expoAux,
     ...others
   } = commands;
 

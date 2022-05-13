@@ -28,7 +28,7 @@ export class ExpoGoInstaller<IDevice> {
     }
     const version = await this._getExpectedClientVersionAsync();
     Log.debug(`Expected Expo Go version: ${version}, installed version: ${installedVersion}`);
-    return version ? semver.lt(installedVersion, version) : true;
+    return version ? !semver.eq(installedVersion, version) : true;
   }
 
   /** Returns the expected version of Expo Go given the project SDK Version. Exposed for testing. */

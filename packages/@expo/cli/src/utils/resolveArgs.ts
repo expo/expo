@@ -26,7 +26,7 @@ export async function resolveStringOrBooleanArgsAsync(
   );
 
   // Collapse aliases into fully qualified arguments.
-  args = collapseAliases(extraArgs, args);
+  args = collapseAliases({ ...rawMap, ...extraArgs }, args);
 
   // Resolve all of the string or boolean arguments and the project root.
   return _resolveStringOrBooleanArgs({ ...rawMap, ...extraArgs }, args);
