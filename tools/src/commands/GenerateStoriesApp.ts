@@ -33,12 +33,14 @@ async function addNativeDependencies({ projectDir }: { projectDir: string }) {
     'bundledNativeModules.json'
   ));
 
-  pkg.dependencies['react-native-safe-area-context'] =
-    bundledNativeModules['react-native-safe-area-context'];
-  pkg.dependencies['react-native-screens'] = bundledNativeModules['react-native-screens'];
-  pkg.dependencies['react-native-svg'] = bundledNativeModules['react-native-svg'];
-  pkg.dependencies['react-native-gesture-handler'] =
-    bundledNativeModules['react-native-gesture-handler'];
+  [
+    'react-native-safe-area-context',
+    'react-native-screens',
+    'react-native-svg',
+    'react-native-gesture-handler'
+  ].forEach(packageName => {
+    pkg.dependencies[packageName] = bundledNativeModules[packageName];
+  });
 
   const storiesPkgJson = require(path.resolve(PACKAGES_DIR, 'expo-stories', 'package.json'));
   pkg.dependencies['expo-stories'] = storiesPkgJson.version;
