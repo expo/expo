@@ -1011,13 +1011,15 @@ In Expo SDK 46, we're migrating to a new suite of tooling that is versioned in t
 | Legacy                        | Notes                           |
 | ----------------------------- | ------------------------------- |
 | `expo client:ios`             | Removed in favor of Dev Clients |
-| `expo send`                   | Unimplemented                   |
+| `expo send`                   | Removed                         |
 | `expo client:install:ios`     | Unimplemented                   |
 | `expo client:install:android` | Unimplemented                   |
 | `expo doctor`                 | Undecided                       |
 | `expo upgrade`                | Undecided                       |
 
 ### Services
+
+> The new `expo update` command uses a different hosting service than the legacy `expo publish` command.
 
 | Legacy                           | New                     | Notes              |
 | -------------------------------- | ----------------------- | ------------------ |
@@ -1027,20 +1029,20 @@ In Expo SDK 46, we're migrating to a new suite of tooling that is versioned in t
 | `expo publish:history`           | `eas update`            | Moved to `eas-cli` |
 | `expo publish:details`           | `eas update`            | Moved to `eas-cli` |
 | `expo credentials:manager`       | `eas credentials`       | Moved to `eas-cli` |
-| `expo fetch:ios:certs`           | `eas XXX`               | Moved to `eas-cli` |
-| `expo fetch:android:keystore`    | `eas XXX`               | Moved to `eas-cli` |
-| `expo fetch:android:hashes`      | `eas XXX`               | Moved to `eas-cli` |
-| `expo fetch:android:upload-cert` | `eas XXX`               | Moved to `eas-cli` |
-| `expo push:android:upload`       | `eas XXX`               | Moved to `eas-cli` |
-| `expo push:android:show`         | `eas XXX`               | Moved to `eas-cli` |
-| `expo push:android:clear`        | `eas XXX`               | Moved to `eas-cli` |
-| `expo url`                       | `eas XXX`               | Moved to `eas-cli` |
-| `expo url:ipa`                   | `eas XXX`               | Moved to `eas-cli` |
-| `expo url:apk`                   | `eas XXX`               | Moved to `eas-cli` |
-| `expo webhooks`                  | `eas XXX`               | Moved to `eas-cli` |
-| `expo webhooks:add`              | `eas XXX`               | Moved to `eas-cli` |
-| `expo webhooks:remove`           | `eas XXX`               | Moved to `eas-cli` |
-| `expo webhooks:update`           | `eas XXX`               | Moved to `eas-cli` |
+| `expo fetch:ios:certs`           | `eas credentials`       | Moved to `eas-cli` |
+| `expo fetch:android:keystore`    | `eas credentials`       | Moved to `eas-cli` |
+| `expo fetch:android:hashes`      | `eas credentials`       | Moved to `eas-cli` |
+| `expo fetch:android:upload-cert` | `eas credentials`       | Moved to `eas-cli` |
+| `expo push:android:upload`       | `eas credentials`       | Moved to `eas-cli` |
+| `expo push:android:show`         | `eas credentials`       | Moved to `eas-cli` |
+| `expo push:android:clear`        | `eas credentials`       | Moved to `eas-cli` |
+| `expo url`                       | `eas build:list`        | Moved to `eas-cli` |
+| `expo url:ipa`                   | `eas build:list`        | Moved to `eas-cli` |
+| `expo url:apk`                   | `eas build:list`        | Moved to `eas-cli` |
+| `expo webhooks`                  | `eas webhook`           | Moved to `eas-cli` |
+| `expo webhooks:add`              | `eas webhook:create`    | Moved to `eas-cli` |
+| `expo webhooks:remove`           | `eas webhook:delete`    | Moved to `eas-cli` |
+| `expo webhooks:update`           | `eas webhook:update`    | Moved to `eas-cli` |
 | `expo build:ios`                 | `eas build -p ios`      | Moved to `eas-cli` |
 | `expo build:android`             | `eas build -p android`  | Moved to `eas-cli` |
 | `expo build:status`              | `eas build:list`        | Moved to `eas-cli` |
