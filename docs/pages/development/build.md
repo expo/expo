@@ -68,7 +68,7 @@ Note: If you register any new iOS devices, you'll need create a new development 
 
 If you are comfortable setting up Xcode, Android Studio, and related dependencies, you can build and distribute your app the same as any other iOS or Android app.
 
-The `expo run` commands will create a new build, install it on to your emulator or device, and start it running.
+The `expo run` commands will create a new build, install it on to your emulator or device, and start running it.
 
 <Tabs tabs={["For Android", "For iOS (macOS Only)"]}>
 
