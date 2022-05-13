@@ -53,7 +53,7 @@ async function addNativeDependencies({ projectDir }: { projectDir: string }) {
 async function createMetroConfig({ projectRoot }: { projectRoot: string }) {
   console.log('Adding metro.config.js for project');
 
-  const template = `// Learn more https://docs.expo.io/guides/customizing-metro
+  const template = `// Learn more https://docs.expo.dev/guides/customizing-metro
 const { getDefaultConfig } = require('expo/metro-config');
 const { withExpoStories } = require('expo-stories/build/withExpoStories');
 const config = getDefaultConfig('${projectRoot}');
