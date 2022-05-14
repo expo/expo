@@ -16,6 +16,9 @@ import { ensureDependenciesAsync } from '../dependencies/ensureDependenciesAsync
 export class WebSupportProjectPrerequisite extends ProjectPrerequisite {
   /** Ensure a project that hasn't explicitly disabled web support has all the required packages for running in the browser. */
   async assertImplementation(): Promise<void> {
+    if (env.EXPO_USE_METRO_WEB) {
+      return;
+    }
     if (env.EXPO_NO_WEB_SETUP) {
       Log.warn('Skipping web setup: EXPO_NO_WEB_SETUP is enabled.');
       return;

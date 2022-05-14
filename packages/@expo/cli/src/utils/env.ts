@@ -58,6 +58,10 @@ class Env {
   get EXPO_NO_WEB_SETUP() {
     return boolish('EXPO_NO_WEB_SETUP', false);
   }
+  /** Enable experimental Metro bundling for web */
+  get EXPO_USE_METRO_WEB() {
+    return boolish('EXPO_USE_METRO_WEB', false);
+  }
   /** Disable auto TypeScript setup */
   get EXPO_NO_TYPESCRIPT_SETUP() {
     return boolish('EXPO_NO_TYPESCRIPT_SETUP', false);

@@ -22,9 +22,6 @@ const BUNDLERS = {
   metro: () =>
     require('./metro/MetroBundlerDevServer')
       .MetroBundlerDevServer as typeof import('./metro/MetroBundlerDevServer').MetroBundlerDevServer,
-  metroWeb: () =>
-    require('./metro/MetroWebBundlerDevServer')
-      .MetroWebBundlerDevServer as typeof import('./metro/MetroWebBundlerDevServer').MetroWebBundlerDevServer,
 };
 
 /** Manages interacting with multiple dev servers. */
@@ -106,7 +103,7 @@ export class DevServerManager {
     Log.debug('Starting webpack dev server');
     return this.startAsync([
       {
-        type: 'metroWeb',
+        type: 'webpack',
         options: this.options,
       },
     ]);

@@ -1,5 +1,6 @@
 import { Platform } from '@expo/config';
 
+import { env } from '../utils/env';
 import { CommandError } from '../utils/errors';
 
 export type Options = {
@@ -25,7 +26,10 @@ export function resolvePlatformOption(
     case 'android':
       return ['android'];
     case 'all': {
-      const platforms: Platform[] = ['android', 'web'];
+      const platforms: Platform[] = ['android'];
+      if (env.EXPO_USE_METRO_WEB) {
+        platforms.push('web');
+      }
       if (loose || process.platform !== 'win32') {
         platforms.push('ios');
       }
