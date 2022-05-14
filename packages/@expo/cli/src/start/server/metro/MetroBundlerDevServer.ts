@@ -17,10 +17,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     return 'metro';
   }
 
-  isTargetingWeb(): boolean {
-    return true;
-  }
-
   async resolvePortAsync(options: Partial<BundlerStartOptions> = {}): Promise<number> {
     const port =
       // If the manually defined port is busy then an error should be thrown...
