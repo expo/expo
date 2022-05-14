@@ -1,12 +1,13 @@
+import { EventEmitter } from 'expo-modules-core';
 import React, { useEffect, useState, useRef, useMemo } from 'react';
-import { Animated, StyleSheet, Text, NativeModules, NativeEventEmitter, TurboModuleRegistry, View, } from 'react-native';
+import { Animated, StyleSheet, Text, Platform, NativeModules, TurboModuleRegistry, View, } from 'react-native';
 export default function DevLoadingView() {
     const [isDevLoading, setIsDevLoading] = useState(false);
     const [isAnimating, setIsAnimating] = useState(false);
     const translateY = useRef(new Animated.Value(0)).current;
     const emitter = useMemo(() => {
         try {
-            return new NativeEventEmitter(NativeModules.DevLoadingView);
+            return new EventEmitter(NativeModules.DevLoadingView);
         }
         catch (error) {
             throw new Error('Failed to instantiate native emitter in `DevLoadingView` because the native module `DevLoadingView` is undefined: ' +
@@ -65,12 +66,19 @@ export default function DevLoadingView() {
         return null;
     }
 }
-/**
- * This is a hack to get the safe area insets without explicitly depending on react-native-safe-area-context.
- **/
-const RNCSafeAreaContext = TurboModuleRegistry.get('RNCSafeAreaContext');
-// @ts-ignore: we're not using the spec so the return type of getConstants() is {}
-const initialWindowMetrics = RNCSafeAreaContext?.getConstants()?.initialWindowMetrics;
+let paddingBottom = 0;
+if (Platform.OS !== 'web') {
+    try {
+        /**
+         * This is a hack to get the safe area insets without explicitly depending on react-native-safe-area-context.
+         **/
+        const RNCSafeAreaContext = TurboModuleRegistry.get('RNCSafeAreaContext');
+        // @ts-ignore: we're not using the spec so the return type of getConstants() is {}
+        const initialWindowMetrics = RNCSafeAreaContext?.getConstants()?.initialWindowMetrics;
+        paddingBottom = initialWindowMetrics?.insets?.bottom ?? 0;
+    }
+    catch { }
+}
 const styles = StyleSheet.create({
     animatedContainer: {
         position: 'absolute',
@@ -83,7 +91,7 @@ const styles = StyleSheet.create({
         flex: 1,
         overflow: 'visible',
         backgroundColor: 'rgba(0,0,0,0.75)',
-        paddingBottom: initialWindowMetrics?.insets?.bottom ?? 0,
+        paddingBottom,
     },
     contentContainer: {
         flex: 1,
