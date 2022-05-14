@@ -16,7 +16,7 @@ module.exports = function (api, options = {}) {
   }
 
   const platformOptions =
-    platform === 'web'
+    platform === 'web' && isWebpack
       ? { disableImportExportTransform: true, ...web }
       : { disableImportExportTransform: false, ...native };
 
