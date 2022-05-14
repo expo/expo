@@ -1,10 +1,10 @@
-import { ModPlatform } from '@expo/config-plugins';
+import { Platform } from '@expo/config';
 
 import { resolvePlatformOption } from '../prebuild/resolveOptions';
 
 export type Options = {
   outputDir: string;
-  platforms: ModPlatform[];
+  platforms: Platform[];
   maxWorkers?: number;
   dev: boolean;
   clear: boolean;
@@ -13,7 +13,7 @@ export type Options = {
 };
 
 export async function resolveOptionsAsync(args: any): Promise<Options> {
-  const platforms = resolvePlatformOption(args['--platform'] ?? 'all', { loose: true });
+  const platforms: Platform[] = ['web']; // resolvePlatformOption(args['--platform'] ?? 'all', { loose: true });
 
   return {
     outputDir: args['--output-dir'] ?? 'dist',

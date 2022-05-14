@@ -11,27 +11,20 @@ import { learnMore } from '../utils/link';
 export function printBundleSizes(bundles: Partial<Record<Platform, BundleOutput>>) {
   const files: [string, string | Uint8Array][] = [];
 
-  if (bundles.ios?.hermesBytecodeBundle) {
-    files.push(['index.ios.js (Hermes)', bundles.ios.hermesBytecodeBundle]);
-  } else if (bundles.ios?.code) {
-    files.push(['index.ios.js', bundles.ios.code]);
-  }
-  if (bundles.android?.hermesBytecodeBundle) {
-    files.push(['index.android.js (Hermes)', bundles.android.hermesBytecodeBundle]);
-  } else if (bundles.android?.code) {
-    files.push(['index.android.js', bundles.android.code]);
-  }
-
-  // Account for inline source maps
-  if (bundles.ios?.hermesSourcemap) {
-    files.push([chalk.dim('index.ios.js.map (Hermes)'), bundles.ios.hermesSourcemap]);
-  } else if (bundles.ios?.map) {
-    files.push([chalk.dim('index.ios.js.map'), bundles.ios.map]);
-  }
-  if (bundles.android?.hermesSourcemap) {
-    files.push([chalk.dim('index.android.js.map (Hermes)'), bundles.android.hermesSourcemap]);
-  } else if (bundles.android?.map) {
-    files.push([chalk.dim('index.android.js.map'), bundles.android.map]);
+  for (const [platform, bundleOutput] of Object.entries(bundles) as [
+    Platform,
+    Pick<BundleOutput, 'hermesBytecodeBundle' | 'code' | 'hermesSourcemap' | 'map'>
+  ][]) {
+    if (bundleOutput.hermesBytecodeBundle) {
+      files.push([chalk.bold(`index.${platform}.js (Hermes)`), bundleOutput.hermesBytecodeBundle]);
+    } else if (bundleOutput.code) {
+      files.push([chalk.bold(`index.${platform}.js`), bundleOutput.code]);
+    }
+    if (bundleOutput.hermesSourcemap) {
+      files.push([chalk.dim(`index.${platform}.js.map (Hermes)`), bundleOutput.hermesSourcemap]);
+    } else if (bundleOutput.map) {
+      files.push([chalk.dim(`index.${platform}.js.map`), bundleOutput.map]);
+    }
   }
 
   Log.log();

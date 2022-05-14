@@ -1,3 +1,4 @@
+import { Platform } from '@expo/config';
 import { BundleOutput } from '@expo/dev-server';
 import crypto from 'crypto';
 import fs from 'fs/promises';
@@ -27,13 +28,16 @@ export async function writeBundlesAsync({
   bundles,
   outputDir,
 }: {
-  bundles: Record<string, Pick<BundleOutput, 'hermesBytecodeBundle' | 'code'>>;
+  bundles: Partial<Record<Platform, Pick<BundleOutput, 'hermesBytecodeBundle' | 'code'>>>;
   outputDir: string;
 }) {
-  const hashes: Record<string, string> = {};
-  const fileNames: Record<string, string> = {};
+  const hashes: Partial<Record<Platform, string>> = {};
+  const fileNames: Partial<Record<Platform, string>> = {};
 
-  for (const [platform, bundleOutput] of Object.entries(bundles)) {
+  for (const [platform, bundleOutput] of Object.entries(bundles) as [
+    Platform,
+    Pick<BundleOutput, 'hermesBytecodeBundle' | 'code'>
+  ][]) {
     const bundle = bundleOutput.hermesBytecodeBundle ?? bundleOutput.code;
     const hash = createBundleHash(bundle);
     const fileName = createBundleFileName({ platform, hash });

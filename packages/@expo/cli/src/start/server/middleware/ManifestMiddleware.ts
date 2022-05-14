@@ -1,14 +1,16 @@
 import { ExpoConfig, ExpoGoConfig, getConfig, ProjectConfig } from '@expo/config';
+import path from 'path';
 import { resolve } from 'url';
 
 import * as Log from '../../../log';
 import { stripExtension } from '../../../utils/url';
 import * as ProjectDevices from '../../project/devices';
 import { UrlCreator } from '../UrlCreator';
+import { createTemplateHtml } from '../webTemplate';
 import { ExpoMiddleware } from './ExpoMiddleware';
 import { resolveGoogleServicesFile, resolveManifestAssets } from './resolveAssets';
 import { resolveEntryPoint } from './resolveEntryPoint';
-import { RuntimePlatform } from './resolvePlatform';
+import { parsePlatformHeader, RuntimePlatform } from './resolvePlatform';
 import { ServerHeaders, ServerNext, ServerRequest, ServerResponse } from './server.types';
 
 /** Info about the computer hosting the dev server. */
@@ -140,6 +142,24 @@ export abstract class ManifestMiddleware<
     hostname?: string | null;
     mainModuleName: string;
   }): string {
+    const path = this._getBundleUrlPath({ platform, mainModuleName });
+
+    return (
+      this.options.constructUrl({
+        scheme: 'http',
+        // hostType: this.options.location.hostType,
+        hostname,
+      }) + path
+    );
+  }
+
+  public _getBundleUrlPath({
+    platform,
+    mainModuleName,
+  }: {
+    platform: string;
+    mainModuleName: string;
+  }): string {
     const queryParams = new URLSearchParams({
       platform: encodeURIComponent(platform),
       dev: String(this.options.mode !== 'production'),
@@ -151,15 +171,7 @@ export abstract class ManifestMiddleware<
       queryParams.append('minify', String(this.options.minify));
     }
 
-    const path = `/${encodeURI(mainModuleName)}.bundle?${queryParams.toString()}`;
-
-    return (
-      this.options.constructUrl({
-        scheme: 'http',
-        // hostType: this.options.location.hostType,
-        hostname,
-      }) + path
-    );
+    return `/${encodeURI(mainModuleName)}.bundle?${queryParams.toString()}`;
   }
 
   /** Log telemetry. */
@@ -226,6 +238,26 @@ export abstract class ManifestMiddleware<
     res: ServerResponse,
     next: ServerNext
   ): Promise<void> {
+    let platform = parsePlatformHeader(req);
+    // On web, serve the public folder
+    if (!platform || platform === 'web') {
+      platform = 'web';
+      // Read the config
+      const projectConfig = getConfig(this.projectRoot);
+
+      // Read from headers
+      const mainModuleName = this.resolveMainModuleName(projectConfig, platform);
+      const bundleUrl = this._getBundleUrlPath({
+        platform,
+        mainModuleName,
+      });
+
+      res.end(createTemplateHtml(this.projectRoot, { url: bundleUrl }));
+      return;
+      // const serveStatic = require('serve-static');
+      // return serveStatic(path.join(this.projectRoot, 'public'))(req, res, next);
+    }
+
     // Save device IDs for dev client.
     await this.saveDevicesAsync(req);
 

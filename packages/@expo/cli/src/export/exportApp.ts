@@ -1,6 +1,8 @@
+import { writeFile } from 'fs-extra';
 import path from 'path';
 
 import * as Log from '../log';
+import { createTemplateHtml } from '../start/server/webTemplate';
 import { ensureDirectoryAsync } from '../utils/dir';
 import { createBundlesAsync } from './createBundles';
 import { exportAssetsAsync } from './exportAssets';
@@ -65,6 +67,14 @@ export async function exportAppAsync(
   const { hashes, fileNames } = await writeBundlesAsync({ bundles, outputDir: bundlesPath });
 
   Log.log('Finished saving JS Bundles');
+
+  // If web exists, then write the template HTML file.
+  if (fileNames.web) {
+    writeFile(
+      path.join(outputPath, 'index.html'),
+      createTemplateHtml(projectRoot, { url: `/bundles/${fileNames.web}` })
+    );
+  }
 
   const { assets } = await exportAssetsAsync(projectRoot, {
     exp,
