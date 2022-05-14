@@ -32,7 +32,7 @@ export const expoExport: Command = async (argv) => {
       chalk`npx expo export {dim <dir>}`,
       [
         chalk`<dir>                         Directory of the Expo project. {dim Default: Current working directory}`,
-        chalk`--platform <all|android|ios>  Platforms: android, ios, all. {dim Default: all}`,
+        chalk`--platform <platform>         Platforms: android, ios, web, all. {dim Default: all}`,
         `--dev                         Configure static files for developing locally using a non-https server`,
         chalk`--output-dir <dir>            The directory to export the static files to. {dim Default: dist}`,
         `--max-workers <number>        Maximum number of tasks to allow the bundler to spawn`,

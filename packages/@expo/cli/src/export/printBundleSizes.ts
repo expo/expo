@@ -28,7 +28,7 @@ export function printBundleSizes(bundles: Partial<Record<Platform, BundleOutput>
   }
 
   Log.log();
-  Log.log(createFilesTable(files));
+  Log.log(createFilesTable(files.sort((a, b) => a[1].length - b[1].length)));
   Log.log();
   Log.log(
     chalk`💡 JavaScript bundle sizes affect startup time. {dim ${learnMore(
