@@ -2,7 +2,7 @@
 
 ## ⚠️ Deprecated
 
-**expo-app-loading** is deprecated in favor of **expo-splash-screen**: use `SplashScreen.preventAutoHideAsync()` and `SplashScren.hideAsync()` instead. [Learn more](https://docs.expo.dev/versions/latest/sdk/splash-screen/).
+**expo-app-loading** is deprecated in favor of **expo-splash-screen**: use `SplashScreen.preventAutoHideAsync()` and `SplashScreen.hideAsync()` instead. [Learn more](https://docs.expo.dev/versions/latest/sdk/splash-screen/).
 
 A React component that tells expo-splash-screen to remain visible if it is the first and only component rendered in your app.
 This can be useful while download and cache fonts, logos, icon images and other assets that you want to be sure the user has on their device for an optimal experience before rendering and they start using the app. You can alternatively use expo-splash-screen APIs directly - expo-app-loading just wraps them.
