@@ -20,7 +20,9 @@ Learn more about this on the [Already used React Native?](/workflow/already-used
 
 <Collapsible summary="How much does Expo cost?">
 
-You can use Expo for free if the usage limits of the [free plan](https://expo.dev/pricing) are sufficient for your application. More information available on the [Pricing page](https://expo.dev/pricing).
+The Expo platform is [free and open source](https://blog.expo.dev/exponent-is-free-as-in-and-as-in-1d6d948a60dc). This includes the libraries that make up the [Expo SDK](/versions/latest/) and the [Expo CLI](/workflow/expo-cli/) used for development. The Expo Go app, the easiest way to get started, is also free from the app stores.
+
+[Expo Application Services (EAS)](https://expo.dev/eas) is an optional suite of cloud services for Expo and React Native apps, from the Expo team. EAS makes it easier to build your app, submit it to the stores, keep it updated, send push notifications, and more. You can use EAS for free if the [Free tier](https://expo.dev/pricing) quotas are sufficient for your app. More information is available on the [pricing page](https://expo.dev/pricing).
 
 </Collapsible>
 
