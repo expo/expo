@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- [android] Set the "notification number" (sometimes used to increment badge count on some launchers) from the notification payload `badge` field. ([#17171](https://github.com/expo/expo/pull/17171) by [@danstepanov](https://github.com/danstepanov))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes

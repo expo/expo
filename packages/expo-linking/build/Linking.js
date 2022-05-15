@@ -30,7 +30,8 @@ function isExpoHosted() {
     const hostUri = getHostUri();
     return !!(hostUri &&
         (/^(.*\.)?(expo\.io|exp\.host|exp\.direct|expo\.test)(:.*)?(\/.*)?$/.test(hostUri) ||
-            Constants.manifest?.developer));
+            Constants.manifest?.developer ||
+            Constants.manifest2?.extra?.expoGo?.developer));
 }
 function removeScheme(url) {
     return url.replace(/^[a-zA-Z0-9+.-]+:\/\//, '');
@@ -270,7 +271,6 @@ export async function sendIntent(action, extras) {
 // @needsAudit
 /**
  * Open the operating system settings app and displays the app’s custom settings, if it has any.
- * @platform ios
  */
 export async function openSettings() {
     if (Platform.OS === 'web') {

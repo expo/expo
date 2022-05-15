@@ -2,7 +2,7 @@
 title: Troubleshooting Proxies
 ---
 
-## Mac OS Proxy Configuration (Sierra)
+## macOS Proxy Configuration (Sierra)
 
 > If anything goes wrong, you can revert back to the "Automatic Proxy settings" in System Network Preferences using Automatic Proxy Configuration `your-corporate-proxy-uri:port-number/proxy.pac`
 
@@ -10,7 +10,7 @@ title: Troubleshooting Proxies
 
 In order to run this in the local iOS Simulator while on your corporate wi-fi network, a local proxy manager is required. This local proxy application, named [Charles](http://charlesproxy.com), is what our iOS Dev Team uses. Meet Charles, get to know him. He is your friend.
 
-#### Open Mac OS Network Preferences
+#### Open macOS Network Preferences
 
 1. Open `System Preferences` for your Mac (Apple Menu > System Preferences).
 2. Go to Network.
@@ -26,7 +26,7 @@ In order to run this in the local iOS Simulator while on your corporate wi-fi ne
 ### Configure `Charles`
 
 1. Open Charles
-2. If it asks, don't allow it to manage your Mac OS Network Configuration, the previous steps do that. (If you change Charles port, update the previous step to the correct port instead of default 8888)
+2. If it asks, don't allow it to manage your macOS Network Configuration, the previous steps do that. (If you change Charles port, update the previous step to the correct port instead of default 8888)
 3. In the menu of Charles go to `Proxy > External Proxy Settings`, check `Use external proxy servers`
 4. Check `Web Proxy (HTTP)`, and enter `your-corporate-proxy-uri:port-number`
 5. Check `Proxy server requires a password`
@@ -65,7 +65,7 @@ npm, git, Brew, Curl, and any other command line applications need proxy access 
 
 Open `~/.npmrc` and set:
 
-```
+```ini
 http_proxy=http://localhost:8888
 https_proxy=http://localhost:8888
 ```
@@ -74,18 +74,18 @@ https_proxy=http://localhost:8888
 
 Open `~/.gitconfig` and set
 
-```
+```ini
 [http]
- 	proxy = http://localhost:8888
+  proxy = http://localhost:8888
 [https]
-	proxy = http://localhost:8888
+  proxy = http://localhost:8888
 ```
 
 ### For Command line applications
 
 Depending on your shell, and config, Open `~/.bashrc`, `~/.bash_profile`, or `~/.zshrc` or wherever you set your shell variables, and set:
 
-```
+```bash
 export HTTP_PROXY="http://localhost:8888"
 export http_proxy="http://localhost:8888"
 export ALL_PROXY="http://localhost:8888"

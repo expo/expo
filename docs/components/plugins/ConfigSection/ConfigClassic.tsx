@@ -1,7 +1,7 @@
 import React, { PropsWithChildren, useEffect } from 'react';
 
 import { InlineCode } from '~/components/base/code';
-import { B } from '~/components/base/paragraph';
+import { Collapsible } from '~/ui/components/Collapsible';
 
 type Props = PropsWithChildren<object>;
 
@@ -15,12 +15,14 @@ export const ConfigClassic = ({ children }: Props) => {
   }, [children]);
 
   return (
-    <details>
-      <summary>
-        <B>Are you using the classic build system?</B> (
-        <InlineCode>expo build:[android|ios]</InlineCode>)
-      </summary>
+    <Collapsible
+      summary={
+        <span>
+          Are you using the classic build system? (<InlineCode>expo build:[android|ios]</InlineCode>
+          )
+        </span>
+      }>
       {children}
-    </details>
+    </Collapsible>
   );
 };

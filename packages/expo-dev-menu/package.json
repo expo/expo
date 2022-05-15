@@ -1,6 +1,6 @@
 {
   "name": "expo-dev-menu",
-  "version": "0.10.5",
+  "version": "0.10.6",
   "description": "Expo/React Native module with the developer menu.",
   "main": "build/DevMenu.js",
   "types": "build/DevMenu.d.ts",
@@ -66,7 +66,7 @@
     "graphql": "^15.3.0",
     "graphql-tag": "^2.10.1",
     "react": "17.0.2",
-    "react-native": "0.68.1",
+    "react-native": "0.68.2",
     "url": "^0.11.0"
   },
   "peerDependencies": {

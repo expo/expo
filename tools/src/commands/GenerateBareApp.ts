@@ -6,7 +6,7 @@ import path from 'path';
 import { EXPO_DIR, PACKAGES_DIR } from '../Constants';
 import { runExpoCliAsync } from '../ExpoCLI';
 
-type GenerateBareAppOptions = {
+export type GenerateBareAppOptions = {
   name?: string;
   template?: string;
   clean?: boolean;
@@ -14,7 +14,7 @@ type GenerateBareAppOptions = {
   rnVersion?: string;
 };
 
-async function action(
+export async function action(
   packageNames: string[],
   {
     name: appName = 'my-generated-bare-app',
@@ -28,8 +28,8 @@ async function action(
   // if appName === ''
   // if packageNames.length === 0
 
-  const workspaceDir = path.resolve(process.cwd(), outDir);
-  const projectDir = path.resolve(process.cwd(), workspaceDir, appName);
+  const { workspaceDir, projectDir } = getDirectories({ name: appName, outDir });
+
   const packagesToSymlink = await getPackagesToSymlink({ packageNames, workspaceDir });
 
   await createProjectDirectory({ clean, projectDir, workspaceDir, appName, template });
@@ -39,11 +39,25 @@ async function action(
   await runExpoPrebuild({ projectDir });
   await updateRNVersion({ projectDir, rnVersion });
   await createMetroConfig({ workspaceRoot: EXPO_DIR, projectRoot: projectDir });
-  await applyGradleFlipperFixtures({ projectDir });
+  await createScripts({ projectDir });
+
   // reestablish symlinks - some might be wiped out from prebuild
   await symlinkPackages({ projectDir, packagesToSymlink });
 
   console.log(`Project created in ${projectDir}!`);
+}
+
+export function getDirectories({
+  name: appName = 'my-generated-bare-app',
+  outDir = 'bare-apps',
+}: GenerateBareAppOptions) {
+  const workspaceDir = path.resolve(process.cwd(), outDir);
+  const projectDir = path.resolve(process.cwd(), workspaceDir, appName);
+
+  return {
+    workspaceDir,
+    projectDir,
+  };
 }
 
 async function createProjectDirectory({
@@ -76,7 +90,7 @@ async function createProjectDirectory({
 }
 
 function getDefaultPackagesToSymlink({ workspaceDir }: { workspaceDir: string }) {
-  const defaultPackagesToSymlink: string[] = ['expo', 'expo-modules-autolinking'];
+  const defaultPackagesToSymlink: string[] = ['expo'];
 
   const isInExpoRepo = workspaceDir.startsWith(EXPO_DIR);
 
@@ -105,7 +119,7 @@ function getDefaultPackagesToSymlink({ workspaceDir }: { workspaceDir: string })
   return defaultPackagesToSymlink;
 }
 
-async function getPackagesToSymlink({
+export async function getPackagesToSymlink({
   packageNames,
   workspaceDir,
 }: {
@@ -157,9 +171,13 @@ async function modifyPackageJson({
   const pkgPath = path.resolve(projectDir, 'package.json');
   const pkg = await fs.readJSON(pkgPath);
 
+  pkg.expo = pkg.expo ?? {};
+  pkg.expo.symlinks = pkg.expo.symlinks ?? [];
+
   packagesToSymlink.forEach((packageName) => {
     const packageJson = require(path.resolve(PACKAGES_DIR, packageName, 'package.json'));
     pkg.dependencies[packageName] = packageJson.version ?? '*';
+    pkg.expo.symlinks.push(packageName);
   });
 
   await fs.outputJson(path.resolve(projectDir, 'package.json'), pkg, { spaces: 2 });
@@ -170,7 +188,7 @@ async function yarnInstall({ projectDir }: { projectDir: string }) {
   return await spawnAsync('yarn', [], { cwd: projectDir, stdio: 'ignore' });
 }
 
-async function symlinkPackages({
+export async function symlinkPackages({
   packagesToSymlink,
   projectDir,
 }: {
@@ -182,7 +200,7 @@ async function symlinkPackages({
     const expoPackagePath = path.resolve(PACKAGES_DIR, packageName);
 
     if (fs.existsSync(projectPackagePath)) {
-      fs.rmdirSync(projectPackagePath, { recursive: true });
+      fs.rmSync(projectPackagePath, { recursive: true });
     }
 
     fs.symlinkSync(expoPackagePath, projectPackagePath);
@@ -258,16 +276,25 @@ module.exports = config;
   });
 }
 
-async function applyGradleFlipperFixtures({ projectDir }: { projectDir: string }) {
-  // prebuild is updating the gradle.properties FLIPPER_VERSION which causes SoLoader crash on launch
-  const gradlePropertiesPath = path.resolve(projectDir, 'android', 'gradle.properties');
-  const gradleProperties = await fs.readFile(gradlePropertiesPath, { encoding: 'utf-8' });
-  const updatedGradleProperies = gradleProperties.replace(
-    `FLIPPER_VERSION=0.54.0`,
-    `FLIPPER_VERSION=0.99.0`
-  );
-  console.log(`Overriding the gradle.properties to FLIPPER_VERSION=0.99.0`);
-  await fs.outputFile(gradlePropertiesPath, updatedGradleProperies);
+async function createScripts({ projectDir }) {
+  const scriptsDir = path.resolve(projectDir, 'scripts');
+  await fs.mkdir(scriptsDir);
+
+  const scriptsToCopy = path.resolve(EXPO_DIR, 'template-files/generate-bare-app/scripts');
+  await fs.copy(scriptsToCopy, scriptsDir, { recursive: true });
+
+  const pkgJsonPath = path.resolve(projectDir, 'package.json');
+  const pkgJson = await fs.readJSON(pkgJsonPath);
+  pkgJson.scripts['package:add'] = `node scripts/addPackages.js ${EXPO_DIR} ${projectDir}`;
+  pkgJson.scripts['package:remove'] = `node scripts/removePackages.js ${EXPO_DIR} ${projectDir}`;
+  pkgJson.scripts['clean'] =
+    'watchman watch-del-all &&  rm -fr $TMPDIR/metro-cache && rm $TMPDIR/haste-map-*';
+  pkgJson.scripts['ios'] = 'expo run:ios';
+  pkgJson.scripts['android'] = 'expo run:android';
+
+  await fs.writeJSON(pkgJsonPath, pkgJson, { spaces: 2 });
+
+  console.log('Added package scripts!');
 }
 
 export default (program: Command) => {

@@ -3,6 +3,9 @@ title: Submitting to the Apple App Store
 sidebar_title: Submitting to Apple
 ---
 
+import { Collapsible } from '~/ui/components/Collapsible';
+import { Terminal } from '~/ui/components/Snippet';
+
 This guide outlines how to submit your app to the Apple App Store from your own computer and from CI.
 
 ## Prerequisites
@@ -38,14 +41,13 @@ The command will perform the following steps:
   > If you already have an App Store Connect app, this step can be skipped by providing the `ascAppId` in the submit profile. The [ASC App ID](https://expo.fyi/asc-app-id) can be found either on App Store Connect, or later during this command in the _Submission Summary_ table.
 
 - Ensure you have the proper credentials set up. If none can be found, you can let EAS CLI set some up for you.
-  <details><summary><h4>🔐 Do you want to use your own credentials?</h4></summary>
-  <p>
+  <Collapsible summary="🔐 Do you want to use your own credentials?">
 
   **App Store Connect API Key:** Create your own [API Key](https://expo.fyi/creating-asc-api-key) then set it with the `ascApiKeyPath`, `ascApiKeyIssuerId`, and `ascApiKeyId` fields in **eas.json**.
 
   **App Specific Password:** Provide your [password](https://expo.fyi/apple-app-specific-password) and Apple ID Username by passing them in with the `EXPO_APPLE_APP_SPECIFIC_PASSWORD` environment variable and `appleId` field in **eas.json**, respectively.
-  </p>
-  </details>
+
+  </Collapsible>
 
 - Ask for which binary to submit. You can select one of the following:
 
@@ -69,20 +71,17 @@ You must do the following:
 - Make sure that the iOS Bundle Identifier is present in your [app config file](/workflow/configuration.md).
 - Set the ASC App ID (`ascAppId` in **eas.json**). The ASC App ID is required to skip the Apple Developer log-in process, which will likely not be possible on CI due to the 2FA prompt.
 - Set up your App Store Connect API Key with EAS Servers. You can check the state of your credentials by running `eas credentials` or by running `eas submit -p ios` interactively.
-  <details><summary><h4>🔐 Do you want to use your own credentials?</h4></summary>
-  <p>
+  <Collapsible summary="🔐 Do you want to use your own credentials?">
 
   **App Store Connect API Key:** Create your own [API Key](https://expo.fyi/creating-asc-api-key) then set it with the `ascApiKeyPath`, `ascApiKeyIssuerId`, and `ascApiKeyId` fields in **eas.json**.
 
   **App Specific Password:** Provide your [password](https://expo.fyi/apple-app-specific-password) and Apple ID Username by passing them in with the `EXPO_APPLE_APP_SPECIFIC_PASSWORD` environment variable and `appleId` field in **eas.json**, respectively.
-  </p>
-  </details>
+
+  </Collapsible>
 
 Example usage:
 
-```sh
-eas submit -p ios --latest --profile foobar
-```
+<Terminal cmd={['$ eas submit -p ios --latest --profile foobar']} copyCmd="eas submit -p ios --latest --profile foobar" />
 
 ## Automating submissions
 

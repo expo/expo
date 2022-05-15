@@ -36,6 +36,10 @@ public class CategoryAwareNotificationBuilder extends ExpoNotificationBuilder {
     if (categoryIdentifier != null) {
       addActionsToBuilder(builder, categoryIdentifier);
     }
+
+    if (content.getBadgeCount() != null) {
+      builder.setNumber(content.getBadgeCount().intValue());
+    }
     
     return builder;
   }
