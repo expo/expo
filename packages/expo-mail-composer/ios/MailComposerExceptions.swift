@@ -9,9 +9,9 @@ internal final class CannotSendMailException: Exception {
   }
 }
 
-internal final class UnfinishedSessionException: Exception {
+internal final class OperationInProgressException: Exception {
   override var reason: String {
-    "Cannot compose an email while an unfinished session already exists"
+    "Cannot compose an email because another email composing operation is in progress"
   }
 }
 

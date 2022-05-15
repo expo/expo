@@ -17,7 +17,7 @@ public class MailComposerModule: Module {
         throw CannotSendMailException()
       }
       guard self.currentSession == nil else {
-        throw UnfinishedSessionException()
+        throw OperationInProgressException()
       }
       guard let appContext = self.appContext else {
         throw AppContextLostException()
