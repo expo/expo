@@ -37,8 +37,8 @@ async function addNativeDependencies({ projectDir }: { projectDir: string }) {
     'react-native-safe-area-context',
     'react-native-screens',
     'react-native-svg',
-    'react-native-gesture-handler'
-  ].forEach(packageName => {
+    'react-native-gesture-handler',
+  ].forEach((packageName) => {
     pkg.dependencies[packageName] = bundledNativeModules[packageName];
   });
 
