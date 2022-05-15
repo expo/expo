@@ -75,8 +75,8 @@
   NSString *scopeKey = @"testScopeKey";
   NSString *runtimeVersion = @"1.0";
   ABI44_0_0EXUpdatesConfig *config = [ABI44_0_0EXUpdatesConfig configWithDictionary:@{
-    @"ABI44_0_0EXUpdatesScopeKey": scopeKey,
-    @"ABI44_0_0EXUpdatesRuntimeVersion": runtimeVersion
+    ABI44_0_0EXUpdatesConfigScopeKeyKey: scopeKey,
+    ABI44_0_0EXUpdatesConfigRuntimeVersionKey: runtimeVersion
   }];
   ABI44_0_0EXUpdatesUpdate *update1 = [ABI44_0_0EXUpdatesUpdate updateWithId:NSUUID.UUID scopeKey:scopeKey commitTime:[NSDate dateWithTimeIntervalSince1970:1608667851] runtimeVersion:runtimeVersion manifest:nil status:ABI44_0_0EXUpdatesUpdateStatusReady keep:YES config:config database:_db];
   ABI44_0_0EXUpdatesUpdate *update2 = [ABI44_0_0EXUpdatesUpdate updateWithId:NSUUID.UUID scopeKey:scopeKey commitTime:[NSDate dateWithTimeIntervalSince1970:1608667852] runtimeVersion:runtimeVersion manifest:nil status:ABI44_0_0EXUpdatesUpdateStatusReady keep:YES config:config database:_db];
@@ -116,8 +116,8 @@
   NSString *scopeKey = @"testScopeKey";
   NSString *runtimeVersion = @"1.0";
   ABI44_0_0EXUpdatesConfig *config = [ABI44_0_0EXUpdatesConfig configWithDictionary:@{
-    @"ABI44_0_0EXUpdatesScopeKey": scopeKey,
-    @"ABI44_0_0EXUpdatesRuntimeVersion": runtimeVersion
+    ABI44_0_0EXUpdatesConfigScopeKeyKey: scopeKey,
+    ABI44_0_0EXUpdatesConfigRuntimeVersionKey: runtimeVersion
   }];
   ABI44_0_0EXUpdatesUpdate *update1 = [ABI44_0_0EXUpdatesUpdate updateWithId:NSUUID.UUID scopeKey:scopeKey commitTime:[NSDate dateWithTimeIntervalSince1970:1608667851] runtimeVersion:runtimeVersion manifest:nil status:ABI44_0_0EXUpdatesUpdateStatusReady keep:YES config:config database:_db];
   ABI44_0_0EXUpdatesUpdate *update2 = [ABI44_0_0EXUpdatesUpdate updateWithId:NSUUID.UUID scopeKey:scopeKey commitTime:[NSDate dateWithTimeIntervalSince1970:1608667852] runtimeVersion:runtimeVersion manifest:nil status:ABI44_0_0EXUpdatesUpdateStatusReady keep:YES config:config database:_db];

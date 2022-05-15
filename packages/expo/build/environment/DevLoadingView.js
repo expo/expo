@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef, useMemo } from 'react';
-import { Animated, StyleSheet, Text, NativeModules, NativeEventEmitter, UIManager, View, } from 'react-native';
+import { Animated, StyleSheet, Text, NativeModules, NativeEventEmitter, TurboModuleRegistry, View, } from 'react-native';
 export default function DevLoadingView() {
     const [isDevLoading, setIsDevLoading] = useState(false);
     const [isAnimating, setIsAnimating] = useState(false);
@@ -45,11 +45,11 @@ export default function DevLoadingView() {
                 }
             });
         }
-        emitter.addListener('devLoadingView:showMessage', handleShowMessage);
-        emitter.addListener('devLoadingView:hide', handleHide);
+        const showMessageSubscription = emitter.addListener('devLoadingView:showMessage', handleShowMessage);
+        const hideSubscription = emitter.addListener('devLoadingView:hide', handleHide);
         return function cleanup() {
-            emitter.removeListener('devLoadingView:showMessage', handleShowMessage);
-            emitter.removeListener('devLoadingView:hide', handleHide);
+            showMessageSubscription.remove();
+            hideSubscription.remove();
         };
     }, [translateY, emitter]);
     if (isDevLoading || isAnimating) {
@@ -67,12 +67,10 @@ export default function DevLoadingView() {
 }
 /**
  * This is a hack to get the safe area insets without explicitly depending on react-native-safe-area-context.
- * The following code is lifted from: https://git.io/Jzk4k
- *
- * TODO: This will need to be updated for Fabric/TurboModules.
  **/
-const RNCSafeAreaProviderConfig = UIManager.getViewManagerConfig('RNCSafeAreaProvider');
-const initialWindowMetrics = RNCSafeAreaProviderConfig?.Constants?.initialWindowMetrics;
+const RNCSafeAreaContext = TurboModuleRegistry.get('RNCSafeAreaContext');
+// @ts-ignore: we're not using the spec so the return type of getConstants() is {}
+const initialWindowMetrics = RNCSafeAreaContext?.getConstants()?.initialWindowMetrics;
 const styles = StyleSheet.create({
     animatedContainer: {
         position: 'absolute',

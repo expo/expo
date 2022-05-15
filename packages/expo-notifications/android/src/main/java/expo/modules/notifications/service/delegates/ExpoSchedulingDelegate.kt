@@ -1,7 +1,9 @@
 package expo.modules.notifications.service.delegates
 
 import android.app.AlarmManager
+import android.app.PendingIntent
 import android.content.Context
+import android.os.Build
 import android.util.Log
 import androidx.core.app.AlarmManagerCompat
 import expo.modules.notifications.notifications.interfaces.SchedulableNotificationTrigger
@@ -57,12 +59,7 @@ class ExpoSchedulingDelegate(protected val context: Context) : SchedulingDelegat
         NotificationsService.removeScheduledNotification(context, request.identifier)
       } else {
         store.saveNotificationRequest(request)
-        AlarmManagerCompat.setExactAndAllowWhileIdle(
-          alarmManager,
-          AlarmManager.RTC_WAKEUP,
-          nextTriggerDate.time,
-          NotificationsService.createNotificationTrigger(context, request.identifier)
-        )
+        setupAlarm(nextTriggerDate.time, NotificationsService.createNotificationTrigger(context, request.identifier))
       }
     }
   }
@@ -97,6 +94,24 @@ class ExpoSchedulingDelegate(protected val context: Context) : SchedulingDelegat
   override fun removeAllScheduledNotifications() {
     store.removeAllNotificationRequests().forEach {
       alarmManager.cancel(NotificationsService.createNotificationTrigger(context, it))
+    }
+  }
+
+  private fun setupAlarm(triggerAtMillis: Long, operation: PendingIntent) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S || alarmManager.canScheduleExactAlarms()) {
+      AlarmManagerCompat.setExactAndAllowWhileIdle(
+        alarmManager,
+        AlarmManager.RTC_WAKEUP,
+        triggerAtMillis,
+        operation
+      )
+    } else {
+      AlarmManagerCompat.setAndAllowWhileIdle(
+        alarmManager,
+        AlarmManager.RTC_WAKEUP,
+        triggerAtMillis,
+        operation
+      )
     }
   }
 }

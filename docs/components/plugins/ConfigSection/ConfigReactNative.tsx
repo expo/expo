@@ -1,6 +1,6 @@
 import React, { PropsWithChildren, useEffect } from 'react';
 
-import { B } from '~/components/base/paragraph';
+import { Collapsible } from '~/ui/components/Collapsible';
 
 type Props = PropsWithChildren<object>;
 
@@ -14,11 +14,8 @@ export const ConfigReactNative = ({ children }: Props) => {
   }, [children]);
 
   return (
-    <details>
-      <summary>
-        <B>Are you using this library in a bare React Native app?</B>
-      </summary>
+    <Collapsible summary="Are you using this library in a bare React Native app?">
       {children}
-    </details>
+    </Collapsible>
   );
 };

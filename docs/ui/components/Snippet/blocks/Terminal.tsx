@@ -26,13 +26,30 @@ export const Terminal = ({
 }: TerminalProps) => (
   <Snippet style={style}>
     <SnippetHeader alwaysDark title={title}>
-      {!!cmdCopy && <CopyAction alwaysDark text={cmdCopy} />}
+      {renderCopyButton({ cmd, cmdCopy })}
     </SnippetHeader>
     <SnippetContent alwaysDark hideOverflow={hideOverflow}>
       {cmd.map(cmdMapper)}
     </SnippetContent>
   </Snippet>
 );
+
+/**
+ * This method attempts to naively generate the basic cmdCopy from the given cmd list.
+ * Currently, the implementation is simple, but we can add multiline support in the future.
+ */
+function getDefaultCmdCopy(cmd: TerminalProps['cmd']) {
+  const validLines = cmd.filter(line => !line.startsWith('#') && line !== '');
+  if (validLines.length === 1) {
+    return validLines[0].startsWith('$') ? validLines[0].slice(2) : validLines[0];
+  }
+  return undefined;
+}
+
+function renderCopyButton({ cmd, cmdCopy }: TerminalProps) {
+  const copyText = cmdCopy || getDefaultCmdCopy(cmd);
+  return copyText && <CopyAction alwaysDark text={copyText} />;
+}
 
 /**
  * Map all provided lines and render the correct component.
@@ -60,16 +77,21 @@ function cmdMapper(line: string, index: number) {
   if (line.startsWith('$')) {
     return (
       <div key={key}>
-        <CODE css={[codeStyle, unselectableStyle, { color: darkTheme.text.secondary }]}>
+        <CODE
+          css={[
+            codeStyle,
+            unselectableStyle,
+            { display: 'inline', color: darkTheme.text.secondary },
+          ]}>
           →&nbsp;
         </CODE>
-        <CODE css={[codeStyle, { display: 'inline' }]}>{line.substring(1).trim()}</CODE>
+        <CODE css={codeStyle}>{line.substring(1).trim()}</CODE>
       </div>
     );
   }
 
   return (
-    <CODE key={key} css={codeStyle}>
+    <CODE key={key} css={[codeStyle, { display: 'inherit' }]}>
       {line}
     </CODE>
   );

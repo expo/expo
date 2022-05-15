@@ -12,6 +12,9 @@ include ':app'
 apply from: new File(["node", "--print", "require.resolve('expo/package.json')"].execute(null, rootDir).text.trim(), "../scripts/autolinking.gradle")
 
 /* UNCOMMENT WHEN DISTRIBUTING
+
+includeBuild('../node_modules/react-native-gradle-plugin')
+
 useExpoModules([
     exclude: [
         'expo-module-template',
@@ -48,6 +51,7 @@ project(":expo-random").projectDir = new File("../packages/expo-random/android")
 
 [
     // ADD_NEW_SUPPORTED_ABIS_HERE
+    "abi45_0_0",
     "abi44_0_0",
     "abi43_0_0",
 ].forEach({ abiVariant ->

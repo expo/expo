@@ -2,20 +2,52 @@ import { vol } from 'memfs';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
+import { asMock } from '../../../../__tests__/asMock';
 import * as Log from '../../../../log';
-import { validateDependenciesVersionsAsync } from '../validateDependenciesVersions';
-
-const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
-  fn as jest.MockedFunction<T>;
+import {
+  logIncorrectDependencies,
+  validateDependenciesVersionsAsync,
+} from '../validateDependenciesVersions';
 
 jest.mock(`../../../../log`);
 jest.mock('../bundledNativeModules', () => ({
-  getBundledNativeModulesAsync: () => ({
+  getVersionedNativeModulesAsync: () => ({
     'expo-splash-screen': '~1.2.3',
     'expo-updates': '~2.3.4',
     firebase: '9.1.0',
   }),
 }));
+jest.mock('../getVersionedPackages', () => ({
+  getCombinedKnownVersionsAsync: () => ({
+    'expo-splash-screen': '~1.2.3',
+    'expo-updates': '~2.3.4',
+    firebase: '9.1.0',
+  }),
+}));
+
+describe(logIncorrectDependencies, () => {
+  it(`logs incorrect dependencies`, () => {
+    asMock(Log.warn).mockImplementation(console.log);
+
+    logIncorrectDependencies([
+      {
+        actualVersion: '1.0.0',
+        packageName: 'react-native',
+        expectedVersionOrRange: '~2.0.0',
+      },
+    ]);
+
+    expect(Log.warn).toHaveBeenNthCalledWith(
+      1,
+      expect.stringContaining('Some dependencies are incompatible')
+    );
+    expect(Log.warn).toHaveBeenNthCalledWith(2, expect.stringContaining('expected version'));
+    expect(Log.warn).toHaveBeenNthCalledWith(
+      3,
+      expect.stringContaining('npx expo install react-native@~2.0.0')
+    );
+  });
+});
 
 describe(validateDependenciesVersionsAsync, () => {
   const projectRoot = '/test-project';
@@ -73,7 +105,7 @@ describe(validateDependenciesVersionsAsync, () => {
     );
     expect(Log.warn).toHaveBeenNthCalledWith(
       1,
-      'Some dependencies are incompatible with the installed expo package version:'
+      expect.stringContaining('Some dependencies are incompatible with the installed')
     );
     expect(Log.warn).toHaveBeenNthCalledWith(2, expect.stringContaining('expo-splash-screen'));
     expect(Log.warn).toHaveBeenNthCalledWith(3, expect.stringContaining('expo-updates'));

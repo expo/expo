@@ -14,9 +14,13 @@ concurrency:
 
 jobs:
   build:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        ndk-version: [21.4.7075529]
     steps:
-      - uses: actions/checkout@v3
+      - name: 👀 Checkout
+        uses: actions/checkout@v3
         with:
           submodules: true
       - name: 🔨 Use JDK 11
@@ -24,71 +28,52 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '11'
-      - name: Get cache key of git lfs files
-        id: git-lfs
-        run: echo "::set-output name=sha256::$(git lfs ls-files | openssl dgst -sha256)"
-      - uses: actions/cache@v2
+      - name: ➕ Add `EXPO_ROOT_DIR` to GITHUB_ENV
+        run: echo "EXPO_ROOT_DIR=$(pwd)" >> $GITHUB_ENV
+      - name: ➕ Add `bin` to GITHUB_PATH
+        run: echo "$(pwd)/bin" >> $GITHUB_PATH
+      - name: ♻️ Restore caches
+        uses: ./.github/actions/expo-caches
+        id: expo-caches
         with:
-          path: .git/lfs
-          key: ${{ steps.git-lfs.outputs.sha256 }}
-      - run: git lfs pull
-      - run: echo "$(pwd)/bin" >> $GITHUB_PATH
-      - run: echo "EXPO_ROOT_DIR=$(pwd)" >> $GITHUB_ENV
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-      - uses: actions/cache@v2
-        with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-      - run: yarn install --frozen-lockfile
-      - uses: actions/cache@v2
-        with:
-          path: ~/.gradle/caches
-          key: ${{ runner.os }}-gradle-${{ hashFiles('android/*.gradle*') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
-      - uses: actions/cache@v2
-        id: cache-android-ndk
-        with:
-          path: /usr/local/lib/android/sdk/ndk/21.4.7075529/
-          key: ${{ runner.os }}-ndk-21.4.7075529
-          restore-keys: |
-            ${{ runner.os }}-ndk-
-      - name: Install NDK
-        if: steps.cache-android-ndk.outputs.cache-hit != 'true'
-        run: |
-          sudo $ANDROID_SDK_ROOT/tools/bin/sdkmanager --install "ndk;21.4.7075529"
-      - name: Build Android packages
+          yarn-workspace: 'true'
+          git-lfs: 'true'
+          ndk: 'true'
+          ndk-version: ${{ matrix.ndk-version }}
+      - name: 🚚 Pull Git LFS files
+        run: git lfs pull
+      - name: 🧶 Yarn install
+        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
+        run: yarn install --frozen-lockfile
+      - name: 🏗️ Build Android packages
         env:
-          ANDROID_NDK_HOME: /usr/local/lib/android/sdk/ndk/21.4.7075529/
+          ANDROID_NDK_HOME: /usr/local/lib/android/sdk/ndk/${{ matrix.ndk-version }}/
         run: expotools android-build-packages --packages all
-      - name: Clean Android build artifacts that would needlessly bloat the shell app
+      - name: 🧹 Clean Android build artifacts that would needlessly bloat the shell app
         env:
-          ANDROID_NDK_HOME: /usr/local/lib/android/sdk/ndk/21.4.7075529/
+          ANDROID_NDK_HOME: /usr/local/lib/android/sdk/ndk/${{ matrix.ndk-version }}/
         run: ./gradlew clean
         working-directory: android
-      - name: Build shell app tarball
+      - name: 🏗️ Build shell app tarball
         run: ./buildAndroidTarballLocally.sh
-      - name: Make an artifact
+      - name: 📦️ Make an artifact
         uses: actions/upload-artifact@v3
         with:
           name: android-shell-app
           path: artifacts/android-shell-builder.tar.gz
-      - name: Upload shell app tarball to S3
+      - name: 📤️ Upload shell app tarball to S3
         if: ${{ github.event_name == 'workflow_dispatch' }}
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: 'us-east-1'
           S3_URI: s3://exp-artifacts/android-shell-builder-${{ github.sha }}.tar.gz
         run: |
           aws s3 cp --acl public-read artifacts/android-shell-builder.tar.gz $S3_URI
           echo "Release tarball uploaded to $S3_URI"
           echo "You can deploy this by updating or creating a new file in https://github.com/expo/turtle/tree/master/shellTarballs/android"
           echo "Then follow the deployment instructions: https://github.com/expo/turtle-deploy"
-      - name: Set the description for slack message
+      - name: 🏷️ Set the description for Slack message
         if: ${{ github.event_name != 'push' }}
         run: |
           if [ ${{ github.event_name }} == 'schedule' ]; then
@@ -96,11 +81,13 @@ jobs:
           else
             echo "SLACK_MESSAGE_DESCRIPTION=triggered by ${{ github.actor }}" >> $GITHUB_ENV
           fi
-      - uses: 8398a7/action-slack@v3
+      - name: 🔔 Notify on Slack
+        uses: 8398a7/action-slack@v3
         if: ${{ github.event_name != 'push' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_ANDROID }}
+          MATRIX_CONTEXT: ${{ toJson(matrix) }}
         with:
           channel: '#expo-android'
           status: ${{ job.status }}

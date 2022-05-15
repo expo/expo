@@ -34,9 +34,10 @@ export default async function ({ pullRequest, diff }: ReviewInput): Promise<Revi
   return {
     status: ReviewStatus.WARN,
     title: 'Missing changelog entries',
-    body: `Your changes should be noted in the changelog. 
-      Read [Updating Changelogs](https://github.com/expo/expo/blob/main/guides/contributing/Updating%20Changelogs.md) 
-      guide and consider (it's optional) adding an appropriate entry to the following changelogs: ${changelogLinks}`,
+    body:
+      'Your changes should be noted in the changelog. ' +
+      'Read [Updating Changelogs](https://github.com/expo/expo/blob/main/guides/contributing/Updating%20Changelogs.md) ' +
+      `guide and consider adding an appropriate entry to the following changelogs: \n${changelogLinks}`,
   };
 }
 

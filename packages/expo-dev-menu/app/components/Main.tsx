@@ -25,6 +25,7 @@ import { useAppInfo } from '../hooks/useAppInfo';
 import { useBottomSheet } from '../hooks/useBottomSheet';
 import { useClipboard } from '../hooks/useClipboard';
 import { useDevSettings } from '../hooks/useDevSettings';
+import { isDevLauncherInstalled } from '../native-modules/DevLauncher';
 import { GestureHandlerTouchableWrapper } from './GestureHandlerTouchableWrapper';
 
 export function Main() {
@@ -63,9 +64,10 @@ export function Main() {
 
   return (
     <View flex="1" bg="secondary">
-      <View padding="medium" bg="default">
+      <View py="medium" bg="default">
         <Row align="start">
-          <Row align="center">
+          <Spacer.Horizontal size="medium" />
+          <Row align="center" shrink="1">
             <View>
               <View height="xl" width="xl" overflow="hidden" bg="secondary" rounded="medium">
                 {Boolean(appInfo.appIcon) && (
@@ -79,9 +81,13 @@ export function Main() {
 
             <Spacer.Horizontal size="small" />
 
-            <View>
-              <Heading weight="bold">{appInfo.appName}</Heading>
-              <Spacer.Vertical size="tiny" />
+            <View shrink="1">
+              <Row style={{ flexWrap: 'wrap' }}>
+                <Heading weight="bold" numberOfLines={1}>
+                  {appInfo.appName}
+                </Heading>
+              </Row>
+
               {Boolean(appInfo.runtimeVersion) && (
                 <>
                   <Text size="small" color="secondary">
@@ -98,20 +104,25 @@ export function Main() {
                 </>
               )}
             </View>
-          </Row>
 
-          <Spacer.Horizontal />
-          <GestureHandlerTouchableWrapper onPress={bottomSheet.collapse}>
-            <Button.ScaleOnPressContainer
-              onPress={bottomSheet.collapse}
-              bg="ghost"
-              rounded="full"
-              minScale={0.8}>
-              <View padding="micro">
-                <XIcon />
-              </View>
-            </Button.ScaleOnPressContainer>
-          </GestureHandlerTouchableWrapper>
+            <Spacer.Horizontal />
+
+            <View width="large" style={{ alignSelf: 'flex-start' }}>
+              <GestureHandlerTouchableWrapper onPress={bottomSheet.collapse}>
+                <Button.ScaleOnPressContainer
+                  onPress={bottomSheet.collapse}
+                  bg="ghost"
+                  rounded="full"
+                  minScale={0.8}>
+                  <View padding="micro">
+                    <XIcon />
+                  </View>
+                </Button.ScaleOnPressContainer>
+              </GestureHandlerTouchableWrapper>
+            </View>
+
+            <Spacer.Horizontal size="small" />
+          </Row>
         </Row>
       </View>
 
@@ -120,15 +131,15 @@ export function Main() {
       {Boolean(appInfo.hostUrl) && (
         <>
           <View bg="default" padding="medium">
-            <Text color="secondary">Connected to local server</Text>
+            <Text color="secondary">Connected to:</Text>
 
             <Spacer.Vertical size="small" />
 
             <Row align="center">
               <StatusIndicator style={{ width: 10, height: 10 }} status="success" />
-              <Spacer.Horizontal size="tiny" />
+              <Spacer.Horizontal size="small" />
               <View flex="1">
-                <Text type="mono" numberOfLines={1} size="small">
+                <Text type="mono" numberOfLines={2} size="small">
                   {appInfo.hostUrl}
                 </Text>
               </View>
@@ -141,13 +152,15 @@ export function Main() {
       )}
 
       <Row padding="small">
-        <View flex="1">
-          <ActionButton
-            icon={<HomeFilledIcon />}
-            label="Go home"
-            onPress={actions.navigateToLauncher}
-          />
-        </View>
+        {isDevLauncherInstalled && (
+          <View flex="1">
+            <ActionButton
+              icon={<HomeFilledIcon />}
+              label="Go home"
+              onPress={actions.navigateToLauncher}
+            />
+          </View>
+        )}
 
         <Spacer.Horizontal size="medium" />
 
@@ -235,6 +248,7 @@ export function Main() {
             bg="default"
             roundedTop="none"
             roundedBottom="large"
+            onPress={onCopyAppInfoPress}
             disabled={hasCopiedAppInfoContent}>
             <Row px="medium" py="small" align="center" bg="default">
               <Text color="link" size="medium">

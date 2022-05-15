@@ -19,6 +19,6 @@ Pod::Spec.new do |s|
   s.source_files   = '**/*.{h,m,mm,swift}'
 
   s.dependency 'ExpoModulesCore'
-  s.dependency 'Quick'
-  s.dependency 'Nimble'
+  s.dependency 'Quick', '~> 5.0.0'
+  s.dependency 'Nimble', '~> 9.2.0'
 end

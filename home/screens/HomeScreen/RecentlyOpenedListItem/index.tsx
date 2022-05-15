@@ -1,5 +1,5 @@
 import { ChevronDownIcon, spacing } from '@expo/styleguide-native';
-import { Text, useExpoTheme } from 'expo-dev-client-components';
+import { Text, useExpoPalette, useExpoTheme, View } from 'expo-dev-client-components';
 import * as React from 'react';
 import { View as RNView, StyleSheet, ViewStyle, Share } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
@@ -14,10 +14,20 @@ type Props = {
   image?: number | string | null;
   url: string;
   onPress?: () => void;
+  releaseChannel?: string;
 };
 
-export function RecentlyOpenedListItem({ title, url, image, disabled, style, onPress }: Props) {
+export function RecentlyOpenedListItem({
+  title,
+  url,
+  image,
+  disabled,
+  style,
+  onPress,
+  releaseChannel,
+}: Props) {
   const theme = useExpoTheme();
+  const palette = useExpoPalette();
 
   const handleLongPress = () => {
     const message = UrlUtils.normalizeUrl(url);
@@ -37,9 +47,33 @@ export function RecentlyOpenedListItem({ title, url, image, disabled, style, onP
       disabled={disabled}>
       <AppIcon image={image} />
       <RNView style={[styles.contentContainer]}>
-        <Text type="InterSemiBold" ellipsizeMode="tail" numberOfLines={1}>
-          {title}
-        </Text>
+        <View>
+          <Text type="InterSemiBold" ellipsizeMode="tail" numberOfLines={1}>
+            {title}
+          </Text>
+          {releaseChannel && (
+            <View
+              style={{
+                marginTop: 8,
+                backgroundColor: palette.blue['100'],
+                borderRadius: 4,
+                paddingVertical: 2,
+                paddingHorizontal: 8,
+                flexDirection: 'row',
+                alignItems: 'center',
+                alignSelf: 'flex-start',
+              }}>
+              <Text
+                type="InterRegular"
+                style={{ color: palette.blue['800'] }}
+                size="small"
+                ellipsizeMode="tail"
+                numberOfLines={1}>
+                Channel: {releaseChannel}
+              </Text>
+            </View>
+          )}
+        </View>
         <RNView style={styles.chevronRightContainer}>
           <ChevronDownIcon
             style={{ transform: [{ rotate: '-90deg' }] }}

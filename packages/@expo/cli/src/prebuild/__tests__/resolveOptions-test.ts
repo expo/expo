@@ -4,8 +4,31 @@ import {
   ensureValidPlatforms,
   resolvePlatformOption,
   resolveSkipDependencyUpdate,
+  resolvePackageManagerOptions,
   resolveTemplateOption,
 } from '../resolveOptions';
+
+describe(resolvePackageManagerOptions, () => {
+  it(`resolves`, () => {
+    expect(resolvePackageManagerOptions({ '--yarn': true })).toEqual({
+      npm: undefined,
+      pnpm: undefined,
+      yarn: true,
+    });
+  });
+  it(`asserts mutually exclusive arguments`, () => {
+    expect(() => resolvePackageManagerOptions({ '--npm': true, '--pnpm': true })).toThrow();
+    expect(() => resolvePackageManagerOptions({ '--no-install': true, '--yarn': true })).toThrow();
+    expect(() =>
+      resolvePackageManagerOptions({
+        '--npm': true,
+        '--pnpm': true,
+        '--no-install': true,
+        '--yarn': true,
+      })
+    ).toThrow();
+  });
+});
 
 describe(resolvePlatformOption, () => {
   const platform = process.platform;

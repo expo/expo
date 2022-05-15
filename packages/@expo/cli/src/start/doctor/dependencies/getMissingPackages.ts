@@ -2,8 +2,8 @@ import JsonFile from '@expo/json-file';
 import resolveFrom from 'resolve-from';
 import semver from 'semver';
 
-import { getReleasedVersionsAsync, SDKVersion } from '../../../api/getVersions';
 import * as Log from '../../../log';
+import { getCombinedKnownVersionsAsync } from './getVersionedPackages';
 
 export type ResolvedPackage = {
   /** Module ID pointing to the library `package.json`. */
@@ -90,63 +90,26 @@ export async function getMissingPackagesAsync(
   }
 
   // Ensure the versions are right for the SDK that the project is currently using.
-  await mutatePackagesWithKnownVersionsAsync(sdkVersion, results.missing);
+  await mutatePackagesWithKnownVersionsAsync(projectRoot, sdkVersion, results.missing);
 
   return results;
 }
 
-async function getSDKVersionsAsync(sdkVersion?: string): Promise<SDKVersion | null> {
-  // Should never happen in practice since the CLI is versioned in Expo.
-  if (!sdkVersion) {
-    return null;
-  }
-
-  const sdkVersions = await getReleasedVersionsAsync().catch(
-    // This is a convenience method and we should avoid making this halt the process.
-    () => null
-  );
-
-  const currentVersion = sdkVersions?.[sdkVersion] ?? null;
-  if (!currentVersion) {
-    return null;
-  }
-
-  // For legacy purposes, we want to ensure `react`, `react-dom`, and `react-native` are added to the `relatedPackages` list.
-  const { relatedPackages, facebookReactVersion, facebookReactNativeVersion } = currentVersion;
-
-  const reactVersion = facebookReactVersion
-    ? {
-        react: facebookReactVersion,
-        'react-dom': facebookReactVersion,
-      }
-    : undefined;
-
-  return {
-    ...currentVersion,
-    relatedPackages: {
-      ...reactVersion,
-      'react-native': facebookReactNativeVersion,
-      ...relatedPackages,
-    },
-  };
-}
-
 export async function mutatePackagesWithKnownVersionsAsync(
+  projectRoot: string,
   sdkVersion: string | undefined,
   packages: ResolvedPackage[]
 ) {
   // Ensure the versions are right for the SDK that the project is currently using.
-  const versions = await getSDKVersionsAsync(sdkVersion);
-  if (versions?.relatedPackages) {
-    for (const pkg of packages) {
-      if (
-        // Only use the SDK versions if the package does not already have a hardcoded version.
-        // We do this because some packages have API coded into the CLI which expects an exact version.
-        !pkg.version &&
-        pkg.pkg in versions.relatedPackages
-      ) {
-        pkg.version = versions.relatedPackages[pkg.pkg];
-      }
+  const relatedPackages = await getCombinedKnownVersionsAsync({ projectRoot, sdkVersion });
+  for (const pkg of packages) {
+    if (
+      // Only use the SDK versions if the package does not already have a hardcoded version.
+      // We do this because some packages have API coded into the CLI which expects an exact version.
+      !pkg.version &&
+      pkg.pkg in relatedPackages
+    ) {
+      pkg.version = relatedPackages[pkg.pkg];
     }
   }
   return packages;

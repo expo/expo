@@ -4,14 +4,14 @@ import Foundation
 import CommonCrypto
 
 @objc
-extension NSString {
+public extension NSString {
   @objc func hexEncodedSHA256() -> String {
     let digest = (self as String).data(using:String.Encoding.utf8)!.sha256()
     return digest.reduce("") { $0 + String(format: "%02x", $1) }
   }
 }
 
-extension Data {
+public extension Data {
   func sha256() -> Data {
     var digest = Data(count: Int(CC_SHA256_DIGEST_LENGTH))
     withUnsafeBytes { bytes in

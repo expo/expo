@@ -3,21 +3,21 @@ title: Expo CLI
 maxHeadingDepth: 4
 ---
 
-import TerminalBlock from '~/components/plugins/TerminalBlock';
+import { Terminal } from '~/ui/components/Snippet';
 
 Expo CLI is a command line app that is the main interface between a developer and Expo tools. You'll use it for a variety of tasks, such as:
 
 - Creating new projects
 - Developing your app: running the project server, viewing logs, opening your app in a simulator
 - [Publishing](publishing.md) your app JavaScript and other assets and managing releasing them as updates
-- [Building binaries](../distribution/building-standalone-apps.md) (`aab` and `ipa` files) to be [uploaded to the App Store and Play Store](../distribution/uploading-apps.md)
+- [Building binaries](/distribution/building-standalone-apps.md) (`aab` and `ipa` files) to be [uploaded to the App Store and Play Store](/distribution/uploading-apps.md)
 - Managing Apple Credentials and Google Keystores
 
 You may use the CLI in your terminal or use the web based interface (it opens automatically by default, or you can press d from the CLI to open it on demand). The web interface enables you to use some of the most often used features from a quick-to-use graphical interface. We’ve only scratched the surface of what expo-cli can do so far. Be sure to check out all the possible commands below!
 
 ## Installation
 
-<TerminalBlock cmd={['npm install -g expo-cli']} />
+<Terminal cmd={['$ npm install -g expo-cli']} cmdCopy="npm install -g expo-cli" />
 
 ## Checking CLI Version
 
@@ -27,7 +27,7 @@ Run `expo --version` to determine what version you are currently working with.
 
 The commands listed below are derived from the latest version of Expo CLI. You can view the list of commands available with your version in your terminal using `expo --help`. To learn more about a specific command and its options use `expo [command] --help`.
 
-<TerminalBlock cmd={[`# Usage: expo [command] [options]`]} />
+<Terminal cmd={[`# Usage: expo [command] [options]`]} />
 
 <!-- BEGIN GENERATED BLOCK. DO NOT MODIFY MANUALLY. https://github.com/expo/expo-cli/blob/main/packages/expo-cli/scripts/introspect.ts -->
 

@@ -11,7 +11,6 @@ import * as React from 'react';
 import { LoadInitialData } from './components/LoadInitialData';
 import { Splash } from './components/Splash';
 import { AppProviders } from './providers/AppProviders';
-import { useUser } from './providers/UserContextProvider';
 import { CrashReportScreen } from './screens/CrashReportScreen';
 import { ExtensionsStack } from './screens/ExtensionsStack';
 import { HomeScreen } from './screens/HomeScreen';
@@ -47,9 +46,6 @@ export function App(props: LauncherAppProps) {
 }
 
 const Main = () => {
-  const { userData } = useUser();
-  const showExtensionsStack = userData?.isExpoAdmin || __DEV__;
-
   return (
     <Tab.Navigator screenOptions={{ tabBarHideOnKeyboard: true }}>
       <Tab.Screen
@@ -60,16 +56,14 @@ const Main = () => {
           tabBarIcon: ({ focused }) => <HomeFilledIcon focused={focused} />,
         }}
       />
-      {showExtensionsStack && (
-        <Tab.Screen
-          name="Extensions"
-          component={ExtensionsStack}
-          options={{
-            headerShown: false,
-            tabBarIcon: ({ focused }) => <ExtensionsFilledIcon focused={focused} />,
-          }}
-        />
-      )}
+      <Tab.Screen
+        name="Extensions"
+        component={ExtensionsStack}
+        options={{
+          headerShown: false,
+          tabBarIcon: ({ focused }) => <ExtensionsFilledIcon focused={focused} />,
+        }}
+      />
       <Tab.Screen
         name="Settings"
         component={SettingsScreen}

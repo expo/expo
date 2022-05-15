@@ -14,28 +14,25 @@ concurrency:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v3
+      - name: 👀 Checkout
+        uses: actions/checkout@v3
         with:
           submodules: true
-      - name: Get cache key of git lfs files
-        id: git-lfs
-        run: echo "::set-output name=sha256::$(git lfs ls-files | openssl dgst -sha256)"
-      - uses: actions/cache@v2
-        with:
-          path: .git/lfs
-          key: ${{ steps.git-lfs.outputs.sha256 }}
-      - run: git lfs pull
-      - uses: actions/setup-node@v3
+      - name: ⬢ Setup Node
+        uses: actions/setup-node@v3
         with:
           node-version: '14.17'
-      - run: yarn global add expo-cli@3
-      - name: Cache Node.js modules
-        uses: actions/cache@v2
+      - name: ♻️ Restore caches
+        uses: ./.github/actions/expo-caches
+        id: expo-caches
         with:
-          path: ${{ github.workspace }}/node_modules
-          key: ${{ runner.OS }}-node_modules-${{ hashFiles('yarn.lock') }}
+          yarn-workspace: 'true'
+          git-lfs: 'true'
+      - name: 🚚 Pull Git LFS files
+        run: git lfs pull
+
       #  Setup Expo CLI action
       # - name: Setup Expo
       #   uses: expo/expo-github-action@v5
@@ -45,7 +42,11 @@ jobs:
       #     expo-password: ${{ secrets.EXPO_CLI_PASSWORD }}
       #     expo-cache: true
 
-      - run: yarn --frozen-lockfile
+      - name: 🧶 Install workspace node modules
+        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
+        run: yarn install --frozen-lockfile
+      - name: 🔧 Install Expo CLI v3
+        run: yarn global add expo-cli@3
 
       # - name: Publish Expo app
       #   working-directory: ./apps/native-component-list

@@ -17,6 +17,7 @@ typedef void (^ABI43_0_0EXUpdatesAppLoaderErrorBlock)(NSError *error);
 - (instancetype)initWithConfig:(ABI43_0_0EXUpdatesConfig *)config
                       database:(ABI43_0_0EXUpdatesDatabase *)database
                      directory:(NSURL *)directory
+                launchedUpdate:(nullable ABI43_0_0EXUpdatesUpdate *)launchedUpdate
                completionQueue:(dispatch_queue_t)completionQueue;
 
 /**

@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+## 5.0.0 — 2022-04-18
+
 ### ⚠️ Notices
 
 - On Android bumped `com.google.firebase:firebase-core:17.2.1 ➡️ 20.1.2` and `com.google.firebase:firebase-common:19.0.0 ➡️ 20.1.0`. ([#17002](https://github.com/expo/expo/pull/17002) by [@bbarthec](https://github.com/bbarthec))

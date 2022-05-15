@@ -13,6 +13,7 @@ on:
       - packages/expo-updates/**
       - packages/expo/android/**
       - packages/expo/ios/**
+      - templates/expo-template-bare-minimum/**
   push:
     branches: [main, 'sdk-*']
     paths:
@@ -25,48 +26,54 @@ on:
       - packages/expo-updates/**
       - packages/expo/android/**
       - packages/expo/ios/**
+      - templates/expo-template-bare-minimum/**
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  android:
-    runs-on: ubuntu-latest
+  # (2022-05): we run both iOS and Android tests in a single job in order to avoid taking up 2 macOS
+  # runners each time this workflow runs
+  build:
+    runs-on: macos-11
+    timeout-minutes: 120
     env:
       UPDATES_PORT: 4747
+    strategy:
+      matrix:
+        api-level: [31]
     steps:
+      - name: 👀 Checkout
+        uses: actions/checkout@v3
       - name: ⬢ Setup Node
         uses: actions/setup-node@v3
         with:
           node-version: '14.17'
-      - name: Check out repository
-        uses: actions/checkout@v3
-        with:
-          submodules: false
+      - name: 🔨 Switch to Xcode 13.2.1
+        run: sudo xcode-select --switch /Applications/Xcode_13.2.1.app
       - name: 🔨 Use JDK 11
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: '11'
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-      - uses: actions/cache@v2
+      - name: ➕ Add `bin` to GITHUB_PATH
+        run: echo "$(yarn global bin)" >> $GITHUB_PATH
+      - name: ♻️ Restore caches
+        uses: ./.github/actions/expo-caches
+        id: expo-caches
         with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-      - run: yarn install --frozen-lockfile
-      - uses: actions/cache@v2
-        with:
-          path: ~/.gradle/caches
-          key: ${{ runner.os }}-gradle-${{ hashFiles('android/*.gradle*') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
-      - run: yarn global add expo-cli
-      - run: echo "$(yarn global bin)" >> $GITHUB_PATH
+          yarn-workspace: 'true'
+          avd: 'true'
+          avd-api: ${{ matrix.api-level }}
+      - name: 🧶 Yarn install
+        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
+        run: yarn install --frozen-lockfile
+      - name: Build expo-updates CLI
+        working-directory: packages/expo-updates
+        run: yarn build:cli
+      - name: 🔧 Install Expo CLI
+        run: yarn global add expo-cli
       - name: Init new expo app
         working-directory: ../
         run: expo-cli init updates-e2e --yes
@@ -98,42 +105,87 @@ jobs:
       - name: Add local expo packages
         working-directory: ../updates-e2e
         run: yarn add file:../expo/packages/expo-updates file:../expo/packages/expo file:../expo/packages/expo-splash-screen file:../expo/packages/expo-status-bar
+      - name: Get local IP address
+        run: echo "UPDATES_HOST=$(ifconfig -l | xargs -n1 ipconfig getifaddr)" >> $GITHUB_ENV
       - name: Setup app.config.json
         working-directory: ../updates-e2e
-        run: echo "{\"name\":\"updates-e2e\",\"plugins\":[\"expo-updates\"],\"android\":{\"package\":\"dev.expo.updatese2e\"},\"ios\":{\"bundleIdentifier\":\"dev.expo.updatese2e\"}}" > app.config.json
+        run: echo "{\"name\":\"updates-e2e\",\"runtimeVersion\":\"1.0.0\",\"plugins\":[\"expo-updates\"],\"android\":{\"package\":\"dev.expo.updatese2e\"},\"ios\":{\"bundleIdentifier\":\"dev.expo.updatese2e\"},\"updates\":{\"url\":\"http://$UPDATES_HOST:$UPDATES_PORT/update\"}}" > app.config.json
+      - name: Generate code signing
+        working-directory: ../updates-e2e
+        run: yarn expo-updates codesigning:generate --key-output-directory keys --certificate-output-directory certs --certificate-validity-duration-years 1 --certificate-common-name "E2E Test App"
+      - name: Configure code signing
+        working-directory: ../updates-e2e
+        run: yarn expo-updates codesigning:configure --certificate-input-directory certs --key-input-directory keys
       - name: Pack latest bare-minimum template as tarball for expo prebuild
         working-directory: templates/expo-template-bare-minimum
-        run: npm pack --pack-destination ../../../updates-e2e/
+        run: echo "$PWD" && npm pack --pack-destination ../../../updates-e2e/
       - name: Prebuild
         working-directory: ../updates-e2e
         run: expo-cli prebuild --template expo-template-bare-minimum-*.tgz
       - name: Copy App.js from test fixtures
         working-directory: ../updates-e2e
         run: cp ../expo/packages/expo-updates/e2e/__tests__/fixtures/App.js .
-      - name: Set port in App.js
+      - name: Set host and port in App.js
         working-directory: ../updates-e2e
-        run: sed -i -e "s/UPDATES_PORT/$UPDATES_PORT/" ./App.js
-      - name: Assemble release APK
+        run: sed -i -e "s/UPDATES_HOST/$UPDATES_HOST/" ./App.js && sed -i -e "s/UPDATES_PORT/$UPDATES_PORT/" ./App.js
+      - name: 🍏 Build release app
+        working-directory: ../updates-e2e/ios
+        run: xcodebuild -workspace updatese2e.xcworkspace -scheme updatese2e -configuration Release -destination "generic/platform=iOS Simulator" -derivedDataPath ./build build
+      - name: 🍏 Copy app to working directory
+        run: cp -R ../updates-e2e/ios/build/Build/Products/Release-iphonesimulator/updatese2e.app artifact
+      - name: 🍏 Get test app path
+        id: test-app-path
+        working-directory: ../updates-e2e/ios/build/Build/Products/Release-iphonesimulator/
+        run: echo "::set-output name=dir::$(pwd)"
+      - name: 🤖 Assemble release APK
         working-directory: ../updates-e2e/android
-        run: ./gradlew assembleRelease
-      - name: Copy APK to working directory
+        run: ./gradlew assembleRelease --stacktrace
+      - name: 🤖 Copy APK to working directory
         run: cp -R ../updates-e2e/android/app/build/outputs/apk artifact
-      - name: Upload test APK artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: updates-e2e-android-apk
-          path: artifact
-      - name: Get test APK path
+      - name: 🤖 Get test APK path
         id: test-apk-path
         working-directory: ../updates-e2e/android/app/build/outputs/apk/release
         run: echo "::set-output name=dir::$(pwd)"
-      - name: Run tests
+      - name: Upload test app artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: updates-e2e-artifacts
+          path: artifact
+      - name: Export update for test server to host
+        working-directory: ../updates-e2e
+        run: expo export --public-url https://u.expo.dev/dummy-url
+      - name: Get test update dist path
+        id: test-update-dist-path
+        working-directory: ../updates-e2e/dist
+        run: echo "::set-output name=dir::$(pwd)"
+      - name: Get test code signing private key path
+        id: test-code-signing-private-key-path
+        working-directory: ../updates-e2e/keys
+        run: echo "::set-output name=dir::$(pwd)/private-key.pem"
+      - name: 🍏 Start simulator
+        run: |
+          xcrun simctl list devices -j \
+          | jq -rc '[ .[] | .[] | .[] | select( .name | contains( "iPhone" ) ) | select( .isAvailable == true ) ] | last.udid ' \
+          | xargs open -a Simulator --args -CurrentDeviceUDID
+      - name: 🍏 Run tests
+        env:
+          TEST_APP_PATH: '${{ steps.test-app-path.outputs.dir }}/updatese2e.app'
+          TEST_UPDATE_DIST_PATH: '${{ steps.test-update-dist-path.outputs.dir }}'
+          TEST_PRIVATE_KEY_PATH: '${{ steps.test-code-signing-private-key-path.outputs.dir }}'
+        timeout-minutes: 30
+        working-directory: packages/expo-updates
+        run: yarn test --config e2e/jest.config.ios.js
+      - name: 🤖 Start emulator and run tests
         env:
           TEST_APK_PATH: '${{ steps.test-apk-path.outputs.dir }}/app-release.apk'
+          TEST_UPDATE_DIST_PATH: '${{ steps.test-update-dist-path.outputs.dir }}'
+          TEST_PRIVATE_KEY_PATH: '${{ steps.test-code-signing-private-key-path.outputs.dir }}'
         timeout-minutes: 30
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 29
-          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -no-snapshot-save
-          script: yarn test --config e2e/jest.config.js
+          api-level: ${{ matrix.api-level }}
+          avd-name: avd-${{ matrix.api-level }}
+          arch: x86_64
+          force-avd-creation: false
+          script: yarn test --config e2e/jest.config.android.js
           working-directory: packages/expo-updates

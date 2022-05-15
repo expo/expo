@@ -1,126 +1,75 @@
+import { Row, View, Text, Divider, Spacer } from 'expo-dev-client-components';
 import React from 'react';
-import { Image, StyleSheet, Text, View } from 'react-native';
+import { Image, StyleSheet } from 'react-native';
 
 import DevIndicator from '../components/DevIndicator';
-import { StyledText } from '../components/Text';
 import FriendlyUrls from '../legacy/FriendlyUrls';
 
 type Props = {
   task: { [key: string]: any };
 };
 
-class DevMenuTaskInfo extends React.PureComponent<Props, any> {
-  _maybeRenderDevServerName(manifest: Record<string, any>) {
-    const devServerName = manifest && manifest.developer ? manifest.developer.tool : null;
+export function DevMenuTaskInfo({ task }: Props) {
+  const taskUrl = task.manifestUrl ? FriendlyUrls.toFriendlyString(task.manifestUrl) : '';
+  const manifest = task.manifestString && JSON.parse(task.manifestString);
+  const iconUrl = manifest && (manifest.iconUrl ?? manifest.extra.expoClient.iconUrl);
+  const taskName = manifest && (manifest.name ?? manifest.extra.expoClient.name);
+  const sdkVersion = manifest && (manifest.sdkVersion ?? manifest.extra.expoClient.sdkVersion);
+  const runtimeVersion = manifest && manifest.runtimeVersion;
 
-    if (devServerName) {
-      return (
-        <View style={styles.taskDevServerRow}>
-          <DevIndicator style={styles.taskDevServerIndicator} isActive isNetworkAvailable />
-          <Text style={styles.taskDevServerName}>{devServerName}</Text>
-        </View>
-      );
-    }
-    return null;
-  }
+  const devServerName =
+    manifest && manifest.extra?.expoGo?.developer ? manifest.extra.expoGo.developer.tool : null;
 
-  render() {
-    const { task } = this.props;
-    const taskUrl = task.manifestUrl ? FriendlyUrls.toFriendlyString(task.manifestUrl) : '';
-    const manifest = task.manifestString && JSON.parse(task.manifestString);
-    const iconUrl = manifest && manifest.iconUrl;
-    const taskName = manifest && (manifest.name ?? manifest.extra.expoClient.name);
-    const taskNameStyles = taskName ? styles.taskName : [styles.taskName, { color: '#c5c6c7' }];
-    const sdkVersion = manifest && manifest.sdkVersion;
-
-    return (
-      <View style={styles.taskMetaRow}>
-        {!manifest?.metadata?.branchName ? (
+  return (
+    <View>
+      <Row bg="default" padding="medium">
+        {!manifest?.metadata?.branchName && iconUrl ? (
           // EAS Updates don't have icons
-          <View style={styles.taskIconColumn}>
-            {iconUrl ? (
-              <Image source={{ uri: iconUrl }} style={styles.taskIcon} />
-            ) : (
-              <View style={[styles.taskIcon, { backgroundColor: '#eee' }]} />
-            )}
-          </View>
+          <Image source={{ uri: iconUrl }} style={styles.taskIcon} />
         ) : null}
-        <View style={styles.taskInfoColumn}>
-          <StyledText style={taskNameStyles} numberOfLines={1} lightColor="#595c68">
+        <View flex="1" style={{ justifyContent: 'center' }}>
+          <Text type="InterBold" color="default" size="medium" numberOfLines={1}>
             {taskName ? taskName : 'Untitled Experience'}
-          </StyledText>
-          <Text style={[styles.taskUrl]} numberOfLines={1}>
-            {taskUrl}
           </Text>
           {sdkVersion && (
-            <StyledText style={styles.taskSdkVersion}>
-              SDK: <Text style={styles.taskSdkVersionBold}>{sdkVersion}</Text>
-            </StyledText>
+            <Text size="small" type="InterRegular" color="secondary">
+              Runtime version:{' '}
+              <Text type="InterSemiBold" color="secondary" size="small">
+                {runtimeVersion}
+              </Text>
+            </Text>
           )}
-          {this._maybeRenderDevServerName(manifest)}
         </View>
+      </Row>
+      <Divider />
+      <View bg="default" padding="medium">
+        <Text size="small" type="InterRegular">
+          {devServerName ? `Connected to ${devServerName}` : `Running from URL`}
+        </Text>
+        <Spacer.Vertical size="tiny" />
+        <Row align="center">
+          {devServerName ? (
+            <DevIndicator style={styles.taskDevServerIndicator} isActive isNetworkAvailable />
+          ) : null}
+          <Text type="InterRegular" size="medium" numberOfLines={1}>
+            {taskUrl}
+          </Text>
+        </Row>
       </View>
-    );
-  }
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
-  taskMetaRow: {
-    flexDirection: 'row',
-    paddingHorizontal: 14,
-    paddingBottom: 12,
-  },
-  taskInfoColumn: {
-    flex: 4,
-    justifyContent: 'center',
-  },
-  taskIconColumn: {
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  taskName: {
-    backgroundColor: 'transparent',
-    fontWeight: '700',
-    fontSize: 16,
-    marginTop: 14,
-    marginBottom: 1,
-    marginRight: 24,
-  },
-  taskUrl: {
-    color: '#9ca0a6',
-    backgroundColor: 'transparent',
-    marginRight: 16,
-    marginBottom: 2,
-    marginTop: 1,
-    fontSize: 11,
-  },
-  taskSdkVersion: {
-    color: '#9ca0a6',
-    fontSize: 11,
-  },
-  taskSdkVersionBold: {
-    fontWeight: 'bold',
-  },
   taskIcon: {
-    width: 52,
-    height: 52,
-    marginTop: 12,
-    marginRight: 10,
+    width: 40,
+    height: 40,
+    marginRight: 8,
+    borderRadius: 8,
     alignSelf: 'center',
     backgroundColor: 'transparent',
   },
-  taskDevServerRow: {
-    flexDirection: 'row',
-  },
-  taskDevServerName: {
-    fontSize: 11,
-    color: '#9ca0a6',
-    fontWeight: '700',
-  },
   taskDevServerIndicator: {
-    marginTop: 4,
-    marginRight: 7,
+    marginRight: 8,
   },
 });
-
-export default DevMenuTaskInfo;

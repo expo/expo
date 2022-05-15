@@ -1,13 +1,11 @@
+import { asMock } from '../../../../__tests__/asMock';
 import { getReleasedVersionsAsync } from '../../../../api/getVersions';
-import { getBundledNativeModulesAsync } from '../bundledNativeModules';
+import { getVersionedNativeModulesAsync } from '../bundledNativeModules';
 import {
   getOperationLog,
   getRemoteVersionsForSdkAsync,
   getVersionedPackagesAsync,
 } from '../getVersionedPackages';
-
-const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
-  fn as jest.MockedFunction<T>;
 
 jest.mock('../../../../api/getVersions', () => ({
   getVersionsAsync: jest.fn(),
@@ -15,12 +13,12 @@ jest.mock('../../../../api/getVersions', () => ({
 }));
 
 jest.mock('../bundledNativeModules', () => ({
-  getBundledNativeModulesAsync: jest.fn(),
+  getVersionedNativeModulesAsync: jest.fn(),
 }));
 
 describe(getVersionedPackagesAsync, () => {
   it('should return versioned packages', async () => {
-    asMock(getBundledNativeModulesAsync).mockResolvedValueOnce({});
+    asMock(getVersionedNativeModulesAsync).mockResolvedValueOnce({});
     asMock(getReleasedVersionsAsync).mockResolvedValueOnce({
       '1.0.0': {
         relatedPackages: {
@@ -78,7 +76,9 @@ describe(getRemoteVersionsForSdkAsync, () => {
   it('returns an empty object when the SDK version is not supported', async () => {
     asMock(getReleasedVersionsAsync).mockResolvedValueOnce({});
 
-    expect(await getRemoteVersionsForSdkAsync('1.0.0')).toEqual({});
+    expect(await getRemoteVersionsForSdkAsync({ sdkVersion: '1.0.0', skipCache: true })).toEqual(
+      {}
+    );
   });
 
   it('returns versions for SDK with Facebook overrides', async () => {
@@ -95,7 +95,7 @@ describe(getRemoteVersionsForSdkAsync, () => {
       },
     });
 
-    expect(await getRemoteVersionsForSdkAsync('1.0.0')).toEqual({
+    expect(await getRemoteVersionsForSdkAsync({ sdkVersion: '1.0.0', skipCache: true })).toEqual({
       'expo-sms': 'default',
       react: 'facebook-react',
       'react-dom': 'facebook-react',

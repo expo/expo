@@ -1,17 +1,15 @@
 import { vol } from 'memfs';
 
-import { getReleasedVersionsAsync } from '../../../../api/getVersions';
+import { asMock } from '../../../../__tests__/asMock';
 import {
   collectMissingPackages,
   getMissingPackagesAsync,
   versionSatisfiesRequiredPackage,
 } from '../getMissingPackages';
+import { getCombinedKnownVersionsAsync } from '../getVersionedPackages';
 
-const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
-  fn as jest.MockedFunction<T>;
-
-jest.mock('../../../../api/getVersions', () => ({
-  getReleasedVersionsAsync: jest.fn(),
+jest.mock('../getVersionedPackages', () => ({
+  getCombinedKnownVersionsAsync: jest.fn(() => []),
 }));
 
 describe(versionSatisfiesRequiredPackage, () => {
@@ -55,13 +53,10 @@ describe(getMissingPackagesAsync, () => {
 
   it('gets missing packages', async () => {
     const projectRoot = '/test-project';
-    asMock(getReleasedVersionsAsync).mockResolvedValue({
-      '43.0.0': {
-        facebookReactNativeVersion: '1.0.0',
-        // The `facebookReactVersion` will be added to `relatedPackages` in the form of `react-dom` and `react`.
-        facebookReactVersion: '420.0.0',
-        relatedPackages: {},
-      },
+    asMock(getCombinedKnownVersionsAsync).mockResolvedValue({
+      'react-native': '1.0.0',
+      'react-dom': '420.0.0',
+      react: '420.0.0',
     });
 
     vol.fromJSON(

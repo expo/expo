@@ -1,29 +1,29 @@
 import { getExpoHomeDirectory } from '@expo/config/build/getUserState';
 import path from 'path';
-import ProgressBar from 'progress';
 
-import { getVersionsAsync } from '../api/getVersions';
+import { getReleasedVersionsAsync, SDKVersion } from '../api/getVersions';
 import * as Log from '../log';
 import { downloadAppAsync } from './downloadAppAsync';
+import { CommandError } from './errors';
 import { profile } from './profile';
-import { setProgressBar } from './progress';
+import { createProgressBar } from './progress';
 
 const platformSettings: Record<
   string,
   {
     shouldExtractResults: boolean;
-    versionsKey: keyof Awaited<ReturnType<typeof getVersionsAsync>>;
+    versionsKey: keyof SDKVersion;
     getFilePath: (filename: string) => string;
   }
 > = {
   ios: {
-    versionsKey: 'iosUrl',
+    versionsKey: 'iosClientUrl',
     getFilePath: (filename) =>
       path.join(getExpoHomeDirectory(), 'ios-simulator-app-cache', `${filename}.app`),
     shouldExtractResults: true,
   },
   android: {
-    versionsKey: 'androidUrl',
+    versionsKey: 'androidClientUrl',
     getFilePath: (filename) =>
       path.join(getExpoHomeDirectory(), 'android-apk-cache', `${filename}.apk`),
     shouldExtractResults: false,
@@ -35,25 +35,32 @@ export async function downloadExpoGoAsync(
   platform: keyof typeof platformSettings,
   {
     url,
+    sdkVersion,
   }: {
     url?: string;
-  } = {}
+    sdkVersion?: string;
+  }
 ): Promise<string> {
   const { getFilePath, versionsKey, shouldExtractResults } = platformSettings[platform];
 
-  const bar = new ProgressBar('Downloading the Expo Go app [:bar] :percent :etas', {
+  const bar = createProgressBar('Downloading the Expo Go app [:bar] :percent :etas', {
     width: 64,
     total: 100,
     clear: true,
     complete: '=',
     incomplete: ' ',
   });
-  // TODO: Auto track progress
-  setProgressBar(bar);
 
   if (!url) {
-    const versions = await getVersionsAsync();
-    url = versions[versionsKey] as string;
+    if (!sdkVersion) {
+      throw new CommandError(
+        `Unable to determine which Expo Go version to install (platform: ${platform})`
+      );
+    }
+    const versions = await getReleasedVersionsAsync();
+    const version = versions[sdkVersion];
+    Log.debug(`Installing Expo Go version for SDK ${sdkVersion} at URL: ${version[versionsKey]}`);
+    url = version[versionsKey] as string;
   }
 
   const filename = path.parse(url).name;
@@ -78,7 +85,6 @@ export async function downloadExpoGoAsync(
     });
     return outputPath;
   } finally {
-    bar.terminate();
-    setProgressBar(null);
+    bar?.terminate();
   }
 }

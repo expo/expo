@@ -98,7 +98,7 @@ If your app asks for [system permissions](../versions/latest/sdk/permissions.md)
 },
 ```
 
-The full list of keys Expo provides by default can be seen [here](https://github.com/expo/expo/tree/main/exponent-view-template/ios/exponent-view-template/Supporting/Info.plist#L28-L45). Unlike with Android, on iOS it is not possible to filter the list of permissions an app may request at a native level. This means that by default, your app will ship with all of these default boilerplate strings embedded in the binary. You can provide any overrides you want in the `infoPlist` configuration. Because these strings are configured at the native level, they will only be published when you build a new binary with `expo build`.
+The full list of keys Expo provides by default can be seen [here](https://github.com/expo/expo/tree/main/exponent-view-template/ios/exponent-view-template/Supporting/Info.plist#L28-L45). Unlike with Android, on iOS it is not possible to filter the list of permissions an app may request at a native level. This means that by default, your app will ship with all of these default boilerplate strings embedded in the binary. You can provide any overrides you want in the `infoPlist` configuration. Because these strings are configured at the native level, they will only be published when you build a new binary with [`eas build`](/build/introduction.md).
 
 ## Localizing your iOS app
 
@@ -118,7 +118,7 @@ If you plan on shipping your app to different countries, regions, or just want i
   }
 ```
 
-The keys provided to `locales` should be the [2-letter language code](https://www.loc.gov/standards/iso639-2/php/code_list.php) of your desired language, and the value should point to a JSON file that looks something like this:
+The keys provided to `locales` should be the [language identifier](https://developer.apple.com/documentation/xcode/choosing-localization-regions-and-scripts), made up of a [2-letter language code](https://www.loc.gov/standards/iso639-2/php/code_list.php) of your desired language, with an optional region code (e.g. `en-US` or `en-GB`), and the value should point to a JSON file that looks something like this:
 
 ```json
 // japanese.json

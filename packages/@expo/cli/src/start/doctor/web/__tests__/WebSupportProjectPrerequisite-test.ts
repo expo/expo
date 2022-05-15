@@ -1,13 +1,12 @@
-import { getConfig, getProjectConfigDescriptionWithPaths } from '@expo/config';
+import { getConfig, getProjectConfigDescriptionWithPaths, ProjectConfig } from '@expo/config';
 
+import { asMock } from '../../../../__tests__/asMock';
 import * as Log from '../../../../log';
 import { stripAnsi } from '../../../../utils/ansi';
 import {
   isWebPlatformExcluded,
   WebSupportProjectPrerequisite,
 } from '../WebSupportProjectPrerequisite';
-
-const asMock = (fn: any): jest.Mock => fn;
 
 jest.mock('../../../../log');
 jest.mock('@expo/config', () => ({
@@ -83,7 +82,7 @@ describe('_shouldSetupWebSupportAsync', () => {
           platforms: ['ios', 'android'],
         },
       },
-    });
+    } as ProjectConfig);
 
     const prerequisite = new WebSupportProjectPrerequisite(projectRoot);
     await expectThrowsErrorStrippedMessageMatching(
@@ -99,7 +98,7 @@ describe('_shouldSetupWebSupportAsync', () => {
       rootConfig: {
         expo: {},
       },
-    });
+    } as ProjectConfig);
     const prerequisite = new WebSupportProjectPrerequisite(projectRoot);
     await expect(prerequisite._shouldSetupWebSupportAsync()).resolves.toEqual(expect.anything());
   });

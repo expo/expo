@@ -9,13 +9,14 @@ import type webpack from 'webpack';
 import type WebpackDevServer from 'webpack-dev-server';
 
 import * as Log from '../../../log';
-import { WEB_HOST } from '../../../utils/env';
+import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
 import { getIpAddress } from '../../../utils/ip';
 import { choosePortAsync } from '../../../utils/port';
+import { createProgressBar } from '../../../utils/progress';
 import { ensureDotExpoProjectDirectoryInitialized } from '../../project/dotExpo';
 import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
-import { UrlCreator } from '../UrlCreator';
+import { compileAsync } from './compile';
 import {
   importExpoWebpackConfigFromProject,
   importWebpackDevServerFromProject,
@@ -130,7 +131,7 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
 
     const { createDevServerMiddleware } = await import('../middleware/createDevServerMiddleware');
 
-    const nativeMiddleware = createDevServerMiddleware({
+    const nativeMiddleware = createDevServerMiddleware(this.projectRoot, {
       port,
       watchFolders: [this.projectRoot],
     });
@@ -155,7 +156,7 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
       const defaultPort = options?.defaultPort ?? 19006;
       const port = await choosePortAsync(this.projectRoot, {
         defaultPort,
-        host: WEB_HOST,
+        host: env.WEB_HOST,
       });
       if (!port) {
         throw new CommandError('NO_PORT_FOUND', `Port ${defaultPort} not available.`);
@@ -166,34 +167,81 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
     }
   }
 
-  async startAsync(options: BundlerStartOptions): Promise<DevServerInstance> {
+  async bundleAsync({ mode, clear }: { mode: 'development' | 'production'; clear: boolean }) {
+    // Do this first to fail faster.
+    const webpack = importWebpackFromProject(this.projectRoot);
+
+    if (clear) {
+      await this.clearWebProjectCacheAsync(this.projectRoot, mode);
+    }
+
+    const config = await this.loadConfigAsync({
+      isImageEditingEnabled: true,
+      mode,
+    });
+
+    if (!config.plugins) {
+      config.plugins = [];
+    }
+
+    const bar = createProgressBar(chalk`{bold Web} Bundling Javascript [:bar] :percent`, {
+      width: 64,
+      total: 100,
+      clear: true,
+      complete: '=',
+      incomplete: ' ',
+    });
+
+    // NOTE(EvanBacon): Add a progress bar to the webpack logger if defined (e.g. not in CI).
+    if (bar != null) {
+      config.plugins.push(
+        new webpack.ProgressPlugin((percent: number) => {
+          bar?.update(percent);
+          if (percent === 1) {
+            bar?.terminate();
+          }
+        })
+      );
+    }
+
+    // Create a webpack compiler that is configured with custom messages.
+    const compiler = webpack(config);
+
+    try {
+      await compileAsync(compiler);
+    } catch (error: any) {
+      Log.error(chalk.red('Failed to compile'));
+      throw error;
+    } finally {
+      bar?.terminate();
+    }
+  }
+
+  protected async startImplementationAsync(
+    options: BundlerStartOptions
+  ): Promise<DevServerInstance> {
     // Do this first to fail faster.
     const webpack = importWebpackFromProject(this.projectRoot);
     const WebpackDevServer = importWebpackDevServerFromProject(this.projectRoot);
 
     await this.stopAsync();
 
-    const { resetDevServer, https, mode } = options;
-
-    const port = await this.getAvailablePortAsync({
+    options.port = await this.getAvailablePortAsync({
       defaultPort: options.port,
     });
+    const { resetDevServer, https, port, mode } = options;
 
-    this.urlCreator = new UrlCreator(
-      {
+    this.urlCreator = this.getUrlCreator({
+      port,
+      location: {
         scheme: https ? 'https' : 'http',
-        ...options.location,
       },
-      {
-        port,
-        getTunnelUrl: this.getTunnelUrl.bind(this),
-      }
-    );
+    });
 
     Log.debug('Starting webpack on port: ' + port);
 
     if (resetDevServer) {
-      await clearWebProjectCacheAsync(this.projectRoot, mode);
+      await this.clearWebProjectCacheAsync(this.projectRoot, mode);
     }
 
     if (https) {
@@ -241,7 +289,7 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
       config.devServer
     );
     // Launch WebpackDevServer.
-    server.listen(port, WEB_HOST, function (this: http.Server, error) {
+    server.listen(port, env.WEB_HOST, function (this: http.Server, error) {
       if (nativeMiddleware) {
         attachNativeDevServerMiddlewareToDevServer({
           server: this,
@@ -266,7 +314,7 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
     const _host = getIpAddress();
     const protocol = https ? 'https' : 'http';
 
-    this.setInstance({
+    return {
       // Server instance
       server,
       // URL Info
@@ -281,11 +329,7 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
       messageSocket: {
         broadcast: this.broadcastMessage,
       },
-    });
-
-    await this.postStartAsync(options);
-
-    return this.instance!;
+    };
   }
 
   /** Load the Webpack config. Exposed for testing. */
@@ -300,7 +344,7 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
   }
 
   async loadConfigAsync(
-    options: BundlerStartOptions,
+    options: Pick<BundlerStartOptions, 'mode' | 'isImageEditingEnabled' | 'https'>,
     argv?: string[]
   ): Promise<WebpackConfiguration> {
     // let bar: ProgressBar | null = null;
@@ -338,6 +382,21 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
   protected getConfigModuleIds(): string[] {
     return ['./webpack.config.js'];
   }
+
+  protected async clearWebProjectCacheAsync(
+    projectRoot: string,
+    mode: string = 'development'
+  ): Promise<void> {
+    Log.log(chalk.dim(`Clearing Webpack ${mode} cache directory...`));
+
+    const dir = await ensureDotExpoProjectDirectoryInitialized(projectRoot);
+    const cacheFolder = path.join(dir, 'web/cache', mode);
+    try {
+      await fs.promises.rm(cacheFolder, { recursive: true, force: true });
+    } catch (error: any) {
+      Log.error(`Could not clear ${mode} web cache directory: ${error.message}`);
+    }
+  }
 }
 
 function setMode(mode: 'development' | 'production' | 'test' | 'none'): void {
@@ -347,19 +406,4 @@ function setMode(mode: 'development' | 'production' | 'test' | 'none'): void {
 
 export function getProjectWebpackConfigFilePath(projectRoot: string) {
   return resolveFrom.silent(projectRoot, './webpack.config.js');
-}
-
-async function clearWebProjectCacheAsync(
-  projectRoot: string,
-  mode: string = 'development'
-): Promise<void> {
-  Log.log(chalk.dim(`Clearing Webpack ${mode} cache directory...`));
-
-  const dir = await ensureDotExpoProjectDirectoryInitialized(projectRoot);
-  const cacheFolder = path.join(dir, 'web/cache', mode);
-  try {
-    await fs.promises.rm(cacheFolder, { recursive: true, force: true });
-  } catch (error: any) {
-    Log.error(`Could not clear ${mode} web cache directory: ${error.message}`);
-  }
 }

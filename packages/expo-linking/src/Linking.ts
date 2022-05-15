@@ -40,7 +40,8 @@ function isExpoHosted(): boolean {
   return !!(
     hostUri &&
     (/^(.*\.)?(expo\.io|exp\.host|exp\.direct|expo\.test)(:.*)?(\/.*)?$/.test(hostUri) ||
-      Constants.manifest?.developer)
+      Constants.manifest?.developer ||
+      Constants.manifest2?.extra?.expoGo?.developer)
   );
 }
 
@@ -313,7 +314,6 @@ export async function sendIntent(action: string, extras?: SendIntentExtras[]): P
 // @needsAudit
 /**
  * Open the operating system settings app and displays the app’s custom settings, if it has any.
- * @platform ios
  */
 export async function openSettings(): Promise<void> {
   if (Platform.OS === 'web') {
@@ -386,3 +386,4 @@ export function useURL(): string | null {
 }
 
 export * from './Linking.types';
+export * from './Schemes';

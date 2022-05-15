@@ -1,9 +1,10 @@
 import RudderAnalytics from '@expo/rudder-sdk-node';
+import * as ciInfo from 'ci-info';
 import os from 'os';
 import { v4 as uuidv4 } from 'uuid';
 
 import UserSettings from '../../api/user/UserSettings';
-import { EXPO_LOCAL, EXPO_STAGING, EXPO_NO_TELEMETRY } from '../env';
+import { env } from '../env';
 
 const PLATFORM_TO_ANALYTICS_PLATFORM: { [platform: string]: string } = {
   darwin: 'Mac',
@@ -25,7 +26,9 @@ function getClient(): RudderAnalytics {
   }
 
   client = new RudderAnalytics(
-    EXPO_STAGING || EXPO_LOCAL ? '24TKICqYKilXM480mA7ktgVDdea' : '24TKR7CQAaGgIrLTgu3Fp4OdOkI', // expo unified
+    env.EXPO_STAGING || env.EXPO_LOCAL
+      ? '24TKICqYKilXM480mA7ktgVDdea'
+      : '24TKR7CQAaGgIrLTgu3Fp4OdOkI', // expo unified
     'https://cdp.expo.dev/v1/batch',
     {
       flushInterval: 300,
@@ -40,7 +43,7 @@ function getClient(): RudderAnalytics {
 }
 
 export async function setUserDataAsync(userId: string, traits: Record<string, any>): Promise<void> {
-  if (EXPO_NO_TELEMETRY) {
+  if (env.EXPO_NO_TELEMETRY) {
     return;
   }
 
@@ -65,7 +68,7 @@ export function logEvent(
     | 'Serve Expo Updates Manifest',
   properties: Record<string, any> = {}
 ): void {
-  if (EXPO_NO_TELEMETRY) {
+  if (env.EXPO_NO_TELEMETRY) {
     return;
   }
   ensureIdentified();
@@ -83,7 +86,7 @@ export function logEvent(
 }
 
 function ensureIdentified(): void {
-  if (EXPO_NO_TELEMETRY || identified || !identifyData) {
+  if (env.EXPO_NO_TELEMETRY || identified || !identifyData) {
     return;
   }
 
@@ -95,11 +98,13 @@ function ensureIdentified(): void {
   identified = true;
 }
 
-function getContext(): Record<string, any> {
+/** Exposed for testing only */
+export function getContext(): Record<string, any> {
   const platform = PLATFORM_TO_ANALYTICS_PLATFORM[os.platform()] || os.platform();
   return {
     os: { name: platform, version: os.release() },
     device: { type: platform, model: platform },
     app: { name: 'expo', version: process.env.__EXPO_VERSION },
+    ci: ciInfo.isCI ? { name: ciInfo.name, isPr: ciInfo.isPR } : undefined,
   };
 }

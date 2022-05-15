@@ -11,6 +11,7 @@ on:
       - packages/**/android/**
       - tools/**
       - yarn.lock
+      - '!packages/@expo/cli/**'
   pull_request:
     paths:
       - .github/workflows/android-unit-tests.yml
@@ -19,6 +20,7 @@ on:
       - packages/**/android/**
       - tools/**
       - yarn.lock
+      - '!packages/@expo/cli/**'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
@@ -26,10 +28,10 @@ concurrency:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     timeout-minutes: 60
     env:
-      ORG_GRADLE_PROJECT_reactNativeArchitectures: x86
+      ORG_GRADLE_PROJECT_reactNativeArchitectures: x86_64
       GRADLE_OPTS: -Dorg.gradle.jvmargs=-Xmx2048m -XX:MaxMetaspaceSize=1024m
     steps:
       - name: ⬢ Setup Node
@@ -45,53 +47,24 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '11'
-      - name: ♻️ Restore workspace node modules
-        uses: actions/cache@v2
-        id: node-modules-cache
+      - name: ♻️ Restore caches
+        uses: ./.github/actions/expo-caches
+        id: expo-caches
         with:
-          path: |
-            # See "workspaces" → "packages" in the root package.json for the source of truth of
-            # which node_modules are affected by the root yarn.lock
-            node_modules
-            apps/*/node_modules
-            home/node_modules
-            packages/*/node_modules
-            packages/@expo/*/node_modules
-            packages/@unimodules/*/node_modules
-            react-native-lab/react-native/node_modules
-          key: ${{ runner.os }}-modules-${{ hashFiles('yarn.lock') }}
+          yarn-workspace: 'true'
+          yarn-tools: 'true'
+      - name: ➕ Add `bin` to GITHUB_PATH
+        run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: 🧶 Install node modules in root dir
+        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
-      - name: ♻️ Restore node modules in tools
-        uses: actions/cache@v2
-        with:
-          path: tools/node_modules
-          key: ${{ runner.os }}-tools-modules-${{ hashFiles('tools/yarn.lock') }}
-      - name: ♻️ Restore Gradle caches
-        uses: actions/cache@v2
-        with:
-          path: ~/.gradle/caches
-          key: ${{ runner.os }}-gradle-${{ hashFiles('android/*.gradle*') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
-      - run: echo "$(pwd)/bin" >> $GITHUB_PATH
-      - name: Run Spotless lint check
+      - name: 🚨 Run Spotless lint check
         working-directory: android
         run: ./gradlew spotlessCheck || { echo '::error Spotless lint failed. Run `./gradlew spotlessApply` to automatically fix formatting.' && exit 1; }
       - name: 🎸 Run native Android unit tests
         timeout-minutes: 30
         run: expotools native-unit-tests --platform android
-      - name: 🎸 Run instrumented unit tests
-        timeout-minutes: 40
-        uses: reactivecircus/android-emulator-runner@v2
-        with:
-          api-level: 29
-          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -no-snapshot-save
-          script: |
-            # wait for emulator to be fully boot up
-            sleep 180
-            bin/expotools android-native-unit-tests --type instrumented
-      - name: 💿 Save test results
+      - name: 💾 Save test results
         if: always()
         uses: actions/upload-artifact@v3
         with:

@@ -26,11 +26,11 @@ A build profile is a named grouping of configuration that describes the necessar
 
 The JSON object under the `build` key can contain multiple build profiles, and you can name these build profiles whatever you like; in the above example, there are three build profiles: `development`, `preview`, and `production`, but these could have been named `foo`, `bar`, and `baz` if that was your preference.
 
-To run a build with a specific profile, execute `eas build --profile <profile-name>`. If you omit the `--profile` flag, EAS CLI will default to using the channel with the name **production**, if it exists.
+To run a build with a specific profile, execute `eas build --profile <profile-name>`. If you omit the `--profile` flag, EAS CLI will default to using the profile with the name **production**, if it exists.
 
 ### Platform-specific and common options
 
-Inside each build profile you can specify `android` and `ios` fields that contain platform-specific configuration for the build. Fields that are available to both platforms can provided on the platform-specific configuration object or on the root of the profile.
+Inside each build profile you can specify `android` and `ios` fields that contain platform-specific configuration for the build. Fields that are available to both platforms can be provided on the platform-specific configuration object or on the root of the profile.
 
 ### Sharing configuration between profiles
 
@@ -161,7 +161,7 @@ If you are using the Expo managed workflow, EAS Build will pick the appropriate 
 
 ## Environment variables
 
-You can configure environment variables on your build profiles using the `"env"` field. These environment variable those will be used to evaluate **app.config.js** locally when you run `eas build`, and they will also be set on the EAS Build worker.
+You can configure environment variables on your build profiles using the `"env"` field. These environment variable will be used to evaluate **app.config.js** locally when you run `eas build`, and they will also be set on the EAS Build worker.
 
 ```json
 {

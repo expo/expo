@@ -1,9 +1,12 @@
 import fse from 'fs-extra';
 
-import { StoryOptions, StoryManifest } from '../types';
+import { StoryManifest } from '../types';
 import { getManifestFilePath } from './shared';
 
-export async function saveManifestAsync(storyManifest: StoryManifest, config: StoryOptions) {
+export async function saveManifestAsync(
+  storyManifest: StoryManifest,
+  config: { watchRoot: string; projectRoot: string }
+) {
   const manifestFilePath = getManifestFilePath(config.projectRoot);
   const storyManifestAsString = JSON.stringify(storyManifest, null, '\t');
 

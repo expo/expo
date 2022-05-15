@@ -3,6 +3,8 @@ title: Build server infrastructure
 sidebar_title: Server infrastructure
 ---
 
+import { Collapsible } from '~/ui/components/Collapsible';
+
 This document describes the current build infrastructure as of February 1, 2022. It is likely to change over time, and this document will be updated.
 
 ## Configuring build environment
@@ -17,8 +19,7 @@ When selecting an image for the build you can use the full name provided below o
 
 > **Note:**
 >
-> - If you have a bare workflow project: your build is going to use the `default` image unless you provide `image` in **eas.json**.
-> - If you have a managed workflow project: your build is going to use an automatically chosen image, unless you provide `image` in **eas.json**.
+> If you do not provide `image` in **eas.json**, your build will use `default` image. However, in some cases, we select a more appropriate image based on the Expo SDK version or React Native version. You can check what image is used for a build in the "Spin up build environment" build logs section.
 
 ## Android build server configurations
 
@@ -29,7 +30,7 @@ When selecting an image for the build you can use the full name provided below o
 - Maven cache deployed with Kubernetes. [Learn more](caching/#android-dependencies)
 - Global Gradle configuration in `~/.gradle/gradle.properties`:
 
-  ```jsx
+  ```ini
   org.gradle.jvmargs=-Xmx14g -XX:MaxPermSize=512m -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8
   org.gradle.parallel=true
   org.gradle.configureondemand=true
@@ -38,13 +39,13 @@ When selecting an image for the build you can use the full name provided below o
 
 - `~/.npmrc`
 
-  ```
+  ```ini
   registry=http://npm-cache-service.worker-infra-production.svc.cluster.local:4873
   ```
 
 - `~/.yarnrc.yml`
 
-  ```
+  ```yml
   unsafeHttpWhitelist:
     - "*"
   npmRegistryServer: "http://npm-cache-service.worker-infra-production.svc.cluster.local:4873"
@@ -53,7 +54,7 @@ When selecting an image for the build you can use the full name provided below o
 
 #### Image `ubuntu-20.04-jdk-11-ndk-r21e` (alias `latest`)
 
-<details><summary>Details</summary>
+<Collapsible summary="Details">
 
 - Docker image: `ubuntu:focal-20210921`
 - NDK 21.4.7075529
@@ -62,11 +63,11 @@ When selecting an image for the build you can use the full name provided below o
 - npm 8.1.2
 - Java 11
 
-</details>
+</Collapsible>
 
 #### Image `ubuntu-20.04-jdk-8-ndk-r21e`
 
-<details><summary>Details</summary>
+<Collapsible summary="Details">
 
 - Docker image: `ubuntu:focal-20210921`
 - NDK 21.4.7075529
@@ -75,33 +76,33 @@ When selecting an image for the build you can use the full name provided below o
 - npm 8.1.2
 - Java 8
 
-</details>
+</Collapsible>
 
 #### Image `ubuntu-18.04-jdk-11-ndk-r19c`
 
-<details><summary>Details</summary>
+<Collapsible summary="Details">
 
 - Docker image: `ubuntu:bionic-20210930`
 - NDK 19.2.5345600
 - Node.js 16.13.2
 - Yarn 1.22.17
-- Npm 8.1.2
+- npm 8.1.2
 - Java 11
 
-</details>
+</Collapsible>
 
 #### Image `ubuntu-18.04-jdk-8-ndk-r19c` (alias `default`)
 
-<details><summary>Details</summary>
+<Collapsible summary="Details">
 
 - Docker image: `ubuntu:bionic-20210930`
 - NDK 19.2.5345600
 - Node.js 16.13.2
 - Yarn 1.22.17
-- Npm 8.1.2
+- npm 8.1.2
 - Java 8
 
-</details>
+</Collapsible>
 
 ## iOS build server configurations
 
@@ -112,60 +113,79 @@ When selecting an image for the build you can use the full name provided below o
 - npm cache. [Learn more](caching/#javascript-dependencies)
 - `~/.npmrc`
 
-  ```
+  ```ini
   registry=http://10.254.24.8:4873
   ```
 
 - `~/.yarnrc.yml`
 
-  ```
+  ```yml
   unsafeHttpWhitelist:
     - "*"
   npmRegistryServer: "registry=http://10.254.24.8:4873"
   enableImmutableInstalls: false
   ```
 
-#### Image `macos-monterey-12.1-xcode-13.2` (alias `latest`)
+#### Image `macos-monterey-12.3-xcode-13.3` (alias `default`, `latest`)
 
-<details><summary>Details</summary>
+<Collapsible summary="Details">
+
+- macOS Monterey 12.3.1
+- Xcode 13.3.1 (13E500a)
+- Node.js 16.13.2
+- Yarn 1.22.17
+- pnpm 7.0.0
+- npm 8.1.2
+- fastlane 2.205.2
+- CocoaPods 1.11.3
+- Ruby 2.7
+
+</Collapsible>
+
+#### Image `macos-monterey-12.1-xcode-13.2`
+
+<Collapsible summary="Details">
 
 - macOS Monterey 12.1
 - Xcode 13.2.1 (13C100)
 - Node.js 16.13.2
 - Yarn 1.22.17
+- pnpm 7.0.0
 - npm 8.1.2
 - fastlane 2.201.0
 - CocoaPods 1.11.2
 - Ruby 2.7
 
-</details>
+</Collapsible>
 
-#### Image `macos-big-sur-11.4-xcode-13.0` (alias `default`)
+#### Image `macos-big-sur-11.4-xcode-13.0`
 
-<details><summary>Details</summary>
+<Collapsible summary="Details">
 
 - macOS Big Sur 11.4
 - Xcode 13.0 (13A233)
 - Node.js 16.13.2
 - Yarn 1.22.17
+- pnpm 7.0.0
 - npm 8.1.2
 - fastlane 2.185.1
 - CocoaPods 1.10.1
 - Ruby 2.7
 
-</details>
+</Collapsible>
 
 #### Image `macos-big-sur-11.4-xcode-12.5`
 
-<details><summary>Details</summary>
+<Collapsible summary="Details">
 
 - macOS Big Sur 11.4
 - Xcode 12.5 (12E5244e)
 - Node.js 16.13.2
 - Yarn 1.22.17
+- pnpm 7.0.0
 - npm 8.1.2
 - fastlane 2.185.1
 - CocoaPods 1.10.1
 - Ruby 2.7
 
-</details>
+</Collapsible>

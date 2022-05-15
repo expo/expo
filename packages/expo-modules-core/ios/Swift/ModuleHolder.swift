@@ -56,56 +56,30 @@ public final class ModuleHolder {
    Merges all `constants` definitions into one dictionary.
    */
   func getConstants() -> [String: Any?] {
-    return definition.constants.reduce(into: [String: Any?]()) { dict, definition in
-      dict.merge(definition.body()) { $1 }
-    }
+    return definition.getConstants()
   }
 
   // MARK: Calling functions
 
-  func call(function functionName: String, args: [Any], promise: Promise) {
-    do {
-      guard let function = definition.functions[functionName] else {
-        throw FunctionNotFoundException((functionName: functionName, moduleName: self.name))
-      }
-      let queue = function.queue ?? DispatchQueue.global(qos: .default)
-
-      // Given arguments can be:
-      // - Swift primitives when invoked through the bridge and in unit tests
-      // - `JavaScriptValue`s when the function is called through the JSI
-      // The latter need to be unpacked to Swift primitives on the JS thread,
-      // so before the function call is scheduled on the queue.
-      // TODO: Move arguments conversion mechanism to JS thread and allow JS types as function arguments.
-      let unpackedArgs = args.map { arg in unpackIfJavaScriptValue(arg) }
-
-      queue.async {
-        function.call(args: unpackedArgs, promise: promise)
-      }
-    } catch let error as CodedError {
-      promise.reject(error)
-    } catch {
-      promise.reject(UnexpectedException(error))
+  func call(function functionName: String, args: [Any], _ callback: @escaping (FunctionCallResult) -> () = { _ in }) {
+    guard let function = definition.functions[functionName] else {
+      callback(.failure(FunctionNotFoundException((functionName: functionName, moduleName: self.name))))
+      return
     }
-  }
-
-  func call(function functionName: String, args: [Any], _ callback: @escaping (Any?, CodedError?) -> Void = { _, _ in }) {
-    let promise = Promise {
-      callback($0, nil)
-    } rejecter: {
-      callback(nil, $0)
-    }
-    call(function: functionName, args: args, promise: promise)
+    function.call(args: args, callback: callback)
   }
 
   @discardableResult
   func callSync(function functionName: String, args: [Any]) -> Any? {
-    if let function = definition.functions[functionName] {
-      // The comment in `call(function:args:promise)` is partially applicable here as well.
-      // TODO: Move unpacking JS values to `callSync` in function's instance
-      let unpackedArgs = args.map { arg in unpackIfJavaScriptValue(arg) }
-      return function.callSync(args: unpackedArgs)
+    guard let function = definition.functions[functionName] as? AnySyncFunctionComponent else {
+      return nil
     }
-    return nil
+    do {
+      let arguments = try castArguments(args, toTypes: function.argumentTypes)
+      return try function.call(args: arguments)
+    } catch {
+      return error
+    }
   }
 
   // MARK: JavaScript Module Object
@@ -118,24 +92,10 @@ public final class ModuleHolder {
    */
   private func createJavaScriptModuleObject() -> JavaScriptObject? {
     // It might be impossible to create any object at the moment (e.g. remote debugging, app context destroyed)
-    guard let object = appContext?.runtime?.createObject() else {
+    guard let runtime = appContext?.runtime else {
       return nil
     }
-
-    // Fill in with constants
-    for (key, value) in getConstants() {
-      object.setProperty(key, value: value)
-    }
-
-    // Fill in with functions
-    for (_, fn) in definition.functions {
-      if fn.isAsync {
-        object.setAsyncFunction(fn.name, argsCount: fn.argumentsCount, block: createAsyncFunctionBlock(holder: self, name: fn.name))
-      } else {
-        object.setSyncFunction(fn.name, argsCount: fn.argumentsCount, block: createSyncFunctionBlock(holder: self, name: fn.name))
-      }
-    }
-    return object
+    return definition.build(inRuntime: runtime)
   }
 
   // MARK: Listening to native events
@@ -165,9 +125,9 @@ public final class ModuleHolder {
    */
   func modifyListenersCount(_ count: Int) {
     if count > 0 && listenersCount == 0 {
-      _ = definition.functions["startObserving"]?.callSync(args: [])
+      definition.functions["startObserving"]?.call(args: [])
     } else if count < 0 && listenersCount + count <= 0 {
-      _ = definition.functions["stopObserving"]?.callSync(args: [])
+      definition.functions["stopObserving"]?.call(args: [])
     }
     listenersCount = max(0, listenersCount + count)
   }

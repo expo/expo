@@ -6,18 +6,18 @@ public final class KeepAwakeModule: Module {
   private var activeTags = Set<String>()
 
   public func definition() -> ModuleDefinition {
-    name("ExpoKeepAwake")
+    Name("ExpoKeepAwake")
 
-    function("activate", activate)
-    function("deactivate", deactivate)
-    function("isActivated", isActivated)
+    AsyncFunction("activate", activate)
+    AsyncFunction("deactivate", deactivate)
+    AsyncFunction("isActivated", isActivated)
 
-    onAppEntersForeground {
+    OnAppEntersForeground {
       if !self.activeTags.isEmpty {
         setActivated(true)
       }
     }
-    onAppEntersBackground {
+    OnAppEntersBackground {
       if !self.activeTags.isEmpty {
         setActivated(false)
       }

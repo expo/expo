@@ -4,15 +4,15 @@ sidebar_title: Bare React Native Installation
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';
-import TerminalBlock from '~/components/plugins/TerminalBlock';
 import ConfigurationDiff from '~/components/plugins/ConfigurationDiff';
 import { Tab, Tabs } from '~/components/plugins/Tabs';
+import { Terminal } from '~/ui/components/Snippet';
 
 The installation steps on this page are only required to add the `expo-dev-client` library to a React Native or Bare project. To add a the `expo-dev-client` library to an existing managed project, see our [Getting Started guide](getting-started.md).
 
 If you're just starting your project, you can create a new project from our template with:
 
-<TerminalBlock cmd={["npx crna -t with-dev-client"]} />
+<Terminal cmd={["$ npx crna -t with-dev-client"]} cmdCopy="npx crna -t with-dev-client" />
 
 If you have an existing project, you'll need to [install the package and make a few changes](installation.md) to your **AppDelegate.m**, **MainActivity.java** and **MainApplication.java**.
 
@@ -32,6 +32,19 @@ Add the `expo-dev-client` library to your package.json.
 
 ### 🍏 iOS
 
+<Tabs tabs={["SDK 45+", "SDK below 45"]}>
+
+<Tab >
+
+Make sure that your project is configured to deploy on an iOS version _above 10_.
+To do that, open Xcode and go to General > Deployment Info, and select an iOS version of at least 11.0.
+
+<img src="/static/images/client/check_ios_version.png" style={{maxWidth: "100%" }}/>
+
+</Tab >
+
+<Tab >
+
 Add the following lines to your **Podfile**:
 
 <ConfigurationDiff source="/static/diffs/client/podfile.diff" />
@@ -44,6 +57,10 @@ Also, make sure that your project is configured to deploy on an iOS version _abo
 To do that, open Xcode and go to General > Deployment Info, and select an iOS version of at least 11.0.
 
 <img src="/static/images/client/check_ios_version.png" style={{maxWidth: "100%" }}/>
+
+</Tab >
+
+</Tabs >
 
 ### 🤖 Android
 
@@ -59,15 +76,25 @@ See the [uri-scheme package](https://www.npmjs.com/package/uri-scheme) for more 
 
 ### 🍏 iOS
 
-Make the following changes to allow the `expo-dev-client` library to control project initialization in the **DEBUG** mode.
-
-<Tabs tabs={["With Expo modules", "With unimodules"]}>
+<Tabs tabs={["SDK 45+/expo-modules-core@0.9.1+", "With Expo modules", "With unimodules"]}>
 
 <Tab >
+
+No additional changes are needed to configure the package on iOS. 🎉
+
+</Tab >
+
+<Tab >
+
+Make the following changes to allow the `expo-dev-client` library to control project initialization in the **DEBUG** mode.
+
 <ConfigurationDiff source="/static/diffs/client/app-delegate-expo-modules.diff" />
 </Tab>
 
 <Tab >
+
+Make the following changes to allow the `expo-dev-client` library to control project initialization in the **DEBUG** mode.
+
 <ConfigurationDiff source="/static/diffs/client/app-delegate.diff" />
 </Tab>
 
@@ -75,15 +102,25 @@ Make the following changes to allow the `expo-dev-client` library to control pro
 
 ### 🤖 Android
 
-Make the following changes to allow the `expo-dev-client` library to control project initialization in the **DEBUG** mode.
-
-<Tabs tabs={["With Expo modules", "With unimodules"]}>
+<Tabs tabs={["SDK 45+/expo-modules-core@0.9.1+", "With Expo modules", "With unimodules"]}>
 
 <Tab >
+
+No additional changes are needed to configure the package on Android. 🎉
+
+</Tab >
+
+<Tab >
+
+Make the following changes to allow the `expo-dev-client` library to control project initialization in the **DEBUG** mode.
+
 <ConfigurationDiff source="/static/diffs/client/main-activity-and-application-expo-modules.diff" />
 </Tab>
 
 <Tab >
+
+Make the following changes to allow the `expo-dev-client` library to control project initialization in the **DEBUG** mode.
+
 <ConfigurationDiff source="/static/diffs/client/main-activity-and-application.diff" />
 </Tab>
 

@@ -9,64 +9,40 @@ concurrency:
 
 jobs:
   build-android:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v3
         with:
           submodules: true
-      - uses: actions/setup-node@v3
+      - name: ⬢ Setup Node
+        uses: actions/setup-node@v3
         with:
           node-version: '14.17'
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-      - uses: actions/cache@v2
-        with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-      - name: 🧶 Yarn install
-        run: yarn install --frozen-lockfile
-      - name: 🤠 Install expo-cli
-        run: yarn global add expo-cli
       - name: 💎 Setup Ruby and install gems
         uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
-      - name: 🐙 Install git-crypt
-        run: sudo apt-get install git-crypt
+      - name: ➕ Add `bin` to GITHUB_PATH
+        run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: 🔓 Decrypt secrets if possible
-        env:
-          GIT_CRYPT_KEY_BASE64: ${{ secrets.GIT_CRYPT_KEY_BASE64 }}
-        run: |
-          if [ -z "${GIT_CRYPT_KEY_BASE64}" ]; then
-            echo 'git-crypt key not present in environment'
-          else
-            git crypt unlock <(echo $GIT_CRYPT_KEY_BASE64 | base64 --decode)
-          fi
-      - name: ♻️ Restore Gradle caches
-        uses: actions/cache@v2
+        uses: ./.github/actions/expo-git-decrypt
         with:
-          path: ~/.gradle/caches
-          key: ${{ runner.os }}-gradle-${{ hashFiles('android/*.gradle*') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
-      - name: ♻️ Restore Android NDK from cache
-        uses: actions/cache@v2
-        id: cache-android-ndk
+          key: ${{ secrets.GIT_CRYPT_KEY_BASE64 }}
+      - name: ♻️ Restore caches
+        uses: ./.github/actions/expo-caches
+        id: expo-caches
         with:
-          path: /usr/local/lib/android/sdk/ndk/21.4.7075529/
-          key: ${{ runner.os }}-ndk-21.4.7075529
-          restore-keys: |
-            ${{ runner.os }}-ndk-
-      - name: 🛠 Install NDK
-        if: steps.cache-android-ndk.outputs.cache-hit != 'true'
-        run: |
-          sudo $ANDROID_SDK_ROOT/tools/bin/sdkmanager --install "ndk;21.4.7075529"
+          yarn-workspace: 'true'
+          yarn-tools: 'true'
+          ndk: 'true'
+      - name: 🧶 Yarn install
+        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
+        run: yarn install --frozen-lockfile
+      - name: 🔧 Install Expo CLI
+        run: yarn global add expo-cli
       - name: 🦴 Publish dogfood home and generate bundled manifest
-        run: bin/expotools publish-dogfood-home
+        run: expotools publish-dogfood-home
         env:
           EXPO_DOGFOOD_HOME_ACCESS_TOKEN: ${{ secrets.EXPO_DOGFOOD_HOME_ACCESS_TOKEN }}
       - name: 🏭 Build APK
@@ -87,9 +63,9 @@ jobs:
           else
             echo "Internal build detected, APK will be signed"
             echo $ANDROID_KEYSTORE_B64 | base64 -d > android/app/release-key.jks
-            bin/fastlane android build build_type:$BUILD_TYPE flavor:$FLAVOR
+            fastlane android build build_type:$BUILD_TYPE flavor:$FLAVOR
           fi
-      - name: 💾 Upload APK artifact
+      - name: 📤️ Upload APK artifact
         uses: actions/upload-artifact@v3
         with:
           name: android-apk

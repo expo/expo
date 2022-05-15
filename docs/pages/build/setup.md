@@ -3,6 +3,7 @@ title: Creating your first build
 ---
 
 import ImageSpotlight from '~/components/plugins/ImageSpotlight'
+import { Collapsible } from '~/ui/components/Collapsible';
 
 In this guide, you'll learn how to build a ready-to-submit binary for the Apple App Store and Google Play Store using EAS Build.
 
@@ -14,12 +15,9 @@ For a small app, you should expect to have kicked off your builds for Android an
 
 EAS Build is a new and rapidly evolving service; before you set out to create a build for your project we recommend consulting the [limitations](/build-reference/limitations.md) page and the other prerequisites below.
 
-<details><summary><h4>📦 A React Native iOS and/or Android project that you want to build.</h4></summary>
-<p>
+<Collapsible summary="📦 A React Native iOS and/or Android project that you want to build">
 
 Don't have a project yet? No problem: it's quick and easy to create a "Hello world" app that you can use with this guide.
-
-<div style={{marginTop: -10}} />
 
 - Install Expo CLI by running `npm install -g expo-cli`.
 - Run `expo init PROJECT_NAME`. Choose the project template that best suits you.
@@ -27,16 +25,13 @@ Don't have a project yet? No problem: it's quick and easy to create a "Hello wor
 
 <ImageSpotlight alt="Terminal running expo init, with minimal (TypeScript) selected" src="/static/images/eas-build/expo-init.png" />
 
-</p>
-</details>
+</Collapsible>
 
-<details><summary><h4>🙋 An Expo user account.</h4></summary>
-<p>
+<Collapsible summary="🙋 An Expo user account">
 
 EAS Build is available to everybody with an Expo account; you can sign up at [https://expo.dev/signup](https://expo.dev/signup). You can use EAS Build for free, and paid subscriptions provide service quality improvements such as additional build concurrencies, priority access to minimize time your builds spend queueing, and increased limits on build timeouts. [Read more](https://expo.dev/pricing).
 
-</p>
-</details>
+</Collapsible>
 
 ## 1. Install the latest EAS CLI
 
@@ -68,25 +63,18 @@ The easiest way to try out EAS Build is to create a build that you can run on yo
 
 ### Build for app stores
 
-<div style={{marginTop: -10}} />
 
-<details><summary><h4>🍎 Apple Developer Program membership is required to build for the App Store.</h4></summary>
-<p>
+<Collapsible summary="🍎 Apple Developer Program membership is required to build for the App Store.">
 
 - If you are going to use EAS Build to create release builds for the Apple App Store, this requires access to an account with a $99 USD [Apple Developer Program](https://developer.apple.com/programs) membership.
 
-</p>
-</details>
+</Collapsible>
 
-<div style={{marginTop: -10}} />
-
-<details><summary><h4>🤖 Google Play Developer membership is required to distribute to the Play Store.</h4></summary>
-<p>
+<Collapsible summary="🤖 Google Play Developer membership is required to distribute to the Play Store.">
 
 - You can build and sign your app using EAS Build, but you can't upload it to the Google Play Store unless you have a membership, a one-time $25 USD fee.
 
-</p>
-</details>
+</Collapsible>
 
 - Run `eas build --platform android` to build for Android.
 
@@ -112,9 +100,9 @@ Before the build can start, we'll need to generate or provide app signing creden
 
 ## 5. Wait for the build to complete
 
-By default, the `eas build` command will wait for your build to complete; but, you can interrupt it if you prefer not to wait. Monitor the progress and read the logs by following the link to the build details page. You can also find this page by visting [your build dashboard](https://expo.dev/builds) or running the `eas build:list` command. If your build is on behalf of an organization that you are a member of, you will find the build details on [the build dashboard for that account](https://expo.dev/accounts/[account]/builds).
+By default, the `eas build` command will wait for your build to complete; but, you can interrupt it if you prefer not to wait. Monitor the progress and read the logs by following the link to the build details page. You can also find this page by visiting [your build dashboard](https://expo.dev/builds) or running the `eas build:list` command. If your build is on behalf of an organization that you are a member of, you will find the build details on [the build dashboard for that account](https://expo.dev/accounts/[account]/builds).
 
-> **Did your build fail?** Double check that you followed any applicable instructions in the [the configuration step](#3-configure-the-project) and the refer to the [troubleshooting guide](/build-reference/troubleshooting.md) if needed.
+> **Did your build fail?** Double check that you followed any applicable instructions in the [configuration step](#3-configure-the-project) and refer to the [troubleshooting guide](/build-reference/troubleshooting.md) if needed.
 
 ## 6. Deploy the build
 

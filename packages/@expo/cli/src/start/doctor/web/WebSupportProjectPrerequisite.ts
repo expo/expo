@@ -49,23 +49,17 @@ export class WebSupportProjectPrerequisite extends ProjectPrerequisite {
   async _ensureWebDependenciesInstalledAsync({ exp }: { exp: ExpoConfig }): Promise<boolean> {
     try {
       return await ensureDependenciesAsync(this.projectRoot, {
+        // This never seems to work when prompting, installing, and running -- instead just inform the user to run the install command and try again.
+        skipPrompt: true,
         exp,
         installMessage: `It looks like you're trying to use web support but don't have the required dependencies installed.`,
-        warningMessage: chalk`If you're not using web, please remove the {bold "web"} string from the platforms array in the project Expo config.`,
+        warningMessage: chalk`If you're not using web, please ensure you remove the {bold "web"} string from the platforms array in the project Expo config.`,
         requiredPackages: [
           // use react-native-web/package.json to skip node module cache issues when the user installs
           // the package and attempts to resolve the module in the same process.
           { file: 'react-native-web/package.json', pkg: 'react-native-web', version: '~0.17.1' },
           { file: 'react-dom/package.json', pkg: 'react-dom', version: '^17.0.1' },
           // `webpack` and `webpack-dev-server` should be installed in the `@expo/webpack-config`
-          // package, but just in case we'll do the check now.
-          {
-            file: 'webpack-dev-server/package.json',
-            // https://github.com/expo/expo-cli/pull/4282
-            pkg: 'webpack-dev-server',
-            version: '~3.11.0',
-            dev: true,
-          },
           {
             file: '@expo/webpack-config/package.json',
             pkg: '@expo/webpack-config',

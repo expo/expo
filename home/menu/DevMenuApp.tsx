@@ -1,4 +1,5 @@
 import { ThemeProvider } from '@react-navigation/native';
+import { ThemePreference, ThemeProvider as DCCThemeProvider } from 'expo-dev-client-components';
 import React from 'react';
 import { AppRegistry, useColorScheme } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -7,7 +8,7 @@ import { ColorTheme } from '../constants/Colors';
 import Themes from '../constants/Themes';
 import LocalStorage from '../storage/LocalStorage';
 import DevMenuBottomSheet from './DevMenuBottomSheet';
-import DevMenuView from './DevMenuView';
+import { DevMenuView } from './DevMenuView';
 
 function useUserSettings(renderId: string): { preferredAppearance?: string } {
   const [settings, setSettings] = React.useState({});
@@ -43,12 +44,15 @@ class DevMenuRoot extends React.PureComponent<{ task: { [key: string]: any }; uu
 
 function DevMenuApp(props: { task: { [key: string]: any }; uuid: string }) {
   const theme = useAppColorScheme(props.uuid);
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <DevMenuBottomSheet uuid={props.uuid}>
-        <ThemeProvider value={Themes[theme]}>
-          <DevMenuView {...props} />
-        </ThemeProvider>
+        <DCCThemeProvider themePreference={theme as ThemePreference}>
+          <ThemeProvider value={Themes[theme]}>
+            <DevMenuView {...props} />
+          </ThemeProvider>
+        </DCCThemeProvider>
       </DevMenuBottomSheet>
     </GestureHandlerRootView>
   );

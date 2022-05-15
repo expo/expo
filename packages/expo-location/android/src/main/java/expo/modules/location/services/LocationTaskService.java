@@ -10,8 +10,8 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
-import android.net.Uri;
 import android.os.Binder;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import androidx.annotation.Nullable;
@@ -21,7 +21,7 @@ public class LocationTaskService extends Service {
   private static final String TAG = "LocationTaskService";
   private static int sServiceId = 481756;
   private String mChannelId;
-  private String killService = "false";
+  private boolean mKillService = false;
   private Context mParentContext;
   private int mServiceId = sServiceId++;
   private final IBinder mBinder = new ServiceBinder();
@@ -46,6 +46,7 @@ public class LocationTaskService extends Service {
 
     if (extras != null) {
       mChannelId = extras.getString("appId") + ":" + extras.getString("taskName");
+      mKillService = extras.getBoolean("killService", false);
     }
 
     return START_REDELIVER_INTENT;
@@ -64,10 +65,7 @@ public class LocationTaskService extends Service {
 
   @Override
   public void onTaskRemoved(Intent rootIntent) {
-    Bundle extras = rootIntent.getExtras();
-    extras.getString("killService");
-    
-    if(killService == "true"){
+    if (mKillService){
       super.onTaskRemoved(rootIntent);
       stop();
     }
@@ -106,7 +104,9 @@ public class LocationTaskService extends Service {
 
     if (intent != null) {
       intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-      PendingIntent contentIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+      // We're defaulting to the behaviour prior API 31 (mutable) even though Android recommends immutability
+      int mutableFlag = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S ? PendingIntent.FLAG_MUTABLE : 0;
+      PendingIntent contentIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT | mutableFlag);
       builder.setContentIntent(contentIntent);
     }
 

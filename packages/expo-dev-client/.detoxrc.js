@@ -18,13 +18,13 @@ module.exports = {
     emulator: {
       type: 'android.emulator',
       device: {
-        avdName: 'DevClientEmulator',
+        avdName: 'avd-31',
       },
     },
     simulator: {
       type: 'ios.simulator',
       device: {
-        type: 'iPhone 8',
+        type: 'iPhone 12',
       },
     },
   },

@@ -1,12 +1,15 @@
 import { StackNavigationProp } from '@react-navigation/stack';
-import { Heading, View, Button, Divider, Spacer, Text } from 'expo-dev-client-components';
+import { Heading, View, Divider, Spacer, Text } from 'expo-dev-client-components';
 import * as React from 'react';
 
+import { BasicButton } from '../components/BasicButton';
 import { EASBranchRow, EASEmptyBranchRow } from '../components/EASUpdatesRows';
 import { EmptyBranchesMessage } from '../components/EmptyBranchesMessage';
 import { FlatList } from '../components/FlatList';
-import { LoadMoreButton } from '../components/LoadMoreButton';
+import { getRecentRuntime } from '../functions/getRecentRuntime';
+import { useOnUpdatePress } from '../hooks/useOnUpdatePress';
 import { useUpdatesConfig } from '../providers/UpdatesConfigProvider';
+import { useUser } from '../providers/UserContextProvider';
 import { Branch, useBranchesForApp } from '../queries/useBranchesForApp';
 import { ExtensionsStackParamList } from './ExtensionsStack';
 
@@ -16,6 +19,7 @@ type BranchesScreenProps = {
 
 export function BranchesScreen({ navigation }: BranchesScreenProps) {
   const { appId } = useUpdatesConfig();
+  const { isAuthenticated } = useUser();
   const {
     data: branches,
     emptyBranches,
@@ -26,18 +30,16 @@ export function BranchesScreen({ navigation }: BranchesScreenProps) {
     fetchNextPage,
     hasNextPage,
     refetch,
-  } = useBranchesForApp(appId);
+  } = useBranchesForApp(appId, isAuthenticated);
 
-  function onBranchPress(branchName: string) {
-    navigation.navigate('Updates', { branchName });
-  }
+  const { loadingUpdateId, onUpdatePress } = useOnUpdatePress();
 
   function Header() {
     if (branches.length > 0) {
       return (
         <View py="small" px="small">
           <Heading size="small" color="secondary">
-            Recently updated branches
+            Branches
           </Heading>
         </View>
       );
@@ -47,25 +49,49 @@ export function BranchesScreen({ navigation }: BranchesScreenProps) {
   }
 
   function Footer() {
+    const latestRuntimeVersion = getRecentRuntime(incompatibleBranches);
+
     return (
       <View>
-        <EmptyBranchesList
-          branches={emptyBranches}
-          onBranchPress={(branch) => onBranchPress(branch.name)}
-        />
-
-        {branches.length > 0 && incompatibleBranches.length > 0 && (
-          <>
-            <Spacer.Vertical size="small" />
-            <View px="small">
-              <Text size="small" color="secondary">
-                {getIncompatibleBranchMessage(incompatibleBranches.length)}
-              </Text>
-            </View>
-          </>
+        {branches.length > 0 && hasNextPage && (
+          <View align="centered" mt="small">
+            <BasicButton
+              label="Load More"
+              size="small"
+              isLoading={isFetchingNextPage}
+              onPress={() => fetchNextPage()}
+            />
+          </View>
         )}
 
-        {hasNextPage && <LoadMoreButton isLoading={isFetchingNextPage} onPress={fetchNextPage} />}
+        <RecentlyCreatedBranches branches={emptyBranches} navigation={navigation} />
+
+        {branches.length === 0 && hasNextPage && (
+          <View align="centered" mt="small">
+            <BasicButton
+              label="Load More"
+              size="small"
+              isLoading={isFetchingNextPage}
+              onPress={() => fetchNextPage()}
+            />
+          </View>
+        )}
+
+        {incompatibleBranches.length > 0 && (
+          <View px="small" mt="medium">
+            <Text size="small" color="secondary">
+              {getIncompatibleBranchMessage(incompatibleBranches.length)}
+            </Text>
+            {Boolean(latestRuntimeVersion != null) && (
+              <>
+                <Spacer.Vertical size="small" />
+                <Text size="small" color="secondary">
+                  {`A recent update was published with runtime version "${latestRuntimeVersion}".`}
+                </Text>
+              </>
+            )}
+          </View>
+        )}
       </View>
     );
   }
@@ -73,7 +99,10 @@ export function BranchesScreen({ navigation }: BranchesScreenProps) {
   function EmptyList() {
     if (emptyBranches.length === 0) {
       return (
-        <EmptyBranchesMessage branches={branches} incompatibleBranches={incompatibleBranches} />
+        <View>
+          <Spacer.Vertical size="medium" />
+          <EmptyBranchesMessage branches={branches} incompatibleBranches={incompatibleBranches} />
+        </View>
       );
     }
 
@@ -83,11 +112,17 @@ export function BranchesScreen({ navigation }: BranchesScreenProps) {
   function renderBranch({ index, item: branch }: { index: number; item: Branch }) {
     const isFirst = index === 0;
     const isLast = index === branches?.length - 1;
+    const isLoading = loadingUpdateId === branch.updates[0]?.id;
 
     return (
-      <ButtonContainer onPress={() => onBranchPress(branch.name)} isFirst={isFirst} isLast={isLast}>
-        <EASBranchRow branch={branch} />
-      </ButtonContainer>
+      <EASBranchRow
+        branch={branch}
+        isFirst={isFirst}
+        isLast={isLast}
+        isLoading={isLoading}
+        navigation={navigation}
+        onUpdatePress={onUpdatePress}
+      />
     );
   }
 
@@ -98,7 +133,7 @@ export function BranchesScreen({ navigation }: BranchesScreenProps) {
         isRefreshing={isRefreshing}
         onRefresh={() => refetch()}
         ListHeaderComponent={Header}
-        extraData={{ length: branches.length, hasNextPage }}
+        extraData={{ length: branches.length, hasNextPage, loadingUpdateId }}
         data={branches}
         ItemSeparatorComponent={Divider}
         renderItem={renderBranch}
@@ -110,31 +145,12 @@ export function BranchesScreen({ navigation }: BranchesScreenProps) {
   );
 }
 
-function ButtonContainer({ children, onPress, isFirst, isLast }) {
-  return (
-    <Button.ScaleOnPressContainer
-      bg="default"
-      onPress={onPress}
-      roundedBottom={isLast ? 'large' : 'none'}
-      roundedTop={isFirst ? 'large' : 'none'}>
-      <View
-        bg="default"
-        roundedTop={isFirst ? 'large' : 'none'}
-        roundedBottom={isLast ? 'large' : 'none'}
-        py="small"
-        px="small">
-        {children}
-      </View>
-    </Button.ScaleOnPressContainer>
-  );
-}
-
-type EmptyBranchesListProps = {
+type RecentlyCreatedBranchesProps = {
   branches: Branch[];
-  onBranchPress: (branch: Branch) => void;
+  navigation: StackNavigationProp<ExtensionsStackParamList>;
 };
 
-function EmptyBranchesList({ branches, onBranchPress }: EmptyBranchesListProps) {
+function RecentlyCreatedBranches({ branches, navigation }: RecentlyCreatedBranchesProps) {
   if (branches.length === 0) {
     return null;
   }
@@ -155,12 +171,12 @@ function EmptyBranchesList({ branches, onBranchPress }: EmptyBranchesListProps) 
 
         return (
           <View key={branch.id}>
-            <ButtonContainer
-              onPress={() => onBranchPress(branch)}
+            <EASEmptyBranchRow
+              branch={branch}
               isFirst={isFirst}
-              isLast={isLast}>
-              <EASEmptyBranchRow branch={branch} />
-            </ButtonContainer>
+              isLast={isLast}
+              navigation={navigation}
+            />
             {!isLast && <Divider />}
           </View>
         );

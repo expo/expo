@@ -84,7 +84,6 @@ export declare function parseInitialURLAsync(): Promise<ParsedURL>;
 export declare function sendIntent(action: string, extras?: SendIntentExtras[]): Promise<void>;
 /**
  * Open the operating system settings app and displays the app’s custom settings, if it has any.
- * @platform ios
  */
 export declare function openSettings(): Promise<void>;
 /**
@@ -118,4 +117,5 @@ export declare function canOpenURL(url: string): Promise<boolean>;
  */
 export declare function useURL(): string | null;
 export * from './Linking.types';
+export * from './Schemes';
 //# sourceMappingURL=Linking.d.ts.map

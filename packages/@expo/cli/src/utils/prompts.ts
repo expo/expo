@@ -2,7 +2,7 @@ import assert from 'assert';
 import prompts, { Choice, Options, PromptObject, PromptType } from 'prompts';
 
 import * as Log from '../log';
-import { CI } from './env';
+import { env } from './env';
 import { AbortCommandError, CommandError } from './errors';
 
 export type Question<V extends string = string> = PromptObject<V> & {
@@ -31,7 +31,7 @@ export default async function prompt(
   { nonInteractiveHelp, ...options }: PromptOptions = {}
 ) {
   questions = Array.isArray(questions) ? questions : [questions];
-  if (CI && questions.length !== 0) {
+  if (env.CI && questions.length !== 0) {
     let message = `Input is required, but 'npx expo' is in non-interactive mode.\n`;
     if (nonInteractiveHelp) {
       message += nonInteractiveHelp;
@@ -132,4 +132,20 @@ export function resumeInteractions(options: Omit<InteractionOptions, 'pause'> = 
   for (const listener of listeners) {
     listener({ pause: false, ...options });
   }
+}
+
+export function createSelectionFilter(): (input: any, choices: Choice[]) => Promise<any> {
+  function escapeRegex(string: string) {
+    return string.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
+  }
+
+  return async (input: any, choices: Choice[]) => {
+    try {
+      const regex = new RegExp(escapeRegex(input), 'i');
+      return choices.filter((choice: any) => regex.test(choice.title));
+    } catch (error: any) {
+      Log.debug('Error filtering choices', error);
+      return [];
+    }
+  };
 }

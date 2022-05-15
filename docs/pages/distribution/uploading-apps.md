@@ -2,7 +2,7 @@
 title: Uploading Apps to the Apple App Store and Google Play
 ---
 
-import { InlineCode } from '~/components/base/code';
+import { ConfigClassic } from '~/components/plugins/ConfigSection';
 
 This guide will help you upload your Expo standalone apps to Apple TestFlight and to Google Play.
 You'll need a paid developer account for each platform for which you wish to upload and publish an app. You can create an Apple Developer account on [Apple's developer site](https://developer.apple.com/account/) and a Google Play Developer account on the [Google Play Console sign-up page](https://play.google.com/apps/publish/signup/).
@@ -11,12 +11,11 @@ You'll need a paid developer account for each platform for which you wish to upl
 
 To learn how to build native binaries, see [Creating your first build](/build/setup.md) or [Building on CI](/build/building-on-ci.md).
 
-<details><summary><strong>Are you using the classic build system?</strong> (<InlineCode>expo build:[android|ios]</InlineCode>)</summary> <p>
+<ConfigClassic>
 
 To learn how to build native binaries, see [Building Standalone Apps](/classic/building-standalone-apps.md) or [Building Standalone Apps on Your CI](/classic/turtle-cli.md).
 
-</p>
-</details>
+</ConfigClassic>
 
 ## 2. Start the upload
 
@@ -70,7 +69,7 @@ Start by creating an app profile in App Store Connect, if you haven't already:
 
 #### Uploading with Transporter
 
-In order to see your app on Testflight, you will first need to submit your build to Apple using **Transporter** (previously known as Application Loader), available on the App Store ([link](https://apps.apple.com/app/transporter/id1450874784)). In order to do this:
+In order to see your app on TestFlight, you will first need to submit your build to Apple using **Transporter** (previously known as Application Loader), available on the App Store ([link](https://apps.apple.com/app/transporter/id1450874784)). In order to do this:
 
 1. Make sure you have logged into App Store Connect with your Apple ID and accepted any terms and agreements.
 2. Download Transporter from the [App Store](https://apps.apple.com/app/transporter/id1450874784).

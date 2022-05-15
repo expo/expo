@@ -36,13 +36,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)autoSetupStart:(UIWindow *)window;
 
-- (NSURL *)sourceUrl;
+- (nullable NSURL *)sourceUrl;
 
 - (void)navigateToLauncher;
 
 - (BOOL)onDeepLink:(NSURL *)url options:(NSDictionary *)options;
 
 - (void)loadApp:(NSURL *)url onSuccess:(void (^ _Nullable)(void))onSuccess onError:(void (^ _Nullable)(NSError *error))onError;
+
+- (void)loadApp:(NSURL *)expoUrl withProjectUrl:(NSURL  * _Nullable)projectUrl onSuccess:(void (^ _Nullable)(void))onSuccess onError:(void (^ _Nullable)(NSError *error))onError;
 
 - (NSDictionary *)recentlyOpenedApps;
 
@@ -51,6 +53,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (EXManifestsManifest * _Nullable)appManifest;
 
 - (NSURL * _Nullable)appManifestURL;
+
+- (nullable NSURL *)appManifestURLWithFallback;
 
 - (BOOL)isAppRunning;
 

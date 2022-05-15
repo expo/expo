@@ -1,6 +1,6 @@
 {
   "name": "expo-dev-menu",
-  "version": "0.9.1",
+  "version": "0.10.6",
   "description": "Expo/React Native module with the developer menu.",
   "main": "build/DevMenu.js",
   "types": "build/DevMenu.d.ts",
@@ -47,7 +47,7 @@
   },
   "dependencies": {
     "@expo/config-plugins": "^4.0.14",
-    "expo-dev-menu-interface": "0.5.1",
+    "expo-dev-menu-interface": "0.6.0",
     "semver": "^7.3.5"
   },
   "devDependencies": {
@@ -59,14 +59,14 @@
     "@testing-library/jest-native": "^4.0.4",
     "@testing-library/react-native": "^8.0.0",
     "babel-plugin-module-resolver": "^4.1.0",
-    "babel-preset-expo": "~9.0.0",
-    "expo-dev-client-components": "1.0.0",
+    "babel-preset-expo": "~9.1.0",
+    "expo-dev-client-components": "1.1.0",
     "expo-module-scripts": "^2.0.0",
     "fuse.js": "^6.4.6",
     "graphql": "^15.3.0",
     "graphql-tag": "^2.10.1",
     "react": "17.0.2",
-    "react-native": "0.68.0",
+    "react-native": "0.68.2",
     "url": "^0.11.0"
   },
   "peerDependencies": {

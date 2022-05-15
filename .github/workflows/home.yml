@@ -20,29 +20,32 @@ concurrency:
 
 jobs:
   build:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v3
+      - name: 👀 Checkout
+        uses: actions/checkout@v3
         with:
           submodules: true
-      - uses: actions/setup-node@v3
+      - name: ⬢ Setup Node
+        uses: actions/setup-node@v3
         with:
           node-version: '14.17'
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-      - uses: actions/cache@v2
+      - name: ♻️ Restore caches
+        uses: ./.github/actions/expo-caches
+        id: expo-caches
         with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-      - run: yarn install --frozen-lockfile
-      - run: yarn jest --maxWorkers 1
+          yarn-workspace: 'true'
+      - name: 🧶 Yarn install
+        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
+        run: yarn install --frozen-lockfile
+      - name: 🛠 Compile Home sources
+        run: yarn tsc
         working-directory: home
-      - run: yarn tsc
+      - name: 🧪 Run Home tests
+        run: yarn jest --maxWorkers 1
         working-directory: home
-      - run: yarn lint --max-warnings 0
+      - name: 🚨 Lint Home app
+        run: yarn lint --max-warnings 0
         working-directory: home
       - name: 🔔 Notify on Slack
         uses: 8398a7/action-slack@v3
@@ -59,26 +62,28 @@ jobs:
   publish-dogfood-home:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     needs: build
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v3
+      - name: 👀 Checkout
+        uses: actions/checkout@v3
         with:
           submodules: true
-      - uses: actions/setup-node@v3
+      - name: ⬢ Setup Node
+        uses: actions/setup-node@v3
         with:
           node-version: '14.17'
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-      - uses: actions/cache@v2
+      - name: ♻️ Restore caches
+        uses: ./.github/actions/expo-caches
+        id: expo-caches
         with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-      - run: yarn install --frozen-lockfile
-      - run: yarn global add expo-cli
-      - name: 🦴 Publish dogfood home
+          yarn-tools: 'true'
+      - name: 🧶 Yarn install /tools
+        if: steps.expo-caches.outputs.yarn-tools-hit != 'true'
+        run: yarn install --frozen-lockfile
+        working-directory: tools
+      - name: 🔧 Install Expo CLI
+        run: yarn global add expo-cli
+      - name: 🦴 Publish dogfood Home
         run: bin/expotools publish-dogfood-home
         env:
           EXPO_DOGFOOD_HOME_ACCESS_TOKEN: ${{ secrets.EXPO_DOGFOOD_HOME_ACCESS_TOKEN }}

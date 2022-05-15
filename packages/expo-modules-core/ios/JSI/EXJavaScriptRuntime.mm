@@ -82,18 +82,18 @@ using namespace facebook;
   return [[EXJavaScriptObject alloc] initWith:jsGlobalPtr runtime:self];
 }
 
-- (jsi::Function)createSyncFunction:(nonnull NSString *)name
-                          argsCount:(NSInteger)argsCount
-                              block:(nonnull JSSyncFunctionBlock)block
+- (nonnull EXJavaScriptObject *)createSyncFunction:(nonnull NSString *)name
+                                         argsCount:(NSInteger)argsCount
+                                             block:(nonnull JSSyncFunctionBlock)block
 {
   return [self createHostFunction:name argsCount:argsCount block:^jsi::Value(jsi::Runtime &runtime, std::shared_ptr<react::CallInvoker> callInvoker, NSArray * _Nonnull arguments) {
     return expo::convertObjCObjectToJSIValue(runtime, block(arguments));
   }];
 }
 
-- (jsi::Function)createAsyncFunction:(nonnull NSString *)name
-                           argsCount:(NSInteger)argsCount
-                               block:(nonnull JSAsyncFunctionBlock)block
+- (nonnull EXJavaScriptObject *)createAsyncFunction:(nonnull NSString *)name
+                                          argsCount:(NSInteger)argsCount
+                                              block:(nonnull JSAsyncFunctionBlock)block
 {
   return [self createHostFunction:name argsCount:argsCount block:^jsi::Value(jsi::Runtime &runtime, std::shared_ptr<react::CallInvoker> callInvoker, NSArray *arguments) {
     if (!callInvoker) {
@@ -109,6 +109,21 @@ using namespace facebook;
     };
     return createPromiseAsJSIValue(runtime, promiseSetup);
   }];
+}
+
+#pragma mark - Classes
+
+- (nonnull EXJavaScriptObject *)createClass:(nonnull NSString *)name
+                                constructor:(nonnull ClassConstructorBlock)constructor
+{
+  std::shared_ptr<jsi::Function> klass = expo::createClass(*_runtime, [name UTF8String], [self, constructor](jsi::Runtime &runtime, const jsi::Value &thisValue, jsi::Array args) {
+    std::shared_ptr<jsi::Object> thisPtr = std::make_shared<jsi::Object>(thisValue.asObject(runtime));
+    EXJavaScriptObject *caller = [[EXJavaScriptObject alloc] initWith:thisPtr runtime:self];
+    NSArray<EXJavaScriptValue *> *arguments = expo::convertJSIArrayToNSArray(runtime, args, self->_jsCallInvoker);
+
+    constructor(caller, arguments);
+  });
+  return [[EXJavaScriptObject alloc] initWith:klass runtime:self];
 }
 
 #pragma mark - Script evaluation
@@ -134,9 +149,9 @@ using namespace facebook;
 
 #pragma mark - Private
 
-- (jsi::Function)createHostFunction:(nonnull NSString *)name
-                          argsCount:(NSInteger)argsCount
-                              block:(nonnull JSHostFunctionBlock)block
+- (nonnull EXJavaScriptObject *)createHostFunction:(nonnull NSString *)name
+                                         argsCount:(NSInteger)argsCount
+                                             block:(nonnull JSHostFunctionBlock)block
 {
   jsi::PropNameID propNameId = jsi::PropNameID::forAscii(*_runtime, [name UTF8String], [name length]);
   std::weak_ptr<react::CallInvoker> weakCallInvoker = _jsCallInvoker;
@@ -147,7 +162,8 @@ using namespace facebook;
     NSArray<EXJavaScriptValue *> *arguments = expo::convertJSIValuesToNSArray(self, args, count);
     return block(runtime, callInvoker, arguments);
   };
-  return jsi::Function::createFromHostFunction(*_runtime, propNameId, (unsigned int)argsCount, function);
+  std::shared_ptr<jsi::Object> fnPtr = std::make_shared<jsi::Object>(jsi::Function::createFromHostFunction(*_runtime, propNameId, (unsigned int)argsCount, function));
+  return [[EXJavaScriptObject alloc] initWith:fnPtr runtime:self];
 }
 
 @end

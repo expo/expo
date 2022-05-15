@@ -1,1 +1,0 @@
-{"version":3,"file":"ExpoGoogleSignIn.js","sourceRoot":"","sources":["../src/ExpoGoogleSignIn.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,kBAAkB,EAAE,MAAM,mBAAmB,CAAC;AAEvD,eAAe,kBAAkB,CAAC,gBAAgB,CAAC","sourcesContent":["import { NativeModulesProxy } from 'expo-modules-core';\n\nexport default NativeModulesProxy.ExpoGoogleSignIn;\n"]}

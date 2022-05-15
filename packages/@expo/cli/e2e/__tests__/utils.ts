@@ -59,8 +59,8 @@ function isSpawnResult(errorOrResult: Error): errorOrResult is Error & SpawnResu
   return 'pid' in errorOrResult && 'stdout' in errorOrResult && 'stderr' in errorOrResult;
 }
 
-async function installAsync(projectRoot: string) {
-  return abortingSpawnAsync('yarn', [], {
+export async function installAsync(projectRoot: string, pkgs: string[] = []) {
+  return abortingSpawnAsync('yarn', pkgs, {
     cwd: projectRoot,
     stdio: ['ignore', 'pipe', 'pipe'],
   });

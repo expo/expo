@@ -1,0 +1,18 @@
+{
+  "amazon appstore": "Amazon Appstore",
+  "android emulator": "Android Emulator",
+  "app store": "App Store",
+  "apple developer": "Apple Developer",
+  "eas": "EAS",
+  "eas build": "EAS Build",
+  "eas update": "EAS Update",
+  "expo cli": "Expo CLI",
+  "expo go": "Expo Go",
+  "expo sdk": "Expo SDK",
+  "ios simulator": "iOS Simulator",
+  "mac os": "macOS",
+  "play store": "Play Store",
+  "react navigation": "React Navigation",
+  "turtle cli": "Turtle CLI",
+  "unix": "Unix"
+}

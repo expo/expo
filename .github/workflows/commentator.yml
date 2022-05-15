@@ -9,13 +9,18 @@ on:
 
 jobs:
   comment:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     steps:
-      - name: Checkout a ref for the event
+      - name: 👀 Checkout
         uses: actions/checkout@v3
+      - name: ➕ Add `bin` to GITHUB_PATH
+        run: echo "$(pwd)/bin" >> $GITHUB_PATH
+      - name: ♻️ Restore caches
+        uses: ./.github/actions/expo-caches
+        id: expo-caches
         with:
-          fetch-depth: 1
-      - name: Comment on GitHub issues as github-actions bot
-        run: bin/expotools commentator --payload "${{ github.event.inputs.payload }}"
+          yarn-tools: 'true'
+      - name: 💬 Comment on GitHub issues as github-actions bot
+        run: expotools commentator --payload "${{ github.event.inputs.payload }}"
         env:
           GITHUB_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
