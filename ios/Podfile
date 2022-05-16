@@ -5,7 +5,7 @@ require File.join(File.dirname(`node --print "require.resolve('expo/package.json
 install! 'cocoapods',
          :generate_multiple_pod_projects => true,
          :incremental_installation => true
-platform :ios, '12.0'
+platform :ios, '13.0'
 inhibit_all_warnings!
 
 # Disable expo-updates auto create manifest in podspec script_phase
