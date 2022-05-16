@@ -21,7 +21,7 @@ class UpdatesPackage : Package {
   }
 
   override fun createExportedModules(context: Context): List<ExportedModule> {
-    return listOf(UpdatesModule(context) as ExportedModule)
+    return listOf(UpdatesModule(context) as ExportedModule, UpdatesE2ETestModule(context))
   }
 
   override fun createReactNativeHostHandlers(context: Context): List<ReactNativeHostHandler> {
