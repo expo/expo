@@ -19,7 +19,7 @@
 
 EX_EXPORT_MODULE(CTKInterstitialAdManager)
 
-- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
+- (void)setEXModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
 }

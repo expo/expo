@@ -160,7 +160,7 @@ RCT_EXPORT_METHOD(removeProxiedListeners:(NSString *)moduleName count:(double)co
 
 # pragma mark - EXModuleRegistryConsumer
 
-- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
+- (void)setEXModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   // We need to check if we get an object of the correct class because RN 65 tries to call this method with RTCModuleRegistry.
   // See https://github.com/facebook/react-native/blob/2c2b83171603b47e5eec61eea55139f760dba090/React/Base/RCTModuleData.mm#L274-L289.

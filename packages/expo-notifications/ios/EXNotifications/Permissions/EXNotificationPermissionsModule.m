@@ -54,7 +54,7 @@ EX_EXPORT_METHOD_AS(requestPermissionsAsync,
 
 # pragma mark - EXModuleRegistryConsumer
 
-- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry {
+- (void)setEXModuleRegistry:(EXModuleRegistry *)moduleRegistry {
   _permissionsManager = [moduleRegistry getModuleImplementingProtocol:@protocol(EXPermissionsInterface)];
   if (!_legacyRemoteNotificationsRequester) {
     // TODO: Remove once we deprecate and remove "notifications" permission type

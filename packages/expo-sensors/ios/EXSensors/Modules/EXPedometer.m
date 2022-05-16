@@ -54,7 +54,7 @@ NSString * const EXPedometerModuleName = @"ExponentPedometer";
 
 # pragma mark - EXModuleRegistryConsumer
 
-- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
+- (void)setEXModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   if (_lifecycleManager) {
     [_lifecycleManager unregisterAppLifecycleListener:self];

@@ -34,7 +34,7 @@ EX_VIEW_PROPERTY(msaaSamples, NSNumber *, EXGLView)
   [view setMsaaSamples:value];
 }
 
-- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
+- (void)setEXModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
 }

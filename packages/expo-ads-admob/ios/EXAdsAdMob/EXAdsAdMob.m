@@ -18,7 +18,7 @@
 
 EX_EXPORT_MODULE(ExpoAdsAdMob);
 
-- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
+- (void)setEXModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   _permissionsManager = [moduleRegistry getModuleImplementingProtocol:@protocol(EXPermissionsInterface)];
   [EXPermissionsMethodsDelegate registerRequesters:@[[EXAdsAdMobAppTrackingPermissionRequester new]] withPermissionsManager:_permissionsManager];

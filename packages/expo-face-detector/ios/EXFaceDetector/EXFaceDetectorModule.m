@@ -42,7 +42,7 @@ EX_EXPORT_MODULE(ExpoFaceDetector);
   return [EXFaceDetectorUtils constantsToExport];
 }
 
-- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
+- (void)setEXModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
 }

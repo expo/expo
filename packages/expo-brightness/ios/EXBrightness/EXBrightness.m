@@ -18,7 +18,7 @@
 
 EX_EXPORT_MODULE(ExpoBrightness);
 
-- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
+- (void)setEXModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   _permissionsManager = [moduleRegistry getModuleImplementingProtocol:@protocol(EXPermissionsInterface)];
   [EXPermissionsMethodsDelegate registerRequesters:@[[EXSystemBrightnessPermissionRequester new]] withPermissionsManager:_permissionsManager];

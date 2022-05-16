@@ -285,7 +285,7 @@ RCT_EXPORT_METHOD(callMethod:(NSString *)moduleName methodNameOrKey:(id)methodNa
     [_exModuleRegistry registerInternalModule:eventEmitter];
 
     // Let the modules consume the registry :)
-    // It calls `setModuleRegistry:` on all `EXModuleRegistryConsumer`s.
+    // It calls `setEXModuleRegistry:` on all `EXModuleRegistryConsumer`s.
     [_exModuleRegistry initialize];
   }
 }

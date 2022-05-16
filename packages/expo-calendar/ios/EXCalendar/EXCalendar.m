@@ -35,7 +35,7 @@
 
 EX_EXPORT_MODULE(ExpoCalendar);
 
-- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
+- (void)setEXModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   _permissionsManager = [moduleRegistry getModuleImplementingProtocol:@protocol(EXPermissionsInterface)];
   [EXPermissionsMethodsDelegate registerRequesters:@[

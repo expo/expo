@@ -24,7 +24,7 @@
 
 EX_EXPORT_MODULE(ExponentSQLite);
 
-- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
+- (void)setEXModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
   cachedDatabases = [NSMutableDictionary dictionary];

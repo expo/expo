@@ -23,7 +23,7 @@ EX_REGISTER_MODULE();
   return @"ExponentConstants";
 }
 
-- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
+- (void)setEXModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   _constantsService = [moduleRegistry getModuleImplementingProtocol:@protocol(EXConstantsInterface)];
 }

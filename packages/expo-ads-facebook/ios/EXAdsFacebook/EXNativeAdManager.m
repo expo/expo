@@ -75,7 +75,7 @@ EX_EXPORT_MODULE(CTKNativeAdManager)
   return @"CTKNativeAd";
 }
 
-- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
+- (void)setEXModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
 }

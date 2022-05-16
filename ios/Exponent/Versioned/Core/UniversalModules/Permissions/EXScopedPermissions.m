@@ -26,9 +26,9 @@
   return self;
 }
 
-- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
+- (void)setEXModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
-  [super setModuleRegistry:moduleRegistry];
+  [super setEXModuleRegistry:moduleRegistry];
   _utils = [moduleRegistry getModuleImplementingProtocol:@protocol(EXUtilitiesInterface)];
   _permissionsService = [moduleRegistry getSingletonModuleForName:@"Permissions"];
 }

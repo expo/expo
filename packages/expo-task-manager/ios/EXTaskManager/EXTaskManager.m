@@ -45,7 +45,7 @@ EX_EXPORT_MODULE(ExpoTaskManager);
   return self;
 }
 
-- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
+- (void)setEXModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   _eventEmitter = [moduleRegistry getModuleImplementingProtocol:@protocol(EXEventEmitterService)];
   _constantsService = [moduleRegistry getModuleImplementingProtocol:@protocol(EXConstantsInterface)];

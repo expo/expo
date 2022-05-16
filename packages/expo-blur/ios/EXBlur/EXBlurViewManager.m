@@ -19,7 +19,7 @@
 
 EX_EXPORT_MODULE(ExpoBlurViewManager);
 
-- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry {
+- (void)setEXModuleRegistry:(EXModuleRegistry *)moduleRegistry {
   _moduleRegistry = moduleRegistry;
 }
 

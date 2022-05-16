@@ -28,7 +28,7 @@ EX_EXPORT_MODULE(ExpoSMS);
   return dispatch_get_main_queue();
 }
 
-- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
+- (void)setEXModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   _utils = [moduleRegistry getModuleImplementingProtocol:@protocol(EXUtilitiesInterface)];
 }

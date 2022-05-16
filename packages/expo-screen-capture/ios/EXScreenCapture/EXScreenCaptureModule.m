@@ -23,7 +23,7 @@ EX_EXPORT_MODULE(ExpoScreenCapture);
 
 # pragma mark - EXModuleRegistryConsumer
 
-- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
+- (void)setEXModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
   _eventEmitter = [moduleRegistry getModuleImplementingProtocol:@protocol(EXEventEmitterService)];

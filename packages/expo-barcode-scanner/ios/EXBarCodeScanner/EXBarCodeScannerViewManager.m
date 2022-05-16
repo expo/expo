@@ -23,7 +23,7 @@ EX_REGISTER_MODULE();
   return @"ExpoBarCodeScannerView";
 }
 
-- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
+- (void)setEXModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
 }

@@ -18,7 +18,7 @@
 
 EX_EXPORT_MODULE(ExpoUpdates);
 
-- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
+- (void)setEXModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   _updatesService = [moduleRegistry getModuleImplementingProtocol:@protocol(EXUpdatesModuleInterface)];
 }

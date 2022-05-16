@@ -61,7 +61,7 @@ EX_REGISTER_MODULE();
   return filePermissions;
 }
 
-- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry {
+- (void)setEXModuleRegistry:(EXModuleRegistry *)moduleRegistry {
   _moduleRegistry = moduleRegistry;
 }
 

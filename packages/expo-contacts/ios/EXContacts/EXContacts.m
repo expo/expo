@@ -85,7 +85,7 @@ static NSString *const EXContactsKeyImageBase64 = @"imageBase64";
 
 EX_EXPORT_MODULE(ExpoContacts);
 
-- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
+- (void)setEXModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
   _fileSystem = [moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];

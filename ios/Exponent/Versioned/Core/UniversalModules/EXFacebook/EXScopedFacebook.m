@@ -134,9 +134,9 @@ static NSString *AUTO_INIT_KEY = @"autoInitEnabled";
 
 # pragma mark - EXModuleRegistryConsumer
 
-- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
+- (void)setEXModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
-  [super setModuleRegistry:moduleRegistry];
+  [super setEXModuleRegistry:moduleRegistry];
 
   id<EXAppLifecycleService> appLifecycleService = [moduleRegistry getModuleImplementingProtocol:@protocol(EXAppLifecycleService)];
   [appLifecycleService registerAppLifecycleListener:self];

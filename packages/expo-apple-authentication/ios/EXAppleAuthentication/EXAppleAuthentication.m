@@ -19,7 +19,7 @@ static NSString *const EXAppleIDCredentialRevokedEvent = @"Expo.appleIdCredentia
 
 EX_EXPORT_MODULE(ExpoAppleAuthentication);
 
-- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
+- (void)setEXModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
 }

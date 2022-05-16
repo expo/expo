@@ -77,7 +77,7 @@ static NSString * EXConvertMimeTypeToUTI(NSString *mimeType)
 
 EX_EXPORT_MODULE(ExpoDocumentPicker);
 
-- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
+- (void)setEXModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
 

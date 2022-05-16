@@ -141,7 +141,7 @@ EX_EXPORT_MODULE(ExponentAV);
 
 #pragma mark - Expo experience lifecycle
 
-- (void)setModuleRegistry:(EXModuleRegistry *)expoModuleRegistry
+- (void)setEXModuleRegistry:(EXModuleRegistry *)expoModuleRegistry
 {
   [[_expoModuleRegistry getModuleImplementingProtocol:@protocol(EXAppLifecycleService)] unregisterAppLifecycleListener:self];
   _expoModuleRegistry = expoModuleRegistry;

@@ -56,7 +56,7 @@
 
 # pragma mark - EXModuleRegistryConsumer
 
-- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
+- (void)setEXModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   if (_moduleRegistry) {
     [_lifecycleManager unregisterAppLifecycleListener:self];

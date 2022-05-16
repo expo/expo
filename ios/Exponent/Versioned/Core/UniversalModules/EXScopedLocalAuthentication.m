@@ -16,7 +16,7 @@
 
 @implementation EXScopedLocalAuthentication
 
-- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
+- (void)setEXModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   _isInExpoClient = [((EXConstantsBinding *)[moduleRegistry getModuleImplementingProtocol:@protocol(EXConstantsInterface)]).appOwnership isEqualToString:@"expo"];
 }

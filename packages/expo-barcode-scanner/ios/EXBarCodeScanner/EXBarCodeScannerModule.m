@@ -19,7 +19,7 @@
 
 EX_EXPORT_MODULE(ExpoBarCodeScannerModule);
 
-- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
+- (void)setEXModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
   _imageLoader = [moduleRegistry getModuleImplementingProtocol:@protocol(EXImageLoaderInterface)];

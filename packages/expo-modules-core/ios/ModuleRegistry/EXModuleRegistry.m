@@ -100,7 +100,7 @@
 {
   [self resolveInternalModulesConflicts];
   for (id<EXModuleRegistryConsumer> registryConsumer in _registryConsumers) {
-    [registryConsumer setModuleRegistry:self];
+    [registryConsumer setEXModuleRegistry:self];
   }
 }
 

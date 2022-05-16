@@ -25,7 +25,7 @@ static NSString *const FBSDKAppEventsPushPayloadCampaignKey = @"campaign";
 
 EX_EXPORT_MODULE(ExponentFacebook)
 
-- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
+- (void)setEXModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   _permissionsManager = [moduleRegistry getModuleImplementingProtocol:@protocol(EXPermissionsInterface)];
   [EXPermissionsMethodsDelegate registerRequesters:@[[EXFacebookAppTrackingPermissionRequester new]] withPermissionsManager:_permissionsManager];

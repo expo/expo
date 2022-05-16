@@ -40,7 +40,7 @@ EX_REGISTER_MODULE();
   return dispatch_queue_create("host.exp.exponent.GLObjectManager", DISPATCH_QUEUE_SERIAL);
 }
 
-- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
+- (void)setEXModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
   _uiManager = [moduleRegistry getModuleImplementingProtocol:@protocol(EXUIManager)];

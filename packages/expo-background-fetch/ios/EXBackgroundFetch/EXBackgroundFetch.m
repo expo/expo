@@ -16,7 +16,7 @@
 
 EX_EXPORT_MODULE(ExpoBackgroundFetch);
 
-- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
+- (void)setEXModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   _taskManager = [moduleRegistry getModuleImplementingProtocol:@protocol(EXTaskManagerInterface)];
 }

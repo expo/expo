@@ -28,7 +28,7 @@ static NSString *const EXAdsAdMobInterstitialDidFailToOpen = @"interstitialDidFa
 
 EX_EXPORT_MODULE(ExpoAdsAdMobInterstitialManager);
 
-- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
+- (void)setEXModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   _utilities = [moduleRegistry getModuleImplementingProtocol:@protocol(EXUtilitiesInterface)];
   _eventEmitter = [moduleRegistry getModuleImplementingProtocol:@protocol(EXEventEmitterService)];

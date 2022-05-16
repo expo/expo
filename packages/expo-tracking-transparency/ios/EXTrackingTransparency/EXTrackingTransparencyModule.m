@@ -18,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 EX_EXPORT_MODULE(ExpoTrackingTransparency);
 
-- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
+- (void)setEXModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   _permissionsManager = [moduleRegistry getModuleImplementingProtocol:@protocol(EXPermissionsInterface)];
   [EXPermissionsMethodsDelegate registerRequesters:@[[EXTrackingPermissionRequester new]] withPermissionsManager:_permissionsManager];
