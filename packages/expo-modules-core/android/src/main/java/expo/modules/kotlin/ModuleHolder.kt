@@ -13,32 +13,49 @@ import expo.modules.kotlin.exception.exceptionDecorator
 import expo.modules.kotlin.jni.JavaScriptModuleObject
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.types.JSTypeConverter
+import kotlinx.coroutines.launch
 
 class ModuleHolder(val module: Module) {
   val definition = module.definition()
   val name get() = definition.name
 
+  /**
+   * Cached instance of HybridObject used by CPP to interact with underlying [expo.modules.kotlin.modules.Module] object.
+   */
   val jsObject by lazy {
-    JavaScriptModuleObject(this).apply {
-      definition
-        .methods
-        .forEach { (name, method) ->
-          if (method.isSync) {
-            registerSyncFunction(name, method.argsCount)
-          } else {
-            registerAsyncFunction(name, method.argsCount)
+    JavaScriptModuleObject()
+      .apply {
+        definition
+          .methods
+          .forEach { (name, method) ->
+            val moduleHolder = this@ModuleHolder
+            if (method.isSync) {
+              registerSyncFunction(name, method.argsCount) { args ->
+                val result = method.callSync(moduleHolder, args)
+                val convertedResult = JSTypeConverter.convertToJSValue(result)
+                return@registerSyncFunction Arguments.fromJavaArgs(arrayOf(convertedResult))
+              }
+            } else {
+              registerAsyncFunction(name, method.argsCount) { args, bridgePromise ->
+                val kotlinPromise = KPromiseWrapper(bridgePromise as com.facebook.react.bridge.Promise)
+                moduleHolder.module.appContext.modulesQueue.launch {
+                  method.call(moduleHolder, args, kotlinPromise)
+                }
+              }
+            }
           }
-        }
-    }
+      }
   }
 
+  /**
+   * Invokes a function with promise. Is used in the bridge implementation of the Sweet API.
+   */
   fun call(methodName: String, args: ReadableArray, promise: Promise) = exceptionDecorator({
     FunctionCallException(methodName, definition.name, it)
   }) {
     val method = definition.methods[methodName]
       ?: throw MethodNotFoundException()
 
-    // TODO(@lukmccall): handle sync call
     if (method.isSync) {
       throw MethodNotFoundException()
     }
@@ -46,11 +63,14 @@ class ModuleHolder(val module: Module) {
     method.call(this, args, promise)
   }
 
-  fun callSync(methodName: String, args: ReadableArray): ReadableNativeArray {
+  /**
+   * Invokes a function without promise.
+   * `callSync` was added only for test purpose and shouldn't be used anywhere else.
+   */
+  internal fun callSync(methodName: String, args: ReadableArray): ReadableNativeArray {
     val method = definition.methods[methodName]
       ?: throw MethodNotFoundException()
 
-    // TODO(@lukmccall): handle async call
     if (!method.isSync) {
       throw MethodNotFoundException()
     }
