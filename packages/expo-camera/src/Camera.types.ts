@@ -303,9 +303,9 @@ export type ConstantsType = {
 // @needsAudit
 export type CameraProps = ViewProps & {
   /**
-   * Camera facing. Use one of `Camera.Constants.Type`. When `Type.front`, use the front-facing camera.
-   * When `Type.back`, use the back-facing camera.
-   * @default Type.back
+   * Camera facing. Use one of `CameraType`. When `CameraType.front`, use the front-facing camera.
+   * When `CameraType.back`, use the back-facing camera.
+   * @default CameraType.back
    */
   type?: number | CameraType;
   /**
