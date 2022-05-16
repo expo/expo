@@ -14,6 +14,7 @@ import { LoadOptions } from '@expo/metro-config';
 import chalk from 'chalk';
 import Metro from 'metro';
 import { Terminal } from 'metro-core';
+import { withMetroWeb } from '../start/server/metro/instantiateMetro';
 
 import { MetroTerminalReporter } from '../start/server/metro/MetroTerminalReporter';
 
@@ -89,7 +90,8 @@ export async function bundleAsync(
 
   const ExpoMetroConfig = getExpoMetroConfig(projectRoot, options);
 
-  const config = await ExpoMetroConfig.loadAsync(projectRoot, { reporter, ...options });
+  let config = await ExpoMetroConfig.loadAsync(projectRoot, { reporter, ...options });
+  config = withMetroWeb(projectRoot, config);
   const buildID = `bundle_${nextBuildID++}`;
 
   // @ts-expect-error

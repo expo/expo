@@ -7,6 +7,7 @@ import { logEvent } from '../../utils/analytics/rudderstackClient';
 import { ProjectPrerequisite } from '../doctor/Prerequisite';
 import * as AndroidDebugBridge from '../platforms/android/adb';
 import { BundlerDevServer, BundlerStartOptions } from './BundlerDevServer';
+import { env } from '../../utils/env';
 
 export type MultiBundlerStartOptions = {
   type: keyof typeof BUNDLERS;
@@ -103,7 +104,7 @@ export class DevServerManager {
     Log.debug('Starting webpack dev server');
     return this.startAsync([
       {
-        type: 'webpack',
+        type: env.EXPO_USE_METRO_WEB ? 'metro' : 'webpack',
         options: this.options,
       },
     ]);

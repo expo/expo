@@ -1,11 +1,14 @@
 import { MetroDevServerOptions } from '@expo/dev-server';
 import http from 'http';
 import Metro from 'metro';
+import path from 'path';
 import { Terminal } from 'metro-core';
+import resolveFrom from 'resolve-from';
 
 import { createDevServerMiddleware } from '../middleware/createDevServerMiddleware';
 import { MetroTerminalReporter } from './MetroTerminalReporter';
 import { importExpoMetroConfigFromProject, importMetroFromProject } from './resolveFromProject';
+import { env } from '../../../utils/env';
 
 // From expo/dev-server but with ability to use custom logger.
 type MessageSocket = {
@@ -38,7 +41,9 @@ export async function instantiateMetroAsync(
     },
   };
 
-  const metroConfig = await ExpoMetroConfig.loadAsync(projectRoot, { reporter, ...options });
+  let metroConfig = await ExpoMetroConfig.loadAsync(projectRoot, { reporter, ...options });
+
+  metroConfig = withMetroWeb(projectRoot, metroConfig);
 
   const {
     middleware,
@@ -88,4 +93,60 @@ export async function instantiateMetroAsync(
       messageSocket: messageSocketEndpoint,
     };
   }
+}
+
+export function withMetroWeb(projectRoot: string, config: import('metro-config').ConfigT) {
+  if (!env.EXPO_USE_METRO_WEB) {
+    return config;
+  }
+
+  // Add basic source extension support with all platforms stripped away.
+  const { getBareExtensions } = require('@expo/config/paths');
+
+  const sourceExts = getBareExtensions([], {
+    isTS: true,
+    isReact: true,
+    isModern: false,
+  });
+
+  // @ts-expect-error
+  config.resolver.sourceExts = sourceExts;
+
+  // Create a resolver which dynamically disables support for
+  // `*.native.*` extensions on web.
+
+  const { resolve } = require(resolveFrom(projectRoot, 'metro-resolver'));
+
+  // @ts-expect-error
+  config.resolver.resolveRequest = (context, _realModuleName, platform, moduleName) => {
+    const contextResolveRequest = context.resolveRequest;
+    delete context.resolveRequest;
+    try {
+      // Disable `*.native.*` extensions on web.
+      context.preferNativePlatform = platform !== 'web';
+      return resolve(context, moduleName, platform);
+    } catch (e) {
+      throw e;
+    } finally {
+      context.resolveRequest = contextResolveRequest;
+    }
+  };
+
+  if (!config.resolver.extraNodeModules) {
+    // @ts-expect-error
+    config.resolver.extraNodeModules = {};
+  }
+
+  // Remap `react-native` to `react-native-web` -- no idea how this works across platforms.
+  config.resolver.extraNodeModules['react-native'] = path.resolve(
+    require.resolve('react-native-web/package.json'),
+    '..'
+  );
+
+  if (!config.resolver.platforms.includes('web')) {
+    // @ts-expect-error
+    config.resolver.platforms = ['ios', 'android', 'web']; // .push('web');
+  }
+
+  return config;
 }
