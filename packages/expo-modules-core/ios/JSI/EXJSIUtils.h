@@ -54,7 +54,7 @@ void defineProperty(jsi::Runtime &runtime, const jsi::Object *object, const char
 #pragma mark - Deallocator
 
 /**
- Sets the deallocator block on given object, which is called when the object is being deallocated.
+ Sets the deallocator block on a given object, which is called when the object is being deallocated.
  */
 void setDeallocator(jsi::Runtime &runtime, std::shared_ptr<jsi::Object> object, ObjectDeallocatorBlock deallocatorBlock);
 

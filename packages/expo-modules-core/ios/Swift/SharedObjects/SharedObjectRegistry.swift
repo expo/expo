@@ -32,7 +32,7 @@ public final class SharedObjectRegistry {
   internal static var pairs = [SharedObjectId: SharedObjectPair]()
 
   /**
-   Number of all pairs stored in the registry.
+   A number of all pairs stored in the registry.
    */
   internal static var size: Int {
     return pairs.count
@@ -76,7 +76,7 @@ public final class SharedObjectRegistry {
   }
 
   /**
-   Deletes the shared objects pair with given ID.
+   Deletes the shared objects pair with a given ID.
    */
   internal static func delete(_ id: SharedObjectId) {
     if let pair = pairs[id] {
@@ -90,7 +90,7 @@ public final class SharedObjectRegistry {
   }
 
   /**
-   Gets the native shared object that is paired with given JS object.
+   Gets the native shared object that is paired with a given JS object.
    */
   internal static func toNativeObject(_ jsObject: JavaScriptObject) -> SharedObject? {
     if let objectId = try? jsObject.getProperty(sharedObjectIdPropertyName).asInt() {
@@ -100,7 +100,7 @@ public final class SharedObjectRegistry {
   }
 
   /**
-   Gets the JS shared object that is paired with given native object.
+   Gets the JS shared object that is paired with a given native object.
    */
   internal static func toJavaScriptObject(_ nativeObject: SharedObject) -> JavaScriptObject? {
     let objectId = nativeObject.sharedObjectId
@@ -108,7 +108,7 @@ public final class SharedObjectRegistry {
   }
 
   /**
-   Creates a plain JS object and pairs it with given native object.
+   Creates a plain JS object and pairs it with a given native object.
    */
   internal static func createSharedJavaScriptObject(runtime: JavaScriptRuntime, nativeObject: SharedObject) -> JavaScriptObject {
     let object = runtime.createObject()
@@ -117,7 +117,7 @@ public final class SharedObjectRegistry {
   }
 
   /**
-   Ensures that there is a JS object paired with given native object. If not, a plain JS object is created.
+   Ensures that there is a JS object paired with a given native object. If not, a plain JS object is created.
    */
   internal static func ensureSharedJavaScriptObject(runtime: JavaScriptRuntime, nativeObject: SharedObject) -> JavaScriptObject {
     if let jsObject = toJavaScriptObject(nativeObject) {
