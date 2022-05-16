@@ -1,6 +1,9 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
 #import <ReactCommon/TurboModuleUtils.h>
+#import <ExpoModulesCore/EXJavaScriptValue.h>
+#import <ExpoModulesCore/EXJavaScriptObject.h>
+#import <ExpoModulesCore/EXJavaScriptWeakObject.h>
 #import <ExpoModulesCore/EXJSIConversions.h>
 #import <ExpoModulesCore/EXJavaScriptValue.h>
 #import <ExpoModulesCore/EXJavaScriptRuntime.h>
@@ -59,6 +62,9 @@ jsi::Value convertObjCObjectToJSIValue(jsi::Runtime &runtime, id value)
   }
   if ([value isKindOfClass:[EXJavaScriptObject class]]) {
     return jsi::Value(runtime, *[(EXJavaScriptObject *)value get]);
+  }
+  if ([value isKindOfClass:[EXJavaScriptWeakObject class]]) {
+    return jsi::Value(runtime, *[[(EXJavaScriptWeakObject *)value lock] get]);
   }
   if ([value isKindOfClass:[NSString class]]) {
     return convertNSStringToJSIString(runtime, (NSString *)value);

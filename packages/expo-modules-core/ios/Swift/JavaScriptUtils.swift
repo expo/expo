@@ -12,6 +12,9 @@
  */
 internal func castArgument(_ argument: Any, toType argumentType: AnyArgumentType) throws -> Any {
   // TODO: Accept JavaScriptValue and JavaScriptObject as argument types.
+  if argumentType is SharedObjectArgumentType {
+    return try argumentType.cast(argument)
+  }
   if let argument = argument as? JavaScriptValue {
     return try argumentType.cast(argument.getRaw())
   }
