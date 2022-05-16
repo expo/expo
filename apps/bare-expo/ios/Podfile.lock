@@ -86,8 +86,6 @@ PODS:
     - ExpoModulesCore
   - EXLocation (14.2.1):
     - ExpoModulesCore
-  - EXMailComposer (11.2.0):
-    - ExpoModulesCore
   - EXManifests (0.3.0):
     - EXJSONUtils
   - EXMediaLibrary (14.1.0):
@@ -218,6 +216,8 @@ PODS:
   - ExpoLinearGradient (11.3.0):
     - ExpoModulesCore
   - ExpoLocalization (13.0.0):
+    - ExpoModulesCore
+  - ExpoMailComposer (11.2.0):
     - ExpoModulesCore
   - ExpoModulesCore (0.9.0):
     - React-Core
@@ -869,7 +869,6 @@ DEPENDENCIES:
   - EXJSONUtils (from `../../../packages/expo-json-utils/ios`)
   - EXLocalAuthentication (from `../../../packages/expo-local-authentication/ios`)
   - EXLocation (from `../../../packages/expo-location/ios`)
-  - EXMailComposer (from `../../../packages/expo-mail-composer/ios`)
   - EXManifests (from `../../../packages/expo-manifests/ios`)
   - EXMediaLibrary (from `../../../packages/expo-media-library/ios`)
   - EXNetwork (from `../../../packages/expo-network/ios`)
@@ -893,6 +892,7 @@ DEPENDENCIES:
   - ExpoKeepAwake (from `../../../packages/expo-keep-awake/ios`)
   - ExpoLinearGradient (from `../../../packages/expo-linear-gradient/ios`)
   - ExpoLocalization (from `../../../packages/expo-localization/ios`)
+  - ExpoMailComposer (from `../../../packages/expo-mail-composer/ios`)
   - ExpoModulesCore (from `../../../packages/expo-modules-core/ios`)
   - ExpoRandom (from `../../../packages/expo-random/ios`)
   - ExpoSystemUI (from `../../../packages/expo-system-ui/ios`)
@@ -1099,9 +1099,6 @@ EXTERNAL SOURCES:
   EXLocation:
     inhibit_warnings: false
     :path: "../../../packages/expo-location/ios"
-  EXMailComposer:
-    inhibit_warnings: false
-    :path: "../../../packages/expo-mail-composer/ios"
   EXManifests:
     inhibit_warnings: false
     :path: "../../../packages/expo-manifests/ios"
@@ -1158,6 +1155,9 @@ EXTERNAL SOURCES:
   ExpoLocalization:
     inhibit_warnings: false
     :path: "../../../packages/expo-localization/ios"
+  ExpoMailComposer:
+    inhibit_warnings: false
+    :path: "../../../packages/expo-mail-composer/ios"
   ExpoModulesCore:
     inhibit_warnings: false
     :path: "../../../packages/expo-modules-core/ios"
@@ -1355,7 +1355,6 @@ SPEC CHECKSUMS:
   EXJSONUtils: 2a74b8f40f1523cc3f92af99c91aa78201737a77
   EXLocalAuthentication: 7f37b242eae73f9acf111d39bdee3f1379e68902
   EXLocation: f40d82e745a66deac2e649b496098064008e0973
-  EXMailComposer: 2e5fdf265f3a1d5d5ef03724ce361cdedb0f546f
   EXManifests: 0c6134b7b6f3236a93a778c3f44ba1cfb3f9fa3d
   EXMediaLibrary: 5d0e1b78268c90f7dd8a83ee3be26e01c4fd6c1f
   EXNetwork: 116e5ec043168904c1f24a2e96a8361063e57d26
@@ -1375,6 +1374,7 @@ SPEC CHECKSUMS:
   ExpoKeepAwake: 6f23558b054e4d0c04535f7d70c3fe6a2025d8f7
   ExpoLinearGradient: 0debcf7d6cd7fea3050c218544f0db2de9a64f42
   ExpoLocalization: 8f619bb6eec64575cd5220bfabbd7b4e2d6f33f8
+  ExpoMailComposer: 9eaf63bec7ec619ca84b30d7f8eb7169ed12db8b
   ExpoModulesCore: 4093531a41eb8b2e3b508ee519afbd84b09de727
   ExpoRandom: 14df0976aa363a71a730ceb7655250f3047c0e42
   ExpoSystemUI: 6175204b809d9598d56e5a711480415d28c9fb5b
