@@ -8,8 +8,9 @@ namespace react = facebook::react;
 namespace expo {
 jni::local_ref<react::ReadableNativeArray::javaobject>
 JNIFunctionBody::invoke(react::ReadableNativeArray::javaobject &&args) {
-  static const auto method = getClass()->getMethod<react::ReadableNativeArray::javaobject(
-    react::ReadableNativeArray::javaobject)>(
+  static const auto method = getClass()->getMethod<
+    react::ReadableNativeArray::javaobject(react::ReadableNativeArray::javaobject)
+  >(
     "invoke"
   );
 
@@ -17,9 +18,9 @@ JNIFunctionBody::invoke(react::ReadableNativeArray::javaobject &&args) {
 }
 
 void JNIAsyncFunctionBody::invoke(react::ReadableNativeArray::javaobject &&args, jobject promise) {
-  static const auto method = getClass()->getMethod<react::ReadableNativeArray::javaobject(
-    react::ReadableNativeArray::javaobject,
-    jobject)>(
+  static const auto method = getClass()->getMethod<
+    react::ReadableNativeArray::javaobject(react::ReadableNativeArray::javaobject, jobject)
+  >(
     "invoke"
   );
 

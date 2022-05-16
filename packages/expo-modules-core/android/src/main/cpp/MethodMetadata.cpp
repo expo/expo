@@ -127,8 +127,10 @@ jsi::Function MethodMetadata::toSyncFunction(jsi::Runtime &runtime) {
     });
 }
 
-jsi::Function
-MethodMetadata::toAsyncFunction(jsi::Runtime &runtime, JSIInteropModuleRegistry *moduleRegistry) {
+jsi::Function MethodMetadata::toAsyncFunction(
+  jsi::Runtime &runtime, 
+  JSIInteropModuleRegistry *moduleRegistry
+) {
   return jsi::Function::createFromHostFunction(
     runtime,
     jsi::PropNameID::forAscii(runtime, name),

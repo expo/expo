@@ -48,7 +48,7 @@ class ModuleHolder(val module: Module) {
   }
 
   /**
-   * Invokes a function with promise. Is used in the bridge implementation of the Sweat API.
+   * Invokes a function with promise. Is used in the bridge implementation of the Sweet API.
    */
   fun call(methodName: String, args: ReadableArray, promise: Promise) = exceptionDecorator({
     FunctionCallException(methodName, definition.name, it)
