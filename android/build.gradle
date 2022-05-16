@@ -111,7 +111,9 @@ def ktlintTarget = '**/*.kt'
 
 // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
 // We don't need linter on turtle.
-subprojects {
+subprojects { project ->
+  if (project.name == "ReactAndroid") { return; }
+
   plugins.apply("com.diffplug.spotless")
   spotless {
     format 'gradle', {
