@@ -21,6 +21,9 @@ internal func ArgumentType<T>(_ type: T.Type) -> AnyArgumentType {
   if let EnumType = T.self as? EnumArgument.Type {
     return EnumArgumentType(innerType: EnumType)
   }
+  if let SharedObjectType = T.self as? SharedObject.Type {
+    return SharedObjectArgumentType(innerType: SharedObjectType)
+  }
   if T.self is Promise.Type {
     return PromiseArgumentType()
   }
