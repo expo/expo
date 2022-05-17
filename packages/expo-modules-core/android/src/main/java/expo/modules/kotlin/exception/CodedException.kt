@@ -152,3 +152,14 @@ internal class CollectionElementCastException(
   message = "Cannot cast '${providedType.name}' to '$elementType' required by the collection of type: '$collectionType'.",
   cause
 )
+
+internal class FieldAssignException(
+  fieldName: String,
+  fieldType: KType,
+  providedValue: Any?,
+  cause: CodedException
+) : DecoratedException(
+  message = "Cannot assign '${providedValue}' to a field '$fieldName' ('$fieldType')",
+  cause
+)
+

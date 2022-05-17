@@ -3,6 +3,7 @@ package expo.modules.kotlin.records
 import com.facebook.react.bridge.Dynamic
 import expo.modules.kotlin.allocators.ObjectConstructor
 import expo.modules.kotlin.allocators.ObjectConstructorFactory
+import expo.modules.kotlin.exception.FieldAssignException
 import expo.modules.kotlin.exception.FieldCastException
 import expo.modules.kotlin.exception.FieldRequiredException
 import expo.modules.kotlin.exception.RecordCastException
@@ -10,8 +11,10 @@ import expo.modules.kotlin.exception.exceptionDecorator
 import expo.modules.kotlin.recycle
 import expo.modules.kotlin.types.TypeConverter
 import expo.modules.kotlin.types.TypeConverterProvider
+import java.lang.reflect.InvocationTargetException
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty1
+import kotlin.reflect.KMutableProperty1
 import kotlin.reflect.KType
 import kotlin.reflect.full.createInstance
 import kotlin.reflect.full.findAnnotation
@@ -61,6 +64,7 @@ class RecordTypeConverter<T : Record>(
         jsMap.getDynamic(jsKey).recycle {
           val javaField = property.javaField!!
 
+          val elementConverter = converterProvider.obtainTypeConverter(property.returnType)
           val casted = exceptionDecorator({ cause -> FieldCastException(property.name, property.returnType, type, cause) }) {
             descriptor.typeConverter.convert(this)
           }
@@ -76,6 +80,9 @@ class RecordTypeConverter<T : Record>(
 
           javaField.isAccessible = true
           javaField.set(instance, casted)
+          exceptionDecorator({ cause -> FieldAssignException(property.name, property.returnType, casted, cause) }) {
+            (property as KMutableProperty1<* ,*>).setter.call(instance, casted)
+          }
         }
       }
 
