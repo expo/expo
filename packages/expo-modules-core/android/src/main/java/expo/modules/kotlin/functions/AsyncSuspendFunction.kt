@@ -15,7 +15,7 @@ class AsyncSuspendFunction(
   name: String,
   argsType: Array<AnyType>,
   private val body: suspend CoroutineScope.(args: Array<out Any?>) -> Any?
-) : AnyFunction(name, argsType) {
+) : AnyFunction(name, argsType, isSync = false) {
   override fun callImplementation(holder: ModuleHolder, args: Array<out Any?>, promise: Promise) {
     val scope = holder.module.coroutineScopeDelegate.value
     scope.launch {

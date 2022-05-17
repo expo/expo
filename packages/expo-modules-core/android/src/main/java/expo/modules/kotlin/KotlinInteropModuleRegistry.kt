@@ -41,26 +41,26 @@ class KotlinInteropModuleRegistry(
   }
 
   fun exportedModulesConstants(): Map<ModuleName, ModuleConstants> {
-    return registry
-      .map { holder ->
-        holder.name to holder.definition.constantsProvider()
-      }
-      .toMap()
+    return registry.associate { holder ->
+      holder.name to holder.definition.constantsProvider()
+    }
   }
 
   fun exportMethods(exportKey: (String, List<ModuleMethodInfo>) -> Unit = { _, _ -> }): Map<ModuleName, List<ModuleMethodInfo>> {
-    return registry
-      .map { holder ->
-        val methodsInfo = holder.definition.methods.map { (name, method) ->
+    return registry.associate { holder ->
+      val methodsInfo = holder
+        .definition
+        .methods
+        .filter { (_, method) -> !method.isSync }
+        .map { (name, method) ->
           mapOf(
             "name" to name,
             "argumentsCount" to method.argsCount
           )
         }
-        exportKey(holder.name, methodsInfo)
-        holder.name to methodsInfo
-      }
-      .toMap()
+      exportKey(holder.name, methodsInfo)
+      holder.name to methodsInfo
+    }
   }
 
   fun exportViewManagers(): List<ViewManager<*, *>> {
@@ -109,5 +109,9 @@ class KotlinInteropModuleRegistry(
 
   fun onDestroy() {
     appContext.onDestroy()
+  }
+
+  fun installJSIInterop() {
+    appContext.installJSIInterop()
   }
 }

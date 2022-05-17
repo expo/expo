@@ -1,9 +1,13 @@
+@file:OptIn(DelicateCoroutinesApi::class)
+
 package expo.modules.kotlin
 
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import com.facebook.react.bridge.ReactApplicationContext
+import com.facebook.react.turbomodule.core.CallInvokerHolderImpl
+import expo.modules.core.errors.ContextDestroyedException
 import expo.modules.core.interfaces.ActivityProvider
 import expo.modules.interfaces.barcodescanner.BarCodeScannerInterface
 import expo.modules.interfaces.camera.CameraViewInterface
@@ -20,7 +24,14 @@ import expo.modules.kotlin.events.EventName
 import expo.modules.kotlin.events.KEventEmitterWrapper
 import expo.modules.kotlin.events.KModuleEventEmitterWrapper
 import expo.modules.kotlin.events.OnActivityResultPayload
+import expo.modules.kotlin.jni.JSIInteropModuleRegistry
 import expo.modules.kotlin.modules.Module
+import kotlinx.coroutines.CoroutineName
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.newSingleThreadContext
 import java.lang.ref.WeakReference
 
 class AppContext(
@@ -33,6 +44,13 @@ class AppContext(
     register(modulesProvider)
   }
   private val reactLifecycleDelegate = ReactLifecycleDelegate(this)
+  // We postpone creating the `JSIInteropModuleRegistry` to not load so files in unit tests.
+  private lateinit var jsiInterop: JSIInteropModuleRegistry
+  internal val modulesQueue = CoroutineScope(
+    newSingleThreadContext("ExpoModulesCoreQueue") +
+      SupervisorJob() +
+      CoroutineName("ExpoModulesCoreCoroutineQueue")
+  )
 
   init {
     requireNotNull(reactContextHolder.get()) {
@@ -40,6 +58,18 @@ class AppContext(
     }.apply {
       addLifecycleEventListener(reactLifecycleDelegate)
       addActivityEventListener(reactLifecycleDelegate)
+    }
+  }
+
+  fun installJSIInterop() {
+    jsiInterop = JSIInteropModuleRegistry(this)
+    val reactContext = reactContextHolder.get() ?: return
+    reactContext.javaScriptContextHolder?.get()?.let {
+      jsiInterop.installJSI(
+        it,
+        reactContext.catalystInstance.jsCallInvokerHolder as CallInvokerHolderImpl,
+        reactContext.catalystInstance.nativeCallInvokerHolder as CallInvokerHolderImpl
+      )
     }
   }
 
@@ -149,6 +179,7 @@ class AppContext(
     reactContextHolder.get()?.removeLifecycleEventListener(reactLifecycleDelegate)
     registry.post(EventName.MODULE_DESTROY)
     registry.cleanUp()
+    modulesQueue.cancel(ContextDestroyedException())
   }
 
   fun onHostResume() {
