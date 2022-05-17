@@ -1,14 +1,15 @@
 import { MetroDevServerOptions } from '@expo/dev-server';
+import fs from 'fs';
 import http from 'http';
 import Metro from 'metro';
-import path from 'path';
 import { Terminal } from 'metro-core';
+import path from 'path';
 import resolveFrom from 'resolve-from';
 
+import { env } from '../../../utils/env';
 import { createDevServerMiddleware } from '../middleware/createDevServerMiddleware';
 import { MetroTerminalReporter } from './MetroTerminalReporter';
 import { importExpoMetroConfigFromProject, importMetroFromProject } from './resolveFromProject';
-import { env } from '../../../utils/env';
 
 // From expo/dev-server but with ability to use custom logger.
 type MessageSocket = {
@@ -112,6 +113,16 @@ export function withMetroWeb(projectRoot: string, config: import('metro-config')
   // @ts-expect-error
   config.resolver.sourceExts = sourceExts;
 
+  // Get the `transformer.assetRegistryPath`
+  // this needs to be unified since you can't dynamically
+  // swap out the transformer based on platform.
+  const assetRegistryPath = fs.realpathSync(
+    path.resolve(
+      // config.transformer.assetRegistryPath ??
+      resolveFrom(projectRoot, '@react-native/assets/registry.js')
+    )
+  );
+
   // Create a resolver which dynamically disables support for
   // `*.native.*` extensions on web.
 
@@ -124,7 +135,33 @@ export function withMetroWeb(projectRoot: string, config: import('metro-config')
     try {
       // Disable `*.native.*` extensions on web.
       context.preferNativePlatform = platform !== 'web';
-      return resolve(context, moduleName, platform);
+
+      // @ts-expect-error: custom property to extend the resolution.
+      const resolvers = config.resolver._expo_resolvers;
+
+      if (Array.isArray(resolvers)) {
+        for (const resolver of resolvers) {
+          const results = resolver(context, _realModuleName, platform, moduleName);
+          if (results) {
+            return results;
+          }
+        }
+      }
+
+      const result = resolve(context, moduleName, platform);
+
+      // Replace the web resolver with the original one.
+      // This is basically an alias for web-only.
+      if (
+        platform === 'web' &&
+        result?.type === 'sourceFile' &&
+        typeof result?.filePath === 'string' &&
+        result.filePath.endsWith('react-native-web/dist/modules/AssetRegistry/index.js')
+      ) {
+        result.filePath = assetRegistryPath;
+      }
+
+      return result;
     } catch (e) {
       throw e;
     } finally {

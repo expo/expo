@@ -39,7 +39,7 @@ async function getMultiBundlerStartOptions(
 
   const multiBundlerStartOptions: MultiBundlerStartOptions = [];
 
-  if (options.web || settings.webOnly) {
+  if (!env.EXPO_USE_METRO_WEB && (options.web || settings.webOnly)) {
     multiBundlerStartOptions.push({
       type: 'webpack',
       options: {
