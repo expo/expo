@@ -17,6 +17,8 @@ export type GitLogOptions = {
   fromCommit?: string;
   toCommit?: string;
   paths?: string[];
+  cherryPick?: 'left' | 'right';
+  symmetricDifference?: boolean;
 };
 
 export type GitLog = {
@@ -24,6 +26,7 @@ export type GitLog = {
   parent: string;
   title: string;
   authorName: string;
+  authorDate: string;
   committerRelativeDate: string;
 };
 
@@ -215,13 +218,18 @@ export class GitDirectory {
   async logAsync(options: GitLogOptions = {}): Promise<GitLog[]> {
     const fromCommit = options.fromCommit ?? '';
     const toCommit = options.toCommit ?? 'head';
+    const commitSeparator = options.symmetricDifference ? '...' : '..';
     const paths = options.paths ?? ['.'];
+    const cherryPickOptions = options.cherryPick
+      ? ['--cherry-pick', options.cherryPick === 'left' ? '--left-only' : '--right-only']
+      : [];
 
     const template = {
       hash: '%H',
       parent: '%P',
       title: '%s',
       authorName: '%aN',
+      authorDate: '%aI',
       committerRelativeDate: '%cr',
     };
 
@@ -238,7 +246,8 @@ export class GitDirectory {
     const { stdout } = await this.runAsync([
       'log',
       `--pretty=format:${format}`,
-      `${fromCommit}..${toCommit}`,
+      ...cherryPickOptions,
+      `${fromCommit}${commitSeparator}${toCommit}`,
       '--',
       ...paths,
     ]);
