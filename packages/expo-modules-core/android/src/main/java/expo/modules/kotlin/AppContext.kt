@@ -34,6 +34,7 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.newSingleThreadContext
+import java.lang.RuntimeException
 import java.lang.ref.WeakReference
 
 class AppContext(
@@ -214,6 +215,7 @@ class AppContext(
       intent
     )
   }
+<<<<<<< HEAD
 
 // region CurrentActivityProvider
 
@@ -229,4 +231,23 @@ class AppContext(
     }
 
 // endregion
+||||||| parent of 39d1e35786 ([emc][Android] Implement `ReactActivityProvider` in `AppContext`)
+=======
+
+// region ReactActivityProvider
+
+  override val reactActivity: ReactActivity?
+    get() {
+      val currentActivity = this.activityProvider?.currentActivity ?: return null
+
+      if (currentActivity !is ReactActivity) {
+        throw RuntimeException("Current Activity is of incorrect class, expected ReactActivity, received ${currentActivity.localClassName}")
+      }
+
+      return currentActivity
+    }
+
+// endregion
+
+>>>>>>> 39d1e35786 ([emc][Android] Implement `ReactActivityProvider` in `AppContext`)
 }
