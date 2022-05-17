@@ -28,17 +28,22 @@ import expo.modules.kotlin.events.KModuleEventEmitterWrapper
 import expo.modules.kotlin.events.OnActivityResultPayload
 import expo.modules.kotlin.modules.Module
 import java.lang.ref.WeakReference
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 class AppContext(
   modulesProvider: ModulesProvider,
   val legacyModuleRegistry: expo.modules.core.ModuleRegistry,
   private val reactContextHolder: WeakReference<ReactApplicationContext>
-) {
+):
+  AppContextActivityResultCaller
+{
   val registry = ModuleRegistry(WeakReference(this)).apply {
     register(ErrorManagerModule())
     register(modulesProvider)
   }
   private val reactLifecycleDelegate = ReactLifecycleDelegate(this)
+  private val activityResultsManager = ActivityResultsManager(this)
 
   init {
     requireNotNull(reactContextHolder.get()) {
