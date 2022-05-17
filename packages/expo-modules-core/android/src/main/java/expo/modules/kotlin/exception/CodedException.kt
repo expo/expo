@@ -97,11 +97,11 @@ internal class ValidationException(message: String) :
 /**
  * A base class for all exceptions used in `exceptionDecorator` function.
  */
-internal open class DecoratedException(
+open class DecoratedException(
   message: String,
-  cause: CodedException,
+  cause: Throwable,
 ) : CodedException(
-  cause.code,
+  if (cause is CodedException) cause.code else "TODO",
   message = "$message${System.lineSeparator()}→ Caused by: ${cause.localizedMessage ?: cause}",
   cause
 )
