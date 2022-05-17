@@ -5,6 +5,7 @@ import android.content.Intent
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.annotation.MainThread
+import androidx.appcompat.app.AppCompatActivity
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContext
 import expo.modules.core.interfaces.ActivityProvider
@@ -27,6 +28,7 @@ import expo.modules.kotlin.events.KEventEmitterWrapper
 import expo.modules.kotlin.events.KModuleEventEmitterWrapper
 import expo.modules.kotlin.events.OnActivityResultPayload
 import expo.modules.kotlin.modules.Module
+import expo.modules.kotlin.providers.AppCompatActivityProvider
 import java.lang.ref.WeakReference
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
@@ -36,6 +38,7 @@ class AppContext(
   val legacyModuleRegistry: expo.modules.core.ModuleRegistry,
   private val reactContextHolder: WeakReference<ReactApplicationContext>
 ):
+  AppCompatActivityProvider,
   AppContextActivityResultCaller
 {
   val registry = ModuleRegistry(WeakReference(this)).apply {
@@ -193,6 +196,23 @@ class AppContext(
       intent
     )
   }
+
+// region AppCompatActivityProvider
+
+  override val appCompatActivity: AppCompatActivity?
+    get() {
+      val currentActivity = this.activityProvider?.currentActivity ?: return null
+
+      if (currentActivity !is AppCompatActivity) {
+        // TODO(@bbarthec): what happens here? It should rather never happen
+        TODO()
+      }
+
+      return currentActivity
+    }
+
+// endregion
+
 // region AppContextActivityResultCaller
 
   @MainThread
