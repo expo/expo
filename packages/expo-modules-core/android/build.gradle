@@ -179,8 +179,18 @@ android {
 dependencies {
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
   implementation "org.jetbrains.kotlin:kotlin-reflect:${getKotlinVersion()}"
-  implementation 'androidx.annotation:annotation:1.2.0'
+  implementation 'androidx.annotation:annotation:1.3.0'
   implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0"
+  /**
+   * ReactActivity (the base activity for every React Native application) is subclassing AndroidX classes.
+   * Unfortunately until https://github.com/facebook/react-native/pull/33072 us released React Native uses "androidx.appcompat:appcompat:1.0.2".
+   * Gradle is picking the highest version of the dependency so we enforce higher version here.
+   * see https://docs.gradle.org/current/userguide/dependency_resolution.html#sec:version-conflict
+   * We're enforcing the most up-to-date versions of the dependencies here that are used in subclassing chain for ReactActivity.
+   */
+  implementation "androidx.appcompat:appcompat:1.4.1"
+  implementation "androidx.activity:activity-ktx:1.4.0" // androidx.appcompat:appcompat:1.4.1 depends on version 1.2.3, so we enforce higher one here
+  implementation "androidx.fragment:fragment-ktx:1.4.1" // androidx.appcomapt:appcompat:1.4.1 depends on version 1.3.4, so we enforce higher one here
 
   //noinspection GradleDynamicVersion
   implementation 'com.facebook.react:react-native:+'
