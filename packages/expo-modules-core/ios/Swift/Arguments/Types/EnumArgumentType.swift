@@ -6,6 +6,17 @@
 internal struct EnumArgumentType: AnyArgumentType {
   let innerType: EnumArgument.Type
 
+  func wraps<InnerType>(_ type: InnerType.Type) -> Bool {
+    return innerType == InnerType.self
+  }
+
+  func equals(_ type: AnyArgumentType) -> Bool {
+    if let enumType = type as? Self {
+      return enumType.innerType == innerType
+    }
+    return false
+  }
+
   func cast<ArgType>(_ value: ArgType) throws -> Any {
     return try innerType.create(fromRawValue: value)
   }
