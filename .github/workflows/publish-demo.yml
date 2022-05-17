@@ -45,11 +45,9 @@ jobs:
       - name: 🧶 Install workspace node modules
         if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
-      - name: 🔧 Install Expo CLI v3
-        run: yarn global add expo-cli@3
-      - name: Publish Expo app
+      - name: Publish update
         working-directory: ./apps/native-component-list
-        run: EXPO_SDK_VERSION=43.0.0 eas update --branch main --message "initial publish"
+        run: EXPO_SDK_VERSION=45.0.0 eas update --branch main --message "Publishing ${{ github.sha }}"
       - name: 🏗️ Build the NCL website
         working-directory: ./apps/native-component-list
         run: yarn build:web
