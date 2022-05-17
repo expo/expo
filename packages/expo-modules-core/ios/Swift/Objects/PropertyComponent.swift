@@ -28,7 +28,7 @@ public final class PropertyComponent: AnyDefinition {
   public func get<Value>(_ getter: @escaping () -> Value) -> Self {
     self.getter = SyncFunctionComponent(
       "get",
-      argTypes: [ArgumentType(Any.self)],
+      dynamicArgumentTypes: [~Any.self],
       { (caller: Any) in getter() }
     )
     return self
@@ -40,7 +40,7 @@ public final class PropertyComponent: AnyDefinition {
   public func set<Value>(_ setter: @escaping (_ newValue: Value) -> ()) -> Self {
     self.setter = SyncFunctionComponent(
       "set",
-      argTypes: [ArgumentType(Any.self), ArgumentType(Value.self)],
+      dynamicArgumentTypes: [~Any.self, ~Value.self],
       { (caller: Any, value: Value) in setter(value) }
     )
     return self
@@ -53,7 +53,7 @@ public final class PropertyComponent: AnyDefinition {
   public func get<Value, Caller>(_ getter: @escaping (_ this: Caller) -> Value) -> Self {
     self.getter = SyncFunctionComponent(
       "get",
-      argTypes: [ArgumentType(Caller.self)],
+      dynamicArgumentTypes: [~Caller.self],
       getter
     )
     return self
@@ -66,7 +66,7 @@ public final class PropertyComponent: AnyDefinition {
   public func set<Value, Caller>(_ setter: @escaping (_ this: Caller, _ newValue: Value) -> ()) -> Self {
     self.setter = SyncFunctionComponent(
       "set",
-      argTypes: [ArgumentType(Caller.self), ArgumentType(Value.self)],
+      dynamicArgumentTypes: [~Caller.self, ~Value.self],
       setter
     )
     return self
