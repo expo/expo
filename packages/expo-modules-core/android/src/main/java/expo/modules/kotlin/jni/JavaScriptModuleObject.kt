@@ -1,6 +1,7 @@
 package expo.modules.kotlin.jni
 
 import com.facebook.jni.HybridData
+import expo.modules.core.interfaces.DoNotStrip
 
 /**
  * A class to communicate with CPP part of the [expo.modules.kotlin.modules.Module] class.
@@ -9,8 +10,10 @@ import com.facebook.jni.HybridData
  * All exported functions/objects will have a reference to the `JavaScriptModuleObject`,
  * so it must outlive the current RN context.
  */
+@DoNotStrip
 class JavaScriptModuleObject {
   // Has to be called "mHybridData" - fbjni uses it via reflection
+  @DoNotStrip
   private val mHybridData = initHybrid()
 
   @Suppress("KotlinJniMissingFunction")
