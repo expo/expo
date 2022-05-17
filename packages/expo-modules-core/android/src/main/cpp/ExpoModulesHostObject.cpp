@@ -15,6 +15,10 @@ ExpoModulesHostObject::ExpoModulesHostObject(JSIInteropModuleRegistry *installer
 jsi::Value ExpoModulesHostObject::get(jsi::Runtime &runtime, const jsi::PropNameID &name) {
   auto cName = name.utf8(runtime);
   auto module = installer->getModule(cName);
+  if (module == nullptr) {
+    return jsi::Value::undefined();
+  }
+
   module->cthis()->jsiInteropModuleRegistry = installer;
   auto jsiObject = module->cthis()->getJSIObject(runtime);
   return jsi::Value(runtime, *jsiObject);
