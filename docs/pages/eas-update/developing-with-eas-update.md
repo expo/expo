@@ -4,6 +4,8 @@ title: Developing with EAS Update
 
 import ImageSpotlight from '~/components/plugins/ImageSpotlight'
 
+> EAS Update is currently available only to customers with an EAS subscription plan. [Sign up](https://expo.dev/accounts/[account]/settings/subscriptions).
+
 EAS Update can help us fix critical bugs in production. It can also help us iterate faster with our team.
 
 ## Developing locally
