@@ -33,7 +33,7 @@ internal class CustomTabsConnectionHelper(
   }
 
   fun coolDown(packageName: String): Boolean {
-    if (packageName == currentPackageName) {
+    if (isConnectionStarted(packageName)) {
       unbindService()
       return true
     }
