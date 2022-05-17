@@ -149,11 +149,6 @@ class ClipboardModule : Module() {
     // endregion
   }
 
-  private val context
-    get() = requireNotNull(appContext.reactContext) {
-      "React Application Context is null"
-    }
-
   private val clipboardManager: ClipboardManager
     get() = context.getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager
       ?: throw ClipboardUnavailableException()
