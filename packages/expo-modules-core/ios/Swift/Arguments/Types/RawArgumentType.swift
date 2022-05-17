@@ -7,6 +7,14 @@
 internal struct RawArgumentType<InnerType>: AnyArgumentType {
   let innerType: InnerType.Type
 
+  func wraps<InnerType>(_ type: InnerType.Type) -> Bool {
+    return type == innerType
+  }
+
+  func equals(_ type: AnyArgumentType) -> Bool {
+    return type is Self
+  }
+
   func cast<ArgType>(_ value: ArgType) throws -> Any {
     if let value = value as? InnerType {
       return value

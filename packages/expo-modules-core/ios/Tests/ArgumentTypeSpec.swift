@@ -119,6 +119,30 @@ class ArgumentTypeSpec: ExpoSpec {
         expect(StringTestEnum.allRawValues as? [String]) == ["hello", "expo"]
         expect(IntTestEnum.allRawValues as? [Int]) == [-1, 1]
       }
+
+      describe("wraps") {
+        it("is wrapped") {
+          expect(ArgumentType(StringTestEnum.self) ~> StringTestEnum.self) == true
+          expect(ArgumentType(IntTestEnum.self) ~> IntTestEnum.self) == true
+        }
+        it("is not wrapped") {
+          expect(ArgumentType(StringTestEnum.self) !~> IntTestEnum.self) == true
+          expect(ArgumentType(IntTestEnum.self) !~> StringTestEnum.self) == true
+        }
+      }
+
+      describe("equals") {
+        it("is equal") {
+          expect(ArgumentType(StringTestEnum.self) == ArgumentType(StringTestEnum.self)) == true
+          expect(ArgumentType(IntTestEnum.self) == ArgumentType(IntTestEnum.self)) == true
+        }
+        it("is not equal") {
+          expect(ArgumentType(StringTestEnum.self) != ArgumentType(IntTestEnum.self)) == true
+          expect(ArgumentType(IntTestEnum.self) != ArgumentType(StringTestEnum.self)) == true
+          expect(ArgumentType(StringTestEnum.self) != ArgumentType(Double.self)) == true
+          expect(ArgumentType(IntTestEnum.self) != ArgumentType(Int.self)) == true
+        }
+      }
     }
   }
 }
