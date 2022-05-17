@@ -125,6 +125,11 @@ class AppContext(
   /**
    * Provides access to the activity provider from the legacy module registry
    */
+  @Deprecated(
+    message = "This provider enables accessing generic Activity that is an instance of ReactActivity " +
+      "that subclasses AppCompatActivity. Access AppCompatActivity directly via currentAppCompatActivity.",
+    replaceWith = ReplaceWith("currentAppCompatActivity")
+  )
   val activityProvider: ActivityProvider?
     get() = legacyModule()
 
