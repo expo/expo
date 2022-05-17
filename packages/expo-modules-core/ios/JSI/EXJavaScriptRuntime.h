@@ -30,6 +30,7 @@ NS_SWIFT_NAME(JavaScriptRuntime)
 - (nonnull instancetype)init;
 
 #ifdef __cplusplus
+
 - (nonnull instancetype)initWithRuntime:(nonnull jsi::Runtime *)runtime
                             callInvoker:(std::shared_ptr<react::CallInvoker>)callInvoker;
 
