@@ -2,6 +2,8 @@
 title: Known issues
 ---
 
+> EAS Update is currently available only to customers with an EAS subscription plan. [Sign up](https://expo.dev/accounts/[account]/settings/subscriptions).
+
 EAS Update is in "preview" meaning we may still make breaking developer-facing changes. With that, EAS Update is ready for production apps.
 
 With our initial release of EAS Update, there are several known issues you may encounter. As we continue to iterate on EAS Update, we will address these issues.

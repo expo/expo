@@ -2,6 +2,8 @@
 title: Using expo-dev-client with EAS Update
 ---
 
+> EAS Update is currently available only to customers with an EAS subscription plan. [Sign up](https://expo.dev/accounts/[account]/settings/subscriptions).
+
 > ⚠️ This guide is likely to change as we continue to work on EAS Update.
 
 The [`expo-dev-client`](/development/introduction) library allows us to launch different versions of our project. One of the most popular use-cases is to preview a published update inside a development build, using the `expo-dev-client` library.
