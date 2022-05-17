@@ -41,7 +41,9 @@ class WebBrowserModule : Module() {
     AsyncFunction("warmUpAsync") { packageName: String? ->
       val resolvedPackageName = givenOrPreferredPackageName(packageName)
       connectionHelper.warmUp(resolvedPackageName)
-      return@AsyncFunction
+      return@AsyncFunction bundleOf(
+        SERVICE_PACKAGE_KEY to resolvedPackageName
+      )
     }
 
     AsyncFunction("coolDownAsync") { packageName: String? ->
@@ -100,8 +102,9 @@ class WebBrowserModule : Module() {
     }
   }
 
-  private lateinit var customTabsResolver: CustomTabsActivitiesHelper
-  private lateinit var connectionHelper: CustomTabsConnectionHelper
+  // these must be `internal` to be able to be injected in tests
+  internal lateinit var customTabsResolver: CustomTabsActivitiesHelper
+  internal lateinit var connectionHelper: CustomTabsConnectionHelper
 
   private fun createCustomTabsIntent(options: OpenBrowserOptions): Intent {
     val builder = CustomTabsIntent.Builder()
