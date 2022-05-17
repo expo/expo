@@ -1,12 +1,12 @@
 package expo.modules.kotlin
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.annotation.MainThread
 import com.facebook.react.bridge.ReactApplicationContext
+import com.facebook.react.bridge.ReactContext
 import expo.modules.core.interfaces.ActivityProvider
 import expo.modules.interfaces.barcodescanner.BarCodeScannerInterface
 import expo.modules.interfaces.camera.CameraViewInterface
@@ -128,7 +128,7 @@ class AppContext(
   /**
    * Provides access to the react application context
    */
-  val reactContext: Context?
+  val reactContext: ReactContext?
     get() = reactContextHolder.get()
 
   /**
