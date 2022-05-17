@@ -17,6 +17,9 @@ namespace jsi = facebook::jsi;
 namespace react = facebook::react;
 
 namespace expo {
+/**
+ * A JNI wrapper to initialize CPP part of modules and access all data from the module registry.
+ */
 class JSIInteropModuleRegistry : public jni::HybridClass<JSIInteropModuleRegistry> {
 public:
   static auto constexpr
@@ -27,12 +30,25 @@ public:
 
   static void registerNatives();
 
+  /**
+   * Initializes the `ExpoModulesHostObject` and adds it to the globa object.
+   *
+   * @param jsRuntimePointer
+   * @param jsInvokerHolder
+   * @param nativeInvokerHolder
+   */
   void installJSI(
     jlong jsRuntimePointer,
     jni::alias_ref<react::CallInvokerHolder::javaobject> jsInvokerHolder,
     jni::alias_ref<react::CallInvokerHolder::javaobject> nativeInvokerHolder
   );
 
+  /**
+   * Gets a module for a given name. It will throw an exception if the module doesn't exist.
+   *
+   * @param moduleName
+   * @return An instance of `JavaScriptModuleObject`
+   */
   jni::local_ref<JavaScriptModuleObject::javaobject> getModule(const std::string &moduleName) const;
 
   std::shared_ptr<react::CallInvoker> jsInvoker;

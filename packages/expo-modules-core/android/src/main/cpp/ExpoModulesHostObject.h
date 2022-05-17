@@ -11,6 +11,11 @@
 namespace jsi = facebook::jsi;
 
 namespace expo {
+/**
+ * An entry point to all exported functionalities like modules.
+ *
+ * An instance of this class will be added to the JS global object.
+ */
 class ExpoModulesHostObject : public jsi::HostObject {
 public:
   ExpoModulesHostObject(JSIInteropModuleRegistry *installer);

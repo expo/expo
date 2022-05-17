@@ -80,17 +80,20 @@ jsi::Value JavaScriptModuleObject::HostObject::get(jsi::Runtime &runtime,
   return jsi::Value(runtime, *metadata.toJSFunction(runtime, jsModule->jsiInteropModuleRegistry));
 }
 
-void
-JavaScriptModuleObject::HostObject::set(jsi::Runtime &runtime, const jsi::PropNameID &name,
-                                        const jsi::Value &value) {
+void JavaScriptModuleObject::HostObject::set(
+  jsi::Runtime &runtime,
+  const jsi::PropNameID &name,
+  const jsi::Value &value
+) {
   throw jsi::JSError(
     runtime,
     "RuntimeError: Cannot override the host object for expo module '" + name.utf8(runtime) + "'"
   );
 }
 
-std::vector<jsi::PropNameID>
-JavaScriptModuleObject::HostObject::getPropertyNames(jsi::Runtime &rt) {
+std::vector<jsi::PropNameID> JavaScriptModuleObject::HostObject::getPropertyNames(
+  jsi::Runtime &rt
+) {
   auto &metadata = jsModule->methodsMetadata;
   std::vector<jsi::PropNameID> result;
   std::transform(
