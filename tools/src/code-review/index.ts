@@ -7,12 +7,38 @@ import { COMMENT_HEADER, generateReportFromOutputs } from './reports';
 import checkMissingChangelogs from './reviewers/checkMissingChangelogs';
 import reviewChangelogEntries from './reviewers/reviewChangelogEntries';
 import reviewForbiddenFiles from './reviewers/reviewForbiddenFiles';
-import { ReviewEvent, ReviewComment, ReviewInput, ReviewOutput, ReviewStatus } from './types';
+import {
+  ReviewEvent,
+  ReviewComment,
+  ReviewInput,
+  ReviewOutput,
+  ReviewStatus,
+  Reviewer,
+} from './types';
 
 /**
  * An array with functions whose purpose is to check and review the diff.
  */
-const REVIEWERS = [checkMissingChangelogs, reviewChangelogEntries, reviewForbiddenFiles];
+const REVIEWERS: Reviewer[] = [
+  {
+    id: 'changelog-checks',
+    action: checkMissingChangelogs,
+  },
+  {
+    id: 'changelog-review',
+    action: reviewChangelogEntries,
+  },
+  {
+    id: 'file-checks',
+    action: reviewForbiddenFiles,
+  },
+];
+
+/**
+ * A magic comment template for a reviewer. Magic comments are used to disable specific reviewers.
+ * Available reviewers: {@link REVIEWERS}
+ */
+const getMagicCommentForReviewer = (reviewer: Reviewer) => `<!-- disable:${reviewer.id} -->`;
 
 enum Label {
   PASSED_CHECKS = 'bot: passed checks',
@@ -42,11 +68,12 @@ export async function reviewPullRequestAsync(prNumber: number) {
     diff,
   };
 
-  // Run all the checks asynchronously and collects their outputs.
+  // Filter out the disabled checks, run the checks asynchronously and collects their outputs.
   logger.info('🕵️‍♀️  Reviewing changes');
-  const outputs = (await Promise.all(REVIEWERS.map((reviewer) => reviewer(input)))).filter(
-    Boolean
-  ) as ReviewOutput[];
+  const reviewActions = REVIEWERS.filter(
+    (reviewer) => !pr.body?.includes(getMagicCommentForReviewer(reviewer))
+  ).map(({ action }) => action(input));
+  const outputs = (await Promise.all(reviewActions)).filter(Boolean) as ReviewOutput[];
 
   // Only active (non-passive) outputs will be reported in the review body.
   const activeOutputs = outputs.filter(
