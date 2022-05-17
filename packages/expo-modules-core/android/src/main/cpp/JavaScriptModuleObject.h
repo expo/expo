@@ -75,7 +75,7 @@ public:
    *  --create JSI function--> `MethodMetadata`
    *
    * This abstraction wasn't necessary. However, it makes the management of ownership much easier -
-   * `JavaScriptModuleObject` is hold by the ModuleHolder and `JavaScriptModuleObject::HostObject` is stored in the JS runtime.
+   * `JavaScriptModuleObject` is held by the ModuleHolder and `JavaScriptModuleObject::HostObject` is stored in the JS runtime.
    * Without this distinction the `JavaScriptModuleObject` would have to turn into `HostObject` and `HybridObject` at the same time.
    */
   class HostObject : public jsi::HostObject {

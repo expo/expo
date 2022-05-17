@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - Introduce dynamic properties in the Sweet API on iOS. ([#17318](https://github.com/expo/expo/pull/17318) by [@tsapeta](https://github.com/tsapeta))
+- Add basic support for sync functions in the Sweet API on Android.
 
 ### 🐛 Bug fixes
 

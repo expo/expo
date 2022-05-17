@@ -31,11 +31,7 @@ public:
   static void registerNatives();
 
   /**
-   * Initializes the `ExpoModulesHostObject` and adds it to the globa object.
-   *
-   * @param jsRuntimePointer
-   * @param jsInvokerHolder
-   * @param nativeInvokerHolder
+   * Initializes the `ExpoModulesHostObject` and adds it to the global object.
    */
   void installJSI(
     jlong jsRuntimePointer,
