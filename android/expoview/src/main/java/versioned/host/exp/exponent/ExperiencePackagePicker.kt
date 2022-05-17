@@ -32,7 +32,7 @@ import expo.modules.gl.GLPackage
 import expo.modules.haptics.HapticsPackage
 import expo.modules.imageloader.ImageLoaderPackage
 import expo.modules.imagemanipulator.ImageManipulatorPackage
-import expo.modules.imagepicker.ImagePickerPackage
+import expo.modules.imagepicker.ImagePickerModule
 import expo.modules.intentlauncher.IntentLauncherPackage
 import expo.modules.keepawake.KeepAwakePackage
 import expo.modules.kotlin.ModulesProvider
@@ -94,7 +94,6 @@ object ExperiencePackagePicker : ModulesProvider {
     HapticsPackage(),
     ImageLoaderPackage(),
     ImageManipulatorPackage(),
-    ImagePickerPackage(),
     IntentLauncherPackage(),
     KeepAwakePackage(),
     LocalAuthenticationPackage(),
@@ -144,6 +143,7 @@ object ExperiencePackagePicker : ModulesProvider {
     CellularModule::class.java,
     ClipboardModule::class.java,
     EASClientModule::class.java,
-    LinearGradientModule::class.java,
+    ImagePickerModule::class.java,
+    LinearGradientModule::class.java
   )
 }
