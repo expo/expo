@@ -6,6 +6,9 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContract
+import androidx.annotation.MainThread
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.turbomodule.core.CallInvokerHolderImpl
 import expo.modules.core.errors.ContextDestroyedException
@@ -19,6 +22,9 @@ import expo.modules.interfaces.imageloader.ImageLoaderInterface
 import expo.modules.interfaces.permissions.Permissions
 import expo.modules.interfaces.sensors.SensorServiceInterface
 import expo.modules.interfaces.taskManager.TaskManagerInterface
+import expo.modules.kotlin.activityresult.ActivityResultsManager
+import expo.modules.kotlin.activityresult.AppContextActivityResultCallback
+import expo.modules.kotlin.activityresult.AppContextActivityResultCaller
 import expo.modules.kotlin.defaultmodules.ErrorManagerModule
 import expo.modules.kotlin.events.EventEmitter
 import expo.modules.kotlin.events.EventName
@@ -36,12 +42,14 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.newSingleThreadContext
 import java.lang.RuntimeException
 import java.lang.ref.WeakReference
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 class AppContext(
   modulesProvider: ModulesProvider,
   val legacyModuleRegistry: expo.modules.core.ModuleRegistry,
   private val reactContextHolder: WeakReference<ReactApplicationContext>
-) : CurrentActivityProvider {
+) : CurrentActivityProvider, AppContextActivityResultCaller {
   val registry = ModuleRegistry(WeakReference(this)).apply {
     register(ErrorManagerModule())
     register(modulesProvider)
@@ -54,6 +62,8 @@ class AppContext(
       SupervisorJob() +
       CoroutineName("ExpoModulesCoreCoroutineQueue")
   )
+
+  private val activityResultsManager = ActivityResultsManager(this)
 
   init {
     requireNotNull(reactContextHolder.get()) {
@@ -198,6 +208,7 @@ class AppContext(
   }
 
   fun onActivityResult(activity: Activity, requestCode: Int, resultCode: Int, data: Intent?) {
+    activityResultsManager.onActivityResult(activity, requestCode, resultCode, data)
     registry.post(
       EventName.ON_ACTIVITY_RESULT,
       activity,
@@ -230,4 +241,35 @@ class AppContext(
     }
 
 // endregion
+
+// region AppContextActivityResultCaller
+
+  @MainThread
+  override fun <I, O> registerForActivityResult(
+    contract: ActivityResultContract<I, O>,
+    callback: AppContextActivityResultCallback<O>
+  ): ActivityResultLauncher<I> {
+    return activityResultsManager.registerForActivityResult(
+      contract,
+      callback
+    )
+  }
+
+  @MainThread
+  suspend fun <O> launchForActivityResult(
+    contract: ActivityResultContract<Any?, O>
+  ) = suspendCoroutine<AppContextActivityResult<O>> { continuation ->
+    activityResultsManager.registerForActivityResult(
+      contract
+    ) { output, launchingActivityHasBeenKilled ->
+      continuation.resume(AppContextActivityResult(output, launchingActivityHasBeenKilled))
+    }.launch(null)
+  }
+
+// endregion
 }
+
+data class AppContextActivityResult<O>(
+  val result: O,
+  val launchingActivityHasBeenKilled: Boolean
+)
