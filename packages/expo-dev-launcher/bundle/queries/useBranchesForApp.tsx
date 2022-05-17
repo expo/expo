@@ -53,27 +53,17 @@ export type Branch = {
   updates: Update[];
 };
 
-type GetBranchesResponse = {
-  branches: Branch[];
-  incompatibleBranches: Branch[];
-  page: number;
-};
-
 async function getBranchesAsync({
   appId,
   page = 1,
   runtimeVersion,
   pageSize,
-  recursionCount = 0,
-  previousPage,
 }: {
   appId: string;
   page?: number;
   runtimeVersion: string;
   pageSize: number;
-  recursionCount?: number;
-  previousPage?: GetBranchesResponse;
-}): Promise<GetBranchesResponse> {
+}) {
   if (appId !== '') {
     const offset = (page - 1) * pageSize;
     const variables = {
@@ -117,13 +107,11 @@ async function getBranchesAsync({
         primeCacheWithUpdates(appId, branch.name, branch.updates);
       });
 
-      const branchesResponse: GetBranchesResponse = {
+      return {
         branches,
         incompatibleBranches,
         page,
       };
-
-      return branchesResponse;
     });
   }
 

@@ -12,7 +12,7 @@ import {
   scale,
 } from 'expo-dev-client-components';
 import * as React from 'react';
-import { Animated, ScrollView } from 'react-native';
+import { Animated } from 'react-native';
 
 import { useUpdatesConfig } from '../providers/UpdatesConfigProvider';
 import { Branch } from '../queries/useBranchesForApp';
