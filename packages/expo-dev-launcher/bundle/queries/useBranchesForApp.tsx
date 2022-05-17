@@ -53,17 +53,27 @@ export type Branch = {
   updates: Update[];
 };
 
-function getBranchesAsync({
+type GetBranchesResponse = {
+  branches: Branch[];
+  incompatibleBranches: Branch[];
+  page: number;
+};
+
+async function getBranchesAsync({
   appId,
   page = 1,
   runtimeVersion,
   pageSize,
+  recursionCount = 0,
+  previousPage,
 }: {
   appId: string;
   page?: number;
   runtimeVersion: string;
   pageSize: number;
-}) {
+  recursionCount?: number;
+  previousPage?: GetBranchesResponse;
+}): Promise<GetBranchesResponse> {
   if (appId !== '') {
     const offset = (page - 1) * pageSize;
     const variables = {
@@ -107,11 +117,13 @@ function getBranchesAsync({
         primeCacheWithUpdates(appId, branch.name, branch.updates);
       });
 
-      return {
+      const branchesResponse: GetBranchesResponse = {
         branches,
         incompatibleBranches,
         page,
       };
+
+      return branchesResponse;
     });
   }
 
@@ -142,8 +154,10 @@ export function useBranchesForApp(appId: string, isAuthenticated: boolean) {
       retry: 3,
       refetchOnMount: false,
       enabled: !!isEnabled,
-      getNextPageParam: (lastPage, pages) => {
-        if (lastPage.branches.length < queryOptions.pageSize) {
+      getNextPageParam: (lastPage) => {
+        const totalBranches = lastPage.incompatibleBranches.length + lastPage.branches.length;
+
+        if (totalBranches < queryOptions.pageSize) {
           return undefined;
         }
 
