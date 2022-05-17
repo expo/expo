@@ -132,7 +132,7 @@ private fun prepareMockAppContext(customAppContext: AppContext?): AppContext {
 }
 
 /**
- * Creates a spy from given object or returns it as-is if it's already a spy
+ * Creates a spy from a given object or returns it as-is if it's already a spy
  */
 private fun <T : Any> convertToSpy(obj: T, recordPrivateCalls: Boolean = false): T =
   MockK.useImpl {
