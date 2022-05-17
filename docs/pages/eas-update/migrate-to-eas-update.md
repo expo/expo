@@ -4,6 +4,8 @@ title: Migrating from Classic Updates to EAS Update
 
 import ImageSpotlight from '~/components/plugins/ImageSpotlight'
 
+> EAS Update is currently available only to customers with an EAS subscription plan. [Sign up](https://expo.dev/accounts/[account]/settings/subscriptions).
+
 EAS Update is the next generation of Expo's updates service. If you're using Classic Updates, this guide will help you upgrade to EAS Update.
 
 ## Prerequisites
