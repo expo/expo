@@ -3,73 +3,69 @@ package expo.modules.imagepicker.exporters
 import android.graphics.Bitmap
 import android.net.Uri
 import androidx.annotation.FloatRange
-import expo.modules.imagepicker.exporters.ImageExporter.Listener
-import expo.modules.interfaces.imageloader.ImageLoaderInterface
-import org.apache.commons.io.FilenameUtils
+import androidx.core.net.toFile
+import expo.modules.imagepicker.FailedToReadFileException
+import expo.modules.imagepicker.FailedToWriteFileException
+import expo.modules.imagepicker.toBitmapCompressFormat
+import expo.modules.kotlin.exception.ModuleNotFoundException
+import expo.modules.kotlin.providers.AppContextProvider
+import expo.modules.kotlin.providers.ContextProvider
+import kotlinx.coroutines.runInterruptible
 import java.io.ByteArrayOutputStream
 import java.io.File
+import java.io.FileNotFoundException
 import java.io.FileOutputStream
 import java.io.IOException
+import java.util.concurrent.ExecutionException
 
 class CompressionImageExporter(
-  private val mImageLoader: ImageLoaderInterface,
-  @FloatRange(from = 0.0, to = 1.0, fromInclusive = true, toInclusive = true)
-  private val mQuality: Double,
-  private val mBase64: Boolean
+  private val appContextProvider: AppContextProvider,
+  private val contextProvider: ContextProvider,
+  @FloatRange(from = 0.0, to = 1.0)
+  private val quality: Double,
 ) : ImageExporter {
-  private val quality: Int
+  private val compressQuality: Int
     get() {
-      return (mQuality * 100).toInt()
+      return (quality * 100).toInt()
     }
 
-  override fun export(source: Uri, output: File, exporterListener: Listener) {
-    val imageLoaderHandler = object : ImageLoaderInterface.ResultListener {
-      override fun onSuccess(bitmap: Bitmap) {
-        val width = bitmap.width
-        val height = bitmap.height
-        (if (mBase64) ByteArrayOutputStream() else null).use { base64Stream ->
-          try {
-            val compressFormat = if (FilenameUtils.getExtension(output.path).contains("png")) {
-              Bitmap.CompressFormat.PNG
-            } else {
-              Bitmap.CompressFormat.JPEG
-            }
+  override suspend fun exportAsync(source: Uri, output: File): ImageExportResult = runInterruptible {
+    val loaderResult = appContextProvider.appContext.imageLoader
+      ?.loadImageForManipulationFromURL(source.toString())
+      ?: throw ModuleNotFoundException("ImageLoader")
 
-            saveBitmap(bitmap, compressFormat, output, base64Stream)
-            exporterListener.onResult(base64Stream, width, height)
-          } catch (e: IOException) {
-            exporterListener.onFailure(e)
-          }
-        }
-      }
-
-      override fun onFailure(cause: Throwable?) {
-        exporterListener.onFailure(cause)
-      }
+    val bitmap = try {
+      loaderResult.get()
+    } catch (cause: ExecutionException) {
+      throw FailedToReadFileException(source.toFile(), cause)
     }
 
-    mImageLoader.loadImageForManipulationFromURL(source.toString(), imageLoaderHandler)
+    val compressFormat = output.toBitmapCompressFormat()
+    writeImage(bitmap, output, compressFormat)
+
+    return@runInterruptible object : ImageExportResult(
+      bitmap.width,
+      bitmap.height,
+      contextProvider,
+      output
+    ) {
+      override suspend fun data(): ByteArrayOutputStream {
+        val outputStream = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.JPEG, compressQuality, outputStream)
+        return outputStream
+      }
+    }
   }
 
   /**
-   * Compress and save the `bitmap` to `file`, optionally saving it in `out` if
-   * base64 is requested.
-   *
-   * @param bitmap bitmap to be saved
-   * @param compressFormat compression format to save the image in
-   * @param output file to save the image to
-   * @param out if not null, the stream to save the image to
+   * Compress and save the `bitmap` to `file`
+   * @throws [IOException]
    */
-  @Throws(IOException::class)
-  private fun saveBitmap(bitmap: Bitmap, compressFormat: Bitmap.CompressFormat, output: File, out: ByteArrayOutputStream?) {
-    writeImage(bitmap, output, compressFormat)
-    if (mBase64) {
-      bitmap.compress(Bitmap.CompressFormat.JPEG, quality, out)
+  private fun writeImage(bitmap: Bitmap, output: File, compressFormat: Bitmap.CompressFormat) {
+    try {
+      FileOutputStream(output).use { out -> bitmap.compress(compressFormat, compressQuality, out) }
+    } catch (cause: FileNotFoundException) {
+      throw FailedToWriteFileException(output, cause)
     }
-  }
-
-  @Throws(IOException::class)
-  private fun writeImage(image: Bitmap, output: File, compressFormat: Bitmap.CompressFormat) {
-    FileOutputStream(output).use { out -> image.compress(compressFormat, quality, out) }
   }
 }
