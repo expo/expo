@@ -3,6 +3,7 @@
     "name": "Expo APIs",
     "description": "This demonstrates a bunch of the native components that you can use in React Native core and Expo.",
     "slug": "native-component-list",
+    "owner": "community",
     "sdkVersion": "UNVERSIONED",
     "version": "UNVERSIONED",
     "githubUrl": "https://github.com/expo/native-component-list",
@@ -23,6 +24,12 @@
       "silentLaunch": true
     },
     "platforms": ["android", "ios", "web"],
+    "runtimeVersion": {
+      "policy": "sdkVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/2c28de10-a2cd-11e6-b8ce-59d1587e6774"
+    },
     "facebookScheme": "fb1696089354000816",
     "facebookAppId": "1696089354000816",
     "facebookDisplayName": "Expo APIs",
