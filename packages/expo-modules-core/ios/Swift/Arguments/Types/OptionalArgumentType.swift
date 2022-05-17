@@ -7,6 +7,17 @@
 internal struct OptionalArgumentType: AnyArgumentType {
   let wrappedType: AnyArgumentType
 
+  func wraps<InnerType>(_ type: InnerType.Type) -> Bool {
+    return wrappedType.wraps(InnerType.self)
+  }
+
+  func equals(_ type: AnyArgumentType) -> Bool {
+    if let optionalType = type as? Self {
+      return optionalType.wrappedType.equals(wrappedType)
+    }
+    return false
+  }
+
   func cast<ArgType>(_ value: ArgType) throws -> Any {
     if Optional.isNil(value) {
       return Optional<Any>.none as Any

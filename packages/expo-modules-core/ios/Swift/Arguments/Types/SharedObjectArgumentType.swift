@@ -3,6 +3,17 @@
 internal struct SharedObjectArgumentType: AnyArgumentType {
   let innerType: SharedObject.Type
 
+  func wraps<InnerType>(_ type: InnerType.Type) -> Bool {
+    return innerType == InnerType.self
+  }
+
+  func equals(_ type: AnyArgumentType) -> Bool {
+    if let sharedObjectType = type as? Self {
+      return sharedObjectType.innerType == innerType
+    }
+    return false
+  }
+
   func cast<ArgType>(_ value: ArgType) throws -> Any {
     if let jsObject = try (value as? JavaScriptValue)?.asObject(),
        let nativeSharedObject = SharedObjectRegistry.toNativeObject(jsObject) {

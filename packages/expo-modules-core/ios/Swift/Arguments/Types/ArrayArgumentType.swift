@@ -7,6 +7,20 @@
 internal struct ArrayArgumentType: AnyArgumentType {
   let elementType: AnyArgumentType
 
+  func wraps<InnerType>(_ type: InnerType.Type) -> Bool {
+    if let ArrayType = InnerType.self as? AnyArrayArgument.Type {
+      return elementType.equals(ArrayType.getElementArgumentType())
+    }
+    return false
+  }
+
+  func equals(_ type: AnyArgumentType) -> Bool {
+    if let arrayType = type as? Self {
+      return arrayType.elementType.equals(elementType)
+    }
+    return false
+  }
+
   func cast<ArgType>(_ value: ArgType) throws -> Any {
     if let value = value as? [Any] {
       return try value.map { try elementType.cast($0) }
