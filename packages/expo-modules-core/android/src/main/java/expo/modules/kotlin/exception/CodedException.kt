@@ -163,3 +163,8 @@ internal class FieldAssignException(
   cause
 )
 
+open class ModuleNotFoundException(
+  moduleName: String
+): CodedException(
+  message = "Module '$moduleName' not found. Are you sure all modules are linked correctly?"
+)
