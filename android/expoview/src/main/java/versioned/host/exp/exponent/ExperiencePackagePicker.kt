@@ -64,7 +64,6 @@ import expo.modules.taskManager.TaskManagerPackage
 import expo.modules.updates.UpdatesPackage
 import expo.modules.videothumbnails.VideoThumbnailsPackage
 import expo.modules.webbrowser.WebBrowserModule
-import expo.modules.webbrowser.WebBrowserPackage
 
 object ExperiencePackagePicker : ModulesProvider {
   private val EXPO_MODULES_PACKAGES = listOf(
@@ -123,7 +122,6 @@ object ExperiencePackagePicker : ModulesProvider {
     TaskManagerPackage(),
     UpdatesPackage(),
     VideoThumbnailsPackage(),
-    WebBrowserPackage()
   )
 
   /**
