@@ -32,23 +32,3 @@ internal fun mockkCustomTabsActivitiesHelper(
 internal fun mockkCustomTabsConnectionHelper(): CustomTabsConnectionHelper {
   return mockk(relaxed = true)
 }
-
-internal fun browserArguments(
-  toolbarColor: String = "#000000",
-  toolbarSecondaryColor: String = "#000000",
-  browserPackage: String = "com.browser",
-  enableBarCollapsing: Boolean = true,
-  showTitle: Boolean = true,
-  enableDefaultShareMenuItem: Boolean = true,
-  showInRecents: Boolean = true,
-  createTask: Boolean = true
-) = OpenBrowserOptions().apply {
-  this.toolbarColor = toolbarColor
-  this.secondaryToolbarColor = toolbarSecondaryColor
-  this.browserPackage = browserPackage
-  this.enableBarCollapsing = enableBarCollapsing
-  this.showTitle = showTitle
-  this.enableDefaultShareMenuItem = enableDefaultShareMenuItem
-  this.showInRecents = showInRecents
-  this.shouldCreateTask = createTask
-}

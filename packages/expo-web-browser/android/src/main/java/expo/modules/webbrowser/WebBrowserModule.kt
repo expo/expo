@@ -130,8 +130,8 @@ class WebBrowserModule : Module() {
     }
 
     return builder.build().intent.apply {
-      // We cannot use builder's method enableUrlBarHiding, because there is
-      // no corresponding disable method and some browsers enables it by default.
+      // We cannot use the builder's method enableUrlBarHiding, because there is
+      // no corresponding disable method and some browsers enable it by default.
       putExtra(CustomTabsIntent.EXTRA_ENABLE_URLBAR_HIDING, options.enableBarCollapsing)
 
       val packageName = options.browserPackage

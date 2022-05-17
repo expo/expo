@@ -56,7 +56,7 @@ internal class WebBrowserModuleTest {
     initialize(moduleSpy, customTabsActivitiesHelper = mock)
 
     // when
-    val result = module.openBrowserAsync("http://expo.dev", browserArguments())
+    val result = module.openBrowserAsync("http://expo.dev", OpenBrowserOptions())
 
     // then
     result.let {
@@ -74,7 +74,7 @@ internal class WebBrowserModuleTest {
 
     // when
     val exception = runCatching {
-      module.openBrowserAsync("http://expo.dev", browserArguments())
+      module.openBrowserAsync("http://expo.dev", OpenBrowserOptions())
     }.exceptionOrNull()
 
     // then
@@ -92,7 +92,7 @@ internal class WebBrowserModuleTest {
 
     // when
     val exception = runCatching {
-      module.openBrowserAsync("http://expo.io", browserArguments())
+      module.openBrowserAsync("http://expo.io", OpenBrowserOptions())
     }.exceptionOrNull()
 
     // then
@@ -111,13 +111,13 @@ internal class WebBrowserModuleTest {
     // when
     module.openBrowserAsync(
       "http://expo.io",
-      browserArguments(
+      OpenBrowserOptions(
         toolbarColor = "#000000",
         browserPackage = "com.browser.package",
         enableBarCollapsing = true,
         enableDefaultShareMenuItem = true,
         showInRecents = true,
-        createTask = true,
+        shouldCreateTask = true,
         showTitle = true
       )
     )
@@ -137,7 +137,7 @@ internal class WebBrowserModuleTest {
     // when
     module.openBrowserAsync(
       "http://expo.io",
-      browserArguments(
+      OpenBrowserOptions(
         toolbarColor = "#000000",
         browserPackage = "com.browser.package",
         enableBarCollapsing = true,
@@ -166,7 +166,7 @@ internal class WebBrowserModuleTest {
     // when
     module.openBrowserAsync(
       "http://expo.io",
-      browserArguments(
+      OpenBrowserOptions(
         toolbarColor = "#000000",
         browserPackage = "com.browser.package",
         enableBarCollapsing = false,
@@ -194,10 +194,10 @@ internal class WebBrowserModuleTest {
     // when
     module.openBrowserAsync(
       "http://expo.io",
-      browserArguments(
+      OpenBrowserOptions(
         toolbarColor = "#000000",
         browserPackage = "com.browser.package",
-        createTask = false
+        shouldCreateTask = false
       )
     )
 

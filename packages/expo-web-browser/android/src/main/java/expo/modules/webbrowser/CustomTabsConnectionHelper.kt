@@ -43,19 +43,19 @@ internal class CustomTabsConnectionHelper(
 
   // region CustomTabsServiceConnection implementation
   override fun onBindingDied(componentName: ComponentName) {
-    if (componentName.packageName == currentPackageName) {
+    if (isConnectionStarted(componentName.packageName)) {
       clearConnection()
     }
   }
 
   override fun onCustomTabsServiceConnected(componentName: ComponentName, client: CustomTabsClient) {
-    if (componentName.packageName == currentPackageName) {
+    if (isConnectionStarted(componentName.packageName)) {
       clientActions.setClient(client)
     }
   }
 
   override fun onServiceDisconnected(componentName: ComponentName) {
-    if (componentName.packageName == currentPackageName) {
+    if (isConnectionStarted(componentName.packageName)) {
       clearConnection()
     }
   }
@@ -75,13 +75,13 @@ internal class CustomTabsConnectionHelper(
     if (currentPackageName != null && currentPackageName != packageName) {
       clearConnection()
     }
-    if (!connectionStarted(packageName)) {
+    if (!isConnectionStarted(packageName)) {
       CustomTabsClient.bindCustomTabsService(context, packageName, this)
       currentPackageName = packageName
     }
   }
 
-  private fun connectionStarted(packageName: String): Boolean {
+  private fun isConnectionStarted(packageName: String): Boolean {
     return packageName == currentPackageName
   }
 
