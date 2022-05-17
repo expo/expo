@@ -27,4 +27,8 @@ RCT_EXPORT_METHOD(copyToClipboardAsync:(NSString *)content
   resolve(nil);
 }
 
+RCT_EXTERN_METHOD(fireCallback:(NSString *)name
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
+
 @end

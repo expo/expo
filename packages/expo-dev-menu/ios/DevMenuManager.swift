@@ -432,4 +432,12 @@ open class DevMenuManager: NSObject {
       CTFontManagerRegisterGraphicsFont(font!, &error)
     }
   }
+  
+  @objc
+  public var registeredCallbacks: [String] = []
+  
+  @objc
+  public func getRegisteredCallbacks() -> [String] {
+    return registeredCallbacks
+  }
 }

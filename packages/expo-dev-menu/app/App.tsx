@@ -12,13 +12,20 @@ type DevMenuInitialProps = {
   devSettings: DevSettings;
   menuPreferences: MenuPreferences;
   isDevice?: boolean;
+  registeredCallbacks: string[];
 };
 
-export function App({ devSettings, appInfo, menuPreferences, isDevice }: DevMenuInitialProps) {
+export function App({
+  devSettings,
+  appInfo,
+  menuPreferences,
+  isDevice,
+  registeredCallbacks,
+}: DevMenuInitialProps) {
   return (
     <AppProviders appInfo={appInfo} devSettings={devSettings} menuPreferences={menuPreferences}>
       <LoadInitialData loader={<Splash />}>
-        <Main />
+        <Main registeredCallbacks={registeredCallbacks} />
         <Onboarding isDevice={isDevice} />
       </LoadInitialData>
     </AppProviders>
