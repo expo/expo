@@ -6,7 +6,7 @@ import MonoTextWithCountdown from '../MonoTextWithCountdown';
 import ActionButton from './ActionButton';
 import Configurator from './Configurator';
 import Divider from './Divider';
-import FunctionSignature from './FunctionSignature';
+import FunctionSignature, { generateFunctionSignature } from './FunctionSignature';
 import Platforms from './Platforms';
 import {
   ActionFunction,
@@ -61,6 +61,19 @@ type Props = {
  * Helper type for typing out the function description that is later passed to the `FunctionDemo` component.
  */
 export type FunctionDescription = Omit<Props, 'namespace' | 'renderAdditionalResult'>;
+
+type Result =
+  | {
+      type: 'none';
+    }
+  | {
+      type: 'error';
+      error: unknown;
+    }
+  | {
+      type: 'success';
+      result: unknown;
+    };
 
 /**
  * FunctionDemo is a component that allows visualizing the function call.
@@ -122,7 +135,7 @@ function FunctionDemoContent({
   renderAdditionalResult,
   additionalParameters = [],
 }: Props) {
-  const [result, setResult] = useState<unknown>(undefined);
+  const [result, setResult] = useState<Result>({ type: 'none' });
   const [args, updateArgument] = useArguments(parameters);
   const [additionalArgs, updateAdditionalArgs] = useArguments(additionalParameters);
   const actionsList = useMemo(
@@ -133,11 +146,14 @@ function FunctionDemoContent({
   const handlePress = useCallback(
     async (action: ActionFunction) => {
       // force clear the previous result if exists
-      setResult(undefined);
-      const newResult = await action(...args, ...additionalArgs);
-      // undefined is a special value hiding the result box
-      // so we need to replace it with a string
-      setResult(newResult === undefined ? 'undefined' : newResult);
+      setResult({ type: 'none' });
+      try {
+        const newResult = await action(...args, ...additionalArgs);
+        setResult({ type: 'success', result: newResult });
+      } catch (e) {
+        logError(e, generateFunctionSignature({ namespace, name, parameters, args }));
+        setResult({ type: 'error', error: e });
+      }
     },
     [args, additionalArgs]
   );
@@ -163,16 +179,35 @@ function FunctionDemoContent({
           ))}
         </View>
       </View>
-      {result !== undefined && (
+      {result.type === 'success' ? (
         <>
-          <MonoTextWithCountdown onCountdownEnded={() => setResult(undefined)}>
-            {resultToString(result)}
+          <MonoTextWithCountdown onCountdownEnded={() => setResult({ type: 'none' })}>
+            {resultToString(result.result)}
           </MonoTextWithCountdown>
-          {renderAdditionalResult?.(result)}
+          {renderAdditionalResult?.(result.result)}
         </>
-      )}
+      ) : result.type === 'error' ? (
+        <MonoTextWithCountdown
+          style={styles.errorResult}
+          onCountdownEnded={() => setResult({ type: 'none' })}>
+          {errorToString(result.error)}
+        </MonoTextWithCountdown>
+      ) : null}
     </>
   );
+}
+
+function logError(e: unknown, functionSignature: string) {
+  const errorMessage = e instanceof Error ? e.message : e;
+  console.error(`
+
+  ${errorMessage}
+
+Function call that failed:
+
+  ${functionSignature.replace(/\n/g, '\n  ')}
+
+​`);
 }
 
 function initialArgumentFromParameter(parameter: PrimitiveParameter | ConstantParameter) {
@@ -260,6 +295,13 @@ function resultToString(result: unknown) {
     : String(result);
 }
 
+function errorToString(error: unknown) {
+  if (error instanceof Error) {
+    return `${error.name}: ${error.message}`;
+  }
+  return String(error);
+}
+
 const styles = StyleSheet.create({
   container: {
     position: 'relative',
@@ -284,5 +326,8 @@ const styles = StyleSheet.create({
   },
   demoContainerDisabled: {
     marginBottom: 10,
+  },
+  errorResult: {
+    borderColor: 'red',
   },
 });

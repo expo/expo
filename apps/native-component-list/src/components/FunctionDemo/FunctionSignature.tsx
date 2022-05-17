@@ -4,7 +4,16 @@ import MonoText from '../MonoText';
 import { EnumParameter, FunctionArgument, FunctionParameter, ObjectParameter } from './index.types';
 import { isCurrentPlatformSupported } from './utils';
 
-export default function FunctionSignature({
+export default function FunctionSignature(props: {
+  namespace: string;
+  name: string;
+  parameters: FunctionParameter[];
+  args: FunctionArgument[];
+}) {
+  return <MonoText>{generateFunctionSignature(props)}</MonoText>;
+}
+
+export function generateFunctionSignature({
   namespace,
   name,
   parameters,
@@ -15,32 +24,28 @@ export default function FunctionSignature({
   parameters: FunctionParameter[];
   args: FunctionArgument[];
 }) {
-  const renderArguments = () => {
-    return parameters
-      .map((parameter, idx) => {
-        if (!isCurrentPlatformSupported(parameter.platforms)) {
-          return;
-        }
-        switch (parameter.type) {
-          case 'object':
-            return convertObjectArgumentToString(args[idx], parameter);
-          case 'enum':
-            return convertEnumArgumentToString(args[idx], parameter);
-          case 'constant':
-            return parameter.name;
-          default:
-            return String(args[idx]);
-        }
-      })
-      .filter((arg) => !!arg) // filter out all void values
-      .join(', ');
-  };
+  return `${namespace}.${name}(${argumentsToString(args, parameters)})`;
+}
 
-  return (
-    <MonoText>
-      {namespace}.{name}({renderArguments()})
-    </MonoText>
-  );
+function argumentsToString(args: FunctionArgument[], parameters: FunctionParameter[]) {
+  return parameters
+    .map((parameter, idx) => {
+      if (!isCurrentPlatformSupported(parameter.platforms)) {
+        return;
+      }
+      switch (parameter.type) {
+        case 'object':
+          return convertObjectArgumentToString(args[idx], parameter);
+        case 'enum':
+          return convertEnumArgumentToString(args[idx], parameter);
+        case 'constant':
+          return parameter.name;
+        default:
+          return String(args[idx]);
+      }
+    })
+    .filter((arg) => !!arg) // filter out all void values
+    .join(', ');
 }
 
 function convertObjectArgumentToString(arg: FunctionArgument, parameter: ObjectParameter) {
@@ -89,11 +94,16 @@ function convertObjectArgumentToString(arg: FunctionArgument, parameter: ObjectP
 function convertEnumArgumentToString(arg: FunctionArgument, { name, values }: EnumParameter) {
   // this should always find the current value for the enum, if failed something is messed up somewhere else
   // eslint-disable-next-line no-case-declarations
-  const value = values.find(({ value }) => value === arg);
+  const value = values.find(({ value }) =>
+    typeof value === 'object' && typeof arg === 'object'
+      ? JSON.stringify(value) === JSON.stringify(arg) // for tuple case
+      : value === arg
+  );
   if (!value) {
+    console.log(value, arg, values);
     throw new Error(
       `Value ${arg} not found in available values for enum parameter ${name}. Available values: ${values
-        .map((v) => `{${v.name} -> ${v.value}`)
+        .map((v) => `${v.name} -> ${v.value}`)
         .join(', ')}`
     );
   }
