@@ -59,7 +59,9 @@ afterEvaluate {
 }
 
 android {
-  compileSdkVersion safeExtGet("compileSdkVersion", 31)
+// TODO(@bbarthec): check this version
+// compileSdkVersion safeExtGet("compileSdkVersion", 31)
+  compileSdkVersion 32
 
   compileOptions {
     sourceCompatibility JavaVersion.VERSION_11
@@ -72,7 +74,9 @@ android {
 
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 21)
-    targetSdkVersion safeExtGet("targetSdkVersion", 31)
+    // TODO(@bbarthec): check this version
+//    targetSdkVersion safeExtGet("targetSdkVersion", 31)
+    targetSdkVersion 32
     versionCode 22
     versionName "13.1.1"
   }
