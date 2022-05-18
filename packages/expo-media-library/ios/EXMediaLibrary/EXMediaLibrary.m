@@ -323,7 +323,7 @@ EX_EXPORT_METHOD_AS(getAlbumsAsync,
     if ([options[@"includeSmartAlbums"] boolValue]) {
       PHFetchResult<PHAssetCollection *> *smartAlbumsFetchResult =
       [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeSmartAlbum
-                                               subtype:PHAssetCollectionSubtypeAlbumRegular
+                                               subtype:PHAssetCollectionSubtypeAny
                                                options:fetchOptions];
       [albums addObjectsFromArray:[EXMediaLibrary _exportCollections:smartAlbumsFetchResult withFetchOptions:fetchOptions inFolder:nil]];
     }
@@ -750,7 +750,7 @@ EX_EXPORT_METHOD_AS(getAssetsAsync,
   
   PHFetchResult *fetchResult = [PHAssetCollection
                                 fetchAssetCollectionsWithType:PHAssetCollectionTypeAlbum
-                                subtype:PHAssetCollectionSubtypeAlbumRegular
+                                subtype:PHAssetCollectionSubtypeAny
                                 options:options];
 
   return fetchResult.firstObject;
