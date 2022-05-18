@@ -5,7 +5,7 @@ sidebar_title: Server infrastructure
 
 import { Collapsible } from '~/ui/components/Collapsible';
 
-This document describes the current build infrastructure as of February 1, 2022. It is likely to change over time, and this document will be updated.
+This document describes the current build infrastructure as of May 13, 2022. It is likely to change over time, and this document will be updated.
 
 ## Configuring build environment
 
