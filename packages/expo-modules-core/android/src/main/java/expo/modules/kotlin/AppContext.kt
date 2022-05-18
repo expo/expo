@@ -3,7 +3,6 @@
 package expo.modules.kotlin
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.turbomodule.core.CallInvokerHolderImpl
