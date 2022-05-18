@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Use `PHAssetCollectionSubtypeAny` subtype to avoid Recently Deleted album to show up ([#17561](https://github.com/expo/expo/pull/17561) by [@chuganzy](https://github.com/chuganzy))
+
 ## 14.1.0 — 2022-04-18
 
 ### 🐛 Bug fixes
