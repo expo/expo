@@ -180,14 +180,14 @@ async function main(packageNames: string[], options: ActionOptions): Promise<voi
   const commitsToCherryPickOrdered = candidateCommits.filter((commit) =>
     commitsToCherryPick.includes(commit.hash)
   );
-  const gitArgs = ['cherry-pick', ...commitsToCherryPickOrdered.map((commit) => commit.hash)];
+  const commitHashes = commitsToCherryPickOrdered.map((commit) => commit.hash);
   if (options.dry) {
-    logger.log(chalk.bold(chalk.yellow(`git ${gitArgs.join(' ')}`)));
+    logger.log(chalk.bold(chalk.yellow(`git cherry-pick ${commitHashes.join(' ')}`)));
   } else {
-    logger.info(`Running ${chalk.yellow(`git ${gitArgs.join(' ')}`)}`);
+    logger.info(`Running ${chalk.yellow(`git cherry-pick ${commitHashes.join(' ')}`)}`);
     try {
       // pipe output to current process stdio to emulate user running this command directly
-      await Git.runAsync(gitArgs, { stdio: 'inherit' });
+      await Git.cherryPickAsync(commitHashes, { inheritStdio: true });
     } catch {
       logger.error(
         `Expotools: could not complete cherry-pick. Resolve the conflicts and continue as instructed by git above.`

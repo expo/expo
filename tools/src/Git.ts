@@ -55,6 +55,10 @@ export type GitCommitOptions = {
   body?: string;
 };
 
+export type GitCherryPickOptions = {
+  inheritStdio?: boolean;
+};
+
 export type GitFetchOptions = {
   depth?: number;
   remote?: string;
@@ -329,6 +333,14 @@ export class GitDirectory {
       args.push('--message', options.body);
     }
     await this.runAsync(args);
+  }
+
+  /**
+   * Cherry-picks the given commits onto the checked out branch.
+   */
+  async cherryPickAsync(commits: string[], options: GitCherryPickOptions = {}): Promise<void> {
+    const spawnOptions: SpawnOptions = options.inheritStdio ? { stdio: 'inherit' } : {};
+    await this.runAsync(['cherry-pick', ...commits], spawnOptions);
   }
 
   /**
