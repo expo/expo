@@ -88,6 +88,7 @@ dependencies {
   api "androidx.browser:browser:1.2.0"
 
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
+  implementation "androidx.core:core-ktx:1.7.0"
 
   if (project.findProject(':expo-modules-test-core')) {
     testImplementation project(':expo-modules-test-core')

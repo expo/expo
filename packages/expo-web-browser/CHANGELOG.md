@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Native module on Android is now written in Kotlin using the new API. ([#17454](https://github.com/expo/expo/pull/17454) by [@barthap](https://github.com/barthap))
+
 ### 🐛 Bug fixes
 
 - On Web fix popup being blocked by Safari. ([#17222](https://github.com/expo/expo/pull/17222) by [@sreuter](https://github.com/sreuter))

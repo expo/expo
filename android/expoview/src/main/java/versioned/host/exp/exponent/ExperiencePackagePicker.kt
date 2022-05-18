@@ -63,7 +63,7 @@ import expo.modules.systemui.SystemUIPackage
 import expo.modules.taskManager.TaskManagerPackage
 import expo.modules.updates.UpdatesPackage
 import expo.modules.videothumbnails.VideoThumbnailsPackage
-import expo.modules.webbrowser.WebBrowserPackage
+import expo.modules.webbrowser.WebBrowserModule
 
 object ExperiencePackagePicker : ModulesProvider {
   private val EXPO_MODULES_PACKAGES = listOf(
@@ -122,7 +122,6 @@ object ExperiencePackagePicker : ModulesProvider {
     TaskManagerPackage(),
     UpdatesPackage(),
     VideoThumbnailsPackage(),
-    WebBrowserPackage()
   )
 
   /**
@@ -145,5 +144,6 @@ object ExperiencePackagePicker : ModulesProvider {
     ClipboardModule::class.java,
     EASClientModule::class.java,
     LinearGradientModule::class.java,
+    WebBrowserModule::class.java,
   )
 }

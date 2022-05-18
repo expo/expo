@@ -31,7 +31,6 @@ import expo.modules.splashscreen.SplashScreenImageResizeMode
 import expo.modules.splashscreen.SplashScreenPackage
 import expo.modules.splashscreen.singletons.SplashScreen
 import expo.modules.taskManager.TaskManagerPackage
-import expo.modules.webbrowser.WebBrowserPackage
 import host.exp.exponent.Constants
 import host.exp.exponent.ExponentManifest
 import host.exp.exponent.RNObject
@@ -158,7 +157,6 @@ open class HomeActivity : BaseExperienceActivity() {
         TaskManagerPackage(), // load expo-task-manager to restore tasks once the client is opened
         DevicePackage(),
         SplashScreenPackage(),
-        WebBrowserPackage(),
         HapticsPackage()
       )
     }
