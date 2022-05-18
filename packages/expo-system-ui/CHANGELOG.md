@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix color setting on web.
+- Fix color setting on web. ([#17558](https://github.com/expo/expo/pull/17558) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 
