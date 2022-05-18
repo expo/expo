@@ -1,4 +1,4 @@
-import { processColor } from 'react-native';
+import { Platform, processColor } from 'react-native';
 import ExpoSystemUI from './ExpoSystemUI';
 /**
  * Changes the root view background color.
@@ -10,7 +10,7 @@ import ExpoSystemUI from './ExpoSystemUI';
  * @param color Any valid [CSS 3 (SVG) color](http://www.w3.org/TR/css3-color/#svg-color).
  */
 export async function setBackgroundColorAsync(color) {
-    const colorNumber = processColor(color);
+    const colorNumber = Platform.OS === 'web' ? color : processColor(color);
     return await ExpoSystemUI.setBackgroundColorAsync(colorNumber);
 }
 /**
