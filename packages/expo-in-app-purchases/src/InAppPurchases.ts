@@ -258,10 +258,7 @@ export function setPurchaseListener(
  * non-consumable in its product entry in App Store Connect, whereas on Android you indicate an item
  * is consumable at runtime.
  *
- * > Make sure that you verify each purchase to prevent faulty transactions and protect against
- * > fraud _before_ you call `finishTransactionAsync`. On iOS, you can validate the purchase's
- * > `transactionReceipt` with the App Store as described [here](https://developer.apple.com/library/archive/releasenotes/General/ValidateAppStoreReceipt/Chapters/ValidateRemotely.html).
- * > On Android, you can verify your purchase using the Google Play Developer API as described [here](https://developer.android.com/google/play/billing/billing_best_practices#validating-purchase).
+ * > Make sure that you verify each purchase to prevent faulty transactions and protect against fraud _before_ you call `finishTransactionAsync`. On iOS, you can validate the purchase's `transactionReceipt` with the App Store as described [here](https://developer.apple.com/library/archive/releasenotes/General/ValidateAppStoreReceipt/Chapters/ValidateRemotely.html). On Android, you can verify your purchase using the Google Play Developer API as described [here](https://developer.android.com/google/play/billing/billing_best_practices#validating-purchase).
  *
  * @example
  * ```ts
