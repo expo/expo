@@ -43,8 +43,8 @@ let purchaseUpdatedSubscription: Subscription;
 // @needsAudit
 /**
  * Connects to the app store and performs all of the necessary initialization to prepare the module
- * to accept payments.
- * This method must be called before anything else, otherwise an error will be thrown.
+ * to accept payments. This method must be called before anything else, otherwise an error will be
+ * thrown.
  * @return Returns a Promise that fulfills when connection is established.
  */
 export async function connectAsync(): Promise<void> {
@@ -68,8 +68,8 @@ export async function connectAsync(): Promise<void> {
  * or on your own servers.
  *
  * If any of the product IDs passed in are invalid and don't exist, you will not receive an
- * `IAPItemDetails` object corresponding to that ID. For example, if you pass in four product IDs
- * in but one of them has a typo, you will only get three response objects back.
+ * `IAPItemDetails` object corresponding to that ID. For example, if you pass in four product IDs in
+ * but one of them has a typo, you will only get three response objects back.
  *
  * @param itemList The list of product IDs whose details you want to query from the app store.
  * @return Returns a Promise that resolves with an `IAPQueryResponse` containing `IAPItemDetails`
@@ -140,8 +140,8 @@ export async function getPurchaseHistoryAsync(
 
 // @needsAudit
 /**
- * Initiates the purchase flow to buy the item associated with this `productId`. This will display
- * a prompt to the user that will allow them to either buy the item or cancel the purchase. When the
+ * Initiates the purchase flow to buy the item associated with this `productId`. This will display a
+ * prompt to the user that will allow them to either buy the item or cancel the purchase. When the
  * purchase completes, the result must be handled in the callback that you passed in to
  * [`setPurchaseListener`](#setpurchaselistener).
  *
@@ -152,21 +152,28 @@ export async function getPurchaseHistoryAsync(
  * and [Google](https://developer.android.com/google/play/billing/billing_subscriptions) both have
  * their own workflows for dealing with subscriptions. In general, you can deal with them in the
  * same way you do one-time purchases but there are caveats including if a user decides to cancel
- * before the expiration date. To check the status of a subscription, you can use the [Google Play Developer](https://developers.google.com/android-publisher/api-ref/purchases/subscriptions/get)
- * API on Android and the [Status Update Notifications](https://developer.apple.com/documentation/storekit/in-app_purchase/enabling_status_update_notifications)
+ * before the expiration date. To check the status of a subscription, you can use the [Google Play
+ * Developer](https://developers.google.com/android-publisher/api-ref/purchases/subscriptions/get)
+ * API on Android and the [Status Update
+ * Notifications](https://developer.apple.com/documentation/storekit/in-app_purchase/enabling_status_update_notifications)
  * service on iOS.
  *
  * @param itemId The product ID of the item you want to buy.
- * @param details __Android Only.__ details for billing flow is an object with the following properties:
- *  - 'oldPurchaseToken' : the `purchaseToken` of the purchase that the user is upgrading or downgrading from. This is mandatory
- *    for replacing an old subscription such as when a user upgrades from a monthly subscription to a yearly
- *    one that provides the same content. You can get the purchase token from [`getPurchaseHistoryAsync`](#inapppurchasesgetpurchasehistoryasyncrefresh-boolean).
- *  - 'accountIdentifiers' : account identifiers. Note: both ids must be provided for payments to work on Google Play.
+ * @param details __Android Only.__ details for billing flow is an object with the following
+ * properties:
+ *  - 'oldPurchaseToken' : the `purchaseToken` of the purchase that the user is upgrading or
+ *    downgrading from. This is mandatory for replacing an old subscription such as when a user
+ *    upgrades from a monthly subscription to a yearly one that provides the same content. You can
+ *    get the purchase token from
+ *    [`getPurchaseHistoryAsync`](#inapppurchasesgetpurchasehistoryasyncrefresh-boolean).
+ *  - 'accountIdentifiers' : account identifiers. Note: both ids must be provided for payments to
+ *    work on Google Play.
  *      - 'obfuscatedAccountId' : the obfuscated account ID of the user in the app's system.
  *      - 'obfuscatedProfileId' : the obfuscated profile ID of the user in the app's system.
  *  - 'isVrPurchaseFlow' : whether the purchase is happening in a VR context.
  * @return Returns a `Promise` that resolves when the purchase is done processing. To get the actual
- * result of the purchase, you must handle purchase events inside the `setPurchaseListener` callback.
+ * result of the purchase, you must handle purchase events inside the `setPurchaseListener`
+ * callback.
  */
 export async function purchaseItemAsync(
   itemId: string,
@@ -190,13 +197,14 @@ export async function purchaseItemAsync(
  * subscription renewals or unfinished transactions on iOS (e.g. if your app exits before
  * `finishTransactionAsync` was called).
  *
- * > Note that on iOS, the results array will only contain one item: the one that was just purchased.
- * On Android, it will return both finished and unfinished purchases, hence the array return type.
- * This is because the Google Play Billing API detects purchase updates but doesn't differentiate
- * which item was just purchased, therefore there's no good way to tell but in general it will be
- * whichever purchase has `acknowledged` set to `false`, so those are the ones that you have to
- * handle in the response. Consumed items will not be returned however, so if you consume an item
- * that record will be gone and no longer appear in the results array when a new purchase is made.
+ * > Note that on iOS, the results array will only contain one item: the one that was just
+ * purchased. On Android, it will return both finished and unfinished purchases, hence the array
+ * return type. This is because the Google Play Billing API detects purchase updates but doesn't
+ * differentiate which item was just purchased, therefore there's no good way to tell but in general
+ * it will be whichever purchase has `acknowledged` set to `false`, so those are the ones that you
+ * have to handle in the response. Consumed items will not be returned however, so if you consume an
+ * item that record will be gone and no longer appear in the results array when a new purchase is
+ * made.
  *
  * @example
  * ```ts
@@ -251,17 +259,21 @@ export function setPurchaseListener(
  * processing the transaction. If you do not acknowledge or consume a purchase within three days,
  * the user automatically receives a refund, and Google Play revokes the purchase.
  *
- * On iOS, this will mark the transaction as finished and prevent it from reappearing in the
- * purchase listener callback. It will also let the user know their purchase was successful.
+ * On iOS, this will [mark the transaction as
+ * finished](https://developer.apple.com/documentation/storekit/skpaymentqueue/1506003-finishtransaction#discussion)
+ * and prevent it from reappearing in the purchase listener callback. It will also let the user know
+ * their purchase was successful.
  *
  * `consumeItem` is ignored on iOS because you must specify whether an item is a consumable or
  * non-consumable in its product entry in App Store Connect, whereas on Android you indicate an item
  * is consumable at runtime.
  *
  * > Make sure that you verify each purchase to prevent faulty transactions and protect against
- * fraud _before_ you call `finishTransactionAsync`. On iOS, you can validate the purchase's
- * `transactionReceipt` with the App Store as described [here](https://developer.apple.com/library/archive/releasenotes/General/ValidateAppStoreReceipt/Chapters/ValidateRemotely.html).
- * On Android, you can verify your purchase using the Google Play Developer API as described [here](https://developer.android.com/google/play/billing/billing_best_practices#validating-purchase).
+ * > fraud _before_ you call `finishTransactionAsync`. On iOS, you can validate the purchase's
+ * > `transactionReceipt` with the App Store as described
+ * > [here](https://developer.apple.com/library/archive/releasenotes/General/ValidateAppStoreReceipt/Chapters/ValidateRemotely.html).
+ * > On Android, you can verify your purchase using the Google Play Developer API as described
+ * > [here](https://developer.android.com/google/play/billing/billing_best_practices#validating-purchase).
  *
  * @example
  * ```ts
@@ -270,7 +282,8 @@ export function setPurchaseListener(
  * }
  * ```
  * @param purchase The purchase you want to mark as completed.
- * @param consumeItem __Android Only.__ A boolean indicating whether or not the item is a consumable.
+ * @param consumeItem __Android Only.__ A boolean indicating whether or not the item is a
+ * consumable.
  */
 export async function finishTransactionAsync(
   purchase: InAppPurchase,
@@ -294,7 +307,8 @@ export async function finishTransactionAsync(
  * for retrieving the billing response code.
  *
  * On Android, this will return `IAPResponseCode.ERROR` if you are not connected or one of the
- * billing response codes found [here](https://developer.android.com/reference/com/android/billingclient/api/BillingClient.BillingResponseCode)
+ * billing response codes found
+ * [here](https://developer.android.com/reference/com/android/billingclient/api/BillingClient.BillingResponseCode)
  * if you are.
  *
  * On iOS, this will return `IAPResponseCode.OK` if you are connected or `IAPResponseCode.ERROR` if
