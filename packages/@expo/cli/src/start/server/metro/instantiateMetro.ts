@@ -101,18 +101,6 @@ export function withMetroWeb(projectRoot: string, config: import('metro-config')
     return config;
   }
 
-  // Add basic source extension support with all platforms stripped away.
-  const { getBareExtensions } = require('@expo/config/paths');
-
-  const sourceExts = getBareExtensions([], {
-    isTS: true,
-    isReact: true,
-    isModern: false,
-  });
-
-  // @ts-expect-error
-  config.resolver.sourceExts = sourceExts;
-
   // Get the `transformer.assetRegistryPath`
   // this needs to be unified since you can't dynamically
   // swap out the transformer based on platform.

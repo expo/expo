@@ -36,15 +36,18 @@ export class DevServerManagerActions {
       }
     }
 
-    const webUrl = this.devServerManager
-      .getWebDevServer()
-      ?.getDevServerUrl({ hostType: 'localhost' });
+    const webDevServer = this.devServerManager.getWebDevServer();
+    const webUrl = webDevServer?.getDevServerUrl({ hostType: 'localhost' });
     if (webUrl) {
       Log.log();
-      Log.log(printItem(chalk`Webpack waiting on {underline ${webUrl}}`));
-      Log.log(
-        chalk.gray(printItem('Expo Webpack (web) is in beta, and subject to breaking changes!'))
-      );
+      if (webDevServer?.name === 'webpack') {
+        Log.log(printItem(chalk`Webpack waiting on {underline ${webUrl}}`));
+        Log.log(
+          chalk.gray(printItem('Expo Webpack (web) is in beta, and subject to breaking changes!'))
+        );
+      } else {
+        Log.log(printItem(chalk`Metro web is waiting on {underline ${webUrl}}`));
+      }
     }
 
     printUsage(options, { verbose: false });
