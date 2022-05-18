@@ -14,6 +14,10 @@
                   logThreshold:(NSInteger)threshold;
 - (void)bridgeWillStartLoading:(id)bridge;
 - (void)bridgeFinishedLoading:(id)bridge;
+- (void)bridgeBindWithFabricIfNeeded:(id)bridge;
+- (UIView *)createRootViewWithBridge:(RCTBridge *)bridge
+                          moduleName:(NSString *)moduleName
+                   initialProperties:(NSDictionary *)initialProperties;
 - (void)invalidate;
 
 /**
