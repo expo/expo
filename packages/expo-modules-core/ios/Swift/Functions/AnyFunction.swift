@@ -13,9 +13,9 @@ public protocol AnyFunction: AnyDefinition, JavaScriptObjectBuilder, ClassCompon
   var name: String { get }
 
   /**
-   An array of argument types that the function takes. If the last type is `Promise`, it's not included.
+   An array of the dynamic types that the function takes. If the last type is `Promise`, it's not included.
    */
-  var argumentTypes: [AnyArgumentType] { get }
+  var dynamicArgumentTypes: [AnyDynamicType] { get }
 
   /**
    A number of arguments the function takes. If the last argument is of type `Promise`, it is not counted.

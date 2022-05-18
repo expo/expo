@@ -14,16 +14,16 @@ public final class ConcreteViewProp<ViewType: UIView, PropType: AnyArgument>: An
   public let name: String
 
   /**
-   An argument type wrapper for the prop's value type.
+   A dynamic type for the prop's value type.
    */
-  private let propType: AnyArgumentType
+  private let propType: AnyDynamicType
 
   /**
    Closure to call to set the actual property on the given view.
    */
   private let setter: SetterType
 
-  internal init(name: String, propType: AnyArgumentType, setter: @escaping SetterType) {
+  internal init(name: String, propType: AnyDynamicType, setter: @escaping SetterType) {
     self.name = name
     self.propType = propType
     self.setter = setter

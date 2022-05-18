@@ -75,7 +75,7 @@ public final class ModuleHolder {
       return nil
     }
     do {
-      let arguments = try castArguments(args, toTypes: function.argumentTypes)
+      let arguments = try castArguments(args, toTypes: function.dynamicArgumentTypes)
       return try function.call(args: arguments)
     } catch {
       return error

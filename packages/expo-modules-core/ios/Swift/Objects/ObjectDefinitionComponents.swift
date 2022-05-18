@@ -45,7 +45,7 @@ public func function<R>(
 ) -> AnyAsyncFunctionComponent {
   return AsyncFunctionComponent(
     name,
-    argTypes: [],
+    dynamicArgumentTypes: [],
     closure
   )
 }
@@ -60,7 +60,7 @@ public func function<R, A0: AnyArgument>(
 ) -> AnyAsyncFunctionComponent {
   return AsyncFunctionComponent(
     name,
-    argTypes: [ArgumentType(A0.self)],
+    dynamicArgumentTypes: [~A0.self],
     closure
   )
 }
@@ -75,7 +75,7 @@ public func function<R, A0: AnyArgument, A1: AnyArgument>(
 ) -> AnyAsyncFunctionComponent {
   return AsyncFunctionComponent(
     name,
-    argTypes: [ArgumentType(A0.self), ArgumentType(A1.self)],
+    dynamicArgumentTypes: [~A0.self, ~A1.self],
     closure
   )
 }
@@ -90,10 +90,10 @@ public func function<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument>(
 ) -> AnyAsyncFunctionComponent {
   return AsyncFunctionComponent(
     name,
-    argTypes: [
-      ArgumentType(A0.self),
-      ArgumentType(A1.self),
-      ArgumentType(A2.self)
+    dynamicArgumentTypes: [
+      ~A0.self,
+      ~A1.self,
+      ~A2.self
     ],
     closure
   )
@@ -109,11 +109,11 @@ public func function<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3: A
 ) -> AnyAsyncFunctionComponent {
   return AsyncFunctionComponent(
     name,
-    argTypes: [
-      ArgumentType(A0.self),
-      ArgumentType(A1.self),
-      ArgumentType(A2.self),
-      ArgumentType(A3.self)
+    dynamicArgumentTypes: [
+      ~A0.self,
+      ~A1.self,
+      ~A2.self,
+      ~A3.self
     ],
     closure
   )
@@ -129,12 +129,12 @@ public func function<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3: A
 ) -> AnyAsyncFunctionComponent {
   return AsyncFunctionComponent(
     name,
-    argTypes: [
-      ArgumentType(A0.self),
-      ArgumentType(A1.self),
-      ArgumentType(A2.self),
-      ArgumentType(A3.self),
-      ArgumentType(A4.self)
+    dynamicArgumentTypes: [
+      ~A0.self,
+      ~A1.self,
+      ~A2.self,
+      ~A3.self,
+      ~A4.self
     ],
     closure
   )
@@ -150,13 +150,13 @@ public func function<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3: A
 ) -> AnyAsyncFunctionComponent {
   return AsyncFunctionComponent(
     name,
-    argTypes: [
-      ArgumentType(A0.self),
-      ArgumentType(A1.self),
-      ArgumentType(A2.self),
-      ArgumentType(A3.self),
-      ArgumentType(A4.self),
-      ArgumentType(A5.self)
+    dynamicArgumentTypes: [
+      ~A0.self,
+      ~A1.self,
+      ~A2.self,
+      ~A3.self,
+      ~A4.self,
+      ~A5.self
     ],
     closure
   )
@@ -172,14 +172,14 @@ public func function<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3: A
 ) -> AnyAsyncFunctionComponent {
   return AsyncFunctionComponent(
     name,
-    argTypes: [
-      ArgumentType(A0.self),
-      ArgumentType(A1.self),
-      ArgumentType(A2.self),
-      ArgumentType(A3.self),
-      ArgumentType(A4.self),
-      ArgumentType(A5.self),
-      ArgumentType(A6.self)
+    dynamicArgumentTypes: [
+      ~A0.self,
+      ~A1.self,
+      ~A2.self,
+      ~A3.self,
+      ~A4.self,
+      ~A5.self,
+      ~A6.self
     ],
     closure
   )
@@ -195,15 +195,15 @@ public func function<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3: A
 ) -> AnyAsyncFunctionComponent {
   return AsyncFunctionComponent(
     name,
-    argTypes: [
-      ArgumentType(A0.self),
-      ArgumentType(A1.self),
-      ArgumentType(A2.self),
-      ArgumentType(A3.self),
-      ArgumentType(A4.self),
-      ArgumentType(A5.self),
-      ArgumentType(A6.self),
-      ArgumentType(A7.self)
+    dynamicArgumentTypes: [
+      ~A0.self,
+      ~A1.self,
+      ~A2.self,
+      ~A3.self,
+      ~A4.self,
+      ~A5.self,
+      ~A6.self,
+      ~A7.self
     ],
     closure
   )
@@ -231,14 +231,14 @@ public func Events(_ names: String...) -> AnyDefinition {
  */
 @available(*, deprecated, renamed: "OnStartObserving")
 public func onStartObserving(_ body: @escaping () -> Void) -> AnyFunction {
-  return AsyncFunctionComponent("startObserving", argTypes: [], body)
+  return AsyncFunctionComponent("startObserving", dynamicArgumentTypes: [], body)
 }
 
 /**
  Function that is invoked when the first event listener is added.
  */
 public func OnStartObserving(_ body: @escaping () -> Void) -> AnyFunction {
-  return AsyncFunctionComponent("startObserving", argTypes: [], body)
+  return AsyncFunctionComponent("startObserving", dynamicArgumentTypes: [], body)
 }
 
 /**
@@ -246,12 +246,12 @@ public func OnStartObserving(_ body: @escaping () -> Void) -> AnyFunction {
  */
 @available(*, deprecated, renamed: "OnStopObserving")
 public func onStopObserving(_ body: @escaping () -> Void) -> AnyFunction {
-  return AsyncFunctionComponent("stopObserving", argTypes: [], body)
+  return AsyncFunctionComponent("stopObserving", dynamicArgumentTypes: [], body)
 }
 
 /**
  Function that is invoked when all event listeners are removed.
  */
 public func OnStopObserving(_ body: @escaping () -> Void) -> AnyFunction {
-  return AsyncFunctionComponent("stopObserving", argTypes: [], body)
+  return AsyncFunctionComponent("stopObserving", dynamicArgumentTypes: [], body)
 }

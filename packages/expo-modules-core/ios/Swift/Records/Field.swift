@@ -8,7 +8,7 @@ public final class Field<Type>: AnyFieldInternal {
    */
   public var wrappedValue: Type
 
-  private let fieldType: AnyArgumentType = ArgumentType(Type.self)
+  private let fieldType: AnyDynamicType = ~Type.self
 
   /**
    Field's key in the dictionary, which by default is a label of the wrapped property.
@@ -27,7 +27,7 @@ public final class Field<Type>: AnyFieldInternal {
    Whether the generic field type accepts `nil` values.
    */
   internal var isOptional: Bool {
-    return fieldType is OptionalArgumentType
+    return fieldType is DynamicOptionalType
   }
 
   internal var isRequired: Bool {

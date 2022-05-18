@@ -1,30 +1,4 @@
-// Copyright 2021-present 650 Industries. All rights reserved.
-
-/**
- An argument type representing an enum that conforms to `EnumArgument`.
- */
-internal struct EnumArgumentType: AnyArgumentType {
-  let innerType: EnumArgument.Type
-
-  func wraps<InnerType>(_ type: InnerType.Type) -> Bool {
-    return innerType == InnerType.self
-  }
-
-  func equals(_ type: AnyArgumentType) -> Bool {
-    if let enumType = type as? Self {
-      return enumType.innerType == innerType
-    }
-    return false
-  }
-
-  func cast<ArgType>(_ value: ArgType) throws -> Any {
-    return try innerType.create(fromRawValue: value)
-  }
-
-  var description: String {
-    "Enum<\(innerType)>"
-  }
-}
+// Copyright 2022-present 650 Industries. All rights reserved.
 
 /**
  A protocol that allows converting raw values to enum cases.
@@ -34,7 +8,7 @@ public protocol EnumArgument: AnyArgument {
    Tries to create an enum case using given raw value.
    May throw errors, e.g. when the raw value doesn't match any case.
    */
-  static func create<ArgType>(fromRawValue rawValue: ArgType) throws -> Self
+  static func create<RawValueType>(fromRawValue rawValue: RawValueType) throws -> Self
 
   /**
    Returns an array of all raw values available in the enum.

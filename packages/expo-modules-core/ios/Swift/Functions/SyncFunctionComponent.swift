@@ -24,9 +24,9 @@ internal final class SyncFunctionComponent<Args, ReturnType>: AnySyncFunctionCom
    */
   let body: ClosureType
 
-  init(_ name: String, argTypes: [AnyArgumentType], _ body: @escaping ClosureType) {
+  init(_ name: String, dynamicArgumentTypes argTypes: [AnyDynamicType], _ body: @escaping ClosureType) {
     self.name = name
-    self.argumentTypes = argTypes
+    self.dynamicArgumentTypes = argTypes
     self.body = body
   }
 
@@ -34,10 +34,10 @@ internal final class SyncFunctionComponent<Args, ReturnType>: AnySyncFunctionCom
 
   let name: String
 
-  let argumentTypes: [AnyArgumentType]
+  let dynamicArgumentTypes: [AnyDynamicType]
 
   var argumentsCount: Int {
-    return argumentTypes.count
+    return dynamicArgumentTypes.count
   }
 
   func call(args: [Any], callback: (FunctionCallResult) -> ()) {
@@ -55,7 +55,7 @@ internal final class SyncFunctionComponent<Args, ReturnType>: AnySyncFunctionCom
 
   func call(args: [Any]) throws -> Any {
     do {
-      let arguments = try castArguments(args, toTypes: argumentTypes)
+      let arguments = try castArguments(args, toTypes: dynamicArgumentTypes)
       let argumentsTuple = try Conversions.toTuple(arguments) as! Args
       return try body(argumentsTuple)
     } catch let error as Exception {
@@ -90,7 +90,7 @@ public func Function<R>(
 ) -> AnyFunction {
   return SyncFunctionComponent(
     name,
-    argTypes: [],
+    dynamicArgumentTypes: [],
     closure
   )
 }
@@ -104,7 +104,7 @@ public func Function<R, A0: AnyArgument>(
 ) -> AnyFunction {
   return SyncFunctionComponent(
     name,
-    argTypes: [ArgumentType(A0.self)],
+    dynamicArgumentTypes: [~A0.self],
     closure
   )
 }
@@ -118,7 +118,7 @@ public func Function<R, A0: AnyArgument, A1: AnyArgument>(
 ) -> AnyFunction {
   return SyncFunctionComponent(
     name,
-    argTypes: [ArgumentType(A0.self), ArgumentType(A1.self)],
+    dynamicArgumentTypes: [~A0.self, ~A1.self],
     closure
   )
 }
@@ -132,10 +132,10 @@ public func Function<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument>(
 ) -> AnyFunction {
   return SyncFunctionComponent(
     name,
-    argTypes: [
-      ArgumentType(A0.self),
-      ArgumentType(A1.self),
-      ArgumentType(A2.self)
+    dynamicArgumentTypes: [
+      ~A0.self,
+      ~A1.self,
+      ~A2.self
     ],
     closure
   )
@@ -150,11 +150,11 @@ public func Function<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3: A
 ) -> AnyFunction {
   return SyncFunctionComponent(
     name,
-    argTypes: [
-      ArgumentType(A0.self),
-      ArgumentType(A1.self),
-      ArgumentType(A2.self),
-      ArgumentType(A3.self)
+    dynamicArgumentTypes: [
+      ~A0.self,
+      ~A1.self,
+      ~A2.self,
+      ~A3.self
     ],
     closure
   )
@@ -169,12 +169,12 @@ public func Function<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3: A
 ) -> AnyFunction {
   return SyncFunctionComponent(
     name,
-    argTypes: [
-      ArgumentType(A0.self),
-      ArgumentType(A1.self),
-      ArgumentType(A2.self),
-      ArgumentType(A3.self),
-      ArgumentType(A4.self)
+    dynamicArgumentTypes: [
+      ~A0.self,
+      ~A1.self,
+      ~A2.self,
+      ~A3.self,
+      ~A4.self
     ],
     closure
   )
@@ -189,13 +189,13 @@ public func Function<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3: A
 ) -> AnyFunction {
   return SyncFunctionComponent(
     name,
-    argTypes: [
-      ArgumentType(A0.self),
-      ArgumentType(A1.self),
-      ArgumentType(A2.self),
-      ArgumentType(A3.self),
-      ArgumentType(A4.self),
-      ArgumentType(A5.self)
+    dynamicArgumentTypes: [
+      ~A0.self,
+      ~A1.self,
+      ~A2.self,
+      ~A3.self,
+      ~A4.self,
+      ~A5.self
     ],
     closure
   )
@@ -210,14 +210,14 @@ public func Function<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3: A
 ) -> AnyFunction {
   return SyncFunctionComponent(
     name,
-    argTypes: [
-      ArgumentType(A0.self),
-      ArgumentType(A1.self),
-      ArgumentType(A2.self),
-      ArgumentType(A3.self),
-      ArgumentType(A4.self),
-      ArgumentType(A5.self),
-      ArgumentType(A6.self)
+    dynamicArgumentTypes: [
+      ~A0.self,
+      ~A1.self,
+      ~A2.self,
+      ~A3.self,
+      ~A4.self,
+      ~A5.self,
+      ~A6.self
     ],
     closure
   )
@@ -232,15 +232,15 @@ public func Function<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3: A
 ) -> AnyFunction {
   return SyncFunctionComponent(
     name,
-    argTypes: [
-      ArgumentType(A0.self),
-      ArgumentType(A1.self),
-      ArgumentType(A2.self),
-      ArgumentType(A3.self),
-      ArgumentType(A4.self),
-      ArgumentType(A5.self),
-      ArgumentType(A6.self),
-      ArgumentType(A7.self)
+    dynamicArgumentTypes: [
+      ~A0.self,
+      ~A1.self,
+      ~A2.self,
+      ~A3.self,
+      ~A4.self,
+      ~A5.self,
+      ~A6.self,
+      ~A7.self
     ],
     closure
   )
