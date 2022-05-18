@@ -147,7 +147,7 @@ class AppContext(
   /**
    * Provides access to the react application context
    */
-  val reactContext: Context?
+  val reactApplicationContext: ReactApplicationContext?
     get() = reactContextHolder.get()
 
   /**
