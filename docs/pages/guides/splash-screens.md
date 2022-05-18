@@ -101,7 +101,7 @@ Your app can be opened from the Expo Go app or in a standalone app, and it can b
 
 ### Using a `.xib` file as the launch screen for the standalone iOS app
 
-For iOS, you can also choose to use a `.xib` interface builder document as the splash screen of the standalone iOS app. Simply set `ios.splash.xib` in **app.json** to the path to your `.xib` file.
+For iOS, you can also choose to use a `.xib` interface builder document as the splash screen of the standalone iOS app. Simply set `ios.splash.xib` in **app.json** to the path to your `.xib` file. Using a `.xib` file is not compatible with `expo prebuild` and EAS builds.
 
 > **Note**: `.xib` file will only be used in the standalone app. The splash image will continue to be used in the Expo Go app.
 
