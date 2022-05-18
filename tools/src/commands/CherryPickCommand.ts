@@ -106,14 +106,13 @@ async function main(packageNames: string[], options: ActionOptions): Promise<voi
       // Git will sometimes return commits that have already been cherry-picked if the diff is
       // slightly different. We filter them out here if the commit name/date/author matches
       // another commit already on the destination branch.
-      if (
-        commitsOnDestinationBranch.some(
-          (destCommit) =>
-            srcCommit.authorDate === destCommit.authorDate &&
-            srcCommit.authorName === destCommit.authorName &&
-            srcCommit.title === destCommit.title
-        )
-      ) {
+      const hasAlreadyBeenCherryPicked = commitsOnDestinationBranch.some(
+        (destCommit) =>
+          srcCommit.authorDate === destCommit.authorDate &&
+          srcCommit.authorName === destCommit.authorName &&
+          srcCommit.title === destCommit.title
+      );
+      if (hasAlreadyBeenCherryPicked) {
         return false;
       }
 
@@ -186,11 +185,13 @@ async function main(packageNames: string[], options: ActionOptions): Promise<voi
     logger.log(chalk.bold(chalk.yellow(`git ${gitArgs.join(' ')}`)));
   } else {
     logger.info(`Running ${chalk.yellow(`git ${gitArgs.join(' ')}`)}`);
-    // pipe output to current process stdio to emulate user running this command directly
-    await Git.runAsync(gitArgs, { stdio: 'inherit' }).catch(() =>
+    try {
+      // pipe output to current process stdio to emulate user running this command directly
+      await Git.runAsync(gitArgs, { stdio: 'inherit' });
+    } catch {
       logger.error(
         `Expotools: could not complete cherry-pick. Resolve the conflicts and continue as instructed by git above.`
-      )
-    );
+      );
+    }
   }
 }
