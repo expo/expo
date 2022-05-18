@@ -7,7 +7,7 @@ import expo.modules.kotlin.providers.AppContextProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.cancel
 
-abstract class Module: AppContextProvider {
+abstract class Module : AppContextProvider {
 
   // region AppContextProvider
 
