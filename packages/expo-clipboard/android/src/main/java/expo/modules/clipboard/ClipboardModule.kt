@@ -47,8 +47,8 @@ class ClipboardModule : Module() {
     AsyncFunction("getStringAsync") { options: GetStringOptions ->
       val item = clipboardManager.firstItem
       when (options.preferredFormat) {
-        StringFormat.PLAIN -> item?.coerceToPlainText(context)
-        StringFormat.HTML -> item?.coerceToHtmlText(context)
+        StringFormat.PLAIN -> item?.coerceToPlainText(reactApplicationContext)
+        StringFormat.HTML -> item?.coerceToHtmlText(reactApplicationContext)
       } ?: ""
     }
 
@@ -95,7 +95,7 @@ class ClipboardModule : Module() {
       }
 
       moduleCoroutineScope.launch(exceptionHandler) {
-        val imageResult = imageFromContentUri(context, imageUri, options)
+        val imageResult = imageFromContentUri(reactApplicationContext, imageUri, options)
         promise.resolve(imageResult.toBundle())
       }
     }
@@ -111,7 +111,7 @@ class ClipboardModule : Module() {
       }
 
       moduleCoroutineScope.launch(exceptionHandler) {
-        val clip = clipDataFromBase64Image(context, imageData, clipboardCacheDir)
+        val clip = clipDataFromBase64Image(reactApplicationContext, imageData, clipboardCacheDir)
         clipboardManager.setPrimaryClip(clip)
         promise.resolve(null)
       }
@@ -149,19 +149,14 @@ class ClipboardModule : Module() {
     // endregion
   }
 
-  private val context
-    get() = requireNotNull(appContext.reactContext) {
-      "React Application Context is null"
-    }
-
   private val clipboardManager: ClipboardManager
-    get() = context.getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager
+    get() = reactApplicationContext.getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager
       ?: throw ClipboardUnavailableException()
 
   private val moduleCoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
   private val clipboardCacheDir: File by lazy {
-    File(context.cacheDir, CLIPBOARD_DIRECTORY_NAME).also { it.mkdirs() }
+    File(reactApplicationContext.cacheDir, CLIPBOARD_DIRECTORY_NAME).also { it.mkdirs() }
   }
 
   // region Clipboard event emitter

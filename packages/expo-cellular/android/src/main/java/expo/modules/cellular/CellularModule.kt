@@ -17,7 +17,7 @@ class CellularModule : Module() {
     Constants {
       val telephonyManager = telephonyManager()
       mapOf(
-        "allowsVoip" to SipManager.isVoipSupported(context),
+        "allowsVoip" to SipManager.isVoipSupported(reactApplicationContext),
         "isoCountryCode" to telephonyManager?.simCountryIso,
         "carrier" to telephonyManager?.simOperatorName,
         "mobileCountryCode" to telephonyManager?.simOperator?.substring(0, 3),
@@ -35,7 +35,7 @@ class CellularModule : Module() {
     }
 
     AsyncFunction("allowsVoipAsync") {
-      SipManager.isVoipSupported(context)
+      SipManager.isVoipSupported(reactApplicationContext)
     }
 
     AsyncFunction("getIsoCountryCodeAsync") {
@@ -56,12 +56,9 @@ class CellularModule : Module() {
   }
 
   private fun telephonyManager() =
-    (context.getSystemService(Context.TELEPHONY_SERVICE) as? TelephonyManager).takeIf {
+    (reactApplicationContext.getSystemService(Context.TELEPHONY_SERVICE) as? TelephonyManager).takeIf {
       it?.simState == TelephonyManager.SIM_STATE_READY
     }
-
-  private val context
-    get() = requireNotNull(appContext.reactContext)
 
   @SuppressLint("MissingPermission")
   private fun getCurrentGeneration(): Int {

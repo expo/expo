@@ -27,11 +27,7 @@ class WebBrowserModule : Module() {
 
     OnCreate {
       customTabsResolver = CustomTabsActivitiesHelper(appContext.activityProvider)
-      connectionHelper = CustomTabsConnectionHelper(
-        requireNotNull(appContext.reactContext) {
-          "Cannot initialize WebBrowser, ReactContext is null"
-        }
-      )
+      connectionHelper = CustomTabsConnectionHelper(reactApplicationContext)
     }
 
     OnActivityDestroys {
