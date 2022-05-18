@@ -202,7 +202,7 @@ export type CameraRecordingOptions = {
    */
   maxFileSize?: number;
   /**
-   * Specify the quality of recorded video. Use on of [`VideoQuality.<value>`](#videoquality).
+   * Specify the quality of recorded video. Use one of [`VideoQuality.<value>`](#videoquality).
    * Possible values: for 16:9 resolution `2160p`, `1080p`, `720p`, `480p` : `Android only` and for 4:3 `4:3` (the size is 640x480).
    * If the chosen quality is not available for a device, the highest available is chosen.
    */
