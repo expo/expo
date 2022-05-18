@@ -46,6 +46,8 @@ Now you can create a [sandbox account](https://help.apple.com/app-store-connect/
 
 For more information, see Apple's workflow for configuring In-App Purchases [here](https://help.apple.com/app-store-connect/#/devb57be10e7).
 
+Note that Expo implements the ["Original API for In-App Purchase"](https://developer.apple.com/documentation/storekit/original_api_for_in-app_purchase) and not the alternative StoreKit API.
+
 ### Android
 
 On Android, you must first create an entry for your app and upload a release APK in the [Google Play Console](https://developer.android.com/distribute/console/). From there, you can configure your in-app purchases and their details under `Store Presence > In-app products`.
