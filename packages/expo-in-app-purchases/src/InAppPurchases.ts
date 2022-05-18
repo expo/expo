@@ -251,7 +251,7 @@ export function setPurchaseListener(
  * processing the transaction. If you do not acknowledge or consume a purchase within three days,
  * the user automatically receives a refund, and Google Play revokes the purchase.
  *
- * On iOS, this will mark the transaction as finished and prevent it from reappearing in the
+ * On iOS, this will [mark the transaction as finished](https://developer.apple.com/documentation/storekit/skpaymentqueue/1506003-finishtransaction#discussion) and prevent it from reappearing in the
  * purchase listener callback. It will also let the user know their purchase was successful.
  *
  * `consumeItem` is ignored on iOS because you must specify whether an item is a consumable or
@@ -259,9 +259,9 @@ export function setPurchaseListener(
  * is consumable at runtime.
  *
  * > Make sure that you verify each purchase to prevent faulty transactions and protect against
- * fraud _before_ you call `finishTransactionAsync`. On iOS, you can validate the purchase's
- * `transactionReceipt` with the App Store as described [here](https://developer.apple.com/library/archive/releasenotes/General/ValidateAppStoreReceipt/Chapters/ValidateRemotely.html).
- * On Android, you can verify your purchase using the Google Play Developer API as described [here](https://developer.android.com/google/play/billing/billing_best_practices#validating-purchase).
+ * > fraud _before_ you call `finishTransactionAsync`. On iOS, you can validate the purchase's
+ * > `transactionReceipt` with the App Store as described [here](https://developer.apple.com/library/archive/releasenotes/General/ValidateAppStoreReceipt/Chapters/ValidateRemotely.html).
+ * > On Android, you can verify your purchase using the Google Play Developer API as described [here](https://developer.android.com/google/play/billing/billing_best_practices#validating-purchase).
  *
  * @example
  * ```ts
