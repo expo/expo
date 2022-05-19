@@ -210,7 +210,7 @@ export interface NativeConstants {
      * An identifier that is unique to this particular device and whose lifetime is at least as long
      * as the installation of the app.
      * @deprecated `Constants.installationId` is deprecated in favor of generating your own ID and
-     * storing it. This API will be removed in SDK 44.
+     * storing it.
      */
     installationId: string;
     /**

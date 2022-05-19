@@ -10,6 +10,7 @@ namespace jsi = facebook::jsi;
 
 @class EXJavaScriptRuntime;
 @class EXJavaScriptValue;
+@class EXJavaScriptWeakObject;
 
 /**
  The property descriptor options for the property being defined or modified.
@@ -77,5 +78,13 @@ NS_SWIFT_NAME(JavaScriptObject)
  Defines a new property or modifies an existing property on the object. Calls `Object.defineProperty` under the hood.
  */
 - (void)defineProperty:(nonnull NSString *)name value:(nullable id)value options:(EXJavaScriptObjectPropertyDescriptor)options;
+
+#pragma mark - WeakObject
+
+- (nonnull EXJavaScriptWeakObject *)createWeak;
+
+#pragma mark - Deallocator
+
+- (void)setObjectDeallocator:(void (^ _Nonnull)(void))deallocatorBlock;
 
 @end

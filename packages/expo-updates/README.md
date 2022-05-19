@@ -41,9 +41,7 @@ Release builds of both iOS and Android apps include a full embedded update, incl
 
 ## Configuration
 
-Some build-time configuration options are available to allow your app to update automatically on launch. On iOS, these properties are set as keys in `Expo.plist` and on Android as `meta-data` tags in `AndroidManifest.xml`, adjacent to the tags added during installation.
-
-On Android, you may also define these properties at runtime by passing a `Map` as the second parameter of `UpdatesController.initialize()`. If provided, the values in this Map will override any values specified in `AndroidManifest.xml`. On iOS, you may set these properties at runtime by calling `[UpdatesController.sharedInstance setConfiguration:]` at any point _before_ calling `start` or `startAndShowLaunchScreen`, and the values in this dictionary will override Expo.plist.
+Some build-time configuration options are available to configure the behavior of `expo-updates`. On iOS, these properties are set as keys in `Expo.plist` and on Android as `meta-data` tags in `AndroidManifest.xml` adjacent to the tags added during installation. On Android, you may also define these properties at runtime by passing a `Map` as the second parameter of `UpdatesController.initialize()`, and when provided the values will override any values specified in `AndroidManifest.xml`. On iOS, you may set these properties at runtime by calling `[UpdatesController.sharedInstance setConfiguration:]` at any point _before_ calling `start` or `startAndShowLaunchScreen` and the values in this dictionary will override any values specified in `Expo.plist`.
 
 | iOS plist/dictionary key | Android Map key | Android meta-data name         | Default | Required? |
 | ------------------------ | --------------- | ------------------------------ | ------- | --------- |
@@ -56,6 +54,12 @@ Whether updates are enabled. Setting this to `false` disables all update functio
 | `EXUpdatesURL`           | `updateUrl`     | `expo.modules.updates.EXPO_UPDATE_URL` | (none)  | ✅        |
 
 The URL to the remote server where the app should check for updates. A request to this URL should return a valid manifest object for the latest available update and tells expo-updates how to fetch the JS bundle and other assets that comprise the update. (Example: for apps published with `expo publish`, this URL would be `https://exp.host/@username/slug`.)
+
+| iOS plist/dictionary key | Android Map key | Android meta-data name                                           | Default | Required? |
+| ------------------------ | --------------- | ---------------------------------------------------------------- | ------- | --------- |
+| `EXUpdatesRequestHeaders`| `requestHeaders`| `expo.modules.updates.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY` | (none)  | ❌        |
+
+Extra HTTP headers to include in HTTP requests made by expo-updates. These may override preset headers. On iOS this is specified as a plist dictionary. On Android this is JSON object string.
 
 | iOS plist/dictionary key | Android Map key | Android meta-data name                  | Default | Required?                                                     |
 | ------------------------ | --------------- | --------------------------------------- | ------- | ------------------------------------------------------------- |

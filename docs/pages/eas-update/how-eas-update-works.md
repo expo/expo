@@ -5,6 +5,8 @@ title: How EAS Update works
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
 
+> EAS Update is currently available only to customers with an EAS subscription plan. [Sign up](https://expo.dev/accounts/[account]/settings/subscriptions).
+
 EAS Update is a service that allows you to deliver small bug fixes and updates to your users immediately as you work on your next app store release. Making an update available to builds involves creating a link between a build and an update.
 
 To create a link between a build and an update, we have to make sure the update can run on the build. We also want to make sure we can create a deployment process so that we can expose certain updates to certain builds when we're ready.

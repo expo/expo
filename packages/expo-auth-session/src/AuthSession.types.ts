@@ -8,9 +8,8 @@ export type AuthSessionOptions = {
    */
   authUrl: string;
   /**
-   * The URL to return to the application. In managed apps, it's optional (defaults to `${Constants.linkingUrl}expo-auth-session`,
-   * for example, `exp://expo.dev/@yourname/your-app-slug+expo-auth-session`).
-   * However, in the bare app, it's required - `AuthSession` needs to know where to wait for the response.
+   * The URL to return to the application. In managed apps, it's optional and defaults to output of [`Linking.createURL('expo-auth-session', params)`](./linking/#linkingcreateurlpath-namedparameters)
+   * call with `scheme` and `queryParams` params. However, in the bare app, it's required - `AuthSession` needs to know where to wait for the response.
    * Hence, this method will throw an exception, if you don't provide `returnUrl`.
    */
   returnUrl?: string;

@@ -4,6 +4,8 @@ title: Getting started
 
 import { Terminal } from '~/ui/components/Snippet';
 
+> EAS Update is currently available only to customers with an EAS subscription plan. [Sign up](https://expo.dev/accounts/[account]/settings/subscriptions).
+
 Setting up EAS Update allows you to push critical bug fixes and improvements that your users need right away.
 
 ## Prerequisites

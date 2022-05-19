@@ -4,6 +4,8 @@ title: Deployment patterns
 
 import ImageSpotlight from '~/components/plugins/ImageSpotlight'
 
+> EAS Update is currently available only to customers with an EAS subscription plan. [Sign up](https://expo.dev/accounts/[account]/settings/subscriptions).
+
 Once we've created features and fixed bugs in our app, we want to deliver those features and bug fixes out to our users as quickly and safely as we can. Often "safe" and "fast" are opposing forces when delivering code to our users. We could push our code directly to production, which would be fast yet less safe since we never tested our code. On the other hand, we could make test builds, share them with a QA team, and release periodically, which would be safer but slower to deliver changes to our users.
 
 Depending on your project, you'll have some tolerance for how "fast" and how "safe" you'll need to be when delivering updates to your users.

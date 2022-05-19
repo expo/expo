@@ -5,6 +5,8 @@ title: Debugging guide
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
 
+> EAS Update is currently available only to customers with an EAS subscription plan. [Sign up](https://expo.dev/accounts/[account]/settings/subscriptions).
+
 It's important to tell the current state of our app at any given time. We built EAS Update with this in mind. Once we know which updates are running on which builds, we can make changes so that our apps are in the state we expect and desire. This guide sets out to show how we can verify our EAS Update and expo-updates configuration, so that we can find the source of problems like an app not showing a published update.
 
 ## expo-updates configuration

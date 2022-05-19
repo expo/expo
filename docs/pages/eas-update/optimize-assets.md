@@ -5,6 +5,8 @@ title: How to optimize assets for EAS Update
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
 
+> EAS Update is currently available only to customers with an EAS subscription plan. [Sign up](https://expo.dev/accounts/[account]/settings/subscriptions).
+
 When an app finds a new update, it downloads a manifest and then downloads any new or updated assets so that it can run the update. The process is as follows:
 
 <ImageSpotlight alt="Update download timeline" src="/static/images/eas-update/process.png" />
