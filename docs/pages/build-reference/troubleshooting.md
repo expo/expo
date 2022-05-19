@@ -58,6 +58,7 @@ Monorepos are incredibly useful but they do introduce their own set of problems.
 With EAS Build, it's necessary to upload the entire monorepo to the build worker, set it up, and run the build; but, on `expo build` you only had to be able to build the JavaScript bundle locally and upload that to the worker.
 
 EAS Build is more like a typical CI service in that we need the source code, rather than a compiled JavaScript bundle and manifest. EAS Build has first-class support for Yarn workspaces, and [your success may vary when using other monorepo tools](/build-reference/limitations.md).
+
 <!-- TODO: link to monorepos guide when ready -->
 
 </Collapsible>
@@ -74,6 +75,18 @@ It's not yet possible to increase memory limits on your build workers, [only one
 
 </Collapsible>
 
+## Verify that your JavaScript bundles locally
+
+When you get the `Metro encountered an error` during a native iOS build, it means Metro bundler failed to bundle the app. This unfortunately runs at the end of the native build process, meaning it takes a while to fail.
+
+<Terminal cmd={[
+`❌ Metro encountered an error:`
+]} />
+
+You can reproduce this production bundle locally by running `expo export --experimental-bundle` which simply creates a production bundle. Continue doing this until the command passes without throwing. In general this should save you hours of debugging time.
+
+This behavior comes from React Native on iOS, in the future we plan to rewrite this for EAS Build so the bundle is created before the native runtime.
+
 ## Verify that your project builds and runs locally
 
 If the logs weren't enough to immediately help you understand and fix the root cause, it's time to try to reproduce the issue locally. If your project builds and runs locally in release mode then it will also build on EAS Build, provided that the following are all true:
@@ -85,11 +98,11 @@ If the logs weren't enough to immediately help you understand and fix the root c
 You can verify that your project builds on your local machine with the `expo run` commands with variant/configuration flags set to release to most faithfully reproduce what executes on EAS Build. (Learn more about the [iOS build process](/build-reference/ios-builds.md) and [Android build process](/build-reference/android-builds.md)).
 
 <Terminal cmd={[
-  '# Locally compile and run the Android app in release mode',
-  '$ expo run:android --variant release',
-  '',
-  '# Locally compile and run the iOS app in release mode',
-  '$ expo run:ios --configuration Release'
+'# Locally compile and run the Android app in release mode',
+'$ expo run:android --variant release',
+'',
+'# Locally compile and run the iOS app in release mode',
+'$ expo run:ios --configuration Release'
 ]} />
 
 > In managed projects, these commands will run `expo prebuild` to generate native projects &mdash; you likely want to [clean up the changes](https://expo.fyi/prebuild-cleanup) once you are done troubleshooting.
@@ -109,12 +122,17 @@ If your native toolchains are installed correctly and you are unable to build an
 If you find yourself in this situation, it's time to narrow down what configuration exists on your machine that hasn't been set up for your project on EAS Build yet.
 
 There are two ways to approach this, which are quite similar:
+
 - Do a fresh `git clone` of your project to a new directory and get it running. Pay attention to each of the steps that are needed and verify that they are also configured for EAS Build.
 - Run a local build with `eas build --local`. This command will locally run a process that is as close as it can be to the remote, hosted EAS Build service. [Learn how to set this up and use it for debugging](/build-reference/local-builds.md#using-local-builds-for-debugging).
 
 ### Why does my app work in Expo Go and `expo build:[android|ios]` but not with EAS Build?
 
 The classic build service (`expo build`) works completely differently from EAS Build, and there is no guarantee that your app will work out of the box on EAS Build if it works on the classic build service. You can learn more about [migrating from `expo build` in the guide](/build-reference/migrating.md), and get a better understanding of how these two services are fundamentally different in [this two-part blog post](https://blog.expo.dev/expo-managed-workflow-in-2021-5b887bbf7dbb).
+
+### Why does my production app does not match my development app?
+
+You can test how the JS part of your app will run in production by starting it with `expo start --no-dev`. This tells the bundler to minify JavaScript before serving it, most notably stripping code protected by the `__DEV__` boolean. This will remove most of the logging, HMR, Fast Refresh functionality, and make debugging a bit harder, but you can iterate on the production bundle faster this way.
 
 ## Still having trouble?
 
