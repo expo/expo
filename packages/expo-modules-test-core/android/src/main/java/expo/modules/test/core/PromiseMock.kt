@@ -10,6 +10,11 @@ enum class PromiseState {
   ILLEGAL
 }
 
+/**
+ * The [Promise] mock that should be used in conjunction with promise-mapped functions
+ * in the module test interface. See [ModuleMockInvocationHandler] documentation for more details
+ * @see ModuleMockInvocationHandler
+ */
 class PromiseMock : Promise {
 
   var state = PromiseState.NONE
