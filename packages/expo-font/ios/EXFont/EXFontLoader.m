@@ -43,7 +43,7 @@ EX_EXPORT_MODULE(ExpoFontLoader);
 }
 
 
-- (void)setEXModuleRegistry:(EXModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   if (moduleRegistry) {
     id<EXFontManagerInterface> manager = [moduleRegistry getModuleImplementingProtocol:@protocol(EXFontManagerInterface)];

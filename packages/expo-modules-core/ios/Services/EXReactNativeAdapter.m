@@ -50,7 +50,7 @@ EX_REGISTER_MODULE();
   return self;
 }
 
-- (void)setEXModuleRegistry:(EXModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   if (moduleRegistry) {
     [self startObserving];

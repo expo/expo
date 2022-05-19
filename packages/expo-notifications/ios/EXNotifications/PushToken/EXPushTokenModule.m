@@ -47,7 +47,7 @@ EX_EXPORT_METHOD_AS(getDevicePushTokenAsync,
 
 # pragma mark - EXModuleRegistryConsumer
 
-- (void)setEXModuleRegistry:(EXModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   _eventEmitter = [moduleRegistry getModuleImplementingProtocol:@protocol(EXEventEmitterService)];
   _pushTokenManager = [moduleRegistry getSingletonModuleForName:@"PushTokenManager"];

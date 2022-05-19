@@ -92,7 +92,7 @@ EX_REGISTER_MODULE();
                          bundleDirectory:[NSBundle mainBundle].bundlePath];
 }
 
-- (void)setEXModuleRegistry:(EXModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
   _eventEmitter = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXEventEmitterService)];

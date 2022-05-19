@@ -16,7 +16,7 @@ EX_EXPORT_MODULE(ExpoBackgroundNotificationTasksModule);
 
 # pragma mark - EXModuleRegistryConsumer
 
-- (void)setEXModuleRegistry:(EXModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   _taskManager = [moduleRegistry getModuleImplementingProtocol:@protocol(EXTaskManagerInterface)];
 }

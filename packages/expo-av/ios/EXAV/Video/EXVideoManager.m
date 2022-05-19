@@ -21,7 +21,7 @@ EX_EXPORT_MODULE(ExpoVideoManager);
   return @"ExpoVideoView";
 }
 
-- (void)setEXModuleRegistry:(EXModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
 }

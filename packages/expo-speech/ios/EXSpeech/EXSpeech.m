@@ -40,7 +40,7 @@ static NSString *const INVALID_VOICE_ERROR_MSG = @"Cannot find voice with identi
 
 EX_EXPORT_MODULE(ExponentSpeech)
 
-- (void)setEXModuleRegistry:(EXModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
 }

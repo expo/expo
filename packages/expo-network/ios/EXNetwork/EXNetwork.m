@@ -30,7 +30,7 @@
 
 EX_EXPORT_MODULE(ExpoNetwork);
 
-- (void)setEXModuleRegistry:(EXModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
 }

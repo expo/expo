@@ -10,6 +10,6 @@
 
 @protocol EXModuleRegistryConsumer <NSObject>
 
-- (void)setEXModuleRegistry:(nonnull EXModuleRegistry *)moduleRegistry;
+- (void)setModuleRegistry:(nonnull EXModuleRegistry *)moduleRegistry;
 
 @end

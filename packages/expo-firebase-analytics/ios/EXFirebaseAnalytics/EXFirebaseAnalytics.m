@@ -34,7 +34,7 @@ EX_EXPORT_MODULE(ExpoFirebaseAnalytics);
   reject(exception.name, exception.reason, error);
 }
 
-- (void)setEXModuleRegistry:(EXModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
   _firebaseCore = [moduleRegistry getModuleImplementingProtocol:@protocol(EXFirebaseCoreInterface)];

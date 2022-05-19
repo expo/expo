@@ -29,7 +29,7 @@
   return self;
 }
 
-- (void)setEXModuleRegistry:(EXModuleRegistry *)exModuleRegistry
+- (void)setModuleRegistry:(EXModuleRegistry *)exModuleRegistry
 {
   _exModuleRegistry = exModuleRegistry;
   [(id<EXBranchScopedModuleDelegate>)[_exModuleRegistry getSingletonModuleForName:@"BranchManager"] branchModuleDidInit:self];

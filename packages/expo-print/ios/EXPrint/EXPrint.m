@@ -28,7 +28,7 @@ EX_EXPORT_MODULE(ExponentPrint);
   return self;
 }
 
-- (void)setEXModuleRegistry:(EXModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
 }

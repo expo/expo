@@ -24,7 +24,7 @@ EX_EXPORT_MODULE(AdOptionsViewManager)
   return [[FBAdOptionsView alloc] init];
 }
 
-- (void)setEXModuleRegistry:(EXModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
 }

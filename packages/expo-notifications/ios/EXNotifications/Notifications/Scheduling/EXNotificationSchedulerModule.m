@@ -47,7 +47,7 @@ static NSString * const calendarNotificationTriggerTimezoneKey = @"timezone";
 
 EX_EXPORT_MODULE(ExpoNotificationScheduler);
 
-- (void)setEXModuleRegistry:(EXModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   _builder = [moduleRegistry getModuleImplementingProtocol:@protocol(EXNotificationBuilder)];
 }

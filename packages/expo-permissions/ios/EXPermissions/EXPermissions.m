@@ -14,7 +14,7 @@
 
 EX_EXPORT_MODULE(ExpoPermissions);
 
-- (void)setEXModuleRegistry:(EXModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   _permissionsService = [moduleRegistry getModuleImplementingProtocol:@protocol(EXPermissionsInterface)];
 }

@@ -26,7 +26,7 @@ EX_REGISTER_MODULE();
   return @[@protocol(EXUtilitiesInterface)];
 }
 
-- (void)setEXModuleRegistry:(EXModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
 }

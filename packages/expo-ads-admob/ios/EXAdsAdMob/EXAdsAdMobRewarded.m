@@ -29,7 +29,7 @@ static NSString *const EXAdsAdMobRewardedDidDismiss = @"rewardedVideoDidDismiss"
 
 EX_EXPORT_MODULE(ExpoAdsAdMobRewardedVideoAdManager);
 
-- (void)setEXModuleRegistry:(EXModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   _utilities = [moduleRegistry getModuleImplementingProtocol:@protocol(EXUtilitiesInterface)];
   _eventEmitter = [moduleRegistry getModuleImplementingProtocol:@protocol(EXEventEmitterService)];

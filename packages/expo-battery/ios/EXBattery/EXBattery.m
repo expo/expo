@@ -32,7 +32,7 @@ EX_EXPORT_MODULE(ExpoBattery);
   return dispatch_get_main_queue();
 }
 
-- (void)setEXModuleRegistry:(EXModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   if (_moduleRegistry) {
     [self invalidate];

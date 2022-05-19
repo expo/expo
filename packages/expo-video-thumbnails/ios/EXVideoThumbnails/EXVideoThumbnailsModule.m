@@ -13,7 +13,7 @@ static NSString* const OPTIONS_KEY_HEADERS = @"headers";
 
 EX_EXPORT_MODULE(ExpoVideoThumbnails);
 
-- (void)setEXModuleRegistry:(EXModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
   _fileSystem = [moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];
