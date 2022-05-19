@@ -183,7 +183,7 @@ dependencies {
   implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0"
 
   //noinspection GradleDynamicVersion
-  api 'com.facebook.react:react-native:+'
+  implementation 'com.facebook.react:react-native:+'
 
   testImplementation 'androidx.test:core:1.4.0'
   testImplementation 'junit:junit:4.13.1'

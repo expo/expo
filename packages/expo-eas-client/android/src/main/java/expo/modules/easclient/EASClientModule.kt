@@ -8,7 +8,7 @@ class EASClientModule : Module() {
     Name("EASClient")
 
     Constants {
-      mapOf("clientID" to EASClientID(reactApplicationContext).uuid.toString())
+      mapOf("clientID" to EASClientID(context).uuid.toString())
     }
   }
 }

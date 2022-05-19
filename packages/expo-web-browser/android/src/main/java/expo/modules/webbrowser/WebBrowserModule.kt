@@ -27,7 +27,7 @@ class WebBrowserModule : Module() {
 
     OnCreate {
       customTabsResolver = CustomTabsActivitiesHelper(appContext.activityProvider)
-      connectionHelper = CustomTabsConnectionHelper(reactApplicationContext)
+      connectionHelper = CustomTabsConnectionHelper(context)
     }
 
     OnActivityDestroys {

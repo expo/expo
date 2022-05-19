@@ -47,8 +47,8 @@ class ClipboardModule : Module() {
     AsyncFunction("getStringAsync") { options: GetStringOptions ->
       val item = clipboardManager.firstItem
       when (options.preferredFormat) {
-        StringFormat.PLAIN -> item?.coerceToPlainText(reactApplicationContext)
-        StringFormat.HTML -> item?.coerceToHtmlText(reactApplicationContext)
+        StringFormat.PLAIN -> item?.coerceToPlainText(context)
+        StringFormat.HTML -> item?.coerceToHtmlText(context)
       } ?: ""
     }
 
@@ -95,7 +95,7 @@ class ClipboardModule : Module() {
       }
 
       moduleCoroutineScope.launch(exceptionHandler) {
-        val imageResult = imageFromContentUri(reactApplicationContext, imageUri, options)
+        val imageResult = imageFromContentUri(context, imageUri, options)
         promise.resolve(imageResult.toBundle())
       }
     }
@@ -111,7 +111,7 @@ class ClipboardModule : Module() {
       }
 
       moduleCoroutineScope.launch(exceptionHandler) {
-        val clip = clipDataFromBase64Image(reactApplicationContext, imageData, clipboardCacheDir)
+        val clip = clipDataFromBase64Image(context, imageData, clipboardCacheDir)
         clipboardManager.setPrimaryClip(clip)
         promise.resolve(null)
       }
@@ -150,13 +150,13 @@ class ClipboardModule : Module() {
   }
 
   private val clipboardManager: ClipboardManager
-    get() = reactApplicationContext.getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager
+    get() = context.getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager
       ?: throw ClipboardUnavailableException()
 
   private val moduleCoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
   private val clipboardCacheDir: File by lazy {
-    File(reactApplicationContext.cacheDir, CLIPBOARD_DIRECTORY_NAME).also { it.mkdirs() }
+    File(context.cacheDir, CLIPBOARD_DIRECTORY_NAME).also { it.mkdirs() }
   }
 
   // region Clipboard event emitter

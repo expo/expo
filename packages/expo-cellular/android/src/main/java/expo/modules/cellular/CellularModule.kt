@@ -17,7 +17,7 @@ class CellularModule : Module() {
     Constants {
       val telephonyManager = telephonyManager()
       mapOf(
-        "allowsVoip" to SipManager.isVoipSupported(reactApplicationContext),
+        "allowsVoip" to SipManager.isVoipSupported(context),
         "isoCountryCode" to telephonyManager?.simCountryIso,
         "carrier" to telephonyManager?.simOperatorName,
         "mobileCountryCode" to telephonyManager?.simOperator?.substring(0, 3),
@@ -35,7 +35,7 @@ class CellularModule : Module() {
     }
 
     AsyncFunction("allowsVoipAsync") {
-      SipManager.isVoipSupported(reactApplicationContext)
+      SipManager.isVoipSupported(context)
     }
 
     AsyncFunction("getIsoCountryCodeAsync") {
@@ -56,7 +56,7 @@ class CellularModule : Module() {
   }
 
   private fun telephonyManager() =
-    (reactApplicationContext.getSystemService(Context.TELEPHONY_SERVICE) as? TelephonyManager).takeIf {
+    (context.getSystemService(Context.TELEPHONY_SERVICE) as? TelephonyManager).takeIf {
       it?.simState == TelephonyManager.SIM_STATE_READY
     }
 

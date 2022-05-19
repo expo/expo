@@ -1,15 +1,15 @@
 package expo.modules.kotlin.modules
 
+import android.content.Context
 import android.os.Bundle
-import com.facebook.react.bridge.ReactApplicationContext
 import expo.modules.core.errors.ModuleDestroyedException
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.providers.AppContextProvider
-import expo.modules.kotlin.providers.ReactApplicationContextProvider
+import expo.modules.kotlin.providers.ContextProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.cancel
 
-abstract class Module : AppContextProvider, ReactApplicationContextProvider {
+abstract class Module : AppContextProvider, ContextProvider {
 
   // region AppContextProvider
 
@@ -21,10 +21,10 @@ abstract class Module : AppContextProvider, ReactApplicationContextProvider {
 
   // endregion
 
-  // region ReactApplicationContextProvider
+  // region ContextProvider
 
-  override val reactApplicationContext: ReactApplicationContext
-    get() = requireNotNull(appContext.reactApplicationContext) { "React Application Context is null. You can't access the context at this point." }
+  override val context: Context
+    get() = requireNotNull(appContext.context) { "React Application Context is null. You can't access the Context at this point." }
 
   // endregion
 

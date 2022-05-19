@@ -3,6 +3,7 @@
 package expo.modules.kotlin
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.turbomodule.core.CallInvokerHolderImpl
@@ -25,6 +26,7 @@ import expo.modules.kotlin.events.KModuleEventEmitterWrapper
 import expo.modules.kotlin.events.OnActivityResultPayload
 import expo.modules.kotlin.jni.JSIInteropModuleRegistry
 import expo.modules.kotlin.modules.Module
+import expo.modules.kotlin.providers.ContextProvider
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -144,9 +146,11 @@ class AppContext(
     get() = legacyModule()
 
   /**
-   * Provides access to the react application context
+   * Provides access to the [Context] (it's [ReactApplicationContext] under the hood, but we don't
+   * want to expose this type via this module's public API).
+   * @see [ContextProvider] - this interface is not implemented here as it forces non-null return type
    */
-  val reactApplicationContext: ReactApplicationContext?
+  val context: Context?
     get() = reactContextHolder.get()
 
   /**
