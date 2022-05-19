@@ -53,7 +53,7 @@ export type Branch = {
   updates: Update[];
 };
 
-function getBranchesAsync({
+async function getBranchesAsync({
   appId,
   page = 1,
   runtimeVersion,
@@ -142,8 +142,10 @@ export function useBranchesForApp(appId: string, isAuthenticated: boolean) {
       retry: 3,
       refetchOnMount: false,
       enabled: !!isEnabled,
-      getNextPageParam: (lastPage, pages) => {
-        if (lastPage.branches.length < queryOptions.pageSize) {
+      getNextPageParam: (lastPage) => {
+        const totalBranches = lastPage.incompatibleBranches.length + lastPage.branches.length;
+
+        if (totalBranches < queryOptions.pageSize) {
           return undefined;
         }
 
