@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix color setting on web. ([#17558](https://github.com/expo/expo/pull/17558) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 💡 Others
 
 - Migrated Expo modules definitions to the new naming convention. ([#17193](https://github.com/expo/expo/pull/17193) by [@tsapeta](https://github.com/tsapeta))
