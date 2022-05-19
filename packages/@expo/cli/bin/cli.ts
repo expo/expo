@@ -18,6 +18,7 @@ const commands: { [command: string]: () => Promise<Command> } = {
 
   // Auxiliary commands
   install: () => import('../src/install').then((i) => i.expoInstall),
+  customize: () => import('../src/customize').then((i) => i.expoCustomize),
 
   // Auth
   login: () => import('../src/login').then((i) => i.expoLogin),
@@ -61,6 +62,7 @@ if (!isSubcommand && args['--help']) {
     install,
     export: _export,
     config,
+    customize,
     prebuild,
     'run:ios': runIos,
     'run:android': runAndroid,
@@ -72,8 +74,9 @@ if (!isSubcommand && args['--help']) {
     {dim $} npx expo <command>
 
   {bold Commands}
-    ${Object.keys({ start, install, export: _export, config, ...others }).join(', ')}
+    ${Object.keys({ start, export: _export, ...others }).join(', ')}
     ${Object.keys({ 'run:ios': runIos, 'run:android': runAndroid, prebuild }).join(', ')}
+    ${Object.keys({ install, customize, config }).join(', ')}
     {dim ${Object.keys({ login, logout, whoami, register }).join(', ')}}
 
   {bold Options}
