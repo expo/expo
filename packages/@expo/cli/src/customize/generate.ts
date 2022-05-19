@@ -103,9 +103,7 @@ async function generateAsync(
   const packages = answer
     .map((file) => TEMPLATES[file].dependencies)
     .flat()
-    .filter((pkg) => {
-      return !resolveFrom.silent(projectRoot, pkg);
-    });
+    .filter((pkg) => !resolveFrom.silent(projectRoot, pkg));
   if (packages.length) {
     Log.debug('Installing ' + packages.join(', '));
     await installAsync(packages, {}, ['--dev', ...extras]);
