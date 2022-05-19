@@ -12,7 +12,11 @@ export class FileNotifier {
     /** Project root to resolve the module IDs relative to. */
     private projectRoot: string,
     /** List of module IDs sorted by priority. Only the first file that exists will be observed. */
-    private moduleIds: string[]
+    private moduleIds: string[],
+    private settings: {
+      /** An additional warning message to add to the notice. */
+      additionalWarning?: string;
+    } = {}
   ) {}
 
   /** Get the file in the project. */
@@ -44,7 +48,7 @@ export class FileNotifier {
         Log.log(
           `\u203A Detected a change in ${chalk.bold(
             configName
-          )}. Restart the server to see the new results.`
+          )}. Restart the server to see the new results.` + (this.settings.additionalWarning || '')
         );
       }
     });
