@@ -337,9 +337,11 @@ tasks.whenTaskAdded { task ->
     task.dependsOn(extractAARHeaders)
     task.dependsOn(extractJNIFiles)
     if (REACT_NATIVE_BUILD_FROM_SOURCE) {
-      task.dependsOn(":ReactAndroid:packageReactNdkLibs")
+      def buildType = task.name.endsWith('Debug') ? 'Debug' : 'Release'
+      task.dependsOn(":ReactAndroid:copy${buildType}JniLibsProjectOnly")
     }
   } else if (task.name.startsWith('generateJsonModel') && REACT_NATIVE_BUILD_FROM_SOURCE) {
-    task.dependsOn(":ReactAndroid:packageReactNdkLibs")
+    def buildType = task.name.endsWith('Debug') ? 'Debug' : 'Release'
+    task.dependsOn(":ReactAndroid:copy${buildType}JniLibsProjectOnly")
   }
 }
