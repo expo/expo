@@ -55,9 +55,12 @@ export function EASBranchRow({
   return (
     <Animated.View style={loadingStyle}>
       <ListButton isFirst={isFirst} isLast={isLast} onPress={onBranchPress}>
-        <Row>
+        <Row align="center">
           <Row
-            style={{ backgroundColor: palette.blue['100'] }}
+            shrink="1"
+            style={{
+              backgroundColor: palette.blue['100'],
+            }}
             py="tiny"
             px="1.5"
             rounded="medium"
@@ -67,10 +70,12 @@ export function EASBranchRow({
               resizeMethod="scale"
             />
             <Spacer.Horizontal size="tiny" />
-            <Text size="small">{`Branch: ${name}`}</Text>
+            <View shrink="1">
+              <Text size="small" numberOfLines={1}>{`Branch: ${name}`}</Text>
+            </View>
           </Row>
-
-          <View style={{ position: 'absolute', right: 0, top: scale.tiny }}>
+          <Spacer.Horizontal />
+          <View style={{ paddingLeft: scale.small }}>
             <ChevronRightIcon />
           </View>
         </Row>
@@ -133,9 +138,12 @@ export function EASEmptyBranchRow({ branch, isFirst, isLast, navigation }: EASEm
   return (
     <ListButton isFirst={isFirst} isLast={isLast} onPress={onBranchPress}>
       <View>
-        <Row>
+        <Row align="center">
           <Row
-            style={{ backgroundColor: palette.blue['100'] }}
+            shrink="1"
+            style={{
+              backgroundColor: palette.blue['100'],
+            }}
             py="tiny"
             px="1.5"
             rounded="medium"
@@ -145,10 +153,12 @@ export function EASEmptyBranchRow({ branch, isFirst, isLast, navigation }: EASEm
               resizeMethod="scale"
             />
             <Spacer.Horizontal size="tiny" />
-            <Text size="small">{`Branch: ${name}`}</Text>
+            <View shrink="1">
+              <Text size="small" numberOfLines={1}>{`Branch: ${name}`}</Text>
+            </View>
           </Row>
-
-          <View style={{ position: 'absolute', right: 0, top: scale.tiny }}>
+          <Spacer.Horizontal />
+          <View style={{ paddingLeft: scale.small }}>
             <ChevronRightIcon />
           </View>
         </Row>
