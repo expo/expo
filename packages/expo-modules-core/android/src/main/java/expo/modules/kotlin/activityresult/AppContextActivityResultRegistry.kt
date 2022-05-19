@@ -15,8 +15,8 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.ActivityResultRegistry
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContract
-import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.activity.result.contract.ActivityResultContracts.RequestMultiplePermissions
+import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.activity.result.contract.ActivityResultContracts.StartIntentSenderForResult
 import androidx.annotation.MainThread
 import androidx.appcompat.app.AppCompatActivity
@@ -25,9 +25,9 @@ import androidx.core.app.ActivityOptionsCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
-import expo.modules.kotlin.providers.AppCompatActivityProvider
+import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.providers.CurrentActivityProvider
 import java.util.*
-import kotlin.collections.HashSet
 
 /**
  * This class is created to address the problem of integrating original [ActivityResultRegistry]
@@ -44,7 +44,7 @@ import kotlin.collections.HashSet
  * @see [ActivityResultRegistry] for more information.
  */
 class AppContextActivityResultRegistry(
-  private val activityProvider: AppCompatActivityProvider
+  private val currentActivityProvider: CurrentActivityProvider
 ) {
   private val LOG_TAG = "ActivityResultRegistry"
 
@@ -57,10 +57,13 @@ class AppContextActivityResultRegistry(
   private val mKeyToLifecycleContainers: MutableMap<String, LifecycleContainer> = HashMap()
   private var mLaunchedKeys: ArrayList<String> = ArrayList()
 
-  @Transient /* synthetic access */
+  @Transient
+  /* synthetic access */
   private val mKeyToCallback: MutableMap<String, CallbackAndContract<*>> = HashMap()
+
   /* synthetic access */
   private val mParsedPendingResults: MutableMap<String, Any?> = HashMap()
+
   /* synthetic access */
   private val mPendingResults = Bundle/*<String, ActivityResult>*/()
 
@@ -76,7 +79,7 @@ class AppContextActivityResultRegistry(
   }
 
   private val activity: AppCompatActivity
-    get() = requireNotNull(activityProvider.appCompatActivity) { TODO() }
+    get() = requireNotNull(currentActivityProvider.currentActivity) { TODO() }
 
   /**
    * @see [ActivityResultRegistry.onLaunch]
@@ -282,7 +285,7 @@ class AppContextActivityResultRegistry(
   }
 
   private fun <O> doDispatch(key: String, resultCode: Int, data: Intent?,
-                                  callbackAndContract: CallbackAndContract<O>?) {
+                             callbackAndContract: CallbackAndContract<O>?) {
     if (callbackAndContract?.mCallback != null && mLaunchedKeys.contains(key)) {
       val callback = callbackAndContract.mCallback
       val contract = callbackAndContract.mContract
