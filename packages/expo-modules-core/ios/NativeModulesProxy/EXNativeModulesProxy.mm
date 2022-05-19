@@ -75,7 +75,7 @@ RCT_EXPORT_MODULE(NativeUnimoduleProxy)
 }
 
 /**
- The designated initializer is for Expo Go to pass a custom `EXModuleRegistry`
+ The initializer for Expo Go to pass a custom `EXModuleRegistry`
  other than the default one from `EXModuleRegistryProvider`.
  The `EXModuleRegistry` is still owned by this class.
  */
