@@ -63,6 +63,11 @@ def DOUBLE_CONVERSION_VERSION = reactProperties.getProperty("DOUBLE_CONVERSION_V
 
 def reactNativeThirdParty = new File("$REACT_NATIVE_DIR/ReactAndroid/src/main/jni/third-party")
 
+def reactNativeArchitectures() {
+    def value = project.getProperties().get("reactNativeArchitectures")
+    return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
+}
+
 // Creating sources with comments
 task androidSourcesJar(type: Jar) {
   classifier = 'sources'
@@ -109,7 +114,7 @@ android {
 
     externalNativeBuild {
       cmake {
-        abiFilters(*(System.getenv('NDK_ABI_FILTERS') ?: 'armeabi-v7a x86 arm64-v8a x86_64').split(' '))
+        abiFilters (*reactNativeArchitectures())
         arguments "-DREACT_NATIVE_DIR=${REACT_NATIVE_DIR}",
           "-DREACT_NATIVE_SO_DIR=${REACT_NATIVE_SO_DIR}",
           "-DBOOST_VERSION=${BOOST_VERSION}"
