@@ -3,15 +3,18 @@
 // MARK: - Arguments
 
 /**
- Tries to cast given argument to the type that is wrapped by the argument type.
+ Tries to cast given argument to the type that is wrapped by the dynamic type.
  - Parameters:
   - argument: A value to be cast. If it's a ``JavaScriptValue``, it's first unpacked to the raw value.
-  - argumentType: Something that implements ``AnyArgumentType`` and knows how to cast the argument.
- - Returns: A new value converted according to the argument type.
- - Throws: Rethrows various exceptions that could be thrown by the argument type wrappers.
+  - argumentType: Something that implements ``AnyDynamicType`` and knows how to cast the argument.
+ - Returns: A new value converted according to the dynamic type.
+ - Throws: Rethrows various exceptions that could be thrown by the dynamic types.
  */
-internal func castArgument(_ argument: Any, toType argumentType: AnyArgumentType) throws -> Any {
+internal func castArgument(_ argument: Any, toType argumentType: AnyDynamicType) throws -> Any {
   // TODO: Accept JavaScriptValue and JavaScriptObject as argument types.
+  if argumentType is DynamicSharedObjectType {
+    return try argumentType.cast(argument)
+  }
   if let argument = argument as? JavaScriptValue {
     return try argumentType.cast(argument.getRaw())
   }
@@ -22,12 +25,12 @@ internal func castArgument(_ argument: Any, toType argumentType: AnyArgumentType
  Same as ``castArgument(_:argumentType:)`` but for an array of arguments.
  - Parameters:
    - arguments: An array of arguments to be cast.
-   - argumentTypes: An array of argument types in the same order as the array of arguments.
+   - argumentTypes: An array of the dynamic types in the same order as the array of arguments.
  - Returns: An array of arguments after casting. Its size is the same as the input arrays.
  - Throws: ``InvalidArgsNumberException`` when the sizes of arrays passed as parameters are not equal.
    Rethrows exceptions thrown by ``castArgument(_:argumentType:)``.
  */
-internal func castArguments(_ arguments: [Any], toTypes argumentTypes: [AnyArgumentType]) throws -> [Any] {
+internal func castArguments(_ arguments: [Any], toTypes argumentTypes: [AnyDynamicType]) throws -> [Any] {
   if arguments.count != argumentTypes.count {
     throw InvalidArgsNumberException((received: arguments.count, expected: argumentTypes.count))
   }
@@ -50,7 +53,7 @@ internal class InvalidArgsNumberException: GenericException<(received: Int, expe
   }
 }
 
-internal class ArgumentCastException: GenericException<(index: Int, type: AnyArgumentType)> {
+internal class ArgumentCastException: GenericException<(index: Int, type: AnyDynamicType)> {
   override var reason: String {
     "Argument at index '\(param.index)' couldn't be cast to type \(param.type.description)"
   }

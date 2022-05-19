@@ -11,8 +11,10 @@ import expo.modules.kotlin.records.Record
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 
 @RunWith(RobolectricTestRunner::class)
+@Config(sdk = [30])
 class JSTypeConverterTest {
   private object TestContainerProvider : JSTypeConverter.ContainerProvider {
     override fun createMap(): WritableMap = JavaOnlyMap()

@@ -2,6 +2,8 @@
 title: FAQ
 ---
 
+> EAS Update is currently available only to customers with an EAS subscription plan. [Sign up](https://expo.dev/accounts/[account]/settings/subscriptions).
+
 **What guidelines must I follow when publishing updates?**
 
 One of the rules of EAS Update is that you need to follow the rules of the platforms and app stores you are building for. This means your updates need to follow the App Store and Play Store guidelines, including the content of the updates and how you use them. This usually means changes to your app’s behavior need to be reviewed.

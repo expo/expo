@@ -32,11 +32,11 @@ In managed apps, `Camera` requires `Permissions.CAMERA`. Video recording require
 ```jsx
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
-import { Camera } from 'expo-camera';
+import { Camera, CameraType } from 'expo-camera';
 
 export default function App() {
   const [hasPermission, setHasPermission] = useState(null);
-  const [type, setType] = useState(Camera.Constants.Type.back);
+  const [type, setType] = useState(CameraType.back);
 
   useEffect(() => {
     (async () => {
@@ -58,11 +58,7 @@ export default function App() {
           <TouchableOpacity
             style={styles.button}
             onPress={() => {
-              setType(
-                type === Camera.Constants.Type.back
-                  ? Camera.Constants.Type.front
-                  : Camera.Constants.Type.back
-              );
+              setType(type === CameraType.back ? CameraType.front : CameraType.back);
             }}>
             <Text style={styles.text}> Flip </Text>
           </TouchableOpacity>

@@ -8,7 +8,7 @@ class AsyncFunctionWithPromise(
   name: String,
   argsType: Array<AnyType>,
   private val body: (args: Array<out Any?>, promise: Promise) -> Unit
-) : AnyFunction(name, argsType) {
+) : AnyFunction(name, argsType, isSync = false) {
   override fun callImplementation(holder: ModuleHolder, args: Array<out Any?>, promise: Promise) {
     body(args, promise)
   }

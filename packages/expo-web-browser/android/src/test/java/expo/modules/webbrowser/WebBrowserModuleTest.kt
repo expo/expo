@@ -1,120 +1,125 @@
 package expo.modules.webbrowser
 
 import android.content.Intent
+import android.os.Bundle
 import androidx.browser.customtabs.CustomTabsIntent
-import expo.modules.webbrowser.error.PackageManagerNotFoundException
+import expo.modules.kotlin.exception.CodedException
+import expo.modules.kotlin.exception.errorCodeOf
+import expo.modules.test.core.ModuleMock
+import expo.modules.test.core.ModuleMockHolder
+import expo.modules.test.core.assertCodedException
 import io.mockk.every
-import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
-import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 
 import org.robolectric.RobolectricTestRunner
-import org.unimodules.test.core.PromiseMock
 import org.unimodules.test.core.assertListsEqual
+
 import org.unimodules.test.core.assertSetsEqual
 import org.unimodules.test.core.assertStringValueNull
-import org.unimodules.test.core.mockInternalModule
-import org.unimodules.test.core.mockkInternalModule
-import org.unimodules.test.core.moduleRegistryMock
-import org.unimodules.test.core.promiseRejected
-import org.unimodules.test.core.promiseResolved
+
+private interface WebBrowserModuleTestInterface {
+  @Throws(CodedException::class)
+  fun openBrowserAsync(url: String, options: OpenBrowserOptions): Bundle
+
+  fun getCustomTabsSupportingBrowsersAsync(): Bundle
+
+  fun warmUpAsync(browserPackage: String?): Bundle
+
+  fun coolDownAsync(browserPackage: String?): Bundle
+
+  fun mayInitWithUrlAsync(url: String, browserPackage: String?): Bundle
+}
+
+private inline fun withWebBrowserMock(
+  block: ModuleMockHolder<WebBrowserModuleTestInterface, WebBrowserModule>.() -> Unit
+) = ModuleMock.createMock(
+  WebBrowserModuleTestInterface::class,
+  WebBrowserModule(),
+  block = block,
+  autoOnCreate = false
+)
 
 @RunWith(RobolectricTestRunner::class)
 internal class WebBrowserModuleTest {
 
-  private var moduleRegistry = moduleRegistryMock()
-
-  private lateinit var promise: PromiseMock
-
-  private lateinit var module: WebBrowserModule
-
-  @Before
-  fun initializeMock() {
-    promise = PromiseMock()
-    module = WebBrowserModule(mockk())
-  }
-
   @Test
-  fun testOpenBrowserAsync() {
+  fun testOpenBrowserAsync() = withWebBrowserMock {
     // given
     val mock = mockkCustomTabsActivitiesHelper()
     every { mock.canResolveIntent(any()) } returns true
-    initialize(mock)
+    initialize(moduleSpy, customTabsActivitiesHelper = mock)
 
     // when
-    module.openBrowserAsync("http://expo.io", browserArguments(), promise)
+    val result = module.openBrowserAsync("http://expo.dev", OpenBrowserOptions())
 
     // then
-    promiseResolved(promise) {
+    result.let {
       assertSetsEqual(setOf("type"), it.keySet())
       assertEquals("opened", it.getString("type"))
     }
   }
 
   @Test
-  fun `test browser not opened when no resolving activity found`() {
+  fun `test browser not opened when no resolving activity found`() = withWebBrowserMock {
     // given
     val mock = mockkCustomTabsActivitiesHelper()
     every { mock.canResolveIntent(any()) } returns false
-    initialize(mock)
+    initialize(moduleSpy, customTabsActivitiesHelper = mock)
 
     // when
-    module.openBrowserAsync("http://expo.io", browserArguments(), promise)
+    val exception = runCatching {
+      module.openBrowserAsync("http://expo.dev", OpenBrowserOptions())
+    }.exceptionOrNull()
 
     // then
-    promiseRejected(promise) {
-      assertTrue(it.rejectCodeSet)
-      assertEquals(it.rejectCode, "EXWebBrowser")
-      assertTrue(it.rejectMessageSet)
-      assertEquals(it.rejectMessage, "No matching activity!")
+    assertCodedException(exception) {
+      assertEquals(errorCodeOf<NoMatchingActivityException>(), it.code)
     }
   }
 
   @Test
-  fun `test no exception thrown when no package manager found`() {
+  fun `test no exception thrown when no package manager found`() = withWebBrowserMock {
     // given
     val mock = mockkCustomTabsActivitiesHelper()
     every { mock.canResolveIntent(any()) } throws PackageManagerNotFoundException()
-    initialize(mock)
+    initialize(moduleSpy, customTabsActivitiesHelper = mock)
 
     // when
-    module.openBrowserAsync("http://expo.io", browserArguments(), promise)
+    val exception = runCatching {
+      module.openBrowserAsync("http://expo.io", OpenBrowserOptions())
+    }.exceptionOrNull()
 
     // then
-    promiseRejected(promise) {
-      assertFalse(it.rejectCodeSet)
-      assertFalse(it.rejectMessageSet)
-      assertTrue(it.rejectThrowableSet)
-      assertTrue(it.rejectThrowable is PackageManagerNotFoundException)
+    assertCodedException(exception) {
+      assertEquals(errorCodeOf<PackageManagerNotFoundException>(), it.code)
     }
   }
 
   @Test
-  fun testArgumentsCorrectlyPassedToIntent() {
+  fun testArgumentsCorrectlyPassedToIntent() = withWebBrowserMock {
     // given
     val intentSlot = slot<Intent>()
     val mock = mockkCustomTabsActivitiesHelper(defaultCanResolveIntent = true, startIntentSlot = intentSlot)
-    initialize(mock)
+    initialize(moduleSpy, customTabsActivitiesHelper = mock)
 
     // when
     module.openBrowserAsync(
       "http://expo.io",
-      browserArguments(
+      OpenBrowserOptions(
         toolbarColor = "#000000",
         browserPackage = "com.browser.package",
         enableBarCollapsing = true,
         enableDefaultShareMenuItem = true,
         showInRecents = true,
-        createTask = true,
+        shouldCreateTask = true,
         showTitle = true
-      ),
-      promise
+      )
     )
 
     intentSlot.captured.let {
@@ -123,24 +128,23 @@ internal class WebBrowserModuleTest {
   }
 
   @Test
-  fun testTrueFlagsCorrectlyPassedToIntent() {
+  fun testTrueFlagsCorrectlyPassedToIntent() = withWebBrowserMock {
     // given
     val intentSlot = slot<Intent>()
     val mock = mockkCustomTabsActivitiesHelper(defaultCanResolveIntent = true, startIntentSlot = intentSlot)
-    initialize(mock)
+    initialize(moduleSpy, customTabsActivitiesHelper = mock)
 
     // when
     module.openBrowserAsync(
       "http://expo.io",
-      browserArguments(
+      OpenBrowserOptions(
         toolbarColor = "#000000",
         browserPackage = "com.browser.package",
         enableBarCollapsing = true,
         enableDefaultShareMenuItem = true,
         showInRecents = true,
         showTitle = true
-      ),
-      promise
+      )
     )
 
     intentSlot.captured.let {
@@ -153,24 +157,23 @@ internal class WebBrowserModuleTest {
   }
 
   @Test
-  fun testFalseFlagsCorrectlyPassedToIntent() {
+  fun testFalseFlagsCorrectlyPassedToIntent() = withWebBrowserMock {
     // given
     val intentSlot = slot<Intent>()
     val mock = mockkCustomTabsActivitiesHelper(defaultCanResolveIntent = true, startIntentSlot = intentSlot)
-    initialize(mock)
+    initialize(moduleSpy, customTabsActivitiesHelper = mock)
 
     // when
     module.openBrowserAsync(
       "http://expo.io",
-      browserArguments(
+      OpenBrowserOptions(
         toolbarColor = "#000000",
         browserPackage = "com.browser.package",
         enableBarCollapsing = false,
         enableDefaultShareMenuItem = false,
         showInRecents = false,
         showTitle = false
-      ),
-      promise
+      )
     )
 
     intentSlot.captured.let {
@@ -182,21 +185,20 @@ internal class WebBrowserModuleTest {
   }
 
   @Test
-  fun testCreateTaskFalseCorrectlyPassedToIntent() {
+  fun testCreateTaskFalseCorrectlyPassedToIntent() = withWebBrowserMock {
     // given
     val intentSlot = slot<Intent>()
     val mock = mockkCustomTabsActivitiesHelper(defaultCanResolveIntent = true, startIntentSlot = intentSlot)
-    initialize(mock)
+    initialize(moduleSpy, customTabsActivitiesHelper = mock)
 
     // when
     module.openBrowserAsync(
       "http://expo.io",
-      browserArguments(
+      OpenBrowserOptions(
         toolbarColor = "#000000",
         browserPackage = "com.browser.package",
-        createTask = false
-      ),
-      promise
+        shouldCreateTask = false
+      )
     )
 
     intentSlot.captured.let {
@@ -207,17 +209,17 @@ internal class WebBrowserModuleTest {
   }
 
   @Test
-  fun testActivitiesAndServicesReturnedForValidKeys() {
+  fun testActivitiesAndServicesReturnedForValidKeys() = withWebBrowserMock {
     // given
     val services = arrayListOf("service1", "service2")
     val activities = arrayListOf("activity1", "activity2")
-    initialize(mockkCustomTabsActivitiesHelper(services, activities))
+    initialize(moduleSpy, customTabsActivitiesHelper = mockkCustomTabsActivitiesHelper(services, activities))
 
     // when
-    module.getCustomTabsSupportingBrowsersAsync(promise)
+    val result = module.getCustomTabsSupportingBrowsersAsync()
 
     // then
-    promiseResolved(promise) {
+    result.let {
       assertSetsEqual(setOf("browserPackages", "servicePackages", "preferredBrowserPackage", "defaultBrowserPackage"), it.keySet())
       assertListsEqual(activities, it.getStringArrayList("browserPackages"))
       assertListsEqual(services, it.getStringArrayList("servicePackages"))
@@ -227,15 +229,15 @@ internal class WebBrowserModuleTest {
   }
 
   @Test
-  fun testActivitiesAndServicesWorkForNulls() {
+  fun testActivitiesAndServicesWorkForNulls() = withWebBrowserMock {
     // given
-    initialize()
+    initialize(moduleSpy)
 
     // when
-    module.getCustomTabsSupportingBrowsersAsync(promise)
+    val result = module.getCustomTabsSupportingBrowsersAsync()
 
     // then
-    promiseResolved(promise) {
+    result.let {
       assertSetsEqual(setOf("browserPackages", "servicePackages", "preferredBrowserPackage", "defaultBrowserPackage"), it.keySet())
       assertListsEqual(emptyList<String>(), it.getStringArrayList("browserPackages"))
       assertListsEqual(emptyList<String>(), it.getStringArrayList("servicePackages"))
@@ -245,13 +247,13 @@ internal class WebBrowserModuleTest {
   }
 
   @Test
-  fun testWarmUpWithGivenPackage() {
+  fun testWarmUpWithGivenPackage() = withWebBrowserMock {
     // given
     val connectionHelper: CustomTabsConnectionHelper = mockkCustomTabsConnectionHelper()
-    initialize(customTabsConnectionHelper = connectionHelper)
+    initialize(moduleSpy, customTabsConnectionHelper = connectionHelper)
 
     // when
-    module.warmUpAsync("com.browser.package", promise)
+    module.warmUpAsync(browserPackage = "com.browser.package")
 
     // then
     verify(exactly = 1) {
@@ -263,14 +265,14 @@ internal class WebBrowserModuleTest {
   }
 
   @Test
-  fun testWarmUpWithoutPackage() {
+  fun testWarmUpWithoutPackage() = withWebBrowserMock {
     // given
     val connectionHelper: CustomTabsConnectionHelper = mockkCustomTabsConnectionHelper()
     val customTabsHelper = mockkCustomTabsActivitiesHelper(preferredActivity = "com.browser.package")
-    initialize(customTabsConnectionHelper = connectionHelper, customTabsActivitiesHelper = customTabsHelper)
+    initialize(moduleSpy, customTabsConnectionHelper = connectionHelper, customTabsActivitiesHelper = customTabsHelper)
 
     // when
-    module.warmUpAsync(null, promise)
+    module.warmUpAsync(browserPackage = null)
 
     // then
     verify(exactly = 1) {
@@ -282,13 +284,13 @@ internal class WebBrowserModuleTest {
   }
 
   @Test
-  fun testCoolDownWithGivenPackage() {
+  fun testCoolDownWithGivenPackage() = withWebBrowserMock {
     // given
     val connectionHelper: CustomTabsConnectionHelper = mockkCustomTabsConnectionHelper()
-    initialize(customTabsConnectionHelper = connectionHelper)
+    initialize(moduleSpy, customTabsConnectionHelper = connectionHelper)
 
     // when
-    module.coolDownAsync("com.browser.package", promise)
+    module.coolDownAsync(browserPackage = "com.browser.package")
 
     // then
     verify(exactly = 1) {
@@ -300,14 +302,14 @@ internal class WebBrowserModuleTest {
   }
 
   @Test
-  fun testCoolDownWithoutPackage() {
+  fun testCoolDownWithoutPackage() = withWebBrowserMock {
     // given
-    val connectionHelper: CustomTabsConnectionHelper = mockkInternalModule(relaxed = true)
+    val connectionHelper = mockkCustomTabsConnectionHelper()
     val customTabsHelper = mockkCustomTabsActivitiesHelper(preferredActivity = "com.browser.package")
-    initialize(customTabsConnectionHelper = connectionHelper, customTabsActivitiesHelper = customTabsHelper)
+    initialize(moduleSpy, customTabsConnectionHelper = connectionHelper, customTabsActivitiesHelper = customTabsHelper)
 
     // when
-    module.coolDownAsync(null, promise)
+    module.coolDownAsync(browserPackage = null)
 
     // then
     verify(exactly = 1) {
@@ -319,11 +321,11 @@ internal class WebBrowserModuleTest {
   }
 
   private fun initialize(
+    moduleSpy: WebBrowserModule,
     customTabsActivitiesHelper: CustomTabsActivitiesHelper = mockkCustomTabsActivitiesHelper(),
     customTabsConnectionHelper: CustomTabsConnectionHelper = mockkCustomTabsConnectionHelper()
   ) {
-    moduleRegistry.mockInternalModule(customTabsConnectionHelper)
-    moduleRegistry.mockInternalModule(customTabsActivitiesHelper)
-    module.onCreate(moduleRegistry)
+    every { moduleSpy.customTabsResolver } returns customTabsActivitiesHelper
+    every { moduleSpy.connectionHelper } returns customTabsConnectionHelper
   }
 }

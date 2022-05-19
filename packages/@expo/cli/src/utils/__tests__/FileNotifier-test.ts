@@ -42,15 +42,20 @@ it('observes the first existing file', () => {
     },
     '/'
   );
-  const fileNotifier = new FileNotifier('./', [
-    // Skips this file
-    '.babelrc',
-    // Starts observing
-    'babel.config.js',
-  ]);
+  const fileNotifier = new FileNotifier(
+    './',
+    [
+      // Skips this file
+      '.babelrc',
+      // Starts observing
+      'babel.config.js',
+    ],
+    { additionalWarning: ' foobar' }
+  );
   expect(fileNotifier.startObserving()).toBe('babel.config.js');
 
   // We mock out the callback firing and test that a warning was logged.
   expect(Log.log).toBeCalledTimes(1);
   expect(Log.log).toBeCalledWith(expect.stringContaining('babel.config.js'));
+  expect(Log.log).toBeCalledWith(expect.stringContaining('foobar'));
 });
