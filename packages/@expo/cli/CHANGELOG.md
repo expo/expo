@@ -26,6 +26,7 @@
 
 ### 💡 Others
 
+- Bump `@expo/xcpretty` to link to the troubleshooting guide.
 - deduplicate asMock helper function. ([#17294](https://github.com/expo/expo/pull/17294) by [@wschurman](https://github.com/wschurman))
 
 ## 0.1.3 — 2022-04-28
