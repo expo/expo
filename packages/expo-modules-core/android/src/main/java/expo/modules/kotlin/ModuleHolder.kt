@@ -67,7 +67,9 @@ class ModuleHolder(val module: Module) {
    * Invokes a function without promise.
    * `callSync` was added only for test purpose and shouldn't be used anywhere else.
    */
-  internal fun callSync(methodName: String, args: ReadableArray): ReadableNativeArray {
+  fun callSync(methodName: String, args: ReadableArray): Any? = exceptionDecorator({
+    FunctionCallException(methodName, definition.name, it)
+  }) {
     val method = definition.methods[methodName]
       ?: throw MethodNotFoundException()
 
@@ -76,9 +78,7 @@ class ModuleHolder(val module: Module) {
     }
 
     val result = method.callSync(this, args)
-    val convertedResult = JSTypeConverter.convertToJSValue(result)
-
-    return Arguments.fromJavaArgs(arrayOf(convertedResult))
+    JSTypeConverter.convertToJSValue(result)
   }
 
   fun post(eventName: EventName) {
