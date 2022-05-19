@@ -87,6 +87,9 @@
   if ([value isString]) {
     return @"string";
   }
+  if ([value isSymbol]) {
+    return @"symbol";
+  }
   if ([value isFunction]) {
     return @"function";
   }
