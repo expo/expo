@@ -1,121 +1,65 @@
-export function createTemplateHtml(projectRoot: string, { url }: { url: string }) {
-  return `<!DOCTYPE html>
-    <html>
-      <head>
-        <meta charset="utf-8" />
-        <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
-        <!-- 
-          This viewport works for phones with notches.
-          It's optimized for gestures by disabling global zoom.
-         -->
-        <meta
-          name="viewport"
-          content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1.00001, viewport-fit=cover"
-        />
-      
-        <style>
-          /**
-           * Extend the react-native-web reset:
-           * https://github.com/necolas/react-native-web/blob/master/packages/react-native-web/src/exports/StyleSheet/initialRules.js
-           */
-          html,
-          body,
-          #root {
-            width: 100%;
-            /* To smooth any scrolling behavior */
-            -webkit-overflow-scrolling: touch;
-            margin: 0px;
-            padding: 0px;
-            /* Allows content to fill the viewport and go beyond the bottom */
-            min-height: 100%;
-          }
-          #root {
-            flex-shrink: 0;
-            flex-basis: auto;
-            flex-grow: 1;
-            display: flex;
-            flex: 1;
-          }
-    
-          html {
-            scroll-behavior: smooth;
-            /* Prevent text size change on orientation change https://gist.github.com/tfausak/2222823#file-ios-8-web-app-html-L138 */
-            -webkit-text-size-adjust: 100%;
-            height: calc(100% + env(safe-area-inset-top));
-          }
-    
-          body {
-            display: flex;
-            /* Allows you to scroll below the viewport; default value is visible */
-            overflow-y: auto;
-            overscroll-behavior-y: none;
-            text-rendering: optimizeLegibility;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-            -ms-overflow-style: scrollbar;
-          }
-          /* Enable for apps that support dark-theme */
-          /*@media (prefers-color-scheme: dark) {
-            body {
-              background-color: black;
-            }
-          }*/
-        </style>
-      </head>
-    
-      <body>
-        <!-- 
-          A generic no script element with a reload button and a message.
-          Feel free to customize this however you'd like.
-        -->
-        <noscript>
-          <form
-            action=""
-            style="
-              background-color: #fff;
-              position: fixed;
-              top: 0;
-              left: 0;
-              right: 0;
-              bottom: 0;
-              z-index: 9999;
-            "
-          >
-            <div
-              style="
-                font-size: 18px;
-                font-family: Helvetica, sans-serif;
-                line-height: 24px;
-                margin: 10%;
-                width: 80%;
-              "
-            >
-              <p>Oh no! It looks like JavaScript is not enabled in your browser.</p>
-              <p style="margin: 20px 0;">
-                <button
-                  type="submit"
-                  style="
-                    background-color: #4630eb;
-                    border-radius: 100px;
-                    border: none;
-                    box-shadow: none;
-                    color: #fff;
-                    cursor: pointer;
-                    font-weight: bold;
-                    line-height: 20px;
-                    padding: 6px 16px;
-                  "
-                >
-                  Reload
-                </button>
-              </p>
-            </div>
-          </form>
-        </noscript>
-        <!-- The root element for your Expo app. -->
-        <div id="root"></div>
-        <script src="${url}"></script>
-      </body>
-    </html>
-    `;
+import { ExpoConfig, getConfig, getNameFromConfig } from '@expo/config';
+import fs from 'fs';
+
+import { TEMPLATES } from '../../customize/templates';
+
+export async function createTemplateHtmlFromExpoConfigAsync(
+  projectRoot: string,
+  {
+    scripts,
+    exp = getConfig(projectRoot, { skipSDKVersionRequirement: true }).exp,
+  }: {
+    scripts: string[];
+    exp?: ExpoConfig;
+  }
+) {
+  return createTemplateHtmlAsync(projectRoot, {
+    langIsoCode: exp.web?.lang ?? 'en',
+    scripts,
+    title: getNameFromConfig(exp).webName ?? 'Expo App',
+    description: exp.web?.description,
+    themeColor: exp.web?.themeColor,
+  });
+}
+
+export async function createTemplateHtmlAsync(
+  projectRoot: string,
+  {
+    scripts,
+    description,
+    langIsoCode,
+    title,
+    themeColor,
+  }: {
+    scripts: string[];
+    description?: string;
+    langIsoCode: string;
+    title: string;
+    themeColor?: string;
+  }
+) {
+  const indexHtmlFilePath = TEMPLATES.find((value) => value.id === 'index.html')!.file(projectRoot);
+
+  let contents = await fs.promises.readFile(indexHtmlFilePath, 'utf8');
+
+  contents = contents.replace('%LANG_ISO_CODE%', langIsoCode);
+  contents = contents.replace('%WEB_TITLE%', title);
+  contents = contents.replace(
+    '</body>',
+    scripts.map((url) => `<script src="${url}"></script>`).join('') + '</body>'
+  );
+
+  if (themeColor) {
+    contents = addMeta(contents, `name="theme-color" content="${themeColor}"`);
+  }
+
+  if (description) {
+    contents = addMeta(contents, `name="description" content="${description}"`);
+  }
+
+  return contents;
+}
+
+function addMeta(contents: string, meta: string) {
+  return contents.replace('</head>', `<meta ${meta}>\n</head>`);
 }

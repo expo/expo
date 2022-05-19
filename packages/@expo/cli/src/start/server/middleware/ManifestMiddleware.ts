@@ -1,13 +1,12 @@
 import { ExpoConfig, ExpoGoConfig, getConfig, ProjectConfig } from '@expo/config';
-import path from 'path';
 import { resolve } from 'url';
 
 import * as Log from '../../../log';
-import { env } from '../../../utils/env';
 import { stripExtension } from '../../../utils/url';
 import * as ProjectDevices from '../../project/devices';
 import { UrlCreator } from '../UrlCreator';
-import { createTemplateHtml } from '../webTemplate';
+import { getPlatformBundlers } from '../platformBundlers';
+import { createTemplateHtmlFromExpoConfigAsync } from '../webTemplate';
 import { ExpoMiddleware } from './ExpoMiddleware';
 import { resolveGoogleServicesFile, resolveManifestAssets } from './resolveAssets';
 import { resolveEntryPoint } from './resolveEntryPoint';
@@ -239,13 +238,14 @@ export abstract class ManifestMiddleware<
     res: ServerResponse,
     next: ServerNext
   ): Promise<void> {
-    if (env.EXPO_USE_METRO_WEB) {
+    // Read the config
+    const projectConfig = getConfig(this.projectRoot);
+    const bundlers = getPlatformBundlers(projectConfig.exp);
+    if (bundlers.web === 'metro') {
       let platform = parsePlatformHeader(req);
       // On web, serve the public folder
       if (!platform || platform === 'web') {
         platform = 'web';
-        // Read the config
-        const projectConfig = getConfig(this.projectRoot);
 
         // Read from headers
         const mainModuleName = this.resolveMainModuleName(projectConfig, platform);
@@ -254,10 +254,13 @@ export abstract class ManifestMiddleware<
           mainModuleName,
         });
 
-        res.end(createTemplateHtml(this.projectRoot, { url: bundleUrl }));
+        res.end(
+          await createTemplateHtmlFromExpoConfigAsync(this.projectRoot, {
+            exp: projectConfig.exp,
+            scripts: [bundleUrl],
+          })
+        );
         return;
-        // const serveStatic = require('serve-static');
-        // return serveStatic(path.join(this.projectRoot, 'public'))(req, res, next);
       }
     }
 

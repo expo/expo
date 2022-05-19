@@ -2,7 +2,7 @@ import { writeFile } from 'fs-extra';
 import path from 'path';
 
 import * as Log from '../log';
-import { createTemplateHtml } from '../start/server/webTemplate';
+import { createTemplateHtmlFromExpoConfigAsync } from '../start/server/webTemplate';
 import { ensureDirectoryAsync } from '../utils/dir';
 import { createBundlesAsync } from './createBundles';
 import { exportAssetsAsync } from './exportAssets';
@@ -72,7 +72,9 @@ export async function exportAppAsync(
   if (fileNames.web) {
     writeFile(
       path.join(outputPath, 'index.html'),
-      createTemplateHtml(projectRoot, { url: `/bundles/${fileNames.web}` })
+      await createTemplateHtmlFromExpoConfigAsync(projectRoot, {
+        scripts: [`/bundles/${fileNames.web}`],
+      })
     );
   }
 

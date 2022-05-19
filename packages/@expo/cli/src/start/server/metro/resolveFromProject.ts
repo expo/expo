@@ -37,3 +37,10 @@ export function importExpoMetroConfigFromProject(
 ): typeof import('@expo/metro-config') {
   return importFromProject(projectRoot, '@expo/metro-config');
 }
+
+/** Import `metro-resolver` from the project. */
+export function importMetroResolverFromProject(
+  projectRoot: string
+): typeof import('metro-resolver') {
+  return importFromProject(projectRoot, 'metro-resolver');
+}

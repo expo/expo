@@ -15,11 +15,13 @@ import { Options, resolvePortsAsync } from './resolveOptions';
 import { BundlerStartOptions } from './server/BundlerDevServer';
 import { DevServerManager, MultiBundlerStartOptions } from './server/DevServerManager';
 import { openPlatformsAsync } from './server/openPlatforms';
+import { getPlatformBundlers, PlatformBundlers } from './server/platformBundlers';
 
 async function getMultiBundlerStartOptions(
   projectRoot: string,
   { forceManifestType, ...options }: Options,
-  settings: { webOnly?: boolean }
+  settings: { webOnly?: boolean },
+  platformBundlers: PlatformBundlers
 ): Promise<[BundlerStartOptions, MultiBundlerStartOptions]> {
   const commonOptions: BundlerStartOptions = {
     mode: options.dev ? 'development' : 'production',
@@ -37,27 +39,25 @@ async function getMultiBundlerStartOptions(
   };
   const multiBundlerSettings = await resolvePortsAsync(projectRoot, options, settings);
 
-  const multiBundlerStartOptions: MultiBundlerStartOptions = [];
-
-  if (!env.EXPO_USE_METRO_WEB && (options.web || settings.webOnly)) {
-    multiBundlerStartOptions.push({
-      type: 'webpack',
-      options: {
-        ...commonOptions,
-        port: multiBundlerSettings.webpackPort,
-      },
-    });
+  const optionalBundlers: Partial<PlatformBundlers> = { ...platformBundlers };
+  // In the default case, we don't want to start multiple bundlers since this is
+  // a bit slower. Our priority (for legacy) is native platforms.
+  if (!options.web) {
+    delete optionalBundlers['web'];
   }
 
-  if (!settings.webOnly) {
-    multiBundlerStartOptions.push({
-      type: 'metro',
+  const bundlers = [...new Set(Object.values(optionalBundlers))];
+  const multiBundlerStartOptions = bundlers.map((bundler) => {
+    const port =
+      bundler === 'webpack' ? multiBundlerSettings.webpackPort : multiBundlerSettings.metroPort;
+    return {
+      type: bundler,
       options: {
         ...commonOptions,
-        port: multiBundlerSettings.metroPort,
+        port,
       },
-    });
-  }
+    };
+  });
 
   return [commonOptions, multiBundlerStartOptions];
 }
@@ -71,6 +71,8 @@ export async function startAsync(
 
   const { exp, pkg } = profile(getConfig)(projectRoot);
 
+  const platformBundlers = getPlatformBundlers(exp);
+
   if (!options.forceManifestType) {
     const easUpdatesUrlRegex = /^https:\/\/(staging-)?u\.expo\.dev/;
     const isEasUpdatesUrl = exp.updates?.url ? easUpdatesUrlRegex.test(exp.updates.url) : false;
@@ -80,14 +82,15 @@ export async function startAsync(
   const [defaultOptions, startOptions] = await getMultiBundlerStartOptions(
     projectRoot,
     options,
-    settings
+    settings,
+    platformBundlers
   );
 
   const devServerManager = new DevServerManager(projectRoot, defaultOptions);
 
   // Validations
 
-  if (options.web || settings.webOnly) {
+  if ((options.web || settings.webOnly) && platformBundlers.web === 'webpack') {
     await devServerManager.ensureProjectPrerequisiteAsync(WebSupportProjectPrerequisite);
   }
 

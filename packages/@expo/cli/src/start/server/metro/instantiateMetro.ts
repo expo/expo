@@ -1,3 +1,4 @@
+import { getConfig } from '@expo/config';
 import { MetroDevServerOptions } from '@expo/dev-server';
 import fs from 'fs';
 import http from 'http';
@@ -6,10 +7,14 @@ import { Terminal } from 'metro-core';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
-import { env } from '../../../utils/env';
 import { createDevServerMiddleware } from '../middleware/createDevServerMiddleware';
+import { getPlatformBundlers, PlatformBundlers } from '../platformBundlers';
 import { MetroTerminalReporter } from './MetroTerminalReporter';
-import { importExpoMetroConfigFromProject, importMetroFromProject } from './resolveFromProject';
+import {
+  importExpoMetroConfigFromProject,
+  importMetroFromProject,
+  importMetroResolverFromProject,
+} from './resolveFromProject';
 
 // From expo/dev-server but with ability to use custom logger.
 type MessageSocket = {
@@ -44,7 +49,10 @@ export async function instantiateMetroAsync(
 
   let metroConfig = await ExpoMetroConfig.loadAsync(projectRoot, { reporter, ...options });
 
-  metroConfig = withMetroWeb(projectRoot, metroConfig);
+  // TODO: When we bring expo/metro-config into the expo/expo repo, then we can upstream this.
+  const { exp } = getConfig(projectRoot, { skipSDKVersionRequirement: true, skipPlugins: true });
+  const platformBundlers = getPlatformBundlers(exp);
+  metroConfig = withMetroMultiPlatform(projectRoot, metroConfig, platformBundlers);
 
   const {
     middleware,
@@ -96,8 +104,25 @@ export async function instantiateMetroAsync(
   }
 }
 
-export function withMetroWeb(projectRoot: string, config: import('metro-config').ConfigT) {
-  if (!env.EXPO_USE_METRO_WEB) {
+/** Add support for `react-native-web` and the Web platform. */
+export function withMetroMultiPlatform(
+  projectRoot: string,
+  config: import('metro-config').ConfigT,
+  platformBundlers: PlatformBundlers
+) {
+  let expoConfigPlatforms = Object.entries(platformBundlers)
+    .filter(([, bundler]) => bundler === 'metro')
+    .map(([platform]) => platform);
+
+  if (Array.isArray(config.resolver.platforms)) {
+    expoConfigPlatforms = [...new Set(expoConfigPlatforms.concat(config.resolver.platforms))];
+  }
+
+  // @ts-expect-error: typed as `readonly`.
+  config.resolver.platforms = expoConfigPlatforms;
+
+  // Bail out early for performance enhancements if web is not enabled.
+  if (platformBundlers.web !== 'metro') {
     return config;
   }
 
@@ -105,16 +130,13 @@ export function withMetroWeb(projectRoot: string, config: import('metro-config')
   // this needs to be unified since you can't dynamically
   // swap out the transformer based on platform.
   const assetRegistryPath = fs.realpathSync(
-    path.resolve(
-      // config.transformer.assetRegistryPath ??
-      resolveFrom(projectRoot, '@react-native/assets/registry.js')
-    )
+    path.resolve(resolveFrom(projectRoot, '@react-native/assets/registry.js'))
   );
 
   // Create a resolver which dynamically disables support for
   // `*.native.*` extensions on web.
 
-  const { resolve } = require(resolveFrom(projectRoot, 'metro-resolver'));
+  const { resolve } = importMetroResolverFromProject(projectRoot);
 
   // @ts-expect-error
   config.resolver.resolveRequest = (context, _realModuleName, platform, moduleName) => {
@@ -146,6 +168,7 @@ export function withMetroWeb(projectRoot: string, config: import('metro-config')
         typeof result?.filePath === 'string' &&
         result.filePath.endsWith('react-native-web/dist/modules/AssetRegistry/index.js')
       ) {
+        // @ts-expect-error: `readonly` for some reason.
         result.filePath = assetRegistryPath;
       }
 
@@ -167,11 +190,6 @@ export function withMetroWeb(projectRoot: string, config: import('metro-config')
     require.resolve('react-native-web/package.json'),
     '..'
   );
-
-  if (!config.resolver.platforms.includes('web')) {
-    // @ts-expect-error
-    config.resolver.platforms = ['ios', 'android', 'web']; // .push('web');
-  }
 
   return config;
 }

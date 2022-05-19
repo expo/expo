@@ -17,6 +17,7 @@ import {
 import { AsyncNgrok } from './AsyncNgrok';
 import { DevelopmentSession } from './DevelopmentSession';
 import { CreateURLOptions, UrlCreator } from './UrlCreator';
+import { getPlatformBundlers } from './platformBundlers';
 
 export type ServerLike = {
   close(callback?: (err?: Error) => void): void;

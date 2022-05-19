@@ -9,6 +9,7 @@ import { ProjectPrerequisite } from '../doctor/Prerequisite';
 import * as AndroidDebugBridge from '../platforms/android/adb';
 import { BundlerDevServer, BundlerStartOptions } from './BundlerDevServer';
 import { env } from '../../utils/env';
+import { getPlatformBundlers } from './platformBundlers';
 
 export type MultiBundlerStartOptions = {
   type: keyof typeof BUNDLERS;
@@ -108,10 +109,15 @@ export class DevServerManager {
     if (server) {
       return;
     }
-    Log.debug('Starting webpack dev server');
+    const { exp } = getConfig(this.projectRoot, {
+      skipPlugins: true,
+      skipSDKVersionRequirement: true,
+    });
+    const bundler = getPlatformBundlers(exp).web;
+    Log.debug(`Starting ${bundler} dev server for web`);
     return this.startAsync([
       {
-        type: env.EXPO_USE_METRO_WEB ? 'metro' : 'webpack',
+        type: bundler,
         options: this.options,
       },
     ]);
