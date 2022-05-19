@@ -2,20 +2,22 @@ package expo.modules.kotlin.activityresult
 
 import android.app.Activity
 import android.content.Intent
-import androidx.activity.result.ActivityResultCaller
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContract
-import androidx.activity.result.registerForActivityResult
 import androidx.appcompat.app.AppCompatActivity
-import expo.modules.kotlin.providers.AppCompatActivityProvider
+import androidx.lifecycle.Lifecycle
 import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.AppContextActivityResult
+import expo.modules.kotlin.providers.CurrentActivityProvider
 import java.util.concurrent.atomic.AtomicInteger
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 class ActivityResultsManager(
-  private val activityProvider: AppCompatActivityProvider
-): AppContextActivityResultCaller {
+  private val currentActivityProvider: CurrentActivityProvider
+) : AppContextActivityResultCaller {
   private val activity: AppCompatActivity
-    get() = requireNotNull(activityProvider.appCompatActivity) { TODO() }
+    get() = requireNotNull(currentActivityProvider.currentActivity) { TODO() }
 
   /**
    * Due to the fact that [AppContext] is not coupled directly with the [Activity]'s lifecycle
@@ -23,20 +25,15 @@ class ActivityResultsManager(
    * That forces us to create our own [AppContextActivityResultRegistry].
    */
   private val nextLocalRequestCode = AtomicInteger()
-  private val registry = AppContextActivityResultRegistry(activityProvider)
+  private val registry = AppContextActivityResultRegistry(currentActivityProvider)
 
 
   fun onActivityResult(activity: Activity, requestCode: Int, resultCode: Int, data: Intent?) {
     registry.dispatchResult(requestCode, resultCode, data)
   }
 
-  /**
-   * A version of [ActivityResultCaller.registerForActivityResult]
-   * that additionally takes an input right away, producing a launcher that doesn't take any
-   * additional input when called.
-   *
-   * @see ActivityResultCaller.registerForActivityResult from `androidx.activity:activity-ktx:1.4.0`.
-   */
+// region AppContextActivityResultCaller
+
   override fun <I, O> registerForActivityResult(
     contract: ActivityResultContract<I, O>,
     callback: AppContextActivityResultCallback<O>,
@@ -48,4 +45,16 @@ class ActivityResultsManager(
       callback
     )
   }
+
+  override suspend fun <O> launchForActivityResult(
+    contract: ActivityResultContract<Any?, O>
+  ): AppContextActivityResult<O> = suspendCoroutine { continuation ->
+    registerForActivityResult(
+      contract
+    ) { output, launchingActivityHasBeenKilled ->
+      continuation.resume(AppContextActivityResult(output, launchingActivityHasBeenKilled))
+    }.launch(null)
+  }
+
+// endregion
 }

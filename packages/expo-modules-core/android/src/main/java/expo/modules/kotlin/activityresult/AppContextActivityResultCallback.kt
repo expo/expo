@@ -1,5 +1,8 @@
 package expo.modules.kotlin.activityresult
 
+import android.app.Activity
+import androidx.activity.result.ActivityResultCallback
+
 /**
  * @see [ActivityResultCallback]
  */

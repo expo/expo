@@ -5,10 +5,9 @@ package expo.modules.kotlin
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContract
-import androidx.annotation.MainThread
+import androidx.appcompat.app.AppCompatActivity
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.turbomodule.core.CallInvokerHolderImpl
 import expo.modules.core.errors.ContextDestroyedException
@@ -40,10 +39,7 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.newSingleThreadContext
-import java.lang.RuntimeException
 import java.lang.ref.WeakReference
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
 
 class AppContext(
   modulesProvider: ModulesProvider,
@@ -55,6 +51,7 @@ class AppContext(
     register(modulesProvider)
   }
   private val reactLifecycleDelegate = ReactLifecycleDelegate(this)
+
   // We postpone creating the `JSIInteropModuleRegistry` to not load so files in unit tests.
   private lateinit var jsiInterop: JSIInteropModuleRegistry
   internal val modulesQueue = CoroutineScope(
@@ -244,27 +241,14 @@ class AppContext(
 
 // region AppContextActivityResultCaller
 
-  @MainThread
   override fun <I, O> registerForActivityResult(
     contract: ActivityResultContract<I, O>,
     callback: AppContextActivityResultCallback<O>
-  ): ActivityResultLauncher<I> {
-    return activityResultsManager.registerForActivityResult(
-      contract,
-      callback
-    )
-  }
+  ): ActivityResultLauncher<I> = activityResultsManager.registerForActivityResult(contract, callback)
 
-  @MainThread
-  suspend fun <O> launchForActivityResult(
+  override suspend fun <O> launchForActivityResult(
     contract: ActivityResultContract<Any?, O>
-  ) = suspendCoroutine<AppContextActivityResult<O>> { continuation ->
-    activityResultsManager.registerForActivityResult(
-      contract
-    ) { output, launchingActivityHasBeenKilled ->
-      continuation.resume(AppContextActivityResult(output, launchingActivityHasBeenKilled))
-    }.launch(null)
-  }
+  ): AppContextActivityResult<O> = activityResultsManager.launchForActivityResult(contract)
 
 // endregion
 }
