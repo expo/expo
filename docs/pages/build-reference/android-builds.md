@@ -37,7 +37,7 @@ Next, this is what happens when EAS Build picks up your request:
 1. Restore a previously saved cache identified by the `cache.key` value in the build profile. ([Learn more](../build/eas-json/).)
 1. Run the `eas-build-post-install` script from package.json if defined.
 1. Restore the keystore (if it was included in the build request).
-1. Inject the signing configuration into **build.gradl**. [Learn more](#configuring-gradle).
+1. Inject the signing configuration into **build.gradle**. [Learn more](#configuring-gradle).
 1. Run `./gradlew COMMAND` in the **android** directory inside your project.
 
    - `COMMAND` is the command defined in your **eas.json** at `builds.android.PROFILE_NAME.gradleCommand`. It defaults to `:app:bundleRelease` which produces the AAB (Android App Bundle).
