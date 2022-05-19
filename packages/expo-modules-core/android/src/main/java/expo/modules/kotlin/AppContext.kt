@@ -5,7 +5,7 @@ package expo.modules.kotlin
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import com.facebook.react.ReactActivity
+import androidx.appcompat.app.AppCompatActivity
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.turbomodule.core.CallInvokerHolderImpl
 import expo.modules.core.errors.ContextDestroyedException
@@ -27,7 +27,7 @@ import expo.modules.kotlin.events.KModuleEventEmitterWrapper
 import expo.modules.kotlin.events.OnActivityResultPayload
 import expo.modules.kotlin.jni.JSIInteropModuleRegistry
 import expo.modules.kotlin.modules.Module
-import expo.modules.kotlin.providers.ReactActivityProvider
+import expo.modules.kotlin.providers.CurrentActivityProvider
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -41,7 +41,7 @@ class AppContext(
   modulesProvider: ModulesProvider,
   val legacyModuleRegistry: expo.modules.core.ModuleRegistry,
   private val reactContextHolder: WeakReference<ReactApplicationContext>
-) : ReactActivityProvider {
+) : CurrentActivityProvider {
   val registry = ModuleRegistry(WeakReference(this)).apply {
     register(ErrorManagerModule())
     register(modulesProvider)
@@ -216,19 +216,18 @@ class AppContext(
     )
   }
 
-// region ReactActivityProvider
+// region CurrentActivityProvider
 
-  override val reactActivity: ReactActivity?
+  override val currentActivity: AppCompatActivity?
     get() {
       val currentActivity = this.activityProvider?.currentActivity ?: return null
 
-      if (currentActivity !is ReactActivity) {
-        throw RuntimeException("Current Activity is of incorrect class, expected ReactActivity, received ${currentActivity.localClassName}")
+      if (currentActivity !is AppCompatActivity) {
+        throw RuntimeException("Current Activity is of incorrect class, expected AppCompatActivity, received ${currentActivity.localClassName}")
       }
 
       return currentActivity
     }
 
 // endregion
-
 }
