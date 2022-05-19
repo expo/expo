@@ -259,7 +259,7 @@ class DocumentationPageWithApiVersion extends React.Component<Props, State> {
         isMobileSearchActive={this.state.isMobileSearchActive}
         onContentScroll={handleContentScroll}
         sidebarScrollPosition={sidebarScrollPosition}>
-        <Head title={title}>
+        <Head title={this.props.title}>
           {algoliaTag !== null && <meta name="docsearch:version" content={algoliaTag} />}
           <meta property="og:title" content={title} />
           <meta property="og:type" content="website" />

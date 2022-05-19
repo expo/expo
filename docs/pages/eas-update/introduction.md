@@ -4,7 +4,7 @@ title: Introduction
 
 import Head from '~/components/Head'
 
-<Head title="Introduction to EAS Update - Expo Documentation" />
+<Head title="Introduction to EAS Update" />
 
 > EAS Update is currently available only to customers with an EAS subscription plan. [Sign up](https://expo.dev/accounts/[account]/settings/subscriptions).
 
