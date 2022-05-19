@@ -140,6 +140,24 @@ export abstract class ManifestMiddleware<
     hostname?: string | null;
     mainModuleName: string;
   }): string {
+    const path = this._getBundleUrlPath({ platform, mainModuleName });
+
+    return (
+      this.options.constructUrl({
+        scheme: 'http',
+        // hostType: this.options.location.hostType,
+        hostname,
+      }) + path
+    );
+  }
+
+  public _getBundleUrlPath({
+    platform,
+    mainModuleName,
+  }: {
+    platform: string;
+    mainModuleName: string;
+  }): string {
     const queryParams = new URLSearchParams({
       platform: encodeURIComponent(platform),
       dev: String(this.options.mode !== 'production'),
@@ -151,15 +169,7 @@ export abstract class ManifestMiddleware<
       queryParams.append('minify', String(this.options.minify));
     }
 
-    const path = `/${encodeURI(mainModuleName)}.bundle?${queryParams.toString()}`;
-
-    return (
-      this.options.constructUrl({
-        scheme: 'http',
-        // hostType: this.options.location.hostType,
-        hostname,
-      }) + path
-    );
+    return `/${encodeURI(mainModuleName)}.bundle?${queryParams.toString()}`;
   }
 
   /** Log telemetry. */
