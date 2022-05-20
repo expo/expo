@@ -1,17 +1,21 @@
 import { Spacer, View } from 'expo-dev-client-components';
 import * as Tracking from 'expo-tracking-transparency';
+import { useHome_CurrentUserQuery } from 'graphql/types';
 import * as React from 'react';
 import { Platform, StyleSheet } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
-import ScrollView from '../../components/NavigationScrollView';
 import { ConstantsSection } from './ConstantsSection';
+import { DeleteAccount } from './DeleteAccountSection';
 import { DevMenuGestureSection } from './DevMenuGestureSection';
 import { ThemeSection } from './ThemeSection';
 import { TrackingSection } from './TrackingSection';
 
 export function SettingsScreen() {
+  const { data } = useHome_CurrentUserQuery();
+
   return (
-    <ScrollView
+    <KeyboardAwareScrollView
       style={styles.container}
       keyboardShouldPersistTaps="always"
       keyboardDismissMode="on-drag">
@@ -31,8 +35,14 @@ export function SettingsScreen() {
           </>
         )}
         <ConstantsSection />
+        {data?.viewer ? (
+          <>
+            <Spacer.Vertical size="medium" />
+            <DeleteAccount viewerUsername={data.viewer.username} />
+          </>
+        ) : null}
       </View>
-    </ScrollView>
+    </KeyboardAwareScrollView>
   );
 }
 
