@@ -1950,6 +1950,9 @@ PODS:
     - ExpoModulesCore
   - ExpoClipboard (3.0.1):
     - ExpoModulesCore
+  - ExpoClipboard/Tests (3.0.1):
+    - ExpoModulesCore
+    - ExpoModulesTestCore
   - ExpoCrypto (10.2.0):
     - ExpoModulesCore
   - ExpoHaptics (11.2.0):
@@ -2986,6 +2989,7 @@ DEPENDENCIES:
   - Expo (from `../packages/expo/ios`)
   - ExpoCellular (from `../packages/expo-cellular/ios`)
   - ExpoClipboard (from `../packages/expo-clipboard/ios`)
+  - ExpoClipboard/Tests (from `../packages/expo-clipboard/ios`)
   - ExpoCrypto (from `../packages/expo-crypto/ios`)
   - ExpoHaptics (from `../packages/expo-haptics/ios`)
   - ExpoImageManipulator (from `../packages/expo-image-manipulator/ios`)
@@ -4366,7 +4370,7 @@ SPEC CHECKSUMS:
   EXPermissions: 3dbb869e7f96a5711314f73d48ddc2f28009a7f6
   Expo: 8af09aaa24c023d55160118554032b178fad1871
   ExpoCellular: b5daa3b732c0c9841979c39988062e50e70dc053
-  ExpoClipboard: e2dda22be0524595a5eeead51665f60729829123
+  ExpoClipboard: bf4c910383ea182bc3706c572b7c6c6ecc012f13
   ExpoCrypto: d0d0f3e20875dc450b4ec88f0fb608da5c2c6c17
   ExpoHaptics: ad58ec96a25e57579c14a47c7d71f0de0de8656a
   ExpoImageManipulator: b55580bbc7b10099c7707949903e7176a8542ee8
@@ -4481,6 +4485,6 @@ SPEC CHECKSUMS:
   Yoga: 17cd9a50243093b547c1e539c749928dd68152da
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 6dabe95cbe1bb677756539dabe50e48e996a3bc2
+PODFILE CHECKSUM: 0743540d8c24caa8e7f6ec11741975ed036ccf00
 
 COCOAPODS: 1.11.2

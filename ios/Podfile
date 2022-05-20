@@ -38,6 +38,7 @@ abstract_target 'Expo Go' do
       'expo-manifests',
       'expo-json-utils',
       'expo-structured-headers',
+      'expo-clipboard',
     ],
     flags: {
       :inhibit_warnings => false
