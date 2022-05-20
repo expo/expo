@@ -276,6 +276,8 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
     }
   }
 
+  var registeredCallbacks = arrayListOf<String>()
+
   //endregion
 
   //region shake detector

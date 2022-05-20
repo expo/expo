@@ -64,4 +64,13 @@ class DevMenuInternalMenuControllerModule(private val reactContext: ReactContext
     clipboard.setPrimaryClip(clip)
     promise.resolve(null)
   }
+
+  override fun fireCallback(name: String, promise: Promise) {
+    if (!devMenuManager.registeredCallbacks.contains(name)) {
+      return promise.reject("ERR_DEVMENU_CALLBACK_FAILED", "Callback with name: $name is not registered")
+    }
+
+    devMenuManager.sendEventToDelegateBridge("registeredCallbackFired", name)
+    return promise.resolve(null)
+  }
 }
