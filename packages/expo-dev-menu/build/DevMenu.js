@@ -25,7 +25,8 @@ registerCallbackListener();
 let handlers = new Map();
 export async function registerDevMenuItems(items) {
     if (!__DEV__) {
-        return Promise.resolve();
+        // resolve null
+        return;
     }
     handlers = new Map();
     const callbackNames = [];

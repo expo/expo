@@ -435,9 +435,5 @@ open class DevMenuManager: NSObject {
   
   @objc
   public var registeredCallbacks: [String] = []
-  
-  @objc
-  public func getRegisteredCallbacks() -> [String] {
-    return registeredCallbacks
-  }
+
 }

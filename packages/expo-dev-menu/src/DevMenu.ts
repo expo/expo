@@ -36,7 +36,8 @@ let handlers = new Map<string, () => void>();
 
 export async function registerDevMenuItems(items: ExpoDevMenuItem[]) {
   if (!__DEV__) {
-    return Promise.resolve();
+    // resolve null
+    return;
   }
 
   handlers = new Map();
