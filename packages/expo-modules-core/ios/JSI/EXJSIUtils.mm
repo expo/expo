@@ -91,7 +91,7 @@ std::shared_ptr<jsi::Function> createClass(jsi::Runtime &runtime, const char *na
 
   // Create a string buffer of the source code to evaluate.
   std::stringstream source;
-  source << "(function " << name << "(...args) { this." << nativeConstructorKey << "(args); return this; })";
+  source << "(function " << name << "(...args) { this." << nativeConstructorKey << "(...args); return this; })";
   std::shared_ptr<jsi::StringBuffer> sourceBuffer = std::make_shared<jsi::StringBuffer>(source.str());
 
   // Evaluate the code and obtain returned value (the constructor function).
@@ -103,9 +103,9 @@ std::shared_ptr<jsi::Function> createClass(jsi::Runtime &runtime, const char *na
   jsi::Function nativeConstructor = jsi::Function::createFromHostFunction(
     runtime,
     nativeConstructorPropId,
-    1,
+    0,
     [constructor](jsi::Runtime &runtime, const jsi::Value &thisValue, const jsi::Value *args, size_t count) -> jsi::Value {
-      constructor(runtime, thisValue, args->asObject(runtime).asArray(runtime));
+      constructor(runtime, thisValue, args, count);
       return jsi::Value::undefined();
     });
 

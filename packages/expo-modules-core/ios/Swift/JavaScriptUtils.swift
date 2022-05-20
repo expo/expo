@@ -3,46 +3,54 @@
 // MARK: - Arguments
 
 /**
- Tries to cast given argument to the type that is wrapped by the dynamic type.
+ Tries to cast a given value to the type that is wrapped by the dynamic type.
  - Parameters:
-  - argument: A value to be cast. If it's a ``JavaScriptValue``, it's first unpacked to the raw value.
-  - argumentType: Something that implements ``AnyDynamicType`` and knows how to cast the argument.
+  - value: A value to be cast. If it's a ``JavaScriptValue``, it's first unpacked to the raw value.
+  - type: Something that implements ``AnyDynamicType`` and knows how to cast the argument.
  - Returns: A new value converted according to the dynamic type.
  - Throws: Rethrows various exceptions that could be thrown by the dynamic types.
  */
-internal func castArgument(_ argument: Any, toType argumentType: AnyDynamicType) throws -> Any {
+internal func cast(_ value: Any, toType type: AnyDynamicType) throws -> Any {
   // TODO: Accept JavaScriptValue and JavaScriptObject as argument types.
-  if argumentType is DynamicSharedObjectType {
-    return try argumentType.cast(argument)
+  if let value = value as? JavaScriptValue {
+    return try type.cast(value.getRaw())
   }
-  if let argument = argument as? JavaScriptValue {
-    return try argumentType.cast(argument.getRaw())
-  }
-  return try argumentType.cast(argument)
+  return try type.cast(value)
 }
 
 /**
- Same as ``castArgument(_:argumentType:)`` but for an array of arguments.
+ Tries to cast the given arguments to the types expected by the function.
  - Parameters:
    - arguments: An array of arguments to be cast.
-   - argumentTypes: An array of the dynamic types in the same order as the array of arguments.
+   - function: A function for which to cast the arguments.
  - Returns: An array of arguments after casting. Its size is the same as the input arrays.
- - Throws: ``InvalidArgsNumberException`` when the sizes of arrays passed as parameters are not equal.
-   Rethrows exceptions thrown by ``castArgument(_:argumentType:)``.
+ - Throws: `InvalidArgsNumberException` when the number of arguments is not equal to the actual number
+ of function's arguments (without an owner and promise). Rethrows exceptions thrown by `cast(_:toType:)`.
  */
-internal func castArguments(_ arguments: [Any], toTypes argumentTypes: [AnyDynamicType]) throws -> [Any] {
-  if arguments.count != argumentTypes.count {
-    throw InvalidArgsNumberException((received: arguments.count, expected: argumentTypes.count))
+internal func cast(arguments: [Any], forFunction function: AnyFunction) throws -> [Any] {
+  if arguments.count != function.argumentsCount {
+    throw InvalidArgsNumberException((received: arguments.count, expected: function.argumentsCount))
   }
+  let argumentTypeOffset = function.takesOwner ? 1 : 0
   return try arguments.enumerated().map { index, argument in
-    let argumentType = argumentTypes[index]
+    let argumentType = function.dynamicArgumentTypes[index + argumentTypeOffset]
 
     do {
-      return try castArgument(argument, toType: argumentType)
+      return try cast(argument, toType: argumentType)
     } catch {
       throw ArgumentCastException((index: index, type: argumentType)).causedBy(error)
     }
   }
+}
+
+/**
+ Prepends the owner to the array of arguments if the given function can take it.
+ */
+internal func concat(arguments: [Any], withOwner owner: AnyObject?, forFunction function: AnyFunction) -> [Any] {
+  if function.takesOwner, let owner = try? function.dynamicArgumentTypes.first?.cast(owner) {
+    return [owner] + arguments
+  }
+  return arguments
 }
 
 // MARK: - Exceptions
