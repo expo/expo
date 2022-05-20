@@ -68,6 +68,15 @@ def reactNativeArchitectures() {
   return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
 }
 
+def FOR_HERMES = false
+def HERMES_DIR = ""
+if (findProject(":app")) {
+  FOR_HERMES = project(":app").ext.react.enableHermes
+  HERMES_DIR = new File(["node", "--print", "require.resolve('hermes-engine/package.json')"].execute(null, rootDir).text.trim()).parent
+} else {
+  FOR_HERMES = (findProperty('expo.jsEngine') ?: "jsc") == "hermes"
+}
+
 // Creating sources with comments
 task androidSourcesJar(type: Jar) {
   classifier = 'sources'
@@ -110,14 +119,16 @@ android {
     versionCode 1
     versionName "0.9.0"
 
-    testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    testInstrumentationRunner "expo.modules.TestRunner"
 
     externalNativeBuild {
       cmake {
         abiFilters (*reactNativeArchitectures())
         arguments "-DREACT_NATIVE_DIR=${REACT_NATIVE_DIR}",
           "-DREACT_NATIVE_SO_DIR=${REACT_NATIVE_SO_DIR}",
-          "-DBOOST_VERSION=${BOOST_VERSION}"
+          "-DBOOST_VERSION=${BOOST_VERSION}",
+          "-DFOR_HERMES=${FOR_HERMES}",
+          "-DHERMES_DIR=${HERMES_DIR}"
       }
     }
   }
@@ -190,13 +201,6 @@ dependencies {
   //noinspection GradleDynamicVersion
   implementation 'com.facebook.react:react-native:+'
 
-  testImplementation 'androidx.test:core:1.4.0'
-  testImplementation 'junit:junit:4.13.1'
-  testImplementation 'io.mockk:mockk:1.10.6'
-  testImplementation "com.google.truth:truth:1.1.2"
-  testImplementation "org.robolectric:robolectric:4.5.1"
-  testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0"
-
   compileOnly 'com.facebook.fbjni:fbjni:0.2.2'
   extractHeaders 'com.facebook.fbjni:fbjni:0.2.2:headers'
   extractJNI 'com.facebook.fbjni:fbjni:0.2.2'
@@ -214,9 +218,21 @@ dependencies {
   }
   // else - there is no prebuilt react-native.aar, this is most likely Expo Go
 
+  testImplementation 'androidx.test:core:1.4.0'
+  testImplementation 'junit:junit:4.13.1'
+  testImplementation 'io.mockk:mockk:1.12.3'
+  testImplementation "com.google.truth:truth:1.1.2"
+  testImplementation "org.robolectric:robolectric:4.5.1"
+  testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0"
+
   androidTestImplementation 'androidx.test:runner:1.4.0'
   androidTestImplementation 'androidx.test:core:1.4.0'
   androidTestImplementation 'androidx.test:rules:1.4.0'
+  androidTestImplementation "io.mockk:mockk-android:1.12.3"
+  androidTestImplementation "com.google.truth:truth:1.1.2"
+  if (FOR_HERMES) {
+    androidTestImplementation files(new File(HERMES_DIR, "android/hermes-debug.aar"))
+  }
 }
 
 /**
@@ -330,7 +346,26 @@ task prepareFolly(dependsOn: [downloadFolly], type: Copy) {
 }
 // END FOLLy
 
-task prepareThirdPartyNdkHeaders(dependsOn: [prepareBoost, prepareDoubleConversion, prepareFolly]) {}
+task prepareHermes() {
+  if (!FOR_HERMES) {
+    return
+  }
+
+  def hermesAAR = file("$HERMES_DIR/android/hermes-debug.aar")
+  if (!hermesAAR.exists()) {
+    throw new GradleScriptException("The hermes-engine npm package is missing \"android/hermes-debug.aar\"", null)
+  }
+
+  def soFiles = zipTree(hermesAAR).matching({ it.include "**/*.so" })
+
+  copy {
+    from soFiles
+    from "$REACT_NATIVE_DIR/ReactAndroid/src/main/jni/first-party/hermes/Android.mk"
+    into "$thirdPartyNdkDir/hermes"
+  }
+}
+
+task prepareThirdPartyNdkHeaders(dependsOn: [prepareBoost, prepareDoubleConversion, prepareFolly, prepareHermes]) {}
 
 afterEvaluate {
   extractAARHeaders.dependsOn(prepareThirdPartyNdkHeaders)

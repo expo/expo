@@ -31,6 +31,7 @@ if (NOT LIBRN_DIR)
 endif ()
 
 file(GLOB libfbjni_include_DIRS "${BUILD_DIR}/fbjni-*-headers.jar/")
+file(GLOB HERMES_SO_DIR "${BUILD_DIR}/third-party-ndk/hermes/jni/${ANDROID_ABI}")
 
 # includes
 
@@ -46,6 +47,7 @@ target_include_directories(
         "${REACT_NATIVE_DIR}/ReactCommon/react/nativemodule/core"
         "${REACT_NATIVE_DIR}/ReactCommon/callinvoker"
         "${REACT_NATIVE_DIR}/ReactCommon/jsi"
+        "${HERMES_DIR}/android/include"
         "${BUILD_DIR}/third-party-ndk/boost/boost_${BOOST_VERSION}"
         "${BUILD_DIR}/third-party-ndk/double-conversion"
         "${BUILD_DIR}/third-party-ndk/folly"
@@ -91,6 +93,13 @@ find_library(
         NO_CMAKE_FIND_ROOT_PATH
 )
 
+find_library(
+        HERMES_LIB
+        hermes
+        PATHS ${HERMES_SO_DIR}
+        NO_CMAKE_FIND_ROOT_PATH
+)
+
 #reactnativejni
 
 # linking
@@ -102,6 +111,7 @@ target_compile_options(
         -DFOLLY_HAVE_MEMRCHR=1
         -DFOLLY_USE_LIBCPP=1
         -DFOLLY_MOBILE=1
+        -DFOR_HERMES=${FOR_HERMES}
         -O2
         -frtti
         -fexceptions
@@ -109,13 +119,28 @@ target_compile_options(
         -fstack-protector-all
 )
 
-target_link_libraries(
-        ${PACKAGE_NAME}
-        ${LOG_LIB}
-        ${FBJNI_LIB}
-        ${JSI_LIB}
-        ${REACT_NATIVE_JNI_LIB}
-        ${FOLLY_JSON_LIB}
-        ${REACT_NATIVE_MODULES_CORE}
-        android
-)
+if (${FOR_HERMES})
+    target_link_libraries(
+            ${PACKAGE_NAME}
+            ${LOG_LIB}
+            ${FBJNI_LIB}
+            ${JSI_LIB}
+            ${HERMES_LIB}
+            ${REACT_NATIVE_JNI_LIB}
+            ${FOLLY_JSON_LIB}
+            ${REACT_NATIVE_MODULES_CORE}
+            android
+    )
+else ()
+    target_link_libraries(
+            ${PACKAGE_NAME}
+            ${LOG_LIB}
+            ${FBJNI_LIB}
+            ${JSI_LIB}
+            ${REACT_NATIVE_JNI_LIB}
+            ${FOLLY_JSON_LIB}
+            ${REACT_NATIVE_MODULES_CORE}
+            android
+    )
+endif ()
+

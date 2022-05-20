@@ -1,6 +1,7 @@
 package expo.modules.kotlin.exception
 
 import com.facebook.react.bridge.ReadableType
+import expo.modules.core.interfaces.DoNotStrip
 import java.util.*
 import kotlin.reflect.KProperty1
 import kotlin.reflect.KType
@@ -8,6 +9,7 @@ import kotlin.reflect.KType
 /**
  * A class for errors specifying its `code` and providing the `description`.
  */
+@DoNotStrip
 open class CodedException(
   message: String?,
   cause: Throwable?
@@ -152,3 +154,12 @@ internal class CollectionElementCastException(
   message = "Cannot cast '${providedType.name}' to '$elementType' required by the collection of type: '$collectionType'.",
   cause
 )
+
+@DoNotStrip
+class JavaScriptEvaluateException(
+  message: String,
+  val jsStack: String
+) : CodedException(message = """
+  Cannot evaluate JavaScript code: $message.
+  $jsStack
+""".trimIndent())
