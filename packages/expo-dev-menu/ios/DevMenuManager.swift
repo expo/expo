@@ -433,6 +433,9 @@ open class DevMenuManager: NSObject {
     }
   }
   
+  // captures any callbacks that are registered via the `registerDevMenuItems` module method
+  // it is set and unset the public facing `DevMenuModule`
+  // when the DevMenuModule instance is unloaded (e.g between app loads) the callback list is reset to an empty array
   @objc
   public var registeredCallbacks: [String] = []
 
