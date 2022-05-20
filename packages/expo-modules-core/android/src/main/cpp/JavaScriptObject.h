@@ -60,4 +60,4 @@ private:
 
   jni::local_ref<jni::JArrayClass<jstring>> jniGetPropertyNames();
 };
-}
+} // namespace expo
