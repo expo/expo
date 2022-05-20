@@ -450,6 +450,9 @@
   self.manifest = manifest;
   self.manifestURL = appUrl;
   _possibleManifestURL = nil;
+
+  [self _resetRemoteDebuggingForAppLoad:manifest.isUsingDeveloperTool];
+
   __block UIInterfaceOrientation orientation = [EXDevLauncherManifestHelper exportManifestOrientation:manifest.orientation];
   __block UIColor *backgroundColor = [EXDevLauncherManifestHelper hexStringToColor:manifest.iosOrRootBackgroundColor];
   
@@ -688,6 +691,36 @@
   [updatesConfig setObject:@(usesEASUpdates) forKey:@"usesEASUpdates"];
     
   return updatesConfig;
+}
+
+/**
+ * Reset remote debugging to "off" when loading non-development manifests
+ * and back to its previous state otherwise.
+ *
+ * Relies on behavior and string values from RCTDevSettings.mm
+ */
+- (void)_resetRemoteDebuggingForAppLoad:(BOOL)isUsingDeveloperTool
+{
+  // from RCTDevSettings.mm
+  NSString *kRCTDevSettingsUserDefaultsKey = @"RCTDevMenu";
+  NSString *kRCTDevSettingIsDebuggingRemotely = @"isDebuggingRemotely";
+
+  NSString *DevLauncherTempKey = @"EXDevLauncher_tmp_isDebuggingRemotely";
+
+  NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+  NSMutableDictionary *existingSettings = ((NSDictionary *)[userDefaults objectForKey:kRCTDevSettingsUserDefaultsKey]).mutableCopy;
+  if (!existingSettings) {
+    return;
+  }
+  if (!isUsingDeveloperTool) {
+    existingSettings[DevLauncherTempKey] = existingSettings[kRCTDevSettingIsDebuggingRemotely];
+    existingSettings[kRCTDevSettingIsDebuggingRemotely] = @(NO);
+    [userDefaults setObject:existingSettings forKey:kRCTDevSettingsUserDefaultsKey];
+  } else if (existingSettings[DevLauncherTempKey]) {
+    existingSettings[kRCTDevSettingIsDebuggingRemotely] = existingSettings[DevLauncherTempKey];
+    [existingSettings removeObjectForKey:DevLauncherTempKey];
+    [userDefaults setObject:existingSettings forKey:kRCTDevSettingsUserDefaultsKey];
+  }
 }
 
 
