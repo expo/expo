@@ -63,6 +63,11 @@ def DOUBLE_CONVERSION_VERSION = reactProperties.getProperty("DOUBLE_CONVERSION_V
 
 def reactNativeThirdParty = new File("$REACT_NATIVE_DIR/ReactAndroid/src/main/jni/third-party")
 
+def reactNativeArchitectures() {
+  def value = project.getProperties().get("reactNativeArchitectures")
+  return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
+}
+
 // Creating sources with comments
 task androidSourcesJar(type: Jar) {
   classifier = 'sources'
@@ -109,7 +114,7 @@ android {
 
     externalNativeBuild {
       cmake {
-        abiFilters(*(System.getenv('NDK_ABI_FILTERS') ?: 'armeabi-v7a x86 arm64-v8a x86_64').split(' '))
+        abiFilters (*reactNativeArchitectures())
         arguments "-DREACT_NATIVE_DIR=${REACT_NATIVE_DIR}",
           "-DREACT_NATIVE_SO_DIR=${REACT_NATIVE_SO_DIR}",
           "-DBOOST_VERSION=${BOOST_VERSION}"
@@ -333,13 +338,15 @@ afterEvaluate {
 }
 
 tasks.whenTaskAdded { task ->
-  if (task.name.contains('externalNativeBuild') || task.name.startsWith('configureCMake')) {
+  if (!task.name.contains("Clean") && (task.name.contains('externalNativeBuild') || task.name.startsWith('configureCMake'))) {
     task.dependsOn(extractAARHeaders)
     task.dependsOn(extractJNIFiles)
     if (REACT_NATIVE_BUILD_FROM_SOURCE) {
-      task.dependsOn(":ReactAndroid:packageReactNdkLibs")
+      def buildType = task.name.endsWith('Debug') ? 'Debug' : 'Release'
+      task.dependsOn(":ReactAndroid:copy${buildType}JniLibsProjectOnly")
     }
   } else if (task.name.startsWith('generateJsonModel') && REACT_NATIVE_BUILD_FROM_SOURCE) {
-    task.dependsOn(":ReactAndroid:packageReactNdkLibs")
+    def buildType = task.name.endsWith('Debug') ? 'Debug' : 'Release'
+    task.dependsOn(":ReactAndroid:copy${buildType}JniLibsProjectOnly")
   }
 }
