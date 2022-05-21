@@ -37,7 +37,7 @@ export function PasswordStep(props: Props) {
     <View bg="default" padding="medium" rounded="medium" border="default">
       <Text type="InterSemiBold">Confirm password</Text>
       <Spacer.Vertical size="small" />
-      <Text type="InterRegular" color="secondary">
+      <Text type="InterRegular" color="secondary" size="medium">
         To delete your account, you must confirm your current password.
       </Text>
       <Spacer.Vertical size="small" />

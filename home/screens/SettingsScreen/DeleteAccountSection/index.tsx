@@ -1,12 +1,12 @@
 import { useApolloClient } from '@apollo/client';
-import { TrashIcon } from '@expo/styleguide-native';
+import { InfoIcon, TrashIcon } from '@expo/styleguide-native';
 import { useNavigation } from '@react-navigation/native';
 import Analytics from 'api/Analytics';
 import ApiV2HttpClient from 'api/ApiV2HttpClient';
 import { SectionHeader } from 'components/SectionHeader';
 import { FormStates } from 'constants/FormStates';
 import { Row, Spacer, Text, useExpoTheme, View } from 'expo-dev-client-components';
-import { useDeleteAccountPermissionsQuery } from 'graphql/types';
+import { Permission, useDeleteAccountPermissionsQuery } from 'graphql/types';
 import React, { useState } from 'react';
 import { ActivityIndicator } from 'react-native';
 import { useDispatch } from 'redux/Hooks';
@@ -17,7 +17,7 @@ import { notEmpty } from 'utils/notEmpty';
 import { ConfirmationStep } from './ConfirmationStep';
 import { OTPStep } from './OTPStep';
 import { PasswordStep } from './PasswordStep';
-import { handleAccountDeleteAsync } from './utils';
+import { handleAccountDeleteAsync, memberHasPermission } from './utils';
 
 type Props = {
   viewerUsername: string;
@@ -126,12 +126,27 @@ export function DeleteAccountSection(props: Props) {
   }
 
   const accounts = data?.me?.accounts ?? [];
+  const dependentAccounts = accounts.filter((account) => {
+    const members = account?.users ?? [];
+    const isViewerOwner = memberHasPermission(account, viewerUsername, Permission.Own);
+    const accountOwners = members
+      ?.filter(notEmpty)
+      ?.filter((member) => member?.permissions?.filter(notEmpty).includes(Permission.Own));
+
+    if (members.length > 1 && isViewerOwner && accountOwners.length === 1) {
+      return true;
+    }
+
+    return false;
+  });
+
+  const canViewConfirmationForm = !loading && dependentAccounts.length === 0;
 
   return (
     <View>
       <SectionHeader header="Delete Account" />
       <View>
-        <View bg="default" padding="medium" rounded="medium" border="default">
+        <View bg="default" padding="medium" rounded="large" border="default">
           <Row align="center">
             <TrashIcon color={theme.icon.default} />
             <Spacer.Horizontal size="small" />
@@ -153,16 +168,31 @@ export function DeleteAccountSection(props: Props) {
               <Spacer.Vertical size="small" />
             </>
           ) : null}
-          {formState === FormStates.LOADING ||
-            (loading && <ActivityIndicator color={theme.highlight.accent} />)}
-          {!(formState === FormStates.LOADING) && visibleStep === 'confirm' ? (
-            <ConfirmationStep
-              accounts={accounts}
-              viewerUsername={viewerUsername}
-              loading={loading}
-              onSubmit={_onSubmit}
-              formState={formState}
-            />
+          {formState === FormStates.LOADING || loading ? (
+            <ActivityIndicator color={theme.highlight.accent} />
+          ) : null}
+          {!canViewConfirmationForm ? (
+            <View rounded="medium" bg="secondary" padding="medium">
+              <Row>
+                <InfoIcon color={theme.icon.default} />
+                <Spacer.Horizontal size="small" />
+                <Text type="InterSemiBold">Cannot delete account</Text>
+              </Row>
+              <Spacer.Vertical size="small" />
+              <Text type="InterRegular" size="medium">
+                Your account is currently the sole owner of these organizations:{' '}
+                <Text type="InterBold">
+                  {dependentAccounts.map((account) => account.name).join(', ')}
+                </Text>
+                . You must assign another owner or remove all other members from these organizations
+                before you can delete your account.
+              </Text>
+            </View>
+          ) : null}
+          {!(formState === FormStates.LOADING) &&
+          canViewConfirmationForm &&
+          visibleStep === 'confirm' ? (
+            <ConfirmationStep onSubmit={_onSubmit} />
           ) : null}
           {visibleStep === 'password' ? <PasswordStep {...passwordDialogConfig} /> : null}
           {visibleStep === 'otp' ? <OTPStep {...OTPDialogConfig} /> : null}

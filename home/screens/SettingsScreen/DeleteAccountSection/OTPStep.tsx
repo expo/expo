@@ -136,7 +136,7 @@ export function OTPStep(props: Props) {
       ) : null}
       <Text type="InterSemiBold">More two-factor options</Text>
       <Spacer.Vertical size="small" />
-      <Text type="InterRegular">
+      <Text type="InterRegular" size="medium">
         Enter a recovery code (from when you set up two-factor authentication) as your one-time
         password.
       </Text>
