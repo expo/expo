@@ -1,10 +1,10 @@
-import { spacing } from '@expo/styleguide-native';
+import { Button } from 'components/Button';
 import { FormStates } from 'constants/FormStates';
-import { Button, Row, Spacer, Text } from 'expo-dev-client-components';
+import { Row, Spacer, Text } from 'expo-dev-client-components';
 import React, { useState } from 'react';
 import { ActivityIndicator } from 'react-native';
 
-import { PartialUserSecondFactorDevice } from './OTPDialog';
+import { PartialUserSecondFactorDevice } from './OTPStep';
 
 type Props = {
   SMSDevice: PartialUserSecondFactorDevice;
@@ -38,16 +38,12 @@ export function SMSDevice(props: Props) {
       {buttonState === FormStates.LOADING ? (
         <ActivityIndicator />
       ) : (
-        <Button.Container
-          style={{ height: spacing[7], padding: `0 ${spacing[4]}px` }}
-          bg="ghost"
-          border="ghost"
+        <Button
+          theme="ghost"
+          label={buttonText}
           onPress={() => SMSDevice?.id && _sendSMSOTPAsync(SMSDevice.id)}
-          disabled={buttonState !== FormStates.IDLE}>
-          <Button.Text color="ghost" size="small">
-            {buttonText}
-          </Button.Text>
-        </Button.Container>
+          disabled={buttonState !== FormStates.IDLE}
+        />
       )}
     </Row>
   );

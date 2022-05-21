@@ -1,13 +1,20 @@
-import { spacing } from '@expo/styleguide-native';
-import { useExpoTheme, View, Text } from 'expo-dev-client-components';
+import { Button } from 'components/Button';
+import {
+  useExpoTheme,
+  View,
+  Text,
+  TextInput,
+  Row,
+  Spacer,
+  scale,
+} from 'expo-dev-client-components';
 import {
   SecondFactorMethod,
   UserSecondFactorDevice,
   useSecondFactorDevicesQuery,
   useSendSmsotpToSecondFactorDeviceMutation,
 } from 'graphql/types';
-import React, { useEffect, useState } from 'react';
-import Dialog from 'react-native-dialog';
+import React, { Fragment, useEffect, useState } from 'react';
 import { notEmpty } from 'utils/notEmpty';
 
 import { SMSDevice } from './SMSDevice';
@@ -20,13 +27,12 @@ export type PartialUserSecondFactorDevice = Partial<
 >;
 
 type Props = {
-  visible: boolean;
   onCancel: () => void;
   onConfirm: (otp: string) => void;
 };
 
-export function OTPDialog(props: Props) {
-  const { visible, onCancel, onConfirm } = props;
+export function OTPStep(props: Props) {
+  const { onCancel, onConfirm } = props;
 
   const theme = useExpoTheme();
   const [OTP, setOTP] = useState('');
@@ -85,40 +91,66 @@ export function OTPDialog(props: Props) {
   }
 
   return (
-    <Dialog.Container visible={visible} onBackdropPress={onCancel}>
-      <Dialog.Title>Confirm your one-time password to delete your account</Dialog.Title>
-      <Dialog.Description>{description}</Dialog.Description>
-      <Dialog.Input
-        style={{ fontFamily: 'InterRegular', color: theme.text.default }}
+    <View bg="default" padding="medium" rounded="medium" border="default">
+      <Text type="InterSemiBold">Confirm your one-time password to delete your account</Text>
+      <Spacer.Vertical size="small" />
+      <Text type="InterRegular" color="secondary">
+        {description}
+      </Text>
+      <Spacer.Vertical size="small" />
+      <TextInput
+        placeholder="Enter your one-time password"
+        autoComplete="sms-otp"
+        secureTextEntry
+        textContentType="oneTimeCode"
+        rounded="medium"
+        style={{ borderColor: theme.border.default, borderWidth: 1, padding: scale.medium }}
         placeholderTextColor={theme.text.secondary}
         onChangeText={(p) => setOTP(p)}
       />
 
       {inputError ? (
-        <View>
-          <Text>{inputError}</Text>
-        </View>
+        <>
+          <Spacer.Vertical size="small" />
+          <View bg="error" rounded="medium" padding="medium">
+            <Text>{inputError}</Text>
+          </View>
+        </>
       ) : null}
+      <Spacer.Vertical size="medium" />
       {SMSDevices && SMSDevices?.length > 0 ? (
-        <View style={{ marginBottom: spacing[3] }}>
+        <View>
           <Text type="InterSemiBold">SMS numbers</Text>
-          {SMSDevices?.map((device) => (
-            <SMSDevice
-              key={device.id}
-              SMSDevice={device}
-              sendSMSOTPAsync={sendSMSOTP}
-              sentCode={primarySMSDevice?.id === device.id}
-            />
+          {SMSDevices?.map((device, i) => (
+            <Fragment key={device.id}>
+              <SMSDevice
+                SMSDevice={device}
+                sendSMSOTPAsync={sendSMSOTP}
+                sentCode={primarySMSDevice?.id === device.id}
+              />
+              {i < SMSDevices.length - 1 ? <Spacer.Vertical size="small" /> : null}
+            </Fragment>
           ))}
+          <Spacer.Vertical size="medium" />
         </View>
       ) : null}
       <Text type="InterSemiBold">More two-factor options</Text>
+      <Spacer.Vertical size="small" />
       <Text type="InterRegular">
         Enter a recovery code (from when you set up two-factor authentication) as your one-time
         password.
       </Text>
-      <Dialog.Button label="Cancel" onPress={onCancel} />
-      <Dialog.Button label="Verify" onPress={_onSubmit} color={theme.text.error} />
-    </Dialog.Container>
+      <Spacer.Vertical size="medium" />
+      <Row justify="end">
+        <Button label="Cancel" onPress={onCancel} theme="secondary" />
+        <Spacer.Horizontal size="small" />
+        <Button
+          label="Verify"
+          onPress={_onSubmit}
+          theme="tertiary"
+          disabled={OTP.trim().length === 0}
+        />
+      </Row>
+    </View>
   );
 }

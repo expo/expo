@@ -6,7 +6,7 @@ import { Platform, StyleSheet } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 import { ConstantsSection } from './ConstantsSection';
-import { DeleteAccount } from './DeleteAccountSection';
+import { DeleteAccountSection } from './DeleteAccountSection';
 import { DevMenuGestureSection } from './DevMenuGestureSection';
 import { ThemeSection } from './ThemeSection';
 import { TrackingSection } from './TrackingSection';
@@ -37,8 +37,8 @@ export function SettingsScreen() {
         <ConstantsSection />
         {data?.viewer ? (
           <>
-            <Spacer.Vertical size="medium" />
-            <DeleteAccount viewerUsername={data.viewer.username} />
+            <Spacer.Vertical size="xl" />
+            <DeleteAccountSection viewerUsername={data.viewer.username} />
           </>
         ) : null}
       </View>
