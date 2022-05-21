@@ -103,39 +103,40 @@ import React from 'react';
 import { Text, StyleSheet, View, useColorScheme } from 'react-native';
 import { StatusBar } from 'expo-status-bar'; // automatically switches bar style based on theme!
 
+const themes = {
+  dark: { 
+    backgorund: "#111", 
+    text: "#fff"
+  }, 
+  light: { 
+    backgorund: "#fff", 
+    text: "#111"
+  }, 
+};
+
 export default function App() {
   const colorScheme = useColorScheme();
-
-  const themeTextStyle = colorScheme === 'light' ? styles.lightThemeText : styles.darkThemeText;
-  const themeContainerStyle =
-    colorScheme === 'light' ? styles.lightContainer : styles.darkContainer;
-
+  const currentStyle = styles(themes[colorScheme])
+  
+  
   return (
-    <View style={[styles.container, themeContainerStyle]}>
-      <Text style={[styles.text, themeTextStyle]}>Color scheme: {colorScheme}</Text>
+    <View style={currentStyle.container}>
+      <Text style={currentStyle.text}>Color scheme: {colorScheme}</Text>
       <StatusBar />
     </View>
   );
 }
 
-const styles = StyleSheet.create({
+const styles = (theme) => StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: theme.backgorund,
   },
-  lightContainer: {
-    backgroundColor: '#d0d0c0',
-  },
-  darkContainer: {
-    backgroundColor: '#242c40',
-  },
-  lightThemeText: {
-    color: '#242c40',
-  },
-  darkThemeText: {
-    color: '#d0d0c0',
-  },
+  text: {
+    color: theme.text,
+  }, 
 });
 ```
 
