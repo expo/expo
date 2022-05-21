@@ -68,8 +68,8 @@ After copying or creating the first app, run `yarn install` to check for common 
 
 Metro doesn't come with monorepo support by default (yet). That's why we need to configure Metro and let it know where to find certain things. There are two main changes we need to make:
 
-1. Make sure Metro is watching the full monorepo, not just **app/cool-app**.
-2. Tell Metro where it can resolve packages. They might be installed in **app/cool-app/node_modules** or **node_modules**.
+1. Make sure Metro is watching the full monorepo, not just **apps/cool-app**.
+2. Tell Metro where it can resolve packages. They might be installed in **apps/cool-app/node_modules** or **node_modules**.
 
 We can configure that by creating a **metro.config.js** with the following content.
 
