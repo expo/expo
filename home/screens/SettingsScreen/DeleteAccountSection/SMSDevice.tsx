@@ -2,7 +2,6 @@ import { Button } from 'components/Button';
 import { FormStates } from 'constants/FormStates';
 import { Row, Spacer, Text } from 'expo-dev-client-components';
 import React, { useState } from 'react';
-import { ActivityIndicator } from 'react-native';
 
 import { PartialUserSecondFactorDevice } from './OTPStep';
 
@@ -32,19 +31,16 @@ export function SMSDevice(props: Props) {
   }
 
   return (
-    <Row align="center">
+    <Row align="center" style={{ minHeight: 48 }}>
       <Text type="InterRegular">{SMSDevice.smsPhoneNumber}</Text>
       <Spacer.Horizontal size="small" />
-      {buttonState === FormStates.LOADING ? (
-        <ActivityIndicator />
-      ) : (
-        <Button
-          theme="ghost"
-          label={buttonText}
-          onPress={() => SMSDevice?.id && _sendSMSOTPAsync(SMSDevice.id)}
-          disabled={buttonState !== FormStates.IDLE}
-        />
-      )}
+      <Button
+        theme="ghost"
+        label={buttonText}
+        onPress={() => SMSDevice?.id && _sendSMSOTPAsync(SMSDevice.id)}
+        disabled={buttonState !== FormStates.IDLE}
+        loading={buttonState === FormStates.LOADING}
+      />
     </Row>
   );
 }
