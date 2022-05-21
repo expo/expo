@@ -20,6 +20,7 @@ static NSString * const kView = @"view";
  * That's why we keep a weak reference here but not a boolean flag.
  */
 @property (nonatomic, weak) UIViewController *observingRootViewController;
+@property (nonatomic, assign) BOOL showSplashScreenAgain;
 
 @end
 
@@ -71,8 +72,12 @@ EX_REGISTER_SINGLETON_MODULE(SplashScreen);
             successCallback:(void (^)(void))successCallback
             failureCallback:(void (^)(NSString * _Nonnull))failureCallback
 {
-  if ([self.splashScreenControllers objectForKey:viewController]) {
+  if (!_showSplashScreenAgain && [self.splashScreenControllers objectForKey:viewController]) {
     return failureCallback(@"'SplashScreen.show' has already been called for given view controller.");
+  }
+  
+  if (_showSplashScreenAgain) {
+    _showSplashScreenAgain = NO;
   }
   
   [self.splashScreenControllers setObject:splashScreenController forKey:viewController];
@@ -125,6 +130,7 @@ EX_REGISTER_SINGLETON_MODULE(SplashScreen);
   }
   BOOL needsShow = [[self.splashScreenControllers objectForKey:viewController] needsShowOnAppContentWillReload];
   if (needsShow) {
+    _showSplashScreenAgain = YES;
     [self showSplashScreenFor:viewController
        splashScreenController:[self.splashScreenControllers objectForKey:viewController]
               successCallback:^{}
