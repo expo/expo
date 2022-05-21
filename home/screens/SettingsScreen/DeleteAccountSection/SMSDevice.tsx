@@ -23,7 +23,7 @@ export function SMSDevice(props: Props) {
       setButtonState(FormStates.LOADING);
       await sendSMSOTPAsync(deviceId);
     } catch (error) {
-      console.error(error);
+      alert(error);
     }
 
     setButtonState(FormStates.IDLE);

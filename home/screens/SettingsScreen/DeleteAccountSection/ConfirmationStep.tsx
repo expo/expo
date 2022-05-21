@@ -74,7 +74,6 @@ export function ConfirmationStep({ onSubmit }: Props) {
         onChangeText={onDeleteConfirmationTextChange}
       />
       <Spacer.Vertical size="small" />
-
       <Row justify="end">
         <Button
           label="Delete Account"
