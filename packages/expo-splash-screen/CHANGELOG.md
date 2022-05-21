@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed issue in `expo-splash-screen` where it would not show the splash screen again when reloading the app via `reloadAsync` in `expo-updates` ([#17592](https://github.com/expo/expo/pull/17592) by [@ilyausorov](https://github.com/ilyausorov))
+
 ### 💡 Others
 
 ## 0.15.1 — 2022-04-27
