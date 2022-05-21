@@ -155,7 +155,7 @@ export function DeleteAccountSection(props: Props) {
             </Text>
           </Row>
           <Spacer.Vertical size="small" />
-          <Text type="InterRegular" color="secondary">
+          <Text type="InterRegular" color="secondary" size="medium">
             This action is irreversible. It will delete your personal account, projects, and
             activity.
           </Text>
