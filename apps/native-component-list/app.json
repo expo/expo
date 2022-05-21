@@ -88,6 +88,11 @@
       "assets/**",
       "node_modules/react-navigation/src/**/*.png",
       "node_modules/@expo/vector-icons/fonts/*.ttf"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "2c28de10-a2cd-11e6-b8ce-59d1587e6774"
+      }
+    }
   }
 }
