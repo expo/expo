@@ -43,7 +43,7 @@ public final class ModuleHolder {
    */
   var listenersCount: Int = 0
 
-  public init(appContext: AppContext, module: AnyModule) {
+  init(appContext: AppContext, module: AnyModule) {
     self.appContext = appContext
     self.module = module
     self.definition = module.definition()
@@ -61,7 +61,7 @@ public final class ModuleHolder {
 
   // MARK: Calling functions
 
-  public func call(function functionName: String, args: [Any], _ callback: @escaping (FunctionCallResult) -> () = { _ in }) {
+  func call(function functionName: String, args: [Any], _ callback: @escaping (FunctionCallResult) -> () = { _ in }) {
     guard let function = definition.functions[functionName] else {
       callback(.failure(FunctionNotFoundException((functionName: functionName, moduleName: self.name))))
       return
