@@ -118,7 +118,7 @@ internal class DevLauncherExpoActivityConfiguratorTest {
       verify { mockWindow.statusBarColor = expectedColor }
     }
 
-    verify { mockDecorView.setOnApplyWindowInsetsListener(isNull(inverse = expectedTranslucent))}
+    verify { mockDecorView.setOnApplyWindowInsetsListener(isNull(inverse = expectedTranslucent)) }
 
     if (expectedHidden) {
       verify { mockWindow.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN) }
@@ -177,7 +177,7 @@ internal class DevLauncherExpoActivityConfiguratorTest {
     }
 
     expectedVisibility?.let {
-      when(it) {
+      when (it) {
         DevLauncherNavigationBarVisibility.LEANBACK ->
           verify { mockDecorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_FULLSCREEN) }
         DevLauncherNavigationBarVisibility.IMMERSIVE ->

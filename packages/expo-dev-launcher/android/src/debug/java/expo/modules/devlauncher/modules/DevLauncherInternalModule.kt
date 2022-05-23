@@ -19,7 +19,6 @@ import expo.modules.devlauncher.koin.DevLauncherKoinComponent
 import expo.modules.devlauncher.launcher.DevLauncherControllerInterface
 import expo.modules.devlauncher.launcher.DevLauncherIntentRegistryInterface
 import expo.modules.devlauncher.launcher.errors.DevLauncherErrorRegistry
-import expo.modules.devmenu.DevMenuAppInfo
 import expo.modules.devmenu.DevMenuManager
 import kotlinx.coroutines.launch
 import org.koin.core.component.inject
@@ -28,8 +27,8 @@ private const val ON_NEW_DEEP_LINK_EVENT = "expo.modules.devlauncher.onnewdeepli
 private const val CLIENT_PACKAGE_NAME = "host.exp.exponent"
 private val CLIENT_HOME_QR_SCANNER_DEEP_LINK = Uri.parse("expo-home://qr-scanner")
 
-class DevLauncherInternalModule(reactContext: ReactApplicationContext?)
-  : ReactContextBaseJavaModule(reactContext), DevLauncherKoinComponent {
+class DevLauncherInternalModule(reactContext: ReactApplicationContext?) :
+  ReactContextBaseJavaModule(reactContext), DevLauncherKoinComponent {
   private val controller: DevLauncherControllerInterface by inject()
   private val intentRegistry: DevLauncherIntentRegistryInterface by inject()
   private val installationIDHelper: DevLauncherInstallationIDHelper by inject()
@@ -94,7 +93,7 @@ class DevLauncherInternalModule(reactContext: ReactApplicationContext?)
     } else {
       parsedUrl
     }
-    return appUrl;
+    return appUrl
   }
 
   @ReactMethod
@@ -136,13 +135,15 @@ class DevLauncherInternalModule(reactContext: ReactApplicationContext?)
 
   @ReactMethod
   fun getRecentlyOpenedApps(promise: Promise) {
-    promise.resolve(Arguments
-      .createMap()
-      .apply {
-        controller.getRecentlyOpenedApps().forEach { (key, value) ->
-          putString(key, value)
+    promise.resolve(
+      Arguments
+        .createMap()
+        .apply {
+          controller.getRecentlyOpenedApps().forEach { (key, value) ->
+            putString(key, value)
+          }
         }
-      })
+    )
   }
 
   @ReactMethod
@@ -214,17 +215,16 @@ class DevLauncherInternalModule(reactContext: ReactApplicationContext?)
     }
   }
 
-
   @ReactMethod
   fun getBuildInfo(promise: Promise) {
     val map = Arguments.createMap()
     val packageManager = reactApplicationContext.packageManager
     val packageName = reactApplicationContext.packageName
 
-    val packageInfo =  packageManager.getPackageInfo(packageName, 0)
+    val packageInfo = packageManager.getPackageInfo(packageName, 0)
     val applicationInfo = packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA)
     val appName = packageManager.getApplicationLabel(applicationInfo).toString()
-    val runtimeVersion = DevLauncherController.getMetadataValue(reactApplicationContext,"expo.modules.updates.EXPO_RUNTIME_VERSION")
+    val runtimeVersion = DevLauncherController.getMetadataValue(reactApplicationContext, "expo.modules.updates.EXPO_RUNTIME_VERSION")
     val sdkVersion = DevLauncherController.getMetadataValue(reactApplicationContext, "expo.modules.updates.EXPO_SDK_VERSION")
     var appIcon = getApplicationIconUri()
 

@@ -29,7 +29,7 @@ class DevLauncherDevSupportManagerFactory : DevSupportManagerFactory {
         applicationContext,
         reactInstanceManagerHelper,
         packagerPathForJSBundleName,
-        enableOnCreate, 
+        enableOnCreate,
         redBoxHandler,
         devBundleDownloadListener,
         minNumShakes,

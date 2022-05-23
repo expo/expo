@@ -38,15 +38,17 @@ internal class DevLauncherAppLoaderFactoryTest {
   fun setup() {
     val reactNativeHost = mockk<ReactNativeHost>(relaxed = true)
     val devLauncherController = mockk<DevLauncherControllerInterface>(relaxed = true)
-    DevLauncherKoinContext.app.koin.loadModules(listOf(
-      module {
-        single<Context> { ApplicationProvider.getApplicationContext() }
-        single { reactNativeHost }
-        single { devLauncherController }
-        single<UpdatesInterface?> { null }
-        single { mockk<DevLauncherInstallationIDHelper>(relaxed = true) }
-      }
-    ))
+    DevLauncherKoinContext.app.koin.loadModules(
+      listOf(
+        module {
+          single<Context> { ApplicationProvider.getApplicationContext() }
+          single { reactNativeHost }
+          single { devLauncherController }
+          single<UpdatesInterface?> { null }
+          single { mockk<DevLauncherInstallationIDHelper>(relaxed = true) }
+        }
+      )
+    )
   }
 
   @Test
@@ -114,7 +116,7 @@ internal class DevLauncherAppLoaderFactoryTest {
     val manifestParser = mockk<DevLauncherManifestParser>()
     coEvery { manifestParser.isManifestUrl() } returns true
 
-    val appLoader = appLoaderFactory.createAppLoader(publishedManifestURL,developmentManifestURL, manifestParser)
+    val appLoader = appLoaderFactory.createAppLoader(publishedManifestURL, developmentManifestURL, manifestParser)
     Truth.assertThat(appLoader).isInstanceOf(DevLauncherPublishedAppLoader::class.java)
     Truth.assertThat(appLoaderFactory.shouldUseDeveloperSupport()).isFalse()
   }
@@ -143,10 +145,12 @@ internal class DevLauncherAppLoaderFactoryTest {
       }
     }
 
-    DevLauncherKoinContext.app.koin.loadModules(listOf(
-      module {
-        single { updatesInterface }
-      }
-    ))
+    DevLauncherKoinContext.app.koin.loadModules(
+      listOf(
+        module {
+          single { updatesInterface }
+        }
+      )
+    )
   }
 }
