@@ -1,5 +1,5 @@
-import { css, SerializedStyles } from '@emotion/react';
-import { darkTheme } from '@expo/styleguide';
+import { css } from '@emotion/react';
+import { darkTheme, spacing } from '@expo/styleguide';
 import React from 'react';
 
 import { Snippet } from '../Snippet';
@@ -13,18 +13,11 @@ type TerminalProps = {
   cmd: string[];
   cmdCopy?: string;
   hideOverflow?: boolean;
-  style?: SerializedStyles;
   title?: string;
 };
 
-export const Terminal = ({
-  cmd,
-  cmdCopy,
-  hideOverflow,
-  style,
-  title = 'Terminal',
-}: TerminalProps) => (
-  <Snippet style={style}>
+export const Terminal = ({ cmd, cmdCopy, hideOverflow, title = 'Terminal' }: TerminalProps) => (
+  <Snippet style={wrapperStyle}>
     <SnippetHeader alwaysDark title={title}>
       {renderCopyButton({ cmd, cmdCopy })}
     </SnippetHeader>
@@ -96,6 +89,13 @@ function cmdMapper(line: string, index: number) {
     </CODE>
   );
 }
+
+const wrapperStyle = css`
+  li & {
+    margin-top: ${spacing[4]}px;
+    display: flex;
+  }
+`;
 
 const unselectableStyle = css`
   user-select: none;

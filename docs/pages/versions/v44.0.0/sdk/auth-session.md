@@ -27,7 +27,7 @@ In **bare-workflow** you can use the [`uri-scheme` package][n-uri-scheme] to eas
 
 To make your native app handle `mycoolredirect://` simply run:
 
-<Terminal cmd={['$ npx uri-scheme add mycoolredirect']} cmdCopy="npx uri-scheme add mycoolredirect" />
+<Terminal cmd={['$ npx uri-scheme add mycoolredirect']} />
 
 <br />
 

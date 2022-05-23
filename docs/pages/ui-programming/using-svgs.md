@@ -38,7 +38,7 @@ To automate this process, React-SVGR also [provides a CLI](https://react-svgr.co
 
 Once we have a compatible SVG, we'll need to add [react-native-svg](https://github.com/react-native-svg/react-native-svg) to our project. We can do so with:
 
-<Terminal cmd={['$ expo install react-native-svg']} cmdCopy="expo install react-native-svg" />
+<Terminal cmd={['$ expo install react-native-svg']} />
 
 Then we can add code like the following to our project:
 

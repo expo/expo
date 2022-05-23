@@ -19,7 +19,7 @@ At this point we should have Expo CLI installed on our development machine and t
 
 ## Starting the development server
 
-<Terminal cmd={['$ expo start']} cmdCopy="expo start" />
+<Terminal cmd={['$ expo start']} />
 
 When you run `expo start` (or `npm start`), Expo CLI starts Metro Bundler, which is an HTTP server that compiles the JavaScript code of our app using [Babel](https://babeljs.io/) and serves it to the Expo app.
 

@@ -80,7 +80,7 @@ Setting up ad hoc provisioning consists of two steps. In the first step, you'll 
 <Terminal cmd={[
   '# Register Apple Devices for internal distribution',
   '$ eas device:create'
-]} cmdCopy="eas device:create" />
+]} />
 
 You can register new devices at any time, but builds that were created before the device was registered will not run on newly registered devices; only builds that are created after the device is registered will be installable.
 

@@ -17,7 +17,7 @@ You may use the CLI in your terminal or use the web based interface (it opens au
 
 ## Installation
 
-<Terminal cmd={['$ npm install -g expo-cli']} cmdCopy="npm install -g expo-cli" />
+<Terminal cmd={['$ npm install -g expo-cli']} />
 
 ## Checking CLI Version
 

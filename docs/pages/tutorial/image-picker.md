@@ -3,7 +3,8 @@ title: Picking an image
 ---
 
 import SnackInline from '~/components/plugins/SnackInline';
-import Video from '~/components/plugins/Video'
+import Video from '~/components/plugins/Video';
+import { Terminal } from '~/ui/components/Snippet';
 
 So far we have been using code from React and React Native in our app. React gives us a nice way to build components and React Native gives us pre-built components that work on iOS, Android, and web &mdash; like `View`, `Text`, `TouchableOpacity`. React Native does _not_ provide us with an image picker. For this, we can use an Expo library called [expo-image-picker](../versions/latest/sdk/imagepicker.md):
 
@@ -13,7 +14,11 @@ So far we have been using code from React and React Native in our app. React giv
 
 To use expo-image-picker in our project, we first need to install it.
 
-In your project directory, run `expo install expo-image-picker`. This will tell npm (or yarn) to install a version of the `expo-image-picker` library that is compatible with your project. That's it!
+In your project directory, run the following command:
+
+<Terminal cmd={['$ expo install expo-image-picker']} /> 
+
+This will tell npm (or yarn) to install a version of the `expo-image-picker` library that is compatible with your project. That's it!
 
 <Video file={"tutorial/cli-install.mp4"} />
 
