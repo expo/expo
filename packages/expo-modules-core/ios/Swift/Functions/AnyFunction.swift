@@ -6,7 +6,7 @@ public typealias FunctionCallResult = Result<Any, Exception>
 /**
  A protocol for any type-erased function.
  */
-public protocol AnyFunction: AnyDefinition, JavaScriptObjectBuilder, ClassComponentElement {
+internal protocol AnyFunction: AnyDefinition, JavaScriptObjectBuilder {
   /**
    Name of the function. JavaScript refers to the function by this name.
    */
@@ -18,28 +18,37 @@ public protocol AnyFunction: AnyDefinition, JavaScriptObjectBuilder, ClassCompon
   var dynamicArgumentTypes: [AnyDynamicType] { get }
 
   /**
-   A number of arguments the function takes. If the last argument is of type `Promise`, it is not counted.
+   A number of arguments the function takes. If the function expects to receive an owner (`this`) as the first argument, it's not counted.
+   Similarly, if the last argument is of type `Promise`, it is not counted.
    */
   var argumentsCount: Int { get }
 
   /**
-   Calls the function with given arguments and returns a result through the callback block.
-   - Parameters:
-     - args: An array of arguments to pass to the function. They could be Swift primitives
-      when invoked through the bridge and in unit tests or `JavaScriptValue`s
-      when the function is called through the JSI
-     - callback: A callback that receives a result of the function execution.
+   Indicates whether the function's arguments starts from the owner that calls this function.
    */
-  func call(args: [Any], callback: @escaping (FunctionCallResult) -> ())
+  var takesOwner: Bool { get set }
+
+  /**
+   Calls the function with a given owner and arguments and returns a result through the callback block.
+   - Parameters:
+      - owner: An object that calls this function. If the `takesOwner` property is true
+      and type of the first argument matches the owner type, it's being passed as the argument.
+      - args: An array of arguments to pass to the function. They could be Swift primitives
+      when invoked through the bridge and in unit tests or `JavaScriptValue`s
+      when the function is called through the JSI.
+      - callback: A callback that receives a result of the function execution.
+   */
+  func call(by owner: AnyObject?, withArguments args: [Any], callback: @escaping (FunctionCallResult) -> ())
 }
 
 extension AnyFunction {
   /**
-   Calls the function just like `call(args:callback:)` but with an empty callback.
-   Might be useful when you only want to call the function but don't care about the result.
+   Calls the function just like `call(by:withArguments:callback:)`, but without an owner
+   and with an empty callback. Might be useful when you only want to call the function,
+   but don't care about the result.
    */
-  func call(args: [Any]) {
-    call(args: args, callback: { _ in })
+  func call(withArguments args: [Any]) {
+    call(by: nil, withArguments: args, callback: { _ in })
   }
 }
 

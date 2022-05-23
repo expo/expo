@@ -66,7 +66,7 @@ public final class ModuleHolder {
       callback(.failure(FunctionNotFoundException((functionName: functionName, moduleName: self.name))))
       return
     }
-    function.call(args: args, callback: callback)
+    function.call(by: self, withArguments: args, callback: callback)
   }
 
   @discardableResult
@@ -75,8 +75,14 @@ public final class ModuleHolder {
       return nil
     }
     do {
-      let arguments = try castArguments(args, toTypes: function.dynamicArgumentTypes)
-      return try function.call(args: arguments)
+      let arguments = try cast(arguments: args, forFunction: function)
+      let result = try function.call(by: self, withArguments: arguments)
+
+      if let result = result as? SharedObject {
+        let jsObject = SharedObjectRegistry.ensureSharedJavaScriptObject(runtime: appContext!.runtime!, nativeObject: result)
+        return jsObject
+      }
+      return result
     } catch {
       return error
     }
@@ -125,9 +131,9 @@ public final class ModuleHolder {
    */
   func modifyListenersCount(_ count: Int) {
     if count > 0 && listenersCount == 0 {
-      definition.functions["startObserving"]?.call(args: [])
+      definition.functions["startObserving"]?.call(withArguments: [])
     } else if count < 0 && listenersCount + count <= 0 {
-      definition.functions["stopObserving"]?.call(args: [])
+      definition.functions["stopObserving"]?.call(withArguments: [])
     }
     listenersCount = max(0, listenersCount + count)
   }

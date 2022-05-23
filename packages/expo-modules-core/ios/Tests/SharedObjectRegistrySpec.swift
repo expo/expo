@@ -106,4 +106,4 @@ final class SharedObjectRegistrySpec: ExpoSpec {
   }
 }
 
-final class TestSharedObject: SharedObject {}
+fileprivate final class TestSharedObject: SharedObject {}
