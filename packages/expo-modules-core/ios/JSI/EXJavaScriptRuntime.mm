@@ -143,6 +143,12 @@ using namespace facebook;
       @"message": reason,
       @"stack": stack,
     }];
+  } catch (jsi::JSIException &error) {
+    NSString *reason = [NSString stringWithUTF8String:error.what()];
+    
+    @throw [NSException exceptionWithName:@"ScriptEvaluationException" reason:reason userInfo:@{
+      @"message": reason
+    }];
   }
   return [[EXJavaScriptValue alloc] initWithRuntime:self value:result];
 }
