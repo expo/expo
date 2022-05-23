@@ -1,4 +1,3 @@
-import { Button } from 'components/Button';
 import {
   useExpoTheme,
   View,
@@ -9,6 +8,8 @@ import {
   scale,
 } from 'expo-dev-client-components';
 import React, { useState } from 'react';
+
+import { Button } from '../../../components/Button';
 
 type Props = {
   onCancel: () => void;

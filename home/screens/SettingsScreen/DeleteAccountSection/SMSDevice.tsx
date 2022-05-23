@@ -1,8 +1,8 @@
-import { Button } from 'components/Button';
-import { FormStates } from 'constants/FormStates';
 import { Row, Spacer, Text } from 'expo-dev-client-components';
 import React, { useState } from 'react';
 
+import { Button } from '../../../components/Button';
+import { FormStates } from '../../../constants/FormStates';
 import { PartialUserSecondFactorDevice } from './OTPStep';
 
 type Props = {

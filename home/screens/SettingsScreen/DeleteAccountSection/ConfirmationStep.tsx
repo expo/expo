@@ -1,5 +1,4 @@
 import { InfoIcon } from '@expo/styleguide-native';
-import { Button } from 'components/Button';
 import {
   Row,
   scale,
@@ -11,6 +10,8 @@ import {
 } from 'expo-dev-client-components';
 import React, { useState } from 'react';
 import { Linking } from 'react-native';
+
+import { Button } from '../../../components/Button';
 
 const DELETE_ACCOUNT_STRING = 'I understand and I want to delete my account';
 

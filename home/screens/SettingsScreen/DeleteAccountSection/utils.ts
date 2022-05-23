@@ -1,18 +1,17 @@
 import { ApolloClient } from '@apollo/client';
-import ApiV2HttpClient from 'api/ApiV2HttpClient';
-import { UserPermissionDataFragment, Permission } from 'graphql/types';
+
+import { APIV2Client } from '../../../api/APIV2Client';
+import { UserPermissionDataFragment, Permission } from '../../../graphql/types';
 
 export const handleAccountDeleteAsync = async (
-  apiV2Client: ApiV2HttpClient,
+  apiV2Client: APIV2Client,
   client: ApolloClient<any>,
   clearSessionSecretData: () => void,
   password: string,
   otp?: string
 ) => {
-  await apiV2Client.postAsync('auth/delete-user', {
-    notify: true,
-    otp,
-    password,
+  await apiV2Client.sendAuthenticatedApiV2Request('auth/delete-user', {
+    body: { notify: true, otp, password },
   });
 
   if (client) {

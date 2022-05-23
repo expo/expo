@@ -1,19 +1,19 @@
 import { useApolloClient } from '@apollo/client';
 import { InfoIcon, TrashIcon } from '@expo/styleguide-native';
 import { useNavigation } from '@react-navigation/native';
-import Analytics from 'api/Analytics';
-import ApiV2HttpClient from 'api/ApiV2HttpClient';
-import { SectionHeader } from 'components/SectionHeader';
-import { FormStates } from 'constants/FormStates';
 import { Row, Spacer, Text, useExpoTheme, View } from 'expo-dev-client-components';
-import { Permission, useDeleteAccountPermissionsQuery } from 'graphql/types';
 import React, { useState } from 'react';
 import { ActivityIndicator } from 'react-native';
-import { useDispatch } from 'redux/Hooks';
-import SessionActions from 'redux/SessionActions';
-import { useAccountName } from 'utils/AccountNameContext';
-import { notEmpty } from 'utils/notEmpty';
 
+import { APIV2Client } from '../../../api/APIV2Client';
+import Analytics from '../../../api/Analytics';
+import { SectionHeader } from '../../../components/SectionHeader';
+import { FormStates } from '../../../constants/FormStates';
+import { Permission, useDeleteAccountPermissionsQuery } from '../../../graphql/types';
+import { useDispatch } from '../../../redux/Hooks';
+import SessionActions from '../../../redux/SessionActions';
+import { useAccountName } from '../../../utils/AccountNameContext';
+import { notEmpty } from '../../../utils/notEmpty';
 import { ConfirmationStep } from './ConfirmationStep';
 import { OTPStep } from './OTPStep';
 import { PasswordStep } from './PasswordStep';
@@ -28,7 +28,7 @@ export function DeleteAccountSection(props: Props) {
   const { data, loading } = useDeleteAccountPermissionsQuery();
   const apolloClient = useApolloClient();
   const navigation = useNavigation();
-  const apiV2Client = new ApiV2HttpClient();
+  const apiV2Client = new APIV2Client();
   const [formState, setFormState] = useState(FormStates.IDLE);
   const [formError, setFormError] = useState('');
   const secondFactorDevices = data?.me?.secondFactorDevices.filter(notEmpty);

@@ -1,4 +1,3 @@
-import { Button } from 'components/Button';
 import {
   useExpoTheme,
   View,
@@ -8,15 +7,16 @@ import {
   Spacer,
   scale,
 } from 'expo-dev-client-components';
+import React, { Fragment, useEffect, useState } from 'react';
+
+import { Button } from '../../../components/Button';
 import {
   SecondFactorMethod,
   UserSecondFactorDevice,
   useSecondFactorDevicesQuery,
   useSendSmsotpToSecondFactorDeviceMutation,
-} from 'graphql/types';
-import React, { Fragment, useEffect, useState } from 'react';
-import { notEmpty } from 'utils/notEmpty';
-
+} from '../../../graphql/types';
+import { notEmpty } from '../../../utils/notEmpty';
 import { SMSDevice } from './SMSDevice';
 
 export type PartialUserSecondFactorDevice = Partial<
