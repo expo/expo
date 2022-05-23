@@ -9,46 +9,44 @@ class ClipboardModuleSpec: ExpoSpec {
   override func spec() {
     let appContext = AppContext()
     let holder = ModuleHolder(appContext: appContext, module: ClipboardModule(appContext: appContext))
-    /**
-     * Base64-encoded PNG data - it's a 1x1 image (a black pixel), 8 bit depth
-     * the data has length of 68 bytes after decoding
-     */
-    let rawPngData = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII="
     
     func testModuleFunction<T>(_ functionName: String, args: [Any], _ block: @escaping (T?) -> ()) {
       waitUntil { done in
         holder.call(function: functionName, args: args) { result in
           let value = try! result.get()
-
-//          expect(value).notTo(beNil())
-//          expect(value).to(beAKindOf(T.self))
+          expect(value).to(beAKindOf(T?.self))
           block(value as? T)
           done()
         }
       }
     }
     
+    func expectModuleFunctionThrows<T>(_ functionName: String, args: [Any], exception: T.Type) where T: Exception {
+      waitUntil { done in
+        holder.call(function: functionName, args: args) { result in
+          expect(result).to(beFailure(exception: exception))
+          done()
+        }
+      }
+    }
+    
     beforeSuite {
-      // replace UIPasteboard.general getter with MockUIPasteboard instance
-      let originSelector = #selector(getter:UIPasteboard.general)
-      let swizzleSelector = #selector(getter:UIPasteboard.swizzledGeneralPasteboard)
-      let originMethod = class_getClassMethod(UIPasteboard.self, originSelector)
-      let swizzleMethod = class_getClassMethod(UIPasteboard.self, swizzleSelector)
-      method_exchangeImplementations(originMethod!, swizzleMethod!)
+     swizzleGeneralPasteboard()
     }
     
     // MARK: - Strings
     
     describe("getStringAsync") {
+      let function = "getStringAsync"
       it("returns plain text from the clipboard") {
         let expectedString = "hello"
         UIPasteboard.general.string = expectedString
 
-//        let options = GetStringOptions(preferredFormat: .plainText)
+        // let options = GetStringOptions(preferredFormat: .plainText)
         let options = [
           "preferredFormat": "plainText"
         ]
-        testModuleFunction("getStringAsync", args: [options]) { (result: String?) in
+        testModuleFunction(function, args: [options]) { (result: String?) in
           expect(result) == expectedString
         }
       }
@@ -59,11 +57,11 @@ class ClipboardModuleSpec: ExpoSpec {
           kUTTypeHTML as String: expectedHtml
         ]]
 
-//        let options = GetStringOptions(preferredFormat: .plainText)
+        // let options = GetStringOptions(preferredFormat: .html)
         let options = [
           "preferredFormat": "html"
         ]
-        testModuleFunction("getStringAsync", args: [options]) { (result: String?) in
+        testModuleFunction(function, args: [options]) { (result: String?) in
           expect(result) == expectedHtml
         }
       }
@@ -71,23 +69,24 @@ class ClipboardModuleSpec: ExpoSpec {
       it("returns empty string if no text in clipboard") {
         UIPasteboard.general.items = []
 
-//        let options = GetStringOptions(preferredFormat: .plainText)
         let options = [
           "preferredFormat": "plainText"
         ]
-        testModuleFunction("getStringAsync", args: [options]) { (result: String?) in
+        testModuleFunction(function, args: [options]) { (result: String?) in
           expect(result) == ""
         }
       }
     }
     
     describe("setStringAsync") {
+      let function = "setStringAsync"
+      
       it("copies string to clipboard") {
         let expectedString = "hello"
         let options = [
           "inputFormat": "plainText"
         ]
-        testModuleFunction("setStringAsync", args: [expectedString, options]) { (result: Bool?) in
+        testModuleFunction(function, args: [expectedString, options]) { (result: Bool?) in
           expect(result) == true
           expect(UIPasteboard.general.hasStrings) == true
           expect(UIPasteboard.general.string) == expectedString
@@ -99,7 +98,7 @@ class ClipboardModuleSpec: ExpoSpec {
         let options = [
           "inputFormat": "html"
         ]
-        testModuleFunction("setStringAsync", args: [expectedHtml, options]) { (result: Bool?) in
+        testModuleFunction(function, args: [expectedHtml, options]) { (result: Bool?) in
           let mockPasteboard = UIPasteboard.StaticVars.mockPastebaord
           expect(result) == true
           expect(mockPasteboard._items.count) == 3
@@ -111,10 +110,12 @@ class ClipboardModuleSpec: ExpoSpec {
     }
     
     describe("hasStringAsync") {
+      let function = "hasStringAsync"
+      
       it("returns true when clipboard contains a string") {
         UIPasteboard.general.string = "hello world"
         
-        testModuleFunction("hasStringAsync", args: []) { (result: Bool?) in
+        testModuleFunction(function, args: []) { (result: Bool?) in
           expect(result) == true
         }
       }
@@ -122,7 +123,7 @@ class ClipboardModuleSpec: ExpoSpec {
       it("returns false when there are no no items") {
         UIPasteboard.general.items = []
         
-        testModuleFunction("hasStringAsync", args: []) { (result: Bool?) in
+        testModuleFunction(function, args: []) { (result: Bool?) in
           expect(result) == false
         }
       }
@@ -130,37 +131,49 @@ class ClipboardModuleSpec: ExpoSpec {
       it("returns false when items are not strings") {
         UIPasteboard.general.image = UIImage()
         
-        testModuleFunction("hasStringAsync", args: []) { (result: Bool?) in
+        testModuleFunction(function, args: []) { (result: Bool?) in
           expect(result) == false
         }
       }
     }
     
-    
-    
     // MARK: - Images
+    
+    /**
+     * Base64-encoded PNG data - it's a 1x1 image (a black pixel), 8 bit depth
+     * the data has length of 68 bytes after decoding
+     */
+    let testImageBase64 = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII="
+    let testImage = UIImage(data: Data(base64Encoded: testImageBase64)!)!
     
     describe("setImageAsync") {
       it("copies image to clipboard") {
 
-        testModuleFunction("setImageAsync", args: [rawPngData]) { (_: Any?) in
+        testModuleFunction("setImageAsync", args: [testImageBase64]) { (_: Any?) in
           let pasteboardImgData = UIPasteboard.general.image?.pngData()?.base64EncodedString()
           expect(UIPasteboard.general.hasImages) == true
-          expect(pasteboardImgData?.prefix(10)) == rawPngData.prefix(10)
+          // compare first 10 characters only as UIImage can optimize the data so it differs
+          expect(pasteboardImgData?.prefix(10)) == testImageBase64.prefix(10)
         }
+      }
+      
+      it("throws when given invalid base64") {
+        let base64 = "invalid"
+        expectModuleFunctionThrows("setImageAsync", args: [base64], exception: InvalidImageException.self)
       }
     }
     
     describe("getImageAsync") {
+      let function = "getImageAsync"
+      
       it("returns PNG image from the clipboard") {
-        let expectedImg = UIImage(data: Data(base64Encoded: rawPngData)!)!
-        let expectedImgData = expectedImg.pngData()!.base64EncodedString()
-        UIPasteboard.general.image = expectedImg
+        let expectedImgData = testImage.pngData()!.base64EncodedString()
+        UIPasteboard.general.image = testImage
 
         let options = [
           "format": "png"
         ]
-        testModuleFunction("getImageAsync", args: [options]) { (result: [String: Any?]?) in
+        testModuleFunction(function, args: [options]) { (result: [String: Any?]?) in
           let imgData = result!["data"]! as? String?
           let imgSize = result!["size"]! as? [String: Any]
           expect(imgSize!["width"] as? CGFloat) == CGFloat(1)
@@ -170,14 +183,13 @@ class ClipboardModuleSpec: ExpoSpec {
       }
       
       it("returns JPEG image from the clipboard") {
-        let expectedImg = UIImage(data: Data(base64Encoded: rawPngData)!)!
-        let expectedImgData = expectedImg.jpegData(compressionQuality: 1.0)!.base64EncodedString()
-        UIPasteboard.general.image = expectedImg
+        let expectedImgData = testImage.jpegData(compressionQuality: 1.0)!.base64EncodedString()
+        UIPasteboard.general.image = testImage
 
         let options = [
           "format": "jpeg"
         ]
-        testModuleFunction("getImageAsync", args: [options]) { (result: [String: Any?]?) in
+        testModuleFunction(function, args: [options]) { (result: [String: Any?]?) in
           let imgData = result!["data"]! as? String?
           let imgSize = result!["size"]! as? [String: Any]
           expect(imgSize!["width"] as? CGFloat) == CGFloat(1)
@@ -186,23 +198,25 @@ class ClipboardModuleSpec: ExpoSpec {
         }
       }
 
-      it("returns nil if no text in clipboard") {
+      it("returns nil if no image in the clipboard") {
         UIPasteboard.general.items = []
 
         let options = [
           "imageFormat": "png"
         ]
-        testModuleFunction("getImageAsync", args: [options]) { (result: UIImage?) in
+        testModuleFunction(function, args: [options]) { (result: UIImage?) in
           expect(result).to(beNil())
         }
       }
     }
     
     describe("hasImageAsync") {
+      let function = "hasImageAsync"
+      
       it("returns true when there is image") {
         UIPasteboard.general.image = UIImage()
         
-        testModuleFunction("hasImageAsync", args: []) { (result: Bool?) in
+        testModuleFunction(function, args: []) { (result: Bool?) in
           expect(result) == true
         }
       }
@@ -210,7 +224,7 @@ class ClipboardModuleSpec: ExpoSpec {
       it("returns false when there are no no items") {
         UIPasteboard.general.items = []
         
-        testModuleFunction("hasImageAsync", args: []) { (result: Bool?) in
+        testModuleFunction(function, args: []) { (result: Bool?) in
           expect(result) == false
         }
       }
@@ -219,7 +233,7 @@ class ClipboardModuleSpec: ExpoSpec {
         UIPasteboard.general.items = []
         UIPasteboard.general.string = "not an image"
         
-        testModuleFunction("hasImageAsync", args: []) { (result: Bool?) in
+        testModuleFunction(function, args: []) { (result: Bool?) in
           expect(result) == false
         }
       }
@@ -228,7 +242,7 @@ class ClipboardModuleSpec: ExpoSpec {
     // MARK: - URLs
     
     describe("setUrlAsync") {
-      it("copies URL to clipboard") {
+      it("copies URL to the clipboard") {
         let urlString = "https://expo.dev"
         
         testModuleFunction("setUrlAsync", args: [urlString]) { (_: Any?) in
@@ -239,19 +253,21 @@ class ClipboardModuleSpec: ExpoSpec {
     }
     
     describe("getUrlAsync") {
+      let function = "getUrlAsync"
+      
       it("returns URL from the clipboard") {
         let expectedUrl = URL(string: "http://expo.dev")
         UIPasteboard.general.url = expectedUrl
 
-        testModuleFunction("getUrlAsync", args: []) { (result: String?) in
+        testModuleFunction(function, args: []) { (result: String?) in
           expect(result) == expectedUrl?.absoluteString
         }
       }
 
-      it("returns nil if no text in clipboard") {
+      it("returns nil if no URL in the clipboard") {
         UIPasteboard.general.items = []
 
-        testModuleFunction("getUrlAsync", args: []) { (result: String?) in
+        testModuleFunction(function, args: []) { (result: String?) in
           expect(result).to(beNil())
         }
       }
@@ -285,5 +301,18 @@ class ClipboardModuleSpec: ExpoSpec {
         }
       }
     }
+  }
+}
+
+// TODO: (barthap) Replace this with built-in beFailure() when upgraded to Nimble 10.0
+func beFailure<Success, Failure, T: Exception>(exception: T.Type) -> Predicate<Result<Success, Failure>> {
+  return Predicate.simple("be \(exception)") { actualExpression in
+    guard let actual = try actualExpression.evaluate(),
+          case let .failure(error) = actual,
+          (error as? Exception)?.rootCause is T
+    else {
+      return .doesNotMatch
+    }
+    return .matches
   }
 }
