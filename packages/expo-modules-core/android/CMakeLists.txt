@@ -100,6 +100,13 @@ find_library(
         NO_CMAKE_FIND_ROOT_PATH
 )
 
+find_library(
+        JSEXECUTOR_LIB
+        jscexecutor
+        PATHS ${LIBRN_DIR}
+        NO_CMAKE_FIND_ROOT_PATH
+)
+
 #reactnativejni
 
 # linking
@@ -137,6 +144,7 @@ else ()
             ${LOG_LIB}
             ${FBJNI_LIB}
             ${JSI_LIB}
+            ${JSEXECUTOR_LIB}
             ${REACT_NATIVE_JNI_LIB}
             ${FOLLY_JSON_LIB}
             ${REACT_NATIVE_MODULES_CORE}
