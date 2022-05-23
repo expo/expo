@@ -32,7 +32,8 @@ class DevLauncherDevSupportManager(
   devBundleDownloadListener,
   minNumShakes,
   customPackagerCommandHandlers
-), DevLauncherKoinComponent {
+),
+  DevLauncherKoinComponent {
   private val controller: DevLauncherControllerInterface by inject()
   override fun showNewJavaError(message: String?, e: Throwable) {
     if (!DevLauncherController.wasInitialized()) {

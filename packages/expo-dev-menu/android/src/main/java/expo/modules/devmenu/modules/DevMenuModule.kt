@@ -7,7 +7,6 @@ import com.facebook.react.bridge.ReactMethod
 import expo.modules.devmenu.DevMenuManager
 import kotlinx.coroutines.launch
 
-
 class DevMenuModule(reactContext: ReactApplicationContext) :
   ReactContextBaseJavaModule(reactContext) {
   override fun getName() = "ExpoDevMenu"
