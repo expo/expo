@@ -23,11 +23,13 @@ class DevLauncherModuleTest {
     val manifestURL = Uri.parse(urlString)
 
     val devLauncherController = mockk<DevLauncherControllerInterface>(relaxed = true)
-    DevLauncherKoinContext.app.koin.loadModules(listOf(
+    DevLauncherKoinContext.app.koin.loadModules(
+      listOf(
         module {
           single { devLauncherController }
         }
-    ))
+      )
+    )
     every { devLauncherController.manifestURL } returns manifestURL
 
     val reactApplicationContext = mockk<ReactApplicationContext>(relaxed = true)

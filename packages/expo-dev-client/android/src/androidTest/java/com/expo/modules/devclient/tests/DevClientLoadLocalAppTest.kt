@@ -67,7 +67,8 @@ internal class DevClientLoadLocalAppTest : DevLauncherKoinTest() {
           object : ReactPackage {
             override fun createNativeModules(reactContext: ReactApplicationContext) = listOf(DevClientTestExtension(reactContext))
             override fun createViewManagers(reactContext: ReactApplicationContext): List<ViewManager<View, ReactShadowNode<*>>> = emptyList()
-          })
+          }
+        )
       }
     }.also {
       reactNativeHostHolder = it
@@ -213,9 +214,12 @@ internal class DevClientLoadLocalAppTest : DevLauncherKoinTest() {
     launcherClass = DevClientBundledAppActivity::class.java
   ).setUpAndLaunch {
     it.onLauncherActivity { launcherActivity ->
-      it.launcherController().handleIntent(Intent().apply {
-        data = Uri.parse("https://expo-development-client?url=$appURL")
-      }, activityToBeInvalidated = launcherActivity)
+      it.launcherController().handleIntent(
+        Intent().apply {
+          data = Uri.parse("https://expo-development-client?url=$appURL")
+        },
+        activityToBeInvalidated = launcherActivity
+      )
     }
 
     Views.BundledApp.main.isDisplayed()
