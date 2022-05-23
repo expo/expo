@@ -4,7 +4,7 @@ const { buildAsync: buildAndroidAsync } = require('./build-android');
 const { buildAsync: buildIosAsync } = require('./build-ios');
 const { setupAsync } = require('./project');
 
-const repoRoot = process.env.EXPO_REPO_ROOT ?? process.env.GITHUB_WORKSPACE;
+const repoRoot = process.env.EXPO_REPO_ROOT;
 const artifactsDest = process.env.ARTIFACTS_DEST;
 
 const workingDir = path.resolve(repoRoot, '..');

@@ -74,6 +74,8 @@ jobs:
         run: yarn build:cli
       - name: 🔧 Install Expo CLI
         run: yarn global add expo-cli
+      - name: 🌳 Add EXPO_REPO_ROOT to environment
+        run: echo "EXPO_REPO_ROOT=$GITHUB_WORKSPACE" >> $GITHUB_ENV
       - name: 🌐 Get local IP address
         run: echo "UPDATES_HOST=$(ifconfig -l | xargs -n1 ipconfig getifaddr)" >> $GITHUB_ENV
       - name: 📦 Get artifacts path

@@ -15,7 +15,7 @@ async function setupAsync(workingDir, repoRoot, runtimeVersion) {
   packageJson = {
     ...packageJson,
     resolutions: {
-      ...(packageJson.resolutions ?? {}),
+      ...packageJson.resolutions,
       'expo-application': 'file:../expo/packages/expo-application',
       'expo-constants': 'file:../expo/packages/expo-constants',
       'expo-eas-client': 'file:../expo/packages/expo-eas-client',
@@ -55,14 +55,14 @@ async function setupAsync(workingDir, repoRoot, runtimeVersion) {
   appJson = {
     ...appJson,
     expo: {
-      ...(appJson.expo ?? {}),
+      ...appJson.expo,
       name: 'updates-e2e',
       runtimeVersion,
       plugins: ['expo-updates'],
-      android: { ...(appJson.android ?? {}), package: 'dev.expo.updatese2e' },
-      ios: { ...(appJson.ios ?? {}), bundleIdentifier: 'dev.expo.updatese2e' },
+      android: { ...appJson.android, package: 'dev.expo.updatese2e' },
+      ios: { ...appJson.ios, bundleIdentifier: 'dev.expo.updatese2e' },
       updates: {
-        ...(appJson.updates ?? {}),
+        ...appJson.updates,
         url: `http://${process.env.UPDATES_HOST}:${process.env.UPDATES_PORT}/update`,
       },
     },
@@ -82,7 +82,7 @@ async function setupAsync(workingDir, repoRoot, runtimeVersion) {
       '--certificate-validity-duration-years',
       '1',
       '--certificate-common-name',
-      '"E2E Test App"',
+      'E2E Test App',
     ],
     { cwd: projectRoot, stdio: 'inherit' }
   );
