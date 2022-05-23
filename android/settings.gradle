@@ -13,7 +13,7 @@ apply from: new File(["node", "--print", "require.resolve('expo/package.json')"]
 
 /* UNCOMMENT WHEN DISTRIBUTING
 
-includeBuild('../node_modules/react-native-gradle-plugin')
+includeBuild('../react-native-lab/react-native/packages/react-native-gradle-plugin/')
 
 useExpoModules([
     exclude: [
