@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:tools="http://schemas.android.com/tools">
+
+  <application
+    tools:replace="label"
+    android:label="ExpoModulesCoreTest">
+    <activity
+      android:name="androidx.appcompat.app.AppCompatActivity"
+      android:theme="@style/Theme.AppCompat"
+      android:exported="true" />
+    <activity
+      android:name="kotlin.activityresult.NoopActivity"
+      android:exported="true" />
+    <activity
+      android:name="kotlin.activityresult.activities.ImmediateVoidResultActivity"
+      android:exported="true" />
+  </application>
+
+</manifest>
