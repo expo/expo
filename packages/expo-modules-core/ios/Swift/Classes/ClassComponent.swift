@@ -14,9 +14,19 @@ public final class ClassComponent: ObjectDefinition {
    */
   let constructor: AnySyncFunctionComponent?
 
-  init(name: String, elements: [ClassComponentElement]) {
+  /**
+   A dynamic type for the associated object class.
+   */
+  let associatedType: AnyDynamicType?
+
+  init<AssociatedObject: ClassAssociatedObject>(
+    name: String,
+    associatedType: AssociatedObject.Type,
+    elements: [AnyClassComponentElement] = []
+  ) {
     self.name = name
     self.constructor = elements.first(where: isConstructor) as? AnySyncFunctionComponent
+    self.associatedType = ~AssociatedObject.self
 
     // Constructors can't be passed down to the object component
     // as we shouldn't override the default `<Class>.prototype.constructor`.
@@ -28,17 +38,22 @@ public final class ClassComponent: ObjectDefinition {
   // MARK: - JavaScriptObjectBuilder
 
   public override func build(inRuntime runtime: JavaScriptRuntime) -> JavaScriptObject {
-    let klass = runtime.createClass(name) { [weak self, weak runtime] caller, arguments in
+    let klass = runtime.createClass(name) { [weak self, weak runtime] this, arguments in
       guard let self = self, let runtime = runtime else {
         // TODO: Throw an exception? (@tsapeta)
         return
       }
       // The properties can't go into the prototype as they would be shared across all instances.
       // Instead, we decorate the instance object on initialization.
-      self.decorateWithProperties(runtime: runtime, object: caller)
+      self.decorateWithProperties(runtime: runtime, object: this)
 
       // Call the native constructor when defined.
-      let _ = try? self.constructor?.call(args: arguments)
+      let result = try? self.constructor?.call(by: this, withArguments: arguments)
+
+      // Register the shared object if returned by the constructor.
+      if let result = result as? SharedObject {
+        SharedObjectRegistry.add(native: result, javaScript: this)
+      }
     }
     decorate(object: klass, inRuntime: runtime)
     return klass
@@ -53,6 +68,17 @@ public final class ClassComponent: ObjectDefinition {
     decorateWithClasses(runtime: runtime, object: prototype)
   }
 }
+
+// MARK: - ClassAssociatedObject
+
+/**
+ A protocol for types that can be used an associated type of the `ClassComponent`.
+ */
+internal protocol ClassAssociatedObject {}
+
+// Basically we only need these two
+extension JavaScriptObject: ClassAssociatedObject {}
+extension SharedObject: ClassAssociatedObject {}
 
 // MARK: - Privates
 

@@ -3,20 +3,22 @@
 /**
  Type-erased protocol for synchronous functions.
  */
-public protocol AnySyncFunctionComponent: AnyFunction {
+internal protocol AnySyncFunctionComponent: AnyFunction {
   /**
    Calls the function synchronously with given arguments.
    - Parameters:
+     - owner: An object that calls this function. If the `takesOwner` property is true
+       and type of the first argument matches the owner type, it's being passed as the argument.
      - args: An array of arguments to pass to the function. The arguments must be of the same type as in the underlying closure.
    - Returns: A value returned by the called function when succeeded or an error when it failed.
    */
-  func call(args: [Any]) throws -> Any
+  func call(by owner: AnyObject?, withArguments args: [Any]) throws -> Any
 }
 
 /**
  Represents a function that can only be called synchronously.
  */
-internal final class SyncFunctionComponent<Args, ReturnType>: AnySyncFunctionComponent {
+public final class SyncFunctionComponent<Args, FirstArgType, ReturnType>: AnySyncFunctionComponent {
   typealias ClosureType = (Args) throws -> ReturnType
 
   /**
@@ -24,9 +26,14 @@ internal final class SyncFunctionComponent<Args, ReturnType>: AnySyncFunctionCom
    */
   let body: ClosureType
 
-  init(_ name: String, dynamicArgumentTypes argTypes: [AnyDynamicType], _ body: @escaping ClosureType) {
+  init(
+    _ name: String,
+    firstArgType: FirstArgType.Type,
+    dynamicArgumentTypes: [AnyDynamicType],
+    _ body: @escaping ClosureType
+  ) {
     self.name = name
-    self.dynamicArgumentTypes = argTypes
+    self.dynamicArgumentTypes = dynamicArgumentTypes
     self.body = body
   }
 
@@ -37,12 +44,14 @@ internal final class SyncFunctionComponent<Args, ReturnType>: AnySyncFunctionCom
   let dynamicArgumentTypes: [AnyDynamicType]
 
   var argumentsCount: Int {
-    return dynamicArgumentTypes.count
+    return dynamicArgumentTypes.count - (takesOwner ? 1 : 0)
   }
 
-  func call(args: [Any], callback: (FunctionCallResult) -> ()) {
+  var takesOwner: Bool = false
+
+  func call(by owner: AnyObject?, withArguments args: [Any], callback: @escaping (FunctionCallResult) -> ()) {
     do {
-      let result = try call(args: args)
+      let result = try call(by: owner, withArguments: args)
       callback(.success(result))
     } catch let error as Exception {
       callback(.failure(error))
@@ -53,9 +62,13 @@ internal final class SyncFunctionComponent<Args, ReturnType>: AnySyncFunctionCom
 
   // MARK: - AnySyncFunctionComponent
 
-  func call(args: [Any]) throws -> Any {
+  func call(by owner: AnyObject?, withArguments args: [Any]) throws -> Any {
     do {
-      let arguments = try castArguments(args, toTypes: dynamicArgumentTypes)
+      let arguments = concat(
+        arguments: try cast(arguments: args, forFunction: self),
+        withOwner: owner,
+        forFunction: self
+      )
       let argumentsTuple = try Conversions.toTuple(arguments) as! Args
       return try body(argumentsTuple)
     } catch let error as Exception {
@@ -68,12 +81,12 @@ internal final class SyncFunctionComponent<Args, ReturnType>: AnySyncFunctionCom
   // MARK: - JavaScriptObjectBuilder
 
   func build(inRuntime runtime: JavaScriptRuntime) -> JavaScriptObject {
-    return runtime.createSyncFunction(name, argsCount: argumentsCount) { [weak self, name] args in
+    return runtime.createSyncFunction(name, argsCount: argumentsCount) { [weak self, name] this, args in
       guard let self = self else {
         return NativeFunctionUnavailableException(name)
       }
       do {
-        return try self.call(args: args)
+        return try self.call(by: this, withArguments: args)
       } catch {
         return error
       }
@@ -87,9 +100,10 @@ internal final class SyncFunctionComponent<Args, ReturnType>: AnySyncFunctionCom
 public func Function<R>(
   _ name: String,
   _ closure: @escaping () throws -> R
-) -> AnyFunction {
+) -> SyncFunctionComponent<(), Void, R> {
   return SyncFunctionComponent(
     name,
+    firstArgType: Void.self,
     dynamicArgumentTypes: [],
     closure
   )
@@ -101,9 +115,10 @@ public func Function<R>(
 public func Function<R, A0: AnyArgument>(
   _ name: String,
   _ closure: @escaping (A0) throws -> R
-) -> AnyFunction {
+) -> SyncFunctionComponent<(A0), A0, R> {
   return SyncFunctionComponent(
     name,
+    firstArgType: A0.self,
     dynamicArgumentTypes: [~A0.self],
     closure
   )
@@ -115,9 +130,10 @@ public func Function<R, A0: AnyArgument>(
 public func Function<R, A0: AnyArgument, A1: AnyArgument>(
   _ name: String,
   _ closure: @escaping (A0, A1) throws -> R
-) -> AnyFunction {
+) -> SyncFunctionComponent<(A0, A1), A0, R> {
   return SyncFunctionComponent(
     name,
+    firstArgType: A0.self,
     dynamicArgumentTypes: [~A0.self, ~A1.self],
     closure
   )
@@ -129,9 +145,10 @@ public func Function<R, A0: AnyArgument, A1: AnyArgument>(
 public func Function<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument>(
   _ name: String,
   _ closure: @escaping (A0, A1, A2) throws -> R
-) -> AnyFunction {
+) -> SyncFunctionComponent<(A0, A1, A2), A0, R> {
   return SyncFunctionComponent(
     name,
+    firstArgType: A0.self,
     dynamicArgumentTypes: [
       ~A0.self,
       ~A1.self,
@@ -147,9 +164,10 @@ public func Function<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument>(
 public func Function<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3: AnyArgument>(
   _ name: String,
   _ closure: @escaping (A0, A1, A2, A3) throws -> R
-) -> AnyFunction {
+) -> SyncFunctionComponent<(A0, A1, A2, A3), A0, R> {
   return SyncFunctionComponent(
     name,
+    firstArgType: A0.self,
     dynamicArgumentTypes: [
       ~A0.self,
       ~A1.self,
@@ -166,9 +184,10 @@ public func Function<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3: A
 public func Function<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3: AnyArgument, A4: AnyArgument>(
   _ name: String,
   _ closure: @escaping (A0, A1, A2, A3, A4) throws -> R
-) -> AnyFunction {
+) -> SyncFunctionComponent<(A0, A1, A2, A3, A4), A0, R> {
   return SyncFunctionComponent(
     name,
+    firstArgType: A0.self,
     dynamicArgumentTypes: [
       ~A0.self,
       ~A1.self,
@@ -186,9 +205,10 @@ public func Function<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3: A
 public func Function<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3: AnyArgument, A4: AnyArgument, A5: AnyArgument>(
   _ name: String,
   _ closure: @escaping (A0, A1, A2, A3, A4, A5) throws -> R
-) -> AnyFunction {
+) -> SyncFunctionComponent<(A0, A1, A2, A3, A4, A5), A0, R> {
   return SyncFunctionComponent(
     name,
+    firstArgType: A0.self,
     dynamicArgumentTypes: [
       ~A0.self,
       ~A1.self,
@@ -207,9 +227,10 @@ public func Function<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3: A
 public func Function<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3: AnyArgument, A4: AnyArgument, A5: AnyArgument, A6: AnyArgument>(
   _ name: String,
   _ closure: @escaping (A0, A1, A2, A3, A4, A5, A6) throws -> R
-) -> AnyFunction {
+) -> SyncFunctionComponent<(A0, A1, A2, A3, A4, A5, A6), A0, R> {
   return SyncFunctionComponent(
     name,
+    firstArgType: A0.self,
     dynamicArgumentTypes: [
       ~A0.self,
       ~A1.self,
@@ -229,9 +250,10 @@ public func Function<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3: A
 public func Function<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3: AnyArgument, A4: AnyArgument, A5: AnyArgument, A6: AnyArgument, A7: AnyArgument>(
   _ name: String,
   _ closure: @escaping (A0, A1, A2, A3, A4, A5, A6, A7) throws -> R
-) -> AnyFunction {
+) -> SyncFunctionComponent<(A0, A1, A2, A3, A4, A5, A6, A7), A0, R> {
   return SyncFunctionComponent(
     name,
+    firstArgType: A0.self,
     dynamicArgumentTypes: [
       ~A0.self,
       ~A1.self,

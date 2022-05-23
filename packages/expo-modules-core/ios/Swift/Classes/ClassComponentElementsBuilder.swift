@@ -1,13 +1,34 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
-#if swift(>=5.4)
 /**
  A result builder that captures the ``ClassComponent`` elements such as functions, constants and properties.
  */
 @resultBuilder
-public struct ClassComponentElementsBuilder {
-  public static func buildBlock(_ elements: ClassComponentElement...) -> [ClassComponentElement] {
+public struct ClassComponentElementsBuilder<OwnerType> {
+  public static func buildBlock(_ elements: AnyClassComponentElement...) -> [AnyClassComponentElement] {
     return elements
   }
+
+  /**
+   Default implementation without any constraints that just returns type-erased element.
+   */
+  static func buildExpression<ElementType: ClassComponentElement>(
+    _ element: ElementType
+  ) -> AnyClassComponentElement {
+    return element
+  }
+
+  /**
+   In case the element's owner type matches builder's generic type,
+   we need to instruct the function to pass `this` to the closure
+   as the first argument and deduct it from `argumentsCount`.
+   */
+  static func buildExpression<ElementType: ClassComponentElement>(
+    _ element: ElementType
+  ) -> AnyClassComponentElement where ElementType.OwnerType == OwnerType {
+    if var function = element as? AnyFunction {
+      function.takesOwner = true
+    }
+    return element
+  }
 }
-#endif
