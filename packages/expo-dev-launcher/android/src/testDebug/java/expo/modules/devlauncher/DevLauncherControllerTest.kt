@@ -4,8 +4,6 @@ import android.content.Intent
 import android.net.Uri
 import androidx.test.core.app.ApplicationProvider
 import com.facebook.react.ReactNativeHost
-import com.google.common.truth.Truth
-import expo.interfaces.devmenu.DevMenuManagerInterface
 import expo.modules.devlauncher.koin.DevLauncherKoinContext
 import expo.modules.devlauncher.tests.DevLauncherTestInterceptor
 import expo.modules.devmenu.DevMenuManager
@@ -37,10 +35,13 @@ class DevLauncherControllerTest {
     val mockDevMenuManager = mockk<DevMenuManager>(relaxed = true)
     controller.devMenuManager = mockDevMenuManager
 
-    controller.handleIntent(Intent().apply {
-      data = Uri.parse("https://expo-development-client")
-      putExtra("EXDevMenuDisableAutoLaunch", true)
-    }, null)
+    controller.handleIntent(
+      Intent().apply {
+        data = Uri.parse("https://expo-development-client")
+        putExtra("EXDevMenuDisableAutoLaunch", true)
+      },
+      null
+    )
 
     verify {
       mockDevMenuManager.setCanLaunchDevMenuOnStart(false)

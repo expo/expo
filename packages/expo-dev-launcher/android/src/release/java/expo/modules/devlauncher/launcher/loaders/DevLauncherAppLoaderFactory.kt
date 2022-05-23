@@ -1,8 +1,5 @@
 package expo.modules.devlauncher.launcher.loaders
 
-interface DevLauncherAppLoaderFactoryInterface {
-}
+interface DevLauncherAppLoaderFactoryInterface
 
-class DevLauncherAppLoaderFactory : DevLauncherAppLoaderFactoryInterface {
-
-}
+class DevLauncherAppLoaderFactory : DevLauncherAppLoaderFactoryInterface

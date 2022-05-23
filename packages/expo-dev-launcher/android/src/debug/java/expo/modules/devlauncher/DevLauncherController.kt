@@ -55,8 +55,8 @@ private const val NEW_ACTIVITY_FLAGS = Intent.FLAG_ACTIVITY_NEW_TASK or
   Intent.FLAG_ACTIVITY_CLEAR_TASK or
   Intent.FLAG_ACTIVITY_NO_ANIMATION
 
-class DevLauncherController private constructor()
-  : DevLauncherKoinComponent, DevLauncherControllerInterface {
+class DevLauncherController private constructor() :
+  DevLauncherKoinComponent, DevLauncherControllerInterface {
   private val context: Context by lazy {
     DevLauncherKoinContext.app.koin.get()
   }
@@ -69,9 +69,13 @@ class DevLauncherController private constructor()
   var devMenuManager: DevMenuManager = DevMenuManager
   override var updatesInterface: UpdatesInterface?
     get() = internalUpdatesInterface
-    set(value) = DevLauncherKoinContext.app.koin.loadModules(listOf(module {
-      single { value }
-    }))
+    set(value) = DevLauncherKoinContext.app.koin.loadModules(
+      listOf(
+        module {
+          single { value }
+        }
+      )
+    )
   override val coroutineScope = CoroutineScope(Dispatchers.Default)
 
   override val devClientHost = DevLauncherClientHost((context as Application), DEV_LAUNCHER_HOST)
@@ -360,12 +364,15 @@ class DevLauncherController private constructor()
       if (!testInterceptor.allowReinitialization()) {
         check(!wasInitialized()) { "DevelopmentClientController was initialized." }
       }
-      DevLauncherKoinContext.app.koin.loadModules(listOf(
-        module {
-          single { context }
-          single { appHost }
-        }
-      ), allowOverride = true)
+      DevLauncherKoinContext.app.koin.loadModules(
+        listOf(
+          module {
+            single { context }
+            single { appHost }
+          }
+        ),
+        allowOverride = true
+      )
 
       val controller = DevLauncherController()
       DevLauncherKoinContext.app.koin.declare<DevLauncherControllerInterface>(controller)

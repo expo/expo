@@ -8,17 +8,17 @@ import androidx.core.graphics.ColorUtils
 
 class DevLauncherSplashScreenProvider {
   fun attachSplashScreenViewAsync(activity: Activity): DevLauncherSplashScreen? {
-      val contentView = activity.findViewById<ViewGroup>(android.R.id.content)
-        ?: return null
-      val backgroundColor = getBackgroundColor(activity)
-      val splashScreenView = DevLauncherSplashScreen(
-        activity,
-        getTextColorForBackgroundColor(backgroundColor)
-      )
-      splashScreenView.setBackgroundColor(backgroundColor)
-      contentView.addView(splashScreenView)
+    val contentView = activity.findViewById<ViewGroup>(android.R.id.content)
+      ?: return null
+    val backgroundColor = getBackgroundColor(activity)
+    val splashScreenView = DevLauncherSplashScreen(
+      activity,
+      getTextColorForBackgroundColor(backgroundColor)
+    )
+    splashScreenView.setBackgroundColor(backgroundColor)
+    contentView.addView(splashScreenView)
 
-      return splashScreenView
+    return splashScreenView
   }
 
   private fun getBackgroundColor(context: Context): Int {

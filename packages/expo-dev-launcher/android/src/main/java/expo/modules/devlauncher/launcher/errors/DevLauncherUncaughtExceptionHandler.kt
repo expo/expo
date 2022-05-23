@@ -47,7 +47,6 @@ class DevLauncherUncaughtExceptionHandler(
 
       override fun onActivityDestroyed(activity: Activity) = Unit
     })
-
   }
 
   override fun uncaughtException(thread: Thread, exception: Throwable) {

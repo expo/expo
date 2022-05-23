@@ -11,7 +11,7 @@ import expo.modules.devlauncher.databinding.ErrorConsoleListItemBinding
 class DevLauncherStackAdapter(
   val context: Context,
   var data: DevLauncherAppError?
-): BaseAdapter() {
+) : BaseAdapter() {
   override fun getCount(): Int {
     return data?.error?.stackTrace?.size ?: 0
   }

@@ -12,10 +12,13 @@ internal class KeyValueCachedPropertyProxyTest {
   @Test
   fun `checks if loader function is called only once`() {
     var counter = 0
-    val cache = KeyValueCachedPropertyProxy({
-      counter++
-      return@KeyValueCachedPropertyProxy 999
-    }, WeakHashMap<Int, Int>())
+    val cache = KeyValueCachedPropertyProxy(
+      {
+        counter++
+        return@KeyValueCachedPropertyProxy 999
+      },
+      WeakHashMap<Int, Int>()
+    )
 
     val result = cache[1]
     val result2 = cache[1]
@@ -28,9 +31,12 @@ internal class KeyValueCachedPropertyProxyTest {
   @Test
   fun `checks if container is populated with data`() {
     val container = WeakHashMap<Int, Int>()
-    val cache = KeyValueCachedPropertyProxy({ key ->
-      return@KeyValueCachedPropertyProxy key
-    }, container)
+    val cache = KeyValueCachedPropertyProxy(
+      { key ->
+        return@KeyValueCachedPropertyProxy key
+      },
+      container
+    )
 
     cache[1]
     cache[2]

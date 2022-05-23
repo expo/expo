@@ -44,7 +44,6 @@ fun post(url: Uri, requestBody: RequestBody, vararg headers: Pair<String, String
     .apply {
       headers.forEach {
         addHeader(it.first, it.second)
-
       }
     }
     .build()

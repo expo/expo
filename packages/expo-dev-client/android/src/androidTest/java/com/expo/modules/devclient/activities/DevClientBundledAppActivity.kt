@@ -17,16 +17,18 @@ internal class DevClientBundledAppActivity : DevMenuAwareReactActivity() {
 
   override fun createReactActivityDelegate(): ReactActivityDelegate {
     val activity = this
-    return wrapReactActivityDelegate(this, object : DevLauncherReactActivityDelegateSupplier {
-      override fun get(): ReactActivityDelegate {
-        return object : ReactActivityDelegate(activity, mainComponentName) {
-          override fun getReactNativeHost(): ReactNativeHost {
-            return reactNativeHostHolder!!
+    return wrapReactActivityDelegate(
+      this,
+      object : DevLauncherReactActivityDelegateSupplier {
+        override fun get(): ReactActivityDelegate {
+          return object : ReactActivityDelegate(activity, mainComponentName) {
+            override fun getReactNativeHost(): ReactNativeHost {
+              return reactNativeHostHolder!!
+            }
           }
-
         }
       }
-    })
+    )
   }
 
   override fun onNewIntent(intent: Intent?) {

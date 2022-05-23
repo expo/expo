@@ -73,4 +73,3 @@ class DevLauncherAppLoaderFactory : DevLauncherKoinComponent, DevLauncherAppLoad
     return block()
   }
 }
-

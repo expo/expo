@@ -15,24 +15,25 @@ import expo.modules.devlauncher.launcher.errors.DevLauncherErrorActivity
 import org.koin.core.component.inject
 
 class DevLauncherDevSupportManager(
-    applicationContext: Context?,
-    val reactInstanceManagerHelper: ReactInstanceDevHelper?,
-    packagerPathForJSBundleName: String?,
-    enableOnCreate: Boolean,
-    redBoxHandler: RedBoxHandler?,
-    devBundleDownloadListener: DevBundleDownloadListener?,
-    minNumShakes: Int,
-    customPackagerCommandHandlers: MutableMap<String, RequestHandler>?
+  applicationContext: Context?,
+  val reactInstanceManagerHelper: ReactInstanceDevHelper?,
+  packagerPathForJSBundleName: String?,
+  enableOnCreate: Boolean,
+  redBoxHandler: RedBoxHandler?,
+  devBundleDownloadListener: DevBundleDownloadListener?,
+  minNumShakes: Int,
+  customPackagerCommandHandlers: MutableMap<String, RequestHandler>?
 ) : DevSupportManagerBase(
-    applicationContext,
-    reactInstanceManagerHelper,
-    packagerPathForJSBundleName,
-    enableOnCreate,
-    redBoxHandler,
-    devBundleDownloadListener,
-    minNumShakes,
-    customPackagerCommandHandlers
-), DevLauncherKoinComponent {
+  applicationContext,
+  reactInstanceManagerHelper,
+  packagerPathForJSBundleName,
+  enableOnCreate,
+  redBoxHandler,
+  devBundleDownloadListener,
+  minNumShakes,
+  customPackagerCommandHandlers
+),
+  DevLauncherKoinComponent {
   private val controller: DevLauncherControllerInterface by inject()
   override fun showNewJavaError(message: String?, e: Throwable) {
     if (!DevLauncherController.wasInitialized()) {

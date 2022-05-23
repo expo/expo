@@ -33,11 +33,13 @@ class DevLauncherExpoActivityConfigurator(
     val color = Color.parseColor(manifest.getPrimaryColor())
     val icon = BitmapFactory.decodeResource(context.resources, context.applicationInfo.icon)
 
-    activity.setTaskDescription(ActivityManager.TaskDescription(
-      manifest.getName(),
-      icon,
-      color
-    ))
+    activity.setTaskDescription(
+      ActivityManager.TaskDescription(
+        manifest.getName(),
+        icon,
+        color
+      )
+    )
   }
 
   fun applyOrientation(activity: ReactActivity) {
@@ -131,7 +133,8 @@ class DevLauncherExpoActivityConfigurator(
           defaultInsets.systemWindowInsetLeft,
           0,
           defaultInsets.systemWindowInsetRight,
-          defaultInsets.systemWindowInsetBottom)
+          defaultInsets.systemWindowInsetBottom
+        )
       }
     } else {
       decorView.setOnApplyWindowInsetsListener(null)

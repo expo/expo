@@ -13,8 +13,8 @@ import kotlinx.coroutines.launch
 import org.koin.core.component.inject
 import java.lang.ref.WeakReference
 
-class DevLauncherErrorActivity
-  : FragmentActivity(), DevLauncherKoinComponent {
+class DevLauncherErrorActivity :
+  FragmentActivity(), DevLauncherKoinComponent {
 
   private val controller: DevLauncherControllerInterface by inject()
   private lateinit var binding: ErrorFragmentBinding
@@ -53,7 +53,6 @@ class DevLauncherErrorActivity
       adapter.notifyDataSetChanged()
     }
     binding.errorDetails.text = error.message ?: "Unknown error"
-
   }
 
   private fun launchHome() {
@@ -126,9 +125,10 @@ class DevLauncherErrorActivity
 
       context.startActivity(
         Intent(context, DevLauncherErrorActivity::class.java).apply {
-          addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or
-            Intent.FLAG_ACTIVITY_CLEAR_TASK or
-            Intent.FLAG_ACTIVITY_NO_ANIMATION
+          addFlags(
+            Intent.FLAG_ACTIVITY_NEW_TASK or
+              Intent.FLAG_ACTIVITY_CLEAR_TASK or
+              Intent.FLAG_ACTIVITY_NO_ANIMATION
           )
         }
       )
