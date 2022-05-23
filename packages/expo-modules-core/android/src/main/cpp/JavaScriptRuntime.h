@@ -21,7 +21,7 @@ namespace react = facebook::react;
  *
  * Instances of this class should be managed using a shared smart pointer.
  * To pass runtime information to all of `JavaScriptValue` and `JavaScriptObject` we use `weak_from_this()`
- * that requires that object is hold via smart pointer. Otherwise, `weak_from_this()` returns `nullptr`.
+ * that requires that the object is held via a smart pointer. Otherwise, `weak_from_this()` returns `nullptr`.
  */
 class JavaScriptRuntime : public std::enable_shared_from_this<JavaScriptRuntime> {
 public:

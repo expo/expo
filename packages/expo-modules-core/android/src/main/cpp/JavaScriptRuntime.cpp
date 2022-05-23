@@ -34,7 +34,7 @@ JavaScriptRuntime::JavaScriptRuntime(
   std::shared_ptr<react::CallInvoker> nativeInvoker
 ) : jsInvoker(std::move(jsInvoker)), nativeInvoker(std::move(nativeInvoker)) {
   // Creating a shared pointer that points to the runtime but doesn't own it, thus doesn't release it.
-  // In this code flow, the runtime should be owned by something else like the RCTBridge.
+  // In this code flow, the runtime should be owned by something else like the CatalystInstance.
   // See explanation for constructor (8): https://en.cppreference.com/w/cpp/memory/shared_ptr/shared_ptr
   this->runtime = std::shared_ptr<jsi::Runtime>(std::shared_ptr<jsi::Runtime>(), runtime);
 }

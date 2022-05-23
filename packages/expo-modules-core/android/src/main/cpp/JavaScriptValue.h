@@ -16,7 +16,7 @@ namespace expo {
 class JavaScriptRuntime;
 
 /**
- * Represents any JavaScript value. Its purpose is to exposes `jsi::Value` API back to Kotlin.
+ * Represents any JavaScript value. Its purpose is to expose the `jsi::Value` API back to Kotlin.
  */
 class JavaScriptValue : public jni::HybridClass<JavaScriptValue> {
 public:

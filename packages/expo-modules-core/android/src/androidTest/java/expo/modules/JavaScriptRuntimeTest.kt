@@ -18,28 +18,17 @@ class JavaScriptRuntimeTest {
     }
   }
 
-  @Test
+  @Test(expected = JavaScriptEvaluateException::class)
   fun evaluate_should_throw_evaluate_exception() {
-    try {
-      jsiInterop.evaluateScript("'")
-    } catch (e: Throwable) {
-      Truth.assertThat(e).isInstanceOf(JavaScriptEvaluateException::class.java)
-      return
-    }
-
-    Assert.fail("Should throw")
+    jsiInterop.evaluateScript("'")
   }
 
   @Test
   fun evaluate_should_throw_evaluate_exception_with_stack() {
-    try {
+    val exception = Assert.assertThrows(JavaScriptEvaluateException::class.java) {
       jsiInterop.evaluateScript("function x() { console.log(10); }; x();")
-    } catch (e: Throwable) {
-      Truth.assertThat(e).isInstanceOf(JavaScriptEvaluateException::class.java)
-      Truth.assertThat((e as JavaScriptEvaluateException).jsStack).isNotEmpty()
-      return
     }
 
-    Assert.fail("Should throw")
+    Truth.assertThat(exception.jsStack).isNotEmpty()
   }
 }

@@ -18,17 +18,30 @@ class JSIInteropModuleRegistry(appContext: AppContext) {
 
   private external fun initHybrid(): HybridData
 
+  /**
+   * Initializes the `ExpoModulesHostObject` and adds it to the global object.
+   */
   external fun installJSI(
     jsRuntimePointer: Long,
     jsInvokerHolder: CallInvokerHolderImpl,
     nativeInvokerHolder: CallInvokerHolderImpl
   )
 
+  /**
+   * Initializes the test runtime. Shouldn't be used in the production.
+   */
   external fun installJSIForTests()
 
+  /**
+   * Evaluates given JavaScript source code.
+   * @throws JavaScriptEvaluateException if the input format is unknown or evaluation causes an error
+   */
   @Throws(JavaScriptEvaluateException::class)
   external fun evaluateScript(script: String): JavaScriptValue
 
+  /**
+   * Returns the runtime global object
+   */
   external fun global(): JavaScriptObject
 
   /**

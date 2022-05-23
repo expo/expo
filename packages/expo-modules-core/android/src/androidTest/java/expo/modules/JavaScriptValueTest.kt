@@ -61,6 +61,5 @@ class JavaScriptValueTest {
     val properties = jsObject.getPropertyNames()
     Truth.assertThat(properties).hasLength(1)
     Truth.assertThat(properties).isEqualTo(arrayOf("p1"))
-
   }
 }
