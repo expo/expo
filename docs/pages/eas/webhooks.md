@@ -65,7 +65,6 @@ The build webhook payload looks something like this:
       "dev_client": false,
       "project_id": "bc0a82de-65a5-4497-ad86-54ff1f53edf7",
       "tracking_id": "a3fdefa7-d129-42f2-9432-912050ab0f10",
-      "account_name": "dsokal",
       "project_type": "managed",
       "dev_client_version": "0.6.2"
     },
