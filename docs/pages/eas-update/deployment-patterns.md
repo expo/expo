@@ -13,16 +13,18 @@ Depending on your project, you'll have some tolerance for how "fast" and how "sa
 There are three parts to consider when designing a EAS Update deployment process:
 
 1. Creating builds
-    a. We can create builds for production use only.
-    b. We can create builds for production use and separate builds for pre-production change testing.
+
+   - (a) We can create builds for production use only.
+   - (b) We can create builds for production use and separate builds for pre-production change testing.
+
 2. Testing changes
-    a. We can test changes with TestFlight and Play Store Internal Track.
-    b. We can test changes with an internal distribution build.
-    c. We can test changes with Expo Go or a development app.
+   - (a) We can test changes with TestFlight and Play Store Internal Track.
+   - (b) We can test changes with an internal distribution build.
+   - (c) We can test changes with Expo Go or a development app.
 3. Publishing updates
-    a. We can publish updates to a single branch.
-    b. We can create update branches that are environment-based, like "production" and "staging".
-    c. We can create update branches that are version-based, like "version-1.0", which enables us to promote updates from one channel to another.
+   - (a) We can publish updates to a single branch.
+   - (b) We can create update branches that are environment-based, like "production" and "staging".
+   - (c) We can create update branches that are version-based, like "version-1.0", which enables us to promote updates from one channel to another.
 
 We can mix and match the parts above to create a process that is the right balance of cadence and safety for our team and users.
 
