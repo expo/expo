@@ -12,7 +12,7 @@ import expo.modules.kotlin.jni.JSIInteropModuleRegistry
 class TestRunner : AndroidJUnitRunner() {
   override fun newApplication(cl: ClassLoader?, className: String?, context: Context?): Application {
     // Loads libs like hermes
-    SoLoader.init(context,  /* native exopackage */false)
+    SoLoader.init(context, /* native exopackage */false)
     // Using `JSIInteropModuleRegistry.Companion` ensures that static libs will be loaded.
     JSIInteropModuleRegistry.Companion
 

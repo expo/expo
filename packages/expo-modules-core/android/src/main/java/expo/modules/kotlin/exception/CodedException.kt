@@ -159,7 +159,9 @@ internal class CollectionElementCastException(
 class JavaScriptEvaluateException(
   message: String,
   val jsStack: String
-) : CodedException(message = """
+) : CodedException(
+  message = """
   Cannot evaluate JavaScript code: $message.
   $jsStack
-""".trimIndent())
+  """.trimIndent()
+)
