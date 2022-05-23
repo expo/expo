@@ -22,11 +22,13 @@ export var CryptoDigestAlgorithm;
     CryptoDigestAlgorithm["SHA512"] = "SHA-512";
     /**
      * `128` bits.
+     * @platform android
      * @platform ios
      */
     CryptoDigestAlgorithm["MD2"] = "MD2";
     /**
      * `128` bits.
+     * @platform android
      * @platform ios
      */
     CryptoDigestAlgorithm["MD4"] = "MD4";
