@@ -69,10 +69,14 @@ def reactNativeArchitectures() {
 }
 
 def FOR_HERMES = false
-def HERMES_DIR = ""
+def HERMES_DIR = new File(["node", "--print", "require.resolve('hermes-engine/package.json')"].execute(null, rootDir).text.trim()).parent
 if (findProject(":app")) {
-  FOR_HERMES = project(":app").ext.react.enableHermes
-  HERMES_DIR = new File(["node", "--print", "require.resolve('hermes-engine/package.json')"].execute(null, rootDir).text.trim()).parent
+  def appProjectExt = project(":app").ext
+  if (appProjectExt.has("react")) {
+    FOR_HERMES = project(":app").ext.react.enableHermes
+  } else {
+    FOR_HERMES = (findProperty('expo.jsEngine') ?: "jsc") == "hermes"
+  }
 } else {
   FOR_HERMES = (findProperty('expo.jsEngine') ?: "jsc") == "hermes"
 }
