@@ -91,10 +91,8 @@ using namespace facebook;
     std::shared_ptr<react::CallInvoker> callInvoker,
     EXJavaScriptValue * _Nonnull thisValue,
     NSArray<EXJavaScriptValue *> * _Nonnull arguments) {
-    @autoreleasepool {
       return expo::convertObjCObjectToJSIValue(runtime, block(thisValue, arguments));
-    }
-  };
+    };
   return [self createHostFunction:name argsCount:argsCount block:hostFunctionBlock];
 }
 
@@ -107,19 +105,19 @@ using namespace facebook;
     std::shared_ptr<react::CallInvoker> callInvoker,
     EXJavaScriptValue * _Nonnull thisValue,
     NSArray<EXJavaScriptValue *> * _Nonnull arguments) {
-    if (!callInvoker) {
-      // In mocked environment the call invoker may be null so it's not supported to call async functions.
-      // Testing async functions is a bit more complicated anyway. See `init` description for more.
-      throw jsi::JSError(runtime, "Calling async functions is not supported when the call invoker is unavailable");
-    }
-    // The function that is invoked as a setup of the EXJavaScript `Promise`.
-    auto promiseSetup = [callInvoker, block, thisValue, arguments](jsi::Runtime &runtime, std::shared_ptr<Promise> promise) {
-      expo::callPromiseSetupWithBlock(runtime, callInvoker, promise, ^(RCTPromiseResolveBlock resolver, RCTPromiseRejectBlock rejecter) {
-        block(thisValue, arguments, resolver, rejecter);
-      });
+      if (!callInvoker) {
+        // In mocked environment the call invoker may be null so it's not supported to call async functions.
+        // Testing async functions is a bit more complicated anyway. See `init` description for more.
+        throw jsi::JSError(runtime, "Calling async functions is not supported when the call invoker is unavailable");
+      }
+      // The function that is invoked as a setup of the EXJavaScript `Promise`.
+      auto promiseSetup = [callInvoker, block, thisValue, arguments](jsi::Runtime &runtime, std::shared_ptr<Promise> promise) {
+        expo::callPromiseSetupWithBlock(runtime, callInvoker, promise, ^(RCTPromiseResolveBlock resolver, RCTPromiseRejectBlock rejecter) {
+          block(thisValue, arguments, resolver, rejecter);
+        });
+      };
+      return createPromiseAsJSIValue(runtime, promiseSetup);
     };
-    return createPromiseAsJSIValue(runtime, promiseSetup);
-  };
   return [self createHostFunction:name argsCount:argsCount block:hostFunctionBlock];
 }
 
