@@ -12,7 +12,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 ## Installation
 
-<APIInstallSection hideBareInstructions />
+<APIInstallSection hideBareInstructions cmd={['$ npm install expo-in-app-purchases']} />
 
 This module is currently only available in the [bare](/introduction/managed-vs-bare.md#bare-workflow) workflow.
 
