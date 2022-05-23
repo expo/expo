@@ -1,51 +1,36 @@
 package expo.modules.kotlin.activityresult
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Intent
-import android.content.IntentSender
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.ActivityResultRegistry
-import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContract
-import androidx.activity.result.contract.ActivityResultContracts.RequestMultiplePermissions
-import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
-import androidx.activity.result.contract.ActivityResultContracts.StartIntentSenderForResult
 import androidx.annotation.MainThread
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityOptionsCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
-import expo.modules.kotlin.AppContext
-import expo.modules.kotlin.providers.CurrentActivityProvider
 import java.util.*
 
 /**
- * This class is created to address the problem of integrating original [ActivityResultRegistry]
- * with ReactNative and our current architecture of subscribing to [Lifecycle]'s events for [Activity].
+ * This class is created to address the problem of integrating original [androidx.activity.result.ActivityResultRegistry]
+ * with ReactNative and our current architecture of subscribing to [Lifecycle]'s events for [android.app.Activity].
  *
  * Ideally we would get rid of this class in favour of the original one, but firstly we need to
- * create some mechanism for hooking into full [Activity]'s [Lifecycle] from [AppContext].
+ * create some mechanism for hooking into full [android.app.Activity]'s [Lifecycle] from [expo.modules.kotlin.AppContext].
  *
- * The implementation is based on [ActivityResultRegistry] coming from `androidx.activity:activity-ktx:1.4.0`
- * Main difference is in the [register] method that serves as replacement for [ActivityResultRegistry.register].
- * Moreover following methods are removed [ActivityResultRegistry.onSaveInstanceState] and [ActivityResultRegistry.onRestoreInstanceState]
- * as this class lives outside [Activity]'s scope and does not need to be saved/restored.
+ * The implementation is based on [androidx.activity.result.ActivityResultRegistry] coming from `androidx.activity:activity-ktx:1.4.0`
+ * Main difference is in the [register] method that serves as replacement for [androidx.activity.result.ActivityResultRegistry.register].
+ * Moreover following methods are removed [androidx.activity.result.ActivityResultRegistry.onSaveInstanceState] and [androidx.activity.result.ActivityResultRegistry.onRestoreInstanceState]
+ * as this class lives outside [android.app.Activity]'s scope and does not need to be saved/restored.
  *
- * @see [ActivityResultRegistry] for more information.
+ * @see [androidx.activity.result.ActivityResultRegistry] for more information.
  */
-class AppContextActivityResultRegistry(
-  private val currentActivityProvider: CurrentActivityProvider
-) {
+abstract class AppContextActivityResultRegistry {
   private val LOG_TAG = "ActivityResultRegistry"
 
   // Use upper 16 bits for request codes
@@ -68,7 +53,7 @@ class AppContextActivityResultRegistry(
   private val mPendingResults = Bundle/*<String, ActivityResult>*/()
 
   /**
-   * A register that stores the keys for which the original launching [Activity] has been destroyed
+   * A register that stores the keys for which the original launching [android.app.Activity] has been destroyed
    * due to resources limits. This information is then propagated as an additional information to
    * the resulting callback.
    */
@@ -78,74 +63,21 @@ class AppContextActivityResultRegistry(
     return launchingActivityDestroyedForKey.remove(key)
   }
 
-  private val activity: AppCompatActivity
-    get() = requireNotNull(currentActivityProvider.currentActivity) { TODO() }
-
   /**
-   * @see [ActivityResultRegistry.onLaunch]
+   * @see [androidx.activity.result.ActivityResultRegistry.onLaunch]
    * @see [ComponentActivity.mActivityResultRegistry] - this method code is adapted from this class
    */
   @MainThread
-  fun <I, O> onLaunch(
+  abstract fun <I, O> onLaunch(
     requestCode: Int,
     contract: ActivityResultContract<I, O>,
     @SuppressLint("UnknownNullness") input: I,
     options: ActivityOptionsCompat?
-  ) {
-    // Immediate result path
-    val synchronousResult = contract.getSynchronousResult(activity, input)
-    if (synchronousResult != null) {
-      Handler(Looper.getMainLooper()).post { dispatchResult(requestCode, synchronousResult.value) }
-      return
-    }
-
-    // Start activity path
-    val intent = contract.createIntent(activity, input)
-    var optionsBundle: Bundle? = null
-    // If there are any extras, we should defensively set the classLoader
-    if (intent.extras != null && intent.extras!!.classLoader == null) {
-      intent.setExtrasClassLoader(activity.classLoader)
-    }
-    if (intent.hasExtra(StartActivityForResult.EXTRA_ACTIVITY_OPTIONS_BUNDLE)) {
-      optionsBundle = intent.getBundleExtra(StartActivityForResult.EXTRA_ACTIVITY_OPTIONS_BUNDLE)
-      intent.removeExtra(StartActivityForResult.EXTRA_ACTIVITY_OPTIONS_BUNDLE)
-    } else if (options != null) {
-      optionsBundle = options.toBundle()
-    }
-    when (intent.action) {
-      RequestMultiplePermissions.ACTION_REQUEST_PERMISSIONS -> {
-        // requestPermissions path
-        var permissions = intent.getStringArrayExtra(RequestMultiplePermissions.EXTRA_PERMISSIONS)
-        if (permissions == null) {
-          permissions = arrayOfNulls(0)
-        }
-        ActivityCompat.requestPermissions(activity, permissions, requestCode)
-      }
-      StartIntentSenderForResult.ACTION_INTENT_SENDER_REQUEST -> {
-        val request: IntentSenderRequest = intent.getParcelableExtra(StartIntentSenderForResult.EXTRA_INTENT_SENDER_REQUEST)!!
-        try {
-          // startIntentSenderForResult path
-          ActivityCompat.startIntentSenderForResult(activity, request.intentSender,
-            requestCode, request.fillInIntent, request.flagsMask,
-            request.flagsValues, 0, optionsBundle)
-        } catch (e: IntentSender.SendIntentException) {
-          Handler(Looper.getMainLooper()).post {
-            dispatchResult(requestCode, Activity.RESULT_CANCELED,
-              Intent().setAction(StartIntentSenderForResult.ACTION_INTENT_SENDER_REQUEST)
-                .putExtra(StartIntentSenderForResult.EXTRA_SEND_INTENT_EXCEPTION, e))
-          }
-        }
-      }
-      else -> {
-        // startActivityForResult path
-        ActivityCompat.startActivityForResult(activity, intent, requestCode, optionsBundle)
-      }
-    }
-  }
+  )
 
   /**
    * The difference from the original method is commented out assertion about the current [Lifecycle]'s state.
-   * @see [ActivityResultRegistry.register]
+   * @see [androidx.activity.result.ActivityResultRegistry.register]
    */
   @MainThread
   fun <I, O> register(
@@ -225,7 +157,51 @@ class AppContextActivityResultRegistry(
   }
 
   /**
-   * @see [ActivityResultRegistry.unregister]
+   * @see [androidx.activity.result.ActivityResultRegistry.register]
+   */
+  fun <I, O> register(
+    key: String,
+    contract: ActivityResultContract<I, O>,
+    callback: AppContextActivityResultCallback<O>
+  ): ActivityResultLauncher<I> {
+    registerKey(key)
+    mKeyToCallback[key] = CallbackAndContract(callback, contract)
+    if (mParsedPendingResults.containsKey(key)) {
+      @Suppress("UNCHECKED_CAST")
+      val parsedPendingResult = mParsedPendingResults[key] as O
+      mParsedPendingResults.remove(key)
+      callback.onActivityResult(parsedPendingResult, false)
+    }
+    val pendingResult = mPendingResults.getParcelable<ActivityResult>(key)
+    if (pendingResult != null) {
+      mPendingResults.remove(key)
+      callback.onActivityResult(contract.parseResult(
+        pendingResult.resultCode,
+        pendingResult.data), false)
+    }
+    return object : ActivityResultLauncher<I>() {
+      override fun launch(input: I, options: ActivityOptionsCompat?) {
+        val innerCode = mKeyToRc[key]
+          ?: throw java.lang.IllegalStateException("Attempting to launch an unregistered "
+            + "ActivityResultLauncher with contract " + contract + " and input "
+            + input + ". You must ensure the ActivityResultLauncher is registered "
+            + "before calling launch().")
+        mLaunchedKeys.add(key)
+        onLaunch(innerCode, contract, input, options)
+      }
+
+      override fun unregister() {
+        this@AppContextActivityResultRegistry.unregister(key)
+      }
+
+      override fun getContract(): ActivityResultContract<I, *> {
+        return contract
+      }
+    }
+  }
+
+  /**
+   * @see [androidx.activity.result.ActivityResultRegistry.unregister]
    */
   @MainThread
   fun unregister(key: String) {
@@ -251,7 +227,7 @@ class AppContextActivityResultRegistry(
   }
 
   /**
-   * @see [ActivityResultRegistry.dispatchResult]
+   * @see [androidx.activity.result.ActivityResultRegistry.dispatchResult]
    */
   @MainThread
   fun dispatchResult(requestCode: Int, resultCode: Int, data: Intent?): Boolean {
@@ -261,7 +237,7 @@ class AppContextActivityResultRegistry(
   }
 
   /**
-   * @see [ActivityResultRegistry.dispatchResult]
+   * @see [androidx.activity.result.ActivityResultRegistry.dispatchResult]
    */
   @MainThread
   fun <O> dispatchResult(requestCode: Int,
