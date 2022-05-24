@@ -85,11 +85,7 @@ public final class SyncFunctionComponent<Args, FirstArgType, ReturnType>: AnySyn
       guard let self = self else {
         return NativeFunctionUnavailableException(name)
       }
-      do {
-        return try self.call(by: this, withArguments: args)
-      } catch {
-        return error
-      }
+      return try self.call(by: this, withArguments: args)
     }
   }
 }
