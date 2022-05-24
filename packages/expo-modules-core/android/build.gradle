@@ -247,6 +247,8 @@ dependencies {
   androidTestImplementation "com.google.truth:truth:1.1.2"
   if (FOR_HERMES) {
     androidTestImplementation files(new File(HERMES_DIR, "android/hermes-debug.aar"))
+  } else {
+    androidTestImplementation "org.webkit:android-jsc:+"
   }
 }
 
