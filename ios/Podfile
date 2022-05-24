@@ -4,7 +4,8 @@ require File.join(File.dirname(`node --print "require.resolve('expo/package.json
 
 install! 'cocoapods',
          :generate_multiple_pod_projects => true,
-         :incremental_installation => true
+         :incremental_installation => true,
+         :deterministic_uuids => false
 platform :ios, '12.4'
 inhibit_all_warnings!
 
@@ -49,7 +50,17 @@ abstract_target 'Expo Go' do
   use_pods! 'vendored/unversioned/**/*.podspec.json'
 
   # Unversioned React Native
-  use_react_native! path: '../react-native-lab/react-native'
+  ENV['RCT_NEW_ARCH_ENABLED'] = '1'
+  flags = get_default_flags()
+  use_react_native!(
+    :path => '../react-native-lab/react-native',
+    # Turn off hermes first because building from source code taking much time
+    # :hermes_enabled => flags[:hermes_enabled],
+    :hermes_enabled => false,
+    :fabric_enabled => flags[:fabric_enabled],
+    # An absolute path to your application root.
+    :app_path => "#{Pod::Config.instance.installation_root}/.."
+  )
 
   # Build React Native with RCT_DEV enabled and RCT_ENABLE_INSPECTOR and
   # RCT_ENABLE_PACKAGER_CONNECTION disabled

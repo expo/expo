@@ -15,6 +15,10 @@ def eval_versioned_scripts!(file_name, message: '', context: nil)
   glob_pattern = File.join(project_directory, "versioned-react-native/ABI*/#{file_name}")
 
   Dir.glob(glob_pattern) { |file_path|
+    # Reset new architecture flags and turn on by each sdk accordingly
+    ENV['RCT_NEW_ARCH_ENABLED'] = '0'
+    ENV['USE_CODEGEN_DISCOVERY'] = '0'
+
     relative_file_path = Pathname.new(file_path).relative_path_from(project_root_directory)
 
     unless message.empty?
