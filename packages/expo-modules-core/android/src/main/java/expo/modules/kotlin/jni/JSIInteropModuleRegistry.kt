@@ -4,8 +4,10 @@ import com.facebook.jni.HybridData
 import com.facebook.react.turbomodule.core.CallInvokerHolderImpl
 import expo.modules.core.interfaces.DoNotStrip
 import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.exception.JavaScriptEvaluateException
 import java.lang.ref.WeakReference
 
+@Suppress("KotlinJniMissingFunction")
 @DoNotStrip
 class JSIInteropModuleRegistry(appContext: AppContext) {
   private val appContextHolder = WeakReference(appContext)
@@ -14,15 +16,33 @@ class JSIInteropModuleRegistry(appContext: AppContext) {
   @DoNotStrip
   private val mHybridData = initHybrid()
 
-  @Suppress("KotlinJniMissingFunction")
   private external fun initHybrid(): HybridData
 
-  @Suppress("KotlinJniMissingFunction")
+  /**
+   * Initializes the `ExpoModulesHostObject` and adds it to the global object.
+   */
   external fun installJSI(
     jsRuntimePointer: Long,
     jsInvokerHolder: CallInvokerHolderImpl,
     nativeInvokerHolder: CallInvokerHolderImpl
   )
+
+  /**
+   * Initializes the test runtime. Shouldn't be used in the production.
+   */
+  external fun installJSIForTests()
+
+  /**
+   * Evaluates given JavaScript source code.
+   * @throws JavaScriptEvaluateException if the input format is unknown or evaluation causes an error
+   */
+  @Throws(JavaScriptEvaluateException::class)
+  external fun evaluateScript(script: String): JavaScriptValue
+
+  /**
+   * Returns the runtime global object
+   */
+  external fun global(): JavaScriptObject
 
   /**
    * Returns a `JavaScriptModuleObject` that is a bridge between [expo.modules.kotlin.modules.Module]
