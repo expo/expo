@@ -26,7 +26,7 @@ export default [
     name: 'channel',
     type: 'string',
     description: [
-      'Name of the channel for the EAS Update ([Learn more about this](../../eas-update/introduction)). If you do not specify a channel, your project will use Classic Updates service. If you do not use `expo-updates` in your project then this property will have no effect.',
+      'Name of the channel for the EAS Update service ([Learn more about this](../../eas-update/introduction)). If you do not specify a channel, your project will use the Classic Updates service. If you do not use `expo-updates` in your project then this property will have no effect.',
     ]
   },
   {
