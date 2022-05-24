@@ -43,6 +43,25 @@ async function runTests(podspecName: string, testSpecName: string, shouldUseBare
   }
 }
 
+async function runTestsButMuchFaster() {
+  await spawnAsync(
+    'fastlane',
+    [
+      'scan',
+      '--workspace',
+      'apps/native-tests/ios/NativeTests.xcworkspace',
+      '--scheme',
+      'NativeTests',
+      '--clean',
+      'false',
+    ],
+    {
+      cwd: Directories.getExpoRepositoryRootDir(),
+      stdio: 'inherit',
+    }
+  );
+}
+
 async function prepareSchemes(podspecName: string, shouldUseBareExpo: boolean) {
   if (shouldUseBareExpo) {
     await spawnAsync(
@@ -105,6 +124,15 @@ function getTestSpecNames(pkg: Packages.Package): string[] {
 export async function iosNativeUnitTests({ packages }: { packages?: string }) {
   const allPackages = await Packages.getListOfPackagesAsync();
   const packageNamesFilter = packages ? packages.split(',') : [];
+
+  if (packageNamesFilter.length === 0) {
+    console.log('Running all iOS native unit tests. Should be fast.');
+    await runTestsButMuchFaster();
+    return;
+  }
+  console.warn('Running iOS native unit tests for given packages. This should be slower');
+  // TODO: Maybe modify the xcscheme here to run only the tests for the given packages
+
   const packagesTested: string[] = [];
   const errors: any[] = [];
   for (const pkg of allPackages) {
