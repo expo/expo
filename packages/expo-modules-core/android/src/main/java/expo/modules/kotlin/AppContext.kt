@@ -34,7 +34,6 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.newSingleThreadContext
-import java.lang.RuntimeException
 import java.lang.ref.WeakReference
 
 class AppContext(
