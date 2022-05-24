@@ -9,8 +9,6 @@ PODS:
     - ExpoModulesCore
   - EASClient/Tests (0.2.1):
     - ExpoModulesCore
-    - hermes-engine
-    - React-hermes
   - EXImage (0.2.2):
     - React-Core
     - SDWebImage (~> 5.0)
@@ -47,13 +45,11 @@ PODS:
     - expo-dev-menu-interface
     - ExpoModulesCore
     - EXUpdatesInterface
-    - hermes-engine
     - Nimble
     - OHHTTPStubs
     - Quick
     - React-Core
     - React-CoreModules
-    - React-hermes
   - expo-dev-launcher/Unsafe (0.11.6):
     - EXManifests
     - expo-dev-menu
@@ -104,16 +100,12 @@ PODS:
     - Yoga
   - expo-dev-menu/SafeAreaView (0.10.7)
   - expo-dev-menu/Tests (0.10.7):
-    - hermes-engine
     - Nimble
     - Quick
     - React-CoreModules
-    - React-hermes
   - expo-dev-menu/UITests (0.10.7):
-    - hermes-engine
     - React
     - React-CoreModules
-    - React-hermes
   - expo-dev-menu/Vendored (0.10.7):
     - expo-dev-menu/GestureHandler
     - expo-dev-menu/Reanimated
@@ -123,9 +115,7 @@ PODS:
     - ReactCommon/turbomodule/core
   - ExpoModulesCore/Tests (0.9.0):
     - ExpoModulesTestCore
-    - hermes-engine
     - React-Core
-    - React-hermes
     - ReactCommon/turbomodule/core
   - ExpoModulesTestCore (0.8.0):
     - ExpoModulesCore
@@ -148,10 +138,8 @@ PODS:
     - ExpoModulesCore
     - EXStructuredHeaders
     - EXUpdatesInterface
-    - hermes-engine
     - OCMockito (~> 6.0)
     - React-Core
-    - React-hermes
   - EXUpdatesInterface (0.6.0)
   - FBLazyVector (0.68.2)
   - FBReactNativeSpec (0.68.2):
@@ -163,8 +151,6 @@ PODS:
     - ReactCommon/turbomodule/core (= 0.68.2)
   - fmt (6.2.1)
   - glog (0.3.5)
-  - hermes-engine (0.11.0)
-  - libevent (2.1.12)
   - libwebp (1.2.1):
     - libwebp/demux (= 1.2.1)
     - libwebp/mux (= 1.2.1)
@@ -203,12 +189,6 @@ PODS:
     - DoubleConversion
     - fmt (~> 6.2.1)
     - glog
-  - RCT-Folly/Futures (2021.06.28.00-v2):
-    - boost
-    - DoubleConversion
-    - fmt (~> 6.2.1)
-    - glog
-    - libevent
   - RCTRequired (0.68.2)
   - RCTTypeSafety (0.68.2):
     - FBLazyVector (= 0.68.2)
@@ -384,17 +364,6 @@ PODS:
     - React-logger (= 0.68.2)
     - React-perflogger (= 0.68.2)
     - React-runtimeexecutor (= 0.68.2)
-  - React-hermes (0.68.2):
-    - DoubleConversion
-    - glog
-    - hermes-engine
-    - RCT-Folly (= 2021.06.28.00-v2)
-    - RCT-Folly/Futures (= 2021.06.28.00-v2)
-    - React-cxxreact (= 0.68.2)
-    - React-jsi (= 0.68.2)
-    - React-jsiexecutor (= 0.68.2)
-    - React-jsinspector (= 0.68.2)
-    - React-perflogger (= 0.68.2)
   - React-jsi (0.68.2):
     - boost (= 1.76.0)
     - DoubleConversion
@@ -523,8 +492,6 @@ DEPENDENCIES:
   - FBLazyVector (from `../../../node_modules/react-native/Libraries/FBLazyVector`)
   - FBReactNativeSpec (from `../../../node_modules/react-native/React/FBReactNativeSpec`)
   - glog (from `../../../node_modules/react-native/third-party-podspecs/glog.podspec`)
-  - hermes-engine (~> 0.11.0)
-  - libevent (~> 2.1.12)
   - Nimble (from `./../../../ios/Nimble.podspec`)
   - RCT-Folly (from `../../../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec`)
   - RCTRequired (from `../../../node_modules/react-native/Libraries/RCTRequired`)
@@ -537,7 +504,6 @@ DEPENDENCIES:
   - React-Core/RCTWebSocket (from `../../../node_modules/react-native/`)
   - React-CoreModules (from `../../../node_modules/react-native/React/CoreModules`)
   - React-cxxreact (from `../../../node_modules/react-native/ReactCommon/cxxreact`)
-  - React-hermes (from `../../../node_modules/react-native/ReactCommon/hermes`)
   - React-jsi (from `../../../node_modules/react-native/ReactCommon/jsi`)
   - React-jsiexecutor (from `../../../node_modules/react-native/ReactCommon/jsiexecutor`)
   - React-jsinspector (from `../../../node_modules/react-native/ReactCommon/jsinspector`)
@@ -561,8 +527,6 @@ SPEC REPOS:
     - ASN1Decoder
     - CocoaLumberjack
     - fmt
-    - hermes-engine
-    - libevent
     - libwebp
     - OCHamcrest
     - OCMockito
@@ -639,8 +603,6 @@ EXTERNAL SOURCES:
     :path: "../../../node_modules/react-native/React/CoreModules"
   React-cxxreact:
     :path: "../../../node_modules/react-native/ReactCommon/cxxreact"
-  React-hermes:
-    :path: "../../../node_modules/react-native/ReactCommon/hermes"
   React-jsi:
     :path: "../../../node_modules/react-native/ReactCommon/jsi"
   React-jsiexecutor:
@@ -681,25 +643,23 @@ SPEC CHECKSUMS:
   boost: a7c83b31436843459a1961bfd74b96033dc77234
   CocoaLumberjack: 543c79c114dadc3b1aba95641d8738b06b05b646
   DoubleConversion: 831926d9b8bf8166fd87886c4abab286c2422662
-  EASClient: 272e423f5339f7ebf362863c5a1389bd4fcfe569
+  EASClient: 93565f4d024559b75eac62bc7d50acaa354614f6
   EXImage: b41d1f72f0565a9f62ab0c6dde0d4d6d3c68c226
   EXJSONUtils: 2a74b8f40f1523cc3f92af99c91aa78201737a77
   EXManifests: 0c6134b7b6f3236a93a778c3f44ba1cfb3f9fa3d
   Expo: 8af09aaa24c023d55160118554032b178fad1871
-  expo-dev-launcher: 7f6b17d961e4beb7052bf9e7f7220a5c46823b90
-  expo-dev-menu: 4597310b970a5c819ecad4349d2b945a94766b5a
+  expo-dev-launcher: 613d44fe53decf77b10499e66faf95850603ca00
+  expo-dev-menu: fec65d9c8e5031f65f84ebc0649310e05eb1f838
   expo-dev-menu-interface: b0e5958c56dc420517e8d8769f009536fbbb5935
-  ExpoModulesCore: 279a25b0c521d40fca85da68f1e0fd9283d0c5de
+  ExpoModulesCore: 4093531a41eb8b2e3b508ee519afbd84b09de727
   ExpoModulesTestCore: 200e6d0280f7842d915eab63d0c6b298b4dff530
   EXStructuredHeaders: 5d86829469399370a9fc7cb1e4391b09de87681d
-  EXUpdates: a5e3f50e57f3883ecb0217e1e2fa380ed5aa830e
+  EXUpdates: bc5e9947411f5e8822a243b24c145e5e3e5ab068
   EXUpdatesInterface: 0b101ace1dbfa0f64260a5df31c71d03c66cca54
   FBLazyVector: a7a655862f6b09625d11c772296b01cd5164b648
   FBReactNativeSpec: 0889721ed98ab092618c3acb600f110406226a96
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
   glog: 476ee3e89abb49e07f822b48323c51c57124b572
-  hermes-engine: 84e3af1ea01dd7351ac5d8689cbbea1f9903ffc3
-  libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
   libwebp: 98a37e597e40bfdb4c911fc98f2c53d0b12d05fc
   Nimble: d954d0accfd082f2225e62d71008440493e318f4
   OCHamcrest: a613690381f1dac7637c18962c10dbe8feca4bb5
@@ -715,7 +675,6 @@ SPEC CHECKSUMS:
   React-Core: fdaa2916b1c893f39f02cff0476d1fb0cab1e352
   React-CoreModules: fd8705b80699ec36c2cdd635c2ce9d874b9cfdfc
   React-cxxreact: 1832d971f7b0cb2c7b943dc0ec962762c90c906e
-  React-hermes: 14e0ea3ce4b44bb3ac7663d96d0e3e28857f7b62
   React-jsi: 72af715135abe8c3f0dcf3b2548b71d048b69a7e
   React-jsiexecutor: b7b553412f2ec768fe6c8f27cd6bafdb9d8719e6
   React-jsinspector: c5989c77cb89ae6a69561095a61cce56a44ae8e8

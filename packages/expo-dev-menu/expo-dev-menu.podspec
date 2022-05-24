@@ -147,8 +147,8 @@ Pod::Spec.new do |s|
     test_spec.dependency 'Nimble'
     test_spec.dependency 'React-CoreModules'
     # `hermes_enabled` should be enabled for test integrations
-    test_spec.dependency 'React-hermes'
-    test_spec.dependency 'hermes-engine'
+    # test_spec.dependency 'React-hermes'
+    # test_spec.dependency 'hermes-engine'
     test_spec.platform = :ios, '12.0'
   end
 
@@ -158,8 +158,8 @@ Pod::Spec.new do |s|
     test_spec.dependency 'React-CoreModules'
     test_spec.dependency 'React'
     # `hermes_enabled` should be enabled for test integrations
-    test_spec.dependency 'React-hermes'
-    test_spec.dependency 'hermes-engine'
+    # test_spec.dependency 'React-hermes'
+    # test_spec.dependency 'hermes-engine'
     test_spec.platform = :ios, '12.0'
   end
 
