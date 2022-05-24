@@ -1,10 +1,14 @@
 import * as React from 'react';
 
-import { getRecentlyOpenedApps } from '../native-modules/DevLauncherInternal';
+import {
+  getRecentlyOpenedApps,
+  clearRecentlyOpenedApps,
+} from '../native-modules/DevLauncherInternal';
 
 export type RecentApp = {
   url: string;
   name: string;
+  timestamp: number;
 };
 
 type RecentlyOpenedApps = {
@@ -37,14 +41,14 @@ export function useRecentlyOpenedApps() {
     setIsFetching(true);
     getRecentlyOpenedApps()
       .then((apps) => {
-        const formattedApps = Object.entries(apps).map(([url, name]) => {
-          return {
-            url,
-            name: name ?? url,
-          };
-        });
+        const recentApps = {};
 
-        setRecentApps(formattedApps);
+        for (const id in apps) {
+          const app = apps[id];
+          recentApps[app?.name] = app;
+        }
+
+        setRecentApps(Object.values(recentApps));
         setIsFetching(false);
       })
       .catch((error) => {
@@ -54,9 +58,15 @@ export function useRecentlyOpenedApps() {
       });
   }, []);
 
+  async function clear() {
+    await clearRecentlyOpenedApps();
+    setRecentApps([]);
+  }
+
   return {
     data: recentApps,
     isFetching,
     error,
+    clear,
   };
 }

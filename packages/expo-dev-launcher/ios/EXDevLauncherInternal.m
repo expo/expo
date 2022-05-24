@@ -154,6 +154,12 @@ RCT_EXPORT_METHOD(getRecentlyOpenedApps:(RCTPromiseResolveBlock)resolve
   resolve([[EXDevLauncherController sharedInstance] recentlyOpenedApps]);
 }
 
+RCT_EXPORT_METHOD(clearRecentlyOpenedApps:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
+{
+  [[EXDevLauncherController sharedInstance] clearRecentlyOpenedApps];
+  resolve(nil);
+}
+
 RCT_EXPORT_METHOD(getBuildInfo:(RCTPromiseResolveBlock)resolve
                    rejecter:(RCTPromiseRejectBlock)reject)
 {

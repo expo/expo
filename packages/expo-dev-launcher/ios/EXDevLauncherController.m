@@ -121,6 +121,11 @@
   return [_recentlyOpenedAppsRegistry recentlyOpenedApps];
 }
 
+- (void)clearRecentlyOpenedApps
+{
+  return [_recentlyOpenedAppsRegistry clearRegistry];
+}
+
 - (NSDictionary<UIApplicationLaunchOptionsKey, NSObject*> *)getLaunchOptions;
 {
   NSURL *deepLink = [self.pendingDeepLinkRegistry consumePendingDeepLink];
@@ -358,8 +363,12 @@
 
   void (^launchReactNativeApp)(void) = ^{
     self->_shouldPreferUpdatesInterfaceSourceUrl = NO;
-    RCTDevLoadingViewSetEnabled(NO);
-    [self.recentlyOpenedAppsRegistry appWasOpened:expoUrl.absoluteString name:nil];
+    RCTDevLoadingViewSetEnabled(NO);  
+    NSMutableDictionary *appInfo = [NSMutableDictionary new];
+    // TODO - figure out app name
+    appInfo[@"name"] = @"";
+    appInfo[@"url"] = expoUrl.absoluteString;
+    [self.recentlyOpenedAppsRegistry appWasOpenedWithAppInfo:appInfo];
     if ([expoUrl.path isEqual:@"/"] || [expoUrl.path isEqual:@""]) {
       [self _initAppWithUrl:expoUrl bundleUrl:[NSURL URLWithString:@"index.bundle?platform=ios&dev=true&minify=false" relativeToURL:expoUrl] manifest:nil];
     } else {
@@ -373,7 +382,11 @@
   void (^launchExpoApp)(NSURL *, EXManifestsManifest *) = ^(NSURL *bundleURL, EXManifestsManifest *manifest) {
     self->_shouldPreferUpdatesInterfaceSourceUrl = !manifest.isUsingDeveloperTool;
     RCTDevLoadingViewSetEnabled(manifest.isUsingDeveloperTool);
-    [self.recentlyOpenedAppsRegistry appWasOpened:expoUrl.absoluteString name:manifest.name];
+    NSMutableDictionary *appInfo = [NSMutableDictionary new];
+    appInfo[@"url"] = expoUrl.absoluteString;
+    appInfo[@"name"] = manifest.name;
+    [self.recentlyOpenedAppsRegistry appWasOpenedWithAppInfo:appInfo];
+    
     [self _initAppWithUrl:expoUrl bundleUrl:bundleURL manifest:manifest];
     if (onSuccess) {
       onSuccess();

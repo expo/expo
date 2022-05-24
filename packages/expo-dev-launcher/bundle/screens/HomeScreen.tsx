@@ -255,7 +255,7 @@ function DevSessionList({ devSessions = [], onDevSessionPress }: DevSessionListP
 }
 
 function RecentlyOpenedApps({ onAppPress }) {
-  const { data: apps } = useRecentlyOpenedApps();
+  const { data: apps, clear: clearRecentlyOpenedApps } = useRecentlyOpenedApps();
 
   if (apps.length === 0) {
     return null;
@@ -263,9 +263,20 @@ function RecentlyOpenedApps({ onAppPress }) {
 
   return (
     <View px="medium">
-      <View padding="medium">
+      <Row align="center" py="small">
+        <Spacer.Horizontal size="small" />
+
         <Heading color="secondary">Recently opened</Heading>
-      </View>
+        <Spacer.Horizontal />
+
+        <Button.ScaleOnPressContainer bg="ghost" onPress={clearRecentlyOpenedApps}>
+          <View rounded="medium" px="small" py="micro">
+            <Heading size="small" weight="semibold" color="secondary">
+              Reset
+            </Heading>
+          </View>
+        </Button.ScaleOnPressContainer>
+      </Row>
 
       <View>
         {apps.slice(0, 5).map((app, index, arr) => {
@@ -279,8 +290,9 @@ function RecentlyOpenedApps({ onAppPress }) {
                 onPress={() => onAppPress(app.url)}
                 roundedTop={isFirst ? 'large' : 'none'}
                 roundedBottom={isLast ? 'large' : 'none'}
+                py="small"
                 bg="default">
-                <Row align="center" padding="medium" bg="default">
+                <Row align="center" px="medium" bg="default">
                   <StatusIndicator size="small" status="success" />
                   <Spacer.Horizontal size="small" />
                   <View flex="1">
@@ -289,6 +301,25 @@ function RecentlyOpenedApps({ onAppPress }) {
                     </Button.Text>
                   </View>
                   <ChevronRightIcon />
+                </Row>
+
+                <Row
+                  px="medium"
+                  align="center"
+                  bg="default"
+                  // border="default"
+                >
+                  <Spacer.Vertical size="tiny" />
+                  <Spacer.Horizontal size="large" />
+                  <Row
+                    style={{
+                      flexWrap: 'wrap',
+                      flexShrink: 1,
+                    }}>
+                    <Text size="small" color="secondary" numberOfLines={1}>
+                      {app.url}
+                    </Text>
+                  </Row>
                 </Row>
               </Button.ScaleOnPressContainer>
               {!isLast && <Divider />}

@@ -18,19 +18,19 @@ public class EXDevLauncherRecentlyOpenedAppsRegistry: NSObject {
   }
 
   @objc
-  public func appWasOpened(_ url: String, name: String?) {
+  public func appWasOpened(appInfo: [String: Any]) {
+    let timestamp = getCurrentTimestamp()
+
+    var appDetails = appInfo
+    appDetails["timestamp"] = timestamp
+    
     var registry = appRegistry
-    var appEntry: [String: Any] = ["timestamp": getCurrentTimestamp()]
-    if name != nil {
-      appEntry["name"] = name
-    }
-    registry[url] = appEntry
+    registry["\(timestamp)"] = appDetails
     appRegistry = registry
   }
 
   @objc
-  public func recentlyOpenedApps() -> [String: Any] {
-    var result = [String: Any]()
+  public func recentlyOpenedApps() -> [String: Any] {    
     guard let registry = appRegistry as? [String: [String: Any]] else {
       return [:]
     }
@@ -40,11 +40,15 @@ public class EXDevLauncherRecentlyOpenedAppsRegistry: NSObject {
         return false
       }
 
-      result[url] = appEntry["name"] ?? NSNull()
       return true
     }
-
-    return result
+    
+    return appRegistry
+  }
+  
+  @objc
+  public func clearRegistry() {
+    resetStorage()
   }
 
   func getCurrentTimestamp() -> Int64 {

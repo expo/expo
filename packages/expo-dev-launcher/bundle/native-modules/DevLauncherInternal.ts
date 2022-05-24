@@ -6,7 +6,12 @@ const EventEmitter = new NativeEventEmitter(DevLauncher);
 const ON_NEW_DEEP_LINK_EVENT = 'expo.modules.devlauncher.onnewdeeplink';
 
 export async function getRecentlyOpenedApps(): Promise<{ [key: string]: string | null }[]> {
-  return await DevLauncher.getRecentlyOpenedApps();
+  const recentlyOpenedApps = await DevLauncher.getRecentlyOpenedApps();
+  return recentlyOpenedApps;
+}
+
+export async function clearRecentlyOpenedApps(): Promise<void> {
+  return await DevLauncher.clearRecentlyOpenedApps();
 }
 
 export async function loadApp(url: string): Promise<void> {
