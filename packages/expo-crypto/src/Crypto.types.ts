@@ -21,13 +21,11 @@ export enum CryptoDigestAlgorithm {
   SHA512 = 'SHA-512',
   /**
    * `128` bits.
-   * @platform android
    * @platform ios
    */
   MD2 = 'MD2',
   /**
    * `128` bits.
-   * @platform android
    * @platform ios
    */
   MD4 = 'MD4',

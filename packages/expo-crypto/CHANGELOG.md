@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- The module on Android now uses JSI host object instead of the bridge module for communication between JavaScript and native code.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
