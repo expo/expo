@@ -277,7 +277,7 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
   }
 
   // captures any callbacks that are registered via the `registerDevMenuItems` module method
-  // it is set and unset the public facing `DevMenuModule`
+  // it is set and unset by the public facing `DevMenuModule`
   // when the DevMenuModule instance is unloaded (e.g between app loads) the callback list is reset to an empty array
   var registeredCallbacks = arrayListOf<String>()
 
