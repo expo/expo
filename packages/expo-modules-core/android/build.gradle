@@ -183,7 +183,7 @@ dependencies {
   implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0"
   /**
    * ReactActivity (the base activity for every React Native application) is subclassing AndroidX classes.
-   * Unfortunately until https://github.com/facebook/react-native/pull/33072 us released React Native uses "androidx.appcompat:appcompat:1.0.2".
+   * Unfortunately until https://github.com/facebook/react-native/pull/33072 is released React Native uses "androidx.appcompat:appcompat:1.0.2".
    * Gradle is picking the highest version of the dependency so we enforce higher version here.
    * see https://docs.gradle.org/current/userguide/dependency_resolution.html#sec:version-conflict
    * We're enforcing the most up-to-date versions of the dependencies here that are used in subclassing chain for ReactActivity.

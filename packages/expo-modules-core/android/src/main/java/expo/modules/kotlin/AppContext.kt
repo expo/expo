@@ -222,8 +222,8 @@ class AppContext(
     get() {
       val currentActivity = this.activityProvider?.currentActivity ?: return null
 
-      if (currentActivity !is AppCompatActivity) {
-        throw RuntimeException("Current Activity is of incorrect class, expected AppCompatActivity, received ${currentActivity.localClassName}")
+      check(currentActivity is AppCompatActivity) {
+        "Current Activity is of incorrect class, expected AppCompatActivity, received ${currentActivity.localClassName}"
       }
 
       return currentActivity
