@@ -19,7 +19,14 @@ export default [
     name: 'releaseChannel',
     type: 'string',
     description: [
-      'Name of the release channel for the `expo-updates` package ([Learn more about this](../../distribution/release-channels)). If you do not specify a channel, your binary will pull releases from the `default` channel. If you do not use `expo-updates` in your project then this property will have no effect.',
+      'Name of the release channel for the Classic Updates service ([Learn more about this](../../distribution/release-channels)). If you do not specify a channel, your binary will pull releases from the `default` channel. If you do not use `expo-updates` in your project then this property will have no effect.',
+    ]
+  },
+  {
+    name: 'channel',
+    type: 'string',
+    description: [
+      'Name of the channel for the EAS Update ([Learn more about this](../../eas-update/introduction)). If you do not specify a channel, your project will use Classic Updates service. If you do not use `expo-updates` in your project then this property will have no effect.',
     ]
   },
   {
