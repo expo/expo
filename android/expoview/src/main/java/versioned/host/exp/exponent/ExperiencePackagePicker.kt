@@ -49,6 +49,7 @@ import expo.modules.network.NetworkPackage
 import expo.modules.notifications.NotificationsPackage
 import expo.modules.permissions.PermissionsPackage
 import expo.modules.print.PrintPackage
+import expo.modules.random.RandomModule
 import expo.modules.screencapture.ScreenCapturePackage
 import expo.modules.screenorientation.ScreenOrientationPackage
 import expo.modules.securestore.SecureStorePackage
@@ -144,6 +145,7 @@ object ExperiencePackagePicker : ModulesProvider {
     ClipboardModule::class.java,
     EASClientModule::class.java,
     LinearGradientModule::class.java,
+    RandomModule::class.java,
     WebBrowserModule::class.java,
   )
 }
