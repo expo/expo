@@ -165,7 +165,11 @@ android {
     // In android (instrumental) tests, we want to package all so files to enable our JSI functionality.
     // Otherwise, those files should be excluded, because will be loaded by the application.
     if (isAndroidTest()) {
-      excludes = ["META-INF/MANIFEST.MF", "META-INF/com.android.tools/proguard/coroutines.pro"]
+      excludes = [
+        "META-INF/MANIFEST.MF",
+        "META-INF/com.android.tools/proguard/coroutines.pro",
+        "META-INF/proguard/coroutines.pro"
+      ]
       pickFirsts = sharedLibraries
     } else {
       excludes = sharedLibraries
