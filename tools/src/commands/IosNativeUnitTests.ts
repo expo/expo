@@ -44,22 +44,10 @@ async function runTests(podspecName: string, testSpecName: string, shouldUseBare
 }
 
 async function runTestsButMuchFaster() {
-  await spawnAsync(
-    'fastlane',
-    [
-      'scan',
-      '--workspace',
-      'apps/native-tests/ios/NativeTests.xcworkspace',
-      '--scheme',
-      'NativeTests',
-      '--clean',
-      'false',
-    ],
-    {
-      cwd: Directories.getExpoRepositoryRootDir(),
-      stdio: 'inherit',
-    }
-  );
+  await spawnAsync('fastlane', ['ios', 'unit_tests'], {
+    cwd: Directories.getExpoRepositoryRootDir(),
+    stdio: 'inherit',
+  });
 }
 
 async function prepareSchemes(podspecName: string, shouldUseBareExpo: boolean) {
