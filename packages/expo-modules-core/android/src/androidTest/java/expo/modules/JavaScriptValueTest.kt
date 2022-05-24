@@ -3,10 +3,11 @@ package expo.modules
 import com.google.common.truth.Truth
 import expo.modules.kotlin.jni.JSIInteropModuleRegistry
 import io.mockk.mockk
+import junit.framework.TestCase
 import org.junit.Before
 import org.junit.Test
 
-class JavaScriptValueTest {
+class JavaScriptValueTest : TestCase() {
   private lateinit var jsiInterop: JSIInteropModuleRegistry
 
   @Before
