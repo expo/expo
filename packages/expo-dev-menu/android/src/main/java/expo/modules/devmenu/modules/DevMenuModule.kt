@@ -67,9 +67,7 @@ class DevMenuModule(reactContext: ReactApplicationContext) :
 
   @ReactMethod
   fun addDevMenuCallbacks(names: ReadableArray, promise: Promise) {
-    for (name in names.toArrayList()) {
-      devMenuManager.registeredCallbacks.add(name as String)
-    }
+    devMenuManager.registeredCallbacks = names.toArrayList() as ArrayList<String>
 
     return promise.resolve(null)
   }

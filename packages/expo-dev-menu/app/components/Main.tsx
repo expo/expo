@@ -197,11 +197,14 @@ export function Main({ registeredCallbacks = [] }: MainProps) {
               const onPress = () => fireCallbackAsync(name);
 
               return (
-                <View
-                  key={name}
-                  roundedTop={isFirst ? 'large' : 'none'}
-                  roundedBottom={isLast ? 'large' : 'none'}>
-                  <SettingsRowButton label={name} icon={null} onPress={onPress} />
+                <View key={name + index}>
+                  <View
+                    bg="default"
+                    roundedTop={isFirst ? 'large' : 'none'}
+                    roundedBottom={isLast ? 'large' : 'none'}>
+                    <SettingsRowButton label={name} icon={null} onPress={onPress} />
+                  </View>
+                  {!isLast && <Divider />}
                 </View>
               );
             })}
@@ -212,7 +215,7 @@ export function Main({ registeredCallbacks = [] }: MainProps) {
       )}
 
       <View mx="small">
-        <View roundedTop="large">
+        <View roundedTop="large" bg="default">
           <SettingsRowButton
             disabled={!devSettings.isPerfMonitorAvailable}
             label="Toggle performance monitor"
@@ -221,12 +224,14 @@ export function Main({ registeredCallbacks = [] }: MainProps) {
           />
         </View>
         <Divider />
-        <SettingsRowButton
-          disabled={!devSettings.isElementInspectorAvailable}
-          label="Toggle element inspector"
-          icon={<InspectElementIcon />}
-          onPress={actions.toggleElementInspector}
-        />
+        <View bg="default">
+          <SettingsRowButton
+            disabled={!devSettings.isElementInspectorAvailable}
+            label="Toggle element inspector"
+            icon={<InspectElementIcon />}
+            onPress={actions.toggleElementInspector}
+          />
+        </View>
         <Divider />
         <View bg="default">
           <SettingsRowSwitch
