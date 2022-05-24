@@ -569,6 +569,13 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
 
 - (void *)versionedJsExecutorFactoryForBridge:(RCTBridge *)bridge
 {
+  if (RCTTurboModuleEnabled()) {
+    _turboModuleManager = [[RCTTurboModuleManager alloc] initWithBridge:bridge
+                                                               delegate:self
+                                                              jsInvoker:bridge.jsCallInvoker];
+    [bridge setRCTTurboModuleRegistry:_turboModuleManager];
+  }
+
   [bridge moduleForClass:[RCTUIManager class]];
   REAUIManager *reaUiManager = [REAUIManager new];
   [reaUiManager setBridge:bridge];
@@ -585,11 +592,18 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
   [eventDispatcher initialize];
   [bridge updateModuleWithInstance:eventDispatcher];
 
+  RCTTurboModuleManager *turboModuleManager = _turboModuleManager;
   EX_WEAKIFY(self);
-  const auto executor = [EXWeak_self, bridge](facebook::jsi::Runtime &runtime) {
+  const auto executor = [EXWeak_self, bridge, turboModuleManager](facebook::jsi::Runtime &runtime) {
     if (!bridge) {
       return;
     }
+    if (turboModuleManager) {
+      facebook::react::RuntimeExecutor syncRuntimeExecutor =
+          [&](std::function<void(facebook::jsi::Runtime & runtime_)> &&callback) { callback(runtime); };
+      [turboModuleManager installJSBindingWithRuntimeExecutor:syncRuntimeExecutor];
+    }
+
     EX_ENSURE_STRONGIFY(self);
     auto reanimatedModule = reanimated::createReanimatedModule(bridge, bridge.jsCallInvoker);
     auto workletRuntimeValue = runtime
