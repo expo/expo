@@ -44,5 +44,8 @@ Pod::Spec.new do |s|
     test_spec.dependency 'ExpoModulesTestCore'
 
     test_spec.source_files = 'Tests/**/*.{m,swift}'
+    
+    test_spec.dependency 'React-hermes'
+    test_spec.dependency 'hermes-engine'
   end
 end
