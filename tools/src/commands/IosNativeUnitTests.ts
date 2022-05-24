@@ -5,72 +5,27 @@ import path from 'path';
 import * as Directories from '../Directories';
 import * as Packages from '../Packages';
 
-const BARE_EXPO_IOS_DIR = path.join(Directories.getAppsDir(), 'bare-expo', 'ios');
-const packagesToTestWithBareExpo = [
-  'expo-dev-client',
-  'expo-dev-launcher',
-  'expo-dev-menu',
-  'expo-dev-menu-interface',
-];
+const TEST_APP_IOS_DIR = path.join(Directories.getAppsDir(), 'native-tests', 'ios');
 
-async function runTests(podspecName: string, testSpecName: string, shouldUseBareExpo: boolean) {
-  if (shouldUseBareExpo) {
-    await spawnAsync(
-      'fastlane',
-      [
-        'scan',
-        '--project',
-        `Pods/${podspecName}.xcodeproj`,
-        '--scheme',
-        `${podspecName}-Unit-${testSpecName}`,
-        '--clean',
-        'false',
-      ],
-      {
-        cwd: BARE_EXPO_IOS_DIR,
-        stdio: 'inherit',
-      }
-    );
-  } else {
-    await spawnAsync(
-      'fastlane',
-      ['test_module', `pod:${podspecName}`, `testSpecName:${testSpecName}`],
-      {
-        cwd: Directories.getExpoRepositoryRootDir(),
-        stdio: 'inherit',
-      }
-    );
-  }
-}
-
-async function runTestsButMuchFaster() {
-  await spawnAsync('fastlane', ['ios', 'unit_tests'], {
+async function runTests(testTargets: string[]) {
+  await spawnAsync('fastlane', ['ios', 'unit_tests', `targets:${testTargets.join(',')}`], {
     cwd: Directories.getExpoRepositoryRootDir(),
     stdio: 'inherit',
   });
 }
 
-async function prepareSchemes(podspecName: string, shouldUseBareExpo: boolean) {
-  if (shouldUseBareExpo) {
-    await spawnAsync(
-      'fastlane',
-      ['run', 'recreate_schemes', `project:Pods/${podspecName}.xcodeproj`],
-      {
-        cwd: BARE_EXPO_IOS_DIR,
-        stdio: 'inherit',
-      }
-    );
-  } else {
-    await spawnAsync('fastlane', ['prepare_schemes', `pod:${podspecName}`], {
-      cwd: Directories.getExpoRepositoryRootDir(),
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+async function prepareSchemes(podspecName: string) {
+  await spawnAsync(
+    'fastlane',
+    ['run', 'recreate_schemes', `project:Pods/${podspecName}.xcodeproj`],
+    {
+      cwd: TEST_APP_IOS_DIR,
       stdio: 'inherit',
-    });
-  }
-
-  await moveSchemesToSharedData(
-    podspecName,
-    shouldUseBareExpo ? BARE_EXPO_IOS_DIR : Directories.getIosDir()
+    }
   );
+
+  await moveSchemesToSharedData(podspecName, TEST_APP_IOS_DIR);
 }
 
 async function moveSchemesToSharedData(podspecName: string, rootDirectory: string) {
@@ -113,60 +68,57 @@ export async function iosNativeUnitTests({ packages }: { packages?: string }) {
   const allPackages = await Packages.getListOfPackagesAsync();
   const packageNamesFilter = packages ? packages.split(',') : [];
 
-  if (packageNamesFilter.length === 0) {
-    console.log('Running all iOS native unit tests. Should be fast.');
-    await runTestsButMuchFaster();
-    return;
-  }
-  console.warn('Running iOS native unit tests for given packages. This should be slower');
-  // TODO: Maybe modify the xcscheme here to run only the tests for the given packages
-
-  const packagesTested: string[] = [];
-  const errors: any[] = [];
+  const targetsToTest: string[] = [];
+  const packagesToTest: string[] = [];
   for (const pkg of allPackages) {
+    // if no filters, don't need to iterate through packages,
+    // test spec names will be inferred by fastlane action
+    if (!packageNamesFilter.length) {
+      break;
+    }
+
+    if (!packageNamesFilter.includes(pkg.packageName)) {
+      continue;
+    }
+
     if (!pkg.podspecName || !pkg.podspecPath || !(await pkg.hasNativeTestsAsync('ios'))) {
       if (packageNamesFilter.includes(pkg.packageName)) {
         throw new Error(`The package ${pkg.packageName} does not include iOS unit tests.`);
       }
       continue;
     }
-    if (packageNamesFilter.length > 0 && !packageNamesFilter.includes(pkg.packageName)) {
-      continue;
-    }
-    const shouldUseBareExpo = packagesToTestWithBareExpo.includes(pkg.packageName);
 
-    try {
-      await prepareSchemes(pkg.podspecName, shouldUseBareExpo);
-      const testSpecNames = getTestSpecNames(pkg);
-      if (!testSpecNames.length) {
-        throw new Error(
-          `Failed to test package ${pkg.packageName}: no test specs were found in podspec file.`
-        );
-      }
-      for (const testSpecName of testSpecNames) {
-        await runTests(pkg.podspecName, testSpecName, shouldUseBareExpo);
-      }
-      packagesTested.push(pkg.packageName);
-    } catch (error) {
-      errors.push({ error, packageName: pkg.packageName });
+    const testSpecNames = getTestSpecNames(pkg);
+    if (!testSpecNames.length) {
+      throw new Error(
+        `Failed to test package ${pkg.packageName}: no test specs were found in podspec file.`
+      );
+    }
+
+    console.log(pkg.podspecPath);
+    // TODO: do we need this?
+    // await prepareSchemes(pkg.podspecName);
+
+    for (const testSpecName of testSpecNames) {
+      targetsToTest.push(`${pkg.podspecName}-Unit-${testSpecName}`);
     }
   }
-  if (errors.length) {
-    console.error('One or more iOS unit tests failed:');
-    for (const { error, packageName } of errors) {
-      console.error(`Error running tests for ${packageName}: ${error.message}`);
-      console.error('stdout >', error.stdout);
-      console.error('stderr >', error.stderr);
-      if (error.message.startsWith('fastlane exited')) {
-        console.warn(
-          "Did you add unit tests to a package that didn't have unit tests before? If so, make sure to add the correct subspec to ios/Podfile."
-        );
-      }
-    }
-    throw new Error('Unit tests failed');
-  } else {
-    console.log('✅ All unit tests passed for the following packages:', packagesTested.join(', '));
+
+  if (packageNamesFilter.length && !targetsToTest.length) {
+    throw new Error(
+      `No packages were found with the specified names: ${packageNamesFilter.join(', ')}`
+    );
   }
+
+  try {
+    await runTests(targetsToTest);
+  } catch (error) {
+    console.error('iOS unit tests failed:');
+    console.error('stdout >', error.stdout);
+    console.error('stderr >', error.stderr);
+    throw new Error('iOS Unit tests failed');
+  }
+  console.log('✅ All unit tests passed for the following packages:', packagesToTest.join(', '));
 }
 
 export default (program: any) => {

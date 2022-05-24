@@ -14,7 +14,7 @@ module Fastlane
         workspace_path = params[:workspace_path]
         workspace = Xcodeproj::Workspace.new_from_xcworkspace(workspace_path)
 
-        targets_to_test = params[:targets]&.select { |target| !target.empty? } || []
+        targets_to_test = params[:targets].select { |target| !target.empty? }
 
         # TODO: Check if scheme exists and if the scheme is shared
         scheme_project_path = workspace.schemes.find { |k, v| k == scheme_name }.last
@@ -36,7 +36,7 @@ module Fastlane
         }
 
         if testables.empty?
-          UI.user_error! "No test targets found in the Pods project"
+          UI.user_error! "No test targets found in the Pods project" + (targets_to_test.empty? ? "" : " (filter: '#{targets_to_test.join(', ')}')")
         end
 
         scheme.test_action.testables = testables
