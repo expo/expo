@@ -36,7 +36,7 @@ let handlers = new Map<string, () => void>();
 
 export async function registerDevMenuItems(items: ExpoDevMenuItem[]) {
   if (!__DEV__) {
-    // resolve null
+    // resolve undefined
     return;
   }
 
