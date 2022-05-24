@@ -1985,7 +1985,7 @@ PODS:
     - ExpoModulesCore
   - ExpoSystemUI (1.2.0):
     - ExpoModulesCore
-  - ExpoWebBrowser (10.2.0):
+  - ExpoWebBrowser (10.2.1):
     - ExpoModulesCore
   - EXPrint (11.2.0):
     - ExpoModulesCore
@@ -4386,7 +4386,7 @@ SPEC CHECKSUMS:
   ExpoModulesTestCore: 200e6d0280f7842d915eab63d0c6b298b4dff530
   ExpoRandom: 14df0976aa363a71a730ceb7655250f3047c0e42
   ExpoSystemUI: 6175204b809d9598d56e5a711480415d28c9fb5b
-  ExpoWebBrowser: 818c519c3519cdd79780228039938fbd8236c885
+  ExpoWebBrowser: 4b5f9633e5f169dc948587cb6d26d2d1d1406187
   EXPrint: 419b26afe98d548b524d0c1812bdd64d154ca215
   EXScreenCapture: cbee2204f313038a1819d31ad99a31e15f8e0f59
   EXScreenOrientation: e3c072fb0add472a3037482ea43ccbade9b88a25

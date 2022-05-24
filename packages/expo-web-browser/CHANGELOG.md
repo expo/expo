@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- On Web fix popup being blocked by Safari. ([#17222](https://github.com/expo/expo/pull/17222) by [@sreuter](https://github.com/sreuter))
-
 ### 💡 Others
+
+## 10.2.1 — 2022-05-24
+
+### 🐛 Bug fixes
+
+- On Web fix popup being blocked by Safari. ([#17222](https://github.com/expo/expo/pull/17222) by [@sreuter](https://github.com/sreuter))
 
 ## 10.2.0 — 2022-04-18
 
