@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add JS API to register buttons in dev menu. ([#17528](https://github.com/expo/expo/pull/17528) by [@ajsmth](https://github.com/ajsmth))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
