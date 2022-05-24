@@ -138,12 +138,13 @@ android {
     def sharedLibraries = [
       "**/libc++_shared.so",
       "**/libreactnativejni.so",
+      "**/libreact_nativemodule_core.so",
       "**/libglog.so",
       "**/libjscexecutor.so",
       "**/libfbjni.so",
       "**/libfolly_json.so",
       "**/libhermes.so",
-      "**/libjsi.so"
+      "**/libjsi.so",
     ]
 
     // In android (instrumental) tests, we want to package all so files to enable our JSI functionality.
