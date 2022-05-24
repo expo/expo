@@ -22,7 +22,10 @@ buildscript {
     classpath 'com.google.gms:google-services:4.3.5'
     classpath "de.undercouch:gradle-download-task:$gradleDownloadTaskVersion"
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
+
+    // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
     classpath "com.facebook.react:react-native-gradle-plugin"
+    // WHEN_DISTRIBUTING_REMOVE_TO_HERE
   }
 }
 
