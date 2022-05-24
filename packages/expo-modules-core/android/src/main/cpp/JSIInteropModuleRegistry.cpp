@@ -20,7 +20,11 @@ JSIInteropModuleRegistry::initHybrid(jni::alias_ref<jhybridobject> jThis) {
 void JSIInteropModuleRegistry::registerNatives() {
   registerHybrid({
                    makeNativeMethod("initHybrid", JSIInteropModuleRegistry::initHybrid),
-                   makeNativeMethod("installJSI", JSIInteropModuleRegistry::installJSI)
+                   makeNativeMethod("installJSI", JSIInteropModuleRegistry::installJSI),
+                   makeNativeMethod("installJSIForTests",
+                                    JSIInteropModuleRegistry::installJSIForTests),
+                   makeNativeMethod("evaluateScript", JSIInteropModuleRegistry::evaluateScript),
+                   makeNativeMethod("global", JSIInteropModuleRegistry::global),
                  });
 }
 
@@ -33,9 +37,9 @@ void JSIInteropModuleRegistry::installJSI(
   jni::alias_ref<react::CallInvokerHolder::javaobject> nativeInvokerHolder
 ) {
   auto runtime = reinterpret_cast<jsi::Runtime *>(jsRuntimePointer);
-  runtimeHolder = std::make_unique<JavaScriptRuntime>(runtime);
   jsInvoker = jsInvokerHolder->cthis()->getCallInvoker();
   nativeInvoker = nativeInvokerHolder->cthis()->getCallInvoker();
+  runtimeHolder = std::make_shared<JavaScriptRuntime>(runtime, jsInvoker, nativeInvoker);
 
   auto expoModules = std::make_shared<ExpoModulesHostObject>(this);
   auto expoModulesObject = jsi::Object::createFromHostObject(*runtime, expoModules);
@@ -47,6 +51,10 @@ void JSIInteropModuleRegistry::installJSI(
       "ExpoModules",
       std::move(expoModulesObject)
     );
+}
+
+void JSIInteropModuleRegistry::installJSIForTests() {
+  runtimeHolder = std::make_shared<JavaScriptRuntime>();
 }
 
 jni::local_ref<JavaScriptModuleObject::javaobject>
@@ -63,5 +71,15 @@ JSIInteropModuleRegistry::callGetJavaScriptModuleObjectMethod(const std::string 
 jni::local_ref<JavaScriptModuleObject::javaobject>
 JSIInteropModuleRegistry::getModule(const std::string &moduleName) const {
   return callGetJavaScriptModuleObjectMethod(moduleName);
+}
+
+jni::local_ref<JavaScriptValue::javaobject> JSIInteropModuleRegistry::evaluateScript(
+  jni::JString script
+) {
+  return runtimeHolder->evaluateScript(script.toStdString());
+}
+
+jni::local_ref<JavaScriptObject::javaobject> JSIInteropModuleRegistry::global() {
+  return runtimeHolder->global();
 }
 } // namespace expo
