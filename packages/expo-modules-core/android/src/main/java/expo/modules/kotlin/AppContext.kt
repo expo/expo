@@ -5,6 +5,7 @@ package expo.modules.kotlin
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import androidx.appcompat.app.AppCompatActivity
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.turbomodule.core.CallInvokerHolderImpl
 import expo.modules.core.errors.ContextDestroyedException
@@ -26,19 +27,21 @@ import expo.modules.kotlin.events.KModuleEventEmitterWrapper
 import expo.modules.kotlin.events.OnActivityResultPayload
 import expo.modules.kotlin.jni.JSIInteropModuleRegistry
 import expo.modules.kotlin.modules.Module
+import expo.modules.kotlin.providers.CurrentActivityProvider
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.newSingleThreadContext
+import java.lang.RuntimeException
 import java.lang.ref.WeakReference
 
 class AppContext(
   modulesProvider: ModulesProvider,
   val legacyModuleRegistry: expo.modules.core.ModuleRegistry,
   private val reactContextHolder: WeakReference<ReactApplicationContext>
-) {
+) : CurrentActivityProvider {
   val registry = ModuleRegistry(WeakReference(this)).apply {
     register(ErrorManagerModule())
     register(modulesProvider)
@@ -212,4 +215,19 @@ class AppContext(
       intent
     )
   }
+
+// region CurrentActivityProvider
+
+  override val currentActivity: AppCompatActivity?
+    get() {
+      val currentActivity = this.activityProvider?.currentActivity ?: return null
+
+      check(currentActivity is AppCompatActivity) {
+        "Current Activity is of incorrect class, expected AppCompatActivity, received ${currentActivity.localClassName}"
+      }
+
+      return currentActivity
+    }
+
+// endregion
 }
