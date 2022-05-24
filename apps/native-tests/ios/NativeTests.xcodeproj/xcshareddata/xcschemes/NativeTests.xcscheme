@@ -62,39 +62,19 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "46E81F30FC8478806E47C555EFC1B53F"
-               BuildableName = "EXStructuredHeaders-Unit-Tests.xctest"
-               BlueprintName = "EXStructuredHeaders-Unit-Tests"
-               ReferencedContainer = "container:Pods/Pods.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "651F7FDBA977CED32C69F02D08E931CA"
-               BuildableName = "EXUpdates-Unit-Tests.xctest"
-               BlueprintName = "EXUpdates-Unit-Tests"
-               ReferencedContainer = "container:Pods/Pods.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "4F310784370A157E9DDCC2C08A296039"
-               BuildableName = "ExpoModulesCore-Unit-Tests.xctest"
-               BlueprintName = "ExpoModulesCore-Unit-Tests"
-               ReferencedContainer = "container:Pods/Pods.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
                BlueprintIdentifier = "86E115D1BD70F7F86B038CA2F6FC2617"
                BuildableName = "expo-dev-launcher-Unit-Tests.xctest"
                BlueprintName = "expo-dev-launcher-Unit-Tests"
+               ReferencedContainer = "container:Pods/Pods.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "6E999695DE282FC9B16E5D1F0872A25C"
+               BuildableName = "expo-dev-menu-interface-Unit-Tests.xctest"
+               BlueprintName = "expo-dev-menu-interface-Unit-Tests"
                ReferencedContainer = "container:Pods/Pods.xcodeproj">
             </BuildableReference>
          </TestableReference>
@@ -122,9 +102,29 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "6E999695DE282FC9B16E5D1F0872A25C"
-               BuildableName = "expo-dev-menu-interface-Unit-Tests.xctest"
-               BlueprintName = "expo-dev-menu-interface-Unit-Tests"
+               BlueprintIdentifier = "4F310784370A157E9DDCC2C08A296039"
+               BuildableName = "ExpoModulesCore-Unit-Tests.xctest"
+               BlueprintName = "ExpoModulesCore-Unit-Tests"
+               ReferencedContainer = "container:Pods/Pods.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "46E81F30FC8478806E47C555EFC1B53F"
+               BuildableName = "EXStructuredHeaders-Unit-Tests.xctest"
+               BlueprintName = "EXStructuredHeaders-Unit-Tests"
+               ReferencedContainer = "container:Pods/Pods.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "651F7FDBA977CED32C69F02D08E931CA"
+               BuildableName = "EXUpdates-Unit-Tests.xctest"
+               BlueprintName = "EXUpdates-Unit-Tests"
                ReferencedContainer = "container:Pods/Pods.xcodeproj">
             </BuildableReference>
          </TestableReference>
