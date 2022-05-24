@@ -21,7 +21,7 @@ Publish your update on a release channel by running:
 <Terminal cmd={[
   '# Publish to release channel <your-channel>',
   '$ expo publish --release-channel <your-channel>'
-]} cmdCopy="expo publish --release-channel <your-channel>" />
+]} />
 
 Your team can see this release channel in the Expo Go app with a parameterized URL `https://exp.host/@username/yourApp?release-channel=<your-release-channel>`. If you do not specify a release channel, you will publish to the `default` channel.
 

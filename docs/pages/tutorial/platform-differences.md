@@ -3,7 +3,8 @@ title: Handling platform differences
 ---
 
 import SnackInline from '~/components/plugins/SnackInline';
-import Video from '~/components/plugins/Video'
+import Video from '~/components/plugins/Video';
+import { Terminal } from '~/ui/components/Snippet';
 
 In the perfect world we want to write code to perform our task just once and have it run the same on every platform. Even on the web, where this is an explicit design goal, it's often necessary to consider differences between web browsers.
 
@@ -16,9 +17,13 @@ Expo tools try to handle smoothing over these differences between iOS, Android, 
 
 ## A workaround for sharing on web
 
-We are going to work around spotty support for the Web Share API and the lack of support for sharing files from our device by uploading the file to some web service and then letting the users copy the URL.
+We are going to work around spotty support for the Web Share API and the lack of support for sharing files from our device by uploading the file to some web service and then letting the users copy the URL. 
 
-Run `expo install anonymous-files` to install a library to handle uploading the file for us, then make these changes to your app:
+To install a library to handle uploading the file for us run:
+
+<Terminal cmd={["$ expo install anonymous-files"]} />
+
+Then make these changes to your app:
 
 <SnackInline label="Sharing web workaround" templateId="tutorial/sharing-web-workaround" dependencies={['expo-image-picker', 'expo-sharing', 'anonymous-files']} defaultPlatform="web">
 

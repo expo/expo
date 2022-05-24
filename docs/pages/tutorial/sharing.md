@@ -5,14 +5,15 @@ title: Sharing the image
 import SnackInline from '~/components/plugins/SnackInline';
 import Video from '~/components/plugins/Video';
 import { Collapsible } from '~/ui/components/Collapsible';
+import { Terminal } from '~/ui/components/Snippet';
 
 Similar to expo-image-picker, the functionality that we need to share is available in an Expo library &mdash; this one is called [expo-sharing](../versions/latest/sdk/sharing.md).
 
 ## Installing expo-sharing
 
-You can install expo-sharing in the same way as you installed expo-image-picker:
+You can install expo-sharing in the same way as you installed expo-image-picker. In your project directory run:
 
-- Run `expo install expo-sharing` in your project directory.
+<Terminal cmd={['$ expo install expo-sharing']} />
 
 ## Using expo-sharing to share an image
 

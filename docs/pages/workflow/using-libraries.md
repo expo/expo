@@ -4,6 +4,7 @@ title: Using libraries
 
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import InstallSection from '~/components/plugins/InstallSection';
+import { Terminal } from '~/ui/components/Snippet';
 
 Every app is made up of some combination of React Native, Expo SDK, and third party libraries. It's important to understand how to use the libraries from each of these sources, and how to determine whether a third-party library will work in your project or not.
 
@@ -15,7 +16,7 @@ React Native provides a set of built-in primitives that most developers will nee
 
 The `react-native` core library is installed automatically in every Expo app. To use a React Native library in your project, import it from the `react-native` package in your code:
 
-```js
+```jsx
 import * as React from 'react';
 import { Text, View } from 'react-native';
 
@@ -56,7 +57,7 @@ This section also lists all of the types, functions, and classes available. If y
 
 Now you can use the library in your project:
 
-```js
+```jsx
 import * as React from 'react';
 import { Text, View } from 'react-native';
 import * as Device from 'expo-device';
@@ -86,9 +87,7 @@ After React Native Directory, the [npm registry](https://www.npmjs.com/) is the 
 
 **Not listed on the directory?** find the project on GitHub, an easy way to do this is with `npx npm-home --github <package-name>`. For example, to open the GitHub page for react-native-localize you would run:
 
-```bash
-npx npm-home --github react-native-localize
-```
+<Terminal cmd={['$ npx npm-home --github react-native-localize']} />
 
 Now check the following:
 
@@ -108,15 +107,11 @@ Many libraries you can use with Expo and React Native will not be compatible wit
 
 Once you have determined if the library is compatible, use `expo-cli` to install the package:
 
-```bash
-expo install @react-navigation/native
-```
+<Terminal cmd={['$ npm install @react-navigation/native']} />
 
 Be sure to follow the project website or README for any additional configuration and usage instructions. You can get to the README quickly using this command:
 
-```bash
-npx npm-home @react-navigation/native
-```
+<Terminal cmd={['$ npx npm-home @react-navigation/native']} />
 
 If the module needs additional native configuration, you can do so using [config plugins](../guides/config-plugins.md).
 

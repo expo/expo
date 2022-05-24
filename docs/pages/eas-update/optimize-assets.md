@@ -2,7 +2,8 @@
 title: How to optimize assets for EAS Update
 ---
 
-import ImageSpotlight from '~/components/plugins/ImageSpotlight'
+import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import { Terminal } from '~/ui/components/Snippet';
 
 > EAS Update is currently available only to customers with an EAS subscription plan. [Sign up](https://expo.dev/accounts/[account]/settings/subscriptions).
 
@@ -22,15 +23,11 @@ In **./dist/bundles**, we can see the size of the **index.ios.js** and **index.a
 
 Users will have to download any new images or other assets when they detect a new update, if those assets are not already a part of their build. You can view all the assets uploaded to EAS' servers in **./dist/assets**. The assets there are hashed with their extensions removed, so it is difficult to know what assets are there. To see a pretty-printed list of assets, we can run:
 
-```
-expo export --experimental-bundle
-```
+<Terminal cmd={["$ expo export --experimental-bundle"]} />
 
 To optimize all the images in an app at once, we can use the [expo-optimize library](https://www.npmjs.com/package/expo-optimize). `expo-optimize` uses `sharp-cli` to optimize all image assets.
 
-```bash
-npx expo-optimize
-```
+<Terminal cmd={["$ npx expo-optimize"]} />
 
 ## **Other assets**
 
