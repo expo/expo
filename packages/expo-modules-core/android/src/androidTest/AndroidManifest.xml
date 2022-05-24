@@ -7,14 +7,15 @@
     tools:replace="label"
     android:label="ExpoModulesCoreTest">
     <activity
-      android:name="androidx.appcompat.app.AppCompatActivity"
+      android:name="expo.modules.kotlin.activityresult.SignalingActivity"
       android:theme="@style/Theme.AppCompat"
       android:exported="true" />
     <activity
-      android:name="kotlin.activityresult.NoopActivity"
+      android:name="expo.modules.kotlin.activityresult.RecreatedSignalingActivity"
+      android:theme="@style/Theme.AppCompat"
       android:exported="true" />
     <activity
-      android:name="kotlin.activityresult.activities.ImmediateVoidResultActivity"
+      android:name="expo.modules.kotlin.activityresult.DelayedBundleResultActivity"
       android:exported="true" />
   </application>
 
