@@ -14,7 +14,7 @@ async function runTests(testTargets: string[]) {
   });
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+// TODO: Do we need this?
 async function prepareSchemes(podspecName: string) {
   await spawnAsync(
     'fastlane',
@@ -97,7 +97,7 @@ export async function iosNativeUnitTests({ packages }: { packages?: string }) {
 
     console.log(pkg.podspecPath);
     // TODO: do we need this?
-    // await prepareSchemes(pkg.podspecName);
+    await prepareSchemes(pkg.podspecName);
 
     for (const testSpecName of testSpecNames) {
       targetsToTest.push(`${pkg.podspecName}-Unit-${testSpecName}`);
