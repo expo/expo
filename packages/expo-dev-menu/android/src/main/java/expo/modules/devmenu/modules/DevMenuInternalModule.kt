@@ -30,6 +30,9 @@ interface DevMenuInternalMenuControllerModuleInterface {
 
   @ReactMethod
   fun copyToClipboardAsync(content: String, promise: Promise)
+
+  @ReactMethod
+  fun fireCallback(name: String, promise: Promise)
 }
 
 interface DevMenuInternalSessionManagerModuleInterface {

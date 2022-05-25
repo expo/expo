@@ -80,3 +80,7 @@ export async function setOnboardingFinishedAsync(isFinished: boolean) {
 export async function loadFontsAsync() {
   return await DevMenu.loadFontsAsync();
 }
+
+export async function fireCallbackAsync(name: string) {
+  return await DevMenu.fireCallback(name).catch((error) => console.warn(error.message));
+}

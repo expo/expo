@@ -25,6 +25,8 @@ object DevMenuManager : DevMenuManagerInterface {
   var currentManifest: Manifest? = null
   var currentManifestURL: String? = null
 
+  var registeredCallbacks = arrayListOf<String>()
+
   fun getReactInstanceManager(): ReactInstanceManager? {
     return null
   }

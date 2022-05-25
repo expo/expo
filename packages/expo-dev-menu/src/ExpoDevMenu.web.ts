@@ -11,4 +11,7 @@ export default {
   openSettings() {
     throw new WebUnsupportedError();
   },
+  addDevMenuCallbacks() {
+    throw new WebUnsupportedError();
+  },
 } as ExpoDevMenu;
