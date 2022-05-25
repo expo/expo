@@ -63,8 +63,7 @@ jobs:
         with:
           yarn-workspace: 'true'
           yarn-tools: 'true'
-          ios-pods: 'true'
-          bare-expo-pods: 'true'
+          native-tests-pods: 'true'
       - name: 🧶 Yarn install
         if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
