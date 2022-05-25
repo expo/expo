@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed clipboard listener returning invalid `contentTypes` value for images on Android. ([#17644](https://github.com/expo/expo/pull/17644) by [@barthap](https://github.com/barthap))
+
 ### 💡 Others
 
 - Migrated Expo modules definitions to the new naming convention. ([#17193](https://github.com/expo/expo/pull/17193) by [@tsapeta](https://github.com/tsapeta))
