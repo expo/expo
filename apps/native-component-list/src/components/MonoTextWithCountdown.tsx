@@ -1,6 +1,14 @@
 import { Code } from '@expo/html-elements';
 import React, { PropsWithChildren, useCallback, useState, useRef, useEffect } from 'react';
-import { View, StyleSheet, TouchableOpacity, Text, Animated } from 'react-native';
+import {
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  Text,
+  Animated,
+  StyleProp,
+  ViewStyle,
+} from 'react-native';
 
 import Colors from '../constants/Colors';
 
@@ -14,9 +22,11 @@ type Props = PropsWithChildren<{
    * Called when the countdown ended or close button is pressed.
    */
   onCountdownEnded: () => void;
+
+  style?: StyleProp<ViewStyle>;
 }>;
 
-function MonoTextWithCountdown({ children, timeout = 8000, onCountdownEnded }: Props) {
+function MonoTextWithCountdown({ style, children, timeout = 8000, onCountdownEnded }: Props) {
   const animatedValue = useRef(new Animated.Value(1)).current;
   const [countdownInterrupted, setCountdownInterrupted] = useState(false);
   const [valueUponPause, setValueUponPause] = useState(1);
@@ -47,7 +57,7 @@ function MonoTextWithCountdown({ children, timeout = 8000, onCountdownEnded }: P
   }, [countdownInterrupted]);
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, style]}>
       <Code style={styles.monoText}>{children}</Code>
       <View style={styles.buttonsContainer}>
         <IconButton icon={countdownInterrupted ? '▶️' : '⏸'} onPress={toggleCountdown} />
