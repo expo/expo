@@ -100,7 +100,6 @@ function convertEnumArgumentToString(arg: FunctionArgument, { name, values }: En
       : value === arg
   );
   if (!value) {
-    console.log(value, arg, values);
     throw new Error(
       `Value ${arg} not found in available values for enum parameter ${name}. Available values: ${values
         .map((v) => `${v.name} -> ${v.value}`)
