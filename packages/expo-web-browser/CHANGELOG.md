@@ -10,7 +10,7 @@
 
 ### 🐛 Bug fixes
 
-- Fixed `removeListener(): Method has been deprecated` warning.
+- Fixed `removeListener(): Method has been deprecated` warning. ([#17645](https://github.com/expo/expo/pull/17645) by [@barthap](https://github.com/barthap))
 
 ### 💡 Others
 
