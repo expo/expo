@@ -66,6 +66,7 @@ class DevMenuActivity : ReactActivity() {
         putBundle("devSettings", DevMenuManager.getDevSettings())
         putBundle("menuPreferences", DevMenuManager.getMenuPreferences())
         putBoolean("isDevice", !isEmulator)
+        putStringArrayList("registeredCallbacks", DevMenuManager.registeredCallbacks)
       }
 
       override fun createRootView() = createRootView(this@DevMenuActivity)
