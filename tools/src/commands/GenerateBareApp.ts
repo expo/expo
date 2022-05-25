@@ -234,11 +234,7 @@ async function runExpoPrebuild({ projectDir }: { projectDir: string }) {
   return await runExpoCliAsync('prebuild', ['--no-install'], { cwd: projectDir });
 }
 
-async function createMetroConfig({
-  projectRoot,
-}: {
-  projectRoot: string;
-}) {
+async function createMetroConfig({ projectRoot }: { projectRoot: string }) {
   console.log('Adding metro.config.js for project');
 
   const template = `// Learn more https://docs.expo.io/guides/customizing-metro
