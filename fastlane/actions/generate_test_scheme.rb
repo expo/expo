@@ -80,28 +80,11 @@ module Fastlane
       end
 
       def self.return_value
-        # If your method provides a return value, you can describe here what it does
         "Generated scheme name"
       end
 
       def self.is_supported?(platform)
         platform == :ios
-      end
-
-      private
-
-      def self.construct_referenced_container_uri(target, root_project = nil)
-        target_project = target.project
-        root_project ||= target_project
-        root_project_dir_path = root_project.root_object.project_dir_path
-        path = if !root_project_dir_path.to_s.empty?
-                 root_project.path + root_project_dir_path
-               else
-                 root_project.project_dir
-               end
-        relative_path = target_project.path.relative_path_from(path).to_s
-        relative_path = target_project.path.basename if relative_path == '.'
-        "container:#{relative_path}"
       end
     end
   end

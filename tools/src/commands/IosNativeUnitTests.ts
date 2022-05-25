@@ -71,20 +71,14 @@ export async function iosNativeUnitTests({ packages }: { packages?: string }) {
   const targetsToTest: string[] = [];
   const packagesToTest: string[] = [];
   for (const pkg of allPackages) {
-    // if no filters, don't need to iterate through packages,
-    // test spec names will be inferred by fastlane action
-    if (!packageNamesFilter.length) {
-      break;
-    }
-
-    if (!packageNamesFilter.includes(pkg.packageName)) {
-      continue;
-    }
-
     if (!pkg.podspecName || !pkg.podspecPath || !(await pkg.hasNativeTestsAsync('ios'))) {
       if (packageNamesFilter.includes(pkg.packageName)) {
         throw new Error(`The package ${pkg.packageName} does not include iOS unit tests.`);
       }
+      continue;
+    }
+
+    if (packageNamesFilter.length > 0 && !packageNamesFilter.includes(pkg.packageName)) {
       continue;
     }
 
@@ -95,13 +89,17 @@ export async function iosNativeUnitTests({ packages }: { packages?: string }) {
       );
     }
 
-    console.log(pkg.podspecPath);
-    // TODO: do we need this?
-    await prepareSchemes(pkg.podspecName);
+    try {
+      // TODO: do we need this?
+      await prepareSchemes(pkg.podspecName);
+    } catch {
+      // ignore
+    }
 
     for (const testSpecName of testSpecNames) {
       targetsToTest.push(`${pkg.podspecName}-Unit-${testSpecName}`);
     }
+    packagesToTest.push(pkg.packageName);
   }
 
   if (packageNamesFilter.length && !targetsToTest.length) {
