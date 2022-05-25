@@ -30,6 +30,9 @@ class TestCodedException(
  *     - [non-promise mapping] fun ModuleTestInterface.name(args: ArgsType): ReturnType
  *     - [promise mapping] fun ModuleTestInterface.name(args: ArgsType, promise: Promise): Unit
  *
+ *   Function("name") { args: ArgsType -> return ReturnType } can be invoked using non-promise mapping only:
+ *     - fun ModuleTestInterface.name(args: ArgsType): ReturnType
+ *
  * In tests, the non-promise mapping should be preferred if possible.
  * The promise mapping should be only used when dealing with native async code.
  *
@@ -43,14 +46,16 @@ class ModuleMockInvocationHandler<T : Any>(
   private val holder: ModuleHolder
 ) : InvocationHandler {
   override fun invoke(proxy: Any, method: Method, args: Array<out Any>?): Any? {
-    if (!holder.definition.methods.containsKey(method.name)) {
-      return method.invoke(moduleController, *(args ?: emptyArray()))
-    }
-
-    return callExportedFunction(method.name, args)
+    return holder.definition.methods[method.name]?.let {
+      callExportedFunction(method.name, args, it.isSync)
+    } ?: method.invoke(moduleController, *(args ?: emptyArray()))
   }
 
-  private fun callExportedFunction(methodName: String, args: Array<out Any>?): Any? {
+  private fun callExportedFunction(methodName: String, args: Array<out Any>?, isSync: Boolean): Any? {
+    if (isSync) {
+      return syncCall(methodName, args?.asList() ?: emptyList())
+    }
+
     val lastArg = args?.lastOrNull()
     if (Promise::class.java.isInstance(lastArg)) {
       promiseMappingCall(methodName, args!!.dropLast(1), lastArg as Promise)
@@ -96,6 +101,10 @@ class ModuleMockInvocationHandler<T : Any>(
 
   private fun promiseMappingCall(methodName: String, args: List<Any>, promise: Promise) {
     holder.call(methodName, convertArgs(args), promise)
+  }
+
+  private fun syncCall(methodName: String, args: Iterable<Any?>): Any? {
+    return holder.callSync(methodName, convertArgs(args))
   }
 
   private fun convertArgs(args: Iterable<Any?>): ReadableArray {
