@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- The module on Android is now uses JSI host object instead of the bridge module for communication between JavaScript and native code.
+- The module on Android now uses JSI host object instead of the bridge module for communication between JavaScript and native code. ([#17613](https://github.com/expo/expo/pull/17613) by [@lukmccall](https://github.com/lukmccall))
 
 ### 🐛 Bug fixes
 

@@ -5,6 +5,6 @@
     "modules": ["RandomModule"]
   },
   "android": {
-    "modulesClassNames": ["expo.modules.random.RandomModule"]
+    "modules": ["expo.modules.random.RandomModule"]
   }
 }
