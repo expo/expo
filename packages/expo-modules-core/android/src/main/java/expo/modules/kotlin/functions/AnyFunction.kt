@@ -16,7 +16,7 @@ abstract class AnyFunction(
   private val desiredArgsTypes: Array<AnyType>,
   isSync: Boolean = false
 ) {
-  internal var isSync = isSync
+  var isSync = isSync
     private set
 
   fun runSynchronously() = apply {
