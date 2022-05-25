@@ -7,8 +7,10 @@ import expo.modules.kotlin.events.BasicEventListener
 import expo.modules.kotlin.events.EventListenerWithPayload
 import expo.modules.kotlin.events.EventListenerWithSenderAndPayload
 import expo.modules.kotlin.events.EventName
+import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.FunctionCallException
 import expo.modules.kotlin.exception.MethodNotFoundException
+import expo.modules.kotlin.exception.UnexpectedException
 import expo.modules.kotlin.exception.exceptionDecorator
 import expo.modules.kotlin.jni.JavaScriptModuleObject
 import expo.modules.kotlin.modules.Module
@@ -39,7 +41,13 @@ class ModuleHolder(val module: Module) {
               registerAsyncFunction(name, method.argsCount) { args, bridgePromise ->
                 val kotlinPromise = KPromiseWrapper(bridgePromise as com.facebook.react.bridge.Promise)
                 moduleHolder.module.appContext.modulesQueue.launch {
-                  method.call(moduleHolder, args, kotlinPromise)
+                  try {
+                    method.call(moduleHolder, args, kotlinPromise)
+                  } catch (e: CodedException) {
+                    kotlinPromise.reject(e)
+                  } catch (e: Throwable) {
+                    kotlinPromise.reject(UnexpectedException(e))
+                  }
                 }
               }
             }
