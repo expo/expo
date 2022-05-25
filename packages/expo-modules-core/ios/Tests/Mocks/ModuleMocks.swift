@@ -8,7 +8,7 @@ class NamedModule: Module {
   static let namedModuleName = "MyModule"
 
   func definition() -> ModuleDefinition {
-    name(Self.namedModuleName)
+    Name(Self.namedModuleName)
   }
 }
 
