@@ -8,7 +8,7 @@ import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
 
 /**
- * Asserts that provided [exception] is a [CodedException] and
+ * Asserts that provided [exception] is a [CodedException]
  */
 @OptIn(ExperimentalContracts::class)
 fun assertCodedException(exception: Throwable?) {
