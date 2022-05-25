@@ -20,15 +20,15 @@ fun assertCodedException(exception: Throwable?) {
 
   if (exception is UndeclaredThrowableException) {
     Assert.fail(
-            "Expected CodedException, got UndeclaredThrowableException. " +
-                    "Did you forget to add '@Throws' annotations to module test interface methods?"
+      "Expected CodedException, got UndeclaredThrowableException. " +
+        "Did you forget to add '@Throws' annotations to module test interface methods?"
     )
   }
 
   if (exception !is CodedException) {
     Assert.fail(
-            "Expected CodedException, got ${exception!!::class.simpleName}. " +
-                    "Full stack trace:\n${exception.stackTraceToString()}"
+      "Expected CodedException, got ${exception!!::class.simpleName}. " +
+        "Full stack trace:\n${exception.stackTraceToString()}"
     )
   }
 }
