@@ -198,10 +198,8 @@ function FunctionDemoContent({
 }
 
 function logError(e: unknown, functionSignature: string) {
-  const errorMessage = e instanceof Error ? e.message : e;
   console.error(`
-
-  ${errorMessage}
+${e}
 
 Function call that failed:
 
