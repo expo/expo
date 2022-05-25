@@ -205,7 +205,7 @@ Function call that failed:
 
   ${functionSignature.replace(/\n/g, '\n  ')}
 
-​`);
+  `);
 }
 
 function initialArgumentFromParameter(parameter: PrimitiveParameter | ConstantParameter) {
