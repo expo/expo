@@ -26,7 +26,7 @@ class JavaScriptRuntimeTest {
   @Test
   fun evaluate_should_throw_evaluate_exception_with_stack() {
     val exception = Assert.assertThrows(JavaScriptEvaluateException::class.java) {
-      jsiInterop.evaluateScript("function x() { console.log(10); }; x();")
+      jsiInterop.evaluateScript("function x() { global.nonExistingFunction(10); }; x();")
     }
 
     Truth.assertThat(exception.jsStack).isNotEmpty()

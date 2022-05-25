@@ -11,7 +11,6 @@ import expo.modules.adapters.react.ReactModuleRegistryProvider
 import expo.modules.core.interfaces.Package
 import expo.modules.core.interfaces.SingletonModule
 import expo.modules.kotlin.ModulesProvider
-import expo.modules.random.RandomModule
 import expo.modules.manifests.core.Manifest
 import host.exp.exponent.Constants
 import host.exp.exponent.analytics.EXL
@@ -124,7 +123,6 @@ class ExponentPackage : ReactPackage {
         val scopedContext = ScopedContext(reactContext, experienceKey)
         nativeModules.add(NotificationsModule(reactContext, experienceKey, manifest.getStableLegacyID(), manifest.getEASProjectID()))
         nativeModules.add(RNViewShotModule(reactContext, scopedContext))
-        nativeModules.add(RandomModule(reactContext))
         nativeModules.add(ExponentTestNativeModule(reactContext))
         nativeModules.add(PedometerModule(reactContext))
         nativeModules.add(ScreenOrientationModule(reactContext))
