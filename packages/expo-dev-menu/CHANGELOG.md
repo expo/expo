@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Update dev settings when initial props change.
+
 ### 💡 Others
 
 ## 0.10.7 — 2022-05-19
