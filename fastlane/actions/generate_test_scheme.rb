@@ -8,24 +8,31 @@ module Fastlane
 
     class GenerateTestSchemeAction < Action
       def self.run(params)
+        targets_to_test = params[:targets].select { |target| !target.empty? }
+
         scheme_name = params[:scheme_name]
         generated_scheme_name = "#{scheme_name}_generated"
         
         workspace_path = params[:workspace_path]
         workspace = Xcodeproj::Workspace.new_from_xcworkspace(workspace_path)
 
-        targets_to_test = params[:targets].select { |target| !target.empty? }
+        scheme_project_path = workspace.schemes.find { |k, v| k == scheme_name }&.last
+        UI.user_error!("Couldn't find project for scheme '#{scheme_name}' in workspace '#{workspace_path}'") unless scheme_project_path
 
-        # TODO: Check if scheme exists and if the scheme is shared
-        scheme_project_path = workspace.schemes.find { |k, v| k == scheme_name }.last
+        pods_project_path = workspace.schemes.find { |k, v| v.include?('Pods.xcodeproj') }&.last
+        UI.user_error!("Couldn't find project 'Pods.xcodeproj' in workspace '#{workspace_path}'") unless pods_project_path
+
         main_project = Xcodeproj::Project.open(scheme_project_path)
-        scheme = Xcodeproj::XCScheme.new(File.join(main_project.path, 'xcshareddata', 'xcschemes', "#{scheme_name}.xcscheme"))
-        UI.message "Found scheme '#{scheme_name}' in project '#{main_project.path}'"
-
-        # TODO: Check if path exists
-        pods_project_path = workspace.schemes.find { |k, v| v.include?('Pods.xcodeproj') }.last
         pods_project = Xcodeproj::Project.open(pods_project_path)
-        UI.message "Found pods project: '#{pods_project.path}'"
+        UI.message "Found main project at: '#{main_project.path}'"
+        UI.message "Found pods project at: '#{pods_project.path}'"
+
+        scheme_path = File.join(main_project.path, 'xcshareddata', 'xcschemes', "#{scheme_name}.xcscheme")
+        UI.user_error!("Couldn't find scheme '#{scheme_name}' in project '#{scheme_project_path}'.
+          Make sure that the scheme is shared.") unless File.exist?(scheme_path)
+
+        scheme = Xcodeproj::XCScheme.new(scheme_path)
+        UI.message "Found scheme '#{scheme_name}' in project '#{main_project.path}'"
 
         UI.message "Finding test targets in the Pods project..."
         testables = pods_project.native_targets.select { |target|
@@ -36,7 +43,7 @@ module Fastlane
         }
 
         if testables.empty?
-          UI.user_error! "No test targets found in the Pods project" + (targets_to_test.empty? ? "" : " (filter: '#{targets_to_test.join(', ')}')")
+          UI.user_error! "No test targets found in the Pods project" + (targets_to_test.empty? ? "" : " (filter: '#{targets_to_test.join(', ')}')") if testables.empty?
         end
 
         scheme.test_action.testables = testables
