@@ -36,6 +36,10 @@ export function useDevSettings() {
     initialDevSettings || defaultDevSettings
   );
 
+  React.useEffect(() => {
+    setDevSettings(initialDevSettings);
+  }, [initialDevSettings]);
+
   // toggle value so that there is no lag in response to user input
   // these values will update to the correct value after the native fn is executed via updateSettings()
   // by this time the bottom sheet will likely be closed
