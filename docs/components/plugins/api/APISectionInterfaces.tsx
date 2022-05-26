@@ -77,15 +77,15 @@ const renderInterfacePropertyRow = ({
   signatures,
 }: PropData): JSX.Element => (
   <Row key={name}>
-    <Cell>
+    <Cell fitContent>
       <B>
         {name}
         {signatures && signatures.length ? '()' : ''}
       </B>
       {renderFlags(flags)}
     </Cell>
-    <Cell>{renderTypeOrSignatureType(type, signatures)}</Cell>
-    <Cell>{renderInterfaceComment(comment, signatures)}</Cell>
+    <Cell fitContent>{renderTypeOrSignatureType(type, signatures)}</Cell>
+    <Cell fitContent>{renderInterfaceComment(comment, signatures)}</Cell>
   </Row>
 );
 
