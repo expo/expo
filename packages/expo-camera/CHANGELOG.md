@@ -10,7 +10,6 @@
 
 - Fix bug on Android that would only allow you to scan one bar code. ([#17655](https://github.com/expo/expo/pull/17655) by [@witheroux](https://github.com/witheroux))
 
-
 ### 💡 Others
 
 ## 12.2.0 — 2022-04-18
