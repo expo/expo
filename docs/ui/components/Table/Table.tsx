@@ -1,5 +1,5 @@
 import { css } from '@emotion/react';
-import { theme, borderRadius, typography, spacing } from '@expo/styleguide';
+import {theme, borderRadius, typography, spacing, shadows} from '@expo/styleguide';
 import React, { PropsWithChildren } from 'react';
 
 import { TableHeaders } from './TableHeaders';
@@ -34,8 +34,28 @@ export const Table = ({
 const tableWrapperStyle = css({
   border: `1px solid ${theme.border.default}`,
   borderRadius: borderRadius.medium,
-  overflow: 'hidden',
+  overflowY: 'hidden',
+  overflowX: 'auto',
   marginBottom: spacing[4],
+
+  '::-webkit-scrollbar': {
+    height: 6,
+  },
+
+  '::-webkit-scrollbar-track': {
+    background: theme.background.default,
+    borderBottomLeftRadius: borderRadius.medium,
+    borderBottomRightRadius: borderRadius.medium,
+  },
+
+  '::-webkit-scrollbar-thumb': {
+    background: theme.background.tertiary,
+    borderRadius: borderRadius.medium,
+
+    ':hover': {
+      background: theme.background.quaternary,
+    },
+  },
 });
 
 const tableStyle = css({

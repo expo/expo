@@ -82,8 +82,8 @@ const renderTypePropertyRow = ({
         <B>{name}</B>
         {renderFlags(flags)}
       </Cell>
-      <Cell>{renderTypeOrSignatureType(type, signatures)}</Cell>
-      <Cell>
+      <Cell fitContent>{renderTypeOrSignatureType(type, signatures)}</Cell>
+      <Cell fitContent>
         {commentData ? (
           <CommentTextBlock
             comment={commentData}
