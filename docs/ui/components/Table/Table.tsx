@@ -37,6 +37,7 @@ const tableWrapperStyle = css({
   overflowY: 'hidden',
   overflowX: 'auto',
   marginBottom: spacing[4],
+  boxShadow: shadows.micro,
 
   '::-webkit-scrollbar': {
     height: 6,
