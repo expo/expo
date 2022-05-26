@@ -14,19 +14,22 @@ type BoxLinkProps = PropsWithChildren<{
 export function BoxLink({ title, description, href, testID }: BoxLinkProps) {
   return (
     <A href={href} css={tileContainerStyle} data-testid={testID}>
-      <HEADLINE tag="span">{title}</HEADLINE>
-      <P>{description}</P>
-      <ArrowRightIcon css={iconStyle} color={theme.icon.secondary} size={iconSize.large} />
+      <div>
+        <HEADLINE tag="span">{title}</HEADLINE>
+        <P>{description}</P>
+      </div>
+      <ArrowRightIcon css={iconStyle} color={theme.icon.secondary} />
     </A>
   );
 }
 
 const tileContainerStyle = css({
   display: 'flex',
-  flexDirection: 'column',
+  flexDirection: 'row',
+  justifyContent: 'space-between',
   border: `1px solid ${theme.border.default}`,
   borderRadius: borderRadius.medium,
-  padding: `${spacing[3]}px ${spacing[12]}px ${spacing[3]}px ${spacing[4]}px`,
+  padding: `${spacing[3]}px ${spacing[4]}px`,
   marginBottom: spacing[3],
 
   ':hover': {
@@ -35,7 +38,8 @@ const tileContainerStyle = css({
 });
 
 const iconStyle = css({
-  position: 'absolute',
-  right: spacing[4],
-  top: `calc((100% / 2) - ${iconSize.large / 2}px)`,
+  alignSelf: 'center',
+  alignContent: 'flex-end',
+  minWidth: iconSize.regular,
+  marginLeft: spacing[3],
 });
