@@ -91,7 +91,14 @@ using namespace facebook;
     std::shared_ptr<react::CallInvoker> callInvoker,
     EXJavaScriptValue * _Nonnull thisValue,
     NSArray<EXJavaScriptValue *> * _Nonnull arguments) {
-      return expo::convertObjCObjectToJSIValue(runtime, block(thisValue, arguments));
+      NSError *error;
+      id result = block(thisValue, arguments, &error);
+
+      if (error == nil) {
+        return expo::convertObjCObjectToJSIValue(runtime, result);
+      } else {
+        throw jsi::JSError(runtime, [error.userInfo[@"message"] UTF8String]);
+      }
     };
   return [self createHostFunction:name argsCount:argsCount block:hostFunctionBlock];
 }
