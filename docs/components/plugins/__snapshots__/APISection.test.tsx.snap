@@ -333,7 +333,7 @@ for more details.
     <br />
     <div>
       <ul
-        class="css-1h2n3le-paragraph-STYLES_UNORDERED_LIST"
+        class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
         data-text="true"
       >
         <li
@@ -881,7 +881,7 @@ in here.
         </div>
       </h4>
       <ul
-        class="css-1h2n3le-paragraph-STYLES_UNORDERED_LIST"
+        class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
         data-text="true"
       >
         <li
@@ -1061,7 +1061,7 @@ in here.
       </div>
     </h4>
     <ul
-      class="css-1h2n3le-paragraph-STYLES_UNORDERED_LIST"
+      class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
       data-text="true"
     >
       <li
@@ -1194,7 +1194,7 @@ This should come from the user field of an
       </div>
     </h4>
     <ul
-      class="css-1h2n3le-paragraph-STYLES_UNORDERED_LIST"
+      class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
       data-text="true"
     >
       <li
@@ -1358,7 +1358,7 @@ value depending on the state of the credential.
       </div>
     </h4>
     <ul
-      class="css-1h2n3le-paragraph-STYLES_UNORDERED_LIST"
+      class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
       data-text="true"
     >
       <li
@@ -1511,7 +1511,7 @@ value depending on the state of the credential.
       </div>
     </h4>
     <ul
-      class="css-1h2n3le-paragraph-STYLES_UNORDERED_LIST"
+      class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
       data-text="true"
     >
       <li
@@ -1611,7 +1611,7 @@ Calling this method will show the sign in modal before actually refreshing the u
       </div>
     </h4>
     <ul
-      class="css-1h2n3le-paragraph-STYLES_UNORDERED_LIST"
+      class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
       data-text="true"
     >
       <li
@@ -1776,7 +1776,7 @@ refresh operation.
       </div>
     </h4>
     <ul
-      class="css-1h2n3le-paragraph-STYLES_UNORDERED_LIST"
+      class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
       data-text="true"
     >
       <li
@@ -1915,7 +1915,7 @@ the user, since this remains the same for apps released by the same developer.
       </div>
     </h4>
     <ul
-      class="css-1h2n3le-paragraph-STYLES_UNORDERED_LIST"
+      class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
       data-text="true"
     >
       <li
@@ -2080,7 +2080,7 @@ sign-in operation.
       </div>
     </h4>
     <ul
-      class="css-1h2n3le-paragraph-STYLES_UNORDERED_LIST"
+      class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
       data-text="true"
     >
       <li
@@ -2210,7 +2210,7 @@ from using
       </div>
     </h4>
     <ul
-      class="css-1h2n3le-paragraph-STYLES_UNORDERED_LIST"
+      class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
       data-text="true"
     >
       <li
@@ -2425,7 +2425,7 @@ sign-out operation.
       </div>
     </h4>
     <ul
-      class="css-1h2n3le-paragraph-STYLES_UNORDERED_LIST"
+      class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
       data-text="true"
     >
       <li
@@ -2500,7 +2500,7 @@ sign-out operation.
       </div>
     </h4>
     <ul
-      class="css-1h2n3le-paragraph-STYLES_UNORDERED_LIST"
+      class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
       data-text="true"
     >
       <li
@@ -4416,7 +4416,7 @@ OAuth 2.0 protocol
       .
     </p>
     <ul
-      class="css-1h2n3le-paragraph-STYLES_UNORDERED_LIST"
+      class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
       data-text="true"
     >
       <li
@@ -4588,7 +4588,7 @@ OAuth 2.0 protocol
       .
     </p>
     <ul
-      class="css-1h2n3le-paragraph-STYLES_UNORDERED_LIST"
+      class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
       data-text="true"
     >
       <li
@@ -4806,7 +4806,7 @@ for more details.
       </div>
     </blockquote>
     <ul
-      class="css-1h2n3le-paragraph-STYLES_UNORDERED_LIST"
+      class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
       data-text="true"
     >
       <li
@@ -4976,7 +4976,7 @@ for more details.
       </div>
     </h3>
     <ul
-      class="css-1h2n3le-paragraph-STYLES_UNORDERED_LIST"
+      class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
       data-text="true"
     >
       <li
@@ -5242,7 +5242,7 @@ for more details.
       </div>
     </blockquote>
     <ul
-      class="css-1h2n3le-paragraph-STYLES_UNORDERED_LIST"
+      class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
       data-text="true"
     >
       <li
@@ -5407,7 +5407,7 @@ for more details.
       </div>
     </blockquote>
     <ul
-      class="css-1h2n3le-paragraph-STYLES_UNORDERED_LIST"
+      class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
       data-text="true"
     >
       <li
@@ -5701,7 +5701,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
     <br />
     <div>
       <ul
-        class="css-1h2n3le-paragraph-STYLES_UNORDERED_LIST"
+        class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
         data-text="true"
       >
         <li
@@ -6164,7 +6164,7 @@ Same as
         </div>
       </h4>
       <ul
-        class="css-1h2n3le-paragraph-STYLES_UNORDERED_LIST"
+        class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
         data-text="true"
       >
         <li
@@ -6344,7 +6344,7 @@ Same as
       </div>
     </h4>
     <ul
-      class="css-1h2n3le-paragraph-STYLES_UNORDERED_LIST"
+      class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
       data-text="true"
     >
       <li
@@ -6435,7 +6435,7 @@ This can be used to quickly create specific permission hooks in every module.
       </div>
     </h4>
     <ul
-      class="css-1h2n3le-paragraph-STYLES_UNORDERED_LIST"
+      class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
       data-text="true"
     >
       <li
@@ -6659,7 +6659,7 @@ This can be used to quickly create specific permission hooks in every module.
       </div>
     </h4>
     <ul
-      class="css-1h2n3le-paragraph-STYLES_UNORDERED_LIST"
+      class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
       data-text="true"
     >
       <li
@@ -6841,7 +6841,7 @@ This can be used to quickly create specific permission hooks in every module.
       </div>
     </h4>
     <ul
-      class="css-1h2n3le-paragraph-STYLES_UNORDERED_LIST"
+      class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
       data-text="true"
     >
       <li
@@ -6999,7 +6999,7 @@ This can be used to quickly create specific permission hooks in every module.
       </div>
     </h4>
     <ul
-      class="css-1h2n3le-paragraph-STYLES_UNORDERED_LIST"
+      class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
       data-text="true"
     >
       <li
@@ -7141,7 +7141,7 @@ the platform.
       </div>
     </h4>
     <ul
-      class="css-1h2n3le-paragraph-STYLES_UNORDERED_LIST"
+      class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
       data-text="true"
     >
       <li
@@ -7938,7 +7938,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
         </div>
       </h4>
       <ul
-        class="css-1h2n3le-paragraph-STYLES_UNORDERED_LIST"
+        class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
         data-text="true"
       >
         <li
@@ -8864,7 +8864,7 @@ For some types, they will represent the area used by the scanner.
       </div>
     </h3>
     <ul
-      class="css-1h2n3le-paragraph-STYLES_UNORDERED_LIST"
+      class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
       data-text="true"
     >
       <li
@@ -9115,7 +9115,7 @@ exports[`APISection expo-pedometer 1`] = `
       </div>
     </h4>
     <ul
-      class="css-1h2n3le-paragraph-STYLES_UNORDERED_LIST"
+      class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
       data-text="true"
     >
       <li
@@ -9255,7 +9255,7 @@ exports[`APISection expo-pedometer 1`] = `
       </div>
     </h4>
     <ul
-      class="css-1h2n3le-paragraph-STYLES_UNORDERED_LIST"
+      class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
       data-text="true"
     >
       <li
@@ -9370,7 +9370,7 @@ exports[`APISection expo-pedometer 1`] = `
       </div>
     </h4>
     <ul
-      class="css-1h2n3le-paragraph-STYLES_UNORDERED_LIST"
+      class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
       data-text="true"
     >
       <li
@@ -9583,7 +9583,7 @@ a start date that is more than seven days in the past returns only the available
       </div>
     </h4>
     <ul
-      class="css-1h2n3le-paragraph-STYLES_UNORDERED_LIST"
+      class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
       data-text="true"
     >
       <li
@@ -9731,7 +9731,7 @@ available on this device.
       </div>
     </h4>
     <ul
-      class="css-1h2n3le-paragraph-STYLES_UNORDERED_LIST"
+      class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
       data-text="true"
     >
       <li
@@ -9871,7 +9871,7 @@ available on this device.
       </div>
     </h4>
     <ul
-      class="css-1h2n3le-paragraph-STYLES_UNORDERED_LIST"
+      class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
       data-text="true"
     >
       <li
@@ -9971,7 +9971,7 @@ provided with a single argument that is
       </div>
     </h4>
     <ul
-      class="css-1h2n3le-paragraph-STYLES_UNORDERED_LIST"
+      class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
       data-text="true"
     >
       <li
@@ -10296,7 +10296,7 @@ provided with a single argument that is
         </div>
       </h4>
       <ul
-        class="css-1h2n3le-paragraph-STYLES_UNORDERED_LIST"
+        class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
         data-text="true"
       >
         <li
@@ -10896,7 +10896,7 @@ provided with a single argument that is
       </div>
     </h3>
     <ul
-      class="css-1h2n3le-paragraph-STYLES_UNORDERED_LIST"
+      class="css-1oe4yj6-paragraph-STYLES_UNORDERED_LIST-UL"
       data-text="true"
     >
       <li
