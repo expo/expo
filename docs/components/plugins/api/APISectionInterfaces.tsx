@@ -19,6 +19,7 @@ import {
   renderTypeOrSignatureType,
   resolveTypeName,
 } from '~/components/plugins/api/APISectionUtils';
+import { Cell, HeaderCell, Row, Table, TableHead } from '~/ui/components/Table';
 
 export type APISectionInterfacesProps = {
   data: InterfaceDefinitionData[];
@@ -75,17 +76,17 @@ const renderInterfacePropertyRow = ({
   comment,
   signatures,
 }: PropData): JSX.Element => (
-  <tr key={name}>
-    <td>
+  <Row key={name}>
+    <Cell>
       <B>
         {name}
         {signatures && signatures.length ? '()' : ''}
       </B>
       {renderFlags(flags)}
-    </td>
-    <td>{renderTypeOrSignatureType(type, signatures)}</td>
-    <td>{renderInterfaceComment(comment, signatures)}</td>
-  </tr>
+    </Cell>
+    <Cell>{renderTypeOrSignatureType(type, signatures)}</Cell>
+    <Cell>{renderInterfaceComment(comment, signatures)}</Cell>
+  </Row>
 );
 
 const renderInterface = ({
@@ -110,18 +111,18 @@ const renderInterface = ({
         </P>
       )}
       <CommentTextBlock comment={comment} />
-      <table>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Type</th>
-            <th>Description</th>
-          </tr>
-        </thead>
+      <Table>
+        <TableHead>
+          <Row>
+            <HeaderCell>Name</HeaderCell>
+            <HeaderCell>Type</HeaderCell>
+            <HeaderCell>Description</HeaderCell>
+          </Row>
+        </TableHead>
         <tbody>
           {children.filter(child => !child?.inheritedFrom).map(renderInterfacePropertyRow)}
         </tbody>
-      </table>
+      </Table>
     </div>
   ) : null;
 

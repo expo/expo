@@ -1,24 +1,8 @@
-import { css } from '@emotion/react';
-import { theme } from '@expo/styleguide';
 import MDX from '@mdx-js/runtime';
 import * as React from 'react';
 
 import * as components from '~/common/translate-markdown';
-
-const STYLES_TABLE = css`
-  font-size: 1rem;
-  margin-top: 24px;
-`;
-
-const STYLES_HEAD = css`
-  background-color: ${theme.background.tertiary};
-`;
-
-const STYLES_DESCRIPTION_CELL = css`
-  word-break: break-word;
-  white-space: break-spaces;
-  padding-bottom: 0.2rem;
-`;
+import { Cell, HeaderCell, Row, Table, TableHead } from '~/ui/components/Table';
 
 export type Property = {
   description?: string[];
@@ -93,38 +77,37 @@ export default class EasJsonPropertiesTable extends React.Component<{
     const formattedSchema = formatSchema(this.props.schema);
 
     return (
-      <table css={STYLES_TABLE}>
-        <thead css={STYLES_HEAD}>
-          <tr>
-            <td>Property</td>
-            <td>Description</td>
-          </tr>
-        </thead>
+      <Table>
+        <TableHead>
+          <Row>
+            <HeaderCell>Property</HeaderCell>
+            <HeaderCell>Description</HeaderCell>
+          </Row>
+        </TableHead>
         <tbody>
           {formattedSchema.map((property, index) => {
             return (
-              <tr key={index}>
-                <td>
+              <Row key={index}>
+                <Cell fitContent>
                   <div
                     data-testid={property.name}
                     style={{
                       marginLeft: `${property.nestingLevel * 32}px`,
                       display: property.nestingLevel ? 'list-item' : 'block',
                       listStyleType: property.nestingLevel % 2 ? 'default' : 'circle',
-                      width: 'fit-content',
                       overflowX: 'visible',
                     }}>
                     <MDX components={components}>{property.name}</MDX>
                   </div>
-                </td>
-                <td css={STYLES_DESCRIPTION_CELL}>
+                </Cell>
+                <Cell>
                   <MDX components={components}>{property.description}</MDX>
-                </td>
-              </tr>
+                </Cell>
+              </Row>
             );
           })}
         </tbody>
-      </table>
+      </Table>
     );
   }
 }

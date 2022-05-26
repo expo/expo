@@ -22,6 +22,7 @@ import {
   getCommentOrSignatureComment,
   getTagData,
 } from '~/components/plugins/api/APISectionUtils';
+import { Cell, HeaderCell, Row, Table, TableHead } from '~/ui/components/Table';
 
 export type APISectionTypesProps = {
   data: TypeGeneralData[];
@@ -43,16 +44,16 @@ const defineLiteralType = (types: TypeDefinitionData[]): JSX.Element | null => {
 };
 
 const renderTypeDeclarationTable = ({ children }: TypeDeclarationContentData): JSX.Element => (
-  <table key={`type-declaration-table-${children?.map(child => child.name).join('-')}`}>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
+  <Table key={`type-declaration-table-${children?.map(child => child.name).join('-')}`}>
+    <TableHead>
+      <Row>
+        <HeaderCell>Name</HeaderCell>
+        <HeaderCell>Type</HeaderCell>
+        <HeaderCell>Description</HeaderCell>
+      </Row>
+    </TableHead>
     <tbody>{children?.map(renderTypePropertyRow)}</tbody>
-  </table>
+  </Table>
 );
 
 const renderDefaultValue = (initValue?: string) =>
@@ -76,13 +77,13 @@ const renderTypePropertyRow = ({
   const initValue = parseCommentContent(defaultValue || getTagData('default', comment)?.text);
   const commentData = getCommentOrSignatureComment(comment, signatures);
   return (
-    <tr key={name}>
-      <td>
+    <Row key={name}>
+      <Cell fitContent>
         <B>{name}</B>
         {renderFlags(flags)}
-      </td>
-      <td>{renderTypeOrSignatureType(type, signatures)}</td>
-      <td>
+      </Cell>
+      <Cell>{renderTypeOrSignatureType(type, signatures)}</Cell>
+      <Cell>
         {commentData ? (
           <CommentTextBlock
             comment={commentData}
@@ -92,8 +93,8 @@ const renderTypePropertyRow = ({
         ) : (
           '-'
         )}
-      </td>
-    </tr>
+      </Cell>
+    </Row>
   );
 };
 
