@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Stop persisting remote debugging setting between app loads on iOS. ([#17650](https://github.com/expo/expo/pull/17650) by [@esamelson](https://github.com/esamelson))
+
 ## 0.11.6 — 2022-05-19
 
 _This version does not introduce any user-facing changes._
