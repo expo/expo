@@ -10,8 +10,6 @@
 
 ### 🐛 Bug fixes
 
-- Update dev settings when initial props change. ([#17651](https://github.com/expo/expo/pull/17651) by [@esamelson](https://github.com/esamelson))
-
 ### 💡 Others
 
 ## 0.10.7 — 2022-05-19
