@@ -37,7 +37,9 @@ export function useDevSettings() {
   );
 
   React.useEffect(() => {
-    setDevSettings(initialDevSettings);
+    if (initialDevSettings) {
+      setDevSettings(initialDevSettings);
+    }
   }, [initialDevSettings]);
 
   // toggle value so that there is no lag in response to user input
