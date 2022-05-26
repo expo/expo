@@ -21,6 +21,7 @@ abstract_target 'BareExpoMain' do
     tests: [
       'expo-dev-menu-interface',
       'expo-dev-launcher',
+      'expo-updates',
     ],
   )
 
