@@ -1,5 +1,6 @@
 import { ExpoConfig, getConfig, getNameFromConfig } from '@expo/config';
 import fs from 'fs';
+import path from 'path';
 
 import { TEMPLATES } from '../../customize/templates';
 
@@ -22,6 +23,30 @@ export async function createTemplateHtmlFromExpoConfigAsync(
   });
 }
 
+function getFileFromLocalPublicFolder(
+  projectRoot: string,
+  { publicFolder, filePath }: { publicFolder: string; filePath: string }
+) {
+  const localFilePath = path.resolve(projectRoot, publicFolder, filePath);
+  if (!fs.existsSync(localFilePath)) {
+    return null;
+  }
+  return localFilePath;
+}
+
+/** Attempt to read the `index.html` from the local project before falling back on the template `index.html`. */
+async function getTemplateIndexHtmlAsync(projectRoot: string) {
+  let filePath = getFileFromLocalPublicFolder(projectRoot, {
+    // TODO: Maybe use the app.json override.
+    publicFolder: 'web',
+    filePath: 'index.html',
+  });
+  if (!filePath) {
+    filePath = TEMPLATES.find((value) => value.id === 'index.html')!.file(projectRoot);
+  }
+  return fs.promises.readFile(filePath, 'utf8');
+}
+
 export async function createTemplateHtmlAsync(
   projectRoot: string,
   {
@@ -38,9 +63,8 @@ export async function createTemplateHtmlAsync(
     themeColor?: string;
   }
 ) {
-  const indexHtmlFilePath = TEMPLATES.find((value) => value.id === 'index.html')!.file(projectRoot);
-
-  let contents = await fs.promises.readFile(indexHtmlFilePath, 'utf8');
+  // Resolve the best possible index.html template file.
+  let contents = await getTemplateIndexHtmlAsync(projectRoot);
 
   contents = contents.replace('%LANG_ISO_CODE%', langIsoCode);
   contents = contents.replace('%WEB_TITLE%', title);
