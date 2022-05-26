@@ -16,14 +16,15 @@ async function runTests(testTargets: string[]) {
 
 // TODO: Do we need this?
 async function prepareSchemes(podspecName: string) {
-  await spawnAsync(
-    'fastlane',
-    ['run', 'recreate_schemes', `project:Pods/${podspecName}.xcodeproj`],
-    {
-      cwd: TEST_APP_IOS_DIR,
-      stdio: 'inherit',
-    }
-  );
+  // TEMPORARILY DISABLED
+  // await spawnAsync(
+  //   'fastlane',
+  //   ['run', 'recreate_schemes', `project:Pods/${podspecName}.xcodeproj`],
+  //   {
+  //     cwd: TEST_APP_IOS_DIR,
+  //     stdio: 'inherit',
+  //   }
+  // );
 
   await moveSchemesToSharedData(podspecName, TEST_APP_IOS_DIR);
 }
