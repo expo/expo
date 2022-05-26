@@ -1,23 +1,20 @@
 package expo.modules.kotlin
 
-import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReadableArray
 import expo.modules.kotlin.events.BasicEventListener
 import expo.modules.kotlin.events.EventListenerWithPayload
 import expo.modules.kotlin.events.EventListenerWithSenderAndPayload
 import expo.modules.kotlin.events.EventName
-import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.FunctionCallException
 import expo.modules.kotlin.exception.MethodNotFoundException
-import expo.modules.kotlin.exception.UnexpectedException
 import expo.modules.kotlin.exception.exceptionDecorator
 import expo.modules.kotlin.jni.JavaScriptModuleObject
 import expo.modules.kotlin.modules.Module
-import expo.modules.kotlin.types.JSTypeConverter
-import kotlinx.coroutines.launch
+import expo.modules.kotlin.modules.ProcessedModuleDefinition
 
 class ModuleHolder(val module: Module) {
-  val definition = module.definition()
+  val definition = ProcessedModuleDefinition(module.definition(), this)
+
   val name get() = definition.name
 
   /**
@@ -27,29 +24,9 @@ class ModuleHolder(val module: Module) {
     JavaScriptModuleObject()
       .apply {
         definition
-          .methods
-          .forEach { (name, method) ->
-            val moduleHolder = this@ModuleHolder
-            if (method.isSync) {
-              registerSyncFunction(name, method.argsCount) { args ->
-                val result = method.callSync(moduleHolder, args)
-                val convertedResult = JSTypeConverter.convertToJSValue(result)
-                return@registerSyncFunction Arguments.fromJavaArgs(arrayOf(convertedResult))
-              }
-            } else {
-              registerAsyncFunction(name, method.argsCount) { args, bridgePromise ->
-                val kotlinPromise = KPromiseWrapper(bridgePromise as com.facebook.react.bridge.Promise)
-                moduleHolder.module.appContext.modulesQueue.launch {
-                  try {
-                    method.call(moduleHolder, args, kotlinPromise)
-                  } catch (e: CodedException) {
-                    kotlinPromise.reject(e)
-                  } catch (e: Throwable) {
-                    kotlinPromise.reject(UnexpectedException(e))
-                  }
-                }
-              }
-            }
+          .functions
+          .forEach { function ->
+            function.attachToJSObject(module.appContext, this)
           }
       }
   }
@@ -60,32 +37,21 @@ class ModuleHolder(val module: Module) {
   fun call(methodName: String, args: ReadableArray, promise: Promise) = exceptionDecorator({
     FunctionCallException(methodName, definition.name, it)
   }) {
-    val method = definition.methods[methodName]
+    val method = definition.asyncFunctions[methodName]
       ?: throw MethodNotFoundException()
 
-    if (method.isSync) {
-      throw MethodNotFoundException()
-    }
-
-    method.call(this, args, promise)
+    method.call(args, promise)
   }
 
   /**
    * Invokes a function without promise.
    * `callSync` was added only for test purpose and shouldn't be used anywhere else.
    */
-  fun callSync(methodName: String, args: ReadableArray): Any? = exceptionDecorator({
-    FunctionCallException(methodName, definition.name, it)
-  }) {
-    val method = definition.methods[methodName]
+  fun callSync(methodName: String, args: ReadableArray): Any? {
+    val method = definition.syncFunctions[methodName]
       ?: throw MethodNotFoundException()
 
-    if (!method.isSync) {
-      throw MethodNotFoundException()
-    }
-
-    val result = method.callSync(this, args)
-    JSTypeConverter.convertToJSValue(result)
+    return method.call(args)
   }
 
   fun post(eventName: EventName) {

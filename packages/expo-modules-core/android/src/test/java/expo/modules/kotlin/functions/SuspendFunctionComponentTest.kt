@@ -6,8 +6,10 @@ import expo.modules.PromiseMock
 import expo.modules.PromiseState
 import expo.modules.kotlin.ModuleHolder
 import expo.modules.kotlin.modules.Module
+import expo.modules.kotlin.types.AnyType
 import io.mockk.every
 import io.mockk.mockk
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
 import kotlinx.coroutines.cancel
@@ -16,11 +18,13 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
 import org.junit.Before
 import org.junit.Test
+import java.lang.ref.WeakReference
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class AsyncSuspendFunctionTest {
+class SuspendFunctionComponentTest {
   private lateinit var testScope: TestScope
   private lateinit var moduleHolderMock: ModuleHolder
+
   @Before
   fun setUp() {
     testScope = TestScope()
@@ -34,12 +38,12 @@ class AsyncSuspendFunctionTest {
 
   @Test
   fun `suspend block should resolve promise on finish`() {
-    val suspendMethod = AsyncSuspendFunction("test", emptyArray()) {
+    val suspendMethod = createSuspendFunctionComponent("test", emptyArray()) {
       delay(2000)
     }
     val promiseMock = PromiseMock()
 
-    suspendMethod.call(moduleHolderMock, JavaOnlyArray(), promiseMock)
+    suspendMethod.call(JavaOnlyArray(), promiseMock)
     testScope.testScheduler.advanceTimeBy(3000)
 
     Truth.assertThat(promiseMock.state).isEqualTo(PromiseState.RESOLVED)
@@ -47,13 +51,13 @@ class AsyncSuspendFunctionTest {
 
   @Test
   fun `suspend block should reject promise when throws`() {
-    val suspendMethod = AsyncSuspendFunction("test", emptyArray()) {
+    val suspendMethod = createSuspendFunctionComponent("test", emptyArray()) {
       delay(2000)
       throw IllegalStateException()
     }
     val promiseMock = PromiseMock()
 
-    suspendMethod.call(moduleHolderMock, JavaOnlyArray(), promiseMock)
+    suspendMethod.call(JavaOnlyArray(), promiseMock)
     testScope.testScheduler.advanceTimeBy(3000)
 
     Truth.assertThat(promiseMock.state).isEqualTo(PromiseState.REJECTED)
@@ -61,12 +65,12 @@ class AsyncSuspendFunctionTest {
 
   @Test
   fun `suspend block should be cancelable`() {
-    val suspendMethod = AsyncSuspendFunction("test", emptyArray()) {
+    val suspendMethod = createSuspendFunctionComponent("test", emptyArray()) {
       delay(2000)
     }
     val promiseMock = PromiseMock()
 
-    suspendMethod.call(moduleHolderMock, JavaOnlyArray(), promiseMock)
+    suspendMethod.call(JavaOnlyArray(), promiseMock)
     testScope.testScheduler.advanceTimeBy(1000)
     testScope.cancel()
     Truth.assertThat(promiseMock.state).isEqualTo(PromiseState.NONE)
@@ -77,7 +81,7 @@ class AsyncSuspendFunctionTest {
     var wasAsyncCalled = false
     var wasLaunchCalled = false
 
-    val suspendMethod = AsyncSuspendFunction("test", emptyArray()) {
+    val suspendMethod = createSuspendFunctionComponent("test", emptyArray()) {
       val deferred = async {
         delay(1000)
         wasAsyncCalled = true
@@ -91,7 +95,7 @@ class AsyncSuspendFunctionTest {
     }
     val promiseMock = PromiseMock()
 
-    suspendMethod.call(moduleHolderMock, JavaOnlyArray(), promiseMock)
+    suspendMethod.call(JavaOnlyArray(), promiseMock)
     testScope.testScheduler.advanceTimeBy(3500)
 
     Truth.assertThat(promiseMock.state).isEqualTo(PromiseState.RESOLVED)
@@ -104,7 +108,7 @@ class AsyncSuspendFunctionTest {
     var wasAsyncCalled = false
     var wasLaunchCalled = false
 
-    val suspendMethod = AsyncSuspendFunction("test", emptyArray()) {
+    val suspendMethod = createSuspendFunctionComponent("test", emptyArray()) {
       val deferred = async {
         delay(1000)
         wasAsyncCalled = true
@@ -118,7 +122,7 @@ class AsyncSuspendFunctionTest {
     }
     val promiseMock = PromiseMock()
 
-    suspendMethod.call(moduleHolderMock, JavaOnlyArray(), promiseMock)
+    suspendMethod.call(JavaOnlyArray(), promiseMock)
     testScope.testScheduler.advanceTimeBy(500)
     testScope.cancel()
     Truth.assertThat(promiseMock.state).isEqualTo(PromiseState.NONE)
@@ -128,14 +132,14 @@ class AsyncSuspendFunctionTest {
 
   @Test
   fun `should handle multiple calls`() {
-    val suspendMethod = AsyncSuspendFunction("test", emptyArray()) {
+    val suspendMethod = createSuspendFunctionComponent("test", emptyArray()) {
       delay(2000)
     }
     val promiseMock1 = PromiseMock()
     val promiseMock2 = PromiseMock()
 
-    suspendMethod.call(moduleHolderMock, JavaOnlyArray(), promiseMock1)
-    suspendMethod.call(moduleHolderMock, JavaOnlyArray(), promiseMock2)
+    suspendMethod.call(JavaOnlyArray(), promiseMock1)
+    suspendMethod.call(JavaOnlyArray(), promiseMock2)
 
     testScope.testScheduler.advanceTimeBy(2500)
 
@@ -145,10 +149,10 @@ class AsyncSuspendFunctionTest {
 
   @Test
   fun `should not cancel siblings `() {
-    val suspendMethod1 = AsyncSuspendFunction("test1", emptyArray()) {
+    val suspendMethod1 = SuspendFunctionComponent("test1", emptyArray(), WeakReference(moduleHolderMock)) {
       delay(2000)
     }
-    val suspendMethod2 = AsyncSuspendFunction("test2", emptyArray()) {
+    val suspendMethod2 = SuspendFunctionComponent("test2", emptyArray(), WeakReference(moduleHolderMock)) {
       delay(1000)
       throw IllegalStateException()
     }
@@ -156,12 +160,18 @@ class AsyncSuspendFunctionTest {
     val promiseMock1 = PromiseMock()
     val promiseMock2 = PromiseMock()
 
-    suspendMethod1.call(moduleHolderMock, JavaOnlyArray(), promiseMock1)
-    suspendMethod2.call(moduleHolderMock, JavaOnlyArray(), promiseMock2)
+    suspendMethod1.call(JavaOnlyArray(), promiseMock1)
+    suspendMethod2.call(JavaOnlyArray(), promiseMock2)
 
     testScope.testScheduler.advanceTimeBy(2500)
 
     Truth.assertThat(promiseMock1.state).isEqualTo(PromiseState.RESOLVED)
     Truth.assertThat(promiseMock2.state).isEqualTo(PromiseState.REJECTED)
   }
+
+  private fun createSuspendFunctionComponent(
+    name: String,
+    args: Array<AnyType>,
+    block: suspend CoroutineScope.(args: Array<out Any?>) -> Any?
+  ) = SuspendFunctionComponent(name, args, WeakReference(moduleHolderMock), block)
 }
