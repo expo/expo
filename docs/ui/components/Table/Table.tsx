@@ -1,5 +1,5 @@
 import { css } from '@emotion/react';
-import {theme, borderRadius, typography, spacing, shadows} from '@expo/styleguide';
+import { theme, borderRadius, typography, spacing, shadows } from '@expo/styleguide';
 import React, { PropsWithChildren } from 'react';
 
 import { TableHeaders } from './TableHeaders';
