@@ -1,7 +1,6 @@
-package expo.modules
+package expo.modules.kotlin.jni
 
 import com.google.common.truth.Truth
-import expo.modules.kotlin.jni.JSIInteropModuleRegistry
 import io.mockk.mockk
 import org.junit.Before
 import org.junit.Test
