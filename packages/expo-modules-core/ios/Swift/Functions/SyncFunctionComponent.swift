@@ -83,7 +83,7 @@ public final class SyncFunctionComponent<Args, FirstArgType, ReturnType>: AnySyn
   func build(inRuntime runtime: JavaScriptRuntime) -> JavaScriptObject {
     return runtime.createSyncFunction(name, argsCount: argumentsCount) { [weak self, name] this, args in
       guard let self = self else {
-        return NativeFunctionUnavailableException(name)
+        throw NativeFunctionUnavailableException(name)
       }
       return try self.call(by: this, withArguments: args)
     }
