@@ -2,8 +2,8 @@
 title: iOS Simulator
 ---
 
-import ImageSpotlight from '~/components/plugins/ImageSpotlight'
-import Video from '~/components/plugins/Video'
+import ImageSpotlight from '/components/plugins/ImageSpotlight'
+import Video from '/components/plugins/Video'
 
 It's often convenient to develop your app directly on your computer rather than having to physically interact with an iPhone and iPad and load your app over the network, which may be slow under some conditions such as if you need to use a tunnel connection because LAN isn't possible on your network.
 
