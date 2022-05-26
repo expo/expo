@@ -102,6 +102,6 @@ typedef void (^ClassConstructorBlock)(EXJavaScriptObject * _Nonnull thisValue, N
 /**
  Evaluates given JavaScript source code.
  */
-- (nonnull EXJavaScriptValue *)evaluateScript:(nonnull NSString *)scriptSource;
+- (nonnull EXJavaScriptValue *)evaluateScript:(nonnull NSString *)scriptSource NS_REFINED_FOR_SWIFT;
 
 @end

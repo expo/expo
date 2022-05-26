@@ -21,13 +21,22 @@ public extension JavaScriptRuntime {
     do {
       var result: JavaScriptValue?
       try EXUtilities.catchException {
-        result = self.evaluateScript(source)
+        result = self.__evaluateScript(source)
       }
       // There is no risk to force unwrapping as long as the `evaluateScript` returns nonnull value.
       return result!
     } catch {
       throw JavaScriptEvalException(error as NSError)
     }
+  }
+
+  /**
+   Evaluates the JavaScript code made by joining an array of strings with a newline separator.
+   See the other ``eval(_:)`` for more details.
+   */
+  @discardableResult
+  func eval(_ source: [String]) throws -> JavaScriptValue {
+    try eval(source.joined(separator: "\n"))
   }
 
   /**

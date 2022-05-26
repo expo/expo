@@ -91,8 +91,10 @@ class ClassComponentSpec: ExpoSpec {
       }
 
       it("is an instance of") {
-        try runtime?.eval("myObject = new ExpoModules.ClassTest.MyClass()")
-        let isInstanceOf = try runtime?.eval("myObject instanceof ExpoModules.ClassTest.MyClass")
+        let isInstanceOf = try runtime?.eval([
+          "myObject = new ExpoModules.ClassTest.MyClass()",
+          "myObject instanceof ExpoModules.ClassTest.MyClass",
+        ])
 
         expect(isInstanceOf?.getBool()) == true
       }
@@ -130,21 +132,27 @@ class ClassComponentSpec: ExpoSpec {
         expect(SharedObjectRegistry.size) == oldSize + 1
       }
       it("calls function with owner") {
-        try runtime?.eval("object = new ExpoModules.TestModule.Counter(0)")
-        try runtime?.eval("object.increment(1)")
+        try runtime?.eval([
+          "object = new ExpoModules.TestModule.Counter(0)",
+          "object.increment(1)",
+        ])
         // no expectations, just checking if it doesn't fail
       }
       it("creates with initial value") {
         let initialValue = Int.random(in: 1..<100)
-        try runtime?.eval("object = new ExpoModules.TestModule.Counter(\(initialValue))")
-        let value = try runtime!.eval("object.getValue()")
+        let value = try runtime!.eval([
+          "object = new ExpoModules.TestModule.Counter(\(initialValue))",
+          "object.getValue()",
+        ])
 
         expect(value.kind) == .number
         expect(value.getInt()) == initialValue
       }
       it("gets shared object value") {
-        try! runtime?.eval("object = new ExpoModules.TestModule.Counter(0)")
-        let value = try runtime!.eval("object.getValue()")
+        let value = try runtime!.eval([
+          "object = new ExpoModules.TestModule.Counter(0)",
+          "object.getValue()",
+        ])
 
         expect(value.kind) == .number
         expect(value.isNumber()) == true
@@ -153,8 +161,10 @@ class ClassComponentSpec: ExpoSpec {
         try! runtime?.eval("object = new ExpoModules.TestModule.Counter(0)")
         let incrementBy = Int.random(in: 1..<100)
         let value = try runtime!.eval("object.getValue()").asInt()
-        try runtime?.eval("object.increment(\(incrementBy))")
-        let newValue = try runtime!.eval("object.getValue()")
+        let newValue = try runtime!.eval([
+          "object.increment(\(incrementBy))",
+          "object.getValue()",
+        ])
 
         expect(newValue.kind) == .number
         expect(newValue.getInt()) == value + incrementBy
