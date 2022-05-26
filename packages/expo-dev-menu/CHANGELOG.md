@@ -10,7 +10,7 @@
 
 ### 🐛 Bug fixes
 
-- Update dev settings when initial props change. ([#17651](https://github.com/expo/expo/pull/17651) by [@esamelson](https://github.com/esamelson))
+- Update dev settings when initial props change. ([#17663](https://github.com/expo/expo/pull/17663) by [@esamelson](https://github.com/esamelson))
 
 ### 💡 Others
 
