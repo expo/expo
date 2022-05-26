@@ -2712,7 +2712,7 @@ for more details.
       </div>
     </blockquote>
     <div
-      class="css-gxs0zd-tableWrapperStyle"
+      class="css-zdmbpy-tableWrapperStyle"
     >
       <table
         class="css-33l6in-tableStyle-Table"
@@ -2745,7 +2745,7 @@ for more details.
             class="css-1ne1f2k-tableRowStyle-Row"
           >
             <td
-              class="css-1rwbqei-tableCellStyle-fitContentStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <strong
                 class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
@@ -2754,7 +2754,7 @@ for more details.
               </strong>
             </td>
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <code
                 class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
@@ -2769,7 +2769,7 @@ for more details.
               </code>
             </td>
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <span>
                 A short-lived session token used by your app for proof of authorization when interacting with
@@ -2787,7 +2787,7 @@ the app's server counterpart. Unlike
             class="css-1ne1f2k-tableRowStyle-Row"
           >
             <td
-              class="css-1rwbqei-tableCellStyle-fitContentStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <strong
                 class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
@@ -2796,7 +2796,7 @@ the app's server counterpart. Unlike
               </strong>
             </td>
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <code
                 class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
@@ -2811,7 +2811,7 @@ the app's server counterpart. Unlike
               </code>
             </td>
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <span>
                 The user's email address. Might not be present if you didn't request the 
@@ -2831,7 +2831,7 @@ an Apple domain.
             class="css-1ne1f2k-tableRowStyle-Row"
           >
             <td
-              class="css-1rwbqei-tableCellStyle-fitContentStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <strong
                 class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
@@ -2840,7 +2840,7 @@ an Apple domain.
               </strong>
             </td>
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <code
                 class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
@@ -2860,7 +2860,7 @@ an Apple domain.
               </code>
             </td>
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <span>
                 The user's name. May be 
@@ -2891,7 +2891,7 @@ your app.
             class="css-1ne1f2k-tableRowStyle-Row"
           >
             <td
-              class="css-1rwbqei-tableCellStyle-fitContentStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <strong
                 class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
@@ -2900,7 +2900,7 @@ your app.
               </strong>
             </td>
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <code
                 class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
@@ -2915,7 +2915,7 @@ your app.
               </code>
             </td>
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <span>
                 A JSON Web Token (JWT) that securely communicates information about the user to your app.
@@ -2926,7 +2926,7 @@ your app.
             class="css-1ne1f2k-tableRowStyle-Row"
           >
             <td
-              class="css-1rwbqei-tableCellStyle-fitContentStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <strong
                 class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
@@ -2935,7 +2935,7 @@ your app.
               </strong>
             </td>
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <code
                 class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
@@ -2949,7 +2949,7 @@ your app.
               </code>
             </td>
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <span>
                 A value that indicates whether the user appears to the system to be a real person.
@@ -2960,7 +2960,7 @@ your app.
             class="css-1ne1f2k-tableRowStyle-Row"
           >
             <td
-              class="css-1rwbqei-tableCellStyle-fitContentStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <strong
                 class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
@@ -2969,7 +2969,7 @@ your app.
               </strong>
             </td>
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <code
                 class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
@@ -2984,7 +2984,7 @@ your app.
               </code>
             </td>
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <span>
                 An arbitrary string that your app provided as 
@@ -3016,7 +3016,7 @@ will be
             class="css-1ne1f2k-tableRowStyle-Row"
           >
             <td
-              class="css-1rwbqei-tableCellStyle-fitContentStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <strong
                 class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
@@ -3025,7 +3025,7 @@ will be
               </strong>
             </td>
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <code
                 class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
@@ -3034,7 +3034,7 @@ will be
               </code>
             </td>
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <span>
                 An identifier associated with the authenticated user. You can use this to check if the user is
@@ -3119,7 +3119,7 @@ may be
       . Only applicable fields that the user has allowed your app to access will be nonnull.
     </p>
     <div
-      class="css-gxs0zd-tableWrapperStyle"
+      class="css-zdmbpy-tableWrapperStyle"
     >
       <table
         class="css-33l6in-tableStyle-Table"
@@ -3152,7 +3152,7 @@ may be
             class="css-1ne1f2k-tableRowStyle-Row"
           >
             <td
-              class="css-1rwbqei-tableCellStyle-fitContentStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <strong
                 class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
@@ -3161,7 +3161,7 @@ may be
               </strong>
             </td>
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <code
                 class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
@@ -3176,7 +3176,7 @@ may be
               </code>
             </td>
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               -
             </td>
@@ -3185,7 +3185,7 @@ may be
             class="css-1ne1f2k-tableRowStyle-Row"
           >
             <td
-              class="css-1rwbqei-tableCellStyle-fitContentStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <strong
                 class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
@@ -3194,7 +3194,7 @@ may be
               </strong>
             </td>
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <code
                 class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
@@ -3209,7 +3209,7 @@ may be
               </code>
             </td>
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               -
             </td>
@@ -3218,7 +3218,7 @@ may be
             class="css-1ne1f2k-tableRowStyle-Row"
           >
             <td
-              class="css-1rwbqei-tableCellStyle-fitContentStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <strong
                 class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
@@ -3227,7 +3227,7 @@ may be
               </strong>
             </td>
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <code
                 class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
@@ -3242,7 +3242,7 @@ may be
               </code>
             </td>
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               -
             </td>
@@ -3251,7 +3251,7 @@ may be
             class="css-1ne1f2k-tableRowStyle-Row"
           >
             <td
-              class="css-1rwbqei-tableCellStyle-fitContentStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <strong
                 class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
@@ -3260,7 +3260,7 @@ may be
               </strong>
             </td>
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <code
                 class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
@@ -3275,7 +3275,7 @@ may be
               </code>
             </td>
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               -
             </td>
@@ -3284,7 +3284,7 @@ may be
             class="css-1ne1f2k-tableRowStyle-Row"
           >
             <td
-              class="css-1rwbqei-tableCellStyle-fitContentStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <strong
                 class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
@@ -3293,7 +3293,7 @@ may be
               </strong>
             </td>
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <code
                 class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
@@ -3308,7 +3308,7 @@ may be
               </code>
             </td>
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               -
             </td>
@@ -3317,7 +3317,7 @@ may be
             class="css-1ne1f2k-tableRowStyle-Row"
           >
             <td
-              class="css-1rwbqei-tableCellStyle-fitContentStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <strong
                 class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
@@ -3326,7 +3326,7 @@ may be
               </strong>
             </td>
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <code
                 class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
@@ -3341,7 +3341,7 @@ may be
               </code>
             </td>
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               -
             </td>
@@ -3469,7 +3469,7 @@ for more details.
       </div>
     </blockquote>
     <div
-      class="css-gxs0zd-tableWrapperStyle"
+      class="css-zdmbpy-tableWrapperStyle"
     >
       <table
         class="css-33l6in-tableStyle-Table"
@@ -3502,7 +3502,7 @@ for more details.
             class="css-1ne1f2k-tableRowStyle-Row"
           >
             <td
-              class="css-1rwbqei-tableCellStyle-fitContentStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <strong
                 class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
@@ -3517,7 +3517,7 @@ for more details.
               </span>
             </td>
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <code
                 class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
@@ -3532,7 +3532,7 @@ for more details.
               </code>
             </td>
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <span>
                 Array of user information scopes to which your app is requesting access. Note that the user can
@@ -3565,7 +3565,7 @@ requests they will be
             class="css-1ne1f2k-tableRowStyle-Row"
           >
             <td
-              class="css-1rwbqei-tableCellStyle-fitContentStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <strong
                 class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
@@ -3580,7 +3580,7 @@ requests they will be
               </span>
             </td>
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <code
                 class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
@@ -3589,7 +3589,7 @@ requests they will be
               </code>
             </td>
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <span>
                 An arbitrary string that is returned unmodified in the corresponding credential after a
@@ -3611,7 +3611,7 @@ OAuth 2.0 protocol
             class="css-1ne1f2k-tableRowStyle-Row"
           >
             <td
-              class="css-1rwbqei-tableCellStyle-fitContentStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <strong
                 class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
@@ -3620,7 +3620,7 @@ OAuth 2.0 protocol
               </strong>
             </td>
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <code
                 class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
@@ -3629,7 +3629,7 @@ OAuth 2.0 protocol
               </code>
             </td>
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               -
             </td>
@@ -3757,7 +3757,7 @@ for more details.
       </div>
     </blockquote>
     <div
-      class="css-gxs0zd-tableWrapperStyle"
+      class="css-zdmbpy-tableWrapperStyle"
     >
       <table
         class="css-33l6in-tableStyle-Table"
@@ -3790,7 +3790,7 @@ for more details.
             class="css-1ne1f2k-tableRowStyle-Row"
           >
             <td
-              class="css-1rwbqei-tableCellStyle-fitContentStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <strong
                 class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
@@ -3805,7 +3805,7 @@ for more details.
               </span>
             </td>
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <code
                 class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
@@ -3814,7 +3814,7 @@ for more details.
               </code>
             </td>
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <span>
                 An arbitrary string that is used to prevent replay attacks. See more information on this in the
@@ -3834,7 +3834,7 @@ for more details.
             class="css-1ne1f2k-tableRowStyle-Row"
           >
             <td
-              class="css-1rwbqei-tableCellStyle-fitContentStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <strong
                 class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
@@ -3849,7 +3849,7 @@ for more details.
               </span>
             </td>
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <code
                 class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
@@ -3864,7 +3864,7 @@ for more details.
               </code>
             </td>
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <span>
                 Array of user information scopes to which your app is requesting access. Note that the user can
@@ -3897,7 +3897,7 @@ requests they will be
             class="css-1ne1f2k-tableRowStyle-Row"
           >
             <td
-              class="css-1rwbqei-tableCellStyle-fitContentStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <strong
                 class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
@@ -3912,7 +3912,7 @@ requests they will be
               </span>
             </td>
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <code
                 class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
@@ -3921,7 +3921,7 @@ requests they will be
               </code>
             </td>
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <span>
                 An arbitrary string that is returned unmodified in the corresponding credential after a
@@ -4062,7 +4062,7 @@ for more details.
       </div>
     </blockquote>
     <div
-      class="css-gxs0zd-tableWrapperStyle"
+      class="css-zdmbpy-tableWrapperStyle"
     >
       <table
         class="css-33l6in-tableStyle-Table"
@@ -4095,7 +4095,7 @@ for more details.
             class="css-1ne1f2k-tableRowStyle-Row"
           >
             <td
-              class="css-1rwbqei-tableCellStyle-fitContentStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <strong
                 class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
@@ -4110,7 +4110,7 @@ for more details.
               </span>
             </td>
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <code
                 class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
@@ -4119,7 +4119,7 @@ for more details.
               </code>
             </td>
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <span>
                 An arbitrary string that is returned unmodified in the corresponding credential after a
@@ -4141,7 +4141,7 @@ OAuth 2.0 protocol
             class="css-1ne1f2k-tableRowStyle-Row"
           >
             <td
-              class="css-1rwbqei-tableCellStyle-fitContentStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <strong
                 class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
@@ -4150,7 +4150,7 @@ OAuth 2.0 protocol
               </strong>
             </td>
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <code
                 class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
@@ -4159,7 +4159,7 @@ OAuth 2.0 protocol
               </code>
             </td>
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               -
             </td>
@@ -4226,7 +4226,7 @@ OAuth 2.0 protocol
       </div>
     </h3>
     <div
-      class="css-gxs0zd-tableWrapperStyle"
+      class="css-zdmbpy-tableWrapperStyle"
     >
       <table
         class="css-33l6in-tableStyle-Table"
@@ -4259,7 +4259,7 @@ OAuth 2.0 protocol
             class="css-1ne1f2k-tableRowStyle-Row"
           >
             <td
-              class="css-1rwbqei-tableCellStyle-fitContentStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <strong
                 class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
@@ -4268,7 +4268,7 @@ OAuth 2.0 protocol
               </strong>
             </td>
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <code
                 class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
@@ -4280,7 +4280,7 @@ OAuth 2.0 protocol
               </code>
             </td>
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <span>
                 A method to unsubscribe the listener.
@@ -7295,7 +7295,7 @@ code.
       </div>
     </h3>
     <div
-      class="css-gxs0zd-tableWrapperStyle"
+      class="css-zdmbpy-tableWrapperStyle"
     >
       <table
         class="css-33l6in-tableStyle-Table"
@@ -7328,7 +7328,7 @@ code.
             class="css-1ne1f2k-tableRowStyle-Row"
           >
             <td
-              class="css-1rwbqei-tableCellStyle-fitContentStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <strong
                 class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
@@ -7337,7 +7337,7 @@ code.
               </strong>
             </td>
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <code
                 class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
@@ -7351,7 +7351,7 @@ code.
               </code>
             </td>
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <span>
                 The origin point of the bounding box.
@@ -7362,7 +7362,7 @@ code.
             class="css-1ne1f2k-tableRowStyle-Row"
           >
             <td
-              class="css-1rwbqei-tableCellStyle-fitContentStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <strong
                 class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
@@ -7371,7 +7371,7 @@ code.
               </strong>
             </td>
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <code
                 class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
@@ -7385,7 +7385,7 @@ code.
               </code>
             </td>
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <span>
                 The size of the bounding box.
@@ -7470,7 +7470,7 @@ code.
       extended by:
     </p>
     <div
-      class="css-gxs0zd-tableWrapperStyle"
+      class="css-zdmbpy-tableWrapperStyle"
     >
       <table
         class="css-33l6in-tableStyle-Table"
@@ -7503,7 +7503,7 @@ code.
             class="css-1ne1f2k-tableRowStyle-Row"
           >
             <td
-              class="css-1rwbqei-tableCellStyle-fitContentStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <strong
                 class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
@@ -7518,7 +7518,7 @@ code.
               </span>
             </td>
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <code
                 class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
@@ -7527,7 +7527,7 @@ code.
               </code>
             </td>
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               -
             </td>
@@ -7594,7 +7594,7 @@ code.
       </div>
     </h3>
     <div
-      class="css-gxs0zd-tableWrapperStyle"
+      class="css-zdmbpy-tableWrapperStyle"
     >
       <table
         class="css-33l6in-tableStyle-Table"
@@ -7627,7 +7627,7 @@ code.
             class="css-1ne1f2k-tableRowStyle-Row"
           >
             <td
-              class="css-1rwbqei-tableCellStyle-fitContentStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <strong
                 class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
@@ -7636,7 +7636,7 @@ code.
               </strong>
             </td>
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <code
                 class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
@@ -7650,7 +7650,7 @@ code.
               </code>
             </td>
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               -
             </td>
@@ -7724,7 +7724,7 @@ code.
 are using the barcode scanner view, these values are adjusted to the dimensions of the view).
     </p>
     <div
-      class="css-gxs0zd-tableWrapperStyle"
+      class="css-zdmbpy-tableWrapperStyle"
     >
       <table
         class="css-33l6in-tableStyle-Table"
@@ -7757,7 +7757,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
             class="css-1ne1f2k-tableRowStyle-Row"
           >
             <td
-              class="css-1rwbqei-tableCellStyle-fitContentStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <strong
                 class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
@@ -7766,7 +7766,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
               </strong>
             </td>
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <code
                 class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
@@ -7775,7 +7775,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
               </code>
             </td>
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <span>
                 The 
@@ -7792,7 +7792,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
             class="css-1ne1f2k-tableRowStyle-Row"
           >
             <td
-              class="css-1rwbqei-tableCellStyle-fitContentStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <strong
                 class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
@@ -7801,7 +7801,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
               </strong>
             </td>
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <code
                 class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
@@ -7810,7 +7810,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
               </code>
             </td>
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <span>
                 The 
@@ -8085,7 +8085,7 @@ For some types, they will represent the area used by the scanner.
       </div>
     </blockquote>
     <div
-      class="css-gxs0zd-tableWrapperStyle"
+      class="css-zdmbpy-tableWrapperStyle"
     >
       <table
         class="css-33l6in-tableStyle-Table"
@@ -8118,7 +8118,7 @@ For some types, they will represent the area used by the scanner.
             class="css-1ne1f2k-tableRowStyle-Row"
           >
             <td
-              class="css-1rwbqei-tableCellStyle-fitContentStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <strong
                 class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
@@ -8133,7 +8133,7 @@ For some types, they will represent the area used by the scanner.
               </span>
             </td>
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <code
                 class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
@@ -8147,7 +8147,7 @@ For some types, they will represent the area used by the scanner.
               </code>
             </td>
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <span>
                 The 
@@ -8165,7 +8165,7 @@ For some types, they will represent the area used by the scanner.
             class="css-1ne1f2k-tableRowStyle-Row"
           >
             <td
-              class="css-1rwbqei-tableCellStyle-fitContentStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <strong
                 class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
@@ -8180,7 +8180,7 @@ For some types, they will represent the area used by the scanner.
               </span>
             </td>
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <code
                 class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
@@ -8195,7 +8195,7 @@ For some types, they will represent the area used by the scanner.
               </code>
             </td>
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <span>
                 Corner points of the bounding box.
@@ -8206,7 +8206,7 @@ For some types, they will represent the area used by the scanner.
             class="css-1ne1f2k-tableRowStyle-Row"
           >
             <td
-              class="css-1rwbqei-tableCellStyle-fitContentStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <strong
                 class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
@@ -8215,7 +8215,7 @@ For some types, they will represent the area used by the scanner.
               </strong>
             </td>
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <code
                 class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
@@ -8224,7 +8224,7 @@ For some types, they will represent the area used by the scanner.
               </code>
             </td>
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <span>
                 The information encoded in the bar code.
@@ -8235,7 +8235,7 @@ For some types, they will represent the area used by the scanner.
             class="css-1ne1f2k-tableRowStyle-Row"
           >
             <td
-              class="css-1rwbqei-tableCellStyle-fitContentStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <strong
                 class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
@@ -8244,7 +8244,7 @@ For some types, they will represent the area used by the scanner.
               </strong>
             </td>
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <code
                 class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
@@ -8253,7 +8253,7 @@ For some types, they will represent the area used by the scanner.
               </code>
             </td>
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <span>
                 The barcode type.
@@ -8322,7 +8322,7 @@ For some types, they will represent the area used by the scanner.
       </div>
     </h3>
     <div
-      class="css-gxs0zd-tableWrapperStyle"
+      class="css-zdmbpy-tableWrapperStyle"
     >
       <table
         class="css-33l6in-tableStyle-Table"
@@ -8355,7 +8355,7 @@ For some types, they will represent the area used by the scanner.
             class="css-1ne1f2k-tableRowStyle-Row"
           >
             <td
-              class="css-1rwbqei-tableCellStyle-fitContentStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <strong
                 class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
@@ -8364,7 +8364,7 @@ For some types, they will represent the area used by the scanner.
               </strong>
             </td>
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <code
                 class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
@@ -8373,7 +8373,7 @@ For some types, they will represent the area used by the scanner.
               </code>
             </td>
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <span>
                 The height value.
@@ -8384,7 +8384,7 @@ For some types, they will represent the area used by the scanner.
             class="css-1ne1f2k-tableRowStyle-Row"
           >
             <td
-              class="css-1rwbqei-tableCellStyle-fitContentStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <strong
                 class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
@@ -8393,7 +8393,7 @@ For some types, they will represent the area used by the scanner.
               </strong>
             </td>
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <code
                 class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
@@ -8402,7 +8402,7 @@ For some types, they will represent the area used by the scanner.
               </code>
             </td>
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <span>
                 The width value.
@@ -8601,7 +8601,7 @@ For some types, they will represent the area used by the scanner.
       </div>
     </h3>
     <div
-      class="css-gxs0zd-tableWrapperStyle"
+      class="css-zdmbpy-tableWrapperStyle"
     >
       <table
         class="css-33l6in-tableStyle-Table"
@@ -8634,7 +8634,7 @@ For some types, they will represent the area used by the scanner.
             class="css-1ne1f2k-tableRowStyle-Row"
           >
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <strong
                 class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
@@ -8644,7 +8644,7 @@ For some types, they will represent the area used by the scanner.
               </strong>
             </td>
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <code
                 class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
@@ -8653,7 +8653,7 @@ For some types, they will represent the area used by the scanner.
               </code>
             </td>
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               -
             </td>
@@ -8662,7 +8662,7 @@ For some types, they will represent the area used by the scanner.
             class="css-1ne1f2k-tableRowStyle-Row"
           >
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <strong
                 class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
@@ -8672,7 +8672,7 @@ For some types, they will represent the area used by the scanner.
               </strong>
             </td>
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <code
                 class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
@@ -8686,7 +8686,7 @@ For some types, they will represent the area used by the scanner.
               </code>
             </td>
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               -
             </td>
@@ -8695,7 +8695,7 @@ For some types, they will represent the area used by the scanner.
             class="css-1ne1f2k-tableRowStyle-Row"
           >
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <strong
                 class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
@@ -8705,7 +8705,7 @@ For some types, they will represent the area used by the scanner.
               </strong>
             </td>
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <code
                 class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
@@ -8714,7 +8714,7 @@ For some types, they will represent the area used by the scanner.
               </code>
             </td>
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               -
             </td>
@@ -8723,7 +8723,7 @@ For some types, they will represent the area used by the scanner.
             class="css-1ne1f2k-tableRowStyle-Row"
           >
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <strong
                 class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
@@ -8733,7 +8733,7 @@ For some types, they will represent the area used by the scanner.
               </strong>
             </td>
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <code
                 class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
@@ -8747,7 +8747,7 @@ For some types, they will represent the area used by the scanner.
               </code>
             </td>
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               -
             </td>
@@ -10123,7 +10123,7 @@ provided with a single argument that is
       </div>
     </h3>
     <div
-      class="css-gxs0zd-tableWrapperStyle"
+      class="css-zdmbpy-tableWrapperStyle"
     >
       <table
         class="css-33l6in-tableStyle-Table"
@@ -10156,7 +10156,7 @@ provided with a single argument that is
             class="css-1ne1f2k-tableRowStyle-Row"
           >
             <td
-              class="css-1rwbqei-tableCellStyle-fitContentStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <strong
                 class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
@@ -10165,7 +10165,7 @@ provided with a single argument that is
               </strong>
             </td>
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <code
                 class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
@@ -10174,7 +10174,7 @@ provided with a single argument that is
               </code>
             </td>
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <span>
                 Number of steps taken between the given dates.
@@ -10461,7 +10461,7 @@ provided with a single argument that is
       </div>
     </h3>
     <div
-      class="css-gxs0zd-tableWrapperStyle"
+      class="css-zdmbpy-tableWrapperStyle"
     >
       <table
         class="css-33l6in-tableStyle-Table"
@@ -10494,7 +10494,7 @@ provided with a single argument that is
             class="css-1ne1f2k-tableRowStyle-Row"
           >
             <td
-              class="css-1rwbqei-tableCellStyle-fitContentStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <strong
                 class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
@@ -10503,7 +10503,7 @@ provided with a single argument that is
               </strong>
             </td>
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <code
                 class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
@@ -10514,7 +10514,7 @@ provided with a single argument that is
               </code>
             </td>
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <span>
                 A method to unsubscribe the listener.
@@ -10633,7 +10633,7 @@ provided with a single argument that is
       </div>
     </h3>
     <div
-      class="css-gxs0zd-tableWrapperStyle"
+      class="css-zdmbpy-tableWrapperStyle"
     >
       <table
         class="css-33l6in-tableStyle-Table"
@@ -10666,7 +10666,7 @@ provided with a single argument that is
             class="css-1ne1f2k-tableRowStyle-Row"
           >
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <strong
                 class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
@@ -10676,7 +10676,7 @@ provided with a single argument that is
               </strong>
             </td>
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <code
                 class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
@@ -10685,7 +10685,7 @@ provided with a single argument that is
               </code>
             </td>
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               -
             </td>
@@ -10694,7 +10694,7 @@ provided with a single argument that is
             class="css-1ne1f2k-tableRowStyle-Row"
           >
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <strong
                 class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
@@ -10704,7 +10704,7 @@ provided with a single argument that is
               </strong>
             </td>
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <code
                 class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
@@ -10718,7 +10718,7 @@ provided with a single argument that is
               </code>
             </td>
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               -
             </td>
@@ -10727,7 +10727,7 @@ provided with a single argument that is
             class="css-1ne1f2k-tableRowStyle-Row"
           >
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <strong
                 class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
@@ -10737,7 +10737,7 @@ provided with a single argument that is
               </strong>
             </td>
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <code
                 class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
@@ -10746,7 +10746,7 @@ provided with a single argument that is
               </code>
             </td>
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               -
             </td>
@@ -10755,7 +10755,7 @@ provided with a single argument that is
             class="css-1ne1f2k-tableRowStyle-Row"
           >
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <strong
                 class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
@@ -10765,7 +10765,7 @@ provided with a single argument that is
               </strong>
             </td>
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               <code
                 class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
@@ -10779,7 +10779,7 @@ provided with a single argument that is
               </code>
             </td>
             <td
-              class="css-1sp938g-tableCellStyle-Cell"
+              class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
               -
             </td>

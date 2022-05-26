@@ -3,7 +3,7 @@
 exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
 <div>
   <div
-    class="css-gxs0zd-tableWrapperStyle"
+    class="css-zdmbpy-tableWrapperStyle"
   >
     <table
       class="css-33l6in-tableStyle-Table"
@@ -31,7 +31,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           class="css-1ne1f2k-tableRowStyle-Row"
         >
           <td
-            class="css-1rwbqei-tableCellStyle-fitContentStyle-Cell"
+            class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
           >
             <div
               data-testid="<propertyAnchor level={0}><inlineCode>name</inlineCode></propertyAnchor>"
@@ -95,7 +95,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             </div>
           </td>
           <td
-            class="css-1sp938g-tableCellStyle-Cell"
+            class="css-yr5jng-tableCellStyle-Cell"
           >
             <div
               class=" css-pb2q8c-paragraph-STYLES_PARAGRAPH_DIV"
@@ -157,7 +157,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           class="css-1ne1f2k-tableRowStyle-Row"
         >
           <td
-            class="css-1rwbqei-tableCellStyle-fitContentStyle-Cell"
+            class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
           >
             <div
               data-testid="<propertyAnchor level={0}><inlineCode>androidNavigationBar</inlineCode></propertyAnchor>"
@@ -221,7 +221,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             </div>
           </td>
           <td
-            class="css-1sp938g-tableCellStyle-Cell"
+            class="css-yr5jng-tableCellStyle-Cell"
           >
             <div
               class=" css-pb2q8c-paragraph-STYLES_PARAGRAPH_DIV"
@@ -326,7 +326,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           class="css-1ne1f2k-tableRowStyle-Row"
         >
           <td
-            class="css-1rwbqei-tableCellStyle-fitContentStyle-Cell"
+            class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
           >
             <div
               data-testid="<subpropertyAnchor level={1}><inlineCode>visible</inlineCode></subpropertyAnchor>"
@@ -390,7 +390,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             </div>
           </td>
           <td
-            class="css-1sp938g-tableCellStyle-Cell"
+            class="css-yr5jng-tableCellStyle-Cell"
           >
             <div
               class=" css-pb2q8c-paragraph-STYLES_PARAGRAPH_DIV"
@@ -452,7 +452,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           class="css-1ne1f2k-tableRowStyle-Row"
         >
           <td
-            class="css-1rwbqei-tableCellStyle-fitContentStyle-Cell"
+            class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
           >
             <div
               data-testid="<subpropertyAnchor level={2}><inlineCode>always</inlineCode></subpropertyAnchor>"
@@ -516,7 +516,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             </div>
           </td>
           <td
-            class="css-1sp938g-tableCellStyle-Cell"
+            class="css-yr5jng-tableCellStyle-Cell"
           >
             <div
               class=" css-pb2q8c-paragraph-STYLES_PARAGRAPH_DIV"
@@ -535,7 +535,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           class="css-1ne1f2k-tableRowStyle-Row"
         >
           <td
-            class="css-1rwbqei-tableCellStyle-fitContentStyle-Cell"
+            class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
           >
             <div
               data-testid="<subpropertyAnchor level={1}><inlineCode>backgroundColor</inlineCode></subpropertyAnchor>"
@@ -599,7 +599,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             </div>
           </td>
           <td
-            class="css-1sp938g-tableCellStyle-Cell"
+            class="css-yr5jng-tableCellStyle-Cell"
           >
             <div
               class=" css-pb2q8c-paragraph-STYLES_PARAGRAPH_DIV"
@@ -629,7 +629,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           class="css-1ne1f2k-tableRowStyle-Row"
         >
           <td
-            class="css-1rwbqei-tableCellStyle-fitContentStyle-Cell"
+            class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
           >
             <div
               data-testid="<propertyAnchor level={0}><inlineCode>intentFilters</inlineCode></propertyAnchor>"
@@ -693,7 +693,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             </div>
           </td>
           <td
-            class="css-1sp938g-tableCellStyle-Cell"
+            class="css-yr5jng-tableCellStyle-Cell"
           >
             <div
               class=" css-pb2q8c-paragraph-STYLES_PARAGRAPH_DIV"
@@ -792,7 +792,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           class="css-1ne1f2k-tableRowStyle-Row"
         >
           <td
-            class="css-1rwbqei-tableCellStyle-fitContentStyle-Cell"
+            class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
           >
             <div
               data-testid="<subpropertyAnchor level={1}><inlineCode>autoVerify</inlineCode></subpropertyAnchor>"
@@ -856,7 +856,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             </div>
           </td>
           <td
-            class="css-1sp938g-tableCellStyle-Cell"
+            class="css-yr5jng-tableCellStyle-Cell"
           >
             <div
               class=" css-pb2q8c-paragraph-STYLES_PARAGRAPH_DIV"
@@ -875,7 +875,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           class="css-1ne1f2k-tableRowStyle-Row"
         >
           <td
-            class="css-1rwbqei-tableCellStyle-fitContentStyle-Cell"
+            class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
           >
             <div
               data-testid="<subpropertyAnchor level={1}><inlineCode>data</inlineCode></subpropertyAnchor>"
@@ -939,7 +939,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             </div>
           </td>
           <td
-            class="css-1sp938g-tableCellStyle-Cell"
+            class="css-yr5jng-tableCellStyle-Cell"
           >
             <div
               class=" css-pb2q8c-paragraph-STYLES_PARAGRAPH_DIV"
@@ -957,7 +957,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           class="css-1ne1f2k-tableRowStyle-Row"
         >
           <td
-            class="css-1rwbqei-tableCellStyle-fitContentStyle-Cell"
+            class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
           >
             <div
               data-testid="<subpropertyAnchor level={2}><inlineCode>host</inlineCode></subpropertyAnchor>"
@@ -1021,7 +1021,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             </div>
           </td>
           <td
-            class="css-1sp938g-tableCellStyle-Cell"
+            class="css-yr5jng-tableCellStyle-Cell"
           >
             <div
               class=" css-pb2q8c-paragraph-STYLES_PARAGRAPH_DIV"

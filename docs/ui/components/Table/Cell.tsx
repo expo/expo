@@ -16,7 +16,6 @@ export const Cell = ({ children, fitContent = false, textAlign = TextAlign.Left 
 const tableCellStyle = css({
   padding: spacing[4],
   verticalAlign: 'middle',
-  wordBreak: 'break-word',
   borderRight: `1px solid ${theme.border.default}`,
 
   '&:last-child': {
@@ -26,5 +25,4 @@ const tableCellStyle = css({
 
 const fitContentStyle = css({
   width: 'fit-content',
-  wordBreak: 'initial',
 });
