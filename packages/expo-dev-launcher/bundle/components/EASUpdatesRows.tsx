@@ -28,7 +28,7 @@ type EASBranchRowProps = {
   isLast?: boolean;
   navigation: StackNavigationProp<ExtensionsStackParamList>;
   isLoading?: boolean;
-  onUpdatePress: (update: Update) => void;
+  onUpdatePress: (update: Update, branchName?: string) => void;
 };
 
 export function EASBranchRow({
@@ -102,7 +102,11 @@ export function EASBranchRow({
             <Spacer.Horizontal size="large" />
             <Spacer.Vertical size="small" />
             <View align="centered" opacity={isLatestUpdateCompatible ? '1' : '0.5'}>
-              <BasicButton label="Open" size="small" onPress={() => onUpdatePress(latestUpdate)} />
+              <BasicButton
+                label="Open"
+                size="small"
+                onPress={() => onUpdatePress(latestUpdate, branch.name)}
+              />
             </View>
           </Row>
         )}
@@ -234,7 +238,7 @@ export function EASUpdateRow({ update, isFirst, isLast, isLoading, onPress }: EA
   );
 }
 
-function useLoadingContainerStyle(isLoading: boolean = false) {
+export function useLoadingContainerStyle(isLoading: boolean = false) {
   const animatedValue = React.useRef(new Animated.Value(0)).current;
 
   React.useEffect(() => {

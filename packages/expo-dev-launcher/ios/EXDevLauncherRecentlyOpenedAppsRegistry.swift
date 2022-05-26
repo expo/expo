@@ -18,32 +18,54 @@ public class EXDevLauncherRecentlyOpenedAppsRegistry: NSObject {
   }
 
   @objc
-  public func appWasOpened(appInfo: [String: Any]) {
+  public func appWasOpened(_ url: URL) {
+    var appEntry: [String: Any] = [:]
+    
+    let urlAsString = url.absoluteString
     let timestamp = getCurrentTimestamp()
-
-    var appDetails = appInfo
-    appDetails["timestamp"] = timestamp
+        
+    var isEASUpdate = false
+    
+    if let host = url.host {
+      isEASUpdate = host == "u.expo.dev" || host == "staging-u.expo.dev"
+    }
+    
+    appEntry["isEASUpdate"] = isEASUpdate
+  
+    if let branchName = getQueryStringParameter(url: url, param: "branchName") {
+      appEntry["branchName"] = branchName
+    }
+    
+    if let updateMessage = getQueryStringParameter(url: url, param: "updateMessage") {
+      appEntry["updateMessage"] = updateMessage
+    }
+    
+    appEntry["timestamp"] = timestamp
+    appEntry["url"] = urlAsString
     
     var registry = appRegistry
-    registry["\(timestamp)"] = appDetails
+    registry[urlAsString] = appEntry
     appRegistry = registry
   }
 
   @objc
-  public func recentlyOpenedApps() -> [String: Any] {    
+  public func recentlyOpenedApps() -> [[String: Any]] {
     guard let registry = appRegistry as? [String: [String: Any]] else {
-      return [:]
+      return []
     }
+    
+    var apps: [[String: Any]] = []
 
     appRegistry = registry.filter { (url: String, appEntry: [String: Any]) in
       if getCurrentTimestamp() - (appEntry["timestamp"] as! Int64) > TIME_TO_REMOVE {
         return false
       }
 
+      apps.append(appEntry)
       return true
     }
     
-    return appRegistry
+    return apps
   }
   
   @objc
@@ -57,5 +79,10 @@ public class EXDevLauncherRecentlyOpenedAppsRegistry: NSObject {
 
   func resetStorage() {
     UserDefaults.standard.removeObject(forKey: RECENTLY_OPENED_APPS_REGISTRY_KEY)
+  }
+  
+  func getQueryStringParameter(url: URL, param: String) -> String? {
+    guard let url = URLComponents(string: url.absoluteString) else { return nil }
+    return url.queryItems?.first(where: { $0.name == param })?.value
   }
 }

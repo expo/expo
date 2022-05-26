@@ -13,7 +13,7 @@ export function useOnUpdatePress() {
   const [loadingUpdateId, setLoadingUpdateId] = React.useState('');
 
   const onUpdatePress = React.useCallback(
-    (update: Update) => {
+    async (update: Update, branchName: string) => {
       const isCompatible = update.runtimeVersion === runtimeVersion;
       if (!isCompatible) {
         // prevent multiple taps bringing up multiple of the same toast
@@ -33,7 +33,11 @@ export function useOnUpdatePress() {
       } else {
         setLoadingUpdateId(update.id);
 
-        loadUpdate(update.manifestPermalink, updatesUrl)
+        const branchQueryParam = `branchName=${encodeURIComponent(branchName)}`;
+        const messageQueryParam = `updateMessage=${encodeURIComponent(update.message)}`;
+        const manifestPermalink = `${update.manifestPermalink}?${branchQueryParam}&${messageQueryParam}`;
+
+        return loadUpdate(manifestPermalink, updatesUrl)
           .catch((error) => {
             setLoadingUpdateId('');
 

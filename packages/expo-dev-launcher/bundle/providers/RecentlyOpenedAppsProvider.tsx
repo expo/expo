@@ -5,11 +5,20 @@ import {
   clearRecentlyOpenedApps,
 } from '../native-modules/DevLauncherInternal';
 
-export type RecentApp = {
+type App = {
+  id: string;
   url: string;
   name: string;
   timestamp: number;
 };
+
+export type RecentApp =
+  | (App & {
+      isEASUpdate: true;
+      branchName: string;
+      updateMessage: string;
+    })
+  | (App & { isEASUpdate: false });
 
 type RecentlyOpenedApps = {
   recentApps: RecentApp[];
@@ -41,11 +50,14 @@ export function useRecentlyOpenedApps() {
     setIsFetching(true);
     getRecentlyOpenedApps()
       .then((apps) => {
+        // use a map to index apps by their url:
         const recentApps = {};
 
-        for (const id in apps) {
-          const app = apps[id];
-          recentApps[app?.name] = app;
+        for (const app of apps) {
+          // index by url to eliminate multiple bundlers with the same address
+          const id = `${app.url}`;
+          app.id = id;
+          recentApps[id] = app;
         }
 
         setRecentApps(Object.values(recentApps));

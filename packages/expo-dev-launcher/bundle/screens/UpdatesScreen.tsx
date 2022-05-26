@@ -129,7 +129,7 @@ export function UpdatesScreen({ route }: UpdatesScreenProps) {
           isFirst={isFirst}
           isLast={isLast}
           isLoading={isLoading}
-          onPress={() => onUpdatePress(update)}
+          onPress={() => onUpdatePress(update, branchName)}
         />
         {!isLast && <Divider />}
       </View>
@@ -141,7 +141,7 @@ export function UpdatesScreen({ route }: UpdatesScreenProps) {
       <BranchDetailsHeader
         branchName={branchName}
         updates={updates}
-        onOpenPress={() => onUpdatePress(updates[0])}
+        onOpenPress={() => onUpdatePress(updates[0], branchName)}
       />
       <FlatList
         isLoading={isLoading}
