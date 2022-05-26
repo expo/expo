@@ -11,6 +11,10 @@ const path_1 = __importDefault(require("path"));
 const { createBuildGradlePropsConfigPlugin } = config_plugins_1.AndroidConfig.BuildProperties;
 exports.withAndroidBuildProperties = createBuildGradlePropsConfigPlugin([
     {
+        propName: 'android.minSdkVersion',
+        propValueGetter: (config) => { var _a, _b; return (_b = (_a = config.android) === null || _a === void 0 ? void 0 : _a.minSdkVersion) === null || _b === void 0 ? void 0 : _b.toString(); },
+    },
+    {
         propName: 'android.compileSdkVersion',
         propValueGetter: (config) => { var _a, _b; return (_b = (_a = config.android) === null || _a === void 0 ? void 0 : _a.compileSdkVersion) === null || _b === void 0 ? void 0 : _b.toString(); },
     },

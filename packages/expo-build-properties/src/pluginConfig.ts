@@ -7,6 +7,7 @@ import semver from 'semver';
  */
 const EXPO_SDK_MINIMAL_SUPPORTED_VERSIONS = {
   android: {
+    minSdkVersion: 21,
     compileSdkVersion: 31,
     targetSdkVersion: 31,
     kotlinVersion: '1.6.10',
@@ -28,6 +29,9 @@ export interface PluginConfigType {
  * Config for Android native build properties
  */
 export interface PluginConfigTypeAndroid {
+  /** Override the default `minSdkVersion` version number in `build.gradle` */
+  minSdkVersion?: number;
+
   /** Override the default `compileSdkVersion` version number in `build.gradle` */
   compileSdkVersion?: number;
 
@@ -88,6 +92,7 @@ const schema: JSONSchemaType<PluginConfigType> = {
     android: {
       type: 'object',
       properties: {
+        minSdkVersion: { type: 'integer', nullable: true },
         compileSdkVersion: { type: 'integer', nullable: true },
         targetSdkVersion: { type: 'integer', nullable: true },
         buildToolsVersion: { type: 'string', nullable: true },
@@ -130,6 +135,11 @@ const schema: JSONSchemaType<PluginConfigType> = {
  */
 function maybeThrowInvalidVersions(config: PluginConfigType) {
   const checkItems = [
+    {
+      name: 'android.minSdkVersion',
+      configVersion: config.android?.minSdkVersion,
+      minimalVersion: EXPO_SDK_MINIMAL_SUPPORTED_VERSIONS.android.minSdkVersion,
+    },
     {
       name: 'android.compileSdkVersion',
       configVersion: config.android?.compileSdkVersion,
