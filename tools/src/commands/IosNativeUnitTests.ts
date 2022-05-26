@@ -5,53 +5,11 @@ import path from 'path';
 import * as Directories from '../Directories';
 import * as Packages from '../Packages';
 
-const TEST_APP_IOS_DIR = path.join(Directories.getAppsDir(), 'native-tests', 'ios');
-
 async function runTests(testTargets: string[]) {
   await spawnAsync('fastlane', ['ios', 'unit_tests', `targets:${testTargets.join(',')}`], {
     cwd: Directories.getExpoRepositoryRootDir(),
     stdio: 'inherit',
   });
-}
-
-// TODO: Do we need this?
-async function prepareSchemes(podspecName: string) {
-  // TEMPORARILY DISABLED
-  // await spawnAsync(
-  //   'fastlane',
-  //   ['run', 'recreate_schemes', `project:Pods/${podspecName}.xcodeproj`],
-  //   {
-  //     cwd: TEST_APP_IOS_DIR,
-  //     stdio: 'inherit',
-  //   }
-  // );
-
-  await moveSchemesToSharedData(podspecName, TEST_APP_IOS_DIR);
-}
-
-async function moveSchemesToSharedData(podspecName: string, rootDirectory: string) {
-  // make schemes shared by moving them from xcodeproj/xcuserdata/runner.xcuserdatad/xcschemes
-  // to xcodeproj/xcshareddata/xcschemes
-  // otherwise they aren't visible to fastlane
-  const xcodeprojDir = path.join(rootDirectory, 'Pods', `${podspecName}.xcodeproj`);
-  const destinationDir = path.join(xcodeprojDir, 'xcshareddata', 'xcschemes');
-  await fs.mkdirp(destinationDir);
-
-  // find user directory name, should be runner.xcuserdatad but depends on the OS username
-  const xcuserdataDirName = (await fs.readdir(path.join(xcodeprojDir, 'xcuserdata')))[0];
-
-  const xcschemesDir = path.join(xcodeprojDir, 'xcuserdata', xcuserdataDirName, 'xcschemes');
-  const xcschemesFiles = (await fs.readdir(xcschemesDir)).filter((file) =>
-    file.endsWith('.xcscheme')
-  );
-  if (!xcschemesFiles.length) {
-    throw new Error(`No scheme could be found to run tests for ${podspecName}`);
-  }
-  for (const file of xcschemesFiles) {
-    await fs.move(path.join(xcschemesDir, file), path.join(destinationDir, file), {
-      overwrite: true,
-    });
-  }
 }
 
 function getTestSpecNames(pkg: Packages.Package): string[] {
@@ -88,13 +46,6 @@ export async function iosNativeUnitTests({ packages }: { packages?: string }) {
       throw new Error(
         `Failed to test package ${pkg.packageName}: no test specs were found in podspec file.`
       );
-    }
-
-    try {
-      // TODO: do we need this?
-      await prepareSchemes(pkg.podspecName);
-    } catch {
-      // ignore
     }
 
     for (const testSpecName of testSpecNames) {

@@ -67,8 +67,6 @@ jobs:
       - name: 🧶 Yarn install
         if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
-      - name: 🏭 Generating dynamic macros
-        run: expotools ios-generate-dynamic-macros
       - name: 🥥 Install CocoaPods in `apps/native-tests/ios`
         if: steps.expo-caches.outputs.bare-expo-pods-hit != 'true'
         run: pod install
