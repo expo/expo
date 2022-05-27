@@ -6,9 +6,9 @@ package expo.modules.kotlin.functions
 import expo.modules.kotlin.types.toAnyType
 import kotlin.reflect.typeOf
 
-class AsyncFunctionBuilder(val name: String) {
+class AsyncFunctionBuilder(@PublishedApi internal val name: String) {
   @PublishedApi
-  internal var function: AnyFunction? = null
+  internal var functionBuilder: SuspendFunctionComponentBuilder? = null
 
   @Deprecated(
     message = "The 'suspendBody' component was renamed to 'SuspendBody'.",
@@ -17,7 +17,7 @@ class AsyncFunctionBuilder(val name: String) {
   inline fun <reified R> suspendBody(crossinline block: suspend () -> R) = SuspendBody(block)
 
   inline fun <reified R> SuspendBody(crossinline block: suspend () -> R) {
-    function = AsyncSuspendFunction(name, arrayOf()) { block() }
+    functionBuilder = SuspendFunctionComponentBuilder(name, arrayOf()) { block() }
   }
 
   @Deprecated(
@@ -27,7 +27,7 @@ class AsyncFunctionBuilder(val name: String) {
   inline fun <reified R, reified P0> suspendBody(crossinline block: suspend (p0: P0) -> R) = SuspendBody(block)
 
   inline fun <reified R, reified P0> SuspendBody(crossinline block: suspend (p0: P0) -> R) {
-    function = AsyncSuspendFunction(name, arrayOf(typeOf<P0>().toAnyType())) { block(it[0] as P0) }
+    functionBuilder = SuspendFunctionComponentBuilder(name, arrayOf(typeOf<P0>().toAnyType())) { block(it[0] as P0) }
   }
 
   @Deprecated(
@@ -37,7 +37,7 @@ class AsyncFunctionBuilder(val name: String) {
   inline fun <reified R, reified P0, reified P1> suspendBody(crossinline block: suspend (p0: P0, p1: P1) -> R) = SuspendBody(block)
 
   inline fun <reified R, reified P0, reified P1> SuspendBody(crossinline block: suspend (p0: P0, p1: P1) -> R) {
-    function = AsyncSuspendFunction(name, arrayOf(typeOf<P0>().toAnyType())) { block(it[0] as P0, it[0] as P1) }
+    functionBuilder = SuspendFunctionComponentBuilder(name, arrayOf(typeOf<P0>().toAnyType())) { block(it[0] as P0, it[0] as P1) }
   }
 
   @Deprecated(
@@ -47,7 +47,7 @@ class AsyncFunctionBuilder(val name: String) {
   inline fun <reified R, reified P0, reified P1, reified P2> suspendBody(crossinline block: suspend (p0: P0, p1: P1, p2: P2) -> R) = SuspendBody(block)
 
   inline fun <reified R, reified P0, reified P1, reified P2> SuspendBody(crossinline block: suspend (p0: P0, p1: P1, p2: P2) -> R) {
-    function = AsyncSuspendFunction(name, arrayOf(typeOf<P0>().toAnyType())) { block(it[0] as P0, it[1] as P1, it[2] as P2) }
+    functionBuilder = SuspendFunctionComponentBuilder(name, arrayOf(typeOf<P0>().toAnyType())) { block(it[0] as P0, it[1] as P1, it[2] as P2) }
   }
 
   @Deprecated(
@@ -57,7 +57,7 @@ class AsyncFunctionBuilder(val name: String) {
   inline fun <reified R, reified P0, reified P1, reified P2, reified P3> suspendBody(crossinline block: suspend (p0: P0, p1: P1, p2: P2, p3: P3) -> R) = SuspendBody(block)
 
   inline fun <reified R, reified P0, reified P1, reified P2, reified P3> SuspendBody(crossinline block: suspend (p0: P0, p1: P1, p2: P2, p3: P3) -> R) {
-    function = AsyncSuspendFunction(name, arrayOf(typeOf<P0>().toAnyType())) { block(it[0] as P0, it[1] as P1, it[2] as P2, it[3] as P3) }
+    functionBuilder = SuspendFunctionComponentBuilder(name, arrayOf(typeOf<P0>().toAnyType())) { block(it[0] as P0, it[1] as P1, it[2] as P2, it[3] as P3) }
   }
 
   @Deprecated(
@@ -67,7 +67,7 @@ class AsyncFunctionBuilder(val name: String) {
   inline fun <reified R, reified P0, reified P1, reified P2, reified P3, reified P4> suspendBody(crossinline block: suspend (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4) -> R) = SuspendBody(block)
 
   inline fun <reified R, reified P0, reified P1, reified P2, reified P3, reified P4> SuspendBody(crossinline block: suspend (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4) -> R) {
-    function = AsyncSuspendFunction(name, arrayOf(typeOf<P0>().toAnyType())) { block(it[0] as P0, it[1] as P1, it[2] as P2, it[3] as P3, it[4] as P4) }
+    functionBuilder = SuspendFunctionComponentBuilder(name, arrayOf(typeOf<P0>().toAnyType())) { block(it[0] as P0, it[1] as P1, it[2] as P2, it[3] as P3, it[4] as P4) }
   }
 
   @Deprecated(
@@ -77,7 +77,7 @@ class AsyncFunctionBuilder(val name: String) {
   inline fun <reified R, reified P0, reified P1, reified P2, reified P3, reified P4, reified P5> suspendBody(crossinline block: suspend (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5) -> R) = SuspendBody(block)
 
   inline fun <reified R, reified P0, reified P1, reified P2, reified P3, reified P4, reified P5> SuspendBody(crossinline block: suspend (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5) -> R) {
-    function = AsyncSuspendFunction(name, arrayOf(typeOf<P0>().toAnyType())) { block(it[0] as P0, it[1] as P1, it[2] as P2, it[3] as P3, it[4] as P4, it[5] as P5) }
+    functionBuilder = SuspendFunctionComponentBuilder(name, arrayOf(typeOf<P0>().toAnyType())) { block(it[0] as P0, it[1] as P1, it[2] as P2, it[3] as P3, it[4] as P4, it[5] as P5) }
   }
 
   @Deprecated(
@@ -87,7 +87,7 @@ class AsyncFunctionBuilder(val name: String) {
   inline fun <reified R, reified P0, reified P1, reified P2, reified P3, reified P4, reified P5, reified P6> suspendBody(crossinline block: suspend (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5, p6: P6) -> R) = SuspendBody(block)
 
   inline fun <reified R, reified P0, reified P1, reified P2, reified P3, reified P4, reified P5, reified P6> SuspendBody(crossinline block: suspend (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5, p6: P6) -> R) {
-    function = AsyncSuspendFunction(name, arrayOf(typeOf<P0>().toAnyType())) { block(it[0] as P0, it[1] as P1, it[2] as P2, it[3] as P3, it[4] as P4, it[5] as P5, it[6] as P6) }
+    functionBuilder = SuspendFunctionComponentBuilder(name, arrayOf(typeOf<P0>().toAnyType())) { block(it[0] as P0, it[1] as P1, it[2] as P2, it[3] as P3, it[4] as P4, it[5] as P5, it[6] as P6) }
   }
 
   @Deprecated(
@@ -97,11 +97,11 @@ class AsyncFunctionBuilder(val name: String) {
   inline fun <reified R, reified P0, reified P1, reified P2, reified P3, reified P4, reified P5, reified P6, reified P7> suspendBody(crossinline block: suspend (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5, p6: P6, p7: P7) -> R) = SuspendBody(block)
 
   inline fun <reified R, reified P0, reified P1, reified P2, reified P3, reified P4, reified P5, reified P6, reified P7> SuspendBody(crossinline block: suspend (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5, p6: P6, p7: P7) -> R) {
-    function = AsyncSuspendFunction(name, arrayOf(typeOf<P0>().toAnyType())) { block(it[0] as P0, it[1] as P1, it[2] as P2, it[3] as P3, it[4] as P4, it[5] as P5, it[6] as P6, it[7] as P7) }
+    functionBuilder = SuspendFunctionComponentBuilder(name, arrayOf(typeOf<P0>().toAnyType())) { block(it[0] as P0, it[1] as P1, it[2] as P2, it[3] as P3, it[4] as P4, it[5] as P5, it[6] as P6, it[7] as P7) }
   }
 
-  internal fun build(): Pair<String, AnyFunction> {
-    return name to requireNotNull(function)
+  internal fun build(): SuspendFunctionComponentBuilder {
+    return requireNotNull(functionBuilder)
   }
 }
 

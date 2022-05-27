@@ -11,7 +11,7 @@ class RandomModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("ExpoRandom")
 
-    function("getRandomBase64String", this@RandomModule::getRandomBase64String).runSynchronously()
+    Function("getRandomBase64String", this@RandomModule::getRandomBase64String)
     AsyncFunction("getRandomBase64StringAsync", this@RandomModule::getRandomBase64String)
   }
 

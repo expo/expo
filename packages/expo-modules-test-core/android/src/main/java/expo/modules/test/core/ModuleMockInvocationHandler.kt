@@ -46,23 +46,33 @@ class ModuleMockInvocationHandler<T : Any>(
   private val holder: ModuleHolder
 ) : InvocationHandler {
   override fun invoke(proxy: Any, method: Method, args: Array<out Any>?): Any? {
-    return holder.definition.methods[method.name]?.let {
-      callExportedFunction(method.name, args, it.isSync)
-    } ?: method.invoke(moduleController, *(args ?: emptyArray()))
+    if (!holder.definition.asyncFunctions.containsKey(method.name) &&
+      !holder.definition.syncFunctions.containsKey(method.name)
+    ) {
+      return method.invoke(moduleController, *(args ?: emptyArray()))
+    }
+
+    return callExportedFunction(method.name, args)
   }
 
-  private fun callExportedFunction(methodName: String, args: Array<out Any>?, isSync: Boolean): Any? {
-    if (isSync) {
-      return syncCall(methodName, args?.asList() ?: emptyList())
+  private fun callExportedFunction(methodName: String, args: Array<out Any>?): Any? {
+    if (holder.definition.syncFunctions.containsKey(methodName)) {
+      // Call as a sync function
+      return holder.callSync(methodName, convertArgs(args?.asList() ?: emptyList()))
     }
 
-    val lastArg = args?.lastOrNull()
-    if (Promise::class.java.isInstance(lastArg)) {
-      promiseMappingCall(methodName, args!!.dropLast(1), lastArg as Promise)
-      return Unit
+    if (holder.definition.asyncFunctions.containsKey(methodName)) {
+      // We know it's a async function, but we don't know which mapping we're using
+      val lastArg = args?.lastOrNull()
+      if (Promise::class.java.isInstance(lastArg)) {
+        promiseMappingCall(methodName, args!!.dropLast(1), lastArg as Promise)
+        return Unit
+      }
+
+      return nonPromiseMappingCall(methodName, args)
     }
 
-    return nonPromiseMappingCall(methodName, args)
+    throw IllegalStateException("Module class method '$methodName' not found")
   }
 
   private fun nonPromiseMappingCall(methodName: String, args: Array<out Any>?): Any? {
