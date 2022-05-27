@@ -30,8 +30,9 @@ import expo.modules.firebase.core.FirebaseCorePackage
 import expo.modules.font.FontLoaderPackage
 import expo.modules.gl.GLPackage
 import expo.modules.haptics.HapticsPackage
-import expo.modules.imageloader.ImageLoaderModule
+import expo.modules.imageloader.ImageLoaderPackage
 import expo.modules.imagemanipulator.ImageManipulatorPackage
+import expo.modules.imagepicker.ImagePickerModule
 import expo.modules.intentlauncher.IntentLauncherPackage
 import expo.modules.keepawake.KeepAwakePackage
 import expo.modules.kotlin.ModulesProvider
@@ -93,7 +94,6 @@ object ExperiencePackagePicker : ModulesProvider {
     HapticsPackage(),
     ImageLoaderPackage(),
     ImageManipulatorPackage(),
-    ImagePickerPackage(),
     IntentLauncherPackage(),
     KeepAwakePackage(),
     LocalAuthenticationPackage(),
