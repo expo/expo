@@ -23,6 +23,9 @@ type Props = {
   viewerUsername: string;
 };
 
+// Note(fiberjw): This should stay in sync with the Website's Delete Account page logic
+// source: website/scenes/Settings/SettingsIndexScene/PersonalSettings/DeleteAccount/index.tsx
+
 export function DeleteAccountSection(props: Props) {
   const { viewerUsername } = props;
   const { data, loading } = useDeleteAccountPermissionsQuery();
