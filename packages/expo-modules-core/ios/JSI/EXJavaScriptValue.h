@@ -37,8 +37,6 @@ NS_SWIFT_NAME(JavaScriptValue)
 - (BOOL)isObject;
 - (BOOL)isFunction;
 
-+ (nonnull NSString *)kindOf:(nonnull EXJavaScriptValue *)value;
-
 #pragma mark - Type casting
 
 - (nullable id)getRaw;
