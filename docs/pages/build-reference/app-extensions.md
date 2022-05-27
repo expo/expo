@@ -2,17 +2,17 @@
 title: iOS App Extensions
 ---
 
-App extensions let you extend custom functionality and content beyond your app and make it available to users while they’re interacting with other apps or the system.
+App extensions let you extend custom functionality and content beyond your app and make it available to users while they’re interacting with other apps or iOS system functionality. EAS Build provides affordances for including app extensions in both bare and managed projects.
 
-## Bare project
+## Bare projects
 
-When you build a bare project EAS CLI will automatically detect app extensions configured in your Xcode project and generate all necessary credentials for each target, or you can provide them in `credentials.json` ([Learn more](../../app-signing/local-credentials/#multi-target-project)).
+When you build a bare project, EAS CLI will automatically detect app extensions configured in your Xcode project and generate all necessary credentials for each target, or you can provide them in **credentials.json** ([Learn more](../../app-signing/local-credentials/#multi-target-project)).
 
 ## Managed projects (experimental support)
 
-In a standard managed project we have only one application target without any extensions, but with introduction of [config plugins](../../guides/config-plugins) it became possible to create new targets on the fly. When EAS Build worker is executing `expo prebuild` a new Xcode targets can be added to the project, but at that point it is to late to generate credentials for them, so we need a way to declare earlier what targets will be exist during build.
+A typical, simple managed project we have a single application target and no app extensions. You can add an app extension to your project by writing a [config plugin](../../guides/config-plugins) (or using a library that creates an extension with its own config plugin). Config plugins let you add targets to the Xcode project that is generated during the "Prebuild" phase of a build job.
 
-To declare new target add in your **app.json**:
+Declaring app extensions with `extra.eas.build.experimental.ios.appExtensions` in your app config makes it possible for EAS CLI to know what app extensions exist *before the build starts* (before the Xcode project has been generated) to ensure that the required credentials are generated and validated. Config plugins are also able to modify the app config, and in most cases if you are using a library that adds an extension then the config plugin will also add the required configuration to declare the extension in your app config. If you are writing a library, we recommend that you consider this. The following is an example of what this would look like if it were declared directly in **app.json**:
 
 ```json
 {
@@ -39,5 +39,3 @@ To declare new target add in your **app.json**:
     }
   }
 ```
-
-> Note: This is just an example of a configuration, but in most cases above target info should be added as part of the config plugin.
