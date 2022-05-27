@@ -30,9 +30,8 @@ import expo.modules.firebase.core.FirebaseCorePackage
 import expo.modules.font.FontLoaderPackage
 import expo.modules.gl.GLPackage
 import expo.modules.haptics.HapticsPackage
-import expo.modules.imageloader.ImageLoaderPackage
+import expo.modules.imageloader.ImageLoaderModule
 import expo.modules.imagemanipulator.ImageManipulatorPackage
-import expo.modules.imagepicker.ImagePickerPackage
 import expo.modules.intentlauncher.IntentLauncherPackage
 import expo.modules.keepawake.KeepAwakePackage
 import expo.modules.kotlin.ModulesProvider
@@ -144,6 +143,7 @@ object ExperiencePackagePicker : ModulesProvider {
     ClipboardModule::class.java,
     CryptoModule::class.java,
     EASClientModule::class.java,
+    ImagePickerModule::class.java,
     LinearGradientModule::class.java,
     RandomModule::class.java,
     WebBrowserModule::class.java,
