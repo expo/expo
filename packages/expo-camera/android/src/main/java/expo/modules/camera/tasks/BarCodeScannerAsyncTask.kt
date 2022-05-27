@@ -21,6 +21,7 @@ class BarCodeScannerAsyncTask(
     super.onPostExecute(result)
     result?.let {
       delegate.onBarCodeScanned(result)
-    } ?: delegate.onBarCodeScanningTaskCompleted()
+    }
+    delegate.onBarCodeScanningTaskCompleted()
   }
 }
