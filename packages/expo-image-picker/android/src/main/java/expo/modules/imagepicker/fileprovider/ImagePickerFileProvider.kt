@@ -1,4 +1,4 @@
-package expo.modules.imagepicker
+package expo.modules.imagepicker.fileprovider
 
 import androidx.core.content.FileProvider
 
