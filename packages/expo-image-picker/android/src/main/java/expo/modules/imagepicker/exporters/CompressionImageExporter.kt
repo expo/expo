@@ -2,7 +2,6 @@ package expo.modules.imagepicker.exporters
 
 import android.graphics.Bitmap
 import android.net.Uri
-import androidx.annotation.FloatRange
 import expo.modules.imagepicker.exporters.ImageExporter.Listener
 import expo.modules.interfaces.imageloader.ImageLoaderInterface
 import org.apache.commons.io.FilenameUtils
