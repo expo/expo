@@ -1,4 +1,6 @@
+import assert from 'assert';
 import fs from 'fs-extra';
+import path from 'path';
 
 import { Podspec } from '../../CocoaPods';
 import { VendoringTargetConfig } from '../types';
@@ -17,7 +19,7 @@ const config: VendoringTargetConfig = {
     '@stripe/stripe-react-native': {
       source: 'https://github.com/stripe/stripe-react-native.git',
       ios: {
-        mutatePodspec(podspec: Podspec) {
+        async mutatePodspec(podspec: Podspec) {
           if (!podspec.pod_target_xcconfig) {
             podspec.pod_target_xcconfig = {};
           }
@@ -65,7 +67,7 @@ const config: VendoringTargetConfig = {
           await fs.writeFile(podspecPath, content);
           return podspecPath;
         },
-        mutatePodspec(podspec: Podspec) {
+        async mutatePodspec(podspec: Podspec) {
           // TODO: The podspec checks RN version from package.json.
           // however we don't have RN's package.json in the place where it looks for and the fallback
           // is set to `0.66.0`.
@@ -271,6 +273,33 @@ const config: VendoringTargetConfig = {
     '@react-native-community/slider': {
       source: 'https://github.com/callstack/react-native-slider',
       packageJsonPath: 'src/package.json',
+    },
+    '@shopify/react-native-skia': {
+      source: '@shopify/react-native-skia',
+      sourceType: 'npm',
+      ios: {
+        async mutatePodspec(podspec: Podspec, sourceDirectory: string, targetDirectory: string) {
+          const vendoredRootDir = path.dirname(path.dirname(path.dirname(targetDirectory)));
+          assert(path.basename(vendoredRootDir) === 'vendored');
+          const vendoredCommonDir = path.join(vendoredRootDir, 'common');
+          const vendoredFrameworks = podspec.ios?.vendored_frameworks ?? [];
+          for (const framework of vendoredFrameworks) {
+            // copy prebuilt xcframework to `ios/vendored/common`
+            const sharedFrameworkPath = path.join(vendoredCommonDir, path.basename(framework));
+            await fs.copy(path.join(sourceDirectory, framework), sharedFrameworkPath, {
+              overwrite: true,
+            });
+
+            // create symlink from common dir to module dir, because podspec cannot specify files out of its dir.
+            const symlinkFrameworkPath = path.join(targetDirectory, framework);
+            await fs.ensureDir(path.dirname(symlinkFrameworkPath));
+            await fs.symlink(
+              path.relative(path.dirname(symlinkFrameworkPath), sharedFrameworkPath),
+              symlinkFrameworkPath
+            );
+          }
+        },
+      },
     },
   },
 };

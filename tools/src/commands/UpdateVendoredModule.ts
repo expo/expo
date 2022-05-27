@@ -1,4 +1,5 @@
 import { Command } from '@expo/commander';
+import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
 import fs from 'fs-extra';
 import inquirer from 'inquirer';
@@ -9,6 +10,7 @@ import { runReactNativeCodegenAsync } from '../Codegen';
 import { EXPO_DIR } from '../Constants';
 import { GitDirectory } from '../Git';
 import logger from '../Logger';
+import { downloadPackageTarballAsync } from '../Npm';
 import { PackageJson } from '../Packages';
 import { updateBundledVersionsAsync } from '../ProjectVersions';
 import * as Workspace from '../Workspace';
@@ -86,20 +88,8 @@ async function action(options: ActionOptions) {
   const sourceDirectory = path.join(os.tmpdir(), 'ExpoVendoredModules', moduleName);
   const moduleConfig = targetConfig.modules[moduleName];
 
-  logger.log(
-    '📥 Cloning %s#%s from %s',
-    chalk.green(moduleName),
-    chalk.cyan(options.commit),
-    chalk.magenta(moduleConfig.source)
-  );
-
   try {
-    // Clone repository from the source
-    await GitDirectory.shallowCloneAsync(
-      sourceDirectory,
-      moduleConfig.source,
-      options.commit ?? 'master'
-    );
+    await downloadSourceAsync(sourceDirectory, moduleName, moduleConfig, options);
 
     const platforms = resolvePlatforms(options.platform);
 
@@ -154,6 +144,44 @@ async function action(options: ActionOptions) {
     await fs.remove(sourceDirectory);
   }
   logger.success('💪 Successfully updated %s\n', chalk.bold(moduleName));
+}
+
+/**
+ *
+ */
+async function downloadSourceAsync(
+  sourceDirectory: string,
+  moduleName: string,
+  moduleConfig: VendoringModuleConfig,
+  options: ActionOptions
+) {
+  if (moduleConfig.sourceType === 'npm') {
+    const version = options.commit ?? 'latest';
+    logger.log('📥 Downloading %s@%s from npm', chalk.green(moduleName), chalk.cyan(version));
+
+    const tarball = await downloadPackageTarballAsync(
+      sourceDirectory,
+      moduleConfig.source,
+      version
+    );
+    // `--strip-component 1` to extract files from package/ folder
+    await spawnAsync('tar', ['--strip-component', '1', '-xf', tarball], { cwd: sourceDirectory });
+    return;
+  }
+
+  // Clone repository from the source
+  logger.log(
+    '📥 Cloning %s#%s from %s',
+    chalk.green(moduleName),
+    chalk.cyan(options.commit),
+    chalk.magenta(moduleConfig.source)
+  );
+
+  await GitDirectory.shallowCloneAsync(
+    sourceDirectory,
+    moduleConfig.source,
+    options.commit ?? 'master'
+  );
 }
 
 /**

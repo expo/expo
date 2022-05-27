@@ -15,11 +15,14 @@ export type Podspec = {
   preserve_paths: string | string[];
   compiler_flags: string;
   frameworks: string | string[];
+  vendored_frameworks: string | string[];
   pod_target_xcconfig: Record<string, string>;
   xcconfig: Record<string, string>;
   dependencies: Record<string, any>;
   info_plist: Record<string, string>;
   ios?: Podspec;
+  default_subspecs: string[];
+  subspecs: Podspec[];
 };
 
 /**
