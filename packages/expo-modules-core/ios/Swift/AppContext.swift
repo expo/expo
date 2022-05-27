@@ -259,9 +259,11 @@ public final class AppContext: NSObject {
 
   @objc
   public func exportedModulesConstants() -> [String: Any] {
-    return moduleRegistry.reduce(into: [String: Any]()) { acc, holder in
-      acc[holder.name] = holder.getConstants()
-    }
+    return moduleRegistry
+      .filter { holder in holder.name != "SweetProxy" }
+      .reduce(into: [String: Any]()) { acc, holder in
+        acc[holder.name] = holder.getConstants()
+      }
   }
 
   @objc

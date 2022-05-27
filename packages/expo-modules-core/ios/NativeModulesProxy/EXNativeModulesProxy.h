@@ -9,12 +9,13 @@
 // to proper exported universal modules. Also, it exports important constants to JS, like
 // properties of exported methods and modules' constants.
 
-NS_SWIFT_NAME(NativeModulesProxy)
+NS_SWIFT_NAME(LegacyNativeModulesProxy)
 @interface EXNativeModulesProxy : NSObject <RCTBridgeModule>
 
 - (nonnull instancetype)init;
 - (nonnull instancetype)initWithModuleRegistry:(nullable EXModuleRegistry *)moduleRegistry;
 - (nonnull instancetype)initWithCustomModuleRegistry:(nonnull EXModuleRegistry *)moduleRegistry;
+- (nonnull instancetype)initWithAppContext:(nonnull NSObject *)appContext;
 
 - (void)callMethod:(NSString *)moduleName methodNameOrKey:(id)methodNameOrKey arguments:(NSArray *)arguments resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject;
 

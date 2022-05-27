@@ -94,6 +94,13 @@ RCT_EXPORT_MODULE(NativeUnimoduleProxy)
   return [self initWithModuleRegistry:nil];
 }
 
+- (instancetype)initWithAppContext:(nonnull NSObject *)appContext
+{
+  self = [self init];
+  self->_appContext = appContext;
+  return self;
+}
+
 # pragma mark - React API
 
 + (BOOL)requiresMainQueueSetup
@@ -103,6 +110,7 @@ RCT_EXPORT_MODULE(NativeUnimoduleProxy)
 
 - (NSDictionary *)constantsToExport
 {
+  CFTimeInterval startTime = CACurrentMediaTime();
   NSMutableDictionary <NSString *, id> *exportedModulesConstants = [NSMutableDictionary dictionary];
   // Grab all the constants exported by modules
   for (EXExportedModule *exportedModule in [_exModuleRegistry getAllExportedModules]) {
@@ -151,6 +159,8 @@ RCT_EXPORT_MODULE(NativeUnimoduleProxy)
   constantsAccumulator[exportedConstantsKeyPath] = exportedModulesConstants;
   constantsAccumulator[exportedMethodsNamesKeyPath] = exportedMethodsNamesAccumulator;
 
+  CFTimeInterval endTime = CACurrentMediaTime();
+  NSLog(@"constantsToExport Runtime: %g s", endTime - startTime);
   return constantsAccumulator;
 }
 
