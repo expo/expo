@@ -12,7 +12,8 @@ import org.junit.Test
 import java.lang.ref.WeakReference
 
 private inline fun withJSIInterop(
-  vararg modules: Module, block: JSIInteropModuleRegistry.() -> Unit
+  vararg modules: Module,
+  block: JSIInteropModuleRegistry.() -> Unit
 ) {
   val appContextMock = mockk<AppContext>()
   val registry = ModuleRegistry(WeakReference(appContextMock)).apply {
@@ -94,10 +95,12 @@ class JSIInteropModuleRegistryTest {
       AsyncFunction("f") { return@AsyncFunction 20 }
     }
   ) {
-    val jsPromiseClass = evaluateScript("""
+    val jsPromiseClass = evaluateScript(
+      """
       const promise = ExpoModules.TestModule.f();
       promise.constructor.name
-    """.trimIndent())
+      """.trimIndent()
+    )
 
     Truth.assertThat(jsPromiseClass.isString()).isTrue()
     Truth.assertThat(jsPromiseClass.getString()).isEqualTo("Promise")

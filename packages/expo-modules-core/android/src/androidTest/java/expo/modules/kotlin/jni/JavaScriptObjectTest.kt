@@ -35,7 +35,6 @@ class JavaScriptObjectTest {
     Truth.assertThat(property.getDouble()).isEqualTo(123)
   }
 
-
   @Test
   fun getProperty_should_return_undefined_when_the_property_is_missing() {
     val jsObject = jsiInterop.evaluateScript("({ 'prop': 123 })").getObject()
