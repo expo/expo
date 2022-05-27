@@ -69,7 +69,7 @@ class ExifDataHandler(private val uri: Uri) {
       val oldExif = ExifInterface(input)
       newUri.path?.let {
         val newExif = ExifInterface(it)
-        for ((_, exifTag) in ImagePickerConstants.exifTags) {
+        for (exifTag in ImagePickerConstants.EXIF_TAGS.values.flatten()) {
           val value = oldExif.getAttribute(exifTag)
           if (value != null &&
             exifTag != ExifInterface.TAG_IMAGE_LENGTH &&
