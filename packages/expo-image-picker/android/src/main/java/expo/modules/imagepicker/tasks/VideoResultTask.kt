@@ -3,12 +3,8 @@ package expo.modules.imagepicker.tasks
 import android.content.ContentResolver
 import android.media.MediaMetadataRetriever
 import android.net.Uri
-import android.os.Bundle
-import android.util.Log
-import expo.modules.core.errors.ModuleDestroyedException
 import expo.modules.imagepicker.FailedToExtractVideoMetadataException
 import expo.modules.imagepicker.FailedToWriteFileException
-import expo.modules.imagepicker.ImagePickerConstants
 import expo.modules.imagepicker.ImagePickerMediaResponse
 import expo.modules.imagepicker.UnknownException
 import expo.modules.imagepicker.fileproviders.FileProvider
@@ -55,7 +51,7 @@ class VideoResultTask(
           uri = Uri.fromFile(outputFile).toString(),
           width = extractMediaMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH),
           height = extractMediaMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT),
-          rotation =extractMediaMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION),
+          rotation = extractMediaMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION),
           duration = extractMediaMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
         )
         promise.resolve(response)

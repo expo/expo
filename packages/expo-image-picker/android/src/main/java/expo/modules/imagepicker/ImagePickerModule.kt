@@ -371,5 +371,4 @@ class ImagePickerModule : Module() {
   }
 
   // endregion
-
 }

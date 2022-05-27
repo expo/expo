@@ -4,13 +4,10 @@ import android.content.ContentResolver
 import android.net.Uri
 import android.os.Bundle
 import android.util.Base64
-import android.util.Log
 import androidx.exifinterface.media.ExifInterface
-import expo.modules.core.errors.ModuleDestroyedException
 import expo.modules.imagepicker.ExifDataHandler
 import expo.modules.imagepicker.FailedToExtractVideoMetadataException
 import expo.modules.imagepicker.FailedToWriteFileException
-import expo.modules.imagepicker.ImagePickerConstants
 import expo.modules.imagepicker.ImagePickerConstants.EXIF_TAGS
 import expo.modules.imagepicker.ImagePickerMediaResponse
 import expo.modules.imagepicker.UnknownException
@@ -24,7 +21,6 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.IOException
-import java.lang.IllegalStateException
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
