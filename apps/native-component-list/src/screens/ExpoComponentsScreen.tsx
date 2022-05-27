@@ -32,6 +32,7 @@ const screens = [
   'ProgressViewIOS',
   'QRCode',
   'Reanimated',
+  'Skia',
   'SVG',
   'Screens',
   'ScrollView',

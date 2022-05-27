@@ -53,6 +53,7 @@
     "@react-navigation/material-bottom-tabs": "~5.3.9",
     "@react-navigation/native": "~5.8.9",
     "@react-navigation/stack": "~5.12.6",
+    "@shopify/react-native-skia": "0.1.130",
     "@use-expo/permissions": "^2.0.0",
     "date-format": "^2.0.0",
     "deep-object-diff": "^1.1.0",
