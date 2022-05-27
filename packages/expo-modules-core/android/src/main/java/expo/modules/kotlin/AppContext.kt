@@ -193,6 +193,7 @@ class AppContext(
   }
 
   fun onHostResume() {
+    activityResultsManager.onHostResume()
     registry.post(EventName.ACTIVITY_ENTERS_FOREGROUND)
   }
 

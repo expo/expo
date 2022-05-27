@@ -7,11 +7,11 @@
     tools:replace="label"
     android:label="ExpoModulesCoreTest">
     <activity
-      android:name="expo.modules.kotlin.activityresult.SignalingActivity"
+      android:name="expo.modules.kotlin.activityresult.ReportingActivity"
       android:theme="@style/Theme.AppCompat"
       android:exported="true" />
     <activity
-      android:name="expo.modules.kotlin.activityresult.RecreatedSignalingActivity"
+      android:name="expo.modules.kotlin.activityresult.RecreatedActivity"
       android:theme="@style/Theme.AppCompat"
       android:exported="true" />
     <activity

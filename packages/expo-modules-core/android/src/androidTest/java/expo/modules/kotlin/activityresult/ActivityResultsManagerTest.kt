@@ -3,6 +3,7 @@ package expo.modules.kotlin.activityresult
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import androidx.activity.ComponentActivity
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
@@ -12,6 +13,7 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import com.google.common.truth.Truth.assertThat
+import expo.modules.core.utilities.ifNull
 import expo.modules.kotlin.providers.CurrentActivityProvider
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -19,9 +21,9 @@ import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
 private val currentActivityProvider = object : CurrentActivityProvider {
-  var activity: AppCompatActivity? = null
+  var activity: ComponentActivity? = null
 
-  override val currentActivity: AppCompatActivity?
+  override val currentActivity: ComponentActivity?
     get() = activity
 }
 private val activityResultsManager = ActivityResultsManager(currentActivityProvider)
@@ -30,9 +32,9 @@ private val activityResultsManager = ActivityResultsManager(currentActivityProvi
 @RunWith(AndroidJUnit4::class)
 class ActivityResultsManagerTest {
   @Test
-  fun registerCallbackAndWaitForResult() {
+  fun registerCallbackAndEnsureItLaunches() {
     var launchCount = 0
-    ActivityScenario.launch(SignalingActivity::class.java)
+    ActivityScenario.launch(ReportingActivity::class.java)
       .use { scenario ->
         scenario.moveToState(Lifecycle.State.STARTED)
         scenario.withActivity {
@@ -40,20 +42,25 @@ class ActivityResultsManagerTest {
             launchCount += 1
           }.launch(Intent(this, DelayedBundleResultActivity::class.java))
         }
-        scenario.withActivity { assertThat(launchCount).isEqualTo(1) }
+        scenario.moveToState(Lifecycle.State.RESUMED)
+        scenario.withActivity {
+          assertThat(launchCount).isEqualTo(1)
+        }
       }
   }
 
   @Test
-  fun registerCallbackAndCheckActivityIsNotDestroyed() {
+  fun registerCallbackAndEnsureActivityIsNotDestroyed() {
     var launchingActivityDestroyed: Boolean? = null
-    ActivityScenario.launch(SignalingActivity::class.java)
+    ActivityScenario.launch(ReportingActivity::class.java)
       .use { scenario ->
+        scenario.moveToState(Lifecycle.State.STARTED)
         scenario.withActivity {
           activityResultsManager.registerForActivityResult(StartActivityForResult()) { _, activityDestroyed ->
             launchingActivityDestroyed = activityDestroyed
           }.launch(Intent(this, DelayedBundleResultActivity::class.java))
         }
+        scenario.moveToState(Lifecycle.State.RESUMED)
         scenario.withActivity {
           assertThat(launchingActivityDestroyed).isFalse()
         }
@@ -61,10 +68,28 @@ class ActivityResultsManagerTest {
   }
 
   @Test
-  fun registerCallbackAndCheckActivityIsDestroyed() {
-    var launchingActivityDestroyed: Boolean? = null
-    ActivityScenario.launch(RecreatedSignalingActivity::class.java)
+  fun registerCallbackAndEnsurePayloadIsReturned() {
+    var returnedBundle: Bundle? = null
+    ActivityScenario.launch(ReportingActivity::class.java)
       .use { scenario ->
+        scenario.withActivity {
+          activityResultsManager.registerForActivityResult(StartActivityForResult()) { result, _ ->
+            returnedBundle = result.data?.extras?.getBundle("data")
+          }.launch(Intent(this, DelayedBundleResultActivity::class.java))
+        }
+        scenario.moveToState(Lifecycle.State.RESUMED)
+        scenario.withActivity {
+          assertThat(returnedBundle?.getString("key")).isEqualTo("value")
+        }
+      }
+  }
+
+  @Test
+  fun registerCallbackAndRecreateActivityAndEnsureActivityIsDestroyed() {
+    var launchingActivityDestroyed: Boolean? = null
+    ActivityScenario.launch(RecreatedActivity::class.java)
+      .use { scenario ->
+        scenario.moveToState(Lifecycle.State.STARTED)
         scenario.withActivity {
           activityResultsManager.registerForActivityResult(StartActivityForResult()) { _, activityDestroyed ->
             launchingActivityDestroyed = activityDestroyed
@@ -72,43 +97,53 @@ class ActivityResultsManagerTest {
         }
         scenario.recreate()
         scenario.withActivity {
-          assertThat(launchingActivityDestroyed).isTrue()
+          assertThat(launchingActivityDestroyed).isEqualTo(true)
         }
       }
   }
 }
 
-open class SignalingActivity : AppCompatActivity() {
+/**
+ * This Activity register itself in [currentActivityProvider] and [activityResultsManager]
+ */
+open class ReportingActivity : AppCompatActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     currentActivityProvider.activity = this
   }
 
+  override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+    activityResultsManager.onActivityResult(this, requestCode, resultCode, data)
+    super.onActivityResult(requestCode, resultCode, data)
+  }
+}
+
+/**
+ * This Activity imitates the process happening in Android when the OS is low on resources and kills
+ * backgrounded Activities.
+ */
+class RecreatedActivity : ReportingActivity() {
+  override fun onCreate(savedInstanceState: Bundle?) {
+    if (savedInstanceState != null) {
+      rememberedRequestCode?.let { onActivityResult(it, RESULT_OK, null) }
+    }
+    super.onCreate(savedInstanceState)
+  }
+
+  /**
+   * Intentionally do not start other Activity here and only save request code
+   */
   override fun startActivityForResult(intent: Intent?, requestCode: Int, options: Bundle?) {
-    super.startActivityForResult(intent, requestCode, options)
-    // TODO (@bbarthec): `onActivityResult` is not triggered for some unknown reason
-    onActivityResult(requestCode, Activity.RESULT_OK, null)
+    rememberedRequestCode = requestCode
   }
 
-  override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-    activityResultsManager.onActivityResult(this, requestCode, resultCode, data)
-    super.onActivityResult(requestCode, resultCode, data)
+  companion object {
+    var rememberedRequestCode: Int? = null
   }
 }
 
-open class RecreatedSignalingActivity : AppCompatActivity() {
-  override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
-    currentActivityProvider.activity = this
-  }
 
-  override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-    activityResultsManager.onActivityResult(this, requestCode, resultCode, data)
-    super.onActivityResult(requestCode, resultCode, data)
-  }
-}
-
-open class DelayedBundleResultActivity : Activity() {
+class DelayedBundleResultActivity : ComponentActivity() {
   private val threadExecutor = Executors.newSingleThreadScheduledExecutor()
 
   override fun onCreate(savedInstanceState: Bundle?) {

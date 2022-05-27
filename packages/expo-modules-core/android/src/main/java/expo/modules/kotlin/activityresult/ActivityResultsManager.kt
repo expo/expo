@@ -21,18 +21,19 @@ import java.util.concurrent.atomic.AtomicInteger
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
+/**
+ * Due to the fact that [AppContext] is not coupled directly with the [Activity]'s lifecycle
+ * it's impossible to subscribe all [Lifecycle]'s events properly.
+ * That forces us to create our own [AppContextActivityResultRegistry].
+ * This class serves as a proxy between mechanism proposed in [androidx.activity.result.ActivityResultRegistry] and [AppContext]
+ */
 class ActivityResultsManager(
   private val currentActivityProvider: CurrentActivityProvider
 ) : AppContextActivityResultCaller {
   private val activity: AppCompatActivity
     get() = requireNotNull(currentActivityProvider.currentActivity) { TODO() }
 
-  /**
-   * Due to the fact that [AppContext] is not coupled directly with the [Activity]'s lifecycle
-   * it's impossible to subscribe all [Lifecycle]'s events properly.
-   * That forces us to create our own [AppContextActivityResultRegistry].
-   */
-  private val nextLocalRequestCode = AtomicInteger()
+  private val nextLocalRequestCode = AtomicInteger(120)
   private val registry = object : AppContextActivityResultRegistry() {
     /**
      * This method is launching the asynchronous flow based on [ActivityCompat.requestPermissions], [ActivityCompat.startIntentSenderForResult] or [ActivityCompat.startActivityForResult]
@@ -90,7 +91,19 @@ class ActivityResultsManager(
     }
   }
 
+  /**
+   * [AppContextActivityResultRegistry] observes the [Activity]'s [Lifecycle] by it's own,
+   * but it fails to properly react to the scenario when Android OS recreates [Activity].
+   * When this happens we need to re-create the flow that happens in [AppContextActivityResultRegistry.register]
+   * and possibly handle the returned result from [onActivityResult].
+   */
+  fun onHostResume() {
+    registry.onActivityRecreated(activity)
+  }
 
+  /**
+   * Tries to dispatch returned result to the registered callback.
+   */
   fun onActivityResult(activity: Activity, requestCode: Int, resultCode: Int, data: Intent?) {
     registry.dispatchResult(requestCode, resultCode, data)
   }
