@@ -12,7 +12,7 @@ import expo.modules.kotlin.views.ViewManagerDefinition
 
 /**
  * Intermediate data used to create a proper [ProcessedModuleDefinition].
- * It contains all, not processed data from [ModuleDefinitionBuilder].
+ * It contains all, unprocessed data from [ModuleDefinitionBuilder].
  */
 class ModuleDefinitionData(
   val name: String,
@@ -28,7 +28,7 @@ class ModuleDefinitionData(
 /**
  * A final version of the ModuleDefinition.
  * Most values are just copied from [ModuleDefinitionData].
- * However some fields like `asyncFunctions` needs to be processed or bound with the [ModuleHolder].
+ * However some fields like `asyncFunctions` need to be processed or bound with the [ModuleHolder].
  */
 class ProcessedModuleDefinition(
   data: ModuleDefinitionData,

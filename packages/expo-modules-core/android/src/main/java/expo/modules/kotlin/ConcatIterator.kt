@@ -9,11 +9,10 @@ class ConcatIterator<T>(
 ) : Iterator<T> {
   override fun hasNext(): Boolean = first.hasNext() || second.hasNext()
 
-  override fun next(): T {
+  override fun next(): T =
     if (first.hasNext()) {
-      return first.next()
+      first.next()
+    } else {
+      second.next()
     }
-
-    return second.next()
-  }
 }

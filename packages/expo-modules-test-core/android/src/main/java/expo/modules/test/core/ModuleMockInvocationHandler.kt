@@ -47,7 +47,8 @@ class ModuleMockInvocationHandler<T : Any>(
 ) : InvocationHandler {
   override fun invoke(proxy: Any, method: Method, args: Array<out Any>?): Any? {
     if (!holder.definition.asyncFunctions.containsKey(method.name) &&
-      !holder.definition.syncFunctions.containsKey(method.name)) {
+      !holder.definition.syncFunctions.containsKey(method.name)
+    ) {
       return method.invoke(moduleController, *(args ?: emptyArray()))
     }
 

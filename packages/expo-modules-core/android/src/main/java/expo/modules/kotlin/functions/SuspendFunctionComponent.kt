@@ -15,8 +15,8 @@ import java.lang.ref.WeakReference
 import kotlin.jvm.Throws
 
 /**
- * We can't construct a `SuspendFunctionComponent` in the build phase, cause it has to have access to module coroutine scope.
- * So we create another builder to store need information and build it later - during the holder initialization.
+ * We can't construct a `SuspendFunctionComponent` in the build phase, because it has to have access to module coroutine scope.
+ * So we create another builder to store needed information and build it later - during the holder initialization.
  */
 class SuspendFunctionComponentBuilder(
   internal val name: String,
