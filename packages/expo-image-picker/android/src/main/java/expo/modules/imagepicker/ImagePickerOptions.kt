@@ -1,7 +1,11 @@
 package expo.modules.imagepicker
 
+import android.net.Uri
+import android.provider.MediaStore
 import androidx.annotation.FloatRange
 import androidx.annotation.IntRange
+import expo.modules.imagepicker.contracts.CameraContract
+import expo.modules.imagepicker.contracts.ImageLibraryContract
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 
@@ -27,10 +31,60 @@ internal class ImagePickerOptions : Record {
 
   @Field
   var aspect: Pair<Int, Int>? = null
+
+  internal fun toCameraContract(uri: Uri) = CameraContract(
+    uri,
+    mediaTypes.toMimeType(),
+  )
+
+  fun toImageLibraryContract() = ImageLibraryContract(
+    mediaTypes.toMimeType(),
+  )
 }
 
 enum class MediaTypes(val value: String) {
   IMAGES("Images"),
   VIDEOS("Videos"),
   ALL("All");
+
+  internal fun toMimeType(): String {
+    return when (this) {
+      IMAGES -> ImageAllMimeType
+      VIDEOS -> VideoAllMimeType
+      ALL -> AllMimeType
+    }
+  }
+
+  internal fun toMultipleMimeTypes(): Array<String>? {
+    return when (this) {
+      ALL -> arrayOf(
+        ImageAllMimeType,
+        VideoAllMimeType
+      )
+      else -> null
+    }
+  }
+
+  internal fun toFileExtension(): String {
+    return when(this) {
+      VIDEOS -> ".mp4"
+      else -> ".jpeg"
+    }
+  }
+
+  /**
+   * Return [MediaStore]'s intent capture action associated with given media types
+   */
+  internal fun toCameraIntentAction(): String {
+    return when (this) {
+      VIDEOS -> MediaStore.ACTION_VIDEO_CAPTURE
+      else -> MediaStore.ACTION_IMAGE_CAPTURE
+    }
+  }
+
+  internal companion object {
+    const val ImageAllMimeType = "image/*"
+    const val VideoAllMimeType = "video/*"
+    const val AllMimeType = "*/*"
+  }
 }
