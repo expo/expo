@@ -126,6 +126,18 @@ export function withMetroMultiPlatform(
     return config;
   }
 
+  const reactNativePath = path.dirname(resolveFrom(projectRoot, 'react-native/package.json'));
+
+  // @ts-expect-error: readonly
+  config.serializer.getPolyfills = ({ platform }) => {
+    if (platform === 'web') {
+      return [
+        // TODO: runtime polyfills, i.e. Fast Refresh, error overlay, React Dev Tools...
+      ];
+    }
+    return require(path.join(reactNativePath, 'rn-get-polyfills'))();
+  };
+
   // Get the `transformer.assetRegistryPath`
   // this needs to be unified since you can't dynamically
   // swap out the transformer based on platform.
