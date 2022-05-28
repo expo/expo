@@ -1,4 +1,4 @@
-package expo.modules.notifications.tokens;
+package expo.modules.notifications.topics;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -29,13 +29,14 @@ public class TopicSubscribeModule extends ExportedModule {
   }
 
   /**
-   * Subscribe to a topic
+   * Subscribe to a broadcast topic
    *
+   * @param topic Broadcast topic to subscribe to
    * @param promise Promise to be resolved when the operation completes
    */
   @ExpoMethod
   public void topicSubscribeAsync(final String topic, final Promise promise) {
-    FirebaseMessaging.getInstance().subscribeTopic(topic)
+    FirebaseMessaging.getInstance().subscribeToTopic(topic)
         .addOnCompleteListener(new OnCompleteListener<Void>() {
           @Override
           public void onComplete(@NonNull Task<Void> task) {
@@ -47,7 +48,7 @@ public class TopicSubscribeModule extends ExportedModule {
               }
               return;
             }
-            promise.resolve();
+            promise.resolve(null);
           }
         });
   }

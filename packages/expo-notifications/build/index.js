@@ -10,6 +10,7 @@ if (isRunningInExpoGo() && !areWeTestingWithJest()) {
 export { default as getDevicePushTokenAsync } from './getDevicePushTokenAsync';
 export { default as unregisterForNotificationsAsync } from './unregisterForNotificationsAsync';
 export { default as getExpoPushTokenAsync } from './getExpoPushTokenAsync';
+export { default as topicSubscribeAsync } from './topicSubscribeAsync';
 export { default as getPresentedNotificationsAsync } from './getPresentedNotificationsAsync';
 export { default as dismissNotificationAsync } from './dismissNotificationAsync';
 export { default as dismissAllNotificationsAsync } from './dismissAllNotificationsAsync';
