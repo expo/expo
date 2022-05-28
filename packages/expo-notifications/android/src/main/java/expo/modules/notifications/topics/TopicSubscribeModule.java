@@ -52,4 +52,29 @@ public class TopicSubscribeModule extends ExportedModule {
           }
         });
   }
+
+  /**
+   * Unsubscribe from a previously subscribed broadcast topic
+   *
+   * @param topic Broadcast topic to unsubscribe from
+   * @param promise Promise to be resolved when the operation completes
+   */
+  @ExpoMethod
+  public void topicUnsubscribeAsync(final String topic, final Promise promise) {
+    FirebaseMessaging.getInstance().unsubscribeFromTopic(topic)
+        .addOnCompleteListener(new OnCompleteListener<Void>() {
+          @Override
+          public void onComplete(@NonNull Task<Void> task) {
+            if (!task.isSuccessful()) {
+              if (task.getException() == null) {
+                promise.reject(TOPIC_SUBSCRIBE_FAIL_CODE, "Unsubscribing from the topic failed.");
+              } else {
+                promise.reject(TOPIC_SUBSCRIBE_FAIL_CODE, "Unsubscribing from the topic failed: " + task.getException().getMessage(), task.getException());
+              }
+              return;
+            }
+            promise.resolve(null);
+          }
+        });
+  }
 }
