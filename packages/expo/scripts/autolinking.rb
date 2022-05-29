@@ -24,3 +24,20 @@ def expo_patch_react_imports!(installer, options = {})
 
   Expo::ReactImportPatcher.new(installer, options).run!
 end
+
+def expo_post_install(installer, options = {})
+  # If we want to run expo-dev-launcher packager, set EX_DEV_LAUNCHER_URL to its base URL (e.g. http://localhost:8090),
+  # and the iOS build will pick it up here.
+  dev_launcher_url = ENV['EX_DEV_LAUNCHER_URL'] || ""
+  if dev_launcher_url != ""
+    installer.pods_project.targets.each do |target|
+      if target.name == 'expo-dev-launcher'
+        target.build_configurations.each do |config|
+          if config.name == 'Debug'
+            config.build_settings['OTHER_CFLAGS'] = "$(inherited) -DEX_DEV_LAUNCHER_URL=\'\\\"" + dev_launcher_url + "\\\"\'"
+          end
+        end
+      end
+    end
+  end
+end

@@ -37,8 +37,7 @@
 #define VERSION @ STRINGIZE2(EX_DEV_LAUNCHER_VERSION)
 #endif
 
-// Uncomment the below and set it to a React Native bundler URL to develop the launcher JS
-//  #define DEV_LAUNCHER_URL "http://localhost:8090//index.bundle?platform=ios&dev=true&minify=false"
+#define EX_DEV_LAUNCHER_PACKAGER_PATH "index.bundle?platform=ios&dev=true&minify=false"
 
 @interface EXDevLauncherController ()
 
@@ -105,15 +104,65 @@
   return nil;
 }
 
+// Expo developers: Enable the below code by running
+//     export EX_DEV_LAUNCHER_URL=http://localhost:8090
+// before doing pod install. This will cause the controller to see if
+// the expo-launcher packager is running, and if so, use that instead of
+// the prebuild bundle.
+// See the post_install step in expo/scripts/autolinking.rb
+
+- (NSURL *)devLauncherURL
+{
+#ifdef EX_DEV_LAUNCHER_URL
+  NSString *urlString = [NSString stringWithFormat:@"%s/%s", EX_DEV_LAUNCHER_URL, EX_DEV_LAUNCHER_PACKAGER_PATH];
+  return [NSURL URLWithString:urlString];
+#endif
+  return nil;
+}
+
+- (NSURL *)devLauncherStatusURL
+{
+#ifdef EX_DEV_LAUNCHER_URL
+  NSString *urlString = [NSString stringWithFormat:@"%s/status", EX_DEV_LAUNCHER_URL];
+  return [NSURL URLWithString:urlString];
+#endif
+  return nil;
+}
+
+- (BOOL)isLauncherPackagerRunning
+{
+  // Shamelessly copied from RN core (RCTBundleURLProvider)
+
+  NSURL *url = [self devLauncherStatusURL];
+
+  NSURLSession *session = [NSURLSession sharedSession];
+  NSURLRequest *request = [NSURLRequest requestWithURL:url
+                                           cachePolicy:NSURLRequestUseProtocolCachePolicy
+                                       timeoutInterval:1];
+  __block NSURLResponse *response;
+  __block NSData *data;
+
+  dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+  [[session dataTaskWithRequest:request
+              completionHandler:^(NSData *d, NSURLResponse *res, __unused NSError *err) {
+                data = d;
+                response = res;
+                dispatch_semaphore_signal(semaphore);
+              }] resume];
+  dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+
+  NSString *status = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+  return [status isEqualToString:@"packager-status:running"];
+}
+
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
 {
-#ifdef DEV_LAUNCHER_URL
-  // LAN url for developing launcher JS
-  return [NSURL URLWithString:@(DEV_LAUNCHER_URL)];
-#else
+  NSURL *launcherURL = [self devLauncherURL];
+  if (launcherURL != nil && [self isLauncherPackagerRunning]) {
+    return launcherURL;
+  }
   NSURL *bundleURL = [[NSBundle mainBundle] URLForResource:@"EXDevLauncher" withExtension:@"bundle"];
   return [[NSBundle bundleWithURL:bundleURL] URLForResource:@"main" withExtension:@"jsbundle"];
-#endif
 }
 
 - (NSDictionary *)recentlyOpenedApps
@@ -252,11 +301,14 @@
   rootViewController.view = rootView;
   _window.rootViewController = rootViewController;
 
-#if RCT_DEV && defined(DEV_LAUNCHER_URL)
+#if RCT_DEV
+  NSURL *url = [self devLauncherURL];
+  if (url != nil) {
     // Connect to the websocket
-    [[RCTPackagerConnection sharedPackagerConnection] setSocketConnectionURL:[NSURL URLWithString:@DEV_LAUNCHER_URL]];
+    [[RCTPackagerConnection sharedPackagerConnection] setSocketConnectionURL:url];
+  }
 #endif
-  
+
   [_window makeKeyAndVisible];
 }
 
