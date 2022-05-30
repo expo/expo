@@ -25,6 +25,7 @@ void JSIInteropModuleRegistry::registerNatives() {
                                     JSIInteropModuleRegistry::installJSIForTests),
                    makeNativeMethod("evaluateScript", JSIInteropModuleRegistry::evaluateScript),
                    makeNativeMethod("global", JSIInteropModuleRegistry::global),
+                   makeNativeMethod("createObject", JSIInteropModuleRegistry::createObject),
                  });
 }
 
@@ -93,5 +94,9 @@ jni::local_ref<JavaScriptValue::javaobject> JSIInteropModuleRegistry::evaluateSc
 
 jni::local_ref<JavaScriptObject::javaobject> JSIInteropModuleRegistry::global() {
   return runtimeHolder->global();
+}
+
+jni::local_ref<JavaScriptObject::javaobject> JSIInteropModuleRegistry::createObject() {
+  return runtimeHolder->createObject();
 }
 } // namespace expo
