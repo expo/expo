@@ -59,9 +59,9 @@ public:
    */
   jni::local_ref<jni::HybridClass<JavaScriptObject>::javaobject> createObject();
 
-private:
-  std::shared_ptr<jsi::Runtime> runtime;
   std::shared_ptr<react::CallInvoker> jsInvoker;
   std::shared_ptr<react::CallInvoker> nativeInvoker;
+private:
+  std::shared_ptr<jsi::Runtime> runtime;
 };
 } // namespace expo

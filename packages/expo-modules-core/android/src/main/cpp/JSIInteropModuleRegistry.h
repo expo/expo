@@ -71,10 +71,9 @@ public:
 
   std::shared_ptr<react::CallInvoker> jsInvoker;
   std::shared_ptr<react::CallInvoker> nativeInvoker;
-
+  std::shared_ptr<JavaScriptRuntime> runtimeHolder;
 private:
   friend HybridBase;
-  std::shared_ptr<JavaScriptRuntime> runtimeHolder;
   jni::global_ref<JSIInteropModuleRegistry::javaobject> javaPart_;
 
   explicit JSIInteropModuleRegistry(jni::alias_ref<jhybridobject> jThis);

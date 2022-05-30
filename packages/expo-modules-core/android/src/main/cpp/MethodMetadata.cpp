@@ -183,13 +183,13 @@ jsi::Function MethodMetadata::createPromiseBody(
       jobject resolve = createJavaCallbackFromJSIFunction(
         std::move(resolveJSIFn),
         rt,
-        moduleRegistry->jsInvoker
+        moduleRegistry->runtimeHolder->jsInvoker
       ).release();
 
       jobject reject = createJavaCallbackFromJSIFunction(
         std::move(rejectJSIFn),
         rt,
-        moduleRegistry->jsInvoker
+        moduleRegistry->runtimeHolder->nativeInvoker
       ).release();
 
       JNIEnv *env = jni::Environment::current();
