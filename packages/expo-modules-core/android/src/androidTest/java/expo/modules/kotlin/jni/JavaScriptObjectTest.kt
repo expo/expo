@@ -59,7 +59,6 @@ class JavaScriptObjectTest {
     Truth.assertThat(bar).isFalse()
   }
 
-
   @Test
   fun setProperty_should_work_with_int() = with(emptyObject()) {
     setProperty("foo", 123)
