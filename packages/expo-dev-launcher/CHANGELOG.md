@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Include extra information in the recently opened list ([#17633](https://github.com/expo/expo/pull/17633) by [@ajsmth](https://github.com/ajsmth))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
