@@ -38,7 +38,7 @@
 #endif
 
 // Uncomment the below and set it to a React Native bundler URL to develop the launcher JS
-//  #define DEV_LAUNCHER_URL "http://localhost:8090//index.bundle?platform=ios&dev=true&minify=false"
+  #define DEV_LAUNCHER_URL "http://localhost:8090//index.bundle?platform=ios&dev=true&minify=false"
 
 @interface EXDevLauncherController ()
 
@@ -363,12 +363,8 @@
 
   void (^launchReactNativeApp)(void) = ^{
     self->_shouldPreferUpdatesInterfaceSourceUrl = NO;
-    RCTDevLoadingViewSetEnabled(NO);  
-    NSMutableDictionary *appInfo = [NSMutableDictionary new];
-    // TODO - figure out app name
-    appInfo[@"name"] = @"";
-    appInfo[@"url"] = expoUrl.absoluteString;
-    [self.recentlyOpenedAppsRegistry appWasOpenedWithAppInfo:appInfo];
+    RCTDevLoadingViewSetEnabled(NO);
+    [self.recentlyOpenedAppsRegistry appWasOpened:expoUrl manifest:nil];
     if ([expoUrl.path isEqual:@"/"] || [expoUrl.path isEqual:@""]) {
       [self _initAppWithUrl:expoUrl bundleUrl:[NSURL URLWithString:@"index.bundle?platform=ios&dev=true&minify=false" relativeToURL:expoUrl] manifest:nil];
     } else {
@@ -382,11 +378,7 @@
   void (^launchExpoApp)(NSURL *, EXManifestsManifest *) = ^(NSURL *bundleURL, EXManifestsManifest *manifest) {
     self->_shouldPreferUpdatesInterfaceSourceUrl = !manifest.isUsingDeveloperTool;
     RCTDevLoadingViewSetEnabled(manifest.isUsingDeveloperTool);
-    NSMutableDictionary *appInfo = [NSMutableDictionary new];
-    appInfo[@"url"] = expoUrl.absoluteString;
-    appInfo[@"name"] = manifest.name;
-    [self.recentlyOpenedAppsRegistry appWasOpenedWithAppInfo:appInfo];
-    
+    [self.recentlyOpenedAppsRegistry appWasOpened:expoUrl manifest:manifest];
     [self _initAppWithUrl:expoUrl bundleUrl:bundleURL manifest:manifest];
     if (onSuccess) {
       onSuccess();

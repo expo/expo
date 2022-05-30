@@ -28,7 +28,7 @@ type EASBranchRowProps = {
   isLast?: boolean;
   navigation: StackNavigationProp<ExtensionsStackParamList>;
   isLoading?: boolean;
-  onUpdatePress: (update: Update, branchName?: string) => void;
+  onUpdatePress: (update: Update) => void;
 };
 
 export function EASBranchRow({
@@ -102,11 +102,7 @@ export function EASBranchRow({
             <Spacer.Horizontal size="large" />
             <Spacer.Vertical size="small" />
             <View align="centered" opacity={isLatestUpdateCompatible ? '1' : '0.5'}>
-              <BasicButton
-                label="Open"
-                size="small"
-                onPress={() => onUpdatePress(latestUpdate, branch.name)}
-              />
+              <BasicButton label="Open" size="small" onPress={() => onUpdatePress(latestUpdate)} />
             </View>
           </Row>
         )}

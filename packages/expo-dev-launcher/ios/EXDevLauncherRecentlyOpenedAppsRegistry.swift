@@ -1,6 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 import Foundation
+import EXManifests
 
 let RECENTLY_OPENED_APPS_REGISTRY_KEY = "expo.devlauncher.recentlyopenedapps"
 
@@ -18,7 +19,7 @@ public class EXDevLauncherRecentlyOpenedAppsRegistry: NSObject {
   }
 
   @objc
-  public func appWasOpened(_ url: URL) {
+  public func appWasOpened(_ url: URL, manifest: EXManifestsManifestBehavior?) {
     var appEntry: [String: Any] = [:]
     
     let urlAsString = url.absoluteString
@@ -31,17 +32,28 @@ public class EXDevLauncherRecentlyOpenedAppsRegistry: NSObject {
     }
     
     appEntry["isEASUpdate"] = isEASUpdate
-  
-    if let branchName = getQueryStringParameter(url: url, param: "branchName") {
-      appEntry["branchName"] = branchName
+    
+    if (isEASUpdate) {      
+      if let updateMessage = getQueryStringParameter(url: url, param: "updateMessage") {
+        appEntry["updateMessage"] = updateMessage
+      }
     }
     
-    if let updateMessage = getQueryStringParameter(url: url, param: "updateMessage") {
-      appEntry["updateMessage"] = updateMessage
+    if let manifest = manifest {
+      appEntry["name"] = manifest.name()
+      
+      let json = manifest.rawManifestJSON()
+      
+      if (isEASUpdate) {
+        if let metadata: [String: Any] = json["metadata"] as? [String : Any], let branchName = metadata["branchName"] {
+          appEntry["branchName"] = branchName;
+        }
+      }
     }
     
     appEntry["timestamp"] = timestamp
     appEntry["url"] = urlAsString
+    
     
     var registry = appRegistry
     registry[urlAsString] = appEntry
