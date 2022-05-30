@@ -6,6 +6,29 @@ import ImageSpotlight from '~/components/plugins/ImageSpotlight'
 
 Extensions allow you to extend your development client with additional capabilities.
 
+
+### Extending the dev menu
+
+The dev menu can be extended to include extra buttons by using the `registerDevMenuItems` API:
+
+```tsx
+import { registerDevMenuItems } from 'expo-dev-menu'
+
+const devMenuItems = [
+  {
+    name: 'My Custom Button',
+    callback: () => console.log("Hello world!")
+  }
+]
+
+registerDevMenuItems(devMenuItems)
+```
+
+This will create a new section in the dev menu that includes the buttons you have registered: 
+
+<ImageSpotlight alt="An example of a custom menu button in expo-dev-menu" src="/static/images/dev-client/custom-menu-button.png" containerStyle={{ paddingBottom: 0 }} />
+
+
 ### EAS Updates
 
 <ImageSpotlight alt="An example list of EAS Updates that can be loaded in the expo-dev-client" src="/static/images/dev-client/eas-updates-screen.png" containerStyle={{ paddingBottom: 0 }} />
