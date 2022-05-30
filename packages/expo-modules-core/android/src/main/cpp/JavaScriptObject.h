@@ -98,5 +98,34 @@ private:
       jsi_type_converter<T>::convert(*runtime->get(), value)
     );
   }
+
+  template<
+    class T,
+    typename = std::enable_if_t<is_jsi_type_converter_defined<T>>
+  >
+  void defineProperty(jni::alias_ref<jstring> name, T value, int options) {
+    auto runtime = runtimeHolder.lock();
+    assert(runtime != nullptr);
+    jsi::Runtime &jsRuntime = *runtime->get();
+
+    auto cName = name->toStdString();
+    jsi::Object global = jsRuntime.global();
+    jsi::Object objectClass = global.getPropertyAsObject(jsRuntime, "Object");
+    jsi::Function definePropertyFunction = objectClass.getPropertyAsFunction(
+      jsRuntime,
+      "defineProperty"
+    );
+    jsi::Object descriptor = preparePropertyDescriptor(jsRuntime, options);
+
+    descriptor.setProperty(jsRuntime, "value", jsi_type_converter<T>::convert(jsRuntime, value));
+
+    definePropertyFunction.callWithThis(jsRuntime, objectClass, {
+      jsi::Value(jsRuntime, *jsObject),
+      jsi::String::createFromUtf8(jsRuntime, cName),
+      std::move(descriptor)
+    });
+  }
+
+  static jsi::Object preparePropertyDescriptor(jsi::Runtime &jsRuntime, int options);
 };
 } // namespace expo
