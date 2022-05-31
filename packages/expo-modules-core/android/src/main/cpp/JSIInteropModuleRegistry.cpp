@@ -38,9 +38,11 @@ void JSIInteropModuleRegistry::installJSI(
   jni::alias_ref<react::CallInvokerHolder::javaobject> nativeInvokerHolder
 ) {
   auto runtime = reinterpret_cast<jsi::Runtime *>(jsRuntimePointer);
-  jsInvoker = jsInvokerHolder->cthis()->getCallInvoker();
-  nativeInvoker = nativeInvokerHolder->cthis()->getCallInvoker();
-  runtimeHolder = std::make_shared<JavaScriptRuntime>(runtime, jsInvoker, nativeInvoker);
+  runtimeHolder = std::make_shared<JavaScriptRuntime>(
+    runtime,
+    jsInvokerHolder->cthis()->getCallInvoker(),
+    nativeInvokerHolder->cthis()->getCallInvoker()
+  );
 
   auto expoModules = std::make_shared<ExpoModulesHostObject>(this);
   auto expoModulesObject = jsi::Object::createFromHostObject(*runtime, expoModules);
