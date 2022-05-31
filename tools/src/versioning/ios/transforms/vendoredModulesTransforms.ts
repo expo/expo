@@ -174,5 +174,38 @@ export default function vendoredModulesTransformsFactory(prefix: string): Config
     'react-native-screens': {
       content: [],
     },
+    '@shopify/react-native-skia': {
+      path: [
+        {
+          find: /\b(DisplayLink|PlatformContext|SkiaDrawView|SkiaDrawViewManager|SkiaManager)/g,
+          replaceWith: `${prefix}$1`,
+        },
+      ],
+      content: [
+        {
+          paths: '*.h',
+          find: new RegExp(`ReactCommon/(?!${prefix})`, 'g'),
+          replaceWith: `ReactCommon/${prefix}`,
+        },
+        {
+          find: /\b(DisplayLink|PlatformContext|SkiaDrawView|SkiaDrawViewManager|SkiaManager)/g,
+          replaceWith: `${prefix}$1`,
+        },
+        {
+          // The module name in bridge should be unversioned `RNSkia`
+          paths: 'SkiaDrawViewManager.mm',
+          find: new RegExp(`(\\smoduleForName:@")${prefix}(RNSkia")`, 'g'),
+          replaceWith: '$1$2',
+        },
+        {
+          // __typename__ exposed to js should be unversioned
+          find: new RegExp(
+            `(\\bJSI_PROPERTY_GET\\(__typename__\\) \\{\\n\\s*return jsi::String::createFromUtf8\\(runtime, ")${prefix}(.*")`,
+            'gm'
+          ),
+          replaceWith: '$1$2',
+        },
+      ],
+    },
   };
 }
