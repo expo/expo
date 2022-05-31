@@ -15,7 +15,7 @@ namespace expo {
 class JSIObjectWrapper {
 public:
   /**
-   * @return an pointer to the underlying jsi::Object.
+   * @return a pointer to the underlying jsi::Object.
    */
   virtual std::shared_ptr<jsi::Object> get() = 0;
 };
@@ -26,7 +26,7 @@ public:
 class JSIValueWrapper {
 public:
   /**
-   * @return an pointer to the underlying jsi::Value.
+   * @return a pointer to the underlying jsi::Value.
    */
   virtual std::shared_ptr<jsi::Value> get() = 0;
 };
