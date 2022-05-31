@@ -76,4 +76,9 @@ jni::local_ref<JavaScriptObject::javaobject> JavaScriptRuntime::global() {
   auto global = std::make_shared<jsi::Object>(runtime->global());
   return JavaScriptObject::newObjectCxxArgs(weak_from_this(), global);
 }
+
+jni::local_ref<JavaScriptObject::javaobject> JavaScriptRuntime::createObject() {
+  auto newObject = std::make_shared<jsi::Object>(*runtime);
+  return JavaScriptObject::newObjectCxxArgs(weak_from_this(), newObject);
+}
 } // namespace expo

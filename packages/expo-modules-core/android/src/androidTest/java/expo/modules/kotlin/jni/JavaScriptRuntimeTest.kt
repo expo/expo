@@ -85,4 +85,14 @@ class JavaScriptRuntimeTest {
     Truth.assertThat(number.isObject()).isTrue()
     Truth.assertThat(number.kind()).isEqualTo("function")
   }
+
+  @Test
+  fun createObject_should_return_a_valid_object() {
+    val jsObject = jsiInterop.createObject()
+
+    Truth.assertThat(jsObject.getPropertyNames()).hasLength(0)
+
+    jsObject.setProperty("foo", "bar")
+    Truth.assertThat(jsObject.getProperty("foo").getString()).isEqualTo("bar")
+  }
 }

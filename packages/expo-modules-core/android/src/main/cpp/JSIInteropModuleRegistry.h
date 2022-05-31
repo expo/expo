@@ -64,6 +64,11 @@ public:
    */
   jni::local_ref<JavaScriptObject::javaobject> global();
 
+  /**
+   * Exposes a `JavaScriptRuntime::createObject` function to Kotlin
+   */
+  jni::local_ref<JavaScriptObject::javaobject> createObject();
+
   std::shared_ptr<react::CallInvoker> jsInvoker;
   std::shared_ptr<react::CallInvoker> nativeInvoker;
 
