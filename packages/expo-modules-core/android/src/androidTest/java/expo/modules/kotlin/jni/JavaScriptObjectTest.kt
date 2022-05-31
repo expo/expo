@@ -8,6 +8,10 @@ import org.junit.Test
 class JavaScriptObjectTest {
   private lateinit var jsiInterop: JSIInteropModuleRegistry
 
+  private fun emptyObject(): JavaScriptObject {
+    return jsiInterop.evaluateScript("({ })").getObject()
+  }
+
   @Before
   fun before() {
     jsiInterop = JSIInteropModuleRegistry(mockk()).apply {
@@ -17,7 +21,7 @@ class JavaScriptObjectTest {
 
   @Test
   fun hasProperty_should_return_false_when_the_property_is_missing() {
-    val jsObject = jsiInterop.evaluateScript("({})").getObject()
+    val jsObject = emptyObject()
     Truth.assertThat(jsObject.hasProperty("prop")).isFalse()
   }
 
@@ -40,5 +44,77 @@ class JavaScriptObjectTest {
     val jsObject = jsiInterop.evaluateScript("({ 'prop': 123 })").getObject()
     val property = jsObject.getProperty("foo")
     Truth.assertThat(property.isUndefined()).isTrue()
+  }
+
+  @Test
+  fun setProperty_should_work_with_bool() {
+    val jsObject = jsiInterop.evaluateScript("({ })").getObject()
+    jsObject.setProperty("foo", true)
+    jsObject.setProperty("bar", false)
+
+    val foo = jsObject.getProperty("foo").getBool()
+    val bar = jsObject.getProperty("bar").getBool()
+
+    Truth.assertThat(foo).isTrue()
+    Truth.assertThat(bar).isFalse()
+  }
+
+  @Test
+  fun setProperty_should_work_with_int() = with(emptyObject()) {
+    setProperty("foo", 123)
+    val foo = getProperty("foo").getDouble()
+    Truth.assertThat(foo).isEqualTo(123)
+  }
+
+  @Test
+  fun setProperty_should_work_with_double() = with(emptyObject()) {
+    setProperty("foo", 20.43)
+    val foo = getProperty("foo").getDouble()
+    Truth.assertThat(foo).isEqualTo(20.43)
+  }
+
+  @Test
+  fun setProperty_should_work_with_string() = with(emptyObject()) {
+    setProperty("foo", "bar")
+    setProperty("bar", null as String?)
+
+    val foo = getProperty("foo").getString()
+    val bar = getProperty("bar")
+
+    Truth.assertThat(foo).isEqualTo("bar")
+    Truth.assertThat(bar.isUndefined()).isTrue()
+  }
+
+  @Test
+  fun setProperty_should_work_with_js_value() = with(emptyObject()) {
+    val jsValue = jsiInterop.evaluateScript("123")
+
+    setProperty("foo", jsValue)
+
+    val foo = getProperty("foo").getDouble()
+
+    Truth.assertThat(foo).isEqualTo(123)
+  }
+
+  @Test
+  fun setProperty_should_work_with_js_object() = with(emptyObject()) {
+    val jsObject = jsiInterop.evaluateScript("({ 'bar': 10 })").getObject()
+
+    setProperty("foo", jsObject)
+
+    val foo = getProperty("foo").getObject()
+    val bar = foo.getProperty("bar").getDouble()
+
+    Truth.assertThat(bar).isEqualTo(10)
+  }
+
+  @Test
+  fun setProperty_should_work_with_untyped_null() {
+    val jsObject = jsiInterop.evaluateScript("({ 'foo': 10 })").getObject()
+
+    jsObject.setProperty("foo", null)
+    val foo = jsObject.getProperty("foo")
+
+    Truth.assertThat(foo.isUndefined()).isTrue()
   }
 }
