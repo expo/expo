@@ -56,12 +56,24 @@ class ExpoHandlingDelegate(protected val context: Context) : HandlingDelegate {
 
   fun getListeners() = sListenersReferences.values.mapNotNull { it.get() }
 
+  /**
+   * If the app is foregrounded, invokes [NotificationManager.onNotificationReceived] with the
+   * [notification].
+   *
+   * If the app is backgrounded, a notification is only presented if
+   * the title and text are both non-empty. Otherwise, this is a "data-only" or "silent"
+   * notification that should not be presented to the user.
+   */
   override fun handleNotification(notification: Notification) {
     if (isAppInForeground()) {
       getListeners().forEach {
         it.onNotificationReceived(notification)
       }
-    } else {
+    } else if (!(
+      notification.notificationRequest.content.title.isNullOrEmpty() &&
+        notification.notificationRequest.content.text.isNullOrEmpty()
+      )
+    ) {
       NotificationsService.present(context, notification)
     }
   }

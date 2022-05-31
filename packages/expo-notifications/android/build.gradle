@@ -95,4 +95,9 @@ dependencies {
   api 'com.google.firebase:firebase-messaging:21.1.0'
 
   api 'me.leolin:ShortcutBadger:1.1.22@aar'
+
+  testImplementation "androidx.test:core:1.4.0"
+  testImplementation "junit:junit:4.13.2"
+  testImplementation "org.robolectric:robolectric:4.7.3"
+  testImplementation "io.mockk:mockk:1.12.3"
 }
