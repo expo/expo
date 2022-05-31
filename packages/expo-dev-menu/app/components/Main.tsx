@@ -1,5 +1,6 @@
 import {
   View,
+  WarningIcon,
   Text,
   Heading,
   Row,
@@ -255,6 +256,36 @@ export function Main({ registeredCallbacks = [] }: MainProps) {
           />
         </View>
       </View>
+
+      {appInfo.engine === 'Hermes' && (
+        <>
+          <Spacer.Vertical size="large" />
+
+          <View mx="small">
+            <View bg="warning" padding="medium" rounded="medium" border="warning">
+              <Row align="center">
+                <WarningIcon />
+
+                <Spacer.Horizontal size="tiny" />
+
+                <Heading color="warning" size="small" style={{ top: 1 }}>
+                  Warning
+                </Heading>
+              </Row>
+
+              <Spacer.Vertical size="small" />
+
+              <View>
+                <Text size="small" color="warning">
+                  If you need to inspect the JS bundle in the flipper or the dev tools, you have to
+                  ensure that your app has been reloaded after the first launch of the dev-menu.
+                  Otherwise, the incorrect bundle will be detected by the debugger.
+                </Text>
+              </View>
+            </View>
+          </View>
+        </>
+      )}
 
       {!hasDisabledDevSettingOption && (
         <>
