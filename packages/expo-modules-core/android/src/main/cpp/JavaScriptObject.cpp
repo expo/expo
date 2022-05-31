@@ -20,6 +20,15 @@ void JavaScriptObject::registerNatives() {
                    makeNativeMethod("setJSObjectProperty",
                                     JavaScriptObject::setProperty<jni::alias_ref<JavaScriptObject::javaobject>>),
                    makeNativeMethod("unsetProperty", JavaScriptObject::unsetProperty),
+                   makeNativeMethod("defineBoolProperty", JavaScriptObject::defineProperty<bool>),
+                   makeNativeMethod("defineDoubleProperty",
+                                    JavaScriptObject::defineProperty<double>),
+                   makeNativeMethod("defineStringProperty",
+                                    JavaScriptObject::defineProperty<jni::alias_ref<jstring>>),
+                   makeNativeMethod("defineJSValueProperty",
+                                    JavaScriptObject::defineProperty<jni::alias_ref<JavaScriptValue::javaobject>>),
+                   makeNativeMethod("defineJSObjectProperty",
+                                    JavaScriptObject::defineProperty<jni::alias_ref<JavaScriptObject::javaobject>>),
                  });
 }
 
@@ -101,5 +110,16 @@ void JavaScriptObject::unsetProperty(jni::alias_ref<jstring> name) {
     cName.c_str(),
     jsi::Value::undefined()
   );
+}
+
+jsi::Object JavaScriptObject::preparePropertyDescriptor(
+  jsi::Runtime &jsRuntime,
+  int options
+) {
+  jsi::Object descriptor(jsRuntime);
+  descriptor.setProperty(jsRuntime, "configurable", (bool) ((1 << 0) & options));
+  descriptor.setProperty(jsRuntime, "enumerable", (bool) ((1 << 1) & options));
+  descriptor.setProperty(jsRuntime, "writable", (bool) ((1 << 2) & options));
+  return descriptor;
 }
 } // namespace expo
