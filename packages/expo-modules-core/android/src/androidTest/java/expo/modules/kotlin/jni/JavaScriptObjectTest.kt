@@ -117,4 +117,41 @@ class JavaScriptObjectTest {
 
     Truth.assertThat(foo.isUndefined()).isTrue()
   }
+
+  @Test
+  fun defineProperty_defines_non_enumerable_property() = with(emptyObject()) {
+    defineProperty("expo", 10)
+
+    Truth.assertThat(getProperty("expo").getDouble()).isEqualTo(10)
+    Truth.assertThat(getPropertyNames().toList()).doesNotContain("expo")
+  }
+
+  @Test
+  fun defineProperty_defines_enumerable_property() = with(emptyObject()) {
+    // When the property is enumerable, it is listed in the property names
+    defineProperty("expo", 10, listOf(JavaScriptObject.PropertyDescriptor.Enumerable))
+
+    Truth.assertThat(getProperty("expo").getDouble()).isEqualTo(10)
+    Truth.assertThat(getPropertyNames().toList()).contains("expo")
+  }
+
+  @Test
+  fun defineProperty_defines_configurable_property() = with(emptyObject()) {
+    // Configurable allows to redefine the property
+    defineProperty("expo", 10, listOf(JavaScriptObject.PropertyDescriptor.Configurable))
+    Truth.assertThat(getProperty("expo").getDouble()).isEqualTo(10)
+
+    defineProperty("expo", 123)
+    Truth.assertThat(getProperty("expo").getDouble()).isEqualTo(123)
+  }
+
+  @Test
+  fun defineProperty_defines_writable_property() = with(emptyObject()) {
+    // Writable allows changing the property
+    defineProperty("expo", 10, listOf(JavaScriptObject.PropertyDescriptor.Writable))
+    Truth.assertThat(getProperty("expo").getDouble()).isEqualTo(10)
+
+    setProperty("expo", 123)
+    Truth.assertThat(getProperty("expo").getDouble()).isEqualTo(123)
+  }
 }
