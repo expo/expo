@@ -180,16 +180,17 @@ jsi::Function MethodMetadata::createPromiseBody(
       jsi::Function resolveJSIFn = promiseConstructorArgs[0].getObject(rt).getFunction(rt);
       jsi::Function rejectJSIFn = promiseConstructorArgs[1].getObject(rt).getFunction(rt);
 
+      auto &runtimeHolder = moduleRegistry->runtimeHolder;
       jobject resolve = createJavaCallbackFromJSIFunction(
         std::move(resolveJSIFn),
         rt,
-        moduleRegistry->runtimeHolder->jsInvoker
+        runtimeHolder->jsInvoker
       ).release();
 
       jobject reject = createJavaCallbackFromJSIFunction(
         std::move(rejectJSIFn),
         rt,
-        moduleRegistry->runtimeHolder->nativeInvoker
+        runtimeHolder->jsInvoker
       ).release();
 
       JNIEnv *env = jni::Environment::current();
