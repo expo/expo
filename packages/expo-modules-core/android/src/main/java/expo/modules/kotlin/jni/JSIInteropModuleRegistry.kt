@@ -45,6 +45,11 @@ class JSIInteropModuleRegistry(appContext: AppContext) {
   external fun global(): JavaScriptObject
 
   /**
+   * Returns a new instance of [JavaScriptObject]
+   */
+  external fun createObject(): JavaScriptObject
+
+  /**
    * Returns a `JavaScriptModuleObject` that is a bridge between [expo.modules.kotlin.modules.Module]
    * and HostObject exported via JSI.
    *
