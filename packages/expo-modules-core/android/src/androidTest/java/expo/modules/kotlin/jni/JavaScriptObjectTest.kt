@@ -129,7 +129,7 @@ class JavaScriptObjectTest {
   @Test
   fun defineProperty_defines_enumerable_property() = with(emptyObject()) {
     // When the property is enumerable, it is listed in the property names
-    defineProperty("expo", 10, listOf(JavaScriptObjectPropertyDescriptor.Enumerable))
+    defineProperty("expo", 10, listOf(JavaScriptObject.PropertyDescriptor.Enumerable))
 
     Truth.assertThat(getProperty("expo").getDouble()).isEqualTo(10)
     Truth.assertThat(getPropertyNames().toList()).contains("expo")
@@ -138,7 +138,7 @@ class JavaScriptObjectTest {
   @Test
   fun defineProperty_defines_configurable_property() = with(emptyObject()) {
     // Configurable allows to redefine the property
-    defineProperty("expo", 10, listOf(JavaScriptObjectPropertyDescriptor.Configurable))
+    defineProperty("expo", 10, listOf(JavaScriptObject.PropertyDescriptor.Configurable))
     Truth.assertThat(getProperty("expo").getDouble()).isEqualTo(10)
 
     defineProperty("expo", 123)
@@ -148,7 +148,7 @@ class JavaScriptObjectTest {
   @Test
   fun defineProperty_defines_writable_property() = with(emptyObject()) {
     // Writable allows changing the property
-    defineProperty("expo", 10, listOf(JavaScriptObjectPropertyDescriptor.Writable))
+    defineProperty("expo", 10, listOf(JavaScriptObject.PropertyDescriptor.Writable))
     Truth.assertThat(getProperty("expo").getDouble()).isEqualTo(10)
 
     setProperty("expo", 123)
