@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 
 import FeatureFlags from '../../FeatureFlags';
-import ApiV2HttpClient from '../../api/ApiV2HttpClient';
+import { APIV2Client } from '../../api/APIV2Client';
 import ApolloClient from '../../api/ApolloClient';
 import Connectivity from '../../api/Connectivity';
 import ScrollView from '../../components/NavigationScrollView';
@@ -234,11 +234,14 @@ export class HomeScreenView extends React.Component<Props, State> {
     const { accountName } = this.props;
 
     try {
-      const api = new ApiV2HttpClient();
+      const api = new APIV2Client();
 
       const [projects, graphQLResponse] = await Promise.all([
-        api.getAsync('development-sessions', {
-          deviceId: getSnackId(),
+        api.sendAuthenticatedApiV2Request<DevSession[]>('development-sessions', {
+          method: 'GET',
+          searchParams: {
+            deviceId: getSnackId(),
+          },
         }),
         accountName
           ? ApolloClient.query<HomeScreenDataQuery, HomeScreenDataQueryVariables>({
