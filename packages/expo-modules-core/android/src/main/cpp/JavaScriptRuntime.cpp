@@ -1,6 +1,8 @@
 // Copyright © 2021-present 650 Industries, Inc. (aka Expo)
 
 #include "JavaScriptRuntime.h"
+#include "JavaScriptValue.h"
+#include "JavaScriptObject.h"
 #include "Exceptions.h"
 
 #if FOR_HERMES

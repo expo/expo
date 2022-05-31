@@ -2,18 +2,18 @@
 
 #pragma once
 
-#include "JavaScriptValue.h"
-#include "JavaScriptObject.h"
-
 #include <jsi/jsi.h>
 #include <fbjni/fbjni.h>
 #include <ReactCommon/CallInvoker.h>
 
-namespace expo {
 
 namespace jsi = facebook::jsi;
 namespace jni = facebook::jni;
 namespace react = facebook::react;
+
+namespace expo {
+class JavaScriptValue;
+class JavaScriptObject;
 
 /**
  * A wrapper for the jsi::Runtime.
@@ -47,12 +47,12 @@ public:
    * @throws if the input format is unknown, or evaluation causes an error,
    * a jni::JniException<JavaScriptEvaluateException> will be thrown.
    */
-  jni::local_ref<JavaScriptValue::javaobject> evaluateScript(const std::string &script);
+  jni::local_ref<jni::HybridClass<JavaScriptValue>::javaobject> evaluateScript(const std::string &script);
 
   /**
    * Returns the runtime global object for use in Kotlin.
    */
-  jni::local_ref<JavaScriptObject::javaobject> global();
+  jni::local_ref<jni::HybridClass<JavaScriptObject>::javaobject> global();
 
 private:
   std::shared_ptr<jsi::Runtime> runtime;

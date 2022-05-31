@@ -31,6 +31,10 @@ JavaScriptValue::JavaScriptValue(
   assert(runtimeHolder.lock() != nullptr);
 }
 
+std::shared_ptr<jsi::Value> JavaScriptValue::get() {
+  return jsValue;
+}
+
 std::string JavaScriptValue::kind() {
   if (isNull()) {
     return "null";
