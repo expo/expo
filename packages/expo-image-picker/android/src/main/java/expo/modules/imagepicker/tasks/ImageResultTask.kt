@@ -99,15 +99,15 @@ open class ImageResultTask(
     contentResolver.openInputStream(uri)?.use { input ->
       val exifInterface = ExifInterface(input)
       EXIF_TAGS.forEach { (type, tag) ->
-          if (exifInterface.getAttribute(tag) == null) {
-            return@forEach
-          }
-          when (type) {
-            "string" -> putString(tag, exifInterface.getAttribute(tag))
-            "int" -> putInt(tag, exifInterface.getAttributeInt(tag, 0))
-            "double" -> putDouble(tag, exifInterface.getAttributeDouble(tag, 0.0))
-          }
+        if (exifInterface.getAttribute(tag) == null) {
+          return@forEach
         }
+        when (type) {
+          "string" -> putString(tag, exifInterface.getAttribute(tag))
+          "int" -> putInt(tag, exifInterface.getAttributeInt(tag, 0))
+          "double" -> putDouble(tag, exifInterface.getAttributeDouble(tag, 0.0))
+        }
+      }
       // Explicitly get latitude, longitude, altitude with their specific accessor functions.
       exifInterface.latLong?.let { latLong ->
         putDouble(ExifInterface.TAG_GPS_LATITUDE, latLong[0])
