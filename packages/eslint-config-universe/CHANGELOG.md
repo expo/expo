@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- Bumped `@typescript-eslint/*` dependencies to add the TypeScript 4.7 support.
+- Bumped `@typescript-eslint/*` dependencies from 5.14.0 to 5.27.0, to add the TypeScript 4.7 support.
 - Bumped `eslint-plugin-import` from 2.25.4 to 2.26.0.
 - Bumped `eslint-plugin-react` from 7.29.3 to 7.30.0.
 - Bumped `eslint-plugin-react-hooks` from 4.3.0 to 4.5.0.
