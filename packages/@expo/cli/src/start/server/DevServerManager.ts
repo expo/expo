@@ -8,7 +8,6 @@ import { logEvent } from '../../utils/analytics/rudderstackClient';
 import { ProjectPrerequisite } from '../doctor/Prerequisite';
 import * as AndroidDebugBridge from '../platforms/android/adb';
 import { BundlerDevServer, BundlerStartOptions } from './BundlerDevServer';
-import { env } from '../../utils/env';
 import { getPlatformBundlers } from './platformBundlers';
 
 export type MultiBundlerStartOptions = {
@@ -131,10 +130,16 @@ export class DevServerManager {
       sdkVersion: exp.sdkVersion ?? null,
     });
 
+    const platformBundlers = getPlatformBundlers(exp);
+
     // Start all dev servers...
     for (const { type, options } of startOptions) {
       const BundlerDevServerClass = await BUNDLERS[type]();
-      const server = new BundlerDevServerClass(this.projectRoot, !!options?.devClient);
+      const server = new BundlerDevServerClass(
+        this.projectRoot,
+        platformBundlers,
+        !!options?.devClient
+      );
       await server.startAsync(options ?? this.options);
       devServers.push(server);
     }

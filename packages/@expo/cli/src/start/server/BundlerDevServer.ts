@@ -17,7 +17,7 @@ import {
 import { AsyncNgrok } from './AsyncNgrok';
 import { DevelopmentSession } from './DevelopmentSession';
 import { CreateURLOptions, UrlCreator } from './UrlCreator';
-import { getPlatformBundlers } from './platformBundlers';
+import { getPlatformBundlers, PlatformBundlers } from './platformBundlers';
 
 export type ServerLike = {
   close(callback?: (err?: Error) => void): void;
@@ -106,6 +106,7 @@ export abstract class BundlerDevServer {
   constructor(
     /** Project root folder. */
     public projectRoot: string,
+    public platformBundlers: PlatformBundlers,
     // TODO: Replace with custom scheme maybe...
     public isDevClient?: boolean
   ) {}
@@ -243,7 +244,7 @@ export abstract class BundlerDevServer {
   }
 
   public isTargetingWeb() {
-    return false;
+    return this.platformBundlers.web === this.name;
   }
 
   /**

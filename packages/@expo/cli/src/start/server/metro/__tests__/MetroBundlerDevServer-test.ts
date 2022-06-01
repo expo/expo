@@ -1,6 +1,7 @@
 import { vol } from 'memfs';
 
 import { BundlerStartOptions } from '../../BundlerDevServer';
+import { getPlatformBundlers } from '../../platformBundlers';
 import { MetroBundlerDevServer } from '../MetroBundlerDevServer';
 import { instantiateMetroAsync } from '../instantiateMetro';
 
@@ -17,7 +18,7 @@ beforeEach(() => {
 });
 
 async function getStartedDevServer(options: Partial<BundlerStartOptions> = {}) {
-  const devServer = new MetroBundlerDevServer('/', false);
+  const devServer = new MetroBundlerDevServer('/', getPlatformBundlers({}), false);
   devServer['getAvailablePortAsync'] = jest.fn(() => Promise.resolve(3000));
   // Tested in the superclass
   devServer['postStartAsync'] = jest.fn(async () => {});
