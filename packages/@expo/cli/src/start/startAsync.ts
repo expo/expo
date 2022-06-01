@@ -90,7 +90,7 @@ export async function startAsync(
 
   // Validations
 
-  if ((options.web || settings.webOnly) && platformBundlers.web === 'webpack') {
+  if (options.web || settings.webOnly) {
     await devServerManager.ensureProjectPrerequisiteAsync(WebSupportProjectPrerequisite);
   }
 
