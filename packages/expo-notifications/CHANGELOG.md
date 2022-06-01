@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix app not bringing to foreground when clicking notification on Android 12+. ([#17686](https://github.com/expo/expo/pull/17686) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 0.15.2 — 2022-05-05
