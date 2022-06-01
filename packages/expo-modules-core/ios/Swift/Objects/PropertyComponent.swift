@@ -28,6 +28,7 @@ public final class PropertyComponent: AnyDefinition {
   public func get<Value>(_ getter: @escaping () -> Value) -> Self {
     self.getter = SyncFunctionComponent(
       "get",
+      firstArgType: Void.self,
       dynamicArgumentTypes: [~Any.self],
       { (caller: Any) in getter() }
     )
@@ -40,6 +41,7 @@ public final class PropertyComponent: AnyDefinition {
   public func set<Value>(_ setter: @escaping (_ newValue: Value) -> ()) -> Self {
     self.setter = SyncFunctionComponent(
       "set",
+      firstArgType: Void.self,
       dynamicArgumentTypes: [~Any.self, ~Value.self],
       { (caller: Any, value: Value) in setter(value) }
     )
@@ -53,6 +55,7 @@ public final class PropertyComponent: AnyDefinition {
   public func get<Value, Caller>(_ getter: @escaping (_ this: Caller) -> Value) -> Self {
     self.getter = SyncFunctionComponent(
       "get",
+      firstArgType: Caller.self,
       dynamicArgumentTypes: [~Caller.self],
       getter
     )
@@ -66,6 +69,7 @@ public final class PropertyComponent: AnyDefinition {
   public func set<Value, Caller>(_ setter: @escaping (_ this: Caller, _ newValue: Value) -> ()) -> Self {
     self.setter = SyncFunctionComponent(
       "set",
+      firstArgType: Caller.self,
       dynamicArgumentTypes: [~Caller.self, ~Value.self],
       setter
     )
@@ -74,20 +78,20 @@ public final class PropertyComponent: AnyDefinition {
 
   // MARK: - Internals
 
-  internal func getValue<Value>(caller: Any? = nil) -> Value? {
-    let value = try? getter?.call(args: [caller as Any])
+  internal func getValue<Value>(caller: AnyObject? = nil) -> Value? {
+    let value = try? getter?.call(by: caller, withArguments: [caller as Any])
     return value as? Value
   }
 
-  internal func setValue(_ value: Any, caller: Any? = nil) {
-    let _ = try? setter?.call(args: [caller as Any, value])
+  internal func setValue(_ value: Any, caller: AnyObject? = nil) {
+    let _ = try? setter?.call(by: caller, withArguments: [caller as Any, value])
   }
 
   /**
    Creates the JavaScript function that will be used as a getter of the property.
    */
   internal func buildGetter(inRuntime runtime: JavaScriptRuntime, withCaller caller: AnyObject?) -> JavaScriptObject {
-    return runtime.createSyncFunction(name, argsCount: 0) { [weak self, weak caller] args in
+    return runtime.createSyncFunction(name, argsCount: 0) { [weak self, weak caller] this, args in
       return self?.getValue(caller: caller)
     }
   }
@@ -96,7 +100,7 @@ public final class PropertyComponent: AnyDefinition {
    Creates the JavaScript function that will be used as a setter of the property.
    */
   internal func buildSetter(inRuntime runtime: JavaScriptRuntime, withCaller caller: AnyObject?) -> JavaScriptObject {
-    return runtime.createSyncFunction(name, argsCount: 1) { [weak self, weak caller] args in
+    return runtime.createSyncFunction(name, argsCount: 1) { [weak self, weak caller] this, args in
       return self?.setValue(args.first as Any, caller: caller)
     }
   }

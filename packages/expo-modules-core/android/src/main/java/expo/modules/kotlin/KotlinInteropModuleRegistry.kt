@@ -50,8 +50,7 @@ class KotlinInteropModuleRegistry(
     return registry.associate { holder ->
       val methodsInfo = holder
         .definition
-        .methods
-        .filter { (_, method) -> !method.isSync }
+        .asyncFunctions
         .map { (name, method) ->
           mapOf(
             "name" to name,

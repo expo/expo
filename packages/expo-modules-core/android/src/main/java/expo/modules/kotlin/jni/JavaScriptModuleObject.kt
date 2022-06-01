@@ -10,27 +10,25 @@ import expo.modules.core.interfaces.DoNotStrip
  * All exported functions/objects will have a reference to the `JavaScriptModuleObject`,
  * so it must outlive the current RN context.
  */
+@Suppress("KotlinJniMissingFunction")
 @DoNotStrip
 class JavaScriptModuleObject {
   // Has to be called "mHybridData" - fbjni uses it via reflection
   @DoNotStrip
   private val mHybridData = initHybrid()
 
-  @Suppress("KotlinJniMissingFunction")
   private external fun initHybrid(): HybridData
 
   /**
    * Register a promise-less function on the CPP module representation.
    * After calling this function, user can access the exported function in the JS code.
    */
-  @Suppress("KotlinJniMissingFunction")
   external fun registerSyncFunction(name: String, args: Int, body: JNIFunctionBody)
 
   /**
    * Register a promise function on the CPP module representation.
    * After calling this function, user can access the exported function in the JS code.
    */
-  @Suppress("KotlinJniMissingFunction")
   external fun registerAsyncFunction(name: String, args: Int, body: JNIAsyncFunctionBody)
 
   @Throws(Throwable::class)

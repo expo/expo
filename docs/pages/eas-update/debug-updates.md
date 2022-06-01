@@ -2,7 +2,8 @@
 title: Debugging guide
 ---
 
-import ImageSpotlight from '~/components/plugins/ImageSpotlight'
+import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import { Terminal } from '~/ui/components/Snippet';
 
 > EAS Update is currently available only to customers with an EAS subscription plan. [Sign up](https://expo.dev/accounts/[account]/settings/subscriptions).
 
@@ -22,9 +23,7 @@ When we set up EAS Update, we likely ran `eas update:configure` to configure exp
 
 Finally, make sure that `expo-updates` is included in **package.json**. If it's not, run:
 
-```bash
-expo install expo-updates
-```
+<Terminal cmd={['$ expo install expo-updates']} />
 
 ### Inspecting expo-updates configuration after prebuild
 
@@ -97,8 +96,7 @@ or
 ```bash
 eas channel:view [channel-name]
 
-# example
-
+# Example
 eas channel:view production
 ```
 
@@ -107,8 +105,7 @@ We'd expect the output of these commands to display the same channel name that o
 ```bash
 eas channel:create [channel-name]
 
-# example
-
+# Example
 eas channel:create production
 ```
 
@@ -121,8 +118,7 @@ To verify which branch is linked to a channel, we can run:
 ```bash
 eas channel:view [channel-name]
 
-# example
-
+# Example
 eas channel:view production
 ```
 
@@ -131,8 +127,7 @@ If the channel is not linked to the branch we expect, we can change the link wit
 ```bash
 eas channel:edit [channel-name] --branch [branch-name]
 
-# example
-
+# Example
 eas channel:edit production --branch release-1.0
 ```
 
@@ -145,8 +140,7 @@ To inspect which updates are on a branch, we can run:
 ```bash
 eas branch:view [branch-name]
 
-# example
-
+# Example
 eas branch:view production
 ```
 
@@ -156,9 +150,7 @@ The output of this command will show us a list of updates and their runtime vers
 
 To create and publish an update, we can run the following command:
 
-```bash
-eas update
-```
+<Terminal cmd={['$ eas update']} />
 
 After publishing, the output will display the branch and the runtime version. This info can help us verify that we're creating an update with the configuration we expect.
 
@@ -273,9 +265,7 @@ https://u.expo.dev/your-project-id?runtime-version=1.0.0&channel-name=production
 
 It may be helpful to see which assets are included in our update bundle. We can see a list of named assets by running:
 
-```bash
-expo export --experimental-bundle
-```
+<Terminal cmd={['$ expo export --experimental-bundle']} />
 
 ## Mitigation steps
 

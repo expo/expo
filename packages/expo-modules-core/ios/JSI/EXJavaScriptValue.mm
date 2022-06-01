@@ -70,30 +70,6 @@
   return false;
 }
 
-+ (nonnull NSString *)kindOf:(nonnull EXJavaScriptValue *)value
-{
-  if ([value isUndefined]) {
-    return @"undefined";
-  }
-  if ([value isNull]) {
-    return @"null";
-  }
-  if ([value isBool]) {
-    return @"boolean";
-  }
-  if ([value isNumber]) {
-    return @"number";
-  }
-  if ([value isString]) {
-    return @"string";
-  }
-  if ([value isFunction]) {
-    return @"function";
-  }
-  assert([value isObject] && "Expecting object.");
-  return @"object";
-}
-
 #pragma mark - Type casting
 
 - (nullable id)getRaw

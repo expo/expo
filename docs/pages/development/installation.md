@@ -12,7 +12,7 @@ The installation steps on this page are only required to add the `expo-dev-clien
 
 If you're just starting your project, you can create a new project from our template with:
 
-<Terminal cmd={["$ npx crna -t with-dev-client"]} cmdCopy="npx crna -t with-dev-client" />
+<Terminal cmd={["$ npx crna -t with-dev-client"]} />
 
 If you have an existing project, you'll need to [install the package and make a few changes](installation.md) to your **AppDelegate.m**, **MainActivity.java** and **MainApplication.java**.
 

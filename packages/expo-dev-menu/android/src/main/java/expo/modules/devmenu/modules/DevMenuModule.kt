@@ -1,12 +1,8 @@
 package expo.modules.devmenu.modules
 
-import com.facebook.react.bridge.Promise
-import com.facebook.react.bridge.ReactApplicationContext
-import com.facebook.react.bridge.ReactContextBaseJavaModule
-import com.facebook.react.bridge.ReactMethod
+import com.facebook.react.bridge.*
 import expo.modules.devmenu.DevMenuManager
 import kotlinx.coroutines.launch
-
 
 class DevMenuModule(reactContext: ReactApplicationContext) :
   ReactContextBaseJavaModule(reactContext) {
@@ -61,5 +57,17 @@ class DevMenuModule(reactContext: ReactApplicationContext) :
   @ReactMethod
   fun openSettings() {
     openMenuOn("Settings")
+  }
+
+  override fun invalidate() {
+    devMenuManager.registeredCallbacks = arrayListOf<String>()
+    super.invalidate()
+  }
+
+  @ReactMethod
+  fun addDevMenuCallbacks(names: ReadableArray, promise: Promise) {
+    devMenuManager.registeredCallbacks = names.toArrayList() as ArrayList<String>
+
+    return promise.resolve(null)
   }
 }

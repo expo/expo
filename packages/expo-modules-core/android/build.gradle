@@ -63,6 +63,24 @@ def DOUBLE_CONVERSION_VERSION = reactProperties.getProperty("DOUBLE_CONVERSION_V
 
 def reactNativeThirdParty = new File("$REACT_NATIVE_DIR/ReactAndroid/src/main/jni/third-party")
 
+def reactNativeArchitectures() {
+  def value = project.getProperties().get("reactNativeArchitectures")
+  return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
+}
+
+def FOR_HERMES = false
+def HERMES_DIR = new File(["node", "--print", "require.resolve('hermes-engine/package.json')"].execute(null, rootDir).text.trim()).parent
+if (findProject(":app")) {
+  def appProjectExt = project(":app").ext
+  if (appProjectExt.has("react")) {
+    FOR_HERMES = project(":app").ext.react.enableHermes
+  } else {
+    FOR_HERMES = (findProperty('expo.jsEngine') ?: "jsc") == "hermes"
+  }
+} else {
+  FOR_HERMES = (findProperty('expo.jsEngine') ?: "jsc") == "hermes"
+}
+
 // Creating sources with comments
 task androidSourcesJar(type: Jar) {
   classifier = 'sources'
@@ -105,14 +123,16 @@ android {
     versionCode 1
     versionName "0.9.0"
 
-    testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    testInstrumentationRunner "expo.modules.TestRunner"
 
     externalNativeBuild {
       cmake {
-        abiFilters(*(System.getenv('NDK_ABI_FILTERS') ?: 'armeabi-v7a x86 arm64-v8a x86_64').split(' '))
+        abiFilters (*reactNativeArchitectures())
         arguments "-DREACT_NATIVE_DIR=${REACT_NATIVE_DIR}",
           "-DREACT_NATIVE_SO_DIR=${REACT_NATIVE_SO_DIR}",
-          "-DBOOST_VERSION=${BOOST_VERSION}"
+          "-DBOOST_VERSION=${BOOST_VERSION}",
+          "-DFOR_HERMES=${FOR_HERMES}",
+          "-DHERMES_DIR=${HERMES_DIR}"
       }
     }
   }
@@ -133,18 +153,23 @@ android {
     def sharedLibraries = [
       "**/libc++_shared.so",
       "**/libreactnativejni.so",
+      "**/libreact_nativemodule_core.so",
       "**/libglog.so",
       "**/libjscexecutor.so",
       "**/libfbjni.so",
       "**/libfolly_json.so",
       "**/libhermes.so",
-      "**/libjsi.so"
+      "**/libjsi.so",
     ]
 
     // In android (instrumental) tests, we want to package all so files to enable our JSI functionality.
     // Otherwise, those files should be excluded, because will be loaded by the application.
     if (isAndroidTest()) {
-      excludes = ["META-INF/MANIFEST.MF"]
+      excludes = [
+        "META-INF/MANIFEST.MF",
+        "META-INF/com.android.tools/proguard/coroutines.pro",
+        "META-INF/proguard/coroutines.pro"
+      ]
       pickFirsts = sharedLibraries
     } else {
       excludes = sharedLibraries
@@ -179,18 +204,21 @@ android {
 dependencies {
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
   implementation "org.jetbrains.kotlin:kotlin-reflect:${getKotlinVersion()}"
-  implementation 'androidx.annotation:annotation:1.2.0'
+  implementation 'androidx.annotation:annotation:1.3.0'
   implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0"
+  /**
+   * ReactActivity (the base activity for every React Native application) is subclassing AndroidX classes.
+   * Unfortunately until https://github.com/facebook/react-native/pull/33072 is released React Native uses "androidx.appcompat:appcompat:1.0.2".
+   * Gradle is picking the highest version of the dependency so we enforce higher version here.
+   * see https://docs.gradle.org/current/userguide/dependency_resolution.html#sec:version-conflict
+   * We're enforcing the most up-to-date versions of the dependencies here that are used in subclassing chain for ReactActivity.
+   */
+  implementation "androidx.appcompat:appcompat:1.4.1"
+  implementation "androidx.activity:activity-ktx:1.4.0" // androidx.appcompat:appcompat:1.4.1 depends on version 1.2.3, so we enforce higher one here
+  implementation "androidx.fragment:fragment-ktx:1.4.1" // androidx.appcomapt:appcompat:1.4.1 depends on version 1.3.4, so we enforce higher one here
 
   //noinspection GradleDynamicVersion
   implementation 'com.facebook.react:react-native:+'
-
-  testImplementation 'androidx.test:core:1.4.0'
-  testImplementation 'junit:junit:4.13.1'
-  testImplementation 'io.mockk:mockk:1.10.6'
-  testImplementation "com.google.truth:truth:1.1.2"
-  testImplementation "org.robolectric:robolectric:4.5.1"
-  testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0"
 
   compileOnly 'com.facebook.fbjni:fbjni:0.2.2'
   extractHeaders 'com.facebook.fbjni:fbjni:0.2.2:headers'
@@ -209,9 +237,23 @@ dependencies {
   }
   // else - there is no prebuilt react-native.aar, this is most likely Expo Go
 
+  testImplementation 'androidx.test:core:1.4.0'
+  testImplementation 'junit:junit:4.13.1'
+  testImplementation 'io.mockk:mockk:1.12.3'
+  testImplementation "com.google.truth:truth:1.1.2"
+  testImplementation "org.robolectric:robolectric:4.5.1"
+  testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0"
+
   androidTestImplementation 'androidx.test:runner:1.4.0'
   androidTestImplementation 'androidx.test:core:1.4.0'
   androidTestImplementation 'androidx.test:rules:1.4.0'
+  androidTestImplementation "io.mockk:mockk-android:1.12.3"
+  androidTestImplementation "com.google.truth:truth:1.1.2"
+  if (FOR_HERMES) {
+    androidTestImplementation files(new File(HERMES_DIR, "android/hermes-debug.aar"))
+  } else {
+    androidTestImplementation "org.webkit:android-jsc:+"
+  }
 }
 
 /**
@@ -325,7 +367,26 @@ task prepareFolly(dependsOn: [downloadFolly], type: Copy) {
 }
 // END FOLLy
 
-task prepareThirdPartyNdkHeaders(dependsOn: [prepareBoost, prepareDoubleConversion, prepareFolly]) {}
+task prepareHermes() {
+  if (!FOR_HERMES) {
+    return
+  }
+
+  def hermesAAR = file("$HERMES_DIR/android/hermes-debug.aar")
+  if (!hermesAAR.exists()) {
+    throw new GradleScriptException("The hermes-engine npm package is missing \"android/hermes-debug.aar\"", null)
+  }
+
+  def soFiles = zipTree(hermesAAR).matching({ it.include "**/*.so" })
+
+  copy {
+    from soFiles
+    from "$REACT_NATIVE_DIR/ReactAndroid/src/main/jni/first-party/hermes/Android.mk"
+    into "$thirdPartyNdkDir/hermes"
+  }
+}
+
+task prepareThirdPartyNdkHeaders(dependsOn: [prepareBoost, prepareDoubleConversion, prepareFolly, prepareHermes]) {}
 
 afterEvaluate {
   extractAARHeaders.dependsOn(prepareThirdPartyNdkHeaders)
@@ -333,13 +394,15 @@ afterEvaluate {
 }
 
 tasks.whenTaskAdded { task ->
-  if (task.name.contains('externalNativeBuild') || task.name.startsWith('configureCMake')) {
+  if (!task.name.contains("Clean") && (task.name.contains('externalNativeBuild') || task.name.startsWith('configureCMake'))) {
     task.dependsOn(extractAARHeaders)
     task.dependsOn(extractJNIFiles)
     if (REACT_NATIVE_BUILD_FROM_SOURCE) {
-      task.dependsOn(":ReactAndroid:packageReactNdkLibs")
+      def buildType = task.name.endsWith('Debug') ? 'Debug' : 'Release'
+      task.dependsOn(":ReactAndroid:copy${buildType}JniLibsProjectOnly")
     }
   } else if (task.name.startsWith('generateJsonModel') && REACT_NATIVE_BUILD_FROM_SOURCE) {
-    task.dependsOn(":ReactAndroid:packageReactNdkLibs")
+    def buildType = task.name.endsWith('Debug') ? 'Debug' : 'Release'
+    task.dependsOn(":ReactAndroid:copy${buildType}JniLibsProjectOnly")
   }
 }

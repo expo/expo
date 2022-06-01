@@ -23,4 +23,3 @@ internal data class TaggedView(val tag: String) {
     onView(ViewSelectors.withTaggedView(tag)).perform(*actions)
   }
 }
-

@@ -19,7 +19,7 @@ JNIFunctionBody::invoke(react::ReadableNativeArray::javaobject &&args) {
 
 void JNIAsyncFunctionBody::invoke(react::ReadableNativeArray::javaobject &&args, jobject promise) {
   static const auto method = getClass()->getMethod<
-    react::ReadableNativeArray::javaobject(react::ReadableNativeArray::javaobject, jobject)
+    void(react::ReadableNativeArray::javaobject, jobject)
   >(
     "invoke"
   );

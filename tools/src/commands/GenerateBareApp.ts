@@ -38,7 +38,7 @@ export async function action(
   await symlinkPackages({ packagesToSymlink, projectDir });
   await runExpoPrebuild({ projectDir });
   await updateRNVersion({ projectDir, rnVersion });
-  await createMetroConfig({ workspaceRoot: EXPO_DIR, projectRoot: projectDir });
+  await createMetroConfig({ projectRoot: projectDir });
   await createScripts({ projectDir });
 
   // reestablish symlinks - some might be wiped out from prebuild
@@ -234,13 +234,7 @@ async function runExpoPrebuild({ projectDir }: { projectDir: string }) {
   return await runExpoCliAsync('prebuild', ['--no-install'], { cwd: projectDir });
 }
 
-async function createMetroConfig({
-  workspaceRoot,
-  projectRoot,
-}: {
-  workspaceRoot: string;
-  projectRoot: string;
-}) {
+async function createMetroConfig({ projectRoot }: { projectRoot: string }) {
   console.log('Adding metro.config.js for project');
 
   const template = `// Learn more https://docs.expo.io/guides/customizing-metro
@@ -249,13 +243,13 @@ const path = require('path');
 
 const config = getDefaultConfig('${projectRoot}');
 
-// 1. Watch all files within the monorepo
-config.watchFolders = ['${workspaceRoot}'];
+// 1. Watch expo packages within the monorepo
+config.watchFolders = ['${PACKAGES_DIR}'];
 
 // 2. Let Metro know where to resolve packages, and in what order
 config.resolver.nodeModulesPaths = [
   path.resolve('${projectRoot}', 'node_modules'),
-  path.resolve('${workspaceRoot}', 'packages'),
+  path.resolve('${PACKAGES_DIR}'),
 ];
 
 // Use Node-style module resolution instead of Haste everywhere

@@ -38,16 +38,16 @@ After you configure your project as covered by the [Building with EAS guide](eas
 > Apple Developer membership required
 
 Register any devices you would like to develop on to your ad hoc provisioning profile:
-<Terminal cmd={["$ eas device:create"]} cmdCopy="eas device:create" />
+<Terminal cmd={["$ eas device:create"]} />
 
 Once you have registered all of the iOS devices you would like to develop on, you can build your app with:
-<Terminal cmd={["$ eas build --profile development --platform ios"]} cmdCopy="eas build --profile development --platform ios" />
+<Terminal cmd={["$ eas build --profile development --platform ios"]} />
 
 </Tab>
 
 <Tab>
 
-<Terminal cmd={["$ eas build --profile development --platform android"]} cmdCopy="eas build --profile development --platform android" />
+<Terminal cmd={["$ eas build --profile development --platform android"]} />
 
 </Tab>
 
@@ -64,7 +64,7 @@ But now that you have a development build of your project installed on your devi
 
 Instead, all you need to do to start developing is to run:
 
-<Terminal cmd={["$ expo start --dev-client"]} cmdCopy="expo start --dev-client" />
+<Terminal cmd={["$ expo start --dev-client"]} />
 
 and scanning the resulting QR code with your system camera or QR code reader (if you want to develop against a physical device)
 
