@@ -146,14 +146,18 @@ When you define environment variables on build profiles in **eas.json**, they wi
 In **app.config.js**, we may be using the API URL like this:
 
 ```js
-export default {
+export default ({ config }) => {
+  // app.json config provided in the arguments
   // ...
-  extra: {
-    // Fall back to development URL when not set
-    apiUrl: process.env.API_URL ?? 'https://localhost:3000'
-    enableHiddenFeatures: process.env.ENABLE_HIDDEN_FEATURES ? Boolean(process.env.ENABLE_HIDDEN_FEATURES) : true,
+  return {
+    ...config,
+    extra: {
+      // Fall back to development URL when not set
+      apiUrl: process.env.API_URL ?? 'https://localhost:3000'
+      enableHiddenFeatures: process.env.ENABLE_HIDDEN_FEATURES ? Boolean(process.env.ENABLE_HIDDEN_FEATURES) : true,
+    }
   }
-}
+};
 ```
 
 Using this approach, we would always need to remember to run `API_URL=https://api.staging.com ENABLE_HIDDEN_FEATURES=1 expo publish` when updating staging, and something similar for production. If we forgot the `ENABLE_HIDDEN_FEATURES=0` flag when publishing to production, we might end up rolling out untested features to production, and if we forgot the `API_URL` value, then users would be pointed to `https://localhost:3000`!
@@ -213,29 +217,31 @@ The following are two possible alternative approaches, each with different trade
   <Collapsible summary="app.config.js">
 
   ```js
-  let Config = {
+  let extraConfig = {
     apiUrl: 'https://localhost:3000',
     enableHiddenFeatures: true,
   };
 
   if (process.env.APP_ENV === 'production') {
-    Config.apiUrl = 'https://api.production.com';
-    Config.enableHiddenFeatures = false;
+    extraConfig.apiUrl = 'https://api.production.com';
+    extraConfig.enableHiddenFeatures = false;
   } else if (process.env.APP_ENV === 'staging') {
-    Config.apiUrl = 'https://api.staging.com';
-    Config.enableHiddenFeatures = true;
+    extraConfig.apiUrl = 'https://api.staging.com';
+    extraConfig.enableHiddenFeatures = true;
   }
 
-  export default {
-    // ...
-    extra: {
-      ...Config,
-    },
+  export default ({ config }) => {
+    // app.json config provided in the arguments
+    return {
+      ...config,
+      extra: {
+        ...extraConfig,
+      },
+    };
   };
   ```
 
   </Collapsible>
-
 
 ### How are naming collisions between secrets and the `env` field in eas.json handled?
 
