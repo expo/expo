@@ -50,7 +50,7 @@ open class ImageExportResult(
       return@runInterruptible Bundle().apply {
         val exifInterface = ExifInterface(inputStream)
 
-        ImagePickerConstants
+        ImagePickerConstants.EXIF_TAGS
           .filter { (_, tag) -> exifInterface.getAttribute(tag) != null }
           .forEach { (type, tag) ->
             when (type) {

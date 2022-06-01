@@ -8,7 +8,6 @@ import android.content.Intent
 import android.net.Uri
 import expo.modules.core.errors.ModuleNotFoundException
 import android.os.OperationCanceledException
-import expo.modules.core.utilities.ifNull
 import expo.modules.imagepicker.contracts.CropImageContract
 import expo.modules.imagepicker.contracts.ImagePickerContract
 import expo.modules.imagepicker.contracts.ImagePickerContractResult
@@ -248,7 +247,8 @@ internal enum class PickingSource {
 }
 
 /**
- * Signalling [Exception] that might holds the optional data that should be preserved for later retrieval.
+ * [Exception] that signals the launching Activity has been destroyed by the OS.
+ * It stores optional data that should be preserved for possible later retrieval.
  * @see [ImagePickerModule.pendingMediaPickingResult]
  */
 internal class ActivityDestroyedException(val data: Pair<MediaType, Uri>?): Exception()
