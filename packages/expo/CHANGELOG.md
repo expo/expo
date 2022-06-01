@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added web support and bundle splitting support to `DevLoadingView`.
+
 ### 🐛 Bug fixes
 
 - Fixed `Unable to deactivate keep awake. However, it probably is deactivated already` unhandled promise rejection warning when resuming apps on Android. ([#17319](https://github.com/expo/expo/pull/17319) by [@kudo](https://github.com/kudo))
