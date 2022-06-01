@@ -16,8 +16,13 @@ module.exports = function (api, options = {}) {
   }
 
   const platformOptions =
-    platform === 'web' && isWebpack
-      ? { disableImportExportTransform: true, ...web }
+    platform === 'web'
+      ? {
+          // Only disable import/export transform on webpack because Metro doesn't have
+          // tree-shaking.
+          disableImportExportTransform: !!isWebpack,
+          ...web,
+        }
       : { disableImportExportTransform: false, ...native };
 
   // Note that if `options.lazyImports` is not set (i.e., `null` or `undefined`),
