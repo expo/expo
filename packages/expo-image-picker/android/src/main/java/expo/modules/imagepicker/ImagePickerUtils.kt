@@ -8,11 +8,13 @@ import android.webkit.MimeTypeMap
 import androidx.core.content.FileProvider
 import androidx.exifinterface.media.ExifInterface
 import expo.modules.core.utilities.FileUtilities.generateOutputPath
-import expo.modules.core.utilities.ifNull
 import expo.modules.imagepicker.ImagePickerConstants.TAG
 import java.io.File
 import java.io.IOException
 
+/**
+ * Fallback method for getting file type from url string as [ContentResolver.getType] might sometimes return `null`
+ */
 private fun getTypeFromFileUrl(url: String): String? {
   val extension = MimeTypeMap.getFileExtensionFromUrl(url)
   return if (extension != null) MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension) else null
@@ -30,10 +32,7 @@ fun createOutputFile(cacheDir: File, extension: String): File? {
 }
 
 fun getType(contentResolver: ContentResolver, uri: Uri): String? {
-  return contentResolver.getType(uri).ifNull {
-    // previous method sometimes returns null
-    getTypeFromFileUrl(uri.toString())
-  }
+  return contentResolver.getType(uri) ?: getTypeFromFileUrl(uri.toString())
 }
 
 fun contentUriFromFile(file: File, application: Application): Uri {

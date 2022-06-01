@@ -34,12 +34,12 @@ private const val moduleName = "ExponentImagePicker"
 
 class ImagePickerModule : Module() {
   private val context: Context
-    get() = appContext.reactContext.ifNull { throw IllegalStateException("React Application Context is null. You can't access the Context at this point.") }
+    get() = appContext.reactContext ?: throw IllegalStateException("React Application Context is null. You can't access the Context at this point.")
 
   private lateinit var pickerResultStore: PickerResultsStore
-  private var mCameraCaptureURI: Uri? = null
-  private var mPromise: Promise? = null
-  private var mPickerOptions: ImagePickerOptions? = null
+  private var cameraCaptureURI: Uri? = null
+  private var promise: Promise? = null
+  private var pickerOptions: ImagePickerOptions? = null
   private var exifDataHandler: ExifDataHandler? = null
 
   /**
@@ -48,7 +48,7 @@ class ImagePickerModule : Module() {
    * To do it we track if the current activity was destroyed.
    * Flag indicating that the main activity (host) was killed while performing cropping.
    */
-  private var mWasHostDestroyedWhileCropping = false
+  private var wasHostDestroyedWhileCropping = false
 
   override fun definition() = ModuleDefinition {
 
@@ -73,19 +73,17 @@ class ImagePickerModule : Module() {
     }
 
     AsyncFunction("launchCameraAsync") { options: ImagePickerOptions, promise: Promise ->
-      val activity = appContext.currentActivity.ifNull {
-        throw MissingCurrentActivityException()
-      }
+      val activity = appContext.currentActivity ?: throw MissingCurrentActivityException()
 
-      val permissions = appContext.permissions.ifNull {
-        throw ModuleNotFoundException("permissions")
-      }
+      val permissions = appContext.permissions ?: throw ModuleNotFoundException("permissions")
 
-      val intentType = if (options.mediaTypes == MediaTypes.VIDEOS) MediaStore.ACTION_VIDEO_CAPTURE else MediaStore.ACTION_IMAGE_CAPTURE
+      val intentType = if (options.mediaTypes == MediaTypes.VIDEOS) {
+        MediaStore.ACTION_VIDEO_CAPTURE
+      } else {
+        MediaStore.ACTION_IMAGE_CAPTURE
+      }
       val cameraIntent = Intent(intentType)
-      cameraIntent.resolveActivity(activity.application.packageManager).ifNull {
-        throw MissingActivityToHandleIntent(intentType)
-      }
+      cameraIntent.resolveActivity(activity.application.packageManager) ?: throw MissingActivityToHandleIntent(intentType)
 
       val permissionsResponseHandler = PermissionsResponseListener { permissionsResponse: Map<String, PermissionsResponse> ->
         if (permissionsResponse[Manifest.permission.WRITE_EXTERNAL_STORAGE]?.status == PermissionsStatus.GRANTED &&
@@ -130,17 +128,17 @@ class ImagePickerModule : Module() {
     }
 
     OnActivityDestroys {
-      mWasHostDestroyedWhileCropping = true
+      wasHostDestroyedWhileCropping = true
     }
 
     OnActivityEntersForeground {
-      mWasHostDestroyedWhileCropping = false
+      wasHostDestroyedWhileCropping = false
     }
 
     OnActivityResult { activity, (requestCode, resultCode, data) ->
       if (shouldHandleOnActivityResult(activity, requestCode)) {
-        var pickerOptions = mPickerOptions!!
-        val promise = if (mWasHostDestroyedWhileCropping && mPromise !is PendingPromise) {
+        var pickerOptions = pickerOptions!!
+        val promise = if (wasHostDestroyedWhileCropping && promise !is PendingPromise) {
           if (pickerOptions.base64) {
             // we know that the activity was killed and we don't want to store
             // base64 into `SharedPreferences`...
@@ -159,11 +157,11 @@ class ImagePickerModule : Module() {
             PendingPromise(pickerResultStore)
           }
         } else {
-          mPromise!!
+          promise!!
         }
 
-        mPromise = null
-        mPickerOptions = null
+        this@ImagePickerModule.promise = null
+        this@ImagePickerModule.pickerOptions = null
 
         handleOnActivityResult(promise, activity, requestCode, resultCode, data, pickerOptions)
       }
@@ -177,25 +175,24 @@ class ImagePickerModule : Module() {
   // region helpers
 
   private fun getMediaLibraryPermissions(writeOnly: Boolean): Array<String> =
-    if (writeOnly) arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-    else arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE)
+    if (writeOnly) {
+      arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+    } else {
+      arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE)
+    }
 
   private fun launchCameraWithPermissionsGranted(promise: Promise, cameraIntent: Intent, pickerOptions: ImagePickerOptions) {
     val imageFile = createOutputFile(
       context.cacheDir,
       if (pickerOptions.mediaTypes == MediaTypes.VIDEOS) ".mp4" else ".jpg"
-    ).ifNull {
-      return promise.reject(FailedToCreateFileException())
-    }
+    ) ?: return promise.reject(FailedToCreateFileException())
 
-    mCameraCaptureURI = uriFromFile(imageFile)
+    cameraCaptureURI = uriFromFile(imageFile)
 
-    val activity = appContext.currentActivity.ifNull {
-      return promise.reject(MissingCurrentActivityException())
-    }
+    val activity = appContext.currentActivity ?: return promise.reject(MissingCurrentActivityException())
 
-    mPromise = promise
-    mPickerOptions = pickerOptions
+    this.promise = promise
+    this.pickerOptions = pickerOptions
 
     if (pickerOptions.videoMaxDuration > 0) {
       cameraIntent.putExtra(MediaStore.EXTRA_DURATION_LIMIT, pickerOptions.videoMaxDuration)
@@ -277,19 +274,19 @@ class ImagePickerModule : Module() {
         return promise.reject(MissingCurrentActivityException())
       }
       .also {
-        mPromise = promise
-        mPickerOptions = pickerOptions
+        this.promise = promise
+        this.pickerOptions = pickerOptions
       }
       .startActivityForResult(intent, requestCode)
   }
 
   private fun shouldHandleOnActivityResult(activity: Activity, requestCode: Int): Boolean {
     return appContext.currentActivity != null &&
-      mPromise != null &&
-      mPickerOptions != null &&
+      promise != null &&
+      pickerOptions != null &&
       // When we launched the crop tool and the android kills current activity, the references can be different.
       // So, we fallback to the requestCode in this case.
-      (activity === appContext.currentActivity || mWasHostDestroyedWhileCropping && requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE)
+      (activity === appContext.currentActivity || wasHostDestroyedWhileCropping && requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE)
   }
 
   private fun handleOnActivityResult(promise: Promise, activity: Activity, requestCode: Int, resultCode: Int, intent: Intent?, pickerOptions: ImagePickerOptions) {
@@ -300,9 +297,7 @@ class ImagePickerModule : Module() {
     val contentResolver = activity.application.contentResolver
 
     if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
-      val result = CropImage.getActivityResult(intent).ifNull {
-        return promise.reject(CroppingFailedException())
-      }
+      val result = CropImage.getActivityResult(intent) ?: return promise.reject(CroppingFailedException())
 
       val exporter = CropImageExporter(result.rotation, result.cropRect, pickerOptions.base64)
       ImageResultTask(
@@ -319,14 +314,10 @@ class ImagePickerModule : Module() {
       return
     }
 
-    val uri = (if (requestCode == ImagePickerConstants.REQUEST_LAUNCH_CAMERA) mCameraCaptureURI else intent?.data)
-      .ifNull {
-        return promise.reject(FailedToReadDataException())
-      }
+    val uri = (if (requestCode == ImagePickerConstants.REQUEST_LAUNCH_CAMERA) cameraCaptureURI else intent?.data)
+      ?: return promise.reject(FailedToReadDataException())
 
-    val type = getType(contentResolver, uri).ifNull {
-      return promise.reject(FailedToDeduceTypeException())
-    }
+    val type = getType(contentResolver, uri) ?: return promise.reject(FailedToDeduceTypeException())
 
     if (type.contains("image")) {
       if (pickerOptions.allowsEditing) {
@@ -339,9 +330,7 @@ class ImagePickerModule : Module() {
       val exporter: ImageExporter = if (pickerOptions.quality == ImagePickerConstants.MAXIMUM_QUALITY) {
         RawImageExporter(contentResolver, pickerOptions.base64)
       } else {
-        val imageLoader = appContext.imageLoader.ifNull {
-          return promise.reject(MissingModuleException("ImageLoader"))
-        }
+        val imageLoader = appContext.imageLoader ?: return promise.reject(MissingModuleException("ImageLoader"))
         CompressionImageExporter(imageLoader, pickerOptions.quality, pickerOptions.base64)
       }
 
