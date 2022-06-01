@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Preserve `import/export` syntax on Webpack only.
+
 ## 9.1.0 — 2022-04-18
 
 ### 📚 3rd party library updates
