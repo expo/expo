@@ -11,6 +11,7 @@
 ### 🐛 Bug fixes
 
 - Fixed Android 12+ runtime crash caused by `PendingIntent` misconfiguration. ([#17333](https://github.com/expo/expo/pull/17333) by [@kudo](https://github.com/kudo))
+- Fix app not bringing to foreground when clicking notification on Android 12+. ([#17686](https://github.com/expo/expo/pull/17686) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
