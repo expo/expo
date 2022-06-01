@@ -3,12 +3,12 @@ package expo.modules.imagepicker.tasks
 import android.content.ContentResolver
 import android.media.MediaMetadataRetriever
 import android.net.Uri
-import android.os.Bundle
-import android.util.Log
-import expo.modules.core.Promise
-import expo.modules.core.errors.ModuleDestroyedException
-import expo.modules.imagepicker.ImagePickerConstants
+import expo.modules.imagepicker.FailedToExtractVideoMetadataException
+import expo.modules.imagepicker.FailedToWriteFileException
+import expo.modules.imagepicker.ImagePickerMediaResponse
+import expo.modules.imagepicker.UnknownException
 import expo.modules.imagepicker.fileproviders.FileProvider
+import expo.modules.kotlin.Promise
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -47,30 +47,24 @@ class VideoResultTask(
     coroutineScope.launch {
       try {
         val outputFile = getFile()
-        val response = Bundle().apply {
-          putString("uri", Uri.fromFile(outputFile).toString())
-          putBoolean("cancelled", false)
-          putString("type", "video")
-          putInt("width", extractMediaMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH))
-          putInt("height", extractMediaMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT))
-          putInt("rotation", extractMediaMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION))
-          putInt("duration", extractMediaMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION))
-        }
+        val response = ImagePickerMediaResponse.Video(
+          uri = Uri.fromFile(outputFile).toString(),
+          width = extractMediaMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH),
+          height = extractMediaMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT),
+          rotation = extractMediaMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION),
+          duration = extractMediaMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
+        )
         promise.resolve(response)
-      } catch (e: ModuleDestroyedException) {
-        Log.d(ImagePickerConstants.TAG, ImagePickerConstants.COROUTINE_CANCELED, e)
-        promise.reject(e)
       } catch (e: NullPointerException) {
-        promise.reject(ImagePickerConstants.ERR_CAN_NOT_EXTRACT_METADATA, ImagePickerConstants.CAN_NOT_EXTRACT_METADATA_MESSAGE, e)
+        promise.reject(FailedToExtractVideoMetadataException(e))
       } catch (e: IllegalArgumentException) {
-        promise.reject(ImagePickerConstants.ERR_CAN_NOT_EXTRACT_METADATA, ImagePickerConstants.CAN_NOT_EXTRACT_METADATA_MESSAGE, e)
+        promise.reject(FailedToExtractVideoMetadataException(e))
       } catch (e: SecurityException) {
-        promise.reject(ImagePickerConstants.ERR_CAN_NOT_EXTRACT_METADATA, ImagePickerConstants.CAN_NOT_EXTRACT_METADATA_MESSAGE, e)
+        promise.reject(FailedToExtractVideoMetadataException(e))
       } catch (e: IOException) {
-        promise.reject(ImagePickerConstants.ERR_CAN_NOT_SAVE_RESULT, ImagePickerConstants.CAN_NOT_SAVE_RESULT_MESSAGE, e)
+        promise.reject(FailedToWriteFileException(null, e))
       } catch (e: Exception) {
-        Log.e(ImagePickerConstants.TAG, ImagePickerConstants.UNKNOWN_EXCEPTION, e)
-        promise.reject(ImagePickerConstants.UNKNOWN_EXCEPTION, e)
+        promise.reject(UnknownException(e))
       }
     }
   }

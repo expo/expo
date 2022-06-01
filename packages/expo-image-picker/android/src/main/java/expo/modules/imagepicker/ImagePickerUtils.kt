@@ -8,11 +8,13 @@ import android.webkit.MimeTypeMap
 import androidx.core.content.FileProvider
 import androidx.exifinterface.media.ExifInterface
 import expo.modules.core.utilities.FileUtilities.generateOutputPath
-import expo.modules.core.utilities.ifNull
 import expo.modules.imagepicker.ImagePickerConstants.TAG
 import java.io.File
 import java.io.IOException
 
+/**
+ * Fallback method for getting file type from url string as [ContentResolver.getType] might sometimes return `null`
+ */
 private fun getTypeFromFileUrl(url: String): String? {
   val extension = MimeTypeMap.getFileExtensionFromUrl(url)
   return if (extension != null) MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension) else null
@@ -30,10 +32,7 @@ fun createOutputFile(cacheDir: File, extension: String): File? {
 }
 
 fun getType(contentResolver: ContentResolver, uri: Uri): String? {
-  return contentResolver.getType(uri).ifNull {
-    // previous method sometimes returns null
-    getTypeFromFileUrl(uri.toString())
-  }
+  return contentResolver.getType(uri) ?: getTypeFromFileUrl(uri.toString())
 }
 
 fun contentUriFromFile(file: File, application: Application): Uri {
@@ -69,7 +68,7 @@ class ExifDataHandler(private val uri: Uri) {
       val oldExif = ExifInterface(input)
       newUri.path?.let {
         val newExif = ExifInterface(it)
-        for ((_, exifTag) in ImagePickerConstants.exifTags) {
+        for (exifTag in ImagePickerConstants.EXIF_TAGS.map { (_, exif) -> exif }) {
           val value = oldExif.getAttribute(exifTag)
           if (value != null &&
             exifTag != ExifInterface.TAG_IMAGE_LENGTH &&
