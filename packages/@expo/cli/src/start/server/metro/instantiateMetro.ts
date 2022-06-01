@@ -150,26 +150,14 @@ export function withMetroMultiPlatform(
 
   const { resolve } = importMetroResolverFromProject(projectRoot);
 
-  // @ts-expect-error
-  config.resolver.resolveRequest = (context, _realModuleName, platform, moduleName) => {
-    const contextResolveRequest = context.resolveRequest;
-    delete context.resolveRequest;
-    try {
-      // Disable `*.native.*` extensions on web.
-      context.preferNativePlatform = platform !== 'web';
-
-      // @ts-expect-error: custom property to extend the resolution.
-      const resolvers = config.resolver._expo_resolvers;
-
-      if (Array.isArray(resolvers)) {
-        for (const resolver of resolvers) {
-          const results = resolver(context, _realModuleName, platform, moduleName);
-          if (results) {
-            return results;
-          }
-        }
-      }
-
+  Object.defineProperty(config.resolver, 'resolveRequest', {
+    value: (_context: any, moduleName: string, platform: string) => {
+      const context = {
+        ..._context,
+        resolveRequest: undefined,
+        // Ensure this is set correctly
+        preferNativePlatform: platform !== 'web',
+      };
       const result = resolve(context, moduleName, platform);
 
       // Replace the web resolver with the original one.
@@ -185,12 +173,8 @@ export function withMetroMultiPlatform(
       }
 
       return result;
-    } catch (e) {
-      throw e;
-    } finally {
-      context.resolveRequest = contextResolveRequest;
-    }
-  };
+    },
+  });
 
   if (!config.resolver.extraNodeModules) {
     // @ts-expect-error
