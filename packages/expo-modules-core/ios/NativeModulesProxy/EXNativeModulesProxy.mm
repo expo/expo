@@ -56,6 +56,7 @@ static const NSString *methodInfoArgumentsCountKey = @"argumentsCount";
 }
 
 @synthesize bridge = _bridge;
+@synthesize legacyModulesConfig = _legacyModulesConfig;
 
 RCT_EXPORT_MODULE(NativeUnimoduleProxy)
 
@@ -108,9 +109,15 @@ RCT_EXPORT_MODULE(NativeUnimoduleProxy)
   return YES;
 }
 
-- (NSDictionary *)constantsToExport
+- (NSDictionary *)legacyModulesConfig
 {
-  CFTimeInterval startTime = CACurrentMediaTime();
+  if (_legacyModulesConfig) {
+    NSLog(@"CONST: Getting cached legacy config");
+    return _legacyModulesConfig;
+  }
+  
+  NSLog(@"CONST: Creating legacy config");
+  
   NSMutableDictionary <NSString *, id> *exportedModulesConstants = [NSMutableDictionary dictionary];
   // Grab all the constants exported by modules
   for (EXExportedModule *exportedModule in [_exModuleRegistry getAllExportedModules]) {
@@ -120,7 +127,6 @@ RCT_EXPORT_MODULE(NativeUnimoduleProxy)
       continue;
     }
   }
-  [exportedModulesConstants addEntriesFromDictionary:[_appContext exportedModulesConstants]];
 
   // Also add `exportedMethodsNames`
   NSMutableDictionary<const NSString *, NSMutableArray<NSMutableDictionary<const NSString *, id> *> *> *exportedMethodsNamesAccumulator = [NSMutableDictionary dictionary];
@@ -137,10 +143,7 @@ RCT_EXPORT_MODULE(NativeUnimoduleProxy)
     }];
     [self assignExportedMethodsKeys:exportedMethodsNamesAccumulator[exportedModuleName] forModuleName:exportedModuleName];
   }
-
-  // Add entries from Swift modules
-  [exportedMethodsNamesAccumulator addEntriesFromDictionary:[_appContext exportedFunctionNames]];
-
+  
   // Also, add `viewManagersMetadata` for sanity check and testing purposes -- with names we know what managers to mock on UIManager
   NSArray<EXViewManager *> *viewManagers = [_exModuleRegistry getAllViewManagers];
   NSMutableDictionary<NSString *, NSDictionary *> *viewManagersMetadata = [[NSMutableDictionary alloc] initWithCapacity:[viewManagers count]];
@@ -151,23 +154,32 @@ RCT_EXPORT_MODULE(NativeUnimoduleProxy)
     };
   }
 
-  // Add entries from Swift view managers
-  [viewManagersMetadata addEntriesFromDictionary:[_appContext viewManagersMetadata]];
-
   NSMutableDictionary <NSString *, id> *constantsAccumulator = [NSMutableDictionary dictionary];
   constantsAccumulator[viewManagersMetadataKeyPath] = viewManagersMetadata;
   constantsAccumulator[exportedConstantsKeyPath] = exportedModulesConstants;
   constantsAccumulator[exportedMethodsNamesKeyPath] = exportedMethodsNamesAccumulator;
-
-  CFTimeInterval endTime = CACurrentMediaTime();
-  NSLog(@"constantsToExport Runtime: %g s", endTime - startTime);
+  
+  _legacyModulesConfig = constantsAccumulator;
   return constantsAccumulator;
+}
+
+- (NSDictionary *)constantsToExport
+{
+  NSLog(@"CONST: Getting config from LegacyProxy");
+  NSDictionary* config = [self.legacyModulesConfig copy];
+  // decorate legacy config with expo-modules config
+  NSDictionary* expoModulesConfig = [_appContext expoModulesConfig];
+  [config[exportedConstantsKeyPath] addEntriesFromDictionary:expoModulesConfig[@"exportedModulesConstants"]];
+  [config[exportedMethodsNamesKeyPath] addEntriesFromDictionary:expoModulesConfig[@"exportedFunctionNames"]];
+  [config[viewManagersMetadataKeyPath] addEntriesFromDictionary:expoModulesConfig[@"viewManagersMetadata"]];
+  return config;
 }
 
 - (void)setBridge:(RCTBridge *)bridge
 {
   _appContext = [(ExpoBridgeModule *)[bridge moduleForClass:ExpoBridgeModule.class] appContext];
   [_appContext setLegacyModuleRegistry:_exModuleRegistry];
+  [_appContext setLegacyModulesProxy:self];
 
   if (!_bridge) {
     // The `setBridge` can be called during module setup or after. Registering more modules

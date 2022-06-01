@@ -2,17 +2,17 @@ import { NativeModules } from 'react-native';
 
 import { ProxyNativeModule } from './NativeModulesProxy.types';
 
-const start = global.performance.now(); // use Date.now() if global.performance doesnt work
-const NativeProxy = NativeModules.NativeUnimoduleProxy;
-const end = global.performance.now();
-console.log('NativeUnimoduleProxy loaded in', end - start, 'ms');
-
 const start2 = global.performance.now();
 // @ts-ignore
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const _unused = global.ExpoModules.SweetProxy;
 const end2 = global.performance.now();
-console.log('SweetProxy loaded in', end2 - start2, 'ms');
+console.log('CONST: SweetProxy loaded in', end2 - start2, 'ms');
+
+const start = global.performance.now(); // use Date.now() if global.performance doesnt work
+const NativeProxy = NativeModules.NativeUnimoduleProxy;
+const end = global.performance.now();
+console.log('CONST: NativeUnimoduleProxy loaded in', end - start, 'ms');
 
 const modulesConstantsKey = 'modulesConstants';
 const exportedMethodsKey = 'exportedMethods';

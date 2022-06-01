@@ -15,8 +15,9 @@ NS_SWIFT_NAME(LegacyNativeModulesProxy)
 - (nonnull instancetype)init;
 - (nonnull instancetype)initWithModuleRegistry:(nullable EXModuleRegistry *)moduleRegistry;
 - (nonnull instancetype)initWithCustomModuleRegistry:(nonnull EXModuleRegistry *)moduleRegistry;
-- (nonnull instancetype)initWithAppContext:(nonnull NSObject *)appContext;
 
 - (void)callMethod:(NSString *)moduleName methodNameOrKey:(id)methodNameOrKey arguments:(NSArray *)arguments resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject;
+
+@property (nonatomic, strong) NSMutableDictionary<NSString *, id> *legacyModulesConfig;
 
 @end

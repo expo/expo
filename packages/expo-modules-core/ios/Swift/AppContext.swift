@@ -30,6 +30,9 @@ public final class AppContext: NSObject {
    */
   @objc
   public weak var legacyModuleRegistry: EXModuleRegistry?
+  
+  @objc
+  public weak var legacyModulesProxy: LegacyNativeModulesProxy?
 
   /**
    React bridge of the context's app. Can be `nil` when the bridge
@@ -241,8 +244,7 @@ public final class AppContext: NSObject {
       }
   }
 
-  @objc
-  public func exportedFunctionNames() -> [String: [[String: Any]]] {
+  private func exportedFunctionNames() -> [String: [[String: Any]]] {
     var constants = [String: [[String: Any]]]()
 
     for holder in moduleRegistry {
@@ -257,17 +259,20 @@ public final class AppContext: NSObject {
     return constants
   }
 
-  @objc
-  public func exportedModulesConstants() -> [String: Any] {
-    return moduleRegistry
-      .filter { holder in holder.name != "SweetProxy" }
+  private func exportedModulesConstants() -> [String: Any] {
+    let startTime = CACurrentMediaTime();
+    let tmp = moduleRegistry
       .reduce(into: [String: Any]()) { acc, holder in
-        acc[holder.name] = holder.getConstants()
+        if holder.name != "SweetProxy" {
+          acc[holder.name] = holder.getConstants()
+        }
       }
+    let endTime = CACurrentMediaTime();
+    NSLog("CONST: total: %g ms", (endTime - startTime)/1000.0);
+    return tmp
   }
 
-  @objc
-  public func viewManagersMetadata() -> [String: Any] {
+  private func viewManagersMetadata() -> [String: Any] {
     return moduleRegistry.reduce(into: [String: Any]()) { acc, holder in
       if let viewManager = holder.definition.viewManager {
         acc[holder.name] = [
@@ -276,6 +281,16 @@ public final class AppContext: NSObject {
       }
     }
   }
+  
+  @objc
+  public final lazy var expoModulesConfig: [String: [String: Any]] = {
+    NSLog("CONST: Creating expo-module config")
+    return [
+      "exportedFunctionNames": self.exportedFunctionNames(),
+      "exportedModulesConstants": self.exportedModulesConstants(),
+      "viewManagersMetadata": self.viewManagersMetadata()
+    ]
+  }()
 
   // MARK: - Runtime
 
