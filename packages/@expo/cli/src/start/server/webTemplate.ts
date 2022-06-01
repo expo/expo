@@ -3,6 +3,7 @@ import fs from 'fs';
 import path from 'path';
 
 import { TEMPLATES } from '../../customize/templates';
+import { env } from '../../utils/env';
 
 export async function createTemplateHtmlFromExpoConfigAsync(
   projectRoot: string,
@@ -38,7 +39,7 @@ function getFileFromLocalPublicFolder(
 async function getTemplateIndexHtmlAsync(projectRoot: string) {
   let filePath = getFileFromLocalPublicFolder(projectRoot, {
     // TODO: Maybe use the app.json override.
-    publicFolder: 'web',
+    publicFolder: env.EXPO_PUBLIC_FOLDER,
     filePath: 'index.html',
   });
   if (!filePath) {

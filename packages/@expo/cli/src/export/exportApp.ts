@@ -1,9 +1,10 @@
-import { writeFile } from 'fs-extra';
+import fs from 'fs';
 import path from 'path';
 
 import * as Log from '../log';
 import { createTemplateHtmlFromExpoConfigAsync } from '../start/server/webTemplate';
-import { ensureDirectoryAsync } from '../utils/dir';
+import { copyAsync, ensureDirectoryAsync } from '../utils/dir';
+import { env } from '../utils/env';
 import { createBundlesAsync } from './createBundles';
 import { exportAssetsAsync } from './exportAssets';
 import { getPublicExpoManifestAsync } from './getPublicExpoManifest';
@@ -16,6 +17,12 @@ import {
   writeMetadataJsonAsync,
   writeSourceMapsAsync,
 } from './writeContents';
+
+async function copyPublicFolderAsync(publicFolder: string, outputFolder: string) {
+  if (fs.existsSync(publicFolder)) {
+    await copyAsync(publicFolder, outputFolder);
+  }
+}
 
 /**
  * The structure of the outputDir will be:
@@ -42,11 +49,15 @@ export async function exportAppAsync(
 ): Promise<void> {
   const exp = await getPublicExpoManifestAsync(projectRoot);
 
+  const publicPath = path.resolve(projectRoot, env.EXPO_PUBLIC_FOLDER);
+
   const outputPath = path.resolve(projectRoot, outputDir);
   const assetsPath = path.join(outputPath, 'assets');
   const bundlesPath = path.join(outputPath, 'bundles');
 
   await Promise.all([assetsPath, bundlesPath].map(ensureDirectoryAsync));
+
+  await copyPublicFolderAsync(publicPath, outputDir);
 
   // Run metro bundler and create the JS bundles/source maps.
   const bundles = await createBundlesAsync(
@@ -70,7 +81,7 @@ export async function exportAppAsync(
 
   // If web exists, then write the template HTML file.
   if (fileNames.web) {
-    writeFile(
+    await fs.promises.writeFile(
       path.join(outputPath, 'index.html'),
       await createTemplateHtmlFromExpoConfigAsync(projectRoot, {
         scripts: [`/bundles/${fileNames.web}`],

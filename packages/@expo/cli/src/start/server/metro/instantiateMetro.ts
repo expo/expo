@@ -151,9 +151,14 @@ export function withMetroMultiPlatform(
   const { resolve } = importMetroResolverFromProject(projectRoot);
 
   Object.defineProperty(config.resolver, 'resolveRequest', {
-    value: (_context: any, moduleName: string, platform: string) => {
+    value: (
+      immutableContext: import('metro-resolver').ResolutionContext,
+      moduleName: string,
+      platform: string | null
+    ) => {
+      // Must copy the immutable context so we can modify it.
       const context = {
-        ..._context,
+        ...immutableContext,
         resolveRequest: undefined,
         // Ensure this is set correctly
         preferNativePlatform: platform !== 'web',
@@ -177,7 +182,7 @@ export function withMetroMultiPlatform(
   });
 
   if (!config.resolver.extraNodeModules) {
-    // @ts-expect-error
+    // @ts-expect-error: typed as readonly
     config.resolver.extraNodeModules = {};
   }
 
