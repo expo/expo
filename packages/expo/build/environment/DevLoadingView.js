@@ -1,13 +1,15 @@
 import { EventEmitter } from 'expo-modules-core';
 import React, { useEffect, useState, useRef, useMemo } from 'react';
-import { Animated, StyleSheet, Text, Platform, NativeModules, TurboModuleRegistry, View, } from 'react-native';
+import { Animated, StyleSheet, Text, Platform, TurboModuleRegistry, View } from 'react-native';
+import DevLoadingViewNativeModule from './DevLoadingViewNativeModule';
 export default function DevLoadingView() {
+    const [message, setMessage] = useState('Refreshing...');
     const [isDevLoading, setIsDevLoading] = useState(false);
     const [isAnimating, setIsAnimating] = useState(false);
     const translateY = useRef(new Animated.Value(0)).current;
     const emitter = useMemo(() => {
         try {
-            return new EventEmitter(NativeModules.DevLoadingView);
+            return new EventEmitter(DevLoadingViewNativeModule);
         }
         catch (error) {
             throw new Error('Failed to instantiate native emitter in `DevLoadingView` because the native module `DevLoadingView` is undefined: ' +
@@ -18,11 +20,7 @@ export default function DevLoadingView() {
         if (!emitter)
             return;
         function handleShowMessage({ message }) {
-            // "Refreshing..." is the standard fast refresh message and it's the
-            // only time we want to display this overlay.
-            if (message !== 'Refreshing...') {
-                return;
-            }
+            setMessage(message || 'Refreshing...');
             // TODO: if we show the refreshing banner and don't get a hide message
             // for 3 seconds, warn the user that it's taking a while and suggest
             // they reload
@@ -38,7 +36,7 @@ export default function DevLoadingView() {
                 toValue: 150,
                 delay: 1000,
                 duration: 350,
-                useNativeDriver: true,
+                useNativeDriver: Platform.OS !== 'web',
             }).start(({ finished }) => {
                 if (finished) {
                     setIsAnimating(false);
@@ -58,7 +56,7 @@ export default function DevLoadingView() {
             React.createElement(View, { style: styles.banner },
                 React.createElement(View, { style: styles.contentContainer },
                     React.createElement(View, { style: { flexDirection: 'row' } },
-                        React.createElement(Text, { style: styles.text }, isDevLoading ? 'Refreshing...' : 'Refreshed')),
+                        React.createElement(Text, { style: styles.text }, message)),
                     React.createElement(View, { style: { flex: 1 } },
                         React.createElement(Text, { style: styles.subtitle }, isDevLoading ? 'Using Fast Refresh' : "Don't see your changes? Reload the app"))))));
     }
