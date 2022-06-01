@@ -98,8 +98,7 @@ open class ImageResultTask(
   private fun readExif() = Bundle().apply {
     contentResolver.openInputStream(uri)?.use { input ->
       val exifInterface = ExifInterface(input)
-      EXIF_TAGS.flatMap { (type, tags) -> tags.map { tag -> type to tag } }
-        .forEach { (type, tag) ->
+      EXIF_TAGS.forEach { (type, tag) ->
           if (exifInterface.getAttribute(tag) == null) {
             return@forEach
           }
