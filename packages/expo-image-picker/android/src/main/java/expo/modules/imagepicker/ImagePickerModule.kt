@@ -199,10 +199,12 @@ class ImagePickerModule : Module() {
     contract {
       returns() implies (operationResult is ImagePickerContractResult.Success)
     }
-    if (activityDestroyed) {
-      throw ActivityDestroyedException(null)
+    if (operationResult is ImagePickerContractResult.Cancelled) {
+      if (activityDestroyed) {
+        throw ActivityDestroyedException(null)
+      }
+      throw OperationCanceledException()
     }
-    throw OperationCanceledException()
   }
 
   // endregion
