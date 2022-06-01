@@ -12,11 +12,11 @@ import java.io.IOException
 
 class RawImageExporter(
   private val contentResolver: ContentResolver,
-  private val mBase64: Boolean
+  private val base64: Boolean
 ) : ImageExporter {
 
   override fun export(source: Uri, output: File, exporterListener: Listener) {
-    val base64Stream = if (mBase64) ByteArrayOutputStream() else null
+    val base64Stream = if (base64) ByteArrayOutputStream() else null
     base64Stream.use {
       try {
         copyImage(source, output, base64Stream)
