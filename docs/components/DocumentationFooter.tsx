@@ -24,7 +24,7 @@ const STYLES_FOOTER_LINK = css`
 const STYLES_FOOTER_ICON = css`
   display: flex;
   align-items: center;
-  margin-right: 8px;
+  min-width: 32px;
   margin-bottom: 1px;
 `;
 

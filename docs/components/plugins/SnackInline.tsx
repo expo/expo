@@ -1,4 +1,4 @@
-import { iconSize, spacing, theme, ArrowUpRightIcon } from '@expo/styleguide';
+import { spacing, theme, ArrowUpRightIcon } from '@expo/styleguide';
 import * as React from 'react';
 
 import { SNACK_URL, getSnackFiles } from '~/common/snack';
@@ -106,7 +106,7 @@ export default class SnackInline extends React.Component<Props> {
           )}
           <Button
             disabled={!this.state.ready}
-            iconRight={<ArrowUpRightIcon color={theme.palette.white} size={iconSize.small} />}>
+            iconRight={<ArrowUpRightIcon color={theme.palette.white} />}>
             {this.props.buttonTitle || 'Try this example on Snack'}
           </Button>
         </form>
