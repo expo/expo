@@ -1,8 +1,7 @@
+import { ClipboardIcon } from '@expo/styleguide';
 import React, { useState } from 'react';
 
 import { SnippetAction, SnippetActionProps } from '../SnippetAction';
-
-import { ClipboardIcon } from '~/ui/foundations/icons';
 
 type CopyActionProps = SnippetActionProps & {
   text: string;
