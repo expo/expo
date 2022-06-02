@@ -106,7 +106,8 @@ export default class SnackInline extends React.Component<Props> {
           )}
           <Button
             disabled={!this.state.ready}
-            iconRight={<ArrowUpRightIcon color={theme.palette.white} />}>
+            iconRight={<ArrowUpRightIcon color={theme.palette.white} />}
+            type="submit">
             {this.props.buttonTitle || 'Try this example on Snack'}
           </Button>
         </form>
