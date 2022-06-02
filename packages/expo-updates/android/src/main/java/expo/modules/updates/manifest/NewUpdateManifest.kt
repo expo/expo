@@ -86,7 +86,7 @@ class NewUpdateManifest private constructor(
               url = Uri.parse(assetObject.getString("url"))
               extraRequestHeaders = assetHeaders[assetObject.getString("key")]
               embeddedAssetFilename = assetObject.getNullable("embeddedAssetFilename")
-              expectedHash = mLaunchAsset.getNullable("hash")
+              expectedHash = assetObject.getNullable("hash")
             }
           )
         } catch (e: JSONException) {
