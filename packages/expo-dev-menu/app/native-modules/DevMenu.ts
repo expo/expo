@@ -1,5 +1,7 @@
 import { DeviceEventEmitter, NativeModules, EventSubscription } from 'react-native';
 
+export type JSEngine = 'Hermes' | 'JSC';
+
 export type AppInfo = {
   appIcon?: string;
   appVersion?: string;
@@ -7,6 +9,7 @@ export type AppInfo = {
   appName?: string;
   sdkVersion?: string;
   runtimeVersion?: string;
+  engine?: JSEngine;
 };
 
 export type DevSettings = {

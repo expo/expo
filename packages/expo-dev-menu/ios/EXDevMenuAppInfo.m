@@ -22,6 +22,10 @@
     appVersion = [manager.currentManifest version];
   }
   
+  NSString *engine = @"JSC";
+  if ([[[[manager currentBridge] batchedBridge] bridgeDescription] containsString:@"Hermes"]) {
+    engine = @"Hermes";
+  }
   
   NSString *hostUrl = [manager.currentManifestURL absoluteString] ?: @"";
 
@@ -31,6 +35,7 @@
   appInfo[@"runtimeVersion"] = runtimeVersion;
   appInfo[@"sdkVersion"] = sdkVersion;
   appInfo[@"hostUrl"] = hostUrl;
+  appInfo[@"engine"] = engine;
 
   return appInfo;
 }

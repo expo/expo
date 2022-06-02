@@ -238,11 +238,10 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
   }
 
   fun getAppInfo(): Bundle {
-    if (delegateReactContext != null) {
-      return DevMenuAppInfo.getAppInfo(delegateReactContext!!)
-    }
+    val reactContext = delegateReactContext ?: return Bundle.EMPTY
+    val instanceManager = delegate?.reactInstanceManager() ?: return Bundle.EMPTY
 
-    return Bundle.EMPTY
+    return DevMenuAppInfo.getAppInfo(instanceManager, reactContext)
   }
 
   fun getDevSettings(): Bundle {

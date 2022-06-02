@@ -1,5 +1,6 @@
 import {
   View,
+  WarningIcon,
   Text,
   Heading,
   Row,
@@ -255,6 +256,34 @@ export function Main({ registeredCallbacks = [] }: MainProps) {
           />
         </View>
       </View>
+
+      {appInfo.engine === 'Hermes' && (
+        <>
+          <Spacer.Vertical size="large" />
+
+          <View mx="small">
+            <View bg="warning" padding="medium" rounded="medium" border="warning">
+              <Row align="center">
+                <WarningIcon />
+
+                <Spacer.Horizontal size="tiny" />
+
+                <Heading color="warning" size="small" style={{ top: 1 }}>
+                  Warning
+                </Heading>
+              </Row>
+
+              <Spacer.Vertical size="small" />
+
+              <View>
+                <Text size="small" color="warning">
+                  Debugging not working? Try manually reloading first
+                </Text>
+              </View>
+            </View>
+          </View>
+        </>
+      )}
 
       {!hasDisabledDevSettingOption && (
         <>
