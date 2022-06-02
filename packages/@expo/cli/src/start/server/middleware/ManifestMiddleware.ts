@@ -254,6 +254,8 @@ export abstract class ManifestMiddleware<
           mainModuleName,
         });
 
+        res.setHeader('Content-Type', 'text/html');
+
         res.end(
           await createTemplateHtmlFromExpoConfigAsync(this.projectRoot, {
             exp: projectConfig.exp,

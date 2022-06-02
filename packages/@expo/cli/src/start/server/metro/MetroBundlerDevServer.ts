@@ -85,15 +85,13 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     middleware.use(deepLinkMiddleware.getHandler());
 
     if (this.isTargetingWeb()) {
-      middleware.use((req: ServerRequest, res: ServerResponse) => {
+      middleware.use((req: ServerRequest, res: ServerResponse, next: any) => {
         const platform = parsePlatformHeader(req);
 
         if (!platform || platform === 'web') {
-          // Redirect unknown to the manifest handler.
-          res.setHeader('Location', '/');
-          // 'Temporary Redirect'
-          res.statusCode = 307;
-          res.end();
+          // Redirect unknown to the manifest handler while preserving the path.
+          // This implements the HTML5 history fallback API.
+          return manifestMiddleware.internal(req, res, next);
         }
       });
     }

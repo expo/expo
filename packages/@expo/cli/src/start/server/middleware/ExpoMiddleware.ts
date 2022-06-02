@@ -36,11 +36,11 @@ export abstract class ExpoMiddleware {
     res: ServerResponse,
     next: ServerNext
   ) => Promise<void> {
-    return async (req: ServerRequest, res: ServerResponse, next: ServerNext) => {
-      if (!this._shouldHandleRequest(req)) {
-        return next();
-      }
-
+    const internalMiddleware = async (
+      req: ServerRequest,
+      res: ServerResponse,
+      next: ServerNext
+    ) => {
       try {
         return await this.handleRequestAsync(req, res, next);
       } catch (error: any) {
@@ -58,6 +58,16 @@ export abstract class ExpoMiddleware {
         }
       }
     };
+    const middleware = async (req: ServerRequest, res: ServerResponse, next: ServerNext) => {
+      if (!this._shouldHandleRequest(req)) {
+        return next();
+      }
+      return internalMiddleware(req, res, next);
+    };
+
+    middleware.internal = internalMiddleware;
+
+    return middleware;
   }
 }
 
