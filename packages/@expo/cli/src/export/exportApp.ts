@@ -24,6 +24,8 @@ async function copyPublicFolderAsync(publicFolder: string, outputFolder: string)
   }
 }
 
+import saveAssets from '@react-native-community/cli-plugin-metro/build/commands/bundle/saveAssets';
+
 /**
  * The structure of the outputDir will be:
  *
@@ -71,6 +73,17 @@ export async function exportAppAsync(
     }
   );
 
+  // Save assets like a typical bundler, preserving the file paths.
+  await Promise.all(
+    Object.entries(bundles).map(([platform, bundle]) => {
+      return saveAssets(
+        // @ts-expect-error
+        bundle.assets,
+        platform,
+        outputPath
+      );
+    })
+  );
   // Log bundle size info to the user
   printBundleSizes(bundles);
 
