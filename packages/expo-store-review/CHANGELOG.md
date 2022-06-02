@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed null pointer exception when store review request failed ([#16365](https://github.com/expo/expo/pull/16365) by [@mariomurrent-softwaresolutions](https://github.com/mariomurrent-softwaresolutions))
+
 ### 💡 Others
 
 ## 5.2.0 — 2022-04-18
