@@ -8,6 +8,7 @@ import androidx.core.net.toFile
 import expo.modules.imagepicker.FailedToReadFileException
 import expo.modules.imagepicker.FailedToWriteFileException
 import expo.modules.imagepicker.MissingModuleException
+import expo.modules.imagepicker.copyExifData
 import expo.modules.imagepicker.toBitmapCompressFormat
 import expo.modules.kotlin.providers.AppContextProvider
 import kotlinx.coroutines.runInterruptible
@@ -25,21 +26,17 @@ class CompressionImageExporter(
 ) : ImageExporter {
   private val compressQuality = (quality * 100).toInt()
 
-  override suspend fun exportAsync(source: Uri, output: File, contentResolver: ContentResolver): ImageExportResult = runInterruptible {
-    val loaderResult = appContextProvider.appContext.imageLoader
-      ?.loadImageForManipulationFromURL(source.toString())
-      ?: throw MissingModuleException("ImageLoader")
-
-    val bitmap = try {
-      loaderResult.get()
-    } catch (cause: ExecutionException) {
-      throw FailedToReadFileException(source.toFile(), cause)
-    }
-
+  override suspend fun exportAsync(
+    source: Uri,
+    output: File,
+    contentResolver: ContentResolver
+  ): ImageExportResult {
+    val bitmap = readBitmap(source)
     val compressFormat = output.toBitmapCompressFormat()
     writeImage(bitmap, output, compressFormat)
+    copyExifData(source, output, contentResolver)
 
-    return@runInterruptible object : ImageExportResult(
+    return object : ImageExportResult(
       bitmap.width,
       bitmap.height,
       output
@@ -52,11 +49,27 @@ class CompressionImageExporter(
     }
   }
 
+  private suspend fun readBitmap(source: Uri): Bitmap = runInterruptible {
+    val loaderResult = appContextProvider.appContext.imageLoader
+      ?.loadImageForManipulationFromURL(source.toString())
+      ?: throw MissingModuleException("ImageLoader")
+
+    try {
+      loaderResult.get()
+    } catch (cause: ExecutionException) {
+      throw FailedToReadFileException(source.toFile(), cause)
+    }
+  }
+
   /**
    * Compress and save the `bitmap` to `file`
    * @throws [IOException]
    */
-  private fun writeImage(bitmap: Bitmap, output: File, compressFormat: Bitmap.CompressFormat) {
+  private suspend fun writeImage(
+    bitmap: Bitmap,
+    output: File,
+    compressFormat: Bitmap.CompressFormat
+  ) = runInterruptible {
     try {
       FileOutputStream(output).use { out -> bitmap.compress(compressFormat, compressQuality, out) }
     } catch (cause: FileNotFoundException) {

@@ -9,6 +9,7 @@ import android.util.Log
 import android.webkit.MimeTypeMap
 import androidx.core.content.FileProvider
 import androidx.core.net.toFile
+import androidx.exifinterface.media.ExifInterface
 import expo.modules.core.utilities.FileUtilities
 import expo.modules.imagepicker.ImagePickerConstants.TAG
 import kotlinx.coroutines.runInterruptible
@@ -16,7 +17,6 @@ import java.io.File
 import java.io.FileNotFoundException
 import java.io.FileOutputStream
 import java.io.IOException
-
 
 internal fun createOutputFile(cacheDir: File, extension: String): File {
   val filePath = FileUtilities.generateOutputPath(cacheDir, ImagePickerConstants.CACHE_DIR_NAME, extension)
@@ -111,10 +111,10 @@ internal suspend fun copyFile(
   targetFile: File,
   contentResolver: ContentResolver,
 ) = runInterruptible {
-  val destinationUri = Uri.fromFile(targetFile)
+  val targetUri = Uri.fromFile(targetFile)
 
   // source and destination are the same file
-  if (sourceUri.compareTo(destinationUri) == 0) {
+  if (sourceUri.compareTo(targetUri) == 0) {
     return@runInterruptible
   }
 
@@ -123,6 +123,45 @@ internal suspend fun copyFile(
       FileOutputStream(targetFile).use { fileOutputStream ->
         inputStream.copyTo(fileOutputStream)
         return@runInterruptible
+      }
+    } ?: throw FailedToReadFileException(sourceUri.toFile())
+  } catch (cause: FileNotFoundException) {
+    throw FailedToWriteFileException(targetFile, cause)
+  }
+}
+
+internal suspend fun copyExifData(
+  sourceUri: Uri,
+  targetFile: File,
+  contentResolver: ContentResolver
+) = runInterruptible {
+  val targetUri = Uri.fromFile(targetFile)
+  if (sourceUri.compareTo(targetUri) == 0) {
+    return@runInterruptible
+  }
+
+  val omittableTags = listOf(
+    ExifInterface.TAG_IMAGE_LENGTH,
+    ExifInterface.TAG_IMAGE_WIDTH,
+    ExifInterface.TAG_PIXEL_X_DIMENSION,
+    ExifInterface.TAG_PIXEL_Y_DIMENSION,
+    ExifInterface.TAG_ORIENTATION,
+  )
+
+  try {
+    contentResolver.openInputStream(sourceUri)?.use { inputStream ->
+      val sourceExif = ExifInterface(inputStream)
+      val targetExif = ExifInterface(targetFile)
+      ImagePickerConstants.EXIF_TAGS
+        .filter { (_, tag) -> !omittableTags.contains(tag) }
+        .map { (_, tag) -> tag to sourceExif.getAttribute(tag) }
+        .filter { (_, value) -> value != null }
+        .forEach { (tag, value) -> targetExif.setAttribute(tag, value) }
+
+      try {
+        targetExif.saveAttributes()
+      } catch (cause: IOException) {
+        throw FailedToWriteExifDataToFileException(targetFile, cause)
       }
     } ?: throw FailedToReadFileException(sourceUri.toFile())
   } catch (cause: FileNotFoundException) {
