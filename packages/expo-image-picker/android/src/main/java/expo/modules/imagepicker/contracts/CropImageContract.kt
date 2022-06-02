@@ -64,7 +64,7 @@ internal class CropImageContract(
     val compressFormat = mediaType.toBitmapCompressFormat()
 
     val outputUri: Uri = if (needCreateNewFile) {
-      createOutputFile(context.cacheDir, compressFormat.toFileExtension()).toUri()
+      createOutputFile(context.cacheDir, compressFormat.toImageFileExtension()).toUri()
     } else {
       sourceUri
     }

@@ -53,7 +53,7 @@ internal fun File.toBitmapCompressFormat(): Bitmap.CompressFormat = when {
   else -> Bitmap.CompressFormat.JPEG
 }
 
-internal fun Bitmap.CompressFormat.toFileExtension(): String {
+internal fun Bitmap.CompressFormat.toImageFileExtension(): String {
   return when(this) {
     Bitmap.CompressFormat.PNG -> ".png"
     Bitmap.CompressFormat.JPEG -> ".jpeg"
@@ -61,7 +61,7 @@ internal fun Bitmap.CompressFormat.toFileExtension(): String {
   }
 }
 
-internal fun String.toFileExtension(): String = when {
+internal fun String.toImageFileExtension(): String = when {
   this.contains("png") -> ".png"
   this.contains("gif") -> ".gif"
   this.contains("bmp") -> ".bmp"

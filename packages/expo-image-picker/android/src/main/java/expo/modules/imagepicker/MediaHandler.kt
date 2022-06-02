@@ -33,7 +33,7 @@ internal class MediaHandler(
       CompressionImageExporter(appContextProvider, options.quality)
     }
 
-    val outputFile = createOutputFile(context.cacheDir, getType(context.contentResolver, sourceUri).toFileExtension())
+    val outputFile = createOutputFile(context.cacheDir, getType(context.contentResolver, sourceUri).toImageFileExtension())
 
     val exportedImage = exporter.exportAsync(sourceUri, outputFile, context.contentResolver)
     val base64 = options.base64.takeIf { it }
