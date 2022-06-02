@@ -277,9 +277,7 @@ export function Main({ registeredCallbacks = [] }: MainProps) {
 
               <View>
                 <Text size="small" color="warning">
-                  If you need to inspect the JS bundle in the flipper or the dev tools, you have to
-                  ensure that your app has been reloaded after the first launch of the dev-menu.
-                  Otherwise, the incorrect bundle will be detected by the debugger.
+                  Debugging not working? Try manually reloading first
                 </Text>
               </View>
             </View>
