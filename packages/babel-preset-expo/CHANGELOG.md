@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- Preserve `import/export` syntax on Webpack only.
+- Preserve `import/export` syntax on Webpack only. ([#17713](https://github.com/expo/expo/pull/17713) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 9.1.0 — 2022-04-18
 
