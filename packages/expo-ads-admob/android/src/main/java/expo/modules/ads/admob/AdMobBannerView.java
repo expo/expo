@@ -1,9 +1,9 @@
 package expo.modules.ads.admob;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
-import android.view.View;
 import android.widget.FrameLayout;
 
 import com.google.ads.mediation.admob.AdMobAdapter;
@@ -11,13 +11,14 @@ import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.LoadAdError;
 
 import expo.modules.core.interfaces.services.EventEmitter;
 
+@SuppressLint("ViewConstructor")
 public class AdMobBannerView extends FrameLayout {
 
-  private EventEmitter mEventEmitter;
-  private String mSizeString;
+  private final EventEmitter mEventEmitter;
   private Bundle mAdditionalRequestParams;
 
   public AdMobBannerView(@NonNull Context context, EventEmitter eventEmitter) {
@@ -28,7 +29,6 @@ public class AdMobBannerView extends FrameLayout {
 
   protected void attachNewAdView() {
     final AdView adView = new AdView(getContext());
-
     // destroy old AdView if present
     AdView oldAdView = (AdView) getChildAt(0);
     removeAllViews();
@@ -58,7 +58,7 @@ public class AdMobBannerView extends FrameLayout {
       }
 
       @Override
-      public void onAdFailedToLoad(int errorCode) {
+      public void onAdFailedToLoad(@NonNull LoadAdError errorCode) {
         sendEvent(
             AdMobBannerViewManager.Events.EVENT_ERROR,
             AdMobUtils.createEventForAdFailedToLoad(errorCode));
@@ -72,17 +72,12 @@ public class AdMobBannerView extends FrameLayout {
       @Override
       public void onAdClosed() {
         sendEvent(AdMobBannerViewManager.Events.EVENT_WILL_DISMISS);
-      }
-
-      @Override
-      public void onAdLeftApplication() {
-        sendEvent(AdMobBannerViewManager.Events.EVENT_WILL_LEAVE_APP);
+        sendEvent(AdMobBannerViewManager.Events.EVENT_DID_DISMISS);
       }
     });
   }
 
   public void setBannerSize(final String sizeString) {
-    mSizeString = sizeString;
     AdSize adSize = AdMobUtils.getAdSizeFromString(sizeString);
 
     // store old ad unit ID (even if not yet present and thus null)
@@ -122,15 +117,10 @@ public class AdMobBannerView extends FrameLayout {
   }
 
   private void loadAd(final AdView adView) {
-    if (adView.getAdSize() != null && adView.getAdUnitId() != null && mAdditionalRequestParams != null) {
-      AdRequest.Builder adRequestBuilder =
-          new AdRequest.Builder()
-              .addNetworkExtrasBundle(AdMobAdapter.class, mAdditionalRequestParams);
-      String testDeviceID = AdMobModule.getTestDeviceID();
-      if (testDeviceID != null) {
-        adRequestBuilder = adRequestBuilder.addTestDevice(testDeviceID);
-      }
-      AdRequest adRequest = adRequestBuilder.build();
+    if (adView.getAdSize() != null && mAdditionalRequestParams != null) {
+      AdRequest adRequest = new AdRequest.Builder()
+          .addNetworkExtrasBundle(AdMobAdapter.class, mAdditionalRequestParams)
+          .build();
       adView.loadAd(adRequest);
     }
   }

@@ -13,11 +13,12 @@ const octokit = new Octokit({
 const owner = 'expo';
 const repo = 'expo';
 
-export type Workflow = RestEndpointMethodTypes['actions']['listRepoWorkflows']['response']['data']['workflows'][0] & {
-  slug: string;
-  baseSlug: string;
-  inputs?: Record<string, string>;
-};
+export type Workflow =
+  RestEndpointMethodTypes['actions']['listRepoWorkflows']['response']['data']['workflows'][0] & {
+    slug: string;
+    baseSlug: string;
+    inputs?: Record<string, string>;
+  };
 
 export type WorkflowDispatchEventInputs = Record<string, string>;
 

@@ -4,6 +4,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+typedef void (^ABI43_0_0EXUpdatesAppLauncherCompletionBlock)(NSError * _Nullable error, BOOL success);
+
 @protocol ABI43_0_0EXUpdatesAppLauncher
 
 @property (nullable, nonatomic, strong, readonly) ABI43_0_0EXUpdatesUpdate *launchedUpdate;

@@ -48,6 +48,7 @@ import java.net.CookieHandler
 import java.net.URLConnection
 import java.util.*
 import java.util.concurrent.TimeUnit
+import java.util.regex.Pattern
 
 import kotlin.math.pow
 
@@ -56,18 +57,15 @@ import okhttp3.Callback
 import okhttp3.Headers
 import okhttp3.JavaNetCookieJar
 import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.Response
 import okhttp3.ResponseBody
-
-import okio.Buffer
-import okio.BufferedSource
-import okio.ForwardingSource
-import okio.Okio
-import okio.Source
+import okio.*
 
 import org.apache.commons.codec.binary.Hex
 import org.apache.commons.codec.digest.DigestUtils
@@ -81,6 +79,17 @@ private const val EXUploadProgressEventName = "expo-file-system.uploadProgress"
 private const val MIN_EVENT_DT_MS: Long = 100
 private const val HEADER_KEY = "headers"
 private const val DIR_PERMISSIONS_REQUEST_CODE = 5394
+
+private fun slashifyFilePath(path: String?): String? {
+  return if (path == null) {
+    null
+  } else if (path.startsWith("file:///")) {
+    path
+  } else {
+    // Ensure leading schema with a triple slash
+    Pattern.compile("^file:/*").matcher(path).replaceAll("file:///")
+  }
+}
 
 // The class needs to be 'open', because it's inherited in expoview
 open class FileSystemModule(
@@ -206,12 +215,12 @@ open class FileSystemModule(
 
   @ExpoMethod
   fun getInfoAsync(_uriStr: String, options: Map<String?, Any?>, promise: Promise) {
-    var uriStr = _uriStr
+    var uriStr = slashifyFilePath(_uriStr)
     try {
       val uri = Uri.parse(uriStr)
       var absoluteUri = uri
       if (uri.scheme == "file") {
-        uriStr = parseFileUri(uriStr)
+        uriStr = parseFileUri(uriStr as String)
         absoluteUri = Uri.parse(uriStr)
       }
       ensurePermission(absoluteUri, Permission.READ)
@@ -277,7 +286,7 @@ open class FileSystemModule(
   @ExpoMethod
   fun readAsStringAsync(uriStr: String?, options: Map<String?, Any?>, promise: Promise) {
     try {
-      val uri = Uri.parse(uriStr)
+      val uri = Uri.parse(slashifyFilePath(uriStr))
       ensurePermission(uri, Permission.READ)
 
       // TODO:Bacon: Add more encoding types to match iOS
@@ -316,7 +325,7 @@ open class FileSystemModule(
   @ExpoMethod
   fun writeAsStringAsync(uriStr: String?, string: String?, options: Map<String?, Any?>, promise: Promise) {
     try {
-      val uri = Uri.parse(uriStr)
+      val uri = Uri.parse(slashifyFilePath(uriStr))
       ensurePermission(uri, Permission.WRITE)
       val encoding = getEncodingFromOptions(options)
       getOutputStream(uri).use { out ->
@@ -337,7 +346,7 @@ open class FileSystemModule(
   @ExpoMethod
   fun deleteAsync(uriStr: String?, options: Map<String?, Any?>, promise: Promise) {
     try {
-      val uri = Uri.parse(uriStr)
+      val uri = Uri.parse(slashifyFilePath(uriStr))
       val appendedUri = Uri.withAppendedPath(uri, "..")
       ensurePermission(appendedUri, Permission.WRITE, "Location '$uri' isn't deletable.")
       if (uri.scheme == "file") {
@@ -391,13 +400,13 @@ open class FileSystemModule(
         promise.reject("ERR_FILESYSTEM_MISSING_PARAMETER", "`FileSystem.moveAsync` needs a `from` path.")
         return
       }
-      val fromUri = Uri.parse(options["from"] as String?)
+      val fromUri = Uri.parse(slashifyFilePath(options["from"] as String?))
       ensurePermission(Uri.withAppendedPath(fromUri, ".."), Permission.WRITE, "Location '$fromUri' isn't movable.")
       if (!options.containsKey("to")) {
         promise.reject("ERR_FILESYSTEM_MISSING_PARAMETER", "`FileSystem.moveAsync` needs a `to` path.")
         return
       }
-      val toUri = Uri.parse(options["to"] as String?)
+      val toUri = Uri.parse(slashifyFilePath(options["to"] as String?))
       ensurePermission(toUri, Permission.WRITE)
       if (fromUri.scheme == "file") {
         val from = fromUri.toFile()
@@ -435,13 +444,13 @@ open class FileSystemModule(
         promise.reject("ERR_FILESYSTEM_MISSING_PARAMETER", "`FileSystem.moveAsync` needs a `from` path.")
         return
       }
-      val fromUri = Uri.parse(options["from"] as String?)
+      val fromUri = Uri.parse(slashifyFilePath(options["from"] as String?))
       ensurePermission(fromUri, Permission.READ)
       if (!options.containsKey("to")) {
         promise.reject("ERR_FILESYSTEM_MISSING_PARAMETER", "`FileSystem.moveAsync` needs a `to` path.")
         return
       }
-      val toUri = Uri.parse(options["to"] as String?)
+      val toUri = Uri.parse(slashifyFilePath(options["to"] as String?))
       ensurePermission(toUri, Permission.WRITE)
       when {
         fromUri.scheme == "file" -> {
@@ -524,7 +533,7 @@ open class FileSystemModule(
   @ExpoMethod
   fun makeDirectoryAsync(uriStr: String?, options: Map<String?, Any?>, promise: Promise) {
     try {
-      val uri = Uri.parse(uriStr)
+      val uri = Uri.parse(slashifyFilePath(uriStr))
       ensurePermission(uri, Permission.WRITE)
       if (uri.scheme == "file") {
         val file = uri.toFile()
@@ -551,7 +560,7 @@ open class FileSystemModule(
   @ExpoMethod
   fun readDirectoryAsync(uriStr: String?, options: Map<String?, Any?>?, promise: Promise) {
     try {
-      val uri = Uri.parse(uriStr)
+      val uri = Uri.parse(slashifyFilePath(uriStr))
       ensurePermission(uri, Permission.READ)
       if (uri.scheme == "file") {
         val file = uri.toFile()
@@ -614,7 +623,7 @@ open class FileSystemModule(
   @ExpoMethod
   fun getContentUriAsync(uri: String, promise: Promise) {
     try {
-      val fileUri = Uri.parse(uri)
+      val fileUri = Uri.parse(slashifyFilePath(uri))
       ensurePermission(fileUri, Permission.WRITE)
       ensurePermission(fileUri, Permission.READ)
       fileUri.checkIfFileDirExists()
@@ -639,7 +648,7 @@ open class FileSystemModule(
   @ExpoMethod
   fun readSAFDirectoryAsync(uriStr: String?, options: Map<String?, Any?>?, promise: Promise) {
     try {
-      val uri = Uri.parse(uriStr)
+      val uri = Uri.parse(slashifyFilePath(uriStr))
       ensurePermission(uri, Permission.READ)
       if (uri.isSAFUri) {
         val file = DocumentFile.fromTreeUri(context, uri)
@@ -665,7 +674,7 @@ open class FileSystemModule(
   @ExpoMethod
   fun makeSAFDirectoryAsync(uriStr: String?, dirName: String?, promise: Promise) {
     try {
-      val uri = Uri.parse(uriStr)
+      val uri = Uri.parse(slashifyFilePath(uriStr))
       ensurePermission(uri, Permission.WRITE)
       if (!uri.isSAFUri) {
         throw IOException("The URI '$uri' is not a Storage Access Framework URI. Try using FileSystem.makeDirectoryAsync instead.")
@@ -691,7 +700,7 @@ open class FileSystemModule(
   @ExpoMethod
   fun createSAFFileAsync(uriStr: String?, fileName: String?, mimeType: String?, promise: Promise) {
     try {
-      val uri = Uri.parse(uriStr)
+      val uri = Uri.parse(slashifyFilePath(uriStr))
       ensurePermission(uri, Permission.WRITE)
       if (uri.isSAFUri) {
         val dir = getNearestSAFFile(uri)
@@ -727,7 +736,7 @@ open class FileSystemModule(
       val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         initialFileUrl
-          ?.let { Uri.parse(it) }
+          ?.let { Uri.parse(slashifyFilePath(it)) }
           ?.let { intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, it) }
       }
       val activityProvider: ActivityProvider by moduleRegistry()
@@ -747,7 +756,7 @@ open class FileSystemModule(
 
   private fun createUploadRequest(url: String, fileUriString: String, options: Map<String, Any>, promise: Promise, decorator: RequestBodyDecorator): Request? {
     try {
-      val fileUri = Uri.parse(fileUriString)
+      val fileUri = Uri.parse(slashifyFilePath(fileUriString))
       ensurePermission(fileUri, Permission.READ)
       fileUri.checkIfFileExists()
       if (!options.containsKey("httpMethod")) {
@@ -766,7 +775,7 @@ open class FileSystemModule(
       }
 
       val body = createRequestBody(options, decorator, fileUri.toFile())
-      return requestBuilder.method(method, body).build()
+      return method?.let { requestBuilder.method(method, body).build() }
     } catch (e: Exception) {
       e.message?.let { Log.e(TAG, it) }
       promise.reject(e)
@@ -791,7 +800,7 @@ open class FileSystemModule(
         } ?: URLConnection.guessContentTypeFromName(file.name)
 
         val fieldName = options["fieldName"]?.let { it as String } ?: file.name
-        bodyBuilder.addFormDataPart(fieldName, file.name, decorator.decorate(RequestBody.create(MediaType.parse(mimeType), file)))
+        bodyBuilder.addFormDataPart(fieldName, file.name, decorator.decorate(file.asRequestBody(mimeType.toMediaTypeOrNull())))
         bodyBuilder.build()
       }
       else -> {
@@ -816,9 +825,9 @@ open class FileSystemModule(
 
         override fun onResponse(call: Call, response: Response) {
           val result = Bundle().apply {
-            putString("body", response.body()?.string())
-            putInt("status", response.code())
-            putBundle("headers", translateHeaders(response.headers()))
+            putString("body", response.body?.string())
+            putInt("status", response.code)
+            putBundle("headers", translateHeaders(response.headers))
           }
           response.close()
           promise.resolve(result)
@@ -866,7 +875,7 @@ open class FileSystemModule(
     taskHandlers[uuid] = TaskHandler(call)
     call.enqueue(object : Callback {
       override fun onFailure(call: Call, e: IOException) {
-        if (call.isCanceled) {
+        if (call.isCanceled()) {
           promise.resolve(null)
           return
         }
@@ -876,11 +885,11 @@ open class FileSystemModule(
 
       override fun onResponse(call: Call, response: Response) {
         val result = Bundle()
-        val body = response.body()
+        val body = response.body
         result.apply {
           putString("body", body?.string())
-          putInt("status", response.code())
-          putBundle("headers", translateHeaders(response.headers()))
+          putInt("status", response.code)
+          putBundle("headers", translateHeaders(response.headers))
         }
         response.close()
         promise.resolve(result)
@@ -891,7 +900,7 @@ open class FileSystemModule(
   @ExpoMethod
   fun downloadAsync(url: String, uriStr: String?, options: Map<String?, Any?>?, promise: Promise) {
     try {
-      val uri = Uri.parse(uriStr)
+      val uri = Uri.parse(slashifyFilePath(uriStr))
       ensurePermission(uri, Permission.WRITE)
       uri.checkIfFileDirExists()
       when {
@@ -900,10 +909,10 @@ open class FileSystemModule(
           val resources = context.resources
           val packageName = context.packageName
           val resourceId = resources.getIdentifier(url, "raw", packageName)
-          val bufferedSource = Okio.buffer(Okio.source(context.resources.openRawResource(resourceId)))
+          val bufferedSource = context.resources.openRawResource(resourceId).source().buffer()
           val file = uri.toFile()
           file.delete()
-          val sink = Okio.buffer(Okio.sink(file))
+          val sink = file.sink().buffer()
           sink.writeAll(bufferedSource)
           sink.close()
           val result = Bundle()
@@ -934,13 +943,13 @@ open class FileSystemModule(
             override fun onResponse(call: Call, response: Response) {
               val file = uri.toFile()
               file.delete()
-              val sink = Okio.buffer(Okio.sink(file))
-              sink.writeAll(response.body()!!.source())
+              val sink = file.sink().buffer()
+              sink.writeAll(response.body!!.source())
               sink.close()
               val result = Bundle().apply {
                 putString("uri", Uri.fromFile(file).toString())
-                putInt("status", response.code())
-                putBundle("headers", translateHeaders(response.headers()))
+                putInt("status", response.code)
+                putBundle("headers", translateHeaders(response.headers))
                 if (options?.get("md5") == true) {
                   putString("md5", md5(file))
                 }
@@ -970,7 +979,7 @@ open class FileSystemModule(
   @ExpoMethod
   fun downloadResumableStartAsync(url: String, fileUriStr: String, uuid: String, options: Map<String?, Any?>, resumeData: String?, promise: Promise) {
     try {
-      val fileUri = Uri.parse(fileUriStr)
+      val fileUri = Uri.parse(slashifyFilePath(fileUriStr))
       fileUri.checkIfFileDirExists()
       if (fileUri.scheme != "file") {
         throw IOException("Unsupported scheme for location '$fileUri'.")
@@ -1003,7 +1012,7 @@ open class FileSystemModule(
         ?.addNetworkInterceptor { chain ->
           val originalResponse = chain.proceed(chain.request())
           originalResponse.newBuilder()
-            .body(ProgressResponseBody(originalResponse.body(), progressListener))
+            .body(ProgressResponseBody(originalResponse.body, progressListener))
             .build()
         }
         ?.build()
@@ -1098,7 +1107,7 @@ open class FileSystemModule(
       val options = params[0]?.options
       return try {
         val response = call!!.execute()
-        val responseBody = response.body()
+        val responseBody = response.body
         val input = BufferedInputStream(responseBody!!.byteStream())
         val output = FileOutputStream(file, isResume == true)
         val data = ByteArray(1024)
@@ -1108,15 +1117,15 @@ open class FileSystemModule(
         }
         val result = Bundle().apply {
           putString("uri", Uri.fromFile(file).toString())
-          putInt("status", response.code())
-          putBundle("headers", translateHeaders(response.headers()))
+          putInt("status", response.code)
+          putBundle("headers", translateHeaders(response.headers))
           options?.get("md5").takeIf { it == true }?.let { putString("md5", file?.let { md5(it) }) }
         }
         response.close()
         promise?.resolve(result)
         null
       } catch (e: Exception) {
-        if (call?.isCanceled == true) {
+        if (call?.isCanceled() == true) {
           promise?.resolve(null)
           return null
         }
@@ -1139,7 +1148,7 @@ open class FileSystemModule(
     override fun contentLength(): Long = responseBody?.contentLength() ?: -1
 
     override fun source(): BufferedSource =
-      bufferedSource ?: Okio.buffer(source(responseBody!!.source()))
+      bufferedSource ?: source(responseBody!!.source()).buffer()
 
     private fun source(source: Source): Source {
       return object : ForwardingSource(source) {
@@ -1304,7 +1313,7 @@ open class FileSystemModule(
   // Copied out of React Native's `NetworkingModule.java`
   private fun translateHeaders(headers: Headers): Bundle {
     val responseHeaders = Bundle()
-    for (i in 0 until headers.size()) {
+    for (i in 0 until headers.size) {
       val headerName = headers.name(i)
       // multiple values for the same header
       if (responseHeaders[headerName] != null) {

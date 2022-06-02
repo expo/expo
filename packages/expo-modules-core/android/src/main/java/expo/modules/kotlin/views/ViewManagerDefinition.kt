@@ -17,10 +17,13 @@ class ViewManagerDefinition(
   private val viewType: Class<out View>,
   private val props: Map<String, AnyViewProp>,
   val onViewDestroys: ((View) -> Unit)? = null,
-  val callbacksDefinition: CallbacksDefinition? = null
+  val callbacksDefinition: CallbacksDefinition? = null,
+  val viewGroupDefinition: ViewGroupDefinition? = null
 ) {
 
   fun createView(context: Context): View = viewFactory(context)
+
+  val propsNames: List<String> = props.keys.toList()
 
   fun getViewManagerType(): ViewManager.ViewManagerType {
     return if (ViewGroup::class.java.isAssignableFrom(viewType)) {

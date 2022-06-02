@@ -49,10 +49,6 @@ The iOS and Android app that runs Expo apps. When you want to run your app outsi
 
 The former name for the [Expo Go](#expo-go) app.
 
-### Expo Dev Tools
-
-Expo Developer Tools is a web browser based UI included in [Expo CLI](#expo-cli).
-
 ### Expo SDK
 
 The Expo SDK provides access to device/system functionality such as camera, push notification, contacts, file system, and more. Scroll to the SDK API reference in the documentation navigation to see a full list of APIs and to explore them. [Read more about the Expo SDK](/versions/latest/). [Find it on GitHub](https://github.com/expo/expo-sdk).

@@ -7,25 +7,19 @@ import androidx.arch.core.util.Function
 
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.Task
-import com.google.firebase.ml.vision.common.FirebaseVisionImage
-import com.google.firebase.ml.vision.common.FirebaseVisionImageMetadata
-import com.google.firebase.ml.vision.face.FirebaseVisionFaceDetectorOptions
-import com.google.firebase.ml.vision.face.FirebaseVisionFaceDetector
-import com.google.firebase.ml.vision.face.FirebaseVisionFace
-import com.google.firebase.ml.vision.FirebaseVision
 
-import com.google.firebase.ml.vision.common.FirebaseVisionImageMetadata.ROTATION_0
-import com.google.firebase.ml.vision.common.FirebaseVisionImageMetadata.ROTATION_180
-import com.google.firebase.ml.vision.common.FirebaseVisionImageMetadata.ROTATION_270
-import com.google.firebase.ml.vision.common.FirebaseVisionImageMetadata.ROTATION_90
-
-import abi44_0_0.expo.modules.facedetector.FaceDetectorUtils.serializeFace
-import abi44_0_0.expo.modules.facedetector.FaceDetectorUtils.rotateFaceX
 import abi44_0_0.expo.modules.interfaces.facedetector.FaceDetectorInterface
 import abi44_0_0.expo.modules.interfaces.facedetector.FacesDetectionCompleted
 import abi44_0_0.expo.modules.interfaces.facedetector.FaceDetectionError
 import abi44_0_0.expo.modules.interfaces.facedetector.FaceDetectionSkipped
 import abi44_0_0.expo.modules.interfaces.facedetector.FaceDetectionUnspecifiedError
+
+import com.google.mlkit.vision.common.InputImage
+import com.google.mlkit.vision.face.Face
+import com.google.mlkit.vision.face.FaceDetection
+import com.google.mlkit.vision.face.FaceDetector
+import com.google.mlkit.vision.face.FaceDetectorOptions
+import expo.modules.facedetector.FaceDetectorUtils
 
 import java.io.IOException
 import java.util.ArrayList
@@ -37,7 +31,7 @@ private const val RUN_CLASSIFICATIONS_KEY = "runClassifications"
 private const val TRACKING_KEY = "tracking"
 
 class ExpoFaceDetector(private val context: Context) : FaceDetectorInterface {
-  private var faceDetector: FirebaseVisionFaceDetector? = null
+  private var faceDetector: FaceDetector? = null
   private val minFaceSize = 0.15f
   private var minDetectionInterval: Long = 0
   private var lastDetectionMillis: Long = 0
@@ -76,8 +70,8 @@ class ExpoFaceDetector(private val context: Context) : FaceDetectorInterface {
     if (faceDetector == null) {
       createFaceDetector()
     }
-    val image = FirebaseVisionImage.fromFilePath(context, filePath)
-    faceDetector?.detectInImage(image)
+    val image = InputImage.fromFilePath(context, filePath)
+    faceDetector?.process(image)
       ?.addOnCompleteListener(
         faceDetectionHandler(FaceDetectorUtils::serializeFace, complete, error)
       )
@@ -98,26 +92,22 @@ class ExpoFaceDetector(private val context: Context) : FaceDetectorInterface {
     if (faceDetector == null) {
       createFaceDetector()
     }
-    val firRotation = getFirRotation(rotation)
-    val metadata = FirebaseVisionImageMetadata.Builder()
-      .setWidth(width)
-      .setHeight(height)
-      .setFormat(FirebaseVisionImageMetadata.IMAGE_FORMAT_NV21)
-      .setRotation(firRotation)
-      .build()
-    val image = FirebaseVisionImage.fromByteArray(imageData, metadata)
+    val image = InputImage.fromByteArray(
+      imageData, width, height, rotation,
+      InputImage.IMAGE_FORMAT_NV21
+    )
     if (minDetectionInterval <= 0 || minIntervalPassed()) {
       lastDetectionMillis = System.currentTimeMillis()
-      faceDetector?.detectInImage(image)
+      faceDetector?.process(image)
         ?.addOnCompleteListener(
           faceDetectionHandler(
             { face ->
-              var result = serializeFace(face, scaleX, scaleY)
+              var result = FaceDetectorUtils.serializeFace(face, scaleX, scaleY)
               if (mirrored) {
-                result = if (firRotation == ROTATION_270 || firRotation == ROTATION_90) {
-                  rotateFaceX(result, height, scaleX)
+                result = if (rotation == 270 || rotation == 90) {
+                  FaceDetectorUtils.rotateFaceX(result, height, scaleX)
                 } else {
-                  rotateFaceX(result, width, scaleX)
+                  FaceDetectorUtils.rotateFaceX(result, width, scaleX)
                 }
               }
               result
@@ -130,15 +120,8 @@ class ExpoFaceDetector(private val context: Context) : FaceDetectorInterface {
     }
   }
 
-  private fun getFirRotation(rotation: Int) = when ((rotation + 360) % 360) {
-    90 -> ROTATION_90
-    180 -> ROTATION_180
-    270 -> ROTATION_270
-    else -> ROTATION_0
-  }
-
-  private fun faceDetectionHandler(transformer: Function<FirebaseVisionFace, Bundle>, complete: FacesDetectionCompleted, error: FaceDetectionError): OnCompleteListener<List<FirebaseVisionFace>?> =
-    OnCompleteListener { task: Task<List<FirebaseVisionFace>?> ->
+  private fun faceDetectionHandler(transformer: Function<Face, Bundle>, complete: FacesDetectionCompleted, error: FaceDetectionError): OnCompleteListener<List<Face>?> =
+    OnCompleteListener { task: Task<List<Face>?> ->
       if (task.isComplete && task.isSuccessful) {
         val facesArray = ArrayList<Bundle>().apply {
           val faces = task.result
@@ -182,11 +165,11 @@ class ExpoFaceDetector(private val context: Context) : FaceDetectorInterface {
   }
 
   private fun createFaceDetector() {
-    faceDetector = FirebaseVision.getInstance().getVisionFaceDetector(createOptions())
+    faceDetector = FaceDetection.getClient(createOptions())
   }
 
-  private fun createOptions(): FirebaseVisionFaceDetectorOptions {
-    val builder = FirebaseVisionFaceDetectorOptions.Builder()
+  private fun createOptions(): FaceDetectorOptions {
+    val builder = FaceDetectorOptions.Builder()
       .setClassificationMode(classificationType)
       .setLandmarkMode(landmarkType)
       .setPerformanceMode(mode)

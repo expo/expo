@@ -177,8 +177,8 @@ export declare type CameraRecordingOptions = {
      */
     maxFileSize?: number;
     /**
-     * Specify the quality of recorded video. Usage: `Camera.Constants.VideoQuality.<value>`,
-     * possible values: for 16:9 resolution `2160p`, `1080p`, `720p`, `480p` : `Android only` and for 4:3 `4:3` (the size is 640x480).
+     * Specify the quality of recorded video. Use one of [`VideoQuality.<value>`](#videoquality).
+     * Possible values: for 16:9 resolution `2160p`, `1080p`, `720p`, `480p` : `Android only` and for 4:3 `4:3` (the size is 640x480).
      * If the chosen quality is not available for a device, the highest available is chosen.
      */
     quality?: number | string;
@@ -198,7 +198,7 @@ export declare type CameraRecordingOptions = {
      */
     videoBitrate?: number;
     /**
-     * This option specifies what codec to use when recording the video. See [`Camera.Constants.VideoCodec`](#video-codec) for the possible values.
+     * This option specifies what codec to use when recording the video. See [`VideoCodec`](#videocodec) for the possible values.
      * @platform ios
      */
     codec?: VideoCodec;
@@ -274,26 +274,28 @@ export declare type ConstantsType = {
 };
 export declare type CameraProps = ViewProps & {
     /**
-     * Camera facing. Use one of `Camera.Constants.Type`. When `Type.front`, use the front-facing camera.
-     * When `Type.back`, use the back-facing camera.
-     * @default Type.back
+     * Camera facing. Use one of `CameraType`. When `CameraType.front`, use the front-facing camera.
+     * When `CameraType.back`, use the back-facing camera.
+     * @default CameraType.back
      */
     type?: number | CameraType;
     /**
-     * Camera flash mode. Use one of `Camera.Constants.FlashMode`. When `on`, the flash on your device will
-     * turn on when taking a picture, when `off`, it won't. Setting to `auto` will fire flash if required,
-     * `torch` turns on flash during the preview.
+     * Camera flash mode. Use one of [`FlashMode.<value>`](#flashmode-1). When `FlashMode.on`, the flash on your device will
+     * turn on when taking a picture, when `FlashMode.off`, it won't. Setting to `FlashMode.auto` will fire flash if required,
+     * `FlashMode.torch` turns on flash during the preview.
      * @default FlashMode.off
      */
     flashMode?: number | FlashMode;
     /**
-     * Camera white balance. Use one of [`Camera.Constants.WhiteBalance`](#whitebalance). If a device does not support any of these values previous one is used.
+     * Camera white balance. Use one of [`WhiteBalance.<value>`](#whitebalance). If a device does not support any of these values previous one is used.
+     * @default WhiteBalance.auto
      */
     whiteBalance?: number | WhiteBalance;
     /**
-     * State of camera auto focus. Use one of [`Camera.Constants.AutoFocus`](#autofocus). When `on`,
-     * auto focus will be enabled, when `off`, it won't and focus will lock as it was in the moment of change,
+     * State of camera auto focus. Use one of [`AutoFocus.<value>`](#autofocus-1). When `AutoFocus.on`,
+     * auto focus will be enabled, when `AutoFocus.off`, it won't and focus will lock as it was in the moment of change,
      * but it can be adjusted on some devices via `focusDepth` prop.
+     * @default AutoFocus.on
      */
     autoFocus?: boolean | number | AutoFocus;
     /**
@@ -329,7 +331,7 @@ export declare type CameraProps = ViewProps & {
      */
     pictureSize?: string;
     /**
-     * The video stabilization mode used for a video recording. Use one of [`Camera.Constants.VideoStabilization`](#videostabilization).
+     * The video stabilization mode used for a video recording. Use one of [`VideoStabilization.<value>`](#videostabilization).
      * You can read more about each stabilization type in [Apple Documentation](https://developer.apple.com/documentation/avfoundation/avcapturevideostabilizationmode).
      * @platform ios
      */

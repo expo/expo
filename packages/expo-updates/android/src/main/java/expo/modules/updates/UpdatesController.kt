@@ -307,7 +307,7 @@ class UpdatesController private constructor(
         }
         remoteLoadStatus = ErrorRecoveryDelegate.RemoteLoadStatus.NEW_UPDATE_LOADING
         val database = getDatabase()
-        val remoteLoader = RemoteLoader(context, updatesConfiguration, database, fileDownloader, updatesDirectory)
+        val remoteLoader = RemoteLoader(context, updatesConfiguration, database, fileDownloader, updatesDirectory, launchedUpdate)
         remoteLoader.start(object : Loader.LoaderCallback {
           override fun onFailure(e: Exception) {
             setRemoteLoadStatus(ErrorRecoveryDelegate.RemoteLoadStatus.IDLE)

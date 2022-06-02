@@ -5,11 +5,11 @@ Provides a way to launch Android intents, e.g. opening a specific activity.
 # API documentation
 
 - [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/intent-launcher.md)
-- [Documentation for the latest stable release](https://docs.expo.io/versions/latest/sdk/intent-launcher/)
+- [Documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/intent-launcher/)
 
 # Installation in managed Expo projects
 
-For [managed](https://docs.expo.io/versions/latest/introduction/managed-vs-bare/) Expo projects, please follow the installation instructions in the [API documentation for the latest stable release](https://docs.expo.io/versions/latest/sdk/intent-launcher/).
+For [managed](https://docs.expo.dev/versions/latest/introduction/managed-vs-bare/) Expo projects, please follow the installation instructions in the [API documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/intent-launcher/).
 
 # Installation in bare React Native projects
 

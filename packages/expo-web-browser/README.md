@@ -5,11 +5,11 @@ Provides access to the system's web browser and supports handling redirects. On 
 # API documentation
 
 - [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/webbrowser.md)
-- [Documentation for the latest stable release](https://docs.expo.io/versions/latest/sdk/webbrowser/)
+- [Documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/webbrowser/)
 
 # Installation in managed Expo projects
 
-For [managed](https://docs.expo.io/versions/latest/introduction/managed-vs-bare/) Expo projects, please follow the installation instructions in the [API documentation for the latest stable release](https://docs.expo.io/versions/latest/sdk/webbrowser/).
+For [managed](https://docs.expo.dev/versions/latest/introduction/managed-vs-bare/) Expo projects, please follow the installation instructions in the [API documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/webbrowser/).
 
 # Installation in bare React Native projects
 

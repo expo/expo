@@ -62,6 +62,8 @@ export const locale = ExpoLocalization.locale;
 /**
  * List of all the native languages provided by the user settings.
  * These are returned in the order the user defines in their device settings.
+ *
+ * @example `['en', 'en-US', 'zh-Hans', 'zh-Hans-CN', 'en-emodeng']`
  */
 export const locales = ExpoLocalization.locales;
 

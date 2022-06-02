@@ -1,6 +1,21 @@
 import groovy.json.JsonSlurper
 import java.nio.file.Paths
 
+
+// Object representing a gradle project.
+class ExpoModuleGradleProject {
+  // Name of the Android project
+  String name
+
+  // Path to the folder with Android project
+  String sourceDir
+
+  ExpoModuleGradleProject(Object data) {
+    this.name = data.name
+    this.sourceDir = data.sourceDir
+  }
+}
+
 // Object representing a module.
 class ExpoModule {
   // Name of the JavaScript package
@@ -9,17 +24,13 @@ class ExpoModule {
   // Version of the package, loaded from `package.json`
   String version
 
-  // Name of the Android project
-  String projectName
-
-  // Path to the folder with Android project
-  String sourceDir
+  // Gradle projects
+  ExpoModuleGradleProject[] projects
 
   ExpoModule(Object data) {
     this.name = data.packageName
     this.version = data.packageVersion
-    this.projectName = data.projectName
-    this.sourceDir = data.sourceDir
+    this.projects = data.projects.collect { new ExpoModuleGradleProject(it) }
   }
 }
 
@@ -129,6 +140,16 @@ class Colors {
   static final String RESET = "\u001B[0m"
 }
 
+// We can't cast a manager that is created in `settings.gradle` to the `ExpoAutolinkingManager` 
+// because if someone is using `buildSrc`, the `ExpoAutolinkingManager` class 
+// will be loaded by two different class loader - `settings.gradle` will use a diffrent loader. 
+// In the JVM, classes are equal only if were loaded by the same loader.
+// There is nothing that we can do in that case, but to make our code safer, we check if the class name is the same.
+def validateExpoAutolinkingManager(manager) {
+  assert ExpoAutolinkingManager.name == manager.getClass().name
+  return manager
+}
+
 // Here we split the implementation, depending on Gradle context.
 // `rootProject` is a `ProjectDescriptor` if this file is imported in `settings.gradle` context,
 // otherwise we can assume it is imported in `build.gradle`.
@@ -140,8 +161,10 @@ if (rootProject instanceof ProjectDescriptor) {
     ExpoModule[] modules = manager.getModules()
 
     for (module in modules) {
-      include(":${module.projectName}")
-      project(":${module.projectName}").projectDir = new File(module.sourceDir)
+      for (moduleProject in module.projects) {
+        include(":${moduleProject.name}")
+        project(":${moduleProject.name}").projectDir = new File(moduleProject.sourceDir)
+      }
     }
 
     // Save the manager in the shared context, so that we can later use it in `build.gradle`.
@@ -159,7 +182,7 @@ if (rootProject instanceof ProjectDescriptor) {
   }
 
   def addDependencies = { DependencyHandler handler, Project project ->
-    ExpoAutolinkingManager manager = gradle.ext.expoAutolinkingManager
+    def manager = validateExpoAutolinkingManager(gradle.ext.expoAutolinkingManager)
     def modules = manager.getModules()
 
     if (!modules.length) {
@@ -174,15 +197,15 @@ if (rootProject instanceof ProjectDescriptor) {
       if (module.name == project.name) {
         continue
       }
-
-      addModule(handler, module.projectName, manager.shouldUseAAR())
-
       // Can remove this once we move all the interfaces into the core.
       if (module.name.endsWith('-interface')) {
         continue
       }
 
-      println "  - ${Colors.GREEN}${module.name}${Colors.RESET} (${module.version})"
+      for (moduleProject in module.projects) {
+        addModule(handler, moduleProject.name, manager.shouldUseAAR())
+        println "  - ${Colors.GREEN}${moduleProject.name}${Colors.RESET} (${module.version})"
+      }
     }
 
     println ''
@@ -196,7 +219,7 @@ if (rootProject instanceof ProjectDescriptor) {
       return
     }
 
-    ExpoAutolinkingManager manager = gradle.ext.expoAutolinkingManager
+    def manager = validateExpoAutolinkingManager(gradle.ext.expoAutolinkingManager)
 
     if (rootProject.findProject(':expo-modules-core')) {
       // `expo` requires `expo-modules-core` as a dependency, even if autolinking is turned off.
@@ -234,18 +257,20 @@ if (rootProject instanceof ProjectDescriptor) {
 
     def modules = gradle.ext.expoAutolinkingManager.getModules()
     for (module in modules) {
-      def dependency = project.findProject(":${module.projectName}")
-      if (dependency == null) {
-        logger.warn("Coudn't find project ${module.projectName}. Please, make sure that `useExpoModules` was called in `settings.gradle`.")
-        continue
-      }
+      for (moduleProject in module.projects) {
+        def dependency = project.findProject(":${moduleProject.name}")
+        if (dependency == null) {
+          logger.warn("Coudn't find project ${moduleProject.name}. Please, make sure that `useExpoModules` was called in `settings.gradle`.")
+          continue
+        }
 
-      // Prevent circular dependencies
-      if (module.projectName == project.name) {
-        continue
-      }
+        // Prevent circular dependencies
+        if (moduleProject.name == project.name) {
+          continue
+        }
       
-      project.evaluationDependsOn(":${module.projectName}")
+        project.evaluationDependsOn(":${moduleProject.name}")
+      }
     }
   }
 }

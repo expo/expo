@@ -56,10 +56,16 @@ export default function vendoredModulesTransformsFactory(prefix: string): Config
           paths: 'RNCWebView.m',
           find: 'NSString *const CUSTOM_SELECTOR',
           replaceWith: 'static NSString *const CUSTOM_SELECTOR',
-        }
+        },
       ],
     },
     'react-native-reanimated': {
+      path: [
+        {
+          find: /\b(ReanimatedSensor)/g,
+          replaceWith: `${prefix}$1`,
+        },
+      ],
       content: [
         {
           find: 'namespace reanimated',
@@ -104,8 +110,18 @@ export default function vendoredModulesTransformsFactory(prefix: string): Config
           // `dataComponenetsByName[@"ABI44_0_0RCTView"];` -> `dataComponenetsByName[@"RCTView"];`
           // the RCTComponentData internal view name is not versioned
           find: new RegExp(`(RCTComponentData .+)\\[@"${prefix}(RCT.+)"\\];`, 'g'),
-          replaceWith: '$1[@"$2"];'
-        }
+          replaceWith: '$1[@"$2"];',
+        },
+        {
+          paths: ['**/sensor/**', 'NativeProxy.mm'],
+          find: /\b(ReanimatedSensor)/g,
+          replaceWith: `${prefix}$1`,
+        },
+        {
+          paths: 'REANodesManager.m',
+          find: /\b(ComponentUpdate)\b/g,
+          replaceWith: `${prefix}$1`,
+        },
       ],
     },
     'react-native-gesture-handler': {

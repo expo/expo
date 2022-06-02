@@ -67,7 +67,7 @@ The Runtime Version expected by a given update must also be provided as a field 
 
 ### Release Channels
 
-Because the current implementation of the Expo updates service relies heavily on SDK version (a managed-workflow concept), if you're using `expo publish` you cannot yet use Runtime Version to manage compatibility of your updates and binaries. Instead, you can use [release channels](../distribution/release-channels.md). A typical workflow would be to create a new release channel for each new binary you build (or at least every new binary with an incompatible change in the native-JavaScript interface) by publishing to that new channel with `expo publish --release-channel <channel-name>`. After creating a build with this release channel name configured, you can continue to publish future updates to this same release channel as long as they remain compatible with that build. Only builds that were configured to use that release channel will receive those updates.
+Because the current implementation of the Expo updates service relies heavily on SDK version (a managed-workflow concept), if you're using `expo publish` you cannot yet use Runtime Version to manage compatibility of your updates and binaries. Instead, you can use [release channels](../distribution/release-channels.md). A typical workflow would be to create a new release channel for each new binary you build (or at least every new binary with an incompatible change in the native-JavaScript interface) by publishing to that new release channel with `expo publish --release-channel <channel-name>`. After creating a build with this release channel name configured, you can continue to publish future updates to this same release channel as long as they remain compatible with that build. Only builds that were configured to use that release channel will receive those updates.
 
 ### Statically Hosted Updates
 
@@ -77,7 +77,7 @@ Since headers sent in requests by `expo-updates` do not affect statically hosted
 
 In addition to loading updates from remote servers, apps with `expo-updates` installed also include the necessary capability to load updates embedded in the app binary. This is critical to ensure that your app can launch offline for all users immediately upon installation, without needing an internet connection.
 
-When you make a release build of your app, the build process will bundle your JavaScript source code into a minifed bundle and embed this in the binary, along with any other assets your app imports (with `require` or `import` or used in **app.json**). `expo-updates` includes an extra script on each platform to embed some additional metadata about the embedded assets -- namely, a minimal manifest JSON object for the update.
+When you make a release build of your app, the build process will bundle your JavaScript source code into a minified bundle and embed this in the binary, along with any other assets your app imports (with `require` or `import` or used in **app.json**). `expo-updates` includes an extra script on each platform to embed some additional metadata about the embedded assets -- namely, a minimal manifest JSON object for the update.
 
 ## Including Assets in Updates
 

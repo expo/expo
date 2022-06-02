@@ -10,6 +10,7 @@
 #import <ABI44_0_0EXUpdates/ABI44_0_0EXUpdatesSelectionPolicyFactory.h>
 #import <ABI44_0_0EXUpdates/ABI44_0_0EXUpdatesUtils.h>
 #import <ABI44_0_0EXUpdates/ABI44_0_0EXUpdatesBuildData.h>
+#import <ABI44_0_0ExpoModulesCore/ABI44_0_0EXDefines.h>
 #import <ABI44_0_0React/ABI44_0_0RCTReloadCommand.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -113,7 +114,11 @@ static NSString * const ABI44_0_0EXUpdatesErrorEventName = @"error";
     [launcher launchUpdateWithConfig:_config];
 
     if (_delegate) {
-      [_delegate appController:self didStartWithSuccess:self.launchAssetUrl != nil];
+      ABI44_0_0EX_WEAKIFY(self);
+      dispatch_async(dispatch_get_main_queue(), ^{
+        ABI44_0_0EX_ENSURE_STRONGIFY(self);
+        [self->_delegate appController:self didStartWithSuccess:self.launchAssetUrl != nil];
+      });
     }
 
     return;
@@ -180,7 +185,12 @@ static NSString * const ABI44_0_0EXUpdatesErrorEventName = @"error";
     view.backgroundColor = [UIColor whiteColor];
   }
   
+  if (window.rootViewController == nil) {
+      UIViewController *rootViewController = [UIViewController new];
+      window.rootViewController = rootViewController;
+  }
   window.rootViewController.view = view;
+  [window makeKeyAndVisible];
 
   [self start];
 }
@@ -357,7 +367,7 @@ static NSString * const ABI44_0_0EXUpdatesErrorEventName = @"error";
   }
 
   _remoteLoadStatus = ABI44_0_0EXUpdatesRemoteLoadStatusLoading;
-  ABI44_0_0EXUpdatesAppLoader *remoteAppLoader = [[ABI44_0_0EXUpdatesRemoteAppLoader alloc] initWithConfig:_config database:_database directory:_updatesDirectory completionQueue:_controllerQueue];
+  ABI44_0_0EXUpdatesAppLoader *remoteAppLoader = [[ABI44_0_0EXUpdatesRemoteAppLoader alloc] initWithConfig:_config database:_database directory:_updatesDirectory launchedUpdate:self.launchedUpdate completionQueue:_controllerQueue];
   [remoteAppLoader loadUpdateFromUrl:_config.updateUrl onManifest:^BOOL(ABI44_0_0EXUpdatesUpdate *update) {
     return [self->_selectionPolicy shouldLoadNewUpdate:update withLaunchedUpdate:self.launchedUpdate filters:update.manifestFilters];
   } asset:^(ABI44_0_0EXUpdatesAsset *asset, NSUInteger successfulAssetCount, NSUInteger failedAssetCount, NSUInteger totalAssetCount) {
@@ -423,9 +433,11 @@ static NSString * const ABI44_0_0EXUpdatesErrorEventName = @"error";
   [launcher launchUpdateWithConfig:_config];
 
   if (_delegate) {
-    [ABI44_0_0EXUpdatesUtils runBlockOnMainThread:^{
+    ABI44_0_0EX_WEAKIFY(self);
+    dispatch_async(dispatch_get_main_queue(), ^{
+      ABI44_0_0EX_ENSURE_STRONGIFY(self);
       [self->_delegate appController:self didStartWithSuccess:self.launchAssetUrl != nil];
-    }];
+    });
   }
 
   [_errorRecovery writeErrorOrExceptionToLog:error];

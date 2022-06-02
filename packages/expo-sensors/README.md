@@ -5,11 +5,11 @@ Provides access to a hardware device's accelerometer, gyroscope, magnetometer, a
 # API documentation
 
 - [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/sensors.md)
-- [Documentation for the latest stable release](https://docs.expo.io/versions/latest/sdk/sensors/)
+- [Documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/sensors/)
 
 # Installation in managed Expo projects
 
-For [managed](https://docs.expo.io/versions/latest/introduction/managed-vs-bare/) Expo projects, please follow the installation instructions in the [API documentation for the latest stable release](https://docs.expo.io/versions/latest/sdk/sensors/).
+For [managed](https://docs.expo.dev/versions/latest/introduction/managed-vs-bare/) Expo projects, please follow the installation instructions in the [API documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/sensors/).
 
 # Installation in bare React Native projects
 
@@ -29,7 +29,9 @@ Run `npx pod-install` after installing the npm package.
 
 ### Configure for Android
 
-No additional set up necessary.
+No additional set up necessary for basic usage.
+
+**Note:** Starting in Android 12 (API level 31), the system has a 200ms limit for each sensor updates. If you need a update interval less than 200ms, you should add `<uses-permission android:name="android.permission.HIGH_SAMPLING_RATE_SENSORS"/>` to **AndroidManifest.xml**.
 
 # Contributing
 

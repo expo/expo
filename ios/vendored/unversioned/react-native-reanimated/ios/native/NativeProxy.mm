@@ -1,18 +1,21 @@
-
+#import <RNReanimated/LayoutAnimationsProxy.h>
+#import <RNReanimated/NativeMethods.h>
+#import <RNReanimated/NativeProxy.h>
+#import <RNReanimated/REAAnimationsManager.h>
+#import <RNReanimated/REAIOSErrorHandler.h>
+#import <RNReanimated/REAIOSScheduler.h>
+#import <RNReanimated/REAModule.h>
+#import <RNReanimated/REANodesManager.h>
+#import <RNReanimated/REAUIManager.h>
+#import <RNReanimated/RNGestureHandlerStateManager.h>
+#import <RNReanimated/ReanimatedSensorContainer.h>
 #import <React/RCTFollyConvert.h>
 #import <React/RCTUIManager.h>
 #import <folly/json.h>
 
-#import "LayoutAnimationsProxy.h"
-#import "NativeMethods.h"
-#import "NativeProxy.h"
-#import "REAAnimationsManager.h"
-#import "REAIOSErrorHandler.h"
-#import "REAIOSScheduler.h"
-#import "REAModule.h"
-#import "REANodesManager.h"
-#import "REAUIManager.h"
-#import "RNGestureHandlerStateManager.h"
+#if TARGET_IPHONE_SIMULATOR
+#import <dlfcn.h>
+#endif
 
 #if __has_include(<reacthermes/HermesExecutorFactory.h>)
 #import <reacthermes/HermesExecutorFactory.h>
@@ -26,6 +29,41 @@ namespace reanimated {
 
 using namespace facebook;
 using namespace react;
+
+static CGFloat SimAnimationDragCoefficient(void)
+{
+  static float (*UIAnimationDragCoefficient)(void) = NULL;
+#if TARGET_IPHONE_SIMULATOR
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    UIAnimationDragCoefficient = (float (*)(void))dlsym(RTLD_DEFAULT, "UIAnimationDragCoefficient");
+  });
+#endif
+  return UIAnimationDragCoefficient ? UIAnimationDragCoefficient() : 1.f;
+}
+
+static CFTimeInterval calculateTimestampWithSlowAnimations(CFTimeInterval currentTimestamp)
+{
+#if TARGET_IPHONE_SIMULATOR
+  static CFTimeInterval dragCoefChangedTimestamp = CACurrentMediaTime();
+  static CGFloat previousDragCoef = SimAnimationDragCoefficient();
+
+  const CGFloat dragCoef = SimAnimationDragCoefficient();
+  if (previousDragCoef != dragCoef) {
+    previousDragCoef = dragCoef;
+    dragCoefChangedTimestamp = CACurrentMediaTime();
+  }
+
+  const bool areSlowAnimationsEnabled = dragCoef != 1.f;
+  if (areSlowAnimationsEnabled) {
+    return (dragCoefChangedTimestamp + (currentTimestamp - dragCoefChangedTimestamp) / dragCoef);
+  } else {
+    return currentTimestamp;
+  }
+#else
+  return currentTimestamp;
+#endif
+}
 
 // COPIED FROM RCTTurboModule.mm
 static id convertJSIValueToObjCObject(jsi::Runtime &runtime, const jsi::Value &value);
@@ -87,6 +125,17 @@ static id convertJSIValueToObjCObject(jsi::Runtime &runtime, const jsi::Value &v
   throw std::runtime_error("Unsupported jsi::jsi::Value kind");
 }
 
+static NSSet *convertProps(jsi::Runtime &rt, const jsi::Value &props)
+{
+  NSMutableSet *propsSet = [[NSMutableSet alloc] init];
+  jsi::Array propsNames = props.asObject(rt).asArray(rt);
+  for (int i = 0; i < propsNames.size(rt); i++) {
+    NSString *propName = @(propsNames.getValueAtIndex(rt, i).asString(rt).utf8(rt).c_str());
+    [propsSet addObject:propName];
+  }
+  return propsSet;
+}
+
 std::shared_ptr<NativeReanimatedModule> createReanimatedModule(
     RCTBridge *bridge,
     std::shared_ptr<CallInvoker> jsInvoker)
@@ -113,8 +162,12 @@ std::shared_ptr<NativeReanimatedModule> createReanimatedModule(
     scrollTo(viewTag, uiManager, x, y, animated);
   };
 
-  id<RNGestureHandlerStateManager> gestureHandlerStateManager = [bridge moduleForName:@"RNGestureHandlerModule"];
-  auto setGestureStateFunction = [gestureHandlerStateManager](int handlerTag, int newState) {
+  id<RNGestureHandlerStateManager> gestureHandlerStateManager = nil;
+  auto setGestureStateFunction = [gestureHandlerStateManager, bridge](int handlerTag, int newState) mutable {
+    if (gestureHandlerStateManager == nil) {
+      gestureHandlerStateManager = [bridge moduleForName:@"RNGestureHandlerModule"];
+    }
+
     setGestureState(gestureHandlerStateManager, handlerTag, newState);
   };
 
@@ -149,7 +202,7 @@ std::shared_ptr<NativeReanimatedModule> createReanimatedModule(
 
   auto requestRender = [reanimatedModule, &module](std::function<void(double)> onRender, jsi::Runtime &rt) {
     [reanimatedModule.nodesManager postOnAnimation:^(CADisplayLink *displayLink) {
-      double frameTimestamp = displayLink.targetTimestamp * 1000;
+      double frameTimestamp = calculateTimestampWithSlowAnimations(displayLink.targetTimestamp) * 1000;
       jsi::Object global = rt.global();
       jsi::String frameTimestampName = jsi::String::createFromAscii(rt, "_frameTimestamp");
       global.setProperty(rt, frameTimestampName, frameTimestamp);
@@ -158,7 +211,7 @@ std::shared_ptr<NativeReanimatedModule> createReanimatedModule(
     }];
   };
 
-  auto getCurrentTime = []() { return CACurrentMediaTime() * 1000; };
+  auto getCurrentTime = []() { return calculateTimestampWithSlowAnimations(CACurrentMediaTime()) * 1000; };
 
   // Layout Animations start
   REAUIManager *reaUiManagerNoCast = [bridge moduleForClass:[REAUIManager class]];
@@ -177,6 +230,13 @@ std::shared_ptr<NativeReanimatedModule> createReanimatedModule(
     if (animationsManager) {
       [animationsManager notifyAboutEnd:[NSNumber numberWithInt:tag] cancelled:isCancelled];
     }
+  };
+
+  auto configurePropsFunction = [reanimatedModule](
+                                    jsi::Runtime &rt, const jsi::Value &uiProps, const jsi::Value &nativeProps) {
+    NSSet *uiPropsSet = convertProps(rt, uiProps);
+    NSSet *nativePropsSet = convertProps(rt, nativeProps);
+    [reanimatedModule.nodesManager configureUiProps:uiPropsSet andNativeProps:nativePropsSet];
   };
 
   std::shared_ptr<LayoutAnimationsProxy> layoutAnimationsProxy =
@@ -224,14 +284,29 @@ std::shared_ptr<NativeReanimatedModule> createReanimatedModule(
 
   // Layout Animations end
 
+  // sensors
+  ReanimatedSensorContainer *reanimatedSensorContainer = [[ReanimatedSensorContainer alloc] init];
+  auto registerSensorFunction = [=](int sensorType, int interval, std::function<void(double[])> setter) -> int {
+    return [reanimatedSensorContainer registerSensor:(ReanimatedSensorType)sensorType
+                                            interval:interval
+                                              setter:^(double *data) {
+                                                setter(data);
+                                              }];
+  };
+
+  auto unregisterSensorFunction = [=](int sensorId) { [reanimatedSensorContainer unregisterSensor:sensorId]; };
+  // end sensors
+
   PlatformDepMethodsHolder platformDepMethodsHolder = {
       requestRender,
       propUpdater,
       scrollToFunction,
       measuringFunction,
       getCurrentTime,
+      registerSensorFunction,
+      unregisterSensorFunction,
       setGestureStateFunction,
-  };
+      configurePropsFunction};
 
   module = std::make_shared<NativeReanimatedModule>(
       jsInvoker,
@@ -246,7 +321,15 @@ std::shared_ptr<NativeReanimatedModule> createReanimatedModule(
 
   [reanimatedModule.nodesManager registerEventHandler:^(NSString *eventName, id<RCTEvent> event) {
     std::string eventNameString([eventName UTF8String]);
-    std::string eventAsString = folly::toJson(convertIdToFollyDynamic([event arguments][2]));
+
+    std::string eventAsString;
+    try {
+      eventAsString = folly::toJson(convertIdToFollyDynamic([event arguments][2]));
+    } catch (std::exception &) {
+      // Events from other libraries may contain NaN or INF values which cannot be represented in JSON.
+      // See https://github.com/software-mansion/react-native-reanimated/issues/1776 for details.
+      return;
+    }
 
     eventAsString = "{ NativeMap:" + eventAsString + "}";
     jsi::Object global = module->runtime->global();

@@ -7,9 +7,10 @@ import android.view.MotionEvent
 import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.bridge.ReadableMap
+import com.facebook.react.bridge.ReactApplicationContext
 import expo.interfaces.devmenu.DevMenuDelegateInterface
 import expo.interfaces.devmenu.DevMenuManagerInterface
-import expo.interfaces.devmenu.DevMenuSettingsInterface
+import expo.interfaces.devmenu.DevMenuPreferencesInterface
 import expo.interfaces.devmenu.expoapi.DevMenuExpoApiClientInterface
 import expo.interfaces.devmenu.items.DevMenuDataSourceItem
 import expo.modules.devmenu.api.DevMenuMetroClient
@@ -24,8 +25,18 @@ object DevMenuManager : DevMenuManagerInterface {
   var currentManifest: Manifest? = null
   var currentManifestURL: String? = null
 
+  var registeredCallbacks = arrayListOf<String>()
+
   fun getReactInstanceManager(): ReactInstanceManager? {
     return null
+  }
+
+  fun getAppInfo(): Bundle {
+    throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
+  }
+
+  fun getDevSettings(): Bundle {
+    throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
   }
 
   val metroClient: DevMenuMetroClient by lazy {
@@ -68,7 +79,11 @@ object DevMenuManager : DevMenuManagerInterface {
     throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
   }
 
-  override fun getSettings(): DevMenuSettingsInterface? {
+  override fun getSettings(): DevMenuPreferencesInterface? {
+    throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
+  }
+
+  fun getMenuPreferences(): Bundle {
     throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
   }
 
@@ -99,6 +114,10 @@ object DevMenuManager : DevMenuManagerInterface {
   }
 
   override suspend fun fetchDataSource(id: String): List<DevMenuDataSourceItem> {
+    throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
+  }
+
+  fun loadFonts(applicationContext: ReactApplicationContext) {
     throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
   }
 

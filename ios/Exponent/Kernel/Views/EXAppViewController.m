@@ -31,14 +31,14 @@
 #endif
 
 #import <React/RCTAppearance.h>
+#if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI45_0_0React/ABI45_0_0RCTAppearance.h>)
+#import <ABI45_0_0React/ABI45_0_0RCTAppearance.h>
+#endif
 #if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI44_0_0React/ABI44_0_0RCTAppearance.h>)
 #import <ABI44_0_0React/ABI44_0_0RCTAppearance.h>
 #endif
 #if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI43_0_0React/ABI43_0_0RCTAppearance.h>)
 #import <ABI43_0_0React/ABI43_0_0RCTAppearance.h>
-#endif
-#if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI42_0_0React/ABI42_0_0RCTAppearance.h>)
-#import <ABI42_0_0React/ABI42_0_0RCTAppearance.h>
 #endif
 
 #define EX_INTERFACE_ORIENTATION_USE_MANIFEST 0
@@ -614,7 +614,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
   NSString *userInterfaceStyle = [self _readUserInterfaceStyleFromManifest:_appRecord.appLoader.manifest];
   NSString *appearancePreference = nil;
-  if (!userInterfaceStyle || [userInterfaceStyle isEqualToString:@"light"]) {
+  if ([userInterfaceStyle isEqualToString:@"light"]) {
     appearancePreference = @"light";
   } else if ([userInterfaceStyle isEqualToString:@"dark"]) {
     appearancePreference = @"dark";
@@ -622,6 +622,9 @@ NS_ASSUME_NONNULL_BEGIN
     appearancePreference = nil;
   }
   RCTOverrideAppearancePreference(appearancePreference);
+#if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI45_0_0React/ABI45_0_0RCTAppearance.h>)
+  ABI45_0_0RCTOverrideAppearancePreference(appearancePreference);
+#endif
 #if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI44_0_0React/ABI44_0_0RCTAppearance.h>)
   ABI44_0_0RCTOverrideAppearancePreference(appearancePreference);
 #endif
@@ -629,9 +632,6 @@ NS_ASSUME_NONNULL_BEGIN
   ABI43_0_0RCTOverrideAppearancePreference(appearancePreference);
 #endif
 
-#if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI42_0_0React/ABI42_0_0RCTAppearance.h>)
-  ABI42_0_0RCTOverrideAppearancePreference(appearancePreference);
-#endif
 }
 
 #pragma mark - user interface style
@@ -656,7 +656,11 @@ NS_ASSUME_NONNULL_BEGIN
   if ([userInterfaceStyleString isEqualToString:@"automatic"]) {
     return UIUserInterfaceStyleUnspecified;
   }
-  return UIUserInterfaceStyleLight;
+  if ([userInterfaceStyleString isEqualToString:@"light"]) {
+    return UIUserInterfaceStyleLight;
+  }
+
+  return UIUserInterfaceStyleUnspecified;
 }
 
 #pragma mark - root view and window background color

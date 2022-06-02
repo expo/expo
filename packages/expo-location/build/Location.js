@@ -160,7 +160,7 @@ export async function reverseGeocodeAsync(location, options) {
 /**
  * Checks user's permissions for accessing location.
  * @return A promise that fulfills with an object of type [LocationPermissionResponse](#locationpermissionresponse).
- * @deprecated __Deprecated.__ Use [`getForegroundPermissionsAsync`](#locationgetforegroundpermissionsasync) or [`getBackgroundPermissionsAsync`](#locationgetbackgroundpermissionsasync) instead.
+ * @deprecated Use [`getForegroundPermissionsAsync`](#locationgetforegroundpermissionsasync) or [`getBackgroundPermissionsAsync`](#locationgetbackgroundpermissionsasync) instead.
  */
 export async function getPermissionsAsync() {
     console.warn(`"getPermissionsAsync()" is now deprecated. Please use "getForegroundPermissionsAsync()" or "getBackgroundPermissionsAsync()" instead.`);
@@ -170,7 +170,7 @@ export async function getPermissionsAsync() {
 /**
  * Asks the user to grant permissions for location.
  * @return A promise that fulfills with an object of type [LocationPermissionResponse](#locationpermissionresponse).
- * @deprecated __Deprecated.__ Use [`requestForegroundPermissionsAsync`](#locationrequestforegroundpermissionsasync) or [`requestBackgroundPermissionsAsync`](#locationrequestbackgroundpermissionsasync) instead.
+ * @deprecated Use [`requestForegroundPermissionsAsync`](#locationrequestforegroundpermissionsasync) or [`requestBackgroundPermissionsAsync`](#locationrequestbackgroundpermissionsasync) instead.
  */
 export async function requestPermissionsAsync() {
     console.warn(`"requestPermissionsAsync()" is now deprecated. Please use "requestForegroundPermissionsAsync()" or "requestBackgroundPermissionsAsync()" instead.`);

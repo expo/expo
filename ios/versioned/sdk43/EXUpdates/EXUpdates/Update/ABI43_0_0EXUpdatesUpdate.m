@@ -32,6 +32,8 @@ NSString * const ABI43_0_0EXUpdatesUpdateErrorDomain = @"ABI43_0_0EXUpdatesUpdat
     _scopeKey = config.scopeKey;
     _status = ABI43_0_0EXUpdatesUpdateStatusPending;
     _lastAccessed = [NSDate date];
+    _successfulLaunchCount = 0;
+    _failedLaunchCount = 0;
     _isDevelopmentMode = NO;
   }
   return self;
@@ -61,23 +63,13 @@ NSString * const ABI43_0_0EXUpdatesUpdateErrorDomain = @"ABI43_0_0EXUpdatesUpdat
 }
 
 + (instancetype)updateWithManifest:(NSDictionary *)manifest
-                          response:(nullable NSURLResponse *)response
+                   manifestHeaders:(ABI43_0_0EXUpdatesManifestHeaders *)manifestHeaders
+                        extensions:(NSDictionary *)extensions
                             config:(ABI43_0_0EXUpdatesConfig *)config
                           database:(ABI43_0_0EXUpdatesDatabase *)database
                              error:(NSError ** _Nullable)error
 {
-  if (![response isKindOfClass:[NSHTTPURLResponse class]]) {
-    if(error){
-      *error = [NSError errorWithDomain:ABI43_0_0EXUpdatesUpdateErrorDomain
-                                   code:1001
-                               userInfo:@{NSLocalizedDescriptionKey:@"response must be a NSHTTPURLResponse"}];
-    }
-    return nil;
-  }
-
-  NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
-  NSDictionary *headerDictionary = [httpResponse allHeaderFields];
-  NSString *expoProtocolVersion = headerDictionary[@"expo-protocol-version"];
+  NSString *expoProtocolVersion = manifestHeaders.protocolVersion;
 
   if (expoProtocolVersion == nil) {
     return [ABI43_0_0EXUpdatesLegacyUpdate updateWithLegacyManifest:[[ABI43_0_0EXManifestsLegacyManifest alloc] initWithRawManifestJSON:manifest]
@@ -85,7 +77,8 @@ NSString * const ABI43_0_0EXUpdatesUpdateErrorDomain = @"ABI43_0_0EXUpdatesUpdat
                                                   database:database];
   } else if (expoProtocolVersion.integerValue == 0) {
     return [ABI43_0_0EXUpdatesNewUpdate updateWithNewManifest:[[ABI43_0_0EXManifestsNewManifest alloc] initWithRawManifestJSON:manifest]
-                                            response:response
+                                     manifestHeaders:manifestHeaders
+                                          extensions:extensions
                                               config:config
                                             database:database];
   } else {

@@ -10,7 +10,7 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.devsupport.DevInternalSettings
-import com.facebook.react.devsupport.DevSupportManagerImpl
+import com.facebook.react.devsupport.BridgeDevSupportManager
 import com.facebook.react.devsupport.HMRClient
 import expo.modules.manifests.core.Manifest
 import host.exp.exponent.di.NativeModuleDepsProvider
@@ -186,12 +186,12 @@ class DevMenuModule(reactContext: ReactApplicationContext, val experiencePropert
   //region internals
 
   /**
-   * Returns versioned instance of [DevSupportManagerImpl],
+   * Returns versioned instance of [BridgeDevSupportManager],
    * or null if no activity is currently attached to react context.
    */
-  private fun getDevSupportManager(): DevSupportManagerImpl? {
+  private fun getDevSupportManager(): BridgeDevSupportManager? {
     val activity = currentActivity as? ReactNativeActivity?
-    return activity?.devSupportManager?.get() as? DevSupportManagerImpl?
+    return activity?.devSupportManager?.get() as? BridgeDevSupportManager?
   }
 
   /**

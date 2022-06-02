@@ -28,19 +28,21 @@ describe('codesigning:generate', () => {
     );
 
     await generateCodeSigningAsync(projectRoot, {
-      output: 'keys',
-      validityDurationYears: 10,
-      commonName: 'hello',
+      certificateOutput: 'certificates',
+      keyOutput: 'keys',
+      certificateValidityDurationYears: 10,
+      certificateCommonName: 'hello',
     });
 
-    const inputDir = path.resolve(projectRoot, 'keys');
+    const keysDir = path.resolve(projectRoot, 'keys');
+    const certificateDir = path.resolve(projectRoot, 'certificates');
 
     const [certificatePEM, privateKeyPEM, publicKeyPEM] = (
-      await Promise.all(
-        ['certificate.pem', 'private-key.pem', 'public-key.pem'].map((fname) =>
-          fs.readFile(`${inputDir}/${fname}`)
-        )
-      )
+      await Promise.all([
+        fs.readFile(`${certificateDir}/certificate.pem`),
+        fs.readFile(`${keysDir}/private-key.pem`),
+        fs.readFile(`${keysDir}/public-key.pem`),
+      ])
     ).map((buffer) => buffer.toString());
 
     expect(certificatePEM).toBeTruthy();

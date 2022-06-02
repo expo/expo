@@ -2,6 +2,7 @@
 .expo
 __generated__
 web-build
+bare-apps
 
 # macOS
 .DS_Store
@@ -58,6 +59,8 @@ xcuserdata
 /android/captures
 /android/expoview/libs/ReactAndroid-temp
 /android/versioned-react-native/ReactAndroid
+/android/versioned-react-native/ReactCommon
+/android/versioned-react-native/codegen
 ReactAndroid-temp.aar
 
 # Tools
@@ -88,6 +91,8 @@ jarjar-rules.txt
 templates/**/android/**/generated/*
 templates/**/android/app/build
 templates/**/Pods/**
+templates/**/Podfile.lock
+templates/**/yarn.lock
 
 # Codemod
 .codemod.bookmark
@@ -134,5 +139,6 @@ docs/pages/versions/*/react-native/*.diff
 /packages/**/*.spec.json
 /packages/**/Info-generated.plist
 
-# Pods
+# iOS
 /ios/Pods
+/ios/build

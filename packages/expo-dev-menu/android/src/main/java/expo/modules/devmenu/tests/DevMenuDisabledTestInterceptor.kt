@@ -1,7 +1,7 @@
 package expo.modules.devmenu.tests
 
-import expo.interfaces.devmenu.DevMenuSettingsInterface
+import expo.interfaces.devmenu.DevMenuPreferencesInterface
 
-class DevMenuDisabledTestInterceptor: DevMenuTestInterceptor {
-  override fun overrideSettings(): DevMenuSettingsInterface? = null
+class DevMenuDisabledTestInterceptor : DevMenuTestInterceptor {
+  override fun overrideSettings(): DevMenuPreferencesInterface? = null
 }

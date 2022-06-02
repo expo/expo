@@ -6,7 +6,8 @@
       android:name="expo.modules.devlauncher.launcher.DevLauncherActivity"
       android:screenOrientation="portrait"
       android:theme="@style/Theme.DevLauncher.LauncherActivity"
-      android:launchMode="singleTask" 
+      android:launchMode="singleTask"
+      android:exported="true"
       >
       <intent-filter>
         <action android:name="android.intent.action.VIEW"/>

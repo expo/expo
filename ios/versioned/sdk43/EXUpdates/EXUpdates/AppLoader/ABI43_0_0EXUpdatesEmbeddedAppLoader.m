@@ -2,6 +2,7 @@
 
 #import <ABI43_0_0EXUpdates/ABI43_0_0EXUpdatesFileDownloader.h>
 #import <ABI43_0_0EXUpdates/ABI43_0_0EXUpdatesEmbeddedAppLoader.h>
+#import <ABI43_0_0EXUpdates/ABI43_0_0EXUpdatesUtils.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -30,6 +31,15 @@ static NSString * const ABI43_0_0EXUpdatesEmbeddedAppLoaderErrorDomain = @"ABI43
       NSBundle *bundle = [NSBundle bundleWithURL:bundleUrl];
       NSString *path = [bundle pathForResource:ABI43_0_0EXUpdatesEmbeddedManifestName ofType:ABI43_0_0EXUpdatesEmbeddedManifestType];
       NSData *manifestData = [NSData dataWithContentsOfFile:path];
+
+      // Fallback to main bundle if the embedded manifest is not found in ABI43_0_0EXUpdates.bundle. This is a special case
+      // to support the existing structure of Expo "shell apps"
+      if (!manifestData) {
+        path = [[NSBundle mainBundle] pathForResource:ABI43_0_0EXUpdatesEmbeddedManifestName ofType:ABI43_0_0EXUpdatesEmbeddedManifestType];
+        manifestData = [NSData dataWithContentsOfFile:path];
+      }
+
+      // Not found in ABI43_0_0EXUpdates.bundle or main bundle
       if (!manifestData) {
         @throw [NSException exceptionWithName:NSInternalInconsistencyException
                                        reason:@"The embedded manifest is invalid or could not be read. Make sure you have configured expo-updates correctly in your Xcode Build Phases."
@@ -92,9 +102,7 @@ static NSString * const ABI43_0_0EXUpdatesEmbeddedAppLoaderErrorDomain = @"ABI43
       });
     } else {
       NSAssert(asset.mainBundleFilename, @"embedded asset mainBundleFilename must be nonnull");
-      NSString *bundlePath = asset.mainBundleDir
-        ? [[NSBundle mainBundle] pathForResource:asset.mainBundleFilename ofType:asset.type inDirectory:asset.mainBundleDir]
-        : [[NSBundle mainBundle] pathForResource:asset.mainBundleFilename ofType:asset.type];
+      NSString *bundlePath = [ABI43_0_0EXUpdatesUtils pathForBundledAsset:asset];
       NSAssert(bundlePath, @"NSBundle must contain the expected assets");
 
       if (!bundlePath) {

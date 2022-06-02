@@ -20,17 +20,17 @@ If you don't have an Android device available to test with, we recommend using t
 
 <ImageSpotlight alt="Android SDK location" src="/static/images/android-studio-sdk-location.png" containerStyle={{ paddingBottom: 0 }} />
 
-- If you are on macOS or Linux, add an environment variable pointing to the Android SDK location in `~/.bash_profile` (or `~/.zshenv` if you use Zsh) - eg. `export ANDROID_SDK=/your/path/here`. Copy and paste these two lines to do this automatically for Bash and Zsh:
+- If you are on macOS or Linux, add an [environment variable](https://developer.android.com/studio/command-line/variables#envar) pointing to the Android SDK location in `~/.bash_profile` (or `~/.zshenv` if you use Zsh) - eg. `export ANDROID_HOME=/your/path/here`. Copy and paste these two lines to do this automatically for Bash and Zsh:
 
 ```bash
-[ -d "$HOME/Library/Android/sdk" ] && ANDROID_SDK=$HOME/Library/Android/sdk || ANDROID_SDK=$HOME/Android/Sdk
-echo "export ANDROID_SDK=$ANDROID_SDK" >> ~/`[[ $SHELL == *"zsh" ]] && echo '.zshenv' || echo '.bash_profile'`
+[ -d "$HOME/Library/Android/sdk" ] && ANDROID_HOME=$HOME/Library/Android/sdk || ANDROID_HOME=$HOME/Android/Sdk
+echo "export ANDROID_HOME=$ANDROID_HOME" >> ~/`[[ $SHELL == *"zsh" ]] && echo '.zshenv' || echo '.bash_profile'`
 ```
 
 - On macOS, you will also need to add `platform-tools` to your `~/.bash_profile` (or `~/.zshenv` if you use Zsh) - eg. `export PATH=/your/path/here:$PATH`. Copy and paste this line to do this automatically for Bash and Zsh:
 
 ```bash
-echo "export PATH=$HOME/Library/Android/sdk/platform-tools:\$PATH" >> ~/`[[ $SHELL == *"zsh" ]] && echo '.zshenv' || echo '.bash_profile'`
+echo "export PATH=$ANDROID_HOME/platform-tools:\$PATH" >> ~/`[[ $SHELL == *"zsh" ]] && echo '.zshenv' || echo '.bash_profile'`
 ```
 
 - Reload the path environment variables by running:
@@ -43,11 +43,15 @@ source ~/`[[ $SHELL == *"zsh" ]] && echo '.zshenv' || echo '.bash_profile'`
 
 ## Step 2: Set up a virtual device
 
-- On the Android Studio main screen, click "Configure", then "AVD Manager" in the dropdown.
+- On the Android Studio main screen, click "More Actions", then "Virtual Device Manager" in the dropdown.
 
 <ImageSpotlight alt="Android Studio configure" src="/static/images/android-studio-configure.png" containerStyle={{ paddingBottom: 0 }} />
 
-- Press the "+ Create Virtual Device" button.
+If you already have a project, then the menu will show up under the three dots menu in the top right corner of the window.
+
+<ImageSpotlight alt="Android Studio configure alternate" src="/static/images/android-studio-configure-2.png" containerStyle={{ paddingBottom: 0 }} />
+
+- Press the "Create device" button.
 
 <ImageSpotlight alt="Android Studio create virtual device" src="/static/images/android-studio-avd-manager.png" containerStyle={{ paddingBottom: 0 }} />
 
@@ -65,14 +69,19 @@ This is because the adb version on your system is different from the adb version
 
 - Open the terminal and check the `adb` version on the system:
 
-`$adb version`
+```bash
+adb version
+```
 
 - And from the Android SDK platform-tool directory:
 
-`$cd ~/Library/Android/sdk/platform-tools`
-
-`$./adb version`
+```bash
+cd ~/Library/Android/sdk/platform-tools
+./adb version
+```
 
 - Copy `adb` from Android SDK directory to `usr/bin` directory:
 
-`$sudo cp ~/Library/Android/sdk/platform-tools/adb /usr/bin`
+```bash
+sudo cp ~/Library/Android/sdk/platform-tools/adb /usr/bin
+```

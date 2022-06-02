@@ -2,26 +2,28 @@
 title: Getting Started
 ---
 
-import ImageSpotlight from '~/components/plugins/ImageSpotlight'
-import TerminalBlock from '~/components/plugins/TerminalBlock';
+import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import SnackInline from '~/components/plugins/SnackInline';
 import { Tab, Tabs } from '~/components/plugins/Tabs';
+import { Terminal } from '~/ui/components/Snippet';
 
 Development builds of your app are Debug builds of your project that include the [`expo-dev-client`](https://www.npmjs.com/package/expo-dev-client) library, which allows you to develop and debug projects from expo-cli or a compatible server.
 
 `expo-dev-client` is designed to support any workflow, release process, or set of dependencies in the Expo / React Native ecosystem. Whatever the needs of your project, either now or in the future, you'll be able to create development builds for it and get the productivity and quality of life improvements of JavaScript-driven development.
 
-Of course, there are always tradeoffs, and that flexibility means there's not just one way to get started. To help you choose the options that are right for you, these icons indicate:
-
-
 ## Installing `expo-dev-client` in your project
 
 If you have used Expo before, especially with the Managed workflow, [config plugins](/guides/config-plugins.md) will let you customize your project from JavaScript without ever needing to directly modify Xcode or Android Studio projects.
 
-<TerminalBlock cmd={["expo init # if you don't already have a Managed Workflow project", "expo install expo-dev-client"]}  />
+<Terminal cmd={[
+  "# Only if you don't already have a Managed Workflow project",
+  "$ expo init",
+  "",
+  "# Install development client",
+  "$ expo install expo-dev-client"
+]} cmdCopy="expo init && expo install expo-dev-client" />
 
 > You can also improve error messages to be helpful during the development process. To do so, add `import 'expo-dev-client';` to the top of your `App.{js|tsx}` file. [Learn more](installation.md#add-better-error-handlers).
-
 
 ## Creating and installing your first development build
 
@@ -31,27 +33,27 @@ After you configure your project as covered by the [Building with EAS guide](eas
 
 <Tabs tabs={["For iOS Devices", "For Android Devices"]}>
 
-<Tab >
+<Tab>
 
 > Apple Developer membership required
 
 Register any devices you would like to develop on to your ad hoc provisioning profile:
-<TerminalBlock cmd={["eas device:create"]} />
+<Terminal cmd={["$ eas device:create"]} />
 
 Once you have registered all of the iOS devices you would like to develop on, you can build your app with:
-<TerminalBlock cmd={["eas build --profile development --platform ios"]} />
+<Terminal cmd={["$ eas build --profile development --platform ios"]} />
 
 </Tab>
 
-<Tab >
+<Tab>
 
-<TerminalBlock cmd={["eas build --profile development --platform android"]} />
+<Terminal cmd={["$ eas build --profile development --platform android"]} />
 
 </Tab>
 
 </Tabs>
 
-and installing the resulting build on your device.
+and [installing the resulting build on your device](/build/internal-distribution.md).
 
 
 ## Developing your app
@@ -62,7 +64,7 @@ But now that you have a development build of your project installed on your devi
 
 Instead, all you need to do to start developing is to run:
 
-<TerminalBlock packageName="expo-dev-client" cmd={["expo start --dev-client"]} />
+<Terminal cmd={["$ expo start --dev-client"]} />
 
 and scanning the resulting QR code with your system camera or QR code reader (if you want to develop against a physical device)
 
@@ -84,12 +86,12 @@ In Expo Go, you can already convert text to audio with [expo-speech](/versions/l
 
 First, install the library as you normally would:
 
-<TerminalBlock cmd={["yarn add @react-native-voice/voice"]} />
+<Terminal cmd={["$ yarn add @react-native-voice/voice"]} cmdCopy="yarn add @react-native-voice/voice" />
 
-then register the plugin in your app.json. Using this module will require new permissions, and the plugin can optionally customize the message displayed to users in the permission prompt.
+then register the plugin in your `app.json`. Using this module will require new permissions, and the plugin can optionally customize the message displayed to users in the permission prompt.
 
 <!-- prettier-ignore -->
-```js
+```json
 "expo": {
   "plugins": [
     [
@@ -119,7 +121,7 @@ import Voice, {
 } from "@react-native-voice/voice";
 
 export default function App() {
-  const [results, setResults] = useState([] as string[]);
+  const [results, setResults] = useState([]);
   const [isListening, setIsListening] = useState(false);
 
   useEffect(() => {
@@ -178,4 +180,4 @@ const styles = StyleSheet.create({
 
 ## Debugging your app
 
-When you need to, you can access the menu by pressing Cmd-d in Expo CLI or by shaking your phone or tablet. Here you'll be able to access all of the functions of your development build, access any debugging functionality you need, switch to a different version of your app, or [any capabilities you have added yourself](extending-the-dev-menu.md).
+When you need to, you can access the menu by pressing Cmd-d in Expo CLI or by shaking your phone or tablet. Here you'll be able to access all of the functions of your development build, access any debugging functionality you need, or switch to a different version of your app.

@@ -41,7 +41,7 @@ object VersionedUtils {
   // Update this value when hermes-engine getting updated.
   // Currently there is no way to retrieve Hermes bytecode version from Java,
   // as an alternative, we maintain the version by hand.
-  private const val HERMES_BYTECODE_VERSION = 76
+  private const val HERMES_BYTECODE_VERSION = 84
 
   private fun toggleExpoDevMenu() {
     val currentActivity = Exponent.instance.currentActivity
@@ -241,6 +241,7 @@ object VersionedUtils {
           instanceManagerBuilderProperties.manifest
         )
       )
+      .setMinNumShakes(100) // disable the RN dev menu
       .setInitialLifecycleState(LifecycleState.BEFORE_CREATE)
       .setCustomPackagerCommandHandlers(createPackagerCommandHelpers())
       .setJavaScriptExecutorFactory(createJSExecutorFactory(instanceManagerBuilderProperties))

@@ -1,11 +1,11 @@
 package versioned.host.exp.exponent.modules.api.reanimated;
 
+import android.util.Log;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.NativeViewHierarchyManager;
@@ -14,8 +14,6 @@ import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.UIManagerModuleListener;
 import versioned.host.exp.exponent.modules.api.reanimated.transitions.TransitionModule;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
 import javax.annotation.Nullable;
 
 @ReactModule(name = ReanimatedModule.NAME)
@@ -100,6 +98,21 @@ public class ReanimatedModule extends ReactContextBaseJavaModule
     }
 
     return mNodesManager;
+  }
+
+  @ReactMethod(isBlockingSynchronousMethod = true)
+  public void installTurboModule() {
+    // When debugging in chrome the JS context is not available.
+    // https://github.com/facebook/react-native/blob/v0.67.0-rc.6/ReactAndroid/src/main/java/com/facebook/react/modules/blob/BlobCollector.java#L25
+    Utils.isChromeDebugger = getReactApplicationContext().getJavaScriptContextHolder().get() == 0;
+
+    if (!Utils.isChromeDebugger) {
+      this.getNodesManager().initWithContext(getReactApplicationContext());
+    } else {
+      Log.w(
+          "[REANIMATED]",
+          "Unable to create Reanimated Native Module. You can ignore this message if you are using Chrome Debugger now.");
+    }
   }
 
   @ReactMethod
@@ -191,28 +204,6 @@ public class ReanimatedModule extends ReactContextBaseJavaModule
           @Override
           public void execute(NodesManager nodesManager) {
             nodesManager.detachEvent(viewTag, eventName, eventNodeID);
-          }
-        });
-  }
-
-  @ReactMethod
-  public void configureProps(ReadableArray nativePropsArray, ReadableArray uiPropsArray) {
-    int size = nativePropsArray.size();
-    final Set<String> nativeProps = new HashSet<>(size);
-    for (int i = 0; i < size; i++) {
-      nativeProps.add(nativePropsArray.getString(i));
-    }
-
-    size = uiPropsArray.size();
-    final Set<String> uiProps = new HashSet<>(size);
-    for (int i = 0; i < size; i++) {
-      uiProps.add(uiPropsArray.getString(i));
-    }
-    mOperations.add(
-        new UIThreadOperation() {
-          @Override
-          public void execute(NodesManager nodesManager) {
-            nodesManager.configureProps(nativeProps, uiProps);
           }
         });
   }

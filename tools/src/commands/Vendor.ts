@@ -1,8 +1,9 @@
 import { Command } from '@expo/commander';
-import os from 'os';
 import chalk from 'chalk';
 import inquirer from 'inquirer';
+import os from 'os';
 import path from 'path';
+
 import {
   Clone,
   CopyFiles,

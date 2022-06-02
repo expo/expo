@@ -6,7 +6,7 @@ export const PageApiVersionContext = createContext({
   version: 'latest',
   /** If the current URL has a version defined */
   hasVersion: false,
-  /** Change the URL to the selecte version  */
+  /** Change the URL to the select version  */
   setVersion: (newVersion: string): void => {
     throw new Error('PageApiVersionContext not found');
   },

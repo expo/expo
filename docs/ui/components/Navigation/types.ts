@@ -23,8 +23,8 @@ export type Section = Node<
   {
     /** The groups or pages it should render within the collapsible section */
     children: (Group | Page)[];
-    /** If the section should be rendered as "closed" by default */
-    collapsed?: boolean;
+    /** If the section should be rendered as "closed" by default. Defaults to false. */
+    expanded?: boolean;
   }
 >;
 

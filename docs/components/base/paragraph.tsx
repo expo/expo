@@ -61,22 +61,36 @@ export const PDIV: React.FC = ({ children }) => {
 };
 
 const STYLES_BLOCKQUOTE = css`
-  ${paragraph}
-  display: grid;
-  grid-template-columns: auto 1fr;
-  grid-gap: 12px;
-  padding: 12px;
-  margin-bottom: 1rem;
-  border-left: 4px solid ${theme.border.default};
-  background: ${theme.background.secondary};
-  border-radius: 4px;
+  & {
+    ${paragraph}
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-gap: 12px;
+    padding: 12px;
+    margin-bottom: 1rem;
+    border-left: 4px solid ${theme.border.default};
+    background: ${theme.background.secondary};
+    border-radius: 4px;
 
-  div {
-    margin: 0;
+    div {
+      margin: 0;
+    }
+
+    code {
+      background-color: ${theme.background.tertiary};
+    }
   }
 
-  code {
-    background-color: ${theme.background.tertiary};
+  table & {
+    margin: 0.5rem 0;
+
+    &:first-child {
+      margin-top: 0;
+    }
+
+    &:last-child {
+      margin-bottom: 0;
+    }
   }
 `;
 

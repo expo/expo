@@ -14,13 +14,9 @@ RCT_EXTERN_METHOD(dispatchCallableAsync:(NSString *)callableId args:(NSDictionar
 RCT_EXTERN_METHOD(fetchDataSourceAsync:(NSString *)dataSourceId resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject)
 RCT_EXTERN_METHOD(hideMenu)
 RCT_EXTERN_METHOD(setOnboardingFinished:(BOOL)finished)
-RCT_EXTERN_METHOD(getSettingsAsync:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject)
-RCT_EXTERN_METHOD(setSettingsAsync:(NSDictionary *)dict resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject)
 RCT_EXTERN_METHOD(openDevMenuFromReactNative)
 RCT_EXTERN_METHOD(onScreenChangeAsync:(NSString *)currentScreen resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject)
-RCT_EXTERN_METHOD(getAppInfoAsync:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject)
-RCT_EXTERN_METHOD(getDevSettingsAsync:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject)
-
+RCT_EXTERN_METHOD(loadFontsAsync:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject)
 
 RCT_EXPORT_METHOD(copyToClipboardAsync:(NSString *)content
                   resolver:(RCTPromiseResolveBlock)resolve
@@ -30,5 +26,9 @@ RCT_EXPORT_METHOD(copyToClipboardAsync:(NSString *)content
   clipboard.string = (content ?: @"");
   resolve(nil);
 }
+
+RCT_EXTERN_METHOD(fireCallback:(NSString *)name
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
 
 @end

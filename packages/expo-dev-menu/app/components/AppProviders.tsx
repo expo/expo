@@ -1,17 +1,33 @@
+import { ThemeProvider } from 'expo-dev-client-components';
 import * as React from 'react';
 
 import { AppInfoContextProvider, AppInfoContextProviderProps } from '../hooks/useAppInfo';
 import { BottomSheetProvider } from '../hooks/useBottomSheet';
+import { DevSettingsProviderProps, DevSettingsProvider } from '../hooks/useDevSettings';
+import { MenuPreferencesProvider, MenuPreferencesProviderProps } from '../hooks/useMenuPreferences';
 
 export type AppProvidersProps = {
   children?: React.ReactNode;
-  initialAppInfo?: AppInfoContextProviderProps['initialAppInfo'];
+  appInfo?: AppInfoContextProviderProps['appInfo'];
+  devSettings?: DevSettingsProviderProps['devSettings'];
+  menuPreferences?: MenuPreferencesProviderProps['menuPreferences'];
 };
 
-export function AppProviders({ children, initialAppInfo }: AppProvidersProps) {
+export function AppProviders({
+  children,
+  appInfo,
+  devSettings,
+  menuPreferences,
+}: AppProvidersProps) {
   return (
-    <AppInfoContextProvider initialAppInfo={initialAppInfo}>
-      <BottomSheetProvider>{children}</BottomSheetProvider>
-    </AppInfoContextProvider>
+    <DevSettingsProvider devSettings={devSettings}>
+      <AppInfoContextProvider appInfo={appInfo}>
+        <MenuPreferencesProvider menuPreferences={menuPreferences}>
+          <ThemeProvider themePreference="no-preference">
+            <BottomSheetProvider>{children}</BottomSheetProvider>
+          </ThemeProvider>
+        </MenuPreferencesProvider>
+      </AppInfoContextProvider>
+    </DevSettingsProvider>
   );
 }

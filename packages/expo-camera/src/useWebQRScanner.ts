@@ -13,7 +13,7 @@ const qrWorkerMethod = ({ data, width, height }: ImageData): any => {
   let parsed;
   try {
     parsed = JSON.parse(decoded);
-  } catch (err) {
+  } catch {
     parsed = decoded;
   }
 

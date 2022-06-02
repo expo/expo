@@ -2,6 +2,8 @@
 title: Using expo-updates
 ---
 
+> This guide references Classic Updates service. As of Dec 2021, we started previewing the next generation of our updates service: EAS Update. [Learn more](/eas-update).
+
 EAS Build includes some special affordances for Expo's [`expo-updates`](/versions/latest/sdk/updates.md) library. In particular, you can configure the release channel in **eas.json** and EAS Build will take care of updating it in your native project at build time. Not sure what a release channel is? [Learn more about release channels](/distribution/release-channels.md). This document covers concerns specific to using `expo-updates` with EAS Build; for more general information about configuring `expo-updates`, refer to the ["Configuring Updates" guide](/guides/configuring-updates.md).
 
 ## Setting the release channel for a build profile
@@ -28,7 +30,7 @@ The following example demonstrates how you might use the `"production"` release 
 
 Your native runtime may change on each build, depending on whether you modify the code in a way that changes the API contract with JavaScript. If you publish a JavaScript bundle to a binary with an incompatible native runtime (for example, a function that the JavaScript bundle expects to exist does not exist) then your app may not work as expected or it may crash.
 
-We recommend using a different [runtime version](/distribution/runtime-versions.md) for each binary version of your app. Any time you change the native runtime (in managed apps, this happens if when you add or remove a native library, or modify **app.json**), you should increment the runtime version.
+We recommend using a different [runtime version](/distribution/runtime-versions.md) for each binary version of your app. Any time you change the native runtime (in managed apps, this happens when you add or remove a native library, or modify **app.json**), you should increment the runtime version.
 
 ## Previewing updates in development builds
 

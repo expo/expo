@@ -138,6 +138,17 @@ export declare class SQLError {
 // @docsMissing
 export interface WebSQLDatabase extends Database {
   exec(queries: Query[], readOnly: boolean, callback: SQLiteCallback): void;
+
+  /**
+   * Close the database.
+   */
+  closeAsync(): void;
+
+  /**
+   * Delete the database file.
+   * > The database has to be closed prior to deletion.
+   */
+  deleteAsync(): Promise<void>;
 }
 
 // @docsMissing

@@ -7,6 +7,8 @@ import { CheckCircle } from '~/components/icons/CheckCircle';
 import { PendingCircle } from '~/components/icons/PendingCircle';
 import { XCircle } from '~/components/icons/XCircle';
 import { ElementType } from '~/types/common';
+import { Cell, HeaderCell, Row, Table, TableHead } from '~/ui/components/Table';
+import { TableLayout } from '~/ui/components/Table/types';
 
 const STYLES_TITLE = css`
   margin-bottom: 1rem;
@@ -19,10 +21,6 @@ const STYLES_LINK = css`
   text-align: left;
   grid-gap: 8px;
   color: ${theme.link.default};
-`;
-
-const STYLES_TABLE = css`
-  table-layout: fixed;
 `;
 
 const platforms = [
@@ -70,31 +68,29 @@ type Props = {
 
 type PlatformProps = Omit<Props, 'title'>;
 
-export default class PlatformsSection extends React.Component<Props> {
-  render() {
-    return (
-      <div>
-        <H4 css={STYLES_TITLE}>{this.props.title || 'Platform Compatibility'}</H4>
-        <table css={STYLES_TABLE}>
-          <thead>
-            <tr>
-              {platforms.map(({ title }) => (
-                <th key={title}>{title}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              {platforms.map(platform => (
-                <td
-                  key={platform.title}
-                  {...getInfo(this.props[platform.propName as keyof PlatformProps], platform)}
-                />
-              ))}
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    );
-  }
-}
+const PlatformsSection = (props: Props) => (
+  <>
+    <H4 css={STYLES_TITLE}>{props.title || 'Platform Compatibility'}</H4>
+    <Table layout={TableLayout.Fixed}>
+      <TableHead>
+        <Row>
+          {platforms.map(({ title }) => (
+            <HeaderCell key={title}>{title}</HeaderCell>
+          ))}
+        </Row>
+      </TableHead>
+      <tbody>
+        <Row>
+          {platforms.map(platform => (
+            <Cell
+              key={platform.title}
+              {...getInfo(props[platform.propName as keyof PlatformProps], platform)}
+            />
+          ))}
+        </Row>
+      </tbody>
+    </Table>
+  </>
+);
+
+export default PlatformsSection;

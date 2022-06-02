@@ -1,4 +1,4 @@
-import { Audio, Video } from 'expo-av';
+import { Video } from 'expo-av';
 import { Camera } from 'expo-camera';
 import React from 'react';
 import { Platform } from 'react-native';
@@ -30,10 +30,10 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
 
     t.beforeAll(async () => {
       await TestUtils.acceptPermissionsAndRunCommandAsync(() => {
-        return Camera.requestPermissionsAsync();
+        return Camera.requestCameraPermissionsAsync();
       });
       await TestUtils.acceptPermissionsAndRunCommandAsync(() => {
-        return Audio.requestPermissionsAsync();
+        return Camera.requestMicrophonePermissionsAsync();
       });
 
       originalTimeout = t.jasmine.DEFAULT_TIMEOUT_INTERVAL;
@@ -45,13 +45,27 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
     });
 
     t.beforeEach(async () => {
-      const { status } = await Camera.getPermissionsAsync();
+      const { status } = await Camera.getCameraPermissionsAsync();
       t.expect(status).toEqual('granted');
     });
 
     t.afterEach(async () => {
       instance = null;
       await cleanupPortal();
+    });
+
+    t.describe('Camera.getCameraPermissionsAsync', () => {
+      t.it('is granted', async () => {
+        const { status } = await Camera.getCameraPermissionsAsync();
+        t.expect(status).toEqual('granted');
+      });
+    });
+
+    t.describe('Camera.getMicrophonePermissionsAsync', () => {
+      t.it('is granted', async () => {
+        const { status } = await Camera.getMicrophonePermissionsAsync();
+        t.expect(status).toEqual('granted');
+      });
     });
 
     if (Platform.OS === 'android') {

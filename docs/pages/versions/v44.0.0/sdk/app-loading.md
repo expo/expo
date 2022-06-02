@@ -1,6 +1,6 @@
 ---
 title: AppLoading
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-44/packages/expo/src/launch'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-44/packages/expo-app-loading'
 ---
 
 import APISection from '~/components/plugins/APISection';

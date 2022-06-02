@@ -5,11 +5,11 @@ Provides GLView that acts as OpenGL ES render target and gives GL context object
 # API documentation
 
 - [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/gl-view.md)
-- [Documentation for the latest stable release](https://docs.expo.io/versions/latest/sdk/gl-view/)
+- [Documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/gl-view/)
 
 # Installation in managed Expo projects
 
-For [managed](https://docs.expo.io/versions/latest/introduction/managed-vs-bare/) Expo projects, please follow the installation instructions in the [API documentation for the latest stable release](https://docs.expo.io/versions/latest/sdk/gl-view/).
+For [managed](https://docs.expo.dev/versions/latest/introduction/managed-vs-bare/) Expo projects, please follow the installation instructions in the [API documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/gl-view/).
 
 # Installation in bare React Native projects
 
@@ -27,12 +27,20 @@ expo install expo-gl
 
 ### Compatibility
 
-To use version `9.0.0` or newer of `expo-gl` you will need to use at least version `0.63.1` of React Native.
+To use version `11.2.0` or newer of `expo-gl` you will need to use at least version `0.68.0` of React Native.
 
-| expo-gl | react-native |
-| ------- | ------------ |
-| <=8.x.x | \*           |
-| >=9.0.0 | >=0.63.1     |
+| expo-gl            | react-native         |
+| ------------------ | -------------------- |
+| <=8.x.x            | \*                   |
+| >=9.0.0 && <11.2.0 | >=0.63.1 &&  <0.65.0 |
+| >=11.2.0           | >=0.68.0             |
+
+To use reanimated worklets you will need compatible version of `react-native-reanimated`.
+
+| expo-gl            | react-native-reanimated |
+| ------------------ | ----------------------- |
+| <11.3.0            | <=2.8.0                 |
+| >=11.3.0           | >2.8.0                  |
 
 ### Configure for iOS
 

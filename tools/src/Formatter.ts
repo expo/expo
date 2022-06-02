@@ -1,5 +1,5 @@
-import path from 'path';
 import chalk from 'chalk';
+import path from 'path';
 import terminalLink from 'terminal-link';
 
 import { GitLog, GitFileLog } from './Git';

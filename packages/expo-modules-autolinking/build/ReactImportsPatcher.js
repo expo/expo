@@ -70,9 +70,9 @@ async function patchFileAsync(headerSet, file, dryRun) {
     });
     if (changed) {
         console.log(`Patching imports for file: ${file}`);
-    }
-    if (!dryRun) {
-        await fs_extra_1.default.writeFile(file, transformContent);
+        if (!dryRun) {
+            await fs_extra_1.default.writeFile(file, transformContent);
+        }
     }
 }
 exports.patchFileAsync = patchFileAsync;

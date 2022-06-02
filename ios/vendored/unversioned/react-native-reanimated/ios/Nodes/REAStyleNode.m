@@ -1,6 +1,5 @@
-#import "REAStyleNode.h"
-
-#import "REANodesManager.h"
+#import <RNReanimated/REANodesManager.h>
+#import <RNReanimated/REAStyleNode.h>
 
 @implementation REAStyleNode {
   NSMutableDictionary<NSString *, REANodeID> *_styleConfig;

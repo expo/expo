@@ -485,7 +485,7 @@ Plugins will generally have `@expo/config-plugins` installed as a dependency, an
 
 ### Tooling
 
-We highly recommend installing the [Expo config VSCode plugin](https://marketplace.visualstudio.com/items?itemName=byCedric.vscode-expo) as this will perform automatic validation on the plugins and surface error information along with other quality of life improvements for Config Plugin development.
+We highly recommend installing the [Expo config VS Code plugin](https://marketplace.visualstudio.com/items?itemName=byCedric.vscode-expo) as this will perform automatic validation on the plugins and surface error information along with other quality of life improvements for Config Plugin development.
 
 ### Setting up a playground environment
 
@@ -845,7 +845,7 @@ Introspection works by creating custom base mods that work like the default base
 
 As a real-world example, introspection is used by `eas-cli` to determine what the final iOS entitlements will be in a managed app, so it can sync them with the Apple Developer Portal before building. Introspection can also be used as a handy debugging and development tool.
 
-<!-- TODO: Link to Vscode extension after preview feature lands -->
+<!-- TODO: Link to VS Code extension after preview feature lands -->
 
 ## Legacy plugins
 

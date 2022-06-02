@@ -11,7 +11,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 > **Note:** Session tracking may not work correctly when running Experiences in the main Expo app. It will work correctly if you create a standalone app.
 
-<PlatformsSection android emulator ios simulator web={{ pending: 'https://github.com/expo/expo/issues/6887' }} />
+<PlatformsSection android emulator ios simulator />
 
 ## Installation
 

@@ -4,7 +4,7 @@ Provides a native interface for creating strong random bytes. With `Random` you 
 
 # Installation in managed Expo projects
 
-For [managed](https://docs.expo.io/versions/latest/introduction/managed-vs-bare/) Expo projects, please follow the installation instructions in the [API documentation for the latest stable release](https://docs.expo.io/versions/latest/sdk/random/).
+For [managed](https://docs.expo.dev/versions/latest/introduction/managed-vs-bare/) Expo projects, please follow the installation instructions in the [API documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/random/).
 
 You can add a polyfill for the web's `crypto.getRandomValues` by installing [expo-standard-web-crypto](https://github.com/expo/expo/tree/main/packages/expo-standard-web-crypto) and importing it in SDK 39 and higher:
 

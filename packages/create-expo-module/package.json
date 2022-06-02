@@ -1,6 +1,6 @@
 {
   "name": "create-expo-module",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "The script to create the Expo module",
   "main": "build/create-expo-module.js",
   "types": "build/create-expo-module.d.ts",
@@ -36,7 +36,7 @@
     "@expo/spawn-async": "^1.5.0",
     "commander": "^8.3.0",
     "download-tarball": "^2.0.0",
-    "ejs": "^3.1.6",
+    "ejs": "^3.1.7",
     "fs-extra": "^10.0.0",
     "prompts": "^2.4.2"
   },

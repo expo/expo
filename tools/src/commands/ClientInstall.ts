@@ -1,12 +1,12 @@
-import chalk from 'chalk';
 import { Command } from '@expo/commander';
 import spawnAsync from '@expo/spawn-async';
 import { Android, Config, Simulator, Versions } from '@expo/xdl';
+import chalk from 'chalk';
 
 import { STAGING_API_HOST } from '../Constants';
+import { Platform, getNewestSDKVersionAsync } from '../ProjectVersions';
 import askForPlatformAsync from '../utils/askForPlatformAsync';
 import askForSDKVersionAsync from '../utils/askForSDKVersionAsync';
-import { Platform, getNewestSDKVersionAsync } from '../ProjectVersions';
 
 type ActionOptions = {
   platform?: Platform;

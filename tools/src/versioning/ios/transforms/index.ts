@@ -1,5 +1,5 @@
-import path from 'path';
 import chalk from 'chalk';
+import path from 'path';
 
 import { VERSIONED_RN_IOS_DIR } from '../../../Constants';
 
@@ -32,7 +32,7 @@ export async function runTransformPipelineAsync({ pipeline, targetPath, input }:
     .filter((transform) => pathMatchesTransformPaths(targetPath, transform.paths))
     .forEach((transform) => {
       output = output.replace(transform.replace, (match, ...args) => {
-        const { leftContext } = (RegExp as unknown) as { leftContext: string };
+        const { leftContext } = RegExp as unknown as { leftContext: string };
         const result = transform.with.replace(/\$[1-9]/g, (m) => args[parseInt(m[1], 10) - 1]);
 
         matches.push({

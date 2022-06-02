@@ -1,6 +1,7 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 
 #import <EXUpdates/EXUpdatesConfig.h>
+#import <EXUpdates/EXUpdatesDatabase.h>
 #import <EXUpdates/EXUpdatesUpdate.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -33,6 +34,15 @@ typedef void (^EXUpdatesFileDownloaderErrorBlock)(NSError *error);
                      errorBlock:(EXUpdatesFileDownloaderErrorBlock)errorBlock;
 
 + (dispatch_queue_t)assetFilesQueue;
+
+/**
+ * Get extra (stateful) headers to pass into `downloadManifestFromURL:`
+ * Must be called on the database queue
+ */
++ (NSDictionary *)extraHeadersWithDatabase:(EXUpdatesDatabase *)database
+                                    config:(EXUpdatesConfig *)config
+                            launchedUpdate:(nullable EXUpdatesUpdate *)launchedUpdate
+                            embeddedUpdate:(nullable EXUpdatesUpdate *)embeddedUpdate;
 
 /**
  * For test purposes; shouldn't be needed in application code

@@ -1,22 +1,25 @@
 {
   "name": "stripe-react-native",
-  "version": "0.2.3",
+  "version": "0.6.0",
   "summary": "Stripe SDK for React Native",
   "homepage": "https://github.com/stripe/stripe-react-native/#readme",
   "license": "MIT",
   "authors": "Stripe",
   "platforms": {
-    "ios": "11.0"
+    "ios": "12.0"
   },
   "source": {
     "git": "https://github.com/stripe/stripe-react-native.git",
-    "tag": "0.2.3"
+    "tag": "0.6.0"
   },
   "source_files": "ios/**/*.{h,m,mm,swift}",
   "dependencies": {
     "React-Core": [],
     "Stripe": [
-      "~> 21.9.0"
+      "~> 22.0.0"
+    ],
+    "StripeConnections": [
+      "~> 22.0.0"
     ]
   },
   "pod_target_xcconfig": {

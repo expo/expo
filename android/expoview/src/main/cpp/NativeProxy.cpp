@@ -25,6 +25,14 @@ namespace reanimated {
 using namespace facebook;
 using namespace react;
 
+NativeProxy::~NativeProxy(){
+  runtime_->global().setProperty(
+      *runtime_,
+      jsi::PropNameID::forAscii(*runtime_, "__reanimatedModuleProxy"),
+      jsi::Value::undefined()
+  );
+}
+
 NativeProxy::NativeProxy(
     jni::alias_ref<NativeProxy::javaobject> jThis,
     jsi::Runtime *rt,
@@ -67,7 +75,7 @@ void NativeProxy::installJSIBindings() {
 
   auto getCurrentTime = [this]() {
     auto method =
-        javaPart_->getClass()->getMethod<local_ref<JString>()>("getUpTime");
+        javaPart_->getClass()->getMethod<local_ref<JString>()>("getUptime");
     local_ref<JString> output = method(javaPart_.get());
     return static_cast<double>(
         std::strtoll(output->toStdString().c_str(), NULL, 10));
@@ -117,22 +125,43 @@ void NativeProxy::installJSIBindings() {
     scrollTo(viewTag, x, y, animated);
   };
 
+  auto registerSensorFunction =
+      [this](int sensorType, int interval, std::function<void(double[])> setter)
+      -> int {
+    return this->registerSensor(sensorType, interval, std::move(setter));
+  };
+  auto unregisterSensorFunction = [this](int sensorId) {
+    unregisterSensor(sensorId);
+  };
+
   auto setGestureStateFunction = [this](int handlerTag, int newState) -> void {
     setGestureState(handlerTag, newState);
   };
-
 #if FOR_HERMES
+  auto config =
+      ::hermes::vm::RuntimeConfig::Builder().withEnableSampleProfiling(false);
   std::shared_ptr<jsi::Runtime> animatedRuntime =
-      jsc::makeJSCRuntime();
+      facebook::hermes::makeHermesRuntime(config.build());
 #else
   std::shared_ptr<jsi::Runtime> animatedRuntime =
       facebook::jsc::makeJSCRuntime();
 #endif
+  auto workletRuntimeValue = runtime_->global()
+    .getProperty(*runtime_, "ArrayBuffer")
+    .asObject(*runtime_)
+    .asFunction(*runtime_)
+    .callAsConstructor(*runtime_, {static_cast<double>(sizeof(void*))});
+  uintptr_t* workletRuntimeData = reinterpret_cast<uintptr_t*>(
+    workletRuntimeValue
+      .getObject(*runtime_)
+      .getArrayBuffer(*runtime_)
+      .data(*runtime_));
+  workletRuntimeData[0] = reinterpret_cast<uintptr_t>(animatedRuntime.get());
+
   runtime_->global().setProperty(
       *runtime_,
       "_WORKLET_RUNTIME",
-      static_cast<double>(
-          reinterpret_cast<std::uintptr_t>(animatedRuntime.get())));
+      workletRuntimeValue);
 
   std::shared_ptr<ErrorHandler> errorHandler =
       std::make_shared<AndroidErrorHandler>(scheduler_);
@@ -145,6 +174,12 @@ void NativeProxy::installJSIBindings() {
 
   auto notifyAboutEnd = [=](int tag, bool isCancelled) {
     this->layoutAnimations->cthis()->notifyAboutEnd(tag, (isCancelled) ? 1 : 0);
+  };
+
+  auto configurePropsFunction = [=](jsi::Runtime &rt,
+                                    const jsi::Value &uiProps,
+                                    const jsi::Value &nativeProps) {
+    this->configureProps(rt, uiProps, nativeProps);
   };
 
   std::shared_ptr<LayoutAnimationsProxy> layoutAnimationsProxy =
@@ -161,8 +196,10 @@ void NativeProxy::installJSIBindings() {
       scrollToFunction,
       measuringFunction,
       getCurrentTime,
+      registerSensorFunction,
+      unregisterSensorFunction,
       setGestureStateFunction,
-  };
+      configurePropsFunction};
 
   auto module = std::make_shared<NativeReanimatedModule>(
       jsCallInvoker_,
@@ -175,16 +212,19 @@ void NativeProxy::installJSIBindings() {
 
   _nativeReanimatedModule = module;
 
-  this->registerEventHandler([module, getCurrentTime](
+  std::weak_ptr<NativeReanimatedModule> weakModule = module;
+  this->registerEventHandler([weakModule, getCurrentTime](
                                  std::string eventName,
                                  std::string eventAsString) {
-    jsi::Object global = module->runtime->global();
-    jsi::String eventTimestampName =
-        jsi::String::createFromAscii(*module->runtime, "_eventTimestamp");
-    global.setProperty(*module->runtime, eventTimestampName, getCurrentTime());
-    module->onEvent(eventName, eventAsString);
-    global.setProperty(
-        *module->runtime, eventTimestampName, jsi::Value::undefined());
+    if (auto module = weakModule.lock()) {
+      jsi::Object global = module->runtime->global();
+      jsi::String eventTimestampName =
+          jsi::String::createFromAscii(*module->runtime, "_eventTimestamp");
+      global.setProperty(*module->runtime, eventTimestampName, getCurrentTime());
+      module->onEvent(eventName, eventAsString);
+      global.setProperty(
+          *module->runtime, eventTimestampName, jsi::Value::undefined());
+    }
   });
 
   runtime_->global().setProperty(
@@ -264,10 +304,46 @@ std::vector<std::pair<std::string, double>> NativeProxy::measure(int viewTag) {
   return result;
 }
 
+int NativeProxy::registerSensor(
+    int sensorType,
+    int interval,
+    std::function<void(double[])> setter) {
+  static auto method =
+      javaPart_->getClass()->getMethod<int(int, int, SensorSetter::javaobject)>(
+          "registerSensor");
+  return method(
+      javaPart_.get(),
+      sensorType,
+      interval,
+      SensorSetter::newObjectCxxArgs(std::move(setter)).get());
+}
+void NativeProxy::unregisterSensor(int sensorId) {
+  auto method = javaPart_->getClass()->getMethod<void(int)>("unregisterSensor");
+  method(javaPart_.get(), sensorId);
+}
+
 void NativeProxy::setGestureState(int handlerTag, int newState) {
   auto method =
       javaPart_->getClass()->getMethod<void(int, int)>("setGestureState");
   method(javaPart_.get(), handlerTag, newState);
+}
+
+void NativeProxy::configureProps(
+    jsi::Runtime &rt,
+    const jsi::Value &uiProps,
+    const jsi::Value &nativeProps) {
+  auto method = javaPart_->getClass()
+                    ->getMethod<void(
+                        ReadableNativeArray::javaobject,
+                        ReadableNativeArray::javaobject)>("configureProps");
+  method(
+      javaPart_.get(),
+      ReadableNativeArray::newObjectCxxArgs(
+          std::move(jsi::dynamicFromValue(rt, uiProps)))
+          .get(),
+      ReadableNativeArray::newObjectCxxArgs(
+          std::move(jsi::dynamicFromValue(rt, nativeProps)))
+          .get());
 }
 
 } // namespace reanimated

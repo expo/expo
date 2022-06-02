@@ -51,7 +51,6 @@ type PropsType = ViewProps & {
   onAdViewWillPresentScreen?: () => void;
   onAdViewWillDismissScreen?: () => void;
   onAdViewDidDismissScreen?: () => void;
-  onAdViewWillLeaveApplication?: () => void;
 };
 
 type StateType = {
@@ -100,7 +99,6 @@ export default class AdMobBanner extends React.Component<PropsType, StateType> {
           onAdViewWillPresentScreen={this.props.onAdViewWillPresentScreen}
           onAdViewWillDismissScreen={this.props.onAdViewWillDismissScreen}
           onAdViewDidDismissScreen={this.props.onAdViewDidDismissScreen}
-          onAdViewWillLeaveApplication={this.props.onAdViewWillLeaveApplication}
         />
       </View>
     );

@@ -85,6 +85,10 @@ export type AuthRequestPromptOptions = Omit<WebBrowserOpenOptions, 'windowFeatur
    */
   useProxy?: boolean;
   /**
+   * Project name to use for the \`auth.expo.io\` proxy when `useProxy` is true.
+   */
+  projectNameForProxy?: string;
+  /**
    * URL options to be used when creating the redirect URL for the auth proxy.
    */
   proxyOptions?: Omit<CreateURLOptions, 'queryParams'> & { path?: string };
@@ -120,7 +124,7 @@ export interface AuthRequestConfig {
   clientId: string;
   /**
    * After completing an interaction with a resource owner the
-   * server will redirect to this URI. Learn more about [linking in Expo](https://docs.expo.io/versions/latest/workflow/linking/).
+   * server will redirect to this URI. Learn more about [linking in Expo](https://docs.expo.dev/versions/latest/workflow/linking/).
    *
    * [Section 3.1.2](https://tools.ietf.org/html/rfc6749#section-3.1.2)
    */

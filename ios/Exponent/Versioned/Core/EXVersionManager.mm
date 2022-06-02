@@ -38,6 +38,7 @@
 #import <ExpoModulesCore/EXDefines.h>
 #import <ExpoModulesCore/EXModuleRegistry.h>
 #import <ExpoModulesCore/EXModuleRegistryDelegate.h>
+#import <ExpoModulesCore/EXModuleRegistryHolderReactModule.h>
 #import <ExpoModulesCore/EXNativeModulesProxy.h>
 #import <EXMediaLibrary/EXMediaLibraryImageLoader.h>
 #import <EXFileSystem/EXFileSystem.h>
@@ -137,7 +138,9 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
 #if DEBUG || RCT_DEV
   if ([self _isDevModeEnabledForBridge:bridge]) {
     // Set the bundle url for the packager connection manually
-    [[RCTPackagerConnection sharedPackagerConnection] setBundleURL:[bridge bundleURL]];
+    NSURL *bundleURL = [bridge bundleURL];
+    NSString *packagerServerHostPort = [NSString stringWithFormat:@"%@:%@", bundleURL.host, bundleURL.port];
+    [[RCTPackagerConnection sharedPackagerConnection] reconnect:packagerServerHostPort];
   }
 #endif
 
@@ -376,8 +379,13 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
                                                                            scopeKey:self.manifest.scopeKey
                                                                            manifest:self.manifest
                                                                  withKernelServices:services];
-  NSArray<id<RCTBridgeModule>> *expoModules = [moduleRegistryAdapter extraModulesForModuleRegistry:moduleRegistry];
-  [extraModules addObjectsFromArray:expoModules];
+
+  // Adding EXNativeModulesProxy with the custom moduleRegistry.
+  EXNativeModulesProxy *expoNativeModulesProxy = [[EXNativeModulesProxy alloc] initWithCustomModuleRegistry:moduleRegistry];
+  [extraModules addObject:expoNativeModulesProxy];
+
+  // Adding the way to access the module registry from RCTBridgeModules.
+  [extraModules addObject:[[EXModuleRegistryHolderReactModule alloc] initWithModuleRegistry:moduleRegistry]];
 
   if (!RCTTurboModuleEnabled()) {
     [extraModules addObject:[self getModuleInstanceFromClass:[self getModuleClassFromName:"DevSettings"]]];
@@ -470,13 +478,13 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
 {
   // Standard
   if (moduleClass == RCTImageLoader.class) {
-    return [[moduleClass alloc] initWithRedirectDelegate:nil loadersProvider:^NSArray<id<RCTImageURLLoader>> *{
+    return [[moduleClass alloc] initWithRedirectDelegate:nil loadersProvider:^NSArray<id<RCTImageURLLoader>> *(RCTModuleRegistry *) {
       return @[[RCTLocalAssetImageLoader new], [EXMediaLibraryImageLoader new]];
-    } decodersProvider:^NSArray<id<RCTImageDataDecoder>> *{
+    } decodersProvider:^NSArray<id<RCTImageDataDecoder>> *(RCTModuleRegistry *) {
       return @[[RCTGIFImageDecoder new]];
     }];
   } else if (moduleClass == RCTNetworking.class) {
-    return [[moduleClass alloc] initWithHandlersProvider:^NSArray<id<RCTURLRequestHandler>> *{
+    return [[moduleClass alloc] initWithHandlersProvider:^NSArray<id<RCTURLRequestHandler>> *(RCTModuleRegistry *) {
       return @[
         [RCTHTTPRequestHandler new],
         [RCTDataRequestHandler new],
@@ -533,7 +541,12 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
 
   [bridge moduleForClass:[RCTEventDispatcher class]];
   RCTEventDispatcher *eventDispatcher = [REAEventDispatcher new];
-  [eventDispatcher setBridge:bridge];
+  RCTCallableJSModules *callableJSModules = [RCTCallableJSModules new];
+  [bridge setValue:callableJSModules forKey:@"_callableJSModules"];
+  [callableJSModules setBridge:bridge];
+  [eventDispatcher setValue:callableJSModules forKey:@"_callableJSModules"];
+  [eventDispatcher setValue:bridge forKey:@"_bridge"];
+  [eventDispatcher initialize];
   [bridge updateModuleWithInstance:eventDispatcher];
 
   EX_WEAKIFY(self);
@@ -543,10 +556,19 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
     }
     EX_ENSURE_STRONGIFY(self);
     auto reanimatedModule = reanimated::createReanimatedModule(bridge, bridge.jsCallInvoker);
+    auto workletRuntimeValue = runtime
+        .global()
+        .getProperty(runtime, "ArrayBuffer")
+        .asObject(runtime)
+        .asFunction(runtime)
+        .callAsConstructor(runtime, {static_cast<double>(sizeof(void*))});
+    uintptr_t* workletRuntimeData = reinterpret_cast<uintptr_t*>(
+        workletRuntimeValue.getObject(runtime).getArrayBuffer(runtime).data(runtime));
+    workletRuntimeData[0] = reinterpret_cast<uintptr_t>(reanimatedModule->runtime.get());
     runtime.global().setProperty(
         runtime,
         "_WORKLET_RUNTIME",
-        static_cast<double>(reinterpret_cast<std::uintptr_t>(reanimatedModule->runtime.get())));
+        workletRuntimeValue);
 
     runtime.global().setProperty(
          runtime,

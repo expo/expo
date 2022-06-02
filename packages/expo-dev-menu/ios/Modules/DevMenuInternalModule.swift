@@ -1,5 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
+
 import SafariServices
+import React
 
 @objc(DevMenuInternalModule)
 public class DevMenuInternalModule: NSObject, RCTBridgeModule {
@@ -23,7 +25,6 @@ public class DevMenuInternalModule: NSObject, RCTBridgeModule {
   }
 
   // MARK: JavaScript API
-
   @objc
   public func constantsToExport() -> [AnyHashable: Any] {
 #if targetEnvironment(simulator)
@@ -31,7 +32,9 @@ public class DevMenuInternalModule: NSObject, RCTBridgeModule {
 #else
     let doesDeviceSupportKeyCommands = false
 #endif
-    return ["doesDeviceSupportKeyCommands": doesDeviceSupportKeyCommands]
+    return [
+      "doesDeviceSupportKeyCommands": doesDeviceSupportKeyCommands,
+    ]
   }
 
   @objc
@@ -60,6 +63,12 @@ public class DevMenuInternalModule: NSObject, RCTBridgeModule {
     manager.dispatchCallable(withId: callableId, args: args)
     resolve(nil)
   }
+  
+  @objc
+  func loadFontsAsync(_ resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
+    manager.loadFonts()
+    resolve(nil)
+  }
 
   @objc
   func hideMenu() {
@@ -68,28 +77,7 @@ public class DevMenuInternalModule: NSObject, RCTBridgeModule {
 
   @objc
   func setOnboardingFinished(_ finished: Bool) {
-    DevMenuSettings.isOnboardingFinished = finished
-  }
-
-  @objc
-  func getSettingsAsync(_ resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
-    resolve(DevMenuSettings.serialize())
-  }
-
-  @objc
-  func setSettingsAsync(_ dict: [String: Any], resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
-    if let motionGestureEnabled = dict["motionGestureEnabled"] as? Bool {
-      DevMenuSettings.motionGestureEnabled = motionGestureEnabled
-    }
-    if let touchGestureEnabled = dict["touchGestureEnabled"] as? Bool {
-      DevMenuSettings.touchGestureEnabled = touchGestureEnabled
-    }
-    if let keyCommandsEnabled = dict["keyCommandsEnabled"] as? Bool {
-      DevMenuSettings.keyCommandsEnabled = keyCommandsEnabled
-    }
-    if let showsAtLaunch = dict["showsAtLaunch"] as? Bool {
-      DevMenuSettings.showsAtLaunch = showsAtLaunch
-    }
+    DevMenuPreferences.isOnboardingFinished = finished
   }
 
   @objc
@@ -108,43 +96,15 @@ public class DevMenuInternalModule: NSObject, RCTBridgeModule {
     manager.setCurrentScreen(currentScreen)
     resolve(nil)
   }
-
-  @objc
-  func getAppInfoAsync(_ resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
-    if let bridge = manager.currentBridge {
-      let manifest = manager.currentManifest
-      
-      let appInfo = EXDevMenuAppInfo.getFor(bridge, andManifest: manifest as Any as! [AnyHashable : Any])
-      
-      let hostUrl = manager.currentManifestURL?.absoluteString
-          
-      resolve([
-        "appName": appInfo["appName"],
-        "appIcon": appInfo["appIcon"],
-        "appVersion": appInfo["appVersion"],
-        "runtimeVersion": appInfo["runtimeVersion"],
-        "sdkVersion": appInfo["sdkVersion"],
-        "hostUrl": hostUrl,
-      ])
-    } else {
-      reject("E_MISSING_BRIDGE", "DevMenuManager does not have a currentBridge - getAppInfoAsync() ", nil);
-    }
-  }
   
   @objc
-  func getDevSettingsAsync(_ resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
-    if let bridge = manager.currentBridge {
-      if let devSettings = bridge.module(forName: "DevSettings") as? RCTDevSettings {
-        resolve([
-          "isDebuggingRemotely": devSettings.isDebuggingRemotely,
-          "isElementInspectorShown": devSettings.isElementInspectorShown,
-          "isHotLoadingEnabled": devSettings.isHotLoadingEnabled,
-          "isPerfMonitorShown": devSettings.isPerfMonitorShown,
-        ])
-      }
-      
-    } else {
-      reject("E_MISSING_BRIDGE", "DevMenuManager does not have a currentBridge - getDevSettingsAsync() ", nil);
+  func fireCallback(_ name: String, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
+    
+    if (!manager.registeredCallbacks.contains(name)) {
+      return reject("ERR_DEVMENU_ACTION_FAILED", "\(name) is not a registered callback", nil)
     }
+    manager.sendEventToDelegateBridge("registeredCallbackFired", data: name)
+    
+    return resolve(nil)
   }
 }

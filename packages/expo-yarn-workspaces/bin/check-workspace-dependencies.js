@@ -72,7 +72,7 @@ function getWorkspacesInfo() {
 
   try {
     return JSON.parse(result.stdout);
-  } catch (e) {
+  } catch {
     console.error(`yarn did not print valid JSON:`);
     const stdout = result.stdout.toString();
     const stderr = result.stderr.toString();
