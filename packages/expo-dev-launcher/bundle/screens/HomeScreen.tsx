@@ -24,13 +24,16 @@ import { DevServerExplainerModal } from '../components/DevServerExplainerModal';
 import { useLoadingContainerStyle } from '../components/EASUpdatesRows';
 import { LoadAppErrorModal } from '../components/LoadAppErrorModal';
 import { PulseIndicator } from '../components/PulseIndicator';
+import { Toasts } from '../components/Toasts';
 import { UrlDropdown } from '../components/UrlDropdown';
-import { useOnUpdatePress } from '../hooks/useOnUpdatePress';
-import { loadApp } from '../native-modules/DevLauncherInternal';
+import { formatUpdateUrl } from '../functions/formatUpdateUrl';
+import { loadApp, loadUpdate } from '../native-modules/DevLauncherInternal';
 import { useCrashReport } from '../providers/CrashReportProvider';
 import { useDevSessions } from '../providers/DevSessionsProvider';
 import { useModalStack } from '../providers/ModalStackProvider';
 import { RecentApp, useRecentlyOpenedApps } from '../providers/RecentlyOpenedAppsProvider';
+import { useToastStack } from '../providers/ToastStackProvider';
+import { useUpdatesConfig } from '../providers/UpdatesConfigProvider';
 import { DevSession } from '../types';
 
 export type HomeScreenProps = {
@@ -51,6 +54,8 @@ export function HomeScreen({
   const [loadingUrl, setLoadingUrl] = React.useState('');
 
   const { data: devSessions, pollAsync, isFetching } = useDevSessions();
+  const toastStack = useToastStack();
+  const { projectUrl } = useUpdatesConfig();
 
   const crashReport = useCrashReport();
 
@@ -85,8 +90,17 @@ export function HomeScreen({
     pollAsync({ pollAmount, pollInterval });
   };
 
-  const onAppPress = async (url: string) => {
-    onLoadUrl(url);
+  const onRecentAppPress = async (app: RecentApp) => {
+    if (app.isEASUpdate) {
+      const updateUrl = formatUpdateUrl(app.url, app.updateMessage);
+      loadUpdate(updateUrl, projectUrl).catch((error) => {
+        toastStack.push(() => <Toasts.Error>{error.message}</Toasts.Error>, {
+          durationMs: 10000,
+        });
+      });
+    } else {
+      onLoadUrl(app.url);
+    }
   };
 
   const onDevServerQuestionPress = () => {
@@ -181,7 +195,7 @@ export function HomeScreen({
 
           <Spacer.Vertical size="medium" />
 
-          <RecentlyOpenedApps onAppPress={onAppPress} loadingUrl={loadingUrl} />
+          <RecentlyOpenedApps onRecentAppPress={onRecentAppPress} loadingUrl={loadingUrl} />
         </View>
       </ScrollView>
     </View>
@@ -258,7 +272,7 @@ function DevSessionList({ devSessions = [], onDevSessionPress }: DevSessionListP
   );
 }
 
-function RecentlyOpenedApps({ onAppPress, loadingUrl }) {
+function RecentlyOpenedApps({ onRecentAppPress, loadingUrl }) {
   const { data: apps, clear: clearRecentlyOpenedApps } = useRecentlyOpenedApps();
 
   if (apps.length === 0) {
@@ -308,7 +322,7 @@ function RecentlyOpenedApps({ onAppPress, loadingUrl }) {
           return (
             <LoadingContainer key={app.id} isLoading={isLoading}>
               <Button.ScaleOnPressContainer
-                onPress={() => onAppPress(app.url)}
+                onPress={() => onRecentAppPress(app)}
                 roundedTop={isFirst ? 'large' : 'none'}
                 roundedBottom={isLast ? 'large' : 'none'}
                 py="small"

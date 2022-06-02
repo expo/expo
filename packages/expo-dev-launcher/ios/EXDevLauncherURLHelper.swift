@@ -1,12 +1,54 @@
-// Copyright 2015-present 650 Industries. All rights reserved.
+  // Copyright 2015-present 650 Industries. All rights reserved.
 
 import Foundation
+
+@objc
+public class EXDevLauncherUrl: NSObject {
+  @objc
+  public var url: URL
+  
+  @objc
+  public var queryParams: [String: URLQueryItem]
+  
+  @objc
+  public init(_ url: URL) {
+    self.queryParams = EXDevLauncherURLHelper.getQueryParamsForUrl(url)
+    self.url = url
+    
+    if (EXDevLauncherURLHelper.isDevLauncherURL(url)) {
+      if let urlParam = self.queryParams["url"]?.value?.removingPercentEncoding {
+        if let urlFromParam = URL.init(string: urlParam) {
+          self.url = EXDevLauncherURLHelper.replaceEXPScheme(urlFromParam, to: "http")
+        }
+      }
+    }
+    
+    super.init()
+  }
+}
 
 @objc
 public class EXDevLauncherURLHelper: NSObject {
   @objc
   public static func isDevLauncherURL(_ url: URL?) -> Bool {
-    return url?.host == "expo-development-client"
+    guard let url = url else {
+      return false
+    }
+
+    let hostIsMatching = url.host == "expo-development-client"
+    var hasUrlQueryParam = false
+    
+    let components = URLComponents.init(url: url, resolvingAgainstBaseURL: false)
+    
+    for queryItem in components?.queryItems ?? [] {
+      if queryItem.name == "url" && queryItem.value != nil {
+        hasUrlQueryParam = true
+        break
+      }
+    }
+    
+    let isDevLauncherURL = hostIsMatching && hasUrlQueryParam
+    return isDevLauncherURL
   }
 
   @objc
@@ -17,16 +59,16 @@ public class EXDevLauncherURLHelper: NSObject {
     }
     return components.url!
   }
-
+  
   @objc
-  public static func getAppURLFromDevLauncherURL(_ url: URL) -> URL? {
+  public static func getQueryParamsForUrl(_ url: URL) -> [String: URLQueryItem] {
     let components = URLComponents.init(url: url, resolvingAgainstBaseURL: false)
+    var dict: [String: URLQueryItem] = [:]
+    
     for parameter in components?.queryItems ?? [] {
-      if parameter.name == "url" {
-        return URL.init(string: parameter.value?.removingPercentEncoding ?? "")
-      }
+      dict[parameter.name] = parameter
     }
-
-    return nil
+  
+    return dict
   }
 }

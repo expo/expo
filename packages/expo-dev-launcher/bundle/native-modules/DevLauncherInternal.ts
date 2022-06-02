@@ -72,7 +72,7 @@ export type EXUpdatesConfig = {
   sdkVersion: string;
   appId: string;
   usesEASUpdates: boolean;
-  updatesUrl: string;
+  projectUrl: string;
 };
 
 export const updatesConfig: EXUpdatesConfig = DevLauncher.updatesConfig;

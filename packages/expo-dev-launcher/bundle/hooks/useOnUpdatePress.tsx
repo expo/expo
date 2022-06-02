@@ -1,6 +1,7 @@
 import * as React from 'react';
 
 import { Toasts } from '../components/Toasts';
+import { formatUpdateUrl } from '../functions/formatUpdateUrl';
 import { loadUpdate } from '../native-modules/DevLauncherInternal';
 import { useToastStack } from '../providers/ToastStackProvider';
 import { useUpdatesConfig } from '../providers/UpdatesConfigProvider';
@@ -8,7 +9,7 @@ import { Update } from '../queries/useUpdatesForBranch';
 
 export function useOnUpdatePress() {
   const toastStack = useToastStack();
-  const { runtimeVersion, updatesUrl } = useUpdatesConfig();
+  const { runtimeVersion, projectUrl } = useUpdatesConfig();
 
   const [loadingUpdateId, setLoadingUpdateId] = React.useState('');
 
@@ -33,10 +34,9 @@ export function useOnUpdatePress() {
       } else {
         setLoadingUpdateId(update.id);
 
-        const messageQueryParam = `updateMessage=${encodeURIComponent(update.message)}`;
-        const manifestPermalink = `${update.manifestPermalink}?${messageQueryParam}`;
+        const updateUrl = formatUpdateUrl(update.manifestPermalink, update.message);
 
-        return loadUpdate(manifestPermalink, updatesUrl)
+        return loadUpdate(updateUrl, projectUrl)
           .catch((error) => {
             setLoadingUpdateId('');
 
@@ -47,7 +47,7 @@ export function useOnUpdatePress() {
           .then(() => setLoadingUpdateId(''));
       }
     },
-    [runtimeVersion, updatesUrl, toastStack]
+    [runtimeVersion, projectUrl, toastStack]
   );
 
   return {

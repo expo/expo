@@ -89,10 +89,6 @@ NSString *ON_NEW_DEEP_LINK_EVENT = @"expo.modules.devlauncher.onnewdeeplink";
   NSString *sanitizedUrl = [urlString stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
   
   NSURL *url = [NSURL URLWithString:sanitizedUrl];
-
-  if ([EXDevLauncherURLHelper isDevLauncherURL:url]) {
-    url = [EXDevLauncherURLHelper getAppURLFromDevLauncherURL:url];
-  }
   
   return url;
 }

@@ -19,7 +19,7 @@ public class EXDevLauncherRecentlyOpenedAppsRegistry: NSObject {
   }
 
   @objc
-  public func appWasOpened(_ url: URL, manifest: EXManifestsManifestBehavior?) {
+  public func appWasOpened(_ url: URL, queryParams: [String: URLQueryItem], manifest: EXManifestsManifestBehavior?) {
     var appEntry: [String: Any] = [:]
     
     let urlAsString = url.absoluteString
@@ -34,14 +34,15 @@ public class EXDevLauncherRecentlyOpenedAppsRegistry: NSObject {
     appEntry["isEASUpdate"] = isEASUpdate
     
     if (isEASUpdate) {      
-      if let updateMessage = getQueryStringParameter(url: url, param: "updateMessage") {
-        appEntry["updateMessage"] = updateMessage
+      if let updateMessage = queryParams["updateMessage"] {
+        appEntry["updateMessage"] = updateMessage.value
       }
     }
     
     if let manifest = manifest {
       appEntry["name"] = manifest.name()
       
+      // TODO - expose metadata object in expo-manifests
       let json = manifest.rawManifestJSON()
       
       if (isEASUpdate) {
@@ -91,10 +92,5 @@ public class EXDevLauncherRecentlyOpenedAppsRegistry: NSObject {
 
   func resetStorage() {
     UserDefaults.standard.removeObject(forKey: RECENTLY_OPENED_APPS_REGISTRY_KEY)
-  }
-  
-  func getQueryStringParameter(url: URL, param: String) -> String? {
-    guard let url = URLComponents(string: url.absoluteString) else { return nil }
-    return url.queryItems?.first(where: { $0.name == param })?.value
   }
 }

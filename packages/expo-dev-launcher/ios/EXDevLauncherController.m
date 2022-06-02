@@ -271,24 +271,19 @@
     return [self _handleExternalDeepLink:url options:options];
   }
   
-  NSURL *appUrl = [EXDevLauncherURLHelper getAppURLFromDevLauncherURL:url];
-  if (appUrl) {
-    [self loadApp:appUrl onSuccess:nil onError:^(NSError *error) {
-      __weak typeof(self) weakSelf = self;
-      dispatch_async(dispatch_get_main_queue(), ^{
-        typeof(self) self = weakSelf;
-        if (!self) {
-          return;
-        }
-        
-        EXDevLauncherAppError *appError = [[EXDevLauncherAppError alloc] initWithMessage:error.description stack:nil];
-        [self.errorManager showError:appError];
-      });
-    }];
-    return true;
-  }
+  [self loadApp:url onSuccess:nil onError:^(NSError *error) {
+    __weak typeof(self) weakSelf = self;
+    dispatch_async(dispatch_get_main_queue(), ^{
+      typeof(self) self = weakSelf;
+      if (!self) {
+        return;
+      }
+      
+      EXDevLauncherAppError *appError = [[EXDevLauncherAppError alloc] initWithMessage:error.description stack:nil];
+      [self.errorManager showError:appError];
+    });
+  }];
   
-  [self navigateToLauncher];
   return true;
 }
 
@@ -337,8 +332,11 @@
  * downloads all the project's assets (via expo-updates) in the case of a published project, and
  * then calls `_initAppWithUrl:bundleUrl:manifest:` if successful.
  */
-- (void)loadApp:(NSURL *)expoUrl withProjectUrl:(NSURL * _Nullable)projectUrl onSuccess:(void (^ _Nullable)(void))onSuccess onError:(void (^ _Nullable)(NSError *error))onError
+- (void)loadApp:(NSURL *)url withProjectUrl:(NSURL * _Nullable)projectUrl onSuccess:(void (^ _Nullable)(void))onSuccess onError:(void (^ _Nullable)(NSError *error))onError
 {
+  EXDevLauncherUrl *devLauncherUrl = [[EXDevLauncherUrl alloc] init:url];
+  NSURL *expoUrl = devLauncherUrl.url;
+  
   _possibleManifestURL = expoUrl;
   BOOL isEASUpdate = [self isEASUpdateURL:expoUrl];
   
@@ -355,7 +353,6 @@
   }
   
   NSString *installationID = [_installationIDHelper getOrCreateInstallationID];
-  expoUrl = [EXDevLauncherURLHelper replaceEXPScheme:expoUrl to:@"http"];
 
   NSDictionary *updatesConfiguration = [EXDevLauncherUpdatesHelper createUpdatesConfigurationWithURL:expoUrl
                                                                                           projectURL:projectUrl
@@ -364,7 +361,7 @@
   void (^launchReactNativeApp)(void) = ^{
     self->_shouldPreferUpdatesInterfaceSourceUrl = NO;
     RCTDevLoadingViewSetEnabled(NO);
-    [self.recentlyOpenedAppsRegistry appWasOpened:expoUrl manifest:nil];
+    [self.recentlyOpenedAppsRegistry appWasOpened:expoUrl queryParams:devLauncherUrl.queryParams manifest:nil];
     if ([expoUrl.path isEqual:@"/"] || [expoUrl.path isEqual:@""]) {
       [self _initAppWithUrl:expoUrl bundleUrl:[NSURL URLWithString:@"index.bundle?platform=ios&dev=true&minify=false" relativeToURL:expoUrl] manifest:nil];
     } else {
@@ -378,7 +375,7 @@
   void (^launchExpoApp)(NSURL *, EXManifestsManifest *) = ^(NSURL *bundleURL, EXManifestsManifest *manifest) {
     self->_shouldPreferUpdatesInterfaceSourceUrl = !manifest.isUsingDeveloperTool;
     RCTDevLoadingViewSetEnabled(manifest.isUsingDeveloperTool);
-    [self.recentlyOpenedAppsRegistry appWasOpened:expoUrl manifest:manifest];
+    [self.recentlyOpenedAppsRegistry appWasOpened:expoUrl queryParams:devLauncherUrl.queryParams manifest:manifest];
     [self _initAppWithUrl:expoUrl bundleUrl:bundleURL manifest:manifest];
     if (onSuccess) {
       onSuccess();
@@ -675,7 +672,7 @@
   NSURL *url = [NSURL URLWithString:projectUrl];
   NSString *appId = [[url pathComponents] lastObject];
   
-  BOOL isModernManifestProtocol = [[url host] isEqualToString:@"u.expo.dev"];
+  BOOL isModernManifestProtocol = [[url host] isEqualToString:@"u.expo.dev"] || [[url host] isEqualToString:@"staging-u.expo.dev"];
   BOOL expoUpdatesInstalled = EXDevLauncherController.sharedInstance.updatesInterface != nil;
   BOOL hasAppId = appId.length > 0;
   
