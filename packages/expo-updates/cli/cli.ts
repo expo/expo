@@ -2,6 +2,8 @@
 import arg from 'arg';
 import chalk from 'chalk';
 
+import * as Log from './utils/log';
+
 export type Command = (argv?: string[]) => void;
 
 const commands: { [command: string]: () => Promise<Command> } = {
@@ -28,21 +30,23 @@ const command = args._[0];
 const commandArgs = args._.slice(1);
 
 // Handle `--help` flag
-if (args['--help'] || !command) {
-  console.log(chalk`
-    {bold Usage}
-      {bold $} expo-updates <command>
+if ((args['--help'] && !command) || !command) {
+  Log.exit(
+    chalk`
+{bold Usage}
+  {dim $} npx expo-updates <command>
 
-    {bold Available commands}
-      ${Object.keys(commands).sort().join(', ')}
+{bold Commands}
+  ${Object.keys(commands).sort().join(', ')}
 
-    {bold Options}
-      --help, -h      Displays this message
+{bold Options}
+  --help, -h      Displays this message
 
-    For more information run a command with the --help flag
-      {bold $} expo-updates codesigning:generate --help
-  `);
-  process.exit(0);
+For more information run a command with the --help flag
+  {dim $} npx expo-updates codesigning:generate --help
+  `,
+    0
+  );
 }
 
 // Push the help flag to the subcommand args.

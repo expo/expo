@@ -13,7 +13,7 @@ function browserSupportsWebGL() {
       !!window.WebGLRenderingContext &&
       (canvas.getContext('webgl') || canvas.getContext('experimental-webgl'))
     );
-  } catch (e) {
+  } catch {
     return false;
   }
 }
@@ -21,7 +21,7 @@ function browserSupportsWebGL() {
 function optionalRequire(requirer) {
   try {
     return requirer();
-  } catch (e) {
+  } catch {
     // eslint-disable-next-line
     return;
   }
@@ -60,6 +60,7 @@ export function getTestModules() {
 
   // Universally tested APIs
   modules.push(
+    require('./tests/EASClient'),
     require('./tests/Random'),
     require('./tests/Crypto'),
     require('./tests/KeepAwake'),
@@ -144,8 +145,6 @@ export function getTestModules() {
     );
     // Invalid placementId in CI (all tests fail)
     modules.push(optionalRequire(() => require('./tests/FBNativeAd')));
-    // Requires interaction (sign in popup)
-    modules.push(optionalRequire(() => require('./tests/GoogleSignIn')));
     // Popup to request device's location which uses Google's location service
     modules.push(LocationTestScreen);
     // Fails to redirect because of malformed URL in published version with release channel parameter
@@ -165,7 +164,7 @@ export function getTestModules() {
     // Crashes app when mounting component
     modules.push(optionalRequire(() => require('./tests/Video')));
     // "sdkUnversionedTestSuite failed: java.lang.NullPointerException: Attempt to invoke interface method
-    // 'java.util.Map org.unimodules.interfaces.taskManager.TaskInterface.getOptions()' on a null object reference"
+    // 'java.util.Map expo.modules.interfaces.taskManager.TaskInterface.getOptions()' on a null object reference"
     modules.push(TaskManagerTestScreen);
     // Audio tests are flaky in CI due to asynchronous fetching of resources
     modules.push(optionalRequire(() => require('./tests/Audio')));

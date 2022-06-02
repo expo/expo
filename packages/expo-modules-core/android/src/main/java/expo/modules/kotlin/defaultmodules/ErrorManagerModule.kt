@@ -9,8 +9,8 @@ private const val onNewException = "ExpoModulesCoreErrorManager.onNewException"
 
 class ErrorManagerModule : Module() {
   override fun definition() = ModuleDefinition {
-    name("ExpoModulesCoreErrorManager")
-    events(onNewException)
+    Name("ExpoModulesCoreErrorManager")
+    Events(onNewException)
   }
 
   fun reportExceptionToLogBox(codedException: CodedException) {

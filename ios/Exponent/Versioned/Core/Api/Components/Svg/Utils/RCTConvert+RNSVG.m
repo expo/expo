@@ -130,17 +130,17 @@ RCT_ENUM_CONVERTER(RNSVGUnits, (@{
     };
 }
 
-+ (CGColorRef)RNSVGCGColor:(id)json offset:(NSUInteger)offset
++ (RNSVGColor *)RNSVGColor:(id)json offset:(NSUInteger)offset
 {
     NSArray *arr = [self NSArray:json];
     if (arr.count == offset + 1) {
-        return [self CGColor:[arr objectAtIndex:offset]];
+        return [self RNSVGColor:[arr objectAtIndex:offset]];
     }
     if (arr.count < offset + 4) {
         RCTLogError(@"Too few elements in array (expected at least %zd): %@", (ssize_t)(4 + offset), arr);
         return nil;
     }
-    return [self CGColor:[arr subarrayWithRange:(NSRange){offset, 4}]];
+    return [self RNSVGColor:[arr subarrayWithRange:(NSRange){offset, 4}]];
 }
 
 + (CGGradientRef)RNSVGCGGradient:(id)json

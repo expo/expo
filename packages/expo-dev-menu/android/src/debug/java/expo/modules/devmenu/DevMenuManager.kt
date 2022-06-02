@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.Application
 import android.content.Context
 import android.content.Intent
+import android.graphics.Typeface
 import android.hardware.SensorManager
 import android.os.Bundle
 import android.util.Log
@@ -13,6 +14,7 @@ import android.view.inputmethod.InputMethodManager
 import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.bridge.*
+import com.facebook.react.views.text.ReactFontManager
 import com.facebook.react.modules.core.DeviceEventManagerModule
 import expo.interfaces.devmenu.DevMenuDelegateInterface
 import expo.interfaces.devmenu.DevMenuExtensionInterface
@@ -48,6 +50,7 @@ import java.lang.ref.WeakReference
 
 object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
   val metroClient: DevMenuMetroClient by lazy { DevMenuMetroClient() }
+  private var fontsWereLoaded = false
 
   private var shakeDetector: ShakeDetector? = null
   private var threeFingerLongPressDetector: ThreeFingerLongPressDetector? = null
@@ -171,12 +174,6 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
       devMenuHost = DevMenuHost(application)
       UiThreadUtil.runOnUiThread {
         devMenuHost.reactInstanceManager.createReactContextInBackground()
-
-        // Hermes inspector will use latest executed script for Chrome DevTools Protocol.
-        // It will be EXDevMenuApp.android.js in our case.
-        // To let Hermes aware target bundle, we try to reload here as a workaround solution.
-        // @see <a href="https://github.com/facebook/react-native/blob/0.63-stable/ReactCommon/hermes/inspector/Inspector.cpp#L231>code here</a>
-        currentReactInstanceManager.get()?.devSupportManager?.handleReloadJS()
       }
     }
   }
@@ -220,28 +217,31 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
   private fun handleLoadedDelegateContext(reactContext: ReactContext) {
     Log.i(DEV_MENU_TAG, "Delegate's context was loaded.")
 
-    maybeInitDevMenuHost(reactContext.currentActivity?.application
-        ?: reactContext.applicationContext as Application)
+    maybeInitDevMenuHost(
+      reactContext.currentActivity?.application
+        ?: reactContext.applicationContext as Application
+    )
     maybeStartDetectors(devMenuHost.getContext())
-    preferences = (testInterceptor.overrideSettings()
+    preferences = (
+      testInterceptor.overrideSettings()
         ?: if (reactContext.hasNativeModule(DevMenuPreferences::class.java)) {
           reactContext.getNativeModule(DevMenuPreferences::class.java)!!
         } else {
           DevMenuDefaultPreferences()
-        }).also {
-          shouldLaunchDevMenuOnStart = canLaunchDevMenuOnStart && (it.showsAtLaunch || !it.isOnboardingFinished)
-          if (shouldLaunchDevMenuOnStart) {
-            reactContext.addLifecycleEventListener(this)
-          }
         }
+      ).also {
+      shouldLaunchDevMenuOnStart = canLaunchDevMenuOnStart && (it.showsAtLaunch || !it.isOnboardingFinished)
+      if (shouldLaunchDevMenuOnStart) {
+        reactContext.addLifecycleEventListener(this)
+      }
+    }
   }
 
   fun getAppInfo(): Bundle {
-    if (delegateReactContext != null) {
-      return DevMenuAppInfo.getAppInfo(delegateReactContext!!)
-    }
+    val reactContext = delegateReactContext ?: return Bundle.EMPTY
+    val instanceManager = delegate?.reactInstanceManager() ?: return Bundle.EMPTY
 
-    return Bundle.EMPTY
+    return DevMenuAppInfo.getAppInfo(instanceManager, reactContext)
   }
 
   fun getDevSettings(): Bundle {
@@ -252,6 +252,37 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
 
     return Bundle.EMPTY
   }
+
+  fun loadFonts(applicationContext: ReactApplicationContext) {
+    if (fontsWereLoaded) {
+      return
+    }
+    fontsWereLoaded = true
+
+    val fonts = arrayOf(
+      "Inter-Black",
+      "Inter-ExtraBold",
+      "Inter-Bold",
+      "Inter-SemiBold",
+      "Inter-Medium",
+      "Inter-Regular",
+      "Inter-Light",
+      "Inter-ExtraLight",
+      "Inter-Thin"
+    )
+
+    val assets = applicationContext.assets
+
+    fonts.map { familyName ->
+      val font = Typeface.createFromAsset(assets, "$familyName.otf")
+      ReactFontManager.getInstance().setTypeface(familyName, Typeface.NORMAL, font)
+    }
+  }
+
+  // captures any callbacks that are registered via the `registerDevMenuItems` module method
+  // it is set and unset by the public facing `DevMenuModule`
+  // when the DevMenuModule instance is unloaded (e.g between app loads) the callback list is reset to an empty array
+  var registeredCallbacks = arrayListOf<String>()
 
   //endregion
 

@@ -5,7 +5,7 @@ import { StoryOptions } from '../../types';
 import { getStoriesDir } from '../shared';
 
 export async function initAsync(config: StoryOptions) {
-  const { projectRoot, watchRoot } = config;
+  const { projectRoot, watchRoots } = config;
 
   const pathToStories = getStoriesDir(config);
 
@@ -26,13 +26,13 @@ export async function initAsync(config: StoryOptions) {
   if (fse.existsSync(pathToStoryManifest)) {
     const storyManifest = require(pathToStoryManifest);
 
-    if (storyManifest.watchRoot !== watchRoot || storyManifest.projectRoot !== projectRoot) {
+    if (storyManifest.watchRoot !== watchRoots || storyManifest.projectRoot !== projectRoot) {
       await fse.unlink(pathToStoryManifest);
     }
   }
 
   const emptyManifest = {
-    watchRoot,
+    watchRoots,
     projectRoot,
     files: {},
   };

@@ -7,7 +7,7 @@ import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
 
-Expo includes support for [Lottie](https://airbnb.design/lottie/), the animation library from AirBnB.
+[Lottie](https://airbnb.design/lottie/) renders After Effects animations in real time, allowing apps to use animations as easily as they use static images.
 
 <PlatformsSection android emulator ios simulator />
 
@@ -25,44 +25,41 @@ files={{
   }}>
 
 ```js
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import { Button, StyleSheet, View } from 'react-native';
 import LottieView from 'lottie-react-native';
 
-export default class App extends React.Component {
-  componentDidMount() {
-    this.animation.play();
-    // Or set a specific startFrame and endFrame with:
-    // this.animation.play(30, 120);
-  }
+export default function App() {
+  const animation = useRef(null);
+  useEffect(() => {
+    // You can control the ref programmatically, rather than using autoPlay
+    // animation.current?.play();
+  }, []);
 
-  resetAnimation = () => {
-    this.animation.reset();
-    this.animation.play();
-  };
-
-  render() {
-    return (
-      <View style={styles.animationContainer}>
-        <LottieView
-          ref={animation => {
-            this.animation = animation;
+  return (
+    <View style={styles.animationContainer}>
+      <LottieView
+        autoPlay
+        ref={animation}
+        style={{
+          width: 200,
+          height: 200,
+          backgroundColor: '#eee',
+        }}
+        // Find more Lottie files at https://lottiefiles.com/featured
+        source={require('./assets/gradientBall.json')}
+      />
+      <View style={styles.buttonContainer}>
+        <Button
+          title="Restart Animation"
+          onPress={() => {
+            animation.current?.reset();
+            animation.current?.play();
           }}
-          style={{
-            width: 400,
-            height: 400,
-            backgroundColor: '#eee',
-          }}
-          source={require('./assets/gradientBall.json')}
-          // OR find more Lottie files @ https://lottiefiles.com/featured
-          // Just click the one you like, place that file in the 'assets' folder to the left, and replace the above 'require' statement
         />
-        <View style={styles.buttonContainer}>
-          <Button title="Restart Animation" onPress={this.resetAnimation} />
-        </View>
       </View>
-    );
-  }
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({

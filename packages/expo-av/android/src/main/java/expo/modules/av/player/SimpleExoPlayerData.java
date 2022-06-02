@@ -3,7 +3,6 @@ package expo.modules.av.player;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 
 import android.text.TextUtils;
 import android.util.Log;
@@ -118,11 +117,20 @@ class SimpleExoPlayerData extends PlayerData
 
   @Override
   public synchronized void release() {
+    super.release();
     stopUpdatingProgressIfNecessary();
     if (mSimpleExoPlayer != null) {
       mSimpleExoPlayer.release();
       mSimpleExoPlayer = null;
     }
+  }
+
+  @Override
+  protected double getCurrentPositionSeconds() {
+    // TODO: Find a way to fix "IllegalStateException: SimpleExoPlayer is accessed on the wrong thread."
+    // this is called synchronously on JS thread while SimpleExoPlayer is accessed on main thread.
+    return -1.0;
+    // return (double)mSimpleExoPlayer.getCurrentPosition() / 1000.0;
   }
 
   @Override

@@ -39,7 +39,7 @@ yarn run export-server
 
 You can find the content source of the documentation inside the `pages/` directory. Documentation is mostly written in markdown with the help of some React components (for Snack embeds, etc). Our API documentation can all be found under `pages/versions/`; we keep separate versions of the documentation for each SDK version currently supported in Expo Go, see ["A note about versioning"](#a-note-about-versioning) for more info. The routes and navbar are automatically inferred from the directory structure within `versions`.
 
-> Note: We are currently in the process of moving our API documenation to being auto-generated using `expotools`'s `GenerateDocsAPIData` command.
+> Note: We are currently in the process of moving our API documentation to being auto-generated using `expotools`'s `GenerateDocsAPIData` command.
 
 Each markdown page can be provided metadata in the heading, distinguished by:
 

@@ -1,5 +1,6 @@
 import * as React from 'react';
 
+import { DevLauncher } from '../native-modules/DevLauncher';
 import * as DevMenu from '../native-modules/DevMenu';
 import { useBottomSheet } from './useBottomSheet';
 
@@ -34,6 +35,12 @@ export function useDevSettings() {
   const [devSettings, setDevSettings] = React.useState<DevMenu.DevSettings>(
     initialDevSettings || defaultDevSettings
   );
+
+  React.useEffect(() => {
+    if (initialDevSettings) {
+      setDevSettings(initialDevSettings);
+    }
+  }, [initialDevSettings]);
 
   // toggle value so that there is no lag in response to user input
   // these values will update to the correct value after the native fn is executed via updateSettings()
@@ -72,7 +79,7 @@ export function useDevSettings() {
   }, []);
 
   const navigateToLauncher = React.useCallback(async () => {
-    await DevMenu.navigateToLauncherAsync();
+    await DevLauncher.navigateToLauncherAsync();
     bottomSheet.collapse();
   }, []);
 

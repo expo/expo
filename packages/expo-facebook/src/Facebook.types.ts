@@ -32,11 +32,12 @@ export type FacebookAuthenticationCredential = {
    */
   dataAccessExpirationDate: Date;
   /**
-   * The last time the `token` was refreshed (or when it was first obtained)
+   * The last time the `token` was refreshed (or when it was first obtained).
    */
   refreshDate?: Date;
   /**
-   * _(Android only)_ Indicates how this `token` was obtained.
+   * Indicates how this `token` was obtained.
+   * @platform android
    */
   tokenSource?: string;
   /**
@@ -45,8 +46,7 @@ export type FacebookAuthenticationCredential = {
   signedRequest?: string;
   /**
    * A website domain within the Graph API.
-   *
-   * https://developers.facebook.com/docs/graph-api/reference/v5.0/domain
+   * @see https://developers.facebook.com/docs/graph-api/reference/v5.0/domain
    */
   graphDomain?: string;
 };
@@ -65,8 +65,9 @@ export type FacebookOptions = {
 
 export type FacebookSDKScriptURLOptions = {
   /**
-   * Android: Sets the base Facebook domain to use when making network requests.
-   * Defaults to: 'connect.facebook.net'
+   * Sets the base Facebook domain to use when making network requests.
+   * @default 'connect.facebook.net'
+   * @platform android
    */
   domain?: string;
 };
@@ -76,19 +77,24 @@ export type FacebookSDKInitializationOptions = {
    * Application ID used to initialize the FBSDK app.
    *
    * On Android and iOS if you don't provide this, Facebook SDK will try to use `appId` from Android and iOS.
-   * app resources (which in standalone apps you would define in `app.json`, in the Expo client are unavailable, and in bare you configure yourself according to Facebook setup documentation for [iOS](https://developers.facebook.com/docs/facebook-login/ios#4--configure-your-project) and [Android](https://developers.facebook.com/docs/facebook-login/android#manifest)).
+   * app resources (which in standalone apps you would define in `app.json`, in the Expo client are unavailable,
+   * and in bare you configure yourself according to Facebook setup documentation
+   * for [iOS](https://developers.facebook.com/docs/facebook-login/ios#4--configure-your-project)
+   * and [Android](https://developers.facebook.com/docs/facebook-login/android#manifest)).
    * If it fails to find one, the promise will be rejected.
    */
   appId?: string;
   /**
    * Selects the version of FBSDK to use.
-   *
-   * https://developers.facebook.com/docs/javascript/reference/FB.init/v5.0
+   * @see [Graph API Initialization](https://developers.facebook.com/docs/javascript/reference/FB.init/v13.0)
    */
   version?: string;
   /**
-   * Sets whether Facebook SDK should log app events. App events involve app eg. installs, app launches (more info [here](https://developers.facebook.com/docs/app-events/getting-started-app-events-android/#auto-events) and [here](https://developers.facebook.com/docs/app-events/getting-started-app-events-ios#auto-events)).
-   * In some cases, you may want to disable or delay the collection of automatically logged events, such as to obtain user consent or fulfill legal obligations.
+   * Sets whether Facebook SDK should log app events. App events involve app eg. installs,
+   * app launches (more info [here](https://developers.facebook.com/docs/app-events/getting-started-app-events-android/#auto-events)
+   * and [here](https://developers.facebook.com/docs/app-events/getting-started-app-events-ios#auto-events)).
+   * In some cases, you may want to disable or delay the collection of automatically logged events,
+   * such as to obtain user consent or fulfill legal obligations.
    *
    * This method corresponds to:
    * - [iOS disable auto events](https://developers.facebook.com/docs/app-events/getting-started-app-events-ios#disable-auto-events)

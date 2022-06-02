@@ -18,6 +18,15 @@ struct WebBrowserOptions: Record {
 
   @Field
   var controlsColor: UIColor?
+  
+  // Defaults to .overFullScreen to keep backwards compatibility
+  @Field
+  var presentationStyle: PresentationStyle = .overFullScreen
+}
+
+struct AuthSessionOptions: Record {
+  @Field
+  var preferEphemeralSession: Bool = false
 }
 
 enum DismissButtonStyle: String, EnumArgument {
@@ -33,6 +42,45 @@ enum DismissButtonStyle: String, EnumArgument {
       return .close
     case .cancel:
       return .cancel
+    }
+  }
+}
+
+internal enum PresentationStyle: String, EnumArgument {
+  case fullScreen
+  case pageSheet
+  case formSheet
+  case currentContext
+  case overFullScreen
+  case overCurrentContext
+  case popover
+  case none
+  case automatic
+
+  func toPresentationStyle() -> UIModalPresentationStyle {
+    switch self {
+    case .fullScreen:
+      return .fullScreen
+    case .pageSheet:
+      return .pageSheet
+    case .formSheet:
+      return .formSheet
+    case .currentContext:
+      return .currentContext
+    case .overFullScreen:
+      return .overFullScreen
+    case .overCurrentContext:
+      return .overCurrentContext
+    case .popover:
+      return .popover
+    case .none:
+      return .none
+    case .automatic:
+      if #available(iOS 13.0, *) {
+        return .automatic
+      }
+      // default prior iOS 13
+      return .fullScreen
     }
   }
 }

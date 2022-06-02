@@ -1,5 +1,7 @@
 import { DeviceEventEmitter, NativeModules, EventSubscription } from 'react-native';
 
+export type JSEngine = 'Hermes' | 'JSC';
+
 export type AppInfo = {
   appIcon?: string;
   appVersion?: string;
@@ -7,6 +9,7 @@ export type AppInfo = {
   appName?: string;
   sdkVersion?: string;
   runtimeVersion?: string;
+  engine?: JSEngine;
 };
 
 export type DevSettings = {
@@ -49,10 +52,6 @@ export function openDevMenuFromReactNative() {
   DevMenu.openDevMenuFromReactNative();
 }
 
-export async function navigateToLauncherAsync(): Promise<void> {
-  return await dispatchCallableAsync('backToLauncher');
-}
-
 export async function togglePerformanceMonitorAsync() {
   return await dispatchCallableAsync('performance-monitor');
 }
@@ -79,4 +78,12 @@ export async function copyToClipboardAsync(content: string) {
 
 export async function setOnboardingFinishedAsync(isFinished: boolean) {
   return await DevMenu.setOnboardingFinished(isFinished);
+}
+
+export async function loadFontsAsync() {
+  return await DevMenu.loadFontsAsync();
+}
+
+export async function fireCallbackAsync(name: string) {
+  return await DevMenu.fireCallback(name).catch((error) => console.warn(error.message));
 }

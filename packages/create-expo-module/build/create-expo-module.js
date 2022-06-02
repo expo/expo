@@ -98,7 +98,7 @@ async function npmWhoamiAsync(targetDir) {
         const { stdout } = await (0, spawn_async_1.default)('npm', ['whoami'], { cwd: targetDir });
         return stdout.trim();
     }
-    catch (e) {
+    catch {
         return null;
     }
 }

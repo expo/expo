@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 8.5.0 — 2022-04-18
+
+### 💡 Others
+
 - Swap out Cloudfront CDN for `classic-assets.eascdn.net`. ([#15781](https://github.com/expo/expo/pull/15781)) by [@quinlanj](https://github.com/quinlanj)
 
 ## 8.4.6 - 2022-01-13

@@ -5,9 +5,9 @@ import { LogBox, Platform } from 'react-native';
 
 import { waitFor } from './helpers';
 
-const validHttpUrl = 'http://expo.io/';
-const validHttpsUrl = 'https://expo.io/';
-const validExpUrl = 'exp://expo.io/@community/native-component-list';
+const validHttpUrl = 'http://exp.host/';
+const validHttpsUrl = 'https://exp.host/';
+const validExpUrl = 'exp://exp.host/@community/native-component-list';
 const redirectingBackendUrl = 'https://backend-xxswjknyfi.now.sh/?linkingUri=';
 
 // Because the root navigator of test-suite doesn't have a matching screen for URL, it will warn.
@@ -58,10 +58,11 @@ export function test(t) {
             t.expect(url).toEqual(testUrl);
             handlerCalled = true;
           };
-          Linking.addEventListener('url', handler);
+          const subscription = Linking.addEventListener('url', handler);
           await WebBrowser.openBrowserAsync(testUrl);
           await waitFor(8000);
           t.expect(handlerCalled).toBe(true);
+          t.expect(subscription).toBeTruthy();
           Linking.removeEventListener('url', handler);
         });
 

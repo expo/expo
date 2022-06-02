@@ -119,17 +119,17 @@ Other features not implemented in this package can be found in different parts o
 | `style="backdrop-filter"`       |    `<BlurView />`    |                                                 [`expo-blur`][ex-blur]                                                 |
 | `style="linear-gradient()"`     | `<LinearGradient />` |                                         [`expo-linear-gradient`][ex-gradient]                                          |
 
-[ex-gradient]: https://docs.expo.io/versions/latest/sdk/linear-gradient/
-[ex-webview]: https://docs.expo.io/versions/latest/sdk/webview/
-[ex-audio]: https://docs.expo.io/versions/latest/sdk/audio
-[ex-gl]: https://docs.expo.io/versions/latest/sdk/gl-view
+[ex-gradient]: https://docs.expo.dev/versions/latest/sdk/linear-gradient/
+[ex-webview]: https://docs.expo.dev/versions/latest/sdk/webview/
+[ex-audio]: https://docs.expo.dev/versions/latest/sdk/audio
+[ex-gl]: https://docs.expo.dev/versions/latest/sdk/gl-view
 [ex-canvas]: https://github.com/expo/expo-2d-context
 [html-noscript]: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/noscript
 [html-link]: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/link
-[ex-blur]: https://docs.expo.io/versions/latest/sdk/blur-view/
-[ex-vid]: https://docs.expo.io/versions/latest/sdk/video/
-[ex-ipick]: https://docs.expo.io/versions/latest/sdk/imagepicker/
-[ex-dpick]: https://docs.expo.io/versions/latest/sdk/document-picker/
+[ex-blur]: https://docs.expo.dev/versions/latest/sdk/blur-view/
+[ex-vid]: https://docs.expo.dev/versions/latest/sdk/video/
+[ex-ipick]: https://docs.expo.dev/versions/latest/sdk/imagepicker/
+[ex-dpick]: https://docs.expo.dev/versions/latest/sdk/document-picker/
 
 ## Headings
 
@@ -218,7 +218,7 @@ export default () => <H6>Example<H6/>
 You can use the anchor element with href prop to open links. On native this will attempt to use the `Linking` API to open the `href`.
 
 - The CSS style is fully normalized to match `<Text />`
-- For pseudo-class effects like hover and focus states check out the package [`react-native-web-hooks`](https://www.npmjs.com/package/react-native-web-hooks) | [tutorial](https://blog.expo.io/css-pseudo-class-effects-in-expo-for-web-56649f88eb6b)
+- For pseudo-class effects like hover and focus states check out the package [`react-native-web-hooks`](https://www.npmjs.com/package/react-native-web-hooks) | [tutorial](https://blog.expo.dev/css-pseudo-class-effects-in-expo-for-web-56649f88eb6b)
 
 ```tsx
 import { A } from '@expo/html-elements';

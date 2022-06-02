@@ -274,7 +274,7 @@ class LoaderTask(
   private fun launchRemoteUpdateInBackground(context: Context, remoteUpdateCallback: Callback) {
     AsyncTask.execute {
       val database = databaseHolder.database
-      RemoteLoader(context, configuration, database, fileDownloader, directory)
+      RemoteLoader(context, configuration, database, fileDownloader, directory, candidateLauncher?.launchedUpdate)
         .start(object : LoaderCallback {
           override fun onFailure(e: Exception) {
             databaseHolder.releaseDatabase()

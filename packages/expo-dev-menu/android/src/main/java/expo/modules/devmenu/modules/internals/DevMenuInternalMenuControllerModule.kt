@@ -3,14 +3,11 @@ package expo.modules.devmenu.modules.internals
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
-import android.content.pm.PackageManager
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.ReadableMap
-import com.facebook.react.devsupport.DevInternalSettings
 import expo.modules.devmenu.DevMenuManager
-import expo.modules.devmenu.devtools.DevMenuDevToolsDelegate
 import expo.modules.devmenu.modules.DevMenuInternalMenuControllerModuleInterface
 import kotlinx.coroutines.launch
 
@@ -66,5 +63,14 @@ class DevMenuInternalMenuControllerModule(private val reactContext: ReactContext
     val clip = ClipData.newPlainText(null, content)
     clipboard.setPrimaryClip(clip)
     promise.resolve(null)
+  }
+
+  override fun fireCallback(name: String, promise: Promise) {
+    if (!devMenuManager.registeredCallbacks.contains(name)) {
+      return promise.reject("ERR_DEVMENU_CALLBACK_FAILED", "Callback with name: $name is not registered")
+    }
+
+    devMenuManager.sendEventToDelegateBridge("registeredCallbackFired", name)
+    return promise.resolve(null)
   }
 }

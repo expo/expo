@@ -162,6 +162,7 @@ class DatabaseLauncher(
         asset,
         updatesDirectory,
         configuration,
+        context,
         object : AssetDownloadCallback {
           override fun onFailure(e: Exception, assetEntity: AssetEntity) {
             Log.e(TAG, "Failed to load asset from disk or network", e)

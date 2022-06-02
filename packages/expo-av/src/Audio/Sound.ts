@@ -10,6 +10,7 @@ import {
   assertStatusValuesInBounds,
   getNativeSourceAndFullInitialStatusForLoadAsync,
   getUnloadedStatus,
+  AVPlaybackTolerance,
 } from '../AV';
 import { PitchCorrectionQuality } from '../Audio';
 import ExponentAV from '../ExponentAV';
@@ -116,10 +117,13 @@ export class Sound implements Playback {
 
   private _updateAudioSampleReceivedCallback() {
     if (global.__EXAV_setOnAudioSampleReceivedCallback == null) {
-      if (Platform.OS === 'ios') {
-        throw new Error(
-          'Failed to set Audio Sample Buffer callback! The JSI function seems to not be installed correctly.'
+      if (Platform.OS === 'ios' || Platform.OS === 'android') {
+        console.warn(
+          'expo-av: Failed to set up Audio Sample Buffer callback. ' +
+            "Do you have 'Remote Debugging' enabled in your app's Developer Menu (https://docs.expo.dev/workflow/debugging)? " +
+            'Audio Sample Buffer callbacks are not supported while using Remote Debugging, you will need to disable it to use them.'
         );
+        return;
       } else {
         throw new UnavailabilityError('expo-av', 'setOnAudioSampleReceived');
       }
@@ -316,13 +320,13 @@ export class Sound implements Playback {
   playAsync!: () => Promise<AVPlaybackStatus>;
   playFromPositionAsync!: (
     positionMillis: number,
-    tolerances?: { toleranceMillisBefore?: number; toleranceMillisAfter?: number }
+    tolerances?: AVPlaybackTolerance
   ) => Promise<AVPlaybackStatus>;
   pauseAsync!: () => Promise<AVPlaybackStatus>;
   stopAsync!: () => Promise<AVPlaybackStatus>;
   setPositionAsync!: (
     positionMillis: number,
-    tolerances?: { toleranceMillisBefore?: number; toleranceMillisAfter?: number }
+    tolerances?: AVPlaybackTolerance
   ) => Promise<AVPlaybackStatus>;
   setRateAsync!: (
     rate: number,

@@ -35,6 +35,7 @@ It is important that you follow the [Human Interface Guidelines](https://develop
 
 #### iOS
 
+
 You can redirect someone to the "Write a Review" screen for an app in the iOS App Store by using the query parameter `action=write-review`. For example:
 
 ```ts
@@ -74,3 +75,7 @@ import * as StoreReview from 'expo-store-review';
 ### `E_STORE_REVIEW_UNSUPPORTED`
 
 Requesting an App Store review is not supported on this device. The device must be iOS 10.3 or greater. Android and web are not supported. Be sure to check for support with `isAvailableAsync()` to avoid this error.
+
+### `E_STORE_REVIEW_FAILED`
+
+This error occurs when the store review request was not successful.

@@ -4,6 +4,8 @@ title: Runtime versions and updates
 
 import ImageSpotlight from '~/components/plugins/ImageSpotlight'
 
+> EAS Update is currently available only to customers with an EAS subscription plan. [Sign up](https://expo.dev/accounts/[account]/settings/subscriptions).
+
 Runtime versions are a property that guarantees compatibility between a build's native code and an update. When a project is made into a build, the build will contain some native code that cannot be changed with an update. Therefore, an update must be compatible with a build's native code to run on the build.
 
 To illustrate how builds and updates interact, take a look at the following diagram:
@@ -16,7 +18,7 @@ Since updates must be compatible with a build's native code, any time native cod
 
 ## Setting `"runtimeVersion"`
 
-To make managing the `"runtimeVerison"` property easier between builds and updates, we've created runtime version policies that will update automatically based on other fields inside the app config (**app.json**/**app.config.js**). If these policies do not match the development flow of a project, there's also an option to set the `"runtimeVersion"` manually.
+To make managing the `"runtimeVersion"` property easier between builds and updates, we've created runtime version policies that will update automatically based on other fields inside the app config (**app.json**/**app.config.js**). If these policies do not match the development flow of a project, there's also an option to set the `"runtimeVersion"` manually.
 
 ### `"sdkVersion"` runtime version policy
 
@@ -63,13 +65,13 @@ The `"nativeVersion"` policy will set the runtime version to the projects curren
       "buildNumber": "1"
     },
     "android": {
-      "versionCode": "1"
+      "versionCode": 1
     }
   }
 }
 ```
 
-The runtime version for the iOS and Android builds and any updates would be the combination of `"[version]-[buildNumber|versionCode]"`, which in this case would be `"1.0.0-1"`.
+The runtime version for the iOS and Android builds and any updates would be the combination of `"[version]([buildNumber|versionCode])"`, which in this case would be `"1.0.0(1)"`.
 
 This policy is great for projects that contain custom native code and that update the native version numbers (`"buildNumber"`for iOS and `"versionCode"` for Android) for each build. To submit an app, the app stores require an updated native version number for each submitted build, which makes this policy convenient for projects who use the Play Store's Internal Test Track and the App Store's TestFlight distribution tools.
 
@@ -99,7 +101,7 @@ You can also set a runtime version for a specific platform:
 {
   "expo": {
     "android": {
-        "runtimeVersion": "1.0.0"
+      "runtimeVersion": "1.0.0"
     }
   }
 }

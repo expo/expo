@@ -6,11 +6,24 @@
 
 ### 🎉 New features
 
-- Native module on iOS is now written in Swift using the new API. ([#16129](https://github.com/expo/expo/pull/16129) by [@tsapeta](https://github.com/tsapeta))
+- The module on Android now uses JSI host object instead of the bridge module for communication between JavaScript and native code. ([#17614](https://github.com/expo/expo/pull/17614) by [@lukmccall](https://github.com/lukmccall))
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- Migrated Expo modules definitions to the new naming convention. ([#17193](https://github.com/expo/expo/pull/17193) by [@tsapeta](https://github.com/tsapeta))
+
+## 10.2.0 — 2022-04-18
+
+### 🎉 New features
+
+- Native module on iOS is now written in Swift using the new API. ([#16129](https://github.com/expo/expo/pull/16129) by [@tsapeta](https://github.com/tsapeta))
+- Use JSI host object instead of the bridge module for communication between JavaScript and native code. ([#16972](https://github.com/expo/expo/pull/16972) by [@tsapeta](https://github.com/tsapeta))
+
+### ⚠️ Notices
+
+- On Android bump `compileSdkVersion` to `31`, `targetSdkVersion` to `31` and `Java` version to `11`. ([#16941](https://github.com/expo/expo/pull/16941) by [@bbarthec](https://github.com/bbarthec))
 
 ## 10.1.2 - 2022-02-01
 

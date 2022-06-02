@@ -2,7 +2,7 @@
 
 buildscript {
     ext {
-        gradlePluginVersion = '4.2.2'
+        gradlePluginVersion = '7.0.4'
     }
     repositories {
         google()
@@ -11,7 +11,8 @@ buildscript {
     }
     dependencies {
         classpath "com.android.tools.build:gradle:${gradlePluginVersion}"
-        classpath 'de.undercouch:gradle-download-task:2.0.0'
+        classpath 'de.undercouch:gradle-download-task:4.1.2'
+        classpath "com.facebook.react:react-native-gradle-plugin"
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -23,12 +24,5 @@ allprojects {
         google()
         mavenCentral()
         mavenLocal()
-    }
-
-    // used to override ndk path/version from env variables on CI
-    ext["ANDROID_NDK_PATH"] = null
-    if (System.getenv("LOCAL_ANDROID_NDK_VERSION") != null) {
-      setProperty("ANDROID_NDK_VERSION", System.getenv("LOCAL_ANDROID_NDK_VERSION"))
-      ext["ANDROID_NDK_PATH"] =  System.getenv("ANDROID_NDK")
     }
 }

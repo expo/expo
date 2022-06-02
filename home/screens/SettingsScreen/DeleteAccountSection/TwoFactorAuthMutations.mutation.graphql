@@ -1,0 +1,101 @@
+fragment ConfigurationResultsData on SecondFactorDeviceConfigurationResult {
+  secondFactorDevice {
+    id
+    name
+    isCertified
+    isPrimary
+    smsPhoneNumber
+    method
+    createdAt
+  }
+  secret
+  keyURI
+}
+
+fragment SecondFactorInitiationResultData on SecondFactorInitiationResult {
+  configurationResults {
+    ...ConfigurationResultsData
+  }
+  plaintextBackupCodes
+}
+
+mutation InitiateSecondFactorAuthenticationMutation(
+  $secondFactorDeviceConfigurations: [SecondFactorDeviceConfiguration!]!
+  $recaptchaResponseToken: String
+) {
+  me {
+    initiateSecondFactorAuthentication(
+      deviceConfigurations: $secondFactorDeviceConfigurations
+      recaptchaResponseToken: $recaptchaResponseToken
+    ) {
+      ...SecondFactorInitiationResultData
+    }
+  }
+}
+
+mutation PurgeUnfinishedSecondFactorAuthenticationMutation {
+  me {
+    purgeUnfinishedSecondFactorAuthentication {
+      success
+    }
+  }
+}
+
+mutation CertifySecondFactorDeviceMutation($otp: String!) {
+  me {
+    certifySecondFactorDevice(otp: $otp) {
+      success
+    }
+  }
+}
+
+mutation SendSMSOTPToSecondFactorDeviceMutation($userSecondFactorDeviceId: ID!) {
+  me {
+    sendSMSOTPToSecondFactorDevice(userSecondFactorDeviceId: $userSecondFactorDeviceId) {
+      success
+    }
+  }
+}
+
+mutation DisableSecondFactorAuthenticationMutation($otp: String!) {
+  me {
+    disableSecondFactorAuthentication(otp: $otp) {
+      success
+    }
+  }
+}
+
+mutation AddSecondFactorDeviceMutation(
+  $deviceConfiguration: SecondFactorDeviceConfiguration!
+  $otp: String!
+) {
+  me {
+    addSecondFactorDevice(deviceConfiguration: $deviceConfiguration, otp: $otp) {
+      ...ConfigurationResultsData
+    }
+  }
+}
+
+mutation SetPrimarySecondFactorDeviceMutation($userSecondFactorDeviceId: ID!) {
+  me {
+    setPrimarySecondFactorDevice(userSecondFactorDeviceId: $userSecondFactorDeviceId) {
+      success
+    }
+  }
+}
+
+mutation DeleteSecondFactorDeviceMutation($userSecondFactorDeviceId: ID!, $otp: String!) {
+  me {
+    deleteSecondFactorDevice(userSecondFactorDeviceId: $userSecondFactorDeviceId, otp: $otp) {
+      success
+    }
+  }
+}
+
+mutation RegenerateSecondFactorBackupCodesMutation($otp: String!) {
+  me {
+    regenerateSecondFactorBackupCodes(otp: $otp) {
+      plaintextBackupCodes
+    }
+  }
+}

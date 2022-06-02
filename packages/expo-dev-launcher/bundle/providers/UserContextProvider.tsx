@@ -5,9 +5,11 @@ import { getUserProfileAsync, UserAccount, UserData } from '../functions/getUser
 import { restoreUserAsync } from '../functions/restoreUserAsync';
 import { startAuthSessionAsync } from '../functions/startAuthSessionAsync';
 import { useIsMounted } from '../hooks/useIsMounted';
+import { resetBranchQueries } from '../queries/useBranchesForApp';
 
 type UserContext = {
   userData?: UserData;
+  isAuthenticated: boolean;
   selectedAccount?: UserAccount;
 };
 
@@ -20,7 +22,7 @@ type UserActionsContext = {
 };
 
 const ActionsContext = React.createContext<UserActionsContext | null>(null);
-const Context = React.createContext<UserContext | null>(null);
+const Context = React.createContext<UserContext>(null);
 
 type UserContextProviderProps = {
   children: React.ReactNode;
@@ -30,7 +32,7 @@ type UserContextProviderProps = {
 export function UserContextProvider({ children, initialUserData }: UserContextProviderProps) {
   const [userData, setUserData] = React.useState<UserData | undefined>(initialUserData);
   const [selectedAccountId, setSelectedAccount] = React.useState<string>(
-    initialUserData?.accounts[0].id ?? ''
+    initialUserData?.accounts[0]?.id ?? ''
   );
   const isMounted = useIsMounted();
 
@@ -53,7 +55,9 @@ export function UserContextProvider({ children, initialUserData }: UserContextPr
   }
 
   async function logout() {
-    return clearSession();
+    const result = await clearSession();
+    await resetBranchQueries();
+    return result;
   }
 
   async function restore() {
@@ -75,7 +79,7 @@ export function UserContextProvider({ children, initialUserData }: UserContextPr
       setSelectedAccount(undefined);
     }
 
-    await setSessionAsync(null);
+    return await setSessionAsync(null);
   }
 
   const actions = React.useMemo(() => {
@@ -90,10 +94,12 @@ export function UserContextProvider({ children, initialUserData }: UserContextPr
 
   return (
     <ActionsContext.Provider value={actions}>
-      <Context.Provider value={{ userData, selectedAccount }}>{children}</Context.Provider>
+      <Context.Provider value={{ userData, selectedAccount, isAuthenticated: userData != null }}>
+        {children}
+      </Context.Provider>
     </ActionsContext.Provider>
   );
 }
 
-export const useUser = () => React.useContext(Context);
+export const useUser = () => React.useContext<UserContext>(Context);
 export const useUserActions = () => React.useContext(ActionsContext);

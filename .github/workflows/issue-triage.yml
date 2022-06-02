@@ -5,7 +5,7 @@ on:
 
 jobs:
   needs-repro:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     if: "${{ contains(github.event.label.name, 'incomplete issue: missing or invalid repro') }}"
     steps:
       - uses: actions/github-script@v3
@@ -49,7 +49,7 @@ jobs:
             })
 
   needs-info:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     if: "${{ contains(github.event.label.name, 'incomplete issue: missing info') }}"
     steps:
       - uses: actions/github-script@v3
@@ -78,7 +78,7 @@ jobs:
             })
 
   issue-accepted:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     if: github.event.label.name == 'issue accepted'
     steps:
       - uses: actions/github-script@v3
@@ -95,7 +95,7 @@ jobs:
             `})
 
   question:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     if: "${{ contains(github.event.label.name, 'invalid issue: question') }}"
     steps:
       - uses: actions/github-script@v3
@@ -123,7 +123,7 @@ jobs:
             })
 
   feature-request:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     if: "${{ contains(github.event.label.name, 'invalid issue: feature request') }}"
     steps:
       - uses: actions/github-script@v3

@@ -1,34 +1,53 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
 #import <ExpoModulesCore/EXJSIInstaller.h>
-#import <ExpoModulesCore/ExpoModulesProxySpec.h>
 #import <ExpoModulesCore/ExpoModulesHostObject.h>
 #import <ExpoModulesCore/Swift.h>
 
-using namespace facebook;
-using namespace react;
+namespace jsi = facebook::jsi;
 
-namespace expo {
+/**
+ This name will be used as a property of the JS global object to which the host object is added.
+ */
+static NSString *expoModulesHostObjectPropertyName = @"ExpoModules";
 
-void installRuntimeObjects(jsi::Runtime &runtime, std::shared_ptr<CallInvoker> callInvoker, EXNativeModulesProxy *nativeModulesProxy)
-{
-  auto expoModulesProxyModule = std::make_shared<ExpoModulesProxySpec>(callInvoker, nativeModulesProxy);
+@interface RCTBridge (ExpoBridgeWithRuntime)
 
-  runtime
-    .global()
-    .setProperty(runtime, "ExpoModulesProxy", jsi::Object::createFromHostObject(runtime, expoModulesProxyModule));
-}
+- (void *)runtime;
 
-} // namespace expo
+@end
 
 @implementation EXJavaScriptRuntimeManager
 
-+ (void)installExpoModulesToRuntime:(nonnull EXJavaScriptRuntime *)runtime withSwiftInterop:(nonnull SwiftInteropBridge *)swiftInterop
++ (nullable EXJavaScriptRuntime *)runtimeFromBridge:(nonnull RCTBridge *)bridge
 {
-  std::shared_ptr<expo::ExpoModulesHostObject> hostObjectPtr = std::make_shared<expo::ExpoModulesHostObject>(swiftInterop);
+  jsi::Runtime *jsiRuntime = [bridge respondsToSelector:@selector(runtime)] ? reinterpret_cast<jsi::Runtime *>(bridge.runtime) : nullptr;
+  return jsiRuntime ? [[EXJavaScriptRuntime alloc] initWithRuntime:jsiRuntime callInvoker:bridge.jsCallInvoker] : nil;
+}
+
++ (BOOL)installExpoModulesHostObject:(nonnull EXAppContext *)appContext
+{
+  EXJavaScriptRuntime *runtime = [appContext runtime];
+
+  // The runtime may be unavailable, e.g. remote debugger is enabled or it hasn't been set yet.
+  if (!runtime) {
+    return false;
+  }
+
   EXJavaScriptObject *global = [runtime global];
 
-  global[@"ExpoModules"] = [runtime createHostObject:hostObjectPtr];
+  if ([global hasProperty:expoModulesHostObjectPropertyName]) {
+    return false;
+  }
+
+  std::shared_ptr<expo::ExpoModulesHostObject> hostObjectPtr = std::make_shared<expo::ExpoModulesHostObject>(appContext);
+  EXJavaScriptObject *hostObject = [runtime createHostObject:hostObjectPtr];
+
+  // Define the ExpoModules object as a non-configurable, read-only and enumerable property.
+  [global defineProperty:expoModulesHostObjectPropertyName
+                   value:hostObject
+                 options:EXJavaScriptObjectPropertyDescriptorEnumerable];
+  return true;
 }
 
 @end

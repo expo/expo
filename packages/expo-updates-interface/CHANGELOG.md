@@ -6,11 +6,19 @@
 
 ### 🎉 New features
 
-- Add controller registry in order to support dev client auto-setup with updates integration on iOS. ([#16230](https://github.com/expo/expo/pull/16230) by [@esamelson](https://github.com/esamelson))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 0.6.0 — 2022-04-18
+
+### 🎉 New features
+
+- Add controller registry in order to support dev client auto-setup with updates integration on iOS. ([#16230](https://github.com/expo/expo/pull/16230) by [@esamelson](https://github.com/esamelson))
+
+### ⚠️ Notices
+
+- On Android bump `compileSdkVersion` to `31`, `targetSdkVersion` to `31` and `Java` version to `11`. ([#16941](https://github.com/expo/expo/pull/16941) by [@bbarthec](https://github.com/bbarthec))
 
 ## 0.5.1 - 2022-02-01
 

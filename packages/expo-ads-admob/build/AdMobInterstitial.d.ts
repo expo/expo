@@ -1,4 +1,4 @@
-declare type EventNameType = 'interstitialDidLoad' | 'interstitialDidFailToLoad' | 'interstitialDidOpen' | 'interstitialDidClose' | 'interstitialWillLeaveApplication';
+declare type EventNameType = 'interstitialDidLoad' | 'interstitialDidFailToLoad' | 'interstitialDidOpen' | 'interstitialDidClose';
 declare type EventListener = (...args: any[]) => void;
 declare const _default: {
     setAdUnitID(id: string): Promise<void>;

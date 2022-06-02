@@ -1,9 +1,8 @@
-import Quick
-import Nimble
+import ExpoModulesTestCore
 
 @testable import ExpoModulesCore
 
-class FunctionSpec: QuickSpec {
+class FunctionSpec: ExpoSpec {
   override func spec() {
     let appContext = AppContext()
     let functionName = "test function name"
@@ -11,11 +10,13 @@ class FunctionSpec: QuickSpec {
     func testFunctionReturning<T: Equatable>(value returnValue: T) {
       waitUntil { done in
         mockModuleHolder(appContext) {
-          function(functionName) {
+          AsyncFunction(functionName) {
             return returnValue
           }
         }
-        .call(function: functionName, args: []) { value, _ in
+        .call(function: functionName, args: []) { result in
+          let value = try! result.get()
+
           expect(value).notTo(beNil())
           expect(value).to(beAKindOf(T.self))
           expect(value as? T).to(equal(returnValue))
@@ -27,7 +28,7 @@ class FunctionSpec: QuickSpec {
     it("is called") {
       waitUntil { done in
         mockModuleHolder(appContext) {
-          function(functionName) {
+          AsyncFunction(functionName) {
             done()
           }
         }
@@ -60,7 +61,7 @@ class FunctionSpec: QuickSpec {
       let str: String? = nil
 
       mockModuleHolder(appContext) {
-        function(functionName) { (a: String?) in
+        AsyncFunction(functionName) { (a: String?) in
           expect(a == nil) == true
         }
       }
@@ -71,7 +72,7 @@ class FunctionSpec: QuickSpec {
       let array: [[String]] = [["expo"]]
 
       mockModuleHolder(appContext) {
-        function(functionName) { (a: [[String]]) in
+        AsyncFunction(functionName) { (a: [[String]]) in
           expect(a.first!.first) == array.first!.first
         }
       }
@@ -92,11 +93,13 @@ class FunctionSpec: QuickSpec {
       it("converts to simple record when passed as an argument") {
         waitUntil { done in
           mockModuleHolder(appContext) {
-            function(functionName) { (a: TestRecord) in
+            AsyncFunction(functionName) { (a: TestRecord) in
               return a.property
             }
           }
-          .call(function: functionName, args: [dict]) { value, _ in
+          .call(function: functionName, args: [dict]) { result in
+            let value = try! result.get()
+
             expect(value).notTo(beNil())
             expect(value).to(beAKindOf(String.self))
             expect(value).to(be(dict["property"]))
@@ -108,11 +111,12 @@ class FunctionSpec: QuickSpec {
       it("converts to record with custom key") {
         waitUntil { done in
           mockModuleHolder(appContext) {
-            function(functionName) { (a: TestRecord) in
+            AsyncFunction(functionName) { (a: TestRecord) in
               return a.customKeyProperty
             }
           }
-          .call(function: functionName, args: [dict]) { value, _ in
+          .call(function: functionName, args: [dict]) { result in
+            let value = try! result.get()
             expect(value).notTo(beNil())
             expect(value).to(beAKindOf(String.self))
             expect(value).to(be(dict["propertyWithCustomKey"]))
@@ -124,11 +128,13 @@ class FunctionSpec: QuickSpec {
       it("returns the record back") {
         waitUntil { done in
           mockModuleHolder(appContext) {
-            function(functionName) { (a: TestRecord) in
+            AsyncFunction(functionName) { (a: TestRecord) in
               return a.toDictionary()
             }
           }
-          .call(function: functionName, args: [dict]) { value, _ in
+          .call(function: functionName, args: [dict]) { result in
+            let value = try! result.get()
+
             expect(value).notTo(beNil())
             expect(value).to(beAKindOf(Record.Dict.self))
 
@@ -145,15 +151,19 @@ class FunctionSpec: QuickSpec {
     it("throws when called with more arguments than expected") {
       waitUntil { done in
         mockModuleHolder(appContext) {
-          function(functionName) { (_: Int) in
+          AsyncFunction(functionName) { (_: Int) in
             return "something"
           }
         }
         // Function expects one argument, let's give it more.
-        .call(function: functionName, args: [1, 2]) { _, error in
-          expect(error).notTo(beNil())
-          expect(error).to(beAKindOf(FunctionCallException.self))
-          expect((error as! Exception).isCausedBy(InvalidArgsNumberException.self)) == true
+        .call(function: functionName, args: [1, 2]) { result in
+          switch result {
+          case .failure(let error):
+            expect(error).notTo(beNil())
+            expect(error).to(beAKindOf(InvalidArgsNumberException.self))
+          case .success(_):
+            fail()
+          }
           done()
         }
       }
@@ -162,15 +172,20 @@ class FunctionSpec: QuickSpec {
     it("throws when called with arguments of incompatible types") {
       waitUntil { done in
         mockModuleHolder(appContext) {
-          function(functionName) { (_: String) in
+          AsyncFunction(functionName) { (_: String) in
             return "something"
           }
         }
         // Function expects a string, let's give it a number.
-        .call(function: functionName, args: [1]) { value, error in
-          expect(error).notTo(beNil())
-          expect(error).to(beAKindOf(FunctionCallException.self))
-          expect((error as! Exception).isCausedBy(Conversions.CastingException<String>.self)) == true
+        .call(function: functionName, args: [1]) { result in
+          switch result {
+          case .failure(let error):
+            expect(error).notTo(beNil())
+            expect(error).to(beAKindOf(ArgumentCastException.self))
+            expect(error.isCausedBy(Conversions.CastingException<String>.self)) == true
+          case .success(_):
+            fail()
+          }
           done()
         }
       }

@@ -16,7 +16,7 @@ import java.lang.reflect.Method
 
 open class ReactNativeHostWrapperBase(
   application: Application,
-  private val host: ReactNativeHost
+  protected val host: ReactNativeHost
 ) : ReactNativeHost(application) {
   internal val reactNativeHostHandlers = ExpoModulesPackage.packageList
     .flatMap { it.createReactNativeHostHandlers(application) }
@@ -44,7 +44,9 @@ open class ReactNativeHostWrapperBase(
   }
 
   override fun getJavaScriptExecutorFactory(): JavaScriptExecutorFactory? {
-    return invokeDelegateMethod("getJavaScriptExecutorFactory")
+    return reactNativeHostHandlers.asSequence()
+      .mapNotNull { it.javaScriptExecutorFactory }
+      .firstOrNull() ?: invokeDelegateMethod("getJavaScriptExecutorFactory")
   }
 
   @Suppress("DEPRECATION")
@@ -74,7 +76,9 @@ open class ReactNativeHostWrapperBase(
   }
 
   override fun getUseDeveloperSupport(): Boolean {
-    return host.useDeveloperSupport
+    return reactNativeHostHandlers.asSequence()
+      .mapNotNull { it.useDeveloperSupport }
+      .firstOrNull() ?: host.useDeveloperSupport
   }
 
   override fun getPackages(): MutableList<ReactPackage> {

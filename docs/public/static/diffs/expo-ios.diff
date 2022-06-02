@@ -12,22 +12,20 @@ index ef1de86..d3d75b0 100644
  
  @property (nonatomic, strong) UIWindow *window;
  
-diff --git a/ios/MyApp/AppDelegate.m b/ios/MyApp/AppDelegate.m
+diff --git a/ios/MyApp/AppDelegate.mm b/ios/MyApp/AppDelegate.mm
 index da9f60a..0164063 100644
---- a/ios/MyApp/AppDelegate.m
-+++ b/ios/MyApp/AppDelegate.m
-@@ -31,8 +31,8 @@ - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(
-   InitializeFlipper(application);
- #endif
+--- a/ios/MyApp/AppDelegate.mm
++++ b/ios/MyApp/AppDelegate.mm
+@@ -31,7 +31,7 @@ - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(
+ {
+   RCTAppSetupPrepareApp(application);
  
 -  RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
--  RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge
 +  RCTBridge *bridge = [self.reactDelegate createBridgeWithDelegate:self launchOptions:launchOptions];
-+  RCTRootView *rootView = [self.reactDelegate createRootViewWithBridge:bridge
-                                                    moduleName:@"MyApp"
-                                             initialProperties:nil];
  
-@@ -43,10 +43,11 @@ - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(
+ #if RCT_NEW_ARCH_ENABLED
+   _contextContainer = std::make_shared<facebook::react::ContextContainer const>();
+@@ -50,10 +50,11 @@ - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(
    }
  
    self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
@@ -49,7 +47,7 @@ index 99b1b8d..71524e2 100644
  require_relative '../node_modules/react-native/scripts/react_native_pods'
  require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
 
--platform :ios, '10.0'
+-platform :ios, '11.0'
 +platform :ios, '12.0'
 
  target 'ModuleDiff' do

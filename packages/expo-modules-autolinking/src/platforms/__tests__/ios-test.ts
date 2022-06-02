@@ -24,6 +24,7 @@ describe(formatArrayOfReactDelegateHandler, () => {
         swiftModuleNames: [],
         appDelegateSubscribers: [],
         reactDelegateHandlers: [],
+        debugOnly: false,
       },
     ];
     expect(formatArrayOfReactDelegateHandler(modules)).toBe(`[
@@ -46,6 +47,7 @@ describe(formatArrayOfReactDelegateHandler, () => {
         swiftModuleNames: [],
         appDelegateSubscribers: [],
         reactDelegateHandlers: ['ConstantsReactDelegateHandler', 'ConstantsReactDelegateHandler2'],
+        debugOnly: false,
       },
       {
         packageName: 'expo-device',
@@ -61,6 +63,7 @@ describe(formatArrayOfReactDelegateHandler, () => {
         swiftModuleNames: [],
         appDelegateSubscribers: [],
         reactDelegateHandlers: ['DeviceReactDelegateHandler'],
+        debugOnly: false,
       },
     ];
     expect(formatArrayOfReactDelegateHandler(modules)).toBe(`[
@@ -120,6 +123,7 @@ describe(resolveModuleAsync, () => {
       modules: [],
       appDelegateSubscribers: [],
       reactDelegateHandlers: [],
+      debugOnly: false,
     });
   });
 
@@ -157,6 +161,7 @@ describe(resolveModuleAsync, () => {
       modules: [],
       appDelegateSubscribers: [],
       reactDelegateHandlers: [],
+      debugOnly: false,
     });
   });
 });

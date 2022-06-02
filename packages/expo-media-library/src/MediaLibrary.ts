@@ -152,7 +152,7 @@ export type MediaSubtype =
 export type MediaLibraryAssetInfoQueryOptions = {
   /**
    * Whether allow the asset to be downloaded from network. Only available in iOS with iCloud assets.
-   * @default `true`
+   * @default true
    */
   shouldDownloadFromNetwork?: boolean;
 };
@@ -248,7 +248,7 @@ export type AlbumsOptions = {
 export type AssetsOptions = {
   /**
    * The maximum number of items on a single page.
-   * @default `20`
+   * @default 20
    */
   first?: number;
   /**
@@ -270,7 +270,7 @@ export type AssetsOptions = {
   sortBy?: SortByValue[] | SortByValue;
   /**
    * An array of [MediaTypeValue](#expomedialibrarymediatypevalue)s or a single `MediaTypeValue`.
-   * @default `MediaType.photo`
+   * @default MediaType.photo
    */
   mediaType?: MediaTypeValue[] | MediaTypeValue;
   /**
@@ -460,7 +460,7 @@ export async function presentPermissionsPickerAsync(): Promise<void> {
 
 // @needsAudit
 /**
- * Creates an asset from existing file. The most common use case is to save a picture taken by [Camera](../camera).
+ * Creates an asset from existing file. The most common use case is to save a picture taken by [Camera](./camera).
  * This method requires `CAMERA_ROLL` permission.
  *
  * @example

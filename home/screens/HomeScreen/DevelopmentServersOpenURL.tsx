@@ -12,8 +12,8 @@ import {
 } from 'expo-dev-client-components';
 import * as React from 'react';
 import { Animated, Linking } from 'react-native';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
-import { PressableOpacity } from '../../components/PressableOpacity';
 import * as UrlUtils from '../../utils/UrlUtils';
 
 export function DevelopmentServersOpenURL() {
@@ -50,20 +50,22 @@ export function DevelopmentServersOpenURL() {
 
   return (
     <>
-      <Divider />
-      <View padding="medium">
-        <PressableOpacity onPress={() => setShowInput((prevState) => !prevState)}>
+      <Divider style={{ height: 1 }} />
+      <View>
+        <TouchableOpacity
+          style={{ padding: 16 }}
+          onPress={() => setShowInput((prevState) => !prevState)}>
           <Row align="center">
             <Animated.View
               style={{ transform: [{ rotate: interpolateRotating }], marginRight: spacing[2] }}>
               <ChevronRightIcon size="small" style={{ tintColor: theme.icon.default }} />
             </Animated.View>
-            <Text>Enter URL manually</Text>
+            <Text type="InterRegular">Enter URL manually</Text>
           </Row>
-        </PressableOpacity>
+        </TouchableOpacity>
         {showInput ? <Spacer.Vertical size="medium" /> : null}
         {showInput ? (
-          <View>
+          <View padding="medium" style={{ marginTop: -32 }}>
             <TextInput
               onChangeText={(newUrl) => setUrl(newUrl.trim())}
               border="default"
@@ -77,11 +79,12 @@ export function DevelopmentServersOpenURL() {
               style={{ backgroundColor: theme.background.default }}
               px="4"
               py="3"
+              type="InterRegular"
               placeholder="exp://"
               placeholderTextColor={theme.text.secondary}
             />
             <Spacer.Vertical size="small" />
-            <PressableOpacity
+            <TouchableOpacity
               onPress={openURL}
               disabled={!url}
               style={[
@@ -93,10 +96,10 @@ export function DevelopmentServersOpenURL() {
                   alignItems: 'center',
                 },
               ]}>
-              <Button.Text color="tertiary" weight="semibold">
+              <Button.Text color="tertiary" type="InterSemiBold">
                 Connect
               </Button.Text>
-            </PressableOpacity>
+            </TouchableOpacity>
           </View>
         ) : null}
       </View>

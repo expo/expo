@@ -44,7 +44,8 @@ module Expo
 
             pod_options = {
               :path => podspec_dir_path,
-              :testspecs => tests.include?(package.name) ? ['Tests'] : []
+              :testspecs => tests.include?(package.name) ? ['Tests'] : [],
+              :configuration => package.debugOnly ? ['Debug'] : [] # An empty array means all configurations
             }.merge(global_flags, package.flags)
 
             # Install the pod.

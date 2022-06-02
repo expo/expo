@@ -2,6 +2,7 @@ import { EventEmitter, Subscription, UnavailabilityError, Platform } from 'expo-
 
 import {
   ClipboardImage,
+  ContentType,
   GetImageOptions,
   GetStringOptions,
   SetStringOptions,
@@ -14,12 +15,16 @@ const onClipboardEventName = 'onClipboardChanged';
 
 type ClipboardEvent = {
   /**
-   * The new content of the user's clipboard.
+   * @deprecated Returns empty string. Use [`getStringAsync()`](#getstringasyncoptions) instead to retrieve clipboard content.
    */
   content: string;
+  /**
+   * An array of content types that are available on the clipboard.
+   */
+  contentTypes: ContentType[];
 };
 
-export { Subscription, EventEmitter, ClipboardEvent };
+export { Subscription, ClipboardEvent };
 
 /**
  * Gets the content of the user's clipboard. Please note that calling this method on web will prompt
@@ -55,7 +60,7 @@ export async function setStringAsync(
 
 /**
  * Sets the content of the user's clipboard.
- * @deprecated Deprecated. Use [`setStringAsync()`](#setstringasynctext) instead.
+ * @deprecated Use [`setStringAsync()`](#setstringasynctext-options) instead.
  *
  * @returns On web, this returns a boolean value indicating whether or not the string was saved to
  * the user's clipboard. On iOS and Android, nothing is returned.
@@ -71,11 +76,11 @@ export function setString(text: string): void {
 }
 
 /**
- * Returns whether the clipboard has text content.
+ * Returns whether the clipboard has text content. Returns true for both plain text and rich text (e.g. HTML).
  *
  * On web, this requires the user to grant your app permission to _"see text and images copied to the clipboard"_.
  *
- * @returns A promise that fulfills to `true` if clipboard has plain text content, resolves to `false` otherwise.
+ * @returns A promise that fulfills to `true` if clipboard has text content, resolves to `false` otherwise.
  */
 export function hasStringAsync(): Promise<boolean> {
   if (!ExpoClipboard.hasStringAsync) {
@@ -85,9 +90,9 @@ export function hasStringAsync(): Promise<boolean> {
 }
 
 /**
- * Gets the url from the user's clipboard.
+ * Gets the URL from the user's clipboard.
  *
- * @returns A promise that fulfills to the url in the clipboard.
+ * @returns A promise that fulfills to the URL in the clipboard.
  * @platform iOS
  */
 export async function getUrlAsync(): Promise<string | null> {
@@ -98,9 +103,9 @@ export async function getUrlAsync(): Promise<string | null> {
 }
 
 /**
- * Sets a url in the user's clipboard.
+ * Sets a URL in the user's clipboard.
  *
- * @param url The url to save to the clipboard.
+ * @param url The URL to save to the clipboard.
  * @platform iOS
  */
 export async function setUrlAsync(url: string): Promise<void> {
@@ -124,14 +129,20 @@ export async function hasUrlAsync(): Promise<boolean> {
 }
 
 /**
- * Gets the image from the user's clipboard and returns it in the specified format.
+ * Gets the image from the user's clipboard and returns it in the specified format. Please note that calling
+ * this method on web will prompt the user to grant your app permission to "see text and images copied to the clipboard."
  *
  * @param options A `GetImageOptions` object to specify the desired format of the image.
  * @returns If there was an image in the clipboard, the promise resolves to
  * a [`ClipboardImage`](#clipboardimage) object containing the base64 string and metadata of the image.
  * Otherwise, it resolves to `null`.
- * @platform Android
- * @platform iOS
+ *
+ * @example
+ * ```tsx
+ * const img = await Clipboard.getImageAsync({ format: 'png' });
+ * // ...
+ * <Image source={{ uri: img?.data }} style={{ width: 200, height: 200 }} />
+ * ```
  */
 export async function getImageAsync(options: GetImageOptions): Promise<ClipboardImage | null> {
   if (!ExpoClipboard.getImageAsync) {
@@ -143,9 +154,16 @@ export async function getImageAsync(options: GetImageOptions): Promise<Clipboard
 /**
  * Sets an image in the user's clipboard.
  *
- * @param base64Image Image encoded as a base64 string, without mime type.
- * @platform Android
- * @platform iOS
+ * @param base64Image Image encoded as a base64 string, without MIME type.
+ *
+ * @example
+ * ```tsx
+ * const result = await ImagePicker.launchImageLibraryAsync({
+ *   mediaTypes: ImagePicker.MediaTypeOptions.Images,
+ *   base64: true,
+ * });
+ * await Clipboard.setImageAsync(result.base64);
+ * ```
  */
 export async function setImageAsync(base64Image: string): Promise<void> {
   if (!ExpoClipboard.setImageAsync) {
@@ -157,9 +175,9 @@ export async function setImageAsync(base64Image: string): Promise<void> {
 /**
  * Returns whether the clipboard has a image content.
  *
+ * On web, this requires the user to grant your app permission to _"see text and images copied to the clipboard"_.
+ *
  * @returns A promise that fulfills to `true` if clipboard has image content, resolves to `false` otherwise.
- * @platform Android
- * @platform iOS
  */
 export async function hasImageAsync(): Promise<boolean> {
   if (!ExpoClipboard.hasImageAsync) {
@@ -173,17 +191,36 @@ export async function hasImageAsync(): Promise<boolean> {
  * is a no-op on Web.
  *
  * @param listener Callback to execute when listener is triggered. The callback is provided a
- * single argument that is an object with a `content` key.
+ * single argument that is an object containing information about clipboard contents.
  *
  * @example
  * ```typescript
- * addClipboardListener(({ content }: ClipboardEvent) => {
- *   alert('Copy pasta! Here's the string that was copied: ' + content);
+ * Clipboard.addClipboardListener(({ contentTypes }: ClipboardEvent) => {
+ *   if (contentTypes.includes(Clipboard.ContentType.PLAIN_TEXT)) {
+ *     Clipboard.getStringAsync().then(content => {
+ *       alert('Copy pasta! Here\'s the string that was copied: ' + content)
+ *     });
+ *   } else if (contentTypes.includes(Clipboard.ContentType.IMAGE)) {
+ *     alert('Yay! Clipboard contains an image');
+ *   }
  * });
  * ```
  */
 export function addClipboardListener(listener: (event: ClipboardEvent) => void): Subscription {
-  return emitter.addListener<ClipboardEvent>(onClipboardEventName, listener);
+  // TODO: Get rid of this wrapper once we remove deprecated `content` property (not before SDK47)
+  const listenerWrapper = (event: ClipboardEvent) => {
+    const wrappedEvent: ClipboardEvent = {
+      ...event,
+      get content(): string {
+        console.warn(
+          "The 'content' property of the clipboard event is deprecated. Use 'getStringAsync()' instead to get clipboard content"
+        );
+        return '';
+      },
+    };
+    listener(wrappedEvent);
+  };
+  return emitter.addListener<ClipboardEvent>(onClipboardEventName, listenerWrapper);
 }
 
 /**

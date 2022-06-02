@@ -1,6 +1,6 @@
 package abi44_0_0.expo.modules.gl;
 
-import static expo.modules.gl.cpp.EXGL.*;
+import static abi44_0_0.expo.modules.gl.cpp.EXGL.*;
 
 public class GLObject {
   protected int exglCtxId;

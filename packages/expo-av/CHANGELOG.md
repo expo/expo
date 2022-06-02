@@ -8,13 +8,46 @@
 
 ### 🐛 Bug fixes
 
+- On Android fix `Video` component crashes when activity loses focus due to accessing player from the wrong thread. ([#17280](https://github.com/expo/expo/pull/17280) by [@mnightingale](https://github.com/mnightingale))
+
 ### 💡 Others
+
+## 11.2.2 — 2022-04-27
+
+### 🐛 Bug fixes
+
+- Fixed displaying warning about `Sound.setOnAudioSampleReceived` unavailable when debugging remotely. ([#17210](https://github.com/expo/expo/pull/17210) by [@barthap](https://github.com/barthap))
+- Fixed crash when remote debugging is enabled on Android. ([#17212](https://github.com/expo/expo/pull/17212) by [@barthap](https://github.com/barthap))
+
+## 11.2.1 — 2022-04-20
+
+### 🐛 Bug fixes
+
+- On iOS fix crash caused by updating `AVPlaybackStatus` from both `<Video />` props and  the Playback API at the same time. Also prevented a crash on iOS caused by removing the Video without unlisting its underlying native `EXAVPlayerData` as an observer. ([#17036](https://github.com/expo/expo/pull/17036) by [@Pickleboyonline](https://github.com/Pickleboyonline))
+
+## 11.2.0 — 2022-04-18
+
+### 🎉 New features
+
+- Add new `Sound.setOnAudioSampleReceived` API to support streaming audio sample buffers in realtime. ([#14904](https://github.com/expo/expo/pull/14904), [#16075](https://github.com/expo/expo/pull/16075) by [@barthap](https://github.com/barthap))
+
+### 🐛 Bug fixes
+
+- On Android fix crashes caused by accessing player from the wrong thread ([#16611](https://github.com/expo/expo/pull/16611) by [@mnightingale](https://github.com/mnightingale))
+
+### 💡 Others
+
+- Extract `tolerances` param type definition, used across the package methods, to the separate type `AVPlaybackTolerance`. ([#16905](https://github.com/expo/expo/pull/16905) by [@Simek](https://github.com/Simek))
+
+### ⚠️ Notices
+
+- On Android bump `compileSdkVersion` to `31`, `targetSdkVersion` to `31` and `Java` version to `11`. ([#16941](https://github.com/expo/expo/pull/16941) by [@bbarthec](https://github.com/bbarthec))
 
 ## 11.1.0 — 2022-03-10
 
 ### 🐛 Bug fixes
 
-- On iOS fix `pauseAsync` causing framedrops and being delayed by not disabling `AVAudioSession` when there is no need for it ([#15873](https://github.com/expo/expo/pull/16544) by [@hirbod](https://github.com/hirbod) and [@mnightingale](https://github.com/mnightingale))
+- On iOS fix `pauseAsync` causing framedrops and being delayed by not disabling `AVAudioSession` when there is no need for it ([#15873](https://github.com/expo/expo/pull/15873) by [@hirbod](https://github.com/hirbod) and [@mnightingale](https://github.com/mnightingale))
 
 ## 11.0.1 — 2022-03-07
 

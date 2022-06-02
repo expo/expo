@@ -9,9 +9,10 @@ const AnimatedPressable = Animated.createAnimatedComponent(RNPressable);
 
 const Text = create(RNText, {
   base: {
-    fontWeight: '400',
+    fontFamily: 'Inter-Regular',
     color: lightTheme.text.default,
     fontSize: 16,
+    lineHeight: 22,
   },
 
   props: {

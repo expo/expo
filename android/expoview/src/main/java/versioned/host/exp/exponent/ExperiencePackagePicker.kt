@@ -17,9 +17,10 @@ import expo.modules.clipboard.ClipboardModule
 import expo.modules.constants.ConstantsPackage
 import expo.modules.contacts.ContactsPackage
 import expo.modules.core.interfaces.Package
-import expo.modules.crypto.CryptoPackage
+import expo.modules.crypto.CryptoModule
 import expo.modules.device.DevicePackage
 import expo.modules.documentpicker.DocumentPickerPackage
+import expo.modules.easclient.EASClientModule
 import expo.modules.errorrecovery.ErrorRecoveryPackage
 import expo.modules.facebook.FacebookPackage
 import expo.modules.facedetector.FaceDetectorPackage
@@ -28,11 +29,10 @@ import expo.modules.firebase.analytics.FirebaseAnalyticsPackage
 import expo.modules.firebase.core.FirebaseCorePackage
 import expo.modules.font.FontLoaderPackage
 import expo.modules.gl.GLPackage
-import expo.modules.google.signin.GoogleSignInPackage
 import expo.modules.haptics.HapticsPackage
 import expo.modules.imageloader.ImageLoaderPackage
 import expo.modules.imagemanipulator.ImageManipulatorPackage
-import expo.modules.imagepicker.ImagePickerPackage
+import expo.modules.imagepicker.ImagePickerModule
 import expo.modules.intentlauncher.IntentLauncherPackage
 import expo.modules.keepawake.KeepAwakePackage
 import expo.modules.kotlin.ModulesProvider
@@ -49,6 +49,7 @@ import expo.modules.network.NetworkPackage
 import expo.modules.notifications.NotificationsPackage
 import expo.modules.permissions.PermissionsPackage
 import expo.modules.print.PrintPackage
+import expo.modules.random.RandomModule
 import expo.modules.screencapture.ScreenCapturePackage
 import expo.modules.screenorientation.ScreenOrientationPackage
 import expo.modules.securestore.SecureStorePackage
@@ -63,7 +64,7 @@ import expo.modules.systemui.SystemUIPackage
 import expo.modules.taskManager.TaskManagerPackage
 import expo.modules.updates.UpdatesPackage
 import expo.modules.videothumbnails.VideoThumbnailsPackage
-import expo.modules.webbrowser.WebBrowserPackage
+import expo.modules.webbrowser.WebBrowserModule
 
 object ExperiencePackagePicker : ModulesProvider {
   private val EXPO_MODULES_PACKAGES = listOf(
@@ -80,7 +81,6 @@ object ExperiencePackagePicker : ModulesProvider {
     CameraPackage(),
     ConstantsPackage(),
     ContactsPackage(),
-    CryptoPackage(),
     DevicePackage(),
     DocumentPickerPackage(),
     ErrorRecoveryPackage(),
@@ -91,11 +91,9 @@ object ExperiencePackagePicker : ModulesProvider {
     FirebaseAnalyticsPackage(),
     FontLoaderPackage(),
     GLPackage(),
-    GoogleSignInPackage(),
     HapticsPackage(),
     ImageLoaderPackage(),
     ImageManipulatorPackage(),
-    ImagePickerPackage(),
     IntentLauncherPackage(),
     KeepAwakePackage(),
     LocalAuthenticationPackage(),
@@ -123,7 +121,6 @@ object ExperiencePackagePicker : ModulesProvider {
     TaskManagerPackage(),
     UpdatesPackage(),
     VideoThumbnailsPackage(),
-    WebBrowserPackage()
   )
 
   /**
@@ -144,6 +141,11 @@ object ExperiencePackagePicker : ModulesProvider {
   override fun getModulesList(): List<Class<out Module>> = listOf(
     CellularModule::class.java,
     ClipboardModule::class.java,
-    LinearGradientModule::class.java
+    CryptoModule::class.java,
+    EASClientModule::class.java,
+    ImagePickerModule::class.java,
+    LinearGradientModule::class.java,
+    RandomModule::class.java,
+    WebBrowserModule::class.java,
   )
 }

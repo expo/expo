@@ -27,7 +27,7 @@ export function ThemeProvider({ children, themePreference = 'no-preference' }: T
   return <ThemeContext.Provider value={theme}>{children}</ThemeContext.Provider>;
 }
 
-type ExpoTheme = typeof lightTheme;
+export type ExpoTheme = typeof lightTheme;
 
 export function useCurrentTheme(): 'light' | 'dark' {
   const theme = useTheme();

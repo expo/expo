@@ -1,5 +1,6 @@
 import * as React from 'react';
 
+import { DevLauncher } from '../../native-modules/DevLauncher';
 import {
   AppInfo,
   toggleDebugRemoteJSAsync,
@@ -7,11 +8,12 @@ import {
   toggleFastRefreshAsync,
   togglePerformanceMonitorAsync,
   copyToClipboardAsync,
-  navigateToLauncherAsync,
   reloadAsync,
 } from '../../native-modules/DevMenu';
 import { render, waitFor, fireEvent, act } from '../../test-utils';
 import { Main } from '../Main';
+
+const { navigateToLauncherAsync } = DevLauncher;
 
 const mockToggleDebugRemoteJSAsync = toggleDebugRemoteJSAsync as jest.Mock;
 const mockToggleElementInspectorAsync = toggleElementInspectorAsync as jest.Mock;

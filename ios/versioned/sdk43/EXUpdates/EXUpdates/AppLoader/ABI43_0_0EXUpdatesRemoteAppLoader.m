@@ -2,7 +2,9 @@
 
 #import <ABI43_0_0EXUpdates/ABI43_0_0EXUpdatesRemoteAppLoader.h>
 #import <ABI43_0_0EXUpdates/ABI43_0_0EXUpdatesCrypto.h>
+#import <ABI43_0_0EXUpdates/ABI43_0_0EXUpdatesEmbeddedAppLoader.h>
 #import <ABI43_0_0EXUpdates/ABI43_0_0EXUpdatesFileDownloader.h>
+#import <ABI43_0_0EXUpdates/ABI43_0_0EXUpdatesUtils.h>
 #import <ABI43_0_0ExpoModulesCore/ABI43_0_0EXUtilities.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -22,9 +24,10 @@ static NSString * const ABI43_0_0EXUpdatesRemoteAppLoaderErrorDomain = @"ABI43_0
 - (instancetype)initWithConfig:(ABI43_0_0EXUpdatesConfig *)config
                       database:(ABI43_0_0EXUpdatesDatabase *)database
                      directory:(NSURL *)directory
+                launchedUpdate:(nullable ABI43_0_0EXUpdatesUpdate *)launchedUpdate
                completionQueue:(dispatch_queue_t)completionQueue
 {
-  if (self = [super initWithConfig:config database:database directory:directory completionQueue:completionQueue]) {
+  if (self = [super initWithConfig:config database:database directory:directory launchedUpdate:launchedUpdate completionQueue:completionQueue]) {
     _downloader = [[ABI43_0_0EXUpdatesFileDownloader alloc] initWithUpdatesConfig:self.config];
     _completionQueue = completionQueue;
   }
@@ -65,15 +68,15 @@ static NSString * const ABI43_0_0EXUpdatesRemoteAppLoaderErrorDomain = @"ABI43_0
   };
 
   dispatch_async(self.database.databaseQueue, ^{
-    NSError *headersError;
-    NSDictionary *extraHeaders = [self.database serverDefinedHeadersWithScopeKey:self.config.scopeKey error:&headersError];
-    if (headersError) {
-      NSLog(@"Error selecting serverDefinedHeaders from database: %@", headersError.localizedDescription);
-    }
+    ABI43_0_0EXUpdatesUpdate *embeddedUpdate = [ABI43_0_0EXUpdatesEmbeddedAppLoader embeddedManifestWithConfig:self.config database:self.database];
+    NSDictionary *extraHeaders = [ABI43_0_0EXUpdatesFileDownloader extraHeadersWithDatabase:self.database
+                                                                            config:self.config
+                                                                    launchedUpdate:self.launchedUpdate
+                                                                    embeddedUpdate:embeddedUpdate];
     [self->_downloader downloadManifestFromURL:url withDatabase:self.database extraHeaders:extraHeaders successBlock:^(ABI43_0_0EXUpdatesUpdate *update) {
       self->_remoteUpdate = update;
       [self startLoadingFromManifest:update];
-    } errorBlock:^(NSError *error, NSURLResponse *response) {
+    } errorBlock:^(NSError *error) {
       if (self.errorBlock) {
         self.errorBlock(error);
       }
@@ -97,11 +100,23 @@ static NSString * const ABI43_0_0EXUpdatesRemoteAppLoaderErrorDomain = @"ABI43_0
         return;
       }
 
-      [self->_downloader downloadFileFromURL:asset.url toPath:[urlOnDisk path] successBlock:^(NSData *data, NSURLResponse *response) {
+      [self->_downloader downloadFileFromURL:asset.url
+                                      toPath:[urlOnDisk path]
+                                extraHeaders:asset.extraRequestHeaders ?: @{}
+                                successBlock:^(NSData *data, NSURLResponse *response) {
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-          [self handleAssetDownloadWithData:data response:response asset:asset];
+          NSString *hashBase64String = [ABI43_0_0EXUpdatesUtils base64UrlEncodedSHA256WithData:data];
+          if (asset.expectedHash && ![asset.expectedHash isEqualToString:hashBase64String]) {
+            NSError *error = [NSError errorWithDomain:ABI43_0_0EXUpdatesRemoteAppLoaderErrorDomain
+                                                 code:1016
+                                             userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithFormat:@"Asset hash invalid: %@; expectedHash: %@; actualHash: %@", asset.key, asset.expectedHash, hashBase64String]}];
+            [self handleAssetDownloadWithError:error asset:asset];
+          } else {
+            [self handleAssetDownloadWithData:data response:response asset:asset];
+          }
         });
-      } errorBlock:^(NSError *error, NSURLResponse *response) {
+      }
+                                  errorBlock:^(NSError *error) {
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
           [self handleAssetDownloadWithError:error asset:asset];
         });

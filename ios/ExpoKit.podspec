@@ -3,7 +3,7 @@
 
 Pod::Spec.new do |s|
   s.name = "ExpoKit"
-  s.version = "44.0.0"
+  s.version = "45.0.0"
   s.summary = 'ExpoKit'
   s.description = 'ExpoKit allows native projects to integrate with the Expo SDK.'
   s.homepage = 'http://docs.expo.io'
@@ -11,6 +11,7 @@ Pod::Spec.new do |s|
   s.author = "650 Industries, Inc."
   s.requires_arc = true
   s.platform = :ios, "12.0"
+  s.swift_version  = '5.4'
   s.default_subspec = "Core"
   s.source = { :git => "http://github.com/expo/expo.git" }
   s.xcconfig = {
@@ -24,10 +25,15 @@ Pod::Spec.new do |s|
     ]
   }
 
+  s.pod_target_xcconfig = {
+    'USE_HEADERMAP' => 'YES',
+    'DEFINES_MODULE' => 'YES',
+  }
+
   s.subspec "Core" do |ss|
-    ss.source_files = "Exponent/**/*.{h,m,mm,cpp}", "../template-files/keys.json"
-    ss.preserve_paths = "Exponent/**/*.{h,m,mm,cpp}"
-    ss.exclude_files = "Exponent/Supporting/**", "Exponent/Versioned/Optional/**/*.{h,m}"
+    ss.source_files = "Exponent/**/*.{h,m,mm,cpp,swift}", "../template-files/keys.json"
+    ss.preserve_paths = "Exponent/**/*.{h,m,mm,cpp,swift}"
+    ss.exclude_files = "Exponent/Supporting/**", "Exponent/Versioned/Optional/**/*.{h,m,swift}"
 
     ss.dependency 'Amplitude', '~> 6.0.0'
     ss.dependency 'CocoaLumberjack', '~> 3.5.3'

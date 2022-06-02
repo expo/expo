@@ -1,6 +1,5 @@
 export * as Directories from './Directories';
 export * as FirebaseTestLab from './FirebaseTestLab';
-export * as HashDirectory from './HashDirectory';
 export * as IOSSimulator from './IOSSimulator';
 export * as IOSSimulatorTestSuite from './IOSSimulatorTestSuite';
 export * as Log from './Log';

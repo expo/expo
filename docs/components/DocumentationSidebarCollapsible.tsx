@@ -61,7 +61,7 @@ export default class DocumentationSidebarCollapsible extends React.Component<Pro
 
     // default to always open
     this.state = {
-      isOpen: props.info.collapsed ? isOpen : true,
+      isOpen: props.info.expanded || isOpen,
     };
   }
 

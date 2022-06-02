@@ -15,12 +15,6 @@ import org.json.JSONObject;
 import expo.modules.apploader.AppLoaderProvider;
 import expo.modules.apploader.HeadlessAppLoader;
 import expo.modules.core.interfaces.SingletonModule;
-import org.unimodules.interfaces.taskManager.TaskConsumerInterface;
-import org.unimodules.interfaces.taskManager.TaskExecutionCallback;
-import org.unimodules.interfaces.taskManager.TaskInterface;
-import org.unimodules.interfaces.taskManager.TaskManagerInterface;
-import org.unimodules.interfaces.taskManager.TaskManagerUtilsInterface;
-import org.unimodules.interfaces.taskManager.TaskServiceInterface;
 
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Constructor;
@@ -31,6 +25,13 @@ import java.util.Map;
 import java.util.UUID;
 
 import androidx.annotation.Nullable;
+
+import expo.modules.interfaces.taskManager.TaskConsumerInterface;
+import expo.modules.interfaces.taskManager.TaskExecutionCallback;
+import expo.modules.interfaces.taskManager.TaskInterface;
+import expo.modules.interfaces.taskManager.TaskManagerInterface;
+import expo.modules.interfaces.taskManager.TaskManagerUtilsInterface;
+import expo.modules.interfaces.taskManager.TaskServiceInterface;
 import expo.modules.taskManager.exceptions.InvalidConsumerClassException;
 import expo.modules.taskManager.exceptions.TaskNotFoundException;
 import expo.modules.taskManager.exceptions.TaskRegisteringFailedException;

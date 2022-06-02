@@ -35,7 +35,7 @@ export type NavigationRoute = {
   href: string;
   as?: string;
   hidden?: boolean;
-  collapsed?: boolean;
+  expanded?: boolean;
   sidebarTitle?: string;
   weight?: number;
   children?: NavigationRoute[];

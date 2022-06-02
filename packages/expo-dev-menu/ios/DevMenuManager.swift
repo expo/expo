@@ -1,7 +1,10 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
+import React
 import EXDevMenuInterface
 import EXManifests
+import CoreGraphics
+import CoreMedia
 
 class Dispatch {
   static func mainSync<T>(_ closure: () -> T) -> T {
@@ -54,7 +57,7 @@ open class DevMenuManager: NSObject {
   var canLaunchDevMenuOnStart = true
 
   public var expoApiClient: DevMenuExpoApiClientProtocol = DevMenuExpoApiClient()
-
+  
   /**
    Shared singleton instance.
    */
@@ -398,4 +401,42 @@ open class DevMenuManager: NSObject {
   public func getDevSettings() -> [AnyHashable: Any] {
     return EXDevMenuDevSettings.getDevSettings()
   }
+  
+  private static var fontsWereLoaded = false
+
+  @objc
+  public func loadFonts() {
+    if DevMenuManager.fontsWereLoaded {
+       return
+    }
+    DevMenuManager.fontsWereLoaded = true
+
+    let fonts = [
+      "Inter-Black",
+      "Inter-ExtraBold",
+      "Inter-Bold",
+      "Inter-SemiBold",
+      "Inter-Medium",
+      "Inter-Regular",
+      "Inter-Light",
+      "Inter-ExtraLight",
+      "Inter-Thin"
+    ]
+    
+    for font in fonts {
+      let path = DevMenuUtils.resourcesBundle()?.path(forResource: font, ofType: "otf")
+      let data = FileManager.default.contents(atPath: path!)
+      let provider = CGDataProvider(data: data! as CFData)
+      let font = CGFont(provider!)
+      var error: Unmanaged<CFError>?
+      CTFontManagerRegisterGraphicsFont(font!, &error)
+    }
+  }
+  
+  // captures any callbacks that are registered via the `registerDevMenuItems` module method
+  // it is set and unset by the public facing `DevMenuModule`
+  // when the DevMenuModule instance is unloaded (e.g between app loads) the callback list is reset to an empty array
+  @objc
+  public var registeredCallbacks: [String] = []
+
 }

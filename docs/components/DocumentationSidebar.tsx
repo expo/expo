@@ -62,7 +62,7 @@ function DocumentationSidebarSection(props: SidebarNodeProps) {
 
   return (
     <DocumentationSidebarCollapsible
-      key={`group-${props.route.name}`}
+      key={`section-${props.route.name}`}
       router={props.router}
       info={props.route}>
       {props.route.children.map(group => (
@@ -108,7 +108,7 @@ function shouldSkipTitle(info: NavigationRoute, parentGroup?: NavigationRoute) {
     ((info.children[0] || {}).sidebarTitle || (info.children[0] || {}).name) === info.name
   ) {
     // If the first child post in the group has the same name as the group, then hide the
-    // group title, lest we be very repetititve
+    // group title, lest we be very repetitive
     return true;
   }
 

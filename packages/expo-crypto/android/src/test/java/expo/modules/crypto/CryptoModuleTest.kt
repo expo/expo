@@ -1,61 +1,46 @@
 package expo.modules.crypto
 
-import androidx.test.core.app.ApplicationProvider
-
+import expo.modules.kotlin.exception.CodedException
+import expo.modules.test.core.ModuleMock
+import expo.modules.test.core.ModuleMockHolder
 import org.junit.Assert.assertEquals
-import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import org.unimodules.test.core.PromiseMock
-import org.unimodules.test.core.assertRejected
+
+private interface CryptoModuleTestInterface {
+  @Throws(CodedException::class)
+  fun digestStringAsync(algorithm: DigestAlgorithm, data: String, options: DigestOptions): String
+}
+
+private inline fun withCryptoModuleMock(
+  block: ModuleMockHolder<CryptoModuleTestInterface, CryptoModule>.() -> Unit
+) = ModuleMock.createMock(
+  CryptoModuleTestInterface::class,
+  CryptoModule(),
+  block = block,
+)
 
 @RunWith(RobolectricTestRunner::class)
 class CryptoModuleTest {
   private val testValue = "Expo"
-  private val algorithms = listOf("SHA-1", "SHA-256", "SHA-384", "SHA-512", "MD2", "MD4", "MD5")
-  private lateinit var module: CryptoModule
-
-  @Before
-  fun initializeMock() {
-    module = CryptoModule(ApplicationProvider.getApplicationContext())
-  }
+  private val algorithms = DigestAlgorithm.values()
 
   @Test
-  fun digestStringForBase64() {
-    val encoding = "base64"
+  fun digestStringForBase64() = withCryptoModuleMock {
+    val options = DigestOptions().apply { encoding = DigestOptions.Encoding.BASE64 }
     for (algorithm in algorithms) {
-      val promise = PromiseMock()
-      module.digestStringAsync(algorithm, testValue, mapOf("encoding" to "base64"), promise)
-      assertEquals(expectedEncodingResults[encoding]!![algorithm], promise.resolveValue)
+      val result = module.digestStringAsync(algorithm, testValue, options)
+      assertEquals(expectedEncodingResults[options.encoding]!![algorithm], result)
     }
   }
 
   @Test
-  fun digestStringForHex() {
-    val encoding = "hex"
+  fun digestStringForHex() = withCryptoModuleMock {
+    val options = DigestOptions().apply { encoding = DigestOptions.Encoding.HEX }
     for (algorithm in algorithms) {
-      val promise = PromiseMock()
-      module.digestStringAsync(algorithm, testValue, mapOf("encoding" to encoding), promise)
-      assertEquals(expectedEncodingResults[encoding]!![algorithm], promise.resolveValue)
+      val result = module.digestStringAsync(algorithm, testValue, options)
+      assertEquals(expectedEncodingResults[options.encoding]!![algorithm], result)
     }
-  }
-
-  @Test
-  fun digestStringForInvalidEncoding() {
-    val promise = PromiseMock()
-    val encoding = "h333x"
-    val algorithm = "SHA-1"
-    module.digestStringAsync(algorithm, testValue, mapOf("encoding" to encoding), promise)
-    assertRejected(promise)
-  }
-
-  @Test
-  fun digestStringForInvalidAlgorithm() {
-    val promise = PromiseMock()
-    val encoding = "hex"
-    val algorithm = "MDWer4"
-    module.digestStringAsync(algorithm, testValue, mapOf("encoding" to encoding), promise)
-    assertRejected(promise)
   }
 }

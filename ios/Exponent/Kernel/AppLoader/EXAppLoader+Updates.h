@@ -19,16 +19,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly, nullable) id<EXUpdatesAppLauncher> appLauncher;
 @property (nonatomic, readonly, assign) BOOL isEmergencyLaunch;
 
-/**
- * Fetch JS bundle without any side effects or interaction with the timer.
- */
-- (void)fetchJSBundleWithManifest:(NSDictionary *)manifest
-                    cacheBehavior:(EXCachedResourceBehavior)cacheBehavior
-                  timeoutInterval:(NSTimeInterval)timeoutInterval
-                         progress:(void (^ _Nullable )(EXLoadingProgress *))progressBlock
-                          success:(void (^)(NSData *))successBlock
-                            error:(void (^)(NSError *))errorBlock;
-
 @end
 
 NS_ASSUME_NONNULL_END

@@ -22,6 +22,7 @@ import {
   getCommentOrSignatureComment,
   getTagData,
 } from '~/components/plugins/api/APISectionUtils';
+import { Cell, HeaderCell, Row, Table, TableHead } from '~/ui/components/Table';
 
 export type APISectionTypesProps = {
   data: TypeGeneralData[];
@@ -43,17 +44,27 @@ const defineLiteralType = (types: TypeDefinitionData[]): JSX.Element | null => {
 };
 
 const renderTypeDeclarationTable = ({ children }: TypeDeclarationContentData): JSX.Element => (
-  <table key={`type-declaration-table-${children?.map(child => child.name).join('-')}`}>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
+  <Table key={`type-declaration-table-${children?.map(child => child.name).join('-')}`}>
+    <TableHead>
+      <Row>
+        <HeaderCell>Name</HeaderCell>
+        <HeaderCell>Type</HeaderCell>
+        <HeaderCell>Description</HeaderCell>
+      </Row>
+    </TableHead>
     <tbody>{children?.map(renderTypePropertyRow)}</tbody>
-  </table>
+  </Table>
 );
+
+const renderDefaultValue = (initValue?: string) =>
+  initValue ? (
+    <>
+      <br />
+      <br />
+      <B>Default: </B>
+      <InlineCode>{initValue}</InlineCode>
+    </>
+  ) : null;
 
 const renderTypePropertyRow = ({
   name,
@@ -66,28 +77,24 @@ const renderTypePropertyRow = ({
   const initValue = parseCommentContent(defaultValue || getTagData('default', comment)?.text);
   const commentData = getCommentOrSignatureComment(comment, signatures);
   return (
-    <tr key={name}>
-      <td>
+    <Row key={name}>
+      <Cell fitContent>
         <B>{name}</B>
         {renderFlags(flags)}
-      </td>
-      <td>{renderTypeOrSignatureType(type, signatures)}</td>
-      <td>
+      </Cell>
+      <Cell fitContent>{renderTypeOrSignatureType(type, signatures)}</Cell>
+      <Cell fitContent>
         {commentData ? (
-          <CommentTextBlock comment={commentData} components={mdInlineComponents} />
+          <CommentTextBlock
+            comment={commentData}
+            components={mdInlineComponents}
+            afterContent={renderDefaultValue(initValue)}
+          />
         ) : (
           '-'
         )}
-        {initValue ? (
-          <>
-            <br />
-            <br />
-            <B>Default: </B>
-            <InlineCode>{initValue}</InlineCode>
-          </>
-        ) : null}
-      </td>
-    </tr>
+      </Cell>
+    </Row>
   );
 };
 

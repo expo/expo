@@ -5,7 +5,7 @@ import { FontDisplay, FontSource, FontResource, UnloadFontOptions } from './Font
  * names if it is called in those contexts.
  *
  * @param fontFamily Name of font to process.
- * @returns Returns a name processed for use with the [current workflow](https://docs.expo.io/introduction/managed-vs-bare/).
+ * @returns Returns a name processed for use with the [current workflow](https://docs.expo.dev/introduction/managed-vs-bare/).
  */
 export declare function processFontFamily(fontFamily: string | null): string | null;
 /**

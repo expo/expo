@@ -1,52 +1,59 @@
-import Dispatch
+/**
+ An alias to `Result<Any, Exception>` which can be passed to the function callback.
+ */
+public typealias FunctionCallResult = Result<Any, Exception>
 
 /**
  A protocol for any type-erased function.
  */
-public protocol AnyFunction: AnyDefinition {
+internal protocol AnyFunction: AnyDefinition, JavaScriptObjectBuilder {
   /**
    Name of the function. JavaScript refers to the function by this name.
    */
   var name: String { get }
 
   /**
-   Bool value indicating whether the function takes promise as the last argument.
+   An array of the dynamic types that the function takes. If the last type is `Promise`, it's not included.
    */
-  var takesPromise: Bool { get }
+  var dynamicArgumentTypes: [AnyDynamicType] { get }
 
   /**
-   A number of arguments the function takes. If the last argument is of type `Promise`, it is not counted.
+   A number of arguments the function takes. If the function expects to receive an owner (`this`) as the first argument, it's not counted.
+   Similarly, if the last argument is of type `Promise`, it is not counted.
    */
   var argumentsCount: Int { get }
 
   /**
-   Dispatch queue on which each function's call is run.
+   Indicates whether the function's arguments starts from the owner that calls this function.
    */
-  var queue: DispatchQueue? { get }
+  var takesOwner: Bool { get set }
 
   /**
-   Whether the function needs to be called asynchronously from JavaScript.
+   Calls the function with a given owner and arguments and returns a result through the callback block.
+   - Parameters:
+      - owner: An object that calls this function. If the `takesOwner` property is true
+      and type of the first argument matches the owner type, it's being passed as the argument.
+      - args: An array of arguments to pass to the function. They could be Swift primitives
+      when invoked through the bridge and in unit tests or `JavaScriptValue`s
+      when the function is called through the JSI.
+      - callback: A callback that receives a result of the function execution.
    */
-  var isAsync: Bool { get }
+  func call(by owner: AnyObject?, withArguments args: [Any], callback: @escaping (FunctionCallResult) -> ())
+}
 
+extension AnyFunction {
   /**
-   Calls the function on given module with arguments and a promise.
+   Calls the function just like `call(by:withArguments:callback:)`, but without an owner
+   and with an empty callback. Might be useful when you only want to call the function,
+   but don't care about the result.
    */
-  func call(args: [Any], promise: Promise)
+  func call(withArguments args: [Any]) {
+    call(by: nil, withArguments: args, callback: { _ in })
+  }
+}
 
-  /**
-   Synchronously calls the function with given arguments. If the function takes a promise,
-   the current thread will be locked until the promise rejects or resolves with the return value.
-   */
-  func callSync(args: [Any]) -> Any
-
-  /**
-   Specifies on which queue the function should run.
-   */
-  func runOnQueue(_ queue: DispatchQueue?) -> Self
-
-  /**
-   Makes the JavaScript function synchronous.
-   */
-  func runSynchronously() -> Self
+internal class FunctionCallException: GenericException<String> {
+  override var reason: String {
+    "Calling the '\(param)' function has failed"
+  }
 }

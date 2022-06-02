@@ -1,5 +1,4 @@
 export const hideMenu = jest.fn();
-export const navigateToLauncherAsync = jest.fn();
 export const reloadAsync = jest.fn();
 export const toggleDebugRemoteJSAsync = jest.fn();
 export const toggleElementInspectorAsync = jest.fn();

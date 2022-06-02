@@ -248,7 +248,7 @@ export function test(t) {
                 uri: hlsStreamUriWithRedirect,
               });
               await retryForStatus(soundObject, { isLoaded: true });
-            } catch (error) {
+            } catch {
               hasBeenRejected = true;
             }
             t.expect(hasBeenRejected).toBe(true);
@@ -264,7 +264,7 @@ export function test(t) {
                 overrideFileExtensionAndroid: 'm3u8',
               });
               await retryForStatus(soundObject, { isLoaded: true });
-            } catch (error) {
+            } catch {
               hasBeenRejected = true;
             }
             t.expect(hasBeenRejected).toBe(false);
@@ -280,7 +280,7 @@ export function test(t) {
                 uri: hlsStreamUriWithRedirect,
               });
               await retryForStatus(soundObject, { isLoaded: true });
-            } catch (error) {
+            } catch {
               hasBeenRejected = true;
             }
             t.expect(hasBeenRejected).toBe(false);
@@ -356,7 +356,7 @@ export function test(t) {
         let hasBeenRejected = false;
         try {
           await soundObject.unloadAsync();
-        } catch (error) {
+        } catch {
           hasBeenRejected = true;
         }
         t.expect(hasBeenRejected).toBe(false);
@@ -581,7 +581,7 @@ export function test(t) {
           t.expect(status.rate).toBeCloseTo(rate, 2);
           t.expect(status.shouldCorrectPitch).toBe(shouldCorrectPitch);
           t.expect(status.pitchCorrectionQuality).toBe(pitchCorrectionQuality);
-        } catch (error) {
+        } catch {
           hasBeenRejected = true;
         }
 

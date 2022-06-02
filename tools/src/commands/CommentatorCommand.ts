@@ -1,7 +1,7 @@
 import { Command } from '@expo/commander';
 import chalk from 'chalk';
-import { link } from '../Formatter';
 
+import { link } from '../Formatter';
 import { commentOnIssueAsync } from '../GitHubActions';
 import logger from '../Logger';
 

@@ -3,16 +3,15 @@
 package expo.modules.kotlin.functions
 
 import com.facebook.react.bridge.JavaOnlyArray
+import com.facebook.react.bridge.ReadableArray
 import com.google.common.truth.Truth
 import expo.modules.PromiseMock
 import expo.modules.PromiseState
 import expo.modules.assertThrows
-import expo.modules.kotlin.ModuleHolder
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.ArgumentCastException
 import expo.modules.kotlin.exception.InvalidArgsNumberException
 import expo.modules.kotlin.types.toAnyType
-import io.mockk.mockk
 import org.junit.Test
 import kotlin.reflect.KType
 import kotlin.reflect.typeOf
@@ -20,8 +19,9 @@ import kotlin.reflect.typeOf
 class AnyFunctionTest {
   class MockedAnyFunction(
     desiredArgsTypes: Array<KType>
-  ) : AnyFunction("my-method", desiredArgsTypes.map { it.toAnyType() }.toTypedArray()) {
-    override fun callImplementation(moduleHolder: ModuleHolder, args: Array<out Any?>, promise: Promise) {
+  ) : AsyncFunction("my-method", desiredArgsTypes.map { it.toAnyType() }.toTypedArray()) {
+    override fun call(args: ReadableArray, promise: Promise) {
+      convertArgs(args)
       throw NullPointerException()
     }
   }
@@ -33,7 +33,6 @@ class AnyFunctionTest {
 
     assertThrows<InvalidArgsNumberException>("Received 2 arguments, but 1 was expected.") {
       method.call(
-        mockk(),
         JavaOnlyArray().apply {
           pushInt(1)
           pushInt(2)
@@ -52,7 +51,6 @@ class AnyFunctionTest {
 
     assertThrows<InvalidArgsNumberException>("Received 1 arguments, but 2 was expected.") {
       method.call(
-        mockk(),
         JavaOnlyArray().apply {
           pushInt(1)
         },
@@ -71,11 +69,10 @@ class AnyFunctionTest {
     assertThrows<ArgumentCastException>(
       """
       Argument at index '0' couldn't be casted to type 'kotlin.Int' (received 'String').
-      → Caused by: java.lang.ClassCastException: java.lang.String cannot be cast to java.lang.Number
+      → Caused by: java.lang.ClassCastException: class java.lang.String cannot be cast to class java.lang.Number (java.lang.String and java.lang.Number are in module java.base of loader 'bootstrap')
       """.trimIndent()
     ) {
       method.call(
-        mockk(),
         JavaOnlyArray().apply {
           pushString("STRING")
         },
@@ -93,7 +90,6 @@ class AnyFunctionTest {
 
     assertThrows<NullPointerException> {
       method.call(
-        mockk(),
         JavaOnlyArray(),
         promise
       )

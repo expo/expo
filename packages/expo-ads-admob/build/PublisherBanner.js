@@ -18,7 +18,7 @@ export default class PublisherBanner extends React.Component {
             additionalRequestParams.npa = '1';
         }
         return (React.createElement(View, { style: this.props.style },
-            React.createElement(ExpoBannerView, { style: this.state.style, adUnitID: this.props.adUnitID, bannerSize: this.props.bannerSize, onSizeChange: this._handleSizeChange, additionalRequestParams: additionalRequestParams, onAdViewDidReceiveAd: this.props.onAdViewDidReceiveAd, onDidFailToReceiveAdWithError: this._handleDidFailToReceiveAdWithError, onAdViewWillPresentScreen: this.props.onAdViewWillPresentScreen, onAdViewWillDismissScreen: this.props.onAdViewWillDismissScreen, onAdViewDidDismissScreen: this.props.onAdViewDidDismissScreen, onAdViewWillLeaveApplication: this.props.onAdViewWillLeaveApplication, onAdmobDispatchAppEvent: this.props.onAdMobDispatchAppEvent })));
+            React.createElement(ExpoBannerView, { style: this.state.style, adUnitID: this.props.adUnitID, bannerSize: this.props.bannerSize, onSizeChange: this._handleSizeChange, additionalRequestParams: additionalRequestParams, onAdViewDidReceiveAd: this.props.onAdViewDidReceiveAd, onDidFailToReceiveAdWithError: this._handleDidFailToReceiveAdWithError, onAdViewWillPresentScreen: this.props.onAdViewWillPresentScreen, onAdViewWillDismissScreen: this.props.onAdViewWillDismissScreen, onAdViewDidDismissScreen: this.props.onAdViewDidDismissScreen, onAdmobDispatchAppEvent: this.props.onAdMobDispatchAppEvent })));
     }
 }
 const ExpoBannerView = requireNativeViewManager('ExpoAdsPublisherBannerView');

@@ -190,7 +190,8 @@ class UpdatesModule(
           updatesServiceLocal.configuration,
           databaseHolder.database,
           updatesServiceLocal.fileDownloader,
-          updatesServiceLocal.directory
+          updatesServiceLocal.directory,
+          updatesServiceLocal.launchedUpdate
         )
           .start(
             object : Loader.LoaderCallback {

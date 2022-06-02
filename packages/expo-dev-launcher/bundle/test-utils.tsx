@@ -1,6 +1,7 @@
 import { render as rtlRender, RenderOptions } from '@testing-library/react-native';
 import * as React from 'react';
 
+import { apiClient } from './apiClient';
 import { AppProviders, AppProvidersProps } from './providers/AppProviders';
 
 export * from '@testing-library/react-native';
@@ -24,5 +25,10 @@ export function render(
 const mockFetch = global.fetch as jest.Mock;
 
 export function mockFetchReturn(dataToReturn: any) {
-  return mockFetch.mockResolvedValueOnce({ ok: true, json: () => dataToReturn });
+  return mockFetch.mockResolvedValue({ ok: true, json: () => dataToReturn });
+}
+
+export function mockGraphQLResponse<T>(data: T) {
+  const request = apiClient.request as jest.Mock;
+  return request.mockResolvedValue(data);
 }

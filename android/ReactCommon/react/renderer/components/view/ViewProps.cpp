@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -124,6 +124,24 @@ ViewProps::ViewProps(
           rawProps,
           "onLayout",
           sourceProps.onLayout,
+          {})),
+      pointerEnter(convertRawProp(
+          context,
+          rawProps,
+          "pointerenter",
+          sourceProps.pointerEnter,
+          {})),
+      pointerLeave(convertRawProp(
+          context,
+          rawProps,
+          "pointerleave",
+          sourceProps.pointerLeave,
+          {})),
+      pointerMove(convertRawProp(
+          context,
+          rawProps,
+          "pointermove",
+          sourceProps.pointerMove,
           {})),
       collapsable(convertRawProp(
           context,

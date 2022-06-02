@@ -1,13 +1,13 @@
 package expo.modules.facedetector
 
-import com.google.firebase.ml.vision.face.FirebaseVisionFaceDetectorOptions
+import com.google.mlkit.vision.face.FaceDetectorOptions
 
-const val ALL_CLASSIFICATIONS = FirebaseVisionFaceDetectorOptions.ALL_CLASSIFICATIONS
-const val NO_CLASSIFICATIONS = FirebaseVisionFaceDetectorOptions.NO_CLASSIFICATIONS
-const val ALL_LANDMARKS = FirebaseVisionFaceDetectorOptions.ALL_LANDMARKS
-const val NO_LANDMARKS = FirebaseVisionFaceDetectorOptions.NO_LANDMARKS
-const val ACCURATE_MODE = FirebaseVisionFaceDetectorOptions.ACCURATE
-const val FAST_MODE = FirebaseVisionFaceDetectorOptions.FAST
+const val ALL_CLASSIFICATIONS = FaceDetectorOptions.CLASSIFICATION_MODE_ALL
+const val NO_CLASSIFICATIONS = FaceDetectorOptions.CLASSIFICATION_MODE_NONE
+const val ALL_LANDMARKS = FaceDetectorOptions.LANDMARK_MODE_ALL
+const val NO_LANDMARKS = FaceDetectorOptions.LANDMARK_MODE_NONE
+const val ACCURATE_MODE = FaceDetectorOptions.PERFORMANCE_MODE_ACCURATE
+const val FAST_MODE = FaceDetectorOptions.PERFORMANCE_MODE_FAST
 
 val faceDetectionModeConstants = mapOf(
   "fast" to FAST_MODE,

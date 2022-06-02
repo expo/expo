@@ -23,7 +23,6 @@ import { LoadAppErrorModal } from '../components/LoadAppErrorModal';
 import { PulseIndicator } from '../components/PulseIndicator';
 import { UrlDropdown } from '../components/UrlDropdown';
 import { loadApp } from '../native-modules/DevLauncherInternal';
-import { useBuildInfo } from '../providers/BuildInfoProvider';
 import { useCrashReport } from '../providers/CrashReportProvider';
 import { useDevSessions } from '../providers/DevSessionsProvider';
 import { useModalStack } from '../providers/ModalStackProvider';
@@ -44,10 +43,10 @@ export function HomeScreen({
   navigation,
 }: HomeScreenProps) {
   const modalStack = useModalStack();
-  const { data: devSessions, pollAsync, isFetching } = useDevSessions();
+  const [inputValue, setInputValue] = React.useState('');
+  const [loadingUrl, setLoadingUrl] = React.useState('');
 
-  const buildInfo = useBuildInfo();
-  const { appName, appIcon } = buildInfo;
+  const { data: devSessions, pollAsync, isFetching } = useDevSessions();
 
   const crashReport = useCrashReport();
 
@@ -59,12 +58,15 @@ export function HomeScreen({
     }
   }, [fetchOnMount, pollInterval, pollAmount, pollAsync]);
 
-  const onLoadUrl = (url: string) => {
-    loadApp(url).catch((error) => {
-      modalStack.push({
-        element: <LoadAppErrorModal message={error.message} />,
-      });
+  const onLoadUrl = async (url: string) => {
+    setLoadingUrl(url);
+
+    await loadApp(url).catch((error) => {
+      setLoadingUrl('');
+      modalStack.push(() => <LoadAppErrorModal message={error.message} />);
     });
+
+    setLoadingUrl('');
   };
 
   const onDevSessionPress = async (devSession: DevSession) => {
@@ -79,16 +81,12 @@ export function HomeScreen({
     pollAsync({ pollAmount, pollInterval });
   };
 
-  const onUserProfilePress = () => {
-    navigation.navigate('User Profile');
-  };
-
   const onAppPress = async (url: string) => {
     onLoadUrl(url);
   };
 
   const onDevServerQuestionPress = () => {
-    modalStack.push({ element: <DevServerExplainerModal /> });
+    modalStack.push(() => <DevServerExplainerModal />);
   };
 
   const onCrashReportPress = () => {
@@ -97,14 +95,7 @@ export function HomeScreen({
 
   return (
     <View testID="DevLauncherMainScreen">
-      <View bg="default">
-        <AppHeader
-          title={appName}
-          appImageUri={appIcon}
-          subtitle="Development Build"
-          onUserProfilePress={onUserProfilePress}
-        />
-      </View>
+      <AppHeader navigation={navigation} />
       <ScrollView contentContainerStyle={{ paddingBottom: scale['48'] }}>
         {crashReport && (
           <View px="medium" py="small" mt="small">
@@ -175,7 +166,12 @@ export function HomeScreen({
               <FetchDevSessionsRow isFetching={isFetching} onRefetchPress={onRefetchPress} />
               <Divider />
 
-              <UrlDropdown onSubmit={onUrlSubmit} />
+              <UrlDropdown
+                onSubmit={onUrlSubmit}
+                inputValue={inputValue}
+                setInputValue={setInputValue}
+                isLoading={inputValue !== '' && inputValue === loadingUrl}
+              />
             </View>
           </View>
 
@@ -204,8 +200,10 @@ function FetchDevSessionsRow({ isFetching, onRefetchPress }: FetchDevSessionsRow
       bg="default"
       rounded="none">
       <Row align="center" padding="medium" bg="default">
-        <PulseIndicator isActive={isFetching} color={backgroundColor} />
-        <Spacer.Horizontal size="small" />
+        <View width="6">
+          <PulseIndicator isActive={isFetching} color={backgroundColor} />
+        </View>
+
         <Button.Text color="default">
           {isFetching ? 'Searching for development servers...' : 'Fetch development servers'}
         </Button.Text>
@@ -270,7 +268,7 @@ function RecentlyOpenedApps({ onAppPress }) {
       </View>
 
       <View>
-        {apps.map((app, index, arr) => {
+        {apps.slice(0, 5).map((app, index, arr) => {
           const isFirst = index === 0;
           const isLast = index === arr.length - 1;
           const label = app.name ?? app.url;

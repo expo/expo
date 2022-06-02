@@ -7,7 +7,7 @@ apply plugin: 'kotlin-kapt'
 // WHEN_VERSIONING_REMOVE_FROM_HERE
 //maven repository info
 group = 'host.exp.exponent'
-version = '44.0.0'
+version = '45.0.0'
 
 // Creating sources with comments
 task androidSourcesJar(type: Jar) {
@@ -62,10 +62,13 @@ def GLOG_VERSION = reactProperties.getProperty("GLOG_VERSION")
 def REACT_VERSION = reactProperties.getProperty("VERSION_NAME").split("\\.")[1].toInteger()
 def REACT_NATIVE_PATH = reactNative.absolutePath
 def CMAKE_OUTPUT_DIR = "$buildDir/reanimated-ndk/all"
-def RN_SO_DIR = "$reactNative/ReactAndroid/build/react-ndk/exported"
+def RN_SO_DIR = "$reactNative/ReactAndroid/build/intermediates/library_*/*/jni"
 def FBJNI_HEADERS_DIR = "$reactNative/ReactAndroid/src/main/jni/first-party/fbjni/headers"
 def FOR_HERMES = false
-def ABI_FILTERS = System.getenv("NDK_ABI_FILTERS") ?: 'arm64-v8a, armeabi-v7a, x86, x86_64'
+def reactNativeArchitectures() {
+    def value = project.getProperties().get("reactNativeArchitectures")
+    return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
+}
 // WHEN_PREPARING_REANIMATED_REMOVE_TO_HERE
 
 
@@ -96,17 +99,24 @@ repositories {
 }
 
 android {
-  compileSdkVersion safeExtGet("compileSdkVersion", 30)
+  compileSdkVersion safeExtGet("compileSdkVersion", 31)
 
-  ndkVersion ANDROID_NDK_VERSION
-
-  if (ANDROID_NDK_PATH != null) {
-    ndkPath ANDROID_NDK_PATH
+  // Used to override the NDK path/version on internal CI or by allowing
+  // users to customize the NDK path/version from their root project (e.g. for M1 support)
+  if (rootProject.hasProperty("ndkPath")) {
+    ndkPath rootProject.ext.ndkPath
+  }
+  if (rootProject.hasProperty("ndkVersion")) {
+    ndkVersion rootProject.ext.ndkVersion
   }
 
   compileOptions {
-    sourceCompatibility = '1.8'
-    targetCompatibility = '1.8'
+    sourceCompatibility JavaVersion.VERSION_11
+    targetCompatibility JavaVersion.VERSION_11
+  }
+
+  kotlinOptions {
+    jvmTarget = JavaVersion.VERSION_11.majorVersion
   }
 
   buildFeatures {
@@ -115,7 +125,7 @@ android {
 
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 21)
-    targetSdkVersion safeExtGet("targetSdkVersion", 30)
+    targetSdkVersion safeExtGet("targetSdkVersion", 31)
     versionCode 1
     versionName "1.0"
 
@@ -142,13 +152,13 @@ android {
             "-DRN_SO_DIR=${RN_SO_DIR}",
             "-DFBJNI_HEADERS_DIR=${FBJNI_HEADERS_DIR}",
             "-DCMAKE_OUTPUT_DIR=${CMAKE_OUTPUT_DIR}"
-        abiFilters = []
-        abiFilters.addAll(ABI_FILTERS.split(',').collect { (it as String).trim() })
+        abiFilters (*reactNativeArchitectures())
       }
     }
 
     buildConfigField("boolean", "IS_INTERNAL_BUILD", "false")
     buildConfigField("int", "EXOPACKAGE_FLAGS", "0")
+    buildConfigField("boolean", "IS_NEW_ARCHITECTURE_ENABLED", "false")
     // WHEN_PREPARING_REANIMATED_REMOVE_TO_HERE
   }
 
@@ -205,15 +215,6 @@ android {
 
   // use `versionedRelease` configuration when publishing to maven
   defaultPublishConfig "versionedRelease"
-
-  compileOptions {
-    sourceCompatibility = '1.8'
-    targetCompatibility = '1.8'
-  }
-
-  kotlinOptions {
-    jvmTarget = '1.8'
-  }
 }
 
 // WHEN_VERSIONING_REMOVE_FROM_HERE
@@ -257,12 +258,12 @@ dependencies {
   testImplementation 'junit:junit:4.12'
 
 
-  api("com.facebook.fbjni:fbjni-java-only:0.0.3")
+  api("com.facebook.fbjni:fbjni-java-only:0.2.2")
 
   // WHEN_PREPARING_REANIMATED_REMOVE_FROM_HERE
 
-  extractHeaders("com.facebook.fbjni:fbjni:0.0.2:headers")
-  extractSO("com.facebook.fbjni:fbjni:0.0.2")
+  extractHeaders("com.facebook.fbjni:fbjni:0.2.2:headers")
+  extractSO("com.facebook.fbjni:fbjni:0.2.2")
 
   // WHEN_PREPARING_REANIMATED_REMOVE_TO_HERE
 
@@ -273,7 +274,7 @@ dependencies {
   api 'org.webkit:android-jsc:r245459' // needs to be before react-native
 
   /* UNCOMMENT WHEN DISTRIBUTING
-  api 'com.facebook.react:react-native:44.0.0'
+  api 'com.facebook.react:react-native:45.0.0'
   compileOnly project(':expo')
   compileOnly project(':expo-random')
   END UNCOMMENT WHEN DISTRIBUTING */
@@ -294,6 +295,9 @@ dependencies {
   // Versioned react native
   // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
   // THIS COMMENT IS USED BY android-build-aar.sh DO NOT MODIFY
+  // BEGIN_SDK_45
+  versionedApi 'host.exp:reactandroid-abi45_0_0:1.0.0'
+  // END_SDK_45
   // BEGIN_SDK_44
   versionedApi 'host.exp:reactandroid-abi44_0_0:1.0.0'
   // END_SDK_44
@@ -305,24 +309,26 @@ dependencies {
   // WHEN_DISTRIBUTING_REMOVE_TO_HERE
 
   // React native dependencies
+  api 'androidx.appcompat:appcompat:1.2.0'
+  api 'androidx.autofill:autofill:1.1.0'
   api 'androidx.swiperefreshlayout:swiperefreshlayout:1.0.0'
-  api 'com.facebook.fresco:fresco:2.0.0'
-  api 'com.facebook.fresco:animated-gif:2.0.0'
-  api 'com.facebook.fresco:animated-webp:2.0.0'
-  api 'com.facebook.fresco:webpsupport:2.0.0'
-  api 'com.facebook.fresco:imagepipeline-okhttp3:2.0.0'
-  api 'com.facebook.stetho:stetho:1.3.1' // do we need this?
-  api 'com.facebook.stetho:stetho-okhttp3:1.3.1' // do we need this?
-  compileOnly 'com.facebook.soloader:soloader:0.8.2'
+  api 'com.facebook.fbjni:fbjni-java-only:0.2.2'
+  api 'com.facebook.fresco:fresco:2.5.0'
+  api 'com.facebook.fresco:animated-gif:2.5.0'
+  api 'com.facebook.fresco:animated-webp:2.5.0'
+  api 'com.facebook.fresco:webpsupport:2.5.0'
+  api 'com.facebook.fresco:imagepipeline-okhttp3:2.5.0'
+  api 'com.facebook.fresco:ui-common:2.5.0'
+  api 'com.facebook.infer.annotation:infer-annotation:0.18.0'
+  api 'com.facebook.soloader:soloader:0.10.3'
+  api 'com.facebook.yoga:proguard-annotations:1.19.0'
   api 'com.google.code.findbugs:jsr305:3.0.2'
-  api 'com.squareup.okhttp3:okhttp:3.12.1'
-  api 'com.squareup.okhttp3:okhttp-urlconnection:3.12.1'
-  api 'com.squareup.okio:okio:1.15.0'
-  api 'com.facebook.infer.annotation:infer-annotation:0.11.2'
+  api 'com.squareup.okhttp3:okhttp-urlconnection:4.9.2'
+  api 'com.squareup.okhttp3:okhttp:4.9.2'
+  api 'com.squareup.okio:okio:2.9.0'
   api 'javax.inject:javax.inject:1'
 
   // Our dependencies
-  api "androidx.appcompat:appcompat:1.2.0"
   compileOnly 'org.glassfish:javax.annotation:3.1.1'
   api 'de.greenrobot:eventbus:2.4.0'
   api "androidx.room:room-runtime:2.1.0"
@@ -348,13 +354,29 @@ dependencies {
   api "androidx.legacy:legacy-support-v4:1.0.0"
   api "androidx.browser:browser:1.0.0"
 
+  // expo-face-detector
+  implementation 'com.google.mlkit:face-detection:16.1.5'
+
+  // expo-ads-admob
+  implementation 'com.google.android.gms:play-services-ads:20.5.0'
+  // For apps targeting Android 12, add WorkManager dependency.
+  // See more at https://developers.google.com/admob/android/rel-notes
+  constraints {
+    implementation('androidx.work:work-runtime:2.7.0') {
+      because '''androidx.work:work-runtime:2.1.0 pulled from
+      play-services-ads has a bug using PendingIntent without
+      FLAG_IMMUTABLE or FLAG_MUTABLE and will fail in Apps
+      targeting S+.'''
+    }
+  }
+
   // react-native-screens
   api 'androidx.fragment:fragment:1.2.2'
   api 'androidx.coordinatorlayout:coordinatorlayout:1.1.0'
   api 'com.google.android.material:material:1.1.0'
 
   api 'com.google.firebase:firebase-core:17.2.3'
-  api 'com.google.firebase:firebase-messaging:20.2.4'
+  api 'com.google.firebase:firebase-messaging:21.1.0'
   api 'com.google.maps.android:android-maps-utils:0.5'
   // Remember to update DetachAppTemplate build.gradle if you add any excludes or transitive = false here!
 
@@ -383,13 +405,21 @@ dependencies {
   api 'com.github.troZee:ViewPager2:v1.0.6'
 
   // stripe-react-native
-  implementation 'com.stripe:stripe-android:18.1.0'
+  implementation('com.stripe:stripe-android:19.3.1') {
+    exclude group:'com.google.android.gms', module:'play-services-wallet'
+  }
   implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.0'
   implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.3.1"
   implementation 'com.google.android.material:material:1.3.0'
 
   // react-native-webview
   implementation "androidx.webkit:webkit:1.4.0"
+
+  // expo-updates
+  implementation 'org.bouncycastle:bcutil-jdk15to18:1.70'
+
+  // react-native-maps
+  implementation "androidx.work:work-runtime:2.7.1"
 }
 
 
@@ -719,18 +749,31 @@ task extractSOFiles {
 }
 
 project.afterEvaluate {
-  def nativeBuildTask = tasks.findByName("externalNativeBuildRelease")
+  def nativeBuildTask = tasks.findByName("copyUnversionedReleaseJniLibsProjectOnly")  // for expoview
+                        ?: tasks.findByName("copyReleaseJniLibsProjectOnly") // for expoview-${abiName}
   if (nativeBuildTask) {
     packageNdkLibs.dependsOn nativeBuildTask
   }
+
+  // Workaround for AGP 7 local lint aar task with errors from a library project owning other aars.
+  // In our case, it's the expoview (library project) owning hermes aar
+  // ```
+  // Error while evaluating property 'hasLocalAarDeps' of task ':expoview:bundleVersionedReleaseLocalLintAar'
+  //   > Direct local .aar file dependencies are not supported when building an AAR.
+  //     The resulting AAR would be broken because the classes and Android resources from any local .aar file dependencies would not be packaged in the resulting AAR.
+  //     Previous versions of the Android Gradle Plugin produce broken AARs in this case too (despite not throwing this error).
+  //     The following direct local .aar file dependencies of the :expoview project caused this error:
+  //     /home/runner/work/expo/expo/node_modules/hermes-engine/android/hermes-release.aar
+  // ```
+  // For the workaround, we just pretend we don't have local aar dependencies.
+  tasks.findByName("bundleVersionedReleaseLocalLintAar")?.localAarDeps?.setFrom([])
+  tasks.findByName("bundleUnversionedReleaseLocalLintAar")?.localAarDeps?.setFrom([])
 }
 
 task packageNdkLibs(type: Copy) {
-  from("$buildDir/reanimated-ndk/all")
-  include("**/lib*reanimated*.so")
-  if (REACT_VERSION < 64) {
-    include("**/lib*turbomodulejsijni*.so")
-  }
+  from("$buildDir/intermediates/library_jni/unversionedRelease/jni") // for expoview
+  from("$buildDir/intermediates/library_jni/release/jni") // for expoview-${abiName}
+  include("**/libreanimated*.so")
   into("$projectDir/src/main/jniLibs")
 }
 
@@ -741,15 +784,17 @@ task prepareThirdPartyNdkHeaders(dependsOn: [downloadNdkBuildDependencies, prepa
 // pre-native build pipeline
 
 tasks.whenTaskAdded { task ->
-  if (task.name.contains('externalNativeBuild')) {
+  if (!task.name.contains("Clean") && (task.name.contains('externalNativeBuild') || task.name.startsWith('configureCMake'))) {
+    def buildType = task.name.endsWith('Debug') ? 'Debug' : 'Release'
     task.dependsOn(prepareThirdPartyNdkHeaders)
     extractAARHeaders.dependsOn(prepareThirdPartyNdkHeaders)
     extractSOFiles.dependsOn(prepareThirdPartyNdkHeaders)
     task.dependsOn(extractAARHeaders)
     task.dependsOn(extractSOFiles)
-    task.dependsOn(":ReactAndroid:packageReactNdkLibs")
+    task.dependsOn(":ReactAndroid:copy${buildType}JniLibsProjectOnly")
   } else if (task.name.startsWith('generateJsonModel')) {
-    task.dependsOn(":ReactAndroid:packageReactNdkLibs")
+    def buildType = task.name.endsWith('Debug') ? 'Debug' : 'Release'
+    task.dependsOn(":ReactAndroid:copy${buildType}JniLibsProjectOnly")
   }
 }
 

@@ -11,133 +11,133 @@ import javax.annotation.Nonnull
 
 @ReactModule(name = ScreenStackHeaderConfigViewManager.REACT_CLASS)
 class ScreenStackHeaderConfigViewManager : ViewGroupManager<ScreenStackHeaderConfig>() {
-  override fun getName(): String {
-    return REACT_CLASS
-  }
-
-  override fun createViewInstance(reactContext: ThemedReactContext): ScreenStackHeaderConfig {
-    return ScreenStackHeaderConfig(reactContext)
-  }
-
-  override fun addView(parent: ScreenStackHeaderConfig, child: View, index: Int) {
-    if (child !is ScreenStackHeaderSubview) {
-      throw JSApplicationCausedNativeException(
-        "Config children should be of type " + ScreenStackHeaderSubviewManager.REACT_CLASS
-      )
+    override fun getName(): String {
+        return REACT_CLASS
     }
-    parent.addConfigSubview(child, index)
-  }
 
-  override fun onDropViewInstance(@Nonnull view: ScreenStackHeaderConfig) {
-    view.destroy()
-  }
+    override fun createViewInstance(reactContext: ThemedReactContext): ScreenStackHeaderConfig {
+        return ScreenStackHeaderConfig(reactContext)
+    }
 
-  override fun removeAllViews(parent: ScreenStackHeaderConfig) {
-    parent.removeAllConfigSubviews()
-  }
+    override fun addView(parent: ScreenStackHeaderConfig, child: View, index: Int) {
+        if (child !is ScreenStackHeaderSubview) {
+            throw JSApplicationCausedNativeException(
+                "Config children should be of type " + ScreenStackHeaderSubviewManager.REACT_CLASS
+            )
+        }
+        parent.addConfigSubview(child, index)
+    }
 
-  override fun removeViewAt(parent: ScreenStackHeaderConfig, index: Int) {
-    parent.removeConfigSubview(index)
-  }
+    override fun onDropViewInstance(@Nonnull view: ScreenStackHeaderConfig) {
+        view.destroy()
+    }
 
-  override fun getChildCount(parent: ScreenStackHeaderConfig): Int {
-    return parent.configSubviewsCount
-  }
+    override fun removeAllViews(parent: ScreenStackHeaderConfig) {
+        parent.removeAllConfigSubviews()
+    }
 
-  override fun getChildAt(parent: ScreenStackHeaderConfig, index: Int): View {
-    return parent.getConfigSubview(index)
-  }
+    override fun removeViewAt(parent: ScreenStackHeaderConfig, index: Int) {
+        parent.removeConfigSubview(index)
+    }
 
-  override fun needsCustomLayoutForChildren(): Boolean {
-    return true
-  }
+    override fun getChildCount(parent: ScreenStackHeaderConfig): Int {
+        return parent.configSubviewsCount
+    }
 
-  override fun onAfterUpdateTransaction(parent: ScreenStackHeaderConfig) {
-    super.onAfterUpdateTransaction(parent)
-    parent.onUpdate()
-  }
+    override fun getChildAt(parent: ScreenStackHeaderConfig, index: Int): View {
+        return parent.getConfigSubview(index)
+    }
 
-  @ReactProp(name = "title")
-  fun setTitle(config: ScreenStackHeaderConfig, title: String?) {
-    config.setTitle(title)
-  }
+    override fun needsCustomLayoutForChildren(): Boolean {
+        return true
+    }
 
-  @ReactProp(name = "titleFontFamily")
-  fun setTitleFontFamily(config: ScreenStackHeaderConfig, titleFontFamily: String?) {
-    config.setTitleFontFamily(titleFontFamily)
-  }
+    override fun onAfterUpdateTransaction(parent: ScreenStackHeaderConfig) {
+        super.onAfterUpdateTransaction(parent)
+        parent.onUpdate()
+    }
 
-  @ReactProp(name = "titleFontSize")
-  fun setTitleFontSize(config: ScreenStackHeaderConfig, titleFontSize: Float) {
-    config.setTitleFontSize(titleFontSize)
-  }
+    @ReactProp(name = "title")
+    fun setTitle(config: ScreenStackHeaderConfig, title: String?) {
+        config.setTitle(title)
+    }
 
-  @ReactProp(name = "titleFontWeight")
-  fun setTitleFontWeight(config: ScreenStackHeaderConfig, titleFontWeight: String?) {
-    config.setTitleFontWeight(titleFontWeight)
-  }
+    @ReactProp(name = "titleFontFamily")
+    fun setTitleFontFamily(config: ScreenStackHeaderConfig, titleFontFamily: String?) {
+        config.setTitleFontFamily(titleFontFamily)
+    }
 
-  @ReactProp(name = "titleColor", customType = "Color")
-  fun setTitleColor(config: ScreenStackHeaderConfig, titleColor: Int) {
-    config.setTitleColor(titleColor)
-  }
+    @ReactProp(name = "titleFontSize")
+    fun setTitleFontSize(config: ScreenStackHeaderConfig, titleFontSize: Float) {
+        config.setTitleFontSize(titleFontSize)
+    }
 
-  @ReactProp(name = "backgroundColor", customType = "Color")
-  fun setBackgroundColor(config: ScreenStackHeaderConfig, backgroundColor: Int?) {
-    config.setBackgroundColor(backgroundColor)
-  }
+    @ReactProp(name = "titleFontWeight")
+    fun setTitleFontWeight(config: ScreenStackHeaderConfig, titleFontWeight: String?) {
+        config.setTitleFontWeight(titleFontWeight)
+    }
 
-  @ReactProp(name = "hideShadow")
-  fun setHideShadow(config: ScreenStackHeaderConfig, hideShadow: Boolean) {
-    config.setHideShadow(hideShadow)
-  }
+    @ReactProp(name = "titleColor", customType = "Color")
+    fun setTitleColor(config: ScreenStackHeaderConfig, titleColor: Int) {
+        config.setTitleColor(titleColor)
+    }
 
-  @ReactProp(name = "hideBackButton")
-  fun setHideBackButton(config: ScreenStackHeaderConfig, hideBackButton: Boolean) {
-    config.setHideBackButton(hideBackButton)
-  }
+    @ReactProp(name = "backgroundColor", customType = "Color")
+    fun setBackgroundColor(config: ScreenStackHeaderConfig, backgroundColor: Int?) {
+        config.setBackgroundColor(backgroundColor)
+    }
 
-  @ReactProp(name = "topInsetEnabled")
-  fun setTopInsetEnabled(config: ScreenStackHeaderConfig, topInsetEnabled: Boolean) {
-    config.setTopInsetEnabled(topInsetEnabled)
-  }
+    @ReactProp(name = "hideShadow")
+    fun setHideShadow(config: ScreenStackHeaderConfig, hideShadow: Boolean) {
+        config.setHideShadow(hideShadow)
+    }
 
-  @ReactProp(name = "color", customType = "Color")
-  fun setColor(config: ScreenStackHeaderConfig, color: Int) {
-    config.setTintColor(color)
-  }
+    @ReactProp(name = "hideBackButton")
+    fun setHideBackButton(config: ScreenStackHeaderConfig, hideBackButton: Boolean) {
+        config.setHideBackButton(hideBackButton)
+    }
 
-  @ReactProp(name = "hidden")
-  fun setHidden(config: ScreenStackHeaderConfig, hidden: Boolean) {
-    config.setHidden(hidden)
-  }
+    @ReactProp(name = "topInsetEnabled")
+    fun setTopInsetEnabled(config: ScreenStackHeaderConfig, topInsetEnabled: Boolean) {
+        config.setTopInsetEnabled(topInsetEnabled)
+    }
 
-  @ReactProp(name = "translucent")
-  fun setTranslucent(config: ScreenStackHeaderConfig, translucent: Boolean) {
-    config.setTranslucent(translucent)
-  }
+    @ReactProp(name = "color", customType = "Color")
+    fun setColor(config: ScreenStackHeaderConfig, color: Int) {
+        config.setTintColor(color)
+    }
 
-  @ReactProp(name = "backButtonInCustomView")
-  fun setBackButtonInCustomView(
-    config: ScreenStackHeaderConfig,
-    backButtonInCustomView: Boolean
-  ) {
-    config.setBackButtonInCustomView(backButtonInCustomView)
-  }
+    @ReactProp(name = "hidden")
+    fun setHidden(config: ScreenStackHeaderConfig, hidden: Boolean) {
+        config.setHidden(hidden)
+    }
 
-  @ReactProp(name = "direction")
-  fun setDirection(config: ScreenStackHeaderConfig, direction: String?) {
-    config.setDirection(direction)
-  }
+    @ReactProp(name = "translucent")
+    fun setTranslucent(config: ScreenStackHeaderConfig, translucent: Boolean) {
+        config.setTranslucent(translucent)
+    }
 
-  override fun getExportedCustomDirectEventTypeConstants(): Map<String, Any>? {
-    return MapBuilder.builder<String, Any>()
-      .put("onAttached", MapBuilder.of("registrationName", "onAttached"))
-      .put("onDetached", MapBuilder.of("registrationName", "onDetached"))
-      .build()
-  }
+    @ReactProp(name = "backButtonInCustomView")
+    fun setBackButtonInCustomView(
+        config: ScreenStackHeaderConfig,
+        backButtonInCustomView: Boolean
+    ) {
+        config.setBackButtonInCustomView(backButtonInCustomView)
+    }
 
-  companion object {
-    const val REACT_CLASS = "RNSScreenStackHeaderConfig"
-  }
+    @ReactProp(name = "direction")
+    fun setDirection(config: ScreenStackHeaderConfig, direction: String?) {
+        config.setDirection(direction)
+    }
+
+    override fun getExportedCustomDirectEventTypeConstants(): Map<String, Any>? {
+        return MapBuilder.builder<String, Any>()
+            .put("onAttached", MapBuilder.of("registrationName", "onAttached"))
+            .put("onDetached", MapBuilder.of("registrationName", "onDetached"))
+            .build()
+    }
+
+    companion object {
+        const val REACT_CLASS = "RNSScreenStackHeaderConfig"
+    }
 }

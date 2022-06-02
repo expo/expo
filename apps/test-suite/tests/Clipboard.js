@@ -28,42 +28,42 @@ export function test({ describe, expect, it, afterEach, ...t }) {
 
       it('checks if clipboard has string content', async () => {
         await Clipboard.setStringAsync('test string');
-        let result = await Clipboard.hasStringAsync();
+        const result = await Clipboard.hasStringAsync();
         expect(result).toBe(true);
-
-        await Clipboard.setStringAsync('');
-        result = await Clipboard.hasStringAsync();
-        expect(result).toBe(false);
       });
 
-      if (Platform.OS !== 'web') {
-        it('gets and sets HTML string', async () => {
-          await Clipboard.setStringAsync('<p>test</p>', { inputType: Clipboard.StringFormat.HTML });
-          const result = await Clipboard.getStringAsync({
-            preferredType: Clipboard.StringFormat.HTML,
-          });
-          expect(result.includes('<p>test</p>')).toBe(true);
+      it('gets and sets HTML string', async () => {
+        await Clipboard.setStringAsync('<p>test</p>', {
+          inputFormat: Clipboard.StringFormat.HTML,
         });
+        const result = await Clipboard.getStringAsync({
+          preferredFormat: Clipboard.StringFormat.HTML,
+        });
+        // The OS can add some atributes or inner tags to the HTML string, so we can't just
+        // check for equality.
+        expect(/<p(\s.*)?>(<.*>)?test(<\/.*>)?<\/p>/gi.test(result)).toBe(true);
+      });
 
-        it('gets plain text from copied HTML', async () => {
-          await Clipboard.setStringAsync('<p>test</p>', { inputType: Clipboard.StringFormat.HTML });
-          const result = await Clipboard.getStringAsync({
-            preferredType: Clipboard.StringFormat.PLAIN_TEXT,
-          });
-          expect(result).toEqual('test');
+      it('gets plain text from copied HTML', async () => {
+        await Clipboard.setStringAsync('<p>test</p>', {
+          inputFormat: Clipboard.StringFormat.HTML,
         });
+        const result = await Clipboard.getStringAsync({
+          preferredFormat: Clipboard.StringFormat.PLAIN_TEXT,
+        });
+        expect(result.trim()).toEqual('test');
+      });
 
-        it('falls back to plain text if no HTML is copied', async () => {
-          await Clipboard.setStringAsync('test', { inputType: Clipboard.StringFormat.PLAIN_TEXT });
-          const result = await Clipboard.getStringAsync({
-            preferredType: Clipboard.StringFormat.HTML,
-          });
-          expect(result).toEqual('test');
+      it('falls back to plain text if no HTML is copied', async () => {
+        await Clipboard.setStringAsync('test', { inputFormat: Clipboard.StringFormat.PLAIN_TEXT });
+        const result = await Clipboard.getStringAsync({
+          preferredFormat: Clipboard.StringFormat.HTML,
         });
-      }
+        expect(result).toEqual('test');
+      });
     });
 
-    if (Platform.OS === 'iOS') {
+    if (Platform.OS === 'ios') {
       describe('URLs', () => {
         it('sets and gets an url', async () => {
           const exampleUrl = 'https://example.com';
@@ -85,21 +85,21 @@ export function test({ describe, expect, it, afterEach, ...t }) {
       });
     }
 
-    if (Platform.OS !== 'web') {
-      describe('Images', () => {
-        it('sets and gets a png image', async () => {
-          const imageBase64 =
-            'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=';
-          const expectedResultRegex = 'data:image/png;base64,[A-Za-z0-9+/=]*';
-          let hasImage = await Clipboard.hasImageAsync();
-          expect(hasImage).toEqual(false);
-          await Clipboard.setImageAsync(imageBase64);
-          hasImage = await Clipboard.hasImageAsync();
-          expect(hasImage).toEqual(true);
-          const result = await Clipboard.getImageAsync({ format: 'png' });
-          expect(result.data).toMatch(expectedResultRegex);
-        });
+    describe('Images', () => {
+      it('sets and gets a png image', async () => {
+        const imageBase64 =
+          'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=';
+        const expectedResultRegex = 'data:image/png;base64,[A-Za-z0-9+/=]*';
+        let hasImage = await Clipboard.hasImageAsync();
+        expect(hasImage).toEqual(false);
+        await Clipboard.setImageAsync(imageBase64);
+        hasImage = await Clipboard.hasImageAsync();
+        expect(hasImage).toEqual(true);
+        const result = await Clipboard.getImageAsync({ format: 'png' });
+        expect(result.data).toMatch(expectedResultRegex);
+      });
 
+      if (Platform.OS !== 'web') {
         it('sets and gets a jpg image', async () => {
           const imageBase64 =
             'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=';
@@ -119,7 +119,7 @@ export function test({ describe, expect, it, afterEach, ...t }) {
           const hasImage = await Clipboard.hasImageAsync();
           expect(hasImage).toEqual(false);
         });
-      });
-    }
+      }
+    });
   });
 }

@@ -20,7 +20,7 @@ const loadPromises: { [name: string]: Promise<void> } = {};
  * names if it is called in those contexts.
  *
  * @param fontFamily Name of font to process.
- * @returns Returns a name processed for use with the [current workflow](https://docs.expo.io/introduction/managed-vs-bare/).
+ * @returns Returns a name processed for use with the [current workflow](https://docs.expo.dev/introduction/managed-vs-bare/).
  */
 export function processFontFamily(fontFamily: string | null): string | null {
   if (!fontFamily || !fontFamilyNeedsScoping(fontFamily)) {

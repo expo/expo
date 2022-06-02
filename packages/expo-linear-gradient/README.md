@@ -5,11 +5,11 @@ Provides a React component that renders a gradient view.
 # API documentation
 
 - [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/linear-gradient.md)
-- [Documentation for the latest stable release](https://docs.expo.io/versions/latest/sdk/linear-gradient/)
+- [Documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/linear-gradient/)
 
 # Installation in managed Expo projects
 
-For [managed](https://docs.expo.io/versions/latest/introduction/managed-vs-bare/) Expo projects, please follow the installation instructions in the [API documentation for the latest stable release](https://docs.expo.io/versions/latest/sdk/linear-gradient/).
+For [managed](https://docs.expo.dev/versions/latest/introduction/managed-vs-bare/) Expo projects, please follow the installation instructions in the [API documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/linear-gradient/).
 
 # Installation in bare React Native projects
 

@@ -2,7 +2,10 @@
 title: Debugging guide
 ---
 
-import ImageSpotlight from '~/components/plugins/ImageSpotlight'
+import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import { Terminal } from '~/ui/components/Snippet';
+
+> EAS Update is currently available only to customers with an EAS subscription plan. [Sign up](https://expo.dev/accounts/[account]/settings/subscriptions).
 
 It's important to tell the current state of our app at any given time. We built EAS Update with this in mind. Once we know which updates are running on which builds, we can make changes so that our apps are in the state we expect and desire. This guide sets out to show how we can verify our EAS Update and expo-updates configuration, so that we can find the source of problems like an app not showing a published update.
 
@@ -20,9 +23,7 @@ When we set up EAS Update, we likely ran `eas update:configure` to configure exp
 
 Finally, make sure that `expo-updates` is included in **package.json**. If it's not, run:
 
-```bash
-expo install expo-updates
-```
+<Terminal cmd={['$ expo install expo-updates']} />
 
 ### Inspecting expo-updates configuration after prebuild
 
@@ -95,18 +96,16 @@ or
 ```bash
 eas channel:view [channel-name]
 
-# example
-
+# Example
 eas channel:view production
 ```
 
-We'd exepect the output of these commands to display the same channel name that our build has. If it's not there, we can create the channel on EAS' servers with:
+We'd expect the output of these commands to display the same channel name that our build has. If it's not there, we can create the channel on EAS' servers with:
 
 ```bash
 eas channel:create [channel-name]
 
-# example
-
+# Example
 eas channel:create production
 ```
 
@@ -119,8 +118,7 @@ To verify which branch is linked to a channel, we can run:
 ```bash
 eas channel:view [channel-name]
 
-# example
-
+# Example
 eas channel:view production
 ```
 
@@ -129,8 +127,7 @@ If the channel is not linked to the branch we expect, we can change the link wit
 ```bash
 eas channel:edit [channel-name] --branch [branch-name]
 
-# example
-
+# Example
 eas channel:edit production --branch release-1.0
 ```
 
@@ -143,8 +140,7 @@ To inspect which updates are on a branch, we can run:
 ```bash
 eas branch:view [branch-name]
 
-# example
-
+# Example
 eas branch:view production
 ```
 
@@ -154,9 +150,7 @@ The output of this command will show us a list of updates and their runtime vers
 
 To create and publish an update, we can run the following command:
 
-```bash
-eas update
-```
+<Terminal cmd={['$ eas update']} />
 
 After publishing, the output will display the branch and the runtime version. This info can help us verify that we're creating an update with the configuration we expect.
 
@@ -226,7 +220,7 @@ Below is a screenshot showing the request of a successful update manfiest reques
 
 When building a project into an app, there can be multiple steps that alter the output of `expo prebuild`. After making a build, it is possible to open the build's contents and inspect native files to see its final configuration.
 
-Here are the steps for inspecting an iOS simulator build on MacOS:
+Here are the steps for inspecting an iOS simulator build on macOS:
 
 1. Create an iOS simulator build of the app using EAS Build. This is done by adding `"ios": { "simulator": true }` to a build profile.
 2. Once the build is finished, download the result and unzip it.
@@ -271,9 +265,7 @@ https://u.expo.dev/your-project-id?runtime-version=1.0.0&channel-name=production
 
 It may be helpful to see which assets are included in our update bundle. We can see a list of named assets by running:
 
-```bash
-expo export --experimental-bundle
-```
+<Terminal cmd={['$ expo export --experimental-bundle']} />
 
 ## Mitigation steps
 

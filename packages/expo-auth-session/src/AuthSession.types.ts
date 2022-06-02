@@ -8,9 +8,8 @@ export type AuthSessionOptions = {
    */
   authUrl: string;
   /**
-   * The URL to return to the application. In managed apps, it's optional (defaults to `${Constants.linkingUrl}expo-auth-session`,
-   * for example, `exp://expo.dev/@yourname/your-app-slug+expo-auth-session`).
-   * However, in the bare app, it's required - `AuthSession` needs to know where to wait for the response.
+   * The URL to return to the application. In managed apps, it's optional and defaults to output of [`Linking.createURL('expo-auth-session', params)`](./linking/#linkingcreateurlpath-namedparameters)
+   * call with `scheme` and `queryParams` params. However, in the bare app, it's required - `AuthSession` needs to know where to wait for the response.
    * Hence, this method will throw an exception, if you don't provide `returnUrl`.
    */
   returnUrl?: string;
@@ -20,6 +19,10 @@ export type AuthSessionOptions = {
    * @platform android
    */
   showInRecents?: boolean;
+  /**
+   * Project name to use for the \`auth.expo.io\` proxy.
+   */
+  projectNameForProxy?: string;
 };
 
 // @needsAudit
@@ -37,7 +40,7 @@ export type AuthSessionResult =
       /**
        * How the auth completed.
        */
-      type: 'cancel' | 'dismiss' | 'locked';
+      type: 'cancel' | 'dismiss' | 'opened' | 'locked';
     }
   | {
       /**
@@ -99,6 +102,10 @@ export type AuthSessionRedirectUriOptions = {
    * @default false
    */
   useProxy?: boolean;
+  /**
+   * Project name to use for the \`auth.expo.io\` proxy when `useProxy` is true.
+   */
+  projectNameForProxy?: string;
   /**
    * Attempt to convert the Expo server IP address to localhost.
    * This is useful for testing when your IP changes often, this will only work for iOS simulator.

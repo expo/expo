@@ -1,6 +1,7 @@
 package expo.modules.clipboard
 
 import android.content.ClipData
+import android.content.ClipDescription
 import android.content.ClipboardManager
 import android.content.Context
 import android.net.Uri
@@ -10,11 +11,11 @@ import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.errorCodeOf
 import expo.modules.test.core.ModuleMock
 import expo.modules.test.core.ModuleMockHolder
+import expo.modules.test.core.assertCodedException
 import io.mockk.confirmVerified
 import io.mockk.verify
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
-import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -36,7 +37,7 @@ private interface ClipboardModuleTestInterface {
 }
 
 private inline fun withClipboardMock(
-  block: ModuleMockHolder<ClipboardModuleTestInterface>.() -> Unit
+  block: ModuleMockHolder<ClipboardModuleTestInterface, ClipboardModule>.() -> Unit
 ) = ModuleMock.createMock(ClipboardModuleTestInterface::class, ClipboardModule(), block = block)
 
 @RunWith(RobolectricTestRunner::class)
@@ -81,18 +82,21 @@ class ClipboardModuleTest {
     assertEquals("<p>hello world</p>", htmlResult)
   }
 
-  // TODO (barthap): Uncomment this once fixed race condition "React Application Context is null"
-//  @Test
-//  fun `setStringAsync should support HTML`() = withClipboardMock {
-//    module.setStringAsync("<p>hello</p>", SetStringOptions().apply {
-//      inputType = StringContentType.HTML
-//    })
-//
-//    assertTrue(
-//      clipboardManager.primaryClipDescription?.hasMimeType(ClipDescription.MIMETYPE_TEXT_HTML) == true
-//    )
-//    assertEquals("<p>hello</p>", clipboardManager.primaryClip!!.getItemAt(0).htmlText)
-//  }
+  @Test
+  fun `setStringAsync should support HTML`() = withClipboardMock {
+
+    module.setStringAsync(
+      "<p>hello</p>",
+      SetStringOptions().apply {
+        inputFormat = StringFormat.HTML
+      }
+    )
+
+    assertTrue(
+      clipboardManager.primaryClipDescription?.hasMimeType(ClipDescription.MIMETYPE_TEXT_HTML) == true
+    )
+    assertEquals("<p>hello</p>", clipboardManager.primaryClip!!.getItemAt(0).htmlText)
+  }
 
   @Test
   fun `hasStringAsync should return correct values`() = withClipboardMock {
@@ -130,7 +134,7 @@ class ClipboardModuleTest {
       eventEmitter.emit(
         CLIPBOARD_CHANGED_EVENT_NAME,
         match {
-          it.getString("content") == "severus snape"
+          it.getStringArrayList("contentTypes")?.contains("plain-text") == true
         }
       )
     }
@@ -154,10 +158,10 @@ class ClipboardModuleTest {
   @Config(shadows = [ContextWithoutClipboardService::class])
   fun `should throw when ClipboardManager is unavailable`() = withClipboardMock {
     val exception = runCatching { module.hasStringAsync() }.exceptionOrNull()
-    assertNotNull(exception)
-    assertTrue(exception is CodedException)
-    exception as CodedException
-    assertEquals(errorCodeOf<ClipboardUnavailableException>(), exception.code)
+
+    assertCodedException(exception) {
+      assertEquals(errorCodeOf<ClipboardUnavailableException>(), it.code)
+    }
   }
 
   private val clipboardManager: ClipboardManager

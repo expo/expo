@@ -10,6 +10,7 @@ import android.net.Uri
 import android.os.Build
 import com.facebook.react.bridge.*
 import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter
+import expo.modules.devlauncher.DevLauncherController
 import expo.modules.devlauncher.DevLauncherController.Companion.wasInitialized
 import expo.modules.devlauncher.helpers.DevLauncherInstallationIDHelper
 import expo.modules.devlauncher.helpers.getAppUrlFromDevLauncherUrl
@@ -18,6 +19,7 @@ import expo.modules.devlauncher.koin.DevLauncherKoinComponent
 import expo.modules.devlauncher.launcher.DevLauncherControllerInterface
 import expo.modules.devlauncher.launcher.DevLauncherIntentRegistryInterface
 import expo.modules.devlauncher.launcher.errors.DevLauncherErrorRegistry
+import expo.modules.devmenu.DevMenuManager
 import kotlinx.coroutines.launch
 import org.koin.core.component.inject
 
@@ -25,8 +27,8 @@ private const val ON_NEW_DEEP_LINK_EVENT = "expo.modules.devlauncher.onnewdeepli
 private const val CLIENT_PACKAGE_NAME = "host.exp.exponent"
 private val CLIENT_HOME_QR_SCANNER_DEEP_LINK = Uri.parse("expo-home://qr-scanner")
 
-class DevLauncherInternalModule(reactContext: ReactApplicationContext?)
-  : ReactContextBaseJavaModule(reactContext), DevLauncherKoinComponent {
+class DevLauncherInternalModule(reactContext: ReactApplicationContext?) :
+  ReactContextBaseJavaModule(reactContext), DevLauncherKoinComponent {
   private val controller: DevLauncherControllerInterface by inject()
   private val intentRegistry: DevLauncherIntentRegistryInterface by inject()
   private val installationIDHelper: DevLauncherInstallationIDHelper by inject()
@@ -54,8 +56,62 @@ class DevLauncherInternalModule(reactContext: ReactApplicationContext?)
     val isRunningOnStockEmulator = Build.FINGERPRINT.contains("generic")
     return mapOf(
       "installationID" to installationIDHelper.getOrCreateInstallationID(reactApplicationContext),
-      "isDevice" to (!isRunningOnGenymotion && !isRunningOnStockEmulator)
+      "isDevice" to (!isRunningOnGenymotion && !isRunningOnStockEmulator),
+      "updatesConfig" to getUpdatesConfig(),
     )
+  }
+
+  private fun getUpdatesConfig(): WritableMap {
+    val map = Arguments.createMap()
+
+    val runtimeVersion = DevLauncherController.getMetadataValue(reactApplicationContext, "expo.modules.updates.EXPO_RUNTIME_VERSION")
+    val sdkVersion = DevLauncherController.getMetadataValue(reactApplicationContext, "expo.modules.updates.EXPO_SDK_VERSION")
+    var projectUrl = DevLauncherController.getMetadataValue(reactApplicationContext, "expo.modules.updates.EXPO_UPDATE_URL")
+
+    val appId = if (projectUrl.isNotEmpty()) {
+      Uri.parse(projectUrl).lastPathSegment ?: ""
+    } else {
+      ""
+    }
+
+    var isModernManifestProtocol = Uri.parse(projectUrl).host.equals("u.expo.dev")
+    var usesEASUpdates = isModernManifestProtocol && appId.isNotEmpty()
+
+    return map.apply {
+      putString("appId", appId)
+      putString("runtimeVersion", runtimeVersion)
+      putString("sdkVersion", sdkVersion)
+      putBoolean("usesEASUpdates", usesEASUpdates)
+      putString("updatesUrl", projectUrl)
+    }
+  }
+
+  private fun sanitizeUrlString(url: String): Uri {
+    val parsedUrl = Uri.parse(url?.trim())
+    val appUrl = if (isDevLauncherUrl(parsedUrl)) {
+      requireNotNull(getAppUrlFromDevLauncherUrl(parsedUrl)) { "The provided url doesn't contain the app url." }
+    } else {
+      parsedUrl
+    }
+    return appUrl
+  }
+
+  @ReactMethod
+  fun loadUpdate(url: String, projectUrlString: String?, promise: Promise) {
+    controller.coroutineScope.launch {
+      try {
+        val appUrl = sanitizeUrlString(url)
+        var projectUrl: Uri? = null
+        if (projectUrlString != null) {
+          projectUrl = sanitizeUrlString(projectUrlString)
+        }
+        controller.loadApp(appUrl, projectUrl)
+      } catch (e: Exception) {
+        promise.reject("ERR_DEV_LAUNCHER_CANNOT_LOAD_APP", e.message, e)
+        return@launch
+      }
+      promise.resolve(null)
+    }
   }
 
   @ReactMethod
@@ -79,13 +135,15 @@ class DevLauncherInternalModule(reactContext: ReactApplicationContext?)
 
   @ReactMethod
   fun getRecentlyOpenedApps(promise: Promise) {
-    promise.resolve(Arguments
-      .createMap()
-      .apply {
-        controller.getRecentlyOpenedApps().forEach { (key, value) ->
-          putString(key, value)
+    promise.resolve(
+      Arguments
+        .createMap()
+        .apply {
+          controller.getRecentlyOpenedApps().forEach { (key, value) ->
+            putString(key, value)
+          }
         }
-      })
+    )
   }
 
   @ReactMethod
@@ -157,22 +215,30 @@ class DevLauncherInternalModule(reactContext: ReactApplicationContext?)
     }
   }
 
-
   @ReactMethod
   fun getBuildInfo(promise: Promise) {
     val map = Arguments.createMap()
     val packageManager = reactApplicationContext.packageManager
     val packageName = reactApplicationContext.packageName
 
-    val packageInfo =  packageManager.getPackageInfo(packageName, 0)
+    val packageInfo = packageManager.getPackageInfo(packageName, 0)
     val applicationInfo = packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA)
     val appName = packageManager.getApplicationLabel(applicationInfo).toString()
-    val runtimeVersion = getMetadataValue("expo.modules.updates.EXPO_RUNTIME_VERSION")
-    val sdkVersion = getMetadataValue("expo.modules.updates.EXPO_SDK_VERSION")
+    val runtimeVersion = DevLauncherController.getMetadataValue(reactApplicationContext, "expo.modules.updates.EXPO_RUNTIME_VERSION")
+    val sdkVersion = DevLauncherController.getMetadataValue(reactApplicationContext, "expo.modules.updates.EXPO_SDK_VERSION")
     var appIcon = getApplicationIconUri()
+
+    var updatesUrl = DevLauncherController.getMetadataValue(reactApplicationContext, "expo.modules.updates.EXPO_UPDATE_URL")
+    var appId = ""
+
+    if (updatesUrl.isNotEmpty()) {
+      var uri = Uri.parse(updatesUrl)
+      appId = uri.lastPathSegment ?: ""
+    }
 
     map.apply {
       putString("appVersion", packageInfo.versionName)
+      putString("appId", appId)
       putString("appName", appName)
       putString("appIcon", appIcon)
       putString("runtimeVersion", runtimeVersion)
@@ -190,23 +256,6 @@ class DevLauncherInternalModule(reactContext: ReactApplicationContext?)
     promise.resolve(null)
   }
 
-  private fun getMetadataValue(key: String): String {
-    val packageManager = reactApplicationContext.packageManager
-    val packageName = reactApplicationContext.packageName
-    val applicationInfo = packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA)
-    var metaDataValue = ""
-
-    if (applicationInfo.metaData != null) {
-      val value = applicationInfo.metaData.get(key)
-      
-      if (value != null) {
-        metaDataValue = value.toString()
-      }
-    }
-
-    return metaDataValue
-  }
-
   private fun getApplicationIconUri(): String {
     var appIcon = ""
     val packageManager = reactApplicationContext.packageManager
@@ -215,5 +264,11 @@ class DevLauncherInternalModule(reactContext: ReactApplicationContext?)
     appIcon = "" + applicationInfo.icon
 //    TODO - figure out how to get resId for AdaptiveIconDrawable icons
     return appIcon
+  }
+
+  @ReactMethod
+  fun loadFontsAsync(promise: Promise) {
+    DevMenuManager.loadFonts(reactApplicationContext)
+    promise.resolve(null)
   }
 }

@@ -7,9 +7,6 @@ import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.UpdatesUtils
 import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.launcher.NoDatabaseLauncher
-import expo.modules.updates.manifest.ManifestFactory
-import expo.modules.updates.manifest.ManifestHeaderData
-import expo.modules.updates.manifest.UpdateManifest
 import expo.modules.updates.selectionpolicy.SelectionPolicies
 import okhttp3.*
 import org.json.JSONArray
@@ -23,9 +20,13 @@ import org.apache.commons.fileupload.MultipartStream
 import org.apache.commons.fileupload.ParameterParser
 import java.io.ByteArrayOutputStream
 import android.util.Base64
+import expo.modules.easclient.EASClientID
 import okhttp3.Headers.Companion.toHeaders
 import expo.modules.jsonutils.getNullable
 import expo.modules.updates.codesigning.ValidationResult
+import expo.modules.updates.db.UpdatesDatabase
+import expo.modules.updates.db.entity.UpdateEntity
+import expo.modules.updates.manifest.*
 import java.security.cert.CertificateException
 
 open class FileDownloader(private val client: OkHttpClient) {
@@ -305,6 +306,7 @@ open class FileDownloader(private val client: OkHttpClient) {
     asset: AssetEntity,
     destinationDirectory: File?,
     configuration: UpdatesConfiguration,
+    context: Context,
     callback: AssetDownloadCallback
   ) {
     if (asset.url == null) {
@@ -319,7 +321,7 @@ open class FileDownloader(private val client: OkHttpClient) {
     } else {
       try {
         downloadFileToPath(
-          createRequestForAsset(asset, configuration),
+          createRequestForAsset(asset, configuration, context),
           path,
           object : FileDownloadCallback {
             override fun onFailure(e: Exception) {
@@ -329,7 +331,7 @@ open class FileDownloader(private val client: OkHttpClient) {
             override fun onSuccess(file: File, hash: ByteArray) {
               // base64url - https://datatracker.ietf.org/doc/html/rfc4648#section-5
               val hashBase64String = Base64.encodeToString(hash, Base64.URL_SAFE or Base64.NO_PADDING or Base64.NO_WRAP)
-              val expectedAssetHash = asset.expectedHash?.toLowerCase(Locale.ROOT)
+              val expectedAssetHash = asset.expectedHash
               if (expectedAssetHash != null && expectedAssetHash != hashBase64String) {
                 callback.onFailure(Exception("Asset hash invalid: ${asset.key}; expectedHash: $expectedAssetHash; actualHash: $hashBase64String"), asset)
                 return
@@ -473,7 +475,11 @@ open class FileDownloader(private val client: OkHttpClient) {
       throw IOException("No compatible manifest found. SDK Versions supported: " + configuration.sdkVersion + " Provided manifestString: " + manifestString)
     }
 
-    internal fun createRequestForAsset(assetEntity: AssetEntity, configuration: UpdatesConfiguration): Request {
+    internal fun createRequestForAsset(
+      assetEntity: AssetEntity,
+      configuration: UpdatesConfiguration,
+      context: Context,
+    ): Request {
       return Request.Builder()
         .url(assetEntity.url!!.toString())
         .apply {
@@ -486,6 +492,7 @@ open class FileDownloader(private val client: OkHttpClient) {
         .header("Expo-Platform", "android")
         .header("Expo-API-Version", "1")
         .header("Expo-Updates-Environment", "BARE")
+        .header("EAS-Client-ID", EASClientID(context).uuid.toString())
         .apply {
           for ((key, value) in configuration.requestHeaders) {
             header(key, value)
@@ -517,6 +524,7 @@ open class FileDownloader(private val client: OkHttpClient) {
         .header("Expo-Updates-Environment", "BARE")
         .header("Expo-JSON-Error", "true")
         .header("Expo-Accept-Signature", configuration.expectsSignedManifest.toString())
+        .header("EAS-Client-ID", EASClientID(context).uuid.toString())
         .apply {
           val runtimeVersion = configuration.runtimeVersion
           val sdkVersion = configuration.sdkVersion
@@ -559,6 +567,25 @@ open class FileDownloader(private val client: OkHttpClient) {
 
     private fun getCacheDirectory(context: Context): File {
       return File(context.cacheDir, "okhttp")
+    }
+
+    fun getExtraHeaders(
+      database: UpdatesDatabase,
+      configuration: UpdatesConfiguration,
+      launchedUpdate: UpdateEntity?,
+      embeddedUpdate: UpdateEntity?
+    ): JSONObject {
+      val extraHeaders =
+        ManifestMetadata.getServerDefinedHeaders(database, configuration) ?: JSONObject()
+
+      launchedUpdate?.let {
+        extraHeaders.put("Expo-Current-Update-ID", it.id.toString().lowercase())
+      }
+      embeddedUpdate?.let {
+        extraHeaders.put("Expo-Embedded-Update-ID", it.id.toString().lowercase())
+      }
+
+      return extraHeaders
     }
   }
 }
