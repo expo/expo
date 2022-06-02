@@ -436,6 +436,11 @@ class UpdatesDatabaseMigrationTest {
     (4,NULL,NULL,NULL,'js',NULL,1614137406588,'bundle-1614137401950',NULL,0,0,NULL,'testhash4')"""
     )
 
+    val cursorAssetsPrecondition1 = db.query("SELECT * FROM `assets`")
+    Assert.assertEquals(3, cursorAssetsPrecondition1.count.toLong())
+    val cursorAssetsPrecondition2 = db.query("SELECT * FROM `assets` WHERE `expected_hash` IS NULL")
+    Assert.assertEquals(0, cursorAssetsPrecondition2.count.toLong())
+
     // Prepare for the next version.
     db.close()
 
@@ -445,11 +450,9 @@ class UpdatesDatabaseMigrationTest {
     db.execSQL("PRAGMA foreign_keys=ON")
 
     // schema changes automatically verified, we just need to verify data integrity
-    val cursorAssets1 =
-      db.query("SELECT * FROM `assets`")
+    val cursorAssets1 = db.query("SELECT * FROM `assets`")
     Assert.assertEquals(3, cursorAssets1.count.toLong())
-    val cursorAssets2 =
-      db.query("SELECT * FROM `assets` WHERE `expected_hash` IS NULL")
+    val cursorAssets2 = db.query("SELECT * FROM `assets` WHERE `expected_hash` IS NULL")
     Assert.assertEquals(3, cursorAssets2.count.toLong())
   }
 
