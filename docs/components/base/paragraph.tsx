@@ -1,11 +1,10 @@
 import { css } from '@emotion/react';
-import { theme, typography } from '@expo/styleguide';
+import { theme, typography, iconSize, InfoIcon } from '@expo/styleguide';
 import emojiRegex from 'emoji-regex';
 import * as React from 'react';
 
 import { paragraph } from './typography';
 
-import { Info } from '~/components/icons/Info';
 import * as Constants from '~/constants/theme';
 
 const attributes = {
@@ -128,7 +127,7 @@ function removeEmoji(emoji: string, children: string[]) {
 export const Quote = ({ children, ...rest }: { children: JSX.Element | JSX.Element[] }) => {
   let icon: React.ReactNode = (
     <div style={{ marginTop: 2 }}>
-      <Info size={16} />
+      <InfoIcon size={iconSize.small} />
     </div>
   );
 

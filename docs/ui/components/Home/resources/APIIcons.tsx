@@ -1,7 +1,6 @@
 import { iconSize, theme } from '@expo/styleguide';
+import { IconProps } from '@expo/styleguide/dist/types';
 import React from 'react';
-
-import { IconProps } from '~/ui/foundations/icons';
 
 export const APIMapsIcon = ({ size = iconSize.regular }: IconProps) => (
   <svg

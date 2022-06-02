@@ -1,10 +1,9 @@
 import { css } from '@emotion/react';
-import { theme, typography } from '@expo/styleguide';
+import { theme, typography, iconSize, ChevronDownIcon } from '@expo/styleguide';
 import * as React from 'react';
 
 import * as Utilities from '~/common/utilities';
 import { paragraph } from '~/components/base/typography';
-import ChevronDownIcon from '~/components/icons/ChevronDown';
 import { VERSIONS, LATEST_VERSION, BETA_VERSION } from '~/constants/versions';
 import { usePageApiVersion } from '~/providers/page-api-version';
 
@@ -63,7 +62,7 @@ const VersionSelector: React.FC<Props> = ({ style }) => {
     <div css={STYLES_SELECT} style={style}>
       <label css={STYLES_SELECT_TEXT} htmlFor="version-menu">
         <div>{Utilities.getUserFacingVersionString(version, LATEST_VERSION, BETA_VERSION)}</div>
-        <ChevronDownIcon style={{ height: '16px', width: '16px' }} />
+        <ChevronDownIcon size={iconSize.small} />
       </label>
       {
         // Add hidden links to create crawlable references to other SDK versions

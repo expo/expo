@@ -1,5 +1,5 @@
 import { css } from '@emotion/react';
-import { theme, breakpoints, SearchIcon, iconSize, spacing } from '@expo/styleguide';
+import { theme, breakpoints, SearchIcon, HamburgerIcon, iconSize, spacing } from '@expo/styleguide';
 import React, { useState } from 'react';
 
 import { Logo } from './Logo';
@@ -8,7 +8,6 @@ import { ThemeSelector } from './ThemeSelector';
 
 import { Button } from '~/ui/components/Button';
 import { BOLD } from '~/ui/components/Text';
-import { MenuIcon } from '~/ui/foundations/icons';
 
 export const Header = () => {
   const [isMobileSearchVisible, setMobileSearchVisible] = useState(false);
@@ -40,7 +39,7 @@ export const Header = () => {
               setMobileSearchVisible(false);
               setMobileMenuVisible(prevState => !prevState);
             }}>
-            <MenuIcon />
+            <HamburgerIcon size={iconSize.small} color={theme.icon.default} />
           </Button>
         </div>
       </nav>

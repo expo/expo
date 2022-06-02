@@ -12,8 +12,6 @@ import { Cell, HeaderCell, Row, Table, TableHead } from '~/ui/components/Table';
 // This column defines if the permission is granted by the system or user (requires notification).
 // We have to clearly communicate what it means before showing it to the user.
 
-// import { QuestionIcon } from '~/components/icons/QuestionIcon';
-
 type AndroidPermissionsProps = {
   permissions: PermissionReference<AndroidPermission>[];
 };

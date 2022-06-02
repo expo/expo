@@ -1,5 +1,5 @@
 import { css } from '@emotion/react';
-import { iconSize, spacing, typography } from '@expo/styleguide';
+import { iconSize, spacing, typography, ChevronDownIcon } from '@expo/styleguide';
 import React, { PropsWithChildren } from 'react';
 
 import { NavigationRenderProps } from '.';
@@ -7,7 +7,6 @@ import { NavigationRenderProps } from '.';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { CALLOUT } from '~/ui/components/Text';
 import { durations } from '~/ui/foundations/durations';
-import { ChevronDownIcon } from '~/ui/foundations/icons';
 
 type SectionListProps = PropsWithChildren<NavigationRenderProps>;
 

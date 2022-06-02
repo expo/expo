@@ -1,14 +1,10 @@
 import { css } from '@emotion/react';
-import { theme } from '@expo/styleguide';
+import { StatusFailedIcon, StatusSuccessIcon, StatusWaitingIcon, theme } from '@expo/styleguide';
 import * as React from 'react';
 
 import { H4 } from '~/components/base/headings';
-import { CheckCircle } from '~/components/icons/CheckCircle';
-import { PendingCircle } from '~/components/icons/PendingCircle';
-import { XCircle } from '~/components/icons/XCircle';
 import { ElementType } from '~/types/common';
-import { Cell, HeaderCell, Row, Table, TableHead } from '~/ui/components/Table';
-import { TableLayout } from '~/ui/components/Table/types';
+import { Cell, HeaderCell, Row, Table, TableHead, TableLayout } from '~/ui/components/Table';
 
 const STYLES_TITLE = css`
   margin-bottom: 1rem;
@@ -37,14 +33,14 @@ type IsSupported = boolean | undefined | { pending: string };
 function getInfo(isSupported: IsSupported, { title }: Platform) {
   if (isSupported === true) {
     return {
-      children: <CheckCircle size={20} />,
+      children: <StatusSuccessIcon color={theme.status.success} />,
       title: `${title} is supported`,
     };
   } else if (typeof isSupported === 'object') {
     return {
       children: (
         <a css={STYLES_LINK} target="_blank" href={isSupported.pending}>
-          <PendingCircle size={20} /> Pending
+          <StatusWaitingIcon color={theme.status.info} /> Pending
         </a>
       ),
       title: `${title} support is pending`,
@@ -52,7 +48,7 @@ function getInfo(isSupported: IsSupported, { title }: Platform) {
   }
 
   return {
-    children: <XCircle size={20} />,
+    children: <StatusFailedIcon color={theme.status.error} />,
     title: `${title} is not supported`,
   };
 }

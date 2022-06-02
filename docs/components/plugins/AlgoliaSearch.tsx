@@ -1,13 +1,11 @@
 import { css } from '@emotion/react';
-import { theme } from '@expo/styleguide';
+import { theme, SlashShortcutIcon, XIcon } from '@expo/styleguide';
 import Router from 'next/router';
 import * as React from 'react';
 
 import * as Utilities from '~/common/utilities';
 import { paragraph } from '~/components/base/typography';
 import { Search } from '~/components/icons/Search';
-import { SlashShortcut } from '~/components/icons/SlashShortcut';
-import { X } from '~/components/icons/X';
 import * as Constants from '~/constants/theme';
 import { LATEST_VERSION } from '~/constants/versions';
 import { usePageApiVersion } from '~/providers/page-api-version';
@@ -234,11 +232,11 @@ class AlgoliaSearchWithApiVersion extends React.Component<Props> {
           <div
             className="shortcut-hint"
             style={{ display: this.state.isFocused ? 'none' : 'flex' }}>
-            <SlashShortcut />
+            <SlashShortcutIcon />
           </div>
         ) : (
           <span className="close-search" onClick={this.props.onToggleSearch}>
-            <X />
+            <XIcon />
           </span>
         )}
       </div>

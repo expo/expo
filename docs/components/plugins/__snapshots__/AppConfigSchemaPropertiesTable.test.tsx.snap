@@ -132,7 +132,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                           Triangle-down-icon
                         </title>
                         <path
-                          d="M16.993 6.667H3.227l6.883 6.883 6.883-6.883z"
+                          d="M16.883 7.43H3.117L10 14.313l6.883-6.883z"
                           fill="var(--expo-theme-icon-default)"
                         />
                       </svg>
@@ -143,11 +143,11 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                       Bare Workflow
                     </span>
                   </summary>
-                  <p
-                    class="css-167hun1-baseTextStyle-P-TextComponent-contentStyle"
+                  <div
+                    class="css-1q9dch1-contentStyle"
                   >
                     Edit the 'Display Name' field in Xcode
-                  </p>
+                  </div>
                 </details>
               </div>
             </div>
@@ -258,7 +258,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                           Triangle-down-icon
                         </title>
                         <path
-                          d="M16.993 6.667H3.227l6.883 6.883 6.883-6.883z"
+                          d="M16.883 7.43H3.117L10 14.313l6.883-6.883z"
                           fill="var(--expo-theme-icon-default)"
                         />
                       </svg>
@@ -269,11 +269,11 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                       ExpoKit
                     </span>
                   </summary>
-                  <p
-                    class="css-167hun1-baseTextStyle-P-TextComponent-contentStyle"
+                  <div
+                    class="css-1q9dch1-contentStyle"
                   >
                     Set this property using AppConstants.java.
-                  </p>
+                  </div>
                 </details>
               </div>
               <div
@@ -301,7 +301,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                           Triangle-down-icon
                         </title>
                         <path
-                          d="M16.993 6.667H3.227l6.883 6.883 6.883-6.883z"
+                          d="M16.883 7.43H3.117L10 14.313l6.883-6.883z"
                           fill="var(--expo-theme-icon-default)"
                         />
                       </svg>
@@ -312,11 +312,11 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                       Bare Workflow
                     </span>
                   </summary>
-                  <p
-                    class="css-167hun1-baseTextStyle-P-TextComponent-contentStyle"
+                  <div
+                    class="css-1q9dch1-contentStyle"
                   >
                     Set this property using just Xcode
-                  </p>
+                  </div>
                 </details>
               </div>
             </div>
@@ -427,7 +427,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                           Triangle-down-icon
                         </title>
                         <path
-                          d="M16.993 6.667H3.227l6.883 6.883 6.883-6.883z"
+                          d="M16.883 7.43H3.117L10 14.313l6.883-6.883z"
                           fill="var(--expo-theme-icon-default)"
                         />
                       </svg>
@@ -438,11 +438,11 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                       ExpoKit
                     </span>
                   </summary>
-                  <p
-                    class="css-167hun1-baseTextStyle-P-TextComponent-contentStyle"
+                  <div
+                    class="css-1q9dch1-contentStyle"
                   >
                     Set this property using Xcode.
-                  </p>
+                  </div>
                 </details>
               </div>
             </div>
@@ -730,7 +730,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                           Triangle-down-icon
                         </title>
                         <path
-                          d="M16.993 6.667H3.227l6.883 6.883 6.883-6.883z"
+                          d="M16.883 7.43H3.117L10 14.313l6.883-6.883z"
                           fill="var(--expo-theme-icon-default)"
                         />
                       </svg>
@@ -741,11 +741,11 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                       Bare Workflow
                     </span>
                   </summary>
-                  <p
-                    class="css-167hun1-baseTextStyle-P-TextComponent-contentStyle"
+                  <div
+                    class="css-1q9dch1-contentStyle"
                   >
                     This is set in AndroidManifest.xml directly.
-                  </p>
+                  </div>
                 </details>
               </div>
             </div>
@@ -758,17 +758,34 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                   style="margin-top: 2px;"
                 >
                   <svg
-                    aria-label="check"
                     fill="none"
                     height="16"
-                    viewBox="0 0 24 24"
+                    role="img"
+                    size="16"
+                    viewBox="0 0 20 20"
                     width="16"
-                    xmlns="http://www.w3.org/2000/svg"
                   >
-                    <path
-                      d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12c6.628 0 12-5.373 12-12S18.628 0 12 0zm-.015 5.419c.269-.292.596-.44.973-.44.306 0 .575.11.776.317.203.207.306.472.306.786 0 .394-.137.745-.409 1.042-.279.306-.605.462-.968.462-.3 0-.566-.113-.768-.326-.201-.208-.304-.48-.304-.809 0-.401.133-.749.394-1.032zm1.999 11.305c-.995.936-1.705 1.52-2.17 1.784-.496.284-.905.423-1.25.423-.342 0-.621-.114-.83-.338-.202-.218-.305-.51-.305-.87 0-.92.521-3.058 1.595-6.534a1.47 1.47 0 00.042-.166c-.04.017-.087.041-.14.075-.088.055-.356.265-1.14 1.03a.334.334 0 01-.438.025l-.463-.358a.334.334 0 01-.043-.49c.722-.794 1.395-1.371 2.002-1.714.636-.358 1.173-.533 1.643-.533.303 0 .548.076.729.225.196.164.3.391.3.658 0 .175-.084.63-.697 2.686-.875 2.937-1.084 4.003-1.099 4.372.166-.098.558-.376 1.395-1.162a.334.334 0 01.462.003l.411.4a.334.334 0 01-.004.484z"
-                      fill="var(--expo-theme-icon-default)"
-                    />
+                    <title>
+                      Info-icon
+                    </title>
+                    <g
+                      clip-path="url(#info-icon_svg__info-icon_svg__clip0)"
+                    >
+                      <path
+                        d="M10 1a9 9 0 100 18 9 9 0 000-18zm-.01 4.064a.962.962 0 01.73-.33c.229 0 .43.082.582.238.152.155.23.354.23.59 0 .295-.104.558-.308.78-.209.23-.453.347-.726.347a.777.777 0 01-.576-.244.844.844 0 01-.227-.607c0-.3.099-.561.295-.774zm1.499 8.48c-.746.7-1.279 1.138-1.628 1.337-.372.213-.679.317-.937.317a.814.814 0 01-.622-.254c-.152-.162-.23-.382-.23-.652 0-.69.392-2.293 1.197-4.9.013-.044.024-.086.031-.125a.814.814 0 00-.105.056c-.066.042-.267.2-.854.773a.25.25 0 01-.329.02l-.347-.27a.25.25 0 01-.033-.367c.542-.596 1.047-1.029 1.502-1.286.477-.269.88-.4 1.232-.4.227 0 .411.057.547.17a.621.621 0 01.225.492c0 .132-.063.474-.522 2.015-.657 2.203-.814 3.003-.825 3.28.125-.074.419-.283 1.046-.873a.25.25 0 01.347.003l.308.3a.25.25 0 01-.003.363z"
+                        fill="var(--expo-theme-icon-default)"
+                      />
+                    </g>
+                    <defs>
+                      <clippath
+                        id="info-icon_svg__info-icon_svg__clip0"
+                      >
+                        <path
+                          d="M0 0h20v20H0z"
+                          fill="#fff"
+                        />
+                      </clippath>
+                    </defs>
                   </svg>
                 </div>
               </div>
