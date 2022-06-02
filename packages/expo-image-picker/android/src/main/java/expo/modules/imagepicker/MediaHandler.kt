@@ -4,6 +4,7 @@ import android.content.Context
 import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.util.Base64
+import androidx.core.net.toUri
 import expo.modules.imagepicker.exporters.CompressionImageExporter
 import expo.modules.imagepicker.exporters.ImageExporter
 import expo.modules.imagepicker.exporters.RawImageExporter
@@ -55,20 +56,24 @@ internal class MediaHandler(
   private suspend fun handleVideo(
     sourceUri: Uri,
   ): ImagePickerMediaResponse.Video {
-
     val outputFile = createOutputFile(context.cacheDir, ".mp4")
-    val metadataRetriever = MediaMetadataRetriever().apply {
-      setDataSource(context, sourceUri)
-    }
-
     copyFile(sourceUri, outputFile, context.contentResolver)
+    val outputUri = outputFile.toUri()
 
-    return ImagePickerMediaResponse.Video(
-      uri = Uri.fromFile(outputFile).toString(),
-      width = metadataRetriever.extractInt(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH),
-      height = metadataRetriever.extractInt(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT),
-      duration = metadataRetriever.extractInt(MediaMetadataRetriever.METADATA_KEY_DURATION),
-      rotation = metadataRetriever.extractInt(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION),
-    )
+    return try {
+      val metadataRetriever = MediaMetadataRetriever().apply {
+        setDataSource(context, outputUri)
+      }
+
+      ImagePickerMediaResponse.Video(
+        uri = outputUri.toString(),
+        width = metadataRetriever.extractInt(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH),
+        height = metadataRetriever.extractInt(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT),
+        duration = metadataRetriever.extractInt(MediaMetadataRetriever.METADATA_KEY_DURATION),
+        rotation = metadataRetriever.extractInt(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION),
+      )
+    } catch (cause: FailedToExtractVideoMetadataException) {
+      throw FailedToExtractVideoMetadataException(outputFile, cause)
+    }
   }
 }
