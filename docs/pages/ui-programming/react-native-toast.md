@@ -114,4 +114,4 @@ setTimeout(function hideToast() {
 ```
 
 This library has many options for [customizing the appearance and behavior](https://github.com/crazycodeboy/react-native-easy-toast#api) of your toast.
-docs](https://github.com/magicismight/react-native-root-toast) to learn more.
+See the [docs](https://github.com/magicismight/react-native-root-toast) to learn more.
