@@ -18,10 +18,16 @@ import expo.modules.imagepicker.MediaType
 internal class CameraContract(
   private val uri: Uri,
   private val intentAction: String,
+  private val videoMaxDuration: Int,
 ) : ImagePickerContract() {
   override fun createIntent(context: Context, input: Any?) =
     Intent(intentAction)
       .putExtra(MediaStore.EXTRA_OUTPUT, uri)
+      .apply {
+        if (intentAction == MediaStore.ACTION_VIDEO_CAPTURE) {
+          putExtra(MediaStore.EXTRA_DURATION_LIMIT, videoMaxDuration)
+        }
+      }
 
   override fun parseResult(resultCode: Int, intent: Intent?) =
     if (resultCode == Activity.RESULT_CANCELED) ImagePickerContractResult.Cancelled()

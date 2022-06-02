@@ -35,6 +35,7 @@ internal class ImagePickerOptions : Record {
   internal fun toCameraContract(uri: Uri) = CameraContract(
     uri,
     mediaTypes.toMimeType(),
+    videoMaxDuration
   )
 
   fun toImageLibraryContract() = ImageLibraryContract(
