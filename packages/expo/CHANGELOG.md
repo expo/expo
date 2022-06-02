@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Added web support and bundle splitting support to `DevLoadingView`.
+- Added web support and bundle splitting support to `DevLoadingView`. ([#17714](https://github.com/expo/expo/pull/17714) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
