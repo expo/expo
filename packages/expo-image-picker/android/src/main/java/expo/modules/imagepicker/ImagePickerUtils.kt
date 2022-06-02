@@ -72,6 +72,15 @@ internal fun String.toFileExtension(): String = when {
   else -> ".jpeg"
 }
 
+internal fun Uri.toMediaType(contentResolver: ContentResolver): MediaType {
+  val type = getType(contentResolver, this)
+  return when {
+    type.contains("image/") -> MediaType.IMAGE
+    type.contains("video/") -> MediaType.VIDEO
+    else -> throw FailedToDeduceTypeException()
+  }
+}
+
 internal fun String.toBitmapCompressFormat(): Bitmap.CompressFormat = when {
   this.contains("png") ||
   this.contains("gif") ||

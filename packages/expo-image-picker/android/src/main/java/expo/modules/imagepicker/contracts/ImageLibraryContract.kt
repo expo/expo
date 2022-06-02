@@ -4,7 +4,11 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import androidx.core.net.toFile
 import expo.modules.imagepicker.MediaType
+import expo.modules.imagepicker.toImageFileExtension
+import expo.modules.imagepicker.toMediaType
+import expo.modules.kotlin.providers.AppContextProvider
 
 /**
  * An [androidx.activity.result.contract.ActivityResultContract] to prompt the user to pick single or multiple image(s) or/and video(s),
@@ -13,6 +17,7 @@ import expo.modules.imagepicker.MediaType
  * @see [androidx.activity.result.contract.ActivityResultContracts.GetContent]
  */
 internal class ImageLibraryContract(
+  private val appContextProvider: AppContextProvider,
   private val singleMimeType: String,
 ) : ImagePickerContract() {
   override fun createIntent(context: Context, input: Any?) =
@@ -21,7 +26,13 @@ internal class ImageLibraryContract(
       .setType(singleMimeType)
 
   override fun parseResult(resultCode: Int, intent: Intent?) =
-    if (resultCode == Activity.RESULT_CANCELED) ImagePickerContractResult.Cancelled()
-    else ImagePickerContractResult.Success(MediaType.IMAGE to intent!!.data!!) // TODO (@bbarthec): forced nonnull, but it have to be like this, to be refactor
-  // TODO (@bbarthec): add support for videos
+    if (resultCode == Activity.RESULT_CANCELED) {
+      ImagePickerContractResult.Cancelled()
+    } else {
+      val uri = requireNotNull(requireNotNull(intent).data)
+      val contentResolver = requireNotNull(appContextProvider.appContext.reactContext) { "React Application Context is null. "}.contentResolver
+      val type = uri.toMediaType(contentResolver)
+
+      ImagePickerContractResult.Success(type to uri)
+    }
 }

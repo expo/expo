@@ -58,13 +58,13 @@ class ImagePickerModule : Module() {
 
       val mediaFile = createOutputFile(context.cacheDir, options.mediaTypes.toFileExtension())
       val uri = mediaFile.toContentUri(context)
-      val contract = options.toCameraContract(uri)
+      val contract = options.toCameraContract(this@ImagePickerModule, uri)
 
       launchContractWithPromise(contract, options, PickingSource.CAMERA)
     }
 
     AsyncFunction("launchImageLibraryAsync") Coroutine { options: ImagePickerOptions ->
-      val contract = options.toImageLibraryContract()
+      val contract = options.toImageLibraryContract(this@ImagePickerModule)
       launchContractWithPromise(contract, options, PickingSource.IMAGE_LIBRARY)
     }
 
@@ -166,6 +166,7 @@ class ImagePickerModule : Module() {
     }
 
     val (editedResult, activityDestroyedWhenEditing) = appContext.launchForActivityResult(CropImageContract(
+      this@ImagePickerModule,
       rawPickingResult.data.second,
       options,
       pickingSource

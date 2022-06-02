@@ -6,6 +6,7 @@ import androidx.annotation.FloatRange
 import androidx.annotation.IntRange
 import expo.modules.imagepicker.contracts.CameraContract
 import expo.modules.imagepicker.contracts.ImageLibraryContract
+import expo.modules.kotlin.providers.AppContextProvider
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 
@@ -32,13 +33,15 @@ internal class ImagePickerOptions : Record {
   @Field
   var aspect: Pair<Int, Int>? = null
 
-  internal fun toCameraContract(uri: Uri) = CameraContract(
+  internal fun toCameraContract(appContextProvider: AppContextProvider, uri: Uri) = CameraContract(
+    appContextProvider,
     uri,
     mediaTypes.toMimeType(),
     videoMaxDuration
   )
 
-  fun toImageLibraryContract() = ImageLibraryContract(
+  fun toImageLibraryContract(appContextProvider: AppContextProvider) = ImageLibraryContract(
+    appContextProvider,
     mediaTypes.toMimeType(),
   )
 }
