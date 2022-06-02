@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix opening published EAS Update from URL on Android.
+
 ### 💡 Others
 
 - Stop persisting remote debugging setting between app loads on iOS. ([#17650](https://github.com/expo/expo/pull/17650) by [@esamelson](https://github.com/esamelson))
