@@ -109,7 +109,7 @@
 // before doing pod install. This will cause the controller to see if
 // the expo-launcher packager is running, and if so, use that instead of
 // the prebuild bundle.
-// See the post_install step in expo/scripts/autolinking.rb
+// See the pod_target_xcconfig definition in expo-dev-launcher.podspec
 
 - (NSURL * _Nullable)devLauncherURL
 {
