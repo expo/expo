@@ -1,25 +1,21 @@
 package expo.modules.random
 
 import android.util.Base64
-
+import expo.modules.kotlin.modules.Module
+import expo.modules.kotlin.modules.ModuleDefinition
 import java.security.SecureRandom
 
-import com.facebook.react.bridge.Promise
-import com.facebook.react.bridge.ReactApplicationContext
-import com.facebook.react.bridge.ReactContextBaseJavaModule
-import com.facebook.react.bridge.ReactMethod
-
-class RandomModule(context: ReactApplicationContext) : ReactContextBaseJavaModule(context) {
+class RandomModule : Module() {
   private val secureRandom by lazy { SecureRandom() }
 
-  override fun getName() = "ExpoRandom"
+  override fun definition() = ModuleDefinition {
+    Name("ExpoRandom")
 
-  @ReactMethod
-  fun getRandomBase64StringAsync(randomByteCount: Int, promise: Promise) =
-    promise.resolve(getRandomBase64String(randomByteCount))
+    Function("getRandomBase64String", this@RandomModule::getRandomBase64String)
+    AsyncFunction("getRandomBase64StringAsync", this@RandomModule::getRandomBase64String)
+  }
 
-  @ReactMethod(isBlockingSynchronousMethod = true)
-  fun getRandomBase64String(randomByteCount: Int): String {
+  private fun getRandomBase64String(randomByteCount: Int): String {
     val output = ByteArray(randomByteCount)
     secureRandom.nextBytes(output)
     return Base64.encodeToString(output, Base64.NO_WRAP)

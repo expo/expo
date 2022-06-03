@@ -1,4 +1,5 @@
 import { unmockAllProperties } from 'jest-expo';
+import { Linking, EmitterSubscription } from 'react-native';
 
 import ExpoWebBrowser from '../ExpoWebBrowser';
 import * as WebBrowser from '../WebBrowser';
@@ -7,7 +8,22 @@ const fakeReturnValue = {
   type: 'cancel',
 };
 
+// we need a mock subscription, because original Linking.addEventListener returns undefined in tests
+class MockSubscription implements Pick<EmitterSubscription, 'remove'> {
+  private _isCancelled = false;
+
+  remove = jest.fn().mockImplementation(() => {
+    if (this._isCancelled) {
+      throw new Error(
+        'MockSubscription: Cannot remove a subscription that has already been cancelled'
+      );
+    }
+    this._isCancelled = true;
+  });
+}
+
 function applyMocks() {
+  Linking.addEventListener = jest.fn().mockImplementation(() => new MockSubscription());
   ExpoWebBrowser.openBrowserAsync.mockImplementation(async () => fakeReturnValue);
 }
 

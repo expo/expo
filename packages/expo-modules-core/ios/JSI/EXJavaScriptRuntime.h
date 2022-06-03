@@ -1,5 +1,6 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
+#import <Foundation/Foundation.h>
 #import <ExpoModulesCore/EXJavaScriptValue.h>
 #import <ExpoModulesCore/EXJavaScriptObject.h>
 #import <React/RCTBridgeModule.h>
@@ -20,7 +21,8 @@ typedef void (^JSAsyncFunctionBlock)(EXJavaScriptValue * _Nonnull thisValue,
                                      RCTPromiseRejectBlock _Nonnull reject);
 
 typedef id _Nullable (^JSSyncFunctionBlock)(EXJavaScriptValue * _Nonnull thisValue,
-                                            NSArray<EXJavaScriptValue *> * _Nonnull arguments);
+                                            NSArray<EXJavaScriptValue *> * _Nonnull arguments,
+                                            NSError * _Nullable __autoreleasing * _Nullable error);
 
 #ifdef __cplusplus
 typedef jsi::Value (^JSHostFunctionBlock)(jsi::Runtime &runtime,
@@ -76,7 +78,7 @@ NS_SWIFT_NAME(JavaScriptRuntime)
  */
 - (nonnull EXJavaScriptObject *)createSyncFunction:(nonnull NSString *)name
                                          argsCount:(NSInteger)argsCount
-                                             block:(nonnull JSSyncFunctionBlock)block;
+                                             block:(nonnull JSSyncFunctionBlock)block NS_REFINED_FOR_SWIFT;
 
 /**
  Creates an asynchronous host function that runs given block when it's called.
@@ -100,6 +102,6 @@ typedef void (^ClassConstructorBlock)(EXJavaScriptObject * _Nonnull thisValue, N
 /**
  Evaluates given JavaScript source code.
  */
-- (nonnull EXJavaScriptValue *)evaluateScript:(nonnull NSString *)scriptSource;
+- (nonnull EXJavaScriptValue *)evaluateScript:(nonnull NSString *)scriptSource NS_REFINED_FOR_SWIFT;
 
 @end

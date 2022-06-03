@@ -342,8 +342,8 @@
 - (void)loadApp:(NSURL *)url withProjectUrl:(NSURL * _Nullable)projectUrl onSuccess:(void (^ _Nullable)(void))onSuccess onError:(void (^ _Nullable)(NSError *error))onError
 {
   EXDevLauncherUrl *devLauncherUrl = [[EXDevLauncherUrl alloc] init:url];
-  NSURL *expoUrl = devLauncherUrl.url;
-  
+  NSURL *expoUrl = devLauncherUrl.url; 
+  [self _resetRemoteDebuggingForAppLoad];
   _possibleManifestURL = expoUrl;
   BOOL isEASUpdate = [self isEASUpdateURL:expoUrl];
   
@@ -697,6 +697,25 @@
   [updatesConfig setObject:@(usesEASUpdates) forKey:@"usesEASUpdates"];
     
   return updatesConfig;
+}
+
+/**
+ * Reset remote debugging to its initial setting. Relies on behavior from react-native's
+ * RCTDevSettings.mm and must be kept in sync there.
+ */
+- (void)_resetRemoteDebuggingForAppLoad
+{
+  // Must be kept in sync with RCTDevSettings.mm
+  NSString *kRCTDevSettingsUserDefaultsKey = @"RCTDevMenu";
+  NSString *kRCTDevSettingIsDebuggingRemotely = @"isDebuggingRemotely";
+
+  NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+  NSMutableDictionary *existingSettings = ((NSDictionary *)[userDefaults objectForKey:kRCTDevSettingsUserDefaultsKey]).mutableCopy;
+  if (!existingSettings) {
+    return;
+  }
+  [existingSettings removeObjectForKey:kRCTDevSettingIsDebuggingRemotely];
+  [userDefaults setObject:existingSettings forKey:kRCTDevSettingsUserDefaultsKey];
 }
 
 

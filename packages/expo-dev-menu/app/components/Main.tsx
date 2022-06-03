@@ -1,5 +1,6 @@
 import {
   View,
+  WarningIcon,
   Text,
   Heading,
   Row,
@@ -26,9 +27,14 @@ import { useBottomSheet } from '../hooks/useBottomSheet';
 import { useClipboard } from '../hooks/useClipboard';
 import { useDevSettings } from '../hooks/useDevSettings';
 import { isDevLauncherInstalled } from '../native-modules/DevLauncher';
+import { fireCallbackAsync } from '../native-modules/DevMenu';
 import { GestureHandlerTouchableWrapper } from './GestureHandlerTouchableWrapper';
 
-export function Main() {
+type MainProps = {
+  registeredCallbacks?: string[];
+};
+
+export function Main({ registeredCallbacks = [] }: MainProps) {
   const appInfo = useAppInfo();
   const bottomSheet = useBottomSheet();
   const { devSettings, actions } = useDevSettings();
@@ -175,8 +181,42 @@ export function Main() {
         </View>
       </Row>
 
+      {registeredCallbacks.length > 0 && (
+        <View>
+          <View mx="large">
+            <Heading size="small" color="secondary">
+              Custom Menu Items
+            </Heading>
+          </View>
+
+          <Spacer.Vertical size="small" />
+
+          <View mx="small">
+            {registeredCallbacks.map((name, index, arr) => {
+              const isFirst = index === 0;
+              const isLast = index === arr.length - 1;
+              const onPress = () => fireCallbackAsync(name);
+
+              return (
+                <View key={name + index}>
+                  <View
+                    bg="default"
+                    roundedTop={isFirst ? 'large' : 'none'}
+                    roundedBottom={isLast ? 'large' : 'none'}>
+                    <SettingsRowButton label={name} icon={null} onPress={onPress} />
+                  </View>
+                  {!isLast && <Divider />}
+                </View>
+              );
+            })}
+          </View>
+
+          <Spacer.Vertical size="medium" />
+        </View>
+      )}
+
       <View mx="small">
-        <View roundedTop="large">
+        <View roundedTop="large" bg="default">
           <SettingsRowButton
             disabled={!devSettings.isPerfMonitorAvailable}
             label="Toggle performance monitor"
@@ -185,12 +225,14 @@ export function Main() {
           />
         </View>
         <Divider />
-        <SettingsRowButton
-          disabled={!devSettings.isElementInspectorAvailable}
-          label="Toggle element inspector"
-          icon={<InspectElementIcon />}
-          onPress={actions.toggleElementInspector}
-        />
+        <View bg="default">
+          <SettingsRowButton
+            disabled={!devSettings.isElementInspectorAvailable}
+            label="Toggle element inspector"
+            icon={<InspectElementIcon />}
+            onPress={actions.toggleElementInspector}
+          />
+        </View>
         <Divider />
         <View bg="default">
           <SettingsRowSwitch
@@ -214,6 +256,34 @@ export function Main() {
           />
         </View>
       </View>
+
+      {appInfo.engine === 'Hermes' && (
+        <>
+          <Spacer.Vertical size="large" />
+
+          <View mx="small">
+            <View bg="warning" padding="medium" rounded="medium" border="warning">
+              <Row align="center">
+                <WarningIcon />
+
+                <Spacer.Horizontal size="tiny" />
+
+                <Heading color="warning" size="small" style={{ top: 1 }}>
+                  Warning
+                </Heading>
+              </Row>
+
+              <Spacer.Vertical size="small" />
+
+              <View>
+                <Text size="small" color="warning">
+                  Debugging not working? Try manually reloading first
+                </Text>
+              </View>
+            </View>
+          </View>
+        </>
+      )}
 
       {!hasDisabledDevSettingOption && (
         <>
@@ -305,9 +375,11 @@ function SettingsRowButton({
     <GestureHandlerTouchableWrapper onPress={onPress} disabled={disabled}>
       <Button.ScaleOnPressContainer onPress={onPress} bg="default" disabled={disabled}>
         <Row padding="small" align="center" bg="default" style={{ opacity: disabled ? 0.75 : 1 }}>
-          <View width="large" height="large">
-            {icon}
-          </View>
+          {icon && (
+            <View width="large" height="large">
+              {icon}
+            </View>
+          )}
 
           <Spacer.Horizontal size="small" />
 

@@ -238,11 +238,10 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
   }
 
   fun getAppInfo(): Bundle {
-    if (delegateReactContext != null) {
-      return DevMenuAppInfo.getAppInfo(delegateReactContext!!)
-    }
+    val reactContext = delegateReactContext ?: return Bundle.EMPTY
+    val instanceManager = delegate?.reactInstanceManager() ?: return Bundle.EMPTY
 
-    return Bundle.EMPTY
+    return DevMenuAppInfo.getAppInfo(instanceManager, reactContext)
   }
 
   fun getDevSettings(): Bundle {
@@ -279,6 +278,11 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
       ReactFontManager.getInstance().setTypeface(familyName, Typeface.NORMAL, font)
     }
   }
+
+  // captures any callbacks that are registered via the `registerDevMenuItems` module method
+  // it is set and unset by the public facing `DevMenuModule`
+  // when the DevMenuModule instance is unloaded (e.g between app loads) the callback list is reset to an empty array
+  var registeredCallbacks = arrayListOf<String>()
 
   //endregion
 

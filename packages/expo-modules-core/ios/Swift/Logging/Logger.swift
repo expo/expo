@@ -165,15 +165,16 @@ public class Logger {
     guard type.rawValue >= minLevel.rawValue else {
       return
     }
-    let message = items
-      .map { String(describing: $0) }
+    let messages = items
+      .map { describe(value: $0) }
       .joined(separator: " ")
       .split(whereSeparator: \.isNewline)
       .map { "\(type.prefix) \($0)" }
-      .joined()
 
     handlers.forEach { handler in
-      handler.log(type: type, message)
+      messages.forEach { message in
+        handler.log(type: type, message)
+      }
     }
   }
 
@@ -182,6 +183,16 @@ public class Logger {
   }
 }
 
-private func reformatStackSymbol(_ symbol: String) -> String {
+fileprivate func reformatStackSymbol(_ symbol: String) -> String {
   return symbol.replacingOccurrences(of: #"^\d+\s+"#, with: "", options: .regularExpression)
+}
+
+fileprivate func describe(value: Any) -> String {
+  if let value = value as? CustomDebugStringConvertible {
+    return value.debugDescription
+  }
+  if let value = value as? CustomStringConvertible {
+    return value.description
+  }
+  return String(describing: value)
 }

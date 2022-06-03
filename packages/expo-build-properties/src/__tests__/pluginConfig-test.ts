@@ -16,7 +16,12 @@ describe(validateConfig, () => {
     }).toThrow();
   });
 
-  it('should throw error from unsupported android.compileSdkVersion', () => {
+  it('should throw error from unsupported android versions', () => {
+    expect(() =>
+      validateConfig({ android: { minSdkVersion: 14 } })
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"\`android.minSdkVersion\` needs to be at least version 21."`
+    );
     expect(() =>
       validateConfig({ android: { compileSdkVersion: 14 } })
     ).toThrowErrorMatchingInlineSnapshot(
