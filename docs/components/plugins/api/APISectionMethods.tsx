@@ -45,12 +45,8 @@ export const renderMethod = (
         </InlineCode>
       </HeaderComponent>
       {getPlatformTags(comment)}
-      <CommentTextBlock
-        comment={comment}
-        beforeContent={parameters && renderParams(parameters)}
-        includePlatforms={false}
-        emptyCommentFallback="-"
-      />
+      {parameters && renderParams(parameters)}
+      <CommentTextBlock comment={comment} includePlatforms={false} />
       {resolveTypeName(type) !== 'undefined' ? (
         <>
           <H4>Returns</H4>

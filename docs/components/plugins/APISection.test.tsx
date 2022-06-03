@@ -32,7 +32,7 @@ describe('APISection', () => {
 
     expect(screen.getAllByRole('heading', { level: 2 })).toHaveLength(5);
     expect(screen.getAllByRole('heading', { level: 3 })).toHaveLength(20);
-    expect(screen.getAllByRole('table')).toHaveLength(10);
+    expect(screen.getAllByRole('table')).toHaveLength(11);
 
     expect(screen.queryByText('Event Subscriptions'));
     expect(screen.queryByText('Components'));

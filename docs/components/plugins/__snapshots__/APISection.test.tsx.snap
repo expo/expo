@@ -2367,7 +2367,72 @@ sign-out operation.
         </a>
       </div>
     </h3>
-    -
+    <h4
+      class="css-838f5l-h4-h4-STYLES_H4"
+      data-heading="true"
+    >
+      Arguments
+    </h4>
+    <div
+      class="css-zdmbpy-tableWrapperStyle"
+    >
+      <table
+        class="css-33l6in-tableStyle-Table"
+      >
+        <thead
+          class="css-7aq1e9-tableHeadStyle"
+        >
+          <tr
+            class="css-1ne1f2k-tableRowStyle-Row"
+          >
+            <th
+              class="css-qgy7w-tableHeadersCellStyle-HeaderCell"
+            >
+              Name
+            </th>
+            <th
+              class="css-qgy7w-tableHeadersCellStyle-HeaderCell"
+            >
+              Type
+            </th>
+            <th
+              class="css-qgy7w-tableHeadersCellStyle-HeaderCell"
+            >
+              Description
+            </th>
+          </tr>
+        </thead>
+        <tr
+          class="css-1ne1f2k-tableRowStyle-Row"
+        >
+          <td
+            class="css-yr5jng-tableCellStyle-Cell"
+          >
+            <strong
+              class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
+            >
+              listener
+            </strong>
+          </td>
+          <td
+            class="css-yr5jng-tableCellStyle-Cell"
+          >
+            <code
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+            >
+              () =&gt;
+               
+              void
+            </code>
+          </td>
+          <td
+            class="css-yr5jng-tableCellStyle-Cell"
+          >
+            -
+          </td>
+        </tr>
+      </table>
+    </div>
     <h4
       class="  css-838f5l-h4-h4-STYLES_H4"
       data-components-heading="true"
@@ -6439,7 +6504,9 @@ Same as
           </td>
           <td
             class="css-yr5jng-tableCellStyle-Cell"
-          />
+          >
+            -
+          </td>
         </tr>
       </table>
     </div>
@@ -8031,7 +8098,9 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
             </td>
             <td
               class="css-yr5jng-tableCellStyle-Cell"
-            />
+            >
+              -
+            </td>
           </tr>
         </table>
       </div>
@@ -9151,7 +9220,6 @@ exports[`APISection expo-pedometer 1`] = `
         </a>
       </div>
     </h3>
-    -
     <h4
       class="  css-838f5l-h4-h4-STYLES_H4"
       data-components-heading="true"
@@ -9783,7 +9851,6 @@ available on this device.
         </a>
       </div>
     </h3>
-    -
     <h4
       class="  css-838f5l-h4-h4-STYLES_H4"
       data-components-heading="true"
@@ -10401,7 +10468,9 @@ provided with a single argument that is
             </td>
             <td
               class="css-yr5jng-tableCellStyle-Cell"
-            />
+            >
+              -
+            </td>
           </tr>
         </table>
       </div>

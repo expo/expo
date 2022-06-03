@@ -327,6 +327,7 @@ export const renderParamRow = ({ comment, name, type, flags }: MethodParamData):
           comment={comment}
           components={mdInlineComponents}
           afterContent={renderDefaultValue(defaultValue)}
+          emptyCommentFallback="-"
         />
       </Cell>
     </Row>
@@ -456,7 +457,7 @@ export const CommentTextBlock = ({
   beforeContent,
   afterContent,
   includePlatforms = true,
-  emptyCommentFallback
+  emptyCommentFallback,
 }: CommentTextBlockProps) => {
   const shortText = comment?.shortText?.trim().length ? (
     <ReactMarkdown components={components} remarkPlugins={[remarkGfm]}>
@@ -469,7 +470,9 @@ export const CommentTextBlock = ({
     </ReactMarkdown>
   ) : null;
 
-  if (emptyCommentFallback && (!comment || (!shortText && !text))) return <>{emptyCommentFallback}</>;
+  if (emptyCommentFallback && (!comment || (!shortText && !text))) {
+    return <>{emptyCommentFallback}</>;
+  }
 
   const examples = getAllTagData('example', comment);
   const exampleText = examples?.map((example, index) => (
