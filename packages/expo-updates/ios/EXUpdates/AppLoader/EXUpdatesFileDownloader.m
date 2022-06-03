@@ -28,6 +28,7 @@ NSString * const EXUpdatesMultipartCertificateChainPartName = @"certificate_chai
 NSString * const EXUpdatesFileDownloaderErrorDomain = @"EXUpdatesFileDownloader";
 const NSInteger EXUpdatesFileDownloaderErrorCodeFileWriteError = 1002;
 const NSInteger EXUpdatesFileDownloaderErrorCodeManifestVerificationError = 1003;
+const NSInteger EXUpdatesFileDownloaderErrorCodeFileHashMismatchError = 1004;
 const NSInteger EXUpdatesFileDownloaderErrorCodeNoCompatibleUpdateError = 1009;
 const NSInteger EXUpdatesFileDownloaderErrorCodeMismatchedManifestFiltersError = 1021;
 const NSInteger EXUpdatesFileDownloaderErrorCodeManifestParseError = 1022;
@@ -85,15 +86,27 @@ const NSInteger EXUpdatesFileDownloaderErrorCodeCodeSigningSignatureError = 1048
 }
 
 - (void)downloadFileFromURL:(NSURL *)url
+              verifyingHash:(nullable NSString *)expectedBase64URLEncodedSHA256Hash
                      toPath:(NSString *)destinationPath
                extraHeaders:(NSDictionary *)extraHeaders
-               successBlock:(EXUpdatesFileDownloaderSuccessBlock)successBlock
+               successBlock:(EXUpdatesFileDownloaderWithHashSuccessBlock)successBlock
                  errorBlock:(EXUpdatesFileDownloaderErrorBlock)errorBlock
 {
   [self downloadDataFromURL:url extraHeaders:extraHeaders successBlock:^(NSData *data, NSURLResponse *response) {
+    NSString *hashBase64String = [EXUpdatesUtils base64UrlEncodedSHA256WithData:data];
+    if (expectedBase64URLEncodedSHA256Hash && ![expectedBase64URLEncodedSHA256Hash isEqualToString:hashBase64String]) {
+      errorBlock([NSError errorWithDomain:EXUpdatesFileDownloaderErrorDomain
+                                     code:EXUpdatesFileDownloaderErrorCodeFileHashMismatchError
+                                 userInfo:@{
+        NSLocalizedDescriptionKey: [NSString stringWithFormat:@"File download was successful but base64url-encoded SHA-256 did not match expected; expected: %@; actual: %@", expectedBase64URLEncodedSHA256Hash, hashBase64String]
+      }
+                 ]);
+      return;
+    }
+
     NSError *error;
     if ([data writeToFile:destinationPath options:NSDataWritingAtomic error:&error]) {
-      successBlock(data, response);
+      successBlock(data, response, hashBase64String);
     } else {
       errorBlock([NSError errorWithDomain:EXUpdatesFileDownloaderErrorDomain
                                      code:EXUpdatesFileDownloaderErrorCodeFileWriteError

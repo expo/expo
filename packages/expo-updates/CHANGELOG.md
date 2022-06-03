@@ -12,6 +12,7 @@
 - Android: Allow null asset hash in new manifests. ([#17466](https://github.com/expo/expo/pull/17466) by [@wschurman](https://github.com/wschurman))
 - Fixed `source-login-scripts.sh` ~/zlogin typo. ([#17622](https://github.com/expo/expo/pull/17622) by [@vrgimael](https://github.com/vrgimael))
 - Android: Fix asset hash storage. ([#17732](https://github.com/expo/expo/pull/17732) by [@wschurman](https://github.com/wschurman))
+- Validate asset hash against expected hash before writing file to disk. ([#17745](https://github.com/expo/expo/pull/17745) by [@wschurman](https://github.com/wschurman))
 
 ### 💡 Others
 
