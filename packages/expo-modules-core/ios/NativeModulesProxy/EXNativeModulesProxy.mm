@@ -28,7 +28,15 @@ static const NSString *methodInfoKeyKey = @"key";
 static const NSString *methodInfoNameKey = @"name";
 static const NSString *methodInfoArgumentsCountKey = @"argumentsCount";
 
-@implementation ExpoModulesConfig
+@interface EXModulesProxyConfig ()
+
+@property (readonly) NSMutableDictionary* exportedConstants;
+@property (readonly) NSMutableDictionary* methodNames;
+@property (readonly) NSMutableDictionary* viewManagerMentadata;
+
+@end
+
+@implementation EXModulesProxyConfig
 
 - (instancetype)initWithConstants:(NSDictionary*)constants
                       methodNames:(NSDictionary*)methodNames
@@ -43,28 +51,20 @@ static const NSString *methodInfoArgumentsCountKey = @"argumentsCount";
   return self;
 }
 
-- (void)addEntriesFromConfig:(ExpoModulesConfig*)config
+- (void)addEntriesFromConfig:(const EXModulesProxyConfig*)config
 {
   [_exportedConstants addEntriesFromDictionary:config.exportedConstants];
   [_methodNames addEntriesFromDictionary:config.methodNames];
   [_viewManagerMentadata addEntriesFromDictionary:config.viewManagerMentadata];
 }
 
-- (NSDictionary<NSString*, id>*) toDictionary
+- (NSDictionary<NSString*, id> *) toDictionary
 {
   NSMutableDictionary <NSString *, id> *constantsAccumulator = [NSMutableDictionary dictionary];
   constantsAccumulator[viewManagersMetadataKeyPath] = _viewManagerMentadata;
   constantsAccumulator[exportedConstantsKeyPath] = _exportedConstants;
   constantsAccumulator[exportedMethodsNamesKeyPath] = _methodNames;
   return constantsAccumulator;
-}
-
-- (id)copyWithZone:(NSZone *)zone
-{
-  ExpoModulesConfig* cfg = [[ExpoModulesConfig allocWithZone:zone] initWithConstants:self.exportedConstants
-                                                                         methodNames:self.methodNames
-                                                                        viewManagers:self.viewManagerMentadata];
-  return cfg;
 }
 
 @end
@@ -97,7 +97,7 @@ static const NSString *methodInfoArgumentsCountKey = @"argumentsCount";
 }
 
 @synthesize bridge = _bridge;
-@synthesize legacyModulesConfig = _legacyModulesConfig;
+@synthesize nativeModulesConfig = _nativeModulesConfig;
 
 RCT_EXPORT_MODULE(NativeUnimoduleProxy)
 
@@ -150,14 +150,11 @@ RCT_EXPORT_MODULE(NativeUnimoduleProxy)
   return YES;
 }
 
-- (ExpoModulesConfig *)legacyModulesConfig
+- (EXModulesProxyConfig *)nativeModulesConfig
 {
-  if (_legacyModulesConfig) {
-    NSLog(@"CONST: Getting cached legacy config");
-    return _legacyModulesConfig;
+  if (_nativeModulesConfig) {
+    return _nativeModulesConfig;
   }
-  
-  NSLog(@"CONST: Creating legacy config");
   
   NSMutableDictionary <NSString *, id> *exportedModulesConstants = [NSMutableDictionary dictionary];
   // Grab all the constants exported by modules
@@ -194,29 +191,20 @@ RCT_EXPORT_MODULE(NativeUnimoduleProxy)
       @"propsNames": [[viewManager getPropsNames] allKeys]
     };
   }
-
-  NSMutableDictionary <NSString *, id> *constantsAccumulator = [NSMutableDictionary dictionary];
-  constantsAccumulator[viewManagersMetadataKeyPath] = viewManagersMetadata;
-  constantsAccumulator[exportedConstantsKeyPath] = exportedModulesConstants;
-  constantsAccumulator[exportedMethodsNamesKeyPath] = exportedMethodsNamesAccumulator;
   
-  ExpoModulesConfig* newConfig = [[ExpoModulesConfig alloc] initWithConstants:exportedModulesConstants
-                                                                  methodNames:exportedMethodsNamesAccumulator
-                                                                 viewManagers:viewManagersMetadata];
+  EXModulesProxyConfig* config = [[EXModulesProxyConfig alloc] initWithConstants:exportedModulesConstants
+                                                                     methodNames:exportedMethodsNamesAccumulator
+                                                                    viewManagers:viewManagersMetadata];
+  // decorate legacy config with sweet expo-modules config
+  [config addEntriesFromConfig:[_appContext expoModulesConfig]];
   
-  _legacyModulesConfig = newConfig;
-  return newConfig;
+  _nativeModulesConfig = config;
+  return config;
 }
 
 - (NSDictionary *)constantsToExport
 {
-  NSLog(@"CONST: Getting config from LegacyProxy");
-  
-  // decorate legacy config with expo-modules config
-  ExpoModulesConfig* config = [self.legacyModulesConfig copy];
-  ExpoModulesConfig* sweetModulesConfig = [_appContext expoModulesConfig];
-  [config addEntriesFromConfig:sweetModulesConfig];
-  return [config toDictionary];
+  return [self.nativeModulesConfig toDictionary];
 }
 
 - (void)setBridge:(RCTBridge *)bridge

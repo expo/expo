@@ -30,7 +30,7 @@ public final class AppContext: NSObject {
    */
   @objc
   public weak var legacyModuleRegistry: EXModuleRegistry?
-  
+
   @objc
   public weak var legacyModulesProxy: LegacyNativeModulesProxy?
 
@@ -244,6 +244,11 @@ public final class AppContext: NSObject {
       }
   }
 
+  @objc
+  public final lazy var expoModulesConfig = ModulesProxyConfig(constants: self.exportedModulesConstants(),
+                                                               methodNames: self.exportedFunctionNames(),
+                                                               viewManagers: self.viewManagersMetadata())
+
   private func exportedFunctionNames() -> [String: [[String: Any]]] {
     var constants = [String: [[String: Any]]]()
 
@@ -277,11 +282,6 @@ public final class AppContext: NSObject {
       }
     }
   }
-  
-  @objc
-  public final lazy var expoModulesConfig = ExpoModulesConfig(constants: self.exportedModulesConstants(),
-                                                              methodNames: self.exportedFunctionNames(),
-                                                              viewManagers: self.viewManagersMetadata())
 
   // MARK: - Runtime
 
@@ -340,7 +340,6 @@ public final class AppContext: NSObject {
     // [2] Fallback to an empty `ModulesProvider` if `ExpoModulesProvider` was not generated
     return ModulesProvider()
   }
-
 }
 
 // MARK: - Public exceptions

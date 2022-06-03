@@ -5,17 +5,14 @@
 #import <ExpoModulesCore/EXInternalModule.h>
 #import <ExpoModulesCore/EXModuleRegistry.h>
 
-@interface ExpoModulesConfig : NSObject<NSCopying>
-
-@property (nonatomic, strong) NSMutableDictionary* exportedConstants;
-@property (nonatomic, strong) NSMutableDictionary* methodNames;
-@property (nonatomic, strong) NSMutableDictionary* viewManagerMentadata;
+NS_SWIFT_NAME(ModulesProxyConfig)
+@interface EXModulesProxyConfig : NSObject
 
 - (instancetype)initWithConstants:(NSDictionary*)constants
                       methodNames:(NSDictionary*)methodNames
                      viewManagers:(NSDictionary*)viewManagerMetadata;
 
-- (void)addEntriesFromConfig:(ExpoModulesConfig*)config;
+- (void)addEntriesFromConfig:(const EXModulesProxyConfig*)config;
 - (NSDictionary<NSString*, id>*) toDictionary;
 
 @end
@@ -33,6 +30,6 @@ NS_SWIFT_NAME(LegacyNativeModulesProxy)
 
 - (void)callMethod:(NSString *)moduleName methodNameOrKey:(id)methodNameOrKey arguments:(NSArray *)arguments resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject;
 
-@property (nonatomic, strong) ExpoModulesConfig* legacyModulesConfig;
+@property (nonatomic, strong, readonly) EXModulesProxyConfig* nativeModulesConfig;
 
 @end
