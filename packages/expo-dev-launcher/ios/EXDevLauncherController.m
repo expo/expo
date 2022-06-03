@@ -111,24 +111,20 @@
 // the prebuild bundle.
 // See the post_install step in expo/scripts/autolinking.rb
 
-- (NSURL *)devLauncherURL
+- (NSURL * _Nullable)devLauncherURL
 {
-#if RCT_DEV
 #ifdef EX_DEV_LAUNCHER_URL
   NSString *urlString = [NSString stringWithFormat:@"%s/%s", EX_DEV_LAUNCHER_URL, EX_DEV_LAUNCHER_PACKAGER_PATH];
   return [NSURL URLWithString:urlString];
 #endif
-#endif
   return nil;
 }
 
-- (NSURL *)devLauncherStatusURL
+- (NSURL * _Nullable)devLauncherStatusURL
 {
-#if RCT_DEV
 #ifdef EX_DEV_LAUNCHER_URL
   NSString *urlString = [NSString stringWithFormat:@"%s/status", EX_DEV_LAUNCHER_URL];
   return [NSURL URLWithString:urlString];
-#endif
 #endif
   return nil;
 }
