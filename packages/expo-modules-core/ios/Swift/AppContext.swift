@@ -260,16 +260,12 @@ public final class AppContext: NSObject {
   }
 
   private func exportedModulesConstants() -> [String: Any] {
-    let startTime = CACurrentMediaTime();
-    let tmp = moduleRegistry
+    return moduleRegistry
       .reduce(into: [String: Any]()) { acc, holder in
         if holder.name != "SweetProxy" {
           acc[holder.name] = holder.getConstants()
         }
       }
-    let endTime = CACurrentMediaTime();
-    NSLog("CONST: total: %g ms", (endTime - startTime)/1000.0);
-    return tmp
   }
 
   private func viewManagersMetadata() -> [String: Any] {
@@ -283,14 +279,9 @@ public final class AppContext: NSObject {
   }
   
   @objc
-  public final lazy var expoModulesConfig: [String: [String: Any]] = {
-    NSLog("CONST: Creating expo-module config")
-    return [
-      "exportedFunctionNames": self.exportedFunctionNames(),
-      "exportedModulesConstants": self.exportedModulesConstants(),
-      "viewManagersMetadata": self.viewManagersMetadata()
-    ]
-  }()
+  public final lazy var expoModulesConfig = ExpoModulesConfig(constants: self.exportedModulesConstants(),
+                                                              methodNames: self.exportedFunctionNames(),
+                                                              viewManagers: self.viewManagersMetadata())
 
   // MARK: - Runtime
 
