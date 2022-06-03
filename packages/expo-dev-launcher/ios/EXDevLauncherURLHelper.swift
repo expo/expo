@@ -8,7 +8,7 @@ public class EXDevLauncherUrl: NSObject {
   public var url: URL
   
   @objc
-  public var queryParams: [String: URLQueryItem]
+  public var queryParams: [String: String]
   
   @objc
   public init(_ url: URL) {
@@ -16,7 +16,7 @@ public class EXDevLauncherUrl: NSObject {
     self.url = url
     
     if (EXDevLauncherURLHelper.isDevLauncherURL(url)) {
-      if let urlParam = self.queryParams["url"]?.value?.removingPercentEncoding {
+      if let urlParam = self.queryParams["url"] {
         if let urlFromParam = URL.init(string: urlParam) {
           self.url = EXDevLauncherURLHelper.replaceEXPScheme(urlFromParam, to: "http")
         }
@@ -61,12 +61,12 @@ public class EXDevLauncherURLHelper: NSObject {
   }
   
   @objc
-  public static func getQueryParamsForUrl(_ url: URL) -> [String: URLQueryItem] {
+  public static func getQueryParamsForUrl(_ url: URL) -> [String: String] {
     let components = URLComponents.init(url: url, resolvingAgainstBaseURL: false)
-    var dict: [String: URLQueryItem] = [:]
+    var dict: [String: String] = [:]
     
     for parameter in components?.queryItems ?? [] {
-      dict[parameter.name] = parameter
+      dict[parameter.name] = parameter.value?.removingPercentEncoding ?? ""
     }
   
     return dict

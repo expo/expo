@@ -361,7 +361,7 @@
   void (^launchReactNativeApp)(void) = ^{
     self->_shouldPreferUpdatesInterfaceSourceUrl = NO;
     RCTDevLoadingViewSetEnabled(NO);
-    [self.recentlyOpenedAppsRegistry appWasOpened:expoUrl queryParams:devLauncherUrl.queryParams manifest:nil];
+    [self.recentlyOpenedAppsRegistry appWasOpened:[expoUrl absoluteString] queryParams:devLauncherUrl.queryParams manifest:nil];
     if ([expoUrl.path isEqual:@"/"] || [expoUrl.path isEqual:@""]) {
       [self _initAppWithUrl:expoUrl bundleUrl:[NSURL URLWithString:@"index.bundle?platform=ios&dev=true&minify=false" relativeToURL:expoUrl] manifest:nil];
     } else {
@@ -375,7 +375,7 @@
   void (^launchExpoApp)(NSURL *, EXManifestsManifest *) = ^(NSURL *bundleURL, EXManifestsManifest *manifest) {
     self->_shouldPreferUpdatesInterfaceSourceUrl = !manifest.isUsingDeveloperTool;
     RCTDevLoadingViewSetEnabled(manifest.isUsingDeveloperTool);
-    [self.recentlyOpenedAppsRegistry appWasOpened:expoUrl queryParams:devLauncherUrl.queryParams manifest:manifest];
+    [self.recentlyOpenedAppsRegistry appWasOpened:[expoUrl absoluteString] queryParams:devLauncherUrl.queryParams manifest:manifest];
     [self _initAppWithUrl:expoUrl bundleUrl:bundleURL manifest:manifest];
     if (onSuccess) {
       onSuccess();

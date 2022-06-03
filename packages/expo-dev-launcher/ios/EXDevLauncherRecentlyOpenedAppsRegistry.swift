@@ -19,15 +19,15 @@ public class EXDevLauncherRecentlyOpenedAppsRegistry: NSObject {
   }
 
   @objc
-  public func appWasOpened(_ url: URL, queryParams: [String: URLQueryItem], manifest: EXManifestsManifestBehavior?) {
+  public func appWasOpened(_ url: String, queryParams: [String: String], manifest: EXManifestsManifestBehavior?) {
+    
     var appEntry: [String: Any] = [:]
     
-    let urlAsString = url.absoluteString
     let timestamp = getCurrentTimestamp()
         
     var isEASUpdate = false
     
-    if let host = url.host {
+    if let host = URL(string:url)?.host {
       isEASUpdate = host == "u.expo.dev" || host == "staging-u.expo.dev"
     }
     
@@ -35,7 +35,7 @@ public class EXDevLauncherRecentlyOpenedAppsRegistry: NSObject {
     
     if (isEASUpdate) {      
       if let updateMessage = queryParams["updateMessage"] {
-        appEntry["updateMessage"] = updateMessage.value
+        appEntry["updateMessage"] = updateMessage
       }
     }
     
@@ -52,12 +52,14 @@ public class EXDevLauncherRecentlyOpenedAppsRegistry: NSObject {
       }
     }
     
+    
+    
     appEntry["timestamp"] = timestamp
-    appEntry["url"] = urlAsString
+    appEntry["url"] = url
     
     
     var registry = appRegistry
-    registry[urlAsString] = appEntry
+    registry[url] = appEntry
     appRegistry = registry
   }
 
@@ -80,7 +82,7 @@ public class EXDevLauncherRecentlyOpenedAppsRegistry: NSObject {
     
     return apps
   }
-  
+
   @objc
   public func clearRegistry() {
     resetStorage()
