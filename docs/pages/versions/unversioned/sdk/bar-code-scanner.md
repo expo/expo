@@ -67,10 +67,12 @@ export default function App() {
   const [scanned, setScanned] = useState(false);
 
   useEffect(() => {
-    (async () => {
+    const getBarCodeScannerPermissions = async () => {
       const { status } = await BarCodeScanner.requestPermissionsAsync();
       setHasPermission(status === 'granted' ? true : false);
-    })();
+    });
+    
+    getBarCodeScannerPermissions();  
   }, []);
 
   const handleBarCodeScanned = ({ type, data }) => {
