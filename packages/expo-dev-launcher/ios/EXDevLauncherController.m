@@ -113,18 +113,22 @@
 
 - (NSURL *)devLauncherURL
 {
+#if RCT_DEV
 #ifdef EX_DEV_LAUNCHER_URL
   NSString *urlString = [NSString stringWithFormat:@"%s/%s", EX_DEV_LAUNCHER_URL, EX_DEV_LAUNCHER_PACKAGER_PATH];
   return [NSURL URLWithString:urlString];
+#endif
 #endif
   return nil;
 }
 
 - (NSURL *)devLauncherStatusURL
 {
+#if RCT_DEV
 #ifdef EX_DEV_LAUNCHER_URL
   NSString *urlString = [NSString stringWithFormat:@"%s/status", EX_DEV_LAUNCHER_URL];
   return [NSURL URLWithString:urlString];
+#endif
 #endif
   return nil;
 }
@@ -134,7 +138,6 @@
   // Shamelessly copied from RN core (RCTBundleURLProvider)
 
   NSURL *url = [self devLauncherStatusURL];
-
   NSURLSession *session = [NSURLSession sharedSession];
   NSURLRequest *request = [NSURLRequest requestWithURL:url
                                            cachePolicy:NSURLRequestUseProtocolCachePolicy
