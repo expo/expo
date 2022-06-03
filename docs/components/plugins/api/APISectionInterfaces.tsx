@@ -15,11 +15,12 @@ import {
   getTagData,
   mdInlineComponents,
   renderFlags,
-  renderParam,
+  renderParamRow,
+  renderTableHeadRow,
   renderTypeOrSignatureType,
   resolveTypeName,
 } from '~/components/plugins/api/APISectionUtils';
-import { Cell, HeaderCell, Row, Table, TableHead } from '~/ui/components/Table';
+import { Cell, Row, Table } from '~/ui/components/Table';
 
 export type APISectionInterfacesProps = {
   data: InterfaceDefinitionData[];
@@ -40,7 +41,7 @@ const renderInterfaceComment = (comment?: CommentData, signatures?: MethodSignat
     const defaultValue = getTagData('default', signatureComment);
     return (
       <>
-        {parameters?.length ? parameters.map(param => renderParam(param)) : null}
+        {parameters?.length ? parameters.map(param => renderParamRow(param)) : null}
         <B>Returns: </B>
         <InlineCode>{resolveTypeName(type)}</InlineCode>
         {signatureComment && (
@@ -57,14 +58,13 @@ const renderInterfaceComment = (comment?: CommentData, signatures?: MethodSignat
     );
   } else {
     const defaultValue = getTagData('default', comment);
-    return comment ? (
+    return (
       <CommentTextBlock
         comment={comment}
         components={mdInlineComponents}
         afterContent={renderDefaultValue(defaultValue)}
+        emptyCommentFallback="-"
       />
-    ) : (
-      '-'
     );
   }
 };
@@ -112,13 +112,7 @@ const renderInterface = ({
       )}
       <CommentTextBlock comment={comment} />
       <Table>
-        <TableHead>
-          <Row>
-            <HeaderCell>Name</HeaderCell>
-            <HeaderCell>Type</HeaderCell>
-            <HeaderCell>Description</HeaderCell>
-          </Row>
-        </TableHead>
+        {renderTableHeadRow()}
         <tbody>
           {children.filter(child => !child?.inheritedFrom).map(renderInterfacePropertyRow)}
         </tbody>
