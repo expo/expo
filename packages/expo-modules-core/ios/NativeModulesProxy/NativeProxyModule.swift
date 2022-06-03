@@ -1,8 +1,10 @@
 import Foundation
 
-public class NativeModulesProxyModule: Module {
+public class NativeProxyModule: Module {
+  public static let moduleName = "NativeProxy"
+
   public func definition() -> ModuleDefinition {
-    Name("SweetProxy")
+    Name(Self.moduleName)
 
     Constants { () -> [String: Any?] in
       guard let config = self.appContext?.legacyModulesProxy?.nativeModulesConfig else {
@@ -10,10 +12,6 @@ public class NativeModulesProxyModule: Module {
         return [:]
       }
       return config.toDictionary()
-    }
-
-    AsyncFunction("callMethod") { (_: String, _: String, _: Promise) in
-      // TODO
     }
   }
 }

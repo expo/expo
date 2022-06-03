@@ -266,10 +266,10 @@ public final class AppContext: NSObject {
 
   private func exportedModulesConstants() -> [String: Any] {
     return moduleRegistry
+      // prevent infinite recursion - exclude NativeProxyModule constants
+      .filter { $0.name != NativeProxyModule.moduleName }
       .reduce(into: [String: Any]()) { acc, holder in
-        if holder.name != "SweetProxy" {
-          acc[holder.name] = holder.getConstants()
-        }
+        acc[holder.name] = holder.getConstants()
       }
   }
 

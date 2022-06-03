@@ -1,27 +1,24 @@
 import { NativeModules } from 'react-native';
-const start2 = global.performance.now();
-// @ts-ignore
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const _unused = global.ExpoModules.SweetProxy;
-const end2 = global.performance.now();
-console.log('CONST: SweetProxy loaded in', end2 - start2, 'ms');
-const start = global.performance.now(); // use Date.now() if global.performance doesnt work
-const NativeProxy = NativeModules.NativeUnimoduleProxy;
-const end = global.performance.now();
-console.log('CONST: NativeUnimoduleProxy loaded in', end - start, 'ms');
+const ExpoNativeProxy = global.ExpoModules?.NativeProxy;
+const LegacyNativeProxy = NativeModules.NativeUnimoduleProxy;
 const modulesConstantsKey = 'modulesConstants';
 const exportedMethodsKey = 'exportedMethods';
 const NativeModulesProxy = {};
-if (NativeProxy) {
+if (LegacyNativeProxy) {
+    // use JSI proxy if available, fallback to legacy RN proxy
+    const NativeProxy = ExpoNativeProxy ?? LegacyNativeProxy;
     Object.keys(NativeProxy[exportedMethodsKey]).forEach((moduleName) => {
+        // copy constants
         NativeModulesProxy[moduleName] = NativeProxy[modulesConstantsKey][moduleName] || {};
+        // copy methods
         NativeProxy[exportedMethodsKey][moduleName].forEach((methodInfo) => {
             NativeModulesProxy[moduleName][methodInfo.name] = (...args) => {
                 const { key, argumentsCount } = methodInfo;
                 if (argumentsCount !== args.length) {
                     return Promise.reject(new Error(`Native method ${moduleName}.${methodInfo.name} expects ${argumentsCount} ${argumentsCount === 1 ? 'argument' : 'arguments'} but received ${args.length}`));
                 }
-                return NativeProxy.callMethod(moduleName, key, args);
+                // we still want to call methods using the legacy proxy
+                return LegacyNativeProxy.callMethod(moduleName, key, args);
             };
         });
         // These are called by EventEmitter (which is a wrapper for NativeEventEmitter)
