@@ -282,7 +282,7 @@ function RecentlyOpenedApps({ onRecentAppPress, loadingUrl }) {
   function renderRow(app: RecentApp) {
     const label = app.name ?? app.url;
 
-    if (app.isEASUpdate) {
+    if (app.isEASUpdate && app.updateMessage != null) {
       return (
         <RecentEASUpdateRow
           label={label}

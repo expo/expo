@@ -23,6 +23,11 @@ public class EXDevLauncherRecentlyOpenedAppsRegistry: NSObject {
     
     var appEntry: [String: Any] = [:]
     
+    // reloading the same url - update the old entry w/ any new fields instead of creating a new one
+    if let previousMatchingEntry = appRegistry[url] {
+      appEntry = previousMatchingEntry as! [String : Any]
+    }
+    
     let timestamp = getCurrentTimestamp()
         
     var isEASUpdate = false
@@ -52,11 +57,8 @@ public class EXDevLauncherRecentlyOpenedAppsRegistry: NSObject {
       }
     }
     
-    
-    
     appEntry["timestamp"] = timestamp
     appEntry["url"] = url
-    
     
     var registry = appRegistry
     registry[url] = appEntry
