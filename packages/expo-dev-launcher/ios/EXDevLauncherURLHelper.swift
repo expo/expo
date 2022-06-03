@@ -31,11 +31,11 @@ public class EXDevLauncherUrl: NSObject {
 public class EXDevLauncherURLHelper: NSObject {
   @objc
   public static func isDevLauncherURL(_ url: URL?) -> Bool {
-    guard let url = url else {
-      return false
-    }
-
-    let hostIsMatching = url.host == "expo-development-client"
+    return url?.host == "expo-development-client"
+  }
+  
+  @objc
+  public static func hasUrlQueryParam(_ url: URL) -> Bool {
     var hasUrlQueryParam = false
     
     let components = URLComponents.init(url: url, resolvingAgainstBaseURL: false)
@@ -47,8 +47,7 @@ public class EXDevLauncherURLHelper: NSObject {
       }
     }
     
-    let isDevLauncherURL = hostIsMatching && hasUrlQueryParam
-    return isDevLauncherURL
+    return hasUrlQueryParam
   }
 
   @objc

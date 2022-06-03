@@ -271,6 +271,13 @@
     return [self _handleExternalDeepLink:url options:options];
   }
   
+  if (![EXDevLauncherURLHelper hasUrlQueryParam:url]) {
+    // edgecase: this is a dev launcher url but it doesnt specify what url to open
+    // fallback to navigating to the launcher home screen
+    [self navigateToLauncher];
+    return true;
+  }
+  
   [self loadApp:url onSuccess:nil onError:^(NSError *error) {
     __weak typeof(self) weakSelf = self;
     dispatch_async(dispatch_get_main_queue(), ^{
