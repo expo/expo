@@ -455,7 +455,8 @@ open class NotificationsService : BroadcastReceiver() {
       // are not allowed. If the notification wants to open foreground app,
       // we should use the dedicated Activity pendingIntent.
       if (action.opensAppToForeground()) {
-        return ExpoHandlingDelegate.createPendingIntentForOpeningApp(context, intent)
+        val notificationResponse = getNotificationResponseFromBroadcastIntent(intent)
+        return ExpoHandlingDelegate.createPendingIntentForOpeningApp(context, intent, notificationResponse)
       }
 
       // We're defaulting to the behaviour prior API 31 (mutable) even though Android recommends immutability
@@ -497,7 +498,18 @@ open class NotificationsService : BroadcastReceiver() {
       return intent
     }
 
-    fun getNotificationResponseFromIntent(intent: Intent): NotificationResponse? {
+    fun getNotificationResponseFromBroadcastIntent(intent: Intent): NotificationResponse {
+      val notification = intent.getParcelableExtra<Notification>(NOTIFICATION_KEY)!!
+      val action = intent.getParcelableExtra<NotificationAction>(NOTIFICATION_ACTION_KEY)!!
+      val response = if (action is TextInputNotificationAction) {
+        TextInputNotificationResponse(action, notification, RemoteInput.getResultsFromIntent(intent).getString(USER_TEXT_RESPONSE_KEY))
+      } else {
+        NotificationResponse(action, notification)
+      }
+      return response
+    }
+
+    fun getNotificationResponseFromOpenIntent(intent: Intent): NotificationResponse? {
       intent.getByteArrayExtra(NOTIFICATION_RESPONSE_KEY)?.let { return unmarshalObject(NotificationResponse.CREATOR, it) }
       intent.getByteArrayExtra(TEXT_INPUT_NOTIFICATION_RESPONSE_KEY)?.let { return unmarshalObject(TextInputNotificationResponse.CREATOR, it) }
       return null
@@ -677,13 +689,7 @@ open class NotificationsService : BroadcastReceiver() {
     )
 
   open fun onReceiveNotificationResponse(context: Context, intent: Intent) {
-    val notification = intent.getParcelableExtra<Notification>(NOTIFICATION_KEY)!!
-    val action = intent.getParcelableExtra<NotificationAction>(NOTIFICATION_ACTION_KEY)!!
-    val response = if (action is TextInputNotificationAction) {
-      TextInputNotificationResponse(action, notification, RemoteInput.getResultsFromIntent(intent).getString(USER_TEXT_RESPONSE_KEY))
-    } else {
-      NotificationResponse(action, notification)
-    }
+    val response = getNotificationResponseFromBroadcastIntent(intent)
     getHandlingDelegate(context).handleNotificationResponse(response)
   }
 
