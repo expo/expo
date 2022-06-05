@@ -5,6 +5,8 @@ Package-specific changes not released in any SDK will be added here just before 
 
 ## Unpublished
 
+- Updated `FirebaseRecaptchaScreen` to hooks ([])() by [@rissois](https://github.com/rissois)
+
 ### 📚 3rd party library updates
 
 ### 🛠 Breaking changes
