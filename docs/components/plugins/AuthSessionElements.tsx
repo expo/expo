@@ -35,7 +35,7 @@ export const CreateAppButton: React.FC<{ href: string; name: string }> = ({ href
     css={STYLES_BUTTON}
     href={href}
     target="_blank"
-    iconRight={<ArrowUpRightIcon color={theme.palette.white} />}>
+    iconRight={<ArrowUpRightIcon color={theme.button.primary.foreground} />}>
     Create {name} App
   </Button>
 );
