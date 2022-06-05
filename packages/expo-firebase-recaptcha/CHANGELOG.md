@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Added firebase.initializeApp for web ([]()) by [@rissois](https://github.com/rissois)
+- Added firebase.initializeApp for web ([#17757](https://github.com/expo/expo/pull/17757) by [@rissois](https://github.com/rissois))
 
 ### 💡 Others
 
