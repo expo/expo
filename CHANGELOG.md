@@ -5,7 +5,7 @@ Package-specific changes not released in any SDK will be added here just before 
 
 ## Unpublished
 
-- Updated `FirebaseRecaptchaScreen` to hooks ([])() by [@rissois](https://github.com/rissois)
+- Updated `FirebaseRecaptchaScreen` to hooks ([#17757](https://github.com/expo/expo/pull/17757) by [@rissois](https://github.com/rissois))
 
 ### 📚 3rd party library updates
 
