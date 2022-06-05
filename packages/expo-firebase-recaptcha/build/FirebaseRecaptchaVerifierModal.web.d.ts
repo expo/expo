@@ -6,6 +6,7 @@ interface Props {
     appVerificationDisabledForTesting?: boolean;
     languageCode?: string;
     innerRef: React.MutableRefObject<FirebaseAuthApplicationVerifier | null>;
+    firebaseConfig: any;
 }
 declare const _default: React.ForwardRefExoticComponent<Omit<Props, "innerRef"> & React.RefAttributes<unknown>>;
 export default _default;

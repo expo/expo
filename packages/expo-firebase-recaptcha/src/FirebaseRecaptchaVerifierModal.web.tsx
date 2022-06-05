@@ -9,6 +9,7 @@ interface Props {
   appVerificationDisabledForTesting?: boolean;
   languageCode?: string;
   innerRef: React.MutableRefObject<FirebaseAuthApplicationVerifier | null>;
+  firebaseConfig: any;
 }
 
 class FirebaseRecaptchaVerifierModal extends React.Component<Props> {
@@ -16,6 +17,8 @@ class FirebaseRecaptchaVerifierModal extends React.Component<Props> {
 
   private setRef = (ref: any) => {
     if (ref) {
+      if (!firebase.apps?.length) firebase.initializeApp(this.props.firebaseConfig);
+
       if (this.props.appVerificationDisabledForTesting !== undefined) {
         firebase.auth().settings.appVerificationDisabledForTesting =
           !!this.props.appVerificationDisabledForTesting;
@@ -25,6 +28,7 @@ class FirebaseRecaptchaVerifierModal extends React.Component<Props> {
       }
       this.verifier = new firebase.auth.RecaptchaVerifier(ref, {
         size: this.props.attemptInvisibleVerification ? 'invisible' : 'normal',
+        // callback: response => {}
       });
     } else {
       this.verifier = null;

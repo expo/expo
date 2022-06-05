@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Added firebase.initializeApp for web ([]()) by [@rissois](https://github.com/rissois)
+
 ### 💡 Others
 
 ## 2.1.0 — 2021-12-03

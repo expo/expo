@@ -5,6 +5,8 @@ class FirebaseRecaptchaVerifierModal extends React.Component {
     verifier = null;
     setRef = (ref) => {
         if (ref) {
+            if (!firebase.apps?.length)
+                firebase.initializeApp(this.props.firebaseConfig);
             if (this.props.appVerificationDisabledForTesting !== undefined) {
                 firebase.auth().settings.appVerificationDisabledForTesting =
                     !!this.props.appVerificationDisabledForTesting;
@@ -14,6 +16,7 @@ class FirebaseRecaptchaVerifierModal extends React.Component {
             }
             this.verifier = new firebase.auth.RecaptchaVerifier(ref, {
                 size: this.props.attemptInvisibleVerification ? 'invisible' : 'normal',
+                // callback: response => {}
             });
         }
         else {
