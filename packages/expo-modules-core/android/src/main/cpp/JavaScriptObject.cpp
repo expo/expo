@@ -1,15 +1,34 @@
 // Copyright © 2021-present 650 Industries, Inc. (aka Expo)
 
 #include "JavaScriptObject.h"
-#include "JavaScriptRuntime.h"
 #include "JavaScriptValue.h"
+#include "JavaScriptRuntime.h"
+#include "JSITypeConverter.h"
 
 namespace expo {
 void JavaScriptObject::registerNatives() {
   registerHybrid({
                    makeNativeMethod("hasProperty", JavaScriptObject::jniHasProperty),
                    makeNativeMethod("getProperty", JavaScriptObject::jniGetProperty),
-                   makeNativeMethod("getPropertyNames", JavaScriptObject::jniGetPropertyNames)
+                   makeNativeMethod("getPropertyNames", JavaScriptObject::jniGetPropertyNames),
+                   makeNativeMethod("setBoolProperty", JavaScriptObject::setProperty<bool>),
+                   makeNativeMethod("setDoubleProperty", JavaScriptObject::setProperty<double>),
+                   makeNativeMethod("setStringProperty",
+                                    JavaScriptObject::setProperty<jni::alias_ref<jstring>>),
+                   makeNativeMethod("setJSValueProperty",
+                                    JavaScriptObject::setProperty<jni::alias_ref<JavaScriptValue::javaobject>>),
+                   makeNativeMethod("setJSObjectProperty",
+                                    JavaScriptObject::setProperty<jni::alias_ref<JavaScriptObject::javaobject>>),
+                   makeNativeMethod("unsetProperty", JavaScriptObject::unsetProperty),
+                   makeNativeMethod("defineBoolProperty", JavaScriptObject::defineProperty<bool>),
+                   makeNativeMethod("defineDoubleProperty",
+                                    JavaScriptObject::defineProperty<double>),
+                   makeNativeMethod("defineStringProperty",
+                                    JavaScriptObject::defineProperty<jni::alias_ref<jstring>>),
+                   makeNativeMethod("defineJSValueProperty",
+                                    JavaScriptObject::defineProperty<jni::alias_ref<JavaScriptValue::javaobject>>),
+                   makeNativeMethod("defineJSObjectProperty",
+                                    JavaScriptObject::defineProperty<jni::alias_ref<JavaScriptObject::javaobject>>),
                  });
 }
 
@@ -18,6 +37,10 @@ JavaScriptObject::JavaScriptObject(
   std::shared_ptr<jsi::Object> jsObject
 ) : runtimeHolder(std::move(runtime)), jsObject(std::move(jsObject)) {
   assert(runtimeHolder.lock() != nullptr);
+}
+
+std::shared_ptr<jsi::Object> JavaScriptObject::get() {
+  return jsObject;
 }
 
 bool JavaScriptObject::hasProperty(const std::string &name) {
@@ -70,5 +93,33 @@ jni::local_ref<jni::JArrayClass<jstring>> JavaScriptObject::jniGetPropertyNames(
   }
 
   return paredResult;
+}
+
+void JavaScriptObject::setProperty(const std::string &name, jsi::Value value) {
+  auto runtime = runtimeHolder.lock();
+  assert(runtime != nullptr);
+  jsObject->setProperty(*runtime->get(), name.c_str(), value);
+}
+
+void JavaScriptObject::unsetProperty(jni::alias_ref<jstring> name) {
+  auto runtime = runtimeHolder.lock();
+  assert(runtime != nullptr);
+  auto cName = name->toStdString();
+  jsObject->setProperty(
+    *runtime->get(),
+    cName.c_str(),
+    jsi::Value::undefined()
+  );
+}
+
+jsi::Object JavaScriptObject::preparePropertyDescriptor(
+  jsi::Runtime &jsRuntime,
+  int options
+) {
+  jsi::Object descriptor(jsRuntime);
+  descriptor.setProperty(jsRuntime, "configurable", (bool) ((1 << 0) & options));
+  descriptor.setProperty(jsRuntime, "enumerable", (bool) ((1 << 1) & options));
+  descriptor.setProperty(jsRuntime, "writable", (bool) ((1 << 2) & options));
+  return descriptor;
 }
 } // namespace expo

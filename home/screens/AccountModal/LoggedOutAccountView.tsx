@@ -40,6 +40,7 @@ export function LoggedOutAccountView({ refetch }: Props) {
       // after logging in, wait for redux action to dispatch, refetch with new sessionSecret, then dismiss modal
       if (isFinishedAuthenticating && sessionSecretExists) {
         try {
+          await ApolloClient.resetStore();
           await refetch();
         } finally {
           // in the case that it rejects, we still want to dismiss the modal
@@ -114,7 +115,6 @@ export function LoggedOutAccountView({ refetch }: Props) {
         Analytics.identify(null, trackingOpts);
         Analytics.track(analyticsEvent, trackingOpts);
 
-        await ApolloClient.resetStore();
         dispatch(
           SessionActions.setSession({
             sessionSecret: decodeURIComponent(sessionSecret),

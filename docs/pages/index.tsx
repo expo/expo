@@ -1,5 +1,15 @@
 import { css } from '@emotion/react';
-import { spacing, theme, typography, useTheme } from '@expo/styleguide';
+import {
+  spacing,
+  theme,
+  typography,
+  useTheme,
+  DiscordIcon,
+  DiscourseIcon,
+  GithubIcon,
+  RedditIcon,
+  TwitterIcon,
+} from '@expo/styleguide';
 import { useRouter } from 'next/router';
 import React, { PropsWithChildren } from 'react';
 import { Container, Row } from 'react-grid-system';
@@ -20,13 +30,6 @@ import {
 import { Spacer } from '~/ui/components/Separator';
 import { Terminal } from '~/ui/components/Snippet';
 import { H1, H2, H3, P } from '~/ui/components/Text';
-import {
-  DiscordIcon,
-  DiscourseIcon,
-  GithubIcon,
-  RedditIcon,
-  TwitterIcon,
-} from '~/ui/foundations/icons';
 
 export const CellContainer = ({ children, style }: PropsWithChildren<{ style?: object }>) => (
   // https://github.com/sealninja/react-grid-system/issues/175
@@ -227,13 +230,13 @@ const Home = () => {
             title="GitHub"
             description="View our SDK, submit a PR, or report an issue."
             link="https://github.com/expo/expo"
-            icon={<GithubIcon size={20} color={palette.white} />}
+            icon={<GithubIcon color={palette.white} />}
           />
           <CommunityGridCell
             title="Discord"
             description="Join our Discord and chat with other Expo users."
             link="https://chat.expo.dev"
-            icon={<DiscordIcon size={20} color={palette.white} />}
+            icon={<DiscordIcon color={palette.white} />}
             iconBackground="#3131E8"
           />
         </Row>
@@ -242,14 +245,14 @@ const Home = () => {
             title="Twitter"
             description="Follow Expo on Twitter for news and updates."
             link="https://twitter.com/expo"
-            icon={<TwitterIcon size={20} color={palette.white} />}
+            icon={<TwitterIcon color={palette.white} />}
             iconBackground="#1E8EF0"
           />
           <CommunityGridCell
             title="Forums"
             description="Ask or answer a question on the forums."
             link="https://forums.expo.dev/"
-            icon={<DiscourseIcon size={20} color={palette.white} />}
+            icon={<DiscourseIcon color={palette.white} />}
           />
         </Row>
         <Row>
@@ -257,7 +260,7 @@ const Home = () => {
             title="Reddit"
             description="Get the latest on /r/expo."
             link="https://www.reddit.com/r/expo"
-            icon={<RedditIcon size={20} color={palette.white} />}
+            icon={<RedditIcon color={palette.white} />}
             iconBackground="#FC471E"
           />
         </Row>

@@ -73,8 +73,9 @@ Metro doesn't come with monorepo support by default (yet). That's why we need to
 
 We can configure that by creating a **metro.config.js** with the following content.
 
+> Learn more about customizing Metro in [our guide](/guides/customizing-metro).
+
 ```js
-// Learn more https://docs.expo.io/guides/customizing-metro
 const { getDefaultConfig } = require('expo/metro-config');
 const path = require('path');
 

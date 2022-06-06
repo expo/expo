@@ -25,6 +25,7 @@ void JSIInteropModuleRegistry::registerNatives() {
                                     JSIInteropModuleRegistry::installJSIForTests),
                    makeNativeMethod("evaluateScript", JSIInteropModuleRegistry::evaluateScript),
                    makeNativeMethod("global", JSIInteropModuleRegistry::global),
+                   makeNativeMethod("createObject", JSIInteropModuleRegistry::createObject),
                  });
 }
 
@@ -37,9 +38,11 @@ void JSIInteropModuleRegistry::installJSI(
   jni::alias_ref<react::CallInvokerHolder::javaobject> nativeInvokerHolder
 ) {
   auto runtime = reinterpret_cast<jsi::Runtime *>(jsRuntimePointer);
-  jsInvoker = jsInvokerHolder->cthis()->getCallInvoker();
-  nativeInvoker = nativeInvokerHolder->cthis()->getCallInvoker();
-  runtimeHolder = std::make_shared<JavaScriptRuntime>(runtime, jsInvoker, nativeInvoker);
+  runtimeHolder = std::make_shared<JavaScriptRuntime>(
+    runtime,
+    jsInvokerHolder->cthis()->getCallInvoker(),
+    nativeInvokerHolder->cthis()->getCallInvoker()
+  );
 
   auto expoModules = std::make_shared<ExpoModulesHostObject>(this);
   auto expoModulesObject = jsi::Object::createFromHostObject(*runtime, expoModules);
@@ -55,6 +58,18 @@ void JSIInteropModuleRegistry::installJSI(
 
 void JSIInteropModuleRegistry::installJSIForTests() {
   runtimeHolder = std::make_shared<JavaScriptRuntime>();
+  jsi::Runtime &jsiRuntime = *runtimeHolder->get();
+
+  auto expoModules = std::make_shared<ExpoModulesHostObject>(this);
+  auto expoModulesObject = jsi::Object::createFromHostObject(jsiRuntime, expoModules);
+
+  jsiRuntime
+    .global()
+    .setProperty(
+      jsiRuntime,
+      "ExpoModules",
+      std::move(expoModulesObject)
+    );
 }
 
 jni::local_ref<JavaScriptModuleObject::javaobject>
@@ -81,5 +96,9 @@ jni::local_ref<JavaScriptValue::javaobject> JSIInteropModuleRegistry::evaluateSc
 
 jni::local_ref<JavaScriptObject::javaobject> JSIInteropModuleRegistry::global() {
   return runtimeHolder->global();
+}
+
+jni::local_ref<JavaScriptObject::javaobject> JSIInteropModuleRegistry::createObject() {
+  return runtimeHolder->createObject();
 }
 } // namespace expo

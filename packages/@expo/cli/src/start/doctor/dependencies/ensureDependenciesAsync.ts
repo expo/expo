@@ -1,5 +1,4 @@
 import { ExpoConfig, getConfig } from '@expo/config';
-import * as PackageManager from '@expo/package-manager';
 import chalk from 'chalk';
 import wrapAnsi from 'wrap-ansi';
 
@@ -75,10 +74,7 @@ export async function ensureDependenciesAsync(
     title = '';
   }
 
-  const managerName = PackageManager.resolvePackageManager(projectRoot);
-
   const installCommand = createInstallCommand({
-    manager: managerName ?? 'npm',
     packages: missing,
   });
 
@@ -99,10 +95,8 @@ function wrapForTerminal(message: string): string {
 
 /** Create the bash install command from a given set of packages and settings. */
 export function createInstallCommand({
-  manager,
   packages,
 }: {
-  manager: PackageManager.NodePackageManager;
   packages: {
     file: string;
     pkg: string;
@@ -110,8 +104,7 @@ export function createInstallCommand({
   }[];
 }) {
   return (
-    (manager === 'yarn' ? `${manager} add` : `${manager} install`) +
-    ' ' +
+    'npx expo install ' +
     packages
       .map(({ pkg, version }) => {
         if (version) {

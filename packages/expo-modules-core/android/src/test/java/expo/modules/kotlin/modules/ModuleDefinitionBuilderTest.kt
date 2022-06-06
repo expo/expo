@@ -51,8 +51,8 @@ class ModuleDefinitionBuilderTest {
 
     Truth.assertThat(moduleDefinition.name).isEqualTo(moduleName)
     Truth.assertThat(moduleDefinition.constantsProvider()).isSameInstanceAs(moduleConstants)
-    Truth.assertThat(moduleDefinition.methods).containsKey("m1")
-    Truth.assertThat(moduleDefinition.methods).containsKey("m2")
+    Truth.assertThat(moduleDefinition.asyncFunctions).containsKey("m1")
+    Truth.assertThat(moduleDefinition.asyncFunctions).containsKey("m2")
   }
 
   @Test
@@ -98,7 +98,7 @@ class ModuleDefinitionBuilderTest {
       OnStartObserving { }
     }
 
-    Truth.assertThat(moduleDefinition.methods).containsKey("startObserving")
+    Truth.assertThat(moduleDefinition.asyncFunctions).containsKey("startObserving")
   }
 
   @Test
@@ -108,7 +108,7 @@ class ModuleDefinitionBuilderTest {
       OnStopObserving { }
     }
 
-    Truth.assertThat(moduleDefinition.methods).containsKey("stopObserving")
+    Truth.assertThat(moduleDefinition.asyncFunctions).containsKey("stopObserving")
   }
 
   @Test
