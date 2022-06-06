@@ -51,18 +51,25 @@ export function useRecentlyOpenedApps() {
     getRecentlyOpenedApps()
       .then((apps) => {
         // use a map to index apps by their url:
-        const recentApps: {[id: string]: RecentApp } = {};
+        const recentApps: { [id: string]: RecentApp } = {};
 
         for (const app of apps) {
           // index by url to eliminate multiple bundlers with the same address
           const id = `${app.url}`;
           app.id = id;
-          recentApps[id] = app;
+
+          const previousTimestamp = recentApps[id]?.timestamp || 0;
+
+          if (app.timestamp > previousTimestamp) {
+            recentApps[id] = app;
+          }
         }
 
         // sorted by most recent timestamp first
-        const sortedByMostRecent = Object.values(recentApps).sort((a, b) => b.timestamp - a.timestamp)
-        
+        const sortedByMostRecent = Object.values(recentApps).sort(
+          (a, b) => b.timestamp - a.timestamp
+        );
+
         setRecentApps(sortedByMostRecent);
         setIsFetching(false);
       })
