@@ -14,7 +14,7 @@ export function useOnUpdatePress() {
   const [loadingUpdateId, setLoadingUpdateId] = React.useState('');
 
   const onUpdatePress = React.useCallback(
-    async (update: Update) => {
+    (update: Update) => {
       const isCompatible = update.runtimeVersion === runtimeVersion;
       if (!isCompatible) {
         // prevent multiple taps bringing up multiple of the same toast
