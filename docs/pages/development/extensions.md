@@ -28,7 +28,7 @@ This will create a new section in the dev menu that includes the buttons you hav
 
 <ImageSpotlight alt="An example of a custom menu button in expo-dev-menu" src="/static/images/dev-client/custom-menu-button.png" containerStyle={{ paddingBottom: 0 }} />
 
-*Note: Subsequent calls of `registerDevMenuItems` will override previous all entries.*
+*Note: Subsequent calls of `registerDevMenuItems` will override all previous entries.*
 
 
 ### EAS Updates
