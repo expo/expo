@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix opening published EAS Update from URL on Android.
+- Fix opening published EAS Update from URL on Android. ([#17734](https://github.com/expo/expo/pull/17734) by [@esamelson](https://github.com/esamelson))
 
 ### 💡 Others
 
