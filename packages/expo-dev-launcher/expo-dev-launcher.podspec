@@ -36,7 +36,7 @@ Pod::Spec.new do |s|
   s.pod_target_xcconfig = { "DEFINES_MODULE" => "YES" }
   dev_launcher_url = ENV['EX_DEV_LAUNCHER_URL'] || ""
   if dev_launcher_url != ""
-    escaped_dev_launcher_url = dev_launcher_url.gsub('/','\\/')
+    escaped_dev_launcher_url = Shellwords.escape(dev_launcher_url).gsub('/','\\/')
     s.pod_target_xcconfig = {
       'DEFINES_MODULE' => 'YES',
       'OTHER_CFLAGS[config=Debug]' => "$(inherited) -DEX_DEV_LAUNCHER_URL=\"\\\"" + escaped_dev_launcher_url + "\\\"\""

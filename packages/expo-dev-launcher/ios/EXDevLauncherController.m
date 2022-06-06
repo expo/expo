@@ -37,7 +37,7 @@
 #define VERSION @ STRINGIZE2(EX_DEV_LAUNCHER_VERSION)
 #endif
 
-#define EX_DEV_LAUNCHER_PACKAGER_PATH "index.bundle?platform=ios&dev=true&minify=false"
+#define EX_DEV_LAUNCHER_PACKAGER_PATH @"index.bundle?platform=ios&dev=true&minify=false"
 
 @interface EXDevLauncherController ()
 
@@ -106,25 +106,32 @@
 
 // Expo developers: Enable the below code by running
 //     export EX_DEV_LAUNCHER_URL=http://localhost:8090
-// before doing pod install. This will cause the controller to see if
+// in your shell before doing pod install. This will cause the controller to see if
 // the expo-launcher packager is running, and if so, use that instead of
-// the prebuild bundle.
+// the prebuilt bundle.
 // See the pod_target_xcconfig definition in expo-dev-launcher.podspec
 
-- (NSURL * _Nullable)devLauncherURL
+- (nullable NSURL *)devLauncherBaseURL
 {
 #ifdef EX_DEV_LAUNCHER_URL
-  NSString *urlString = [NSString stringWithFormat:@"%s/%s", EX_DEV_LAUNCHER_URL, EX_DEV_LAUNCHER_PACKAGER_PATH];
-  return [NSURL URLWithString:urlString];
+  return [NSURL URLWithString:@EX_DEV_LAUNCHER_URL];
+#endif
+  return nil;
+}
+- (nullable NSURL *)devLauncherURL
+{
+#ifdef EX_DEV_LAUNCHER_URL
+  return [NSURL URLWithString:EX_DEV_LAUNCHER_PACKAGER_PATH
+                relativeToURL:[self devLauncherBaseURL]];
 #endif
   return nil;
 }
 
-- (NSURL * _Nullable)devLauncherStatusURL
+- (nullable NSURL *)devLauncherStatusURL
 {
 #ifdef EX_DEV_LAUNCHER_URL
-  NSString *urlString = [NSString stringWithFormat:@"%s/status", EX_DEV_LAUNCHER_URL];
-  return [NSURL URLWithString:urlString];
+  return [NSURL URLWithString:@"status"
+                relativeToURL:[self devLauncherBaseURL]];
 #endif
   return nil;
 }
@@ -132,6 +139,11 @@
 - (BOOL)isLauncherPackagerRunning
 {
   // Shamelessly copied from RN core (RCTBundleURLProvider)
+
+  // If we are not running in the main thread, run away
+  if (![NSThread isMainThread]) {
+    return NO;
+  }
 
   NSURL *url = [self devLauncherStatusURL];
   NSURLSession *session = [NSURLSession sharedSession];
