@@ -64,7 +64,7 @@ This property is passed down to [`@babel/plugin-transform-react-jsx`](https://ba
 
 `string`, defaults to `react`
 
-This option allows specifying a custom import source for importing functions. 
+This option allows specifying a custom import source for importing functions.
 
 ```js
 [
@@ -117,7 +117,7 @@ Enabling this option will allow your project to run with older JavaScript syntax
 
 > `TypeError: Cannot assign to read only property 'exports' of object '#<Object>'`
 
-**default:** `false`
+**default:** `false` when using Webpack. `true` otherwise.
 
 ```js
 [
