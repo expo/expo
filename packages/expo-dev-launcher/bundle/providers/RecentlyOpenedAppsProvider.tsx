@@ -58,7 +58,7 @@ export function useRecentlyOpenedApps() {
           const id = `${app.url}`;
           app.id = id;
 
-          const previousTimestamp = recentApps[id]?.timestamp || 0;
+          const previousTimestamp = recentApps[id]?.timestamp ?? 0;
 
           if (app.timestamp > previousTimestamp) {
             recentApps[id] = app;
