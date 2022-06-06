@@ -32,7 +32,7 @@
     "@expo/config-plugins": "^4.0.14",
     "resolve-from": "^5.0.0",
     "semver": "^7.3.5",
-    "expo-dev-menu": "0.9.3"
+    "expo-dev-menu": "0.9.4"
   },
   "devDependencies": {
     "@react-navigation/bottom-tabs": "^6.0.9",
