@@ -68,7 +68,7 @@ class ExpoHandlingDelegate(protected val context: Context) : HandlingDelegate {
 
   /**
    * If the app is backgrounded, a notification is only presented if
-   * the title and text are both non-empty. Otherwise, this is a "data-only" or "silent"
+   * the title and or text is present. If both are null or empty, this is a "data-only" or "silent"
    * notification that should not be presented to the user.
    */
   private fun Notification.shouldPresent(): Boolean {
