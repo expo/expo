@@ -87,7 +87,7 @@ class DevLauncherInternalModule(reactContext: ReactApplicationContext?) :
   }
 
   private fun sanitizeUrlString(url: String): Uri {
-    val parsedUrl = Uri.parse(url?.trim())
+    val parsedUrl = Uri.parse(url.trim())
     val appUrl = if (isDevLauncherUrl(parsedUrl)) {
       requireNotNull(getAppUrlFromDevLauncherUrl(parsedUrl)) { "The provided url doesn't contain the app url." }
     } else {
@@ -257,13 +257,11 @@ class DevLauncherInternalModule(reactContext: ReactApplicationContext?) :
   }
 
   private fun getApplicationIconUri(): String {
-    var appIcon = ""
     val packageManager = reactApplicationContext.packageManager
     val packageName = reactApplicationContext.packageName
     val applicationInfo = packageManager.getApplicationInfo(packageName, 0)
-    appIcon = "" + applicationInfo.icon
 //    TODO - figure out how to get resId for AdaptiveIconDrawable icons
-    return appIcon
+    return "" + applicationInfo.icon
   }
 
   @ReactMethod
