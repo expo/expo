@@ -11,6 +11,7 @@
 ### 🐛 Bug fixes
 
 - Update dev settings when initial props change. ([#17663](https://github.com/expo/expo/pull/17663) by [@esamelson](https://github.com/esamelson))
+- Fix copy on onboarding screen re: location of "Send Keyboard Input to Device" in system menu. ([#17767](https://github.com/expo/expo/pull/17767) by [@esamelson](https://github.com/esamelson))
 
 ### 💡 Others
 
