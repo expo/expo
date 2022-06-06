@@ -7,7 +7,7 @@ import uuid from 'uuid/v4';
 
 import * as Server from './utils/server';
 import * as Simulator from './utils/simulator';
-import { copyBundleToStaticFolder } from './utils/update';
+import { copyAssetToStaticFolder, copyBundleToStaticFolder } from './utils/update';
 
 const SERVER_HOST = process.env.UPDATES_HOST;
 const SERVER_PORT = parseInt(process.env.UPDATES_PORT, 10);
@@ -141,6 +141,64 @@ test('downloads and runs update, and updates current-update-id header', async ()
   );
   expect(secondRequest.headers['expo-current-update-id']).toBeDefined();
   expect(secondRequest.headers['expo-current-update-id']).toEqual(manifest.id);
+});
+
+test('downloads and runs update with multiple assets', async () => {
+  jest.setTimeout(300000 * TIMEOUT_BIAS);
+  const bundleFilename = 'bundle2.js';
+  const newNotifyString = 'test-update-2';
+  const hash = await copyBundleToStaticFolder(updateDistPath, bundleFilename, newNotifyString);
+  const assets = await Promise.all(
+    [
+      'lubo-minar-j2RgHfqKhCM-unsplash.jpg',
+      'niklas-liniger-zuPiCN7xekM-unsplash.jpg',
+      'patrick-untersee-XJjsuuDwWas-unsplash.jpg',
+    ].map(async (sourceFilename, index) => {
+      const destinationFilename = `asset${index}.jpg`;
+      const hash = await copyAssetToStaticFolder(
+        path.join(__dirname, 'assets', sourceFilename),
+        destinationFilename
+      );
+      return {
+        hash,
+        key: `asset${index}`,
+        contentType: 'image/jpg',
+        fileExtension: '.jpg',
+        url: `http://${SERVER_HOST}:${SERVER_PORT}/static/${destinationFilename}`,
+      };
+    })
+  );
+  const manifest = {
+    id: uuid(),
+    createdAt: new Date().toISOString(),
+    runtimeVersion: RUNTIME_VERSION,
+    launchAsset: {
+      hash,
+      key: 'test-update-2-key',
+      contentType: 'application/javascript',
+      url: `http://${SERVER_HOST}:${SERVER_PORT}/static/${bundleFilename}`,
+    },
+    assets,
+    metadata: {},
+    extra: {},
+  };
+
+  Server.start(SERVER_PORT);
+  await serveUpdateWithManifest(manifest);
+  await Simulator.installApp();
+  await Simulator.startApp();
+  const response = await Server.waitForResponse(10000 * TIMEOUT_BIAS);
+  expect(response).toBe('test');
+
+  // give the app time to load the new update in the background
+  await setTimeout(2000 * TIMEOUT_BIAS);
+  expect(Server.consumeRequestedStaticFiles().length).toBe(4);
+
+  // restart the app so it will launch the new update
+  await Simulator.stopApp();
+  await Simulator.startApp();
+  const updatedResponse = await Server.waitForResponse(10000 * TIMEOUT_BIAS);
+  expect(updatedResponse).toBe(newNotifyString);
 });
 
 // important for usage accuracy
