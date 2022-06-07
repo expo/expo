@@ -16,7 +16,7 @@ object DevMenuAppInfo {
     var appName = packageManager.getApplicationLabel(applicationInfo).toString()
     val runtimeVersion = getMetadataValue(reactContext, "expo.modules.updates.EXPO_RUNTIME_VERSION")
     val sdkVersion = getMetadataValue(reactContext, "expo.modules.updates.EXPO_SDK_VERSION")
-    var appIcon = getApplicationIconUri(reactContext)
+    val appIcon = getApplicationIconUri(reactContext)
     var hostUrl = reactContext.sourceURL
 
     val manifest = DevMenuManager.currentManifest
