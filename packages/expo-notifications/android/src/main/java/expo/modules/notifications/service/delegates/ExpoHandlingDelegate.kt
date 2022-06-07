@@ -100,9 +100,18 @@ class ExpoHandlingDelegate(protected val context: Context) : HandlingDelegate {
       getListeners().forEach {
         it.onNotificationReceived(notification)
       }
-    } else {
+    } else if (notification.shouldPresent()) {
       NotificationsService.present(context, notification)
     }
+  }
+
+  /**
+   * If the app is backgrounded, a notification is only presented if
+   * the title and or text is present. If both are null or empty, this is a "data-only" or "silent"
+   * notification that should not be presented to the user.
+   */
+  private fun Notification.shouldPresent(): Boolean {
+    return !(notificationRequest.content.title.isNullOrEmpty() && notificationRequest.content.text.isNullOrEmpty())
   }
 
   override fun handleNotificationResponse(notificationResponse: NotificationResponse) {
