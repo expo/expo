@@ -3,39 +3,27 @@ package expo.modules.localization
 import android.os.Bundle
 import android.view.View
 import android.text.TextUtils
-import android.content.Context
 import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
 
-import expo.modules.core.Promise
-import expo.modules.core.ExportedModule
-import expo.modules.core.interfaces.ExpoMethod
+import expo.modules.kotlin.modules.Module
+import expo.modules.kotlin.modules.ModuleDefinition
 
 import kotlin.collections.ArrayList
-import java.lang.ref.WeakReference
 import java.text.DecimalFormatSymbols
 import java.util.*
 
-class LocalizationModule(context: Context) : ExportedModule(context) {
-  private val contextRef: WeakReference<Context> = WeakReference(context)
+class LocalizationModule : Module() {
+  override fun definition() = ModuleDefinition {
+    Name("ExpoLocalization")
 
-  private val applicationContext: Context?
-    get() = contextRef.get()?.applicationContext
-
-  override fun getName() = "ExpoLocalization"
-
-  override fun getConstants(): Map<String, Any?> {
-    val constants = HashMap<String, Any?>()
-    val bundle = bundledConstants
-    for (key in bundle.keySet()) {
-      constants[key] = bundle[key] as Any?
+    Constants {
+      bundledConstants.toMap()
     }
-    return constants
-  }
 
-  @ExpoMethod
-  fun getLocalizationAsync(promise: Promise) {
-    promise.resolve(bundledConstants)
+    AsyncFunction("getLocalizationAsync") {
+      return@AsyncFunction bundledConstants
+    }
   }
 
   // TODO: Bacon: add set language
@@ -63,7 +51,7 @@ class LocalizationModule(context: Context) : ExportedModule(context) {
 
   private val locales: ArrayList<Locale>
     get() {
-      val context = applicationContext ?: return ArrayList()
+      val context = appContext.reactContext ?: return ArrayList()
       val configuration = context.resources.configuration
       return if (VERSION.SDK_INT > VERSION_CODES.N) {
         val locales = ArrayList<Locale>()
@@ -80,6 +68,19 @@ class LocalizationModule(context: Context) : ExportedModule(context) {
     val miuiRegion = getSystemProperty("ro.miui.region")
     return if (!TextUtils.isEmpty(miuiRegion)) {
       miuiRegion
-    } else getCountryCode(locale)
+    } else {
+      getCountryCode(locale)
+    }
   }
+}
+
+/**
+ * Creates a shallow [Map] from the [Bundle]. Does not traverse nested arrays and bundles.
+ */
+private fun Bundle.toMap(): Map<String, Any?> {
+  val map = HashMap<String, Any?>()
+  for (key in this.keySet()) {
+    map[key] = this[key]
+  }
+  return map
 }
