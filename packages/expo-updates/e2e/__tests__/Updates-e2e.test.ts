@@ -143,6 +143,47 @@ test('downloads and runs update, and updates current-update-id header', async ()
   expect(secondRequest.headers['expo-current-update-id']).toEqual(manifest.id);
 });
 
+test('does not run update with incorrect hash', async () => {
+  jest.setTimeout(300000 * TIMEOUT_BIAS);
+  const bundleFilename = 'bundle-invalid-hash.js';
+  const newNotifyString = 'test-update-invalid-hash';
+  await copyBundleToStaticFolder(updateDistPath, bundleFilename, newNotifyString);
+  const hash = 'invalid-hash';
+  const manifest = {
+    id: uuid(),
+    createdAt: new Date().toISOString(),
+    runtimeVersion: RUNTIME_VERSION,
+    launchAsset: {
+      hash,
+      key: 'test-update-1-key',
+      contentType: 'application/javascript',
+      url: `http://${SERVER_HOST}:${SERVER_PORT}/static/${bundleFilename}`,
+    },
+    assets: [],
+    metadata: {},
+    extra: {},
+  };
+
+  Server.start(SERVER_PORT);
+  await serveUpdateWithManifest(manifest);
+  await Simulator.installApp();
+  await Simulator.startApp();
+  await Server.waitForUpdateRequest(10000 * TIMEOUT_BIAS);
+  const response = await Server.waitForResponse(10000 * TIMEOUT_BIAS);
+  expect(response).toBe('test');
+
+  // give the app time to load the new update in the background
+  await setTimeout(2000 * TIMEOUT_BIAS);
+  expect(Server.consumeRequestedStaticFiles().length).toBe(1);
+
+  // restart the app to verify the new update isn't used
+  await Simulator.stopApp();
+  await Simulator.startApp();
+  await Server.waitForUpdateRequest(10000 * TIMEOUT_BIAS);
+  const updatedResponse = await Server.waitForResponse(10000 * TIMEOUT_BIAS);
+  expect(updatedResponse).toBe('test');
+});
+
 test('downloads and runs update with multiple assets', async () => {
   jest.setTimeout(300000 * TIMEOUT_BIAS);
   const bundleFilename = 'bundle2.js';
