@@ -2,7 +2,6 @@ package expo.modules.localization
 
 import android.text.TextUtils
 import java.util.*
-import kotlin.collections.ArrayList
 
 val USES_IMPERIAL = listOf("US", "LR", "MM")
 
