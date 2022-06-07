@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Native module on Android is now written in Kotlin using the new API.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
