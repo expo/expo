@@ -15,6 +15,7 @@ const defaultDevSettings: DevMenu.DevSettings = {
   isHotLoadingAvailable: true,
   isPerfMonitorAvailable: true,
   isRemoteDebuggingAvailable: true,
+  isJSInspectorAvailable: false,
 };
 
 const DevSettingsContext = React.createContext<DevMenu.DevSettings>(defaultDevSettings);
@@ -88,6 +89,15 @@ export function useDevSettings() {
     bottomSheet.collapse();
   }, []);
 
+  const openRNDevMenu = React.useCallback(async () => {
+    await DevMenu.openDevMenuFromReactNative();
+  }, []);
+
+  const openJSInspector = React.useCallback(async () => {
+    await DevMenu.openJSInspector();
+    bottomSheet.collapse();
+  }, []);
+
   return {
     devSettings,
     actions: {
@@ -97,6 +107,8 @@ export function useDevSettings() {
       toggleFastRefresh,
       reload,
       navigateToLauncher,
+      openRNDevMenu,
+      openJSInspector,
     },
   };
 }

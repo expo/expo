@@ -4,6 +4,7 @@ import android.os.Bundle
 import com.facebook.react.ReactInstanceManager
 import com.facebook.react.devsupport.DevInternalSettings
 import expo.modules.devmenu.devtools.DevMenuDevToolsDelegate
+import kotlinx.coroutines.runBlocking
 
 object DevMenuDevSettings {
   fun getDevSettings(reactInstanceManager: ReactInstanceManager): Bundle {
@@ -22,6 +23,15 @@ object DevMenuDevSettings {
         putBoolean("isElementInspectorAvailable", devSettings.isJSDevModeEnabled)
         putBoolean("isHotLoadingAvailable", devSettings.isJSDevModeEnabled)
         putBoolean("isPerfMonitorAvailable", devSettings.isJSDevModeEnabled)
+        putBoolean("isJSInspectorAvailable", run {
+          val packageName = reactInstanceManager.currentReactContext?.packageName
+            ?: return@run false
+          val metroHost = "http://${devSettings.packagerConnectionSettings.debugServerHost}"
+          runBlocking {
+            DevMenuManager.metroClient
+              .queryJSInspectorAvailability(metroHost, packageName)
+          }
+        })
       }
     }
 
@@ -34,6 +44,7 @@ object DevMenuDevSettings {
       putBoolean("isElementInspectorAvailable", false)
       putBoolean("isHotLoadingAvailable", false)
       putBoolean("isPerfMonitorAvailable", false)
+      putBoolean("isJSInspectorAvailable", false)
     }
   }
 }

@@ -18,8 +18,10 @@ import {
   StatusIndicator,
   Image,
   scale,
+  SettingsFilledIcon,
 } from 'expo-dev-client-components';
 import * as React from 'react';
+import { Platform } from 'react-native';
 import { Switch } from 'react-native-gesture-handler';
 
 import { useAppInfo } from '../hooks/useAppInfo';
@@ -234,6 +236,19 @@ export function Main({ registeredCallbacks = [] }: MainProps) {
           />
         </View>
         <Divider />
+        {Platform.OS === 'android' && (
+          <>
+            <View bg="default">
+              <SettingsRowButton
+                disabled={!devSettings.isJSInspectorAvailable}
+                label="Open JavaScript Inspector"
+                icon={<SettingsFilledIcon />}
+                onPress={actions.openJSInspector}
+              />
+            </View>
+            <Divider />
+          </>
+        )}
         <View bg="default">
           <SettingsRowSwitch
             disabled={!devSettings.isRemoteDebuggingAvailable}
@@ -324,6 +339,21 @@ export function Main({ registeredCallbacks = [] }: MainProps) {
               <Text color="link" size="medium">
                 {hasCopiedAppInfoContent ? 'Copied to clipboard!' : 'Tap to Copy All'}
               </Text>
+            </Row>
+          </Button.ScaleOnPressContainer>
+        </GestureHandlerTouchableWrapper>
+      </View>
+
+      <Spacer.Vertical size="large" />
+      <View mx="small" rounded="large" overflow="hidden">
+        <GestureHandlerTouchableWrapper onPress={actions.openRNDevMenu}>
+          <Button.ScaleOnPressContainer
+            bg="default"
+            roundedTop="none"
+            roundedBottom="large"
+            onPress={actions.openRNDevMenu}>
+            <Row px="medium" py="small" align="center" bg="default">
+              <Text>Open React Native dev menu</Text>
             </Row>
           </Button.ScaleOnPressContainer>
         </GestureHandlerTouchableWrapper>

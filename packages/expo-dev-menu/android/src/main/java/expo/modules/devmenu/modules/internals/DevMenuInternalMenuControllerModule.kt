@@ -33,10 +33,14 @@ class DevMenuInternalMenuControllerModule(private val reactContext: ReactContext
   }
 
   override fun openDevMenuFromReactNative() {
-    devMenuManager.getReactInstanceManager()?.devSupportManager?.let {
-      devMenuManager.closeMenu()
-      it.devSupportEnabled = true
-      it.showDevOptionsDialog()
+    val instanceManager = devMenuManager.getReactInstanceManager() ?: return
+    val devSupportManager = instanceManager.devSupportManager
+    val activity = instanceManager.currentReactContext?.currentActivity ?: return
+
+    devMenuManager.closeMenu()
+    activity.runOnUiThread {
+      devSupportManager.devSupportEnabled = true
+      devSupportManager.showDevOptionsDialog()
     }
   }
 
