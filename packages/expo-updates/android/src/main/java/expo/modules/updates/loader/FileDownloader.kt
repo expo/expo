@@ -19,7 +19,6 @@ import kotlin.math.min
 import org.apache.commons.fileupload.MultipartStream
 import org.apache.commons.fileupload.ParameterParser
 import java.io.ByteArrayOutputStream
-import android.util.Base64
 import expo.modules.easclient.EASClientID
 import okhttp3.Headers.Companion.toHeaders
 import expo.modules.jsonutils.getNullable
@@ -47,7 +46,12 @@ open class FileDownloader(private val client: OkHttpClient) {
     fun onSuccess(assetEntity: AssetEntity, isNew: Boolean)
   }
 
-  private fun downloadFileToPath(request: Request, destination: File, callback: FileDownloadCallback) {
+  private fun downloadFileAndVerifyHashAndWriteToPath(
+    request: Request,
+    expectedBase64URLEncodedSHA256Hash: String?,
+    destination: File,
+    callback: FileDownloadCallback
+  ) {
     downloadData(
       request,
       object : Callback {
@@ -68,7 +72,7 @@ open class FileDownloader(private val client: OkHttpClient) {
           }
           try {
             response.body!!.byteStream().use { inputStream ->
-              val hash = UpdatesUtils.sha256AndWriteToFile(inputStream, destination)
+              val hash = UpdatesUtils.verifySHA256AndWriteToFile(inputStream, destination, expectedBase64URLEncodedSHA256Hash)
               callback.onSuccess(destination, hash)
             }
           } catch (e: Exception) {
@@ -320,8 +324,9 @@ open class FileDownloader(private val client: OkHttpClient) {
       callback.onSuccess(asset, false)
     } else {
       try {
-        downloadFileToPath(
+        downloadFileAndVerifyHashAndWriteToPath(
           createRequestForAsset(asset, configuration, context),
+          asset.expectedHash,
           path,
           object : FileDownloadCallback {
             override fun onFailure(e: Exception) {
@@ -329,14 +334,6 @@ open class FileDownloader(private val client: OkHttpClient) {
             }
 
             override fun onSuccess(file: File, hash: ByteArray) {
-              // base64url - https://datatracker.ietf.org/doc/html/rfc4648#section-5
-              val hashBase64String = Base64.encodeToString(hash, Base64.URL_SAFE or Base64.NO_PADDING or Base64.NO_WRAP)
-              val expectedAssetHash = asset.expectedHash
-              if (expectedAssetHash != null && expectedAssetHash != hashBase64String) {
-                callback.onFailure(Exception("Asset hash invalid: ${asset.key}; expectedHash: $expectedAssetHash; actualHash: $hashBase64String"), asset)
-                return
-              }
-
               asset.downloadTime = Date()
               asset.relativePath = filename
               asset.hash = hash

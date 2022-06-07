@@ -101,19 +101,12 @@ static NSString * const EXUpdatesRemoteAppLoaderErrorDomain = @"EXUpdatesRemoteA
       }
 
       [self->_downloader downloadFileFromURL:asset.url
+                               verifyingHash:asset.expectedHash
                                       toPath:[urlOnDisk path]
                                 extraHeaders:asset.extraRequestHeaders ?: @{}
-                                successBlock:^(NSData *data, NSURLResponse *response) {
+                                successBlock:^(NSData *data, NSURLResponse *response, NSString *base64URLEncodedSHA256Hash) {
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-          NSString *hashBase64String = [EXUpdatesUtils base64UrlEncodedSHA256WithData:data];
-          if (asset.expectedHash && ![asset.expectedHash isEqualToString:hashBase64String]) {
-            NSError *error = [NSError errorWithDomain:EXUpdatesRemoteAppLoaderErrorDomain
-                                                 code:1016
-                                             userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithFormat:@"Asset hash invalid: %@; expectedHash: %@; actualHash: %@", asset.key, asset.expectedHash, hashBase64String]}];
-            [self handleAssetDownloadWithError:error asset:asset];
-          } else {
-            [self handleAssetDownloadWithData:data response:response asset:asset];
-          }
+          [self handleAssetDownloadWithData:data response:response asset:asset];
         });
       }
                                   errorBlock:^(NSError *error) {

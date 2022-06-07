@@ -21,7 +21,7 @@ function findBundlePath(updateDistPath: string): string {
 export async function copyBundleToStaticFolder(
   updateDistPath: string,
   filename: string,
-  notifyString?: string
+  notifyString: string
 ): Promise<string> {
   await fs.mkdir(STATIC_FOLDER_PATH, { recursive: true });
   let bundleString = await fs.readFile(findBundlePath(updateDistPath), 'utf-8');

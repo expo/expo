@@ -290,24 +290,15 @@ static NSString * const EXUpdatesAppLauncherErrorDomain = @"AppLauncher";
   }
   dispatch_async([EXUpdatesFileDownloader assetFilesQueue], ^{
     [self.downloader downloadFileFromURL:asset.url
+                           verifyingHash:asset.expectedHash
                                   toPath:[assetLocalUrl path]
                             extraHeaders:asset.extraRequestHeaders ?: @{}
-                            successBlock:^(NSData *data, NSURLResponse *response) {
+                            successBlock:^(NSData *data, NSURLResponse *response, NSString *base64URLEncodedSHA256Hash) {
       dispatch_async(self->_launcherQueue, ^{
-        NSString *hashBase64String = [EXUpdatesUtils base64UrlEncodedSHA256WithData:data];
-        if (asset.expectedHash && ![asset.expectedHash isEqualToString:hashBase64String]) {
-          completion([NSError errorWithDomain:EXUpdatesAppLauncherErrorDomain
-                                         code:1016
-                                     userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithFormat:@"Asset hash invalid: %@; expectedHash: %@; actualHash: %@", asset.key, asset.expectedHash, hashBase64String]}],
-                     asset,
-                     assetLocalUrl);
-          return;
-        }
-        
         if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
           asset.headers = ((NSHTTPURLResponse *)response).allHeaderFields;
         }
-        asset.contentHash = hashBase64String;
+        asset.contentHash = base64URLEncodedSHA256Hash;
         asset.downloadTime = [NSDate date];
         completion(nil, asset, assetLocalUrl);
       });

@@ -7,6 +7,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 typedef void (^EXUpdatesFileDownloaderSuccessBlock)(NSData *data, NSURLResponse *response);
+typedef void (^EXUpdatesFileDownloaderWithHashSuccessBlock)(NSData *data, NSURLResponse *response, NSString *base64URLEncodedSHA256Hash);
 typedef void (^EXUpdatesFileDownloaderManifestSuccessBlock)(EXUpdatesUpdate *update);
 typedef void (^EXUpdatesFileDownloaderErrorBlock)(NSError *error);
 
@@ -22,9 +23,10 @@ typedef void (^EXUpdatesFileDownloaderErrorBlock)(NSError *error);
                  errorBlock:(EXUpdatesFileDownloaderErrorBlock)errorBlock;
 
 - (void)downloadFileFromURL:(NSURL *)url
+              verifyingHash:(nullable NSString *)expectedBase64URLEncodedSHA256Hash
                      toPath:(NSString *)destinationPath
                extraHeaders:(NSDictionary *)extraHeaders
-               successBlock:(EXUpdatesFileDownloaderSuccessBlock)successBlock
+               successBlock:(EXUpdatesFileDownloaderWithHashSuccessBlock)successBlock
                  errorBlock:(EXUpdatesFileDownloaderErrorBlock)errorBlock;
 
 - (void)downloadManifestFromURL:(NSURL *)url

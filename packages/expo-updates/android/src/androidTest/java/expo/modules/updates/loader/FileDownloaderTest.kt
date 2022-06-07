@@ -200,7 +200,7 @@ class FileDownloaderTest {
       }
     )
 
-    Assert.assertTrue(error!!.message!!.contains("Asset hash invalid"))
+    Assert.assertTrue(error!!.message!!.contains("File download was successful but base64url-encoded SHA-256 did not match expected"))
     Assert.assertFalse(didSucceed)
   }
 
