@@ -83,15 +83,6 @@ class DevMenuExtension(reactContext: ReactApplicationContext) :
 
     if (devSettings is DevInternalSettings) {
       action("js-inspector", devDelegate::openJsInspector) {
-        isAvailable = {
-          val metroHost = "http://${devSettings.packagerConnectionSettings.debugServerHost}"
-          var result: Boolean
-          runBlocking {
-            result = DevMenuManager.metroClient
-              .queryJSInspectorAvailability(metroHost, reactApplicationContext.packageName)
-          }
-          result
-        }
         label = { "Open JavaScript Inspector" }
         glyphName = { "language-javascript" }
         importance = DevMenuItemImportance.LOW.value
