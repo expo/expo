@@ -26,6 +26,8 @@ The following instructions apply to macOS.
 - Press accept on your device
 - Run `idevicesyslog`
 
+To view logs for a specific app, run `idevicesyslog --process [APP_PROCESS_NAME]`.
+
 ### View logs for an iOS simulator
 
 #### Option 1: Use GUI log
