@@ -1,4 +1,4 @@
-import crypto from 'crypto';
+import crypto, { BinaryToTextEncoding } from 'crypto';
 import { createReadStream } from 'fs';
 import fs from 'fs/promises';
 import path from 'path';
@@ -18,6 +18,14 @@ function findBundlePath(updateDistPath: string): string {
   return bundlePath;
 }
 
+function createHash(file: string, hashingAlgorithm: string, encoding: BinaryToTextEncoding) {
+  return crypto.createHash(hashingAlgorithm).update(file).digest(encoding);
+}
+
+function getBase64URLEncoding(base64EncodedString: string): string {
+  return base64EncodedString.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+
 export async function copyBundleToStaticFolder(
   updateDistPath: string,
   filename: string,
@@ -29,7 +37,7 @@ export async function copyBundleToStaticFolder(
     bundleString = bundleString.replace('/notify/test', `/notify/${notifyString}`);
   }
   await fs.writeFile(path.join(STATIC_FOLDER_PATH, filename), bundleString, 'utf-8');
-  return crypto.createHash('sha256').update(bundleString, 'utf-8').digest('base64url');
+  return getBase64URLEncoding(createHash(bundleString, 'sha256', 'base64'));
 }
 
 export async function copyAssetToStaticFolder(
@@ -45,6 +53,6 @@ export async function copyAssetToStaticFolder(
   return new Promise((resolve, reject) => {
     stream.on('error', (err) => reject(err));
     stream.on('data', (chunk) => hash.update(chunk));
-    stream.on('end', () => resolve(hash.digest('base64url')));
+    stream.on('end', () => resolve(getBase64URLEncoding(hash.digest('base64'))));
   });
 }
