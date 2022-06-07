@@ -5,6 +5,7 @@ import android.view.View
 import android.text.TextUtils
 import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
+import androidx.core.os.bundleOf
 
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
@@ -35,18 +36,18 @@ class LocalizationModule : Module() {
       val isRTL = TextUtils.getLayoutDirectionFromLocale(locale) == View.LAYOUT_DIRECTION_RTL
       val region = getRegionCode(locale)
       val symbols = DecimalFormatSymbols(locale)
-      return Bundle().apply {
-        putString("currency", getCurrencyCode(locale))
-        putString("decimalSeparator", symbols.decimalSeparator.toString())
-        putString("digitGroupingSeparator", symbols.groupingSeparator.toString())
-        putStringArrayList("isoCurrencyCodes", iSOCurrencyCodes)
-        putBoolean("isMetric", !USES_IMPERIAL.contains(region))
-        putBoolean("isRTL", isRTL)
-        putString("locale", localeNames[0])
-        putStringArrayList("locales", localeNames)
-        putString("region", region)
-        putString("timezone", TimeZone.getDefault().id)
-      }
+      return bundleOf(
+        "currency" to getCurrencyCode(locale),
+        "decimalSeparator" to symbols.decimalSeparator.toString(),
+        "digitGroupingSeparator" to symbols.groupingSeparator.toString(),
+        "isoCurrencyCodes" to ISOCurrencyCodes,
+        "isMetric" to !USES_IMPERIAL.contains(region),
+        "isRTL" to isRTL,
+        "locale" to localeNames[0],
+        "locales" to localeNames,
+        "region" to region,
+        "timezone" to TimeZone.getDefault().id
+      )
     }
 
   private val locales: ArrayList<Locale>
