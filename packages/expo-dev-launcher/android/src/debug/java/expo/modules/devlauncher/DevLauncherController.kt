@@ -100,8 +100,8 @@ class DevLauncherController private constructor() :
 
     try {
       ensureHostWasCleared(appHost, activityToBeInvalidated = mainActivity)
-      var devLauncherUrl = DevLauncherUrl(url)
-      var parsedUrl = devLauncherUrl.url
+      val devLauncherUrl = DevLauncherUrl(url)
+      val parsedUrl = devLauncherUrl.url
       var parsedProjectUrl = projectUrl ?: url
 
       val isEASUpdate = isEASUpdateURL(url)
