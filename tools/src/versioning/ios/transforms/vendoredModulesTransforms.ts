@@ -188,7 +188,7 @@ export default function vendoredModulesTransformsFactory(prefix: string): Config
           replaceWith: `ReactCommon/${prefix}`,
         },
         {
-          find: /\b(DisplayLink|PlatformContext|SkiaDrawView|SkiaDrawViewManager|SkiaManager)/g,
+          find: /\b(DisplayLink|PlatformContext|SkiaDrawView|SkiaDrawViewManager|SkiaManager|RNJsi)/g,
           replaceWith: `${prefix}$1`,
         },
         {
