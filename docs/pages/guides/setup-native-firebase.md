@@ -16,6 +16,27 @@ This will guide you through a series of steps to create your own Firebase projec
 Some (but not all) native Firebase features can be used with the Managed Workflow. The most notable native feature is Firebase Analytics,
 which is otherwise unavailable in react-native using the Firebase JavaScript SDK.
 
+### Adding the Native Firebase Plugin
+
+- To being using Native Firebase with Expo, you will start using the plugin `@react-native-firebase/app`.
+- **Note: By doing this you will convert your project into a semi-managed project and will need to rebuild it if any native code changes.**
+
+```json
+{
+  "expo": {
+    "plugins": [
+      "@react-native-firebase/app"
+    ]
+  }
+}
+```
+
+- Once the plugin is in use you will need to:
+  - To **prebuild** your project, you will run `expo prebuild`. This will need to be done after every native code change.
+  - To **run** your project on a **local simulator** you will run `expo run [ios:android]`
+  - To **run** your project on a **external device** you will need to build a [development client](https://docs.expo.dev/development/getting-started/) and install it on your external device. This development client will act as a custom version of Expo Go built with your native code. To start the developemnt client you will run `expo start --dev-client`
+  - To **build** your project you will use `eas build`
+
 ### Android
 
 - Open **Project overview** in the firebase console and click on the Android icon or + button to **Add Firebase to your Android app**.
