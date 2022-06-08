@@ -1,6 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import <EXDevMenu/DevMenuRCTBridge.h>
+#import <EXDevMenu-Swift.h>
 #import <RCTCxxBridge+Private.h>
 
 #import <React/RCTPerformanceLogger.h>
@@ -11,6 +12,16 @@
 @import EXDevMenuInterface;
 
 @implementation DevMenuRCTCxxBridge
+
+- (instancetype)initWithParentBridge:(RCTBridge *)bridge
+{
+  if ((self = [super initWithParentBridge:bridge])) {
+    RCTBridge *appBridge = DevMenuManager.shared.currentBridge;
+    // reset the singleton `RCTBridge.currentBridge` to app bridge instance
+    RCTBridge.currentBridge = appBridge != nil ? appBridge.batchedBridge : nil;
+  }
+  return self;
+}
 
 /**
  * Theoretically, we could overwrite the `RCTDevSettings` module by exporting our version through the bridge.
