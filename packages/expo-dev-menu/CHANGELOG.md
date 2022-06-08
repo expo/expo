@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed the singleton `RCTBridge.currentBridge` instance value be override by expo-dev-menu bridge instance on iOS. ([#17780](https://github.com/expo/expo/pull/17780) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 0.11.0 — 2022-06-07
