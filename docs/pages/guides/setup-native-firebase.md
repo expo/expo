@@ -18,8 +18,8 @@ which is otherwise unavailable in react-native using the Firebase JavaScript SDK
 
 ### Adding the Native Firebase Plugin
 
-- To being using Native Firebase with Expo, you will start using the plugin `@react-native-firebase/app`.
-- **Note: By doing this you will convert your project into a semi-managed project and will need to rebuild it if any native code changes.**
+- To being using Native Firebase with Expo, you will start using the plugin `@react-native-firebase/app`. You can reference the [React Native Firebase docs](https://rnfirebase.io/#expo) for more details as needed.
+- **Note: By doing this you will convert your project into a semi-managed project and will need to rebuild it if any native code changes. For more information on adding custom native code, see [here](https://docs.expo.dev/workflow/customizing/).**
 
 ```json
 {
