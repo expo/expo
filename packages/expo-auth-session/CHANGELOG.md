@@ -8,6 +8,8 @@
 
 - Add projectNameForProxy option. ([#17327](https://github.com/expo/expo/pull/17327) by [@wschurman](https://github.com/wschurman))
 
+- Add preferEphemeralSession option. ([#17792](https://github.com/expo/expo/pull/17792) by [@thorbenprimke](https://github.com/thorbenprimke))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

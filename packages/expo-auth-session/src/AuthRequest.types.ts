@@ -97,6 +97,11 @@ export type AuthRequestPromptOptions = Omit<WebBrowserOpenOptions, 'windowFeatur
    * @platform web
    */
   windowFeatures?: WebBrowserWindowFeatures;
+  /**
+   * Flag to indicate that the session should be in ephemeral mode.
+   * @platform ios
+   */
+  preferEphemeralSession?: boolean;
 };
 
 // @needsAudit

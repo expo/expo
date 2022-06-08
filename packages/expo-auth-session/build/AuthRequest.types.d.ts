@@ -91,6 +91,11 @@ export declare type AuthRequestPromptOptions = Omit<WebBrowserOpenOptions, 'wind
      * @platform web
      */
     windowFeatures?: WebBrowserWindowFeatures;
+    /**
+     * Flag to indicate that the session should be in ephemeral mode.
+     * @platform ios
+     */
+    preferEphemeralSession?: boolean;
 };
 /**
  * Represents an OAuth authorization request as JSON.
