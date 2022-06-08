@@ -11,7 +11,7 @@ fun hasUrlQueryParam(uri: Uri): Boolean {
 }
 
 class DevLauncherUrl(var url: Uri) {
-  var queryParams = mutableMapOf<String, String>()
+  val queryParams = mutableMapOf<String, String>()
 
   init {
     url.queryParameterNames.forEach { name ->

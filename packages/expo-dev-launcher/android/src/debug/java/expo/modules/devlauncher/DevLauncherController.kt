@@ -203,7 +203,7 @@ class DevLauncherController private constructor() :
 
         if (!hasUrlQueryParam(uri)) {
           // edge case: this is a dev launcher url but it does not specify what url to open
-            // fallback to navigating to the launcher home screen
+          // fallback to navigating to the launcher home screen
           navigateToLauncher()
           return true
         }

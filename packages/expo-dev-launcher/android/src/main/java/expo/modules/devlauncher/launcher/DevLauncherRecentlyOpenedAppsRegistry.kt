@@ -23,8 +23,8 @@ class DevLauncherRecentlyOpenedAppsRegistry(context: Context) {
   private val sharedPreferences: SharedPreferences = context.getSharedPreferences(RECENTLY_OPENED_APPS_SHARED_PREFERENCES, Context.MODE_PRIVATE)
 
   fun appWasOpened(url: String, queryParams: Map<String, String>, manifest: Manifest?) {
-    var appEntry = mutableMapOf<String, Any>()
-    var uri = Uri.parse(url)
+    val appEntry = mutableMapOf<String, Any>()
+    val uri = Uri.parse(url)
 
     if (sharedPreferences.contains(url)) {
       val previousEntryJsonString = sharedPreferences.getString(url, null)
@@ -32,10 +32,9 @@ class DevLauncherRecentlyOpenedAppsRegistry(context: Context) {
       appEntry = previousEntry.toMutableMap() as MutableMap<String, Any>
     }
 
-
     val timestamp = TimeHelper.getCurrentTime()
 
-    var isEASUpdate = uri.host === "u.expo.dev" || uri.host == "staging-u.expo.dev"
+    val isEASUpdate = uri.host === "u.expo.dev" || uri.host == "staging-u.expo.dev"
     appEntry["isEASUpdate"] = isEASUpdate
 
     if (isEASUpdate) {
@@ -58,7 +57,6 @@ class DevLauncherRecentlyOpenedAppsRegistry(context: Context) {
 
     appEntry["timestamp"] = timestamp
     appEntry["url"] = url
-
 
     sharedPreferences
       .edit()

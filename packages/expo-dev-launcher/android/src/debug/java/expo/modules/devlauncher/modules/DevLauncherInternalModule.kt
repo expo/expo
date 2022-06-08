@@ -74,8 +74,8 @@ class DevLauncherInternalModule(reactContext: ReactApplicationContext?) :
 
     val projectUri = Uri.parse(projectUrl)
 
-    var isModernManifestProtocol = projectUri.host.equals("u.expo.dev") || projectUri.host.equals("staging-u.expo.dev")
-    var usesEASUpdates = isModernManifestProtocol && appId.isNotEmpty()
+    val isModernManifestProtocol = projectUri.host.equals("u.expo.dev") || projectUri.host.equals("staging-u.expo.dev")
+    val usesEASUpdates = isModernManifestProtocol && appId.isNotEmpty()
 
     return map.apply {
       putString("appId", appId)
@@ -87,7 +87,7 @@ class DevLauncherInternalModule(reactContext: ReactApplicationContext?) :
   }
 
   private fun sanitizeUrlString(url: String): Uri {
-    return Uri.parse(url?.trim())
+    return Uri.parse(url.trim())
   }
 
   @ReactMethod
@@ -124,10 +124,10 @@ class DevLauncherInternalModule(reactContext: ReactApplicationContext?) :
 
   @ReactMethod
   fun getRecentlyOpenedApps(promise: Promise) {
-    var apps = Arguments.createArray()
+    val apps = Arguments.createArray()
 
     for (recentlyOpenedApp in controller.getRecentlyOpenedApps()) {
-      var app = Arguments.createMap()
+      val app = Arguments.createMap()
       
       app.putDouble("timestamp", recentlyOpenedApp.timestamp.toDouble())
       app.putString("name", recentlyOpenedApp.name)
@@ -150,7 +150,6 @@ class DevLauncherInternalModule(reactContext: ReactApplicationContext?) :
     controller.clearRecentlyOpenedApps()
     return promise.resolve(null)
   }
-
 
   @ReactMethod
   fun openCamera(promise: Promise) {
