@@ -1,20 +1,14 @@
 package expo.modules.devmenu.modules
 
-import com.facebook.react.bridge.Promise
-import com.facebook.react.bridge.ReactApplicationContext
-import com.facebook.react.bridge.ReactContextBaseJavaModule
-import com.facebook.react.bridge.ReactMethod
+import com.facebook.react.bridge.*
+import expo.modules.devmenu.DevMenuManager
 import kotlinx.coroutines.launch
 
 class DevMenuModule(reactContext: ReactApplicationContext) :
   ReactContextBaseJavaModule(reactContext) {
   override fun getName() = "ExpoDevMenu"
 
-  private val devMenuManager by lazy {
-    reactContext
-      .getNativeModule(DevMenuManagerProvider::class.java)!!
-      .getDevMenuManager()
-  }
+  private val devMenuManager: DevMenuManager = DevMenuManager
 
   private fun openMenuOn(screen: String?) {
     reactApplicationContext
@@ -51,23 +45,6 @@ class DevMenuModule(reactContext: ReactApplicationContext) :
   }
 
   @ReactMethod
-  fun queryDevSessionsAsync(deviceID: String?, promise: Promise) {
-    devMenuManager.coroutineScope.launch {
-      try {
-        devMenuManager
-          .getExpoApiClient()
-          .queryDevSessions(deviceID)
-          .use {
-            @Suppress("DEPRECATION_ERROR")
-            promise.resolve(it.body()?.charStream()?.readText() ?: "")
-          }
-      } catch (e: Exception) {
-        promise.reject("ERR_DEVMENU_CANNOT_GET_DEV_SESSIONS", e.message, e)
-      }
-    }
-  }
-
-  @ReactMethod
   fun openMenu() {
     openMenuOn(null)
   }
@@ -80,5 +57,17 @@ class DevMenuModule(reactContext: ReactApplicationContext) :
   @ReactMethod
   fun openSettings() {
     openMenuOn("Settings")
+  }
+
+  override fun invalidate() {
+    devMenuManager.registeredCallbacks = arrayListOf<String>()
+    super.invalidate()
+  }
+
+  @ReactMethod
+  fun addDevMenuCallbacks(names: ReadableArray, promise: Promise) {
+    devMenuManager.registeredCallbacks = names.toArrayList() as ArrayList<String>
+
+    return promise.resolve(null)
   }
 }

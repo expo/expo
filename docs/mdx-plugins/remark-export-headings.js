@@ -1,8 +1,8 @@
 const visit = require('unist-util-visit');
 
 /**
- * @typedef {import('mdast').Root} Root - https://github.com/syntax-tree/mdast#root
- * @typedef {import('mdast').Heading} Heading - https://github.com/syntax-tree/mdast#heading
+ * @typedef {import('@types/mdast').Root} Root - https://github.com/syntax-tree/mdast#root
+ * @typedef {import('@types/mdast').Heading} Heading - https://github.com/syntax-tree/mdast#heading
  */
 
 /**
@@ -20,7 +20,7 @@ module.exports = function remarkExportHeadings(options = {}) {
   return tree => {
     const headings = [];
 
-    /** @param {Heading} node -  */
+    /** @param {Heading} node */
     const visitor = node => {
       if (node.children.length > 0) {
         headings.push({

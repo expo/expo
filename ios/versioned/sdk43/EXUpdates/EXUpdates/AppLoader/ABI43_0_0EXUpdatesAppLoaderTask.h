@@ -37,6 +37,8 @@ typedef NS_ENUM(NSInteger, ABI43_0_0EXUpdatesBackgroundUpdateStatus) {
 
 @property (nonatomic, weak) id<ABI43_0_0EXUpdatesAppLoaderTaskDelegate> delegate;
 
+@property (nonatomic, assign, readonly) BOOL isRunning;
+
 - (instancetype)initWithConfig:(ABI43_0_0EXUpdatesConfig *)config
                       database:(ABI43_0_0EXUpdatesDatabase *)database
                      directory:(NSURL *)directory

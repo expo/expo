@@ -39,7 +39,8 @@ For using the Gatsby tools in a universal app with the Expo SDK.
   - using npm - `npm install --save gatsby gatsby-plugin-react-native-web`
 - Create a `gatsby-config.js` and use the plugin - `touch gatsby-config.js`
 
-  `gatsby-config.js`
+
+  **gatsby-config.js**
 
   ```js
   module.exports = {
@@ -66,7 +67,8 @@ For using the Expo SDK in a web-only Gatsby project.
   - using npm - `npm install --save react-native-web gatsby-plugin-react-native-web`
 - Create a `gatsby-config.js` and use the plugin - `touch gatsby-config.js`
 
-  `gatsby-config.js`
+
+  **gatsby-config.js**
 
   ```js
   module.exports = {
@@ -152,5 +154,5 @@ If you're curious how Expo support works under the hood, you can refer to this p
 
 Learn more about how to use Gatsby in their [docs](https://www.gatsbyjs.org/docs).
 
-[expo-packages]: https://github.com/expo/expo/tree/master/packages
+[expo-packages]: https://github.com/expo/expo/tree/main/packages
 [expo-cli]: https://github.com/expo/expo-cli/

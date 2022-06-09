@@ -44,7 +44,7 @@ receive a response with an SVG image containing a QR code that can be easily sca
 
 ## Example Workflows
 
-These are a few examples of workflows to help your team get the most out of your development build. If you come up with others that would be useful for other teams, please [submit a PR](https://github.com/expo/expo/blob/master/CONTRIBUTING.md#-updating-documentation) to share your knowledge!
+These are a few examples of workflows to help your team get the most out of your development build. If you come up with others that would be useful for other teams, please [submit a PR](https://github.com/expo/expo/tree/main/CONTRIBUTING.md#-updating-documentation) to share your knowledge!
 
 ### Development Builds
 
@@ -52,9 +52,11 @@ Developers on your team with expertise working with Xcode and Android Studio can
 
 ### Side by side installation
 
-If you need to look at release builds of your project, it is convenient to not overwrite the development build of your app every time you do so. You can accomplish this by using [**app.config.js**](../workflow/configuration.md) to set the bundle identifier or package name based on an environment variable. When changing the ID of your project, be aware that some modules will expect you to perform installation steps for each bundle identifier or package name you use.
+If you need to look at release builds of your project, it is convenient to not overwrite the development build of your app every time you do so. You can accomplish this by using [**app.config.js**](../workflow/configuration.md) to set the bundle identifier or package name based on an environment variable. When changing the ID of your project, be aware that some modules will expect you to perform installation steps for each bundle identifier or package name you use. [Learn more about how to use this pattern on EAS Build with build variants](/build-reference/variants.md).
 
 ```js
+// Example app.config.js where the bundle identifier and package name are
+// swapped out depending on an environment variable
 module.exports = () => {
   if (process.env.MY_ENVIRONMENT === 'production') {
     return {
@@ -69,6 +71,7 @@ module.exports = () => {
   }
 };
 ```
+
 
 ### PR Previews
 

@@ -1,7 +1,7 @@
 import { borderRadius, iconSize } from '@expo/styleguide-native';
 import { Image as RNImage } from 'react-native';
-import { create } from 'react-native-primitives';
 
+import { create } from './create-primitive';
 import { scale } from './theme';
 
 export const Image = create(RNImage, {

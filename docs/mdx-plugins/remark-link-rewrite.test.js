@@ -7,6 +7,7 @@ const makeFile = filePath => ({
   cwd: '/absolue/path/to/docs',
   history: [path.join('/absolue/path/to/docs/pages', filePath)],
 });
+
 const rewrite = (file, url) => {
   const link = { type: 'link', url };
   const tree = { type: 'root', children: [link] };

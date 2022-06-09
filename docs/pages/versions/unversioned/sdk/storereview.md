@@ -1,6 +1,6 @@
 ---
 title: StoreReview
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-store-review'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-store-review'
 packageName: 'expo-store-review'
 ---
 

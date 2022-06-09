@@ -13,12 +13,11 @@ import kotlinx.coroutines.CoroutineScope
 
 interface DevLauncherControllerInterface {
   suspend fun loadApp(url: Uri, mainActivity: ReactActivity? = null)
+  suspend fun loadApp(url: Uri, projectUrl: Uri?, mainActivity: ReactActivity? = null)
   fun onAppLoaded(context: ReactContext)
   fun onAppLoadedWithError()
   fun getRecentlyOpenedApps(): Map<String, String?>
   fun navigateToLauncher()
-  fun maybeSynchronizeDevMenuDelegate()
-  fun maybeInitDevMenuDelegate(context: ReactContext)
   fun getCurrentReactActivityDelegate(activity: ReactActivity, delegateSupplierDevLauncher: DevLauncherReactActivityDelegateSupplier): ReactActivityDelegate
   fun handleIntent(intent: Intent?, activityToBeInvalidated: ReactActivity?): Boolean
 

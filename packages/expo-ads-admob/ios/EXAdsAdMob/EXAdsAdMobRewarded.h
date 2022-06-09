@@ -3,5 +3,5 @@
 #import <ExpoModulesCore/EXModuleRegistryConsumer.h>
 #import <GoogleMobileAds/GoogleMobileAds.h>
 
-@interface EXAdsAdMobRewarded : EXExportedModule <EXEventEmitter, EXModuleRegistryConsumer, GADRewardedAdDelegate>
+@interface EXAdsAdMobRewarded : EXExportedModule <EXEventEmitter, EXModuleRegistryConsumer, GADFullScreenContentDelegate>
 @end

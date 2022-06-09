@@ -4,6 +4,7 @@ sidebar_title: Build schema for eas.json
 ---
 
 import EasJsonPropertiesTable from '~/components/plugins/EasJsonPropertiesTable';
+import { Collapsible } from '~/ui/components/Collapsible';
 
 import commonSchema from '~/scripts/schemas/unversioned/eas-json-build-common-schema.js';
 import androidSchema from '~/scripts/schemas/unversioned/eas-json-build-android-schema.js';
@@ -15,8 +16,7 @@ This document is a reference that outlines the schema for the `"build"` key in *
 
 ## Examples
 
-<details>
-  <summary>A managed project with several profiles</summary>
+<Collapsible summary="A managed project with several profiles">
 
 ```json
 {
@@ -74,10 +74,9 @@ This document is a reference that outlines the schema for the `"build"` key in *
 }
 ```
 
-</details>
+</Collapsible>
 
-<details>
-  <summary>A bare project with several profiles</summary>
+<Collapsible summary="A bare project with several profiles">
 
 ```json
 {
@@ -131,7 +130,7 @@ This document is a reference that outlines the schema for the `"build"` key in *
 }
 ```
 
-</details>
+</Collapsible>
 
 ## Schema
 
@@ -140,18 +139,21 @@ This document is a reference that outlines the schema for the `"build"` key in *
 {
   "cli": {
     "version": /* @info Required EAS CLI version range. */"SEMVER_RANGE"/* @end */,
-    "requireCommit": /* @info If true, ensures that all changes are committed before a build. Defults to false. */boolean/* @end */
+    "requireCommit": /* @info If true, ensures that all changes are committed before a build. Defaults to false. */boolean/* @end */
 
   },
   "build": {
     /* @info any arbitrary name - used as an identifier */"BUILD_PROFILE_NAME_1"/* @end */: {
-      /* @info Options common to both platforms*/...COMMON_OPTIONS/* @end */
+      /* @info Options common to both platforms*/...COMMON_OPTIONS/* @end */,
 
       "android": {
+        /* @info Options common to both platforms*/...COMMON_OPTIONS/* @end */,
         /* @info Options specific for Android and common to both platforms*/...ANDROID_OPTIONS/* @end */
 
       },
+
       "ios": {
+        /* @info Options common to both platforms*/...COMMON_OPTIONS/* @end */,
         /* @info Options specific for iOS and common to both platforms*/...IOS_OPTIONS/* @end */
 
       }
@@ -161,6 +163,8 @@ This document is a reference that outlines the schema for the `"build"` key in *
   }
 }
 ```
+
+> You can specify common options both in the platform-specific configuration object or at the profile's root. The platform-specific options take precedence over globally-defined ones.
 
 > EAS Submit is also configured in **eas.json**. You can find the reference for the `"submit"` fields in ["Configuring EAS Submit with eas.json"](/submit/eas-json.md).
 

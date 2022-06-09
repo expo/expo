@@ -1,12 +1,12 @@
-import path from 'path';
 import chalk from 'chalk';
 import fs from 'fs-extra';
-import xcode from 'xcode';
 import glob from 'glob-promise';
 import ncp from 'ncp';
+import path from 'path';
+import xcode from 'xcode';
 
-import * as Directories from '../Directories';
 import { EXPO_DIR } from '../Constants';
+import * as Directories from '../Directories';
 
 interface VendoredModuleUpdateStep {
   iosPrefix?: string;
@@ -18,6 +18,9 @@ interface VendoredModuleUpdateStep {
   targetAndroidPackage?: string;
   recursive?: boolean;
   updatePbxproj?: boolean;
+
+  // should cleanup target path before vendoring
+  cleanupTargetPath?: boolean;
 
   /**
    * Hook that is fired by the end of vendoring an Android file.
@@ -115,7 +118,7 @@ const ReanimatedModifier: ModuleModifier = async function (
 
   const copyCPP = async () => {
     const dirs = ['Common', 'cpp'];
-    for (let dir of dirs) {
+    for (const dir of dirs) {
       await fs.remove(path.join(androidMainPathExpoview, dir)); // clean
       // copy
       await new Promise<void>((res, rej) => {
@@ -137,7 +140,7 @@ const ReanimatedModifier: ModuleModifier = async function (
     const commonFiles = await glob(patternCommon);
     const iosOnlyFiles = await glob(patternNative);
     const files = [...commonFiles, ...iosOnlyFiles];
-    for (let file of files) {
+    for (const file of files) {
       console.log(file);
       const fileName = file.split(path.sep).slice(-1)[0];
       await fs.copy(file, path.join(clonedProjectPath, 'ios', fileName));
@@ -161,7 +164,7 @@ const ReanimatedModifier: ModuleModifier = async function (
   };
 
   const applyRNVersionPatches = async () => {
-    const rnVersion = '0.64.3';
+    const rnVersion = '0.67.2';
     const patchVersion = rnVersion.split('.')[1];
     const patchSourceDir = path.join(clonedProjectPath, 'android', 'rnVersionPatch', patchVersion);
     const javaFiles = await glob('**/*.java', {
@@ -253,7 +256,7 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
         targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.gesturehandler',
       },
       {
-        sourceAndroidPath: 'android/src/main/java/com/swmansion/common',
+        sourceAndroidPath: 'android/common/src/main/java/com/swmansion/common',
         targetAndroidPath: 'modules/api/components/gesturehandler/common',
         sourceAndroidPackage: 'com.swmansion.common',
         targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.gesturehandler',
@@ -320,7 +323,7 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
       `NOTE: Any files in ${chalk.magenta(
         'com.facebook.react'
       )} will not be updated -- you'll need to add these to expoview manually!`,
-      `NOTE: Some imports have to be changed from ${chalk.magenta('<>')} form to 
+      `NOTE: Some imports have to be changed from ${chalk.magenta('<>')} form to
       ${chalk.magenta('""')}`,
     ],
   },
@@ -336,21 +339,31 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
         targetAndroidPath: 'modules/api/screens',
         sourceAndroidPackage: 'com.swmansion.rnscreens',
         targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.screens',
-      },
-    ],
-  },
-  'react-native-appearance': {
-    repoUrl: 'https://github.com/expo/react-native-appearance.git',
-    installableInManagedApps: true,
-    semverPrefix: '~',
-    steps: [
-      {
-        sourceIosPath: 'ios/Appearance',
-        targetIosPath: 'Api/Appearance',
-        sourceAndroidPath: 'android/src/main/java/io/expo/appearance',
-        targetAndroidPath: 'modules/api/appearance/rncappearance',
-        sourceAndroidPackage: 'io.expo.appearance',
-        targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.appearance.rncappearance',
+        onDidVendorAndroidFile: async (file: string) => {
+          const filename = path.basename(file);
+          const CHANGES = {
+            'ScreenStack.kt': {
+              find: /(?=^class ScreenStack\()/m,
+              replaceWith: `import host.exp.expoview.R\n\n`,
+            },
+            'ScreenStackHeaderConfig.kt': {
+              find: /(?=^class ScreenStackHeaderConfig\()/m,
+              replaceWith: `import host.exp.expoview.BuildConfig\nimport host.exp.expoview.R\n\n`,
+            },
+          };
+
+          const fileConfig = CHANGES[filename];
+          if (!fileConfig) {
+            return;
+          }
+
+          const originalFileContent = await fs.readFile(file, 'utf8');
+          const newFileContent = originalFileContent.replace(
+            fileConfig.find,
+            fileConfig.replaceWith
+          );
+          await fs.writeFile(file, newFileContent, 'utf8');
+        },
       },
     ],
   },
@@ -480,20 +493,43 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
     repoUrl: 'https://github.com/th3rdwave/react-native-safe-area-context',
     steps: [
       {
-        sourceIosPath: 'ios/SafeAreaView',
+        sourceIosPath: 'ios',
         targetIosPath: 'Api/SafeAreaContext',
         sourceAndroidPath: 'android/src/main/java/com/th3rdwave/safeareacontext',
         targetAndroidPath: 'modules/api/safeareacontext',
         sourceAndroidPackage: 'com.th3rdwave.safeareacontext',
         targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.safeareacontext',
+        onDidVendorAndroidFile: async (file: string) => {
+          const fileName = path.basename(file);
+          if (fileName === 'SafeAreaContextPackage.kt') {
+            let content = await fs.readFile(file, 'utf8');
+            content = content.replace(
+              /^(package .+)$/gm,
+              '$1\nimport host.exp.expoview.BuildConfig'
+            );
+            await fs.writeFile(file, content, 'utf8');
+          }
+        },
       },
-    ],
-    warnings: [
-      chalk.bold.yellow(
-        `Last time checked, ${chalk.green('react-native-safe-area-context')} used ${chalk.blue(
-          'androidx'
-        )} which wasn't at that time supported by Expo. Please ensure that the project builds on Android after upgrading or remove this warning.`
-      ),
+      {
+        sourceIosPath: 'ios/SafeAreaContextSpec',
+        targetIosPath: 'Api/SafeAreaContext',
+        cleanupTargetPath: false,
+      },
+      {
+        sourceAndroidPath: 'android/src/paper/java/com/th3rdwave/safeareacontext',
+        targetAndroidPath: 'modules/api/safeareacontext',
+        sourceAndroidPackage: 'com.th3rdwave.safeareacontext',
+        targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.safeareacontext',
+        cleanupTargetPath: false,
+      },
+      {
+        sourceAndroidPath: 'android/src/paper/java/com/facebook/react/viewmanagers',
+        targetAndroidPath: 'modules/api/safeareacontext',
+        sourceAndroidPackage: 'com.facebook.react.viewmanagers',
+        targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.safeareacontext',
+        cleanupTargetPath: false,
+      },
     ],
   },
   '@react-native-community/datetimepicker': {
@@ -768,17 +804,20 @@ export async function legacyVendorModuleAsync(
 
     step.recursive = step.recursive === true;
     step.updatePbxproj = !(step.updatePbxproj === false);
+    const cleanupTargetPath = step.cleanupTargetPath ?? true;
 
     // iOS
     if (executeIOS && step.sourceIosPath && step.targetIosPath) {
       const sourceDir = path.join(tmpDir, step.sourceIosPath);
       const targetDir = path.join(IOS_DIR, 'Exponent', 'Versioned', 'Core', step.targetIosPath);
 
-      console.log(
-        `\nCleaning up iOS files at ${chalk.magenta(path.relative(IOS_DIR, targetDir))} ...`
-      );
+      if (cleanupTargetPath) {
+        console.log(
+          `\nCleaning up iOS files at ${chalk.magenta(path.relative(IOS_DIR, targetDir))} ...`
+        );
 
-      await fs.remove(targetDir);
+        await fs.remove(targetDir);
+      }
       await fs.mkdirs(targetDir);
 
       console.log('\nCopying iOS files ...');
@@ -848,11 +887,15 @@ export async function legacyVendorModuleAsync(
         step.targetAndroidPath
       );
 
-      console.log(
-        `\nCleaning up Android files at ${chalk.magenta(path.relative(ANDROID_DIR, targetDir))} ...`
-      );
+      if (cleanupTargetPath) {
+        console.log(
+          `\nCleaning up Android files at ${chalk.magenta(
+            path.relative(ANDROID_DIR, targetDir)
+          )} ...`
+        );
 
-      await fs.remove(targetDir);
+        await fs.remove(targetDir);
+      }
       await fs.mkdirs(targetDir);
 
       console.log('\nCopying Android files ...');

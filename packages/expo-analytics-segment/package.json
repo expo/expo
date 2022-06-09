@@ -1,6 +1,6 @@
 {
   "name": "expo-analytics-segment",
-  "version": "11.1.0",
+  "version": "11.2.0",
   "description": "Expo module that provides access to Segment mobile analytics",
   "main": "build/Segment.js",
   "types": "build/Segment.d.ts",

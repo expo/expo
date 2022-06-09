@@ -1,6 +1,6 @@
 {
   "name": "babel-preset-expo",
-  "version": "9.0.1",
+  "version": "9.1.0",
   "description": "The Babel preset for Expo projects",
   "main": "index.js",
   "files": [
@@ -28,12 +28,12 @@
     "metro",
     "webpack"
   ],
-  "author": "Expo <support@expo.io>",
+  "author": "Expo <support@expo.dev>",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/expo/expo/issues"
   },
-  "homepage": "https://github.com/expo/expo/tree/master/packages/babel-preset-expo#readme",
+  "homepage": "https://github.com/expo/expo/tree/main/packages/babel-preset-expo#readme",
   "eslintConfig": {
     "extends": "universe/node"
   },
@@ -50,7 +50,7 @@
     "@babel/preset-env": "^7.12.9",
     "babel-plugin-module-resolver": "^4.1.0",
     "babel-plugin-react-native-web": "~0.17.1",
-    "metro-react-native-babel-preset": "~0.64.0"
+    "metro-react-native-babel-preset": "~0.67.0"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",

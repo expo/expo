@@ -10,29 +10,18 @@ import java.io.FileInputStream
 import java.io.IOException
 
 class CropImageExporter(
-  private val mRotation: Int,
-  private val mCropRect: Rect,
-  private val mBase64: Boolean
+  rotation: Int,
+  cropRect: Rect,
+  private val base64: Boolean
 ) : ImageExporter {
+  private val rotation = (rotation + 360) % 360
+  private val isImageHorizontal = this.rotation == 0 || this.rotation == 180
+  private val width = if (isImageHorizontal) cropRect.width() else cropRect.height()
+  private val height = if (isImageHorizontal) cropRect.height() else cropRect.width()
 
   // Note: Crop activity saves the result to the output file. So, we don't need to do it.
   override fun export(source: Uri, output: File, exporterListener: Listener) {
-    val width: Int
-    val height: Int
-    var rot = mRotation % 360
-    if (rot < 0) {
-      rot += 360
-    }
-
-    if (rot == 0 || rot == 180) { // Rotation is right-angled only
-      width = mCropRect.width()
-      height = mCropRect.height()
-    } else {
-      width = mCropRect.height()
-      height = mCropRect.width()
-    }
-
-    if (mBase64) {
+    if (base64) {
       ByteArrayOutputStream().use { base64Stream ->
         try {
           FileInputStream(source.path!!).use { input ->

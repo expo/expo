@@ -12,6 +12,15 @@ export type ReviewComment = {
 };
 
 /**
+ * The type representing a single pull request reviewer.
+ * An `action` is a function whose purpose is to check and review the diff.
+ */
+export type Reviewer = {
+  id: string;
+  action: (input: ReviewInput) => Promise<ReviewOutput | null>;
+};
+
+/**
  * The result of code reviews that is being used to generate the final review comment/report.
  */
 export type ReviewOutput = {

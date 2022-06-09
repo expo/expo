@@ -9,7 +9,7 @@ import { PermissionResponse, PermissionType } from './Permissions.types';
  * The hook fetches the permissions when rendered, by default.
  * To ask the user permission, use the `askPermission` callback or `ask` option.
  *
- * @see https://docs.expo.io/versions/latest/sdk/permissions/
+ * @see https://docs.expo.dev/versions/latest/sdk/permissions/
  * @example
  * ```tsx
  * const [permission, askPermission, getPermission] = usePermissions(Permissions.CAMERA);

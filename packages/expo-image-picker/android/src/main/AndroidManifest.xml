@@ -10,7 +10,7 @@
 
     <application>
       <activity
-        android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
+        android:name="com.canhub.cropper.CropImageActivity"
         android:theme="@style/Base.Theme.AppCompat"/>
       <!-- https://developer.android.com/guide/topics/manifest/provider-element.html -->
         <provider

@@ -42,9 +42,6 @@ const DEV_LAUNCHER_UPDATES_ANDROID_INIT = `if (BuildConfig.DEBUG) {
 const DEV_LAUNCHER_UPDATES_DEVELOPER_SUPPORT =
   'return DevLauncherController.getInstance().getUseDeveloperSupport();';
 
-const DEV_LAUNCHER_JS_REGISTER_ERROR_HANDLERS_REGEX =
-  /import ['"](?:expo-dev-client|expo-dev-launcher)['"]/;
-
 async function readFileAsync(path: string): Promise<string> {
   return fs.promises.readFile(path, 'utf8');
 }
@@ -124,20 +121,6 @@ async function editPodfile(config: ExportedConfigWithProps, action: (podfile: st
       'expo-dev-launcher',
       `Couldn't modify AppDelegate.m - ${e}.
 See the expo-dev-client installation instructions to modify your AppDelegate.m manually: ${InstallationPage}`
-    );
-  }
-}
-
-async function editIndex(config: ExportedConfigWithProps, action: (index: string) => string) {
-  const indexPath = path.join(config.modRequest.projectRoot, 'index.js');
-  try {
-    const index = action(await readFileAsync(indexPath));
-    return await saveFileAsync(indexPath, index);
-  } catch (e) {
-    WarningAggregator.addWarningIOS(
-      'expo-dev-launcher',
-      `Couldn't modify index.js - ${e}.
-See the expo-dev-client installation instructions to modify your index.js manually: ${InstallationPage}`
     );
   }
 }
@@ -271,32 +254,15 @@ const withDevLauncherPodfile: ConfigPlugin = (config) => {
   ]);
 };
 
-const withErrorHandling: ConfigPlugin = (config) => {
-  const injectErrorHandlers = async (config: ExportedConfigWithProps) => {
-    await editIndex(config, (index) => {
-      if (!DEV_LAUNCHER_JS_REGISTER_ERROR_HANDLERS_REGEX.test(index)) {
-        index = `import 'expo-dev-client';\n\n${index}`;
-      }
-      return index;
-    });
-    return config;
-  };
-
-  // We need to run the same task twice to ensure it will work on both platforms,
-  // because if someone runs `expo run:ios`, it will trigger only dangerous mode for that specific platform.
-  // Note: after the first execution, the second one won't change anything.
-  config = withDangerousMod(config, ['android', injectErrorHandlers]);
-  config = withDangerousMod(config, ['ios', injectErrorHandlers]);
-
-  return config;
-};
-
 const withDevLauncher = (config: ExpoConfig) => {
-  config = withDevLauncherActivity(config);
-  config = withDevLauncherApplication(config);
-  config = withDevLauncherPodfile(config);
-  config = withDevLauncherAppDelegate(config);
-  config = withErrorHandling(config);
+  // projects using SDKs before 45 need the old regex-based integration
+  // TODO: remove these once we drop support for SDK 44
+  if (config.sdkVersion && semver.lt(config.sdkVersion, '45.0.0')) {
+    config = withDevLauncherActivity(config);
+    config = withDevLauncherApplication(config);
+    config = withDevLauncherPodfile(config);
+    config = withDevLauncherAppDelegate(config);
+  }
   return config;
 };
 

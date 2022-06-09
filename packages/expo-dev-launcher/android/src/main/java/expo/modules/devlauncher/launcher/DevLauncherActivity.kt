@@ -12,20 +12,17 @@ import com.facebook.react.ReactActivityDelegate
 import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactRootView
 import com.facebook.react.bridge.ReactContext
-import expo.interfaces.devmenu.DevMenuManagerInterface
-import expo.interfaces.devmenu.DevMenuManagerProviderInterface
 import expo.modules.devlauncher.koin.DevLauncherKoinComponent
-import expo.modules.devlauncher.launcher.errors.DevLauncherAppError
-import expo.modules.devlauncher.launcher.errors.DevLauncherErrorActivity
 import expo.modules.devlauncher.splashscreen.DevLauncherSplashScreen
 import expo.modules.devlauncher.splashscreen.DevLauncherSplashScreenProvider
+import expo.modules.devmenu.DevMenuManager
 import org.koin.core.component.inject
 
 const val SEARCH_FOR_ROOT_VIEW_INTERVAL = 20L
 
 class DevLauncherActivity : ReactActivity(), ReactInstanceManager.ReactInstanceEventListener, DevLauncherKoinComponent {
   private val controller: DevLauncherControllerInterface by inject()
-  private var devMenuManager: DevMenuManagerInterface? = null
+  private var devMenuManager: DevMenuManager = DevMenuManager
   private var splashScreen: DevLauncherSplashScreen? = null
   private var rootView: ViewGroup? = null
   private lateinit var contentView: ViewGroup
@@ -60,7 +57,6 @@ class DevLauncherActivity : ReactActivity(), ReactInstanceManager.ReactInstanceE
 
   override fun onPostCreate(savedInstanceState: Bundle?) {
     super.onPostCreate(savedInstanceState)
-    controller.maybeSynchronizeDevMenuDelegate()
     reactInstanceManager.currentReactContext?.let {
       onReactContextInitialized(it)
       return
@@ -75,30 +71,16 @@ class DevLauncherActivity : ReactActivity(), ReactInstanceManager.ReactInstanceE
   }
 
   override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
-    devMenuManager?.onTouchEvent(ev)
+    devMenuManager.onTouchEvent(ev)
     return super.dispatchTouchEvent(ev)
   }
 
   override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
-    return devMenuManager?.onKeyEvent(keyCode, event) == true || super.onKeyUp(keyCode, event)
+    return devMenuManager.onKeyEvent(keyCode, event) == true || super.onKeyUp(keyCode, event)
   }
 
   override fun onReactContextInitialized(context: ReactContext) {
     reactInstanceManager.removeReactInstanceEventListener(this)
-    setUpDevMenuDelegateIfPresent(context)
-  }
-
-  private fun setUpDevMenuDelegateIfPresent(context: ReactContext) {
-    controller.maybeInitDevMenuDelegate(context)
-
-    val devMenuManagerProvider = context
-      .catalystInstance
-      .nativeModules
-      .find { nativeModule ->
-        nativeModule is DevMenuManagerProviderInterface
-      } as? DevMenuManagerProviderInterface
-
-    this.devMenuManager = devMenuManagerProvider?.getDevMenuManager()
   }
 
   private val isSimulator

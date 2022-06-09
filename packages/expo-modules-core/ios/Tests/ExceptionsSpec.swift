@@ -1,11 +1,10 @@
 // Copyright 2021-present 650 Industries. All rights reserved.
 
-import Quick
-import Nimble
+import ExpoModulesTestCore
 
 @testable import ExpoModulesCore
 
-final class ExceptionsSpec: QuickSpec {
+final class ExceptionsSpec: ExpoSpec {
   override func spec() {
     it("has name") {
       let error = TestException()

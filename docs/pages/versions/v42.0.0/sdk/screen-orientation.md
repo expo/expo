@@ -252,7 +252,7 @@ An enum representing the lock policies that can be applied on the web platform, 
 
 ### `Subscription`
 
-A [subscription object](https://github.com/expo/expo/blob/master/packages/%40unimodules/react-native-adapter/src/EventEmitter.ts#L13).
+A [subscription object](https://github.com/expo/expo/tree/main/packages/%40unimodules/react-native-adapter/src/EventEmitter.ts#L13).
 
 ## Function Types
 

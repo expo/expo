@@ -54,7 +54,7 @@ export class Recording {
             try {
                 await this.getStatusAsync();
             }
-            catch (error) {
+            catch {
                 this._disablePolling();
             }
         }
@@ -172,6 +172,15 @@ export class Recording {
         else {
             throw new Error('This Recording object is already prepared to record.');
         }
+    }
+    async getAvailableInputs() {
+        return ExponentAV.getAvailableInputs();
+    }
+    async getCurrentInput() {
+        return ExponentAV.getCurrentInput();
+    }
+    async setInput(inputUid) {
+        return ExponentAV.setInput(inputUid);
     }
     async startAsync() {
         return this._performOperationAndHandleStatusAsync(() => ExponentAV.startAudioRecording());

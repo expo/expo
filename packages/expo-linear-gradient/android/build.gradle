@@ -1,14 +1,29 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-apply plugin: 'maven'
+apply plugin: 'maven-publish'
 
 group = 'host.exp.exponent'
-version = '11.0.0'
+version = '11.3.0'
 
 buildscript {
+  def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
+  if (expoModulesCorePlugin.exists()) {
+    apply from: expoModulesCorePlugin
+    applyKotlinExpoModulesCorePlugin()
+  }
+
   // Simple helper that allows the root project to override versions declared by this library.
   ext.safeExtGet = { prop, fallback ->
     rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
+  }
+
+  // Ensures backward compatibility
+  ext.getKotlinVersion = {
+    if (ext.has("kotlinVersion")) {
+      ext.kotlinVersion()
+    } else {
+      ext.safeExtGet("kotlinVersion", "1.6.10")
+    }
   }
 
   repositories {
@@ -16,13 +31,8 @@ buildscript {
   }
 
   dependencies {
-    classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${safeExtGet('kotlinVersion', '1.6.10')}")
+    classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${getKotlinVersion()}")
   }
-}
-
-// Upload android library to maven with javadoc and android sources
-configurations {
-  deployerJars
 }
 
 // Creating sources with comments
@@ -31,37 +41,40 @@ task androidSourcesJar(type: Jar) {
   from android.sourceSets.main.java.srcDirs
 }
 
-// Put the androidSources and javadoc to the artifacts
-artifacts {
-  archives androidSourcesJar
-}
-
-uploadArchives {
-  repositories {
-    mavenDeployer {
-      configuration = configurations.deployerJars
-      repository(url: mavenLocal().url)
+afterEvaluate {
+  publishing {
+    publications {
+      release(MavenPublication) {
+        from components.release
+        // Add additional sourcesJar to artifacts
+        artifact(androidSourcesJar)
+      }
+    }
+    repositories {
+      maven {
+        url = mavenLocal().url
+      }
     }
   }
 }
 
 android {
-  compileSdkVersion safeExtGet("compileSdkVersion", 30)
+  compileSdkVersion safeExtGet("compileSdkVersion", 31)
 
   compileOptions {
-    sourceCompatibility JavaVersion.VERSION_1_8
-    targetCompatibility JavaVersion.VERSION_1_8
+    sourceCompatibility JavaVersion.VERSION_11
+    targetCompatibility JavaVersion.VERSION_11
   }
 
   kotlinOptions {
-    jvmTarget = JavaVersion.VERSION_1_8
+    jvmTarget = JavaVersion.VERSION_11.majorVersion
   }
 
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 21)
-    targetSdkVersion safeExtGet("targetSdkVersion", 30)
+    targetSdkVersion safeExtGet("targetSdkVersion", 31)
     versionCode 17
-    versionName "11.0.0"
+    versionName "11.3.0"
   }
   lintOptions {
     abortOnError false
@@ -71,5 +84,5 @@ android {
 dependencies {
   implementation project(':expo-modules-core')
 
-  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${safeExtGet('kotlinVersion', '1.6.10')}"
+  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
 }

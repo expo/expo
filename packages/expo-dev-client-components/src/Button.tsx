@@ -1,17 +1,18 @@
 import { lightTheme, darkTheme, borderRadius, shadows, palette } from '@expo/styleguide-native';
 import * as React from 'react';
-import { Pressable as RNPressable, Text as RNText, Animated, useColorScheme } from 'react-native';
-import { create } from 'react-native-primitives';
+import { Text as RNText, Animated, useColorScheme, Pressable as RNPressable } from 'react-native';
 
+import { create } from './create-primitive';
 import { rounded, margin, padding, text } from './theme';
 
 const AnimatedPressable = Animated.createAnimatedComponent(RNPressable);
 
 const Text = create(RNText, {
   base: {
-    fontWeight: '400',
+    fontFamily: 'Inter-Regular',
     color: lightTheme.text.default,
     fontSize: 16,
+    lineHeight: 22,
   },
 
   props: {

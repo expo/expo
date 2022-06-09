@@ -10,6 +10,8 @@
 #import <EXDevLauncher-Swift.h>
 #endif
 
+@import EXDevMenu;
+
 NSString *ON_NEW_DEEP_LINK_EVENT = @"expo.modules.devlauncher.onnewdeeplink";
 
 @implementation EXDevLauncherInternal
@@ -64,6 +66,7 @@ NSString *ON_NEW_DEEP_LINK_EVENT = @"expo.modules.devlauncher.onnewdeeplink";
 
 - (NSDictionary *)constantsToExport
 {
+//
   BOOL isDevice = YES;
 #if TARGET_IPHONE_SIMULATOR
   isDevice = NO;
@@ -71,7 +74,8 @@ NSString *ON_NEW_DEEP_LINK_EVENT = @"expo.modules.devlauncher.onnewdeeplink";
   return @{
     @"clientUrlScheme": self.findClientUrlScheme ?: [NSNull null],
     @"installationID": [EXDevLauncherController.sharedInstance.installationIDHelper getOrCreateInstallationID] ?: [NSNull null],
-    @"isDevice": @(isDevice)
+    @"isDevice": @(isDevice),
+    @"updatesConfig": [[EXDevLauncherController sharedInstance] getUpdatesConfig],
   };
 }
 
@@ -80,30 +84,64 @@ NSString *ON_NEW_DEEP_LINK_EVENT = @"expo.modules.devlauncher.onnewdeeplink";
   [self sendEventWithName:ON_NEW_DEEP_LINK_EVENT body:deepLink.absoluteString];
 }
 
+- (NSURL *)sanitizeUrlString:(NSString *)urlString;
+{
+  NSString *sanitizedUrl = [urlString stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+  
+  NSURL *url = [NSURL URLWithString:sanitizedUrl];
+
+  if ([EXDevLauncherURLHelper isDevLauncherURL:url]) {
+    url = [EXDevLauncherURLHelper getAppURLFromDevLauncherURL:url];
+  }
+  
+  return url;
+}
+
 RCT_EXPORT_METHOD(getPendingDeepLink:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject)
 {
   resolve([EXDevLauncherController sharedInstance].pendingDeepLinkRegistry.pendingDeepLink.absoluteString);
 }
 
+RCT_EXPORT_METHOD(getCrashReport:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject)
+{
+  resolve([[[EXDevLauncherErrorRegistry new] consumeException] toDict]);
+}
+
 RCT_EXPORT_METHOD(loadApp:(NSString *)urlString
                   resolver:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject)
 {
-  NSString *sanitizedUrl = [urlString stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-
+  NSURL *url = [self sanitizeUrlString:urlString];
   EXDevLauncherController *controller = [EXDevLauncherController sharedInstance];
-  NSURL *url = [NSURL URLWithString:sanitizedUrl];
-
-  if ([EXDevLauncherURLHelper isDevLauncherURL:url]) {
-    url = [EXDevLauncherURLHelper getAppURLFromDevLauncherURL:url];
-  }
 
   if (!url) {
     return reject(@"ERR_DEV_LAUNCHER_INVALID_URL", @"Cannot parse the provided url.", nil);
   }
   
   [controller loadApp:url onSuccess:^{
+    resolve(nil);
+  } onError:^(NSError *error) {
+    reject(@"ERR_DEV_LAUNCHER_CANNOT_LOAD_APP", error.localizedDescription, error);
+  }];
+}
+
+RCT_EXPORT_METHOD(loadUpdate:(NSString *)updateUrlString
+                  projectUrlString:(NSString *)projectUrlString
+                  resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject)
+{
+  EXDevLauncherController *controller = [EXDevLauncherController sharedInstance];
+  
+  NSURL *updatesUrl = [self sanitizeUrlString:updateUrlString];
+  NSURL *projectUrl = [self sanitizeUrlString:projectUrlString];
+  
+  if (!updatesUrl) {
+    return reject(@"ERR_DEV_LAUNCHER_INVALID_URL", @"Cannot parse the provided url.", nil);
+  }
+  
+  [controller loadApp:updatesUrl withProjectUrl:projectUrl onSuccess:^{
     resolve(nil);
   } onError:^(NSError *error) {
     reject(@"ERR_DEV_LAUNCHER_CANNOT_LOAD_APP", error.localizedDescription, error);
@@ -132,5 +170,10 @@ RCT_EXPORT_METHOD(copyToClipboard:(NSString *)content
   resolve(nil);
 }
 
-
+RCT_EXPORT_METHOD(loadFontsAsync:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject)
+{
+  [[DevMenuManager shared] loadFonts];
+  resolve(nil);
+}
 @end

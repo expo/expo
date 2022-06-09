@@ -78,12 +78,12 @@ class SvgViewManager extends ReactViewManager {
     }
 
     @ReactProp(name = "tintColor")
-    public void setTintColor(SvgView node, @Nullable Integer tintColor) {
+    public void setTintColor(SvgView node, @Nullable Dynamic tintColor) {
         node.setTintColor(tintColor);
     }
 
     @ReactProp(name = "color")
-    public void setColor(SvgView node, @Nullable Integer color) {
+    public void setColor(SvgView node, @Nullable Dynamic color) {
         node.setTintColor(color);
     }
 

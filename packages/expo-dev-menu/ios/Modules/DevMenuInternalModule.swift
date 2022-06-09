@@ -1,15 +1,10 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
+
 import SafariServices
+import React
 
 @objc(DevMenuInternalModule)
 public class DevMenuInternalModule: NSObject, RCTBridgeModule {
-  @objc
-  var redirectResolve: RCTPromiseResolveBlock?
-  @objc
-  var redirectReject: RCTPromiseRejectBlock?
-  @objc
-  var authSession: SFAuthenticationSession?
-
   public static func moduleName() -> String! {
     return "ExpoDevMenuInternal"
   }
@@ -18,12 +13,6 @@ public class DevMenuInternalModule: NSObject, RCTBridgeModule {
   public static func requiresMainQueueSetup() -> Bool {
     return true
   }
-
-  private static var fontsWereLoaded = false
-  private static let sessionKey = "expo-dev-menu.session"
-  private static let userLoginEvent = "expo.dev-menu.user-login"
-  private static let userLogoutEvent = "expo.dev-menu.user-logout"
-  private static let defaultScheme = "expo-dev-menu"
 
   let manager: DevMenuManager
 
@@ -36,7 +25,6 @@ public class DevMenuInternalModule: NSObject, RCTBridgeModule {
   }
 
   // MARK: JavaScript API
-
   @objc
   public func constantsToExport() -> [AnyHashable: Any] {
 #if targetEnvironment(simulator)
@@ -44,45 +32,9 @@ public class DevMenuInternalModule: NSObject, RCTBridgeModule {
 #else
     let doesDeviceSupportKeyCommands = false
 #endif
-    return ["doesDeviceSupportKeyCommands": doesDeviceSupportKeyCommands]
-  }
-
-  @objc
-  func loadFontsAsync(_ resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
-    if DevMenuInternalModule.fontsWereLoaded {
-      resolve(nil)
-      return
-    }
-
-    let fonts = ["MaterialCommunityIcons", "Ionicons"]
-    for font in fonts {
-      guard let path = DevMenuUtils.resourcesBundle()?.path(forResource: font, ofType: "ttf") else {
-        reject("ERR_DEVMENU_CANNOT_FIND_FONT", "Font file for '\(font)' doesn't exist.", nil)
-        return
-      }
-      guard let data = FileManager.default.contents(atPath: path) else {
-        reject("ERR_DEVMENU_CANNOT_OPEN_FONT_FILE", "Could not open '\(path)'.", nil)
-        return
-      }
-
-      guard let provider = CGDataProvider(data: data as CFData) else {
-        reject("ERR_DEVMENU_CANNOT_CREATE_FONT_PROVIDER", "Could not create font provider for '\(font)'.", nil)
-        return
-      }
-      guard let cgFont = CGFont(provider) else {
-        reject("ERR_DEVMENU_CANNOT_CREATE_FONT", "Could not create font for '\(font)'.", nil)
-        return
-      }
-
-      var error: Unmanaged<CFError>?
-      if !CTFontManagerRegisterGraphicsFont(cgFont, &error) {
-        reject("ERR_DEVMENU_CANNOT_ADD_FONT", "Could not create font from loaded data for '\(font)'. '\(error.debugDescription)'.", nil)
-        return
-      }
-    }
-
-    DevMenuInternalModule.fontsWereLoaded = true
-    resolve(nil)
+    return [
+      "doesDeviceSupportKeyCommands": doesDeviceSupportKeyCommands,
+    ]
   }
 
   @objc
@@ -111,6 +63,12 @@ public class DevMenuInternalModule: NSObject, RCTBridgeModule {
     manager.dispatchCallable(withId: callableId, args: args)
     resolve(nil)
   }
+  
+  @objc
+  func loadFontsAsync(_ resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
+    manager.loadFonts()
+    resolve(nil)
+  }
 
   @objc
   func hideMenu() {
@@ -119,33 +77,12 @@ public class DevMenuInternalModule: NSObject, RCTBridgeModule {
 
   @objc
   func setOnboardingFinished(_ finished: Bool) {
-    DevMenuSettings.isOnboardingFinished = finished
-  }
-
-  @objc
-  func getSettingsAsync(_ resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
-    resolve(DevMenuSettings.serialize())
-  }
-
-  @objc
-  func setSettingsAsync(_ dict: [String: Any], resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
-    if let motionGestureEnabled = dict["motionGestureEnabled"] as? Bool {
-      DevMenuSettings.motionGestureEnabled = motionGestureEnabled
-    }
-    if let touchGestureEnabled = dict["touchGestureEnabled"] as? Bool {
-      DevMenuSettings.touchGestureEnabled = touchGestureEnabled
-    }
-    if let keyCommandsEnabled = dict["keyCommandsEnabled"] as? Bool {
-      DevMenuSettings.keyCommandsEnabled = keyCommandsEnabled
-    }
-    if let showsAtLaunch = dict["showsAtLaunch"] as? Bool {
-      DevMenuSettings.showsAtLaunch = showsAtLaunch
-    }
+    DevMenuPreferences.isOnboardingFinished = finished
   }
 
   @objc
   func openDevMenuFromReactNative() {
-    guard let rctDevMenu = manager.session?.bridge.devMenu else {
+    guard let rctDevMenu = manager.currentBridge?.devMenu else {
       return
     }
 
@@ -159,47 +96,15 @@ public class DevMenuInternalModule: NSObject, RCTBridgeModule {
     manager.setCurrentScreen(currentScreen)
     resolve(nil)
   }
-
+  
   @objc
-  func setSessionAsync(_ session: [String: Any]?, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
-    do {
-      try manager.expoSessionDelegate.setSessionAsync(session)
-      resolve(nil)
-    } catch let error {
-      reject("ERR_DEVMENU_CANNOT_SAVE_SESSION", error.localizedDescription, error)
+  func fireCallback(_ name: String, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
+    
+    if (!manager.registeredCallbacks.contains(name)) {
+      return reject("ERR_DEVMENU_ACTION_FAILED", "\(name) is not a registered callback", nil)
     }
-  }
-
-  @objc
-  func restoreSessionAsync(_ resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
-    resolve(manager.expoSessionDelegate.restoreSession())
-  }
-
-  @objc
-  func getAuthSchemeAsync(_ resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
-    guard let urlTypesArray = Bundle.main.infoDictionary?["CFBundleURLTypes"] as? [NSDictionary] else {
-      resolve(DevMenuInternalModule.defaultScheme)
-      return
-    }
-
-    if (urlTypesArray
-          .contains(where: { ($0["CFBundleURLSchemes"] as? [String] ?? [])
-                      .contains(DevMenuInternalModule.defaultScheme) })) {
-      resolve(DevMenuInternalModule.defaultScheme)
-      return
-    }
-
-    for urlType in urlTypesArray {
-      guard let schemes = urlType["CFBundleURLSchemes"] as? [String] else {
-        continue
-      }
-
-      if schemes.first != nil {
-        resolve(schemes.first)
-        return
-      }
-    }
-
-    resolve(DevMenuInternalModule.defaultScheme)
+    manager.sendEventToDelegateBridge("registeredCallbackFired", data: name)
+    
+    return resolve(nil)
   }
 }

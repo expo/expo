@@ -185,7 +185,7 @@ export function test(t, { setPortalChild, cleanupPortal }) {
                 />
               );
               t.expect(status).toEqual(t.jasmine.objectContaining({ isLoaded: true }));
-            } catch (error) {
+            } catch {
               hasBeenRejected = true;
             }
             t.expect(hasBeenRejected).toBe(false);
@@ -201,7 +201,7 @@ export function test(t, { setPortalChild, cleanupPortal }) {
                 <Video style={style} source={{ uri: hlsStreamUriWithRedirect }} />
               );
               t.expect(status).toEqual(t.jasmine.objectContaining({ isLoaded: true }));
-            } catch (error) {
+            } catch {
               hasBeenRejected = true;
             }
             t.expect(hasBeenRejected).toBe(false);
@@ -504,7 +504,7 @@ export function test(t, { setPortalChild, cleanupPortal }) {
           const pleaseDismiss = async () => {
             try {
               await instance.dismissFullscreenPlayer();
-            } catch (error) {
+            } catch {
               pleaseDismiss();
             }
           };

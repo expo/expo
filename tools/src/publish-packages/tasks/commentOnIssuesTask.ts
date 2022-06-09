@@ -55,8 +55,8 @@ export const commentOnIssuesTask = new Task<TaskArgs>(
     const currentBranchName = await Git.getCurrentBranchNameAsync();
 
     // Sometimes we publish from different branches (especially for testing) where comments are not advisable.
-    if (currentBranchName !== 'master') {
-      logger.warn('This feature is disabled on branches other than master');
+    if (currentBranchName !== 'main') {
+      logger.warn('This feature is disabled on branches other than main');
       logManualFallback(payload);
       return;
     }
@@ -195,5 +195,5 @@ function linkToNpmPackage(packageName: string, version: string): string {
  */
 function linkToChangelog(pkg: Package): string {
   const changelogRelativePath = path.relative(EXPO_DIR, pkg.changelogPath);
-  return `[CHANGELOG.md](https://github.com/expo/expo/blob/master/${changelogRelativePath})`;
+  return `[CHANGELOG.md](https://github.com/expo/expo/blob/main/${changelogRelativePath})`;
 }

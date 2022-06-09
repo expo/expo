@@ -36,13 +36,13 @@ export default function App() {
 
   if (!fontsLoaded) {
     return <AppLoading />;
-  } else {
-    return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <Text style={{ fontFamily: 'Inter_900Black', fontSize: 40 }}>Inter Black</Text>
-      </View>
-    );
   }
+
+  return (
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <Text style={{ fontFamily: 'Inter_900Black', fontSize: 40 }}>Inter Black</Text>
+    </View>
+  );
 }
 ```
 
@@ -72,14 +72,14 @@ export default props => {
 
   if (!fontsLoaded) {
     return <AppLoading />;
-  } else {
-    return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <Text style={{ fontFamily: 'Inter-Black', fontSize: 40 }}>Inter Black</Text>
-        <Text style={{ fontSize: 40 }}>Platform Default</Text>
-      </View>
-    );
   }
+
+  return (
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <Text style={{ fontFamily: 'Inter-Black', fontSize: 40 }}>Inter Black</Text>
+      <Text style={{ fontSize: 40 }}>Platform Default</Text>
+    </View>
+  );
 };
 ```
 
@@ -184,14 +184,14 @@ export default props => {
   });
   if (!fontsLoaded) {
     return <AppLoading />;
-  } else {
-    return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <Text style={{ fontFamily: 'Inter-SemiBoldItalic' }}>Inter SemiBoldItalic</Text>
-        <Text>Platform Default</Text>
-      </View>
-    );
   }
+
+  return (
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <Text style={{ fontFamily: 'Inter-SemiBoldItalic' }}>Inter SemiBoldItalic</Text>
+      <Text>Platform Default</Text>
+    </View>
+  );
 };
 ```
 
@@ -236,17 +236,17 @@ export default class App extends React.Component {
   }
 
   render() {
-    if (this.state.fontsLoaded) {
-      return (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-          <Text>Platform Default</Text>
-          <Text style={{ fontFamily: 'Inter-Black' }}>Inter Black</Text>
-          <Text style={{ fontFamily: 'Inter-SemiBoldItalic' }}>Inter SemiBoldItalic</Text>
-        </View>
-      );
-    } else {
+    if (!this.state.fontsLoaded) {
       return <AppLoading />;
     }
+
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text>Platform Default</Text>
+        <Text style={{ fontFamily: 'Inter-Black' }}>Inter Black</Text>
+        <Text style={{ fontFamily: 'Inter-SemiBoldItalic' }}>Inter SemiBoldItalic</Text>
+      </View>
+    );
   }
 }
 ```

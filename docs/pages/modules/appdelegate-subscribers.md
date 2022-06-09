@@ -6,7 +6,7 @@ import { CodeBlocksTable } from '~/components/plugins/CodeBlocksTable';
 
 In order to respond to certain iOS system events relevant to an app, such as inbound links and notifications, it is necessary to handle the corresponding methods in the `AppDelegate`.
 
-The React Native module API does not provide any mechanism to hook into these methods, and so setup instructions for React Native libraries often include a step to copy code into the `AppDelegate` file. To simplify and automate setup and maintenace, the Expo module API provides a mechanism that allows your library to subscribe to calls to `AppDelegate` functions. In order for this to work, the app `AppDelegate` must inherit from `ExpoAppDelegate`, and this is a requirement for using Expo Modules.
+The React Native module API does not provide any mechanism to hook into these methods, and so setup instructions for React Native libraries often include a step to copy code into the `AppDelegate` file. To simplify and automate setup and maintenance, the Expo module API provides a mechanism that allows your library to subscribe to calls to `AppDelegate` functions. In order for this to work, the app `AppDelegate` must inherit from `ExpoAppDelegate`, and this is a requirement for using Expo Modules.
 
 `ExpoAppDelegate` implements most functions from [`UIApplicationDelegate`](https://developer.apple.com/documentation/uikit/uiapplicationdelegate) protocol and forwards their calls to all the subscribers.
 
@@ -16,7 +16,7 @@ First, you need to have created an Expo module or integrated the Expo modules AP
 
 Create a new public Swift class that extends `ExpoAppDelegateSubscriber` from `ExpoModulesCore` and add its name to the `ios.appDelegateSubscribers` array in the [module config](./module-config.md). Run `pod install`, and the subscriber will be generated in the **ExpoModulesProvider.swift** file within the application project.
 
-Now you can subscribe to events by adding delegate functions to your subscriber class. For the full list of functions that you can subscribe to, see the functions that are overriden in [`ExpoAppDelegate.swift`](https://github.com/expo/expo/blob/master/packages/expo-modules-core/ios/AppDelegates/ExpoAppDelegate.swift). App delegate functions that may cause side effects when provided are not supported yet (e.g. [`application(_:viewControllerWithRestorationIdentifierPath:coder:)`](https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1623062-application)).
+Now you can subscribe to events by adding delegate functions to your subscriber class. For the full list of functions that you can subscribe to, see the functions that are overriden in [`ExpoAppDelegate.swift`](https://github.com/expo/expo/tree/main/packages/expo-modules-core/ios/AppDelegates/ExpoAppDelegate.swift). App delegate functions that may cause side effects when provided are not supported yet (e.g. [`application(_:viewControllerWithRestorationIdentifierPath:coder:)`](https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1623062-application)).
 
 > Note: Objective-C classes are not supported.
 
@@ -38,7 +38,7 @@ In this scenario, `ExpoAppDelegate` passes a new completion block to each subscr
 - If there is at least one `newData` result, the delegate returns `newData`.
 - Otherwise `noData` is returned.
 
-> To check out how other functions process the result of your subscriber, we recommend reading the code directly: [`ExpoAppDelegate.swift`](https://github.com/expo/expo/blob/master/packages/expo-modules-core/ios/AppDelegates/ExpoAppDelegate.swift).
+> To check out how other functions process the result of your subscriber, we recommend reading the code directly: [`ExpoAppDelegate.swift`](https://github.com/expo/expo/tree/main/packages/expo-modules-core/ios/AppDelegates/ExpoAppDelegate.swift).
 
 ## Example
 

@@ -2,10 +2,9 @@ import { css } from '@emotion/react';
 import React from 'react';
 
 import { InlineCode } from '~/components/base/code';
-import { H4 } from '~/components/base/headings';
 import { LI, UL } from '~/components/base/list';
 import { P } from '~/components/base/paragraph';
-import { H2, H3, H3Code } from '~/components/plugins/Headings';
+import { H2, H3, H3Code, H4 } from '~/components/plugins/Headings';
 import {
   DefaultPropsDefinitionData,
   PropData,
@@ -30,7 +29,12 @@ export type APISectionPropsProps = {
 const UNKNOWN_VALUE = '...';
 
 const PROP_LIST_ELEMENT_STYLE = css`
-  padding: 0;
+  padding-top: 0.15rem;
+  padding-bottom: 0.15rem;
+`;
+
+const STYLES_DIVIDER = css`
+  margin-bottom: 1rem;
 `;
 
 const extractDefaultPropValue = (
@@ -102,7 +106,7 @@ export const renderProp = (
   defaultValue?: string,
   exposeInSidebar?: boolean
 ) => (
-  <LI key={`prop-entry-${name}`} customCss={exposeInSidebar ? PROP_LIST_ELEMENT_STYLE : undefined}>
+  <LI propType key={`prop-entry-${name}`} customCss={PROP_LIST_ELEMENT_STYLE}>
     {exposeInSidebar ? (
       <H3Code>
         <InlineCode>{name}</InlineCode>
@@ -121,11 +125,13 @@ export const renderProp = (
       ) : null}
     </P>
     <CommentTextBlock comment={getCommentOrSignatureComment(comment, signatures)} />
+    <hr css={STYLES_DIVIDER} />
   </LI>
 );
 
-const APISectionProps = ({ data, defaultProps, header = 'Props' }: APISectionPropsProps) =>
-  data?.length ? (
+const APISectionProps = ({ data, defaultProps, header = 'Props' }: APISectionPropsProps) => {
+  const baseProp = data.find(prop => prop.name === header);
+  return data?.length ? (
     <>
       {header === 'Props' ? (
         <H2 key="props-header">{header}</H2>
@@ -134,7 +140,7 @@ const APISectionProps = ({ data, defaultProps, header = 'Props' }: APISectionPro
           <H3Code key={`${header}-props-header`}>
             <InlineCode>{header}</InlineCode>
           </H3Code>
-          <br />
+          {baseProp && baseProp.comment ? <CommentTextBlock comment={baseProp.comment} /> : <br />}
         </>
       )}
       {data.map((propsDefinition: PropsDefinitionData) =>
@@ -142,5 +148,6 @@ const APISectionProps = ({ data, defaultProps, header = 'Props' }: APISectionPro
       )}
     </>
   ) : null;
+};
 
 export default APISectionProps;

@@ -1,11 +1,9 @@
 import { css } from '@emotion/react';
-import { theme } from '@expo/styleguide';
+import { theme, typography } from '@expo/styleguide';
 import * as React from 'react';
 
-import DocumentationPageContext from '../DocumentationPageContext';
-import TerminalBlock from './TerminalBlock';
-
-import * as Constants from '~/constants/theme';
+import { usePageMetadata } from '~/providers/page-metadata';
+import { Terminal } from '~/ui/components/Snippet';
 
 const STYLES_P = css`
   line-height: 1.8rem;
@@ -15,7 +13,7 @@ const STYLES_P = css`
 `;
 
 const STYLES_BOLD = css`
-  font-family: ${Constants.fonts.demi};
+  font-family: ${typography.fontFaces.medium};
   font-weight: 400;
   text-decoration: none;
   color: ${theme.link.default};
@@ -39,16 +37,16 @@ type Props = {
 };
 
 const getPackageLink = (packageNames: string) =>
-  `https://github.com/expo/expo/tree/master/packages/${packageNames.split(' ')[0]}`;
+  `https://github.com/expo/expo/tree/main/packages/${packageNames.split(' ')[0]}`;
 
 const InstallSection: React.FC<Props> = ({
   packageName,
   hideBareInstructions = false,
-  cmd = [`expo install ${packageName}`],
+  cmd = [`$ expo install ${packageName}`],
   href = getPackageLink(packageName),
 }) => (
-  <div>
-    <TerminalBlock cmd={cmd} />
+  <>
+    <Terminal cmd={cmd} />
     {hideBareInstructions ? null : (
       <p css={STYLES_P}>
         If you're installing this in a{' '}
@@ -62,12 +60,12 @@ const InstallSection: React.FC<Props> = ({
         .
       </p>
     )}
-  </div>
+  </>
 );
 
 export default InstallSection;
 
 export const APIInstallSection: React.FC<Props> = props => {
-  const context = React.useContext(DocumentationPageContext);
-  return <InstallSection {...props} packageName={props.packageName ?? context.packageName} />;
+  const { packageName } = usePageMetadata();
+  return <InstallSection {...props} packageName={props.packageName ?? packageName} />;
 };

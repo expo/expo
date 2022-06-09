@@ -2,16 +2,17 @@
 
 buildscript {
     ext {
-        gradlePluginVersion = '4.1.2'
+        gradlePluginVersion = '7.0.4'
     }
     repositories {
         google()
-        jcenter()
+        mavenCentral()
         mavenLocal()
     }
     dependencies {
         classpath "com.android.tools.build:gradle:${gradlePluginVersion}"
-        classpath 'de.undercouch:gradle-download-task:2.0.0'
+        classpath 'de.undercouch:gradle-download-task:4.1.2'
+        classpath "com.facebook.react:react-native-gradle-plugin"
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -21,7 +22,7 @@ buildscript {
 allprojects {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
         mavenLocal()
     }
 }

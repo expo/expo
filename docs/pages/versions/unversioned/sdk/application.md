@@ -1,6 +1,6 @@
 ---
 title: Application
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-application'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-application'
 packageName: 'expo-application'
 ---
 

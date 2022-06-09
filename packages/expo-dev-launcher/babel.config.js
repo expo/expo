@@ -10,6 +10,12 @@ function tryResolveModule(module) {
 module.exports = function (api) {
   api.cache(true);
 
+  if (process.env.NODE_ENV === 'test') {
+    return {
+      presets: ['babel-preset-expo'],
+    };
+  }
+
   const gestureHandler = tryResolveModule(
     'expo-dev-menu/vendored/react-native-gesture-handler/src/index.js'
   );

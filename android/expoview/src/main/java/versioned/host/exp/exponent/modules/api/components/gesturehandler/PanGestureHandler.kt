@@ -163,14 +163,12 @@ class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler>()
     }
     val vx = velocityX
     if (minVelocityX != MIN_VALUE_IGNORE &&
-      (minVelocityX < 0 && vx <= minVelocityX || minVelocityX in 0.0f..vx)
-    ) {
+      (minVelocityX < 0 && vx <= minVelocityX || minVelocityX in 0.0f..vx)) {
       return true
     }
     val vy = velocityY
     if (minVelocityY != MIN_VALUE_IGNORE &&
-      (minVelocityY < 0 && vx <= minVelocityY || minVelocityY in 0.0f..vx)
-    ) {
+      (minVelocityY < 0 && vx <= minVelocityY || minVelocityY in 0.0f..vx)) {
       return true
     }
     val velocitySq = vx * vx + vy * vy
@@ -210,8 +208,7 @@ class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler>()
       lastY = getLastPointerY(event, averageTouches)
     }
     if (state == STATE_UNDETERMINED && event.pointerCount >= minPointers) {
-      startX = lastX
-      startY = lastY
+      resetProgress()
       offsetX = 0f
       offsetY = 0f
       velocityX = 0f
@@ -255,8 +252,7 @@ class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler>()
   override fun activate(force: Boolean) {
     // reset starting point if the handler has not yet activated
     if (state != STATE_ACTIVE) {
-      startX = lastX
-      startY = lastY
+      resetProgress()
     }
     super.activate(force)
   }
@@ -266,6 +262,11 @@ class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler>()
       it.recycle()
       velocityTracker = null
     }
+  }
+
+  override fun resetProgress() {
+    startX = lastX
+    startY = lastY
   }
 
   companion object {

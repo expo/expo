@@ -8,14 +8,15 @@ import {
   ThemeAutoIcon,
   ChevronDownIcon,
   shadows,
+  typography,
+  DocsLogo,
+  XIcon,
+  HamburgerIcon,
 } from '@expo/styleguide';
 import Link from 'next/link';
 import * as React from 'react';
 
-import { MoreHorizontal } from './icons/MoreHorizontal';
-import { SDK } from './icons/SDK';
 import { Search } from './icons/Search';
-import { X } from './icons/X';
 
 import { paragraph } from '~/components/base/typography';
 import AlgoliaSearch from '~/components/plugins/AlgoliaSearch';
@@ -37,7 +38,7 @@ const STYLES_TITLE_TEXT = css`
   white-space: nowrap;
   padding-left: 8px;
   font-size: 1.2rem;
-  font-family: ${Constants.fonts.bold};
+  font-family: ${typography.fontFaces.semiBold};
   color: ${theme.text.default};
 `;
 
@@ -153,7 +154,7 @@ const STYLES_MENU_BUTTON = css`
 
 const SECTION_LINK = css`
   text-decoration: none;
-  font-family: ${Constants.fontFamilies.demi};
+  font-family: ${typography.fontFaces.medium};
   cursor: pointer;
 
   padding: 0 16px;
@@ -264,7 +265,6 @@ type Props = {
   isAlgoliaSearchHidden: boolean;
   isMenuActive: boolean;
   isMobileSearchActive: boolean;
-  version: string;
   activeSection?: string;
   onToggleSearch: () => void;
   onShowMenu: () => void;
@@ -319,7 +319,7 @@ export default class DocumentationHeader extends React.PureComponent<Props> {
               <Link href="/" passHref>
                 <a css={STYLES_UNSTYLED_ANCHOR}>
                   <span css={STYLES_LOGO}>
-                    <SDK />
+                    <DocsLogo color={theme.text.default} style={{ width: 26, height: 26 }} />
                   </span>
                 </a>
               </Link>
@@ -335,7 +335,7 @@ export default class DocumentationHeader extends React.PureComponent<Props> {
           <div css={STYLES_RIGHT}>
             {!this.props.isAlgoliaSearchHidden && (
               <div css={HEADER_RIGHT}>
-                <AlgoliaSearch version={this.props.version} hiddenOnMobile />
+                <AlgoliaSearch hiddenOnMobile />
                 <SelectTheme />
               </div>
             )}
@@ -346,25 +346,21 @@ export default class DocumentationHeader extends React.PureComponent<Props> {
                   <Search />
                 </span>
                 <span css={STYLES_MENU_BUTTON} onClick={this.props.onShowMenu}>
-                  <MoreHorizontal />
+                  <HamburgerIcon />
                 </span>
               </div>
             )}
 
             {this.props.isMenuActive && (
               <span css={STYLES_MENU_BUTTON} onClick={this.props.onHideMenu}>
-                <X />
+                <XIcon />
               </span>
             )}
           </div>
         </header>
         <header css={[STYLES_NAV, STYLES_MOBILE_NAV]}>
           {this.props.isMobileSearchActive ? (
-            <AlgoliaSearch
-              version={this.props.version}
-              hiddenOnMobile={false}
-              onToggleSearch={this.props.onToggleSearch}
-            />
+            <AlgoliaSearch hiddenOnMobile={false} onToggleSearch={this.props.onToggleSearch} />
           ) : (
             this.renderSectionLinks(false)
           )}

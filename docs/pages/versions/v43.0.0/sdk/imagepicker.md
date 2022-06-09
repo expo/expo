@@ -38,7 +38,7 @@ You can configure [the permissions for this library](#permissions) using [`ios.i
 
 <!-- update library name and link here -->
 
-Learn how to configure the native projects in the [installation instructions in the `expo-image-picker` repository](https://github.com/expo/expo/tree/master/packages/expo-image-picker#installation-in-bare-react-native-projects).
+Learn how to configure the native projects in the [installation instructions in the `expo-image-picker` repository](https://github.com/expo/expo/tree/main/packages/expo-image-picker#installation-in-bare-react-native-projects).
 
 </ConfigReactNative>
 
@@ -63,7 +63,10 @@ Learn how to configure the native projects in the [installation instructions in 
 
 </ConfigPluginExample>
 
-<!-- look in the plugin directory for the library and see what the options are, then fill in the below table as needed. here's an example plugin: https://git.io/JKlrN -->
+<!-- 
+  Look in the plugin directory for the library and see what the options are, then fill in the below table as needed. 
+  Here's an example plugin: https://github.com/expo/expo/blob/main/packages/expo-image-picker/plugin/src/withImagePicker.ts#L70-L73
+-->
 
 <ConfigPluginProperties properties={[
 { name: 'photosPermission', platform: 'ios', description: 'A string to set the NSPhotoLibraryUsageDescription permission message.', default: '"Allow $(PRODUCT_NAME) to access your photos"' },

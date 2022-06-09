@@ -3,15 +3,17 @@ title: Sharing the image
 ---
 
 import SnackInline from '~/components/plugins/SnackInline';
-import Video from '~/components/plugins/Video'
+import Video from '~/components/plugins/Video';
+import { Collapsible } from '~/ui/components/Collapsible';
+import { Terminal } from '~/ui/components/Snippet';
 
 Similar to expo-image-picker, the functionality that we need to share is available in an Expo library &mdash; this one is called [expo-sharing](../versions/latest/sdk/sharing.md).
 
 ## Installing expo-sharing
 
-You can install expo-sharing in the same way as you installed expo-image-picker:
+You can install expo-sharing in the same way as you installed expo-image-picker. In your project directory run:
 
-- Run `expo install expo-sharing` in your project directory.
+<Terminal cmd={['$ expo install expo-sharing']} />
 
 ## Using expo-sharing to share an image
 
@@ -20,7 +22,7 @@ You can install expo-sharing in the same way as you installed expo-image-picker:
 <!-- prettier-ignore -->
 ```js
 import React from 'react';
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, StyleSheet, Text, TouchableOpacity, View, Platform } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 /* @info As always, we must import it to use it */ import * as Sharing from 'expo-sharing'; /* @end */
 
@@ -35,7 +37,7 @@ export default function App() {
 
   /* @info Share the selected image if sharing is available on the user's device */
   let openShareDialogAsync = async () => {
-    if (!(await Sharing.isAvailableAsync())) {
+    if (Platform.OS === 'web') {
       alert(`Uh oh, sharing isn't available on your platform`);
       return;
     }
@@ -80,16 +82,11 @@ export default function App() {
 
 😱 Uh oh. When we hit "Share this photo" we see that our `alert` warns us that sharing is not available. This is happening because the desktop Chrome browser does not currently provide a way for users to share content.
 
-<div style={{marginTop: '-1rem'}} />
-
-<details><summary><h4>Want to learn more about why we can't use expo-sharing in Chrome?</h4></summary>
-
-<p>
+<Collapsible summary="Want to learn more about why we can't use expo-sharing in Chrome?">
 
 Sharing didn't work here because the desktop Chrome browser doesn't yet implement the [Web Share API](https://web.dev/web-share/). _"But wait,"_ you say, _"aren't we using expo-sharing, not the Web Share API?"_ You can think of the Expo SDK libraries as translators for different platforms. They speak the language of Expo and turn it into the language of iOS, Android, and web. It isn't always possible to translate from Expo's language to the platform that you're working with. In other words, if the platform doesn't implement a feature, Expo can't tell it to invoke that feature. In some cases Expo can attempt to [polyfill](<https://en.wikipedia.org/wiki/Polyfill_(programming)>) the feature for you, but this isn't always possible. Invoking your operating system's built-in share dialog to share content with other applications needs to be implemented by the platform itself &mdash; Chrome in this case.
 
-</p>
-</details>
+</Collapsible>
 
 ## Working with what we have available
 

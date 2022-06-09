@@ -1,6 +1,6 @@
 ---
 title: Contacts
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-contacts'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-contacts'
 packageName: 'expo-contacts'
 ---
 

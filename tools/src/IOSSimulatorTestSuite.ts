@@ -24,11 +24,11 @@ export async function runTestSuiteOnIOSSimulatorAsync(simulatorId, archivePath, 
   console.log(`Installing test-suite on the simulator`);
   await IOSSimulator.installSimulatorAppAsync(simulatorId, path.resolve(archivePath));
   console.log(`Streaming logs from the simulator`);
-  let resultsPromise = _streamSimulatorLogsAsync(simulatorId);
+  const resultsPromise = _streamSimulatorLogsAsync(simulatorId);
   console.log(`Launching the test-suite app and waiting for tests to complete`);
   await IOSSimulator.launchSimulatorAppAsync(simulatorId, TEST_SUITE_BUNDLE_ID);
 
-  let results = await resultsPromise;
+  const results = await resultsPromise;
   if (results.failed === 0) {
     console.log(`😊 All tests passed`);
   } else {
@@ -45,11 +45,11 @@ export async function runTestSuiteOnIOSSimulatorAsync(simulatorId, archivePath, 
 
 function _streamSimulatorLogsAsync(simulatorId: string): Promise<TestSuiteResults> {
   return new Promise((resolve, reject) => {
-    let logProcess = IOSSimulator.getSimulatorLogProcess(
+    const logProcess = IOSSimulator.getSimulatorLogProcess(
       simulatorId,
       '(subsystem == "host.exp.Exponent") && (category == "test")'
     );
-    let logStream = new IOSSimulator.IOSLogStream();
+    const logStream = new IOSSimulator.IOSLogStream();
     logProcess.stdout.pipe(logStream);
 
     logStream.on('data', (entry) => {
@@ -63,8 +63,8 @@ function _streamSimulatorLogsAsync(simulatorId: string): Promise<TestSuiteResult
       try {
         logStream.removeAllListeners('data');
 
-        let resultsJson = entry.eventMessage.substring(TEST_SUITE_END_SENTINEL.length).trim();
-        let results = JSON.parse(resultsJson);
+        const resultsJson = entry.eventMessage.substring(TEST_SUITE_END_SENTINEL.length).trim();
+        const results = JSON.parse(resultsJson);
         resolve(results);
       } catch (e) {
         reject(e);
@@ -77,7 +77,7 @@ function _streamSimulatorLogsAsync(simulatorId: string): Promise<TestSuiteResult
 }
 
 function _writeJUnitReport(results: TestSuiteResults, reportPath: string): void {
-  let builder = JUnitReportBuilder.newBuilder();
+  const builder = JUnitReportBuilder.newBuilder();
   // let suite = builder.testSuite().name('Test Suite');
 
   // TODO: parse the results

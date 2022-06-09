@@ -2,26 +2,19 @@ import * as React from 'react';
 
 import { getDevSessionsAsync } from '../../functions/getDevSessionsAsync';
 import { UserData } from '../../functions/getUserProfileAsync';
-import { RecentApp } from '../../hooks/useRecentlyOpenedApps';
-import {
-  clientUrlScheme,
-  getRecentlyOpenedApps,
-  loadApp,
-} from '../../native-modules/DevLauncherInternal';
-import { queryDevSessionsAsync } from '../../native-modules/DevMenu';
+import { getRecentlyOpenedApps, loadApp } from '../../native-modules/DevLauncherInternal';
+import { RecentApp } from '../../providers/RecentlyOpenedAppsProvider';
 import { render, waitFor, fireEvent, act } from '../../test-utils';
 import { DevSession } from '../../types';
 import { HomeScreen, HomeScreenProps } from '../HomeScreen';
 
 jest.mock('../../functions/getDevSessionsAsync');
 jest.mock('../../hooks/useDebounce');
-jest.mock('../../native-modules/DevMenu');
 
 const mockGetDevSessionsAsync = getDevSessionsAsync as jest.Mock;
-const mockQueryDevSessionsAsync = queryDevSessionsAsync as jest.Mock;
 const mockGetRecentlyOpenedApps = getRecentlyOpenedApps as jest.Mock;
 
-const mockFns = [mockGetDevSessionsAsync, mockQueryDevSessionsAsync, mockGetRecentlyOpenedApps];
+const mockFns = [mockGetDevSessionsAsync, mockGetRecentlyOpenedApps];
 
 function mockGetDevSessionsResponse(response: DevSession[]) {
   return mockGetDevSessionsAsync.mockResolvedValueOnce(response);
@@ -29,7 +22,7 @@ function mockGetDevSessionsResponse(response: DevSession[]) {
 
 const devSessionInstructionsRegex = /start a local development server with/i;
 const fetchingDevSessionsRegex = /searching for development servers/i;
-const refetchDevSessionsRegex = /refetch development servers/i;
+const refetchDevSessionsRegex = /fetch development servers/i;
 const textInputToggleRegex = /enter url manually/i;
 const textInputPlaceholder = 'http://10.0.0.25:19000';
 
@@ -118,18 +111,20 @@ describe('<HomeScreen />', () => {
   test('select dev session by entered url', async () => {
     const { getByText, getByPlaceholderText } = renderHomeScreen();
 
-    expect(() => getByPlaceholderText(textInputPlaceholder)).toThrow();
-    const toggleButton = getByText(textInputToggleRegex);
-    fireEvent.press(toggleButton);
+    await act(async () => {
+      expect(() => getByPlaceholderText(textInputPlaceholder)).toThrow();
+      const toggleButton = getByText(textInputToggleRegex);
+      fireEvent.press(toggleButton);
 
-    const input = await waitFor(() => getByPlaceholderText(textInputPlaceholder));
-    expect(loadApp).toHaveBeenCalledTimes(0);
+      const input = await waitFor(() => getByPlaceholderText(textInputPlaceholder));
+      expect(loadApp).toHaveBeenCalledTimes(0);
 
-    fireEvent.changeText(input, 'exp://tester');
-    fireEvent.press(getByText(/connect/i));
+      fireEvent.changeText(input, 'exp://tester');
+      fireEvent.press(getByText(/connect/i));
 
-    expect(loadApp).toHaveBeenCalledTimes(1);
-    expect(loadApp).toHaveBeenCalledWith('exp://tester');
+      expect(loadApp).toHaveBeenCalledTimes(1);
+      expect(loadApp).toHaveBeenCalledWith('exp://tester');
+    });
   });
 
   // TODO - figure out how to trigger blur event
@@ -155,11 +150,13 @@ describe('<HomeScreen />', () => {
   test('select dev session from list', async () => {
     const { getByText } = renderHomeScreen();
 
-    await waitFor(() => getByText(fakeLocalDevSession.description));
+    await act(async () => {
+      await waitFor(() => getByText(fakeLocalDevSession.description));
 
-    fireEvent.press(getByText(fakeLocalDevSession.description));
-    expect(loadApp).toHaveBeenCalled();
-    expect(loadApp).toHaveBeenCalledWith(fakeLocalDevSession.url);
+      fireEvent.press(getByText(fakeLocalDevSession.description));
+      expect(loadApp).toHaveBeenCalled();
+      expect(loadApp).toHaveBeenCalledWith(fakeLocalDevSession.url);
+    });
   });
 
   test('navigate to user profile', async () => {
@@ -200,6 +197,7 @@ describe('<HomeScreen />', () => {
         appCount: 1,
         email: '123@321.ca',
         profilePhoto: '123',
+        isExpoAdmin: true,
         accounts: [{ id: '1', name: 'Joe', owner: { username: '123', fullName: 'Joe' } }],
       },
     });

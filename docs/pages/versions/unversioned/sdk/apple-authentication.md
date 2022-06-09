@@ -1,6 +1,6 @@
 ---
 title: AppleAuthentication
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-apple-authentication'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-apple-authentication'
 packageName: 'expo-apple-authentication'
 ---
 

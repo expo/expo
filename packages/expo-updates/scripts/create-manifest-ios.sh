@@ -16,7 +16,10 @@ fi
 # ref: https://github.com/facebook/react-native/blob/c974cbff04a8d90ac0f856dbada3fc5a75c75b49/scripts/react-native-xcode.sh#L59-L65
 EXPO_UPDATES_PACKAGE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)"
 
+# Suppress environment errors from sourcing the login scripts
+set +e
 source "$EXPO_UPDATES_PACKAGE_DIR/scripts/source-login-scripts.sh"
+set -e
 
 DEST="$CONFIGURATION_BUILD_DIR"
 RESOURCE_BUNDLE_NAME="EXUpdates.bundle"

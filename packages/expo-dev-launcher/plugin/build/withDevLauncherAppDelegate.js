@@ -19,12 +19,16 @@ const DEV_LAUNCHER_APP_DELEGATE_SOURCE_FOR_URL = `  #if defined(EX_DEV_LAUNCHER_
   #else
   return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index" fallbackResource:nil];
   #endif`;
+const DEV_LAUNCHER_APP_DELEGATE_ON_DEEP_LINK_TO_REMOVE = new RegExp('return (' +
+    escapeRegExpCharacters('[super application:application openURL:url options:options] || ') +
+    ')?' +
+    escapeRegExpCharacters('[RCTLinkingManager application:application openURL:url options:options];'));
 const DEV_LAUNCHER_APP_DELEGATE_ON_DEEP_LINK = `#if defined(EX_DEV_LAUNCHER_ENABLED)
   if ([EXDevLauncherController.sharedInstance onDeepLink:url options:options]) {
     return true;
   }
   #endif
-  return [RCTLinkingManager application:application openURL:url options:options];`;
+  $&`;
 const DEV_LAUNCHER_APP_DELEGATE_IOS_IMPORT = `
 #if defined(EX_DEV_LAUNCHER_ENABLED)
 #include <EXDevLauncher/EXDevLauncherController.h>
@@ -192,7 +196,7 @@ function removeDevMenuInit(appDelegate) {
 }
 function addDeepLinkHandler(appDelegate) {
     if (!appDelegate.includes(DEV_LAUNCHER_APP_DELEGATE_ON_DEEP_LINK)) {
-        appDelegate = appDelegate.replace('return [RCTLinkingManager application:application openURL:url options:options];', DEV_LAUNCHER_APP_DELEGATE_ON_DEEP_LINK);
+        appDelegate = appDelegate.replace(DEV_LAUNCHER_APP_DELEGATE_ON_DEEP_LINK_TO_REMOVE, DEV_LAUNCHER_APP_DELEGATE_ON_DEEP_LINK);
     }
     return appDelegate;
 }
@@ -263,9 +267,7 @@ See the expo-dev-client installation instructions to modify your AppDelegate man
     if (!appDelegate.includes(DEV_LAUNCHER_APP_DELEGATE_CONTROLLER_DELEGATE)) {
         appDelegate += DEV_LAUNCHER_APP_DELEGATE_CONTROLLER_DELEGATE;
     }
-    if (!appDelegate.includes(DEV_LAUNCHER_APP_DELEGATE_ON_DEEP_LINK)) {
-        appDelegate = appDelegate.replace('return [RCTLinkingManager application:application openURL:url options:options];', DEV_LAUNCHER_APP_DELEGATE_ON_DEEP_LINK);
-    }
+    appDelegate = addDeepLinkHandler(appDelegate);
     appDelegate = changeDebugURL(appDelegate);
     appDelegate = removeDevMenuInit(appDelegate);
     return appDelegate;

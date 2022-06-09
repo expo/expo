@@ -1,6 +1,6 @@
 ---
 title: Asset
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-asset'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-asset'
 packageName: 'expo-asset'
 ---
 

@@ -2,21 +2,20 @@ import Ionicons from '@expo/vector-icons/build/Ionicons';
 import Slider from '@react-native-community/slider';
 import * as BarCodeScanner from 'expo-barcode-scanner';
 import { BlurView } from 'expo-blur';
-import { Camera } from 'expo-camera';
-import { CameraType } from 'expo-camera/build/Camera.types';
+import { Camera, CameraType, FlashMode } from 'expo-camera';
 import * as Haptics from 'expo-haptics';
 import * as React from 'react';
 import {
   Animated,
   Easing,
   Platform,
+  Pressable,
   StyleProp,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
   ViewStyle,
-  Pressable,
 } from 'react-native';
 import { Path, Svg, SvgProps } from 'react-native-svg';
 
@@ -101,7 +100,7 @@ function useCameraAvailable(): boolean {
 }
 
 export default function QRCodeScreen() {
-  const [isPermissionsGranted] = usePermissions(Camera.requestPermissionsAsync);
+  const [isPermissionsGranted] = usePermissions(Camera.requestCameraPermissionsAsync);
   const isAvailable = useCameraAvailable();
 
   if (!isPermissionsGranted || !isAvailable) {
@@ -180,7 +179,7 @@ function QRCodeView() {
               }
             }}
             style={{ flex: 1 }}
-            flashMode={isLit ? 'torch' : 'off'}
+            flashMode={isLit ? FlashMode.torch : FlashMode.off}
           />
         </OverlayView>
       )}

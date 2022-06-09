@@ -1,3 +1,4 @@
+import { CodeChallengeMethod } from './AuthRequest.types';
 /**
  * URL using the `https` scheme with no query or fragment component that the OP asserts as its Issuer Identifier.
  */
@@ -33,7 +34,8 @@ export declare type ProviderMetadata = Record<string, string | boolean | string[
      */
     jwks_uri?: string;
     /**
-     * JSON array containing a list of the OAuth 2.0 [RFC6749](https://openid.net/specs/openid-connect-discovery-1_0.html#RFC6749) scope values that this server supports.
+     * JSON array containing a list of the OAuth 2.0 [RFC6749](https://openid.net/specs/openid-connect-discovery-1_0.html#RFC6749)
+     * scope values that this server supports.
      */
     scopes_supported?: string[];
     /**
@@ -83,7 +85,8 @@ export declare type ProviderMetadata = Record<string, string | boolean | string[
     claims_supported?: string[];
     /**
      * URL of a page containing human-readable information that developers might want or need to know when using the OpenID Provider.
-     * In particular, if the OpenID Provider does not support Dynamic Client Registration, then information on how to register Clients needs to be provided in this documentation.
+     * In particular, if the OpenID Provider does not support Dynamic Client Registration, then information on how to register Clients
+     * needs to be provided in this documentation.
      */
     service_documentation?: string;
     /**
@@ -97,27 +100,29 @@ export declare type ProviderMetadata = Record<string, string | boolean | string[
     ui_locales_supported?: string[];
     /**
      * Boolean value specifying whether the OP supports use of the claims parameter, with `true` indicating support.
-     * If omitted, the default value is `false`.
+     * @default false
      */
     claims_parameter_supported?: boolean;
     /**
      * Boolean value specifying whether the OP supports use of the request parameter, with `true` indicating support.
-     * If omitted, the default value is `false`.
+     * @default false
      */
     request_parameter_supported?: boolean;
     /**
      * Whether the OP supports use of the `request_uri` parameter, with `true` indicating support.
-     * If omitted, the default value is `true`.
+     * @default true
      */
     request_uri_parameter_supported?: boolean;
     /**
      * Whether the OP requires any `request_uri` values used to be pre-registered using the `request_uris` registration parameter.
      * Pre-registration is required when the value is `true`.
-     * If omitted, the default value is `false`.
+     * @default false
      */
     require_request_uri_registration?: boolean;
     /**
-     * URL that the OpenID Provider provides to the person registering the Client to read about the OP's requirements on how the Relying Party can use the data provided by the OP. The registration process SHOULD display this URL to the person registering the Client if it is given.
+     * URL that the OpenID Provider provides to the person registering the Client to read about the OP's requirements on how
+     * the Relying Party can use the data provided by the OP. The registration process SHOULD display this URL to the person
+     * registering the Client if it is given.
      */
     op_policy_uri?: string;
     /**
@@ -125,7 +130,7 @@ export declare type ProviderMetadata = Record<string, string | boolean | string[
      * The registration process should display this URL to the person registering the Client if it is given.
      */
     op_tos_uri?: string;
-    code_challenge_methods_supported?: ('plain' | 'S256')[];
+    code_challenge_methods_supported?: CodeChallengeMethod[];
     check_session_iframe?: string;
     backchannel_logout_supported?: boolean;
     backchannel_logout_session_supported?: boolean;
@@ -148,13 +153,14 @@ export interface DiscoveryDocument {
      */
     tokenEndpoint?: string;
     /**
-     * The spec requires a revocation endpoint but some providers (like Spotify) do not support one.
+     * Used to revoke a token (generally for signing out). The spec requires a revocation endpoint,
+     * but some providers (like Spotify) do not support one.
      *
      * [Section 2.1](https://tools.ietf.org/html/rfc7009#section-2.1)
      */
     revocationEndpoint?: string;
     /**
-     * URL of the OP's UserInfo Endpoint.
+     * URL of the OP's UserInfo Endpoint used to return info about the authenticated user.
      *
      * [UserInfo](https://openid.net/specs/openid-connect-core-1_0.html#UserInfo)
      */
@@ -169,6 +175,9 @@ export interface DiscoveryDocument {
      * URL of the OP's [Dynamic Client Registration](https://openid.net/specs/openid-connect-discovery-1_0.html#OpenID.Registration) Endpoint.
      */
     registrationEndpoint?: string;
+    /**
+     * All metadata about the provider.
+     */
     discoveryDocument?: ProviderMetadata;
 }
 export declare type IssuerOrDiscovery = Issuer | DiscoveryDocument;
@@ -177,6 +186,11 @@ export declare type IssuerOrDiscovery = Issuer | DiscoveryDocument;
  * https://tools.ietf.org/html/rfc5785
  */
 export declare function issuerWithWellKnownUrl(issuer: Issuer): string;
+/**
+ * Fetch a `DiscoveryDocument` from a well-known resource provider that supports auto discovery.
+ * @param issuer An `Issuer` URL to fetch from.
+ * @return Returns a discovery document that can be used for authentication.
+ */
 export declare function fetchDiscoveryAsync(issuer: Issuer): Promise<DiscoveryDocument>;
 /**
  * Utility method for resolving the discovery document from an issuer or object.

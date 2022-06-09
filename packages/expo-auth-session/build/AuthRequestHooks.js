@@ -1,10 +1,18 @@
 import { useCallback, useMemo, useEffect, useState } from 'react';
 import { AuthRequest } from './AuthRequest';
 import { resolveDiscoveryAsync } from './Discovery';
+// @needsAudit
 /**
- * Fetch the discovery document from an OpenID Connect issuer.
+ * Given an OpenID Connect issuer URL, this will fetch and return the [`DiscoveryDocument`](#discoverydocument)
+ * (a collection of URLs) from the resource provider.
  *
- * @param issuerOrDiscovery
+ * @param issuerOrDiscovery URL using the `https` scheme with no query or fragment component that the OP asserts as its Issuer Identifier.
+ * @return Returns `null` until the [`DiscoveryDocument`](#discoverydocument) has been fetched from the provided issuer URL.
+ *
+ * @example
+ * ```ts
+ * const discovery = useAutoDiscovery('https://example.com/auth');
+ * ```
  */
 export function useAutoDiscovery(issuerOrDiscovery) {
     const [discovery, setDiscovery] = useState(null);
@@ -38,9 +46,7 @@ export function useLoadedAuthRequest(config, discovery, AuthRequestInstance) {
         return () => {
             isMounted = false;
         };
-    }, 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [
+    }, [
         discovery?.authorizationEndpoint,
         config.clientId,
         config.redirectUri,
@@ -72,18 +78,35 @@ export function useAuthRequestResult(request, discovery, customOptions = {}) {
         const result = await request?.promptAsync(discovery, inputOptions);
         setResult(result);
         return result;
-    }, 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [request?.url, discovery?.authorizationEndpoint]);
+    }, [request?.url, discovery?.authorizationEndpoint]);
     return [result, promptAsync];
 }
+// @needsAudit
 /**
- * Load an authorization request.
- * Returns a loaded request, a response, and a prompt method.
- * When the prompt method completes then the response will be fulfilled.
+ * Load an authorization request for a code. When the prompt method completes then the response will be fulfilled.
  *
- * @param config
- * @param discovery
+ * > In order to close the popup window on web, you need to invoke `WebBrowser.maybeCompleteAuthSession()`.
+ * > See the [Identity example](/guides/authentication.md#identityserver-4) for more info.
+ *
+ * If an Implicit grant flow was used, you can pass the `response.params` to `TokenResponse.fromQueryParams()`
+ * to get a `TokenResponse` instance which you can use to easily refresh the token.
+ *
+ * @param config A valid [`AuthRequestConfig`](#authrequestconfig) that specifies what provider to use.
+ * @param discovery A loaded [`DiscoveryDocument`](#discoverydocument) with endpoints used for authenticating.
+ * Only `authorizationEndpoint` is required for requesting an authorization code.
+ *
+ * @return Returns a loaded request, a response, and a prompt method in a single array in the following order:
+ * - `request` - An instance of [`AuthRequest`](#authrequest) that can be used to prompt the user for authorization.
+ *   This will be `null` until the auth request has finished loading.
+ * - `response` - This is `null` until `promptAsync` has been invoked. Once fulfilled it will return information about the authorization.
+ * - `promptAsync` - When invoked, a web browser will open up and prompt the user for authentication.
+ *   Accepts an [`AuthRequestPromptOptions`](#authrequestpromptoptions) object with options about how the prompt will execute.
+ *   You can use this to enable the Expo proxy service `auth.expo.io`.
+ *
+ * @example
+ * ```ts
+ * const [request, response, promptAsync] = useAuthRequest({ ... }, { ... });
+ * ```
  */
 export function useAuthRequest(config, discovery) {
     const request = useLoadedAuthRequest(config, discovery, AuthRequest);

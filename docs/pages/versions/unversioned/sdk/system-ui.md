@@ -1,6 +1,6 @@
 ---
 title: SystemUI
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-system-ui'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-system-ui'
 packageName: 'expo-system-ui'
 ---
 

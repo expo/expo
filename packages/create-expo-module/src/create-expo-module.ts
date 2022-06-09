@@ -149,7 +149,7 @@ async function npmWhoamiAsync(targetDir: string): Promise<string | null> {
   try {
     const { stdout } = await spawnAsync('npm', ['whoami'], { cwd: targetDir });
     return stdout.trim();
-  } catch (e) {
+  } catch {
     return null;
   }
 }

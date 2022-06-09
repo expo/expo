@@ -4,13 +4,13 @@ import { captureImageData } from './WebCameraUtils';
 const qrWorkerMethod = ({ data, width, height }) => {
     // eslint-disable-next-line no-undef
     const decoded = self.jsQR(data, width, height, {
-        inversionAttempts: 'dontInvert',
+        inversionAttempts: 'attemptBoth',
     });
     let parsed;
     try {
         parsed = JSON.parse(decoded);
     }
-    catch (err) {
+    catch {
         parsed = decoded;
     }
     if (parsed?.data) {

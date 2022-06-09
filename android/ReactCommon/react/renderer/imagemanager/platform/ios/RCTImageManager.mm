@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -44,7 +44,6 @@ using namespace facebook::react;
   std::shared_ptr<ImageTelemetry> telemetry;
   if ([self->_imageLoader shouldEnablePerfLoggingForRequestUrl:request.URL]) {
     telemetry = std::make_shared<ImageTelemetry>(surfaceId);
-    telemetry->willRequestUrl();
   } else {
     telemetry = nullptr;
   }

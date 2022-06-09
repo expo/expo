@@ -20,8 +20,13 @@ export function useClipboard(clearInMillis: number = 3000) {
     };
   }, [clipboardContent, clearInMillis]);
 
-  async function onCopyPress(data: object) {
-    const content = JSON.stringify(data, null, 2);
+  async function onCopyPress(data: object | string) {
+    let content;
+    if (typeof data === 'object') {
+      content = JSON.stringify(data, null, 2);
+    } else {
+      content = data;
+    }
 
     setClipboardError('');
     setClipboardContent(content);

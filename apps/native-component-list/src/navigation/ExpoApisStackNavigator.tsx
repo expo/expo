@@ -12,6 +12,12 @@ const Stack = createStackNavigator();
 export const Screens = [
   {
     getComponent() {
+      return optionalRequire(() => require('../screens/ExpoModulesScreen'));
+    },
+    name: 'ExpoModules',
+  },
+  {
+    getComponent() {
       return optionalRequire(() => require('../screens/StatusBarScreen'));
     },
     name: 'StatusBar',
@@ -30,7 +36,7 @@ export const Screens = [
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/ClipboardScreen'));
+      return optionalRequire(() => require('../screens/Clipboard/ClipboardScreen'));
     },
     name: 'Clipboard',
   },
@@ -52,13 +58,6 @@ export const Screens = [
     },
     name: 'ActionSheet',
     options: { title: 'Action Sheet' },
-  },
-  {
-    getComponent() {
-      return optionalRequire(() => require('../screens/AppAuthScreen'));
-    },
-    name: 'AppAuth',
-    options: { title: 'App Auth' },
   },
   {
     getComponent() {
@@ -179,19 +178,6 @@ export const Screens = [
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/GoogleScreen'));
-    },
-    name: 'Google',
-  },
-  {
-    getComponent() {
-      return optionalRequire(() => require('../screens/GoogleSignInScreen'));
-    },
-    name: 'GoogleSignIn',
-    options: { title: 'Native Google Sign-In' },
-  },
-  {
-    getComponent() {
       return optionalRequire(() => require('../screens/HapticsScreen'));
     },
     name: 'Haptics',
@@ -241,7 +227,7 @@ export const Screens = [
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/ImagePickerScreen'));
+      return optionalRequire(() => require('../screens/ImagePicker/ImagePickerScreen'));
     },
     name: 'ImagePicker',
   },
@@ -459,7 +445,7 @@ export const Screens = [
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/WebBrowserScreen'));
+      return optionalRequire(() => require('../screens/WebBrowser/WebBrowserScreen'));
     },
     name: 'WebBrowser',
   },

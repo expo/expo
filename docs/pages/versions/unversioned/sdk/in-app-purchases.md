@@ -1,6 +1,6 @@
 ---
 title: InAppPurchases
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-in-app-purchases'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-in-app-purchases'
 packageName: 'expo-in-app-purchases'
 ---
 
@@ -14,17 +14,11 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 ## Installation
 
-<APIInstallSection hideBareInstructions />
+<APIInstallSection hideBareInstructions cmd={['$ npm install expo-in-app-purchases']} />
 
-This module is currently only available in the [bare](../../../introduction/managed-vs-bare.md#bare-workflow) workflow.
+This module is currently only available in the [bare](/introduction/managed-vs-bare.md#bare-workflow) workflow.
 
 You must ensure that you have [installed and configured Expo modules](/bare/installing-expo-modules.md) before continuing.
-
-### Add the package to your dependencies
-
-```
-npm install expo-in-app-purchases
-```
 
 ### Configure for iOS
 

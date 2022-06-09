@@ -10,6 +10,26 @@
 
 ### 💡 Others
 
+## 13.0.0 — 2022-04-18
+
+### 🛠 Breaking changes
+
+- Added `obfuscatedAccountId`, `obfuscatedProfileId` and `isVrPurchaseFlow` as options to `purchaseItemAsync` for Android in-app purchases. The second arguemnt of `purchaseItemAsync` is no longer `oldPurchaseToken` and must be a `IAPPurchaseItemOptions` object instead. You can still pass `oldPurchaseToken` via the `IAPPurchaseItemOptions` object. ([#16670](https://github.com/expo/expo/pull/16670) by [@lukebrandonfarrell](https://github.com/lukebrandonfarrell))
+
+### 🐛 Bug fixes
+
+- Removed the unused `jcenter()` maven dependencies. ([#16846](https://github.com/expo/expo/pull/16846) by [@kudo](https://github.com/kudo))
+
+### ⚠️ Notices
+
+- On Android bump `compileSdkVersion` to `31`, `targetSdkVersion` to `31` and `Java` version to `11`. ([#16941](https://github.com/expo/expo/pull/16941) by [@bbarthec](https://github.com/bbarthec))
+
+## 12.1.1 - 2022-02-01
+
+### 🐛 Bug fixes
+
+- Fix `Plugin with id 'maven' not found` build error from Android Gradle 7. ([#16080](https://github.com/expo/expo/pull/16080) by [@kudo](https://github.com/kudo))
+
 ## 12.1.0 — 2021-12-03
 
 _This version does not introduce any user-facing changes._
@@ -35,7 +55,7 @@ _This version does not introduce any user-facing changes._
 ### 🛠 Breaking changes
 
 - `purchaseItemAsync` no longer accepts the old SKU as the second (optional) argument. Instead, this method now accepts the `purchaseToken` of the purchase you are replacing as the second argument. You can get this value via `getPurchaseHistoryAsync`. This change only affects Android. ([#13884](https://github.com/expo/expo/pull/13884) by [@cruzach](https://github.com/cruzach))
-- `getPurchaseHistoryAsync` no longer accepts a boolean parameter. Instead, it accepts an object containing the key `useGooglePlayCache`. `useGooglePlayCache` functions similarly to the the previous `refresh` parameter, except it is clearer in naming. If you had `refresh` as false, you should pass `useGooglePlayCache: true`. If `refresh` was true, you should pass `useGooglePlayCache: false`. Please see the [docs](https://github.com/expo/expo/blob/master/docs/pages/versions/unversioned/sdk/in-app-purchases.md#inapppurchasesgetpurchasehistoryasyncrefresh-boolean) for more information. ([#13942](https://github.com/expo/expo/pull/13942) by [@cruzach](https://github.com/cruzach))
+- `getPurchaseHistoryAsync` no longer accepts a boolean parameter. Instead, it accepts an object containing the key `useGooglePlayCache`. `useGooglePlayCache` functions similarly to the the previous `refresh` parameter, except it is clearer in naming. If you had `refresh` as false, you should pass `useGooglePlayCache: true`. If `refresh` was true, you should pass `useGooglePlayCache: false`. Please see the [docs](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/in-app-purchases.md#inapppurchasesgetpurchasehistoryasyncrefresh-boolean) for more information. ([#13942](https://github.com/expo/expo/pull/13942) by [@cruzach](https://github.com/cruzach))
 
 ### 🐛 Bug fixes
 

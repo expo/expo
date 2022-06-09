@@ -1,19 +1,20 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
 #import <ExpoModulesCore/ExpoModulesHostObject.h>
+#import <ExpoModulesCore/EXJavaScriptObject.h>
 #import <ExpoModulesCore/Swift.h>
 
 namespace expo {
 
-ExpoModulesHostObject::ExpoModulesHostObject(SwiftInteropBridge *swiftInterop) : swiftInterop(swiftInterop) {}
+ExpoModulesHostObject::ExpoModulesHostObject(EXAppContext *appContext) : appContext(appContext) {}
 
 ExpoModulesHostObject::~ExpoModulesHostObject() {
-  [swiftInterop setRuntime:nil];
+  [appContext setRuntime:nil];
 }
 
 jsi::Value ExpoModulesHostObject::get(jsi::Runtime &runtime, const jsi::PropNameID &name) {
   NSString *moduleName = [NSString stringWithUTF8String:name.utf8(runtime).c_str()];
-  JavaScriptObject *nativeObject = [swiftInterop getNativeModuleObject:moduleName];
+  EXJavaScriptObject *nativeObject = [appContext getNativeModuleObject:moduleName];
 
   return nativeObject ? jsi::Value(runtime, *[nativeObject get]) : jsi::Value::undefined();
 }
@@ -26,7 +27,7 @@ void ExpoModulesHostObject::set(jsi::Runtime &runtime, const jsi::PropNameID &na
 }
 
 std::vector<jsi::PropNameID> ExpoModulesHostObject::getPropertyNames(jsi::Runtime &runtime) {
-  NSArray<NSString *> *moduleNames = [swiftInterop getModuleNames];
+  NSArray<NSString *> *moduleNames = [appContext getModuleNames];
   std::vector<jsi::PropNameID> propertyNames;
 
   propertyNames.reserve([moduleNames count]);

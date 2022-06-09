@@ -2,7 +2,9 @@
 title: Building Standalone Apps
 ---
 
-> 🆕 [Try creating your build with EAS Build](/build/setup.md), our new and improved build service.
+> 🆕 [Try creating your build with EAS Build](/build/setup.md), the modern build service with support for custom native code and smaller app archives.
+
+> ⚠️ [The Classic Build service (`expo build:{android,ios}`) is in maintenance mode](https://blog.expo.dev/turtle-goes-out-to-sea-d334db2a6b60) and has been superseded by [EAS Build](/build/setup.md). SDK 46 will be the last SDK supported by Classic Builds and the Classic Build service will stop running for all SDK versions after January 4, 2023.
 
 The purpose of this guide is to help you create standalone binaries of your Expo app for iOS and
 Android which can be submitted to the Apple App Store and Google Play Store.
@@ -128,7 +130,7 @@ If you plan on providing your own certificates, we recommend creating them in th
 
 #### Enterprise distribution
 
-The Expo build service supports both normal App Store distribution as well as enterprise distribution. To use the latter, you must be a member of the ["Apple Developer Enterprise Program"](https://developer.apple.com/programs/enterprise/). Only normal Apple developer accounts can build apps that can be submitted to the Apple App Store, and only enterprise developer accounts can build apps that can be distributed using enterprise distribution methods. When you call `expo build:ios`, you just need to choose the correct team, it will be labeled `(In-House)`.
+The Expo build service supports both normal App Store distribution as well as enterprise distribution. To use the latter, you must be a member of the ["Apple Developer Enterprise Program"](https://developer.apple.com/programs/enterprise/). Only normal Apple Developer accounts can build apps that can be submitted to the Apple App Store, and only enterprise developer accounts can build apps that can be distributed using enterprise distribution methods. When you call `expo build:ios`, you just need to choose the correct team, it will be labeled `(In-House)`.
 
 #### Adhoc distribution
 
@@ -159,7 +161,7 @@ When one of our building machines is free, it'll start building your app. You ca
 
 ### Android
 
-- **To run it on your Android emulator**, first build your project with the apk flag by running `expo build:android -t apk`, and you can drag and drop the **.apk** into the emulator.
+- **To run it on your Android Emulator**, first build your project with the apk flag by running `expo build:android -t apk`, and you can drag and drop the **.apk** into the emulator.
 - **To run it on your Android device**, make sure you have the Android platform tools installed along with `adb`, then just run `adb install app-filename.apk` with [USB debugging enabled on your device](https://developer.android.com/studio/run/device.html#device-developer-options) and the device plugged in.
 
 ### iOS

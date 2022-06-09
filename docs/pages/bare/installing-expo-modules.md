@@ -5,7 +5,7 @@ title: Installing Expo modules
 import InstallSection from '~/components/plugins/InstallSection';
 import ConfigurationDiff from '~/components/plugins/ConfigurationDiff';
 
-> Are you migrating from `react-native-unimodules`? Please refer to [the Expo modules migration guide](https://expo.fyi/expo-modules-migration).
+> Are you migrating from `react-native-unimodules`? If yes, please refer to [the Expo modules migration guide](https://expo.fyi/expo-modules-migration).
 
 In order to use Expo modules in your app, you will need to install and configure the `expo` package.
 
@@ -19,12 +19,14 @@ If you have an existing project without Expo modules installed (perhaps created 
 
 Aside from initializing a new project with `expo-cli`, the easiest way to get up and running is with the `install-expo-modules` command.
 
-<InstallSection packageName="expo" cmd={["# Install and configure the expo package automatically", "npx install-expo-modules"]} hideBareInstructions />
+<InstallSection packageName="expo" cmd={["# Install and configure the expo package automatically", "npx install-expo-modules@latest"]} hideBareInstructions />
 
-- ✅ **When the command succeeds**, you will be able any Expo module in your app! Proceed to [Usage](#usage) for more information.
-- ❌ **If the command fails**, please follow the manual installation instructions. Updating code programmatically can be tricky, and if your project deviates significantly from a default React Native project then manual installation is needed in order to adapt the instructions to your codebase.
+- ✅ **When the command succeeds**, you will be able to add any Expo module in your app! Proceed to [Usage](#usage) for more information.
+- ❌ **If the command fails**, please follow the manual installation instructions. Updating code programmatically can be tricky, and if your project deviates significantly from a default React Native project, then you need to perform manual installation and adapt the instructions here to your codebase.
 
 ## Manual installation
+
+The following instructions apply to installing the latest version of Expo modules in React Native 0.68.
 
 <InstallSection packageName="expo" cmd={["npm install expo"]} hideBareInstructions />
 
@@ -93,7 +95,7 @@ If you need to exclude Expo modules that you are not using but they got installe
 }
 ```
 
-You can exclude only for a specific platform by using `exclude` under the platform key:
+You can also exclude a specific platform by using `exclude` under the platform key:
 
 ```json
 {

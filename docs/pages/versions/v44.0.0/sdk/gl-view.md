@@ -223,7 +223,7 @@ export default function App() {
 
 </SnackInline>
 
-For more in-depth example on how to use `expo-gl` with Reanimated and Gesture Handler you can check [this example](https://github.com/expo/expo/blob/master/apps/native-component-list/src/screens/GL/GLReanimatedExample.tsx).
+For more in-depth example on how to use `expo-gl` with Reanimated and Gesture Handler you can check [this example](https://github.com/expo/expo/tree/main/apps/native-component-list/src/screens/GL/GLReanimatedExample.tsx).
 
 ### Limitations
 

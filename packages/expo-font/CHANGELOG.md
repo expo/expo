@@ -10,6 +10,18 @@
 
 ### 💡 Others
 
+## 10.1.0 — 2022-04-18
+
+### ⚠️ Notices
+
+- On Android bump `compileSdkVersion` to `31`, `targetSdkVersion` to `31` and `Java` version to `11`. ([#16941](https://github.com/expo/expo/pull/16941) by [@bbarthec](https://github.com/bbarthec))
+
+## 10.0.5 - 2022-02-01
+
+### 🐛 Bug fixes
+
+- Fix `Plugin with id 'maven' not found` build error from Android Gradle 7. ([#16080](https://github.com/expo/expo/pull/16080) by [@kudo](https://github.com/kudo))
+
 ## 10.0.4 — 2021-11-17
 
 _This version does not introduce any user-facing changes._

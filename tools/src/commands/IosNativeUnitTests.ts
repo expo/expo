@@ -94,7 +94,7 @@ async function moveSchemesToSharedData(podspecName: string, rootDirectory: strin
 function getTestSpecNames(pkg: Packages.Package): string[] {
   const podspec = fs.readFileSync(path.join(pkg.path, pkg.podspecPath!), 'utf8');
   const regex = new RegExp("test_spec\\s'([^']*)'", 'g');
-  let testSpecNames: string[] = [];
+  const testSpecNames: string[] = [];
   let match: RegExpExecArray | null;
   while ((match = regex.exec(podspec)) !== null) {
     testSpecNames.push(match[1]);
@@ -105,8 +105,8 @@ function getTestSpecNames(pkg: Packages.Package): string[] {
 export async function iosNativeUnitTests({ packages }: { packages?: string }) {
   const allPackages = await Packages.getListOfPackagesAsync();
   const packageNamesFilter = packages ? packages.split(',') : [];
-  let packagesTested: string[] = [];
-  let errors: any[] = [];
+  const packagesTested: string[] = [];
+  const errors: any[] = [];
   for (const pkg of allPackages) {
     if (!pkg.podspecName || !pkg.podspecPath || !(await pkg.hasNativeTestsAsync('ios'))) {
       if (packageNamesFilter.includes(pkg.packageName)) {

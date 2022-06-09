@@ -2,18 +2,18 @@ import ExpoModulesCore
 
 public class <%- project.name %>Module: Module {
   public func definition() -> ModuleDefinition {
-    name("<%- project.name %>")
+    Name("<%- project.name %>")
 
-    function("helloAsync") { (options: [String: String]) in
+    AsyncFunction("helloAsync") { (options: [String: String]) in
       print("Hello 👋")
     }
 
-    viewManager {
-      view {
+    ViewManager {
+      View {
         <%- project.name %>View()
       }
 
-      prop("name") { (view: <%- project.name %>View, prop: String) in
+      Prop("name") { (view: <%- project.name %>View, prop: String) in
         print(prop)
       }
     }

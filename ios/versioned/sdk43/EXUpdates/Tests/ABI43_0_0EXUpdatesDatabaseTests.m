@@ -2,6 +2,8 @@
 
 #import <XCTest/XCTest.h>
 
+#import <ABI43_0_0EXManifests/ABI43_0_0EXManifestsNewManifest.h>
+#import <ABI43_0_0EXUpdates/ABI43_0_0EXUpdatesAsset.h>
 #import <ABI43_0_0EXUpdates/ABI43_0_0EXUpdatesConfig.h>
 #import <ABI43_0_0EXUpdates/ABI43_0_0EXUpdatesDatabase+Tests.h>
 #import <ABI43_0_0EXUpdates/ABI43_0_0EXUpdatesNewUpdate.h>
@@ -41,8 +43,7 @@
     @"launchAsset": @{@"url": @"https://url.to/bundle.js", @"contentType": @"application/javascript"}
   }];
   _config = [ABI43_0_0EXUpdatesConfig configWithDictionary:@{
-    @"ABI43_0_0EXUpdatesURL": @"https://exp.host/@test/test",
-    @"ABI43_0_0EXUpdatesUsesLegacyManifest": @(NO)
+    ABI43_0_0EXUpdatesConfigUpdateUrlKey: @"https://exp.host/@test/test",
   }];
 }
 
@@ -59,11 +60,20 @@
 - (void)testForeignKeys
 {
   __block NSError *expectedError;
-  ABI43_0_0EXUpdatesUpdate *update = [ABI43_0_0EXUpdatesNewUpdate updateWithNewManifest:_manifest response:nil config:_config database:_db];
+  ABI43_0_0EXUpdatesManifestHeaders *manifestHeaders = [[ABI43_0_0EXUpdatesManifestHeaders alloc] initWithProtocolVersion:nil
+                                                                                   serverDefinedHeaders:nil
+                                                                                        manifestFilters:nil
+                                                                                      manifestSignature:nil
+                                                                                              signature:nil];
+  ABI43_0_0EXUpdatesUpdate *update = [ABI43_0_0EXUpdatesNewUpdate updateWithNewManifest:_manifest
+                                                      manifestHeaders:manifestHeaders
+                                                           extensions:@{}
+                                                               config:_config database:_db];
   dispatch_sync(_db.databaseQueue, ^{
     NSError *updatesError;
     [_db addUpdate:update error:&updatesError];
     if (updatesError) {
+      XCTFail(@"%@", updatesError.localizedDescription);
       return;
     }
 
@@ -77,20 +87,32 @@
 
 - (void)testSetMetadata_OverwriteAllFields
 {
-  NSHTTPURLResponse *response1 = [[NSHTTPURLResponse alloc] initWithURL:[NSURL URLWithString:@"https://exp.host/"] statusCode:200 HTTPVersion:@"HTTP/2" headerFields:@{
-    @"expo-manifest-filters": @"branch-name=\"rollout-1\",test=\"value\""
-  }];
-  ABI43_0_0EXUpdatesUpdate *update1 = [ABI43_0_0EXUpdatesNewUpdate updateWithNewManifest:_manifest response:response1 config:_config database:_db];
+  ABI43_0_0EXUpdatesManifestHeaders *manifestHeaders1 = [[ABI43_0_0EXUpdatesManifestHeaders alloc] initWithProtocolVersion:nil
+                                                                                   serverDefinedHeaders:nil
+                                                                                        manifestFilters:@"branch-name=\"rollout-1\",test=\"value\""
+                                                                                      manifestSignature:nil
+                                                                                               signature:nil];
+  ABI43_0_0EXUpdatesUpdate *update1 = [ABI43_0_0EXUpdatesNewUpdate updateWithNewManifest:_manifest
+                                                       manifestHeaders:manifestHeaders1
+                                                            extensions:@{}
+                                                                config:_config
+                                                              database:_db];
   __block NSError *error1;
   dispatch_sync(_db.databaseQueue, ^{
     [_db setMetadataWithManifest:update1 error:&error1];
   });
   XCTAssertNil(error1);
 
-  NSHTTPURLResponse *response2 = [[NSHTTPURLResponse alloc] initWithURL:[NSURL URLWithString:@"https://exp.host/"] statusCode:200 HTTPVersion:@"HTTP/2" headerFields:@{
-    @"expo-manifest-filters": @"branch-name=\"rollout-2\""
-  }];
-  ABI43_0_0EXUpdatesUpdate *update2 = [ABI43_0_0EXUpdatesNewUpdate updateWithNewManifest:_manifest response:response2 config:_config database:_db];
+  ABI43_0_0EXUpdatesManifestHeaders *manifestHeaders2 = [[ABI43_0_0EXUpdatesManifestHeaders alloc] initWithProtocolVersion:nil
+                                                                                   serverDefinedHeaders:nil
+                                                                                        manifestFilters:@"branch-name=\"rollout-2\""
+                                                                                      manifestSignature:nil
+                                                                                               signature:nil];
+  ABI43_0_0EXUpdatesUpdate *update2 = [ABI43_0_0EXUpdatesNewUpdate updateWithNewManifest:_manifest
+                                                       manifestHeaders:manifestHeaders2
+                                                            extensions:@{}
+                                                                config:_config
+                                                              database:_db];
   __block NSError *error2;
   dispatch_sync(_db.databaseQueue, ^{
     [_db setMetadataWithManifest:update2 error:&error2];
@@ -110,20 +132,32 @@
 
 - (void)testSetMetadata_OverwriteEmpty
 {
-  NSHTTPURLResponse *response1 = [[NSHTTPURLResponse alloc] initWithURL:[NSURL URLWithString:@"https://exp.host/"] statusCode:200 HTTPVersion:@"HTTP/2" headerFields:@{
-    @"expo-manifest-filters": @"branch-name=\"rollout-1\""
-  }];
-  ABI43_0_0EXUpdatesUpdate *update1 = [ABI43_0_0EXUpdatesNewUpdate updateWithNewManifest:_manifest response:response1 config:_config database:_db];
+  ABI43_0_0EXUpdatesManifestHeaders *manifestHeaders1 = [[ABI43_0_0EXUpdatesManifestHeaders alloc] initWithProtocolVersion:nil
+                                                                                   serverDefinedHeaders:nil
+                                                                                        manifestFilters:@"branch-name=\"rollout-1\""
+                                                                                      manifestSignature:nil
+                                                                                               signature:nil];
+  ABI43_0_0EXUpdatesUpdate *update1 = [ABI43_0_0EXUpdatesNewUpdate updateWithNewManifest:_manifest
+                                                       manifestHeaders:manifestHeaders1
+                                                            extensions:@{}
+                                                                config:_config
+                                                              database:_db];
   __block NSError *error1;
   dispatch_sync(_db.databaseQueue, ^{
     [_db setMetadataWithManifest:update1 error:&error1];
   });
   XCTAssertNil(error1);
 
-  NSHTTPURLResponse *response2 = [[NSHTTPURLResponse alloc] initWithURL:[NSURL URLWithString:@"https://exp.host/"] statusCode:200 HTTPVersion:@"HTTP/2" headerFields:@{
-    @"expo-manifest-filters": @""
-  }];
-  ABI43_0_0EXUpdatesUpdate *update2 = [ABI43_0_0EXUpdatesNewUpdate updateWithNewManifest:_manifest response:response2 config:_config database:_db];
+  ABI43_0_0EXUpdatesManifestHeaders *manifestHeaders2 = [[ABI43_0_0EXUpdatesManifestHeaders alloc] initWithProtocolVersion:nil
+                                                                                   serverDefinedHeaders:nil
+                                                                                        manifestFilters:@""
+                                                                                      manifestSignature:nil
+                                                                                               signature:nil];
+  ABI43_0_0EXUpdatesUpdate *update2 = [ABI43_0_0EXUpdatesNewUpdate updateWithNewManifest:_manifest
+                                                       manifestHeaders:manifestHeaders2
+                                                            extensions:@{}
+                                                                config:_config
+                                                              database:_db];
   __block NSError *error2;
   dispatch_sync(_db.databaseQueue, ^{
     [_db setMetadataWithManifest:update2 error:&error2];
@@ -143,18 +177,32 @@
 
 - (void)testSetMetadata_OverwriteNull
 {
-  NSHTTPURLResponse *response1 = [[NSHTTPURLResponse alloc] initWithURL:[NSURL URLWithString:@"https://exp.host/"] statusCode:200 HTTPVersion:@"HTTP/2" headerFields:@{
-    @"expo-manifest-filters": @"branch-name=\"rollout-1\""
-  }];
-  ABI43_0_0EXUpdatesUpdate *update1 = [ABI43_0_0EXUpdatesNewUpdate updateWithNewManifest:_manifest response:response1 config:_config database:_db];
+  ABI43_0_0EXUpdatesManifestHeaders *manifestHeaders1 = [[ABI43_0_0EXUpdatesManifestHeaders alloc] initWithProtocolVersion:nil
+                                                                                   serverDefinedHeaders:nil
+                                                                                        manifestFilters:@"branch-name=\"rollout-1\""
+                                                                                      manifestSignature:nil
+                                                                                               signature:nil];
+  ABI43_0_0EXUpdatesUpdate *update1 = [ABI43_0_0EXUpdatesNewUpdate updateWithNewManifest:_manifest
+                                                       manifestHeaders:manifestHeaders1
+                                                            extensions:@{}
+                                                                config:_config
+                                                              database:_db];
   __block NSError *error1;
   dispatch_sync(_db.databaseQueue, ^{
     [_db setMetadataWithManifest:update1 error:&error1];
   });
   XCTAssertNil(error1);
 
-  NSHTTPURLResponse *response2 = [[NSHTTPURLResponse alloc] initWithURL:[NSURL URLWithString:@"https://exp.host/"] statusCode:200 HTTPVersion:@"HTTP/2" headerFields:@{}];
-  ABI43_0_0EXUpdatesUpdate *update2 = [ABI43_0_0EXUpdatesNewUpdate updateWithNewManifest:_manifest response:response2 config:_config database:_db];
+  ABI43_0_0EXUpdatesManifestHeaders *manifestHeaders2 = [[ABI43_0_0EXUpdatesManifestHeaders alloc] initWithProtocolVersion:nil
+                                                                                   serverDefinedHeaders:nil
+                                                                                        manifestFilters:nil
+                                                                                      manifestSignature:nil
+                                                                                               signature:nil];
+  ABI43_0_0EXUpdatesUpdate *update2 = [ABI43_0_0EXUpdatesNewUpdate updateWithNewManifest:_manifest
+                                                       manifestHeaders:manifestHeaders2
+                                                            extensions:@{}
+                                                                config:_config
+                                                              database:_db];
   __block NSError *error2;
   dispatch_sync(_db.databaseQueue, ^{
     [_db setMetadataWithManifest:update2 error:&error2];
@@ -170,6 +218,100 @@
   XCTAssertNil(readError);
   XCTAssertNotNil(actual);
   XCTAssertEqualObjects(expected, actual);
+}
+
+- (void)testDeleteUnusedAssets_DuplicateFilenames
+{
+  ABI43_0_0EXManifestsNewManifest *manifest1 = [[ABI43_0_0EXManifestsNewManifest alloc] initWithRawManifestJSON:@{
+    @"runtimeVersion": @"1",
+    @"id": @"0eef8214-4833-4089-9dff-b4138a14f196",
+    @"createdAt": @"2020-11-11T00:17:54.797Z",
+    @"launchAsset": @{@"url": @"https://url.to/bundle1.js", @"contentType": @"application/javascript"}
+  }];
+  ABI43_0_0EXManifestsNewManifest *manifest2 = [[ABI43_0_0EXManifestsNewManifest alloc] initWithRawManifestJSON:@{
+    @"runtimeVersion": @"1",
+    @"id": @"0eef8214-4833-4089-9dff-b4138a14f197",
+    @"createdAt": @"2020-11-11T00:17:55.797Z",
+    @"launchAsset": @{@"url": @"https://url.to/bundle2.js", @"contentType": @"application/javascript"}
+  }];
+
+  ABI43_0_0EXUpdatesAsset *asset1 = [self createMockAssetWithKey:@"key1"];
+  ABI43_0_0EXUpdatesAsset *asset2 = [self createMockAssetWithKey:@"key2"];
+  ABI43_0_0EXUpdatesAsset *asset3 = [self createMockAssetWithKey:@"key3"];
+
+  // simulate two assets with different keys that share a file on disk
+  // this can happen if we, for example, change the format of asset keys that we serve
+  asset2.filename = @"same-filename.png";
+  asset3.filename = @"same-filename.png";
+
+  ABI43_0_0EXUpdatesManifestHeaders *manifestHeaders = [[ABI43_0_0EXUpdatesManifestHeaders alloc] initWithProtocolVersion:nil
+                                                                                   serverDefinedHeaders:nil
+                                                                                        manifestFilters:nil
+                                                                                      manifestSignature:nil
+                                                                                              signature:nil];
+  ABI43_0_0EXUpdatesUpdate *update1 = [ABI43_0_0EXUpdatesNewUpdate updateWithNewManifest:manifest1
+                                                       manifestHeaders:manifestHeaders
+                                                            extensions:@{}
+                                                                config:_config
+                                                              database:_db];
+  ABI43_0_0EXUpdatesUpdate *update2 = [ABI43_0_0EXUpdatesNewUpdate updateWithNewManifest:manifest2
+                                                       manifestHeaders:manifestHeaders
+                                                            extensions:@{}
+                                                                config:_config
+                                                              database:_db];
+
+  dispatch_sync(_db.databaseQueue, ^{
+    NSError *update1Error;
+    [_db addUpdate:update1 error:&update1Error];
+    NSError *update2Error;
+    [_db addUpdate:update2 error:&update2Error];
+    NSError *updateAsset1Error;
+    [_db addNewAssets:@[asset1, asset2] toUpdateWithId:update1.updateId error:&updateAsset1Error];
+    NSError *updateAsset2Error;
+    [_db addNewAssets:@[asset3] toUpdateWithId:update2.updateId error:&updateAsset2Error];
+    if (update1Error || update2Error || updateAsset1Error || updateAsset2Error) {
+      XCTFail(@"%@ %@ %@ %@", update1Error.localizedDescription, update2Error.localizedDescription, updateAsset1Error.localizedDescription, updateAsset2Error.localizedDescription);
+      return;
+    }
+
+    // simulate update1 being reaped, update2 being kept
+    NSError *deleteUpdateError;
+    [_db deleteUpdates:@[update1] error:&deleteUpdateError];
+    if (deleteUpdateError) {
+      XCTFail(@"%@", deleteUpdateError.localizedDescription);
+      return;
+    }
+
+    NSArray<ABI43_0_0EXUpdatesAsset *> *assets = [_db allAssetsWithError:nil];
+    XCTAssertEqual(3, assets.count); // two bundles and asset1 and asset2
+
+    NSError *deleteAssetsError;
+    NSArray<ABI43_0_0EXUpdatesAsset *> *deletedAssets = [_db deleteUnusedAssetsWithError:&deleteAssetsError];
+    if (deleteAssetsError) {
+      XCTFail(@"%@", deleteAssetsError.localizedDescription);
+      return;
+    }
+
+    // asset1 should have been deleted, but asset2 should have been kept
+    // since it shared a filename with asset3, which is still in use
+    XCTAssertEqual(1, deletedAssets.count);
+    for (ABI43_0_0EXUpdatesAsset *deletedAsset in deletedAssets) {
+      XCTAssertEqualObjects(@"key1", deletedAsset.key);
+    }
+
+    XCTAssertNil([_db assetWithKey:@"key1" error:nil]);
+    XCTAssertNotNil([_db assetWithKey:@"key2" error:nil]);
+    XCTAssertNotNil([_db assetWithKey:@"key3" error:nil]);
+  });
+}
+
+- (ABI43_0_0EXUpdatesAsset *)createMockAssetWithKey:(NSString *)key
+{
+  ABI43_0_0EXUpdatesAsset *asset = [[ABI43_0_0EXUpdatesAsset alloc] initWithKey:key type:@"png"];
+  asset.downloadTime = [NSDate date];
+  asset.contentHash = key;
+  asset.filename = [NSString stringWithFormat:@"%@.png", key];
+  return asset;
 }
 
 @end

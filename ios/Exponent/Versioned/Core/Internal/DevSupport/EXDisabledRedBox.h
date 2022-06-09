@@ -1,9 +1,8 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import <ReactCommon/RCTTurboModule.h>
 #import <React/RCTRedBox.h>
 
-@interface EXDisabledRedBox : RCTRedBox <RCTTurboModule>
+@interface EXDisabledRedBox : RCTRedBox
 
 - (void)showError:(NSError *)message;
 - (void)showErrorMessage:(NSString *)message;

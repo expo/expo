@@ -10,5 +10,5 @@
   "expo-module-scripts",
   "expo-module-template",
   "jest-expo",
-  "unimodules-test-core"
+  "expo-modules-test-core"
 ]

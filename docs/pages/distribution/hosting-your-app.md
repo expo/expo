@@ -2,7 +2,7 @@
 title: Hosting Updates on Your Servers
 ---
 
-import { InlineCode } from '~/components/base/code';
+import { ConfigClassic } from '~/components/plugins/ConfigSection';
 
 Normally, when updates are enabled, your app will fetch updates comprising JavaScript bundles and assets from Expo’s CDN. However, there will be situations when you will want to host your JS bundles and assets on your own servers. For example, updates are slow or unusable in countries that have blocked Expo’s CDN providers on AWS and Google Cloud. In these cases, you can host your updates on your own servers to better suit your use cases.
 
@@ -80,7 +80,7 @@ firebase deploy --only hosting:native -m "Deploy my app"`
 
 To configure your standalone binary to pull updates from your server, you’ll need to define the URL where you will host your **index.json** file. When using EAS Build, just set the [`updates.url` property in app.json](/versions/latest/config/app/#url) to point to that url.
 
-<details><summary><strong>Are you using the classic build system?</strong> (<InlineCode>expo build:[android|ios]</InlineCode>)</summary> <p>
+<ConfigClassic>
 
 With the classic build system, you need to pass the URL to your hosted `index.json` file to the `expo build` command.
 
@@ -90,8 +90,7 @@ For iOS builds, run the following commands from your terminal:
 For Android builds, run the following commands from your terminal:
 `expo build:android --public-url <path-to-android-index.json>`, where the `public-url` option will be something like https://expo.github.io/self-hosting-example/android-index.json
 
-</p>
-</details>
+</ConfigClassic>
 
 ## Loading QR Code/URL in Development
 
@@ -146,17 +145,6 @@ When Expo CLI bundles your update, minification is always enabled. In order to s
 3. In Chrome, open up **debug.html** and navigate to the `Source` tab. In the left tab there should be a resource explorer with a red folder containing the reconstructed source code from your bundle.
 
 ![Debugging Source Code](/static/images/host-your-app-debug.png)
-
-### Multimanifests
-
-As new Expo SDK versions are released, you may want to serve multiple versions of your app from your server endpoint. For example, if you first released your app with SDK 29 and later upgraded to SDK 30, you'd want users with your old standalone binary to receive the SDK 29 version, and those with the new standalone binary to receive the SDK 30 version.
-In order to do this, you can run `expo export` with some merge flags to combine previously exported updates into a single multiversion update which you can serve from your servers.
-
-Here is an example workflow:
-
-1. Release your update with previous Expo SDKs. For example, when you released SDK 29, you can run `expo export --output-dir sdk29 --public-url <your-public-url>`. This exports the current version of the update (SDK 29) to a directory named `sdk29`.
-
-2. Update your app and include previous Expo SDK versions. For example, if you've previously released SDK 28 and 29 versions of your app, you can include them when you release an SDK 30 version by running `expo export --merge-src-dir sdk29 --merge-src-dir sdk28 --public-url <your-url>`. Alternatively, you could also compress and host the directories and run `expo export --merge-src-url https://examplesite.com/sdk29.tar.gz --merge-src-url https://examplesite.com/sdk28.tar.gz --public-url <your-url>`. This creates a multiversion update in the `dist` output directory. The **asset** and **bundle** folders contain everything that the source directories had, and the **index.json** file contains an array of the individual **index.json** files found in the source directories.
 
 ### Asset Hosting
 

@@ -35,7 +35,7 @@ class DevMenuPackagerConnectionHandler {
   func sendDevCommandNotificationHandler(_ params: [String: Any]) {
     guard let manager = manager,
           let command = params["name"] as? String,
-          let bridge = manager.delegate?.appBridge?(forDevMenuManager: manager) as? RCTBridge
+          let bridge = manager.currentBridge
     else {
       return
     }

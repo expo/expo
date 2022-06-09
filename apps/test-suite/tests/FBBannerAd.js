@@ -9,7 +9,7 @@ const { BannerAd, AdSettings } = FacebookAds;
 
 try {
   AdSettings.addTestDevice(AdSettings.currentDeviceHash);
-} catch (e) {
+} catch {
   // AdSettings may not be available, shrug
 }
 

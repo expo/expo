@@ -1,0 +1,1 @@
+{"version":3,"file":"index.js","sourceRoot":"","sources":["../src/index.ts"],"names":[],"mappings":"AAAA,OAAO,SAAS,MAAM,aAAa,CAAC;AAEpC,MAAM,CAAC,MAAM,QAAQ,GAAG,SAAS,CAAC,QAAQ,CAAC","sourcesContent":["import EASClient from './EASClient';\n\nexport const clientID = EASClient.clientID;\n"]}

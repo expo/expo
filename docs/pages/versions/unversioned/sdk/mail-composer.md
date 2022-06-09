@@ -1,6 +1,6 @@
 ---
 title: MailComposer
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-mail-composer'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-mail-composer'
 packageName: 'expo-mail-composer'
 ---
 

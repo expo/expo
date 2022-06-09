@@ -9,14 +9,14 @@ export var FaceDetectorMode;
 // @docsMissing
 export var FaceDetectorLandmarks;
 (function (FaceDetectorLandmarks) {
-    FaceDetectorLandmarks[FaceDetectorLandmarks["all"] = 1] = "all";
-    FaceDetectorLandmarks[FaceDetectorLandmarks["none"] = 2] = "none";
+    FaceDetectorLandmarks[FaceDetectorLandmarks["none"] = 1] = "none";
+    FaceDetectorLandmarks[FaceDetectorLandmarks["all"] = 2] = "all";
 })(FaceDetectorLandmarks || (FaceDetectorLandmarks = {}));
 // @docsMissing
 export var FaceDetectorClassifications;
 (function (FaceDetectorClassifications) {
-    FaceDetectorClassifications[FaceDetectorClassifications["all"] = 1] = "all";
-    FaceDetectorClassifications[FaceDetectorClassifications["none"] = 2] = "none";
+    FaceDetectorClassifications[FaceDetectorClassifications["none"] = 1] = "none";
+    FaceDetectorClassifications[FaceDetectorClassifications["all"] = 2] = "all";
 })(FaceDetectorClassifications || (FaceDetectorClassifications = {}));
 // @needsAudit
 /**

@@ -28,6 +28,8 @@ public interface UIManager {
 
   void runOnClientCodeQueueThread(Runnable runnable);
 
+  void runOnNativeModulesQueueThread(Runnable runnable);
+
   void registerLifecycleEventListener(LifecycleEventListener listener);
 
   void unregisterLifecycleEventListener(LifecycleEventListener listener);

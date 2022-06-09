@@ -1,28 +1,27 @@
-#import "REANodesManager.h"
-
+#import <RNReanimated/REAAlwaysNode.h>
+#import <RNReanimated/REABezierNode.h>
+#import <RNReanimated/REABlockNode.h>
+#import <RNReanimated/REACallFuncNode.h>
+#import <RNReanimated/REAClockNodes.h>
+#import <RNReanimated/REAConcatNode.h>
+#import <RNReanimated/REACondNode.h>
+#import <RNReanimated/READebugNode.h>
+#import <RNReanimated/REAEventNode.h>
+#import <RNReanimated/REAFunctionNode.h>
+#import <RNReanimated/REAJSCallNode.h>
+#import <RNReanimated/REAModule.h>
+#import <RNReanimated/REANode.h>
+#import <RNReanimated/REANodesManager.h>
+#import <RNReanimated/REAOperatorNode.h>
+#import <RNReanimated/REAParamNode.h>
+#import <RNReanimated/REAPropsNode.h>
+#import <RNReanimated/REASetNode.h>
+#import <RNReanimated/REAStyleNode.h>
+#import <RNReanimated/REATransformNode.h>
+#import <RNReanimated/REAValueNode.h>
 #import <React/RCTConvert.h>
-
 #import <React/RCTShadowView.h>
-#import "Nodes/REAAlwaysNode.h"
-#import "Nodes/REABezierNode.h"
-#import "Nodes/REABlockNode.h"
-#import "Nodes/REACallFuncNode.h"
-#import "Nodes/REAClockNodes.h"
-#import "Nodes/REAConcatNode.h"
-#import "Nodes/REACondNode.h"
-#import "Nodes/READebugNode.h"
-#import "Nodes/REAEventNode.h"
-#import "Nodes/REAFunctionNode.h"
-#import "Nodes/REAJSCallNode.h"
-#import "Nodes/REANode.h"
-#import "Nodes/REAOperatorNode.h"
-#import "Nodes/REAParamNode.h"
-#import "Nodes/REAPropsNode.h"
-#import "Nodes/REASetNode.h"
-#import "Nodes/REAStyleNode.h"
-#import "Nodes/REATransformNode.h"
-#import "Nodes/REAValueNode.h"
-#import "REAModule.h"
+#import <stdatomic.h>
 
 // Interface below has been added in order to use private methods of RCTUIManager,
 // RCTUIManager#UpdateView is a React Method which is exported to JS but in
@@ -44,6 +43,17 @@
 
 - (void)runSyncUIUpdatesWithObserver:(id<RCTUIManagerObserver>)observer;
 
+@end
+
+@interface ComponentUpdate : NSObject
+
+@property (nonnull) NSMutableDictionary *props;
+@property (nonnull) NSNumber *viewTag;
+@property (nonnull) NSString *viewName;
+
+@end
+
+@implementation ComponentUpdate
 @end
 
 @implementation RCTUIManager (SyncUpdates)
@@ -99,6 +109,9 @@
   BOOL _tryRunBatchUpdatesSynchronously;
   REAEventHandler _eventHandler;
   volatile void (^_mounting)(void);
+  NSMutableDictionary<NSNumber *, ComponentUpdate *> *_componentUpdateBuffer;
+  volatile atomic_bool _shouldFlushUpdateBuffer;
+  NSMutableDictionary<NSNumber *, UIView *> *_viewRegistry;
 }
 
 - (instancetype)initWithModule:(REAModule *)reanimatedModule uiManager:(RCTUIManager *)uiManager
@@ -113,6 +126,9 @@
     _wantRunUpdates = NO;
     _onAnimationCallbacks = [NSMutableArray new];
     _operationsInBatch = [NSMutableArray new];
+    _componentUpdateBuffer = [NSMutableDictionary new];
+    _viewRegistry = [_uiManager valueForKey:@"_viewRegistry"];
+    _shouldFlushUpdateBuffer = false;
   }
 
   _displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(onAnimationFrame:)];
@@ -125,7 +141,7 @@
 - (void)invalidate
 {
   _eventHandler = nil;
-  [self stopUpdatingOnAnimationFrame];
+  [_displayLink invalidate];
 }
 
 - (void)operationsBatchDidComplete
@@ -486,10 +502,16 @@
   }
 }
 
-- (void)configureProps:(NSSet<NSString *> *)nativeProps uiProps:(NSSet<NSString *> *)uiProps
+- (void)configureUiProps:(nonnull NSSet<NSString *> *)uiPropsSet
+          andNativeProps:(nonnull NSSet<NSString *> *)nativePropsSet
 {
-  _uiProps = uiProps;
-  _nativeProps = nativeProps;
+  _uiProps = uiPropsSet;
+  _nativeProps = nativePropsSet;
+}
+
+- (BOOL)isNotNativeViewFullyMounted:(NSNumber *)viewTag
+{
+  return _viewRegistry[viewTag].superview == nil;
 }
 
 - (void)setValueForNodeID:(nonnull NSNumber *)nodeID value:(nonnull NSNumber *)newValue
@@ -506,6 +528,24 @@
       ofViewWithTag:(nonnull NSNumber *)viewTag
            withName:(nonnull NSString *)viewName
 {
+  ComponentUpdate *lastSnapshot = _componentUpdateBuffer[viewTag];
+  if ([self isNotNativeViewFullyMounted:viewTag] || lastSnapshot != nil) {
+    if (lastSnapshot == nil) {
+      ComponentUpdate *propsSnapshot = [ComponentUpdate new];
+      propsSnapshot.props = [props mutableCopy];
+      propsSnapshot.viewTag = viewTag;
+      propsSnapshot.viewName = viewName;
+      _componentUpdateBuffer[viewTag] = propsSnapshot;
+      atomic_store(&_shouldFlushUpdateBuffer, true);
+    } else {
+      NSMutableDictionary *lastProps = lastSnapshot.props;
+      for (NSString *key in props) {
+        [lastProps setValue:props[key] forKey:key];
+      }
+    }
+    return;
+  }
+
   // TODO: refactor PropsNode to also use this function
   NSMutableDictionary *uiProps = [NSMutableDictionary new];
   NSMutableDictionary *nativeProps = [NSMutableDictionary new];
@@ -551,6 +591,36 @@
   }
 
   return result;
+}
+
+- (void)maybeFlushUpdateBuffer
+{
+  RCTAssertUIManagerQueue();
+  bool shouldFlushUpdateBuffer = atomic_load(&_shouldFlushUpdateBuffer);
+  if (!shouldFlushUpdateBuffer) {
+    return;
+  }
+
+  __weak typeof(self) weakSelf = self;
+  [_uiManager addUIBlock:^(__unused RCTUIManager *manager, __unused NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+    __typeof__(self) strongSelf = weakSelf;
+    if (strongSelf == nil) {
+      return;
+    }
+    atomic_store(&strongSelf->_shouldFlushUpdateBuffer, false);
+    NSMutableDictionary *componentUpdateBuffer = [strongSelf->_componentUpdateBuffer copy];
+    strongSelf->_componentUpdateBuffer = [NSMutableDictionary new];
+    for (NSNumber *tag in componentUpdateBuffer) {
+      ComponentUpdate *componentUpdate = componentUpdateBuffer[tag];
+      if (componentUpdate == Nil) {
+        continue;
+      }
+      [strongSelf updateProps:componentUpdate.props
+                ofViewWithTag:componentUpdate.viewTag
+                     withName:componentUpdate.viewName];
+    }
+    [strongSelf performOperations];
+  }];
 }
 
 @end

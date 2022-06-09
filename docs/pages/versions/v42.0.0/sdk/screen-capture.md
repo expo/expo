@@ -132,7 +132,7 @@ Re-allows the user to screen record or screenshot your app. If you haven't calle
 
 ### `addScreenshotListener(listener)`
 
-Adds a listener that will fire whenever the user takes a screenshot while the app is foregrounded. On Android, this method requires the `READ_EXTERNAL_STORAGE` permission. You can request this with [MediaLibrary.requestPermissionsAsync()](../media-library.md/#medialibraryrequestpermissionsasync).
+Adds a listener that will fire whenever the user takes a screenshot while the app is foregrounded. On Android, this method requires the `READ_EXTERNAL_STORAGE` permission. You can request this with [MediaLibrary.requestPermissionsAsync()](./media-library.md#medialibraryrequestpermissionsasync).
 
 #### Arguments
 

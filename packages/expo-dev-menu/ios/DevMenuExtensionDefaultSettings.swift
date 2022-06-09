@@ -10,10 +10,6 @@ class DevMenuExtensionDefaultSettings: DevMenuExtensionSettingsProtocol {
   }
 
   func wasRunOnDevelopmentBridge() -> Bool {
-    if manager.delegate?.supportsDevelopment?() == false {
-      return false
-    }
-
     #if DEBUG
       return true
     #else

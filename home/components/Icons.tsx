@@ -3,7 +3,7 @@ import DefaultMaterialIcons from '@expo/vector-icons/build/MaterialIcons';
 import { useTheme } from '@react-navigation/native';
 import * as React from 'react';
 import { Platform } from 'react-native';
-import { Svg, Path } from 'react-native-svg';
+import { Svg, Path, SvgProps } from 'react-native-svg';
 
 import Colors from '../constants/Colors';
 
@@ -113,6 +113,40 @@ export function Store({
   return (
     <Svg width={size} fill={fill} height={size} viewBox="0 0 512 512" {...props}>
       <Path d="M325.3 234.3L104.6 13l280.8 161.2-60.1 60.1zM47 0C34 6.8 25.3 19.2 25.3 35.3v441.3c0 16.1 8.7 28.5 21.7 35.3l256.6-256L47 0zm425.2 225.6l-58.9-34.1-65.7 64.5 65.7 64.5 60.1-34.1c18-14.3 18-46.5-1.2-60.8zM104.6 499l280.8-161.2-60.1-60.1L104.6 499z" />
+    </Svg>
+  );
+}
+
+export default function DiagnosticsIcon(props: SvgProps & Props) {
+  const { size, color, width, height } = props;
+  return (
+    <Svg
+      width={size || width || 20}
+      height={size || height || 20}
+      viewBox="0 0 20 20"
+      fill="none"
+      {...props}>
+      <Path
+        d="M13.8 2.7998H15.6C16.0774 2.7998 16.5353 2.98945 16.8728 3.32701C17.2104 3.66458 17.4 4.12242 17.4 4.59981V17.1998C17.4 17.6772 17.2104 18.1351 16.8728 18.4726C16.5353 18.8102 16.0774 18.9999 15.6 18.9999H4.80001C4.32261 18.9999 3.86478 18.8102 3.52721 18.4726C3.18964 18.1351 3 17.6772 3 17.1998V4.59981C3 4.12242 3.18964 3.66458 3.52721 3.32701C3.86478 2.98945 4.32261 2.7998 4.80001 2.7998H6.60001"
+        stroke={color || '#000'}
+        strokeWidth="1.80001"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <Path
+        d="M12.8999 1H7.49986C7.0028 1 6.59985 1.40294 6.59985 1.9V3.70001C6.59985 4.19707 7.0028 4.60001 7.49986 4.60001H12.8999C13.3969 4.60001 13.7999 4.19707 13.7999 3.70001V1.9C13.7999 1.40294 13.3969 1 12.8999 1Z"
+        stroke={color || '#000'}
+        strokeWidth="1.80001"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <Path
+        d="M6 12H7.5L9 8.5L11.5 14.5L13 12H14.5"
+        stroke={color || '#000'}
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </Svg>
   );
 }

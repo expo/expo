@@ -1,3 +1,4 @@
+import { AutoFocus, CameraType, FlashMode, WhiteBalance } from '../../Camera.types';
 import { convertNativeProps } from '../props';
 
 describe(convertNativeProps, () => {
@@ -7,10 +8,10 @@ describe(convertNativeProps, () => {
   it(`converts known properties to native props`, () => {
     expect(
       convertNativeProps({
-        type: 'front',
-        flashMode: 'torch',
-        autoFocus: 'auto',
-        whiteBalance: 'continuous',
+        type: CameraType.front,
+        flashMode: FlashMode.torch,
+        autoFocus: AutoFocus.auto,
+        whiteBalance: WhiteBalance.continuous,
       })
     ).toStrictEqual({
       autoFocus: 'auto',

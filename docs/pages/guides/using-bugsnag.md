@@ -81,5 +81,5 @@ Type definitions provided and will be picked up automatically by the TypeScript 
 
 - Read the [full integration guide](https://docs.bugsnag.com/platforms/react-native/expo/)
 - View [`@bugsnag/js`](https://github.com/bugsnag/bugsnag-js), the library powering Bugsnag’s JavaScript error reporting, on GitHub
-- Explore [the example project](https://github.com/bugsnag/bugsnag-js/tree/master/examples/expo)
+- Explore [the example project](https://github.com/bugsnag/bugsnag-js/tree/next/examples/js/expo)
 - Get [support](https://docs.bugsnag.com/#support) for your questions and feature requests

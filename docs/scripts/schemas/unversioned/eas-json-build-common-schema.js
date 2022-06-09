@@ -19,14 +19,21 @@ export default [
     name: 'releaseChannel',
     type: 'string',
     description: [
-      'Name of the release channel for the `expo-updates` package ([Learn more about this](../../distribution/release-channels)). If you do not specify a channel, your binary will pull releases from the `default` channel. If you do not use `expo-updates` in your project then this property will have no effect.',
+      'Name of the release channel for the `expo-updates` package ([Learn more about this](../../distribution/release-channels)). If you do not specify a channel, your binary will pull releases from the `default` channel. If you do not use `expo-updates` in your project then this property will have no effect. **This field only applies to the Classic Update service**; if you use EAS Update, use the [channel](#channel) field instead.',
+    ]
+  },
+  {
+    name: 'channel',
+    type: 'string',
+    description: [
+      'The channel is a name we can give to multiple builds to identify them easily. [Learn more](../../eas-update/how-eas-update-works). **This field only applies to the EAS Update service**, if your project still uses Classic Updates then use the [releaseChannel](#releasechannel) field instead.',
     ]
   },
   {
     name: 'distribution',
     enum: [ 'store', 'internal' ],
     description: [ 'The method of distributing your app.',
-      '- `internal` - with this option you\'ll be able to share your build URLs with anyone, and they will be able to install the builds to their devices straight from the Expo website. When using `internal`, make sure the build produces an APK or IPA file. Otherwise, the sharable URL will be useless. [Learn more about internal distribution](../internal-distribution).',
+      '- `internal` - with this option you\'ll be able to share your build URLs with anyone, and they will be able to install the builds to their devices straight from the Expo website. When using `internal`, make sure the build produces an APK or IPA file. Otherwise, the sharable URL will be useless. [Learn more about internal distribution](../../build/internal-distribution).',
       ' - `store` - produces builds for store uploads, your build URLs won\'t be sharable.'
     ]
   },
@@ -38,6 +45,16 @@ export default [
       'For the build to be successful, the project must have expo-dev-client installed and configured.',
       'Note: this field is sugar for setting the iOS `buildConfiguration` to `Debug` and Android `gradleCommand` to `:app:assembleDebug`. Those fields, if provided for the same build profile, will take precedence.',
       '[Learn more about custom development clients](../../clients/introduction).',
+    ],
+  },
+  {
+    name: 'prebuildCommand',
+    type: 'string',
+    description: [
+      'Optional override of the prebuild command used by EAS.',
+      'For example, you can specify `prebuild --template example-template` to use a custom template.',
+      'Note: `--platform` and `--non-interactive` will be added automatically by the build engine, so you do not need to specify them manually.',
+      '[Learn more about prebuild options](../../workflow/expo-cli/#expo-prebuild).'
     ],
   },
   {

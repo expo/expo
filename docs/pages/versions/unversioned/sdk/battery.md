@@ -1,6 +1,6 @@
 ---
 title: Battery
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-battery'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-battery'
 packageName: 'expo-battery'
 ---
 

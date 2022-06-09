@@ -1,12 +1,12 @@
 import { css } from '@emotion/react';
-import { theme } from '@expo/styleguide';
+import { theme, typography } from '@expo/styleguide';
 import NextLink from 'next/link';
+import { NextRouter } from 'next/router';
 import * as React from 'react';
 
 import stripVersionFromPath from '~/common/stripVersionFromPath';
 import { paragraph } from '~/components/base/typography';
-import * as Constants from '~/constants/theme';
-import { NavigationRoute, Url } from '~/types/common';
+import { NavigationRoute } from '~/types/common';
 
 const STYLES_LINK = css`
   display: block;
@@ -17,7 +17,7 @@ const STYLES_ACTIVE = css`
   ${paragraph}
   font-size: 15px;
   line-height: 140%;
-  font-family: ${Constants.fontFamilies.demi};
+  font-family: ${typography.fontFaces.medium};
   color: ${theme.link.default};
   position: relative;
   left: -7px;
@@ -65,9 +65,8 @@ const STYLES_ACTIVE_BULLET = css`
 `;
 
 type Props = {
-  url: Url;
+  router: NextRouter;
   info: NavigationRoute;
-  asPath: string;
 };
 
 export default class DocumentationSidebarLink extends React.Component<Props> {
@@ -77,14 +76,14 @@ export default class DocumentationSidebarLink extends React.Component<Props> {
   }
 
   isSelected() {
-    if (!this.props.url) {
-      console.log('[debug] isSelected bailed out, no url', this.props);
+    if (!this.props.router) {
+      console.log('[debug] isSelected bailed out, no router', this.props);
       return false;
     }
 
     // Special case for root url
     if (this.props.info.name === 'Introduction') {
-      const { asPath } = this.props;
+      const { asPath } = this.props.router;
       if (asPath.match(/\/versions\/[\w.]+\/$/) || asPath === '/versions/latest/') {
         return true;
       }
@@ -92,8 +91,8 @@ export default class DocumentationSidebarLink extends React.Component<Props> {
 
     const linkUrl = stripVersionFromPath(this.props.info.as || this.props.info.href);
     if (
-      linkUrl === stripVersionFromPath(this.props.url.pathname) ||
-      linkUrl === stripVersionFromPath(this.props.asPath)
+      linkUrl === stripVersionFromPath(this.props.router.pathname) ||
+      linkUrl === stripVersionFromPath(this.props.router.asPath)
     ) {
       return true;
     }

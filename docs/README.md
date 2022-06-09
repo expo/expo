@@ -39,7 +39,7 @@ yarn run export-server
 
 You can find the content source of the documentation inside the `pages/` directory. Documentation is mostly written in markdown with the help of some React components (for Snack embeds, etc). Our API documentation can all be found under `pages/versions/`; we keep separate versions of the documentation for each SDK version currently supported in Expo Go, see ["A note about versioning"](#a-note-about-versioning) for more info. The routes and navbar are automatically inferred from the directory structure within `versions`.
 
-> Note: We are currently in the process of moving our API documenation to being auto-generated using `expotools`'s `GenerateDocsAPIData` command.
+> Note: We are currently in the process of moving our API documentation to being auto-generated using `expotools`'s `GenerateDocsAPIData` command.
 
 Each markdown page can be provided metadata in the heading, distinguished by:
 
@@ -133,7 +133,7 @@ so don't worry if you have code changes or such elsewhere.
 
 ## Deployment
 
-The docs are deployed automatically via a GitHub Action each time a PR with docs changes is merged to `master`. 
+The docs are deployed automatically via a GitHub Action each time a PR with docs changes is merged to `main`.
 
 ## How-tos
 
@@ -173,7 +173,7 @@ You can import the React Native docs in an automated way into these docs.
 This will write all the relevant RN doc stuff into the unversioned version directory.
 You may need to tweak the script as the source docs change; the script hackily translates between the different forms of markdown that have different quirks.
 
-The React Native docs are actually versioned but we currently read off of master.
+The React Native docs are actually versioned but we currently read off of main.
 
 ### Adding Images and Assets
 
@@ -276,5 +276,5 @@ If you have a codeblock using `/* @info */` highlighting, use `<!-- prettier-ign
 ## TODOs:
 
 - Handle image sizing in imports better
-- Read from the appropriate version (configurable) of the React Native docs, not just master
+- Read from the appropriate version (configurable) of the React Native docs, not just main
 - Make Snack embeds work; these are marked in some of the React Native docs but they are just imported as plain JS code blocks

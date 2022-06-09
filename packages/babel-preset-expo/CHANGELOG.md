@@ -10,6 +10,14 @@
 
 ### 💡 Others
 
+- Preserve `import/export` syntax on Webpack only. ([#17713](https://github.com/expo/expo/pull/17713) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 9.1.0 — 2022-04-18
+
+### 📚 3rd party library updates
+
+- Upgrade to react-native 0.66. ([#15914](https://github.com/expo/expo/pull/15914) by [@kudo](https://github.com/kudo))
+
 ## 9.0.2 — 2021-12-15
 
 ### 🐛 Bug fixes

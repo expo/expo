@@ -210,7 +210,9 @@ static NSString * const EXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoader
             [self->_selectionPolicy shouldLoadNewUpdate:[EXUpdatesEmbeddedAppLoader embeddedManifestWithConfig:self->_config database:self->_database]
                                      withLaunchedUpdate:launchableUpdate
                                                 filters:manifestFilters]) {
-          self->_embeddedAppLoader = [[EXUpdatesEmbeddedAppLoader alloc] initWithConfig:self->_config database:self->_database directory:self->_directory completionQueue:self->_loaderTaskQueue];
+          // launchedUpdate is nil because we don't yet have one, and it doesn't matter as we won't
+          // be sending an HTTP request from EXUpdatesEmbeddedAppLoader
+          self->_embeddedAppLoader = [[EXUpdatesEmbeddedAppLoader alloc] initWithConfig:self->_config database:self->_database directory:self->_directory launchedUpdate:nil completionQueue:self->_loaderTaskQueue];
           [self->_embeddedAppLoader loadUpdateFromEmbeddedManifestWithCallback:^BOOL(EXUpdatesUpdate * _Nonnull update) {
             // we already checked using selection policy, so we don't need to check again
             return YES;
@@ -238,7 +240,7 @@ static NSString * const EXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoader
 
 - (void)_loadRemoteUpdateWithCompletion:(void (^)(NSError * _Nullable error, EXUpdatesUpdate * _Nullable update))completion
 {
-  _remoteAppLoader = [[EXUpdatesRemoteAppLoader alloc] initWithConfig:_config database:_database directory:_directory completionQueue:_loaderTaskQueue];
+  _remoteAppLoader = [[EXUpdatesRemoteAppLoader alloc] initWithConfig:_config database:_database directory:_directory launchedUpdate:_candidateLauncher.launchedUpdate completionQueue:_loaderTaskQueue];
   [_remoteAppLoader loadUpdateFromUrl:_config.updateUrl onManifest:^BOOL(EXUpdatesUpdate * _Nonnull update) {
     if ([self->_selectionPolicy shouldLoadNewUpdate:update withLaunchedUpdate:self->_candidateLauncher.launchedUpdate filters:update.manifestFilters]) {
       self->_isUpToDate = NO;

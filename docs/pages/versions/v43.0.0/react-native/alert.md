@@ -205,7 +205,7 @@ An iOS Alert type.
 
 ### Buttons
 
-Array of objects containg Alert buttons configuration.
+Array of objects containing Alert buttons configuration.
 
 | Type             |
 | ---------------- |

@@ -11,7 +11,7 @@ In this guide, an **update** refers to a single, atomic update, which may consis
 
 If possible, we highly recommend starting with a boilerplate project that has the `expo-updates` library already installed. Running `expo init` and choosing either of the bare workflow templates will give you such a template.
 
-To install the `expo-updates` module in an existing bare workflow app, follow the [installation instructions in the package README](https://github.com/expo/expo/blob/master/packages/expo-updates/README.md#installation).
+To install the `expo-updates` module in an existing bare workflow app, follow the [installation instructions in the package README](https://github.com/expo/expo/tree/main/packages/expo-updates/README.md#installation).
 
 Additionally, you'll need to host your updates and their respective assets (JavaScript bundles, images, fonts, etc.) on a server somewhere that deployed client apps can access. `expo-cli` provides a couple of easy options for this: (1) `expo export` creates prebuilt update packages that you can upload to any static hosting site (e.g. GitHub Pages), and (2) `expo publish` packages and deploys your updates to Expo's updates service, which is part of the services we offer.
 
@@ -55,7 +55,7 @@ Say you have an existing build, build A, of your app running in production. Buil
 
 However, if build A of your app fetches JavaScript version 2 as an update and tries to run it, it will error on the `MediaLibrary.getAlbumsAsync()` method call because the `MediaLibrary` native module is not present in build A. If your JavaScript doesn't catch this error, it will propagate and your app will crash, rendering JavaScript version 2 unusable on build A of your app.
 
-We need some way, therefore, of preventing JavaScript version 2 from being deployed to build A -- or, in general, controlling which updates str deployed to specific builds of your app. `expo-updates` provides two ways to control this: Runtime Version and Release Channels.
+We need some way, therefore, of preventing JavaScript version 2 from being deployed to build A - or, in general, controlling which updates are deployed to specific builds of your app. `expo-updates` provides two ways to control this: Runtime Version and Release Channels.
 
 ### Runtime Version
 
@@ -67,7 +67,7 @@ The Runtime Version expected by a given update must also be provided as a field 
 
 ### Release Channels
 
-Because the current implementation of the Expo updates service relies heavily on SDK version (a managed-workflow concept), if you're using `expo publish` you cannot yet use Runtime Version to manage compatibility of your updates and binaries. Instead, you can use [release channels](../distribution/release-channels.md). A typical workflow would be to create a new release channel for each new binary you build (or at least every new binary with an incompatible change in the native-JavaScript interface) by publishing to that new channel with `expo publish --release-channel <channel-name>`. After creating a build with this release channel name configured, you can continue to publish future updates to this same release channel as long as they remain compatible with that build. Only builds that were configured to use that release channel will receive those updates.
+Because the current implementation of the Expo updates service relies heavily on SDK version (a managed-workflow concept), if you're using `expo publish` you cannot yet use Runtime Version to manage compatibility of your updates and binaries. Instead, you can use [release channels](../distribution/release-channels.md). A typical workflow would be to create a new release channel for each new binary you build (or at least every new binary with an incompatible change in the native-JavaScript interface) by publishing to that new release channel with `expo publish --release-channel <channel-name>`. After creating a build with this release channel name configured, you can continue to publish future updates to this same release channel as long as they remain compatible with that build. Only builds that were configured to use that release channel will receive those updates.
 
 ### Statically Hosted Updates
 
@@ -77,7 +77,7 @@ Since headers sent in requests by `expo-updates` do not affect statically hosted
 
 In addition to loading updates from remote servers, apps with `expo-updates` installed also include the necessary capability to load updates embedded in the app binary. This is critical to ensure that your app can launch offline for all users immediately upon installation, without needing an internet connection.
 
-When you make a release build of your app, the build process will bundle your JavaScript source code into a minifed bundle and embed this in the binary, along with any other assets your app imports (with `require` or `import` or used in **app.json**). `expo-updates` includes an extra script on each platform to embed some additional metadata about the embedded assets -- namely, a minimal manifest JSON object for the update.
+When you make a release build of your app, the build process will bundle your JavaScript source code into a minified bundle and embed this in the binary, along with any other assets your app imports (with `require` or `import` or used in **app.json**). `expo-updates` includes an extra script on each platform to embed some additional metadata about the embedded assets -- namely, a minimal manifest JSON object for the update.
 
 ## Including Assets in Updates
 

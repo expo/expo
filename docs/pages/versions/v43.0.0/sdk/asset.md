@@ -79,7 +79,7 @@ The MD5 hash of the asset's data
 
 - `uri`
 
-A URI that points to the asset's data on the remote server. When running the published version of your app, this refers to the the location on Expo's asset server where Expo has stored your asset. When running the app from Expo CLI during development, this URI points to Expo CLI's server running on your computer and the asset is served directly from your computer.
+A URI that points to the asset's data on the remote server. When running the published version of your app, this refers to the location on Expo's asset server where Expo has stored your asset. When running the app from Expo CLI during development, this URI points to Expo CLI's server running on your computer and the asset is served directly from your computer.
 
 - `localUri`
 

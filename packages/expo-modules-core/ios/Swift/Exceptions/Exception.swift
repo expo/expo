@@ -1,9 +1,7 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
 open class Exception: CodedError, ChainableException, CustomStringConvertible, CustomDebugStringConvertible {
-  open var name: String {
-    return String(describing: Self.self)
-  }
+  open lazy var name: String = String(describing: Self.self)
 
   /**
    String describing the reason of the exception.
@@ -25,15 +23,19 @@ open class Exception: CodedError, ChainableException, CustomStringConvertible, C
     self.origin = ExceptionOrigin(file: file, line: line, function: function)
   }
 
+  public init(name: String, description: String, file: String = #fileID, line: UInt = #line, function: String = #function) {
+    self.origin = ExceptionOrigin(file: file, line: line, function: function)
+    self.name = name
+    self.description = description
+  }
+
   // MARK: ChainableException
 
   open var cause: Error?
 
   // MARK: CustomStringConvertible
 
-  open var description: String {
-    return concatDescription(reason, withCause: cause, debug: false)
-  }
+  open lazy var description: String = concatDescription(reason, withCause: cause, debug: false)
 
   // MARK: CustomDebugStringConvertible
 

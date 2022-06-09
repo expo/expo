@@ -1,13 +1,13 @@
 /**
- * Access token type
+ * Access token type.
  *
- * [Section 7.1](https://tools.ietf.org/html/rfc6749#section-7.1)
+ * @see [Section 7.1](https://tools.ietf.org/html/rfc6749#section-7.1)
  */
 export declare type TokenType = 'bearer' | 'mac';
 /**
- * A hint about the type of the token submitted for revocation.
+ * A hint about the type of the token submitted for revocation. If not included then the server should attempt to deduce the token type.
  *
- * [Section 2.1](https://tools.ietf.org/html/rfc7009#section-2.1)
+ * @see [Section 2.1](https://tools.ietf.org/html/rfc7009#section-2.1)
  */
 export declare enum TokenTypeHint {
     /**
@@ -58,7 +58,7 @@ export interface TokenRequestConfig {
 /**
  * Config used to exchange an authorization code for an access token.
  *
- * [Section 4.1.3](https://tools.ietf.org/html/rfc6749#section-4.1.3)
+ * @see [Section 4.1.3](https://tools.ietf.org/html/rfc6749#section-4.1.3)
  */
 export interface AccessTokenRequestConfig extends TokenRequestConfig {
     /**
@@ -75,7 +75,7 @@ export interface AccessTokenRequestConfig extends TokenRequestConfig {
 /**
  * Config used to request a token refresh, or code exchange.
  *
- * [Section 6](https://tools.ietf.org/html/rfc6749#section-6)
+ * @see [Section 6](https://tools.ietf.org/html/rfc6749#section-6)
  */
 export interface RefreshTokenRequestConfig extends TokenRequestConfig {
     /**
@@ -86,22 +86,26 @@ export interface RefreshTokenRequestConfig extends TokenRequestConfig {
 /**
  * Config used to revoke a token.
  *
- * [Section 2.1](https://tools.ietf.org/html/rfc7009#section-2.1)
+ * @see [Section 2.1](https://tools.ietf.org/html/rfc7009#section-2.1)
  */
 export interface RevokeTokenRequestConfig extends Partial<TokenRequestConfig> {
     /**
      * The token that the client wants to get revoked.
+     *
+     * [Section 3.1](https://tools.ietf.org/html/rfc6749#section-3.1)
      */
     token: string;
     /**
      * A hint about the type of the token submitted for revocation.
+     *
+     * [Section 3.2](https://tools.ietf.org/html/rfc6749#section-3.2)
      */
     tokenTypeHint?: TokenTypeHint;
 }
 /**
  * Grant type values used in dynamic client registration and auth requests.
  *
- * [Appendix A.10](https://tools.ietf.org/html/rfc6749#appendix-A.10)
+ * @see [Appendix A.10](https://tools.ietf.org/html/rfc6749#appendix-A.10)
  */
 export declare enum GrantType {
     /**

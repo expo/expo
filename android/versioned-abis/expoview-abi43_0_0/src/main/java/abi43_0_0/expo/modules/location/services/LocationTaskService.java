@@ -12,6 +12,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Binder;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import androidx.annotation.Nullable;
@@ -101,7 +102,9 @@ public class LocationTaskService extends Service {
 
     if (intent != null) {
       intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-      PendingIntent contentIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+      // We're defaulting to the behaviour prior API 31 (mutable) even though Android recommends immutability
+      int mutableFlag = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S ? PendingIntent.FLAG_MUTABLE : 0;
+      PendingIntent contentIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT | mutableFlag);
       builder.setContentIntent(contentIntent);
     }
 

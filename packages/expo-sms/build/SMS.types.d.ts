@@ -10,7 +10,7 @@ export declare type SMSResponse = {
 export declare type SMSAttachment = {
     /**
      * The content URI of the attachment. The URI needs be a content URI so that it can be accessed by
-     * other applications outside of Expo. (See [FileSystem.getContentUriAsync](../filesystem/#filesystemgetcontenturiasyncfileuri))
+     * other applications outside of Expo. See [FileSystem.getContentUriAsync](./filesystem/#filesystemgetcontenturiasyncfileuri)).
      */
     uri: string;
     /**

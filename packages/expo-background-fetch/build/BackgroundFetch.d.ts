@@ -30,7 +30,7 @@ export declare function setMinimumIntervalAsync(minimumInterval: number): Promis
  * TaskManager.defineTask(YOUR_TASK_NAME, () => {
  *   try {
  *     const receivedNewData = // do your background fetch here
- *     return receivedNewData ? BackgroundFetch.Result.NewData : BackgroundFetch.Result.NoData;
+ *     return receivedNewData ? BackgroundFetch.BackgroundFetchResult.NewData : BackgroundFetch.BackgroundFetchResult.NoData;
  *   } catch (error) {
  *     return BackgroundFetch.Result.Failed;
  *   }

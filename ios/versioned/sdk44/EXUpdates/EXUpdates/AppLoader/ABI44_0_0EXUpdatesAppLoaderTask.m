@@ -210,7 +210,9 @@ static NSString * const ABI44_0_0EXUpdatesAppLoaderTaskErrorDomain = @"ABI44_0_0
             [self->_selectionPolicy shouldLoadNewUpdate:[ABI44_0_0EXUpdatesEmbeddedAppLoader embeddedManifestWithConfig:self->_config database:self->_database]
                                      withLaunchedUpdate:launchableUpdate
                                                 filters:manifestFilters]) {
-          self->_embeddedAppLoader = [[ABI44_0_0EXUpdatesEmbeddedAppLoader alloc] initWithConfig:self->_config database:self->_database directory:self->_directory completionQueue:self->_loaderTaskQueue];
+          // launchedUpdate is nil because we don't yet have one, and it doesn't matter as we won't
+          // be sending an HTTP request from ABI44_0_0EXUpdatesEmbeddedAppLoader
+          self->_embeddedAppLoader = [[ABI44_0_0EXUpdatesEmbeddedAppLoader alloc] initWithConfig:self->_config database:self->_database directory:self->_directory launchedUpdate:nil completionQueue:self->_loaderTaskQueue];
           [self->_embeddedAppLoader loadUpdateFromEmbeddedManifestWithCallback:^BOOL(ABI44_0_0EXUpdatesUpdate * _Nonnull update) {
             // we already checked using selection policy, so we don't need to check again
             return YES;
@@ -238,7 +240,7 @@ static NSString * const ABI44_0_0EXUpdatesAppLoaderTaskErrorDomain = @"ABI44_0_0
 
 - (void)_loadRemoteUpdateWithCompletion:(void (^)(NSError * _Nullable error, ABI44_0_0EXUpdatesUpdate * _Nullable update))completion
 {
-  _remoteAppLoader = [[ABI44_0_0EXUpdatesRemoteAppLoader alloc] initWithConfig:_config database:_database directory:_directory completionQueue:_loaderTaskQueue];
+  _remoteAppLoader = [[ABI44_0_0EXUpdatesRemoteAppLoader alloc] initWithConfig:_config database:_database directory:_directory launchedUpdate:_candidateLauncher.launchedUpdate completionQueue:_loaderTaskQueue];
   [_remoteAppLoader loadUpdateFromUrl:_config.updateUrl onManifest:^BOOL(ABI44_0_0EXUpdatesUpdate * _Nonnull update) {
     if ([self->_selectionPolicy shouldLoadNewUpdate:update withLaunchedUpdate:self->_candidateLauncher.launchedUpdate filters:update.manifestFilters]) {
       self->_isUpToDate = NO;
