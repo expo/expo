@@ -76,7 +76,7 @@ Now make some changes to your project code and see them reflected on your device
 
 If you launch your development build from your device's Home Screen, you will see your launcher screen, which looks like this:
 
-<ImageSpotlight alt="The launcher screen of a development build" src="/static/images/dev-client-launcher.png" style={{ maxWidth: 600}} />
+<ImageSpotlight alt="The launcher screen of a development build" src="/static/images/dev-client/launcher-screen.png" style={{ maxWidth: 600}} />
 
 If a bundler is detected on your local network, or if you've signed in to an Expo account in both `expo-cli` and your development build, you can connect to it directly from this screen. Otherwise you can connect by scanning the QR code displayed by Expo CLI.
 
