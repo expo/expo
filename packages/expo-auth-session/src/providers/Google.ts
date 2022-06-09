@@ -102,7 +102,7 @@ export interface GoogleAuthRequestConfig extends ProviderAuthRequestConfig {
    *   - Run `expo credentials:manager -p android` then select "Update upload Keystore" -> "Generate new keystore" -> "Go back to experience overview"
    *   - Copy your "Google Certificate Fingerprint", it will output a string that looks like `A1:B2:C3` but longer.
    * - To test this you can:
-   *   1. Eject to bare: `expo prebuild` and run `yarn ios`
+   *   1. Prebuild to generate the native files: `expo prebuild` and run `yarn ios`
    *   2. Build a production IPA: `expo build:android`
    */
   androidClientId?: string;

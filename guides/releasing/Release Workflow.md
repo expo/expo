@@ -469,7 +469,7 @@ Once everything above is completed and Apple has approved Expo Go (iOS) for the 
 
 ## 5.3. Add related packages to versions endpoint
 
-**Why:** These package versions are used by `expo-cli` in the `prebuild` command to ensure that the proper versions of packages are installed in developers' projects.
+**Why:** These package versions are used by `expo-cli` in the `install` command to ensure that the proper versions of packages are installed in developers' projects.
 
 **How:**
 
