@@ -20,6 +20,9 @@ static NSString * const onDevicePushTokenEventName = @"onDevicePushToken";
 @property (nonatomic, strong) EXPromiseResolveBlock getDevicePushTokenResolver;
 @property (nonatomic, strong) EXPromiseRejectBlock getDevicePushTokenRejecter;
 
+@property (nonatomic, strong) EXPromiseResolveBlock unregisterForNotificationsResolver;
+@property (nonatomic, strong) EXPromiseRejectBlock unregisterForNotificationsRejecter;
+
 @end
 
 @implementation EXPushTokenModule
@@ -43,6 +46,13 @@ EX_EXPORT_METHOD_AS(getDevicePushTokenAsync,
   dispatch_async(dispatch_get_main_queue(), ^{
     [[UIApplication sharedApplication] registerForRemoteNotifications];
   });
+}
+
+EX_EXPORT_METHOD_AS(unregisterForNotificationsAsync,
+        resolve:(EXPromiseResolveBlock)resolve reject:(EXPromiseRejectBlock)reject)
+{
+  [[UIApplication sharedApplication] unregisterForRemoteNotifications];
+  resolve(nil);
 }
 
 # pragma mark - EXModuleRegistryConsumer
