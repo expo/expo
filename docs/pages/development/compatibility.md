@@ -10,12 +10,12 @@ You do not need to use any of these packages in your project in order to use `ex
 
 This table lists the highest minor version of `expo-dev-client` that is supported by each Expo SDK version.
 
-| Expo SDK | expo-dev-client    |
-| -------- | ------------------ |
-| SDK 45   | `0.9.X` - `0.10.X` |
-| SDK 44   | `0.8.X`            |
-| SDK 43   | `0.8.X`            |
-| SDK 42   | `0.7.X`            |
+| Expo SDK | expo-dev-client   |
+| -------- | ----------------- |
+| SDK 45   | `0.9.X` - `1.0.X` |
+| SDK 44   | `0.8.X`           |
+| SDK 43   | `0.8.X`           |
+| SDK 42   | `0.7.X`           |
 
 ## react-native
 
