@@ -338,7 +338,10 @@ export default (program: Command) => {
     .option('--rnVersion <string>', 'Version of react-native to include')
     .option('-o, --outDir <string>', 'Specifies the directory to build the project in')
     .option('-t, --template <string>', 'Specify the expo template to use as the project starter')
-    .option('--localTemplate', 'Copy the localTemplate expo-template-bare-minimum from the expo repo')
+    .option(
+      '--localTemplate',
+      'Copy the localTemplate expo-template-bare-minimum from the expo repo'
+    )
     .description(`Generates a bare app with the specified packages symlinked`)
     .asyncAction(action);
 };
