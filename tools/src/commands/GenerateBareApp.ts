@@ -10,6 +10,7 @@ export type GenerateBareAppOptions = {
   name?: string;
   template?: string;
   clean?: boolean;
+  localTemplate?: boolean;
   outDir?: string;
   rnVersion?: string;
 };
@@ -20,6 +21,7 @@ export async function action(
     name: appName = 'my-generated-bare-app',
     outDir = 'bare-apps',
     template = 'expo-template-bare-minimum',
+    localTemplate = false,
     clean = false,
     rnVersion,
   }: GenerateBareAppOptions
@@ -32,8 +34,10 @@ export async function action(
 
   const packagesToSymlink = await getPackagesToSymlink({ packageNames, workspaceDir });
 
-  await createProjectDirectory({ clean, projectDir, workspaceDir, appName, template });
+  await cleanIfNeeded({ clean, projectDir, workspaceDir });
+  await createProjectDirectory({ workspaceDir, appName, template, localTemplate });
   await modifyPackageJson({ packagesToSymlink, projectDir });
+  await modifyAppJson({ projectDir, appName });
   await yarnInstall({ projectDir });
   await symlinkPackages({ packagesToSymlink, projectDir });
   await runExpoPrebuild({ projectDir });
@@ -43,6 +47,7 @@ export async function action(
 
   // reestablish symlinks - some might be wiped out from prebuild
   await symlinkPackages({ projectDir, packagesToSymlink });
+  await stageAndCommitInitialChanges({ projectDir });
 
   console.log(`Project created in ${projectDir}!`);
 }
@@ -60,19 +65,7 @@ export function getDirectories({
   };
 }
 
-async function createProjectDirectory({
-  clean,
-  workspaceDir,
-  projectDir,
-  appName,
-  template,
-}: {
-  clean: boolean;
-  workspaceDir: string;
-  projectDir: string;
-  appName: string;
-  template: string;
-}) {
+async function cleanIfNeeded({ workspaceDir, projectDir, clean }) {
   console.log('Creating project');
 
   if (!fs.existsSync(workspaceDir)) {
@@ -81,6 +74,24 @@ async function createProjectDirectory({
 
   if (clean) {
     await fs.remove(projectDir);
+  }
+}
+
+async function createProjectDirectory({
+  workspaceDir,
+  appName,
+  template,
+  localTemplate,
+}: {
+  workspaceDir: string;
+  appName: string;
+  template: string;
+  localTemplate: boolean;
+}) {
+  if (localTemplate) {
+    const pathToBareTemplate = path.resolve(EXPO_DIR, 'templates', 'expo-template-bare-minimum');
+    const pathToWorkspace = path.resolve(workspaceDir, appName);
+    return fs.copy(pathToBareTemplate, pathToWorkspace, { recursive: true });
   }
 
   return await runExpoCliAsync('init', [appName, '--no-install', '--template', template], {
@@ -291,6 +302,33 @@ async function createScripts({ projectDir }) {
   console.log('Added package scripts!');
 }
 
+async function stageAndCommitInitialChanges({ projectDir }) {
+  await spawnAsync('git', ['init'], { cwd: projectDir });
+  await spawnAsync('git', ['add', '.'], { cwd: projectDir });
+  await spawnAsync('git', ['commit', '-m', 'Initialized bare app!'], { cwd: projectDir });
+}
+
+async function modifyAppJson({ projectDir, appName }: { projectDir: string; appName: string }) {
+  const pathToAppJson = path.resolve(projectDir, 'app.json');
+  const json = await fs.readJson(pathToAppJson);
+
+  const strippedAppName = removeCharRecursive(appName, '-');
+  json.expo.android = { package: `com.${strippedAppName}` };
+  json.expo.ios = { bundleIdentifier: `com.${strippedAppName}` };
+
+  await fs.writeJSON(pathToAppJson, json, { spaces: 2 });
+}
+
+function removeCharRecursive(str: string, charToReplace: string) {
+  let copy = str;
+
+  while (copy.includes(charToReplace)) {
+    copy = copy.replace(charToReplace, '');
+  }
+
+  return copy;
+}
+
 export default (program: Command) => {
   program
     .command('generate-bare-app [packageNames...]')
@@ -300,6 +338,7 @@ export default (program: Command) => {
     .option('--rnVersion <string>', 'Version of react-native to include')
     .option('-o, --outDir <string>', 'Specifies the directory to build the project in')
     .option('-t, --template <string>', 'Specify the expo template to use as the project starter')
+    .option('--localTemplate', 'Copy the localTemplate expo-template-bare-minimum from the expo repo')
     .description(`Generates a bare app with the specified packages symlinked`)
     .asyncAction(action);
 };
