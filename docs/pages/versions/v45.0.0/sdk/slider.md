@@ -1,7 +1,7 @@
 ---
 title: Slider
-sourceCodeUrl: 'https://github.com/react-native-community/react-native-slider'
-packageName: 'react-native-slider'
+sourceCodeUrl: 'https://github.com/callstack/react-native-slider'
+packageName: '@react-native-community/slider'
 ---
 
 import {APIInstallSection} from '~/components/plugins/InstallSection';
@@ -16,8 +16,8 @@ A component that provides access to the system UI for a slider control, that all
 
 ## Installation
 
-<APIInstallSection href="https://github.com/react-native-community/react-native-slider#getting-started" />
+<APIInstallSection href="https://github.com/callstack/react-native-slider#installation--usage" />
 
 ## Usage
 
-See full documentation at [react-native-community/react-native-slider](https://github.com/react-native-community/react-native-slider).
+See full documentation at [callstack/react-native-slider](https://github.com/callstack/react-native-slider).
