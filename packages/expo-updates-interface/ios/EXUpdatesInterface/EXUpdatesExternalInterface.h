@@ -32,6 +32,12 @@ typedef BOOL (^EXUpdatesManifestBlock) (NSDictionary *manifest);
                              success:(EXUpdatesSuccessBlock)successBlock
                                error:(EXUpdatesErrorBlock)errorBlock;
 
+/**
+ * Returns a list of UUIDs for updates already in the updates DB that are in the READY state.
+ */
+- (NSArray<NSUUID *> *)storedUpdateIdsWithConfiguration:(NSDictionary *)configuration
+                                                  error:(EXUpdatesErrorBlock)errorBlock;
+
 @end
 
 NS_ASSUME_NONNULL_END

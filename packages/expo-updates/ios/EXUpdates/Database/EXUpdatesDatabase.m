@@ -24,8 +24,13 @@ static NSString * const EXUpdatesDatabaseStaticBuildDataKey = @"staticBuildData"
 
 - (instancetype)init
 {
+  return [self initWithDatabaseQueue:dispatch_queue_create("expo.database.DatabaseQueue", DISPATCH_QUEUE_SERIAL)];
+}
+
+- (instancetype)initWithDatabaseQueue:(dispatch_queue_t)databaseQueue
+{
   if (self = [super init]) {
-    _databaseQueue = dispatch_queue_create("expo.database.DatabaseQueue", DISPATCH_QUEUE_SERIAL);
+    self.databaseQueue = databaseQueue;
   }
   return self;
 }

@@ -8,6 +8,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable NSArray<NSDictionary *> *)_executeSql:(NSString *)sql withArgs:(nullable NSArray *)args error:(NSError ** _Nullable)error;
 
+- (instancetype)initWithDatabaseQueue:(dispatch_queue_t)databaseQueue;
+
 @end
 
 NS_ASSUME_NONNULL_END

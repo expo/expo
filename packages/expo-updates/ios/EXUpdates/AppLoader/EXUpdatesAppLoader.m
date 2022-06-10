@@ -59,6 +59,29 @@ static NSString * const EXUpdatesAppLoaderErrorDomain = @"EXUpdatesAppLoader";
   _errorBlock = nil;
 }
 
+# pragma mark - class methods
+- (NSArray<NSUUID *> *)storedUpdateIds:(EXUpdatesAppLoaderErrorBlock)errorBlock
+{
+  // Get all ready updates for this config
+  __block NSArray<EXUpdatesUpdate *> *readyUpdates = @[];
+  dispatch_sync(self.database.databaseQueue,^{
+    NSError *dbError = nil;
+    readyUpdates = [self.database allUpdatesWithStatus:EXUpdatesUpdateStatusReady config:self.config error:&dbError];
+    if (dbError != nil) {
+      errorBlock(dbError);
+      readyUpdates = @[];
+    }
+  });
+  if (readyUpdates == nil || [readyUpdates count] == 0) {
+    return @[];
+  }
+  NSMutableArray *readyUpdateURLs = [NSMutableArray new];
+  for (EXUpdatesUpdate *update in readyUpdates) {
+    [readyUpdateURLs addObject:update.updateId];
+  }
+  return readyUpdateURLs;
+}
+
 # pragma mark - subclass methods
 
 - (void)loadUpdateFromUrl:(NSURL *)url

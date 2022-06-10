@@ -71,31 +71,15 @@ typedef NS_ENUM(NSInteger, EXUpdatesDevLauncherErrorCode) {
                              success:(EXUpdatesSuccessBlock)successBlock
                                error:(EXUpdatesErrorBlock)errorBlock
 {
+  NSDictionary *loaderAndConfiguration = [self _setupLoader:configuration
+                                                      error:errorBlock];
+  if (loaderAndConfiguration == nil) {
+    return;
+  }
+  EXUpdatesAppLoader *loader = loaderAndConfiguration[@"loader"];
+  EXUpdatesConfig *updatesConfiguration = loaderAndConfiguration[@"updatesConfiguration"];
   EXUpdatesAppController *controller = EXUpdatesAppController.sharedInstance;
-  EXUpdatesConfig *updatesConfiguration = [EXUpdatesConfig configWithExpoPlist];
-  [updatesConfiguration loadConfigFromDictionary:configuration];
-  if (!updatesConfiguration.updateUrl || !updatesConfiguration.scopeKey) {
-    errorBlock([NSError errorWithDomain:EXUpdatesDevLauncherControllerErrorDomain code:EXUpdatesDevLauncherErrorCodeInvalidUpdateURL userInfo:@{NSLocalizedDescriptionKey: @"Failed to load update: configuration object must include a valid update URL"}]);
-    return;
-  }
-  NSError *fsError;
-  if (![controller initializeUpdatesDirectoryWithError:&fsError]) {
-    errorBlock(fsError ?: [NSError errorWithDomain:EXUpdatesDevLauncherControllerErrorDomain code:EXUpdatesDevLauncherErrorCodeDirectoryInitializationFailed userInfo:@{NSLocalizedDescriptionKey: @"Failed to initialize updates directory with an unknown error"}]);
-    return;
-  }
-  NSError *dbError;
-  if (![controller initializeUpdatesDatabaseWithError:&dbError]) {
-    errorBlock(dbError ?: [NSError errorWithDomain:EXUpdatesDevLauncherControllerErrorDomain code:EXUpdatesDevLauncherErrorCodeDatabaseInitializationFailed userInfo:@{NSLocalizedDescriptionKey: @"Failed to initialize updates database with an unknown error"}]);
-    return;
-  }
 
-  // since controller is a singleton, save its config so we can reset to it if our request fails
-  _tempConfig = controller.config;
-
-  [self _setDevelopmentSelectionPolicy];
-  [controller setConfigurationInternal:updatesConfiguration];
-
-  EXUpdatesRemoteAppLoader *loader = [[EXUpdatesRemoteAppLoader alloc] initWithConfig:updatesConfiguration database:controller.database directory:controller.updatesDirectory launchedUpdate:nil completionQueue:controller.controllerQueue];
   [loader loadUpdateFromUrl:updatesConfiguration.updateUrl onManifest:^BOOL(EXUpdatesUpdate * _Nonnull update) {
     return manifestBlock(update.manifest.rawManifestJSON);
   } asset:^(EXUpdatesAsset * _Nonnull asset, NSUInteger successfulAssetCount, NSUInteger failedAssetCount, NSUInteger totalAssetCount) {
@@ -111,6 +95,51 @@ typedef NS_ENUM(NSInteger, EXUpdatesDevLauncherErrorCode) {
     [controller setConfigurationInternal:self->_tempConfig];
     errorBlock(error);
   }];
+}
+
+- (nonnull NSArray<NSUUID *> *)storedUpdateIdsWithConfiguration:(nonnull NSDictionary *)configuration error:(EXUpdatesErrorBlock)errorBlock {
+  NSDictionary *loaderAndConfiguration = [self _setupLoader:configuration
+                                                      error:errorBlock];
+  if (loaderAndConfiguration == nil) {
+    return @[];
+  }
+  EXUpdatesAppLoader *loader = loaderAndConfiguration[@"loader"];
+  return [loader storedUpdateIds:errorBlock];
+}
+
+// Common initialization for both fetchUpdateWithConfiguration: and storedUpdateIdsWithConfiguration:
+- (nullable NSDictionary *)_setupLoader:(nonnull NSDictionary *)configuration
+                                  error:(EXUpdatesErrorBlock)errorBlock
+{
+  EXUpdatesAppController *controller = EXUpdatesAppController.sharedInstance;
+  EXUpdatesConfig *updatesConfiguration = [EXUpdatesConfig configWithExpoPlist];
+  [updatesConfiguration loadConfigFromDictionary:configuration];
+  if (!updatesConfiguration.updateUrl || !updatesConfiguration.scopeKey) {
+    errorBlock([NSError errorWithDomain:EXUpdatesDevLauncherControllerErrorDomain code:EXUpdatesDevLauncherErrorCodeInvalidUpdateURL userInfo:@{NSLocalizedDescriptionKey: @"Failed to read stored updates: configuration object must include a valid update URL"}]);
+    return nil;
+  }
+  NSError *fsError;
+  if (![controller initializeUpdatesDirectoryWithError:&fsError]) {
+    errorBlock(fsError ?: [NSError errorWithDomain:EXUpdatesDevLauncherControllerErrorDomain code:EXUpdatesDevLauncherErrorCodeDirectoryInitializationFailed userInfo:@{NSLocalizedDescriptionKey: @"Failed to initialize updates directory with an unknown error"}]);
+    return nil;
+  }
+  NSError *dbError;
+  if (![controller initializeUpdatesDatabaseWithError:&dbError]) {
+    errorBlock(dbError ?: [NSError errorWithDomain:EXUpdatesDevLauncherControllerErrorDomain code:EXUpdatesDevLauncherErrorCodeDatabaseInitializationFailed userInfo:@{NSLocalizedDescriptionKey: @"Failed to initialize updates database with an unknown error"}]);
+    return nil;
+  }
+
+  // since controller is a singleton, save its config so we can reset to it if our request fails
+  _tempConfig = controller.config;
+
+  [self _setDevelopmentSelectionPolicy];
+  [controller setConfigurationInternal:updatesConfiguration];
+
+  EXUpdatesAppLoader *loader = [[EXUpdatesAppLoader alloc] initWithConfig:updatesConfiguration database:controller.database directory:controller.updatesDirectory launchedUpdate:nil completionQueue:controller.controllerQueue];
+  return @{
+    @"loader": loader,
+    @"updatesConfiguration": updatesConfiguration
+  };
 }
 
 - (void)_setDevelopmentSelectionPolicy
