@@ -118,6 +118,7 @@ import React from 'react';
 import { createBottomTabNavigator } from 'react-navigation';
 // Import Firebase
 import * as Analytics from 'expo-firebase-analytics';
+import { DEFAULT_APP_NAME } from 'expo-firebase-core';
 // Import some screens
 import HomeScreen from '../screens/HomeScreen';
 import ProfileScreen from '../screens/ProfileScreen';
