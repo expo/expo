@@ -143,8 +143,13 @@ export default () => (
       const prevScreen = getActiveRouteName(prevState);
       if (prevScreen !== currentScreen) {
         // Update Firebase with the name of your screen
+        // Use "firebase_screen" for Expo Go client, "screen_name" for dev-client and production
+        const paramKey =
+          DEFAULT_APP_NAME !== '[DEFAULT]'
+            ? 'firebase_screen'
+            : 'screen_name';
         await Analytics.logEvent('screen_view', {
-          firebase_screen: currentScreen,
+          [paramKey]: currentScreen,
         });
       }
     }}
