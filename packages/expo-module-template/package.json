@@ -22,10 +22,6 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/module-template",
   "dependencies": {},
-  "devDependencies": {
-    "expo-module-scripts": "^2.0.0"
-  },
-  "peerDependencies": {
-    "expo": "*"
-  }
+  "devDependencies": {},
+  "peerDependencies": {}
 }
