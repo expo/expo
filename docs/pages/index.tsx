@@ -23,6 +23,7 @@ import {
   APINotificationsIcon,
   CodecademyImage,
   DevicesImage,
+  OfficeHoursImage,
   QuickStartIcon,
   SnackImage,
   WhyImage,
@@ -131,7 +132,6 @@ const Home = () => {
       <CellContainer>
         <Row>
           <GridCell
-            xxl={4}
             xl={6}
             lg={6}
             style={{ backgroundColor: palette.blue['000'], borderColor: palette.blue['200'] }}>
@@ -152,7 +152,6 @@ const Home = () => {
             </HomeButton>
           </GridCell>
           <GridCell
-            xxl={4}
             xl={6}
             lg={6}
             style={{
@@ -173,7 +172,6 @@ const Home = () => {
             </HomeButton>
           </GridCell>
           <GridCell
-            xxl={4}
             xl={6}
             lg={6}
             style={{ backgroundColor: palette.green['000'], borderColor: palette.green['200'] }}>
@@ -190,6 +188,26 @@ const Home = () => {
               style={{ backgroundColor: palette.green['700'], color: palette.green['000'] }}
               href="/introduction/faq">
               Read
+            </HomeButton>
+          </GridCell>
+          <GridCell
+            xl={6}
+            lg={6}
+            style={{ backgroundColor: palette.yellow['000'], borderColor: palette.yellow['300'] }}>
+            <OfficeHoursImage />
+            <H3 style={{ color: palette.yellow['900'], marginBottom: spacing[1.5] }}>
+              Join us for Office Hours
+            </H3>
+            <P style={{ color: palette.yellow['800'], ...typography.fontSizes[14] }}>
+              Get answers to your questions and
+              <br />
+              get advice from the Expo team.
+            </P>
+            <HomeButton
+              style={{ backgroundColor: palette.yellow['900'], color: palette.yellow['000'] }}
+              href="https://us02web.zoom.us/meeting/register/tZcvceivqj0oHdGVOjEeKY0dRxCRPb0HzaAK"
+              target="_new">
+              Register
             </HomeButton>
           </GridCell>
         </Row>
