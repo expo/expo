@@ -35,8 +35,7 @@ void ExpoModulesHostObject::set(jsi::Runtime &runtime, const jsi::PropNameID &na
 std::vector<jsi::PropNameID> ExpoModulesHostObject::getPropertyNames(jsi::Runtime &rt) {
   auto names = installer->getModulesName();
   size_t size = names->size();
-  std::vector<jsi::PropNameID> result;
-  result.reserve(size);
+  std::vector<jsi::PropNameID> result(size);
   for (int i = 0; i < size; i++) {
     result.push_back(
       jsi::PropNameID::forUtf8(rt, names->getElement(i)->toStdString())
