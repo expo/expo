@@ -105,4 +105,33 @@ class JSIInteropModuleRegistryTest {
     Truth.assertThat(jsPromiseClass.isString()).isTrue()
     Truth.assertThat(jsPromiseClass.getString()).isEqualTo("Promise")
   }
+
+  @Test
+  fun constants_should_be_exported() = withJSIInterop(
+    inlineModule {
+      Name("TestModule")
+      Constants(
+        "c1" to 123,
+        "c2" to "string",
+        "c3" to mapOf("i1" to 123)
+      )
+    }
+  ) {
+
+    val c1Value = evaluateScript("ExpoModules.TestModule.c1")
+    val c2Value = evaluateScript("ExpoModules.TestModule.c2")
+    val i1Value = evaluateScript("ExpoModules.TestModule.c3.i1")
+
+    Truth.assertThat(c1Value.isNumber()).isTrue()
+    val unboxedC1Value = c1Value.getDouble().toInt()
+    Truth.assertThat(unboxedC1Value).isEqualTo(123)
+
+    Truth.assertThat(c2Value.isString()).isTrue()
+    val unboxedC2Value = c2Value.getString()
+    Truth.assertThat(unboxedC2Value).isEqualTo("string")
+
+    Truth.assertThat(i1Value.isNumber()).isTrue()
+    val unboxedI1Value = i1Value.getDouble().toInt()
+    Truth.assertThat(unboxedI1Value).isEqualTo(123)
+  }
 }
