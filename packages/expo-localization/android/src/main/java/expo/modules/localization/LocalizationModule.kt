@@ -19,7 +19,7 @@ class LocalizationModule : Module() {
     Name("ExpoLocalization")
 
     Constants {
-      bundledConstants.toMap()
+      bundledConstants.toShallowMap()
     }
 
     AsyncFunction("getLocalizationAsync") {
@@ -31,7 +31,6 @@ class LocalizationModule : Module() {
   private val bundledConstants: Bundle
     get() {
       val locale = Locale.getDefault()
-      val locales = locales
       val localeNames = getLocaleNames(locales)
       val isRTL = TextUtils.getLayoutDirectionFromLocale(locale) == View.LAYOUT_DIRECTION_RTL
       val region = getRegionCode(locale)
@@ -43,6 +42,7 @@ class LocalizationModule : Module() {
         "isoCurrencyCodes" to ISOCurrencyCodes,
         "isMetric" to !USES_IMPERIAL.contains(region),
         "isRTL" to isRTL,
+        // TODO: (barthap) this can throw IndexOutOfBounds exception - handle this properly
         "locale" to localeNames[0],
         "locales" to localeNames,
         "region" to region,
@@ -50,9 +50,9 @@ class LocalizationModule : Module() {
       )
     }
 
-  private val locales: ArrayList<Locale>
+  private val locales: List<Locale>
     get() {
-      val context = appContext.reactContext ?: return ArrayList()
+      val context = appContext.reactContext ?: return emptyList()
       val configuration = context.resources.configuration
       return if (VERSION.SDK_INT > VERSION_CODES.N) {
         val locales = ArrayList<Locale>()
@@ -61,7 +61,7 @@ class LocalizationModule : Module() {
         }
         locales
       } else {
-        arrayListOf(configuration.locale)
+        listOf(configuration.locale)
       }
     }
 
@@ -78,7 +78,7 @@ class LocalizationModule : Module() {
 /**
  * Creates a shallow [Map] from the [Bundle]. Does not traverse nested arrays and bundles.
  */
-private fun Bundle.toMap(): Map<String, Any?> {
+private fun Bundle.toShallowMap(): Map<String, Any?> {
   val map = HashMap<String, Any?>()
   for (key in this.keySet()) {
     map[key] = this[key]
