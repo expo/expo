@@ -2,15 +2,6 @@ import { NativeModules } from 'react-native';
 
 import { ProxyNativeModule } from './NativeModulesProxy.types';
 
-declare global {
-  // eslint-disable-next-line no-var
-  var ExpoModules:
-    | undefined
-    | {
-        [key: string]: any;
-      };
-}
-
 const ExpoNativeProxy = global.ExpoModules?.NativeProxy;
 const LegacyNativeProxy = NativeModules.NativeUnimoduleProxy;
 
