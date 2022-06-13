@@ -24,6 +24,7 @@ public class PushTokenModule extends ExportedModule implements PushTokenListener
   private final static String NEW_TOKEN_EVENT_TOKEN_KEY = "devicePushToken";
 
   private final static String REGISTRATION_FAIL_CODE = "E_REGISTRATION_FAILED";
+  private final static String UNREGISTER_FOR_NOTIFICATIONS_FAIL_CODE = "E_UNREGISTER_FOR_NOTIFICATIONS_FAILED";
 
   private PushTokenManager mPushTokenManager;
   private EventEmitter mEventEmitter;
@@ -79,6 +80,23 @@ public class PushTokenModule extends ExportedModule implements PushTokenListener
             onNewToken(token);
           }
         });
+  }
+
+  @ExpoMethod
+  public void unregisterForNotificationsAsync(final Promise promise) {
+    FirebaseMessaging.getInstance().deleteToken()
+      .addOnCompleteListener(task -> {
+        if (!task.isSuccessful()) {
+          if (task.getException() == null) {
+            promise.reject(UNREGISTER_FOR_NOTIFICATIONS_FAIL_CODE, "Unregistering for notifications failed.");
+          } else {
+            promise.reject(UNREGISTER_FOR_NOTIFICATIONS_FAIL_CODE, "Unregistering for notifications failed: " + task.getException().getMessage(), task.getException());
+          }
+          return;
+        }
+
+        promise.resolve(null);
+      });
   }
 
   /**
