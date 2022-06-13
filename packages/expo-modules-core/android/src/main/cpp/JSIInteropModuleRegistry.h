@@ -55,6 +55,11 @@ public:
   jni::local_ref<JavaScriptModuleObject::javaobject> getModule(const std::string &moduleName) const;
 
   /**
+   * Gets names of all available modules.
+   */
+  jni::local_ref<jni::JArrayClass<jni::JString>> getModulesName() const;
+
+  /**
    * Exposes a `JavaScriptRuntime::evaluateScript` function to Kotlin
    */
   jni::local_ref<JavaScriptValue::javaobject> evaluateScript(jni::JString script);
@@ -80,5 +85,7 @@ private:
 
   inline jni::local_ref<JavaScriptModuleObject::javaobject>
   callGetJavaScriptModuleObjectMethod(const std::string &moduleName) const;
+
+  inline jni::local_ref<jni::JArrayClass<jni::JString>> callGetJavaScriptModulesNames() const;
 };
 } // namespace expo
