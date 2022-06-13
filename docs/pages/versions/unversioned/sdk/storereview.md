@@ -75,3 +75,7 @@ import * as StoreReview from 'expo-store-review';
 ### `E_STORE_REVIEW_UNSUPPORTED`
 
 Requesting an App Store review is not supported on this device. The device must be iOS 10.3 or greater. Android and web are not supported. Be sure to check for support with `isAvailableAsync()` to avoid this error.
+
+### `ERR_STORE_REVIEW_FAILED`
+
+This error occurs when the store review request was not successful.
