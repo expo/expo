@@ -13,7 +13,7 @@ Expo provides a set of APIs and utilities to improve the process of developing n
 
 ## Create a new module
 
-To create a new Expo module from scratch, run `npx create-expo-module`.
+To create a new Expo module from scratch, run `npm create expo-module` or `yarn create expo-module`.
 
 ## Use the Expo Module API in an existing React Native library
 
@@ -47,15 +47,18 @@ dependencies {
 
 </CodeBlocksTable>
 
-### 3. Add the `expo` peer dependency
+### 3. Add Expo packages to dependencies
 
-Add `expo` package as a peer dependency in your **package.json** — we recommend using `*` as a version range so as not to cause any duplicated packages in user's **node_modules** folder. Depending on `expo-modules-core` is not needed in **package.json** as it's already provided by the `expo` package with the version of core that is compatible with specific SDK.<br/>
+Add `expo` package as a peer dependency in your **package.json** — we recommend using `*` as a version range so as not to cause any duplicated packages in user's **node_modules** folder. Your library also needs to depend on `expo-modules-core` but only as a dev dependency — it's already provided in the projects depending on your library by the `expo` package with the version of core that is compatible with the specific SDK used in the project.<br/>
 
 <CodeBlocksTable tabs={["package.json"]}>
 
 ```json
 {
   // ...
+  "devDependencies": {
+    "expo-modules-core": "^X.Y.Z"
+  },
   "peerDependencies": {
     "expo": "*"
   }
