@@ -49,9 +49,8 @@ std::shared_ptr<jsi::Object> JavaScriptModuleObject::getJSIObject(jsi::Runtime &
   return jsiObject;
 }
 
-void JavaScriptModuleObject::exportConstants(
-  jni::alias_ref<react::NativeMap::javaobject> constants
-) {
+void JavaScriptModuleObject::exportConstants(jni::alias_ref<react::NativeMap::javaobject>
+  constants) {
   auto dynamic = constants->cthis()->consume();
   assert(dynamic.isObject());
 
