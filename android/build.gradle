@@ -12,6 +12,14 @@ buildscript {
     gradlePluginVersion = '7.0.4'
     gradleDownloadTaskVersion = '4.1.2'
     repositoryUrl = "file:${System.env.HOME}/.m2/repository/"
+
+    if (System.properties['os.arch'] == "aarch64") {
+      // For M1 Users we need to use the NDK 24 which added support for aarch64
+      ndkVersion = "24.0.8215888"
+    } else {
+      // Otherwise we default to the side-by-side NDK version from AGP.
+      ndkVersion = "21.4.7075529"
+    }
   }
   repositories {
     google()
