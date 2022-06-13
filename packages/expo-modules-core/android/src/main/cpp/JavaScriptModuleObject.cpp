@@ -31,6 +31,7 @@ JavaScriptModuleObject::initHybrid(jni::alias_ref<jhybridobject> jThis) {
 void JavaScriptModuleObject::registerNatives() {
   registerHybrid({
                    makeNativeMethod("initHybrid", JavaScriptModuleObject::initHybrid),
+                   makeNativeMethod("exportConstants", JavaScriptModuleObject::exportConstants),
                    makeNativeMethod("registerSyncFunction",
                                     JavaScriptModuleObject::registerSyncFunction),
                    makeNativeMethod("registerAsyncFunction",
@@ -46,6 +47,17 @@ std::shared_ptr<jsi::Object> JavaScriptModuleObject::getJSIObject(jsi::Runtime &
   }
 
   return jsiObject;
+}
+
+void JavaScriptModuleObject::exportConstants(
+  jni::alias_ref<react::NativeMap::javaobject> constants
+) {
+  auto dynamic = constants->cthis()->consume();
+  assert(dynamic.isObject());
+
+  for (const auto &[key, value]: dynamic.items()) {
+    this->constants[key.asString()] = value;
+  }
 }
 
 void JavaScriptModuleObject::registerSyncFunction(
@@ -72,6 +84,13 @@ JavaScriptModuleObject::HostObject::HostObject(
 jsi::Value JavaScriptModuleObject::HostObject::get(jsi::Runtime &runtime,
                                                    const jsi::PropNameID &name) {
   auto cName = name.utf8(runtime);
+
+  auto constantsRecord = jsModule->constants.find(cName);
+  if (constantsRecord != jsModule->constants.end()) {
+    auto dynamic = constantsRecord->second;
+    return jsi::valueFromDynamic(runtime, dynamic);
+  }
+
   auto metadataRecord = jsModule->methodsMetadata.find(cName);
   if (metadataRecord == jsModule->methodsMetadata.end()) {
     return jsi::Value::undefined();
@@ -99,6 +118,16 @@ std::vector<jsi::PropNameID> JavaScriptModuleObject::HostObject::getPropertyName
   std::transform(
     metadata.begin(),
     metadata.end(),
+    std::back_inserter(result),
+    [&rt](const auto &kv) {
+      return jsi::PropNameID::forUtf8(rt, kv.first);
+    }
+  );
+
+  auto &constants = jsModule->constants;
+  std::transform(
+    constants.begin(),
+    constants.end(),
     std::back_inserter(result),
     [&rt](const auto &kv) {
       return jsi::PropNameID::forUtf8(rt, kv.first);

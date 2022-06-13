@@ -1,6 +1,9 @@
 package expo.modules.kotlin.jni
 
 import com.facebook.jni.HybridData
+import com.facebook.react.bridge.NativeArray
+import com.facebook.react.bridge.NativeMap
+import com.facebook.react.bridge.ReadableArray
 import expo.modules.core.interfaces.DoNotStrip
 
 /**
@@ -18,6 +21,11 @@ class JavaScriptModuleObject {
   private val mHybridData = initHybrid()
 
   private external fun initHybrid(): HybridData
+
+  /**
+   * Exports constants
+   */
+  external fun exportConstants(constants: NativeMap)
 
   /**
    * Register a promise-less function on the CPP module representation.

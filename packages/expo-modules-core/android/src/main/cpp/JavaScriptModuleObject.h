@@ -48,6 +48,11 @@ public:
   std::shared_ptr<jsi::Object> getJSIObject(jsi::Runtime &runtime);
 
   /**
+   * Exports constants that will be assigned to the underlying HostObject.
+   */
+  void exportConstants(jni::alias_ref<react::NativeMap::javaobject> constants);
+
+  /**
    * Registers a sync function.
    * That function can be called via the `JavaScriptModuleObject.callSyncMethod` method.
    */
@@ -105,6 +110,11 @@ private:
    * Metadata map that stores information about all available methods on this module.
    */
   std::map<std::string, MethodMetadata> methodsMetadata;
+
+  /**
+   * A constants map.
+   */
+  std::map<std::string, folly::dynamic> constants;
 
   explicit JavaScriptModuleObject(jni::alias_ref<jhybridobject> jThis)
     : javaPart_(jni::make_global(jThis)) {}
