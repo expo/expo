@@ -84,7 +84,7 @@ android {
 dependencies {
   implementation project(':expo-modules-core')
 
-  api 'com.segment.analytics.android:analytics:4.9.4'
+  api 'com.segment.analytics.android:analytics:4.10.4'
   api 'com.segment.analytics.android.integrations:firebase:2.+@aar'
 
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
