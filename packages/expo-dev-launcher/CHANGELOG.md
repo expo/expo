@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add debug settings for EAS Updates (admin only) ([#17842](https://github.com/expo/expo/pull/17842) by [@ajsmth](https://github.com/ajsmth))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
