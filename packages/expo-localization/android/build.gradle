@@ -85,4 +85,5 @@ dependencies {
   implementation project(':expo-modules-core')
 
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
+  implementation "androidx.core:core-ktx:1.6.0"
 }
