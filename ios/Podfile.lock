@@ -4375,7 +4375,7 @@ SPEC CHECKSUMS:
   ExpoLinearGradient: 0debcf7d6cd7fea3050c218544f0db2de9a64f42
   ExpoLocalization: 8f619bb6eec64575cd5220bfabbd7b4e2d6f33f8
   ExpoMailComposer: 9eaf63bec7ec619ca84b30d7f8eb7169ed12db8b
-  ExpoModulesCore: 4093531a41eb8b2e3b508ee519afbd84b09de727
+  ExpoModulesCore: 72ed9a7a84b8184e3bffc3e4739d4ecc038de08b
   ExpoModulesTestCore: 200e6d0280f7842d915eab63d0c6b298b4dff530
   ExpoRandom: 14df0976aa363a71a730ceb7655250f3047c0e42
   ExpoSystemUI: 6175204b809d9598d56e5a711480415d28c9fb5b
