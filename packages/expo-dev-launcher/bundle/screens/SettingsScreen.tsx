@@ -346,9 +346,11 @@ function UpdatesDebugSettings() {
         <Spacer.Vertical size="medium" />
       </View>
 
-      <View bg="default" px="medium">
+      <View bg="default" padding="medium" rounded="large">
         <Text type="mono">{JSON.stringify(updatesConfig, null, 2)}</Text>
       </View>
+
+      <Spacer.Vertical size="medium" />
 
       <View px="medium">
         <Heading size="small" color="secondary">
