@@ -60,7 +60,7 @@ class ExpoHandlingDelegate(protected val context: Context) : HandlingDelegate {
      *   - the foreground main Activity
      *   - the background [NotificationForwarderActivity] Activity that send notification clicked events through broadcast
      */
-    fun createPendingIntentForOpeningApp(context: Context, broadcastIntent: Intent): PendingIntent {
+    fun createPendingIntentForOpeningApp(context: Context, broadcastIntent: Intent, notificationResponse: NotificationResponse): PendingIntent {
       var intentFlags = PendingIntent.FLAG_UPDATE_CURRENT
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
         intentFlags = intentFlags or PendingIntent.FLAG_IMMUTABLE
@@ -70,6 +70,7 @@ class ExpoHandlingDelegate(protected val context: Context) : HandlingDelegate {
         Intent()
       }
       foregroundActivityIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_MULTIPLE_TASK
+      NotificationsService.setNotificationResponseToIntent(foregroundActivityIntent, notificationResponse)
       val backgroundActivityIntent = Intent(context, NotificationForwarderActivity::class.java)
       backgroundActivityIntent.putExtras(broadcastIntent)
       return PendingIntent.getActivities(context, 0, arrayOf(foregroundActivityIntent, backgroundActivityIntent), intentFlags)
