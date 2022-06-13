@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 11.2.1 — 2022-06-13
+
+### 💡 Others
+
 - Bump `com.segment.analytics.android:analytics` from `4.9.4` to `4.10.4` to resolve Google Play rejections. ([#17841](https://github.com/expo/expo/pull/17841) by [@brentvatne](https://github.com/brentvatne))
 
 ## 11.2.0 — 2022-04-18
