@@ -70,6 +70,7 @@ export function mockLinking() {
       const subscription = emitter.addListener(type, cb);
       subscriptions[type] = subscriptions[type] || new Map();
       subscriptions[type].set(cb, subscription);
+      return subscription;
     })
   );
 
