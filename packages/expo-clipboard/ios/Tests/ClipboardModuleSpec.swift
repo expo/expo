@@ -31,13 +31,14 @@ class ClipboardModuleSpec: ExpoSpec {
     }
 
     beforeSuite {
-     swizzleGeneralPasteboard()
+      swizzleGeneralPasteboard()
     }
 
     // MARK: - Strings
 
     describe("getStringAsync") {
       let function = "getStringAsync"
+
       it("returns plain text from the clipboard") {
         let expectedString = "hello"
         UIPasteboard.general.string = expectedString
