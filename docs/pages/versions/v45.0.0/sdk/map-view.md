@@ -70,7 +70,7 @@ No additional configuration is necessary to use `react-native-maps` in Expo Go. 
   - Go to the [Google Play Console](https://play.google.com/console) → (your app) → Setup → App Integrity
   - Copy the value of _SHA-1 certificate fingerprint_
 - **If you are sideloading your APK or deploying it to another store**, you will need to have [created a standalone app](../../../distribution/building-standalone-apps.md), then run `expo fetch:android:hashes` and copy the _Google Certificate Fingerprint_.
-- **If you are running a _debug_ build (development client or local debug build)**, your Android app will be signed using the debug keystore. See the instructions [below](#how-to-retrieve-your-debug-keystore-fingerprint-android-only) on how to retrieve your fingerprint.
+- **If you are running a _debug_ build (development client or local debug build)**, your Android app will be signed using the debug keystore. See the instructions [below](#how-to-retrieve-your-debug-keystore-fingerprint) on how to retrieve your fingerprint.
 
 #### 3. Create an API key
 
