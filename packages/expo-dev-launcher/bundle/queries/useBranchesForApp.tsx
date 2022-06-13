@@ -10,6 +10,7 @@ import { Toasts } from '../components/Toasts';
 import { useBuildInfo } from '../providers/BuildInfoProvider';
 import { queryClient, useQueryOptions } from '../providers/QueryProvider';
 import { useToastStack } from '../providers/ToastStackProvider';
+import { useUpdatesConfig } from '../providers/UpdatesConfigProvider';
 import { primeCacheWithUpdates, Update } from './useUpdatesForBranch';
 
 const query = gql`
@@ -123,7 +124,7 @@ async function getBranchesAsync({
 }
 
 export function useBranchesForApp(appId: string, isAuthenticated: boolean) {
-  const { runtimeVersion } = useBuildInfo();
+  const { runtimeVersion } = useUpdatesConfig();
   const toastStack = useToastStack();
   const { queryOptions } = useQueryOptions();
   const isEnabled = appId != null && isAuthenticated;
