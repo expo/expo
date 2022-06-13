@@ -35,7 +35,6 @@ It is important that you follow the [Human Interface Guidelines](https://develop
 
 #### iOS
 
-
 You can redirect someone to the "Write a Review" screen for an app in the iOS App Store by using the query parameter `action=write-review`. For example:
 
 ```ts
