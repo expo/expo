@@ -12,7 +12,22 @@
 
 ### 💡 Others
 
+## 1.0.0 — 2022-06-09
+
+### 🐛 Bug fixes
+
+- Fixed the singleton `RCTBridge.currentBridge` instance value be override by expo-dev-launcher bridge instance on iOS. ([#17780](https://github.com/expo/expo/pull/17780) by [@kudo](https://github.com/kudo))
+
+## 0.11.7 — 2022-06-07
+
+### 🐛 Bug fixes
+
+- Fix opening published EAS Update from URL on Android. ([#17734](https://github.com/expo/expo/pull/17734) by [@esamelson](https://github.com/esamelson))
+
+### 💡 Others
+
 - Stop persisting remote debugging setting between app loads on iOS. ([#17650](https://github.com/expo/expo/pull/17650) by [@esamelson](https://github.com/esamelson))
+- Autodetect dev-launcher packager on iOS. ([#17712](https://github.com/expo/expo/pull/17712) by [@douglowder](https://github.com/douglowder))
 
 ## 0.11.6 — 2022-05-19
 

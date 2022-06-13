@@ -108,7 +108,7 @@ class DevLauncherController private constructor() :
 
       // default to the EXPO_UPDATE_URL value configured in AndroidManifest.xml when project url is unspecified for an EAS update
       if (isEASUpdate && projectUrl == null) {
-        val projectUrlString = appHost.reactInstanceManager?.currentReactContext?.let { getMetadataValue(it, "expo.modules.updates.EXPO_UPDATE_URL") }
+        val projectUrlString = getMetadataValue(context, "expo.modules.updates.EXPO_UPDATE_URL")
         parsedProjectUrl = Uri.parse(projectUrlString)
       }
 
@@ -323,9 +323,9 @@ class DevLauncherController private constructor() :
     internal var sAdditionalPackages: List<ReactPackage>? = null
 
     @JvmStatic
-    fun getMetadataValue(reactApplicationContext: ReactContext, key: String): String {
-      val packageManager = reactApplicationContext.packageManager
-      val packageName = reactApplicationContext.packageName
+    fun getMetadataValue(context: Context, key: String): String {
+      val packageManager = context.packageManager
+      val packageName = context.packageName
       val applicationInfo = packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA)
       var metaDataValue = ""
 

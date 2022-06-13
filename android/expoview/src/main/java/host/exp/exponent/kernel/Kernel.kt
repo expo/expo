@@ -29,7 +29,7 @@ import com.facebook.react.modules.network.ReactCookieJarContainer
 import com.facebook.react.shell.MainReactPackage
 import com.facebook.soloader.SoLoader
 import de.greenrobot.event.EventBus
-import expo.modules.notifications.service.NotificationsService.Companion.getNotificationResponseFromIntent
+import expo.modules.notifications.service.NotificationsService.Companion.getNotificationResponseFromOpenIntent
 import expo.modules.notifications.service.delegates.ExpoHandlingDelegate
 import expo.modules.manifests.core.Manifest
 import host.exp.exponent.*
@@ -527,7 +527,7 @@ class Kernel : KernelInterface() {
   }
 
   private fun openExperienceFromNotificationIntent(intent: Intent): Boolean {
-    val response = getNotificationResponseFromIntent(intent)
+    val response = getNotificationResponseFromOpenIntent(intent)
     val experienceScopeKey = ScopedNotificationsUtils.getExperienceScopeKey(response) ?: return false
     val exponentDBObject = try {
       val exponentDBObjectInner = ExponentDB.experienceScopeKeyToExperienceSync(experienceScopeKey)
