@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fixed null pointer exception when store review request failed ([#16365](https://github.com/expo/expo/pull/16365) by [@mariomurrent-softwaresolutions](https://github.com/mariomurrent-softwaresolutions))
+- Fixed null pointer exception when store review request failed on Android. ([#16365](https://github.com/expo/expo/pull/16365) by [@mariomurrent-softwaresolutions](https://github.com/mariomurrent-softwaresolutions))
 
 ### 💡 Others
 
