@@ -6,7 +6,7 @@ const DEFAULT_SAFE_AREA = { top: 0, bottom: 0, left: 0, right: 0 };
  * Get the best estimate safe area before native modules have fully loaded.
  * This is a hack to get the safe area insets without explicitly depending on react-native-safe-area-context.
  */
-export function getStaticSafeArea(): { top: number; bottom: number; left: number; right: number } {
+export function getInitialSafeArea(): { top: number; bottom: number; left: number; right: number } {
   try {
     const RNCSafeAreaContext = TurboModuleRegistry.get('RNCSafeAreaContext');
 
@@ -14,6 +14,8 @@ export function getStaticSafeArea(): { top: number; bottom: number; left: number
     const initialWindowMetrics = RNCSafeAreaContext?.getConstants()?.initialWindowMetrics;
 
     return initialWindowMetrics?.insets ?? DEFAULT_SAFE_AREA;
-  } catch {}
+  } catch {
+    // Catch cases where RNCSafeAreaContext is not available
+  }
   return DEFAULT_SAFE_AREA;
 }

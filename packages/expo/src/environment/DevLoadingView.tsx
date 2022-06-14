@@ -3,7 +3,7 @@ import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { Animated, StyleSheet, Text, Platform, View } from 'react-native';
 
 import DevLoadingViewNativeModule from './DevLoadingViewNativeModule';
-import { getStaticSafeArea } from './getStaticSafeArea';
+import { getInitialSafeArea } from './getInitialSafeArea';
 
 export default function DevLoadingView() {
   const [message, setMessage] = useState('Refreshing...');
@@ -16,7 +16,7 @@ export default function DevLoadingView() {
     } catch (error) {
       throw new Error(
         'Failed to instantiate native emitter in `DevLoadingView` because the native module `DevLoadingView` is undefined: ' +
-          error.message
+        error.message
       );
     }
   }, []);
@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
     flex: 1,
     overflow: 'visible',
     backgroundColor: 'rgba(0,0,0,0.75)',
-    paddingBottom: getStaticSafeArea().bottom,
+    paddingBottom: getInitialSafeArea().bottom,
   },
   contentContainer: {
     flex: 1,
