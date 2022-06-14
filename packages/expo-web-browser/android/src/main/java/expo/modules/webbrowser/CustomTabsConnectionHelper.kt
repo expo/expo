@@ -86,11 +86,17 @@ internal class CustomTabsConnectionHelper(
   }
 
   private fun unbindService() {
-    context.unbindService(this)
+    if (currentPackageName != null) {
+      context.unbindService(this)
+    }
     clearConnection()
   }
 
   private fun clearConnection() {
+    if (currentPackageName != null) {
+      context.unbindService(this)
+    }
+
     currentPackageName = null
     clientActions.clear()
     sessionActions.clear()
