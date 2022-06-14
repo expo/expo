@@ -4,6 +4,7 @@ import fs from 'fs';
 import http from 'http';
 import Metro from 'metro';
 import { Terminal } from 'metro-core';
+import type { ResolutionContext } from 'metro-resolver';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
@@ -150,19 +151,27 @@ export function withMetroMultiPlatform(
 
   const { resolve } = importMetroResolverFromProject(projectRoot);
 
+  const extraNodeModules: { [key: string]: Record<string, string> } = {
+    web: {
+      'react-native': path.resolve(require.resolve('react-native-web/package.json'), '..'),
+    },
+  };
+
   Object.defineProperty(config.resolver, 'resolveRequest', {
-    value: (
-      immutableContext: import('metro-resolver').ResolutionContext,
-      moduleName: string,
-      platform: string | null
-    ) => {
+    value: (immutableContext: ResolutionContext, moduleName: string, platform: string | null) => {
       // Must copy the immutable context so we can modify it.
-      const context = {
+      const context: ResolutionContext = {
         ...immutableContext,
         resolveRequest: undefined,
         // Ensure this is set correctly
         preferNativePlatform: platform !== 'web',
       };
+
+      // Conditionally remap `react-native` to `react-native-web`
+      if (platform && platform in extraNodeModules) {
+        context.extraNodeModules = extraNodeModules[platform];
+      }
+
       const result = resolve(context, moduleName, platform);
 
       // Replace the web resolver with the original one.
@@ -173,6 +182,7 @@ export function withMetroMultiPlatform(
         typeof result?.filePath === 'string' &&
         result.filePath.endsWith('react-native-web/dist/modules/AssetRegistry/index.js')
       ) {
+        console.log('res', result);
         // @ts-expect-error: `readonly` for some reason.
         result.filePath = assetRegistryPath;
       }
@@ -185,12 +195,6 @@ export function withMetroMultiPlatform(
     // @ts-expect-error: typed as readonly
     config.resolver.extraNodeModules = {};
   }
-
-  // Remap `react-native` to `react-native-web` -- no idea how this works across platforms.
-  config.resolver.extraNodeModules['react-native'] = path.resolve(
-    require.resolve('react-native-web/package.json'),
-    '..'
-  );
 
   return config;
 }
