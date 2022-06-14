@@ -5,15 +5,17 @@
 #import <ExpoModulesCore/EXInternalModule.h>
 #import <ExpoModulesCore/EXModuleRegistry.h>
 
+// A convenience class, which acts as a store for the native modules proxy config
+
 NS_SWIFT_NAME(ModulesProxyConfig)
 @interface EXModulesProxyConfig : NSObject
 
-- (instancetype)initWithConstants:(NSDictionary*)constants
-                      methodNames:(NSDictionary*)methodNames
-                     viewManagers:(NSDictionary*)viewManagerMetadata;
+- (instancetype)initWithConstants:(nonnull NSDictionary *)constants
+                      methodNames:(nonnull NSDictionary *)methodNames
+                     viewManagers:(nonnull NSDictionary *)viewManagerMetadata;
 
-- (void)addEntriesFromConfig:(const EXModulesProxyConfig*)config;
-- (NSDictionary<NSString*, id>*) toDictionary;
+- (void)addEntriesFromConfig:(nonnull const EXModulesProxyConfig *)config;
+- (NSDictionary<NSString *, id> *) toDictionary;
 
 @end
 
@@ -24,12 +26,12 @@ NS_SWIFT_NAME(ModulesProxyConfig)
 NS_SWIFT_NAME(LegacyNativeModulesProxy)
 @interface EXNativeModulesProxy : NSObject <RCTBridgeModule>
 
+@property (nonatomic, strong, readonly) EXModulesProxyConfig *nativeModulesConfig;
+
 - (nonnull instancetype)init;
 - (nonnull instancetype)initWithModuleRegistry:(nullable EXModuleRegistry *)moduleRegistry;
 - (nonnull instancetype)initWithCustomModuleRegistry:(nonnull EXModuleRegistry *)moduleRegistry;
 
 - (void)callMethod:(NSString *)moduleName methodNameOrKey:(id)methodNameOrKey arguments:(NSArray *)arguments resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject;
-
-@property (nonatomic, strong, readonly) EXModulesProxyConfig* nativeModulesConfig;
 
 @end

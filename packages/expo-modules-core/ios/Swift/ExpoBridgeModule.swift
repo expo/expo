@@ -21,7 +21,7 @@ public final class ExpoBridgeModule: NSObject, RCTBridgeModule {
    */
   override init() {
     appContext = AppContext().useModulesProvider("ExpoModulesProvider")
-    appContext.moduleRegistry.register(moduleType: NativeProxyModule.self)
+    appContext.moduleRegistry.register(moduleType: NativeModulesProxyModule.self)
     super.init()
 
     // Listen to React Native notifications posted just before the JS is executed.

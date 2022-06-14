@@ -1,7 +1,7 @@
 import Foundation
 
-public class NativeProxyModule: Module {
-  public static let moduleName = "NativeProxy"
+public class NativeModulesProxyModule: Module {
+  public static let moduleName = "NativeModulesProxy"
 
   public func definition() -> ModuleDefinition {
     Name(Self.moduleName)

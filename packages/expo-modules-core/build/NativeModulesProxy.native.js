@@ -1,5 +1,5 @@
 import { NativeModules } from 'react-native';
-const ExpoNativeProxy = global.ExpoModules?.NativeProxy;
+const ExpoNativeProxy = global.ExpoModules?.NativeModulesProxy;
 const LegacyNativeProxy = NativeModules.NativeUnimoduleProxy;
 const modulesConstantsKey = 'modulesConstants';
 const exportedMethodsKey = 'exportedMethods';

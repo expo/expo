@@ -267,7 +267,7 @@ public final class AppContext: NSObject {
   private func exportedModulesConstants() -> [String: Any] {
     return moduleRegistry
       // prevent infinite recursion - exclude NativeProxyModule constants
-      .filter { $0.name != NativeProxyModule.moduleName }
+      .filter { $0.name != NativeModulesProxyModule.moduleName }
       .reduce(into: [String: Any]()) { acc, holder in
         acc[holder.name] = holder.getConstants()
       }

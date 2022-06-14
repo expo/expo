@@ -30,23 +30,23 @@ static const NSString *methodInfoArgumentsCountKey = @"argumentsCount";
 
 @interface EXModulesProxyConfig ()
 
-@property (readonly) NSMutableDictionary* exportedConstants;
-@property (readonly) NSMutableDictionary* methodNames;
-@property (readonly) NSMutableDictionary* viewManagerMentadata;
+@property (readonly) NSMutableDictionary *exportedConstants;
+@property (readonly) NSMutableDictionary *methodNames;
+@property (readonly) NSMutableDictionary *viewManagerMetadata;
 
 @end
 
 @implementation EXModulesProxyConfig
 
-- (instancetype)initWithConstants:(NSDictionary*)constants
-                      methodNames:(NSDictionary*)methodNames
-                     viewManagers:(NSDictionary*)viewManagerMetadata
+- (instancetype)initWithConstants:(nonnull NSDictionary *)constants
+                      methodNames:(nonnull NSDictionary *)methodNames
+                     viewManagers:(nonnull NSDictionary *)viewManagerMetadata
 {
   self = [super init];
   if (self) {
     _exportedConstants = constants;
     _methodNames = methodNames;
-    _viewManagerMentadata = viewManagerMetadata;
+    _viewManagerMetadata = viewManagerMetadata;
   }
   return self;
 }
@@ -55,13 +55,13 @@ static const NSString *methodInfoArgumentsCountKey = @"argumentsCount";
 {
   [_exportedConstants addEntriesFromDictionary:config.exportedConstants];
   [_methodNames addEntriesFromDictionary:config.methodNames];
-  [_viewManagerMentadata addEntriesFromDictionary:config.viewManagerMentadata];
+  [_viewManagerMetadata addEntriesFromDictionary:config.viewManagerMetadata];
 }
 
 - (NSDictionary<NSString*, id> *) toDictionary
 {
   NSMutableDictionary <NSString *, id> *constantsAccumulator = [NSMutableDictionary dictionary];
-  constantsAccumulator[viewManagersMetadataKeyPath] = _viewManagerMentadata;
+  constantsAccumulator[viewManagersMetadataKeyPath] = _viewManagerMetadata;
   constantsAccumulator[exportedConstantsKeyPath] = _exportedConstants;
   constantsAccumulator[exportedMethodsNamesKeyPath] = _methodNames;
   return constantsAccumulator;
@@ -192,7 +192,7 @@ RCT_EXPORT_MODULE(NativeUnimoduleProxy)
     };
   }
   
-  EXModulesProxyConfig* config = [[EXModulesProxyConfig alloc] initWithConstants:exportedModulesConstants
+  EXModulesProxyConfig *config = [[EXModulesProxyConfig alloc] initWithConstants:exportedModulesConstants
                                                                      methodNames:exportedMethodsNamesAccumulator
                                                                     viewManagers:viewManagersMetadata];
   // decorate legacy config with sweet expo-modules config
