@@ -57,6 +57,8 @@ export type ManifestMiddlewareOptions = {
 export abstract class ManifestMiddleware<
   TManifestRequestInfo extends ManifestRequestInfo
 > extends ExpoMiddleware {
+  private initialProjectConfig: ProjectConfig;
+
   constructor(protected projectRoot: string, protected options: ManifestMiddlewareOptions) {
     super(
       projectRoot,
@@ -65,6 +67,7 @@ export abstract class ManifestMiddleware<
        */
       ['/', '/manifest', '/index.exp']
     );
+    this.initialProjectConfig = getConfig(projectRoot);
   }
 
   /** Exposed for testing. */
@@ -239,8 +242,7 @@ export abstract class ManifestMiddleware<
     next: ServerNext
   ): Promise<void> {
     // Read the config
-    const projectConfig = getConfig(this.projectRoot);
-    const bundlers = getPlatformBundlers(projectConfig.exp);
+    const bundlers = getPlatformBundlers(this.initialProjectConfig.exp);
     if (bundlers.web === 'metro') {
       let platform = parsePlatformHeader(req);
       // On web, serve the public folder
@@ -248,7 +250,7 @@ export abstract class ManifestMiddleware<
         platform = 'web';
 
         // Read from headers
-        const mainModuleName = this.resolveMainModuleName(projectConfig, platform);
+        const mainModuleName = this.resolveMainModuleName(this.initialProjectConfig, platform);
         const bundleUrl = this._getBundleUrlPath({
           platform,
           mainModuleName,
@@ -258,7 +260,7 @@ export abstract class ManifestMiddleware<
 
         res.end(
           await createTemplateHtmlFromExpoConfigAsync(this.projectRoot, {
-            exp: projectConfig.exp,
+            exp: this.initialProjectConfig.exp,
             scripts: [bundleUrl],
           })
         );

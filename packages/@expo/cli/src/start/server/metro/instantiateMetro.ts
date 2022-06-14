@@ -182,7 +182,6 @@ export function withMetroMultiPlatform(
         typeof result?.filePath === 'string' &&
         result.filePath.endsWith('react-native-web/dist/modules/AssetRegistry/index.js')
       ) {
-        console.log('res', result);
         // @ts-expect-error: `readonly` for some reason.
         result.filePath = assetRegistryPath;
       }
