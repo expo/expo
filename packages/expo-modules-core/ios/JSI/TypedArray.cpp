@@ -60,7 +60,7 @@ bool isTypedArray(jsi::Runtime &runtime, const jsi::Object &jsObj) {
     .getPropertyAsFunction(runtime, "isView")
     .callWithThis(runtime, ArrayBuffer, {jsi::Value(runtime, jsObj)});
 
-  assert(isViewResult.isBool())
+  assert(isViewResult.isBool());
   return isViewResult.getBool();
 }
 
