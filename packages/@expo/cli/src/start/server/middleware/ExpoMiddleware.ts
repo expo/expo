@@ -31,11 +31,7 @@ export abstract class ExpoMiddleware {
   ): Promise<void>;
 
   /** Create a server middleware handler. */
-  public getHandler(): (
-    req: ServerRequest,
-    res: ServerResponse,
-    next: ServerNext
-  ) => Promise<void> {
+  public getHandler() {
     const internalMiddleware = async (
       req: ServerRequest,
       res: ServerResponse,

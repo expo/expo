@@ -2,6 +2,7 @@ import { prependMiddleware } from '@expo/dev-server';
 
 import { getFreePortAsync } from '../../../utils/port';
 import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
+import { HistoryFallbackMiddleware } from '../middleware/HistoryFallbackMiddleware';
 import { InterstitialPageMiddleware } from '../middleware/InterstitialPageMiddleware';
 import { parsePlatformHeader } from '../middleware/resolvePlatform';
 import { RuntimeRedirectMiddleware } from '../middleware/RuntimeRedirectMiddleware';
@@ -84,16 +85,9 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     });
     middleware.use(deepLinkMiddleware.getHandler());
 
+    // Append support for redirecting unhandled requests to the index.html page on web.
     if (this.isTargetingWeb()) {
-      middleware.use((req: ServerRequest, res: ServerResponse, next: any) => {
-        const platform = parsePlatformHeader(req);
-
-        if (!platform || platform === 'web') {
-          // Redirect unknown to the manifest handler while preserving the path.
-          // This implements the HTML5 history fallback API.
-          return manifestMiddleware.internal(req, res, next);
-        }
-      });
+      middleware.use(new HistoryFallbackMiddleware(manifestMiddleware.internal).getHandler());
     }
     // Extend the close method to ensure that we clean up the local info.
     const originalClose = server.close.bind(server);
