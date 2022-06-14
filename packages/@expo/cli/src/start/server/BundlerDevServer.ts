@@ -189,8 +189,17 @@ export abstract class BundlerDevServer {
     };
   }
 
+  /**
+   * Runs after the `startAsync` function, performing any additional common operations.
+   * You can assume the dev server is started by the time this function is called.
+   */
   protected async postStartAsync(options: BundlerStartOptions) {
-    if (options.location.hostType === 'tunnel' && !APISettings.isOffline) {
+    if (
+      options.location.hostType === 'tunnel' &&
+      !APISettings.isOffline &&
+      // This is a hack to prevent using tunnel on web since we block it upstream for some reason.
+      this.isTargetingNative()
+    ) {
       await this._startTunnelAsync();
     }
     await this.startDevSessionAsync();
