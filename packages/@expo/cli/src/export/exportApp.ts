@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import resolveFrom from 'resolve-from';
 
 import * as Log from '../log';
 import { createTemplateHtmlFromExpoConfigAsync } from '../start/server/webTemplate';
@@ -23,8 +24,6 @@ async function copyPublicFolderAsync(publicFolder: string, outputFolder: string)
     await copyAsync(publicFolder, outputFolder);
   }
 }
-
-import saveAssets from '@react-native-community/cli-plugin-metro/build/commands/bundle/saveAssets';
 
 /**
  * The structure of the outputDir will be:
@@ -73,17 +72,20 @@ export async function exportAppAsync(
     }
   );
 
-  // Save assets like a typical bundler, preserving the file paths.
-  await Promise.all(
-    Object.entries(bundles).map(([platform, bundle]) => {
-      return saveAssets(
-        // @ts-expect-error
-        bundle.assets,
-        platform,
-        outputPath
-      );
-    })
-  );
+  if (platforms.includes('web')) {
+    const saveAssets = getSaveAssets(projectRoot);
+    // Save assets like a typical bundler, preserving the file paths on web.
+    await Promise.all(
+      Object.entries(bundles).map(([platform, bundle]) => {
+        return saveAssets(
+          // @ts-expect-error
+          bundle.assets,
+          platform,
+          outputPath
+        );
+      })
+    );
+  }
   // Log bundle size info to the user
   printBundleSizes(bundles);
 
@@ -134,4 +136,14 @@ export async function exportAppAsync(
 
   // Generate a `metadata.json` and the export is complete.
   await writeMetadataJsonAsync({ outputDir, bundles, fileNames });
+}
+
+/** Get the `saveAssets` module from upstream to create the same asset structure React Native expects by default. */
+function getSaveAssets(projectRoot: string) {
+  return (
+    require(resolveFrom(
+      projectRoot,
+      '@react-native-community/cli-plugin-metro/build/commands/bundle/saveAssets'
+    )) as typeof import('@react-native-community/cli-plugin-metro/build/commands/bundle/saveAssets')
+  ).default;
 }
