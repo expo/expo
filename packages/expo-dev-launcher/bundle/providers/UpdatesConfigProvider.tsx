@@ -5,7 +5,7 @@ import {
   updatesConfig as initialUpdatesConfig,
 } from '../native-modules/DevLauncherInternal';
 
-const defaultUpdatesConfg: EXUpdatesConfig = {
+const defaultUpdatesConfig: EXUpdatesConfig = {
   runtimeVersion: '',
   sdkVersion: '',
   appId: '',
@@ -13,7 +13,7 @@ const defaultUpdatesConfg: EXUpdatesConfig = {
   updatesUrl: '',
 };
 
-const Context = React.createContext<EXUpdatesConfig>(defaultUpdatesConfg);
+const Context = React.createContext<EXUpdatesConfig>(defaultUpdatesConfig);
 export const useUpdatesConfig = () => React.useContext(Context);
 
 type UpdatesConfigProviderProps = {
