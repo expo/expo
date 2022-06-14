@@ -61,6 +61,11 @@
   return self;
 }
 
+- (void)triggerAction
+{
+  [_gestureHandler handleGesture:self];
+}
+
 - (void)setMinimumNumberOfTouches:(NSUInteger)minimumNumberOfTouches
 {
   _realMinimumNumberOfTouches = minimumNumberOfTouches;
@@ -68,6 +73,9 @@
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
+  if ([self numberOfTouches] == 0) {
+    [_gestureHandler reset];
+  }
 #if !TARGET_OS_TV
   if (_hasCustomActivationCriteria) {
     // We use "minimumNumberOfTouches" property to prevent pan handler from recognizing
@@ -79,11 +87,15 @@
   }
 #endif
   [super touchesBegan:touches withEvent:event];
+  [self triggerAction];
+  [_gestureHandler.pointerTracker touchesBegan:touches withEvent:event];
 }
 
 - (void)touchesMoved:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
   [super touchesMoved:touches withEvent:event];
+  [_gestureHandler.pointerTracker touchesMoved:touches withEvent:event];
+  
   if (self.state == UIGestureRecognizerStatePossible && [self shouldFailUnderCustomCriteria]) {
     self.state = UIGestureRecognizerStateFailed;
     return;
@@ -112,8 +124,22 @@
   }
 }
 
+- (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+{
+  [super touchesEnded:touches withEvent:event];
+  [_gestureHandler.pointerTracker touchesEnded:touches withEvent:event];
+}
+
+- (void)touchesCancelled:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+{
+  [super touchesCancelled:touches withEvent:event];
+  [_gestureHandler.pointerTracker touchesCancelled:touches withEvent:event];
+}
+
 - (void)reset
 {
+  [self triggerAction];
+  [_gestureHandler.pointerTracker reset];
   self.enabled = YES;
   [super reset];
 }
@@ -128,7 +154,7 @@
 
 - (BOOL)shouldFailUnderCustomCriteria
 {
-  CGPoint trans = [self translationInView:self.view];
+  CGPoint trans = [self translationInView:self.view.window];
   if (!isnan(_failOffsetXStart) && trans.x < _failOffsetXStart) {
     return YES;
   }
@@ -146,7 +172,7 @@
 
 - (BOOL)shouldActivateUnderCustomCriteria
 {
-  CGPoint trans = [self translationInView:self.view];
+  CGPoint trans = [self translationInView:self.view.window];
   if (!isnan(_activeOffsetXStart) && trans.x < _activeOffsetXStart) {
     return YES;
   }
@@ -190,6 +216,32 @@
   return self;
 }
 
+- (void)resetConfig
+{
+  [super resetConfig];
+  DevMenuRNBetterPanGestureRecognizer *recognizer = (DevMenuRNBetterPanGestureRecognizer *)_recognizer;
+  recognizer.minVelocityX = NAN;
+  recognizer.minVelocityY = NAN;
+  recognizer.activeOffsetXStart = NAN;
+  recognizer.activeOffsetXEnd = NAN;
+  recognizer.failOffsetXStart = NAN;
+  recognizer.failOffsetXEnd = NAN;
+  recognizer.activeOffsetYStart = NAN;
+  recognizer.activeOffsetYEnd = NAN;
+  recognizer.failOffsetYStart = NAN;
+  recognizer.failOffsetYStart = NAN;
+  recognizer.failOffsetYEnd = NAN;
+#if !TARGET_OS_TV && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130400
+  if (@available(iOS 13.4, *)) {
+    recognizer.allowedScrollTypesMask = 0;
+  }
+#endif
+  recognizer.minimumNumberOfTouches = 1;
+  recognizer.maximumNumberOfTouches = NSUIntegerMax;
+  recognizer.minDistSq = NAN;
+  recognizer.minVelocitySq = NAN;
+}
+
 - (void)configure:(NSDictionary *)config
 {
   [super configure:config];
@@ -205,8 +257,15 @@
   APPLY_FLOAT_PROP(activeOffsetYEnd);
   APPLY_FLOAT_PROP(failOffsetYStart);
   APPLY_FLOAT_PROP(failOffsetYEnd);
-  
-#if !TARGET_OS_TV
+
+#if !TARGET_OS_TV && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130400
+  if (@available(iOS 13.4, *)) {
+    bool enableTrackpadTwoFingerGesture = [RCTConvert BOOL:config[@"enableTrackpadTwoFingerGesture"]];
+    if(enableTrackpadTwoFingerGesture){
+      recognizer.allowedScrollTypesMask = UIScrollTypeMaskAll;
+    }
+  }
+
   APPLY_NAMED_INT_PROP(minimumNumberOfTouches, @"minPointers");
   APPLY_NAMED_INT_PROP(maximumNumberOfTouches, @"maxPointers");
 #endif
@@ -225,15 +284,23 @@
   [recognizer updateHasCustomActivationCriteria];
 }
 
+- (BOOL) gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
+{
+  DevMenuRNGestureHandlerState savedState = _lastState;
+  BOOL shouldBegin = [super gestureRecognizerShouldBegin:gestureRecognizer];
+  _lastState = savedState;
+  
+  return shouldBegin;
+}
+
 - (DevMenuRNGestureHandlerEventExtraData *)eventExtraData:(UIPanGestureRecognizer *)recognizer
 {
   return [DevMenuRNGestureHandlerEventExtraData
           forPan:[recognizer locationInView:recognizer.view]
           withAbsolutePosition:[recognizer locationInView:recognizer.view.window]
-          withTranslation:[recognizer translationInView:recognizer.view]
+          withTranslation:[recognizer translationInView:recognizer.view.window]
           withVelocity:[recognizer velocityInView:recognizer.view.window]
           withNumberOfTouches:recognizer.numberOfTouches];
 }
 
 @end
-

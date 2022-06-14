@@ -4,6 +4,7 @@
 #import <UIKit/UIKit.h>
 
 #import "DevMenuRNGestureHandlerState.h"
+#import "DevMenuRNTouchEventType.h"
 
 @interface DevMenuRNGestureHandlerEventExtraData : NSObject
 
@@ -14,6 +15,10 @@
 + (DevMenuRNGestureHandlerEventExtraData *)forPosition:(CGPoint)position
                            withAbsolutePosition:(CGPoint)absolutePosition
                             withNumberOfTouches:(NSUInteger)numberOfTouches;
++ (DevMenuRNGestureHandlerEventExtraData *)forPosition:(CGPoint)position
+                           withAbsolutePosition:(CGPoint)absolutePosition
+                            withNumberOfTouches:(NSUInteger)numberOfTouches
+                                   withDuration:(NSUInteger)duration;
 + (DevMenuRNGestureHandlerEventExtraData *)forPan:(CGPoint)position
                       withAbsolutePosition:(CGPoint)absolutePosition
                            withTranslation:(CGPoint)translation
@@ -31,6 +36,10 @@
                                 withAnchorPoint:(CGPoint)anchorPoint
                                    withVelocity:(CGFloat)velocity
                             withNumberOfTouches:(NSUInteger)numberOfTouches;
++ (DevMenuRNGestureHandlerEventExtraData *)forEventType:(DevMenuRNTouchEventType)eventType
+                             withChangedPointers:(NSArray<NSDictionary *> *)changedPointers
+                                 withAllPointers:(NSArray<NSDictionary *> *)allPointers
+                             withNumberOfTouches:(NSUInteger)numberOfTouches;
 + (DevMenuRNGestureHandlerEventExtraData *)forPointerInside:(BOOL)pointerInside;
 @end
 

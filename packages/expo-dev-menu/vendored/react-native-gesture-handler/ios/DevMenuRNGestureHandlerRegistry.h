@@ -13,6 +13,7 @@
 - (nullable DevMenuRNGestureHandler *)handlerWithTag:(nonnull NSNumber *)handlerTag;
 - (void)registerGestureHandler:(nonnull DevMenuRNGestureHandler *)gestureHandler;
 - (void)attachHandlerWithTag:(nonnull NSNumber *)handlerTag toView:(nonnull UIView *)view;
+- (void)attachHandlerWithTagForDeviceEvents:(nonnull NSNumber *)handlerTag toView:(nonnull UIView *)view;
 - (void)dropHandlerWithTag:(nonnull NSNumber *)handlerTag;
 
 @end
