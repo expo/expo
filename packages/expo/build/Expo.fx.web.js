@@ -19,7 +19,7 @@ if (__DEV__) {
             },
         });
     }
-    // add the dev app container wrapper component on ios
+    // add the dev app container wrapper component to web
     // @ts-ignore
     AppRegistry.setWrapperComponentProvider(() => DevAppContainer);
     // @ts-ignore
