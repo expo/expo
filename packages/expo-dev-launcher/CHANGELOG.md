@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fixed the application crashing when the user forces a dark mode only of the dev-client app in the system setting on Android.
+- Fixed the application crashing when the user forces a dark mode only for the dev-client app in the system setting on Android.
 
 ### 💡 Others
 
