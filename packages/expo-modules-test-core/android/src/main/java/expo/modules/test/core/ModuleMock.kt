@@ -49,7 +49,7 @@ data class ModuleMock<TestInterfaceType : Any, ModuleType : Module>(
       // prepare module spy
       val moduleSpy = convertToSpy(module, recordPrivateCalls = true)
       every { moduleSpy getProperty "appContext" } returns appContext
-      every { moduleSpy.sendEvent(any(), any()) } answers { call ->
+      every { moduleSpy.sendEvent(any(), any<Bundle>()) } answers { call ->
         val (eventName, eventBody) = call.invocation.args
         eventEmitter.emit(eventName as String, eventBody as? Bundle)
       }

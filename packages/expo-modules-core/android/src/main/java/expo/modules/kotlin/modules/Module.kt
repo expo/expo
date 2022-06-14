@@ -26,7 +26,15 @@ abstract class Module : AppContextProvider {
   internal lateinit var coroutineScopeDelegate: Lazy<CoroutineScope>
   val coroutineScope get() = coroutineScopeDelegate.value
 
+  fun sendEvent(name: String) {
+    moduleEventEmitter?.emit(name, Bundle.EMPTY)
+  }
+
   fun sendEvent(name: String, body: Bundle?) {
+    moduleEventEmitter?.emit(name, body)
+  }
+
+  fun sendEvent(name: String, body: Map<String, Any?>?) {
     moduleEventEmitter?.emit(name, body)
   }
 
