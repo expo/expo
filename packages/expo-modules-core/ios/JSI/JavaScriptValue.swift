@@ -85,6 +85,13 @@ public extension JavaScriptValue {
     }
     throw JavaScriptValueConversionException((kind: kind, target: "Object"))
   }
+
+  func asTypedArray() throws -> JavaScriptTypedArray {
+    if let typedArray = getTypedArray() {
+      return typedArray
+    }
+    throw JavaScriptValueConversionException((kind: kind, target: "TypedArray"))
+  }
 }
 
 internal final class JavaScriptValueConversionException: GenericException<(kind: JavaScriptValueKind, target: String)> {

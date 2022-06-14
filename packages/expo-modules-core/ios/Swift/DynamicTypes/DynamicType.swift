@@ -24,6 +24,9 @@ internal func DynamicType<T>(_ type: T.Type) -> AnyDynamicType {
   if let SharedObjectType = T.self as? SharedObject.Type {
     return DynamicSharedObjectType(innerType: SharedObjectType)
   }
+  if let TypedArrayType = T.self as? AnyTypedArray.Type {
+    return DynamicTypedArrayType(innerType: TypedArrayType)
+  }
   return DynamicRawType(innerType: T.self)
 }
 
