@@ -54,24 +54,24 @@ Create a project with Expo CLI by running:
 
   This command will create a file named **eas.json**.
 
-4. Inside the `preview` and `production` build profiles in **eas.json**, add a `channel` property for each:
+4. Inside the `preview` and `production` build profiles in **eas.json**, add a `releaseChannel` property for each:
 
   ```json
   {
     "build": {
       "preview": {
-        "channel": "preview",
+        "releaseChannel": "preview",
         // ...
       },
       "production": {
-        "channel": "production",
+        "releaseChannel": "production",
         // ...
       }
     }
   }
   ```
 
-  The `channel` allows you to point updates at builds. For example, if we set up a GitHub Action to publish changes on merge, it will make it so that we can merge code into the "production" Git branch. Then, each commit will trigger a GitHub Action that will publish an update that will be available to builds with the channel "production".
+  The `releaseChannel` allows you to point updates at builds. For example, if we set up a GitHub Action to publish changes on merge, it will make it so that we can merge code into the "production" Git branch. Then, each commit will trigger a GitHub Action that will publish an update that will be available to builds with the channel "production".
 
 5. Optional: If your project is a bare React Native project, [read the doc](/eas-update/bare-react-native) on additional configuration you may need.
 
