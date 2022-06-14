@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed the error screen is sometimes empty on Android.
+
 ### 💡 Others
 
 ## 1.0.0 — 2022-06-09
