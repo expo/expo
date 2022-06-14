@@ -37,6 +37,16 @@
     DevMenuRNGestureHandler *handler = _handlers[handlerTag];
     RCTAssert(handler != nil, @"Handler for tag %@ does not exists", handlerTag);
     [handler unbindFromView];
+    handler.usesDeviceEvents = NO;
+    [handler bindToView:view];
+}
+
+- (void)attachHandlerWithTagForDeviceEvents:(NSNumber *)handlerTag toView:(UIView *)view
+{
+    DevMenuRNGestureHandler *handler = _handlers[handlerTag];
+    RCTAssert(handler != nil, @"Handler for tag %@ does not exists", handlerTag);
+    [handler unbindFromView];
+    handler.usesDeviceEvents = YES;
     [handler bindToView:view];
 }
 
