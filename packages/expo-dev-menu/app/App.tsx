@@ -24,13 +24,13 @@ export function App({
   registeredCallbacks,
 }: DevMenuInitialProps) {
   return (
-    <AppProviders appInfo={appInfo} devSettings={devSettings} menuPreferences={menuPreferences}>
-      <GestureHandlerRootView style={{ flex: 1 }}>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <AppProviders appInfo={appInfo} devSettings={devSettings} menuPreferences={menuPreferences}>
         <LoadInitialData loader={<Splash />}>
           <Main registeredCallbacks={registeredCallbacks} />
           <Onboarding isDevice={isDevice} />
         </LoadInitialData>
-      </GestureHandlerRootView>
-    </AppProviders>
+      </AppProviders>
+    </GestureHandlerRootView>
   );
 }
