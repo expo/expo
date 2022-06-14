@@ -34,7 +34,15 @@ type ToastStackContextProps = {
 };
 
 const ToastStackContext = React.createContext<ToastStackContextProps | null>(null);
-export const useToastStack = () => React.useContext(ToastStackContext);
+export const useToastStack = () => {
+  const context = React.useContext(ToastStackContext);
+
+  if (!context) {
+    throw new Error(`useToastStack() was called outside of a <ToastStackContext /> provider`);
+  }
+
+  return context;
+};
 
 export function ToastStackProvider({ children }) {
   const toastStack = React.useRef(createAsyncStack<ToastStackItem>()).current;
