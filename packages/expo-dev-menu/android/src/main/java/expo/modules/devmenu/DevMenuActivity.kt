@@ -69,7 +69,14 @@ class DevMenuActivity : ReactActivity() {
         putStringArrayList("registeredCallbacks", DevMenuManager.registeredCallbacks)
       }
 
-      override fun createRootView() = createRootView(this@DevMenuActivity)
+      override fun createRootView(): ReactRootView {
+        if (rootViewWasInitialized()) {
+          return rootView
+        }
+
+        rootView = super.createRootView()
+        return rootView
+      }
     }
   }
 
@@ -118,19 +125,6 @@ class DevMenuActivity : ReactActivity() {
     var appWasLoaded = false
     private lateinit var rootView: ReactRootView
 
-    fun createRootView(activity: ReactActivity): ReactRootView {
-      if (::rootView.isInitialized) {
-        return rootView
-      }
-
-      // This type hint is needed for the older kotlin version.
-      @Suppress("RemoveExplicitTypeArguments")
-      rootView = getVendoredClass<ReactRootView>(
-        "com.swmansion.gesturehandler.react.RNGestureHandlerEnabledRootView",
-        arrayOf(Context::class.java),
-        arrayOf(activity)
-      )
-      return rootView
-    }
+    private fun rootViewWasInitialized() = ::rootView.isInitialized
   }
 }
