@@ -11,6 +11,7 @@
 ### 🐛 Bug fixes
 
 - Fixed `removeListener(): Method has been deprecated` warning. ([#17645](https://github.com/expo/expo/pull/17645) by [@barthap](https://github.com/barthap))
+- Fixed `service not registered` exception on Android. ([#17855](https://github.com/expo/expo/pull/17855) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 

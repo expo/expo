@@ -15,7 +15,7 @@ internal class CustomTabsConnectionHelper(
   private val sessionActions = DeferredClientActionsQueue<CustomTabsSession?>()
 
   // region lifecycle methods
-  fun destroy() = unbindService()
+  fun destroy() = clearConnection()
   // endregion
 
   // region Actual connection helper methods
@@ -34,7 +34,7 @@ internal class CustomTabsConnectionHelper(
 
   fun coolDown(packageName: String): Boolean {
     if (isConnectionStarted(packageName)) {
-      unbindService()
+      clearConnection()
       return true
     }
     return false
@@ -85,12 +85,11 @@ internal class CustomTabsConnectionHelper(
     return packageName == currentPackageName
   }
 
-  private fun unbindService() {
-    context.unbindService(this)
-    clearConnection()
-  }
-
   private fun clearConnection() {
+    if (currentPackageName != null) {
+      context.unbindService(this)
+    }
+
     currentPackageName = null
     clientActions.clear()
     sessionActions.clear()
