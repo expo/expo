@@ -60,11 +60,8 @@ bool isTypedArray(jsi::Runtime &runtime, const jsi::Object &jsObj) {
     .getPropertyAsFunction(runtime, "isView")
     .callWithThis(runtime, ArrayBuffer, {jsi::Value(runtime, jsObj)});
 
-  if (isViewResult.isBool()) {
-    return isViewResult.getBool();
-  } else {
-    throw std::runtime_error("value is not a boolean");
-  }
+  assert(isViewResult.isBool())
+  return isViewResult.getBool();
 }
 
 } // namespace expo
