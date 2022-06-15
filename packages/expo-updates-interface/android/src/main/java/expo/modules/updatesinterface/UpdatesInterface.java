@@ -5,6 +5,8 @@ import android.content.Context;
 import org.json.JSONObject;
 
 import java.util.HashMap;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * Interface for modules that depend on expo-updates for loading production updates but do not want
@@ -15,6 +17,7 @@ public interface UpdatesInterface {
   interface UpdateCallback {
     void onFailure(Exception e);
     void onSuccess(Update update);
+    void onQuerySuccess(List<UUID> updateIds);
     void onProgress(int successfulAssetCount, int failedAssetCount, int totalAssetCount);
 
     /**
@@ -33,4 +36,6 @@ public interface UpdatesInterface {
   void reset();
 
   void fetchUpdateWithConfiguration(HashMap<String, Object> configuration, Context context, UpdateCallback callback);
+
+  void storedUpdateIdsWithConfiguration(HashMap<String, Object> configuration, Context context, UpdateCallback callback);
 }

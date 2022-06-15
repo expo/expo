@@ -12,6 +12,7 @@ import expo.modules.updates.selectionpolicy.LauncherSelectionPolicySingleUpdate
 import expo.modules.updates.selectionpolicy.ReaperSelectionPolicyDevelopmentClient
 import expo.modules.updates.selectionpolicy.SelectionPolicy
 import expo.modules.updatesinterface.UpdatesInterface
+import expo.modules.updatesinterface.UpdatesInterface.UpdateCallback
 import org.json.JSONObject
 import java.util.*
 
@@ -138,6 +139,29 @@ class UpdatesDevLauncherController : UpdatesInterface {
         }
       }
     )
+  }
+
+  override fun storedUpdateIdsWithConfiguration(configuration: HashMap<String, Any>?, context: Context?, callback: UpdateCallback?) {
+    val controller = UpdatesController.instance
+    val updatesConfiguration = UpdatesConfiguration(context, configuration)
+    if (updatesConfiguration.updateUrl == null || updatesConfiguration.scopeKey == null) {
+      callback?.onFailure(Exception("Failed to load update: UpdatesConfiguration object must include a valid update URL"))
+      return
+    }
+    if (controller.updatesDirectory == null) {
+      callback?.onFailure(controller.updatesDirectoryException)
+      return
+    }
+    val databaseHolder = controller.databaseHolder
+    val launcher = DatabaseLauncher(
+      updatesConfiguration,
+      controller.updatesDirectory!!,
+      controller.fileDownloader,
+      controller.selectionPolicy
+    )
+    val readyUpdateIds = launcher.getReadyUpdateIds(databaseHolder.database)
+    controller.databaseHolder.releaseDatabase()
+    callback?.onQuerySuccess(readyUpdateIds)
   }
 
   companion object {
