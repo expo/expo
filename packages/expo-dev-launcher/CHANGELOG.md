@@ -6,9 +6,12 @@
 
 ### 🎉 New features
 
+- Add debug settings for EAS Updates (admin only) ([#17842](https://github.com/expo/expo/pull/17842) by [@ajsmth](https://github.com/ajsmth))
+
 ### 🐛 Bug fixes
 
 - Fixed the application crashing when the user forces a dark mode only for the dev-client app in the system setting on Android. ([#17858](https://github.com/expo/expo/pull/17858) by [@lukmccall](https://github.com/lukmccall))
+- Fixed the error screen is sometimes empty on Android. ([#17857](https://github.com/expo/expo/pull/17857) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 

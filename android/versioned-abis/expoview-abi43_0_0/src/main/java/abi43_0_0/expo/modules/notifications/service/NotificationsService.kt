@@ -457,6 +457,15 @@ open class NotificationsService : BroadcastReceiver() {
         intent.putExtra(NOTIFICATION_ACTION_KEY, action as Parcelable)
       }
 
+      // Starting from Android 12,
+      // [notification trampolines](https://developer.android.com/about/versions/12/behavior-changes-12#identify-notification-trampolines)
+      // are not allowed. If the notification wants to open foreground app,
+      // we should use the dedicated Activity pendingIntent.
+      if (action.opensAppToForeground()) {
+        val notificationResponse = getNotificationResponseFromBroadcastIntent(intent)
+        return ExpoHandlingDelegate.createPendingIntentForOpeningApp(context, intent, notificationResponse)
+      }
+
       // We're defaulting to the behaviour prior API 31 (mutable) even though Android recommends immutability
       val mutableFlag = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) PendingIntent.FLAG_MUTABLE else 0
       return PendingIntent.getBroadcast(
@@ -467,7 +476,47 @@ open class NotificationsService : BroadcastReceiver() {
       )
     }
 
-    fun getNotificationResponseFromIntent(intent: Intent): NotificationResponse? {
+    /**
+     * Recreate an Intent from [createNotificationResponseIntent] extras
+     * for [NotificationForwarderActivity] to send broadcasts
+     */
+    fun createNotificationResponseBroadcastIntent(context: Context, extras: Bundle?): Intent {
+      val notification = extras?.getParcelable<Notification>(NOTIFICATION_KEY)
+      val action = extras?.getParcelable<NotificationAction>(NOTIFICATION_ACTION_KEY)
+      if (notification == null || action == null) {
+        throw IllegalArgumentException("notification and action should not be null")
+      }
+      val backgroundAction = NotificationAction(action.identifier, action.title, false)
+      val intent = Intent(
+        NOTIFICATION_EVENT_ACTION,
+        getUriBuilder()
+          .appendPath(notification.notificationRequest.identifier)
+          .appendPath("actions")
+          .appendPath(backgroundAction.identifier)
+          .build()
+      ).also { intent ->
+        findDesignatedBroadcastReceiver(context, intent)?.let {
+          intent.component = ComponentName(it.packageName, it.name)
+        }
+        intent.putExtra(EVENT_TYPE_KEY, RECEIVE_RESPONSE_TYPE)
+        intent.putExtra(NOTIFICATION_KEY, notification)
+        intent.putExtra(NOTIFICATION_ACTION_KEY, backgroundAction as Parcelable)
+      }
+      return intent
+    }
+
+    fun getNotificationResponseFromBroadcastIntent(intent: Intent): NotificationResponse {
+      val notification = intent.getParcelableExtra<Notification>(NOTIFICATION_KEY) ?: throw IllegalArgumentException("$NOTIFICATION_KEY not found in the intent extras.")
+      val action = intent.getParcelableExtra<NotificationAction>(NOTIFICATION_ACTION_KEY) ?: throw IllegalArgumentException("$NOTIFICATION_ACTION_KEY not found in the intent extras.")
+      val response = if (action is TextInputNotificationAction) {
+        TextInputNotificationResponse(action, notification, RemoteInput.getResultsFromIntent(intent).getString(USER_TEXT_RESPONSE_KEY))
+      } else {
+        NotificationResponse(action, notification)
+      }
+      return response
+    }
+
+    fun getNotificationResponseFromOpenIntent(intent: Intent): NotificationResponse? {
       intent.getByteArrayExtra(NOTIFICATION_RESPONSE_KEY)?.let { return unmarshalObject(NotificationResponse.CREATOR, it) }
       intent.getByteArrayExtra(TEXT_INPUT_NOTIFICATION_RESPONSE_KEY)?.let { return unmarshalObject(TextInputNotificationResponse.CREATOR, it) }
       return null
@@ -647,13 +696,7 @@ open class NotificationsService : BroadcastReceiver() {
     )
 
   open fun onReceiveNotificationResponse(context: Context, intent: Intent) {
-    val notification = intent.getParcelableExtra<Notification>(NOTIFICATION_KEY)!!
-    val action = intent.getParcelableExtra<NotificationAction>(NOTIFICATION_ACTION_KEY)!!
-    val response = if (action is TextInputNotificationAction) {
-      TextInputNotificationResponse(action, notification, RemoteInput.getResultsFromIntent(intent).getString(USER_TEXT_RESPONSE_KEY))
-    } else {
-      NotificationResponse(action, notification)
-    }
+    val response = getNotificationResponseFromBroadcastIntent(intent)
     getHandlingDelegate(context).handleNotificationResponse(response)
   }
 
