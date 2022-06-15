@@ -53,7 +53,9 @@ exports[`APISection expo-apple-authentication 1`] = `
       </a>
     </div>
   </h2>
-  <div>
+  <div
+    class="css-kdowal-STYLES_APIBOX"
+  >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
@@ -347,14 +349,13 @@ for more details.
         </a>
       </div>
     </h3>
-    <br />
     <div>
       <ul
         class="css-1qha16q-paragraph-STYLES_UNORDERED_LIST-UL"
         data-text="true"
       >
         <li
-          class="docs-list-item css-1jvmp7m-STYLES_LIST_ITEM-STYLE_PROP_LIST-PROP_LIST_ELEMENT_STYLE-LI"
+          class="docs-list-item css-41zxpi-STYLES_LIST_ITEM-STYLE_PROP_LIST-PROP_LIST_ELEMENT_STYLE-LI"
         >
           <h4
             class="  css-838f5l-h4-h4-STYLES_H4"
@@ -435,12 +436,9 @@ for more details.
           >
             The Apple-defined color scheme to use to display the button.
           </p>
-          <hr
-            class="css-bxzs19-STYLES_DIVIDER"
-          />
         </li>
         <li
-          class="docs-list-item css-1jvmp7m-STYLES_LIST_ITEM-STYLE_PROP_LIST-PROP_LIST_ELEMENT_STYLE-LI"
+          class="docs-list-item css-41zxpi-STYLES_LIST_ITEM-STYLE_PROP_LIST-PROP_LIST_ELEMENT_STYLE-LI"
         >
           <h4
             class="  css-838f5l-h4-h4-STYLES_H4"
@@ -521,12 +519,9 @@ for more details.
           >
             The type of button text to display ("Sign In with Apple" vs. "Continue with Apple").
           </p>
-          <hr
-            class="css-bxzs19-STYLES_DIVIDER"
-          />
         </li>
         <li
-          class="docs-list-item css-1jvmp7m-STYLES_LIST_ITEM-STYLE_PROP_LIST-PROP_LIST_ELEMENT_STYLE-LI"
+          class="docs-list-item css-41zxpi-STYLES_LIST_ITEM-STYLE_PROP_LIST-PROP_LIST_ELEMENT_STYLE-LI"
         >
           <h4
             class="  css-838f5l-h4-h4-STYLES_H4"
@@ -614,12 +609,9 @@ for more details.
             </code>
              in other Views.
           </p>
-          <hr
-            class="css-bxzs19-STYLES_DIVIDER"
-          />
         </li>
         <li
-          class="docs-list-item css-1jvmp7m-STYLES_LIST_ITEM-STYLE_PROP_LIST-PROP_LIST_ELEMENT_STYLE-LI"
+          class="docs-list-item css-41zxpi-STYLES_LIST_ITEM-STYLE_PROP_LIST-PROP_LIST_ELEMENT_STYLE-LI"
         >
           <h4
             class="  css-838f5l-h4-h4-STYLES_H4"
@@ -744,12 +736,9 @@ for more details.
             
 properties.
           </p>
-          <hr
-            class="css-bxzs19-STYLES_DIVIDER"
-          />
         </li>
         <li
-          class="docs-list-item css-1jvmp7m-STYLES_LIST_ITEM-STYLE_PROP_LIST-PROP_LIST_ELEMENT_STYLE-LI"
+          class="docs-list-item css-41zxpi-STYLES_LIST_ITEM-STYLE_PROP_LIST-PROP_LIST_ELEMENT_STYLE-LI"
         >
           <h4
             class="  css-838f5l-h4-h4-STYLES_H4"
@@ -840,9 +829,6 @@ properties.
             
 in here.
           </p>
-          <hr
-            class="css-bxzs19-STYLES_DIVIDER"
-          />
         </li>
       </ul>
       <h4
@@ -969,7 +955,9 @@ in here.
       </a>
     </div>
   </h2>
-  <div>
+  <div
+    class="css-kdowal-STYLES_APIBOX"
+  >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
@@ -989,7 +977,7 @@ in here.
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-ni28os-STYLES_INLINE_CODE-STYLES_NOT_EXPOSED_HEADER-InlineCode"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               getCredentialStateAsync(user)
             </code>
@@ -1275,9 +1263,10 @@ This should come from the user field of an
       
 value depending on the state of the credential.
     </p>
-    <hr />
   </div>
-  <div>
+  <div
+    class="css-kdowal-STYLES_APIBOX"
+  >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
@@ -1297,7 +1286,7 @@ value depending on the state of the credential.
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-ni28os-STYLES_INLINE_CODE-STYLES_NOT_EXPOSED_HEADER-InlineCode"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               isAvailableAsync()
             </code>
@@ -1434,9 +1423,10 @@ value depending on the state of the credential.
       </code>
        otherwise.
     </p>
-    <hr />
   </div>
-  <div>
+  <div
+    class="css-kdowal-STYLES_APIBOX"
+  >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
@@ -1456,7 +1446,7 @@ value depending on the state of the credential.
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-ni28os-STYLES_INLINE_CODE-STYLES_NOT_EXPOSED_HEADER-InlineCode"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               refreshAsync(options)
             </code>
@@ -1699,9 +1689,10 @@ object after a successful authentication, and rejects with
        if the user cancels the
 refresh operation.
     </p>
-    <hr />
   </div>
-  <div>
+  <div
+    class="css-kdowal-STYLES_APIBOX"
+  >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
@@ -1721,7 +1712,7 @@ refresh operation.
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-ni28os-STYLES_INLINE_CODE-STYLES_NOT_EXPOSED_HEADER-InlineCode"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               signInAsync(options)
             </code>
@@ -2003,9 +1994,10 @@ object after a successful authentication, and rejects with
        if the user cancels the
 sign-in operation.
     </p>
-    <hr />
   </div>
-  <div>
+  <div
+    class="css-kdowal-STYLES_APIBOX"
+  >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
@@ -2025,7 +2017,7 @@ sign-in operation.
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-ni28os-STYLES_INLINE_CODE-STYLES_NOT_EXPOSED_HEADER-InlineCode"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               signOutAsync(options)
             </code>
@@ -2350,7 +2342,9 @@ sign-out operation.
       </a>
     </div>
   </h2>
-  <div>
+  <div
+    class="css-kdowal-STYLES_APIBOX"
+  >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
@@ -2370,7 +2364,7 @@ sign-out operation.
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-ni28os-STYLES_INLINE_CODE-STYLES_NOT_EXPOSED_HEADER-InlineCode"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               addRevokeListener(listener)
             </code>
@@ -2604,7 +2598,9 @@ sign-out operation.
       </a>
     </div>
   </h2>
-  <div>
+  <div
+    class="css-kdowal-STYLES_APIBOX"
+  >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
@@ -3099,7 +3095,9 @@ developers.
       </table>
     </div>
   </div>
-  <div>
+  <div
+    class="css-kdowal-STYLES_APIBOX"
+  >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
@@ -3401,7 +3399,9 @@ may be
       </table>
     </div>
   </div>
-  <div>
+  <div
+    class="css-kdowal-STYLES_APIBOX"
+  >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
@@ -3706,7 +3706,9 @@ OAuth 2.0 protocol
       </table>
     </div>
   </div>
-  <div>
+  <div
+    class="css-kdowal-STYLES_APIBOX"
+  >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
@@ -4028,7 +4030,9 @@ OAuth 2.0 protocol
       </table>
     </div>
   </div>
-  <div>
+  <div
+    class="css-kdowal-STYLES_APIBOX"
+  >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
@@ -4270,7 +4274,9 @@ OAuth 2.0 protocol
       </table>
     </div>
   </div>
-  <div>
+  <div
+    class="css-kdowal-STYLES_APIBOX"
+  >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
@@ -4444,7 +4450,9 @@ OAuth 2.0 protocol
       </a>
     </div>
   </h2>
-  <div>
+  <div
+    class="css-1kfymly-STYLES_APIBOX-STYLES_ELEMENTS-renderEnum"
+  >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
@@ -4616,7 +4624,9 @@ OAuth 2.0 protocol
       </li>
     </ul>
   </div>
-  <div>
+  <div
+    class="css-1kfymly-STYLES_APIBOX-STYLES_ELEMENTS-renderEnum"
+  >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
@@ -4791,7 +4801,9 @@ OAuth 2.0 protocol
       </li>
     </ul>
   </div>
-  <div>
+  <div
+    class="css-1kfymly-STYLES_APIBOX-STYLES_ELEMENTS-renderEnum"
+  >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
@@ -5038,7 +5050,9 @@ for more details.
       </li>
     </ul>
   </div>
-  <div>
+  <div
+    class="css-1kfymly-STYLES_APIBOX-STYLES_ELEMENTS-renderEnum"
+  >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
@@ -5212,7 +5226,9 @@ for more details.
       </li>
     </ul>
   </div>
-  <div>
+  <div
+    class="css-1kfymly-STYLES_APIBOX-STYLES_ELEMENTS-renderEnum"
+  >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
@@ -5454,7 +5470,9 @@ for more details.
       </li>
     </ul>
   </div>
-  <div>
+  <div
+    class="css-1kfymly-STYLES_APIBOX-STYLES_ELEMENTS-renderEnum"
+  >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
@@ -5731,7 +5749,9 @@ exports[`APISection expo-barcode-scanner 1`] = `
       </a>
     </div>
   </h2>
-  <div>
+  <div
+    class="css-kdowal-STYLES_APIBOX"
+  >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
@@ -5868,14 +5888,13 @@ exports[`APISection expo-barcode-scanner 1`] = `
         </a>
       </div>
     </h3>
-    <br />
     <div>
       <ul
         class="css-1qha16q-paragraph-STYLES_UNORDERED_LIST-UL"
         data-text="true"
       >
         <li
-          class="docs-list-item css-1jvmp7m-STYLES_LIST_ITEM-STYLE_PROP_LIST-PROP_LIST_ELEMENT_STYLE-LI"
+          class="docs-list-item css-41zxpi-STYLES_LIST_ITEM-STYLE_PROP_LIST-PROP_LIST_ELEMENT_STYLE-LI"
         >
           <h4
             class="  css-838f5l-h4-h4-STYLES_H4"
@@ -5990,12 +6009,9 @@ minimize battery usage.
             </code>
             .
           </p>
-          <hr
-            class="css-bxzs19-STYLES_DIVIDER"
-          />
         </li>
         <li
-          class="docs-list-item css-1jvmp7m-STYLES_LIST_ITEM-STYLE_PROP_LIST-PROP_LIST_ELEMENT_STYLE-LI"
+          class="docs-list-item css-41zxpi-STYLES_LIST_ITEM-STYLE_PROP_LIST-PROP_LIST_ELEMENT_STYLE-LI"
         >
           <h4
             class="  css-838f5l-h4-h4-STYLES_H4"
@@ -6158,12 +6174,9 @@ data has been retrieved.
 
             </div>
           </blockquote>
-          <hr
-            class="css-bxzs19-STYLES_DIVIDER"
-          />
         </li>
         <li
-          class="docs-list-item css-1jvmp7m-STYLES_LIST_ITEM-STYLE_PROP_LIST-PROP_LIST_ELEMENT_STYLE-LI"
+          class="docs-list-item css-41zxpi-STYLES_LIST_ITEM-STYLE_PROP_LIST-PROP_LIST_ELEMENT_STYLE-LI"
         >
           <h4
             class="  css-838f5l-h4-h4-STYLES_H4"
@@ -6293,9 +6306,6 @@ Same as
             </code>
             .
           </p>
-          <hr
-            class="css-bxzs19-STYLES_DIVIDER"
-          />
         </li>
       </ul>
       <h4
@@ -6422,7 +6432,9 @@ Same as
       </a>
     </div>
   </h2>
-  <div>
+  <div
+    class="css-kdowal-STYLES_APIBOX"
+  >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
@@ -6442,7 +6454,7 @@ Same as
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-ni28os-STYLES_INLINE_CODE-STYLES_NOT_EXPOSED_HEADER-InlineCode"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               usePermissions
             </code>
@@ -6730,7 +6742,9 @@ This can be used to quickly create specific permission hooks in every module.
       </a>
     </div>
   </h2>
-  <div>
+  <div
+    class="css-kdowal-STYLES_APIBOX"
+  >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
@@ -6750,7 +6764,7 @@ This can be used to quickly create specific permission hooks in every module.
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-ni28os-STYLES_INLINE_CODE-STYLES_NOT_EXPOSED_HEADER-InlineCode"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               BarCodeScanner.
               getPermissionsAsync()
@@ -6892,9 +6906,10 @@ This can be used to quickly create specific permission hooks in every module.
       </a>
       .
     </p>
-    <hr />
   </div>
-  <div>
+  <div
+    class="css-kdowal-STYLES_APIBOX"
+  >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
@@ -6914,7 +6929,7 @@ This can be used to quickly create specific permission hooks in every module.
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-ni28os-STYLES_INLINE_CODE-STYLES_NOT_EXPOSED_HEADER-InlineCode"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               BarCodeScanner.
               requestPermissionsAsync()
@@ -7074,9 +7089,10 @@ This can be used to quickly create specific permission hooks in every module.
       </a>
       .
     </p>
-    <hr />
   </div>
-  <div>
+  <div
+    class="css-kdowal-STYLES_APIBOX"
+  >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
@@ -7096,7 +7112,7 @@ This can be used to quickly create specific permission hooks in every module.
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-ni28os-STYLES_INLINE_CODE-STYLES_NOT_EXPOSED_HEADER-InlineCode"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               BarCodeScanner.
               scanFromURLAsync(url, barCodeTypes)
@@ -7441,7 +7457,9 @@ code.
       </a>
     </div>
   </h2>
-  <div>
+  <div
+    class="css-kdowal-STYLES_APIBOX"
+  >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
@@ -7600,7 +7618,9 @@ code.
       </table>
     </div>
   </div>
-  <div>
+  <div
+    class="css-kdowal-STYLES_APIBOX"
+  >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
@@ -7740,7 +7760,9 @@ code.
       </table>
     </div>
   </div>
-  <div>
+  <div
+    class="css-kdowal-STYLES_APIBOX"
+  >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
@@ -7863,7 +7885,9 @@ code.
       </table>
     </div>
   </div>
-  <div>
+  <div
+    class="css-kdowal-STYLES_APIBOX"
+  >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
@@ -8031,7 +8055,9 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
       </table>
     </div>
   </div>
-  <div>
+  <div
+    class="css-kdowal-STYLES_APIBOX"
+  >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
@@ -8169,7 +8195,9 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
       </ul>
     </div>
   </div>
-  <div>
+  <div
+    class="css-kdowal-STYLES_APIBOX"
+  >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
@@ -8485,7 +8513,9 @@ For some types, they will represent the area used by the scanner.
       </table>
     </div>
   </div>
-  <div>
+  <div
+    class="css-kdowal-STYLES_APIBOX"
+  >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
@@ -8634,7 +8664,9 @@ For some types, they will represent the area used by the scanner.
       </table>
     </div>
   </div>
-  <div>
+  <div
+    class="css-kdowal-STYLES_APIBOX"
+  >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
@@ -8765,7 +8797,9 @@ For some types, they will represent the area used by the scanner.
       </a>
     </div>
   </h2>
-  <div>
+  <div
+    class="css-kdowal-STYLES_APIBOX"
+  >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
@@ -9028,7 +9062,9 @@ For some types, they will represent the area used by the scanner.
       </a>
     </div>
   </h2>
-  <div>
+  <div
+    class="css-1kfymly-STYLES_APIBOX-STYLES_ELEMENTS-renderEnum"
+  >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
@@ -9227,7 +9263,9 @@ exports[`APISection expo-pedometer 1`] = `
       </a>
     </div>
   </h2>
-  <div>
+  <div
+    class="css-kdowal-STYLES_APIBOX"
+  >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
@@ -9247,7 +9285,7 @@ exports[`APISection expo-pedometer 1`] = `
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-ni28os-STYLES_INLINE_CODE-STYLES_NOT_EXPOSED_HEADER-InlineCode"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               getPermissionsAsync()
             </code>
@@ -9365,9 +9403,10 @@ exports[`APISection expo-pedometer 1`] = `
         </code>
       </li>
     </ul>
-    <hr />
   </div>
-  <div>
+  <div
+    class="css-kdowal-STYLES_APIBOX"
+  >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
@@ -9387,7 +9426,7 @@ exports[`APISection expo-pedometer 1`] = `
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-ni28os-STYLES_INLINE_CODE-STYLES_NOT_EXPOSED_HEADER-InlineCode"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               getStepCountAsync(start, end)
             </code>
@@ -9704,9 +9743,10 @@ a start date that is more than seven days in the past returns only the available
 
       </div>
     </blockquote>
-    <hr />
   </div>
-  <div>
+  <div
+    class="css-kdowal-STYLES_APIBOX"
+  >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
@@ -9726,7 +9766,7 @@ a start date that is more than seven days in the past returns only the available
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-ni28os-STYLES_INLINE_CODE-STYLES_NOT_EXPOSED_HEADER-InlineCode"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               isAvailableAsync()
             </code>
@@ -9858,9 +9898,10 @@ a start date that is more than seven days in the past returns only the available
       , indicating whether the pedometer is
 available on this device.
     </p>
-    <hr />
   </div>
-  <div>
+  <div
+    class="css-kdowal-STYLES_APIBOX"
+  >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
@@ -9880,7 +9921,7 @@ available on this device.
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-ni28os-STYLES_INLINE_CODE-STYLES_NOT_EXPOSED_HEADER-InlineCode"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               requestPermissionsAsync()
             </code>
@@ -9998,9 +10039,10 @@ available on this device.
         </code>
       </li>
     </ul>
-    <hr />
   </div>
-  <div>
+  <div
+    class="css-kdowal-STYLES_APIBOX"
+  >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
@@ -10020,7 +10062,7 @@ available on this device.
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-ni28os-STYLES_INLINE_CODE-STYLES_NOT_EXPOSED_HEADER-InlineCode"
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
               watchStepCount(callback)
             </code>
@@ -10303,7 +10345,9 @@ provided with a single argument that is
       </a>
     </div>
   </h2>
-  <div>
+  <div
+    class="css-kdowal-STYLES_APIBOX"
+  >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
@@ -10423,7 +10467,9 @@ provided with a single argument that is
       </table>
     </div>
   </div>
-  <div>
+  <div
+    class="css-kdowal-STYLES_APIBOX"
+  >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
@@ -10561,7 +10607,9 @@ provided with a single argument that is
       </ul>
     </div>
   </div>
-  <div>
+  <div
+    class="css-kdowal-STYLES_APIBOX"
+  >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
@@ -10641,7 +10689,9 @@ provided with a single argument that is
       </span>
     </p>
   </div>
-  <div>
+  <div
+    class="css-kdowal-STYLES_APIBOX"
+  >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
@@ -10814,7 +10864,9 @@ provided with a single argument that is
       </a>
     </div>
   </h2>
-  <div>
+  <div
+    class="css-kdowal-STYLES_APIBOX"
+  >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
@@ -11077,7 +11129,9 @@ provided with a single argument that is
       </a>
     </div>
   </h2>
-  <div>
+  <div
+    class="css-1kfymly-STYLES_APIBOX-STYLES_ELEMENTS-renderEnum"
+  >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
