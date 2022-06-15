@@ -14,7 +14,7 @@
   "expo-ads-admob": "~12.0.0",
   "expo-ads-facebook": "~11.1.0",
   "expo-analytics-amplitude": "~11.1.0",
-  "expo-analytics-segment": "~11.1.0",
+  "expo-analytics-segment": "~11.1.2",
   "expo-app-auth": "~11.1.0",
   "expo-app-loader-provider": "~8.0.0",
   "expo-app-loading": "~1.3.0",
