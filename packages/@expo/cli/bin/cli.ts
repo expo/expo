@@ -1,17 +1,14 @@
 #!/usr/bin/env node
 import arg from 'arg';
 import chalk from 'chalk';
+import Debug from 'debug';
 import { boolish } from 'getenv';
 
 // Setup before requiring `debug`.
 if (boolish('EXPO_DEBUG', false)) {
-  if (!process.env.DEBUG) {
-    process.env.DEBUG = '';
-  } else {
-    // Ensure we stack our debug calls on top of the existing debug calls.
-    process.env.DEBUG += ',';
-  }
-  process.env.DEBUG += 'expo:*';
+  Debug.enable('expo:*');
+} else if (Debug.enabled('expo:')) {
+  process.env.EXPO_DEBUG = '1';
 }
 
 const defaultCmd = 'start';
