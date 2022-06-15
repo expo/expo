@@ -89,10 +89,6 @@ NSString *ON_NEW_DEEP_LINK_EVENT = @"expo.modules.devlauncher.onnewdeeplink";
   NSString *sanitizedUrl = [urlString stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
   
   NSURL *url = [NSURL URLWithString:sanitizedUrl];
-
-  if ([EXDevLauncherURLHelper isDevLauncherURL:url]) {
-    url = [EXDevLauncherURLHelper getAppURLFromDevLauncherURL:url];
-  }
   
   return url;
 }
@@ -152,6 +148,12 @@ RCT_EXPORT_METHOD(getRecentlyOpenedApps:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject)
 {
   resolve([[EXDevLauncherController sharedInstance] recentlyOpenedApps]);
+}
+
+RCT_EXPORT_METHOD(clearRecentlyOpenedApps:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
+{
+  [[EXDevLauncherController sharedInstance] clearRecentlyOpenedApps];
+  resolve(nil);
 }
 
 RCT_EXPORT_METHOD(getBuildInfo:(RCTPromiseResolveBlock)resolve
