@@ -1,6 +1,15 @@
 #!/usr/bin/env node
 import arg from 'arg';
 import chalk from 'chalk';
+import Debug from 'debug';
+import { boolish } from 'getenv';
+
+// Setup before requiring `debug`.
+if (boolish('EXPO_DEBUG', false)) {
+  Debug.enable('expo:*');
+} else if (Debug.enabled('expo:')) {
+  process.env.EXPO_DEBUG = '1';
+}
 
 const defaultCmd = 'start';
 
