@@ -28,8 +28,14 @@ class DevLauncherErrorActivity :
     binding.reloadButton.setOnClickListener { this.reload() }
 
     synchronized(DevLauncherErrorActivity) {
-      displayError(currentError!!)
-      currentError = null
+      val error = currentError
+      if (error != null) {
+        displayError(currentError!!)
+        currentError = null
+      } else {
+        finish()
+        return
+      }
     }
 
     setContentView(binding.root)
@@ -89,6 +95,11 @@ class DevLauncherErrorActivity :
   companion object {
     private var openedErrorActivity = WeakReference<DevLauncherErrorActivity?>(null)
     private var currentError: DevLauncherAppError? = null
+
+    fun isVisible(): Boolean {
+      val errorActivity = openedErrorActivity.get()
+      return !(errorActivity == null || errorActivity.isDestroyed || errorActivity.isFinishing)
+    }
 
     fun showErrorIfNotVisible(activity: Activity, error: DevLauncherAppError) {
       val errorActivity = openedErrorActivity.get()
