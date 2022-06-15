@@ -18,6 +18,7 @@ import {
   renderParam,
   renderTypeOrSignatureType,
   resolveTypeName,
+  STYLES_APIBOX,
 } from '~/components/plugins/api/APISectionUtils';
 import { Cell, HeaderCell, Row, Table, TableHead } from '~/ui/components/Table';
 
@@ -96,7 +97,7 @@ const renderInterface = ({
   extendedTypes,
 }: InterfaceDefinitionData): JSX.Element | null =>
   children ? (
-    <div key={`interface-definition-${name}`}>
+    <div key={`interface-definition-${name}`} css={STYLES_APIBOX}>
       <H3Code>
         <InlineCode>{name}</InlineCode>
       </H3Code>

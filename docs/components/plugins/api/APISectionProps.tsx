@@ -1,4 +1,5 @@
 import { css } from '@emotion/react';
+import { spacing } from '@expo/styleguide';
 import React from 'react';
 
 import { InlineCode } from '~/components/base/code';
@@ -28,14 +29,13 @@ export type APISectionPropsProps = {
 
 const UNKNOWN_VALUE = '...';
 
-const PROP_LIST_ELEMENT_STYLE = css`
-  padding-top: 0.15rem;
-  padding-bottom: 0.15rem;
-`;
+const PROP_LIST_ELEMENT_STYLE = css({
+  marginBottom: spacing[1],
 
-const STYLES_DIVIDER = css`
-  margin-bottom: 1rem;
-`;
+  'h3, h4': {
+    marginTop: `0 !important`,
+  },
+});
 
 const extractDefaultPropValue = (
   { comment, name }: PropData,
@@ -125,7 +125,6 @@ export const renderProp = (
       ) : null}
     </P>
     <CommentTextBlock comment={getCommentOrSignatureComment(comment, signatures)} />
-    <hr css={STYLES_DIVIDER} />
   </LI>
 );
 
@@ -140,7 +139,7 @@ const APISectionProps = ({ data, defaultProps, header = 'Props' }: APISectionPro
           <H3Code key={`${header}-props-header`}>
             <InlineCode>{header}</InlineCode>
           </H3Code>
-          {baseProp && baseProp.comment ? <CommentTextBlock comment={baseProp.comment} /> : <br />}
+          {baseProp && baseProp.comment ? <CommentTextBlock comment={baseProp.comment} /> : null}
         </>
       )}
       {data.map((propsDefinition: PropsDefinitionData) =>

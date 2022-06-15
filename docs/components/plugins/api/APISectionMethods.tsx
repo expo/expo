@@ -12,11 +12,11 @@ import {
 } from '~/components/plugins/api/APIDataTypes';
 import {
   CommentTextBlock,
-  getPlatformTags,
   listParams,
   mdComponents,
   renderParam,
   resolveTypeName,
+  STYLES_APIBOX,
 } from '~/components/plugins/api/APISectionUtils';
 
 export type APISectionMethodsProps = {
@@ -37,14 +37,13 @@ export const renderMethod = (
 ): JSX.Element[] => {
   const HeaderComponent = exposeInSidebar ? H3Code : H4Code;
   return signatures.map(({ name, parameters, comment, type }: MethodSignatureData) => (
-    <div key={`method-signature-${name}-${parameters?.length || 0}`}>
+    <div key={`method-signature-${name}-${parameters?.length || 0}`} css={STYLES_APIBOX}>
       <HeaderComponent>
-        <InlineCode customCss={STYLES_NOT_EXPOSED_HEADER}>
+        <InlineCode customCss={!exposeInSidebar ? STYLES_NOT_EXPOSED_HEADER : undefined}>
           {apiName && `${apiName}.`}
           {header !== 'Hooks' ? `${name}(${listParams(parameters)})` : name}
         </InlineCode>
       </HeaderComponent>
-      {getPlatformTags(comment)}
       <CommentTextBlock
         comment={comment}
         beforeContent={
@@ -55,9 +54,8 @@ export const renderMethod = (
             </>
           )
         }
-        includePlatforms={false}
       />
-      {resolveTypeName(type) !== 'undefined' ? (
+      {resolveTypeName(type) !== 'undefined' && (
         <>
           <H4>Returns</H4>
           <UL>
@@ -69,8 +67,7 @@ export const renderMethod = (
             <ReactMarkdown components={mdComponents}>{comment.returns}</ReactMarkdown>
           )}
         </>
-      ) : null}
-      {index !== undefined ? index + 1 !== dataLength && <hr /> : null}
+      )}
     </div>
   ));
 };

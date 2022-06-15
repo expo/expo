@@ -1,5 +1,15 @@
 import { css } from '@emotion/react';
-import { theme } from '@expo/styleguide';
+import {
+  theme,
+  iconSize,
+  spacing,
+  AtSignIcon,
+  AndroidIcon,
+  AppleIcon,
+  ExpoGoLogo,
+  borderRadius,
+  shadows,
+} from '@expo/styleguide';
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -11,12 +21,14 @@ import { LI, UL } from '~/components/base/list';
 import { B, P, Quote } from '~/components/base/paragraph';
 import {
   CommentData,
+  CommentTagData,
   MethodParamData,
   MethodSignatureData,
   PropData,
   TypeDefinitionData,
   TypePropertyDataFlags,
 } from '~/components/plugins/api/APIDataTypes';
+import * as Constants from '~/constants/theme';
 
 const isDev = process.env.NODE_ENV === 'development';
 
@@ -380,6 +392,54 @@ export const getTagData = (tagName: string, comment?: CommentData) =>
 export const getAllTagData = (tagName: string, comment?: CommentData) =>
   comment?.tags?.filter(tag => tag.tag === tagName);
 
+const getCleanPlatformName = (platform: CommentTagData) => {
+  if (platform.text.includes('ios')) return 'ios';
+  if (platform.text.includes('android')) return 'android';
+  if (platform.text.includes('web')) return 'web';
+  if (platform.text.includes('expo')) return 'expo';
+  return undefined;
+};
+
+const renderPlatformIcon = (platform: CommentTagData) => {
+  switch (getCleanPlatformName(platform)) {
+    case 'ios':
+      return (
+        <AppleIcon
+          size={iconSize.micro}
+          color={theme.palette.blue['900']}
+          css={STYLES_PLATFORM_ICON}
+        />
+      );
+    case 'android':
+      return (
+        <AndroidIcon
+          size={iconSize.micro}
+          color={theme.palette.green['900']}
+          css={STYLES_PLATFORM_ICON}
+        />
+      );
+    case 'web':
+      return (
+        <AtSignIcon
+          size={iconSize.micro}
+          color={theme.palette.orange['900']}
+          css={STYLES_PLATFORM_ICON}
+        />
+      );
+    case 'expo':
+      return (
+        <ExpoGoLogo
+          width={iconSize.micro}
+          height={iconSize.micro}
+          color={theme.palette.purple['900']}
+          css={STYLES_PLATFORM_ICON}
+        />
+      );
+    default:
+      return undefined;
+  }
+};
+
 const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
 
 const formatPlatformName = (name: string) => {
@@ -391,16 +451,27 @@ const formatPlatformName = (name: string) => {
     : capitalize(name);
 };
 
-export const getPlatformTags = (comment?: CommentData, breakLine: boolean = true) => {
+export const getPlatformTags = (comment?: CommentData) => {
   const platforms = getAllTagData('platform', comment);
   return platforms?.length ? (
     <>
-      {platforms.map(platform => (
-        <div key={platform.text} css={STYLES_PLATFORM}>
-          {formatPlatformName(platform.text)} Only
-        </div>
-      ))}
-      {breakLine && <br />}
+      {platforms.map(platform => {
+        const platformName = getCleanPlatformName(platform);
+        return (
+          <div
+            key={platformName}
+            css={[
+              STYLES_PLATFORM,
+              platformName === 'android' && STYLES_ANDROID_PLATFORM,
+              platformName === 'ios' && STYLES_IOS_PLATFORM,
+              platformName === 'web' && STYLES_WEB_PLATFORM,
+              platformName === 'expo' && STYLES_EXPO_PLATFORM,
+            ]}>
+            {renderPlatformIcon(platform)}
+            {formatPlatformName(platform.text)}
+          </div>
+        );
+      })}
     </>
   ) : null;
 };
@@ -460,10 +531,16 @@ export const CommentTextBlock = ({
 
   return (
     <>
+      {!withDash && includePlatforms && getPlatformTags(comment) && (
+        <>
+          <B>Only for:</B> {getPlatformTags(comment)}
+          <br />
+        </>
+      )}
       {deprecationNote}
       {beforeContent}
       {withDash && (shortText || text) && ' - '}
-      {includePlatforms && getPlatformTags(comment, !withDash)}
+      {withDash && includePlatforms && getPlatformTags(comment)}
       {shortText}
       {text}
       {afterContent}
@@ -479,6 +556,24 @@ export const getComponentName = (name?: string, children: PropData[] = []) => {
   return ctor?.signatures?.[0]?.type?.name ?? 'default';
 };
 
+export const STYLES_APIBOX = css({
+  borderRadius: borderRadius.medium,
+  borderWidth: 1,
+  borderStyle: 'solid',
+  borderColor: theme.border.default,
+  padding: `${spacing[1]}px ${spacing[5]}px`,
+  boxShadow: shadows.micro,
+  marginBottom: spacing[5],
+
+  h3: {
+    marginTop: spacing[4],
+  },
+
+  [`@media screen and (max-width: ${Constants.breakpoints.mobile})`]: {
+    padding: `0 ${spacing[4]}px`,
+  },
+});
+
 export const STYLES_OPTIONAL = css`
   color: ${theme.text.secondary};
   font-size: 90%;
@@ -492,21 +587,52 @@ export const STYLES_SECONDARY = css`
 `;
 
 export const STYLES_PLATFORM = css`
-  & {
-    display: inline-block;
-    background-color: ${theme.background.tertiary};
-    color: ${theme.text.default};
-    font-size: 90%;
-    font-weight: 700;
-    padding: 6px 12px;
-    margin-bottom: 8px;
-    margin-right: 8px;
-    border-radius: 4px;
-  }
+  display: inline-block;
+  background-color: ${theme.background.tertiary};
+  color: ${theme.text.default};
+  font-size: 90%;
+  font-weight: 700;
+  padding: ${spacing[1]}px ${spacing[2]}px;
+  margin-bottom: ${spacing[2]}px;
+  margin-left: ${spacing[1]}px;
+  margin-right: ${spacing[1]}px;
+  border-radius: ${borderRadius.small}px;
+  border: 1px solid ${theme.border.default};
 
   table & {
-    margin-bottom: 1rem;
+    margin-bottom: ${spacing[2]}px;
+    padding: 0 ${spacing[1.5]}px;
   }
+`;
+
+export const STYLES_PLATFORM_ICON = css({
+  marginRight: spacing[1],
+  marginBottom: spacing[0.5],
+  verticalAlign: 'middle',
+});
+
+export const STYLES_ANDROID_PLATFORM = css`
+  background-color: ${theme.palette.green['000']};
+  color: ${theme.palette.green['900']};
+  border-color: ${theme.palette.green['200']};
+`;
+
+export const STYLES_IOS_PLATFORM = css`
+  background-color: ${theme.palette.blue['000']};
+  color: ${theme.palette.blue['900']};
+  border-color: ${theme.palette.blue['200']};
+`;
+
+export const STYLES_WEB_PLATFORM = css`
+  background-color: ${theme.palette.orange['000']};
+  color: ${theme.palette.orange['900']};
+  border-color: ${theme.palette.orange['200']};
+`;
+
+export const STYLES_EXPO_PLATFORM = css`
+  background-color: ${theme.palette.purple['000']};
+  color: ${theme.palette.purple['900']};
+  border-color: ${theme.palette.purple['200']};
 `;
 
 const STYLES_EXAMPLE_IN_TABLE = css`

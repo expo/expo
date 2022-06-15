@@ -14,6 +14,7 @@ import {
   CommentTextBlock,
   resolveTypeName,
   getComponentName,
+  STYLES_APIBOX,
 } from '~/components/plugins/api/APISectionUtils';
 
 export type APISectionComponentsProps = {
@@ -31,7 +32,7 @@ const renderComponent = (
   const resolvedType = extendedTypes?.length ? extendedTypes[0] : type;
   const resolvedName = getComponentName(name, children);
   return (
-    <div key={`component-definition-${resolvedName}`}>
+    <div key={`component-definition-${resolvedName}`} css={STYLES_APIBOX}>
       <H3Code>
         <InlineCode>{resolvedName}</InlineCode>
       </H3Code>

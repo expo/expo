@@ -1,5 +1,5 @@
 import { css } from '@emotion/react';
-import { theme } from '@expo/styleguide';
+import { spacing, theme } from '@expo/styleguide';
 import React from 'react';
 
 import { InlineCode } from '~/components/base/code';
@@ -7,13 +7,27 @@ import { LI, UL } from '~/components/base/list';
 import { P } from '~/components/base/paragraph';
 import { H2, H3Code } from '~/components/plugins/Headings';
 import { EnumDefinitionData, EnumValueData } from '~/components/plugins/api/APIDataTypes';
-import { CommentTextBlock, mdInlineComponents } from '~/components/plugins/api/APISectionUtils';
+import {
+  CommentTextBlock,
+  mdInlineComponents,
+  STYLES_APIBOX,
+} from '~/components/plugins/api/APISectionUtils';
 
 export type APISectionEnumsProps = {
   data: EnumDefinitionData[];
 };
 
 const STYLES_ENUM_VALUE = css({ color: theme.text.secondary, fontSize: '75%' });
+
+const STYLES_ELEMENTS = css({
+  '& blockquote': {
+    margin: `${spacing[2]}px 0`,
+  },
+
+  '& ul': {
+    marginBottom: 0,
+  },
+});
 
 const sortByValue = (a: EnumValueData, b: EnumValueData) => {
   if (a.defaultValue && b.defaultValue) {
@@ -27,7 +41,7 @@ const sortByValue = (a: EnumValueData, b: EnumValueData) => {
 };
 
 const renderEnum = ({ name, children, comment }: EnumDefinitionData): JSX.Element => (
-  <div key={`enum-definition-${name}`}>
+  <div key={`enum-definition-${name}`} css={[STYLES_APIBOX, STYLES_ELEMENTS]}>
     <H3Code>
       <InlineCode>{name}</InlineCode>
     </H3Code>

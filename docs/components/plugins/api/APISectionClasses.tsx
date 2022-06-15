@@ -14,6 +14,7 @@ import { renderProp } from '~/components/plugins/api/APISectionProps';
 import {
   CommentTextBlock,
   resolveTypeName,
+  STYLES_APIBOX,
   TypeDocKind,
 } from '~/components/plugins/api/APISectionUtils';
 
@@ -35,7 +36,7 @@ const renderClass = (clx: ClassDefinitionData, hasMultipleClasses: boolean): JSX
   const methods = children?.filter(isMethod);
 
   return (
-    <div key={`class-definition-${name}`}>
+    <div key={`class-definition-${name}`} css={STYLES_APIBOX}>
       {hasMultipleClasses ? (
         <H3Code>
           <InlineCode>{name}</InlineCode>
@@ -87,17 +88,21 @@ const renderClass = (clx: ClassDefinitionData, hasMultipleClasses: boolean): JSX
           </UL>
         </>
       ) : null}
-      {methods?.length ? (
+      {methods?.length && (
         <>
-          {hasMultipleClasses ? <H4>{name} Methods</H4> : <H2>{name} Methods</H2>}
-          <div style={{ paddingLeft: 8 }}>
-            {methods.map((method, index) =>
-              renderMethod(method, index, methods.length, undefined, undefined, !hasMultipleClasses)
-            )}
-          </div>
+          {hasMultipleClasses ? (
+            <>
+              <H4>{name} Methods</H4>
+              <br />
+            </>
+          ) : (
+            <H2>{name} Methods</H2>
+          )}
+          {methods.map((method, index) =>
+            renderMethod(method, index, methods.length, undefined, undefined, !hasMultipleClasses)
+          )}
         </>
-      ) : null}
-      <hr />
+      )}
     </div>
   );
 };
