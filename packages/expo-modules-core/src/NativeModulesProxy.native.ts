@@ -32,7 +32,7 @@ if (LegacyNativeProxy) {
           );
         }
 
-        // we still want to call methods using the legacy proxy
+        // We still want to call methods using the legacy proxy in SDK 46
         return LegacyNativeProxy.callMethod(moduleName, key, args);
       };
     });

@@ -15,7 +15,7 @@ NS_SWIFT_NAME(ModulesProxyConfig)
                      viewManagers:(nonnull NSDictionary *)viewManagerMetadata;
 
 - (void)addEntriesFromConfig:(nonnull const EXModulesProxyConfig *)config;
-- (NSDictionary<NSString *, id> *) toDictionary;
+- (nonnull NSDictionary<NSString *, id> *)toDictionary;
 
 @end
 

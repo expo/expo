@@ -42,8 +42,7 @@ static const NSString *methodInfoArgumentsCountKey = @"argumentsCount";
                       methodNames:(nonnull NSDictionary *)methodNames
                      viewManagers:(nonnull NSDictionary *)viewManagerMetadata
 {
-  self = [super init];
-  if (self) {
+  if (self = [super init]) {
     _exportedConstants = constants;
     _methodNames = methodNames;
     _viewManagerMetadata = viewManagerMetadata;
@@ -51,14 +50,14 @@ static const NSString *methodInfoArgumentsCountKey = @"argumentsCount";
   return self;
 }
 
-- (void)addEntriesFromConfig:(const EXModulesProxyConfig*)config
+- (void)addEntriesFromConfig:(nonnull const EXModulesProxyConfig*)config
 {
   [_exportedConstants addEntriesFromDictionary:config.exportedConstants];
   [_methodNames addEntriesFromDictionary:config.methodNames];
   [_viewManagerMetadata addEntriesFromDictionary:config.viewManagerMetadata];
 }
 
-- (NSDictionary<NSString*, id> *) toDictionary
+- (nonnull NSDictionary<NSString *, id> *)toDictionary
 {
   NSMutableDictionary <NSString *, id> *constantsAccumulator = [NSMutableDictionary dictionary];
   constantsAccumulator[viewManagersMetadataKeyPath] = _viewManagerMetadata;
@@ -136,13 +135,6 @@ RCT_EXPORT_MODULE(NativeUnimoduleProxy)
   return [self initWithModuleRegistry:nil];
 }
 
-- (instancetype)initWithAppContext:(nonnull NSObject *)appContext
-{
-  self = [self init];
-  self->_appContext = appContext;
-  return self;
-}
-
 # pragma mark - React API
 
 + (BOOL)requiresMainQueueSetup
@@ -150,7 +142,7 @@ RCT_EXPORT_MODULE(NativeUnimoduleProxy)
   return YES;
 }
 
-- (EXModulesProxyConfig *)nativeModulesConfig
+- (nonnull EXModulesProxyConfig *)nativeModulesConfig
 {
   if (_nativeModulesConfig) {
     return _nativeModulesConfig;
@@ -202,7 +194,7 @@ RCT_EXPORT_MODULE(NativeUnimoduleProxy)
   return config;
 }
 
-- (NSDictionary *)constantsToExport
+- (nonnull NSDictionary *)constantsToExport
 {
   return [self.nativeModulesConfig toDictionary];
 }

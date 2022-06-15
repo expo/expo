@@ -17,7 +17,7 @@ if (LegacyNativeProxy) {
                 if (argumentsCount !== args.length) {
                     return Promise.reject(new Error(`Native method ${moduleName}.${methodInfo.name} expects ${argumentsCount} ${argumentsCount === 1 ? 'argument' : 'arguments'} but received ${args.length}`));
                 }
-                // we still want to call methods using the legacy proxy
+                // We still want to call methods using the legacy proxy in SDK 46
                 return LegacyNativeProxy.callMethod(moduleName, key, args);
             };
         });
