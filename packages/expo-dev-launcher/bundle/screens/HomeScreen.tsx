@@ -13,20 +13,27 @@ import {
   ChevronRightIcon,
   InfoIcon,
   scale,
+  useExpoPalette,
+  BranchIcon,
 } from 'expo-dev-client-components';
 import * as React from 'react';
-import { ScrollView } from 'react-native';
+import { Animated, ScrollView } from 'react-native';
 
 import { AppHeader } from '../components/AppHeader';
 import { DevServerExplainerModal } from '../components/DevServerExplainerModal';
+import { useLoadingContainerStyle } from '../components/EASUpdatesRows';
 import { LoadAppErrorModal } from '../components/LoadAppErrorModal';
 import { PulseIndicator } from '../components/PulseIndicator';
+import { Toasts } from '../components/Toasts';
 import { UrlDropdown } from '../components/UrlDropdown';
-import { loadApp } from '../native-modules/DevLauncherInternal';
+import { formatUpdateUrl } from '../functions/formatUpdateUrl';
+import { loadApp, loadUpdate } from '../native-modules/DevLauncherInternal';
 import { useCrashReport } from '../providers/CrashReportProvider';
 import { useDevSessions } from '../providers/DevSessionsProvider';
 import { useModalStack } from '../providers/ModalStackProvider';
-import { useRecentlyOpenedApps } from '../providers/RecentlyOpenedAppsProvider';
+import { RecentApp, useRecentlyOpenedApps } from '../providers/RecentlyOpenedAppsProvider';
+import { useToastStack } from '../providers/ToastStackProvider';
+import { useUpdatesConfig } from '../providers/UpdatesConfigProvider';
 import { DevSession } from '../types';
 
 export type HomeScreenProps = {
@@ -47,6 +54,8 @@ export function HomeScreen({
   const [loadingUrl, setLoadingUrl] = React.useState('');
 
   const { data: devSessions, pollAsync, isFetching } = useDevSessions();
+  const toastStack = useToastStack();
+  const { projectUrl } = useUpdatesConfig();
 
   const crashReport = useCrashReport();
 
@@ -81,8 +90,17 @@ export function HomeScreen({
     pollAsync({ pollAmount, pollInterval });
   };
 
-  const onAppPress = async (url: string) => {
-    onLoadUrl(url);
+  const onRecentAppPress = async (app: RecentApp) => {
+    if (app.isEASUpdate) {
+      const updateUrl = formatUpdateUrl(app.url, app.updateMessage);
+      loadUpdate(updateUrl, projectUrl).catch((error) => {
+        toastStack.push(() => <Toasts.Error>{error.message}</Toasts.Error>, {
+          durationMs: 10000,
+        });
+      });
+    } else {
+      onLoadUrl(app.url);
+    }
   };
 
   const onDevServerQuestionPress = () => {
@@ -177,7 +195,7 @@ export function HomeScreen({
 
           <Spacer.Vertical size="medium" />
 
-          <RecentlyOpenedApps onAppPress={onAppPress} />
+          <RecentlyOpenedApps onRecentAppPress={onRecentAppPress} loadingUrl={loadingUrl} />
         </View>
       </ScrollView>
     </View>
@@ -254,48 +272,164 @@ function DevSessionList({ devSessions = [], onDevSessionPress }: DevSessionListP
   );
 }
 
-function RecentlyOpenedApps({ onAppPress }) {
-  const { data: apps } = useRecentlyOpenedApps();
+function RecentlyOpenedApps({ onRecentAppPress, loadingUrl }) {
+  const { data: apps, clear: clearRecentlyOpenedApps } = useRecentlyOpenedApps();
 
   if (apps.length === 0) {
     return null;
   }
 
+  function renderRow(app: RecentApp) {
+    const label = app.name ?? app.url;
+
+    if (app.isEASUpdate && app.updateMessage != null) {
+      return (
+        <RecentEASUpdateRow
+          label={label}
+          url={app.url}
+          message={app.updateMessage}
+          branchName={app.branchName}
+        />
+      );
+    }
+
+    return <RecentLocalPackagerRow label={label} url={app.url} />;
+  }
+
   return (
     <View px="medium">
-      <View padding="medium">
+      <Row align="center" py="small">
+        <Spacer.Horizontal size="small" />
+
         <Heading color="secondary">Recently opened</Heading>
-      </View>
+        <Spacer.Horizontal />
+
+        <Button.ScaleOnPressContainer bg="ghost" onPress={clearRecentlyOpenedApps}>
+          <View rounded="medium" px="small" py="micro">
+            <Heading size="small" weight="semibold" color="secondary">
+              Reset
+            </Heading>
+          </View>
+        </Button.ScaleOnPressContainer>
+      </Row>
 
       <View>
-        {apps.slice(0, 5).map((app, index, arr) => {
+        {apps.map((app, index, arr) => {
           const isFirst = index === 0;
           const isLast = index === arr.length - 1;
-          const label = app.name ?? app.url;
+          const isLoading = app.url === loadingUrl;
 
           return (
-            <View key={app.url}>
+            <LoadingContainer key={app.id} isLoading={isLoading}>
               <Button.ScaleOnPressContainer
-                onPress={() => onAppPress(app.url)}
+                onPress={() => onRecentAppPress(app)}
                 roundedTop={isFirst ? 'large' : 'none'}
                 roundedBottom={isLast ? 'large' : 'none'}
+                py="small"
                 bg="default">
-                <Row align="center" padding="medium" bg="default">
-                  <StatusIndicator size="small" status="success" />
-                  <Spacer.Horizontal size="small" />
-                  <View flex="1">
-                    <Button.Text color="default" numberOfLines={1}>
-                      {label}
-                    </Button.Text>
-                  </View>
-                  <ChevronRightIcon />
-                </Row>
+                {renderRow(app)}
               </Button.ScaleOnPressContainer>
               {!isLast && <Divider />}
-            </View>
+            </LoadingContainer>
           );
         })}
       </View>
+    </View>
+  );
+}
+
+function LoadingContainer({ children, isLoading }) {
+  const style = useLoadingContainerStyle(isLoading);
+  return <Animated.View style={style}>{children}</Animated.View>;
+}
+
+function RecentLocalPackagerRow({ label, url }) {
+  return (
+    <>
+      <Row align="center" px="medium" bg="default">
+        <StatusIndicator size="small" status="success" />
+        <Spacer.Horizontal size="small" />
+        <View flex="1">
+          <Button.Text color="default" numberOfLines={1}>
+            {label}
+          </Button.Text>
+        </View>
+        <ChevronRightIcon />
+      </Row>
+
+      <Row px="medium" align="center" bg="default">
+        <Spacer.Vertical size="tiny" />
+        <Spacer.Horizontal size="large" />
+        <Row
+          style={{
+            flexWrap: 'wrap',
+            flexShrink: 1,
+          }}>
+          <Text size="small" color="secondary" numberOfLines={1}>
+            {url}
+          </Text>
+        </Row>
+      </Row>
+    </>
+  );
+}
+
+function RecentEASUpdateRow({ label, url, branchName, message }) {
+  const palette = useExpoPalette();
+  return (
+    <View>
+      <Row align="center" px="medium" bg="default">
+        <Row
+          shrink="1"
+          style={{
+            backgroundColor: palette.blue['100'],
+          }}
+          py="tiny"
+          px="1.5"
+          rounded="medium"
+          align="center">
+          <BranchIcon
+            style={{ maxHeight: 10, maxWidth: 12, resizeMode: 'contain' }}
+            resizeMethod="scale"
+          />
+          <Spacer.Horizontal size="tiny" />
+          <View shrink="1">
+            <Text size="small" numberOfLines={1}>{`Branch: ${branchName}`}</Text>
+          </View>
+        </Row>
+
+        <Spacer.Horizontal />
+
+        <ChevronRightIcon />
+      </Row>
+
+      <Spacer.Vertical size="small" bg="default" />
+
+      {Boolean(message) && (
+        <>
+          <Row px="medium" align="center" bg="default">
+            <View>
+              <Heading size="small" numberOfLines={1}>
+                {`Update "${message}"`}
+              </Heading>
+            </View>
+          </Row>
+
+          <Spacer.Vertical size="micro" bg="default" />
+        </>
+      )}
+
+      <Row px="medium" align="center" bg="default">
+        <Row
+          style={{
+            flexWrap: 'wrap',
+            flexShrink: 1,
+          }}>
+          <Text size="small" color="secondary" numberOfLines={1}>
+            {url}
+          </Text>
+        </Row>
+      </Row>
     </View>
   );
 }

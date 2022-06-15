@@ -6,7 +6,9 @@
 
 ### 🎉 New features
 
+- Include extra information in the recently opened list ([#17633](https://github.com/expo/expo/pull/17633) by [@ajsmth](https://github.com/ajsmth))
 - Add debug settings for EAS Updates (admin only) ([#17842](https://github.com/expo/expo/pull/17842) by [@ajsmth](https://github.com/ajsmth))
+
 
 ### 🐛 Bug fixes
 

@@ -1,11 +1,24 @@
 import * as React from 'react';
 
-import { getRecentlyOpenedApps } from '../native-modules/DevLauncherInternal';
+import {
+  getRecentlyOpenedApps,
+  clearRecentlyOpenedApps,
+} from '../native-modules/DevLauncherInternal';
 
-export type RecentApp = {
+type App = {
+  id: string;
   url: string;
   name: string;
+  timestamp: number;
 };
+
+export type RecentApp =
+  | (App & {
+      isEASUpdate: true;
+      branchName: string;
+      updateMessage: string;
+    })
+  | (App & { isEASUpdate: false });
 
 type RecentlyOpenedApps = {
   recentApps: RecentApp[];
@@ -37,14 +50,27 @@ export function useRecentlyOpenedApps() {
     setIsFetching(true);
     getRecentlyOpenedApps()
       .then((apps) => {
-        const formattedApps = Object.entries(apps).map(([url, name]) => {
-          return {
-            url,
-            name: name ?? url,
-          };
-        });
+        // use a map to index apps by their url:
+        const recentApps: { [id: string]: RecentApp } = {};
 
-        setRecentApps(formattedApps);
+        for (const app of apps) {
+          // index by url to eliminate multiple bundlers with the same address
+          const id = `${app.url}`;
+          app.id = id;
+
+          const previousTimestamp = recentApps[id]?.timestamp ?? 0;
+
+          if (app.timestamp > previousTimestamp) {
+            recentApps[id] = app;
+          }
+        }
+
+        // sorted by most recent timestamp first
+        const sortedByMostRecent = Object.values(recentApps).sort(
+          (a, b) => b.timestamp - a.timestamp
+        );
+
+        setRecentApps(sortedByMostRecent);
         setIsFetching(false);
       })
       .catch((error) => {
@@ -54,9 +80,15 @@ export function useRecentlyOpenedApps() {
       });
   }, []);
 
+  async function clear() {
+    await clearRecentlyOpenedApps();
+    setRecentApps([]);
+  }
+
   return {
     data: recentApps,
     isFetching,
     error,
+    clear,
   };
 }

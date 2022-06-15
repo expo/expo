@@ -1,6 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 import Foundation
+import EXManifests
 
 let RECENTLY_OPENED_APPS_REGISTRY_KEY = "expo.devlauncher.recentlyopenedapps"
 
@@ -18,33 +19,75 @@ public class EXDevLauncherRecentlyOpenedAppsRegistry: NSObject {
   }
 
   @objc
-  public func appWasOpened(_ url: String, name: String?) {
-    var registry = appRegistry
-    var appEntry: [String: Any] = ["timestamp": getCurrentTimestamp()]
-    if name != nil {
-      appEntry["name"] = name
+  public func appWasOpened(_ url: String, queryParams: [String: String], manifest: EXManifestsManifestBehavior?) {
+    
+    var appEntry: [String: Any] = [:]
+    
+    // reloading the same url - update the old entry w/ any new fields instead of creating a new one
+    if let previousMatchingEntry = appRegistry[url] {
+      appEntry = previousMatchingEntry as! [String : Any]
     }
+    
+    let timestamp = getCurrentTimestamp()
+        
+    var isEASUpdate = false
+    
+    if let host = URL(string:url)?.host {
+      isEASUpdate = host == "u.expo.dev" || host == "staging-u.expo.dev"
+    }
+    
+    appEntry["isEASUpdate"] = isEASUpdate
+    
+    if (isEASUpdate) {      
+      if let updateMessage = queryParams["updateMessage"] {
+        appEntry["updateMessage"] = updateMessage
+      }
+    }
+    
+    if let manifest = manifest {
+      appEntry["name"] = manifest.name()
+      
+      // TODO - expose metadata object in expo-manifests
+      let json = manifest.rawManifestJSON()
+      
+      if (isEASUpdate) {
+        if let metadata: [String: Any] = json["metadata"] as? [String : Any], let branchName = metadata["branchName"] {
+          appEntry["branchName"] = branchName;
+        }
+      }
+    }
+    
+    appEntry["timestamp"] = timestamp
+    appEntry["url"] = url
+    
+    var registry = appRegistry
     registry[url] = appEntry
     appRegistry = registry
   }
 
   @objc
-  public func recentlyOpenedApps() -> [String: Any] {
-    var result = [String: Any]()
+  public func recentlyOpenedApps() -> [[String: Any]] {
     guard let registry = appRegistry as? [String: [String: Any]] else {
-      return [:]
+      return []
     }
+    
+    var apps: [[String: Any]] = []
 
     appRegistry = registry.filter { (url: String, appEntry: [String: Any]) in
       if getCurrentTimestamp() - (appEntry["timestamp"] as! Int64) > TIME_TO_REMOVE {
         return false
       }
 
-      result[url] = appEntry["name"] ?? NSNull()
+      apps.append(appEntry)
       return true
     }
+    
+    return apps
+  }
 
-    return result
+  @objc
+  public func clearRegistry() {
+    resetStorage()
   }
 
   func getCurrentTimestamp() -> Int64 {

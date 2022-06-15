@@ -1,6 +1,5 @@
 package expo.modules.devlauncher.launcher
 
-import android.net.Uri
 import androidx.test.core.app.ApplicationProvider
 import com.google.common.truth.Truth
 import io.mockk.every
@@ -16,9 +15,11 @@ internal class DevLauncherRecentlyOpenedAppsRegistryTest {
   fun `adds app to registry`() {
     val urlString = "http://localhost:8081"
     val registry = DevLauncherRecentlyOpenedAppsRegistry(ApplicationProvider.getApplicationContext())
-    registry.appWasOpened(Uri.parse(urlString), "test-app")
+    Truth.assertThat(registry.getRecentlyOpenedApps().size).isEqualTo(0)
+    registry.appWasOpened(urlString, mapOf(), null)
     val apps = registry.getRecentlyOpenedApps()
-    Truth.assertThat(apps[urlString]).isEqualTo("test-app")
+    Truth.assertThat(apps.size).isEqualTo(1)
+    Truth.assertThat(apps[0].url).isEqualTo(urlString)
   }
 
   @Test
@@ -33,11 +34,11 @@ internal class DevLauncherRecentlyOpenedAppsRegistryTest {
 
     val urlString = "http://localhost:8081"
     val registry = DevLauncherRecentlyOpenedAppsRegistry(ApplicationProvider.getApplicationContext())
-    registry.appWasOpened(Uri.parse(urlString), "test-app")
+    registry.appWasOpened(urlString, mapOf(), null)
 
     unmockkAll()
 
     val apps = registry.getRecentlyOpenedApps()
-    Truth.assertThat(apps[urlString]).isNull()
+    Truth.assertThat(apps.size).isEqualTo(0)
   }
 }
