@@ -16,7 +16,7 @@ export default function DevLoadingView() {
     } catch (error) {
       throw new Error(
         'Failed to instantiate native emitter in `DevLoadingView` because the native module `DevLoadingView` is undefined: ' +
-        error.message
+          error.message
       );
     }
   }, []);
@@ -25,7 +25,7 @@ export default function DevLoadingView() {
     if (!emitter) return;
 
     function handleShowMessage({ message }) {
-      setMessage(message || 'Refreshing...');
+      setMessage(message);
       // TODO: if we show the refreshing banner and don't get a hide message
       // for 3 seconds, warn the user that it's taking a while and suggest
       // they reload
@@ -65,29 +65,29 @@ export default function DevLoadingView() {
     };
   }, [translateY, emitter]);
 
-  if (isDevLoading || isAnimating) {
-    return (
-      <Animated.View
-        style={[styles.animatedContainer, { transform: [{ translateY }] }]}
-        pointerEvents="none">
-        <View style={styles.banner}>
-          <View style={styles.contentContainer}>
-            <View style={{ flexDirection: 'row' }}>
-              <Text style={styles.text}>{message}</Text>
-            </View>
-
-            <View style={{ flex: 1 }}>
-              <Text style={styles.subtitle}>
-                {isDevLoading ? 'Using Fast Refresh' : "Don't see your changes? Reload the app"}
-              </Text>
-            </View>
-          </View>
-        </View>
-      </Animated.View>
-    );
-  } else {
+  if (!isDevLoading && !isAnimating) {
     return null;
   }
+
+  return (
+    <Animated.View
+      style={[styles.animatedContainer, { transform: [{ translateY }] }]}
+      pointerEvents="none">
+      <View style={styles.banner}>
+        <View style={styles.contentContainer}>
+          <View style={{ flexDirection: 'row' }}>
+            <Text style={styles.text}>{message}</Text>
+          </View>
+
+          <View style={{ flex: 1 }}>
+            <Text style={styles.subtitle}>
+              {isDevLoading ? 'Using Fast Refresh' : "Don't see your changes? Reload the app"}
+            </Text>
+          </View>
+        </View>
+      </View>
+    </Animated.View>
+  );
 }
 
 const styles = StyleSheet.create({
