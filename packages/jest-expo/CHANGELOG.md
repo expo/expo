@@ -10,4 +10,6 @@
 
 ### 🐛 Bug fixes
 
+- Makes jest-expo compatible with `jest@28.x`
+
 ### 💡 Others
