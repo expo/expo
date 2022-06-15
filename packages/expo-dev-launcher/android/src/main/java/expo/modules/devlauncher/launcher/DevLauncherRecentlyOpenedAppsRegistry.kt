@@ -23,7 +23,7 @@ class DevLauncherRecentlyOpenedAppsRegistry(context: Context) {
   private val sharedPreferences: SharedPreferences = context.getSharedPreferences(RECENTLY_OPENED_APPS_SHARED_PREFERENCES, Context.MODE_PRIVATE)
 
   fun appWasOpened(url: String, queryParams: Map<String, String>, manifest: Manifest?) {
-    val appEntry = mutableMapOf<String, Any>()
+    var appEntry = mutableMapOf<String, Any>()
     val uri = Uri.parse(url)
 
     if (sharedPreferences.contains(url)) {
