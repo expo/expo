@@ -401,36 +401,20 @@ const getCleanPlatformName = (platform: CommentTagData) => {
 };
 
 const renderPlatformIcon = (platform: CommentTagData) => {
+  const iconProps = { size: iconSize.micro, css: STYLES_PLATFORM_ICON };
+
   switch (getCleanPlatformName(platform)) {
     case 'ios':
-      return (
-        <AppleIcon
-          size={iconSize.micro}
-          color={theme.palette.blue['900']}
-          css={STYLES_PLATFORM_ICON}
-        />
-      );
+      return <AppleIcon color={theme.palette.blue['900']} {...iconProps} />;
     case 'android':
-      return (
-        <AndroidIcon
-          size={iconSize.micro}
-          color={theme.palette.green['900']}
-          css={STYLES_PLATFORM_ICON}
-        />
-      );
+      return <AndroidIcon color={theme.palette.green['900']} {...iconProps} />;
     case 'web':
-      return (
-        <AtSignIcon
-          size={iconSize.micro}
-          color={theme.palette.orange['900']}
-          css={STYLES_PLATFORM_ICON}
-        />
-      );
+      return <AtSignIcon color={theme.palette.orange['900']} {...iconProps} />;
     case 'expo':
       return (
         <ExpoGoLogo
-          width={iconSize.micro}
-          height={iconSize.micro}
+          width={iconProps.size}
+          height={iconProps.size}
           color={theme.palette.purple['900']}
           css={STYLES_PLATFORM_ICON}
         />
@@ -444,11 +428,13 @@ const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
 
 const formatPlatformName = (name: string) => {
   const cleanName = name.toLowerCase().replace('\n', '');
-  return cleanName.includes('ios')
-    ? cleanName.replace('ios', 'iOS')
-    : cleanName.includes('expo')
-    ? cleanName.replace('expo', 'Expo Go')
-    : capitalize(name);
+  if (cleanName.includes('ios')) {
+    return cleanName.replace('ios', 'iOS');
+  } else if (cleanName.includes('expo')) {
+    return cleanName.replace('expo', 'Expo Go');
+  } else {
+    return capitalize(name);
+  }
 };
 
 export const getPlatformTags = (comment?: CommentData) => {
@@ -561,7 +547,7 @@ export const STYLES_APIBOX = css({
   borderWidth: 1,
   borderStyle: 'solid',
   borderColor: theme.border.default,
-  padding: `${spacing[0.5]}px ${spacing[5]}px`,
+  padding: `${spacing[1]}px ${spacing[5]}px`,
   boxShadow: shadows.micro,
   marginBottom: spacing[6],
 
