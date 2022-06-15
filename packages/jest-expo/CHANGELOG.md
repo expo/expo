@@ -8,8 +8,8 @@
 
 ### 🎉 New features
 
-### 🐛 Bug fixes
+- Make `jest-expo` compatible with Jest 28. ([#17874](https://github.com/expo/expo/pull/17874) by [@madhums](https://github.com/madhums))
 
-- Makes jest-expo compatible with `jest@28.x` ([#17874](https://github.com/expo/expo/pull/17874) by [@madhums](https://github.com/madhums))
+### 🐛 Bug fixes
 
 ### 💡 Others
