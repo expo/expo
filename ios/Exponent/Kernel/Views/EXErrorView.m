@@ -7,27 +7,6 @@
 #import "EXKernelAppRecord.h"
 #import "EXUtil.h"
 
-// for creating a filled button background in iOS <15
-@interface UIImage (Utils)
-
-+ (UIImage *)imageWithSize:(CGSize)size color:(UIColor *)color;
-
-@end
-
-@implementation UIImage (Utils)
-
-+ (UIImage *)imageWithSize:(CGSize)size color:(UIColor *)color
-{
-    UIGraphicsBeginImageContextWithOptions(size, true, 0.0);
-    [color setFill];
-    UIRectFill(CGRectMake(0.0, 0.0, size.width, size.height));
-    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-    return image;
-}
-
-@end
-
 @interface EXErrorView ()
 
 @property (nonatomic, strong) IBOutlet UILabel *lblError;
@@ -52,7 +31,7 @@
     [self addSubview:_vContainer];
     
     [_btnRetry addTarget:self action:@selector(_onTapRetry) forControlEvents:UIControlEventTouchUpInside];
-   [_btnBack addTarget:self action:@selector(_onTapBack) forControlEvents:UIControlEventTouchUpInside];
+    [_btnBack addTarget:self action:@selector(_onTapBack) forControlEvents:UIControlEventTouchUpInside];
     
     for (UIButton *btnToStyle in @[ _btnRetry, _btnBack ]) {
       btnToStyle.layer.cornerRadius = 4.0;
@@ -147,10 +126,10 @@
   [_vContainer.topAnchor constraintEqualToAnchor:guide.topAnchor].active = YES;
   [_vContainer.bottomAnchor constraintEqualToAnchor:guide.bottomAnchor].active = YES;
 
-  UIImage *btnRetryBgImage = [UIImage imageWithSize:_btnRetry.frame.size color:  [EXUtil colorWithRGB:0x25292E]];
+  UIImage *btnRetryBgImage = [self imageWithSize:_btnRetry.frame.size color:  [EXUtil colorWithRGB:0x25292E]];
   [_btnRetry setBackgroundImage:btnRetryBgImage forState:UIControlStateNormal];
   
-  UIImage *btnBackBgImage = [UIImage imageWithSize:_btnBack.frame.size color:  [EXUtil colorWithRGB:0xF0F1F2]];
+  UIImage *btnBackBgImage = [self imageWithSize:_btnBack.frame.size color:  [EXUtil colorWithRGB:0xF0F1F2]];
   [_btnBack setBackgroundImage:btnBackBgImage forState:UIControlStateNormal];
 }
 
@@ -195,6 +174,17 @@
 - (BOOL)_isDevDetached
 {
   return [EXEnvironment sharedEnvironment].isDetached && [EXEnvironment sharedEnvironment].isDebugXCodeScheme;
+}
+
+// for creating a filled button background in iOS < 15
+- (UIImage *)imageWithSize:(CGSize)size color:(UIColor *)color
+{
+  UIGraphicsBeginImageContextWithOptions(size, true, 0.0);
+  [color setFill];
+  UIRectFill(CGRectMake(0.0, 0.0, size.width, size.height));
+  UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
+  UIGraphicsEndImageContext();
+  return image;
 }
 
 @end
