@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fixed the error screen is sometimes empty on Android.
+- Fixed the error screen is sometimes empty on Android. ([#17857](https://github.com/expo/expo/pull/17857) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 
