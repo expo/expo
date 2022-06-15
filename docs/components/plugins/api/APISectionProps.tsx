@@ -1,11 +1,9 @@
-import { css } from '@emotion/react';
-import { spacing } from '@expo/styleguide';
 import React from 'react';
 
 import { InlineCode } from '~/components/base/code';
 import { LI, UL } from '~/components/base/list';
 import { P } from '~/components/base/paragraph';
-import { H2, H3, H3Code, H4 } from '~/components/plugins/Headings';
+import { H2, H3, H3Code, H4, H4Code } from '~/components/plugins/Headings';
 import {
   DefaultPropsDefinitionData,
   PropData,
@@ -18,6 +16,9 @@ import {
   getTagData,
   renderTypeOrSignatureType,
   resolveTypeName,
+  STYLES_APIBOX,
+  STYLES_APIBOX_NESTED,
+  STYLES_NOT_EXPOSED_HEADER,
   STYLES_SECONDARY,
 } from '~/components/plugins/api/APISectionUtils';
 
@@ -28,14 +29,6 @@ export type APISectionPropsProps = {
 };
 
 const UNKNOWN_VALUE = '...';
-
-const PROP_LIST_ELEMENT_STYLE = css({
-  marginBottom: spacing[1],
-
-  'h3, h4': {
-    marginTop: `0 !important`,
-  },
-});
 
 const extractDefaultPropValue = (
   { comment, name }: PropData,
@@ -89,13 +82,11 @@ const renderProps = (
 
   return (
     <div key={`props-definition-${name}`}>
-      <UL>
-        {propsDeclarations?.map(prop =>
-          prop
-            ? renderProp(prop, extractDefaultPropValue(prop, defaultValues), exposeInSidebar)
-            : null
-        )}
-      </UL>
+      {propsDeclarations?.map(prop =>
+        prop
+          ? renderProp(prop, extractDefaultPropValue(prop, defaultValues), exposeInSidebar)
+          : null
+      )}
       {renderInheritedProps(type.types, exposeInSidebar)}
     </div>
   );
@@ -105,28 +96,30 @@ export const renderProp = (
   { comment, name, type, flags, signatures }: PropData,
   defaultValue?: string,
   exposeInSidebar?: boolean
-) => (
-  <LI propType key={`prop-entry-${name}`} customCss={PROP_LIST_ELEMENT_STYLE}>
-    {exposeInSidebar ? (
-      <H3Code>
-        <InlineCode>{name}</InlineCode>
-      </H3Code>
-    ) : (
-      <H4>{name}</H4>
-    )}
-    <P>
-      {flags?.isOptional && <span css={STYLES_SECONDARY}>Optional&emsp;&bull;&emsp;</span>}
-      <span css={STYLES_SECONDARY}>Type:</span> {renderTypeOrSignatureType(type, signatures, true)}
-      {defaultValue && defaultValue !== UNKNOWN_VALUE ? (
-        <span>
-          <span css={STYLES_SECONDARY}>&emsp;&bull;&emsp;Default:</span>{' '}
-          <InlineCode>{defaultValue}</InlineCode>
-        </span>
-      ) : null}
-    </P>
-    <CommentTextBlock comment={getCommentOrSignatureComment(comment, signatures)} />
-  </LI>
-);
+) => {
+  const HeaderComponent = exposeInSidebar ? H3Code : H4Code;
+  return (
+    <div key={`prop-entry-${name}`} css={[STYLES_APIBOX, !exposeInSidebar && STYLES_APIBOX_NESTED]}>
+      <HeaderComponent>
+        <InlineCode customCss={!exposeInSidebar ? STYLES_NOT_EXPOSED_HEADER : undefined}>
+          {name}
+        </InlineCode>
+      </HeaderComponent>
+      <P>
+        {flags?.isOptional && <span css={STYLES_SECONDARY}>Optional&emsp;&bull;&emsp;</span>}
+        <span css={STYLES_SECONDARY}>Type:</span>{' '}
+        {renderTypeOrSignatureType(type, signatures, true)}
+        {defaultValue && defaultValue !== UNKNOWN_VALUE ? (
+          <span>
+            <span css={STYLES_SECONDARY}>&emsp;&bull;&emsp;Default:</span>{' '}
+            <InlineCode>{defaultValue}</InlineCode>
+          </span>
+        ) : null}
+      </P>
+      <CommentTextBlock comment={getCommentOrSignatureComment(comment, signatures)} />
+    </div>
+  );
+};
 
 const APISectionProps = ({ data, defaultProps, header = 'Props' }: APISectionPropsProps) => {
   const baseProp = data.find(prop => prop.name === header);

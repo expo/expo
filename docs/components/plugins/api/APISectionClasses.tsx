@@ -1,7 +1,6 @@
 import React from 'react';
 
 import { InlineCode } from '~/components/base/code';
-import { UL } from '~/components/base/list';
 import { B, P } from '~/components/base/paragraph';
 import { H2, H3Code, H4 } from '~/components/plugins/Headings';
 import {
@@ -81,11 +80,9 @@ const renderClass = (clx: ClassDefinitionData, hasMultipleClasses: boolean): JSX
           ) : (
             <H2>{name} Properties</H2>
           )}
-          <UL>
-            {properties.map(property =>
-              renderProp(property, property?.defaultValue, !hasMultipleClasses)
-            )}
-          </UL>
+          {properties.map(property =>
+            renderProp(property, property?.defaultValue, !hasMultipleClasses)
+          )}
         </>
       ) : null}
       {methods?.length && (

@@ -561,9 +561,9 @@ export const STYLES_APIBOX = css({
   borderWidth: 1,
   borderStyle: 'solid',
   borderColor: theme.border.default,
-  padding: `${spacing[1]}px ${spacing[5]}px`,
+  padding: `${spacing[0.5]}px ${spacing[5]}px`,
   boxShadow: shadows.micro,
-  marginBottom: spacing[5],
+  marginBottom: spacing[6],
 
   h3: {
     marginTop: spacing[4],
@@ -572,6 +572,16 @@ export const STYLES_APIBOX = css({
   [`@media screen and (max-width: ${Constants.breakpoints.mobile})`]: {
     padding: `0 ${spacing[4]}px`,
   },
+});
+
+export const STYLES_APIBOX_NESTED = css({
+  marginBottom: spacing[4],
+});
+
+export const STYLES_NOT_EXPOSED_HEADER = css({
+  marginTop: spacing[5],
+  marginBottom: spacing[2],
+  display: 'inline-block',
 });
 
 export const STYLES_OPTIONAL = css`

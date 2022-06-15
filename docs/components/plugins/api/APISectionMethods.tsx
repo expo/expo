@@ -1,4 +1,3 @@
-import { css } from '@emotion/react';
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
 
@@ -17,6 +16,8 @@ import {
   renderParam,
   resolveTypeName,
   STYLES_APIBOX,
+  STYLES_APIBOX_NESTED,
+  STYLES_NOT_EXPOSED_HEADER,
 } from '~/components/plugins/api/APISectionUtils';
 
 export type APISectionMethodsProps = {
@@ -24,8 +25,6 @@ export type APISectionMethodsProps = {
   apiName?: string;
   header?: string;
 };
-
-const STYLES_NOT_EXPOSED_HEADER = css({ marginTop: 20, marginBottom: 10, display: 'inline-block' });
 
 export const renderMethod = (
   { signatures = [] }: MethodDefinitionData | PropData,
@@ -37,7 +36,9 @@ export const renderMethod = (
 ): JSX.Element[] => {
   const HeaderComponent = exposeInSidebar ? H3Code : H4Code;
   return signatures.map(({ name, parameters, comment, type }: MethodSignatureData) => (
-    <div key={`method-signature-${name}-${parameters?.length || 0}`} css={STYLES_APIBOX}>
+    <div
+      key={`method-signature-${name}-${parameters?.length || 0}`}
+      css={[STYLES_APIBOX, !exposeInSidebar && STYLES_APIBOX_NESTED]}>
       <HeaderComponent>
         <InlineCode customCss={!exposeInSidebar ? STYLES_NOT_EXPOSED_HEADER : undefined}>
           {apiName && `${apiName}.`}
