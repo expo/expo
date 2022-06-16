@@ -78,7 +78,7 @@ export enum SaveFormat {
   JPEG = 'jpeg',
   PNG = 'png',
   /**
-   * __Web Only__
+   * @platform web
    */
   WEBP = 'webp',
 }

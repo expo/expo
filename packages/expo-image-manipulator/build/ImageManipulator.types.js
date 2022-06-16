@@ -10,7 +10,7 @@ export var SaveFormat;
     SaveFormat["JPEG"] = "jpeg";
     SaveFormat["PNG"] = "png";
     /**
-     * __Web Only__
+     * @platform web
      */
     SaveFormat["WEBP"] = "webp";
 })(SaveFormat || (SaveFormat = {}));
