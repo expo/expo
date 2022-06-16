@@ -37,11 +37,6 @@ typedef void (^EXUpdatesAppLoaderErrorBlock)(NSError *error);
                   success:(EXUpdatesAppLoaderSuccessBlock)success
                     error:(EXUpdatesAppLoaderErrorBlock)error;
 
-/**
- * Returns array of UUIDs for updates that exist already in the DB and are in the READY state.
- */
-- (NSArray<NSUUID *> *)storedUpdateIds:(EXUpdatesAppLoaderErrorBlock)errorBlock;
-
 @end
 
 NS_ASSUME_NONNULL_END

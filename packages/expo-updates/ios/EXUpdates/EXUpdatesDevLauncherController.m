@@ -71,14 +71,15 @@ typedef NS_ENUM(NSInteger, EXUpdatesDevLauncherErrorCode) {
                              success:(EXUpdatesSuccessBlock)successBlock
                                error:(EXUpdatesErrorBlock)errorBlock
 {
-  NSDictionary *loaderAndConfiguration = [self _setupLoader:configuration
-                                                      error:errorBlock];
-  if (loaderAndConfiguration == nil) {
+  EXUpdatesConfig *updatesConfiguration = [self _setup:configuration
+                                                 error:errorBlock];
+  if (updatesConfiguration == nil) {
     return;
   }
-  EXUpdatesAppLoader *loader = loaderAndConfiguration[@"loader"];
-  EXUpdatesConfig *updatesConfiguration = loaderAndConfiguration[@"updatesConfiguration"];
+
   EXUpdatesAppController *controller = EXUpdatesAppController.sharedInstance;
+
+  EXUpdatesAppLoader *loader = [[EXUpdatesAppLoader alloc] initWithConfig:updatesConfiguration database:controller.database directory:controller.updatesDirectory launchedUpdate:nil completionQueue:controller.controllerQueue];
 
   [loader loadUpdateFromUrl:updatesConfiguration.updateUrl onManifest:^BOOL(EXUpdatesUpdate * _Nonnull update) {
     return manifestBlock(update.manifest.rawManifestJSON);
@@ -98,18 +99,20 @@ typedef NS_ENUM(NSInteger, EXUpdatesDevLauncherErrorCode) {
 }
 
 - (nonnull NSArray<NSUUID *> *)storedUpdateIdsWithConfiguration:(nonnull NSDictionary *)configuration error:(EXUpdatesErrorBlock)errorBlock {
-  NSDictionary *loaderAndConfiguration = [self _setupLoader:configuration
-                                                      error:errorBlock];
-  if (loaderAndConfiguration == nil) {
+  EXUpdatesConfig *updatesConfiguration = [self _setup:configuration
+                                                 error:errorBlock];
+  if (updatesConfiguration == nil) {
     return @[];
   }
-  EXUpdatesAppLoader *loader = loaderAndConfiguration[@"loader"];
-  return [loader storedUpdateIds:errorBlock];
+
+  return [EXUpdatesAppLauncherWithDatabase storedUpdateIdsInDatabase:EXUpdatesAppController.sharedInstance.database error:errorBlock];
 }
 
 // Common initialization for both fetchUpdateWithConfiguration: and storedUpdateIdsWithConfiguration:
-- (nullable NSDictionary *)_setupLoader:(nonnull NSDictionary *)configuration
-                                  error:(EXUpdatesErrorBlock)errorBlock
+// Sets up EXUpdatesAppController shared instance
+// Returns the updatesConfiguration
+- (nullable EXUpdatesConfig *)_setup:(nonnull NSDictionary *)configuration
+                               error:(EXUpdatesErrorBlock)errorBlock
 {
   EXUpdatesAppController *controller = EXUpdatesAppController.sharedInstance;
   EXUpdatesConfig *updatesConfiguration = [EXUpdatesConfig configWithExpoPlist];
@@ -135,11 +138,7 @@ typedef NS_ENUM(NSInteger, EXUpdatesDevLauncherErrorCode) {
   [self _setDevelopmentSelectionPolicy];
   [controller setConfigurationInternal:updatesConfiguration];
 
-  EXUpdatesAppLoader *loader = [[EXUpdatesAppLoader alloc] initWithConfig:updatesConfiguration database:controller.database directory:controller.updatesDirectory launchedUpdate:nil completionQueue:controller.controllerQueue];
-  return @{
-    @"loader": loader,
-    @"updatesConfiguration": updatesConfiguration
-  };
+  return updatesConfiguration;
 }
 
 - (void)_setDevelopmentSelectionPolicy

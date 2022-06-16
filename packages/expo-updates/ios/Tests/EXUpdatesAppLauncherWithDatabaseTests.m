@@ -89,7 +89,35 @@
   XCTAssertNil(error);
 }
 
-- (void)testExample
+- (void)testGetStoredUpdateIdsInEmptyDB
+{
+  NSArray<NSUUID *> *storedUpdateIds = [EXUpdatesAppLauncherWithDatabase storedUpdateIdsInDatabase:_db error:^(NSError * _Nonnull error) {
+    XCTFail(@"Unexpected error: %@", [error debugDescription]);
+  }];
+  XCTAssertNotNil(storedUpdateIds);
+  XCTAssertEqual([storedUpdateIds count], 0);
+}
+
+- (void)testGetCorrectUpdateIdsInDB
+{
+  EXUpdatesUpdate *testUpdate = [EXUpdatesAppLauncherWithDatabaseMock testUpdate];
+  NSDate *yesterday = [NSDate dateWithTimeIntervalSinceNow:24 * 60 * 60 * -1];
+  testUpdate.lastAccessed = yesterday;
+  dispatch_sync(_db.databaseQueue, ^{
+    NSError *error1;
+    [_db addUpdate:testUpdate error:&error1];
+    XCTAssertNil(error1);
+  });
+
+  NSArray<NSUUID *> *storedUpdateIds = [EXUpdatesAppLauncherWithDatabase storedUpdateIdsInDatabase:_db error:^(NSError * _Nonnull error) {
+    XCTFail(@"Unexpected error: %@", [error debugDescription]);
+  }];
+  XCTAssertNotNil(storedUpdateIds);
+  XCTAssertEqual([storedUpdateIds count], 1);
+  XCTAssertTrue([storedUpdateIds[0].UUIDString isEqualToString:testUpdate.updateId.UUIDString]);
+}
+
+- (void)testLaunchUpdate
 {
   EXUpdatesUpdate *testUpdate = [EXUpdatesAppLauncherWithDatabaseMock testUpdate];
   NSDate *yesterday = [NSDate dateWithTimeIntervalSinceNow:24 * 60 * 60 * -1];

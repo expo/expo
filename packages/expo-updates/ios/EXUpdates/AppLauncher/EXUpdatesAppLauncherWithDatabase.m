@@ -117,6 +117,24 @@ static NSString * const EXUpdatesAppLauncherErrorDomain = @"AppLauncher";
   }
 }
 
++ (NSArray<NSUUID *> *)storedUpdateIdsInDatabase:(EXUpdatesDatabase *)database
+                                           error:(EXUpdatesAppLauncherErrorBlock)errorBlock
+{
+  __block NSArray<NSUUID *> *readyUpdateIds = @[];
+  dispatch_sync(database.databaseQueue,^{
+    NSError *dbError = nil;
+    readyUpdateIds = [database allUpdateIdsWithStatus:EXUpdatesUpdateStatusReady error:&dbError];
+    if (dbError != nil) {
+      errorBlock(dbError);
+      readyUpdateIds = @[];
+    }
+  });
+  if (readyUpdateIds == nil || [readyUpdateIds count] == 0) {
+    return @[];
+  }
+  return readyUpdateIds;
+}
+
 - (BOOL)isUsingEmbeddedAssets
 {
   return _assetFilesMap == nil;
