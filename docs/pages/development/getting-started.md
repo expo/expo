@@ -40,16 +40,16 @@ After you configure your project as covered by the [Building with EAS guide](eas
 > Apple Developer membership required
 
 Register any devices you would like to develop on to your ad hoc provisioning profile:
-<Terminal cmd={["$ eas device:create"]} cmdCopy="eas device:create" />
+<Terminal cmd={["$ eas device:create"]} />
 
 Once you have registered all of the iOS devices you would like to develop on, you can build your app with:
-<Terminal cmd={["$ eas build --profile development --platform ios"]} cmdCopy="eas build --profile development --platform ios" />
+<Terminal cmd={["$ eas build --profile development --platform ios"]} />
 
 </Tab>
 
 <Tab>
 
-<Terminal cmd={["$ eas build --profile development --platform android"]} cmdCopy="eas build --profile development --platform android" />
+<Terminal cmd={["$ eas build --profile development --platform android"]} />
 
 </Tab>
 
@@ -65,7 +65,7 @@ But now that you have a development build of your project installed on your devi
 
 Instead, all you need to do to start developing is to run:
 
-<Terminal cmd={["$ expo start --dev-client"]} cmdCopy="expo start --dev-client" />
+<Terminal cmd={["$ expo start --dev-client"]} />
 
 and scanning the resulting QR code with your system camera or QR code reader (if you want to develop against a physical device)
 
@@ -77,7 +77,7 @@ Now make some changes to your project code and see them reflected on your device
 
 If you launch your development build from your device's Home Screen, you will see your launcher screen, which looks like this:
 
-<ImageSpotlight alt="The launcher screen of a development build" src="/static/images/dev-client-launcher.png" style={{ maxWidth: 600}} />
+<ImageSpotlight alt="The launcher screen of a development build" src="/static/images/dev-client/launcher-screen.png" style={{ maxWidth: 600}} />
 
 If a bundler is detected on your local network, or if you've signed in to an Expo account in both `expo-cli` and your development build, you can connect to it directly from this screen. Otherwise you can connect by scanning the QR code displayed by Expo CLI.
 
@@ -181,4 +181,4 @@ const styles = StyleSheet.create({
 
 ## Debugging your app
 
-When you need to, you can access the menu by pressing Cmd-d in Expo CLI or by shaking your phone or tablet. Here you'll be able to access all of the functions of your development build, access any debugging functionality you need, switch to a different version of your app, or [any capabilities you have added yourself](extending-the-dev-menu.md).
+When you need to, you can access the menu by pressing Cmd-d in Expo CLI or by shaking your phone or tablet. Here you'll be able to access all of the functions of your development build, access any debugging functionality you need, or switch to a different version of your app.

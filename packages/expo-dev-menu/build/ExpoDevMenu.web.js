@@ -9,5 +9,8 @@ export default {
     openSettings() {
         throw new WebUnsupportedError();
     },
+    addDevMenuCallbacks() {
+        throw new WebUnsupportedError();
+    },
 };
 //# sourceMappingURL=ExpoDevMenu.web.js.map

@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Fix typo in deprecation warning. ([#17513](https://github.com/expo/expo/pull/17513) by [@frankcalise](https://github.com/frankcalise))
+
 ## 2.0.0 — 2022-04-18
 
 ### 🛠 Breaking changes

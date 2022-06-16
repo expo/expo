@@ -11,11 +11,11 @@ import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.errorCodeOf
 import expo.modules.test.core.ModuleMock
 import expo.modules.test.core.ModuleMockHolder
+import expo.modules.test.core.assertCodedException
 import io.mockk.confirmVerified
 import io.mockk.verify
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
-import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -37,7 +37,7 @@ private interface ClipboardModuleTestInterface {
 }
 
 private inline fun withClipboardMock(
-  block: ModuleMockHolder<ClipboardModuleTestInterface>.() -> Unit
+  block: ModuleMockHolder<ClipboardModuleTestInterface, ClipboardModule>.() -> Unit
 ) = ModuleMock.createMock(ClipboardModuleTestInterface::class, ClipboardModule(), block = block)
 
 @RunWith(RobolectricTestRunner::class)
@@ -158,10 +158,10 @@ class ClipboardModuleTest {
   @Config(shadows = [ContextWithoutClipboardService::class])
   fun `should throw when ClipboardManager is unavailable`() = withClipboardMock {
     val exception = runCatching { module.hasStringAsync() }.exceptionOrNull()
-    assertNotNull(exception)
-    assertTrue(exception is CodedException)
-    exception as CodedException
-    assertEquals(errorCodeOf<ClipboardUnavailableException>(), exception.code)
+
+    assertCodedException(exception) {
+      assertEquals(errorCodeOf<ClipboardUnavailableException>(), it.code)
+    }
   }
 
   private val clipboardManager: ClipboardManager

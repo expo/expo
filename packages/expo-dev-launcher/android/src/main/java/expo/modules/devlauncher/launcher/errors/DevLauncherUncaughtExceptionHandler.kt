@@ -47,13 +47,12 @@ class DevLauncherUncaughtExceptionHandler(
 
       override fun onActivityDestroyed(activity: Activity) = Unit
     })
-
   }
 
   override fun uncaughtException(thread: Thread, exception: Throwable) {
     // The same exception can be reported multiple times.
     // We handle only the first one.
-    if (exceptionWasReported) {
+    if (exceptionWasReported || DevLauncherErrorActivity.isVisible()) {
       return
     }
 

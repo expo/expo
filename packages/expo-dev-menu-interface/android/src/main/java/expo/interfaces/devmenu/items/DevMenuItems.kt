@@ -85,12 +85,15 @@ class DevMenuAction(
     putString("detail", detail())
     putString("glyphName", glyphName())
 
-    putBundle("keyCommand", keyCommand?.let { keyCommand ->
-      Bundle().apply {
-        putString("input", keyCharacterMap.getDisplayLabel(keyCommand.code).toString())
-        putInt("modifiers", exportKeyCommandModifiers())
+    putBundle(
+      "keyCommand",
+      keyCommand?.let { keyCommand ->
+        Bundle().apply {
+          putString("input", keyCharacterMap.getDisplayLabel(keyCommand.code).toString())
+          putInt("modifiers", exportKeyCommandModifiers())
+        }
       }
-    })
+    )
   }
 
   private fun exportKeyCommandModifiers(): Int {

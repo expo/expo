@@ -5,18 +5,18 @@ import os from 'os';
 import path from 'path';
 
 import {
+  Append,
   Clone,
   CopyFiles,
   Pipe,
+  Platform,
+  prefixPackage,
+  RemoveDirectory,
+  renameClass,
+  renameIOSFiles,
+  renameIOSSymbols,
   TransformFilesContent,
   TransformFilesName,
-  RemoveDirectory,
-  prefixPackage,
-  renameIOSSymbols,
-  renameIOSFiles,
-  Platform,
-  renameClass,
-  Append,
 } from '../vendoring/devmenu';
 
 const CONFIGURATIONS = {
@@ -100,15 +100,20 @@ function getGestureHandlerPipe() {
     'all',
       new Clone({
         url: 'git@github.com:software-mansion/react-native-gesture-handler.git',
-        tag: '1.7.0',
+        tag: '2.1.2',
       }),
       new RemoveDirectory({
         name: 'clean vendored folder',
         target: destination,
       }),
       new CopyFiles({
-        filePattern: ['*.js', 'touchables/*.js', '*.d.ts'],
+        subDirectory: 'src',
+        filePattern: ['**/*.ts', '**/*.tsx'],
         to: path.join(destination, 'src'),
+      }),
+      new CopyFiles({
+        filePattern: 'jestSetup.js',
+        to: destination,
       }),
 
     'android',
@@ -128,6 +133,11 @@ function getGestureHandlerPipe() {
       }),
       new CopyFiles({
         subDirectory: 'android/lib/src/main/java',
+        filePattern: '**/*.@(java|kt|xml)',
+        to: path.join(destination, 'android/devmenu'),
+      }),
+      new CopyFiles({
+        subDirectory: 'android/common/src/main/java',
         filePattern: '**/*.@(java|kt|xml)',
         to: path.join(destination, 'android/devmenu'),
       }),

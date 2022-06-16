@@ -76,11 +76,14 @@ object DevLauncherPackageDelegate {
           if (!shouldEnableAutoSetup) {
             return null
           }
-          return DevLauncherController.wrapReactActivityDelegate(activity, object : DevLauncherReactActivityDelegateSupplier {
-            override fun get(): ReactActivityDelegate {
-              return delegate
+          return DevLauncherController.wrapReactActivityDelegate(
+            activity,
+            object : DevLauncherReactActivityDelegateSupplier {
+              override fun get(): ReactActivityDelegate {
+                return delegate
+              }
             }
-          })
+          )
         }
       }
     )

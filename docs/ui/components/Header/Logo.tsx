@@ -6,16 +6,16 @@ import {
   spacing,
   typography,
   ChevronDownIcon,
+  Logo as LogoIcon,
 } from '@expo/styleguide';
 import React from 'react';
 
 import { BOLD, LinkBase } from '~/ui/components/Text';
-import { ExpoLogoIcon } from '~/ui/foundations/icons';
 
 export const Logo = () => (
   <LinkBase css={linkStyle} href="/">
     <div css={logoStyle}>
-      <ExpoLogoIcon fill={theme.text.default} />
+      <LogoIcon color={theme.text.default} style={{ height: 20 }} />
     </div>
     <BOLD css={titleStyle}>Expo</BOLD>
     <ChevronDownIcon size={iconSize.regular} css={chevronStyle} color={theme.icon.secondary} />
@@ -32,7 +32,8 @@ const linkStyle = css`
 
 const logoStyle = css`
   float: left;
-  margin-right: ${spacing[2]}px;
+  padding-top: 2px;
+  margin-right: ${spacing[1.5]}px;
 `;
 
 const chevronStyle = css`

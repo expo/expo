@@ -1,5 +1,6 @@
 import { ExpoConfig, getConfig } from '@expo/config';
 import assert from 'assert';
+import chalk from 'chalk';
 
 import * as Log from '../../log';
 import { FileNotifier } from '../../utils/FileNotifier';
@@ -37,13 +38,19 @@ export class DevServerManager {
   }
 
   private watchBabelConfig() {
-    const notifier = new FileNotifier(this.projectRoot, [
-      './babel.config.js',
-      './babel.config.json',
-      './.babelrc.json',
-      './.babelrc',
-      './.babelrc.js',
-    ]);
+    const notifier = new FileNotifier(
+      this.projectRoot,
+      [
+        './babel.config.js',
+        './babel.config.json',
+        './.babelrc.json',
+        './.babelrc',
+        './.babelrc.js',
+      ],
+      {
+        additionalWarning: chalk` You may need to clear the bundler cache with the {bold --clear} flag for your changes to take effect.`,
+      }
+    );
 
     notifier.startObserving();
 

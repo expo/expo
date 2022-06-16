@@ -24,10 +24,11 @@ import expo.modules.kotlin.events.EventListenerWithSenderAndPayload
 import expo.modules.kotlin.events.EventName
 import expo.modules.kotlin.events.EventsDefinition
 import expo.modules.kotlin.events.OnActivityResultPayload
-import expo.modules.kotlin.functions.AnyFunction
 import expo.modules.kotlin.functions.AsyncFunction
-import expo.modules.kotlin.functions.AsyncFunctionWithPromise
 import expo.modules.kotlin.functions.AsyncFunctionBuilder
+import expo.modules.kotlin.functions.AsyncFunctionComponent
+import expo.modules.kotlin.functions.AsyncFunctionWithPromiseComponent
+import expo.modules.kotlin.functions.SyncFunctionComponent
 import expo.modules.kotlin.types.toAnyType
 import expo.modules.kotlin.views.ViewManagerDefinition
 import expo.modules.kotlin.views.ViewManagerDefinitionBuilder
@@ -41,7 +42,10 @@ class ModuleDefinitionBuilder(@PublishedApi internal val module: Module? = null)
   private var functionBuilders = mutableListOf<AsyncFunctionBuilder>()
 
   @PublishedApi
-  internal var methods = mutableMapOf<String, AnyFunction>()
+  internal var syncFunctions = mutableMapOf<String, SyncFunctionComponent>()
+
+  @PublishedApi
+  internal var asyncFunctions = mutableMapOf<String, AsyncFunction>()
 
   @PublishedApi
   internal var viewManagerDefinition: ViewManagerDefinition? = null
@@ -55,7 +59,9 @@ class ModuleDefinitionBuilder(@PublishedApi internal val module: Module? = null)
     return ModuleDefinitionData(
       requireNotNull(moduleName),
       constantsProvider,
-      methods + functionBuilders.associate { it.build() },
+      syncFunctions,
+      asyncFunctions,
+      functionBuilders.map { it.build() },
       viewManagerDefinition,
       eventListeners,
       eventsDefinition
@@ -101,146 +107,94 @@ class ModuleDefinitionBuilder(@PublishedApi internal val module: Module? = null)
     constantsProvider = { constants.toMap() }
   }
 
-  @Deprecated(
-    message = "The 'function' component was deprecated and will change its behavior in the future.",
-    replaceWith = ReplaceWith("AsyncFunction(name, body)")
-  )
-  @JvmName("functionWithoutArgs")
-  inline fun function(
+  @JvmName("FunctionWithoutArgs")
+  inline fun Function(
     name: String,
     crossinline body: () -> Any?
   ) {
-    methods[name] = AsyncFunction(name, arrayOf()) { body() }
+    SyncFunctionComponent(name, arrayOf()) { body() }.also {
+      syncFunctions[name] = it
+    }
   }
 
-  @Deprecated(
-    message = "The 'function' component was deprecated and will change its behavior in the future.",
-    replaceWith = ReplaceWith("AsyncFunction(name, body)")
-  )
-  inline fun <reified R> function(
+  inline fun <reified R> Function(
     name: String,
     crossinline body: () -> R
   ) {
-    methods[name] = AsyncFunction(name, arrayOf()) { body() }
+    SyncFunctionComponent(name, arrayOf()) { body() }.also {
+      syncFunctions[name] = it
+    }
   }
 
-  @Deprecated(
-    message = "The 'function' component was deprecated and will change its behavior in the future.",
-    replaceWith = ReplaceWith("AsyncFunction(name, body)")
-  )
-  inline fun <reified R, reified P0> function(
+  inline fun <reified R, reified P0> Function(
     name: String,
     crossinline body: (p0: P0) -> R
   ) {
-    methods[name] = if (P0::class == Promise::class) {
-      AsyncFunctionWithPromise(name, arrayOf()) { _, promise -> body(promise as P0) }
-    } else {
-      AsyncFunction(name, arrayOf(typeOf<P0>().toAnyType())) { body(it[0] as P0) }
+    SyncFunctionComponent(name, arrayOf(typeOf<P0>().toAnyType())) { body(it[0] as P0) }.also {
+      syncFunctions[name] = it
     }
   }
 
-  @Deprecated(
-    message = "The 'function' component was deprecated and will change its behavior in the future.",
-    replaceWith = ReplaceWith("AsyncFunction(name, body)")
-  )
-  inline fun <reified R, reified P0, reified P1> function(
+  inline fun <reified R, reified P0, reified P1> Function(
     name: String,
     crossinline body: (p0: P0, p1: P1) -> R
   ) {
-    methods[name] = if (P1::class == Promise::class) {
-      AsyncFunctionWithPromise(name, arrayOf(typeOf<P0>().toAnyType())) { args, promise -> body(args[0] as P0, promise as P1) }
-    } else {
-      AsyncFunction(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType())) { body(it[0] as P0, it[1] as P1) }
+    SyncFunctionComponent(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType())) { body(it[0] as P0, it[1] as P1) }.also {
+      syncFunctions[name] = it
     }
   }
 
-  @Deprecated(
-    message = "The 'function' component was deprecated and will change its behavior in the future.",
-    replaceWith = ReplaceWith("AsyncFunction(name, body)")
-  )
-  inline fun <reified R, reified P0, reified P1, reified P2> function(
+  inline fun <reified R, reified P0, reified P1, reified P2> Function(
     name: String,
     crossinline body: (p0: P0, p1: P1, p2: P2) -> R
   ) {
-    methods[name] = if (P2::class == Promise::class) {
-      AsyncFunctionWithPromise(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType())) { args, promise -> body(args[0] as P0, args[1] as P1, promise as P2) }
-    } else {
-      AsyncFunction(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType(), typeOf<P2>().toAnyType())) { body(it[0] as P0, it[1] as P1, it[2] as P2) }
+    SyncFunctionComponent(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType(), typeOf<P2>().toAnyType())) { body(it[0] as P0, it[1] as P1, it[2] as P2) }.also {
+      syncFunctions[name] = it
     }
   }
 
-  @Deprecated(
-    message = "The 'function' component was deprecated and will change its behavior in the future.",
-    replaceWith = ReplaceWith("AsyncFunction(name, body)")
-  )
   inline fun <reified R, reified P0, reified P1, reified P2, reified P3> function(
     name: String,
     crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3) -> R
   ) {
-    methods[name] = if (P3::class == Promise::class) {
-      AsyncFunctionWithPromise(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType(), typeOf<P2>().toAnyType())) { args, promise -> body(args[0] as P0, args[1] as P1, args[2] as P2, promise as P3) }
-    } else {
-      AsyncFunction(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType(), typeOf<P2>().toAnyType(), typeOf<P3>().toAnyType())) { body(it[0] as P0, it[1] as P1, it[2] as P2, it[3] as P3) }
+    SyncFunctionComponent(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType(), typeOf<P2>().toAnyType(), typeOf<P3>().toAnyType())) { body(it[0] as P0, it[1] as P1, it[2] as P2, it[3] as P3) }.also {
+      syncFunctions[name] = it
     }
   }
 
-  @Deprecated(
-    message = "The 'function' component was deprecated and will change its behavior in the future.",
-    replaceWith = ReplaceWith("AsyncFunction(name, body)")
-  )
   inline fun <reified R, reified P0, reified P1, reified P2, reified P3, reified P4> function(
     name: String,
     crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4) -> R
   ) {
-    methods[name] = if (P4::class == Promise::class) {
-      AsyncFunctionWithPromise(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType(), typeOf<P2>().toAnyType(), typeOf<P3>().toAnyType())) { args, promise -> body(args[0] as P0, args[1] as P1, args[2] as P2, args[3] as P3, promise as P4) }
-    } else {
-      AsyncFunction(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType(), typeOf<P2>().toAnyType(), typeOf<P3>().toAnyType(), typeOf<P4>().toAnyType())) { body(it[0] as P0, it[1] as P1, it[2] as P2, it[3] as P3, it[4] as P4) }
+    SyncFunctionComponent(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType(), typeOf<P2>().toAnyType(), typeOf<P3>().toAnyType(), typeOf<P4>().toAnyType())) { body(it[0] as P0, it[1] as P1, it[2] as P2, it[3] as P3, it[4] as P4) }.also {
+      syncFunctions[name] = it
     }
   }
 
-  @Deprecated(
-    message = "The 'function' component was deprecated and will change its behavior in the future.",
-    replaceWith = ReplaceWith("AsyncFunction(name, body)")
-  )
-  inline fun <reified R, reified P0, reified P1, reified P2, reified P3, reified P4, reified P5> function(
+  inline fun <reified R, reified P0, reified P1, reified P2, reified P3, reified P4, reified P5> Function(
     name: String,
     crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5) -> R
   ) {
-    methods[name] = if (P5::class == Promise::class) {
-      AsyncFunctionWithPromise(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType(), typeOf<P2>().toAnyType(), typeOf<P3>().toAnyType(), typeOf<P4>().toAnyType())) { args, promise -> body(args[0] as P0, args[1] as P1, args[2] as P2, args[3] as P3, args[4] as P4, promise as P5) }
-    } else {
-      AsyncFunction(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType(), typeOf<P2>().toAnyType(), typeOf<P3>().toAnyType(), typeOf<P4>().toAnyType(), typeOf<P5>().toAnyType())) { body(it[0] as P0, it[1] as P1, it[2] as P2, it[3] as P3, it[4] as P4, it[5] as P5) }
+    SyncFunctionComponent(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType(), typeOf<P2>().toAnyType(), typeOf<P3>().toAnyType(), typeOf<P4>().toAnyType(), typeOf<P5>().toAnyType())) { body(it[0] as P0, it[1] as P1, it[2] as P2, it[3] as P3, it[4] as P4, it[5] as P5) }.also {
+      syncFunctions[name] = it
     }
   }
 
-  @Deprecated(
-    message = "The 'function' component was deprecated and will change its behavior in the future.",
-    replaceWith = ReplaceWith("AsyncFunction(name, body)")
-  )
   inline fun <reified R, reified P0, reified P1, reified P2, reified P3, reified P4, reified P5, reified P6> function(
     name: String,
     crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5, p6: P6) -> R
   ) {
-    methods[name] = if (P6::class == Promise::class) {
-      AsyncFunctionWithPromise(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType(), typeOf<P2>().toAnyType(), typeOf<P3>().toAnyType(), typeOf<P4>().toAnyType(), typeOf<P5>().toAnyType())) { args, promise -> body(args[0] as P0, args[1] as P1, args[2] as P2, args[3] as P3, args[4] as P4, args[5] as P5, promise as P6) }
-    } else {
-      AsyncFunction(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType(), typeOf<P2>().toAnyType(), typeOf<P3>().toAnyType(), typeOf<P4>().toAnyType(), typeOf<P5>().toAnyType(), typeOf<P6>().toAnyType())) { body(it[0] as P0, it[1] as P1, it[2] as P2, it[3] as P3, it[4] as P4, it[5] as P5, it[6] as P6) }
+    SyncFunctionComponent(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType(), typeOf<P2>().toAnyType(), typeOf<P3>().toAnyType(), typeOf<P4>().toAnyType(), typeOf<P5>().toAnyType(), typeOf<P6>().toAnyType())) { body(it[0] as P0, it[1] as P1, it[2] as P2, it[3] as P3, it[4] as P4, it[5] as P5, it[6] as P6) }.also {
+      syncFunctions[name] = it
     }
   }
 
-  @Deprecated(
-    message = "The 'function' component was deprecated and will change its behavior in the future.",
-    replaceWith = ReplaceWith("AsyncFunction(name, body)")
-  )
   inline fun <reified R, reified P0, reified P1, reified P2, reified P3, reified P4, reified P5, reified P6, reified P7> function(
     name: String,
     crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5, p6: P6, p7: P7) -> R
   ) {
-    methods[name] = if (P7::class == Promise::class) {
-      AsyncFunctionWithPromise(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType(), typeOf<P2>().toAnyType(), typeOf<P3>().toAnyType(), typeOf<P4>().toAnyType(), typeOf<P5>().toAnyType(), typeOf<P6>().toAnyType())) { args, promise -> body(args[0] as P0, args[1] as P1, args[2] as P2, args[3] as P3, args[4] as P4, args[5] as P5, args[6] as P6, promise as P7) }
-    } else {
-      AsyncFunction(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType(), typeOf<P2>().toAnyType(), typeOf<P3>().toAnyType(), typeOf<P4>().toAnyType(), typeOf<P5>().toAnyType(), typeOf<P6>().toAnyType(), typeOf<P7>().toAnyType())) { body(it[0] as P0, it[1] as P1, it[2] as P2, it[3] as P3, it[4] as P4, it[5] as P5, it[6] as P6, it[7] as P7) }
+    SyncFunctionComponent(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType(), typeOf<P2>().toAnyType(), typeOf<P3>().toAnyType(), typeOf<P4>().toAnyType(), typeOf<P5>().toAnyType(), typeOf<P6>().toAnyType(), typeOf<P7>().toAnyType())) { body(it[0] as P0, it[1] as P1, it[2] as P2, it[3] as P3, it[4] as P4, it[5] as P5, it[6] as P6, it[7] as P7) }.also {
+      syncFunctions[name] = it
     }
   }
 
@@ -259,7 +213,7 @@ class ModuleDefinitionBuilder(@PublishedApi internal val module: Module? = null)
     name: String,
     crossinline body: () -> Any?
   ) {
-    methods[name] = AsyncFunction(name, arrayOf()) { body() }
+    asyncFunctions[name] = AsyncFunctionComponent(name, arrayOf()) { body() }
   }
 
   @Deprecated(
@@ -275,7 +229,7 @@ class ModuleDefinitionBuilder(@PublishedApi internal val module: Module? = null)
     name: String,
     crossinline body: () -> R
   ) {
-    methods[name] = AsyncFunction(name, arrayOf()) { body() }
+    asyncFunctions[name] = AsyncFunctionComponent(name, arrayOf()) { body() }
   }
 
   @Deprecated(
@@ -291,10 +245,10 @@ class ModuleDefinitionBuilder(@PublishedApi internal val module: Module? = null)
     name: String,
     crossinline body: (p0: P0) -> R
   ) {
-    methods[name] = if (P0::class == Promise::class) {
-      AsyncFunctionWithPromise(name, arrayOf()) { _, promise -> body(promise as P0) }
+    asyncFunctions[name] = if (P0::class == Promise::class) {
+      AsyncFunctionWithPromiseComponent(name, arrayOf()) { _, promise -> body(promise as P0) }
     } else {
-      AsyncFunction(name, arrayOf(typeOf<P0>().toAnyType())) { body(it[0] as P0) }
+      AsyncFunctionComponent(name, arrayOf(typeOf<P0>().toAnyType())) { body(it[0] as P0) }
     }
   }
 
@@ -311,10 +265,10 @@ class ModuleDefinitionBuilder(@PublishedApi internal val module: Module? = null)
     name: String,
     crossinline body: (p0: P0, p1: P1) -> R
   ) {
-    methods[name] = if (P1::class == Promise::class) {
-      AsyncFunctionWithPromise(name, arrayOf(typeOf<P0>().toAnyType())) { args, promise -> body(args[0] as P0, promise as P1) }
+    asyncFunctions[name] = if (P1::class == Promise::class) {
+      AsyncFunctionWithPromiseComponent(name, arrayOf(typeOf<P0>().toAnyType())) { args, promise -> body(args[0] as P0, promise as P1) }
     } else {
-      AsyncFunction(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType())) { body(it[0] as P0, it[1] as P1) }
+      AsyncFunctionComponent(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType())) { body(it[0] as P0, it[1] as P1) }
     }
   }
 
@@ -331,10 +285,10 @@ class ModuleDefinitionBuilder(@PublishedApi internal val module: Module? = null)
     name: String,
     crossinline body: (p0: P0, p1: P1, p2: P2) -> R
   ) {
-    methods[name] = if (P2::class == Promise::class) {
-      AsyncFunctionWithPromise(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType())) { args, promise -> body(args[0] as P0, args[1] as P1, promise as P2) }
+    asyncFunctions[name] = if (P2::class == Promise::class) {
+      AsyncFunctionWithPromiseComponent(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType())) { args, promise -> body(args[0] as P0, args[1] as P1, promise as P2) }
     } else {
-      AsyncFunction(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType(), typeOf<P2>().toAnyType())) { body(it[0] as P0, it[1] as P1, it[2] as P2) }
+      AsyncFunctionComponent(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType(), typeOf<P2>().toAnyType())) { body(it[0] as P0, it[1] as P1, it[2] as P2) }
     }
   }
 
@@ -351,10 +305,10 @@ class ModuleDefinitionBuilder(@PublishedApi internal val module: Module? = null)
     name: String,
     crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3) -> R
   ) {
-    methods[name] = if (P3::class == Promise::class) {
-      AsyncFunctionWithPromise(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType(), typeOf<P2>().toAnyType())) { args, promise -> body(args[0] as P0, args[1] as P1, args[2] as P2, promise as P3) }
+    asyncFunctions[name] = if (P3::class == Promise::class) {
+      AsyncFunctionWithPromiseComponent(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType(), typeOf<P2>().toAnyType())) { args, promise -> body(args[0] as P0, args[1] as P1, args[2] as P2, promise as P3) }
     } else {
-      AsyncFunction(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType(), typeOf<P2>().toAnyType(), typeOf<P3>().toAnyType())) { body(it[0] as P0, it[1] as P1, it[2] as P2, it[3] as P3) }
+      AsyncFunctionComponent(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType(), typeOf<P2>().toAnyType(), typeOf<P3>().toAnyType())) { body(it[0] as P0, it[1] as P1, it[2] as P2, it[3] as P3) }
     }
   }
 
@@ -371,10 +325,10 @@ class ModuleDefinitionBuilder(@PublishedApi internal val module: Module? = null)
     name: String,
     crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4) -> R
   ) {
-    methods[name] = if (P4::class == Promise::class) {
-      AsyncFunctionWithPromise(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType(), typeOf<P2>().toAnyType(), typeOf<P3>().toAnyType())) { args, promise -> body(args[0] as P0, args[1] as P1, args[2] as P2, args[3] as P3, promise as P4) }
+    asyncFunctions[name] = if (P4::class == Promise::class) {
+      AsyncFunctionWithPromiseComponent(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType(), typeOf<P2>().toAnyType(), typeOf<P3>().toAnyType())) { args, promise -> body(args[0] as P0, args[1] as P1, args[2] as P2, args[3] as P3, promise as P4) }
     } else {
-      AsyncFunction(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType(), typeOf<P2>().toAnyType(), typeOf<P3>().toAnyType(), typeOf<P4>().toAnyType())) { body(it[0] as P0, it[1] as P1, it[2] as P2, it[3] as P3, it[4] as P4) }
+      AsyncFunctionComponent(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType(), typeOf<P2>().toAnyType(), typeOf<P3>().toAnyType(), typeOf<P4>().toAnyType())) { body(it[0] as P0, it[1] as P1, it[2] as P2, it[3] as P3, it[4] as P4) }
     }
   }
 
@@ -391,10 +345,10 @@ class ModuleDefinitionBuilder(@PublishedApi internal val module: Module? = null)
     name: String,
     crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5) -> R
   ) {
-    methods[name] = if (P5::class == Promise::class) {
-      AsyncFunctionWithPromise(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType(), typeOf<P2>().toAnyType(), typeOf<P3>().toAnyType(), typeOf<P4>().toAnyType())) { args, promise -> body(args[0] as P0, args[1] as P1, args[2] as P2, args[3] as P3, args[4] as P4, promise as P5) }
+    asyncFunctions[name] = if (P5::class == Promise::class) {
+      AsyncFunctionWithPromiseComponent(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType(), typeOf<P2>().toAnyType(), typeOf<P3>().toAnyType(), typeOf<P4>().toAnyType())) { args, promise -> body(args[0] as P0, args[1] as P1, args[2] as P2, args[3] as P3, args[4] as P4, promise as P5) }
     } else {
-      AsyncFunction(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType(), typeOf<P2>().toAnyType(), typeOf<P3>().toAnyType(), typeOf<P4>().toAnyType(), typeOf<P5>().toAnyType())) { body(it[0] as P0, it[1] as P1, it[2] as P2, it[3] as P3, it[4] as P4, it[5] as P5) }
+      AsyncFunctionComponent(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType(), typeOf<P2>().toAnyType(), typeOf<P3>().toAnyType(), typeOf<P4>().toAnyType(), typeOf<P5>().toAnyType())) { body(it[0] as P0, it[1] as P1, it[2] as P2, it[3] as P3, it[4] as P4, it[5] as P5) }
     }
   }
 
@@ -411,10 +365,10 @@ class ModuleDefinitionBuilder(@PublishedApi internal val module: Module? = null)
     name: String,
     crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5, p6: P6) -> R
   ) {
-    methods[name] = if (P6::class == Promise::class) {
-      AsyncFunctionWithPromise(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType(), typeOf<P2>().toAnyType(), typeOf<P3>().toAnyType(), typeOf<P4>().toAnyType(), typeOf<P5>().toAnyType())) { args, promise -> body(args[0] as P0, args[1] as P1, args[2] as P2, args[3] as P3, args[4] as P4, args[5] as P5, promise as P6) }
+    asyncFunctions[name] = if (P6::class == Promise::class) {
+      AsyncFunctionWithPromiseComponent(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType(), typeOf<P2>().toAnyType(), typeOf<P3>().toAnyType(), typeOf<P4>().toAnyType(), typeOf<P5>().toAnyType())) { args, promise -> body(args[0] as P0, args[1] as P1, args[2] as P2, args[3] as P3, args[4] as P4, args[5] as P5, promise as P6) }
     } else {
-      AsyncFunction(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType(), typeOf<P2>().toAnyType(), typeOf<P3>().toAnyType(), typeOf<P4>().toAnyType(), typeOf<P5>().toAnyType(), typeOf<P6>().toAnyType())) { body(it[0] as P0, it[1] as P1, it[2] as P2, it[3] as P3, it[4] as P4, it[5] as P5, it[6] as P6) }
+      AsyncFunctionComponent(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType(), typeOf<P2>().toAnyType(), typeOf<P3>().toAnyType(), typeOf<P4>().toAnyType(), typeOf<P5>().toAnyType(), typeOf<P6>().toAnyType())) { body(it[0] as P0, it[1] as P1, it[2] as P2, it[3] as P3, it[4] as P4, it[5] as P5, it[6] as P6) }
     }
   }
 
@@ -431,10 +385,10 @@ class ModuleDefinitionBuilder(@PublishedApi internal val module: Module? = null)
     name: String,
     crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5, p6: P6, p7: P7) -> R
   ) {
-    methods[name] = if (P7::class == Promise::class) {
-      AsyncFunctionWithPromise(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType(), typeOf<P2>().toAnyType(), typeOf<P3>().toAnyType(), typeOf<P4>().toAnyType(), typeOf<P5>().toAnyType(), typeOf<P6>().toAnyType())) { args, promise -> body(args[0] as P0, args[1] as P1, args[2] as P2, args[3] as P3, args[4] as P4, args[5] as P5, args[6] as P6, promise as P7) }
+    asyncFunctions[name] = if (P7::class == Promise::class) {
+      AsyncFunctionWithPromiseComponent(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType(), typeOf<P2>().toAnyType(), typeOf<P3>().toAnyType(), typeOf<P4>().toAnyType(), typeOf<P5>().toAnyType(), typeOf<P6>().toAnyType())) { args, promise -> body(args[0] as P0, args[1] as P1, args[2] as P2, args[3] as P3, args[4] as P4, args[5] as P5, args[6] as P6, promise as P7) }
     } else {
-      AsyncFunction(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType(), typeOf<P2>().toAnyType(), typeOf<P3>().toAnyType(), typeOf<P4>().toAnyType(), typeOf<P5>().toAnyType(), typeOf<P6>().toAnyType(), typeOf<P7>().toAnyType())) { body(it[0] as P0, it[1] as P1, it[2] as P2, it[3] as P3, it[4] as P4, it[5] as P5, it[6] as P6, it[7] as P7) }
+      AsyncFunctionComponent(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType(), typeOf<P2>().toAnyType(), typeOf<P3>().toAnyType(), typeOf<P4>().toAnyType(), typeOf<P5>().toAnyType(), typeOf<P6>().toAnyType(), typeOf<P7>().toAnyType())) { body(it[0] as P0, it[1] as P1, it[2] as P2, it[3] as P3, it[4] as P4, it[5] as P5, it[6] as P6, it[7] as P7) }
     }
   }
 

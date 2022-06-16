@@ -91,8 +91,10 @@ class ClassComponentSpec: ExpoSpec {
       }
 
       it("is an instance of") {
-        try runtime?.eval("myObject = new ExpoModules.ClassTest.MyClass()")
-        let isInstanceOf = try runtime?.eval("myObject instanceof ExpoModules.ClassTest.MyClass")
+        let isInstanceOf = try runtime?.eval([
+          "myObject = new ExpoModules.ClassTest.MyClass()",
+          "myObject instanceof ExpoModules.ClassTest.MyClass",
+        ])
 
         expect(isInstanceOf?.getBool()) == true
       }
@@ -104,5 +106,105 @@ class ClassComponentSpec: ExpoSpec {
         expect(object?.getProperty("foo").getString()) == "bar"
       }
     }
+
+    describe("class with associated type") {
+      let appContext = AppContext.create()
+      let runtime = appContext.runtime
+
+      beforeSuite {
+        appContext.moduleRegistry.register(moduleType: ModuleWithCounterClass.self)
+      }
+      it("is defined") {
+        let isDefined = try! runtime!.eval("'Counter' in ExpoModules.TestModule")
+
+        expect(isDefined.getBool()) == true
+      }
+      it("creates shared object") {
+        let jsObject = try! runtime!.eval("new ExpoModules.TestModule.Counter(0)").getObject()
+        let nativeObject = SharedObjectRegistry.toNativeObject(jsObject)
+
+        expect(nativeObject).notTo(beNil())
+      }
+      it("registers shared object") {
+        let oldSize = SharedObjectRegistry.size
+        try! runtime?.eval("object = new ExpoModules.TestModule.Counter(0)")
+
+        expect(SharedObjectRegistry.size) == oldSize + 1
+      }
+      it("calls function with owner") {
+        try runtime?.eval([
+          "object = new ExpoModules.TestModule.Counter(0)",
+          "object.increment(1)",
+        ])
+        // no expectations, just checking if it doesn't fail
+      }
+      it("creates with initial value") {
+        let initialValue = Int.random(in: 1..<100)
+        let value = try runtime!.eval([
+          "object = new ExpoModules.TestModule.Counter(\(initialValue))",
+          "object.getValue()",
+        ])
+
+        expect(value.kind) == .number
+        expect(value.getInt()) == initialValue
+      }
+      it("gets shared object value") {
+        let value = try runtime!.eval([
+          "object = new ExpoModules.TestModule.Counter(0)",
+          "object.getValue()",
+        ])
+
+        expect(value.kind) == .number
+        expect(value.isNumber()) == true
+      }
+      it("changes shared object") {
+        try! runtime?.eval("object = new ExpoModules.TestModule.Counter(0)")
+        let incrementBy = Int.random(in: 1..<100)
+        let value = try runtime!.eval("object.getValue()").asInt()
+        let newValue = try runtime!.eval([
+          "object.increment(\(incrementBy))",
+          "object.getValue()",
+        ])
+
+        expect(newValue.kind) == .number
+        expect(newValue.getInt()) == value + incrementBy
+      }
+    }
+  }
+}
+
+/**
+ A module that exposes a Counter class with an associated shared object class.
+ */
+fileprivate final class ModuleWithCounterClass: Module {
+  func definition() -> ModuleDefinition {
+    Name("TestModule")
+
+    Class(Counter.self) {
+      Constructor { (initialValue: Int) in
+        return Counter(initialValue: initialValue)
+      }
+      Function("increment") { (counter, value: Int) in
+        counter.increment(by: value)
+      }
+      Function("getValue") { counter in
+        return counter.currentValue
+      }
+    }
+  }
+}
+
+/**
+ A shared object class that stores some native value and can be used as an associated type of the JS class.
+ */
+fileprivate final class Counter: SharedObject {
+  var currentValue = 0
+
+  init(initialValue: Int = 0) {
+    self.currentValue = initialValue
+  }
+
+  func increment(by value: Int = 1) {
+    currentValue += value
   }
 }

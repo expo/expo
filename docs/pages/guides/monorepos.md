@@ -62,19 +62,20 @@ Now that we have the basic monorepo structure set up, let's add our first app. B
 
 > If you have an existing app, you can copy all those files inside a subfolder.
 
-After copying or creating the first app, run `yarn install` to check for common warnings.
+After copying or creating the first app, run `yarn` to check for common warnings.
 
 #### Modify the Metro config
 
 Metro doesn't come with monorepo support by default (yet). That's why we need to configure Metro and let it know where to find certain things. There are two main changes we need to make:
 
-1. Make sure Metro is watching the full monorepo, not just **app/cool-app**.
-2. Tell Metro where it can resolve packages. They might be installed in **app/cool-app/node_modules** or **node_modules**.
+1. Make sure Metro is watching the full monorepo, not just **apps/cool-app**.
+2. Tell Metro where it can resolve packages. They might be installed in **apps/cool-app/node_modules** or **node_modules**.
 
 We can configure that by creating a **metro.config.js** with the following content.
 
+> Learn more about customizing Metro in [our guide](/guides/customizing-metro).
+
 ```js
-// Learn more https://docs.expo.io/guides/customizing-metro
 const { getDefaultConfig } = require('expo/metro-config');
 const path = require('path');
 
@@ -149,7 +150,6 @@ Like standard packages, we need to add our **cool-package** as a dependency to o
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "eject": "expo eject"
   },
   "dependencies": {
     "cool-package": "*",

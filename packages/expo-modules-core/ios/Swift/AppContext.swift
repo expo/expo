@@ -279,7 +279,7 @@ public final class AppContext: NSObject {
 
   internal func installExpoModulesHostObject() throws {
     guard runtime != nil else {
-      throw UndefinedRuntimeException()
+      throw RuntimeLostException()
     }
     EXJavaScriptRuntimeManager.installExpoModulesHostObject(self)
   }
@@ -333,17 +333,18 @@ public final class AppContext: NSObject {
     return ModulesProvider()
   }
 
-  // MARK: - Exceptions
+}
 
-  class DeallocatedAppContextException: Exception {
-    override var reason: String {
-      "The AppContext has been deallocated"
-    }
+// MARK: - Public exceptions
+
+public final class AppContextLostException: Exception {
+  override public var reason: String {
+    "The app context has been lost"
   }
+}
 
-  class UndefinedRuntimeException: Exception {
-    override var reason: String {
-      "The AppContext has undefined runtime"
-    }
+public final class RuntimeLostException: Exception {
+  override public var reason: String {
+    "The JavaScript runtime has been lost"
   }
 }

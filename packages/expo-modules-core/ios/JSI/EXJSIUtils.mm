@@ -91,7 +91,7 @@ std::shared_ptr<jsi::Function> createClass(jsi::Runtime &runtime, const char *na
 
   // Create a string buffer of the source code to evaluate.
   std::stringstream source;
-  source << "(function " << name << "(...args) { this." << nativeConstructorKey << "(args); return this; })";
+  source << "(function " << name << "(...args) { this." << nativeConstructorKey << "(...args); return this; })";
   std::shared_ptr<jsi::StringBuffer> sourceBuffer = std::make_shared<jsi::StringBuffer>(source.str());
 
   // Evaluate the code and obtain returned value (the constructor function).
@@ -103,9 +103,10 @@ std::shared_ptr<jsi::Function> createClass(jsi::Runtime &runtime, const char *na
   jsi::Function nativeConstructor = jsi::Function::createFromHostFunction(
     runtime,
     nativeConstructorPropId,
-    1,
+    // The paramCount is not obligatory to match, it only affects the `length` property of the function.
+    0,
     [constructor](jsi::Runtime &runtime, const jsi::Value &thisValue, const jsi::Value *args, size_t count) -> jsi::Value {
-      constructor(runtime, thisValue, args->asObject(runtime).asArray(runtime));
+      constructor(runtime, thisValue, args, count);
       return jsi::Value::undefined();
     });
 
@@ -113,6 +114,37 @@ std::shared_ptr<jsi::Function> createClass(jsi::Runtime &runtime, const char *na
 
   return std::make_shared<jsi::Function>(klass.asFunction(runtime));
 }
+
+#pragma mark - Weak objects
+
+bool isWeakRefSupported(jsi::Runtime &runtime) {
+  return runtime.global().hasProperty(runtime, "WeakRef");
+}
+
+std::shared_ptr<jsi::Object> createWeakRef(jsi::Runtime &runtime, std::shared_ptr<jsi::Object> object) {
+  jsi::Object weakRef = runtime
+    .global()
+    .getProperty(runtime, "WeakRef")
+    .asObject(runtime)
+    .asFunction(runtime)
+    .callAsConstructor(runtime, jsi::Value(runtime, *object))
+    .asObject(runtime);
+  return std::make_shared<jsi::Object>(std::move(weakRef));
+}
+
+std::shared_ptr<jsi::Object> derefWeakRef(jsi::Runtime &runtime, std::shared_ptr<jsi::Object> object) {
+  jsi::Value ref = object->getProperty(runtime, "deref")
+    .asObject(runtime)
+    .asFunction(runtime)
+    .callWithThis(runtime, *object);
+
+  if (ref.isUndefined()) {
+    return nullptr;
+  }
+  return std::make_shared<jsi::Object>(ref.asObject(runtime));
+}
+
+#pragma mark - Define property
 
 void defineProperty(jsi::Runtime &runtime, const jsi::Object *object, const char *name, jsi::Value value) {
   jsi::Object global = runtime.global();
@@ -127,6 +159,15 @@ void defineProperty(jsi::Runtime &runtime, const jsi::Object *object, const char
     jsi::String::createFromUtf8(runtime, name),
     std::move(descriptor),
   });
+}
+
+#pragma mark - Deallocator
+
+void setDeallocator(jsi::Runtime &runtime, std::shared_ptr<jsi::Object> object, ObjectDeallocatorBlock deallocatorBlock) {
+  std::shared_ptr<expo::ObjectDeallocator> hostObjectPtr = std::make_shared<ObjectDeallocator>(deallocatorBlock);
+  jsi::Object jsObject = jsi::Object::createFromHostObject(runtime, hostObjectPtr);
+
+  object->setProperty(runtime, "__expo_object_deallocator__", jsi::Value(runtime, jsObject));
 }
 
 } // namespace expo

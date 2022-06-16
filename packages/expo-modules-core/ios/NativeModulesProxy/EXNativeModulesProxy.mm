@@ -75,6 +75,18 @@ RCT_EXPORT_MODULE(NativeUnimoduleProxy)
 }
 
 /**
+ The initializer for Expo Go to pass a custom `EXModuleRegistry`
+ other than the default one from `EXModuleRegistryProvider`.
+ The `EXModuleRegistry` is still owned by this class.
+ */
+- (instancetype)initWithCustomModuleRegistry:(nonnull EXModuleRegistry *)moduleRegistry
+{
+  self = [self initWithModuleRegistry:moduleRegistry];
+  self.ownsModuleRegistry = YES;
+  return self;
+}
+
+/**
  Convenience initializer used by React Native in the new setup, where the modules are registered automatically.
  */
 - (instancetype)init

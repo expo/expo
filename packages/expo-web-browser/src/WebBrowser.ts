@@ -1,5 +1,5 @@
 import { UnavailabilityError } from 'expo-modules-core';
-import { AppState, AppStateStatus, Linking, Platform } from 'react-native';
+import { AppState, AppStateStatus, Linking, Platform, EmitterSubscription } from 'react-native';
 
 import ExponentWebBrowser from './ExpoWebBrowser';
 import {
@@ -331,7 +331,7 @@ function _authSessionIsNativelySupported(): boolean {
   return versionNumber >= 11;
 }
 
-let _redirectHandler: ((event: RedirectEvent) => void) | null = null;
+let _redirectSubscription: EmitterSubscription | null = null;
 
 /*
  * openBrowserAsync on Android doesn't wait until closed, so we need to polyfill
@@ -393,7 +393,7 @@ async function _openAuthSessionPolyfillAsync(
   returnUrl: string,
   browserParams: WebBrowserOpenOptions = {}
 ): Promise<WebBrowserAuthSessionResult> {
-  if (_redirectHandler) {
+  if (_redirectSubscription) {
     throw new Error(
       `The WebBrowser's auth session is in an invalid state with a redirect handler set when it should not be`
     );
@@ -427,24 +427,24 @@ async function _openAuthSessionPolyfillAsync(
 }
 
 function _stopWaitingForRedirect() {
-  if (!_redirectHandler) {
+  if (!_redirectSubscription) {
     throw new Error(
       `The WebBrowser auth session is in an invalid state with no redirect handler when one should be set`
     );
   }
 
-  Linking.removeEventListener('url', _redirectHandler);
-  _redirectHandler = null;
+  _redirectSubscription.remove();
+  _redirectSubscription = null;
 }
 
 function _waitForRedirectAsync(returnUrl: string): Promise<WebBrowserRedirectResult> {
   return new Promise((resolve) => {
-    _redirectHandler = (event: RedirectEvent) => {
+    const redirectHandler = (event: RedirectEvent) => {
       if (event.url.startsWith(returnUrl)) {
         resolve({ url: event.url, type: 'success' });
       }
     };
 
-    Linking.addEventListener('url', _redirectHandler);
+    _redirectSubscription = Linking.addEventListener('url', redirectHandler);
   });
 }

@@ -9,6 +9,7 @@ import Link from '~/components/base/link';
 import { UL, OL, LI } from '~/components/base/list';
 import { PDIV, B, Quote } from '~/components/base/paragraph';
 import { BareWorkflowCollapsible, ExpoKitCollapsible } from '~/ui/components/Collapsible';
+import { Cell, HeaderCell, Row, Table, TableHead } from '~/ui/components/Table';
 
 type Options = {
   customIconStyle?: React.CSSProperties;
@@ -52,6 +53,11 @@ export const code = Code;
 export const inlineCode = InlineCode;
 export const a = Link;
 export const blockquote = Quote;
+export const table = Table;
+export const thead = TableHead;
+export const tr = Row;
+export const th = HeaderCell;
+export const td = Cell;
 export const expokitDetails = ExpoKitCollapsible;
 export const bareworkflowDetails = BareWorkflowCollapsible;
 export const propertyAnchor = createPermalinkedComponent(PDIV, {

@@ -13,8 +13,8 @@ import kotlinx.coroutines.launch
 import org.koin.core.component.inject
 import java.lang.ref.WeakReference
 
-class DevLauncherErrorActivity
-  : FragmentActivity(), DevLauncherKoinComponent {
+class DevLauncherErrorActivity :
+  FragmentActivity(), DevLauncherKoinComponent {
 
   private val controller: DevLauncherControllerInterface by inject()
   private lateinit var binding: ErrorFragmentBinding
@@ -28,8 +28,14 @@ class DevLauncherErrorActivity
     binding.reloadButton.setOnClickListener { this.reload() }
 
     synchronized(DevLauncherErrorActivity) {
-      displayError(currentError!!)
-      currentError = null
+      val error = currentError
+      if (error != null) {
+        displayError(currentError!!)
+        currentError = null
+      } else {
+        finish()
+        return
+      }
     }
 
     setContentView(binding.root)
@@ -53,7 +59,6 @@ class DevLauncherErrorActivity
       adapter.notifyDataSetChanged()
     }
     binding.errorDetails.text = error.message ?: "Unknown error"
-
   }
 
   private fun launchHome() {
@@ -91,6 +96,11 @@ class DevLauncherErrorActivity
     private var openedErrorActivity = WeakReference<DevLauncherErrorActivity?>(null)
     private var currentError: DevLauncherAppError? = null
 
+    fun isVisible(): Boolean {
+      val errorActivity = openedErrorActivity.get()
+      return !(errorActivity == null || errorActivity.isDestroyed || errorActivity.isFinishing)
+    }
+
     fun showErrorIfNotVisible(activity: Activity, error: DevLauncherAppError) {
       val errorActivity = openedErrorActivity.get()
       if (errorActivity == null || errorActivity.isDestroyed || errorActivity.isFinishing) {
@@ -126,9 +136,10 @@ class DevLauncherErrorActivity
 
       context.startActivity(
         Intent(context, DevLauncherErrorActivity::class.java).apply {
-          addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or
-            Intent.FLAG_ACTIVITY_CLEAR_TASK or
-            Intent.FLAG_ACTIVITY_NO_ANIMATION
+          addFlags(
+            Intent.FLAG_ACTIVITY_NEW_TASK or
+              Intent.FLAG_ACTIVITY_CLEAR_TASK or
+              Intent.FLAG_ACTIVITY_NO_ANIMATION
           )
         }
       )

@@ -2,6 +2,8 @@
 title: Using environment variables with EAS Update
 ---
 
+> EAS Update is currently available only to customers with an EAS subscription plan. [Sign up](https://expo.dev/accounts/[account]/settings/subscriptions).
+
 > ⚠️ The APIs below are not stable and are expected to change as we develop EAS Update. An alternate solution is to use a babel plugin to transform variables into environment variables, as described [here](/guides/environment-variables/#using-babel-to-replace-variables).
 
 EAS Build and EAS Update allow setting and getting environment variables at different times. There are multiple steps to ensure the proper environment variables are available when developing, building, and publishing an update to a project.

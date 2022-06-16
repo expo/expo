@@ -1,8 +1,15 @@
 import { css } from '@emotion/react';
-import { borderRadius, iconSize, theme, typography } from '@expo/styleguide';
+import {
+  borderRadius,
+  iconSize,
+  theme,
+  typography,
+  ErrorIcon,
+  InfoIcon,
+  WarningIcon,
+} from '@expo/styleguide';
+import { IconProps } from '@expo/styleguide/dist/types';
 import React, { ComponentType, PropsWithChildren } from 'react';
-
-import { IconProps, ErrorIcon, InfoIcon, WarningIcon } from '~/ui/foundations/icons';
 
 type CalloutType = 'info' | 'warning' | 'error';
 

@@ -10,6 +10,29 @@
 
 ### 💡 Others
 
+## 1.0.0 — 2022-06-09
+
+### 🐛 Bug fixes
+
+- Fixed the singleton `RCTBridge.currentBridge` instance value be override by expo-dev-menu bridge instance on iOS. ([#17780](https://github.com/expo/expo/pull/17780) by [@kudo](https://github.com/kudo))
+
+## 0.11.0 — 2022-06-07
+
+### 🎉 New features
+
+- Add JS API to register buttons in dev menu. ([#17528](https://github.com/expo/expo/pull/17528) by [@ajsmth](https://github.com/ajsmth))
+
+### 🐛 Bug fixes
+
+- Update dev settings when initial props change. ([#17663](https://github.com/expo/expo/pull/17663) by [@esamelson](https://github.com/esamelson))
+- Fix copy on onboarding screen re: location of "Send Keyboard Input to Device" in system menu. ([#17767](https://github.com/expo/expo/pull/17767) by [@esamelson](https://github.com/esamelson))
+- Restore JavaScript inspector menu item. ([#17762](https://github.com/expo/expo/pull/17762) by [@lukmccall](https://github.com/lukmccall))
+- Restore the ability to open React Native dev menu. ([#17762](https://github.com/expo/expo/pull/17762) by [@lukmccall](https://github.com/lukmccall))
+
+## 0.10.7 — 2022-05-19
+
+_This version does not introduce any user-facing changes._
+
 ## 0.10.6 — 2022-05-06
 
 ### 🐛 Bug fixes
