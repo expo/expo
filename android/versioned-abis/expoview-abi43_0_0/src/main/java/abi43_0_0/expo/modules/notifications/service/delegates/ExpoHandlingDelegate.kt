@@ -63,7 +63,9 @@ class ExpoHandlingDelegate(protected val context: Context) : HandlingDelegate {
     fun createPendingIntentForOpeningApp(context: Context, broadcastIntent: Intent, notificationResponse: NotificationResponse): PendingIntent {
       var intentFlags = PendingIntent.FLAG_UPDATE_CURRENT
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-        intentFlags = intentFlags or PendingIntent.FLAG_IMMUTABLE
+        // The intent may include `RemoteInput` from `TextInputNotificationAction`.
+        // For intent with RemoteInput, it should be mutable.
+        intentFlags = intentFlags or PendingIntent.FLAG_MUTABLE
       }
       val foregroundActivityIntent = getNotificationActionLauncher(context) ?: getMainActivityLauncher(context) ?: run {
         Log.w("expo-notifications", "No launch intent found for application. Interacting with the notification won't open the app. The implementation uses `getLaunchIntentForPackage` to find appropriate activity.")
