@@ -11,7 +11,7 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
-import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -114,7 +114,7 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
     }
     try {
       if (Constants.FCM_ENABLED) {
-        String token = FirebaseInstanceId.getInstance().getToken();
+        String token = FirebaseMessaging.getInstance().getToken().getResult();
         if (token == null) {
           promise.reject("FCM token has not been set");
         } else {

@@ -2,7 +2,7 @@ package host.exp.exponent.fcm
 
 import android.content.Context
 import android.util.Log
-import com.google.firebase.iid.FirebaseInstanceId
+import com.google.firebase.messaging.FirebaseMessaging
 import host.exp.exponent.notifications.ExponentNotificationIntentService
 import host.exp.exponent.storage.ExponentSharedPreferences
 import java.io.IOException
@@ -31,16 +31,16 @@ class FcmRegistrationIntentService : ExponentNotificationIntentService(TAG) {
     private val TAG = FcmRegistrationIntentService::class.java.simpleName
 
     fun getTokenAndRegister(context: Context) {
-      FirebaseInstanceId.getInstance().instanceId.addOnSuccessListener { instanceIdResult ->
+      FirebaseMessaging.getInstance().token.addOnSuccessListener { instanceIdResult ->
         registerForeground(
           context,
-          instanceIdResult.token
+          instanceIdResult
         )
       }
         .addOnFailureListener { e ->
           Log.e(
             "FCM Device Token",
-            "Error calling getInstanceId " + e.localizedMessage
+            "Error calling getToken " + e.localizedMessage
           )
         }
     }
