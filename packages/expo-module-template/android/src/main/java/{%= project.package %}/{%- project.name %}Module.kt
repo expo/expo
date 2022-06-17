@@ -5,7 +5,7 @@ import expo.modules.kotlin.modules.ModuleDefinition
 
 class <%- project.name %>Module : Module() {
   // Each module class must implement the definition function. The definition consists of components
-  // that describe the module's functionality and behavior.
+  // that describes the module's functionality and behavior.
   // See https://docs.expo.dev/modules/module-api for more details about available components.
   override fun definition() = ModuleDefinition {
     // Sets the name of the module that JavaScript code will use to refer to the module. Takes a string as an argument.
@@ -36,7 +36,7 @@ class <%- project.name %>Module : Module() {
     // the definition components used in the closure passed to viewManager.
     // Definition components that are accepted as part of the view manager definition: `View`, `Prop`.
     ViewManager {
-      // Defines the factory creating a native view, when the module is used as a view.
+      // Defines the factory creating a native view when the module is used as a view.
       View { context -> 
         <%- project.name %>View(context) 
       }
