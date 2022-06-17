@@ -91,9 +91,8 @@
 
 - (void)testGetStoredUpdateIdsInEmptyDB
 {
-  NSArray<NSUUID *> *storedUpdateIds = [EXUpdatesAppLauncherWithDatabase storedUpdateIdsInDatabase:_db error:^(NSError * _Nonnull error) {
-    XCTFail(@"Unexpected error: %@", [error debugDescription]);
-  }];
+  NSArray<NSUUID *> * storedUpdateIds = [self _getStoredUpdatesInTestDB];
+
   XCTAssertNotNil(storedUpdateIds);
   XCTAssertEqual([storedUpdateIds count], 0);
 }
@@ -109,9 +108,8 @@
     XCTAssertNil(error1);
   });
 
-  NSArray<NSUUID *> *storedUpdateIds = [EXUpdatesAppLauncherWithDatabase storedUpdateIdsInDatabase:_db error:^(NSError * _Nonnull error) {
-    XCTFail(@"Unexpected error: %@", [error debugDescription]);
-  }];
+  NSArray<NSUUID *> * storedUpdateIds = [self _getStoredUpdatesInTestDB];
+
   XCTAssertNotNil(storedUpdateIds);
   XCTAssertEqual([storedUpdateIds count], 1);
   XCTAssertTrue([storedUpdateIds[0].UUIDString isEqualToString:testUpdate.updateId.UUIDString]);
@@ -157,6 +155,18 @@
     XCTAssertNotEqualObjects(yesterday, sameUpdate.lastAccessed);
     XCTAssertTrue(fabs(sameUpdate.lastAccessed.timeIntervalSinceNow) < 1, @"new lastAccessed date should be within 1 second of now");
   });
+}
+
+- (NSArray<NSUUID *> *)_getStoredUpdatesInTestDB
+{
+  __block NSArray<NSUUID *> *storedUpdateIds = nil;
+  dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+  [EXUpdatesAppLauncherWithDatabase storedUpdateIdsInDatabase:_db completion:^(NSError * _Nullable error, NSArray<NSUUID *> * _Nonnull _storedUpdateIds) {
+    storedUpdateIds = [NSArray arrayWithArray:_storedUpdateIds];
+    dispatch_semaphore_signal(semaphore);
+  }];
+  dispatch_semaphore_wait(semaphore, dispatch_time(DISPATCH_WALLTIME_NOW, 5000000000L)); // wait 5 seconds max
+  return storedUpdateIds;
 }
 
 @end

@@ -68,7 +68,7 @@ typedef NS_ENUM(NSInteger, EXUpdatesDevLauncherErrorCode) {
 - (void)fetchUpdateWithConfiguration:(NSDictionary *)configuration
                           onManifest:(EXUpdatesManifestBlock)manifestBlock
                             progress:(EXUpdatesProgressBlock)progressBlock
-                             success:(EXUpdatesSuccessBlock)successBlock
+                             success:(EXUpdatesUpdateSuccessBlock)successBlock
                                error:(EXUpdatesErrorBlock)errorBlock
 {
   EXUpdatesConfig *updatesConfiguration = [self _setup:configuration
@@ -79,7 +79,13 @@ typedef NS_ENUM(NSInteger, EXUpdatesDevLauncherErrorCode) {
 
   EXUpdatesAppController *controller = EXUpdatesAppController.sharedInstance;
 
-  EXUpdatesAppLoader *loader = [[EXUpdatesAppLoader alloc] initWithConfig:updatesConfiguration database:controller.database directory:controller.updatesDirectory launchedUpdate:nil completionQueue:controller.controllerQueue];
+  // since controller is a singleton, save its config so we can reset to it if our request fails
+  _tempConfig = controller.config;
+
+  [self _setDevelopmentSelectionPolicy];
+  [controller setConfigurationInternal:updatesConfiguration];
+
+  EXUpdatesRemoteAppLoader *loader = [[EXUpdatesRemoteAppLoader alloc] initWithConfig:updatesConfiguration database:controller.database directory:controller.updatesDirectory launchedUpdate:nil completionQueue:controller.controllerQueue];
 
   [loader loadUpdateFromUrl:updatesConfiguration.updateUrl onManifest:^BOOL(EXUpdatesUpdate * _Nonnull update) {
     return manifestBlock(update.manifest.rawManifestJSON);
@@ -98,14 +104,23 @@ typedef NS_ENUM(NSInteger, EXUpdatesDevLauncherErrorCode) {
   }];
 }
 
-- (nonnull NSArray<NSUUID *> *)storedUpdateIdsWithConfiguration:(nonnull NSDictionary *)configuration error:(EXUpdatesErrorBlock)errorBlock {
+- (void)storedUpdateIdsWithConfiguration:(NSDictionary *)configuration
+                                 success:(EXUpdatesQuerySuccessBlock)successBlock
+                                   error:(EXUpdatesErrorBlock)errorBlock
+{
   EXUpdatesConfig *updatesConfiguration = [self _setup:configuration
                                                  error:errorBlock];
   if (updatesConfiguration == nil) {
-    return @[];
+    successBlock(@[]);
   }
 
-  return [EXUpdatesAppLauncherWithDatabase storedUpdateIdsInDatabase:EXUpdatesAppController.sharedInstance.database error:errorBlock];
+  [EXUpdatesAppLauncherWithDatabase storedUpdateIdsInDatabase:EXUpdatesAppController.sharedInstance.database completion:^(NSError * _Nullable error, NSArray<NSUUID *> * _Nonnull storedUpdateIds) {
+    if (error != nil) {
+      errorBlock(error);
+    } else {
+      successBlock(storedUpdateIds);
+    }
+  }];
 }
 
 // Common initialization for both fetchUpdateWithConfiguration: and storedUpdateIdsWithConfiguration:
@@ -132,12 +147,6 @@ typedef NS_ENUM(NSInteger, EXUpdatesDevLauncherErrorCode) {
     return nil;
   }
 
-  // since controller is a singleton, save its config so we can reset to it if our request fails
-  _tempConfig = controller.config;
-
-  [self _setDevelopmentSelectionPolicy];
-  [controller setConfigurationInternal:updatesConfiguration];
-
   return updatesConfiguration;
 }
 
@@ -155,7 +164,7 @@ typedef NS_ENUM(NSInteger, EXUpdatesDevLauncherErrorCode) {
 
 - (void)_launchUpdate:(EXUpdatesUpdate *)update
     withConfiguration:(EXUpdatesConfig *)configuration
-              success:(EXUpdatesSuccessBlock)successBlock
+              success:(EXUpdatesUpdateSuccessBlock)successBlock
                 error:(EXUpdatesErrorBlock)errorBlock
 {
   EXUpdatesAppController *controller = EXUpdatesAppController.sharedInstance;
