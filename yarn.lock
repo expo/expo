@@ -19740,9 +19740,9 @@ unc-path-regex@^0.1.2:
   integrity sha1-5z3T17DXxe2G+6xrCufYxqadUPo=
 
 undici@^5.0.0:
-  version "5.0.0"
-  resolved "https://registry.yarnpkg.com/undici/-/undici-5.0.0.tgz#3c1e08c7f0df90c485d5d8dbb0517e11e34f2090"
-  integrity sha512-VhUpiZ3No1DOPPQVQnsDZyfcbTTcHdcgWej1PdFnSvOeJmOVDgiOHkunJmBLfmjt4CqgPQddPVjSWW0dsTs5Yg==
+  version "5.5.1"
+  resolved "https://registry.yarnpkg.com/undici/-/undici-5.5.1.tgz#baaf25844a99eaa0b22e1ef8d205bffe587c8f43"
+  integrity sha512-MEvryPLf18HvlCbLSzCW0U00IMftKGI5udnjrQbC5D4P0Hodwffhv+iGfWuJwg16Y/TK11ZFK8i+BPVW2z/eAw==
 
 unicode-canonical-property-names-ecmascript@^2.0.0:
   version "2.0.0"
