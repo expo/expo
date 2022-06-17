@@ -4,12 +4,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const spawn_async_1 = __importDefault(require("@expo/spawn-async"));
+const chalk_1 = __importDefault(require("chalk"));
 const commander_1 = require("commander");
 const download_tarball_1 = __importDefault(require("download-tarball"));
 const ejs_1 = __importDefault(require("ejs"));
 const fs_extra_1 = __importDefault(require("fs-extra"));
 const path_1 = __importDefault(require("path"));
 const prompts_1 = __importDefault(require("prompts"));
+const resolvePackageManager_1 = require("./resolvePackageManager");
 const packageJson = require('../package.json');
 // `yarn run` may change the current working dir, then we should use `INIT_CWD` env.
 const CWD = process.env.INIT_CWD || process.cwd();
@@ -24,10 +26,11 @@ const IGNORES_PATHS = ['.DS_Store', 'build', 'node_modules', 'package.json'];
  */
 async function main(target, options) {
     const targetDir = target ? path_1.default.join(CWD, target) : CWD;
+    await confirmTargetDirAsync(targetDir);
     options.target = targetDir;
     await fs_extra_1.default.ensureDir(targetDir);
     const data = await askForSubstitutionDataAsync(targetDir, options);
-    const packageManager = await selectPackageManagerAsync();
+    const packageManager = await (0, resolvePackageManager_1.resolvePackageManager)();
     const packagePath = options.source
         ? path_1.default.join(CWD, options.source)
         : await downloadPackageAsync(targetDir);
@@ -115,21 +118,6 @@ async function downloadPackageAsync(targetDir) {
     return path_1.default.join(targetDir, 'package');
 }
 /**
- * Asks whether to use Yarn or npm as a dependency package manager.
- */
-async function selectPackageManagerAsync() {
-    const { packageManager } = await (0, prompts_1.default)({
-        type: 'select',
-        name: 'packageManager',
-        message: 'Which package manager do you want to use to install dependencies?',
-        choices: [
-            { title: 'yarn', value: 'yarn' },
-            { title: 'npm', value: 'npm' },
-        ],
-    });
-    return packageManager;
-}
-/**
  * Installs dependencies and builds TypeScript files.
  */
 async function postActionsAsync(packageManager, targetDir) {
@@ -197,10 +185,14 @@ async function askForSubstitutionDataAsync(targetDir, options) {
             message: 'What is the repository URL?',
         },
     ];
+    // Stop the process when the user cancels/exits the prompt.
+    const onCancel = () => {
+        process.exit(0);
+    };
     const answers = {};
     for (const query of promptQueries) {
         const { name, resolvedValue } = query;
-        answers[name] = (_b = resolvedValue !== null && resolvedValue !== void 0 ? resolvedValue : options[name]) !== null && _b !== void 0 ? _b : (await (0, prompts_1.default)(query))[name];
+        answers[name] = (_b = resolvedValue !== null && resolvedValue !== void 0 ? resolvedValue : options[name]) !== null && _b !== void 0 ? _b : (await (0, prompts_1.default)(query, { onCancel }))[name];
     }
     const { slug, name, description, package: projectPackage, author, license, repo } = answers;
     return {
@@ -215,6 +207,26 @@ async function askForSubstitutionDataAsync(targetDir, options) {
         license,
         repo,
     };
+}
+/**
+ * Checks whether the target directory is empty and if not, asks the user to confirm if he wants to continue.
+ */
+async function confirmTargetDirAsync(targetDir) {
+    const files = await fs_extra_1.default.readdir(targetDir);
+    if (files.length === 0) {
+        return;
+    }
+    const { shouldContinue } = await (0, prompts_1.default)({
+        type: 'confirm',
+        name: 'shouldContinue',
+        message: `The target directory ${chalk_1.default.magenta(targetDir)} is not empty.\nDo you want to continue anyway?`,
+        initial: true,
+    }, {
+        onCancel: () => false,
+    });
+    if (!shouldContinue) {
+        process.exit(0);
+    }
 }
 const program = new commander_1.Command();
 program
