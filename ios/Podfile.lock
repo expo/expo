@@ -1945,11 +1945,11 @@ PODS:
     - React-Core
   - EXNetwork (4.2.0):
     - ExpoModulesCore
-  - EXNotifications (0.15.2):
+  - EXNotifications (0.15.3):
     - ExpoModulesCore
   - EXPermissions (13.2.0):
     - ExpoModulesCore
-  - Expo (45.0.4):
+  - Expo (45.0.5):
     - ExpoModulesCore
   - ExpoCellular (4.2.0):
     - ExpoModulesCore
@@ -1996,7 +1996,7 @@ PODS:
     - React-Core
   - EXSecureStore (11.2.0):
     - ExpoModulesCore
-  - EXSegment (11.2.0):
+  - EXSegment (11.2.1):
     - Analytics (= 4.0.4)
     - ExpoModulesCore
   - EXSensors (11.3.0):
@@ -4370,9 +4370,9 @@ SPEC CHECKSUMS:
   EXManifests: 0c6134b7b6f3236a93a778c3f44ba1cfb3f9fa3d
   EXMediaLibrary: 5d0e1b78268c90f7dd8a83ee3be26e01c4fd6c1f
   EXNetwork: 116e5ec043168904c1f24a2e96a8361063e57d26
-  EXNotifications: 43ef917067a8c1cc977c7976e43df63d582c7c4d
+  EXNotifications: fa84c2aa6b46e265b6df5c1f9e37053cc9980ef5
   EXPermissions: 3dbb869e7f96a5711314f73d48ddc2f28009a7f6
-  Expo: 64d52669fa3b9342919b5b44b2b4f15f19b0cf76
+  Expo: b9fff0a1eac0f424fc68ea49b4347fb308e52e17
   ExpoCellular: b5daa3b732c0c9841979c39988062e50e70dc053
   ExpoClipboard: e2dda22be0524595a5eeead51665f60729829123
   ExpoCrypto: d0d0f3e20875dc450b4ec88f0fb608da5c2c6c17
@@ -4391,7 +4391,7 @@ SPEC CHECKSUMS:
   EXScreenCapture: cbee2204f313038a1819d31ad99a31e15f8e0f59
   EXScreenOrientation: e3c072fb0add472a3037482ea43ccbade9b88a25
   EXSecureStore: aaae919d83aec2faf031e99398807edac0313285
-  EXSegment: e05f11265384090c219ea8c450f14906caad7859
+  EXSegment: aefdf506b520917c73d2c5920c83b49e2cffa7cf
   EXSensors: 158b3487409f0e7fdebfe9c1f0b7509a81a3af07
   EXSharing: b058aa8e8993ac63d809c686df7695203a810123
   EXSMS: 26f6d61a00a3a3fb125a233d81b1d3ab48303cef
