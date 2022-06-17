@@ -4,7 +4,7 @@ import <%- project.name %>View, { <%- project.name %>ViewProps } from './<%- pro
 
 // It loads the native module object from the JSI or falls back to
 // the bridge module (from NativeModulesProxy) if the remote debugger is on.
-const <%- project.name %> = requireNativeModule(<%- project.name %>);
+const <%- project.name %> = requireNativeModule('<%- project.name %>');
 
 // Get the native constant value.
 export const PI = <%- project.name %>.PI;
