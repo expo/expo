@@ -375,6 +375,22 @@ static NSString * const EXUpdatesDatabaseStaticBuildDataKey = @"staticBuildData"
   return updates;
 }
 
+- (nullable NSArray<NSUUID *> *)allUpdateIdsWithStatus:(EXUpdatesUpdateStatus)status error:(NSError ** _Nullable)error
+{
+  NSString * const sql = @"SELECT id FROM updates WHERE status = ?1;";
+
+  NSArray<NSDictionary *> *rows = [self _executeSql:sql withArgs:@[@(status)] error:error];
+  if (!rows) {
+    return nil;
+  }
+
+  NSMutableArray<NSUUID *> *ids = [NSMutableArray new];
+  for (NSDictionary *row in rows) {
+    [ids addObject:row[@"id"]];
+  }
+  return ids;
+}
+
 - (nullable NSArray<EXUpdatesUpdate *> *)launchableUpdatesWithConfig:(EXUpdatesConfig *)config error:(NSError ** _Nullable)error
 {
   // if an update has successfully launched at least once, we treat it as launchable
