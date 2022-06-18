@@ -419,6 +419,8 @@ dependencies {
 
   // react-native-maps
   implementation "androidx.work:work-runtime:2.7.1"
+
+  implementation project(':vendored_unversioned_@shopify_react-native-skia')
 }
 
 
