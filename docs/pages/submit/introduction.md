@@ -18,7 +18,7 @@ import { BoxLink } from '~/ui/components/BoxLink';
 <BoxLink 
   title={'Learn how to use EAS Submit with "expo build"'} 
   description="EAS Submit works with EAS Build projects by default, but it's easy to use EAS Submit to submit apps built with Classic Builds too."
-  href="/submit/ios"
+  href="/submit/classic-builds"
 />
 
 <BoxLink 

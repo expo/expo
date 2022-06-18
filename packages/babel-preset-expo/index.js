@@ -18,8 +18,8 @@ module.exports = function (api, options = {}) {
   const platformOptions =
     platform === 'web'
       ? {
-          // Only disable import/export transform on webpack because Metro doesn't have
-          // tree-shaking.
+          // Only disable import/export transform when Webpack is used because
+          // Metro does not support tree-shaking.
           disableImportExportTransform: !!isWebpack,
           ...web,
         }

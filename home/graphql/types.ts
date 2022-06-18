@@ -1560,10 +1560,13 @@ export type Build = ActivityTimelineProjectActivity & BuildOrBuildJob & {
   appVersion?: Maybe<Scalars['String']>;
   artifacts?: Maybe<BuildArtifacts>;
   buildProfile?: Maybe<Scalars['String']>;
+  canRetry: Scalars['Boolean'];
   cancelingActor?: Maybe<Actor>;
   channel?: Maybe<Scalars['String']>;
-  createdAt?: Maybe<Scalars['DateTime']>;
+  completedAt?: Maybe<Scalars['DateTime']>;
+  createdAt: Scalars['DateTime'];
   distribution?: Maybe<DistributionType>;
+  enqueuedAt?: Maybe<Scalars['DateTime']>;
   error?: Maybe<BuildError>;
   estimatedWaitTimeLeftSeconds?: Maybe<Scalars['Int']>;
   expirationDate?: Maybe<Scalars['DateTime']>;
@@ -1578,9 +1581,11 @@ export type Build = ActivityTimelineProjectActivity & BuildOrBuildJob & {
   isGitWorkingTreeDirty?: Maybe<Scalars['Boolean']>;
   logFiles: Array<Scalars['String']>;
   metrics?: Maybe<BuildMetrics>;
+  parentBuild?: Maybe<Build>;
   platform: AppPlatform;
   priority: BuildPriority;
   project: Project;
+  provisioningStartedAt?: Maybe<Scalars['DateTime']>;
   /** Queue position is 1-indexed */
   queuePosition?: Maybe<Scalars['Int']>;
   reactNativeVersion?: Maybe<Scalars['String']>;
@@ -1589,7 +1594,8 @@ export type Build = ActivityTimelineProjectActivity & BuildOrBuildJob & {
   sdkVersion?: Maybe<Scalars['String']>;
   status: BuildStatus;
   submissions: Array<Submission>;
-  updatedAt?: Maybe<Scalars['DateTime']>;
+  updatedAt: Scalars['DateTime'];
+  workerStartedAt?: Maybe<Scalars['DateTime']>;
 };
 
 export type BuildArtifact = {
@@ -1761,6 +1767,8 @@ export type BuildMutation = {
   createIosBuild: CreateBuildResult;
   /** Delete an EAS Build build */
   deleteBuild: Build;
+  /** Retry an EAS Build build */
+  retryBuild: Build;
 };
 
 
@@ -1784,6 +1792,11 @@ export type BuildMutationCreateIosBuildArgs = {
 
 
 export type BuildMutationDeleteBuildArgs = {
+  buildId: Scalars['ID'];
+};
+
+
+export type BuildMutationRetryBuildArgs = {
   buildId: Scalars['ID'];
 };
 
@@ -3888,6 +3901,13 @@ export type Home_ViewerUsernameQueryVariables = Exact<{ [key: string]: never; }>
 
 export type Home_ViewerUsernameQuery = { __typename?: 'RootQuery', me?: { __typename?: 'User', id: string, username: string } | null };
 
+export type HomeScreenDataQueryVariables = Exact<{
+  accountName: Scalars['String'];
+}>;
+
+
+export type HomeScreenDataQuery = { __typename?: 'RootQuery', account: { __typename?: 'AccountQuery', byName: { __typename?: 'Account', id: string, name: string, isCurrent: boolean, appCount: number, owner?: { __typename?: 'User', id: string, username: string, firstName?: string | null, lastName?: string | null, profilePhoto: string, accounts: Array<{ __typename?: 'Account', id: string, name: string, owner?: { __typename?: 'User', id: string, username: string, profilePhoto: string, firstName?: string | null, fullName?: string | null, lastName?: string | null } | null }> } | null, apps: Array<{ __typename?: 'App', id: string, fullName: string, name: string, iconUrl?: string | null, packageName: string, username: string, description: string, sdkVersion: string, privacy: string }>, snacks: Array<{ __typename?: 'Snack', id: string, name: string, description: string, fullName: string, slug: string, isDraft: boolean }> } } };
+
 export type DeleteAccountPermissionsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -3900,30 +3920,6 @@ export type SecondFactorDevicesQueryVariables = Exact<{ [key: string]: never; }>
 
 export type SecondFactorDevicesQuery = { __typename?: 'RootQuery', me?: { __typename?: 'User', id: string, emailVerified: boolean, secondFactorDevices: Array<{ __typename?: 'UserSecondFactorDevice', id: string, name: string, isPrimary: boolean, isCertified: boolean, smsPhoneNumber?: string | null, method: SecondFactorMethod, createdAt: any }> } | null };
 
-export type ConfigurationResultsDataFragment = { __typename?: 'SecondFactorDeviceConfigurationResult', secret: string, keyURI: string, secondFactorDevice: { __typename?: 'UserSecondFactorDevice', id: string, name: string, isCertified: boolean, isPrimary: boolean, smsPhoneNumber?: string | null, method: SecondFactorMethod, createdAt: any } };
-
-export type SecondFactorInitiationResultDataFragment = { __typename?: 'SecondFactorInitiationResult', plaintextBackupCodes: Array<string>, configurationResults: Array<{ __typename?: 'SecondFactorDeviceConfigurationResult', secret: string, keyURI: string, secondFactorDevice: { __typename?: 'UserSecondFactorDevice', id: string, name: string, isCertified: boolean, isPrimary: boolean, smsPhoneNumber?: string | null, method: SecondFactorMethod, createdAt: any } }> };
-
-export type InitiateSecondFactorAuthenticationMutationVariables = Exact<{
-  secondFactorDeviceConfigurations: Array<SecondFactorDeviceConfiguration> | SecondFactorDeviceConfiguration;
-  recaptchaResponseToken?: InputMaybe<Scalars['String']>;
-}>;
-
-
-export type InitiateSecondFactorAuthenticationMutation = { __typename?: 'RootMutation', me: { __typename?: 'MeMutation', initiateSecondFactorAuthentication: { __typename?: 'SecondFactorInitiationResult', plaintextBackupCodes: Array<string>, configurationResults: Array<{ __typename?: 'SecondFactorDeviceConfigurationResult', secret: string, keyURI: string, secondFactorDevice: { __typename?: 'UserSecondFactorDevice', id: string, name: string, isCertified: boolean, isPrimary: boolean, smsPhoneNumber?: string | null, method: SecondFactorMethod, createdAt: any } }> } } };
-
-export type PurgeUnfinishedSecondFactorAuthenticationMutationVariables = Exact<{ [key: string]: never; }>;
-
-
-export type PurgeUnfinishedSecondFactorAuthenticationMutation = { __typename?: 'RootMutation', me: { __typename?: 'MeMutation', purgeUnfinishedSecondFactorAuthentication: { __typename?: 'SecondFactorBooleanResult', success: boolean } } };
-
-export type CertifySecondFactorDeviceMutationVariables = Exact<{
-  otp: Scalars['String'];
-}>;
-
-
-export type CertifySecondFactorDeviceMutation = { __typename?: 'RootMutation', me: { __typename?: 'MeMutation', certifySecondFactorDevice: { __typename?: 'SecondFactorBooleanResult', success: boolean } } };
-
 export type SendSmsotpToSecondFactorDeviceMutationVariables = Exact<{
   userSecondFactorDeviceId: Scalars['ID'];
 }>;
@@ -3931,51 +3927,7 @@ export type SendSmsotpToSecondFactorDeviceMutationVariables = Exact<{
 
 export type SendSmsotpToSecondFactorDeviceMutation = { __typename?: 'RootMutation', me: { __typename?: 'MeMutation', sendSMSOTPToSecondFactorDevice: { __typename?: 'SecondFactorBooleanResult', success: boolean } } };
 
-export type DisableSecondFactorAuthenticationMutationVariables = Exact<{
-  otp: Scalars['String'];
-}>;
-
-
-export type DisableSecondFactorAuthenticationMutation = { __typename?: 'RootMutation', me: { __typename?: 'MeMutation', disableSecondFactorAuthentication: { __typename?: 'SecondFactorBooleanResult', success: boolean } } };
-
-export type AddSecondFactorDeviceMutationVariables = Exact<{
-  deviceConfiguration: SecondFactorDeviceConfiguration;
-  otp: Scalars['String'];
-}>;
-
-
-export type AddSecondFactorDeviceMutation = { __typename?: 'RootMutation', me: { __typename?: 'MeMutation', addSecondFactorDevice: { __typename?: 'SecondFactorDeviceConfigurationResult', secret: string, keyURI: string, secondFactorDevice: { __typename?: 'UserSecondFactorDevice', id: string, name: string, isCertified: boolean, isPrimary: boolean, smsPhoneNumber?: string | null, method: SecondFactorMethod, createdAt: any } } } };
-
-export type SetPrimarySecondFactorDeviceMutationVariables = Exact<{
-  userSecondFactorDeviceId: Scalars['ID'];
-}>;
-
-
-export type SetPrimarySecondFactorDeviceMutation = { __typename?: 'RootMutation', me: { __typename?: 'MeMutation', setPrimarySecondFactorDevice: { __typename?: 'SecondFactorBooleanResult', success: boolean } } };
-
-export type DeleteSecondFactorDeviceMutationVariables = Exact<{
-  userSecondFactorDeviceId: Scalars['ID'];
-  otp: Scalars['String'];
-}>;
-
-
-export type DeleteSecondFactorDeviceMutation = { __typename?: 'RootMutation', me: { __typename?: 'MeMutation', deleteSecondFactorDevice: { __typename?: 'SecondFactorBooleanResult', success: boolean } } };
-
-export type RegenerateSecondFactorBackupCodesMutationVariables = Exact<{
-  otp: Scalars['String'];
-}>;
-
-
-export type RegenerateSecondFactorBackupCodesMutation = { __typename?: 'RootMutation', me: { __typename?: 'MeMutation', regenerateSecondFactorBackupCodes: { __typename?: 'SecondFactorRegenerateBackupCodesResult', plaintextBackupCodes: Array<string> } } };
-
 export type UserPermissionDataFragment = { __typename?: 'UserPermission', permissions: Array<Permission>, role?: Role | null, user?: { __typename?: 'User', id: string, fullName?: string | null, profilePhoto: string, username: string, email?: string | null } | null };
-
-export type HomeScreenDataQueryVariables = Exact<{
-  accountName: Scalars['String'];
-}>;
-
-
-export type HomeScreenDataQuery = { __typename?: 'RootQuery', account: { __typename?: 'AccountQuery', byName: { __typename?: 'Account', id: string, name: string, isCurrent: boolean, appCount: number, owner?: { __typename?: 'User', id: string, username: string, firstName?: string | null, lastName?: string | null, profilePhoto: string, accounts: Array<{ __typename?: 'Account', id: string, name: string, owner?: { __typename?: 'User', id: string, username: string, profilePhoto: string, firstName?: string | null, fullName?: string | null, lastName?: string | null } | null }> } | null, apps: Array<{ __typename?: 'App', id: string, fullName: string, name: string, iconUrl?: string | null, packageName: string, username: string, description: string, sdkVersion: string, privacy: string }>, snacks: Array<{ __typename?: 'Snack', id: string, name: string, description: string, fullName: string, slug: string, isDraft: boolean }> } } };
 
 export const CommonAppDataFragmentDoc = gql`
     fragment CommonAppData on App {
@@ -4032,29 +3984,6 @@ export const UserSecondFactorDeviceDataFragmentDoc = gql`
   createdAt
 }
     `;
-export const ConfigurationResultsDataFragmentDoc = gql`
-    fragment ConfigurationResultsData on SecondFactorDeviceConfigurationResult {
-  secondFactorDevice {
-    id
-    name
-    isCertified
-    isPrimary
-    smsPhoneNumber
-    method
-    createdAt
-  }
-  secret
-  keyURI
-}
-    `;
-export const SecondFactorInitiationResultDataFragmentDoc = gql`
-    fragment SecondFactorInitiationResultData on SecondFactorInitiationResult {
-  configurationResults {
-    ...ConfigurationResultsData
-  }
-  plaintextBackupCodes
-}
-    ${ConfigurationResultsDataFragmentDoc}`;
 export const UserPermissionDataFragmentDoc = gql`
     fragment UserPermissionData on UserPermission {
   permissions
@@ -4643,6 +4572,60 @@ export type Home_ViewerUsernameQueryResult = Apollo.QueryResult<Home_ViewerUsern
 export function refetchHome_ViewerUsernameQuery(variables?: Home_ViewerUsernameQueryVariables) {
       return { query: Home_ViewerUsernameDocument, variables: variables }
     }
+export const HomeScreenDataDocument = gql`
+    query HomeScreenData($accountName: String!) {
+  account {
+    byName(accountName: $accountName) {
+      id
+      name
+      isCurrent
+      owner {
+        ...CurrentUserData
+      }
+      apps(limit: 5, offset: 0, includeUnpublished: true) {
+        ...CommonAppData
+      }
+      snacks(limit: 5, offset: 0) {
+        ...CommonSnackData
+      }
+      appCount
+    }
+  }
+}
+    ${CurrentUserDataFragmentDoc}
+${CommonAppDataFragmentDoc}
+${CommonSnackDataFragmentDoc}`;
+
+/**
+ * __useHomeScreenDataQuery__
+ *
+ * To run a query within a React component, call `useHomeScreenDataQuery` and pass it any options that fit your needs.
+ * When your component renders, `useHomeScreenDataQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useHomeScreenDataQuery({
+ *   variables: {
+ *      accountName: // value for 'accountName'
+ *   },
+ * });
+ */
+export function useHomeScreenDataQuery(baseOptions: Apollo.QueryHookOptions<HomeScreenDataQuery, HomeScreenDataQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<HomeScreenDataQuery, HomeScreenDataQueryVariables>(HomeScreenDataDocument, options);
+      }
+export function useHomeScreenDataLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<HomeScreenDataQuery, HomeScreenDataQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<HomeScreenDataQuery, HomeScreenDataQueryVariables>(HomeScreenDataDocument, options);
+        }
+export type HomeScreenDataQueryHookResult = ReturnType<typeof useHomeScreenDataQuery>;
+export type HomeScreenDataLazyQueryHookResult = ReturnType<typeof useHomeScreenDataLazyQuery>;
+export type HomeScreenDataQueryResult = Apollo.QueryResult<HomeScreenDataQuery, HomeScreenDataQueryVariables>;
+export function refetchHomeScreenDataQuery(variables: HomeScreenDataQueryVariables) {
+      return { query: HomeScreenDataDocument, variables: variables }
+    }
 export const DeleteAccountPermissionsDocument = gql`
     query DeleteAccountPermissions {
   me {
@@ -4735,114 +4718,6 @@ export type SecondFactorDevicesQueryQueryResult = Apollo.QueryResult<SecondFacto
 export function refetchSecondFactorDevicesQuery(variables?: SecondFactorDevicesQueryVariables) {
       return { query: SecondFactorDevicesQueryDocument, variables: variables }
     }
-export const InitiateSecondFactorAuthenticationMutationDocument = gql`
-    mutation InitiateSecondFactorAuthenticationMutation($secondFactorDeviceConfigurations: [SecondFactorDeviceConfiguration!]!, $recaptchaResponseToken: String) {
-  me {
-    initiateSecondFactorAuthentication(
-      deviceConfigurations: $secondFactorDeviceConfigurations
-      recaptchaResponseToken: $recaptchaResponseToken
-    ) {
-      ...SecondFactorInitiationResultData
-    }
-  }
-}
-    ${SecondFactorInitiationResultDataFragmentDoc}`;
-export type InitiateSecondFactorAuthenticationMutationMutationFn = Apollo.MutationFunction<InitiateSecondFactorAuthenticationMutation, InitiateSecondFactorAuthenticationMutationVariables>;
-
-/**
- * __useInitiateSecondFactorAuthenticationMutation__
- *
- * To run a mutation, you first call `useInitiateSecondFactorAuthenticationMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useInitiateSecondFactorAuthenticationMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [initiateSecondFactorAuthenticationMutation, { data, loading, error }] = useInitiateSecondFactorAuthenticationMutation({
- *   variables: {
- *      secondFactorDeviceConfigurations: // value for 'secondFactorDeviceConfigurations'
- *      recaptchaResponseToken: // value for 'recaptchaResponseToken'
- *   },
- * });
- */
-export function useInitiateSecondFactorAuthenticationMutation(baseOptions?: Apollo.MutationHookOptions<InitiateSecondFactorAuthenticationMutation, InitiateSecondFactorAuthenticationMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<InitiateSecondFactorAuthenticationMutation, InitiateSecondFactorAuthenticationMutationVariables>(InitiateSecondFactorAuthenticationMutationDocument, options);
-      }
-export type InitiateSecondFactorAuthenticationMutationHookResult = ReturnType<typeof useInitiateSecondFactorAuthenticationMutation>;
-export type InitiateSecondFactorAuthenticationMutationMutationResult = Apollo.MutationResult<InitiateSecondFactorAuthenticationMutation>;
-export type InitiateSecondFactorAuthenticationMutationMutationOptions = Apollo.BaseMutationOptions<InitiateSecondFactorAuthenticationMutation, InitiateSecondFactorAuthenticationMutationVariables>;
-export const PurgeUnfinishedSecondFactorAuthenticationMutationDocument = gql`
-    mutation PurgeUnfinishedSecondFactorAuthenticationMutation {
-  me {
-    purgeUnfinishedSecondFactorAuthentication {
-      success
-    }
-  }
-}
-    `;
-export type PurgeUnfinishedSecondFactorAuthenticationMutationMutationFn = Apollo.MutationFunction<PurgeUnfinishedSecondFactorAuthenticationMutation, PurgeUnfinishedSecondFactorAuthenticationMutationVariables>;
-
-/**
- * __usePurgeUnfinishedSecondFactorAuthenticationMutation__
- *
- * To run a mutation, you first call `usePurgeUnfinishedSecondFactorAuthenticationMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `usePurgeUnfinishedSecondFactorAuthenticationMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [purgeUnfinishedSecondFactorAuthenticationMutation, { data, loading, error }] = usePurgeUnfinishedSecondFactorAuthenticationMutation({
- *   variables: {
- *   },
- * });
- */
-export function usePurgeUnfinishedSecondFactorAuthenticationMutation(baseOptions?: Apollo.MutationHookOptions<PurgeUnfinishedSecondFactorAuthenticationMutation, PurgeUnfinishedSecondFactorAuthenticationMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<PurgeUnfinishedSecondFactorAuthenticationMutation, PurgeUnfinishedSecondFactorAuthenticationMutationVariables>(PurgeUnfinishedSecondFactorAuthenticationMutationDocument, options);
-      }
-export type PurgeUnfinishedSecondFactorAuthenticationMutationHookResult = ReturnType<typeof usePurgeUnfinishedSecondFactorAuthenticationMutation>;
-export type PurgeUnfinishedSecondFactorAuthenticationMutationMutationResult = Apollo.MutationResult<PurgeUnfinishedSecondFactorAuthenticationMutation>;
-export type PurgeUnfinishedSecondFactorAuthenticationMutationMutationOptions = Apollo.BaseMutationOptions<PurgeUnfinishedSecondFactorAuthenticationMutation, PurgeUnfinishedSecondFactorAuthenticationMutationVariables>;
-export const CertifySecondFactorDeviceMutationDocument = gql`
-    mutation CertifySecondFactorDeviceMutation($otp: String!) {
-  me {
-    certifySecondFactorDevice(otp: $otp) {
-      success
-    }
-  }
-}
-    `;
-export type CertifySecondFactorDeviceMutationMutationFn = Apollo.MutationFunction<CertifySecondFactorDeviceMutation, CertifySecondFactorDeviceMutationVariables>;
-
-/**
- * __useCertifySecondFactorDeviceMutation__
- *
- * To run a mutation, you first call `useCertifySecondFactorDeviceMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useCertifySecondFactorDeviceMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [certifySecondFactorDeviceMutation, { data, loading, error }] = useCertifySecondFactorDeviceMutation({
- *   variables: {
- *      otp: // value for 'otp'
- *   },
- * });
- */
-export function useCertifySecondFactorDeviceMutation(baseOptions?: Apollo.MutationHookOptions<CertifySecondFactorDeviceMutation, CertifySecondFactorDeviceMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<CertifySecondFactorDeviceMutation, CertifySecondFactorDeviceMutationVariables>(CertifySecondFactorDeviceMutationDocument, options);
-      }
-export type CertifySecondFactorDeviceMutationHookResult = ReturnType<typeof useCertifySecondFactorDeviceMutation>;
-export type CertifySecondFactorDeviceMutationMutationResult = Apollo.MutationResult<CertifySecondFactorDeviceMutation>;
-export type CertifySecondFactorDeviceMutationMutationOptions = Apollo.BaseMutationOptions<CertifySecondFactorDeviceMutation, CertifySecondFactorDeviceMutationVariables>;
 export const SendSmsotpToSecondFactorDeviceMutationDocument = gql`
     mutation SendSMSOTPToSecondFactorDeviceMutation($userSecondFactorDeviceId: ID!) {
   me {
@@ -4880,239 +4755,3 @@ export function useSendSmsotpToSecondFactorDeviceMutation(baseOptions?: Apollo.M
 export type SendSmsotpToSecondFactorDeviceMutationHookResult = ReturnType<typeof useSendSmsotpToSecondFactorDeviceMutation>;
 export type SendSmsotpToSecondFactorDeviceMutationMutationResult = Apollo.MutationResult<SendSmsotpToSecondFactorDeviceMutation>;
 export type SendSmsotpToSecondFactorDeviceMutationMutationOptions = Apollo.BaseMutationOptions<SendSmsotpToSecondFactorDeviceMutation, SendSmsotpToSecondFactorDeviceMutationVariables>;
-export const DisableSecondFactorAuthenticationMutationDocument = gql`
-    mutation DisableSecondFactorAuthenticationMutation($otp: String!) {
-  me {
-    disableSecondFactorAuthentication(otp: $otp) {
-      success
-    }
-  }
-}
-    `;
-export type DisableSecondFactorAuthenticationMutationMutationFn = Apollo.MutationFunction<DisableSecondFactorAuthenticationMutation, DisableSecondFactorAuthenticationMutationVariables>;
-
-/**
- * __useDisableSecondFactorAuthenticationMutation__
- *
- * To run a mutation, you first call `useDisableSecondFactorAuthenticationMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useDisableSecondFactorAuthenticationMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [disableSecondFactorAuthenticationMutation, { data, loading, error }] = useDisableSecondFactorAuthenticationMutation({
- *   variables: {
- *      otp: // value for 'otp'
- *   },
- * });
- */
-export function useDisableSecondFactorAuthenticationMutation(baseOptions?: Apollo.MutationHookOptions<DisableSecondFactorAuthenticationMutation, DisableSecondFactorAuthenticationMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<DisableSecondFactorAuthenticationMutation, DisableSecondFactorAuthenticationMutationVariables>(DisableSecondFactorAuthenticationMutationDocument, options);
-      }
-export type DisableSecondFactorAuthenticationMutationHookResult = ReturnType<typeof useDisableSecondFactorAuthenticationMutation>;
-export type DisableSecondFactorAuthenticationMutationMutationResult = Apollo.MutationResult<DisableSecondFactorAuthenticationMutation>;
-export type DisableSecondFactorAuthenticationMutationMutationOptions = Apollo.BaseMutationOptions<DisableSecondFactorAuthenticationMutation, DisableSecondFactorAuthenticationMutationVariables>;
-export const AddSecondFactorDeviceMutationDocument = gql`
-    mutation AddSecondFactorDeviceMutation($deviceConfiguration: SecondFactorDeviceConfiguration!, $otp: String!) {
-  me {
-    addSecondFactorDevice(deviceConfiguration: $deviceConfiguration, otp: $otp) {
-      ...ConfigurationResultsData
-    }
-  }
-}
-    ${ConfigurationResultsDataFragmentDoc}`;
-export type AddSecondFactorDeviceMutationMutationFn = Apollo.MutationFunction<AddSecondFactorDeviceMutation, AddSecondFactorDeviceMutationVariables>;
-
-/**
- * __useAddSecondFactorDeviceMutation__
- *
- * To run a mutation, you first call `useAddSecondFactorDeviceMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useAddSecondFactorDeviceMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [addSecondFactorDeviceMutation, { data, loading, error }] = useAddSecondFactorDeviceMutation({
- *   variables: {
- *      deviceConfiguration: // value for 'deviceConfiguration'
- *      otp: // value for 'otp'
- *   },
- * });
- */
-export function useAddSecondFactorDeviceMutation(baseOptions?: Apollo.MutationHookOptions<AddSecondFactorDeviceMutation, AddSecondFactorDeviceMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<AddSecondFactorDeviceMutation, AddSecondFactorDeviceMutationVariables>(AddSecondFactorDeviceMutationDocument, options);
-      }
-export type AddSecondFactorDeviceMutationHookResult = ReturnType<typeof useAddSecondFactorDeviceMutation>;
-export type AddSecondFactorDeviceMutationMutationResult = Apollo.MutationResult<AddSecondFactorDeviceMutation>;
-export type AddSecondFactorDeviceMutationMutationOptions = Apollo.BaseMutationOptions<AddSecondFactorDeviceMutation, AddSecondFactorDeviceMutationVariables>;
-export const SetPrimarySecondFactorDeviceMutationDocument = gql`
-    mutation SetPrimarySecondFactorDeviceMutation($userSecondFactorDeviceId: ID!) {
-  me {
-    setPrimarySecondFactorDevice(
-      userSecondFactorDeviceId: $userSecondFactorDeviceId
-    ) {
-      success
-    }
-  }
-}
-    `;
-export type SetPrimarySecondFactorDeviceMutationMutationFn = Apollo.MutationFunction<SetPrimarySecondFactorDeviceMutation, SetPrimarySecondFactorDeviceMutationVariables>;
-
-/**
- * __useSetPrimarySecondFactorDeviceMutation__
- *
- * To run a mutation, you first call `useSetPrimarySecondFactorDeviceMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useSetPrimarySecondFactorDeviceMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [setPrimarySecondFactorDeviceMutation, { data, loading, error }] = useSetPrimarySecondFactorDeviceMutation({
- *   variables: {
- *      userSecondFactorDeviceId: // value for 'userSecondFactorDeviceId'
- *   },
- * });
- */
-export function useSetPrimarySecondFactorDeviceMutation(baseOptions?: Apollo.MutationHookOptions<SetPrimarySecondFactorDeviceMutation, SetPrimarySecondFactorDeviceMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<SetPrimarySecondFactorDeviceMutation, SetPrimarySecondFactorDeviceMutationVariables>(SetPrimarySecondFactorDeviceMutationDocument, options);
-      }
-export type SetPrimarySecondFactorDeviceMutationHookResult = ReturnType<typeof useSetPrimarySecondFactorDeviceMutation>;
-export type SetPrimarySecondFactorDeviceMutationMutationResult = Apollo.MutationResult<SetPrimarySecondFactorDeviceMutation>;
-export type SetPrimarySecondFactorDeviceMutationMutationOptions = Apollo.BaseMutationOptions<SetPrimarySecondFactorDeviceMutation, SetPrimarySecondFactorDeviceMutationVariables>;
-export const DeleteSecondFactorDeviceMutationDocument = gql`
-    mutation DeleteSecondFactorDeviceMutation($userSecondFactorDeviceId: ID!, $otp: String!) {
-  me {
-    deleteSecondFactorDevice(
-      userSecondFactorDeviceId: $userSecondFactorDeviceId
-      otp: $otp
-    ) {
-      success
-    }
-  }
-}
-    `;
-export type DeleteSecondFactorDeviceMutationMutationFn = Apollo.MutationFunction<DeleteSecondFactorDeviceMutation, DeleteSecondFactorDeviceMutationVariables>;
-
-/**
- * __useDeleteSecondFactorDeviceMutation__
- *
- * To run a mutation, you first call `useDeleteSecondFactorDeviceMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useDeleteSecondFactorDeviceMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [deleteSecondFactorDeviceMutation, { data, loading, error }] = useDeleteSecondFactorDeviceMutation({
- *   variables: {
- *      userSecondFactorDeviceId: // value for 'userSecondFactorDeviceId'
- *      otp: // value for 'otp'
- *   },
- * });
- */
-export function useDeleteSecondFactorDeviceMutation(baseOptions?: Apollo.MutationHookOptions<DeleteSecondFactorDeviceMutation, DeleteSecondFactorDeviceMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<DeleteSecondFactorDeviceMutation, DeleteSecondFactorDeviceMutationVariables>(DeleteSecondFactorDeviceMutationDocument, options);
-      }
-export type DeleteSecondFactorDeviceMutationHookResult = ReturnType<typeof useDeleteSecondFactorDeviceMutation>;
-export type DeleteSecondFactorDeviceMutationMutationResult = Apollo.MutationResult<DeleteSecondFactorDeviceMutation>;
-export type DeleteSecondFactorDeviceMutationMutationOptions = Apollo.BaseMutationOptions<DeleteSecondFactorDeviceMutation, DeleteSecondFactorDeviceMutationVariables>;
-export const RegenerateSecondFactorBackupCodesMutationDocument = gql`
-    mutation RegenerateSecondFactorBackupCodesMutation($otp: String!) {
-  me {
-    regenerateSecondFactorBackupCodes(otp: $otp) {
-      plaintextBackupCodes
-    }
-  }
-}
-    `;
-export type RegenerateSecondFactorBackupCodesMutationMutationFn = Apollo.MutationFunction<RegenerateSecondFactorBackupCodesMutation, RegenerateSecondFactorBackupCodesMutationVariables>;
-
-/**
- * __useRegenerateSecondFactorBackupCodesMutation__
- *
- * To run a mutation, you first call `useRegenerateSecondFactorBackupCodesMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useRegenerateSecondFactorBackupCodesMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [regenerateSecondFactorBackupCodesMutation, { data, loading, error }] = useRegenerateSecondFactorBackupCodesMutation({
- *   variables: {
- *      otp: // value for 'otp'
- *   },
- * });
- */
-export function useRegenerateSecondFactorBackupCodesMutation(baseOptions?: Apollo.MutationHookOptions<RegenerateSecondFactorBackupCodesMutation, RegenerateSecondFactorBackupCodesMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<RegenerateSecondFactorBackupCodesMutation, RegenerateSecondFactorBackupCodesMutationVariables>(RegenerateSecondFactorBackupCodesMutationDocument, options);
-      }
-export type RegenerateSecondFactorBackupCodesMutationHookResult = ReturnType<typeof useRegenerateSecondFactorBackupCodesMutation>;
-export type RegenerateSecondFactorBackupCodesMutationMutationResult = Apollo.MutationResult<RegenerateSecondFactorBackupCodesMutation>;
-export type RegenerateSecondFactorBackupCodesMutationMutationOptions = Apollo.BaseMutationOptions<RegenerateSecondFactorBackupCodesMutation, RegenerateSecondFactorBackupCodesMutationVariables>;
-export const HomeScreenDataDocument = gql`
-    query HomeScreenData($accountName: String!) {
-  account {
-    byName(accountName: $accountName) {
-      id
-      name
-      isCurrent
-      owner {
-        ...CurrentUserData
-      }
-      apps(limit: 5, offset: 0, includeUnpublished: true) {
-        ...CommonAppData
-      }
-      snacks(limit: 5, offset: 0) {
-        ...CommonSnackData
-      }
-      appCount
-    }
-  }
-}
-    ${CurrentUserDataFragmentDoc}
-${CommonAppDataFragmentDoc}
-${CommonSnackDataFragmentDoc}`;
-
-/**
- * __useHomeScreenDataQuery__
- *
- * To run a query within a React component, call `useHomeScreenDataQuery` and pass it any options that fit your needs.
- * When your component renders, `useHomeScreenDataQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useHomeScreenDataQuery({
- *   variables: {
- *      accountName: // value for 'accountName'
- *   },
- * });
- */
-export function useHomeScreenDataQuery(baseOptions: Apollo.QueryHookOptions<HomeScreenDataQuery, HomeScreenDataQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<HomeScreenDataQuery, HomeScreenDataQueryVariables>(HomeScreenDataDocument, options);
-      }
-export function useHomeScreenDataLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<HomeScreenDataQuery, HomeScreenDataQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<HomeScreenDataQuery, HomeScreenDataQueryVariables>(HomeScreenDataDocument, options);
-        }
-export type HomeScreenDataQueryHookResult = ReturnType<typeof useHomeScreenDataQuery>;
-export type HomeScreenDataLazyQueryHookResult = ReturnType<typeof useHomeScreenDataLazyQuery>;
-export type HomeScreenDataQueryResult = Apollo.QueryResult<HomeScreenDataQuery, HomeScreenDataQueryVariables>;
-export function refetchHomeScreenDataQuery(variables: HomeScreenDataQueryVariables) {
-      return { query: HomeScreenDataDocument, variables: variables }
-    }

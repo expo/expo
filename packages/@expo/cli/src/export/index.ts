@@ -17,6 +17,12 @@ export const expoExport: Command = async (argv) => {
       '--max-workers': Number,
       '--output-dir': String,
       '--platform': String,
+
+      // Hack: This is added because EAS CLI always includes the flag.
+      // If supplied, we'll do nothing with the value, but at least the process won't crash.
+      // Note that we also don't show this value in the `--help` prompt since we don't want people to use it.
+      '--experimental-bundle': Boolean,
+
       // Aliases
       '-h': '--help',
       // '-s': '--dump-sourcemap',

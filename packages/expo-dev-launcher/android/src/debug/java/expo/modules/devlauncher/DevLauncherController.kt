@@ -11,23 +11,12 @@ import com.facebook.react.ReactActivityDelegate
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.ReactContext
-import expo.modules.devlauncher.helpers.DevLauncherInstallationIDHelper
-import expo.modules.devlauncher.helpers.replaceEXPScheme
-import expo.modules.devlauncher.helpers.getAppUrlFromDevLauncherUrl
-import expo.modules.devlauncher.helpers.getFieldInClassHierarchy
-import expo.modules.devlauncher.helpers.isDevLauncherUrl
-import expo.modules.devlauncher.helpers.runBlockingOnMainThread
+import expo.modules.devlauncher.helpers.*
 import expo.modules.devlauncher.koin.DevLauncherKoinComponent
 import expo.modules.devlauncher.koin.DevLauncherKoinContext
 import expo.modules.devlauncher.koin.devLauncherKoin
 import expo.modules.devlauncher.koin.optInject
-import expo.modules.devlauncher.launcher.DevLauncherActivity
-import expo.modules.devlauncher.launcher.DevLauncherClientHost
-import expo.modules.devlauncher.launcher.DevLauncherControllerInterface
-import expo.modules.devlauncher.launcher.DevLauncherIntentRegistryInterface
-import expo.modules.devlauncher.launcher.DevLauncherLifecycle
-import expo.modules.devlauncher.launcher.DevLauncherReactActivityDelegateSupplier
-import expo.modules.devlauncher.launcher.DevLauncherRecentlyOpenedAppsRegistry
+import expo.modules.devlauncher.launcher.*
 import expo.modules.devlauncher.launcher.errors.DevLauncherAppError
 import expo.modules.devlauncher.launcher.errors.DevLauncherErrorActivity
 import expo.modules.devlauncher.launcher.errors.DevLauncherUncaughtExceptionHandler
@@ -98,7 +87,7 @@ class DevLauncherController private constructor() :
   private var appIsLoading = false
 
   private fun isEASUpdateURL(url: Uri): Boolean {
-    return url.host.equals("u.expo.dev")
+    return url.host.equals("u.expo.dev") || url.host.equals("staging-u.expo.dev")
   }
 
   override suspend fun loadApp(url: Uri, projectUrl: Uri?, mainActivity: ReactActivity?) {
@@ -111,15 +100,15 @@ class DevLauncherController private constructor() :
 
     try {
       ensureHostWasCleared(appHost, activityToBeInvalidated = mainActivity)
-
-      val parsedUrl = replaceEXPScheme(url, "http")
+      val devLauncherUrl = DevLauncherUrl(url)
+      val parsedUrl = devLauncherUrl.url
       var parsedProjectUrl = projectUrl ?: url
 
       val isEASUpdate = isEASUpdateURL(url)
 
       // default to the EXPO_UPDATE_URL value configured in AndroidManifest.xml when project url is unspecified for an EAS update
       if (isEASUpdate && projectUrl == null) {
-        val projectUrlString = appHost.reactInstanceManager?.currentReactContext?.let { getMetadataValue(it, "expo.modules.updates.EXPO_UPDATE_URL") }
+        val projectUrlString = getMetadataValue(context, "expo.modules.updates.EXPO_UPDATE_URL")
         parsedProjectUrl = Uri.parse(projectUrlString)
       }
 
@@ -142,7 +131,7 @@ class DevLauncherController private constructor() :
 
       // Note that `launch` method is a suspend one. So the execution will be stopped here until the method doesn't finish.
       if (appLoader.launch(appIntent)) {
-        recentlyOpedAppsRegistry.appWasOpened(parsedUrl, appLoader.getAppName())
+        recentlyOpedAppsRegistry.appWasOpened(parsedUrl.toString(), devLauncherUrl.queryParams, manifest)
         latestLoadedApp = parsedUrl
         // Here the app will be loaded - we can remove listener here.
         lifecycle.removeListener(appLoaderListener)
@@ -177,7 +166,11 @@ class DevLauncherController private constructor() :
     }
   }
 
-  override fun getRecentlyOpenedApps(): Map<String, String?> = recentlyOpedAppsRegistry.getRecentlyOpenedApps()
+  override fun getRecentlyOpenedApps(): List<DevLauncherAppEntry> = recentlyOpedAppsRegistry.getRecentlyOpenedApps()
+
+  override fun clearRecentlyOpenedApps() {
+    recentlyOpedAppsRegistry.clearRegistry()
+  }
 
   override fun navigateToLauncher() {
     ensureHostWasCleared(appHost)
@@ -208,15 +201,16 @@ class DevLauncherController private constructor() :
           return handleExternalIntent(intent)
         }
 
-        val appUrl = getAppUrlFromDevLauncherUrl(uri)
-        if (appUrl == null) {
+        if (!hasUrlQueryParam(uri)) {
+          // edge case: this is a dev launcher url but it does not specify what url to open
+          // fallback to navigating to the launcher home screen
           navigateToLauncher()
           return true
         }
 
         coroutineScope.launch {
           try {
-            loadApp(appUrl, activityToBeInvalidated)
+            loadApp(uri, activityToBeInvalidated)
           } catch (e: Throwable) {
             DevLauncherErrorActivity.showFatalError(context, DevLauncherAppError(e.message, e))
           }
@@ -329,9 +323,9 @@ class DevLauncherController private constructor() :
     internal var sAdditionalPackages: List<ReactPackage>? = null
 
     @JvmStatic
-    fun getMetadataValue(reactApplicationContext: ReactContext, key: String): String {
-      val packageManager = reactApplicationContext.packageManager
-      val packageName = reactApplicationContext.packageName
+    fun getMetadataValue(context: Context, key: String): String {
+      val packageManager = context.packageManager
+      val packageName = context.packageName
       val applicationInfo = packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA)
       var metaDataValue = ""
 

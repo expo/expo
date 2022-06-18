@@ -1,5 +1,6 @@
 package expo.modules.kotlin
 
+import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReadableArray
 import expo.modules.kotlin.events.BasicEventListener
 import expo.modules.kotlin.events.EventListenerWithPayload
@@ -23,6 +24,10 @@ class ModuleHolder(val module: Module) {
   val jsObject by lazy {
     JavaScriptModuleObject()
       .apply {
+        val constants = definition.constantsProvider()
+        val convertedConstants = Arguments.makeNativeMap(constants)
+        exportConstants(convertedConstants)
+
         definition
           .functions
           .forEach { function ->

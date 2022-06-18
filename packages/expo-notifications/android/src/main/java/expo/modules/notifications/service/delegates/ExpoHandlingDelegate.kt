@@ -60,16 +60,19 @@ class ExpoHandlingDelegate(protected val context: Context) : HandlingDelegate {
      *   - the foreground main Activity
      *   - the background [NotificationForwarderActivity] Activity that send notification clicked events through broadcast
      */
-    fun createPendingIntentForOpeningApp(context: Context, broadcastIntent: Intent): PendingIntent {
+    fun createPendingIntentForOpeningApp(context: Context, broadcastIntent: Intent, notificationResponse: NotificationResponse): PendingIntent {
       var intentFlags = PendingIntent.FLAG_UPDATE_CURRENT
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-        intentFlags = intentFlags or PendingIntent.FLAG_IMMUTABLE
+        // The intent may include `RemoteInput` from `TextInputNotificationAction`.
+        // For intent with RemoteInput, it should be mutable.
+        intentFlags = intentFlags or PendingIntent.FLAG_MUTABLE
       }
       val foregroundActivityIntent = getNotificationActionLauncher(context) ?: getMainActivityLauncher(context) ?: run {
         Log.w("expo-notifications", "No launch intent found for application. Interacting with the notification won't open the app. The implementation uses `getLaunchIntentForPackage` to find appropriate activity.")
         Intent()
       }
       foregroundActivityIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_MULTIPLE_TASK
+      NotificationsService.setNotificationResponseToIntent(foregroundActivityIntent, notificationResponse)
       val backgroundActivityIntent = Intent(context, NotificationForwarderActivity::class.java)
       backgroundActivityIntent.putExtras(broadcastIntent)
       return PendingIntent.getActivities(context, 0, arrayOf(foregroundActivityIntent, backgroundActivityIntent), intentFlags)
@@ -99,9 +102,18 @@ class ExpoHandlingDelegate(protected val context: Context) : HandlingDelegate {
       getListeners().forEach {
         it.onNotificationReceived(notification)
       }
-    } else {
+    } else if (notification.shouldPresent()) {
       NotificationsService.present(context, notification)
     }
+  }
+
+  /**
+   * If the app is backgrounded, a notification is only presented if
+   * the title and or text is present. If both are null or empty, this is a "data-only" or "silent"
+   * notification that should not be presented to the user.
+   */
+  private fun Notification.shouldPresent(): Boolean {
+    return !(notificationRequest.content.title.isNullOrEmpty() && notificationRequest.content.text.isNullOrEmpty())
   }
 
   override fun handleNotificationResponse(notificationResponse: NotificationResponse) {

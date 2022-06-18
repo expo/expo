@@ -3,67 +3,56 @@ package expo.modules.localization
 import android.os.Bundle
 import android.view.View
 import android.text.TextUtils
-import android.content.Context
 import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
+import androidx.core.os.bundleOf
 
-import expo.modules.core.Promise
-import expo.modules.core.ExportedModule
-import expo.modules.core.interfaces.ExpoMethod
+import expo.modules.kotlin.modules.Module
+import expo.modules.kotlin.modules.ModuleDefinition
 
 import kotlin.collections.ArrayList
-import java.lang.ref.WeakReference
 import java.text.DecimalFormatSymbols
 import java.util.*
 
-class LocalizationModule(context: Context) : ExportedModule(context) {
-  private val contextRef: WeakReference<Context> = WeakReference(context)
+class LocalizationModule : Module() {
+  override fun definition() = ModuleDefinition {
+    Name("ExpoLocalization")
 
-  private val applicationContext: Context?
-    get() = contextRef.get()?.applicationContext
-
-  override fun getName() = "ExpoLocalization"
-
-  override fun getConstants(): Map<String, Any?> {
-    val constants = HashMap<String, Any?>()
-    val bundle = bundledConstants
-    for (key in bundle.keySet()) {
-      constants[key] = bundle[key] as Any?
+    Constants {
+      bundledConstants.toShallowMap()
     }
-    return constants
-  }
 
-  @ExpoMethod
-  fun getLocalizationAsync(promise: Promise) {
-    promise.resolve(bundledConstants)
+    AsyncFunction("getLocalizationAsync") {
+      return@AsyncFunction bundledConstants
+    }
   }
 
   // TODO: Bacon: add set language
   private val bundledConstants: Bundle
     get() {
       val locale = Locale.getDefault()
-      val locales = locales
       val localeNames = getLocaleNames(locales)
       val isRTL = TextUtils.getLayoutDirectionFromLocale(locale) == View.LAYOUT_DIRECTION_RTL
       val region = getRegionCode(locale)
       val symbols = DecimalFormatSymbols(locale)
-      return Bundle().apply {
-        putString("currency", getCurrencyCode(locale))
-        putString("decimalSeparator", symbols.decimalSeparator.toString())
-        putString("digitGroupingSeparator", symbols.groupingSeparator.toString())
-        putStringArrayList("isoCurrencyCodes", iSOCurrencyCodes)
-        putBoolean("isMetric", !USES_IMPERIAL.contains(region))
-        putBoolean("isRTL", isRTL)
-        putString("locale", localeNames[0])
-        putStringArrayList("locales", localeNames)
-        putString("region", region)
-        putString("timezone", TimeZone.getDefault().id)
-      }
+      return bundleOf(
+        "currency" to getCurrencyCode(locale),
+        "decimalSeparator" to symbols.decimalSeparator.toString(),
+        "digitGroupingSeparator" to symbols.groupingSeparator.toString(),
+        "isoCurrencyCodes" to ISOCurrencyCodes,
+        "isMetric" to !USES_IMPERIAL.contains(region),
+        "isRTL" to isRTL,
+        // TODO: (barthap) this can throw IndexOutOfBounds exception - handle this properly
+        "locale" to localeNames[0],
+        "locales" to localeNames,
+        "region" to region,
+        "timezone" to TimeZone.getDefault().id
+      )
     }
 
-  private val locales: ArrayList<Locale>
+  private val locales: List<Locale>
     get() {
-      val context = applicationContext ?: return ArrayList()
+      val context = appContext.reactContext ?: return emptyList()
       val configuration = context.resources.configuration
       return if (VERSION.SDK_INT > VERSION_CODES.N) {
         val locales = ArrayList<Locale>()
@@ -72,7 +61,7 @@ class LocalizationModule(context: Context) : ExportedModule(context) {
         }
         locales
       } else {
-        arrayListOf(configuration.locale)
+        listOf(configuration.locale)
       }
     }
 
@@ -80,6 +69,19 @@ class LocalizationModule(context: Context) : ExportedModule(context) {
     val miuiRegion = getSystemProperty("ro.miui.region")
     return if (!TextUtils.isEmpty(miuiRegion)) {
       miuiRegion
-    } else getCountryCode(locale)
+    } else {
+      getCountryCode(locale)
+    }
   }
+}
+
+/**
+ * Creates a shallow [Map] from the [Bundle]. Does not traverse nested arrays and bundles.
+ */
+private fun Bundle.toShallowMap(): Map<String, Any?> {
+  val map = HashMap<String, Any?>()
+  for (key in this.keySet()) {
+    map[key] = this[key]
+  }
+  return map
 }

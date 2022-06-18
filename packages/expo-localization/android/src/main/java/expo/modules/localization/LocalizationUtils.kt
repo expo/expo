@@ -2,15 +2,14 @@ package expo.modules.localization
 
 import android.text.TextUtils
 import java.util.*
-import kotlin.collections.ArrayList
 
 val USES_IMPERIAL = listOf("US", "LR", "MM")
 
-val iSOCurrencyCodes: ArrayList<String> by lazy {
-  Currency.getAvailableCurrencies().map { it.currencyCode as String } as ArrayList<String>
+val ISOCurrencyCodes: Array<String> by lazy {
+  Currency.getAvailableCurrencies().map { it.currencyCode as String }.toTypedArray()
 }
 
-fun getLocaleNames(locales: ArrayList<Locale>) = locales.map { it.toLanguageTag() } as ArrayList
+fun getLocaleNames(locales: List<Locale>) = locales.map { it.toLanguageTag() }.toTypedArray()
 
 fun getCountryCode(locale: Locale): String? {
   return runCatching {

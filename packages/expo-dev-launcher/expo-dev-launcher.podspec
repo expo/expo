@@ -34,6 +34,15 @@ Pod::Spec.new do |s|
 
   # Swift/Objective-C compatibility
   s.pod_target_xcconfig = { "DEFINES_MODULE" => "YES" }
+  dev_launcher_url = ENV['EX_DEV_LAUNCHER_URL'] || ""
+  if dev_launcher_url != ""
+    escaped_dev_launcher_url = Shellwords.escape(dev_launcher_url).gsub('/','\\/')
+    s.pod_target_xcconfig = {
+      'DEFINES_MODULE' => 'YES',
+      'OTHER_CFLAGS[config=Debug]' => "$(inherited) -DEX_DEV_LAUNCHER_URL=\"\\\"" + escaped_dev_launcher_url + "\\\"\""
+    }
+  end
+
   s.user_target_xcconfig = {
     "HEADER_SEARCH_PATHS" => "\"${PODS_CONFIGURATION_BUILD_DIR}/expo-dev-launcher/Swift Compatibility Header\"",
   }
@@ -66,4 +75,5 @@ Pod::Spec.new do |s|
   end
   
   s.default_subspec = 'Main'
+
 end

@@ -1,6 +1,15 @@
 #!/usr/bin/env node
 import arg from 'arg';
 import chalk from 'chalk';
+import Debug from 'debug';
+import { boolish } from 'getenv';
+
+// Setup before requiring `debug`.
+if (boolish('EXPO_DEBUG', false)) {
+  Debug.enable('expo:*');
+} else if (Debug.enabled('expo:')) {
+  process.env.EXPO_DEBUG = '1';
+}
 
 const defaultCmd = 'start';
 
@@ -87,6 +96,69 @@ if (!isSubcommand && args['--help']) {
     {dim $} npx expo start --help
 `);
   process.exit(0);
+}
+
+// NOTE(EvanBacon): Squat some directory names to help with migration,
+// users can still use folders named "send" or "eject" by using the fully qualified `npx expo start ./send`.
+if (!isSubcommand) {
+  const migrationMap: Record<string, string> = {
+    init: 'npx create-expo-app',
+    eject: 'npx expo prebuild',
+    'start:web': 'npx expo start --web',
+    'build:ios': 'eas build -p ios',
+    'build:android': 'eas build -p android',
+    'client:install:ios': 'npx expo start --ios',
+    'client:install:android': 'npx expo start --android',
+    doctor: 'expo doctor',
+    upgrade: 'expo upgrade',
+    'customize:web': 'npx expo customize',
+
+    publish: 'eas update',
+    'publish:set': 'eas update',
+    'publish:rollback': 'eas update',
+    'publish:history': 'eas update',
+    'publish:details': 'eas update',
+
+    'build:web': 'npx expo export',
+
+    'credentials:manager': `eas credentials`,
+    'fetch:ios:certs': `eas credentials`,
+    'fetch:android:keystore': `eas credentials`,
+    'fetch:android:hashes': `eas credentials`,
+    'fetch:android:upload-cert': `eas credentials`,
+    'push:android:upload': `eas credentials`,
+    'push:android:show': `eas credentials`,
+    'push:android:clear': `eas credentials`,
+    url: `eas build:list`,
+    'url:ipa': `eas build:list`,
+    'url:apk': `eas build:list`,
+    webhooks: `eas webhook`,
+    'webhooks:add': `eas webhook:create`,
+    'webhooks:remove': `eas webhook:delete`,
+    'webhooks:update': `eas webhook:update`,
+
+    'build:status': `eas build:list`,
+    'upload:android': `eas submit -p android`,
+    'upload:ios': `eas submit -p ios`,
+  };
+
+  const subcommand = args._[0];
+  if (subcommand in migrationMap) {
+    const replacement = migrationMap[subcommand];
+    console.log();
+    console.log(
+      chalk.yellow`  {gray $} {bold expo ${subcommand}} is not supported in the local CLI, please use {bold ${replacement}} instead`
+    );
+    console.log();
+    process.exit(1);
+  }
+  const deprecated = ['send', 'client:ios'];
+  if (deprecated.includes(subcommand)) {
+    console.log();
+    console.log(chalk.yellow`  {gray $} {bold expo ${subcommand}} is deprecated`);
+    console.log();
+    process.exit(1);
+  }
 }
 
 const command = isSubcommand ? args._[0] : defaultCmd;

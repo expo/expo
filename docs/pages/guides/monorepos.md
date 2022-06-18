@@ -73,8 +73,9 @@ Metro doesn't come with monorepo support by default (yet). That's why we need to
 
 We can configure that by creating a **metro.config.js** with the following content.
 
+> Learn more about customizing Metro in [our guide](/guides/customizing-metro).
+
 ```js
-// Learn more https://docs.expo.io/guides/customizing-metro
 const { getDefaultConfig } = require('expo/metro-config');
 const path = require('path');
 
@@ -149,7 +150,6 @@ Like standard packages, we need to add our **cool-package** as a dependency to o
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "eject": "expo eject"
   },
   "dependencies": {
     "cool-package": "*",

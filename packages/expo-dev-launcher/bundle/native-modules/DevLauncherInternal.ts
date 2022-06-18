@@ -1,12 +1,19 @@
 import { NativeModules, NativeEventEmitter, EventSubscription } from 'react-native';
 
+import { RecentApp } from '../providers/RecentlyOpenedAppsProvider';
+
 const DevLauncher = NativeModules.EXDevLauncherInternal;
 const EventEmitter = new NativeEventEmitter(DevLauncher);
 
 const ON_NEW_DEEP_LINK_EVENT = 'expo.modules.devlauncher.onnewdeeplink';
 
-export async function getRecentlyOpenedApps(): Promise<{ [key: string]: string | null }[]> {
-  return await DevLauncher.getRecentlyOpenedApps();
+export async function getRecentlyOpenedApps(): Promise<RecentApp[]> {
+  const recentlyOpenedApps = await DevLauncher.getRecentlyOpenedApps();
+  return recentlyOpenedApps;
+}
+
+export async function clearRecentlyOpenedApps(): Promise<void> {
+  return await DevLauncher.clearRecentlyOpenedApps();
 }
 
 export async function loadApp(url: string): Promise<void> {
@@ -65,7 +72,7 @@ export type EXUpdatesConfig = {
   sdkVersion: string;
   appId: string;
   usesEASUpdates: boolean;
-  updatesUrl: string;
+  projectUrl: string;
 };
 
 export const updatesConfig: EXUpdatesConfig = DevLauncher.updatesConfig;

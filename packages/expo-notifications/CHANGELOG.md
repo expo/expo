@@ -12,6 +12,9 @@
 
 - Fixed Android 12+ runtime crash caused by `PendingIntent` misconfiguration. ([#17333](https://github.com/expo/expo/pull/17333) by [@kudo](https://github.com/kudo))
 - Fix app not bringing to foreground when clicking notification on Android 12+. ([#17686](https://github.com/expo/expo/pull/17686) by [@kudo](https://github.com/kudo))
+- Fixed Android data-only FCM notifications (i.e. notifications without a title and message) appearing in the notification drawer ([#17707](https://github.com/expo/expo/pull/17707) by [@sausti](https://github.com/sausti))
+- Add support for unregistering from push notifications on Android and iOS ([#17812](https://github.com/expo/expo/pull/17812) by [@sausti](https://github.com/sausti))
+- Fix another Android 12+ trampoline issue from push notifications. ([#17871](https://github.com/expo/expo/pull/17871) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 

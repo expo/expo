@@ -13,8 +13,6 @@ import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEm
 import expo.modules.devlauncher.DevLauncherController
 import expo.modules.devlauncher.DevLauncherController.Companion.wasInitialized
 import expo.modules.devlauncher.helpers.DevLauncherInstallationIDHelper
-import expo.modules.devlauncher.helpers.getAppUrlFromDevLauncherUrl
-import expo.modules.devlauncher.helpers.isDevLauncherUrl
 import expo.modules.devlauncher.koin.DevLauncherKoinComponent
 import expo.modules.devlauncher.launcher.DevLauncherControllerInterface
 import expo.modules.devlauncher.launcher.DevLauncherIntentRegistryInterface
@@ -74,26 +72,22 @@ class DevLauncherInternalModule(reactContext: ReactApplicationContext?) :
       ""
     }
 
-    var isModernManifestProtocol = Uri.parse(projectUrl).host.equals("u.expo.dev")
-    var usesEASUpdates = isModernManifestProtocol && appId.isNotEmpty()
+    val projectUri = Uri.parse(projectUrl)
+
+    val isModernManifestProtocol = projectUri.host.equals("u.expo.dev") || projectUri.host.equals("staging-u.expo.dev")
+    val usesEASUpdates = isModernManifestProtocol && appId.isNotEmpty()
 
     return map.apply {
       putString("appId", appId)
       putString("runtimeVersion", runtimeVersion)
       putString("sdkVersion", sdkVersion)
       putBoolean("usesEASUpdates", usesEASUpdates)
-      putString("updatesUrl", projectUrl)
+      putString("projectUrl", projectUrl)
     }
   }
 
   private fun sanitizeUrlString(url: String): Uri {
-    val parsedUrl = Uri.parse(url?.trim())
-    val appUrl = if (isDevLauncherUrl(parsedUrl)) {
-      requireNotNull(getAppUrlFromDevLauncherUrl(parsedUrl)) { "The provided url doesn't contain the app url." }
-    } else {
-      parsedUrl
-    }
-    return appUrl
+    return Uri.parse(url.trim())
   }
 
   @ReactMethod
@@ -118,13 +112,8 @@ class DevLauncherInternalModule(reactContext: ReactApplicationContext?) :
   fun loadApp(url: String, promise: Promise) {
     controller.coroutineScope.launch {
       try {
-        val parsedUrl = Uri.parse(url.trim())
-        val appUrl = if (isDevLauncherUrl(parsedUrl)) {
-          requireNotNull(getAppUrlFromDevLauncherUrl(parsedUrl)) { "The provided url doesn't contain the app url." }
-        } else {
-          parsedUrl
-        }
-        controller.loadApp(appUrl)
+        val parsedUrl = sanitizeUrlString(url)
+        controller.loadApp(parsedUrl)
       } catch (e: Exception) {
         promise.reject("ERR_DEV_LAUNCHER_CANNOT_LOAD_APP", e.message, e)
         return@launch
@@ -135,15 +124,31 @@ class DevLauncherInternalModule(reactContext: ReactApplicationContext?) :
 
   @ReactMethod
   fun getRecentlyOpenedApps(promise: Promise) {
-    promise.resolve(
-      Arguments
-        .createMap()
-        .apply {
-          controller.getRecentlyOpenedApps().forEach { (key, value) ->
-            putString(key, value)
-          }
-        }
-    )
+    val apps = Arguments.createArray()
+
+    for (recentlyOpenedApp in controller.getRecentlyOpenedApps()) {
+      val app = Arguments.createMap()
+      
+      app.putDouble("timestamp", recentlyOpenedApp.timestamp.toDouble())
+      app.putString("name", recentlyOpenedApp.name)
+      app.putString("url", recentlyOpenedApp.url)
+      app.putBoolean("isEASUpdate", recentlyOpenedApp.isEASUpdate == true)
+
+      if (recentlyOpenedApp.isEASUpdate == true) {
+        app.putString("updateMessage", recentlyOpenedApp.updateMessage)
+        app.putString("branchName", recentlyOpenedApp.branchName)
+      }
+
+      apps.pushMap(app)
+    }
+
+    return promise.resolve(apps)
+  }
+
+  @ReactMethod
+  fun clearRecentlyOpenedApps(promise: Promise) {
+    controller.clearRecentlyOpenedApps()
+    return promise.resolve(null)
   }
 
   @ReactMethod
@@ -257,13 +262,11 @@ class DevLauncherInternalModule(reactContext: ReactApplicationContext?) :
   }
 
   private fun getApplicationIconUri(): String {
-    var appIcon = ""
     val packageManager = reactApplicationContext.packageManager
     val packageName = reactApplicationContext.packageName
     val applicationInfo = packageManager.getApplicationInfo(packageName, 0)
-    appIcon = "" + applicationInfo.icon
 //    TODO - figure out how to get resId for AdaptiveIconDrawable icons
-    return appIcon
+    return "" + applicationInfo.icon
   }
 
   @ReactMethod

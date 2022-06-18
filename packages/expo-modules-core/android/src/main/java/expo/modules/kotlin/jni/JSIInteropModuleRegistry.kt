@@ -62,6 +62,15 @@ class JSIInteropModuleRegistry(appContext: AppContext) {
     return appContextHolder.get()?.registry?.getModuleHolder(name)?.jsObject
   }
 
+  /**
+   * Returns an array that contains names of available modules.
+   */
+  @Suppress("unused")
+  @DoNotStrip
+  fun getJavaScriptModulesName(): Array<String> {
+    return appContextHolder.get()?.registry?.registry?.keys?.toTypedArray() ?: emptyArray()
+  }
+
   @Throws(Throwable::class)
   protected fun finalize() {
     mHybridData.resetNative()

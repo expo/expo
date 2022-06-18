@@ -2,10 +2,11 @@ package expo.modules.devmenu
 
 import android.content.pm.PackageManager
 import android.os.Bundle
+import com.facebook.react.ReactInstanceManager
 import com.facebook.react.bridge.ReactContext
 
 object DevMenuAppInfo {
-  fun getAppInfo(reactContext: ReactContext): Bundle {
+  fun getAppInfo(instanceManager: ReactInstanceManager, reactContext: ReactContext): Bundle {
     val packageManager = reactContext.packageManager
     val packageName = reactContext.packageName
     val packageInfo = packageManager.getPackageInfo(packageName, 0)
@@ -15,7 +16,7 @@ object DevMenuAppInfo {
     var appName = packageManager.getApplicationLabel(applicationInfo).toString()
     val runtimeVersion = getMetadataValue(reactContext, "expo.modules.updates.EXPO_RUNTIME_VERSION")
     val sdkVersion = getMetadataValue(reactContext, "expo.modules.updates.EXPO_SDK_VERSION")
-    var appIcon = getApplicationIconUri(reactContext)
+    val appIcon = getApplicationIconUri(reactContext)
     var hostUrl = reactContext.sourceURL
 
     val manifest = DevMenuManager.currentManifest
@@ -36,6 +37,12 @@ object DevMenuAppInfo {
       hostUrl = DevMenuManager.currentManifestURL
     }
 
+    val engine = if (instanceManager.jsExecutorName.contains("Hermes")) {
+      "Hermes"
+    } else {
+      "JSC"
+    }
+
     return Bundle().apply {
       putString("appVersion", appVersion)
       putString("appName", appName)
@@ -43,6 +50,7 @@ object DevMenuAppInfo {
       putString("runtimeVersion", runtimeVersion)
       putString("sdkVersion", sdkVersion)
       putString("hostUrl", hostUrl)
+      putString("engine", engine)
     }
   }
 
