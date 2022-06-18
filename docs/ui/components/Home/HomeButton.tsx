@@ -3,9 +3,11 @@ import React from 'react';
 
 import { Button, ButtonProps } from '~/ui/components/Button';
 
-export const HomeButton = ({ children, style, ...rest }: ButtonProps) => (
+export const HomeButton = ({ children, style, href, ...rest }: ButtonProps) => (
   <Button
     {...rest}
+    href={href}
+    rel={href?.startsWith('http') ? 'noopener noreferrer' : undefined}
     style={{
       ...typography.fontSizes[14],
       height: 36,

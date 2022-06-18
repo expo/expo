@@ -147,7 +147,7 @@ const Home = () => {
             <HomeButton
               style={{ backgroundColor: palette.blue['500'], color: palette.blue['100'] }}
               href="https://snack.expo.dev/"
-              target="_new">
+              target="_blank">
               Create a Snack
             </HomeButton>
           </GridCell>
@@ -167,7 +167,7 @@ const Home = () => {
             <HomeButton
               style={{ backgroundColor: palette.orange['800'], color: palette.orange['100'] }}
               href="https://www.codecademy.com/learn/learn-react-native"
-              target="_new">
+              target="_blank">
               Start Course
             </HomeButton>
           </GridCell>
