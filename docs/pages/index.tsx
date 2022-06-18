@@ -206,7 +206,7 @@ const Home = () => {
             <HomeButton
               style={{ backgroundColor: palette.yellow['900'], color: palette.yellow['000'] }}
               href="https://us02web.zoom.us/meeting/register/tZcvceivqj0oHdGVOjEeKY0dRxCRPb0HzaAK"
-              target="_new">
+              target="_blank">
               Register
             </HomeButton>
           </GridCell>
