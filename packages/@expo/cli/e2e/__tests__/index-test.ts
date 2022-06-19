@@ -20,6 +20,9 @@ it('runs `npx expo -v`', async () => {
   const results = await execute('-v');
   expect(results.stdout).toEqual(require('../../package.json').version);
 });
+it('asserts with a deprecated command `npx expo send`', async () => {
+  await expect(execute('send')).rejects.toThrow(/expo send is deprecated/);
+});
 
 it('runs `npx expo --help`', async () => {
   const results = await execute('--help');

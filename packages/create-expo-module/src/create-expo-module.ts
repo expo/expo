@@ -1,10 +1,13 @@
 import spawnAsync from '@expo/spawn-async';
+import chalk from 'chalk';
 import { Command } from 'commander';
 import downloadTarball from 'download-tarball';
 import ejs from 'ejs';
 import fs from 'fs-extra';
 import path from 'path';
 import prompts, { PromptObject } from 'prompts';
+
+import { PackageManagerName, resolvePackageManager } from './resolvePackageManager';
 
 const packageJson = require('../package.json');
 
@@ -52,8 +55,6 @@ type CustomPromptObject = PromptObject & {
   resolvedValue?: string | null;
 };
 
-type PackageManager = 'npm' | 'yarn';
-
 /**
  * The main function of the command.
  *
@@ -63,11 +64,13 @@ type PackageManager = 'npm' | 'yarn';
 async function main(target: string | undefined, options: CommandOptions) {
   const targetDir = target ? path.join(CWD, target) : CWD;
 
+  await confirmTargetDirAsync(targetDir);
+
   options.target = targetDir;
   await fs.ensureDir(targetDir);
 
   const data = await askForSubstitutionDataAsync(targetDir, options);
-  const packageManager = await selectPackageManagerAsync();
+  const packageManager = await resolvePackageManager();
   const packagePath = options.source
     ? path.join(CWD, options.source)
     : await downloadPackageAsync(targetDir);
@@ -170,25 +173,9 @@ async function downloadPackageAsync(targetDir: string): Promise<string> {
 }
 
 /**
- * Asks whether to use Yarn or npm as a dependency package manager.
- */
-async function selectPackageManagerAsync(): Promise<PackageManager> {
-  const { packageManager } = await prompts({
-    type: 'select',
-    name: 'packageManager',
-    message: 'Which package manager do you want to use to install dependencies?',
-    choices: [
-      { title: 'yarn', value: 'yarn' },
-      { title: 'npm', value: 'npm' },
-    ],
-  });
-  return packageManager;
-}
-
-/**
  * Installs dependencies and builds TypeScript files.
  */
-async function postActionsAsync(packageManager: PackageManager, targetDir: string) {
+async function postActionsAsync(packageManager: PackageManagerName, targetDir: string) {
   async function run(...args: string[]) {
     await spawnAsync(packageManager, args, {
       cwd: targetDir,
@@ -260,10 +247,15 @@ async function askForSubstitutionDataAsync(
     },
   ];
 
+  // Stop the process when the user cancels/exits the prompt.
+  const onCancel = () => {
+    process.exit(0);
+  };
+
   const answers: Record<string, string> = {};
   for (const query of promptQueries) {
     const { name, resolvedValue } = query;
-    answers[name] = resolvedValue ?? options[name] ?? (await prompts(query))[name];
+    answers[name] = resolvedValue ?? options[name] ?? (await prompts(query, { onCancel }))[name];
   }
 
   const { slug, name, description, package: projectPackage, author, license, repo } = answers;
@@ -280,6 +272,33 @@ async function askForSubstitutionDataAsync(
     license,
     repo,
   };
+}
+
+/**
+ * Checks whether the target directory is empty and if not, asks the user to confirm if he wants to continue.
+ */
+async function confirmTargetDirAsync(targetDir: string): Promise<void> {
+  const files = await fs.readdir(targetDir);
+
+  if (files.length === 0) {
+    return;
+  }
+  const { shouldContinue } = await prompts(
+    {
+      type: 'confirm',
+      name: 'shouldContinue',
+      message: `The target directory ${chalk.magenta(
+        targetDir
+      )} is not empty.\nDo you want to continue anyway?`,
+      initial: true,
+    },
+    {
+      onCancel: () => false,
+    }
+  );
+  if (!shouldContinue) {
+    process.exit(0);
+  }
 }
 
 const program = new Command();

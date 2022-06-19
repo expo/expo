@@ -234,7 +234,7 @@ export function EASUpdateRow({ update, isFirst, isLast, isLoading, onPress }: EA
   );
 }
 
-function useLoadingContainerStyle(isLoading: boolean = false) {
+export function useLoadingContainerStyle(isLoading: boolean = false) {
   const animatedValue = React.useRef(new Animated.Value(0)).current;
 
   React.useEffect(() => {

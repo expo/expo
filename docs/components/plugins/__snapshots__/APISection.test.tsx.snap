@@ -4796,11 +4796,14 @@ OAuth 2.0 protocol
           </code>
         </span>
          - 
+        <div
+          class="css-4f6ers-STYLES_PLATFORM"
+        >
+          iOS 13.2+
+           Only
+        </div>
         <span>
-          "Sign up with Apple" 
-          <em>
-            (requires iOS 13.2 or higher)
-          </em>
+          "Sign up with Apple"
         </span>
         <p
           class="css-101h856-paragraph-STYLES_PARAGRAPH"

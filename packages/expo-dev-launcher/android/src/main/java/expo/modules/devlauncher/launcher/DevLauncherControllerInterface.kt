@@ -16,7 +16,8 @@ interface DevLauncherControllerInterface {
   suspend fun loadApp(url: Uri, projectUrl: Uri?, mainActivity: ReactActivity? = null)
   fun onAppLoaded(context: ReactContext)
   fun onAppLoadedWithError()
-  fun getRecentlyOpenedApps(): Map<String, String?>
+  fun getRecentlyOpenedApps(): List<DevLauncherAppEntry>
+  fun clearRecentlyOpenedApps()
   fun navigateToLauncher()
   fun getCurrentReactActivityDelegate(activity: ReactActivity, delegateSupplierDevLauncher: DevLauncherReactActivityDelegateSupplier): ReactActivityDelegate
   fun handleIntent(intent: Intent?, activityToBeInvalidated: ReactActivity?): Boolean

@@ -48,6 +48,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSDictionary *)recentlyOpenedApps;
 
+- (void)clearRecentlyOpenedApps;
+
 - (NSDictionary<UIApplicationLaunchOptionsKey, NSObject*> *)getLaunchOptions;
 
 - (EXManifestsManifest * _Nullable)appManifest;
