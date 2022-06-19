@@ -18,6 +18,7 @@ import {
   resolveTypeName,
   STYLES_APIBOX,
   STYLES_APIBOX_NESTED,
+  STYLES_NESTED_SECTION_HEADER,
   STYLES_NOT_EXPOSED_HEADER,
   STYLES_SECONDARY,
 } from '~/components/plugins/api/APISectionUtils';
@@ -128,12 +129,12 @@ const APISectionProps = ({ data, defaultProps, header = 'Props' }: APISectionPro
       {header === 'Props' ? (
         <H2 key="props-header">{header}</H2>
       ) : (
-        <>
-          <H3Code key={`${header}-props-header`}>
-            <InlineCode>{header}</InlineCode>
-          </H3Code>
+        <div>
+          <div css={STYLES_NESTED_SECTION_HEADER}>
+            <H4 key={`${header}-props-header`}>{header}</H4>
+          </div>
           {baseProp && baseProp.comment ? <CommentTextBlock comment={baseProp.comment} /> : null}
-        </>
+        </div>
       )}
       {data.map((propsDefinition: PropsDefinitionData) =>
         renderProps(propsDefinition, defaultProps, header === 'Props')

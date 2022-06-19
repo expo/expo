@@ -14,6 +14,7 @@ import {
   CommentTextBlock,
   resolveTypeName,
   STYLES_APIBOX,
+  STYLES_NESTED_SECTION_HEADER,
   TypeDocKind,
 } from '~/components/plugins/api/APISectionUtils';
 
@@ -73,25 +74,25 @@ const renderClass = (clx: ClassDefinitionData, hasMultipleClasses: boolean): JSX
       {properties?.length ? (
         <>
           {hasMultipleClasses ? (
-            <>
+            <div css={STYLES_NESTED_SECTION_HEADER}>
               <H4>{name} Properties</H4>
-              <br />
-            </>
+            </div>
           ) : (
             <H2>{name} Properties</H2>
           )}
-          {properties.map(property =>
-            renderProp(property, property?.defaultValue, !hasMultipleClasses)
-          )}
+          <div>
+            {properties.map(property =>
+              renderProp(property, property?.defaultValue, !hasMultipleClasses)
+            )}
+          </div>
         </>
       ) : null}
       {methods?.length && (
         <>
           {hasMultipleClasses ? (
-            <>
+            <div css={STYLES_NESTED_SECTION_HEADER}>
               <H4>{name} Methods</H4>
-              <br />
-            </>
+            </div>
           ) : (
             <H2>{name} Methods</H2>
           )}

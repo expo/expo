@@ -54,7 +54,7 @@ exports[`APISection expo-apple-authentication 1`] = `
     </div>
   </h2>
   <div
-    class="css-5bhofi-STYLES_APIBOX"
+    class="css-xnvfwf-STYLES_APIBOX"
   >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
@@ -294,64 +294,67 @@ for more details.
         </span>
       </div>
     </blockquote>
-    <h3
-      class="css-1fe5f89-h3-h3-STYLES_H3"
-      data-heading="true"
-    >
-      <div
-        class="css-1rh3o5q-STYLES_PERMALINK"
-      >
-        <span
-          class="css-zonpcr-STYLES_PERMALINK_TARGET"
-          id="appleauthenticationbuttonprops"
-        />
-        <a
-          class="css-15lh5hg-STYLES_PERMALINK_LINK"
-          href="#appleauthenticationbuttonprops"
-        >
-          <span
-            class="css-1icvi79-STYLED_PERMALINK_CONTENT"
-          >
-            <code
-              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
-            >
-              AppleAuthenticationButtonProps
-            </code>
-          </span>
-          <span
-            class="css-10vdcw8-STYLES_PERMALINK_ICON"
-          >
-            <svg
-              aria-label="permalink"
-              class="anchor-icon"
-              fill="none"
-              height="24"
-              viewBox="0 0 24 24"
-              width="24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                stroke="#9B9B9B"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-              />
-              <path
-                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                stroke="#9B9B9B"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-              />
-            </svg>
-          </span>
-        </a>
-      </div>
-    </h3>
     <div>
       <div
-        class="css-7sa77d-STYLES_APIBOX-STYLES_APIBOX_NESTED-renderProp"
+        class="css-1iw8c1u-STYLES_NESTED_SECTION_HEADER"
+      >
+        <h4
+          class="  css-838f5l-h4-h4-STYLES_H4"
+          data-components-heading="true"
+          data-heading="true"
+        >
+          <div
+            class="css-1rh3o5q-STYLES_PERMALINK"
+          >
+            <span
+              class="css-zonpcr-STYLES_PERMALINK_TARGET"
+              id="appleauthenticationbuttonprops"
+            />
+            <a
+              class="css-15lh5hg-STYLES_PERMALINK_LINK"
+              href="#appleauthenticationbuttonprops"
+            >
+              <span
+                class="css-1icvi79-STYLED_PERMALINK_CONTENT"
+              >
+                AppleAuthenticationButtonProps
+              </span>
+              <span
+                class="css-10vdcw8-STYLES_PERMALINK_ICON"
+              >
+                <svg
+                  aria-label="permalink"
+                  class="anchor-icon"
+                  fill="none"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                    stroke="#9B9B9B"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                  />
+                  <path
+                    d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                    stroke="#9B9B9B"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                  />
+                </svg>
+              </span>
+            </a>
+          </div>
+        </h4>
+      </div>
+    </div>
+    <div>
+      <div
+        class="css-1xojqjp-STYLES_APIBOX-STYLES_APIBOX_NESTED-renderProp"
       >
         <h4
           class="  css-838f5l-h4-h4-STYLES_H4"
@@ -438,7 +441,7 @@ for more details.
         </p>
       </div>
       <div
-        class="css-7sa77d-STYLES_APIBOX-STYLES_APIBOX_NESTED-renderProp"
+        class="css-1xojqjp-STYLES_APIBOX-STYLES_APIBOX_NESTED-renderProp"
       >
         <h4
           class="  css-838f5l-h4-h4-STYLES_H4"
@@ -525,7 +528,7 @@ for more details.
         </p>
       </div>
       <div
-        class="css-7sa77d-STYLES_APIBOX-STYLES_APIBOX_NESTED-renderProp"
+        class="css-1xojqjp-STYLES_APIBOX-STYLES_APIBOX_NESTED-renderProp"
       >
         <h4
           class="  css-838f5l-h4-h4-STYLES_H4"
@@ -619,7 +622,7 @@ for more details.
         </p>
       </div>
       <div
-        class="css-7sa77d-STYLES_APIBOX-STYLES_APIBOX_NESTED-renderProp"
+        class="css-1xojqjp-STYLES_APIBOX-STYLES_APIBOX_NESTED-renderProp"
       >
         <h4
           class="  css-838f5l-h4-h4-STYLES_H4"
@@ -750,7 +753,7 @@ properties.
         </p>
       </div>
       <div
-        class="css-7sa77d-STYLES_APIBOX-STYLES_APIBOX_NESTED-renderProp"
+        class="css-1xojqjp-STYLES_APIBOX-STYLES_APIBOX_NESTED-renderProp"
       >
         <h4
           class="  css-838f5l-h4-h4-STYLES_H4"
@@ -971,7 +974,7 @@ in here.
     </div>
   </h2>
   <div
-    class="css-1v343xz-STYLES_APIBOX-renderMethod"
+    class="css-xaoslm-STYLES_APIBOX-renderMethod"
   >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
@@ -1280,7 +1283,7 @@ value depending on the state of the credential.
     </p>
   </div>
   <div
-    class="css-1v343xz-STYLES_APIBOX-renderMethod"
+    class="css-xaoslm-STYLES_APIBOX-renderMethod"
   >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
@@ -1440,7 +1443,7 @@ value depending on the state of the credential.
     </p>
   </div>
   <div
-    class="css-1v343xz-STYLES_APIBOX-renderMethod"
+    class="css-xaoslm-STYLES_APIBOX-renderMethod"
   >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
@@ -1706,7 +1709,7 @@ refresh operation.
     </p>
   </div>
   <div
-    class="css-1v343xz-STYLES_APIBOX-renderMethod"
+    class="css-xaoslm-STYLES_APIBOX-renderMethod"
   >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
@@ -2011,7 +2014,7 @@ sign-in operation.
     </p>
   </div>
   <div
-    class="css-1v343xz-STYLES_APIBOX-renderMethod"
+    class="css-xaoslm-STYLES_APIBOX-renderMethod"
   >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
@@ -2358,7 +2361,7 @@ sign-out operation.
     </div>
   </h2>
   <div
-    class="css-1v343xz-STYLES_APIBOX-renderMethod"
+    class="css-xaoslm-STYLES_APIBOX-renderMethod"
   >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
@@ -2614,7 +2617,7 @@ sign-out operation.
     </div>
   </h2>
   <div
-    class="css-5bhofi-STYLES_APIBOX"
+    class="css-xnvfwf-STYLES_APIBOX"
   >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
@@ -3111,7 +3114,7 @@ developers.
     </div>
   </div>
   <div
-    class="css-5bhofi-STYLES_APIBOX"
+    class="css-xnvfwf-STYLES_APIBOX"
   >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
@@ -3415,7 +3418,7 @@ may be
     </div>
   </div>
   <div
-    class="css-5bhofi-STYLES_APIBOX"
+    class="css-xnvfwf-STYLES_APIBOX"
   >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
@@ -3722,7 +3725,7 @@ OAuth 2.0 protocol
     </div>
   </div>
   <div
-    class="css-5bhofi-STYLES_APIBOX"
+    class="css-xnvfwf-STYLES_APIBOX"
   >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
@@ -4046,7 +4049,7 @@ OAuth 2.0 protocol
     </div>
   </div>
   <div
-    class="css-5bhofi-STYLES_APIBOX"
+    class="css-xnvfwf-STYLES_APIBOX"
   >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
@@ -4290,7 +4293,7 @@ OAuth 2.0 protocol
     </div>
   </div>
   <div
-    class="css-5bhofi-STYLES_APIBOX"
+    class="css-xnvfwf-STYLES_APIBOX"
   >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
@@ -4466,7 +4469,7 @@ OAuth 2.0 protocol
     </div>
   </h2>
   <div
-    class="css-f6dfjl-STYLES_APIBOX-STYLES_ELEMENTS-renderEnum"
+    class="css-su7y5h-STYLES_APIBOX-STYLES_ELEMENTS-renderEnum"
   >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
@@ -4640,7 +4643,7 @@ OAuth 2.0 protocol
     </ul>
   </div>
   <div
-    class="css-f6dfjl-STYLES_APIBOX-STYLES_ELEMENTS-renderEnum"
+    class="css-su7y5h-STYLES_APIBOX-STYLES_ELEMENTS-renderEnum"
   >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
@@ -4817,7 +4820,7 @@ OAuth 2.0 protocol
     </ul>
   </div>
   <div
-    class="css-f6dfjl-STYLES_APIBOX-STYLES_ELEMENTS-renderEnum"
+    class="css-su7y5h-STYLES_APIBOX-STYLES_ELEMENTS-renderEnum"
   >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
@@ -5066,7 +5069,7 @@ for more details.
     </ul>
   </div>
   <div
-    class="css-f6dfjl-STYLES_APIBOX-STYLES_ELEMENTS-renderEnum"
+    class="css-su7y5h-STYLES_APIBOX-STYLES_ELEMENTS-renderEnum"
   >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
@@ -5242,7 +5245,7 @@ for more details.
     </ul>
   </div>
   <div
-    class="css-f6dfjl-STYLES_APIBOX-STYLES_ELEMENTS-renderEnum"
+    class="css-su7y5h-STYLES_APIBOX-STYLES_ELEMENTS-renderEnum"
   >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
@@ -5486,7 +5489,7 @@ for more details.
     </ul>
   </div>
   <div
-    class="css-f6dfjl-STYLES_APIBOX-STYLES_ELEMENTS-renderEnum"
+    class="css-su7y5h-STYLES_APIBOX-STYLES_ELEMENTS-renderEnum"
   >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
@@ -5765,7 +5768,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
     </div>
   </h2>
   <div
-    class="css-5bhofi-STYLES_APIBOX"
+    class="css-xnvfwf-STYLES_APIBOX"
   >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
@@ -5848,64 +5851,67 @@ exports[`APISection expo-barcode-scanner 1`] = `
         &gt;
       </code>
     </p>
-    <h3
-      class="css-1fe5f89-h3-h3-STYLES_H3"
-      data-heading="true"
-    >
-      <div
-        class="css-1rh3o5q-STYLES_PERMALINK"
-      >
-        <span
-          class="css-zonpcr-STYLES_PERMALINK_TARGET"
-          id="barcodescannerprops"
-        />
-        <a
-          class="css-15lh5hg-STYLES_PERMALINK_LINK"
-          href="#barcodescannerprops"
-        >
-          <span
-            class="css-1icvi79-STYLED_PERMALINK_CONTENT"
-          >
-            <code
-              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
-            >
-              BarCodeScannerProps
-            </code>
-          </span>
-          <span
-            class="css-10vdcw8-STYLES_PERMALINK_ICON"
-          >
-            <svg
-              aria-label="permalink"
-              class="anchor-icon"
-              fill="none"
-              height="24"
-              viewBox="0 0 24 24"
-              width="24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                stroke="#9B9B9B"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-              />
-              <path
-                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                stroke="#9B9B9B"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-              />
-            </svg>
-          </span>
-        </a>
-      </div>
-    </h3>
     <div>
       <div
-        class="css-7sa77d-STYLES_APIBOX-STYLES_APIBOX_NESTED-renderProp"
+        class="css-1iw8c1u-STYLES_NESTED_SECTION_HEADER"
+      >
+        <h4
+          class="  css-838f5l-h4-h4-STYLES_H4"
+          data-components-heading="true"
+          data-heading="true"
+        >
+          <div
+            class="css-1rh3o5q-STYLES_PERMALINK"
+          >
+            <span
+              class="css-zonpcr-STYLES_PERMALINK_TARGET"
+              id="barcodescannerprops"
+            />
+            <a
+              class="css-15lh5hg-STYLES_PERMALINK_LINK"
+              href="#barcodescannerprops"
+            >
+              <span
+                class="css-1icvi79-STYLED_PERMALINK_CONTENT"
+              >
+                BarCodeScannerProps
+              </span>
+              <span
+                class="css-10vdcw8-STYLES_PERMALINK_ICON"
+              >
+                <svg
+                  aria-label="permalink"
+                  class="anchor-icon"
+                  fill="none"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                    stroke="#9B9B9B"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                  />
+                  <path
+                    d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                    stroke="#9B9B9B"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                  />
+                </svg>
+              </span>
+            </a>
+          </div>
+        </h4>
+      </div>
+    </div>
+    <div>
+      <div
+        class="css-1xojqjp-STYLES_APIBOX-STYLES_APIBOX_NESTED-renderProp"
       >
         <h4
           class="  css-838f5l-h4-h4-STYLES_H4"
@@ -6026,7 +6032,7 @@ minimize battery usage.
         </p>
       </div>
       <div
-        class="css-7sa77d-STYLES_APIBOX-STYLES_APIBOX_NESTED-renderProp"
+        class="css-1xojqjp-STYLES_APIBOX-STYLES_APIBOX_NESTED-renderProp"
       >
         <h4
           class="  css-838f5l-h4-h4-STYLES_H4"
@@ -6195,7 +6201,7 @@ data has been retrieved.
         </blockquote>
       </div>
       <div
-        class="css-7sa77d-STYLES_APIBOX-STYLES_APIBOX_NESTED-renderProp"
+        class="css-1xojqjp-STYLES_APIBOX-STYLES_APIBOX_NESTED-renderProp"
       >
         <h4
           class="  css-838f5l-h4-h4-STYLES_H4"
@@ -6455,7 +6461,7 @@ Same as
     </div>
   </h2>
   <div
-    class="css-1v343xz-STYLES_APIBOX-renderMethod"
+    class="css-xaoslm-STYLES_APIBOX-renderMethod"
   >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
@@ -6765,7 +6771,7 @@ This can be used to quickly create specific permission hooks in every module.
     </div>
   </h2>
   <div
-    class="css-1v343xz-STYLES_APIBOX-renderMethod"
+    class="css-xaoslm-STYLES_APIBOX-renderMethod"
   >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
@@ -6930,7 +6936,7 @@ This can be used to quickly create specific permission hooks in every module.
     </p>
   </div>
   <div
-    class="css-1v343xz-STYLES_APIBOX-renderMethod"
+    class="css-xaoslm-STYLES_APIBOX-renderMethod"
   >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
@@ -7113,7 +7119,7 @@ This can be used to quickly create specific permission hooks in every module.
     </p>
   </div>
   <div
-    class="css-1v343xz-STYLES_APIBOX-renderMethod"
+    class="css-xaoslm-STYLES_APIBOX-renderMethod"
   >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
@@ -7480,7 +7486,7 @@ code.
     </div>
   </h2>
   <div
-    class="css-5bhofi-STYLES_APIBOX"
+    class="css-xnvfwf-STYLES_APIBOX"
   >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
@@ -7641,7 +7647,7 @@ code.
     </div>
   </div>
   <div
-    class="css-5bhofi-STYLES_APIBOX"
+    class="css-xnvfwf-STYLES_APIBOX"
   >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
@@ -7783,7 +7789,7 @@ code.
     </div>
   </div>
   <div
-    class="css-5bhofi-STYLES_APIBOX"
+    class="css-xnvfwf-STYLES_APIBOX"
   >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
@@ -7908,7 +7914,7 @@ code.
     </div>
   </div>
   <div
-    class="css-5bhofi-STYLES_APIBOX"
+    class="css-xnvfwf-STYLES_APIBOX"
   >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
@@ -8078,7 +8084,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
     </div>
   </div>
   <div
-    class="css-5bhofi-STYLES_APIBOX"
+    class="css-xnvfwf-STYLES_APIBOX"
   >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
@@ -8218,7 +8224,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
     </div>
   </div>
   <div
-    class="css-5bhofi-STYLES_APIBOX"
+    class="css-xnvfwf-STYLES_APIBOX"
   >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
@@ -8536,7 +8542,7 @@ For some types, they will represent the area used by the scanner.
     </div>
   </div>
   <div
-    class="css-5bhofi-STYLES_APIBOX"
+    class="css-xnvfwf-STYLES_APIBOX"
   >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
@@ -8687,7 +8693,7 @@ For some types, they will represent the area used by the scanner.
     </div>
   </div>
   <div
-    class="css-5bhofi-STYLES_APIBOX"
+    class="css-xnvfwf-STYLES_APIBOX"
   >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
@@ -8820,7 +8826,7 @@ For some types, they will represent the area used by the scanner.
     </div>
   </h2>
   <div
-    class="css-5bhofi-STYLES_APIBOX"
+    class="css-xnvfwf-STYLES_APIBOX"
   >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
@@ -9085,7 +9091,7 @@ For some types, they will represent the area used by the scanner.
     </div>
   </h2>
   <div
-    class="css-f6dfjl-STYLES_APIBOX-STYLES_ELEMENTS-renderEnum"
+    class="css-su7y5h-STYLES_APIBOX-STYLES_ELEMENTS-renderEnum"
   >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
@@ -9286,7 +9292,7 @@ exports[`APISection expo-pedometer 1`] = `
     </div>
   </h2>
   <div
-    class="css-1v343xz-STYLES_APIBOX-renderMethod"
+    class="css-xaoslm-STYLES_APIBOX-renderMethod"
   >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
@@ -9427,7 +9433,7 @@ exports[`APISection expo-pedometer 1`] = `
     </ul>
   </div>
   <div
-    class="css-1v343xz-STYLES_APIBOX-renderMethod"
+    class="css-xaoslm-STYLES_APIBOX-renderMethod"
   >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
@@ -9767,7 +9773,7 @@ a start date that is more than seven days in the past returns only the available
     </blockquote>
   </div>
   <div
-    class="css-1v343xz-STYLES_APIBOX-renderMethod"
+    class="css-xaoslm-STYLES_APIBOX-renderMethod"
   >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
@@ -9922,7 +9928,7 @@ available on this device.
     </p>
   </div>
   <div
-    class="css-1v343xz-STYLES_APIBOX-renderMethod"
+    class="css-xaoslm-STYLES_APIBOX-renderMethod"
   >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
@@ -10063,7 +10069,7 @@ available on this device.
     </ul>
   </div>
   <div
-    class="css-1v343xz-STYLES_APIBOX-renderMethod"
+    class="css-xaoslm-STYLES_APIBOX-renderMethod"
   >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
@@ -10368,7 +10374,7 @@ provided with a single argument that is
     </div>
   </h2>
   <div
-    class="css-5bhofi-STYLES_APIBOX"
+    class="css-xnvfwf-STYLES_APIBOX"
   >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
@@ -10490,7 +10496,7 @@ provided with a single argument that is
     </div>
   </div>
   <div
-    class="css-5bhofi-STYLES_APIBOX"
+    class="css-xnvfwf-STYLES_APIBOX"
   >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
@@ -10630,7 +10636,7 @@ provided with a single argument that is
     </div>
   </div>
   <div
-    class="css-5bhofi-STYLES_APIBOX"
+    class="css-xnvfwf-STYLES_APIBOX"
   >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
@@ -10712,7 +10718,7 @@ provided with a single argument that is
     </p>
   </div>
   <div
-    class="css-5bhofi-STYLES_APIBOX"
+    class="css-xnvfwf-STYLES_APIBOX"
   >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
@@ -10887,7 +10893,7 @@ provided with a single argument that is
     </div>
   </h2>
   <div
-    class="css-5bhofi-STYLES_APIBOX"
+    class="css-xnvfwf-STYLES_APIBOX"
   >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
@@ -11152,7 +11158,7 @@ provided with a single argument that is
     </div>
   </h2>
   <div
-    class="css-f6dfjl-STYLES_APIBOX-STYLES_ELEMENTS-renderEnum"
+    class="css-su7y5h-STYLES_APIBOX-STYLES_ELEMENTS-renderEnum"
   >
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"

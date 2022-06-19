@@ -555,13 +555,40 @@ export const STYLES_APIBOX = css({
     marginTop: spacing[4],
   },
 
+  table: {
+    boxShadow: 'none',
+  },
+
   [`@media screen and (max-width: ${Constants.breakpoints.mobile})`]: {
     padding: `0 ${spacing[4]}px`,
   },
 });
 
 export const STYLES_APIBOX_NESTED = css({
-  marginBottom: spacing[4],
+  marginBottom: spacing[1],
+  border: 0,
+  borderRadius: 0,
+  padding: `${spacing[1]}px 0`,
+  borderBottom: `1px solid ${theme.border.default}`,
+  boxShadow: 'none',
+
+  ':last-of-type': {
+    borderBottom: 0,
+    marginBottom: 0,
+  },
+});
+
+export const STYLES_NESTED_SECTION_HEADER = css({
+  display: 'flex',
+  borderTop: `1px solid ${theme.border.default}`,
+  borderBottom: `1px solid ${theme.border.default}`,
+  margin: `${spacing[6]}px -${spacing[5]}px 0`,
+  padding: `${spacing[2.5]}px ${spacing[5]}px`,
+  backgroundColor: theme.background.secondary,
+
+  h4: {
+    marginBottom: 0,
+  },
 });
 
 export const STYLES_NOT_EXPOSED_HEADER = css({
