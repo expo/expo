@@ -29,6 +29,7 @@ import {
   TypePropertyDataFlags,
 } from '~/components/plugins/api/APIDataTypes';
 import * as Constants from '~/constants/theme';
+import { tableWrapperStyle } from '~/ui/components/Table/Table';
 
 const isDev = process.env.NODE_ENV === 'development';
 
@@ -555,7 +556,7 @@ export const STYLES_APIBOX = css({
     marginTop: spacing[4],
   },
 
-  table: {
+  [`.css-${tableWrapperStyle.name}`]: {
     boxShadow: 'none',
   },
 
