@@ -10,6 +10,7 @@ pluginManagement {
 include ':app'
 
 apply from: new File(["node", "--print", "require.resolve('expo/package.json')"].execute(null, rootDir).text.trim(), "../scripts/autolinking.gradle")
+apply from: new File(rootDir, "versioning_linking.gradle")
 
 /* UNCOMMENT WHEN DISTRIBUTING
 useExpoModules([
@@ -44,9 +45,6 @@ project(':ReactAndroid:hermes-engine').projectDir = new File(rootDir, 'ReactAndr
 include ':expo-modules-test-core'
 project(':expo-modules-test-core').projectDir = new File(rootDir, '../packages/expo-modules-test-core/android')
 
-include(':vendored_unversioned_@shopify_react-native-skia')
-project(':vendored_unversioned_@shopify_react-native-skia').projectDir = new File(rootDir, 'vendored/unversioned/@shopify/react-native-skia/android')
-
 // Include Expo modules that are not unimodules
 include(":expo-random")
 project(":expo-random").projectDir = new File("../packages/expo-random/android")
@@ -71,4 +69,7 @@ useExpoModules([
         'expo-dev-client'
     ]
 ])
+
+useVendoredModules("unversioned")
+
 // WHEN_DISTRIBUTING_REMOVE_TO_HERE

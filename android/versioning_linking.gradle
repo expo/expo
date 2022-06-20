@@ -1,0 +1,20 @@
+import java.nio.file.Paths
+
+
+def normalizeProjectName(String projectRoot) {
+  return projectRoot.replace('/', '_')
+}
+
+/**
+ * Link vendored modules into settings.gradle
+ */
+ext.useVendoredModules = { String sdkVersion ->
+  def vendoredRoot = Paths.get(rootDir.toString(), 'vendored', sdkVersion).toString()
+  fileTree(dir: vendoredRoot, include: '**/build.gradle').each { gradleFile ->
+    def projectRoot = rootDir.toPath().relativize(gradleFile.toPath()).getParent().getParent().toString()
+    def projectName = normalizeProjectName(projectRoot)
+
+    include(":${projectName}")
+    project(":${projectName}").projectDir = gradleFile.getParentFile()
+  }
+}
