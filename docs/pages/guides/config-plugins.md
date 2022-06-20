@@ -2,6 +2,8 @@
 title: Config Plugins
 ---
 
+import { Terminal } from '~/ui/components/Snippet';
+
 > This guide applies to SDK 41+ projects. The Expo Go app doesn't support custom native modules.
 
 When adding a native module to your project, most of the setup can be done automatically by installing the module in your project, but some modules require a more complex setup. For instance, say you installed `expo-camera` in your bare project, you now need to configure the native app to enable camera permissions — this is where config plugins come in. Config plugins are a system for extending the Expo config and customizing the prebuild phase of managed builds.
@@ -10,7 +12,7 @@ Internally Expo CLI uses config plugins to generate and configure all the native
 
 You can think of plugins like a bundler for native projects, and running `expo prebuild` as a way to bundle the projects by evaluating all the project plugins. Doing so will generate `ios` and `android` directories. These directories can be modified manually after being generated, but then they can no longer be safely regenerated without potentially overwriting manual modifications.
 
-**Quick facts**
+#### Quick facts
 
 - Plugins are functions that can change values on your Expo config.
 - Plugins are mostly meant to be used with [`expo prebuild`][cli-prebuild] or `eas build` commands.
@@ -28,9 +30,7 @@ For instance, `expo-camera` has a plugin that adds camera permissions to the **I
 
 Install it in your project:
 
-```sh
-expo install expo-camera
-```
+<Terminal cmd={['$ expo install expo-camera']} />
 
 In your app's Expo config (**app.json**, or **app.config.js**), add `expo-camera` to the list of plugins:
 
