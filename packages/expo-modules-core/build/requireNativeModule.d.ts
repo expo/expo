@@ -1,3 +1,8 @@
+declare global {
+    var ExpoModules: undefined | {
+        [key: string]: any;
+    };
+}
 /**
  * Imports the native module registered with given name. In the first place it tries to load
  * the module installed through the JSI host object and then falls back to the bridge proxy module.
