@@ -1,9 +1,11 @@
 {
     "main": "node_modules/expo/AppEntry.js",
     "dependencies": {
-        "expo": "~44.0.0",
-        "react": "17.0.1",
-        "react-native": "0.64.3"
+        "expo": "~45.0.0",
+        "react": "17.0.2",
+        "react-native": "0.68.2",
+        "react-dom": "17.0.2",
+        "react-native-web": "~0.17.1"
     },
     "devDependencies": {
         "@babel/core": "^7.12.9"
