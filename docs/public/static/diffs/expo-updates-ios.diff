@@ -96,7 +96,7 @@ index 471ca3dde5..2abdd7a775 100644
 --- a/apps/bare-update/ios/bareupdate/Supporting/Expo.plist
 +++ b/apps/bare-update/ios/bareupdate/Supporting/Expo.plist
 @@ -6,5 +6,7 @@
-     <string>42.0.0</string>
+     <string>45.0.0</string>
      <key>EXUpdatesURL</key>
      <string>https://exp.host/@my-expo-username/my-app</string>
 +    <key>EXUpdatesAutoSetup</key>
