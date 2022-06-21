@@ -24,8 +24,8 @@ export default function DevLoadingView() {
   useEffect(() => {
     if (!emitter) return;
 
-    function handleShowMessage({ message }) {
-      setMessage(message);
+    function handleShowMessage(event: { message: string }) {
+      setMessage(event.message);
       // TODO: if we show the refreshing banner and don't get a hide message
       // for 3 seconds, warn the user that it's taking a while and suggest
       // they reload
