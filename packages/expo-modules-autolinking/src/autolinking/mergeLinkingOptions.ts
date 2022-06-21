@@ -79,25 +79,21 @@ async function findDefaultPathsAsync(cwd: string): Promise<string[]> {
 
 /**
  * Finds the real path to custom native modules directory.
+ * - When {@link cwd} is inside the project directory, the path is searched relatively
+ * to the project root (directory with the `package.json` file).
+ * - When {@link cwd} is outside project directory (no `package.json` found), it is relative to
+ * the current working directory (the {@link cwd} param).
+ *
+ * @param nativeModulesDir path to custom native modules directory. Defaults to `"./modules"` if null.
+ * @param cwd current working directory
  * @returns resolved native modules directory or `null` if it is not found or doesn't exist.
  */
 async function resolveNativeModulesDirAsync(
   nativeModulesDir: string | null | undefined,
   cwd: string
 ): Promise<string | null> {
-  // first try resolving the provided dir
-  if (nativeModulesDir) {
-    const nativeModulesDirPath = path.resolve(cwd, nativeModulesDir);
-    if (await fs.pathExists(nativeModulesDirPath)) {
-      return nativeModulesDirPath;
-    }
-  }
-
-  // if not found, try to find it relative to the package.json
-  const up = await findUp('package.json', { cwd });
-  if (!up) {
-    return null;
-  }
-  const resolvedPath = path.join(up, '..', nativeModulesDir || 'modules');
+  const packageJsonPath = await findUp('package.json', { cwd });
+  const projectRoot = packageJsonPath != null ? path.join(packageJsonPath, '..') : cwd;
+  const resolvedPath = path.resolve(projectRoot, nativeModulesDir || 'modules');
   return fs.existsSync(resolvedPath) ? resolvedPath : null;
 }
