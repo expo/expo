@@ -22,6 +22,8 @@ export class HistoryFallbackMiddleware {
         // This implements the HTML5 history fallback API.
         return this.indexMiddleware(req, res, next);
       }
+
+      return next();
     };
   }
 }

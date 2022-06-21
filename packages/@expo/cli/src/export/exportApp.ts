@@ -1,8 +1,8 @@
 import fs from 'fs';
 import path from 'path';
-import resolveFrom from 'resolve-from';
 
 import * as Log from '../log';
+import { importCliSaveAssetsFromProject } from '../start/server/metro/resolveFromProject';
 import { createTemplateHtmlFromExpoConfigAsync } from '../start/server/webTemplate';
 import { copyAsync, ensureDirectoryAsync } from '../utils/dir';
 import { env } from '../utils/env';
@@ -18,12 +18,6 @@ import {
   writeMetadataJsonAsync,
   writeSourceMapsAsync,
 } from './writeContents';
-
-async function copyPublicFolderAsync(publicFolder: string, outputFolder: string) {
-  if (fs.existsSync(publicFolder)) {
-    await copyAsync(publicFolder, outputFolder);
-  }
-}
 
 /**
  * The structure of the outputDir will be:
@@ -72,20 +66,6 @@ export async function exportAppAsync(
     }
   );
 
-  if (platforms.includes('web')) {
-    const saveAssets = getSaveAssets(projectRoot);
-    // Save assets like a typical bundler, preserving the file paths on web.
-    await Promise.all(
-      Object.entries(bundles).map(([platform, bundle]) => {
-        return saveAssets(
-          // @ts-expect-error
-          bundle.assets,
-          platform,
-          outputPath
-        );
-      })
-    );
-  }
   // Log bundle size info to the user
   printBundleSizes(bundles);
 
@@ -94,12 +74,25 @@ export async function exportAppAsync(
 
   Log.log('Finished saving JS Bundles');
 
-  // If web exists, then write the template HTML file.
   if (fileNames.web) {
+    // If web exists, then write the template HTML file.
     await fs.promises.writeFile(
       path.join(outputPath, 'index.html'),
       await createTemplateHtmlFromExpoConfigAsync(projectRoot, {
         scripts: [`/bundles/${fileNames.web}`],
+      })
+    );
+
+    // Save assets like a typical bundler, preserving the file paths on web.
+    const saveAssets = importCliSaveAssetsFromProject(projectRoot);
+    await Promise.all(
+      Object.entries(bundles).map(([platform, bundle]) => {
+        return saveAssets(
+          // @ts-expect-error: tolerable type mismatches: unused `readonly` (common in Metro) and `undefined` instead of `null`.
+          bundle.assets,
+          platform,
+          outputPath
+        );
       })
     );
   }
@@ -138,12 +131,16 @@ export async function exportAppAsync(
   await writeMetadataJsonAsync({ outputDir, bundles, fileNames });
 }
 
-/** Get the `saveAssets` module from upstream to create the same asset structure React Native expects by default. */
-function getSaveAssets(projectRoot: string) {
-  return (
-    require(resolveFrom(
-      projectRoot,
-      '@react-native-community/cli-plugin-metro/build/commands/bundle/saveAssets'
-    )) as typeof import('@react-native-community/cli-plugin-metro/build/commands/bundle/saveAssets')
-  ).default;
+/**
+ * Copy the contents of the public folder into the output folder.
+ * This enables users to add static files like `favicon.ico` or `serve.json`.
+ *
+ * The contents of this folder are completely universal since they refer to
+ * static network requests which fall outside the scope of React Native's magic
+ * platform resolution patterns.
+ */
+async function copyPublicFolderAsync(publicFolder: string, outputFolder: string) {
+  if (fs.existsSync(publicFolder)) {
+    await copyAsync(publicFolder, outputFolder);
+  }
 }

@@ -5,6 +5,10 @@ import path from 'path';
 import { TEMPLATES } from '../../customize/templates';
 import { env } from '../../utils/env';
 
+/**
+ * Create a static HTML for SPA styled websites.
+ * This method attempts to reuse the same patterns as `@expo/webpack-config`.
+ */
 export async function createTemplateHtmlFromExpoConfigAsync(
   projectRoot: string,
   {

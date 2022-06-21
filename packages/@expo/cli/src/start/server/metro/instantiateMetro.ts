@@ -190,10 +190,5 @@ export function withMetroMultiPlatform(
     },
   });
 
-  if (!config.resolver.extraNodeModules) {
-    // @ts-expect-error: typed as readonly
-    config.resolver.extraNodeModules = {};
-  }
-
   return config;
 }

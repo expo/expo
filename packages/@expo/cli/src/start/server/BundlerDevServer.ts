@@ -106,6 +106,7 @@ export abstract class BundlerDevServer {
   constructor(
     /** Project root folder. */
     public projectRoot: string,
+    /** A mapping of bundlers to platforms. */
     public platformBundlers: PlatformBundlers,
     // TODO: Replace with custom scheme maybe...
     public isDevClient?: boolean
