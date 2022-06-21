@@ -7,15 +7,10 @@ const DEFAULT_SAFE_AREA = { top: 0, bottom: 0, left: 0, right: 0 };
  * This is a hack to get the safe area insets without explicitly depending on react-native-safe-area-context.
  */
 export function getInitialSafeArea(): { top: number; bottom: number; left: number; right: number } {
-  try {
-    const RNCSafeAreaContext = TurboModuleRegistry.get('RNCSafeAreaContext');
+  const RNCSafeAreaContext = TurboModuleRegistry.get('RNCSafeAreaContext');
 
-    // @ts-ignore: we're not using the spec so the return type of getConstants() is {}
-    const initialWindowMetrics = RNCSafeAreaContext?.getConstants()?.initialWindowMetrics;
+  // @ts-ignore: we're not using the spec so the return type of getConstants() is {}
+  const initialWindowMetrics = RNCSafeAreaContext?.getConstants()?.initialWindowMetrics;
 
-    return initialWindowMetrics?.insets ?? DEFAULT_SAFE_AREA;
-  } catch {
-    // Catch cases where RNCSafeAreaContext is not available
-  }
-  return DEFAULT_SAFE_AREA;
+  return initialWindowMetrics?.insets ?? DEFAULT_SAFE_AREA;
 }
