@@ -9,7 +9,7 @@
 ### 🐛 Bug fixes
 
 - Fix bug in isExpoHosted for new manifests. ([#17402](https://github.com/expo/expo/pull/17402) by [@wschurman](https://github.com/wschurman))
-- Fix `addEventListener` not returning a subscription on web.
+- Fix `addEventListener` not returning a subscription on web. ([#17925](https://github.com/expo/expo/pull/17925) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 
