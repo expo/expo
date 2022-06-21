@@ -54,7 +54,7 @@ If you're migrating from an ExpoKit project to the bare workflow with `expo-upda
 <plist version="1.0">
   <dict>
     <key>EXUpdatesSDKVersion</key>
-    <string>43.0.0</string>
+    <string>45.0.0</string>
     <key>EXUpdatesURL</key>
     <string>https://exp.host/@my-expo-username/my-app</string>
   </dict>
@@ -73,7 +73,7 @@ If you're migrating from an ExpoKit project to the bare workflow with `expo-upda
    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
    <application android:name=".MainApplication" android:label="@string/app_name" android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher_round" android:allowBackup="false" android:theme="@style/AppTheme" android:usesCleartextTraffic="true">
 +    <meta-data android:name="expo.modules.updates.EXPO_UPDATE_URL" android:value="https://exp.host/@my-expo-username/my-app"/>
-+    <meta-data android:name="expo.modules.updates.EXPO_SDK_VERSION" android:value="43.0.0"/>
++    <meta-data android:name="expo.modules.updates.EXPO_SDK_VERSION" android:value="45.0.0"/>
      <activity android:name=".MainActivity" android:label="@string/app_name" android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode" android:launchMode="singleTask" android:windowSoftInputMode="adjustResize" android:theme="@style/Theme.App.SplashScreen">
        <intent-filter>
          <action android:name="android.intent.action.MAIN"/>
