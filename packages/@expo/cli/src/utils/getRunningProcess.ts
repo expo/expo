@@ -1,6 +1,8 @@
 import { execFileSync, execSync, ExecSyncOptionsWithStringEncoding } from 'child_process';
 import * as path from 'path';
 
+const debug = require('debug')('expo:utils:getRunningProcess') as typeof console.log;
+
 const defaultOptions: ExecSyncOptionsWithStringEncoding = {
   encoding: 'utf8',
   stdio: ['pipe', 'pipe', 'ignore'],
@@ -12,8 +14,11 @@ export function getPID(port: number): number | null {
     const results = execFileSync('lsof', [`-i:${port}`, '-P', '-t', '-sTCP:LISTEN'], defaultOptions)
       .split('\n')[0]
       .trim();
-    return Number(results);
-  } catch {
+    const pid = Number(results);
+    debug(`pid: ${pid} for port: ${port}`);
+    return pid;
+  } catch (error: any) {
+    debug(`No pid found for port: ${port}. Error: ${error}`);
     return null;
   }
 }

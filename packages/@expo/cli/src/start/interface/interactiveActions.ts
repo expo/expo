@@ -8,6 +8,8 @@ import { selectAsync } from '../../utils/prompts';
 import { DevServerManager } from '../server/DevServerManager';
 import { BLT, printHelp, printItem, printQRCode, printUsage, StartOptions } from './commandsTable';
 
+const debug = require('debug')('expo:start:interface:interactiveActions') as typeof console.log;
+
 /** Wraps the DevServerManager and adds an interface for user actions. */
 export class DevServerManagerActions {
   constructor(private devServerManager: DevServerManager) {}
@@ -91,7 +93,7 @@ export class DevServerManagerActions {
       ]);
       this.devServerManager.broadcastMessage('sendDevCommand', { name: value });
     } catch (error: any) {
-      Log.debug(error);
+      debug(error);
       // do nothing
     } finally {
       printHelp();

@@ -3,6 +3,8 @@ import editors from 'env-editor';
 
 import * as Log from '../log';
 
+const debug = require('debug')('expo:utils:editor') as typeof console.log;
+
 /** Guess what the default editor is and default to VSCode. */
 export function guessEditor(): editors.Editor {
   try {
@@ -16,16 +18,13 @@ export function guessEditor(): editors.Editor {
 export async function openInEditorAsync(path: string): Promise<boolean> {
   const editor = guessEditor();
 
-  Log.debug(`Opening ${path} in ${editor?.name} (bin: ${editor?.binary}, id: ${editor?.id})`);
+  debug(`Opening ${path} in ${editor?.name} (bin: ${editor?.binary}, id: ${editor?.id})`);
   if (editor) {
     try {
       await spawnAsync(editor.binary, [path]);
       return true;
     } catch (error: any) {
-      Log.debug(
-        `Failed to auto open path in editor (path: ${path}, binary: ${editor.binary}):`,
-        error
-      );
+      debug(`Failed to auto open path in editor (path: ${path}, binary: ${editor.binary}):`, error);
     }
   }
 

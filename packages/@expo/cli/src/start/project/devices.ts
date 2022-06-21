@@ -1,5 +1,7 @@
 import { createTemporaryProjectFile } from './dotExpo';
 
+const debug = require('debug')('expo:start:project:devices') as typeof console.log;
+
 export type DeviceInfo = {
   installationId: string;
   lastUsed: number;
@@ -66,6 +68,7 @@ export async function saveDevicesAsync(
   const currentTime = Date.now();
   const newDeviceIds = typeof deviceIds === 'string' ? [deviceIds] : deviceIds;
 
+  debug(`Saving devices: ${newDeviceIds}`);
   const { devices } = await getDevicesInfoAsync(projectRoot);
   const newDevicesJson = devices
     .filter((device) => !newDeviceIds.includes(device.installationId))

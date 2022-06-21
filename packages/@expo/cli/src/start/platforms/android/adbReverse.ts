@@ -2,6 +2,8 @@ import * as Log from '../../../log';
 import { installExitHooks } from '../../../utils/exit';
 import { adbArgs, Device, getAttachedDevicesAsync, getServer, logUnauthorized } from './adb';
 
+const debug = require('debug')('expo:start:platforms:android:adbReverse') as typeof console.log;
+
 let removeExitHook: (() => void) | null = null;
 
 export async function startAdbReverseAsync(ports: number[]): Promise<boolean> {
@@ -14,7 +16,7 @@ export async function startAdbReverseAsync(ports: number[]): Promise<boolean> {
   for (const device of devices) {
     for (const port of ports) {
       if (!(await adbReverseAsync(device, port))) {
-        Log.debug(`[ADB] Failed to start reverse port ${port} on device "${device.name}"`);
+        debug(`Failed to start reverse port ${port} on device "${device.name}"`);
         return false;
       }
     }
@@ -58,7 +60,7 @@ async function adbReverseRemoveAsync(device: Device, port: number): Promise<bool
     return true;
   } catch (error: any) {
     // Don't send this to warn because we call this preemptively sometimes
-    Log.debug(`[ADB] Couldn't reverse remove port ${port}: ${error.message}`);
+    debug(`Could not unforward port ${port}: ${error.message}`);
     return false;
   }
 }

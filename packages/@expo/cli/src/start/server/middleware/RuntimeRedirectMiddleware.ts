@@ -10,6 +10,10 @@ import {
 } from './resolvePlatform';
 import { ServerRequest, ServerResponse } from './server.types';
 
+const debug = require('debug')(
+  'expo:start:server:middleware:runtimeRedirect'
+) as typeof console.log;
+
 /** Runtime to target: expo = Expo Go, custom = Dev Client. */
 type RuntimeTarget = 'expo' | 'custom';
 
@@ -35,6 +39,8 @@ export class RuntimeRedirectMiddleware extends ExpoMiddleware {
     assertRuntimePlatform(platform);
     const runtime = isDevClient ? 'custom' : 'expo';
 
+    debug(`props:`, { platform, runtime });
+
     this.options.onDeepLink({ runtime, platform });
 
     const redirect = this.options.getLocation({ runtime });
@@ -46,7 +52,7 @@ export class RuntimeRedirectMiddleware extends ExpoMiddleware {
       res.end();
       return;
     }
-    Log.debug('Redirect ->', redirect);
+    debug('Redirect ->', redirect);
     res.setHeader('Location', redirect);
 
     // Disable caching

@@ -1,5 +1,6 @@
-import * as Log from '../log';
 import { guardAsync } from './fn';
+
+const debug = require('debug')('expo:utils:exit') as typeof console.log;
 
 type AsyncExitHook = (signal: NodeJS.Signals) => void | Promise<void>;
 
@@ -36,17 +37,17 @@ export function installExitHooks(asyncExitHook: AsyncExitHook): () => void {
 // Create a function that runs before the process exits and guards against running multiple times.
 function createExitHook(signal: NodeJS.Signals) {
   return guardAsync(async () => {
-    Log.debug(`pre-exit (signal: ${signal}, queue length: ${queue.length})`);
+    debug(`pre-exit (signal: ${signal}, queue length: ${queue.length})`);
 
     for (const [index, hookAsync] of Object.entries(queue)) {
       try {
         await hookAsync(signal);
       } catch (error: any) {
-        Log.debug(`Error in exit hook: %O (queue: ${index})`, error);
+        debug(`Error in exit hook: %O (queue: ${index})`, error);
       }
     }
 
-    Log.debug(`post-exit (code: ${process.exitCode ?? 0})`);
+    debug(`post-exit (code: ${process.exitCode ?? 0})`);
 
     process.exit();
   });

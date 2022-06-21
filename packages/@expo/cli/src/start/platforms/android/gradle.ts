@@ -1,9 +1,10 @@
 import spawnAsync, { SpawnResult } from '@expo/spawn-async';
 import path from 'path';
 
-import { Log } from '../../../log';
 import { env } from '../../../utils/env';
 import { AbortCommandError } from '../../../utils/errors';
+
+const debug = require('debug')('expo:start:platforms:android:gradle') as typeof console.log;
 
 function upperFirst(name: string) {
   return name.charAt(0).toUpperCase() + name.slice(1);
@@ -104,7 +105,7 @@ export async function spawnGradleAsync(
 ): Promise<SpawnResult> {
   const gradlew = resolveGradleWPath(projectRoot);
   if (port != null) args.push(getPortArg(port));
-  Log.debug(`  ${gradlew} ${args.join(' ')}`);
+  debug(`  ${gradlew} ${args.join(' ')}`);
   try {
     return await spawnAsync(gradlew, args, {
       cwd: projectRoot,

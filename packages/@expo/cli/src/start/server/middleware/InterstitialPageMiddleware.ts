@@ -13,6 +13,10 @@ import {
 } from './resolvePlatform';
 import { ServerRequest, ServerResponse } from './server.types';
 
+const debug = require('debug')(
+  'expo:start:server:middleware:interstitialPage'
+) as typeof console.log;
+
 export const LoadingEndpoint = '/_expo/loading';
 
 function getRuntimeVersion(exp: ExpoConfig, platform: 'android' | 'ios' | null): string {
@@ -76,6 +80,9 @@ export class InterstitialPageMiddleware extends ExpoMiddleware {
     assertRuntimePlatform(platform);
 
     const { appName, runtimeVersion } = this._getProjectOptions(platform);
+    debug(
+      `Create loading page. (platform: ${platform}, appName: ${appName}, runtimeVersion: ${runtimeVersion})`
+    );
     const content = await this._getPageAsync({ appName, runtimeVersion });
     res.end(content);
   }

@@ -5,6 +5,8 @@ import fetch from 'node-fetch';
 import { learnMore } from './link';
 import { isUrlAvailableAsync } from './url';
 
+const debug = require('debug')('expo:utils:validateApplicationId') as typeof console.log;
+
 const IOS_BUNDLE_ID_REGEX = /^[a-zA-Z0-9-.]+$/;
 const ANDROID_PACKAGE_REGEX = /^[a-zA-Z][a-zA-Z0-9_]*(\.[a-zA-Z][a-zA-Z0-9_]*)+$/;
 
@@ -45,12 +47,16 @@ export async function getBundleIdWarningAsync(bundleId: string): Promise<string 
   }
 
   if (!(await isUrlAvailableAsync('itunes.apple.com'))) {
+    debug(
+      `Couldn't connect to iTunes Store to check bundle ID ${bundleId}. itunes.apple.com may be down.`
+    );
     // If no network, simply skip the warnings since they'll just lead to more confusion.
     return null;
   }
 
   const url = `http://itunes.apple.com/lookup?bundleId=${bundleId}`;
   try {
+    debug(`Checking iOS bundle ID '${bundleId}' at: ${url}`);
     const response = await fetch(url);
     const json = await response.json();
     if (json.resultCount > 0) {
@@ -59,7 +65,8 @@ export async function getBundleIdWarningAsync(bundleId: string): Promise<string 
       cachedBundleIdResults[bundleId] = message;
       return message;
     }
-  } catch {
+  } catch (error: any) {
+    debug(`Error checking bundle ID ${bundleId}: ${error.message}`);
     // Error fetching itunes data.
   }
   return null;
@@ -73,12 +80,16 @@ export async function getPackageNameWarningAsync(packageName: string): Promise<s
   }
 
   if (!(await isUrlAvailableAsync('play.google.com'))) {
+    debug(
+      `Couldn't connect to Play Store to check package name ${packageName}. play.google.com may be down.`
+    );
     // If no network, simply skip the warnings since they'll just lead to more confusion.
     return null;
   }
 
   const url = `https://play.google.com/store/apps/details?id=${packageName}`;
   try {
+    debug(`Checking Android package name '${packageName}' at: ${url}`);
     const response = await fetch(url);
     // If the page exists, then warn the user.
     if (response.status === 200) {
@@ -90,7 +101,8 @@ export async function getPackageNameWarningAsync(packageName: string): Promise<s
       cachedPackageNameResults[packageName] = message;
       return message;
     }
-  } catch {
+  } catch (error: any) {
+    debug(`Error checking package name ${packageName}: ${error.message}`);
     // Error fetching play store data or the page doesn't exist.
   }
   return null;

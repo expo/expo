@@ -7,6 +7,8 @@ import { profile } from '../../../utils/profile';
 import { confirmAsync } from '../../../utils/prompts';
 import { Prerequisite } from '../Prerequisite';
 
+const debug = require('debug')('expo:doctor:apple:xcode') as typeof console.log;
+
 // Based on the RN docs (Aug 2020).
 const MIN_XCODE_VERSION = 9.4;
 const APP_STORE_ID = '497799835';
@@ -76,6 +78,7 @@ export class XcodePrerequisite extends Prerequisite {
    */
   async assertImplementation(): Promise<void> {
     const version = profile(getXcodeVersionAsync)();
+    debug(`Xcode version: ${version}`);
     if (!version) {
       // Almost certainly Xcode isn't installed.
       await promptToOpenAppStoreAsync(

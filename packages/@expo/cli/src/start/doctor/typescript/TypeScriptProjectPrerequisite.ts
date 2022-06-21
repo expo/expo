@@ -10,6 +10,8 @@ import { ProjectPrerequisite } from '../Prerequisite';
 import { ensureDependenciesAsync } from '../dependencies/ensureDependenciesAsync';
 import { updateTSConfigAsync } from './updateTSConfig';
 
+const debug = require('debug')('expo:doctor:typescriptSupport') as typeof console.log;
+
 /** Ensure the project has the required TypeScript support settings. */
 export class TypeScriptProjectPrerequisite extends ProjectPrerequisite {
   /** Ensure a project that hasn't explicitly disabled web support has all the required packages for running in the browser. */
@@ -18,7 +20,7 @@ export class TypeScriptProjectPrerequisite extends ProjectPrerequisite {
       Log.warn('Skipping TypeScript setup: EXPO_NO_TYPESCRIPT_SETUP is enabled.');
       return;
     }
-    Log.debug('Ensuring TypeScript support is setup');
+    debug('Ensuring TypeScript support is setup');
 
     const tsConfigPath = path.join(this.projectRoot, 'tsconfig.json');
 
