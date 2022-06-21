@@ -63,21 +63,16 @@ jobs:
         with:
           yarn-workspace: 'true'
           yarn-tools: 'true'
-          ios-pods: 'true'
-          bare-expo-pods: 'true'
+          native-tests-pods: 'true'
       - name: 🧶 Yarn install
         if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
-      - name: 🏭 Generating dynamic macros
-        run: expotools ios-generate-dynamic-macros
-      - name: 🥥 Install CocoaPods in `ios`
-        if: steps.expo-caches.outputs.ios-pods-hit != 'true'
-        run: pod install
-        working-directory: ios
-      - name: 🥥 Install CocoaPods in `apps/bare-expo/ios`
+      - name: 🥥 Install CocoaPods in `apps/native-tests/ios`
         if: steps.expo-caches.outputs.bare-expo-pods-hit != 'true'
         run: pod install
-        working-directory: apps/bare-expo/ios
+        working-directory: apps/native-tests/ios
       - name: 🧪 Run native iOS unit tests
         timeout-minutes: 45
+        env:
+          FASTLANE_SKIP_UPDATE_CHECK: '1'
         run: expotools native-unit-tests --platform ios

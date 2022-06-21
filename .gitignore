@@ -102,6 +102,7 @@ templates/**/yarn.lock
 /fastlane/report.xml
 /fastlane/Preview.html
 /fastlane/Deployment
+/fastlane/test_output
 /Preview.html
 /gc_keys.json
 /fastlane/gc_keys.json

@@ -10,8 +10,7 @@ class EXDevLauncherURLHelperTests: XCTestCase {
   
   func testIsDevLauncherURL() {
     let defaultUrl = "scheme://expo-development-client"
-    // missing url param -> not a dev client url
-    XCTAssertFalse(EXDevLauncherURLHelper.isDevLauncherURL(URL(string: defaultUrl)))
+    XCTAssertTrue(EXDevLauncherURLHelper.isDevLauncherURL(URL(string: defaultUrl)))
     XCTAssertTrue(EXDevLauncherURLHelper.isDevLauncherURL(URL(string: defaultUrl + "?url=123")))
     XCTAssertTrue(EXDevLauncherURLHelper.isDevLauncherURL(URL(string: "scheme://expo-development-client/?url=http%3A%2F%2Flocalhost%3A8081")))
     XCTAssertFalse(EXDevLauncherURLHelper.isDevLauncherURL(URL(string: "scheme://not-expo-development-client")))

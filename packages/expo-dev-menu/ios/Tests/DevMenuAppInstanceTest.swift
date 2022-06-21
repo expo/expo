@@ -54,8 +54,6 @@ class DevMenuAppInstanceTest: QuickSpec {
       let extraModules = appInstance.extraModules(for: mockedBridge)
 
       expect(extraModules).toNot(beNil())
-      expect(extraModules?.count).to(equal(7))
-
       expect(extraModules?.first { type(of: $0).moduleName() == "ExpoDevMenuInternal" }).toNot(beNil())
       expect(extraModules?.first { type(of: $0).moduleName() == "RNCSafeAreaProvider" }).toNot(beNil())
       expect(extraModules?.first { type(of: $0).moduleName() == "RNCSafeAreaView" }).toNot(beNil())

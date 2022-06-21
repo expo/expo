@@ -107,20 +107,12 @@ export class Package {
       return this.expoModuleConfig.ios.podspecPath;
     }
 
-    const iosConfig = {
-      subdirectory: 'ios',
-      ...(this.expoModuleConfig?.ios ?? {}),
-    };
-
-    // Obtain podspecName by looking for podspecs
-    const podspecPaths = glob.sync('*.podspec', {
-      cwd: path.join(this.path, iosConfig.subdirectory),
+    // Obtain podspecName by looking for podspecs in both package's root directory and ios subdirectory.
+    const [podspecPath] = glob.sync(`{*,${this.iosSubdirectory}/*}.podspec`, {
+      cwd: this.path,
     });
 
-    if (!podspecPaths || podspecPaths.length === 0) {
-      return null;
-    }
-    return path.join(iosConfig.subdirectory, podspecPaths[0]);
+    return podspecPath || null;
   }
 
   get podspecName(): string | null {
@@ -169,6 +161,13 @@ export class Package {
     return !!this.expoModuleConfig;
   }
 
+  containsPodspecFile() {
+    return [
+      ...fs.readdirSync(this.path),
+      ...fs.readdirSync(path.join(this.path, this.iosSubdirectory)),
+    ].some((path) => path.endsWith('.podspec'));
+  }
+
   isSupportedOnPlatform(platform: 'ios' | 'android'): boolean {
     if (this.expoModuleConfig && !fs.existsSync(path.join(this.path, 'react-native.config.js'))) {
       // check platform support from expo autolinking but not rn-cli linking which is not platform aware
@@ -177,10 +176,7 @@ export class Package {
       return fs.existsSync(path.join(this.path, this.androidSubdirectory, 'build.gradle'));
     } else if (platform === 'ios') {
       return (
-        fs.existsSync(path.join(this.path, this.iosSubdirectory)) &&
-        fs
-          .readdirSync(path.join(this.path, this.iosSubdirectory))
-          .some((path) => path.endsWith('.podspec'))
+        fs.existsSync(path.join(this.path, this.iosSubdirectory)) && this.containsPodspecFile()
       );
     }
     return false;
