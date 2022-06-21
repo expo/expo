@@ -1,5 +1,6 @@
 import { getConfig } from '@expo/config';
 
+import { asMock } from '../../../../__tests__/asMock';
 import * as Log from '../../../../log';
 import * as ProjectDevices from '../../../project/devices';
 import { ManifestMiddleware, ParsedHeaders } from '../ManifestMiddleware';
@@ -86,6 +87,9 @@ describe('_resolveProjectSettingsAsync', () => {
       constructUrl: jest.fn(() => 'http://fake.mock'),
       mode: 'development',
     });
+
+    asMock(getConfig).mockClear();
+
     middleware._getBundleUrl = jest.fn(() => 'http://fake.mock/index.bundle');
 
     const hostname = 'localhost';
@@ -115,6 +119,9 @@ describe('_resolveProjectSettingsAsync', () => {
       constructUrl: jest.fn(() => 'http://fake.mock'),
       mode: 'production',
     });
+
+    asMock(getConfig).mockClear();
+
     middleware._getBundleUrl = jest.fn(() => 'http://fake.mock/index.bundle');
 
     const hostname = 'localhost';

@@ -17,7 +17,7 @@ import {
 import { AsyncNgrok } from './AsyncNgrok';
 import { DevelopmentSession } from './DevelopmentSession';
 import { CreateURLOptions, UrlCreator } from './UrlCreator';
-import { getPlatformBundlers, PlatformBundlers } from './platformBundlers';
+import { PlatformBundlers } from './platformBundlers';
 
 const debug = require('debug')('expo:start:server:devServer') as typeof console.log;
 

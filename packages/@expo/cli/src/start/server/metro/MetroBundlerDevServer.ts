@@ -4,9 +4,7 @@ import { getFreePortAsync } from '../../../utils/port';
 import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
 import { HistoryFallbackMiddleware } from '../middleware/HistoryFallbackMiddleware';
 import { InterstitialPageMiddleware } from '../middleware/InterstitialPageMiddleware';
-import { parsePlatformHeader } from '../middleware/resolvePlatform';
 import { RuntimeRedirectMiddleware } from '../middleware/RuntimeRedirectMiddleware';
-import { ServerRequest, ServerResponse } from '../middleware/server.types';
 import { ServeStaticMiddleware } from '../middleware/ServeStaticMiddleware';
 import { instantiateMetroAsync } from './instantiateMetro';
 

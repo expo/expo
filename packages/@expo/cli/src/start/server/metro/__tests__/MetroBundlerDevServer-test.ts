@@ -5,6 +5,16 @@ import { getPlatformBundlers } from '../../platformBundlers';
 import { MetroBundlerDevServer } from '../MetroBundlerDevServer';
 import { instantiateMetroAsync } from '../instantiateMetro';
 
+jest.mock('@expo/config', () => ({
+  getConfig: jest.fn(() => ({
+    pkg: {},
+    exp: {
+      sdkVersion: '45.0.0',
+      name: 'my-app',
+      slug: 'my-app',
+    },
+  })),
+}));
 jest.mock('../instantiateMetro', () => ({
   instantiateMetroAsync: jest.fn(async () => ({
     middleware: { use: jest.fn() },
