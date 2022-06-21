@@ -1,17 +1,10 @@
 package expo.modules.kotlin.activityresult
 
-import android.app.Activity
-import androidx.activity.result.ActivityResultCallback
+import android.annotation.SuppressLint
 
 /**
- * @see [ActivityResultCallback]
+ * @see [androidx.activity.result.ActivityResultCallback]
  */
-fun interface AppContextActivityResultCallback<O> {
-  /**
-   * Called when result is available
-   * @param launchingActivityHasBeenKilled additional parameter that tells whether the calling [Activity]
-   * has been destroyed and recreated due to resources limits. If this is true then React Native application
-   * has been recreated from scratch as well and all previous state is invalid.
-   */
-  fun onActivityResult(result: O, launchingActivityHasBeenKilled: Boolean)
+fun interface AppContextActivityResultCallback<O, P> {
+  fun onActivityResult(@SuppressLint("UnknownNullness") result: O, params: P)
 }

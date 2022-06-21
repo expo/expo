@@ -1,23 +1,28 @@
+@file:OptIn(DelicateCoroutinesApi::class)
+
 package expo.modules.kotlin.activityresult
 
 import android.app.Activity
 import android.content.Intent
-import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Lifecycle
 import expo.modules.kotlin.AppContext
-import expo.modules.kotlin.AppContextActivityResult
+import expo.modules.kotlin.activityaware.AppCompatActivityAware
+import expo.modules.kotlin.activityaware.AppCompatActivityAwareHelper
+import expo.modules.kotlin.activityaware.OnActivityAvailableListener
+import expo.modules.kotlin.activityaware.withActivityAvailable
 import expo.modules.kotlin.providers.CurrentActivityProvider
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import java.util.concurrent.atomic.AtomicInteger
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
 
 class ActivityResultsManager(
   private val currentActivityProvider: CurrentActivityProvider
-) : AppContextActivityResultCaller {
+) : AppContextActivityResultCaller, AppCompatActivityAware {
   private val activity: AppCompatActivity
-    get() = requireNotNull(currentActivityProvider.currentActivity) { TODO() }
+    get() = requireNotNull(currentActivityProvider.currentActivity) { "Current Activity is not available at the moment" }
 
   /**
    * Due to the fact that [AppContext] is not coupled directly with the [Activity]'s lifecycle
@@ -26,35 +31,68 @@ class ActivityResultsManager(
    */
   private val nextLocalRequestCode = AtomicInteger()
   private val registry = AppContextActivityResultRegistry(currentActivityProvider)
+  private val activityAwareHelper = AppCompatActivityAwareHelper()
 
+  init {
+    GlobalScope.launch {
+      // this is launched only once per Activity life
+      withActivityAvailable { activity ->
+        registry.restoreInstanceState(activity)
+      }
+    }
+  }
+
+  // region Lifecycle
 
   fun onActivityResult(activity: Activity, requestCode: Int, resultCode: Int, data: Intent?) {
     registry.dispatchResult(requestCode, resultCode, data)
   }
 
-// region AppContextActivityResultCaller
+  /**
+   * This function is called every time the [Activity] is resumed.
+   * If you want to add some mechanism that fires only once (similar to how [Activity.onCreate] works),
+   * then use `init` block with [withActivityAvailable].
+   */
+  fun onHostResume(activity: AppCompatActivity) {
+    activityAwareHelper.dispatchOnActivityAvailable(activity)
+  }
 
-  override fun <I, O> registerForActivityResult(
+  fun onHostDestroy(activity: AppCompatActivity) {
+    registry.persistInstanceState(activity)
+  }
+
+  // endregion
+
+  // region AppContextActivityResultCaller
+
+  override suspend fun <I, O, P> registerForActivityResult(
     contract: ActivityResultContract<I, O>,
-    callback: AppContextActivityResultCallback<O>,
-  ): ActivityResultLauncher<I> {
-    return registry.register(
-      "AppContext_rq#${nextLocalRequestCode.getAndIncrement()}",
-      activity,
-      contract,
-      callback
-    )
+    fallbackCallback: AppContextActivityResultCallback<O, P>
+  ): AppContextActivityResultLauncher<I, O, P> =
+    withActivityAvailable { activity ->
+      registry.register(
+        "AppContext_rq#${nextLocalRequestCode.getAndIncrement()}",
+        activity,
+        contract,
+        fallbackCallback
+      )
+    }
+
+  // endregion
+
+  // region ActivityAware
+
+  override fun peekAvailableActivity(): AppCompatActivity? {
+    return activityAwareHelper.peekAvailableActivity()
   }
 
-  override suspend fun <O> launchForActivityResult(
-    contract: ActivityResultContract<Any?, O>
-  ): AppContextActivityResult<O> = suspendCoroutine { continuation ->
-    registerForActivityResult(
-      contract
-    ) { output, launchingActivityHasBeenKilled ->
-      continuation.resume(AppContextActivityResult(output, launchingActivityHasBeenKilled))
-    }.launch(null)
+  override fun addOnActivityAvailableListener(listener: OnActivityAvailableListener) {
+    activityAwareHelper.addOnActivityAvailableListener(listener)
   }
 
-// endregion
+  override fun removeOnActivityAvailableListener(listener: OnActivityAvailableListener) {
+    activityAwareHelper.removeOnActivityAvailableListener(listener)
+  }
+
+  // endregion
 }

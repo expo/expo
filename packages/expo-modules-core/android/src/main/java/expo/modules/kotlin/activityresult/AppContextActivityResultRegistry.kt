@@ -2,6 +2,7 @@ package expo.modules.kotlin.activityresult
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.content.IntentSender
 import android.os.Bundle
@@ -11,7 +12,6 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultCallback
-import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.ActivityResultRegistry
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContract
@@ -21,7 +21,6 @@ import androidx.activity.result.contract.ActivityResultContracts.StartIntentSend
 import androidx.annotation.MainThread
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.core.app.ActivityOptionsCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
@@ -46,40 +45,44 @@ import java.util.*
 class AppContextActivityResultRegistry(
   private val currentActivityProvider: CurrentActivityProvider
 ) {
+  private val SHARED_PREFERENCES_NAME = "expo.modules.kotlin.PersistentDataManager"
+  private val KEY_COMPONENT_ACTIVITY_REGISTERED_RCS = "KEY_COMPONENT_ACTIVITY_REGISTERED_RCS"
+  private val KEY_COMPONENT_ACTIVITY_REGISTERED_KEYS = "KEY_COMPONENT_ACTIVITY_REGISTERED_KEYS"
+  private val KEY_COMPONENT_ACTIVITY_LAUNCHED_KEYS = "KEY_COMPONENT_ACTIVITY_LAUNCHED_KEYS"
+  private val KEY_COMPONENT_ACTIVITY_RANDOM_OBJECT = "KEY_COMPONENT_ACTIVITY_RANDOM_OBJECT"
+  private val KEY_COMPONENT_ACTIVITY_PARAMS_FOR_FALLBACK_CALLBACK = "KEY_COMPONENT_ACTIVITY_PARAMS_FOR_FALLBACK_CALLBACK"
+
   private val LOG_TAG = "ActivityResultRegistry"
 
   // Use upper 16 bits for request codes
   private val INITIAL_REQUEST_CODE_VALUE = 0x00010000
-  private var mRandom: Random = Random()
+  private var random: Random = Random()
 
-  private val mRcToKey: MutableMap<Int, String> = HashMap()
-  private val mKeyToRc: MutableMap<String, Int> = HashMap()
-  private val mKeyToLifecycleContainers: MutableMap<String, LifecycleContainer> = HashMap()
-  private var mLaunchedKeys: ArrayList<String> = ArrayList()
+  private val requestCodeToKey: MutableMap<Int, String> = HashMap()
+  private val keyToRequestCode: MutableMap<String, Int> = HashMap()
+  private val keyToLifecycleContainers: MutableMap<String, LifecycleContainer> = HashMap()
+  private var launchedKeys: ArrayList<String> = ArrayList()
 
-  @Transient
-  /* synthetic access */
-  private val mKeyToCallback: MutableMap<String, CallbackAndContract<*>> = HashMap()
-
-  /* synthetic access */
-  private val mParsedPendingResults: MutableMap<String, Any?> = HashMap()
-
-  /* synthetic access */
-  private val mPendingResults = Bundle/*<String, ActivityResult>*/()
+  private val keyToCallback: MutableMap<String, CallbackAndContract<*>> = HashMap()
 
   /**
    * A register that stores the keys for which the original launching [Activity] has been destroyed
-   * due to resources limits. This information is then propagated as an additional information to
-   * the resulting callback.
+   * due to resources limits. It also stores the contract and callback that have to be invoked once
+   * the application is restored by the Android OS.
    */
-  private val launchingActivityDestroyedForKey: MutableSet<String> = HashSet()
+  private val keyToFallbackCallback: MutableMap<String, FallbackCallbackAndContract<*, *>> = HashMap()
 
-  private fun hasLaunchingActivityBeenDestroyedForKey(key: String): Boolean {
-    return launchingActivityDestroyedForKey.remove(key)
-  }
+  /**
+   * A register that stores launching-specific options that allow proper resumption of the process
+   * in case launching Activity is destroyed.
+   */
+  private val keyToParamsForFallbackCallback: MutableMap<String, Any> = HashMap()
+
+  private val parsedPendingResults: MutableMap<String, Any?> = HashMap()
+  private val pendingResults = Bundle/*<String, ActivityResult>*/()
 
   private val activity: AppCompatActivity
-    get() = requireNotNull(currentActivityProvider.currentActivity) { TODO() }
+    get() = requireNotNull(currentActivityProvider.currentActivity) { "Current Activity is not available at the moment" }
 
   /**
    * @see [ActivityResultRegistry.onLaunch]
@@ -90,7 +93,6 @@ class AppContextActivityResultRegistry(
     requestCode: Int,
     contract: ActivityResultContract<I, O>,
     @SuppressLint("UnknownNullness") input: I,
-    options: ActivityOptionsCompat?
   ) {
     // Immediate result path
     val synchronousResult = contract.getSynchronousResult(activity, input)
@@ -109,8 +111,6 @@ class AppContextActivityResultRegistry(
     if (intent.hasExtra(StartActivityForResult.EXTRA_ACTIVITY_OPTIONS_BUNDLE)) {
       optionsBundle = intent.getBundleExtra(StartActivityForResult.EXTRA_ACTIVITY_OPTIONS_BUNDLE)
       intent.removeExtra(StartActivityForResult.EXTRA_ACTIVITY_OPTIONS_BUNDLE)
-    } else if (options != null) {
-      optionsBundle = options.toBundle()
     }
     when (intent.action) {
       RequestMultiplePermissions.ACTION_REQUEST_PERMISSIONS -> {
@@ -144,51 +144,46 @@ class AppContextActivityResultRegistry(
   }
 
   /**
-   * The difference from the original method is commented out assertion about the current [Lifecycle]'s state.
+   * This method should be called every time the Activity is created
    * @see [ActivityResultRegistry.register]
+   * @param fallbackCallback callback that is invoked only if the Activity is destroyed and
+   * recreated by the Android OS. Regular results are returned from [AppContextActivityResultLauncher.launch] method.
    */
   @MainThread
-  fun <I, O> register(
+  fun <I, O, P> register(
     key: String,
     lifecycleOwner: LifecycleOwner,
     contract: ActivityResultContract<I, O>,
-    callback: AppContextActivityResultCallback<O>
-  ): ActivityResultLauncher<I> {
+    fallbackCallback: AppContextActivityResultCallback<O, P>
+  ): AppContextActivityResultLauncher<I, O, P> {
     val lifecycle = lifecycleOwner.lifecycle
-
-    /**
-     * Below is commented out as we're registering contracts when the Activity is already STARTED
-     */
-//    check(!lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
-//      ("LifecycleOwner " + lifecycleOwner + " is "
-//        + "attempting to register while current state is "
-//        + lifecycle.currentState + ". LifecycleOwners must call register before "
-//        + "they are STARTED.")
-//    }
+    keyToFallbackCallback[key] = FallbackCallbackAndContract(fallbackCallback, contract)
 
     registerKey(key)
 
-    val lifecycleContainer = mKeyToLifecycleContainers[key] ?: LifecycleContainer(lifecycle)
+    val lifecycleContainer = keyToLifecycleContainers[key] ?: LifecycleContainer(lifecycle)
     val observer = LifecycleEventObserver { _, event ->
       when (event) {
         Lifecycle.Event.ON_START -> {
-          mKeyToCallback[key] = CallbackAndContract(callback, contract)
-          val launchingActivityDestroyed = hasLaunchingActivityBeenDestroyedForKey(key)
-          if (mParsedPendingResults.containsKey(key)) {
-            @Suppress("UNCHECKED_CAST")
-            val parsedPendingResult = mParsedPendingResults[key] as O
-            mParsedPendingResults.remove(key)
+          // This is the most common path for returning results
+          // When the Activity is destroyed then the other path is invoked, see [keyToFallbackCallback]
+          val callbackAndContract = keyToCallback[key] ?: return@LifecycleEventObserver
+          @Suppress("UNCHECKED_CAST")
+          val callback = callbackAndContract.callback as ActivityResultCallback<O>
 
-            callback.onActivityResult(parsedPendingResult, launchingActivityDestroyed)
+          if (parsedPendingResults.containsKey(key)) {
+            @Suppress("UNCHECKED_CAST")
+            val parsedPendingResult = parsedPendingResults[key] as O
+            parsedPendingResults.remove(key)
+
+            callback.onActivityResult(parsedPendingResult)
           }
-          mPendingResults.getParcelable<ActivityResult>(key)?.let {
-            mPendingResults.remove(key)
-            callback.onActivityResult(contract.parseResult(it.resultCode, it.data), launchingActivityDestroyed)
+          pendingResults.getParcelable<ActivityResult>(key)?.let {
+            pendingResults.remove(key)
+            callback.onActivityResult(contract.parseResult(it.resultCode, it.data))
           }
         }
-        Lifecycle.Event.ON_STOP -> mKeyToCallback.remove(key)
         Lifecycle.Event.ON_DESTROY -> {
-          launchingActivityDestroyedForKey.add(key)
           unregister(key)
         }
         else -> Unit
@@ -196,32 +191,49 @@ class AppContextActivityResultRegistry(
     }
 
     lifecycleContainer.addObserver(observer)
-    mKeyToLifecycleContainers[key] = lifecycleContainer
+    keyToLifecycleContainers[key] = lifecycleContainer
 
-    return object : ActivityResultLauncher<I>() {
-      override fun launch(input: I, options: ActivityOptionsCompat?) {
-        val innerCode = mKeyToRc[key]
-          ?: throw IllegalStateException("Attempting to launch an unregistered "
-            + "ActivityResultLauncher with contract " + contract + " and input "
-            + input + ". You must ensure the ActivityResultLauncher is registered "
-            + "before calling launch().")
-        mLaunchedKeys.add(key)
+    return object : AppContextActivityResultLauncher<I, O, P>() {
+      override fun launch(input: I, params: P, callback: ActivityResultCallback<O>) {
+        val requestCode = keyToRequestCode[key] ?: throw IllegalStateException("Attempting to launch an unregistered ActivityResultLauncher with contract $contract and input $input .You must ensure the ActivityResultLauncher is registered before calling launch()")
+        launchedKeys.add(key)
+        keyToCallback[key] = CallbackAndContract(callback, contract)
+        keyToParamsForFallbackCallback[key] = params as Any
         try {
-          onLaunch(innerCode, contract, input, options)
+          onLaunch(requestCode, contract, input)
         } catch (e: Exception) {
-          mLaunchedKeys.remove(key)
+          launchedKeys.remove(key)
           throw e
         }
       }
 
-      override fun unregister() {
-        this@AppContextActivityResultRegistry.unregister(key)
-      }
-
-      override fun getContract(): ActivityResultContract<I, *> {
-        return contract
-      }
+      override val contract: ActivityResultContract<I, *> = contract
     }
+  }
+
+  fun persistInstanceState(context: Context) {
+    val sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE)
+
+    sharedPreferences
+      .edit()
+      .putString(KEY_COMPONENT_ACTIVITY_REGISTERED_RCS, requestCodeToKey.toString())
+      .putString(KEY_COMPONENT_ACTIVITY_REGISTERED_KEYS, keyToRequestCode.toString())
+      .putString(KEY_COMPONENT_ACTIVITY_LAUNCHED_KEYS, launchedKeys.toString())
+      .putString(KEY_COMPONENT_ACTIVITY_RANDOM_OBJECT, random.toString())
+      .putString(KEY_COMPONENT_ACTIVITY_PARAMS_FOR_FALLBACK_CALLBACK, keyToParamsForFallbackCallback.toString())
+      .apply()
+  }
+
+  fun restoreInstanceState(context: Context) {
+    val sharedPreferences = context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE)
+
+    sharedPreferences.all.let {
+    }
+
+    sharedPreferences
+      .edit()
+      .clear()
+      .apply()
   }
 
   /**
@@ -229,24 +241,22 @@ class AppContextActivityResultRegistry(
    */
   @MainThread
   fun unregister(key: String) {
-    if (!mLaunchedKeys.contains(key)) {
+    if (!launchedKeys.contains(key)) {
       // Only remove the key -> requestCode mapping if there isn't a launch in flight
-      mKeyToRc.remove(key)?.let { mRcToKey.remove(it) }
+      keyToRequestCode.remove(key)?.let { requestCodeToKey.remove(it) }
     }
-    mKeyToCallback.remove(key)
-    if (mParsedPendingResults.containsKey(key)) {
-      Log.w(LOG_TAG, "Dropping pending result for request " + key + ": "
-        + mParsedPendingResults[key])
-      mParsedPendingResults.remove(key)
+    keyToCallback.remove(key)
+    if (parsedPendingResults.containsKey(key)) {
+      Log.w(LOG_TAG, "Dropping pending result for request $key : ${parsedPendingResults[key]}")
+      parsedPendingResults.remove(key)
     }
-    if (mPendingResults.containsKey(key)) {
-      Log.w(LOG_TAG, "Dropping pending result for request " + key + ": "
-        + mPendingResults.getParcelable<ActivityResult>(key))
-      mPendingResults.remove(key)
+    if (pendingResults.containsKey(key)) {
+      Log.w(LOG_TAG, "Dropping pending result for request $key : ${pendingResults.getParcelable<ActivityResult>(key)}")
+      pendingResults.remove(key)
     }
-    mKeyToLifecycleContainers[key]?.let {
+    keyToLifecycleContainers[key]?.let {
       it.clearObservers()
-      mKeyToLifecycleContainers.remove(key)
+      keyToLifecycleContainers.remove(key)
     }
   }
 
@@ -255,8 +265,8 @@ class AppContextActivityResultRegistry(
    */
   @MainThread
   fun dispatchResult(requestCode: Int, resultCode: Int, data: Intent?): Boolean {
-    val key = mRcToKey[requestCode] ?: return false
-    doDispatch(key, resultCode, data, mKeyToCallback[key])
+    val key = requestCodeToKey[requestCode] ?: return false
+    doDispatch(key, resultCode, data, keyToCallback[key])
     return true
   }
 
@@ -267,78 +277,84 @@ class AppContextActivityResultRegistry(
   fun <O> dispatchResult(requestCode: Int,
                          @SuppressLint("UnknownNullness") result: O
   ): Boolean {
-    val key = mRcToKey[requestCode] ?: return false
-    val callbackAndContract = mKeyToCallback[key]
-    if (callbackAndContract?.mCallback == null) {
+    val key = requestCodeToKey[requestCode] ?: return false
+    val callbackAndContract = keyToCallback[key]
+    if (callbackAndContract?.callback == null) {
       // Remove any pending result
-      mPendingResults.remove(key)
+      pendingResults.remove(key)
       // And add these pre-parsed pending results in their place
-      mParsedPendingResults[key] = result
+      parsedPendingResults[key] = result
     } else {
       @Suppress("UNCHECKED_CAST")
-      val callback = callbackAndContract.mCallback as ActivityResultCallback<O>
-      if (mLaunchedKeys.remove(key)) {
+      val callback = callbackAndContract.callback as ActivityResultCallback<O>
+      if (launchedKeys.remove(key)) {
         callback.onActivityResult(result)
       }
     }
     return true
   }
 
-  private fun <O> doDispatch(key: String, resultCode: Int, data: Intent?,
-                             callbackAndContract: CallbackAndContract<O>?) {
-    if (callbackAndContract?.mCallback != null && mLaunchedKeys.contains(key)) {
-      val callback = callbackAndContract.mCallback
-      val contract = callbackAndContract.mContract
-      val launchingActivityDestroyed = hasLaunchingActivityBeenDestroyedForKey(key)
-      callback.onActivityResult(contract.parseResult(resultCode, data), launchingActivityDestroyed)
-      mLaunchedKeys.remove(key)
+  private fun <O> doDispatch(key: String, resultCode: Int, data: Intent?, callbackAndContract: CallbackAndContract<O>?) {
+    @Suppress("UNCHECKED_CAST")
+//    val storedCallbackAndContract = keyToFallbackCallback[key] as FallbackCallbackAndContract<O, P>?
+    if (callbackAndContract?.callback != null && launchedKeys.contains(key)) {
+      val callback = callbackAndContract.callback
+      val contract = callbackAndContract.contract
+      callback.onActivityResult(contract.parseResult(resultCode, data))
+      launchedKeys.remove(key)
+//    } else if (storedCallbackAndContract != null && launchedKeys.contains(key)) {
+//      // That's the path when the Activity has been destroyed and restored by the Android OS
+//      val (callback, contract) = storedCallbackAndContract
+//      callback.onActivityResult(contract.parseResult(resultCode, data))
+//      keyToFallbackCallback.remove(key)
+//      launchedKeys.remove(key)
     } else {
       // Remove any parsed pending result
-      mParsedPendingResults.remove(key)
+      parsedPendingResults.remove(key)
       // And add these pending results in their place
-      mPendingResults.putParcelable(key, ActivityResult(resultCode, data))
+      pendingResults.putParcelable(key, ActivityResult(resultCode, data))
     }
   }
 
   private fun registerKey(key: String) {
-    val existing = mKeyToRc[key]
+    val existing = keyToRequestCode[key]
     if (existing != null) {
       return
     }
-    val rc = generateRandomNumber()
-    bindRcKey(rc, key)
+    val requestCode = generateRandomNumber()
+    requestCodeToKey[requestCode] = key
+    keyToRequestCode[key] = requestCode
   }
 
   private fun generateRandomNumber(): Int {
-    var number = (mRandom.nextInt(Int.MAX_VALUE - INITIAL_REQUEST_CODE_VALUE + 1)
-      + INITIAL_REQUEST_CODE_VALUE)
-    while (mRcToKey.containsKey(number)) {
-      number = (mRandom.nextInt(Int.MAX_VALUE - INITIAL_REQUEST_CODE_VALUE + 1)
-        + INITIAL_REQUEST_CODE_VALUE)
+    var number = (random.nextInt(Int.MAX_VALUE - INITIAL_REQUEST_CODE_VALUE + 1) + INITIAL_REQUEST_CODE_VALUE)
+    while (requestCodeToKey.containsKey(number)) {
+      number = (random.nextInt(Int.MAX_VALUE - INITIAL_REQUEST_CODE_VALUE + 1) + INITIAL_REQUEST_CODE_VALUE)
     }
     return number
   }
 
-  private fun bindRcKey(rc: Int, key: String) {
-    mRcToKey[rc] = key
-    mKeyToRc[key] = rc
-  }
+  private data class CallbackAndContract<O>(
+    val callback: ActivityResultCallback<O>,
+    val contract: ActivityResultContract<*, O>
+  )
 
-  class CallbackAndContract<O> internal constructor(
-    val mCallback: AppContextActivityResultCallback<O>?,
-    val mContract: ActivityResultContract<*, O>)
+  private data class FallbackCallbackAndContract<O, P>(
+    val callback: AppContextActivityResultCallback<O, P>,
+    val contract: ActivityResultContract<*, O>
+  )
 
-  class LifecycleContainer internal constructor(val mLifecycle: Lifecycle) {
-    private val mObservers: ArrayList<LifecycleEventObserver> = ArrayList()
+  class LifecycleContainer internal constructor(val lifecycle: Lifecycle) {
+    private val observers: ArrayList<LifecycleEventObserver> = ArrayList()
 
     fun addObserver(observer: LifecycleEventObserver) {
-      mLifecycle.addObserver(observer)
-      mObservers.add(observer)
+      lifecycle.addObserver(observer)
+      observers.add(observer)
     }
 
     fun clearObservers() {
-      mObservers.forEach { mLifecycle.removeObserver(it) }
-      mObservers.clear()
+      observers.forEach { lifecycle.removeObserver(it) }
+      observers.clear()
     }
   }
 }

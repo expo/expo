@@ -5,8 +5,8 @@ package expo.modules.kotlin
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContract
+import androidx.annotation.MainThread
 import androidx.appcompat.app.AppCompatActivity
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.turbomodule.core.CallInvokerHolderImpl
@@ -24,6 +24,7 @@ import expo.modules.interfaces.taskManager.TaskManagerInterface
 import expo.modules.kotlin.activityresult.ActivityResultsManager
 import expo.modules.kotlin.activityresult.AppContextActivityResultCallback
 import expo.modules.kotlin.activityresult.AppContextActivityResultCaller
+import expo.modules.kotlin.activityresult.AppContextActivityResultLauncher
 import expo.modules.kotlin.defaultmodules.ErrorManagerModule
 import expo.modules.kotlin.events.EventEmitter
 import expo.modules.kotlin.events.EventName
@@ -47,8 +48,7 @@ class AppContext(
   private val reactContextHolder: WeakReference<ReactApplicationContext>
 ) : CurrentActivityProvider, AppContextActivityResultCaller {
   val registry = ModuleRegistry(WeakReference(this)).apply {
-    register(ErrorManagerModule())
-    register(modulesProvider)
+
   }
   private val reactLifecycleDelegate = ReactLifecycleDelegate(this)
 
@@ -68,6 +68,13 @@ class AppContext(
     }.apply {
       addLifecycleEventListener(reactLifecycleDelegate)
       addActivityEventListener(reactLifecycleDelegate)
+
+      // Registering modules has to happen at the very end of `AppContext` creation, because
+      // registering modules triggers modules' creation (`OnCreate` is called).
+      // Some modules need accessing `AppContext`'s properties during initialisation,
+      // so we need to be sure all the properties are initialized first
+      registry.register(ErrorManagerModule())
+      registry.register(modulesProvider)
     }
   }
 
@@ -193,6 +200,7 @@ class AppContext(
   }
 
   fun onHostResume() {
+    activityResultsManager.onHostResume(requireNotNull(currentActivity) { "Current Activity should be available at this point!" })
     registry.post(EventName.ACTIVITY_ENTERS_FOREGROUND)
   }
 
@@ -201,6 +209,7 @@ class AppContext(
   }
 
   fun onHostDestroy() {
+    activityResultsManager.onHostDestroy(requireNotNull(currentActivity) { "Current Activity should be available at this point!" })
     registry.post(EventName.ACTIVITY_DESTROYS)
   }
 
@@ -241,19 +250,12 @@ class AppContext(
 
 // region AppContextActivityResultCaller
 
-  override fun <I, O> registerForActivityResult(
+  @MainThread
+  override suspend fun <I, O, P> registerForActivityResult(
     contract: ActivityResultContract<I, O>,
-    callback: AppContextActivityResultCallback<O>
-  ): ActivityResultLauncher<I> = activityResultsManager.registerForActivityResult(contract, callback)
-
-  override suspend fun <O> launchForActivityResult(
-    contract: ActivityResultContract<Any?, O>
-  ): AppContextActivityResult<O> = activityResultsManager.launchForActivityResult(contract)
+    fallbackCallback: AppContextActivityResultCallback<O, P>
+  ): AppContextActivityResultLauncher<I, O, P> =
+    activityResultsManager.registerForActivityResult(contract, fallbackCallback)
 
 // endregion
 }
-
-data class AppContextActivityResult<O>(
-  val result: O,
-  val launchingActivityHasBeenKilled: Boolean
-)
