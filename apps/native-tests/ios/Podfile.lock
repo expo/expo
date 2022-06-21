@@ -23,15 +23,15 @@ PODS:
     - EXJSONUtils
   - Expo (45.0.0-beta.9):
     - ExpoModulesCore
-  - expo-dev-launcher (0.11.6):
+  - expo-dev-launcher (1.0.0):
     - EXManifests
-    - expo-dev-launcher/Main (= 0.11.6)
+    - expo-dev-launcher/Main (= 1.0.0)
     - expo-dev-menu
     - expo-dev-menu-interface
     - ExpoModulesCore
     - EXUpdatesInterface
     - React-Core
-  - expo-dev-launcher/Main (0.11.6):
+  - expo-dev-launcher/Main (1.0.0):
     - EXManifests
     - expo-dev-launcher/Unsafe
     - expo-dev-menu
@@ -39,7 +39,7 @@ PODS:
     - ExpoModulesCore
     - EXUpdatesInterface
     - React-Core
-  - expo-dev-launcher/Tests (0.11.6):
+  - expo-dev-launcher/Tests (1.0.0):
     - EXManifests
     - expo-dev-menu
     - expo-dev-menu-interface
@@ -50,27 +50,27 @@ PODS:
     - Quick
     - React-Core
     - React-CoreModules
-  - expo-dev-launcher/Unsafe (0.11.6):
+  - expo-dev-launcher/Unsafe (1.0.0):
     - EXManifests
     - expo-dev-menu
     - expo-dev-menu-interface
     - ExpoModulesCore
     - EXUpdatesInterface
     - React-Core
-  - expo-dev-menu (0.10.7):
-    - expo-dev-menu/Main (= 0.10.7)
-  - expo-dev-menu-interface (0.6.0)
-  - expo-dev-menu-interface/Tests (0.6.0):
+  - expo-dev-menu (1.0.0):
+    - expo-dev-menu/Main (= 1.0.0)
+  - expo-dev-menu-interface (0.7.0)
+  - expo-dev-menu-interface/Tests (0.7.0):
     - Nimble
     - Quick
-  - expo-dev-menu/GestureHandler (0.10.7)
-  - expo-dev-menu/Main (0.10.7):
+  - expo-dev-menu/GestureHandler (1.0.0)
+  - expo-dev-menu/Main (1.0.0):
     - EXManifests
     - expo-dev-menu-interface
     - expo-dev-menu/Vendored
     - ExpoModulesCore
     - React-Core
-  - expo-dev-menu/Reanimated (0.10.7):
+  - expo-dev-menu/Reanimated (1.0.0):
     - DoubleConversion
     - FBLazyVector
     - FBReactNativeSpec
@@ -98,18 +98,23 @@ PODS:
     - React-RCTVibration
     - ReactCommon/turbomodule/core
     - Yoga
-  - expo-dev-menu/SafeAreaView (0.10.7)
-  - expo-dev-menu/Tests (0.10.7):
+  - expo-dev-menu/SafeAreaView (1.0.0)
+  - expo-dev-menu/Tests (1.0.0):
     - Nimble
     - Quick
     - React-CoreModules
-  - expo-dev-menu/UITests (0.10.7):
+  - expo-dev-menu/UITests (1.0.0):
     - React
     - React-CoreModules
-  - expo-dev-menu/Vendored (0.10.7):
+  - expo-dev-menu/Vendored (1.0.0):
     - expo-dev-menu/GestureHandler
     - expo-dev-menu/Reanimated
     - expo-dev-menu/SafeAreaView
+  - ExpoClipboard (3.0.1):
+    - ExpoModulesCore
+  - ExpoClipboard/Tests (3.0.1):
+    - ExpoModulesCore
+    - ExpoModulesTestCore
   - ExpoModulesCore (0.9.0):
     - React-Core
     - ReactCommon/turbomodule/core
@@ -481,6 +486,8 @@ DEPENDENCIES:
   - expo-dev-menu-interface/Tests (from `../../../packages/expo-dev-menu-interface/ios`)
   - expo-dev-menu/Tests (from `../../../packages/expo-dev-menu`)
   - expo-dev-menu/UITests (from `../../../packages/expo-dev-menu`)
+  - ExpoClipboard (from `../../../packages/expo-clipboard/ios`)
+  - ExpoClipboard/Tests (from `../../../packages/expo-clipboard/ios`)
   - ExpoModulesCore (from `../../../packages/expo-modules-core/ios`)
   - ExpoModulesCore/Tests (from `../../../packages/expo-modules-core/ios`)
   - ExpoModulesTestCore (from `../../../packages/expo-modules-test-core/ios`)
@@ -563,6 +570,9 @@ EXTERNAL SOURCES:
   expo-dev-menu-interface:
     inhibit_warnings: false
     :path: "../../../packages/expo-dev-menu-interface/ios"
+  ExpoClipboard:
+    inhibit_warnings: false
+    :path: "../../../packages/expo-clipboard/ios"
   ExpoModulesCore:
     inhibit_warnings: false
     :path: "../../../packages/expo-modules-core/ios"
@@ -648,10 +658,11 @@ SPEC CHECKSUMS:
   EXJSONUtils: 2a74b8f40f1523cc3f92af99c91aa78201737a77
   EXManifests: 0c6134b7b6f3236a93a778c3f44ba1cfb3f9fa3d
   Expo: 8af09aaa24c023d55160118554032b178fad1871
-  expo-dev-launcher: 613d44fe53decf77b10499e66faf95850603ca00
-  expo-dev-menu: fec65d9c8e5031f65f84ebc0649310e05eb1f838
-  expo-dev-menu-interface: b0e5958c56dc420517e8d8769f009536fbbb5935
-  ExpoModulesCore: 4093531a41eb8b2e3b508ee519afbd84b09de727
+  expo-dev-launcher: fd6c935d293bf696c56c912c2b9266e0678bd7f5
+  expo-dev-menu: 7719fe054e8b084d2078207ce380feeb2e4ad026
+  expo-dev-menu-interface: db5495dd7206992a94ce35c51391f139ae26f2b7
+  ExpoClipboard: bf4c910383ea182bc3706c572b7c6c6ecc012f13
+  ExpoModulesCore: 72ed9a7a84b8184e3bffc3e4739d4ecc038de08b
   ExpoModulesTestCore: 200e6d0280f7842d915eab63d0c6b298b4dff530
   EXStructuredHeaders: 5d86829469399370a9fc7cb1e4391b09de87681d
   EXUpdates: bc5e9947411f5e8822a243b24c145e5e3e5ab068
