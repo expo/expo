@@ -14,6 +14,8 @@ import { PrerequisiteCommandError, ProjectPrerequisite } from '../Prerequisite';
 import { ensureDependenciesAsync } from '../dependencies/ensureDependenciesAsync';
 import { ResolvedPackage } from '../dependencies/getMissingPackages';
 
+const debug = require('debug')('expo:doctor:webSupport') as typeof console.log;
+
 /** Ensure the project has the required web support settings. */
 export class WebSupportProjectPrerequisite extends ProjectPrerequisite {
   /** Ensure a project that hasn't explicitly disabled web support has all the required packages for running in the browser. */
@@ -22,7 +24,7 @@ export class WebSupportProjectPrerequisite extends ProjectPrerequisite {
       Log.warn('Skipping web setup: EXPO_NO_WEB_SETUP is enabled.');
       return;
     }
-    Log.debug('Ensuring web support is setup');
+    debug('Ensuring web support is setup');
 
     const result = await this._shouldSetupWebSupportAsync();
 

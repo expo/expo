@@ -1,12 +1,13 @@
 import { getConfig } from '@expo/config';
 import assert from 'assert';
 
-import * as Log from '../../log';
 import { logEvent } from '../../utils/analytics/rudderstackClient';
 import { CommandError, UnimplementedError } from '../../utils/errors';
 import { learnMore } from '../../utils/link';
 import { AppIdResolver } from './AppIdResolver';
 import { DeviceManager } from './DeviceManager';
+
+const debug = require('debug')('expo:start:platforms:platformManager') as typeof console.log;
 
 export interface BaseOpenInCustomProps {
   scheme?: string;
@@ -77,13 +78,14 @@ export class PlatformManager<
     resolveSettings: Partial<IResolveDeviceProps> = {},
     props: Partial<IOpenInCustomProps> = {}
   ): Promise<{ url: string }> {
-    Log.debug(
+    debug(
       `open custom (${Object.entries(props)
         .map(([k, v]) => `${k}: ${v}`)
         .join(', ')})`
     );
 
     let url = this.props.getCustomRuntimeUrl({ scheme: props.scheme });
+    debug(`Opening project in custom runtime: ${url} -- %O`, props);
     // TODO: It's unclear why we do application id validation when opening with a URL
     const applicationId = props.applicationId ?? (await this._getAppIdResolver().getAppIdAsync());
 
@@ -129,7 +131,7 @@ export class PlatformManager<
         },
     resolveSettings: Partial<IResolveDeviceProps> = {}
   ): Promise<{ url: string }> {
-    Log.debug(
+    debug(
       `open (runtime: ${options.runtime}, platform: ${this.props.platform}, device: %O, shouldPrompt: ${resolveSettings.shouldPrompt})`,
       resolveSettings.device
     );

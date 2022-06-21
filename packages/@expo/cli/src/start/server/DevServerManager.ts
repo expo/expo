@@ -2,13 +2,14 @@ import { ExpoConfig, getConfig } from '@expo/config';
 import assert from 'assert';
 import chalk from 'chalk';
 
-import * as Log from '../../log';
 import { FileNotifier } from '../../utils/FileNotifier';
 import { logEvent } from '../../utils/analytics/rudderstackClient';
 import { ProjectPrerequisite } from '../doctor/Prerequisite';
 import * as AndroidDebugBridge from '../platforms/android/adb';
 import { BundlerDevServer, BundlerStartOptions } from './BundlerDevServer';
 import { getPlatformBundlers } from './platformBundlers';
+
+const debug = require('debug')('expo:start:server:devServerManager') as typeof console.log;
 
 export type MultiBundlerStartOptions = {
   type: keyof typeof BUNDLERS;
@@ -113,7 +114,7 @@ export class DevServerManager {
       skipSDKVersionRequirement: true,
     });
     const bundler = getPlatformBundlers(exp).web;
-    Log.debug(`Starting ${bundler} dev server for web`);
+    debug(`Starting ${bundler} dev server for web`);
     return this.startAsync([
       {
         type: bundler,

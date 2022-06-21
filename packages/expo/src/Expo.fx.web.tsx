@@ -1,11 +1,10 @@
 import './environment/react-native-logs.fx';
 
 import { Platform } from 'expo-modules-core';
-import { AppRegistry, StyleSheet } from 'react-native';
 import * as React from 'react';
+import { AppRegistry } from 'react-native';
 
 import DevAppContainer from './environment/DevAppContainer';
-
 
 // When users dangerously import a file inside of react-native, it breaks the web alias.
 // This is one of the most common, and cryptic web errors that users encounter.
@@ -27,11 +26,7 @@ if (__DEV__) {
     });
   }
 
-
-  // Having two if statements will enable terser to remove the entire block.
-  // Only enable the fast refresh indicator for managed iOS apps in dev mode.
-
-  // add the dev app container wrapper component on ios
+  // add the dev app container wrapper component to web
   // @ts-ignore
   AppRegistry.setWrapperComponentProvider(() => DevAppContainer);
 
@@ -52,6 +47,4 @@ if (__DEV__) {
 
     originalSetWrapperComponentProvider(() => PatchedProviderComponent);
   };
-
-
 }

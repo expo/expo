@@ -1,7 +1,8 @@
 import { EventEmitter } from 'expo-modules-core';
 import React, { useEffect, useState, useRef, useMemo } from 'react';
-import { Animated, StyleSheet, Text, Platform, TurboModuleRegistry, View } from 'react-native';
+import { Animated, StyleSheet, Text, Platform, View } from 'react-native';
 import DevLoadingViewNativeModule from './DevLoadingViewNativeModule';
+import { getInitialSafeArea } from './getInitialSafeArea';
 export default function DevLoadingView() {
     const [message, setMessage] = useState('Refreshing...');
     const [isDevLoading, setIsDevLoading] = useState(false);
@@ -19,8 +20,8 @@ export default function DevLoadingView() {
     useEffect(() => {
         if (!emitter)
             return;
-        function handleShowMessage({ message }) {
-            setMessage(message || 'Refreshing...');
+        function handleShowMessage(event) {
+            setMessage(event.message);
             // TODO: if we show the refreshing banner and don't get a hide message
             // for 3 seconds, warn the user that it's taking a while and suggest
             // they reload
@@ -51,31 +52,16 @@ export default function DevLoadingView() {
             hideSubscription.remove();
         };
     }, [translateY, emitter]);
-    if (isDevLoading || isAnimating) {
-        return (React.createElement(Animated.View, { style: [styles.animatedContainer, { transform: [{ translateY }] }], pointerEvents: "none" },
-            React.createElement(View, { style: styles.banner },
-                React.createElement(View, { style: styles.contentContainer },
-                    React.createElement(View, { style: { flexDirection: 'row' } },
-                        React.createElement(Text, { style: styles.text }, message)),
-                    React.createElement(View, { style: { flex: 1 } },
-                        React.createElement(Text, { style: styles.subtitle }, isDevLoading ? 'Using Fast Refresh' : "Don't see your changes? Reload the app"))))));
-    }
-    else {
+    if (!isDevLoading && !isAnimating) {
         return null;
     }
-}
-let paddingBottom = 0;
-if (Platform.OS !== 'web') {
-    try {
-        /**
-         * This is a hack to get the safe area insets without explicitly depending on react-native-safe-area-context.
-         **/
-        const RNCSafeAreaContext = TurboModuleRegistry.get('RNCSafeAreaContext');
-        // @ts-ignore: we're not using the spec so the return type of getConstants() is {}
-        const initialWindowMetrics = RNCSafeAreaContext?.getConstants()?.initialWindowMetrics;
-        paddingBottom = initialWindowMetrics?.insets?.bottom ?? 0;
-    }
-    catch { }
+    return (React.createElement(Animated.View, { style: [styles.animatedContainer, { transform: [{ translateY }] }], pointerEvents: "none" },
+        React.createElement(View, { style: styles.banner },
+            React.createElement(View, { style: styles.contentContainer },
+                React.createElement(View, { style: { flexDirection: 'row' } },
+                    React.createElement(Text, { style: styles.text }, message)),
+                React.createElement(View, { style: { flex: 1 } },
+                    React.createElement(Text, { style: styles.subtitle }, isDevLoading ? 'Using Fast Refresh' : "Don't see your changes? Reload the app"))))));
 }
 const styles = StyleSheet.create({
     animatedContainer: {
@@ -89,7 +75,7 @@ const styles = StyleSheet.create({
         flex: 1,
         overflow: 'visible',
         backgroundColor: 'rgba(0,0,0,0.75)',
-        paddingBottom,
+        paddingBottom: getInitialSafeArea().bottom,
     },
     contentContainer: {
         flex: 1,

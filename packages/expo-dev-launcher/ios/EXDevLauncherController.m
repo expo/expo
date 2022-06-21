@@ -85,7 +85,7 @@
 - (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge
 {
   
-  NSMutableArray *modules = [[DevMenuVendoredModulesUtils vendoredModules] mutableCopy];
+  NSMutableArray *modules = [[DevMenuVendoredModulesUtils vendoredModules:bridge addReanimated2:FALSE] mutableCopy];
   
   [modules addObject:[RCTDevMenu new]];
   [modules addObject:[RCTAsyncLocalStorage new]];
