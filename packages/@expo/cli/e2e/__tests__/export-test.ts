@@ -137,7 +137,7 @@ it(
               path: 'assets/3858f62230ac3c915f300c664312c63f',
             },
           ],
-          bundle: 'bundles/web-1e885aa1a2429ebd6bd90715bae26330.js',
+          bundle: expect.stringMatching(/bundles\/web-.*\.js/),
         },
       },
       version: 0,
