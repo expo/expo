@@ -1,3 +1,3 @@
-declare let ExpoLocalization: any;
-export default ExpoLocalization;
+declare const _default: any;
+export default _default;
 //# sourceMappingURL=ExpoLocalization.native.d.ts.map

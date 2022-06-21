@@ -31,6 +31,9 @@ public final class AppContext: NSObject {
   @objc
   public weak var legacyModuleRegistry: EXModuleRegistry?
 
+  @objc
+  public weak var legacyModulesProxy: LegacyNativeModulesProxy?
+
   /**
    React bridge of the context's app. Can be `nil` when the bridge
    hasn't been propagated to the bridge modules yet (see ``ExpoBridgeModule``),
@@ -242,7 +245,11 @@ public final class AppContext: NSObject {
   }
 
   @objc
-  public func exportedFunctionNames() -> [String: [[String: Any]]] {
+  public final lazy var expoModulesConfig = ModulesProxyConfig(constants: self.exportedModulesConstants(),
+                                                               methodNames: self.exportedFunctionNames(),
+                                                               viewManagers: self.viewManagersMetadata())
+
+  private func exportedFunctionNames() -> [String: [[String: Any]]] {
     var constants = [String: [[String: Any]]]()
 
     for holder in moduleRegistry {
@@ -257,15 +264,16 @@ public final class AppContext: NSObject {
     return constants
   }
 
-  @objc
-  public func exportedModulesConstants() -> [String: Any] {
-    return moduleRegistry.reduce(into: [String: Any]()) { acc, holder in
-      acc[holder.name] = holder.getConstants()
-    }
+  private func exportedModulesConstants() -> [String: Any] {
+    return moduleRegistry
+      // prevent infinite recursion - exclude NativeProxyModule constants
+      .filter { $0.name != NativeModulesProxyModule.moduleName }
+      .reduce(into: [String: Any]()) { acc, holder in
+        acc[holder.name] = holder.getConstants()
+      }
   }
 
-  @objc
-  public func viewManagersMetadata() -> [String: Any] {
+  private func viewManagersMetadata() -> [String: Any] {
     return moduleRegistry.reduce(into: [String: Any]()) { acc, holder in
       if let viewManager = holder.definition.viewManager {
         acc[holder.name] = [
@@ -332,7 +340,6 @@ public final class AppContext: NSObject {
     // [2] Fallback to an empty `ModulesProvider` if `ExpoModulesProvider` was not generated
     return ModulesProvider()
   }
-
 }
 
 // MARK: - Public exceptions
