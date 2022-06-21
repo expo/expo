@@ -1,7 +1,7 @@
 /**
  * Basic string transform that describes what should be replaced in the input string.
  */
-export type StringTransform = {
+export type ReplaceTransform = {
   /**
    * A substring or RegExp matching a part of the input that you want to replace.
    */
@@ -12,6 +12,12 @@ export type StringTransform = {
    */
   replaceWith: string | ((substring: string, ...args: any[]) => string);
 };
+
+export type RawTransform = {
+  fn: (text: string) => string;
+};
+
+export type StringTransform = RawTransform | ReplaceTransform;
 
 /**
  * A string transform extended by paths glob filter.

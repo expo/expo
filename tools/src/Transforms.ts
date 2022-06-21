@@ -2,7 +2,13 @@ import fs from 'fs-extra';
 import minimatch from 'minimatch';
 import path from 'path';
 
-import { CopyFileOptions, CopyFileResult, StringTransform } from './Transforms.types';
+import {
+  CopyFileOptions,
+  CopyFileResult,
+  RawTransform,
+  ReplaceTransform,
+  StringTransform,
+} from './Transforms.types';
 import { arrayize } from './Utils';
 
 export * from './Transforms.types';
@@ -17,11 +23,15 @@ export function transformString(
   if (!transforms) {
     return input;
   }
-  return transforms.reduce(
-    // @ts-ignore @tsapeta: TS gets crazy on `replaceWith` being a function.
-    (acc, { find, replaceWith }) => acc.replace(find, replaceWith),
-    input
-  );
+  return transforms.reduce((acc, transform) => {
+    if ('fn' in transform) {
+      return (transform as RawTransform).fn(acc);
+    } else {
+      const { find, replaceWith } = transform as ReplaceTransform;
+      // @ts-ignore @tsapeta: TS gets crazy on `replaceWith` being a function.
+      return acc.replace(find, replaceWith);
+    }
+  }, input);
 }
 
 /**
