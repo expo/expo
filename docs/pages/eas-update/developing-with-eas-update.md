@@ -4,6 +4,8 @@ title: Developing with EAS Update
 
 import ImageSpotlight from '~/components/plugins/ImageSpotlight'
 
+> EAS Update is currently available only to customers with an EAS subscription plan. [Sign up](https://expo.dev/accounts/[account]/settings/subscriptions).
+
 EAS Update can help us fix critical bugs in production. It can also help us iterate faster with our team.
 
 ## Developing locally
@@ -39,10 +41,10 @@ The process flows like this:
 
 EAS Update is still in “preview”. We are still working on features to make developing with your team easier. They include:
 
-### Previewing updates with Expo Go
+#### Previewing updates with Expo Go
 
 Expo Go does not support the modern manifest protocol needed to load updates published with EAS Update. We expect to support this with a new version of Expo Go released along with Expo SDK 45.
 
-### Generating QR codes with GitHub Actions and comments
+#### Generating QR codes with GitHub Actions and comments
 
-We plan to add support for commenting valid QR codes on PRs with expo-github-action in the future.
+We plan to add support for commenting valid QR codes on PRs with `expo-github-action` in the future.

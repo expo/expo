@@ -45,8 +45,8 @@ const InstallSection: React.FC<Props> = ({
   cmd = [`$ expo install ${packageName}`],
   href = getPackageLink(packageName),
 }) => (
-  <div>
-    <Terminal cmd={cmd} cmdCopy={cmd[0].slice(2)} />
+  <>
+    <Terminal cmd={cmd} />
     {hideBareInstructions ? null : (
       <p css={STYLES_P}>
         If you're installing this in a{' '}
@@ -60,7 +60,7 @@ const InstallSection: React.FC<Props> = ({
         .
       </p>
     )}
-  </div>
+  </>
 );
 
 export default InstallSection;

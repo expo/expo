@@ -217,15 +217,19 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
   private fun handleLoadedDelegateContext(reactContext: ReactContext) {
     Log.i(DEV_MENU_TAG, "Delegate's context was loaded.")
 
-    maybeInitDevMenuHost(reactContext.currentActivity?.application
-      ?: reactContext.applicationContext as Application)
+    maybeInitDevMenuHost(
+      reactContext.currentActivity?.application
+        ?: reactContext.applicationContext as Application
+    )
     maybeStartDetectors(devMenuHost.getContext())
-    preferences = (testInterceptor.overrideSettings()
-      ?: if (reactContext.hasNativeModule(DevMenuPreferences::class.java)) {
-        reactContext.getNativeModule(DevMenuPreferences::class.java)!!
-      } else {
-        DevMenuDefaultPreferences()
-      }).also {
+    preferences = (
+      testInterceptor.overrideSettings()
+        ?: if (reactContext.hasNativeModule(DevMenuPreferences::class.java)) {
+          reactContext.getNativeModule(DevMenuPreferences::class.java)!!
+        } else {
+          DevMenuDefaultPreferences()
+        }
+      ).also {
       shouldLaunchDevMenuOnStart = canLaunchDevMenuOnStart && (it.showsAtLaunch || !it.isOnboardingFinished)
       if (shouldLaunchDevMenuOnStart) {
         reactContext.addLifecycleEventListener(this)
@@ -234,11 +238,10 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
   }
 
   fun getAppInfo(): Bundle {
-    if (delegateReactContext != null) {
-      return DevMenuAppInfo.getAppInfo(delegateReactContext!!)
-    }
+    val reactContext = delegateReactContext ?: return Bundle.EMPTY
+    val instanceManager = delegate?.reactInstanceManager() ?: return Bundle.EMPTY
 
-    return Bundle.EMPTY
+    return DevMenuAppInfo.getAppInfo(instanceManager, reactContext)
   }
 
   fun getDevSettings(): Bundle {
@@ -275,6 +278,11 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
       ReactFontManager.getInstance().setTypeface(familyName, Typeface.NORMAL, font)
     }
   }
+
+  // captures any callbacks that are registered via the `registerDevMenuItems` module method
+  // it is set and unset by the public facing `DevMenuModule`
+  // when the DevMenuModule instance is unloaded (e.g between app loads) the callback list is reset to an empty array
+  var registeredCallbacks = arrayListOf<String>()
 
   //endregion
 

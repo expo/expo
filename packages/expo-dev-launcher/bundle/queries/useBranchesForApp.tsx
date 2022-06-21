@@ -10,6 +10,7 @@ import { Toasts } from '../components/Toasts';
 import { useBuildInfo } from '../providers/BuildInfoProvider';
 import { queryClient, useQueryOptions } from '../providers/QueryProvider';
 import { useToastStack } from '../providers/ToastStackProvider';
+import { useUpdatesConfig } from '../providers/UpdatesConfigProvider';
 import { primeCacheWithUpdates, Update } from './useUpdatesForBranch';
 
 const query = gql`
@@ -53,7 +54,7 @@ export type Branch = {
   updates: Update[];
 };
 
-function getBranchesAsync({
+async function getBranchesAsync({
   appId,
   page = 1,
   runtimeVersion,
@@ -123,7 +124,7 @@ function getBranchesAsync({
 }
 
 export function useBranchesForApp(appId: string, isAuthenticated: boolean) {
-  const { runtimeVersion } = useBuildInfo();
+  const { runtimeVersion } = useUpdatesConfig();
   const toastStack = useToastStack();
   const { queryOptions } = useQueryOptions();
   const isEnabled = appId != null && isAuthenticated;
@@ -142,8 +143,10 @@ export function useBranchesForApp(appId: string, isAuthenticated: boolean) {
       retry: 3,
       refetchOnMount: false,
       enabled: !!isEnabled,
-      getNextPageParam: (lastPage, pages) => {
-        if (lastPage.branches.length < queryOptions.pageSize) {
+      getNextPageParam: (lastPage) => {
+        const totalBranches = lastPage.incompatibleBranches.length + lastPage.branches.length;
+
+        if (totalBranches < queryOptions.pageSize) {
           return undefined;
         }
 

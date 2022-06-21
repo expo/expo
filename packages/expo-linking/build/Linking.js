@@ -271,7 +271,6 @@ export async function sendIntent(action, extras) {
 // @needsAudit
 /**
  * Open the operating system settings app and displays the app’s custom settings, if it has any.
- * @platform ios
  */
 export async function openSettings() {
     if (Platform.OS === 'web') {

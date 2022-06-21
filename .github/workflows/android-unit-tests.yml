@@ -33,9 +33,6 @@ jobs:
     env:
       ORG_GRADLE_PROJECT_reactNativeArchitectures: x86_64
       GRADLE_OPTS: -Dorg.gradle.jvmargs=-Xmx2048m -XX:MaxMetaspaceSize=1024m
-    strategy:
-      matrix:
-        api-level: [31]
     steps:
       - name: ⬢ Setup Node
         uses: actions/setup-node@v3
@@ -56,8 +53,6 @@ jobs:
         with:
           yarn-workspace: 'true'
           yarn-tools: 'true'
-          avd: 'true'
-          avd-api: ${{ matrix.api-level }}
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: 🧶 Install node modules in root dir
@@ -69,15 +64,6 @@ jobs:
       - name: 🎸 Run native Android unit tests
         timeout-minutes: 30
         run: expotools native-unit-tests --platform android
-      - name: 📱 Run instrumented unit tests
-        timeout-minutes: 40
-        uses: reactivecircus/android-emulator-runner@v2
-        with:
-          api-level: ${{ matrix.api-level }}
-          avd-name: avd-${{ matrix.api-level }}
-          arch: x86_64
-          force-avd-creation: false
-          script: expotools android-native-unit-tests --type instrumented
       - name: 💾 Save test results
         if: always()
         uses: actions/upload-artifact@v3

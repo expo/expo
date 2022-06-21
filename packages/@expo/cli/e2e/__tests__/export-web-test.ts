@@ -80,31 +80,33 @@ it(
       })
       .filter(Boolean);
 
-    expect(await JsonFile.readAsync(path.resolve(outputDir, 'asset-manifest.json'))).toEqual({
-      entrypoints: [
-        expect.stringMatching(/static\/js\/runtime~app\.[a-z\d]+\.js/),
-        expect.stringMatching(/static\/js\/\d\.[a-z\d]+\.chunk\.js/),
-        expect.stringMatching(/static\/js\/app\.[a-z\d]+\.chunk\.js/),
-      ],
-      files: {
-        'app.js': expect.stringMatching(/static\/js\/app\.[a-z\d]+\.chunk\.js/),
-        'app.js.map': expect.stringMatching(/static\/js\/app\.[a-z\d]+\.chunk\.js\.map/),
-        'index.html': '/index.html',
-        'manifest.json': '/manifest.json',
-        'runtime~app.js': expect.stringMatching(/static\/js\/runtime~app\.[a-z\d]+\.js/),
-        'runtime~app.js.map': expect.stringMatching(/static\/js\/runtime~app\.[a-z\d]+\.js\.map/),
-        'serve.json': '/serve.json',
-        'static/js/2.6566e185.chunk.js': expect.stringMatching(
-          /static\/js\/\d\.[a-z\d]+\.chunk\.js/
-        ),
-        'static/js/2.6566e185.chunk.js.LICENSE.txt': expect.stringMatching(
-          /static\/js\/\d\.[a-z\d]+\.chunk\.js\.LICENSE\.txt/
-        ),
-        'static/js/2.6566e185.chunk.js.map': expect.stringMatching(
-          /static\/js\/\d\.[a-z\d]+\.chunk\.js\.map/
-        ),
-      },
-    });
+    const assetsManifest = await JsonFile.readAsync(path.resolve(outputDir, 'asset-manifest.json'));
+    expect(assetsManifest.entrypoints).toEqual([
+      expect.stringMatching(/static\/js\/runtime~app\.[a-z\d]+\.js/),
+      expect.stringMatching(/static\/js\/\d\.[a-z\d]+\.chunk\.js/),
+      expect.stringMatching(/static\/js\/app\.[a-z\d]+\.chunk\.js/),
+    ]);
+
+    const knownFiles = [
+      ['app.js', expect.stringMatching(/static\/js\/app\.[a-z\d]+\.chunk\.js/)],
+      ['app.js.map', expect.stringMatching(/static\/js\/app\.[a-z\d]+\.chunk\.js\.map/)],
+      ['index.html', '/index.html'],
+      ['manifest.json', '/manifest.json'],
+      ['serve.json', '/serve.json'],
+      ['runtime~app.js', expect.stringMatching(/static\/js\/runtime~app\.[a-z\d]+\.js/)],
+      ['runtime~app.js.map', expect.stringMatching(/static\/js\/runtime~app\.[a-z\d]+\.js\.map/)],
+    ];
+
+    for (const [key, value] of knownFiles) {
+      expect(assetsManifest.files[key]).toEqual(value);
+      delete assetsManifest.files[key];
+    }
+
+    for (const [key, value] of Object.entries(assetsManifest.files)) {
+      expect(key).toMatch(/static\/js\/\d\.[a-z\d]+\.chunk\.js(\.LICENSE\.txt|\.map)?/);
+      expect(value).toMatch(/static\/js\/\d\.[a-z\d]+\.chunk\.js(\.LICENSE\.txt|\.map)?/);
+    }
+
     expect(await JsonFile.readAsync(path.resolve(outputDir, 'manifest.json'))).toEqual({
       display: 'standalone',
       lang: 'en',

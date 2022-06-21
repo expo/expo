@@ -1,12 +1,10 @@
 import { css } from '@emotion/react';
-import { theme } from '@expo/styleguide';
+import { StatusFailedIcon, StatusSuccessIcon, StatusWaitingIcon, theme } from '@expo/styleguide';
 import * as React from 'react';
 
 import { H4 } from '~/components/base/headings';
-import { CheckCircle } from '~/components/icons/CheckCircle';
-import { PendingCircle } from '~/components/icons/PendingCircle';
-import { XCircle } from '~/components/icons/XCircle';
 import { ElementType } from '~/types/common';
+import { Cell, HeaderCell, Row, Table, TableHead, TableLayout } from '~/ui/components/Table';
 
 const STYLES_TITLE = css`
   margin-bottom: 1rem;
@@ -19,10 +17,6 @@ const STYLES_LINK = css`
   text-align: left;
   grid-gap: 8px;
   color: ${theme.link.default};
-`;
-
-const STYLES_TABLE = css`
-  table-layout: fixed;
 `;
 
 const platforms = [
@@ -39,14 +33,14 @@ type IsSupported = boolean | undefined | { pending: string };
 function getInfo(isSupported: IsSupported, { title }: Platform) {
   if (isSupported === true) {
     return {
-      children: <CheckCircle size={20} />,
+      children: <StatusSuccessIcon color={theme.status.success} />,
       title: `${title} is supported`,
     };
   } else if (typeof isSupported === 'object') {
     return {
       children: (
         <a css={STYLES_LINK} target="_blank" href={isSupported.pending}>
-          <PendingCircle size={20} /> Pending
+          <StatusWaitingIcon color={theme.status.info} /> Pending
         </a>
       ),
       title: `${title} support is pending`,
@@ -54,7 +48,7 @@ function getInfo(isSupported: IsSupported, { title }: Platform) {
   }
 
   return {
-    children: <XCircle size={20} />,
+    children: <StatusFailedIcon color={theme.status.error} />,
     title: `${title} is not supported`,
   };
 }
@@ -70,31 +64,29 @@ type Props = {
 
 type PlatformProps = Omit<Props, 'title'>;
 
-export default class PlatformsSection extends React.Component<Props> {
-  render() {
-    return (
-      <div>
-        <H4 css={STYLES_TITLE}>{this.props.title || 'Platform Compatibility'}</H4>
-        <table css={STYLES_TABLE}>
-          <thead>
-            <tr>
-              {platforms.map(({ title }) => (
-                <th key={title}>{title}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              {platforms.map(platform => (
-                <td
-                  key={platform.title}
-                  {...getInfo(this.props[platform.propName as keyof PlatformProps], platform)}
-                />
-              ))}
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    );
-  }
-}
+const PlatformsSection = (props: Props) => (
+  <>
+    <H4 css={STYLES_TITLE}>{props.title || 'Platform Compatibility'}</H4>
+    <Table layout={TableLayout.Fixed}>
+      <TableHead>
+        <Row>
+          {platforms.map(({ title }) => (
+            <HeaderCell key={title}>{title}</HeaderCell>
+          ))}
+        </Row>
+      </TableHead>
+      <tbody>
+        <Row>
+          {platforms.map(platform => (
+            <Cell
+              key={platform.title}
+              {...getInfo(props[platform.propName as keyof PlatformProps], platform)}
+            />
+          ))}
+        </Row>
+      </tbody>
+    </Table>
+  </>
+);
+
+export default PlatformsSection;

@@ -2,18 +2,17 @@
 title: Using automatically managed credentials
 ---
 
-import { InlineCode } from '~/components/base/code';
+import { ConfigClassic } from '~/components/plugins/ConfigSection';
 
 For your app to be distributed in an app store, it needs to be digitally signed with credentials such as a keystore or a distribution certificate. This certifies the source of the app and ensures that it can't be tampered with. Other credentials, such as your Apple Push Key and FCM API Key, are needed to send push notifications, but they are not involved in app signing.
 
 Thankfully, that's all that you need to know about any of this to build an app with EAS Build, but if you would like to learn more you can refer to the ["App Signing"](/app-signing/app-credentials.md) guide.
 
-<details><summary><strong>Are you using the classic build system?</strong> (<InlineCode>expo build:[android|ios]</InlineCode>)</summary> <p>
+<ConfigClassic>
 
 Learn how to [manage credentials with our classic build service](/app-signing/app-credentials.md).
 
-</p>
-</details>
+</ConfigClassic>
 
 Read on to learn how EAS can automatically manage credentials for you and your team.
 

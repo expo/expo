@@ -2,7 +2,9 @@
 title: Triggering builds from CI
 ---
 
+import { ConfigClassic } from '~/components/plugins/ConfigSection';
 import { InlineCode } from '~/components/base/code';
+import { Collapsible } from '~/ui/components/Collapsible';
 
 This document outlines how to trigger builds on EAS for your app from a CI environment such as GitHub Actions.
 
@@ -18,12 +20,11 @@ If you have run `eas build -p [all|ios|android]` successfully before, then you c
 
 If you haven't done this yet, please refer to the [Creating your first build](setup.md) guide and return here when you're ready.
 
-<details><summary><strong>Are you using the classic build system?</strong> (<InlineCode>expo build:[android|ios]</InlineCode>)</summary> <p>
+<ConfigClassic>
 
 Learn how to [build standalone apps on your CI with our classic build service](/classic/turtle-cli.md).
 
-</p>
-</details>
+</ConfigClassic>
 
 ## Configure your app for CI
 
@@ -74,8 +75,7 @@ npx eas-cli build --platform all --non-interactive
 
 This will trigger a new build on EAS and print the URLs for the built files after the build completes.
 
-<details><summary>Travis CI</summary>
-<p>
+<Collapsible summary="Travis CI">
 
 ```yaml
 ---
@@ -100,11 +100,9 @@ jobs:
 
 > Put this into `.travis.yml` in the root of your repository.
 
-</p>
-</details>
+</Collapsible>
 
-<details><summary>GitLab CI</summary>
-<p>
+<Collapsible summary="GitLab CI">
 
 ```yaml
 image: node:alpine
@@ -129,11 +127,9 @@ eas-build:
 
 > Put this into `.gitlab-ci.yml` in the root of your repository.
 
-</p>
-</details>
+</Collapsible>
 
-<details><summary>Bitbucket Pipelines</summary>
-<p>
+<Collapsible summary="Bitbucket Pipelines">
 
 ```yaml
 image: node:alpine
@@ -157,11 +153,9 @@ pipelines:
 
 > Put this into `bitbucket-pipelines.yml` in the root of your repository.
 
-</p>
-</details>
+</Collapsible>
 
-<details><summary>CircleCI</summary>
-<p>
+<Collapsible summary="CircleCI">
 
 ```yaml
 version: 2.1
@@ -195,11 +189,9 @@ workflows:
 
 > Put this into `.circleci/config.yml` in the root of your repository.
 
-</p>
-</details>
+</Collapsible>
 
-<details><summary>GitHub Actions</summary>
-<p>
+<Collapsible summary="GitHub Actions">
 
 ```yaml
 name: EAS Build
@@ -232,5 +224,4 @@ jobs:
 
 > Put this into `.github/workflows/eas-build.yml` in the root of your repository.
 
-</p>
-</details>
+</Collapsible>

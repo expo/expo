@@ -3,7 +3,7 @@ import NativeAppLoading from './AppLoadingNativeWrapper';
 class AppLoading extends React.Component {
     _isMounted = false;
     componentDidMount() {
-        console.warn(`expo-app-loading is deprecated in favor of expo-splash-screen: use SplashScreen.preventAutoHideAsync() and SplashScren.hideAsync() instead. https://docs.expo.dev/versions/latest/sdk/splash-screen/`);
+        console.warn(`expo-app-loading is deprecated in favor of expo-splash-screen: use SplashScreen.preventAutoHideAsync() and SplashScreen.hideAsync() instead. https://docs.expo.dev/versions/latest/sdk/splash-screen/`);
         this._isMounted = true;
         this.startLoadingAppResourcesAsync().catch((error) => {
             console.error(`AppLoading threw an unexpected error when loading:\n${error}`);

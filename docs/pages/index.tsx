@@ -1,5 +1,15 @@
 import { css } from '@emotion/react';
-import { spacing, theme, typography, useTheme } from '@expo/styleguide';
+import {
+  spacing,
+  theme,
+  typography,
+  useTheme,
+  DiscordIcon,
+  DiscourseIcon,
+  GithubIcon,
+  RedditIcon,
+  TwitterIcon,
+} from '@expo/styleguide';
 import { useRouter } from 'next/router';
 import React, { PropsWithChildren } from 'react';
 import { Container, Row } from 'react-grid-system';
@@ -13,6 +23,7 @@ import {
   APINotificationsIcon,
   CodecademyImage,
   DevicesImage,
+  OfficeHoursImage,
   QuickStartIcon,
   SnackImage,
   WhyImage,
@@ -20,13 +31,6 @@ import {
 import { Spacer } from '~/ui/components/Separator';
 import { Terminal } from '~/ui/components/Snippet';
 import { H1, H2, H3, P } from '~/ui/components/Text';
-import {
-  DiscordIcon,
-  DiscourseIcon,
-  GithubIcon,
-  RedditIcon,
-  TwitterIcon,
-} from '~/ui/foundations/icons';
 
 export const CellContainer = ({ children, style }: PropsWithChildren<{ style?: object }>) => (
   // https://github.com/sealninja/react-grid-system/issues/175
@@ -128,7 +132,6 @@ const Home = () => {
       <CellContainer>
         <Row>
           <GridCell
-            xxl={4}
             xl={6}
             lg={6}
             style={{ backgroundColor: palette.blue['000'], borderColor: palette.blue['200'] }}>
@@ -144,12 +147,11 @@ const Home = () => {
             <HomeButton
               style={{ backgroundColor: palette.blue['500'], color: palette.blue['100'] }}
               href="https://snack.expo.dev/"
-              target="_new">
+              target="_blank">
               Create a Snack
             </HomeButton>
           </GridCell>
           <GridCell
-            xxl={4}
             xl={6}
             lg={6}
             style={{
@@ -165,12 +167,11 @@ const Home = () => {
             <HomeButton
               style={{ backgroundColor: palette.orange['800'], color: palette.orange['100'] }}
               href="https://www.codecademy.com/learn/learn-react-native"
-              target="_new">
+              target="_blank">
               Start Course
             </HomeButton>
           </GridCell>
           <GridCell
-            xxl={4}
             xl={6}
             lg={6}
             style={{ backgroundColor: palette.green['000'], borderColor: palette.green['200'] }}>
@@ -187,6 +188,26 @@ const Home = () => {
               style={{ backgroundColor: palette.green['700'], color: palette.green['000'] }}
               href="/introduction/faq">
               Read
+            </HomeButton>
+          </GridCell>
+          <GridCell
+            xl={6}
+            lg={6}
+            style={{ backgroundColor: palette.yellow['000'], borderColor: palette.yellow['300'] }}>
+            <OfficeHoursImage />
+            <H3 style={{ color: palette.yellow['900'], marginBottom: spacing[1.5] }}>
+              Join us for Office Hours
+            </H3>
+            <P style={{ color: palette.yellow['800'], ...typography.fontSizes[14] }}>
+              Get answers to your questions and
+              <br />
+              get advice from the Expo team.
+            </P>
+            <HomeButton
+              style={{ backgroundColor: palette.yellow['900'], color: palette.yellow['000'] }}
+              href="https://us02web.zoom.us/meeting/register/tZcvceivqj0oHdGVOjEeKY0dRxCRPb0HzaAK"
+              target="_blank">
+              Register
             </HomeButton>
           </GridCell>
         </Row>
@@ -227,13 +248,13 @@ const Home = () => {
             title="GitHub"
             description="View our SDK, submit a PR, or report an issue."
             link="https://github.com/expo/expo"
-            icon={<GithubIcon size={20} color={palette.white} />}
+            icon={<GithubIcon color={palette.white} />}
           />
           <CommunityGridCell
             title="Discord"
             description="Join our Discord and chat with other Expo users."
             link="https://chat.expo.dev"
-            icon={<DiscordIcon size={20} color={palette.white} />}
+            icon={<DiscordIcon color={palette.white} />}
             iconBackground="#3131E8"
           />
         </Row>
@@ -242,14 +263,14 @@ const Home = () => {
             title="Twitter"
             description="Follow Expo on Twitter for news and updates."
             link="https://twitter.com/expo"
-            icon={<TwitterIcon size={20} color={palette.white} />}
+            icon={<TwitterIcon color={palette.white} />}
             iconBackground="#1E8EF0"
           />
           <CommunityGridCell
             title="Forums"
             description="Ask or answer a question on the forums."
             link="https://forums.expo.dev/"
-            icon={<DiscourseIcon size={20} color={palette.white} />}
+            icon={<DiscourseIcon color={palette.white} />}
           />
         </Row>
         <Row>
@@ -257,7 +278,7 @@ const Home = () => {
             title="Reddit"
             description="Get the latest on /r/expo."
             link="https://www.reddit.com/r/expo"
-            icon={<RedditIcon size={20} color={palette.white} />}
+            icon={<RedditIcon color={palette.white} />}
             iconBackground="#FC471E"
           />
         </Row>

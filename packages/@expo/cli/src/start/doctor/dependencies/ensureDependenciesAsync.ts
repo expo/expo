@@ -1,8 +1,8 @@
 import { ExpoConfig, getConfig } from '@expo/config';
-import * as PackageManager from '@expo/package-manager';
 import chalk from 'chalk';
 import wrapAnsi from 'wrap-ansi';
 
+import { installAsync } from '../../../install/installAsync';
 import * as Log from '../../../log';
 import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
@@ -40,8 +40,6 @@ export async function ensureDependenciesAsync(
     .map(({ pkg, version }) => (version ? [pkg, version].join('@') : pkg))
     .join(', ');
 
-  const isYarn = PackageManager.isUsingYarn(projectRoot);
-
   let title = installMessage;
 
   if (skipPrompt) {
@@ -61,7 +59,6 @@ export async function ensureDependenciesAsync(
       );
       // Install packages with versions
       await installPackagesAsync(projectRoot, {
-        isYarn,
         packages,
       });
       // Try again but skip prompting twice, simply fail if the packages didn't install correctly.
@@ -77,7 +74,9 @@ export async function ensureDependenciesAsync(
     title = '';
   }
 
-  const installCommand = createInstallCommand({ isYarn, packages: missing });
+  const installCommand = createInstallCommand({
+    packages: missing,
+  });
 
   const disableMessage = warningMessage;
 
@@ -96,10 +95,8 @@ function wrapForTerminal(message: string): string {
 
 /** Create the bash install command from a given set of packages and settings. */
 export function createInstallCommand({
-  isYarn,
   packages,
 }: {
-  isYarn: boolean;
   packages: {
     file: string;
     pkg: string;
@@ -107,8 +104,7 @@ export function createInstallCommand({
   }[];
 }) {
   return (
-    (isYarn ? 'yarn add' : 'npm install') +
-    ' ' +
+    'npx expo install ' +
     packages
       .map(({ pkg, version }) => {
         if (version) {
@@ -121,21 +117,12 @@ export function createInstallCommand({
 }
 
 /** Install packages in the project. */
-async function installPackagesAsync(
-  projectRoot: string,
-  { isYarn, packages }: { isYarn: boolean; packages: string[] }
-) {
-  const packageManager = PackageManager.createForProject(projectRoot, {
-    yarn: isYarn,
-    log: Log.log,
-    silent: !env.EXPO_DEBUG,
-  });
-
+async function installPackagesAsync(projectRoot: string, { packages }: { packages: string[] }) {
   const packagesStr = chalk.bold(packages.join(', '));
   Log.log();
   const installingPackageStep = logNewSection(`Installing ${packagesStr}`);
   try {
-    await packageManager.addAsync(...packages);
+    await installAsync(packages, { projectRoot });
   } catch (e: any) {
     installingPackageStep.fail(`Failed to install ${packagesStr} with error: ${e.message}`);
     throw e;

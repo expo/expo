@@ -43,10 +43,8 @@ class DevMenuHost(application: Application) : ReactNativeHost(application) {
       // dev launcher is not installed in this project
     }
 
-
     return packages
   }
-
 
   override fun getJSIModulePackage(): JSIModulePackage {
     return getVendoredJNIPackage("com.swmansion.reanimated.ReanimatedJSIModulePackage")

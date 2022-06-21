@@ -103,8 +103,12 @@ export async function getVersionedDependenciesAsync(
   debug(`Checking dependencies for ${exp.sdkVersion}: %O`, resolvedDependencies);
 
   // intersection of packages from package.json and bundled native modules
-  const resolvedPackagesToCheck = getPackagesToCheck(resolvedDependencies, combinedKnownPackages);
+  const { known: resolvedPackagesToCheck, unknown } = getPackagesToCheck(
+    resolvedDependencies,
+    combinedKnownPackages
+  );
   debug(`Comparing known versions: %O`, resolvedPackagesToCheck);
+  debug(`Skipping packages that cannot be versioned automatically: %O`, unknown);
   // read package versions from the file system (node_modules)
   const packageVersions = await resolvePackageVersionsAsync(projectRoot, resolvedPackagesToCheck);
   debug(`Package versions: %O`, packageVersions);
@@ -125,15 +129,18 @@ function getFilteredObject(keys: string[], object: Record<string, string>) {
 function getPackagesToCheck(
   dependencies: Record<string, string> | null | undefined,
   bundledNativeModules: BundledNativeModules
-): string[] {
+): { known: string[]; unknown: string[] } {
   const dependencyNames = Object.keys(dependencies ?? {});
-  const result: string[] = [];
+  const known: string[] = [];
+  const unknown: string[] = [];
   for (const dependencyName of dependencyNames) {
     if (dependencyName in bundledNativeModules) {
-      result.push(dependencyName);
+      known.push(dependencyName);
+    } else {
+      unknown.push(dependencyName);
     }
   }
-  return result;
+  return { known, unknown };
 }
 
 async function resolvePackageVersionsAsync(

@@ -176,6 +176,7 @@ const Horizontal = create(RNView, {
     flex: 1,
   },
   variants: {
+    bg,
     size: {
       micro: { width: scale.micro, flex: 0 },
       tiny: { width: scale.tiny, flex: 0 },
@@ -192,6 +193,7 @@ const Vertical = create(RNView, {
     flex: 1,
   },
   variants: {
+    bg,
     size: {
       micro: { height: scale.micro, flex: 0 },
       tiny: { height: scale.tiny, flex: 0 },

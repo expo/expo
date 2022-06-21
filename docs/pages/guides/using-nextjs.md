@@ -3,6 +3,8 @@ title: Using Next.js with Expo for Web
 sidebar_title: Using Next.js
 ---
 
+import { Collapsible } from '~/ui/components/Collapsible';
+
 > Please open any issues related to Next.js with Expo at [expo-cli/issues](https://github.com/expo/expo-cli/issues).
 
 [Next.js][nextjs] is a React framework that provides simple page-based routing as well as server-side rendering. To use Next.js with Expo for web we recommend that you use a library called [`@expo/next-adapter`][next-adapter] to handle the configuration and integration of the tools.
@@ -34,8 +36,7 @@ npx create-react-native-app -t with-nextjs
 
 In this approach you would be using SSR for web in your universal project. This is the recommended path because it gives you full access to the features of Expo and Next.js.
 
-<details><summary>Instructions</summary>
-<p>
+<Collapsible summary="Instructions">
 
 - Install the adapter:
   - **yarn:** `yarn add -D @expo/next-adapter`
@@ -47,8 +48,7 @@ In this approach you would be using SSR for web in your universal project. This 
 - Start the project with `yarn next dev`
   - Go to `http://localhost:3000/` to see your project!
 
-</p>
-</details>
+</Collapsible>
 
 ### Add Expo to Next.js projects
 
@@ -56,8 +56,7 @@ In this approach you would be using SSR for web in your universal project. This 
 
 This approach is useful if you only want to use Expo components in your web-only project.
 
-<details><summary>Instructions</summary>
-<p>
+<Collapsible summary="Instructions">
 
 - Install the adapter:
   - **yarn:** `yarn add -D @expo/next-adapter`
@@ -69,15 +68,13 @@ This approach is useful if you only want to use Expo components in your web-only
 - Start the project with `yarn next dev`
   - Go to `http://localhost:3000/` to see your project!
 
-</p>
-</details>
+</Collapsible>
 
 ### Manual setup
 
 Optionally you can set the project up manually (not recommended).
 
-<details><summary>Instructions</summary>
-<p>
+<Collapsible summary="Instructions">
 
 - Re-export the custom `Document` component in the **pages/_document.js** file of your Next.js project.
 
@@ -127,8 +124,7 @@ Optionally you can set the project up manually (not recommended).
 
 - You can now start your Expo web + Next.js project with `yarn next dev` 🎉
 
-</p>
-</details>
+</Collapsible>
 
 ## Guides
 
@@ -189,8 +185,7 @@ By default Next.js won't load your statically imported images (images that you i
 
 You can test your config with the following example:
 
-<details><summary>Show Example</summary>
-<p>
+<Collapsible summary="Show Example">
 
 ```js
 import React from 'react';
@@ -201,8 +196,7 @@ export default function ImageDemo() {
 }
 ```
 
-</p>
-</details>
+</Collapsible>
 
 [next-images]: https://github.com/twopluszero/next-images
 [next-optimized-images]: https://github.com/cyrilwanner/next-optimized-images
@@ -232,8 +226,7 @@ By default Next.js doesn't support static assets like an Expo project. Because t
 
 You can test your config with the following example:
 
-<details><summary>Show Example</summary>
-<p>
+<Collapsible summary="Show Example">
 
 ```js
 import React, { useEffect, useState } from 'react';
@@ -265,8 +258,7 @@ export default function FontDemo() {
 }
 ```
 
-</p>
-</details>
+</Collapsible>
 
 [next-fonts]: https://github.com/rohanray/next-fonts
 

@@ -57,7 +57,9 @@ it('runs `npx expo prebuild --help`', async () => {
         <dir>                                    Directory of the Expo project. Default: Current working directory
         --no-install                             Skip installing npm packages and CocoaPods
         --clean                                  Delete the native folders and regenerate them before applying changes
-        --npm                                    Use npm to install dependencies. Default when Yarn is not installed
+        --npm                                    Use npm to install dependencies. Default when package-lock.json exists
+        --yarn                                   Use Yarn to install dependencies. Default when yarn.lock exists
+        --pnpm                                   Use pnpm to install dependencies. Default when pnpm-lock.yaml exists
         --template <template>                    Project template to clone from. File path pointing to a local tar file or a github repo
         -p, --platform <all|android|ios>         Platforms to sync: ios, android, all. Default: all
         --skip-dependency-update <dependencies>  Preserves versions of listed packages in package.json (comma separated list)

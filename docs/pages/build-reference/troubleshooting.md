@@ -2,6 +2,7 @@
 title: Troubleshooting build errors and crashes
 ---
 
+import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
 
 > This document is under active development; the topic it covers is expansive and finding the right way to explain how to troubleshoot issues will take some trial and error. Your suggestions for improvements are welcome as pull requests.
@@ -50,22 +51,19 @@ If you are working on a managed app and the build error is a native error rather
 
 Armed with your error logs, you can often start to fix your build, or you can search the [forums](https://forums.expo.dev) and GitHub issues for related packages to dig deeper. Some common sources of problems are listed below.
 
-<details><summary><h4>📦 Are you using a monorepo?</h4></summary>
-<p>
+<Collapsible summary="📦 Are you using a monorepo?">
 
 Monorepos are incredibly useful but they do introduce their own set of problems. A monorepo that you have set up to work with `expo build` will not necessarily work with `eas build`.
 
 With EAS Build, it's necessary to upload the entire monorepo to the build worker, set it up, and run the build; but, on `expo build` you only had to be able to build the JavaScript bundle locally and upload that to the worker.
 
 EAS Build is more like a typical CI service in that we need the source code, rather than a compiled JavaScript bundle and manifest. EAS Build has first-class support for Yarn workspaces, and [your success may vary when using other monorepo tools](/build-reference/limitations.md).
+
 <!-- TODO: link to monorepos guide when ready -->
 
-</p>
-</details>
+</Collapsible>
 
-<div style={{marginTop: -15}} />
-
-<details><summary><h4>💥 Out-of-memory (OOM) errors</h4></summary>
+<Collapsible summary="💥 Out-of-memory (OOM) errors">
 
 If your build fails with "Gradle build daemon disappeared unexpectedly (it may have been killed or may have crashed)" in your Gradle logs, this may be because the Node process responsible for bundling your app JavaScript was killed.
 
@@ -75,7 +73,19 @@ To determine how large your bundle is and to see a breakdown of where the size c
 
 It's not yet possible to increase memory limits on your build workers, [only one worker configuration is currently available](/build-reference/limitations.md).
 
-</details>
+</Collapsible>
+
+## Verify that your JavaScript bundles locally
+
+When you get the `Metro encountered an error` during a native iOS build, it means Metro bundler failed to bundle the app. This unfortunately runs at the end of the native build process, meaning it takes a while to fail.
+
+<Terminal cmd={[
+`❌ Metro encountered an error:`
+]} />
+
+You can reproduce this production bundle locally by running `expo export --experimental-bundle` which simply creates a production bundle. Continue doing this until the command passes without throwing. In general this should save you hours of debugging time.
+
+This behavior comes from React Native on iOS, in the future we plan to rewrite this for EAS Build so the bundle is created before the native runtime.
 
 ## Verify that your project builds and runs locally
 
@@ -88,24 +98,22 @@ If the logs weren't enough to immediately help you understand and fix the root c
 You can verify that your project builds on your local machine with the `expo run` commands with variant/configuration flags set to release to most faithfully reproduce what executes on EAS Build. (Learn more about the [iOS build process](/build-reference/ios-builds.md) and [Android build process](/build-reference/android-builds.md)).
 
 <Terminal cmd={[
-  '# Locally compile and run the Android app in release mode',
-  '$ expo run:android --variant release',
-  '',
-  '# Locally compile and run the iOS app in release mode',
-  '$ expo run:ios --configuration Release'
+'# Locally compile and run the Android app in release mode',
+'$ expo run:android --variant release',
+'',
+'# Locally compile and run the iOS app in release mode',
+'$ expo run:ios --configuration Release'
 ]} />
 
 > In managed projects, these commands will run `expo prebuild` to generate native projects &mdash; you likely want to [clean up the changes](https://expo.fyi/prebuild-cleanup) once you are done troubleshooting.
 
-<details><summary><h4>💡 Don't have Xcode and Android Studio set up on your machine?</h4></summary>
-<p>
+<Collapsible summary="💡 Don't have Xcode and Android Studio set up on your machine?">
 
 **If you do not have native toolchains installed locally**, for example because you do not have an Apple computer and therefore cannot build an iOS app on your machine, it can be trickier to get to the bottom of build errors. The feedback loop of making small changes locally and then seeing the result on EAS Build is slower than doing the same steps locally, because the EAS Build worker must set up its environment, download your project, and install dependencies before starting the build.
 
 If you are willing and able to set up the appropriate native tools, then refer to the [React Native environment setup guide](https://reactnative.dev/docs/environment-setup).
 
-</p>
-</details>
+</Collapsible>
 
 If your native toolchains are installed correctly and you are unable to build and run your project in release mode on your local machine, it will not build on EAS Build. Fix the issues locally, then try again on EAS Build. The other advice in this doc may be useful to help you resolve the issue locally, but often this requires some knowledge of native tooling or judicious application of Google, StackOverflow, and GitHub Issues.
 
@@ -114,12 +122,17 @@ If your native toolchains are installed correctly and you are unable to build an
 If you find yourself in this situation, it's time to narrow down what configuration exists on your machine that hasn't been set up for your project on EAS Build yet.
 
 There are two ways to approach this, which are quite similar:
+
 - Do a fresh `git clone` of your project to a new directory and get it running. Pay attention to each of the steps that are needed and verify that they are also configured for EAS Build.
 - Run a local build with `eas build --local`. This command will locally run a process that is as close as it can be to the remote, hosted EAS Build service. [Learn how to set this up and use it for debugging](/build-reference/local-builds.md#using-local-builds-for-debugging).
 
 ### Why does my app work in Expo Go and `expo build:[android|ios]` but not with EAS Build?
 
 The classic build service (`expo build`) works completely differently from EAS Build, and there is no guarantee that your app will work out of the box on EAS Build if it works on the classic build service. You can learn more about [migrating from `expo build` in the guide](/build-reference/migrating.md), and get a better understanding of how these two services are fundamentally different in [this two-part blog post](https://blog.expo.dev/expo-managed-workflow-in-2021-5b887bbf7dbb).
+
+### Why does my production app does not match my development app?
+
+You can test how the JS part of your app will run in production by starting it with `expo start --no-dev`. This tells the bundler to minify JavaScript before serving it, most notably stripping code protected by the `__DEV__` boolean. This will remove most of the logging, HMR, Fast Refresh functionality, and make debugging a bit harder, but you can iterate on the production bundle faster this way.
 
 ## Still having trouble?
 

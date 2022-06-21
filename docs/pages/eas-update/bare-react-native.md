@@ -2,6 +2,8 @@
 title: Using EAS Update with a bare React Native project
 ---
 
+> EAS Update is currently available only to customers with an EAS subscription plan. [Sign up](https://expo.dev/accounts/[account]/settings/subscriptions).
+
 EAS update works with projects created with `react-native init` and with Expo projects that are ejected. These projects have **android** and **ios** directories so that we can modify native files directly.
 
 The steps for configuring a bare React Native project are identical to the steps for configuring an Expo project. However, you may need to edit some of the code `eas update:configure` and `eas build:configure` generates depending on how you build and run your project.

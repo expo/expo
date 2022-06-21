@@ -188,7 +188,7 @@ class ClipboardModule : Module() {
               "contentTypes" to listOfNotNull(
                 ContentType.PLAIN_TEXT.takeIf { clip.hasTextContent },
                 ContentType.HTML.takeIf { clip.hasMimeType(ClipDescription.MIMETYPE_TEXT_HTML) },
-                ContentType.HTML.takeIf { clip.hasMimeType("image/*") }
+                ContentType.IMAGE.takeIf { clip.hasMimeType("image/*") }
               ).map { it.jsName }
             )
           )
