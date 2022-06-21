@@ -28,8 +28,6 @@ class EXDevLauncherControllerTest: QuickSpec {
       expect(modules.first { $0 is RCTAsyncLocalStorage }).toNot(beNil())
       expect(modules.first { type(of: $0).moduleName() == "DevLoadingView" }).toNot(beNil())
       expect(modules.first { type(of: $0).moduleName() == "EXDevLauncherInternal" }).toNot(beNil())
-      // TODO: Fix failing test
-//      expect(modules.first { type(of: $0).moduleName() == "ExpoDevMenuInternal" }).toNot(beNil())
 
       // vendored
       expect(modules.first { type(of: $0).moduleName() == "ReanimatedModule" }).toNot(beNil())
