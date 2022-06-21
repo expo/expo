@@ -12,10 +12,11 @@ import { promisify } from 'util';
 
 import { FileSystemCache } from '../api/rest/cache/FileSystemCache';
 import { wrapFetchWithCache } from '../api/rest/cache/wrapFetchWithCache';
-import * as Log from '../log';
 import { createEntryResolver, createFileTransform } from './createFileTransform';
 import { ensureDirectoryAsync } from './dir';
 import { CommandError } from './errors';
+
+const debug = require('debug')('expo:utils:npm') as typeof console.log;
 
 const cachedFetch = wrapFetchWithCache(
   fetch,
@@ -59,7 +60,7 @@ export async function npmViewAsync(...props: string[]): Promise<JSONValue> {
   const cmd = ['view', ...props, '--json'];
   const results = (await spawnAsync('npm', cmd)).stdout?.trim();
   const cmdString = `npm ${cmd.join(' ')}`;
-  Log.debug('Run:', cmdString);
+  debug('Run:', cmdString);
   if (!results) {
     return null;
   }
@@ -106,7 +107,7 @@ export async function downloadAndExtractNpmModuleAsync(
 ): Promise<void> {
   const url = await getNpmUrlAsync(npmName);
 
-  Log.debug('Fetch from URL:', url);
+  debug('Fetch from URL:', url);
   await extractNpmTarballFromUrlAsync(url, props);
 }
 

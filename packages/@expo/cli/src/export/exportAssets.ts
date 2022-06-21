@@ -9,6 +9,8 @@ import { resolveGoogleServicesFile } from '../start/server/middleware/resolveAss
 import { uniqBy } from '../utils/array';
 import { Asset, saveAssetsAsync } from './saveAssets';
 
+const debug = require('debug')('expo:export:exportAssets') as typeof console.log;
+
 /**
  * Resolves the assetBundlePatterns from the manifest and returns a list of assets to bundle.
  *
@@ -38,7 +40,7 @@ export async function resolveAssetBundlePatternsAsync(
     .map((asset) => {
       const shouldBundle = shouldBundleAsset(asset, fullPatterns);
       if (shouldBundle) {
-        Log.debug(`${shouldBundle ? 'Include' : 'Exclude'} asset ${asset.files?.[0]}`);
+        debug(`${shouldBundle ? 'Include' : 'Exclude'} asset ${asset.files?.[0]}`);
         return asset.fileHashes.map(
           (hash) => 'asset_' + hash + ('type' in asset && asset.type ? '.' + asset.type : '')
         );
