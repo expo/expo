@@ -110,13 +110,17 @@ image: node:alpine
 cache:
   key: ${CI_COMMIT_REF_SLUG}
   paths:
-    - ~/.npm
+    - .npm
+    # or with yarn:
+    #- .yarn
 
 stages:
   - build
 
 before_script:
-  - npm ci
+  - npm ci --cache .npm
+  # or with yarn:
+  #- yarn install --cache-folder .yarn
 
 eas-build:
   stage: build
