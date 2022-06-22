@@ -1,16 +1,16 @@
 package expo.modules.imagepicker
 
+import java.io.Serializable
 import android.net.Uri
 import android.provider.MediaStore
 import androidx.annotation.FloatRange
 import androidx.annotation.IntRange
-import expo.modules.imagepicker.contracts.CameraContract
-import expo.modules.imagepicker.contracts.ImageLibraryContract
-import expo.modules.kotlin.providers.AppContextProvider
+import expo.modules.imagepicker.contracts.CameraContractOptions
+import expo.modules.imagepicker.contracts.ImageLibraryContractOptions
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 
-internal class ImagePickerOptions : Record {
+internal class ImagePickerOptions : Record, Serializable {
   @Field
   var allowsEditing: Boolean = false
 
@@ -33,15 +33,13 @@ internal class ImagePickerOptions : Record {
   @Field
   var aspect: Pair<Int, Int>? = null
 
-  internal fun toCameraContract(appContextProvider: AppContextProvider, uri: Uri) = CameraContract(
-    appContextProvider,
+  internal fun toCameraContractOptions(uri: Uri) = CameraContractOptions(
     uri,
     mediaTypes.toMimeType(),
     videoMaxDuration
   )
 
-  fun toImageLibraryContract(appContextProvider: AppContextProvider) = ImageLibraryContract(
-    appContextProvider,
+  fun toImageLibraryContractOptions() = ImageLibraryContractOptions(
     mediaTypes.toMimeType(),
   )
 }
