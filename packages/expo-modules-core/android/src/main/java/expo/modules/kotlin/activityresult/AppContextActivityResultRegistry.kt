@@ -12,7 +12,6 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultCallback
-import androidx.activity.result.ActivityResultRegistry
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.result.contract.ActivityResultContracts.RequestMultiplePermissions
@@ -36,18 +35,18 @@ import kotlin.collections.HashMap
  * A registry that stores activity result callbacks ([ActivityResultCallback]) for
  * [AppContextActivityResultCaller.registerForActivityResult] registered calls.
  *
- * This class is created to address the problems of integrating original [ActivityResultRegistry]
- * with ReactNative and our current architecture.
- * There are two main problems:
- * - react-native-screen prevents us from using [Activity.onSaveInstanceState]/[Activity.onCreate] with `saveInstanceState`, because of https://github.com/software-mansion/react-native-screens/issues/17#issuecomment-424704067
+ * This class is created to address the problems of integrating original [androidx.activity.result.ActivityResultRegistry]
+ * with ReactNative and our current architecture ([AppContext]).
+ * There are two main problems that this class is solving:
+ * - react-native-screen prevents us from using [Activity.onSaveInstanceState] / [Activity.onCreate] with `saveInstanceState`, because of https://github.com/software-mansion/react-native-screens/issues/17#issuecomment-424704067
  *   - this might be fixable in react-native-screens itself
- * - ReactNative does not provide any straightforward way to hook into every [Activity]/[Lifecycle] event that the original [ActivityResultRegistry] mechanism needs
- *   - there's room for further research in this topic
+ * - ReactNative does not provide any straightforward way to hook into every [Activity] / [Lifecycle] event that the original [androidx.activity.result.ActivityResultRegistry] mechanism depends on
+ *   - there's room for further research in this case
  *
  * Ideally we would get rid of this class in favour of the original one, but firstly we need to
  * solve these problems listed above.
  *
- * The implementation is based on [ActivityResultRegistry] coming from `androidx.activity:activity-ktx:1.4.0`.
+ * The implementation is based on [androidx.activity.result.ActivityResultRegistry] coming from  `androidx.activity:activity:1.4.0` and `androidx.activity:activity-ktx:1.4.0`.
  * Main differences are:
  * - it operates on two callbacks instead of one
  *   - fallback callback - the secondary callback that is registered at the very beginning of the registry lifecycle (at the very beginning of the app's lifecycle).
@@ -57,7 +56,7 @@ import kotlin.collections.HashMap
  * - it preserves the state across [Activity] recreation in different way - we use [android.content.SharedPreferences]
  * - it is adjusted to work with [AppContext] and the lifecycle events ReactNative provides.
  *
- * @see [ActivityResultRegistry] for more information.
+ * @see [androidx.activity.result.ActivityResultRegistry] for more information.
  */
 class AppContextActivityResultRegistry(
   private val currentActivityProvider: CurrentActivityProvider
@@ -91,8 +90,9 @@ class AppContextActivityResultRegistry(
     get() = requireNotNull(currentActivityProvider.currentActivity) { "Current Activity is not available at the moment" }
 
   /**
-   * @see [ActivityResultRegistry.onLaunch]
-   * @see [ComponentActivity.mActivityResultRegistry] - this method code is adapted from this class
+   * This method body is adapted mainly from [ComponentActivity.mActivityResultRegistry]
+   *
+   * @see [androidx.activity.result.ActivityResultRegistry.onLaunch]
    */
   @MainThread
   fun <I, O> onLaunch(
@@ -141,9 +141,12 @@ class AppContextActivityResultRegistry(
 
   /**
    * This method should be called every time the Activity is created
-   * @see [ActivityResultRegistry.register]
+   *
    * @param fallbackCallback callback that is invoked only if the Activity is destroyed and
-   * recreated by the Android OS. Regular results are returned from [AppContextActivityResultLauncher.launch] method.
+   * recreated by the Android OS. Regular results are returned using main callback coming from
+   * [AppContextActivityResultLauncher.launch] method.
+   *
+   * @see [androidx.activity.result.ActivityResultRegistry.register]
    */
   @MainThread
   fun <I, O, P: Serializable> register(
@@ -167,7 +170,7 @@ class AppContextActivityResultRegistry(
           // This is the most common path for returning results
           // When the Activity is destroyed then the other path is invoked, see [keyToFallbackCallback]
 
-          // 1. No callbacks registered, other path would take care of the flow
+          // 1. No callbacks registered yet, other path would take care of the results
           @Suppress("UNCHECKED_CAST")
           val callbacksAndContract: CallbacksAndContract<O, P> = (keyToCallbacksAndContract[key] ?: return@LifecycleEventObserver) as CallbacksAndContract<O, P>
 
@@ -176,9 +179,12 @@ class AppContextActivityResultRegistry(
             pendingResults.remove(key)
 
             val result = callbacksAndContract.contract.parseResult(it.resultCode, it.data)
+
             if (callbacksAndContract.mainCallback != null) {
+              // 2.1 there's a main callback available, so launching Activity has not been killed during the process
               callbacksAndContract.mainCallback.onActivityResult(result)
             } else {
+              // 2.2 launching Activity killed during the process, proceed with fallback callback
               @Suppress("UNCHECKED_CAST")
               val params = keyToParamsForFallbackCallback[key] as P
               callbacksAndContract.fallbackCallback.onActivityResult(result, params)
@@ -199,10 +205,11 @@ class AppContextActivityResultRegistry(
     return object : AppContextActivityResultLauncher<I, O, P>() {
       override fun launch(input: I, params: P, callback: ActivityResultCallback<O>) {
         val requestCode = keyToRequestCode[key] ?: throw IllegalStateException("Attempting to launch an unregistered ActivityResultLauncher with contract $contract and input $input. You must ensure the ActivityResultLauncher is registered before calling launch()")
-        launchedKeys.add(key)
+
         @Suppress("UNCHECKED_CAST")
         keyToCallbacksAndContract[key] = CallbacksAndContract(fallbackCallback, callback, contract)
         keyToParamsForFallbackCallback[key] = params
+        launchedKeys.add(key)
 
         try {
           onLaunch(requestCode, contract, input)
@@ -248,7 +255,7 @@ class AppContextActivityResultRegistry(
   }
 
   /**
-   * @see [ActivityResultRegistry.unregister]
+   * @see [androidx.activity.result.ActivityResultRegistry.unregister]
    */
   @MainThread
   fun unregister(key: String) {
@@ -268,7 +275,9 @@ class AppContextActivityResultRegistry(
   }
 
   /**
-   * @see [ActivityResultRegistry.dispatchResult]
+   * Entry point for informing about data coming from [Activity.onActivityResult].
+   *
+   * @see [androidx.activity.result.ActivityResultRegistry.dispatchResult]
    */
   @MainThread
   fun dispatchResult(requestCode: Int, resultCode: Int, data: Intent?): Boolean {
@@ -278,6 +287,12 @@ class AppContextActivityResultRegistry(
     return true
   }
 
+  /**
+   * This method has three different flows:
+   * 1. main callback available (launcher Activity has not been killed), so resume main flow with results
+   * 2. launcher Activity has been recreated and it has already proceeded to [Lifecycle.State.STARTED] phase, so use fallback callback
+   * 3. results are delivered, but [Activity] has not yet reached [Lifecycle.State.STARTED] phase, so save them got later use
+   */
   private fun <O, P: Serializable> doDispatch(key: String, resultCode: Int, data: Intent?, callbacksAndContract: CallbacksAndContract<O, P>?) {
     val currentLifecycleState = keyToLifecycleContainers[key]?.lifecycle?.currentState
 

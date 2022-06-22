@@ -70,10 +70,9 @@ class AppContext(
       addLifecycleEventListener(reactLifecycleDelegate)
       addActivityEventListener(reactLifecycleDelegate)
 
-      // Registering modules has to happen at the very end of `AppContext` creation, because
-      // registering modules triggers modules' creation (`OnCreate` is called).
-      // Some modules need accessing `AppContext`'s properties during initialisation,
-      // so we need to be sure all the properties are initialized first
+      // Registering modules has to happen at the very end of `AppContext` creation. Some modules need to access
+      // `AppContext` during their initialisation (or during `OnCreate` method), so we need to ensure all `AppContext`'s
+      // properties are initialized first. Not having that would trigger NPE.
       registry.register(ErrorManagerModule())
       registry.register(modulesProvider)
     }
@@ -201,7 +200,9 @@ class AppContext(
   }
 
   fun onHostResume() {
-    activityResultsManager.onHostResume(requireNotNull(currentActivity) { "Current Activity should be available at this point!" })
+    activityResultsManager.onHostResume(requireNotNull(currentActivity) {
+      "Current Activity is not available at this moment"
+    })
     registry.post(EventName.ACTIVITY_ENTERS_FOREGROUND)
   }
 
@@ -210,7 +211,9 @@ class AppContext(
   }
 
   fun onHostDestroy() {
-    activityResultsManager.onHostDestroy(requireNotNull(currentActivity) { "Current Activity should be available at this point!" })
+    activityResultsManager.onHostDestroy(requireNotNull(currentActivity) {
+      "Current Activity is not available at this moment"
+    })
     registry.post(EventName.ACTIVITY_DESTROYS)
   }
 

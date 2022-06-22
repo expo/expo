@@ -10,7 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
  */
 fun interface OnActivityAvailableListener {
   /**
-   * Would be fired on Main thread.
+   * This callback will be called on Main thread.
    */
   fun onActivityAvailable(activity: AppCompatActivity)
 }

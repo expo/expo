@@ -19,6 +19,10 @@ import kotlinx.coroutines.launch
 import java.io.Serializable
 import java.util.concurrent.atomic.AtomicInteger
 
+/**
+ * Manager class that takes care of proper communication with [AppContextActivityResultRegistry]
+ * It also monitors the needed lifecycle state using [AppCompatActivityAwareHelper]
+ */
 class ActivityResultsManager(
   currentActivityProvider: CurrentActivityProvider
 ) : AppContextActivityResultCaller, AppCompatActivityAware {
@@ -32,7 +36,7 @@ class ActivityResultsManager(
 
   /**
    * Helper property that allows for waiting for [Activity] creation.
-   * It is useful when some Module wants to register itself before the current [Activity] created.
+   * It is useful when some Module wants to register itself before the current [Activity] is made available.
    */
   private val activityAwareHelper = AppCompatActivityAwareHelper()
 

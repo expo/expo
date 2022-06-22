@@ -1,5 +1,6 @@
 package expo.modules.kotlin.activityresult
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
@@ -17,7 +18,8 @@ const val EXPIRATION_TIME = 5 * 60 * 1000 // 5 min
 /**
  * This class serves as a persistable store that accepts different kinds of data that have to
  * be preserved between Activity destruction and recreation.
- * For each kind of data there's a separate pair of methods.
+ * For each kind of data there's a separate pair of methods for storing and retrieving the data.
+ *
  * Ideally we would use [android.app.Activity.onSaveInstanceState] and [android.app.Activity.onCreate]
  * alongside with `savedBundleState`, but it's blocked by https://github.com/software-mansion/react-native-screens/issues/17#issuecomment-424704067
  */
@@ -99,6 +101,7 @@ class DataPersistor(context: Context) {
     editor.putString("bundle", accumulator.toBase64())
     editor.putLong(EXPIRE_KEY, Date().time + EXPIRATION_TIME)
 
+    @Suppress("ApplySharedPref")
     editor.commit()
   }
 
@@ -124,6 +127,7 @@ private fun String.toBundle(): Bundle? {
   return Parcel.obtain().run {
     unmarshall(bytes, 0, bytes.size)
     setDataPosition(0)
+    @Suppress("ParcelClassLoader")
     val bundle = readBundle(null)
     recycle()
     bundle

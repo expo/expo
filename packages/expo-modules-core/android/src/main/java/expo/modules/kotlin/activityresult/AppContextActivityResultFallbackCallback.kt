@@ -3,14 +3,13 @@ package expo.modules.kotlin.activityresult
 import java.io.Serializable
 
 /**
+ * Interface for fallback callback that has to be registered at the very beginning of module's lifecycle
+ * in order to deliver all results in case launching [android.app.Activity] is killed.
+ *
+ * @param O output type, similar to the main callback
+ * @param P additional parameters type. This is registered during and preserved across [android.app.Activity] destruction.
+ *
  * @see [androidx.activity.result.ActivityResultCallback]
- *
- * Interface for fallback callback that has to be registered at the very beginning of module's life
- * in order to deliver all results in case launching Activity is killed.
- *
- * Type parameters:
- * @param O - result/output type
- * @param P - additional parameter type
  */
 fun interface AppContextActivityResultFallbackCallback<O, P: Serializable> {
   fun onActivityResult(result: O, params: P)

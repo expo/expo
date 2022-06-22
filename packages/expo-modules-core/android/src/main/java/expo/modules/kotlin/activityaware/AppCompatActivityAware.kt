@@ -10,7 +10,7 @@ import kotlinx.coroutines.suspendCancellableCoroutine
  *
  * A [AppCompatActivityAware] class is associated with a [AppCompatActivity] sometime after
  * the [Activity] is passed down to the [AppContext] in [AppContext.onHostResume].
- * By adding a [OnActivityAvailableListener] , you can receive a callback for that event.
+ * By adding a [OnActivityAvailableListener] you can receive a callback for that event.
  */
 interface AppCompatActivityAware {
   fun peekAvailableActivity(): AppCompatActivity?
@@ -29,7 +29,7 @@ interface AppCompatActivityAware {
  * called on the current coroutine context. Otherwise, [onActivityAvailable] will be called on the
  * the UI thread immediately when the [Activity] becomes available.
  *
- * No matter how many times [Activity] will become available this mechanism would only fire once.
+ * No matter how many times [Activity] will become available callback would be called only once.
  */
 suspend inline fun <R> AppCompatActivityAware.withActivityAvailable(
   crossinline onActivityAvailable: (AppCompatActivity) -> R
@@ -38,15 +38,15 @@ suspend inline fun <R> AppCompatActivityAware.withActivityAvailable(
   return if (availableActivity != null) {
     onActivityAvailable(availableActivity)
   } else {
-    suspendCancellableCoroutine { co ->
+    suspendCancellableCoroutine { continuation ->
       val listener = object : OnActivityAvailableListener {
         override fun onActivityAvailable(activity: AppCompatActivity) {
-          co.resumeWith(runCatching { onActivityAvailable(activity) })
+          continuation.resumeWith(runCatching { onActivityAvailable(activity) })
           removeOnActivityAvailableListener(this)
         }
       }
       addOnActivityAvailableListener(listener)
-      co.invokeOnCancellation {
+      continuation.invokeOnCancellation {
         removeOnActivityAvailableListener(listener)
       }
     }

@@ -6,6 +6,13 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
 /**
+ * A launcher for a previously-[AppContextActivityResultCaller.registerForActivityResult] prepared call
+ * to start the process of executing an [ActivityResultContract]
+ *
+ * @param I type of the input required to launch
+ * @param O result type
+ * @param P additional parameters type that would be passed to fallback callback
+ *
  * @see [androidx.activity.result.ActivityResultLauncher]
  */
 abstract class AppContextActivityResultLauncher<I, O, P> {
