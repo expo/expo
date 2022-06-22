@@ -4,7 +4,6 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import assert from 'assert';
 import fs from 'fs';
 import { ConfigT } from 'metro-config';
 import { ResolutionContext } from 'metro-resolver';
@@ -57,7 +56,6 @@ function withCustomResolvers(
 ): ConfigT {
   const originalResolveRequest =
     config.resolver.resolveRequest || getDefaultResolveRequest(projectRoot);
-  assert(originalResolveRequest, 'Metro `resolver.resolveRequest` is required');
 
   return {
     ...config,
