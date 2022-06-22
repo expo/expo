@@ -9,6 +9,7 @@ import semver from 'semver';
 import * as Directories from '../../Directories';
 import { getListOfPackagesAsync } from '../../Packages';
 import { transformFileAsync as transformFileMultiReplacerAsync } from '../../Transforms';
+import { copyExpoviewAsync } from './copyExpoview';
 import { JniLibNames, getJavaPackagesToRename } from './libraries';
 import { versionCxxExpoModulesAsync } from './versionCxx';
 import { renameHermesEngine, updateVersionedReactNativeAsync } from './versionReactNative';
@@ -630,11 +631,7 @@ export async function addVersionAsync(version: string) {
   console.log(' ✅  1/12: Finished\n\n');
 
   console.log(' 🛠   2/12: Creating versioned expoview package...');
-  await spawnAsync('./android-copy-expoview.sh', [version], {
-    shell: true,
-    cwd: SCRIPT_DIR,
-  });
-
+  await copyExpoviewAsync(version, ANDROID_DIR);
   console.log(' ✅  2/12: Finished\n\n');
 
   console.log(' 🛠   3/12: Renaming JNI libs in android/versioned-react-native and Reanimated...');
