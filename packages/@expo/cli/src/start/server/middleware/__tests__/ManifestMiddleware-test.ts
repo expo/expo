@@ -4,9 +4,9 @@ import { asMock } from '../../../../__tests__/asMock';
 import * as Log from '../../../../log';
 import * as ProjectDevices from '../../../project/devices';
 import { getPlatformBundlers } from '../../platformBundlers';
+import { createTemplateHtmlFromExpoConfigAsync } from '../../webTemplate';
 import { ManifestMiddleware, ManifestRequestInfo } from '../ManifestMiddleware';
 import { ServerHeaders, ServerRequest, ServerResponse } from '../server.types';
-import { createTemplateHtmlFromExpoConfigAsync } from '../../webTemplate';
 
 jest.mock('../../webTemplate', () => ({
   createTemplateHtmlFromExpoConfigAsync: jest.fn(async () => '<html />'),
