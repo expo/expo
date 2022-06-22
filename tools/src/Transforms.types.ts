@@ -14,7 +14,10 @@ export type ReplaceTransform = {
 };
 
 export type RawTransform = {
-  fn: (text: string) => string;
+  /**
+   * Function that takes string as an argument and returns result of the transformations.
+   */
+  transform: (text: string) => string;
 };
 
 export type StringTransform = RawTransform | ReplaceTransform;

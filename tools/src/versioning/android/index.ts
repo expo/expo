@@ -632,7 +632,6 @@ export async function addVersionAsync(version: string) {
 
   console.log(' 🛠   2/12: Creating versioned expoview package...');
   await copyExpoviewAsync(version, ANDROID_DIR);
-
   console.log(' ✅  2/12: Finished\n\n');
 
   console.log(' 🛠   3/12: Renaming JNI libs in android/versioned-react-native and Reanimated...');

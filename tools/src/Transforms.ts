@@ -13,6 +13,14 @@ import { arrayize } from './Utils';
 
 export * from './Transforms.types';
 
+function isRawTransform(transform: any): transform is RawTransform {
+  return transform.transform;
+}
+
+function isReplaceTransform(transform: any): transform is ReplaceTransform {
+  return transform.find !== undefined && transform.replaceWith !== undefined;
+}
+
 /**
  * Transforms input string according to the given transform rules.
  */
@@ -24,13 +32,14 @@ export function transformString(
     return input;
   }
   return transforms.reduce((acc, transform) => {
-    if ('fn' in transform) {
-      return (transform as RawTransform).fn(acc);
-    } else {
-      const { find, replaceWith } = transform as ReplaceTransform;
+    if (isRawTransform(transform)) {
+      return transform.transform(acc);
+    } else if (isReplaceTransform(transform)) {
+      const { find, replaceWith } = transform;
       // @ts-ignore @tsapeta: TS gets crazy on `replaceWith` being a function.
       return acc.replace(find, replaceWith);
     }
+    throw new Error(`Unknown transform type`);
   }, input);
 }
 
