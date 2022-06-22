@@ -2,10 +2,24 @@ import fs from 'fs-extra';
 import minimatch from 'minimatch';
 import path from 'path';
 
-import { CopyFileOptions, CopyFileResult, StringTransform } from './Transforms.types';
+import {
+  CopyFileOptions,
+  CopyFileResult,
+  RawTransform,
+  ReplaceTransform,
+  StringTransform,
+} from './Transforms.types';
 import { arrayize } from './Utils';
 
 export * from './Transforms.types';
+
+function isRawTransform(transform: any): transform is RawTransform {
+  return transform.transform;
+}
+
+function isReplaceTransform(transform: any): transform is ReplaceTransform {
+  return transform.find !== undefined && transform.replaceWith !== undefined;
+}
 
 /**
  * Transforms input string according to the given transform rules.
@@ -17,11 +31,16 @@ export function transformString(
   if (!transforms) {
     return input;
   }
-  return transforms.reduce(
-    // @ts-ignore @tsapeta: TS gets crazy on `replaceWith` being a function.
-    (acc, { find, replaceWith }) => acc.replace(find, replaceWith),
-    input
-  );
+  return transforms.reduce((acc, transform) => {
+    if (isRawTransform(transform)) {
+      return transform.transform(acc);
+    } else if (isReplaceTransform(transform)) {
+      const { find, replaceWith } = transform;
+      // @ts-ignore @tsapeta: TS gets crazy on `replaceWith` being a function.
+      return acc.replace(find, replaceWith);
+    }
+    throw new Error(`Unknown transform type`);
+  }, input);
 }
 
 /**
