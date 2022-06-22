@@ -16,6 +16,7 @@ import expo.modules.kotlin.providers.CurrentActivityProvider
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import java.io.Serializable
 import java.util.concurrent.atomic.AtomicInteger
 
 class ActivityResultsManager(
@@ -66,7 +67,7 @@ class ActivityResultsManager(
 
   // region AppContextActivityResultCaller
 
-  override suspend fun <I, O, P: Bundleable<P>> registerForActivityResult(
+  override suspend fun <I, O, P: Serializable> registerForActivityResult(
     contract: ActivityResultContract<I, O>,
     fallbackCallback: AppContextActivityResultFallbackCallback<O, P>
   ): AppContextActivityResultLauncher<I, O, P> =

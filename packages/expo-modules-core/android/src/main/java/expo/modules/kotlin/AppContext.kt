@@ -25,7 +25,6 @@ import expo.modules.kotlin.activityresult.ActivityResultsManager
 import expo.modules.kotlin.activityresult.AppContextActivityResultFallbackCallback
 import expo.modules.kotlin.activityresult.AppContextActivityResultCaller
 import expo.modules.kotlin.activityresult.AppContextActivityResultLauncher
-import expo.modules.kotlin.activityresult.Bundleable
 import expo.modules.kotlin.defaultmodules.ErrorManagerModule
 import expo.modules.kotlin.events.EventEmitter
 import expo.modules.kotlin.events.EventName
@@ -41,6 +40,7 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.newSingleThreadContext
+import java.io.Serializable
 import java.lang.ref.WeakReference
 
 class AppContext(
@@ -252,7 +252,7 @@ class AppContext(
 // region AppContextActivityResultCaller
 
   @MainThread
-  override suspend fun <I, O, P: Bundleable<P>> registerForActivityResult(
+  override suspend fun <I, O, P: Serializable> registerForActivityResult(
     contract: ActivityResultContract<I, O>,
     fallbackCallback: AppContextActivityResultFallbackCallback<O, P>
   ): AppContextActivityResultLauncher<I, O, P> =

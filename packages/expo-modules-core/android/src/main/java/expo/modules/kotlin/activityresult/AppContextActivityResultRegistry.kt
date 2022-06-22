@@ -27,6 +27,7 @@ import androidx.lifecycle.LifecycleOwner
 import expo.modules.core.utilities.ifNull
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.providers.CurrentActivityProvider
+import java.io.Serializable
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
@@ -82,7 +83,7 @@ class AppContextActivityResultRegistry(
    * in case of launching Activity being is destroyed.
    * These are serialized and deserialized.
    */
-  private val keyToParamsForFallbackCallback: MutableMap<String, Any> = HashMap()
+  private val keyToParamsForFallbackCallback: MutableMap<String, Serializable> = HashMap()
 
   private val pendingResults = Bundle/*<String, ActivityResult>*/()
 
@@ -145,7 +146,7 @@ class AppContextActivityResultRegistry(
    * recreated by the Android OS. Regular results are returned from [AppContextActivityResultLauncher.launch] method.
    */
   @MainThread
-  fun <I, O, P: Bundleable<P>> register(
+  fun <I, O, P: Serializable> register(
     key: String,
     lifecycleOwner: LifecycleOwner,
     contract: ActivityResultContract<I, O>,
@@ -201,7 +202,7 @@ class AppContextActivityResultRegistry(
         launchedKeys.add(key)
         @Suppress("UNCHECKED_CAST")
         keyToCallbacksAndContract[key] = CallbacksAndContract(fallbackCallback, callback, contract)
-        keyToParamsForFallbackCallback[key] = params as Any
+        keyToParamsForFallbackCallback[key] = params
 
         try {
           onLaunch(requestCode, contract, input)
@@ -222,7 +223,7 @@ class AppContextActivityResultRegistry(
     DataPersistor(context)
       .addStringArrayList("launchedKeys", launchedKeys)
       .addStringToIntMap("keyToRequestCode", keyToRequestCode)
-      .addStringToBundleableMap("keyToParamsForFallbackCallback", keyToParamsForFallbackCallback.filter { (key) -> launchedKeys.contains(key) })
+      .addStringToSerializableMap("keyToParamsForFallbackCallback", keyToParamsForFallbackCallback.filter { (key) -> launchedKeys.contains(key) })
       .addBundle("pendingResult", pendingResults)
       .addSerializable("random", random)
       .persist()
@@ -234,15 +235,15 @@ class AppContextActivityResultRegistry(
   fun restoreInstanceState(context: Context) {
     val dataPersistor = DataPersistor(context)
 
-    launchedKeys = dataPersistor.retrieveStringArrayList("launchedKeys")
-    keyToParamsForFallbackCallback.putAll(dataPersistor.retrieveStringToBundleableMap("keyToParamsForFallbackCallback"))
-    pendingResults.putAll(dataPersistor.retrieveBundle("pendingResult"))
-    random = dataPersistor.retrieveSerializable("random") as Random
-
-    val keyToRequestCode = dataPersistor.retrieveStringToIntMap("keyToRequestCode")
-    keyToRequestCode.entries.forEach { (key, requestCode) ->
-      this.keyToRequestCode[key] = requestCode
-      this.requestCodeToKey[requestCode] = key
+    dataPersistor.retrieveStringArrayList("launchedKeys")?.let { launchedKeys = it }
+    dataPersistor.retrieveStringToSerializableMap("keyToParamsForFallbackCallback")?.let { keyToParamsForFallbackCallback.putAll(it) }
+    dataPersistor.retrieveBundle("pendingResult")?.let { pendingResults.putAll(it) }
+    dataPersistor.retrieveSerializable("random")?.let { random = it as Random }
+    dataPersistor.retrieveStringToIntMap("keyToRequestCode")?.let {
+      it.entries.forEach { (key, requestCode) ->
+        keyToRequestCode[key] = requestCode
+        requestCodeToKey[requestCode] = key
+      }
     }
   }
 
@@ -277,7 +278,7 @@ class AppContextActivityResultRegistry(
     return true
   }
 
-  private fun <O, P: Bundleable<P>> doDispatch(key: String, resultCode: Int, data: Intent?, callbacksAndContract: CallbacksAndContract<O, P>?) {
+  private fun <O, P: Serializable> doDispatch(key: String, resultCode: Int, data: Intent?, callbacksAndContract: CallbacksAndContract<O, P>?) {
     val currentLifecycleState = keyToLifecycleContainers[key]?.lifecycle?.currentState
 
     if (callbacksAndContract?.mainCallback != null && launchedKeys.contains(key)) {
@@ -304,7 +305,7 @@ class AppContextActivityResultRegistry(
     return number
   }
 
-  private data class CallbacksAndContract<O, P: Bundleable<P>>(
+  private data class CallbacksAndContract<O, P: Serializable>(
     /**
      * Fallback callback that accepts both output and deserialized additional parameters
      */

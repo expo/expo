@@ -5,6 +5,7 @@ import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.result.registerForActivityResult
 import androidx.annotation.MainThread
 import androidx.lifecycle.Lifecycle
+import java.io.Serializable
 
 /**
  * This interface is direct based on [ActivityResultCaller], but due to incompatibility of ReactNative
@@ -16,7 +17,7 @@ interface AppContextActivityResultCaller {
    * @see ActivityResultCaller.registerForActivityResult from `androidx.activity:activity-ktx:1.4.0`.
    */
   @MainThread
-  suspend fun <I, O, P: Bundleable<P>> registerForActivityResult(
+  suspend fun <I, O, P: Serializable> registerForActivityResult(
     contract: ActivityResultContract<I, O>,
     fallbackCallback: AppContextActivityResultFallbackCallback<O, P>,
   ): AppContextActivityResultLauncher<I, O, P>

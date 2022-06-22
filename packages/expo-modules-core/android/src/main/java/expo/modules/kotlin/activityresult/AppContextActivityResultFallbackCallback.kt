@@ -1,5 +1,7 @@
 package expo.modules.kotlin.activityresult
 
+import java.io.Serializable
+
 /**
  * @see [androidx.activity.result.ActivityResultCallback]
  *
@@ -10,6 +12,6 @@ package expo.modules.kotlin.activityresult
  * @param O - result/output type
  * @param P - additional parameter type
  */
-fun interface AppContextActivityResultFallbackCallback<O, P: Bundleable<P>> {
+fun interface AppContextActivityResultFallbackCallback<O, P: Serializable> {
   fun onActivityResult(result: O, params: P)
 }
