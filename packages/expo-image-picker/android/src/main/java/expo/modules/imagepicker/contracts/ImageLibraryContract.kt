@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import androidx.activity.result.contract.ActivityResultContract
 import androidx.core.net.toFile
 import expo.modules.imagepicker.MediaType
 import expo.modules.imagepicker.toImageFileExtension
@@ -18,12 +19,11 @@ import expo.modules.kotlin.providers.AppContextProvider
  */
 internal class ImageLibraryContract(
   private val appContextProvider: AppContextProvider,
-  private val singleMimeType: String,
-) : ImagePickerContract() {
-  override fun createIntent(context: Context, input: Any?) =
+) : ActivityResultContract<ImageLibraryContractOptions, ImagePickerContractResult>() {
+  override fun createIntent(context: Context, input: ImageLibraryContractOptions) =
     Intent(Intent.ACTION_GET_CONTENT)
       .addCategory(Intent.CATEGORY_OPENABLE)
-      .setType(singleMimeType)
+      .setType(input.singleMimeType)
 
   override fun parseResult(resultCode: Int, intent: Intent?) =
     if (resultCode == Activity.RESULT_CANCELED) {
@@ -36,3 +36,7 @@ internal class ImageLibraryContract(
       ImagePickerContractResult.Success(type to uri)
     }
 }
+
+internal data class ImageLibraryContractOptions(
+  val singleMimeType: String,
+)
