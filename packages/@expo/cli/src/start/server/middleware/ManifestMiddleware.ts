@@ -236,36 +236,57 @@ export abstract class ManifestMiddleware<
     await resolveGoogleServicesFile(this.projectRoot, manifest);
   }
 
+  /**
+   * Web platforms should create an index.html response using the same script resolution as native.
+   *
+   * Instead of adding a `bundleUrl` to a `manifest.json` (native) we'll add a `<script src="">`
+   * to an `index.html`, this enables the web platform to load JavaScript from the server.
+   */
+  private async handleWebRequestAsync(req: ServerRequest, res: ServerResponse) {
+    const platform = 'web';
+    // Read from headers
+    const mainModuleName = this.resolveMainModuleName(this.initialProjectConfig, platform);
+    const bundleUrl = this._getBundleUrlPath({
+      platform,
+      mainModuleName,
+    });
+
+    res.setHeader('Content-Type', 'text/html');
+
+    res.end(
+      await createTemplateHtmlFromExpoConfigAsync(this.projectRoot, {
+        exp: this.initialProjectConfig.exp,
+        scripts: [bundleUrl],
+      })
+    );
+  }
+
+  /** Exposed for testing. */
+  async checkBrowserRequestAsync(req: ServerRequest, res: ServerResponse) {
+    // Read the config
+    const bundlers = getPlatformBundlers(this.initialProjectConfig.exp);
+    if (bundlers.web === 'metro') {
+      // NOTE(EvanBacon): This effectively disables the safety check we do on custom runtimes to ensure
+      // the `expo-platform` header is included. When `web.bundler=web`, if the user has non-standard Expo
+      // code loading then they'll get a web bundle without a clear assertion of platform support.
+      const platform = parsePlatformHeader(req);
+      // On web, serve the public folder
+      if (!platform || platform === 'web') {
+        await this.handleWebRequestAsync(req, res);
+        return true;
+      }
+    }
+    return false;
+  }
+
   async handleRequestAsync(
     req: ServerRequest,
     res: ServerResponse,
     next: ServerNext
   ): Promise<void> {
-    // Read the config
-    const bundlers = getPlatformBundlers(this.initialProjectConfig.exp);
-    if (bundlers.web === 'metro') {
-      let platform = parsePlatformHeader(req);
-      // On web, serve the public folder
-      if (!platform || platform === 'web') {
-        platform = 'web';
-
-        // Read from headers
-        const mainModuleName = this.resolveMainModuleName(this.initialProjectConfig, platform);
-        const bundleUrl = this._getBundleUrlPath({
-          platform,
-          mainModuleName,
-        });
-
-        res.setHeader('Content-Type', 'text/html');
-
-        res.end(
-          await createTemplateHtmlFromExpoConfigAsync(this.projectRoot, {
-            exp: this.initialProjectConfig.exp,
-            scripts: [bundleUrl],
-          })
-        );
-        return;
-      }
+    // First check for standard JavaScript runtimes (aka legacy browsers like Chrome).
+    if (await this.checkBrowserRequestAsync(req, res)) {
+      return;
     }
 
     // Save device IDs for dev client.

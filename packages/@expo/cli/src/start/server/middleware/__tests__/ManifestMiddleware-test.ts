@@ -3,8 +3,17 @@ import { getConfig } from '@expo/config';
 import { asMock } from '../../../../__tests__/asMock';
 import * as Log from '../../../../log';
 import * as ProjectDevices from '../../../project/devices';
-import { ManifestMiddleware, ParsedHeaders } from '../ManifestMiddleware';
-import { ServerHeaders, ServerRequest } from '../server.types';
+import { getPlatformBundlers } from '../../platformBundlers';
+import { ManifestMiddleware, ManifestRequestInfo } from '../ManifestMiddleware';
+import { ServerHeaders, ServerRequest, ServerResponse } from '../server.types';
+import { createTemplateHtmlFromExpoConfigAsync } from '../../webTemplate';
+
+jest.mock('../../webTemplate', () => ({
+  createTemplateHtmlFromExpoConfigAsync: jest.fn(async () => '<html />'),
+}));
+jest.mock('../../platformBundlers', () => ({
+  getPlatformBundlers: jest.fn(jest.requireActual('../../platformBundlers').getPlatformBundlers),
+}));
 
 jest.mock('../../../../log');
 jest.mock('../resolveAssets', () => ({
@@ -15,6 +24,7 @@ jest.mock('../resolveEntryPoint', () => ({
   resolveEntryPoint: jest.fn(() => './index.js'),
 }));
 jest.mock('@expo/config', () => ({
+  getNameFromConfig: jest.fn(jest.requireActual('@expo/config').getNameFromConfig),
   getProjectConfigDescriptionWithPaths: jest.fn(),
   getConfig: jest.fn(() => ({
     pkg: {},
@@ -29,13 +39,13 @@ jest.mock('../../../project/devices', () => ({
   saveDevicesAsync: jest.fn(async () => ({})),
 }));
 
-class MockManifestMiddleware extends ManifestMiddleware {
+class MockManifestMiddleware extends ManifestMiddleware<any> {
   public _getManifestResponseAsync(
-    options: ParsedHeaders
+    options: ManifestRequestInfo
   ): Promise<{ body: string; version: string; headers: ServerHeaders }> {
     throw new Error('Method not implemented.');
   }
-  public getParsedHeaders(req: ServerRequest): ParsedHeaders {
+  public getParsedHeaders(req: ServerRequest): ManifestRequestInfo {
     throw new Error('Method not implemented.');
   }
   protected trackManifest(version?: string): void {
@@ -44,6 +54,74 @@ class MockManifestMiddleware extends ManifestMiddleware {
 }
 
 const asReq = (req: Partial<ServerRequest>) => req as ServerRequest;
+const asRes = (res: Partial<ServerResponse>) => res as ServerResponse;
+
+describe('checkBrowserRequestAsync', () => {
+  const createConstructUrl = () =>
+    jest.fn(({ scheme, hostname }) => `${scheme}://${hostname ?? 'localhost'}:8080`);
+
+  it('handles browser requests when the web bundler is "metro" and no platform is specified', async () => {
+    asMock(getPlatformBundlers).mockReturnValueOnce({
+      web: 'metro',
+      ios: 'metro',
+      android: 'metro',
+    });
+
+    const middleware = new MockManifestMiddleware('/', {
+      constructUrl: createConstructUrl(),
+      mode: 'development',
+    });
+
+    const res = asRes({
+      setHeader: jest.fn(),
+      end: jest.fn(),
+    });
+
+    expect(
+      await middleware.checkBrowserRequestAsync(
+        asReq({ url: 'http://localhost:8080/', headers: {} }),
+        res
+      )
+    ).toBe(true);
+
+    expect(createTemplateHtmlFromExpoConfigAsync).toHaveBeenCalledWith('/', {
+      exp: { name: 'my-app', sdkVersion: '45.0.0', slug: 'my-app' },
+      scripts: [
+        // NOTE(EvanBacon): Browsers won't pass the `expo-platform` header so we need to
+        // provide the `platform=web` query parameter in order for the multi-platform dev server
+        // to return the correct bundle.
+        '/./index.bundle?platform=web&dev=true&hot=false',
+      ],
+    });
+    expect(res.setHeader).toBeCalledWith('Content-Type', 'text/html');
+    expect(res.end).toBeCalledWith('<html />');
+  });
+
+  it('skips handling browser requests when the web bundler is "webpack"', async () => {
+    asMock(getPlatformBundlers).mockReturnValueOnce({
+      web: 'webpack',
+      ios: 'metro',
+      android: 'metro',
+    });
+
+    const middleware = new MockManifestMiddleware('/', {
+      constructUrl: createConstructUrl(),
+      mode: 'development',
+    });
+
+    const res = asRes({
+      setHeader: jest.fn(),
+      end: jest.fn(),
+    });
+
+    expect(
+      await middleware.checkBrowserRequestAsync(
+        asReq({ url: 'http://localhost:8080/', headers: {} }),
+        res
+      )
+    ).toBe(false);
+  });
+});
 
 describe('_getBundleUrl', () => {
   const createConstructUrl = () =>
