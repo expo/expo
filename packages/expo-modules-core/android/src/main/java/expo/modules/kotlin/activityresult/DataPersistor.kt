@@ -1,6 +1,5 @@
 package expo.modules.kotlin.activityresult
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
@@ -10,7 +9,6 @@ import androidx.core.os.bundleOf
 import java.io.Serializable
 import java.util.*
 import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
 
 const val EXPIRE_KEY = "expire"
 const val EXPIRATION_TIME = 5 * 60 * 1000 // 5 min

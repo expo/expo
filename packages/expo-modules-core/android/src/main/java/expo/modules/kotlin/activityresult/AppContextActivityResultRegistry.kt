@@ -121,14 +121,18 @@ class AppContextActivityResultRegistry(
         val request: IntentSenderRequest = intent.getParcelableExtra(StartIntentSenderForResult.EXTRA_INTENT_SENDER_REQUEST)!!
         try {
           // startIntentSenderForResult path
-          ActivityCompat.startIntentSenderForResult(activity, request.intentSender,
+          ActivityCompat.startIntentSenderForResult(
+            activity, request.intentSender,
             requestCode, request.fillInIntent, request.flagsMask,
-            request.flagsValues, 0, optionsBundle)
+            request.flagsValues, 0, optionsBundle
+          )
         } catch (e: IntentSender.SendIntentException) {
           Handler(Looper.getMainLooper()).post {
-            dispatchResult(requestCode, Activity.RESULT_CANCELED,
+            dispatchResult(
+              requestCode, Activity.RESULT_CANCELED,
               Intent().setAction(StartIntentSenderForResult.ACTION_INTENT_SENDER_REQUEST)
-                .putExtra(StartIntentSenderForResult.EXTRA_SEND_INTENT_EXCEPTION, e))
+                .putExtra(StartIntentSenderForResult.EXTRA_SEND_INTENT_EXCEPTION, e)
+            )
           }
         }
       }
@@ -149,7 +153,7 @@ class AppContextActivityResultRegistry(
    * @see [androidx.activity.result.ActivityResultRegistry.register]
    */
   @MainThread
-  fun <I, O, P: Serializable> register(
+  fun <I, O, P : Serializable> register(
     key: String,
     lifecycleOwner: LifecycleOwner,
     contract: ActivityResultContract<I, O>,
@@ -293,7 +297,7 @@ class AppContextActivityResultRegistry(
    * 2. launcher Activity has been recreated and it has already proceeded to [Lifecycle.State.STARTED] phase, so use fallback callback
    * 3. results are delivered, but [Activity] has not yet reached [Lifecycle.State.STARTED] phase, so save them got later use
    */
-  private fun <O, P: Serializable> doDispatch(key: String, resultCode: Int, data: Intent?, callbacksAndContract: CallbacksAndContract<O, P>?) {
+  private fun <O, P : Serializable> doDispatch(key: String, resultCode: Int, data: Intent?, callbacksAndContract: CallbacksAndContract<O, P>?) {
     val currentLifecycleState = keyToLifecycleContainers[key]?.lifecycle?.currentState
 
     if (callbacksAndContract?.mainCallback != null && launchedKeys.contains(key)) {
@@ -320,7 +324,7 @@ class AppContextActivityResultRegistry(
     return number
   }
 
-  private data class CallbacksAndContract<O, P: Serializable>(
+  private data class CallbacksAndContract<O, P : Serializable>(
     /**
      * Fallback callback that accepts both output and deserialized additional parameters
      */

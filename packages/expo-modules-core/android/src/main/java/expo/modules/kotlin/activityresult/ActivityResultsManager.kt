@@ -71,7 +71,7 @@ class ActivityResultsManager(
 
   // region AppContextActivityResultCaller
 
-  override suspend fun <I, O, P: Serializable> registerForActivityResult(
+  override suspend fun <I, O, P : Serializable> registerForActivityResult(
     contract: ActivityResultContract<I, O>,
     fallbackCallback: AppContextActivityResultFallbackCallback<O, P>
   ): AppContextActivityResultLauncher<I, O, P> =

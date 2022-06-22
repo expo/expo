@@ -11,6 +11,6 @@ import java.io.Serializable
  *
  * @see [androidx.activity.result.ActivityResultCallback]
  */
-fun interface AppContextActivityResultFallbackCallback<O, P: Serializable> {
+fun interface AppContextActivityResultFallbackCallback<O, P : Serializable> {
   fun onActivityResult(result: O, params: P)
 }

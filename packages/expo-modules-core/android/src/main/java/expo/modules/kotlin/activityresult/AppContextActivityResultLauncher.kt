@@ -22,7 +22,7 @@ abstract class AppContextActivityResultLauncher<I, O, P> {
    */
   abstract fun launch(input: I, params: P, callback: ActivityResultCallback<O>)
 
-  suspend fun launch(input: I, params: P): O  = suspendCoroutine { continuation ->
+  suspend fun launch(input: I, params: P): O = suspendCoroutine { continuation ->
     launch(input, params) { output -> continuation.resume(output) }
   }
 

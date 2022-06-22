@@ -18,7 +18,7 @@ interface AppContextActivityResultCaller {
    * @param P - additional parameters to be passed into the [fallbackCallback]
    */
   @MainThread
-  suspend fun <I, O, P: Serializable> registerForActivityResult(
+  suspend fun <I, O, P : Serializable> registerForActivityResult(
     contract: ActivityResultContract<I, O>,
     fallbackCallback: AppContextActivityResultFallbackCallback<O, P>,
   ): AppContextActivityResultLauncher<I, O, P>

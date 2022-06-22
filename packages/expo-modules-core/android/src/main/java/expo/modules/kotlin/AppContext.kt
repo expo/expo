@@ -49,7 +49,6 @@ class AppContext(
   private val reactContextHolder: WeakReference<ReactApplicationContext>
 ) : CurrentActivityProvider, AppContextActivityResultCaller {
   val registry = ModuleRegistry(WeakReference(this)).apply {
-
   }
   private val reactLifecycleDelegate = ReactLifecycleDelegate(this)
 
@@ -200,9 +199,11 @@ class AppContext(
   }
 
   fun onHostResume() {
-    activityResultsManager.onHostResume(requireNotNull(currentActivity) {
-      "Current Activity is not available at this moment"
-    })
+    activityResultsManager.onHostResume(
+      requireNotNull(currentActivity) {
+        "Current Activity is not available at this moment"
+      }
+    )
     registry.post(EventName.ACTIVITY_ENTERS_FOREGROUND)
   }
 
@@ -211,9 +212,11 @@ class AppContext(
   }
 
   fun onHostDestroy() {
-    activityResultsManager.onHostDestroy(requireNotNull(currentActivity) {
-      "Current Activity is not available at this moment"
-    })
+    activityResultsManager.onHostDestroy(
+      requireNotNull(currentActivity) {
+        "Current Activity is not available at this moment"
+      }
+    )
     registry.post(EventName.ACTIVITY_DESTROYS)
   }
 
@@ -255,7 +258,7 @@ class AppContext(
 // region AppContextActivityResultCaller
 
   @MainThread
-  override suspend fun <I, O, P: Serializable> registerForActivityResult(
+  override suspend fun <I, O, P : Serializable> registerForActivityResult(
     contract: ActivityResultContract<I, O>,
     fallbackCallback: AppContextActivityResultFallbackCallback<O, P>
   ): AppContextActivityResultLauncher<I, O, P> =
