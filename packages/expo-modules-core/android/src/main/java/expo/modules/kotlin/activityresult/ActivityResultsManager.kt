@@ -19,23 +19,24 @@ import kotlinx.coroutines.launch
 import java.util.concurrent.atomic.AtomicInteger
 
 class ActivityResultsManager(
-  private val currentActivityProvider: CurrentActivityProvider
+  currentActivityProvider: CurrentActivityProvider
 ) : AppContextActivityResultCaller, AppCompatActivityAware {
-  private val activity: AppCompatActivity
-    get() = requireNotNull(currentActivityProvider.currentActivity) { "Current Activity is not available at the moment" }
-
   /**
    * Due to the fact that [AppContext] is not coupled directly with the [Activity]'s lifecycle
    * it's impossible to subscribe all [Lifecycle]'s events properly.
    * That forces us to create our own [AppContextActivityResultRegistry].
    */
-  private val nextLocalRequestCode = AtomicInteger()
   private val registry = AppContextActivityResultRegistry(currentActivityProvider)
+  private val nextLocalRequestCode = AtomicInteger()
+
+  /**
+   * Helper property that allows for waiting for [Activity] creation.
+   * It is useful when some Module wants to register itself before the current [Activity] created.
+   */
   private val activityAwareHelper = AppCompatActivityAwareHelper()
 
   init {
     GlobalScope.launch {
-      // this is launched only once per Activity life
       withActivityAvailable { activity ->
         registry.restoreInstanceState(activity)
       }
@@ -65,9 +66,9 @@ class ActivityResultsManager(
 
   // region AppContextActivityResultCaller
 
-  override suspend fun <I, O, P> registerForActivityResult(
+  override suspend fun <I, O, P: Bundleable<P>> registerForActivityResult(
     contract: ActivityResultContract<I, O>,
-    fallbackCallback: AppContextActivityResultCallback<O, P>
+    fallbackCallback: AppContextActivityResultFallbackCallback<O, P>
   ): AppContextActivityResultLauncher<I, O, P> =
     withActivityAvailable { activity ->
       registry.register(

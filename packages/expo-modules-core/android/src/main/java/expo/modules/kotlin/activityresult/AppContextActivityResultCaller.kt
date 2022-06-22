@@ -16,8 +16,8 @@ interface AppContextActivityResultCaller {
    * @see ActivityResultCaller.registerForActivityResult from `androidx.activity:activity-ktx:1.4.0`.
    */
   @MainThread
-  suspend fun <I, O, P> registerForActivityResult(
+  suspend fun <I, O, P: Bundleable<P>> registerForActivityResult(
     contract: ActivityResultContract<I, O>,
-    fallbackCallback: AppContextActivityResultCallback<O, P>,
+    fallbackCallback: AppContextActivityResultFallbackCallback<O, P>,
   ): AppContextActivityResultLauncher<I, O, P>
 }

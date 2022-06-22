@@ -22,9 +22,10 @@ import expo.modules.interfaces.permissions.Permissions
 import expo.modules.interfaces.sensors.SensorServiceInterface
 import expo.modules.interfaces.taskManager.TaskManagerInterface
 import expo.modules.kotlin.activityresult.ActivityResultsManager
-import expo.modules.kotlin.activityresult.AppContextActivityResultCallback
+import expo.modules.kotlin.activityresult.AppContextActivityResultFallbackCallback
 import expo.modules.kotlin.activityresult.AppContextActivityResultCaller
 import expo.modules.kotlin.activityresult.AppContextActivityResultLauncher
+import expo.modules.kotlin.activityresult.Bundleable
 import expo.modules.kotlin.defaultmodules.ErrorManagerModule
 import expo.modules.kotlin.events.EventEmitter
 import expo.modules.kotlin.events.EventName
@@ -251,9 +252,9 @@ class AppContext(
 // region AppContextActivityResultCaller
 
   @MainThread
-  override suspend fun <I, O, P> registerForActivityResult(
+  override suspend fun <I, O, P: Bundleable<P>> registerForActivityResult(
     contract: ActivityResultContract<I, O>,
-    fallbackCallback: AppContextActivityResultCallback<O, P>
+    fallbackCallback: AppContextActivityResultFallbackCallback<O, P>
   ): AppContextActivityResultLauncher<I, O, P> =
     activityResultsManager.registerForActivityResult(contract, fallbackCallback)
 
