@@ -1,6 +1,7 @@
 package expo.modules.updates.launcher
 
 import android.content.Context
+import android.text.format.DateUtils
 import androidx.room.Room
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
 import androidx.test.platform.app.InstrumentationRegistry
@@ -59,7 +60,7 @@ class DatabaseLauncherTest {
   @Test
   fun testGetUpdateIds_DBWithOneUpdate() {
     val testUpdate = UpdateEntity(UUID.randomUUID(), Date(), "1.0", "scopeKey")
-    testUpdate.lastAccessed = Date(Date().time - 24 * 60 * 60 * 1000) // yesterday
+    testUpdate.lastAccessed = Date(Date().time - DateUtils.DAY_IN_MILLIS) // yesterday
     testUpdate.status = UpdateStatus.READY
     db.updateDao().insertUpdate(testUpdate)
 
@@ -80,12 +81,12 @@ class DatabaseLauncherTest {
   @Test
   fun testGetUpdateIds_DBWithOneReadyUpdate() {
     val testUpdate1 = UpdateEntity(UUID.randomUUID(), Date(), "1.0", "scopeKey")
-    testUpdate1.lastAccessed = Date(Date().time - 24 * 60 * 60 * 1000) // yesterday
+    testUpdate1.lastAccessed = Date(Date().time - DateUtils.DAY_IN_MILLIS) // yesterday
     testUpdate1.status = UpdateStatus.READY
     db.updateDao().insertUpdate(testUpdate1)
 
     val testUpdate2 = UpdateEntity(UUID.randomUUID(), Date(), "1.0", "scopeKey")
-    testUpdate2.lastAccessed = Date(Date().time - 24 * 60 * 60 * 1000) // yesterday
+    testUpdate2.lastAccessed = Date(Date().time - DateUtils.DAY_IN_MILLIS) // yesterday
     testUpdate2.status = UpdateStatus.PENDING
     db.updateDao().insertUpdate(testUpdate2)
 
@@ -106,7 +107,7 @@ class DatabaseLauncherTest {
   @Test
   fun testLaunch_MarkUpdateAccessed() {
     val testUpdate = UpdateEntity(UUID.randomUUID(), Date(), "1.0", "scopeKey")
-    testUpdate.lastAccessed = Date(Date().time - 24 * 60 * 60 * 1000) // yesterday
+    testUpdate.lastAccessed = Date(Date().time - DateUtils.DAY_IN_MILLIS) // yesterday
     db.updateDao().insertUpdate(testUpdate)
 
     val testAsset = AssetEntity("bundle-1234", "js")
