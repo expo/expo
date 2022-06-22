@@ -65,6 +65,8 @@ export declare function addEventListener(type: 'url', handler: URLListener): Emi
  * @param handler An [`URLListener`](#urllistener) function that takes an `event` object of the type
  * [`EventType`](#eventype).
  * @see [React Native Docs Linking page](https://reactnative.dev/docs/linking#removeeventlistener).
+ *
+ * @deprecated Call `remove()` on the return value of `addEventListener()` instead.
  */
 export declare function removeEventListener(type: 'url', handler: URLListener): void;
 /**
