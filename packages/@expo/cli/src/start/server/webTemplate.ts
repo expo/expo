@@ -31,7 +31,7 @@ export async function createTemplateHtmlFromExpoConfigAsync(
 function getFileFromLocalPublicFolder(
   projectRoot: string,
   { publicFolder, filePath }: { publicFolder: string; filePath: string }
-) {
+): string | null {
   const localFilePath = path.resolve(projectRoot, publicFolder, filePath);
   if (!fs.existsSync(localFilePath)) {
     return null;
@@ -40,7 +40,7 @@ function getFileFromLocalPublicFolder(
 }
 
 /** Attempt to read the `index.html` from the local project before falling back on the template `index.html`. */
-async function getTemplateIndexHtmlAsync(projectRoot: string) {
+async function getTemplateIndexHtmlAsync(projectRoot: string): Promise<string> {
   let filePath = getFileFromLocalPublicFolder(projectRoot, {
     // TODO: Maybe use the app.json override.
     publicFolder: env.EXPO_PUBLIC_FOLDER,
@@ -52,6 +52,7 @@ async function getTemplateIndexHtmlAsync(projectRoot: string) {
   return fs.promises.readFile(filePath, 'utf8');
 }
 
+/** Return an `index.html` string with template values added. */
 export async function createTemplateHtmlAsync(
   projectRoot: string,
   {
@@ -67,7 +68,7 @@ export async function createTemplateHtmlAsync(
     title: string;
     themeColor?: string;
   }
-) {
+): Promise<string> {
   // Resolve the best possible index.html template file.
   let contents = await getTemplateIndexHtmlAsync(projectRoot);
 
@@ -89,6 +90,7 @@ export async function createTemplateHtmlAsync(
   return contents;
 }
 
-function addMeta(contents: string, meta: string) {
+/** Add a `<meta />` tag to the `<head />` element. */
+function addMeta(contents: string, meta: string): string {
   return contents.replace('</head>', `<meta ${meta}>\n</head>`);
 }
