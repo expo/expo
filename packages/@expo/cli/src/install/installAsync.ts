@@ -107,7 +107,7 @@ async function applyPluginsAsync(projectRoot: string, packages: string[]) {
   const { autoAddConfigPluginsAsync } = await import('./utils/autoAddConfigPlugins');
 
   try {
-    const { exp } = getConfig(projectRoot, { skipSDKVersionRequirement: true, skipPlugins: false });
+    const { exp } = getConfig(projectRoot, { skipSDKVersionRequirement: true });
 
     // Only auto add plugins if the plugins array is defined or if the project is using SDK +42.
     await autoAddConfigPluginsAsync(
