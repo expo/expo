@@ -121,19 +121,6 @@ PODS:
     - ExpoModulesCore
     - EXUpdatesInterface
     - React-Core
-  - expo-dev-launcher/Tests (1.0.0):
-    - EXManifests
-    - expo-dev-menu
-    - expo-dev-menu-interface
-    - ExpoModulesCore
-    - EXUpdatesInterface
-    - hermes-engine
-    - Nimble
-    - OHHTTPStubs
-    - Quick
-    - React-Core
-    - React-CoreModules
-    - React-hermes
   - expo-dev-launcher/Unsafe (1.0.0):
     - EXManifests
     - expo-dev-menu
@@ -144,9 +131,6 @@ PODS:
   - expo-dev-menu (1.0.0):
     - expo-dev-menu/Main (= 1.0.0)
   - expo-dev-menu-interface (0.7.0)
-  - expo-dev-menu-interface/Tests (0.7.0):
-    - Nimble
-    - Quick
   - expo-dev-menu/GestureHandler (1.0.0)
   - expo-dev-menu/Main (1.0.0):
     - EXManifests
@@ -184,16 +168,12 @@ PODS:
     - Yoga
   - expo-dev-menu/SafeAreaView (1.0.0)
   - expo-dev-menu/Tests (1.0.0):
-    - hermes-engine
     - Nimble
     - Quick
     - React-CoreModules
-    - React-hermes
   - expo-dev-menu/UITests (1.0.0):
-    - hermes-engine
     - React
     - React-CoreModules
-    - React-hermes
   - expo-dev-menu/Vendored (1.0.0):
     - expo-dev-menu/GestureHandler
     - expo-dev-menu/Reanimated
@@ -421,22 +401,9 @@ PODS:
   - nanopb/decode (2.30908.0)
   - nanopb/encode (2.30908.0)
   - Nimble (9.2.1)
-  - OHHTTPStubs (9.1.0):
-    - OHHTTPStubs/Default (= 9.1.0)
-  - OHHTTPStubs/Core (9.1.0)
-  - OHHTTPStubs/Default (9.1.0):
-    - OHHTTPStubs/Core
-    - OHHTTPStubs/JSON
-    - OHHTTPStubs/NSURLSession
-    - OHHTTPStubs/OHPathHelpers
-  - OHHTTPStubs/JSON (9.1.0):
-    - OHHTTPStubs/Core
-  - OHHTTPStubs/NSURLSession (9.1.0):
-    - OHHTTPStubs/Core
-  - OHHTTPStubs/OHPathHelpers (9.1.0)
   - PromisesObjC (2.1.0)
   - Protobuf (3.20.0)
-  - Quick (5.0.0)
+  - Quick (5.0.1)
   - RCT-Folly (2021.06.28.00-v2):
     - boost
     - DoubleConversion
@@ -877,10 +844,8 @@ DEPENDENCIES:
   - Expo (from `../../../packages/expo/ios`)
   - expo-dev-client (from `../../../packages/expo-dev-client/ios`)
   - expo-dev-launcher (from `../../../packages/expo-dev-launcher`)
-  - expo-dev-launcher/Tests (from `../../../packages/expo-dev-launcher`)
   - expo-dev-menu (from `../../../packages/expo-dev-menu`)
   - expo-dev-menu-interface (from `../../../packages/expo-dev-menu-interface/ios`)
-  - expo-dev-menu-interface/Tests (from `../../../packages/expo-dev-menu-interface/ios`)
   - expo-dev-menu/Tests (from `../../../packages/expo-dev-menu`)
   - expo-dev-menu/UITests (from `../../../packages/expo-dev-menu`)
   - ExpoCellular (from `../../../packages/expo-cellular/ios`)
@@ -995,7 +960,6 @@ SPEC REPOS:
     - MLKitFaceDetection
     - MLKitVision
     - nanopb
-    - OHHTTPStubs
     - PromisesObjC
     - Protobuf
     - Quick
@@ -1362,8 +1326,8 @@ SPEC CHECKSUMS:
   EXPermissions: 3dbb869e7f96a5711314f73d48ddc2f28009a7f6
   Expo: 8af09aaa24c023d55160118554032b178fad1871
   expo-dev-client: 658fa86a3498812778d6c706205677c8e0674b9f
-  expo-dev-launcher: d752e911ee38ae4aca228a109c4ce07984006c44
-  expo-dev-menu: ef341cc70965de34085201b0ea57bc91f7ff16a8
+  expo-dev-launcher: fd6c935d293bf696c56c912c2b9266e0678bd7f5
+  expo-dev-menu: 7719fe054e8b084d2078207ce380feeb2e4ad026
   expo-dev-menu-interface: db5495dd7206992a94ce35c51391f139ae26f2b7
   ExpoCellular: b5daa3b732c0c9841979c39988062e50e70dc053
   ExpoClipboard: bf4c910383ea182bc3706c572b7c6c6ecc012f13
@@ -1423,10 +1387,9 @@ SPEC CHECKSUMS:
   MLKitVision: e87dc3f2e456a6ab32361ebd985e078dd2746143
   nanopb: a0ba3315591a9ae0a16a309ee504766e90db0c96
   Nimble: d954d0accfd082f2225e62d71008440493e318f4
-  OHHTTPStubs: 90eac6d8f2c18317baeca36698523dc67c513831
   PromisesObjC: 99b6f43f9e1044bd87a95a60beff28c2c44ddb72
   Protobuf: 66e2f3b26a35e4cc379831f4ced538274ee4b923
-  Quick: f58aae30d750b27918005b93d870c187353a7bf0
+  Quick: 749aa754fd1e7d984f2000fe051e18a3a9809179
   RCT-Folly: 4d8508a426467c48885f1151029bc15fa5d7b3b8
   RCTRequired: 3e917ea5377751094f38145fdece525aa90545a0
   RCTTypeSafety: c43c072a4bd60feb49a9570b0517892b4305c45e

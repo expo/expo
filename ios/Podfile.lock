@@ -1846,8 +1846,6 @@ PODS:
   - DoubleConversion (1.1.6)
   - EASClient (0.2.1):
     - ExpoModulesCore
-  - EASClient/Tests (0.2.1):
-    - ExpoModulesCore
   - EXAdsAdMob (13.0.0):
     - ExpoModulesCore
     - Google-Mobile-Ads-SDK (= 8.13.0)
@@ -1926,14 +1924,11 @@ PODS:
     - ExpoModulesCore
     - React-Core
   - EXJSONUtils (0.3.0)
-  - EXJSONUtils/Tests (0.3.0)
   - EXLocalAuthentication (12.2.0):
     - ExpoModulesCore
   - EXLocation (14.2.1):
     - ExpoModulesCore
   - EXManifests (0.3.0):
-    - EXJSONUtils
-  - EXManifests/Tests (0.3.0):
     - EXJSONUtils
   - EXMediaLibrary (14.1.0):
     - ExpoModulesCore
@@ -1950,9 +1945,6 @@ PODS:
     - ExpoModulesCore
   - ExpoClipboard (3.0.1):
     - ExpoModulesCore
-  - ExpoClipboard/Tests (3.0.1):
-    - ExpoModulesCore
-    - ExpoModulesTestCore
   - ExpoCrypto (10.2.0):
     - ExpoModulesCore
   - ExpoHaptics (11.2.0):
@@ -1971,10 +1963,6 @@ PODS:
   - ExpoMailComposer (11.2.0):
     - ExpoModulesCore
   - ExpoModulesCore (0.9.0):
-    - React-Core
-    - ReactCommon/turbomodule/core
-  - ExpoModulesCore/Tests (0.9.0):
-    - ExpoModulesTestCore
     - React-Core
     - ReactCommon/turbomodule/core
   - ExpoModulesTestCore (0.8.0):
@@ -2015,7 +2003,6 @@ PODS:
   - EXStoreReview (5.2.0):
     - ExpoModulesCore
   - EXStructuredHeaders (2.2.1)
-  - EXStructuredHeaders/Tests (2.2.1)
   - EXTaskManager (10.2.1):
     - ExpoModulesCore
     - UMAppLoader
@@ -2028,15 +2015,6 @@ PODS:
     - ExpoModulesCore
     - EXStructuredHeaders
     - EXUpdatesInterface
-    - React-Core
-  - EXUpdates/Tests (0.13.0):
-    - ASN1Decoder (~> 1.8)
-    - EASClient
-    - EXManifests
-    - ExpoModulesCore
-    - EXStructuredHeaders
-    - EXUpdatesInterface
-    - OCMockito (~> 6.0)
     - React-Core
   - EXUpdatesInterface (0.6.0)
   - EXVideoThumbnails (6.3.0):
@@ -2227,9 +2205,6 @@ PODS:
   - nanopb/decode (2.30908.0)
   - nanopb/encode (2.30908.0)
   - Nimble (9.2.1)
-  - OCHamcrest (8.0.0)
-  - OCMockito (6.0.0):
-    - OCHamcrest (~> 8.0)
   - PromisesObjC (2.1.0)
   - Protobuf (3.20.0)
   - Quick (5.0.0)
@@ -2947,7 +2922,6 @@ DEPENDENCIES:
   - CocoaLumberjack (~> 3.5.3)
   - DoubleConversion (from `../react-native-lab/react-native/third-party-podspecs/DoubleConversion.podspec`)
   - EASClient (from `../packages/expo-eas-client/ios`)
-  - EASClient/Tests (from `../packages/expo-eas-client/ios`)
   - EXAdsAdMob (from `../packages/expo-ads-admob/ios`)
   - EXAdsFacebook (from `../packages/expo-ads-facebook/ios`)
   - EXAmplitude (from `../packages/expo-analytics-amplitude/ios`)
@@ -2977,11 +2951,9 @@ DEPENDENCIES:
   - EXGL_CPP (from `../packages/expo-gl-cpp/cpp`)
   - EXImageLoader (from `../packages/expo-image-loader/ios`)
   - EXJSONUtils (from `../packages/expo-json-utils/ios`)
-  - EXJSONUtils/Tests (from `../packages/expo-json-utils/ios`)
   - EXLocalAuthentication (from `../packages/expo-local-authentication/ios`)
   - EXLocation (from `../packages/expo-location/ios`)
   - EXManifests (from `../packages/expo-manifests/ios`)
-  - EXManifests/Tests (from `../packages/expo-manifests/ios`)
   - EXMediaLibrary (from `../packages/expo-media-library/ios`)
   - EXNetwork (from `../packages/expo-network/ios`)
   - EXNotifications (from `../packages/expo-notifications/ios`)
@@ -2989,7 +2961,6 @@ DEPENDENCIES:
   - Expo (from `../packages/expo/ios`)
   - ExpoCellular (from `../packages/expo-cellular/ios`)
   - ExpoClipboard (from `../packages/expo-clipboard/ios`)
-  - ExpoClipboard/Tests (from `../packages/expo-clipboard/ios`)
   - ExpoCrypto (from `../packages/expo-crypto/ios`)
   - ExpoHaptics (from `../packages/expo-haptics/ios`)
   - ExpoImageManipulator (from `../packages/expo-image-manipulator/ios`)
@@ -2999,7 +2970,6 @@ DEPENDENCIES:
   - ExpoLocalization (from `../packages/expo-localization/ios`)
   - ExpoMailComposer (from `../packages/expo-mail-composer/ios`)
   - ExpoModulesCore (from `../packages/expo-modules-core/ios`)
-  - ExpoModulesCore/Tests (from `../packages/expo-modules-core/ios`)
   - ExpoModulesTestCore (from `../packages/expo-modules-test-core/ios`)
   - ExpoRandom (from `../packages/expo-random/ios`)
   - ExpoSystemUI (from `../packages/expo-system-ui/ios`)
@@ -3017,11 +2987,9 @@ DEPENDENCIES:
   - EXSQLite (from `../packages/expo-sqlite/ios`)
   - EXStoreReview (from `../packages/expo-store-review/ios`)
   - EXStructuredHeaders (from `../packages/expo-structured-headers/ios`)
-  - EXStructuredHeaders/Tests (from `../packages/expo-structured-headers/ios`)
   - EXTaskManager (from `../packages/expo-task-manager/ios`)
   - EXTrackingTransparency (from `../packages/expo-tracking-transparency/ios`)
   - EXUpdates (from `../packages/expo-updates/ios`)
-  - EXUpdates/Tests (from `../packages/expo-updates/ios`)
   - EXUpdatesInterface (from `../packages/expo-updates-interface/ios`)
   - EXVideoThumbnails (from `../packages/expo-video-thumbnails/ios`)
   - FBLazyVector (from `../react-native-lab/react-native/Libraries/FBLazyVector`)
@@ -3109,8 +3077,6 @@ SPEC REPOS:
     - MLKitFaceDetection
     - MLKitVision
     - nanopb
-    - OCHamcrest
-    - OCMockito
     - PromisesObjC
     - Protobuf
     - Quick
@@ -4437,8 +4403,6 @@ SPEC CHECKSUMS:
   MLKitVision: e87dc3f2e456a6ab32361ebd985e078dd2746143
   nanopb: a0ba3315591a9ae0a16a309ee504766e90db0c96
   Nimble: d954d0accfd082f2225e62d71008440493e318f4
-  OCHamcrest: a613690381f1dac7637c18962c10dbe8feca4bb5
-  OCMockito: 780f04370226f81a9d972c97d1203864ef609f5b
   PromisesObjC: 99b6f43f9e1044bd87a95a60beff28c2c44ddb72
   Protobuf: 66e2f3b26a35e4cc379831f4ced538274ee4b923
   Quick: f58aae30d750b27918005b93d870c187353a7bf0
