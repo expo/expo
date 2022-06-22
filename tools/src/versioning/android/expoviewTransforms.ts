@@ -63,8 +63,8 @@ export function expoviewTransforms(abiVersion: string): FileTransforms {
       },
       ...packagesToRename.map((pkg: string) => ({
         paths: './src/main/java/**/*.{java,kt}',
-        find: new RegExp(`import (static |)${escapeRegExp(pkg)}`, 'g'),
-        replaceWith: `import $1${abiVersion}.${pkg}`,
+        find: new RegExp(`([, ^(<])${escapeRegExp(pkg)}`, 'g'),
+        replaceWith: `$1${abiVersion}.${pkg}`,
       })),
       {
         paths: `./src/main/java/**/*.{java,kt}`,
