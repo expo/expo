@@ -59,6 +59,7 @@ public:
   void registerSyncFunction(
     jni::alias_ref<jstring> name,
     jint args,
+    jni::alias_ref<jni::JArrayInt> desiredTypes,
     jni::alias_ref<JNIFunctionBody::javaobject> JSIFunctionBody
   );
 
@@ -69,6 +70,7 @@ public:
   void registerAsyncFunction(
     jni::alias_ref<jstring> name,
     jint args,
+    jni::alias_ref<jni::JArrayInt> desiredTypes,
     jni::alias_ref<JNIAsyncFunctionBody::javaobject> JSIAsyncFunctionBody
   );
 

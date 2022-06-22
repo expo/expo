@@ -1,40 +1,10 @@
+@file:OptIn(ExperimentalCoroutinesApi::class)
+
 package expo.modules.kotlin.jni
 
 import com.google.common.truth.Truth
-import expo.modules.kotlin.AppContext
-import expo.modules.kotlin.ModuleRegistry
-import expo.modules.kotlin.modules.Module
-import expo.modules.kotlin.modules.ModuleDefinition
-import expo.modules.kotlin.modules.ModuleDefinitionBuilder
-import io.mockk.every
-import io.mockk.mockk
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Test
-import java.lang.ref.WeakReference
-
-private inline fun withJSIInterop(
-  vararg modules: Module,
-  block: JSIInteropModuleRegistry.() -> Unit
-) {
-  val appContextMock = mockk<AppContext>()
-  val registry = ModuleRegistry(WeakReference(appContextMock)).apply {
-    modules.forEach {
-      register(it)
-    }
-  }
-  every { appContextMock.registry } answers { registry }
-
-  val jsiIterop = JSIInteropModuleRegistry(appContextMock).apply {
-    installJSIForTests()
-  }
-
-  block(jsiIterop)
-}
-
-private inline fun inlineModule(
-  crossinline block: ModuleDefinitionBuilder.() -> Unit
-) = object : Module() {
-  override fun definition() = ModuleDefinition { block.invoke(this) }
-}
 
 class JSIInteropModuleRegistryTest {
   @Test
@@ -92,18 +62,14 @@ class JSIInteropModuleRegistryTest {
   fun async_functions_should_be_callable() = withJSIInterop(
     inlineModule {
       Name("TestModule")
-      AsyncFunction("f") { return@AsyncFunction 20 }
+      AsyncFunction("f") {
+        return@AsyncFunction 20
+      }
     }
-  ) {
-    val jsPromiseClass = evaluateScript(
-      """
-      const promise = ExpoModules.TestModule.f();
-      promise.constructor.name
-      """.trimIndent()
-    )
-
-    Truth.assertThat(jsPromiseClass.isString()).isTrue()
-    Truth.assertThat(jsPromiseClass.getString()).isEqualTo("Promise")
+  ) { methodQueue ->
+    val promiseResult = waitForAsyncFunction(methodQueue, "ExpoModules.TestModule.f()")
+    Truth.assertThat(promiseResult.isNumber()).isTrue()
+    Truth.assertThat(global().getProperty("promiseResult").getDouble().toInt()).isEqualTo(20)
   }
 
   @Test
@@ -133,5 +99,19 @@ class JSIInteropModuleRegistryTest {
     Truth.assertThat(i1Value.isNumber()).isTrue()
     val unboxedI1Value = i1Value.getDouble().toInt()
     Truth.assertThat(unboxedI1Value).isEqualTo(123)
+  }
+
+  @Test
+  fun work() = withJSIInterop(
+    inlineModule {
+      Name("TestModule")
+      Function("f1") { a: String, b: Int, c: Double ->
+        return@Function "$a $b $c"
+      }
+    }
+  ) {
+    val result = evaluateScript("ExpoModules.TestModule.f1('expo', 123, 1.3)").getString()
+
+    Truth.assertThat(result).isEqualTo("expo 123 1.3")
   }
 }

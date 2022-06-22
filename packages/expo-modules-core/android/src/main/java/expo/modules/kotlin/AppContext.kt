@@ -46,9 +46,15 @@ class AppContext(
     register(modulesProvider)
   }
   private val reactLifecycleDelegate = ReactLifecycleDelegate(this)
+
   // We postpone creating the `JSIInteropModuleRegistry` to not load so files in unit tests.
   private lateinit var jsiInterop: JSIInteropModuleRegistry
+
+  /**
+   * A queue used to dispatch all async methods that are called via JSI.
+   */
   internal val modulesQueue = CoroutineScope(
+    // TODO(@lukmccall): maybe it will be better to use a thread pool
     newSingleThreadContext("ExpoModulesCoreQueue") +
       SupervisorJob() +
       CoroutineName("ExpoModulesCoreCoroutineQueue")
@@ -63,6 +69,10 @@ class AppContext(
     }
   }
 
+  /**
+   * Initializes a JSI part of the module registry.
+   * It will be a NOOP if the remote debugging was activated.
+   */
   fun installJSIInterop() {
     jsiInterop = JSIInteropModuleRegistry(this)
     val reactContext = reactContextHolder.get() ?: return
