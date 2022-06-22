@@ -1,21 +1,14 @@
 import { getConfig } from '@expo/config';
 import { MetroDevServerOptions } from '@expo/dev-server';
-import fs from 'fs';
 import http from 'http';
 import Metro from 'metro';
 import { Terminal } from 'metro-core';
-import type { ResolutionContext } from 'metro-resolver';
-import path from 'path';
-import resolveFrom from 'resolve-from';
 
 import { createDevServerMiddleware } from '../middleware/createDevServerMiddleware';
-import { getPlatformBundlers, PlatformBundlers } from '../platformBundlers';
+import { getPlatformBundlers } from '../platformBundlers';
 import { MetroTerminalReporter } from './MetroTerminalReporter';
-import {
-  importExpoMetroConfigFromProject,
-  importMetroFromProject,
-  importMetroResolverFromProject,
-} from './resolveFromProject';
+import { importExpoMetroConfigFromProject, importMetroFromProject } from './resolveFromProject';
+import { withMetroMultiPlatform } from './withMetroMultiPlatform';
 
 // From expo/dev-server but with ability to use custom logger.
 type MessageSocket = {
@@ -103,92 +96,4 @@ export async function instantiateMetroAsync(
       messageSocket: messageSocketEndpoint,
     };
   }
-}
-
-/** Add support for `react-native-web` and the Web platform. */
-export function withMetroMultiPlatform(
-  projectRoot: string,
-  config: import('metro-config').ConfigT,
-  platformBundlers: PlatformBundlers
-) {
-  let expoConfigPlatforms = Object.entries(platformBundlers)
-    .filter(([, bundler]) => bundler === 'metro')
-    .map(([platform]) => platform);
-
-  if (Array.isArray(config.resolver.platforms)) {
-    expoConfigPlatforms = [...new Set(expoConfigPlatforms.concat(config.resolver.platforms))];
-  }
-
-  // @ts-expect-error: typed as `readonly`.
-  config.resolver.platforms = expoConfigPlatforms;
-
-  // Bail out early for performance enhancements if web is not enabled.
-  if (platformBundlers.web !== 'metro') {
-    return config;
-  }
-
-  const reactNativePath = path.dirname(resolveFrom(projectRoot, 'react-native/package.json'));
-
-  // @ts-expect-error: readonly
-  config.serializer.getPolyfills = ({ platform }) => {
-    if (platform === 'web') {
-      return [
-        // TODO: runtime polyfills, i.e. Fast Refresh, error overlay, React Dev Tools...
-      ];
-    }
-    return require(path.join(reactNativePath, 'rn-get-polyfills'))();
-  };
-
-  // Get the `transformer.assetRegistryPath`
-  // this needs to be unified since you can't dynamically
-  // swap out the transformer based on platform.
-  const assetRegistryPath = fs.realpathSync(
-    path.resolve(resolveFrom(projectRoot, '@react-native/assets/registry.js'))
-  );
-
-  // Create a resolver which dynamically disables support for
-  // `*.native.*` extensions on web.
-
-  const { resolve } = importMetroResolverFromProject(projectRoot);
-
-  const extraNodeModules: { [key: string]: Record<string, string> } = {
-    web: {
-      'react-native': path.resolve(require.resolve('react-native-web/package.json'), '..'),
-    },
-  };
-
-  Object.defineProperty(config.resolver, 'resolveRequest', {
-    value: (immutableContext: ResolutionContext, moduleName: string, platform: string | null) => {
-      // Must copy the immutable context so we can modify it.
-      const context: ResolutionContext = {
-        ...immutableContext,
-        resolveRequest: undefined,
-        // Ensure this is set correctly
-        preferNativePlatform: platform !== 'web',
-      };
-
-      // Conditionally remap `react-native` to `react-native-web`
-      if (platform && platform in extraNodeModules) {
-        context.extraNodeModules = extraNodeModules[platform];
-      }
-
-      const result = resolve(context, moduleName, platform);
-
-      // Replace the web resolver with the original one.
-      // This is basically an alias for web-only.
-      if (
-        platform === 'web' &&
-        result?.type === 'sourceFile' &&
-        typeof result?.filePath === 'string' &&
-        result.filePath.endsWith('react-native-web/dist/modules/AssetRegistry/index.js')
-      ) {
-        // @ts-expect-error: `readonly` for some reason.
-        result.filePath = assetRegistryPath;
-      }
-
-      return result;
-    },
-  });
-
-  return config;
 }
