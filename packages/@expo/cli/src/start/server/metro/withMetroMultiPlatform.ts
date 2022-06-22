@@ -100,24 +100,19 @@ export function withWebResolvers(config: ConfigT, projectRoot: string) {
   };
 
   return withCustomResolvers(config, projectRoot, [
-    // Add a resolver to mutate the context so it works with web.
-    (context: ResolutionContext, moduleName: string, platform: string | null) => {
-      // @ts-expect-error: typed as `readonly`.
-      context.preferNativePlatform = platform !== 'web';
+    // Add a resolver to alias the web asset resolver.
+    (immutableContext: ResolutionContext, moduleName: string, platform: string | null) => {
+      const context = { ...immutableContext };
 
       // Conditionally remap `react-native` to `react-native-web`
       if (platform && platform in extraNodeModules) {
         context.extraNodeModules = extraNodeModules[platform];
       }
 
-      return null;
-    },
-
-    // Add a resolver to alias the web asset resolver.
-    (context: ResolutionContext, moduleName: string, platform: string | null) => {
       const result = resolve(
         {
           ...context,
+          preferNativePlatform: platform !== 'web',
           resolveRequest: undefined,
         },
         moduleName,
