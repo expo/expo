@@ -17,9 +17,10 @@
 
 #endif
 
+namespace jsi = facebook::jsi;
+
 namespace expo {
 
-namespace jsi = facebook::jsi;
 void SyncCallInvoker::invokeAsync(std::function<void()> &&func) {
   func();
 }
@@ -118,5 +119,9 @@ jni::local_ref<JavaScriptObject::javaobject> JavaScriptRuntime::global() {
 jni::local_ref<JavaScriptObject::javaobject> JavaScriptRuntime::createObject() {
   auto newObject = std::make_shared<jsi::Object>(*runtime);
   return JavaScriptObject::newObjectCxxArgs(weak_from_this(), newObject);
+}
+
+void JavaScriptRuntime::drainJSEventLoop() {
+  while (!runtime->drainMicrotasks()) {}
 }
 } // namespace expo
