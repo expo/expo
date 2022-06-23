@@ -153,6 +153,7 @@ export type RecordingOptionsIOS = {
   linearPCMIsFloat?: boolean;
 };
 
+// @docs missing
 export type RecordingOptionsWeb = {
   mimeType?: string;
   bitsPerSecond?: number;
