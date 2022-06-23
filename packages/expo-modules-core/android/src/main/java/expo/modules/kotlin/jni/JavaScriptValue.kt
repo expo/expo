@@ -19,12 +19,14 @@ class JavaScriptValue @DoNotStrip private constructor(@DoNotStrip private val mH
   external fun isString(): Boolean
   external fun isSymbol(): Boolean
   external fun isFunction(): Boolean
+  external fun isArray(): Boolean
   external fun isObject(): Boolean
 
   external fun getBool(): Boolean
   external fun getDouble(): Double
   external fun getString(): String
   external fun getObject(): JavaScriptObject
+  external fun getArray(): Array<JavaScriptValue>
 
   @Throws(Throwable::class)
   protected fun finalize() {

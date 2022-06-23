@@ -16,11 +16,13 @@ void JavaScriptValue::registerNatives() {
                    makeNativeMethod("isString", JavaScriptValue::isString),
                    makeNativeMethod("isSymbol", JavaScriptValue::isSymbol),
                    makeNativeMethod("isFunction", JavaScriptValue::isFunction),
+                   makeNativeMethod("isArray", JavaScriptValue::isArray),
                    makeNativeMethod("isObject", JavaScriptValue::isObject),
                    makeNativeMethod("getBool", JavaScriptValue::getBool),
                    makeNativeMethod("getDouble", JavaScriptValue::getDouble),
                    makeNativeMethod("getString", JavaScriptValue::jniGetString),
                    makeNativeMethod("getObject", JavaScriptValue::getObject),
+                   makeNativeMethod("getArray", JavaScriptValue::getArray),
                  });
 }
 
@@ -56,6 +58,9 @@ std::string JavaScriptValue::kind() {
   }
   if (isFunction()) {
     return "function";
+  }
+  if (isArray()) {
+    return "array";
   }
   if (isObject()) {
     return "object";
@@ -99,6 +104,16 @@ bool JavaScriptValue::isFunction() {
   return false;
 }
 
+bool JavaScriptValue::isArray() {
+  if (jsValue->isObject()) {
+    auto runtime = runtimeHolder.lock();
+    assert(runtime != nullptr);
+    return jsValue->asObject(*runtime->get()).isArray(*runtime->get());
+  }
+
+  return false;
+}
+
 bool JavaScriptValue::isObject() {
   return jsValue->isObject();
 }
@@ -122,6 +137,27 @@ jni::local_ref<JavaScriptObject::javaobject> JavaScriptValue::getObject() {
   assert(runtime != nullptr);
   auto jsObject = std::make_shared<jsi::Object>(jsValue->getObject(*runtime->get()));
   return JavaScriptObject::newObjectCxxArgs(runtimeHolder, jsObject);
+}
+
+jni::local_ref<jni::JArrayClass<JavaScriptValue::javaobject>> JavaScriptValue::getArray() {
+  auto runtime = runtimeHolder.lock();
+  assert(runtime != nullptr);
+
+  auto jsArray = jsValue
+    ->getObject(*runtime->get())
+    .asArray(*runtime->get());
+  size_t size = jsArray.size(*runtime->get());
+
+  auto result = jni::JArrayClass<JavaScriptValue::javaobject>::newArray(size);
+  for (size_t i = 0; i < size; i++) {
+    auto element = JavaScriptValue::newObjectCxxArgs(
+      runtimeHolder,
+      std::make_shared<jsi::Value>(jsArray.getValueAtIndex(*runtime->get(), i))
+    );
+
+    result->setElement(i, element.release());
+  }
+  return result;
 }
 
 jni::local_ref<jstring> JavaScriptValue::jniKind() {
