@@ -50,6 +50,11 @@ class JSIInteropModuleRegistry(appContext: AppContext) {
   external fun createObject(): JavaScriptObject
 
   /**
+   * Drains the JavaScript VM internal Microtask (a.k.a. event loop) queue.
+   */
+  external fun drainJSEventLoop()
+
+  /**
    * Returns a `JavaScriptModuleObject` that is a bridge between [expo.modules.kotlin.modules.Module]
    * and HostObject exported via JSI.
    *

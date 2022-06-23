@@ -59,6 +59,11 @@ public:
    */
   jni::local_ref<jni::HybridClass<JavaScriptObject>::javaobject> createObject();
 
+  /**
+   * Drains the JavaScript VM internal Microtask (a.k.a. event loop) queue.
+   */
+  void drainJSEventLoop();
+
   std::shared_ptr<react::CallInvoker> jsInvoker;
   std::shared_ptr<react::CallInvoker> nativeInvoker;
 private:
