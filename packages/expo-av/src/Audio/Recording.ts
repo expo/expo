@@ -57,6 +57,7 @@ export const usePermissions = createPermissionHook({
   requestMethod: requestPermissionsAsync,
 });
 
+// @needsAudit
 /**
  * This class represents an audio recording. After creating an instance of this class, `prepareToRecordAsync`
  * must be called in order to record audio. Once recording is finished, call `stopAndUnloadAsync`. Note that
@@ -389,7 +390,7 @@ export class Recording {
    * This method can only be called if the `Recording` has been prepared.
    *
    * > On Android this method may fail with `E_AUDIO_NODATA` when called too soon after `startAsync` and
-   * no audio data has been recorded yet. In that case the recorded file will be invalid and should be discarded.
+   * > no audio data has been recorded yet. In that case the recorded file will be invalid and should be discarded.
    *
    * @return A `Promise` that is fulfilled when recording has stopped, or rejects if recording could not be stopped.
    * The promise is resolved with the `RecordingStatus` of the recording.

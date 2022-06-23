@@ -34,7 +34,7 @@ export type AudioMode = {
    */
   shouldDuckAndroid: boolean;
   /**
-   * A boolean selecting if the audio is routed to earpiece (on Android).
+   * A boolean selecting if the audio is routed to earpiece on Android.
    * @default false
    */
   playThroughEarpieceAndroid: boolean;

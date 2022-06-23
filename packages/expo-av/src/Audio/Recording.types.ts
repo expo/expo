@@ -8,6 +8,7 @@ import {
 
 // TODO: For consistency with PlaybackStatus, should we include progressUpdateIntervalMillis here as well?
 
+// @needsAudit
 export type RecordingStatus = {
   /**
    * A boolean describing if the `Recording` can initiate the recording.
@@ -30,6 +31,7 @@ export type RecordingStatus = {
    * to `0` dBFS, indicating maximum power. Present or not based on Recording options. See `RecordingOptions` for more information.
    */
   metering?: number;
+  // @docsMissing
   uri?: string | null;
   /**
    * A boolean indicating whether media services were reset during recording. This may occur if the active input ceases to be available
@@ -42,6 +44,7 @@ export type RecordingStatus = {
   mediaServicesDidReset?: boolean;
 };
 
+// @needsAudit
 export type RecordingOptionsAndroid = {
   /**
    * The desired file extension. Example valid values are `.3gp` and `.m4a`.
@@ -96,6 +99,7 @@ export type RecordingOptionsAndroid = {
   maxFileSize?: number;
 };
 
+// @needsAudit
 export type RecordingOptionsIOS = {
   /**
    * The desired file extension.
@@ -118,11 +122,13 @@ export type RecordingOptionsIOS = {
    */
   sampleRate: number;
   /**
-   * The desired number of channels. This key is required. Example valid values are `1` and `2`.
+   * The desired number of channels.
+   *
+   * @example `1`, `2`
    */
   numberOfChannels: number;
   /**
-   * The desired bit rate. This key is required.
+   * The desired bit rate.
    *
    * @example `128000`
    */
@@ -153,12 +159,13 @@ export type RecordingOptionsIOS = {
   linearPCMIsFloat?: boolean;
 };
 
-// @docs missing
+// @docsMissing
 export type RecordingOptionsWeb = {
   mimeType?: string;
   bitsPerSecond?: number;
 };
 
+// @needsAudit
 /**
  * The recording extension, sample rate, bitrate, channels, format, encoder, etc. which can be customized by passing options to `prepareToRecordAsync()`.
  *
@@ -167,8 +174,8 @@ export type RecordingOptionsWeb = {
  * - `Audio.RecordingOptionsPresets.LOW_QUALITY`
  *
  * We also provide the ability to define your own custom recording options, but **we recommend you use the presets,
- * as not all combinations of options will allow you to successfully `prepareToRecordAsync()`.
- * **You will have to test your custom options on iOS and Android to make sure it's working. In the future,
+ * as not all combinations of options will allow you to successfully `prepareToRecordAsync()`.**
+ * You will have to test your custom options on iOS and Android to make sure it's working. In the future,
  * we will enumerate all possible valid combinations, but at this time, our goal is to make the basic use-case easy (with presets)
  * and the advanced use-case possible (by exposing all the functionality available on all supported platforms).
  */
@@ -204,6 +211,7 @@ export type RecordingInput = {
   uid: string;
 };
 
+// @needsAudit
 export type RecordingObject = {
   /**
    * The newly created and started `Recording` object.

@@ -16,6 +16,7 @@ import { PitchCorrectionQuality } from '../Audio';
 import ExponentAV from '../ExponentAV';
 import { throwIfAudioIsDisabled } from './AudioAvailability';
 
+// @needsAudit
 export type AudioChannel = {
   /**
    * All samples for this specific Audio Channel in PCM Buffer format (-1 to 1).
@@ -23,6 +24,7 @@ export type AudioChannel = {
   frames: number[];
 };
 
+// @needsAudit
 /**
  * Object passed to the `onAudioSampleReceived` function. Represents a single sample from an audio source.
  * The sample contains all frames (PCM Buffer values) for each channel of the audio, so if the audio is _stereo_ (interleaved),
@@ -41,6 +43,7 @@ export type AudioSample = {
   timestamp: number;
 };
 
+// @needsAudit
 export type SoundObject = {
   /**
    * The newly created and loaded `Sound` object.

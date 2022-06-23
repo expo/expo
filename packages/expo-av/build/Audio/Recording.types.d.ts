@@ -108,11 +108,13 @@ export declare type RecordingOptionsIOS = {
      */
     sampleRate: number;
     /**
-     * The desired number of channels. This key is required. Example valid values are `1` and `2`.
+     * The desired number of channels.
+     *
+     * @example `1`, `2`
      */
     numberOfChannels: number;
     /**
-     * The desired bit rate. This key is required.
+     * The desired bit rate.
      *
      * @example `128000`
      */
@@ -154,8 +156,8 @@ export declare type RecordingOptionsWeb = {
  * - `Audio.RecordingOptionsPresets.LOW_QUALITY`
  *
  * We also provide the ability to define your own custom recording options, but **we recommend you use the presets,
- * as not all combinations of options will allow you to successfully `prepareToRecordAsync()`.
- * **You will have to test your custom options on iOS and Android to make sure it's working. In the future,
+ * as not all combinations of options will allow you to successfully `prepareToRecordAsync()`.**
+ * You will have to test your custom options on iOS and Android to make sure it's working. In the future,
  * we will enumerate all possible valid combinations, but at this time, our goal is to make the basic use-case easy (with presets)
  * and the advanced use-case possible (by exposing all the functionality available on all supported platforms).
  */
