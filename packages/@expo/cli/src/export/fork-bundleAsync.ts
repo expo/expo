@@ -1,5 +1,5 @@
 import Log from '@expo/bunyan';
-import { ExpoConfig, getConfigFilePaths } from '@expo/config';
+import { ExpoConfig, getConfig, getConfigFilePaths } from '@expo/config';
 import {
   buildHermesBundleAsync,
   isEnableHermesManaged,
@@ -16,6 +16,8 @@ import Metro from 'metro';
 import { Terminal } from 'metro-core';
 
 import { MetroTerminalReporter } from '../start/server/metro/MetroTerminalReporter';
+import { withMetroMultiPlatform } from '../start/server/metro/withMetroMultiPlatform';
+import { getPlatformBundlers } from '../start/server/platformBundlers';
 
 export type MetroDevServerOptions = LoadOptions & {
   logger: Log;
@@ -89,7 +91,9 @@ export async function bundleAsync(
 
   const ExpoMetroConfig = getExpoMetroConfig(projectRoot, options);
 
-  const config = await ExpoMetroConfig.loadAsync(projectRoot, { reporter, ...options });
+  const { exp } = getConfig(projectRoot, { skipSDKVersionRequirement: true });
+  let config = await ExpoMetroConfig.loadAsync(projectRoot, { reporter, ...options });
+  config = withMetroMultiPlatform(projectRoot, config, getPlatformBundlers(exp));
   const buildID = `bundle_${nextBuildID++}`;
 
   // @ts-expect-error

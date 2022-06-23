@@ -7,6 +7,7 @@ import { logEvent } from '../../utils/analytics/rudderstackClient';
 import { ProjectPrerequisite } from '../doctor/Prerequisite';
 import * as AndroidDebugBridge from '../platforms/android/adb';
 import { BundlerDevServer, BundlerStartOptions } from './BundlerDevServer';
+import { getPlatformBundlers } from './platformBundlers';
 
 const debug = require('debug')('expo:start:server:devServerManager') as typeof console.log;
 
@@ -108,10 +109,15 @@ export class DevServerManager {
     if (server) {
       return;
     }
-    debug('Starting webpack dev server');
+    const { exp } = getConfig(this.projectRoot, {
+      skipPlugins: true,
+      skipSDKVersionRequirement: true,
+    });
+    const bundler = getPlatformBundlers(exp).web;
+    debug(`Starting ${bundler} dev server for web`);
     return this.startAsync([
       {
-        type: 'webpack',
+        type: bundler,
         options: this.options,
       },
     ]);
@@ -125,10 +131,16 @@ export class DevServerManager {
       sdkVersion: exp.sdkVersion ?? null,
     });
 
+    const platformBundlers = getPlatformBundlers(exp);
+
     // Start all dev servers...
     for (const { type, options } of startOptions) {
       const BundlerDevServerClass = await BUNDLERS[type]();
-      const server = new BundlerDevServerClass(this.projectRoot, !!options?.devClient);
+      const server = new BundlerDevServerClass(
+        this.projectRoot,
+        platformBundlers,
+        !!options?.devClient
+      );
       await server.startAsync(options ?? this.options);
       devServers.push(server);
     }

@@ -17,6 +17,7 @@ import {
 import { AsyncNgrok } from './AsyncNgrok';
 import { DevelopmentSession } from './DevelopmentSession';
 import { CreateURLOptions, UrlCreator } from './UrlCreator';
+import { PlatformBundlers } from './platformBundlers';
 
 const debug = require('debug')('expo:start:server:devServer') as typeof console.log;
 
@@ -107,6 +108,8 @@ export abstract class BundlerDevServer {
   constructor(
     /** Project root folder. */
     public projectRoot: string,
+    /** A mapping of bundlers to platforms. */
+    public platformBundlers: PlatformBundlers,
     // TODO: Replace with custom scheme maybe...
     public isDevClient?: boolean
   ) {}
@@ -253,7 +256,7 @@ export abstract class BundlerDevServer {
   }
 
   public isTargetingWeb() {
-    return false;
+    return this.platformBundlers.web === this.name;
   }
 
   /**

@@ -3,6 +3,7 @@ import { vol } from 'memfs';
 
 import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
 import { UrlCreator } from '../UrlCreator';
+import { getPlatformBundlers } from '../platformBundlers';
 
 jest.mock('../AsyncNgrok');
 jest.mock('../DevelopmentSession');
@@ -100,7 +101,7 @@ class MockBundlerDevServer extends BundlerDevServer {
 }
 
 async function getRunningServer() {
-  const devServer = new MockBundlerDevServer('/');
+  const devServer = new MockBundlerDevServer('/', getPlatformBundlers({}));
   await devServer.startAsync({ location: {} });
   return devServer;
 }
@@ -141,7 +142,7 @@ describe('openPlatformAsync', () => {
 
 describe('stopAsync', () => {
   it(`stops a running dev server`, async () => {
-    const server = new MockBundlerDevServer('/');
+    const server = new MockBundlerDevServer('/', getPlatformBundlers({}));
     const instance = await server.startAsync({
       location: {
         hostType: 'tunnel',
@@ -175,7 +176,7 @@ describe('getExpoGoUrl', () => {
       '/'
     );
 
-    const server = new MockBundlerDevServer('/');
+    const server = new MockBundlerDevServer('/', getPlatformBundlers({}));
     await server.startAsync({
       location: {},
     });
@@ -192,7 +193,7 @@ describe('getExpoGoUrl', () => {
     expect(urlCreator.constructLoadingUrl).toBeCalledTimes(2);
   });
   it(`gets the native Expo Go URL`, async () => {
-    const server = new MockBundlerDevServer('/');
+    const server = new MockBundlerDevServer('/', getPlatformBundlers({}));
     await server.startAsync({
       location: {},
     });
@@ -204,7 +205,7 @@ describe('getExpoGoUrl', () => {
 
 describe('getNativeRuntimeUrl', () => {
   it(`gets the native runtime URL`, async () => {
-    const server = new MockBundlerDevServer('/');
+    const server = new MockBundlerDevServer('/', getPlatformBundlers({}));
     await server.startAsync({
       location: {},
     });
@@ -213,7 +214,7 @@ describe('getNativeRuntimeUrl', () => {
     expect(server.getNativeRuntimeUrl({ scheme: 'foobar' })).toBe('exp://100.100.1.100:3000');
   });
   it(`gets the native runtime URL for dev client`, async () => {
-    const server = new MockBundlerDevServer('/', true);
+    const server = new MockBundlerDevServer('/', getPlatformBundlers({}), true);
     await server.startAsync({
       location: {
         scheme: 'my-app',
@@ -232,7 +233,7 @@ describe('getNativeRuntimeUrl', () => {
 });
 
 describe('getManifestMiddlewareAsync', () => {
-  const server = new MockBundlerDevServer('/');
+  const server = new MockBundlerDevServer('/', getPlatformBundlers({}));
   it(`asserts invalid manifest type`, async () => {
     await expect(
       server['getManifestMiddlewareAsync']({
@@ -249,7 +250,7 @@ describe('getManifestMiddlewareAsync', () => {
 });
 
 describe('_startTunnelAsync', () => {
-  const server = new MockBundlerDevServer('/');
+  const server = new MockBundlerDevServer('/', getPlatformBundlers({}));
   it(`returns null when the server isn't running`, async () => {
     expect(await server._startTunnelAsync()).toEqual(null);
   });
