@@ -21,11 +21,49 @@ namespace jsi = facebook::jsi;
 
 namespace expo {
 
+void SyncCallInvoker::invokeAsync(std::function<void()> &&func) {
+  func();
+}
 
-JavaScriptRuntime::JavaScriptRuntime() {
+void SyncCallInvoker::invokeSync(std::function<void()> &&func) {
+  func();
+}
+
+JavaScriptRuntime::JavaScriptRuntime()
+  : jsInvoker(std::make_shared<SyncCallInvoker>()),
+    nativeInvoker(std::make_shared<SyncCallInvoker>()) {
 #if FOR_HERMES
-  auto config = ::hermes::vm::RuntimeConfig::Builder().withEnableSampleProfiling(false);
+  auto config = ::hermes::vm::RuntimeConfig::Builder()
+    .withEnableSampleProfiling(false);
   runtime = facebook::hermes::makeHermesRuntime(config.build());
+
+  // By default "global" property isn't set in the Hermes.
+  runtime->global().setProperty(
+    *runtime,
+    jsi::PropNameID::forUtf8(*runtime, "global"),
+    runtime->global()
+  );
+
+  // This version of the Hermes uses a Promise implementation that is provided by the RN.
+  // The `setImmediate` function isn't defined, but is required by the Promise implementation.
+  // That's why we inject it here.
+  auto setImmediatePropName = jsi::PropNameID::forUtf8(*runtime, "setImmediate");
+  runtime->global().setProperty(
+    *runtime,
+    setImmediatePropName,
+    jsi::Function::createFromHostFunction(
+      *runtime,
+      setImmediatePropName,
+      1,
+      [](jsi::Runtime &rt,
+         const jsi::Value &thisVal,
+         const jsi::Value *args,
+         size_t count) {
+        args[0].asObject(rt).asFunction(rt).call(rt);
+        return jsi::Value::undefined();
+      }
+    )
+  );
 #else
   runtime = facebook::jsc::makeJSCRuntime();
 #endif
