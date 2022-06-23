@@ -2,16 +2,12 @@ package expo.modules.kotlin.jni
 
 private var nextValue = 0
 
-private fun nextValue(): Int {
-  val result = 1 shl nextValue
-  nextValue++
-  return result
-}
+private fun nextValue(): Int = (1 shl nextValue).also { nextValue++ }
 
 /**
- * Enum that represents a Cpp types. Those types can be obtain via JNI.
+ * Enum that represents Cpp types. Objects of those types can be obtained via JNI.
  */
-enum class CppType(private val value: Int) {
+enum class CppType(val value: Int) {
   DOUBLE(nextValue()),
   BOOLEAN(nextValue()),
   STRING(nextValue()),
@@ -19,6 +15,4 @@ enum class CppType(private val value: Int) {
   JS_VALUE(nextValue()),
   READABLE_ARRAY(nextValue()),
   READABLE_MAP(nextValue());
-
-  fun toValue(): Int = value
 }

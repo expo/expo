@@ -14,15 +14,15 @@ class EnumTypeConverter(
   isOptional: Boolean
 ) : DynamicAwareTypeConverters<Enum<*>>(isOptional) {
   private val enumConstants = requireNotNull(enumClass.java.enumConstants) {
-    "Passed type is not an enum type."
+    "Passed type is not an enum type"
   }.also {
     require(it.isNotEmpty()) {
-      "Passed enum type is empty."
+      "Passed enum type is empty"
     }
   }
 
   private val primaryConstructor = requireNotNull(enumClass.primaryConstructor) {
-    "Cannot convert js value to enum without the primary constructor."
+    "Cannot convert js value to enum without the primary constructor"
   }
 
   override fun getCppRequiredTypes(): List<CppType> = listOf(CppType.READABLE_MAP)
@@ -65,7 +65,7 @@ class EnumTypeConverter(
   ): Enum<*> {
     return requireNotNull(
       enumConstants.find { it.name == stringRepresentation }
-    ) { "Couldn't convert $stringRepresentation to ${enumClass.simpleName}." }
+    ) { "Couldn't convert '$stringRepresentation' to ${enumClass.simpleName}" }
   }
 
   /**
@@ -82,7 +82,7 @@ class EnumTypeConverter(
     val parameterProperty = enumClass
       .declaredMemberProperties
       .find { it.name == parameterName }
-    requireNotNull(parameterProperty) { "Cannot find a property for $parameterName parameter." }
+    requireNotNull(parameterProperty) { "Cannot find a property for $parameterName parameter" }
 
     val parameterType = parameterProperty.returnType.classifier
     val jsUnwrapValue = if (jsValue is Dynamic) {
@@ -107,6 +107,6 @@ class EnumTypeConverter(
       enumConstants.find {
         parameterProperty.get(it) == jsUnwrapValue
       }
-    ) { "Couldn't convert $jsValue to ${enumClass.simpleName} where $parameterName is the enum parameter. " }
+    ) { "Couldn't convert '$jsValue' to ${enumClass.simpleName} where $parameterName is the enum parameter" }
   }
 }
