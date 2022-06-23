@@ -1,13 +1,16 @@
 package expo.modules.kotlin.records
 
 import com.facebook.react.bridge.Dynamic
+import com.facebook.react.bridge.ReadableMap
 import expo.modules.kotlin.allocators.ObjectConstructor
 import expo.modules.kotlin.allocators.ObjectConstructorFactory
 import expo.modules.kotlin.exception.FieldCastException
 import expo.modules.kotlin.exception.FieldRequiredException
 import expo.modules.kotlin.exception.RecordCastException
 import expo.modules.kotlin.exception.exceptionDecorator
+import expo.modules.kotlin.jni.CppType
 import expo.modules.kotlin.recycle
+import expo.modules.kotlin.types.DynamicAwareTypeConverters
 import expo.modules.kotlin.types.TypeConverter
 import expo.modules.kotlin.types.TypeConverterProvider
 import kotlin.reflect.KClass
@@ -21,7 +24,7 @@ import kotlin.reflect.jvm.javaField
 class RecordTypeConverter<T : Record>(
   private val converterProvider: TypeConverterProvider,
   val type: KType,
-) : TypeConverter<T>(type.isMarkedNullable) {
+) : DynamicAwareTypeConverters<T>(type.isMarkedNullable) {
   private val objectConstructorFactory = ObjectConstructorFactory()
   private val propertyDescriptors: Map<KProperty1<out Any, *>, PropertyDescriptor> =
     (type.classifier as KClass<*>)
@@ -40,9 +43,23 @@ class RecordTypeConverter<T : Record>(
       .filterNotNull()
       .toMap()
 
-  override fun convertNonOptional(value: Dynamic): T = exceptionDecorator({ cause -> RecordCastException(type, cause) }) {
+  override fun convertFromDynamic(value: Dynamic): T = exceptionDecorator({ cause -> RecordCastException(type, cause) }) {
     val jsMap = value.asMap()
+    return convertFromReadableMap(jsMap)
+  }
 
+  override fun convertFromAny(value: Any): T {
+    if (value is ReadableMap) {
+      return convertFromReadableMap(value)
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    return value as T
+  }
+
+  override fun getCppRequiredTypes(): List<CppType> = listOf(CppType.READABLE_MAP)
+
+  private fun convertFromReadableMap(jsMap: ReadableMap): T {
     val kClass = type.classifier as KClass<*>
     val instance = getObjectConstructor(kClass.java).construct()
 

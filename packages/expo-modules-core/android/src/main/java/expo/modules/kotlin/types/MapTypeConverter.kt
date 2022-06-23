@@ -4,8 +4,10 @@ package expo.modules.kotlin.types
 
 import com.facebook.react.bridge.Dynamic
 import com.facebook.react.bridge.DynamicFromObject
+import com.facebook.react.bridge.ReadableMap
 import expo.modules.kotlin.exception.CollectionElementCastException
 import expo.modules.kotlin.exception.exceptionDecorator
+import expo.modules.kotlin.jni.CppType
 import expo.modules.kotlin.recycle
 import kotlin.reflect.KType
 import kotlin.reflect.typeOf
@@ -13,7 +15,7 @@ import kotlin.reflect.typeOf
 class MapTypeConverter(
   converterProvider: TypeConverterProvider,
   private val mapType: KType
-) : TypeConverter<Map<*, *>>(mapType.isMarkedNullable) {
+) : DynamicAwareTypeConverters<Map<*, *>>(mapType.isMarkedNullable) {
   init {
     require(mapType.arguments.first().type == typeOf<String>()) {
       "The map key type should be String, but received ${mapType.arguments.first()}."
@@ -26,8 +28,20 @@ class MapTypeConverter(
     }
   )
 
-  override fun convertNonOptional(value: Dynamic): Map<*, *> {
+  override fun convertFromDynamic(value: Dynamic): Map<*, *> {
     val jsMap = value.asMap()
+    return convertFromReadableMap(jsMap)
+  }
+
+  override fun convertFromAny(value: Any): Map<*, *> {
+    if (value is ReadableMap) {
+      return convertFromReadableMap(value)
+    }
+
+    return value as Map<*, *>
+  }
+
+  private fun convertFromReadableMap(jsMap: ReadableMap): Map<*, *> {
     val result = mutableMapOf<String, Any?>()
 
     jsMap.entryIterator.forEach { (key, value) ->
@@ -42,4 +56,6 @@ class MapTypeConverter(
 
     return result
   }
+
+  override fun getCppRequiredTypes(): List<CppType> = listOf(CppType.READABLE_MAP)
 }
