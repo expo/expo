@@ -93,10 +93,10 @@ const DRAWABLES_CONFIGS: {
   },
 };
 
-export const withAndroidSplashImages: ConfigPlugin = config => {
+export const withAndroidSplashImages: ConfigPlugin = (config) => {
   return withDangerousMod(config, [
     'android',
-    async config => {
+    async (config) => {
       await setSplashImageDrawablesAsync(config, config.modRequest.projectRoot);
       return config;
     },
@@ -150,7 +150,7 @@ export async function setSplashImageDrawablesForThemeAsync(
   const androidMainPath = path.join(projectRoot, 'android/app/src/main');
 
   await Promise.all(
-    ['mdpi', 'hdpi', 'xhdpi', 'xxhdpi', 'xxxhdpi'].map(async imageKey => {
+    ['mdpi', 'hdpi', 'xhdpi', 'xxhdpi', 'xxxhdpi'].map(async (imageKey) => {
       // @ts-ignore
       const image = config[imageKey];
       if (image) {

@@ -155,7 +155,7 @@ describe('Android permissions', () => {
     );
 
     const manifestPermissionsJSON = androidManifestJson.manifest['uses-permission'];
-    const manifestPermissions = manifestPermissionsJSON.map(e => e.$['android:name']);
+    const manifestPermissions = manifestPermissionsJSON.map((e) => e.$['android:name']);
 
     // Account for INTERNET permission in fixture
     // No duplicates
@@ -165,7 +165,7 @@ describe('Android permissions', () => {
       'com.android.launcher.permission.INSTALL_SHORTCUT',
     ]);
     expect(
-      manifestPermissions.filter(e => e === 'com.android.launcher.permission.INSTALL_SHORTCUT')
+      manifestPermissions.filter((e) => e === 'com.android.launcher.permission.INSTALL_SHORTCUT')
     ).toHaveLength(1);
   });
 });

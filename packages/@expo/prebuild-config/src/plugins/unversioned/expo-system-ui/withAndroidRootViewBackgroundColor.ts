@@ -12,14 +12,14 @@ const { assignStylesValue, getAppThemeLightNoActionBarGroup } = AndroidConfig.St
 const ANDROID_WINDOW_BACKGROUND = 'android:windowBackground';
 const WINDOW_BACKGROUND_COLOR = 'activityBackground';
 
-export const withAndroidRootViewBackgroundColor: ConfigPlugin = config => {
+export const withAndroidRootViewBackgroundColor: ConfigPlugin = (config) => {
   config = withRootViewBackgroundColorColors(config);
   config = withRootViewBackgroundColorStyles(config);
   return config;
 };
 
-export const withRootViewBackgroundColorColors: ConfigPlugin = config => {
-  return withAndroidColors(config, async config => {
+export const withRootViewBackgroundColorColors: ConfigPlugin = (config) => {
+  return withAndroidColors(config, async (config) => {
     config.modResults = assignColorValue(config.modResults, {
       value: getRootViewBackgroundColor(config),
       name: WINDOW_BACKGROUND_COLOR,
@@ -28,8 +28,8 @@ export const withRootViewBackgroundColorColors: ConfigPlugin = config => {
   });
 };
 
-export const withRootViewBackgroundColorStyles: ConfigPlugin = config => {
-  return withAndroidStyles(config, async config => {
+export const withRootViewBackgroundColorStyles: ConfigPlugin = (config) => {
+  return withAndroidStyles(config, async (config) => {
     config.modResults = assignStylesValue(config.modResults, {
       add: !!getRootViewBackgroundColor(config),
       parent: getAppThemeLightNoActionBarGroup(),

@@ -12,15 +12,15 @@ import { getSourceRoot } from './Paths';
 import { appendScheme } from './Scheme';
 import { addResourceFileToGroup, getProjectName } from './utils/Xcodeproj';
 
-export const withGoogle: ConfigPlugin = config => {
-  return withInfoPlist(config, config => {
+export const withGoogle: ConfigPlugin = (config) => {
+  return withInfoPlist(config, (config) => {
     config.modResults = setGoogleConfig(config, config.modResults, config.modRequest);
     return config;
   });
 };
 
-export const withGoogleServicesFile: ConfigPlugin = config => {
-  return withXcodeProject(config, config => {
+export const withGoogleServicesFile: ConfigPlugin = (config) => {
+  return withXcodeProject(config, (config) => {
     config.modResults = setGoogleServicesFile(config, {
       projectRoot: config.modRequest.projectRoot,
       project: config.modResults,

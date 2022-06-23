@@ -1,7 +1,7 @@
-"use strict";
+'use strict';
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
+Object.defineProperty(exports, '__esModule', {
+  value: true,
 });
 exports.escapeAndroidString = escapeAndroidString;
 exports.format = format;
@@ -11,7 +11,7 @@ exports.unescapeAndroidString = unescapeAndroidString;
 exports.writeXMLAsync = writeXMLAsync;
 
 function _fs() {
-  const data = _interopRequireDefault(require("fs"));
+  const data = _interopRequireDefault(require('fs'));
 
   _fs = function () {
     return data;
@@ -21,7 +21,7 @@ function _fs() {
 }
 
 function _os() {
-  const data = require("os");
+  const data = require('os');
 
   _os = function () {
     return data;
@@ -31,7 +31,7 @@ function _os() {
 }
 
 function _path() {
-  const data = _interopRequireDefault(require("path"));
+  const data = _interopRequireDefault(require('path'));
 
   _path = function () {
     return data;
@@ -41,7 +41,7 @@ function _path() {
 }
 
 function _xml2js() {
-  const data = require("xml2js");
+  const data = require('xml2js');
 
   _xml2js = function () {
     return data;
@@ -50,34 +50,49 @@ function _xml2js() {
   return data;
 }
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(obj) {
+  return obj && obj.__esModule ? obj : { default: obj };
+}
 
 async function writeXMLAsync(options) {
   const xml = format(options.xml);
   await _fs().default.promises.mkdir(_path().default.dirname(options.path), {
-    recursive: true
+    recursive: true,
   });
   await _fs().default.promises.writeFile(options.path, xml);
 }
 
 async function readXMLAsync(options) {
-  var _manifest$resources;
+  let _manifest$resources;
 
   let contents = '';
 
   try {
     contents = await _fs().default.promises.readFile(options.path, {
       encoding: 'utf8',
-      flag: 'r'
+      flag: 'r',
     });
-  } catch {// catch and use fallback
+  } catch {
+    // catch and use fallback
   }
 
   const parser = new (_xml2js().Parser)();
   const manifest = await parser.parseStringPromise(contents || options.fallback || ''); // For strings.xml
 
-  if (Array.isArray(manifest === null || manifest === void 0 ? void 0 : (_manifest$resources = manifest.resources) === null || _manifest$resources === void 0 ? void 0 : _manifest$resources.string)) {
-    for (const string of manifest === null || manifest === void 0 ? void 0 : (_manifest$resources2 = manifest.resources) === null || _manifest$resources2 === void 0 ? void 0 : _manifest$resources2.string) {
+  if (
+    Array.isArray(
+      manifest === null || manifest === void 0
+        ? void 0
+        : (_manifest$resources = manifest.resources) === null || _manifest$resources === void 0
+        ? void 0
+        : _manifest$resources.string
+    )
+  ) {
+    for (const string of manifest === null || manifest === void 0
+      ? void 0
+      : (_manifest$resources2 = manifest.resources) === null || _manifest$resources2 === void 0
+      ? void 0
+      : _manifest$resources2.string) {
       var _manifest$resources2;
 
       if (string.$.translatable === 'false' || string.$.translatable === false) {
@@ -98,23 +113,32 @@ async function parseXMLAsync(contents) {
 
 const stringTimesN = (n, char) => Array(n + 1).join(char);
 
-function format(manifest, {
-  indentLevel = 2,
-  newline = _os().EOL
-} = {}) {
+function format(manifest, { indentLevel = 2, newline = _os().EOL } = {}) {
   let xmlInput;
 
   if (typeof manifest === 'string') {
     xmlInput = manifest;
   } else if (manifest.toString) {
-    var _manifest$resources3;
+    let _manifest$resources3;
 
     const builder = new (_xml2js().Builder)({
-      headless: true
+      headless: true,
     }); // For strings.xml
 
-    if (Array.isArray(manifest === null || manifest === void 0 ? void 0 : (_manifest$resources3 = manifest.resources) === null || _manifest$resources3 === void 0 ? void 0 : _manifest$resources3.string)) {
-      for (const string of manifest === null || manifest === void 0 ? void 0 : (_manifest$resources4 = manifest.resources) === null || _manifest$resources4 === void 0 ? void 0 : _manifest$resources4.string) {
+    if (
+      Array.isArray(
+        manifest === null || manifest === void 0
+          ? void 0
+          : (_manifest$resources3 = manifest.resources) === null || _manifest$resources3 === void 0
+          ? void 0
+          : _manifest$resources3.string
+      )
+    ) {
+      for (const string of manifest === null || manifest === void 0
+        ? void 0
+        : (_manifest$resources4 = manifest.resources) === null || _manifest$resources4 === void 0
+        ? void 0
+        : _manifest$resources4.string) {
         var _manifest$resources4;
 
         if (string.$.translatable === 'false' || string.$.translatable === false) {
@@ -136,25 +160,28 @@ function format(manifest, {
   const regex = /(>)(<)(\/*)/g;
   const xml = xmlInput.replace(regex, `$1${newline}$2$3`);
   let pad = 0;
-  xml.split(/\r?\n/).map(line => line.trim()).forEach(line => {
-    let indent = 0;
+  xml
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .forEach((line) => {
+      let indent = 0;
 
-    if (line.match(/.+<\/\w[^>]*>$/)) {
-      indent = 0;
-    } else if (line.match(/^<\/\w/)) {
-      if (pad !== 0) {
-        pad -= 1;
+      if (line.match(/.+<\/\w[^>]*>$/)) {
+        indent = 0;
+      } else if (line.match(/^<\/\w/)) {
+        if (pad !== 0) {
+          pad -= 1;
+        }
+      } else if (line.match(/^<\w([^>]*[^/])?>.*$/)) {
+        indent = 1;
+      } else {
+        indent = 0;
       }
-    } else if (line.match(/^<\w([^>]*[^/])?>.*$/)) {
-      indent = 1;
-    } else {
-      indent = 0;
-    }
 
-    const padding = stringTimesN(pad, indentString);
-    formatted += padding + line + newline;
-    pad += indent;
-  });
+      const padding = stringTimesN(pad, indentString);
+      formatted += padding + line + newline;
+      pad += indent;
+    });
   return formatted.trim();
 }
 /**
@@ -163,9 +190,8 @@ function format(manifest, {
  * @param value unescaped Android XML string literal.
  */
 
-
 function escapeAndroidString(value) {
-  value = value.replace(/[\n\r\t'"@]/g, m => {
+  value = value.replace(/[\n\r\t'"@]/g, (m) => {
     switch (m) {
       case '"':
       case "'":

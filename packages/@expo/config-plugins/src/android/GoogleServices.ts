@@ -15,8 +15,8 @@ const googleServicesPlugin = 'com.google.gms.google-services';
 // NOTE(brentvatne): This may be annoying to keep up to date...
 const googleServicesVersion = '4.3.3';
 
-export const withClassPath: ConfigPlugin = config => {
-  return withProjectBuildGradle(config, config => {
+export const withClassPath: ConfigPlugin = (config) => {
+  return withProjectBuildGradle(config, (config) => {
     if (config.modResults.language === 'groovy') {
       config.modResults.contents = setClassPath(config, config.modResults.contents);
     } else {
@@ -29,8 +29,8 @@ export const withClassPath: ConfigPlugin = config => {
   });
 };
 
-export const withApplyPlugin: ConfigPlugin = config => {
-  return withAppBuildGradle(config, config => {
+export const withApplyPlugin: ConfigPlugin = (config) => {
+  return withAppBuildGradle(config, (config) => {
     if (config.modResults.language === 'groovy') {
       config.modResults.contents = applyPlugin(config, config.modResults.contents);
     } else {
@@ -46,10 +46,10 @@ export const withApplyPlugin: ConfigPlugin = config => {
 /**
  * Add `google-services.json` to project
  */
-export const withGoogleServicesFile: ConfigPlugin = config => {
+export const withGoogleServicesFile: ConfigPlugin = (config) => {
   return withDangerousMod(config, [
     'android',
-    async config => {
+    async (config) => {
       await setGoogleServicesFile(config, config.modRequest.projectRoot);
       return config;
     },

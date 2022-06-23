@@ -1,12 +1,12 @@
-"use strict";
+'use strict';
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
+Object.defineProperty(exports, '__esModule', {
+  value: true,
 });
 exports.withDangerousMod = void 0;
 
 function _withMod() {
-  const data = require("./withMod");
+  const data = require('./withMod');
 
   _withMod = function () {
     return data;
@@ -27,7 +27,7 @@ const withDangerousMod = (config, [platform, action]) => {
   return (0, _withMod().withMod)(config, {
     platform,
     mod: 'dangerous',
-    action
+    action,
   });
 };
 

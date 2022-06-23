@@ -17,8 +17,8 @@ export function createAndroidManifestPlugin(
   action: MutateDataAction<Manifest.AndroidManifest>,
   name: string
 ): ConfigPlugin {
-  const withUnknown: ConfigPlugin = config =>
-    withAndroidManifest(config, async config => {
+  const withUnknown: ConfigPlugin = (config) =>
+    withAndroidManifest(config, async (config) => {
       config.modResults = await action(config, config.modResults);
       return config;
     });
@@ -34,8 +34,8 @@ export function createStringsXmlPlugin(
   action: MutateDataAction<Resources.ResourceXML>,
   name: string
 ): ConfigPlugin {
-  const withUnknown: ConfigPlugin = config =>
-    withStringsXml(config, async config => {
+  const withUnknown: ConfigPlugin = (config) =>
+    withStringsXml(config, async (config) => {
       config.modResults = await action(config, config.modResults);
       return config;
     });

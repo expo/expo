@@ -16,7 +16,7 @@ describe('entitlements', () => {
     // Ensure this test runs in a blank file system
     vol.fromJSON({});
     let config: ExpoConfig = { name: 'bacon', slug: 'bacon' };
-    config = withEntitlementsPlist(config, config => {
+    config = withEntitlementsPlist(config, (config) => {
       config.modResults['haha'] = 'bet';
       return config;
     });
@@ -60,7 +60,7 @@ describe('infoPlist', () => {
     // Ensure this test runs in a blank file system
     vol.fromJSON({});
     let config: ExpoConfig = { name: 'bacon', slug: 'bacon' };
-    config = withInfoPlist(config, config => {
+    config = withInfoPlist(config, (config) => {
       config.modResults['haha'] = 'bet';
       return config;
     });

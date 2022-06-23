@@ -1,7 +1,7 @@
-"use strict";
+'use strict';
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
+Object.defineProperty(exports, '__esModule', {
+  value: true,
 });
 exports.reverseSortString = void 0;
 exports.sortObjWithOrder = sortObjWithOrder;
@@ -9,16 +9,14 @@ exports.sortObject = sortObject;
 exports.sortWithOrder = sortWithOrder;
 
 function sortObject(obj, compareFn) {
-  return Object.keys(obj).sort(compareFn).reduce((acc, key) => ({ ...acc,
-    [key]: obj[key]
-  }), {});
+  return Object.keys(obj)
+    .sort(compareFn)
+    .reduce((acc, key) => ({ ...acc, [key]: obj[key] }), {});
 }
 
 function sortObjWithOrder(obj, order) {
   const sorted = sortWithOrder(Object.keys(obj), order);
-  return sorted.reduce((acc, key) => ({ ...acc,
-    [key]: obj[key]
-  }), {});
+  return sorted.reduce((acc, key) => ({ ...acc, [key]: obj[key] }), {});
 }
 
 function sortWithOrder(obj, order) {

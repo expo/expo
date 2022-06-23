@@ -4,8 +4,8 @@ import { ConfigPlugin } from '../Plugin.types';
 import { withAppBuildGradle, withProjectBuildGradle } from '../plugins/android-plugins';
 import { addWarningAndroid } from '../utils/warnings';
 
-export const withVersion: ConfigPlugin = config => {
-  return withAppBuildGradle(config, config => {
+export const withVersion: ConfigPlugin = (config) => {
+  return withAppBuildGradle(config, (config) => {
     if (config.modResults.language === 'groovy') {
       config.modResults.contents = setVersionCode(config, config.modResults.contents);
       config.modResults.contents = setVersionName(config, config.modResults.contents);
@@ -24,7 +24,7 @@ export const withBuildScriptExtMinimumVersion: ConfigPlugin<{
   name: string;
   minVersion: number;
 }> = (config, props) => {
-  return withProjectBuildGradle(config, config => {
+  return withProjectBuildGradle(config, (config) => {
     if (config.modResults.language === 'groovy') {
       config.modResults.contents = setMinBuildScriptExtVersion(config.modResults.contents, props);
     } else {

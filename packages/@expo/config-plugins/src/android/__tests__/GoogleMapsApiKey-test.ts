@@ -24,13 +24,13 @@ describe(setGoogleMapsApiKey, () => {
       const mainApplication = getMainApplicationOrThrow(androidManifest);
 
       const apiKeyItem = mainApplication['meta-data'].filter(
-        e => e.$['android:name'] === 'com.google.android.geo.API_KEY'
+        (e) => e.$['android:name'] === 'com.google.android.geo.API_KEY'
       );
       expect(apiKeyItem).toHaveLength(1);
       expect(apiKeyItem[0].$['android:value']).toMatch('MY-API-KEY');
 
       const usesLibraryItem = mainApplication['uses-library'].filter(
-        e => e.$['android:name'] === 'org.apache.http.legacy'
+        (e) => e.$['android:name'] === 'org.apache.http.legacy'
       );
       expect(usesLibraryItem).toHaveLength(1);
       expect(usesLibraryItem[0].$['android:required']).toBe(false);
@@ -39,12 +39,12 @@ describe(setGoogleMapsApiKey, () => {
       const mainApplication = getMainApplicationOrThrow(androidManifest);
 
       const apiKeyItem = mainApplication['meta-data'].filter(
-        e => e.$['android:name'] === 'com.google.android.geo.API_KEY'
+        (e) => e.$['android:name'] === 'com.google.android.geo.API_KEY'
       );
       expect(apiKeyItem).toHaveLength(0);
 
       const usesLibraryItem = mainApplication['uses-library'].filter(
-        e => e.$['android:name'] === 'org.apache.http.legacy'
+        (e) => e.$['android:name'] === 'org.apache.http.legacy'
       );
       expect(usesLibraryItem).toHaveLength(0);
     }

@@ -1,8 +1,8 @@
 import { ConfigPlugin, InfoPlist, withInfoPlist } from '@expo/config-plugins';
 import { ExpoConfig } from '@expo/config-types';
 
-export const withIosBranch: ConfigPlugin = config => {
-  return withInfoPlist(config, config => {
+export const withIosBranch: ConfigPlugin = (config) => {
+  return withInfoPlist(config, (config) => {
     config.modResults = setBranchApiKey(config, config.modResults);
     return config;
   });

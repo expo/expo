@@ -1,7 +1,7 @@
 import { ConfigPlugin, WarningAggregator, withStringsXml } from '@expo/config-plugins';
 
-export const withAndroidUserInterfaceStyle: ConfigPlugin<void> = config => {
-  return withStringsXml(config, config => {
+export const withAndroidUserInterfaceStyle: ConfigPlugin<void> = (config) => {
+  return withStringsXml(config, (config) => {
     const userInterfaceStyle = config.android?.userInterfaceStyle ?? config.userInterfaceStyle;
     if (userInterfaceStyle) {
       WarningAggregator.addWarningAndroid(

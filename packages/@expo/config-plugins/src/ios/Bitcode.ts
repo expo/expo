@@ -12,8 +12,8 @@ type Bitcode = NonNullable<ExpoConfig['ios']>['bitcode'];
  * Plugin to set a bitcode preference for the Xcode project
  * based on the project's Expo config `ios.bitcode` value.
  */
-export const withBitcode: ConfigPlugin = config => {
-  return withXcodeProject(config, async config => {
+export const withBitcode: ConfigPlugin = (config) => {
+  return withXcodeProject(config, async (config) => {
     config.modResults = await setBitcodeWithConfig(config, {
       project: config.modResults,
     });
@@ -28,7 +28,7 @@ export const withBitcode: ConfigPlugin = config => {
  * @param bitcode custom bitcode setting.
  */
 export const withCustomBitcode: ConfigPlugin<Bitcode> = (config, bitcode) => {
-  return withXcodeProject(config, async config => {
+  return withXcodeProject(config, async (config) => {
     config.modResults = await setBitcode(bitcode, {
       project: config.modResults,
     });

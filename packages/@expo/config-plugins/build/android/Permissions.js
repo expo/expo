@@ -1,7 +1,7 @@
-"use strict";
+'use strict';
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
+Object.defineProperty(exports, '__esModule', {
+  value: true,
 });
 exports.addBlockedPermissions = addBlockedPermissions;
 exports.addPermission = addPermission;
@@ -14,10 +14,13 @@ exports.getPermissions = getPermissions;
 exports.isPermissionAlreadyRequested = isPermissionAlreadyRequested;
 exports.removePermissions = removePermissions;
 exports.setAndroidPermissions = setAndroidPermissions;
-exports.withPermissions = exports.withInternalBlockedPermissions = exports.withBlockedPermissions = void 0;
+exports.withPermissions =
+  exports.withInternalBlockedPermissions =
+  exports.withBlockedPermissions =
+    void 0;
 
 function _androidPlugins() {
-  const data = require("../plugins/android-plugins");
+  const data = require('../plugins/android-plugins');
 
   _androidPlugins = function () {
     return data;
@@ -27,7 +30,7 @@ function _androidPlugins() {
 }
 
 function _Manifest() {
-  const data = require("./Manifest");
+  const data = require('./Manifest');
 
   _Manifest = function () {
     return data;
@@ -43,31 +46,43 @@ const withPermissions = (config, permissions) => {
     permissions = permissions.filter(Boolean);
     if (!config.android) config.android = {};
     if (!config.android.permissions) config.android.permissions = [];
-    config.android.permissions = [// @ts-ignore
-    ...new Set(config.android.permissions.concat(permissions))];
+    config.android.permissions = [
+      // @ts-ignore
+      ...new Set(config.android.permissions.concat(permissions)),
+    ];
   }
 
-  return (0, _androidPlugins().withAndroidManifest)(config, async config => {
+  return (0, _androidPlugins().withAndroidManifest)(config, async (config) => {
     config.modResults = await setAndroidPermissions(config, config.modResults);
     return config;
   });
 };
 /** Given a permission or list of permissions, block permissions in the final `AndroidManifest.xml` to ensure no installed library or plugin can add them. */
 
-
 exports.withPermissions = withPermissions;
 
 const withBlockedPermissions = (config, permissions) => {
-  var _config$android;
+  let _config$android;
 
-  const resolvedPermissions = (Array.isArray(permissions) ? permissions : [permissions]).filter(Boolean);
+  const resolvedPermissions = (Array.isArray(permissions) ? permissions : [permissions]).filter(
+    Boolean
+  );
 
-  if (config !== null && config !== void 0 && (_config$android = config.android) !== null && _config$android !== void 0 && _config$android.permissions && Array.isArray(config.android.permissions)) {
+  if (
+    config !== null &&
+    config !== void 0 &&
+    (_config$android = config.android) !== null &&
+    _config$android !== void 0 &&
+    _config$android.permissions &&
+    Array.isArray(config.android.permissions)
+  ) {
     // Remove any static config permissions
-    config.android.permissions = config.android.permissions.filter(permission => !resolvedPermissions.includes(permission));
+    config.android.permissions = config.android.permissions.filter(
+      (permission) => !resolvedPermissions.includes(permission)
+    );
   }
 
-  return (0, _androidPlugins().withAndroidManifest)(config, async config => {
+  return (0, _androidPlugins().withAndroidManifest)(config, async (config) => {
     config.modResults = (0, _Manifest().ensureToolsAvailable)(config.modResults);
     config.modResults = addBlockedPermissions(config.modResults, resolvedPermissions);
     return config;
@@ -76,12 +91,18 @@ const withBlockedPermissions = (config, permissions) => {
 
 exports.withBlockedPermissions = withBlockedPermissions;
 
-const withInternalBlockedPermissions = config => {
-  var _config$android2, _config$android2$bloc;
+const withInternalBlockedPermissions = (config) => {
+  let _config$android2, _config$android2$bloc;
 
   // Only add permissions if the user defined the property and added some values
   // this ensures we don't add the `tools:*` namespace extraneously.
-  if ((_config$android2 = config.android) !== null && _config$android2 !== void 0 && (_config$android2$bloc = _config$android2.blockedPermissions) !== null && _config$android2$bloc !== void 0 && _config$android2$bloc.length) {
+  if (
+    (_config$android2 = config.android) !== null &&
+    _config$android2 !== void 0 &&
+    (_config$android2$bloc = _config$android2.blockedPermissions) !== null &&
+    _config$android2$bloc !== void 0 &&
+    _config$android2$bloc.length
+  ) {
     return withBlockedPermissions(config, config.android.blockedPermissions);
   }
 
@@ -96,7 +117,10 @@ function addBlockedPermissions(androidManifest, permissions) {
   }
 
   for (const permission of permissions) {
-    androidManifest.manifest['uses-permission'] = ensureBlockedPermission(androidManifest.manifest['uses-permission'], permission);
+    androidManifest.manifest['uses-permission'] = ensureBlockedPermission(
+      androidManifest.manifest['uses-permission'],
+      permission
+    );
   }
 
   return androidManifest;
@@ -111,22 +135,21 @@ function addBlockedPermissions(androidManifest, permissions) {
  * @returns
  */
 
-
 function ensureBlockedPermission(manifestPermissions, permission) {
   // Remove permission if it currently exists
-  manifestPermissions = manifestPermissions.filter(e => e.$['android:name'] !== permission); // Add a permission with tools:node to overwrite any existing permission and ensure it's removed upon building.
+  manifestPermissions = manifestPermissions.filter((e) => e.$['android:name'] !== permission); // Add a permission with tools:node to overwrite any existing permission and ensure it's removed upon building.
 
   manifestPermissions.push({
     $: {
       'android:name': permission,
-      'tools:node': 'remove'
-    }
+      'tools:node': 'remove',
+    },
   });
   return manifestPermissions;
 }
 
 function prefixAndroidPermissionsIfNecessary(permissions) {
-  return permissions.map(permission => {
+  return permissions.map((permission) => {
     if (!permission.includes('.')) {
       return `android.permission.${permission}`;
     }
@@ -136,13 +159,18 @@ function prefixAndroidPermissionsIfNecessary(permissions) {
 }
 
 function getAndroidPermissions(config) {
-  var _config$android$permi, _config$android3;
+  let _config$android$permi, _config$android3;
 
-  return (_config$android$permi = (_config$android3 = config.android) === null || _config$android3 === void 0 ? void 0 : _config$android3.permissions) !== null && _config$android$permi !== void 0 ? _config$android$permi : [];
+  return (_config$android$permi =
+    (_config$android3 = config.android) === null || _config$android3 === void 0
+      ? void 0
+      : _config$android3.permissions) !== null && _config$android$permi !== void 0
+    ? _config$android$permi
+    : [];
 }
 
 function setAndroidPermissions(config, androidManifest) {
-  var _androidManifest$mani;
+  let _androidManifest$mani;
 
   const permissions = getAndroidPermissions(config);
   const providedPermissions = prefixAndroidPermissionsIfNecessary(permissions);
@@ -152,9 +180,12 @@ function setAndroidPermissions(config, androidManifest) {
     androidManifest.manifest['uses-permission'] = [];
   } // manifest.manifest['uses-permission'] = [];
 
-
-  const manifestPermissions = (_androidManifest$mani = androidManifest.manifest['uses-permission']) !== null && _androidManifest$mani !== void 0 ? _androidManifest$mani : [];
-  permissionsToAdd.forEach(permission => {
+  const manifestPermissions =
+    (_androidManifest$mani = androidManifest.manifest['uses-permission']) !== null &&
+    _androidManifest$mani !== void 0
+      ? _androidManifest$mani
+      : [];
+  permissionsToAdd.forEach((permission) => {
     if (!isPermissionAlreadyRequested(permission, manifestPermissions)) {
       addPermissionToManifest(permission, manifestPermissions);
     }
@@ -163,14 +194,14 @@ function setAndroidPermissions(config, androidManifest) {
 }
 
 function isPermissionAlreadyRequested(permission, manifestPermissions) {
-  return manifestPermissions.some(e => e.$['android:name'] === permission);
+  return manifestPermissions.some((e) => e.$['android:name'] === permission);
 }
 
 function addPermissionToManifest(permission, manifestPermissions) {
   manifestPermissions.push({
     $: {
-      'android:name': permission
-    }
+      'android:name': permission,
+    },
   });
   return manifestPermissions;
 }
@@ -198,8 +229,8 @@ function addPermission(androidManifest, permissionName) {
   const usesPermissions = androidManifest.manifest[USES_PERMISSION] || [];
   usesPermissions.push({
     $: {
-      'android:name': permissionName
-    }
+      'android:name': permissionName,
+    },
   });
   androidManifest.manifest[USES_PERMISSION] = usesPermissions;
 }
@@ -247,7 +278,7 @@ function ensurePermissionNameFormat(permissionName) {
 
 function getPermissions(androidManifest) {
   const usesPermissions = androidManifest.manifest[USES_PERMISSION] || [];
-  const permissions = usesPermissions.map(permissionObject => {
+  const permissions = usesPermissions.map((permissionObject) => {
     return permissionObject.$['android:name'] || permissionObject.$.name;
   });
   return permissions;

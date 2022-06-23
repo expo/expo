@@ -5,8 +5,8 @@ import { getAndroidSplashConfig } from './getAndroidSplashConfig';
 const RESIZE_MODE_KEY = 'expo_splash_screen_resize_mode';
 const STATUS_BAR_TRANSLUCENT_KEY = 'expo_splash_screen_status_bar_translucent';
 
-export const withAndroidSplashStrings: ConfigPlugin = config => {
-  return withStringsXml(config, config => {
+export const withAndroidSplashStrings: ConfigPlugin = (config) => {
+  return withStringsXml(config, (config) => {
     const splashConfig = getAndroidSplashConfig(config);
     if (splashConfig) {
       const { resizeMode } = splashConfig;

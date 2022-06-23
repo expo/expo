@@ -8,8 +8,8 @@ const debug = require('debug')(
   'expo:prebuild-config:expo-splash-screen:ios:xcodeproj'
 ) as typeof console.log;
 
-export const withIosSplashXcodeProject: ConfigPlugin = config => {
-  return withXcodeProject(config, async config => {
+export const withIosSplashXcodeProject: ConfigPlugin = (config) => {
+  return withXcodeProject(config, async (config) => {
     config.modResults = await setSplashStoryboardAsync({
       projectName: config.modRequest.projectName!,
       project: config.modResults,

@@ -1,7 +1,7 @@
-"use strict";
+'use strict';
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
+Object.defineProperty(exports, '__esModule', {
+  value: true,
 });
 exports.parsePropertiesFile = parsePropertiesFile;
 exports.propertiesListToString = propertiesListToString;
@@ -15,12 +15,12 @@ function parsePropertiesFile(contents) {
 
     if (!line) {
       propertiesList.push({
-        type: 'empty'
+        type: 'empty',
       });
     } else if (line.startsWith('#')) {
       propertiesList.push({
         type: 'comment',
-        value: line.substring(1).trimStart()
+        value: line.substring(1).trimStart(),
       });
     } else {
       const eok = line.indexOf('=');
@@ -29,7 +29,7 @@ function parsePropertiesFile(contents) {
       propertiesList.push({
         type: 'property',
         key,
-        value
+        value,
       });
     }
   }

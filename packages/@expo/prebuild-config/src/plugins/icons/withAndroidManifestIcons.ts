@@ -1,8 +1,8 @@
 import { AndroidConfig, ConfigPlugin, withAndroidManifest } from '@expo/config-plugins';
 import { ExpoConfig } from '@expo/config-types';
 
-export const withAndroidManifestIcons: ConfigPlugin = config =>
-  withAndroidManifest(config, config => {
+export const withAndroidManifestIcons: ConfigPlugin = (config) =>
+  withAndroidManifest(config, (config) => {
     config.modResults = setRoundIconManifest(config, config.modResults);
     return config;
   });

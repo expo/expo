@@ -78,7 +78,7 @@ export function removeScheme(scheme: string | null, infoPlist: InfoPlist): InfoP
     return infoPlist;
   }
 
-  infoPlist.CFBundleURLTypes = infoPlist.CFBundleURLTypes.map(bundleUrlType => {
+  infoPlist.CFBundleURLTypes = infoPlist.CFBundleURLTypes.map((bundleUrlType) => {
     const index = bundleUrlType.CFBundleURLSchemes.indexOf(scheme);
     if (index > -1) {
       bundleUrlType.CFBundleURLSchemes.splice(index, 1);

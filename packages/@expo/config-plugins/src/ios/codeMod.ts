@@ -21,7 +21,7 @@ interface InsertContentFunctionOptions {
 export function addObjcImports(source: string, imports: string[]): string {
   const lines = source.split('\n');
   // Try to insert statements after first #import where would probably not in #if block
-  const lineIndexWithFirstImport = lines.findIndex(line => line.match(/^#import .*$/));
+  const lineIndexWithFirstImport = lines.findIndex((line) => line.match(/^#import .*$/));
   for (const importElement of imports) {
     if (!source.includes(importElement)) {
       const importStatement = `#import ${importElement}`;

@@ -7,7 +7,7 @@ import { IOSSplashConfig } from './getIosSplashConfig';
 const debug = Debug('expo:prebuild-config:expo-splash-screen:ios:infoPlist');
 
 export const withIosSplashInfoPlist: ConfigPlugin<IOSSplashConfig> = (config, splash) => {
-  return withInfoPlist(config, config => {
+  return withInfoPlist(config, (config) => {
     config.modResults = setSplashInfoPlist(config, config.modResults, splash);
     return config;
   });

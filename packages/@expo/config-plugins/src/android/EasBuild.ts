@@ -12,7 +12,7 @@ function hasApplyLine(content: string, applyLine: string): boolean {
       .replace(/\r\n/g, '\n')
       .split('\n')
       // Check for both single and double quotes
-      .some(line => line === applyLine || line === applyLine.replace(/"/g, "'"))
+      .some((line) => line === applyLine || line === applyLine.replace(/"/g, "'"))
   );
 }
 

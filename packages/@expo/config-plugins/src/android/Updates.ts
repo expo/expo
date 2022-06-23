@@ -43,7 +43,7 @@ export const withUpdates: ConfigPlugin<{ expoUsername: string | null }> = (
   config,
   { expoUsername }
 ) => {
-  return withAndroidManifest(config, config => {
+  return withAndroidManifest(config, (config) => {
     const projectRoot = config.modRequest.projectRoot;
     const expoUpdatesPackageVersion = getExpoUpdatesPackageVersion(projectRoot);
     config.modResults = setUpdatesConfig(
@@ -153,7 +153,7 @@ export function ensureBuildGradleContainsConfigurationScript(
 
     const isBuildGradleMisconfigured = buildGradleContents
       .split('\n')
-      .some(line => line.includes(CREATE_MANIFEST_ANDROID_PATH));
+      .some((line) => line.includes(CREATE_MANIFEST_ANDROID_PATH));
     if (isBuildGradleMisconfigured) {
       cleanedUpBuildGradleContents = buildGradleContents.replace(
         new RegExp(`(\n// Integration with Expo updates)?\n.*${CREATE_MANIFEST_ANDROID_PATH}.*\n`),
@@ -196,7 +196,7 @@ export function isBuildGradleConfigured(projectRoot: string, buildGradleContents
       .replace(/\r\n/g, '\n')
       .split('\n')
       // Check for both single and double quotes
-      .some(line => line === androidBuildScript || line === androidBuildScript.replace(/"/g, "'"))
+      .some((line) => line === androidBuildScript || line === androidBuildScript.replace(/"/g, "'"))
   );
 }
 

@@ -1,12 +1,35 @@
-"use strict";
+'use strict';
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
+Object.defineProperty(exports, '__esModule', {
+  value: true,
 });
-exports.WindowSoftInputMode = exports.Version = exports.Updates = exports.Styles = exports.Strings = exports.StatusBar = exports.Scheme = exports.Resources = exports.Properties = exports.PrimaryColor = exports.Permissions = exports.Paths = exports.Package = exports.Orientation = exports.Name = exports.Manifest = exports.IntentFilters = exports.GoogleServices = exports.GoogleMapsApiKey = exports.EasBuild = exports.Colors = exports.BuildProperties = exports.AllowBackup = void 0;
+exports.WindowSoftInputMode =
+  exports.Version =
+  exports.Updates =
+  exports.Styles =
+  exports.Strings =
+  exports.StatusBar =
+  exports.Scheme =
+  exports.Resources =
+  exports.Properties =
+  exports.PrimaryColor =
+  exports.Permissions =
+  exports.Paths =
+  exports.Package =
+  exports.Orientation =
+  exports.Name =
+  exports.Manifest =
+  exports.IntentFilters =
+  exports.GoogleServices =
+  exports.GoogleMapsApiKey =
+  exports.EasBuild =
+  exports.Colors =
+  exports.BuildProperties =
+  exports.AllowBackup =
+    void 0;
 
 function AllowBackup() {
-  const data = _interopRequireWildcard(require("./AllowBackup"));
+  const data = _interopRequireWildcard(require('./AllowBackup'));
 
   AllowBackup = function () {
     return data;
@@ -15,15 +38,15 @@ function AllowBackup() {
   return data;
 }
 
-Object.defineProperty(exports, "AllowBackup", {
+Object.defineProperty(exports, 'AllowBackup', {
   enumerable: true,
-  get: function () {
+  get() {
     return AllowBackup();
-  }
+  },
 });
 
 function BuildProperties() {
-  const data = _interopRequireWildcard(require("./BuildProperties"));
+  const data = _interopRequireWildcard(require('./BuildProperties'));
 
   BuildProperties = function () {
     return data;
@@ -32,15 +55,15 @@ function BuildProperties() {
   return data;
 }
 
-Object.defineProperty(exports, "BuildProperties", {
+Object.defineProperty(exports, 'BuildProperties', {
   enumerable: true,
-  get: function () {
+  get() {
     return BuildProperties();
-  }
+  },
 });
 
 function Colors() {
-  const data = _interopRequireWildcard(require("./Colors"));
+  const data = _interopRequireWildcard(require('./Colors'));
 
   Colors = function () {
     return data;
@@ -49,15 +72,15 @@ function Colors() {
   return data;
 }
 
-Object.defineProperty(exports, "Colors", {
+Object.defineProperty(exports, 'Colors', {
   enumerable: true,
-  get: function () {
+  get() {
     return Colors();
-  }
+  },
 });
 
 function EasBuild() {
-  const data = _interopRequireWildcard(require("./EasBuild"));
+  const data = _interopRequireWildcard(require('./EasBuild'));
 
   EasBuild = function () {
     return data;
@@ -66,15 +89,15 @@ function EasBuild() {
   return data;
 }
 
-Object.defineProperty(exports, "EasBuild", {
+Object.defineProperty(exports, 'EasBuild', {
   enumerable: true,
-  get: function () {
+  get() {
     return EasBuild();
-  }
+  },
 });
 
 function GoogleMapsApiKey() {
-  const data = _interopRequireWildcard(require("./GoogleMapsApiKey"));
+  const data = _interopRequireWildcard(require('./GoogleMapsApiKey'));
 
   GoogleMapsApiKey = function () {
     return data;
@@ -83,15 +106,15 @@ function GoogleMapsApiKey() {
   return data;
 }
 
-Object.defineProperty(exports, "GoogleMapsApiKey", {
+Object.defineProperty(exports, 'GoogleMapsApiKey', {
   enumerable: true,
-  get: function () {
+  get() {
     return GoogleMapsApiKey();
-  }
+  },
 });
 
 function GoogleServices() {
-  const data = _interopRequireWildcard(require("./GoogleServices"));
+  const data = _interopRequireWildcard(require('./GoogleServices'));
 
   GoogleServices = function () {
     return data;
@@ -100,15 +123,15 @@ function GoogleServices() {
   return data;
 }
 
-Object.defineProperty(exports, "GoogleServices", {
+Object.defineProperty(exports, 'GoogleServices', {
   enumerable: true,
-  get: function () {
+  get() {
     return GoogleServices();
-  }
+  },
 });
 
 function IntentFilters() {
-  const data = _interopRequireWildcard(require("./IntentFilters"));
+  const data = _interopRequireWildcard(require('./IntentFilters'));
 
   IntentFilters = function () {
     return data;
@@ -117,15 +140,15 @@ function IntentFilters() {
   return data;
 }
 
-Object.defineProperty(exports, "IntentFilters", {
+Object.defineProperty(exports, 'IntentFilters', {
   enumerable: true,
-  get: function () {
+  get() {
     return IntentFilters();
-  }
+  },
 });
 
 function Manifest() {
-  const data = _interopRequireWildcard(require("./Manifest"));
+  const data = _interopRequireWildcard(require('./Manifest'));
 
   Manifest = function () {
     return data;
@@ -134,15 +157,15 @@ function Manifest() {
   return data;
 }
 
-Object.defineProperty(exports, "Manifest", {
+Object.defineProperty(exports, 'Manifest', {
   enumerable: true,
-  get: function () {
+  get() {
     return Manifest();
-  }
+  },
 });
 
 function Name() {
-  const data = _interopRequireWildcard(require("./Name"));
+  const data = _interopRequireWildcard(require('./Name'));
 
   Name = function () {
     return data;
@@ -151,15 +174,15 @@ function Name() {
   return data;
 }
 
-Object.defineProperty(exports, "Name", {
+Object.defineProperty(exports, 'Name', {
   enumerable: true,
-  get: function () {
+  get() {
     return Name();
-  }
+  },
 });
 
 function Orientation() {
-  const data = _interopRequireWildcard(require("./Orientation"));
+  const data = _interopRequireWildcard(require('./Orientation'));
 
   Orientation = function () {
     return data;
@@ -168,15 +191,15 @@ function Orientation() {
   return data;
 }
 
-Object.defineProperty(exports, "Orientation", {
+Object.defineProperty(exports, 'Orientation', {
   enumerable: true,
-  get: function () {
+  get() {
     return Orientation();
-  }
+  },
 });
 
 function Package() {
-  const data = _interopRequireWildcard(require("./Package"));
+  const data = _interopRequireWildcard(require('./Package'));
 
   Package = function () {
     return data;
@@ -185,15 +208,15 @@ function Package() {
   return data;
 }
 
-Object.defineProperty(exports, "Package", {
+Object.defineProperty(exports, 'Package', {
   enumerable: true,
-  get: function () {
+  get() {
     return Package();
-  }
+  },
 });
 
 function Paths() {
-  const data = _interopRequireWildcard(require("./Paths"));
+  const data = _interopRequireWildcard(require('./Paths'));
 
   Paths = function () {
     return data;
@@ -202,15 +225,15 @@ function Paths() {
   return data;
 }
 
-Object.defineProperty(exports, "Paths", {
+Object.defineProperty(exports, 'Paths', {
   enumerable: true,
-  get: function () {
+  get() {
     return Paths();
-  }
+  },
 });
 
 function Permissions() {
-  const data = _interopRequireWildcard(require("./Permissions"));
+  const data = _interopRequireWildcard(require('./Permissions'));
 
   Permissions = function () {
     return data;
@@ -219,15 +242,15 @@ function Permissions() {
   return data;
 }
 
-Object.defineProperty(exports, "Permissions", {
+Object.defineProperty(exports, 'Permissions', {
   enumerable: true,
-  get: function () {
+  get() {
     return Permissions();
-  }
+  },
 });
 
 function PrimaryColor() {
-  const data = _interopRequireWildcard(require("./PrimaryColor"));
+  const data = _interopRequireWildcard(require('./PrimaryColor'));
 
   PrimaryColor = function () {
     return data;
@@ -236,15 +259,15 @@ function PrimaryColor() {
   return data;
 }
 
-Object.defineProperty(exports, "PrimaryColor", {
+Object.defineProperty(exports, 'PrimaryColor', {
   enumerable: true,
-  get: function () {
+  get() {
     return PrimaryColor();
-  }
+  },
 });
 
 function Properties() {
-  const data = _interopRequireWildcard(require("./Properties"));
+  const data = _interopRequireWildcard(require('./Properties'));
 
   Properties = function () {
     return data;
@@ -253,15 +276,15 @@ function Properties() {
   return data;
 }
 
-Object.defineProperty(exports, "Properties", {
+Object.defineProperty(exports, 'Properties', {
   enumerable: true,
-  get: function () {
+  get() {
     return Properties();
-  }
+  },
 });
 
 function Resources() {
-  const data = _interopRequireWildcard(require("./Resources"));
+  const data = _interopRequireWildcard(require('./Resources'));
 
   Resources = function () {
     return data;
@@ -270,15 +293,15 @@ function Resources() {
   return data;
 }
 
-Object.defineProperty(exports, "Resources", {
+Object.defineProperty(exports, 'Resources', {
   enumerable: true,
-  get: function () {
+  get() {
     return Resources();
-  }
+  },
 });
 
 function Scheme() {
-  const data = _interopRequireWildcard(require("./Scheme"));
+  const data = _interopRequireWildcard(require('./Scheme'));
 
   Scheme = function () {
     return data;
@@ -287,15 +310,15 @@ function Scheme() {
   return data;
 }
 
-Object.defineProperty(exports, "Scheme", {
+Object.defineProperty(exports, 'Scheme', {
   enumerable: true,
-  get: function () {
+  get() {
     return Scheme();
-  }
+  },
 });
 
 function StatusBar() {
-  const data = _interopRequireWildcard(require("./StatusBar"));
+  const data = _interopRequireWildcard(require('./StatusBar'));
 
   StatusBar = function () {
     return data;
@@ -304,15 +327,15 @@ function StatusBar() {
   return data;
 }
 
-Object.defineProperty(exports, "StatusBar", {
+Object.defineProperty(exports, 'StatusBar', {
   enumerable: true,
-  get: function () {
+  get() {
     return StatusBar();
-  }
+  },
 });
 
 function Strings() {
-  const data = _interopRequireWildcard(require("./Strings"));
+  const data = _interopRequireWildcard(require('./Strings'));
 
   Strings = function () {
     return data;
@@ -321,15 +344,15 @@ function Strings() {
   return data;
 }
 
-Object.defineProperty(exports, "Strings", {
+Object.defineProperty(exports, 'Strings', {
   enumerable: true,
-  get: function () {
+  get() {
     return Strings();
-  }
+  },
 });
 
 function Styles() {
-  const data = _interopRequireWildcard(require("./Styles"));
+  const data = _interopRequireWildcard(require('./Styles'));
 
   Styles = function () {
     return data;
@@ -338,15 +361,15 @@ function Styles() {
   return data;
 }
 
-Object.defineProperty(exports, "Styles", {
+Object.defineProperty(exports, 'Styles', {
   enumerable: true,
-  get: function () {
+  get() {
     return Styles();
-  }
+  },
 });
 
 function Updates() {
-  const data = _interopRequireWildcard(require("./Updates"));
+  const data = _interopRequireWildcard(require('./Updates'));
 
   Updates = function () {
     return data;
@@ -355,15 +378,15 @@ function Updates() {
   return data;
 }
 
-Object.defineProperty(exports, "Updates", {
+Object.defineProperty(exports, 'Updates', {
   enumerable: true,
-  get: function () {
+  get() {
     return Updates();
-  }
+  },
 });
 
 function Version() {
-  const data = _interopRequireWildcard(require("./Version"));
+  const data = _interopRequireWildcard(require('./Version'));
 
   Version = function () {
     return data;
@@ -372,15 +395,15 @@ function Version() {
   return data;
 }
 
-Object.defineProperty(exports, "Version", {
+Object.defineProperty(exports, 'Version', {
   enumerable: true,
-  get: function () {
+  get() {
     return Version();
-  }
+  },
 });
 
 function WindowSoftInputMode() {
-  const data = _interopRequireWildcard(require("./WindowSoftInputMode"));
+  const data = _interopRequireWildcard(require('./WindowSoftInputMode'));
 
   WindowSoftInputMode = function () {
     return data;
@@ -389,14 +412,49 @@ function WindowSoftInputMode() {
   return data;
 }
 
-Object.defineProperty(exports, "WindowSoftInputMode", {
+Object.defineProperty(exports, 'WindowSoftInputMode', {
   enumerable: true,
-  get: function () {
+  get() {
     return WindowSoftInputMode();
-  }
+  },
 });
 
-function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
+function _getRequireWildcardCache(nodeInterop) {
+  if (typeof WeakMap !== 'function') return null;
+  const cacheBabelInterop = new WeakMap();
+  const cacheNodeInterop = new WeakMap();
+  return (_getRequireWildcardCache = function (nodeInterop) {
+    return nodeInterop ? cacheNodeInterop : cacheBabelInterop;
+  })(nodeInterop);
+}
 
-function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+function _interopRequireWildcard(obj, nodeInterop) {
+  if (!nodeInterop && obj && obj.__esModule) {
+    return obj;
+  }
+  if (obj === null || (typeof obj !== 'object' && typeof obj !== 'function')) {
+    return { default: obj };
+  }
+  const cache = _getRequireWildcardCache(nodeInterop);
+  if (cache && cache.has(obj)) {
+    return cache.get(obj);
+  }
+  const newObj = {};
+  const hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor;
+  for (const key in obj) {
+    if (key !== 'default' && Object.prototype.hasOwnProperty.call(obj, key)) {
+      const desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null;
+      if (desc && (desc.get || desc.set)) {
+        Object.defineProperty(newObj, key, desc);
+      } else {
+        newObj[key] = obj[key];
+      }
+    }
+  }
+  newObj.default = obj;
+  if (cache) {
+    cache.set(obj, newObj);
+  }
+  return newObj;
+}
 //# sourceMappingURL=index.js.map

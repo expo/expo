@@ -2,8 +2,8 @@ import { ConfigPlugin, WarningAggregator, withEntitlementsPlist } from '@expo/co
 
 import { createLegacyPlugin } from './createLegacyPlugin';
 
-const withAppleSignInWarning: ConfigPlugin = config => {
-  return withEntitlementsPlist(config, config => {
+const withAppleSignInWarning: ConfigPlugin = (config) => {
+  return withEntitlementsPlist(config, (config) => {
     if (config.ios?.usesAppleSignIn) {
       WarningAggregator.addWarningIOS(
         'ios.usesAppleSignIn',

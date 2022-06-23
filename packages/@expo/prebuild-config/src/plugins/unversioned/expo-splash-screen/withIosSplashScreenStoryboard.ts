@@ -27,7 +27,7 @@ export const withIosSplashScreenStoryboard: ConfigPlugin<Mod<IBSplashScreenDocum
 };
 
 /** Append a custom rule to supply SplashScreen `.storyboard` xml data to mods on `mods.ios.splashScreenStoryboard` */
-export const withIosSplashScreenStoryboardBaseMod: ConfigPlugin = config => {
+export const withIosSplashScreenStoryboardBaseMod: ConfigPlugin = (config) => {
   return BaseMods.withGeneratedBaseMods(config, {
     platform: 'ios',
     saveToInternal: true,

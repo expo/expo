@@ -103,7 +103,7 @@ function getSingleTaskIntentFilters(androidManifest: AndroidManifest): any[] {
     // @ts-ignore
     const activities = Array.isArray(activity) ? activity : [activity];
     const singleTaskActivities = (activities as ManifestActivity[]).filter(
-      activity => activity?.$?.['android:launchMode'] === 'singleTask'
+      (activity) => activity?.$?.['android:launchMode'] === 'singleTask'
     );
     for (const activity of singleTaskActivities) {
       const intentFilters = activity['intent-filter'];

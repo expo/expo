@@ -176,7 +176,7 @@ function isManifest(xml: XML.XMLObject): xml is AndroidManifest {
 /** Returns the `manifest.application` tag ending in `.MainApplication` */
 export function getMainApplication(androidManifest: AndroidManifest): ManifestApplication | null {
   return (
-    androidManifest?.manifest?.application?.filter(e =>
+    androidManifest?.manifest?.application?.filter((e) =>
       e?.$?.['android:name'].endsWith('.MainApplication')
     )[0] ?? null
   );
@@ -210,10 +210,10 @@ export function getRunnableActivity(androidManifest: AndroidManifest): ManifestA
       for (const intentFilter of activity['intent-filter']) {
         if (
           intentFilter.action?.find(
-            action => action.$['android:name'] === 'android.intent.action.MAIN'
+            (action) => action.$['android:name'] === 'android.intent.action.MAIN'
           ) &&
           intentFilter.category?.find(
-            category => category.$['android:name'] === 'android.intent.category.LAUNCHER'
+            (category) => category.$['android:name'] === 'android.intent.category.LAUNCHER'
           )
         ) {
           return activity;
@@ -247,9 +247,8 @@ export function addMetaDataItemToMainApplication(
       (e: any) => e.$['android:name'] === itemName
     );
     if (existingMetaDataItem.length) {
-      existingMetaDataItem[0].$[
-        `android:${itemType}` as keyof ManifestMetaDataAttributes
-      ] = itemValue;
+      existingMetaDataItem[0].$[`android:${itemType}` as keyof ManifestMetaDataAttributes] =
+        itemValue;
     } else {
       mainApplication['meta-data'].push(newItem);
     }
@@ -314,7 +313,7 @@ export function addUsesLibraryItemToMainApplication(
 
   if (mainApplication['uses-library']) {
     existingMetaDataItem = mainApplication['uses-library'].filter(
-      e => e.$['android:name'] === item.name
+      (e) => e.$['android:name'] === item.name
     );
     if (existingMetaDataItem.length) {
       existingMetaDataItem[0].$ = newItem.$;

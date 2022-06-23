@@ -30,7 +30,7 @@ describe(compileModsAsync, () => {
       mods: null,
     };
 
-    const action: Mod<any> = jest.fn(props => {
+    const action: Mod<any> = jest.fn((props) => {
       // Capitalize app name
       props.name = (props.name as string).toUpperCase();
       return props;
@@ -52,7 +52,7 @@ describe(compileModsAsync, () => {
     expect(config.ios?.infoPlist).toBeUndefined();
     expect(config.ios?.entitlements).toBeUndefined();
     // Adds base mods
-    expect(Object.values(config.mods.ios).every(value => typeof value === 'function')).toBe(true);
+    expect(Object.values(config.mods.ios).every((value) => typeof value === 'function')).toBe(true);
 
     expect(action).not.toBeCalled();
   });
@@ -95,7 +95,7 @@ describe(compileModsAsync, () => {
     expect(config.ios?.infoPlist).toBeUndefined();
     expect(config.ios?.entitlements).toBeUndefined();
     // Adds base mods
-    expect(Object.values(config.mods.ios).every(value => typeof value === 'function')).toBe(true);
+    expect(Object.values(config.mods.ios).every((value) => typeof value === 'function')).toBe(true);
   });
 
   it('compiles mods', async () => {
@@ -130,7 +130,7 @@ describe(compileModsAsync, () => {
     expect(config.ios.entitlements).toBeUndefined();
 
     // Plugins should all be functions
-    expect(Object.values(config.mods.ios).every(value => typeof value === 'function')).toBe(true);
+    expect(Object.values(config.mods.ios).every((value) => typeof value === 'function')).toBe(true);
 
     // Test that the actual file was rewritten.
     const data = await fs.promises.readFile('/app/ios/ReactNativeProject/Info.plist', 'utf8');

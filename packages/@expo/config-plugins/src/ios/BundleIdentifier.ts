@@ -18,7 +18,7 @@ export const withBundleIdentifier: ConfigPlugin<{ bundleIdentifier?: string }> =
 ) => {
   return withDangerousMod(config, [
     'ios',
-    async config => {
+    async (config) => {
       const bundleId = bundleIdentifier ?? config.ios?.bundleIdentifier;
       assert(
         bundleId,
@@ -108,9 +108,8 @@ function getProductBundleIdentifierFromBuildConfiguration(
         '$(PRODUCT_NAME:rfc1034identifier)' &&
       xcBuildConfiguration.buildSettings.PRODUCT_NAME
     ) {
-      bundleIdentifierParts[
-        bundleIdentifierParts.length - 1
-      ] = xcBuildConfiguration.buildSettings.PRODUCT_NAME.replace(/[^a-zA-Z0-9]/g, '-');
+      bundleIdentifierParts[bundleIdentifierParts.length - 1] =
+        xcBuildConfiguration.buildSettings.PRODUCT_NAME.replace(/[^a-zA-Z0-9]/g, '-');
     }
     return bundleIdentifierParts.join('.');
   } else {

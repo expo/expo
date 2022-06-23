@@ -16,10 +16,11 @@ beforeAll(() => {
         path.join(__dirname, '../../__tests__/fixtures/project-multitarget.pbxproj'),
         'utf-8'
       ),
-      'ios/testproject.xcodeproj/xcshareddata/xcschemes/multitarget.xcscheme': originalFs.readFileSync(
-        path.join(__dirname, '../../__tests__/fixtures/multitarget.xcscheme'),
-        'utf-8'
-      ),
+      'ios/testproject.xcodeproj/xcshareddata/xcschemes/multitarget.xcscheme':
+        originalFs.readFileSync(
+          path.join(__dirname, '../../__tests__/fixtures/multitarget.xcscheme'),
+          'utf-8'
+        ),
     },
     projectRoot
   );

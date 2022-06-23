@@ -29,9 +29,8 @@ export function setStringItem(
       // replace the previous item
       stringFileContentsJSON.resources.string[stringNameExists] = newItem;
     } else {
-      stringFileContentsJSON.resources.string = stringFileContentsJSON.resources.string.concat(
-        newItem
-      );
+      stringFileContentsJSON.resources.string =
+        stringFileContentsJSON.resources.string.concat(newItem);
     }
   }
   return stringFileContentsJSON;

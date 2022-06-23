@@ -11,8 +11,8 @@ const MAPPING: Record<string, string> = {
   resize: 'adjustResize',
 };
 
-export const withWindowSoftInputMode: ConfigPlugin = config => {
-  return withAndroidManifest(config, async config => {
+export const withWindowSoftInputMode: ConfigPlugin = (config) => {
+  return withAndroidManifest(config, async (config) => {
     config.modResults = setWindowSoftInputModeMode(config, config.modResults);
     return config;
   });

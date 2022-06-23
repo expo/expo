@@ -59,37 +59,37 @@ describe('Android Updates config', () => {
     const mainApplication = getMainApplication(androidManifestJson);
 
     const updateUrl = mainApplication['meta-data'].filter(
-      e => e.$['android:name'] === 'expo.modules.updates.EXPO_UPDATE_URL'
+      (e) => e.$['android:name'] === 'expo.modules.updates.EXPO_UPDATE_URL'
     );
     expect(updateUrl).toHaveLength(1);
     expect(updateUrl[0].$['android:value']).toMatch('https://exp.host/@owner/my-app');
 
     const sdkVersion = mainApplication['meta-data'].filter(
-      e => e.$['android:name'] === 'expo.modules.updates.EXPO_SDK_VERSION'
+      (e) => e.$['android:name'] === 'expo.modules.updates.EXPO_SDK_VERSION'
     );
     expect(sdkVersion).toHaveLength(1);
     expect(sdkVersion[0].$['android:value']).toMatch('37.0.0');
 
     const enabled = mainApplication['meta-data'].filter(
-      e => e.$['android:name'] === 'expo.modules.updates.ENABLED'
+      (e) => e.$['android:name'] === 'expo.modules.updates.ENABLED'
     );
     expect(enabled).toHaveLength(1);
     expect(enabled[0].$['android:value']).toMatch('false');
 
     const checkOnLaunch = mainApplication['meta-data'].filter(
-      e => e.$['android:name'] === 'expo.modules.updates.EXPO_UPDATES_CHECK_ON_LAUNCH'
+      (e) => e.$['android:name'] === 'expo.modules.updates.EXPO_UPDATES_CHECK_ON_LAUNCH'
     );
     expect(checkOnLaunch).toHaveLength(1);
     expect(checkOnLaunch[0].$['android:value']).toMatch('ERROR_RECOVERY_ONLY');
 
     const timeout = mainApplication['meta-data'].filter(
-      e => e.$['android:name'] === 'expo.modules.updates.EXPO_UPDATES_LAUNCH_WAIT_MS'
+      (e) => e.$['android:name'] === 'expo.modules.updates.EXPO_UPDATES_LAUNCH_WAIT_MS'
     );
     expect(timeout).toHaveLength(1);
     expect(timeout[0].$['android:value']).toMatch('2000');
 
     const codeSigningCertificate = mainApplication['meta-data'].filter(
-      e => e.$['android:name'] === 'expo.modules.updates.CODE_SIGNING_CERTIFICATE'
+      (e) => e.$['android:name'] === 'expo.modules.updates.CODE_SIGNING_CERTIFICATE'
     );
     expect(codeSigningCertificate).toHaveLength(1);
     expect(codeSigningCertificate[0].$['android:value']).toMatch(
@@ -97,7 +97,7 @@ describe('Android Updates config', () => {
     );
 
     const codeSigningMetadata = mainApplication['meta-data'].filter(
-      e => e.$['android:name'] === 'expo.modules.updates.CODE_SIGNING_METADATA'
+      (e) => e.$['android:name'] === 'expo.modules.updates.CODE_SIGNING_METADATA'
     );
     expect(codeSigningMetadata).toHaveLength(1);
     expect(codeSigningMetadata[0].$['android:value']).toMatch(

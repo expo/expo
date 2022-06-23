@@ -20,8 +20,8 @@ const templateBridgingHeader = `//
  * 2. Writes the file and links to Xcode as a resource file.
  * 3. Sets the build configuration `SWIFT_OBJC_BRIDGING_HEADER = [PROJECT_NAME]-Bridging-Header.h`
  */
-export const withSwiftBridgingHeader: ConfigPlugin = config => {
-  return withXcodeProject(config, config => {
+export const withSwiftBridgingHeader: ConfigPlugin = (config) => {
+  return withXcodeProject(config, (config) => {
     config.modResults = ensureSwiftBridgingHeaderSetup({
       project: config.modResults,
       projectRoot: config.modRequest.projectRoot,
@@ -157,7 +157,7 @@ export function createBridgingHeaderFile({
   return project;
 }
 
-export const withNoopSwiftFile: ConfigPlugin = config => {
+export const withNoopSwiftFile: ConfigPlugin = (config) => {
   return withBuildSourceFile(config, {
     filePath: 'noop-file.swift',
     contents: [

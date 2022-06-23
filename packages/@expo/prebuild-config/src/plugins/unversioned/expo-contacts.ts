@@ -4,8 +4,8 @@ import { JSONObject } from '@expo/json-file';
 
 import { createLegacyPlugin } from './createLegacyPlugin';
 
-const withAccessesContactNotes: ConfigPlugin = config => {
-  return withEntitlementsPlist(config, config => {
+const withAccessesContactNotes: ConfigPlugin = (config) => {
+  return withEntitlementsPlist(config, (config) => {
     config.modResults = setAccessesContactNotes(config, config.modResults);
     return config;
   });

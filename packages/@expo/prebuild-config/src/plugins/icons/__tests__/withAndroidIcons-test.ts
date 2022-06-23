@@ -137,7 +137,7 @@ describe('e2e: ONLY android legacy icon', () => {
 
   it('writes all the image files expected', async () => {
     const after = getDirFromFS(vol.toJSON(), projectRoot);
-    Object.keys(after).forEach(path => {
+    Object.keys(after).forEach((path) => {
       expect(LIST_OF_ANDROID_ADAPTIVE_ICON_FILES_FINAL).toContain(path);
     });
   });

@@ -1,14 +1,14 @@
-"use strict";
+'use strict';
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
+Object.defineProperty(exports, '__esModule', {
+  value: true,
 });
 exports.addImports = addImports;
 exports.appendContentsInsideDeclarationBlock = appendContentsInsideDeclarationBlock;
 exports.findNewInstanceCodeBlock = findNewInstanceCodeBlock;
 
 function _commonCodeMod() {
-  const data = require("../utils/commonCodeMod");
+  const data = require('../utils/commonCodeMod');
 
   _commonCodeMod = function () {
     return data;
@@ -18,7 +18,7 @@ function _commonCodeMod() {
 }
 
 function _matchBrackets() {
-  const data = require("../utils/matchBrackets");
+  const data = require('../utils/matchBrackets');
 
   _matchBrackets = function () {
     return data;
@@ -37,12 +37,13 @@ function _matchBrackets() {
  */
 function findNewInstanceCodeBlock(contents, classDeclaration, language) {
   const isJava = language === 'java';
-  let start = isJava ? contents.indexOf(` new ${classDeclaration}(`) : contents.search(new RegExp(` (object\\s*:\\s*)?${classDeclaration}\\(`));
+  let start = isJava
+    ? contents.indexOf(` new ${classDeclaration}(`)
+    : contents.search(new RegExp(` (object\\s*:\\s*)?${classDeclaration}\\(`));
 
   if (start < 0) {
     return null;
   } // `+ 1` for the prefix space
-
 
   start += 1;
   let end = (0, _matchBrackets().findMatchingBracketPosition)(contents, '(', start); // For anonymous class, should search further to the {} block.
@@ -60,7 +61,8 @@ function findNewInstanceCodeBlock(contents, classDeclaration, language) {
   // ```
 
   const nextBrace = contents.indexOf('{', end + 1);
-  const isAnonymousClass = nextBrace >= end && !!contents.substring(end + 1, nextBrace).match(/^\s*$/);
+  const isAnonymousClass =
+    nextBrace >= end && !!contents.substring(end + 1, nextBrace).match(/^\s*$/);
 
   if (isAnonymousClass) {
     end = (0, _matchBrackets().findMatchingBracketPosition)(contents, '{', end);
@@ -69,7 +71,7 @@ function findNewInstanceCodeBlock(contents, classDeclaration, language) {
   return {
     start,
     end,
-    code: contents.substring(start, end + 1)
+    code: contents.substring(start, end + 1),
   };
 }
 /**
@@ -80,7 +82,6 @@ function findNewInstanceCodeBlock(contents, classDeclaration, language) {
  * @param insertion code to append
  * @returns updated contents
  */
-
 
 function appendContentsInsideDeclarationBlock(srcContents, declaration, insertion) {
   const start = srcContents.search(new RegExp(`\\s*${declaration}.*?[\\(\\{]`));
@@ -95,7 +96,7 @@ function appendContentsInsideDeclarationBlock(srcContents, declaration, insertio
 
 function addImports(source, imports, isJava) {
   const lines = source.split('\n');
-  const lineIndexWithPackageDeclaration = lines.findIndex(line => line.match(/^package .*;?$/));
+  const lineIndexWithPackageDeclaration = lines.findIndex((line) => line.match(/^package .*;?$/));
 
   for (const javaImport of imports) {
     if (!source.includes(javaImport)) {

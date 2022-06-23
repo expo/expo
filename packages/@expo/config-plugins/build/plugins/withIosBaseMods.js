@@ -1,13 +1,13 @@
-"use strict";
+'use strict';
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
+Object.defineProperty(exports, '__esModule', {
+  value: true,
 });
 exports.getIosModFileProviders = getIosModFileProviders;
 exports.withIosBaseMods = withIosBaseMods;
 
 function _jsonFile() {
-  const data = _interopRequireDefault(require("@expo/json-file"));
+  const data = _interopRequireDefault(require('@expo/json-file'));
 
   _jsonFile = function () {
     return data;
@@ -17,7 +17,7 @@ function _jsonFile() {
 }
 
 function _plist() {
-  const data = _interopRequireDefault(require("@expo/plist"));
+  const data = _interopRequireDefault(require('@expo/plist'));
 
   _plist = function () {
     return data;
@@ -27,7 +27,7 @@ function _plist() {
 }
 
 function _assert() {
-  const data = _interopRequireDefault(require("assert"));
+  const data = _interopRequireDefault(require('assert'));
 
   _assert = function () {
     return data;
@@ -37,7 +37,7 @@ function _assert() {
 }
 
 function _fs() {
-  const data = _interopRequireWildcard(require("fs"));
+  const data = _interopRequireWildcard(require('fs'));
 
   _fs = function () {
     return data;
@@ -47,7 +47,7 @@ function _fs() {
 }
 
 function _path() {
-  const data = _interopRequireDefault(require("path"));
+  const data = _interopRequireDefault(require('path'));
 
   _path = function () {
     return data;
@@ -57,7 +57,7 @@ function _path() {
 }
 
 function _xcode() {
-  const data = _interopRequireDefault(require("xcode"));
+  const data = _interopRequireDefault(require('xcode'));
 
   _xcode = function () {
     return data;
@@ -67,7 +67,7 @@ function _xcode() {
 }
 
 function _ios() {
-  const data = require("../ios");
+  const data = require('../ios');
 
   _ios = function () {
     return data;
@@ -77,7 +77,7 @@ function _ios() {
 }
 
 function _Entitlements() {
-  const data = require("../ios/Entitlements");
+  const data = require('../ios/Entitlements');
 
   _Entitlements = function () {
     return data;
@@ -87,7 +87,7 @@ function _Entitlements() {
 }
 
 function _Xcodeproj() {
-  const data = require("../ios/utils/Xcodeproj");
+  const data = require('../ios/utils/Xcodeproj');
 
   _Xcodeproj = function () {
     return data;
@@ -97,7 +97,7 @@ function _Xcodeproj() {
 }
 
 function _getInfoPlistPath() {
-  const data = require("../ios/utils/getInfoPlistPath");
+  const data = require('../ios/utils/getInfoPlistPath');
 
   _getInfoPlistPath = function () {
     return data;
@@ -107,7 +107,7 @@ function _getInfoPlistPath() {
 }
 
 function _modules() {
-  const data = require("../utils/modules");
+  const data = require('../utils/modules');
 
   _modules = function () {
     return data;
@@ -117,7 +117,7 @@ function _modules() {
 }
 
 function _sortObject() {
-  const data = require("../utils/sortObject");
+  const data = require('../utils/sortObject');
 
   _sortObject = function () {
     return data;
@@ -127,7 +127,7 @@ function _sortObject() {
 }
 
 function _warnings() {
-  const data = require("../utils/warnings");
+  const data = require('../utils/warnings');
 
   _warnings = function () {
     return data;
@@ -137,7 +137,7 @@ function _warnings() {
 }
 
 function _createBaseMod() {
-  const data = require("./createBaseMod");
+  const data = require('./createBaseMod');
 
   _createBaseMod = function () {
     return data;
@@ -146,16 +146,50 @@ function _createBaseMod() {
   return data;
 }
 
-function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
+function _getRequireWildcardCache(nodeInterop) {
+  if (typeof WeakMap !== 'function') return null;
+  const cacheBabelInterop = new WeakMap();
+  const cacheNodeInterop = new WeakMap();
+  return (_getRequireWildcardCache = function (nodeInterop) {
+    return nodeInterop ? cacheNodeInterop : cacheBabelInterop;
+  })(nodeInterop);
+}
 
-function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+function _interopRequireWildcard(obj, nodeInterop) {
+  if (!nodeInterop && obj && obj.__esModule) {
+    return obj;
+  }
+  if (obj === null || (typeof obj !== 'object' && typeof obj !== 'function')) {
+    return { default: obj };
+  }
+  const cache = _getRequireWildcardCache(nodeInterop);
+  if (cache && cache.has(obj)) {
+    return cache.get(obj);
+  }
+  const newObj = {};
+  const hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor;
+  for (const key in obj) {
+    if (key !== 'default' && Object.prototype.hasOwnProperty.call(obj, key)) {
+      const desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null;
+      if (desc && (desc.get || desc.set)) {
+        Object.defineProperty(newObj, key, desc);
+      } else {
+        newObj[key] = obj[key];
+      }
+    }
+  }
+  newObj.default = obj;
+  if (cache) {
+    cache.set(obj, newObj);
+  }
+  return newObj;
+}
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(obj) {
+  return obj && obj.__esModule ? obj : { default: obj };
+}
 
-const {
-  readFile,
-  writeFile
-} = _fs().promises;
+const { readFile, writeFile } = _fs().promises;
 
 function getEntitlementsPlistTemplate() {
   // TODO: Fetch the versioned template file if possible
@@ -177,14 +211,14 @@ function getInfoPlistTemplate() {
       NSAllowsArbitraryLoads: true,
       NSExceptionDomains: {
         localhost: {
-          NSExceptionAllowsInsecureHTTPLoads: true
-        }
-      }
+          NSExceptionAllowsInsecureHTTPLoads: true,
+        },
+      },
     },
     UILaunchStoryboardName: 'SplashScreen',
     UIRequiredDeviceCapabilities: ['armv7'],
     UIViewControllerBasedStatusBarAppearance: false,
-    UIStatusBarStyle: 'UIStatusBarStyleDefault'
+    UIStatusBarStyle: 'UIStatusBarStyleDefault',
   };
 }
 
@@ -198,16 +232,11 @@ const defaultProviders = {
       return {};
     },
 
-    async write() {}
-
+    async write() {},
   }),
   // Append a rule to supply AppDelegate data to mods on `mods.ios.appDelegate`
   appDelegate: (0, _createBaseMod().provider)({
-    getFilePath({
-      modRequest: {
-        projectRoot
-      }
-    }) {
+    getFilePath({ modRequest: { projectRoot } }) {
       return _ios().Paths.getAppDelegateFilePath(projectRoot);
     },
 
@@ -215,35 +244,25 @@ const defaultProviders = {
       return _ios().Paths.getFileInfo(filePath);
     },
 
-    async write(filePath, {
-      modResults: {
-        contents
-      }
-    }) {
+    async write(filePath, { modResults: { contents } }) {
       await writeFile(filePath, contents);
-    }
-
+    },
   }),
   // Append a rule to supply Expo.plist data to mods on `mods.ios.expoPlist`
   expoPlist: (0, _createBaseMod().provider)({
     isIntrospective: true,
 
-    getFilePath({
-      modRequest: {
+    getFilePath({ modRequest: { platformProjectRoot, projectName } }) {
+      const supportingDirectory = _path().default.join(
         platformProjectRoot,
-        projectName
-      }
-    }) {
-      const supportingDirectory = _path().default.join(platformProjectRoot, projectName, 'Supporting');
+        projectName,
+        'Supporting'
+      );
 
       return _path().default.resolve(supportingDirectory, 'Expo.plist');
     },
 
-    async read(filePath, {
-      modRequest: {
-        introspect
-      }
-    }) {
+    async read(filePath, { modRequest: { introspect } }) {
       try {
         return _plist().default.parse(await readFile(filePath, 'utf8'));
       } catch (error) {
@@ -255,27 +274,17 @@ const defaultProviders = {
       }
     },
 
-    async write(filePath, {
-      modResults,
-      modRequest: {
-        introspect
-      }
-    }) {
+    async write(filePath, { modResults, modRequest: { introspect } }) {
       if (introspect) {
         return;
       }
 
       await writeFile(filePath, _plist().default.build((0, _sortObject().sortObject)(modResults)));
-    }
-
+    },
   }),
   // Append a rule to supply .xcodeproj data to mods on `mods.ios.xcodeproj`
   xcodeproj: (0, _createBaseMod().provider)({
-    getFilePath({
-      modRequest: {
-        projectRoot
-      }
-    }) {
+    getFilePath({ modRequest: { projectRoot } }) {
       return _ios().Paths.getPBXProjectPath(projectRoot);
     },
 
@@ -286,12 +295,9 @@ const defaultProviders = {
       return project;
     },
 
-    async write(filePath, {
-      modResults
-    }) {
+    async write(filePath, { modResults }) {
       await writeFile(filePath, modResults.writeSync());
-    }
-
+    },
   }),
   // Append a rule to supply Info.plist data to mods on `mods.ios.infoPlist`
   infoPlist: (0, _createBaseMod().provider)({
@@ -302,27 +308,37 @@ const defaultProviders = {
 
       try {
         project = (0, _Xcodeproj().getPbxproj)(config.modRequest.projectRoot);
-      } catch {// noop
+      } catch {
+        // noop
       } // Only check / warn if a project actually exists, this'll provide
       // more accurate warning messages for users in managed projects.
 
-
       if (project) {
-        const infoPlistBuildProperty = (0, _getInfoPlistPath().getInfoPlistPathFromPbxproj)(project);
+        const infoPlistBuildProperty = (0, _getInfoPlistPath().getInfoPlistPathFromPbxproj)(
+          project
+        );
 
         if (infoPlistBuildProperty) {
           //: [root]/myapp/ios/MyApp/Info.plist
-          const infoPlistPath = _path().default.join( //: myapp/ios
-          config.modRequest.platformProjectRoot, //: MyApp/Info.plist
-          infoPlistBuildProperty);
+          const infoPlistPath = _path().default.join(
+            //: myapp/ios
+            config.modRequest.platformProjectRoot, //: MyApp/Info.plist
+            infoPlistBuildProperty
+          );
 
           if ((0, _modules().fileExists)(infoPlistPath)) {
             return infoPlistPath;
           }
 
-          (0, _warnings().addWarningIOS)('mods.ios.infoPlist', `Info.plist file linked to Xcode project does not exist: ${infoPlistPath}`);
+          (0, _warnings().addWarningIOS)(
+            'mods.ios.infoPlist',
+            `Info.plist file linked to Xcode project does not exist: ${infoPlistPath}`
+          );
         } else {
-          (0, _warnings().addWarningIOS)('mods.ios.infoPlist', 'Failed to find Info.plist linked to Xcode project.');
+          (0, _warnings().addWarningIOS)(
+            'mods.ios.infoPlist',
+            'Failed to find Info.plist linked to Xcode project.'
+          );
         }
       }
 
@@ -356,13 +372,10 @@ const defaultProviders = {
           throw error;
         } // Fallback to using the infoPlist object from the Expo config.
 
-
         modResults = getInfoPlistTemplate();
       }
 
-      config.ios.infoPlist = { ...(modResults || {}),
-        ...config.ios.infoPlist
-      };
+      config.ios.infoPlist = { ...(modResults || {}), ...config.ios.infoPlist };
       return config.ios.infoPlist;
     },
 
@@ -378,9 +391,11 @@ const defaultProviders = {
         return;
       }
 
-      await writeFile(filePath, _plist().default.build((0, _sortObject().sortObject)(config.modResults)));
-    }
-
+      await writeFile(
+        filePath,
+        _plist().default.build((0, _sortObject().sortObject)(config.modResults))
+      );
+    },
   }),
   // Append a rule to supply .entitlements data to mods on `mods.ios.entitlements`
   entitlements: (0, _createBaseMod().provider)({
@@ -388,10 +403,16 @@ const defaultProviders = {
 
     async getFilePath(config) {
       try {
-        var _Entitlements$getEnti;
+        let _Entitlements$getEnti;
 
-        (0, _Entitlements().ensureApplicationTargetEntitlementsFileConfigured)(config.modRequest.projectRoot);
-        return (_Entitlements$getEnti = _ios().Entitlements.getEntitlementsPath(config.modRequest.projectRoot)) !== null && _Entitlements$getEnti !== void 0 ? _Entitlements$getEnti : '';
+        (0, _Entitlements().ensureApplicationTargetEntitlementsFileConfigured)(
+          config.modRequest.projectRoot
+        );
+        return (_Entitlements$getEnti = _ios().Entitlements.getEntitlementsPath(
+          config.modRequest.projectRoot
+        )) !== null && _Entitlements$getEnti !== void 0
+          ? _Entitlements$getEnti
+          : '';
       } catch (error) {
         if (config.modRequest.introspect) {
           // fallback to an empty string in introspection mode.
@@ -419,17 +440,13 @@ const defaultProviders = {
           throw error;
         } // Fallback to using the template file.
 
-
         modResults = getEntitlementsPlistTemplate();
       } // Apply all of the .entitlements values to the expo.ios.entitlements object
       // TODO: Remove this in favor of just overwriting the .entitlements with the Expo object. This will enable people to actually remove values.
 
-
       if (!config.ios) config.ios = {};
       if (!config.ios.entitlements) config.ios.entitlements = {};
-      config.ios.entitlements = { ...(modResults || {}),
-        ...config.ios.entitlements
-      };
+      config.ios.entitlements = { ...(modResults || {}), ...config.ios.entitlements };
       return config.ios.entitlements;
     },
 
@@ -445,19 +462,17 @@ const defaultProviders = {
         return;
       }
 
-      await writeFile(filePath, _plist().default.build((0, _sortObject().sortObject)(config.modResults)));
-    }
-
+      await writeFile(
+        filePath,
+        _plist().default.build((0, _sortObject().sortObject)(config.modResults))
+      );
+    },
   }),
   // Append a rule to supply Podfile.properties.json data to mods on `mods.ios.podfileProperties`
   podfileProperties: (0, _createBaseMod().provider)({
     isIntrospective: true,
 
-    getFilePath({
-      modRequest: {
-        platformProjectRoot
-      }
-    }) {
+    getFilePath({ modRequest: { platformProjectRoot } }) {
       return _path().default.resolve(platformProjectRoot, 'Podfile.properties.json');
     },
 
@@ -471,29 +486,21 @@ const defaultProviders = {
       return results;
     },
 
-    async write(filePath, {
-      modResults,
-      modRequest: {
-        introspect
-      }
-    }) {
+    async write(filePath, { modResults, modRequest: { introspect } }) {
       if (introspect) {
         return;
       }
 
       await _jsonFile().default.writeAsync(filePath, modResults);
-    }
-
-  })
+    },
+  }),
 };
 
-function withIosBaseMods(config, {
-  providers,
-  ...props
-} = {}) {
-  return (0, _createBaseMod().withGeneratedBaseMods)(config, { ...props,
+function withIosBaseMods(config, { providers, ...props } = {}) {
+  return (0, _createBaseMod().withGeneratedBaseMods)(config, {
+    ...props,
     platform: 'ios',
-    providers: providers !== null && providers !== void 0 ? providers : getIosModFileProviders()
+    providers: providers !== null && providers !== void 0 ? providers : getIosModFileProviders(),
   });
 }
 

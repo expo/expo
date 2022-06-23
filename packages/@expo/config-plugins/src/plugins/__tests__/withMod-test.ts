@@ -7,7 +7,7 @@ describe(withMod, () => {
     // A basic plugin exported from an app.json
     const exportedConfig: ExportedConfig = { name: 'app', slug: '', mods: null };
 
-    const action: Mod<any> = jest.fn(props => {
+    const action: Mod<any> = jest.fn((props) => {
       // Capitalize app name
       props.name = (props.name as string).toUpperCase();
       return props;
@@ -24,7 +24,7 @@ describe(withMod, () => {
     config = await evalModsAsync(config, { projectRoot: '/' });
 
     // Plugins should all be functions
-    expect(Object.values(config.mods.android).every(value => typeof value === 'function')).toBe(
+    expect(Object.values(config.mods.android).every((value) => typeof value === 'function')).toBe(
       true
     );
 

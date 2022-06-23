@@ -1,7 +1,7 @@
-"use strict";
+'use strict';
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
+Object.defineProperty(exports, '__esModule', {
+  value: true,
 });
 exports.getLocales = getLocales;
 exports.getResolvedLocalesAsync = getResolvedLocalesAsync;
@@ -9,7 +9,7 @@ exports.setLocalesAsync = setLocalesAsync;
 exports.withLocales = void 0;
 
 function _jsonFile() {
-  const data = _interopRequireDefault(require("@expo/json-file"));
+  const data = _interopRequireDefault(require('@expo/json-file'));
 
   _jsonFile = function () {
     return data;
@@ -19,7 +19,7 @@ function _jsonFile() {
 }
 
 function _fs() {
-  const data = _interopRequireDefault(require("fs"));
+  const data = _interopRequireDefault(require('fs'));
 
   _fs = function () {
     return data;
@@ -29,7 +29,7 @@ function _fs() {
 }
 
 function _path() {
-  const data = require("path");
+  const data = require('path');
 
   _path = function () {
     return data;
@@ -39,7 +39,7 @@ function _path() {
 }
 
 function _iosPlugins() {
-  const data = require("../plugins/ios-plugins");
+  const data = require('../plugins/ios-plugins');
 
   _iosPlugins = function () {
     return data;
@@ -49,7 +49,7 @@ function _iosPlugins() {
 }
 
 function _warnings() {
-  const data = require("../utils/warnings");
+  const data = require('../utils/warnings');
 
   _warnings = function () {
     return data;
@@ -59,7 +59,7 @@ function _warnings() {
 }
 
 function _Xcodeproj() {
-  const data = require("./utils/Xcodeproj");
+  const data = require('./utils/Xcodeproj');
 
   _Xcodeproj = function () {
     return data;
@@ -68,13 +68,15 @@ function _Xcodeproj() {
   return data;
 }
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(obj) {
+  return obj && obj.__esModule ? obj : { default: obj };
+}
 
-const withLocales = config => {
-  return (0, _iosPlugins().withXcodeProject)(config, async config => {
+const withLocales = (config) => {
+  return (0, _iosPlugins().withXcodeProject)(config, async (config) => {
     config.modResults = await setLocalesAsync(config, {
       projectRoot: config.modRequest.projectRoot,
-      project: config.modResults
+      project: config.modResults,
     });
     return config;
   });
@@ -83,21 +85,19 @@ const withLocales = config => {
 exports.withLocales = withLocales;
 
 function getLocales(config) {
-  var _config$locales;
+  let _config$locales;
 
-  return (_config$locales = config.locales) !== null && _config$locales !== void 0 ? _config$locales : null;
+  return (_config$locales = config.locales) !== null && _config$locales !== void 0
+    ? _config$locales
+    : null;
 }
 
-async function setLocalesAsync(config, {
-  projectRoot,
-  project
-}) {
+async function setLocalesAsync(config, { projectRoot, project }) {
   const locales = getLocales(config);
 
   if (!locales) {
     return project;
   } // possibly validate CFBundleAllowMixedLocalizations is enabled
-
 
   const localesMap = await getResolvedLocalesAsync(projectRoot, locales);
   const projectName = (0, _Xcodeproj().getProjectName)(projectRoot);
@@ -109,7 +109,7 @@ async function setLocalesAsync(config, {
     const dir = (0, _path().join)(supportingDirectory, `${lang}.lproj`); // await fs.ensureDir(dir);
 
     await _fs().default.promises.mkdir(dir, {
-      recursive: true
+      recursive: true,
     });
     const strings = (0, _path().join)(dir, stringName);
     const buffer = [];
@@ -118,22 +118,25 @@ async function setLocalesAsync(config, {
       buffer.push(`${plistKey} = "${localVersion}";`);
     } // Write the file to the file system.
 
-
     await _fs().default.promises.writeFile(strings, buffer.join('\n'));
     const groupName = `${projectName}/Supporting/${lang}.lproj`; // deep find the correct folder
 
     const group = (0, _Xcodeproj().ensureGroupRecursively)(project, groupName); // Ensure the file doesn't already exist
 
-    if (!(group !== null && group !== void 0 && group.children.some(({
-      comment
-    }) => comment === stringName))) {
+    if (
+      !(
+        group !== null &&
+        group !== void 0 &&
+        group.children.some(({ comment }) => comment === stringName)
+      )
+    ) {
       // Only write the file if it doesn't already exist.
       project = (0, _Xcodeproj().addResourceFileToGroup)({
         filepath: (0, _path().relative)(supportingDirectory, strings),
         groupName,
         project,
         isBuildFile: true,
-        verbose: true
+        verbose: true,
       });
     }
   }
@@ -147,10 +150,16 @@ async function getResolvedLocalesAsync(projectRoot, input) {
   for (const [lang, localeJsonPath] of Object.entries(input)) {
     if (typeof localeJsonPath === 'string') {
       try {
-        locales[lang] = await _jsonFile().default.readAsync((0, _path().join)(projectRoot, localeJsonPath));
+        locales[lang] = await _jsonFile().default.readAsync(
+          (0, _path().join)(projectRoot, localeJsonPath)
+        );
       } catch {
         // Add a warning when a json file cannot be parsed.
-        (0, _warnings().addWarningIOS)(`locales.${lang}`, `Failed to parse JSON of locale file for language: ${lang}`, 'https://docs.expo.dev/distribution/app-stores/#localizing-your-ios-app');
+        (0, _warnings().addWarningIOS)(
+          `locales.${lang}`,
+          `Failed to parse JSON of locale file for language: ${lang}`,
+          'https://docs.expo.dev/distribution/app-stores/#localizing-your-ios-app'
+        );
       }
     } else {
       // In the off chance that someone defined the locales json in the config, pass it directly to the object.

@@ -78,7 +78,7 @@ describe(withStaticPlugin, () => {
 
     config = withPlugins(config, [
       // @ts-ignore -- invalid type
-      c =>
+      (c) =>
         withStaticPlugin(c, {
           plugin: './my-plugin.js',
         }),
@@ -106,14 +106,14 @@ describe(withStaticPlugin, () => {
 
     config = withPlugins(config, [
       // @ts-ignore -- invalid type
-      c =>
+      (c) =>
         withStaticPlugin(c, {
           plugin: ['./my-plugin.js', { foobar: true }],
           projectRoot,
         }),
       // Uses a folder with index.js
       // @ts-ignore -- invalid type
-      c =>
+      (c) =>
         withStaticPlugin(c, {
           plugin: './beta',
           projectRoot,

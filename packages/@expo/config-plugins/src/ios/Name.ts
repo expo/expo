@@ -30,8 +30,8 @@ export const withName = createInfoPlistPluginWithPropertyGuard(
 );
 
 /** Set the PRODUCT_NAME variable in the xcproj file based on the app.json name property. */
-export const withProductName: ConfigPlugin = config => {
-  return withXcodeProject(config, config => {
+export const withProductName: ConfigPlugin = (config) => {
+  return withXcodeProject(config, (config) => {
     config.modResults = setProductName(config, config.modResults);
     return config;
   });

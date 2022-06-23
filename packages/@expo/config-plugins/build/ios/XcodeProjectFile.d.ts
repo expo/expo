@@ -10,9 +10,9 @@ import { ConfigPlugin, XcodeProject } from '../Plugin.types';
  * @returns
  */
 export declare const withBuildSourceFile: ConfigPlugin<{
-    filePath: string;
-    contents: string;
-    overwrite?: boolean;
+  filePath: string;
+  contents: string;
+  overwrite?: boolean;
 }>;
 /**
  * Add a source file to the Xcode project and write it to the file system.
@@ -22,10 +22,16 @@ export declare const withBuildSourceFile: ConfigPlugin<{
  * @param fileContents string file contents to write to the `filePath`
  * @param overwrite should write file even if one already exists
  */
-export declare function createBuildSourceFile({ project, nativeProjectRoot, filePath, fileContents, overwrite, }: {
-    project: XcodeProject;
-    nativeProjectRoot: string;
-    filePath: string;
-    fileContents: string;
-    overwrite?: boolean;
+export declare function createBuildSourceFile({
+  project,
+  nativeProjectRoot,
+  filePath,
+  fileContents,
+  overwrite,
+}: {
+  project: XcodeProject;
+  nativeProjectRoot: string;
+  filePath: string;
+  fileContents: string;
+  overwrite?: boolean;
 }): XcodeProject;

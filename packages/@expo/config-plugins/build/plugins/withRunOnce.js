@@ -1,13 +1,13 @@
-"use strict";
+'use strict';
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
+Object.defineProperty(exports, '__esModule', {
+  value: true,
 });
 exports.createRunOncePlugin = createRunOncePlugin;
 exports.withRunOnce = void 0;
 
 function _history() {
-  const data = require("../utils/history");
+  const data = require('../utils/history');
 
   _history = function () {
     return data;
@@ -23,20 +23,15 @@ function _history() {
  * @param config
  * @param name
  */
-const withRunOnce = (config, {
-  plugin,
-  name,
-  version
-}) => {
+const withRunOnce = (config, { plugin, name, version }) => {
   // Detect if a plugin has already been run on this config.
   if ((0, _history().getHistoryItem)(config, name)) {
     return config;
   } // Push the history item so duplicates cannot be run.
 
-
   config = (0, _history().addHistoryItem)(config, {
     name,
-    version
+    version,
   });
   return plugin(config);
 };
@@ -46,15 +41,14 @@ const withRunOnce = (config, {
  * @param action
  */
 
-
 exports.withRunOnce = withRunOnce;
 
 function createRunOncePlugin(plugin, name, version) {
   return (config, props) => {
     return withRunOnce(config, {
-      plugin: config => plugin(config, props),
+      plugin: (config) => plugin(config, props),
       name,
-      version
+      version,
     });
   };
 }

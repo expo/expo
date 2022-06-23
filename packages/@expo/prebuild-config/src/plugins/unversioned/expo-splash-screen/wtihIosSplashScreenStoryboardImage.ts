@@ -10,7 +10,7 @@ import { IOSSplashConfig } from './getIosSplashConfig';
 import { withIosSplashScreenStoryboard } from './withIosSplashScreenStoryboard';
 
 export const withIosSplashScreenImage: ConfigPlugin<IOSSplashConfig> = (config, splash) => {
-  return withIosSplashScreenStoryboard(config, config => {
+  return withIosSplashScreenStoryboard(config, (config) => {
     config.modResults = applySplashScreenStoryboard(config.modResults, splash);
     return config;
   });

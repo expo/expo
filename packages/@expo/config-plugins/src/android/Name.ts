@@ -24,8 +24,8 @@ export function sanitizeNameForGradle(name: string): string {
 
 export const withName = createStringsXmlPlugin(applyNameFromConfig, 'withName');
 
-export const withNameSettingsGradle: ConfigPlugin = config => {
-  return withSettingsGradle(config, config => {
+export const withNameSettingsGradle: ConfigPlugin = (config) => {
+  return withSettingsGradle(config, (config) => {
     if (config.modResults.language === 'groovy') {
       config.modResults.contents = applyNameSettingsGradle(config, config.modResults.contents);
     } else {

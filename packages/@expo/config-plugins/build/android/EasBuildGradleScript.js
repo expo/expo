@@ -1,10 +1,10 @@
-"use strict";
+'use strict';
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
+Object.defineProperty(exports, '__esModule', {
+  value: true,
 });
 exports.default = void 0;
-var _default = `// Build integration with EAS
+const _default = `// Build integration with EAS
 
 import java.nio.file.Paths
 

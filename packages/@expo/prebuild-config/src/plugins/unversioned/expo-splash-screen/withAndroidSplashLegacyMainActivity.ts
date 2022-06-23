@@ -11,8 +11,8 @@ const debug = Debug('expo:prebuild-config:expo-splash-screen:android:mainActivit
 // DO NOT CHANGE
 const SHOW_SPLASH_ID = 'expo-splash-screen-mainActivity-onCreate-show-splash';
 
-export const withAndroidSplashLegacyMainActivity: ConfigPlugin = config => {
-  return withMainActivity(config, config => {
+export const withAndroidSplashLegacyMainActivity: ConfigPlugin = (config) => {
+  return withMainActivity(config, (config) => {
     config.modResults.contents = setSplashScreenLegacyMainActivity(
       config,
       config.modResults.contents,
@@ -96,7 +96,7 @@ export function setSplashScreenLegacyMainActivity(
   // Remove code from `@expo/configure-splash-screen`
   mainActivity = mainActivity
     .split('\n')
-    .filter(line => {
+    .filter((line) => {
       return !/SplashScreen\.show\(this,\s?SplashScreenImageResizeMode\./.test(line);
     })
     .join('\n');

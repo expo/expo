@@ -1,13 +1,13 @@
-"use strict";
+'use strict';
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
+Object.defineProperty(exports, '__esModule', {
+  value: true,
 });
 exports.applyPermissions = applyPermissions;
 exports.createPermissionsPlugin = createPermissionsPlugin;
 
 function _debug() {
-  const data = _interopRequireDefault(require("debug"));
+  const data = _interopRequireDefault(require('debug'));
 
   _debug = function () {
     return data;
@@ -17,7 +17,7 @@ function _debug() {
 }
 
 function _iosPlugins() {
-  const data = require("../plugins/ios-plugins");
+  const data = require('../plugins/ios-plugins');
 
   _iosPlugins = function () {
     return data;
@@ -26,7 +26,9 @@ function _iosPlugins() {
   return data;
 }
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(obj) {
+  return obj && obj.__esModule ? obj : { default: obj };
+}
 
 const debug = (0, _debug().default)('expo:config-plugins:ios:permissions');
 
@@ -55,16 +57,16 @@ function applyPermissions(defaults, permissions, infoPlist) {
  * @param action
  */
 
-
 function createPermissionsPlugin(defaults, name) {
-  const withIosPermissions = (config, permissions) => (0, _iosPlugins().withInfoPlist)(config, async config => {
-    config.modResults = applyPermissions(defaults, permissions, config.modResults);
-    return config;
-  });
+  const withIosPermissions = (config, permissions) =>
+    (0, _iosPlugins().withInfoPlist)(config, async (config) => {
+      config.modResults = applyPermissions(defaults, permissions, config.modResults);
+      return config;
+    });
 
   if (name) {
     Object.defineProperty(withIosPermissions, 'name', {
-      value: name
+      value: name,
     });
   }
 

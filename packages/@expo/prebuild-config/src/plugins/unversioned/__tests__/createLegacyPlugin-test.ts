@@ -13,7 +13,7 @@ jest.mock('@expo/config-plugins', () => {
 
 describe(createLegacyPlugin, () => {
   it(`uses fallback`, () => {
-    const fallback = jest.fn(config => config);
+    const fallback = jest.fn((config) => config);
     const withPlugin = createLegacyPlugin({
       packageName: 'expo-foobar',
       fallback,
@@ -34,7 +34,7 @@ describe(createLegacyPlugin, () => {
 
   it(`uses versioned plugin instead of fallback`, () => {
     require('@expo/config-plugins').withStaticPlugin = jest.fn();
-    const fallback = jest.fn(config => config);
+    const fallback = jest.fn((config) => config);
     const withPlugin = createLegacyPlugin({
       packageName: 'expo-foobar',
       fallback,

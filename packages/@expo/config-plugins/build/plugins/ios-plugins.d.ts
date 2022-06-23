@@ -4,25 +4,41 @@ import type { XcodeProject } from 'xcode';
 import type { ConfigPlugin, Mod } from '../Plugin.types';
 import type { ExpoPlist, InfoPlist } from '../ios/IosConfig.types';
 import type { AppDelegateProjectFile } from '../ios/Paths';
-declare type MutateInfoPlistAction = (expo: ExpoConfig, infoPlist: InfoPlist) => Promise<InfoPlist> | InfoPlist;
+declare type MutateInfoPlistAction = (
+  expo: ExpoConfig,
+  infoPlist: InfoPlist
+) => Promise<InfoPlist> | InfoPlist;
 /**
  * Helper method for creating mods from existing config functions.
  *
  * @param action
  */
-export declare function createInfoPlistPlugin(action: MutateInfoPlistAction, name?: string): ConfigPlugin;
-export declare function createInfoPlistPluginWithPropertyGuard(action: MutateInfoPlistAction, settings: {
+export declare function createInfoPlistPlugin(
+  action: MutateInfoPlistAction,
+  name?: string
+): ConfigPlugin;
+export declare function createInfoPlistPluginWithPropertyGuard(
+  action: MutateInfoPlistAction,
+  settings: {
     infoPlistProperty: string;
     expoConfigProperty: string;
     expoPropertyGetter?: (config: ExpoConfig) => string;
-}, name?: string): ConfigPlugin;
-declare type MutateEntitlementsPlistAction = (expo: ExpoConfig, entitlements: JSONObject) => JSONObject;
+  },
+  name?: string
+): ConfigPlugin;
+declare type MutateEntitlementsPlistAction = (
+  expo: ExpoConfig,
+  entitlements: JSONObject
+) => JSONObject;
 /**
  * Helper method for creating mods from existing config functions.
  *
  * @param action
  */
-export declare function createEntitlementsPlugin(action: MutateEntitlementsPlistAction, name: string): ConfigPlugin;
+export declare function createEntitlementsPlugin(
+  action: MutateEntitlementsPlistAction,
+  name: string
+): ConfigPlugin;
 /**
  * Provides the AppDelegate file for modification.
  *

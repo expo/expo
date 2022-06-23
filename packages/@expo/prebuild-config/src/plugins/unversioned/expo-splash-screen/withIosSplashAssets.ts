@@ -30,7 +30,7 @@ export const withIosSplashAssets: ConfigPlugin<IOSSplashConfig> = (config, splas
   }
   return withDangerousMod(config, [
     'ios',
-    async config => {
+    async (config) => {
       const iosNamedProjectRoot = IOSConfig.Paths.getSourceRoot(config.modRequest.projectRoot);
 
       await createSplashScreenBackgroundImageAsync({
@@ -175,12 +175,12 @@ async function generateImagesAssetsAsync({
   tabletItem?: string | null;
   darkTabletItem?: string | null;
 }) {
-  const items = ([
+  const items = [
     [anyItem, PNG_FILENAME],
     [darkItem, DARK_PNG_FILENAME],
     [tabletItem, TABLET_PNG_FILENAME],
     [darkTabletItem, DARK_TABLET_PNG_FILENAME],
-  ].filter(([item]) => !!item) as unknown) as [string, string];
+  ].filter(([item]) => !!item) as unknown as [string, string];
 
   await Promise.all(items.map(([item, fileName]) => generateImageAsset(item, fileName)));
 }

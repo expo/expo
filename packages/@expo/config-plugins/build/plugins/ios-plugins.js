@@ -1,15 +1,21 @@
-"use strict";
+'use strict';
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
+Object.defineProperty(exports, '__esModule', {
+  value: true,
 });
 exports.createEntitlementsPlugin = createEntitlementsPlugin;
 exports.createInfoPlistPlugin = createInfoPlistPlugin;
 exports.createInfoPlistPluginWithPropertyGuard = createInfoPlistPluginWithPropertyGuard;
-exports.withXcodeProject = exports.withPodfileProperties = exports.withInfoPlist = exports.withExpoPlist = exports.withEntitlementsPlist = exports.withAppDelegate = void 0;
+exports.withXcodeProject =
+  exports.withPodfileProperties =
+  exports.withInfoPlist =
+  exports.withExpoPlist =
+  exports.withEntitlementsPlist =
+  exports.withAppDelegate =
+    void 0;
 
 function _obj() {
-  const data = require("../utils/obj");
+  const data = require('../utils/obj');
 
   _obj = function () {
     return data;
@@ -19,7 +25,7 @@ function _obj() {
 }
 
 function _warnings() {
-  const data = require("../utils/warnings");
+  const data = require('../utils/warnings');
 
   _warnings = function () {
     return data;
@@ -29,7 +35,7 @@ function _warnings() {
 }
 
 function _withMod() {
-  const data = require("./withMod");
+  const data = require('./withMod');
 
   _withMod = function () {
     return data;
@@ -44,14 +50,15 @@ function _withMod() {
  * @param action
  */
 function createInfoPlistPlugin(action, name) {
-  const withUnknown = config => withInfoPlist(config, async config => {
-    config.modResults = await action(config, config.modResults);
-    return config;
-  });
+  const withUnknown = (config) =>
+    withInfoPlist(config, async (config) => {
+      config.modResults = await action(config, config.modResults);
+      return config;
+    });
 
   if (name) {
     Object.defineProperty(withUnknown, 'name', {
-      value: name
+      value: name,
     });
   }
 
@@ -59,24 +66,38 @@ function createInfoPlistPlugin(action, name) {
 }
 
 function createInfoPlistPluginWithPropertyGuard(action, settings, name) {
-  const withUnknown = config => withInfoPlist(config, async config => {
-    var _config$modRawConfig$, _config$modRawConfig$2;
+  const withUnknown = (config) =>
+    withInfoPlist(config, async (config) => {
+      let _config$modRawConfig$, _config$modRawConfig$2;
 
-    const existingProperty = settings.expoPropertyGetter ? settings.expoPropertyGetter(config) : (0, _obj().get)(config, settings.expoConfigProperty); // If the user explicitly sets a value in the infoPlist, we should respect that.
+      const existingProperty = settings.expoPropertyGetter
+        ? settings.expoPropertyGetter(config)
+        : (0, _obj().get)(config, settings.expoConfigProperty); // If the user explicitly sets a value in the infoPlist, we should respect that.
 
-    if (((_config$modRawConfig$ = config.modRawConfig.ios) === null || _config$modRawConfig$ === void 0 ? void 0 : (_config$modRawConfig$2 = _config$modRawConfig$.infoPlist) === null || _config$modRawConfig$2 === void 0 ? void 0 : _config$modRawConfig$2[settings.infoPlistProperty]) === undefined) {
-      config.modResults = await action(config, config.modResults);
-    } else if (existingProperty !== undefined) {
-      // Only warn if there is a conflict.
-      (0, _warnings().addWarningIOS)(settings.expoConfigProperty, `"ios.infoPlist.${settings.infoPlistProperty}" is set in the config. Ignoring abstract property "${settings.expoConfigProperty}": ${existingProperty}`);
-    }
+      if (
+        ((_config$modRawConfig$ = config.modRawConfig.ios) === null ||
+        _config$modRawConfig$ === void 0
+          ? void 0
+          : (_config$modRawConfig$2 = _config$modRawConfig$.infoPlist) === null ||
+            _config$modRawConfig$2 === void 0
+          ? void 0
+          : _config$modRawConfig$2[settings.infoPlistProperty]) === undefined
+      ) {
+        config.modResults = await action(config, config.modResults);
+      } else if (existingProperty !== undefined) {
+        // Only warn if there is a conflict.
+        (0, _warnings().addWarningIOS)(
+          settings.expoConfigProperty,
+          `"ios.infoPlist.${settings.infoPlistProperty}" is set in the config. Ignoring abstract property "${settings.expoConfigProperty}": ${existingProperty}`
+        );
+      }
 
-    return config;
-  });
+      return config;
+    });
 
   if (name) {
     Object.defineProperty(withUnknown, 'name', {
-      value: name
+      value: name,
     });
   }
 
@@ -89,14 +110,15 @@ function createInfoPlistPluginWithPropertyGuard(action, settings, name) {
  * @param action
  */
 function createEntitlementsPlugin(action, name) {
-  const withUnknown = config => withEntitlementsPlist(config, async config => {
-    config.modResults = await action(config, config.modResults);
-    return config;
-  });
+  const withUnknown = (config) =>
+    withEntitlementsPlist(config, async (config) => {
+      config.modResults = await action(config, config.modResults);
+      return config;
+    });
 
   if (name) {
     Object.defineProperty(withUnknown, 'name', {
-      value: name
+      value: name,
     });
   }
 
@@ -109,12 +131,11 @@ function createEntitlementsPlugin(action, name) {
  * @param action
  */
 
-
 const withAppDelegate = (config, action) => {
   return (0, _withMod().withMod)(config, {
     platform: 'ios',
     mod: 'appDelegate',
-    action
+    action,
   });
 };
 /**
@@ -124,7 +145,6 @@ const withAppDelegate = (config, action) => {
  * @param config
  * @param action
  */
-
 
 exports.withAppDelegate = withAppDelegate;
 
@@ -142,8 +162,7 @@ const withInfoPlist = (config, action) => {
 
       config.ios.infoPlist = config.modResults;
       return config;
-    }
-
+    },
   });
 };
 /**
@@ -153,7 +172,6 @@ const withInfoPlist = (config, action) => {
  * @param config
  * @param action
  */
-
 
 exports.withInfoPlist = withInfoPlist;
 
@@ -171,8 +189,7 @@ const withEntitlementsPlist = (config, action) => {
 
       config.ios.entitlements = config.modResults;
       return config;
-    }
-
+    },
   });
 };
 /**
@@ -182,14 +199,13 @@ const withEntitlementsPlist = (config, action) => {
  * @param action
  */
 
-
 exports.withEntitlementsPlist = withEntitlementsPlist;
 
 const withExpoPlist = (config, action) => {
   return (0, _withMod().withMod)(config, {
     platform: 'ios',
     mod: 'expoPlist',
-    action
+    action,
   });
 };
 /**
@@ -199,14 +215,13 @@ const withExpoPlist = (config, action) => {
  * @param action
  */
 
-
 exports.withExpoPlist = withExpoPlist;
 
 const withXcodeProject = (config, action) => {
   return (0, _withMod().withMod)(config, {
     platform: 'ios',
     mod: 'xcodeproj',
-    action
+    action,
   });
 };
 /**
@@ -216,14 +231,13 @@ const withXcodeProject = (config, action) => {
  * @param action
  */
 
-
 exports.withXcodeProject = withXcodeProject;
 
 const withPodfileProperties = (config, action) => {
   return (0, _withMod().withMod)(config, {
     platform: 'ios',
     mod: 'podfileProperties',
-    action
+    action,
   });
 };
 

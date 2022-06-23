@@ -80,7 +80,7 @@ export function getHackyProjectName(projectRoot: string, config: ExpoConfig): st
 function createProjectFileForGroup({ filepath, group }: { filepath: string; group: PBXGroup }) {
   const file = new pbxFile(filepath);
 
-  const conflictingFile = group.children.find(child => child.comment === file.basename);
+  const conflictingFile = group.children.find((child) => child.comment === file.basename);
   if (conflictingFile) {
     // This can happen when a file like the GoogleService-Info.plist needs to be added and the eject command is run twice.
     // Not much we can do here since it might be a conflicting file.
@@ -265,7 +265,7 @@ const findGroup = (
     return undefined;
   }
 
-  return group.children.find(group => group.comment === name);
+  return group.children.find((group) => group.comment === name);
 };
 
 function findGroupInsideGroup(
@@ -373,7 +373,7 @@ export function getBuildConfigurationsForListId(
     ([key]) => key === configurationListId
   ) as ConfigurationListEntry;
 
-  const buildConfigurations = configurationList.buildConfigurations.map(i => i.value);
+  const buildConfigurations = configurationList.buildConfigurations.map((i) => i.value);
 
   return Object.entries(project.pbxXCBuildConfigurationSection())
     .filter(isNotComment)
@@ -391,7 +391,7 @@ export function getBuildConfigurationForListIdAndName(
   const xcBuildConfigurationEntry = getBuildConfigurationsForListId(
     project,
     configurationListId
-  ).find(i => trimQuotes(i[1].name) === buildConfiguration);
+  ).find((i) => trimQuotes(i[1].name) === buildConfiguration);
   if (!xcBuildConfigurationEntry) {
     throw new Error(
       `Build configuration '${buildConfiguration}' does not exist in list with id '${configurationListId}'`

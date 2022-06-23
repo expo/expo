@@ -1,13 +1,13 @@
-"use strict";
+'use strict';
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
+Object.defineProperty(exports, '__esModule', {
+  value: true,
 });
 exports.withBaseMod = withBaseMod;
 exports.withMod = withMod;
 
 function _chalk() {
-  const data = _interopRequireDefault(require("chalk"));
+  const data = _interopRequireDefault(require('chalk'));
 
   _chalk = function () {
     return data;
@@ -17,7 +17,7 @@ function _chalk() {
 }
 
 function _getenv() {
-  const data = require("getenv");
+  const data = require('getenv');
 
   _getenv = function () {
     return data;
@@ -27,7 +27,7 @@ function _getenv() {
 }
 
 function _errors() {
-  const data = require("../utils/errors");
+  const data = require('../utils/errors');
 
   _errors = function () {
     return data;
@@ -36,7 +36,9 @@ function _errors() {
   return data;
 }
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(obj) {
+  return obj && obj.__esModule ? obj : { default: obj };
+}
 
 const EXPO_DEBUG = (0, _getenv().boolish)('EXPO_DEBUG', false);
 
@@ -54,16 +56,11 @@ const EXPO_DEBUG = (0, _getenv().boolish)('EXPO_DEBUG', false);
  * @param isProvider should provide data up to the other mods.
  * @param action method to run on the mod when the config is compiled
  */
-function withBaseMod(config, {
-  platform,
-  mod,
-  action,
-  skipEmptyMod,
-  isProvider,
-  isIntrospective,
-  saveToInternal
-}) {
-  var _config$_internal$isD, _config$_internal;
+function withBaseMod(
+  config,
+  { platform, mod, action, skipEmptyMod, isProvider, isIntrospective, saveToInternal }
+) {
+  let _config$_internal$isD, _config$_internal;
 
   if (!config.mods) {
     config.mods = {};
@@ -81,17 +78,21 @@ function withBaseMod(config, {
       return config;
     } // Use a noop mod and continue
 
-
-    const noopMod = config => config;
+    const noopMod = (config) => config;
 
     interceptedMod = noopMod;
   } // Create a stack trace for debugging ahead of time
 
-
   let debugTrace = ''; // Use the possibly user defined value. Otherwise fallback to the env variable.
   // We support the env variable because user mods won't have _internal defined in time.
 
-  const isDebug = (_config$_internal$isD = (_config$_internal = config._internal) === null || _config$_internal === void 0 ? void 0 : _config$_internal.isDebug) !== null && _config$_internal$isD !== void 0 ? _config$_internal$isD : EXPO_DEBUG;
+  const isDebug =
+    (_config$_internal$isD =
+      (_config$_internal = config._internal) === null || _config$_internal === void 0
+        ? void 0
+        : _config$_internal.isDebug) !== null && _config$_internal$isD !== void 0
+      ? _config$_internal$isD
+      : EXPO_DEBUG;
 
   if (isDebug) {
     // Get a stack trace via the Error API
@@ -105,28 +106,29 @@ function withBaseMod(config, {
   } // Prevent adding multiple providers to a mod.
   // Base mods that provide files ignore any incoming modResults and therefore shouldn't have provider mods as parents.
 
-
   if (interceptedMod.isProvider) {
     if (isProvider) {
-      throw new (_errors().PluginError)(`Cannot set provider mod for "${platform}.${mod}" because another is already being used.`, 'CONFLICTING_PROVIDER');
+      throw new (_errors().PluginError)(
+        `Cannot set provider mod for "${platform}.${mod}" because another is already being used.`,
+        'CONFLICTING_PROVIDER'
+      );
     } else {
-      throw new (_errors().PluginError)(`Cannot add mod to "${platform}.${mod}" because the provider has already been added. Provider must be the last mod added.`, 'INVALID_MOD_ORDER');
+      throw new (_errors().PluginError)(
+        `Cannot add mod to "${platform}.${mod}" because the provider has already been added. Provider must be the last mod added.`,
+        'INVALID_MOD_ORDER'
+      );
     }
   }
 
-  async function interceptingMod({
-    modRequest,
-    ...config
-  }) {
+  async function interceptingMod({ modRequest, ...config }) {
     if (isDebug) {
       // In debug mod, log the plugin stack in the order which they were invoked
       console.log(debugTrace);
     }
 
-    const results = await action({ ...config,
-      modRequest: { ...modRequest,
-        nextMod: interceptedMod
-      }
+    const results = await action({
+      ...config,
+      modRequest: { ...modRequest, nextMod: interceptedMod },
     });
 
     if (saveToInternal) {
@@ -135,7 +137,6 @@ function withBaseMod(config, {
 
     return results;
   } // Ensure this base mod is registered as the provider.
-
 
   interceptingMod.isProvider = isProvider;
 
@@ -170,39 +171,65 @@ function getDebugPluginStackFromStackTrace(stacktrace) {
     }
   }
 
-  const plugins = treeStackLines.map(first => {
-    var _ref, _first$match$1$trim, _first$match, _first$match$, _first$match2, _first$match2$;
+  const plugins = treeStackLines
+    .map((first) => {
+      let _ref, _first$match$1$trim, _first$match, _first$match$, _first$match2, _first$match2$;
 
-    // Match the first part of the stack trace against the plugin naming convention
-    // "with" followed by a capital letter.
-    return (_ref = (_first$match$1$trim = first === null || first === void 0 ? void 0 : (_first$match = first.match(/^(\bwith[A-Z].*?\b)/)) === null || _first$match === void 0 ? void 0 : (_first$match$ = _first$match[1]) === null || _first$match$ === void 0 ? void 0 : _first$match$.trim()) !== null && _first$match$1$trim !== void 0 ? _first$match$1$trim : first === null || first === void 0 ? void 0 : (_first$match2 = first.match(/\.(\bwith[A-Z].*?\b)/)) === null || _first$match2 === void 0 ? void 0 : (_first$match2$ = _first$match2[1]) === null || _first$match2$ === void 0 ? void 0 : _first$match2$.trim()) !== null && _ref !== void 0 ? _ref : null;
-  }).filter(Boolean).filter(plugin => {
-    // redundant as all debug logs are captured in withBaseMod
-    return !['withMod', 'withBaseMod', 'withExtendedMod'].includes(plugin);
-  });
+      // Match the first part of the stack trace against the plugin naming convention
+      // "with" followed by a capital letter.
+      return (_ref =
+        (_first$match$1$trim =
+          first === null || first === void 0
+            ? void 0
+            : (_first$match = first.match(/^(\bwith[A-Z].*?\b)/)) === null ||
+              _first$match === void 0
+            ? void 0
+            : (_first$match$ = _first$match[1]) === null || _first$match$ === void 0
+            ? void 0
+            : _first$match$.trim()) !== null && _first$match$1$trim !== void 0
+          ? _first$match$1$trim
+          : first === null || first === void 0
+          ? void 0
+          : (_first$match2 = first.match(/\.(\bwith[A-Z].*?\b)/)) === null ||
+            _first$match2 === void 0
+          ? void 0
+          : (_first$match2$ = _first$match2[1]) === null || _first$match2$ === void 0
+          ? void 0
+          : _first$match2$.trim()) !== null && _ref !== void 0
+        ? _ref
+        : null;
+    })
+    .filter(Boolean)
+    .filter((plugin) => {
+      // redundant as all debug logs are captured in withBaseMod
+      return !['withMod', 'withBaseMod', 'withExtendedMod'].includes(plugin);
+    });
   const commonPlugins = ['withPlugins', 'withRunOnce', 'withStaticPlugin'];
-  return plugins.reverse().map((pluginName, index) => {
-    // Base mods indicate a logical section.
-    if (pluginName.includes('BaseMod')) {
-      pluginName = _chalk().default.bold(pluginName);
-    } // highlight dangerous mods
+  return (
+    plugins
+      .reverse()
+      .map((pluginName, index) => {
+        // Base mods indicate a logical section.
+        if (pluginName.includes('BaseMod')) {
+          pluginName = _chalk().default.bold(pluginName);
+        } // highlight dangerous mods
 
+        if (pluginName.toLowerCase().includes('dangerous')) {
+          pluginName = _chalk().default.red(pluginName);
+        }
 
-    if (pluginName.toLowerCase().includes('dangerous')) {
-      pluginName = _chalk().default.red(pluginName);
-    }
+        if (index === 0) {
+          return _chalk().default.blue(pluginName);
+        } else if (commonPlugins.includes(pluginName)) {
+          // Common mod names often clutter up the logs, dim them out
+          return _chalk().default.dim(pluginName);
+        }
 
-    if (index === 0) {
-      return _chalk().default.blue(pluginName);
-    } else if (commonPlugins.includes(pluginName)) {
-      // Common mod names often clutter up the logs, dim them out
-      return _chalk().default.dim(pluginName);
-    }
-
-    return pluginName;
-  }) // Join the results:
-  // withAndroidExpoPlugins ➜ withPlugins ➜ withIcons ➜ withDangerousMod ➜ withMod
-  .join(' ➜ ');
+        return pluginName;
+      }) // Join the results:
+      // withAndroidExpoPlugins ➜ withPlugins ➜ withIcons ➜ withDangerousMod ➜ withMod
+      .join(' ➜ ')
+  );
 }
 /**
  * Plugin to extend a mod function in the plugins config.
@@ -213,33 +240,20 @@ function getDebugPluginStackFromStackTrace(stacktrace) {
  * @param action method to run on the mod when the config is compiled
  */
 
-
-function withMod(config, {
-  platform,
-  mod,
-  action
-}) {
+function withMod(config, { platform, mod, action }) {
   return withBaseMod(config, {
     platform,
     mod,
     isProvider: false,
 
-    async action({
-      modRequest: {
-        nextMod,
-        ...modRequest
-      },
-      modResults,
-      ...config
-    }) {
+    async action({ modRequest: { nextMod, ...modRequest }, modResults, ...config }) {
       const results = await action({
         modRequest,
-        modResults: modResults,
-        ...config
+        modResults,
+        ...config,
       });
       return nextMod(results);
-    }
-
+    },
   });
 }
 //# sourceMappingURL=withMod.js.map

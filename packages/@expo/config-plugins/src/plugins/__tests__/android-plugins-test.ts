@@ -32,7 +32,7 @@ describe(withGradleProperties, () => {
       slug: 'foobar',
     };
 
-    config = withGradleProperties(config, config => {
+    config = withGradleProperties(config, (config) => {
       config.modResults.push({ type: 'comment', value: 'expo-test' });
       config.modResults.push({ type: 'empty' });
       config.modResults.push({ type: 'property', key: 'foo', value: 'bar' });

@@ -42,10 +42,8 @@ describe(getApplicationTargetNameForSchemeAsync, () => {
     beforeAll(async () => {
       vol.fromJSON(
         {
-          'ios/testproject.xcodeproj/xcshareddata/xcschemes/testproject.xcscheme': fsReal.readFileSync(
-            path.join(__dirname, 'fixtures/testproject.xcscheme'),
-            'utf-8'
-          ),
+          'ios/testproject.xcodeproj/xcshareddata/xcschemes/testproject.xcscheme':
+            fsReal.readFileSync(path.join(__dirname, 'fixtures/testproject.xcscheme'), 'utf-8'),
         },
         '/app'
       );
@@ -70,10 +68,8 @@ describe(getApplicationTargetNameForSchemeAsync, () => {
     beforeAll(async () => {
       vol.fromJSON(
         {
-          'ios/testproject.xcodeproj/xcshareddata/xcschemes/testproject.xcscheme': fsReal.readFileSync(
-            path.join(__dirname, 'fixtures/testproject-2.xcscheme'),
-            'utf-8'
-          ),
+          'ios/testproject.xcodeproj/xcshareddata/xcschemes/testproject.xcscheme':
+            fsReal.readFileSync(path.join(__dirname, 'fixtures/testproject-2.xcscheme'), 'utf-8'),
         },
         '/app'
       );
@@ -100,10 +96,8 @@ describe(getArchiveBuildConfigurationForSchemeAsync, () => {
   beforeAll(async () => {
     vol.fromJSON(
       {
-        'ios/testproject.xcodeproj/xcshareddata/xcschemes/testproject.xcscheme': fsReal.readFileSync(
-          path.join(__dirname, 'fixtures/testproject.xcscheme'),
-          'utf-8'
-        ),
+        'ios/testproject.xcodeproj/xcshareddata/xcschemes/testproject.xcscheme':
+          fsReal.readFileSync(path.join(__dirname, 'fixtures/testproject.xcscheme'), 'utf-8'),
       },
       '/app'
     );

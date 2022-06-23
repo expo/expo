@@ -1,7 +1,7 @@
 import { CodeBlock } from '../utils/commonCodeMod';
 interface InsertContentFunctionOptions {
-    position: 'head' | 'tail' | 'tailBeforeLastReturn';
-    indent?: number;
+  position: 'head' | 'tail' | 'tailBeforeLastReturn';
+  indent?: number;
 }
 /**
  * Add Objective-C import
@@ -17,7 +17,10 @@ export declare function addObjcImports(source: string, imports: string[]): strin
  * @param declaration interface/implementation, e.g. '@interface Foo'
  * @returns found CodeBlock, or null if not found
  */
-export declare function findObjcInterfaceCodeBlock(contents: string, declaration: string): CodeBlock | null;
+export declare function findObjcInterfaceCodeBlock(
+  contents: string,
+  declaration: string
+): CodeBlock | null;
 /**
  * Find code block of Objective-C function without declaration, will return only {} block
  *
@@ -25,7 +28,10 @@ export declare function findObjcInterfaceCodeBlock(contents: string, declaration
  * @param selector function selector, e.g. 'doSomething:withSomeValue:'
  * @returns found CodeBlock, or null if not found.
  */
-export declare function findObjcFunctionCodeBlock(contents: string, selector: string): CodeBlock | null;
+export declare function findObjcFunctionCodeBlock(
+  contents: string,
+  selector: string
+): CodeBlock | null;
 /**
  * Insert contents to the Objective-C function block
  *
@@ -35,7 +41,12 @@ export declare function findObjcFunctionCodeBlock(contents: string, selector: st
  * @param options insertion options
  * @returns updated contents
  */
-export declare function insertContentsInsideObjcFunctionBlock(srcContents: string, selector: string, insertion: string, options: InsertContentFunctionOptions): string;
+export declare function insertContentsInsideObjcFunctionBlock(
+  srcContents: string,
+  selector: string,
+  insertion: string,
+  options: InsertContentFunctionOptions
+): string;
 /**
  * Insert contents to the Objective-C interface/implementation block
  *
@@ -45,9 +56,14 @@ export declare function insertContentsInsideObjcFunctionBlock(srcContents: strin
  * @param options insertion options
  * @returns updated contents
  */
-export declare function insertContentsInsideObjcInterfaceBlock(srcContents: string, declaration: string, insertion: string, options: {
+export declare function insertContentsInsideObjcInterfaceBlock(
+  srcContents: string,
+  declaration: string,
+  insertion: string,
+  options: {
     position: 'head' | 'tail';
-}): string;
+  }
+): string;
 /**
  * Find code block of Swift function without declaration, will return only {} block
  *
@@ -55,7 +71,10 @@ export declare function insertContentsInsideObjcInterfaceBlock(srcContents: stri
  * @param selector function selector, e.g. 'doSomething(_:withSomeValue:)'
  * @returns found CodeBlock, or null if not found.
  */
-export declare function findSwiftFunctionCodeBlock(contents: string, selector: string): CodeBlock | null;
+export declare function findSwiftFunctionCodeBlock(
+  contents: string,
+  selector: string
+): CodeBlock | null;
 /**
  * Insert contents to the swift class block
  *
@@ -65,9 +84,14 @@ export declare function findSwiftFunctionCodeBlock(contents: string, selector: s
  * @param options insertion options
  * @returns updated contents
  */
-export declare function insertContentsInsideSwiftClassBlock(srcContents: string, declaration: string, insertion: string, options: {
+export declare function insertContentsInsideSwiftClassBlock(
+  srcContents: string,
+  declaration: string,
+  insertion: string,
+  options: {
     position: 'head' | 'tail';
-}): string;
+  }
+): string;
 /**
  * Insert contents to the Swift function block
  *
@@ -77,5 +101,10 @@ export declare function insertContentsInsideSwiftClassBlock(srcContents: string,
  * @param options insertion options
  * @returns updated contents
  */
-export declare function insertContentsInsideSwiftFunctionBlock(srcContents: string, selector: string, insertion: string, options: InsertContentFunctionOptions): string;
+export declare function insertContentsInsideSwiftFunctionBlock(
+  srcContents: string,
+  selector: string,
+  insertion: string,
+  options: InsertContentFunctionOptions
+): string;
 export {};

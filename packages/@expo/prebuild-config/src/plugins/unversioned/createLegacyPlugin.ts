@@ -7,7 +7,7 @@ import {
 } from '@expo/config-plugins';
 import { ExpoConfig } from '@expo/config-types';
 
-const toCamelCase = (s: string) => s.replace(/-./g, x => x.toUpperCase()[1]);
+const toCamelCase = (s: string) => s.replace(/-./g, (x) => x.toUpperCase()[1]);
 
 function isModuleExcluded(config: Pick<ExpoConfig, '_internal'>, packageName: string): boolean {
   // Skip using the versioned plugin when autolinking is enabled
@@ -27,12 +27,12 @@ export function createLegacyPlugin({
   let withFallback: ConfigPlugin;
 
   if (Array.isArray(fallback)) {
-    withFallback = config => withPlugins(config, fallback);
+    withFallback = (config) => withPlugins(config, fallback);
   } else {
     withFallback = fallback;
   }
 
-  const withUnknown: ConfigPlugin = config => {
+  const withUnknown: ConfigPlugin = (config) => {
     // Skip using the versioned plugin when autolinking is enabled
     // and doesn't link the native module.
     if (isModuleExcluded(config, packageName)) {

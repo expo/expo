@@ -1,7 +1,7 @@
-"use strict";
+'use strict';
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
+Object.defineProperty(exports, '__esModule', {
+  value: true,
 });
 exports.getApplicationIdAsync = getApplicationIdAsync;
 exports.getPackage = getPackage;
@@ -13,7 +13,7 @@ exports.setPackageInBuildGradle = setPackageInBuildGradle;
 exports.withPackageRefactor = exports.withPackageManifest = exports.withPackageGradle = void 0;
 
 function _debug() {
-  const data = _interopRequireDefault(require("debug"));
+  const data = _interopRequireDefault(require('debug'));
 
   _debug = function () {
     return data;
@@ -23,7 +23,7 @@ function _debug() {
 }
 
 function _fs() {
-  const data = _interopRequireDefault(require("fs"));
+  const data = _interopRequireDefault(require('fs'));
 
   _fs = function () {
     return data;
@@ -33,7 +33,7 @@ function _fs() {
 }
 
 function _glob() {
-  const data = require("glob");
+  const data = require('glob');
 
   _glob = function () {
     return data;
@@ -43,7 +43,7 @@ function _glob() {
 }
 
 function _path() {
-  const data = _interopRequireDefault(require("path"));
+  const data = _interopRequireDefault(require('path'));
 
   _path = function () {
     return data;
@@ -53,7 +53,7 @@ function _path() {
 }
 
 function _androidPlugins() {
-  const data = require("../plugins/android-plugins");
+  const data = require('../plugins/android-plugins');
 
   _androidPlugins = function () {
     return data;
@@ -63,7 +63,7 @@ function _androidPlugins() {
 }
 
 function _withDangerousMod() {
-  const data = require("../plugins/withDangerousMod");
+  const data = require('../plugins/withDangerousMod');
 
   _withDangerousMod = function () {
     return data;
@@ -73,7 +73,7 @@ function _withDangerousMod() {
 }
 
 function _modules() {
-  const data = require("../utils/modules");
+  const data = require('../utils/modules');
 
   _modules = function () {
     return data;
@@ -83,7 +83,7 @@ function _modules() {
 }
 
 function _warnings() {
-  const data = require("../utils/warnings");
+  const data = require('../utils/warnings');
 
   _warnings = function () {
     return data;
@@ -93,7 +93,7 @@ function _warnings() {
 }
 
 function _Paths() {
-  const data = require("./Paths");
+  const data = require('./Paths');
 
   _Paths = function () {
     return data;
@@ -102,18 +102,26 @@ function _Paths() {
   return data;
 }
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(obj) {
+  return obj && obj.__esModule ? obj : { default: obj };
+}
 
 const debug = (0, _debug().default)('expo:config-plugins:android:package');
-const withPackageManifest = (0, _androidPlugins().createAndroidManifestPlugin)(setPackageInAndroidManifest, 'withPackageManifest');
+const withPackageManifest = (0, _androidPlugins().createAndroidManifestPlugin)(
+  setPackageInAndroidManifest,
+  'withPackageManifest'
+);
 exports.withPackageManifest = withPackageManifest;
 
-const withPackageGradle = config => {
-  return (0, _androidPlugins().withAppBuildGradle)(config, config => {
+const withPackageGradle = (config) => {
+  return (0, _androidPlugins().withAppBuildGradle)(config, (config) => {
     if (config.modResults.language === 'groovy') {
       config.modResults.contents = setPackageInBuildGradle(config, config.modResults.contents);
     } else {
-      (0, _warnings().addWarningAndroid)('android.package', `Cannot automatically configure app build.gradle if it's not groovy`);
+      (0, _warnings().addWarningAndroid)(
+        'android.package',
+        `Cannot automatically configure app build.gradle if it's not groovy`
+      );
     }
 
     return config;
@@ -122,19 +130,27 @@ const withPackageGradle = config => {
 
 exports.withPackageGradle = withPackageGradle;
 
-const withPackageRefactor = config => {
-  return (0, _withDangerousMod().withDangerousMod)(config, ['android', async config => {
-    await renamePackageOnDisk(config, config.modRequest.projectRoot);
-    return config;
-  }]);
+const withPackageRefactor = (config) => {
+  return (0, _withDangerousMod().withDangerousMod)(config, [
+    'android',
+    async (config) => {
+      await renamePackageOnDisk(config, config.modRequest.projectRoot);
+      return config;
+    },
+  ]);
 };
 
 exports.withPackageRefactor = withPackageRefactor;
 
 function getPackage(config) {
-  var _config$android$packa, _config$android;
+  let _config$android$packa, _config$android;
 
-  return (_config$android$packa = (_config$android = config.android) === null || _config$android === void 0 ? void 0 : _config$android.package) !== null && _config$android$packa !== void 0 ? _config$android$packa : null;
+  return (_config$android$packa =
+    (_config$android = config.android) === null || _config$android === void 0
+      ? void 0
+      : _config$android.package) !== null && _config$android$packa !== void 0
+    ? _config$android$packa
+    : null;
 }
 
 function getPackageRoot(projectRoot, type) {
@@ -146,13 +162,18 @@ function getCurrentPackageName(projectRoot, packageRoot) {
 
   const packagePath = _path().default.dirname(mainApplication);
 
-  const packagePathParts = _path().default.relative(packageRoot, packagePath).split(_path().default.sep).filter(Boolean);
+  const packagePathParts = _path()
+    .default.relative(packageRoot, packagePath)
+    .split(_path().default.sep)
+    .filter(Boolean);
 
   return packagePathParts.join('.');
 }
 
 function getCurrentPackageForProjectFile(projectRoot, packageRoot, fileName, type) {
-  const filePath = (0, _glob().sync)(_path().default.join(projectRoot, `android/app/src/${type}/java/**/${fileName}.@(java|kt)`))[0];
+  const filePath = (0, _glob().sync)(
+    _path().default.join(projectRoot, `android/app/src/${type}/java/**/${fileName}.@(java|kt)`)
+  )[0];
 
   if (!filePath) {
     return null;
@@ -160,7 +181,10 @@ function getCurrentPackageForProjectFile(projectRoot, packageRoot, fileName, typ
 
   const packagePath = _path().default.dirname(filePath);
 
-  const packagePathParts = _path().default.relative(packageRoot, packagePath).split(_path().default.sep).filter(Boolean);
+  const packagePathParts = _path()
+    .default.relative(packageRoot, packagePath)
+    .split(_path().default.sep)
+    .filter(Boolean);
 
   return packagePathParts.join('.');
 }
@@ -172,12 +196,10 @@ function getCurrentPackageNameForType(projectRoot, type) {
     return getCurrentPackageName(projectRoot, packageRoot);
   } // debug, etc..
 
-
   return getCurrentPackageForProjectFile(projectRoot, packageRoot, '*', type);
 } // NOTE(brentvatne): this assumes that our MainApplication.java file is in the root of the package
 // this makes sense for standard react-native projects but may not apply in customized projects, so if
 // we want this to be runnable in any app we need to handle other possibilities
-
 
 async function renamePackageOnDisk(config, projectRoot) {
   const newPackageName = getPackage(config);
@@ -190,21 +212,17 @@ async function renamePackageOnDisk(config, projectRoot) {
     await renameJniOnDiskForType({
       projectRoot,
       type,
-      packageName: newPackageName
+      packageName: newPackageName,
     });
     await renamePackageOnDiskForType({
       projectRoot,
       type,
-      packageName: newPackageName
+      packageName: newPackageName,
     });
   }
 }
 
-async function renameJniOnDiskForType({
-  projectRoot,
-  type,
-  packageName
-}) {
+async function renameJniOnDiskForType({ projectRoot, type, packageName }) {
   if (!packageName) {
     return;
   }
@@ -217,17 +235,25 @@ async function renameJniOnDiskForType({
 
   const jniRoot = _path().default.join(projectRoot, 'android', 'app', 'src', type, 'jni');
 
-  const filesToUpdate = [...(0, _glob().sync)('**/*', {
-    cwd: jniRoot,
-    absolute: true
-  })]; // Replace all occurrences of the path in the project
+  const filesToUpdate = [
+    ...(0, _glob().sync)('**/*', {
+      cwd: jniRoot,
+      absolute: true,
+    }),
+  ]; // Replace all occurrences of the path in the project
 
-  filesToUpdate.forEach(filepath => {
+  filesToUpdate.forEach((filepath) => {
     try {
-      if (_fs().default.lstatSync(filepath).isFile() && ['.h', '.cpp'].includes(_path().default.extname(filepath))) {
+      if (
+        _fs().default.lstatSync(filepath).isFile() &&
+        ['.h', '.cpp'].includes(_path().default.extname(filepath))
+      ) {
         let contents = _fs().default.readFileSync(filepath).toString();
 
-        contents = contents.replace(new RegExp(transformJavaClassDescriptor(currentPackageName).replace(/\//g, '\\/'), 'g'), transformJavaClassDescriptor(packageName));
+        contents = contents.replace(
+          new RegExp(transformJavaClassDescriptor(currentPackageName).replace(/\//g, '\\/'), 'g'),
+          transformJavaClassDescriptor(packageName)
+        );
 
         _fs().default.writeFileSync(filepath, contents);
       }
@@ -237,11 +263,7 @@ async function renameJniOnDiskForType({
   });
 }
 
-async function renamePackageOnDiskForType({
-  projectRoot,
-  type,
-  packageName
-}) {
+async function renamePackageOnDiskForType({ projectRoot, type, packageName }) {
   if (!packageName) {
     return;
   }
@@ -265,22 +287,20 @@ async function renamePackageOnDiskForType({
 
   const newPackagePath = _path().default.join(packageRoot, ...packageName.split('.')); // Create the new directory
 
-
   _fs().default.mkdirSync(newPackagePath, {
-    recursive: true
+    recursive: true,
   }); // Move everything from the old directory over
 
-
   (0, _glob().sync)('**/*', {
-    cwd: currentPackagePath
-  }).forEach(relativePath => {
+    cwd: currentPackagePath,
+  }).forEach((relativePath) => {
     const filepath = _path().default.join(currentPackagePath, relativePath);
 
     if (_fs().default.lstatSync(filepath).isFile()) {
       moveFileSync(filepath, _path().default.join(newPackagePath, relativePath));
     } else {
       _fs().default.mkdirSync(filepath, {
-        recursive: true
+        recursive: true,
       });
     }
   }); // Remove the old directory recursively from com/old/package to com/old and com,
@@ -302,17 +322,18 @@ async function renamePackageOnDiskForType({
     }
   }
 
-  const filesToUpdate = [...(0, _glob().sync)('**/*', {
-    cwd: newPackagePath,
-    absolute: true
-  })]; // Only update the BUCK file to match the main package name
+  const filesToUpdate = [
+    ...(0, _glob().sync)('**/*', {
+      cwd: newPackagePath,
+      absolute: true,
+    }),
+  ]; // Only update the BUCK file to match the main package name
 
   if (type === 'main') {
     filesToUpdate.push(_path().default.join(projectRoot, 'android', 'app', 'BUCK'));
   } // Replace all occurrences of the path in the project
 
-
-  filesToUpdate.forEach(filepath => {
+  filesToUpdate.forEach((filepath) => {
     try {
       if (_fs().default.lstatSync(filepath).isFile()) {
         let contents = _fs().default.readFileSync(filepath).toString();
@@ -320,7 +341,10 @@ async function renamePackageOnDiskForType({
         contents = contents.replace(new RegExp(currentPackageName, 'g'), packageName);
 
         if (['.h', '.cpp'].includes(_path().default.extname(filepath))) {
-          contents = contents.replace(new RegExp(transformJavaClassDescriptor(currentPackageName).replace(/\//g, '\\'), 'g'), transformJavaClassDescriptor(packageName));
+          contents = contents.replace(
+            new RegExp(transformJavaClassDescriptor(currentPackageName).replace(/\//g, '\\'), 'g'),
+            transformJavaClassDescriptor(packageName)
+          );
         }
 
         _fs().default.writeFileSync(filepath, contents);
@@ -333,7 +357,7 @@ async function renamePackageOnDiskForType({
 
 function moveFileSync(src, dest) {
   _fs().default.mkdirSync(_path().default.dirname(dest), {
-    recursive: true
+    recursive: true,
   });
 
   _fs().default.renameSync(src, dest);
@@ -363,7 +387,7 @@ function setPackageInAndroidManifest(config, androidManifest) {
 }
 
 async function getApplicationIdAsync(projectRoot) {
-  var _matchResult$;
+  let _matchResult$;
 
   const buildGradlePath = (0, _Paths().getAppBuildGradleFilePath)(projectRoot);
 
@@ -374,13 +398,16 @@ async function getApplicationIdAsync(projectRoot) {
   const buildGradle = await _fs().default.promises.readFile(buildGradlePath, 'utf8');
   const matchResult = buildGradle.match(/applicationId ['"](.*)['"]/); // TODO add fallback for legacy cases to read from AndroidManifest.xml
 
-  return (_matchResult$ = matchResult === null || matchResult === void 0 ? void 0 : matchResult[1]) !== null && _matchResult$ !== void 0 ? _matchResult$ : null;
+  return (_matchResult$ =
+    matchResult === null || matchResult === void 0 ? void 0 : matchResult[1]) !== null &&
+    _matchResult$ !== void 0
+    ? _matchResult$
+    : null;
 }
 /**
  * Transform a java package name to java class descriptor,
  * e.g. `com.helloworld` -> `Lcom/helloworld`.
  */
-
 
 function transformJavaClassDescriptor(packageName) {
   return `L${packageName.replace(/\./g, '/')}`;

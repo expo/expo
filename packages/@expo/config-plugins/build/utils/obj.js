@@ -1,7 +1,7 @@
-"use strict";
+'use strict';
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
+Object.defineProperty(exports, '__esModule', {
+  value: true,
 });
 exports.get = get;
 
@@ -11,7 +11,7 @@ function get(obj, key) {
   let current = obj;
   let branch;
 
-  while (branch = branches.shift()) {
+  while ((branch = branches.shift())) {
     if (!(branch in current)) {
       return undefined;
     }

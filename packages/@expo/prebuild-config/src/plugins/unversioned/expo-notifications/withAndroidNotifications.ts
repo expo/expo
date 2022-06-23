@@ -29,25 +29,25 @@ export const NOTIFICATION_ICON_RESOURCE = `@drawable/${NOTIFICATION_ICON}`;
 export const NOTIFICATION_ICON_COLOR = 'notification_icon_color';
 export const NOTIFICATION_ICON_COLOR_RESOURCE = `@color/${NOTIFICATION_ICON_COLOR}`;
 
-export const withNotificationIcons: ConfigPlugin = config => {
+export const withNotificationIcons: ConfigPlugin = (config) => {
   return withDangerousMod(config, [
     'android',
-    async config => {
+    async (config) => {
       await setNotificationIconAsync(config, config.modRequest.projectRoot);
       return config;
     },
   ]);
 };
 
-export const withNotificationIconColor: ConfigPlugin = config => {
-  return withAndroidColors(config, config => {
+export const withNotificationIconColor: ConfigPlugin = (config) => {
+  return withAndroidColors(config, (config) => {
     config.modResults = setNotificationIconColor(config, config.modResults);
     return config;
   });
 };
 
-export const withNotificationManifest: ConfigPlugin = config => {
-  return withAndroidManifest(config, config => {
+export const withNotificationManifest: ConfigPlugin = (config) => {
+  return withAndroidManifest(config, (config) => {
     config.modResults = setNotificationConfig(config, config.modResults);
     return config;
   });

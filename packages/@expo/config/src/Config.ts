@@ -313,9 +313,11 @@ function getStaticConfigFilePath(projectRoot: string): string | null {
 }
 
 // TODO: This should account for dynamic configs
-export function findConfigFile(
-  projectRoot: string
-): { configPath: string; configName: string; configNamespace: 'expo' } {
+export function findConfigFile(projectRoot: string): {
+  configPath: string;
+  configName: string;
+  configNamespace: 'expo';
+} {
   let configPath: string;
   // Check for a custom config path first.
   if (customConfigPaths[projectRoot]) {
@@ -529,9 +531,10 @@ export function getWebOutputPath(config: { [key: string]: any } = {}): string {
   return expo?.web?.build?.output || DEFAULT_BUILD_PATH;
 }
 
-export function getNameFromConfig(
-  exp: Record<string, any> = {}
-): { appName?: string; webName?: string } {
+export function getNameFromConfig(exp: Record<string, any> = {}): {
+  appName?: string;
+  webName?: string;
+} {
   // For RN CLI support
   const appManifest = exp.expo || exp;
   const { web = {} } = appManifest;

@@ -25,7 +25,7 @@ export function setAndroidIntentFilters(
   // Remove all generated tags from previous runs...
   if (mainActivity['intent-filter']?.length) {
     mainActivity['intent-filter'] = mainActivity['intent-filter'].filter(
-      value => value.$?.[GENERATED_TAG] !== 'true'
+      (value) => value.$?.[GENERATED_TAG] !== 'true'
     );
   }
 
@@ -44,7 +44,7 @@ export function setAndroidIntentFilters(
 export default function renderIntentFilters(
   intentFilters: AndroidIntentFilters
 ): ManifestIntentFilter[] {
-  return intentFilters.map(intentFilter => {
+  return intentFilters.map((intentFilter) => {
     // <intent-filter>
     return {
       $: {
@@ -68,7 +68,7 @@ export default function renderIntentFilters(
 
 /** Like `<data android:scheme="exp"/>` */
 function renderIntentFilterData(data?: AndroidIntentFiltersData | AndroidIntentFiltersData[]) {
-  return (Array.isArray(data) ? data : [data]).filter(Boolean).map(datum => ({
+  return (Array.isArray(data) ? data : [data]).filter(Boolean).map((datum) => ({
     $: Object.entries(datum ?? {}).reduce(
       (prev, [key, value]) => ({ ...prev, [`android:${key}`]: value }),
       {}
@@ -78,7 +78,7 @@ function renderIntentFilterData(data?: AndroidIntentFiltersData | AndroidIntentF
 
 /** Like `<category android:name="android.intent.category.DEFAULT"/>` */
 function renderIntentFilterCategory(category?: string | string[]) {
-  return (Array.isArray(category) ? category : [category]).filter(Boolean).map(cat => ({
+  return (Array.isArray(category) ? category : [category]).filter(Boolean).map((cat) => ({
     $: {
       'android:name': `android.intent.category.${cat}`,
     },

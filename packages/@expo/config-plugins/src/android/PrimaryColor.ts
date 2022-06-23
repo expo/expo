@@ -8,14 +8,14 @@ import { assignStylesValue, getAppThemeLightNoActionBarGroup } from './Styles';
 const COLOR_PRIMARY_KEY = 'colorPrimary';
 const DEFAULT_PRIMARY_COLOR = '#023c69';
 
-export const withPrimaryColor: ConfigPlugin = config => {
+export const withPrimaryColor: ConfigPlugin = (config) => {
   config = withPrimaryColorColors(config);
   config = withPrimaryColorStyles(config);
   return config;
 };
 
-export const withPrimaryColorColors: ConfigPlugin = config => {
-  return withAndroidColors(config, config => {
+export const withPrimaryColorColors: ConfigPlugin = (config) => {
+  return withAndroidColors(config, (config) => {
     config.modResults = assignColorValue(config.modResults, {
       name: COLOR_PRIMARY_KEY,
       value: getPrimaryColor(config),
@@ -24,8 +24,8 @@ export const withPrimaryColorColors: ConfigPlugin = config => {
   });
 };
 
-export const withPrimaryColorStyles: ConfigPlugin = config => {
-  return withAndroidStyles(config, config => {
+export const withPrimaryColorStyles: ConfigPlugin = (config) => {
+  return withAndroidStyles(config, (config) => {
     config.modResults = assignStylesValue(config.modResults, {
       add: !!getPrimaryColor(config),
       parent: getAppThemeLightNoActionBarGroup(),

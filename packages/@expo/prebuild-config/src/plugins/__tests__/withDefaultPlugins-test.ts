@@ -38,7 +38,7 @@ jest.mock('../icons/withAndroidIcons', () => {
   };
 });
 const NotificationsPlugin = require('../unversioned/expo-notifications/withAndroidNotifications');
-NotificationsPlugin.withNotificationIcons = jest.fn(config => config);
+NotificationsPlugin.withNotificationIcons = jest.fn((config) => config);
 
 function getLargeConfig(): ExportedConfig {
   // A very extensive Expo Config.
@@ -294,7 +294,7 @@ describe('built-in plugins', () => {
     let config = getPrebuildConfig();
 
     let modRequest;
-    config = withGradleProperties(config, config => {
+    config = withGradleProperties(config, (config) => {
       modRequest = config.modRequest;
       return config;
     });
@@ -330,7 +330,7 @@ describe('built-in plugins', () => {
     expect(config.ios?.infoPlist?.branch_key?.live).toBe('MY_BRANCH_KEY');
 
     // Mods should all be functions
-    expect(Object.values(config.mods.ios).every(value => typeof value === 'function')).toBe(true);
+    expect(Object.values(config.mods.ios).every((value) => typeof value === 'function')).toBe(true);
 
     delete config.mods;
 
@@ -461,8 +461,8 @@ describe('built-in plugins', () => {
     expect(config.ios?.infoPlist?.branch_key?.live).toBe('MY_BRANCH_KEY');
 
     // Mods should all be functions
-    expect(Object.values(config.mods.ios).every(value => typeof value === 'function')).toBe(true);
-    expect(Object.values(config.mods.android).every(value => typeof value === 'function')).toBe(
+    expect(Object.values(config.mods.ios).every((value) => typeof value === 'function')).toBe(true);
+    expect(Object.values(config.mods.android).every((value) => typeof value === 'function')).toBe(
       true
     );
     // Ensure these mods are removed
@@ -585,8 +585,8 @@ describe('built-in plugins', () => {
     expect(config.ios?.infoPlist?.branch_key?.live).toBe('MY_BRANCH_KEY');
 
     // Mods should all be functions
-    expect(Object.values(config.mods.ios).every(value => typeof value === 'function')).toBe(true);
-    expect(Object.values(config.mods.android).every(value => typeof value === 'function')).toBe(
+    expect(Object.values(config.mods.ios).every((value) => typeof value === 'function')).toBe(true);
+    expect(Object.values(config.mods.android).every((value) => typeof value === 'function')).toBe(
       true
     );
     // Ensure these mods are removed

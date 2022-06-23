@@ -35,6 +35,6 @@ export function createRunOncePlugin<T>(
   version?: string
 ): ConfigPlugin<T> {
   return (config, props) => {
-    return withRunOnce(config, { plugin: config => plugin(config, props), name, version });
+    return withRunOnce(config, { plugin: (config) => plugin(config, props), name, version });
   };
 }

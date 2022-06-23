@@ -20,16 +20,35 @@ export { withPlugins } from './plugins/withPlugins';
 export { withRunOnce, createRunOncePlugin } from './plugins/withRunOnce';
 export { withDangerousMod } from './plugins/withDangerousMod';
 export { withMod, withBaseMod } from './plugins/withMod';
-export { withAppDelegate, withInfoPlist, withEntitlementsPlist, withExpoPlist, withXcodeProject, withPodfileProperties, } from './plugins/ios-plugins';
-export { withAndroidManifest, withStringsXml, withAndroidColors, withAndroidColorsNight, withAndroidStyles, withMainActivity, withMainApplication, withProjectBuildGradle, withAppBuildGradle, withSettingsGradle, withGradleProperties, } from './plugins/android-plugins';
+export {
+  withAppDelegate,
+  withInfoPlist,
+  withEntitlementsPlist,
+  withExpoPlist,
+  withXcodeProject,
+  withPodfileProperties,
+} from './plugins/ios-plugins';
+export {
+  withAndroidManifest,
+  withStringsXml,
+  withAndroidColors,
+  withAndroidColorsNight,
+  withAndroidStyles,
+  withMainActivity,
+  withMainApplication,
+  withProjectBuildGradle,
+  withAppBuildGradle,
+  withSettingsGradle,
+  withGradleProperties,
+} from './plugins/android-plugins';
 export { withStaticPlugin } from './plugins/withStaticPlugin';
 export { compileModsAsync, withDefaultBaseMods, evalModsAsync } from './plugins/mod-compiler';
 export { PluginError } from './utils/errors';
 export declare const BaseMods: {
-    withGeneratedBaseMods: typeof withGeneratedBaseMods;
-    provider: typeof provider;
-    withAndroidBaseMods: typeof withAndroidBaseMods;
-    getAndroidModFileProviders: typeof getAndroidModFileProviders;
-    withIosBaseMods: typeof withIosBaseMods;
-    getIosModFileProviders: typeof getIosModFileProviders;
+  withGeneratedBaseMods: typeof withGeneratedBaseMods;
+  provider: typeof provider;
+  withAndroidBaseMods: typeof withAndroidBaseMods;
+  getAndroidModFileProviders: typeof getAndroidModFileProviders;
+  withIosBaseMods: typeof withIosBaseMods;
+  getIosModFileProviders: typeof getIosModFileProviders;
 };

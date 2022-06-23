@@ -8,7 +8,7 @@ export const withAndroidSplashDrawables: ConfigPlugin<Pick<SplashScreenConfig, '
 ) => {
   return withDangerousMod(config, [
     'android',
-    async config => {
+    async (config) => {
       if (splash) {
         await setSplashDrawableAsync(splash, config.modRequest.projectRoot);
       }

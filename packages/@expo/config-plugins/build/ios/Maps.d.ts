@@ -4,7 +4,10 @@ import { MergeResults } from '../utils/generateCode';
 export declare const MATCH_INIT: RegExp;
 export declare const withMaps: ConfigPlugin;
 export declare function getGoogleMapsApiKey(config: Pick<ExpoConfig, 'ios'>): string | null;
-export declare function setGoogleMapsApiKey(config: Pick<ExpoConfig, 'ios'>, { GMSApiKey, ...infoPlist }: InfoPlist): InfoPlist;
+export declare function setGoogleMapsApiKey(
+  config: Pick<ExpoConfig, 'ios'>,
+  { GMSApiKey, ...infoPlist }: InfoPlist
+): InfoPlist;
 export declare function addGoogleMapsAppDelegateImport(src: string): MergeResults;
 export declare function removeGoogleMapsAppDelegateImport(src: string): MergeResults;
 export declare function addGoogleMapsAppDelegateInit(src: string, apiKey: string): MergeResults;

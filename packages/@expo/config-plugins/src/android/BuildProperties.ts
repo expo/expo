@@ -28,7 +28,7 @@ export function createBuildGradlePropsConfigPlugin<SourceConfigType extends Buil
     config,
     sourceConfig
   ) =>
-    withGradleProperties(config, config => {
+    withGradleProperties(config, (config) => {
       config.modResults = updateAndroidBuildPropertiesFromConfig(
         (sourceConfig ?? config) as SourceConfigType,
         config.modResults,
@@ -51,7 +51,7 @@ export const withJsEngineGradleProps = createBuildGradlePropsConfigPlugin<ExpoCo
   [
     {
       propName: 'expo.jsEngine',
-      propValueGetter: config => config.android?.jsEngine ?? config.jsEngine ?? 'jsc',
+      propValueGetter: (config) => config.android?.jsEngine ?? config.jsEngine ?? 'jsc',
     },
   ],
   'withJsEngineGradleProps'
@@ -79,7 +79,7 @@ export function updateAndroidBuildProperty(
   options?: { removePropWhenValueIsNull?: boolean }
 ) {
   const oldPropIndex = gradleProperties.findIndex(
-    prop => prop.type === 'property' && prop.key === name
+    (prop) => prop.type === 'property' && prop.key === name
   );
 
   if (value) {

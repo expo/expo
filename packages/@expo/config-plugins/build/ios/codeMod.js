@@ -1,7 +1,7 @@
-"use strict";
+'use strict';
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
+Object.defineProperty(exports, '__esModule', {
+  value: true,
 });
 exports.addObjcImports = addObjcImports;
 exports.findObjcFunctionCodeBlock = findObjcFunctionCodeBlock;
@@ -13,7 +13,7 @@ exports.insertContentsInsideSwiftClassBlock = insertContentsInsideSwiftClassBloc
 exports.insertContentsInsideSwiftFunctionBlock = insertContentsInsideSwiftFunctionBlock;
 
 function _commonCodeMod() {
-  const data = require("../utils/commonCodeMod");
+  const data = require('../utils/commonCodeMod');
 
   _commonCodeMod = function () {
     return data;
@@ -23,7 +23,7 @@ function _commonCodeMod() {
 }
 
 function _matchBrackets() {
-  const data = require("../utils/matchBrackets");
+  const data = require('../utils/matchBrackets');
 
   _matchBrackets = function () {
     return data;
@@ -41,7 +41,7 @@ function _matchBrackets() {
 function addObjcImports(source, imports) {
   const lines = source.split('\n'); // Try to insert statements after first #import where would probably not in #if block
 
-  const lineIndexWithFirstImport = lines.findIndex(line => line.match(/^#import .*$/));
+  const lineIndexWithFirstImport = lines.findIndex((line) => line.match(/^#import .*$/));
 
   for (const importElement of imports) {
     if (!source.includes(importElement)) {
@@ -60,7 +60,6 @@ function addObjcImports(source, imports) {
  * @returns found CodeBlock, or null if not found
  */
 
-
 function findObjcInterfaceCodeBlock(contents, declaration) {
   const start = contents.search(new RegExp(`^${declaration}\\W`, 'm'));
 
@@ -74,7 +73,7 @@ function findObjcInterfaceCodeBlock(contents, declaration) {
   return {
     start,
     end,
-    code: contents.substring(start, end)
+    code: contents.substring(start, end),
   };
 }
 /**
@@ -84,7 +83,6 @@ function findObjcInterfaceCodeBlock(contents, declaration) {
  * @param selector function selector, e.g. 'doSomething:withSomeValue:'
  * @returns found CodeBlock, or null if not found.
  */
-
 
 function findObjcFunctionCodeBlock(contents, selector) {
   const symbols = selector.split(':');
@@ -112,7 +110,7 @@ function findObjcFunctionCodeBlock(contents, selector) {
   return {
     start,
     end,
-    code: contents.substring(start, end + 1)
+    code: contents.substring(start, end + 1),
   };
 }
 /**
@@ -124,7 +122,6 @@ function findObjcFunctionCodeBlock(contents, selector) {
  * @param options insertion options
  * @returns updated contents
  */
-
 
 function insertContentsInsideObjcFunctionBlock(srcContents, selector, insertion, options) {
   return insertContentsInsideFunctionBlock(srcContents, selector, insertion, options, 'objc');
@@ -139,7 +136,6 @@ function insertContentsInsideObjcFunctionBlock(srcContents, selector, insertion,
  * @returns updated contents
  */
 
-
 function insertContentsInsideObjcInterfaceBlock(srcContents, declaration, insertion, options) {
   const codeBlock = findObjcInterfaceCodeBlock(srcContents, declaration);
 
@@ -147,16 +143,22 @@ function insertContentsInsideObjcInterfaceBlock(srcContents, declaration, insert
     return srcContents;
   }
 
-  const {
-    position
-  } = options;
+  const { position } = options;
 
   if (position === 'head') {
     const firstNewLineIndex = srcContents.indexOf('\n', codeBlock.start);
-    srcContents = (0, _commonCodeMod().insertContentsAtOffset)(srcContents, insertion, firstNewLineIndex);
+    srcContents = (0, _commonCodeMod().insertContentsAtOffset)(
+      srcContents,
+      insertion,
+      firstNewLineIndex
+    );
   } else if (position === 'tail') {
     const endLen = '@end'.length;
-    srcContents = (0, _commonCodeMod().insertContentsAtOffset)(srcContents, insertion, codeBlock.end - endLen);
+    srcContents = (0, _commonCodeMod().insertContentsAtOffset)(
+      srcContents,
+      insertion,
+      codeBlock.end - endLen
+    );
   }
 
   return srcContents;
@@ -169,7 +171,6 @@ function insertContentsInsideObjcInterfaceBlock(srcContents, declaration, insert
  * @returns found CodeBlock, or null if not found.
  */
 
-
 function findSwiftFunctionCodeBlock(contents, selector) {
   const parenthesesIndex = selector.indexOf('('); // `functName` === 'doSomething' of 'doSomething(_:withSomeValue:)'
 
@@ -178,17 +179,29 @@ function findSwiftFunctionCodeBlock(contents, selector) {
   const argLabels = selector.substring(parenthesesIndex + 1, selector.length - 2).split(':');
   let searchOffset = 0;
   const funcCandidateRegExp = new RegExp(`\\sfunc\\s+${funcName}\\(`, 'm');
-  let funcCandidateOffset = (0, _commonCodeMod().searchFromOffset)(contents, funcCandidateRegExp, searchOffset);
+  let funcCandidateOffset = (0, _commonCodeMod().searchFromOffset)(
+    contents,
+    funcCandidateRegExp,
+    searchOffset
+  );
 
   while (funcCandidateOffset >= 0) {
     // Parse function parameters
     const paramsStartOffset = contents.indexOf('(', funcCandidateOffset);
-    const paramsEndOffset = (0, _matchBrackets().findMatchingBracketPosition)(contents, '(', paramsStartOffset);
+    const paramsEndOffset = (0, _matchBrackets().findMatchingBracketPosition)(
+      contents,
+      '(',
+      paramsStartOffset
+    );
     const paramsString = contents.substring(paramsStartOffset + 1, paramsEndOffset);
     const params = paramsString.split(',').map(parseSwiftFunctionParam); // Prepare offset for next round
 
     searchOffset = paramsEndOffset + 1;
-    funcCandidateOffset = (0, _commonCodeMod().searchFromOffset)(contents, funcCandidateRegExp, searchOffset); // Try to match function parameters
+    funcCandidateOffset = (0, _commonCodeMod().searchFromOffset)(
+      contents,
+      funcCandidateRegExp,
+      searchOffset
+    ); // Try to match function parameters
 
     if (argLabels.length !== params.length) {
       continue;
@@ -200,14 +213,17 @@ function findSwiftFunctionCodeBlock(contents, selector) {
       }
     } // This function is matched one, get the code block.
 
-
     const codeBlockStart = contents.indexOf('{', paramsEndOffset);
-    const codeBlockEnd = (0, _matchBrackets().findMatchingBracketPosition)(contents, '{', paramsEndOffset);
+    const codeBlockEnd = (0, _matchBrackets().findMatchingBracketPosition)(
+      contents,
+      '{',
+      paramsEndOffset
+    );
     const codeBlock = contents.substring(codeBlockStart, codeBlockEnd + 1);
     return {
       start: codeBlockStart,
       end: codeBlockEnd,
-      code: codeBlock
+      code: codeBlock,
     };
   }
 
@@ -221,7 +237,7 @@ function parseSwiftFunctionParam(paramTuple) {
   return {
     argumentLabel,
     parameterName,
-    typeString
+    typeString,
   };
 }
 /**
@@ -234,7 +250,6 @@ function parseSwiftFunctionParam(paramTuple) {
  * @returns updated contents
  */
 
-
 function insertContentsInsideSwiftClassBlock(srcContents, declaration, insertion, options) {
   const start = srcContents.search(new RegExp(`\\s*${declaration}.*?[\\(\\{]`));
 
@@ -242,16 +257,26 @@ function insertContentsInsideSwiftClassBlock(srcContents, declaration, insertion
     throw new Error(`Unable to find class code block - declaration[${declaration}]`);
   }
 
-  const {
-    position
-  } = options;
+  const { position } = options;
 
   if (position === 'head') {
     const firstBracketIndex = srcContents.indexOf('{', start);
-    srcContents = (0, _commonCodeMod().insertContentsAtOffset)(srcContents, insertion, firstBracketIndex + 1);
+    srcContents = (0, _commonCodeMod().insertContentsAtOffset)(
+      srcContents,
+      insertion,
+      firstBracketIndex + 1
+    );
   } else if (position === 'tail') {
-    const endBracketIndex = (0, _matchBrackets().findMatchingBracketPosition)(srcContents, '{', start);
-    srcContents = (0, _commonCodeMod().insertContentsAtOffset)(srcContents, insertion, endBracketIndex);
+    const endBracketIndex = (0, _matchBrackets().findMatchingBracketPosition)(
+      srcContents,
+      '{',
+      start
+    );
+    srcContents = (0, _commonCodeMod().insertContentsAtOffset)(
+      srcContents,
+      insertion,
+      endBracketIndex
+    );
   }
 
   return srcContents;
@@ -266,29 +291,39 @@ function insertContentsInsideSwiftClassBlock(srcContents, declaration, insertion
  * @returns updated contents
  */
 
-
 function insertContentsInsideSwiftFunctionBlock(srcContents, selector, insertion, options) {
   return insertContentsInsideFunctionBlock(srcContents, selector, insertion, options, 'swift');
 }
 
 function insertContentsInsideFunctionBlock(srcContents, selector, insertion, options, language) {
-  var _options$indent;
+  let _options$indent;
 
-  const codeBlock = language === 'objc' ? findObjcFunctionCodeBlock(srcContents, selector) : findSwiftFunctionCodeBlock(srcContents, selector);
+  const codeBlock =
+    language === 'objc'
+      ? findObjcFunctionCodeBlock(srcContents, selector)
+      : findSwiftFunctionCodeBlock(srcContents, selector);
 
   if (!codeBlock) {
     return srcContents;
   }
 
-  const {
-    position
-  } = options;
-  const indent = ' '.repeat((_options$indent = options.indent) !== null && _options$indent !== void 0 ? _options$indent : 2);
+  const { position } = options;
+  const indent = ' '.repeat(
+    (_options$indent = options.indent) !== null && _options$indent !== void 0 ? _options$indent : 2
+  );
 
   if (position === 'head') {
-    srcContents = (0, _commonCodeMod().insertContentsAtOffset)(srcContents, `\n${indent}${insertion}`, codeBlock.start + 1);
+    srcContents = (0, _commonCodeMod().insertContentsAtOffset)(
+      srcContents,
+      `\n${indent}${insertion}`,
+      codeBlock.start + 1
+    );
   } else if (position === 'tail') {
-    srcContents = (0, _commonCodeMod().insertContentsAtOffset)(srcContents, `\n${indent}${insertion}`, codeBlock.end - 1);
+    srcContents = (0, _commonCodeMod().insertContentsAtOffset)(
+      srcContents,
+      `\n${indent}${insertion}`,
+      codeBlock.end - 1
+    );
   } else if (position === 'tailBeforeLastReturn') {
     let lastReturnIndex = srcContents.lastIndexOf(' return ', codeBlock.end);
 
@@ -298,7 +333,11 @@ function insertContentsInsideFunctionBlock(srcContents, selector, insertion, opt
 
     lastReturnIndex += 1; // +1 for the prefix space
 
-    srcContents = (0, _commonCodeMod().insertContentsAtOffset)(srcContents, `${insertion}\n${indent}`, lastReturnIndex);
+    srcContents = (0, _commonCodeMod().insertContentsAtOffset)(
+      srcContents,
+      `${insertion}\n${indent}`,
+      lastReturnIndex
+    );
   }
 
   return srcContents;

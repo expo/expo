@@ -67,7 +67,7 @@ describe('e2e: iOS locales', () => {
 
   it('writes all the image files expected', async () => {
     const after = getDirFromFS(vol.toJSON(), projectRoot);
-    const locales = Object.keys(after).filter(value => value.endsWith('InfoPlist.strings'));
+    const locales = Object.keys(after).filter((value) => value.endsWith('InfoPlist.strings'));
 
     expect(locales.length).toBe(2);
     expect(after[locales[0]]).toMatchSnapshot();

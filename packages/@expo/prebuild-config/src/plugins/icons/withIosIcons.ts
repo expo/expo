@@ -8,10 +8,10 @@ import { ContentsJson, ContentsJsonImageIdiom, writeContentsJsonAsync } from './
 
 const { getProjectName } = IOSConfig.XcodeUtils;
 
-export const withIosIcons: ConfigPlugin = config => {
+export const withIosIcons: ConfigPlugin = (config) => {
   return withDangerousMod(config, [
     'ios',
-    async config => {
+    async (config) => {
       await setIconsAsync(config, config.modRequest.projectRoot);
       return config;
     },

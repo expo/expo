@@ -14,6 +14,11 @@ export declare function formatDeviceFamilies(deviceFamilies: number[]): string;
 /**
  * Add to pbxproj under TARGETED_DEVICE_FAMILY
  */
-export declare function setDeviceFamily(config: Pick<ExpoConfig, 'ios'>, { project }: {
+export declare function setDeviceFamily(
+  config: Pick<ExpoConfig, 'ios'>,
+  {
+    project,
+  }: {
     project: XcodeProject;
-}): XcodeProject;
+  }
+): XcodeProject;

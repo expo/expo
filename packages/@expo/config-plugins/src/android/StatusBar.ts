@@ -14,21 +14,21 @@ const WINDOW_TRANSLUCENT_STATUS = 'android:windowTranslucentStatus';
 // https://developer.android.com/reference/android/R.attr#windowLightStatusBar
 const WINDOW_LIGHT_STATUS_BAR = 'android:windowLightStatusBar';
 
-export const withStatusBar: ConfigPlugin = config => {
+export const withStatusBar: ConfigPlugin = (config) => {
   config = withStatusBarColors(config);
   config = withStatusBarStyles(config);
   return config;
 };
 
-const withStatusBarColors: ConfigPlugin = config => {
-  return withAndroidColors(config, config => {
+const withStatusBarColors: ConfigPlugin = (config) => {
+  return withAndroidColors(config, (config) => {
     config.modResults = setStatusBarColors(config, config.modResults);
     return config;
   });
 };
 
-const withStatusBarStyles: ConfigPlugin = config => {
-  return withAndroidStyles(config, config => {
+const withStatusBarStyles: ConfigPlugin = (config) => {
+  return withAndroidStyles(config, (config) => {
     config.modResults = setStatusBarStyles(config, config.modResults);
     return config;
   });

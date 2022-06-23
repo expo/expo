@@ -1,7 +1,7 @@
-"use strict";
+'use strict';
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
+Object.defineProperty(exports, '__esModule', {
+  value: true,
 });
 exports.getExpoUpdatesPackageVersion = getExpoUpdatesPackageVersion;
 exports.getNativeVersion = getNativeVersion;
@@ -18,7 +18,7 @@ exports.getUpdatesTimeout = getUpdatesTimeout;
 exports.withRuntimeVersion = void 0;
 
 function _sdkRuntimeVersions() {
-  const data = require("@expo/sdk-runtime-versions");
+  const data = require('@expo/sdk-runtime-versions');
 
   _sdkRuntimeVersions = function () {
     return data;
@@ -28,7 +28,7 @@ function _sdkRuntimeVersions() {
 }
 
 function _fs() {
-  const data = _interopRequireDefault(require("fs"));
+  const data = _interopRequireDefault(require('fs'));
 
   _fs = function () {
     return data;
@@ -38,7 +38,7 @@ function _fs() {
 }
 
 function _getenv() {
-  const data = require("getenv");
+  const data = require('getenv');
 
   _getenv = function () {
     return data;
@@ -48,7 +48,7 @@ function _getenv() {
 }
 
 function _path() {
-  const data = _interopRequireDefault(require("path"));
+  const data = _interopRequireDefault(require('path'));
 
   _path = function () {
     return data;
@@ -58,7 +58,7 @@ function _path() {
 }
 
 function _resolveFrom() {
-  const data = _interopRequireDefault(require("resolve-from"));
+  const data = _interopRequireDefault(require('resolve-from'));
 
   _resolveFrom = function () {
     return data;
@@ -68,7 +68,7 @@ function _resolveFrom() {
 }
 
 function _semver() {
-  const data = _interopRequireDefault(require("semver"));
+  const data = _interopRequireDefault(require('semver'));
 
   _semver = function () {
     return data;
@@ -78,7 +78,7 @@ function _semver() {
 }
 
 function _() {
-  const data = require("..");
+  const data = require('..');
 
   _ = function () {
     return data;
@@ -87,10 +87,15 @@ function _() {
   return data;
 }
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(obj) {
+  return obj && obj.__esModule ? obj : { default: obj };
+}
 
 function getExpoUpdatesPackageVersion(projectRoot) {
-  const expoUpdatesPackageJsonPath = _resolveFrom().default.silent(projectRoot, 'expo-updates/package.json');
+  const expoUpdatesPackageJsonPath = _resolveFrom().default.silent(
+    projectRoot,
+    'expo-updates/package.json'
+  );
 
   if (!expoUpdatesPackageJsonPath || !_fs().default.existsSync(expoUpdatesPackageJsonPath)) {
     return null;
@@ -101,12 +106,18 @@ function getExpoUpdatesPackageVersion(projectRoot) {
 }
 
 function getUpdateUrl(config, username) {
-  var _config$updates;
+  let _config$updates;
 
-  if ((_config$updates = config.updates) !== null && _config$updates !== void 0 && _config$updates.url) {
-    var _config$updates2;
+  if (
+    (_config$updates = config.updates) !== null &&
+    _config$updates !== void 0 &&
+    _config$updates.url
+  ) {
+    let _config$updates2;
 
-    return (_config$updates2 = config.updates) === null || _config$updates2 === void 0 ? void 0 : _config$updates2.url;
+    return (_config$updates2 = config.updates) === null || _config$updates2 === void 0
+      ? void 0
+      : _config$updates2.url;
   }
 
   const user = typeof config.owner === 'string' ? config.owner : username;
@@ -122,24 +133,23 @@ function getNativeVersion(config, platform) {
   const version = _().IOSConfig.Version.getVersion(config);
 
   switch (platform) {
-    case 'ios':
-      {
-        const buildNumber = _().IOSConfig.Version.getBuildNumber(config);
+    case 'ios': {
+      const buildNumber = _().IOSConfig.Version.getBuildNumber(config);
 
-        return `${version}(${buildNumber})`;
-      }
+      return `${version}(${buildNumber})`;
+    }
 
-    case 'android':
-      {
-        const versionCode = _().AndroidConfig.Version.getVersionCode(config);
+    case 'android': {
+      const versionCode = _().AndroidConfig.Version.getVersionCode(config);
 
-        return `${version}(${versionCode})`;
-      }
+      return `${version}(${versionCode})`;
+    }
 
-    default:
-      {
-        throw new Error(`"${platform}" is not a supported platform. Choose either "ios" or "android".`);
-      }
+    default: {
+      throw new Error(
+        `"${platform}" is not a supported platform. Choose either "ios" or "android".`
+      );
+    }
   }
 }
 /**
@@ -147,27 +157,30 @@ function getNativeVersion(config, platform) {
  * @return an expoConfig with only string valued platform specific runtime versions.
  */
 
+const withRuntimeVersion = (config) => {
+  let _config$ios, _config$android;
 
-const withRuntimeVersion = config => {
-  var _config$ios, _config$android;
-
-  if ((_config$ios = config.ios) !== null && _config$ios !== void 0 && _config$ios.runtimeVersion || config.runtimeVersion) {
+  if (
+    ((_config$ios = config.ios) !== null && _config$ios !== void 0 && _config$ios.runtimeVersion) ||
+    config.runtimeVersion
+  ) {
     const runtimeVersion = getRuntimeVersion(config, 'ios');
 
     if (runtimeVersion) {
-      config.ios = { ...config.ios,
-        runtimeVersion
-      };
+      config.ios = { ...config.ios, runtimeVersion };
     }
   }
 
-  if ((_config$android = config.android) !== null && _config$android !== void 0 && _config$android.runtimeVersion || config.runtimeVersion) {
+  if (
+    ((_config$android = config.android) !== null &&
+      _config$android !== void 0 &&
+      _config$android.runtimeVersion) ||
+    config.runtimeVersion
+  ) {
     const runtimeVersion = getRuntimeVersion(config, 'android');
 
     if (runtimeVersion) {
-      config.android = { ...config.android,
-        runtimeVersion
-      };
+      config.android = { ...config.android, runtimeVersion };
     }
   }
 
@@ -190,9 +203,15 @@ function getRuntimeVersionNullable(...[config, platform]) {
 }
 
 function getRuntimeVersion(config, platform) {
-  var _config$platform$runt, _config$platform;
+  let _config$platform$runt, _config$platform;
 
-  const runtimeVersion = (_config$platform$runt = (_config$platform = config[platform]) === null || _config$platform === void 0 ? void 0 : _config$platform.runtimeVersion) !== null && _config$platform$runt !== void 0 ? _config$platform$runt : config.runtimeVersion;
+  const runtimeVersion =
+    (_config$platform$runt =
+      (_config$platform = config[platform]) === null || _config$platform === void 0
+        ? void 0
+        : _config$platform.runtimeVersion) !== null && _config$platform$runt !== void 0
+      ? _config$platform$runt
+      : config.runtimeVersion;
 
   if (!runtimeVersion) {
     return null;
@@ -210,7 +229,11 @@ function getRuntimeVersion(config, platform) {
     return (0, _sdkRuntimeVersions().getRuntimeVersionForSDKVersion)(config.sdkVersion);
   }
 
-  throw new Error(`"${typeof runtimeVersion === 'object' ? JSON.stringify(runtimeVersion) : runtimeVersion}" is not a valid runtime version. getRuntimeVersion only supports a string, "sdkVersion", or "nativeVersion" policy.`);
+  throw new Error(
+    `"${
+      typeof runtimeVersion === 'object' ? JSON.stringify(runtimeVersion) : runtimeVersion
+    }" is not a valid runtime version. getRuntimeVersion only supports a string, "sdkVersion", or "nativeVersion" policy.`
+  );
 }
 
 function getSDKVersion(config) {
@@ -218,28 +241,45 @@ function getSDKVersion(config) {
 }
 
 function getUpdatesEnabled(config) {
-  var _config$updates3;
+  let _config$updates3;
 
-  return ((_config$updates3 = config.updates) === null || _config$updates3 === void 0 ? void 0 : _config$updates3.enabled) !== false;
+  return (
+    ((_config$updates3 = config.updates) === null || _config$updates3 === void 0
+      ? void 0
+      : _config$updates3.enabled) !== false
+  );
 }
 
 function getUpdatesTimeout(config) {
-  var _config$updates$fallb, _config$updates4;
+  let _config$updates$fallb, _config$updates4;
 
-  return (_config$updates$fallb = (_config$updates4 = config.updates) === null || _config$updates4 === void 0 ? void 0 : _config$updates4.fallbackToCacheTimeout) !== null && _config$updates$fallb !== void 0 ? _config$updates$fallb : 0;
+  return (_config$updates$fallb =
+    (_config$updates4 = config.updates) === null || _config$updates4 === void 0
+      ? void 0
+      : _config$updates4.fallbackToCacheTimeout) !== null && _config$updates$fallb !== void 0
+    ? _config$updates$fallb
+    : 0;
 }
 
 function getUpdatesCheckOnLaunch(config, expoUpdatesPackageVersion) {
-  var _config$updates5, _config$updates6;
+  let _config$updates5, _config$updates6;
 
-  if (((_config$updates5 = config.updates) === null || _config$updates5 === void 0 ? void 0 : _config$updates5.checkAutomatically) === 'ON_ERROR_RECOVERY') {
+  if (
+    ((_config$updates5 = config.updates) === null || _config$updates5 === void 0
+      ? void 0
+      : _config$updates5.checkAutomatically) === 'ON_ERROR_RECOVERY'
+  ) {
     // native 'ERROR_RECOVERY_ONLY' option was only introduced in 0.11.x
     if (expoUpdatesPackageVersion && _semver().default.gte(expoUpdatesPackageVersion, '0.11.0')) {
       return 'ERROR_RECOVERY_ONLY';
     }
 
     return 'NEVER';
-  } else if (((_config$updates6 = config.updates) === null || _config$updates6 === void 0 ? void 0 : _config$updates6.checkAutomatically) === 'ON_LOAD') {
+  } else if (
+    ((_config$updates6 = config.updates) === null || _config$updates6 === void 0
+      ? void 0
+      : _config$updates6.checkAutomatically) === 'ON_LOAD'
+  ) {
     return 'ALWAYS';
   }
 
@@ -247,9 +287,12 @@ function getUpdatesCheckOnLaunch(config, expoUpdatesPackageVersion) {
 }
 
 function getUpdatesCodeSigningCertificate(projectRoot, config) {
-  var _config$updates7;
+  let _config$updates7;
 
-  const codeSigningCertificatePath = (_config$updates7 = config.updates) === null || _config$updates7 === void 0 ? void 0 : _config$updates7.codeSigningCertificate;
+  const codeSigningCertificatePath =
+    (_config$updates7 = config.updates) === null || _config$updates7 === void 0
+      ? void 0
+      : _config$updates7.codeSigningCertificate;
 
   if (!codeSigningCertificatePath) {
     return undefined;
@@ -265,9 +308,11 @@ function getUpdatesCodeSigningCertificate(projectRoot, config) {
 }
 
 function getUpdatesCodeSigningMetadata(config) {
-  var _config$updates8;
+  let _config$updates8;
 
-  return (_config$updates8 = config.updates) === null || _config$updates8 === void 0 ? void 0 : _config$updates8.codeSigningMetadata;
+  return (_config$updates8 = config.updates) === null || _config$updates8 === void 0
+    ? void 0
+    : _config$updates8.codeSigningMetadata;
 }
 
 function getUpdatesCodeSigningMetadataStringified(config) {

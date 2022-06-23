@@ -9,8 +9,8 @@ const BACKGROUND_COLOR_KEY = 'RCTRootViewBackgroundColor';
 
 const debug = require('debug')('expo:system-ui:plugin:ios');
 
-export const withIosRootViewBackgroundColor: ConfigPlugin = config => {
-  config = withInfoPlist(config, config => {
+export const withIosRootViewBackgroundColor: ConfigPlugin = (config) => {
+  config = withInfoPlist(config, (config) => {
     if (shouldUseLegacyBehavior(config)) {
       config.modResults = setRootViewBackgroundColor(config, config.modResults);
     } else {

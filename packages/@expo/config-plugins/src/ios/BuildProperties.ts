@@ -27,7 +27,7 @@ export function createBuildPodfilePropsConfigPlugin<SourceConfigType extends Bui
     config,
     sourceConfig
   ) =>
-    withPodfileProperties(config, config => {
+    withPodfileProperties(config, (config) => {
       config.modResults = updateIosBuildPropertiesFromConfig(
         (sourceConfig ?? config) as SourceConfigType,
         config.modResults,
@@ -50,7 +50,7 @@ export const withJsEnginePodfileProps = createBuildPodfilePropsConfigPlugin<Expo
   [
     {
       propName: 'expo.jsEngine',
-      propValueGetter: config => config.ios?.jsEngine ?? config.jsEngine ?? 'jsc',
+      propValueGetter: (config) => config.ios?.jsEngine ?? config.jsEngine ?? 'jsc',
     },
   ],
   'withJsEnginePodfileProps'

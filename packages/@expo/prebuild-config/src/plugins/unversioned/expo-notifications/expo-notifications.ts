@@ -8,7 +8,7 @@ import {
 } from './withAndroidNotifications';
 
 const withNotificationsEntitlement: ConfigPlugin<'production' | 'development'> = (config, mode) => {
-  return withEntitlementsPlist(config, config => {
+  return withEntitlementsPlist(config, (config) => {
     config.modResults['aps-environment'] = mode;
     return config;
   });

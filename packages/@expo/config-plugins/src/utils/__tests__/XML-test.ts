@@ -28,7 +28,7 @@ describe(readResourcesXMLAsync, () => {
   it(`can write the escaped name and then read it back in unescaped format`, async () => {
     const stringsPath = '/app/android/app/src/main/res/values/strings.xml';
     let stringsJSON = await readResourcesXMLAsync({ path: stringsPath });
-    expect(stringsJSON.resources.string.filter(e => e.$.name === 'app_name')[0]._).toBe(
+    expect(stringsJSON.resources.string.filter((e) => e.$.name === 'app_name')[0]._).toBe(
       `exp'o &bo<y>'`
     );
     stringsJSON = setStringItem(
@@ -41,7 +41,7 @@ describe(readResourcesXMLAsync, () => {
     expect(format(stringsJSON).includes(`\\'E&amp;x&lt;p&gt;o\\"\\@\\n`)).toBe(true);
 
     // And parsed in unescaped form
-    expect(stringsJSON.resources.string.filter(e => e.$.name === 'app_name')[0]._).toBe(
+    expect(stringsJSON.resources.string.filter((e) => e.$.name === 'app_name')[0]._).toBe(
       `\\'E&x<p>o\\"\\@\\n`
     );
   });

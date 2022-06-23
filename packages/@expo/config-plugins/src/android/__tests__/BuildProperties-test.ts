@@ -73,7 +73,7 @@ describe(updateAndroidBuildPropertiesFromConfig, () => {
     const configToPropertyRules = [
       {
         propName: 'expo.jsEngine',
-        propValueGetter: config => config.android?.jsEngine ?? config.jsEngine ?? 'NOTFOUND',
+        propValueGetter: (config) => config.android?.jsEngine ?? config.jsEngine ?? 'NOTFOUND',
       },
     ];
 

@@ -135,13 +135,15 @@ export function findSchemePaths(projectRoot: string): string[] {
 
 export function findSchemeNames(projectRoot: string): string[] {
   const schemePaths = findSchemePaths(projectRoot);
-  return schemePaths.map(schemePath => path.parse(schemePath).name);
+  return schemePaths.map((schemePath) => path.parse(schemePath).name);
 }
 
 export function getAllXcodeProjectPaths(projectRoot: string): string[] {
   const iosFolder = 'ios';
   const pbxprojPaths = globSync('ios/**/*.xcodeproj', { cwd: projectRoot, ignore: ignoredPaths })
-    .filter(project => !/test|example|sample/i.test(project) || path.dirname(project) === iosFolder)
+    .filter(
+      (project) => !/test|example|sample/i.test(project) || path.dirname(project) === iosFolder
+    )
     // sort alphabetically to ensure this works the same across different devices (Fail in CI (linux) without this)
     .sort()
     .sort((a, b) => {
@@ -159,7 +161,7 @@ export function getAllXcodeProjectPaths(projectRoot: string): string[] {
       `Failed to locate the ios/*.xcodeproj files relative to path "${projectRoot}".`
     );
   }
-  return pbxprojPaths.map(value => path.join(projectRoot, value));
+  return pbxprojPaths.map((value) => path.join(projectRoot, value));
 }
 
 /**
@@ -184,8 +186,8 @@ export function getXcodeProjectPath(projectRoot: string): string {
 export function getAllPBXProjectPaths(projectRoot: string): string[] {
   const projectPaths = getAllXcodeProjectPaths(projectRoot);
   const paths = projectPaths
-    .map(value => path.join(value, 'project.pbxproj'))
-    .filter(value => existsSync(value));
+    .map((value) => path.join(value, 'project.pbxproj'))
+    .filter((value) => existsSync(value));
 
   if (!paths.length) {
     throw new UnexpectedError(
@@ -284,7 +286,7 @@ function warnMultipleFiles({
   extra: string[];
 }) {
   const usingPath = projectRoot ? path.relative(projectRoot, using) : using;
-  const extraPaths = projectRoot ? extra.map(v => path.relative(projectRoot, v)) : extra;
+  const extraPaths = projectRoot ? extra.map((v) => path.relative(projectRoot, v)) : extra;
   addWarningIOS(
     `paths-${tag}`,
     `Found multiple ${fileName} file paths, using "${usingPath}". Ignored paths: ${JSON.stringify(

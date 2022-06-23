@@ -19,7 +19,7 @@ export async function getAutolinkedPackagesAsync(
   const searchPaths = await resolveSearchPathsAsync(null, projectRoot);
 
   const platformPaths = await Promise.all(
-    platforms.map(platform =>
+    platforms.map((platform) =>
       findModulesAsync({
         platform,
         searchPaths,
@@ -32,7 +32,7 @@ export async function getAutolinkedPackagesAsync(
 }
 
 export function resolvePackagesList(platformPaths: Record<string, any>[]) {
-  const allPlatformPaths = platformPaths.map(paths => Object.keys(paths)).flat();
+  const allPlatformPaths = platformPaths.map((paths) => Object.keys(paths)).flat();
 
   const uniquePaths = [...new Set(allPlatformPaths)];
 

@@ -36,7 +36,7 @@ describe(setBitcodeWithConfig, () => {
   });
 
   it('enables bitcode for everything', async () => {
-    setBitcodeEnabledForRoot({ ios: { bitcode: true } }, projectRoot, project => {
+    setBitcodeEnabledForRoot({ ios: { bitcode: true } }, projectRoot, (project) => {
       const configurations = getConfigurations(project);
       for (const [, configuration] of configurations) {
         expect(configuration.buildSettings.ENABLE_BITCODE).toBe('YES');
@@ -45,7 +45,7 @@ describe(setBitcodeWithConfig, () => {
   });
 
   it('disables bitcode for everything', async () => {
-    setBitcodeEnabledForRoot({ ios: { bitcode: false } }, projectRoot, project => {
+    setBitcodeEnabledForRoot({ ios: { bitcode: false } }, projectRoot, (project) => {
       const configurations = getConfigurations(project);
       for (const [, configuration] of configurations) {
         expect(configuration.buildSettings.ENABLE_BITCODE).toBe('NO');
@@ -54,7 +54,7 @@ describe(setBitcodeWithConfig, () => {
   });
 
   it('enables bitcode on specific configuration', async () => {
-    setBitcodeEnabledForRoot({ ios: { bitcode: 'Debug' } }, projectRoot, project => {
+    setBitcodeEnabledForRoot({ ios: { bitcode: 'Debug' } }, projectRoot, (project) => {
       const configurations = getConfigurations(project);
       for (const [, configuration] of configurations) {
         // ensure all others are disabled

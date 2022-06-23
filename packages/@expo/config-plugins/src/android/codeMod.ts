@@ -75,7 +75,7 @@ export function appendContentsInsideDeclarationBlock(
 
 export function addImports(source: string, imports: string[], isJava: boolean): string {
   const lines = source.split('\n');
-  const lineIndexWithPackageDeclaration = lines.findIndex(line => line.match(/^package .*;?$/));
+  const lineIndexWithPackageDeclaration = lines.findIndex((line) => line.match(/^package .*;?$/));
   for (const javaImport of imports) {
     if (!source.includes(javaImport)) {
       const importStatement = `import ${javaImport}${isJava ? ';' : ''}`;

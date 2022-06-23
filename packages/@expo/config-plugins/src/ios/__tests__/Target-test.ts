@@ -19,10 +19,8 @@ describe(findApplicationTargetWithDependenciesAsync, () => {
           path.join(__dirname, 'fixtures/project-multitarget.pbxproj'),
           'utf-8'
         ),
-        'ios/testproject.xcodeproj/xcshareddata/xcschemes/multitarget.xcscheme': originalFs.readFileSync(
-          path.join(__dirname, 'fixtures/multitarget.xcscheme'),
-          'utf-8'
-        ),
+        'ios/testproject.xcodeproj/xcshareddata/xcschemes/multitarget.xcscheme':
+          originalFs.readFileSync(path.join(__dirname, 'fixtures/multitarget.xcscheme'), 'utf-8'),
       },
       projectRoot
     );
@@ -45,10 +43,8 @@ describe(findApplicationTargetWithDependenciesAsync, () => {
           path.join(__dirname, 'fixtures/watch.pbxproj'),
           'utf-8'
         ),
-        'ios/easwatchtest.xcodeproj/xcshareddata/xcschemes/easwatchtest.xcscheme': originalFs.readFileSync(
-          path.join(__dirname, 'fixtures/watch.xcscheme'),
-          'utf-8'
-        ),
+        'ios/easwatchtest.xcodeproj/xcshareddata/xcschemes/easwatchtest.xcscheme':
+          originalFs.readFileSync(path.join(__dirname, 'fixtures/watch.xcscheme'), 'utf-8'),
       },
       projectRoot
     );

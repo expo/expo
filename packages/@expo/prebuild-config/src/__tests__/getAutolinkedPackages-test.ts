@@ -88,7 +88,7 @@ describe(shouldSkipAutoPlugin, () => {
             autolinkedModules: ['foobar'],
           },
         },
-        [c => c, null]
+        [(c) => c, null]
       )
     ).toBe(false);
   });

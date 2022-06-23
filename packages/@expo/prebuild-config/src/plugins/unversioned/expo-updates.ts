@@ -16,7 +16,7 @@ export const withExpoUpdates: ConfigPlugin<{ expoUsername: string }> = (config, 
     // Pass props to the static plugin if it exists.
     plugin: [packageName, props],
     // If the static plugin isn't found, use the unversioned one.
-    fallback: createRunOncePlugin(config => withUnversionedUpdates(config, props), packageName),
+    fallback: createRunOncePlugin((config) => withUnversionedUpdates(config, props), packageName),
   });
 };
 

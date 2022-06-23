@@ -11,7 +11,7 @@ import { withAndroidSplashLegacyMainActivity } from './withAndroidSplashLegacyMa
 import { withAndroidSplashStrings } from './withAndroidSplashStrings';
 import { withAndroidSplashStyles } from './withAndroidSplashStyles';
 
-export const withAndroidSplashScreen: ConfigPlugin = config => {
+export const withAndroidSplashScreen: ConfigPlugin = (config) => {
   const splashConfig = getAndroidSplashConfig(config);
 
   // Update the android status bar to match the splash screen

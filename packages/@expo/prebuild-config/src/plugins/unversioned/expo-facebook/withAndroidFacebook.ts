@@ -23,15 +23,15 @@ const META_AUTO_INIT = 'com.facebook.sdk.AutoInitEnabled';
 const META_AUTO_LOG_APP_EVENTS = 'com.facebook.sdk.AutoLogAppEventsEnabled';
 const META_AD_ID_COLLECTION = 'com.facebook.sdk.AdvertiserIDCollectionEnabled';
 
-export const withFacebookAppIdString: ConfigPlugin = config => {
-  return withStringsXml(config, config => {
+export const withFacebookAppIdString: ConfigPlugin = (config) => {
+  return withStringsXml(config, (config) => {
     config.modResults = applyFacebookAppIdString(config, config.modResults);
     return config;
   });
 };
 
-export const withFacebookManifest: ConfigPlugin = config => {
-  return withAndroidManifest(config, config => {
+export const withFacebookManifest: ConfigPlugin = (config) => {
+  return withAndroidManifest(config, (config) => {
     config.modResults = setFacebookConfig(config, config.modResults);
     return config;
   });
@@ -128,7 +128,7 @@ function ensureFacebookActivity({
 }) {
   if (Array.isArray(mainApplication.activity)) {
     // Remove all Facebook CustomTabActivities first
-    mainApplication.activity = mainApplication.activity.filter(activity => {
+    mainApplication.activity = mainApplication.activity.filter((activity) => {
       return activity.$?.['android:name'] !== CUSTOM_TAB_ACTIVITY;
     });
   } else {

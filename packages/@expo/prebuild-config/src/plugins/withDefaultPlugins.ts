@@ -213,7 +213,7 @@ const withOptionalLegacyPlugins: ConfigPlugin<(StaticPlugin | string)[]> = (conf
       _isLegacyPlugin: true,
       plugin,
       // If a plugin doesn't exist, do nothing.
-      fallback: config => config,
+      fallback: (config) => config,
     });
   }, config);
 };

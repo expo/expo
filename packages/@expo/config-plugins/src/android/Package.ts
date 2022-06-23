@@ -19,8 +19,8 @@ export const withPackageManifest = createAndroidManifestPlugin(
   'withPackageManifest'
 );
 
-export const withPackageGradle: ConfigPlugin = config => {
-  return withAppBuildGradle(config, config => {
+export const withPackageGradle: ConfigPlugin = (config) => {
+  return withAppBuildGradle(config, (config) => {
     if (config.modResults.language === 'groovy') {
       config.modResults.contents = setPackageInBuildGradle(config, config.modResults.contents);
     } else {
@@ -33,10 +33,10 @@ export const withPackageGradle: ConfigPlugin = config => {
   });
 };
 
-export const withPackageRefactor: ConfigPlugin = config => {
+export const withPackageRefactor: ConfigPlugin = (config) => {
   return withDangerousMod(config, [
     'android',
-    async config => {
+    async (config) => {
       await renamePackageOnDisk(config, config.modRequest.projectRoot);
       return config;
     },
@@ -177,7 +177,7 @@ export async function renamePackageOnDiskForType({
   fs.mkdirSync(newPackagePath, { recursive: true });
 
   // Move everything from the old directory over
-  globSync('**/*', { cwd: currentPackagePath }).forEach(relativePath => {
+  globSync('**/*', { cwd: currentPackagePath }).forEach((relativePath) => {
     const filepath = path.join(currentPackagePath, relativePath);
     if (fs.lstatSync(filepath).isFile()) {
       moveFileSync(filepath, path.join(newPackagePath, relativePath));

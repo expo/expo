@@ -35,7 +35,7 @@ const IC_LAUNCHER_FOREGROUND_PNG = 'ic_launcher_foreground.png';
 const IC_LAUNCHER_XML = 'ic_launcher.xml';
 const IC_LAUNCHER_ROUND_XML = 'ic_launcher_round.xml';
 
-export const withAndroidIcons: ConfigPlugin = config => {
+export const withAndroidIcons: ConfigPlugin = (config) => {
   const { foregroundImage, backgroundColor, backgroundImage } = getAdaptiveIcon(config);
   const icon = foregroundImage ?? getIcon(config);
 
@@ -48,7 +48,7 @@ export const withAndroidIcons: ConfigPlugin = config => {
   config = withAndroidAdaptiveIconColors(config, backgroundColor);
   return withDangerousMod(config, [
     'android',
-    async config => {
+    async (config) => {
       await setIconAsync(config.modRequest.projectRoot, {
         icon,
         backgroundColor,
@@ -76,7 +76,7 @@ export function setRoundIconManifest(
 }
 
 const withAndroidAdaptiveIconColors: ConfigPlugin<string | null> = (config, backgroundColor) => {
-  return withAndroidColors(config, config => {
+  return withAndroidColors(config, (config) => {
     config.modResults = setBackgroundColor(backgroundColor ?? '#FFFFFF', config.modResults);
     return config;
   });
@@ -234,7 +234,7 @@ async function createAdaptiveIconXmlFiles(
   } else {
     // Remove the xml if the icon switches from adaptive to standard.
     await Promise.all(
-      [launcherPath, launcherRoundPath].map(async path => {
+      [launcherPath, launcherRoundPath].map(async (path) => {
         if (fs.existsSync(path)) {
           return fs.remove(path);
         }
@@ -307,7 +307,7 @@ function iterateDpiValues(
   callback: (value: { dpiFolder: string; folderName: string; scale: number }) => Promise<void>
 ) {
   return Promise.all(
-    Object.values(dpiValues).map(value =>
+    Object.values(dpiValues).map((value) =>
       callback({
         dpiFolder: path.resolve(projectRoot, ANDROID_RES_PATH, value.folderName),
         ...value,

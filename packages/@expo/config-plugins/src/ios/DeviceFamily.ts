@@ -5,8 +5,8 @@ import { ConfigPlugin } from '../Plugin.types';
 import { withXcodeProject } from '../plugins/ios-plugins';
 import { addWarningIOS } from '../utils/warnings';
 
-export const withDeviceFamily: ConfigPlugin = config => {
-  return withXcodeProject(config, async config => {
+export const withDeviceFamily: ConfigPlugin = (config) => {
+  return withXcodeProject(config, async (config) => {
     config.modResults = await setDeviceFamily(config, {
       project: config.modResults,
     });

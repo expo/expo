@@ -6,7 +6,13 @@ import { XcodeProject } from 'xcode';
  * @param param1
  * @returns
  */
-export declare function getInfoPlistPathFromPbxproj(projectRootOrProject: string | XcodeProject, { targetName, buildConfiguration, }?: {
+export declare function getInfoPlistPathFromPbxproj(
+  projectRootOrProject: string | XcodeProject,
+  {
+    targetName,
+    buildConfiguration,
+  }?: {
     targetName?: string;
     buildConfiguration?: string | 'Release' | 'Debug';
-}): string | null;
+  }
+): string | null;

@@ -1,7 +1,7 @@
-"use strict";
+'use strict';
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
+Object.defineProperty(exports, '__esModule', {
+  value: true,
 });
 exports.addBuildSourceFileToGroup = addBuildSourceFileToGroup;
 exports.addFileToGroupAndLink = addFileToGroupAndLink;
@@ -25,7 +25,7 @@ exports.sanitizedName = sanitizedName;
 exports.unquote = unquote;
 
 function _assert() {
-  const data = _interopRequireDefault(require("assert"));
+  const data = _interopRequireDefault(require('assert'));
 
   _assert = function () {
     return data;
@@ -35,7 +35,7 @@ function _assert() {
 }
 
 function _path() {
-  const data = _interopRequireDefault(require("path"));
+  const data = _interopRequireDefault(require('path'));
 
   _path = function () {
     return data;
@@ -45,7 +45,7 @@ function _path() {
 }
 
 function _slugify() {
-  const data = _interopRequireDefault(require("slugify"));
+  const data = _interopRequireDefault(require('slugify'));
 
   _slugify = function () {
     return data;
@@ -55,7 +55,7 @@ function _slugify() {
 }
 
 function _xcode() {
-  const data = _interopRequireDefault(require("xcode"));
+  const data = _interopRequireDefault(require('xcode'));
 
   _xcode = function () {
     return data;
@@ -65,7 +65,7 @@ function _xcode() {
 }
 
 function _pbxFile() {
-  const data = _interopRequireDefault(require("xcode/lib/pbxFile"));
+  const data = _interopRequireDefault(require('xcode/lib/pbxFile'));
 
   _pbxFile = function () {
     return data;
@@ -75,7 +75,7 @@ function _pbxFile() {
 }
 
 function _warnings() {
-  const data = require("../../utils/warnings");
+  const data = require('../../utils/warnings');
 
   _warnings = function () {
     return data;
@@ -85,7 +85,7 @@ function _warnings() {
 }
 
 function Paths() {
-  const data = _interopRequireWildcard(require("../Paths"));
+  const data = _interopRequireWildcard(require('../Paths'));
 
   Paths = function () {
     return data;
@@ -95,7 +95,7 @@ function Paths() {
 }
 
 function _string() {
-  const data = require("./string");
+  const data = require('./string');
 
   _string = function () {
     return data;
@@ -104,11 +104,48 @@ function _string() {
   return data;
 }
 
-function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
+function _getRequireWildcardCache(nodeInterop) {
+  if (typeof WeakMap !== 'function') return null;
+  const cacheBabelInterop = new WeakMap();
+  const cacheNodeInterop = new WeakMap();
+  return (_getRequireWildcardCache = function (nodeInterop) {
+    return nodeInterop ? cacheNodeInterop : cacheBabelInterop;
+  })(nodeInterop);
+}
 
-function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+function _interopRequireWildcard(obj, nodeInterop) {
+  if (!nodeInterop && obj && obj.__esModule) {
+    return obj;
+  }
+  if (obj === null || (typeof obj !== 'object' && typeof obj !== 'function')) {
+    return { default: obj };
+  }
+  const cache = _getRequireWildcardCache(nodeInterop);
+  if (cache && cache.has(obj)) {
+    return cache.get(obj);
+  }
+  const newObj = {};
+  const hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor;
+  for (const key in obj) {
+    if (key !== 'default' && Object.prototype.hasOwnProperty.call(obj, key)) {
+      const desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null;
+      if (desc && (desc.get || desc.set)) {
+        Object.defineProperty(newObj, key, desc);
+      } else {
+        newObj[key] = obj[key];
+      }
+    }
+  }
+  newObj.default = obj;
+  if (cache) {
+    cache.set(obj, newObj);
+  }
+  return newObj;
+}
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(obj) {
+  return obj && obj.__esModule ? obj : { default: obj };
+}
 
 function getProjectName(projectRoot) {
   const sourceRoot = Paths().getSourceRoot(projectRoot);
@@ -127,19 +164,24 @@ function resolvePathOrProject(projectRootOrProject) {
   return projectRootOrProject;
 } // TODO: come up with a better solution for using app.json expo.name in various places
 
-
 function sanitizedName(name) {
   // Default to the name `app` when every safe character has been sanitized
-  return sanitizedNameForProjects(name) || sanitizedNameForProjects((0, _slugify().default)(name)) || 'app';
+  return (
+    sanitizedNameForProjects(name) ||
+    sanitizedNameForProjects((0, _slugify().default)(name)) ||
+    'app'
+  );
 }
 
 function sanitizedNameForProjects(name) {
-  return name.replace(/[\W_]+/g, '').normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  return name
+    .replace(/[\W_]+/g, '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '');
 } // TODO: it's silly and kind of fragile that we look at app config to determine
 // the ios project paths. Overall this function needs to be revamped, just a
 // placeholder for now! Make this more robust when we support applying config
 // at any time (currently it's only applied on eject).
-
 
 function getHackyProjectName(projectRoot, config) {
   // Attempt to get the current ios folder name (apply).
@@ -153,12 +195,9 @@ function getHackyProjectName(projectRoot, config) {
   }
 }
 
-function createProjectFileForGroup({
-  filepath,
-  group
-}) {
+function createProjectFileForGroup({ filepath, group }) {
   const file = new (_pbxFile().default)(filepath);
-  const conflictingFile = group.children.find(child => child.comment === file.basename);
+  const conflictingFile = group.children.find((child) => child.comment === file.basename);
 
   if (conflictingFile) {
     // This can happen when a file like the GoogleService-Info.plist needs to be added and the eject command is run twice.
@@ -173,7 +212,6 @@ function createProjectFileForGroup({
  * This is akin to creating a new code file in Xcode with `⌘+n`.
  */
 
-
 function addResourceFileToGroup({
   filepath,
   groupName,
@@ -181,7 +219,7 @@ function addResourceFileToGroup({
   isBuildFile,
   project,
   verbose,
-  targetUuid
+  targetUuid,
 }) {
   return addFileToGroupAndLink({
     filepath,
@@ -190,10 +228,7 @@ function addResourceFileToGroup({
     verbose,
     targetUuid,
 
-    addFileToProject({
-      project,
-      file
-    }) {
+    addFileToProject({ project, file }) {
       project.addToPbxFileReferenceSection(file);
 
       if (isBuildFile) {
@@ -201,8 +236,7 @@ function addResourceFileToGroup({
       }
 
       project.addToPbxResourcesBuildPhase(file);
-    }
-
+    },
   });
 }
 /**
@@ -210,14 +244,7 @@ function addResourceFileToGroup({
  * This is akin to creating a new code file in Xcode with `⌘+n`.
  */
 
-
-function addBuildSourceFileToGroup({
-  filepath,
-  groupName,
-  project,
-  verbose,
-  targetUuid
-}) {
+function addBuildSourceFileToGroup({ filepath, groupName, project, verbose, targetUuid }) {
   return addFileToGroupAndLink({
     filepath,
     groupName,
@@ -225,20 +252,15 @@ function addBuildSourceFileToGroup({
     verbose,
     targetUuid,
 
-    addFileToProject({
-      project,
-      file
-    }) {
+    addFileToProject({ project, file }) {
       project.addToPbxFileReferenceSection(file);
       project.addToPbxBuildFileSection(file);
       project.addToPbxSourcesBuildPhase(file);
-    }
-
+    },
   });
 } // TODO(brentvatne): I couldn't figure out how to do this with an existing
 // higher level function exposed by the xcode library, but we should find out how to do
 // that and replace this with it
-
 
 function addFileToGroupAndLink({
   filepath,
@@ -246,19 +268,22 @@ function addFileToGroupAndLink({
   project,
   verbose,
   addFileToProject,
-  targetUuid
+  targetUuid,
 }) {
   const group = pbxGroupByPathOrAssert(project, groupName);
   const file = createProjectFileForGroup({
     filepath,
-    group
+    group,
   });
 
   if (!file) {
     if (verbose) {
       // This can happen when a file like the GoogleService-Info.plist needs to be added and the eject command is run twice.
       // Not much we can do here since it might be a conflicting file.
-      (0, _warnings().addWarningIOS)('ios-xcode-project', `Skipped adding duplicate file "${filepath}" to PBXGroup named "${groupName}"`);
+      (0, _warnings().addWarningIOS)(
+        'ios-xcode-project',
+        `Skipped adding duplicate file "${filepath}" to PBXGroup named "${groupName}"`
+      );
     }
 
     return project;
@@ -268,29 +293,35 @@ function addFileToGroupAndLink({
     file.target = targetUuid;
   } else {
     const applicationNativeTarget = project.getTarget('com.apple.product-type.application');
-    file.target = applicationNativeTarget === null || applicationNativeTarget === void 0 ? void 0 : applicationNativeTarget.uuid;
+    file.target =
+      applicationNativeTarget === null || applicationNativeTarget === void 0
+        ? void 0
+        : applicationNativeTarget.uuid;
   }
 
   file.uuid = project.generateUuid();
   file.fileRef = project.generateUuid();
   addFileToProject({
     project,
-    file
+    file,
   });
   group.children.push({
     value: file.fileRef,
-    comment: file.basename
+    comment: file.basename,
   });
   return project;
 }
 
-function getApplicationNativeTarget({
-  project,
-  projectName
-}) {
+function getApplicationNativeTarget({ project, projectName }) {
   const applicationNativeTarget = project.getTarget('com.apple.product-type.application');
-  (0, _assert().default)(applicationNativeTarget, `Couldn't locate application PBXNativeTarget in '.xcodeproj' file.`);
-  (0, _assert().default)(String(applicationNativeTarget.target.name) === projectName, `Application native target name mismatch. Expected ${projectName}, but found ${applicationNativeTarget.target.name}.`);
+  (0, _assert().default)(
+    applicationNativeTarget,
+    `Couldn't locate application PBXNativeTarget in '.xcodeproj' file.`
+  );
+  (0, _assert().default)(
+    String(applicationNativeTarget.target.name) === projectName,
+    `Application native target name mismatch. Expected ${projectName}, but found ${applicationNativeTarget.target.name}.`
+  );
   return applicationNativeTarget;
 }
 /**
@@ -300,18 +331,13 @@ function getApplicationNativeTarget({
  * @param framework String ending in `.framework`, i.e. `StoreKit.framework`
  */
 
-
-function addFramework({
-  project,
-  projectName,
-  framework
-}) {
+function addFramework({ project, projectName, framework }) {
   const target = getApplicationNativeTarget({
     project,
-    projectName
+    projectName,
   });
   return project.addFramework(framework, {
-    target: target.uuid
+    target: target.uuid,
   });
 }
 
@@ -325,25 +351,26 @@ const findGroup = (group, name) => {
     return undefined;
   }
 
-  return group.children.find(group => group.comment === name);
+  return group.children.find((group) => group.comment === name);
 };
 
 function findGroupInsideGroup(project, group, name) {
   const foundGroup = findGroup(group, name);
 
   if (foundGroup) {
-    var _project$getPBXGroupB;
+    let _project$getPBXGroupB;
 
-    return (_project$getPBXGroupB = project.getPBXGroupByKey(foundGroup.value)) !== null && _project$getPBXGroupB !== void 0 ? _project$getPBXGroupB : null;
+    return (_project$getPBXGroupB = project.getPBXGroupByKey(foundGroup.value)) !== null &&
+      _project$getPBXGroupB !== void 0
+      ? _project$getPBXGroupB
+      : null;
   }
 
   return null;
 }
 
 function pbxGroupByPathOrAssert(project, path) {
-  const {
-    firstProject
-  } = project.getFirstProject();
+  const { firstProject } = project.getFirstProject();
   let group = project.getPBXGroupByKey(firstProject.mainGroup);
   const components = splitPath(path);
 
@@ -365,24 +392,20 @@ function pbxGroupByPathOrAssert(project, path) {
 }
 
 function ensureGroupRecursively(project, filepath) {
-  var _topMostGroup;
+  let _topMostGroup;
 
   const components = splitPath(filepath);
 
-  const hasChild = (group, name) => group.children.find(({
-    comment
-  }) => comment === name);
+  const hasChild = (group, name) => group.children.find(({ comment }) => comment === name);
 
-  const {
-    firstProject
-  } = project.getFirstProject();
+  const { firstProject } = project.getFirstProject();
   let topMostGroup = project.getPBXGroupByKey(firstProject.mainGroup);
 
   for (const pathComponent of components) {
     if (topMostGroup && !hasChild(topMostGroup, pathComponent)) {
       topMostGroup.children.push({
         comment: pathComponent,
-        value: project.pbxCreateGroup(pathComponent, '""')
+        value: project.pbxCreateGroup(pathComponent, '""'),
       });
     }
 
@@ -394,7 +417,6 @@ function ensureGroupRecursively(project, filepath) {
 /**
  * Get the pbxproj for the given path
  */
-
 
 function getPbxproj(projectRoot) {
   const projectPath = Paths().getPBXProjectPath(projectRoot);
@@ -410,7 +432,6 @@ function getPbxproj(projectRoot) {
  * @param project
  */
 
-
 function getProductName(project) {
   let productName = '$(TARGET_NAME)';
 
@@ -423,9 +444,16 @@ function getProductName(project) {
   } catch {}
 
   if (productName === '$(TARGET_NAME)') {
-    var _project$getFirstTarg, _project$getFirstTarg2;
+    let _project$getFirstTarg, _project$getFirstTarg2;
 
-    const targetName = (_project$getFirstTarg = project.getFirstTarget()) === null || _project$getFirstTarg === void 0 ? void 0 : (_project$getFirstTarg2 = _project$getFirstTarg.firstTarget) === null || _project$getFirstTarg2 === void 0 ? void 0 : _project$getFirstTarg2.productName;
+    const targetName =
+      (_project$getFirstTarg = project.getFirstTarget()) === null ||
+      _project$getFirstTarg === void 0
+        ? void 0
+        : (_project$getFirstTarg2 = _project$getFirstTarg.firstTarget) === null ||
+          _project$getFirstTarg2 === void 0
+        ? void 0
+        : _project$getFirstTarg2.productName;
     productName = targetName !== null && targetName !== void 0 ? targetName : productName;
   }
 
@@ -443,19 +471,29 @@ function getXCConfigurationListEntries(project) {
 
 function getBuildConfigurationsForListId(project, configurationListId) {
   const configurationListEntries = getXCConfigurationListEntries(project);
-  const [, configurationList] = configurationListEntries.find(([key]) => key === configurationListId);
-  const buildConfigurations = configurationList.buildConfigurations.map(i => i.value);
-  return Object.entries(project.pbxXCBuildConfigurationSection()).filter(isNotComment).filter(isBuildConfig).filter(([key]) => buildConfigurations.includes(key));
+  const [, configurationList] = configurationListEntries.find(
+    ([key]) => key === configurationListId
+  );
+  const buildConfigurations = configurationList.buildConfigurations.map((i) => i.value);
+  return Object.entries(project.pbxXCBuildConfigurationSection())
+    .filter(isNotComment)
+    .filter(isBuildConfig)
+    .filter(([key]) => buildConfigurations.includes(key));
 }
 
-function getBuildConfigurationForListIdAndName(project, {
-  configurationListId,
-  buildConfiguration
-}) {
-  const xcBuildConfigurationEntry = getBuildConfigurationsForListId(project, configurationListId).find(i => (0, _string().trimQuotes)(i[1].name) === buildConfiguration);
+function getBuildConfigurationForListIdAndName(
+  project,
+  { configurationListId, buildConfiguration }
+) {
+  const xcBuildConfigurationEntry = getBuildConfigurationsForListId(
+    project,
+    configurationListId
+  ).find((i) => (0, _string().trimQuotes)(i[1].name) === buildConfiguration);
 
   if (!xcBuildConfigurationEntry) {
-    throw new Error(`Build configuration '${buildConfiguration}' does not exist in list with id '${configurationListId}'`);
+    throw new Error(
+      `Build configuration '${buildConfiguration}' does not exist in list with id '${configurationListId}'`
+    );
   }
 
   return xcBuildConfigurationEntry;
@@ -473,15 +511,19 @@ function isNotComment([key]) {
   return !key.endsWith(`_comment`);
 } // Remove surrounding double quotes if they exist.
 
-
 function unquote(value) {
-  var _value$match$, _value$match;
+  let _value$match$, _value$match;
 
   // projects with numeric names will fail due to a bug in the xcode package.
   if (typeof value === 'number') {
     value = String(value);
   }
 
-  return (_value$match$ = (_value$match = value.match(/^"(.*)"$/)) === null || _value$match === void 0 ? void 0 : _value$match[1]) !== null && _value$match$ !== void 0 ? _value$match$ : value;
+  return (_value$match$ =
+    (_value$match = value.match(/^"(.*)"$/)) === null || _value$match === void 0
+      ? void 0
+      : _value$match[1]) !== null && _value$match$ !== void 0
+    ? _value$match$
+    : value;
 }
 //# sourceMappingURL=Xcodeproj.js.map

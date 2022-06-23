@@ -1,7 +1,7 @@
-"use strict";
+'use strict';
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
+Object.defineProperty(exports, '__esModule', {
+  value: true,
 });
 exports.getAllowBackup = getAllowBackup;
 exports.getAllowBackupFromManifest = getAllowBackupFromManifest;
@@ -9,7 +9,7 @@ exports.setAllowBackup = setAllowBackup;
 exports.withAllowBackup = void 0;
 
 function _androidPlugins() {
-  const data = require("../plugins/android-plugins");
+  const data = require('../plugins/android-plugins');
 
   _androidPlugins = function () {
     return data;
@@ -19,7 +19,7 @@ function _androidPlugins() {
 }
 
 function _Manifest() {
-  const data = require("./Manifest");
+  const data = require('./Manifest');
 
   _Manifest = function () {
     return data;
@@ -28,15 +28,23 @@ function _Manifest() {
   return data;
 }
 
-const withAllowBackup = (0, _androidPlugins().createAndroidManifestPlugin)(setAllowBackup, 'withAllowBackup');
+const withAllowBackup = (0, _androidPlugins().createAndroidManifestPlugin)(
+  setAllowBackup,
+  'withAllowBackup'
+);
 exports.withAllowBackup = withAllowBackup;
 
 function getAllowBackup(config) {
-  var _config$android$allow, _config$android;
+  let _config$android$allow, _config$android;
 
   // Defaults to true.
   // https://docs.expo.dev/versions/latest/config/app/#allowbackup
-  return (_config$android$allow = (_config$android = config.android) === null || _config$android === void 0 ? void 0 : _config$android.allowBackup) !== null && _config$android$allow !== void 0 ? _config$android$allow : true;
+  return (_config$android$allow =
+    (_config$android = config.android) === null || _config$android === void 0
+      ? void 0
+      : _config$android.allowBackup) !== null && _config$android$allow !== void 0
+    ? _config$android$allow
+    : true;
 }
 
 function setAllowBackup(config, androidManifest) {

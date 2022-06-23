@@ -10,8 +10,8 @@ function getGeneratedSectionIndexes(
   tag: string
 ): { contents: string[]; start: number; end: number } {
   const contents = src.split('\n');
-  const start = contents.findIndex(line => line.includes(`@generated begin ${tag}`));
-  const end = contents.findIndex(line => line.includes(`@generated end ${tag}`));
+  const start = contents.findIndex((line) => line.includes(`@generated begin ${tag}`));
+  const end = contents.findIndex((line) => line.includes(`@generated end ${tag}`));
 
   return { contents, start, end };
 }
@@ -77,7 +77,7 @@ export function removeContents({ src, tag }: { src: string; tag: string }): Merg
 function addLines(content: string, find: string | RegExp, offset: number, toAdd: string[]) {
   const lines = content.split('\n');
 
-  let lineIndex = lines.findIndex(line => line.match(find));
+  let lineIndex = lines.findIndex((line) => line.match(find));
   if (lineIndex < 0) {
     const error = new Error(`Failed to match "${find}" in contents:\n${content}`);
     // @ts-ignore

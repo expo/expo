@@ -20,8 +20,8 @@ type MutateInfoPlistAction = (
  * @param action
  */
 export function createInfoPlistPlugin(action: MutateInfoPlistAction, name?: string): ConfigPlugin {
-  const withUnknown: ConfigPlugin = config =>
-    withInfoPlist(config, async config => {
+  const withUnknown: ConfigPlugin = (config) =>
+    withInfoPlist(config, async (config) => {
       config.modResults = await action(config, config.modResults);
       return config;
     });
@@ -42,8 +42,8 @@ export function createInfoPlistPluginWithPropertyGuard(
   },
   name?: string
 ): ConfigPlugin {
-  const withUnknown: ConfigPlugin = config =>
-    withInfoPlist(config, async config => {
+  const withUnknown: ConfigPlugin = (config) =>
+    withInfoPlist(config, async (config) => {
       const existingProperty = settings.expoPropertyGetter
         ? settings.expoPropertyGetter(config)
         : get(config, settings.expoConfigProperty);
@@ -79,8 +79,8 @@ export function createEntitlementsPlugin(
   action: MutateEntitlementsPlistAction,
   name: string
 ): ConfigPlugin {
-  const withUnknown: ConfigPlugin = config =>
-    withEntitlementsPlist(config, async config => {
+  const withUnknown: ConfigPlugin = (config) =>
+    withEntitlementsPlist(config, async (config) => {
       config.modResults = await action(config, config.modResults);
       return config;
     });

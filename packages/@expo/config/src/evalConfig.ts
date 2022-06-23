@@ -71,7 +71,7 @@ function extractLocationFromSyntaxError(
 // An example is a module that includes an import statement.
 function extractImportantStackFromNodeError(error: any): string | null {
   if (isSyntaxError(error)) {
-    const traces = error.stack?.split('\n').filter(line => !line.startsWith('    at '));
+    const traces = error.stack?.split('\n').filter((line) => !line.startsWith('    at '));
     if (!traces) return null;
 
     // Remove redundant line

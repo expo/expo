@@ -112,7 +112,7 @@ export function format(manifest: any, { indentLevel = 2, newline = EOL } = {}): 
  * @param value unescaped Android XML string literal.
  */
 export function escapeAndroidString(value: string): string {
-  value = value.replace(/[\n\r\t'"@]/g, m => {
+  value = value.replace(/[\n\r\t'"@]/g, (m) => {
     switch (m) {
       case '"':
       case "'":

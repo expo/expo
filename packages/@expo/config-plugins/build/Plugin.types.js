@@ -1,35 +1,35 @@
-"use strict";
+'use strict';
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
+Object.defineProperty(exports, '__esModule', {
+  value: true,
 });
-Object.defineProperty(exports, "AndroidManifest", {
+Object.defineProperty(exports, 'AndroidManifest', {
   enumerable: true,
-  get: function () {
+  get() {
     return _Manifest().AndroidManifest;
-  }
+  },
 });
-Object.defineProperty(exports, "ExpoPlist", {
+Object.defineProperty(exports, 'ExpoPlist', {
   enumerable: true,
-  get: function () {
+  get() {
     return _IosConfig().ExpoPlist;
-  }
+  },
 });
-Object.defineProperty(exports, "InfoPlist", {
+Object.defineProperty(exports, 'InfoPlist', {
   enumerable: true,
-  get: function () {
+  get() {
     return _IosConfig().InfoPlist;
-  }
+  },
 });
-Object.defineProperty(exports, "XcodeProject", {
+Object.defineProperty(exports, 'XcodeProject', {
   enumerable: true,
-  get: function () {
+  get() {
     return _xcode().XcodeProject;
-  }
+  },
 });
 
 function _xcode() {
-  const data = require("xcode");
+  const data = require('xcode');
 
   _xcode = function () {
     return data;
@@ -39,7 +39,7 @@ function _xcode() {
 }
 
 function _Manifest() {
-  const data = require("./android/Manifest");
+  const data = require('./android/Manifest');
 
   _Manifest = function () {
     return data;
@@ -49,7 +49,7 @@ function _Manifest() {
 }
 
 function _IosConfig() {
-  const data = require("./ios/IosConfig.types");
+  const data = require('./ios/IosConfig.types');
 
   _IosConfig = function () {
     return data;

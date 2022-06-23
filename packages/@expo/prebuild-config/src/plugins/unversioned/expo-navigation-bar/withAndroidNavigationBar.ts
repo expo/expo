@@ -9,7 +9,7 @@ import { ExpoConfig } from '@expo/config-types';
 
 const NAVIGATION_BAR_COLOR = 'navigationBarColor';
 
-export const withNavigationBar: ConfigPlugin = config => {
+export const withNavigationBar: ConfigPlugin = (config) => {
   const immersiveMode = getNavigationBarImmersiveMode(config);
   if (immersiveMode) {
     // Immersive mode needs to be set programmatically
@@ -25,15 +25,15 @@ export const withNavigationBar: ConfigPlugin = config => {
   return config;
 };
 
-const withNavigationBarColors: ConfigPlugin = config => {
-  return withAndroidColors(config, config => {
+const withNavigationBarColors: ConfigPlugin = (config) => {
+  return withAndroidColors(config, (config) => {
     config.modResults = setNavigationBarColors(config, config.modResults);
     return config;
   });
 };
 
-const withNavigationBarStyles: ConfigPlugin = config => {
-  return withAndroidStyles(config, config => {
+const withNavigationBarStyles: ConfigPlugin = (config) => {
+  return withAndroidStyles(config, (config) => {
     config.modResults = setNavigationBarStyles(config, config.modResults);
     return config;
   });

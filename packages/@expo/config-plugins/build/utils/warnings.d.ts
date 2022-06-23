@@ -23,4 +23,9 @@ export declare function addWarningAndroid(property: string, text: string, link?:
  * @param link Useful link to resources related to the warning
  */
 export declare function addWarningIOS(property: string, text: string, link?: string): void;
-export declare function addWarningForPlatform(platform: ModPlatform, property: string, text: string, link?: string): void;
+export declare function addWarningForPlatform(
+  platform: ModPlatform,
+  property: string,
+  text: string,
+  link?: string
+): void;

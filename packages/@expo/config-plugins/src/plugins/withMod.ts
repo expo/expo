@@ -65,7 +65,7 @@ export function withBaseMod<T>(
       return config;
     }
     // Use a noop mod and continue
-    const noopMod: Mod<T> = config => config;
+    const noopMod: Mod<T> = (config) => config;
     interceptedMod = noopMod;
   }
 
@@ -111,7 +111,7 @@ export function withBaseMod<T>(
     });
 
     if (saveToInternal) {
-      saveToInternalObject(results, platform, mod, (results.modResults as unknown) as JSONObject);
+      saveToInternalObject(results, platform, mod, results.modResults as unknown as JSONObject);
     }
     return results;
   }
@@ -155,7 +155,7 @@ function getDebugPluginStackFromStackTrace(stacktrace?: string): string {
   }
 
   const plugins = treeStackLines
-    .map(first => {
+    .map((first) => {
       // Match the first part of the stack trace against the plugin naming convention
       // "with" followed by a capital letter.
       return (
@@ -165,7 +165,7 @@ function getDebugPluginStackFromStackTrace(stacktrace?: string): string {
       );
     })
     .filter(Boolean)
-    .filter(plugin => {
+    .filter((plugin) => {
       // redundant as all debug logs are captured in withBaseMod
       return !['withMod', 'withBaseMod', 'withExtendedMod'].includes(plugin!);
     });

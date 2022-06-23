@@ -1,7 +1,7 @@
 export interface CodeBlock {
-    start: number;
-    end: number;
-    code: string;
+  start: number;
+  end: number;
+  code: string;
 }
 /**
  * Insert contents at given offset
@@ -10,7 +10,11 @@ export interface CodeBlock {
  * @param offset `srcContents` offset to insert `insertion`
  * @returns updated contents
  */
-export declare function insertContentsAtOffset(srcContents: string, insertion: string, offset: number): string;
+export declare function insertContentsAtOffset(
+  srcContents: string,
+  insertion: string,
+  offset: number
+): string;
 /**
  * Replace contents at given start and end offset
  *
@@ -20,7 +24,12 @@ export declare function insertContentsAtOffset(srcContents: string, insertion: s
  * @param endOffset `contents` end offset for replacement
  * @returns updated contents
  */
-export declare function replaceContentsWithOffset(contents: string, replacement: string, startOffset: number, endOffset: number): string;
+export declare function replaceContentsWithOffset(
+  contents: string,
+  replacement: string,
+  startOffset: number,
+  endOffset: number
+): string;
 /**
  * String.prototype.search() with offset support
  *

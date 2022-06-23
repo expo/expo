@@ -1,7 +1,7 @@
-"use strict";
+'use strict';
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
+Object.defineProperty(exports, '__esModule', {
+  value: true,
 });
 exports.getBundleIdentifier = getBundleIdentifier;
 exports.getBundleIdentifierFromPbxproj = getBundleIdentifierFromPbxproj;
@@ -13,7 +13,7 @@ exports.updateBundleIdentifierForPbxproj = updateBundleIdentifierForPbxproj;
 exports.withBundleIdentifier = void 0;
 
 function _plist() {
-  const data = _interopRequireDefault(require("@expo/plist"));
+  const data = _interopRequireDefault(require('@expo/plist'));
 
   _plist = function () {
     return data;
@@ -23,7 +23,7 @@ function _plist() {
 }
 
 function _assert() {
-  const data = _interopRequireDefault(require("assert"));
+  const data = _interopRequireDefault(require('assert'));
 
   _assert = function () {
     return data;
@@ -33,7 +33,7 @@ function _assert() {
 }
 
 function _fs() {
-  const data = _interopRequireDefault(require("fs"));
+  const data = _interopRequireDefault(require('fs'));
 
   _fs = function () {
     return data;
@@ -43,7 +43,7 @@ function _fs() {
 }
 
 function _xcode() {
-  const data = _interopRequireDefault(require("xcode"));
+  const data = _interopRequireDefault(require('xcode'));
 
   _xcode = function () {
     return data;
@@ -53,7 +53,7 @@ function _xcode() {
 }
 
 function _withDangerousMod() {
-  const data = require("../plugins/withDangerousMod");
+  const data = require('../plugins/withDangerousMod');
 
   _withDangerousMod = function () {
     return data;
@@ -63,7 +63,7 @@ function _withDangerousMod() {
 }
 
 function _Paths() {
-  const data = require("./Paths");
+  const data = require('./Paths');
 
   _Paths = function () {
     return data;
@@ -73,7 +73,7 @@ function _Paths() {
 }
 
 function _Target() {
-  const data = require("./Target");
+  const data = require('./Target');
 
   _Target = function () {
     return data;
@@ -83,7 +83,7 @@ function _Target() {
 }
 
 function _Xcodeproj() {
-  const data = require("./utils/Xcodeproj");
+  const data = require('./utils/Xcodeproj');
 
   _Xcodeproj = function () {
     return data;
@@ -93,7 +93,7 @@ function _Xcodeproj() {
 }
 
 function _string() {
-  const data = require("./utils/string");
+  const data = require('./utils/string');
 
   _string = function () {
     return data;
@@ -102,33 +102,48 @@ function _string() {
   return data;
 }
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(obj) {
+  return obj && obj.__esModule ? obj : { default: obj };
+}
 
-const withBundleIdentifier = (config, {
-  bundleIdentifier
-}) => {
-  return (0, _withDangerousMod().withDangerousMod)(config, ['ios', async config => {
-    var _config$ios;
+const withBundleIdentifier = (config, { bundleIdentifier }) => {
+  return (0, _withDangerousMod().withDangerousMod)(config, [
+    'ios',
+    async (config) => {
+      let _config$ios;
 
-    const bundleId = bundleIdentifier !== null && bundleIdentifier !== void 0 ? bundleIdentifier : (_config$ios = config.ios) === null || _config$ios === void 0 ? void 0 : _config$ios.bundleIdentifier;
-    (0, _assert().default)(bundleId, '`bundleIdentifier` must be defined in the app config (`expo.ios.bundleIdentifier`) or passed to the plugin `withBundleIdentifier`.');
-    await setBundleIdentifierForPbxproj(config.modRequest.projectRoot, bundleId);
-    return config;
-  }]);
+      const bundleId =
+        bundleIdentifier !== null && bundleIdentifier !== void 0
+          ? bundleIdentifier
+          : (_config$ios = config.ios) === null || _config$ios === void 0
+          ? void 0
+          : _config$ios.bundleIdentifier;
+      (0, _assert().default)(
+        bundleId,
+        '`bundleIdentifier` must be defined in the app config (`expo.ios.bundleIdentifier`) or passed to the plugin `withBundleIdentifier`.'
+      );
+      await setBundleIdentifierForPbxproj(config.modRequest.projectRoot, bundleId);
+      return config;
+    },
+  ]);
 };
 
 exports.withBundleIdentifier = withBundleIdentifier;
 
 function getBundleIdentifier(config) {
-  var _config$ios$bundleIde, _config$ios2;
+  let _config$ios$bundleIde, _config$ios2;
 
-  return (_config$ios$bundleIde = (_config$ios2 = config.ios) === null || _config$ios2 === void 0 ? void 0 : _config$ios2.bundleIdentifier) !== null && _config$ios$bundleIde !== void 0 ? _config$ios$bundleIde : null;
+  return (_config$ios$bundleIde =
+    (_config$ios2 = config.ios) === null || _config$ios2 === void 0
+      ? void 0
+      : _config$ios2.bundleIdentifier) !== null && _config$ios$bundleIde !== void 0
+    ? _config$ios$bundleIde
+    : null;
 }
 /**
  * In Turtle v1 we set the bundleIdentifier directly on Info.plist rather
  * than in pbxproj
  */
-
 
 function setBundleIdentifier(config, infoPlist) {
   const bundleIdentifier = getBundleIdentifier(config);
@@ -137,9 +152,7 @@ function setBundleIdentifier(config, infoPlist) {
     return infoPlist;
   }
 
-  return { ...infoPlist,
-    CFBundleIdentifier: bundleIdentifier
-  };
+  return { ...infoPlist, CFBundleIdentifier: bundleIdentifier };
 }
 /**
  * Gets the bundle identifier defined in the Xcode project found in the project directory.
@@ -157,11 +170,10 @@ function setBundleIdentifier(config, infoPlist) {
  * @returns {string | null} bundle identifier of the Xcode project or null if the project is not configured
  */
 
-
-function getBundleIdentifierFromPbxproj(projectRoot, {
-  targetName,
-  buildConfiguration = 'Release'
-} = {}) {
+function getBundleIdentifierFromPbxproj(
+  projectRoot,
+  { targetName, buildConfiguration = 'Release' } = {}
+) {
   let pbxprojPath;
 
   try {
@@ -175,7 +187,7 @@ function getBundleIdentifierFromPbxproj(projectRoot, {
   project.parseSync();
   const xcBuildConfiguration = (0, _Target().getXCBuildConfigurationFromPbxproj)(project, {
     targetName,
-    buildConfiguration
+    buildConfiguration,
   });
 
   if (!xcBuildConfiguration) {
@@ -196,8 +208,13 @@ function getProductBundleIdentifierFromBuildConfiguration(xcBuildConfiguration) 
 
     const bundleIdentifierParts = bundleIdentifier.split('.');
 
-    if (bundleIdentifierParts[bundleIdentifierParts.length - 1] === '$(PRODUCT_NAME:rfc1034identifier)' && xcBuildConfiguration.buildSettings.PRODUCT_NAME) {
-      bundleIdentifierParts[bundleIdentifierParts.length - 1] = xcBuildConfiguration.buildSettings.PRODUCT_NAME.replace(/[^a-zA-Z0-9]/g, '-');
+    if (
+      bundleIdentifierParts[bundleIdentifierParts.length - 1] ===
+        '$(PRODUCT_NAME:rfc1034identifier)' &&
+      xcBuildConfiguration.buildSettings.PRODUCT_NAME
+    ) {
+      bundleIdentifierParts[bundleIdentifierParts.length - 1] =
+        xcBuildConfiguration.buildSettings.PRODUCT_NAME.replace(/[^a-zA-Z0-9]/g, '-');
     }
 
     return bundleIdentifierParts.join('.');
@@ -213,13 +230,15 @@ function getProductBundleIdentifierFromBuildConfiguration(xcBuildConfiguration) 
  * @param {boolean} [updateProductName=true]  Whether to update PRODUCT_NAME
  */
 
-
 function updateBundleIdentifierForPbxproj(pbxprojPath, bundleIdentifier, updateProductName = true) {
   const project = _xcode().default.project(pbxprojPath);
 
   project.parseSync();
   const [, nativeTarget] = (0, _Target().findFirstNativeTarget)(project);
-  (0, _Xcodeproj().getBuildConfigurationsForListId)(project, nativeTarget.buildConfigurationList).forEach(([, item]) => {
+  (0, _Xcodeproj().getBuildConfigurationsForListId)(
+    project,
+    nativeTarget.buildConfigurationList
+  ).forEach(([, item]) => {
     if (item.buildSettings.PRODUCT_BUNDLE_IDENTIFIER === bundleIdentifier) {
       return;
     }
@@ -245,7 +264,6 @@ function updateBundleIdentifierForPbxproj(pbxprojPath, bundleIdentifier, updateP
  * @param {boolean} [updateProductName=true]  Whether to update PRODUCT_NAME
  */
 
-
 function setBundleIdentifierForPbxproj(projectRoot, bundleIdentifier, updateProductName = true) {
   // Get all pbx projects in the ${projectRoot}/ios directory
   let pbxprojPaths = [];
@@ -261,7 +279,6 @@ function setBundleIdentifierForPbxproj(projectRoot, bundleIdentifier, updateProd
 /**
  * Reset bundle identifier field in Info.plist to use PRODUCT_BUNDLE_IDENTIFIER, as recommended by Apple.
  */
-
 
 const defaultBundleId = '$(PRODUCT_BUNDLE_IDENTIFIER)';
 
@@ -283,12 +300,13 @@ function resetPlistBundleIdentifier(plistPath) {
 
     const format = {
       pretty: true,
-      indent: `\t`
+      indent: `\t`,
     };
 
-    const xml = _plist().default.build({ ...plistObject,
-      CFBundleIdentifier: defaultBundleId
-    }, format);
+    const xml = _plist().default.build(
+      { ...plistObject, CFBundleIdentifier: defaultBundleId },
+      format
+    );
 
     if (xml !== rawPlist) {
       _fs().default.writeFileSync(plistPath, xml);

@@ -1,7 +1,7 @@
-"use strict";
+'use strict';
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
+Object.defineProperty(exports, '__esModule', {
+  value: true,
 });
 exports.createBuildGradlePropsConfigPlugin = createBuildGradlePropsConfigPlugin;
 exports.updateAndroidBuildPropertiesFromConfig = updateAndroidBuildPropertiesFromConfig;
@@ -9,7 +9,7 @@ exports.updateAndroidBuildProperty = updateAndroidBuildProperty;
 exports.withJsEngineGradleProps = void 0;
 
 function _androidPlugins() {
-  const data = require("../plugins/android-plugins");
+  const data = require('../plugins/android-plugins');
 
   _androidPlugins = function () {
     return data;
@@ -34,14 +34,19 @@ function _androidPlugins() {
  * @param name the config plugin name
  */
 function createBuildGradlePropsConfigPlugin(configToPropertyRules, name) {
-  const withUnknown = (config, sourceConfig) => (0, _androidPlugins().withGradleProperties)(config, config => {
-    config.modResults = updateAndroidBuildPropertiesFromConfig(sourceConfig !== null && sourceConfig !== void 0 ? sourceConfig : config, config.modResults, configToPropertyRules);
-    return config;
-  });
+  const withUnknown = (config, sourceConfig) =>
+    (0, _androidPlugins().withGradleProperties)(config, (config) => {
+      config.modResults = updateAndroidBuildPropertiesFromConfig(
+        sourceConfig !== null && sourceConfig !== void 0 ? sourceConfig : config,
+        config.modResults,
+        configToPropertyRules
+      );
+      return config;
+    });
 
   if (name) {
     Object.defineProperty(withUnknown, 'name', {
-      value: name
+      value: name,
     });
   }
 
@@ -51,15 +56,27 @@ function createBuildGradlePropsConfigPlugin(configToPropertyRules, name) {
  * A config-plugin to update `android/gradle.properties` from the `jsEngine` in expo config
  */
 
+const withJsEngineGradleProps = createBuildGradlePropsConfigPlugin(
+  [
+    {
+      propName: 'expo.jsEngine',
+      propValueGetter: (config) => {
+        let _ref, _config$android$jsEng, _config$android;
 
-const withJsEngineGradleProps = createBuildGradlePropsConfigPlugin([{
-  propName: 'expo.jsEngine',
-  propValueGetter: config => {
-    var _ref, _config$android$jsEng, _config$android;
-
-    return (_ref = (_config$android$jsEng = (_config$android = config.android) === null || _config$android === void 0 ? void 0 : _config$android.jsEngine) !== null && _config$android$jsEng !== void 0 ? _config$android$jsEng : config.jsEngine) !== null && _ref !== void 0 ? _ref : 'jsc';
-  }
-}], 'withJsEngineGradleProps');
+        return (_ref =
+          (_config$android$jsEng =
+            (_config$android = config.android) === null || _config$android === void 0
+              ? void 0
+              : _config$android.jsEngine) !== null && _config$android$jsEng !== void 0
+            ? _config$android$jsEng
+            : config.jsEngine) !== null && _ref !== void 0
+          ? _ref
+          : 'jsc';
+      },
+    },
+  ],
+  'withJsEngineGradleProps'
+);
 exports.withJsEngineGradleProps = withJsEngineGradleProps;
 
 function updateAndroidBuildPropertiesFromConfig(config, gradleProperties, configToPropertyRules) {
@@ -72,14 +89,16 @@ function updateAndroidBuildPropertiesFromConfig(config, gradleProperties, config
 }
 
 function updateAndroidBuildProperty(gradleProperties, name, value, options) {
-  const oldPropIndex = gradleProperties.findIndex(prop => prop.type === 'property' && prop.key === name);
+  const oldPropIndex = gradleProperties.findIndex(
+    (prop) => prop.type === 'property' && prop.key === name
+  );
 
   if (value) {
     // found the matched value, add or merge new property
     const newProp = {
       type: 'property',
       key: name,
-      value
+      value,
     };
 
     if (oldPropIndex >= 0) {
@@ -87,7 +106,12 @@ function updateAndroidBuildProperty(gradleProperties, name, value, options) {
     } else {
       gradleProperties.push(newProp);
     }
-  } else if (options !== null && options !== void 0 && options.removePropWhenValueIsNull && oldPropIndex >= 0) {
+  } else if (
+    options !== null &&
+    options !== void 0 &&
+    options.removePropWhenValueIsNull &&
+    oldPropIndex >= 0
+  ) {
     gradleProperties.splice(oldPropIndex, 1);
   }
 

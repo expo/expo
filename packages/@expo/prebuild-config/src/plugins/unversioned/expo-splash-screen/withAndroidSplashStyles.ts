@@ -17,18 +17,18 @@ const styleResourceGroup = {
 
 const SPLASH_COLOR_NAME = 'splashscreen_background';
 
-export const withAndroidSplashStyles: ConfigPlugin = config => {
-  config = withAndroidColors(config, config => {
+export const withAndroidSplashStyles: ConfigPlugin = (config) => {
+  config = withAndroidColors(config, (config) => {
     const backgroundColor = getSplashBackgroundColor(config);
     config.modResults = setSplashColorsForTheme(config.modResults, backgroundColor);
     return config;
   });
-  config = withAndroidColorsNight(config, config => {
+  config = withAndroidColorsNight(config, (config) => {
     const backgroundColor = getSplashDarkBackgroundColor(config);
     config.modResults = setSplashColorsForTheme(config.modResults, backgroundColor);
     return config;
   });
-  config = withAndroidStyles(config, config => {
+  config = withAndroidStyles(config, (config) => {
     config.modResults = removeOldSplashStyleGroup(config.modResults);
     config.modResults = setSplashStylesForTheme(config.modResults);
     return config;

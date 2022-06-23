@@ -90,9 +90,9 @@ async function readSchemeAsync(
 ): Promise<SchemeXML | undefined> {
   const allSchemePaths = findSchemePaths(projectRoot);
   const re = new RegExp(`/${scheme}.xcscheme`, 'i');
-  const schemePath = allSchemePaths.find(i => re.exec(i));
+  const schemePath = allSchemePaths.find((i) => re.exec(i));
   if (schemePath) {
-    return ((await readXMLAsync({ path: schemePath })) as unknown) as SchemeXML | undefined;
+    return (await readXMLAsync({ path: schemePath })) as unknown as SchemeXML | undefined;
   } else {
     throw new Error(`scheme '${scheme}' does not exist, make sure it's marked as shared`);
   }
@@ -109,7 +109,7 @@ export async function getApplicationTargetNameForSchemeAsync(
     buildActionEntry?.length === 1
       ? getBlueprintName(buildActionEntry[0])
       : getBlueprintName(
-          buildActionEntry?.find(entry => {
+          buildActionEntry?.find((entry) => {
             return entry.BuildableReference?.[0]?.['$']?.BuildableName?.endsWith('.app');
           })
         );

@@ -37,7 +37,7 @@ export const withUpdates: ConfigPlugin<{ expoUsername: string | null }> = (
   config,
   { expoUsername }
 ) => {
-  return withExpoPlist(config, config => {
+  return withExpoPlist(config, (config) => {
     const projectRoot = config.modRequest.projectRoot;
     const expoUpdatesPackageVersion = getExpoUpdatesPackageVersion(projectRoot);
     config.modResults = setUpdatesConfig(
@@ -143,7 +143,7 @@ export function getBundleReactNativePhase(project: xcode.XcodeProject): ShellScr
     ShellScriptBuildPhase
   >;
   const bundleReactNative = Object.values(shellScriptBuildPhase).find(
-    buildPhase => buildPhase.name === '"Bundle React Native code and images"'
+    (buildPhase) => buildPhase.name === '"Bundle React Native code and images"'
   );
 
   if (!bundleReactNative) {

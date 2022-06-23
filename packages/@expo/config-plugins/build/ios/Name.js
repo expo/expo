@@ -1,7 +1,7 @@
-"use strict";
+'use strict';
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
+Object.defineProperty(exports, '__esModule', {
+  value: true,
 });
 exports.getName = getName;
 exports.setDisplayName = setDisplayName;
@@ -10,7 +10,7 @@ exports.setProductName = setProductName;
 exports.withProductName = exports.withName = exports.withDisplayName = void 0;
 
 function _iosPlugins() {
-  const data = require("../plugins/ios-plugins");
+  const data = require('../plugins/ios-plugins');
 
   _iosPlugins = function () {
     return data;
@@ -20,7 +20,7 @@ function _iosPlugins() {
 }
 
 function _Target() {
-  const data = require("./Target");
+  const data = require('./Target');
 
   _Target = function () {
     return data;
@@ -30,7 +30,7 @@ function _Target() {
 }
 
 function _Xcodeproj() {
-  const data = require("./utils/Xcodeproj");
+  const data = require('./utils/Xcodeproj');
 
   _Xcodeproj = function () {
     return data;
@@ -39,21 +39,29 @@ function _Xcodeproj() {
   return data;
 }
 
-const withDisplayName = (0, _iosPlugins().createInfoPlistPluginWithPropertyGuard)(setDisplayName, {
-  infoPlistProperty: 'CFBundleDisplayName',
-  expoConfigProperty: 'name'
-}, 'withDisplayName');
+const withDisplayName = (0, _iosPlugins().createInfoPlistPluginWithPropertyGuard)(
+  setDisplayName,
+  {
+    infoPlistProperty: 'CFBundleDisplayName',
+    expoConfigProperty: 'name',
+  },
+  'withDisplayName'
+);
 exports.withDisplayName = withDisplayName;
-const withName = (0, _iosPlugins().createInfoPlistPluginWithPropertyGuard)(setName, {
-  infoPlistProperty: 'CFBundleName',
-  expoConfigProperty: 'name'
-}, 'withName');
+const withName = (0, _iosPlugins().createInfoPlistPluginWithPropertyGuard)(
+  setName,
+  {
+    infoPlistProperty: 'CFBundleName',
+    expoConfigProperty: 'name',
+  },
+  'withName'
+);
 /** Set the PRODUCT_NAME variable in the xcproj file based on the app.json name property. */
 
 exports.withName = withName;
 
-const withProductName = config => {
-  return (0, _iosPlugins().withXcodeProject)(config, config => {
+const withProductName = (config) => {
+  return (0, _iosPlugins().withXcodeProject)(config, (config) => {
     config.modResults = setProductName(config, config.modResults);
     return config;
   });
@@ -69,11 +77,7 @@ function getName(config) {
  * notifications, and others.
  */
 
-
-function setDisplayName(configOrName, {
-  CFBundleDisplayName,
-  ...infoPlist
-}) {
+function setDisplayName(configOrName, { CFBundleDisplayName, ...infoPlist }) {
   let name = null;
 
   if (typeof configOrName === 'string') {
@@ -86,35 +90,29 @@ function setDisplayName(configOrName, {
     return infoPlist;
   }
 
-  return { ...infoPlist,
-    CFBundleDisplayName: name
-  };
+  return { ...infoPlist, CFBundleDisplayName: name };
 }
 /**
  * CFBundleName is recommended to be 16 chars or less and is used in lists, eg:
  * sometimes on the App Store
  */
 
-
-function setName(config, {
-  CFBundleName,
-  ...infoPlist
-}) {
+function setName(config, { CFBundleName, ...infoPlist }) {
   const name = getName(config);
 
   if (!name) {
     return infoPlist;
   }
 
-  return { ...infoPlist,
-    CFBundleName: name
-  };
+  return { ...infoPlist, CFBundleName: name };
 }
 
 function setProductName(config, project) {
-  var _getName;
+  let _getName;
 
-  const name = (0, _Xcodeproj().sanitizedName)((_getName = getName(config)) !== null && _getName !== void 0 ? _getName : '');
+  const name = (0, _Xcodeproj().sanitizedName)(
+    (_getName = getName(config)) !== null && _getName !== void 0 ? _getName : ''
+  );
 
   if (!name) {
     return project;
@@ -122,13 +120,16 @@ function setProductName(config, project) {
 
   const quotedName = ensureQuotes(name);
   const [, nativeTarget] = (0, _Target().findFirstNativeTarget)(project);
-  (0, _Xcodeproj().getBuildConfigurationsForListId)(project, nativeTarget.buildConfigurationList).forEach(([, item]) => {
+  (0, _Xcodeproj().getBuildConfigurationsForListId)(
+    project,
+    nativeTarget.buildConfigurationList
+  ).forEach(([, item]) => {
     item.buildSettings.PRODUCT_NAME = quotedName;
   });
   return project;
 }
 
-const ensureQuotes = value => {
+const ensureQuotes = (value) => {
   if (!value.match(/^['"]/)) {
     return `"${value}"`;
   }

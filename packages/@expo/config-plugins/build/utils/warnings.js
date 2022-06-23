@@ -1,14 +1,14 @@
-"use strict";
+'use strict';
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
+Object.defineProperty(exports, '__esModule', {
+  value: true,
 });
 exports.addWarningAndroid = addWarningAndroid;
 exports.addWarningForPlatform = addWarningForPlatform;
 exports.addWarningIOS = addWarningIOS;
 
 function _chalk() {
-  const data = _interopRequireDefault(require("chalk"));
+  const data = _interopRequireDefault(require('chalk'));
 
   _chalk = function () {
     return data;
@@ -17,7 +17,9 @@ function _chalk() {
   return data;
 }
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(obj) {
+  return obj && obj.__esModule ? obj : { default: obj };
+}
 
 /**
  * Log a warning that doesn't disrupt the spinners.
@@ -45,7 +47,6 @@ function addWarningAndroid(property, text, link) {
  * @param link Useful link to resources related to the warning
  */
 
-
 function addWarningIOS(property, text, link) {
   console.warn(formatWarning('ios', property, text, link));
 }
@@ -55,6 +56,8 @@ function addWarningForPlatform(platform, property, text, link) {
 }
 
 function formatWarning(platform, property, warning, link) {
-  return _chalk().default.yellow`${'» ' + _chalk().default.bold(platform)}: ${property}: ${warning}${link ? _chalk().default.gray(' ' + link) : ''}`;
+  return _chalk().default.yellow`${
+    '» ' + _chalk().default.bold(platform)
+  }: ${property}: ${warning}${link ? _chalk().default.gray(' ' + link) : ''}`;
 }
 //# sourceMappingURL=warnings.js.map

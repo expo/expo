@@ -86,7 +86,7 @@ describe('e2e: iOS icons', () => {
     );
 
     const after = getDirFromFS(vol.toJSON(), projectRoot);
-    const icons = Object.keys(after).filter(value =>
+    const icons = Object.keys(after).filter((value) =>
       value.startsWith('ios/ReactNativeProject/Images.xcassets/AppIcon.appiconset/App-Icon')
     );
 

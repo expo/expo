@@ -16,7 +16,7 @@ export const withPermissions: ConfigPlugin<string[] | void> = (config, permissio
       ...new Set(config.android.permissions.concat(permissions)),
     ];
   }
-  return withAndroidManifest(config, async config => {
+  return withAndroidManifest(config, async (config) => {
     config.modResults = await setAndroidPermissions(config, config.modResults);
     return config;
   });
@@ -31,18 +31,18 @@ export const withBlockedPermissions: ConfigPlugin<string[] | string> = (config, 
   if (config?.android?.permissions && Array.isArray(config.android.permissions)) {
     // Remove any static config permissions
     config.android.permissions = config.android.permissions.filter(
-      permission => !resolvedPermissions.includes(permission)
+      (permission) => !resolvedPermissions.includes(permission)
     );
   }
 
-  return withAndroidManifest(config, async config => {
+  return withAndroidManifest(config, async (config) => {
     config.modResults = ensureToolsAvailable(config.modResults);
     config.modResults = addBlockedPermissions(config.modResults, resolvedPermissions);
     return config;
   });
 };
 
-export const withInternalBlockedPermissions: ConfigPlugin = config => {
+export const withInternalBlockedPermissions: ConfigPlugin = (config) => {
   // Only add permissions if the user defined the property and added some values
   // this ensures we don't add the `tools:*` namespace extraneously.
   if (config.android?.blockedPermissions?.length) {
@@ -81,7 +81,7 @@ function ensureBlockedPermission(
   permission: string
 ) {
   // Remove permission if it currently exists
-  manifestPermissions = manifestPermissions.filter(e => e.$['android:name'] !== permission);
+  manifestPermissions = manifestPermissions.filter((e) => e.$['android:name'] !== permission);
 
   // Add a permission with tools:node to overwrite any existing permission and ensure it's removed upon building.
   manifestPermissions.push({
@@ -91,7 +91,7 @@ function ensureBlockedPermission(
 }
 
 function prefixAndroidPermissionsIfNecessary(permissions: string[]): string[] {
-  return permissions.map(permission => {
+  return permissions.map((permission) => {
     if (!permission.includes('.')) {
       return `android.permission.${permission}`;
     }
@@ -118,7 +118,7 @@ export function setAndroidPermissions(
 
   const manifestPermissions = androidManifest.manifest['uses-permission'] ?? [];
 
-  permissionsToAdd.forEach(permission => {
+  permissionsToAdd.forEach((permission) => {
     if (!isPermissionAlreadyRequested(permission, manifestPermissions)) {
       addPermissionToManifest(permission, manifestPermissions);
     }
@@ -131,7 +131,7 @@ export function isPermissionAlreadyRequested(
   permission: string,
   manifestPermissions: ManifestUsesPermission[]
 ): boolean {
-  return manifestPermissions.some(e => e.$['android:name'] === permission);
+  return manifestPermissions.some((e) => e.$['android:name'] === permission);
 }
 
 export function addPermissionToManifest(
@@ -213,7 +213,7 @@ export function ensurePermissionNameFormat(permissionName: string): string {
 
 export function getPermissions(androidManifest: AndroidManifest): string[] {
   const usesPermissions: { [key: string]: any }[] = androidManifest.manifest[USES_PERMISSION] || [];
-  const permissions = usesPermissions.map(permissionObject => {
+  const permissions = usesPermissions.map((permissionObject) => {
     return permissionObject.$['android:name'] || permissionObject.$.name;
   });
   return permissions;

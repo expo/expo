@@ -83,7 +83,7 @@ export function sortAndroidManifest(obj: AndroidManifest) {
 
     if (Array.isArray(obj.manifest.application)) {
       // reverse sort applications so activity is towards the end and meta-data is towards the front.
-      obj.manifest.application = obj.manifest.application.map(application => {
+      obj.manifest.application = obj.manifest.application.map((application) => {
         application = sortObjWithOrder(application, ['meta-data', 'service', 'activity']);
 
         if (Array.isArray(application['meta-data'])) {

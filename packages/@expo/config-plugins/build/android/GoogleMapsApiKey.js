@@ -1,14 +1,14 @@
-"use strict";
+'use strict';
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
+Object.defineProperty(exports, '__esModule', {
+  value: true,
 });
 exports.getGoogleMapsApiKey = getGoogleMapsApiKey;
 exports.setGoogleMapsApiKey = setGoogleMapsApiKey;
 exports.withGoogleMapsApiKey = void 0;
 
 function _androidPlugins() {
-  const data = require("../plugins/android-plugins");
+  const data = require('../plugins/android-plugins');
 
   _androidPlugins = function () {
     return data;
@@ -18,7 +18,7 @@ function _androidPlugins() {
 }
 
 function _Manifest() {
-  const data = require("./Manifest");
+  const data = require('./Manifest');
 
   _Manifest = function () {
     return data;
@@ -29,13 +29,27 @@ function _Manifest() {
 
 const META_API_KEY = 'com.google.android.geo.API_KEY';
 const LIB_HTTP = 'org.apache.http.legacy';
-const withGoogleMapsApiKey = (0, _androidPlugins().createAndroidManifestPlugin)(setGoogleMapsApiKey, 'withGoogleMapsApiKey');
+const withGoogleMapsApiKey = (0, _androidPlugins().createAndroidManifestPlugin)(
+  setGoogleMapsApiKey,
+  'withGoogleMapsApiKey'
+);
 exports.withGoogleMapsApiKey = withGoogleMapsApiKey;
 
 function getGoogleMapsApiKey(config) {
-  var _config$android$confi, _config$android, _config$android$confi2, _config$android$confi3;
+  let _config$android$confi, _config$android, _config$android$confi2, _config$android$confi3;
 
-  return (_config$android$confi = (_config$android = config.android) === null || _config$android === void 0 ? void 0 : (_config$android$confi2 = _config$android.config) === null || _config$android$confi2 === void 0 ? void 0 : (_config$android$confi3 = _config$android$confi2.googleMaps) === null || _config$android$confi3 === void 0 ? void 0 : _config$android$confi3.apiKey) !== null && _config$android$confi !== void 0 ? _config$android$confi : null;
+  return (_config$android$confi =
+    (_config$android = config.android) === null || _config$android === void 0
+      ? void 0
+      : (_config$android$confi2 = _config$android.config) === null ||
+        _config$android$confi2 === void 0
+      ? void 0
+      : (_config$android$confi3 = _config$android$confi2.googleMaps) === null ||
+        _config$android$confi3 === void 0
+      ? void 0
+      : _config$android$confi3.apiKey) !== null && _config$android$confi !== void 0
+    ? _config$android$confi
+    : null;
 }
 
 function setGoogleMapsApiKey(config, androidManifest) {
@@ -47,7 +61,7 @@ function setGoogleMapsApiKey(config, androidManifest) {
     (0, _Manifest().addMetaDataItemToMainApplication)(mainApplication, META_API_KEY, apiKey);
     (0, _Manifest().addUsesLibraryItemToMainApplication)(mainApplication, {
       name: LIB_HTTP,
-      required: false
+      required: false,
     });
   } else {
     // Remove any existing item

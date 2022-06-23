@@ -9,26 +9,39 @@ import { ConfigPlugin, XcodeProject } from '../Plugin.types';
  * 3. Sets the build configuration `SWIFT_OBJC_BRIDGING_HEADER = [PROJECT_NAME]-Bridging-Header.h`
  */
 export declare const withSwiftBridgingHeader: ConfigPlugin;
-export declare function ensureSwiftBridgingHeaderSetup({ projectRoot, project, }: {
-    projectRoot: string;
-    project: XcodeProject;
+export declare function ensureSwiftBridgingHeaderSetup({
+  projectRoot,
+  project,
+}: {
+  projectRoot: string;
+  project: XcodeProject;
 }): XcodeProject;
-export declare function getDesignatedSwiftBridgingHeaderFileReference({ project, }: {
-    project: XcodeProject;
+export declare function getDesignatedSwiftBridgingHeaderFileReference({
+  project,
+}: {
+  project: XcodeProject;
 }): string | null;
 /**
  *
  * @param bridgingHeader The bridging header filename ex: `ExpoAPIs-Bridging-Header.h`
  * @returns
  */
-export declare function linkBridgingHeaderFile({ project, bridgingHeader, }: {
-    project: XcodeProject;
-    bridgingHeader: string;
+export declare function linkBridgingHeaderFile({
+  project,
+  bridgingHeader,
+}: {
+  project: XcodeProject;
+  bridgingHeader: string;
 }): XcodeProject;
-export declare function createBridgingHeaderFile({ projectRoot, projectName, project, bridgingHeader, }: {
-    project: XcodeProject;
-    projectName: string;
-    projectRoot: string;
-    bridgingHeader: string;
+export declare function createBridgingHeaderFile({
+  projectRoot,
+  projectName,
+  project,
+  bridgingHeader,
+}: {
+  project: XcodeProject;
+  projectName: string;
+  projectRoot: string;
+  bridgingHeader: string;
 }): XcodeProject;
 export declare const withNoopSwiftFile: ConfigPlugin;

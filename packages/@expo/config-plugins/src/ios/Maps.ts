@@ -11,11 +11,12 @@ import { mergeContents, MergeResults, removeContents } from '../utils/generateCo
 const debug = require('debug')('expo:config-plugins:ios:maps') as typeof console.log;
 
 // Match against `UMModuleRegistryAdapter` (unimodules), and React Native without unimodules (Expo Modules), and SDK +44 React AppDelegate subscriber.
-export const MATCH_INIT = /(?:(self\.|_)(\w+)\s?=\s?\[\[UMModuleRegistryAdapter alloc\])|(?:RCTBridge\s?\*\s?(\w+)\s?=\s?\[\[RCTBridge alloc\])|(\[self\.reactDelegate createBridgeWithDelegate:self launchOptions:launchOptions\])/g;
+export const MATCH_INIT =
+  /(?:(self\.|_)(\w+)\s?=\s?\[\[UMModuleRegistryAdapter alloc\])|(?:RCTBridge\s?\*\s?(\w+)\s?=\s?\[\[RCTBridge alloc\])|(\[self\.reactDelegate createBridgeWithDelegate:self launchOptions:launchOptions\])/g;
 
 const withGoogleMapsKey = createInfoPlistPlugin(setGoogleMapsApiKey, 'withGoogleMapsKey');
 
-export const withMaps: ConfigPlugin = config => {
+export const withMaps: ConfigPlugin = (config) => {
   config = withGoogleMapsKey(config);
 
   const apiKey = getGoogleMapsApiKey(config);
@@ -145,7 +146,7 @@ function isReactNativeMapsAutolinked(config: Pick<ExpoConfig, '_internal'>): boo
 const withMapsCocoaPods: ConfigPlugin<{ useGoogleMaps: boolean }> = (config, { useGoogleMaps }) => {
   return withDangerousMod(config, [
     'ios',
-    async config => {
+    async (config) => {
       const filePath = path.join(config.modRequest.platformProjectRoot, 'Podfile');
       const contents = await fs.promises.readFile(filePath, 'utf-8');
       let results: MergeResults;
@@ -179,7 +180,7 @@ const withMapsCocoaPods: ConfigPlugin<{ useGoogleMaps: boolean }> = (config, { u
 };
 
 const withGoogleMapsAppDelegate: ConfigPlugin<{ apiKey: string | null }> = (config, { apiKey }) => {
-  return withAppDelegate(config, config => {
+  return withAppDelegate(config, (config) => {
     if (['objc', 'objcpp'].includes(config.modResults.language)) {
       if (
         apiKey &&

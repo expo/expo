@@ -66,7 +66,7 @@ export function getNativeVersion(
  * Compute runtime version policies.
  * @return an expoConfig with only string valued platform specific runtime versions.
  */
-export const withRuntimeVersion: (config: ExpoConfig) => ExpoConfig = config => {
+export const withRuntimeVersion: (config: ExpoConfig) => ExpoConfig = (config) => {
   if (config.ios?.runtimeVersion || config.runtimeVersion) {
     const runtimeVersion = getRuntimeVersion(config, 'ios');
     if (runtimeVersion) {

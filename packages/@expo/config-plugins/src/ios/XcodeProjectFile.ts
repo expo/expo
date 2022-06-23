@@ -19,7 +19,7 @@ export const withBuildSourceFile: ConfigPlugin<{
   contents: string;
   overwrite?: boolean;
 }> = (config, { filePath, contents, overwrite }) => {
-  return withXcodeProject(config, config => {
+  return withXcodeProject(config, (config) => {
     const projectName = getProjectName(config.modRequest.projectRoot);
 
     config.modResults = createBuildSourceFile({

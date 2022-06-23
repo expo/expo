@@ -40,11 +40,11 @@ const requiredIPadInterface = [
 ];
 
 function isStringArray(value: any): value is string[] {
-  return Array.isArray(value) && value.every(value => typeof value === 'string');
+  return Array.isArray(value) && value.every((value) => typeof value === 'string');
 }
 
 function hasMinimumOrientations(masks: string[]): boolean {
-  return requiredIPadInterface.every(mask => masks.includes(mask));
+  return requiredIPadInterface.every((mask) => masks.includes(mask));
 }
 
 /**

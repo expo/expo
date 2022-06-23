@@ -60,7 +60,7 @@ describe(updateIosBuildPropertiesFromConfig, () => {
     const configToPropertyRules = [
       {
         propName: 'expo.jsEngine',
-        propValueGetter: config => config.ios?.jsEngine ?? config.jsEngine ?? 'NOTFOUND',
+        propValueGetter: (config) => config.ios?.jsEngine ?? config.jsEngine ?? 'NOTFOUND',
       },
     ];
 
