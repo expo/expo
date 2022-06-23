@@ -247,6 +247,12 @@ final class DynamicTypeSpec: ExpoSpec {
           // Simply checking `result == nil` does NOT work here, see `Optional.isNil` extension implementation.
           expect(Optional.isNil(result)) == true
         }
+        it("succeeds with NSNull") {
+          let value = NSNull()
+          let result = try (~Double?.self).cast(value as Any)
+          expect(result).to(beAKindOf(Double?.self))
+          expect(Optional.isNil(result)) == true
+        }
         it("throws CastingException") {
           expect { try (~Double?.self).cast("a string") as? Double }.to(
             throwError(errorType: Conversions.CastingException<Double>.self)

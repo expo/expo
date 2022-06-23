@@ -22,7 +22,7 @@ internal struct DynamicOptionalType: AnyDynamicType {
   }
 
   func cast<ValueType>(_ value: ValueType) throws -> Any {
-    if Optional.isNil(value) {
+    if Optional.isNil(value) || value is NSNull {
       return Optional<Any>.none as Any
     }
     return try wrappedType.cast(value)
