@@ -33,7 +33,7 @@
   ],
   "dependencies": {
     "@babel/code-frame": "~7.10.4",
-    "@expo/config-plugins": "4.1.5",
+    "@expo/config-plugins": "~4.1.5",
     "@expo/config-types": "^45.0.0",
     "@expo/json-file": "8.2.36",
     "getenv": "^1.0.0",

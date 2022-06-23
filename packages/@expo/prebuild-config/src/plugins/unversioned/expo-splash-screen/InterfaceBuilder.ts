@@ -295,7 +295,7 @@ export function removeImageFromSplashScreen(
   removeExisting(mainView.subviews[0].imageView, IMAGE_ID);
 
   // Add Constraints
-  getAbsoluteConstraints(IMAGE_ID, CONTAINER_ID).forEach(constraint => {
+  getAbsoluteConstraints(IMAGE_ID, CONTAINER_ID).forEach((constraint) => {
     // <constraint firstItem="EXPO-SplashScreen" firstAttribute="top" secondItem="EXPO-ContainerView" secondAttribute="top" id="2VS-Uz-0LU"/>
     const constrainsArray = mainView.constraints[0].constraint;
     removeExisting(constrainsArray, constraint);
@@ -304,7 +304,7 @@ export function removeImageFromSplashScreen(
   // Add resource
   const imageSection = xml.document.resources[0].image;
 
-  const existingImageIndex = imageSection.findIndex(image => image.$.name === imageName);
+  const existingImageIndex = imageSection.findIndex((image) => image.$.name === imageName);
   if (existingImageIndex > -1) {
     imageSection.splice(existingImageIndex, 1);
   }
@@ -364,7 +364,7 @@ export function applyImageToSplashScreenXML(
   ensureUniquePush(mainView.subviews[0].imageView, imageView);
 
   // Add Constraints
-  getAbsoluteConstraints(IMAGE_ID, CONTAINER_ID).forEach(constraint => {
+  getAbsoluteConstraints(IMAGE_ID, CONTAINER_ID).forEach((constraint) => {
     // <constraint firstItem="EXPO-SplashScreen" firstAttribute="top" secondItem="EXPO-ContainerView" secondAttribute="top" id="2VS-Uz-0LU"/>
     const constrainsArray = mainView.constraints[0].constraint;
     ensureUniquePush(constrainsArray, constraint);
@@ -373,7 +373,7 @@ export function applyImageToSplashScreenXML(
   // Add resource
   const imageSection = xml.document.resources[0].image;
 
-  const existingImageIndex = imageSection.findIndex(image => image.$.name === imageName);
+  const existingImageIndex = imageSection.findIndex((image) => image.$.name === imageName);
   if (existingImageIndex > -1) {
     debug(`Removing existing IB image asset at index ${existingImageIndex}`);
     imageSection.splice(existingImageIndex, 1);
@@ -406,7 +406,7 @@ export function removeExisting<TItem extends { $: { id: string } }>(
   item: TItem | string
 ) {
   const id = typeof item === 'string' ? item : item.$?.id;
-  const existingItem = array?.findIndex(existingItem => existingItem.$.id === id);
+  const existingItem = array?.findIndex((existingItem) => existingItem.$.id === id);
   if (existingItem > -1) {
     debug(`Removing existing IB item with id ${id}, from: %O`, array);
     array.splice(existingItem, 1);
@@ -417,6 +417,7 @@ export function removeExisting<TItem extends { $: { id: string } }>(
 // Attempt to copy Xcode formatting.
 export function toString(xml: any): string {
   const builder = new Builder({
+    // @ts-expect-error: untyped
     preserveChildrenOrder: true,
     xmldec: {
       version: '1.0',
