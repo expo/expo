@@ -22,6 +22,7 @@
 ### 💡 Others
 
 - Extract types defined in `createAsync` methods return to separate types: `RecordingObject` and `SoundObject`. ([#17954](https://github.com/expo/expo/pull/17954) by [@Simek](https://github.com/Simek))
+- Extract platform related nested object types from `RecordingOptions` to the separate types: `RecordingOptionsAndroid`, `RecordingOptionsIOS` and `RecordingOptionsWeb`. ([#17954](https://github.com/expo/expo/pull/17954) by [@Simek](https://github.com/Simek))
 
 ## 11.2.2 — 2022-04-27
 
