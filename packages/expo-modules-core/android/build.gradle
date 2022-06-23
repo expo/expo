@@ -249,6 +249,8 @@ dependencies {
   androidTestImplementation 'androidx.test:rules:1.4.0'
   androidTestImplementation "io.mockk:mockk-android:1.12.3"
   androidTestImplementation "com.google.truth:truth:1.1.2"
+  androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0"
+
   if (FOR_HERMES) {
     androidTestImplementation files(new File(HERMES_DIR, "android/hermes-debug.aar"))
   } else {
