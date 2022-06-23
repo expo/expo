@@ -877,12 +877,24 @@ const calendarFormat = Contacts.CalendarFormats.Coptic;
 
 This format denotes the common calendar format used to specify how a date is calculated in `nonGregorianBirthday` fields.
 
-| Constant  | value         | iOS | Android |
-| --------- | ------------- | --- | ------- |
-| Gregorian | `'gregorian'` | ✅  | ✅      |
-| Chinese   | `'chinese'`   | ✅  | ❌      |
-| Hebrew    | `'hebrew'`    | ✅  | ❌      |
-| Islamic   | `'islamic'`   | ✅  | ❌      |
+| Constant            | value                   | iOS | Android |
+| ------------------- | ----------------------- | --- | ------- |
+| Gregorian           | `'gregorian'`           | ✅  | ✅      |
+| Buddhist            | `'buddhist'`            | ✅  | ❌      |
+| Chinese             | `'chinese'`             | ✅  | ❌      |
+| Coptic              | `'coptic'`              | ✅  | ❌      |
+| EthiopicAmeteMihret | `'ethiopicAmeteMihret'` | ✅  | ❌      |
+| EthiopicAmeteAlem   | `'ethiopicAmeteAlem'`   | ✅  | ❌      |
+| Hebrew              | `'hebrew'`              | ✅  | ❌      |
+| ISO8601             | `'iso8601'`             | ✅  | ❌      |
+| Indian              | `'indian'`              | ✅  | ❌      |
+| Islamic             | `'islamic'`             | ✅  | ❌      |
+| IslamicCivil        | `'islamicCivil'`        | ✅  | ❌      |
+| Japanese            | `'japanese'`            | ✅  | ❌      |
+| Persian             | `'persian'`             | ✅  | ❌      |
+| RepublicOfChina     | `'republicOfChina'`     | ✅  | ❌      |
+| IslamicTabular      | `'islamicTabular'`      | ✅  | ❌      |
+| IslamicUmmAlQura    | `'islamicUmmAlQura'`    | ✅  | ❌      |
 
 ### Contact Fields
 
