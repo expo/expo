@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 0.9.0 — 2022-06-23
+
+### 🎉 New features
+
+- The `searchPaths` and `nativeModulesDir` options now support direct paths to specific module directories. ([#17922](https://github.com/expo/expo/pull/17922) by [@barthap](https://github.com/barthap))
+
 ## 0.8.1 — 2022-05-12
 
 ### 🐛 Bug fixes
