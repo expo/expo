@@ -151,7 +151,7 @@ export declare class Recording {
     setInput(inputUid: string): Promise<void>;
     /**
      * Begins recording. This method can only be called if the `Recording` has been prepared.
-     * @return A `Promise` that is fulfilled when recording has begun, or rejects if recording could not start.
+     * @return A `Promise` that is fulfilled when recording has begun, or rejects if recording could not be started.
      * The promise is resolved with the `RecordingStatus` of the recording.
      */
     startAsync(): Promise<RecordingStatus>;
