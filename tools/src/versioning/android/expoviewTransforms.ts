@@ -8,11 +8,11 @@ export function expoviewTransforms(abiVersion: string): FileTransforms {
   return {
     path: [
       {
-        find: /src\/main\/java\/versioned/,
+        find: 'src/main/java/versioned',
         replaceWith: `src/main/java/${abiVersion}`,
       },
       {
-        find: /src\/main\/java\/com/,
+        find: 'src/main/java/com',
         replaceWith: `src/main/java/${abiVersion}/com`,
       },
     ],

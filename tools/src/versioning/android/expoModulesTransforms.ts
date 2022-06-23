@@ -8,15 +8,15 @@ function expoModulesBaseTransforms(abiVersion: string): FileTransforms {
   return {
     path: [
       {
-        find: /src\/main\/java/,
+        find: 'src/main/java',
         replaceWith: `src/main/java/${abiVersion}`,
       },
       {
-        find: /src\/main\/kotlin/,
+        find: 'src/main/kotlin',
         replaceWith: `src/main/java/${abiVersion}`,
       },
       {
-        find: /src\/main\/AndroidManifest\.xml/,
+        find: 'src/main/AndroidManifest.xml',
         replaceWith: 'src/main/TemporaryExpoModuleAndroidManifest.xml',
       },
     ],

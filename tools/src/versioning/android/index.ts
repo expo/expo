@@ -452,7 +452,7 @@ async function copyExpoModulesAsync(version: string) {
 
       for (const javaPkg of packagesToKeep) {
         const javaPkgWithSlash = javaPkg.replace(/\./g, '/');
-        const pathFromPackage = `./src/main/{java,kotlin}/${javaPkgWithSlash}{/**,*}`;
+        const pathFromPackage = `./src/main/{java,kotlin}/${javaPkgWithSlash}{/**,.java,.kt}`;
         for (const file of files) {
           if (minimatch(file, pathFromPackage)) {
             files.delete(file);
