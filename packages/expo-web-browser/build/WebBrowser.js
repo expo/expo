@@ -358,7 +358,7 @@ function _stopWaitingForRedirect() {
 function _waitForRedirectAsync(returnUrl) {
     return new Promise((resolve) => {
         const redirectHandler = (event) => {
-            if (event.url.startsWith(returnUrl)) {
+            if (returnUrl && event.url.startsWith(returnUrl)) {
                 resolve({ url: event.url, type: 'success' });
             }
         };
