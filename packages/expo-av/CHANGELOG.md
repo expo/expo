@@ -4,6 +4,15 @@
 
 ### 🛠 Breaking changes
 
+- Replace `RecordingOptions` related constants with enums. To migrate:
+  - Replace `Audio.RECORDING_OPTION_ANDROID_AUDIO_ENCODER_*` with `Audio.AndroidAudioEncoder.*`
+  - Replace `Audio.RECORDING_OPTION_ANDROID_OUTPUT_*` with `Audio.AndroidOutputFormat.*`
+  - Replace `Audio.RECORDING_OPTION_IOS_AUDIO_QUALITY_*` with `Audio.IOSAudioQuality.*`
+  - Replace `Audio.RECORDING_OPTION_IOS_BIT_RATE_STRATEGY_*` with `Audio.IOSBitRateStrategy.*`
+  - Replace `Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_*` with `Audio.IOSOutputFormat.*`
+- Rename the `RecordingOptions` constant presets.
+  - To migrate, replace `Audio.RECORDING_OPTIONS_PRESET_*` with `Audio.RecordingOptionsPresets.*`.
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
@@ -11,6 +20,8 @@
 - On Android fix `Video` component crashes when activity loses focus due to accessing player from the wrong thread. ([#17280](https://github.com/expo/expo/pull/17280) by [@mnightingale](https://github.com/mnightingale))
 
 ### 💡 Others
+
+- Extract types defined in `createAsync` methods return to separate types: `RecordingObject` and `SoundObject`.
 
 ## 11.2.2 — 2022-04-27
 
