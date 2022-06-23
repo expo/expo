@@ -1,0 +1,59 @@
+{
+  "name": "@expo/config-plugins",
+  "version": "4.1.5",
+  "description": "A library for Expo config plugins",
+  "main": "build/index.js",
+  "scripts": {
+    "watch": "tsc --watch --preserveWatchOutput",
+    "build": "tsc --emitDeclarationOnly && babel src --out-dir build --extensions \".ts\" --source-maps --ignore \"src/**/__mocks__/*\",\"src/**/__tests__/*\",\"src/**/__integration_tests__/*\"",
+    "prepare": "yarn run clean && yarn build",
+    "clean": "rimraf build ./tsconfig.tsbuildinfo",
+    "lint": "eslint .",
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo-cli.git",
+    "directory": "packages/config-plugins"
+  },
+  "keywords": [
+    "json",
+    "expo",
+    "react-native",
+    "react"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/expo/expo-cli/issues"
+  },
+  "homepage": "https://docs.expo.dev/guides/config-plugins/",
+  "files": [
+    "build",
+    "paths"
+  ],
+  "dependencies": {
+    "@expo/config-types": "^45.0.0",
+    "@expo/json-file": "8.2.36",
+    "@expo/plist": "0.0.18",
+    "@expo/sdk-runtime-versions": "^1.0.0",
+    "@react-native/normalize-color": "^2.0.0",
+    "chalk": "^4.1.2",
+    "debug": "^4.3.1",
+    "find-up": "~5.0.0",
+    "getenv": "^1.0.0",
+    "glob": "7.1.6",
+    "resolve-from": "^5.0.0",
+    "semver": "^7.3.5",
+    "slash": "^3.0.0",
+    "xcode": "^3.0.1",
+    "xml2js": "0.4.23"
+  },
+  "devDependencies": {
+    "@types/debug": "^4.1.5",
+    "@types/find-up": "^4.0.0",
+    "@types/xml2js": "^0.4.5"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

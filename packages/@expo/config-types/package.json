@@ -1,0 +1,43 @@
+{
+  "name": "@expo/config-types",
+  "version": "45.0.0",
+  "description": "Types for the Expo config object app.config.ts",
+  "types": "build/ExpoConfig.d.ts",
+  "main": "build/ExpoConfig.js",
+  "scripts": {
+    "watch": "tsc --watch --preserveWatchOutput",
+    "build": "tsc",
+    "generate": "ts-node ./scripts/generate.ts",
+    "prepare": "yarn run clean && yarn build",
+    "clean": "rimraf build ./tsconfig.tsbuildinfo",
+    "lint": "eslint .",
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo-cli.git",
+    "directory": "packages/config-types"
+  },
+  "keywords": [
+    "json",
+    "app.json",
+    "app.config.js",
+    "react-native",
+    "expo",
+    "react"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/expo/expo-cli/issues"
+  },
+  "homepage": "https://github.com/expo/expo-cli/tree/main/packages/config-types#readme",
+  "files": [
+    "build"
+  ],
+  "devDependencies": {
+    "json-schema-to-typescript": "^10.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

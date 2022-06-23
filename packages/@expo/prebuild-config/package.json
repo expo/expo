@@ -1,0 +1,53 @@
+{
+  "name": "@expo/prebuild-config",
+  "version": "4.0.2",
+  "description": "Get the prebuild config",
+  "main": "build/index.js",
+  "scripts": {
+    "watch": "tsc --watch --preserveWatchOutput",
+    "build": "tsc --emitDeclarationOnly && babel src --out-dir build --extensions \".ts\" --source-maps --ignore \"src/**/__mocks__/*\",\"src/**/__tests__/*\"",
+    "prepare": "yarn run clean && yarn build",
+    "clean": "rimraf build ./tsconfig.tsbuildinfo",
+    "lint": "eslint .",
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo-cli.git",
+    "directory": "packages/prebuild-config"
+  },
+  "keywords": [
+    "json",
+    "react-native",
+    "expo",
+    "react"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/expo/expo-cli/issues"
+  },
+  "homepage": "https://github.com/expo/expo-cli/tree/main/packages/prebuild-config#readme",
+  "files": [
+    "build"
+  ],
+  "devDependencies": {
+    "@types/debug": "^4.1.5",
+    "@types/xml2js": "^0.4.5"
+  },
+  "dependencies": {
+    "@expo/config": "6.0.24",
+    "@expo/config-plugins": "4.1.5",
+    "@expo/config-types": "^45.0.0",
+    "@expo/image-utils": "0.3.20",
+    "@expo/json-file": "8.2.36",
+    "debug": "^4.3.1",
+    "expo-modules-autolinking": "0.8.1",
+    "fs-extra": "^9.0.0",
+    "resolve-from": "^5.0.0",
+    "semver": "7.3.2",
+    "xml2js": "0.4.23"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
