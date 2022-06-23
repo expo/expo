@@ -200,26 +200,26 @@ class FunctionSpec: ExpoSpec {
         appContext.moduleRegistry.register(holder: mockModuleHolder(appContext) {
           Name("TestModule")
 
-          Function("returnPiSync") { Double.pi }
+          Function("returnPi") { Double.pi }
           
-          Function("returnNullSync") { () -> Double? in
+          Function("returnNull") { () -> Double? in
             return nil
           }
           
-          Function("isArgNilSync") { (arg: Double?) -> Bool in
+          Function("isArgNull") { (arg: Double?) -> Bool in
             return arg == nil
           }
         })
       }
       
       it("returns values") {
-        expect(try runtime?.eval("ExpoModules.TestModule.returnPiSync()").asDouble()) == Double.pi
-        expect(try runtime?.eval("ExpoModules.TestModule.returnNullSync()").isNull()) == true
+        expect(try runtime?.eval("ExpoModules.TestModule.returnPi()").asDouble()) == Double.pi
+        expect(try runtime?.eval("ExpoModules.TestModule.returnNull()").isNull()) == true
       }
       
-      it("accepts optional argument") {
-        expect(try runtime?.eval("ExpoModules.TestModule.isArgNilSync(3.14)").asBool()) == false
-        expect(try runtime?.eval("ExpoModules.TestModule.isArgNilSync(null)").asBool()) == true
+      it("accepts optional arguments") {
+        expect(try runtime?.eval("ExpoModules.TestModule.isArgNull(3.14)").asBool()) == false
+        expect(try runtime?.eval("ExpoModules.TestModule.isArgNull(null)").asBool()) == true
       }
     }
   }
