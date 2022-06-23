@@ -11,5 +11,5 @@ class AnyType(val kType: KType) {
 
   fun convert(value: Any?): Any? = converter.convert(value)
 
-  fun getCppRequiredTypes(): Int = converter.getCppRequiredTypes().fold(0) { acc, current -> acc or current.toValue() }
+  fun getCppRequiredTypes(): Int = converter.getCppRequiredTypes().fold(0) { acc, current -> acc or current.value }
 }
