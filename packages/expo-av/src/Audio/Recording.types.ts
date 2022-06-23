@@ -169,7 +169,7 @@ export type RecordingOptionsWeb = {
  * as not all combinations of options will allow you to successfully `prepareToRecordAsync()`.
  * **You will have to test your custom options on iOS and Android to make sure it's working. In the future,
  * we will enumerate all possible valid combinations, but at this time, our goal is to make the basic use-case easy (with presets)
- * and the advanced use-case possible (by exposing all the functionality available in native).
+ * and the advanced use-case possible (by exposing all the functionality available on all supported platforms).
  */
 export type RecordingOptions = {
   /**
