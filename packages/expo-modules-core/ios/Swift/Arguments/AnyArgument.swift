@@ -5,6 +5,9 @@
  */
 public protocol AnyArgument {}
 
+// Extend the optional type - this is required to support optional arguments.
+extension Optional: AnyArgument where Wrapped: AnyArgument {}
+
 // Extend the primitive types — these may come from React Native bridge.
 extension Bool: AnyArgument {}
 
