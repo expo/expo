@@ -40,6 +40,7 @@ jobs:
           git-lfs: 'true'
           ndk: 'true'
           ndk-version: ${{ matrix.ndk-version }}
+          hermes-engine-aar: 'true'
       - name: 🚚 Pull Git LFS files
         run: git lfs pull
       - name: 🧶 Yarn install
