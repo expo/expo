@@ -47,9 +47,8 @@ export function resolvePlatformOption(
     case 'android':
       assertPlatformBundler('android');
       return ['android'];
-    case 'all': {
+    case 'all':
       return Object.keys(platforms) as Platform[];
-    }
     default:
       throw new CommandError(
         `Unsupported platform "${platform}". Options are: ${Object.keys(platforms).join(',')}, all`
