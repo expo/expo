@@ -37,3 +37,23 @@ export function importExpoMetroConfigFromProject(
 ): typeof import('@expo/metro-config') {
   return importFromProject(projectRoot, '@expo/metro-config');
 }
+
+/** Import `metro-resolver` from the project. */
+export function importMetroResolverFromProject(
+  projectRoot: string
+): typeof import('metro-resolver') {
+  return importFromProject(projectRoot, 'metro-resolver');
+}
+
+/**
+ * Import the internal `saveAssets()` function from `react-native` for the purpose
+ * of saving production assets as-is instead of converting them to a hash.
+ */
+export function importCliSaveAssetsFromProject(
+  projectRoot: string
+): typeof import('@react-native-community/cli-plugin-metro/build/commands/bundle/saveAssets').default {
+  return importFromProject(
+    projectRoot,
+    '@react-native-community/cli-plugin-metro/build/commands/bundle/saveAssets'
+  ).default;
+}

@@ -78,6 +78,11 @@ class Env {
   get EXPO_SKIP_MANIFEST_VALIDATION_TOKEN(): boolean {
     return !!string('EXPO_SKIP_MANIFEST_VALIDATION_TOKEN');
   }
+
+  /** Public folder path relative to the project root. Default to `public` */
+  get EXPO_PUBLIC_FOLDER(): string {
+    return string('EXPO_PUBLIC_FOLDER', 'public');
+  }
 }
 
 export const env = new Env();

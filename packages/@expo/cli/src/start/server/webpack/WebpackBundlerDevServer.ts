@@ -114,10 +114,6 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
     return ['ios', 'android'].includes(process.env.EXPO_WEBPACK_PLATFORM || '');
   }
 
-  isTargetingWeb(): boolean {
-    return true;
-  }
-
   private async createNativeDevServerMiddleware({
     port,
     compiler,

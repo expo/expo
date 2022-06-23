@@ -2,8 +2,10 @@ import { prependMiddleware } from '@expo/dev-server';
 
 import { getFreePortAsync } from '../../../utils/port';
 import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
+import { HistoryFallbackMiddleware } from '../middleware/HistoryFallbackMiddleware';
 import { InterstitialPageMiddleware } from '../middleware/InterstitialPageMiddleware';
 import { RuntimeRedirectMiddleware } from '../middleware/RuntimeRedirectMiddleware';
+import { ServeStaticMiddleware } from '../middleware/ServeStaticMiddleware';
 import { instantiateMetroAsync } from './instantiateMetro';
 
 /** Default port to use for apps running in Expo Go. */
@@ -82,6 +84,14 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     });
     middleware.use(deepLinkMiddleware.getHandler());
 
+    // Append support for redirecting unhandled requests to the index.html page on web.
+    if (this.isTargetingWeb()) {
+      // This MUST be after the manifest middleware so it doesn't have a chance to serve the template `public/index.html`.
+      middleware.use(new ServeStaticMiddleware(this.projectRoot).getHandler());
+
+      // This MUST run last since it's the fallback.
+      middleware.use(new HistoryFallbackMiddleware(manifestMiddleware.internal).getHandler());
+    }
     // Extend the close method to ensure that we clean up the local info.
     const originalClose = server.close.bind(server);
 

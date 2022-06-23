@@ -40,6 +40,8 @@ function importFromVendor(projectRoot: string, moduleId: string) {
 }
 
 export const TEMPLATES: {
+  /** Unique ID for easily indexing. */
+  id: string;
   /** Template file path to copy into the project. */
   file: (projectRoot: string) => string;
   /** Output location for the file in the user project. */
@@ -48,6 +50,7 @@ export const TEMPLATES: {
   dependencies: string[];
 }[] = [
   {
+    id: 'babel.config.js',
     file: (projectRoot) => importFromVendor(projectRoot, 'babel.config.js'),
     destination: () => 'babel.config.js',
     dependencies: [
@@ -56,23 +59,27 @@ export const TEMPLATES: {
     ],
   },
   {
+    id: 'webpack.config.js',
     file: (projectRoot) =>
       importFromExpoWebpackConfig(projectRoot, 'template', 'webpack.config.js'),
     destination: () => 'webpack.config.js',
     dependencies: ['@expo/webpack-config'],
   },
   {
+    id: 'metro.config.js',
     dependencies: ['@expo/metro-config'],
     destination: () => 'metro.config.js',
     file: (projectRoot) => importFromVendor(projectRoot, 'metro.config.js'),
   },
   {
+    id: 'serve.json',
     file: (projectRoot) => importFromExpoWebpackConfig(projectRoot, 'web-default', 'serve.json'),
     // web/serve.json
     destination: ({ webStaticPath }) => webStaticPath + '/serve.json',
     dependencies: [],
   },
   {
+    id: 'index.html',
     file: (projectRoot) => importFromExpoWebpackConfig(projectRoot, 'web-default', 'index.html'),
     // web/index.html
     destination: ({ webStaticPath }) => webStaticPath + '/index.html',

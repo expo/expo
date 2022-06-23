@@ -48,15 +48,15 @@ it('runs `npx expo export --help`', async () => {
         $ npx expo export <dir>
 
       Options
-        <dir>                         Directory of the Expo project. Default: Current working directory
-        --platform <all|android|ios>  Platforms: android, ios, all. Default: all
-        --dev                         Configure static files for developing locally using a non-https server
-        --output-dir <dir>            The directory to export the static files to. Default: dist
-        --max-workers <number>        Maximum number of tasks to allow the bundler to spawn
-        --dump-assetmap               Dump the asset map for further processing
-        --dump-sourcemap              Dump the source map for debugging the JS bundle
-        -c, --clear                   Clear the bundler cache
-        -h, --help                    Usage info
+        <dir>                   Directory of the Expo project. Default: Current working directory
+        --platform <platform>   Options: android, ios, web, all. Default: all
+        --dev                   Configure static files for developing locally using a non-https server
+        --output-dir <dir>      The directory to export the static files to. Default: dist
+        --max-workers <number>  Maximum number of tasks to allow the bundler to spawn
+        --dump-assetmap         Dump the asset map for further processing
+        --dump-sourcemap        Dump the source map for debugging the JS bundle
+        -c, --clear             Clear the bundler cache
+        -h, --help              Usage info
     "
   `);
 });
@@ -122,6 +122,23 @@ it(
           ],
           bundle: expect.stringMatching(/bundles\/ios-.*\.js/),
         },
+        web: {
+          assets: [
+            {
+              ext: 'png',
+              path: 'assets/fb960eb5e4eb49ec8786c7f6c4a57ce2',
+            },
+            {
+              ext: 'png',
+              path: 'assets/9ce7db807e4147e00df372d053c154c2',
+            },
+            {
+              ext: 'ttf',
+              path: 'assets/3858f62230ac3c915f300c664312c63f',
+            },
+          ],
+          bundle: expect.stringMatching(/bundles\/web-.*\.js/),
+        },
       },
       version: 0,
     });
@@ -175,13 +192,24 @@ it(
       'assets/2f334f6c7ca5b2a504bdf8acdee104f3',
       'assets/3858f62230ac3c915f300c664312c63f',
       'assets/9ce7db807e4147e00df372d053c154c2',
+      'assets/assets/font.ttf',
+      'assets/assets/icon.png',
+      'assets/assets/icon@2x.png',
+
       'assets/fb960eb5e4eb49ec8786c7f6c4a57ce2',
       expect.stringMatching(/bundles\/android-[\w\d]+\.js/),
       expect.stringMatching(/bundles\/android-[\w\d]+\.map/),
       expect.stringMatching(/bundles\/ios-[\w\d]+\.js/),
       expect.stringMatching(/bundles\/ios-[\w\d]+\.map/),
+      expect.stringMatching(/bundles\/web-[\w\d]+\.js/),
+      expect.stringMatching(/bundles\/web-[\w\d]+\.map/),
       'debug.html',
+      'drawable-mdpi/assets_icon.png',
+      'drawable-xhdpi/assets_icon.png',
+      'favicon.ico',
+      'index.html',
       'metadata.json',
+      'raw/assets_font.ttf',
     ]);
   },
   // Could take 45s depending on how fast npm installs
