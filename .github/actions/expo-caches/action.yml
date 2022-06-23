@@ -213,6 +213,7 @@ runs:
         if [[ $CURRENT_VERSION == $TARGET_VERSION ]]; then echo '::set-output name=cache-hit::true'; else echo '::set-output name=cache-hit::false'; fi
     - name: 🛠 Rebuild hermes-engine AAR when cache missed
       if: inputs.hermes-engine-aar == 'true' && inputs.rebuild-hermes-engine-aar-if-needed == 'true' && steps.cache-hermes-engine-aar.outputs.cache-hit != 'true'
+      shell: bash
       run: |
         mkdir -p ReactAndroid/prebuiltHermes
         cp -f sdks/.hermesversion ReactAndroid/prebuiltHermes/
