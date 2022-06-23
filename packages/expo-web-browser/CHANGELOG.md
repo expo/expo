@@ -20,7 +20,7 @@
 
 ### ⚠ Notices
 
-- Made `redirectUrl` auth session argument optional.
+- Made `redirectUrl` auth session argument optional. ([#17953](https://github.com/expo/expo/pull/17953) by [@barthap](https://github.com/barthap))
 
 ## 10.2.1 — 2022-05-24
 
