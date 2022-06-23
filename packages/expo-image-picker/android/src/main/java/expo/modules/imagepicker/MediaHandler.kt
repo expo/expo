@@ -52,7 +52,6 @@ internal class MediaHandler(
     )
   }
 
-
   private suspend fun handleVideo(
     sourceUri: Uri,
   ): ImagePickerMediaResponse.Video {

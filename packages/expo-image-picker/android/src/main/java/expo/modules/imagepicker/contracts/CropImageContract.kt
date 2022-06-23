@@ -40,23 +40,26 @@ internal class CropImageContract(
       sourceUri
     }
 
-    putExtra(CropImage.CROP_IMAGE_EXTRA_BUNDLE, bundleOf(
-      CropImage.CROP_IMAGE_EXTRA_SOURCE to sourceUri,
-      CropImage.CROP_IMAGE_EXTRA_OPTIONS to CropImageOptions().apply {
-        outputCompressFormat = compressFormat
-        outputCompressQuality = (this@CropImageContract.options.quality * 100).toInt()
-        this.outputUri = outputUri
+    putExtra(
+      CropImage.CROP_IMAGE_EXTRA_BUNDLE,
+      bundleOf(
+        CropImage.CROP_IMAGE_EXTRA_SOURCE to sourceUri,
+        CropImage.CROP_IMAGE_EXTRA_OPTIONS to CropImageOptions().apply {
+          outputCompressFormat = compressFormat
+          outputCompressQuality = (this@CropImageContract.options.quality * 100).toInt()
+          this.outputUri = outputUri
 
-        this@CropImageContract.options.aspect?.let { (x, y) ->
-          aspectRatioX = x
-          aspectRatioY = y
-          fixAspectRatio = true
-          initialCropWindowPaddingRatio = 0f
+          this@CropImageContract.options.aspect?.let { (x, y) ->
+            aspectRatioX = x
+            aspectRatioY = y
+            fixAspectRatio = true
+            initialCropWindowPaddingRatio = 0f
+          }
+
+          validate()
         }
-
-        validate()
-      }
-    ))
+      )
+    )
   }
 
   override fun parseResult(resultCode: Int, intent: Intent?): ImagePickerContractResult {

@@ -54,7 +54,7 @@ internal fun File.toBitmapCompressFormat(): Bitmap.CompressFormat = when {
 }
 
 internal fun Bitmap.CompressFormat.toImageFileExtension(): String {
-  return when(this) {
+  return when (this) {
     Bitmap.CompressFormat.PNG -> ".png"
     Bitmap.CompressFormat.JPEG -> ".jpeg"
     else -> throw RuntimeException("Compress format not supported '${this.name}'")
@@ -83,8 +83,8 @@ internal fun Uri.toMediaType(contentResolver: ContentResolver): MediaType {
 
 internal fun String.toBitmapCompressFormat(): Bitmap.CompressFormat = when {
   this.contains("png") ||
-  this.contains("gif") ||
-  this.contains("bmp") -> {
+    this.contains("gif") ||
+    this.contains("bmp") -> {
     // The result image won't ever be a GIF of a BMP as the cropper doesn't support it.
     Bitmap.CompressFormat.PNG
   }

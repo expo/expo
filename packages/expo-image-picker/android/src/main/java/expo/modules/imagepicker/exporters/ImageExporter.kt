@@ -69,4 +69,3 @@ open class ImageExportResult(
     } ?: throw FailedToReadFileException(imageFile)
   }
 }
-

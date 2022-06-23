@@ -68,7 +68,7 @@ enum class MediaTypes(val value: String) {
   }
 
   internal fun toFileExtension(): String {
-    return when(this) {
+    return when (this) {
       VIDEOS -> ".mp4"
       else -> ".jpeg"
     }

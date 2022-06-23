@@ -6,7 +6,6 @@ import android.content.Intent
 import android.net.Uri
 import android.provider.MediaStore
 import androidx.activity.result.contract.ActivityResultContract
-import expo.modules.imagepicker.MediaType
 import expo.modules.imagepicker.toMediaType
 import expo.modules.kotlin.providers.AppContextProvider
 
@@ -18,7 +17,7 @@ import expo.modules.kotlin.providers.AppContextProvider
  */
 internal class CameraContract(
   private val appContextProvider: AppContextProvider,
-): ActivityResultContract<CameraContractOptions, ImagePickerContractResult>() {
+) : ActivityResultContract<CameraContractOptions, ImagePickerContractResult>() {
   override fun createIntent(context: Context, input: CameraContractOptions): Intent =
     Intent(input.intentAction)
       .putExtra(MediaStore.EXTRA_OUTPUT, input.uri)
@@ -32,12 +31,12 @@ internal class CameraContract(
     if (resultCode == Activity.RESULT_CANCELED) {
       ImagePickerContractResult.Cancelled()
     } else {
-      val contentResolver = requireNotNull(appContextProvider.appContext.reactContext) { "React Application Context is null. "}.contentResolver
+      val contentResolver = requireNotNull(appContextProvider.appContext.reactContext) { "React Application Context is null. " }.contentResolver
       val uri = intent?.data ?: throw IllegalStateException("No data available in Intent")
       val type = uri.toMediaType(contentResolver)
       ImagePickerContractResult.Success(type to uri)
     }
-  }
+}
 
 data class CameraContractOptions(
   val uri: Uri,

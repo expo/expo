@@ -8,7 +8,7 @@ internal class FailedToDeduceTypeException :
   CodedException("Can not deduce type of the returned file")
 
 internal class FailedToCreateFileException(path: String, cause: Throwable? = null) :
-  CodedException("Failed to create the file '${path}'", cause)
+  CodedException("Failed to create the file '$path'", cause)
 
 internal class FailedToExtractVideoMetadataException(file: File? = null, cause: Throwable? = null) :
   CodedException("Failed to extract metadata from video file '${file?.toUri()?.toString() ?: ""}'", cause)

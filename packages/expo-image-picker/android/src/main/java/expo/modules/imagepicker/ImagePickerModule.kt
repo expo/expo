@@ -175,16 +175,19 @@ class ImagePickerModule : Module() {
   private suspend fun ensureCameraPermissionsAreGranted(): Unit = suspendCancellableCoroutine { continuation ->
     val permissions = appContext.permissions ?: throw ModuleNotFoundException("Permissions")
 
-    permissions.askForPermissions({ permissionsResponse ->
-      if (
-        permissionsResponse[Manifest.permission.WRITE_EXTERNAL_STORAGE]?.status == PermissionsStatus.GRANTED
-        && permissionsResponse[Manifest.permission.CAMERA]?.status == PermissionsStatus.GRANTED
-      ) {
-        continuation.resume(Unit)
-      } else {
-        continuation.resumeWithException(UserRejectedPermissionsException())
-      }
-    }, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA)
+    permissions.askForPermissions(
+      { permissionsResponse ->
+        if (
+          permissionsResponse[Manifest.permission.WRITE_EXTERNAL_STORAGE]?.status == PermissionsStatus.GRANTED &&
+          permissionsResponse[Manifest.permission.CAMERA]?.status == PermissionsStatus.GRANTED
+        ) {
+          continuation.resume(Unit)
+        } else {
+          continuation.resumeWithException(UserRejectedPermissionsException())
+        }
+      },
+      Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA
+    )
   }
 
   // endregion

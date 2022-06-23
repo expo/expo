@@ -5,9 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import androidx.activity.result.contract.ActivityResultContract
-import androidx.core.net.toFile
-import expo.modules.imagepicker.MediaType
-import expo.modules.imagepicker.toImageFileExtension
 import expo.modules.imagepicker.toMediaType
 import expo.modules.kotlin.providers.AppContextProvider
 
@@ -30,7 +27,7 @@ internal class ImageLibraryContract(
       ImagePickerContractResult.Cancelled()
     } else {
       val uri = requireNotNull(requireNotNull(intent).data)
-      val contentResolver = requireNotNull(appContextProvider.appContext.reactContext) { "React Application Context is null. "}.contentResolver
+      val contentResolver = requireNotNull(appContextProvider.appContext.reactContext) { "React Application Context is null. " }.contentResolver
       val type = uri.toMediaType(contentResolver)
 
       ImagePickerContractResult.Success(type to uri)
