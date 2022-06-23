@@ -556,8 +556,8 @@ A set of fields that define information about a single entity.
 | image                   | `Image`                   | Thumbnail image (ios: 320x320)                                                                                   | ✅   | ✅      |
 | rawImage                | `Image`                   | Raw image without cropping, usually large.                                                                       | ✅   | ✅      |
 | contactType             | `ContactType`             | Denoting a person or company.                                                                                    | ✅   | ✅      |
-| birthday                | `Date`                    | Birthday information in JS format.                                                                               | ✅   | ✅      |
-| dates                   | `Date[]`                  | A list of other relevant user dates in JS format.                                                                | ✅   | ✅      |
+| birthday                | `Date`                    | Birthday information in Gregorian format.                                                                        | ✅   | ✅      |
+| dates                   | `Date[]`                  | A list of other relevant user dates in Gregorian format.                                                         | ✅   | ✅      |
 | relationships           | `Relationship[]`          | Names of other relevant user connections                                                                         | ✅   | ✅      |
 | emails                  | `Email[]`                 | Email addresses                                                                                                  | ✅   | ✅      |
 | phoneNumbers            | `PhoneNumber[]`           | Phone numbers                                                                                                    | ✅   | ✅      |
