@@ -235,7 +235,7 @@ export function dismissBrowser(): void {
  *
  * @param url The url to open in the web browser. This should be a login page.
  * @param redirectUrl _Optional_ - The url to deep link back into your app.
- * By default, this will be set to output of [`Linking.createURL("")`](./linking/#linkingcreateurlpath-namedparameters).
+ * On web, this defaults to the output of [`Linking.createURL("")`](./linking/#linkingcreateurlpath-namedparameters).
  * @param options _Optional_ - An object extending the [`WebBrowserOpenOptions`](#webbrowseropenoptions).
  * If there is no native AuthSession implementation available (which is the case on Android)
  * these params will be used in the browser polyfill. If there is a native AuthSession implementation,
@@ -249,7 +249,7 @@ export function dismissBrowser(): void {
  */
 export async function openAuthSessionAsync(
   url: string,
-  redirectUrl: string,
+  redirectUrl?: string,
   options: AuthSessionOpenOptions = {}
 ): Promise<WebBrowserAuthSessionResult> {
   if (_authSessionIsNativelySupported()) {
@@ -390,7 +390,7 @@ async function _openBrowserAndWaitAndroidAsync(
 
 async function _openAuthSessionPolyfillAsync(
   startUrl: string,
-  returnUrl: string,
+  returnUrl: string | undefined,
   browserParams: WebBrowserOpenOptions = {}
 ): Promise<WebBrowserAuthSessionResult> {
   if (_redirectSubscription) {
@@ -437,10 +437,10 @@ function _stopWaitingForRedirect() {
   _redirectSubscription = null;
 }
 
-function _waitForRedirectAsync(returnUrl: string): Promise<WebBrowserRedirectResult> {
+function _waitForRedirectAsync(returnUrl?: string): Promise<WebBrowserRedirectResult> {
   return new Promise((resolve) => {
     const redirectHandler = (event: RedirectEvent) => {
-      if (event.url.startsWith(returnUrl)) {
+      if (returnUrl && event.url.startsWith(returnUrl)) {
         resolve({ url: event.url, type: 'success' });
       }
     };
