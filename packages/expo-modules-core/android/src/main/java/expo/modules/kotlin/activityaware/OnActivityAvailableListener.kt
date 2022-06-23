@@ -1,5 +1,6 @@
 package expo.modules.kotlin.activityaware
 
+import androidx.annotation.UiThread
 import androidx.appcompat.app.AppCompatActivity
 
 /**
@@ -10,7 +11,8 @@ import androidx.appcompat.app.AppCompatActivity
  */
 fun interface OnActivityAvailableListener {
   /**
-   * This callback will be called on Main thread.
+   * This callback will be called on UI thread.
    */
+  @UiThread
   fun onActivityAvailable(activity: AppCompatActivity)
 }

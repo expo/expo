@@ -88,10 +88,6 @@ class ActivityResultsManager(
 
   // region ActivityAware
 
-  override fun peekAvailableActivity(): AppCompatActivity? {
-    return activityAwareHelper.peekAvailableActivity()
-  }
-
   override fun addOnActivityAvailableListener(listener: OnActivityAvailableListener) {
     activityAwareHelper.addOnActivityAvailableListener(listener)
   }

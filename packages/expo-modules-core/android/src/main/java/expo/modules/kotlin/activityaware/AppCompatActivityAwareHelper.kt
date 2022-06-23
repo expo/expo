@@ -9,29 +9,13 @@ import java.util.concurrent.CopyOnWriteArrayList
  *
  * Helper class for implementing [AppCompatActivityAware].
  */
-class AppCompatActivityAwareHelper {
+class AppCompatActivityAwareHelper : AppCompatActivityAware {
   val listeners = CopyOnWriteArrayList<OnActivityAvailableListener>()
 
-  var activity = WeakReference<AppCompatActivity>(null)
-
-  fun peekAvailableActivity(): AppCompatActivity? {
-    return activity.get()
-  }
-
-  fun addOnActivityAvailableListener(listener: OnActivityAvailableListener) {
-    val a = activity.get()
-    if (a != null) {
-      listener.onActivityAvailable(a)
-    }
-    listeners.add(listener)
-  }
-
-  fun removeOnActivityAvailableListener(listener: OnActivityAvailableListener) {
-    listeners.remove(listener)
-  }
+  var activityReference = WeakReference<AppCompatActivity>(null)
 
   fun dispatchOnActivityAvailable(activity: AppCompatActivity) {
-    this.activity = WeakReference(activity)
+    this.activityReference = WeakReference(activity)
 
     activity.runOnUiThread {
       for (listener in listeners) {
@@ -39,4 +23,21 @@ class AppCompatActivityAwareHelper {
       }
     }
   }
+
+  // region AppCompatActivityAware
+
+  override fun addOnActivityAvailableListener(listener: OnActivityAvailableListener) {
+    activityReference.get()?.let { activity ->
+      activity.runOnUiThread {
+        listener.onActivityAvailable(activity)
+      }
+    }
+    listeners.add(listener)
+  }
+
+  override fun removeOnActivityAvailableListener(listener: OnActivityAvailableListener) {
+    listeners.remove(listener)
+  }
+
+  // endregion
 }

@@ -146,7 +146,7 @@ class ReactActivityDelegateWrapper(
   override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
     /**
      * Workaround for a problem when results from [onActivityResult] are not properly delivered to modules.
-     * It happens when Android kills the [Activity] upon low memory scenario and recreates its later on.
+     * It happens when Android kills the [Activity] upon low memory scenario and recreates it later on.
      *
      * In [com.facebook.react.ReactInstanceManager.onActivityResult] you can see that if
      * [com.facebook.react.bridge.ReactContext] is null then React would not broadcast the result to the modules

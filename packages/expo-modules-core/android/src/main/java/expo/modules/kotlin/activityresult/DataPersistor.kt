@@ -25,24 +25,18 @@ class DataPersistor(context: Context) {
   private val sharedPreferences: SharedPreferences = context.getSharedPreferences("expo.modules.kotlin.PersistentDataManager", Context.MODE_PRIVATE)
 
   private val accumulator = Bundle()
+  private val retrievedData by lazy { retrieveData() }
 
-  @Suppress("PropertyName")
-  private var _retrievedData: Bundle? = null
-  private val retrievedData: Bundle
-    get() = _retrievedData ?: retrieveData().also { _retrievedData = it }
-
-  fun addStringArrayList(key: String, value: ArrayList<String>): DataPersistor {
+  fun addStringArrayList(key: String, value: ArrayList<String>) = apply {
     accumulator.putStringArrayList(key, value)
-    return this
   }
 
   fun retrieveStringArrayList(key: String): java.util.ArrayList<String>? {
     return retrievedData.getStringArrayList(key)
   }
 
-  fun addStringToIntMap(key: String, value: Map<String, Int>): DataPersistor {
+  fun addStringToIntMap(key: String, value: Map<String, Int>) = apply {
     accumulator.putBundle(key, bundleOf(*value.toList().toTypedArray()))
-    return this
   }
 
   fun retrieveStringToIntMap(key: String): Map<String, Int>? {
@@ -52,7 +46,7 @@ class DataPersistor(context: Context) {
     }
   }
 
-  fun addStringToSerializableMap(key: String, value: Map<String, Serializable>): DataPersistor {
+  fun addStringToSerializableMap(key: String, value: Map<String, Serializable>) = apply {
     accumulator.putBundle(
       key,
       bundleOf(
@@ -61,7 +55,6 @@ class DataPersistor(context: Context) {
           .toTypedArray()
       )
     )
-    return this
   }
 
   fun retrieveStringToSerializableMap(key: String): Map<String, Serializable>? {
@@ -75,18 +68,16 @@ class DataPersistor(context: Context) {
       }
   }
 
-  fun addBundle(key: String, value: Bundle): DataPersistor {
+  fun addBundle(key: String, value: Bundle) = apply {
     accumulator.putBundle(key, value)
-    return this
   }
 
   fun retrieveBundle(key: String): Bundle? {
     return retrievedData.getBundle(key)
   }
 
-  fun addSerializable(key: String, value: Serializable): DataPersistor {
+  fun addSerializable(key: String, value: Serializable) = apply {
     accumulator.putSerializable(key, value)
-    return this
   }
 
   fun retrieveSerializable(key: String): Serializable? {

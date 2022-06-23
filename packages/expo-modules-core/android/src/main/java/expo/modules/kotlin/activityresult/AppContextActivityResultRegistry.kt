@@ -111,10 +111,9 @@ class AppContextActivityResultRegistry(
     when (intent.action) {
       RequestMultiplePermissions.ACTION_REQUEST_PERMISSIONS -> {
         // requestPermissions path
-        var permissions = intent.getStringArrayExtra(RequestMultiplePermissions.EXTRA_PERMISSIONS)
-        if (permissions == null) {
-          permissions = arrayOfNulls(0)
-        }
+        val permissions = intent
+          .getStringArrayExtra(RequestMultiplePermissions.EXTRA_PERMISSIONS)
+          ?: arrayOfNulls(0)
         ActivityCompat.requestPermissions(activity, permissions, requestCode)
       }
       StartIntentSenderForResult.ACTION_INTENT_SENDER_REQUEST -> {
@@ -208,7 +207,8 @@ class AppContextActivityResultRegistry(
 
     return object : AppContextActivityResultLauncher<I, O, P>() {
       override fun launch(input: I, params: P, callback: ActivityResultCallback<O>) {
-        val requestCode = keyToRequestCode[key] ?: throw IllegalStateException("Attempting to launch an unregistered ActivityResultLauncher with contract $contract and input $input. You must ensure the ActivityResultLauncher is registered before calling launch()")
+        val requestCode = keyToRequestCode[key]
+          ?: throw IllegalStateException("Attempting to launch an unregistered ActivityResultLauncher with contract $contract and input $input. You must ensure the ActivityResultLauncher is registered before calling launch()")
 
         @Suppress("UNCHECKED_CAST")
         keyToCallbacksAndContract[key] = CallbacksAndContract(fallbackCallback, callback, contract)

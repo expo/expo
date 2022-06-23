@@ -13,8 +13,10 @@ import kotlinx.coroutines.suspendCancellableCoroutine
  * By adding a [OnActivityAvailableListener] you can receive a callback for that event.
  */
 interface AppCompatActivityAware {
-  fun peekAvailableActivity(): AppCompatActivity?
-
+  /**
+   * Adds a listener waiting for Activity to become available.
+   * If Activity is available when listener is being added it will be immediately called.
+   */
   fun addOnActivityAvailableListener(listener: OnActivityAvailableListener)
 
   fun removeOnActivityAvailableListener(listener: OnActivityAvailableListener)
@@ -33,22 +35,15 @@ interface AppCompatActivityAware {
  */
 suspend inline fun <R> AppCompatActivityAware.withActivityAvailable(
   crossinline onActivityAvailable: (AppCompatActivity) -> R
-): R {
-  val availableActivity = peekAvailableActivity()
-  return if (availableActivity != null) {
-    onActivityAvailable(availableActivity)
-  } else {
-    suspendCancellableCoroutine { continuation ->
-      val listener = object : OnActivityAvailableListener {
-        override fun onActivityAvailable(activity: AppCompatActivity) {
-          continuation.resumeWith(runCatching { onActivityAvailable(activity) })
-          removeOnActivityAvailableListener(this)
-        }
-      }
-      addOnActivityAvailableListener(listener)
-      continuation.invokeOnCancellation {
-        removeOnActivityAvailableListener(listener)
-      }
+): R = suspendCancellableCoroutine { continuation ->
+  val listener = object : OnActivityAvailableListener {
+    override fun onActivityAvailable(activity: AppCompatActivity) {
+      continuation.resumeWith(runCatching { onActivityAvailable(activity) })
+      removeOnActivityAvailableListener(this)
     }
+  }
+  addOnActivityAvailableListener(listener)
+  continuation.invokeOnCancellation {
+    removeOnActivityAvailableListener(listener)
   }
 }

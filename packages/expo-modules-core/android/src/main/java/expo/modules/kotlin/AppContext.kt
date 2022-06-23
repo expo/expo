@@ -201,7 +201,7 @@ class AppContext(
   fun onHostResume() {
     activityResultsManager.onHostResume(
       requireNotNull(currentActivity) {
-        "Current Activity is not available at this moment"
+        "Current Activity is not available at this moment. This is an invalid state and this should never happen"
       }
     )
     registry.post(EventName.ACTIVITY_ENTERS_FOREGROUND)
@@ -214,7 +214,7 @@ class AppContext(
   fun onHostDestroy() {
     activityResultsManager.onHostDestroy(
       requireNotNull(currentActivity) {
-        "Current Activity is not available at this moment"
+        "Current Activity is not available at this moment. This is an invalid state and this should never happen"
       }
     )
     registry.post(EventName.ACTIVITY_DESTROYS)
