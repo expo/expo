@@ -249,7 +249,7 @@ export function dismissBrowser(): void {
  */
 export async function openAuthSessionAsync(
   url: string,
-  redirectUrl?: string,
+  redirectUrl?: string | null,
   options: AuthSessionOpenOptions = {}
 ): Promise<WebBrowserAuthSessionResult> {
   if (_authSessionIsNativelySupported()) {
@@ -390,7 +390,7 @@ async function _openBrowserAndWaitAndroidAsync(
 
 async function _openAuthSessionPolyfillAsync(
   startUrl: string,
-  returnUrl: string | undefined,
+  returnUrl: string | null | undefined,
   browserParams: WebBrowserOpenOptions = {}
 ): Promise<WebBrowserAuthSessionResult> {
   if (_redirectSubscription) {
@@ -437,7 +437,10 @@ function _stopWaitingForRedirect() {
   _redirectSubscription = null;
 }
 
-function _waitForRedirectAsync(returnUrl?: string): Promise<WebBrowserRedirectResult> {
+function _waitForRedirectAsync(
+  returnUrl: string | null | undefined
+): Promise<WebBrowserRedirectResult> {
+  // Note that this Promise never resolves when `returnUrl` is nullish
   return new Promise((resolve) => {
     const redirectHandler = (event: RedirectEvent) => {
       if (returnUrl && event.url.startsWith(returnUrl)) {

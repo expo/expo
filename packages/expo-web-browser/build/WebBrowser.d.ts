@@ -114,7 +114,7 @@ export declare function dismissBrowser(): void;
  * - If the browser is closed using [`dismissBrowser`](#webbrowserdismissbrowser),
  * the Promise fulfills with `{ type: 'dismiss' }` object.
  */
-export declare function openAuthSessionAsync(url: string, redirectUrl?: string, options?: AuthSessionOpenOptions): Promise<WebBrowserAuthSessionResult>;
+export declare function openAuthSessionAsync(url: string, redirectUrl?: string | null, options?: AuthSessionOpenOptions): Promise<WebBrowserAuthSessionResult>;
 export declare function dismissAuthSession(): void;
 /**
  * Possibly completes an authentication session on web in a window popup. The method

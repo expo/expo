@@ -356,6 +356,7 @@ function _stopWaitingForRedirect() {
     _redirectSubscription = null;
 }
 function _waitForRedirectAsync(returnUrl) {
+    // Note that this Promise never resolves when `returnUrl` is nullish
     return new Promise((resolve) => {
         const redirectHandler = (event) => {
             if (returnUrl && event.url.startsWith(returnUrl)) {
