@@ -6232,6 +6232,13 @@ builtins@^1.0.3:
   resolved "https://registry.yarnpkg.com/builtins/-/builtins-1.0.3.tgz#cb94faeb61c8696451db36534e1422f94f0aee88"
   integrity sha1-y5T662HIaWRR2zZTThQi+U8K7og=
 
+builtins@^5.0.0:
+  version "5.0.1"
+  resolved "https://registry.yarnpkg.com/builtins/-/builtins-5.0.1.tgz#87f6db9ab0458be728564fa81d876d8d74552fa9"
+  integrity sha512-qwVpFEHNfhYJIzNRBvd2C1kyo6jz3ZSMPyyuR47OPdiKWlbYnZNyDWuyR175qDnAJLiCo5fBBqPb3RiXgWlkOQ==
+  dependencies:
+    semver "^7.0.0"
+
 bunyan-debug-stream@^2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/bunyan-debug-stream/-/bunyan-debug-stream-2.0.1.tgz#9bd7c7e30c7b2cf711317e9d37529b0464c3b164"
@@ -20095,6 +20102,13 @@ validate-npm-package-name@^3.0.0:
   integrity sha1-X6kS2B630MdK/BQN5zF/DKffQ34=
   dependencies:
     builtins "^1.0.3"
+
+validate-npm-package-name@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/validate-npm-package-name/-/validate-npm-package-name-4.0.0.tgz#fe8f1c50ac20afdb86f177da85b3600f0ac0d747"
+  integrity sha512-mzR0L8ZDktZjpX4OB46KT+56MAhl4EIazWP/+G/HPGuvfdaqg4YsCdtOm6U9+LOFyYDoh4dpnpxZRB9MQQns5Q==
+  dependencies:
+    builtins "^5.0.0"
 
 value-or-promise@1.0.11, value-or-promise@^1.0.11:
   version "1.0.11"

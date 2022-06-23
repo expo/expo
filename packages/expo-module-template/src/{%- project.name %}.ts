@@ -9,6 +9,10 @@ const <%- project.name %> = requireNativeModule('<%- project.name %>');
 // Get the native constant value.
 export const PI = <%- project.name %>.PI;
 
+export function hello(): string {
+  return <%- project.name %>.hello();
+}
+
 export async function setValueAsync(value: string) {
   return await <%- project.name %>.setValueAsync(value);
 }
