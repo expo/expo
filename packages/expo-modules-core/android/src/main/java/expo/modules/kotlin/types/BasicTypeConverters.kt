@@ -10,7 +10,7 @@ import expo.modules.kotlin.jni.JavaScriptValue
 class IntTypeConverter(isOptional: Boolean) : DynamicAwareTypeConverters<Int>(isOptional) {
   override fun convertFromDynamic(value: Dynamic): Int = value.asInt()
   override fun convertFromAny(value: Any): Int = when (value) {
-    is Double -> value.toInt()
+    is Number -> value.toInt()
     else -> value as Int
   }
 
@@ -20,7 +20,7 @@ class IntTypeConverter(isOptional: Boolean) : DynamicAwareTypeConverters<Int>(is
 class DoubleTypeConverter(isOptional: Boolean) : DynamicAwareTypeConverters<Double>(isOptional) {
   override fun convertFromDynamic(value: Dynamic): Double = value.asDouble()
   override fun convertFromAny(value: Any): Double = when (value) {
-    is Int -> value.toDouble()
+    is Number -> value.toDouble()
     else -> value as Double
   }
 
@@ -30,8 +30,7 @@ class DoubleTypeConverter(isOptional: Boolean) : DynamicAwareTypeConverters<Doub
 class FloatTypeConverter(isOptional: Boolean) : DynamicAwareTypeConverters<Float>(isOptional) {
   override fun convertFromDynamic(value: Dynamic): Float = value.asDouble().toFloat()
   override fun convertFromAny(value: Any): Float = when (value) {
-    is Int -> value.toFloat()
-    is Double -> value.toFloat()
+    is Number -> value.toFloat()
     else -> value as Float
   }
 
