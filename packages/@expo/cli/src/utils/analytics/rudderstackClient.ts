@@ -2,6 +2,7 @@ import RudderAnalytics from '@expo/rudder-sdk-node';
 import * as ciInfo from 'ci-info';
 import os from 'os';
 import { v4 as uuidv4 } from 'uuid';
+import { getUserAsync } from '../../api/user/user';
 
 import UserSettings from '../../api/user/UserSettings';
 import { env } from '../env';
@@ -58,19 +59,44 @@ export async function setUserDataAsync(userId: string, traits: Record<string, an
   ensureIdentified();
 }
 
-export function logEvent(
-  event: // TODO: revise
+type Event =
   | 'action'
-    | 'Open Url on Device'
-    | 'Start Project'
-    | 'Serve Manifest'
-    | 'dev client start command'
-    | 'Serve Expo Updates Manifest',
-  properties: Record<string, any> = {}
-): void {
+  | 'Open Url on Device'
+  | 'Start Project'
+  | 'Serve Manifest'
+  | 'Serve Expo Updates Manifest'
+  | 'dev client start command'
+  | 'dev client run command';
+
+export function logEvent(event: Event, properties: Record<string, any> = {}): void {
   if (env.EXPO_NO_TELEMETRY) {
     return;
   }
+
+  ensureIdentified();
+
+  const { userId, deviceId } = identifyData ?? {};
+  const commonEventProperties = { source_version: process.env.__EXPO_VERSION, source: 'expo' };
+
+  const identity = { userId: userId ?? undefined, anonymousId: deviceId ?? uuidv4() };
+  getClient().track({
+    event,
+    properties: { ...properties, ...commonEventProperties },
+    ...identity,
+    context: getContext(),
+  });
+}
+
+/** Log event while ensuring the user is identified. */
+export async function logEventAsync(
+  event: Event,
+  properties: Record<string, any> = {}
+): Promise<void> {
+  if (env.EXPO_NO_TELEMETRY) {
+    return;
+  }
+
+  await getUserAsync().catch(() => null);
   ensureIdentified();
 
   const { userId, deviceId } = identifyData ?? {};
