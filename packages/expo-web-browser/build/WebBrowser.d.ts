@@ -102,7 +102,7 @@ export declare function dismissBrowser(): void;
  *
  * @param url The url to open in the web browser. This should be a login page.
  * @param redirectUrl _Optional_ - The url to deep link back into your app.
- * By default, this will be set to output of [`Linking.createURL("")`](./linking/#linkingcreateurlpath-namedparameters).
+ * On web, this defaults to the output of [`Linking.createURL("")`](./linking/#linkingcreateurlpath-namedparameters).
  * @param options _Optional_ - An object extending the [`WebBrowserOpenOptions`](#webbrowseropenoptions).
  * If there is no native AuthSession implementation available (which is the case on Android)
  * these params will be used in the browser polyfill. If there is a native AuthSession implementation,
@@ -114,7 +114,7 @@ export declare function dismissBrowser(): void;
  * - If the browser is closed using [`dismissBrowser`](#webbrowserdismissbrowser),
  * the Promise fulfills with `{ type: 'dismiss' }` object.
  */
-export declare function openAuthSessionAsync(url: string, redirectUrl: string, options?: AuthSessionOpenOptions): Promise<WebBrowserAuthSessionResult>;
+export declare function openAuthSessionAsync(url: string, redirectUrl?: string | null, options?: AuthSessionOpenOptions): Promise<WebBrowserAuthSessionResult>;
 export declare function dismissAuthSession(): void;
 /**
  * Possibly completes an authentication session on web in a window popup. The method
