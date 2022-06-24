@@ -5,7 +5,7 @@ import androidx.annotation.MainThread
 import java.io.Serializable
 
 /**
- * This interface is direct based on [androidx.activity.result.ActivityResultCaller], but due to incompatibility
+ * This interface is directly based on [androidx.activity.result.ActivityResultCaller], but due to incompatibility
  * of ReactNative and Android's [androidx.lifecycle.Lifecycle] it needed to be adapted.
  * For more information how to use it read [androidx.activity.result.ActivityResultCaller] from `androidx.activity:activity:1.4.0`
  * or even better from `androidx.activity:activity-ktx:1.4.0`.
