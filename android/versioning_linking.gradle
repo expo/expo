@@ -8,7 +8,7 @@ def normalizeProjectName(String projectRoot) {
 /**
  * Link vendored modules into settings.gradle
  */
-ext.useVendoredModules = { String sdkVersion ->
+ext.useVendoredModulesForSettingsGradle = { String sdkVersion ->
   def vendoredRoot = Paths.get(rootDir.toString(), 'vendored', sdkVersion).toString()
   fileTree(dir: vendoredRoot, include: '**/build.gradle').each { gradleFile ->
     def projectRoot = rootDir.toPath().relativize(gradleFile.toPath()).getParent().getParent().toString()
@@ -16,5 +16,19 @@ ext.useVendoredModules = { String sdkVersion ->
 
     include(":${projectName}")
     project(":${projectName}").projectDir = gradleFile.getParentFile()
+  }
+}
+
+
+/**
+ * Link vendored modules into settings.gradle
+ */
+ext.useVendoredModulesForExpoView = { String sdkVersion ->
+  def vendoredRoot = Paths.get(rootDir.toString(), 'vendored', sdkVersion).toString()
+  fileTree(dir: vendoredRoot, include: '**/build.gradle').each { gradleFile ->
+    def projectRoot = rootDir.toPath().relativize(gradleFile.toPath()).getParent().getParent().toString()
+    def projectName = normalizeProjectName(projectRoot)
+
+    dependencies.add('implementation', project(":${projectName}"))
   }
 }

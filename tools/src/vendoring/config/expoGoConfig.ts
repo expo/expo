@@ -313,7 +313,7 @@ const config: VendoringTargetConfig = {
         includeFiles: ['android/**', 'cpp/**'],
         async postCopyFilesHookAsync(sourceDirectory, targetDirectory) {
           // copy skia static libraries to common directory
-          const commonLibsDir = path.join(targetDirectory, '..', '..', '..', 'common', 'jniLibs');
+          const commonLibsDir = path.join(targetDirectory, '..', '..', '..', 'common', 'libs');
           await fs.ensureDir(commonLibsDir);
           await fs.copy(path.join(sourceDirectory, 'libs', 'android'), commonLibsDir);
 

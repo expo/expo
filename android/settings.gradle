@@ -70,6 +70,6 @@ useExpoModules([
     ]
 ])
 
-useVendoredModules("unversioned")
+useVendoredModulesForSettingsGradle('unversioned')
 
 // WHEN_DISTRIBUTING_REMOVE_TO_HERE

@@ -62,7 +62,7 @@
  
  # Import prebuilt SKIA libraries
 -set (SKIA_LIBS_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../libs/android/${ANDROID_ABI}")
-+set (SKIA_LIBS_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../../../common/jniLibs/${ANDROID_ABI}")
++set (SKIA_LIBS_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../../../common/libs/${ANDROID_ABI}")
  add_library(skia STATIC IMPORTED)
  set_property(TARGET skia PROPERTY IMPORTED_LOCATION "${SKIA_LIBS_PATH}/libskia.a")
  
@@ -105,12 +105,16 @@
                  arguments '-DANDROID_STL=c++_shared',
                            "-DREACT_NATIVE_VERSION=${REACT_NATIVE_VERSION}",
                            "-DNODE_MODULES_DIR=${nodeModules}",
-@@ -175,8 +179,6 @@
+@@ -175,8 +179,10 @@
      //noinspection GradleDynamicVersion
      extractJNI("com.facebook.fbjni:fbjni:0.2.2")
  
 -    def rnAAR = fileTree("${nodeModules}/react-native/android").matching({ it.include "**/**/*.aar" }).singleFile
 -    extractJNI(files(rnAAR))
++    def rnAAR = fileTree("${nodeModules}/react-native/android").matching({ it.include "**/**/*.aar" })
++    if (rnAAR.any()) {
++      extractJNI(files(rnAAR.singleFile))
++    }
  }
  
  afterEvaluate { project ->
