@@ -27,12 +27,12 @@ class AppCompatActivityAwareHelper : AppCompatActivityAware {
   // region AppCompatActivityAware
 
   override fun addOnActivityAvailableListener(listener: OnActivityAvailableListener) {
+    listeners.add(listener)
     activityReference.get()?.let { activity ->
       activity.runOnUiThread {
         listener.onActivityAvailable(activity)
       }
     }
-    listeners.add(listener)
   }
 
   override fun removeOnActivityAvailableListener(listener: OnActivityAvailableListener) {

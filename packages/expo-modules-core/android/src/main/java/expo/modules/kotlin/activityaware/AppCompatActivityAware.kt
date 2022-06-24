@@ -38,8 +38,8 @@ suspend inline fun <R> AppCompatActivityAware.withActivityAvailable(
 ): R = suspendCancellableCoroutine { continuation ->
   val listener = object : OnActivityAvailableListener {
     override fun onActivityAvailable(activity: AppCompatActivity) {
-      continuation.resumeWith(runCatching { onActivityAvailable(activity) })
       removeOnActivityAvailableListener(this)
+      continuation.resumeWith(runCatching { onActivityAvailable(activity) })
     }
   }
   addOnActivityAvailableListener(listener)
