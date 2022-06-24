@@ -43,6 +43,14 @@ describe('e2e: iOS locales', () => {
       projectRoot
     );
 
+  });
+
+  afterAll(() => {
+    vol.reset();
+  });
+
+  it('writes all the image files expected', async () => {
+
     let project = getPbxproj(projectRoot);
 
     project = await setLocalesAsync(
@@ -59,13 +67,7 @@ describe('e2e: iOS locales', () => {
     );
     // Sync the Xcode project with the changes.
     fs.writeFileSync(project.filepath, project.writeSync());
-  });
-
-  afterAll(() => {
-    vol.reset();
-  });
-
-  it('writes all the image files expected', async () => {
+    
     const after = getDirFromFS(vol.toJSON(), projectRoot);
     const locales = Object.keys(after).filter((value) => value.endsWith('InfoPlist.strings'));
 
