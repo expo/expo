@@ -24,9 +24,11 @@
   "dependencies": {},
   "devDependencies": {
     "expo-module-scripts": "^2.0.0",
-    "expo-modules-core": "^0.9.0"
+    "expo-modules-core": "^0.10.0"
   },
   "peerDependencies": {
-    "expo": "*"
+    "expo": "*",
+    "react": "*",
+    "react-native": "*"
   }
 }

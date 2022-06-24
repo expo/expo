@@ -1,0 +1,10 @@
+# Exclude all top-level hidden directories by convention
+/.*/
+
+__mocks__
+__tests__
+
+/example
+/babel.config.js
+/android/src/androidTest/
+/android/src/test/
