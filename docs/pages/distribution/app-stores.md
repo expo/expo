@@ -4,7 +4,7 @@ title: Deploying to App Stores
 
 import { ConfigClassic } from '~/components/plugins/ConfigSection';
 
-This guide offers best practices around submitting your Expo app to the Apple App Store and Google Play Store. To learn how to generate native binaries for submission, refer to ["Creating your first build"](/build/setup.md).
+This guide offers best practices around submitting your Expo app to the Apple App Store and Google Play Store. To learn how to generate native binaries for submission, refer to ["Creating your first build"](../build/setup.md).
 
 Although you can share your published project through the Expo Go app and on your [expo.dev](https://expo.dev) profile, submitting a standalone app to the Apple and Google stores is necessary to have a dedicated piece of real estate on your users' devices. Submitting to these stores carries stronger requirements and quality standards than sharing a toy project with a few friends, because it makes your app available through a much wider distribution platform.
 
@@ -18,9 +18,7 @@ Try your app on tablets in addition to handsets. Even if you have `ios.supportsT
 
 ## Make app loading seamless
 
-- Add a [splash screen](../guides/splash-screens.md), the very first thing your users see after they select your app.
-- Use [AppLoading](../versions/latest/sdk/app-loading.md) to ensure your interface is ready before the user sees it.
-- [Preload and cache your assets](../guides/preloading-and-caching-assets.md) so your app loads quickly, even with a poor internet connection.
+Add a [splash screen](../guides/splash-screens.md), the very first thing your users see after they select your app.
 
 ## Play nicely with the system UI
 
@@ -31,10 +29,9 @@ Try your app on tablets in addition to handsets. Even if you have `ios.supportsT
 ## Tailor your app metadata
 
 - Add a great [icon](../guides/app-icons.md). Icon requirements between iOS and Android differ and are fairly strict, so be sure and familiarize yourself with that guide.
-- Customize your [primaryColor](../workflow/configuration.md#primarycolor).
 - Make sure your app has a valid iOS [Bundle Identifier](../versions/latest/config/app/#bundleidentifier) and [Android Package](../versions/latest/config/app/#package). Take care in choosing these, as you will not be able to change them later.
 
-## Versioning your App
+## Versioning your app
 
 You'll use the **app.json** file to specify the version of your app, but there are a few different fields each with specific functionality.
 
@@ -58,7 +55,7 @@ To access these values at runtime, you can use the [Expo Application API](../ver
 
 <ConfigClassic>
 
-When you submit an app to the Apple App Store, Apple will ask you whether your app uses the IDFA. For builds with the Classic Build service, the answer is "yes." This is because of limitations of the Classic Build service (not present in [EAS Build](/build/introduction.md)). Classic builds contain the Facebook and Branch SDKs, which contain code for collecting the IDFA, and you'll need to check a couple boxes on the Apple submission form. See [Branch's Guide](https://blog.branch.io/how-to-submit-an-app-that-uses-an-idfa-to-the-app-store/) for which specific boxes to fill in.
+When you submit an app to the Apple App Store, Apple will ask you whether your app uses the IDFA. For builds with the Classic Build service, the answer is "yes." This is because of limitations of the Classic Build service (not present in [EAS Build](../build/introduction.md)). Classic builds contain the Facebook and Branch SDKs, which contain code for collecting the IDFA, and you'll need to check a couple boxes on the Apple submission form. See [Branch's Guide](https://blog.branch.io/how-to-submit-an-app-that-uses-an-idfa-to-the-app-store/) for which specific boxes to fill in.
 
 > **Note**: No data is sent to Branch, Facebook, Segment, or Amplitude from your app unless you explicitly do so using the APIs. For more information on how Expo handles your data, and your end users' data, take a look at our [Privacy Explained page](https://expo.dev/privacy-explained).
 
@@ -136,7 +133,7 @@ If your app asks for [system permissions](../versions/latest/sdk/permissions.md)
 }
 ```
 
-Many of these properties are also directly configurable using the config plugin associated with the library that adds them. For example, with [expo-media-library](/versions/latest/sdk/media-library.md) you can configure photo permission messages like this:
+Many of these properties are also directly configurable using the config plugin associated with the library that adds them. For example, with [expo-media-library](../versions/latest/sdk/media-library.md) you can configure photo permission messages like this:
 
 ```json
 {
@@ -154,11 +151,11 @@ Many of these properties are also directly configurable using the config plugin 
 }
 ```
 
-> Note: These properties cannot be updated over the air, they will only be published when you build a new binary, eg: with [`eas build`](/build/introduction.md).
+> Note: These properties cannot be updated over the air, they will only be published when you build a new binary, eg: with [`eas build`](../build/introduction.md).
 
 ## Localizing your iOS app
 
-If you plan on shipping your app to different countries, regions, or just want it to support various languages, you can provide [localized](/versions/latest/sdk/localization) strings for things like the display name and system dialogs. All of this is easily set up [in your app.json](/workflow/configuration/#ios). First, set `ios.infoPlist.CFBundleAllowMixedLocalizations: true`, then provide a list of file paths to `locales`.
+If you plan on shipping your app to different countries, regions, or just want it to support various languages, you can provide [localized](../versions/latest/sdk/localization) strings for things like the display name and system dialogs. All of this is easily set up [in your app.json](../workflow/configuration.md). First, set `ios.infoPlist.CFBundleAllowMixedLocalizations: true`, then provide a list of file paths to `locales`.
 
 ```json
 {
