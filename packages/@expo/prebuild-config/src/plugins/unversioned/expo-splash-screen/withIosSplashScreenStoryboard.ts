@@ -52,7 +52,7 @@ export const withIosSplashScreenStoryboardBaseMod: ConfigPlugin = (config) => {
             const contents = await fs.promises.readFile(filePath, 'utf8');
             const xml = await new Parser().parseStringPromise(contents);
             return xml;
-          } catch (error) {
+          } catch {
             return getTemplateAsync();
           }
         },

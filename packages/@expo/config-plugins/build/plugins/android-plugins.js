@@ -1,25 +1,14 @@
-'use strict';
+"use strict";
 
-Object.defineProperty(exports, '__esModule', {
-  value: true,
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
 exports.createAndroidManifestPlugin = createAndroidManifestPlugin;
 exports.createStringsXmlPlugin = createStringsXmlPlugin;
-exports.withStringsXml =
-  exports.withSettingsGradle =
-  exports.withProjectBuildGradle =
-  exports.withMainApplication =
-  exports.withMainActivity =
-  exports.withGradleProperties =
-  exports.withAppBuildGradle =
-  exports.withAndroidStyles =
-  exports.withAndroidManifest =
-  exports.withAndroidColorsNight =
-  exports.withAndroidColors =
-    void 0;
+exports.withStringsXml = exports.withSettingsGradle = exports.withProjectBuildGradle = exports.withMainApplication = exports.withMainActivity = exports.withGradleProperties = exports.withAppBuildGradle = exports.withAndroidStyles = exports.withAndroidManifest = exports.withAndroidColorsNight = exports.withAndroidColors = void 0;
 
 function _withMod() {
-  const data = require('./withMod');
+  const data = require("./withMod");
 
   _withMod = function () {
     return data;
@@ -34,15 +23,14 @@ function _withMod() {
  * @param action
  */
 function createAndroidManifestPlugin(action, name) {
-  const withUnknown = (config) =>
-    withAndroidManifest(config, async (config) => {
-      config.modResults = await action(config, config.modResults);
-      return config;
-    });
+  const withUnknown = config => withAndroidManifest(config, async config => {
+    config.modResults = await action(config, config.modResults);
+    return config;
+  });
 
   if (name) {
     Object.defineProperty(withUnknown, 'name', {
-      value: name,
+      value: name
     });
   }
 
@@ -50,15 +38,14 @@ function createAndroidManifestPlugin(action, name) {
 }
 
 function createStringsXmlPlugin(action, name) {
-  const withUnknown = (config) =>
-    withStringsXml(config, async (config) => {
-      config.modResults = await action(config, config.modResults);
-      return config;
-    });
+  const withUnknown = config => withStringsXml(config, async config => {
+    config.modResults = await action(config, config.modResults);
+    return config;
+  });
 
   if (name) {
     Object.defineProperty(withUnknown, 'name', {
-      value: name,
+      value: name
     });
   }
 
@@ -71,11 +58,12 @@ function createStringsXmlPlugin(action, name) {
  * @param action
  */
 
+
 const withAndroidManifest = (config, action) => {
   return (0, _withMod().withMod)(config, {
     platform: 'android',
     mod: 'manifest',
-    action,
+    action
   });
 };
 /**
@@ -85,13 +73,14 @@ const withAndroidManifest = (config, action) => {
  * @param action
  */
 
+
 exports.withAndroidManifest = withAndroidManifest;
 
 const withStringsXml = (config, action) => {
   return (0, _withMod().withMod)(config, {
     platform: 'android',
     mod: 'strings',
-    action,
+    action
   });
 };
 /**
@@ -101,13 +90,14 @@ const withStringsXml = (config, action) => {
  * @param action
  */
 
+
 exports.withStringsXml = withStringsXml;
 
 const withAndroidColors = (config, action) => {
   return (0, _withMod().withMod)(config, {
     platform: 'android',
     mod: 'colors',
-    action,
+    action
   });
 };
 /**
@@ -117,13 +107,14 @@ const withAndroidColors = (config, action) => {
  * @param action
  */
 
+
 exports.withAndroidColors = withAndroidColors;
 
 const withAndroidColorsNight = (config, action) => {
   return (0, _withMod().withMod)(config, {
     platform: 'android',
     mod: 'colorsNight',
-    action,
+    action
   });
 };
 /**
@@ -133,13 +124,14 @@ const withAndroidColorsNight = (config, action) => {
  * @param action
  */
 
+
 exports.withAndroidColorsNight = withAndroidColorsNight;
 
 const withAndroidStyles = (config, action) => {
   return (0, _withMod().withMod)(config, {
     platform: 'android',
     mod: 'styles',
-    action,
+    action
   });
 };
 /**
@@ -149,13 +141,14 @@ const withAndroidStyles = (config, action) => {
  * @param action
  */
 
+
 exports.withAndroidStyles = withAndroidStyles;
 
 const withMainActivity = (config, action) => {
   return (0, _withMod().withMod)(config, {
     platform: 'android',
     mod: 'mainActivity',
-    action,
+    action
   });
 };
 /**
@@ -165,13 +158,14 @@ const withMainActivity = (config, action) => {
  * @param action
  */
 
+
 exports.withMainActivity = withMainActivity;
 
 const withMainApplication = (config, action) => {
   return (0, _withMod().withMod)(config, {
     platform: 'android',
     mod: 'mainApplication',
-    action,
+    action
   });
 };
 /**
@@ -181,13 +175,14 @@ const withMainApplication = (config, action) => {
  * @param action
  */
 
+
 exports.withMainApplication = withMainApplication;
 
 const withProjectBuildGradle = (config, action) => {
   return (0, _withMod().withMod)(config, {
     platform: 'android',
     mod: 'projectBuildGradle',
-    action,
+    action
   });
 };
 /**
@@ -197,13 +192,14 @@ const withProjectBuildGradle = (config, action) => {
  * @param action
  */
 
+
 exports.withProjectBuildGradle = withProjectBuildGradle;
 
 const withAppBuildGradle = (config, action) => {
   return (0, _withMod().withMod)(config, {
     platform: 'android',
     mod: 'appBuildGradle',
-    action,
+    action
   });
 };
 /**
@@ -213,13 +209,14 @@ const withAppBuildGradle = (config, action) => {
  * @param action
  */
 
+
 exports.withAppBuildGradle = withAppBuildGradle;
 
 const withSettingsGradle = (config, action) => {
   return (0, _withMod().withMod)(config, {
     platform: 'android',
     mod: 'settingsGradle',
-    action,
+    action
   });
 };
 /**
@@ -229,13 +226,14 @@ const withSettingsGradle = (config, action) => {
  * @param action
  */
 
+
 exports.withSettingsGradle = withSettingsGradle;
 
 const withGradleProperties = (config, action) => {
   return (0, _withMod().withMod)(config, {
     platform: 'android',
     mod: 'gradleProperties',
-    action,
+    action
   });
 };
 

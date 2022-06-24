@@ -17,7 +17,4 @@ export declare function getName(config: Pick<ExpoConfig, 'name'>): string | null
  * @param config
  * @param settingsGradle
  */
-export declare function applyNameSettingsGradle(
-  config: Pick<ExpoConfig, 'name'>,
-  settingsGradle: string
-): string;
+export declare function applyNameSettingsGradle(config: Pick<ExpoConfig, 'name'>, settingsGradle: string): string;

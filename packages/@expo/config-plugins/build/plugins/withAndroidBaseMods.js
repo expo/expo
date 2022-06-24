@@ -1,14 +1,14 @@
-'use strict';
+"use strict";
 
-Object.defineProperty(exports, '__esModule', {
-  value: true,
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
 exports.getAndroidModFileProviders = getAndroidModFileProviders;
 exports.sortAndroidManifest = sortAndroidManifest;
 exports.withAndroidBaseMods = withAndroidBaseMods;
 
 function _fs() {
-  const data = require('fs');
+  const data = require("fs");
 
   _fs = function () {
     return data;
@@ -18,7 +18,7 @@ function _fs() {
 }
 
 function _path() {
-  const data = _interopRequireDefault(require('path'));
+  const data = _interopRequireDefault(require("path"));
 
   _path = function () {
     return data;
@@ -28,7 +28,7 @@ function _path() {
 }
 
 function _android() {
-  const data = require('../android');
+  const data = require("../android");
 
   _android = function () {
     return data;
@@ -38,7 +38,7 @@ function _android() {
 }
 
 function _XML() {
-  const data = require('../utils/XML');
+  const data = require("../utils/XML");
 
   _XML = function () {
     return data;
@@ -48,7 +48,7 @@ function _XML() {
 }
 
 function _sortObject() {
-  const data = require('../utils/sortObject');
+  const data = require("../utils/sortObject");
 
   _sortObject = function () {
     return data;
@@ -58,7 +58,7 @@ function _sortObject() {
 }
 
 function _createBaseMod() {
-  const data = require('./createBaseMod');
+  const data = require("./createBaseMod");
 
   _createBaseMod = function () {
     return data;
@@ -67,26 +67,20 @@ function _createBaseMod() {
   return data;
 }
 
-function _interopRequireDefault(obj) {
-  return obj && obj.__esModule ? obj : { default: obj };
-}
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-const { readFile, writeFile } = _fs().promises;
+const {
+  readFile,
+  writeFile
+} = _fs().promises;
 
 function getAndroidManifestTemplate(config) {
-  let _config$android$packa, _config$android;
+  var _config$android$packa, _config$android;
 
   // Keep in sync with https://github.com/expo/expo/blob/master/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml
   // TODO: Read from remote template when possible
   return (0, _XML().parseXMLAsync)(`
-  <manifest xmlns:android="http://schemas.android.com/apk/res/android" package="${
-    (_config$android$packa =
-      (_config$android = config.android) === null || _config$android === void 0
-        ? void 0
-        : _config$android.package) !== null && _config$android$packa !== void 0
-      ? _config$android$packa
-      : 'com.placeholder.appid'
-  }">
+  <manifest xmlns:android="http://schemas.android.com/apk/res/android" package="${(_config$android$packa = (_config$android = config.android) === null || _config$android === void 0 ? void 0 : _config$android.package) !== null && _config$android$packa !== void 0 ? _config$android$packa : 'com.placeholder.appid'}">
 
     <uses-permission android:name="android.permission.INTERNET"/>
     <!-- OPTIONAL PERMISSIONS, REMOVE WHATEVER YOU DO NOT NEED -->
@@ -151,12 +145,8 @@ function sortAndroidManifest(obj) {
 
     if (Array.isArray(obj.manifest.application)) {
       // reverse sort applications so activity is towards the end and meta-data is towards the front.
-      obj.manifest.application = obj.manifest.application.map((application) => {
-        application = (0, _sortObject().sortObjWithOrder)(application, [
-          'meta-data',
-          'service',
-          'activity',
-        ]);
+      obj.manifest.application = obj.manifest.application.map(application => {
+        application = (0, _sortObject().sortObjWithOrder)(application, ['meta-data', 'service', 'activity']);
 
         if (Array.isArray(application['meta-data'])) {
           // Sort metadata alphabetically
@@ -184,17 +174,22 @@ const defaultProviders = {
     async read() {
       return {
         filePath: '',
-        modResults: {},
+        modResults: {}
       };
     },
 
-    async write() {},
+    async write() {}
+
   }),
   // Append a rule to supply gradle.properties data to mods on `mods.android.gradleProperties`
   manifest: (0, _createBaseMod().provider)({
     isIntrospective: true,
 
-    getFilePath({ modRequest: { platformProjectRoot } }) {
+    getFilePath({
+      modRequest: {
+        platformProjectRoot
+      }
+    }) {
       return _path().default.join(platformProjectRoot, 'app/src/main/AndroidManifest.xml');
     },
 
@@ -210,19 +205,26 @@ const defaultProviders = {
       return await getAndroidManifestTemplate(config);
     },
 
-    async write(filePath, { modResults, modRequest: { introspect } }) {
+    async write(filePath, {
+      modResults,
+      modRequest: {
+        introspect
+      }
+    }) {
       if (introspect) return;
-      await _android().Manifest.writeAndroidManifestAsync(
-        filePath,
-        sortAndroidManifest(modResults)
-      );
-    },
+      await _android().Manifest.writeAndroidManifestAsync(filePath, sortAndroidManifest(modResults));
+    }
+
   }),
   // Append a rule to supply gradle.properties data to mods on `mods.android.gradleProperties`
   gradleProperties: (0, _createBaseMod().provider)({
     isIntrospective: true,
 
-    getFilePath({ modRequest: { platformProjectRoot } }) {
+    getFilePath({
+      modRequest: {
+        platformProjectRoot
+      }
+    }) {
       return _path().default.join(platformProjectRoot, 'gradle.properties');
     },
 
@@ -238,16 +240,27 @@ const defaultProviders = {
       return [];
     },
 
-    async write(filePath, { modResults, modRequest: { introspect } }) {
+    async write(filePath, {
+      modResults,
+      modRequest: {
+        introspect
+      }
+    }) {
       if (introspect) return;
       await writeFile(filePath, _android().Properties.propertiesListToString(modResults));
-    },
+    }
+
   }),
   // Append a rule to supply strings.xml data to mods on `mods.android.strings`
   strings: (0, _createBaseMod().provider)({
     isIntrospective: true,
 
-    async getFilePath({ modRequest: { projectRoot, introspect } }) {
+    async getFilePath({
+      modRequest: {
+        projectRoot,
+        introspect
+      }
+    }) {
       try {
         return await _android().Strings.getProjectStringsXMLPathAsync(projectRoot);
       } catch (error) {
@@ -262,7 +275,7 @@ const defaultProviders = {
     async read(filePath, config) {
       try {
         return await _android().Resources.readResourcesXMLAsync({
-          path: filePath,
+          path: filePath
         });
       } catch (error) {
         if (!config.modRequest.introspect) {
@@ -271,22 +284,33 @@ const defaultProviders = {
       }
 
       return {
-        resources: {},
+        resources: {}
       };
     },
 
-    async write(filePath, { modResults, modRequest: { introspect } }) {
+    async write(filePath, {
+      modResults,
+      modRequest: {
+        introspect
+      }
+    }) {
       if (introspect) return;
       await (0, _XML().writeXMLAsync)({
         path: filePath,
-        xml: modResults,
+        xml: modResults
       });
-    },
+    }
+
   }),
   colors: (0, _createBaseMod().provider)({
     isIntrospective: true,
 
-    async getFilePath({ modRequest: { projectRoot, introspect } }) {
+    async getFilePath({
+      modRequest: {
+        projectRoot,
+        introspect
+      }
+    }) {
       try {
         return await _android().Colors.getProjectColorsXMLPathAsync(projectRoot);
       } catch (error) {
@@ -298,10 +322,14 @@ const defaultProviders = {
       return '';
     },
 
-    async read(filePath, { modRequest: { introspect } }) {
+    async read(filePath, {
+      modRequest: {
+        introspect
+      }
+    }) {
       try {
         return await _android().Resources.readResourcesXMLAsync({
-          path: filePath,
+          path: filePath
         });
       } catch (error) {
         if (!introspect) {
@@ -310,25 +338,36 @@ const defaultProviders = {
       }
 
       return {
-        resources: {},
+        resources: {}
       };
     },
 
-    async write(filePath, { modResults, modRequest: { introspect } }) {
+    async write(filePath, {
+      modResults,
+      modRequest: {
+        introspect
+      }
+    }) {
       if (introspect) return;
       await (0, _XML().writeXMLAsync)({
         path: filePath,
-        xml: modResults,
+        xml: modResults
       });
-    },
+    }
+
   }),
   colorsNight: (0, _createBaseMod().provider)({
     isIntrospective: true,
 
-    async getFilePath({ modRequest: { projectRoot, introspect } }) {
+    async getFilePath({
+      modRequest: {
+        projectRoot,
+        introspect
+      }
+    }) {
       try {
         return await _android().Colors.getProjectColorsXMLPathAsync(projectRoot, {
-          kind: 'values-night',
+          kind: 'values-night'
         });
       } catch (error) {
         if (!introspect) {
@@ -342,7 +381,7 @@ const defaultProviders = {
     async read(filePath, config) {
       try {
         return await _android().Resources.readResourcesXMLAsync({
-          path: filePath,
+          path: filePath
         });
       } catch (error) {
         if (!config.modRequest.introspect) {
@@ -351,22 +390,33 @@ const defaultProviders = {
       }
 
       return {
-        resources: {},
+        resources: {}
       };
     },
 
-    async write(filePath, { modResults, modRequest: { introspect } }) {
+    async write(filePath, {
+      modResults,
+      modRequest: {
+        introspect
+      }
+    }) {
       if (introspect) return;
       await (0, _XML().writeXMLAsync)({
         path: filePath,
-        xml: modResults,
+        xml: modResults
       });
-    },
+    }
+
   }),
   styles: (0, _createBaseMod().provider)({
     isIntrospective: true,
 
-    async getFilePath({ modRequest: { projectRoot, introspect } }) {
+    async getFilePath({
+      modRequest: {
+        projectRoot,
+        introspect
+      }
+    }) {
       try {
         return await _android().Styles.getProjectStylesXMLPathAsync(projectRoot);
       } catch (error) {
@@ -379,17 +429,17 @@ const defaultProviders = {
     },
 
     async read(filePath, config) {
-      let _styles$resources$$;
+      var _styles$resources$$;
 
       let styles = {
-        resources: {},
+        resources: {}
       };
 
       try {
         // Adds support for `tools:x`
         styles = await _android().Resources.readResourcesXMLAsync({
           path: filePath,
-          fallback: `<?xml version="1.0" encoding="utf-8"?><resources xmlns:tools="http://schemas.android.com/tools"></resources>`,
+          fallback: `<?xml version="1.0" encoding="utf-8"?><resources xmlns:tools="http://schemas.android.com/tools"></resources>`
         });
       } catch (error) {
         if (!config.modRequest.introspect) {
@@ -397,33 +447,38 @@ const defaultProviders = {
         }
       } // Ensure support for tools is added...
 
+
       if (!styles.resources.$) {
         styles.resources.$ = {};
       }
 
-      if (
-        !(
-          (_styles$resources$$ = styles.resources.$) !== null &&
-          _styles$resources$$ !== void 0 &&
-          _styles$resources$$['xmlns:tools']
-        )
-      ) {
+      if (!((_styles$resources$$ = styles.resources.$) !== null && _styles$resources$$ !== void 0 && _styles$resources$$['xmlns:tools'])) {
         styles.resources.$['xmlns:tools'] = 'http://schemas.android.com/tools';
       }
 
       return styles;
     },
 
-    async write(filePath, { modResults, modRequest: { introspect } }) {
+    async write(filePath, {
+      modResults,
+      modRequest: {
+        introspect
+      }
+    }) {
       if (introspect) return;
       await (0, _XML().writeXMLAsync)({
         path: filePath,
-        xml: modResults,
+        xml: modResults
       });
-    },
+    }
+
   }),
   projectBuildGradle: (0, _createBaseMod().provider)({
-    getFilePath({ modRequest: { projectRoot } }) {
+    getFilePath({
+      modRequest: {
+        projectRoot
+      }
+    }) {
       return _android().Paths.getProjectBuildGradleFilePath(projectRoot);
     },
 
@@ -431,12 +486,21 @@ const defaultProviders = {
       return _android().Paths.getFileInfo(filePath);
     },
 
-    async write(filePath, { modResults: { contents } }) {
+    async write(filePath, {
+      modResults: {
+        contents
+      }
+    }) {
       await writeFile(filePath, contents);
-    },
+    }
+
   }),
   settingsGradle: (0, _createBaseMod().provider)({
-    getFilePath({ modRequest: { projectRoot } }) {
+    getFilePath({
+      modRequest: {
+        projectRoot
+      }
+    }) {
       return _android().Paths.getSettingsGradleFilePath(projectRoot);
     },
 
@@ -444,12 +508,21 @@ const defaultProviders = {
       return _android().Paths.getFileInfo(filePath);
     },
 
-    async write(filePath, { modResults: { contents } }) {
+    async write(filePath, {
+      modResults: {
+        contents
+      }
+    }) {
       await writeFile(filePath, contents);
-    },
+    }
+
   }),
   appBuildGradle: (0, _createBaseMod().provider)({
-    getFilePath({ modRequest: { projectRoot } }) {
+    getFilePath({
+      modRequest: {
+        projectRoot
+      }
+    }) {
       return _android().Paths.getAppBuildGradleFilePath(projectRoot);
     },
 
@@ -457,12 +530,21 @@ const defaultProviders = {
       return _android().Paths.getFileInfo(filePath);
     },
 
-    async write(filePath, { modResults: { contents } }) {
+    async write(filePath, {
+      modResults: {
+        contents
+      }
+    }) {
       await writeFile(filePath, contents);
-    },
+    }
+
   }),
   mainActivity: (0, _createBaseMod().provider)({
-    getFilePath({ modRequest: { projectRoot } }) {
+    getFilePath({
+      modRequest: {
+        projectRoot
+      }
+    }) {
       return _android().Paths.getProjectFilePath(projectRoot, 'MainActivity');
     },
 
@@ -470,12 +552,21 @@ const defaultProviders = {
       return _android().Paths.getFileInfo(filePath);
     },
 
-    async write(filePath, { modResults: { contents } }) {
+    async write(filePath, {
+      modResults: {
+        contents
+      }
+    }) {
       await writeFile(filePath, contents);
-    },
+    }
+
   }),
   mainApplication: (0, _createBaseMod().provider)({
-    getFilePath({ modRequest: { projectRoot } }) {
+    getFilePath({
+      modRequest: {
+        projectRoot
+      }
+    }) {
       return _android().Paths.getProjectFilePath(projectRoot, 'MainApplication');
     },
 
@@ -483,18 +574,24 @@ const defaultProviders = {
       return _android().Paths.getFileInfo(filePath);
     },
 
-    async write(filePath, { modResults: { contents } }) {
+    async write(filePath, {
+      modResults: {
+        contents
+      }
+    }) {
       await writeFile(filePath, contents);
-    },
-  }),
+    }
+
+  })
 };
 
-function withAndroidBaseMods(config, { providers, ...props } = {}) {
-  return (0, _createBaseMod().withGeneratedBaseMods)(config, {
-    ...props,
+function withAndroidBaseMods(config, {
+  providers,
+  ...props
+} = {}) {
+  return (0, _createBaseMod().withGeneratedBaseMods)(config, { ...props,
     platform: 'android',
-    providers:
-      providers !== null && providers !== void 0 ? providers : getAndroidModFileProviders(),
+    providers: providers !== null && providers !== void 0 ? providers : getAndroidModFileProviders()
   });
 }
 

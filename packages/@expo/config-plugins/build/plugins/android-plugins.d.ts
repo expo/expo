@@ -8,14 +8,8 @@ declare type MutateDataAction<T> = (expo: ExpoConfig, data: T) => OptionalPromis
  *
  * @param action
  */
-export declare function createAndroidManifestPlugin(
-  action: MutateDataAction<Manifest.AndroidManifest>,
-  name: string
-): ConfigPlugin;
-export declare function createStringsXmlPlugin(
-  action: MutateDataAction<Resources.ResourceXML>,
-  name: string
-): ConfigPlugin;
+export declare function createAndroidManifestPlugin(action: MutateDataAction<Manifest.AndroidManifest>, name: string): ConfigPlugin;
+export declare function createStringsXmlPlugin(action: MutateDataAction<Resources.ResourceXML>, name: string): ConfigPlugin;
 /**
  * Provides the AndroidManifest.xml for modification.
  *

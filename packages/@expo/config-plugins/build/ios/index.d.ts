@@ -23,24 +23,4 @@ import * as Version from './Version';
 import * as XcodeProjectFile from './XcodeProjectFile';
 import * as XcodeUtils from './utils/Xcodeproj';
 export { InfoPlist, ExpoPlist, Entitlements, Paths, Permissions, XcodeUtils };
-export {
-  Bitcode,
-  BundleIdentifier,
-  BuildProperties,
-  BuildScheme,
-  DeviceFamily,
-  Google,
-  Maps,
-  Locales,
-  Name,
-  Orientation,
-  ProvisioningProfile,
-  RequiresFullScreen,
-  Scheme,
-  Swift,
-  Target,
-  Updates,
-  UsesNonExemptEncryption,
-  Version,
-  XcodeProjectFile,
-};
+export { Bitcode, BundleIdentifier, BuildProperties, BuildScheme, DeviceFamily, Google, Maps, Locales, Name, Orientation, ProvisioningProfile, RequiresFullScreen, Scheme, Swift, Target, Updates, UsesNonExemptEncryption, Version, XcodeProjectFile, };

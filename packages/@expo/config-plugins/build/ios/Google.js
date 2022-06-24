@@ -1,7 +1,7 @@
-'use strict';
+"use strict";
 
-Object.defineProperty(exports, '__esModule', {
-  value: true,
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
 exports.getGoogleServicesFile = getGoogleServicesFile;
 exports.getGoogleSignInReservedClientId = getGoogleSignInReservedClientId;
@@ -11,7 +11,7 @@ exports.setGoogleSignInReservedClientId = setGoogleSignInReservedClientId;
 exports.withGoogleServicesFile = exports.withGoogle = void 0;
 
 function _plist() {
-  const data = _interopRequireDefault(require('@expo/plist'));
+  const data = _interopRequireDefault(require("@expo/plist"));
 
   _plist = function () {
     return data;
@@ -21,7 +21,7 @@ function _plist() {
 }
 
 function _assert() {
-  const data = _interopRequireDefault(require('assert'));
+  const data = _interopRequireDefault(require("assert"));
 
   _assert = function () {
     return data;
@@ -31,7 +31,7 @@ function _assert() {
 }
 
 function _fs() {
-  const data = _interopRequireDefault(require('fs'));
+  const data = _interopRequireDefault(require("fs"));
 
   _fs = function () {
     return data;
@@ -41,7 +41,7 @@ function _fs() {
 }
 
 function _path() {
-  const data = _interopRequireDefault(require('path'));
+  const data = _interopRequireDefault(require("path"));
 
   _path = function () {
     return data;
@@ -51,7 +51,7 @@ function _path() {
 }
 
 function _iosPlugins() {
-  const data = require('../plugins/ios-plugins');
+  const data = require("../plugins/ios-plugins");
 
   _iosPlugins = function () {
     return data;
@@ -61,7 +61,7 @@ function _iosPlugins() {
 }
 
 function _Paths() {
-  const data = require('./Paths');
+  const data = require("./Paths");
 
   _Paths = function () {
     return data;
@@ -71,7 +71,7 @@ function _Paths() {
 }
 
 function _Scheme() {
-  const data = require('./Scheme');
+  const data = require("./Scheme");
 
   _Scheme = function () {
     return data;
@@ -81,7 +81,7 @@ function _Scheme() {
 }
 
 function _Xcodeproj() {
-  const data = require('./utils/Xcodeproj');
+  const data = require("./utils/Xcodeproj");
 
   _Xcodeproj = function () {
     return data;
@@ -90,12 +90,10 @@ function _Xcodeproj() {
   return data;
 }
 
-function _interopRequireDefault(obj) {
-  return obj && obj.__esModule ? obj : { default: obj };
-}
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-const withGoogle = (config) => {
-  return (0, _iosPlugins().withInfoPlist)(config, (config) => {
+const withGoogle = config => {
+  return (0, _iosPlugins().withInfoPlist)(config, config => {
     config.modResults = setGoogleConfig(config, config.modResults, config.modRequest);
     return config;
   });
@@ -103,11 +101,11 @@ const withGoogle = (config) => {
 
 exports.withGoogle = withGoogle;
 
-const withGoogleServicesFile = (config) => {
-  return (0, _iosPlugins().withXcodeProject)(config, (config) => {
+const withGoogleServicesFile = config => {
+  return (0, _iosPlugins().withXcodeProject)(config, config => {
     config.modResults = setGoogleServicesFile(config, {
       projectRoot: config.modRequest.projectRoot,
-      project: config.modResults,
+      project: config.modResults
     });
     return config;
   });
@@ -115,7 +113,9 @@ const withGoogleServicesFile = (config) => {
 
 exports.withGoogleServicesFile = withGoogleServicesFile;
 
-function readGoogleServicesInfoPlist(relativePath, { projectRoot }) {
+function readGoogleServicesInfoPlist(relativePath, {
+  projectRoot
+}) {
   const googleServiceFilePath = _path().default.resolve(projectRoot, relativePath);
 
   const contents = _fs().default.readFileSync(googleServiceFilePath, 'utf8');
@@ -125,24 +125,9 @@ function readGoogleServicesInfoPlist(relativePath, { projectRoot }) {
 }
 
 function getGoogleSignInReservedClientId(config, modRequest) {
-  let _config$ios$config$go,
-    _config$ios,
-    _config$ios$config,
-    _config$ios$config$go2,
-    _infoPlist$REVERSED_C;
+  var _config$ios$config$go, _config$ios, _config$ios$config, _config$ios$config$go2, _infoPlist$REVERSED_C;
 
-  const reservedClientId =
-    (_config$ios$config$go =
-      (_config$ios = config.ios) === null || _config$ios === void 0
-        ? void 0
-        : (_config$ios$config = _config$ios.config) === null || _config$ios$config === void 0
-        ? void 0
-        : (_config$ios$config$go2 = _config$ios$config.googleSignIn) === null ||
-          _config$ios$config$go2 === void 0
-        ? void 0
-        : _config$ios$config$go2.reservedClientId) !== null && _config$ios$config$go !== void 0
-      ? _config$ios$config$go
-      : null;
+  const reservedClientId = (_config$ios$config$go = (_config$ios = config.ios) === null || _config$ios === void 0 ? void 0 : (_config$ios$config = _config$ios.config) === null || _config$ios$config === void 0 ? void 0 : (_config$ios$config$go2 = _config$ios$config.googleSignIn) === null || _config$ios$config$go2 === void 0 ? void 0 : _config$ios$config$go2.reservedClientId) !== null && _config$ios$config$go !== void 0 ? _config$ios$config$go : null;
 
   if (reservedClientId) {
     return reservedClientId;
@@ -155,21 +140,13 @@ function getGoogleSignInReservedClientId(config, modRequest) {
   }
 
   const infoPlist = readGoogleServicesInfoPlist(googleServicesFileRelativePath, modRequest);
-  return (_infoPlist$REVERSED_C = infoPlist.REVERSED_CLIENT_ID) !== null &&
-    _infoPlist$REVERSED_C !== void 0
-    ? _infoPlist$REVERSED_C
-    : null;
+  return (_infoPlist$REVERSED_C = infoPlist.REVERSED_CLIENT_ID) !== null && _infoPlist$REVERSED_C !== void 0 ? _infoPlist$REVERSED_C : null;
 }
 
 function getGoogleServicesFile(config) {
-  let _config$ios$googleSer, _config$ios2;
+  var _config$ios$googleSer, _config$ios2;
 
-  return (_config$ios$googleSer =
-    (_config$ios2 = config.ios) === null || _config$ios2 === void 0
-      ? void 0
-      : _config$ios2.googleServicesFile) !== null && _config$ios$googleSer !== void 0
-    ? _config$ios$googleSer
-    : null;
+  return (_config$ios$googleSer = (_config$ios2 = config.ios) === null || _config$ios2 === void 0 ? void 0 : _config$ios2.googleServicesFile) !== null && _config$ios$googleSer !== void 0 ? _config$ios$googleSer : null;
 }
 
 function setGoogleSignInReservedClientId(config, infoPlist, modRequest) {
@@ -187,22 +164,19 @@ function setGoogleConfig(config, infoPlist, modRequest) {
   return infoPlist;
 }
 
-function setGoogleServicesFile(config, { projectRoot, project }) {
+function setGoogleServicesFile(config, {
+  projectRoot,
+  project
+}) {
   const googleServicesFileRelativePath = getGoogleServicesFile(config);
 
   if (googleServicesFileRelativePath === null) {
     return project;
   }
 
-  const googleServiceFilePath = _path().default.resolve(
-    projectRoot,
-    googleServicesFileRelativePath
-  );
+  const googleServiceFilePath = _path().default.resolve(projectRoot, googleServicesFileRelativePath);
 
-  _fs().default.copyFileSync(
-    googleServiceFilePath,
-    _path().default.join((0, _Paths().getSourceRoot)(projectRoot), 'GoogleService-Info.plist')
-  );
+  _fs().default.copyFileSync(googleServiceFilePath, _path().default.join((0, _Paths().getSourceRoot)(projectRoot), 'GoogleService-Info.plist'));
 
   const projectName = (0, _Xcodeproj().getProjectName)(projectRoot);
   const plistFilePath = `${projectName}/GoogleService-Info.plist`;
@@ -213,7 +187,7 @@ function setGoogleServicesFile(config, { projectRoot, project }) {
       groupName: projectName,
       project,
       isBuildFile: true,
-      verbose: true,
+      verbose: true
     });
   }
 

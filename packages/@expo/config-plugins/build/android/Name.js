@@ -1,7 +1,7 @@
-'use strict';
+"use strict";
 
-Object.defineProperty(exports, '__esModule', {
-  value: true,
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
 exports.applyNameSettingsGradle = applyNameSettingsGradle;
 exports.getName = getName;
@@ -9,7 +9,7 @@ exports.sanitizeNameForGradle = sanitizeNameForGradle;
 exports.withNameSettingsGradle = exports.withName = void 0;
 
 function _androidPlugins() {
-  const data = require('../plugins/android-plugins');
+  const data = require("../plugins/android-plugins");
 
   _androidPlugins = function () {
     return data;
@@ -19,7 +19,7 @@ function _androidPlugins() {
 }
 
 function _warnings() {
-  const data = require('../utils/warnings');
+  const data = require("../utils/warnings");
 
   _warnings = function () {
     return data;
@@ -29,7 +29,7 @@ function _warnings() {
 }
 
 function _Resources() {
-  const data = require('./Resources');
+  const data = require("./Resources");
 
   _Resources = function () {
     return data;
@@ -39,7 +39,7 @@ function _Resources() {
 }
 
 function _Strings() {
-  const data = require('./Strings');
+  const data = require("./Strings");
 
   _Strings = function () {
     return data;
@@ -66,15 +66,12 @@ function sanitizeNameForGradle(name) {
 const withName = (0, _androidPlugins().createStringsXmlPlugin)(applyNameFromConfig, 'withName');
 exports.withName = withName;
 
-const withNameSettingsGradle = (config) => {
-  return (0, _androidPlugins().withSettingsGradle)(config, (config) => {
+const withNameSettingsGradle = config => {
+  return (0, _androidPlugins().withSettingsGradle)(config, config => {
     if (config.modResults.language === 'groovy') {
       config.modResults.contents = applyNameSettingsGradle(config, config.modResults.contents);
     } else {
-      (0, _warnings().addWarningAndroid)(
-        'name',
-        `Cannot automatically configure settings.gradle if it's not groovy`
-      );
+      (0, _warnings().addWarningAndroid)('name', `Cannot automatically configure settings.gradle if it's not groovy`);
     }
 
     return config;
@@ -91,15 +88,10 @@ function applyNameFromConfig(config, stringsJSON) {
   const name = getName(config);
 
   if (name) {
-    return (0, _Strings().setStringItem)(
-      [
-        (0, _Resources().buildResourceItem)({
-          name: 'app_name',
-          value: name,
-        }),
-      ],
-      stringsJSON
-    );
+    return (0, _Strings().setStringItem)([(0, _Resources().buildResourceItem)({
+      name: 'app_name',
+      value: name
+    })], stringsJSON);
   }
 
   return (0, _Strings().removeStringItem)('app_name', stringsJSON);
@@ -111,16 +103,12 @@ function applyNameFromConfig(config, stringsJSON) {
  * @param settingsGradle
  */
 
+
 function applyNameSettingsGradle(config, settingsGradle) {
-  let _getName;
+  var _getName;
 
-  const name = sanitizeNameForGradle(
-    (_getName = getName(config)) !== null && _getName !== void 0 ? _getName : ''
-  ); // Select rootProject.name = '***' and replace the contents between the quotes.
+  const name = sanitizeNameForGradle((_getName = getName(config)) !== null && _getName !== void 0 ? _getName : ''); // Select rootProject.name = '***' and replace the contents between the quotes.
 
-  return settingsGradle.replace(
-    /rootProject.name\s?=\s?(["'])(?:(?=(\\?))\2.)*?\1/g,
-    `rootProject.name = '${name.replace(/'/g, "\\'")}'`
-  );
+  return settingsGradle.replace(/rootProject.name\s?=\s?(["'])(?:(?=(\\?))\2.)*?\1/g, `rootProject.name = '${name.replace(/'/g, "\\'")}'`);
 }
 //# sourceMappingURL=Name.js.map

@@ -21,23 +21,13 @@ export declare function getBitcode(config: Pick<ExpoConfig, 'ios'>): Bitcode;
 /**
  * Enable or disable the `ENABLE_BITCODE` property of the project configurations.
  */
-export declare function setBitcodeWithConfig(
-  config: Pick<ExpoConfig, 'ios'>,
-  {
-    project,
-  }: {
+export declare function setBitcodeWithConfig(config: Pick<ExpoConfig, 'ios'>, { project }: {
     project: XcodeProject;
-  }
-): XcodeProject;
+}): XcodeProject;
 /**
  * Enable or disable the `ENABLE_BITCODE` property.
  */
-export declare function setBitcode(
-  bitcode: Bitcode,
-  {
-    project,
-  }: {
+export declare function setBitcode(bitcode: Bitcode, { project }: {
     project: XcodeProject;
-  }
-): XcodeProject;
+}): XcodeProject;
 export {};

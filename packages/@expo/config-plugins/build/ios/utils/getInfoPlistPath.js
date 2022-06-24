@@ -1,12 +1,12 @@
-'use strict';
+"use strict";
 
-Object.defineProperty(exports, '__esModule', {
-  value: true,
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
 exports.getInfoPlistPathFromPbxproj = getInfoPlistPathFromPbxproj;
 
 function _Target() {
-  const data = require('../Target');
+  const data = require("../Target");
 
   _Target = function () {
     return data;
@@ -16,7 +16,7 @@ function _Target() {
 }
 
 function _Xcodeproj() {
-  const data = require('./Xcodeproj');
+  const data = require("./Xcodeproj");
 
   _Xcodeproj = function () {
     return data;
@@ -32,10 +32,10 @@ function _Xcodeproj() {
  * @param param1
  * @returns
  */
-function getInfoPlistPathFromPbxproj(
-  projectRootOrProject,
-  { targetName, buildConfiguration = 'Release' } = {}
-) {
+function getInfoPlistPathFromPbxproj(projectRootOrProject, {
+  targetName,
+  buildConfiguration = 'Release'
+} = {}) {
   const project = (0, _Xcodeproj().resolvePathOrProject)(projectRootOrProject);
 
   if (!project) {
@@ -44,25 +44,20 @@ function getInfoPlistPathFromPbxproj(
 
   const xcBuildConfiguration = (0, _Target().getXCBuildConfigurationFromPbxproj)(project, {
     targetName,
-    buildConfiguration,
+    buildConfiguration
   });
 
   if (!xcBuildConfiguration) {
     return null;
   } // The `INFOPLIST_FILE` is relative to the project folder, ex: app/Info.plist.
 
+
   return sanitizeInfoPlistBuildProperty(xcBuildConfiguration.buildSettings.INFOPLIST_FILE);
 }
 
 function sanitizeInfoPlistBuildProperty(infoPlist) {
-  let _infoPlist$replace$re;
+  var _infoPlist$replace$re;
 
-  return (_infoPlist$replace$re =
-    infoPlist === null || infoPlist === void 0
-      ? void 0
-      : infoPlist.replace(/"/g, '').replace('$(SRCROOT)', '')) !== null &&
-    _infoPlist$replace$re !== void 0
-    ? _infoPlist$replace$re
-    : null;
+  return (_infoPlist$replace$re = infoPlist === null || infoPlist === void 0 ? void 0 : infoPlist.replace(/"/g, '').replace('$(SRCROOT)', '')) !== null && _infoPlist$replace$re !== void 0 ? _infoPlist$replace$re : null;
 }
 //# sourceMappingURL=getInfoPlistPath.js.map

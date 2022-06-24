@@ -1,7 +1,7 @@
-'use strict';
+"use strict";
 
-Object.defineProperty(exports, '__esModule', {
-  value: true,
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
 exports.compileModsAsync = compileModsAsync;
 exports.evalModsAsync = evalModsAsync;
@@ -9,7 +9,7 @@ exports.withDefaultBaseMods = withDefaultBaseMods;
 exports.withIntrospectionBaseMods = withIntrospectionBaseMods;
 
 function _debug() {
-  const data = _interopRequireDefault(require('debug'));
+  const data = _interopRequireDefault(require("debug"));
 
   _debug = function () {
     return data;
@@ -19,7 +19,7 @@ function _debug() {
 }
 
 function _path() {
-  const data = _interopRequireDefault(require('path'));
+  const data = _interopRequireDefault(require("path"));
 
   _path = function () {
     return data;
@@ -29,7 +29,7 @@ function _path() {
 }
 
 function _Xcodeproj() {
-  const data = require('../ios/utils/Xcodeproj');
+  const data = require("../ios/utils/Xcodeproj");
 
   _Xcodeproj = function () {
     return data;
@@ -39,7 +39,7 @@ function _Xcodeproj() {
 }
 
 function _errors() {
-  const data = require('../utils/errors');
+  const data = require("../utils/errors");
 
   _errors = function () {
     return data;
@@ -49,7 +49,7 @@ function _errors() {
 }
 
 function Warnings() {
-  const data = _interopRequireWildcard(require('../utils/warnings'));
+  const data = _interopRequireWildcard(require("../utils/warnings"));
 
   Warnings = function () {
     return data;
@@ -59,7 +59,7 @@ function Warnings() {
 }
 
 function _createBaseMod() {
-  const data = require('./createBaseMod');
+  const data = require("./createBaseMod");
 
   _createBaseMod = function () {
     return data;
@@ -69,7 +69,7 @@ function _createBaseMod() {
 }
 
 function _withAndroidBaseMods() {
-  const data = require('./withAndroidBaseMods');
+  const data = require("./withAndroidBaseMods");
 
   _withAndroidBaseMods = function () {
     return data;
@@ -79,7 +79,7 @@ function _withAndroidBaseMods() {
 }
 
 function _withIosBaseMods() {
-  const data = require('./withIosBaseMods');
+  const data = require("./withIosBaseMods");
 
   _withIosBaseMods = function () {
     return data;
@@ -88,48 +88,11 @@ function _withIosBaseMods() {
   return data;
 }
 
-function _getRequireWildcardCache(nodeInterop) {
-  if (typeof WeakMap !== 'function') return null;
-  const cacheBabelInterop = new WeakMap();
-  const cacheNodeInterop = new WeakMap();
-  return (_getRequireWildcardCache = function (nodeInterop) {
-    return nodeInterop ? cacheNodeInterop : cacheBabelInterop;
-  })(nodeInterop);
-}
+function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
 
-function _interopRequireWildcard(obj, nodeInterop) {
-  if (!nodeInterop && obj && obj.__esModule) {
-    return obj;
-  }
-  if (obj === null || (typeof obj !== 'object' && typeof obj !== 'function')) {
-    return { default: obj };
-  }
-  const cache = _getRequireWildcardCache(nodeInterop);
-  if (cache && cache.has(obj)) {
-    return cache.get(obj);
-  }
-  const newObj = {};
-  const hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor;
-  for (const key in obj) {
-    if (key !== 'default' && Object.prototype.hasOwnProperty.call(obj, key)) {
-      const desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null;
-      if (desc && (desc.get || desc.set)) {
-        Object.defineProperty(newObj, key, desc);
-      } else {
-        newObj[key] = obj[key];
-      }
-    }
-  }
-  newObj.default = obj;
-  if (cache) {
-    cache.set(obj, newObj);
-  }
-  return newObj;
-}
+function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
-function _interopRequireDefault(obj) {
-  return obj && obj.__esModule ? obj : { default: obj };
-}
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 const debug = (0, _debug().default)('expo:config-plugins:mod-compiler');
 
@@ -144,18 +107,19 @@ function withDefaultBaseMods(config, props = {}) {
  * This plugin should be evaluated directly:
  */
 
+
 function withIntrospectionBaseMods(config, props = {}) {
   config = (0, _withIosBaseMods().withIosBaseMods)(config, {
     saveToInternal: true,
     // This writing optimization can be skipped since we never write in introspection mode.
     // Including empty mods will ensure that all mods get introspected.
     skipEmptyMod: false,
-    ...props,
+    ...props
   });
   config = (0, _withAndroidBaseMods().withAndroidBaseMods)(config, {
     saveToInternal: true,
     skipEmptyMod: false,
-    ...props,
+    ...props
   });
 
   if (config.mods) {
@@ -166,23 +130,12 @@ function withIntrospectionBaseMods(config, props = {}) {
         var _config$mods$platform, _config$mods$platform2;
 
         // @ts-ignore
-        if (
-          !(
-            (_config$mods$platform = config.mods[platform]) !== null &&
-            _config$mods$platform !== void 0 &&
-            (_config$mods$platform2 = _config$mods$platform[key]) !== null &&
-            _config$mods$platform2 !== void 0 &&
-            _config$mods$platform2.isIntrospective
-          )
-        ) {
+        if (!((_config$mods$platform = config.mods[platform]) !== null && _config$mods$platform !== void 0 && (_config$mods$platform2 = _config$mods$platform[key]) !== null && _config$mods$platform2 !== void 0 && _config$mods$platform2.isIntrospective)) {
           var _config$mods$platform3;
 
           debug(`removing non-idempotent mod: ${platform}.${key}`); // @ts-ignore
 
-          (_config$mods$platform3 = config.mods[platform]) === null ||
-          _config$mods$platform3 === void 0
-            ? true
-            : delete _config$mods$platform3[key];
+          (_config$mods$platform3 = config.mods[platform]) === null || _config$mods$platform3 === void 0 ? true : delete _config$mods$platform3[key];
         }
       }
     }
@@ -195,6 +148,7 @@ function withIntrospectionBaseMods(config, props = {}) {
  * @param projectRoot
  * @param config
  */
+
 
 async function compileModsAsync(config, props) {
   if (props.introspect === true) {
@@ -223,19 +177,20 @@ function sortMods(commands, order) {
   return sorted;
 }
 
-function getRawClone({ mods, ...config }) {
+function getRawClone({
+  mods,
+  ...config
+}) {
   // Configs should be fully serializable, so we can clone them without worrying about
   // the mods.
   return Object.freeze(JSON.parse(JSON.stringify(config)));
 }
 
 const orders = {
-  ios: [
-    // dangerous runs first
-    'dangerous', // run the XcodeProject mod second because many plugins attempt to read from it.
-    'xcodeproj',
-  ],
-  android: ['dangerous'],
+  ios: [// dangerous runs first
+  'dangerous', // run the XcodeProject mod second because many plugins attempt to read from it.
+  'xcodeproj'],
+  android: ['dangerous']
 };
 /**
  * A generic plugin compiler.
@@ -243,25 +198,20 @@ const orders = {
  * @param config
  */
 
-async function evalModsAsync(
-  config,
-  {
-    projectRoot,
-    introspect,
-    platforms,
+async function evalModsAsync(config, {
+  projectRoot,
+  introspect,
+  platforms,
 
-    /**
-     * Throw errors when mods are missing providers.
-     * @default true
-     */
-    assertMissingModProviders,
-  }
-) {
+  /**
+   * Throw errors when mods are missing providers.
+   * @default true
+   */
+  assertMissingModProviders
+}) {
   const modRawConfig = getRawClone(config);
 
-  for (const [platformName, platform] of Object.entries(
-    (_config$mods = config.mods) !== null && _config$mods !== void 0 ? _config$mods : {}
-  )) {
+  for (const [platformName, platform] of Object.entries((_config$mods = config.mods) !== null && _config$mods !== void 0 ? _config$mods : {})) {
     var _config$mods;
 
     if (platforms && !platforms.includes(platformName)) {
@@ -278,10 +228,7 @@ async function evalModsAsync(
 
       const platformProjectRoot = _path().default.join(projectRoot, platformName);
 
-      const projectName =
-        platformName === 'ios'
-          ? (0, _Xcodeproj().getHackyProjectName)(projectRoot, config)
-          : undefined;
+      const projectName = platformName === 'ios' ? (0, _Xcodeproj().getHackyProjectName)(projectRoot, config) : undefined;
 
       for (const [modName, mod] of entries) {
         const modRequest = {
@@ -290,7 +237,7 @@ async function evalModsAsync(
           platformProjectRoot,
           platform: platformName,
           modName,
-          introspect: !!introspect,
+          introspect: !!introspect
         };
 
         if (!mod.isProvider) {
@@ -300,17 +247,17 @@ async function evalModsAsync(
           if (assertMissingModProviders !== false) {
             throw new (_errors().PluginError)(errorMessage, 'MISSING_PROVIDER');
           } else {
-            Warnings().addWarningForPlatform(
-              platformName,
-              `${platformName}.${modName}`,
-              `Skipping: Initial base modifier for "${platformName}.${modName}" is not a provider and therefore will not provide modResults to child mods. This may be due to an outdated version of Expo CLI.`
-            ); // In loose mode, just skip the mod entirely.
+            Warnings().addWarningForPlatform(platformName, `${platformName}.${modName}`, `Skipping: Initial base modifier for "${platformName}.${modName}" is not a provider and therefore will not provide modResults to child mods. This may be due to an outdated version of Expo CLI.`); // In loose mode, just skip the mod entirely.
 
             continue;
           }
         }
 
-        const results = await mod({ ...config, modResults: null, modRequest, modRawConfig }); // Sanity check to help locate non compliant mods.
+        const results = await mod({ ...config,
+          modResults: null,
+          modRequest,
+          modRawConfig
+        }); // Sanity check to help locate non compliant mods.
 
         config = (0, _createBaseMod().assertModResults)(results, platformName, modName); // @ts-ignore: `modResults` is added for modifications
 

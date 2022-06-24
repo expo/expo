@@ -1,13 +1,13 @@
-'use strict';
+"use strict";
 
-Object.defineProperty(exports, '__esModule', {
-  value: true,
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
 exports.gteSdkVersion = gteSdkVersion;
 exports.lteSdkVersion = lteSdkVersion;
 
 function _semver() {
-  const data = _interopRequireDefault(require('semver'));
+  const data = _interopRequireDefault(require("semver"));
 
   _semver = function () {
     return data;
@@ -16,9 +16,7 @@ function _semver() {
   return data;
 }
 
-function _interopRequireDefault(obj) {
-  return obj && obj.__esModule ? obj : { default: obj };
-}
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function gteSdkVersion(exp, sdkVersion) {
   if (!exp.sdkVersion) {

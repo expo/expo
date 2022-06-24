@@ -1,12 +1,12 @@
-'use strict';
+"use strict";
 
-Object.defineProperty(exports, '__esModule', {
-  value: true,
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
 exports.withStaticPlugin = void 0;
 
 function _assert() {
-  const data = _interopRequireDefault(require('assert'));
+  const data = _interopRequireDefault(require("assert"));
 
   _assert = function () {
     return data;
@@ -16,7 +16,7 @@ function _assert() {
 }
 
 function _getenv() {
-  const data = require('getenv');
+  const data = require("getenv");
 
   _getenv = function () {
     return data;
@@ -26,7 +26,7 @@ function _getenv() {
 }
 
 function _errors() {
-  const data = require('../utils/errors');
+  const data = require("../utils/errors");
 
   _errors = function () {
     return data;
@@ -36,7 +36,7 @@ function _errors() {
 }
 
 function _pluginResolver() {
-  const data = require('../utils/plugin-resolver');
+  const data = require("../utils/plugin-resolver");
 
   _pluginResolver = function () {
     return data;
@@ -45,16 +45,11 @@ function _pluginResolver() {
   return data;
 }
 
-function _interopRequireDefault(obj) {
-  return obj && obj.__esModule ? obj : { default: obj };
-}
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 const EXPO_DEBUG = (0, _getenv().boolish)('EXPO_DEBUG', false); // Show all error info related to plugin resolution.
 
-const EXPO_CONFIG_PLUGIN_VERBOSE_ERRORS = (0, _getenv().boolish)(
-  'EXPO_CONFIG_PLUGIN_VERBOSE_ERRORS',
-  false
-); // Force using the fallback unversioned plugin instead of a local versioned copy,
+const EXPO_CONFIG_PLUGIN_VERBOSE_ERRORS = (0, _getenv().boolish)('EXPO_CONFIG_PLUGIN_VERBOSE_ERRORS', false); // Force using the fallback unversioned plugin instead of a local versioned copy,
 // this should only be used for testing the CLI.
 
 const EXPO_USE_UNVERSIONED_PLUGINS = (0, _getenv().boolish)('EXPO_USE_UNVERSIONED_PLUGINS', false);
@@ -69,14 +64,9 @@ function isModuleMissingError(name, error) {
 }
 
 function isUnexpectedTokenError(error) {
-  if (
-    error instanceof SyntaxError ||
-    (error instanceof _errors().PluginError && error.code === 'INVALID_PLUGIN_IMPORT')
-  ) {
-    return (
-      // These are the most common errors that'll be thrown when a package isn't transpiled correctly.
-      !!error.message.match(/Unexpected token/) ||
-      !!error.message.match(/Cannot use import statement/)
+  if (error instanceof SyntaxError || error instanceof _errors().PluginError && error.code === 'INVALID_PLUGIN_IMPORT') {
+    return (// These are the most common errors that'll be thrown when a package isn't transpiled correctly.
+      !!error.message.match(/Unexpected token/) || !!error.message.match(/Cannot use import statement/)
     );
   }
 
@@ -91,37 +81,26 @@ function isUnexpectedTokenError(error) {
  * @param _isLegacyPlugin Used to suppress errors thrown by plugins that are applied automatically
  */
 
+
 const withStaticPlugin = (config, props) => {
-  let _pluginProps;
+  var _pluginProps;
 
   let projectRoot = props.projectRoot;
 
   if (!projectRoot) {
-    let _config$_internal;
+    var _config$_internal;
 
-    projectRoot =
-      (_config$_internal = config._internal) === null || _config$_internal === void 0
-        ? void 0
-        : _config$_internal.projectRoot;
+    projectRoot = (_config$_internal = config._internal) === null || _config$_internal === void 0 ? void 0 : _config$_internal.projectRoot;
     (0, _pluginResolver().assertInternalProjectRoot)(projectRoot);
   }
 
   let [pluginResolve, pluginProps] = (0, _pluginResolver().normalizeStaticPlugin)(props.plugin); // Ensure no one uses this property by accident.
 
-  (0, _assert().default)(
-    !(
-      (_pluginProps = pluginProps) !== null &&
-      _pluginProps !== void 0 &&
-      _pluginProps._resolverError
-    ),
-    `Plugin property '_resolverError' is a reserved property of \`withStaticPlugin\``
-  );
+  (0, _assert().default)(!((_pluginProps = pluginProps) !== null && _pluginProps !== void 0 && _pluginProps._resolverError), `Plugin property '_resolverError' is a reserved property of \`withStaticPlugin\``);
   let withPlugin;
 
-  if (
-    // Function was provided, no need to resolve: [withPlugin, {}]
-    typeof pluginResolve === 'function'
-  ) {
+  if ( // Function was provided, no need to resolve: [withPlugin, {}]
+  typeof pluginResolve === 'function') {
     withPlugin = pluginResolve;
   } else if (typeof pluginResolve === 'string') {
     try {
@@ -129,12 +108,7 @@ const withStaticPlugin = (config, props) => {
       withPlugin = (0, _pluginResolver().resolveConfigPluginFunction)(projectRoot, pluginResolve); // Only force if the project has the versioned plugin, otherwise use default behavior.
       // This helps see which plugins are being skipped.
 
-      if (
-        EXPO_USE_UNVERSIONED_PLUGINS &&
-        !!withPlugin &&
-        !!props._isLegacyPlugin &&
-        !!props.fallback
-      ) {
+      if (EXPO_USE_UNVERSIONED_PLUGINS && !!withPlugin && !!props._isLegacyPlugin && !!props.fallback) {
         console.log(`Force "${pluginResolve}" to unversioned plugin`);
         withPlugin = props.fallback;
       }
@@ -146,9 +120,7 @@ const withStaticPlugin = (config, props) => {
           console.log(error);
           console.log();
         } else {
-          const shouldMuteWarning =
-            props._isLegacyPlugin &&
-            (isModuleMissingError(pluginResolve, error) || isUnexpectedTokenError(error));
+          const shouldMuteWarning = props._isLegacyPlugin && (isModuleMissingError(pluginResolve, error) || isUnexpectedTokenError(error));
 
           if (!shouldMuteWarning) {
             if (isModuleMissingError(pluginResolve, error)) {
@@ -166,6 +138,7 @@ const withStaticPlugin = (config, props) => {
       // If the static module failed to resolve, attempt to use a fallback.
       // This enables support for built-in plugins with versioned variations living in other packages.
 
+
       if (props.fallback) {
         if (!pluginProps) pluginProps = {}; // Pass this to the fallback plugin for potential warnings about needing to install a versioned package.
 
@@ -177,11 +150,9 @@ const withStaticPlugin = (config, props) => {
       }
     }
   } else {
-    throw new (_errors().PluginError)(
-      `Plugin is an unexpected type: ${typeof pluginResolve}`,
-      'INVALID_PLUGIN_TYPE'
-    );
+    throw new (_errors().PluginError)(`Plugin is an unexpected type: ${typeof pluginResolve}`, 'INVALID_PLUGIN_TYPE');
   } // Execute the plugin.
+
 
   config = withPlugin(config, pluginProps);
   return config;

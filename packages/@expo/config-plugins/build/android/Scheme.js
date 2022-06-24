@@ -1,7 +1,7 @@
-'use strict';
+"use strict";
 
-Object.defineProperty(exports, '__esModule', {
-  value: true,
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
 exports.appendScheme = appendScheme;
 exports.ensureManifestHasValidIntentFilter = ensureManifestHasValidIntentFilter;
@@ -13,7 +13,7 @@ exports.setScheme = setScheme;
 exports.withScheme = void 0;
 
 function _androidPlugins() {
-  const data = require('../plugins/android-plugins');
+  const data = require("../plugins/android-plugins");
 
   _androidPlugins = function () {
     return data;
@@ -23,7 +23,7 @@ function _androidPlugins() {
 }
 
 function _warnings() {
-  const data = require('../utils/warnings');
+  const data = require("../utils/warnings");
 
   _warnings = function () {
     return data;
@@ -37,7 +37,7 @@ exports.withScheme = withScheme;
 
 function getScheme(config) {
   if (Array.isArray(config.scheme)) {
-    const validate = (value) => typeof value === 'string';
+    const validate = value => typeof value === 'string';
 
     return config.scheme.filter(validate);
   } else if (typeof config.scheme === 'string') {
@@ -49,23 +49,14 @@ function getScheme(config) {
 // The only way to reliably remove schemes from the project is to nuke the file and regenerate the code (`expo prebuild --clean`).
 // Regardless, having extra schemes isn't a fatal issue and therefore a tolerable compromise is to just add new schemes that aren't currently present.
 
+
 function setScheme(config, androidManifest) {
-  let _config$android, _config$android2;
+  var _config$android, _config$android2;
 
-  const schemes = [
-    ...getScheme(config), // @ts-ignore: TODO: android.scheme is an unreleased -- harder to add to turtle v1.
-    ...getScheme(
-      (_config$android = config.android) !== null && _config$android !== void 0
-        ? _config$android
-        : {}
-    ),
-  ]; // Add the package name to the list of schemes for easier Google auth and parity with Turtle v1.
+  const schemes = [...getScheme(config), // @ts-ignore: TODO: android.scheme is an unreleased -- harder to add to turtle v1.
+  ...getScheme((_config$android = config.android) !== null && _config$android !== void 0 ? _config$android : {})]; // Add the package name to the list of schemes for easier Google auth and parity with Turtle v1.
 
-  if (
-    (_config$android2 = config.android) !== null &&
-    _config$android2 !== void 0 &&
-    _config$android2.package
-  ) {
+  if ((_config$android2 = config.android) !== null && _config$android2 !== void 0 && _config$android2.package) {
     schemes.push(config.android.package);
   }
 
@@ -74,13 +65,10 @@ function setScheme(config, androidManifest) {
   }
 
   if (!ensureManifestHasValidIntentFilter(androidManifest)) {
-    (0, _warnings().addWarningAndroid)(
-      'scheme',
-      `Cannot add schemes because the provided manifest does not have a valid Activity with \`android:launchMode="singleTask"\``,
-      'https://expo.fyi/setup-android-uri-scheme'
-    );
+    (0, _warnings().addWarningAndroid)('scheme', `Cannot add schemes because the provided manifest does not have a valid Activity with \`android:launchMode="singleTask"\``, 'https://expo.fyi/setup-android-uri-scheme');
     return androidManifest;
   } // Get the current schemes and remove them from the list of schemes to add.
+
 
   const currentSchemes = getSchemesFromManifest(androidManifest);
 
@@ -89,6 +77,7 @@ function setScheme(config, androidManifest) {
     if (index > -1) schemes.splice(index, 1);
   } // Now add all of the remaining schemes.
 
+
   for (const uri of schemes) {
     androidManifest = appendScheme(uri, androidManifest);
   }
@@ -96,97 +85,42 @@ function setScheme(config, androidManifest) {
   return androidManifest;
 }
 
-function isValidRedirectIntentFilter({ actions, categories }) {
-  return (
-    actions.includes('android.intent.action.VIEW') &&
-    !categories.includes('android.intent.category.LAUNCHER')
-  );
+function isValidRedirectIntentFilter({
+  actions,
+  categories
+}) {
+  return actions.includes('android.intent.action.VIEW') && !categories.includes('android.intent.category.LAUNCHER');
 }
 
 function propertiesFromIntentFilter(intentFilter) {
-  let _intentFilter$action$,
-    _intentFilter$action,
-    _intentFilter$categor,
-    _intentFilter$categor2,
-    _intentFilter$data$fi,
-    _intentFilter$data,
-    _intentFilter$data$fi2;
+  var _intentFilter$action$, _intentFilter$action, _intentFilter$categor, _intentFilter$categor2, _intentFilter$data$fi, _intentFilter$data, _intentFilter$data$fi2;
 
-  const actions =
-    (_intentFilter$action$ =
-      intentFilter === null || intentFilter === void 0
-        ? void 0
-        : (_intentFilter$action = intentFilter.action) === null || _intentFilter$action === void 0
-        ? void 0
-        : _intentFilter$action.map((data) => {
-            let _data$$;
+  const actions = (_intentFilter$action$ = intentFilter === null || intentFilter === void 0 ? void 0 : (_intentFilter$action = intentFilter.action) === null || _intentFilter$action === void 0 ? void 0 : _intentFilter$action.map(data => {
+    var _data$$;
 
-            return data === null || data === void 0
-              ? void 0
-              : (_data$$ = data.$) === null || _data$$ === void 0
-              ? void 0
-              : _data$$['android:name'];
-          })) !== null && _intentFilter$action$ !== void 0
-      ? _intentFilter$action$
-      : [];
-  const categories =
-    (_intentFilter$categor =
-      intentFilter === null || intentFilter === void 0
-        ? void 0
-        : (_intentFilter$categor2 = intentFilter.category) === null ||
-          _intentFilter$categor2 === void 0
-        ? void 0
-        : _intentFilter$categor2.map((data) => {
-            let _data$$2;
+    return data === null || data === void 0 ? void 0 : (_data$$ = data.$) === null || _data$$ === void 0 ? void 0 : _data$$['android:name'];
+  })) !== null && _intentFilter$action$ !== void 0 ? _intentFilter$action$ : [];
+  const categories = (_intentFilter$categor = intentFilter === null || intentFilter === void 0 ? void 0 : (_intentFilter$categor2 = intentFilter.category) === null || _intentFilter$categor2 === void 0 ? void 0 : _intentFilter$categor2.map(data => {
+    var _data$$2;
 
-            return data === null || data === void 0
-              ? void 0
-              : (_data$$2 = data.$) === null || _data$$2 === void 0
-              ? void 0
-              : _data$$2['android:name'];
-          })) !== null && _intentFilter$categor !== void 0
-      ? _intentFilter$categor
-      : [];
-  const data =
-    (_intentFilter$data$fi =
-      intentFilter === null || intentFilter === void 0
-        ? void 0
-        : (_intentFilter$data = intentFilter.data) === null || _intentFilter$data === void 0
-        ? void 0
-        : (_intentFilter$data$fi2 = _intentFilter$data.filter((data) => {
-            let _data$$3;
+    return data === null || data === void 0 ? void 0 : (_data$$2 = data.$) === null || _data$$2 === void 0 ? void 0 : _data$$2['android:name'];
+  })) !== null && _intentFilter$categor !== void 0 ? _intentFilter$categor : [];
+  const data = (_intentFilter$data$fi = intentFilter === null || intentFilter === void 0 ? void 0 : (_intentFilter$data = intentFilter.data) === null || _intentFilter$data === void 0 ? void 0 : (_intentFilter$data$fi2 = _intentFilter$data.filter(data => {
+    var _data$$3;
 
-            return data === null || data === void 0
-              ? void 0
-              : (_data$$3 = data.$) === null || _data$$3 === void 0
-              ? void 0
-              : _data$$3['android:scheme'];
-          })) === null || _intentFilter$data$fi2 === void 0
-        ? void 0
-        : _intentFilter$data$fi2.map((data) => {
-            let _data$$4, _data$$5;
+    return data === null || data === void 0 ? void 0 : (_data$$3 = data.$) === null || _data$$3 === void 0 ? void 0 : _data$$3['android:scheme'];
+  })) === null || _intentFilter$data$fi2 === void 0 ? void 0 : _intentFilter$data$fi2.map(data => {
+    var _data$$4, _data$$5;
 
-            return {
-              scheme:
-                data === null || data === void 0
-                  ? void 0
-                  : (_data$$4 = data.$) === null || _data$$4 === void 0
-                  ? void 0
-                  : _data$$4['android:scheme'],
-              host:
-                data === null || data === void 0
-                  ? void 0
-                  : (_data$$5 = data.$) === null || _data$$5 === void 0
-                  ? void 0
-                  : _data$$5['android:host'],
-            };
-          })) !== null && _intentFilter$data$fi !== void 0
-      ? _intentFilter$data$fi
-      : [];
+    return {
+      scheme: data === null || data === void 0 ? void 0 : (_data$$4 = data.$) === null || _data$$4 === void 0 ? void 0 : _data$$4['android:scheme'],
+      host: data === null || data === void 0 ? void 0 : (_data$$5 = data.$) === null || _data$$5 === void 0 ? void 0 : _data$$5['android:host']
+    };
+  })) !== null && _intentFilter$data$fi !== void 0 ? _intentFilter$data$fi : [];
   return {
     actions,
     categories,
-    data,
+    data
   };
 }
 
@@ -195,19 +129,15 @@ function getSingleTaskIntentFilters(androidManifest) {
   let outputSchemes = [];
 
   for (const application of androidManifest.manifest.application) {
-    const { activity } = application; // @ts-ignore
+    const {
+      activity
+    } = application; // @ts-ignore
 
     const activities = Array.isArray(activity) ? activity : [activity];
-    const singleTaskActivities = activities.filter((activity) => {
-      let _activity$$;
+    const singleTaskActivities = activities.filter(activity => {
+      var _activity$$;
 
-      return (
-        (activity === null || activity === void 0
-          ? void 0
-          : (_activity$$ = activity.$) === null || _activity$$ === void 0
-          ? void 0
-          : _activity$$['android:launchMode']) === 'singleTask'
-      );
+      return (activity === null || activity === void 0 ? void 0 : (_activity$$ = activity.$) === null || _activity$$ === void 0 ? void 0 : _activity$$['android:launchMode']) === 'singleTask';
     });
 
     for (const activity of singleTaskActivities) {
@@ -227,7 +157,10 @@ function getSchemesFromManifest(androidManifest, requestedHost = null) {
     const properties = propertiesFromIntentFilter(intentFilter);
 
     if (isValidRedirectIntentFilter(properties) && properties.data) {
-      for (const { scheme, host } of properties.data) {
+      for (const {
+        scheme,
+        host
+      } of properties.data) {
         if (requestedHost === null || !host || host === requestedHost) {
           outputSchemes.push(scheme);
         }
@@ -247,13 +180,7 @@ function ensureManifestHasValidIntentFilter(androidManifest) {
     for (const activity of application.activity || []) {
       var _activity$$2;
 
-      if (
-        (activity === null || activity === void 0
-          ? void 0
-          : (_activity$$2 = activity.$) === null || _activity$$2 === void 0
-          ? void 0
-          : _activity$$2['android:launchMode']) === 'singleTask'
-      ) {
+      if ((activity === null || activity === void 0 ? void 0 : (_activity$$2 = activity.$) === null || _activity$$2 === void 0 ? void 0 : _activity$$2['android:launchMode']) === 'singleTask') {
         for (const intentFilter of activity['intent-filter'] || []) {
           // Parse valid intent filters...
           const properties = propertiesFromIntentFilter(intentFilter);
@@ -268,25 +195,20 @@ function ensureManifestHasValidIntentFilter(androidManifest) {
         }
 
         activity['intent-filter'].push({
-          action: [
-            {
-              $: {
-                'android:name': 'android.intent.action.VIEW',
-              },
-            },
-          ],
-          category: [
-            {
-              $: {
-                'android:name': 'android.intent.category.DEFAULT',
-              },
-            },
-            {
-              $: {
-                'android:name': 'android.intent.category.BROWSABLE',
-              },
-            },
-          ],
+          action: [{
+            $: {
+              'android:name': 'android.intent.action.VIEW'
+            }
+          }],
+          category: [{
+            $: {
+              'android:name': 'android.intent.category.DEFAULT'
+            }
+          }, {
+            $: {
+              'android:name': 'android.intent.category.BROWSABLE'
+            }
+          }]
         });
         return true;
       }
@@ -310,13 +232,7 @@ function appendScheme(scheme, androidManifest) {
     for (const activity of application.activity || []) {
       var _activity$$3;
 
-      if (
-        (activity === null || activity === void 0
-          ? void 0
-          : (_activity$$3 = activity.$) === null || _activity$$3 === void 0
-          ? void 0
-          : _activity$$3['android:launchMode']) === 'singleTask'
-      ) {
+      if ((activity === null || activity === void 0 ? void 0 : (_activity$$3 = activity.$) === null || _activity$$3 === void 0 ? void 0 : _activity$$3['android:launchMode']) === 'singleTask') {
         for (const intentFilter of activity['intent-filter'] || []) {
           const properties = propertiesFromIntentFilter(intentFilter);
 
@@ -324,8 +240,8 @@ function appendScheme(scheme, androidManifest) {
             if (!intentFilter.data) intentFilter.data = [];
             intentFilter.data.push({
               $: {
-                'android:scheme': scheme,
-              },
+                'android:scheme': scheme
+              }
             });
           }
         }
@@ -347,40 +263,21 @@ function removeScheme(scheme, androidManifest) {
     for (const activity of application.activity || []) {
       var _activity$$4;
 
-      if (
-        (activity === null || activity === void 0
-          ? void 0
-          : (_activity$$4 = activity.$) === null || _activity$$4 === void 0
-          ? void 0
-          : _activity$$4['android:launchMode']) === 'singleTask'
-      ) {
+      if ((activity === null || activity === void 0 ? void 0 : (_activity$$4 = activity.$) === null || _activity$$4 === void 0 ? void 0 : _activity$$4['android:launchMode']) === 'singleTask') {
         for (const intentFilter of activity['intent-filter'] || []) {
           // Parse valid intent filters...
           const properties = propertiesFromIntentFilter(intentFilter);
 
           if (isValidRedirectIntentFilter(properties)) {
-            for (const dataKey in (intentFilter === null || intentFilter === void 0
-              ? void 0
-              : intentFilter.data) || []) {
+            for (const dataKey in (intentFilter === null || intentFilter === void 0 ? void 0 : intentFilter.data) || []) {
               var _intentFilter$data2, _data$$6;
 
-              const data =
-                (_intentFilter$data2 = intentFilter.data) === null || _intentFilter$data2 === void 0
-                  ? void 0
-                  : _intentFilter$data2[dataKey];
+              const data = (_intentFilter$data2 = intentFilter.data) === null || _intentFilter$data2 === void 0 ? void 0 : _intentFilter$data2[dataKey];
 
-              if (
-                (data === null || data === void 0
-                  ? void 0
-                  : (_data$$6 = data.$) === null || _data$$6 === void 0
-                  ? void 0
-                  : _data$$6['android:scheme']) === scheme
-              ) {
+              if ((data === null || data === void 0 ? void 0 : (_data$$6 = data.$) === null || _data$$6 === void 0 ? void 0 : _data$$6['android:scheme']) === scheme) {
                 var _intentFilter$data3;
 
-                (_intentFilter$data3 = intentFilter.data) === null || _intentFilter$data3 === void 0
-                  ? true
-                  : delete _intentFilter$data3[dataKey];
+                (_intentFilter$data3 = intentFilter.data) === null || _intentFilter$data3 === void 0 ? true : delete _intentFilter$data3[dataKey];
               }
             }
           }

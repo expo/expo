@@ -1,17 +1,17 @@
 import { ExportedConfig, Mod, ModPlatform } from '../Plugin.types';
 export declare type BaseModOptions = {
-  platform: ModPlatform;
-  mod: string;
-  isProvider?: boolean;
-  skipEmptyMod?: boolean;
-  saveToInternal?: boolean;
-  /**
-   * If the mod supports introspection, and avoids making any filesystem modifications during compilation.
-   * By enabling, this mod, and all of its descendants will be run in introspection mode.
-   * This should only be used for static files like JSON or XML, and not for application files that require regexes,
-   * or complex static files that require other files to be generated like Xcode `.pbxproj`.
-   */
-  isIntrospective?: boolean;
+    platform: ModPlatform;
+    mod: string;
+    isProvider?: boolean;
+    skipEmptyMod?: boolean;
+    saveToInternal?: boolean;
+    /**
+     * If the mod supports introspection, and avoids making any filesystem modifications during compilation.
+     * By enabling, this mod, and all of its descendants will be run in introspection mode.
+     * This should only be used for static files like JSON or XML, and not for application files that require regexes,
+     * or complex static files that require other files to be generated like Xcode `.pbxproj`.
+     */
+    isIntrospective?: boolean;
 };
 /**
  * Plugin to intercept execution of a given `mod` with the given `action`.
@@ -27,20 +27,9 @@ export declare type BaseModOptions = {
  * @param isProvider should provide data up to the other mods.
  * @param action method to run on the mod when the config is compiled
  */
-export declare function withBaseMod<T>(
-  config: ExportedConfig,
-  {
-    platform,
-    mod,
-    action,
-    skipEmptyMod,
-    isProvider,
-    isIntrospective,
-    saveToInternal,
-  }: BaseModOptions & {
+export declare function withBaseMod<T>(config: ExportedConfig, { platform, mod, action, skipEmptyMod, isProvider, isIntrospective, saveToInternal, }: BaseModOptions & {
     action: Mod<T>;
-  }
-): ExportedConfig;
+}): ExportedConfig;
 /**
  * Plugin to extend a mod function in the plugins config.
  *
@@ -49,15 +38,8 @@ export declare function withBaseMod<T>(
  * @param mod name of the platform function to extend
  * @param action method to run on the mod when the config is compiled
  */
-export declare function withMod<T>(
-  config: ExportedConfig,
-  {
-    platform,
-    mod,
-    action,
-  }: {
+export declare function withMod<T>(config: ExportedConfig, { platform, mod, action, }: {
     platform: ModPlatform;
     mod: string;
     action: Mod<T>;
-  }
-): ExportedConfig;
+}): ExportedConfig;

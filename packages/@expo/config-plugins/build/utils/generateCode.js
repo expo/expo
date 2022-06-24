@@ -1,7 +1,7 @@
-'use strict';
+"use strict";
 
-Object.defineProperty(exports, '__esModule', {
-  value: true,
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
 exports.createGeneratedHeaderComment = createGeneratedHeaderComment;
 exports.createHash = createHash;
@@ -10,7 +10,7 @@ exports.removeContents = removeContents;
 exports.removeGeneratedContents = removeGeneratedContents;
 
 function _crypto() {
-  const data = _interopRequireDefault(require('crypto'));
+  const data = _interopRequireDefault(require("crypto"));
 
   _crypto = function () {
     return data;
@@ -19,9 +19,7 @@ function _crypto() {
   return data;
 }
 
-function _interopRequireDefault(obj) {
-  return obj && obj.__esModule ? obj : { default: obj };
-}
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /**
  * Get line indexes for the generated section of a file.
@@ -30,12 +28,12 @@ function _interopRequireDefault(obj) {
  */
 function getGeneratedSectionIndexes(src, tag) {
   const contents = src.split('\n');
-  const start = contents.findIndex((line) => line.includes(`@generated begin ${tag}`));
-  const end = contents.findIndex((line) => line.includes(`@generated end ${tag}`));
+  const start = contents.findIndex(line => line.includes(`@generated begin ${tag}`));
+  const end = contents.findIndex(line => line.includes(`@generated end ${tag}`));
   return {
     contents,
     start,
-    end,
+    end
   };
 }
 
@@ -49,44 +47,49 @@ function getGeneratedSectionIndexes(src, tag) {
  * @param offset line offset to start merging at (<1 for behind the anchor)
  * @param comment comment style `//` or `#`
  */
-function mergeContents({ src, newSrc, tag, anchor, offset, comment }) {
+function mergeContents({
+  src,
+  newSrc,
+  tag,
+  anchor,
+  offset,
+  comment
+}) {
   const header = createGeneratedHeaderComment(newSrc, tag, comment);
 
   if (!src.includes(header)) {
     // Ensure the old generated contents are removed.
     const sanitizedTarget = removeGeneratedContents(src, tag);
     return {
-      contents: addLines(
-        sanitizedTarget !== null && sanitizedTarget !== void 0 ? sanitizedTarget : src,
-        anchor,
-        offset,
-        [header, ...newSrc.split('\n'), `${comment} @generated end ${tag}`]
-      ),
+      contents: addLines(sanitizedTarget !== null && sanitizedTarget !== void 0 ? sanitizedTarget : src, anchor, offset, [header, ...newSrc.split('\n'), `${comment} @generated end ${tag}`]),
       didMerge: true,
-      didClear: !!sanitizedTarget,
+      didClear: !!sanitizedTarget
     };
   }
 
   return {
     contents: src,
     didClear: false,
-    didMerge: false,
+    didMerge: false
   };
 }
 
-function removeContents({ src, tag }) {
+function removeContents({
+  src,
+  tag
+}) {
   // Ensure the old generated contents are removed.
   const sanitizedTarget = removeGeneratedContents(src, tag);
   return {
     contents: sanitizedTarget !== null && sanitizedTarget !== void 0 ? sanitizedTarget : src,
     didMerge: false,
-    didClear: !!sanitizedTarget,
+    didClear: !!sanitizedTarget
   };
 }
 
 function addLines(content, find, offset, toAdd) {
   const lines = content.split('\n');
-  let lineIndex = lines.findIndex((line) => line.match(find));
+  let lineIndex = lines.findIndex(line => line.match(find));
 
   if (lineIndex < 0) {
     const error = new Error(`Failed to match "${find}" in contents:\n${content}`); // @ts-ignore
@@ -109,8 +112,13 @@ function addLines(content, find, offset, toAdd) {
  * @param src
  */
 
+
 function removeGeneratedContents(src, tag) {
-  const { contents, start, end } = getGeneratedSectionIndexes(src, tag);
+  const {
+    contents,
+    start,
+    end
+  } = getGeneratedSectionIndexes(src, tag);
 
   if (start > -1 && end > -1 && start < end) {
     contents.splice(start, end - start + 1); // TODO: We could in theory check that the contents we're removing match the hash used in the header,

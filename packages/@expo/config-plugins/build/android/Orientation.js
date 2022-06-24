@@ -1,7 +1,7 @@
-'use strict';
+"use strict";
 
-Object.defineProperty(exports, '__esModule', {
-  value: true,
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
 exports.SCREEN_ORIENTATION_ATTRIBUTE = void 0;
 exports.getOrientation = getOrientation;
@@ -9,7 +9,7 @@ exports.setAndroidOrientation = setAndroidOrientation;
 exports.withOrientation = void 0;
 
 function _androidPlugins() {
-  const data = require('../plugins/android-plugins');
+  const data = require("../plugins/android-plugins");
 
   _androidPlugins = function () {
     return data;
@@ -19,7 +19,7 @@ function _androidPlugins() {
 }
 
 function _Manifest() {
-  const data = require('./Manifest');
+  const data = require("./Manifest");
 
   _Manifest = function () {
     return data;
@@ -30,10 +30,7 @@ function _Manifest() {
 
 const SCREEN_ORIENTATION_ATTRIBUTE = 'android:screenOrientation';
 exports.SCREEN_ORIENTATION_ATTRIBUTE = SCREEN_ORIENTATION_ATTRIBUTE;
-const withOrientation = (0, _androidPlugins().createAndroidManifestPlugin)(
-  setAndroidOrientation,
-  'withOrientation'
-);
+const withOrientation = (0, _androidPlugins().createAndroidManifestPlugin)(setAndroidOrientation, 'withOrientation');
 exports.withOrientation = withOrientation;
 
 function getOrientation(config) {
@@ -48,8 +45,7 @@ function setAndroidOrientation(config, androidManifest) {
   }
 
   const mainActivity = (0, _Manifest().getMainActivityOrThrow)(androidManifest);
-  mainActivity.$[SCREEN_ORIENTATION_ATTRIBUTE] =
-    orientation !== 'default' ? orientation : 'unspecified';
+  mainActivity.$[SCREEN_ORIENTATION_ATTRIBUTE] = orientation !== 'default' ? orientation : 'unspecified';
   return androidManifest;
 }
 //# sourceMappingURL=Orientation.js.map

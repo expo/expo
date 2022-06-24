@@ -1,24 +1,22 @@
 export declare type XMLValue = boolean | number | string | null | XMLArray | XMLObject;
-export interface XMLArray extends Array<XMLValue> {}
-export interface XMLObject {
-  [key: string]: XMLValue | undefined;
+export interface XMLArray extends Array<XMLValue> {
 }
-export declare function writeXMLAsync(options: { path: string; xml: any }): Promise<void>;
+export interface XMLObject {
+    [key: string]: XMLValue | undefined;
+}
+export declare function writeXMLAsync(options: {
+    path: string;
+    xml: any;
+}): Promise<void>;
 export declare function readXMLAsync(options: {
-  path: string;
-  fallback?: string | null;
+    path: string;
+    fallback?: string | null;
 }): Promise<XMLObject>;
 export declare function parseXMLAsync(contents: string): Promise<XMLObject>;
-export declare function format(
-  manifest: any,
-  {
-    indentLevel,
-    newline,
-  }?: {
+export declare function format(manifest: any, { indentLevel, newline }?: {
     indentLevel?: number | undefined;
     newline?: string | undefined;
-  }
-): string;
+}): string;
 /**
  * Escapes Android string literals, specifically characters `"`, `'`, `\`, `\n`, `\r`, `\t`
  *

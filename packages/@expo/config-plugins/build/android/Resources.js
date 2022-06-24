@@ -1,7 +1,7 @@
-'use strict';
+"use strict";
 
-Object.defineProperty(exports, '__esModule', {
-  value: true,
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
 exports.buildResourceGroup = buildResourceGroup;
 exports.buildResourceItem = buildResourceItem;
@@ -13,7 +13,7 @@ exports.getResourceItemsAsObject = getResourceItemsAsObject;
 exports.readResourcesXMLAsync = readResourcesXMLAsync;
 
 function _XML() {
-  const data = require('../utils/XML');
+  const data = require("../utils/XML");
 
   _XML = function () {
     return data;
@@ -29,10 +29,13 @@ const fallbackResourceString = `<?xml version="1.0" encoding="utf-8"?><resources
  * @param options path to the XML file, returns a fallback XML if the path doesn't exist.
  */
 
-async function readResourcesXMLAsync({ path, fallback = fallbackResourceString }) {
+async function readResourcesXMLAsync({
+  path,
+  fallback = fallbackResourceString
+}) {
   const xml = await (0, _XML().readXMLAsync)({
     path,
-    fallback,
+    fallback
   }); // Ensure the type is expected.
 
   if (!xml.resources) {
@@ -47,10 +50,11 @@ async function readResourcesXMLAsync({ path, fallback = fallbackResourceString }
  * @param xml
  */
 
+
 function ensureDefaultResourceXML(xml) {
   if (!xml) {
     xml = {
-      resources: {},
+      resources: {}
     };
   }
 
@@ -69,12 +73,18 @@ function ensureDefaultResourceXML(xml) {
  * @param props name and value strings.
  */
 
-function buildResourceItem({ name, value, targetApi, translatable }) {
+
+function buildResourceItem({
+  name,
+  value,
+  targetApi,
+  translatable
+}) {
   const item = {
     $: {
-      name,
+      name
     },
-    _: value,
+    _: value
   };
 
   if (targetApi) {
@@ -89,36 +99,31 @@ function buildResourceItem({ name, value, targetApi, translatable }) {
 }
 
 function buildResourceGroup(parent) {
-  let _parent$items;
+  var _parent$items;
 
   return {
     $: {
       name: parent.name,
-      parent: parent.parent,
+      parent: parent.parent
     },
-    item: (_parent$items = parent.items) !== null && _parent$items !== void 0 ? _parent$items : [],
+    item: (_parent$items = parent.items) !== null && _parent$items !== void 0 ? _parent$items : []
   };
 }
 
 function findResourceGroup(xml, group) {
-  let _xml$filter, _xml$filter$call;
+  var _xml$filter, _xml$filter$call;
 
-  const app =
-    xml === null || xml === void 0
-      ? void 0
-      : (_xml$filter = xml.filter) === null || _xml$filter === void 0
-      ? void 0
-      : (_xml$filter$call = _xml$filter.call(xml, ({ $: head }) => {
-          let matches = head.name === group.name;
+  const app = xml === null || xml === void 0 ? void 0 : (_xml$filter = xml.filter) === null || _xml$filter === void 0 ? void 0 : (_xml$filter$call = _xml$filter.call(xml, ({
+    $: head
+  }) => {
+    let matches = head.name === group.name;
 
-          if (group.parent != null && matches) {
-            matches = head.parent === group.parent;
-          }
+    if (group.parent != null && matches) {
+      matches = head.parent === group.parent;
+    }
 
-          return matches;
-        })) === null || _xml$filter$call === void 0
-      ? void 0
-      : _xml$filter$call[0];
+    return matches;
+  })) === null || _xml$filter$call === void 0 ? void 0 : _xml$filter$call[0];
   return app !== null && app !== void 0 ? app : null;
 }
 /**
@@ -128,8 +133,11 @@ function findResourceGroup(xml, group) {
  * @returns
  */
 
+
 function getResourceItemsAsObject(xml) {
-  return xml.reduce((prev, curr) => ({ ...prev, [curr.$.name]: curr._ }), {});
+  return xml.reduce((prev, curr) => ({ ...prev,
+    [curr.$.name]: curr._
+  }), {});
 }
 /**
  * Helper to convert a basic k/v object to a ResourceItemXML array.
@@ -138,12 +146,13 @@ function getResourceItemsAsObject(xml) {
  * @returns
  */
 
+
 function getObjectAsResourceItems(obj) {
   return Object.entries(obj).map(([name, value]) => ({
     $: {
-      name,
+      name
     },
-    _: value,
+    _: value
   }));
 }
 
@@ -151,9 +160,9 @@ function getObjectAsResourceGroup(group) {
   return {
     $: {
       name: group.name,
-      parent: group.parent,
+      parent: group.parent
     },
-    item: getObjectAsResourceItems(group.item),
+    item: getObjectAsResourceItems(group.item)
   };
 }
 //# sourceMappingURL=Resources.js.map

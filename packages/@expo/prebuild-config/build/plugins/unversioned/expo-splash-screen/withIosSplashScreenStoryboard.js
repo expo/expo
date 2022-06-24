@@ -108,7 +108,7 @@ const withIosSplashScreenStoryboardBaseMod = config => {
             const contents = await fs().promises.readFile(filePath, 'utf8');
             const xml = await new (_xml2js().Parser)().parseStringPromise(contents);
             return xml;
-          } catch (error) {
+          } catch {
             return getTemplateAsync();
           }
         },

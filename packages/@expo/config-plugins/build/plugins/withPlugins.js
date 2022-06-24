@@ -1,12 +1,12 @@
-'use strict';
+"use strict";
 
-Object.defineProperty(exports, '__esModule', {
-  value: true,
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
 exports.withPlugins = void 0;
 
 function _assert() {
-  const data = _interopRequireDefault(require('assert'));
+  const data = _interopRequireDefault(require("assert"));
 
   _assert = function () {
     return data;
@@ -16,7 +16,7 @@ function _assert() {
 }
 
 function _withStaticPlugin() {
-  const data = require('./withStaticPlugin');
+  const data = require("./withStaticPlugin");
 
   _withStaticPlugin = function () {
     return data;
@@ -25,9 +25,7 @@ function _withStaticPlugin() {
   return data;
 }
 
-function _interopRequireDefault(obj) {
-  return obj && obj.__esModule ? obj : { default: obj };
-}
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /**
  * Resolves a list of plugins.
@@ -36,17 +34,10 @@ function _interopRequireDefault(obj) {
  * @param plugins list of config config plugins to apply to the exported config
  */
 const withPlugins = (config, plugins) => {
-  (0, _assert().default)(
-    Array.isArray(plugins),
-    'withPlugins expected a valid array of plugins or plugin module paths'
-  );
-  return plugins.reduce(
-    (prev, plugin) =>
-      (0, _withStaticPlugin().withStaticPlugin)(prev, {
-        plugin,
-      }),
-    config
-  );
+  (0, _assert().default)(Array.isArray(plugins), 'withPlugins expected a valid array of plugins or plugin module paths');
+  return plugins.reduce((prev, plugin) => (0, _withStaticPlugin().withStaticPlugin)(prev, {
+    plugin
+  }), config);
 };
 
 exports.withPlugins = withPlugins;

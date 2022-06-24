@@ -7,11 +7,7 @@ import { CodeBlock } from '../utils/commonCodeMod';
  * @param language 'java' | 'kt'
  * @returns `CodeBlock` for start/end offset and code block contents
  */
-export declare function findNewInstanceCodeBlock(
-  contents: string,
-  classDeclaration: string,
-  language: 'java' | 'kt'
-): CodeBlock | null;
+export declare function findNewInstanceCodeBlock(contents: string, classDeclaration: string, language: 'java' | 'kt'): CodeBlock | null;
 /**
  * Append contents to the end of code declaration block, support class or method declarations.
  *
@@ -20,9 +16,5 @@ export declare function findNewInstanceCodeBlock(
  * @param insertion code to append
  * @returns updated contents
  */
-export declare function appendContentsInsideDeclarationBlock(
-  srcContents: string,
-  declaration: string,
-  insertion: string
-): string;
+export declare function appendContentsInsideDeclarationBlock(srcContents: string, declaration: string, insertion: string): string;
 export declare function addImports(source: string, imports: string[], isJava: boolean): string;

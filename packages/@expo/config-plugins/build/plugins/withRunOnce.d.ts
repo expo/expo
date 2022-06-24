@@ -8,17 +8,13 @@ import { PluginHistoryItem } from '../utils/history';
  * @param name
  */
 export declare const withRunOnce: ConfigPlugin<{
-  plugin: ConfigPlugin<void>;
-  name: PluginHistoryItem['name'];
-  version?: PluginHistoryItem['version'];
+    plugin: ConfigPlugin<void>;
+    name: PluginHistoryItem['name'];
+    version?: PluginHistoryItem['version'];
 }>;
 /**
  * Helper method for creating mods from existing config functions.
  *
  * @param action
  */
-export declare function createRunOncePlugin<T>(
-  plugin: ConfigPlugin<T>,
-  name: string,
-  version?: string
-): ConfigPlugin<T>;
+export declare function createRunOncePlugin<T>(plugin: ConfigPlugin<T>, name: string, version?: string): ConfigPlugin<T>;

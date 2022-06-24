@@ -1,16 +1,15 @@
-'use strict';
+"use strict";
 
-Object.defineProperty(exports, '__esModule', {
-  value: true,
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
-exports.ensureApplicationTargetEntitlementsFileConfigured =
-  ensureApplicationTargetEntitlementsFileConfigured;
+exports.ensureApplicationTargetEntitlementsFileConfigured = ensureApplicationTargetEntitlementsFileConfigured;
 exports.getEntitlementsPath = getEntitlementsPath;
 exports.setAssociatedDomains = setAssociatedDomains;
 exports.withAssociatedDomains = void 0;
 
 function _fs() {
-  const data = _interopRequireDefault(require('fs'));
+  const data = _interopRequireDefault(require("fs"));
 
   _fs = function () {
     return data;
@@ -20,7 +19,7 @@ function _fs() {
 }
 
 function _path() {
-  const data = _interopRequireDefault(require('path'));
+  const data = _interopRequireDefault(require("path"));
 
   _path = function () {
     return data;
@@ -30,7 +29,7 @@ function _path() {
 }
 
 function _slash() {
-  const data = _interopRequireDefault(require('slash'));
+  const data = _interopRequireDefault(require("slash"));
 
   _slash = function () {
     return data;
@@ -40,7 +39,7 @@ function _slash() {
 }
 
 function _iosPlugins() {
-  const data = require('../plugins/ios-plugins');
+  const data = require("../plugins/ios-plugins");
 
   _iosPlugins = function () {
     return data;
@@ -50,7 +49,7 @@ function _iosPlugins() {
 }
 
 function _Target() {
-  const data = require('./Target');
+  const data = require("./Target");
 
   _Target = function () {
     return data;
@@ -60,7 +59,7 @@ function _Target() {
 }
 
 function _Xcodeproj() {
-  const data = require('./utils/Xcodeproj');
+  const data = require("./utils/Xcodeproj");
 
   _Xcodeproj = function () {
     return data;
@@ -70,7 +69,7 @@ function _Xcodeproj() {
 }
 
 function _string() {
-  const data = require('./utils/string');
+  const data = require("./utils/string");
 
   _string = function () {
     return data;
@@ -79,69 +78,51 @@ function _string() {
   return data;
 }
 
-function _interopRequireDefault(obj) {
-  return obj && obj.__esModule ? obj : { default: obj };
-}
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-const withAssociatedDomains = (0, _iosPlugins().createEntitlementsPlugin)(
-  setAssociatedDomains,
-  'withAssociatedDomains'
-);
+const withAssociatedDomains = (0, _iosPlugins().createEntitlementsPlugin)(setAssociatedDomains, 'withAssociatedDomains');
 exports.withAssociatedDomains = withAssociatedDomains;
 
-function setAssociatedDomains(
-  config,
-  { 'com.apple.developer.associated-domains': _, ...entitlementsPlist }
-) {
-  let _config$ios;
+function setAssociatedDomains(config, {
+  'com.apple.developer.associated-domains': _,
+  ...entitlementsPlist
+}) {
+  var _config$ios;
 
-  if (
-    (_config$ios = config.ios) !== null &&
-    _config$ios !== void 0 &&
-    _config$ios.associatedDomains
-  ) {
-    return {
-      ...entitlementsPlist,
-      'com.apple.developer.associated-domains': config.ios.associatedDomains,
+  if ((_config$ios = config.ios) !== null && _config$ios !== void 0 && _config$ios.associatedDomains) {
+    return { ...entitlementsPlist,
+      'com.apple.developer.associated-domains': config.ios.associatedDomains
     };
   }
 
   return entitlementsPlist;
 }
 
-function getEntitlementsPath(projectRoot, { targetName, buildConfiguration = 'Release' } = {}) {
+function getEntitlementsPath(projectRoot, {
+  targetName,
+  buildConfiguration = 'Release'
+} = {}) {
   const project = (0, _Xcodeproj().getPbxproj)(projectRoot);
   const xcBuildConfiguration = (0, _Target().getXCBuildConfigurationFromPbxproj)(project, {
     targetName,
-    buildConfiguration,
+    buildConfiguration
   });
 
   if (!xcBuildConfiguration) {
     return null;
   }
 
-  const entitlementsPath = getEntitlementsPathFromBuildConfiguration(
-    projectRoot,
-    xcBuildConfiguration
-  );
+  const entitlementsPath = getEntitlementsPathFromBuildConfiguration(projectRoot, xcBuildConfiguration);
   return entitlementsPath && _fs().default.existsSync(entitlementsPath) ? entitlementsPath : null;
 }
 
 function getEntitlementsPathFromBuildConfiguration(projectRoot, xcBuildConfiguration) {
-  let _xcBuildConfiguration;
+  var _xcBuildConfiguration;
 
-  const entitlementsPathRaw =
-    xcBuildConfiguration === null || xcBuildConfiguration === void 0
-      ? void 0
-      : (_xcBuildConfiguration = xcBuildConfiguration.buildSettings) === null ||
-        _xcBuildConfiguration === void 0
-      ? void 0
-      : _xcBuildConfiguration.CODE_SIGN_ENTITLEMENTS;
+  const entitlementsPathRaw = xcBuildConfiguration === null || xcBuildConfiguration === void 0 ? void 0 : (_xcBuildConfiguration = xcBuildConfiguration.buildSettings) === null || _xcBuildConfiguration === void 0 ? void 0 : _xcBuildConfiguration.CODE_SIGN_ENTITLEMENTS;
 
   if (entitlementsPathRaw) {
-    return _path().default.normalize(
-      _path().default.join(projectRoot, 'ios', (0, _string().trimQuotes)(entitlementsPathRaw))
-    );
+    return _path().default.normalize(_path().default.join(projectRoot, 'ios', (0, _string().trimQuotes)(entitlementsPathRaw)));
   } else {
     return null;
   }
@@ -152,17 +133,11 @@ function ensureApplicationTargetEntitlementsFileConfigured(projectRoot) {
   const projectName = (0, _Xcodeproj().getProjectName)(projectRoot);
   const productName = (0, _Xcodeproj().getProductName)(project);
   const [, applicationTarget] = (0, _Target().findFirstNativeTarget)(project);
-  const buildConfigurations = (0, _Xcodeproj().getBuildConfigurationsForListId)(
-    project,
-    applicationTarget.buildConfigurationList
-  );
+  const buildConfigurations = (0, _Xcodeproj().getBuildConfigurationsForListId)(project, applicationTarget.buildConfigurationList);
   let hasChangesToWrite = false;
 
   for (const [, xcBuildConfiguration] of buildConfigurations) {
-    const oldEntitlementPath = getEntitlementsPathFromBuildConfiguration(
-      projectRoot,
-      xcBuildConfiguration
-    );
+    const oldEntitlementPath = getEntitlementsPathFromBuildConfiguration(projectRoot, xcBuildConfiguration);
 
     if (oldEntitlementPath && _fs().default.existsSync(oldEntitlementPath)) {
       return;
@@ -170,16 +145,12 @@ function ensureApplicationTargetEntitlementsFileConfigured(projectRoot) {
 
     hasChangesToWrite = true; // Use posix formatted path, even on Windows
 
-    const entitlementsRelativePath = (0, _slash().default)(
-      _path().default.join(projectName, `${productName}.entitlements`)
-    );
+    const entitlementsRelativePath = (0, _slash().default)(_path().default.join(projectName, `${productName}.entitlements`));
 
-    const entitlementsPath = _path().default.normalize(
-      _path().default.join(projectRoot, 'ios', entitlementsRelativePath)
-    );
+    const entitlementsPath = _path().default.normalize(_path().default.join(projectRoot, 'ios', entitlementsRelativePath));
 
     _fs().default.mkdirSync(_path().default.dirname(entitlementsPath), {
-      recursive: true,
+      recursive: true
     });
 
     if (!_fs().default.existsSync(entitlementsPath)) {

@@ -1,13 +1,13 @@
-'use strict';
+"use strict";
 
-Object.defineProperty(exports, '__esModule', {
-  value: true,
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
 exports.copyFilePathToPathAsync = copyFilePathToPathAsync;
 exports.removeFile = removeFile;
 
 function _fs() {
-  const data = _interopRequireDefault(require('fs'));
+  const data = _interopRequireDefault(require("fs"));
 
   _fs = function () {
     return data;
@@ -17,7 +17,7 @@ function _fs() {
 }
 
 function _path() {
-  const data = _interopRequireDefault(require('path'));
+  const data = _interopRequireDefault(require("path"));
 
   _path = function () {
     return data;
@@ -26,19 +26,18 @@ function _path() {
   return data;
 }
 
-function _interopRequireDefault(obj) {
-  return obj && obj.__esModule ? obj : { default: obj };
-}
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /** A basic function that copies a single file to another file location. */
 async function copyFilePathToPathAsync(src, dest) {
   const srcFile = await _fs().default.promises.readFile(src);
   await _fs().default.promises.mkdir(_path().default.dirname(dest), {
-    recursive: true,
+    recursive: true
   });
   await _fs().default.promises.writeFile(dest, srcFile);
 }
 /** Remove a single file (not directory). Returns `true` if a file was actually deleted. */
+
 
 function removeFile(filePath) {
   try {

@@ -1,7 +1,7 @@
 interface ProjectFile<L extends string = string> {
-  path: string;
-  language: L;
-  contents: string;
+    path: string;
+    language: L;
+    contents: string;
 }
 declare type AppleLanguage = 'objc' | 'objcpp' | 'swift';
 export declare type AppDelegateProjectFile = ProjectFile<AppleLanguage>;
@@ -9,9 +9,9 @@ export declare function getAppDelegateHeaderFilePath(projectRoot: string): strin
 export declare function getAppDelegateFilePath(projectRoot: string): string;
 export declare function getAppDelegateObjcHeaderFilePath(projectRoot: string): string;
 export declare function getFileInfo(filePath: string): {
-  path: string;
-  contents: string;
-  language: AppleLanguage;
+    path: string;
+    contents: string;
+    language: AppleLanguage;
 };
 export declare function getAppDelegate(projectRoot: string): AppDelegateProjectFile;
 export declare function getSourceRoot(projectRoot: string): string;

@@ -1,7 +1,7 @@
-'use strict';
+"use strict";
 
-Object.defineProperty(exports, '__esModule', {
-  value: true,
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
 exports.assignStylesValue = assignStylesValue;
 exports.getAppThemeLightNoActionBarGroup = getAppThemeLightNoActionBarGroup;
@@ -14,7 +14,7 @@ exports.removeStylesItem = removeStylesItem;
 exports.setStylesItem = setStylesItem;
 
 function _Paths() {
-  const data = require('./Paths');
+  const data = require("./Paths");
 
   _Paths = function () {
     return data;
@@ -24,7 +24,7 @@ function _Paths() {
 }
 
 function _Resources() {
-  const data = require('./Resources');
+  const data = require("./Resources");
 
   _Resources = function () {
     return data;
@@ -36,34 +36,31 @@ function _Resources() {
 // Adds support for `tools:x`
 const fallbackResourceString = `<?xml version="1.0" encoding="utf-8"?><resources xmlns:tools="http://schemas.android.com/tools"></resources>`;
 
-async function readStylesXMLAsync({ path, fallback = fallbackResourceString }) {
+async function readStylesXMLAsync({
+  path,
+  fallback = fallbackResourceString
+}) {
   return (0, _Resources().readResourcesXMLAsync)({
     path,
-    fallback,
+    fallback
   });
 }
 
-async function getProjectStylesXMLPathAsync(projectRoot, { kind } = {}) {
+async function getProjectStylesXMLPathAsync(projectRoot, {
+  kind
+} = {}) {
   return (0, _Paths().getResourceXMLPathAsync)(projectRoot, {
     kind,
-    name: 'styles',
+    name: 'styles'
   });
 }
 
 function ensureDefaultStyleResourceXML(xml) {
-  let _xml, _xml$resources;
+  var _xml, _xml$resources;
 
   xml = (0, _Resources().ensureDefaultResourceXML)(xml);
 
-  if (
-    !Array.isArray(
-      (_xml = xml) === null || _xml === void 0
-        ? void 0
-        : (_xml$resources = _xml.resources) === null || _xml$resources === void 0
-        ? void 0
-        : _xml$resources.style
-    )
-  ) {
+  if (!Array.isArray((_xml = xml) === null || _xml === void 0 ? void 0 : (_xml$resources = _xml.resources) === null || _xml$resources === void 0 ? void 0 : _xml$resources.style)) {
     xml.resources.style = [];
   }
 
@@ -74,7 +71,11 @@ function getStyleParent(xml, group) {
   return (0, _Resources().findResourceGroup)(xml.resources.style, group);
 }
 
-function getStylesItem({ name, xml, parent }) {
+function getStylesItem({
+  name,
+  xml,
+  parent
+}) {
   xml = ensureDefaultStyleResourceXML(xml);
   const appTheme = getStyleParent(xml, parent);
 
@@ -83,7 +84,9 @@ function getStylesItem({ name, xml, parent }) {
   }
 
   if (appTheme.item) {
-    const existingItem = appTheme.item.filter(({ $: head }) => head.name === name)[0]; // Don't want to 2 of the same item, so if one exists, we overwrite it
+    const existingItem = appTheme.item.filter(({
+      $: head
+    }) => head.name === name)[0]; // Don't want to 2 of the same item, so if one exists, we overwrite it
 
     if (existingItem) {
       return existingItem;
@@ -93,7 +96,11 @@ function getStylesItem({ name, xml, parent }) {
   return null;
 }
 
-function setStylesItem({ item, xml, parent }) {
+function setStylesItem({
+  item,
+  xml,
+  parent
+}) {
   xml = ensureDefaultStyleResourceXML(xml);
   let appTheme = getStyleParent(xml, parent);
 
@@ -103,7 +110,9 @@ function setStylesItem({ item, xml, parent }) {
   }
 
   if (appTheme.item) {
-    const existingItem = appTheme.item.filter(({ $: head }) => head.name === item.$.name)[0]; // Don't want to 2 of the same item, so if one exists, we overwrite it
+    const existingItem = appTheme.item.filter(({
+      $: head
+    }) => head.name === item.$.name)[0]; // Don't want to 2 of the same item, so if one exists, we overwrite it
 
     if (existingItem) {
       existingItem._ = item._;
@@ -118,12 +127,18 @@ function setStylesItem({ item, xml, parent }) {
   return xml;
 }
 
-function removeStylesItem({ name, xml, parent }) {
+function removeStylesItem({
+  name,
+  xml,
+  parent
+}) {
   xml = ensureDefaultStyleResourceXML(xml);
   const appTheme = getStyleParent(xml, parent);
 
   if (appTheme !== null && appTheme !== void 0 && appTheme.item) {
-    const index = appTheme.item.findIndex(({ $: head }) => head.name === name);
+    const index = appTheme.item.findIndex(({
+      $: head
+    }) => head.name === name);
 
     if (index > -1) {
       appTheme.item.splice(index, 1);
@@ -133,14 +148,21 @@ function removeStylesItem({ name, xml, parent }) {
   return xml;
 } // This is a very common theme so make it reusable.
 
+
 function getAppThemeLightNoActionBarGroup() {
   return {
     name: 'AppTheme',
-    parent: 'Theme.AppCompat.Light.NoActionBar',
+    parent: 'Theme.AppCompat.Light.NoActionBar'
   };
 }
 
-function assignStylesValue(xml, { add, value, targetApi, name, parent }) {
+function assignStylesValue(xml, {
+  add,
+  value,
+  targetApi,
+  name,
+  parent
+}) {
   if (add) {
     return setStylesItem({
       xml,
@@ -148,15 +170,15 @@ function assignStylesValue(xml, { add, value, targetApi, name, parent }) {
       item: (0, _Resources().buildResourceItem)({
         name,
         targetApi,
-        value,
-      }),
+        value
+      })
     });
   }
 
   return removeStylesItem({
     xml,
     parent,
-    name,
+    name
   });
 }
 /**
@@ -167,10 +189,9 @@ function assignStylesValue(xml, { add, value, targetApi, name, parent }) {
  * @returns
  */
 
+
 function getStylesGroupAsObject(xml, group) {
   const xmlGroup = getStyleParent(xml, group);
-  return xmlGroup !== null && xmlGroup !== void 0 && xmlGroup.item
-    ? (0, _Resources().getResourceItemsAsObject)(xmlGroup.item)
-    : null;
+  return xmlGroup !== null && xmlGroup !== void 0 && xmlGroup.item ? (0, _Resources().getResourceItemsAsObject)(xmlGroup.item) : null;
 }
 //# sourceMappingURL=Styles.js.map

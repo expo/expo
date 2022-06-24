@@ -1,13 +1,13 @@
-'use strict';
+"use strict";
 
-Object.defineProperty(exports, '__esModule', {
-  value: true,
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
 exports.getPrimaryColor = getPrimaryColor;
 exports.withPrimaryColorStyles = exports.withPrimaryColorColors = exports.withPrimaryColor = void 0;
 
 function _androidPlugins() {
-  const data = require('../plugins/android-plugins');
+  const data = require("../plugins/android-plugins");
 
   _androidPlugins = function () {
     return data;
@@ -17,7 +17,7 @@ function _androidPlugins() {
 }
 
 function _Colors() {
-  const data = require('./Colors');
+  const data = require("./Colors");
 
   _Colors = function () {
     return data;
@@ -27,7 +27,7 @@ function _Colors() {
 }
 
 function _Styles() {
-  const data = require('./Styles');
+  const data = require("./Styles");
 
   _Styles = function () {
     return data;
@@ -39,7 +39,7 @@ function _Styles() {
 const COLOR_PRIMARY_KEY = 'colorPrimary';
 const DEFAULT_PRIMARY_COLOR = '#023c69';
 
-const withPrimaryColor = (config) => {
+const withPrimaryColor = config => {
   config = withPrimaryColorColors(config);
   config = withPrimaryColorStyles(config);
   return config;
@@ -47,11 +47,11 @@ const withPrimaryColor = (config) => {
 
 exports.withPrimaryColor = withPrimaryColor;
 
-const withPrimaryColorColors = (config) => {
-  return (0, _androidPlugins().withAndroidColors)(config, (config) => {
+const withPrimaryColorColors = config => {
+  return (0, _androidPlugins().withAndroidColors)(config, config => {
     config.modResults = (0, _Colors().assignColorValue)(config.modResults, {
       name: COLOR_PRIMARY_KEY,
-      value: getPrimaryColor(config),
+      value: getPrimaryColor(config)
     });
     return config;
   });
@@ -59,13 +59,13 @@ const withPrimaryColorColors = (config) => {
 
 exports.withPrimaryColorColors = withPrimaryColorColors;
 
-const withPrimaryColorStyles = (config) => {
-  return (0, _androidPlugins().withAndroidStyles)(config, (config) => {
+const withPrimaryColorStyles = config => {
+  return (0, _androidPlugins().withAndroidStyles)(config, config => {
     config.modResults = (0, _Styles().assignStylesValue)(config.modResults, {
       add: !!getPrimaryColor(config),
       parent: (0, _Styles().getAppThemeLightNoActionBarGroup)(),
       name: COLOR_PRIMARY_KEY,
-      value: `@color/${COLOR_PRIMARY_KEY}`,
+      value: `@color/${COLOR_PRIMARY_KEY}`
     });
     return config;
   });
@@ -74,10 +74,8 @@ const withPrimaryColorStyles = (config) => {
 exports.withPrimaryColorStyles = withPrimaryColorStyles;
 
 function getPrimaryColor(config) {
-  let _config$primaryColor;
+  var _config$primaryColor;
 
-  return (_config$primaryColor = config.primaryColor) !== null && _config$primaryColor !== void 0
-    ? _config$primaryColor
-    : DEFAULT_PRIMARY_COLOR;
+  return (_config$primaryColor = config.primaryColor) !== null && _config$primaryColor !== void 0 ? _config$primaryColor : DEFAULT_PRIMARY_COLOR;
 }
 //# sourceMappingURL=PrimaryColor.js.map

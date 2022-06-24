@@ -1,7 +1,7 @@
-'use strict';
+"use strict";
 
-Object.defineProperty(exports, '__esModule', {
-  value: true,
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
 exports.insertContentsAtOffset = insertContentsAtOffset;
 exports.replaceContentsWithOffset = replaceContentsWithOffset;
@@ -41,16 +41,11 @@ function insertContentsAtOffset(srcContents, insertion, offset) {
  * @returns updated contents
  */
 
+
 function replaceContentsWithOffset(contents, replacement, startOffset, endOffset) {
   const contentsLength = contents.length;
 
-  if (
-    startOffset < 0 ||
-    endOffset < 0 ||
-    startOffset >= contentsLength ||
-    endOffset >= contentsLength ||
-    startOffset > endOffset
-  ) {
+  if (startOffset < 0 || endOffset < 0 || startOffset >= contentsLength || endOffset >= contentsLength || startOffset > endOffset) {
     throw new Error('Invalid parameters.');
   }
 
@@ -66,6 +61,7 @@ function replaceContentsWithOffset(contents, replacement, startOffset, endOffset
  * @param offset start offset of `source` to search `regexp` pattern
  * @returns The index of the first match between the regular expression and the given string, or -1 if no match was found.
  */
+
 
 function searchFromOffset(source, regexp, offset) {
   const target = source.substring(offset);

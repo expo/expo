@@ -22,19 +22,4 @@ import * as Updates from './Updates';
 import * as Version from './Version';
 import * as WindowSoftInputMode from './WindowSoftInputMode';
 export { Manifest, Colors, Paths, Permissions, Properties, Resources, Scheme, Strings, Styles };
-export {
-  AllowBackup,
-  BuildProperties,
-  EasBuild,
-  GoogleMapsApiKey,
-  GoogleServices,
-  IntentFilters,
-  Name,
-  Orientation,
-  Package,
-  PrimaryColor,
-  StatusBar,
-  Updates,
-  Version,
-  WindowSoftInputMode,
-};
+export { AllowBackup, BuildProperties, EasBuild, GoogleMapsApiKey, GoogleServices, IntentFilters, Name, Orientation, Package, PrimaryColor, StatusBar, Updates, Version, WindowSoftInputMode, };

@@ -1,30 +1,19 @@
-'use strict';
+"use strict";
 
-Object.defineProperty(exports, '__esModule', {
-  value: true,
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
 exports.UnexpectedError = exports.PluginError = void 0;
 
-function _defineProperty(obj, key, value) {
-  if (key in obj) {
-    Object.defineProperty(obj, key, {
-      value,
-      enumerable: true,
-      configurable: true,
-      writable: true,
-    });
-  } else {
-    obj[key] = value;
-  }
-  return obj;
-}
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 class UnexpectedError extends Error {
   constructor(message) {
     super(`${message}\nPlease report this as an issue on https://github.com/expo/expo-cli/issues`);
 
-    _defineProperty(this, 'name', 'UnexpectedError');
+    _defineProperty(this, "name", 'UnexpectedError');
   }
+
 }
 
 exports.UnexpectedError = UnexpectedError;
@@ -38,10 +27,11 @@ class PluginError extends Error {
     this.code = code;
     this.cause = cause;
 
-    _defineProperty(this, 'name', 'PluginError');
+    _defineProperty(this, "name", 'PluginError');
 
-    _defineProperty(this, 'isPluginError', true);
+    _defineProperty(this, "isPluginError", true);
   }
+
 }
 
 exports.PluginError = PluginError;

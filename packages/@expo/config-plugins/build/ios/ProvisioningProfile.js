@@ -1,12 +1,12 @@
-'use strict';
+"use strict";
 
-Object.defineProperty(exports, '__esModule', {
-  value: true,
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
 exports.setProvisioningProfileForPbxproj = setProvisioningProfileForPbxproj;
 
 function _fs() {
-  const data = _interopRequireDefault(require('fs'));
+  const data = _interopRequireDefault(require("fs"));
 
   _fs = function () {
     return data;
@@ -16,7 +16,7 @@ function _fs() {
 }
 
 function _Target() {
-  const data = require('./Target');
+  const data = require("./Target");
 
   _Target = function () {
     return data;
@@ -26,7 +26,7 @@ function _Target() {
 }
 
 function _Xcodeproj() {
-  const data = require('./utils/Xcodeproj');
+  const data = require("./utils/Xcodeproj");
 
   _Xcodeproj = function () {
     return data;
@@ -36,7 +36,7 @@ function _Xcodeproj() {
 }
 
 function _string() {
-  const data = require('./utils/string');
+  const data = require("./utils/string");
 
   _string = function () {
     return data;
@@ -45,43 +45,37 @@ function _string() {
   return data;
 }
 
-function _interopRequireDefault(obj) {
-  return obj && obj.__esModule ? obj : { default: obj };
-}
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function setProvisioningProfileForPbxproj(
-  projectRoot,
-  { targetName, profileName, appleTeamId, buildConfiguration = 'Release' }
-) {
+function setProvisioningProfileForPbxproj(projectRoot, {
+  targetName,
+  profileName,
+  appleTeamId,
+  buildConfiguration = 'Release'
+}) {
   const project = (0, _Xcodeproj().getPbxproj)(projectRoot);
-  const nativeTargetEntry = targetName
-    ? (0, _Target().findNativeTargetByName)(project, targetName)
-    : (0, _Target().findFirstNativeTarget)(project);
+  const nativeTargetEntry = targetName ? (0, _Target().findNativeTargetByName)(project, targetName) : (0, _Target().findFirstNativeTarget)(project);
   const [nativeTargetId, nativeTarget] = nativeTargetEntry;
   const quotedAppleTeamId = ensureQuotes(appleTeamId);
-  (0, _Xcodeproj().getBuildConfigurationsForListId)(project, nativeTarget.buildConfigurationList)
-    .filter(([, item]) => (0, _string().trimQuotes)(item.name) === buildConfiguration)
-    .forEach(([, item]) => {
-      item.buildSettings.PROVISIONING_PROFILE_SPECIFIER = `"${profileName}"`;
-      item.buildSettings.DEVELOPMENT_TEAM = quotedAppleTeamId;
-      item.buildSettings.CODE_SIGN_IDENTITY = '"iPhone Distribution"';
-      item.buildSettings.CODE_SIGN_STYLE = 'Manual';
-    });
-  Object.entries((0, _Xcodeproj().getProjectSection)(project))
-    .filter(_Xcodeproj().isNotComment)
-    .forEach(([, item]) => {
-      if (!item.attributes.TargetAttributes[nativeTargetId]) {
-        item.attributes.TargetAttributes[nativeTargetId] = {};
-      }
+  (0, _Xcodeproj().getBuildConfigurationsForListId)(project, nativeTarget.buildConfigurationList).filter(([, item]) => (0, _string().trimQuotes)(item.name) === buildConfiguration).forEach(([, item]) => {
+    item.buildSettings.PROVISIONING_PROFILE_SPECIFIER = `"${profileName}"`;
+    item.buildSettings.DEVELOPMENT_TEAM = quotedAppleTeamId;
+    item.buildSettings.CODE_SIGN_IDENTITY = '"iPhone Distribution"';
+    item.buildSettings.CODE_SIGN_STYLE = 'Manual';
+  });
+  Object.entries((0, _Xcodeproj().getProjectSection)(project)).filter(_Xcodeproj().isNotComment).forEach(([, item]) => {
+    if (!item.attributes.TargetAttributes[nativeTargetId]) {
+      item.attributes.TargetAttributes[nativeTargetId] = {};
+    }
 
-      item.attributes.TargetAttributes[nativeTargetId].DevelopmentTeam = quotedAppleTeamId;
-      item.attributes.TargetAttributes[nativeTargetId].ProvisioningStyle = 'Manual';
-    });
+    item.attributes.TargetAttributes[nativeTargetId].DevelopmentTeam = quotedAppleTeamId;
+    item.attributes.TargetAttributes[nativeTargetId].ProvisioningStyle = 'Manual';
+  });
 
   _fs().default.writeFileSync(project.filepath, project.writeSync());
 }
 
-const ensureQuotes = (value) => {
+const ensureQuotes = value => {
   if (!value.match(/^['"]/)) {
     return `"${value}"`;
   }

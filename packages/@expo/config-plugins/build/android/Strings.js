@@ -1,14 +1,14 @@
-'use strict';
+"use strict";
 
-Object.defineProperty(exports, '__esModule', {
-  value: true,
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
 exports.getProjectStringsXMLPathAsync = getProjectStringsXMLPathAsync;
 exports.removeStringItem = removeStringItem;
 exports.setStringItem = setStringItem;
 
 function _Paths() {
-  const data = require('./Paths');
+  const data = require("./Paths");
 
   _Paths = function () {
     return data;
@@ -17,25 +17,19 @@ function _Paths() {
   return data;
 }
 
-async function getProjectStringsXMLPathAsync(projectRoot, { kind } = {}) {
+async function getProjectStringsXMLPathAsync(projectRoot, {
+  kind
+} = {}) {
   return (0, _Paths().getResourceXMLPathAsync)(projectRoot, {
     kind,
-    name: 'strings',
+    name: 'strings'
   });
 }
 
 function setStringItem(itemToAdd, stringFileContentsJSON) {
-  let _stringFileContentsJS;
+  var _stringFileContentsJS;
 
-  if (
-    !(
-      stringFileContentsJSON !== null &&
-      stringFileContentsJSON !== void 0 &&
-      (_stringFileContentsJS = stringFileContentsJSON.resources) !== null &&
-      _stringFileContentsJS !== void 0 &&
-      _stringFileContentsJS.string
-    )
-  ) {
+  if (!(stringFileContentsJSON !== null && stringFileContentsJSON !== void 0 && (_stringFileContentsJS = stringFileContentsJSON.resources) !== null && _stringFileContentsJS !== void 0 && _stringFileContentsJS.string)) {
     if (!stringFileContentsJSON.resources || typeof stringFileContentsJSON.resources === 'string') {
       // file was empty and JSON is `{resources : ''}`
       stringFileContentsJSON.resources = {};
@@ -46,16 +40,13 @@ function setStringItem(itemToAdd, stringFileContentsJSON) {
   }
 
   for (const newItem of itemToAdd) {
-    const stringNameExists = stringFileContentsJSON.resources.string.findIndex(
-      (e) => e.$.name === newItem.$.name
-    );
+    const stringNameExists = stringFileContentsJSON.resources.string.findIndex(e => e.$.name === newItem.$.name);
 
     if (stringNameExists > -1) {
       // replace the previous item
       stringFileContentsJSON.resources.string[stringNameExists] = newItem;
     } else {
-      stringFileContentsJSON.resources.string =
-        stringFileContentsJSON.resources.string.concat(newItem);
+      stringFileContentsJSON.resources.string = stringFileContentsJSON.resources.string.concat(newItem);
     }
   }
 
@@ -63,18 +54,10 @@ function setStringItem(itemToAdd, stringFileContentsJSON) {
 }
 
 function removeStringItem(named, stringFileContentsJSON) {
-  let _stringFileContentsJS2;
+  var _stringFileContentsJS2;
 
-  if (
-    stringFileContentsJSON !== null &&
-    stringFileContentsJSON !== void 0 &&
-    (_stringFileContentsJS2 = stringFileContentsJSON.resources) !== null &&
-    _stringFileContentsJS2 !== void 0 &&
-    _stringFileContentsJS2.string
-  ) {
-    const stringNameExists = stringFileContentsJSON.resources.string.findIndex(
-      (e) => e.$.name === named
-    );
+  if (stringFileContentsJSON !== null && stringFileContentsJSON !== void 0 && (_stringFileContentsJS2 = stringFileContentsJSON.resources) !== null && _stringFileContentsJS2 !== void 0 && _stringFileContentsJS2.string) {
+    const stringNameExists = stringFileContentsJSON.resources.string.findIndex(e => e.$.name === named);
 
     if (stringNameExists > -1) {
       // replace the previous value

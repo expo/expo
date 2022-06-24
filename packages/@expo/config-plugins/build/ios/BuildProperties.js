@@ -1,7 +1,7 @@
-'use strict';
+"use strict";
 
-Object.defineProperty(exports, '__esModule', {
-  value: true,
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
 exports.createBuildPodfilePropsConfigPlugin = createBuildPodfilePropsConfigPlugin;
 exports.updateIosBuildPropertiesFromConfig = updateIosBuildPropertiesFromConfig;
@@ -9,7 +9,7 @@ exports.updateIosBuildProperty = updateIosBuildProperty;
 exports.withJsEnginePodfileProps = void 0;
 
 function _iosPlugins() {
-  const data = require('../plugins/ios-plugins');
+  const data = require("../plugins/ios-plugins");
 
   _iosPlugins = function () {
     return data;
@@ -34,19 +34,14 @@ function _iosPlugins() {
  * @param name the config plugin name
  */
 function createBuildPodfilePropsConfigPlugin(configToPropertyRules, name) {
-  const withUnknown = (config, sourceConfig) =>
-    (0, _iosPlugins().withPodfileProperties)(config, (config) => {
-      config.modResults = updateIosBuildPropertiesFromConfig(
-        sourceConfig !== null && sourceConfig !== void 0 ? sourceConfig : config,
-        config.modResults,
-        configToPropertyRules
-      );
-      return config;
-    });
+  const withUnknown = (config, sourceConfig) => (0, _iosPlugins().withPodfileProperties)(config, config => {
+    config.modResults = updateIosBuildPropertiesFromConfig(sourceConfig !== null && sourceConfig !== void 0 ? sourceConfig : config, config.modResults, configToPropertyRules);
+    return config;
+  });
 
   if (name) {
     Object.defineProperty(withUnknown, 'name', {
-      value: name,
+      value: name
     });
   }
 
@@ -56,27 +51,15 @@ function createBuildPodfilePropsConfigPlugin(configToPropertyRules, name) {
  * A config-plugin to update `ios/Podfile.properties.json` from the `jsEngine` in expo config
  */
 
-const withJsEnginePodfileProps = createBuildPodfilePropsConfigPlugin(
-  [
-    {
-      propName: 'expo.jsEngine',
-      propValueGetter: (config) => {
-        let _ref, _config$ios$jsEngine, _config$ios;
 
-        return (_ref =
-          (_config$ios$jsEngine =
-            (_config$ios = config.ios) === null || _config$ios === void 0
-              ? void 0
-              : _config$ios.jsEngine) !== null && _config$ios$jsEngine !== void 0
-            ? _config$ios$jsEngine
-            : config.jsEngine) !== null && _ref !== void 0
-          ? _ref
-          : 'jsc';
-      },
-    },
-  ],
-  'withJsEnginePodfileProps'
-);
+const withJsEnginePodfileProps = createBuildPodfilePropsConfigPlugin([{
+  propName: 'expo.jsEngine',
+  propValueGetter: config => {
+    var _ref, _config$ios$jsEngine, _config$ios;
+
+    return (_ref = (_config$ios$jsEngine = (_config$ios = config.ios) === null || _config$ios === void 0 ? void 0 : _config$ios.jsEngine) !== null && _config$ios$jsEngine !== void 0 ? _config$ios$jsEngine : config.jsEngine) !== null && _ref !== void 0 ? _ref : 'jsc';
+  }
+}], 'withJsEnginePodfileProps');
 exports.withJsEnginePodfileProps = withJsEnginePodfileProps;
 
 function updateIosBuildPropertiesFromConfig(config, podfileProperties, configToPropertyRules) {

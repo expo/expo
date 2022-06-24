@@ -8,12 +8,10 @@ import { ConfigPlugin, StaticPlugin } from '../Plugin.types';
  * @param _isLegacyPlugin Used to suppress errors thrown by plugins that are applied automatically
  */
 export declare const withStaticPlugin: ConfigPlugin<{
-  plugin: StaticPlugin | ConfigPlugin | string;
-  fallback?: ConfigPlugin<
-    {
-      _resolverError: Error;
-    } & any
-  >;
-  projectRoot?: string;
-  _isLegacyPlugin?: boolean;
+    plugin: StaticPlugin | ConfigPlugin | string;
+    fallback?: ConfigPlugin<{
+        _resolverError: Error;
+    } & any>;
+    projectRoot?: string;
+    _isLegacyPlugin?: boolean;
 }>;

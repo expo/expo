@@ -2,7 +2,7 @@ import { ExpoConfig } from '@expo/config-types';
 import { ConfigPlugin } from '../Plugin.types';
 import { InfoPlist } from './IosConfig.types';
 export declare const withBundleIdentifier: ConfigPlugin<{
-  bundleIdentifier?: string;
+    bundleIdentifier?: string;
 }>;
 declare function getBundleIdentifier(config: Pick<ExpoConfig, 'ios'>): string | null;
 /**
@@ -25,16 +25,10 @@ declare function setBundleIdentifier(config: ExpoConfig, infoPlist: InfoPlist): 
  * @param {string} buildConfiguration Build configuration. Defaults to 'Release'.
  * @returns {string | null} bundle identifier of the Xcode project or null if the project is not configured
  */
-declare function getBundleIdentifierFromPbxproj(
-  projectRoot: string,
-  {
-    targetName,
-    buildConfiguration,
-  }?: {
+declare function getBundleIdentifierFromPbxproj(projectRoot: string, { targetName, buildConfiguration, }?: {
     targetName?: string;
     buildConfiguration?: string;
-  }
-): string | null;
+}): string | null;
 /**
  * Updates the bundle identifier for a given pbxproj
  *
@@ -42,11 +36,7 @@ declare function getBundleIdentifierFromPbxproj(
  * @param {string} bundleIdentifier Bundle identifier to set in the pbxproj
  * @param {boolean} [updateProductName=true]  Whether to update PRODUCT_NAME
  */
-declare function updateBundleIdentifierForPbxproj(
-  pbxprojPath: string,
-  bundleIdentifier: string,
-  updateProductName?: boolean
-): void;
+declare function updateBundleIdentifierForPbxproj(pbxprojPath: string, bundleIdentifier: string, updateProductName?: boolean): void;
 /**
  * Updates the bundle identifier for pbx projects inside the ios directory of the given project root
  *
@@ -54,19 +44,7 @@ declare function updateBundleIdentifierForPbxproj(
  * @param {string} bundleIdentifier Desired bundle identifier
  * @param {boolean} [updateProductName=true]  Whether to update PRODUCT_NAME
  */
-declare function setBundleIdentifierForPbxproj(
-  projectRoot: string,
-  bundleIdentifier: string,
-  updateProductName?: boolean
-): void;
+declare function setBundleIdentifierForPbxproj(projectRoot: string, bundleIdentifier: string, updateProductName?: boolean): void;
 declare function resetAllPlistBundleIdentifiers(projectRoot: string): void;
 declare function resetPlistBundleIdentifier(plistPath: string): void;
-export {
-  getBundleIdentifier,
-  setBundleIdentifier,
-  getBundleIdentifierFromPbxproj,
-  updateBundleIdentifierForPbxproj,
-  setBundleIdentifierForPbxproj,
-  resetAllPlistBundleIdentifiers,
-  resetPlistBundleIdentifier,
-};
+export { getBundleIdentifier, setBundleIdentifier, getBundleIdentifierFromPbxproj, updateBundleIdentifierForPbxproj, setBundleIdentifierForPbxproj, resetAllPlistBundleIdentifiers, resetPlistBundleIdentifier, };

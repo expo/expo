@@ -1,7 +1,7 @@
-'use strict';
+"use strict";
 
-Object.defineProperty(exports, '__esModule', {
-  value: true,
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
 exports.getAndroidManifestAsync = getAndroidManifestAsync;
 exports.getAppBuildGradleAsync = getAppBuildGradleAsync;
@@ -20,7 +20,7 @@ exports.getSettingsGradleAsync = getSettingsGradleAsync;
 exports.getSettingsGradleFilePath = getSettingsGradleFilePath;
 
 function _assert() {
-  const data = _interopRequireDefault(require('assert'));
+  const data = _interopRequireDefault(require("assert"));
 
   _assert = function () {
     return data;
@@ -30,7 +30,7 @@ function _assert() {
 }
 
 function _fs() {
-  const data = _interopRequireDefault(require('fs'));
+  const data = _interopRequireDefault(require("fs"));
 
   _fs = function () {
     return data;
@@ -40,7 +40,7 @@ function _fs() {
 }
 
 function _glob() {
-  const data = require('glob');
+  const data = require("glob");
 
   _glob = function () {
     return data;
@@ -50,7 +50,7 @@ function _glob() {
 }
 
 function path() {
-  const data = _interopRequireWildcard(require('path'));
+  const data = _interopRequireWildcard(require("path"));
 
   path = function () {
     return data;
@@ -60,7 +60,7 @@ function path() {
 }
 
 function _errors() {
-  const data = require('../utils/errors');
+  const data = require("../utils/errors");
 
   _errors = function () {
     return data;
@@ -70,7 +70,7 @@ function _errors() {
 }
 
 function _modules() {
-  const data = require('../utils/modules');
+  const data = require("../utils/modules");
 
   _modules = function () {
     return data;
@@ -79,57 +79,15 @@ function _modules() {
   return data;
 }
 
-function _getRequireWildcardCache(nodeInterop) {
-  if (typeof WeakMap !== 'function') return null;
-  const cacheBabelInterop = new WeakMap();
-  const cacheNodeInterop = new WeakMap();
-  return (_getRequireWildcardCache = function (nodeInterop) {
-    return nodeInterop ? cacheNodeInterop : cacheBabelInterop;
-  })(nodeInterop);
-}
+function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
 
-function _interopRequireWildcard(obj, nodeInterop) {
-  if (!nodeInterop && obj && obj.__esModule) {
-    return obj;
-  }
-  if (obj === null || (typeof obj !== 'object' && typeof obj !== 'function')) {
-    return { default: obj };
-  }
-  const cache = _getRequireWildcardCache(nodeInterop);
-  if (cache && cache.has(obj)) {
-    return cache.get(obj);
-  }
-  const newObj = {};
-  const hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor;
-  for (const key in obj) {
-    if (key !== 'default' && Object.prototype.hasOwnProperty.call(obj, key)) {
-      const desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null;
-      if (desc && (desc.get || desc.set)) {
-        Object.defineProperty(newObj, key, desc);
-      } else {
-        newObj[key] = obj[key];
-      }
-    }
-  }
-  newObj.default = obj;
-  if (cache) {
-    cache.set(obj, newObj);
-  }
-  return newObj;
-}
+function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
-function _interopRequireDefault(obj) {
-  return obj && obj.__esModule ? obj : { default: obj };
-}
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function getProjectFilePath(projectRoot, name) {
-  const filePath = (0, _glob().sync)(
-    path().join(projectRoot, `android/app/src/main/java/**/${name}.@(java|kt)`)
-  )[0];
-  (0, _assert().default)(
-    filePath,
-    `Project file "${name}" does not exist in android project for root "${projectRoot}"`
-  );
+  const filePath = (0, _glob().sync)(path().join(projectRoot, `android/app/src/main/java/**/${name}.@(java|kt)`))[0];
+  (0, _assert().default)(filePath, `Project file "${name}" does not exist in android project for root "${projectRoot}"`);
   return filePath;
 }
 
@@ -157,7 +115,7 @@ function getFileInfo(filePath) {
   return {
     path: path().normalize(filePath),
     contents: _fs().default.readFileSync(filePath, 'utf8'),
-    language: getLanguage(filePath),
+    language: getLanguage(filePath)
   };
 }
 
@@ -232,7 +190,10 @@ async function getResourceFolderAsync(projectRoot) {
   return path().join(projectPath, `app/src/main/res`);
 }
 
-async function getResourceXMLPathAsync(projectRoot, { kind = 'values', name }) {
+async function getResourceXMLPathAsync(projectRoot, {
+  kind = 'values',
+  name
+}) {
   const resourcePath = await getResourceFolderAsync(projectRoot);
   const filePath = path().join(resourcePath, `${kind}/${name}.xml`);
   return filePath;
