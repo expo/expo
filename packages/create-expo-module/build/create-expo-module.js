@@ -11,6 +11,9 @@ const ejs_1 = __importDefault(require("ejs"));
 const fs_extra_1 = __importDefault(require("fs-extra"));
 const path_1 = __importDefault(require("path"));
 const prompts_1 = __importDefault(require("prompts"));
+const validate_npm_package_name_1 = __importDefault(require("validate-npm-package-name"));
+const createExampleApp_1 = require("./createExampleApp");
+const packageManager_1 = require("./packageManager");
 const resolvePackageManager_1 = require("./resolvePackageManager");
 const packageJson = require('../package.json');
 // `yarn run` may change the current working dir, then we should use `INIT_CWD` env.
@@ -49,6 +52,8 @@ async function main(target, options) {
         const renderedContent = ejs_1.default.render(template, data);
         await fs_extra_1.default.outputFile(toPath, renderedContent, { encoding: 'utf8' });
     }
+    // Install dependencies and build
+    await postActionsAsync(packageManager, targetDir);
     if (!options.source) {
         // Files in the downloaded tarball are wrapped in `package` dir.
         // We should remove it after all.
@@ -60,8 +65,10 @@ async function main(target, options) {
     if (!options.withChangelog) {
         await fs_extra_1.default.remove(path_1.default.join(targetDir, 'CHANGELOG.md'));
     }
-    // Install dependencies and build
-    await postActionsAsync(packageManager, targetDir);
+    if (options.example) {
+        // Create "example" folder
+        await (0, createExampleApp_1.createExampleApp)(data, targetDir, packageManager);
+    }
     console.log('✅ Successfully created Expo module');
 }
 /**
@@ -121,16 +128,13 @@ async function downloadPackageAsync(targetDir) {
  * Installs dependencies and builds TypeScript files.
  */
 async function postActionsAsync(packageManager, targetDir) {
-    async function run(...args) {
-        await (0, spawn_async_1.default)(packageManager, args, {
-            cwd: targetDir,
-            stdio: 'ignore',
-        });
-    }
-    console.log('📦 Installing dependencies...');
-    await run('install');
+    console.log('📦 Installing module dependencies...');
+    await (0, packageManager_1.installDependencies)(packageManager, targetDir);
     console.log('🛠  Compiling TypeScript files...');
-    await run('run', 'build');
+    await (0, spawn_async_1.default)(packageManager, ['run', 'build'], {
+        cwd: targetDir,
+        stdio: 'ignore',
+    });
 }
 /**
  * Asks the user for some data necessary to render the template.
@@ -139,6 +143,7 @@ async function postActionsAsync(packageManager, targetDir) {
 async function askForSubstitutionDataAsync(targetDir, options) {
     var _a, _b;
     const defaultPackageSlug = path_1.default.basename(targetDir);
+    const useDefaultSlug = options.target && (0, validate_npm_package_name_1.default)(defaultPackageSlug);
     const defaultProjectName = defaultPackageSlug
         .replace(/^./, (match) => match.toUpperCase())
         .replace(/\W+(\w)/g, (_, p1) => p1.toUpperCase());
@@ -148,7 +153,8 @@ async function askForSubstitutionDataAsync(targetDir, options) {
             name: 'slug',
             message: 'What is the package slug?',
             initial: defaultPackageSlug,
-            resolvedValue: options.target ? defaultPackageSlug : null,
+            resolvedValue: useDefaultSlug ? defaultPackageSlug : null,
+            validate: (input) => (0, validate_npm_package_name_1.default)(input).validForNewPackages || 'Must be a valid npm package name',
         },
         {
             type: 'text',
@@ -160,6 +166,7 @@ async function askForSubstitutionDataAsync(targetDir, options) {
             type: 'text',
             name: 'description',
             message: 'How would you describe the module?',
+            validate: (input) => !!input || 'Cannot be empty',
         },
         {
             type: 'text',
@@ -183,6 +190,7 @@ async function askForSubstitutionDataAsync(targetDir, options) {
             type: 'text',
             name: 'repo',
             message: 'What is the repository URL?',
+            validate: (input) => /^https?:\/\//.test(input) || 'Must be a valid URL',
         },
     ];
     // Stop the process when the user cancels/exits the prompt.
@@ -243,6 +251,7 @@ program
     .option('-r, --repo <repo_url>', 'The URL to the repository.')
     .option('--with-readme', 'Whether to include README.md file.', false)
     .option('--with-changelog', 'Whether to include CHANGELOG.md file.', false)
+    .option('--no-example', 'Whether to skip creating the example app.', false)
     .action(main);
 program.parse(process.argv);
 //# sourceMappingURL=create-expo-module.js.map
