@@ -11,7 +11,7 @@
 ### 🐛 Bug fixes
 
 - Fixed `Unable to deactivate keep awake. However, it probably is deactivated already` unhandled promise rejection warning when resuming apps on Android. ([#17319](https://github.com/expo/expo/pull/17319) by [@kudo](https://github.com/kudo))
-- Added react-native 0.69 support. ([#17629](https://github.com/expo/expo/pull/17629) by [@kudo](https://github.com/kudo))
+- Added support for React Native 0.69.x ([#17629](https://github.com/expo/expo/pull/17629) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
