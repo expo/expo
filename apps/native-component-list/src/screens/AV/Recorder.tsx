@@ -144,8 +144,8 @@ export default class Recorder extends React.Component<
     return (
       <View style={this.props.style}>
         <View style={styles.container}>
-          {this._renderPrepareButton('High quality', Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY)}
-          {this._renderPrepareButton('Low quality', Audio.RECORDING_OPTIONS_PRESET_LOW_QUALITY)}
+          {this._renderPrepareButton('High quality', Audio.RecordingOptionsPresets.HIGH_QUALITY)}
+          {this._renderPrepareButton('Low quality', Audio.RecordingOptionsPresets.LOW_QUALITY)}
         </View>
         <View style={styles.centerer}>
           {this._renderRecorderButtons()}

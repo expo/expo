@@ -27,6 +27,7 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-app-loading': ['index.ts'],
   'expo-apple-authentication': ['index.ts'],
   'expo-application': ['Application.ts'],
+  'expo-audio': [['Audio.ts', 'Audio.types.ts'], 'expo-av'],
   'expo-auth-session': ['AuthSession.ts'],
   'expo-asset': [['Asset.ts', 'AssetHooks.ts']],
   'expo-background-fetch': ['BackgroundFetch.ts'],

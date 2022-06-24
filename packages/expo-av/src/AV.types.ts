@@ -22,7 +22,13 @@ export type AVPlaybackNativeSource = {
   headers?: { [fieldName: string]: string };
 };
 
+/**
+ * Object passed to the `onMetadataUpdate` function.
+ */
 export type AVMetadata = {
+  /**
+   * A string with the title of the sound object.
+   */
   title?: string;
 };
 

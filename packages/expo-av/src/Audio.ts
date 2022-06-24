@@ -37,6 +37,11 @@ function getCurrentAudioMode(): AudioMode {
   return currentAudioMode;
 }
 
+/**
+ * We provide this API to customize the audio experience on iOS and Android.
+ * @param partialMode
+ * @return A `Promise` that will reject if the audio mode could not be enabled for the device.
+ */
 export async function setAudioModeAsync(partialMode: Partial<AudioMode>): Promise<void> {
   const mode = _populateMissingKeys(partialMode, getCurrentAudioMode());
 

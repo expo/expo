@@ -1,78 +1,103 @@
-// TODO: consider changing these to enums
-export const RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_DEFAULT = 0;
-export const RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_THREE_GPP = 1;
-export const RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_MPEG_4 = 2;
-export const RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_AMR_NB = 3;
-export const RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_AMR_WB = 4;
-export const RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_AAC_ADIF = 5;
-export const RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_AAC_ADTS = 6;
-export const RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_RTP_AVP = 7;
-export const RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_MPEG2TS = 8;
-export const RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_WEBM = 9;
-export const RECORDING_OPTION_ANDROID_AUDIO_ENCODER_DEFAULT = 0;
-export const RECORDING_OPTION_ANDROID_AUDIO_ENCODER_AMR_NB = 1;
-export const RECORDING_OPTION_ANDROID_AUDIO_ENCODER_AMR_WB = 2;
-export const RECORDING_OPTION_ANDROID_AUDIO_ENCODER_AAC = 3;
-export const RECORDING_OPTION_ANDROID_AUDIO_ENCODER_HE_AAC = 4;
-export const RECORDING_OPTION_ANDROID_AUDIO_ENCODER_AAC_ELD = 5;
-export const RECORDING_OPTION_IOS_OUTPUT_FORMAT_LINEARPCM = 'lpcm';
-export const RECORDING_OPTION_IOS_OUTPUT_FORMAT_AC3 = 'ac-3';
-export const RECORDING_OPTION_IOS_OUTPUT_FORMAT_60958AC3 = 'cac3';
-export const RECORDING_OPTION_IOS_OUTPUT_FORMAT_APPLEIMA4 = 'ima4';
-export const RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEG4AAC = 'aac ';
-export const RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEG4CELP = 'celp';
-export const RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEG4HVXC = 'hvxc';
-export const RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEG4TWINVQ = 'twvq';
-export const RECORDING_OPTION_IOS_OUTPUT_FORMAT_MACE3 = 'MAC3';
-export const RECORDING_OPTION_IOS_OUTPUT_FORMAT_MACE6 = 'MAC6';
-export const RECORDING_OPTION_IOS_OUTPUT_FORMAT_ULAW = 'ulaw';
-export const RECORDING_OPTION_IOS_OUTPUT_FORMAT_ALAW = 'alaw';
-export const RECORDING_OPTION_IOS_OUTPUT_FORMAT_QDESIGN = 'QDMC';
-export const RECORDING_OPTION_IOS_OUTPUT_FORMAT_QDESIGN2 = 'QDM2';
-export const RECORDING_OPTION_IOS_OUTPUT_FORMAT_QUALCOMM = 'Qclp';
-export const RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEGLAYER1 = '.mp1';
-export const RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEGLAYER2 = '.mp2';
-export const RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEGLAYER3 = '.mp3';
-export const RECORDING_OPTION_IOS_OUTPUT_FORMAT_APPLELOSSLESS = 'alac';
-export const RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEG4AAC_HE = 'aach';
-export const RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEG4AAC_LD = 'aacl';
-export const RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEG4AAC_ELD = 'aace';
-export const RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEG4AAC_ELD_SBR = 'aacf';
-export const RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEG4AAC_ELD_V2 = 'aacg';
-export const RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEG4AAC_HE_V2 = 'aacp';
-export const RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEG4AAC_SPATIAL = 'aacs';
-export const RECORDING_OPTION_IOS_OUTPUT_FORMAT_AMR = 'samr';
-export const RECORDING_OPTION_IOS_OUTPUT_FORMAT_AMR_WB = 'sawb';
-export const RECORDING_OPTION_IOS_OUTPUT_FORMAT_AUDIBLE = 'AUDB';
-export const RECORDING_OPTION_IOS_OUTPUT_FORMAT_ILBC = 'ilbc';
-export const RECORDING_OPTION_IOS_OUTPUT_FORMAT_DVIINTELIMA = 0x6d730011;
-export const RECORDING_OPTION_IOS_OUTPUT_FORMAT_MICROSOFTGSM = 0x6d730031;
-export const RECORDING_OPTION_IOS_OUTPUT_FORMAT_AES3 = 'aes3';
-export const RECORDING_OPTION_IOS_OUTPUT_FORMAT_ENHANCEDAC3 = 'ec-3';
-export const RECORDING_OPTION_IOS_AUDIO_QUALITY_MIN = 0;
-export const RECORDING_OPTION_IOS_AUDIO_QUALITY_LOW = 0x20;
-export const RECORDING_OPTION_IOS_AUDIO_QUALITY_MEDIUM = 0x40;
-export const RECORDING_OPTION_IOS_AUDIO_QUALITY_HIGH = 0x60;
-export const RECORDING_OPTION_IOS_AUDIO_QUALITY_MAX = 0x7f;
-export const RECORDING_OPTION_IOS_BIT_RATE_STRATEGY_CONSTANT = 0;
-export const RECORDING_OPTION_IOS_BIT_RATE_STRATEGY_LONG_TERM_AVERAGE = 1;
-export const RECORDING_OPTION_IOS_BIT_RATE_STRATEGY_VARIABLE_CONSTRAINED = 2;
-export const RECORDING_OPTION_IOS_BIT_RATE_STRATEGY_VARIABLE = 3;
+// @docsMissing
+export var AndroidOutputFormat;
+(function (AndroidOutputFormat) {
+    AndroidOutputFormat[AndroidOutputFormat["DEFAULT"] = 0] = "DEFAULT";
+    AndroidOutputFormat[AndroidOutputFormat["THREE_GPP"] = 1] = "THREE_GPP";
+    AndroidOutputFormat[AndroidOutputFormat["MPEG_4"] = 2] = "MPEG_4";
+    AndroidOutputFormat[AndroidOutputFormat["AMR_NB"] = 3] = "AMR_NB";
+    AndroidOutputFormat[AndroidOutputFormat["AMR_WB"] = 4] = "AMR_WB";
+    AndroidOutputFormat[AndroidOutputFormat["AAC_ADIF"] = 5] = "AAC_ADIF";
+    AndroidOutputFormat[AndroidOutputFormat["AAC_ADTS"] = 6] = "AAC_ADTS";
+    AndroidOutputFormat[AndroidOutputFormat["RTP_AVP"] = 7] = "RTP_AVP";
+    AndroidOutputFormat[AndroidOutputFormat["MPEG2TS"] = 8] = "MPEG2TS";
+    AndroidOutputFormat[AndroidOutputFormat["WEBM"] = 9] = "WEBM";
+})(AndroidOutputFormat || (AndroidOutputFormat = {}));
+// @docsMissing
+export var AndroidAudioEncoder;
+(function (AndroidAudioEncoder) {
+    AndroidAudioEncoder[AndroidAudioEncoder["DEFAULT"] = 0] = "DEFAULT";
+    AndroidAudioEncoder[AndroidAudioEncoder["AMR_NB"] = 1] = "AMR_NB";
+    AndroidAudioEncoder[AndroidAudioEncoder["AMR_WB"] = 2] = "AMR_WB";
+    AndroidAudioEncoder[AndroidAudioEncoder["AAC"] = 3] = "AAC";
+    AndroidAudioEncoder[AndroidAudioEncoder["HE_AAC"] = 4] = "HE_AAC";
+    AndroidAudioEncoder[AndroidAudioEncoder["AAC_ELD"] = 5] = "AAC_ELD";
+})(AndroidAudioEncoder || (AndroidAudioEncoder = {}));
+// @docsMissing
+/**
+ * > **Note** Not all of the iOS formats included in this list of constants are currently supported by iOS,
+ * > in spite of appearing in the Apple source code. For an accurate list of formats supported by iOS, see
+ * > [Core Audio Codecs](https://developer.apple.com/library/content/documentation/MusicAudio/Conceptual/CoreAudioOverview/CoreAudioEssentials/CoreAudioEssentials.html#//apple_ref/doc/uid/TP40003577-CH10-SW26)
+ * > and [iPhone Audio File Formats](https://developer.apple.com/library/content/documentation/MusicAudio/Conceptual/CoreAudioOverview/CoreAudioEssentials/CoreAudioEssentials.html#//apple_ref/doc/uid/TP40003577-CH10-SW57).
+ */
+export var IOSOutputFormat;
+(function (IOSOutputFormat) {
+    IOSOutputFormat["LINEARPCM"] = "lpcm";
+    IOSOutputFormat["AC3"] = "ac-3";
+    IOSOutputFormat["60958AC3"] = "cac3";
+    IOSOutputFormat["APPLEIMA4"] = "ima4";
+    IOSOutputFormat["MPEG4AAC"] = "aac ";
+    IOSOutputFormat["MPEG4CELP"] = "celp";
+    IOSOutputFormat["MPEG4HVXC"] = "hvxc";
+    IOSOutputFormat["MPEG4TWINVQ"] = "twvq";
+    IOSOutputFormat["MACE3"] = "MAC3";
+    IOSOutputFormat["MACE6"] = "MAC6";
+    IOSOutputFormat["ULAW"] = "ulaw";
+    IOSOutputFormat["ALAW"] = "alaw";
+    IOSOutputFormat["QDESIGN"] = "QDMC";
+    IOSOutputFormat["QDESIGN2"] = "QDM2";
+    IOSOutputFormat["QUALCOMM"] = "Qclp";
+    IOSOutputFormat["MPEGLAYER1"] = ".mp1";
+    IOSOutputFormat["MPEGLAYER2"] = ".mp2";
+    IOSOutputFormat["MPEGLAYER3"] = ".mp3";
+    IOSOutputFormat["APPLELOSSLESS"] = "alac";
+    IOSOutputFormat["MPEG4AAC_HE"] = "aach";
+    IOSOutputFormat["MPEG4AAC_LD"] = "aacl";
+    IOSOutputFormat["MPEG4AAC_ELD"] = "aace";
+    IOSOutputFormat["MPEG4AAC_ELD_SBR"] = "aacf";
+    IOSOutputFormat["MPEG4AAC_ELD_V2"] = "aacg";
+    IOSOutputFormat["MPEG4AAC_HE_V2"] = "aacp";
+    IOSOutputFormat["MPEG4AAC_SPATIAL"] = "aacs";
+    IOSOutputFormat["AMR"] = "samr";
+    IOSOutputFormat["AMR_WB"] = "sawb";
+    IOSOutputFormat["AUDIBLE"] = "AUDB";
+    IOSOutputFormat["ILBC"] = "ilbc";
+    IOSOutputFormat[IOSOutputFormat["DVIINTELIMA"] = 1836253201] = "DVIINTELIMA";
+    IOSOutputFormat[IOSOutputFormat["MICROSOFTGSM"] = 1836253233] = "MICROSOFTGSM";
+    IOSOutputFormat["AES3"] = "aes3";
+    IOSOutputFormat["ENHANCEDAC3"] = "ec-3";
+})(IOSOutputFormat || (IOSOutputFormat = {}));
+// @docsMissing
+export var IOSAudioQuality;
+(function (IOSAudioQuality) {
+    IOSAudioQuality[IOSAudioQuality["MIN"] = 0] = "MIN";
+    IOSAudioQuality[IOSAudioQuality["LOW"] = 32] = "LOW";
+    IOSAudioQuality[IOSAudioQuality["MEDIUM"] = 64] = "MEDIUM";
+    IOSAudioQuality[IOSAudioQuality["HIGH"] = 96] = "HIGH";
+    IOSAudioQuality[IOSAudioQuality["MAX"] = 127] = "MAX";
+})(IOSAudioQuality || (IOSAudioQuality = {}));
+// @docsMissing
+export var IOSBitRateStrategy;
+(function (IOSBitRateStrategy) {
+    IOSBitRateStrategy[IOSBitRateStrategy["CONSTANT"] = 0] = "CONSTANT";
+    IOSBitRateStrategy[IOSBitRateStrategy["LONG_TERM_AVERAGE"] = 1] = "LONG_TERM_AVERAGE";
+    IOSBitRateStrategy[IOSBitRateStrategy["VARIABLE_CONSTRAINED"] = 2] = "VARIABLE_CONSTRAINED";
+    IOSBitRateStrategy[IOSBitRateStrategy["VARIABLE"] = 3] = "VARIABLE";
+})(IOSBitRateStrategy || (IOSBitRateStrategy = {}));
 // TODO : maybe make presets for music and speech, or lossy / lossless.
-export const RECORDING_OPTIONS_PRESET_HIGH_QUALITY = {
+const HIGH_QUALITY = {
     isMeteringEnabled: true,
     android: {
         extension: '.m4a',
-        outputFormat: RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_MPEG_4,
-        audioEncoder: RECORDING_OPTION_ANDROID_AUDIO_ENCODER_AAC,
+        outputFormat: AndroidOutputFormat.MPEG_4,
+        audioEncoder: AndroidAudioEncoder.AAC,
         sampleRate: 44100,
         numberOfChannels: 2,
         bitRate: 128000,
     },
     ios: {
         extension: '.m4a',
-        outputFormat: RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEG4AAC,
-        audioQuality: RECORDING_OPTION_IOS_AUDIO_QUALITY_MAX,
+        outputFormat: IOSOutputFormat.MPEG4AAC,
+        audioQuality: IOSAudioQuality.MAX,
         sampleRate: 44100,
         numberOfChannels: 2,
         bitRate: 128000,
@@ -85,19 +110,19 @@ export const RECORDING_OPTIONS_PRESET_HIGH_QUALITY = {
         bitsPerSecond: 128000,
     },
 };
-export const RECORDING_OPTIONS_PRESET_LOW_QUALITY = {
+const LOW_QUALITY = {
     isMeteringEnabled: true,
     android: {
         extension: '.3gp',
-        outputFormat: RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_THREE_GPP,
-        audioEncoder: RECORDING_OPTION_ANDROID_AUDIO_ENCODER_AMR_NB,
+        outputFormat: AndroidOutputFormat.THREE_GPP,
+        audioEncoder: AndroidAudioEncoder.AMR_NB,
         sampleRate: 44100,
         numberOfChannels: 2,
         bitRate: 128000,
     },
     ios: {
         extension: '.caf',
-        audioQuality: RECORDING_OPTION_IOS_AUDIO_QUALITY_MIN,
+        audioQuality: IOSAudioQuality.MIN,
         sampleRate: 44100,
         numberOfChannels: 2,
         bitRate: 128000,
@@ -109,5 +134,71 @@ export const RECORDING_OPTIONS_PRESET_LOW_QUALITY = {
         mimeType: 'audio/webm',
         bitsPerSecond: 128000,
     },
+};
+/**
+ * Constant which contains definitions of the two preset examples of `RecordingOptions`, as implemented in the Audio SDK.
+ *
+ * # `HIGH_QUALITY`
+ * ```ts
+ * RecordingOptionsPresets.HIGH_QUALITY = {
+ *   isMeteringEnabled: true,
+ *   android: {
+ *     extension: '.m4a',
+ *     outputFormat: AndroidOutputFormat.MPEG_4,
+ *     audioEncoder: AndroidAudioEncoder.AAC,
+ *     sampleRate: 44100,
+ *     numberOfChannels: 2,
+ *     bitRate: 128000,
+ *   },
+ *   ios: {
+ *     extension: '.m4a',
+ *     outputFormat: IOSOutputFormat.MPEG4AAC,
+ *     audioQuality: IOSAudioQuality.MAX,
+ *     sampleRate: 44100,
+ *     numberOfChannels: 2,
+ *     bitRate: 128000,
+ *     linearPCMBitDepth: 16,
+ *     linearPCMIsBigEndian: false,
+ *     linearPCMIsFloat: false,
+ *   },
+ *   web: {
+ *     mimeType: 'audio/webm',
+ *     bitsPerSecond: 128000,
+ *   },
+ * };
+ * ```
+ *
+ * # `LOW_QUALITY`
+ * ```ts
+ * RecordingOptionsPresets.LOW_QUALITY = {
+ *   isMeteringEnabled: true,
+ *   android: {
+ *     extension: '.3gp',
+ *     outputFormat: AndroidOutputFormat.THREE_GPP,
+ *     audioEncoder: AndroidAudioEncoder.AMR_NB,
+ *     sampleRate: 44100,
+ *     numberOfChannels: 2,
+ *     bitRate: 128000,
+ *   },
+ *   ios: {
+ *     extension: '.caf',
+ *     audioQuality: IOSAudioQuality.MIN,
+ *     sampleRate: 44100,
+ *     numberOfChannels: 2,
+ *     bitRate: 128000,
+ *     linearPCMBitDepth: 16,
+ *     linearPCMIsBigEndian: false,
+ *     linearPCMIsFloat: false,
+ *   },
+ *   web: {
+ *     mimeType: 'audio/webm',
+ *     bitsPerSecond: 128000,
+ *   },
+ * };
+ * ```
+ */
+export const RecordingOptionsPresets = {
+    HIGH_QUALITY,
+    LOW_QUALITY,
 };
 //# sourceMappingURL=RecordingConstants.js.map
