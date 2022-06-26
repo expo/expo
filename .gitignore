@@ -62,6 +62,7 @@ xcuserdata
 /android/versioned-react-native/ReactCommon
 /android/versioned-react-native/codegen
 ReactAndroid-temp.aar
+/android/ReactAndroid/prebuiltHermes
 
 # Tools
 jarjar-rules.txt
