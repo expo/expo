@@ -12,18 +12,19 @@ LOCAL_MODULE := react_render_componentregistry
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/../../../
 
 LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp)
+LOCAL_SRC_FILES := $(subst $(LOCAL_PATH)/,,$(LOCAL_SRC_FILES))
 
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/../../../
 
 LOCAL_SHARED_LIBRARIES := \
-  libfolly_futures \
-  libfolly_json \
+  libfolly_runtime \
   libglog_init \
   libjsi \
   libreact_debug \
   libreact_render_core \
   libreact_render_debug \
   libreact_utils
+
 
 LOCAL_CFLAGS := \
   -DLOG_TAG=\"Fabric\"
