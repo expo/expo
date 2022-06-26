@@ -40,6 +40,13 @@ inputs:
   git-lfs:
     description: 'Restore Git LFS cache'
     required: false
+  hermes-engine-aar:
+    description: 'Restore prebuilt hermes-engine AAR'
+    required: false
+  rebuild-hermes-engine-aar-if-needed:
+    description: 'Rebuild hermes-engine AAR when cache missed'
+    default: 'true'
+    required: false
 
 outputs:
   yarn-workspace-hit:
@@ -66,6 +73,9 @@ outputs:
   git-lfs-hit:
     description: 'Returns true, if Git LFS cache is up-to-date'
     value: steps.git-lfs-cache.outputs.cache-hit
+  hermes-engine-aar-hit:
+    description: 'Returns true, if prebuilt hermes-engine AAR cache is up-to-date'
+    value: steps.cache-hermes-engine-aar.outputs.cache-hit
 
 runs:
   using: 'composite'
@@ -186,3 +196,29 @@ runs:
       with:
         path: .git/lfs
         key: ${{ steps.git-lfs.outputs.sha256 }}
+
+    - name: ♻️ Restore hermes-engine AAR cache
+      if: inputs.hermes-engine-aar == 'true'
+      uses: actions/cache@v2
+      with:
+        path: android/ReactAndroid/prebuiltHermes
+        key: hermes-engine-aar-${{ hashFiles('android/sdks/.hermesversion') }}
+    - name: Check hermes-engine cache-hit
+      if: inputs.hermes-engine-aar == 'true'
+      id: cache-hermes-engine-aar
+      shell: bash
+      run: |
+        CURRENT_VERSION=$(test -f android/ReactAndroid/prebuiltHermes/.hermesversion && cat android/ReactAndroid/prebuiltHermes/.hermesversion) || true
+        TARGET_VERSION=$(test -f android/sdks/.hermesversion && cat android/sdks/.hermesversion) || true
+        if [[ $CURRENT_VERSION == $TARGET_VERSION ]]; then echo '::set-output name=cache-hit::true'; else echo '::set-output name=cache-hit::false'; fi
+    - name: 🛠 Rebuild hermes-engine AAR when cache missed
+      if: inputs.hermes-engine-aar == 'true' && inputs.rebuild-hermes-engine-aar-if-needed == 'true' && steps.cache-hermes-engine-aar.outputs.cache-hit != 'true'
+      shell: bash
+      run: |
+        mkdir -p ReactAndroid/prebuiltHermes
+        cp -f sdks/.hermesversion ReactAndroid/prebuiltHermes/
+        ./gradlew :ReactAndroid:hermes-engine:assembleRelease
+        ./gradlew :ReactAndroid:hermes-engine:assembleDebug
+        cp -f ReactAndroid/hermes-engine/build/outputs/aar/hermes-engine-release.aar ReactAndroid/prebuiltHermes/
+        cp -f ReactAndroid/hermes-engine/build/outputs/aar/hermes-engine-debug.aar ReactAndroid/prebuiltHermes/
+      working-directory: android

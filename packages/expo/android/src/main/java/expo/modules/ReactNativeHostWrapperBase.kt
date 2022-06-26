@@ -11,7 +11,6 @@ import com.facebook.react.bridge.JSIModuleSpec
 import com.facebook.react.bridge.JavaScriptContextHolder
 import com.facebook.react.bridge.JavaScriptExecutorFactory
 import com.facebook.react.bridge.ReactApplicationContext
-import com.facebook.react.devsupport.RedBoxHandler
 import java.lang.reflect.Method
 
 open class ReactNativeHostWrapperBase(
@@ -37,10 +36,6 @@ open class ReactNativeHostWrapperBase(
     }
 
     return result
-  }
-
-  override fun getRedBoxHandler(): RedBoxHandler? {
-    return invokeDelegateMethod("getRedBoxHandler")
   }
 
   override fun getJavaScriptExecutorFactory(): JavaScriptExecutorFactory? {
