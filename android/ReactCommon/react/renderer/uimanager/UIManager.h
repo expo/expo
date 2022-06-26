@@ -111,14 +111,6 @@ class UIManager final : public ShadowTreeDelegate {
       RootShadowNode::Shared const &oldRootShadowNode,
       RootShadowNode::Unshared const &newRootShadowNode) const override;
 
- private:
-  friend class UIManagerBinding;
-  friend class Scheduler;
-  friend class SurfaceHandler;
-
-  // `TimelineController` needs to call private `getShadowTreeRegistry()`.
-  friend class TimelineController;
-
   ShadowNode::Shared createNode(
       Tag tag,
       std::string const &componentName,
@@ -127,9 +119,9 @@ class UIManager final : public ShadowTreeDelegate {
       SharedEventTarget eventTarget) const;
 
   ShadowNode::Shared cloneNode(
-      const ShadowNode::Shared &shadowNode,
-      const SharedShadowNodeSharedList &children = nullptr,
-      const RawProps *rawProps = nullptr) const;
+      ShadowNode const &shadowNode,
+      SharedShadowNodeSharedList const &children = nullptr,
+      RawProps const *rawProps = nullptr) const;
 
   void appendChild(
       const ShadowNode::Shared &parentShadowNode,
@@ -174,6 +166,13 @@ class UIManager final : public ShadowTreeDelegate {
       const ShadowNode::Shared &shadowNode,
       std::string const &eventType);
 
+  ShadowTreeRegistry const &getShadowTreeRegistry() const;
+
+ private:
+  friend class UIManagerBinding;
+  friend class Scheduler;
+  friend class SurfaceHandler;
+
   /**
    * Configure a LayoutAnimation to happen on the next commit.
    * This API configures a global LayoutAnimation starting from the root node.
@@ -183,8 +182,6 @@ class UIManager final : public ShadowTreeDelegate {
       RawValue const &config,
       jsi::Value const &successCallback,
       jsi::Value const &failureCallback) const;
-
-  ShadowTreeRegistry const &getShadowTreeRegistry() const;
 
   SharedComponentDescriptorRegistry componentDescriptorRegistry_;
   UIManagerDelegate *delegate_;

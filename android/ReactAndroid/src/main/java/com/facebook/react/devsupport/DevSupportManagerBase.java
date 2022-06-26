@@ -50,6 +50,7 @@ import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.devsupport.interfaces.ErrorCustomizer;
 import com.facebook.react.devsupport.interfaces.ErrorType;
 import com.facebook.react.devsupport.interfaces.PackagerStatusCallback;
+import com.facebook.react.devsupport.interfaces.RedBoxHandler;
 import com.facebook.react.devsupport.interfaces.StackFrame;
 import com.facebook.react.modules.core.RCTNativeAppEventEmitter;
 import com.facebook.react.packagerconnection.RequestHandler;
@@ -112,7 +113,7 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
     public final DevLoadingViewController mDevLoadingViewController;
 
     @Nullable
-    public RedBoxDialog mRedBoxDialog;
+    public SurfaceDelegate mRedBoxSurfaceDelegate;
 
     @Nullable
     public AlertDialog mDevOptionsDialog;
@@ -223,7 +224,7 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
         final String subclassTag = getUniqueTag();
         final String bundleFile = subclassTag + "ReactNativeDevBundle.js";
         mJSBundleDownloadedFile = new File(applicationContext.getFilesDir(), bundleFile);
-        final String splitBundlesDir = subclassTag.toLowerCase() + "_dev_js_split_bundles";
+        final String splitBundlesDir = subclassTag.toLowerCase(Locale.ROOT) + "_dev_js_split_bundles";
         mJSSplitBundlesDir = mApplicationContext.getDir(splitBundlesDir, Context.MODE_PRIVATE);
         mDefaultNativeModuleCallExceptionHandler = new DefaultNativeModuleCallExceptionHandler();
         setDevSupportEnabled(enableOnCreate);
@@ -298,7 +299,8 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
         mErrorCustomizers.add(errorCustomizer);
     }
 
-    private Pair<String, StackFrame[]> processErrorCustomizers(Pair<String, StackFrame[]> errorInfo) {
+    @Override
+    public Pair<String, StackFrame[]> processErrorCustomizers(Pair<String, StackFrame[]> errorInfo) {
         if (mErrorCustomizers == null) {
             return errorInfo;
         } else {
@@ -319,30 +321,22 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
             @Override
             public void run() {
                 // belongs to the most recent showNewJSError
-                if (mRedBoxDialog == null || !mRedBoxDialog.isShowing() || errorCookie != mLastErrorCookie) {
+                if (!mRedBoxSurfaceDelegate.isShowing() || errorCookie != mLastErrorCookie) {
                     return;
                 }
-                StackFrame[] stack = StackTraceHelper.convertJsStackTrace(details);
-                Pair<String, StackFrame[]> errorInfo = processErrorCustomizers(Pair.create(message, stack));
-                mRedBoxDialog.setExceptionDetails(errorInfo.first, errorInfo.second);
-                updateLastErrorInfo(message, stack, errorCookie, ErrorType.JS);
-                // JS errors are reported here after source mapping.
-                if (mRedBoxHandler != null) {
-                    mRedBoxHandler.handleRedbox(message, stack, ErrorType.JS);
-                    mRedBoxDialog.resetReporting();
-                }
-                mRedBoxDialog.show();
+                // The RedBox surface delegate will always show the latest error
+                updateLastErrorInfo(message, StackTraceHelper.convertJsStackTrace(details), errorCookie, ErrorType.JS);
+                mRedBoxSurfaceDelegate.show();
             }
         });
     }
 
     @Override
     public void hideRedboxDialog() {
-        // dismiss redbox if exists
-        if (mRedBoxDialog != null) {
-            mRedBoxDialog.dismiss();
-            mRedBoxDialog = null;
+        if (mRedBoxSurfaceDelegate == null) {
+            return;
         }
+        mRedBoxSurfaceDelegate.hide();
     }
 
     @Nullable
@@ -366,32 +360,22 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
 
             @Override
             public void run() {
-                Activity context = mReactInstanceDevHelper.getCurrentActivity();
-                if (context != null && !context.isFinishing() && currentActivity != context) {
-                    currentActivity = context;
-                    // Create a new RedBox when currentActivity get updated
-                    mRedBoxDialog = new RedBoxDialog(currentActivity, DevSupportManagerBase.this, mRedBoxHandler);
+                // Keep a copy of the latest error to be shown by the RedBoxSurface
+                updateLastErrorInfo(message, stack, errorCookie, errorType);
+                if (mRedBoxSurfaceDelegate == null) {
+                    @Nullable SurfaceDelegate redBoxSurfaceDelegate = createSurfaceDelegate("RedBox");
+                    if (redBoxSurfaceDelegate != null) {
+                        mRedBoxSurfaceDelegate = redBoxSurfaceDelegate;
+                    } else {
+                        mRedBoxSurfaceDelegate = new RedBoxDialogSurfaceDelegate(DevSupportManagerBase.this);
+                    }
+                    mRedBoxSurfaceDelegate.createContentView("RedBox");
                 }
-                if (currentActivity == null || currentActivity.isFinishing()) {
-                    FLog.e(ReactConstants.TAG, "Unable to launch redbox because react activity " + "is not available, here is the error that redbox would've displayed: " + message);
-                    return;
-                }
-                if (mRedBoxDialog == null) {
-                    mRedBoxDialog = new RedBoxDialog(currentActivity, DevSupportManagerBase.this, mRedBoxHandler);
-                }
-                if (mRedBoxDialog.isShowing()) {
+                if (mRedBoxSurfaceDelegate.isShowing()) {
                     // show the first and most actionable one.
                     return;
                 }
-                Pair<String, StackFrame[]> errorInfo = processErrorCustomizers(Pair.create(message, stack));
-                mRedBoxDialog.setExceptionDetails(errorInfo.first, errorInfo.second);
-                updateLastErrorInfo(message, stack, errorCookie, errorType);
-                // inside {@link #updateJSError} after source mapping.
-                if (mRedBoxHandler != null && errorType == ErrorType.NATIVE) {
-                    mRedBoxHandler.handleRedbox(message, stack, ErrorType.NATIVE);
-                }
-                mRedBoxDialog.resetReporting();
-                mRedBoxDialog.show();
+                mRedBoxSurfaceDelegate.show();
             }
         });
     }
@@ -555,6 +539,11 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
     @Override
     public DevInternalSettings getDevSettings() {
         return mDevSettings;
+    }
+
+    @Override
+    public RedBoxHandler getRedBoxHandler() {
+        return mRedBoxHandler;
     }
 
     @Override
@@ -784,6 +773,11 @@ public abstract class DevSupportManagerBase implements DevSupportManager {
     @Nullable
     public StackFrame[] getLastErrorStack() {
         return mLastErrorStack;
+    }
+
+    @Override
+    public int getLastErrorCookie() {
+        return mLastErrorCookie;
     }
 
     @Override

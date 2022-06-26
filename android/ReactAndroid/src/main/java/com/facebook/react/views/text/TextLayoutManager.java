@@ -31,8 +31,8 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableNativeMap;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.common.build.ReactBuildConfig;
+import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.uimanager.PixelUtil;
-import com.facebook.react.uimanager.ReactAccessibilityDelegate;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.yoga.YogaConstants;
@@ -125,12 +125,10 @@ public class TextLayoutManager {
                 sb.length(),
                 new TextInlineViewPlaceholderSpan(reactTag, (int) width, (int) height)));
       } else if (end >= start) {
-        if (ReactAccessibilityDelegate.AccessibilityRole.LINK.equals(
-            textAttributes.mAccessibilityRole)) {
-          ops.add(
-              new SetSpanOperation(
-                  start, end, new ReactClickableSpan(reactTag, textAttributes.mColor)));
-        } else if (textAttributes.mIsColorSet) {
+        if (textAttributes.mIsAccessibilityLink) {
+          ops.add(new SetSpanOperation(start, end, new ReactClickableSpan(reactTag)));
+        }
+        if (textAttributes.mIsColorSet) {
           ops.add(
               new SetSpanOperation(
                   start, end, new ReactForegroundColorSpan(textAttributes.mColor)));
@@ -197,19 +195,25 @@ public class TextLayoutManager {
 
     Spannable preparedSpannableText;
 
-    synchronized (sSpannableCacheLock) {
-      preparedSpannableText = sSpannableCache.get((ReadableNativeMap) attributedString);
-      if (preparedSpannableText != null) {
-        return preparedSpannableText;
+    if (ReactFeatureFlags.enableSpannableCache) {
+      synchronized (sSpannableCacheLock) {
+        preparedSpannableText = sSpannableCache.get((ReadableNativeMap) attributedString);
+        if (preparedSpannableText != null) {
+          return preparedSpannableText;
+        }
       }
-    }
 
-    preparedSpannableText =
-        createSpannableFromAttributedString(
-            context, attributedString, reactTextViewManagerCallback);
+      preparedSpannableText =
+          createSpannableFromAttributedString(
+              context, attributedString, reactTextViewManagerCallback);
 
-    synchronized (sSpannableCacheLock) {
-      sSpannableCache.put((ReadableNativeMap) attributedString, preparedSpannableText);
+      synchronized (sSpannableCacheLock) {
+        sSpannableCache.put((ReadableNativeMap) attributedString, preparedSpannableText);
+      }
+    } else {
+      preparedSpannableText =
+          createSpannableFromAttributedString(
+              context, attributedString, reactTextViewManagerCallback);
     }
 
     return preparedSpannableText;

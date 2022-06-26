@@ -10,6 +10,7 @@ include $(CLEAR_VARS)
 LOCAL_MODULE := react_utils
 
 LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp)
+LOCAL_SRC_FILES := $(subst $(LOCAL_PATH)/,,$(LOCAL_SRC_FILES))
 
 LOCAL_C_INCLUDES := $(LOCAL_PATH) $(LOCAL_PATH)/../../
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/../../
@@ -23,12 +24,10 @@ LOCAL_STATIC_LIBRARIES :=
 LOCAL_SHARED_LIBRARIES := \
   libglog \
   libglog_init \
-  libreact_debug \
-  libreact_render_mapbuffer
+  libreact_debug
 
 include $(BUILD_SHARED_LIBRARY)
 
 $(call import-module,react/debug)
 $(call import-module,fbgloginit)
 $(call import-module,glog)
-$(call import-module,react/renderer/mapbuffer)

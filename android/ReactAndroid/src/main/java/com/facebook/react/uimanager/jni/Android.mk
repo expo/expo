@@ -10,12 +10,11 @@ include $(CLEAR_VARS)
 LOCAL_MODULE := uimanagerjni
 
 LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp)
+LOCAL_SRC_FILES := $(subst $(LOCAL_PATH)/,,$(LOCAL_SRC_FILES))
 
 LOCAL_SHARED_LIBRARIES := \
   libfb \
   libfbjni \
-  libfolly_futures \
-  libfolly_json \
   libglog \
   libglog_init \
   librrc_native \

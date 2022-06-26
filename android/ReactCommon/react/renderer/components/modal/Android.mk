@@ -10,6 +10,7 @@ include $(CLEAR_VARS)
 LOCAL_MODULE := rrc_modal
 
 LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp)
+LOCAL_SRC_FILES := $(subst $(LOCAL_PATH)/,,$(LOCAL_SRC_FILES))
 
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/../../../../
@@ -23,7 +24,7 @@ LOCAL_STATIC_LIBRARIES :=
 
 LOCAL_SHARED_LIBRARIES := \
   glog \
-  libfolly_json \
+  libfolly_runtime \
   libglog_init \
   libreact_codegen_rncore \
   libreact_render_componentregistry \

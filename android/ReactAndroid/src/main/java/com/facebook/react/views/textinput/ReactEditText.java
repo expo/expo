@@ -154,9 +154,9 @@ public class ReactEditText extends AppCompatEditText
       setLayerType(View.LAYER_TYPE_SOFTWARE, null);
     }
 
-    ViewCompat.setAccessibilityDelegate(
-        this,
-        new ReactAccessibilityDelegate() {
+    ReactAccessibilityDelegate editTextAccessibilityDelegate =
+        new ReactAccessibilityDelegate(
+            this, this.isFocusable(), this.getImportantForAccessibility()) {
           @Override
           public boolean performAccessibilityAction(View host, int action, Bundle args) {
             if (action == AccessibilityNodeInfo.ACTION_CLICK) {
@@ -172,7 +172,8 @@ public class ReactEditText extends AppCompatEditText
             }
             return super.performAccessibilityAction(host, action, args);
           }
-        });
+        };
+    ViewCompat.setAccessibilityDelegate(this, editTextAccessibilityDelegate);
   }
 
   @Override
@@ -912,6 +913,10 @@ public class ReactEditText extends AppCompatEditText
 
   public void setBorderColor(int position, float color, float alpha) {
     mReactBackgroundManager.setBorderColor(position, color, alpha);
+  }
+
+  public int getBorderColor(int position) {
+    return mReactBackgroundManager.getBorderColor(position);
   }
 
   public void setBorderRadius(float borderRadius) {

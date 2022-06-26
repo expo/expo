@@ -22,7 +22,7 @@ LOCAL_C_INCLUDES := $(LOCAL_PATH)
 #   ./../ == react
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/../..
 
-LOCAL_CFLAGS += -fexceptions -frtti -Wno-unused-lambda-capture
+LOCAL_CFLAGS += -fexceptions -frtti -Wno-unused-lambda-capture -std=c++17
 
 LOCAL_LDLIBS += -landroid
 
@@ -30,7 +30,7 @@ LOCAL_LDLIBS += -landroid
 LOCAL_SHARED_LIBRARIES := \
   libfb \
   libfbjni \
-  libfolly_json \
+  libfolly_runtime \
   libglog_init \
   libreact_render_runtimescheduler \
   libruntimeexecutor \
@@ -47,6 +47,7 @@ LOCAL_MODULE := reactnativeutilsjni
 
 # Compile all local c++ files.
 LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp)
+LOCAL_SRC_FILES := $(subst $(LOCAL_PATH)/,,$(LOCAL_SRC_FILES))
 
 ifeq ($(APP_OPTIM),debug)
   # Keep symbols by overriding the strip command invoked by ndk-build.
@@ -79,7 +80,7 @@ LOCAL_C_INCLUDES := $(LOCAL_PATH)
 #   ./../ == react
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/../..
 
-LOCAL_CFLAGS += -fexceptions -frtti -Wno-unused-lambda-capture
+LOCAL_CFLAGS += -fexceptions -frtti -Wno-unused-lambda-capture -std=c++17
 
 LOCAL_LDLIBS += -landroid
 
@@ -87,7 +88,7 @@ LOCAL_LDLIBS += -landroid
 LOCAL_SHARED_LIBRARIES := \
   libfb \
   libfbjni \
-  libfolly_json \
+  libfolly_runtime \
   libglog_init \
   libreact_render_runtimescheduler \
   libreactnativeutilsjni \
@@ -106,6 +107,7 @@ LOCAL_MODULE := reactnativejni
 
 # Compile all local c++ files.
 LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp)
+LOCAL_SRC_FILES := $(subst $(LOCAL_PATH)/,,$(LOCAL_SRC_FILES))
 
 ifeq ($(APP_OPTIM),debug)
   # Keep symbols by overriding the strip command invoked by ndk-build.
@@ -143,10 +145,17 @@ $(call import-module,jsiexecutor)
 $(call import-module,logger)
 $(call import-module,callinvoker)
 $(call import-module,reactperflogger)
-$(call import-module,hermes)
 $(call import-module,runtimeexecutor)
 $(call import-module,react/renderer/runtimescheduler)
 $(call import-module,react/nativemodule/core)
+
+# This block is needed only because we build the project on NDK r17 internally.
+ifneq ($(call ndk-major-at-least,21),true)
+    $(call import-add-path,$(NDK_GRADLE_INJECTED_IMPORT_PATH))
+endif
+
+$(call import-module,prefab/hermes-engine)
+
 
 include $(REACT_SRC_DIR)/reactperflogger/jni/Android.mk
 # TODO (T48588859): Restructure this target to align with dir structure: "react/nativemodule/..."
