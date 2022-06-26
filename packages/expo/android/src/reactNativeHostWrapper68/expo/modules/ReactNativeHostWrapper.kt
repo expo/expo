@@ -5,7 +5,7 @@ import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactPackageTurboModuleManagerDelegate
 import com.facebook.react.common.SurfaceDelegateFactory
 import com.facebook.react.devsupport.DevSupportManagerFactory
-import com.facebook.react.devsupport.interfaces.RedBoxHandler
+import com.facebook.react.devsupport.RedBoxHandler
 
 class ReactNativeHostWrapper(
   application: Application,

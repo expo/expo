@@ -61,6 +61,7 @@ jobs:
           yarn-workspace: 'true'
           yarn-tools: 'true'
           gradle: 'true'
+          hermes-engine-aar: 'true'
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: 🧶 Yarn install

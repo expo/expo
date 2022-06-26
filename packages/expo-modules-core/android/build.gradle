@@ -48,9 +48,11 @@ def isAndroidTest() {
 def downloadsDir = new File("$buildDir/downloads")
 def thirdPartyNdkDir = new File("$buildDir/third-party-ndk")
 
-def REACT_NATIVE_DIR = new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim()).parent
 def REACT_NATIVE_BUILD_FROM_SOURCE = findProject(":ReactAndroid") != null
-def REACT_NATIVE_SO_DIR = findProject(":ReactAndroid")
+def REACT_NATIVE_DIR = REACT_NATIVE_BUILD_FROM_SOURCE
+  ? findProject(":ReactAndroid").getProjectDir().parent
+  : new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim()).parent
+def REACT_NATIVE_SO_DIR = REACT_NATIVE_BUILD_FROM_SOURCE
   ? Paths.get(findProject(":ReactAndroid").getProjectDir().toString(), "build", "intermediates", "library_*", "*", "jni")
   : "${buildDir}/react-native-0*/jni"
 
@@ -60,6 +62,7 @@ file("$REACT_NATIVE_DIR/ReactAndroid/gradle.properties").withInputStream { react
 def FOLLY_VERSION = reactProperties.getProperty("FOLLY_VERSION")
 def BOOST_VERSION = reactProperties.getProperty("BOOST_VERSION")
 def DOUBLE_CONVERSION_VERSION = reactProperties.getProperty("DOUBLE_CONVERSION_VERSION")
+def REACT_NATIVE_TARGET_VERSION = reactProperties.getProperty("VERSION_NAME").split("\\.")[1].toInteger()
 
 def reactNativeThirdParty = new File("$REACT_NATIVE_DIR/ReactAndroid/src/main/jni/third-party")
 
@@ -130,6 +133,7 @@ android {
         abiFilters (*reactNativeArchitectures())
         arguments "-DREACT_NATIVE_DIR=${REACT_NATIVE_DIR}",
           "-DREACT_NATIVE_SO_DIR=${REACT_NATIVE_SO_DIR}",
+          "-DREACT_NATIVE_TARGET_VERSION=${REACT_NATIVE_TARGET_VERSION}",
           "-DBOOST_VERSION=${BOOST_VERSION}",
           "-DFOR_HERMES=${FOR_HERMES}",
           "-DHERMES_DIR=${HERMES_DIR}"
@@ -158,6 +162,7 @@ android {
       "**/libjscexecutor.so",
       "**/libfbjni.so",
       "**/libfolly_json.so",
+      "**/libfolly_runtime.so",
       "**/libhermes.so",
       "**/libjsi.so",
     ]
@@ -305,7 +310,10 @@ task extractJNIFiles {
 
 // BOOST
 task downloadBoost(dependsOn: createNativeDepsDirectories, type: Download) {
-  src("https://github.com/react-native-community/boost-for-react-native/releases/download/v${BOOST_VERSION.replace("_", ".")}-0/boost_${BOOST_VERSION}.tar.gz")
+  def srcUrl = REACT_NATIVE_TARGET_VERSION >= 69
+    ? "https://boostorg.jfrog.io/artifactory/main/release/${BOOST_VERSION.replace("_", ".")}/source/boost_${BOOST_VERSION}.tar.gz"
+    : "https://github.com/react-native-community/boost-for-react-native/releases/download/v${BOOST_VERSION.replace("_", ".")}-0/boost_${BOOST_VERSION}.tar.gz"
+  src(srcUrl)
   onlyIfNewer(true)
   overwrite(false)
   dest(new File(downloadsDir, "boost_${BOOST_VERSION}.tar.gz"))

@@ -58,12 +58,21 @@ target_include_directories(
 
 find_library(LOG_LIB log)
 
-find_library(
-        FOLLY_JSON_LIB
+if(${REACT_NATIVE_TARGET_VERSION} LESS 69)
+    find_library(
+        FOLLY_LIB
         folly_json
         PATHS ${LIBRN_DIR}
         NO_CMAKE_FIND_ROOT_PATH
-)
+    )
+else()
+    find_library(
+        FOLLY_LIB
+        folly_runtime
+        PATHS ${LIBRN_DIR}
+        NO_CMAKE_FIND_ROOT_PATH
+    )
+endif()
 
 find_library(
         FBJNI_LIB
@@ -134,7 +143,7 @@ if (${FOR_HERMES})
             ${JSI_LIB}
             ${HERMES_LIB}
             ${REACT_NATIVE_JNI_LIB}
-            ${FOLLY_JSON_LIB}
+            ${FOLLY_LIB}
             ${REACT_NATIVE_MODULES_CORE}
             android
     )
@@ -146,7 +155,7 @@ else ()
             ${JSI_LIB}
             ${JSEXECUTOR_LIB}
             ${REACT_NATIVE_JNI_LIB}
-            ${FOLLY_JSON_LIB}
+            ${FOLLY_LIB}
             ${REACT_NATIVE_MODULES_CORE}
             android
     )

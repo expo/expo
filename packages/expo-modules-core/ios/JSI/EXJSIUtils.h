@@ -6,6 +6,7 @@
 
 #import <jsi/jsi.h>
 #import <ReactCommon/RCTTurboModule.h>
+#import <ReactCommon/TurboModuleUtils.h>
 #import <ExpoModulesCore/EXObjectDeallocator.h>
 
 namespace jsi = facebook::jsi;
