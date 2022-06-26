@@ -202,7 +202,7 @@ runs:
       uses: actions/cache@v2
       with:
         path: android/ReactAndroid/prebuiltHermes
-        key: hermes-engine-aar-${{ hashFiles('android/sdks/.hermesversion') }}
+        key: hermes-engine-aar-v2-${{ hashFiles('android/sdks/.hermesversion') }}
     - name: Check hermes-engine cache-hit
       if: inputs.hermes-engine-aar == 'true'
       id: cache-hermes-engine-aar
@@ -221,4 +221,7 @@ runs:
         ./gradlew :ReactAndroid:hermes-engine:assembleDebug
         cp -f ReactAndroid/hermes-engine/build/outputs/aar/hermes-engine-release.aar ReactAndroid/prebuiltHermes/
         cp -f ReactAndroid/hermes-engine/build/outputs/aar/hermes-engine-debug.aar ReactAndroid/prebuiltHermes/
+      env:
+        # Reset reactNativeArchitectures to build all architectures
+        ORG_GRADLE_PROJECT_reactNativeArchitectures:
       working-directory: android
