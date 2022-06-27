@@ -45,7 +45,7 @@ public:
   CachedReferencesRegistry &operator=(CachedReferencesRegistry const &) = delete;
 
   /**
-   * Gets a signelton instance
+   * Gets a singleton instance
    */
   static std::shared_ptr<CachedReferencesRegistry> instance();
 
@@ -56,7 +56,6 @@ public:
 
   /**
    * Loads predefined set of Java classes and stores them
-   * @param env
    */
   void loadJClasses(JNIEnv *env);
 

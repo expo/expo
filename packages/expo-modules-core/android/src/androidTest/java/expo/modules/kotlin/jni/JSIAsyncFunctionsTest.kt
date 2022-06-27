@@ -5,13 +5,7 @@ package expo.modules.kotlin.jni
 import com.google.common.truth.Truth
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
-import kotlinx.coroutines.newSingleThreadContext
-import kotlinx.coroutines.runBlocking
 import org.junit.Test
 
 class JSIAsyncFunctionsTest {

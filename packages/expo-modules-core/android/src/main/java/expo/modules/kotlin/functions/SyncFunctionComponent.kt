@@ -28,7 +28,8 @@ class SyncFunctionComponent(
       argsCount,
       desiredArgsTypes
         .map { it.getCppRequiredTypes() }
-        .toIntArray()) { args ->
+        .toIntArray()
+    ) { args ->
       val result = call(args)
       val convertedResult = JSTypeConverter.convertToJSValue(result)
       return@registerSyncFunction Arguments.fromJavaArgs(arrayOf(convertedResult))

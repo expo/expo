@@ -100,18 +100,4 @@ class JSIInteropModuleRegistryTest {
     val unboxedI1Value = i1Value.getDouble().toInt()
     Truth.assertThat(unboxedI1Value).isEqualTo(123)
   }
-
-  @Test
-  fun work() = withJSIInterop(
-    inlineModule {
-      Name("TestModule")
-      Function("f1") { a: String, b: Int, c: Double ->
-        return@Function "$a $b $c"
-      }
-    }
-  ) {
-    val result = evaluateScript("ExpoModules.TestModule.f1('expo', 123, 1.3)").getString()
-
-    Truth.assertThat(result).isEqualTo("expo 123 1.3")
-  }
 }
