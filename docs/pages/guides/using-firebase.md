@@ -20,9 +20,7 @@ If you'd like access to the full suite of native firebase tools, we recommend us
 
 First we need to setup a Firebase Account and create a new project. We will be using the JavaScript SDK provided by Firebase, so pull it into your Expo project.
 
-<Terminal cmd={[  
-  '$ expo install firebase'
-]} />
+<Terminal cmd={['$ expo install firebase']} />
 
 [Firebase Console](http://console.firebase.google.com/) provides you with an API key, and other identifiers for your project needed for initialization. [firebase-web-start](https://firebase.google.com/docs/database/web/start) has a detailed description of what each field means and where to find them in your console.
 
