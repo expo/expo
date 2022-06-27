@@ -4,8 +4,6 @@ import androidx.exifinterface.media.ExifInterface
 
 object ImagePickerConstants {
   const val TAG = "ExponentImagePicker"
-  const val REQUEST_LAUNCH_CAMERA = 1
-  const val REQUEST_LAUNCH_IMAGE_LIBRARY = 2
   const val MAXIMUM_QUALITY = 1.0
   const val CACHE_DIR_NAME = "ImagePicker"
 

@@ -14,7 +14,7 @@
         android:theme="@style/Base.Theme.AppCompat"/>
       <!-- https://developer.android.com/guide/topics/manifest/provider-element.html -->
         <provider
-            android:name=".ImagePickerFileProvider"
+            android:name=".fileprovider.ImagePickerFileProvider"
             android:authorities="${applicationId}.ImagePickerFileProvider"
             android:exported="false"
             android:grantUriPermissions="true">
