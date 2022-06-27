@@ -120,7 +120,7 @@ You can add whichever provider makes sense for you, or even add multiple provide
 
 ### Phone Authentication
 
-To use phone authentication, you'll need the `expo-firebase-recaptcha` package. It provides a reCAPTCHA widget which is neccessary to verify that you are not a bot.
+To use phone authentication, you'll need the `expo-firebase-recaptcha` package. It provides a reCAPTCHA widget which is necessary to verify that you are not a bot.
 
 Please follow the instructions for the [expo-firebase-recaptcha](/versions/latest/sdk/firebase-recaptcha) package on how to use phone auth.
 
