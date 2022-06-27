@@ -18,6 +18,20 @@ namespace expo {
 class JSIInteropModuleRegistry;
 
 /**
+ * A cpp version of the `expo.modules.kotlin.jni.CppType` enum.
+ * Used to determine which representation of the js value should be sent to the Kotlin.
+ */
+enum CppType {
+  DOUBLE = 1 << 0,
+  BOOLEAN = 1 << 1,
+  STRING = 1 << 2,
+  JS_OBJECT = 1 << 3,
+  JS_VALUE = 1 << 4,
+  READABLE_ARRAY = 1 << 5,
+  READABLE_MAP = 1 << 6
+};
+
+/**
  * A class that holds information about the exported function.
  */
 class MethodMetadata {
@@ -35,10 +49,13 @@ public:
    */
   bool isAsync;
 
+  std::unique_ptr<int[]> desiredTypes;
+
   MethodMetadata(
     std::string name,
     int args,
     bool isAsync,
+    std::unique_ptr<int[]> desiredTypes,
     jni::global_ref<jobject> &&jBodyReference
   );
 
@@ -79,14 +96,22 @@ private:
    */
   std::shared_ptr<jsi::Function> body = nullptr;
 
-  jsi::Function toSyncFunction(jsi::Runtime &runtime);
+  jsi::Function toSyncFunction(jsi::Runtime &runtime, JSIInteropModuleRegistry *moduleRegistry);
 
   jsi::Function toAsyncFunction(jsi::Runtime &runtime, JSIInteropModuleRegistry *moduleRegistry);
 
   jsi::Function createPromiseBody(
     jsi::Runtime &runtime,
     JSIInteropModuleRegistry *moduleRegistry,
-    folly::dynamic &&args
+    jni::local_ref<jni::JArrayClass<jobject>::javaobject> &&args
+  );
+
+  std::vector<jvalue> convertJSIArgsToJNI(
+    JSIInteropModuleRegistry *moduleRegistry,
+    JNIEnv *env,
+    jsi::Runtime &rt,
+    const jsi::Value *args,
+    size_t count
   );
 };
 } // namespace expo

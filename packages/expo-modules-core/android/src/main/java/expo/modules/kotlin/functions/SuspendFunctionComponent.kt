@@ -12,7 +12,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import java.lang.ref.WeakReference
-import kotlin.jvm.Throws
 
 /**
  * We can't construct a `SuspendFunctionComponent` in the build phase, because it has to have access to module coroutine scope.
@@ -35,9 +34,17 @@ class SuspendFunctionComponent(
 ) : AsyncFunction(name, desiredArgsTypes) {
   @Throws(CodedException::class)
   override fun call(args: ReadableArray, promise: Promise) {
+    callWithConvertedArguments(convertArgs(args), promise)
+  }
+
+  override fun call(args: Array<Any?>, promise: Promise) {
+    callWithConvertedArguments(convertArgs(args), promise)
+  }
+
+  private fun callWithConvertedArguments(convertedArgs: Array<out Any?>, promise: Promise) {
     val holder = moduleHolderRef.get() ?: return
     val scope = holder.module.coroutineScopeDelegate.value
-    val convertedArgs = convertArgs(args)
+
     scope.launch {
       try {
         val result = exceptionDecorator({ cause -> FunctionCallException(name, holder.name, cause) }) {
