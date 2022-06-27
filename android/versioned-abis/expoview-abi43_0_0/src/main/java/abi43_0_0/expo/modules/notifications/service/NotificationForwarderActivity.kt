@@ -16,15 +16,9 @@ class NotificationForwarderActivity : Activity() {
     super.onCreate(savedInstanceState)
     val broadcastIntent =
       NotificationsService.createNotificationResponseBroadcastIntent(applicationContext, intent.extras)
+    val notificationResponse = NotificationsService.getNotificationResponseFromBroadcastIntent(broadcastIntent)
+    ExpoHandlingDelegate.openAppToForeground(this, notificationResponse)
     sendBroadcast(broadcastIntent)
-
-    val foregroundLaunchActivityIntent = ExpoHandlingDelegate.getForegroundLaunchActivityIntent(this)
-    if (foregroundLaunchActivityIntent != null) {
-      val notificationResponse = NotificationsService.getNotificationResponseFromBroadcastIntent(broadcastIntent)
-      NotificationsService.setNotificationResponseToIntent(foregroundLaunchActivityIntent, notificationResponse)
-      startActivity(foregroundLaunchActivityIntent)
-    }
-
     finish()
   }
 
