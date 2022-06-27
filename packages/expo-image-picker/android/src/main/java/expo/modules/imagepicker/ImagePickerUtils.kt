@@ -66,7 +66,7 @@ internal fun String.toImageFileExtension(): String = when {
   this.endsWith("gif", ignoreCase = true) -> ".gif"
   this.endsWith("bmp", ignoreCase = true) -> ".bmp"
   !this.endsWith("jpeg", ignoreCase = true) -> {
-    Log.w(TAG, "Image type not supported. Falling back to JPEG instead.")
+    Log.w(TAG, "Image file $this is of unsupported type. Falling back to JPEG instead.")
     ".jpeg"
   }
   else -> ".jpeg"
@@ -90,7 +90,7 @@ internal fun String.toBitmapCompressFormat(): Bitmap.CompressFormat = when {
   }
   else -> {
     if (!this.endsWith("jpeg", ignoreCase = true)) {
-      Log.w(TAG, "Image type not supported. Falling back to JPEG instead.")
+      Log.w(TAG, "Image file $this is of unsupported type. Falling back to JPEG instead.")
     }
     Bitmap.CompressFormat.JPEG
   }
