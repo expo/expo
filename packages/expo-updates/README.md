@@ -7,7 +7,7 @@
 - [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/updates.md)
 - [Documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/updates/)
 
-Additionally, for an introduction to this module and tooling around OTA updates, you can watch [this talk](https://www.youtube.com/watch?v=Si909la3rLk) by [@esamelson](https://github.com/esamelson) from ReactEurope 2020.
+Additionally, for an introduction to this module and tooling around OTA updates, you can watch [this talk](https://www.youtube.com/watch?v=Si909la3rLk) by [@esamelson](https://github.com/esamelson) from ReactEurope 2020. Note: `expo eject` (mentioned @9:10) is no longer needed to implement native code. See [Development Builds](https://docs.expo.dev/development/introduction/#from-expo-go-to-development-builds).
 
 ## Compatibility
 
@@ -31,7 +31,7 @@ Learn how to install expo-updates in your project in the [Installing expo-update
 
 ## Embedded Assets
 
-In certain situations, assets that are `require`d by your JavaScript are embedded into your application binary by Xcode/Android Studio. This allows these assets to load when the packager server running locally on your machine is not available.
+In certain situations, assets that are `required` by your JavaScript are embedded into your application binary by Xcode/Android Studio. This allows these assets to load when the packager server running locally on your machine is not available.
 
 Debug builds of Android apps do not, by default, have any assets bundled into the APK; they are always loaded at runtime from the Metro packager.
 
