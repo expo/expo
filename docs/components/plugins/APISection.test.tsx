@@ -32,7 +32,7 @@ describe('APISection', () => {
 
     expect(screen.getAllByRole('heading', { level: 2 })).toHaveLength(5);
     expect(screen.getAllByRole('heading', { level: 3 })).toHaveLength(20);
-    expect(screen.getAllByRole('table')).toHaveLength(6);
+    expect(screen.getAllByRole('table')).toHaveLength(11);
 
     expect(screen.queryByText('Event Subscriptions'));
     expect(screen.queryByText('Components'));
@@ -81,7 +81,7 @@ describe('APISection', () => {
 
     expect(screen.getAllByRole('heading', { level: 2 })).toHaveLength(4);
     expect(screen.getAllByRole('heading', { level: 3 })).toHaveLength(11);
-    expect(screen.getAllByRole('table')).toHaveLength(3);
+    expect(screen.getAllByRole('table')).toHaveLength(6);
 
     expect(screen.queryByText('Methods'));
     expect(screen.queryByText('Enums'));

@@ -15,7 +15,7 @@ import {
   getPlatformTags,
   listParams,
   mdComponents,
-  renderParam,
+  renderParams,
   resolveTypeName,
 } from '~/components/plugins/api/APISectionUtils';
 
@@ -45,18 +45,8 @@ export const renderMethod = (
         </InlineCode>
       </HeaderComponent>
       {getPlatformTags(comment)}
-      <CommentTextBlock
-        comment={comment}
-        beforeContent={
-          parameters && (
-            <>
-              <H4>Arguments</H4>
-              <UL>{parameters?.map(renderParam)}</UL>
-            </>
-          )
-        }
-        includePlatforms={false}
-      />
+      {parameters && renderParams(parameters)}
+      <CommentTextBlock comment={comment} includePlatforms={false} />
       {resolveTypeName(type) !== 'undefined' ? (
         <>
           <H4>Returns</H4>
