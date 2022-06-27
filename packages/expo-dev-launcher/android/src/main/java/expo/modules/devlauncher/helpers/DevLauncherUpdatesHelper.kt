@@ -24,7 +24,6 @@ suspend fun UpdatesInterface.loadUpdate(
           // if the update is null, we previously aborted the fetch, so we've already resumed
           update?.let { cont.resume(update) }
         }
-        override fun onQuerySuccess(updateIds: MutableList<UUID>?) {}
         override fun onFailure(e: Exception?) {
           cont.resumeWithException(e ?: Exception("There was an unexpected error loading the update."))
         }

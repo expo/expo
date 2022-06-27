@@ -12,6 +12,7 @@ import expo.modules.updates.selectionpolicy.LauncherSelectionPolicySingleUpdate
 import expo.modules.updates.selectionpolicy.ReaperSelectionPolicyDevelopmentClient
 import expo.modules.updates.selectionpolicy.SelectionPolicy
 import expo.modules.updatesinterface.UpdatesInterface
+import expo.modules.updatesinterface.UpdatesInterface.QueryCallback
 import expo.modules.updatesinterface.UpdatesInterface.UpdateCallback
 import org.json.JSONObject
 import java.util.*
@@ -30,7 +31,7 @@ class UpdatesDevLauncherController : UpdatesInterface {
   override fun fetchUpdateWithConfiguration(
     configuration: HashMap<String, Any>,
     context: Context,
-    callback: UpdatesInterface.UpdateCallback
+    callback: UpdateCallback
   ) {
     val controller = UpdatesController.instance
     val updatesConfiguration = UpdatesConfiguration(context, configuration)
@@ -92,7 +93,7 @@ class UpdatesDevLauncherController : UpdatesInterface {
     update: UpdateEntity,
     configuration: UpdatesConfiguration,
     context: Context,
-    callback: UpdatesInterface.UpdateCallback
+    callback: UpdateCallback
   ) {
     val controller = UpdatesController.instance
 
@@ -141,7 +142,7 @@ class UpdatesDevLauncherController : UpdatesInterface {
     )
   }
 
-  override fun storedUpdateIdsWithConfiguration(configuration: HashMap<String, Any>, context: Context, callback: UpdateCallback) {
+  override fun storedUpdateIdsWithConfiguration(configuration: HashMap<String, Any>, context: Context, callback: QueryCallback) {
     val controller = UpdatesController.instance
     val updatesConfiguration = UpdatesConfiguration(context, configuration)
     if (updatesConfiguration.updateUrl == null || updatesConfiguration.scopeKey == null) {
@@ -162,7 +163,7 @@ class UpdatesDevLauncherController : UpdatesInterface {
     )
     val readyUpdateIds = launcher.getReadyUpdateIds(databaseHolder.database)
     controller.databaseHolder.releaseDatabase()
-    callback.onQuerySuccess(readyUpdateIds)
+    callback.onSuccess(readyUpdateIds)
   }
 
   companion object {
