@@ -5,7 +5,11 @@ sidebar_title: Server infrastructure
 
 import { Collapsible } from '~/ui/components/Collapsible';
 
-This document describes the current build infrastructure as of May 13, 2022. It is likely to change over time, and this document will be updated.
+This document describes the current build infrastructure as of June 27, 2022. It is likely to change over time, and this document will be updated.
+
+## Worker IP addresses
+
+Here is the [up-to-date list of worker IP addresses](https://expo.dev/eas-build-worker-ips.txt).
 
 ## Configuring build environment
 
