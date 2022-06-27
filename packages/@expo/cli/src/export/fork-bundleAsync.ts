@@ -15,7 +15,6 @@ import Metro from 'metro';
 import { Terminal } from 'metro-core';
 
 import { MetroTerminalReporter } from '../start/server/metro/MetroTerminalReporter';
-import { BundleDetails } from '../start/server/metro/TerminalReporter.types';
 import { withMetroMultiPlatform } from '../start/server/metro/withMetroMultiPlatform';
 import { getPlatformBundlers } from '../start/server/platformBundlers';
 
