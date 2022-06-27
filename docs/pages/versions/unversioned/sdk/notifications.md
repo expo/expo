@@ -169,7 +169,7 @@ import * as Notifications from 'expo-notifications';
 
 Check out the Snack below to see Notifications in action, but be sure to use a physical device! Push notifications don't work on simulators/emulators.
 
-<SnackInline label='Push Notifications' dependencies={['expo-constants', 'expo-permissions', 'expo-notifications']}>
+<SnackInline label='Push Notifications' dependencies={['expo-device', 'expo-permissions', 'expo-notifications']}>
 
 ```js
 import * as Device from 'expo-device';
