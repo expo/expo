@@ -49,7 +49,7 @@ internal fun File.toContentUri(context: Context): Uri {
 }
 
 internal fun File.toBitmapCompressFormat(): Bitmap.CompressFormat = when {
-  this.extension.contains("png") -> Bitmap.CompressFormat.PNG
+  this.extension.endsWith("png", ignoreCase = true) -> Bitmap.CompressFormat.PNG
   else -> Bitmap.CompressFormat.JPEG
 }
 
@@ -62,10 +62,10 @@ internal fun Bitmap.CompressFormat.toImageFileExtension(): String {
 }
 
 internal fun String.toImageFileExtension(): String = when {
-  this.contains("png") -> ".png"
-  this.contains("gif") -> ".gif"
-  this.contains("bmp") -> ".bmp"
-  !this.contains("jpeg") -> {
+  this.endsWith("png", ignoreCase = true) -> ".png"
+  this.endsWith("gif", ignoreCase = true) -> ".gif"
+  this.endsWith("bmp", ignoreCase = true) -> ".bmp"
+  !this.endsWith("jpeg", ignoreCase = true) -> {
     Log.w(TAG, "Image type not supported. Falling back to JPEG instead.")
     ".jpeg"
   }
@@ -82,14 +82,14 @@ internal fun Uri.toMediaType(contentResolver: ContentResolver): MediaType {
 }
 
 internal fun String.toBitmapCompressFormat(): Bitmap.CompressFormat = when {
-  this.contains("png") ||
-    this.contains("gif") ||
-    this.contains("bmp") -> {
+  this.endsWith("png", ignoreCase = true) ||
+    this.endsWith("gif", ignoreCase = true) ||
+    this.endsWith("bmp", ignoreCase = true) -> {
     // The result image won't ever be a GIF of a BMP as the cropper doesn't support it.
     Bitmap.CompressFormat.PNG
   }
   else -> {
-    if (!this.contains("jpeg")) {
+    if (!this.endsWith("jpeg", ignoreCase = true)) {
       Log.w(TAG, "Image type not supported. Falling back to JPEG instead.")
     }
     Bitmap.CompressFormat.JPEG
