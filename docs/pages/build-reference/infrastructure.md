@@ -9,7 +9,7 @@ This document describes the current build infrastructure as of June 27, 2022. It
 
 ## Worker IP addresses
 
-An up-to-date list of worker IP addresses is published [here](https://expo.dev/eas-build-worker-ips.txt).
+Here is the [up-to-date list of worker IP addresses](https://expo.dev/eas-build-worker-ips.txt).
 
 ## Configuring build environment
 
