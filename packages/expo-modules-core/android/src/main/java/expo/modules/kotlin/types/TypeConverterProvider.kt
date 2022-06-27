@@ -30,6 +30,11 @@ inline fun <reified T> convert(value: Dynamic): T {
   return converter.convert(value) as T
 }
 
+inline fun <reified T> convert(value: Any?): T {
+  val converter = TypeConverterProviderImpl.obtainTypeConverter(typeOf<T>())
+  return converter.convert(value) as T
+}
+
 fun convert(value: Dynamic, type: KType): Any? {
   val converter = TypeConverterProviderImpl.obtainTypeConverter(type)
   return converter.convert(value)
@@ -115,6 +120,8 @@ object TypeConverterProviderImpl : TypeConverterProvider {
 
       JavaScriptValue::class.createType(nullable = isOptional) to JavaScriptValueTypeConvert(isOptional),
       JavaScriptObject::class.createType(nullable = isOptional) to JavaScriptObjectTypeConverter(isOptional),
+
+      Any::class.createType(nullable = isOptional) to AnyTypeConverter(isOptional),
     )
   }
 }
