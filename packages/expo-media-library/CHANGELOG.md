@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Use `PHAssetCollectionSubtypeAny` subtype to avoid Recently Deleted album to show up ([#17561](https://github.com/expo/expo/pull/17561) by [@chuganzy](https://github.com/chuganzy))
+- Fix `MediaLibrary._exportAsset` crashing if `filename` is nil. ([#17999](https://github.com/expo/expo/pull/17999) by [@ken0nek](https://github.com/ken0nek))
 
 ### 💡 Others
 
