@@ -7,7 +7,7 @@
 #include <react/jni/ReadableNativeArray.h>
 #include <jni/JCallback.h>
 
-#include <map>
+#include <unordered_map>
 
 #include "MethodMetadata.h"
 #include "JNIFunctionBody.h"
@@ -111,12 +111,12 @@ private:
   /**
    * Metadata map that stores information about all available methods on this module.
    */
-  std::map<std::string, MethodMetadata> methodsMetadata;
+  std::unordered_map<std::string, MethodMetadata> methodsMetadata;
 
   /**
    * A constants map.
    */
-  std::map<std::string, folly::dynamic> constants;
+  std::unordered_map<std::string, folly::dynamic> constants;
 
   explicit JavaScriptModuleObject(jni::alias_ref<jhybridobject> jThis)
     : javaPart_(jni::make_global(jThis)) {}
