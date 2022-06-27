@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.os.Parcel
+import android.text.format.DateUtils
 import android.util.Base64
 import androidx.core.os.bundleOf
 import java.io.Serializable
@@ -11,7 +12,7 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 const val EXPIRE_KEY = "expire"
-const val EXPIRATION_TIME = 5 * 60 * 1000 // 5 min
+const val EXPIRATION_TIME = 5 * DateUtils.MINUTE_IN_MILLIS
 
 /**
  * This class serves as a persistable store that accepts different kinds of data that have to
