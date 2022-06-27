@@ -24,6 +24,10 @@ class AnyFunctionTest {
       convertArgs(args)
       throw NullPointerException()
     }
+
+    override fun call(args: Array<Any?>, promise: Promise) {
+      error("Not implemented.")
+    }
   }
 
   @Test
