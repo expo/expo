@@ -242,9 +242,7 @@ This sample was borrowed and edited from [this forum post](https://forums.expo.d
 
 In order to record analytics events, the Expo Firebase Core and Analytics packages needs to be installed.
 
-<Terminal cmd={[  
-  '$ expo install expo-firebase-analytics'
-]} />
+<Terminal cmd={['$ expo install expo-firebase-analytics']} />
 
 This package uses the native Firebase SDK in standalone apps and bare apps and a JavaScript based implementation on Expo Go.
 
