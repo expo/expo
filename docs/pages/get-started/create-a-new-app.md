@@ -10,12 +10,12 @@ At this point we should have Expo CLI installed on our development machine and t
 ## Initializing the project
 
 <Terminal cmd={[
-  '# Create a project named my-app. Select the "blank" template when prompted',
-  '$ expo init my-app',
+  '# Create a project named my-app',
+  '$ npx create-expo-app my-app',
   '',
   '# Navigate to the project directory',
   '$ cd my-app'
-]} cmdCopy="expo init my-app && cd my-app" />
+]} cmdCopy="npx create-expo-app my-app && cd my-app" />
 
 ## Starting the development server
 
