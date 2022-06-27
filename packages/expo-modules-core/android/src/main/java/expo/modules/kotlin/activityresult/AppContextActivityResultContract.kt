@@ -13,7 +13,7 @@ import java.io.Serializable
  *
  * @see androidx.activity.result.contract.ActivityResultContract
  */
-interface AppContextActivityResultContract<I: Serializable, O> {
+interface AppContextActivityResultContract<I : Serializable, O> {
   /**
    * Create an intent that can be used for [android.app.Activity.startActivityForResult].
    */

@@ -5,7 +5,6 @@ package expo.modules.kotlin
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import androidx.activity.result.contract.ActivityResultContract
 import androidx.annotation.MainThread
 import androidx.appcompat.app.AppCompatActivity
 import com.facebook.react.bridge.ReactApplicationContext
@@ -24,6 +23,7 @@ import expo.modules.interfaces.taskManager.TaskManagerInterface
 import expo.modules.kotlin.activityresult.ActivityResultsManager
 import expo.modules.kotlin.activityresult.AppContextActivityResultFallbackCallback
 import expo.modules.kotlin.activityresult.AppContextActivityResultCaller
+import expo.modules.kotlin.activityresult.AppContextActivityResultContract
 import expo.modules.kotlin.activityresult.AppContextActivityResultLauncher
 import expo.modules.kotlin.defaultmodules.ErrorManagerModule
 import expo.modules.kotlin.events.EventEmitter
@@ -258,10 +258,10 @@ class AppContext(
 // region AppContextActivityResultCaller
 
   @MainThread
-  override suspend fun <I, O, P : Serializable> registerForActivityResult(
-    contract: ActivityResultContract<I, O>,
-    fallbackCallback: AppContextActivityResultFallbackCallback<O, P>
-  ): AppContextActivityResultLauncher<I, O, P> =
+  override suspend fun <I : Serializable, O> registerForActivityResult(
+    contract: AppContextActivityResultContract<I, O>,
+    fallbackCallback: AppContextActivityResultFallbackCallback<I, O>
+  ): AppContextActivityResultLauncher<I, O> =
     activityResultsManager.registerForActivityResult(contract, fallbackCallback)
 
 // endregion
