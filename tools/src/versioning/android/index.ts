@@ -3,14 +3,21 @@ import chalk from 'chalk';
 import fs from 'fs-extra';
 import glob from 'glob-promise';
 import inquirer from 'inquirer';
+import minimatch from 'minimatch';
 import path from 'path';
 import semver from 'semver';
 
 import * as Directories from '../../Directories';
 import { getListOfPackagesAsync } from '../../Packages';
-import { transformFileAsync as transformFileMultiReplacerAsync } from '../../Transforms';
+import {
+  copyFileWithTransformsAsync,
+  transformFileAsync as transformFileMultiReplacerAsync,
+} from '../../Transforms';
+import { searchFilesAsync } from '../../Utils';
 import { copyExpoviewAsync } from './copyExpoview';
+import { expoModulesTransforms } from './expoModulesTransforms';
 import { JniLibNames, getJavaPackagesToRename } from './libraries';
+import { packagesToKeep } from './packagesConfig';
 import { versionCxxExpoModulesAsync } from './versionCxx';
 import { renameHermesEngine, updateVersionedReactNativeAsync } from './versionReactNative';
 
@@ -432,14 +439,56 @@ async function copyExpoModulesAsync(version: string) {
       pkg.isIncludedInExpoClientOnPlatform('android') &&
       pkg.isVersionableOnPlatform('android')
     ) {
-      await spawnAsync(
-        './android-copy-expo-module.sh',
-        [pkg.packageName, version, path.join(pkg.path, pkg.androidSubdirectory)],
-        {
-          shell: true,
-          cwd: SCRIPT_DIR,
+      const abiVersion = `abi${version.replace(/\./g, '_')}`;
+      const targetDirectory = path.join(ANDROID_DIR, `versioned-abis/expoview-${abiVersion}`);
+      const sourceDirectory = path.join(pkg.path, pkg.androidSubdirectory);
+      const transforms = expoModulesTransforms(pkg.packageName, abiVersion);
+
+      const files = await searchFilesAsync(sourceDirectory, [
+        './src/main/java/**',
+        './src/main/kotlin/**',
+        './src/main/AndroidManifest.xml',
+      ]);
+
+      for (const javaPkg of packagesToKeep) {
+        const javaPkgWithSlash = javaPkg.replace(/\./g, '/');
+        const pathFromPackage = `./src/main/{java,kotlin}/${javaPkgWithSlash}{/**,.java,.kt}`;
+        for (const file of files) {
+          if (minimatch(file, pathFromPackage)) {
+            files.delete(file);
+            continue;
+          }
         }
+      }
+
+      for (const sourceFile of files) {
+        await copyFileWithTransformsAsync({
+          sourceFile,
+          targetDirectory,
+          sourceDirectory,
+          transforms,
+        });
+      }
+      const temporaryPackageManifestPath = path.join(
+        targetDirectory,
+        'src/main/TemporaryExpoModuleAndroidManifest.xml'
       );
+      const mainManifestPath = path.join(targetDirectory, 'src/main/AndroidManifest.xml');
+      await spawnAsync('java', [
+        '-jar',
+        path.join(SCRIPT_DIR, 'android-manifest-merger-3898d3a.jar'),
+        '--main',
+        mainManifestPath,
+        '--libs',
+        temporaryPackageManifestPath,
+        '--placeholder',
+        'applicationId=${applicationId}',
+        '--out',
+        mainManifestPath,
+        '--log',
+        'WARNING',
+      ]);
+      await fs.remove(temporaryPackageManifestPath);
       console.log(`   ✅  Created versioned ${pkg.packageName}`);
     }
   }
