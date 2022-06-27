@@ -31,7 +31,7 @@ export const packagesToKeep: string[] = [
   'expo.modules.updates.manifest',
   'expo.modules.updates.selectionpolicy',
   'expo.modules.updates.UpdatesDevLauncherController',
-  'expo.modules.splashscreen.singletons.SplashScreen',
+  'expo.modules.splashscreen.singletons',
   'expo.modules.splashscreen.SplashScreenViewProvider',
   'expo.modules.splashscreen.SplashScreenImageResizeMode',
   'com.facebook.proguard.annotations.DoNotStrip',
