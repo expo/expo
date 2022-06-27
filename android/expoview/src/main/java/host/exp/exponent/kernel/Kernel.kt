@@ -648,20 +648,27 @@ class Kernel : KernelInterface() {
     }
     ErrorActivity.clearErrorList()
     val tasks: List<AppTask> = experienceActivityTasks
-    var existingTask: AppTask? = null
-    for (i in tasks.indices) {
-      val task = tasks[i]
-      val baseIntent = task.taskInfo.baseIntent
-      if (baseIntent.hasExtra(KernelConstants.MANIFEST_URL_KEY) && (
-        baseIntent.getStringExtra(
-            KernelConstants.MANIFEST_URL_KEY
-          ) == manifestUrl
-        )
-      ) {
-        existingTask = task
-        break
+    var existingTask: AppTask? = run {
+      for (i in tasks.indices) {
+        val task = tasks[i]
+        // When deep linking from `NotificationForwarderActivity`, the task will finish immediately.
+        // There is race condition to retrieve the taskInfo from the finishing task.
+        // Uses try-catch to handle the cases.
+        try {
+          val baseIntent = task.taskInfo.baseIntent
+          if (baseIntent.hasExtra(KernelConstants.MANIFEST_URL_KEY) && (
+            baseIntent.getStringExtra(
+                KernelConstants.MANIFEST_URL_KEY
+              ) == manifestUrl
+            )
+          ) {
+            return@run task
+          }
+        } catch (e: Exception) {}
       }
+      return@run null
     }
+
     if (isOptimistic && existingTask == null) {
       openOptimisticExperienceActivity(manifestUrl)
     }
