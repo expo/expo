@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import expo.modules.notifications.BuildConfig
+import expo.modules.notifications.service.delegates.ExpoHandlingDelegate
 
 /**
  * An internal Activity that passes given Intent extras from
@@ -15,6 +16,14 @@ class NotificationForwarderActivity : Activity() {
     super.onCreate(savedInstanceState)
     val broadcastIntent =
       NotificationsService.createNotificationResponseBroadcastIntent(applicationContext, intent.extras)
+
+    val foregroundLaunchActivityIntent = ExpoHandlingDelegate.getForegroundLaunchActivityIntent(this)
+    if (foregroundLaunchActivityIntent != null) {
+      val notificationResponse = NotificationsService.getNotificationResponseFromBroadcastIntent(broadcastIntent)
+      NotificationsService.setNotificationResponseToIntent(foregroundLaunchActivityIntent, notificationResponse)
+      startActivity(foregroundLaunchActivityIntent)
+    }
+
     sendBroadcast(broadcastIntent)
     finish()
   }
