@@ -9,15 +9,6 @@ sidebar_title: Using Electron
 
 To simplify this we created the package `@expo/electron-adapter` which wraps [`electron-webpack`][electron-webpack] and adds support for Expo web and other universal React packages.
 
-- [Setup](#-setup)
-- [Usage](#️-usage)
-  - [Starting a project](#starting-a-project)
-  - [Customizing the main process](#customizing-the-main-process)
-  - [Building your project](#building-your-project)
-- [Behavior](#-behavior)
-- [Contributing](#contributing)
-- [Learn more about Electron](#learn-more-about-electron)
-
 ## Setup
 
 - Create a new Expo project - `yarn create expo-app`
