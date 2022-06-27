@@ -20,13 +20,13 @@ Sometimes you'll be able to tell exactly what's wrong just by the [stacktrace](.
 
 - Search for the error message in Google and [Stack Overflow](https://stackoverflow.com/questions), it's likely you're not the first person to ever run into this
 - **Isolate the code that's throwing the error**. This step is _vital_ in fixing obscure errors. To do this:
-  - Revert back to a working version of your code (this may even be a completely blank `expo init` project)
+  - Revert back to a working version of your code (this may even be a completely blank `npx create-expo-app` project)
   - Apply your recent changes piece by piece, until it breaks
     - If the code you're adding in each "piece" is complex, you may want to simplify what you're doing. For example, if you use a state management library like Redux, you can try removing that from the equation completely to see if the issue lies in your state management (which is really common in React apps)
   - This should narrow down the possible sources of the error, and provide you with more information to search the internet for others who have had the same problem
 - Use breakpoints (or `console.log`s) to check and make sure a certain piece of code is being run, or that a variable has a certain value. Using `console.log` for debugging isn't considered the best practice, but it's fast, easy, and oftentimes provides some illuminating information
 
-If you are able to simplify your code as much as possible, tracking down the source of an error gets exponentially easier. That's exactly why so many open source repos require a [minimal reproducible demo](https://stackoverflow.com/help/minimal-reproducible-example) in their bug reports- it ensures you have isolated the issue and identified exactly where the problem lies! If your app is too large and complex to do that, try and extract the functionality you're trying to add to its own blank `expo init` project, and go from there.
+If you are able to simplify your code as much as possible, tracking down the source of an error gets exponentially easier. That's exactly why so many open source repos require a [minimal reproducible demo](https://stackoverflow.com/help/minimal-reproducible-example) in their bug reports- it ensures you have isolated the issue and identified exactly where the problem lies! If your app is too large and complex to do that, try and extract the functionality you're trying to add to its own blank `npx create-expo-app` project, and go from there.
 
 ## Production errors
 
