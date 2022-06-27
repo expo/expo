@@ -103,7 +103,7 @@ PODS:
     - React-Core
   - EXNetwork (4.2.0):
     - ExpoModulesCore
-  - EXNotifications (0.15.3):
+  - EXNotifications (0.15.4):
     - ExpoModulesCore
   - EXPermissions (13.2.0):
     - ExpoModulesCore
@@ -1383,7 +1383,7 @@ SPEC CHECKSUMS:
   EXManifests: 0c6134b7b6f3236a93a778c3f44ba1cfb3f9fa3d
   EXMediaLibrary: 5d0e1b78268c90f7dd8a83ee3be26e01c4fd6c1f
   EXNetwork: 116e5ec043168904c1f24a2e96a8361063e57d26
-  EXNotifications: fa84c2aa6b46e265b6df5c1f9e37053cc9980ef5
+  EXNotifications: eb9e61011ee44c8df295bbd6a44fe44a6c817808
   EXPermissions: 3dbb869e7f96a5711314f73d48ddc2f28009a7f6
   Expo: 3df4af520db4f37f9821ba732ce9ac0dc67bb7b8
   expo-dev-client: 658fa86a3498812778d6c706205677c8e0674b9f
