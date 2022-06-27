@@ -4,10 +4,6 @@ import expo.modules.kotlin.ConcatIterator
 import expo.modules.kotlin.ModuleHolder
 import expo.modules.kotlin.events.EventListener
 import expo.modules.kotlin.events.EventName
-import expo.modules.kotlin.events.EventsDefinition
-import expo.modules.kotlin.functions.AsyncFunction
-import expo.modules.kotlin.functions.SuspendFunctionComponentBuilder
-import expo.modules.kotlin.functions.SyncFunctionComponent
 import expo.modules.kotlin.objects.ObjectDefinitionData
 import expo.modules.kotlin.views.ViewManagerDefinition
 
