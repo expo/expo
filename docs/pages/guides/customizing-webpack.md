@@ -47,7 +47,7 @@ React Native for web uses [some advanced browser features](https://github.com/ne
 
 ### ResizeObserver
 
-👉 [Browser support](https://caniuse.com/#feat=resizeobserver)
+- [Browser support](https://caniuse.com/#feat=resizeobserver)
 
 **TL;DR:** To fully support `onLayout` install `resize-observer-polyfill`.
 

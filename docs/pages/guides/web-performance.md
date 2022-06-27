@@ -24,7 +24,7 @@ npm install -g sharp-cli
 npx expo-optimize
 ```
 
-## 📦 What Makes My App Large?
+## What Makes My App Large?
 
 To inspect bundle sizes, you can use a Webpack plugin called [_Webpack Bundle Analyzer_](https://github.com/webpack-contrib/webpack-bundle-analyzer). This plugin will help you visualize the size of your static bundles. You can use this to identify unwanted large packages that you may not have bundled intentionally.
 
@@ -67,7 +67,7 @@ EXPO_WEB_DEBUG=true expo build:web
 
 You can now search for unwanted packages by name and see which files or methods are preventing them from being tree-shaken.
 
-## ⚡️ Lighthouse
+## Lighthouse
 
 Lighthouse is a great way to see how fast, accessible, and performant your website is.
 You can test your project with the _Audit_ tab in Chrome, or with the [**Lighthouse CLI**][lighthouse].

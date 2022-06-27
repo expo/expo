@@ -66,4 +66,4 @@ Some caveats:
 - The person performing the transfer must have "Owner" role on both the source and destination accounts.
 - New publishes for renamed project must be on SDK 43 or higher.
 
-> 💡 In the case where a project on your Personal or Organization Account (`source`) is sold/given to another company/person (receiving party) and the receiving party does not want to grant you Owner access to their `destination` account, you can create a new Organization Account (`escrow`), grant the receiving party Owner access, and transfer the project to the `escrow` account. The receiving party then can transfer it to the `destination` account from the `escrow` account.
+> In the case where a project on your Personal or Organization Account (`source`) is sold/given to another company/person (receiving party) and the receiving party does not want to grant you Owner access to their `destination` account, you can create a new Organization Account (`escrow`), grant the receiving party Owner access, and transfer the project to the `escrow` account. The receiving party then can transfer it to the `destination` account from the `escrow` account.

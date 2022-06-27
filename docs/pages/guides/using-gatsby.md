@@ -6,11 +6,11 @@ sidebar_title: Using Gatsby
 > Please open any issues related to Gatsby with Expo at [expo-cli/issues](https://github.com/expo/expo-cli/issues).
 
 - [Example](#example)
-- [🏁 Setup](#-setup)
+- [Setup](#-setup)
   - [Expo projects with Gatsby](#expo-projects-with-gatsby)
   - [Gatsby projects with Expo](#gatsby-projects-with-expo)
-- [⌨️ New Commands](#️-new-commands)
-- [📁 File Structure](#-file-structure)
+- [New Commands](#️-new-commands)
+- [File Structure](#-file-structure)
 - [Contributing](#contributing)
 - [Learn more about Gatsby](#learn-more-about-gatsby)
 
@@ -23,7 +23,7 @@ This guide will show you how to use the Gatsby CLI to develop your websites with
 
 If you'd like to jump right into a working project then check out [expo/examples: with-gatsby](https://github.com/expo/examples/edit/master/with-gatsby/).
 
-## 🏁 Setup
+## Setup
 
 We put all of the features for Expo web in the plugin [`gatsby-plugin-react-native-web`](https://github.com/slorber/gatsby-plugin-react-native-web) so setup would be as easy as possible. This guide will show you how to install and use it. Under the hood it's basically doing what `expo start --web` or the Expo + Next.js workflows are doing.
 
@@ -97,7 +97,7 @@ For using the Expo SDK in a web-only Gatsby project.
   - Gestures: `yarn add react-native-gesture-handler`
   - hooks: `yarn add react-native-web-hooks`
 
-## ⌨️ New Commands
+## New Commands
 
 You'll want to use the Gatsby CLI to develop the web part of your app now. You should still use `expo-cli` to run on iOS, and Android.
 
@@ -116,7 +116,7 @@ You'll want to use the Gatsby CLI to develop the web part of your app now. You s
   - 🚫 `serve web-build`
   - ✅ `yarn gatsby serve`
 
-## 📁 File Structure
+## File Structure
 
 Here is the recommended file structure for a Expo project with Gatsby support.
 

@@ -18,7 +18,7 @@ You can think of plugins like a bundler for native projects, and running `expo p
 - `mods` are async functions that modify native project files, such as source code or configuration (plist, xml) files.
 - Changes performed with `mods` will require rebuilding the affected native projects.
 - `mods` are removed from the public app manifest.
-- 💡 Everything in the Expo config must be able to be converted to JSON (with the exception of the `mods` field). So no async functions outside of `mods` in your config plugins!
+- Everything in the Expo config must be able to be converted to JSON (with the exception of the `mods` field). So no async functions outside of `mods` in your config plugins!
 
 ## Using a plugin in your app
 

@@ -515,7 +515,7 @@ You must use the proxy service in the Expo Go app because `exp://` cannot be add
 - Copy the "App ID" in the header into your `expoClientId: '<YOUR FBID>'`. Ex: `{ expoClientId: '474614477183384' }` (no `fb` prefix).
 - Now you're ready to use the demo component in the Expo Go app on iOS and Android.
 
-> ⚠️ If you forget to add the correct URL to the "Valid OAuth Redirect URIs", you will get an error like: `Can't Load URL: The domain of this URL isn't included in the app's domains. To be able to load this URL, add all domains and subdomains of your app to the App Domains field in your app settings.`
+> If you forget to add the correct URL to the "Valid OAuth Redirect URIs", you will get an error like: `Can't Load URL: The domain of this URL isn't included in the app's domains. To be able to load this URL, add all domains and subdomains of your app to the App Domains field in your app settings.`
 
 #### Custom Apps
 
@@ -578,7 +578,7 @@ Then add `<data android:scheme="fb<YOUR ID>"/>` to the `.MainActivity` `intent-f
 
 #### Troubleshooting native
 
-> ⚠️ The `native` redirect URI **must** be formatted like `fb<YOUR FBID>://authorize`, ex: `fb474614477183384://authorize`. Using the `Facebook` provider will do this automatically.
+> The `native` redirect URI **must** be formatted like `fb<YOUR FBID>://authorize`, ex: `fb474614477183384://authorize`. Using the `Facebook` provider will do this automatically.
 
 - If the protocol/suffix is not your FBID then you will get an error like: `No redirect URI in the params: No redirect present in URI`.
 - If the path is not `://authorize` then you will get an error like: `Can't Load URL: The domain of this URL isn't included in the app's domains. To be able to load this URL, add all domains and subdomains of your app to the App Domains field in your app settings.`

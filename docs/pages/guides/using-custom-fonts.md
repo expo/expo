@@ -197,7 +197,7 @@ export default props => {
 
 </SnackInline>
 
-> ⚠️ **If loading remote fonts, make sure they are being served from an origin with CORS properly configured** If you don't do this, your remote font might not load properly on the web platform.
+> **If loading remote fonts, make sure they are being served from an origin with CORS properly configured** If you don't do this, your remote font might not load properly on the web platform.
 
 ### Using `Font.loadAsync` instead of the `useFonts` hook
 

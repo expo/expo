@@ -130,7 +130,7 @@ Alternatively, you can use the JavaScript inspector from the following tools:
 - [Open Google Chrome DevTools manually](https://reactnative.dev/docs/hermes#debugging-js-on-hermes-using-google-chromes-devtools)
 - [Flipper](https://fbflipper.com/)
 
-> 💡 [Development builds](/development/introduction.md) built with `expo-dev-client` simplify this process by integrating directly with the JavaScript inspector in Hermes.
+> [Development builds](/development/introduction.md) built with `expo-dev-client` simplify this process by integrating directly with the JavaScript inspector in Hermes.
 
 ## Limitations
 
