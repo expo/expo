@@ -67,15 +67,22 @@ class ExpoHandlingDelegate(protected val context: Context) : HandlingDelegate {
         // For intent with RemoteInput, it should be mutable.
         intentFlags = intentFlags or PendingIntent.FLAG_MUTABLE
       }
-      val foregroundActivityIntent = getNotificationActionLauncher(context) ?: getMainActivityLauncher(context) ?: run {
-        Log.w("expo-notifications", "No launch intent found for application. Interacting with the notification won't open the app. The implementation uses `getLaunchIntentForPackage` to find appropriate activity.")
-        Intent()
-      }
-      foregroundActivityIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_MULTIPLE_TASK
-      NotificationsService.setNotificationResponseToIntent(foregroundActivityIntent, notificationResponse)
+
       val backgroundActivityIntent = Intent(context, NotificationForwarderActivity::class.java)
+      backgroundActivityIntent.data = broadcastIntent.data
+      backgroundActivityIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_MULTIPLE_TASK
       backgroundActivityIntent.putExtras(broadcastIntent)
-      return PendingIntent.getActivities(context, 0, arrayOf(foregroundActivityIntent, backgroundActivityIntent), intentFlags)
+      val requestCode = broadcastIntent.component?.className?.hashCode() ?: NotificationsService::class.java.hashCode()
+      return PendingIntent.getActivity(context, requestCode, backgroundActivityIntent, intentFlags)
+    }
+
+    fun getForegroundLaunchActivityIntent(context: Context): Intent? {
+      val intent = getNotificationActionLauncher(context)
+        ?: ExpoHandlingDelegate.getMainActivityLauncher(context) ?: run {
+        Log.w("expo-notifications", "No launch intent found for application. Interacting with the notification won't open the app. The implementation uses `getLaunchIntentForPackage` to find appropriate activity.")
+        return null
+      }
+      return intent
     }
 
     private fun getNotificationActionLauncher(context: Context): Intent? {
