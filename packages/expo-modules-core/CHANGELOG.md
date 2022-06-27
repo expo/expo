@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Create `AppContext.registerForActivityResult` mechanism similar to [`ComponentActivity.registerForActivityResult`](https://developer.android.com/training/basics/intents/result)). ([#17572](https://github.com/expo/expo/pull/17572) by [@bbarthec](https://github.com/bbarthec))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

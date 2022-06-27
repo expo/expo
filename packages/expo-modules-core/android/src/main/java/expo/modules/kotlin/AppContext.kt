@@ -5,6 +5,8 @@ package expo.modules.kotlin
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import androidx.activity.result.contract.ActivityResultContract
+import androidx.annotation.MainThread
 import androidx.appcompat.app.AppCompatActivity
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.turbomodule.core.CallInvokerHolderImpl
@@ -19,6 +21,10 @@ import expo.modules.interfaces.imageloader.ImageLoaderInterface
 import expo.modules.interfaces.permissions.Permissions
 import expo.modules.interfaces.sensors.SensorServiceInterface
 import expo.modules.interfaces.taskManager.TaskManagerInterface
+import expo.modules.kotlin.activityresult.ActivityResultsManager
+import expo.modules.kotlin.activityresult.AppContextActivityResultFallbackCallback
+import expo.modules.kotlin.activityresult.AppContextActivityResultCaller
+import expo.modules.kotlin.activityresult.AppContextActivityResultLauncher
 import expo.modules.kotlin.defaultmodules.ErrorManagerModule
 import expo.modules.kotlin.events.EventEmitter
 import expo.modules.kotlin.events.EventName
@@ -34,18 +40,18 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.newSingleThreadContext
+import java.io.Serializable
 import java.lang.ref.WeakReference
 
 class AppContext(
   modulesProvider: ModulesProvider,
   val legacyModuleRegistry: expo.modules.core.ModuleRegistry,
   private val reactContextHolder: WeakReference<ReactApplicationContext>
-) : CurrentActivityProvider {
+) : CurrentActivityProvider, AppContextActivityResultCaller {
   val registry = ModuleRegistry(WeakReference(this)).apply {
-    register(ErrorManagerModule())
-    register(modulesProvider)
   }
   private val reactLifecycleDelegate = ReactLifecycleDelegate(this)
+
   // We postpone creating the `JSIInteropModuleRegistry` to not load so files in unit tests.
   private lateinit var jsiInterop: JSIInteropModuleRegistry
   internal val modulesQueue = CoroutineScope(
@@ -54,12 +60,20 @@ class AppContext(
       CoroutineName("ExpoModulesCoreCoroutineQueue")
   )
 
+  private val activityResultsManager = ActivityResultsManager(this)
+
   init {
     requireNotNull(reactContextHolder.get()) {
       "The app context should be created with valid react context."
     }.apply {
       addLifecycleEventListener(reactLifecycleDelegate)
       addActivityEventListener(reactLifecycleDelegate)
+
+      // Registering modules has to happen at the very end of `AppContext` creation. Some modules need to access
+      // `AppContext` during their initialisation (or during `OnCreate` method), so we need to ensure all `AppContext`'s
+      // properties are initialized first. Not having that would trigger NPE.
+      registry.register(ErrorManagerModule())
+      registry.register(modulesProvider)
     }
   }
 
@@ -185,6 +199,11 @@ class AppContext(
   }
 
   fun onHostResume() {
+    activityResultsManager.onHostResume(
+      requireNotNull(currentActivity) {
+        "Current Activity is not available at this moment. This is an invalid state and this should never happen"
+      }
+    )
     registry.post(EventName.ACTIVITY_ENTERS_FOREGROUND)
   }
 
@@ -193,10 +212,16 @@ class AppContext(
   }
 
   fun onHostDestroy() {
+    activityResultsManager.onHostDestroy(
+      requireNotNull(currentActivity) {
+        "Current Activity is not available at this moment. This is an invalid state and this should never happen"
+      }
+    )
     registry.post(EventName.ACTIVITY_DESTROYS)
   }
 
   fun onActivityResult(activity: Activity, requestCode: Int, resultCode: Int, data: Intent?) {
+    activityResultsManager.onActivityResult(activity, requestCode, resultCode, data)
     registry.post(
       EventName.ON_ACTIVITY_RESULT,
       activity,
@@ -227,6 +252,17 @@ class AppContext(
 
       return currentActivity
     }
+
+// endregion
+
+// region AppContextActivityResultCaller
+
+  @MainThread
+  override suspend fun <I, O, P : Serializable> registerForActivityResult(
+    contract: ActivityResultContract<I, O>,
+    fallbackCallback: AppContextActivityResultFallbackCallback<O, P>
+  ): AppContextActivityResultLauncher<I, O, P> =
+    activityResultsManager.registerForActivityResult(contract, fallbackCallback)
 
 // endregion
 }
