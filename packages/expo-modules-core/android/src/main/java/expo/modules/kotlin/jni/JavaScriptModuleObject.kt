@@ -29,13 +29,13 @@ class JavaScriptModuleObject {
    * Register a promise-less function on the CPP module representation.
    * After calling this function, user can access the exported function in the JS code.
    */
-  external fun registerSyncFunction(name: String, args: Int, body: JNIFunctionBody)
+  external fun registerSyncFunction(name: String, args: Int, desiredTypes: IntArray, body: JNIFunctionBody)
 
   /**
    * Register a promise function on the CPP module representation.
    * After calling this function, user can access the exported function in the JS code.
    */
-  external fun registerAsyncFunction(name: String, args: Int, body: JNIAsyncFunctionBody)
+  external fun registerAsyncFunction(name: String, args: Int, desiredTypes: IntArray, body: JNIAsyncFunctionBody)
 
   @Throws(Throwable::class)
   protected fun finalize() {

@@ -49,8 +49,9 @@ std::shared_ptr<jsi::Object> JavaScriptModuleObject::getJSIObject(jsi::Runtime &
   return jsiObject;
 }
 
-void JavaScriptModuleObject::exportConstants(jni::alias_ref<react::NativeMap::javaobject>
-  constants) {
+void JavaScriptModuleObject::exportConstants(
+  jni::alias_ref<react::NativeMap::javaobject> constants
+) {
   auto dynamic = constants->cthis()->consume();
   assert(dynamic.isObject());
 
@@ -62,19 +63,39 @@ void JavaScriptModuleObject::exportConstants(jni::alias_ref<react::NativeMap::ja
 void JavaScriptModuleObject::registerSyncFunction(
   jni::alias_ref<jstring> name,
   jint args,
+  jni::alias_ref<jni::JArrayInt> desiredTypes,
   jni::alias_ref<JNIFunctionBody::javaobject> body
 ) {
-  auto cName = name->toStdString();
-  methodsMetadata.try_emplace(cName, cName, args, false, jni::make_global(body));
+  std::string cName = name->toStdString();
+  std::unique_ptr<int[]> types = desiredTypes->getRegion(0, args);
+
+  methodsMetadata.try_emplace(
+    cName,
+    cName,
+    args,
+    false,
+    std::move(types),
+    jni::make_global(body)
+  );
 }
 
 void JavaScriptModuleObject::registerAsyncFunction(
   jni::alias_ref<jstring> name,
   jint args,
+  jni::alias_ref<jni::JArrayInt> desiredTypes,
   jni::alias_ref<JNIAsyncFunctionBody::javaobject> body
 ) {
   auto cName = name->toStdString();
-  methodsMetadata.try_emplace(cName, cName, args, true, jni::make_global(body));
+  std::unique_ptr<int[]> types = desiredTypes->getRegion(0, args);
+
+  methodsMetadata.try_emplace(
+    cName,
+    cName,
+    args,
+    true,
+    std::move(types),
+    jni::make_global(body)
+  );
 }
 
 JavaScriptModuleObject::HostObject::HostObject(

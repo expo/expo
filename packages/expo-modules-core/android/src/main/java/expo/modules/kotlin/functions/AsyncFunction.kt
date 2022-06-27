@@ -20,8 +20,14 @@ abstract class AsyncFunction(
   @Throws(CodedException::class)
   abstract fun call(args: ReadableArray, promise: Promise)
 
+  abstract fun call(args: Array<Any?>, promise: Promise)
+
   override fun attachToJSObject(appContext: AppContext, jsObject: JavaScriptModuleObject) {
-    jsObject.registerAsyncFunction(name, argsCount) { args, bridgePromise ->
+    jsObject.registerAsyncFunction(
+      name,
+      argsCount,
+      desiredArgsTypes.map { it.getCppRequiredTypes() }.toIntArray()
+    ) { args, bridgePromise ->
       val kotlinPromise = KPromiseWrapper(bridgePromise as com.facebook.react.bridge.Promise)
       appContext.modulesQueue.launch {
         try {

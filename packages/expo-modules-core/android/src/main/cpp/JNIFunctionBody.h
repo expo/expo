@@ -24,7 +24,7 @@ public:
    * @return result of the Kotlin function
    */
   jni::local_ref<react::ReadableNativeArray::javaobject> invoke(
-    react::ReadableNativeArray::javaobject &&args
+    jni::local_ref<jni::JArrayClass<jobject>> &&args
   );
 };
 
@@ -43,7 +43,7 @@ public:
    * @param promise that will be resolve or rejected in the Kotlin's implementation
    */
   void invoke(
-    react::ReadableNativeArray::javaobject &&args,
+    jni::local_ref<jni::JArrayClass<jobject>> &&args,
     jobject promise
   );
 };

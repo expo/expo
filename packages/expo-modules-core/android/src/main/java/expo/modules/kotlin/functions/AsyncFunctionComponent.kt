@@ -12,7 +12,10 @@ class AsyncFunctionComponent(
 ) : AsyncFunction(name, desiredArgsTypes) {
   @Throws(CodedException::class)
   override fun call(args: ReadableArray, promise: Promise) {
-    val convertedArgs = convertArgs(args)
-    promise.resolve(body(convertedArgs))
+    promise.resolve(body(convertArgs(args)))
+  }
+
+  override fun call(args: Array<Any?>, promise: Promise) {
+    promise.resolve(body(convertArgs(args)))
   }
 }
