@@ -107,6 +107,12 @@ export class TerminalReporter extends XTerminalReporter implements TerminalRepor
       case 'bundle_build_done':
       case 'bundle_build_failed': {
         const startTime = this._bundleTimers.get(event.buildID);
+        // Observed a bug in Metro where the `bundle_build_done` is invoked twice during a static bundle
+        // i.e. `expo export`.
+        if (startTime == null) {
+          break;
+        }
+
         this.bundleBuildEnded(event, startTime ? Date.now() - startTime : 0);
         this._bundleTimers.delete(event.buildID);
         break;
