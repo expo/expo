@@ -324,6 +324,7 @@
           android:excludeFromRecents="true"
           android:noHistory="true"
           android:launchMode="standard"
+          android:taskAffinity=""
           />
 
         <provider
