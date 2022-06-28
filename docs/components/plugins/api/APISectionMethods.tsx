@@ -9,6 +9,7 @@ import {
   MethodSignatureData,
   PropData,
 } from '~/components/plugins/api/APIDataTypes';
+import { PlatformTags } from '~/components/plugins/api/APISectionPlatformTags';
 import {
   CommentTextBlock,
   listParams,
@@ -45,10 +46,10 @@ export const renderMethod = (
           {header !== 'Hooks' ? `${name}(${listParams(parameters)})` : name}
         </InlineCode>
       </HeaderComponent>
-      {getPlatformTags(comment)}
+      <PlatformTags comment={comment} />
       {parameters && renderParams(parameters)}
       <CommentTextBlock comment={comment} includePlatforms={false} />
-      {resolveTypeName(type) !== 'undefined' ? (
+      {resolveTypeName(type) !== 'undefined' && (
         <>
           <H4>Returns</H4>
           <UL>
