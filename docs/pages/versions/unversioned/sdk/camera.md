@@ -19,10 +19,6 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 <APIInstallSection />
 
-## Configuration
-
-In managed apps, `Camera` requires `Permissions.CAMERA`. Video recording requires `Permissions.AUDIO_RECORDING`.
-
 ## Usage
 
 > ⚠️ Only one Camera preview can be active at any given time. If you have multiple screens in your app, you should unmount `Camera` components whenever a screen is unfocused.
