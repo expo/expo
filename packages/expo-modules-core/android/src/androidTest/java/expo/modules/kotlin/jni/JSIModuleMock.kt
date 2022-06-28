@@ -70,7 +70,7 @@ internal inline fun JSIInteropModuleRegistry.waitForAsyncFunction(
   }
 
   Truth
-    .assertWithMessage("Promise wasn't resolve")
+    .assertWithMessage("Promise wasn't resolved")
     .that(global().hasProperty("promiseResult")).isTrue()
   return global().getProperty("promiseResult")
 }
