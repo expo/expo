@@ -168,7 +168,8 @@ const RENAMED_PAGES: Record<string, string> = {
   '/introduction/installation/': '/get-started/installation/',
   '/versions/latest/overview/': '/versions/latest/',
   '/versions/latest/introduction/installation/': '/get-started/installation/',
-  '/workflow/exploring-managed-workflow/': '/introduction/walkthrough/',
+  '/workflow/exploring-managed-workflow/': '/tutorial/planning/',
+  '/introduction/walkthrough/': '/tutorial/planning/',
 
   // Move overview to index
   '/versions/v37.0.0/sdk/overview/': '/versions/v37.0.0/',
