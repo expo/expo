@@ -28,6 +28,7 @@ import {
   TypeDefinitionData,
   TypePropertyDataFlags,
 } from '~/components/plugins/api/APIDataTypes';
+import { Row, Cell, Table, TableHead, HeaderCell } from '~/ui/components/Table';
 import * as Constants from '~/constants/theme';
 import { tableWrapperStyle } from '~/ui/components/Table/Table';
 
@@ -323,18 +324,61 @@ export const resolveTypeName = ({
 
 export const parseParamName = (name: string) => (name.startsWith('__') ? name.substr(2) : name);
 
-export const renderParam = ({ comment, name, type, flags }: MethodParamData): JSX.Element => (
-  <LI key={`param-${name}`}>
-    <B>
-      {parseParamName(name)}
-      {flags?.isOptional && '?'} (<InlineCode>{resolveTypeName(type)}</InlineCode>)
-    </B>
-    <CommentTextBlock comment={comment} components={mdInlineComponents} withDash />
-  </LI>
+export const renderParamRow = ({ comment, name, type, flags }: MethodParamData): JSX.Element => {
+  const defaultValue = parseCommentContent(getTagData('default', comment)?.text);
+  return (
+    <Row key={`param-${name}`}>
+      <Cell>
+        <B>{parseParamName(name)}</B>
+        {renderFlags(flags)}
+      </Cell>
+      <Cell>
+        <InlineCode>{resolveTypeName(type)}</InlineCode>
+      </Cell>
+      <Cell>
+        <CommentTextBlock
+          comment={comment}
+          components={mdInlineComponents}
+          afterContent={renderDefaultValue(defaultValue)}
+          emptyCommentFallback="-"
+        />
+      </Cell>
+    </Row>
+  );
+};
+
+export const renderTableHeadRow = () => (
+  <TableHead>
+    <Row>
+      <HeaderCell>Name</HeaderCell>
+      <HeaderCell>Type</HeaderCell>
+      <HeaderCell>Description</HeaderCell>
+    </Row>
+  </TableHead>
+);
+
+export const renderParams = (parameters: MethodParamData[]) => (
+  <>
+    <H4>Arguments</H4>
+    <Table>
+      {renderTableHeadRow()}
+      {parameters?.map(renderParamRow)}
+    </Table>
+  </>
 );
 
 export const listParams = (parameters: MethodParamData[]) =>
   parameters ? parameters?.map(param => parseParamName(param.name)).join(', ') : '';
+
+export const renderDefaultValue = (defaultValue?: string) =>
+  defaultValue ? (
+    <>
+      <br />
+      <br />
+      <B>Default: </B>
+      <InlineCode>{defaultValue}</InlineCode>
+    </>
+  ) : undefined;
 
 export const renderTypeOrSignatureType = (
   type?: TypeDefinitionData,
@@ -377,6 +421,7 @@ export type CommentTextBlockProps = {
   beforeContent?: JSX.Element | null;
   afterContent?: JSX.Element | null;
   includePlatforms?: boolean;
+  emptyCommentFallback?: string;
 };
 
 export const parseCommentContent = (content?: string): string =>
@@ -470,6 +515,7 @@ export const CommentTextBlock = ({
   beforeContent,
   afterContent,
   includePlatforms = true,
+  emptyCommentFallback,
 }: CommentTextBlockProps) => {
   const shortText = comment?.shortText?.trim().length ? (
     <ReactMarkdown components={components} remarkPlugins={[remarkGfm]}>
@@ -481,6 +527,10 @@ export const CommentTextBlock = ({
       {parseCommentContent(comment.text)}
     </ReactMarkdown>
   ) : null;
+
+  if (emptyCommentFallback && (!comment || (!shortText && !text))) {
+    return <>{emptyCommentFallback}</>;
+  }
 
   const examples = getAllTagData('example', comment);
   const exampleText = examples?.map((example, index) => (

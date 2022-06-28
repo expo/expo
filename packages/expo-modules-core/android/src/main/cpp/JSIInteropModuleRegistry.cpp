@@ -26,6 +26,7 @@ void JSIInteropModuleRegistry::registerNatives() {
                    makeNativeMethod("evaluateScript", JSIInteropModuleRegistry::evaluateScript),
                    makeNativeMethod("global", JSIInteropModuleRegistry::global),
                    makeNativeMethod("createObject", JSIInteropModuleRegistry::createObject),
+                   makeNativeMethod("drainJSEventLoop", JSIInteropModuleRegistry::drainJSEventLoop),
                  });
 }
 
@@ -113,5 +114,9 @@ jni::local_ref<JavaScriptObject::javaobject> JSIInteropModuleRegistry::global() 
 
 jni::local_ref<JavaScriptObject::javaobject> JSIInteropModuleRegistry::createObject() {
   return runtimeHolder->createObject();
+}
+
+void JSIInteropModuleRegistry::drainJSEventLoop() {
+  runtimeHolder->drainJSEventLoop();
 }
 } // namespace expo

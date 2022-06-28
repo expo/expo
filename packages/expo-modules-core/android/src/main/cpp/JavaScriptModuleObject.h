@@ -7,7 +7,7 @@
 #include <react/jni/ReadableNativeArray.h>
 #include <jni/JCallback.h>
 
-#include <map>
+#include <unordered_map>
 
 #include "MethodMetadata.h"
 #include "JNIFunctionBody.h"
@@ -59,6 +59,7 @@ public:
   void registerSyncFunction(
     jni::alias_ref<jstring> name,
     jint args,
+    jni::alias_ref<jni::JArrayInt> desiredTypes,
     jni::alias_ref<JNIFunctionBody::javaobject> JSIFunctionBody
   );
 
@@ -69,6 +70,7 @@ public:
   void registerAsyncFunction(
     jni::alias_ref<jstring> name,
     jint args,
+    jni::alias_ref<jni::JArrayInt> desiredTypes,
     jni::alias_ref<JNIAsyncFunctionBody::javaobject> JSIAsyncFunctionBody
   );
 
@@ -109,12 +111,12 @@ private:
   /**
    * Metadata map that stores information about all available methods on this module.
    */
-  std::map<std::string, MethodMetadata> methodsMetadata;
+  std::unordered_map<std::string, MethodMetadata> methodsMetadata;
 
   /**
    * A constants map.
    */
-  std::map<std::string, folly::dynamic> constants;
+  std::unordered_map<std::string, folly::dynamic> constants;
 
   explicit JavaScriptModuleObject(jni::alias_ref<jhybridobject> jThis)
     : javaPart_(jni::make_global(jThis)) {}

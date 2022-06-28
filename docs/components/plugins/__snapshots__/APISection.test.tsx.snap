@@ -53,9 +53,7 @@ exports[`APISection expo-apple-authentication 1`] = `
       </a>
     </div>
   </h2>
-  <div
-    class="css-f1d2vl-STYLES_APIBOX"
-  >
+  <div>
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
@@ -294,561 +292,559 @@ for more details.
         </span>
       </div>
     </blockquote>
-    <div>
+    <h3
+      class="css-1fe5f89-h3-h3-STYLES_H3"
+      data-heading="true"
+    >
       <div
-        class="css-1iw8c1u-STYLES_NESTED_SECTION_HEADER"
+        class="css-1rh3o5q-STYLES_PERMALINK"
       >
-        <h4
-          class="  css-838f5l-h4-h4-STYLES_H4"
-          data-components-heading="true"
-          data-heading="true"
-        >
-          <div
-            class="css-1rh3o5q-STYLES_PERMALINK"
-          >
-            <span
-              class="css-zonpcr-STYLES_PERMALINK_TARGET"
-              id="appleauthenticationbuttonprops"
-            />
-            <a
-              class="css-15lh5hg-STYLES_PERMALINK_LINK"
-              href="#appleauthenticationbuttonprops"
-            >
-              <span
-                class="css-1icvi79-STYLED_PERMALINK_CONTENT"
-              >
-                AppleAuthenticationButtonProps
-              </span>
-              <span
-                class="css-10vdcw8-STYLES_PERMALINK_ICON"
-              >
-                <svg
-                  aria-label="permalink"
-                  class="anchor-icon"
-                  fill="none"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  width="24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                    stroke="#9B9B9B"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                  />
-                  <path
-                    d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                    stroke="#9B9B9B"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                  />
-                </svg>
-              </span>
-            </a>
-          </div>
-        </h4>
-      </div>
-    </div>
-    <div>
-      <div
-        class="css-5lxf4v-STYLES_APIBOX-STYLES_APIBOX_NESTED-renderProp"
-      >
-        <h4
-          class="  css-838f5l-h4-h4-STYLES_H4"
-          data-components-heading="true"
-          data-heading="true"
-        >
-          <div
-            class="css-1rh3o5q-STYLES_PERMALINK"
-          >
-            <span
-              class="css-zonpcr-STYLES_PERMALINK_TARGET"
-              id="buttonstyle"
-            />
-            <a
-              class="css-15lh5hg-STYLES_PERMALINK_LINK"
-              href="#buttonstyle"
-            >
-              <span
-                class="css-1icvi79-STYLED_PERMALINK_CONTENT"
-              >
-                <code
-                  class="inline css-5itu2l-STYLES_INLINE_CODE-STYLES_NOT_EXPOSED_HEADER-InlineCode"
-                >
-                  buttonStyle
-                </code>
-              </span>
-              <span
-                class="css-10vdcw8-STYLES_PERMALINK_ICON"
-              >
-                <svg
-                  aria-label="permalink"
-                  class="anchor-icon"
-                  fill="none"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  width="24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                    stroke="#9B9B9B"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                  />
-                  <path
-                    d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                    stroke="#9B9B9B"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                  />
-                </svg>
-              </span>
-            </a>
-          </div>
-        </h4>
-        <p
-          class="css-101h856-paragraph-STYLES_PARAGRAPH"
-          data-text="true"
+        <span
+          class="css-zonpcr-STYLES_PERMALINK_TARGET"
+          id="appleauthenticationbuttonprops"
+        />
+        <a
+          class="css-15lh5hg-STYLES_PERMALINK_LINK"
+          href="#appleauthenticationbuttonprops"
         >
           <span
-            class="css-t865as-STYLES_SECONDARY"
-          >
-            Type:
-          </span>
-           
-          <code
-            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
-          >
-            <a
-              class="css-12zqqiz-STYLES_EXTERNAL_LINK"
-              href="/#appleauthenticationbuttonstyle"
-            >
-              AppleAuthenticationButtonStyle
-            </a>
-          </code>
-        </p>
-        <p
-          class="css-101h856-paragraph-STYLES_PARAGRAPH"
-          data-text="true"
-        >
-          The Apple-defined color scheme to use to display the button.
-        </p>
-      </div>
-      <div
-        class="css-5lxf4v-STYLES_APIBOX-STYLES_APIBOX_NESTED-renderProp"
-      >
-        <h4
-          class="  css-838f5l-h4-h4-STYLES_H4"
-          data-components-heading="true"
-          data-heading="true"
-        >
-          <div
-            class="css-1rh3o5q-STYLES_PERMALINK"
-          >
-            <span
-              class="css-zonpcr-STYLES_PERMALINK_TARGET"
-              id="buttontype"
-            />
-            <a
-              class="css-15lh5hg-STYLES_PERMALINK_LINK"
-              href="#buttontype"
-            >
-              <span
-                class="css-1icvi79-STYLED_PERMALINK_CONTENT"
-              >
-                <code
-                  class="inline css-5itu2l-STYLES_INLINE_CODE-STYLES_NOT_EXPOSED_HEADER-InlineCode"
-                >
-                  buttonType
-                </code>
-              </span>
-              <span
-                class="css-10vdcw8-STYLES_PERMALINK_ICON"
-              >
-                <svg
-                  aria-label="permalink"
-                  class="anchor-icon"
-                  fill="none"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  width="24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                    stroke="#9B9B9B"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                  />
-                  <path
-                    d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                    stroke="#9B9B9B"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                  />
-                </svg>
-              </span>
-            </a>
-          </div>
-        </h4>
-        <p
-          class="css-101h856-paragraph-STYLES_PARAGRAPH"
-          data-text="true"
-        >
-          <span
-            class="css-t865as-STYLES_SECONDARY"
-          >
-            Type:
-          </span>
-           
-          <code
-            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
-          >
-            <a
-              class="css-12zqqiz-STYLES_EXTERNAL_LINK"
-              href="/#appleauthenticationbuttontype"
-            >
-              AppleAuthenticationButtonType
-            </a>
-          </code>
-        </p>
-        <p
-          class="css-101h856-paragraph-STYLES_PARAGRAPH"
-          data-text="true"
-        >
-          The type of button text to display ("Sign In with Apple" vs. "Continue with Apple").
-        </p>
-      </div>
-      <div
-        class="css-5lxf4v-STYLES_APIBOX-STYLES_APIBOX_NESTED-renderProp"
-      >
-        <h4
-          class="  css-838f5l-h4-h4-STYLES_H4"
-          data-components-heading="true"
-          data-heading="true"
-        >
-          <div
-            class="css-1rh3o5q-STYLES_PERMALINK"
-          >
-            <span
-              class="css-zonpcr-STYLES_PERMALINK_TARGET"
-              id="cornerradius"
-            />
-            <a
-              class="css-15lh5hg-STYLES_PERMALINK_LINK"
-              href="#cornerradius"
-            >
-              <span
-                class="css-1icvi79-STYLED_PERMALINK_CONTENT"
-              >
-                <code
-                  class="inline css-5itu2l-STYLES_INLINE_CODE-STYLES_NOT_EXPOSED_HEADER-InlineCode"
-                >
-                  cornerRadius
-                </code>
-              </span>
-              <span
-                class="css-10vdcw8-STYLES_PERMALINK_ICON"
-              >
-                <svg
-                  aria-label="permalink"
-                  class="anchor-icon"
-                  fill="none"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  width="24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                    stroke="#9B9B9B"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                  />
-                  <path
-                    d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                    stroke="#9B9B9B"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                  />
-                </svg>
-              </span>
-            </a>
-          </div>
-        </h4>
-        <p
-          class="css-101h856-paragraph-STYLES_PARAGRAPH"
-          data-text="true"
-        >
-          <span
-            class="css-t865as-STYLES_SECONDARY"
-          >
-            Optional • 
-          </span>
-          <span
-            class="css-t865as-STYLES_SECONDARY"
-          >
-            Type:
-          </span>
-           
-          <code
-            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
-          >
-            number
-          </code>
-        </p>
-        <p
-          class="css-101h856-paragraph-STYLES_PARAGRAPH"
-          data-text="true"
-        >
-          The border radius to use when rendering the button. This works similarly to
-
-          <code
-            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
-          >
-            style.borderRadius
-          </code>
-           in other Views.
-        </p>
-      </div>
-      <div
-        class="css-5lxf4v-STYLES_APIBOX-STYLES_APIBOX_NESTED-renderProp"
-      >
-        <h4
-          class="  css-838f5l-h4-h4-STYLES_H4"
-          data-components-heading="true"
-          data-heading="true"
-        >
-          <div
-            class="css-1rh3o5q-STYLES_PERMALINK"
-          >
-            <span
-              class="css-zonpcr-STYLES_PERMALINK_TARGET"
-              id="style"
-            />
-            <a
-              class="css-15lh5hg-STYLES_PERMALINK_LINK"
-              href="#style"
-            >
-              <span
-                class="css-1icvi79-STYLED_PERMALINK_CONTENT"
-              >
-                <code
-                  class="inline css-5itu2l-STYLES_INLINE_CODE-STYLES_NOT_EXPOSED_HEADER-InlineCode"
-                >
-                  style
-                </code>
-              </span>
-              <span
-                class="css-10vdcw8-STYLES_PERMALINK_ICON"
-              >
-                <svg
-                  aria-label="permalink"
-                  class="anchor-icon"
-                  fill="none"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  width="24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                    stroke="#9B9B9B"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                  />
-                  <path
-                    d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                    stroke="#9B9B9B"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                  />
-                </svg>
-              </span>
-            </a>
-          </div>
-        </h4>
-        <p
-          class="css-101h856-paragraph-STYLES_PARAGRAPH"
-          data-text="true"
-        >
-          <span
-            class="css-t865as-STYLES_SECONDARY"
-          >
-            Optional • 
-          </span>
-          <span
-            class="css-t865as-STYLES_SECONDARY"
-          >
-            Type:
-          </span>
-           
-          <code
-            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
-          >
-            StyleProp
-            &lt;
-            <span>
-              <a
-                class="css-12zqqiz-STYLES_EXTERNAL_LINK"
-                href="https://www.typescriptlang.org/docs/handbook/utility-types.html#omittype-keys"
-                rel="noopener noreferrer"
-              >
-                Omit
-              </a>
-              &lt;
-              <span>
-                <a
-                  class="css-12zqqiz-STYLES_EXTERNAL_LINK"
-                  href="/versions/latest/react-native/view-style-props"
-                >
-                  ViewStyle
-                </a>
-                , 
-              </span>
-              <span>
-                <span>
-                  'backgroundColor'
-                   | 
-                </span>
-                <span>
-                  'borderRadius'
-                </span>
-              </span>
-              &gt;
-            </span>
-            &gt;
-          </code>
-        </p>
-        <p
-          class="css-101h856-paragraph-STYLES_PARAGRAPH"
-          data-text="true"
-        >
-          The custom style to apply to the button. Should not include 
-          <code
-            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
-          >
-            backgroundColor
-          </code>
-           or 
-          <code
-            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
-          >
-            borderRadius
-          </code>
-          
-properties.
-        </p>
-      </div>
-      <div
-        class="css-5lxf4v-STYLES_APIBOX-STYLES_APIBOX_NESTED-renderProp"
-      >
-        <h4
-          class="  css-838f5l-h4-h4-STYLES_H4"
-          data-components-heading="true"
-          data-heading="true"
-        >
-          <div
-            class="css-1rh3o5q-STYLES_PERMALINK"
-          >
-            <span
-              class="css-zonpcr-STYLES_PERMALINK_TARGET"
-              id="onpress"
-            />
-            <a
-              class="css-15lh5hg-STYLES_PERMALINK_LINK"
-              href="#onpress"
-            >
-              <span
-                class="css-1icvi79-STYLED_PERMALINK_CONTENT"
-              >
-                <code
-                  class="inline css-5itu2l-STYLES_INLINE_CODE-STYLES_NOT_EXPOSED_HEADER-InlineCode"
-                >
-                  onPress
-                </code>
-              </span>
-              <span
-                class="css-10vdcw8-STYLES_PERMALINK_ICON"
-              >
-                <svg
-                  aria-label="permalink"
-                  class="anchor-icon"
-                  fill="none"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  width="24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                    stroke="#9B9B9B"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                  />
-                  <path
-                    d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                    stroke="#9B9B9B"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                  />
-                </svg>
-              </span>
-            </a>
-          </div>
-        </h4>
-        <p
-          class="css-101h856-paragraph-STYLES_PARAGRAPH"
-          data-text="true"
-        >
-          <span
-            class="css-t865as-STYLES_SECONDARY"
-          >
-            Type:
-          </span>
-           
-          <code
-            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
-          >
-            (
-            
-            ) =&gt; 
-            void
-          </code>
-        </p>
-        <p
-          class="css-101h856-paragraph-STYLES_PARAGRAPH"
-          data-text="true"
-        >
-          The method to call when the user presses the button. You should call 
-          <a
-            class="css-12zqqiz-STYLES_EXTERNAL_LINK"
-            href="/#isavailableasync"
+            class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
               class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
-              AppleAuthentication.signInAsync
+              AppleAuthenticationButtonProps
             </code>
-          </a>
-          
-in here.
-        </p>
+          </span>
+          <span
+            class="css-10vdcw8-STYLES_PERMALINK_ICON"
+          >
+            <svg
+              aria-label="permalink"
+              class="anchor-icon"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </span>
+        </a>
       </div>
+    </h3>
+    <br />
+    <div>
+      <ul
+        class="css-1qha16q-paragraph-STYLES_UNORDERED_LIST-UL"
+        data-text="true"
+      >
+        <li
+          class="docs-list-item css-1jvmp7m-STYLES_LIST_ITEM-STYLE_PROP_LIST-PROP_LIST_ELEMENT_STYLE-LI"
+        >
+          <h4
+            class="  css-838f5l-h4-h4-STYLES_H4"
+            data-components-heading="true"
+            data-heading="true"
+          >
+            <div
+              class="css-1rh3o5q-STYLES_PERMALINK"
+            >
+              <span
+                class="css-zonpcr-STYLES_PERMALINK_TARGET"
+                id="buttonstyle"
+              />
+              <a
+                class="css-15lh5hg-STYLES_PERMALINK_LINK"
+                href="#buttonstyle"
+              >
+                <span
+                  class="css-1icvi79-STYLED_PERMALINK_CONTENT"
+                >
+                  buttonStyle
+                </span>
+                <span
+                  class="css-10vdcw8-STYLES_PERMALINK_ICON"
+                >
+                  <svg
+                    aria-label="permalink"
+                    class="anchor-icon"
+                    fill="none"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    width="24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                      stroke="#9B9B9B"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    />
+                    <path
+                      d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                      stroke="#9B9B9B"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    />
+                  </svg>
+                </span>
+              </a>
+            </div>
+          </h4>
+          <p
+            class="css-101h856-paragraph-STYLES_PARAGRAPH"
+            data-text="true"
+          >
+            <span
+              class="css-t865as-STYLES_SECONDARY"
+            >
+              Type:
+            </span>
+             
+            <code
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+            >
+              <a
+                class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+                href="/#appleauthenticationbuttonstyle"
+              >
+                AppleAuthenticationButtonStyle
+              </a>
+            </code>
+          </p>
+          <p
+            class="css-101h856-paragraph-STYLES_PARAGRAPH"
+            data-text="true"
+          >
+            The Apple-defined color scheme to use to display the button.
+          </p>
+          <hr
+            class="css-bxzs19-STYLES_DIVIDER"
+          />
+        </li>
+        <li
+          class="docs-list-item css-1jvmp7m-STYLES_LIST_ITEM-STYLE_PROP_LIST-PROP_LIST_ELEMENT_STYLE-LI"
+        >
+          <h4
+            class="  css-838f5l-h4-h4-STYLES_H4"
+            data-components-heading="true"
+            data-heading="true"
+          >
+            <div
+              class="css-1rh3o5q-STYLES_PERMALINK"
+            >
+              <span
+                class="css-zonpcr-STYLES_PERMALINK_TARGET"
+                id="buttontype"
+              />
+              <a
+                class="css-15lh5hg-STYLES_PERMALINK_LINK"
+                href="#buttontype"
+              >
+                <span
+                  class="css-1icvi79-STYLED_PERMALINK_CONTENT"
+                >
+                  buttonType
+                </span>
+                <span
+                  class="css-10vdcw8-STYLES_PERMALINK_ICON"
+                >
+                  <svg
+                    aria-label="permalink"
+                    class="anchor-icon"
+                    fill="none"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    width="24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                      stroke="#9B9B9B"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    />
+                    <path
+                      d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                      stroke="#9B9B9B"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    />
+                  </svg>
+                </span>
+              </a>
+            </div>
+          </h4>
+          <p
+            class="css-101h856-paragraph-STYLES_PARAGRAPH"
+            data-text="true"
+          >
+            <span
+              class="css-t865as-STYLES_SECONDARY"
+            >
+              Type:
+            </span>
+             
+            <code
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+            >
+              <a
+                class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+                href="/#appleauthenticationbuttontype"
+              >
+                AppleAuthenticationButtonType
+              </a>
+            </code>
+          </p>
+          <p
+            class="css-101h856-paragraph-STYLES_PARAGRAPH"
+            data-text="true"
+          >
+            The type of button text to display ("Sign In with Apple" vs. "Continue with Apple").
+          </p>
+          <hr
+            class="css-bxzs19-STYLES_DIVIDER"
+          />
+        </li>
+        <li
+          class="docs-list-item css-1jvmp7m-STYLES_LIST_ITEM-STYLE_PROP_LIST-PROP_LIST_ELEMENT_STYLE-LI"
+        >
+          <h4
+            class="  css-838f5l-h4-h4-STYLES_H4"
+            data-components-heading="true"
+            data-heading="true"
+          >
+            <div
+              class="css-1rh3o5q-STYLES_PERMALINK"
+            >
+              <span
+                class="css-zonpcr-STYLES_PERMALINK_TARGET"
+                id="cornerradius"
+              />
+              <a
+                class="css-15lh5hg-STYLES_PERMALINK_LINK"
+                href="#cornerradius"
+              >
+                <span
+                  class="css-1icvi79-STYLED_PERMALINK_CONTENT"
+                >
+                  cornerRadius
+                </span>
+                <span
+                  class="css-10vdcw8-STYLES_PERMALINK_ICON"
+                >
+                  <svg
+                    aria-label="permalink"
+                    class="anchor-icon"
+                    fill="none"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    width="24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                      stroke="#9B9B9B"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    />
+                    <path
+                      d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                      stroke="#9B9B9B"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    />
+                  </svg>
+                </span>
+              </a>
+            </div>
+          </h4>
+          <p
+            class="css-101h856-paragraph-STYLES_PARAGRAPH"
+            data-text="true"
+          >
+            <span
+              class="css-t865as-STYLES_SECONDARY"
+            >
+              Optional • 
+            </span>
+            <span
+              class="css-t865as-STYLES_SECONDARY"
+            >
+              Type:
+            </span>
+             
+            <code
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+            >
+              number
+            </code>
+          </p>
+          <p
+            class="css-101h856-paragraph-STYLES_PARAGRAPH"
+            data-text="true"
+          >
+            The border radius to use when rendering the button. This works similarly to
+
+            <code
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+            >
+              style.borderRadius
+            </code>
+             in other Views.
+          </p>
+          <hr
+            class="css-bxzs19-STYLES_DIVIDER"
+          />
+        </li>
+        <li
+          class="docs-list-item css-1jvmp7m-STYLES_LIST_ITEM-STYLE_PROP_LIST-PROP_LIST_ELEMENT_STYLE-LI"
+        >
+          <h4
+            class="  css-838f5l-h4-h4-STYLES_H4"
+            data-components-heading="true"
+            data-heading="true"
+          >
+            <div
+              class="css-1rh3o5q-STYLES_PERMALINK"
+            >
+              <span
+                class="css-zonpcr-STYLES_PERMALINK_TARGET"
+                id="style"
+              />
+              <a
+                class="css-15lh5hg-STYLES_PERMALINK_LINK"
+                href="#style"
+              >
+                <span
+                  class="css-1icvi79-STYLED_PERMALINK_CONTENT"
+                >
+                  style
+                </span>
+                <span
+                  class="css-10vdcw8-STYLES_PERMALINK_ICON"
+                >
+                  <svg
+                    aria-label="permalink"
+                    class="anchor-icon"
+                    fill="none"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    width="24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                      stroke="#9B9B9B"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    />
+                    <path
+                      d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                      stroke="#9B9B9B"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    />
+                  </svg>
+                </span>
+              </a>
+            </div>
+          </h4>
+          <p
+            class="css-101h856-paragraph-STYLES_PARAGRAPH"
+            data-text="true"
+          >
+            <span
+              class="css-t865as-STYLES_SECONDARY"
+            >
+              Optional • 
+            </span>
+            <span
+              class="css-t865as-STYLES_SECONDARY"
+            >
+              Type:
+            </span>
+             
+            <code
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+            >
+              StyleProp
+              &lt;
+              <span>
+                <a
+                  class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+                  href="https://www.typescriptlang.org/docs/handbook/utility-types.html#omittype-keys"
+                  rel="noopener noreferrer"
+                >
+                  Omit
+                </a>
+                &lt;
+                <span>
+                  <a
+                    class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+                    href="/versions/latest/react-native/view-style-props"
+                  >
+                    ViewStyle
+                  </a>
+                  , 
+                </span>
+                <span>
+                  <span>
+                    'backgroundColor'
+                     | 
+                  </span>
+                  <span>
+                    'borderRadius'
+                  </span>
+                </span>
+                &gt;
+              </span>
+              &gt;
+            </code>
+          </p>
+          <p
+            class="css-101h856-paragraph-STYLES_PARAGRAPH"
+            data-text="true"
+          >
+            The custom style to apply to the button. Should not include 
+            <code
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+            >
+              backgroundColor
+            </code>
+             or 
+            <code
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+            >
+              borderRadius
+            </code>
+            
+properties.
+          </p>
+          <hr
+            class="css-bxzs19-STYLES_DIVIDER"
+          />
+        </li>
+        <li
+          class="docs-list-item css-1jvmp7m-STYLES_LIST_ITEM-STYLE_PROP_LIST-PROP_LIST_ELEMENT_STYLE-LI"
+        >
+          <h4
+            class="  css-838f5l-h4-h4-STYLES_H4"
+            data-components-heading="true"
+            data-heading="true"
+          >
+            <div
+              class="css-1rh3o5q-STYLES_PERMALINK"
+            >
+              <span
+                class="css-zonpcr-STYLES_PERMALINK_TARGET"
+                id="onpress"
+              />
+              <a
+                class="css-15lh5hg-STYLES_PERMALINK_LINK"
+                href="#onpress"
+              >
+                <span
+                  class="css-1icvi79-STYLED_PERMALINK_CONTENT"
+                >
+                  onPress
+                </span>
+                <span
+                  class="css-10vdcw8-STYLES_PERMALINK_ICON"
+                >
+                  <svg
+                    aria-label="permalink"
+                    class="anchor-icon"
+                    fill="none"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    width="24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                      stroke="#9B9B9B"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    />
+                    <path
+                      d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                      stroke="#9B9B9B"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    />
+                  </svg>
+                </span>
+              </a>
+            </div>
+          </h4>
+          <p
+            class="css-101h856-paragraph-STYLES_PARAGRAPH"
+            data-text="true"
+          >
+            <span
+              class="css-t865as-STYLES_SECONDARY"
+            >
+              Type:
+            </span>
+             
+            <code
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+            >
+              (
+              
+              ) =&gt; 
+              void
+            </code>
+          </p>
+          <p
+            class="css-101h856-paragraph-STYLES_PARAGRAPH"
+            data-text="true"
+          >
+            The method to call when the user presses the button. You should call 
+            <a
+              class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+              href="/#isavailableasync"
+            >
+              <code
+                class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+              >
+                AppleAuthentication.signInAsync
+              </code>
+            </a>
+            
+in here.
+          </p>
+          <hr
+            class="css-bxzs19-STYLES_DIVIDER"
+          />
+        </li>
+      </ul>
       <h4
         class="  css-838f5l-h4-h4-STYLES_H4"
         data-components-heading="true"
@@ -973,9 +969,7 @@ in here.
       </a>
     </div>
   </h2>
-  <div
-    class="css-ox6i8w-STYLES_APIBOX-renderMethod"
-  >
+  <div>
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
@@ -995,7 +989,7 @@ in here.
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+              class="inline css-ni28os-STYLES_INLINE_CODE-STYLES_NOT_EXPOSED_HEADER-InlineCode"
             >
               getCredentialStateAsync(user)
             </code>
@@ -1032,94 +1026,83 @@ in here.
       </div>
     </h3>
     <h4
-      class="  css-838f5l-h4-h4-STYLES_H4"
-      data-components-heading="true"
+      class="css-838f5l-h4-h4-STYLES_H4"
       data-heading="true"
     >
-      <div
-        class="css-1rh3o5q-STYLES_PERMALINK"
-      >
-        <span
-          class="css-zonpcr-STYLES_PERMALINK_TARGET"
-          id="arguments"
-        />
-        <a
-          class="css-15lh5hg-STYLES_PERMALINK_LINK"
-          href="#arguments"
-        >
-          <span
-            class="css-1icvi79-STYLED_PERMALINK_CONTENT"
-          >
-            Arguments
-          </span>
-          <span
-            class="css-10vdcw8-STYLES_PERMALINK_ICON"
-          >
-            <svg
-              aria-label="permalink"
-              class="anchor-icon"
-              fill="none"
-              height="24"
-              viewBox="0 0 24 24"
-              width="24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                stroke="#9B9B9B"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-              />
-              <path
-                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                stroke="#9B9B9B"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-              />
-            </svg>
-          </span>
-        </a>
-      </div>
+      Arguments
     </h4>
-    <ul
-      class="css-1qha16q-paragraph-STYLES_UNORDERED_LIST-UL"
-      data-text="true"
+    <div
+      class="css-zdmbpy-tableWrapperStyle"
     >
-      <li
-        class="docs-list-item css-xdejd6-STYLES_LIST_ITEM-LI"
+      <table
+        class="css-33l6in-tableStyle-Table"
       >
-        <strong
-          class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
+        <thead
+          class="css-7aq1e9-tableHeadStyle"
         >
-          user
-           (
-          <code
-            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+          <tr
+            class="css-1ne1f2k-tableRowStyle-Row"
           >
-            string
-          </code>
-          )
-        </strong>
-         - 
-        <span>
-          The unique identifier for the user whose credential state you'd like to check.
-This should come from the user field of an 
-          <a
-            class="css-12zqqiz-STYLES_EXTERNAL_LINK"
-            href="/#appleauthenticationcredentialstate"
+            <th
+              class="css-qgy7w-tableHeadersCellStyle-HeaderCell"
+            >
+              Name
+            </th>
+            <th
+              class="css-qgy7w-tableHeadersCellStyle-HeaderCell"
+            >
+              Type
+            </th>
+            <th
+              class="css-qgy7w-tableHeadersCellStyle-HeaderCell"
+            >
+              Description
+            </th>
+          </tr>
+        </thead>
+        <tr
+          class="css-1ne1f2k-tableRowStyle-Row"
+        >
+          <td
+            class="css-yr5jng-tableCellStyle-Cell"
+          >
+            <strong
+              class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
+            >
+              user
+            </strong>
+          </td>
+          <td
+            class="css-yr5jng-tableCellStyle-Cell"
           >
             <code
               class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
-              AppleAuthenticationCredential
+              string
             </code>
-          </a>
-           object.
-        </span>
-      </li>
-    </ul>
+          </td>
+          <td
+            class="css-yr5jng-tableCellStyle-Cell"
+          >
+            <span>
+              The unique identifier for the user whose credential state you'd like to check.
+This should come from the user field of an 
+              <a
+                class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+                href="/#appleauthenticationcredentialstate"
+              >
+                <code
+                  class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+                >
+                  AppleAuthenticationCredential
+                </code>
+              </a>
+               object.
+            </span>
+          </td>
+        </tr>
+      </table>
+    </div>
     <p
       class="css-101h856-paragraph-STYLES_PARAGRAPH"
       data-text="true"
@@ -1281,10 +1264,9 @@ This should come from the user field of an
       
 value depending on the state of the credential.
     </p>
+    <hr />
   </div>
-  <div
-    class="css-ox6i8w-STYLES_APIBOX-renderMethod"
-  >
+  <div>
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
@@ -1304,7 +1286,7 @@ value depending on the state of the credential.
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+              class="inline css-ni28os-STYLES_INLINE_CODE-STYLES_NOT_EXPOSED_HEADER-InlineCode"
             >
               isAvailableAsync()
             </code>
@@ -1441,10 +1423,9 @@ value depending on the state of the credential.
       </code>
        otherwise.
     </p>
+    <hr />
   </div>
-  <div
-    class="css-ox6i8w-STYLES_APIBOX-renderMethod"
-  >
+  <div>
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
@@ -1464,7 +1445,7 @@ value depending on the state of the credential.
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+              class="inline css-ni28os-STYLES_INLINE_CODE-STYLES_NOT_EXPOSED_HEADER-InlineCode"
             >
               refreshAsync(options)
             </code>
@@ -1501,98 +1482,87 @@ value depending on the state of the credential.
       </div>
     </h3>
     <h4
-      class="  css-838f5l-h4-h4-STYLES_H4"
-      data-components-heading="true"
+      class="css-838f5l-h4-h4-STYLES_H4"
       data-heading="true"
     >
-      <div
-        class="css-1rh3o5q-STYLES_PERMALINK"
-      >
-        <span
-          class="css-zonpcr-STYLES_PERMALINK_TARGET"
-          id="arguments-1"
-        />
-        <a
-          class="css-15lh5hg-STYLES_PERMALINK_LINK"
-          href="#arguments-1"
-        >
-          <span
-            class="css-1icvi79-STYLED_PERMALINK_CONTENT"
-          >
-            Arguments
-          </span>
-          <span
-            class="css-10vdcw8-STYLES_PERMALINK_ICON"
-          >
-            <svg
-              aria-label="permalink"
-              class="anchor-icon"
-              fill="none"
-              height="24"
-              viewBox="0 0 24 24"
-              width="24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                stroke="#9B9B9B"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-              />
-              <path
-                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                stroke="#9B9B9B"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-              />
-            </svg>
-          </span>
-        </a>
-      </div>
+      Arguments
     </h4>
-    <ul
-      class="css-1qha16q-paragraph-STYLES_UNORDERED_LIST-UL"
-      data-text="true"
+    <div
+      class="css-zdmbpy-tableWrapperStyle"
     >
-      <li
-        class="docs-list-item css-xdejd6-STYLES_LIST_ITEM-LI"
+      <table
+        class="css-33l6in-tableStyle-Table"
       >
-        <strong
-          class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
+        <thead
+          class="css-7aq1e9-tableHeadStyle"
         >
-          options
-           (
-          <code
-            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+          <tr
+            class="css-1ne1f2k-tableRowStyle-Row"
           >
-            <a
-              class="css-12zqqiz-STYLES_EXTERNAL_LINK"
-              href="/#appleauthenticationrefreshoptions"
+            <th
+              class="css-qgy7w-tableHeadersCellStyle-HeaderCell"
             >
-              AppleAuthenticationRefreshOptions
-            </a>
-          </code>
-          )
-        </strong>
-         - 
-        <span>
-          An 
-          <a
-            class="css-12zqqiz-STYLES_EXTERNAL_LINK"
-            href="/#appleauthenticationrefreshoptions"
+              Name
+            </th>
+            <th
+              class="css-qgy7w-tableHeadersCellStyle-HeaderCell"
+            >
+              Type
+            </th>
+            <th
+              class="css-qgy7w-tableHeadersCellStyle-HeaderCell"
+            >
+              Description
+            </th>
+          </tr>
+        </thead>
+        <tr
+          class="css-1ne1f2k-tableRowStyle-Row"
+        >
+          <td
+            class="css-yr5jng-tableCellStyle-Cell"
+          >
+            <strong
+              class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
+            >
+              options
+            </strong>
+          </td>
+          <td
+            class="css-yr5jng-tableCellStyle-Cell"
           >
             <code
               class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
-              AppleAuthenticationRefreshOptions
+              <a
+                class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+                href="/#appleauthenticationrefreshoptions"
+              >
+                AppleAuthenticationRefreshOptions
+              </a>
             </code>
-          </a>
-           object
-        </span>
-      </li>
-    </ul>
+          </td>
+          <td
+            class="css-yr5jng-tableCellStyle-Cell"
+          >
+            <span>
+              An 
+              <a
+                class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+                href="/#appleauthenticationrefreshoptions"
+              >
+                <code
+                  class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+                >
+                  AppleAuthenticationRefreshOptions
+                </code>
+              </a>
+               object
+            </span>
+          </td>
+        </tr>
+      </table>
+    </div>
     <p
       class="css-101h856-paragraph-STYLES_PARAGRAPH"
       data-text="true"
@@ -1707,10 +1677,9 @@ object after a successful authentication, and rejects with
        if the user cancels the
 refresh operation.
     </p>
+    <hr />
   </div>
-  <div
-    class="css-ox6i8w-STYLES_APIBOX-renderMethod"
-  >
+  <div>
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
@@ -1730,7 +1699,7 @@ refresh operation.
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+              class="inline css-ni28os-STYLES_INLINE_CODE-STYLES_NOT_EXPOSED_HEADER-InlineCode"
             >
               signInAsync(options)
             </code>
@@ -1767,99 +1736,93 @@ refresh operation.
       </div>
     </h3>
     <h4
-      class="  css-838f5l-h4-h4-STYLES_H4"
-      data-components-heading="true"
+      class="css-838f5l-h4-h4-STYLES_H4"
       data-heading="true"
     >
-      <div
-        class="css-1rh3o5q-STYLES_PERMALINK"
-      >
-        <span
-          class="css-zonpcr-STYLES_PERMALINK_TARGET"
-          id="arguments-2"
-        />
-        <a
-          class="css-15lh5hg-STYLES_PERMALINK_LINK"
-          href="#arguments-2"
-        >
-          <span
-            class="css-1icvi79-STYLED_PERMALINK_CONTENT"
-          >
-            Arguments
-          </span>
-          <span
-            class="css-10vdcw8-STYLES_PERMALINK_ICON"
-          >
-            <svg
-              aria-label="permalink"
-              class="anchor-icon"
-              fill="none"
-              height="24"
-              viewBox="0 0 24 24"
-              width="24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                stroke="#9B9B9B"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-              />
-              <path
-                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                stroke="#9B9B9B"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-              />
-            </svg>
-          </span>
-        </a>
-      </div>
+      Arguments
     </h4>
-    <ul
-      class="css-1qha16q-paragraph-STYLES_UNORDERED_LIST-UL"
-      data-text="true"
+    <div
+      class="css-zdmbpy-tableWrapperStyle"
     >
-      <li
-        class="docs-list-item css-xdejd6-STYLES_LIST_ITEM-LI"
+      <table
+        class="css-33l6in-tableStyle-Table"
       >
-        <strong
-          class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
+        <thead
+          class="css-7aq1e9-tableHeadStyle"
         >
-          options
-          ?
-           (
-          <code
-            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+          <tr
+            class="css-1ne1f2k-tableRowStyle-Row"
           >
-            <a
-              class="css-12zqqiz-STYLES_EXTERNAL_LINK"
-              href="/#appleauthenticationsigninoptions"
+            <th
+              class="css-qgy7w-tableHeadersCellStyle-HeaderCell"
             >
-              AppleAuthenticationSignInOptions
-            </a>
-          </code>
-          )
-        </strong>
-         - 
-        <span>
-          An optional 
-          <a
-            class="css-12zqqiz-STYLES_EXTERNAL_LINK"
-            href="/#appleauthenticationsigninoptions"
+              Name
+            </th>
+            <th
+              class="css-qgy7w-tableHeadersCellStyle-HeaderCell"
+            >
+              Type
+            </th>
+            <th
+              class="css-qgy7w-tableHeadersCellStyle-HeaderCell"
+            >
+              Description
+            </th>
+          </tr>
+        </thead>
+        <tr
+          class="css-1ne1f2k-tableRowStyle-Row"
+        >
+          <td
+            class="css-yr5jng-tableCellStyle-Cell"
+          >
+            <strong
+              class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
+            >
+              options
+            </strong>
+            <br />
+            <span
+              class="css-fbbx5x-STYLES_OPTIONAL"
+            >
+              (optional)
+            </span>
+          </td>
+          <td
+            class="css-yr5jng-tableCellStyle-Cell"
           >
             <code
               class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
-              AppleAuthenticationSignInOptions
+              <a
+                class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+                href="/#appleauthenticationsigninoptions"
+              >
+                AppleAuthenticationSignInOptions
+              </a>
             </code>
-          </a>
-           object
-        </span>
-      </li>
-    </ul>
+          </td>
+          <td
+            class="css-yr5jng-tableCellStyle-Cell"
+          >
+            <span>
+              An optional 
+              <a
+                class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+                href="/#appleauthenticationsigninoptions"
+              >
+                <code
+                  class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+                >
+                  AppleAuthenticationSignInOptions
+                </code>
+              </a>
+               object
+            </span>
+          </td>
+        </tr>
+      </table>
+    </div>
     <p
       class="css-101h856-paragraph-STYLES_PARAGRAPH"
       data-text="true"
@@ -2012,10 +1975,9 @@ object after a successful authentication, and rejects with
        if the user cancels the
 sign-in operation.
     </p>
+    <hr />
   </div>
-  <div
-    class="css-ox6i8w-STYLES_APIBOX-renderMethod"
-  >
+  <div>
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
@@ -2035,7 +1997,7 @@ sign-in operation.
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+              class="inline css-ni28os-STYLES_INLINE_CODE-STYLES_NOT_EXPOSED_HEADER-InlineCode"
             >
               signOutAsync(options)
             </code>
@@ -2072,98 +2034,87 @@ sign-in operation.
       </div>
     </h3>
     <h4
-      class="  css-838f5l-h4-h4-STYLES_H4"
-      data-components-heading="true"
+      class="css-838f5l-h4-h4-STYLES_H4"
       data-heading="true"
     >
-      <div
-        class="css-1rh3o5q-STYLES_PERMALINK"
-      >
-        <span
-          class="css-zonpcr-STYLES_PERMALINK_TARGET"
-          id="arguments-3"
-        />
-        <a
-          class="css-15lh5hg-STYLES_PERMALINK_LINK"
-          href="#arguments-3"
-        >
-          <span
-            class="css-1icvi79-STYLED_PERMALINK_CONTENT"
-          >
-            Arguments
-          </span>
-          <span
-            class="css-10vdcw8-STYLES_PERMALINK_ICON"
-          >
-            <svg
-              aria-label="permalink"
-              class="anchor-icon"
-              fill="none"
-              height="24"
-              viewBox="0 0 24 24"
-              width="24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                stroke="#9B9B9B"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-              />
-              <path
-                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                stroke="#9B9B9B"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-              />
-            </svg>
-          </span>
-        </a>
-      </div>
+      Arguments
     </h4>
-    <ul
-      class="css-1qha16q-paragraph-STYLES_UNORDERED_LIST-UL"
-      data-text="true"
+    <div
+      class="css-zdmbpy-tableWrapperStyle"
     >
-      <li
-        class="docs-list-item css-xdejd6-STYLES_LIST_ITEM-LI"
+      <table
+        class="css-33l6in-tableStyle-Table"
       >
-        <strong
-          class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
+        <thead
+          class="css-7aq1e9-tableHeadStyle"
         >
-          options
-           (
-          <code
-            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+          <tr
+            class="css-1ne1f2k-tableRowStyle-Row"
           >
-            <a
-              class="css-12zqqiz-STYLES_EXTERNAL_LINK"
-              href="/#appleauthenticationsignoutoptions"
+            <th
+              class="css-qgy7w-tableHeadersCellStyle-HeaderCell"
             >
-              AppleAuthenticationSignOutOptions
-            </a>
-          </code>
-          )
-        </strong>
-         - 
-        <span>
-          An 
-          <a
-            class="css-12zqqiz-STYLES_EXTERNAL_LINK"
-            href="/#appleauthenticationsignoutoptions"
+              Name
+            </th>
+            <th
+              class="css-qgy7w-tableHeadersCellStyle-HeaderCell"
+            >
+              Type
+            </th>
+            <th
+              class="css-qgy7w-tableHeadersCellStyle-HeaderCell"
+            >
+              Description
+            </th>
+          </tr>
+        </thead>
+        <tr
+          class="css-1ne1f2k-tableRowStyle-Row"
+        >
+          <td
+            class="css-yr5jng-tableCellStyle-Cell"
+          >
+            <strong
+              class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
+            >
+              options
+            </strong>
+          </td>
+          <td
+            class="css-yr5jng-tableCellStyle-Cell"
           >
             <code
               class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
-              AppleAuthenticationSignOutOptions
+              <a
+                class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+                href="/#appleauthenticationsignoutoptions"
+              >
+                AppleAuthenticationSignOutOptions
+              </a>
             </code>
-          </a>
-           object
-        </span>
-      </li>
-    </ul>
+          </td>
+          <td
+            class="css-yr5jng-tableCellStyle-Cell"
+          >
+            <span>
+              An 
+              <a
+                class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+                href="/#appleauthenticationsignoutoptions"
+              >
+                <code
+                  class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+                >
+                  AppleAuthenticationSignOutOptions
+                </code>
+              </a>
+               object
+            </span>
+          </td>
+        </tr>
+      </table>
+    </div>
     <p
       class="css-101h856-paragraph-STYLES_PARAGRAPH"
       data-text="true"
@@ -2360,9 +2311,7 @@ sign-out operation.
       </a>
     </div>
   </h2>
-  <div
-    class="css-ox6i8w-STYLES_APIBOX-renderMethod"
-  >
+  <div>
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
@@ -2382,7 +2331,7 @@ sign-out operation.
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+              class="inline css-ni28os-STYLES_INLINE_CODE-STYLES_NOT_EXPOSED_HEADER-InlineCode"
             >
               addRevokeListener(listener)
             </code>
@@ -2419,80 +2368,71 @@ sign-out operation.
       </div>
     </h3>
     <h4
-      class="  css-838f5l-h4-h4-STYLES_H4"
-      data-components-heading="true"
+      class="css-838f5l-h4-h4-STYLES_H4"
       data-heading="true"
     >
-      <div
-        class="css-1rh3o5q-STYLES_PERMALINK"
-      >
-        <span
-          class="css-zonpcr-STYLES_PERMALINK_TARGET"
-          id="arguments-4"
-        />
-        <a
-          class="css-15lh5hg-STYLES_PERMALINK_LINK"
-          href="#arguments-4"
-        >
-          <span
-            class="css-1icvi79-STYLED_PERMALINK_CONTENT"
-          >
-            Arguments
-          </span>
-          <span
-            class="css-10vdcw8-STYLES_PERMALINK_ICON"
-          >
-            <svg
-              aria-label="permalink"
-              class="anchor-icon"
-              fill="none"
-              height="24"
-              viewBox="0 0 24 24"
-              width="24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                stroke="#9B9B9B"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-              />
-              <path
-                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                stroke="#9B9B9B"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-              />
-            </svg>
-          </span>
-        </a>
-      </div>
+      Arguments
     </h4>
-    <ul
-      class="css-1qha16q-paragraph-STYLES_UNORDERED_LIST-UL"
-      data-text="true"
+    <div
+      class="css-zdmbpy-tableWrapperStyle"
     >
-      <li
-        class="docs-list-item css-xdejd6-STYLES_LIST_ITEM-LI"
+      <table
+        class="css-33l6in-tableStyle-Table"
       >
-        <strong
-          class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
+        <thead
+          class="css-7aq1e9-tableHeadStyle"
         >
-          listener
-           (
-          <code
-            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+          <tr
+            class="css-1ne1f2k-tableRowStyle-Row"
           >
-            () =&gt;
-             
-            void
-          </code>
-          )
-        </strong>
-      </li>
-    </ul>
+            <th
+              class="css-qgy7w-tableHeadersCellStyle-HeaderCell"
+            >
+              Name
+            </th>
+            <th
+              class="css-qgy7w-tableHeadersCellStyle-HeaderCell"
+            >
+              Type
+            </th>
+            <th
+              class="css-qgy7w-tableHeadersCellStyle-HeaderCell"
+            >
+              Description
+            </th>
+          </tr>
+        </thead>
+        <tr
+          class="css-1ne1f2k-tableRowStyle-Row"
+        >
+          <td
+            class="css-yr5jng-tableCellStyle-Cell"
+          >
+            <strong
+              class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
+            >
+              listener
+            </strong>
+          </td>
+          <td
+            class="css-yr5jng-tableCellStyle-Cell"
+          >
+            <code
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+            >
+              () =&gt;
+               
+              void
+            </code>
+          </td>
+          <td
+            class="css-yr5jng-tableCellStyle-Cell"
+          >
+            -
+          </td>
+        </tr>
+      </table>
+    </div>
     <h4
       class="  css-838f5l-h4-h4-STYLES_H4"
       data-components-heading="true"
@@ -2616,9 +2556,7 @@ sign-out operation.
       </a>
     </div>
   </h2>
-  <div
-    class="css-f1d2vl-STYLES_APIBOX"
-  >
+  <div>
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
@@ -3113,9 +3051,7 @@ developers.
       </table>
     </div>
   </div>
-  <div
-    class="css-f1d2vl-STYLES_APIBOX"
-  >
+  <div>
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
@@ -3417,9 +3353,7 @@ may be
       </table>
     </div>
   </div>
-  <div
-    class="css-f1d2vl-STYLES_APIBOX"
-  >
+  <div>
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
@@ -3724,9 +3658,7 @@ OAuth 2.0 protocol
       </table>
     </div>
   </div>
-  <div
-    class="css-f1d2vl-STYLES_APIBOX"
-  >
+  <div>
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
@@ -4048,9 +3980,7 @@ OAuth 2.0 protocol
       </table>
     </div>
   </div>
-  <div
-    class="css-f1d2vl-STYLES_APIBOX"
-  >
+  <div>
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
@@ -4292,9 +4222,7 @@ OAuth 2.0 protocol
       </table>
     </div>
   </div>
-  <div
-    class="css-f1d2vl-STYLES_APIBOX"
-  >
+  <div>
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
@@ -4468,9 +4396,7 @@ OAuth 2.0 protocol
       </a>
     </div>
   </h2>
-  <div
-    class="css-16aeu59-STYLES_APIBOX-STYLES_ELEMENTS-renderEnum"
-  >
+  <div>
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
@@ -4642,9 +4568,7 @@ OAuth 2.0 protocol
       </li>
     </ul>
   </div>
-  <div
-    class="css-16aeu59-STYLES_APIBOX-STYLES_ELEMENTS-renderEnum"
-  >
+  <div>
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
@@ -4797,27 +4721,10 @@ OAuth 2.0 protocol
         </span>
          - 
         <div
-          class="css-mzz3zf-STYLES_PLATFORM-STYLES_IOS_PLATFORM-getPlatformTags"
+          class="css-4f6ers-STYLES_PLATFORM"
         >
-          <svg
-            class="css-kq8sds-STYLES_PLATFORM_ICON"
-            color="var(--expo-theme-palette-blue-900)"
-            fill="none"
-            height="12"
-            role="img"
-            size="12"
-            viewBox="0 0 20 20"
-            width="12"
-          >
-            <title>
-              Apple-icon
-            </title>
-            <path
-              d="M17.66 15.391a10.489 10.489 0 01-1.039 1.866c-.545.778-.992 1.317-1.336 1.616-.534.49-1.106.742-1.719.757-.44 0-.97-.125-1.587-.38-.619-.252-1.188-.377-1.708-.377-.546 0-1.131.125-1.757.378-.627.253-1.132.386-1.519.399-.587.025-1.172-.234-1.757-.777-.373-.325-.839-.883-1.398-1.673-.6-.843-1.092-1.822-1.478-2.937-.414-1.205-.621-2.371-.621-3.5 0-1.294.28-2.41.839-3.345A4.924 4.924 0 014.338 5.64a4.73 4.73 0 012.377-.67c.466 0 1.078.144 1.838.427.758.285 1.245.429 1.458.429.16 0 .7-.169 1.617-.505.867-.312 1.599-.441 2.198-.39 1.624.13 2.844.77 3.656 1.924-1.453.88-2.171 2.113-2.157 3.694.013 1.232.46 2.257 1.338 3.07.398.378.843.67 1.337.878-.107.31-.22.608-.34.894zM13.934.735c0 .965-.353 1.866-1.056 2.7-.848.992-1.875 1.566-2.987 1.475a3.005 3.005 0 01-.023-.366c0-.926.404-1.918 1.12-2.73.358-.41.813-.751 1.364-1.023.55-.269 1.072-.417 1.561-.443.015.13.02.259.02.387z"
-              fill="var(--expo-theme-palette-blue-900)"
-            />
-          </svg>
           iOS 13.2+
+           Only
         </div>
         <span>
           "Sign up with Apple"
@@ -4839,9 +4746,7 @@ OAuth 2.0 protocol
       </li>
     </ul>
   </div>
-  <div
-    class="css-16aeu59-STYLES_APIBOX-STYLES_ELEMENTS-renderEnum"
-  >
+  <div>
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
@@ -5088,9 +4993,7 @@ for more details.
       </li>
     </ul>
   </div>
-  <div
-    class="css-16aeu59-STYLES_APIBOX-STYLES_ELEMENTS-renderEnum"
-  >
+  <div>
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
@@ -5264,9 +5167,7 @@ for more details.
       </li>
     </ul>
   </div>
-  <div
-    class="css-16aeu59-STYLES_APIBOX-STYLES_ELEMENTS-renderEnum"
-  >
+  <div>
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
@@ -5508,9 +5409,7 @@ for more details.
       </li>
     </ul>
   </div>
-  <div
-    class="css-16aeu59-STYLES_APIBOX-STYLES_ELEMENTS-renderEnum"
-  >
+  <div>
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
@@ -5787,9 +5686,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
       </a>
     </div>
   </h2>
-  <div
-    class="css-f1d2vl-STYLES_APIBOX"
-  >
+  <div>
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
@@ -5871,491 +5768,491 @@ exports[`APISection expo-barcode-scanner 1`] = `
         &gt;
       </code>
     </p>
-    <div>
+    <h3
+      class="css-1fe5f89-h3-h3-STYLES_H3"
+      data-heading="true"
+    >
       <div
-        class="css-1iw8c1u-STYLES_NESTED_SECTION_HEADER"
+        class="css-1rh3o5q-STYLES_PERMALINK"
       >
-        <h4
-          class="  css-838f5l-h4-h4-STYLES_H4"
-          data-components-heading="true"
-          data-heading="true"
+        <span
+          class="css-zonpcr-STYLES_PERMALINK_TARGET"
+          id="barcodescannerprops"
+        />
+        <a
+          class="css-15lh5hg-STYLES_PERMALINK_LINK"
+          href="#barcodescannerprops"
         >
-          <div
-            class="css-1rh3o5q-STYLES_PERMALINK"
+          <span
+            class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
-            <span
-              class="css-zonpcr-STYLES_PERMALINK_TARGET"
-              id="barcodescannerprops"
-            />
-            <a
-              class="css-15lh5hg-STYLES_PERMALINK_LINK"
-              href="#barcodescannerprops"
+            <code
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
-              <span
-                class="css-1icvi79-STYLED_PERMALINK_CONTENT"
-              >
-                BarCodeScannerProps
-              </span>
-              <span
-                class="css-10vdcw8-STYLES_PERMALINK_ICON"
-              >
-                <svg
-                  aria-label="permalink"
-                  class="anchor-icon"
-                  fill="none"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  width="24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                    stroke="#9B9B9B"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                  />
-                  <path
-                    d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                    stroke="#9B9B9B"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                  />
-                </svg>
-              </span>
-            </a>
-          </div>
-        </h4>
+              BarCodeScannerProps
+            </code>
+          </span>
+          <span
+            class="css-10vdcw8-STYLES_PERMALINK_ICON"
+          >
+            <svg
+              aria-label="permalink"
+              class="anchor-icon"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </span>
+        </a>
       </div>
-    </div>
+    </h3>
+    <br />
     <div>
-      <div
-        class="css-5lxf4v-STYLES_APIBOX-STYLES_APIBOX_NESTED-renderProp"
+      <ul
+        class="css-1qha16q-paragraph-STYLES_UNORDERED_LIST-UL"
+        data-text="true"
       >
-        <h4
-          class="  css-838f5l-h4-h4-STYLES_H4"
-          data-components-heading="true"
-          data-heading="true"
+        <li
+          class="docs-list-item css-1jvmp7m-STYLES_LIST_ITEM-STYLE_PROP_LIST-PROP_LIST_ELEMENT_STYLE-LI"
         >
-          <div
-            class="css-1rh3o5q-STYLES_PERMALINK"
+          <h4
+            class="  css-838f5l-h4-h4-STYLES_H4"
+            data-components-heading="true"
+            data-heading="true"
           >
-            <span
-              class="css-zonpcr-STYLES_PERMALINK_TARGET"
-              id="barcodetypes"
-            />
-            <a
-              class="css-15lh5hg-STYLES_PERMALINK_LINK"
-              href="#barcodetypes"
+            <div
+              class="css-1rh3o5q-STYLES_PERMALINK"
             >
               <span
-                class="css-1icvi79-STYLED_PERMALINK_CONTENT"
+                class="css-zonpcr-STYLES_PERMALINK_TARGET"
+                id="barcodetypes"
+              />
+              <a
+                class="css-15lh5hg-STYLES_PERMALINK_LINK"
+                href="#barcodetypes"
               >
-                <code
-                  class="inline css-5itu2l-STYLES_INLINE_CODE-STYLES_NOT_EXPOSED_HEADER-InlineCode"
+                <span
+                  class="css-1icvi79-STYLED_PERMALINK_CONTENT"
                 >
                   barCodeTypes
-                </code>
-              </span>
-              <span
-                class="css-10vdcw8-STYLES_PERMALINK_ICON"
-              >
-                <svg
-                  aria-label="permalink"
-                  class="anchor-icon"
-                  fill="none"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  width="24"
-                  xmlns="http://www.w3.org/2000/svg"
+                </span>
+                <span
+                  class="css-10vdcw8-STYLES_PERMALINK_ICON"
                 >
-                  <path
-                    d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                    stroke="#9B9B9B"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                  />
-                  <path
-                    d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                    stroke="#9B9B9B"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                  />
-                </svg>
-              </span>
-            </a>
-          </div>
-        </h4>
-        <p
-          class="css-101h856-paragraph-STYLES_PARAGRAPH"
-          data-text="true"
-        >
-          <span
-            class="css-t865as-STYLES_SECONDARY"
-          >
-            Optional • 
-          </span>
-          <span
-            class="css-t865as-STYLES_SECONDARY"
-          >
-            Type:
-          </span>
-           
-          <code
-            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
-          >
-            string[]
-          </code>
-        </p>
-        <p
-          class="css-101h856-paragraph-STYLES_PARAGRAPH"
-          data-text="true"
-        >
-          An array of bar code types. Usage: 
-          <code
-            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
-          >
-            BarCodeScanner.Constants.BarCodeType.&lt;codeType&gt;
-          </code>
-           where
-
-          <code
-            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
-          >
-            codeType
-          </code>
-           is one of these 
-          <a
-            class="css-12zqqiz-STYLES_EXTERNAL_LINK"
-            href="/#supported-formats"
-          >
-            listed above
-          </a>
-          . Defaults to all supported bar
-code types. It is recommended to provide only the bar code formats you expect to scan to
-minimize battery usage.
-        </p>
-        <p
-          class="css-101h856-paragraph-STYLES_PARAGRAPH"
-          data-text="true"
-        >
-          For example: 
-          <code
-            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
-          >
-            barCodeTypes={[BarCodeScanner.Constants.BarCodeType.qr]}
-          </code>
-          .
-        </p>
-      </div>
-      <div
-        class="css-5lxf4v-STYLES_APIBOX-STYLES_APIBOX_NESTED-renderProp"
-      >
-        <h4
-          class="  css-838f5l-h4-h4-STYLES_H4"
-          data-components-heading="true"
-          data-heading="true"
-        >
-          <div
-            class="css-1rh3o5q-STYLES_PERMALINK"
-          >
-            <span
-              class="css-zonpcr-STYLES_PERMALINK_TARGET"
-              id="onbarcodescanned"
-            />
-            <a
-              class="css-15lh5hg-STYLES_PERMALINK_LINK"
-              href="#onbarcodescanned"
-            >
-              <span
-                class="css-1icvi79-STYLED_PERMALINK_CONTENT"
-              >
-                <code
-                  class="inline css-5itu2l-STYLES_INLINE_CODE-STYLES_NOT_EXPOSED_HEADER-InlineCode"
-                >
-                  onBarCodeScanned
-                </code>
-              </span>
-              <span
-                class="css-10vdcw8-STYLES_PERMALINK_ICON"
-              >
-                <svg
-                  aria-label="permalink"
-                  class="anchor-icon"
-                  fill="none"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  width="24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                    stroke="#9B9B9B"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                  />
-                  <path
-                    d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                    stroke="#9B9B9B"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                  />
-                </svg>
-              </span>
-            </a>
-          </div>
-        </h4>
-        <p
-          class="css-101h856-paragraph-STYLES_PARAGRAPH"
-          data-text="true"
-        >
-          <span
-            class="css-t865as-STYLES_SECONDARY"
-          >
-            Optional • 
-          </span>
-          <span
-            class="css-t865as-STYLES_SECONDARY"
-          >
-            Type:
-          </span>
-           
-          <code
-            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
-          >
-            <a
-              class="css-12zqqiz-STYLES_EXTERNAL_LINK"
-              href="/#barcodescannedcallback"
-            >
-              BarCodeScannedCallback
-            </a>
-          </code>
-        </p>
-        <p
-          class="css-101h856-paragraph-STYLES_PARAGRAPH"
-          data-text="true"
-        >
-          A callback that is invoked when a bar code has been successfully scanned. The callback is
-provided with an 
-          <a
-            class="css-12zqqiz-STYLES_EXTERNAL_LINK"
-            href="/#barcodescannerresult"
-          >
-            BarCodeScannerResult
-          </a>
-          .
-        </p>
-        
-
-        <blockquote
-          class="css-13jwbau-paragraph-STYLES_BLOCKQUOTE"
-          data-text="true"
-        >
-          <div>
-            <div
-              style="margin-top: 2px;"
-            >
-              <svg
-                fill="none"
-                height="16"
-                role="img"
-                size="16"
-                viewBox="0 0 20 20"
-                width="16"
-              >
-                <title>
-                  Info-icon
-                </title>
-                <g
-                  clip-path="url(#info-icon_svg__info-icon_svg__clip0)"
-                >
-                  <path
-                    d="M10 1a9 9 0 100 18 9 9 0 000-18zm-.01 4.064a.962.962 0 01.73-.33c.229 0 .43.082.582.238.152.155.23.354.23.59 0 .295-.104.558-.308.78-.209.23-.453.347-.726.347a.777.777 0 01-.576-.244.844.844 0 01-.227-.607c0-.3.099-.561.295-.774zm1.499 8.48c-.746.7-1.279 1.138-1.628 1.337-.372.213-.679.317-.937.317a.814.814 0 01-.622-.254c-.152-.162-.23-.382-.23-.652 0-.69.392-2.293 1.197-4.9.013-.044.024-.086.031-.125a.814.814 0 00-.105.056c-.066.042-.267.2-.854.773a.25.25 0 01-.329.02l-.347-.27a.25.25 0 01-.033-.367c.542-.596 1.047-1.029 1.502-1.286.477-.269.88-.4 1.232-.4.227 0 .411.057.547.17a.621.621 0 01.225.492c0 .132-.063.474-.522 2.015-.657 2.203-.814 3.003-.825 3.28.125-.074.419-.283 1.046-.873a.25.25 0 01.347.003l.308.3a.25.25 0 01-.003.363z"
-                    fill="var(--expo-theme-icon-default)"
-                  />
-                </g>
-                <defs>
-                  <clippath
-                    id="info-icon_svg__info-icon_svg__clip0"
+                  <svg
+                    aria-label="permalink"
+                    class="anchor-icon"
+                    fill="none"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    width="24"
+                    xmlns="http://www.w3.org/2000/svg"
                   >
                     <path
-                      d="M0 0h20v20H0z"
-                      fill="#fff"
+                      d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                      stroke="#9B9B9B"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
                     />
-                  </clippath>
-                </defs>
-              </svg>
+                    <path
+                      d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                      stroke="#9B9B9B"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    />
+                  </svg>
+                </span>
+              </a>
             </div>
-          </div>
-          <div>
-            
-
-            <strong
-              class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
-            >
-              Note:
-            </strong>
-             Passing 
-            <code
-              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
-            >
-              undefined
-            </code>
-             to the 
-            <code
-              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
-            >
-              onBarCodeScanned
-            </code>
-             prop will result in no scanning. This
-can be used to effectively "pause" the scanner so that it doesn't continually scan even after
-data has been retrieved.
-            
-
-          </div>
-        </blockquote>
-      </div>
-      <div
-        class="css-5lxf4v-STYLES_APIBOX-STYLES_APIBOX_NESTED-renderProp"
-      >
-        <h4
-          class="  css-838f5l-h4-h4-STYLES_H4"
-          data-components-heading="true"
-          data-heading="true"
-        >
-          <div
-            class="css-1rh3o5q-STYLES_PERMALINK"
+          </h4>
+          <p
+            class="css-101h856-paragraph-STYLES_PARAGRAPH"
+            data-text="true"
           >
-            <span
-              class="css-zonpcr-STYLES_PERMALINK_TARGET"
-              id="type"
-            />
-            <a
-              class="css-15lh5hg-STYLES_PERMALINK_LINK"
-              href="#type"
-            >
-              <span
-                class="css-1icvi79-STYLED_PERMALINK_CONTENT"
-              >
-                <code
-                  class="inline css-5itu2l-STYLES_INLINE_CODE-STYLES_NOT_EXPOSED_HEADER-InlineCode"
-                >
-                  type
-                </code>
-              </span>
-              <span
-                class="css-10vdcw8-STYLES_PERMALINK_ICON"
-              >
-                <svg
-                  aria-label="permalink"
-                  class="anchor-icon"
-                  fill="none"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  width="24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                    stroke="#9B9B9B"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                  />
-                  <path
-                    d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                    stroke="#9B9B9B"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                  />
-                </svg>
-              </span>
-            </a>
-          </div>
-        </h4>
-        <p
-          class="css-101h856-paragraph-STYLES_PARAGRAPH"
-          data-text="true"
-        >
-          <span
-            class="css-t865as-STYLES_SECONDARY"
-          >
-            Optional • 
-          </span>
-          <span
-            class="css-t865as-STYLES_SECONDARY"
-          >
-            Type:
-          </span>
-           
-          <code
-            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
-          >
-            <span>
-              'front'
-               | 
-            </span>
-            <span>
-              'back'
-               | 
-            </span>
-            <span>
-              number
-            </span>
-          </code>
-          <span>
             <span
               class="css-t865as-STYLES_SECONDARY"
             >
-               • Default:
+              Optional • 
+            </span>
+            <span
+              class="css-t865as-STYLES_SECONDARY"
+            >
+              Type:
             </span>
              
             <code
               class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
-              Type.back
-
+              string[]
             </code>
-          </span>
-        </p>
-        <p
-          class="css-101h856-paragraph-STYLES_PARAGRAPH"
-          data-text="true"
+          </p>
+          <p
+            class="css-101h856-paragraph-STYLES_PARAGRAPH"
+            data-text="true"
+          >
+            An array of bar code types. Usage: 
+            <code
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+            >
+              BarCodeScanner.Constants.BarCodeType.&lt;codeType&gt;
+            </code>
+             where
+
+            <code
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+            >
+              codeType
+            </code>
+             is one of these 
+            <a
+              class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+              href="/#supported-formats"
+            >
+              listed above
+            </a>
+            . Defaults to all supported bar
+code types. It is recommended to provide only the bar code formats you expect to scan to
+minimize battery usage.
+          </p>
+          <p
+            class="css-101h856-paragraph-STYLES_PARAGRAPH"
+            data-text="true"
+          >
+            For example: 
+            <code
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+            >
+              barCodeTypes={[BarCodeScanner.Constants.BarCodeType.qr]}
+            </code>
+            .
+          </p>
+          <hr
+            class="css-bxzs19-STYLES_DIVIDER"
+          />
+        </li>
+        <li
+          class="docs-list-item css-1jvmp7m-STYLES_LIST_ITEM-STYLE_PROP_LIST-PROP_LIST_ELEMENT_STYLE-LI"
         >
-          Camera facing. Use one of 
-          <code
-            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+          <h4
+            class="  css-838f5l-h4-h4-STYLES_H4"
+            data-components-heading="true"
+            data-heading="true"
           >
-            BarCodeScanner.Constants.Type
-          </code>
-          . Use either 
-          <code
-            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+            <div
+              class="css-1rh3o5q-STYLES_PERMALINK"
+            >
+              <span
+                class="css-zonpcr-STYLES_PERMALINK_TARGET"
+                id="onbarcodescanned"
+              />
+              <a
+                class="css-15lh5hg-STYLES_PERMALINK_LINK"
+                href="#onbarcodescanned"
+              >
+                <span
+                  class="css-1icvi79-STYLED_PERMALINK_CONTENT"
+                >
+                  onBarCodeScanned
+                </span>
+                <span
+                  class="css-10vdcw8-STYLES_PERMALINK_ICON"
+                >
+                  <svg
+                    aria-label="permalink"
+                    class="anchor-icon"
+                    fill="none"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    width="24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                      stroke="#9B9B9B"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    />
+                    <path
+                      d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                      stroke="#9B9B9B"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    />
+                  </svg>
+                </span>
+              </a>
+            </div>
+          </h4>
+          <p
+            class="css-101h856-paragraph-STYLES_PARAGRAPH"
+            data-text="true"
           >
-            Type.front
-          </code>
-           or 
-          <code
-            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+            <span
+              class="css-t865as-STYLES_SECONDARY"
+            >
+              Optional • 
+            </span>
+            <span
+              class="css-t865as-STYLES_SECONDARY"
+            >
+              Type:
+            </span>
+             
+            <code
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+            >
+              <a
+                class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+                href="/#barcodescannedcallback"
+              >
+                BarCodeScannedCallback
+              </a>
+            </code>
+          </p>
+          <p
+            class="css-101h856-paragraph-STYLES_PARAGRAPH"
+            data-text="true"
           >
-            Type.back
-          </code>
-          .
+            A callback that is invoked when a bar code has been successfully scanned. The callback is
+provided with an 
+            <a
+              class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+              href="/#barcodescannerresult"
+            >
+              BarCodeScannerResult
+            </a>
+            .
+          </p>
+          
+
+          <blockquote
+            class="css-13jwbau-paragraph-STYLES_BLOCKQUOTE"
+            data-text="true"
+          >
+            <div>
+              <div
+                style="margin-top: 2px;"
+              >
+                <svg
+                  fill="none"
+                  height="16"
+                  role="img"
+                  size="16"
+                  viewBox="0 0 20 20"
+                  width="16"
+                >
+                  <title>
+                    Info-icon
+                  </title>
+                  <g
+                    clip-path="url(#info-icon_svg__info-icon_svg__clip0)"
+                  >
+                    <path
+                      d="M10 1a9 9 0 100 18 9 9 0 000-18zm-.01 4.064a.962.962 0 01.73-.33c.229 0 .43.082.582.238.152.155.23.354.23.59 0 .295-.104.558-.308.78-.209.23-.453.347-.726.347a.777.777 0 01-.576-.244.844.844 0 01-.227-.607c0-.3.099-.561.295-.774zm1.499 8.48c-.746.7-1.279 1.138-1.628 1.337-.372.213-.679.317-.937.317a.814.814 0 01-.622-.254c-.152-.162-.23-.382-.23-.652 0-.69.392-2.293 1.197-4.9.013-.044.024-.086.031-.125a.814.814 0 00-.105.056c-.066.042-.267.2-.854.773a.25.25 0 01-.329.02l-.347-.27a.25.25 0 01-.033-.367c.542-.596 1.047-1.029 1.502-1.286.477-.269.88-.4 1.232-.4.227 0 .411.057.547.17a.621.621 0 01.225.492c0 .132-.063.474-.522 2.015-.657 2.203-.814 3.003-.825 3.28.125-.074.419-.283 1.046-.873a.25.25 0 01.347.003l.308.3a.25.25 0 01-.003.363z"
+                      fill="var(--expo-theme-icon-default)"
+                    />
+                  </g>
+                  <defs>
+                    <clippath
+                      id="info-icon_svg__info-icon_svg__clip0"
+                    >
+                      <path
+                        d="M0 0h20v20H0z"
+                        fill="#fff"
+                      />
+                    </clippath>
+                  </defs>
+                </svg>
+              </div>
+            </div>
+            <div>
+              
+
+              <strong
+                class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
+              >
+                Note:
+              </strong>
+               Passing 
+              <code
+                class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+              >
+                undefined
+              </code>
+               to the 
+              <code
+                class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+              >
+                onBarCodeScanned
+              </code>
+               prop will result in no scanning. This
+can be used to effectively "pause" the scanner so that it doesn't continually scan even after
+data has been retrieved.
+              
+
+            </div>
+          </blockquote>
+          <hr
+            class="css-bxzs19-STYLES_DIVIDER"
+          />
+        </li>
+        <li
+          class="docs-list-item css-1jvmp7m-STYLES_LIST_ITEM-STYLE_PROP_LIST-PROP_LIST_ELEMENT_STYLE-LI"
+        >
+          <h4
+            class="  css-838f5l-h4-h4-STYLES_H4"
+            data-components-heading="true"
+            data-heading="true"
+          >
+            <div
+              class="css-1rh3o5q-STYLES_PERMALINK"
+            >
+              <span
+                class="css-zonpcr-STYLES_PERMALINK_TARGET"
+                id="type"
+              />
+              <a
+                class="css-15lh5hg-STYLES_PERMALINK_LINK"
+                href="#type"
+              >
+                <span
+                  class="css-1icvi79-STYLED_PERMALINK_CONTENT"
+                >
+                  type
+                </span>
+                <span
+                  class="css-10vdcw8-STYLES_PERMALINK_ICON"
+                >
+                  <svg
+                    aria-label="permalink"
+                    class="anchor-icon"
+                    fill="none"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    width="24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                      stroke="#9B9B9B"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    />
+                    <path
+                      d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                      stroke="#9B9B9B"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                    />
+                  </svg>
+                </span>
+              </a>
+            </div>
+          </h4>
+          <p
+            class="css-101h856-paragraph-STYLES_PARAGRAPH"
+            data-text="true"
+          >
+            <span
+              class="css-t865as-STYLES_SECONDARY"
+            >
+              Optional • 
+            </span>
+            <span
+              class="css-t865as-STYLES_SECONDARY"
+            >
+              Type:
+            </span>
+             
+            <code
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+            >
+              <span>
+                'front'
+                 | 
+              </span>
+              <span>
+                'back'
+                 | 
+              </span>
+              <span>
+                number
+              </span>
+            </code>
+            <span>
+              <span
+                class="css-t865as-STYLES_SECONDARY"
+              >
+                 • Default:
+              </span>
+               
+              <code
+                class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+              >
+                Type.back
+
+              </code>
+            </span>
+          </p>
+          <p
+            class="css-101h856-paragraph-STYLES_PARAGRAPH"
+            data-text="true"
+          >
+            Camera facing. Use one of 
+            <code
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+            >
+              BarCodeScanner.Constants.Type
+            </code>
+            . Use either 
+            <code
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+            >
+              Type.front
+            </code>
+             or 
+            <code
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+            >
+              Type.back
+            </code>
+            .
 Same as 
-          <code
-            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
-          >
-            Camera.Constants.Type
-          </code>
-          .
-        </p>
-      </div>
+            <code
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+            >
+              Camera.Constants.Type
+            </code>
+            .
+          </p>
+          <hr
+            class="css-bxzs19-STYLES_DIVIDER"
+          />
+        </li>
+      </ul>
       <h4
         class="  css-838f5l-h4-h4-STYLES_H4"
         data-components-heading="true"
@@ -6480,9 +6377,7 @@ Same as
       </a>
     </div>
   </h2>
-  <div
-    class="css-ox6i8w-STYLES_APIBOX-renderMethod"
-  >
+  <div>
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
@@ -6502,7 +6397,7 @@ Same as
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+              class="inline css-ni28os-STYLES_INLINE_CODE-STYLES_NOT_EXPOSED_HEADER-InlineCode"
             >
               usePermissions
             </code>
@@ -6539,89 +6434,85 @@ Same as
       </div>
     </h3>
     <h4
-      class="  css-838f5l-h4-h4-STYLES_H4"
-      data-components-heading="true"
+      class="css-838f5l-h4-h4-STYLES_H4"
       data-heading="true"
     >
-      <div
-        class="css-1rh3o5q-STYLES_PERMALINK"
-      >
-        <span
-          class="css-zonpcr-STYLES_PERMALINK_TARGET"
-          id="arguments"
-        />
-        <a
-          class="css-15lh5hg-STYLES_PERMALINK_LINK"
-          href="#arguments"
-        >
-          <span
-            class="css-1icvi79-STYLED_PERMALINK_CONTENT"
-          >
-            Arguments
-          </span>
-          <span
-            class="css-10vdcw8-STYLES_PERMALINK_ICON"
-          >
-            <svg
-              aria-label="permalink"
-              class="anchor-icon"
-              fill="none"
-              height="24"
-              viewBox="0 0 24 24"
-              width="24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                stroke="#9B9B9B"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-              />
-              <path
-                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                stroke="#9B9B9B"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-              />
-            </svg>
-          </span>
-        </a>
-      </div>
+      Arguments
     </h4>
-    <ul
-      class="css-1qha16q-paragraph-STYLES_UNORDERED_LIST-UL"
-      data-text="true"
+    <div
+      class="css-zdmbpy-tableWrapperStyle"
     >
-      <li
-        class="docs-list-item css-xdejd6-STYLES_LIST_ITEM-LI"
+      <table
+        class="css-33l6in-tableStyle-Table"
       >
-        <strong
-          class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
+        <thead
+          class="css-7aq1e9-tableHeadStyle"
         >
-          options
-          ?
-           (
-          <code
-            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+          <tr
+            class="css-1ne1f2k-tableRowStyle-Row"
           >
-            <a
-              class="css-12zqqiz-STYLES_EXTERNAL_LINK"
-              href="/#permissionhookoptions"
+            <th
+              class="css-qgy7w-tableHeadersCellStyle-HeaderCell"
             >
-              PermissionHookOptions
-            </a>
-            &lt;
-            <span>
-              object
+              Name
+            </th>
+            <th
+              class="css-qgy7w-tableHeadersCellStyle-HeaderCell"
+            >
+              Type
+            </th>
+            <th
+              class="css-qgy7w-tableHeadersCellStyle-HeaderCell"
+            >
+              Description
+            </th>
+          </tr>
+        </thead>
+        <tr
+          class="css-1ne1f2k-tableRowStyle-Row"
+        >
+          <td
+            class="css-yr5jng-tableCellStyle-Cell"
+          >
+            <strong
+              class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
+            >
+              options
+            </strong>
+            <br />
+            <span
+              class="css-fbbx5x-STYLES_OPTIONAL"
+            >
+              (optional)
             </span>
-            &gt;
-          </code>
-          )
-        </strong>
-      </li>
-    </ul>
+          </td>
+          <td
+            class="css-yr5jng-tableCellStyle-Cell"
+          >
+            <code
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+            >
+              <a
+                class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+                href="/#permissionhookoptions"
+              >
+                PermissionHookOptions
+              </a>
+              &lt;
+              <span>
+                object
+              </span>
+              &gt;
+            </code>
+          </td>
+          <td
+            class="css-yr5jng-tableCellStyle-Cell"
+          >
+            -
+          </td>
+        </tr>
+      </table>
+    </div>
     <p
       class="css-101h856-paragraph-STYLES_PARAGRAPH"
       data-text="true"
@@ -6790,9 +6681,7 @@ This can be used to quickly create specific permission hooks in every module.
       </a>
     </div>
   </h2>
-  <div
-    class="css-ox6i8w-STYLES_APIBOX-renderMethod"
-  >
+  <div>
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
@@ -6812,7 +6701,7 @@ This can be used to quickly create specific permission hooks in every module.
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+              class="inline css-ni28os-STYLES_INLINE_CODE-STYLES_NOT_EXPOSED_HEADER-InlineCode"
             >
               BarCodeScanner.
               getPermissionsAsync()
@@ -6954,10 +6843,9 @@ This can be used to quickly create specific permission hooks in every module.
       </a>
       .
     </p>
+    <hr />
   </div>
-  <div
-    class="css-ox6i8w-STYLES_APIBOX-renderMethod"
-  >
+  <div>
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
@@ -6977,7 +6865,7 @@ This can be used to quickly create specific permission hooks in every module.
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+              class="inline css-ni28os-STYLES_INLINE_CODE-STYLES_NOT_EXPOSED_HEADER-InlineCode"
             >
               BarCodeScanner.
               requestPermissionsAsync()
@@ -7137,10 +7025,9 @@ This can be used to quickly create specific permission hooks in every module.
       </a>
       .
     </p>
+    <hr />
   </div>
-  <div
-    class="css-ox6i8w-STYLES_APIBOX-renderMethod"
-  >
+  <div>
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
@@ -7160,7 +7047,7 @@ This can be used to quickly create specific permission hooks in every module.
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+              class="inline css-ni28os-STYLES_INLINE_CODE-STYLES_NOT_EXPOSED_HEADER-InlineCode"
             >
               BarCodeScanner.
               scanFromURLAsync(url, barCodeTypes)
@@ -7198,158 +7085,156 @@ This can be used to quickly create specific permission hooks in every module.
       </div>
     </h3>
     <h4
-      class="  css-838f5l-h4-h4-STYLES_H4"
-      data-components-heading="true"
+      class="css-838f5l-h4-h4-STYLES_H4"
       data-heading="true"
     >
-      <div
-        class="css-1rh3o5q-STYLES_PERMALINK"
-      >
-        <span
-          class="css-zonpcr-STYLES_PERMALINK_TARGET"
-          id="arguments-1"
-        />
-        <a
-          class="css-15lh5hg-STYLES_PERMALINK_LINK"
-          href="#arguments-1"
-        >
-          <span
-            class="css-1icvi79-STYLED_PERMALINK_CONTENT"
-          >
-            Arguments
-          </span>
-          <span
-            class="css-10vdcw8-STYLES_PERMALINK_ICON"
-          >
-            <svg
-              aria-label="permalink"
-              class="anchor-icon"
-              fill="none"
-              height="24"
-              viewBox="0 0 24 24"
-              width="24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                stroke="#9B9B9B"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-              />
-              <path
-                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                stroke="#9B9B9B"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-              />
-            </svg>
-          </span>
-        </a>
-      </div>
+      Arguments
     </h4>
-    <ul
-      class="css-1qha16q-paragraph-STYLES_UNORDERED_LIST-UL"
-      data-text="true"
+    <div
+      class="css-zdmbpy-tableWrapperStyle"
     >
-      <li
-        class="docs-list-item css-xdejd6-STYLES_LIST_ITEM-LI"
+      <table
+        class="css-33l6in-tableStyle-Table"
       >
-        <strong
-          class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
+        <thead
+          class="css-7aq1e9-tableHeadStyle"
         >
-          url
-           (
-          <code
-            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+          <tr
+            class="css-1ne1f2k-tableRowStyle-Row"
           >
-            string
-          </code>
-          )
-        </strong>
-         - 
-        <span>
-          URL to get the image from.
-        </span>
-      </li>
-      <li
-        class="docs-list-item css-xdejd6-STYLES_LIST_ITEM-LI"
-      >
-        <strong
-          class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
-        >
-          barCodeTypes
-           (
-          <code
-            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
-          >
-            string[]
-          </code>
-          )
-        </strong>
-         - 
-        <span>
-          An array of bar code types. Defaults to all supported bar code types on
-the platform.
-        </span>
-        
-
-        <blockquote
-          class="css-13jwbau-paragraph-STYLES_BLOCKQUOTE"
-          data-text="true"
-        >
-          <div>
-            <div
-              style="margin-top: 2px;"
+            <th
+              class="css-qgy7w-tableHeadersCellStyle-HeaderCell"
             >
-              <svg
-                fill="none"
-                height="16"
-                role="img"
-                size="16"
-                viewBox="0 0 20 20"
-                width="16"
-              >
-                <title>
-                  Info-icon
-                </title>
-                <g
-                  clip-path="url(#info-icon_svg__info-icon_svg__clip0)"
-                >
-                  <path
-                    d="M10 1a9 9 0 100 18 9 9 0 000-18zm-.01 4.064a.962.962 0 01.73-.33c.229 0 .43.082.582.238.152.155.23.354.23.59 0 .295-.104.558-.308.78-.209.23-.453.347-.726.347a.777.777 0 01-.576-.244.844.844 0 01-.227-.607c0-.3.099-.561.295-.774zm1.499 8.48c-.746.7-1.279 1.138-1.628 1.337-.372.213-.679.317-.937.317a.814.814 0 01-.622-.254c-.152-.162-.23-.382-.23-.652 0-.69.392-2.293 1.197-4.9.013-.044.024-.086.031-.125a.814.814 0 00-.105.056c-.066.042-.267.2-.854.773a.25.25 0 01-.329.02l-.347-.27a.25.25 0 01-.033-.367c.542-.596 1.047-1.029 1.502-1.286.477-.269.88-.4 1.232-.4.227 0 .411.057.547.17a.621.621 0 01.225.492c0 .132-.063.474-.522 2.015-.657 2.203-.814 3.003-.825 3.28.125-.074.419-.283 1.046-.873a.25.25 0 01.347.003l.308.3a.25.25 0 01-.003.363z"
-                    fill="var(--expo-theme-icon-default)"
-                  />
-                </g>
-                <defs>
-                  <clippath
-                    id="info-icon_svg__info-icon_svg__clip0"
-                  >
-                    <path
-                      d="M0 0h20v20H0z"
-                      fill="#fff"
-                    />
-                  </clippath>
-                </defs>
-              </svg>
-            </div>
-          </div>
-          <div>
-            
-
+              Name
+            </th>
+            <th
+              class="css-qgy7w-tableHeadersCellStyle-HeaderCell"
+            >
+              Type
+            </th>
+            <th
+              class="css-qgy7w-tableHeadersCellStyle-HeaderCell"
+            >
+              Description
+            </th>
+          </tr>
+        </thead>
+        <tr
+          class="css-1ne1f2k-tableRowStyle-Row"
+        >
+          <td
+            class="css-yr5jng-tableCellStyle-Cell"
+          >
             <strong
               class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
             >
-              Note:
+              url
             </strong>
-             Only QR codes are supported on iOS.
+          </td>
+          <td
+            class="css-yr5jng-tableCellStyle-Cell"
+          >
+            <code
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+            >
+              string
+            </code>
+          </td>
+          <td
+            class="css-yr5jng-tableCellStyle-Cell"
+          >
+            <span>
+              URL to get the image from.
+            </span>
+          </td>
+        </tr>
+        <tr
+          class="css-1ne1f2k-tableRowStyle-Row"
+        >
+          <td
+            class="css-yr5jng-tableCellStyle-Cell"
+          >
+            <strong
+              class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
+            >
+              barCodeTypes
+            </strong>
+          </td>
+          <td
+            class="css-yr5jng-tableCellStyle-Cell"
+          >
+            <code
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+            >
+              string[]
+            </code>
+          </td>
+          <td
+            class="css-yr5jng-tableCellStyle-Cell"
+          >
+            <span>
+              An array of bar code types. Defaults to all supported bar code types on
+the platform.
+            </span>
             
 
-          </div>
-        </blockquote>
-      </li>
-    </ul>
+            <blockquote
+              class="css-13jwbau-paragraph-STYLES_BLOCKQUOTE"
+              data-text="true"
+            >
+              <div>
+                <div
+                  style="margin-top: 2px;"
+                >
+                  <svg
+                    fill="none"
+                    height="16"
+                    role="img"
+                    size="16"
+                    viewBox="0 0 20 20"
+                    width="16"
+                  >
+                    <title>
+                      Info-icon
+                    </title>
+                    <g
+                      clip-path="url(#info-icon_svg__info-icon_svg__clip0)"
+                    >
+                      <path
+                        d="M10 1a9 9 0 100 18 9 9 0 000-18zm-.01 4.064a.962.962 0 01.73-.33c.229 0 .43.082.582.238.152.155.23.354.23.59 0 .295-.104.558-.308.78-.209.23-.453.347-.726.347a.777.777 0 01-.576-.244.844.844 0 01-.227-.607c0-.3.099-.561.295-.774zm1.499 8.48c-.746.7-1.279 1.138-1.628 1.337-.372.213-.679.317-.937.317a.814.814 0 01-.622-.254c-.152-.162-.23-.382-.23-.652 0-.69.392-2.293 1.197-4.9.013-.044.024-.086.031-.125a.814.814 0 00-.105.056c-.066.042-.267.2-.854.773a.25.25 0 01-.329.02l-.347-.27a.25.25 0 01-.033-.367c.542-.596 1.047-1.029 1.502-1.286.477-.269.88-.4 1.232-.4.227 0 .411.057.547.17a.621.621 0 01.225.492c0 .132-.063.474-.522 2.015-.657 2.203-.814 3.003-.825 3.28.125-.074.419-.283 1.046-.873a.25.25 0 01.347.003l.308.3a.25.25 0 01-.003.363z"
+                        fill="var(--expo-theme-icon-default)"
+                      />
+                    </g>
+                    <defs>
+                      <clippath
+                        id="info-icon_svg__info-icon_svg__clip0"
+                      >
+                        <path
+                          d="M0 0h20v20H0z"
+                          fill="#fff"
+                        />
+                      </clippath>
+                    </defs>
+                  </svg>
+                </div>
+              </div>
+              <div>
+                
+
+                <strong
+                  class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
+                >
+                  Note:
+                </strong>
+                 Only QR codes are supported on iOS.
+                
+
+              </div>
+            </blockquote>
+          </td>
+        </tr>
+      </table>
+    </div>
     <p
       class="css-101h856-paragraph-STYLES_PARAGRAPH"
       data-text="true"
@@ -7505,9 +7390,7 @@ code.
       </a>
     </div>
   </h2>
-  <div
-    class="css-f1d2vl-STYLES_APIBOX"
-  >
+  <div>
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
@@ -7666,9 +7549,7 @@ code.
       </table>
     </div>
   </div>
-  <div
-    class="css-f1d2vl-STYLES_APIBOX"
-  >
+  <div>
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
@@ -7808,9 +7689,7 @@ code.
       </table>
     </div>
   </div>
-  <div
-    class="css-f1d2vl-STYLES_APIBOX"
-  >
+  <div>
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
@@ -7933,9 +7812,7 @@ code.
       </table>
     </div>
   </div>
-  <div
-    class="css-f1d2vl-STYLES_APIBOX"
-  >
+  <div>
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
@@ -8103,9 +7980,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
       </table>
     </div>
   </div>
-  <div
-    class="css-f1d2vl-STYLES_APIBOX"
-  >
+  <div>
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
@@ -8164,88 +8039,77 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
     </h3>
     <div>
       <h4
-        class="  css-838f5l-h4-h4-STYLES_H4"
-        data-components-heading="true"
+        class="css-838f5l-h4-h4-STYLES_H4"
         data-heading="true"
       >
-        <div
-          class="css-1rh3o5q-STYLES_PERMALINK"
-        >
-          <span
-            class="css-zonpcr-STYLES_PERMALINK_TARGET"
-            id="arguments-2"
-          />
-          <a
-            class="css-15lh5hg-STYLES_PERMALINK_LINK"
-            href="#arguments-2"
-          >
-            <span
-              class="css-1icvi79-STYLED_PERMALINK_CONTENT"
-            >
-              Arguments
-            </span>
-            <span
-              class="css-10vdcw8-STYLES_PERMALINK_ICON"
-            >
-              <svg
-                aria-label="permalink"
-                class="anchor-icon"
-                fill="none"
-                height="24"
-                viewBox="0 0 24 24"
-                width="24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-                <path
-                  d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-              </svg>
-            </span>
-          </a>
-        </div>
+        Arguments
       </h4>
-      <ul
-        class="css-1qha16q-paragraph-STYLES_UNORDERED_LIST-UL"
-        data-text="true"
+      <div
+        class="css-zdmbpy-tableWrapperStyle"
       >
-        <li
-          class="docs-list-item css-xdejd6-STYLES_LIST_ITEM-LI"
+        <table
+          class="css-33l6in-tableStyle-Table"
         >
-          <strong
-            class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
+          <thead
+            class="css-7aq1e9-tableHeadStyle"
           >
-            params
-             (
-            <code
-              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+            <tr
+              class="css-1ne1f2k-tableRowStyle-Row"
             >
-              <a
-                class="css-12zqqiz-STYLES_EXTERNAL_LINK"
-                href="/#barcodeevent"
+              <th
+                class="css-qgy7w-tableHeadersCellStyle-HeaderCell"
               >
-                BarCodeEvent
-              </a>
-            </code>
-            )
-          </strong>
-        </li>
-      </ul>
+                Name
+              </th>
+              <th
+                class="css-qgy7w-tableHeadersCellStyle-HeaderCell"
+              >
+                Type
+              </th>
+              <th
+                class="css-qgy7w-tableHeadersCellStyle-HeaderCell"
+              >
+                Description
+              </th>
+            </tr>
+          </thead>
+          <tr
+            class="css-1ne1f2k-tableRowStyle-Row"
+          >
+            <td
+              class="css-yr5jng-tableCellStyle-Cell"
+            >
+              <strong
+                class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
+              >
+                params
+              </strong>
+            </td>
+            <td
+              class="css-yr5jng-tableCellStyle-Cell"
+            >
+              <code
+                class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+              >
+                <a
+                  class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+                  href="/#barcodeevent"
+                >
+                  BarCodeEvent
+                </a>
+              </code>
+            </td>
+            <td
+              class="css-yr5jng-tableCellStyle-Cell"
+            >
+              -
+            </td>
+          </tr>
+        </table>
+      </div>
     </div>
   </div>
-  <div
-    class="css-f1d2vl-STYLES_APIBOX"
-  >
+  <div>
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
@@ -8561,9 +8425,7 @@ For some types, they will represent the area used by the scanner.
       </table>
     </div>
   </div>
-  <div
-    class="css-f1d2vl-STYLES_APIBOX"
-  >
+  <div>
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
@@ -8712,9 +8574,7 @@ For some types, they will represent the area used by the scanner.
       </table>
     </div>
   </div>
-  <div
-    class="css-f1d2vl-STYLES_APIBOX"
-  >
+  <div>
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
@@ -8845,9 +8705,7 @@ For some types, they will represent the area used by the scanner.
       </a>
     </div>
   </h2>
-  <div
-    class="css-f1d2vl-STYLES_APIBOX"
-  >
+  <div>
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
@@ -9110,9 +8968,7 @@ For some types, they will represent the area used by the scanner.
       </a>
     </div>
   </h2>
-  <div
-    class="css-16aeu59-STYLES_APIBOX-STYLES_ELEMENTS-renderEnum"
-  >
+  <div>
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
@@ -9311,9 +9167,7 @@ exports[`APISection expo-pedometer 1`] = `
       </a>
     </div>
   </h2>
-  <div
-    class="css-ox6i8w-STYLES_APIBOX-renderMethod"
-  >
+  <div>
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
@@ -9333,7 +9187,7 @@ exports[`APISection expo-pedometer 1`] = `
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+              class="inline css-ni28os-STYLES_INLINE_CODE-STYLES_NOT_EXPOSED_HEADER-InlineCode"
             >
               getPermissionsAsync()
             </code>
@@ -9451,10 +9305,9 @@ exports[`APISection expo-pedometer 1`] = `
         </code>
       </li>
     </ul>
+    <hr />
   </div>
-  <div
-    class="css-ox6i8w-STYLES_APIBOX-renderMethod"
-  >
+  <div>
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
@@ -9474,7 +9327,7 @@ exports[`APISection expo-pedometer 1`] = `
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+              class="inline css-ni28os-STYLES_INLINE_CODE-STYLES_NOT_EXPOSED_HEADER-InlineCode"
             >
               getStepCountAsync(start, end)
             </code>
@@ -9511,114 +9364,112 @@ exports[`APISection expo-pedometer 1`] = `
       </div>
     </h3>
     <h4
-      class="  css-838f5l-h4-h4-STYLES_H4"
-      data-components-heading="true"
+      class="css-838f5l-h4-h4-STYLES_H4"
       data-heading="true"
     >
-      <div
-        class="css-1rh3o5q-STYLES_PERMALINK"
-      >
-        <span
-          class="css-zonpcr-STYLES_PERMALINK_TARGET"
-          id="arguments"
-        />
-        <a
-          class="css-15lh5hg-STYLES_PERMALINK_LINK"
-          href="#arguments"
-        >
-          <span
-            class="css-1icvi79-STYLED_PERMALINK_CONTENT"
-          >
-            Arguments
-          </span>
-          <span
-            class="css-10vdcw8-STYLES_PERMALINK_ICON"
-          >
-            <svg
-              aria-label="permalink"
-              class="anchor-icon"
-              fill="none"
-              height="24"
-              viewBox="0 0 24 24"
-              width="24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                stroke="#9B9B9B"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-              />
-              <path
-                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                stroke="#9B9B9B"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-              />
-            </svg>
-          </span>
-        </a>
-      </div>
+      Arguments
     </h4>
-    <ul
-      class="css-1qha16q-paragraph-STYLES_UNORDERED_LIST-UL"
-      data-text="true"
+    <div
+      class="css-zdmbpy-tableWrapperStyle"
     >
-      <li
-        class="docs-list-item css-xdejd6-STYLES_LIST_ITEM-LI"
+      <table
+        class="css-33l6in-tableStyle-Table"
       >
-        <strong
-          class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
+        <thead
+          class="css-7aq1e9-tableHeadStyle"
         >
-          start
-           (
-          <code
-            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+          <tr
+            class="css-1ne1f2k-tableRowStyle-Row"
           >
-            <a
-              class="css-12zqqiz-STYLES_EXTERNAL_LINK"
-              href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date"
-              rel="noopener noreferrer"
+            <th
+              class="css-qgy7w-tableHeadersCellStyle-HeaderCell"
             >
-              Date
-            </a>
-          </code>
-          )
-        </strong>
-         - 
-        <span>
-          A date indicating the start of the range over which to measure steps.
-        </span>
-      </li>
-      <li
-        class="docs-list-item css-xdejd6-STYLES_LIST_ITEM-LI"
-      >
-        <strong
-          class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
+              Name
+            </th>
+            <th
+              class="css-qgy7w-tableHeadersCellStyle-HeaderCell"
+            >
+              Type
+            </th>
+            <th
+              class="css-qgy7w-tableHeadersCellStyle-HeaderCell"
+            >
+              Description
+            </th>
+          </tr>
+        </thead>
+        <tr
+          class="css-1ne1f2k-tableRowStyle-Row"
         >
-          end
-           (
-          <code
-            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+          <td
+            class="css-yr5jng-tableCellStyle-Cell"
           >
-            <a
-              class="css-12zqqiz-STYLES_EXTERNAL_LINK"
-              href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date"
-              rel="noopener noreferrer"
+            <strong
+              class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
             >
-              Date
-            </a>
-          </code>
-          )
-        </strong>
-         - 
-        <span>
-          A date indicating the end of the range over which to measure steps.
-        </span>
-      </li>
-    </ul>
+              start
+            </strong>
+          </td>
+          <td
+            class="css-yr5jng-tableCellStyle-Cell"
+          >
+            <code
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+            >
+              <a
+                class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+                href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date"
+                rel="noopener noreferrer"
+              >
+                Date
+              </a>
+            </code>
+          </td>
+          <td
+            class="css-yr5jng-tableCellStyle-Cell"
+          >
+            <span>
+              A date indicating the start of the range over which to measure steps.
+            </span>
+          </td>
+        </tr>
+        <tr
+          class="css-1ne1f2k-tableRowStyle-Row"
+        >
+          <td
+            class="css-yr5jng-tableCellStyle-Cell"
+          >
+            <strong
+              class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
+            >
+              end
+            </strong>
+          </td>
+          <td
+            class="css-yr5jng-tableCellStyle-Cell"
+          >
+            <code
+              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+            >
+              <a
+                class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+                href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date"
+                rel="noopener noreferrer"
+              >
+                Date
+              </a>
+            </code>
+          </td>
+          <td
+            class="css-yr5jng-tableCellStyle-Cell"
+          >
+            <span>
+              A date indicating the end of the range over which to measure steps.
+            </span>
+          </td>
+        </tr>
+      </table>
+    </div>
     <p
       class="css-101h856-paragraph-STYLES_PARAGRAPH"
       data-text="true"
@@ -9791,10 +9642,9 @@ a start date that is more than seven days in the past returns only the available
 
       </div>
     </blockquote>
+    <hr />
   </div>
-  <div
-    class="css-ox6i8w-STYLES_APIBOX-renderMethod"
-  >
+  <div>
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
@@ -9814,7 +9664,7 @@ a start date that is more than seven days in the past returns only the available
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+              class="inline css-ni28os-STYLES_INLINE_CODE-STYLES_NOT_EXPOSED_HEADER-InlineCode"
             >
               isAvailableAsync()
             </code>
@@ -9946,10 +9796,9 @@ a start date that is more than seven days in the past returns only the available
       , indicating whether the pedometer is
 available on this device.
     </p>
+    <hr />
   </div>
-  <div
-    class="css-ox6i8w-STYLES_APIBOX-renderMethod"
-  >
+  <div>
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
@@ -9969,7 +9818,7 @@ available on this device.
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+              class="inline css-ni28os-STYLES_INLINE_CODE-STYLES_NOT_EXPOSED_HEADER-InlineCode"
             >
               requestPermissionsAsync()
             </code>
@@ -10087,10 +9936,9 @@ available on this device.
         </code>
       </li>
     </ul>
+    <hr />
   </div>
-  <div
-    class="css-ox6i8w-STYLES_APIBOX-renderMethod"
-  >
+  <div>
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
@@ -10110,7 +9958,7 @@ available on this device.
             class="css-1icvi79-STYLED_PERMALINK_CONTENT"
           >
             <code
-              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+              class="inline css-ni28os-STYLES_INLINE_CODE-STYLES_NOT_EXPOSED_HEADER-InlineCode"
             >
               watchStepCount(callback)
             </code>
@@ -10147,99 +9995,88 @@ available on this device.
       </div>
     </h3>
     <h4
-      class="  css-838f5l-h4-h4-STYLES_H4"
-      data-components-heading="true"
+      class="css-838f5l-h4-h4-STYLES_H4"
       data-heading="true"
     >
-      <div
-        class="css-1rh3o5q-STYLES_PERMALINK"
-      >
-        <span
-          class="css-zonpcr-STYLES_PERMALINK_TARGET"
-          id="arguments-1"
-        />
-        <a
-          class="css-15lh5hg-STYLES_PERMALINK_LINK"
-          href="#arguments-1"
-        >
-          <span
-            class="css-1icvi79-STYLED_PERMALINK_CONTENT"
-          >
-            Arguments
-          </span>
-          <span
-            class="css-10vdcw8-STYLES_PERMALINK_ICON"
-          >
-            <svg
-              aria-label="permalink"
-              class="anchor-icon"
-              fill="none"
-              height="24"
-              viewBox="0 0 24 24"
-              width="24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                stroke="#9B9B9B"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-              />
-              <path
-                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                stroke="#9B9B9B"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-              />
-            </svg>
-          </span>
-        </a>
-      </div>
+      Arguments
     </h4>
-    <ul
-      class="css-1qha16q-paragraph-STYLES_UNORDERED_LIST-UL"
-      data-text="true"
+    <div
+      class="css-zdmbpy-tableWrapperStyle"
     >
-      <li
-        class="docs-list-item css-xdejd6-STYLES_LIST_ITEM-LI"
+      <table
+        class="css-33l6in-tableStyle-Table"
       >
-        <strong
-          class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
+        <thead
+          class="css-7aq1e9-tableHeadStyle"
         >
-          callback
-           (
-          <code
-            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+          <tr
+            class="css-1ne1f2k-tableRowStyle-Row"
           >
-            <a
-              class="css-12zqqiz-STYLES_EXTERNAL_LINK"
-              href="/#pedometerupdatecallback"
+            <th
+              class="css-qgy7w-tableHeadersCellStyle-HeaderCell"
             >
-              PedometerUpdateCallback
-            </a>
-          </code>
-          )
-        </strong>
-         - 
-        <span>
-          A callback that is invoked when new step count data is available. The callback is
-provided with a single argument that is 
-          <a
-            class="css-12zqqiz-STYLES_EXTERNAL_LINK"
-            href="/#pedometerresult"
+              Name
+            </th>
+            <th
+              class="css-qgy7w-tableHeadersCellStyle-HeaderCell"
+            >
+              Type
+            </th>
+            <th
+              class="css-qgy7w-tableHeadersCellStyle-HeaderCell"
+            >
+              Description
+            </th>
+          </tr>
+        </thead>
+        <tr
+          class="css-1ne1f2k-tableRowStyle-Row"
+        >
+          <td
+            class="css-yr5jng-tableCellStyle-Cell"
+          >
+            <strong
+              class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
+            >
+              callback
+            </strong>
+          </td>
+          <td
+            class="css-yr5jng-tableCellStyle-Cell"
           >
             <code
               class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
             >
-              PedometerResult
+              <a
+                class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+                href="/#pedometerupdatecallback"
+              >
+                PedometerUpdateCallback
+              </a>
             </code>
-          </a>
-          .
-        </span>
-      </li>
-    </ul>
+          </td>
+          <td
+            class="css-yr5jng-tableCellStyle-Cell"
+          >
+            <span>
+              A callback that is invoked when new step count data is available. The callback is
+provided with a single argument that is 
+              <a
+                class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+                href="/#pedometerresult"
+              >
+                <code
+                  class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+                >
+                  PedometerResult
+                </code>
+              </a>
+              .
+            </span>
+          </td>
+        </tr>
+      </table>
+    </div>
     <p
       class="css-101h856-paragraph-STYLES_PARAGRAPH"
       data-text="true"
@@ -10393,9 +10230,7 @@ provided with a single argument that is
       </a>
     </div>
   </h2>
-  <div
-    class="css-f1d2vl-STYLES_APIBOX"
-  >
+  <div>
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
@@ -10515,9 +10350,7 @@ provided with a single argument that is
       </table>
     </div>
   </div>
-  <div
-    class="css-f1d2vl-STYLES_APIBOX"
-  >
+  <div>
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
@@ -10576,88 +10409,77 @@ provided with a single argument that is
     </h3>
     <div>
       <h4
-        class="  css-838f5l-h4-h4-STYLES_H4"
-        data-components-heading="true"
+        class="css-838f5l-h4-h4-STYLES_H4"
         data-heading="true"
       >
-        <div
-          class="css-1rh3o5q-STYLES_PERMALINK"
-        >
-          <span
-            class="css-zonpcr-STYLES_PERMALINK_TARGET"
-            id="arguments-2"
-          />
-          <a
-            class="css-15lh5hg-STYLES_PERMALINK_LINK"
-            href="#arguments-2"
-          >
-            <span
-              class="css-1icvi79-STYLED_PERMALINK_CONTENT"
-            >
-              Arguments
-            </span>
-            <span
-              class="css-10vdcw8-STYLES_PERMALINK_ICON"
-            >
-              <svg
-                aria-label="permalink"
-                class="anchor-icon"
-                fill="none"
-                height="24"
-                viewBox="0 0 24 24"
-                width="24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-                <path
-                  d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-              </svg>
-            </span>
-          </a>
-        </div>
+        Arguments
       </h4>
-      <ul
-        class="css-1qha16q-paragraph-STYLES_UNORDERED_LIST-UL"
-        data-text="true"
+      <div
+        class="css-zdmbpy-tableWrapperStyle"
       >
-        <li
-          class="docs-list-item css-xdejd6-STYLES_LIST_ITEM-LI"
+        <table
+          class="css-33l6in-tableStyle-Table"
         >
-          <strong
-            class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
+          <thead
+            class="css-7aq1e9-tableHeadStyle"
           >
-            result
-             (
-            <code
-              class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+            <tr
+              class="css-1ne1f2k-tableRowStyle-Row"
             >
-              <a
-                class="css-12zqqiz-STYLES_EXTERNAL_LINK"
-                href="/#pedometerresult"
+              <th
+                class="css-qgy7w-tableHeadersCellStyle-HeaderCell"
               >
-                PedometerResult
-              </a>
-            </code>
-            )
-          </strong>
-        </li>
-      </ul>
+                Name
+              </th>
+              <th
+                class="css-qgy7w-tableHeadersCellStyle-HeaderCell"
+              >
+                Type
+              </th>
+              <th
+                class="css-qgy7w-tableHeadersCellStyle-HeaderCell"
+              >
+                Description
+              </th>
+            </tr>
+          </thead>
+          <tr
+            class="css-1ne1f2k-tableRowStyle-Row"
+          >
+            <td
+              class="css-yr5jng-tableCellStyle-Cell"
+            >
+              <strong
+                class="css-m2r9l3-paragraph-STYLES_BOLD_PARAGRAPH"
+              >
+                result
+              </strong>
+            </td>
+            <td
+              class="css-yr5jng-tableCellStyle-Cell"
+            >
+              <code
+                class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+              >
+                <a
+                  class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+                  href="/#pedometerresult"
+                >
+                  PedometerResult
+                </a>
+              </code>
+            </td>
+            <td
+              class="css-yr5jng-tableCellStyle-Cell"
+            >
+              -
+            </td>
+          </tr>
+        </table>
+      </div>
     </div>
   </div>
-  <div
-    class="css-f1d2vl-STYLES_APIBOX"
-  >
+  <div>
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
@@ -10737,9 +10559,7 @@ provided with a single argument that is
       </span>
     </p>
   </div>
-  <div
-    class="css-f1d2vl-STYLES_APIBOX"
-  >
+  <div>
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
@@ -10912,9 +10732,7 @@ provided with a single argument that is
       </a>
     </div>
   </h2>
-  <div
-    class="css-f1d2vl-STYLES_APIBOX"
-  >
+  <div>
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"
@@ -11177,9 +10995,7 @@ provided with a single argument that is
       </a>
     </div>
   </h2>
-  <div
-    class="css-16aeu59-STYLES_APIBOX-STYLES_ELEMENTS-renderEnum"
-  >
+  <div>
     <h3
       class="css-1fe5f89-h3-h3-STYLES_H3"
       data-heading="true"

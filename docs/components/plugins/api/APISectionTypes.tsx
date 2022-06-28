@@ -3,7 +3,7 @@ import React from 'react';
 import { InlineCode } from '~/components/base/code';
 import { UL, LI } from '~/components/base/list';
 import { B, P } from '~/components/base/paragraph';
-import { H2, H3Code, H4 } from '~/components/plugins/Headings';
+import { H2, H3Code } from '~/components/plugins/Headings';
 import {
   PropData,
   TypeDeclarationContentData,
@@ -15,15 +15,17 @@ import {
   mdInlineComponents,
   resolveTypeName,
   renderFlags,
-  renderParam,
   CommentTextBlock,
   parseCommentContent,
   renderTypeOrSignatureType,
   getCommentOrSignatureComment,
   getTagData,
+  renderParams,
+  renderTableHeadRow,
+  renderDefaultValue,
   STYLES_APIBOX,
 } from '~/components/plugins/api/APISectionUtils';
-import { Cell, HeaderCell, Row, Table, TableHead } from '~/ui/components/Table';
+import { Cell, Row, Table } from '~/ui/components/Table';
 
 export type APISectionTypesProps = {
   data: TypeGeneralData[];
@@ -46,26 +48,10 @@ const defineLiteralType = (types: TypeDefinitionData[]): JSX.Element | null => {
 
 const renderTypeDeclarationTable = ({ children }: TypeDeclarationContentData): JSX.Element => (
   <Table key={`type-declaration-table-${children?.map(child => child.name).join('-')}`}>
-    <TableHead>
-      <Row>
-        <HeaderCell>Name</HeaderCell>
-        <HeaderCell>Type</HeaderCell>
-        <HeaderCell>Description</HeaderCell>
-      </Row>
-    </TableHead>
+    {renderTableHeadRow()}
     <tbody>{children?.map(renderTypePropertyRow)}</tbody>
   </Table>
 );
-
-const renderDefaultValue = (initValue?: string) =>
-  initValue ? (
-    <>
-      <br />
-      <br />
-      <B>Default: </B>
-      <InlineCode>{initValue}</InlineCode>
-    </>
-  ) : null;
 
 const renderTypePropertyRow = ({
   name,
@@ -85,15 +71,12 @@ const renderTypePropertyRow = ({
       </Cell>
       <Cell fitContent>{renderTypeOrSignatureType(type, signatures)}</Cell>
       <Cell fitContent>
-        {commentData ? (
-          <CommentTextBlock
-            comment={commentData}
-            components={mdInlineComponents}
-            afterContent={renderDefaultValue(initValue)}
-          />
-        ) : (
-          '-'
-        )}
+        <CommentTextBlock
+          comment={commentData}
+          components={mdInlineComponents}
+          afterContent={renderDefaultValue(initValue)}
+          emptyCommentFallback="-"
+        />
       </Cell>
     </Row>
   );
@@ -121,8 +104,7 @@ const renderType = ({
           ? type.declaration.signatures.map(({ parameters, comment }: TypeSignaturesData) => (
               <div key={`type-definition-signature-${name}`}>
                 <CommentTextBlock comment={comment} />
-                {parameters ? <H4>Arguments</H4> : null}
-                {parameters ? <UL>{parameters?.map(renderParam)}</UL> : null}
+                {parameters && renderParams(parameters)}
               </div>
             ))
           : null}

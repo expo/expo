@@ -6,6 +6,8 @@ import com.facebook.react.bridge.Dynamic
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
 import expo.modules.kotlin.exception.MissingTypeConverter
+import expo.modules.kotlin.jni.JavaScriptObject
+import expo.modules.kotlin.jni.JavaScriptValue
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.records.RecordTypeConverter
 import kotlin.reflect.KClass
@@ -24,6 +26,11 @@ inline fun <reified T : Any> obtainTypeConverter(): TypeConverter<T> {
 }
 
 inline fun <reified T> convert(value: Dynamic): T {
+  val converter = TypeConverterProviderImpl.obtainTypeConverter(typeOf<T>())
+  return converter.convert(value) as T
+}
+
+inline fun <reified T> convert(value: Any?): T {
   val converter = TypeConverterProviderImpl.obtainTypeConverter(typeOf<T>())
   return converter.convert(value) as T
 }
@@ -110,6 +117,11 @@ object TypeConverterProviderImpl : TypeConverterProvider {
       IntArray::class.createType(nullable = isOptional) to PrimitiveIntArrayTypeConverter(isOptional),
       DoubleArray::class.createType(nullable = isOptional) to PrimitiveDoubleArrayTypeConverter(isOptional),
       FloatArray::class.createType(nullable = isOptional) to PrimitiveFloatArrayTypeConverter(isOptional),
+
+      JavaScriptValue::class.createType(nullable = isOptional) to JavaScriptValueTypeConvert(isOptional),
+      JavaScriptObject::class.createType(nullable = isOptional) to JavaScriptObjectTypeConverter(isOptional),
+
+      Any::class.createType(nullable = isOptional) to AnyTypeConverter(isOptional),
     )
   }
 }

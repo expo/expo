@@ -5,9 +5,13 @@ import downloadTarball from 'download-tarball';
 import ejs from 'ejs';
 import fs from 'fs-extra';
 import path from 'path';
-import prompts, { PromptObject } from 'prompts';
+import prompts from 'prompts';
+import validateNpmPackage from 'validate-npm-package-name';
 
+import { createExampleApp } from './createExampleApp';
+import { installDependencies } from './packageManager';
 import { PackageManagerName, resolvePackageManager } from './resolvePackageManager';
+import { CommandOptions, CustomPromptObject, SubstitutionData } from './types';
 
 const packageJson = require('../package.json');
 
@@ -17,43 +21,6 @@ const CWD = process.env.INIT_CWD || process.cwd();
 // Ignore some paths. Especially `package.json` as it is rendered
 // from `$package.json` file instead of the original one.
 const IGNORES_PATHS = ['.DS_Store', 'build', 'node_modules', 'package.json'];
-
-/**
- * Possible command options.
- */
-type CommandOptions = {
-  target: string;
-  source?: string;
-  name?: string;
-  description?: string;
-  package?: string;
-  author?: string;
-  license?: string;
-  repo?: string;
-  withReadme: boolean;
-  withChangelog: boolean;
-};
-
-/**
- * Represents an object that is passed to `ejs` when rendering the template.
- */
-type SubstitutionData = {
-  project: {
-    slug: string;
-    name: string;
-    version: string;
-    description: string;
-    package: string;
-  };
-  author: string;
-  license: string;
-  repo: string;
-};
-
-type CustomPromptObject = PromptObject & {
-  name: string;
-  resolvedValue?: string | null;
-};
 
 /**
  * The main function of the command.
@@ -93,6 +60,9 @@ async function main(target: string | undefined, options: CommandOptions) {
     await fs.outputFile(toPath, renderedContent, { encoding: 'utf8' });
   }
 
+  // Install dependencies and build
+  await postActionsAsync(packageManager, targetDir);
+
   if (!options.source) {
     // Files in the downloaded tarball are wrapped in `package` dir.
     // We should remove it after all.
@@ -104,9 +74,10 @@ async function main(target: string | undefined, options: CommandOptions) {
   if (!options.withChangelog) {
     await fs.remove(path.join(targetDir, 'CHANGELOG.md'));
   }
-
-  // Install dependencies and build
-  await postActionsAsync(packageManager, targetDir);
+  if (options.example) {
+    // Create "example" folder
+    await createExampleApp(data, targetDir, packageManager);
+  }
 
   console.log('✅ Successfully created Expo module');
 }
@@ -176,18 +147,14 @@ async function downloadPackageAsync(targetDir: string): Promise<string> {
  * Installs dependencies and builds TypeScript files.
  */
 async function postActionsAsync(packageManager: PackageManagerName, targetDir: string) {
-  async function run(...args: string[]) {
-    await spawnAsync(packageManager, args, {
-      cwd: targetDir,
-      stdio: 'ignore',
-    });
-  }
-
-  console.log('📦 Installing dependencies...');
-  await run('install');
+  console.log('📦 Installing module dependencies...');
+  await installDependencies(packageManager, targetDir);
 
   console.log('🛠  Compiling TypeScript files...');
-  await run('run', 'build');
+  await spawnAsync(packageManager, ['run', 'build'], {
+    cwd: targetDir,
+    stdio: 'ignore',
+  });
 }
 
 /**
@@ -199,6 +166,7 @@ async function askForSubstitutionDataAsync(
   options: CommandOptions
 ): Promise<SubstitutionData> {
   const defaultPackageSlug = path.basename(targetDir);
+  const useDefaultSlug = options.target && validateNpmPackage(defaultPackageSlug);
   const defaultProjectName = defaultPackageSlug
     .replace(/^./, (match) => match.toUpperCase())
     .replace(/\W+(\w)/g, (_, p1) => p1.toUpperCase());
@@ -209,7 +177,9 @@ async function askForSubstitutionDataAsync(
       name: 'slug',
       message: 'What is the package slug?',
       initial: defaultPackageSlug,
-      resolvedValue: options.target ? defaultPackageSlug : null,
+      resolvedValue: useDefaultSlug ? defaultPackageSlug : null,
+      validate: (input) =>
+        validateNpmPackage(input).validForNewPackages || 'Must be a valid npm package name',
     },
     {
       type: 'text',
@@ -221,6 +191,7 @@ async function askForSubstitutionDataAsync(
       type: 'text',
       name: 'description',
       message: 'How would you describe the module?',
+      validate: (input) => !!input || 'Cannot be empty',
     },
     {
       type: 'text',
@@ -244,6 +215,7 @@ async function askForSubstitutionDataAsync(
       type: 'text',
       name: 'repo',
       message: 'What is the repository URL?',
+      validate: (input) => /^https?:\/\//.test(input) || 'Must be a valid URL',
     },
   ];
 
@@ -320,6 +292,7 @@ program
   .option('-r, --repo <repo_url>', 'The URL to the repository.')
   .option('--with-readme', 'Whether to include README.md file.', false)
   .option('--with-changelog', 'Whether to include CHANGELOG.md file.', false)
+  .option('--no-example', 'Whether to skip creating the example app.', false)
   .action(main);
 
 program.parse(process.argv);

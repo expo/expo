@@ -74,6 +74,11 @@ public:
    */
   jni::local_ref<JavaScriptObject::javaobject> createObject();
 
+  /**
+   * Exposes a `JavaScriptRuntime::drainJSEventLoop` function to Kotlin
+   */
+  void drainJSEventLoop();
+
   std::shared_ptr<react::CallInvoker> jsInvoker;
   std::shared_ptr<react::CallInvoker> nativeInvoker;
   std::shared_ptr<JavaScriptRuntime> runtimeHolder;

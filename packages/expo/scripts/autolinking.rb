@@ -16,6 +16,10 @@ def use_expo_modules!(options = {})
   @current_target_definition.autolinking_manager = Expo::AutolinkingManager.new(self, @current_target_definition, options).use_expo_modules!
 end
 
+def use_expo_modules_tests!(options = {})
+  use_expo_modules!({ testsOnly: true }.merge(options))
+end
+
 def expo_patch_react_imports!(installer, options = {})
   unless installer.is_a?(Pod::Installer)
     Pod::UI.warn 'expo_patch_react_imports!() - Invalid `installer` parameter'.red

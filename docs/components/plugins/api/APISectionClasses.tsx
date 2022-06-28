@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactMarkdown from 'react-markdown';
 
 import { InlineCode } from '~/components/base/code';
 import { B, P } from '~/components/base/paragraph';
@@ -12,6 +13,8 @@ import { renderMethod } from '~/components/plugins/api/APISectionMethods';
 import { renderProp } from '~/components/plugins/api/APISectionProps';
 import {
   CommentTextBlock,
+  getTagData,
+  mdComponents,
   resolveTypeName,
   STYLES_APIBOX,
   STYLES_NESTED_SECTION_HEADER,
@@ -28,12 +31,19 @@ const isProp = (child: PropData) =>
   !child.name.startsWith('_') &&
   !child.implementationOf;
 
-const isMethod = (child: PropData) => child.kind === TypeDocKind.Method && !child.overwrites;
+const isMethod = (child: PropData) =>
+  child.kind === TypeDocKind.Method &&
+  !child.overwrites &&
+  !child.name.startsWith('_') &&
+  !child?.implementationOf;
 
 const renderClass = (clx: ClassDefinitionData, hasMultipleClasses: boolean): JSX.Element => {
   const { name, comment, type, extendedTypes, children, implementedTypes } = clx;
   const properties = children?.filter(isProp);
-  const methods = children?.filter(isMethod);
+  const methods = children
+    ?.filter(isMethod)
+    .sort((a: PropData, b: PropData) => a.name.localeCompare(b.name));
+  const returnComment = getTagData('returns', comment);
 
   return (
     <div key={`class-definition-${name}`} css={STYLES_APIBOX}>
@@ -71,6 +81,12 @@ const renderClass = (clx: ClassDefinitionData, hasMultipleClasses: boolean): JSX
         </P>
       )}
       <CommentTextBlock comment={comment} />
+      {returnComment && (
+        <>
+          <H4>Returns</H4>
+          <ReactMarkdown components={mdComponents}>{returnComment.text}</ReactMarkdown>
+        </>
+      )}
       {properties?.length ? (
         <>
           {hasMultipleClasses ? (

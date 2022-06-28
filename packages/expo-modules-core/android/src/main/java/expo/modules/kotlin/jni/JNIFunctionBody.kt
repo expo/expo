@@ -18,7 +18,7 @@ fun interface JNIFunctionBody {
    * In the future, we may want to swap it for something else.
    */
   @DoNotStrip
-  fun invoke(args: ReadableNativeArray): ReadableNativeArray?
+  fun invoke(args: Array<Any?>): ReadableNativeArray?
 }
 
 /**
@@ -35,5 +35,5 @@ fun interface JNIAsyncFunctionBody {
    * This is dictated by the fact that [com.facebook.react.bridge.Promise] isn't a hybrid object of jni::HybridClass.
    */
   @DoNotStrip
-  fun invoke(args: ReadableNativeArray, bridgePromise: Any)
+  fun invoke(args: Array<Any?>, bridgePromise: Any)
 }

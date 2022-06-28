@@ -8,10 +8,11 @@ import { promisify } from 'util';
 import { createCachedFetch } from '../api/rest/client';
 import { FetchLike, ProgressCallback } from '../api/rest/client.types';
 import { wrapFetchWithProgress } from '../api/rest/wrapFetchWithProgress';
-import { Log } from '../log';
 import { ensureDirectoryAsync } from './dir';
 import { CommandError } from './errors';
 import { extractAsync } from './tar';
+
+const debug = require('debug')('expo:utils:downloadAppAsync') as typeof console.log;
 
 const TIMER_DURATION = 30000;
 
@@ -39,6 +40,7 @@ async function downloadAsync({
     });
   }
 
+  debug(`Downloading ${url} to ${outputPath}`);
   const res = await wrapFetchWithProgress(fetchInstance)(url, {
     timeout: TIMER_DURATION,
     onProgress,
@@ -72,7 +74,7 @@ export async function downloadAppAsync({
     // would corrupt the file causing tar to fail with `TAR_BAD_ARCHIVE`.
     const tmpPath = temporary.file({ name: path.basename(outputPath) });
     await downloadAsync({ url, outputPath: tmpPath, cacheDirectory, onProgress });
-    Log.debug(`Extracting ${tmpPath} to ${outputPath}`);
+    debug(`Extracting ${tmpPath} to ${outputPath}`);
     await ensureDirectoryAsync(outputPath);
     await extractAsync(tmpPath, outputPath);
   } else {

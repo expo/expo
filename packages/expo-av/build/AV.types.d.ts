@@ -19,7 +19,13 @@ export declare type AVPlaybackNativeSource = {
         [fieldName: string]: string;
     };
 };
+/**
+ * Object passed to the `onMetadataUpdate` function.
+ */
 export declare type AVMetadata = {
+    /**
+     * A string with the title of the sound object.
+     */
     title?: string;
 };
 export declare type AVPlaybackStatus = AVPlaybackStatusError | AVPlaybackStatusSuccess;

@@ -8,9 +8,21 @@
 
 ### 🐛 Bug fixes
 
-- Fixed an infinite loop when the **package.json** is placed at the root path. ([#17440](https://github.com/expo/expo/pull/17440) by [@tsapeta](https://github.com/tsapeta))
+- Added support for React Native 0.69.x ([#17629](https://github.com/expo/expo/pull/17629) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
+
+## 0.9.0 — 2022-06-23
+
+### 🎉 New features
+
+- The `searchPaths` and `nativeModulesDir` options now support direct paths to specific module directories. ([#17922](https://github.com/expo/expo/pull/17922) by [@barthap](https://github.com/barthap))
+
+## 0.8.1 — 2022-05-12
+
+### 🐛 Bug fixes
+
+- Fixed an infinite loop when the **package.json** is placed at the root path. ([#17440](https://github.com/expo/expo/pull/17440) by [@tsapeta](https://github.com/tsapeta))
 
 ## 0.8.0 — 2022-05-06
 

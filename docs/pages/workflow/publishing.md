@@ -2,6 +2,8 @@
 title: Publishing updates
 ---
 
+import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+
 While you’re developing your project, you’re writing code on your
 computer, and when you use Expo CLI, a server and the Metro bundler run on your machine and bundle up all your source code and make
 it available from a URL. Your URL for a project you’re working on
@@ -51,7 +53,11 @@ Your users will get the most recent compatible release that was pushed to a [rel
 
 The following flowchart shows how we determine which release to return to a user:
 
-![Serving Flowchart](/static/images/release-channels-flowchart.png)
+<ImageSpotlight
+  alt="Serving Flowchart"
+  src="/static/images/release-channels-flowchart.png"
+  style={{ maxWidth: 600 }}
+/>
 
 ## Deploying to the App Store and Play Store
 

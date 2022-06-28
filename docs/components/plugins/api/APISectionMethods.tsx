@@ -13,7 +13,7 @@ import {
   CommentTextBlock,
   listParams,
   mdComponents,
-  renderParam,
+  renderParams,
   resolveTypeName,
   STYLES_APIBOX,
   STYLES_APIBOX_NESTED,
@@ -45,18 +45,10 @@ export const renderMethod = (
           {header !== 'Hooks' ? `${name}(${listParams(parameters)})` : name}
         </InlineCode>
       </HeaderComponent>
-      <CommentTextBlock
-        comment={comment}
-        beforeContent={
-          parameters && (
-            <>
-              <H4>Arguments</H4>
-              <UL>{parameters?.map(renderParam)}</UL>
-            </>
-          )
-        }
-      />
-      {resolveTypeName(type) !== 'undefined' && (
+      {getPlatformTags(comment)}
+      {parameters && renderParams(parameters)}
+      <CommentTextBlock comment={comment} includePlatforms={false} />
+      {resolveTypeName(type) !== 'undefined' ? (
         <>
           <H4>Returns</H4>
           <UL>

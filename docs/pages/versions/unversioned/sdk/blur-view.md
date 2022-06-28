@@ -11,7 +11,7 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 A React component that blurs everything underneath the view. On iOS, it renders a native blur view. On Android, it falls back to a semi-transparent view. Common usage of this is for navigation bars, tab bars, and modals.
 
-<PlatformsSection android emulator ios simulator web />
+<PlatformsSection ios simulator web />
 
 ## Installation
 

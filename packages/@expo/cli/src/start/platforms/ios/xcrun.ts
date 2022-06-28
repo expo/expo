@@ -1,11 +1,12 @@
 import spawnAsync, { SpawnOptions } from '@expo/spawn-async';
 import chalk from 'chalk';
 
-import * as Log from '../../../log';
 import { CommandError } from '../../../utils/errors';
 
+const debug = require('debug')('expo:start:platforms:ios:xcrun') as typeof console.log;
+
 export async function xcrunAsync(args: (string | undefined)[], options?: SpawnOptions) {
-  Log.debug('Running: xcrun ' + args.join(' '));
+  debug('Running: xcrun ' + args.join(' '));
   try {
     return await spawnAsync('xcrun', args.filter(Boolean) as string[], options);
   } catch (e) {

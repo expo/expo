@@ -1,5 +1,6 @@
-import * as Log from '../log';
 import { CommandError } from '../utils/errors';
+
+const debug = require('debug')('expo:utils:variadic') as typeof console.log;
 
 /** Given a list of CLI args, return a sorted set of args based on categories used in a complex command. */
 export function parseVariadicArguments(argv: string[]): {
@@ -30,10 +31,10 @@ export function parseVariadicArguments(argv: string[]): {
       throw new CommandError('BAD_ARGS', 'Unexpected multiple --');
     }
     extras.push(...extraArgs);
-    Log.debug('Extra arguments: ' + extras.join(', '));
+    debug('Extra arguments: ' + extras.join(', '));
   }
 
-  Log.debug(`Parsed arguments (variadic: %O, flags: %O, extra: %O)`, variadic, flags, extras);
+  debug(`Parsed arguments (variadic: %O, flags: %O, extra: %O)`, variadic, flags, extras);
 
   return {
     variadic,

@@ -3,6 +3,7 @@ title: Hosting Updates on Your Servers
 ---
 
 import { ConfigClassic } from '~/components/plugins/ConfigSection';
+import { Terminal } from '~/ui/components/Snippet';
 
 Normally, when updates are enabled, your app will fetch updates comprising JavaScript bundles and assets from Expo’s CDN. However, there will be situations when you will want to host your JS bundles and assets on your own servers. For example, updates are slow or unusable in countries that have blocked Expo’s CDN providers on AWS and Google Cloud. In these cases, you can host your updates on your own servers to better suit your use cases.
 
@@ -27,16 +28,16 @@ First, you’ll need to export all the static files of your update so they can b
 
 Once you've exported your update's static files, you can host the contents on your own server. For example, in your `dist` output directory, an easy way to host your own files is to push the contents to GitHub. You can enable [GitHub Pages](https://pages.github.com/) to make your app available at a base URL like https://username.github.io/project-name. To host your files on GitHub, you'd do something like this:
 
-```
-# run this from your project directory
-expo export --public-url https://expo.github.io/self-hosting-example
-
-# commit output directory contents to your repo
-cd dist
-git init && git remote add origin git@github.com:expo/self-hosting-example.git
-git add * && git commit -m "Update my app with this JS bundle"
-git push origin master
-```
+<Terminal cmd={[
+'# run this from your project directory',
+'$ expo export --public-url https://expo.github.io/self-hosting-example',
+'',
+'# commit output directory contents to your repo',
+'$ cd dist',
+'$ git init && git remote add origin git@github.com:expo/self-hosting-example.git',
+'$ git add * && git commit -m "Update my app with this JS bundle"',
+'$ git push origin master',
+]} />
 
 To setup a QR code to view your hosted update, or if you want to host your files locally, follow the instructions below in the 'Loading QR Code/URL in Development' section.
 
@@ -68,13 +69,13 @@ Here's an example of **firebase.json** configuration, with a [deploy target](htt
 }
 ```
 
-```
-# export your app locally
-expo export --public-url https://my-app-native.firebaseapp.com/
-
-# deploy the app to firebase
-firebase deploy --only hosting:native -m "Deploy my app"`
-```
+<Terminal cmd={[
+'# export your app locally',
+'$ expo export --public-url https://my-app-native.firebaseapp.com/',
+'',
+'# deploy the app to firebase',
+'$ firebase deploy --only hosting:native -m "Deploy my app"',
+]} />
 
 ## Building the standalone app
 
@@ -110,17 +111,17 @@ QR code: Generate the URI from a website like https://www.qr-code-generator.com/
 
 Run `expo export` in dev mode and then start a simple HTTP server in your output directory:
 
-```
-# Find your local IP address with `ipconfig getifaddr en0`
-# export static app files
-expo export --public-url http://`ipconfig getifaddr en0`:8000 --dev
-
-# cd into your output directory
-cd dist
-
-# run a simple http server from output directory
-python -m SimpleHTTPServer 8000
-```
+<Terminal cmd={[
+'# Find your local IP address with `ipconfig getifaddr en0`',
+'# export static app files',
+'$ expo export --public-url http://`ipconfig getifaddr en0`:8000 --dev',
+'',
+'# cd into your output directory',
+'$ cd dist',
+'',
+'# run a simple http server from output directory',
+'$ python -m SimpleHTTPServer 8000',
+]} />
 
 URI: `exp://192.xxx.xxx.xxx:8000/android-index.json` (find your local IP with a command like `ipconfig getifaddr en0`)
 

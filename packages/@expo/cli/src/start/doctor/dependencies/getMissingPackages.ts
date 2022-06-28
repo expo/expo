@@ -2,8 +2,9 @@ import JsonFile from '@expo/json-file';
 import resolveFrom from 'resolve-from';
 import semver from 'semver';
 
-import * as Log from '../../../log';
 import { getCombinedKnownVersionsAsync } from './getVersionedPackages';
+
+const debug = require('debug')('expo:doctor:dependencies:getMissingPackages') as typeof console.log;
 
 export type ResolvedPackage = {
   /** Module ID pointing to the library `package.json`. */
@@ -44,7 +45,7 @@ export function versionSatisfiesRequiredPackage(
 ): boolean {
   // If the version is specified, check that it satisfies the installed version.
   if (!resolvedPackage.version) {
-    Log.debug(`Required package "${resolvedPackage.pkg}" found (no version constraint specified).`);
+    debug(`Required package "${resolvedPackage.pkg}" found (no version constraint specified).`);
     return true;
   }
 
@@ -57,7 +58,7 @@ export function versionSatisfiesRequiredPackage(
   ) {
     return true;
   }
-  Log.debug(
+  debug(
     `Installed package "${resolvedPackage.pkg}" does not satisfy version constraint "${resolvedPackage.version}" (version: "${pkgJson.version}")`
   );
   return false;

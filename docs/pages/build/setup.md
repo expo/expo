@@ -20,10 +20,8 @@ EAS Build is a new and rapidly evolving service; before you set out to create a 
 Don't have a project yet? No problem: it's quick and easy to create a "Hello world" app that you can use with this guide.
 
 - Install Expo CLI by running `npm install -g expo-cli`.
-- Run `expo init PROJECT_NAME`. Choose the project template that best suits you.
+- Run `npx create-expo-app PROJECT_NAME`. Choose the project template that best suits you.
 - EAS Build also works well with projects created by `npx create-react-native-app`, `npx react-native`, `ignite-cli`, and other project bootstrapping tools.
-
-<ImageSpotlight alt="Terminal running expo init, with minimal (TypeScript) selected" src="/static/images/eas-build/expo-init.png" />
 
 </Collapsible>
 
