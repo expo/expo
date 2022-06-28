@@ -56,6 +56,9 @@ abstract class UpdateDao {
   @Query("SELECT * FROM updates WHERE status = :status;")
   abstract fun loadAllUpdatesWithStatus(status: UpdateStatus): List<UpdateEntity>
 
+  @Query("SELECT id FROM updates WHERE status = :status;")
+  abstract fun loadAllUpdateIdsWithStatus(status: UpdateStatus): List<UUID>
+
   fun loadUpdateWithId(id: UUID): UpdateEntity? {
     val updateEntities = _loadUpdatesWithId(id)
     return if (updateEntities.isNotEmpty()) updateEntities[0] else null

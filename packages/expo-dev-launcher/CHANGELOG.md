@@ -17,6 +17,8 @@
 
 ### 💡 Others
 
+- [Android] Get downloaded update IDs. ([#17933](https://github.com/expo/expo/pull/17933) by [@douglowder](https://github.com/douglowder))
+
 ## 1.0.0 — 2022-06-09
 
 ### 🐛 Bug fixes
