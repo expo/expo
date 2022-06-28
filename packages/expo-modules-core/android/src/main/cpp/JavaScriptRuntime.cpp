@@ -37,13 +37,6 @@ JavaScriptRuntime::JavaScriptRuntime()
     .withEnableSampleProfiling(false);
   runtime = facebook::hermes::makeHermesRuntime(config.build());
 
-  // By default "global" property isn't set in the Hermes.
-  runtime->global().setProperty(
-    *runtime,
-    jsi::PropNameID::forUtf8(*runtime, "global"),
-    runtime->global()
-  );
-
   // This version of the Hermes uses a Promise implementation that is provided by the RN.
   // The `setImmediate` function isn't defined, but is required by the Promise implementation.
   // That's why we inject it here.
@@ -67,6 +60,13 @@ JavaScriptRuntime::JavaScriptRuntime()
 #else
   runtime = facebook::jsc::makeJSCRuntime();
 #endif
+
+  // By default "global" property isn't set.
+  runtime->global().setProperty(
+    *runtime,
+    jsi::PropNameID::forUtf8(*runtime, "global"),
+    runtime->global()
+  );
 }
 
 JavaScriptRuntime::JavaScriptRuntime(
