@@ -45,7 +45,7 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
   RCTAppSetupPrepareApp(application);
 
 #if DEBUG
-  BOOL useDevClient = YES;
+  BOOL useDevClient = NO;
 
   if (!useDevClient) {
     ExpoDevLauncherReactDelegateHandler.enableAutoSetup = NO;
