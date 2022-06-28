@@ -36,7 +36,7 @@
     "preset": "expo-module-scripts"
   },
   "dependencies": {
-    "@expo/config-plugins": "^4.0.14",
+    "@expo/config-plugins": "~4.1.5",
     "expo-image-loader": "~3.2.0",
     "uuid": "7.0.2"
   },

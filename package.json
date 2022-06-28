@@ -25,7 +25,6 @@
     "**/util": "~0.12.4"
   },
   "dependencies": {
-    "@expo/config-types": "^43.0.1",
     "eslint": "^8.6.0",
     "expo-yarn-workspaces": "*",
     "jsc-android": "^245459.0.0",

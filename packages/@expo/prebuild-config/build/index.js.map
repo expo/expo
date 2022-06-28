@@ -1,0 +1,1 @@
+{"version":3,"file":"index.js","names":[],"sources":["../src/index.ts"],"sourcesContent":["/* eslint-disable import/export */\n\nexport { getPrebuildConfigAsync } from './getPrebuildConfig';\nexport * from './plugins/withDefaultPlugins';\n"],"mappings":";;;;;;;;;;;;;;;AAEA;EAAA;;EAAA;IAAA;EAAA;;EAAA;AAAA;;AACA;;AAAA;EAAA;EAAA;EAAA;EAAA;IAAA;IAAA;MAAA;IAAA;EAAA;AAAA"}
