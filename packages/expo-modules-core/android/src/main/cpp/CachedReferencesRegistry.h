@@ -4,14 +4,21 @@
 
 #include <jsi/jsi.h>
 #include <fbjni/fbjni.h>
+#include "boost/functional/hash.hpp"
 
 #include <memory>
-#include <map>
+#include <unordered_map>
 
 namespace jni = facebook::jni;
 namespace jsi = facebook::jsi;
 
 namespace expo {
+using MethodHashMap = std::unordered_map<
+  std::pair<std::string, std::string>,
+  jmethodID,
+  boost::hash<std::pair<std::string, std::string>>
+>;
+
 /**
  * Singleton registry used to store references to often used Java classes.
  *
@@ -24,7 +31,7 @@ public:
    */
   class CachedJClass {
   public:
-    CachedJClass(jclass clazz, std::map<std::pair<std::string, std::string>, jmethodID> methods);
+    CachedJClass(jclass clazz, MethodHashMap methods);
 
     /**
      * A bare reference to the class object.
@@ -37,7 +44,7 @@ public:
     jmethodID getMethod(const std::string &name, const std::string &signature);
 
   private:
-    std::map<std::pair<std::string, std::string>, jmethodID> methods;
+    MethodHashMap methods;
   };
 
   CachedReferencesRegistry(CachedReferencesRegistry const &) = delete;
@@ -62,7 +69,7 @@ public:
 private:
   CachedReferencesRegistry() = default;
 
-  std::map<std::string, CachedJClass> jClassRegistry;
+  std::unordered_map<std::string, CachedJClass> jClassRegistry;
 
   void loadJClass(
     JNIEnv *env,
