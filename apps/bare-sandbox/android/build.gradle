@@ -5,7 +5,7 @@ import org.apache.tools.ant.taskdefs.condition.Os
 buildscript {
     ext {
         buildToolsVersion = "31.0.0"
-        gradlePluginVersion = '7.0.4'
+        gradlePluginVersion = '7.1.1'
         minSdkVersion = 21
         compileSdkVersion = 31
         targetSdkVersion = 31
@@ -31,7 +31,7 @@ buildscript {
     dependencies {
         classpath("com.android.tools.build:gradle:$gradlePluginVersion")
         classpath("com.facebook.react:react-native-gradle-plugin")
-        classpath("de.undercouch:gradle-download-task:4.1.2")
+        classpath("de.undercouch:gradle-download-task:5.0.1")
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
