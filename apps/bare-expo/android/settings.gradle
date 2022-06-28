@@ -4,9 +4,6 @@ applyNativeModulesSettingsGradle(settings)
 include(":expo-modules-test-core")
 project(":expo-modules-test-core").projectDir = new File("../../../packages/expo-modules-test-core/android")
 
-include(":expo-dev-client")
-project(":expo-dev-client").projectDir = new File("../../../packages/expo-dev-client/android")
-
 // Include Expo modules
 apply from: new File(["node", "--print", "require.resolve('expo/package.json')"].execute(null, rootDir).text.trim(), "../scripts/autolinking.gradle");
 useExpoModules()

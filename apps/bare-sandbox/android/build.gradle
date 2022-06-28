@@ -12,8 +12,6 @@ buildscript {
 
         kotlinVersion = '1.6.10'
         // for expo-dev-client
-        // TODO: remove once bare-expo has been upgraded to SDK 45 on main
-        expoPackageVersion = "45.0.0"
         expoUpdatesVersion = null
 
         if (System.properties['os.arch'] == "aarch64") {
