@@ -355,3 +355,16 @@ index 700cd7e..9c2e19d 100644
  
    # TODO: The boost spec should really be selecting these files so that dependents of Folly can also access the required headers.
    spec.user_target_xcconfig = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost\"" }
+diff --git a/node_modules/react-native/React/Views/RCTShadowView.h b/node_modules/react-native/React/Views/RCTShadowView.h
+index 428d2eb..226672f 100644
+--- a/node_modules/react-native/React/Views/RCTShadowView.h
++++ b/node_modules/react-native/React/Views/RCTShadowView.h
+@@ -8,6 +8,8 @@
+ #import <UIKit/UIKit.h>
+
+ #import <React/RCTComponent.h>
++// Keeps RCTConvert.h here before yoga for clang module to generate correct header imports.
++#import <React/RCTConvert.h>
+ #import <React/RCTLayout.h>
+ #import <React/RCTRootView.h>
+ #import <yoga/Yoga.h>
