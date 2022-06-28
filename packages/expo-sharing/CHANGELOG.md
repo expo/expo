@@ -10,7 +10,7 @@
 
 ### ⚠️ Notices
 
-- Changed the return type of the `shareAsync` function. The promise now resolves to `void` instead of an empty object.
+- Changed the return type of the `shareAsync` function. The promise now resolves to `void` instead of an empty object. ([#18019](https://github.com/expo/expo/pull/18019) by [@barthap](https://github.com/barthap))
 
 ### 💡 Others
 
