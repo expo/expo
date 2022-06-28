@@ -2,15 +2,15 @@
 title: Using Styled Components
 ---
 
+import { Terminal } from '~/ui/components/Snippet';
+
 Styled Components is a CSS-in-JS solution that enables you to create React components with a given style very easily. Using `styled-components` with Expo, you can create universal styles that'll work the same across web, mobile, and desktop!
 
 ## Getting Started
 
-Install the package:
+Install the Styled Components package:
 
-```sh
-yarn add styled-components
-```
+<Terminal cmd={['$ yarn add styled-components']} />
 
 Use `styled-components/native` instead of `styled-components`:
 
@@ -42,22 +42,18 @@ Usage with Next.js is a little different because we need to apply the React Nati
 
 - Add `@expo/next-adapter` to your project:
 
-```sh
-npx @expo/next-adapter
-```
+<Terminal cmd={['$ npx @expo/next-adapter']} />
 
 - Install the styled-components Babel plugin:
 
-```sh
-yarn add -D babel-plugin-styled-components
-```
+<Terminal cmd={['$ yarn add -D babel-plugin-styled-components']} />
 
 - Use the Babel plugin in your **babel.config.js** file:
 
 ```diff
 module.exports = {
     presets: ['@expo/next-adapter/babel'],
-+    plugins: [['styled-components', { 'ssr': true }]]
++   plugins: [['styled-components', { ssr: true }]]
 };
 ```
 
