@@ -45,5 +45,5 @@ abstract class Module : AppContextProvider {
 
 @Suppress("FunctionName")
 inline fun Module.ModuleDefinition(block: ModuleDefinitionBuilder.() -> Unit): ModuleDefinitionData {
-  return ModuleDefinitionBuilder(this).also(block).build()
+  return ModuleDefinitionBuilder(this).also(block).buildModule()
 }
