@@ -38,6 +38,8 @@ Once installation is complete, apply the changes from the following diffs to con
 
 <ConfigurationDiff source="/static/diffs/expo-ios.diff" />
 
+Optionally, you can also add additional delegate methods to your **AppDelegate.mm**. Some libraries may require them, so unless you have a good reason to leave them out, it is recommended to add them. [See delegate methods in AppDelegate.mm](https://github.com/expo/expo/blob/b7c0356c697ef2cf46388e5742d67b7b48adc97f/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.mm#L75-L102).
+
 Save all of your changes. In Xcode, update the iOS Deployment Target under `Target → Build Settings → Deployment` to `iOS 12.0`. The last step is to install the project's CocoaPods again in order to pull in Expo modules that are detected by `use_expo_modules!` directive that we added to the `Podfile`:
 
 <InstallSection packageName="expo" cmd={["# Install pods", "npx pod-install", "", "# Alternatively, the run command will install them for you", "expo run:ios"]} hideBareInstructions />
