@@ -37,6 +37,8 @@ class JavaScriptModuleObject {
    */
   external fun registerAsyncFunction(name: String, args: Int, desiredTypes: IntArray, body: JNIAsyncFunctionBody)
 
+  external fun registerProperty(name: String, desiredType: Int, getter: JNIFunctionBody?, setter: JNIFunctionBody?)
+
   @Throws(Throwable::class)
   protected fun finalize() {
     mHybridData.resetNative()

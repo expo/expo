@@ -7,10 +7,11 @@ import expo.modules.kotlin.types.toAnyType
 import kotlin.reflect.typeOf
 
 class PropertyComponentBuilder(
-  val name: String,
-  var getter: SyncFunctionComponent? = null,
-  var setter: SyncFunctionComponent? = null
+  val name: String
 ) {
+  var getter: SyncFunctionComponent? = null
+  var setter: SyncFunctionComponent? = null
+
   /**
    * Modifier that sets property getter that has no arguments (the caller is not used).
    */
@@ -22,7 +23,7 @@ class PropertyComponentBuilder(
    * Modifier that sets property setter that receives only the new value as an argument.
    */
   inline fun <reified T> set(crossinline body: (newValue: T) -> Unit) = apply {
-    getter = SyncFunctionComponent("set", arrayOf(typeOf<T>().toAnyType())) { body(it[0] as T) }
+    setter = SyncFunctionComponent("set", arrayOf(typeOf<T>().toAnyType())) { body(it[0] as T) }
   }
 
   fun build(): PropertyComponent {

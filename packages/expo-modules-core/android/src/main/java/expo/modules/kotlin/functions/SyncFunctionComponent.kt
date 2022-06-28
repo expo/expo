@@ -26,9 +26,7 @@ class SyncFunctionComponent(
     jsObject.registerSyncFunction(
       name,
       argsCount,
-      desiredArgsTypes
-        .map { it.getCppRequiredTypes() }
-        .toIntArray()
+      getCppRequiredTypes()
     ) { args ->
       val result = call(args)
       val convertedResult = JSTypeConverter.convertToJSValue(result)
