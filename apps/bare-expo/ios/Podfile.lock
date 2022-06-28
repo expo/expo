@@ -846,7 +846,7 @@ DEPENDENCIES:
   - EXNetwork (from `../../../packages/expo-network/ios`)
   - EXNotifications (from `../../../packages/expo-notifications/ios`)
   - EXPermissions (from `../../../packages/expo-permissions/ios`)
-  - Expo (from `../../../packages/expo/ios`)
+  - Expo (from `../../../packages/expo`)
   - expo-dev-client (from `../../../packages/expo-dev-client/ios`)
   - expo-dev-launcher (from `../../../packages/expo-dev-launcher`)
   - expo-dev-menu (from `../../../packages/expo-dev-menu`)
@@ -1085,7 +1085,7 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-permissions/ios"
   Expo:
     inhibit_warnings: false
-    :path: "../../../packages/expo/ios"
+    :path: "../../../packages/expo"
   expo-dev-client:
     inhibit_warnings: false
     :path: "../../../packages/expo-dev-client/ios"
@@ -1333,7 +1333,7 @@ SPEC CHECKSUMS:
   EXNetwork: 116e5ec043168904c1f24a2e96a8361063e57d26
   EXNotifications: 6164d98ce54326bd5f7c09ef0717a500e9820cf9
   EXPermissions: 3dbb869e7f96a5711314f73d48ddc2f28009a7f6
-  Expo: 8af09aaa24c023d55160118554032b178fad1871
+  Expo: a0a758b768629f4a9a12797d40c1e2129fa72b58
   expo-dev-client: 658fa86a3498812778d6c706205677c8e0674b9f
   expo-dev-launcher: fd6c935d293bf696c56c912c2b9266e0678bd7f5
   expo-dev-menu: 950c0d2465e5595e9865603ddf626c667c0ff97a

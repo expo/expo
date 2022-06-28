@@ -2963,7 +2963,7 @@ DEPENDENCIES:
   - EXNetwork (from `../packages/expo-network/ios`)
   - EXNotifications (from `../packages/expo-notifications/ios`)
   - EXPermissions (from `../packages/expo-permissions/ios`)
-  - Expo (from `../packages/expo/ios`)
+  - Expo (from `../packages/expo`)
   - ExpoCellular (from `../packages/expo-cellular/ios`)
   - ExpoClipboard (from `../packages/expo-clipboard/ios`)
   - ExpoCrypto (from `../packages/expo-crypto/ios`)
@@ -3819,7 +3819,7 @@ EXTERNAL SOURCES:
   EXPermissions:
     :path: "../packages/expo-permissions/ios"
   Expo:
-    :path: "../packages/expo/ios"
+    :path: "../packages/expo"
   ExpoCellular:
     :path: "../packages/expo-cellular/ios"
   ExpoClipboard:
@@ -4342,7 +4342,7 @@ SPEC CHECKSUMS:
   EXNetwork: 116e5ec043168904c1f24a2e96a8361063e57d26
   EXNotifications: 6164d98ce54326bd5f7c09ef0717a500e9820cf9
   EXPermissions: 3dbb869e7f96a5711314f73d48ddc2f28009a7f6
-  Expo: 8af09aaa24c023d55160118554032b178fad1871
+  Expo: a0a758b768629f4a9a12797d40c1e2129fa72b58
   ExpoCellular: b5daa3b732c0c9841979c39988062e50e70dc053
   ExpoClipboard: bf4c910383ea182bc3706c572b7c6c6ecc012f13
   ExpoCrypto: d0d0f3e20875dc450b4ec88f0fb608da5c2c6c17
