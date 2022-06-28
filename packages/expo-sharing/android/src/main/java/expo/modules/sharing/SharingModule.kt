@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Bundle
 import androidx.core.content.FileProvider
 import expo.modules.core.ExportedModule
 import expo.modules.core.ModuleRegistry
