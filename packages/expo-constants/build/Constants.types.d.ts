@@ -87,7 +87,7 @@ export declare type Manifest = {
     extra?: ManifestExtra;
 };
 export declare type ManifestExtra = ClientScopingConfig & {
-    expoClient?: ExpoClientConfig;
+    expoClient?: ExpoConfig;
     expoGo?: ExpoGoConfig;
     eas?: EASConfig;
 };
