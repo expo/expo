@@ -1,5 +1,4 @@
-import Log from '@expo/bunyan';
-import { ExpoConfig, getConfig, getConfigFilePaths } from '@expo/config';
+import { ExpoConfig, getConfig, getConfigFilePaths, Platform } from '@expo/config';
 import {
   buildHermesBundleAsync,
   isEnableHermesManaged,
@@ -20,7 +19,7 @@ import { withMetroMultiPlatform } from '../start/server/metro/withMetroMultiPlat
 import { getPlatformBundlers } from '../start/server/platformBundlers';
 
 export type MetroDevServerOptions = LoadOptions & {
-  logger: Log;
+  logger: import('@expo/bunyan');
   quiet?: boolean;
 };
 export type BundleOptions = {
@@ -66,16 +65,33 @@ let nextBuildID = 0;
 
 // Fork of @expo/dev-server bundleAsync to add Metro logging back.
 
+async function assertEngineMismatchAsync(projectRoot: string, exp: ExpoConfig, platform: Platform) {
+  const isHermesManaged = isEnableHermesManaged(exp, platform);
+
+  const paths = getConfigFilePaths(projectRoot);
+  const configFilePath = paths.dynamicConfigPath ?? paths.staticConfigPath ?? 'app.json';
+  await maybeThrowFromInconsistentEngineAsync(
+    projectRoot,
+    configFilePath,
+    platform,
+    isHermesManaged
+  );
+}
+
 export async function bundleAsync(
   projectRoot: string,
   expoConfig: ExpoConfig,
   options: MetroDevServerOptions,
   bundles: BundleOptions[]
 ): Promise<BundleOutput[]> {
+  // Assert early so the user doesn't have to wait until bundling is complete to find out that
+  // Hermes won't be available.
+  await Promise.all(
+    bundles.map(({ platform }) => assertEngineMismatchAsync(projectRoot, expoConfig, platform))
+  );
+
   const metro = importMetroFromProject(projectRoot);
   const Server = importMetroServerFromProject(projectRoot);
-
-  let reportEvent: ((event: any) => void) | undefined;
 
   const terminal = new Terminal(process.stdout);
   const terminalReporter = new MetroTerminalReporter(projectRoot, terminal);
@@ -83,9 +99,6 @@ export async function bundleAsync(
   const reporter = {
     update(event: any) {
       terminalReporter.update(event);
-      if (reportEvent) {
-        reportEvent(event);
-      }
     },
   };
 
@@ -94,7 +107,6 @@ export async function bundleAsync(
   const { exp } = getConfig(projectRoot, { skipSDKVersionRequirement: true });
   let config = await ExpoMetroConfig.loadAsync(projectRoot, { reporter, ...options });
   config = withMetroMultiPlatform(projectRoot, config, getPlatformBundlers(exp));
-  const buildID = `bundle_${nextBuildID++}`;
 
   // @ts-expect-error
   const metroServer = await metro.runMetro(config, {
@@ -102,6 +114,7 @@ export async function bundleAsync(
   });
 
   const buildAsync = async (bundle: BundleOptions): Promise<BundleOutput> => {
+    const buildID = `bundle_${nextBuildID++}_${bundle.platform}`;
     const bundleOptions: Metro.BundleOptions = {
       ...Server.DEFAULT_BUNDLE_OPTIONS,
       bundleType: 'bundle',
@@ -114,7 +127,7 @@ export async function bundleAsync(
       createModuleIdFactory: config.serializer.createModuleIdFactory,
       onProgress: (transformedFileCount: number, totalFileCount: number) => {
         if (!options.quiet) {
-          reporter.update({
+          terminalReporter.update({
             buildID,
             type: 'bundle_transform_progressed',
             transformedFileCount,
@@ -123,26 +136,33 @@ export async function bundleAsync(
         }
       },
     };
-    reporter.update({
+    const bundleDetails = {
+      ...bundleOptions,
+      buildID,
+    };
+    terminalReporter.update({
       buildID,
       type: 'bundle_build_started',
-      bundleDetails: {
-        bundleType: bundleOptions.bundleType,
-        platform: bundle.platform,
-        entryFile: bundle.entryPoint,
-        dev: bundle.dev ?? false,
-        minify: bundle.minify ?? false,
-      },
+      bundleDetails,
     });
-    const { code, map } = await metroServer.build(bundleOptions);
-    const assets = (await metroServer.getAssets(
-      bundleOptions
-    )) as readonly BundleAssetWithFileHashes[];
-    reporter.update({
-      buildID,
-      type: 'bundle_build_done',
-    });
-    return { code, map, assets };
+    try {
+      const { code, map } = await metroServer.build(bundleOptions);
+      const assets = (await metroServer.getAssets(
+        bundleOptions
+      )) as readonly BundleAssetWithFileHashes[];
+      terminalReporter.update({
+        buildID,
+        type: 'bundle_build_done',
+      });
+      return { code, map, assets };
+    } catch (error) {
+      terminalReporter.update({
+        buildID,
+        type: 'bundle_build_failed',
+      });
+
+      throw error;
+    }
   };
 
   const maybeAddHermesBundleAsync = async (
@@ -151,24 +171,13 @@ export async function bundleAsync(
   ): Promise<BundleOutput> => {
     const { platform } = bundle;
     const isHermesManaged = isEnableHermesManaged(expoConfig, platform);
-
-    const paths = getConfigFilePaths(projectRoot);
-    const configFilePath = paths.dynamicConfigPath ?? paths.staticConfigPath ?? 'app.json';
-    await maybeThrowFromInconsistentEngineAsync(
-      projectRoot,
-      configFilePath,
-      platform,
-      isHermesManaged
-    );
-
     if (isHermesManaged) {
       const platformTag = chalk.bold(
         { ios: 'iOS', android: 'Android', web: 'Web' }[platform] || platform
       );
-      options.logger.info(
-        { tag: 'expo' },
-        `💿 ${platformTag} Building Hermes bytecode for the bundle`
-      );
+
+      terminalReporter.terminal.log(`${platformTag} Building Hermes bytecode for the bundle`);
+
       const hermesBundleOutput = await buildHermesBundleAsync(
         projectRoot,
         bundleOutput.code,
@@ -190,6 +199,10 @@ export async function bundleAsync(
       bundleOutputs.push(await maybeAddHermesBundleAsync(bundles[i], intermediateOutputs[i]));
     }
     return bundleOutputs;
+  } catch (error) {
+    // New line so errors don't show up inline with the progress bar
+    console.log('');
+    throw error;
   } finally {
     metroServer.end();
   }

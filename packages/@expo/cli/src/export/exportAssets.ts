@@ -93,8 +93,6 @@ export async function exportAssetsAsync(
   if (assets[0]?.fileHashes) {
     Log.log('Saving assets');
     await saveAssetsAsync(projectRoot, { assets, outputDir });
-  } else {
-    Log.log('No assets to upload, skipped.');
   }
 
   // Add google services file if it exists
