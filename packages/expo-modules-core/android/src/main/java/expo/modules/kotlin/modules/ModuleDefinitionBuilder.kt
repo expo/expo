@@ -1,51 +1,22 @@
-/**
- * We used a function from the experimental STD API - typeOf (see kotlinlang.org/api/latest/jvm/stdlib/kotlin.reflect/type-of.html).
- * We shouldn't have any problem with that function, cause it's widely used in other libraries created by JetBrains like kotlinx-serializer.
- * This function is super handy if we want to receive a collection type.
- * For example, it's very hard to obtain the generic parameter type from the list class.
- * In plain Java, it's almost impossible. There is a trick to getting such information using something called TypeToken.
- * For instance, the Gson library uses this workaround. But there still will be a problem with nullability.
- * We didn't find a good solution to distinguish between List<Any?> and List<Any>.
- * Mainly because from the JVM perspective it's the same type.
- * That's why we used typeOf. It solves all problems described above.
- */
-@file:OptIn(ExperimentalStdlibApi::class)
 @file:Suppress("FunctionName")
 
 package expo.modules.kotlin.modules
 
 import android.app.Activity
 import android.content.Intent
-import expo.modules.kotlin.Promise
 import expo.modules.kotlin.events.BasicEventListener
 import expo.modules.kotlin.events.EventListener
 import expo.modules.kotlin.events.EventListenerWithPayload
 import expo.modules.kotlin.events.EventListenerWithSenderAndPayload
 import expo.modules.kotlin.events.EventName
-import expo.modules.kotlin.events.EventsDefinition
 import expo.modules.kotlin.events.OnActivityResultPayload
-import expo.modules.kotlin.functions.AsyncFunction
-import expo.modules.kotlin.functions.AsyncFunctionBuilder
-import expo.modules.kotlin.functions.AsyncFunctionComponent
-import expo.modules.kotlin.functions.AsyncFunctionWithPromiseComponent
-import expo.modules.kotlin.functions.SyncFunctionComponent
-import expo.modules.kotlin.types.toAnyType
+import expo.modules.kotlin.objects.ObjectDefinitionBuilder
 import expo.modules.kotlin.views.ViewManagerDefinition
 import expo.modules.kotlin.views.ViewManagerDefinitionBuilder
-import kotlin.reflect.typeOf
 
 @DefinitionMarker
-class ModuleDefinitionBuilder(@PublishedApi internal val module: Module? = null) {
+class ModuleDefinitionBuilder(@PublishedApi internal val module: Module? = null) : ObjectDefinitionBuilder() {
   private var name: String? = null
-  private var constantsProvider = { emptyMap<String, Any?>() }
-  private var eventsDefinition: EventsDefinition? = null
-  private var functionBuilders = mutableListOf<AsyncFunctionBuilder>()
-
-  @PublishedApi
-  internal var syncFunctions = mutableMapOf<String, SyncFunctionComponent>()
-
-  @PublishedApi
-  internal var asyncFunctions = mutableMapOf<String, AsyncFunction>()
 
   @PublishedApi
   internal var viewManagerDefinition: ViewManagerDefinition? = null
@@ -53,18 +24,14 @@ class ModuleDefinitionBuilder(@PublishedApi internal val module: Module? = null)
   @PublishedApi
   internal val eventListeners = mutableMapOf<EventName, EventListener>()
 
-  fun build(): ModuleDefinitionData {
+  fun buildModule(): ModuleDefinitionData {
     val moduleName = name ?: module?.javaClass?.simpleName
 
     return ModuleDefinitionData(
       requireNotNull(moduleName),
-      constantsProvider,
-      syncFunctions,
-      asyncFunctions,
-      functionBuilders.map { it.build() },
+      buildObject(),
       viewManagerDefinition,
-      eventListeners,
-      eventsDefinition
+      eventListeners
     )
   }
 
@@ -74,218 +41,6 @@ class ModuleDefinitionBuilder(@PublishedApi internal val module: Module? = null)
   fun Name(name: String) {
     this.name = name
   }
-
-  /**
-   * Definition function setting the module's constants to export.
-   */
-  fun Constants(constantsProvider: () -> Map<String, Any?>) {
-    this.constantsProvider = constantsProvider
-  }
-
-  /**
-   * Definition of the module's constants to export.
-   */
-  fun Constants(vararg constants: Pair<String, Any?>) {
-    constantsProvider = { constants.toMap() }
-  }
-
-  @JvmName("FunctionWithoutArgs")
-  inline fun Function(
-    name: String,
-    crossinline body: () -> Any?
-  ) {
-    SyncFunctionComponent(name, arrayOf()) { body() }.also {
-      syncFunctions[name] = it
-    }
-  }
-
-  inline fun <reified R> Function(
-    name: String,
-    crossinline body: () -> R
-  ) {
-    SyncFunctionComponent(name, arrayOf()) { body() }.also {
-      syncFunctions[name] = it
-    }
-  }
-
-  inline fun <reified R, reified P0> Function(
-    name: String,
-    crossinline body: (p0: P0) -> R
-  ) {
-    SyncFunctionComponent(name, arrayOf(typeOf<P0>().toAnyType())) { body(it[0] as P0) }.also {
-      syncFunctions[name] = it
-    }
-  }
-
-  inline fun <reified R, reified P0, reified P1> Function(
-    name: String,
-    crossinline body: (p0: P0, p1: P1) -> R
-  ) {
-    SyncFunctionComponent(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType())) { body(it[0] as P0, it[1] as P1) }.also {
-      syncFunctions[name] = it
-    }
-  }
-
-  inline fun <reified R, reified P0, reified P1, reified P2> Function(
-    name: String,
-    crossinline body: (p0: P0, p1: P1, p2: P2) -> R
-  ) {
-    SyncFunctionComponent(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType(), typeOf<P2>().toAnyType())) { body(it[0] as P0, it[1] as P1, it[2] as P2) }.also {
-      syncFunctions[name] = it
-    }
-  }
-
-  inline fun <reified R, reified P0, reified P1, reified P2, reified P3> function(
-    name: String,
-    crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3) -> R
-  ) {
-    SyncFunctionComponent(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType(), typeOf<P2>().toAnyType(), typeOf<P3>().toAnyType())) { body(it[0] as P0, it[1] as P1, it[2] as P2, it[3] as P3) }.also {
-      syncFunctions[name] = it
-    }
-  }
-
-  inline fun <reified R, reified P0, reified P1, reified P2, reified P3, reified P4> function(
-    name: String,
-    crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4) -> R
-  ) {
-    SyncFunctionComponent(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType(), typeOf<P2>().toAnyType(), typeOf<P3>().toAnyType(), typeOf<P4>().toAnyType())) { body(it[0] as P0, it[1] as P1, it[2] as P2, it[3] as P3, it[4] as P4) }.also {
-      syncFunctions[name] = it
-    }
-  }
-
-  inline fun <reified R, reified P0, reified P1, reified P2, reified P3, reified P4, reified P5> Function(
-    name: String,
-    crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5) -> R
-  ) {
-    SyncFunctionComponent(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType(), typeOf<P2>().toAnyType(), typeOf<P3>().toAnyType(), typeOf<P4>().toAnyType(), typeOf<P5>().toAnyType())) { body(it[0] as P0, it[1] as P1, it[2] as P2, it[3] as P3, it[4] as P4, it[5] as P5) }.also {
-      syncFunctions[name] = it
-    }
-  }
-
-  inline fun <reified R, reified P0, reified P1, reified P2, reified P3, reified P4, reified P5, reified P6> function(
-    name: String,
-    crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5, p6: P6) -> R
-  ) {
-    SyncFunctionComponent(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType(), typeOf<P2>().toAnyType(), typeOf<P3>().toAnyType(), typeOf<P4>().toAnyType(), typeOf<P5>().toAnyType(), typeOf<P6>().toAnyType())) { body(it[0] as P0, it[1] as P1, it[2] as P2, it[3] as P3, it[4] as P4, it[5] as P5, it[6] as P6) }.also {
-      syncFunctions[name] = it
-    }
-  }
-
-  inline fun <reified R, reified P0, reified P1, reified P2, reified P3, reified P4, reified P5, reified P6, reified P7> function(
-    name: String,
-    crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5, p6: P6, p7: P7) -> R
-  ) {
-    SyncFunctionComponent(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType(), typeOf<P2>().toAnyType(), typeOf<P3>().toAnyType(), typeOf<P4>().toAnyType(), typeOf<P5>().toAnyType(), typeOf<P6>().toAnyType(), typeOf<P7>().toAnyType())) { body(it[0] as P0, it[1] as P1, it[2] as P2, it[3] as P3, it[4] as P4, it[5] as P5, it[6] as P6, it[7] as P7) }.also {
-      syncFunctions[name] = it
-    }
-  }
-
-  @JvmName("AsyncFunctionWithoutArgs")
-  inline fun AsyncFunction(
-    name: String,
-    crossinline body: () -> Any?
-  ) {
-    asyncFunctions[name] = AsyncFunctionComponent(name, arrayOf()) { body() }
-  }
-
-  inline fun <reified R> AsyncFunction(
-    name: String,
-    crossinline body: () -> R
-  ) {
-    asyncFunctions[name] = AsyncFunctionComponent(name, arrayOf()) { body() }
-  }
-
-  inline fun <reified R, reified P0> AsyncFunction(
-    name: String,
-    crossinline body: (p0: P0) -> R
-  ) {
-    asyncFunctions[name] = if (P0::class == Promise::class) {
-      AsyncFunctionWithPromiseComponent(name, arrayOf()) { _, promise -> body(promise as P0) }
-    } else {
-      AsyncFunctionComponent(name, arrayOf(typeOf<P0>().toAnyType())) { body(it[0] as P0) }
-    }
-  }
-
-  inline fun <reified R, reified P0, reified P1> AsyncFunction(
-    name: String,
-    crossinline body: (p0: P0, p1: P1) -> R
-  ) {
-    asyncFunctions[name] = if (P1::class == Promise::class) {
-      AsyncFunctionWithPromiseComponent(name, arrayOf(typeOf<P0>().toAnyType())) { args, promise -> body(args[0] as P0, promise as P1) }
-    } else {
-      AsyncFunctionComponent(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType())) { body(it[0] as P0, it[1] as P1) }
-    }
-  }
-
-  inline fun <reified R, reified P0, reified P1, reified P2> AsyncFunction(
-    name: String,
-    crossinline body: (p0: P0, p1: P1, p2: P2) -> R
-  ) {
-    asyncFunctions[name] = if (P2::class == Promise::class) {
-      AsyncFunctionWithPromiseComponent(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType())) { args, promise -> body(args[0] as P0, args[1] as P1, promise as P2) }
-    } else {
-      AsyncFunctionComponent(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType(), typeOf<P2>().toAnyType())) { body(it[0] as P0, it[1] as P1, it[2] as P2) }
-    }
-  }
-
-  inline fun <reified R, reified P0, reified P1, reified P2, reified P3> AsyncFunction(
-    name: String,
-    crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3) -> R
-  ) {
-    asyncFunctions[name] = if (P3::class == Promise::class) {
-      AsyncFunctionWithPromiseComponent(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType(), typeOf<P2>().toAnyType())) { args, promise -> body(args[0] as P0, args[1] as P1, args[2] as P2, promise as P3) }
-    } else {
-      AsyncFunctionComponent(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType(), typeOf<P2>().toAnyType(), typeOf<P3>().toAnyType())) { body(it[0] as P0, it[1] as P1, it[2] as P2, it[3] as P3) }
-    }
-  }
-
-  inline fun <reified R, reified P0, reified P1, reified P2, reified P3, reified P4> AsyncFunction(
-    name: String,
-    crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4) -> R
-  ) {
-    asyncFunctions[name] = if (P4::class == Promise::class) {
-      AsyncFunctionWithPromiseComponent(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType(), typeOf<P2>().toAnyType(), typeOf<P3>().toAnyType())) { args, promise -> body(args[0] as P0, args[1] as P1, args[2] as P2, args[3] as P3, promise as P4) }
-    } else {
-      AsyncFunctionComponent(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType(), typeOf<P2>().toAnyType(), typeOf<P3>().toAnyType(), typeOf<P4>().toAnyType())) { body(it[0] as P0, it[1] as P1, it[2] as P2, it[3] as P3, it[4] as P4) }
-    }
-  }
-
-  inline fun <reified R, reified P0, reified P1, reified P2, reified P3, reified P4, reified P5> AsyncFunction(
-    name: String,
-    crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5) -> R
-  ) {
-    asyncFunctions[name] = if (P5::class == Promise::class) {
-      AsyncFunctionWithPromiseComponent(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType(), typeOf<P2>().toAnyType(), typeOf<P3>().toAnyType(), typeOf<P4>().toAnyType())) { args, promise -> body(args[0] as P0, args[1] as P1, args[2] as P2, args[3] as P3, args[4] as P4, promise as P5) }
-    } else {
-      AsyncFunctionComponent(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType(), typeOf<P2>().toAnyType(), typeOf<P3>().toAnyType(), typeOf<P4>().toAnyType(), typeOf<P5>().toAnyType())) { body(it[0] as P0, it[1] as P1, it[2] as P2, it[3] as P3, it[4] as P4, it[5] as P5) }
-    }
-  }
-
-  inline fun <reified R, reified P0, reified P1, reified P2, reified P3, reified P4, reified P5, reified P6> AsyncFunction(
-    name: String,
-    crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5, p6: P6) -> R
-  ) {
-    asyncFunctions[name] = if (P6::class == Promise::class) {
-      AsyncFunctionWithPromiseComponent(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType(), typeOf<P2>().toAnyType(), typeOf<P3>().toAnyType(), typeOf<P4>().toAnyType(), typeOf<P5>().toAnyType())) { args, promise -> body(args[0] as P0, args[1] as P1, args[2] as P2, args[3] as P3, args[4] as P4, args[5] as P5, promise as P6) }
-    } else {
-      AsyncFunctionComponent(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType(), typeOf<P2>().toAnyType(), typeOf<P3>().toAnyType(), typeOf<P4>().toAnyType(), typeOf<P5>().toAnyType(), typeOf<P6>().toAnyType())) { body(it[0] as P0, it[1] as P1, it[2] as P2, it[3] as P3, it[4] as P4, it[5] as P5, it[6] as P6) }
-    }
-  }
-
-  inline fun <reified R, reified P0, reified P1, reified P2, reified P3, reified P4, reified P5, reified P6, reified P7> AsyncFunction(
-    name: String,
-    crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5, p6: P6, p7: P7) -> R
-  ) {
-    asyncFunctions[name] = if (P7::class == Promise::class) {
-      AsyncFunctionWithPromiseComponent(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType(), typeOf<P2>().toAnyType(), typeOf<P3>().toAnyType(), typeOf<P4>().toAnyType(), typeOf<P5>().toAnyType(), typeOf<P6>().toAnyType())) { args, promise -> body(args[0] as P0, args[1] as P1, args[2] as P2, args[3] as P3, args[4] as P4, args[5] as P5, args[6] as P6, promise as P7) }
-    } else {
-      AsyncFunctionComponent(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType(), typeOf<P2>().toAnyType(), typeOf<P3>().toAnyType(), typeOf<P4>().toAnyType(), typeOf<P5>().toAnyType(), typeOf<P6>().toAnyType(), typeOf<P7>().toAnyType())) { body(it[0] as P0, it[1] as P1, it[2] as P2, it[3] as P3, it[4] as P4, it[5] as P5, it[6] as P6, it[7] as P7) }
-    }
-  }
-
-  fun AsyncFunction(
-    name: String
-  ) = AsyncFunctionBuilder(name).also { functionBuilders.add(it) }
 
   /**
    * Creates the view manager definition that scopes other view-related definitions.
@@ -331,27 +86,6 @@ class ModuleDefinitionBuilder(@PublishedApi internal val module: Module? = null)
    */
   inline fun OnActivityDestroys(crossinline body: () -> Unit) {
     eventListeners[EventName.ACTIVITY_DESTROYS] = BasicEventListener(EventName.ACTIVITY_DESTROYS) { body() }
-  }
-
-  /**
-   * Defines event names that this module can send to JavaScript.
-   */
-  fun Events(vararg events: String) {
-    eventsDefinition = EventsDefinition(events)
-  }
-
-  /**
-   * Creates module's lifecycle listener that is called right after the first event listener is added.
-   */
-  inline fun OnStartObserving(crossinline body: () -> Unit) {
-    AsyncFunction("startObserving", body)
-  }
-
-  /**
-   * Creates module's lifecycle listener that is called right after all event listeners are removed.
-   */
-  inline fun OnStopObserving(crossinline body: () -> Unit) {
-    AsyncFunction("stopObserving", body)
   }
 
   /**
