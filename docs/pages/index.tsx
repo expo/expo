@@ -88,8 +88,8 @@ const Home = () => {
               <br />
               <Terminal
                 hideOverflow
-                cmd={['$ npm i -g expo-cli', '$ expo init my-project']}
-                cmdCopy="npm install --global expo-cli && expo init my-project"
+                cmd={['$ npm i -g expo-cli', '$ npx create-expo-app my-app']}
+                cmdCopy="npm install --global expo-cli && npx create-expo-app my-app"
               />
             </div>
           </GridCell>
