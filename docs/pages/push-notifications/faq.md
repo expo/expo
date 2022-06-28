@@ -9,11 +9,11 @@ This is a collection of FAQs and common issues when setting up push notification
 
 ### How much does Expo's push notification service cost?
 
-There is no cost associated with sending notifications through Expo's classic push notification service. EAS Notify, an upcoming iteration of Expo's push notification service, will be a part of EAS's pricing plans.
+Expo currently does not charge for sending push notifications through Expo's push notification service. Tentative future pricing for push notification is listed on the [EAS pricing page](https://expo.dev/pricing).
 
 ### How many notifications can I send through Expo?
 
-We don't impose any limit on the number of push notifications you can send. For best results, we do recommend you add throttling (handled automatically in the [`expo-server-sdk-node`](https://github.com/expo/expo-server-sdk-node)) and retry logic to your server.
+We don't impose any limit on the number of push notifications you can send. For best results, we do recommend you batch your notifications, throttle requests (handled automatically in the [`expo-server-sdk-node`](https://github.com/expo/expo-server-sdk-node)), and implement retry logic to your server with exponential backoff.
 
 Total notifications is much less important than your maximum notification throughput—how many notifications you send per second at peak. If this number is more than a couple hundred, reach out to us because we'd love to hear about what you're working on!
 
@@ -29,7 +29,7 @@ You should read **all** the relevant guides (this won't take longer than 10 minu
 
 ### Do I have to use Expo's push notification service?
 
-No, you can use any push notification service for both managed and bare workflow apps. The [`getDevicePushTokenAsync` method from `expo-notifications`](/versions/v40.0.0/sdk/notifications.md#getdevicepushtokenasync-devicepushtoken) allows you to get the native device push token, which you can then use with other services, or even [send your notifications through APNs and FCM directly](/push-notifications/sending-notifications-custom.md).
+No, you can use any push notification service for both managed and bare workflow apps. The [`getDevicePushTokenAsync` method from `expo-notifications`](/versions/latest/sdk/notifications.md#getdevicepushtokenasync-devicepushtoken) allows you to get the native device push token, which you can then use with other services, or even [send your notifications through APNs and FCM directly](/push-notifications/sending-notifications-custom.md).
 
 That being said, we think sending notifications through Expo is the fastest and easiest way to do it, and millions of notifications are sent through Expo every day.
 
@@ -37,7 +37,7 @@ That being said, we think sending notifications through Expo is the fastest and 
 
 Push notifications have a lot of moving parts, so this can be due to a wide variety of reasons. To narrow things down, check the [push ticket](/push-notifications/sending-notifications.md#push-tickets) and [push receipt](/push-notifications/sending-notifications.md#push-receipts) for error messages. This information (and maybe a little bit of Googling) will help narrow down the problem so that you can solve it.
 
-You can also narrow things even further by testing [local notifications](/versions/v40.0.0/sdk/notifications.md#schedulenotificationasyncnotificationrequest-notificationrequestinput-promisestring) in your app. This will ensure all of your client-side logic is correct, and narrow things down to the server side or app credentials.
+You can also narrow things even further by testing [local notifications](/versions/latest/sdk/notifications.md#schedulenotificationasyncnotificationrequest-notificationrequestinput-promisestring) in your app. This will ensure all of your client-side logic is correct, and narrow things down to the server side or app credentials.
 
 <Collapsible summary="See here for some quick terminal commands you can use to get the push receipt">
 
@@ -65,9 +65,9 @@ curl -H "Content-Type: application/json" -X POST "https://exp.host/--/api/v2/pus
 
 ### How often does the `ExpoPushToken` change?
 
-The `ExpoPushToken` will remain the same across app upgrades, and `eject`ing to the bare workflow. On iOS, it will also remain the same even after uninstalling the app and reinstalling (on Android, this results in the push token changing). It will also change if you change your [`applicationId`](/versions/latest/sdk/application.md#applicationapplicationid) or `experienceId` (usually `@expoUsername/projectSlug`).
+The `ExpoPushToken` will remain the same across app upgrades. On iOS, it will also remain the same even after uninstalling the app and reinstalling (on Android, this results in the push token changing). It will also change if you change your [`applicationId`](/versions/latest/sdk/application.md#applicationapplicationid) or `experienceId` (usually `@expoUsername/projectSlug`).
 
-The `ExpoPushToken` will never "expire" but if one of your users uninstalls the app, you'll receive a `DeviceNotRegistered` error back from Expo's servers, meaning you should stop sending notifications to this app.
+The `ExpoPushToken` will never "expire" but if one of your users uninstalls the app, you'll receive a `DeviceNotRegistered` error back from Expo's servers in your push receipts, meaning you should stop sending notifications to this app.
 
 ### Push notifications work in development, but not after I build the app
 
@@ -100,7 +100,7 @@ Expo's connections to Apple and Google are encrypted and use HTTPS.
 
 ### How do I handle expired push notification credentials?
 
-When your push notification credentials have expired, run `expo credentials:manager -p ios` which will provide a list of actions to choose from. Select the removal of your expired credentials and then select "Add new Push Notifications Key".
+You can remove expired credentials from your account using EAS CLI with `eas credentials`, which will prompt you for the platform whose credentials to manage, or through the Expo website [here](https://expo.dev/accounts/[account]/projects/[project]/credentials). Use EAS CLI if you would like Expo to automatically provision new credentials for you. If you'd prefer to provide your own push notification credentials, upload them through the Expo website.
 
 ### What delivery guarantees are there for push notifications?
 
