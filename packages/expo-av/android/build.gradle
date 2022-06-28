@@ -229,11 +229,12 @@ task extractJNIFiles {
 tasks.whenTaskAdded { task ->
   if (!task.name.contains("Clean") && (task.name.contains('externalNativeBuild') || task.name.startsWith('configureCMake'))) {
     def buildType = task.name.endsWith('Debug') ? 'Debug' : 'Release'
-    task.dependsOn("extractReactNativeAAR${buildType}")
     task.dependsOn(extractAARHeaders)
     task.dependsOn(extractJNIFiles)
     if (RN_BUILD_FROM_SOURCE) {
       task.dependsOn(":ReactAndroid:copy${buildType}JniLibsProjectOnly")
+    } else {
+      task.dependsOn("extractReactNativeAAR${buildType}")
     }
   } else if (task.name.startsWith('generateJsonModel') && RN_BUILD_FROM_SOURCE) {
     def buildType = task.name.endsWith('Debug') ? 'Debug' : 'Release'
