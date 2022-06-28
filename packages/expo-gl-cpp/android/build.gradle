@@ -133,7 +133,15 @@ repositories {
 dependencies {
   compileOnly 'com.facebook.soloader:soloader:0.8.2'
 
-  def rnAARs = fileTree(RN_AAR_DIR).matching { include "**/*.aar" }
+  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
+}
+
+def extractReactNativeAAR = { buildType ->
+  def suffix = buildType == 'Debug' ? '-debug' : '-release'
+  def rnAARs = fileTree(RN_AAR_DIR).matching { include "**/react-native/**/*${suffix}.aar" }
+  if (rnAARs.isEmpty()) {
+    rnAARs = fileTree(RN_AAR_DIR).matching { include "**/react-native/**/*.aar" }
+  }
   if (rnAARs.any()) {
     // node_modules/react-native has a .aar, extract headers
     if (rnAARs.size() > 1) {
@@ -142,13 +150,27 @@ dependencies {
       throw new GradleException("Multiple React Native AARs found:\n${rnAARs.join("\n")}" +
           "\nRemove the old ones and try again")
     }
-    def rnAAR = rnAARs.singleFile
-    extractJNI(files(rnAAR))
-  } else {
-    // there is no prebuilt react-native.aar, this is most likely Expo Go
   }
+  def rnAAR = rnAARs.singleFile
+  def file = rnAAR.absoluteFile
+  def packageName = file.name.tokenize('-')[0]
+  copy {
+    from zipTree(file)
+    into "$buildDir/$file.name"
+    include "jni/**/*"
+  }
+}
 
-  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
+task extractReactNativeAARRelease {
+  doLast {
+    extractReactNativeAAR('Release')
+  }
+}
+
+task extractReactNativeAARDebug {
+  doLast {
+    extractReactNativeAAR('Debug')
+  }
 }
 
 task extractJNIFiles {
@@ -166,9 +188,10 @@ task extractJNIFiles {
 
 tasks.whenTaskAdded { task ->
   if (!task.name.contains("Clean") && (task.name.contains('externalNativeBuild') || task.name.startsWith('configureCMake'))) {
+    def buildType = task.name.endsWith('Debug') ? 'Debug' : 'Release'
+    task.dependsOn("extractReactNativeAAR${buildType}")
     task.dependsOn(extractJNIFiles)
     if (RN_BUILD_FROM_SOURCE) {
-      def buildType = task.name.endsWith('Debug') ? 'Debug' : 'Release'
       task.dependsOn(":ReactAndroid:copy${buildType}JniLibsProjectOnly")
     }
   } else if (task.name.startsWith('generateJsonModel') && RN_BUILD_FROM_SOURCE) {
