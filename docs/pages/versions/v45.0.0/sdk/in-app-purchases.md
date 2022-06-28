@@ -8,6 +8,8 @@ import {APIInstallSection} from '~/components/plugins/InstallSection';
 import APISection from '~/components/plugins/APISection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
+> ⚠️ **Development of `expo-in-app-purchases` is currently paused, to focus on other projects**. An excellent alternative library  is `react-native-purchases` from [RevenueCat](https://revenuecat.com/). See ["Using RevenueCat with Expo’s Managed Workflow"](https://www.revenuecat.com/blog/using-revenuecat-with-expos-managed-workflow/) for more information.
+
 **`expo-in-app-purchases`** provides an API to accept payments for in-app products. Internally this relies on the [Google Play Billing](https://developer.android.com/google/play/billing/billing_library_overview) library on Android and the [Storekit](https://developer.apple.com/documentation/storekit?language=objc) framework on iOS.
 
 <PlatformsSection android ios />
