@@ -86,7 +86,6 @@ project.ext.react = [
     entryFile: ["node", "-e", "require('expo/scripts/resolveAppEntry')", projectRoot, "android"].execute(null, rootDir).text.trim(),
     enableHermes: (findProperty('expo.jsEngine') ?: "jsc") == "hermes",
     cliPath: "${reactNativeRoot}/cli.js",
-    hermesCommand: new File(["node", "--print", "require.resolve('hermes-engine/package.json')"].execute(null, rootDir).text.trim()).getParentFile().getAbsolutePath() + "/%OS-BIN%/hermesc",
     composeSourceMapsPath: "${reactNativeRoot}/scripts/compose-source-maps.js",
 ]
 
