@@ -6,11 +6,11 @@ Issues are often solved by upgrading to the latest version of `expo-dev-client`,
 
 If you're not able to resolve your issue, please [let us know!](https://github.com/expo/expo/issues/new?template=dev_client_bug_report.yml)
 
-### The keyboard shortcuts for the Dev Menu don't work reliably in my iOS simulator
+### The keyboard shortcuts for the Dev Menu don't work reliably in iOS simulator
 
 Make sure you have "Send keyboard input to device" enabled for the simulator. This option can be found under I/O > Input in the menu.
 
-### I am getting a build error from Swift on the line `import expo-dev-launcher`
+### I am getting a build error from Swift on `import expo-dev-launcher` line
 
 If you are building for iOS and getting an error that looks something like this:
 
