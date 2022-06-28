@@ -10,5 +10,14 @@ npm-debug.*
 *.orig.*
 web-build/
 
+# Yarn
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+
 # macOS
 .DS_Store
