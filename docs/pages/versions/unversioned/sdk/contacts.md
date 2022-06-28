@@ -16,10 +16,6 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 <APIInstallSection />
 
-## Configuration
-
-In Managed apps, `Contacts` requires `Permissions.CONTACTS`.
-
 ## Usage
 
 <SnackInline label='Basic Contacts Usage' dependencies={['expo-contacts']}>
