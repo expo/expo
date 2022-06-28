@@ -4,7 +4,6 @@ package expo.modules.kotlin.activityresult
 
 import android.app.Activity
 import android.content.Intent
-import androidx.activity.result.contract.ActivityResultContract
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Lifecycle
 import expo.modules.kotlin.AppContext
@@ -71,10 +70,10 @@ class ActivityResultsManager(
 
   // region AppContextActivityResultCaller
 
-  override suspend fun <I, O, P : Serializable> registerForActivityResult(
-    contract: ActivityResultContract<I, O>,
-    fallbackCallback: AppContextActivityResultFallbackCallback<O, P>
-  ): AppContextActivityResultLauncher<I, O, P> =
+  override suspend fun <I : Serializable, O> registerForActivityResult(
+    contract: AppContextActivityResultContract<I, O>,
+    fallbackCallback: AppContextActivityResultFallbackCallback<I, O>
+  ): AppContextActivityResultLauncher<I, O> =
     withActivityAvailable { activity ->
       registry.register(
         "AppContext_rq#${nextLocalRequestCode.getAndIncrement()}",
