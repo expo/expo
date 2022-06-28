@@ -6,8 +6,11 @@ import android.content.Intent
 import android.net.Uri
 import android.provider.MediaStore
 import androidx.activity.result.contract.ActivityResultContract
+import expo.modules.imagepicker.ImagePickerOptions
 import expo.modules.imagepicker.toMediaType
+import expo.modules.kotlin.activityresult.AppContextActivityResultContract
 import expo.modules.kotlin.providers.AppContextProvider
+import java.io.Serializable
 
 /**
  * An [ActivityResultContract] to [take a picture][MediaStore.ACTION_IMAGE_CAPTURE] or [take a video][MediaStore.ACTION_VIDEO_CAPTURE]
@@ -17,32 +20,28 @@ import expo.modules.kotlin.providers.AppContextProvider
  */
 internal class CameraContract(
   private val appContextProvider: AppContextProvider,
-) : ActivityResultContract<CameraContractOptions, ImagePickerContractResult>() {
+) : AppContextActivityResultContract<CameraContractOptions, ImagePickerContractResult> {
   override fun createIntent(context: Context, input: CameraContractOptions): Intent =
-    Intent(input.intentAction)
+    Intent(input.options.mediaTypes.toCameraIntentAction())
       .putExtra(MediaStore.EXTRA_OUTPUT, input.uri)
       .apply {
-        if (input.intentAction == MediaStore.ACTION_VIDEO_CAPTURE) {
-          putExtra(MediaStore.EXTRA_DURATION_LIMIT, input.videoMaxDuration)
+        if (input.options.mediaTypes.toCameraIntentAction() == MediaStore.ACTION_VIDEO_CAPTURE) {
+          putExtra(MediaStore.EXTRA_DURATION_LIMIT, input.options.videoMaxDuration)
         }
       }
 
-  override fun parseResult(resultCode: Int, intent: Intent?): ImagePickerContractResult =
+  override fun parseResult(input: CameraContractOptions, resultCode: Int, intent: Intent?): ImagePickerContractResult =
     if (resultCode == Activity.RESULT_CANCELED) {
       ImagePickerContractResult.Cancelled()
     } else {
       val contentResolver = requireNotNull(appContextProvider.appContext.reactContext) { "React Application Context is null. " }.contentResolver
-      val uri = intent?.data ?: throw IllegalStateException("No data available in Intent")
+      val uri = input.uri
       val type = uri.toMediaType(contentResolver)
       ImagePickerContractResult.Success(type to uri)
     }
 }
 
-data class CameraContractOptions(
+internal data class CameraContractOptions(
   val uri: Uri,
-  /**
-   * Either [MediaStore.ACTION_IMAGE_CAPTURE] or [MediaStore.ACTION_VIDEO_CAPTURE]
-   */
-  val intentAction: String,
-  val videoMaxDuration: Int,
-)
+  val options: ImagePickerOptions,
+) : Serializable

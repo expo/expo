@@ -33,23 +33,17 @@ internal class ImagePickerOptions : Record, Serializable {
   @Field
   var aspect: Pair<Int, Int>? = null
 
-  internal fun toCameraContractOptions(uri: Uri) = CameraContractOptions(
-    uri,
-    mediaTypes.toMimeType(),
-    videoMaxDuration
-  )
+  fun toCameraContractOptions(uri: Uri) = CameraContractOptions(uri, this)
 
-  fun toImageLibraryContractOptions() = ImageLibraryContractOptions(
-    mediaTypes.toMimeType(),
-  )
+  fun toImageLibraryContractOptions() = ImageLibraryContractOptions(this)
 }
 
-enum class MediaTypes(val value: String) {
+internal enum class MediaTypes(val value: String) {
   IMAGES("Images"),
   VIDEOS("Videos"),
   ALL("All");
 
-  internal fun toMimeType(): String {
+  fun toMimeType(): String {
     return when (this) {
       IMAGES -> ImageAllMimeType
       VIDEOS -> VideoAllMimeType
@@ -57,17 +51,7 @@ enum class MediaTypes(val value: String) {
     }
   }
 
-  internal fun toMultipleMimeTypes(): Array<String>? {
-    return when (this) {
-      ALL -> arrayOf(
-        ImageAllMimeType,
-        VideoAllMimeType
-      )
-      else -> null
-    }
-  }
-
-  internal fun toFileExtension(): String {
+  fun toFileExtension(): String {
     return when (this) {
       VIDEOS -> ".mp4"
       else -> ".jpeg"
@@ -77,14 +61,14 @@ enum class MediaTypes(val value: String) {
   /**
    * Return [MediaStore]'s intent capture action associated with given media types
    */
-  internal fun toCameraIntentAction(): String {
+  fun toCameraIntentAction(): String {
     return when (this) {
       VIDEOS -> MediaStore.ACTION_VIDEO_CAPTURE
       else -> MediaStore.ACTION_IMAGE_CAPTURE
     }
   }
 
-  internal companion object {
+  private companion object {
     const val ImageAllMimeType = "image/*"
     const val VideoAllMimeType = "video/*"
     const val AllMimeType = "*/*"

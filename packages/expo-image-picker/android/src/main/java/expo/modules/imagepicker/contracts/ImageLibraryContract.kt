@@ -4,9 +4,11 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import androidx.activity.result.contract.ActivityResultContract
+import expo.modules.imagepicker.ImagePickerOptions
 import expo.modules.imagepicker.toMediaType
+import expo.modules.kotlin.activityresult.AppContextActivityResultContract
 import expo.modules.kotlin.providers.AppContextProvider
+import java.io.Serializable
 
 /**
  * An [androidx.activity.result.contract.ActivityResultContract] to prompt the user to pick single or multiple image(s) or/and video(s),
@@ -16,13 +18,13 @@ import expo.modules.kotlin.providers.AppContextProvider
  */
 internal class ImageLibraryContract(
   private val appContextProvider: AppContextProvider,
-) : ActivityResultContract<ImageLibraryContractOptions, ImagePickerContractResult>() {
+) : AppContextActivityResultContract<ImageLibraryContractOptions, ImagePickerContractResult> {
   override fun createIntent(context: Context, input: ImageLibraryContractOptions) =
     Intent(Intent.ACTION_GET_CONTENT)
       .addCategory(Intent.CATEGORY_OPENABLE)
-      .setType(input.singleMimeType)
+      .setType(input.options.mediaTypes.toMimeType())
 
-  override fun parseResult(resultCode: Int, intent: Intent?) =
+  override fun parseResult(input: ImageLibraryContractOptions, resultCode: Int, intent: Intent?) =
     if (resultCode == Activity.RESULT_CANCELED) {
       ImagePickerContractResult.Cancelled()
     } else {
@@ -35,5 +37,5 @@ internal class ImageLibraryContract(
 }
 
 internal data class ImageLibraryContractOptions(
-  val singleMimeType: String,
-)
+  val options: ImagePickerOptions
+) : Serializable

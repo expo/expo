@@ -63,12 +63,12 @@ class ImagePickerModule : Module() {
       val uri = mediaFile.toContentUri(context)
       val contractOptions = options.toCameraContractOptions(uri)
 
-      launchContract({ cameraLauncher.launch(contractOptions, options) }, options)
+      launchContract({ cameraLauncher.launch(contractOptions) }, options)
     }
 
     AsyncFunction("launchImageLibraryAsync") Coroutine { options: ImagePickerOptions ->
       val contractOptions = options.toImageLibraryContractOptions()
-      launchContract({ imageLibraryLauncher.launch(contractOptions, options) }, options)
+      launchContract({ imageLibraryLauncher.launch(contractOptions) }, options)
     }
 
     AsyncFunction("getPendingResultAsync") Coroutine { _: Promise ->
@@ -86,12 +86,10 @@ class ImagePickerModule : Module() {
         withContext(Dispatchers.Main) {
           cameraLauncher = appContext.registerForActivityResult(
             CameraContract(this@ImagePickerModule),
-            ::handleResultUponActivityDestruction
-          )
+          ) { input, result -> handleResultUponActivityDestruction(result, input.options) }
           imageLibraryLauncher = appContext.registerForActivityResult(
             ImageLibraryContract(this@ImagePickerModule),
-            ::handleResultUponActivityDestruction
-          )
+          ) { input, result -> handleResultUponActivityDestruction(result, input.options) }
         }
       }
     }
@@ -106,8 +104,8 @@ class ImagePickerModule : Module() {
 
   private val mediaHandler = MediaHandler(this)
 
-  private lateinit var cameraLauncher: AppContextActivityResultLauncher<CameraContractOptions, ImagePickerContractResult, ImagePickerOptions>
-  private lateinit var imageLibraryLauncher: AppContextActivityResultLauncher<ImageLibraryContractOptions, ImagePickerContractResult, ImagePickerOptions>
+  private lateinit var cameraLauncher: AppContextActivityResultLauncher<CameraContractOptions, ImagePickerContractResult>
+  private lateinit var imageLibraryLauncher: AppContextActivityResultLauncher<ImageLibraryContractOptions, ImagePickerContractResult>
 
   /**
    * Stores result for an operation that has been interrupted by the activity destruction.
