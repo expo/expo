@@ -1,3 +1,4 @@
+import { ExpoConfig } from '@expo/config-types';
 import { CodedError, NativeModulesProxy } from 'expo-modules-core';
 import { Platform, NativeModules } from 'react-native';
 
@@ -143,6 +144,23 @@ Object.defineProperties(constants, {
         return null;
       }
       return maybeManifest;
+    },
+    enumerable: true,
+  },
+  expoConfig: {
+    get(): ExpoConfig | null {
+      const maybeManifest = getManifest(true);
+      if (!maybeManifest) {
+        return null;
+      }
+
+      if (isManifest(maybeManifest)) {
+        return maybeManifest.extra?.expoClient ?? null;
+      } else if (isAppManifest(maybeManifest)) {
+        return maybeManifest;
+      }
+
+      return null;
     },
     enumerable: true,
   },
