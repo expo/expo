@@ -54,7 +54,7 @@
     "lodash": "^4.17.19",
     "react": "18.0.0",
     "react-native": "0.69.0",
-    "react-native-gesture-handler": "~2.2.1",
+    "react-native-gesture-handler": "~2.5.0",
     "react-native-safe-area-view": "^0.14.8",
     "sinon": "^7.1.1"
   },
