@@ -111,7 +111,7 @@ class SharingModule(
 
   override fun onActivityResult(activity: Activity, requestCode: Int, resultCode: Int, data: Intent?) {
     if (requestCode == REQUEST_CODE && pendingPromise != null) {
-      pendingPromise?.resolve(Bundle.EMPTY)
+      pendingPromise?.resolve(null)
       pendingPromise = null
     }
   }

@@ -8,6 +8,10 @@
 
 ### 🐛 Bug fixes
 
+### ⚠️ Notices
+
+- Changed the return type of the `shareAsync` function. The promise now resolves to `void` instead of an empty object.
+
 ### 💡 Others
 
 ## 10.2.0 — 2022-04-18
