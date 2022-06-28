@@ -33,7 +33,7 @@ void CachedReferencesRegistry::loadJClass(
   // This is appropriate for classes that are never unloaded which is any class in an Android app.
   auto clazz = (jclass) env->NewGlobalRef(env->FindClass(name.c_str()));
 
-  std::unordered_map<std::pair<std::string, std::string>, jmethodID> methods;
+  MethodHashMap methods;
   methods.reserve(methodsNames.size());
 
   for (auto &method: methodsNames) {
@@ -60,6 +60,6 @@ jmethodID CachedReferencesRegistry::CachedJClass::getMethod(const std::string &n
 
 CachedReferencesRegistry::CachedJClass::CachedJClass(
   jclass clazz,
-  std::unordered_map<std::pair<std::string, std::string>, jmethodID> methods
+  MethodHashMap methods
 ) : clazz(clazz), methods(std::move(methods)) {}
 } // namespace expo
