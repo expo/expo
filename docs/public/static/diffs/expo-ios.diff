@@ -28,6 +28,10 @@ index da9f60a..0164063 100644
 @@ -50,10 +50,11 @@ - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(
    }
  
+-  UIView *rootView = RCTAppSetupDefaultRootView(bridge, @"main", nil);
++  UIView *rootView = [self.reactDelegate createRootViewWithBridge:bridge moduleName:@"main" initialProperties:nil];
+
+   rootView.backgroundColor = [UIColor whiteColor];
    self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
 -  UIViewController *rootViewController = [UIViewController new];
 +  UIViewController *rootViewController = [self.reactDelegate createRootViewController];
