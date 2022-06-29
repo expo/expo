@@ -104,7 +104,7 @@ export type Manifest = {
 
 // @docsMissing
 export type ManifestExtra = ClientScopingConfig & {
-  expoClient?: ExpoConfig;
+  expoClient?: ExpoClientConfig;
   expoGo?: ExpoGoConfig;
   eas?: EASConfig;
 };
