@@ -1,0 +1,370 @@
+diff --git a/node_modules/react-native/ReactCommon/react/bridging/React-bridging.podspec b/node_modules/react-native/ReactCommon/React-bridging.podspec
+similarity index 87%
+rename from node_modules/react-native/ReactCommon/react/bridging/React-bridging.podspec
+rename to node_modules/react-native/ReactCommon/React-bridging.podspec
+index 99906e6..5255c13 100644
+--- a/node_modules/react-native/ReactCommon/react/bridging/React-bridging.podspec
++++ b/node_modules/react-native/ReactCommon/React-bridging.podspec
+@@ -5,7 +5,7 @@
+ 
+ require "json"
+ 
+-package = JSON.parse(File.read(File.join(__dir__, "..", "..", "..", "package.json")))
++package = JSON.parse(File.read(File.join(__dir__, "..", "package.json")))
+ version = package['version']
+ 
+ source = { :git => 'https://github.com/facebook/react-native.git' }
+@@ -28,9 +28,10 @@ Pod::Spec.new do |s|
+   s.author                 = "Facebook, Inc. and its affiliates"
+   s.platforms              = { :ios => "12.4" }
+   s.source                 = source
+-  s.source_files           = "**/*.{cpp,h}"
+-  s.exclude_files          = "tests"
++  s.source_files           = "react/bridging/**/*.{cpp,h}"
++  s.exclude_files          = "react/bridging/tests"
+   s.header_dir             = "react/bridging"
++  s.header_mappings_dir    = "."
+   s.compiler_flags         = folly_compiler_flags
+   s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/RCT-Folly\"",
+                                "USE_HEADERMAP" => "YES",
+diff --git a/node_modules/react-native/ReactCommon/ReactCommon.podspec b/node_modules/react-native/ReactCommon/ReactCommon.podspec
+index 3ec2321..717ba54 100644
+--- a/node_modules/react-native/ReactCommon/ReactCommon.podspec
++++ b/node_modules/react-native/ReactCommon/ReactCommon.podspec
+@@ -32,7 +32,7 @@ Pod::Spec.new do |s|
+   s.source                 = source
+   s.header_dir             = "ReactCommon" # Use global header_dir for all subspecs for use_frameworks! compatibility
+   s.compiler_flags         = folly_compiler_flags + ' ' + boost_compiler_flags
+-  s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/RCT-Folly\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/Headers/Private/React-Core\" \"$(PODS_ROOT)/Headers/Private/React-bridging\"",
++  s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/RCT-Folly\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/Headers/Private/React-Core\" \"$(PODS_ROOT)/Headers/Private/React-bridging/react/bridging\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-bridging/react_bridging.framework/Headers\"",
+                                "USE_HEADERMAP" => "YES",
+                                "CLANG_CXX_LANGUAGE_STANDARD" => "c++17" }
+ 
+diff --git a/node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios/RCTTurboModule.h b/node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios/RCTTurboModule.h
+index c143ace..1d16b08 100644
+--- a/node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios/RCTTurboModule.h
++++ b/node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios/RCTTurboModule.h
+@@ -16,7 +16,6 @@
+ #import <React/RCTModuleMethod.h>
+ #import <ReactCommon/CallInvoker.h>
+ #import <ReactCommon/TurboModule.h>
+-#import <ReactCommon/TurboModuleUtils.h>
+ #import <string>
+ #import <unordered_map>
+ 
+@@ -27,6 +26,7 @@
+ namespace facebook {
+ namespace react {
+ 
++class CallbackWrapper;
+ class Instance;
+ 
+ typedef std::weak_ptr<CallbackWrapper> (
+diff --git a/node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios/RCTTurboModuleManager.mm b/node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios/RCTTurboModuleManager.mm
+index 6dfc6cb..e57439c 100644
+--- a/node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios/RCTTurboModuleManager.mm
++++ b/node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios/RCTTurboModuleManager.mm
+@@ -27,6 +27,7 @@
+ #import <ReactCommon/TurboCxxModule.h>
+ #import <ReactCommon/TurboModuleBinding.h>
+ #import <ReactCommon/TurboModulePerfLogger.h>
++#import <ReactCommon/TurboModuleUtils.h>
+ 
+ using namespace facebook;
+ using namespace facebook::react;
+diff --git a/node_modules/react-native/ReactCommon/yoga/Yoga-umbrella.h b/node_modules/react-native/ReactCommon/yoga/Yoga-umbrella.h
+deleted file mode 100644
+index 2e62c47..0000000
+--- a/node_modules/react-native/ReactCommon/yoga/Yoga-umbrella.h
++++ /dev/null
+@@ -1,21 +0,0 @@
+-#ifdef __OBJC__
+-#import <UIKit/UIKit.h>
+-#else
+-#ifndef FOUNDATION_EXPORT
+-#if defined(__cplusplus)
+-#define FOUNDATION_EXPORT extern "C"
+-#else
+-#define FOUNDATION_EXPORT extern
+-#endif
+-#endif
+-#endif
+-
+-#import "yoga/YGEnums.h"
+-#import "yoga/YGMacros.h"
+-#import "yoga/YGNode.h"
+-#import "yoga/YGStyle.h"
+-#import "yoga/YGValue.h"
+-#import "yoga/Yoga.h"
+-
+-FOUNDATION_EXPORT double yogaVersionNumber;
+-FOUNDATION_EXPORT const unsigned char yogaVersionString[];
+diff --git a/node_modules/react-native/ReactCommon/yoga/Yoga.modulemap b/node_modules/react-native/ReactCommon/yoga/Yoga.modulemap
+deleted file mode 100644
+index 54ea792..0000000
+--- a/node_modules/react-native/ReactCommon/yoga/Yoga.modulemap
++++ /dev/null
+@@ -1,6 +0,0 @@
+-framework module yoga {
+-  umbrella header "Yoga-umbrella.h"
+-
+-  export *
+-  module * { export * }
+-}
+diff --git a/node_modules/react-native/ReactCommon/yoga/Yoga.podspec b/node_modules/react-native/ReactCommon/yoga/Yoga.podspec
+index 8b2ef89..8ddf0bd 100644
+--- a/node_modules/react-native/ReactCommon/yoga/Yoga.podspec
++++ b/node_modules/react-native/ReactCommon/yoga/Yoga.podspec
+@@ -47,25 +47,11 @@ Pod::Spec.new do |spec|
+ 
+   # Set this environment variable when *not* using the `:path` option to install the pod.
+   # E.g. when publishing this spec to a spec repo.
+-  source_files = 'yoga/**/*.{cpp,h}', 'Yoga-umbrella.h'
+-  source_files = source_files.map { |file| File.join('ReactCommon/yoga', file) } if ENV['INSTALL_YOGA_WITHOUT_PATH_OPTION']
++  source_files = 'yoga/**/*.{cpp,h}'
++  source_files = File.join('ReactCommon/yoga', source_files) if ENV['INSTALL_YOGA_WITHOUT_PATH_OPTION']
+   spec.source_files = source_files
+ 
+-  spec.module_map = 'Yoga.modulemap'
+-
+-  # CocoaPods custom `module_map` + `header_dir` doesn't put the umbrella header in right place.
+-  # Ideally, modulemap should be placed with the umbrella header, that would work for both use_frameworks! mode and non use_frameworks! mode.
+-  # This script copy the umbrella header back to right place.
+-  spec.script_phase = {
+-    :name => 'Copy umbrella header',
+-    :input_files => ["$PODS_ROOT/Headers/Public/Yoga/yoga/Yoga-umbrella.h"],
+-    :output_files => ["$PODS_ROOT/Headers/Private/Yoga/Yoga-umbrella.h"],
+-    :execution_position => :before_compile,
+-    :shell_path => '/bin/bash',
+-
+-    # In use_frameworks! mode, the umbrella header will by copied to right place.
+-    # This copy command will fail because "$PODS_ROOT/Headers/Public/Yoga/yoga/Yoga-umbrella.h" doesn't exist.
+-    # The command is just a no-op in use_frameworks! mode.
+-    :script => 'cp -f "$PODS_ROOT/Headers/Public/Yoga/yoga/Yoga-umbrella.h" "$PODS_ROOT/Headers/Private/Yoga/Yoga-umbrella.h" || true',
+-  }
++  header_files = 'yoga/*.h'
++  header_files = File.join('ReactCommon/yoga', header_files) if ENV['INSTALL_YOGA_WITHOUT_PATH_OPTION']
++  spec.public_header_files = header_files
+ end
+diff --git a/node_modules/react-native/ReactCommon/yoga/yoga/BitUtils.h b/node_modules/react-native/ReactCommon/yoga/yoga/BitUtils.h
+index b17751a..a60ea76 100644
+--- a/node_modules/react-native/ReactCommon/yoga/yoga/BitUtils.h
++++ b/node_modules/react-native/ReactCommon/yoga/yoga/BitUtils.h
+@@ -7,6 +7,8 @@
+ 
+ #pragma once
+ 
++#ifdef __cplusplus
++
+ #include <cstdio>
+ #include <cstdint>
+ #include "YGEnums.h"
+@@ -65,3 +67,5 @@ inline void setBooleanData(uint8_t& flags, size_t index, bool value) {
+ } // namespace detail
+ } // namespace yoga
+ } // namespace facebook
++
++#endif
+diff --git a/node_modules/react-native/ReactCommon/yoga/yoga/CompactValue.h b/node_modules/react-native/ReactCommon/yoga/yoga/CompactValue.h
+index 6879ca1..1f03cf7 100644
+--- a/node_modules/react-native/ReactCommon/yoga/yoga/CompactValue.h
++++ b/node_modules/react-native/ReactCommon/yoga/yoga/CompactValue.h
+@@ -7,6 +7,8 @@
+ 
+ #pragma once
+ 
++#ifdef __cplusplus
++
+ #include "YGValue.h"
+ #include "YGMacros.h"
+ #include <cmath>
+@@ -182,3 +184,5 @@ constexpr bool operator!=(CompactValue a, CompactValue b) noexcept {
+ } // namespace detail
+ } // namespace yoga
+ } // namespace facebook
++
++#endif
+diff --git a/node_modules/react-native/ReactCommon/yoga/yoga/Utils.h b/node_modules/react-native/ReactCommon/yoga/yoga/Utils.h
+index d21e8ec..8588ecc 100644
+--- a/node_modules/react-native/ReactCommon/yoga/yoga/Utils.h
++++ b/node_modules/react-native/ReactCommon/yoga/yoga/Utils.h
+@@ -6,6 +6,9 @@
+  */
+ 
+ #pragma once
++
++#ifdef __cplusplus
++
+ #include "YGNode.h"
+ #include "Yoga-internal.h"
+ #include "CompactValue.h"
+@@ -145,3 +148,5 @@ inline YGFloatOptional YGResolveValueMargin(
+ }
+ 
+ void throwLogicalErrorWithMessage(const char* message);
++
++#endif
+diff --git a/node_modules/react-native/ReactCommon/yoga/yoga/YGConfig.h b/node_modules/react-native/ReactCommon/yoga/yoga/YGConfig.h
+index 607408a..e15cc12 100644
+--- a/node_modules/react-native/ReactCommon/yoga/yoga/YGConfig.h
++++ b/node_modules/react-native/ReactCommon/yoga/yoga/YGConfig.h
+@@ -6,6 +6,9 @@
+  */
+ 
+ #pragma once
++
++#ifdef __cplusplus
++
+ #include "Yoga-internal.h"
+ #include "Yoga.h"
+ 
+@@ -74,3 +77,5 @@ public:
+     setCloneNodeCallback(YGCloneNodeFunc{nullptr});
+   }
+ };
++
++#endif
+diff --git a/node_modules/react-native/ReactCommon/yoga/yoga/YGFloatOptional.h b/node_modules/react-native/ReactCommon/yoga/yoga/YGFloatOptional.h
+index 4aa9e76..6af7bba 100644
+--- a/node_modules/react-native/ReactCommon/yoga/yoga/YGFloatOptional.h
++++ b/node_modules/react-native/ReactCommon/yoga/yoga/YGFloatOptional.h
+@@ -7,6 +7,8 @@
+ 
+ #pragma once
+ 
++#ifdef __cplusplus
++
+ #include <cmath>
+ #include <limits>
+ #include "Yoga-internal.h"
+@@ -68,3 +70,5 @@ inline bool operator>=(YGFloatOptional lhs, YGFloatOptional rhs) {
+ inline bool operator<=(YGFloatOptional lhs, YGFloatOptional rhs) {
+   return lhs < rhs || lhs == rhs;
+ }
++
++#endif
+diff --git a/node_modules/react-native/ReactCommon/yoga/yoga/YGLayout.h b/node_modules/react-native/ReactCommon/yoga/yoga/YGLayout.h
+index 6c23934..e3a4a19 100644
+--- a/node_modules/react-native/ReactCommon/yoga/yoga/YGLayout.h
++++ b/node_modules/react-native/ReactCommon/yoga/yoga/YGLayout.h
+@@ -6,6 +6,9 @@
+  */
+ 
+ #pragma once
++
++#ifdef __cplusplus
++
+ #include "BitUtils.h"
+ #include "YGFloatOptional.h"
+ #include "Yoga-internal.h"
+@@ -85,3 +88,5 @@ public:
+   bool operator==(YGLayout layout) const;
+   bool operator!=(YGLayout layout) const { return !(*this == layout); }
+ };
++
++#endif
+diff --git a/node_modules/react-native/ReactCommon/yoga/yoga/YGNodePrint.h b/node_modules/react-native/ReactCommon/yoga/yoga/YGNodePrint.h
+index 0e25b97..83b3f86 100644
+--- a/node_modules/react-native/ReactCommon/yoga/yoga/YGNodePrint.h
++++ b/node_modules/react-native/ReactCommon/yoga/yoga/YGNodePrint.h
+@@ -6,7 +6,11 @@
+  */
+ 
+ #ifdef DEBUG
++
+ #pragma once
++
++#ifdef __cplusplus
++
+ #include <string>
+ 
+ #include "Yoga.h"
+@@ -22,4 +26,7 @@ void YGNodeToString(
+ 
+ } // namespace yoga
+ } // namespace facebook
++
++#endif
++
+ #endif
+diff --git a/node_modules/react-native/ReactCommon/yoga/yoga/Yoga-internal.h b/node_modules/react-native/ReactCommon/yoga/yoga/Yoga-internal.h
+index 08f9da1..492543e 100644
+--- a/node_modules/react-native/ReactCommon/yoga/yoga/Yoga-internal.h
++++ b/node_modules/react-native/ReactCommon/yoga/yoga/Yoga-internal.h
+@@ -6,6 +6,9 @@
+  */
+ 
+ #pragma once
++
++#ifdef __cplusplus
++
+ #include <algorithm>
+ #include <array>
+ #include <cmath>
+@@ -148,3 +151,5 @@ static const float kDefaultFlexShrink = 0.0f;
+ static const float kWebDefaultFlexShrink = 1.0f;
+ 
+ extern bool YGFloatsEqual(const float a, const float b);
++
++#endif
+diff --git a/node_modules/react-native/ReactCommon/yoga/yoga/log.h b/node_modules/react-native/ReactCommon/yoga/yoga/log.h
+index 1d270e8..b9bfea4 100644
+--- a/node_modules/react-native/ReactCommon/yoga/yoga/log.h
++++ b/node_modules/react-native/ReactCommon/yoga/yoga/log.h
+@@ -7,6 +7,8 @@
+ 
+ #pragma once
+ 
++#ifdef __cplusplus
++
+ #include "YGEnums.h"
+ 
+ struct YGNode;
+@@ -36,3 +38,5 @@ struct Log {
+ } // namespace detail
+ } // namespace yoga
+ } // namespace facebook
++
++#endif
+diff --git a/node_modules/react-native/scripts/react_native_pods.rb b/node_modules/react-native/scripts/react_native_pods.rb
+index fe4ef7d..7f6ebab 100644
+--- a/node_modules/react-native/scripts/react_native_pods.rb
++++ b/node_modules/react-native/scripts/react_native_pods.rb
+@@ -65,7 +65,7 @@ def use_react_native! (options={})
+     pod 'React-Core/DevSupport', :path => "#{prefix}/"
+   end
+ 
+-  pod 'React-bridging', :path => "#{prefix}/ReactCommon/react/bridging"
++  pod 'React-bridging', :path => "#{prefix}/ReactCommon"
+   pod 'React-cxxreact', :path => "#{prefix}/ReactCommon/cxxreact"
+   pod 'React-jsi', :path => "#{prefix}/ReactCommon/jsi"
+   pod 'React-jsiexecutor', :path => "#{prefix}/ReactCommon/jsiexecutor"
+diff --git a/node_modules/react-native/third-party-podspecs/RCT-Folly.podspec b/node_modules/react-native/third-party-podspecs/RCT-Folly.podspec
+index 700cd7e..9c2e19d 100644
+--- a/node_modules/react-native/third-party-podspecs/RCT-Folly.podspec
++++ b/node_modules/react-native/third-party-podspecs/RCT-Folly.podspec
+@@ -75,7 +75,10 @@ Pod::Spec.new do |spec|
+   spec.libraries           = "c++abi" # NOTE Apple-only: Keep c++abi here due to https://github.com/react-native-community/releases/issues/251
+   spec.pod_target_xcconfig = { "USE_HEADERMAP" => "NO",
+                                "CLANG_CXX_LANGUAGE_STANDARD" => "c++17",
+-                               "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)\" \"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/libevent/include/\"" }
++                               "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)\" \"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/libevent/include/\" \"$(PODS_ROOT)/fmt/include\"",
++                               # In dynamic framework (use_frameworks!) mode, ignore the unused and undefined boost symbols when generating the library.
++                               "OTHER_LDFLAGS" => "\"-Wl,-U,_jump_fcontext\" \"-Wl,-U,_make_fcontext\""
++                             }
+ 
+   # TODO: The boost spec should really be selecting these files so that dependents of Folly can also access the required headers.
+   spec.user_target_xcconfig = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost\"" }
+diff --git a/node_modules/react-native/React/Views/RCTShadowView.h b/node_modules/react-native/React/Views/RCTShadowView.h
+index 428d2eb..226672f 100644
+--- a/node_modules/react-native/React/Views/RCTShadowView.h
++++ b/node_modules/react-native/React/Views/RCTShadowView.h
+@@ -8,6 +8,8 @@
+ #import <UIKit/UIKit.h>
+
+ #import <React/RCTComponent.h>
++// Keeps RCTConvert.h here before yoga for clang module to generate correct header imports.
++#import <React/RCTConvert.h>
+ #import <React/RCTLayout.h>
+ #import <React/RCTRootView.h>
+ #import <yoga/Yoga.h>

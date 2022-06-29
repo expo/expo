@@ -108,7 +108,9 @@ export const ScreenItems = screens.map((name) => ({
 
 export default function ExpoApisScreen() {
   const renderItemRight = React.useCallback(
-    ({ name }) => <ExpoAPIIcon name={name} style={{ marginRight: 10, marginLeft: 6 }} />,
+    ({ name }: { name: string }) => (
+      <ExpoAPIIcon name={name} style={{ marginRight: 10, marginLeft: 6 }} />
+    ),
     []
   );
 

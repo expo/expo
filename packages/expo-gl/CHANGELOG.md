@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Stop rendering when app is backgrounded on iOS. ([#17463](https://github.com/expo/expo/pull/17463) by [@wkozyra95](https://github.com/wkozyra95))
+- Added support for React Native 0.69.x. ([#18006](https://github.com/expo/expo/pull/18006) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
