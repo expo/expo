@@ -10,7 +10,7 @@ import { Terminal } from '~/ui/components/Snippet';
 
 > Note: These docs assume a basic level of familiarity with React-Native. If you are new to React-Native, please see the [React-Native docs](https://reactnative.dev/docs/getting-started).
 
-The installation steps on this page are only required to add the `expo-dev-client` library to a React Native or Bare project. To add a the `expo-dev-client` library to an existing managed project, see our [Getting Started guide](getting-started.md).
+The installation steps on this page are only required to add the `expo-dev-client` library to a React Native or bare project. To add a the `expo-dev-client` library to an existing managed project, see our [Getting Started guide](getting-started.md).
 
 
 If you're just starting your project, you can run the following command to create a new project with Expo modules pre-installed: 
@@ -32,12 +32,12 @@ Now, let's go ahead and install `expo-dev-client`.
 
 ### 🍏 iOS
 
-<Tabs tabs={["Expo SDK 45+", "Expo SDK below 45"]}>
+<Tabs tabs={["Expo SDK 45+", "Expo SDK <= 44"]}>
 
 <Tab >
 
-Make sure that your project is configured to deploy on an iOS version _above 10_.
-To do that, open Xcode and go to General > Deployment Info, and select an iOS version of at least 11.0.
+Make sure that your project is configured to deploy on an iOS version of _at least 12_.
+To do that, open Xcode and go to General > Deployment Info, and select an iOS version of at least 12.0.
 
 <img src="/static/images/client/check_ios_version.png" style={{maxWidth: "100%" }}/>
 
@@ -53,8 +53,8 @@ Run the following command to install native code for the Dev Launcher via CocoaP
 
 <InstallSection packageName="expo-development-client" cmd={["npx pod-install"]} hideBareInstructions />
 
-Also, make sure that your project is configured to deploy on an iOS version _above 10_.
-To do that, open Xcode and go to General > Deployment Info, and select an iOS version of at least 11.0.
+Also, make sure that your project is configured to deploy on an iOS version of _at least 12_.
+To do that, open Xcode and go to General > Deployment Info, and select an iOS version of at least 12.0.
 
 <img src="/static/images/client/check_ios_version.png" style={{maxWidth: "100%" }}/>
 
@@ -80,7 +80,7 @@ See the [uri-scheme package](https://www.npmjs.com/package/uri-scheme) for more 
 
 ### 🍏 iOS
 
-<Tabs tabs={["Expo SDK 45+", "Expo SDK below 45"]}>
+<Tabs tabs={["Expo SDK 45+", "Expo SDK <= 44"]}>
 
 <Tab >
 
@@ -99,7 +99,7 @@ Make the following changes to allow the `expo-dev-client` library to control pro
 
 ### 🤖 Android
 
-<Tabs tabs={["Expo SDK 45+", "Expo SDK below 45"]}>
+<Tabs tabs={["Expo SDK 45+", "Expo SDK <= 44"]}>
 
 <Tab >
 
@@ -118,7 +118,7 @@ Make the following changes to allow the `expo-dev-client` library to control pro
 
 ## 3. Optional configuration
 
-There are a few more changes you can make to get the best experience, but you [can skip ahead to building](/development/getting-started/#creating-and-installing-your-first-development-build), if you prefer.
+There are a few more changes you can make to get the best experience, but you [can skip ahead to building](/development/getting-started.md#creating-and-installing-your-first-development-build), if you prefer.
 
 ### Disable packager autostart when building for iOS
 
@@ -140,15 +140,10 @@ import App from "./App";
 
 ### Loading published updates
 
-Development builds can also open and preview published updates to your app. To add this feature, add `expo-updates@0.13.2` or newer to your app if it isn't already installed, and add a small additional integration in your **AppDelegate.m** and **MainApplication.java** files.
+Development builds can also open and preview published updates to your app. To add this feature to your existing project, [add `expo-updates` to your app](../bare/installing-updates.md), if it isn't already installed. Otherwise, if you are working from a template, you won't need to make any changes beyond the following commands:
 
-1. [Install `expo-updates` in your project](../bare/installing-updates.md).
-2. Make the following changes to complete the integration with `expo-updates`:
-
-<ConfigurationDiff source="/static/diffs/client/app-delegate-updates.diff" />
-
-<ConfigurationDiff source="/static/diffs/client/main-application-updates.diff" />
+<InstallSection packageName="expo-updates" cmd={["expo install expo-updates", "npx pod-install"]} hideBareInstructions />
 
 ## 4. Build and Install
 
-You're now ready to [build your first development build](/development/getting-started/#creating-and-installing-your-first-development-build).
+You're now ready to [build your first development build](/development/getting-started.md#creating-and-installing-your-first-development-build).
