@@ -260,13 +260,20 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
         targetAndroidPath: 'modules/api/components/gesturehandler',
         sourceAndroidPackage: 'com.swmansion.gesturehandler',
         targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.gesturehandler',
-        cleanupTargetPath: false,
+        cleanupTargetPath: false, // first step cleans parent directory
       },
       {
         sourceAndroidPath: 'android/common/src/main/java/com/swmansion/common',
         targetAndroidPath: 'modules/api/components/gesturehandler/common',
         sourceAndroidPackage: 'com.swmansion.common',
         targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.gesturehandler',
+        cleanupTargetPath: false, // first steps cleans parent directory
+      },
+      {
+        sourceAndroidPath: 'android/src/paper/java/com/facebook/react/viewmanagers',
+        targetAndroidPath: '../../../../com/facebook/react/viewmanagers',
+        sourceAndroidPackage: 'com.facebook.react.viewmanagers',
+        targetAndroidPackage: 'com.facebook.react.viewmanagers',
         cleanupTargetPath: false,
       },
       {
@@ -276,9 +283,9 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
       },
     ],
     warnings: [
-      `NOTE: Any files in ${chalk.magenta(
-        'com.facebook.react'
-      )} will not be updated -- you'll need to add these to expoview manually!`,
+      `NOTE: Any files in ${chalk.magenta('com.facebook.react')} will not be updated ${chalk.red(
+        'for iOS, Android is fine'
+      )} -- you'll need to add these to expoview manually!`,
     ],
   },
   'react-native-reanimated': {
