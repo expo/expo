@@ -3,12 +3,15 @@ package versioned.host.exp.exponent.modules.api.components.gesturehandler
 import android.os.SystemClock
 import android.view.MotionEvent
 import android.view.View
+import android.view.ViewConfiguration
 import android.view.ViewGroup
-import versioned.host.exp.exponent.modules.api.components.gesturehandler.react.RNGestureHandlerButtonViewManager
+import com.facebook.react.views.textinput.ReactEditText
 
 class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
   private var shouldActivateOnStart = false
   private var disallowInterruption = false
+
+  private var hook: NativeViewGestureHandlerHook = defaultHook
 
   init {
     setShouldCancelWhenOutside(true)
@@ -34,13 +37,17 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
   }
 
   override fun shouldRecognizeSimultaneously(handler: GestureHandler<*>): Boolean {
+    // if the gesture is marked by user as simultaneous with other or the hook return true
+    if (super.shouldRecognizeSimultaneously(handler) || hook.shouldRecognizeSimultaneously(handler)) {
+      return true
+    }
+
     if (handler is NativeViewGestureHandler) {
       // Special case when the peer handler is also an instance of NativeViewGestureHandler:
       // For the `disallowInterruption` to work correctly we need to check the property when
       // accessed as a peer, because simultaneous recognizers can be set on either side of the
       // connection.
-      val nativeWrapper = handler
-      if (nativeWrapper.state == STATE_ACTIVE && nativeWrapper.disallowInterruption) {
+      if (handler.state == STATE_ACTIVE && handler.disallowInterruption) {
         // other handler is active and it disallows interruption, we don't want to get into its way
         return false
       }
@@ -52,7 +59,7 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
       // as it means the other handler has turned active and returning `true` would prevent it from
       // interrupting the current handler
       false
-    } else state == STATE_ACTIVE && canBeInterrupted
+    } else state == STATE_ACTIVE && canBeInterrupted && (!hook.shouldCancelRootViewGestureHandlerIfNecessary() || handler.tag > 0)
     // otherwise we can only return `true` if already in an active state
   }
 
@@ -60,19 +67,10 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
     return !disallowInterruption
   }
 
-  private fun canStart(): Boolean {
-    val view = view
-    if (view is StateChangeHook) {
-      return view.canStart()
-    }
-
-    return true
-  }
-
-  private fun afterGestureEnd() {
-    val view = view
-    if (view is StateChangeHook) {
-      view.afterGestureEnd()
+  override fun onPrepare() {
+    when (val view = view) {
+      is NativeViewGestureHandlerHook -> this.hook = view
+      is ReactEditText -> this.hook = EditTextHook(this, view)
     }
   }
 
@@ -84,7 +82,7 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
         activate()
       }
       end()
-      afterGestureEnd()
+      hook.afterGestureEnd(event)
     } else if (state == STATE_UNDETERMINED || state == STATE_BEGAN) {
       when {
         shouldActivateOnStart -> {
@@ -96,8 +94,11 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
           view.onTouchEvent(event)
           activate()
         }
+        hook.wantsToHandleEventBeforeActivation() -> {
+          hook.handleEventBeforeActivation(event)
+        }
         state != STATE_BEGAN -> {
-          if (canStart()) {
+          if (hook.canBegin()) {
             begin()
           } else {
             cancel()
@@ -117,13 +118,93 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
     view!!.onTouchEvent(event)
   }
 
+  override fun onReset() {
+    this.hook = defaultHook
+  }
+
   companion object {
     private fun tryIntercept(view: View, event: MotionEvent) =
       view is ViewGroup && view.onInterceptTouchEvent(event)
+
+    private val defaultHook = object : NativeViewGestureHandlerHook {}
   }
 
-  interface StateChangeHook {
-    fun canStart(): Boolean
-    fun afterGestureEnd()
+  interface NativeViewGestureHandlerHook {
+    /**
+     * Called when gesture is in the UNDETERMINED state, shouldActivateOnStart is set to false,
+     * and both tryIntercept and wantsToHandleEventBeforeActivation returned false.
+     *
+     * @return Boolean value signalling whether the handler can transition to the BEGAN state. If false
+     * the gesture will be cancelled.
+     */
+    fun canBegin() = true
+
+    /**
+     * Called after the gesture transitions to the END state.
+     */
+    fun afterGestureEnd(event: MotionEvent) = Unit
+
+    /**
+     * @return Boolean value signalling whether the gesture can be recognized simultaneously with
+     * other (handler). Returning false doesn't necessarily prevent it from happening.
+     */
+    fun shouldRecognizeSimultaneously(handler: GestureHandler<*>) = false
+
+    /**
+     * shouldActivateOnStart and tryIntercept have priority over this method
+     *
+     * @return Boolean value signalling if the hook wants to handle events passed to the handler
+     * before it activates (after that the events are passed to the underlying view).
+     */
+    fun wantsToHandleEventBeforeActivation() = false
+
+    /**
+     * Will be called with events if wantsToHandleEventBeforeActivation returns true.
+     */
+    fun handleEventBeforeActivation(event: MotionEvent) = Unit
+
+    /**
+     * @return Boolean value indicating whether the RootViewGestureHandler should be cancelled
+     * by this one.
+     */
+    fun shouldCancelRootViewGestureHandlerIfNecessary() = false
+  }
+
+  private class EditTextHook(
+          private val handler: NativeViewGestureHandler,
+          private val editText: ReactEditText
+  ) : NativeViewGestureHandlerHook {
+    private var startX = 0f
+    private var startY = 0f
+    private var touchSlopSquared: Int
+
+    init {
+      val vc = ViewConfiguration.get(editText.context)
+      touchSlopSquared = vc.scaledTouchSlop * vc.scaledTouchSlop
+    }
+
+    override fun afterGestureEnd(event: MotionEvent) {
+      if ((event.x - startX) * (event.x - startX) + (event.y - startY) * (event.y - startY) < touchSlopSquared) {
+        editText.requestFocusFromJS()
+      }
+    }
+
+    // recognize alongside every handler besides RootViewGestureHandler, which is a private inner class
+    // of RNGestureHandlerRootHelper so no explicit type checks, but its tag is always negative
+    // also if other handler is NativeViewGestureHandler then don't override the default implementation
+    override fun shouldRecognizeSimultaneously(handler: GestureHandler<*>) =
+            handler.tag > 0 && handler !is NativeViewGestureHandler
+
+    override fun wantsToHandleEventBeforeActivation() = true
+
+    override fun handleEventBeforeActivation(event: MotionEvent) {
+      handler.activate()
+      editText.onTouchEvent(event)
+
+      startX = event.x
+      startY = event.y
+    }
+
+    override fun shouldCancelRootViewGestureHandlerIfNecessary() = true
   }
 }
