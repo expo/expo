@@ -286,7 +286,7 @@ import { Terminal } from '~/ui/components/Snippet';
   "# If you don’t have expo-cli yet, get it",
   "$ npm i -g expo-cli",
   "",
-]} cmdCopy="npx create-expo-app —template bare-minimum && npm i -g expo-cli" />
+]} cmdCopy="npx create-expo-app --template bare-minimum && npm i -g expo-cli" />
 ```
 
 ### Prettier
