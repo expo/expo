@@ -2528,7 +2528,7 @@ PODS:
     - React-logger (= 0.69.1)
     - React-perflogger (= 0.69.1)
     - ReactCommon/turbomodule/core (= 0.69.1)
-  - RNGestureHandler (2.2.0):
+  - RNGestureHandler (2.5.0):
     - React-Core
   - RNReanimated (2.9.1):
     - DoubleConversion
@@ -4445,7 +4445,7 @@ SPEC CHECKSUMS:
   React-RCTVibration: e8b7dd6635cc95689b5db643b5a3848f1e05b30b
   React-runtimeexecutor: 27f468c5576eaf05ffb7a907528e44c75a3fcbae
   ReactCommon: e30ec17dfb1d4c4f3419eac254350d6abca6d5a2
-  RNGestureHandler: bf572f552ea324acd5b5464b8d30755b2d8c1de6
+  RNGestureHandler: bad495418bcbd3ab47017a38d93d290ebd406f50
   RNReanimated: 5c8c17e26787fd8984cd5accdc70fef2ca70aafd
   RNScreens: 4d83613b50b74ed277026375dc0810893b0c347f
   Stripe: ee32e594fa4dee4bdf2a8a3039f7fb07a21075dc

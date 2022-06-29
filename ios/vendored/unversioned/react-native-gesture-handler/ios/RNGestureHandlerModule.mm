@@ -7,6 +7,17 @@
 #import <React/RCTUIManagerUtils.h>
 #import <React/RCTUIManagerObserverCoordinator.h>
 
+#ifdef RN_FABRIC_ENABLED
+#import <React/RCTBridge.h>
+#import <ReactCommon/RCTTurboModule.h>
+#import <React/RCTBridge+Private.h>
+#import <ReactCommon/CallInvoker.h>
+#import <React/RCTUtils.h>
+#import <React/RCTSurfacePresenter.h>
+
+#import <react/renderer/uimanager/primitives.h>
+#endif // RN_FABRIC_ENABLED
+
 #import "RNGestureHandlerState.h"
 #import "RNGestureHandlerDirection.h"
 #import "RNGestureHandler.h"
@@ -15,41 +26,20 @@
 #import "RNGestureHandlerButton.h"
 #import "RNGestureHandlerStateManager.h"
 
+#ifdef RN_FABRIC_ENABLED
+using namespace facebook;
+using namespace react;
+#endif // RN_FABRIC_ENABLED
+
+#ifdef RN_FABRIC_ENABLED
+@interface RNGestureHandlerModule () <RCTSurfacePresenterObserver, RNGestureHandlerStateManager>
+
+@end
+#else
 @interface RNGestureHandlerModule () <RCTUIManagerObserver, RNGestureHandlerStateManager>
 
 @end
-
-@interface RNGestureHandlerButtonManager : RCTViewManager
-@end
-
-@implementation RNGestureHandlerButtonManager
-
-RCT_EXPORT_MODULE(RNGestureHandlerButton)
-
-RCT_EXPORT_VIEW_PROPERTY(enabled, BOOL)
-#if !TARGET_OS_TV
-RCT_CUSTOM_VIEW_PROPERTY(exclusive, BOOL, RNGestureHandlerButton)
-{
-  [view setExclusiveTouch: json == nil ? YES : [RCTConvert BOOL: json]];
-}
-#endif
-RCT_CUSTOM_VIEW_PROPERTY(hitSlop, UIEdgeInsets, RNGestureHandlerButton)
-{
-  if (json) {
-    UIEdgeInsets hitSlopInsets = [RCTConvert UIEdgeInsets:json];
-    view.hitTestEdgeInsets = UIEdgeInsetsMake(-hitSlopInsets.top, -hitSlopInsets.left, -hitSlopInsets.bottom, -hitSlopInsets.right);
-  } else {
-    view.hitTestEdgeInsets = defaultView.hitTestEdgeInsets;
-  }
-}
-
-- (UIView *)view
-{
-    return [RNGestureHandlerButton new];
-}
-
-@end
-
+#endif // RN_FABRIC_ENABLED
 
 typedef void (^GestureHandlerOperation)(RNGestureHandlerManager *manager);
 
@@ -70,8 +60,18 @@ RCT_EXPORT_MODULE()
 
 - (void)invalidate
 {
+    RNGestureHandlerManager *handlerManager = _manager;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [handlerManager dropAllGestureHandlers];
+    });
+    
     _manager = nil;
+    
+#ifdef RN_FABRIC_ENABLED
+    [self.bridge.surfacePresenter removeObserver:self];
+#else
     [self.bridge.uiManager.observerCoordinator removeObserver:self];
+#endif // RN_FABRIC_ENABLED
 }
 
 - (dispatch_queue_t)methodQueue
@@ -85,6 +85,32 @@ RCT_EXPORT_MODULE()
     return RCTGetUIManagerQueue();
 }
 
+#ifdef RN_FABRIC_ENABLED
+void decorateRuntime(jsi::Runtime &runtime)
+{
+  auto isFormsStackingContext = jsi::Function::createFromHostFunction(
+      runtime,
+      jsi::PropNameID::forAscii(runtime, "isFormsStackingContext"),
+      1,
+      [](jsi::Runtime &runtime,
+         const jsi::Value &thisValue,
+         const jsi::Value *arguments,
+         size_t count) -> jsi::Value
+      {
+        if (!arguments[0].isObject())
+        {
+          return jsi::Value::null();
+        }
+
+        auto shadowNode = arguments[0].asObject(runtime).getHostObject<ShadowNodeWrapper>(runtime)->shadowNode;
+        bool isFormsStackingContext = shadowNode->getTraits().check(ShadowNodeTraits::FormsStackingContext);
+
+        return jsi::Value(isFormsStackingContext);
+      });
+  runtime.global().setProperty(runtime, "isFormsStackingContext", std::move(isFormsStackingContext));
+}
+#endif // RN_FABRIC_ENABLED
+
 - (void)setBridge:(RCTBridge *)bridge
 {
     [super setBridge:bridge];
@@ -93,8 +119,22 @@ RCT_EXPORT_MODULE()
                 initWithUIManager:bridge.uiManager
                 eventDispatcher:bridge.eventDispatcher];
     _operations = [NSMutableArray new];
+
+#ifdef RN_FABRIC_ENABLED
+    [bridge.surfacePresenter addObserver:self];
+#else
     [bridge.uiManager.observerCoordinator addObserver:self];
+#endif // RN_FABRIC_ENABLED
 }
+
+#ifdef RN_FABRIC_ENABLED
+RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(install) {
+    RCTCxxBridge *cxxBridge = (RCTCxxBridge *)self.bridge;
+    auto runtime = (jsi::Runtime *)cxxBridge.runtime;
+    decorateRuntime(*runtime);
+    return @true;
+}
+#endif // RN_FABRIC_ENABLED
 
 RCT_EXPORT_METHOD(createGestureHandler:(nonnull NSString *)handlerName tag:(nonnull NSNumber *)handlerTag config:(NSDictionary *)config)
 {
@@ -103,14 +143,10 @@ RCT_EXPORT_METHOD(createGestureHandler:(nonnull NSString *)handlerName tag:(nonn
     }];
 }
 
-RCT_EXPORT_METHOD(attachGestureHandler:(nonnull NSNumber *)handlerTag toViewWithTag:(nonnull NSNumber *)viewTag useDeviceEvents: (BOOL)useDeviceEvents)
+RCT_EXPORT_METHOD(attachGestureHandler:(nonnull NSNumber *)handlerTag toViewWithTag:(nonnull NSNumber *)viewTag actionType:(nonnull NSNumber *)actionType)
 {
     [self addOperationBlock:^(RNGestureHandlerManager *manager) {
-        if (useDeviceEvents) {
-            [manager attachGestureHandlerForDeviceEvents:handlerTag toViewWithTag:viewTag];
-        } else {
-            [manager attachGestureHandler:handlerTag toViewWithTag:viewTag];
-        }
+        [manager attachGestureHandler:handlerTag toViewWithTag:viewTag withActionType:(RNGestureHandlerActionType)[actionType integerValue]];
     }];
 }
 
@@ -139,6 +175,22 @@ RCT_EXPORT_METHOD(handleClearJSResponder)
 {
     [self addOperationBlock:^(RNGestureHandlerManager *manager) {
         [manager handleClearJSResponder];
+    }];
+}
+
+RCT_EXPORT_METHOD(flushOperations)
+{
+    if (_operations.count == 0) {
+        return;
+    }
+
+    NSArray<GestureHandlerOperation> *operations = _operations;
+    _operations = [NSMutableArray new];
+
+    [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *manager, __unused NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+        for (GestureHandlerOperation operation in operations) {
+            operation(self->_manager);
+        }
     }];
 }
 
@@ -180,6 +232,28 @@ RCT_EXPORT_METHOD(handleClearJSResponder)
     [_operations addObject:operation];
 }
 
+#pragma mark - RCTSurfacePresenterObserver
+
+#ifdef RN_FABRIC_ENABLED
+
+- (void)didMountComponentsWithRootTag:(NSInteger)rootTag
+{
+    RCTAssertMainQueue();
+    
+    if (_operations.count == 0) {
+        return;
+    }
+
+    NSArray<GestureHandlerOperation> *operations = _operations;
+    _operations = [NSMutableArray new];
+
+    for (GestureHandlerOperation operation in operations) {
+        operation(self->_manager);
+    }
+}
+
+#else
+
 #pragma mark - RCTUIManagerObserver
 
 - (void)uiManagerWillFlushUIBlocks:(RCTUIManager *)uiManager
@@ -202,6 +276,8 @@ RCT_EXPORT_METHOD(handleClearJSResponder)
         }
     }];
 }
+
+#endif // RN_FABRIC_ENABLED
 
 #pragma mark Events
 

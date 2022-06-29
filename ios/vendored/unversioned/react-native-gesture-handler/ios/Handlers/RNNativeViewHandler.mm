@@ -11,8 +11,13 @@
 #import <UIKit/UIGestureRecognizerSubclass.h>
 
 #import <React/RCTConvert.h>
-#import <React/RCTScrollView.h>
 #import <React/UIView+React.h>
+
+#ifdef RN_FABRIC_ENABLED
+#import <React/RCTScrollViewComponentView.h>
+#else
+#import <React/RCTScrollView.h>
+#endif // RN_FABRIC_ENABLED
 
 #pragma mark RNDummyGestureRecognizer
 
@@ -101,6 +106,12 @@
     // We can restore default scrollview behaviour to delay touches to scrollview's children
     // because gesture handler system can handle cancellation of scroll recognizer when JS responder
     // is set
+#ifdef RN_FABRIC_ENABLED
+    if ([view isKindOfClass:[RCTScrollViewComponentView class]]) {
+        UIScrollView *scrollView = ((RCTScrollViewComponentView *)view).scrollView;
+        scrollView.delaysContentTouches = YES;
+    }
+#else
     if ([view isKindOfClass:[RCTScrollView class]]) {
         // This part of the code is coupled with RN implementation of ScrollView native wrapper and
         // we expect for RCTScrollView component to contain a subclass of UIScrollview as the only
@@ -108,6 +119,7 @@
         UIScrollView *scrollView = [view.subviews objectAtIndex:0];
         scrollView.delaysContentTouches = YES;
     }
+#endif // RN_FABRIC_ENABLED
 }
 
 - (void)handleTouchDown:(UIView *)sender forEvent:(UIEvent *)event
