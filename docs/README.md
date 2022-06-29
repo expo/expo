@@ -267,6 +267,28 @@ Certain directories are excluded from the sidebar in order to prevent it from ge
 
 If you just want to hide a single page from the sidebar, set `hideInSidebar: true` in the page metadata.
 
+### Use `Terminal` component for shell commands snippets
+
+Whenever shell commands are used or referred, use `Terminal` component to make the code snippets copy/pasteable. This component can be imported in any markdown file.
+
+```jsx
+import { Terminal } from '~/ui/components/Snippet';
+
+// for single command and one prop
+<Terminal cmd={["$ expo install package"]} />
+
+// for multiple commands
+
+<Terminal cmd={[
+  "# Create a new native project",
+  "$ npx create-expo-app --template bare-minimum",
+  "",
+  "# If you don’t have expo-cli yet, get it",
+  "$ npm i -g expo-cli",
+  "",
+]} cmdCopy="npx create-expo-app --template bare-minimum && npm i -g expo-cli" />
+```
+
 ### Prettier
 
 Please commit any sizeable diffs that are the result of `prettier` separately to make reviews as easy as possible.
