@@ -1,11 +1,12 @@
 package versioned.host.exp.exponent.modules.api.components.gesturehandler
+import host.exp.expoview.BuildConfig
 
 import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.uimanager.ViewManager
 import com.facebook.soloader.SoLoader
-import versioned.host.exp.exponent.modules.api.components.gesturehandler.BuildConfig
+
 import versioned.host.exp.exponent.modules.api.components.gesturehandler.react.RNGestureHandlerModule
 import versioned.host.exp.exponent.modules.api.components.gesturehandler.react.RNGestureHandlerRootViewManager
 import versioned.host.exp.exponent.modules.api.components.gesturehandler.react.RNGestureHandlerButtonViewManager
