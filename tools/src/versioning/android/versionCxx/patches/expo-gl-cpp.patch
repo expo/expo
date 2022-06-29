@@ -1,5 +1,5 @@
 diff --git a/packages/expo-gl-cpp/android/build.gradle b/packages/expo-gl-cpp/android/build.gradle
-index 118623f853..7bda5ff1aa 100644
+index e144ff2f21..c93b42466a 100644
 --- a/packages/expo-gl-cpp/android/build.gradle
 +++ b/packages/expo-gl-cpp/android/build.gradle
 @@ -13,6 +13,10 @@ def RN_SO_DIR = RN_BUILD_FROM_SOURCE
@@ -13,6 +13,15 @@ index 118623f853..7bda5ff1aa 100644
  def reactNativeArchitectures() {
      def value = project.getProperties().get("reactNativeArchitectures")
      return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
+@@ -138,7 +142,7 @@ dependencies {
+ 
+ def extractReactNativeAAR = { buildType ->
+   def suffix = buildType == 'Debug' ? '-debug' : '-release'
+-  def rnAARs = fileTree(RN_AAR_DIR).matching { include "**/react-native/**/*${suffix}.aar" }
++  def rnAARs = fileTree(RN_AAR_DIR).matching { include "**/*.aar" }
+   if (rnAARs.isEmpty()) {
+     rnAARs = fileTree(RN_AAR_DIR).matching { include "**/react-native/**/*.aar" }
+   }
 diff --git a/packages/expo-gl-cpp/cpp/CMakeLists.txt b/packages/expo-gl-cpp/cpp/CMakeLists.txt
 index 2c6948421c..eacc32ce19 100644
 --- a/packages/expo-gl-cpp/cpp/CMakeLists.txt
@@ -36,7 +45,7 @@ index 2c6948421c..eacc32ce19 100644
      NO_CMAKE_FIND_ROOT_PATH)
  
 diff --git a/packages/expo-gl-cpp/cpp/EXGLJniApi.cpp b/packages/expo-gl-cpp/cpp/EXGLJniApi.cpp
-index 9d554969df..c2a77d1671 100644
+index 9d554969df..405fa2b067 100644
 --- a/packages/expo-gl-cpp/cpp/EXGLJniApi.cpp
 +++ b/packages/expo-gl-cpp/cpp/EXGLJniApi.cpp
 @@ -15,13 +15,13 @@ extern "C" {

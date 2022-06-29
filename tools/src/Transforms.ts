@@ -1,10 +1,13 @@
 import fs from 'fs-extra';
+import inquirer from 'inquirer';
 import minimatch from 'minimatch';
 import path from 'path';
 
+import { printDiff } from './Diff';
 import {
   CopyFileOptions,
   CopyFileResult,
+  FileTransform,
   RawTransform,
   ReplaceTransform,
   StringTransform,
@@ -32,15 +35,59 @@ export function transformString(
     return input;
   }
   return transforms.reduce((acc, transform) => {
-    if (isRawTransform(transform)) {
-      return transform.transform(acc);
-    } else if (isReplaceTransform(transform)) {
-      const { find, replaceWith } = transform;
-      // @ts-ignore @tsapeta: TS gets crazy on `replaceWith` being a function.
-      return acc.replace(find, replaceWith);
-    }
-    throw new Error(`Unknown transform type`);
+    return applySingleTransform(acc, transform);
   }, input);
+}
+
+export async function transformFileContentAsync(
+  filePath: string,
+  transforms: FileTransform[]
+): Promise<string> {
+  let result = await fs.readFile(filePath, 'utf8');
+  for (const transform of transforms) {
+    const beforeTransformation = result;
+    result = applySingleTransform(result, transform);
+    await maybePrintDebugInfoAsync(beforeTransformation, result, filePath, transform);
+  }
+  return result;
+}
+
+async function maybePrintDebugInfoAsync(
+  contentBefore: string,
+  contentAfter: string,
+  filePath: string,
+  transform: FileTransform
+): Promise<void> {
+  if (!transform.debug || contentAfter === contentBefore) {
+    return;
+  }
+  const transformName =
+    typeof transform.debug === 'string' ? transform.debug : JSON.stringify(transform, null, 2);
+
+  printDiff(contentBefore, contentAfter);
+
+  const { isCorrect } = await inquirer.prompt<{ isCorrect: boolean }>([
+    {
+      type: 'confirm',
+      name: 'isCorrect',
+      message: `Changes in file ${filePath} introduced by transform ${transformName}`,
+      default: true,
+    },
+  ]);
+  if (!isCorrect) {
+    throw new Error('ABORTING');
+  }
+}
+
+function applySingleTransform(input: string, transform: StringTransform): string {
+  if (isRawTransform(transform)) {
+    return transform.transform(input);
+  } else if (isReplaceTransform(transform)) {
+    const { find, replaceWith } = transform;
+    // @ts-ignore @tsapeta: TS gets crazy on `replaceWith` being a function.
+    return input.replace(find, replaceWith);
+  }
+  throw new Error(`Unknown transform type`);
 }
 
 /**
@@ -76,7 +123,7 @@ export async function copyFileWithTransformsAsync(
     ) ?? [];
 
   // Transform source content.
-  const content = transformString(await fs.readFile(sourcePath, 'utf8'), filteredContentTransforms);
+  const content = await transformFileContentAsync(sourcePath, filteredContentTransforms);
 
   // Save transformed source file at renamed target path.
   await fs.outputFile(targetPath, content);

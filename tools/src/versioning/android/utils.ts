@@ -1,3 +1,11 @@
+/**
+ * Find lines matched by startRegex and endRegexp and remove all the
+ * lines between. Note it will remove entire line matched by startRegex
+ * and endRegexp regardless if pattern match entire lien or not
+ *
+ * This function supports removing multiple sections in one file and
+ * handles correctly nested ones
+ */
 export function deleteLinesBetweenTags(
   startRegex: RegExp | string,
   endRegex: RegExp | string,
