@@ -9,7 +9,7 @@ import org.junit.Test
 
 class ModuleDefinitionBuilderTest {
   private inline fun unboundModuleDefinition(block: ModuleDefinitionBuilder.() -> Unit): ModuleDefinitionData {
-    return ModuleDefinitionBuilder().also(block).build()
+    return ModuleDefinitionBuilder().also(block).buildModule()
   }
 
   private class TestModule : Module() {
@@ -50,9 +50,9 @@ class ModuleDefinitionBuilderTest {
     }
 
     Truth.assertThat(moduleDefinition.name).isEqualTo(moduleName)
-    Truth.assertThat(moduleDefinition.constantsProvider()).isSameInstanceAs(moduleConstants)
-    Truth.assertThat(moduleDefinition.asyncFunctions).containsKey("m1")
-    Truth.assertThat(moduleDefinition.asyncFunctions).containsKey("m2")
+    Truth.assertThat(moduleDefinition.objectDefinition.constantsProvider()).isSameInstanceAs(moduleConstants)
+    Truth.assertThat(moduleDefinition.objectDefinition.asyncFunctions).containsKey("m1")
+    Truth.assertThat(moduleDefinition.objectDefinition.asyncFunctions).containsKey("m2")
   }
 
   @Test
@@ -98,7 +98,7 @@ class ModuleDefinitionBuilderTest {
       OnStartObserving { }
     }
 
-    Truth.assertThat(moduleDefinition.asyncFunctions).containsKey("startObserving")
+    Truth.assertThat(moduleDefinition.objectDefinition.asyncFunctions).containsKey("startObserving")
   }
 
   @Test
@@ -108,7 +108,7 @@ class ModuleDefinitionBuilderTest {
       OnStopObserving { }
     }
 
-    Truth.assertThat(moduleDefinition.asyncFunctions).containsKey("stopObserving")
+    Truth.assertThat(moduleDefinition.objectDefinition.asyncFunctions).containsKey("stopObserving")
   }
 
   @Test

@@ -26,7 +26,11 @@ abstract class Module : AppContextProvider {
   internal lateinit var coroutineScopeDelegate: Lazy<CoroutineScope>
   val coroutineScope get() = coroutineScopeDelegate.value
 
-  fun sendEvent(name: String, body: Bundle?) {
+  fun sendEvent(name: String, body: Bundle? = Bundle.EMPTY) {
+    moduleEventEmitter?.emit(name, body)
+  }
+
+  fun sendEvent(name: String, body: Map<String, Any?>?) {
     moduleEventEmitter?.emit(name, body)
   }
 
@@ -41,5 +45,5 @@ abstract class Module : AppContextProvider {
 
 @Suppress("FunctionName")
 inline fun Module.ModuleDefinition(block: ModuleDefinitionBuilder.() -> Unit): ModuleDefinitionData {
-  return ModuleDefinitionBuilder(this).also(block).build()
+  return ModuleDefinitionBuilder(this).also(block).buildModule()
 }

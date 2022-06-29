@@ -214,11 +214,14 @@ describe('<HomeScreen />', () => {
   test('displays recently opened apps', async () => {
     expect(getRecentlyOpenedApps).not.toHaveBeenCalled();
     const fakeApp: RecentApp = {
+      id: '123',
       name: 'fakeAppName',
       url: 'fakeAppUrl',
+      timestamp: 123,
+      isEASUpdate: false,
     };
 
-    mockGetRecentlyOpenedApps.mockResolvedValueOnce({ [fakeApp.name]: fakeApp.url });
+    mockGetRecentlyOpenedApps.mockResolvedValueOnce([fakeApp]);
 
     const { queryByText, getByText } = renderHomeScreen();
 

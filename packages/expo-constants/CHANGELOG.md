@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add getter for expo client config. ([#17865](https://github.com/expo/expo/pull/17865) by [@wschurman](https://github.com/wschurman))
+
 ### 🐛 Bug fixes
 
 - Improved support of nvm sourcing in iOS shell scripts. ([#17109](https://github.com/expo/expo/pull/17109) by [@liamronancb](https://github.com/liamronancb))

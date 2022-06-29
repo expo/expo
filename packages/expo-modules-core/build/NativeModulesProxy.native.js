@@ -1,18 +1,24 @@
 import { NativeModules } from 'react-native';
-const NativeProxy = NativeModules.NativeUnimoduleProxy;
+const ExpoNativeProxy = global.ExpoModules?.NativeModulesProxy;
+const LegacyNativeProxy = NativeModules.NativeUnimoduleProxy;
 const modulesConstantsKey = 'modulesConstants';
 const exportedMethodsKey = 'exportedMethods';
 const NativeModulesProxy = {};
-if (NativeProxy) {
+if (LegacyNativeProxy) {
+    // use JSI proxy if available, fallback to legacy RN proxy
+    const NativeProxy = ExpoNativeProxy ?? LegacyNativeProxy;
     Object.keys(NativeProxy[exportedMethodsKey]).forEach((moduleName) => {
+        // copy constants
         NativeModulesProxy[moduleName] = NativeProxy[modulesConstantsKey][moduleName] || {};
+        // copy methods
         NativeProxy[exportedMethodsKey][moduleName].forEach((methodInfo) => {
             NativeModulesProxy[moduleName][methodInfo.name] = (...args) => {
                 const { key, argumentsCount } = methodInfo;
                 if (argumentsCount !== args.length) {
                     return Promise.reject(new Error(`Native method ${moduleName}.${methodInfo.name} expects ${argumentsCount} ${argumentsCount === 1 ? 'argument' : 'arguments'} but received ${args.length}`));
                 }
-                return NativeProxy.callMethod(moduleName, key, args);
+                // We still want to call methods using the legacy proxy in SDK 46
+                return LegacyNativeProxy.callMethod(moduleName, key, args);
             };
         });
         // These are called by EventEmitter (which is a wrapper for NativeEventEmitter)

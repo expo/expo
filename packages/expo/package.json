@@ -64,8 +64,8 @@
     "expo-file-system": "~14.0.0",
     "expo-font": "~10.1.0",
     "expo-keep-awake": "~10.1.0",
-    "expo-modules-autolinking": "0.7.0",
-    "expo-modules-core": "0.9.0",
+    "expo-modules-autolinking": "0.9.0",
+    "expo-modules-core": "0.10.0",
     "fbemitter": "^3.0.0",
     "getenv": "^1.0.0",
     "invariant": "^2.2.4",
@@ -80,13 +80,13 @@
   "devDependencies": {
     "@types/fbemitter": "^2.0.32",
     "@types/invariant": "^2.2.33",
-    "@types/react": "~17.0.21",
-    "@types/react-native": "~0.66.13",
-    "@types/react-test-renderer": "^17.0.1",
+    "@types/react": "~18.0.14",
+    "@types/react-native": "~0.69.1",
+    "@types/react-test-renderer": "^18.0.0",
     "@types/uuid": "^3.4.7",
     "expo-module-scripts": "^2.0.0",
-    "react": "17.0.2",
-    "react-dom": "17.0.2",
-    "react-native": "0.68.2"
+    "react": "18.0.0",
+    "react-dom": "18.0.0",
+    "react-native": "0.69.1"
   }
 }

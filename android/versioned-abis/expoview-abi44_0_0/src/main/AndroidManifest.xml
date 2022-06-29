@@ -318,6 +318,15 @@
             </intent-filter>
         </receiver>
 
+        <activity android:name="abi44_0_0.expo.modules.notifications.service.NotificationForwarderActivity"
+          android:theme="@android:style/Theme.Translucent.NoTitleBar"
+          android:exported="false"
+          android:excludeFromRecents="true"
+          android:noHistory="true"
+          android:launchMode="standard"
+          android:taskAffinity=""
+          />
+
         <provider
             android:name="abi44_0_0.expo.modules.sharing.SharingFileProvider"
             android:authorities="${applicationId}.SharingFileProvider"

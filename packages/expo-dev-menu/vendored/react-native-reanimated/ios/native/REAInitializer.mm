@@ -1,5 +1,10 @@
 #import "REAInitializer.h"
 
+
+#if __has_include("DevMenuRNGestureHandlerModule.h")
+#import "DevMenuRNGestureHandlerModule.h"
+#endif
+
 @interface RCTEventDispatcher(Reanimated)
 
 - (void)setBridge:(RCTBridge*)bridge;
@@ -15,8 +20,9 @@ JSIExecutor::RuntimeInstaller REAJSIExecutorRuntimeInstaller(
     RCTBridge* bridge,
     JSIExecutor::RuntimeInstaller runtimeInstallerToWrap)
 {
-    [bridge moduleForClass:[RCTEventDispatcher class]];
-    RCTEventDispatcher *eventDispatcher = [DevMenuREAEventDispatcher new];
+    // The creation of the DevMenuREAEventDispatcher was moved to the DevMenuVendoredModulesUtils.vendoredModules
+    // because it has to be set up before creating the gesture handler module.
+    RCTEventDispatcher *eventDispatcher = bridge.eventDispatcher;
 #if RNVERSION >= 66
     RCTCallableJSModules *callableJSModules = [RCTCallableJSModules new];
     [bridge setValue:callableJSModules forKey:@"_callableJSModules"];
@@ -27,7 +33,6 @@ JSIExecutor::RuntimeInstaller REAJSIExecutorRuntimeInstaller(
 #else
     [eventDispatcher setBridge:bridge];
 #endif
-    [bridge updateModuleWithInstance:eventDispatcher];
     _devmenu_bridge_reanimated = bridge;
     const auto runtimeInstaller = [bridge, runtimeInstallerToWrap](facebook::jsi::Runtime &runtime) {
       if (!bridge) {

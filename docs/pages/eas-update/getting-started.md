@@ -34,9 +34,9 @@ Install EAS and Expo CLIs by running:
 
 ## Create a project
 
-Create a project with Expo CLI by running:
+Create a project by running:
 
-<Terminal cmd={['$ expo init']} />
+<Terminal cmd={['$ npx create-expo-app']} />
 
 ## Configure your project
 

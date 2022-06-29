@@ -12,7 +12,7 @@
  */
 internal func cast(_ value: Any, toType type: AnyDynamicType) throws -> Any {
   // TODO: Accept JavaScriptValue and JavaScriptObject as argument types.
-  if let value = value as? JavaScriptValue {
+  if !(type is DynamicTypedArrayType), let value = value as? JavaScriptValue {
     return try type.cast(value.getRaw())
   }
   return try type.cast(value)

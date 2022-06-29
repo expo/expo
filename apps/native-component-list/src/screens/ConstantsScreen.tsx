@@ -51,7 +51,9 @@ class ExpoConstant extends React.Component<{ value?: any; name: string }, State>
     return (
       <View style={{ marginBottom: 10 }}>
         <HeadingText>{name}</HeadingText>
-        <MonoText containerStyle={error && { borderColor: 'red' }}>{error || value}</MonoText>
+        <MonoText containerStyle={error && { borderColor: 'red' }}>
+          {error?.message ?? value}
+        </MonoText>
       </View>
     );
   }

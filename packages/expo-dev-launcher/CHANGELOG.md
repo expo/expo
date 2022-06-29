@@ -6,9 +6,18 @@
 
 ### 🎉 New features
 
+- Include extra information in the recently opened list ([#17633](https://github.com/expo/expo/pull/17633) by [@ajsmth](https://github.com/ajsmth))
+- Add debug settings for EAS Updates (admin only) ([#17842](https://github.com/expo/expo/pull/17842) by [@ajsmth](https://github.com/ajsmth))
+
 ### 🐛 Bug fixes
 
+- Fixed the application crashing when the user forces a dark mode only for the dev-client app in the system setting on Android. ([#17858](https://github.com/expo/expo/pull/17858) by [@lukmccall](https://github.com/lukmccall))
+- Fixed the error screen is sometimes empty on Android. ([#17857](https://github.com/expo/expo/pull/17857) by [@lukmccall](https://github.com/lukmccall))
+- Added support for React Native 0.69.x. ([#18006](https://github.com/expo/expo/pull/18006) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
+
+- [Android] Get downloaded update IDs. ([#17933](https://github.com/expo/expo/pull/17933) by [@douglowder](https://github.com/douglowder))
 
 ## 1.0.0 — 2022-06-09
 

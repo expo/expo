@@ -80,7 +80,7 @@
     "test-ios": "./scripts/objc-test.sh test"
   },
   "peerDependencies": {
-    "react": "17.0.1"
+    "react": "18.0.0"
   },
   "dependencies": {
     "@jest/create-cache-key-function": "^26.5.0",
@@ -118,7 +118,7 @@
   },
   "devDependencies": {
     "flow-bin": "^0.137.0",
-    "react": "17.0.1"
+    "react": "18.0.0"
   },
   "detox": {
     "test-runner": "jest",

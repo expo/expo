@@ -17,7 +17,15 @@ export const defaultQueryOptions: QueryOptions = {
 };
 
 const QueryOptionsContext = React.createContext<QueryOptionsContextProps | null>(null);
-export const useQueryOptions = () => React.useContext(QueryOptionsContext);
+export const useQueryOptions = () => {
+  const context = React.useContext(QueryOptionsContext);
+
+  if (!context) {
+    throw new Error(`useQueryOptions() was called outside of a <QueryOptionsContext /> provider`);
+  }
+
+  return context;
+};
 
 export function QueryProvider({ children }: { children: React.ReactNode }) {
   const [queryOptions, setQueryOptions] = React.useState(defaultQueryOptions);

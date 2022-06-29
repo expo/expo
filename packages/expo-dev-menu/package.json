@@ -46,7 +46,7 @@
     "transformIgnorePatterns": []
   },
   "dependencies": {
-    "@expo/config-plugins": "^4.0.14",
+    "@expo/config-plugins": "~4.1.5",
     "expo-dev-menu-interface": "0.7.0",
     "semver": "^7.3.5"
   },
@@ -65,8 +65,8 @@
     "fuse.js": "^6.4.6",
     "graphql": "^15.3.0",
     "graphql-tag": "^2.10.1",
-    "react": "17.0.2",
-    "react-native": "0.68.2",
+    "react": "18.0.0",
+    "react-native": "0.69.1",
     "url": "^0.11.0"
   },
   "peerDependencies": {

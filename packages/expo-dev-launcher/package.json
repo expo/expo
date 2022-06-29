@@ -29,7 +29,7 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev",
   "dependencies": {
-    "@expo/config-plugins": "^4.0.14",
+    "@expo/config-plugins": "~4.1.5",
     "expo-dev-menu": "1.0.0",
     "resolve-from": "^5.0.0",
     "semver": "^7.3.5"
@@ -48,8 +48,8 @@
     "expo-module-scripts": "^2.0.0",
     "graphql": "^16.0.1",
     "graphql-request": "^3.6.1",
-    "react": "17.0.2",
-    "react-native": "0.68.2",
+    "react": "18.0.0",
+    "react-native": "0.69.1",
     "react-query": "^3.34.16",
     "url": "^0.11.0"
   },

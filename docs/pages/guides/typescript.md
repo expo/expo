@@ -66,9 +66,9 @@ Certain language features may require additional configuration, for example if y
 
 ## Starting from scratch: using a TypeScript template
 
-<Terminal cmd={['$ expo init -t expo-template-blank-typescript']} cmdCopy="expo init -t expo-template-blank-typescript" />
+<Terminal cmd={['$ npx create-expo-app -t expo-template-blank-typescript']} cmdCopy="npx create-expo-app -t expo-template-blank-typescript" />
 
-The easiest way to get started is to initialize your new project using a TypeScript template. When you run `expo init` choose one of the templates with TypeScript in the name and then run `yarn tsc` or `npx tsc` to typecheck the project.
+The easiest way to get started is to initialize your new project using a TypeScript template, then run `yarn tsc` or `npx tsc` to "typecheck" the project.
 
 When you create new source files in your project you should use the **.ts** extension or the **.tsx** if the file includes React components.
 

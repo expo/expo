@@ -181,7 +181,7 @@ android {
       "**/libglog.so",
       "**/libjscexecutor.so",
       "**/libfbjni.so",
-      "**/libfolly_json.so",
+      "**/libfolly_runtime.so",
       "**/libhermes.so",
       "**/libjsi.so",
     ]
@@ -376,7 +376,7 @@ dependencies {
   api 'com.google.android.material:material:1.1.0'
 
   api 'com.google.firebase:firebase-core:17.2.3'
-  api 'com.google.firebase:firebase-messaging:21.1.0'
+  api 'com.google.firebase:firebase-messaging:22.0.0'
   api 'com.google.maps.android:android-maps-utils:0.5'
   // Remember to update DetachAppTemplate build.gradle if you add any excludes or transitive = false here!
 
@@ -462,7 +462,7 @@ task createNativeDepsDirectories {
 }
 
 task downloadBoost(dependsOn: createNativeDepsDirectories, type: Download) {
-  src("https://github.com/react-native-community/boost-for-react-native/releases/download/v${BOOST_VERSION.replace("_", ".")}-0/boost_${BOOST_VERSION}.tar.gz")
+  src("https://boostorg.jfrog.io/artifactory/main/release/${BOOST_VERSION.replace("_", ".")}/source/boost_${BOOST_VERSION}.tar.gz")
   onlyIfNewer(true)
   overwrite(false)
   dest(new File(downloadsDir, "boost_${BOOST_VERSION}.tar.gz"))

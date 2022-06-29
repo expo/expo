@@ -2,15 +2,23 @@ import { NativeModules } from 'react-native';
 
 import { ProxyNativeModule } from './NativeModulesProxy.types';
 
-const NativeProxy = NativeModules.NativeUnimoduleProxy;
+const ExpoNativeProxy = global.ExpoModules?.NativeModulesProxy;
+const LegacyNativeProxy = NativeModules.NativeUnimoduleProxy;
+
 const modulesConstantsKey = 'modulesConstants';
 const exportedMethodsKey = 'exportedMethods';
 
 const NativeModulesProxy: { [moduleName: string]: ProxyNativeModule } = {};
 
-if (NativeProxy) {
+if (LegacyNativeProxy) {
+  // use JSI proxy if available, fallback to legacy RN proxy
+  const NativeProxy = ExpoNativeProxy ?? LegacyNativeProxy;
+
   Object.keys(NativeProxy[exportedMethodsKey]).forEach((moduleName) => {
+    // copy constants
     NativeModulesProxy[moduleName] = NativeProxy[modulesConstantsKey][moduleName] || {};
+
+    // copy methods
     NativeProxy[exportedMethodsKey][moduleName].forEach((methodInfo) => {
       NativeModulesProxy[moduleName][methodInfo.name] = (...args: unknown[]): Promise<any> => {
         const { key, argumentsCount } = methodInfo;
@@ -23,7 +31,9 @@ if (NativeProxy) {
             )
           );
         }
-        return NativeProxy.callMethod(moduleName, key, args);
+
+        // We still want to call methods using the legacy proxy in SDK 46
+        return LegacyNativeProxy.callMethod(moduleName, key, args);
       };
     });
 

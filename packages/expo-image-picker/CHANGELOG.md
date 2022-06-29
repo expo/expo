@@ -10,6 +10,7 @@
 
 ### 💡 Others
 
+- On Android migrated to the new `registerForActivityResult` mechanism. ([#17671](https://github.com/expo/expo/pull/17671), ([#17987](https://github.com/expo/expo/pull/17987) by [@bbarthec](https://github.com/bbarthec))
 - Native module on Android is now written in Kotlin using [Sweet API](https://docs.expo.dev/modules/module-api). ([#17668](https://github.com/expo/expo/pull/17668) by [@bbarthec](https://github.com/bbarthec))
 - Migrated Expo modules definitions to the new naming convention. ([#17193](https://github.com/expo/expo/pull/17193) by [@tsapeta](https://github.com/tsapeta))
 

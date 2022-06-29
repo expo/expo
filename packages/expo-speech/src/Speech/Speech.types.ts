@@ -33,6 +33,12 @@ export type SpeechOptions = {
    * @platform android
    */
   onError?: (error: Error) => void | SpeechEventCallback;
+  /**
+   * Volume of the voice to speak `text`. A number between `0.0` (muted) and `1.0` (max volume)
+   *
+   * @default 1.0
+   * @platform web
+   */
   volume?: number;
   /**
    * Voice identifier.

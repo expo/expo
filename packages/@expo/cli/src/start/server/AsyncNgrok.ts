@@ -11,6 +11,8 @@ import { NgrokInstance, NgrokResolver } from '../doctor/ngrok/NgrokResolver';
 import { startAdbReverseAsync } from '../platforms/android/adbReverse';
 import { ProjectSettings } from '../project/settings';
 
+const debug = require('debug')('expo:start:server:ngrok') as typeof console.log;
+
 const NGROK_CONFIG = {
   authToken: '5W1bR67GNbWcXqmxZzBG1_56GezNeaX6sSRvn8npeQ8',
   domain: 'exp.direct',
@@ -70,13 +72,13 @@ export class AsyncNgrok {
 
     this.serverUrl = await this._connectToNgrokAsync({ timeout });
 
-    Log.debug('[ngrok] Tunnel URL:', this.serverUrl);
+    debug('Tunnel URL:', this.serverUrl);
     Log.log('Tunnel ready.');
   }
 
   /** Stop the ngrok process if it's running. */
   public async stopAsync(): Promise<void> {
-    Log.debug('[ngrok] Stopping Tunnel');
+    debug('Stopping Tunnel');
 
     await this.resolver.get()?.kill?.();
     this.serverUrl = null;
@@ -122,9 +124,9 @@ export class AsyncNgrok {
     try {
       // Global config path.
       const configPath = path.join(UserSettings.getDirectory(), 'ngrok.yml');
-      Log.debug('[ngrok] Global config path:', configPath);
+      debug('Global config path:', configPath);
       const hostname = await this._getProjectHostnameAsync();
-      Log.debug('[ngrok] Hostname:', hostname);
+      debug('Hostname:', hostname);
 
       const url = await instance.connect({
         authtoken: NGROK_CONFIG.authToken,
@@ -172,7 +174,7 @@ export class AsyncNgrok {
   async _resetProjectRandomnessAsync() {
     const randomness = crypto.randomBytes(5).toString('base64url');
     await ProjectSettings.setAsync(this.projectRoot, { urlRandomness: randomness });
-    Log.debug('[ngrok] Resetting project randomness:', randomness);
+    debug('Resetting project randomness:', randomness);
     return randomness;
   }
 }

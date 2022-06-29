@@ -36,6 +36,8 @@ void JavaScriptModuleObject::registerNatives() {
                                     JavaScriptModuleObject::registerSyncFunction),
                    makeNativeMethod("registerAsyncFunction",
                                     JavaScriptModuleObject::registerAsyncFunction),
+                   makeNativeMethod("registerProperty",
+                                    JavaScriptModuleObject::registerProperty),
                  });
 }
 
@@ -49,8 +51,9 @@ std::shared_ptr<jsi::Object> JavaScriptModuleObject::getJSIObject(jsi::Runtime &
   return jsiObject;
 }
 
-void JavaScriptModuleObject::exportConstants(jni::alias_ref<react::NativeMap::javaobject>
-  constants) {
+void JavaScriptModuleObject::exportConstants(
+  jni::alias_ref<react::NativeMap::javaobject> constants
+) {
   auto dynamic = constants->cthis()->consume();
   assert(dynamic.isObject());
 
@@ -62,19 +65,73 @@ void JavaScriptModuleObject::exportConstants(jni::alias_ref<react::NativeMap::ja
 void JavaScriptModuleObject::registerSyncFunction(
   jni::alias_ref<jstring> name,
   jint args,
+  jni::alias_ref<jni::JArrayInt> desiredTypes,
   jni::alias_ref<JNIFunctionBody::javaobject> body
 ) {
-  auto cName = name->toStdString();
-  methodsMetadata.try_emplace(cName, cName, args, false, jni::make_global(body));
+  std::string cName = name->toStdString();
+  std::unique_ptr<int[]> types = desiredTypes->getRegion(0, args);
+
+  methodsMetadata.try_emplace(
+    cName,
+    cName,
+    args,
+    false,
+    std::move(types),
+    jni::make_global(body)
+  );
 }
 
 void JavaScriptModuleObject::registerAsyncFunction(
   jni::alias_ref<jstring> name,
   jint args,
+  jni::alias_ref<jni::JArrayInt> desiredTypes,
   jni::alias_ref<JNIAsyncFunctionBody::javaobject> body
 ) {
   auto cName = name->toStdString();
-  methodsMetadata.try_emplace(cName, cName, args, true, jni::make_global(body));
+  std::unique_ptr<int[]> types = desiredTypes->getRegion(0, args);
+
+  methodsMetadata.try_emplace(
+    cName,
+    cName,
+    args,
+    true,
+    std::move(types),
+    jni::make_global(body)
+  );
+}
+
+void JavaScriptModuleObject::registerProperty(
+  jni::alias_ref<jstring> name,
+  jint desiredType,
+  jni::alias_ref<JNIFunctionBody::javaobject> getter,
+  jni::alias_ref<JNIFunctionBody::javaobject> setter
+) {
+  auto cName = name->toStdString();
+  std::unique_ptr<int[]> types = std::make_unique<int[]>(1);
+  types[0] = desiredType;
+
+  auto getterMetadata = MethodMetadata(
+    cName,
+    0,
+    false,
+    std::make_unique<int[]>(0),
+    jni::make_global(getter)
+  );
+
+  auto setterMetadata = MethodMetadata(
+    cName,
+    1,
+    false,
+    std::move(types),
+    jni::make_global(setter)
+  );
+
+  auto functions = std::make_pair(
+    std::move(getterMetadata),
+    std::move(setterMetadata)
+  );
+
+  properties.insert({cName, std::move(functions)});
 }
 
 JavaScriptModuleObject::HostObject::HostObject(
@@ -90,6 +147,12 @@ jsi::Value JavaScriptModuleObject::HostObject::get(jsi::Runtime &runtime,
     return jsi::valueFromDynamic(runtime, dynamic);
   }
 
+  auto propertyRecord = jsModule->properties.find(cName);
+  if (propertyRecord != jsModule->properties.end()) {
+    auto&[getter, _] = propertyRecord->second;
+    return getter.callSync(runtime, jsModule->jsiInteropModuleRegistry, nullptr, 0);
+  }
+
   auto metadataRecord = jsModule->methodsMetadata.find(cName);
   if (metadataRecord == jsModule->methodsMetadata.end()) {
     return jsi::Value::undefined();
@@ -103,6 +166,14 @@ void JavaScriptModuleObject::HostObject::set(
   const jsi::PropNameID &name,
   const jsi::Value &value
 ) {
+  auto cName = name.utf8(runtime);
+  auto propertyRecord = jsModule->properties.find(cName);
+  if (propertyRecord != jsModule->properties.end()) {
+    auto&[_, setter] = propertyRecord->second;
+    setter.callSync(runtime, jsModule->jsiInteropModuleRegistry, &value, 1);
+    return;
+  }
+
   throw jsi::JSError(
     runtime,
     "RuntimeError: Cannot override the host object for expo module '" + name.utf8(runtime) + "'"
@@ -127,6 +198,16 @@ std::vector<jsi::PropNameID> JavaScriptModuleObject::HostObject::getPropertyName
   std::transform(
     constants.begin(),
     constants.end(),
+    std::back_inserter(result),
+    [&rt](const auto &kv) {
+      return jsi::PropNameID::forUtf8(rt, kv.first);
+    }
+  );
+
+  auto &properties = jsModule->properties;
+  std::transform(
+    properties.begin(),
+    properties.end(),
     std::back_inserter(result),
     [&rt](const auto &kv) {
       return jsi::PropNameID::forUtf8(rt, kv.first);
