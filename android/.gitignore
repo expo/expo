@@ -1,4 +1,4 @@
-app/src/main/java/host/exp/exponent/generated/BasePackageList.java 
+app/src/main/java/host/exp/exponent/generated/BasePackageList.java
 
 .idea/caches/build_file_checksums.ser
 .project
@@ -11,6 +11,11 @@ tools/bin/
 app/mockFsDirectory/
 
 expoview/gradlew*
+
+# Additional SDKs
+/sdks/download
+/sdks/hermes
+/sdks/hermesc
 
 # Created by https://www.gitignore.io/api/java,android,eclipse,intellij,androidstudio
 
