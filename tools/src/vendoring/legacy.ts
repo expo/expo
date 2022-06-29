@@ -297,6 +297,13 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
         cleanupTargetPath: false,
       },
       {
+        sourceAndroidPath: 'android/src/paper/java/com/swmansion/gesturehandler',
+        targetAndroidPath: 'modules/api/components/gesturehandler',
+        sourceAndroidPackage: 'com.swmansion.gesturehandler',
+        targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.gesturehandler',
+        cleanupTargetPath: false,
+      },
+      {
         recursive: true,
         sourceIosPath: 'ios',
         targetIosPath: 'Api/Components/GestureHandler',
