@@ -8,6 +8,7 @@ import {
   AppOwnership,
   Constants,
   ExecutionEnvironment,
+  ExpoClientConfig,
   IOSManifest,
   Manifest,
   NativeConstants,
@@ -148,7 +149,7 @@ Object.defineProperties(constants, {
     enumerable: true,
   },
   expoConfig: {
-    get(): ExpoConfig | null {
+    get(): ExpoConfig | ExpoClientConfig | null {
       const maybeManifest = getManifest(true);
       if (!maybeManifest) {
         return null;

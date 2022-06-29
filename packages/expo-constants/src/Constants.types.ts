@@ -158,7 +158,7 @@ export type ExpoClientConfig = ExpoConfig & {
   releaseId?: string;
   revisionId?: string;
   releaseChannel?: string;
-  bundleUrl: string;
+  bundleUrl?: string;
   hostUri?: string;
   publishedTime?: string;
   /**
