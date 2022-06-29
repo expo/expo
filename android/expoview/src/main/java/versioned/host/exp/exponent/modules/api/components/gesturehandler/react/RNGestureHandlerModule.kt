@@ -594,7 +594,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
     // Delivers the event to Reanimated.
     if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
       // Send event directly to Reanimated
-      ReanimatedEventDispatcher.sendEvent(event, reactApplicationContext)
+      // ReanimatedEventDispatcher.sendEvent(event, reactApplicationContext) // COMMENTED OUT BY VENDORING SCRIPT
     } else {
       // In the old architecture, Reanimated subscribes for specific direct events.
       sendEventForDirectEvent(event)
