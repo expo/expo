@@ -34,6 +34,7 @@ class ProcessedModuleDefinition(
   val viewManagerDefinition = data.viewManagerDefinition
   val eventListeners = data.eventListeners
   val eventsDefinition = data.objectDefinition.eventsDefinition
+  val properties = data.objectDefinition.properties
 
   val functions
     get() = ConcatIterator(syncFunctions.values.iterator(), asyncFunctions.values.iterator())

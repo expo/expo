@@ -62,12 +62,16 @@ public:
   // We deleted the copy contractor to not deal with transforming the ownership of the `jBodyReference`.
   MethodMetadata(const MethodMetadata &) = delete;
 
+  MethodMetadata(MethodMetadata &&other) = default;
+
   /**
    * MethodMetadata owns the only reference to the Kotlin function.
    * We have to clean that, cause it's a `global_ref`.
    */
   ~MethodMetadata() {
-    jBodyReference.release();
+    if (jBodyReference != nullptr) {
+      jBodyReference.release();
+    }
   }
 
   /**
@@ -80,6 +84,16 @@ public:
   std::shared_ptr<jsi::Function> toJSFunction(
     jsi::Runtime &runtime,
     JSIInteropModuleRegistry *moduleRegistry
+  );
+
+  /**
+   * Calls the underlying Kotlin function.
+   */
+  jsi::Value callSync(
+    jsi::Runtime &rt,
+    JSIInteropModuleRegistry *moduleRegistry,
+    const jsi::Value *args,
+    size_t count
   );
 
 private:
