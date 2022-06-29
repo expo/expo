@@ -73,13 +73,18 @@ def setupClosure = {
         from(assetsDir)
       }
 
-      // Workaround for Android Gradle Plugin 3.2+ new asset directory
+      // Workaround for Android Gradle Plugin 3.2+ asset directory
       into ("merged_assets/${variant.name}/merge${targetName}Assets/out") {
         from(assetsDir)
       }
 
-      // Workaround for Android Gradle Plugin 3.4+ new asset directory
+      // Workaround for Android Gradle Plugin 3.4+ asset directory
       into ("merged_assets/${variant.name}/out") {
+        from(assetsDir)
+      }
+
+      // Workaround for Android Gradle Plugin 7.1+ asset directory
+      into ("assets/${variant.name}/merge${targetName}Assets") {
         from(assetsDir)
       }
 
