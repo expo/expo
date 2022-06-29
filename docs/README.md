@@ -267,9 +267,9 @@ Certain directories are excluded from the sidebar in order to prevent it from ge
 
 If you just want to hide a single page from the sidebar, set `hideInSidebar: true` in the page metadata.
 
-### Use Terminal component for `expo install` commands snippets
+### Use `Terminal` component for shell commands snippets
 
-Whenever `expo install ...` commands are used or referred, use `Terminal` component to make the code snippets copy/pasteable. This component can be imported in any markdown file.
+Whenever shell commands are used or referred, use `Terminal` component to make the code snippets copy/pasteable. This component can be imported in any markdown file.
 
 ```jsx
 import { Terminal } from '~/ui/components/Snippet';
