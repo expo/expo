@@ -15,6 +15,7 @@
 - Validate asset hash against expected hash before writing file to disk. ([#17745](https://github.com/expo/expo/pull/17745) by [@wschurman](https://github.com/wschurman))
 - Fixed missing `app.manifest` on react-native 0.69 or Android Gradle Plugin 7.1+. ([#18034](https://github.com/expo/expo/pull/18034) by [@kudo](https://github.com/kudo))
 - Suppress EXUpdatesService load in Expo Go to prevent crash. ([#18056](https://github.com/expo/expo/pull/18056) by [@douglowder](https://github.com/douglowder))
+- Fix proguard support in Android builds. ([#18035](https://github.com/expo/expo/pull/18035) by [@esamelson](https://github.com/esamelson))
 
 ### 💡 Others
 
