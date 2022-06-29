@@ -18,7 +18,6 @@
   },
   "dependencies": {
     "@apollo/client": "^3.4.10",
-    "@expo/react-native-action-sheet": "^2.1.0",
     "@expo/sdk-runtime-versions": "^1.0.0",
     "@expo/styleguide-native": "^1.0.1",
     "@expo/vector-icons": "^13.0.0",
@@ -82,6 +81,7 @@
     "@types/dedent": "^0.7.0",
     "@types/jest": "^26.0.24",
     "@types/lodash": "^4.14.161",
+    "@types/react": "~17.0.21",
     "@types/react-redux": "^7.1.16",
     "@types/semver": "^7.3.6",
     "@types/sha1": "^1.1.2",
