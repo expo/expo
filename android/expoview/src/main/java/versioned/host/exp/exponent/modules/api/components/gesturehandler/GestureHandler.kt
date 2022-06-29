@@ -1,4 +1,5 @@
 package versioned.host.exp.exponent.modules.api.components.gesturehandler
+import host.exp.expoview.BuildConfig
 
 import android.app.Activity
 import android.content.Context
