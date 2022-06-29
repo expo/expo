@@ -78,8 +78,8 @@ class ClipboardModule : Module() {
       try {
         val imageResult = imageFromContentUri(context, imageUri, options)
         return@SuspendBody imageResult.toBundle()
-      } catch(err: Throwable) {
-        throw when(err) {
+      } catch (err: Throwable) {
+        throw when (err) {
           is CodedException -> err
           is SecurityException -> NoPermissionException(err)
           else -> PasteFailureException(err, kind = "image")
