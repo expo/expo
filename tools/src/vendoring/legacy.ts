@@ -257,9 +257,28 @@ const GestureHandlerModifier: ModuleModifier = async function (
     );
   };
 
+  const commentOurReanimatedCode = async () => {
+    const files = [
+      `${clonedProjectPath}/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerModule.kt`,
+    ];
+    await Promise.all(
+      files
+        .map((file) => path.resolve(file))
+        .map(async (file) => {
+          let content = await fs.readFile(file, 'utf8');
+          content = content.replace(
+            'ReanimatedEventDispatcher.sendEvent(event, reactApplicationContext)',
+            '// $& // COMMENTED OUT BY VENDORING SCRIPT'
+          );
+          await fs.writeFile(file, content, 'utf8');
+        })
+    );
+  };
+
   await addResourceImportAsync();
   await replaceOrAddBuildConfigImportAsync();
   await transformImportsAsync();
+  await commentOurReanimatedCode();
 };
 
 const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
