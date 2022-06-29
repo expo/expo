@@ -250,25 +250,29 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
     moduleModifier: GestureHandlerModifier,
     steps: [
       {
+        sourceAndroidPath: 'android/src/main/java/com/swmansion/gesturehandler',
+        targetAndroidPath: 'modules/api/components/gesturehandler',
+        sourceAndroidPackage: 'com.swmansion.gesturehandler',
+        targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.gesturehandler',
+      },
+      {
         sourceAndroidPath: 'android/lib/src/main/java/com/swmansion/gesturehandler',
         targetAndroidPath: 'modules/api/components/gesturehandler',
         sourceAndroidPackage: 'com.swmansion.gesturehandler',
         targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.gesturehandler',
+        cleanupTargetPath: false,
       },
       {
         sourceAndroidPath: 'android/common/src/main/java/com/swmansion/common',
         targetAndroidPath: 'modules/api/components/gesturehandler/common',
         sourceAndroidPackage: 'com.swmansion.common',
         targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.gesturehandler',
+        cleanupTargetPath: false,
       },
       {
         recursive: true,
         sourceIosPath: 'ios',
         targetIosPath: 'Api/Components/GestureHandler',
-        sourceAndroidPath: 'android/src/main/java/com/swmansion/gesturehandler/react',
-        targetAndroidPath: 'modules/api/components/gesturehandler/react',
-        sourceAndroidPackage: 'com.swmansion.gesturehandler',
-        targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.gesturehandler',
       },
     ],
     warnings: [
