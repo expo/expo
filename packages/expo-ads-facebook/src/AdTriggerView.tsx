@@ -6,6 +6,7 @@ import { AdTriggerViewContext, AdTriggerViewContextValue } from './withNativeAd'
 
 type TouchableProps = {
   onPress?: (...args: any[]) => any;
+  children?: React.ReactNode;
 };
 
 type AdTriggerViewProps<P> = {

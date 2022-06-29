@@ -62,7 +62,9 @@ function SearchScreen({ route }: StackScreenProps<SearchStack, 'search'>) {
   const apis = React.useMemo(() => fuse.search(query).map(({ item }) => item), [query]);
 
   const renderItemRight = React.useCallback(
-    ({ name }) => <ExpoAPIIcon name={name} style={{ marginRight: 10, marginLeft: 6 }} />,
+    ({ name }: { name: string }) => (
+      <ExpoAPIIcon name={name} style={{ marginRight: 10, marginLeft: 6 }} />
+    ),
     []
   );
 

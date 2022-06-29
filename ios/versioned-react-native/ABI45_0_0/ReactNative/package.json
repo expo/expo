@@ -83,7 +83,7 @@
     "test-ios": "./scripts/objc-test.sh test"
   },
   "peerDependencies": {
-    "react": "17.0.2"
+    "react": "18.0.0"
   },
   "dependencies": {
     "@jest/create-cache-key-function": "^27.0.1",
@@ -121,7 +121,7 @@
   },
   "devDependencies": {
     "flow-bin": "^0.170.0",
-    "react": "17.0.2",
+    "react": "18.0.0",
     "@babel/core": "^7.14.0",
     "@babel/generator": "^7.14.0",
     "@react-native-community/eslint-plugin": "*",
@@ -153,7 +153,7 @@
     "metro-babel-register": "0.67.0",
     "mkdirp": "^0.5.1",
     "prettier": "^2.4.1",
-    "react-test-renderer": "17.0.2",
+    "react-test-renderer": "18.0.0",
     "shelljs": "^0.8.4",
     "signedsource": "^1.0.0",
     "ws": "^6.1.4",

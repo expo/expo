@@ -8,7 +8,6 @@
  */
 import * as React from 'react';
 import StyleSheet from 'react-native-web/dist/exports/StyleSheet';
-import css from 'react-native-web/dist/exports/StyleSheet/css';
 import TextAncestorContext from 'react-native-web/dist/exports/Text/TextAncestorContext';
 import createElement from 'react-native-web/dist/exports/createElement';
 import * as forwardedProps from 'react-native-web/dist/modules/forwardedProps';
@@ -65,7 +64,6 @@ const View = React.forwardRef((props, forwardedRef) => {
     // @ts-ignore: untyped
     props.style);
     const supportedProps = pickProps(props);
-    supportedProps.classList = classList;
     supportedProps.style = style;
     const platformMethodsRef = usePlatformMethods(supportedProps);
     const setRef = useMergeRefs(hostRef, platformMethodsRef, forwardedRef);
@@ -73,7 +71,7 @@ const View = React.forwardRef((props, forwardedRef) => {
     return createElement(__element, supportedProps);
 });
 View.displayName = 'View';
-const classes = css.create({
+const styles = StyleSheet.create({
     view: {
         alignItems: 'stretch',
         border: '0 solid black',
@@ -89,9 +87,6 @@ const classes = css.create({
         position: 'relative',
         zIndex: 0,
     },
-});
-const classList = [classes.view];
-const styles = StyleSheet.create({
     inline: {
         display: 'inline-flex',
     },

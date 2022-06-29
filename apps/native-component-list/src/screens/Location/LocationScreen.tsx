@@ -6,17 +6,18 @@ import { ScrollView, StyleSheet, View } from 'react-native';
 import ListButton from '../../components/ListButton';
 import SimpleActionDemo from '../../components/SimpleActionDemo';
 
+type SetValueType = (value: any) => any;
 type Subscription = { remove: () => any };
 type SubscriptionDemoProps = {
   title: string;
-  subscribe: (setValue: (value: any) => any) => Subscription | Promise<Subscription>;
+  subscribe: (setValue: SetValueType) => Subscription | Promise<Subscription>;
 };
 
 function SubscriptionDemo(props: SubscriptionDemoProps) {
   const [subscription, setSubscription] = React.useState<Subscription | null>(null);
 
   const toggle = React.useCallback(
-    async (setValue) => {
+    async (setValue: SetValueType) => {
       if (subscription) {
         setValue(undefined);
         subscription.remove();

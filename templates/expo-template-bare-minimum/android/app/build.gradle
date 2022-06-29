@@ -80,15 +80,16 @@ import org.apache.tools.ant.taskdefs.condition.Os
 
 def projectRoot = rootDir.getAbsoluteFile().getParentFile().getAbsolutePath()
 
+def reactNativeRoot = new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim()).getParentFile().getAbsolutePath()
+
 project.ext.react = [
     entryFile: ["node", "-e", "require('expo/scripts/resolveAppEntry')", projectRoot, "android"].execute(null, rootDir).text.trim(),
     enableHermes: (findProperty('expo.jsEngine') ?: "jsc") == "hermes",
-    cliPath: new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim()).getParentFile().getAbsolutePath() + "/cli.js",
-    hermesCommand: new File(["node", "--print", "require.resolve('hermes-engine/package.json')"].execute(null, rootDir).text.trim()).getParentFile().getAbsolutePath() + "/%OS-BIN%/hermesc",
-    composeSourceMapsPath: new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim()).getParentFile().getAbsolutePath() + "/scripts/compose-source-maps.js",
+    cliPath: "${reactNativeRoot}/cli.js",
+    composeSourceMapsPath: "${reactNativeRoot}/scripts/compose-source-maps.js",
 ]
 
-apply from: new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim(), "../react.gradle")
+apply from: new File(reactNativeRoot, "react.gradle")
 
 /**
  * Set this to true to create two separate APKs instead of one:
@@ -157,8 +158,9 @@ android {
                         "NDK_TOOLCHAIN_VERSION=clang",
                         "GENERATED_SRC_DIR=$buildDir/generated/source",
                         "PROJECT_BUILD_DIR=$buildDir",
-                        "REACT_ANDROID_DIR=$rootDir/../node_modules/react-native/ReactAndroid",
-                        "REACT_ANDROID_BUILD_DIR=$rootDir/../node_modules/react-native/ReactAndroid/build"
+                        "REACT_ANDROID_DIR=${reactNativeRoot}/ReactAndroid",
+                        "REACT_ANDROID_BUILD_DIR=${reactNativeRoot}/build",
+                        "NODE_MODULES_DIR=$rootDir/../node_modules"
                     cFlags "-Wall", "-Werror", "-fexceptions", "-frtti", "-DWITH_INSPECTOR=1"
                     cppFlags "-std=c++17"
                     // Make sure this target name is the same you specify inside the
@@ -329,8 +331,10 @@ dependencies {
     }
 
     if (enableHermes) {
-        debugImplementation files(new File(["node", "--print", "require.resolve('hermes-engine/package.json')"].execute(null, rootDir).text.trim(), "../android/hermes-debug.aar"))
-        releaseImplementation files(new File(["node", "--print", "require.resolve('hermes-engine/package.json')"].execute(null, rootDir).text.trim(), "../android/hermes-release.aar"))
+        //noinspection GradleDynamicVersion
+        implementation("com.facebook.react:hermes-engine:+") { // From node_modules
+            exclude group:'com.facebook.fbjni'
+        }
     } else {
         implementation jscFlavor
     }
@@ -343,7 +347,11 @@ if (isNewArchitectureEnabled()) {
     configurations.all {
         resolutionStrategy.dependencySubstitution {
             substitute(module("com.facebook.react:react-native"))
-                    .using(project(":ReactAndroid")).because("On New Architecture we're building React Native from source")
+                    .using(project(":ReactAndroid"))
+                    .because("On New Architecture we're building React Native from source")
+            substitute(module("com.facebook.react:hermes-engine"))
+                    .using(project(":ReactAndroid:hermes-engine"))
+                    .because("On New Architecture we're building Hermes from source")
         }
     }
 }

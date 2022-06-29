@@ -19,6 +19,7 @@ export default class FancyButton extends Component<
     onLongPress?: () => void;
     onSingleTap?: () => void;
     onDoubleTap?: () => void;
+    children?: React.ReactNode;
   },
   FBState
 > {

@@ -8,7 +8,7 @@ import { NativeAdIconView } from './AdIconView';
 import { NativeAdMediaView } from './AdMediaView';
 import AdsManager from './NativeAdsManager';
 
-const NativeAdLayout: React.ComponentType | null =
+const NativeAdLayout: React.ComponentType<{ children?: React.ReactNode }> | null =
   Platform.OS === 'android' ? requireNativeViewManager('NativeAdLayout') : null;
 
 type AdContainerProps<P> = {

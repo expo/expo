@@ -12,6 +12,10 @@
 
 - Preserve `import/export` syntax on Webpack only. ([#17713](https://github.com/expo/expo/pull/17713) by [@EvanBacon](https://github.com/EvanBacon))
 
+### 📚 3rd party library updates
+
+- Updates `metro-react-native-babel-preset` for react-native 0.69. ([#18006](https://github.com/expo/expo/pull/18006) by [@kudo](https://github.com/kudo))
+
 ## 9.1.0 — 2022-04-18
 
 ### 📚 3rd party library updates

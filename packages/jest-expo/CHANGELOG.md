@@ -12,4 +12,6 @@
 
 ### 🐛 Bug fixes
 
+- Added support for react-native-web 0.18. ([#18006](https://github.com/expo/expo/pull/18006) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others

@@ -10,7 +10,6 @@ import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.JSIModulePackage;
 import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.soloader.SoLoader;
-import com.swmansion.reanimated.ReanimatedJSIModulePackage;
 
 import java.util.List;
 
@@ -20,6 +19,7 @@ import dev.expo.payments.newarchitecture.MainApplicationReactNativeHost;
 import expo.modules.ReactNativeHostWrapper;
 import expo.modules.ApplicationLifecycleDispatcher;
 import expo.modules.devlauncher.DevLauncherPackageDelegate;
+import expo.modules.devmenu.DevMenuPackageDelegate;
 
 public class MainApplication extends Application implements ReactApplication {
   static final boolean USE_DEV_CLIENT = false;
@@ -64,6 +64,7 @@ public class MainApplication extends Application implements ReactApplication {
     ReactNativeFlipper.initializeFlipper(this);
     if (!USE_DEV_CLIENT) {
       DevLauncherPackageDelegate.enableAutoSetup = false;
+      DevMenuPackageDelegate.enableAutoSetup = false;
     }
     ApplicationLifecycleDispatcher.onApplicationCreate(this);
   }

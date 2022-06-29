@@ -2,6 +2,7 @@ import React from 'react';
 import { TouchableOpacity } from 'react-native';
 declare type TouchableProps = {
     onPress?: (...args: any[]) => any;
+    children?: React.ReactNode;
 };
 declare type AdTriggerViewProps<P> = {
     renderInteractiveComponent?: (props: P) => React.ReactElement<P>;
