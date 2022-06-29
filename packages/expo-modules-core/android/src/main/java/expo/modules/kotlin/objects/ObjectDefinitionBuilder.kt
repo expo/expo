@@ -263,13 +263,8 @@ open class ObjectDefinitionBuilder {
    * Creates the read-only property whose getter doesn't take the caller as an argument.
    */
   inline fun <T> Property(name: String, crossinline body: () -> T): PropertyComponentBuilder {
-    return PropertyComponentBuilder(
-      name,
-      getter = SyncFunctionComponent(
-        "get",
-        arrayOf()
-      ) { body() }
-    ).also {
+    return PropertyComponentBuilder(name).also {
+      it.get(body)
       properties[name] = it
     }
   }

@@ -36,6 +36,8 @@ void JavaScriptModuleObject::registerNatives() {
                                     JavaScriptModuleObject::registerSyncFunction),
                    makeNativeMethod("registerAsyncFunction",
                                     JavaScriptModuleObject::registerAsyncFunction),
+                   makeNativeMethod("registerProperty",
+                                    JavaScriptModuleObject::registerProperty),
                  });
 }
 
@@ -98,6 +100,40 @@ void JavaScriptModuleObject::registerAsyncFunction(
   );
 }
 
+void JavaScriptModuleObject::registerProperty(
+  jni::alias_ref<jstring> name,
+  jint desiredType,
+  jni::alias_ref<JNIFunctionBody::javaobject> getter,
+  jni::alias_ref<JNIFunctionBody::javaobject> setter
+) {
+  auto cName = name->toStdString();
+  std::unique_ptr<int[]> types = std::make_unique<int[]>(1);
+  types[0] = desiredType;
+
+  auto getterMetadata = MethodMetadata(
+    cName,
+    0,
+    false,
+    std::make_unique<int[]>(0),
+    jni::make_global(getter)
+  );
+
+  auto setterMetadata = MethodMetadata(
+    cName,
+    1,
+    false,
+    std::move(types),
+    jni::make_global(setter)
+  );
+
+  auto functions = std::make_pair(
+    std::move(getterMetadata),
+    std::move(setterMetadata)
+  );
+
+  properties.insert({cName, std::move(functions)});
+}
+
 JavaScriptModuleObject::HostObject::HostObject(
   JavaScriptModuleObject *jsModule) : jsModule(jsModule) {}
 
@@ -109,6 +145,12 @@ jsi::Value JavaScriptModuleObject::HostObject::get(jsi::Runtime &runtime,
   if (constantsRecord != jsModule->constants.end()) {
     auto dynamic = constantsRecord->second;
     return jsi::valueFromDynamic(runtime, dynamic);
+  }
+
+  auto propertyRecord = jsModule->properties.find(cName);
+  if (propertyRecord != jsModule->properties.end()) {
+    auto&[getter, _] = propertyRecord->second;
+    return getter.callSync(runtime, jsModule->jsiInteropModuleRegistry, nullptr, 0);
   }
 
   auto metadataRecord = jsModule->methodsMetadata.find(cName);
@@ -124,6 +166,14 @@ void JavaScriptModuleObject::HostObject::set(
   const jsi::PropNameID &name,
   const jsi::Value &value
 ) {
+  auto cName = name.utf8(runtime);
+  auto propertyRecord = jsModule->properties.find(cName);
+  if (propertyRecord != jsModule->properties.end()) {
+    auto&[_, setter] = propertyRecord->second;
+    setter.callSync(runtime, jsModule->jsiInteropModuleRegistry, &value, 1);
+    return;
+  }
+
   throw jsi::JSError(
     runtime,
     "RuntimeError: Cannot override the host object for expo module '" + name.utf8(runtime) + "'"
@@ -148,6 +198,16 @@ std::vector<jsi::PropNameID> JavaScriptModuleObject::HostObject::getPropertyName
   std::transform(
     constants.begin(),
     constants.end(),
+    std::back_inserter(result),
+    [&rt](const auto &kv) {
+      return jsi::PropNameID::forUtf8(rt, kv.first);
+    }
+  );
+
+  auto &properties = jsModule->properties;
+  std::transform(
+    properties.begin(),
+    properties.end(),
     std::back_inserter(result),
     [&rt](const auto &kv) {
       return jsi::PropNameID::forUtf8(rt, kv.first);

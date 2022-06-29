@@ -8,11 +8,17 @@ namespace react = facebook::react;
 namespace expo {
 jni::local_ref<react::ReadableNativeArray::javaobject>
 JNIFunctionBody::invoke(jni::local_ref<jni::JArrayClass<jobject>> &&args) {
-  static const auto method = getClass()->getMethod<
-    react::ReadableNativeArray::javaobject(jni::local_ref<jni::JArrayClass<jobject>>)
-  >(
-    "invoke"
-  );
+  // Do NOT use getClass here!
+  // Method obtained from `getClass` will point to the overridden version of the method.
+  // Because of that, it can't be cached - we will try to invoke the nonexistent method
+  // if we receive an object of a different class than the one used to obtain the method id.
+  // The only cacheable method id can be obtain from the base class.
+  static const auto method = jni::findClassLocal("expo/modules/kotlin/jni/JNIFunctionBody")
+    ->getMethod<
+      react::ReadableNativeArray::javaobject(jni::local_ref<jni::JArrayClass<jobject>>)
+    >(
+      "invoke"
+    );
 
   return method(this->self(), args);
 }
@@ -21,11 +27,17 @@ void JNIAsyncFunctionBody::invoke(
   jni::local_ref<jni::JArrayClass<jobject>> &&args,
   jobject promise
 ) {
-  static const auto method = getClass()->getMethod<
-    void(jni::local_ref<jni::JArrayClass<jobject>>, jobject)
-  >(
-    "invoke"
-  );
+  // Do NOT use getClass here!
+  // Method obtained from `getClass` will point to the overridden version of the method.
+  // Because of that, it can't be cached - we will try to invoke the nonexistent method
+  // if we receive an object of a different class than the one used to obtain the method id.
+  // The only cacheable method id can be obtain from the base class.
+  static const auto method = jni::findClassLocal("expo/modules/kotlin/jni/JNIAsyncFunctionBody")
+    ->getMethod<
+      void(jni::local_ref<jni::JArrayClass<jobject>>, jobject)
+    >(
+      "invoke"
+    );
 
   method(this->self(), args, promise);
 }

@@ -174,38 +174,56 @@ jsi::Function MethodMetadata::toSyncFunction(
       const jsi::Value *args,
       size_t count
     ) -> jsi::Value {
-      JNIEnv *env = jni::Environment::current();
-
-      /**
-       * This will push a new JNI stack frame for the LocalReferences in this
-       * function call. When the stack frame for this lambda is popped,
-       * all LocalReferences are deleted.
-       */
-      jni::JniLocalScope scope(env, (int) count);
-
-      std::vector<jvalue> convertedArgs = convertJSIArgsToJNI(moduleRegistry, env, rt, args, count);
-
-      // TODO(@lukmccall): Remove this temp array
-      auto tempArray = jni::JArrayClass<jobject>::newArray(count);
-      for (size_t i = 0; i < convertedArgs.size(); i++) {
-        tempArray->setElement(i, convertedArgs[i].l);
-      }
-
-      // Cast in this place is safe, cause we know that this function is promise-less.
-      auto syncFunction = jni::static_ref_cast<JNIFunctionBody>(this->jBodyReference);
-      auto result = syncFunction->invoke(
-        std::move(tempArray)
+      return this->callSync(
+        rt,
+        moduleRegistry,
+        args,
+        count
       );
-
-      if (result == nullptr) {
-        return jsi::Value::undefined();
-      }
-
-      return jsi::valueFromDynamic(rt, result->cthis()->consume())
-        .asObject(rt)
-        .asArray(rt)
-        .getValueAtIndex(rt, 0);
     });
+}
+
+jsi::Value MethodMetadata::callSync(
+  jsi::Runtime &rt,
+  JSIInteropModuleRegistry *moduleRegistry,
+  const jsi::Value *args,
+  size_t count
+) {
+  if (this->jBodyReference == nullptr) {
+    return jsi::Value::undefined();
+  }
+
+  JNIEnv *env = jni::Environment::current();
+
+  /**
+   * This will push a new JNI stack frame for the LocalReferences in this
+   * function call. When the stack frame for this lambda is popped,
+   * all LocalReferences are deleted.
+   */
+  jni::JniLocalScope scope(env, (int) count);
+
+  std::vector<jvalue> convertedArgs = convertJSIArgsToJNI(moduleRegistry, env, rt, args, count);
+
+  // TODO(@lukmccall): Remove this temp array
+  auto tempArray = jni::JArrayClass<jobject>::newArray(count);
+  for (size_t i = 0; i < convertedArgs.size(); i++) {
+    tempArray->setElement(i, convertedArgs[i].l);
+  }
+
+  // Cast in this place is safe, cause we know that this function is promise-less.
+  auto syncFunction = jni::static_ref_cast<JNIFunctionBody>(this->jBodyReference);
+  auto result = syncFunction->invoke(
+    std::move(tempArray)
+  );
+
+  if (result == nullptr) {
+    return jsi::Value::undefined();
+  }
+
+  return jsi::valueFromDynamic(rt, result->cthis()->consume())
+    .asObject(rt)
+    .asArray(rt)
+    .getValueAtIndex(rt, 0);
 }
 
 jsi::Function MethodMetadata::toAsyncFunction(
