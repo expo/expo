@@ -58,7 +58,7 @@ The fastest way to get up and running is to use the [Expo Go](https://expo.dev/c
 - [Android Play Store](https://play.google.com/store/apps/details?id=host.exp.exponent) - Android Lollipop (5) and greater
 - [iOS App Store](https://apps.apple.com/app/expo-go/id982107779) - iOS 11 and greater
 
-Open the Expo Go app after it has finished installing. If you have created an account with `expo-cli`, you can sign in by clicking the "Login" button in the top header on the "Home" screen. Signing in will make it easier for you to open projects in the Expo Go app while developing them &mdash; they will appear automatically under the "Projects" section on the Home screen of the app.
+Open the Expo Go app after it has finished installing. If you have created an account with `expo-cli`, you can sign in by clicking the "Login" button in the top header on the "Home" tab. Signing in will make it easier for you to open projects in the Expo Go app while developing them &mdash; they will appear automatically under the "Projects" section on the Home tab of the app.
 
 > It's often useful to be able to run your app directly on your computer instead of on a separate physical device. If you would like to set this up, you can learn more about [installing the iOS Simulator (macOS only)](../workflow/ios-simulator.md) and [installing an Android Emulator](../workflow/android-studio-emulator.md).
 
