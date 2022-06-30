@@ -18,7 +18,7 @@ With Expo CLI, you need to have the following tools installed on your developer 
 
 - [Node.js LTS release](https://nodejs.org/en/)
 - [Git](https://git-scm.com)
-- [Watchman](https://facebook.github.io/watchman/docs/install#buildinstall) required only for macOS or Linux users
+- [Watchman](https://facebook.github.io/watchman/docs/install#buildinstall), required only for macOS or Linux users
 
 > Only Node.js LTS releases (even-numbered) are recommended. As Node.js [officially states](https://nodejs.org/en/about/releases/), "Production applications should only use Active LTS or Maintenance LTS releases."
 
