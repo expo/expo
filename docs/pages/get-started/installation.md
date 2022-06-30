@@ -46,7 +46,7 @@ If the installation is successful, you will see a "Not logged in" message since 
 
 <Terminal cmd={['$ expo register']} />
 
-If you already have an Expo account, you can log into it by running the command:
+If you already have an Expo account, you can log in to it by running the command:
 
 <Terminal cmd={['$ expo login']} />
 
