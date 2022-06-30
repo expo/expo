@@ -106,12 +106,13 @@ export default {
       default: {
         try {
           if (!navigator.clipboard) {
-            throw new ClipboardUnavailableException();
+            throw new Error();
           }
           await navigator.clipboard.writeText(text);
           return true;
         } catch {
           // we can fall back to legacy behavior in any kind of failure
+          // including navigator.clipboard unavailability
           return this.setString(text);
         }
       }
