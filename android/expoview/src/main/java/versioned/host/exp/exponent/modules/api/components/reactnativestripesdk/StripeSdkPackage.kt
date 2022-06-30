@@ -17,7 +17,6 @@ class StripeSdkPackage : ReactPackage {
         AuBECSDebitFormViewManager(),
         StripeContainerManager(),
         CardFormViewManager(),
-        GooglePayButtonManager(),
         AddToWalletButtonManager(reactContext)
       )
     }
