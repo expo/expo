@@ -10,11 +10,10 @@ To develop applications with Expo, you need two tools. A command-line applicatio
 
 ## 1. Expo CLI
 
-[Expo CLI](/workflow/expo-cli) is a command-line app that is the primary interface between a developer and Expo tools. It has a web-based Graphical User Interface (GUI) that pops up in the web browser when you start your project. You can use the GUI instead of the command line interface if you are not yet comfortable using a terminal or prefer GUIs. Both have similar capabilities.
-
+[Expo CLI](/workflow/expo-cli) is a command-line app that is the primary interface between a developer and Expo tools. You will use it for different tasks in the development life cycle of your project.
 ### Requirements
 
-With Expo CLI, you need to have the following tools installed on your developer machine:
+To use Expo CLI, you need to have the following tools installed on your developer machine:
 
 - [Node.js LTS release](https://nodejs.org/en/)
 - [Git](https://git-scm.com)
@@ -31,7 +30,7 @@ With Expo CLI, you need to have the following tools installed on your developer 
 
 ### Installing Expo CLI
 
-Expo CLI is installed as a global npm package from a terminal app on your development machine. You will use it for different tasks in the development life cycle of your project.
+To install Expo CLI on your development machine, you need to install it as a global npm package. Open the terminal and run the following command:
 
 <Terminal cmd={[
   '# Install the command line tools',
