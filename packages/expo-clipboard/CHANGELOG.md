@@ -14,6 +14,7 @@
 ### 💡 Others
 
 - Migrated Expo modules definitions to the new naming convention. ([#17193](https://github.com/expo/expo/pull/17193) by [@tsapeta](https://github.com/tsapeta))
+- Migrated Android module to use Sweet API coroutines. ([#18036](https://github.com/expo/expo/pull/18036) by [@barthap](https://github.com/barthap))
 
 ## 3.0.1 — 2022-04-20
 
