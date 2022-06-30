@@ -371,7 +371,7 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
   public void setAudioIsEnabled(final Boolean value) {
     mEnabled = value;
     if (!value) {
-      abandonAudioFocus();
+      getUIManager().runOnUiQueueThread(this::abandonAudioFocus);
     }
   }
 
@@ -380,7 +380,7 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
     mShouldDuckAudio = map.getBoolean(AUDIO_MODE_SHOULD_DUCK_KEY);
     if (!mShouldDuckAudio) {
       mIsDuckingAudio = false;
-      updateDuckStatusForAllPlayersPlaying();
+      getUIManager().runOnUiQueueThread(this::updateDuckStatusForAllPlayersPlaying);
     }
 
     if (map.containsKey(AUDIO_MODE_PLAY_THROUGH_EARPIECE)) {
