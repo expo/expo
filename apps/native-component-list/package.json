@@ -159,7 +159,7 @@
     "react-native-screens": "~3.11.1",
     "react-native-shared-element": "0.8.4",
     "react-native-svg": "12.3.0",
-    "react-native-view-shot": "3.1.2",
+    "react-native-view-shot": "3.3.0",
     "react-native-web": "~0.18.1",
     "react-native-webview": "11.18.1",
     "react-navigation": "^4.4.0",
