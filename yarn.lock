@@ -4258,15 +4258,6 @@
     "@types/scheduler" "*"
     csstype "^3.0.2"
 
-"@types/react@~17.0.21":
-  version "17.0.47"
-  resolved "https://registry.yarnpkg.com/@types/react/-/react-17.0.47.tgz#4ee71aaf4c5a9e290e03aa4d0d313c5d666b3b78"
-  integrity sha512-mk0BL8zBinf2ozNr3qPnlu1oyVTYq+4V7WA76RgxUAtf0Em/Wbid38KN6n4abEkvO4xMTBWmnP1FtQzgkEiJoA==
-  dependencies:
-    "@types/prop-types" "*"
-    "@types/scheduler" "*"
-    csstype "^3.0.2"
-
 "@types/require-from-string@^1.2.1":
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/@types/require-from-string/-/require-from-string-1.2.1.tgz#50292d824e2244628c0b961c6a1a583fdc494554"
