@@ -1,7 +1,6 @@
 import {
   createDrawerNavigator,
   DrawerContentComponentProps,
-  DrawerContentOptions,
   DrawerContentScrollView,
   DrawerItemList,
 } from '@react-navigation/drawer';
@@ -23,9 +22,10 @@ function CustomDrawerContent({
 }: ScrollViewProps & {
   children?: React.ReactNode;
   hideLabels?: boolean;
-} & DrawerContentComponentProps<DrawerContentOptions>) {
+} & DrawerContentComponentProps) {
   return (
     <DrawerContentScrollView {...props}>
+      {/* @ts-ignore */}
       <DrawerItemList {...props} labelStyle={hideLabels ? { display: 'none' } : undefined} />
     </DrawerContentScrollView>
   );
@@ -58,18 +58,20 @@ export default function MainTabbedNavigator(props: any) {
           borderTopColor: Colors.tabIconDefault,
         }}
         // bottom-tabs props
-        tabBarOptions={{
-          style: {
+        screenOptions={{
+          tabBarStyle: {
             backgroundColor: Colors.tabBar,
           },
-          activeTintColor: Colors.tabIconSelected,
-          inactiveTintColor: Colors.tabIconDefault,
+          tabBarActiveTintColor: Colors.tabIconSelected,
+          tabBarInactiveTintColor: Colors.tabIconDefault,
+          headerShown: false,
         }}>
         {Object.entries(Screens).map(([name, Screen]) => (
           <Tab.Screen
             name={name}
             key={name}
             component={Screen.navigator}
+            // @ts-ignore
             options={Screen.navigator.navigationOptions}
           />
         ))}
@@ -88,6 +90,7 @@ export default function MainTabbedNavigator(props: any) {
           name={name}
           key={name}
           component={Screen.navigator}
+          // @ts-ignore
           options={Screen.navigator.navigationOptions}
         />
       ))}
