@@ -53,7 +53,7 @@ If you already have an Expo account, you can log in to it by running the command
 
 ## 2. Expo Go app for iOS and Android
 
-The fastest way to get up and running is to use the Expo Go app on your iOS or Android device. Expo Go allows you to open up apps served through Expo CLI. It is available on both the iOS App Store and Android Play Store.
+The fastest way to get up and running is to use the [Expo Go](https://expo.dev/client) client app on your iOS or Android device. It allows you to open up apps served through Expo CLI and run your projects faster when developing them. It is available on both the iOS App Store and Android Play Store.
 
 - [Android Play Store](https://play.google.com/store/apps/details?id=host.exp.exponent) - Android Lollipop (5) and greater
 - [iOS App Store](https://apps.apple.com/app/expo-go/id982107779) - iOS 11 and greater
