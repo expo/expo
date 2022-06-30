@@ -10,7 +10,7 @@ To develop applications with Expo, you need two tools. A command-line applicatio
 
 ## 1. Expo CLI
 
-[Expo CLI](../workflow/expo-cli.md) is a command-line app that is the primary interface between a developer and Expo tools. It has a web-based Graphical User Interface (GUI) that pops up in the web browser when you start your project. You can use the GUI instead of the command line interface if you are not yet comfortable using a terminal or prefer GUIs. Both have similar capabilities.
+[Expo CLI](/workflow/expo-cli) is a command-line app that is the primary interface between a developer and Expo tools. It has a web-based Graphical User Interface (GUI) that pops up in the web browser when you start your project. You can use the GUI instead of the command line interface if you are not yet comfortable using a terminal or prefer GUIs. Both have similar capabilities.
 
 ### Requirements
 
