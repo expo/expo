@@ -68,7 +68,7 @@ Open **App.js** file in your code editor and change the text to "Hello, world!".
 
 Expo Go is configured by default to automatically reload the app whenever a file is changed, but let's make sure to go over the steps to enable it in case somehow things aren't working.
 
-- Make sure the [the development server is running](#starting-the-development-server).
+- Make sure the you have the [development mode enabled in Expo CLI](/workflow/development-mode#development-mode).
 - Close the Expo app and reopen it.
 - Once the app is open again, shake your device to reveal the developer menu. If you are using an emulator, press `⌘+d` for iOS or `ctrl+m` for Android.
 - If you see `Enable Fast Refresh`, press it. If you see `Disable Fast Refresh`, dismiss the developer menu. Now try making another change.
