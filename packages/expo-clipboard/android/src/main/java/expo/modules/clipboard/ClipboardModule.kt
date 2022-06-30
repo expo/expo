@@ -13,6 +13,7 @@ import android.util.Log
 import androidx.core.os.bundleOf
 import expo.modules.core.utilities.ifNull
 import expo.modules.kotlin.exception.CodedException
+import expo.modules.kotlin.functions.Coroutine
 
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
@@ -66,19 +67,20 @@ class ClipboardModule : Module() {
     // endregion
 
     // region Images
-    AsyncFunction("getImageAsync").SuspendBody { options: GetImageOptions ->
+    AsyncFunction("getImageAsync") Coroutine { options: GetImageOptions ->
       val imageUri = clipboardManager
         .takeIf { clipboardHasItemWithType("image/*") }
         ?.firstItem
         ?.uri
         .ifNull {
-          return@SuspendBody null
+          return@Coroutine null
         }
 
       try {
         val imageResult = imageFromContentUri(context, imageUri, options)
-        return@SuspendBody imageResult.toBundle()
+        return@Coroutine imageResult.toBundle()
       } catch (err: Throwable) {
+        err.printStackTrace()
         throw when (err) {
           is CodedException -> err
           is SecurityException -> NoPermissionException(err)
@@ -87,11 +89,12 @@ class ClipboardModule : Module() {
       }
     }
 
-    AsyncFunction("setImageAsync").SuspendBody { imageData: String ->
+    AsyncFunction("setImageAsync") Coroutine { imageData: String ->
       try {
         val clip = clipDataFromBase64Image(context, imageData, clipboardCacheDir)
         clipboardManager.setPrimaryClip(clip)
       } catch (err: Throwable) {
+        err.printStackTrace()
         throw when (err) {
           is CodedException -> err
           else -> CopyFailureException(err, kind = "image")
