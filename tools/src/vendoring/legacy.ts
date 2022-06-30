@@ -322,16 +322,6 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
         targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.gesturehandler',
         cleanupTargetPath: false,
       },
-      {
-        recursive: true,
-        sourceIosPath: 'ios',
-        targetIosPath: 'Api/Components/GestureHandler',
-      },
-    ],
-    warnings: [
-      `NOTE: Any files in ${chalk.magenta('com.facebook.react')} will not be updated ${chalk.red(
-        'for iOS, Android is fine'
-      )} -- you'll need to add these to expoview manually!`,
     ],
   },
   'react-native-reanimated': {
