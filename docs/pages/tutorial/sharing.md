@@ -67,7 +67,7 @@ export default function App() {
 
 <Video file={"tutorial/sharing-native.mp4"} />
 
-🥰 Everything is working great! The operating system share dialog opens up and is ready to share our selected image  so it's time to shift our focus towards the purely aesthetic. In the next step of this tutorial we will [customize our app icon and splash screen](/tutorial/configuration).
+🥰 Everything is working great! The operating system share dialog opens up and is ready to share our selected image so it's time to shift our focus towards the purely aesthetic. In the next step of this tutorial we will [customize our app icon and splash screen](/tutorial/configuration).
 
 <!-- TODO(brentvatne): when we have a better workflow for https in expo-cli and a way to open Snack web on mobile we should revisit this -->
 
