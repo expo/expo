@@ -82,7 +82,6 @@ class StripeSdkModule(reactContext: ReactApplicationContext) : ReactContextBaseJ
     hashMapOf(
       "API_VERSIONS" to hashMapOf(
         "CORE" to ApiVersion.API_VERSION_CODE,
-        "ISSUING" to PushProvisioningProxy.getApiVersion(),
       )
     )
 
@@ -532,7 +531,8 @@ class StripeSdkModule(reactContext: ReactApplicationContext) : ReactContextBaseJ
       return
     }
     getCurrentActivityOrResolveWithError(promise)?.let {
-      PushProvisioningProxy.isCardInWallet(it, last4, promise)
+      promise.resolve(false)
+      return
     }
   }
 
