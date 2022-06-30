@@ -11,19 +11,12 @@ import android.text.Spanned
 import android.text.TextUtils
 import android.util.Log
 import androidx.core.os.bundleOf
-import expo.modules.core.errors.ModuleDestroyedException
 import expo.modules.core.utilities.ifNull
-import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.CodedException
+import expo.modules.kotlin.functions.Coroutine
 
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
-import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.launch
 import java.io.File
 
 private const val moduleName = "ExpoClipboard"
@@ -74,46 +67,38 @@ class ClipboardModule : Module() {
     // endregion
 
     // region Images
-    AsyncFunction("getImageAsync") { options: GetImageOptions, promise: Promise ->
+    AsyncFunction("getImageAsync") Coroutine { options: GetImageOptions ->
       val imageUri = clipboardManager
         .takeIf { clipboardHasItemWithType("image/*") }
         ?.firstItem
         ?.uri
         .ifNull {
-          promise.resolve(null)
-          return@AsyncFunction
+          return@Coroutine null
         }
 
-      val exceptionHandler = CoroutineExceptionHandler { _, err ->
+      try {
+        val imageResult = imageFromContentUri(context, imageUri, options)
+        return@Coroutine imageResult.toBundle()
+      } catch (err: Throwable) {
         err.printStackTrace()
-        val rejectionCause = when (err) {
+        throw when (err) {
           is CodedException -> err
           is SecurityException -> NoPermissionException(err)
           else -> PasteFailureException(err, kind = "image")
         }
-        promise.reject(rejectionCause)
-      }
-
-      moduleCoroutineScope.launch(exceptionHandler) {
-        val imageResult = imageFromContentUri(context, imageUri, options)
-        promise.resolve(imageResult.toBundle())
       }
     }
 
-    AsyncFunction("setImageAsync") { imageData: String, promise: Promise ->
-      val exceptionHandler = CoroutineExceptionHandler { _, err ->
+    AsyncFunction("setImageAsync") Coroutine { imageData: String ->
+      try {
+        val clip = clipDataFromBase64Image(context, imageData, clipboardCacheDir)
+        clipboardManager.setPrimaryClip(clip)
+      } catch (err: Throwable) {
         err.printStackTrace()
-        val rejectionCause = when (err) {
+        throw when (err) {
           is CodedException -> err
           else -> CopyFailureException(err, kind = "image")
         }
-        promise.reject(rejectionCause)
-      }
-
-      moduleCoroutineScope.launch(exceptionHandler) {
-        val clip = clipDataFromBase64Image(context, imageData, clipboardCacheDir)
-        clipboardManager.setPrimaryClip(clip)
-        promise.resolve(null)
       }
     }
 
@@ -132,11 +117,6 @@ class ClipboardModule : Module() {
 
     OnDestroy {
       clipboardEventEmitter.detachListener()
-      try {
-        moduleCoroutineScope.cancel(ModuleDestroyedException())
-      } catch (e: IllegalStateException) {
-        // Ignore: The coroutine scope has no job in it
-      }
     }
 
     OnActivityEntersBackground {
@@ -157,8 +137,6 @@ class ClipboardModule : Module() {
   private val clipboardManager: ClipboardManager
     get() = context.getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager
       ?: throw ClipboardUnavailableException()
-
-  private val moduleCoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
   private val clipboardCacheDir: File by lazy {
     File(context.cacheDir, CLIPBOARD_DIRECTORY_NAME).also { it.mkdirs() }
