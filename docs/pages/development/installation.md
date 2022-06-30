@@ -10,7 +10,7 @@ import { Terminal } from '~/ui/components/Snippet';
 
 > Note: These docs assume a basic level of familiarity with React-Native. If you are new to React-Native, please see the [React-Native docs](https://reactnative.dev/docs/getting-started).
 
-The installation steps on this page are only required to add the `expo-dev-client` library to a React Native or bare project. To add a the `expo-dev-client` library to an existing managed project, see our [Getting Started guide](getting-started.md).
+The installation steps on this page are only required to add the `expo-dev-client` library to a React Native or bare project. To add the `expo-dev-client` library to an existing managed project, see our [Getting Started guide](getting-started.md).
 
 
 If you're just starting your project, you can run the following command to create a new project with Expo modules pre-installed: 
@@ -118,13 +118,7 @@ Make the following changes to allow the `expo-dev-client` library to control pro
 
 ## 3. Optional configuration
 
-There are a few more changes you can make to get the best experience, but you [can skip ahead to building](/development/getting-started.md#creating-and-installing-your-first-development-build), if you prefer.
-
-### Disable packager autostart when building for iOS
-
-When you start your project on iOS, the metro bundler will be started automatically. This behavior might not be ideal when you want to use `expo start`. Our recommended solution is to remove the `Start Packager` action from building scripts. To do that you need to open the Xcode, go to "Build Phases" and remove the "Start Packager" action.
-
-<img src="/static/images/client/remove_start_packager.png" style={{maxWidth: "100%" }}/>
+There are a few more changes you can make to get the best experience, if you prefer.
 
 ### Add better error handlers
 
@@ -137,6 +131,12 @@ import App from "./App";
 ```
 
 > Note: This will only affect the application in which you make this change. If you want to load multiple projects from a single development app, you'll need to add this import statement to each project.
+
+### Disable packager autostart when building for iOS
+
+When you start your project on iOS, the metro bundler will be started automatically. This behavior might not be ideal when you want to use `expo start`. Our recommended solution is to remove the `Start Packager` action from building scripts. To do that you need to open the Xcode, go to "Build Phases" and remove the "Start Packager" action.
+
+<img src="/static/images/client/remove_start_packager.png" style={{maxWidth: "100%" }}/>
 
 ### Loading published updates
 
