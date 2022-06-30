@@ -31,7 +31,7 @@ With Expo CLI, you need to have the following tools installed on your developer 
 
 ### Installing Expo CLI
 
-Expo CLI is installed as a global npm package from a terminal app on your development machine. You will use it for different tasks in the development life-cycle of your project.
+Expo CLI is installed as a global npm package from a terminal app on your development machine. You will use it for different tasks in the development life cycle of your project.
 
 <Terminal cmd={[
   '# Install the command line tools',
@@ -46,7 +46,7 @@ If the installation is successful, you will see a "Not logged in" message since 
 
 <Terminal cmd={['$ expo register']} />
 
-If you already have an Expo account, you can log into it by running the command:
+If you already have an Expo account, you can log in to it by running the command:
 
 <Terminal cmd={['$ expo login']} />
 
