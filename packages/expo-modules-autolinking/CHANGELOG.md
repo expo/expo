@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Added support for React Native 0.69.x ([#17629](https://github.com/expo/expo/pull/17629) by [@kudo](https://github.com/kudo))
+- Use regex to match ignored modules in expo_patch_react_imports! ([#17968](https://github.com/expo/expo/pull/17968) by [@dmnkgrc](https://github.com/dmnkgrc))
 
 ### 💡 Others
 
