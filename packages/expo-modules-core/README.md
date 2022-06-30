@@ -36,7 +36,7 @@ Many React Native libraries come with platform-specific (native) code. This nati
 # Podfile
 
 require File.join(File.dirname(`node --print "require.resolve('react-native/package.json')"`), "scripts/react_native_pods")
-require File.join(File.dirname(`node --print "require.resolve('react-native-unimodules/package.json')"`), "cocoapods.rb")
+require File.join(File.dirname(`node --print "require.resolve('expo-modules-core/package.json')"`), "cocoapods.rb")
 require File.join(File.dirname(`node --print "require.resolve('expo-modules-core/package.json')"`), "scripts/autolinking")
 
 #  ...
@@ -55,7 +55,7 @@ end
 ```groovy
 // app/build.gradle
 
-apply from: new File(["node", "--print", "require.resolve('react-native-unimodules/package.json')"].execute(null, rootDir).text.trim(), "../gradle.groovy")
+apply from: new File(["node", "--print", "require.resolve('expo-modules-core/package.json')"].execute(null, rootDir).text.trim(), "../gradle.groovy")
 apply from: new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim(), "../react.gradle")
 apply from: new File(["node", "--print", "require.resolve('expo-updates/package.json')"].execute(null, rootDir).text.trim(), "../scripts/create-manifest-android.gradle")
 
@@ -68,7 +68,7 @@ applyNativeModulesAppBuildGradle(project)
 ```groovy
 // settings.gradle
 
-apply from: new File(["node", "--print", "require.resolve('react-native-unimodules/package.json')"].execute(null, rootDir).text.trim(), "../gradle.groovy");
+apply from: new File(["node", "--print", "require.resolve('expo-modules-core/package.json')"].execute(null, rootDir).text.trim(), "../gradle.groovy");
 includeUnimodulesProjects()
 
 apply from: new File(["node", "--print", "require.resolve('@react-native-community/cli-platform-android/package.json')"].execute(null, rootDir).text.trim(), "../native_modules.gradle");
