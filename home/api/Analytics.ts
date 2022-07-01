@@ -5,7 +5,7 @@ import Environment from '../utils/Environment';
 import { TrackingOptions, normalizeTrackingOptions } from './AnalyticsUtils';
 
 let isInitialized = false;
-const apiKey = Constants.manifest?.extra?.amplitudeApiKey;
+const apiKey = Constants.expoConfig?.extra?.amplitudeApiKey;
 
 const events = {
   USER_LOGGED_IN: 'USER_LOGGED_IN',
