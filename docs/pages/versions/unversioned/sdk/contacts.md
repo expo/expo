@@ -918,14 +918,3 @@ This table illustrates what fields will be added on demand to every contact.
 | RAW_IMAGE              | `'rawImage'`                | ✅             | ❌             |
 | THUMBNAIL              | `'thumbnail'`               | **Deprecated** | **Deprecated** |
 | PREVIOUS_LAST_NAME     | `'previousLastName'`        | **Deprecated** | **Deprecated** |
-
-## Breaking Changes
-
-### SDK 29
-
-- The `thumbnail` field has been deprecated, use `image` on both platforms instead.
-- On iOS `image` is now `rawImage`. There is no Android version of `rawImage`.
-- Images now return a localUri instead of Base64 string.
-- Base64 string is now returned in an encodable format.
-- Empty contact fields will no longer be returned as empty strings on iOS.
-- Passing no fields will now return all contact information.
