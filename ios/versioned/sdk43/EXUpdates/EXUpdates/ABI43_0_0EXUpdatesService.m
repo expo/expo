@@ -13,11 +13,17 @@ ABI43_0_0EX_REGISTER_MODULE();
 
 + (const NSArray<Protocol *> *)exportedInterfaces
 {
+#if SUPPRESS_EXPO_UPDATES_SERVICE // used in Expo Go
+  return @[];
+#endif
   return @[@protocol(ABI43_0_0EXUpdatesModuleInterface)];
 }
 
 - (ABI43_0_0EXUpdatesConfig *)config
 {
+#if SUPPRESS_EXPO_UPDATES_SERVICE // used in Expo Go
+  return nil;
+#endif
   return ABI43_0_0EXUpdatesAppController.sharedInstance.config;
 }
 
