@@ -145,6 +145,12 @@ public class RNTimePickerDialogModule extends ReactContextBaseJavaModule {
     if (options.hasKey(RNConstants.ARG_NEUTRAL_BUTTON_LABEL) && !options.isNull(RNConstants.ARG_NEUTRAL_BUTTON_LABEL)) {
       args.putString(RNConstants.ARG_NEUTRAL_BUTTON_LABEL, options.getString(RNConstants.ARG_NEUTRAL_BUTTON_LABEL));
     }
+    if (options.hasKey(RNConstants.ARG_POSITIVE_BUTTON_LABEL) && !options.isNull(RNConstants.ARG_POSITIVE_BUTTON_LABEL)) {
+      args.putString(RNConstants.ARG_POSITIVE_BUTTON_LABEL, options.getString(RNConstants.ARG_POSITIVE_BUTTON_LABEL));
+    }
+    if (options.hasKey(RNConstants.ARG_NEGATIVE_BUTTON_LABEL) && !options.isNull(RNConstants.ARG_NEGATIVE_BUTTON_LABEL)) {
+      args.putString(RNConstants.ARG_NEGATIVE_BUTTON_LABEL, options.getString(RNConstants.ARG_NEGATIVE_BUTTON_LABEL));
+    }
     if (options.hasKey(RNConstants.ARG_INTERVAL) && !options.isNull(RNConstants.ARG_INTERVAL)) {
       args.putInt(RNConstants.ARG_INTERVAL, options.getInt(RNConstants.ARG_INTERVAL));
     }
