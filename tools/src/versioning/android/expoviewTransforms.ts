@@ -80,6 +80,11 @@ export function expoviewTransforms(abiVersion: string): FileTransforms {
         find: new RegExp(`(SoLoader|System).loadLibrary\\\("${escapeRegExp(libName)}"\\\)`),
         replaceWith: `$1.loadLibrary("${libName}_${abiVersion}")`,
       })),
+      {
+        paths: '*.{java,h,cpp}',
+        find: /versioned\/host\/exp\/exponent\/modules\/api\/reanimated/g,
+        replaceWith: `${abiVersion}/host/exp/exponent/modules/api/reanimated`,
+      },
       ...reanimatedCmakeTransforms(abiVersion),
     ],
   };
