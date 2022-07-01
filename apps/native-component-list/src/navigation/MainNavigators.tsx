@@ -12,7 +12,9 @@ import ExpoComponentsStackNavigator, {
 // so make sure they still work there once you change something here.
 
 type ScreenConfig = {
-  linking: PathConfig;
+  linking: PathConfig<{
+    ExpoApis: undefined;
+  }>;
   navigator: ((props: { navigation: BottomTabNavigationProp<any> }) => JSX.Element) & {
     navigationOptions: StackNavigationOptions & DrawerNavigationOptions;
   };
