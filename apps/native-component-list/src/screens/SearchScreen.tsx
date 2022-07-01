@@ -1,4 +1,5 @@
-import { createStackNavigator, HeaderBackButton, StackScreenProps } from '@react-navigation/stack';
+import { HeaderBackButton } from '@react-navigation/elements';
+import { createStackNavigator, StackScreenProps } from '@react-navigation/stack';
 import Fuse from 'fuse.js';
 import React from 'react';
 import { Animated, Platform, StyleSheet, View } from 'react-native';
@@ -45,7 +46,7 @@ function Header({
           {backButton && (
             <HeaderBackButton
               onPress={() => navigation.goBack()}
-              pressColorAndroid={tintColor || '#fff'}
+              pressColor={tintColor || '#fff'}
               tintColor={tintColor}
             />
           )}

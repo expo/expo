@@ -33,8 +33,9 @@ export const linking = {
 
 export default function RootNavigation() {
   return (
+    // @ts-ignore
     <NavigationContainer linking={linking} fallback={<Text>Loading…</Text>}>
-      <Switch.Navigator mode="modal" headerMode="none">
+      <Switch.Navigator screenOptions={{ presentation: 'modal', headerShown: false }}>
         <Switch.Screen name="main" component={MainTabNavigator} />
         <Switch.Screen name="redirect" component={RedirectScreen} />
         <Switch.Screen
