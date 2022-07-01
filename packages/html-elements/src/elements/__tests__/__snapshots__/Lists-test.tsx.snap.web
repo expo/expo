@@ -2,22 +2,24 @@
 
 exports[`renders UL nested in LI 1`] = `
 <li
-  className="css-reset-4rbku5 css-view-1dbjc4n"
+  className="css-view-175oi2r"
+  dir={null}
   role="listitem"
 >
   <li
-    className="css-reset-4rbku5 css-text-901oao"
+    className="css-text-1rynq56"
     dir="auto"
     role="listitem"
   >
     item
   </li>
   <ul
-    className="css-reset-4rbku5 css-view-1dbjc4n"
+    className="css-view-175oi2r"
+    dir={null}
     role="list"
   >
     <li
-      className="css-reset-4rbku5 css-text-901oao"
+      className="css-text-1rynq56"
       dir="auto"
       role="listitem"
     >

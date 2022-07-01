@@ -3,9 +3,9 @@
 exports[`matches snapshots 1`] = `
 Object {
   "OS": "web",
-  "canUseEventListeners": false,
-  "canUseViewport": false,
-  "isDOMAvailable": false,
+  "canUseEventListeners": true,
+  "canUseViewport": true,
+  "isDOMAvailable": true,
   "isNative": false,
   "isWeb": true,
 }

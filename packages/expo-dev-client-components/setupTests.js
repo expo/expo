@@ -22,7 +22,7 @@ jest.mock('react-native/Libraries/Components/AccessibilityInfo/AccessibilityInfo
 
 jest.mock('react-native/Libraries/Utilities/Appearance', () => {
   const MockAppearance = {
-    addChangeListener: jest.fn(),
+    addChangeListener: jest.fn().mockReturnValue({ remove: jest.fn() }),
     removeChangeListener: jest.fn(),
     getColorScheme: jest.fn(() => 'light'),
   };

@@ -54,6 +54,7 @@ module.exports = {
     return {
       ...getBaseWebPreset(),
       ...getPlatformPreset({ name: 'Web', color: 'magenta' }, ['web']),
+      testEnvironment: 'jsdom',
     };
   },
   getNodePreset() {
