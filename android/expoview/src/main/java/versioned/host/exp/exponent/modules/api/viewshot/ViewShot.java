@@ -8,9 +8,14 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.net.Uri;
+
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.StringDef;
+
+import android.os.Build;
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.util.Base64;
 import android.util.Log;
 import android.view.TextureView;
@@ -18,6 +23,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ScrollView;
 
+import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.uimanager.NativeViewHierarchyManager;
@@ -47,7 +53,7 @@ import static android.view.View.VISIBLE;
 /**
  * Snapshot utility class allow to screenshot a view.
  */
-public class ViewShot implements UIBlock {
+public class ViewShot implements UIBlock, LifecycleEventListener {
     //region Constants
     /**
      * Tag fort Class logs.
@@ -65,6 +71,30 @@ public class ViewShot implements UIBlock {
      * ARGB size in bytes.
      */
     private static final int ARGB_SIZE = 4;
+
+    private HandlerThread mBgThread;
+    private Handler mBgHandler;
+
+    @Override
+    public void onHostResume() {
+
+    }
+
+    @Override
+    public void onHostPause() {
+
+    }
+
+    @Override
+    public void onHostDestroy() {
+        this.reactContext.removeLifecycleEventListener(this);
+        mBgHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                cleanup();
+            }
+        });
+    }
 
     @SuppressWarnings("WeakerAccess")
     @IntDef({Formats.JPEG, Formats.PNG, Formats.WEBP, Formats.RAW})
@@ -157,44 +187,68 @@ public class ViewShot implements UIBlock {
         this.reactContext = reactContext;
         this.currentActivity = currentActivity;
         this.promise = promise;
+
+        reactContext.addLifecycleEventListener(this);
+
+        // bg hanadler for non UI heavy work
+        mBgThread = new HandlerThread("RNViewShot-Handler-Thread");
+        mBgThread.start();
+        mBgHandler = new Handler(mBgThread.getLooper());
     }
     //endregion
 
+    private void cleanup() {
+        if (mBgThread != null) {
+            if (Build.VERSION.SDK_INT < 18) {
+                mBgThread.quit();
+            } else {
+                mBgThread.quitSafely();
+            }
+
+            mBgThread = null;
+        }
+    }
+
     //region Overrides
     @Override
-    public void execute(NativeViewHierarchyManager nativeViewHierarchyManager) {
-        final View view;
+    public void execute(final NativeViewHierarchyManager nativeViewHierarchyManager) {
+        mBgHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                final View view;
 
-        if (tag == -1) {
-            view = currentActivity.getWindow().getDecorView().findViewById(android.R.id.content);
-        } else {
-            view = nativeViewHierarchyManager.resolveView(tag);
-        }
+                if (tag == -1) {
+                    view = currentActivity.getWindow().getDecorView().findViewById(android.R.id.content);
+                } else {
+                    view = nativeViewHierarchyManager.resolveView(tag);
+                }
 
-        if (view == null) {
-            Log.e(TAG, "No view found with reactTag: " + tag, new AssertionError());
-            promise.reject(ERROR_UNABLE_TO_SNAPSHOT, "No view found with reactTag: " + tag);
-            return;
-        }
+                if (view == null) {
+                    Log.e(TAG, "No view found with reactTag: " + tag, new AssertionError());
+                    promise.reject(ERROR_UNABLE_TO_SNAPSHOT, "No view found with reactTag: " + tag);
+                    return;
+                }
 
-        try {
-            final ReusableByteArrayOutputStream stream = new ReusableByteArrayOutputStream(outputBuffer);
-            stream.setSize(proposeSize(view));
-            outputBuffer = stream.innerBuffer();
+                try {
+                    final ReusableByteArrayOutputStream stream = new ReusableByteArrayOutputStream(outputBuffer);
+                    stream.setSize(proposeSize(view));
+                    outputBuffer = stream.innerBuffer();
 
-            if (Results.TEMP_FILE.equals(result) && Formats.RAW == this.format) {
-                saveToRawFileOnDevice(view);
-            } else if (Results.TEMP_FILE.equals(result) && Formats.RAW != this.format) {
-                saveToTempFileOnDevice(view);
-            } else if (Results.BASE_64.equals(result) || Results.ZIP_BASE_64.equals(result)) {
-                saveToBase64String(view);
-            } else if (Results.DATA_URI.equals(result)) {
-                saveToDataUriString(view);
+                    if (Results.TEMP_FILE.equals(result) && Formats.RAW == format) {
+                        saveToRawFileOnDevice(view);
+                    } else if (Results.TEMP_FILE.equals(result) && Formats.RAW != format) {
+                        saveToTempFileOnDevice(view);
+                    } else if (Results.BASE_64.equals(result) || Results.ZIP_BASE_64.equals(result)) {
+                        saveToBase64String(view);
+                    } else if (Results.DATA_URI.equals(result)) {
+                        saveToDataUriString(view);
+                    }
+                } catch (final Throwable ex) {
+                    Log.e(TAG, "Failed to capture view snapshot", ex);
+                    promise.reject(ERROR_UNABLE_TO_SNAPSHOT, "Failed to capture view snapshot");
+                }
             }
-        } catch (final Throwable ex) {
-            Log.e(TAG, "Failed to capture view snapshot", ex);
-            promise.reject(ERROR_UNABLE_TO_SNAPSHOT, "Failed to capture view snapshot");
-        }
+        });
     }
     //endregion
 

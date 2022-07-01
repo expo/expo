@@ -87,12 +87,13 @@ public class RNViewShotModule extends ReactContextBaseJavaModule {
         final Integer scaleWidth = options.hasKey("width") ? (int) (dm.density * options.getDouble("width")) : null;
         final Integer scaleHeight = options.hasKey("height") ? (int) (dm.density * options.getDouble("height")) : null;
         final String resultStreamFormat = options.getString("result");
+        final String fileName = options.hasKey("fileName") ? options.getString("fileName") : null;
         final Boolean snapshotContentContainer = options.getBoolean("snapshotContentContainer");
 
         try {
             File outputFile = null;
             if (Results.TEMP_FILE.equals(resultStreamFormat)) {
-                outputFile = createTempFile(mScopedContext, extension);
+                outputFile = createTempFile(mScopedContext, extension, fileName);
             }
 
             final Activity activity = getCurrentActivity();
@@ -166,7 +167,7 @@ public class RNViewShotModule extends ReactContextBaseJavaModule {
      * whichever is available and has more free space.
      */
     @NonNull
-    private File createTempFile(@NonNull final Context context, @NonNull final String ext) throws IOException {
+    private File createTempFile(@NonNull final Context context, @NonNull final String ext, String fileName) throws IOException {
         final File externalCacheDir = context.getExternalCacheDir();
         final File internalCacheDir = context.getCacheDir();
         final File cacheDir;
@@ -185,6 +186,9 @@ public class RNViewShotModule extends ReactContextBaseJavaModule {
         }
 
         final String suffix = "." + ext;
+        if (fileName != null) {
+            return File.createTempFile(fileName, suffix, cacheDir);
+        }
         return File.createTempFile(TEMP_FILE_PREFIX, suffix, cacheDir);
     }
 }
