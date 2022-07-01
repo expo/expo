@@ -268,6 +268,37 @@ public abstract class ConnectivityReceiver {
                         } catch (Exception e) {
                             // Ignore errors
                         }
+
+                        // Get the link speed
+                        try {
+                            int linkSpeed =
+                                    wifiInfo.getLinkSpeed();
+                            details.putInt("linkSpeed", linkSpeed);
+                        } catch (Exception e) {
+                            // Ignore errors
+                        }
+
+                        // Get the current receive link speed in Mbps
+                        try {
+                            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+                                int rxLinkSpeed =
+                                        wifiInfo.getRxLinkSpeedMbps();
+                                details.putInt("rxLinkSpeed", rxLinkSpeed);
+                            }
+                        } catch (Exception e) {
+                            // Ignore errors
+                        }
+
+                        // Get the current transmit link speed in Mbps
+                        try {
+                            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+                                int txLinkSpeed =
+                                        wifiInfo.getTxLinkSpeedMbps();
+                                details.putInt("txLinkSpeed", txLinkSpeed);
+                            }
+                        } catch (Exception e) {
+                            // Ignore errors
+                        }
                     }
                 }
                 break;
