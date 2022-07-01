@@ -74,7 +74,7 @@ export default function App() {
 
 🥰 Everything is working great! The operating system share dialog opens up and is ready to share our selected image. 
 
-## Platform differences on web
+## Platform differences with web
 
 <Video file={"tutorial/sharing-web-unavailable.mp4"} />
 
