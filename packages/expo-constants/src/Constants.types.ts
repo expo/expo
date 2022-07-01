@@ -209,10 +209,10 @@ export interface PlatformManifest {
 }
 
 // @needsAudit @docsMissing
-/**
- * @hidden
- */
 export interface NativeConstants {
+  /**
+   * @hidden
+   */
   name: 'ExponentConstants';
   /**
    * Returns `expo`, `standalone`, or `guest`. This property only applies to the managed workflow
