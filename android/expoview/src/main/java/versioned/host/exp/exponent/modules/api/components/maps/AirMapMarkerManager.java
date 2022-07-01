@@ -4,6 +4,8 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.view.View;
 
+import androidx.annotation.Nullable;
+
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.MapBuilder;
@@ -19,8 +21,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
-
-import javax.annotation.Nullable;
 
 public class AirMapMarkerManager extends ViewGroupManager<AirMapMarker> {
 

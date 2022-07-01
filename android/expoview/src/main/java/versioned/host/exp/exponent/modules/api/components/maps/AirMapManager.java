@@ -2,6 +2,8 @@ package versioned.host.exp.exponent.modules.api.components.maps;
 
 import android.view.View;
 
+import androidx.annotation.Nullable;
+
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableArray;
@@ -23,8 +25,6 @@ import com.google.android.gms.maps.model.MapStyleOptions;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.annotation.Nullable;
 
 public class AirMapManager extends ViewGroupManager<AirMapView> {
 

@@ -146,7 +146,7 @@ dependencies {
 
   implementation 'com.squareup.picasso:picasso:2.5.2'
   implementation 'com.google.android.gms:play-services-analytics:16.0.1'
-  implementation 'com.google.android.gms:play-services-maps:15.0.1'
+  implementation 'com.google.android.gms:play-services-maps:18.0.0'
   implementation 'com.google.android.gms:play-services-auth:15.0.1'
   implementation 'com.google.android.gms:play-services-location:15.0.1'
   debugImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta1'

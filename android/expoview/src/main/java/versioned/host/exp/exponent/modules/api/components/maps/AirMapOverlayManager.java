@@ -5,6 +5,8 @@ import android.os.Build;
 import android.util.DisplayMetrics;
 import android.view.WindowManager;
 
+import androidx.annotation.Nullable;
+
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.common.MapBuilder;
@@ -13,8 +15,6 @@ import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.annotations.ReactProp;
 
 import java.util.Map;
-
-import javax.annotation.Nullable;
 
 public class AirMapOverlayManager extends ViewGroupManager<AirMapOverlay> {
   private final DisplayMetrics metrics;

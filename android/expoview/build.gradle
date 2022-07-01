@@ -335,7 +335,7 @@ dependencies {
 
   api 'com.squareup.picasso:picasso:2.5.2'
   api 'com.google.android.gms:play-services-analytics:17.0.0'
-  api 'com.google.android.gms:play-services-maps:17.0.0'
+  api 'com.google.android.gms:play-services-maps:18.0.0'
   api 'com.google.android.gms:play-services-auth:17.0.0'
   api 'com.google.android.gms:play-services-location:17.0.0'
   api 'com.google.android.gms:play-services-fitness:17.0.0'

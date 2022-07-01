@@ -1,5 +1,7 @@
 package versioned.host.exp.exponent.modules.api.components.maps;
 
+import androidx.annotation.Nullable;
+
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.ThemedReactContext;
@@ -7,8 +9,6 @@ import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.annotations.ReactProp;
 
 import java.util.Map;
-
-import javax.annotation.Nullable;
 
 public class AirMapCalloutManager extends ViewGroupManager<AirMapCallout> {
 
