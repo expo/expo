@@ -100,7 +100,7 @@ const renderInterface = ({
       <H3Code>
         <InlineCode>{name}</InlineCode>
       </H3Code>
-      {extendedTypes?.length && (
+      {extendedTypes?.length ? (
         <P>
           <B>Extends: </B>
           {extendedTypes.map(extendedType => (
@@ -109,14 +109,16 @@ const renderInterface = ({
             </InlineCode>
           ))}
         </P>
-      )}
+      ) : null}
       <CommentTextBlock comment={comment} />
-      <Table>
-        {renderTableHeadRow()}
-        <tbody>
-          {children.filter(child => !child?.inheritedFrom).map(renderInterfacePropertyRow)}
-        </tbody>
-      </Table>
+      {children.filter(child => !child?.inheritedFrom).length ? (
+        <Table>
+          {renderTableHeadRow()}
+          <tbody>
+            {children.filter(child => !child?.inheritedFrom).map(renderInterfacePropertyRow)}
+          </tbody>
+        </Table>
+      ) : null}
     </div>
   ) : null;
 
