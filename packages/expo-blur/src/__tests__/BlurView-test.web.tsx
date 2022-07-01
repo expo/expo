@@ -25,7 +25,6 @@ afterAll(() => {
 
 it(`prefers filters to background color`, () => {
   const withNativeBlur = mount(<BlurView tint="light" />);
-  expect(getStyleProp(withNativeBlur.find('div'), 'WebkitBackdropFilter')).toBeDefined();
   expect(getStyleProp(withNativeBlur.find('div'), 'backdropFilter')).toBeDefined();
 });
 
@@ -34,7 +33,6 @@ it(`uses a transparent background color when filters aren't supported`, () => {
   global.CSS = undefined;
 
   const withoutNativeBlur = mount(<BlurView tint="light" />);
-  expect(getStyleProp(withoutNativeBlur.find('div'), 'WebkitBackdropFilter')).not.toBeDefined();
   expect(getStyleProp(withoutNativeBlur.find('div'), 'backdropFilter')).not.toBeDefined();
   expect(getStyleProp(withoutNativeBlur.find('div'), 'backgroundColor')).toBeDefined();
 });
