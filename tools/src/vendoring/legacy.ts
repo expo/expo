@@ -447,14 +447,14 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
     installableInManagedApps: true,
     steps: [
       {
-        sourceIosPath: 'lib/ios/AirGoogleMaps',
+        sourceIosPath: 'ios/AirGoogleMaps',
         targetIosPath: 'Api/Components/GoogleMaps',
       },
       {
         recursive: true,
-        sourceIosPath: 'lib/ios/AirMaps',
+        sourceIosPath: 'ios/AirMaps',
         targetIosPath: 'Api/Components/Maps',
-        sourceAndroidPath: 'lib/android/src/main/java/com/airbnb/android/react/maps',
+        sourceAndroidPath: 'android/src/main/java/com/airbnb/android/react/maps',
         targetAndroidPath: 'modules/api/components/maps',
         sourceAndroidPackage: 'com.airbnb.android.react.maps',
         targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.maps',

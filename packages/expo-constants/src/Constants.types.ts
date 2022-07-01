@@ -279,6 +279,10 @@ export interface NativeConstants {
    */
   manifest2: Manifest | null;
   /**
+   * The standard Expo config object defined in `app.config.js` files. For both classic and new manifests.
+   */
+  expoConfig: ExpoConfig | null;
+  /**
    * A string that is unique to the current session of your app. It is different across apps and
    * across multiple launches of the same app.
    */

@@ -171,6 +171,12 @@ public class RNDatePickerDialogModule extends ReactContextBaseJavaModule {
     if (options.hasKey(RNConstants.ARG_NEUTRAL_BUTTON_LABEL) && !options.isNull(RNConstants.ARG_NEUTRAL_BUTTON_LABEL)) {
       args.putString(RNConstants.ARG_NEUTRAL_BUTTON_LABEL, options.getString(RNConstants.ARG_NEUTRAL_BUTTON_LABEL));
     }
+    if (options.hasKey(RNConstants.ARG_POSITIVE_BUTTON_LABEL) && !options.isNull(RNConstants.ARG_POSITIVE_BUTTON_LABEL)) {
+      args.putString(RNConstants.ARG_POSITIVE_BUTTON_LABEL, options.getString(RNConstants.ARG_POSITIVE_BUTTON_LABEL));
+    }
+    if (options.hasKey(RNConstants.ARG_NEGATIVE_BUTTON_LABEL) && !options.isNull(RNConstants.ARG_NEGATIVE_BUTTON_LABEL)) {
+      args.putString(RNConstants.ARG_NEGATIVE_BUTTON_LABEL, options.getString(RNConstants.ARG_NEGATIVE_BUTTON_LABEL));
+    }
     if (options.hasKey(RNConstants.ARG_TZOFFSET_MINS) && !options.isNull(RNConstants.ARG_TZOFFSET_MINS)) {
       args.putLong(RNConstants.ARG_TZOFFSET_MINS, (long) options.getDouble(RNConstants.ARG_TZOFFSET_MINS));
     }

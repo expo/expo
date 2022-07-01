@@ -7,6 +7,13 @@ Package-specific changes not released in any SDK will be added here just before 
 
 ### 📚 3rd party library updates
 
+- Updated `lottie-react-native` from `5.0.1` to `5.1.3`. ([#18051](https://github.com/expo/expo/pull/18051) by [@lukmccall](https://github.com/lukmccall))
+- Updated `react-native-view-shot` from `3.1.2` to `3.3.0`. ([#18050](https://github.com/expo/expo/pull/18050) by [@lukmccall](https://github.com/lukmccall))
+- Updated `react-native-maps` from `0.30.2` to `0.31.1`. ([#18052](https://github.com/expo/expo/pull/18052) by [@lukmccall](https://github.com/lukmccall))
+- Updated `@react-native-community/netinfo` from `8.2.0` to `9.1.0`. ([#18045](https://github.com/expo/expo/pull/18045) by [@lukmccall](https://github.com/lukmccall))
+- Updated `react-native-webview` from `11.18.1` to `11.22.4`. ([#18047](https://github.com/expo/expo/pull/18047) by [@lukmccall](https://github.com/lukmccall))
+- Updated `@react-native-community/datetimepicker` from `6.1.2` to `6.2.0`. ([#18046](https://github.com/expo/expo/pull/18046) by [@lukmccall](https://github.com/lukmccall))
+
 ### 🛠 Breaking changes
 
 ### 🎉 New features
