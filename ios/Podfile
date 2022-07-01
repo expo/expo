@@ -82,6 +82,13 @@ abstract_target 'Expo Go' do
         end
       end
 
+      if pod_name.end_with?('EXUpdates')
+        target_installation_result.native_target.build_configurations.each do |config|
+          config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)']
+          config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'SUPPRESS_EXPO_UPDATES_SERVICE=1'
+        end
+      end
+
       # Build React Native with RCT_DEV enabled and RCT_ENABLE_INSPECTOR and
       # RCT_ENABLE_PACKAGER_CONNECTION disabled
       next unless pod_name.start_with?('React')

@@ -65,7 +65,7 @@ NS_ASSUME_NONNULL_BEGIN
   <EXReactAppManagerUIDelegate, EXAppLoaderDelegate, EXErrorViewDelegate, EXAppLoadingCancelViewDelegate>
 
 @property (nonatomic, assign) BOOL isLoading;
-@property (nonatomic, assign) BOOL isBridgeAlreadyLoading;
+@property (atomic, assign) BOOL isBridgeAlreadyLoading;
 @property (nonatomic, weak) EXKernelAppRecord *appRecord;
 @property (nonatomic, strong) EXErrorView *errorView;
 @property (nonatomic, strong) NSTimer *tmrAutoReloadDebounce;

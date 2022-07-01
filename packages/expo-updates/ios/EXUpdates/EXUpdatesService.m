@@ -13,11 +13,17 @@ EX_REGISTER_MODULE();
 
 + (const NSArray<Protocol *> *)exportedInterfaces
 {
+#if SUPPRESS_EXPO_UPDATES_SERVICE // used in Expo Go
+  return @[];
+#endif
   return @[@protocol(EXUpdatesModuleInterface)];
 }
 
 - (EXUpdatesConfig *)config
 {
+#if SUPPRESS_EXPO_UPDATES_SERVICE // used in Expo Go
+  return nil;
+#endif
   return EXUpdatesAppController.sharedInstance.config;
 }
 
