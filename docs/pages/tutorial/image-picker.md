@@ -6,7 +6,7 @@ import SnackInline from '~/components/plugins/SnackInline';
 import Video from '~/components/plugins/Video';
 import { Terminal } from '~/ui/components/Snippet';
 
-So far we have been using code from React and React Native in our app. React gives us a nice way to build components and React Native gives us pre-built components that work on iOS, and Android &mdash; like `View`, `Text`, `TouchableOpacity`. React Native does _not_ provide us with an image picker. For this, we can use an Expo library called [expo-image-picker](/versions/latest/sdk/imagepicker):
+So far we have been using code from React and React Native in our app. React gives us a nice way to build components and React Native gives us pre-built components that work on iOS, Android, and web &mdash; like `View`, `Text`, `TouchableOpacity`. React Native does _not_ provide us with an image picker. For this, we can use an Expo library called [expo-image-picker](/versions/latest/sdk/imagepicker):
 
 > **`expo-image-picker`** provides access to the system's UI for selecting images and videos from the phone's library or taking a photo with the camera.
 

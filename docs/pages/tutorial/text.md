@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
 
 > 😳 **Wait, what is this "Try this example on Snack" button!?**
 >
-> Snack is a web-based editor that works similar to a managed Expo project. It's a great way to share code snippets with people and try things out without needing to get a project running on your own computer with `expo-cli`. Go ahead, press the button. You will see the above code running in it. Switch between iOS, or Android. Open it on your device in the Expo Go app by pressing the "Run" button.
+> Snack is a web-based editor that works similar to a managed Expo project. It's a great way to share code snippets with people and try things out without needing to get a project running on your own computer with `expo-cli`. Go ahead, press the button. You will see the above code running in it. Switch between iOS, Android, or web. Open it on your device in the Expo Go app by pressing the "Run" button.
 
 ## Adding style
 
