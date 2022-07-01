@@ -2429,7 +2429,7 @@ PODS:
     - ReactCommon/turbomodule/core
   - react-native-segmented-control (2.4.0):
     - React-Core
-  - react-native-webview (11.18.1):
+  - react-native-webview (11.22.4):
     - React-Core
   - React-perflogger (0.69.1)
   - React-RCTActionSheet (0.69.1):
@@ -4432,7 +4432,7 @@ SPEC CHECKSUMS:
   react-native-pager-view: b1914469643f40042e65d78cbf3d3dfebd6fb0d9
   react-native-safe-area-context: f98b0b16d1546d208fc293b4661e3f81a895afd9
   react-native-segmented-control: 06607462630512ff8eef652ec560e6235a30cc3e
-  react-native-webview: 0b7bd2bffced115aefd393e1841babd9b9a557b1
+  react-native-webview: a1ed211d50a5047a4fe54e07140991e277cd66e6
   React-perflogger: c9161ff0f1c769993cd11d2751e4331ff4ceb7cd
   React-RCTActionSheet: 2d885b0bea76a5254ef852939273edd8de116180
   React-RCTAnimation: 353fa4fc3c19060068832dd32e555182ec07be45
