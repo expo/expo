@@ -2175,7 +2175,7 @@ PODS:
   - GTMSessionFetcher/Core (1.7.2)
   - JKBigInteger (0.0.6)
   - lottie-ios (3.2.3)
-  - lottie-react-native (5.0.1):
+  - lottie-react-native (5.1.3):
     - lottie-ios (~> 3.2.3)
     - React-Core
   - MBProgressHUD (1.2.0)
@@ -2417,7 +2417,7 @@ PODS:
   - React-jsinspector (0.69.1)
   - React-logger (0.69.1):
     - glog
-  - react-native-netinfo (8.2.0):
+  - react-native-netinfo (9.3.0):
     - React-Core
   - react-native-pager-view (5.4.15):
     - React-Core
@@ -4403,7 +4403,7 @@ SPEC CHECKSUMS:
   GTMSessionFetcher: 5595ec75acf5be50814f81e9189490412bad82ba
   JKBigInteger: 5c72131974815e969c0782c41e3452f1bbe5619f
   lottie-ios: c058aeafa76daa4cf64d773554bccc8385d0150e
-  lottie-react-native: 1ae63e64711b10eaf181d1bf70819d9a216834cf
+  lottie-react-native: a501112fa980529ccb80b9f3ee117a7f98c6af3a
   MBProgressHUD: 3ee5efcc380f6a79a7cc9b363dd669c5e1ae7406
   MLImage: a454f9f8ecfd537783a12f9488f5be1a68820829
   MLKitCommon: 3bc17c6f7d25ce3660f030350b46ae7ec9ebca6e
@@ -4428,7 +4428,7 @@ SPEC CHECKSUMS:
   React-jsiexecutor: 758e70947c232828a66b5ddc42d02b4d010fa26e
   React-jsinspector: 55605caf04e02f9b0e05842b786f1c12dde08f4b
   React-logger: ca970551cb7eea2fd814d0d5f6fc1a471eb53b76
-  react-native-netinfo: e922cb2e3eaf9ccdf16b8d4744a89657377aa4a1
+  react-native-netinfo: 129bd99f607a2dc5bb096168f3e5c150fd1f1c95
   react-native-pager-view: b1914469643f40042e65d78cbf3d3dfebd6fb0d9
   react-native-safe-area-context: f98b0b16d1546d208fc293b4661e3f81a895afd9
   react-native-segmented-control: 06607462630512ff8eef652ec560e6235a30cc3e

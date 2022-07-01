@@ -54,12 +54,15 @@ module Expo
         end
       end
 
-      return result.select { |dir|
-        # Exclude known dirs unnecessary to patch and reduce processing time
-        !dir.include?('/react-native/') &&
-        !dir.end_with?('/react-native') &&
-        !dir.include?('/expo-')
-      }
+      result
+        .select { |dir| dir.include? '/node_modules/' }
+        .reject do |dir|
+          # Exclude known dirs unnecessary to patch and reduce processing time
+          # Since we are using real (absolute) pathnames we need to assert that we are inside of the node_modules
+          # directory to not collide with other directories in the user's filesystem.
+          # We reject the react-native package and packages starting with expo-
+          dir.match(%r{^.*/node_modules/(react-native(/.*)?|expo-.*)$})
+        end
     end
 
   end # class ReactImportPatcher
