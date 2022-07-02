@@ -1,6 +1,7 @@
 // Copyright 2020-present 650 Industries. All rights reserved.
 
 #import <ABI43_0_0EXUpdates/ABI43_0_0EXUpdatesAppController.h>
+#import <ABI43_0_0EXUpdates/ABI43_0_0EXUpdatesEmbeddedAppLoader.h>
 #import <ABI43_0_0EXUpdates/ABI43_0_0EXUpdatesService.h>
 #import <ABI43_0_0ExpoModulesCore/ABI43_0_0EXUtilities.h>
 
@@ -12,11 +13,17 @@ ABI43_0_0EX_REGISTER_MODULE();
 
 + (const NSArray<Protocol *> *)exportedInterfaces
 {
+#if SUPPRESS_EXPO_UPDATES_SERVICE // used in Expo Go
+  return @[];
+#endif
   return @[@protocol(ABI43_0_0EXUpdatesModuleInterface)];
 }
 
 - (ABI43_0_0EXUpdatesConfig *)config
 {
+#if SUPPRESS_EXPO_UPDATES_SERVICE // used in Expo Go
+  return nil;
+#endif
   return ABI43_0_0EXUpdatesAppController.sharedInstance.config;
 }
 
@@ -33,6 +40,11 @@ ABI43_0_0EX_REGISTER_MODULE();
 - (NSURL *)directory
 {
   return ABI43_0_0EXUpdatesAppController.sharedInstance.updatesDirectory;
+}
+
+- (nullable ABI43_0_0EXUpdatesUpdate *)embeddedUpdate
+{
+  return [ABI43_0_0EXUpdatesEmbeddedAppLoader embeddedManifestWithConfig:self.config database:self.database];
 }
 
 - (nullable ABI43_0_0EXUpdatesUpdate *)launchedUpdate

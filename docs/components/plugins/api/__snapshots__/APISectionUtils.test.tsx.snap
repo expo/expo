@@ -58,7 +58,7 @@ from the Google Play Store. In practice, the referrer URL may not be a complete,
       data-text="true"
     >
       <code
-        class="css-149nz3h-STYLES_CODE_BLOCK"
+        class="css-16ve5fg-STYLES_CODE_BLOCK"
       >
         <span
           class="token keyword"
@@ -414,7 +414,7 @@ exports[`APISectionUtils.resolveTypeName props with multiple omits 1`] = `
     <span>
       <a
         class="css-12zqqiz-STYLES_EXTERNAL_LINK"
-        href="/react-native/view-style-props"
+        href="/versions/latest/react-native/view-style-props"
       >
         ViewStyle
       </a>

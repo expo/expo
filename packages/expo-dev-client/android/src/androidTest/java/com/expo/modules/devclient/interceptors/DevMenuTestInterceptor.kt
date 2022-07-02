@@ -1,9 +1,9 @@
 package com.expo.modules.devclient.interceptors
 
-import expo.interfaces.devmenu.DevMenuSettingsInterface
+import expo.interfaces.devmenu.DevMenuPreferencesInterface
 
 internal class DevMenuTestInterceptor(
-  private val settingsInterface: DevMenuSettingsInterface
+  private val settingsInterface: DevMenuPreferencesInterface
 ) : expo.modules.devmenu.tests.DevMenuTestInterceptor {
-  override fun overrideSettings(): DevMenuSettingsInterface = settingsInterface
+  override fun overrideSettings(): DevMenuPreferencesInterface = settingsInterface
 }

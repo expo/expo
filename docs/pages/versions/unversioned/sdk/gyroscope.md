@@ -137,7 +137,7 @@ import { Gyroscope } from 'expo-sensors';
 
 Returns whether the gyroscope is enabled on the device.
 
-On mobile web, you must first invoke `Permissions.askAsync(Permissions.MOTION)` in a user interaction (i.e. touch event) before you can use this module. If the `status` is not equal to `granted` then you should inform the end user that they may have to open settings.
+On mobile web, you must first invoke `Gyroscope.requestPermissionsAsync()` in a user interaction (i.e. touch event) before you can use this module. If the `status` is not equal to `granted` then you should inform the end user that they may have to open settings.
 
 On **web** this starts a timer and waits to see if an event is fired. This should predict if the iOS device has the **device orientation** API disabled in `Settings > Safari > Motion & Orientation Access`. Some devices will also not fire if the site isn't hosted with **HTTPS** as `DeviceMotion` is now considered a secure API. There is no formal API for detecting the status of `DeviceMotion` so this API can sometimes be unreliable on web.
 
@@ -168,3 +168,5 @@ Subscribe for updates to the gyroscope.
 #### Arguments
 
 - **intervalMs (_number_)** -- Desired interval in milliseconds between gyroscope updates.
+
+  > Starting in Android 12 (API level 31), the system has a 200ms limit for each sensor updates. If you need a update interval less than 200ms, you should add `<uses-permission android:name="android.permission.HIGH_SAMPLING_RATE_SENSORS"/>` to **AndroidManifest.xml**.

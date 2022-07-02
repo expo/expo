@@ -11,7 +11,6 @@ import expo.modules.adapters.react.ReactModuleRegistryProvider
 import expo.modules.core.interfaces.Package
 import expo.modules.core.interfaces.SingletonModule
 import expo.modules.kotlin.ModulesProvider
-import expo.modules.random.RandomModule
 import expo.modules.manifests.core.Manifest
 import host.exp.exponent.Constants
 import host.exp.exponent.analytics.EXL
@@ -23,9 +22,6 @@ import host.exp.exponent.kernel.KernelConstants
 import host.exp.exponent.utils.ScopedContext
 import org.json.JSONException
 import versioned.host.exp.exponent.modules.api.*
-import versioned.host.exp.exponent.modules.api.appearance.ExpoAppearanceModule
-import versioned.host.exp.exponent.modules.api.appearance.ExpoAppearancePackage
-import versioned.host.exp.exponent.modules.api.appearance.rncappearance.RNCAppearanceModule
 import versioned.host.exp.exponent.modules.api.cognito.RNAWSCognitoModule
 import versioned.host.exp.exponent.modules.api.components.datetimepicker.RNDateTimePickerPackage
 import versioned.host.exp.exponent.modules.api.components.gesturehandler.react.RNGestureHandlerModule
@@ -127,7 +123,6 @@ class ExponentPackage : ReactPackage {
         val scopedContext = ScopedContext(reactContext, experienceKey)
         nativeModules.add(NotificationsModule(reactContext, experienceKey, manifest.getStableLegacyID(), manifest.getEASProjectID()))
         nativeModules.add(RNViewShotModule(reactContext, scopedContext))
-        nativeModules.add(RandomModule(reactContext))
         nativeModules.add(ExponentTestNativeModule(reactContext))
         nativeModules.add(PedometerModule(reactContext))
         nativeModules.add(ScreenOrientationModule(reactContext))
@@ -136,16 +131,6 @@ class ExponentPackage : ReactPackage {
         nativeModules.add(RNCWebViewModule(reactContext))
         nativeModules.add(NetInfoModule(reactContext))
         nativeModules.add(RNSharedElementModule(reactContext))
-
-        // @tsapeta: Using ExpoAppearanceModule in home app causes some issues with the dev menu,
-        // when home's setting is set to automatic and the system theme is different
-        // than this supported by the experience in which we opened the dev menu.
-        if (isKernel) {
-          nativeModules.add(RNCAppearanceModule(reactContext))
-        } else {
-          nativeModules.add(ExpoAppearanceModule(reactContext))
-        }
-
         nativeModules.addAll(SvgPackage().createNativeModules(reactContext))
         nativeModules.addAll(MapsPackage().createNativeModules(reactContext))
         nativeModules.addAll(RNDateTimePickerPackage().createNativeModules(reactContext))
@@ -193,7 +178,6 @@ class ExponentPackage : ReactPackage {
         RNCPickerPackage(),
         ReactSliderPackage(),
         PagerViewPackage(),
-        ExpoAppearancePackage(),
         stripePackage
       )
     )

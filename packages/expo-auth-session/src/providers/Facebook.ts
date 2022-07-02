@@ -100,7 +100,7 @@ class FacebookAuthRequest extends AuthRequest {
  * Returns a loaded request, a response, and a prompt method.
  * When the prompt method completes then the response will be fulfilled.
  *
- * - [Get Started](https://docs.expo.io/guides/authentication/#facebook)
+ * - [Get Started](https://docs.expo.dev/guides/authentication/#facebook)
  *
  * @param config
  * @param redirectUriOptions

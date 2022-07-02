@@ -16,7 +16,7 @@ export default async function getInstallationIdAsync() {
     if (installationId) {
       return installationId;
     }
-  } catch (error) {
+  } catch {
     // If we weren't able to fetch one (for whatever reason)
     // let's create a new one.
   }

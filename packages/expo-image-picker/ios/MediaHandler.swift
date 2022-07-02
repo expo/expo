@@ -6,7 +6,6 @@ import Photos
 
 internal struct MediaHandler {
   internal weak var fileSystem: EXFileSystemInterface?
-  internal weak var logger: EXLogManager?
   internal let options: ImagePickerOptions
 
   internal func handleMedia(_ mediaInfo: MediaInfo, completion: @escaping (AsyncResult) -> Void) {
@@ -48,7 +47,7 @@ internal struct MediaHandler {
                                                            tryReadingFile: fileWasCopied,
                                                            shouldReadBase64: self.options.base64)
 
-      ImageUtils.optionallyReadExifFrom(mediaInfo: mediaInfo, logger: self.logger, shouldReadExif: self.options.exif) { exif in
+      ImageUtils.optionallyReadExifFrom(mediaInfo: mediaInfo, shouldReadExif: self.options.exif) { exif in
         let result: ImagePickerResponse = .image(ImageInfo(uri: targetUrl.absoluteString,
                                                            width: image.size.width,
                                                            height: image.size.height,
@@ -104,7 +103,9 @@ internal struct MediaHandler {
     guard let fileSystem = self.fileSystem else {
       throw FileSystemModuleNotFoundException()
     }
-    let directory = fileSystem.cachesDirectory.appending("ImagePicker")
+    let directory =  fileSystem.cachesDirectory.appending(
+      fileSystem.cachesDirectory.hasSuffix("/") ? "" : "/" + "ImagePicker"
+    );
     let path = fileSystem.generatePath(inDirectory: directory, withExtension: withFileExtension)
     let url = URL(fileURLWithPath: path)
     return url
@@ -252,7 +253,6 @@ private struct ImageUtils {
 
   static func optionallyReadExifFrom(
     mediaInfo: MediaInfo,
-    logger: EXLogManager?,
     shouldReadExif: Bool,
     completion: @escaping (_ result: [String: Any]?) -> Void
   ) {
@@ -268,14 +268,14 @@ private struct ImageUtils {
     }
 
     guard let imageUrl = mediaInfo[.referenceURL] as? URL else {
-      logger?.info("Could not fetch metadata for image")
+      NSLog("Could not fetch metadata for image")
       return completion(nil)
     }
 
     let assets = PHAsset.fetchAssets(withALAssetURLs: [imageUrl], options: nil)
 
     guard let asset = assets.firstObject else {
-      logger?.info("Could not fetch metadata for image '\(imageUrl.absoluteString)'.")
+      NSLog("Could not fetch metadata for image '\(imageUrl.absoluteString)'.")
       return completion(nil)
     }
 
@@ -285,7 +285,7 @@ private struct ImageUtils {
       guard let imageUrl = input?.fullSizeImageURL,
             let properties = CIImage(contentsOf: imageUrl)?.properties
       else {
-        logger?.info("Could not fetch metadata for '\(imageUrl.absoluteString)'.")
+        NSLog("Could not fetch metadata for '\(imageUrl.absoluteString)'.")
         return completion(nil)
       }
       let exif = ImageUtils.readExifFrom(imageMetadata: properties)

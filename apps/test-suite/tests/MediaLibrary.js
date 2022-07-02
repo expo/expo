@@ -83,7 +83,7 @@ async function createAlbum(assets, name) {
 async function checkIfThrows(f) {
   try {
     await f();
-  } catch (e) {
+  } catch {
     return true;
   }
 

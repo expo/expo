@@ -36,17 +36,14 @@ class FlingGestureHandler : GestureHandler<FlingGestureHandler>() {
 
   private fun tryEndFling(event: MotionEvent) = if (
     maxNumberOfPointersSimultaneously == numberOfPointersRequired &&
-    (
-      direction and DIRECTION_RIGHT != 0 &&
-        event.rawX - startX > minAcceptableDelta ||
-        direction and DIRECTION_LEFT != 0 &&
-        startX - event.rawX > minAcceptableDelta ||
-        direction and DIRECTION_UP != 0 &&
-        startY - event.rawY > minAcceptableDelta ||
-        direction and DIRECTION_DOWN != 0 &&
-        event.rawY - startY > minAcceptableDelta
-      )
-  ) {
+    (direction and DIRECTION_RIGHT != 0 &&
+      event.rawX - startX > minAcceptableDelta ||
+      direction and DIRECTION_LEFT != 0 &&
+      startX - event.rawX > minAcceptableDelta ||
+      direction and DIRECTION_UP != 0 &&
+      startY - event.rawY > minAcceptableDelta ||
+      direction and DIRECTION_DOWN != 0 &&
+      event.rawY - startY > minAcceptableDelta)) {
     handler!!.removeCallbacksAndMessages(null)
     activate()
     true

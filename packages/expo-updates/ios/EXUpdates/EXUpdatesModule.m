@@ -49,6 +49,8 @@ EX_EXPORT_MODULE(ExpoUpdates);
       @"channel": channel
     };
   }
+
+  long long commitTime = [@(floor([launchedUpdate.commitTime timeIntervalSince1970] * 1000)) longLongValue];
   
   return @{
     @"isEnabled": @(YES),
@@ -60,7 +62,8 @@ EX_EXPORT_MODULE(ExpoUpdates);
     @"isMissingRuntimeVersion": isMissingRuntimeVersion,
     @"releaseChannel": releaseChannel,
     @"runtimeVersion": runtimeVersion,
-    @"channel": channel
+    @"channel": channel,
+    @"commitTime": @(commitTime)
   };
 }
 
@@ -101,11 +104,10 @@ EX_EXPORT_METHOD_AS(checkForUpdateAsync,
 
   __block NSDictionary *extraHeaders;
   dispatch_sync(_updatesService.database.databaseQueue, ^{
-    NSError *error;
-    extraHeaders = [self->_updatesService.database serverDefinedHeadersWithScopeKey:self->_updatesService.config.scopeKey error:&error];
-    if (error) {
-      NSLog(@"Error selecting serverDefinedHeaders from database: %@", error.localizedDescription);
-    }
+    extraHeaders = [EXUpdatesFileDownloader extraHeadersWithDatabase:self->_updatesService.database
+                                                              config:self->_updatesService.config
+                                                      launchedUpdate:self->_updatesService.launchedUpdate
+                                                      embeddedUpdate:self->_updatesService.embeddedUpdate];
   });
 
   EXUpdatesFileDownloader *fileDownloader = [[EXUpdatesFileDownloader alloc] initWithUpdatesConfig:_updatesService.config];
@@ -143,7 +145,7 @@ EX_EXPORT_METHOD_AS(fetchUpdateAsync,
     return;
   }
 
-  EXUpdatesRemoteAppLoader *remoteAppLoader = [[EXUpdatesRemoteAppLoader alloc] initWithConfig:_updatesService.config database:_updatesService.database directory:_updatesService.directory completionQueue:self.methodQueue];
+  EXUpdatesRemoteAppLoader *remoteAppLoader = [[EXUpdatesRemoteAppLoader alloc] initWithConfig:_updatesService.config database:_updatesService.database directory:_updatesService.directory launchedUpdate:_updatesService.launchedUpdate completionQueue:self.methodQueue];
   [remoteAppLoader loadUpdateFromUrl:_updatesService.config.updateUrl onManifest:^BOOL(EXUpdatesUpdate * _Nonnull update) {
     return [self->_updatesService.selectionPolicy shouldLoadNewUpdate:update withLaunchedUpdate:self->_updatesService.launchedUpdate filters:update.manifestFilters];
   } asset:^(EXUpdatesAsset *asset, NSUInteger successfulAssetCount, NSUInteger failedAssetCount, NSUInteger totalAssetCount) {

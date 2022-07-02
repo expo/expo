@@ -18,6 +18,19 @@ const STYLES_UNORDERED_LIST = css`
   .anchor-icon {
     display: none;
   }
+
+  table & {
+    margin: 0.5rem 1rem;
+    line-height: 125%;
+
+    &:first-child {
+      margin-top: 0;
+    }
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
 `;
 
 const STYLES_NO_LIST_STYLE = css`

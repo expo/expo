@@ -30,7 +30,8 @@ function isExpoHosted() {
     const hostUri = getHostUri();
     return !!(hostUri &&
         (/^(.*\.)?(expo\.io|exp\.host|exp\.direct|expo\.test)(:.*)?(\/.*)?$/.test(hostUri) ||
-            Constants.manifest?.developer));
+            Constants.manifest?.developer ||
+            Constants.manifest2?.extra?.expoGo?.developer));
 }
 function removeScheme(url) {
     return url.replace(/^[a-zA-Z0-9+.-]+:\/\//, '');
@@ -154,7 +155,7 @@ export function createURL(path, { scheme, queryParams = {}, isTripleSlashed = fa
                 paramsFromHostUri = parsedParams;
             }
         }
-        catch (e) { }
+        catch { }
         queryParams = {
             ...queryParams,
             ...paramsFromHostUri,
@@ -218,10 +219,11 @@ export function parse(url) {
  * @param type The only valid type is `'url'`.
  * @param handler An [`URLListener`](#urllistener) function that takes an `event` object of the type
  * [`EventType`](#eventype).
+ * @return An EmitterSubscription that has the remove method from EventSubscription
  * @see [React Native Docs Linking page](https://reactnative.dev/docs/linking#addeventlistener).
  */
 export function addEventListener(type, handler) {
-    NativeLinking.addEventListener(type, handler);
+    return NativeLinking.addEventListener(type, handler);
 }
 /**
  * Remove a handler by passing the `url` event type and the handler.
@@ -229,6 +231,8 @@ export function addEventListener(type, handler) {
  * @param handler An [`URLListener`](#urllistener) function that takes an `event` object of the type
  * [`EventType`](#eventype).
  * @see [React Native Docs Linking page](https://reactnative.dev/docs/linking#removeeventlistener).
+ *
+ * @deprecated Call `remove()` on the return value of `addEventListener()` instead.
  */
 export function removeEventListener(type, handler) {
     NativeLinking.removeEventListener(type, handler);
@@ -256,7 +260,7 @@ export async function parseInitialURLAsync() {
 // @needsAudit
 /**
  * Launch an Android intent with extras.
- * > Use [IntentLauncher](../intent-launcher) instead, `sendIntent` is only included in
+ * > Use [IntentLauncher](./intent-launcher) instead, `sendIntent` is only included in
  * > `Linking` for API compatibility with React Native's Linking API.
  * @platform android
  */
@@ -269,7 +273,6 @@ export async function sendIntent(action, extras) {
 // @needsAudit
 /**
  * Open the operating system settings app and displays the app’s custom settings, if it has any.
- * @platform ios
  */
 export async function openSettings() {
     if (Platform.OS === 'web') {
@@ -328,10 +331,11 @@ export function useURL() {
     }
     useEffect(() => {
         getInitialURL().then((url) => setLink(url));
-        addEventListener('url', onChange);
-        return () => removeEventListener('url', onChange);
+        const subscription = addEventListener('url', onChange);
+        return () => subscription.remove();
     }, []);
     return url;
 }
 export * from './Linking.types';
+export * from './Schemes';
 //# sourceMappingURL=Linking.js.map

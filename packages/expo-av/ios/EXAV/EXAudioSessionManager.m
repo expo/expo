@@ -213,6 +213,19 @@ EX_REGISTER_SINGLETON_MODULE(AudioSessionManager);
   // If the session ought to be deactivated let's deactivate it and then configure.
   // And if the session should be activated, let's configure it first!
 
+  // After ample discussion, testing and consideration, it makes no sense to constantly
+  // disable AVAudioSession as it is a synchronous and blocking process. There were no regressions
+  // in various tests. With this change, pauseAsync() function calls are effectively instant
+  // without frame drops. To avoid triggering unnecessary setActive:YES calls, we still set the variable
+  // without actually disabling the session. We agreed to go this way and in case of
+  // doubt look for another approach in a regression.
+  // See https://github.com/expo/expo/issues/15873
+  
+  if (!shouldBeActive && _sessionIsActive) {
+    _sessionIsActive = NO;
+  }
+  
+  /*
   if (!shouldBeActive && _sessionIsActive) {
     [session setActive:NO error:&error];
     if (!error) {
@@ -223,6 +236,7 @@ EX_REGISTER_SINGLETON_MODULE(AudioSessionManager);
   if (error) {
     return error;
   }
+  */
 
   if (!_activeCategory || ![category isEqualToString:_activeCategory] || options != _activeOptions) {
     [session setCategory:category withOptions:options error:&error];

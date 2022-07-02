@@ -1,0 +1,173 @@
+// Copyright 2022-present 650 Industries. All rights reserved.
+
+#import <sstream>
+
+#import <React/RCTUtils.h>
+#import <ExpoModulesCore/EXJSIConversions.h>
+#import <ExpoModulesCore/EXJSIUtils.h>
+
+namespace expo {
+
+void callPromiseSetupWithBlock(jsi::Runtime &runtime, std::shared_ptr<CallInvoker> jsInvoker, std::shared_ptr<Promise> promise, PromiseInvocationBlock setupBlock)
+{
+  auto weakResolveWrapper = react::CallbackWrapper::createWeak(promise->resolve_.getFunction(runtime), runtime, jsInvoker);
+  auto weakRejectWrapper = react::CallbackWrapper::createWeak(promise->reject_.getFunction(runtime), runtime, jsInvoker);
+
+  __block BOOL resolveWasCalled = NO;
+  __block BOOL rejectWasCalled = NO;
+
+  RCTPromiseResolveBlock resolveBlock = ^(id result) {
+    if (rejectWasCalled) {
+      throw std::runtime_error("Tried to resolve a promise after it's already been rejected.");
+    }
+
+    if (resolveWasCalled) {
+      throw std::runtime_error("Tried to resolve a promise more than once.");
+    }
+
+    auto strongResolveWrapper = weakResolveWrapper.lock();
+    auto strongRejectWrapper = weakRejectWrapper.lock();
+    if (!strongResolveWrapper || !strongRejectWrapper) {
+      return;
+    }
+
+    strongResolveWrapper->jsInvoker().invokeAsync([weakResolveWrapper, weakRejectWrapper, result]() {
+      auto strongResolveWrapper2 = weakResolveWrapper.lock();
+      auto strongRejectWrapper2 = weakRejectWrapper.lock();
+      if (!strongResolveWrapper2 || !strongRejectWrapper2) {
+        return;
+      }
+
+      jsi::Runtime &rt = strongResolveWrapper2->runtime();
+      jsi::Value arg = convertObjCObjectToJSIValue(rt, result);
+      strongResolveWrapper2->callback().call(rt, arg);
+
+      strongResolveWrapper2->destroy();
+      strongRejectWrapper2->destroy();
+    });
+
+    resolveWasCalled = YES;
+  };
+
+  RCTPromiseRejectBlock rejectBlock = ^(NSString *code, NSString *message, NSError *error) {
+    if (resolveWasCalled) {
+      throw std::runtime_error("Tried to reject a promise after it's already been resolved.");
+    }
+
+    if (rejectWasCalled) {
+      throw std::runtime_error("Tried to reject a promise more than once.");
+    }
+
+    auto strongResolveWrapper = weakResolveWrapper.lock();
+    auto strongRejectWrapper = weakRejectWrapper.lock();
+    if (!strongResolveWrapper || !strongRejectWrapper) {
+      return;
+    }
+
+    NSDictionary *jsError = RCTJSErrorFromCodeMessageAndNSError(code, message, error);
+    strongRejectWrapper->jsInvoker().invokeAsync([weakResolveWrapper, weakRejectWrapper, jsError]() {
+      auto strongResolveWrapper2 = weakResolveWrapper.lock();
+      auto strongRejectWrapper2 = weakRejectWrapper.lock();
+      if (!strongResolveWrapper2 || !strongRejectWrapper2) {
+        return;
+      }
+
+      jsi::Runtime &rt = strongRejectWrapper2->runtime();
+      jsi::Value arg = convertNSDictionaryToJSIObject(rt, jsError);
+      strongRejectWrapper2->callback().call(rt, arg);
+
+      strongResolveWrapper2->destroy();
+      strongRejectWrapper2->destroy();
+    });
+
+    rejectWasCalled = YES;
+  };
+
+  setupBlock(resolveBlock, rejectBlock);
+}
+
+std::shared_ptr<jsi::Function> createClass(jsi::Runtime &runtime, const char *name, ClassConstructor constructor) {
+  std::string nativeConstructorKey("__native_constructor__");
+
+  // Create a string buffer of the source code to evaluate.
+  std::stringstream source;
+  source << "(function " << name << "(...args) { this." << nativeConstructorKey << "(...args); return this; })";
+  std::shared_ptr<jsi::StringBuffer> sourceBuffer = std::make_shared<jsi::StringBuffer>(source.str());
+
+  // Evaluate the code and obtain returned value (the constructor function).
+  jsi::Object klass = runtime.evaluateJavaScript(sourceBuffer, "").asObject(runtime);
+
+  // Set the native constructor in the prototype.
+  jsi::Object prototype = klass.getPropertyAsObject(runtime, "prototype");
+  jsi::PropNameID nativeConstructorPropId = jsi::PropNameID::forAscii(runtime, nativeConstructorKey);
+  jsi::Function nativeConstructor = jsi::Function::createFromHostFunction(
+    runtime,
+    nativeConstructorPropId,
+    // The paramCount is not obligatory to match, it only affects the `length` property of the function.
+    0,
+    [constructor](jsi::Runtime &runtime, const jsi::Value &thisValue, const jsi::Value *args, size_t count) -> jsi::Value {
+      constructor(runtime, thisValue, args, count);
+      return jsi::Value::undefined();
+    });
+
+  defineProperty(runtime, &prototype, nativeConstructorKey.c_str(), jsi::Value(runtime, nativeConstructor));
+
+  return std::make_shared<jsi::Function>(klass.asFunction(runtime));
+}
+
+#pragma mark - Weak objects
+
+bool isWeakRefSupported(jsi::Runtime &runtime) {
+  return runtime.global().hasProperty(runtime, "WeakRef");
+}
+
+std::shared_ptr<jsi::Object> createWeakRef(jsi::Runtime &runtime, std::shared_ptr<jsi::Object> object) {
+  jsi::Object weakRef = runtime
+    .global()
+    .getProperty(runtime, "WeakRef")
+    .asObject(runtime)
+    .asFunction(runtime)
+    .callAsConstructor(runtime, jsi::Value(runtime, *object))
+    .asObject(runtime);
+  return std::make_shared<jsi::Object>(std::move(weakRef));
+}
+
+std::shared_ptr<jsi::Object> derefWeakRef(jsi::Runtime &runtime, std::shared_ptr<jsi::Object> object) {
+  jsi::Value ref = object->getProperty(runtime, "deref")
+    .asObject(runtime)
+    .asFunction(runtime)
+    .callWithThis(runtime, *object);
+
+  if (ref.isUndefined()) {
+    return nullptr;
+  }
+  return std::make_shared<jsi::Object>(ref.asObject(runtime));
+}
+
+#pragma mark - Define property
+
+void defineProperty(jsi::Runtime &runtime, const jsi::Object *object, const char *name, jsi::Value value) {
+  jsi::Object global = runtime.global();
+  jsi::Object objectClass = global.getPropertyAsObject(runtime, "Object");
+  jsi::Function definePropertyFunction = objectClass.getPropertyAsFunction(runtime, "defineProperty");
+
+  jsi::Object descriptor(runtime);
+  descriptor.setProperty(runtime, "value", value);
+
+  definePropertyFunction.callWithThis(runtime, objectClass, {
+    jsi::Value(runtime, *object),
+    jsi::String::createFromUtf8(runtime, name),
+    std::move(descriptor),
+  });
+}
+
+#pragma mark - Deallocator
+
+void setDeallocator(jsi::Runtime &runtime, std::shared_ptr<jsi::Object> object, ObjectDeallocatorBlock deallocatorBlock) {
+  std::shared_ptr<expo::ObjectDeallocator> hostObjectPtr = std::make_shared<ObjectDeallocator>(deallocatorBlock);
+  jsi::Object jsObject = jsi::Object::createFromHostObject(runtime, hostObjectPtr);
+
+  object->setProperty(runtime, "__expo_object_deallocator__", jsi::Value(runtime, jsObject));
+}
+
+} // namespace expo

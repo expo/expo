@@ -29,6 +29,7 @@ export type ButtonProps = {
   tabIndex?: number;
   openInNewTab?: boolean;
   title?: string;
+  rel?: string;
 };
 
 type Theme = {

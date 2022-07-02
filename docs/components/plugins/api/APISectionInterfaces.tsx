@@ -5,41 +5,67 @@ import { B, P } from '~/components/base/paragraph';
 import { H2, H3Code } from '~/components/plugins/Headings';
 import {
   CommentData,
+  CommentTagData,
   InterfaceDefinitionData,
   MethodSignatureData,
   PropData,
 } from '~/components/plugins/api/APIDataTypes';
 import {
   CommentTextBlock,
+  getTagData,
   mdInlineComponents,
   renderFlags,
-  renderParam,
+  renderParamRow,
+  renderTableHeadRow,
   renderTypeOrSignatureType,
   resolveTypeName,
 } from '~/components/plugins/api/APISectionUtils';
+import { Cell, Row, Table } from '~/ui/components/Table';
 
 export type APISectionInterfacesProps = {
   data: InterfaceDefinitionData[];
 };
 
+const renderDefaultValue = (defaultValue?: CommentTagData) =>
+  defaultValue ? (
+    <>
+      <br />
+      <br />
+      <B>Default:</B> <InlineCode>{defaultValue.text}</InlineCode>
+    </>
+  ) : null;
+
 const renderInterfaceComment = (comment?: CommentData, signatures?: MethodSignatureData[]) => {
   if (signatures && signatures.length) {
     const { type, parameters, comment: signatureComment } = signatures[0];
+    const defaultValue = getTagData('default', signatureComment);
     return (
       <>
-        {parameters?.length ? parameters.map(param => renderParam(param)) : null}
+        {parameters?.length ? parameters.map(param => renderParamRow(param)) : null}
         <B>Returns: </B>
         <InlineCode>{resolveTypeName(type)}</InlineCode>
         {signatureComment && (
           <>
             <br />
-            <CommentTextBlock comment={signatureComment} components={mdInlineComponents} />
+            <CommentTextBlock
+              comment={signatureComment}
+              components={mdInlineComponents}
+              afterContent={renderDefaultValue(defaultValue)}
+            />
           </>
         )}
       </>
     );
   } else {
-    return comment ? <CommentTextBlock comment={comment} components={mdInlineComponents} /> : '-';
+    const defaultValue = getTagData('default', comment);
+    return (
+      <CommentTextBlock
+        comment={comment}
+        components={mdInlineComponents}
+        afterContent={renderDefaultValue(defaultValue)}
+        emptyCommentFallback="-"
+      />
+    );
   }
 };
 
@@ -50,17 +76,17 @@ const renderInterfacePropertyRow = ({
   comment,
   signatures,
 }: PropData): JSX.Element => (
-  <tr key={name}>
-    <td>
+  <Row key={name}>
+    <Cell fitContent>
       <B>
         {name}
         {signatures && signatures.length ? '()' : ''}
       </B>
       {renderFlags(flags)}
-    </td>
-    <td>{renderTypeOrSignatureType(type, signatures)}</td>
-    <td>{renderInterfaceComment(comment, signatures)}</td>
-  </tr>
+    </Cell>
+    <Cell fitContent>{renderTypeOrSignatureType(type, signatures)}</Cell>
+    <Cell fitContent>{renderInterfaceComment(comment, signatures)}</Cell>
+  </Row>
 );
 
 const renderInterface = ({
@@ -74,7 +100,7 @@ const renderInterface = ({
       <H3Code>
         <InlineCode>{name}</InlineCode>
       </H3Code>
-      {extendedTypes?.length && (
+      {extendedTypes?.length ? (
         <P>
           <B>Extends: </B>
           {extendedTypes.map(extendedType => (
@@ -83,20 +109,16 @@ const renderInterface = ({
             </InlineCode>
           ))}
         </P>
-      )}
+      ) : null}
       <CommentTextBlock comment={comment} />
-      <table>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Type</th>
-            <th>Description</th>
-          </tr>
-        </thead>
-        <tbody>
-          {children.filter(child => !child?.inheritedFrom).map(renderInterfacePropertyRow)}
-        </tbody>
-      </table>
+      {children.filter(child => !child?.inheritedFrom).length ? (
+        <Table>
+          {renderTableHeadRow()}
+          <tbody>
+            {children.filter(child => !child?.inheritedFrom).map(renderInterfacePropertyRow)}
+          </tbody>
+        </Table>
+      ) : null}
     </div>
   ) : null;
 

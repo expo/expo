@@ -20,7 +20,7 @@ export type MediaLibraryPermissionResponse = PermissionResponse & {
 // @needsAudit
 /**
  * An alias for the `MediaLibraryPermissionResponse` object.
- * @deprecated Deprecated. Use `ImagePicker.MediaLibraryPermissionResponse` instead.
+ * @deprecated Use `ImagePicker.MediaLibraryPermissionResponse` instead.
  */
 export type CameraRollPermissionResponse = MediaLibraryPermissionResponse;
 
@@ -138,17 +138,79 @@ export enum UIImagePickerControllerQualityType {
   IFrame960x540 = 5,
 }
 
-// @docsMissing
+/**
+ * Picker presentation style. Its values are directly mapped to the [`UIModalPresentationStyle`](https://developer.apple.com/documentation/uikit/uiviewcontroller/1621355-modalpresentationstyle).
+ *
+ * @platform ios
+ */
 export enum UIImagePickerPresentationStyle {
-  FullScreen = 0,
-  PageSheet = 1,
-  FormSheet = 2,
-  CurrentContext = 3,
-  OverFullScreen = 5,
-  OverCurrentContext = 6,
-  Popover = 7,
-  BlurOverFullScreen = 8,
-  Automatic = -2,
+  /**
+   * A presentation style in which the presented picker covers the screen.
+   */
+  FULL_SCREEN = 'fullScreen',
+  /**
+   * A presentation style that partially covers the underlying content.
+   */
+  PAGE_SHEET = 'pageSheet',
+  /**
+   * A presentation style that displays the picker centered in the screen.
+   */
+  FORM_SHEET = 'formSheet',
+  /**
+   * A presentation style where the picker is displayed over the app's content.
+   */
+  CURRENT_CONTEXT = 'currentContext',
+  /**
+   * A presentation style in which the picker view covers the screen.
+   */
+  OVER_FULL_SCREEN = 'overFullScreen',
+  /**
+   * A presentation style where the picker is displayed over the app's content.
+   */
+  OVER_CURRENT_CONTEXT = 'overCurrentContext',
+  /**
+   * A presentation style where the picker is displayed in a popover view.
+   */
+  POPOVER = 'popover',
+  /**
+   * The default presentation style chosen by the system.
+   * On older iOS versions, falls back to `WebBrowserPresentationStyle.FullScreen`.
+   *
+   * @platform ios 13+
+   */
+  AUTOMATIC = 'automatic',
+  /**
+   * @deprecated Use `UIImagePickerPresentationStyle.FULL_SCREEN` instead.
+   */
+  FullScreen = 'fullScreen',
+  /**
+   * @deprecated Use `UIImagePickerPresentationStyle.PAGE_SHEET` instead.
+   */
+  PageSheet = 'pageSheet',
+  /**
+   * @deprecated Use `UIImagePickerPresentationStyle.FORM_SHEET` instead.
+   */
+  FormSheet = 'formSheet',
+  /**
+   * @deprecated Use `UIImagePickerPresentationStyle.CURRENT_CONTEXT` instead.
+   */
+  CurrentContext = 'currentContext',
+  /**
+   * @deprecated Use `UIImagePickerPresentationStyle.OVER_FULL_SCREEN` instead.
+   */
+  OverFullScreen = 'overFullScreen',
+  /**
+   * @deprecated Use `UIImagePickerPresentationStyle.OVER_CURRENT_CONTEXT` instead.
+   */
+  OverCurrentContext = 'overCurrentContext',
+  /**
+   * @deprecated Use `UIImagePickerPresentationStyle.POPOVER` instead.
+   */
+  Popover = 'popover',
+  /**
+   * @deprecated Use `UIImagePickerPresentationStyle.AUTOMATIC` instead.
+   */
+  Automatic = 'automatic',
 }
 
 // @needsAudit
@@ -268,7 +330,7 @@ export type ImagePickerOptions = {
    * Specify preset which will be used to compress selected video.
    * @default ImagePicker.VideoExportPreset.Passthrough
    * @platform ios 11+
-   * @deprecated Deprecated. See [`videoExportPreset`](https://developer.apple.com/documentation/uikit/uiimagepickercontroller/2890964-videoexportpreset?language=objc)
+   * @deprecated See [`videoExportPreset`](https://developer.apple.com/documentation/uikit/uiimagepickercontroller/2890964-videoexportpreset?language=objc)
    * in Apple documentation.
    */
   videoExportPreset?: VideoExportPreset;

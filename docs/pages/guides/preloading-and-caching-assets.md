@@ -44,7 +44,7 @@ import { View, Text, Image } from 'react-native';
 import AppLoading from 'expo-app-loading';
 import * as Font from 'expo-font';
 import { Asset } from 'expo-asset';
-import { FontAwesome } from '@expo/vector-icons';
+import FontAwesome from '@expo/vector-icons/FontAwesome';
 
 function cacheImages(images) {
   return images.map(image => {
@@ -98,7 +98,7 @@ export default class AppContainer extends React.Component {
 
 </SnackInline>
 
-See a full working example in [this Expo template project](https://github.com/expo/expo/blob/sdk-43/templates/expo-template-tabs/App.tsx). You can also run `expo init --template tabs`, which will set you up locally with the same template.
+See a full working example in [this Expo template project](https://github.com/expo/expo/blob/sdk-43/templates/expo-template-tabs/App.tsx). You can also run `npx create-expo-app --template tabs`, which will set you up locally with the same template.
 
 ### Publishing Assets
 

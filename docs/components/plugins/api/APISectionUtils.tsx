@@ -17,6 +17,9 @@ import {
   TypeDefinitionData,
   TypePropertyDataFlags,
 } from '~/components/plugins/api/APIDataTypes';
+import { Row, Cell, Table, TableHead, HeaderCell } from '~/ui/components/Table';
+
+const isDev = process.env.NODE_ENV === 'development';
 
 export enum TypeDocKind {
   LegacyEnum = 4,
@@ -32,6 +35,9 @@ export enum TypeDocKind {
 
 export type MDComponents = React.ComponentProps<typeof ReactMarkdown>['components'];
 
+const getInvalidLinkMessage = (href: string) =>
+  `Using "../" when linking other packages in doc comments produce a broken link! Please use "./" instead. Problematic link:\n\t${href}`;
+
 export const mdComponents: MDComponents = {
   blockquote: ({ children }) => (
     <Quote>
@@ -44,7 +50,20 @@ export const mdComponents: MDComponents = {
   h1: ({ children }) => <H4>{children}</H4>,
   ul: ({ children }) => <UL>{children}</UL>,
   li: ({ children }) => <LI>{children}</LI>,
-  a: ({ href, children }) => <Link href={href}>{children}</Link>,
+  a: ({ href, children }) => {
+    if (
+      href?.startsWith('../') &&
+      !href?.startsWith('../..') &&
+      !href?.startsWith('../react-native')
+    ) {
+      if (isDev) {
+        throw new Error(getInvalidLinkMessage(href));
+      } else {
+        console.warn(getInvalidLinkMessage(href));
+      }
+    }
+    return <Link href={href}>{children}</Link>;
+  },
   p: ({ children }) => (children ? <P>{children}</P> : null),
   strong: ({ children }) => <B>{children}</B>,
   span: ({ children }) => (children ? <span>{children}</span> : null),
@@ -96,9 +115,9 @@ const replaceableTypes: Partial<Record<string, string>> = {
 };
 
 const hardcodedTypeLinks: Record<string, string> = {
-  AVPlaybackSource: '../av/#playback-api',
-  AVPlaybackStatus: '../av/#playback-status',
-  AVPlaybackStatusToSet: '../av/#default-initial--avplaybackstatustoset',
+  AVPlaybackSource: '/versions/latest/sdk/av/#playback-api',
+  AVPlaybackStatus: '/versions/latest/sdk/av/#playback-status',
+  AVPlaybackStatusToSet: '/versions/latest/sdk/av/#default-initial--avplaybackstatustoset',
   Date: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date',
   Element: 'https://www.typescriptlang.org/docs/handbook/jsx.html#function-component',
   Error: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error',
@@ -109,9 +128,9 @@ const hardcodedTypeLinks: Record<string, string> = {
   Partial: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#partialtype',
   Promise:
     'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise',
-  View: '../../react-native/view',
-  ViewProps: '../../react-native/view#props',
-  ViewStyle: '../../react-native/view-style-props/',
+  View: '/versions/latest/react-native/view',
+  ViewProps: '/versions/latest/react-native/view#props',
+  ViewStyle: '/versions/latest/react-native/view-style-props',
 };
 
 const renderWithLink = (name: string, type?: string) => {
@@ -292,18 +311,61 @@ export const resolveTypeName = ({
 
 export const parseParamName = (name: string) => (name.startsWith('__') ? name.substr(2) : name);
 
-export const renderParam = ({ comment, name, type, flags }: MethodParamData): JSX.Element => (
-  <LI key={`param-${name}`}>
-    <B>
-      {parseParamName(name)}
-      {flags?.isOptional && '?'} (<InlineCode>{resolveTypeName(type)}</InlineCode>)
-    </B>
-    <CommentTextBlock comment={comment} components={mdInlineComponents} withDash />
-  </LI>
+export const renderParamRow = ({ comment, name, type, flags }: MethodParamData): JSX.Element => {
+  const defaultValue = parseCommentContent(getTagData('default', comment)?.text);
+  return (
+    <Row key={`param-${name}`}>
+      <Cell>
+        <B>{parseParamName(name)}</B>
+        {renderFlags(flags)}
+      </Cell>
+      <Cell>
+        <InlineCode>{resolveTypeName(type)}</InlineCode>
+      </Cell>
+      <Cell>
+        <CommentTextBlock
+          comment={comment}
+          components={mdInlineComponents}
+          afterContent={renderDefaultValue(defaultValue)}
+          emptyCommentFallback="-"
+        />
+      </Cell>
+    </Row>
+  );
+};
+
+export const renderTableHeadRow = () => (
+  <TableHead>
+    <Row>
+      <HeaderCell>Name</HeaderCell>
+      <HeaderCell>Type</HeaderCell>
+      <HeaderCell>Description</HeaderCell>
+    </Row>
+  </TableHead>
+);
+
+export const renderParams = (parameters: MethodParamData[]) => (
+  <>
+    <H4>Arguments</H4>
+    <Table>
+      {renderTableHeadRow()}
+      {parameters?.map(renderParamRow)}
+    </Table>
+  </>
 );
 
 export const listParams = (parameters: MethodParamData[]) =>
   parameters ? parameters?.map(param => parseParamName(param.name)).join(', ') : '';
+
+export const renderDefaultValue = (defaultValue?: string) =>
+  defaultValue ? (
+    <>
+      <br />
+      <br />
+      <B>Default: </B>
+      <InlineCode>{defaultValue}</InlineCode>
+    </>
+  ) : undefined;
 
 export const renderTypeOrSignatureType = (
   type?: TypeDefinitionData,
@@ -343,8 +405,10 @@ export type CommentTextBlockProps = {
   comment?: CommentData;
   components?: MDComponents;
   withDash?: boolean;
-  beforeContent?: JSX.Element;
+  beforeContent?: JSX.Element | null;
+  afterContent?: JSX.Element | null;
   includePlatforms?: boolean;
+  emptyCommentFallback?: string;
 };
 
 export const parseCommentContent = (content?: string): string =>
@@ -391,7 +455,9 @@ export const CommentTextBlock = ({
   components = mdComponents,
   withDash,
   beforeContent,
+  afterContent,
   includePlatforms = true,
+  emptyCommentFallback,
 }: CommentTextBlockProps) => {
   const shortText = comment?.shortText?.trim().length ? (
     <ReactMarkdown components={components} remarkPlugins={[remarkGfm]}>
@@ -404,10 +470,20 @@ export const CommentTextBlock = ({
     </ReactMarkdown>
   ) : null;
 
+  if (emptyCommentFallback && (!comment || (!shortText && !text))) {
+    return <>{emptyCommentFallback}</>;
+  }
+
   const examples = getAllTagData('example', comment);
   const exampleText = examples?.map((example, index) => (
-    <React.Fragment key={'Example-' + index}>
-      <H4>Example</H4>
+    <React.Fragment key={'example-' + index}>
+      {components !== mdComponents ? (
+        <div css={STYLES_EXAMPLE_IN_TABLE}>
+          <B>Example</B>
+        </div>
+      ) : (
+        <H4>Example</H4>
+      )}
       <ReactMarkdown components={components}>{example.text}</ReactMarkdown>
     </React.Fragment>
   ));
@@ -416,7 +492,8 @@ export const CommentTextBlock = ({
   const deprecationNote = deprecation ? (
     <Quote key="deprecation-note">
       {deprecation.text.trim().length ? (
-        <ReactMarkdown components={mdInlineComponents}>{deprecation.text}</ReactMarkdown>
+        <ReactMarkdown
+          components={mdInlineComponents}>{`**Deprecated.** ${deprecation.text}`}</ReactMarkdown>
       ) : (
         <B>Deprecated</B>
       )}
@@ -439,6 +516,7 @@ export const CommentTextBlock = ({
       {includePlatforms && getPlatformTags(comment, !withDash)}
       {shortText}
       {text}
+      {afterContent}
       {seeText}
       {exampleText}
     </>
@@ -464,13 +542,23 @@ export const STYLES_SECONDARY = css`
 `;
 
 export const STYLES_PLATFORM = css`
-  display: inline-block;
-  background-color: ${theme.background.tertiary};
-  color: ${theme.text.default};
-  font-size: 90%;
-  font-weight: 700;
-  padding: 6px 12px;
-  margin-bottom: 8px;
-  margin-right: 8px;
-  border-radius: 4px;
+  & {
+    display: inline-block;
+    background-color: ${theme.background.tertiary};
+    color: ${theme.text.default};
+    font-size: 90%;
+    font-weight: 700;
+    padding: 6px 12px;
+    margin-bottom: 8px;
+    margin-right: 8px;
+    border-radius: 4px;
+  }
+
+  table & {
+    margin-bottom: 1rem;
+  }
+`;
+
+const STYLES_EXAMPLE_IN_TABLE = css`
+  margin: 8px 0;
 `;

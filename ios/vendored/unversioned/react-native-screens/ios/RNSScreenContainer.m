@@ -23,6 +23,11 @@
 {
   return [self findActiveChildVC].supportedInterfaceOrientations;
 }
+
+- (UIViewController *)childViewControllerForHomeIndicatorAutoHidden
+{
+  return [self findActiveChildVC];
+}
 #endif
 
 - (UIViewController *)findActiveChildVC

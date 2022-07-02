@@ -34,15 +34,15 @@
 # pragma mark - UMPermissionsRequester
 
 - (NSDictionary *)getPermissions {
-  
+
   CLAuthorizationStatus systemStatus;
   if (![EXBaseLocationRequester isConfiguredForAlwaysAuthorization] && ![EXBaseLocationRequester isConfiguredForWhenInUseAuthorization]) {
-    EXFatal(EXErrorWithMessage(@"This app is missing usage descriptions, so location services will fail. Add one of the `NSLocation*UsageDescription` keys to your bundle's Info.plist. See https://bit.ly/2P5fEbG (https://docs.expo.io/versions/latest/guides/app-stores.html#system-permissions-dialogs-on-ios) for more information."));
+    EXFatal(EXErrorWithMessage(@"This app is missing usage descriptions, so location services will fail. Add one of the `NSLocation*UsageDescription` keys to your bundle's Info.plist. See https://bit.ly/3iLqy6S (https://docs.expo.dev/distribution/app-stores/#system-permissions-dialogs-on-ios) for more information."));
     systemStatus = kCLAuthorizationStatusDenied;
   } else {
     systemStatus = [CLLocationManager authorizationStatus];
   }
-  
+
   return [self parsePermissions:systemStatus];
 }
 
@@ -120,7 +120,7 @@
     _locationManagerWasCalled = true;
     return;
   }
-  
+
   if (_resolve) {
     _resolve([self getPermissions]);
     _resolve = nil;
@@ -139,7 +139,7 @@
       _locationManagerWasCalled = true;
       return;
     }
- 
+
     if (_resolve) {
       _resolve([self getPermissions]);
       _resolve = nil;
@@ -149,7 +149,7 @@
 }
 
 #pragma mark - Helpers
-  
+
 + (BOOL)isConfiguredForWhenInUseAuthorization
 {
   return [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationWhenInUseUsageDescription"] != nil;
@@ -160,5 +160,5 @@
   return [self isConfiguredForWhenInUseAuthorization] && [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationAlwaysAndWhenInUseUsageDescription"];
 }
 
-  
+
 @end

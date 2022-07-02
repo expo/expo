@@ -734,7 +734,11 @@ RCT_EXPORT_METHOD(getAddressFromCoordinates:(nonnull NSNumber *)reactTag
                 if (CGPathContainsPoint(mpr, NULL, mapPointAsCGP, FALSE)) {
                     id event = @{
                                 @"action": @"polygon-press",
-                                };
+                                @"coordinate": @{
+                                    @"latitude": @(tapCoordinate.latitude),
+                                    @"longitude": @(tapCoordinate.longitude),
+                                },
+                            };
                     polygon.onPress(event);
                 }
 
@@ -774,8 +778,13 @@ RCT_EXPORT_METHOD(getAddressFromCoordinates:(nonnull NSNumber *)reactTag
     }
 
     if (nearestDistance <= maxMeters) {
+        AIRMapCoordinate *firstCoord = nearestPolyline.coordinates.firstObject;
         id event = @{
                    @"action": @"polyline-press",
+                   @"coordinate": @{
+                       @"latitude": @(firstCoord.coordinate.latitude),
+                       @"longitude": @(firstCoord.coordinate.longitude)
+                   }
                    };
         nearestPolyline.onPress(event);
     }
@@ -1018,6 +1027,7 @@ static int kDragCenterContext;
                          @"accuracy": @(location.location.horizontalAccuracy),
                          @"altitudeAccuracy": @(location.location.verticalAccuracy),
                          @"speed": @(location.location.speed),
+                         @"heading": @(location.location.course),
                          }
                  };
     
@@ -1040,7 +1050,11 @@ static int kDragCenterContext;
 
 - (void)mapView:(AIRMap *)mapView regionWillChangeAnimated:(__unused BOOL)animated
 {
-    [self _regionChanged:mapView];
+    // Don't send region did change events until map has
+    // started rendering, as these won't represent the final location
+    if(mapView.hasStartedRendering){
+        [self _regionChanged:mapView];
+    }
 
     AIRWeakTimerReference *weakTarget = [[AIRWeakTimerReference alloc] initWithTarget:self andSelector:@selector(_onTick:)];
     
@@ -1059,7 +1073,11 @@ static int kDragCenterContext;
     [mapView.regionChangeObserveTimer invalidate];
     mapView.regionChangeObserveTimer = nil;
 
-    [self _regionChanged:mapView];
+    // Don't send region did change events until map has
+    // started rendering, as these won't represent the final location
+    if(mapView.hasStartedRendering){
+        [self _regionChanged:mapView];
+    }
 
     if (zoomLevel < mapView.minZoomLevel) {
       [self setCenterCoordinate:[mapView centerCoordinate] zoomLevel:mapView.minZoomLevel animated:TRUE mapView:mapView];

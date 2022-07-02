@@ -3,20 +3,22 @@ title: Up and Running
 sidebar_label: Up and Running
 ---
 
-import TerminalBlock from '~/components/plugins/TerminalBlock';
+import { Terminal } from '~/ui/components/Snippet';
 
 > This guide assumes that you have Xcode and/or Android Studio installed and working. It also assumes that you want to create a new project. If you have an existing app that you would like to integrate the Expo SDK in an existing app, read the [existing apps guide](../bare/existing-apps.md).
 
 Before you get started with a bare React Native project, make sure you set up your environment for [React Native CLI](https://reactnative.dev/docs/environment-setup).
 
-After this, let's get started with a bare project. Run `expo init` and choose one of the bare templates. We'll use the minimum template here.
+After this, let's get started with a bare project. Run `npx create-expo-app --template bare-minimum` (we'll use the native template here).
 
-```sh
-# If you don't have expo-cli yet, get it
-npm i -g expo-cli
-# This is a shortcut to skip the UI for picking the template
-expo init --template bare-minimum
-```
+<Terminal cmd={[
+  "# Create a new native project",
+  "$ npx create-expo-app --template bare-minimum",
+  "",
+  "# If you don't have expo-cli yet, get it",
+  "$ npm i -g expo-cli",
+  "",
+]} cmdCopy="npx create-expo-app --template bare-minimum && npm i -g expo-cli" />
 
 Next, let's get the project running. Go into your project directory and run `expo run:ios` or `expo run:android` &mdash; hurray! Your project is working.
 
@@ -26,11 +28,9 @@ Bare template projects come with `expo` installed and configured, so you're read
 
 ## Install an Expo SDK package
 
-We're going to install [`expo-web-browser`](https://github.com/expo/expo/tree/main/packages/expo-web-browser), it's a useful little package for showing a modal web browser using the appropriate native APIs on each platform.
+We're going to install [`expo-web-browser`](/versions/latest/sdk/webbrowser/), it's a useful little package for showing a modal web browser using the appropriate native APIs on each platform.
 
-```sh
-expo install expo-web-browser
-```
+<Terminal cmd={['$ expo install expo-web-browser']} />
 
 Open up **App.js** and add a button that, when pressed, opens up a web browser. Here's some code for you.
 
@@ -57,13 +57,19 @@ This will not yet work because we haven't linked the native code that powers it.
 
 ### iOS configuration
 
-<TerminalBlock cmd={['# Build your native iOS project', 'expo run:ios']} />
+<Terminal cmd={[
+  '# Build your native iOS project',
+  '$ expo run:ios'
+]}/>
 
 You may need to run `npx pod-install` to link the native iOS packages using [CocoaPods](https://cocoapods.org/), this is like running `yarn` or `npm install` in an Expo project. `expo run:ios` does this automatically when the **package.json** changes.
 
 ### Android configuration
 
-<TerminalBlock cmd={['# Build your native Android project', 'expo run:android']} />
+<Terminal cmd={[
+  '# Build your native Android project',
+  '$ expo run:android'
+]} />
 
 Once the app is built, press the "Open a web browser" button and watch the browser open. Success! Happy times.
 

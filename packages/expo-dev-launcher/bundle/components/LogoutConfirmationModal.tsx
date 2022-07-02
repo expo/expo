@@ -6,11 +6,9 @@ import { BaseModal } from './BaseModal';
 export function LogoutConfirmationModal({ onLogoutPress, onClosePress }) {
   return (
     <BaseModal title="Confirm logout">
-      <Spacer.Vertical size="medium" />
-
       <Heading weight="medium">Are you sure you want to log out?</Heading>
 
-      <Spacer.Vertical size="large" />
+      <Spacer.Vertical size="medium" />
 
       <Row>
         <View flex="1" grow="1">

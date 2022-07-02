@@ -19,15 +19,22 @@ export default [
     name: 'releaseChannel',
     type: 'string',
     description: [
-      'Name of the release channel for the `expo-updates` package ([Learn more about this](../../distribution/release-channels)). If you do not specify a channel, your binary will pull releases from the `default` channel. If you do not use `expo-updates` in your project then this property will have no effect.',
+      'Name of the release channel for the `expo-updates` package ([Learn more about this](../../distribution/release-channels)). If you do not specify a channel, your binary will pull releases from the `default` channel. If you do not use `expo-updates` in your project then this property will have no effect. **This field only applies to the Classic Update service**; if you use EAS Update, use the [channel](#channel) field instead.',
+    ]
+  },
+  {
+    name: 'channel',
+    type: 'string',
+    description: [
+      'The channel is a name we can give to multiple builds to identify them easily. [Learn more](../../eas-update/how-eas-update-works). **This field only applies to the EAS Update service**, if your project still uses Classic Updates then use the [releaseChannel](#releasechannel) field instead.',
     ]
   },
   {
     name: 'distribution',
     enum: [ 'store', 'internal' ],
     description: [ 'The method of distributing your app.',
-      '- `internal` - with this option you\'ll be able to share your build URLs with anyone, and they will be able to install the builds to their devices straight from the Expo website. When using `internal`, make sure the build produces an APK or IPA file. Otherwise, the sharable URL will be useless. [Learn more about internal distribution](../../build/internal-distribution).',
-      ' - `store` - produces builds for store uploads, your build URLs won\'t be sharable.'
+      '- `internal` - with this option you\'ll be able to share your build URLs with anyone, and they will be able to install the builds to their devices straight from the Expo website. When using `internal`, make sure the build produces an APK or IPA file. Otherwise, the shareable URL will be useless. [Learn more about internal distribution](../../build/internal-distribution).',
+      ' - `store` - produces builds for store uploads, your build URLs won\'t be shareable.'
     ]
   },
   {

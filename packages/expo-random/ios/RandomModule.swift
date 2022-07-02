@@ -5,12 +5,11 @@ import ExpoModulesCore
 
 public class RandomModule: Module {
   public func definition() -> ModuleDefinition {
-    name("ExpoRandom")
+    Name("ExpoRandom")
 
-    function("getRandomBase64StringAsync", getRandomBase64String)
+    AsyncFunction("getRandomBase64StringAsync", getRandomBase64String)
 
-    function("getRandomBase64String", getRandomBase64String)
-      .runSynchronously()
+    Function("getRandomBase64String", getRandomBase64String)
   }
 }
 

@@ -27,9 +27,8 @@ class PinchGestureHandler : GestureHandler<PinchGestureHandler>() {
       if (delta > 0) {
         velocity = (scale - prevScaleFactor) / delta
       }
-      if (abs(startingSpan - detector.currentSpan) >= spanSlop &&
-        state == STATE_BEGAN
-      ) {
+      if (abs(startingSpan - detector.currentSpan) >= spanSlop
+        && state == STATE_BEGAN) {
         activate()
       }
       return true
@@ -53,8 +52,7 @@ class PinchGestureHandler : GestureHandler<PinchGestureHandler>() {
   override fun onHandle(event: MotionEvent) {
     if (state == STATE_UNDETERMINED) {
       val context = view!!.context
-      velocity = 0.0
-      scale = 1.0
+      resetProgress()
       scaleGestureDetector = ScaleGestureDetector(context, gestureListener)
       val configuration = ViewConfiguration.get(context)
       spanSlop = configuration.scaledTouchSlop.toFloat()
@@ -75,14 +73,17 @@ class PinchGestureHandler : GestureHandler<PinchGestureHandler>() {
   override fun activate(force: Boolean) {
     // reset scale if the handler has not yet activated
     if (state != STATE_ACTIVE) {
-      velocity = 0.0
-      scale = 1.0
+      resetProgress()
     }
     super.activate(force)
   }
 
   override fun onReset() {
     scaleGestureDetector = null
+    resetProgress()
+  }
+
+  override fun resetProgress() {
     velocity = 0.0
     scale = 1.0
   }

@@ -5,9 +5,9 @@
 ## API documentation
 
 - [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/updates.md)
-- [Documentation for the latest stable release](https://docs.expo.io/versions/latest/sdk/updates/)
+- [Documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/updates/)
 
-Additionally, for an introduction to this module and tooling around OTA updates, you can watch [this talk](https://www.youtube.com/watch?v=Si909la3rLk) by [@esamelson](https://github.com/esamelson) from ReactEurope 2020.
+Additionally, for an introduction to this module and tooling around OTA updates, you can watch [this talk](https://www.youtube.com/watch?v=Si909la3rLk) by [@esamelson](https://github.com/esamelson) from ReactEurope 2020. Note: `expo eject` (mentioned @9:10) is no longer needed to implement native code. See [Development Builds](https://docs.expo.dev/development/introduction/#from-expo-go-to-development-builds).
 
 ## Compatibility
 
@@ -23,15 +23,15 @@ If you're upgrading from `expo-updates@0.1.x`, you can opt into the **no-publish
 
 # Installation in managed Expo projects
 
-For [managed](https://docs.expo.io/versions/latest/introduction/managed-vs-bare/) Expo projects, please follow the installation instructions in the [API documentation for the latest stable release](https://docs.expo.io/versions/latest/sdk/updates/).
+For [managed](https://docs.expo.dev/versions/latest/introduction/managed-vs-bare/) Expo projects, please follow the installation instructions in the [API documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/updates/).
 
 # Installation in bare React Native projects
 
-Learn how to install expo-updates in your project in the [Installing expo-updates documentation page](https://docs.expo.io/bare/installing-updates/).
+Learn how to install expo-updates in your project in the [Installing expo-updates documentation page](https://docs.expo.dev/bare/installing-updates/).
 
 ## Embedded Assets
 
-In certain situations, assets that are `require`d by your JavaScript are embedded into your application binary by Xcode/Android Studio. This allows these assets to load when the packager server running locally on your machine is not available.
+In certain situations, assets that are `required` by your JavaScript are embedded into your application binary by Xcode/Android Studio. This allows these assets to load when the packager server running locally on your machine is not available.
 
 Debug builds of Android apps do not, by default, have any assets bundled into the APK; they are always loaded at runtime from the Metro packager.
 
@@ -41,9 +41,7 @@ Release builds of both iOS and Android apps include a full embedded update, incl
 
 ## Configuration
 
-Some build-time configuration options are available to allow your app to update automatically on launch. On iOS, these properties are set as keys in `Expo.plist` and on Android as `meta-data` tags in `AndroidManifest.xml`, adjacent to the tags added during installation.
-
-On Android, you may also define these properties at runtime by passing a `Map` as the second parameter of `UpdatesController.initialize()`. If provided, the values in this Map will override any values specified in `AndroidManifest.xml`. On iOS, you may set these properties at runtime by calling `[UpdatesController.sharedInstance setConfiguration:]` at any point _before_ calling `start` or `startAndShowLaunchScreen`, and the values in this dictionary will override Expo.plist.
+Some build-time configuration options are available to configure the behavior of `expo-updates`. On iOS, these properties are set as keys in `Expo.plist` and on Android as `meta-data` tags in `AndroidManifest.xml` adjacent to the tags added during installation. On Android, you may also define these properties at runtime by passing a `Map` as the second parameter of `UpdatesController.initialize()`, and when provided the values will override any values specified in `AndroidManifest.xml`. On iOS, you may set these properties at runtime by calling `[UpdatesController.sharedInstance setConfiguration:]` at any point _before_ calling `start` or `startAndShowLaunchScreen` and the values in this dictionary will override any values specified in `Expo.plist`.
 
 | iOS plist/dictionary key | Android Map key | Android meta-data name         | Default | Required? |
 | ------------------------ | --------------- | ------------------------------ | ------- | --------- |
@@ -56,6 +54,12 @@ Whether updates are enabled. Setting this to `false` disables all update functio
 | `EXUpdatesURL`           | `updateUrl`     | `expo.modules.updates.EXPO_UPDATE_URL` | (none)  | ✅        |
 
 The URL to the remote server where the app should check for updates. A request to this URL should return a valid manifest object for the latest available update and tells expo-updates how to fetch the JS bundle and other assets that comprise the update. (Example: for apps published with `expo publish`, this URL would be `https://exp.host/@username/slug`.)
+
+| iOS plist/dictionary key | Android Map key | Android meta-data name                                           | Default | Required? |
+| ------------------------ | --------------- | ---------------------------------------------------------------- | ------- | --------- |
+| `EXUpdatesRequestHeaders`| `requestHeaders`| `expo.modules.updates.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY` | (none)  | ❌        |
+
+Extra HTTP headers to include in HTTP requests made by expo-updates. These may override preset headers. On iOS this is specified as a plist dictionary. On Android this is JSON object string.
 
 | iOS plist/dictionary key | Android Map key | Android meta-data name                  | Default | Required?                                                     |
 | ------------------------ | --------------- | --------------------------------------- | ------- | ------------------------------------------------------------- |
@@ -93,12 +97,16 @@ The number of milliseconds `expo-updates` should delay the app launch and stay o
 | --------------------------------- | ------------------------ | -------------------------------------------------- | ------- | --------- |
 | `EXUpdatesCodeSigningCertificate` | `codeSigningCertificate` | `expo.modules.updates.CODE_SIGNING_CERTIFICATE`    | (none)  | ❌        |
 | `EXUpdatesCodeSigningMetadata`    | `codeSigningMetadata`    | `expo.modules.updates.CODE_SIGNING_METADATA`       | (none)  | ❌        |
+| `EXUpdatesCodeSigningIncludeManifestResponseCertificateChain` | `codeSigningIncludeManifestResponseCertificateChain` | `expo.modules.updates.CODE_SIGNING_INCLUDE_MANIFEST_RESPONSE_CERTIFICATE_CHAIN` | false | ❌        |
+| `EXUpdatesConfigCodeSigningAllowUnsignedManifests` | `codeSigningAllowUnsignedManifests` | `expo.modules.updates.CODE_SIGNING_ALLOW_UNSIGNED_MANIFESTS` | false | ❌        |
 
 If `codeSigningCertificate` is present, `expo-updates` will enforce manifest code signing using the certificate and any metadata associated with it.
 - `codeSigningCertificate` must be a valid PEM formatted X.509 certificate with code signing extended key usage.
 - `codeSigningMetadata` (optional) must be a JSON object containing:
     - `alg` - Algorithm used to generate manifest signature. Only `rsa-v1_5-sha256` is currently supported.
     - `keyid` - Identifier for the key in `codeSigningCertificate`. Used to instruct signing mechanisms when signing or verifying signatures.
+- `codeSigningIncludeManifestResponseCertificateChain` (optional) instructs `expo-updates` to evaluate certificates included in a multipart manifest response (under the `certificate_chain` multipart part) as part of the code signing certificate chain with the embedded `codeSigningCertificate` as the implicitly trusted root certificate of the chain. The leaf certificate in the chain must be valid for code signing.
+- `codeSigningAllowUnsignedManifests` (optional) instructs `expo-updates` to treat a missing signature in the response as if code signing weren't enabled rather than as invalid as it normally would.
 
 ## Customizing automatic setup
 
@@ -110,7 +118,7 @@ In `expo-updates@0.9.0` and above, we support automatic installation of the modu
 
 # Removing pre-installed expo-updates
 
-Projects created by `expo init` and `expo eject` come with expo-updates pre-installed, because we anticipate most users will want this functionality. However, if you do not intend to use OTA updates, you can disable or uninstall the module.
+Projects created by `expo init` and `expo prebuild` come with expo-updates pre-installed, because we anticipate most users will want this functionality. However, if you do not intend to use OTA updates, you can disable or uninstall the module.
 
 ## Disabling expo-updates
 

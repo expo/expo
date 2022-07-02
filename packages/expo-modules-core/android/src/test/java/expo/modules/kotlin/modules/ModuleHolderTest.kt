@@ -14,9 +14,9 @@ class ModuleHolderTest {
 
     class MyModule : Module() {
       override fun definition() = ModuleDefinition {
-        name("my-module")
-        onCreate { onCreateCalls++ }
-        onDestroy { onDestroyCalls++ }
+        Name("my-module")
+        OnCreate { onCreateCalls++ }
+        OnDestroy { onDestroyCalls++ }
       }
     }
 

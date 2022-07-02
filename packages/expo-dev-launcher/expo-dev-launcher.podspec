@@ -34,6 +34,18 @@ Pod::Spec.new do |s|
 
   # Swift/Objective-C compatibility
   s.pod_target_xcconfig = { "DEFINES_MODULE" => "YES" }
+  dev_launcher_url = ENV['EX_DEV_LAUNCHER_URL'] || ""
+  if dev_launcher_url != ""
+    escaped_dev_launcher_url = Shellwords.escape(dev_launcher_url).gsub('/','\\/')
+    s.pod_target_xcconfig = {
+      'DEFINES_MODULE' => 'YES',
+      'OTHER_CFLAGS[config=Debug]' => "$(inherited) -DEX_DEV_LAUNCHER_URL=\"\\\"" + escaped_dev_launcher_url + "\\\"\""
+    }
+  end
+
+  s.user_target_xcconfig = {
+    "HEADER_SEARCH_PATHS" => "\"${PODS_CONFIGURATION_BUILD_DIR}/expo-dev-launcher/Swift Compatibility Header\"",
+  }
   
   s.dependency "React-Core"
   s.dependency "expo-dev-menu-interface"
@@ -57,10 +69,8 @@ Pod::Spec.new do |s|
     test_spec.dependency 'Nimble'
     test_spec.dependency "React-CoreModules"
     test_spec.dependency "OHHTTPStubs"
-    # `hermes_enabled` should be enabled for test integrations
-    test_spec.dependency 'React-hermes'
-    test_spec.dependency 'hermes-engine'
   end
   
   s.default_subspec = 'Main'
+
 end

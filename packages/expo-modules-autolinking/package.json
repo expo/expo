@@ -1,6 +1,6 @@
 {
   "name": "expo-modules-autolinking",
-  "version": "0.6.0",
+  "version": "0.9.0",
   "description": "Scripts that autolink Expo modules.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -38,6 +38,7 @@
     "@tsconfig/node12": "^1.0.9",
     "@types/fs-extra": "^9.0.11",
     "expo-module-scripts": "~2.0.0",
+    "minimatch": "^3.0.4",
     "tempy": "^0.7.1"
   },
   "dependencies": {

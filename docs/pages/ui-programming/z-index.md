@@ -5,6 +5,7 @@ sidebar_title: Stacking views with zIndex
 
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import SnackEmbed from '~/components/plugins/SnackEmbed';
+import { Collapsible } from '~/ui/components/Collapsible';
 
 `zIndex` is the Expo and React Native analog of [CSS's `z-index` property](https://developer.mozilla.org/en-US/docs/Web/CSS/z-index) which lets the developer control the order in which components are displayed over one another.
 
@@ -62,11 +63,11 @@ const styles = StyleSheet.create({
 `}
 </SnackEmbed>
 
-<details><summary><h4>Result</h4></summary>
+<Collapsible summary="Result">
 
 <ImageSpotlight style={{maxWidth: 360}} alt="Three square components in a square parent container" src="/static/images/z-index/default-layout.png" />
 
-</details>
+</Collapsible>
 
 This is illustrated more clearly when the components visually intersect each other.
 
@@ -120,11 +121,11 @@ const styles = StyleSheet.create({
 `}
 </SnackEmbed>
 
-<details><summary><h4>Result</h4></summary>
+<Collapsible summary="Result">
 
 <ImageSpotlight style={{maxWidth: 360}} alt="Three square components intersecting each other" src="/static/images/z-index/default-visually-stacked.png" />
 
-</details>
+</Collapsible>
 
 ## Changing the `zIndex` of an element
 
@@ -177,11 +178,11 @@ const styles = StyleSheet.create({
 `}
 </SnackEmbed>
 
-<details><summary><h4>Result</h4></summary>
+<Collapsible summary="Result">
 
 <ImageSpotlight style={{maxWidth: 360}} alt="Three components where the second is stacked above the first and third" src="/static/images/z-index/relative-z-index.png" />
 
-</details>
+</Collapsible>
 
 ## Manually positioning your component
 
@@ -233,11 +234,11 @@ const styles = StyleSheet.create({
 `}
 </SnackEmbed>
 
-<details><summary><h4>Result</h4></summary>
+<Collapsible summary="Result">
 
 <ImageSpotlight style={{maxWidth: 360}} alt="Position absolute example" src="/static/images/z-index/absolute-position.png" />
 
-</details>
+</Collapsible>
 
 You can even make the component extend outside of the parent's visual bounds.
 
@@ -287,11 +288,11 @@ const styles = StyleSheet.create({
 `}
 </SnackEmbed>
 
-<details><summary><h4>Result</h4></summary>
+<Collapsible summary="Result">
 
 <ImageSpotlight style={{maxWidth: 360}} alt="Position absolute component out of visual bounds of parent" src="/static/images/z-index/absolute-z-index-bounds.png" />
 
-</details>
+</Collapsible>
 
 While a `position: 'absolute'` component may seem like it operates independently, it must still respect the `zIndex` of its parent.
 
@@ -342,8 +343,8 @@ const styles = StyleSheet.create({
 `}
 </SnackEmbed>
 
-<details><summary><h4>Result</h4></summary>
+<Collapsible summary="Result">
 
 <ImageSpotlight style={{maxWidth: 360}} alt="Position absolute child must respect parent's zIndex" src="/static/images/z-index/z-index-parent.png" />
 
-</details>
+</Collapsible>

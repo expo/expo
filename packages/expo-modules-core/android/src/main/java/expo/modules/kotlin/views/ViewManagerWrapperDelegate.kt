@@ -15,6 +15,9 @@ class ViewManagerWrapperDelegate(internal var moduleHolder: ModuleHolder) {
   private val definition: ViewManagerDefinition
     get() = requireNotNull(moduleHolder.definition.viewManagerDefinition)
 
+  internal val viewGroupDefinition: ViewGroupDefinition?
+    get() = definition.viewGroupDefinition
+
   val name: String
     get() = moduleHolder.name
 

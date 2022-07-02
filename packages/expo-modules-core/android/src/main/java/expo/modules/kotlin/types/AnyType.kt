@@ -1,6 +1,5 @@
 package expo.modules.kotlin.types
 
-import com.facebook.react.bridge.Dynamic
 import kotlin.reflect.KType
 
 fun KType.toAnyType(): AnyType = AnyType(this)
@@ -10,5 +9,7 @@ class AnyType(val kType: KType) {
     TypeConverterProviderImpl.obtainTypeConverter(kType)
   }
 
-  fun convert(value: Dynamic): Any? = converter.convert(value)
+  fun convert(value: Any?): Any? = converter.convert(value)
+
+  fun getCppRequiredTypes(): Int = converter.getCppRequiredTypes().fold(0) { acc, current -> acc or current.value }
 }

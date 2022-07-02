@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 
+#include "AnimatedSensorModule.h"
 #include "ErrorHandler.h"
 #include "LayoutAnimationsProxy.h"
 #include "NativeReanimatedModuleSpec.h"
@@ -70,6 +71,10 @@ class NativeReanimatedModule : public NativeReanimatedModuleSpec,
 
   jsi::Value enableLayoutAnimations(jsi::Runtime &rt, const jsi::Value &config)
       override;
+  jsi::Value configureProps(
+      jsi::Runtime &rt,
+      const jsi::Value &uiProps,
+      const jsi::Value &nativeProps) override;
 
   void onRender(double timestampMs);
   void onEvent(std::string eventName, std::string eventAsString);
@@ -77,6 +82,13 @@ class NativeReanimatedModule : public NativeReanimatedModuleSpec,
 
   void maybeRequestRender();
   UpdaterFunction updaterFunction;
+
+  jsi::Value registerSensor(
+      jsi::Runtime &rt,
+      const jsi::Value &sensorType,
+      const jsi::Value &interval,
+      const jsi::Value &sensorDataContainer) override;
+  void unregisterSensor(jsi::Runtime &rt, const jsi::Value &sensorId) override;
 
  private:
   std::shared_ptr<MapperRegistry> mapperRegistry;
@@ -89,6 +101,8 @@ class NativeReanimatedModule : public NativeReanimatedModuleSpec,
       propObtainer;
   std::function<void(double)> onRenderCallback;
   std::shared_ptr<LayoutAnimationsProxy> layoutAnimationsProxy;
+  AnimatedSensorModule animatedSensorModule;
+  ConfigurePropsFunction configurePropsPlatformFunction;
 };
 
 } // namespace reanimated

@@ -3,7 +3,7 @@ import { by, device, element, expect as detoxExpect, waitFor } from 'detox';
 import { sleepAsync } from './Utils';
 import { expectResults } from './utils/report';
 
-let TESTS = [
+const TESTS = [
   'Basic',
   // 'Asset',
   // 'FileSystem',
@@ -32,7 +32,7 @@ let TESTS = [
 const MIN_TIME = 50000;
 
 describe('test-suite', () => {
-  TESTS.map(testName => {
+  TESTS.map((testName) => {
     it(
       `passes ${testName}`,
       async () => {
@@ -50,7 +50,7 @@ describe('test-suite', () => {
           await waitFor(element(by.id('test_suite_text_results')))
             .toExist()
             .withTimeout(MIN_TIME);
-        } catch (err) {
+        } catch {
           // test hasn't completed within the timeout
           // continue and log the intermediate results
         }
@@ -64,7 +64,9 @@ describe('test-suite', () => {
           });
         } else {
           // Platforms do no support `getAttributes()`, using text matching instead
-          await detoxExpect(element(by.id('test_suite_text_results'))).toHaveText('Complete: 0 tests failed.');
+          await detoxExpect(element(by.id('test_suite_text_results'))).toHaveText(
+            'Complete: 0 tests failed.'
+          );
         }
       },
       MIN_TIME * 1.5

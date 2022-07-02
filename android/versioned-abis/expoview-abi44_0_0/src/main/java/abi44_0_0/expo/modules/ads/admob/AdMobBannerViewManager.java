@@ -18,8 +18,7 @@ public class AdMobBannerViewManager extends ViewManager<AdMobBannerView> {
     EVENT_ERROR("onDidFailToReceiveAdWithError"),
     EVENT_WILL_PRESENT("onAdViewWillPresentScreen"),
     EVENT_WILL_DISMISS("onAdViewWillDismissScreen"),
-    EVENT_DID_DISMISS("onAdViewDidDismissScreen"),
-    EVENT_WILL_LEAVE_APP("onAdViewWillLeaveApplication");
+    EVENT_DID_DISMISS("onAdViewDidDismissScreen");
 
     private final String mName;
 

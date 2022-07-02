@@ -1,3 +1,4 @@
+import { EmitterSubscription } from 'react-native';
 import { CreateURLOptions, ParsedURL, QueryParams, SendIntentExtras, URLListener } from './Linking.types';
 /**
  * Create a URL that works for the environment the app is currently running in.
@@ -54,15 +55,18 @@ export declare function parse(url: string): ParsedURL;
  * @param type The only valid type is `'url'`.
  * @param handler An [`URLListener`](#urllistener) function that takes an `event` object of the type
  * [`EventType`](#eventype).
+ * @return An EmitterSubscription that has the remove method from EventSubscription
  * @see [React Native Docs Linking page](https://reactnative.dev/docs/linking#addeventlistener).
  */
-export declare function addEventListener(type: 'url', handler: URLListener): void;
+export declare function addEventListener(type: 'url', handler: URLListener): EmitterSubscription;
 /**
  * Remove a handler by passing the `url` event type and the handler.
  * @param type The only valid type is `'url'`.
  * @param handler An [`URLListener`](#urllistener) function that takes an `event` object of the type
  * [`EventType`](#eventype).
  * @see [React Native Docs Linking page](https://reactnative.dev/docs/linking#removeeventlistener).
+ *
+ * @deprecated Call `remove()` on the return value of `addEventListener()` instead.
  */
 export declare function removeEventListener(type: 'url', handler: URLListener): void;
 /**
@@ -75,14 +79,13 @@ export declare function removeEventListener(type: 'url', handler: URLListener): 
 export declare function parseInitialURLAsync(): Promise<ParsedURL>;
 /**
  * Launch an Android intent with extras.
- * > Use [IntentLauncher](../intent-launcher) instead, `sendIntent` is only included in
+ * > Use [IntentLauncher](./intent-launcher) instead, `sendIntent` is only included in
  * > `Linking` for API compatibility with React Native's Linking API.
  * @platform android
  */
 export declare function sendIntent(action: string, extras?: SendIntentExtras[]): Promise<void>;
 /**
  * Open the operating system settings app and displays the app’s custom settings, if it has any.
- * @platform ios
  */
 export declare function openSettings(): Promise<void>;
 /**
@@ -116,4 +119,5 @@ export declare function canOpenURL(url: string): Promise<boolean>;
  */
 export declare function useURL(): string | null;
 export * from './Linking.types';
+export * from './Schemes';
 //# sourceMappingURL=Linking.d.ts.map

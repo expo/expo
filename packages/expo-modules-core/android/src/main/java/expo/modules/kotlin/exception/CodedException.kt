@@ -1,12 +1,15 @@
 package expo.modules.kotlin.exception
 
 import com.facebook.react.bridge.ReadableType
+import expo.modules.core.interfaces.DoNotStrip
 import java.util.*
+import kotlin.reflect.KProperty1
 import kotlin.reflect.KType
 
 /**
  * A class for errors specifying its `code` and providing the `description`.
  */
+@DoNotStrip
 open class CodedException(
   message: String?,
   cause: Throwable?
@@ -32,9 +35,11 @@ open class CodedException(
     /**
      * The code is inferred from the class name — e.g. the code of `ModuleNotFoundException` becomes `ERR_MODULE_NOT_FOUND`.
      */
-    private fun inferCode(clazz: Class<*>): String {
+    @PublishedApi
+    internal fun inferCode(clazz: Class<*>): String {
       val name = requireNotNull(clazz.simpleName) { "Cannot infer code name from class name. We don't support anonymous classes." }
 
+      @Suppress("Deprecation")
       return "ERR_" + name
         .replace("(Exception)$".toRegex(), "")
         .replace("(.)([A-Z])".toRegex(), "$1_$2")
@@ -42,6 +47,21 @@ open class CodedException(
     }
   }
 }
+
+/**
+ * Infers error code from the exception class name -
+ * e.g. the code of `ModuleNotFoundException` becomes `ERR_MODULE_NOT_FOUND`.
+ *
+ * Example:
+ * ```kt
+ * class NoPermissionException : CodedException()
+ * val errorCode = errorCodeOf<NoPermissionException>() // ERR_NO_PERMISSION
+ * ```
+ *
+ * **Note**: This works only if the exception class didn't overwrite the error code manually.
+ */
+inline fun <reified T : CodedException> errorCodeOf(): String =
+  CodedException.inferCode(T::class.java)
 
 internal class IncompatibleArgTypeException(
   argumentType: KType,
@@ -67,8 +87,14 @@ internal class MethodNotFoundException :
 internal class NullArgumentException :
   CodedException(message = "Cannot assigned null to not nullable type.")
 
+internal class FieldRequiredException(property: KProperty1<*, *>) :
+  CodedException(message = "Value for field '$property' is required, got nil")
+
 internal class UnexpectedException(val throwable: Throwable) :
   CodedException(message = throwable.toString(), throwable)
+
+internal class ValidationException(message: String) :
+  CodedException(message = message)
 
 /**
  * A base class for all exceptions used in `exceptionDecorator` function.
@@ -127,4 +153,15 @@ internal class CollectionElementCastException(
 ) : DecoratedException(
   message = "Cannot cast '${providedType.name}' to '$elementType' required by the collection of type: '$collectionType'.",
   cause
+)
+
+@DoNotStrip
+class JavaScriptEvaluateException(
+  message: String,
+  val jsStack: String
+) : CodedException(
+  message = """
+  Cannot evaluate JavaScript code: $message.
+  $jsStack
+  """.trimIndent()
 )

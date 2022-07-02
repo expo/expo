@@ -185,7 +185,12 @@ static NSString * const EXUpdatesErrorEventName = @"error";
     view.backgroundColor = [UIColor whiteColor];
   }
   
+  if (window.rootViewController == nil) {
+      UIViewController *rootViewController = [UIViewController new];
+      window.rootViewController = rootViewController;
+  }
   window.rootViewController.view = view;
+  [window makeKeyAndVisible];
 
   [self start];
 }
@@ -362,7 +367,7 @@ static NSString * const EXUpdatesErrorEventName = @"error";
   }
 
   _remoteLoadStatus = EXUpdatesRemoteLoadStatusLoading;
-  EXUpdatesAppLoader *remoteAppLoader = [[EXUpdatesRemoteAppLoader alloc] initWithConfig:_config database:_database directory:_updatesDirectory completionQueue:_controllerQueue];
+  EXUpdatesAppLoader *remoteAppLoader = [[EXUpdatesRemoteAppLoader alloc] initWithConfig:_config database:_database directory:_updatesDirectory launchedUpdate:self.launchedUpdate completionQueue:_controllerQueue];
   [remoteAppLoader loadUpdateFromUrl:_config.updateUrl onManifest:^BOOL(EXUpdatesUpdate *update) {
     return [self->_selectionPolicy shouldLoadNewUpdate:update withLaunchedUpdate:self.launchedUpdate filters:update.manifestFilters];
   } asset:^(EXUpdatesAsset *asset, NSUInteger successfulAssetCount, NSUInteger failedAssetCount, NSUInteger totalAssetCount) {

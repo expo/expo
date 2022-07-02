@@ -1,10 +1,17 @@
 import spawnAsync from '@expo/spawn-async';
+import chalk from 'chalk';
 import { Command } from 'commander';
 import downloadTarball from 'download-tarball';
 import ejs from 'ejs';
 import fs from 'fs-extra';
 import path from 'path';
-import prompts, { PromptObject } from 'prompts';
+import prompts from 'prompts';
+import validateNpmPackage from 'validate-npm-package-name';
+
+import { createExampleApp } from './createExampleApp';
+import { installDependencies } from './packageManager';
+import { PackageManagerName, resolvePackageManager } from './resolvePackageManager';
+import { CommandOptions, CustomPromptObject, SubstitutionData } from './types';
 
 const packageJson = require('../package.json');
 
@@ -16,45 +23,6 @@ const CWD = process.env.INIT_CWD || process.cwd();
 const IGNORES_PATHS = ['.DS_Store', 'build', 'node_modules', 'package.json'];
 
 /**
- * Possible command options.
- */
-type CommandOptions = {
-  target: string;
-  source?: string;
-  name?: string;
-  description?: string;
-  package?: string;
-  author?: string;
-  license?: string;
-  repo?: string;
-  withReadme: boolean;
-  withChangelog: boolean;
-};
-
-/**
- * Represents an object that is passed to `ejs` when rendering the template.
- */
-type SubstitutionData = {
-  project: {
-    slug: string;
-    name: string;
-    version: string;
-    description: string;
-    package: string;
-  };
-  author: string;
-  license: string;
-  repo: string;
-};
-
-type CustomPromptObject = PromptObject & {
-  name: string;
-  resolvedValue?: string | null;
-};
-
-type PackageManager = 'npm' | 'yarn';
-
-/**
  * The main function of the command.
  *
  * @param target Path to the directory where to create the module. Defaults to current working dir.
@@ -63,11 +31,13 @@ type PackageManager = 'npm' | 'yarn';
 async function main(target: string | undefined, options: CommandOptions) {
   const targetDir = target ? path.join(CWD, target) : CWD;
 
+  await confirmTargetDirAsync(targetDir);
+
   options.target = targetDir;
   await fs.ensureDir(targetDir);
 
   const data = await askForSubstitutionDataAsync(targetDir, options);
-  const packageManager = await selectPackageManagerAsync();
+  const packageManager = await resolvePackageManager();
   const packagePath = options.source
     ? path.join(CWD, options.source)
     : await downloadPackageAsync(targetDir);
@@ -90,6 +60,9 @@ async function main(target: string | undefined, options: CommandOptions) {
     await fs.outputFile(toPath, renderedContent, { encoding: 'utf8' });
   }
 
+  // Install dependencies and build
+  await postActionsAsync(packageManager, targetDir);
+
   if (!options.source) {
     // Files in the downloaded tarball are wrapped in `package` dir.
     // We should remove it after all.
@@ -101,9 +74,10 @@ async function main(target: string | undefined, options: CommandOptions) {
   if (!options.withChangelog) {
     await fs.remove(path.join(targetDir, 'CHANGELOG.md'));
   }
-
-  // Install dependencies and build
-  await postActionsAsync(packageManager, targetDir);
+  if (options.example) {
+    // Create "example" folder
+    await createExampleApp(data, targetDir, packageManager);
+  }
 
   console.log('✅ Successfully created Expo module');
 }
@@ -149,7 +123,7 @@ async function npmWhoamiAsync(targetDir: string): Promise<string | null> {
   try {
     const { stdout } = await spawnAsync('npm', ['whoami'], { cwd: targetDir });
     return stdout.trim();
-  } catch (e) {
+  } catch {
     return null;
   }
 }
@@ -170,37 +144,17 @@ async function downloadPackageAsync(targetDir: string): Promise<string> {
 }
 
 /**
- * Asks whether to use Yarn or npm as a dependency package manager.
- */
-async function selectPackageManagerAsync(): Promise<PackageManager> {
-  const { packageManager } = await prompts({
-    type: 'select',
-    name: 'packageManager',
-    message: 'Which package manager do you want to use to install dependencies?',
-    choices: [
-      { title: 'yarn', value: 'yarn' },
-      { title: 'npm', value: 'npm' },
-    ],
-  });
-  return packageManager;
-}
-
-/**
  * Installs dependencies and builds TypeScript files.
  */
-async function postActionsAsync(packageManager: PackageManager, targetDir: string) {
-  async function run(...args: string[]) {
-    await spawnAsync(packageManager, args, {
-      cwd: targetDir,
-      stdio: 'ignore',
-    });
-  }
-
-  console.log('📦 Installing dependencies...');
-  await run('install');
+async function postActionsAsync(packageManager: PackageManagerName, targetDir: string) {
+  console.log('📦 Installing module dependencies...');
+  await installDependencies(packageManager, targetDir);
 
   console.log('🛠  Compiling TypeScript files...');
-  await run('run', 'build');
+  await spawnAsync(packageManager, ['run', 'build'], {
+    cwd: targetDir,
+    stdio: 'ignore',
+  });
 }
 
 /**
@@ -212,6 +166,7 @@ async function askForSubstitutionDataAsync(
   options: CommandOptions
 ): Promise<SubstitutionData> {
   const defaultPackageSlug = path.basename(targetDir);
+  const useDefaultSlug = options.target && validateNpmPackage(defaultPackageSlug);
   const defaultProjectName = defaultPackageSlug
     .replace(/^./, (match) => match.toUpperCase())
     .replace(/\W+(\w)/g, (_, p1) => p1.toUpperCase());
@@ -222,7 +177,9 @@ async function askForSubstitutionDataAsync(
       name: 'slug',
       message: 'What is the package slug?',
       initial: defaultPackageSlug,
-      resolvedValue: options.target ? defaultPackageSlug : null,
+      resolvedValue: useDefaultSlug ? defaultPackageSlug : null,
+      validate: (input) =>
+        validateNpmPackage(input).validForNewPackages || 'Must be a valid npm package name',
     },
     {
       type: 'text',
@@ -234,6 +191,7 @@ async function askForSubstitutionDataAsync(
       type: 'text',
       name: 'description',
       message: 'How would you describe the module?',
+      validate: (input) => !!input || 'Cannot be empty',
     },
     {
       type: 'text',
@@ -257,13 +215,19 @@ async function askForSubstitutionDataAsync(
       type: 'text',
       name: 'repo',
       message: 'What is the repository URL?',
+      validate: (input) => /^https?:\/\//.test(input) || 'Must be a valid URL',
     },
   ];
+
+  // Stop the process when the user cancels/exits the prompt.
+  const onCancel = () => {
+    process.exit(0);
+  };
 
   const answers: Record<string, string> = {};
   for (const query of promptQueries) {
     const { name, resolvedValue } = query;
-    answers[name] = resolvedValue ?? options[name] ?? (await prompts(query))[name];
+    answers[name] = resolvedValue ?? options[name] ?? (await prompts(query, { onCancel }))[name];
   }
 
   const { slug, name, description, package: projectPackage, author, license, repo } = answers;
@@ -280,6 +244,33 @@ async function askForSubstitutionDataAsync(
     license,
     repo,
   };
+}
+
+/**
+ * Checks whether the target directory is empty and if not, asks the user to confirm if he wants to continue.
+ */
+async function confirmTargetDirAsync(targetDir: string): Promise<void> {
+  const files = await fs.readdir(targetDir);
+
+  if (files.length === 0) {
+    return;
+  }
+  const { shouldContinue } = await prompts(
+    {
+      type: 'confirm',
+      name: 'shouldContinue',
+      message: `The target directory ${chalk.magenta(
+        targetDir
+      )} is not empty.\nDo you want to continue anyway?`,
+      initial: true,
+    },
+    {
+      onCancel: () => false,
+    }
+  );
+  if (!shouldContinue) {
+    process.exit(0);
+  }
 }
 
 const program = new Command();
@@ -301,6 +292,7 @@ program
   .option('-r, --repo <repo_url>', 'The URL to the repository.')
   .option('--with-readme', 'Whether to include README.md file.', false)
   .option('--with-changelog', 'Whether to include CHANGELOG.md file.', false)
+  .option('--no-example', 'Whether to skip creating the example app.', false)
   .action(main);
 
 program.parse(process.argv);

@@ -43,9 +43,12 @@ class UpdatesPackage : Package {
       }
 
       override fun onDidCreateReactInstanceManager(reactInstanceManager: ReactInstanceManager, useDeveloperSupport: Boolean) {
+        // WHEN_VERSIONING_REMOVE_FROM_HERE
+        // This code path breaks versioning and is not necessary for Expo Go.
         if (shouldAutoSetup(context) && !useDeveloperSupport) {
           UpdatesController.instance.onDidCreateReactInstanceManager(reactInstanceManager)
         }
+        // WHEN_VERSIONING_REMOVE_TO_HERE
       }
 
       @UiThread

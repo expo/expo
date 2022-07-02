@@ -19,7 +19,7 @@ const fakeLocalDevSession: DevSession = {
   source: 'test',
 };
 
-describe('<DeepLinkPrompt />', () => {
+describe('<DeepLinkModal />', () => {
   afterEach(() => {
     mockGetPendingDeepLink.mockClear();
     mockAddDeepLinkListener.mockClear();
@@ -46,27 +46,27 @@ describe('<DeepLinkPrompt />', () => {
     const fakeDeepLink = 'testing-testing-123';
     mockGetPendingDeepLink.mockResolvedValueOnce(fakeDeepLink);
 
-    const { getByText, queryByText } = render(null, {
+    const { queryByText, queryAllByText } = render(null, {
       initialAppProviderProps: { initialDevSessions: [fakeLocalDevSession] },
     });
 
     expect(queryByText(fakeLocalDevSession.description)).toBe(null);
 
     await act(async () => {
-      await waitFor(() => getByText(/deep link received/i));
-      getByText(fakeLocalDevSession.description);
+      await waitFor(() => queryByText(/deep link received/i));
+      expect(queryAllByText(fakeLocalDevSession.description)).not.toBe(null);
     });
   });
 
   test('packagers in modal call loadApp() when pressed', async () => {
-    const { getByText } = render(<DeepLinkModal pendingDeepLink="123" />, {
+    const { getAllByText } = render(<DeepLinkModal pendingDeepLink="123" />, {
       initialAppProviderProps: { initialDevSessions: [fakeLocalDevSession] },
     });
 
     await act(async () => {
       expect(loadApp).not.toHaveBeenCalled();
 
-      const button = await waitFor(() => getByText(fakeLocalDevSession.description));
+      const [button] = await waitFor(() => getAllByText(fakeLocalDevSession.description));
       fireEvent.press(button);
 
       expect(loadApp).toHaveBeenCalled();
@@ -74,7 +74,7 @@ describe('<DeepLinkPrompt />', () => {
   });
 
   test('shows empty message when no packagers are found', async () => {
-    const { getByText, queryByText } = render(<DeepLinkModal pendingDeepLink="123" />, {
+    const { getAllByText, queryByText } = render(<DeepLinkModal pendingDeepLink="123" />, {
       initialAppProviderProps: { initialDevSessions: [], initialRecentlyOpenedApps: [] },
     });
 
@@ -82,7 +82,7 @@ describe('<DeepLinkPrompt />', () => {
 
     await act(async () => {
       expect(queryByText(/unable to find any packagers/i)).toBe(null);
-      await waitFor(() => getByText(/unable to find any packagers/i));
+      await waitFor(() => getAllByText(/unable to find any packagers/i));
     });
   });
 

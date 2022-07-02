@@ -6,7 +6,6 @@ import path from 'path';
 
 import { EXPO_DIR, ANDROID_DIR } from '../Constants';
 import { getReactNativeSubmoduleDir } from '../Directories';
-import logger from '../Logger';
 import { getNextSDKVersionAsync } from '../ProjectVersions';
 import { transformFileAsync } from '../Transforms';
 
@@ -18,8 +17,8 @@ type ActionOptions = {
 const REACT_NATIVE_SUBMODULE_PATH = getReactNativeSubmoduleDir();
 const REACT_ANDROID_PATH = path.join(ANDROID_DIR, 'ReactAndroid');
 const REACT_COMMON_PATH = path.join(ANDROID_DIR, 'ReactCommon');
-const REACT_APPLICATION_MK_PATH = path.join(REACT_ANDROID_PATH, 'src/main/jni/Application.mk');
 const REACT_ANDROID_GRADLE_PATH = path.join(REACT_ANDROID_PATH, 'build.gradle');
+const REACT_SDKS_PATHS = path.join(ANDROID_DIR, 'sdks');
 
 async function checkoutReactNativeSubmoduleAsync(checkoutRef: string): Promise<void> {
   await spawnAsync('git', ['fetch'], {
@@ -37,6 +36,10 @@ async function updateReactAndroidAsync(sdkVersion: string): Promise<void> {
   console.log(`Cleaning ${chalk.magenta(path.relative(EXPO_DIR, REACT_COMMON_PATH))}...`);
   await fs.remove(REACT_COMMON_PATH);
 
+  console.log(`Syncing ${chalk.magenta(path.relative(EXPO_DIR, REACT_SDKS_PATHS))}...`);
+  await fs.remove(REACT_SDKS_PATHS);
+  await fs.copy(path.join(REACT_NATIVE_SUBMODULE_PATH, 'sdks'), REACT_SDKS_PATHS);
+
   console.log(
     `Running ${chalk.blue('ReactAndroidCodeTransformer')} with ${chalk.yellow(
       `./gradlew :tools:execute --args ${sdkVersion}`
@@ -47,26 +50,19 @@ async function updateReactAndroidAsync(sdkVersion: string): Promise<void> {
     stdio: 'inherit',
   });
 
-  logger.info(
-    '📇 Transforming',
-    chalk.magenta('Application.mk'),
-    'to make use of',
-    chalk.yellow('NDK_ABI_FILTERS')
-  );
-  await transformFileAsync(REACT_APPLICATION_MK_PATH, [
-    {
-      find: /^APP_ABI := (.*)$/m,
-      replaceWith: 'APP_ABI := $(if $(NDK_ABI_FILTERS),$(NDK_ABI_FILTERS),$($1))',
-    },
-  ]);
   await transformFileAsync(REACT_ANDROID_GRADLE_PATH, [
     {
       find: /^(\s*jsRootDir\s*=\s*)file\(.+\)$/m,
       replaceWith: '$1file("$projectDir/../../react-native-lab/react-native/Libraries")',
     },
     {
-      find: /^(\s*reactNativeRootDir\s*=\s*)file\(.+\)$/m,
+      find: /^(\s*reactNativeDir\s*=\s*)file\(.+\)$/m,
       replaceWith: '$1file("$projectDir/../../react-native-lab/react-native")',
+    },
+    {
+      find: /^(\s*\/\/ We search for the codegen.*\n\s*\/\/ root packages folder.*\n\s*codegenDir = .*)$/m,
+      replaceWith:
+        '    codegenDir = file("$projectDir/../../react-native-lab/react-native/packages/react-native-codegen")',
     },
     {
       find: /api\("androidx.appcompat:appcompat:\d+\.\d+\.\d+"\)/,

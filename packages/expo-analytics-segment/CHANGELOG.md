@@ -8,9 +8,21 @@
 
 ### 🐛 Bug fixes
 
-- Fix `Plugin with id 'maven' not found` build error from Android Gradle 7. ([#16080](https://github.com/expo/expo/pull/16080) by [@kudo](https://github.com/kudo))
-
 ### 💡 Others
+
+- Bump `com.segment.analytics.android:analytics` from `4.9.4` to `4.10.4` to resolve Google Play rejections. ([#17841](https://github.com/expo/expo/pull/17841) by [@brentvatne](https://github.com/brentvatne))
+
+## 11.2.0 — 2022-04-18
+
+### ⚠️ Notices
+
+- On Android bump `compileSdkVersion` to `31`, `targetSdkVersion` to `31` and `Java` version to `11`. ([#16941](https://github.com/expo/expo/pull/16941) by [@bbarthec](https://github.com/bbarthec))
+
+## 11.1.1 - 2022-02-01
+
+### 🐛 Bug fixes
+
+- Fix `Plugin with id 'maven' not found` build error from Android Gradle 7. ([#16080](https://github.com/expo/expo/pull/16080) by [@kudo](https://github.com/kudo))
 
 ## 11.1.0 — 2021-12-03
 

@@ -21,7 +21,7 @@ If you already have a React Native project that has been created with `react-nat
 
 ### Existing Expo managed workflow apps
 
-If you already have an Expo managed workflow app and you need to customize the native code, you can eject to the bare workflow by running `expo eject`. This will give you a vanilla React Native app that includes all of the Expo SDK APIs that you were using already, and no more than that. The outcome is that you will be in just as good of a position as if you had started your app in the bare workflow from scratch, only you probably saved yourself some time!
+If you already have an Expo managed workflow app and you need to customize the native code, you can generate the native projects by running `expo prebuild`.
 
 > 💡 We recommend upgrading to the latest SDK version before ejecting. It will be more difficult to upgrade your app after ejecting because you will also be responsible for native iOS and Android related upgrade steps.
 
@@ -69,4 +69,4 @@ With [Expo Application Services (EAS)](/eas/index.md), you can build and submit 
 
 You are now, at a very high level, familiar with the steps you would go through to get started on building an app with the bare workflow. Continue on to [Up and Running](hello-world.md) to get started coding!
 
-Are you feeling intimidated? It might be better for you to start out with the managed workflow if you're new to this. Check out the [managed workflow walkthrough](../introduction/walkthrough.md) for more information.
+Are you feeling intimidated? It might be better for you to start out with the managed workflow if you're new to this. Check out the [First steps](../tutorial/planning/) for more information.

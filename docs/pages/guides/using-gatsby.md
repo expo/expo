@@ -25,21 +25,20 @@ If you'd like to jump right into a working project then check out [expo/examples
 
 ## 🏁 Setup
 
-We put all of the features for Expo web in the plugin [`gatsby-plugin-react-native-web`](https://github.com/slorber/gatsby-plugin-react-native-web) so setup would be as easy as possible. This guide will show you how to install and use it. Under the hood it's basically doing what `expo start:web` or the Expo + Next.js workflows are doing.
+We put all of the features for Expo web in the plugin [`gatsby-plugin-react-native-web`](https://github.com/slorber/gatsby-plugin-react-native-web) so setup would be as easy as possible. This guide will show you how to install and use it. Under the hood it's basically doing what `expo start --web` or the Expo + Next.js workflows are doing.
 
 ### Expo projects with Gatsby
 
 For using the Gatsby tools in a universal app with the Expo SDK.
 
-- Create a new Expo project
-  - Install the CLI - `npm install -g expo-cli`
-  - Bootstrap - `expo init --template blank`
+- Create a new Expo project: `yarn create expo-app`
 - Install Gatsby and the plugin
   - **using yarn** - `yarn add gatsby gatsby-plugin-react-native-web`
   - using npm - `npm install --save gatsby gatsby-plugin-react-native-web`
 - Create a `gatsby-config.js` and use the plugin - `touch gatsby-config.js`
 
-  `gatsby-config.js`
+
+  **gatsby-config.js**
 
   ```js
   module.exports = {
@@ -66,7 +65,8 @@ For using the Expo SDK in a web-only Gatsby project.
   - using npm - `npm install --save react-native-web gatsby-plugin-react-native-web`
 - Create a `gatsby-config.js` and use the plugin - `touch gatsby-config.js`
 
-  `gatsby-config.js`
+
+  **gatsby-config.js**
 
   ```js
   module.exports = {
@@ -103,7 +103,7 @@ You'll want to use the Gatsby CLI to develop the web part of your app now. You s
 
 - **Starting web**
 
-  - 🚫 `expo start:web`
+  - 🚫 `expo start --web`
   - ✅ `yarn gatsby develop`
 
 - **Building web**

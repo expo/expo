@@ -1,11 +1,10 @@
 import { css } from '@emotion/react';
-import { theme, typography } from '@expo/styleguide';
+import { theme, typography, iconSize, InfoIcon } from '@expo/styleguide';
 import emojiRegex from 'emoji-regex';
 import * as React from 'react';
 
 import { paragraph } from './typography';
 
-import { Info } from '~/components/icons/Info';
 import * as Constants from '~/constants/theme';
 
 const attributes = {
@@ -61,22 +60,36 @@ export const PDIV: React.FC = ({ children }) => {
 };
 
 const STYLES_BLOCKQUOTE = css`
-  ${paragraph}
-  display: grid;
-  grid-template-columns: auto 1fr;
-  grid-gap: 12px;
-  padding: 12px;
-  margin-bottom: 1rem;
-  border-left: 4px solid ${theme.border.default};
-  background: ${theme.background.secondary};
-  border-radius: 4px;
+  & {
+    ${paragraph}
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-gap: 12px;
+    padding: 12px;
+    margin-bottom: 1rem;
+    border-left: 4px solid ${theme.border.default};
+    background: ${theme.background.secondary};
+    border-radius: 4px;
 
-  div {
-    margin: 0;
+    div {
+      margin: 0;
+    }
+
+    code {
+      background-color: ${theme.background.tertiary};
+    }
   }
 
-  code {
-    background-color: ${theme.background.tertiary};
+  table & {
+    margin: 0.5rem 0;
+
+    &:first-child {
+      margin-top: 0;
+    }
+
+    &:last-child {
+      margin-bottom: 0;
+    }
   }
 `;
 
@@ -114,7 +127,7 @@ function removeEmoji(emoji: string, children: string[]) {
 export const Quote = ({ children, ...rest }: { children: JSX.Element | JSX.Element[] }) => {
   let icon: React.ReactNode = (
     <div style={{ marginTop: 2 }}>
-      <Info size={16} />
+      <InfoIcon size={iconSize.small} />
     </div>
   );
 

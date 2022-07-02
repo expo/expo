@@ -24,6 +24,11 @@ class DevLauncherDevSupportManagerSwapper : DevLauncherKoinComponent {
     reactInstanceManager: ReactInstanceManager
   ) {
     val currentDevSupportManager = reactInstanceManager.devSupportManager
+    if (currentDevSupportManager is DevLauncherDevSupportManager) {
+      // DevSupportManager was swapped by the DevLauncherReactNativeHostHandler
+      return
+    }
+
     if (currentDevSupportManager is DisabledDevSupportManager) {
       Log.i("DevLauncher", "DevSupportManager is disabled. So we don't want to override it.")
       return

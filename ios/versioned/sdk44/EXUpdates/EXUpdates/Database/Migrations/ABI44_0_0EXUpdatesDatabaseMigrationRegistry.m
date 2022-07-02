@@ -5,6 +5,8 @@
 #import <ABI44_0_0EXUpdates/ABI44_0_0EXUpdatesDatabaseMigration4To5.h>
 #import <ABI44_0_0EXUpdates/ABI44_0_0EXUpdatesDatabaseMigration5To6.h>
 #import <ABI44_0_0EXUpdates/ABI44_0_0EXUpdatesDatabaseMigration6To7.h>
+#import <ABI44_0_0EXUpdates/ABI44_0_0EXUpdatesDatabaseMigration7To8.h>
+#import <ABI44_0_0EXUpdates/ABI44_0_0EXUpdatesDatabaseMigration8To9.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -16,7 +18,9 @@ NS_ASSUME_NONNULL_BEGIN
   return @[
     [ABI44_0_0EXUpdatesDatabaseMigration4To5 new],
     [ABI44_0_0EXUpdatesDatabaseMigration5To6 new],
-    [ABI44_0_0EXUpdatesDatabaseMigration6To7 new]
+    [ABI44_0_0EXUpdatesDatabaseMigration6To7 new],
+    [ABI44_0_0EXUpdatesDatabaseMigration7To8 new],
+    [ABI44_0_0EXUpdatesDatabaseMigration8To9 new]
   ];
 }
 

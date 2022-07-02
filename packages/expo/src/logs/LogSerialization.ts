@@ -109,7 +109,7 @@ async function _symbolicateErrorAsync(error: Error): Promise<StackFrame[]> {
     // @ts-ignore: symbolicateStackTrace has different real/Flow declaration
     // than the one in DefinitelyTyped.
     symbolicatedStack = (await symbolicateStackTrace(parsedStack))?.stack ?? null;
-  } catch (error) {
+  } catch {
     return parsedStack;
   }
 

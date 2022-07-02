@@ -72,7 +72,7 @@ export function getHeadingIndent(heading: HTMLHeadingElement) {
 
 /**
  * Parse the heading information from an HTML heading element.
- * If it contains parentheis, we try to extract the function name only.
+ * If it contains parenthesis, we try to extract the function name only.
  */
 export function getHeadingInfo(heading: HTMLHeadingElement) {
   const text = heading.textContent || '';

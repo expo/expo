@@ -1129,7 +1129,7 @@ export function openEventInCalendar(id: string): void {
 
 // @needsAudit
 /**
- * @deprecated Deprecated. Use [`requestCalendarPermissionsAsync()`](#calendarrequestcalendarpermissionsasync) instead.
+ * @deprecated Use [`requestCalendarPermissionsAsync()`](#calendarrequestcalendarpermissionsasync) instead.
  */
 export async function requestPermissionsAsync(): Promise<PermissionResponse> {
   console.warn(

@@ -15,8 +15,7 @@ class CardFormViewManager : SimpleViewManager<CardFormView>() {
   override fun getExportedCustomDirectEventTypeConstants(): MutableMap<String, Any> {
     return MapBuilder.of(
       CardFocusEvent.EVENT_NAME, MapBuilder.of("registrationName", "onFocusChange"),
-      CardFormCompleteEvent.EVENT_NAME, MapBuilder.of("registrationName", "onFormComplete")
-    )
+      CardFormCompleteEvent.EVENT_NAME, MapBuilder.of("registrationName", "onFormComplete"))
   }
 
   override fun receiveCommand(root: CardFormView, commandId: String?, args: ReadableArray?) {
@@ -28,26 +27,30 @@ class CardFormViewManager : SimpleViewManager<CardFormView>() {
   }
 
   @ReactProp(name = "dangerouslyGetFullCardDetails")
+  @SuppressWarnings("unused")
   fun setDangerouslyGetFullCardDetails(view: CardFormView, dangerouslyGetFullCardDetails: Boolean = false) {
     view.setDangerouslyGetFullCardDetails(dangerouslyGetFullCardDetails)
   }
 
   @ReactProp(name = "postalCodeEnabled")
+  @SuppressWarnings("unused")
   fun setPostalCodeEnabled(view: CardFormView, postalCodeEnabled: Boolean = false) {
     view.setPostalCodeEnabled(postalCodeEnabled)
   }
 
   // @ReactProp(name = "placeholder")
   // fun setPlaceHolders(view: CardFormView, placeholder: ReadableMap) {
-  //   view.setPlaceHolders(placeholder);
+  //   view.setPlaceHolders(placeholder)
   // }
 
   @ReactProp(name = "autofocus")
+  @SuppressWarnings("unused")
   fun setAutofocus(view: CardFormView, autofocus: Boolean = false) {
     view.setAutofocus(autofocus)
   }
 
   @ReactProp(name = "cardStyle")
+  @SuppressWarnings("unused")
   fun setCardStyle(view: CardFormView, cardStyle: ReadableMap) {
     view.setCardStyle(cardStyle)
   }

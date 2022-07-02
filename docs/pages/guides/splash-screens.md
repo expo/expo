@@ -20,7 +20,7 @@ Create an app icon and splash image with the [Figma template](https://www.figma.
 
 ### Make a splash image
 
-The [iOS Human Interface Guidelines](https://developer.apple.com/ios/human-interface-guidelines/icons-and-images/launch-screen/) list the static launch image sizes. I'll go with `1242` pixels wide and `2436` pixels tall -- this is the width of the iPhone 8 Plus (the widest iPhone) and the height of the iPhone X (the tallest iPhone). Expo will resize the image for you depending on the size of the device, and we can specify the strategy used to resize the image with `splash.resizeMode`.
+The [iOS Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/foundations/layout#specifications) list the devices screen sizes. I'll go with `1242` pixels wide (width of the widest iPhone at the moment of writing) and `2436` pixels tall (height of the tallest iPhone at the moment of writing). Expo will resize the image for you depending on the size of the device, and we can specify the strategy used to resize the image with `splash.resizeMode`.
 
 Android screen sizes vary greatly with the massive variety of devices on the market. One strategy to deal with this is to look at the most common resolutions and design around that - [you can see a list of devices and their resolutions here](https://material.io/resources/devices/). Given that we can resize and crop our splash image automatically, it looks like we can stick with our dimensions, as long as we don't depend on the splash image fitting the screen exactly. This is convenient because we can use one splash image for both iOS and Android - less for you to read in this guide and less work for you to do.
 
@@ -101,7 +101,7 @@ Your app can be opened from the Expo Go app or in a standalone app, and it can b
 
 ### Using a `.xib` file as the launch screen for the standalone iOS app
 
-For iOS, you can also choose to use a `.xib` interface builder document as the splash screen of the standalone iOS app. Simply set `ios.splash.xib` in **app.json** to the path to your `.xib` file.
+For iOS, you can also choose to use a `.xib` interface builder document as the splash screen of the standalone iOS app. Simply set `ios.splash.xib` in **app.json** to the path to your `.xib` file. Using a `.xib` file is not compatible with `expo prebuild` and EAS builds.
 
 > **Note**: `.xib` file will only be used in the standalone app. The splash image will continue to be used in the Expo Go app.
 

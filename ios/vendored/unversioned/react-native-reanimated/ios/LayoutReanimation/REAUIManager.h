@@ -1,7 +1,7 @@
+#import <RNReanimated/REAAnimationsManager.h>
 #import <React/RCTBridge+Private.h>
 #import <React/RCTDefines.h>
 #import <React/RCTUIManager.h>
-#import "REAAnimationsManager.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

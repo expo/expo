@@ -39,7 +39,7 @@ yarn run export-server
 
 You can find the content source of the documentation inside the `pages/` directory. Documentation is mostly written in markdown with the help of some React components (for Snack embeds, etc). Our API documentation can all be found under `pages/versions/`; we keep separate versions of the documentation for each SDK version currently supported in Expo Go, see ["A note about versioning"](#a-note-about-versioning) for more info. The routes and navbar are automatically inferred from the directory structure within `versions`.
 
-> Note: We are currently in the process of moving our API documenation to being auto-generated using `expotools`'s `GenerateDocsAPIData` command.
+> Note: We are currently in the process of moving our API documentation to being auto-generated using `expotools`'s `GenerateDocsAPIData` command.
 
 Each markdown page can be provided metadata in the heading, distinguished by:
 
@@ -266,6 +266,28 @@ Please note that `hideFromSearch` only prevents the page from showing up in the 
 Certain directories are excluded from the sidebar in order to prevent it from getting too long and unnavigable. You can find a list of these directories, and add new ones, in **navigation.js** under `hiddenSections`.
 
 If you just want to hide a single page from the sidebar, set `hideInSidebar: true` in the page metadata.
+
+### Use `Terminal` component for shell commands snippets
+
+Whenever shell commands are used or referred, use `Terminal` component to make the code snippets copy/pasteable. This component can be imported in any markdown file.
+
+```jsx
+import { Terminal } from '~/ui/components/Snippet';
+
+// for single command and one prop
+<Terminal cmd={["$ expo install package"]} />
+
+// for multiple commands
+
+<Terminal cmd={[
+  "# Create a new native project",
+  "$ npx create-expo-app --template bare-minimum",
+  "",
+  "# If you don’t have expo-cli yet, get it",
+  "$ npm i -g expo-cli",
+  "",
+]} cmdCopy="npx create-expo-app --template bare-minimum && npm i -g expo-cli" />
+```
 
 ### Prettier
 

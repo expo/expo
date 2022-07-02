@@ -122,8 +122,6 @@ EX_EXPORT_MODULE(ExponentAV);
   void *jsRuntimePtr = [jsContextProvider javaScriptRuntimePointer];
   if (jsRuntimePtr) {
     [self installJSIBindingsForRuntime:jsRuntimePtr withSoundDictionary:_soundDictionary];
-  } else {
-    EXLogWarn(@"EXAV: Cannot install Audio Sample Buffer callback. Do you have 'Remote Debugging' enabled in your app's Developer Menu (https://docs.expo.dev/workflow/debugging)? Audio Sample Buffer callbacks are not supported while using Remote Debugging, you will need to disable it to use them.");
   }
 }
 
@@ -215,7 +213,9 @@ EX_EXPORT_MODULE(ExponentAV);
 // we just need this to dismiss that warning.
 + (BOOL)requiresMainQueueSetup
 {
-  return NO;
+  // We are now using main thread to avoid thread safety issues with `EXAVPlayerData` and `EXVideoView`
+  // return `YES` to avoid deadlock warnings.
+  return YES;
 }
 
 #pragma mark - RCTEventEmitter
@@ -823,7 +823,7 @@ EX_EXPORT_METHOD_AS(setStatusForVideo,
                     rejecter:(EXPromiseRejectBlock)reject)
 {
   [self _runBlock:^(EXVideoView *view) {
-    [view setStatus:status resolver:resolve rejecter:reject];
+    [view setStatusFromPlaybackAPI:status resolver:resolve rejecter:reject];
   } withEXVideoViewForTag:reactTag withRejecter:reject];
 }
 
@@ -1049,6 +1049,11 @@ EX_EXPORT_METHOD_AS(setInput,
   } else {
     reject(@"E_AUDIO_SETINPUT_FAIL", [NSString stringWithFormat:@"Preferred input '%@' not found!", input], nil);
   }
+}
+
+- (dispatch_queue_t)methodQueue
+{
+  return dispatch_get_main_queue();
 }
 
 #pragma mark - Lifecycle

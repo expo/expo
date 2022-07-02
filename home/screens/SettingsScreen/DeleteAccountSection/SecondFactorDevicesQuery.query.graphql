@@ -1,0 +1,19 @@
+fragment UserSecondFactorDeviceData on UserSecondFactorDevice {
+  id
+  name
+  isPrimary
+  isCertified
+  smsPhoneNumber
+  method
+  createdAt
+}
+
+query SecondFactorDevicesQuery {
+  me {
+    id
+    emailVerified
+    secondFactorDevices {
+      ...UserSecondFactorDeviceData
+    }
+  }
+}

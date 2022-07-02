@@ -1,15 +1,14 @@
-import { lightTheme } from '@expo/styleguide-native';
+import { darkTheme, lightTheme, shadows, typography } from '@expo/styleguide-native';
 import { Text as RNText, TextInput as RNTextInput } from 'react-native';
-import { create } from 'react-native-primitives';
 
-import { text, textDark } from './theme';
+import { create } from './create-primitive';
+import { text, textDark, padding, rounded } from './theme';
 
 export const Heading = create(RNText, {
   base: {
-    fontSize: 18,
-    lineHeight: 20,
-    fontWeight: '600',
+    fontFamily: 'Inter-SemiBold',
     color: lightTheme.text.default,
+    ...typography.fontSizes[18],
   },
 
   props: {
@@ -20,10 +19,8 @@ export const Heading = create(RNText, {
     ...text,
 
     size: {
-      large: {
-        fontSize: 22,
-        lineHeight: 28,
-      },
+      large: typography.fontSizes[22],
+      small: typography.fontSizes[13],
     },
   },
 
@@ -34,7 +31,7 @@ export const Heading = create(RNText, {
 
 export const Text = create(RNText, {
   base: {
-    fontWeight: 'normal',
+    fontFamily: 'Inter-Regular',
     color: lightTheme.text.default,
     fontSize: 16,
     lineHeight: 18,
@@ -55,7 +52,7 @@ export const Text = create(RNText, {
 
 export const TextInput = create(RNTextInput, {
   base: {
-    fontWeight: 'normal',
+    fontFamily: 'Inter-Regular',
     color: lightTheme.text.default,
     fontSize: 16,
     lineHeight: 18,
@@ -63,9 +60,33 @@ export const TextInput = create(RNTextInput, {
 
   variants: {
     ...text,
+
+    border: {
+      default: {
+        borderWidth: 1,
+        borderColor: lightTheme.border.default,
+      },
+    },
+
+    ...rounded,
+
+    ...padding,
+
+    shadow: {
+      input: shadows.input,
+    },
   },
 
   selectors: {
-    dark: textDark,
+    dark: {
+      ...textDark,
+
+      border: {
+        default: {
+          borderColor: darkTheme.border.default,
+          borderWidth: 1,
+        },
+      },
+    },
   },
 });

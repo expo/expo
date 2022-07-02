@@ -6,6 +6,8 @@ import com.facebook.react.bridge.Dynamic
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
 import expo.modules.kotlin.exception.MissingTypeConverter
+import expo.modules.kotlin.jni.JavaScriptObject
+import expo.modules.kotlin.jni.JavaScriptValue
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.records.RecordTypeConverter
 import kotlin.reflect.KClass
@@ -28,6 +30,11 @@ inline fun <reified T> convert(value: Dynamic): T {
   return converter.convert(value) as T
 }
 
+inline fun <reified T> convert(value: Any?): T {
+  val converter = TypeConverterProviderImpl.obtainTypeConverter(typeOf<T>())
+  return converter.convert(value) as T
+}
+
 fun convert(value: Dynamic, type: KType): Any? {
   val converter = TypeConverterProviderImpl.obtainTypeConverter(type)
   return converter.convert(value)
@@ -35,6 +42,7 @@ fun convert(value: Dynamic, type: KType): Any? {
 
 object TypeConverterProviderImpl : TypeConverterProvider {
   private val cachedConverters = createCashedConverters(false) + createCashedConverters(true)
+  private val cachedRecordConverters = mutableMapOf<KClass<*>, TypeConverter<*>>()
 
   override fun obtainTypeConverter(type: KType): TypeConverter<*> {
     cachedConverters[type]?.let {
@@ -68,8 +76,15 @@ object TypeConverterProviderImpl : TypeConverterProvider {
       return EnumTypeConverter(kClass as KClass<Enum<*>>, type.isMarkedNullable)
     }
 
+    val cachedConverter = cachedRecordConverters[kClass]
+    if (cachedConverter != null) {
+      return cachedConverter
+    }
+
     if (kClass.isSubclassOf(Record::class)) {
-      return RecordTypeConverter<Record>(this, type)
+      val converter = RecordTypeConverter<Record>(this, type)
+      cachedRecordConverters[kClass] = converter
+      return converter
     }
 
     throw MissingTypeConverter(type)
@@ -102,6 +117,11 @@ object TypeConverterProviderImpl : TypeConverterProvider {
       IntArray::class.createType(nullable = isOptional) to PrimitiveIntArrayTypeConverter(isOptional),
       DoubleArray::class.createType(nullable = isOptional) to PrimitiveDoubleArrayTypeConverter(isOptional),
       FloatArray::class.createType(nullable = isOptional) to PrimitiveFloatArrayTypeConverter(isOptional),
+
+      JavaScriptValue::class.createType(nullable = isOptional) to JavaScriptValueTypeConvert(isOptional),
+      JavaScriptObject::class.createType(nullable = isOptional) to JavaScriptObjectTypeConverter(isOptional),
+
+      Any::class.createType(nullable = isOptional) to AnyTypeConverter(isOptional),
     )
   }
 }

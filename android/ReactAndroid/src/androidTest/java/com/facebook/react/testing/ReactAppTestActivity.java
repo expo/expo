@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -213,6 +213,10 @@ public class ReactAppTestActivity extends FragmentActivity
             .setBundleAssetName(bundleName);
     if (spec.getJavaScriptExecutorFactory() != null) {
       builder.setJavaScriptExecutorFactory(spec.getJavaScriptExecutorFactory());
+    }
+    if (spec.getReactPackageTurboModuleManagerDelegateBuilder() != null) {
+      builder.setReactPackageTurboModuleManagerDelegateBuilder(
+          spec.getReactPackageTurboModuleManagerDelegateBuilder());
     }
     if (spec.getNativeModuleCallExceptionHandler() != null) {
       builder.setNativeModuleCallExceptionHandler(spec.getNativeModuleCallExceptionHandler());

@@ -1,5 +1,5 @@
 import { spacing } from '@expo/styleguide';
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import React from 'react';
 
 import { getHeadingIndent, getHeadingInfo } from './TableOfContents';
@@ -80,6 +80,6 @@ describe(getHeadingInfo, () => {
 });
 
 function makeHeading(Tag: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6', text = 'Hello World') {
-  const { getByTestId } = render(<Tag data-testid="heading">{text}</Tag>);
-  return getByTestId('heading') as HTMLHeadingElement;
+  render(<Tag data-testid="heading">{text}</Tag>);
+  return screen.getByTestId('heading') as HTMLHeadingElement;
 }

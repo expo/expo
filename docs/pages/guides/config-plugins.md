@@ -2,6 +2,8 @@
 title: Config Plugins
 ---
 
+import { Terminal } from '~/ui/components/Snippet';
+
 > This guide applies to SDK 41+ projects. The Expo Go app doesn't support custom native modules.
 
 When adding a native module to your project, most of the setup can be done automatically by installing the module in your project, but some modules require a more complex setup. For instance, say you installed `expo-camera` in your bare project, you now need to configure the native app to enable camera permissions — this is where config plugins come in. Config plugins are a system for extending the Expo config and customizing the prebuild phase of managed builds.
@@ -10,7 +12,7 @@ Internally Expo CLI uses config plugins to generate and configure all the native
 
 You can think of plugins like a bundler for native projects, and running `expo prebuild` as a way to bundle the projects by evaluating all the project plugins. Doing so will generate `ios` and `android` directories. These directories can be modified manually after being generated, but then they can no longer be safely regenerated without potentially overwriting manual modifications.
 
-**Quick facts**
+#### Quick facts
 
 - Plugins are functions that can change values on your Expo config.
 - Plugins are mostly meant to be used with [`expo prebuild`][cli-prebuild] or `eas build` commands.
@@ -28,9 +30,7 @@ For instance, `expo-camera` has a plugin that adds camera permissions to the **I
 
 Install it in your project:
 
-```sh
-expo install expo-camera
-```
+<Terminal cmd={['$ expo install expo-camera']} />
 
 In your app's Expo config (**app.json**, or **app.config.js**), add `expo-camera` to the list of plugins:
 
@@ -485,7 +485,7 @@ Plugins will generally have `@expo/config-plugins` installed as a dependency, an
 
 ### Tooling
 
-We highly recommend installing the [Expo config VSCode plugin](https://marketplace.visualstudio.com/items?itemName=byCedric.vscode-expo) as this will perform automatic validation on the plugins and surface error information along with other quality of life improvements for Config Plugin development.
+We highly recommend installing the [Expo config VS Code plugin](https://marketplace.visualstudio.com/items?itemName=byCedric.vscode-expo) as this will perform automatic validation on the plugins and surface error information along with other quality of life improvements for Config Plugin development.
 
 ### Setting up a playground environment
 
@@ -845,7 +845,7 @@ Introspection works by creating custom base mods that work like the default base
 
 As a real-world example, introspection is used by `eas-cli` to determine what the final iOS entitlements will be in a managed app, so it can sync them with the Apple Developer Portal before building. Introspection can also be used as a handy debugging and development tool.
 
-<!-- TODO: Link to Vscode extension after preview feature lands -->
+<!-- TODO: Link to VS Code extension after preview feature lands -->
 
 ## Legacy plugins
 
@@ -1082,7 +1082,7 @@ Please add the following to your Expo config
 
 [config-docs]: /versions/latest/config/app/
 [prebuild-config]: https://github.com/expo/expo-cli/tree/main/packages/prebuild-config#readme
-[cli-prebuild]: /workflow/expo-cli/#eject
+[cli-prebuild]: /workflow/expo-cli/#expo-prebuild
 [configplugin]: https://github.com/expo/expo-cli/blob/3a0ef962a27525a0fe4b7e5567fb7b3fb18ec786/packages/config-plugins/src/Plugin.types.ts#L76
 [source-template]: https://github.com/expo/expo/tree/main/templates/expo-template-bare-minimum
 [expo-beta-docs]: https://github.com/expo/expo/tree/main/guides/releasing/Release%20Workflow.md#stage-5---beta-release

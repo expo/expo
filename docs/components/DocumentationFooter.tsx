@@ -1,13 +1,11 @@
 import { css } from '@emotion/react';
-import { theme } from '@expo/styleguide';
+import { theme, CodeIcon, MessageIcon } from '@expo/styleguide';
 import { NextRouter } from 'next/router';
 import * as React from 'react';
 
 import { UL, LI } from '~/components/base/list';
 import Bug from '~/components/icons/Bug';
-import ChatBoxes from '~/components/icons/ChatBoxes';
 import Pencil from '~/components/icons/Pencil';
-import Spectacles from '~/components/icons/Spectacles';
 
 const STYLES_FOOTER = css`
   border-top: 1px solid ${theme.border.default};
@@ -26,7 +24,7 @@ const STYLES_FOOTER_LINK = css`
 const STYLES_FOOTER_ICON = css`
   display: flex;
   align-items: center;
-  margin-right: 8px;
+  min-width: 32px;
   margin-bottom: 1px;
 `;
 
@@ -55,7 +53,7 @@ export function githubUrl(path: string) {
 }
 
 // Add any page in the /sdk/ section that is not an actual Expo API
-const SDK_BLACKLIST = ['Overview'];
+const SDK_IGNORE = ['Overview'];
 
 type Props = {
   router: NextRouter;
@@ -78,7 +76,7 @@ export default class DocumentationFooter extends React.PureComponent<Props> {
   }
 
   private renderForumsLink() {
-    if (!this.props.router.asPath.includes('/sdk/') || SDK_BLACKLIST.includes(this.props.title)) {
+    if (!this.props.router.asPath.includes('/sdk/') || SDK_IGNORE.includes(this.props.title)) {
       return (
         <LI>
           <a
@@ -87,7 +85,7 @@ export default class DocumentationFooter extends React.PureComponent<Props> {
             rel="noopener"
             href="https://forums.expo.dev/">
             <span css={STYLES_FOOTER_ICON}>
-              <ChatBoxes fillColor="currentColor" />
+              <MessageIcon color="currentColor" />
             </span>
             Ask a question on the forums
           </a>
@@ -103,7 +101,7 @@ export default class DocumentationFooter extends React.PureComponent<Props> {
           rel="noopener"
           href={'https://forums.expo.dev/tag/' + this.props.title}>
           <span css={STYLES_FOOTER_ICON}>
-            <ChatBoxes fillColor="currentColor" />
+            <MessageIcon color="currentColor" />
           </span>
           Get help from the community and ask questions about {this.props.title}
         </a>
@@ -131,7 +129,7 @@ export default class DocumentationFooter extends React.PureComponent<Props> {
   }
 
   private maybeRenderIssuesLink = () => {
-    if (!this.props.router.asPath.includes('/sdk/') || SDK_BLACKLIST.includes(this.props.title)) {
+    if (!this.props.router.asPath.includes('/sdk/') || SDK_IGNORE.includes(this.props.title)) {
       return;
     }
 
@@ -159,7 +157,7 @@ export default class DocumentationFooter extends React.PureComponent<Props> {
       <LI>
         <a css={STYLES_FOOTER_LINK} target="_blank" href={`${this.props.sourceCodeUrl}`}>
           <span css={STYLES_FOOTER_ICON}>
-            <Spectacles fillColor="currentColor" />
+            <CodeIcon color="currentColor" />
           </span>
           View source code for {this.props.title}
         </a>

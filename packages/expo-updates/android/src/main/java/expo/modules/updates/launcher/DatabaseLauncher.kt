@@ -124,6 +124,10 @@ class DatabaseLauncher(
     return selectionPolicy.selectUpdateToLaunch(filteredLaunchableUpdates, manifestFilters)
   }
 
+  fun getReadyUpdateIds(database: UpdatesDatabase): List<UUID> {
+    return database.updateDao().loadAllUpdateIdsWithStatus(UpdateStatus.READY)
+  }
+
   internal fun ensureAssetExists(asset: AssetEntity, database: UpdatesDatabase, context: Context): File? {
     val assetFile = File(updatesDirectory, asset.relativePath)
     var assetFileExists = assetFile.exists()
@@ -162,6 +166,7 @@ class DatabaseLauncher(
         asset,
         updatesDirectory,
         configuration,
+        context,
         object : AssetDownloadCallback {
           override fun onFailure(e: Exception, assetEntity: AssetEntity) {
             Log.e(TAG, "Failed to load asset from disk or network", e)

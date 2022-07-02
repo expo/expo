@@ -1,4 +1,5 @@
 @file:OptIn(ExperimentalStdlibApi::class)
+@file:Suppress("FunctionName")
 
 package expo.modules.kotlin.views
 
@@ -12,13 +13,18 @@ import kotlin.reflect.typeOf
 class ViewManagerDefinitionBuilder {
   @PublishedApi
   internal var viewFactory: ((Context) -> View)? = null
+
   @PublishedApi
   internal var viewType: Class<out View>? = null
+
   @PublishedApi
   internal var props = mutableMapOf<String, AnyViewProp>()
+
   @PublishedApi
   internal var onViewDestroys: ((View) -> Unit)? = null
 
+  @PublishedApi
+  internal var viewGroupDefinition: ViewGroupDefinition? = null
   private var callbacksDefinition: CallbacksDefinition? = null
 
   fun build(): ViewManagerDefinition =
@@ -27,13 +33,14 @@ class ViewManagerDefinitionBuilder {
       requireNotNull(viewType),
       props,
       onViewDestroys,
-      callbacksDefinition
+      callbacksDefinition,
+      viewGroupDefinition
     )
 
   /**
    * Defines the factory creating a native view when the module is used as a view.
    */
-  inline fun <reified ViewType : View> view(noinline body: (Context) -> ViewType) {
+  inline fun <reified ViewType : View> View(noinline body: (Context) -> ViewType) {
     viewType = ViewType::class.java
     viewFactory = body
   }
@@ -41,14 +48,14 @@ class ViewManagerDefinitionBuilder {
   /**
    * Creates view's lifecycle listener that is called right after the view isn't longer used by React Native.
    */
-  inline fun <reified ViewType : View> onViewDestroys(noinline body: (view: ViewType) -> Unit) {
+  inline fun <reified ViewType : View> OnViewDestroys(noinline body: (view: ViewType) -> Unit) {
     onViewDestroys = { body(it as ViewType) }
   }
 
   /**
    * Creates a view prop that defines its name and setter.
    */
-  inline fun <reified ViewType : View, reified PropType> prop(
+  inline fun <reified ViewType : View, reified PropType> Prop(
     name: String,
     noinline body: (view: ViewType, prop: PropType) -> Unit
   ) {
@@ -62,7 +69,18 @@ class ViewManagerDefinitionBuilder {
   /**
    * Defines prop names that should be treated as callbacks.
    */
-  fun events(vararg callbacks: String) {
+  fun Events(vararg callbacks: String) {
     callbacksDefinition = CallbacksDefinition(callbacks)
+  }
+
+  /**
+   * Creates the group view definition that scopes group view-related definitions.
+   */
+  inline fun GroupView(body: ViewGroupDefinitionBuilder.() -> Unit) {
+    require(viewGroupDefinition == null) { "The viewManager definition may have exported only one groupView definition." }
+
+    val groupViewDefinitionBuilder = ViewGroupDefinitionBuilder()
+    body.invoke(groupViewDefinitionBuilder)
+    viewGroupDefinition = groupViewDefinitionBuilder.build()
   }
 }

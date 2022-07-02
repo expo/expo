@@ -16,7 +16,7 @@ module Expo
         'require(\'expo-modules-autolinking\')(process.argv.slice(1))',
         'patch-react-imports',
         '--pods-root',
-        Shellwords.escape(File.expand_path(@root)),
+        File.expand_path(@root),
       ]
 
       if @options[:dry_run]
@@ -24,9 +24,9 @@ module Expo
       end
 
       @module_dirs.each do |dir|
-        args.append(Shellwords.escape(File.expand_path(dir)))
+        args.append(File.expand_path(dir))
       end
-      Pod::UI.message "Executing ReactImportsPatcher node command: #{args.join(' ')}"
+      Pod::UI.message "Executing ReactImportsPatcher node command: #{Shellwords.join(args)}"
 
       time_begin = Process.clock_gettime(Process::CLOCK_MONOTONIC)
       system(*args)
@@ -54,12 +54,15 @@ module Expo
         end
       end
 
-      return result.select { |dir|
-        # Exclude known dirs unnecessary to patch and reduce processing time
-        !dir.include?('/react-native/') &&
-        !dir.end_with?('/react-native') &&
-        !dir.include?('/expo-')
-      }
+      result
+        .select { |dir| dir.include? '/node_modules/' }
+        .reject do |dir|
+          # Exclude known dirs unnecessary to patch and reduce processing time
+          # Since we are using real (absolute) pathnames we need to assert that we are inside of the node_modules
+          # directory to not collide with other directories in the user's filesystem.
+          # We reject the react-native package and packages starting with expo-
+          dir.match(%r{^.*/node_modules/(react-native(/.*)?|expo-.*)$})
+        end
     end
 
   end # class ReactImportPatcher

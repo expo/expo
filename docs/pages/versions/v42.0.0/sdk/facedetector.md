@@ -8,7 +8,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 **`expo-face-detector`** lets you use the power of the [Google Mobile Vision](https://developers.google.com/vision/face-detection-concepts) framework to detect faces on images.
 
-<PlatformsSection android ios web={{ pending: 'https://github.com/expo/expo/issues/6888' }} />
+<PlatformsSection android ios />
 
 ## Installation
 

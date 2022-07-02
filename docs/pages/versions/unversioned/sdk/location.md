@@ -19,13 +19,16 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 ## Configuration
 
-In Managed and bare apps, `Location` requires `Permissions.LOCATION`.
+### Android permissions
+
+- This module requires the permissions for approximate and exact device location. It also needs the foreground service permission to subscribe to location updates, while the app is in use. The `android.permission.ACCESS_COARSE_LOCATION`, `ACCESS_FINE_LOCATION`, and `FOREGROUND_SERVICE` permissions are automatically added.
+- In order to use background location features, you also must add the `android.permission.ACCESS_BACKGROUND_LOCATION` and [submit your app for review and request access to use the background location permission](https://support.google.com/googleplay/android-developer/answer/9799150?hl=en).
 
 ### Background Location Methods
 
 In order to use Background Location methods, the following requirements apply:
 
-- `Permissions.LOCATION` permission must be granted. On iOS it must be granted with `Always` option — see [Permissions.LOCATION](permissions.md#permissionslocation) for more details.
+- Location permissions must be granted. On iOS it must be granted with `Always` option.
 - **(_iOS only_)** `"location"` background mode must be specified in **Info.plist** file. See [background tasks configuration guide](task-manager.md#configuration). 
 - Background location task must be defined in the top-level scope, using [TaskManager.defineTask](task-manager.md#taskmanagerdefinetasktaskname-task).
 
@@ -33,13 +36,9 @@ In order to use Background Location methods, the following requirements apply:
 
 In order to use Geofencing methods, the following requirements apply:
 
-- `Permissions.LOCATION` permission must be granted. On iOS it must be granted with `Always` option — see [Permissions.LOCATION](permissions.md#permissionslocation) for more details.
-- Geofencing task must be defined in the top-level scope, using [TaskManager.defineTask](task-manager.md#taskmanagerdefinetasktaskname-task).
+- Location permissions must be granted. On iOS it must be granted with `Always` option.
+- The Geofencing task must be defined in the top-level scope, using [TaskManager.defineTask](task-manager.md#taskmanagerdefinetasktaskname-task).
 - On iOS, there is a [limit of 20](https://developer.apple.com/documentation/corelocation/monitoring_the_user_s_proximity_to_geographic_regions) `regions` that can be simultaneously monitored.
-
-> **Note:** On Android, This module requires the permissions for approximate and exact device location. It also needs the foreground service permission to subscribe to location updates, while the app is in use. The `ACCESS_COARSE_LOCATION`, `ACCESS_FINE_LOCATION`, and `FOREGROUND_SERVICE` permissions are automatically added.
-
-> **Note:** On Android, you have to [submit your app for review and request access to use the background location permission](https://support.google.com/googleplay/android-developer/answer/9799150?hl=en).
 
 ## Usage
 
@@ -64,7 +63,7 @@ export default function App() {
       /* @hide */
       if (Platform.OS === 'android' && !Device.isDevice) {
         setErrorMsg(
-          'Oops, this will not work on Snack in an Android emulator. Try it on your device!'
+          'Oops, this will not work on Snack in an Android Emulator. Try it on your device!'
         );
         return;
       }
