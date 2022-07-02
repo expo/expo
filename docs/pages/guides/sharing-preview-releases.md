@@ -3,7 +3,7 @@ title: Sharing pre-release versions of your app
 sidebar_title: Sharing preview releases
 ---
 
-import Video from '~/components/plugins/Video'
+import Video from '~/components/plugins/Video';
 
 The typical means of distribution for a mobile app is through the Apple App Store and/or Google Play Store, but this isn't the best way to share pre-production builds. 
 During the development process you'll want share your progress with both technical and non-technical stakeholders of the project to gather feedback and test it, 
@@ -21,7 +21,7 @@ consider [Internal Distribution](#internal-distribution) or [TestFlight for iOS]
 3. Have them [download the Expo Go app](https://expo.dev/expo-go) onto their device.
 4. They'll be able to open your application from the Profile tab of their Expo Go app.
 
-<Video alt="Finding and sharing projects in Expo Go app" file="guides/load-project.mp4" style={{height: '300px', width: 'auto'}} />
+<Video alt="Finding and sharing projects in Expo Go app" file="guides/load-project.mp4" style={{ height: '300px', width: 'auto' }} />
 
 ## Internal Distribution
 
@@ -32,10 +32,10 @@ This gives you full control of putting specific builds on devices, allowing you 
 
 To share your application to Android devices, you must build an APK (Android application package file) of your project. 
 APKs can be installed directly to an Android device over USB, by downloading the file over the web or through an email or chat app, 
-once the user accepts the security warning for installing an app that has not gone through Play Store review. AAB (Android app bundle) 
-binaries of your application must be distributed through the Play Store.
+once the user accepts the security warning for installing an app that has not gone through Play Store review. 
+AAB (Android app bundle) binaries of your application must be distributed through the Play Store.
 
-### Ad Hoc Distribution on iOS
+### iOS Ad Hoc Distribution
 
 Apple offers [Ad Hoc provisioning profiles](https://help.apple.com/xcode/mac/current/#/dev7ccaf4d3c) to distribute your app to test devices once they have been registered
 to your Apple Developer account. This method requires a paid Apple Developer account and that account will only be able to use this method to distribute
@@ -48,7 +48,7 @@ Setting up Ad Hoc certificates correctly can be intimidating if you haven't done
 If you're using [EAS Build](/build/internal-distribution.md), which is optimized for Expo and React Native projects, we'll handle the time-consuming parts
 of setting up Ad Hoc credentials for you.
 
-### Enterprise Distribution on iOS
+### iOS Enterprise Distribution
 
 If your app is only intended to be used internally and will not be distributed through the App Store, you should use Enterprise distribution. 
 Unlike Ad Hoc Distribution, there is no limit to the number of devices that can install your application, and you will not need to manage the UDIDs of each device. 
