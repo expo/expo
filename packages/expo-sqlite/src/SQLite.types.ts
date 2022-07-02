@@ -67,7 +67,7 @@ export interface SQLTransaction {
    * never construct SQL statements on the fly.
    * @param sqlStatement A string containing a database query to execute expressed as SQL. The string
    * may contain `?` placeholders, with values to be substituted listed in the `arguments` parameter.
-   * @param args An array of values (numbers, strings or nulls) to substitute for `?` placeholders in the
+   * @param args An array of values (numbers or strings) to substitute for `?` placeholders in the
    * SQL statement.
    * @param callback Called when the query is successfully completed during the transaction. Takes
    * two parameters: the transaction itself, and a `ResultSet` object (see below) with the results
@@ -77,7 +77,7 @@ export interface SQLTransaction {
    */
   executeSql(
     sqlStatement: string,
-    args?: (number | string | null)[],
+    args?: (number | string)[],
     callback?: SQLStatementCallback,
     errorCallback?: SQLStatementErrorCallback
   ): void;
