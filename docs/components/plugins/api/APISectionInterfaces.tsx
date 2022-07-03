@@ -99,7 +99,7 @@ const renderInterface = ({
   comment,
   extendedTypes,
 }: InterfaceDefinitionData): JSX.Element | null => {
-  const interfaceChildren = children.filter(child => !child?.inheritedFrom);
+  const interfaceChildren = children?.filter(child => !child?.inheritedFrom) || [];
 
   if (!interfaceChildren.length) return null;
 
