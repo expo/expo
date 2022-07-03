@@ -11,6 +11,7 @@ import {
 } from '@expo/styleguide';
 import React from 'react';
 
+import { B } from '~/components/base/paragraph';
 import { CommentData, CommentTagData } from '~/components/plugins/api/APIDataTypes';
 import { capitalize, getAllTagData } from '~/components/plugins/api/APISectionUtils';
 
@@ -25,16 +26,16 @@ const formatPlatformName = (name: string) => {
   }
 };
 
-const getPlatformName = (platform: CommentTagData) => {
-  if (platform.text.includes('ios')) return 'ios';
-  if (platform.text.includes('android')) return 'android';
-  if (platform.text.includes('web')) return 'web';
-  if (platform.text.includes('expo')) return 'expo';
+const getPlatformName = ({ text }: CommentTagData) => {
+  if (text.includes('ios')) return 'ios';
+  if (text.includes('android')) return 'android';
+  if (text.includes('web')) return 'web';
+  if (text.includes('expo')) return 'expo';
   return undefined;
 };
 
 const renderPlatformIcon = (platform: CommentTagData) => {
-  const iconProps = { size: iconSize.micro, css: STYLES_PLATFORM_ICON };
+  const iconProps = { size: iconSize.micro, css: platformTagIconStyle };
 
   switch (getPlatformName(platform)) {
     case 'ios':
@@ -59,77 +60,88 @@ const renderPlatformIcon = (platform: CommentTagData) => {
 
 type Props = {
   comment?: CommentData;
+  prefix?: string;
+  firstElement?: boolean;
 };
 
-export const PlatformTags = ({ comment }: Props) => {
+export const PlatformTags = ({ comment, prefix, firstElement }: Props) => {
   const platforms = getAllTagData('platform', comment);
   return platforms?.length ? (
     <>
+      {prefix && <B>{prefix}&ensp;</B>}
       {platforms.map(platform => {
         const platformName = getPlatformName(platform);
         return (
           <div
             key={platformName}
             css={[
-              STYLES_PLATFORM,
-              platformName === 'android' && STYLES_ANDROID_PLATFORM,
-              platformName === 'ios' && STYLES_IOS_PLATFORM,
-              platformName === 'web' && STYLES_WEB_PLATFORM,
-              platformName === 'expo' && STYLES_EXPO_PLATFORM,
+              platformTagStyle,
+              firstElement && platformTagFirstStyle,
+              platformName === 'android' && androidPlatformTagStyle,
+              platformName === 'ios' && iosPlatformTagStyle,
+              platformName === 'web' && webPlatformTagStyle,
+              platformName === 'expo' && expoPlatformStyle,
             ]}>
             {renderPlatformIcon(platform)}
             {formatPlatformName(platform.text)}
           </div>
         );
       })}
+      {prefix && <br />}
     </>
   ) : null;
 };
 
-export const STYLES_PLATFORM = css`
-  display: inline-block;
-  background-color: ${theme.background.tertiary};
-  color: ${theme.text.default};
-  font-size: 90%;
-  font-weight: 700;
-  padding: ${spacing[1]}px ${spacing[2]}px;
-  margin-bottom: ${spacing[3]}px;
-  margin-right: ${spacing[2]}px;
-  border-radius: ${borderRadius.small}px;
-  border: 1px solid ${theme.border.default};
+const platformTagStyle = css({
+  display: 'inline-block',
+  backgroundColor: theme.background.tertiary,
+  color: theme.text.default,
+  fontSize: '90%',
+  fontWeight: 700,
+  padding: `${spacing[1]}px ${spacing[2]}px`,
+  marginBottom: spacing[3],
+  marginRight: spacing[2],
+  borderRadius: borderRadius.small,
+  border: `1px solid ${theme.border.default}`,
 
-  table & {
-    margin-bottom: ${spacing[2]}px;
-    padding: 0 ${spacing[1.5]}px;
-  }
-`;
+  'table &': {
+    marginTop: 0,
+    marginBottom: spacing[2],
+    padding: `0 ${spacing[1.5]}px`,
+  },
+});
 
-export const STYLES_PLATFORM_ICON = css({
+const platformTagFirstStyle = css({
+  marginBottom: 0,
+  marginTop: spacing[3],
+});
+
+const platformTagIconStyle = css({
   marginRight: spacing[1],
   marginBottom: spacing[0.5],
   verticalAlign: 'middle',
 });
 
-export const STYLES_ANDROID_PLATFORM = css`
-  background-color: ${theme.palette.green['000']};
-  color: ${theme.palette.green['900']};
-  border-color: ${theme.palette.green['200']};
-`;
+const androidPlatformTagStyle = css({
+  backgroundColor: theme.palette.green['000'],
+  color: theme.palette.green[900],
+  borderColor: theme.palette.green[200],
+});
 
-export const STYLES_IOS_PLATFORM = css`
-  background-color: ${theme.palette.blue['000']};
-  color: ${theme.palette.blue['900']};
-  border-color: ${theme.palette.blue['200']};
-`;
+const iosPlatformTagStyle = css({
+  backgroundColor: theme.palette.blue['000'],
+  color: theme.palette.blue[900],
+  borderColor: theme.palette.blue[200],
+});
 
-export const STYLES_WEB_PLATFORM = css`
-  background-color: ${theme.palette.orange['000']};
-  color: ${theme.palette.orange['900']};
-  border-color: ${theme.palette.orange['200']};
-`;
+const webPlatformTagStyle = css({
+  backgroundColor: theme.palette.orange['000'],
+  color: theme.palette.orange[900],
+  borderColor: theme.palette.orange[200],
+});
 
-export const STYLES_EXPO_PLATFORM = css`
-  background-color: ${theme.palette.purple['000']};
-  color: ${theme.palette.purple['900']};
-  border-color: ${theme.palette.purple['200']};
-`;
+const expoPlatformStyle = css({
+  backgroundColor: theme.palette.purple['000'],
+  color: theme.palette.purple[900],
+  borderColor: theme.palette.purple[200],
+});

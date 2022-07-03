@@ -1,8 +1,10 @@
 import React from 'react';
 
+import { renderMethod } from './APISectionMethods';
+
 import { InlineCode } from '~/components/base/code';
 import { B, P } from '~/components/base/paragraph';
-import { H2, H3Code } from '~/components/plugins/Headings';
+import { H2, H3Code, H4 } from '~/components/plugins/Headings';
 import {
   CommentData,
   CommentTagData,
@@ -17,9 +19,9 @@ import {
   renderFlags,
   renderParamRow,
   renderTableHeadRow,
-  renderTypeOrSignatureType,
   resolveTypeName,
   STYLES_APIBOX,
+  STYLES_NESTED_SECTION_HEADER,
 } from '~/components/plugins/api/APISectionUtils';
 import { Cell, Row, Table } from '~/ui/components/Table';
 
@@ -76,27 +78,35 @@ const renderInterfacePropertyRow = ({
   type,
   comment,
   signatures,
-}: PropData): JSX.Element => (
-  <Row key={name}>
-    <Cell fitContent>
-      <B>
-        {name}
-        {signatures && signatures.length ? '()' : ''}
-      </B>
-      {renderFlags(flags)}
-    </Cell>
-    <Cell fitContent>{renderTypeOrSignatureType(type, signatures)}</Cell>
-    <Cell fitContent>{renderInterfaceComment(comment, signatures)}</Cell>
-  </Row>
-);
+}: PropData): JSX.Element => {
+  return (
+    <Row key={name}>
+      <Cell fitContent>
+        <B>{name}</B>
+        {renderFlags(flags)}
+      </Cell>
+      <Cell fitContent>
+        <InlineCode>{resolveTypeName(type)}</InlineCode>
+      </Cell>
+      <Cell fitContent>{renderInterfaceComment(comment, signatures)}</Cell>
+    </Row>
+  );
+};
 
 const renderInterface = ({
   name,
   children,
   comment,
   extendedTypes,
-}: InterfaceDefinitionData): JSX.Element | null =>
-  children ? (
+}: InterfaceDefinitionData): JSX.Element | null => {
+  const interfaceChildren = children.filter(child => !child?.inheritedFrom);
+
+  if (!interfaceChildren.length) return null;
+
+  const interfaceMethods = interfaceChildren.filter(child => child.signatures);
+  const interfaceFields = interfaceChildren.filter(child => !child.signatures);
+
+  return (
     <div key={`interface-definition-${name}`} css={STYLES_APIBOX}>
       <H3Code>
         <InlineCode>{name}</InlineCode>
@@ -112,14 +122,28 @@ const renderInterface = ({
         </P>
       )}
       <CommentTextBlock comment={comment} />
-      <Table>
-        {renderTableHeadRow()}
-        <tbody>
-          {children.filter(child => !child?.inheritedFrom).map(renderInterfacePropertyRow)}
-        </tbody>
-      </Table>
+      {interfaceMethods.length ? (
+        <>
+          <div css={STYLES_NESTED_SECTION_HEADER}>
+            <H4>Interface Methods</H4>
+          </div>
+          {interfaceMethods.map(method => renderMethod(method))}
+        </>
+      ) : undefined}
+      {interfaceFields.length ? (
+        <>
+          <div css={STYLES_NESTED_SECTION_HEADER}>
+            <H4>Interface Properties</H4>
+          </div>
+          <Table>
+            {renderTableHeadRow()}
+            <tbody>{interfaceFields.map(renderInterfacePropertyRow)}</tbody>
+          </Table>
+        </>
+      ) : undefined}
     </div>
-  ) : null;
+  );
+};
 
 const APISectionInterfaces = ({ data }: APISectionInterfacesProps) =>
   data?.length ? (

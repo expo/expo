@@ -375,20 +375,16 @@ export const renderTypeOrSignatureType = (
   if (type) {
     return <InlineCode key={`signature-type-${type.name}`}>{resolveTypeName(type)}</InlineCode>;
   } else if (signatures && signatures.length) {
-    return signatures.map(({ name, type, parameters }) => (
-      <InlineCode key={`signature-type-${name}`}>
-        (
-        {parameters && includeParamType
-          ? parameters.map(param => (
-              <span key={`signature-param-${param.name}`}>
-                {param.name}
-                {param.flags?.isOptional && '?'}: {resolveTypeName(param.type)}
-              </span>
-            ))
-          : listParams(parameters)}
-        ) =&gt; {resolveTypeName(type)}
-      </InlineCode>
-    ));
+    return signatures.map(({ parameters }) =>
+      parameters && includeParamType
+        ? parameters.map(param => (
+            <span key={`signature-param-${param.name}`}>
+              {param.name}
+              {param.flags?.isOptional && '?'}: {resolveTypeName(param.type)}
+            </span>
+          ))
+        : listParams(parameters)
+    );
   }
   return undefined;
 };
@@ -459,7 +455,9 @@ export const CommentTextBlock = ({
           <B>Example</B>
         </div>
       ) : (
-        <H4>Example</H4>
+        <div css={STYLES_NESTED_SECTION_HEADER}>
+          <H4>Example</H4>
+        </div>
       )}
       <ReactMarkdown components={components}>{example.text}</ReactMarkdown>
     </React.Fragment>
@@ -490,10 +488,7 @@ export const CommentTextBlock = ({
   return (
     <>
       {!withDash && includePlatforms && hasPlatforms && (
-        <>
-          <B>Only for:</B> <PlatformTags comment={comment} />
-          <br />
-        </>
+        <PlatformTags comment={comment} prefix="Only for:" />
       )}
       {deprecationNote}
       {beforeContent}
@@ -537,17 +532,7 @@ export const STYLES_APIBOX = css({
 });
 
 export const STYLES_APIBOX_NESTED = css({
-  marginBottom: spacing[1],
-  border: 0,
-  borderRadius: 0,
-  padding: `${spacing[1]}px 0`,
-  borderBottom: `1px solid ${theme.border.default}`,
   boxShadow: 'none',
-
-  ':last-of-type': {
-    borderBottom: 0,
-    marginBottom: 0,
-  },
 });
 
 export const STYLES_NESTED_SECTION_HEADER = css({
@@ -570,18 +555,18 @@ export const STYLES_NOT_EXPOSED_HEADER = css({
   display: 'inline-block',
 });
 
-export const STYLES_OPTIONAL = css`
-  color: ${theme.text.secondary};
-  font-size: 90%;
-  padding-top: 22px;
-`;
+export const STYLES_OPTIONAL = css({
+  color: theme.text.secondary,
+  fontSize: '90%',
+  paddingTop: 22,
+});
 
-export const STYLES_SECONDARY = css`
-  color: ${theme.text.secondary};
-  font-size: 90%;
-  font-weight: 600;
-`;
+export const STYLES_SECONDARY = css({
+  color: theme.text.secondary,
+  fontSize: '90%',
+  fontWeight: 600,
+});
 
-const STYLES_EXAMPLE_IN_TABLE = css`
-  margin: 8px 0;
-`;
+const STYLES_EXAMPLE_IN_TABLE = css({
+  margin: `${spacing[2]}px 0`,
+});

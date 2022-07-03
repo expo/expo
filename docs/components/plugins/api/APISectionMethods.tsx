@@ -3,6 +3,7 @@ import ReactMarkdown from 'react-markdown';
 
 import { InlineCode } from '~/components/base/code';
 import { LI, UL } from '~/components/base/list';
+import { B } from '~/components/base/paragraph';
 import { H2, H3Code, H4, H4Code } from '~/components/plugins/Headings';
 import {
   MethodDefinitionData,
@@ -18,6 +19,7 @@ import {
   resolveTypeName,
   STYLES_APIBOX,
   STYLES_APIBOX_NESTED,
+  STYLES_NESTED_SECTION_HEADER,
   STYLES_NOT_EXPOSED_HEADER,
 } from '~/components/plugins/api/APISectionUtils';
 
@@ -40,18 +42,20 @@ export const renderMethod = (
     <div
       key={`method-signature-${name}-${parameters?.length || 0}`}
       css={[STYLES_APIBOX, !exposeInSidebar && STYLES_APIBOX_NESTED]}>
+      <PlatformTags comment={comment} prefix="Only for:" firstElement />
       <HeaderComponent>
         <InlineCode customCss={!exposeInSidebar ? STYLES_NOT_EXPOSED_HEADER : undefined}>
           {apiName && `${apiName}.`}
           {header !== 'Hooks' ? `${name}(${listParams(parameters)})` : name}
         </InlineCode>
       </HeaderComponent>
-      <PlatformTags comment={comment} />
       {parameters && renderParams(parameters)}
       <CommentTextBlock comment={comment} includePlatforms={false} />
       {resolveTypeName(type) !== 'undefined' && (
         <>
-          <H4>Returns</H4>
+          <div css={STYLES_NESTED_SECTION_HEADER}>
+            <H4>Returns</H4>
+          </div>
           <UL>
             <LI returnType>
               <InlineCode>{resolveTypeName(type)}</InlineCode>
