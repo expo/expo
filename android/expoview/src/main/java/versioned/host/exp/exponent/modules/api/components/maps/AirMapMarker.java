@@ -14,6 +14,8 @@ import android.animation.ObjectAnimator;
 import android.util.Property;
 import android.animation.TypeEvaluator;
 
+import androidx.annotation.Nullable;
+
 import com.facebook.common.references.CloseableReference;
 import com.facebook.datasource.DataSource;
 import com.facebook.drawee.backends.pipeline.Fresco;
@@ -37,8 +39,6 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-
-import javax.annotation.Nullable;
 
 public class AirMapMarker extends AirMapFeature {
 

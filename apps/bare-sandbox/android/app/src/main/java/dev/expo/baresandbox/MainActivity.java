@@ -41,16 +41,34 @@ public class MainActivity extends DevMenuAwareReactActivity {
     return "main";
   }
 
+  /**
+   * Returns the instance of the {@link ReactActivityDelegate}. There the RootView is created and
+   * you can specify the renderer you wish to use - the new renderer (Fabric) or the old renderer
+   * (Paper).
+   */
   @Override
   protected ReactActivityDelegate createReactActivityDelegate() {
-    return DevLauncherController.wrapReactActivityDelegate(this, () -> new ReactActivityDelegate(this, getMainComponentName()) {
-      @Override
-      protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(null);
-        // SplashScreen.show(...) has to be called after super.onCreate(...)
-        // Below line is handled by '@expo/configure-splash-screen' command and it's discouraged to modify it manually
-        SplashScreen.show(getPlainActivity(), SplashScreenImageResizeMode.CONTAIN, ReactRootView.class, false);
-      }
-    });
+    return DevLauncherController.wrapReactActivityDelegate(this, () -> new MainActivityDelegate(this, getMainComponentName()));
+  }
+
+  public static class MainActivityDelegate extends ReactActivityDelegate {
+    public MainActivityDelegate(ReactActivity activity, String mainComponentName) {
+      super(activity, mainComponentName);
+    }
+
+    @Override
+    protected ReactRootView createRootView() {
+      ReactRootView reactRootView = new ReactRootView(getContext());
+      // If you opted-in for the New Architecture, we enable the Fabric Renderer.
+      reactRootView.setIsFabric(BuildConfig.IS_NEW_ARCHITECTURE_ENABLED);
+      return reactRootView;
+    }
+
+    @Override
+    protected boolean isConcurrentRootEnabled() {
+      // If you opted-in for the New Architecture, we enable Concurrent Root (i.e. React 18).
+      // More on this on https://reactjs.org/blog/2022/03/29/react-v18.html
+      return BuildConfig.IS_NEW_ARCHITECTURE_ENABLED;
+    }
   }
 }

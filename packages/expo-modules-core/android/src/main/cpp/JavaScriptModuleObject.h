@@ -60,7 +60,7 @@ public:
     jni::alias_ref<jstring> name,
     jint args,
     jni::alias_ref<jni::JArrayInt> desiredTypes,
-    jni::alias_ref<JNIFunctionBody::javaobject> JSIFunctionBody
+    jni::alias_ref<JNIFunctionBody::javaobject> body
   );
 
   /**
@@ -71,7 +71,21 @@ public:
     jni::alias_ref<jstring> name,
     jint args,
     jni::alias_ref<jni::JArrayInt> desiredTypes,
-    jni::alias_ref<JNIAsyncFunctionBody::javaobject> JSIAsyncFunctionBody
+    jni::alias_ref<JNIAsyncFunctionBody::javaobject> body
+  );
+
+  /**
+   * Registers a property
+   * @param name of the property
+   * @param desiredType of the setter argument
+   * @param getter body for the get method - can be nullptr
+   * @param setter body for the set method - can be nullptr
+   */
+  void registerProperty(
+    jni::alias_ref<jstring> name,
+    jint desiredType,
+    jni::alias_ref<JNIFunctionBody::javaobject> getter,
+    jni::alias_ref<JNIFunctionBody::javaobject> setter
   );
 
   /**
@@ -117,6 +131,12 @@ private:
    * A constants map.
    */
   std::unordered_map<std::string, folly::dynamic> constants;
+
+  /**
+   * A registry of properties
+   * The first MethodMetadata points to the getter and the second one to the setter.
+   */
+  std::map<std::string, std::pair<MethodMetadata, MethodMetadata>> properties;
 
   explicit JavaScriptModuleObject(jni::alias_ref<jhybridobject> jThis)
     : javaPart_(jni::make_global(jThis)) {}

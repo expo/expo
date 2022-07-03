@@ -111,7 +111,7 @@ const renderInterface = ({
       <H3Code>
         <InlineCode>{name}</InlineCode>
       </H3Code>
-      {extendedTypes?.length && (
+      {extendedTypes?.length ? (
         <P>
           <B>Extends: </B>
           {extendedTypes.map(extendedType => (
@@ -120,7 +120,7 @@ const renderInterface = ({
             </InlineCode>
           ))}
         </P>
-      )}
+      ) : null}
       <CommentTextBlock comment={comment} />
       {interfaceMethods.length ? (
         <>

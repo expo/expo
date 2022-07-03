@@ -817,10 +817,10 @@ EX_EXPORT_METHOD_AS(getAssetsAsync,
 {
   if (asset) {
     NSString *fileName = [asset valueForKey:@"filename"];
-    
+
     return @{
              @"id": asset.localIdentifier,
-             @"filename": fileName,
+             @"filename": EXNullIfNil(fileName),
              @"uri": [EXMediaLibrary _assetUriForLocalId:asset.localIdentifier],
              @"mediaType": [EXMediaLibrary _stringifyMediaType:asset.mediaType],
              @"mediaSubtypes": [EXMediaLibrary _stringifyMediaSubtypes:asset.mediaSubtypes],

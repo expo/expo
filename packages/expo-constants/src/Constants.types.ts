@@ -209,10 +209,10 @@ export interface PlatformManifest {
 }
 
 // @needsAudit @docsMissing
-/**
- * @hidden
- */
 export interface NativeConstants {
+  /**
+   * @hidden
+   */
   name: 'ExponentConstants';
   /**
    * Returns `expo`, `standalone`, or `guest`. This property only applies to the managed workflow
@@ -278,6 +278,10 @@ export interface NativeConstants {
    * Returns `null` in bare workflow and when `manifest` is non-null.
    */
   manifest2: Manifest | null;
+  /**
+   * The standard Expo config object defined in `app.config.js` files. For both classic and new manifests.
+   */
+  expoConfig: ExpoConfig | null;
   /**
    * A string that is unique to the current session of your app. It is different across apps and
    * across multiple launches of the same app.
