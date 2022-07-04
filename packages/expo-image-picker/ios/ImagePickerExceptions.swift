@@ -32,6 +32,12 @@ internal class CameraUnavailableOnSimulatorException: Exception {
   }
 }
 
+internal class MultiselectUnavailableException: Exception {
+  override var reason: String {
+    "Multiple selection is only available on iOS 14+"
+  }
+}
+
 internal class MissingCurrentViewControllerException: Exception {
   override var reason: String {
     "Cannot determine currently presented view controller"
@@ -70,7 +76,13 @@ internal class FailedToWriteImageException: Exception {
 
 internal class FailedToReadImageException: Exception {
   override var reason: String {
-    "Failed to read picked image"
+    return "Failed to read picked image"
+  }
+}
+
+internal class FailedToLoadImageException: GenericException<String?> {
+  override var reason: String {
+    return "Failed to read picked image" + (param != nil ? ": \(param!)" : "")
   }
 }
 

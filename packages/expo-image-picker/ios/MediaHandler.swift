@@ -3,6 +3,7 @@
 import ExpoModulesCore
 import MobileCoreServices
 import Photos
+import PhotosUI
 
 internal struct MediaHandler {
   internal weak var fileSystem: EXFileSystemInterface?
@@ -17,6 +18,50 @@ internal struct MediaHandler {
     case imageType: return handleImage(mediaInfo: mediaInfo, completion: completion)
     case videoType: return handleVideo(mediaInfo: mediaInfo, completion: completion)
     default: return completion(.failure(InvalidMediaTypeException(mediaType)))
+    }
+  }
+  
+  @available(iOS 14, *)
+  internal func handleMultipleMedia(_ results: [PHPickerResult], completion: @escaping (AsyncMultipleResult) -> Void) {
+    let compressionQuality = options.quality ?? DEFAULT_QUALITY
+    
+    var finalResults: [SelectedMediaInfo] = []
+    
+    let dispatchGroup = DispatchGroup()
+    let dispatchQueue = DispatchQueue(label: "expo.imagepicker.multipleMediaHandler")
+    
+    for result in results {
+      let identifier = result.assetIdentifier
+      let itemProvider = result.itemProvider
+      if itemProvider.canLoadObject(ofClass: UIImage.self) {
+        dispatchGroup.enter()
+        itemProvider.loadObject(ofClass: UIImage.self) { (image, error) in
+          guard error == nil,
+                let image = image as? UIImage else {
+            return completion(.failure(FailedToLoadImageException(error?.localizedDescription)))
+          }
+          let fileExtension = ".jpg"
+          let imageData = image.jpegData(compressionQuality: compressionQuality)
+          let targetUrl = try! generateUrl(withFileExtension: fileExtension)
+          try! ImageUtils.write(imageData: imageData, to: targetUrl)
+          
+          let base64 = try! ImageUtils.optionallyReadBase64From(imageData: imageData,
+                                                               orImageFileUrl: targetUrl,
+                                                               tryReadingFile: false,
+                                                               shouldReadBase64: self.options.base64)
+          
+          //TODO: Read exif/metadata the other way
+          
+          dispatchQueue.async {
+            finalResults.append(ImageInfo(uri: targetUrl.absoluteString, width: 0, height: 0, base64: base64, exif: nil))
+            dispatchGroup.leave()
+          }
+        } // loadObject
+      } // canLoadObject
+    } // for
+    
+    dispatchGroup.notify(queue: .main) {
+      completion(.success(ImagePickerMultipleResponse(results: finalResults)))
     }
   }
 

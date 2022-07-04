@@ -1,6 +1,7 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
 import UIKit
+import PhotosUI
 import ExpoModulesCore
 
 typealias MediaInfo = [UIImagePickerController.InfoKey: Any]
@@ -89,6 +90,28 @@ public class ImagePickerModule: Module, OnMediaPickingResultHandler {
     }
 
     let imagePickerDelegate = ImagePickerHandler(onMediaPickingResultHandler: self, hideStatusBarWhenPresented: options.allowsEditing)
+    
+    if #available(iOS 14, *), options.allowsMultipleSelection && !options.allowsEditing {
+      var configuration = PHPickerConfiguration()
+      // TODO: (barthap) Add configurable selection limit. 0 means unlimited
+      configuration.selectionLimit = 0
+      configuration.filter = options.mediaTypes.toPickerFilter()
+      
+      let pickingContext = PickingContext(promise: promise,
+                                          options: options,
+                                          imagePickerHandler: imagePickerDelegate)
+      
+      let picker = PHPickerViewController(configuration: configuration)
+      picker.delegate = pickingContext.imagePickerHandler
+      picker.presentationController?.delegate = pickingContext.imagePickerHandler
+      
+      // Store picking context as we're navigating to the different view controller (starting asynchronous flow)
+      self.currentPickingContext = pickingContext
+      currentViewController.present(picker, animated: true, completion: nil)
+      return
+    }
+    
+    
     let picker = UIImagePickerController()
 
     if sourceType == .camera {
@@ -137,6 +160,31 @@ public class ImagePickerModule: Module, OnMediaPickingResultHandler {
   func didCancelPicking() {
     self.currentPickingContext?.promise.resolve(["cancelled": true])
     self.currentPickingContext = nil
+  }
+  
+  @available(iOS 14, *)
+  func didPickMultipleMedia(results: [PHPickerResult]) {
+    guard let options = self.currentPickingContext?.options,
+          let promise = self.currentPickingContext?.promise else {
+      NSLog("Picking operation context has been lost.")
+      return
+    }
+    guard let fileSystem = self.appContext?.fileSystem else {
+      return promise.reject(FileSystemModuleNotFoundException())
+    }
+    
+    let mediaHandler = MediaHandler(fileSystem: fileSystem,
+                                    options: options)
+    
+    // Cleanup the currently stored picking context
+    self.currentPickingContext = nil
+    
+    mediaHandler.handleMultipleMedia(results) { result -> Void in
+      switch result {
+      case .failure(let error): return promise.reject(error)
+      case .success(let response): return promise.resolve(response.dictionary)
+      }
+    }
   }
 
   func didPickMedia(mediaInfo: MediaInfo) {

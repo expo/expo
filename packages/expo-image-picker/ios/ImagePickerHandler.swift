@@ -1,9 +1,13 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
+import PhotosUI
+
 /**
  Protocol that describes scenarios we care about while the user is picking media.
  */
 protocol OnMediaPickingResultHandler {
+  @available(iOS 14, *)
+  func didPickMultipleMedia(results: [PHPickerResult])
   func didPickMedia(mediaInfo: MediaInfo)
   func didCancelPicking()
 }
@@ -18,6 +22,7 @@ protocol OnMediaPickingResultHandler {
  2) it separates some logic from the main module class and hopefully makes it cleaner.
  */
 internal class ImagePickerHandler: NSObject,
+                                   PHPickerViewControllerDelegate,
                                    UINavigationControllerDelegate,
                                    UIImagePickerControllerDelegate,
                                    UIAdaptivePresentationControllerDelegate {
@@ -33,6 +38,12 @@ internal class ImagePickerHandler: NSObject,
   private func handlePickedMedia(mediaInfo: MediaInfo) {
     statusBarVisibilityController.maybeRestoreStatusBarVisibility()
     onMediaPickingResultHandler.didPickMedia(mediaInfo: mediaInfo)
+  }
+  
+  @available(iOS 14, *)
+  private func handlePickedMedia(results: [PHPickerResult]) {
+    statusBarVisibilityController.maybeRestoreStatusBarVisibility()
+    onMediaPickingResultHandler.didPickMultipleMedia(results: results)
   }
 
   private func handlePickingCancellation() {
@@ -54,6 +65,18 @@ internal class ImagePickerHandler: NSObject,
     DispatchQueue.main.async {
       picker.dismiss(animated: true) { [weak self] in
         self?.handlePickingCancellation()
+      }
+    }
+  }
+  
+  
+  // MARK: - PHPickerViewControllerDelegate
+  
+  @available(iOS 14, *)
+  func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
+    DispatchQueue.main.async {
+      picker.dismiss(animated: true) { [weak self] in
+        self?.handlePickedMedia(results: results)
       }
     }
   }

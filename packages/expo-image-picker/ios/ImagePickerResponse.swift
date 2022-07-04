@@ -7,6 +7,22 @@ internal enum AsyncResult {
   case failure(Exception)
 }
 
+internal enum AsyncMultipleResult {
+  case success(ImagePickerMultipleResponse)
+  case failure(Exception)
+}
+
+internal struct ImagePickerMultipleResponse {
+  let results: [SelectedMediaInfo]
+  
+  var dictionary: [String: Any] {
+    var result: [String: Any] = [:]
+    result["cancelled"] = false
+    result["selected"] = results.map { $0.dictionary }
+    return result
+  }
+}
+
 internal enum ImagePickerResponse {
   case image(ImageInfo)
   case video(VideoInfo)
@@ -24,7 +40,11 @@ internal enum ImagePickerResponse {
   }
 }
 
-internal struct ImageInfo {
+internal protocol SelectedMediaInfo {
+  var dictionary: [String: Any] { get }
+}
+
+internal struct ImageInfo: SelectedMediaInfo {
   let type: String = "image"
   let uri: String
   let width: Double
@@ -49,7 +69,7 @@ internal struct ImageInfo {
   }
 }
 
-internal struct VideoInfo {
+internal struct VideoInfo: SelectedMediaInfo {
   let type: String = "video"
   let uri: String
   let width: Double
