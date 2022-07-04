@@ -5,6 +5,7 @@ import path from 'path';
 
 import { EXPO_DIR, PACKAGES_DIR } from '../Constants';
 import { runExpoCliAsync } from '../ExpoCLI';
+import { GitDirectory } from '../Git';
 
 export type GenerateBareAppOptions = {
   name?: string;
@@ -68,9 +69,7 @@ export function getDirectories({
 async function cleanIfNeeded({ workspaceDir, projectDir, clean }) {
   console.log('Creating project');
 
-  if (!fs.existsSync(workspaceDir)) {
-    fs.mkdirSync(workspaceDir);
-  }
+  await fs.mkdirs(workspaceDir);
 
   if (clean) {
     await fs.remove(projectDir);
@@ -303,9 +302,10 @@ async function createScripts({ projectDir }) {
 }
 
 async function stageAndCommitInitialChanges({ projectDir }) {
-  await spawnAsync('git', ['init'], { cwd: projectDir });
-  await spawnAsync('git', ['add', '.'], { cwd: projectDir });
-  await spawnAsync('git', ['commit', '-m', 'Initialized bare app!'], { cwd: projectDir });
+  const gitDirectory = new GitDirectory(projectDir);
+  await gitDirectory.initAsync();
+  await gitDirectory.addFilesAsync(['.']);
+  await gitDirectory.commitAsync({ title: 'Initialized bare app!' });
 }
 
 async function modifyAppJson({ projectDir, appName }: { projectDir: string; appName: string }) {
@@ -340,7 +340,8 @@ export default (program: Command) => {
     .option('-t, --template <string>', 'Specify the expo template to use as the project starter')
     .option(
       '--localTemplate',
-      'Copy the localTemplate expo-template-bare-minimum from the expo repo'
+      'Copy the localTemplate expo-template-bare-minimum from the expo repo',
+      false
     )
     .description(`Generates a bare app with the specified packages symlinked`)
     .asyncAction(action);

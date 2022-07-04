@@ -51,8 +51,7 @@ function symlinkPackages(expoDirectory, projectDirectory, packageNames) {
       return [];
     }
 
-    const dependencies = new Set();
-    dependencies.add(packageName);
+    const dependencies = new Set([packageName]);
 
     const pkg = require(packagePath);
 
