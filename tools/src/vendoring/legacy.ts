@@ -242,6 +242,50 @@ const GestureHandlerModifier: ModuleModifier = async function (
   await transformImportsAsync();
 };
 
+const ScreensModifier: ModuleModifier = async function (
+  moduleConfig: VendoredModuleConfig,
+  clonedProjectPath: string
+): Promise<void> {
+  const viewmanagersExpoviewDir = path.join(
+    ANDROID_DIR,
+    'expoview',
+    'src',
+    'main',
+    'java',
+    'com',
+    'facebook',
+    'react',
+    'viewmanagers'
+  );
+
+  const copyPaperViewManager = async () => {
+    await fs.remove(viewmanagersExpoviewDir); // clean
+    // copy
+    await new Promise<void>((res, rej) => {
+      ncp(
+        path.join(
+          clonedProjectPath,
+          'android',
+          'src',
+          'paper',
+          'java',
+          'com',
+          'facebook',
+          'react',
+          'viewmanagers'
+        ),
+        viewmanagersExpoviewDir,
+        { dereference: true },
+        () => {
+          res();
+        }
+      );
+    });
+  };
+
+  await copyPaperViewManager();
+};
+
 const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
   'react-native-gesture-handler': {
     repoUrl: 'https://github.com/software-mansion/react-native-gesture-handler.git',
@@ -331,6 +375,7 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
     repoUrl: 'https://github.com/software-mansion/react-native-screens.git',
     installableInManagedApps: true,
     semverPrefix: '~',
+    moduleModifier: ScreensModifier,
     steps: [
       {
         sourceIosPath: 'ios',
@@ -350,6 +395,14 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
               find: /(?=^class ScreenStackHeaderConfig\()/m,
               replaceWith: `import host.exp.expoview.BuildConfig\nimport host.exp.expoview.R\n\n`,
             },
+            'RNScreensPackage.kt': {
+              find: /(?=^class RNScreensPackage\ :)/m,
+              replaceWith: `import host.exp.expoview.BuildConfig\n\n`,
+            },
+            'Screen.kt': {
+              find: /(?=^@SuppressLint\(\"ViewConstructor\"\)\nclass Screen)/m,
+              replaceWith: `import host.exp.expoview.BuildConfig\n\n`,
+            },
           };
 
           const fileConfig = CHANGES[filename];
@@ -364,6 +417,13 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
           );
           await fs.writeFile(file, newFileContent, 'utf8');
         },
+      },
+      {
+        cleanupTargetPath: false,
+        sourceAndroidPath: 'android/src/paper/java/com/swmansion/rnscreens',
+        targetAndroidPath: 'modules/api/screens',
+        sourceAndroidPackage: 'com.swmansion.rnscreens',
+        targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.screens',
       },
     ],
   },
