@@ -162,7 +162,7 @@ runs:
         path: |
           ~/.android/avd/*
           ~/.android/adb*
-        key: avd-${{ inputs.avd-api }}
+        key: avd-v2-${{ inputs.avd-api }}
     - name: 📱 Create AVD and generate snapshot for caching
       if: inputs.avd == 'true' && steps.avd-cache.outputs.cache-hit != 'true'
       uses: reactivecircus/android-emulator-runner@v2
