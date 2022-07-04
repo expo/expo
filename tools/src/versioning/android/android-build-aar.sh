@@ -2,6 +2,7 @@
 # Usage: ./android-build-aar 4.0.0 builds versioned-react-native and packages it into an aar
 # with packages renamed. Must rename the JNI code before using this.
 # Requires $EXPO_ROOT_DIR to be defined in the environment.
+
 ORIGINAL_ABI_VERSION=`echo $1`
 MAJOR_ABI_VERSION=`echo $1 | sed 's/\..*//g'`
 ABI_VERSION_NUMBER=`echo $1 | sed 's/\./_/g'`
@@ -24,9 +25,6 @@ rm -rf expoview/libs/ReactAndroid-temp
 pushd versioned-react-native
 set -e
 ./gradlew :ReactAndroid:assembleRelease
-# 2021-03-23: hacky workaround for weird issue with missing .so libs
-# if we build the aar twice after cleaning, the libs will be packaged correctly
-#./gradlew assembleRelease
 popd
 
 mkdir -p expoview/libs

@@ -1,7 +1,7 @@
 /**
  * Find lines matched by startRegex and endRegexp and remove all the
- * lines between. Note it will remove entire line matched by startRegex
- * and endRegexp regardless if pattern match entire lien or not
+ * lines between them. Note, it will remove entire line matched by startRegex
+ * and endRegexp even if pattern does not match entire line
  *
  * This function supports removing multiple sections in one file and
  * handles correctly nested ones

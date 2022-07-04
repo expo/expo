@@ -39,7 +39,7 @@ export function transformString(
   }, input);
 }
 
-export async function transformFileContentAsync(
+async function getTransformedFileContentAsync(
   filePath: string,
   transforms: FileTransform[]
 ): Promise<string> {
@@ -123,7 +123,7 @@ export async function copyFileWithTransformsAsync(
     ) ?? [];
 
   // Transform source content.
-  const content = await transformFileContentAsync(sourcePath, filteredContentTransforms);
+  const content = await getTransformedFileContentAsync(sourcePath, filteredContentTransforms);
 
   // Save transformed source file at renamed target path.
   await fs.outputFile(targetPath, content);
