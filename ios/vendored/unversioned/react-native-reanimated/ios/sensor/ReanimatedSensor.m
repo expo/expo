@@ -141,9 +141,9 @@
                                                         attitude.quaternion.y,
                                                         attitude.quaternion.z,
                                                         attitude.quaternion.w,
-                                                        attitude.pitch,
-                                                        attitude.roll,
                                                         attitude.yaw,
+                                                        attitude.pitch,
+                                                        attitude.roll
                                                     };
                                                     self->_setter(data);
                                                     self->_lastTimestamp = currentTime;

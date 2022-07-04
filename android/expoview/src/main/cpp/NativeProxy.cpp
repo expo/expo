@@ -25,14 +25,6 @@ namespace reanimated {
 using namespace facebook;
 using namespace react;
 
-NativeProxy::~NativeProxy(){
-  runtime_->global().setProperty(
-      *runtime_,
-      jsi::PropNameID::forAscii(*runtime_, "__reanimatedModuleProxy"),
-      jsi::Value::undefined()
-  );
-}
-
 NativeProxy::NativeProxy(
     jni::alias_ref<NativeProxy::javaobject> jThis,
     jsi::Runtime *rt,
@@ -44,6 +36,13 @@ NativeProxy::NativeProxy(
       jsCallInvoker_(jsCallInvoker),
       scheduler_(scheduler),
       layoutAnimations(std::move(_layoutAnimations)) {}
+
+NativeProxy::~NativeProxy() {
+  runtime_->global().setProperty(
+      *runtime_,
+      jsi::PropNameID::forAscii(*runtime_, "__reanimatedModuleProxy"),
+      jsi::Value::undefined());
+}
 
 jni::local_ref<NativeProxy::jhybriddata> NativeProxy::initHybrid(
     jni::alias_ref<jhybridobject> jThis,
@@ -211,21 +210,21 @@ void NativeProxy::installJSIBindings() {
       platformDepMethodsHolder);
 
   _nativeReanimatedModule = module;
-
   std::weak_ptr<NativeReanimatedModule> weakModule = module;
-  this->registerEventHandler([weakModule, getCurrentTime](
-                                 std::string eventName,
-                                 std::string eventAsString) {
-    if (auto module = weakModule.lock()) {
-      jsi::Object global = module->runtime->global();
-      jsi::String eventTimestampName =
-          jsi::String::createFromAscii(*module->runtime, "_eventTimestamp");
-      global.setProperty(*module->runtime, eventTimestampName, getCurrentTime());
-      module->onEvent(eventName, eventAsString);
-      global.setProperty(
-          *module->runtime, eventTimestampName, jsi::Value::undefined());
-    }
-  });
+  this->registerEventHandler(
+      [weakModule, getCurrentTime](
+          std::string eventName, std::string eventAsString) {
+        if (auto module = weakModule.lock()) {
+          jsi::Object global = module->runtime->global();
+          jsi::String eventTimestampName =
+              jsi::String::createFromAscii(*module->runtime, "_eventTimestamp");
+          global.setProperty(
+              *module->runtime, eventTimestampName, getCurrentTime());
+          module->onEvent(eventName, eventAsString);
+          global.setProperty(
+              *module->runtime, eventTimestampName, jsi::Value::undefined());
+        }
+      });
 
   runtime_->global().setProperty(
       *runtime_,

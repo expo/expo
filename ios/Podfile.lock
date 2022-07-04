@@ -2530,7 +2530,7 @@ PODS:
     - ReactCommon/turbomodule/core (= 0.69.1)
   - RNGestureHandler (2.2.0):
     - React-Core
-  - RNReanimated (2.8.0):
+  - RNReanimated (2.9.1):
     - DoubleConversion
     - FBLazyVector
     - FBReactNativeSpec
@@ -4446,7 +4446,7 @@ SPEC CHECKSUMS:
   React-runtimeexecutor: 27f468c5576eaf05ffb7a907528e44c75a3fcbae
   ReactCommon: e30ec17dfb1d4c4f3419eac254350d6abca6d5a2
   RNGestureHandler: bf572f552ea324acd5b5464b8d30755b2d8c1de6
-  RNReanimated: 64573e25e078ae6bec03b891586d50b9ec284393
+  RNReanimated: 5c8c17e26787fd8984cd5accdc70fef2ca70aafd
   RNScreens: 4d83613b50b74ed277026375dc0810893b0c347f
   Stripe: ee32e594fa4dee4bdf2a8a3039f7fb07a21075dc
   stripe-react-native: bd992665f71c5233d62719c4031351f3f3b769fe
@@ -4458,6 +4458,6 @@ SPEC CHECKSUMS:
   Yoga: 7ab6e3ee4ce47d7b789d1cb520163833e515f452
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 991c5530f98fa584f131b3ef606330f8fc2aa690
+PODFILE CHECKSUM: 36be981ada3f4ab6169e5050570592ffeb4bf944
 
 COCOAPODS: 1.11.2

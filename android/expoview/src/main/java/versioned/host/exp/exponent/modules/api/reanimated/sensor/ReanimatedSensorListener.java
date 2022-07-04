@@ -3,6 +3,7 @@ package versioned.host.exp.exponent.modules.api.reanimated.sensor;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import versioned.host.exp.exponent.modules.api.reanimated.NativeProxy;
 
 public class ReanimatedSensorListener implements SensorEventListener {
@@ -10,6 +11,10 @@ public class ReanimatedSensorListener implements SensorEventListener {
   private NativeProxy.SensorSetter setter;
   private double lastRead = (double) System.currentTimeMillis();
   private final double interval;
+
+  private float[] rotation = new float[9];
+  private float[] orientation = new float[3];
+  private float[] quaternion = new float[4];
 
   ReanimatedSensorListener(NativeProxy.SensorSetter setter, double interval) {
     this.setter = setter;
@@ -22,8 +27,26 @@ public class ReanimatedSensorListener implements SensorEventListener {
     if (current - lastRead < interval) {
       return;
     }
+    int sensorType = event.sensor.getType();
     lastRead = current;
-    setter.sensorSetter(event.values);
+    if (sensorType == Sensor.TYPE_ROTATION_VECTOR) {
+      SensorManager.getQuaternionFromVector(quaternion, event.values);
+      SensorManager.getRotationMatrixFromVector(rotation, event.values);
+      SensorManager.getOrientation(rotation, orientation);
+      float[] data =
+          new float[] {
+            quaternion[1], // qx
+            quaternion[2], // qy
+            quaternion[3], // qz
+            quaternion[0], // qw
+            orientation[0], // yaw
+            orientation[1], // pitch
+            orientation[2] // roll
+          };
+      setter.sensorSetter(data);
+    } else {
+      setter.sensorSetter(event.values);
+    }
   }
 
   @Override

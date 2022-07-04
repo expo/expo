@@ -54,6 +54,7 @@ JSIExecutor::RuntimeInstaller REAJSIExecutorRuntimeInstaller(
     uintptr_t* workletRuntimeData = reinterpret_cast<uintptr_t*>(
         workletRuntimeValue.getObject(runtime).getArrayBuffer(runtime).data(runtime));
     workletRuntimeData[0] = reinterpret_cast<uintptr_t>(reanimatedModule->runtime.get());
+
     runtime.global().setProperty(
         runtime,
         "_WORKLET_RUNTIME",
