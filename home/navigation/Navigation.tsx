@@ -2,12 +2,12 @@ import { HomeFilledIcon, SettingsFilledIcon } from '@expo/styleguide-native';
 import {
   NavigationContainer,
   useTheme,
-  NavigationContainerRef,
   RouteProp,
+  useNavigationContainerRef,
 } from '@react-navigation/native';
 import { createStackNavigator, TransitionPresets } from '@react-navigation/stack';
 import * as React from 'react';
-import { Platform, StyleSheet, Linking } from 'react-native';
+import { Platform, StyleSheet, Linking, View, Text } from 'react-native';
 
 import DiagnosticsIcon from '../components/Icons';
 import { ColorTheme } from '../constants/Colors';
@@ -30,7 +30,7 @@ import {
   requestCameraPermissionsAsync,
 } from '../utils/PermissionUtils';
 import BottomTab, { getNavigatorProps } from './BottomTabNavigator';
-import { DiagnosticsStackRoutes, HomeStackRoutes } from './Navigation.types';
+import { DiagnosticsStackRoutes, HomeStackRoutes, ModalStackRoutes } from './Navigation.types';
 import defaultNavigationOptions from './defaultNavigationOptions';
 
 // TODO(Bacon): Do we need to create a new one each time?
@@ -178,10 +178,10 @@ function TabNavigator(props: { theme: string }) {
   );
 }
 
-const ModalStack = createStackNavigator();
+const ModalStack = createStackNavigator<ModalStackRoutes>();
 
 export default (props: { theme: ColorTheme }) => {
-  const navigationRef = React.useRef<NavigationContainerRef>(null);
+  const navigationRef = useNavigationContainerRef<ModalStackRoutes>();
   const isNavigationReadyRef = React.useRef(false);
   const initialURLWasConsumed = React.useRef(false);
 
@@ -210,11 +210,11 @@ export default (props: { theme: ColorTheme }) => {
       });
     }
 
-    Linking.addEventListener('url', handleDeepLinks);
+    const subscription = Linking.addEventListener('url', handleDeepLinks);
 
     return () => {
       isNavigationReadyRef.current = false;
-      Linking.removeEventListener('url', handleDeepLinks);
+      subscription.remove();
     };
   }, []);
 
@@ -232,14 +232,20 @@ export default (props: { theme: ColorTheme }) => {
           gestureEnabled: true,
           cardOverlayEnabled: true,
           cardStyle: { backgroundColor: 'transparent' },
-          headerStatusBarHeight:
-            navigation.dangerouslyGetState().routes.indexOf(route) > 0 ? 0 : undefined,
+          headerStatusBarHeight: navigation.getState().routes.indexOf(route) > 0 ? 0 : undefined,
           ...TransitionPresets.ModalPresentationIOS,
-        })}
-        mode="modal">
+          presentation: 'modal',
+        })}>
         <ModalStack.Screen name="RootStack">
           {() => (
-            <RootStack.Navigator initialRouteName="Tabs" mode="modal">
+            <View>
+              <Text>Hello</Text>
+            </View>
+          )}
+        </ModalStack.Screen>
+        {/* <ModalStack.Screen name="RootStack">
+          {() => (
+            <RootStack.Navigator initialRouteName="Tabs" screenOptions={{ presentation: 'modal' }}>
               <RootStack.Screen name="Tabs" options={{ headerShown: false }}>
                 {() => <TabNavigator theme={props.theme} />}
               </RootStack.Screen>
@@ -264,7 +270,7 @@ export default (props: { theme: ColorTheme }) => {
               />
             </RootStack.Navigator>
           )}
-        </ModalStack.Screen>
+        </ModalStack.Screen> */}
         <ModalStack.Screen name="QRCode" component={QRCodeScreen} />
       </ModalStack.Navigator>
     </NavigationContainer>
