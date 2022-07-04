@@ -45,7 +45,7 @@ export async function isAvailableAsync(): Promise<boolean> {
  * @param url Local file URL to share.
  * @param options A map of share options.
  */
-export async function shareAsync(url: string, options: SharingOptions = {}): Promise<object> {
+export async function shareAsync(url: string, options: SharingOptions = {}): Promise<void> {
   if (!Sharing || !Sharing.shareAsync) {
     throw new UnavailabilityError('Sharing', 'shareAsync');
   }

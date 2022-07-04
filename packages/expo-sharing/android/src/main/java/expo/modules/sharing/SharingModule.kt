@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Bundle
 import androidx.core.content.FileProvider
 import expo.modules.core.ExportedModule
 import expo.modules.core.ModuleRegistry
@@ -111,7 +110,7 @@ class SharingModule(
 
   override fun onActivityResult(activity: Activity, requestCode: Int, resultCode: Int, data: Intent?) {
     if (requestCode == REQUEST_CODE && pendingPromise != null) {
-      pendingPromise?.resolve(Bundle.EMPTY)
+      pendingPromise?.resolve(null)
       pendingPromise = null
     }
   }
