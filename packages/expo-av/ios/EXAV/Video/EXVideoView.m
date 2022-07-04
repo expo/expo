@@ -765,8 +765,8 @@ willEndFullScreenPresentationWithAnimationCoordinator:(id<UIViewControllerTransi
 
 - (void)dealloc
 {
+  [self setSource:nil];
   [_exAV unregisterVideoForAudioLifecycle:self];
-  [_data pauseImmediately];
   [_exAV demoteAudioSessionIfPossible];
 }
 
