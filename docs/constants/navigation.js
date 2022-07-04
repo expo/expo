@@ -57,7 +57,7 @@ const starting = [
       makePage('tutorial/button.md'),
       makePage('tutorial/image-picker.md'),
       makePage('tutorial/sharing.md'),
-      makePage('tutorial/platform-differences.md'),
+      // makePage('tutorial/platform-differences.md'),
       makePage('tutorial/configuration.md'),
       makePage('tutorial/follow-up.md'),
     ],
