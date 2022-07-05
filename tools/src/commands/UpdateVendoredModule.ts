@@ -147,7 +147,7 @@ async function action(options: ActionOptions) {
 }
 
 /**
- *
+ * Downloads vendoring module source code either from git repository or npm
  */
 async function downloadSourceAsync(
   sourceDirectory: string,
