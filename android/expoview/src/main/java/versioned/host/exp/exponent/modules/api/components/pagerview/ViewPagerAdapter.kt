@@ -44,10 +44,19 @@ class ViewPagerAdapter() : Adapter<ViewPagerViewHolder>() {
 
   fun removeChild(child: View) {
     val index = childrenViews.indexOf(child)
-    removeChildAt(index)
+    
+    if(index > -1) {
+      removeChildAt(index)
+    }
   }
 
   fun removeAll() {
+    for (index in 1..childrenViews.size) {
+      val child = childrenViews[index-1]
+      if (child.parent?.parent != null) {
+        (child.parent.parent as ViewGroup).removeView(child.parent as View)
+      }
+    }
     val removedChildrenCount = childrenViews.size
     childrenViews.clear()
     notifyItemRangeRemoved(0, removedChildrenCount)
