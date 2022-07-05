@@ -7,7 +7,7 @@ import remarkGfm from 'remark-gfm';
 import { Code, InlineCode } from '~/components/base/code';
 import { H4 } from '~/components/base/headings';
 import Link from '~/components/base/link';
-import { LI, UL } from '~/components/base/list';
+import { LI, UL, OL } from '~/components/base/list';
 import { B, P, Quote } from '~/components/base/paragraph';
 import {
   CommentData,
@@ -19,6 +19,7 @@ import {
 } from '~/components/plugins/api/APIDataTypes';
 import { PlatformTags } from '~/components/plugins/api/APISectionPlatformTags';
 import * as Constants from '~/constants/theme';
+import { Callout } from '~/ui/components/Callout';
 import { Cell, HeaderCell, Row, Table, TableHead } from '~/ui/components/Table';
 import { tableWrapperStyle } from '~/ui/components/Table/Table';
 
@@ -52,6 +53,7 @@ export const mdComponents: MDComponents = {
     className ? <Code className={className}>{children}</Code> : <InlineCode>{children}</InlineCode>,
   h1: ({ children }) => <H4>{children}</H4>,
   ul: ({ children }) => <UL>{children}</UL>,
+  ol: ({ children }) => <OL>{children}</OL>,
   li: ({ children }) => <LI>{children}</LI>,
   a: ({ href, children }) => {
     if (
@@ -359,12 +361,9 @@ export const listParams = (parameters: MethodParamData[]) =>
 
 export const renderDefaultValue = (defaultValue?: string) =>
   defaultValue ? (
-    <>
-      <br />
-      <br />
-      <B>Default: </B>
-      <InlineCode>{defaultValue}</InlineCode>
-    </>
+    <div css={defaultValueContainerStyle}>
+      <B>Default:</B> <InlineCode>{defaultValue}</InlineCode>
+    </div>
   ) : undefined;
 
 export const renderTypeOrSignatureType = (
@@ -401,8 +400,8 @@ export type CommentTextBlockProps = {
   comment?: CommentData;
   components?: MDComponents;
   withDash?: boolean;
-  beforeContent?: JSX.Element | null;
-  afterContent?: JSX.Element | null;
+  beforeContent?: JSX.Element;
+  afterContent?: JSX.Element;
   includePlatforms?: boolean;
   emptyCommentFallback?: string;
 };
@@ -465,14 +464,16 @@ export const CommentTextBlock = ({
 
   const deprecation = getTagData('deprecated', comment);
   const deprecationNote = deprecation ? (
-    <Quote key="deprecation-note">
-      {deprecation.text.trim().length ? (
-        <ReactMarkdown
-          components={mdInlineComponents}>{`**Deprecated.** ${deprecation.text}`}</ReactMarkdown>
-      ) : (
-        <B>Deprecated</B>
-      )}
-    </Quote>
+    <div css={deprecationNoticeStyle}>
+      <Callout type="warning" key="deprecation-note">
+        {deprecation.text.trim().length ? (
+          <ReactMarkdown
+            components={mdInlineComponents}>{`**Deprecated.** ${deprecation.text}`}</ReactMarkdown>
+        ) : (
+          <B>Deprecated</B>
+        )}
+      </Callout>
+    </div>
   ) : null;
 
   const see = getTagData('see', comment);
@@ -566,6 +567,14 @@ export const STYLES_SECONDARY = css({
   color: theme.text.secondary,
   fontSize: '90%',
   fontWeight: 600,
+});
+
+const defaultValueContainerStyle = css({
+  marginTop: spacing[2],
+});
+
+const deprecationNoticeStyle = css({
+  marginBottom: spacing[2],
 });
 
 const STYLES_EXAMPLE_IN_TABLE = css({

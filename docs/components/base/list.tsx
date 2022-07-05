@@ -67,6 +67,7 @@ export const OL: React.FC = ({ children }) => (
 );
 
 const STYLES_LIST_ITEM = css`
+  margin-left: 1rem;
   padding: 0.25rem 0;
   :before {
     font-size: 130%;

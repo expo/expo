@@ -899,7 +899,7 @@ in here.
         data-text="true"
       >
         <li
-          class="docs-list-item css-xdejd6-STYLES_LIST_ITEM-LI"
+          class="docs-list-item css-kaip35-STYLES_LIST_ITEM-LI"
         >
           <code
             class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
@@ -1220,7 +1220,7 @@ This should come from the user field of an
       data-text="true"
     >
       <li
-        class="docs-list-item css-1wwpkbk-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
+        class="docs-list-item css-1yggycy-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
       >
         <code
           class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
@@ -1389,7 +1389,7 @@ value depending on the state of the credential.
       data-text="true"
     >
       <li
-        class="docs-list-item css-1wwpkbk-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
+        class="docs-list-item css-1yggycy-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
       >
         <code
           class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
@@ -1632,7 +1632,7 @@ Calling this method will show the sign in modal before actually refreshing the u
       data-text="true"
     >
       <li
-        class="docs-list-item css-1wwpkbk-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
+        class="docs-list-item css-1yggycy-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
       >
         <code
           class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
@@ -1931,7 +1931,7 @@ the user, since this remains the same for apps released by the same developer.
       data-text="true"
     >
       <li
-        class="docs-list-item css-1wwpkbk-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
+        class="docs-list-item css-1yggycy-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
       >
         <code
           class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
@@ -2216,7 +2216,7 @@ from using
       data-text="true"
     >
       <li
-        class="docs-list-item css-1wwpkbk-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
+        class="docs-list-item css-1yggycy-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
       >
         <code
           class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
@@ -2499,7 +2499,7 @@ sign-out operation.
       data-text="true"
     >
       <li
-        class="docs-list-item css-1wwpkbk-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
+        class="docs-list-item css-1yggycy-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
       >
         <code
           class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
@@ -4961,10 +4961,9 @@ OAuth 2.0 protocol
          
       </strong>
       <div
-        class="css-1jhkqst-platformTagStyle-platformTagFirstStyle-iosPlatformTagStyle-PlatformTags"
+        class="css-1vg2gvk-platformTagStyle-platformTagFirstStyle-iosPlatformTagStyle-PlatformTags"
       >
         <svg
-          class="css-g1rf8s-platformTagIconStyle"
           color="var(--expo-theme-palette-blue-900)"
           fill="none"
           height="12"
@@ -4981,7 +4980,11 @@ OAuth 2.0 protocol
             fill="var(--expo-theme-palette-blue-900)"
           />
         </svg>
-        iOS 13.2+
+        <span
+          class="css-41aakw-platformLabelStyle"
+        >
+          iOS 13.2+
+        </span>
       </div>
       <br />
       <div
@@ -7207,7 +7210,7 @@ Same as
         data-text="true"
       >
         <li
-          class="docs-list-item css-xdejd6-STYLES_LIST_ITEM-LI"
+          class="docs-list-item css-kaip35-STYLES_LIST_ITEM-LI"
         >
           <code
             class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
@@ -7476,7 +7479,7 @@ This can be used to quickly create specific permission hooks in every module.
       data-text="true"
     >
       <li
-        class="docs-list-item css-1wwpkbk-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
+        class="docs-list-item css-1yggycy-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
       >
         <code
           class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
@@ -7706,7 +7709,7 @@ This can be used to quickly create specific permission hooks in every module.
       data-text="true"
     >
       <li
-        class="docs-list-item css-1wwpkbk-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
+        class="docs-list-item css-1yggycy-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
       >
         <code
           class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
@@ -7893,7 +7896,7 @@ This can be used to quickly create specific permission hooks in every module.
       data-text="true"
     >
       <li
-        class="docs-list-item css-1wwpkbk-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
+        class="docs-list-item css-1yggycy-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
       >
         <code
           class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
@@ -8209,7 +8212,7 @@ the platform.
       data-text="true"
     >
       <li
-        class="docs-list-item css-1wwpkbk-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
+        class="docs-list-item css-1yggycy-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
       >
         <code
           class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
@@ -9699,16 +9702,17 @@ For some types, they will represent the area used by the scanner.
         >
           <span
             class="css-zonpcr-STYLES_PERMALINK_TARGET"
-            id="interface-properties"
+            id="permissionresponse--properties"
           />
           <a
             class="css-15lh5hg-STYLES_PERMALINK_LINK"
-            href="#interface-properties"
+            href="#permissionresponse--properties"
           >
             <span
               class="css-1icvi79-STYLED_PERMALINK_CONTENT"
             >
-              Interface Properties
+              PermissionResponse
+               Properties
             </span>
             <span
               class="css-10vdcw8-STYLES_PERMALINK_ICON"
@@ -10395,7 +10399,7 @@ exports[`APISection expo-pedometer 1`] = `
       data-text="true"
     >
       <li
-        class="docs-list-item css-1wwpkbk-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
+        class="docs-list-item css-1yggycy-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
       >
         <code
           class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
@@ -10649,7 +10653,7 @@ exports[`APISection expo-pedometer 1`] = `
       data-text="true"
     >
       <li
-        class="docs-list-item css-1wwpkbk-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
+        class="docs-list-item css-1yggycy-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
       >
         <code
           class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
@@ -10884,7 +10888,7 @@ a start date that is more than seven days in the past returns only the available
       data-text="true"
     >
       <li
-        class="docs-list-item css-1wwpkbk-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
+        class="docs-list-item css-1yggycy-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
       >
         <code
           class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
@@ -11037,7 +11041,7 @@ available on this device.
       data-text="true"
     >
       <li
-        class="docs-list-item css-1wwpkbk-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
+        class="docs-list-item css-1yggycy-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
       >
         <code
           class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
@@ -11267,7 +11271,7 @@ provided with a single argument that is
       data-text="true"
     >
       <li
-        class="docs-list-item css-1wwpkbk-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
+        class="docs-list-item css-1yggycy-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
       >
         <code
           class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
@@ -11934,16 +11938,17 @@ provided with a single argument that is
         >
           <span
             class="css-zonpcr-STYLES_PERMALINK_TARGET"
-            id="interface-properties"
+            id="permissionresponse--properties"
           />
           <a
             class="css-15lh5hg-STYLES_PERMALINK_LINK"
-            href="#interface-properties"
+            href="#permissionresponse--properties"
           >
             <span
               class="css-1icvi79-STYLED_PERMALINK_CONTENT"
             >
-              Interface Properties
+              PermissionResponse
+               Properties
             </span>
             <span
               class="css-10vdcw8-STYLES_PERMALINK_ICON"
