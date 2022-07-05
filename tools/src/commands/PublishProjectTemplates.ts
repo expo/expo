@@ -11,24 +11,37 @@ import { Directories } from '../expotools';
 
 const EXPO_DIR = Directories.getExpoRepositoryRootDir();
 
-async function shouldAssignLatestTagAsync(
-  templateName: string,
-  templateVersion: string
-): Promise<boolean> {
-  const { assignLatestTag } = await inquirer.prompt<{ assignLatestTag: boolean }>([
+async function promptForCustomTagAsync(): Promise<string> {
+  const { customTag } = await inquirer.prompt<{ customTag: string }>([
     {
-      type: 'confirm',
-      name: 'assignLatestTag',
-      message: `Do you want to assign ${chalk.blue('latest')} tag to ${chalk.green(
-        templateName
-      )}@${chalk.red(templateVersion)}?`,
-      default: true,
+      type: 'input',
+      name: 'customTag',
+      message: 'Enter custom tag string:',
+      default: 'custom',
+      validate(value: string) {
+        if (!value.match(/[a-zA-Z]/)) {
+          return 'Tag must have at least one alpha character';
+        }
+        if (value[0].match(/[0-9]/)) {
+          return `${value} starts with a number and is not recommended as a tag.`;
+        }
+        if (value[0] === 'v') {
+          return `${value} starts with "v" and is not recommended as a tag.`;
+        }
+        if (semver.valid(value)) {
+          return `${value} is a version string and not recommended as a tag.`;
+        }
+        return true;
+      },
     },
   ]);
-  return assignLatestTag;
+  return customTag;
 }
 
 async function action(options) {
+  // Uncomment the line below when testing changes to this script
+  // to prevent accidental npm publishing and tagging
+  // options.dry = true;
   if (!options.sdkVersion) {
     const { version: expoSdkVersion } = await JsonFile.readAsync<{ version: string }>(
       path.join(EXPO_DIR, 'packages/expo/package.json')
@@ -50,6 +63,30 @@ async function action(options) {
     ]);
     options.sdkVersion = sdkVersion;
   }
+
+  const sdkTag = `sdk-${semver.major(options.sdkVersion)}`;
+
+  const tagOptions = new Map<string, string[]>();
+  tagOptions.set(`${sdkTag} and latest`, [sdkTag, 'latest']);
+  tagOptions.set(`${sdkTag} and beta`, [sdkTag, 'beta']);
+  tagOptions.set(sdkTag, [sdkTag]);
+
+  const { tagChoice } = await inquirer.prompt<{ tagChoice: string }>([
+    {
+      type: 'list',
+      name: 'tagChoice',
+      prefix: '❔',
+      message: 'Which tags would you like to use?',
+      choices: [...tagOptions.keys(), 'custom'],
+    },
+  ]);
+
+  const tags =
+    tagChoice === 'custom' ? [await promptForCustomTagAsync()] : tagOptions.get(tagChoice);
+
+  const npmPublishTag = tags ? tags[0] : sdkTag; // Will either be the sdk-xx tag, or a custom string
+
+  console.log('tags = ' + JSON.stringify(tags));
 
   const availableProjectTemplates = await getAvailableProjectTemplatesAsync();
   const projectTemplatesToPublish = options.project
@@ -90,16 +127,6 @@ async function action(options) {
       },
     ]);
 
-    // Obtain the tag for the template.
-    const { tag } = await inquirer.prompt<{ tag: string }>([
-      {
-        type: 'input',
-        name: 'tag',
-        message: `How to tag ${chalk.green(template.name)}@${chalk.red(newVersion)}?`,
-        default: semver.prerelease(newVersion) ? 'next' : `sdk-${semver.major(options.sdkVersion)}`,
-      },
-    ]);
-
     // Update package version in `package.json`
     await JsonFile.setAsync(path.join(template.path, 'package.json'), 'version', newVersion);
 
@@ -126,31 +153,42 @@ async function action(options) {
 
     const moreArgs: string[] = [];
 
-    if (tag) {
-      // Assign custom tag in the publish command, so we don't accidentally publish as latest.
-      moreArgs.push('--tag', tag);
-    }
+    // Assign custom tag in the publish command, so we don't accidentally publish as latest.
+    moreArgs.push('--tag', npmPublishTag);
+
+    const logMessagePrefix = options.dry ? 'Dry run: ' : 'Command to execute: ';
 
     // Publish to NPM registry
+    console.log(logMessagePrefix + 'npm publish ' + ['--access', 'public', ...moreArgs].join(' '));
     options.dry ||
       (await spawnAsync('npm', ['publish', '--access', 'public', ...moreArgs], {
         stdio: 'inherit',
         cwd: template.path,
       }));
 
-    if (tag && (await shouldAssignLatestTagAsync(template.name, newVersion))) {
+    if (tags && tags.length === 2) {
+      // Additional tag (latest, beta, or next) is added here
       console.log(
-        `Assigning ${chalk.blue('latest')} tag to ${chalk.green(template.name)}@${chalk.red(
+        `Assigning ${chalk.blue(`${tags[1]}`)} tag to ${chalk.green(template.name)}@${chalk.red(
           newVersion
         )}...`
       );
 
-      // Add the latest tag to the new version
+      // Add the tag to the new version
+      console.log(
+        logMessagePrefix +
+          'npm ' +
+          ['dist-tag', 'add', `${template.name}@${newVersion}`, `${tags[1]}`].join(' ')
+      );
       options.dry ||
-        (await spawnAsync('npm', ['dist-tag', 'add', `${template.name}@${newVersion}`, 'latest'], {
-          stdio: 'inherit',
-          cwd: template.path,
-        }));
+        (await spawnAsync(
+          'npm',
+          ['dist-tag', 'add', `${template.name}@${newVersion}`, `${tags[1]}`],
+          {
+            stdio: 'inherit',
+            cwd: template.path,
+          }
+        ));
     }
     console.log();
   }
