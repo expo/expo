@@ -1,5 +1,4 @@
 import { AppOwnership, ExecutionEnvironment } from 'expo-constants';
-import { ExpoClientConfig } from 'expo-constants/build/Constants.types';
 
 import { describeManifestTypes, mockConstants } from './ManifestTestUtils';
 
@@ -43,9 +42,10 @@ describe('Managed', () => {
       {
         extra: {
           expoClient: {
+            name: 'wat',
+            slug: 'wat',
             scheme: 'demo',
-            hostUri: 'exp.host/@test/test',
-          } as ExpoClientConfig,
+          },
         },
       }
     )((manifestObj) => {
@@ -70,8 +70,10 @@ describe('Managed', () => {
       {
         extra: {
           expoClient: {
+            name: 'wat',
+            slug: 'wat',
             scheme: 'demo',
-          } as ExpoClientConfig,
+          },
         },
       }
     )((manifestObj) => {
@@ -96,8 +98,10 @@ describe('Managed', () => {
       {
         extra: {
           expoClient: {
+            name: 'wat',
+            slug: 'wat',
             scheme: 'demo',
-          } as ExpoClientConfig,
+          },
         },
       }
     )((manifestObj) => {
@@ -128,9 +132,10 @@ describe('Managed', () => {
         {
           extra: {
             expoClient: {
+              name: 'wat',
+              slug: 'wat',
               scheme: 'demo',
-              hostUri: 'exp.host/@test/test',
-            } as ExpoClientConfig,
+            },
           },
         }
       )((manifestObj) => {
@@ -157,9 +162,10 @@ describe('Managed', () => {
         {
           extra: {
             expoClient: {
+              name: 'wat',
+              slug: 'wat',
               scheme: 'demo',
-              hostUri: 'exp.host/@test/test',
-            } as ExpoClientConfig,
+            },
           },
         }
       )((manifestObj) => {
@@ -193,9 +199,10 @@ describe('Managed', () => {
         {
           extra: {
             expoClient: {
+              slug: 'wat',
+              name: 'wat',
               scheme: 'demo',
-              hostUri: '192.168.1.4:19000',
-            } as ExpoClientConfig,
+            },
             expoGo: {
               developer: {
                 projectRoot: '/Users/person/myapp',
@@ -206,7 +213,7 @@ describe('Managed', () => {
         }
       )((manifestObj) => {
         const devConstants = {
-          linkingUri: 'exp://192.168.1.4:19000/',
+          linkingUri: 'exp://192.168.1.4:19000',
           experienceUrl: 'exp://192.168.1.4:19000',
           appOwnership: AppOwnership.Expo,
           executionEnvironment: ExecutionEnvironment.StoreClient,
@@ -215,16 +222,19 @@ describe('Managed', () => {
         it(`creates a redirect URL`, () => {
           mockConstants(devConstants, manifestObj);
           const { makeRedirectUri } = require('../AuthSession');
+
           expect(makeRedirectUri()).toBe('exp://192.168.1.4:19000');
         });
         it(`prefers localhost`, () => {
           mockConstants(devConstants, manifestObj);
           const { makeRedirectUri } = require('../AuthSession');
+
           expect(makeRedirectUri({ preferLocalhost: true })).toBe('exp://localhost:19000');
         });
         it(`creates a redirect URL with a custom path`, () => {
           mockConstants(devConstants, manifestObj);
           const { makeRedirectUri } = require('../AuthSession');
+
           expect(makeRedirectUri({ path: 'bacon' })).toBe('exp://192.168.1.4:19000/--/bacon');
         });
       });
@@ -239,8 +249,10 @@ describe('Managed', () => {
         {
           extra: {
             expoClient: {
+              name: 'wat',
+              slug: 'wat',
               originalFullName: '@test/originaltest',
-            } as ExpoClientConfig,
+            },
           },
         }
       )((manifestObj) => {
