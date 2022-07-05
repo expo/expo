@@ -113,19 +113,19 @@ Alternatively, you can use `--platform all` option to build for Android and iOS 
 <Terminal cmd={['$ eas build --platform all']} />
 
 
-> If you have released your app to stores previously and have existing [app signing credentials](/distribution/app-signing) that you would like to use, [follow these instructions to configure them](/app-signing/existing-credentials).
+> If you have released your app to stores previously and have existing [app signing credentials](/distribution/app-signing) that you want to use, [follow these instructions to configure them](/app-signing/existing-credentials).
 
 #### Android app signing credentials
 
-- If you have not yet generated a keystore for your app, you can let EAS CLI take care of that for you by selecting `Generate new keystore`, and then you're done. The keystore is stored securely on EAS servers.
+- If you have not yet generated a keystore for your app, you can let EAS CLI take care of that for you by selecting `Generate new keystore`, and then you are done. The keystore is stored securely on EAS servers.
 - If you have previously built your app with `expo build:android`, you can use the same credentials here.
-- If you would rather manually generate your keystore, please see the [manual Android credentials guide](/app-signing/local-credentials#android-credentials) for more information.
+- If you want to manually generate your keystore, please see the [manual Android credentials guide](/app-signing/local-credentials#android-credentials) for more information.
 
 #### iOS app signing credentials
 
 - If you have not generated a provisioning profile and/or distribution certificate yet, you can let EAS CLI take care of that for you by signing into your Apple Developer Program account and following the prompts.
 - If you have already built your app with `expo build:ios`, you can use the same credentials here.
-- If you would rather manually generate your credentials, refer to the [manual iOS credentials guide](/app-signing/local-credentials#ios-credentials) for more information.
+- If you want to rather manually generate your credentials, refer to the [manual iOS credentials guide](/app-signing/local-credentials#ios-credentials) for more information.
 
 ## 5. Wait for the build to complete
 
