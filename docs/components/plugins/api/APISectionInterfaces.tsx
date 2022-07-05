@@ -30,13 +30,13 @@ export type APISectionInterfacesProps = {
 };
 
 const renderDefaultValue = (defaultValue?: CommentTagData) =>
-  defaultValue ? (
+  defaultValue && (
     <>
       <br />
       <br />
       <B>Default:</B> <InlineCode>{defaultValue.text}</InlineCode>
     </>
-  ) : null;
+  );
 
 const renderInterfaceComment = (comment?: CommentData, signatures?: MethodSignatureData[]) => {
   if (signatures && signatures.length) {
@@ -125,7 +125,7 @@ const renderInterface = ({
       {interfaceMethods.length ? (
         <>
           <div css={STYLES_NESTED_SECTION_HEADER}>
-            <H4>Interface Methods</H4>
+            <H4>{name} Methods</H4>
           </div>
           {interfaceMethods.map(method => renderMethod(method))}
         </>
@@ -133,7 +133,7 @@ const renderInterface = ({
       {interfaceFields.length ? (
         <>
           <div css={STYLES_NESTED_SECTION_HEADER}>
-            <H4>Interface Properties</H4>
+            <H4>{name} Properties</H4>
           </div>
           <Table>
             {renderTableHeadRow()}
