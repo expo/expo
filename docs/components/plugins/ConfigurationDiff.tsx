@@ -55,7 +55,7 @@ const diffContainerStyles = css`
   border: 1px solid ${theme.border.default};
   background-color: ${theme.background.screen};
   border-radius: ${borderRadius.small}px;
-  margin-bottom: ${spacing[2.5]}px;
+  margin-bottom: ${spacing[4]}px;
 
   table {
     ${typography.fontSizes[14]}
@@ -88,8 +88,9 @@ const titleContainerStyles = css`
   padding: ${spacing[3.5]}px;
   background-color: ${theme.background.default};
   border-bottom: 1px solid ${theme.border.default};
-  font-size: 0.9rem;
+  border-radius: ${borderRadius.small}px ${borderRadius.small}px 0 0;
   color: ${theme.text.default};
+  word-break: break-word;
 `;
 
 export default ConfigurationDiff;
