@@ -10,6 +10,7 @@ import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.bridge.ReactContext
 import expo.modules.devlauncher.launcher.DevLauncherControllerInterface
+import java.lang.reflect.InvocationTargetException
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
@@ -54,6 +55,7 @@ abstract class DevLauncherAppLoader(
 
           controller.onAppLoaded(context)
           onReactContext(context)
+          maybeInitFlipper(context.applicationContext, appHost.reactInstanceManager)
           appHost.reactInstanceManager.removeReactInstanceEventListener(this)
           reactContextWasInitialized = true
           continuation!!.resume(true)
@@ -93,5 +95,27 @@ abstract class DevLauncherAppLoader(
 
   private fun launchIntent(intent: Intent) {
     context.applicationContext.startActivity(intent)
+  }
+
+  private fun maybeInitFlipper(appContext: Context, reactInstanceManager: ReactInstanceManager) {
+    try {
+      /*
+      We use reflection here to pick up the class that initializes Flipper,
+      since Flipper library is not available in release mode
+      */
+      val packageName = appContext.packageName
+      val aClass = Class.forName("$packageName.ReactNativeFlipper")
+      aClass
+        .getMethod("initializeFlipper", Context::class.java, ReactInstanceManager::class.java)
+        .invoke(null, context, reactInstanceManager)
+    } catch (e: ClassNotFoundException) {
+      e.printStackTrace()
+    } catch (e: NoSuchMethodException) {
+      e.printStackTrace()
+    } catch (e: IllegalAccessException) {
+      e.printStackTrace()
+    } catch (e: InvocationTargetException) {
+      e.printStackTrace()
+    }
   }
 }

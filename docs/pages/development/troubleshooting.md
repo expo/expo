@@ -2,6 +2,8 @@
 title: Troubleshooting
 ---
 
+import ConfigurationDiff from '~/components/plugins/ConfigurationDiff';
+
 Issues are often solved by upgrading to the latest version of `expo-dev-client`, Expo CLI, and EAS CLI.
 
 If you're not able to resolve your issue, please [let us know!](https://github.com/expo/expo/issues/new?template=dev_client_bug_report.yml)
@@ -27,3 +29,9 @@ you have an outdated version of `expo-modules-autolinking` (below 0.7.x) install
 A common reason for this is installing `expo-cli` or `eas-cli` as dependencies of your project, rather than globally as we recommend; removing those packages should fix the error.
 
 Otherwise, run `yarn why expo-modules-autolinking` to see where the outdated version is coming from, and upgrade that package to the latest version.
+
+### Cannot retrieve the React Context from the Android Flipper plugin
+
+Apply the below diff to your `ReactNativeFlipper.java` file.
+
+<ConfigurationDiff source="/static/diffs/client/react-native-flipper-fix.diff" />
