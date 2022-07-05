@@ -20,6 +20,7 @@ Package-specific changes not released in any SDK will be added here just before 
 - Updated `react-native-reanimated` from `2.8.0` to `2.9.1`. ([#18085](https://github.com/expo/expo/pull/18085) by [@lukmccall](https://github.com/lukmccall))
 - Updated `react-native-pager-view` from `5.4.15` to `5.4.24`. ([#18084](https://github.com/expo/expo/pull/18084) by [@kudo](https://github.com/kudo))
 - Updated `@stripe/stripe-react-native` from `0.6.0` to `0.13.1`. ([#18072](https://github.com/expo/expo/pull/18072) by [@kudo](https://github.com/kudo))
+- Updated `react-native-safe-area-context` from `4.2.4` to `4.3.1`. ([#18048](https://github.com/expo/expo/pull/18048) by [@kudo](https://github.com/kudo))
 
 ### 🛠 Breaking changes
 

@@ -5,7 +5,7 @@
 #import <react/renderer/components/safeareacontext/Props.h>
 #import <react/renderer/components/safeareacontext/RCTComponentViewHelpers.h>
 
-#import "RCTFabricComponentsPlugins.h"
+#import <React/RCTFabricComponentsPlugins.h>
 #import "RNCSafeAreaUtils.h"
 
 using namespace facebook::react;
@@ -55,10 +55,7 @@ using namespace facebook::react;
   _currentSafeAreaInsets = safeAreaInsets;
   _currentFrame = frame;
 
-  [NSNotificationCenter.defaultCenter
-   postNotificationName:RNCSafeAreaDidChange
-   object:self
-   userInfo:nil];
+  [NSNotificationCenter.defaultCenter postNotificationName:RNCSafeAreaDidChange object:self userInfo:nil];
 
   if (_eventEmitter) {
     RNCSafeAreaProviderEventEmitter::OnInsetsChange event = {
