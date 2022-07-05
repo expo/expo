@@ -34,7 +34,7 @@ EAS Build also works well with projects created by `npx create-react-native-app`
 
 <Collapsible summary="An Expo user account">
 
-EAS Build is available to everybody with an Expo account. You can sign up at [https://expo.dev/signup](https://expo.dev/signup). It is available for both free and paid subscriptions. 
+EAS Build is available to anyone with an Expo account, regardless of whether you pay for EAS or use our free tier. You can sign up at [https://expo.dev/signup](https://expo.dev/signup).
 
 Paid subscribers get quality improvements such as additional build concurrencies, priority access to minimize the time your builds spend queueing, and increased limits on build timeouts. Learn more about different plans and benefits at [EAS pricing](https://expo.dev/pricing).
 
