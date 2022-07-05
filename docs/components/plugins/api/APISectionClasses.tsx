@@ -83,7 +83,9 @@ const renderClass = (clx: ClassDefinitionData, hasMultipleClasses: boolean): JSX
       <CommentTextBlock comment={comment} />
       {returnComment && (
         <>
-          <H4>Returns</H4>
+          <div css={STYLES_NESTED_SECTION_HEADER}>
+            <H4>Returns</H4>
+          </div>
           <ReactMarkdown components={mdComponents}>{returnComment.text}</ReactMarkdown>
         </>
       )}
