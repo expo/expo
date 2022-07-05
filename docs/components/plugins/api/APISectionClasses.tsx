@@ -2,7 +2,6 @@ import React from 'react';
 import ReactMarkdown from 'react-markdown';
 
 import { InlineCode } from '~/components/base/code';
-import { UL } from '~/components/base/list';
 import { B, P } from '~/components/base/paragraph';
 import { H2, H3Code, H4 } from '~/components/plugins/Headings';
 import {
@@ -17,6 +16,8 @@ import {
   getTagData,
   mdComponents,
   resolveTypeName,
+  STYLES_APIBOX,
+  STYLES_NESTED_SECTION_HEADER,
   TypeDocKind,
 } from '~/components/plugins/api/APISectionUtils';
 
@@ -45,7 +46,7 @@ const renderClass = (clx: ClassDefinitionData, hasMultipleClasses: boolean): JSX
   const returnComment = getTagData('returns', comment);
 
   return (
-    <div key={`class-definition-${name}`}>
+    <div key={`class-definition-${name}`} css={STYLES_APIBOX}>
       {hasMultipleClasses ? (
         <H3Code>
           <InlineCode>{name}</InlineCode>
@@ -89,31 +90,33 @@ const renderClass = (clx: ClassDefinitionData, hasMultipleClasses: boolean): JSX
       {properties?.length ? (
         <>
           {hasMultipleClasses ? (
-            <>
+            <div css={STYLES_NESTED_SECTION_HEADER}>
               <H4>{name} Properties</H4>
-              <br />
-            </>
+            </div>
           ) : (
             <H2>{name} Properties</H2>
           )}
-          <UL>
+          <div>
             {properties.map(property =>
               renderProp(property, property?.defaultValue, !hasMultipleClasses)
-            )}
-          </UL>
-        </>
-      ) : null}
-      {methods?.length ? (
-        <>
-          {hasMultipleClasses ? <H4>{name} Methods</H4> : <H2>{name} Methods</H2>}
-          <div style={{ paddingLeft: 8 }}>
-            {methods.map((method, index) =>
-              renderMethod(method, index, methods.length, undefined, undefined, !hasMultipleClasses)
             )}
           </div>
         </>
       ) : null}
-      <hr />
+      {methods?.length && (
+        <>
+          {hasMultipleClasses ? (
+            <div css={STYLES_NESTED_SECTION_HEADER}>
+              <H4>{name} Methods</H4>
+            </div>
+          ) : (
+            <H2>{name} Methods</H2>
+          )}
+          {methods.map((method, index) =>
+            renderMethod(method, index, methods.length, undefined, undefined, !hasMultipleClasses)
+          )}
+        </>
+      )}
     </div>
   );
 };

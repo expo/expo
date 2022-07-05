@@ -1,5 +1,5 @@
 import { css } from '@emotion/react';
-import { theme } from '@expo/styleguide';
+import { borderRadius, shadows, spacing, theme, typography } from '@expo/styleguide';
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -17,7 +17,10 @@ import {
   TypeDefinitionData,
   TypePropertyDataFlags,
 } from '~/components/plugins/api/APIDataTypes';
-import { Row, Cell, Table, TableHead, HeaderCell } from '~/ui/components/Table';
+import { PlatformTags } from '~/components/plugins/api/APISectionPlatformTags';
+import * as Constants from '~/constants/theme';
+import { Cell, HeaderCell, Row, Table, TableHead } from '~/ui/components/Table';
+import { tableWrapperStyle } from '~/ui/components/Table/Table';
 
 const isDev = process.env.NODE_ENV === 'development';
 
@@ -345,13 +348,10 @@ export const renderTableHeadRow = () => (
 );
 
 export const renderParams = (parameters: MethodParamData[]) => (
-  <>
-    <H4>Arguments</H4>
-    <Table>
-      {renderTableHeadRow()}
-      {parameters?.map(renderParamRow)}
-    </Table>
-  </>
+  <Table>
+    {renderTableHeadRow()}
+    <tbody>{parameters?.map(renderParamRow)}</tbody>
+  </Table>
 );
 
 export const listParams = (parameters: MethodParamData[]) =>
@@ -375,20 +375,16 @@ export const renderTypeOrSignatureType = (
   if (type) {
     return <InlineCode key={`signature-type-${type.name}`}>{resolveTypeName(type)}</InlineCode>;
   } else if (signatures && signatures.length) {
-    return signatures.map(({ name, type, parameters }) => (
-      <InlineCode key={`signature-type-${name}`}>
-        (
-        {parameters && includeParamType
-          ? parameters.map(param => (
-              <span key={`signature-param-${param.name}`}>
-                {param.name}
-                {param.flags?.isOptional && '?'}: {resolveTypeName(param.type)}
-              </span>
-            ))
-          : listParams(parameters)}
-        ) =&gt; {resolveTypeName(type)}
-      </InlineCode>
-    ));
+    return signatures.map(({ parameters }) =>
+      parameters && includeParamType
+        ? parameters.map(param => (
+            <span key={`signature-param-${param.name}`}>
+              {param.name}
+              {param.flags?.isOptional && '?'}: {resolveTypeName(param.type)}
+            </span>
+          ))
+        : listParams(parameters)
+    );
   }
   return undefined;
 };
@@ -425,30 +421,7 @@ export const getTagData = (tagName: string, comment?: CommentData) =>
 export const getAllTagData = (tagName: string, comment?: CommentData) =>
   comment?.tags?.filter(tag => tag.tag === tagName);
 
-const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
-
-const formatPlatformName = (name: string) => {
-  const cleanName = name.toLowerCase().replace('\n', '');
-  return cleanName.includes('ios')
-    ? cleanName.replace('ios', 'iOS')
-    : cleanName.includes('expo')
-    ? cleanName.replace('expo', 'Expo Go')
-    : capitalize(name);
-};
-
-export const getPlatformTags = (comment?: CommentData, breakLine: boolean = true) => {
-  const platforms = getAllTagData('platform', comment);
-  return platforms?.length ? (
-    <>
-      {platforms.map(platform => (
-        <div key={platform.text} css={STYLES_PLATFORM}>
-          {formatPlatformName(platform.text)} Only
-        </div>
-      ))}
-      {breakLine && <br />}
-    </>
-  ) : null;
-};
+export const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
 
 export const CommentTextBlock = ({
   comment,
@@ -482,7 +455,9 @@ export const CommentTextBlock = ({
           <B>Example</B>
         </div>
       ) : (
-        <H4>Example</H4>
+        <div css={STYLES_NESTED_SECTION_HEADER}>
+          <H4>Example</H4>
+        </div>
       )}
       <ReactMarkdown components={components}>{example.text}</ReactMarkdown>
     </React.Fragment>
@@ -508,12 +483,17 @@ export const CommentTextBlock = ({
     </Quote>
   ) : null;
 
+  const hasPlatforms = (getAllTagData('platform', comment)?.length || 0) > 0;
+
   return (
     <>
+      {!withDash && includePlatforms && hasPlatforms && (
+        <PlatformTags comment={comment} prefix="Only for:" />
+      )}
       {deprecationNote}
       {beforeContent}
       {withDash && (shortText || text) && ' - '}
-      {includePlatforms && getPlatformTags(comment, !withDash)}
+      {withDash && includePlatforms && <PlatformTags comment={comment} />}
       {shortText}
       {text}
       {afterContent}
@@ -529,36 +509,65 @@ export const getComponentName = (name?: string, children: PropData[] = []) => {
   return ctor?.signatures?.[0]?.type?.name ?? 'default';
 };
 
-export const STYLES_OPTIONAL = css`
-  color: ${theme.text.secondary};
-  font-size: 90%;
-  padding-top: 22px;
-`;
+export const STYLES_APIBOX = css({
+  borderRadius: borderRadius.medium,
+  borderWidth: 1,
+  borderStyle: 'solid',
+  borderColor: theme.border.default,
+  padding: `${spacing[1]}px ${spacing[5]}px`,
+  boxShadow: shadows.micro,
+  marginBottom: spacing[6],
+  overflowX: 'hidden',
 
-export const STYLES_SECONDARY = css`
-  color: ${theme.text.secondary};
-  font-size: 90%;
-  font-weight: 600;
-`;
+  h3: {
+    marginTop: spacing[4],
+  },
 
-export const STYLES_PLATFORM = css`
-  & {
-    display: inline-block;
-    background-color: ${theme.background.tertiary};
-    color: ${theme.text.default};
-    font-size: 90%;
-    font-weight: 700;
-    padding: 6px 12px;
-    margin-bottom: 8px;
-    margin-right: 8px;
-    border-radius: 4px;
-  }
+  [`.css-${tableWrapperStyle.name}`]: {
+    boxShadow: 'none',
+  },
 
-  table & {
-    margin-bottom: 1rem;
-  }
-`;
+  [`@media screen and (max-width: ${Constants.breakpoints.mobile})`]: {
+    padding: `0 ${spacing[4]}px`,
+  },
+});
 
-const STYLES_EXAMPLE_IN_TABLE = css`
-  margin: 8px 0;
-`;
+export const STYLES_APIBOX_NESTED = css({
+  boxShadow: 'none',
+});
+
+export const STYLES_NESTED_SECTION_HEADER = css({
+  display: 'flex',
+  borderTop: `1px solid ${theme.border.default}`,
+  borderBottom: `1px solid ${theme.border.default}`,
+  margin: `${spacing[6]}px -${spacing[5]}px ${spacing[4]}px`,
+  padding: `${spacing[2.5]}px ${spacing[5]}px`,
+  backgroundColor: theme.background.secondary,
+
+  h4: {
+    ...typography.fontSizes[16],
+    marginBottom: 0,
+  },
+});
+
+export const STYLES_NOT_EXPOSED_HEADER = css({
+  marginTop: spacing[5],
+  marginBottom: spacing[2],
+  display: 'inline-block',
+});
+
+export const STYLES_OPTIONAL = css({
+  color: theme.text.secondary,
+  fontSize: '90%',
+  paddingTop: 22,
+});
+
+export const STYLES_SECONDARY = css({
+  color: theme.text.secondary,
+  fontSize: '90%',
+  fontWeight: 600,
+});
+
+const STYLES_EXAMPLE_IN_TABLE = css({
+  margin: `${spacing[2]}px 0`,
+});

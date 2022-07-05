@@ -1,4 +1,3 @@
-import { css } from '@emotion/react';
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
 
@@ -10,13 +9,17 @@ import {
   MethodSignatureData,
   PropData,
 } from '~/components/plugins/api/APIDataTypes';
+import { PlatformTags } from '~/components/plugins/api/APISectionPlatformTags';
 import {
   CommentTextBlock,
-  getPlatformTags,
   listParams,
   mdComponents,
   renderParams,
   resolveTypeName,
+  STYLES_APIBOX,
+  STYLES_APIBOX_NESTED,
+  STYLES_NESTED_SECTION_HEADER,
+  STYLES_NOT_EXPOSED_HEADER,
 } from '~/components/plugins/api/APISectionUtils';
 
 export type APISectionMethodsProps = {
@@ -24,8 +27,6 @@ export type APISectionMethodsProps = {
   apiName?: string;
   header?: string;
 };
-
-const STYLES_NOT_EXPOSED_HEADER = css({ marginTop: 20, marginBottom: 10, display: 'inline-block' });
 
 export const renderMethod = (
   { signatures = [] }: MethodDefinitionData | PropData,
@@ -37,19 +38,23 @@ export const renderMethod = (
 ): JSX.Element[] => {
   const HeaderComponent = exposeInSidebar ? H3Code : H4Code;
   return signatures.map(({ name, parameters, comment, type }: MethodSignatureData) => (
-    <div key={`method-signature-${name}-${parameters?.length || 0}`}>
+    <div
+      key={`method-signature-${name}-${parameters?.length || 0}`}
+      css={[STYLES_APIBOX, !exposeInSidebar && STYLES_APIBOX_NESTED]}>
+      <PlatformTags comment={comment} prefix="Only for:" firstElement />
       <HeaderComponent>
-        <InlineCode customCss={STYLES_NOT_EXPOSED_HEADER}>
+        <InlineCode customCss={!exposeInSidebar ? STYLES_NOT_EXPOSED_HEADER : undefined}>
           {apiName && `${apiName}.`}
           {header !== 'Hooks' ? `${name}(${listParams(parameters)})` : name}
         </InlineCode>
       </HeaderComponent>
-      {getPlatformTags(comment)}
       {parameters && renderParams(parameters)}
       <CommentTextBlock comment={comment} includePlatforms={false} />
-      {resolveTypeName(type) !== 'undefined' ? (
+      {resolveTypeName(type) !== 'undefined' && (
         <>
-          <H4>Returns</H4>
+          <div css={STYLES_NESTED_SECTION_HEADER}>
+            <H4>Returns</H4>
+          </div>
           <UL>
             <LI returnType>
               <InlineCode>{resolveTypeName(type)}</InlineCode>
@@ -59,8 +64,7 @@ export const renderMethod = (
             <ReactMarkdown components={mdComponents}>{comment.returns}</ReactMarkdown>
           )}
         </>
-      ) : null}
-      {index !== undefined ? index + 1 !== dataLength && <hr /> : null}
+      )}
     </div>
   ));
 };
