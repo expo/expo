@@ -31,6 +31,13 @@ export type FileTransform = StringTransform & {
    * Patterns without slashes will be matched against the basename of the path.
    */
   paths?: string | string[];
+
+  /**
+   * When truthy every transform that changes anything will print a diff
+   * and wait for confirm to continue. If value is a string it will be used to identify
+   * the transformation in the output
+   */
+  debug?: boolean | string;
 };
 
 /**
