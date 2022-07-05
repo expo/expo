@@ -1,21 +1,39 @@
-#import "RNSScreenStack.h"
-#import "RNSScreen.h"
-#import "RNSScreenStackAnimator.h"
-#import "RNSScreenStackHeaderConfig.h"
-#import "RNSScreenWindowTraits.h"
+#ifdef RN_FABRIC_ENABLED
+#import <React/RCTMountingTransactionObserving.h>
+#import <React/RCTSurfaceTouchHandler.h>
+#import <React/UIView+React.h>
+#import <react/renderer/components/rnscreens/ComponentDescriptors.h>
+#import <react/renderer/components/rnscreens/EventEmitters.h>
+#import <react/renderer/components/rnscreens/Props.h>
+#import <react/renderer/components/rnscreens/RCTComponentViewHelpers.h>
 
+#import "RCTFabricComponentsPlugins.h"
+
+#else
 #import <React/RCTBridge.h>
 #import <React/RCTRootContentView.h>
 #import <React/RCTShadowView.h>
 #import <React/RCTTouchHandler.h>
 #import <React/RCTUIManager.h>
 #import <React/RCTUIManagerUtils.h>
+#endif // RN_FABRIC_ENABLED
+
+#import "RNSScreen.h"
+#import "RNSScreenStack.h"
+#import "RNSScreenStackAnimator.h"
+#import "RNSScreenStackHeaderConfig.h"
+#import "RNSScreenWindowTraits.h"
 
 @interface RNSScreenStackView () <
     UINavigationControllerDelegate,
     UIAdaptivePresentationControllerDelegate,
     UIGestureRecognizerDelegate,
-    UIViewControllerTransitioningDelegate>
+    UIViewControllerTransitioningDelegate
+#ifdef RN_FABRIC_ENABLED
+    ,
+    RCTMountingTransactionObserving
+#endif
+    >
 
 @property (nonatomic) NSMutableArray<UIViewController *> *presentedModals;
 @property (nonatomic) BOOL updatingModals;
@@ -71,13 +89,29 @@
 @implementation RNSScreenStackView {
   UINavigationController *_controller;
   NSMutableArray<RNSScreenView *> *_reactSubviews;
-  __weak RNSScreenStackManager *_manager;
-  BOOL _hasLayout;
   BOOL _invalidated;
-  UIPercentDrivenInteractiveTransition *_interactionController;
-  BOOL _updateScheduled;
   BOOL _isFullWidthSwiping;
+  UIPercentDrivenInteractiveTransition *_interactionController;
+  BOOL _hasLayout;
+  __weak RNSScreenStackManager *_manager;
+  BOOL _updateScheduled;
+#ifdef RN_FABRIC_ENABLED
+  UIView *_snapshot;
+#endif
 }
+
+#ifdef RN_FABRIC_ENABLED
+- (instancetype)initWithFrame:(CGRect)frame
+{
+  if (self = [super initWithFrame:frame]) {
+    static const auto defaultProps = std::make_shared<const facebook::react::RNSScreenStackProps>();
+    _props = defaultProps;
+    [self initCommonProps];
+  }
+
+  return self;
+}
+#endif // RN_FABRIC_ENABLED
 
 - (instancetype)initWithManager:(RNSScreenStackManager *)manager
 {
@@ -85,26 +119,41 @@
     _hasLayout = NO;
     _invalidated = NO;
     _manager = manager;
-    _reactSubviews = [NSMutableArray new];
-    _presentedModals = [NSMutableArray new];
-    _controller = [[RNScreensNavigationController alloc] init];
-    _controller.delegate = self;
-
-#if !TARGET_OS_TV
-    [self setupGestureHandlers];
-#endif
-    // we have to initialize viewControllers with a non empty array for
-    // largeTitle header to render in the opened state. If it is empty
-    // the header will render in collapsed state which is perhaps a bug
-    // in UIKit but ¯\_(ツ)_/¯
-    [_controller setViewControllers:@[ [UIViewController new] ]];
+    [self initCommonProps];
   }
   return self;
 }
 
-- (UIViewController *)reactViewController
+- (void)initCommonProps
 {
-  return _controller;
+  _reactSubviews = [NSMutableArray new];
+  _presentedModals = [NSMutableArray new];
+  _controller = [RNScreensNavigationController new];
+  _controller.delegate = self;
+#if !TARGET_OS_TV
+  [self setupGestureHandlers];
+#endif
+  // we have to initialize viewControllers with a non empty array for
+  // largeTitle header to render in the opened state. If it is empty
+  // the header will render in collapsed state which is perhaps a bug
+  // in UIKit but ¯\_(ツ)_/¯
+  [_controller setViewControllers:@[ [UIViewController new] ]];
+}
+
+#pragma mark - Common
+
+- (void)emitOnFinishTransitioningEvent
+{
+#ifdef RN_FABRIC_ENABLED
+  if (_eventEmitter != nullptr) {
+    std::dynamic_pointer_cast<const facebook::react::RNSScreenStackEventEmitter>(_eventEmitter)
+        ->onFinishTransitioning(facebook::react::RNSScreenStackEventEmitter::OnFinishTransitioning{});
+  }
+#else
+  if (self.onFinishTransitioning) {
+    self.onFinishTransitioning(nil);
+  }
+#endif
 }
 
 - (void)navigationController:(UINavigationController *)navigationController
@@ -112,6 +161,12 @@
                     animated:(BOOL)animated
 {
   UIView *view = viewController.view;
+#ifdef RN_FABRIC_ENABLED
+  if (![view isKindOfClass:[RNSScreenView class]]) {
+    // if the current view is a snapshot, config was already removed so we don't trigger the method
+    return;
+  }
+#endif
   RNSScreenStackHeaderConfig *config = nil;
   for (UIView *subview in view.reactSubviews) {
     if ([subview isKindOfClass:[RNSScreenStackHeaderConfig class]]) {
@@ -122,63 +177,34 @@
   [RNSScreenStackHeaderConfig willShowViewController:viewController animated:animated withConfig:config];
 }
 
-- (void)navigationController:(UINavigationController *)navigationController
-       didShowViewController:(UIViewController *)viewController
-                    animated:(BOOL)animated
-{
-  if (self.onFinishTransitioning) {
-    self.onFinishTransitioning(nil);
-  }
-  [RNSScreenWindowTraits updateWindowTraits];
-}
-
 - (void)presentationControllerDidDismiss:(UIPresentationController *)presentationController
 {
   // We don't directly set presentation delegate but instead rely on the ScreenView's delegate to
   // forward certain calls to the container (Stack).
-  UIView *screenView = presentationController.presentedViewController.view;
-  if ([screenView isKindOfClass:[RNSScreenView class]]) {
+  if ([presentationController.presentedViewController isKindOfClass:[RNSScreen class]]) {
     // we trigger the update of status bar's appearance here because there is no other lifecycle method
     // that can handle it when dismissing a modal, the same for orientation
     [RNSScreenWindowTraits updateWindowTraits];
     [_presentedModals removeObject:presentationController.presentedViewController];
+
+    _updatingModals = NO;
+#ifdef RN_FABRIC_ENABLED
+    [self emitOnFinishTransitioningEvent];
+#else
+    // we double check if there are no new controllers pending to be presented since someone could
+    // have tried to push another one during the transition.
+    // We don't do it on Fabric since update of container will be triggered from "unmount" method afterwards
+    [self updateContainer];
     if (self.onFinishTransitioning) {
       // instead of directly triggering onFinishTransitioning this time we enqueue the event on the
       // main queue. We do that because onDismiss event is also enqueued and we want for the transition
       // finish event to arrive later than onDismiss (see RNSScreen#notifyDismiss)
       dispatch_async(dispatch_get_main_queue(), ^{
-        if (self.onFinishTransitioning) {
-          self.onFinishTransitioning(nil);
-        }
+        [self emitOnFinishTransitioningEvent];
       });
     }
+#endif
   }
-}
-
-- (void)markChildUpdated
-{
-  // do nothing
-}
-
-- (void)didUpdateChildren
-{
-  // do nothing
-}
-
-- (void)insertReactSubview:(RNSScreenView *)subview atIndex:(NSInteger)atIndex
-{
-  if (![subview isKindOfClass:[RNSScreenView class]]) {
-    RCTLogError(@"ScreenStack only accepts children of type Screen");
-    return;
-  }
-  subview.reactSuperview = self;
-  [_reactSubviews insertObject:subview atIndex:atIndex];
-}
-
-- (void)removeReactSubview:(RNSScreenView *)subview
-{
-  subview.reactSuperview = nil;
-  [_reactSubviews removeObject:subview];
 }
 
 - (NSArray<UIView *> *)reactSubviews
@@ -186,32 +212,30 @@
   return _reactSubviews;
 }
 
-- (void)didUpdateReactSubviews
-{
-  // we need to wait until children have their layout set. At this point they don't have the layout
-  // set yet, however the layout call is already enqueued on ui thread. Enqueuing update call on the
-  // ui queue will guarantee that the update will run after layout.
-  dispatch_async(dispatch_get_main_queue(), ^{
-    self->_hasLayout = YES;
-    [self maybeAddToParentAndUpdateContainer];
-  });
-}
-
 - (void)didMoveToWindow
 {
   [super didMoveToWindow];
+#ifdef RN_FABRIC_ENABLED
+  // for handling nested stacks
+  [self maybeAddToParentAndUpdateContainer];
+#else
   if (!_invalidated) {
     // We check whether the view has been invalidated before running side-effects in didMoveToWindow
     // This is needed because when LayoutAnimations are used it is possible for view to be re-attached
     // to a window despite the fact it has been removed from the React Native view hierarchy.
     [self maybeAddToParentAndUpdateContainer];
   }
+#endif
 }
 
 - (void)maybeAddToParentAndUpdateContainer
 {
   BOOL wasScreenMounted = _controller.parentViewController != nil;
+#ifdef RN_FABRIC_ENABLED
+  BOOL isScreenReadyForShowing = self.window;
+#else
   BOOL isScreenReadyForShowing = self.window && _hasLayout;
+#endif
   if (!isScreenReadyForShowing && !wasScreenMounted) {
     // We wait with adding to parent controller until the stack is mounted and has its initial
     // layout done.
@@ -314,9 +338,7 @@
   __weak RNSScreenStackView *weakSelf = self;
 
   void (^afterTransitions)(void) = ^{
-    if (weakSelf.onFinishTransitioning) {
-      weakSelf.onFinishTransitioning(nil);
-    }
+    [weakSelf emitOnFinishTransitioningEvent];
     weakSelf.updatingModals = NO;
     if (weakSelf.scheduleModalsUpdate) {
       // if modals update was requested during setModalViewControllers we set scheduleModalsUpdate
@@ -360,7 +382,15 @@
 #endif
 
         BOOL shouldAnimate = lastModal && [next isKindOfClass:[RNSScreen class]] &&
-            ((RNSScreenView *)next.view).stackAnimation != RNSScreenStackAnimationNone;
+            ((RNSScreen *)next).screenView.stackAnimation != RNSScreenStackAnimationNone;
+
+        // if you want to present another modal quick enough after dismissing the previous one,
+        // it will result in wrong changeRootController, see repro in
+        // https://github.com/software-mansion/react-native-screens/issues/1299 We call `updateContainer` again in
+        // `presentationControllerDidDismiss` to cover this case and present new controller
+        if (previous.beingDismissed) {
+          return;
+        }
 
         [previous presentViewController:next
                                animated:shouldAnimate
@@ -379,7 +409,7 @@
       [_presentedModals containsObject:changeRootController.presentedViewController]) {
     BOOL shouldAnimate = changeRootIndex == controllers.count &&
         [changeRootController.presentedViewController isKindOfClass:[RNSScreen class]] &&
-        ((RNSScreenView *)changeRootController.presentedViewController.view).stackAnimation !=
+        ((RNSScreen *)changeRootController.presentedViewController).screenView.stackAnimation !=
             RNSScreenStackAnimationNone;
     [changeRootController dismissViewControllerAnimated:shouldAnimate completion:finish];
   } else {
@@ -422,33 +452,39 @@
   }
 
   UIViewController *top = controllers.lastObject;
-  UIViewController *lastTop = _controller.viewControllers.lastObject;
+#ifdef RN_FABRIC_ENABLED
+  UIViewController *previousTop = _controller.topViewController;
+#else
+  UIViewController *previousTop = _controller.viewControllers.lastObject;
+#endif
 
-  // at the start we set viewControllers to contain a single UIVIewController
+  // At the start we set viewControllers to contain a single UIViewController
   // instance. This is a workaround for header height adjustment bug (see comment
   // in the init function). Here, we need to detect if the initial empty
   // controller is still there
-  BOOL firstTimePush = ![lastTop isKindOfClass:[RNSScreen class]];
+  BOOL firstTimePush = ![previousTop isKindOfClass:[RNSScreen class]];
 
   if (firstTimePush) {
     // nothing pushed yet
     [_controller setViewControllers:controllers animated:NO];
-  } else if (top != lastTop) {
-    // we always provide `animated:YES` since, if the user does not want the animation, he will provide
-    // `stackAnimation: 'none'`, which will resolve in no animation anyways.
-    if (![controllers containsObject:lastTop]) {
+  } else if (top != previousTop) {
+    if (![controllers containsObject:previousTop]) {
       // if the previous top screen does not exist anymore and the new top was not on the stack before, probably replace
       // was called, so we check the animation
       if (![_controller.viewControllers containsObject:top] &&
           ((RNSScreenView *)top.view).replaceAnimation == RNSScreenReplaceAnimationPush) {
         // setting new controllers with animation does `push` animation by default
+#ifdef RN_FABRIC_ENABLED
+        auto screenController = (RNSScreen *)top;
+        [screenController resetViewToScreen];
+#endif
         [_controller setViewControllers:controllers animated:YES];
       } else {
         // last top controller is no longer on stack
         // in this case we set the controllers stack to the new list with
         // added the last top element to it and perform (animated) pop
         NSMutableArray *newControllers = [NSMutableArray arrayWithArray:controllers];
-        [newControllers addObject:lastTop];
+        [newControllers addObject:previousTop];
         [_controller setViewControllers:newControllers animated:NO];
         [_controller popViewControllerAnimated:YES];
       }
@@ -459,6 +495,10 @@
       NSMutableArray *newControllers = [NSMutableArray arrayWithArray:controllers];
       [newControllers removeLastObject];
       [_controller setViewControllers:newControllers animated:NO];
+#ifdef RN_FABRIC_ENABLED
+      auto screenController = (RNSScreen *)top;
+      [screenController resetViewToScreen];
+#endif
       [_controller pushViewController:top animated:YES];
     } else {
       // don't really know what this case could be, but may need to handle it
@@ -494,45 +534,23 @@
   [self setModalViewControllers:modalControllers];
 }
 
-// By default, the header buttons that are not inside the native hit area
-// cannot be clicked, so we check it by ourselves
-- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
-{
-  if (CGRectContainsPoint(_controller.navigationBar.frame, point)) {
-    // headerConfig should be the first subview of the topmost screen
-    UIView *headerConfig = [[_reactSubviews.lastObject reactSubviews] firstObject];
-    if ([headerConfig isKindOfClass:[RNSScreenStackHeaderConfig class]]) {
-      UIView *headerHitTestResult = [headerConfig hitTest:point withEvent:event];
-      if (headerHitTestResult != nil) {
-        return headerHitTestResult;
-      }
-    }
-  }
-  return [super hitTest:point withEvent:event];
-}
-
 - (void)layoutSubviews
 {
   [super layoutSubviews];
   _controller.view.frame = self.bounds;
 }
 
-- (void)invalidate
-{
-  _invalidated = YES;
-  for (UIViewController *controller in _presentedModals) {
-    [controller dismissViewControllerAnimated:NO completion:nil];
-  }
-  [_presentedModals removeAllObjects];
-  [_controller willMoveToParentViewController:nil];
-  [_controller removeFromParentViewController];
-}
-
 - (void)dismissOnReload
 {
+#ifdef RN_FABRIC_ENABLED
+  if ([_controller.visibleViewController isKindOfClass:[RNSScreen class]]) {
+    [(RNSScreen *)_controller.visibleViewController resetViewToScreen];
+  }
+#else
   dispatch_async(dispatch_get_main_queue(), ^{
     [self invalidate];
   });
+#endif
 }
 
 #pragma mark methods connected to transitioning
@@ -544,9 +562,9 @@
 {
   RNSScreenView *screen;
   if (operation == UINavigationControllerOperationPush) {
-    screen = (RNSScreenView *)toVC.view;
+    screen = ((RNSScreen *)toVC).screenView;
   } else if (operation == UINavigationControllerOperationPop) {
-    screen = (RNSScreenView *)fromVC.view;
+    screen = ((RNSScreen *)fromVC).screenView;
   }
   if (screen != nil &&
       // we need to return the animator when full width swiping even if the animation is not custom,
@@ -567,8 +585,13 @@
   while (parent != nil && ![parent respondsToSelector:@selector(touchHandler)])
     parent = parent.superview;
   if (parent != nil) {
+#ifdef RN_FABRIC_ENABLED
+    RCTSurfaceTouchHandler *touchHandler = [parent performSelector:@selector(touchHandler)];
+#else
     RCTTouchHandler *touchHandler = [parent performSelector:@selector(touchHandler)];
-    [touchHandler cancel];
+#endif
+    [touchHandler setEnabled:NO];
+    [touchHandler setEnabled:YES];
     [touchHandler reset];
   }
 }
@@ -588,8 +611,9 @@
 #else
   if (topScreen.fullScreenSwipeEnabled) {
     // we want only `RNSPanGestureRecognizer` to be able to recognize when
-    // `fullScreenSwipeEnabled` is set
-    if ([gestureRecognizer isKindOfClass:[RNSPanGestureRecognizer class]]) {
+    // `fullScreenSwipeEnabled` is set, and we are in the bounds set by user
+    if ([gestureRecognizer isKindOfClass:[RNSPanGestureRecognizer class]] &&
+        [self isInGestureResponseDistance:gestureRecognizer topScreen:topScreen]) {
       _isFullWidthSwiping = YES;
       [self cancelTouchesInParent];
       return YES;
@@ -622,7 +646,8 @@
     [self cancelTouchesInParent];
     return YES;
   }
-#endif
+
+#endif // TARGET_OS_TV
 }
 
 #if !TARGET_OS_TV
@@ -650,7 +675,7 @@
 
 - (void)handleSwipe:(UIPanGestureRecognizer *)gestureRecognizer
 {
-  RNSScreenView *topScreen = (RNSScreenView *)_controller.viewControllers.lastObject.view;
+  RNSScreenView *topScreen = ((RNSScreen *)_controller.viewControllers.lastObject).screenView;
   float translation;
   float velocity;
   float distance;
@@ -704,7 +729,6 @@
     }
   }
 }
-#endif
 
 - (id<UIViewControllerInteractiveTransitioning>)navigationController:(UINavigationController *)navigationController
                          interactionControllerForAnimationController:
@@ -719,7 +743,243 @@
   return _interactionController;
 }
 
+- (void)navigationController:(UINavigationController *)navigationController
+       didShowViewController:(UIViewController *)viewController
+                    animated:(BOOL)animated
+{
+  [self emitOnFinishTransitioningEvent];
+  [RNSScreenWindowTraits updateWindowTraits];
+}
+#endif
+
+- (void)markChildUpdated
+{
+  // do nothing
+}
+
+- (void)didUpdateChildren
+{
+  // do nothing
+}
+
+- (UIViewController *)reactViewController
+{
+  return _controller;
+}
+
+- (BOOL)isInGestureResponseDistance:(UIGestureRecognizer *)gestureRecognizer topScreen:(RNSScreenView *)topScreen
+{
+  NSDictionary *gestureResponseDistanceValues = topScreen.gestureResponseDistance;
+  float x = [gestureRecognizer locationInView:gestureRecognizer.view].x;
+  float y = [gestureRecognizer locationInView:gestureRecognizer.view].y;
+  BOOL isRTL = _controller.view.semanticContentAttribute == UISemanticContentAttributeForceRightToLeft;
+  if (isRTL) {
+    x = _controller.view.frame.size.width - x;
+  }
+
+  // see:
+  // https://github.com/software-mansion/react-native-screens/pull/1442/commits/74d4bae321875d8305ad021b3d448ebf713e7d56
+  // this prop is always default initialized so we do not expect any nils
+  float start = [gestureResponseDistanceValues[@"start"] floatValue];
+  float end = [gestureResponseDistanceValues[@"end"] floatValue];
+  float top = [gestureResponseDistanceValues[@"top"] floatValue];
+  float bottom = [gestureResponseDistanceValues[@"bottom"] floatValue];
+
+  // we check if any of the constraints are violated and return NO if so
+  return !(
+      (start != -1 && x < start) || (end != -1 && x > end) || (top != -1 && y < top) || (bottom != -1 && y > bottom));
+}
+
+// By default, the header buttons that are not inside the native hit area
+// cannot be clicked, so we check it by ourselves
+- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
+{
+  if (CGRectContainsPoint(_controller.navigationBar.frame, point)) {
+    // headerConfig should be the first subview of the topmost screen
+    UIView *headerConfig = [[_reactSubviews.lastObject reactSubviews] firstObject];
+    if ([headerConfig isKindOfClass:[RNSScreenStackHeaderConfig class]]) {
+      UIView *headerHitTestResult = [headerConfig hitTest:point withEvent:event];
+      if (headerHitTestResult != nil) {
+        return headerHitTestResult;
+      }
+    }
+  }
+  return [super hitTest:point withEvent:event];
+}
+
+- (BOOL)isScrollViewPanGestureRecognizer:(UIGestureRecognizer *)gestureRecognizer
+{
+  // NOTE: This hack is required to restore native behavior of edge swipe (interactive pop gesture)
+  // without this, on a screen with a scroll view, it's only possible to pop view by panning horizontally
+  // if even slightly diagonal (or if in motion), scroll view will scroll, and edge swipe will be cancelled
+  if (![[gestureRecognizer view] isKindOfClass:[UIScrollView class]]) {
+    return NO;
+  }
+  UIScrollView *scrollView = (UIScrollView *)gestureRecognizer.view;
+  return scrollView.panGestureRecognizer == gestureRecognizer;
+}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer
+    shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
+{
+  return [self isScrollViewPanGestureRecognizer:otherGestureRecognizer];
+}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer
+    shouldBeRequiredToFailByGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
+{
+  return [self isScrollViewPanGestureRecognizer:otherGestureRecognizer];
+}
+
+- (void)insertReactSubview:(RNSScreenView *)subview atIndex:(NSInteger)atIndex
+{
+  if (![subview isKindOfClass:[RNSScreenView class]]) {
+    RCTLogError(@"ScreenStack only accepts children of type Screen");
+    return;
+  }
+  subview.reactSuperview = self;
+  [_reactSubviews insertObject:subview atIndex:atIndex];
+}
+
+- (void)removeReactSubview:(RNSScreenView *)subview
+{
+  subview.reactSuperview = nil;
+  [_reactSubviews removeObject:subview];
+}
+
+- (void)didUpdateReactSubviews
+{
+  // we need to wait until children have their layout set. At this point they don't have the layout
+  // set yet, however the layout call is already enqueued on ui thread. Enqueuing update call on the
+  // ui queue will guarantee that the update will run after layout.
+  dispatch_async(dispatch_get_main_queue(), ^{
+    self->_hasLayout = YES;
+    [self maybeAddToParentAndUpdateContainer];
+  });
+}
+
+#ifdef RN_FABRIC_ENABLED
+#pragma mark - Fabric specific
+
+- (void)mountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
+{
+  if (![childComponentView isKindOfClass:[RNSScreenView class]]) {
+    RCTLogError(@"ScreenStack only accepts children of type Screen");
+    return;
+  }
+
+  RCTAssert(
+      childComponentView.reactSuperview == nil,
+      @"Attempt to mount already mounted component view. (parent: %@, child: %@, index: %@, existing parent: %@)",
+      self,
+      childComponentView,
+      @(index),
+      @([childComponentView.superview tag]));
+
+  [_reactSubviews insertObject:(RNSScreenView *)childComponentView atIndex:index];
+  ((RNSScreenView *)childComponentView).reactSuperview = self;
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [self maybeAddToParentAndUpdateContainer];
+  });
+}
+
+- (void)unmountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
+{
+  RNSScreenView *screenChildComponent = (RNSScreenView *)childComponentView;
+  // We should only do a snapshot of a screen that is on the top.
+  // We also check `_presentedModals` since if you push 2 modals, second one is not a "child" of _controller.
+  // Also, when dissmised with a gesture, the screen already is not under the window, so we don't need to apply
+  // snapshot.
+  if (screenChildComponent.window != nil &&
+      ((screenChildComponent == _controller.visibleViewController.view && _presentedModals.count < 2) ||
+       screenChildComponent == [_presentedModals.lastObject view])) {
+    [screenChildComponent.controller setViewToSnapshot:_snapshot];
+  }
+
+  RCTAssert(
+      screenChildComponent.reactSuperview == self,
+      @"Attempt to unmount a view which is mounted inside different view. (parent: %@, child: %@, index: %@)",
+      self,
+      screenChildComponent,
+      @(index));
+  RCTAssert(
+      (_reactSubviews.count > index) && [_reactSubviews objectAtIndex:index] == childComponentView,
+      @"Attempt to unmount a view which has a different index. (parent: %@, child: %@, index: %@, actual index: %@, tag at index: %@)",
+      self,
+      screenChildComponent,
+      @(index),
+      @([_reactSubviews indexOfObject:screenChildComponent]),
+      @([[_reactSubviews objectAtIndex:index] tag]));
+  screenChildComponent.reactSuperview = nil;
+  [_reactSubviews removeObject:screenChildComponent];
+  [screenChildComponent removeFromSuperview];
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [self maybeAddToParentAndUpdateContainer];
+  });
+}
+
+- (void)takeSnapshot
+{
+  _snapshot = [_controller.visibleViewController.view snapshotViewAfterScreenUpdates:NO];
+}
+
+- (void)mountingTransactionWillMount:(facebook::react::MountingTransaction const &)transaction
+                withSurfaceTelemetry:(facebook::react::SurfaceTelemetry const &)surfaceTelemetry
+{
+  for (auto mutation : transaction.getMutations()) {
+    if (mutation.type == facebook::react::ShadowViewMutation::Type::Remove &&
+        mutation.parentShadowView.componentName != nil &&
+        strcmp(mutation.parentShadowView.componentName, "RNSScreenStack") == 0) {
+      [self takeSnapshot];
+      return;
+    }
+  }
+}
+
+- (void)prepareForRecycle
+{
+  [super prepareForRecycle];
+  _reactSubviews = [NSMutableArray new];
+
+  for (UIViewController *controller in _presentedModals) {
+    [controller dismissViewControllerAnimated:NO completion:nil];
+  }
+
+  [_presentedModals removeAllObjects];
+  [self dismissOnReload];
+  [_controller willMoveToParentViewController:nil];
+  [_controller removeFromParentViewController];
+  [_controller setViewControllers:@[ [UIViewController new] ]];
+}
+
++ (facebook::react::ComponentDescriptorProvider)componentDescriptorProvider
+{
+  return facebook::react::concreteComponentDescriptorProvider<facebook::react::RNSScreenStackComponentDescriptor>();
+}
+#else
+#pragma mark - Paper specific
+
+- (void)invalidate
+{
+  _invalidated = YES;
+  for (UIViewController *controller in _presentedModals) {
+    [controller dismissViewControllerAnimated:NO completion:nil];
+  }
+  [_presentedModals removeAllObjects];
+  [_controller willMoveToParentViewController:nil];
+  [_controller removeFromParentViewController];
+}
+
+#endif // RN_FABRIC_ENABLED
+
 @end
+
+#ifdef RN_FABRIC_ENABLED
+Class<RCTComponentViewProtocol> RNSScreenStackCls(void)
+{
+  return RNSScreenStackView.class;
+}
+#endif
 
 @implementation RNSScreenStackManager {
   NSPointerArray *_stacks;
@@ -729,6 +989,8 @@ RCT_EXPORT_MODULE()
 
 RCT_EXPORT_VIEW_PROPERTY(onFinishTransitioning, RCTDirectEventBlock);
 
+#ifdef RN_FABRIC_ENABLED
+#else
 - (UIView *)view
 {
   RNSScreenStackView *view = [[RNSScreenStackView alloc] initWithManager:self];
@@ -738,6 +1000,7 @@ RCT_EXPORT_VIEW_PROPERTY(onFinishTransitioning, RCTDirectEventBlock);
   [_stacks addPointer:(__bridge void *)view];
   return view;
 }
+#endif // RN_FABRIC_ENABLED
 
 - (void)invalidate
 {

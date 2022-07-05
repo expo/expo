@@ -2,6 +2,12 @@
 #import "RNSScreen.h"
 #import "RNSScreenContainer.h"
 
+#ifdef RN_FABRIC_ENABLED
+#import <react/renderer/components/rnscreens/ComponentDescriptors.h>
+#import <react/renderer/components/rnscreens/Props.h>
+#import "RCTFabricComponentsPlugins.h"
+#endif
+
 @implementation RNScreensContainerNavigationController
 
 @end
@@ -29,7 +35,23 @@
   [self maybeDismissVC];
 }
 
+#pragma mark-- Fabric specific
+#ifdef RN_FABRIC_ENABLED
++ (facebook::react::ComponentDescriptorProvider)componentDescriptorProvider
+{
+  return facebook::react::concreteComponentDescriptorProvider<
+      facebook::react::RNSScreenNavigationContainerComponentDescriptor>();
+}
+#endif
+
 @end
+
+#ifdef RN_FABRIC_ENABLED
+Class<RCTComponentViewProtocol> RNSScreenNavigationContainerCls(void)
+{
+  return RNSScreenNavigationContainerView.class;
+}
+#endif
 
 @implementation RNSScreenNavigationContainerManager
 
