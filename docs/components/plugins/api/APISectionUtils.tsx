@@ -517,6 +517,7 @@ export const STYLES_APIBOX = css({
   padding: `${spacing[1]}px ${spacing[5]}px`,
   boxShadow: shadows.micro,
   marginBottom: spacing[6],
+  overflowX: 'hidden',
 
   h3: {
     marginTop: spacing[4],
