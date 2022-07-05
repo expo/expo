@@ -361,10 +361,9 @@ export const listParams = (parameters: MethodParamData[]) =>
 
 export const renderDefaultValue = (defaultValue?: string) =>
   defaultValue ? (
-    <>
-      <br />
+    <div css={defaultValueContainerStyle}>
       <B>Default:</B> <InlineCode>{defaultValue}</InlineCode>
-    </>
+    </div>
   ) : undefined;
 
 export const renderTypeOrSignatureType = (
@@ -569,6 +568,10 @@ export const STYLES_SECONDARY = css({
   fontSize: '90%',
   fontWeight: 600,
 });
+
+const defaultValueContainerStyle = css({
+  marginTop: spacing[2]
+})
 
 const deprecationNoticeStyle = css({
   marginBottom: spacing[2],
