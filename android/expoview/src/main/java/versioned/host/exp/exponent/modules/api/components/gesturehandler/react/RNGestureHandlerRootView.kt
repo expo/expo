@@ -51,6 +51,8 @@ class RNGestureHandlerRootView(context: Context?) : ReactViewGroup(context) {
 
       var parent = viewGroup.parent
       while (parent != null) {
+        // our own deprecated root view
+        @Suppress("DEPRECATION")
         if (parent is RNGestureHandlerEnabledRootView || parent is RNGestureHandlerRootView) {
           return true
         }

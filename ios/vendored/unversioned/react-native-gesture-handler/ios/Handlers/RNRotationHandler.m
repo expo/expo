@@ -8,6 +8,7 @@
 
 #import "RNRotationHandler.h"
 
+#if !TARGET_OS_TV
 @interface RNBetterRotationRecognizer : UIRotationGestureRecognizer
 
 - (id)initWithGestureHandler:(RNGestureHandler*)gestureHandler;
@@ -66,6 +67,7 @@
 }
 
 @end
+#endif
 
 @implementation RNRotationGestureHandler
 

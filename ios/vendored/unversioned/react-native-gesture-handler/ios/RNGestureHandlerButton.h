@@ -14,5 +14,6 @@
  *  Insets used when hit testing inside this view.
  */
 @property (nonatomic, assign) UIEdgeInsets hitTestEdgeInsets;
+@property (nonatomic) BOOL userEnabled;
 
 @end
