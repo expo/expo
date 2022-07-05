@@ -296,7 +296,13 @@ export type ImagePickerOptions = {
   /**
    * Whether to show a UI to edit the image after it is picked. On Android the user can crop and
    * rotate the image and on iOS simply crop it.
+   *
+   * > Cropping multiple images is not supported - this option is mutually exclusive with `allowsMultipleSelection`.
+   * > On iOS, this option is ignored if `allowsMultipleSelection` is enabled.
+   *
    * @default false
+   * @platform ios
+   * @platform android
    */
   allowsEditing?: boolean;
   /**
@@ -310,6 +316,12 @@ export type ImagePickerOptions = {
    * `1` means compress for maximum quality.
    * > Note: If the selected image has been compressed before, the size of the output file may be
    * > bigger than the size of the original image.
+   *
+   * > Note: On iOS, if a `.bmp` or `.png` image is selected from the library, this option is ignored.
+   *
+   * @default 0.2
+   * @platform ios
+   * @platform android
    */
   quality?: number;
   /**
@@ -342,6 +354,12 @@ export type ImagePickerOptions = {
   videoQuality?: UIImagePickerControllerQualityType;
   /**
    * Whether or not to allow selecting multiple media files at once.
+   *
+   * > Cropping multiple images is not supported - this option is mutually exclusive with `allowsEditing`.
+   * > If this option is enabled, then `allowsEditing` is ignored.
+   *
+   * @default false
+   * @platform ios 14+
    * @platform web
    */
   allowsMultipleSelection?: boolean;
