@@ -36,6 +36,7 @@ describe(`manifest`, () => {
       expoClient: {
         slug: 'hello',
         name: 'hello',
+        bundleUrl: 'https://fake-bundle-url.com',
       },
     },
   };
