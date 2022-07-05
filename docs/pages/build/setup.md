@@ -84,7 +84,7 @@ The easiest way to try out EAS Build is to create a build that you can run on yo
 
 Before the build process can start for app stores, you will need to have a store developer account and generate or provide app signing credentials.
 
-Whether you have experience with generating app signing credentials or not, EAS CLI does the heavy lifting. You can opt-in for EAS CLI to handle the generating app signing credentials process. Check out the steps for [Android app signing credentials](#android-app-signing-credentials) or [iOS app signing credentials](#ios-app-signing-credentials) process below for more information.
+Whether you have experience with generating app signing credentials or not, EAS CLI does the heavy lifting. You can opt-in for EAS CLI to handle the app signing credentials process. Check out the steps for [Android app signing credentials](#android-app-signing-credentials) or [iOS app signing credentials](#ios-app-signing-credentials) process below for more information.
 
 <Collapsible summary="Apple Developer Program membership is required to build for the App Store.">
 
