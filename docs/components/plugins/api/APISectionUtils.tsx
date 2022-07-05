@@ -7,7 +7,7 @@ import remarkGfm from 'remark-gfm';
 import { Code, InlineCode } from '~/components/base/code';
 import { H4 } from '~/components/base/headings';
 import Link from '~/components/base/link';
-import { LI, UL } from '~/components/base/list';
+import { LI, UL, OL } from '~/components/base/list';
 import { B, P, Quote } from '~/components/base/paragraph';
 import {
   CommentData,
@@ -53,6 +53,7 @@ export const mdComponents: MDComponents = {
     className ? <Code className={className}>{children}</Code> : <InlineCode>{children}</InlineCode>,
   h1: ({ children }) => <H4>{children}</H4>,
   ul: ({ children }) => <UL>{children}</UL>,
+  ol: ({ children }) => <OL>{children}</OL>,
   li: ({ children }) => <LI>{children}</LI>,
   a: ({ href, children }) => {
     if (
