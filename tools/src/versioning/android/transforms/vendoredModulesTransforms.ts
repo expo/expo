@@ -1,10 +1,6 @@
-import { FileTransforms } from '../../../Transforms.types';
+import { FileTransforms, StringTransform } from '../../../Transforms.types';
 
-type Config = {
-  [key: string]: FileTransforms;
-};
-
-export default function vendoredModulesTransformsFactory(prefix: string): Config {
+export function vendoredModulesTransforms(prefix: string): Record<string, FileTransforms> {
   return {
     '@shopify/react-native-skia': {
       content: [
@@ -18,7 +14,23 @@ export default function vendoredModulesTransformsFactory(prefix: string): Config
           find: 'sourceBuild = true',
           replaceWith: 'sourceBuild = false',
         },
+        {
+          paths: 'ExponentPackage.kt',
+          find: 'import com.shopify',
+          replaceWith: `import ${prefix}.com.shopify`,
+        },
       ],
     },
+  };
+}
+
+export function exponentPackageTransforms(prefix: string): Record<string, StringTransform[]> {
+  return {
+    '@shopify/react-native-skia': [
+      {
+        find: 'import com.shopify',
+        replaceWith: `import ${prefix}.com.shopify`,
+      },
+    ],
   };
 }

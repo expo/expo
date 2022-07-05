@@ -7,10 +7,13 @@ import path from 'path';
 
 import { ANDROID_DIR } from '../../Constants';
 import logger from '../../Logger';
-import { copyFileWithTransformsAsync } from '../../Transforms';
+import { copyFileWithTransformsAsync, transformFileAsync } from '../../Transforms';
 import { FileTransforms } from '../../Transforms.types';
 import { searchFilesAsync } from '../../Utils';
-import vendoredModulesTransforms from './transforms/vendoredModulesTransforms';
+import {
+  exponentPackageTransforms,
+  vendoredModulesTransforms,
+} from './transforms/vendoredModulesTransforms';
 
 const ANDROID_VENDORED_DIR = path.join(ANDROID_DIR, 'vendored');
 
@@ -54,6 +57,7 @@ export async function versionVendoredModulesAsync(
     }
 
     await maybePrebuildSharedLibsAsync(name, sdkNumber);
+    await transformExponentPackageAsync(name, prefix);
   }
 }
 
@@ -105,6 +109,20 @@ async function maybePrebuildSharedLibsAsync(module: string, sdkNumber: number) {
   // Truncate CMakeLists.txt and not to build this cxx module when building versioned Expo Go
   await fs.writeFile(cmakeFile, '');
   await fs.remove(path.join(moduleRootDir, 'build'));
+}
+
+/**
+ * Transform ExponentPackage.kt, e.g. add import abi prefix
+ */
+async function transformExponentPackageAsync(name: string, prefix: string) {
+  const transforms = exponentPackageTransforms(prefix)[name] ?? null;
+  const exponentPackageFile = path.resolve(
+    path.join(
+      ANDROID_DIR,
+      `versioned-abis/expoview-${prefix}/src/main/java/${prefix}/host/exp/exponent/ExponentPackage.kt`
+    )
+  );
+  await transformFileAsync(exponentPackageFile, transforms);
 }
 
 /**
@@ -222,6 +240,11 @@ async function baseTransformsFactoryAsync(prefix: string): Promise<Required<File
       {
         paths: 'build.gradle',
         find: /def rnAAR = fileTree.*\*\.aar.*\)/g,
+        replaceWith: `def rnAAR = fileTree("\${rootDir}/versioned-abis").matching({ include "**/reactandroid-${prefix}/**/*.aar" })`,
+      },
+      {
+        paths: 'build.gradle',
+        find: /def rnAAR = fileTree.*rnAarMatcher.*\)/g,
         replaceWith: `def rnAAR = fileTree("\${rootDir}/versioned-abis").matching({ include "**/reactandroid-${prefix}/**/*.aar" })`,
       },
       {
