@@ -220,4 +220,7 @@ const RENAMED_PAGES: Record<string, string> = {
 
   // updates
   '/guides/configuring-ota-updates/': '/guides/configuring-updates/',
+
+  // Redirect Gatsby guide to index guides page
+  '/guides/using-gatsby/': '/guides/',
 };
