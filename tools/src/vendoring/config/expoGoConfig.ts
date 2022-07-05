@@ -4,6 +4,7 @@ import path from 'path';
 
 import { Podspec } from '../../CocoaPods';
 import { EXPOTOOLS_DIR } from '../../Constants';
+import logger from '../../Logger';
 import { runPatchAsync } from '../../Patch';
 import { VendoringTargetConfig } from '../types';
 
@@ -318,15 +319,30 @@ const config: VendoringTargetConfig = {
           await fs.copy(path.join(sourceDirectory, 'libs', 'android'), commonLibsDir);
 
           // patch gradle and cmake files
+          const patchFile = path.join(
+            EXPOTOOLS_DIR,
+            'src',
+            'vendoring',
+            'config',
+            'react-native-skia.patch'
+          );
           const patchContent = await fs.readFile(
-            path.join(EXPOTOOLS_DIR, 'src', 'vendoring', 'config', 'react-native-skia.patch'),
+            patchFile,
+
             'utf8'
           );
-          await runPatchAsync({
-            patchContent,
-            cwd: targetDirectory,
-            stripPrefixNum: 0,
-          });
+          try {
+            await runPatchAsync({
+              patchContent,
+              cwd: targetDirectory,
+              stripPrefixNum: 0,
+            });
+          } catch (e) {
+            logger.error(
+              `Failed to apply patch: \`patch -p0 -d '${targetDirectory}' < ${patchFile}\``
+            );
+            throw e;
+          }
         },
       },
     },

@@ -1,6 +1,6 @@
---- android/CMakeLists.txt	2022-06-18 23:30:18.000000000 +0800
-+++ android/CMakeLists.txt	2022-06-18 23:30:58.000000000 +0800
-@@ -34,14 +34,14 @@
+--- android/CMakeLists.txt
++++ android/CMakeLists.txt
+@@ -34,14 +34,14 @@ add_library(
          "${PROJECT_SOURCE_DIR}/cpp/rnskia-android/RNSkDrawViewImpl.cpp"
          "${PROJECT_SOURCE_DIR}/cpp/rnskia-android/SkiaOpenGLRenderer.cpp"
          
@@ -20,7 +20,7 @@
          
  )
  
-@@ -56,28 +56,28 @@
+@@ -56,28 +56,28 @@ target_include_directories(
          "${NODE_MODULES_DIR}/react-native/ReactCommon/react/nativemodule/core"
          "${NODE_MODULES_DIR}/react-native/ReactAndroid/src/main/java/com/facebook/react/turbomodule/core/jni"
  
@@ -66,9 +66,9 @@
  add_library(skia STATIC IMPORTED)
  set_property(TARGET skia PROPERTY IMPORTED_LOCATION "${SKIA_LIBS_PATH}/libskia.a")
  
---- android/build.gradle	2022-06-18 23:30:21.000000000 +0800
-+++ android/build.gradle	2022-06-18 23:30:58.000000000 +0800
-@@ -43,13 +43,17 @@
+--- android/build.gradle
++++ android/build.gradle
+@@ -43,13 +43,17 @@ static def findNodeModules(baseDir) {
    throw new GradleException("React-Native-Skia: Failed to find node_modules/ path!")
  }
  
@@ -85,9 +85,9 @@
 +    return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
 +}
  
- if (rootProject.ext.has('reactNativeAndroidRoot')) {
-   defaultDir = rootProject.ext.get('reactNativeAndroidRoot')
-@@ -70,7 +74,7 @@
+ def buildType = "debug"
+ tasks.all({ task ->
+@@ -77,7 +81,7 @@ if (!defaultDir.exists()) {
  }
  
  def prebuiltDir = sourceBuild
@@ -96,7 +96,7 @@
      : "$buildDir/react-native-0*/jni"
  
  
-@@ -111,7 +115,7 @@
+@@ -119,7 +123,7 @@ android {
          externalNativeBuild {
              cmake {
                  cppFlags "-fexceptions", "-frtti", "-std=c++1y", "-DONANDROID"
@@ -105,20 +105,20 @@
                  arguments '-DANDROID_STL=c++_shared',
                            "-DREACT_NATIVE_VERSION=${REACT_NATIVE_VERSION}",
                            "-DNODE_MODULES_DIR=${nodeModules}",
-@@ -175,8 +179,10 @@
-     //noinspection GradleDynamicVersion
-     extractJNI("com.facebook.fbjni:fbjni:0.2.2")
- 
--    def rnAAR = fileTree("${nodeModules}/react-native/android").matching({ it.include "**/**/*.aar" }).singleFile
--    extractJNI(files(rnAAR))
-+    def rnAAR = fileTree("${nodeModules}/react-native/android").matching({ it.include "**/**/*.aar" })
-+    if (rnAAR.any()) {
-+      extractJNI(files(rnAAR.singleFile))
-+    }
+@@ -189,8 +193,10 @@ dependencies {
+     } else {
+         // React Native >= 0.69
+         def rnAarMatcher = "**/react-native/**/*${buildType}.aar"
+-        def rnAAR = fileTree("${nodeModules}/react-native/android").matching({ it.include rnAarMatcher }).singleFile
+-        extractJNI(files(rnAAR))
++        def rnAAR = fileTree("${nodeModules}/react-native/android").matching({ it.include rnAarMatcher })
++        if (rnAAR.any()) {
++            extractJNI(files(rnAAR))
++        }
+     }
  }
  
- afterEvaluate { project ->
-@@ -240,4 +242,16 @@
+@@ -255,4 +261,16 @@ def nativeBuildDependsOn(dependsOnTask, variant) {
  afterEvaluate {
    nativeBuildDependsOn(extractAARHeaders, null)
    nativeBuildDependsOn(extractJNIFiles, null)  
@@ -129,11 +129,11 @@
 +tasks.whenTaskAdded { task ->
 +  if (!task.name.contains("Clean") && (task.name.contains('externalNativeBuild') || task.name.startsWith('configureCMake'))) {
 +    if (sourceBuild) {
-+      def buildType = task.name.endsWith('Debug') ? 'Debug' : 'Release'
-+      task.dependsOn(":ReactAndroid:copy${buildType}JniLibsProjectOnly")
++      def currentBuildType = task.name.endsWith('Debug') ? 'Debug' : 'Release'
++      task.dependsOn(":ReactAndroid:copy${currentBuildType}JniLibsProjectOnly")
 +    }
 +  } else if (task.name.startsWith('generateJsonModel') && sourceBuild) {
-+    def buildType = task.name.endsWith('Debug') ? 'Debug' : 'Release'
-+    task.dependsOn(":ReactAndroid:copy${buildType}JniLibsProjectOnly")
++    def currentBuildType = task.name.endsWith('Debug') ? 'Debug' : 'Release'
++    task.dependsOn(":ReactAndroid:copy${currentBuildType}JniLibsProjectOnly")
 +  }
 +}
