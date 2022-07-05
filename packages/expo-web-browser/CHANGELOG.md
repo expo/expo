@@ -13,7 +13,7 @@
 - Fixed `removeListener(): Method has been deprecated` warning. ([#17645](https://github.com/expo/expo/pull/17645) by [@barthap](https://github.com/barthap))
 - Fixed `service not registered` exception on Android. ([#17855](https://github.com/expo/expo/pull/17855) by [@lukmccall](https://github.com/lukmccall))
 - Fixed `redirectUrl` auth session argument to be optional and thus match documentation. ([#17953](https://github.com/expo/expo/pull/17953) by [@barthap](https://github.com/barthap))
-- Fixed `windowFeatures` property not being properly recognized on web.
+- Fixed `windowFeatures` property not being properly recognized on web. ([#18106](https://github.com/expo/expo/pull/18106) by [@barthap](https://github.com/barthap))
 
 ### 💡 Others
 
