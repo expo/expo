@@ -56,7 +56,35 @@ When selecting an image for the build you can use the full name provided below o
   enableImmutableInstalls: false
   ```
 
-#### Image `ubuntu-20.04-jdk-11-ndk-r21e` (alias `latest`)
+#### Image `ubuntu-22.04-jdk-11-ndk-r21e` (alias `latest`)
+
+<Collapsible summary="Details">
+
+- Docker image: `ubuntu:jammy-20220531`
+- NDK 21.4.7075529
+- Node.js 16.13.2
+- Yarn 1.22.17
+- pnpm 7.0.0
+- npm 8.1.2
+- Java 11
+
+</Collapsible>
+
+#### Image `ubuntu-22.04-jdk-8-ndk-r21e`
+
+<Collapsible summary="Details">
+
+- Docker image: `ubuntu:jammy-20220531`
+- NDK 21.4.7075529
+- Node.js 16.13.2
+- Yarn 1.22.17
+- pnpm 7.0.0
+- npm 8.1.2
+- Java 8
+
+</Collapsible>
+
+#### Image `ubuntu-20.04-jdk-11-ndk-r21e` (alias `default`)
 
 <Collapsible summary="Details">
 
@@ -64,6 +92,7 @@ When selecting an image for the build you can use the full name provided below o
 - NDK 21.4.7075529
 - Node.js 16.13.2
 - Yarn 1.22.17
+- pnpm 7.0.0
 - npm 8.1.2
 - Java 11
 
@@ -77,6 +106,7 @@ When selecting an image for the build you can use the full name provided below o
 - NDK 21.4.7075529
 - Node.js 16.13.2
 - Yarn 1.22.17
+- pnpm 7.0.0
 - npm 8.1.2
 - Java 8
 
@@ -90,12 +120,13 @@ When selecting an image for the build you can use the full name provided below o
 - NDK 19.2.5345600
 - Node.js 16.13.2
 - Yarn 1.22.17
+- pnpm 7.0.0
 - npm 8.1.2
 - Java 11
 
 </Collapsible>
 
-#### Image `ubuntu-18.04-jdk-8-ndk-r19c` (alias `default`)
+#### Image `ubuntu-18.04-jdk-8-ndk-r19c`
 
 <Collapsible summary="Details">
 
@@ -103,6 +134,7 @@ When selecting an image for the build you can use the full name provided below o
 - NDK 19.2.5345600
 - Node.js 16.13.2
 - Yarn 1.22.17
+- pnpm 7.0.0
 - npm 8.1.2
 - Java 8
 
