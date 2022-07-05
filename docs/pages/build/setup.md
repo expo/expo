@@ -52,7 +52,7 @@ You can also use the above command to check if a new version of EAS CLI is avail
 
 ## 2. Log in to your Expo account
 
-If you are already signed in to Expo account using Expo CLI, you can skip the steps described in this section. If you are not, run the following command to log in:
+If you are already signed in to an Expo account using Expo CLI, you can skip the steps described in this section. If you are not, run the following command to log in:
 
 <Terminal cmd={['$ eas login']} />
 
