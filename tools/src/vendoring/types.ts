@@ -9,12 +9,19 @@ export type VendoringModuleConfig = {
   source: string;
   semverPrefix?: string;
   packageJsonPath?: string;
+
+  sourceType?: 'git' | 'npm';
+
   ios?: VendoringModulePlatformConfig<{
     // this hook can do some transformation before running `pod ipc spec ...`.
     // use this hook as a workaround for some podspecs showing errors and violating json format.
     preReadPodspecHookAsync?: (podspecPath: string) => Promise<string>;
 
-    mutatePodspec?: (podspec: Podspec) => void;
+    mutatePodspec?: (
+      podspec: Podspec,
+      sourceDirectory: string,
+      targetDirectory: string
+    ) => Promise<void>;
   }>;
   android?: VendoringModulePlatformConfig<{
     includeFiles?: string | string[];

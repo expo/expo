@@ -365,6 +365,12 @@ export const Screens = [
   },
   {
     getComponent() {
+      return optionalRequire(() => require('../screens/Skia/SkiaScreen'));
+    },
+    name: 'Skia',
+  },
+  {
+    getComponent() {
       return optionalRequire(() => require('../screens/SVG/SVGScreen'));
     },
     name: 'SVG',
