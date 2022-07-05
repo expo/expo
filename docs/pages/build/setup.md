@@ -44,7 +44,7 @@ Paid subscribers get quality improvements such as additional build concurrencies
 
 EAS CLI is the command-line app that you will use to interact with EAS services from your terminal. To install it, run the command:
 
-<Terminal cmd={['$ npm install -g expo-cli']} />
+<Terminal cmd={['$ npm install -g eas-cli']} />
 
 You can also use the above command to check if a new version of the EAS CLI app is available. We encourage you to always stay up to date with the latest version.
 
