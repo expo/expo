@@ -1,5 +1,4 @@
 #import "RNSScreenWindowTraits.h"
-#import "RNSScreen.h"
 #import "RNSScreenContainer.h"
 #import "RNSScreenStack.h"
 
@@ -56,7 +55,9 @@
   } else
 #endif
   {
-    [UIApplication.sharedApplication.keyWindow.rootViewController setNeedsUpdateOfHomeIndicatorAutoHidden];
+    if (@available(iOS 11.0, *)) {
+      [UIApplication.sharedApplication.keyWindow.rootViewController setNeedsUpdateOfHomeIndicatorAutoHidden];
+    }
   }
 #endif
 }

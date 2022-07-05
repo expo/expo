@@ -7,9 +7,18 @@ import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.uimanager.LayoutShadowNode
 import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.ViewGroupManager
+import com.facebook.react.uimanager.ViewManagerDelegate
+import com.facebook.react.viewmanagers.RNSScreenStackManagerDelegate
+import com.facebook.react.viewmanagers.RNSScreenStackManagerInterface
 
 @ReactModule(name = ScreenStackViewManager.REACT_CLASS)
-class ScreenStackViewManager : ViewGroupManager<ScreenStack>() {
+class ScreenStackViewManager : ViewGroupManager<ScreenStack>(), RNSScreenStackManagerInterface<ScreenStack> {
+    private val mDelegate: ViewManagerDelegate<ScreenStack>
+
+    init {
+        mDelegate = RNSScreenStackManagerDelegate<ScreenStack, ScreenStackViewManager>(this)
+    }
+
     override fun getName(): String {
         return REACT_CLASS
     }
@@ -66,6 +75,10 @@ class ScreenStackViewManager : ViewGroupManager<ScreenStack>() {
 
     override fun needsCustomLayoutForChildren(): Boolean {
         return true
+    }
+
+    protected override fun getDelegate(): ViewManagerDelegate<ScreenStack> {
+        return mDelegate
     }
 
     companion object {

@@ -1,59 +1,16 @@
 #import <React/RCTComponent.h>
-#import <React/RCTView.h>
 #import <React/RCTViewManager.h>
 
+#import "RNSEnums.h"
 #import "RNSScreenContainer.h"
 
-typedef NS_ENUM(NSInteger, RNSScreenStackPresentation) {
-  RNSScreenStackPresentationPush,
-  RNSScreenStackPresentationModal,
-  RNSScreenStackPresentationTransparentModal,
-  RNSScreenStackPresentationContainedModal,
-  RNSScreenStackPresentationContainedTransparentModal,
-  RNSScreenStackPresentationFullScreenModal,
-  RNSScreenStackPresentationFormSheet
-};
+#if RN_FABRIC_ENABLED
+#import <React/RCTViewComponentView.h>
+#else
+#import <React/RCTView.h>
+#endif
 
-typedef NS_ENUM(NSInteger, RNSScreenStackAnimation) {
-  RNSScreenStackAnimationDefault,
-  RNSScreenStackAnimationNone,
-  RNSScreenStackAnimationFade,
-  RNSScreenStackAnimationFadeFromBottom,
-  RNSScreenStackAnimationFlip,
-  RNSScreenStackAnimationSlideFromBottom,
-  RNSScreenStackAnimationSimplePush,
-};
-
-typedef NS_ENUM(NSInteger, RNSScreenReplaceAnimation) {
-  RNSScreenReplaceAnimationPop,
-  RNSScreenReplaceAnimationPush,
-};
-
-typedef NS_ENUM(NSInteger, RNSScreenSwipeDirection) {
-  RNSScreenSwipeDirectionHorizontal,
-  RNSScreenSwipeDirectionVertical,
-};
-
-typedef NS_ENUM(NSInteger, RNSActivityState) {
-  RNSActivityStateInactive = 0,
-  RNSActivityStateTransitioningOrBelowTop = 1,
-  RNSActivityStateOnTop = 2
-};
-
-typedef NS_ENUM(NSInteger, RNSStatusBarStyle) {
-  RNSStatusBarStyleAuto,
-  RNSStatusBarStyleInverted,
-  RNSStatusBarStyleLight,
-  RNSStatusBarStyleDark,
-};
-
-typedef NS_ENUM(NSInteger, RNSWindowTrait) {
-  RNSWindowTraitStyle,
-  RNSWindowTraitAnimation,
-  RNSWindowTraitHidden,
-  RNSWindowTraitOrientation,
-  RNSWindowTraitHomeIndicatorHidden,
-};
+NS_ASSUME_NONNULL_BEGIN
 
 @interface RCTConvert (RNSScreen)
 
@@ -62,25 +19,69 @@ typedef NS_ENUM(NSInteger, RNSWindowTrait) {
 
 #if !TARGET_OS_TV
 + (RNSStatusBarStyle)RNSStatusBarStyle:(id)json;
++ (UIStatusBarAnimation)UIStatusBarAnimation:(id)json;
 + (UIInterfaceOrientationMask)UIInterfaceOrientationMask:(id)json;
 #endif
 
 @end
 
+@class RNSScreenView;
+
 @interface RNSScreen : UIViewController <RNScreensViewControllerDelegate>
 
 - (instancetype)initWithView:(UIView *)view;
-- (void)notifyFinishTransitioning;
 - (UIViewController *)findChildVCForConfigAndTrait:(RNSWindowTrait)trait includingModals:(BOOL)includingModals;
+- (void)notifyFinishTransitioning;
+- (RNSScreenView *)screenView;
+#ifdef RN_FABRIC_ENABLED
+- (void)setViewToSnapshot:(UIView *)snapshot;
+- (void)resetViewToScreen;
+#endif
 
 @end
 
-@interface RNSScreenManager : RCTViewManager
+@interface RNSScreenView :
+#ifdef RN_FABRIC_ENABLED
+    RCTViewComponentView
+#else
+    RCTView
+#endif
 
-@end
+@property (nonatomic) BOOL fullScreenSwipeEnabled;
+@property (nonatomic) BOOL gestureEnabled;
+@property (nonatomic) BOOL hasStatusBarHiddenSet;
+@property (nonatomic) BOOL hasStatusBarStyleSet;
+@property (nonatomic) BOOL hasStatusBarAnimationSet;
+@property (nonatomic) BOOL hasHomeIndicatorHiddenSet;
+@property (nonatomic) BOOL hasOrientationSet;
+@property (nonatomic) RNSScreenStackAnimation stackAnimation;
+@property (nonatomic) RNSScreenStackPresentation stackPresentation;
+@property (nonatomic) RNSScreenSwipeDirection swipeDirection;
+@property (nonatomic) RNSScreenReplaceAnimation replaceAnimation;
+@property (nonatomic, retain) NSNumber *transitionDuration;
+@property (nonatomic, readonly) BOOL dismissed;
+@property (nonatomic) BOOL hideKeyboardOnSwipe;
+@property (nonatomic) BOOL customAnimationOnSwipe;
+@property (nonatomic) BOOL preventNativeDismiss;
+@property (nonatomic, retain) RNSScreen *controller;
+@property (nonatomic, copy) NSDictionary *gestureResponseDistance;
+@property (nonatomic) int activityState;
+@property (weak, nonatomic) UIView<RNSScreenContainerDelegate> *reactSuperview;
 
-@interface RNSScreenView : RCTView
+#if !TARGET_OS_TV
+@property (nonatomic) RNSStatusBarStyle statusBarStyle;
+@property (nonatomic) UIStatusBarAnimation statusBarAnimation;
+@property (nonatomic) UIInterfaceOrientationMask screenOrientation;
+@property (nonatomic) BOOL statusBarHidden;
+@property (nonatomic) BOOL homeIndicatorHidden;
+#endif
 
+#ifdef RN_FABRIC_ENABLED
+// we recreate the behavior of `reactSetFrame` on new architecture
+@property (nonatomic) facebook::react::LayoutMetrics oldLayoutMetrics;
+@property (nonatomic) facebook::react::LayoutMetrics newLayoutMetrics;
+@property (weak, nonatomic) UIView *config;
+#else
 @property (nonatomic, copy) RCTDirectEventBlock onAppear;
 @property (nonatomic, copy) RCTDirectEventBlock onDisappear;
 @property (nonatomic, copy) RCTDirectEventBlock onDismissed;
@@ -88,35 +89,19 @@ typedef NS_ENUM(NSInteger, RNSWindowTrait) {
 @property (nonatomic, copy) RCTDirectEventBlock onWillDisappear;
 @property (nonatomic, copy) RCTDirectEventBlock onNativeDismissCancelled;
 @property (nonatomic, copy) RCTDirectEventBlock onTransitionProgress;
-
-@property (weak, nonatomic) UIView<RNSScreenContainerDelegate> *reactSuperview;
-@property (nonatomic, retain) UIViewController *controller;
-@property (nonatomic, readonly) BOOL dismissed;
-@property (nonatomic) int activityState;
-@property (nonatomic) BOOL gestureEnabled;
-@property (nonatomic) RNSScreenStackAnimation stackAnimation;
-@property (nonatomic) RNSScreenStackPresentation stackPresentation;
-@property (nonatomic) RNSScreenReplaceAnimation replaceAnimation;
-@property (nonatomic) RNSScreenSwipeDirection swipeDirection;
-@property (nonatomic) BOOL preventNativeDismiss;
-@property (nonatomic) BOOL hasOrientationSet;
-@property (nonatomic) BOOL hasStatusBarStyleSet;
-@property (nonatomic) BOOL hasStatusBarAnimationSet;
-@property (nonatomic) BOOL hasStatusBarHiddenSet;
-@property (nonatomic) BOOL hasHomeIndicatorHiddenSet;
-@property (nonatomic) BOOL customAnimationOnSwipe;
-@property (nonatomic) BOOL fullScreenSwipeEnabled;
-@property (nonatomic, retain) NSNumber *transitionDuration;
-
-#if !TARGET_OS_TV
-@property (nonatomic) RNSStatusBarStyle statusBarStyle;
-@property (nonatomic) UIStatusBarAnimation statusBarAnimation;
-@property (nonatomic) BOOL statusBarHidden;
-@property (nonatomic) UIInterfaceOrientationMask screenOrientation;
-@property (nonatomic) BOOL homeIndicatorHidden;
 #endif
 
 - (void)notifyFinishTransitioning;
+
+#ifdef RN_FABRIC_ENABLED
+- (void)notifyWillAppear;
+- (void)notifyWillDisappear;
+- (void)notifyAppear;
+- (void)notifyDisappear;
+- (void)updateBounds;
+- (void)notifyDismissedWithCount:(int)dismissCount;
+#endif
+
 - (void)notifyTransitionProgress:(double)progress closing:(BOOL)closing goingForward:(BOOL)goingForward;
 
 @end
@@ -124,3 +109,9 @@ typedef NS_ENUM(NSInteger, RNSWindowTrait) {
 @interface UIView (RNSScreen)
 - (UIViewController *)parentViewController;
 @end
+
+@interface RNSScreenManager : RCTViewManager
+
+@end
+
+NS_ASSUME_NONNULL_END

@@ -1,6 +1,13 @@
 #import "RNSScreenContainer.h"
 #import "RNSScreen.h"
 
+#ifdef RN_FABRIC_ENABLED
+#import <React/RCTConversions.h>
+#import <react/renderer/components/rnscreens/ComponentDescriptors.h>
+#import <react/renderer/components/rnscreens/Props.h>
+#import "RCTFabricComponentsPlugins.h"
+#endif
+
 @implementation RNScreensViewController
 
 #if !TARGET_OS_TV
@@ -34,7 +41,7 @@
 {
   for (UIViewController *childVC in self.childViewControllers) {
     if ([childVC isKindOfClass:[RNSScreen class]] &&
-        ((RNSScreenView *)((RNSScreen *)childVC.view)).activityState == RNSActivityStateOnTop) {
+        ((RNSScreen *)childVC).screenView.activityState == RNSActivityStateOnTop) {
       return childVC;
     }
   }
@@ -51,6 +58,10 @@
 - (instancetype)init
 {
   if (self = [super init]) {
+#ifdef RN_FABRIC_ENABLED
+    static const auto defaultProps = std::make_shared<const facebook::react::RNSScreenContainerProps>();
+    _props = defaultProps;
+#endif
     _activeScreens = [NSMutableSet new];
     _reactSubviews = [NSMutableArray new];
     [self setupController];
@@ -218,6 +229,87 @@
   }
 }
 
+- (void)layoutSubviews
+{
+  [super layoutSubviews];
+  _controller.view.frame = self.bounds;
+  for (RNSScreenView *subview in _reactSubviews) {
+#ifdef RN_FABRIC_ENABLED
+    facebook::react::LayoutMetrics screenLayoutMetrics = subview.newLayoutMetrics;
+    screenLayoutMetrics.frame = RCTRectFromCGRect(CGRectMake(0, 0, self.bounds.size.width, self.bounds.size.height));
+    [subview updateLayoutMetrics:screenLayoutMetrics oldLayoutMetrics:subview.oldLayoutMetrics];
+#else
+    [subview reactSetFrame:CGRectMake(0, 0, self.bounds.size.width, self.bounds.size.height)];
+#endif
+    [subview setNeedsLayout];
+  }
+}
+
+#pragma mark-- Fabric specific
+#ifdef RN_FABRIC_ENABLED
+
+- (void)mountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
+{
+  if (![childComponentView isKindOfClass:[RNSScreenView class]]) {
+    RCTLogError(@"ScreenContainer only accepts children of type Screen");
+    return;
+  }
+
+  RNSScreenView *screenView = (RNSScreenView *)childComponentView;
+
+  RCTAssert(
+      childComponentView.reactSuperview == nil,
+      @"Attempt to mount already mounted component view. (parent: %@, child: %@, index: %@, existing parent: %@)",
+      self,
+      childComponentView,
+      @(index),
+      @([childComponentView.superview tag]));
+
+  [_reactSubviews insertObject:screenView atIndex:index];
+  screenView.reactSuperview = self;
+  facebook::react::LayoutMetrics screenLayoutMetrics = screenView.newLayoutMetrics;
+  screenLayoutMetrics.frame = RCTRectFromCGRect(CGRectMake(0, 0, self.bounds.size.width, self.bounds.size.height));
+  [screenView updateLayoutMetrics:screenLayoutMetrics oldLayoutMetrics:screenView.oldLayoutMetrics];
+  [self markChildUpdated];
+}
+
+- (void)unmountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
+{
+  RCTAssert(
+      childComponentView.reactSuperview == self,
+      @"Attempt to unmount a view which is mounted inside different view. (parent: %@, child: %@, index: %@)",
+      self,
+      childComponentView,
+      @(index));
+  RCTAssert(
+      (_reactSubviews.count > index) && [_reactSubviews objectAtIndex:index] == childComponentView,
+      @"Attempt to unmount a view which has a different index. (parent: %@, child: %@, index: %@, actual index: %@, tag at index: %@)",
+      self,
+      childComponentView,
+      @(index),
+      @([_reactSubviews indexOfObject:childComponentView]),
+      @([[_reactSubviews objectAtIndex:index] tag]));
+  ((RNSScreenView *)childComponentView).reactSuperview = nil;
+  [_reactSubviews removeObject:childComponentView];
+  [childComponentView removeFromSuperview];
+  [self markChildUpdated];
+}
+
++ (facebook::react::ComponentDescriptorProvider)componentDescriptorProvider
+{
+  return facebook::react::concreteComponentDescriptorProvider<facebook::react::RNSScreenContainerComponentDescriptor>();
+}
+
+- (void)prepareForRecycle
+{
+  [super prepareForRecycle];
+  [_controller willMoveToParentViewController:nil];
+  [_controller removeFromParentViewController];
+}
+
+#pragma mark-- Paper specific
+#else
+
 - (void)invalidate
 {
   _invalidated = YES;
@@ -225,17 +317,16 @@
   [_controller removeFromParentViewController];
 }
 
-- (void)layoutSubviews
-{
-  [super layoutSubviews];
-  _controller.view.frame = self.bounds;
-  for (RNSScreenView *subview in _reactSubviews) {
-    [subview reactSetFrame:CGRectMake(0, 0, self.bounds.size.width, self.bounds.size.height)];
-    [subview setNeedsLayout];
-  }
-}
+#endif
 
 @end
+
+#ifdef RN_FABRIC_ENABLED
+Class<RCTComponentViewProtocol> RNSScreenContainerCls(void)
+{
+  return RNSScreenContainerView.class;
+}
+#endif
 
 @implementation RNSScreenContainerManager
 
