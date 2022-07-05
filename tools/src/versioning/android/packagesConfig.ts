@@ -9,6 +9,7 @@ export const packagesToKeep: string[] = [
   'expo.modules.core.interfaces.SingletonModule',
   'expo.modules.jsonutils',
   'expo.modules.manifests',
+  'expo.modules.notifications.BuildConfig',
   'expo.modules.notifications.notifications.model',
   'expo.modules.notifications.notifications.enums',
   'expo.modules.notifications.badge.interfaces.BadgeManager',

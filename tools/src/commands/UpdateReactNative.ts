@@ -70,7 +70,7 @@ async function updateReactAndroidAsync(sdkVersion: string): Promise<void> {
     },
     {
       find: /compileSdkVersion\s+\d+/,
-      replaceWith: 'compileSdkVersion 30',
+      replaceWith: 'compileSdkVersion 31',
     },
   ]);
 }

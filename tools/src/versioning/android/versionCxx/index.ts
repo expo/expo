@@ -147,14 +147,16 @@ async function versionJavaLoadersAsync(
     path.join(versionedAbiRoot, 'src', 'main', 'java', abiName, file)
   );
   await Promise.all(
-    versionedJavaFiles.map((file) =>
-      transformFileAsync(file, [
-        {
-          find: /\b((System|SoLoader)\.loadLibrary\("expo[^"]*)("\);?)/g,
-          replaceWith: `$1_${abiName}$3`,
-        },
-      ])
-    )
+    versionedJavaFiles.map(async (file) => {
+      if (await fs.pathExists(file)) {
+        await transformFileAsync(file, [
+          {
+            find: /\b((System|SoLoader)\.loadLibrary\("expo[^"]*)("\);?)/g,
+            replaceWith: `$1_${abiName}$3`,
+          },
+        ]);
+      }
+    })
   );
 }
 
