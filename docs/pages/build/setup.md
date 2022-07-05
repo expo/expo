@@ -46,7 +46,7 @@ EAS CLI is the command-line app that you will use to interact with EAS services 
 
 <Terminal cmd={['$ npm install -g eas-cli']} />
 
-You can also use the above command to check if a new version of the EAS CLI app is available. We encourage you to always stay up to date with the latest version.
+You can also use the above command to check if a new version of EAS CLI is available. We encourage you to always stay up to date with the latest version.
 
 > We recommend using `npm` instead of `yarn` for global package installations. You may alternatively use `npx eas-cli`, just remember to use that instead of `eas` whenever it's called for in the documentation.
 
