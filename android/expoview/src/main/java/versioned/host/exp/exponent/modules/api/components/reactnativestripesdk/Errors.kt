@@ -3,11 +3,15 @@ package versioned.host.exp.exponent.modules.api.components.reactnativestripesdk
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.bridge.WritableNativeMap
 import com.stripe.android.core.exception.APIException
+import com.stripe.android.core.exception.AuthenticationException
 import com.stripe.android.core.exception.InvalidRequestException
-import com.stripe.android.exception.AuthenticationException
 import com.stripe.android.exception.CardException
 import com.stripe.android.model.PaymentIntent
 import com.stripe.android.model.SetupIntent
+
+enum class ErrorType {
+  Failed, Canceled, Unknown
+}
 
 enum class ConfirmPaymentErrorType {
   Failed, Canceled, Unknown
@@ -17,12 +21,8 @@ enum class CreateTokenErrorType {
   Failed
 }
 
-enum class NextPaymentActionErrorType {
-  Failed, Canceled, Unknown
-}
-
 enum class ConfirmSetupIntentErrorType {
-  Failed, Canceled
+  Failed, Canceled, Unknown
 }
 
 enum class RetrievePaymentIntentErrorType {
@@ -41,6 +41,8 @@ enum class GooglePayErrorType {
   Failed, Canceled
 }
 
+class PaymentSheetAppearanceException(message: String) : Exception(message)
+
 internal fun mapError(code: String, message: String?, localizedMessage: String?, declineCode: String?, type: String?, stripeErrorCode: String?): WritableMap {
   val map: WritableMap = WritableNativeMap()
   val details: WritableMap = WritableNativeMap()
@@ -57,6 +59,16 @@ internal fun mapError(code: String, message: String?, localizedMessage: String?,
 
 internal fun createError(code: String, message: String?): WritableMap {
   return mapError(code, message, message, null, null, null)
+}
+
+internal fun createMissingActivityError(): WritableMap {
+  return mapError(
+    "Failed",
+    "Activity doesn't exist yet. You can safely retry this method.",
+    null,
+    null,
+    null,
+    null)
 }
 
 internal fun createError(code: String, error: PaymentIntent.Error?): WritableMap {
@@ -86,5 +98,16 @@ internal fun createError(code: String, error: Exception): WritableMap {
 }
 
 internal fun createError(code: String, error: Throwable): WritableMap {
-  return mapError(code, error.message, error.localizedMessage, null, null, null)
+  (error as? Exception)?.let {
+    return createError(
+      code,
+      it)
+  }
+  return mapError(
+    code,
+    error.message,
+    error.localizedMessage,
+    null,
+    null,
+    null)
 }

@@ -18,6 +18,7 @@ Package-specific changes not released in any SDK will be added here just before 
 - Updated `react-native-screens` from `3.11.1` to `3.14.1`. ([#18086](https://github.com/expo/expo/pull/18086) by [@lukmccall](https://github.com/lukmccall))
 - Updated `react-native-reanimated` from `2.8.0` to `2.9.1`. ([#18085](https://github.com/expo/expo/pull/18085) by [@lukmccall](https://github.com/lukmccall))
 - Updated `react-native-pager-view` from `5.4.15` to `5.4.24`. ([#18084](https://github.com/expo/expo/pull/18084) by [@kudo](https://github.com/kudo))
+- Updated `@stripe/stripe-react-native` from `0.6.0` to `0.13.1`. ([#18072](https://github.com/expo/expo/pull/18072) by [@kudo](https://github.com/kudo))
 
 ### 🛠 Breaking changes
 
