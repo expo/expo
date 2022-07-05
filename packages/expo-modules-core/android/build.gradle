@@ -92,6 +92,7 @@ if (FOR_HERMES) {
   // To get those, we must fall back to the `hermes-engine` package.
   HERMES_ENGINE_DIR = new File(["node", "--print", "require.resolve('hermes-engine/package.json')"].execute(null, rootDir).text.trim()).parent
   if (REACT_NATIVE_BUILD_FROM_SOURCE) {
+    // TODO(@lukmccall): Use Hermes from the `ReactAndroid:hermes-engine`
     HERMES_AAR = file("$HERMES_ENGINE_DIR/android/hermes-debug.aar")
   } else {
     def prebuiltAAR = fileTree(REACT_NATIVE_DIR).matching { include "**/hermes-engine/**/hermes-engine-*-debug.aar" }
