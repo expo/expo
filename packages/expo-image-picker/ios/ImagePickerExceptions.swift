@@ -2,6 +2,18 @@
 
 import ExpoModulesCore
 
+extension ChainableException {
+  /**
+   The same as `causedBy` but accepts optional errors
+   */
+  public func maybeCausedBy(_ error: Error?) -> Self {
+    if let error = error {
+      return self.causedBy(error)
+    }
+    return self
+  }
+}
+
 internal class PermissionsModuleNotFoundException: Exception {
   override var reason: String {
     "Permissions module not found. Are you sure that Expo modules are properly linked?"
@@ -76,13 +88,7 @@ internal class FailedToWriteImageException: Exception {
 
 internal class FailedToReadImageException: Exception {
   override var reason: String {
-    return "Failed to read picked image"
-  }
-}
-
-internal class FailedToLoadImageException: GenericException<String?> {
-  override var reason: String {
-    "Failed to read picked image" + (param != nil ? ": \(param!)" : "")
+    "Failed to read picked image"
   }
 }
 
@@ -101,12 +107,6 @@ internal class FailedToReadVideoSizeException: Exception {
 internal class FailedToReadVideoException: Exception {
   override var reason: String {
     "Failed to read picked video"
-  }
-}
-
-internal class FailedToLoadVideoException: GenericException<String?> {
-  override var reason: String {
-    "Failed to read picked video" + (param != nil ? ": \(param!)" : "")
   }
 }
 

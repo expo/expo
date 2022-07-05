@@ -7,23 +7,17 @@ internal enum AsyncResult {
   case failure(Exception)
 }
 
-internal enum AsyncMultipleResult {
-  case success(ImagePickerMultipleResponse)
-  case failure(Exception)
+/**
+ General protocol representing a picker response
+ */
+internal protocol ImagePickerResponse {
+  var dictionary: [String: Any] { get }
 }
 
-internal struct ImagePickerMultipleResponse {
-  let results: [SelectedMediaInfo]
-  
-  var dictionary: [String: Any] {
-    var result: [String: Any] = [:]
-    result["cancelled"] = false
-    result["selected"] = results.map { $0.dictionary }
-    return result
-  }
-}
-
-internal enum ImagePickerResponse {
+/**
+ Represents a picker response, when multiple selection is disabled
+ */
+internal enum ImagePickerSingleResponse: ImagePickerResponse {
   case image(ImageInfo)
   case video(VideoInfo)
 
@@ -40,19 +34,42 @@ internal enum ImagePickerResponse {
   }
 }
 
+/**
+ Represents a picker response, when multiple selection is enabled
+ */
+internal struct ImagePickerMultipleResponse: ImagePickerResponse {
+  let results: [SelectedMediaInfo]
+
+  var dictionary: [String: Any] {
+    [
+      "cancelled": false,
+      "selected": results.map { $0.dictionary }
+    ]
+  }
+}
+
+/**
+ Convenience alias, a dictionary representing EXIF data
+ */
+internal typealias ExifInfo = [String: Any]
+
+/**
+ General protocol representing a single selected asset
+ */
 internal protocol SelectedMediaInfo {
   var dictionary: [String: Any] { get }
 }
 
-internal typealias ExifInfo = [String: Any]
-
+/**
+ Represents a single selected image
+ */
 internal struct ImageInfo: SelectedMediaInfo {
   let type: String = "image"
   let uri: String
   let width: Double
   let height: Double
   let base64: String?
-  var exif: ExifInfo? = nil
+  let exif: ExifInfo?
 
   var dictionary: [String: Any] {
     var result: [String: Any] = [
@@ -71,6 +88,9 @@ internal struct ImageInfo: SelectedMediaInfo {
   }
 }
 
+/**
+ Represents a single selected video
+ */
 internal struct VideoInfo: SelectedMediaInfo {
   let type: String = "video"
   let uri: String

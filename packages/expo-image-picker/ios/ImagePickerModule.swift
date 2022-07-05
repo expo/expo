@@ -90,28 +90,16 @@ public class ImagePickerModule: Module, OnMediaPickingResultHandler {
     }
 
     let imagePickerDelegate = ImagePickerHandler(onMediaPickingResultHandler: self, hideStatusBarWhenPresented: options.allowsEditing)
-    
-    if #available(iOS 14, *), options.allowsMultipleSelection && !options.allowsEditing {
-      var configuration = PHPickerConfiguration(photoLibrary: PHPhotoLibrary.shared())
-      // TODO: (barthap) Add configurable selection limit. 0 means unlimited
-      configuration.selectionLimit = 0
-      configuration.filter = options.mediaTypes.toPickerFilter()
-      
-      let pickingContext = PickingContext(promise: promise,
-                                          options: options,
-                                          imagePickerHandler: imagePickerDelegate)
-      
-      let picker = PHPickerViewController(configuration: configuration)
-      picker.delegate = pickingContext.imagePickerHandler
-      picker.presentationController?.delegate = pickingContext.imagePickerHandler
-      
-      // Store picking context as we're navigating to the different view controller (starting asynchronous flow)
-      self.currentPickingContext = pickingContext
-      currentViewController.present(picker, animated: true, completion: nil)
+
+    let pickingContext = PickingContext(promise: promise,
+                                        options: options,
+                                        imagePickerHandler: imagePickerDelegate)
+
+    if #available(iOS 14, *), options.allowsMultipleSelection && !options.allowsEditing && sourceType != .camera {
+      self.launchMultiSelectPicker(pickingContext: pickingContext, currentViewController: currentViewController)
       return
     }
-    
-    
+
     let picker = UIImagePickerController()
 
     if sourceType == .camera {
@@ -143,10 +131,23 @@ public class ImagePickerModule: Module, OnMediaPickingResultHandler {
       }
     }
 
-    let pickingContext = PickingContext(promise: promise,
-                                        options: options,
-                                        imagePickerHandler: imagePickerDelegate)
+    picker.delegate = pickingContext.imagePickerHandler
+    picker.presentationController?.delegate = pickingContext.imagePickerHandler
 
+    // Store picking context as we're navigating to the different view controller (starting asynchronous flow)
+    self.currentPickingContext = pickingContext
+    currentViewController.present(picker, animated: true, completion: nil)
+  }
+
+  @available(iOS 14, *)
+  private func launchMultiSelectPicker(pickingContext: PickingContext,
+                                       currentViewController: UIViewController) {
+    var configuration = PHPickerConfiguration(photoLibrary: PHPhotoLibrary.shared())
+    // TODO: (barthap) Add configurable selection limit. 0 means unlimited
+    configuration.selectionLimit = 0
+    configuration.filter = pickingContext.options.mediaTypes.toPickerFilter()
+
+    let picker = PHPickerViewController(configuration: configuration)
     picker.delegate = pickingContext.imagePickerHandler
     picker.presentationController?.delegate = pickingContext.imagePickerHandler
 
@@ -161,7 +162,7 @@ public class ImagePickerModule: Module, OnMediaPickingResultHandler {
     self.currentPickingContext?.promise.resolve(["cancelled": true])
     self.currentPickingContext = nil
   }
-  
+
   @available(iOS 14, *)
   func didPickMultipleMedia(selection: [PHPickerResult]) {
     guard let options = self.currentPickingContext?.options,
@@ -172,13 +173,13 @@ public class ImagePickerModule: Module, OnMediaPickingResultHandler {
     guard let fileSystem = self.appContext?.fileSystem else {
       return promise.reject(FileSystemModuleNotFoundException())
     }
-    
+
     let mediaHandler = MediaHandler(fileSystem: fileSystem,
                                     options: options)
-    
-    // Cleanup the currently stored picking context
+
+    // Clean up the currently stored picking context
     self.currentPickingContext = nil
-    
+
     mediaHandler.handleMultipleMedia(selection) { result -> Void in
       switch result {
       case .failure(let error): return promise.reject(error)
@@ -197,7 +198,7 @@ public class ImagePickerModule: Module, OnMediaPickingResultHandler {
       return promise.reject(FileSystemModuleNotFoundException())
     }
 
-    // Cleanup the currently stored picking context
+    // Clean up the currently stored picking context
     self.currentPickingContext = nil
 
     let mediaHandler = MediaHandler(fileSystem: fileSystem,

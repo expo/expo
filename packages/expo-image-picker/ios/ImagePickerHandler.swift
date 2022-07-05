@@ -39,7 +39,7 @@ internal class ImagePickerHandler: NSObject,
     statusBarVisibilityController.maybeRestoreStatusBarVisibility()
     onMediaPickingResultHandler.didPickMedia(mediaInfo: mediaInfo)
   }
-  
+
   @available(iOS 14, *)
   private func handlePickedMedia(selection: [PHPickerResult]) {
     statusBarVisibilityController.maybeRestoreStatusBarVisibility()
@@ -68,10 +68,9 @@ internal class ImagePickerHandler: NSObject,
       }
     }
   }
-  
-  
+
   // MARK: - PHPickerViewControllerDelegate
-  
+
   @available(iOS 14, *)
   func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
     DispatchQueue.main.async {

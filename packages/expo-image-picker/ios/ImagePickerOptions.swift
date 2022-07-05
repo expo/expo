@@ -40,7 +40,7 @@ internal struct ImagePickerOptions: Record {
   // TODO: (bbarthec): undocumented
   @Field
   var cameraType: CameraType = .back
-  
+
   @Field
   var allowsMultipleSelection: Bool = false
 }
@@ -125,7 +125,7 @@ internal enum MediaType: String, EnumArgument {
       return [kUTTypeImage as String, kUTTypeMovie as String]
     }
   }
-  
+
   @available(iOS 14, *)
   func toPickerFilter() -> PHPickerFilter {
     // TODO: (barthap) Maybe add support for live photos
