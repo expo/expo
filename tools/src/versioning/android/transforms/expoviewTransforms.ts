@@ -7,7 +7,6 @@ import { JniLibNames } from '../libraries';
 import { packagesToKeep, packagesToRename } from '../packagesConfig';
 import { deleteLinesBetweenTags } from '../utils';
 
-
 export function expoviewTransforms(abiVersion: string): FileTransforms {
   const sdkVersion = abiVersion.replace(/abi(\d+)_0_0/, 'sdk$1');
   return {
