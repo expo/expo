@@ -22,17 +22,37 @@ internal struct MediaHandler {
   }
   
   @available(iOS 14, *)
-  internal func handleMultipleMedia(_ results: [PHPickerResult], completion: @escaping (AsyncMultipleResult) -> Void) {
+  internal func handleMultipleMedia(_ selection: [PHPickerResult], completion: @escaping (AsyncMultipleResult) -> Void) {
     let compressionQuality = options.quality ?? DEFAULT_QUALITY
     
-    var finalResults: [SelectedMediaInfo] = []
+    var results: [String: SelectedMediaInfo] = [:]
+    var exifData: [String: ExifInfo?] = [:]
     
     let dispatchGroup = DispatchGroup()
     let dispatchQueue = DispatchQueue(label: "expo.imagepicker.multipleMediaHandler")
     
-    for result in results {
-      let identifier = result.assetIdentifier
-      let itemProvider = result.itemProvider
+    for item in selection {
+      let identifier = item.assetIdentifier
+      let itemProvider = item.itemProvider
+      
+      if self.options.exif,
+         itemProvider.hasItemConformingToTypeIdentifier(UTType.image.identifier) {
+        
+        dispatchGroup.enter()
+          itemProvider.loadDataRepresentation(forTypeIdentifier: UTType.image.identifier) { data, error in
+              guard let data = data,
+                    let cgImageSource = CGImageSourceCreateWithData(data as CFData, nil),
+                    let properties = CGImageSourceCopyPropertiesAtIndex(cgImageSource, 0, nil) else { return }
+//            let img = UIImage(data: data)
+            
+            let exif = ImageUtils.readExifFrom(imageMetadata: properties as! [String : Any])
+            dispatchQueue.async {
+              exifData[identifier!] = exif
+              dispatchGroup.leave()
+            }
+          }
+      }
+      
       if itemProvider.canLoadObject(ofClass: UIImage.self) {
         dispatchGroup.enter()
         itemProvider.loadObject(ofClass: UIImage.self) { (image, error) in
@@ -50,18 +70,27 @@ internal struct MediaHandler {
                                                                tryReadingFile: false,
                                                                shouldReadBase64: self.options.base64)
           
-          //TODO: Read exif/metadata the other way
-          
           dispatchQueue.async {
-            finalResults.append(ImageInfo(uri: targetUrl.absoluteString, width: 0, height: 0, base64: base64, exif: nil))
+            results[identifier!] = ImageInfo(uri: targetUrl.absoluteString,
+                                          width: image.size.width,
+                                          height: image.size.height,
+                                          base64: base64)
             dispatchGroup.leave()
           }
         } // loadObject
       } // canLoadObject
+      
     } // for
     
     dispatchGroup.notify(queue: .main) {
-      completion(.success(ImagePickerMultipleResponse(results: finalResults)))
+      for key in results.keys {
+        if exifData[key] != nil, var image = results[key] as? ImageInfo {
+          image.exif = exifData[key]!
+          results[key] = image
+        }
+      }
+      
+      completion(.success(ImagePickerMultipleResponse(results: Array(results.values))))
     }
   }
 
@@ -338,8 +367,8 @@ private struct ImageUtils {
     }
   }
 
-  static func readExifFrom(imageMetadata: [String: Any]) -> [String: Any] {
-    var exif: [String: Any] = imageMetadata[kCGImagePropertyExifDictionary as String] as? [String: Any] ?? [:]
+  static func readExifFrom(imageMetadata: [String: Any]) -> ExifInfo {
+    var exif: ExifInfo = imageMetadata[kCGImagePropertyExifDictionary as String] as? ExifInfo ?? [:]
 
     // Copy ["{GPS}"]["<tag>"] to ["GPS<tag>"]
     let gps = imageMetadata[kCGImagePropertyGPSDictionary as String] as? [String: Any]

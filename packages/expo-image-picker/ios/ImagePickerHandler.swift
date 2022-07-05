@@ -7,7 +7,7 @@ import PhotosUI
  */
 protocol OnMediaPickingResultHandler {
   @available(iOS 14, *)
-  func didPickMultipleMedia(results: [PHPickerResult])
+  func didPickMultipleMedia(selection: [PHPickerResult])
   func didPickMedia(mediaInfo: MediaInfo)
   func didCancelPicking()
 }
@@ -41,9 +41,9 @@ internal class ImagePickerHandler: NSObject,
   }
   
   @available(iOS 14, *)
-  private func handlePickedMedia(results: [PHPickerResult]) {
+  private func handlePickedMedia(selection: [PHPickerResult]) {
     statusBarVisibilityController.maybeRestoreStatusBarVisibility()
-    onMediaPickingResultHandler.didPickMultipleMedia(results: results)
+    onMediaPickingResultHandler.didPickMultipleMedia(selection: selection)
   }
 
   private func handlePickingCancellation() {
@@ -76,7 +76,12 @@ internal class ImagePickerHandler: NSObject,
   func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
     DispatchQueue.main.async {
       picker.dismiss(animated: true) { [weak self] in
-        self?.handlePickedMedia(results: results)
+        // The PHPickerViewController returns empty collection when cancelled
+        if results.isEmpty {
+          self?.handlePickingCancellation()
+        } else {
+          self?.handlePickedMedia(selection: results)
+        }
       }
     }
   }

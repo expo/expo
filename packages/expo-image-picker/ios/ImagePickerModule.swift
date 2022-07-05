@@ -92,7 +92,7 @@ public class ImagePickerModule: Module, OnMediaPickingResultHandler {
     let imagePickerDelegate = ImagePickerHandler(onMediaPickingResultHandler: self, hideStatusBarWhenPresented: options.allowsEditing)
     
     if #available(iOS 14, *), options.allowsMultipleSelection && !options.allowsEditing {
-      var configuration = PHPickerConfiguration()
+      var configuration = PHPickerConfiguration(photoLibrary: PHPhotoLibrary.shared())
       // TODO: (barthap) Add configurable selection limit. 0 means unlimited
       configuration.selectionLimit = 0
       configuration.filter = options.mediaTypes.toPickerFilter()
@@ -163,7 +163,7 @@ public class ImagePickerModule: Module, OnMediaPickingResultHandler {
   }
   
   @available(iOS 14, *)
-  func didPickMultipleMedia(results: [PHPickerResult]) {
+  func didPickMultipleMedia(selection: [PHPickerResult]) {
     guard let options = self.currentPickingContext?.options,
           let promise = self.currentPickingContext?.promise else {
       NSLog("Picking operation context has been lost.")
@@ -179,7 +179,7 @@ public class ImagePickerModule: Module, OnMediaPickingResultHandler {
     // Cleanup the currently stored picking context
     self.currentPickingContext = nil
     
-    mediaHandler.handleMultipleMedia(results) { result -> Void in
+    mediaHandler.handleMultipleMedia(selection) { result -> Void in
       switch result {
       case .failure(let error): return promise.reject(error)
       case .success(let response): return promise.resolve(response.dictionary)

@@ -44,13 +44,15 @@ internal protocol SelectedMediaInfo {
   var dictionary: [String: Any] { get }
 }
 
+internal typealias ExifInfo = [String: Any]
+
 internal struct ImageInfo: SelectedMediaInfo {
   let type: String = "image"
   let uri: String
   let width: Double
   let height: Double
   let base64: String?
-  let exif: [String: Any]?
+  var exif: ExifInfo? = nil
 
   var dictionary: [String: Any] {
     var result: [String: Any] = [
