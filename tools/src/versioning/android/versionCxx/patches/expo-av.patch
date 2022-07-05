@@ -1,5 +1,5 @@
 diff --git a/packages/expo-av/android/CMakeLists.txt b/packages/expo-av/android/CMakeLists.txt
-index fe625b6347..af6218de4c 100644
+index fe625b6347..bafd146556 100644
 --- a/packages/expo-av/android/CMakeLists.txt
 +++ b/packages/expo-av/android/CMakeLists.txt
 @@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.4.1)
@@ -29,7 +29,7 @@ index fe625b6347..af6218de4c 100644
          NO_CMAKE_FIND_ROOT_PATH
  )
 diff --git a/packages/expo-av/android/build.gradle b/packages/expo-av/android/build.gradle
-index c987524d4e..3ce6a15103 100644
+index fafe099214..cae6d92e3e 100644
 --- a/packages/expo-av/android/build.gradle
 +++ b/packages/expo-av/android/build.gradle
 @@ -13,6 +13,10 @@ def RN_SO_DIR = RN_BUILD_FROM_SOURCE
@@ -43,8 +43,17 @@ index c987524d4e..3ce6a15103 100644
  def reactNativeArchitectures() {
      def value = project.getProperties().get("reactNativeArchitectures")
      return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
+@@ -165,7 +169,7 @@ dependencies {
+ 
+ def extractReactNativeAAR = { buildType ->
+   def suffix = buildType == 'Debug' ? '-debug' : '-release'
+-  def rnAARs = fileTree(RN_AAR_DIR).matching { include "**/react-native/**/*${suffix}.aar" }
++  def rnAARs = fileTree(RN_AAR_DIR).matching { include "**/*.aar" }
+   if (rnAARs.isEmpty()) {
+     rnAARs = fileTree(RN_AAR_DIR).matching { include "**/react-native/**/*.aar" }
+   }
 diff --git a/packages/expo-av/android/src/main/cpp/JAVManager.h b/packages/expo-av/android/src/main/cpp/JAVManager.h
-index 6107c0ab93..1f0765c0e5 100644
+index 6107c0ab93..f61328b2ca 100644
 --- a/packages/expo-av/android/src/main/cpp/JAVManager.h
 +++ b/packages/expo-av/android/src/main/cpp/JAVManager.h
 @@ -20,7 +20,7 @@ namespace expo {
@@ -57,7 +66,7 @@ index 6107c0ab93..1f0765c0e5 100644
  
        static jni::local_ref<jhybriddata> initHybrid(jni::alias_ref<jhybridobject> jThis);
 diff --git a/packages/expo-av/android/src/main/cpp/JPlayerData.h b/packages/expo-av/android/src/main/cpp/JPlayerData.h
-index e51a5bed4f..8a248bd6ea 100644
+index e51a5bed4f..8a2d318775 100644
 --- a/packages/expo-av/android/src/main/cpp/JPlayerData.h
 +++ b/packages/expo-av/android/src/main/cpp/JPlayerData.h
 @@ -16,7 +16,7 @@ namespace expo {
