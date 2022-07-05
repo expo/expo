@@ -15,13 +15,11 @@ class AuBECSDebitFormViewManager : SimpleViewManager<AuBECSDebitFormView>() {
   }
 
   @ReactProp(name = "companyName")
-  @SuppressWarnings("unused")
   fun setCompanyName(view: AuBECSDebitFormView, name: String?) {
     view.setCompanyName(name)
   }
 
   @ReactProp(name = "formStyle")
-  @SuppressWarnings("unused")
   fun setFormStyle(view: AuBECSDebitFormView, style: ReadableMap) {
     view.setFormStyle(style)
   }

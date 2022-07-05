@@ -44,7 +44,7 @@ class CardFormView: UIView, STPCardFormViewDelegate {
                 "expiryMonth": cardForm?.cardParams?.card?.expMonth ?? NSNull(),
                 "expiryYear": cardForm?.cardParams?.card?.expYear ?? NSNull(),
                 "complete": complete,
-                "brand": Mappers.mapCardBrand(brand) ?? NSNull(),
+                "brand": Mappers.mapFromCardBrand(brand) ?? NSNull(),
                 "last4": cardForm?.cardParams?.card?.last4 ?? "",
                 "postalCode": cardForm?.cardParams?.billingDetails?.address?.postalCode ?? "",
                 "country": cardForm?.cardParams?.billingDetails?.address?.country
@@ -52,6 +52,7 @@ class CardFormView: UIView, STPCardFormViewDelegate {
 
             if (dangerouslyGetFullCardDetails) {
                 cardData["number"] = cardForm?.cardParams?.card?.number ?? ""
+                cardData["cvc"] = cardForm?.cardParams?.card?.cvc ?? ""
             }
             if (complete) {
                 self.cardParams = cardForm?.cardParams?.card

@@ -18,20 +18,26 @@ class CardFieldView: UIView, STPPaymentCardTextFieldDelegate {
         }
     }
     
-    @objc var placeholder: NSDictionary = NSDictionary() {
+    @objc var countryCode: String? {
         didSet {
-            if let numberPlaceholder = placeholder["number"] as? String {
+            cardField.countryCode = countryCode
+        }
+    }
+    
+    @objc var placeholders: NSDictionary = NSDictionary() {
+        didSet {
+            if let numberPlaceholder = placeholders["number"] as? String {
                 cardField.numberPlaceholder = numberPlaceholder
             } else {
                 cardField.numberPlaceholder = "1234123412341234"
             }
-            if let expirationPlaceholder = placeholder["expiration"] as? String {
+            if let expirationPlaceholder = placeholders["expiration"] as? String {
                 cardField.expirationPlaceholder = expirationPlaceholder
             }
-            if let cvcPlaceholder = placeholder["cvc"] as? String {
+            if let cvcPlaceholder = placeholders["cvc"] as? String {
                 cardField.cvcPlaceholder = cvcPlaceholder
             }
-            if let postalCodePlaceholder = placeholder["postalCode"] as? String {
+            if let postalCodePlaceholder = placeholders["postalCode"] as? String {
                 cardField.postalCodePlaceholder = postalCodePlaceholder
             }
         }
@@ -134,7 +140,7 @@ class CardFieldView: UIView, STPPaymentCardTextFieldDelegate {
                 "expiryMonth": textField.cardParams.expMonth ?? NSNull(),
                 "expiryYear": textField.cardParams.expYear ?? NSNull(),
                 "complete": textField.isValid,
-                "brand": Mappers.mapCardBrand(brand) ?? NSNull(),
+                "brand": Mappers.mapFromCardBrand(brand) ?? NSNull(),
                 "last4": textField.cardParams.last4 ?? "",
                 "validExpiryDate": Mappers.mapFromCardValidationState(state: validExpiryDate),
                 "validCVC": Mappers.mapFromCardValidationState(state: validCVC),
@@ -145,6 +151,7 @@ class CardFieldView: UIView, STPPaymentCardTextFieldDelegate {
             }
             if (dangerouslyGetFullCardDetails) {
                 cardData["number"] = textField.cardParams.number ?? ""
+                cardData["cvc"] = textField.cardParams.cvc ?? ""
             }
             onCardChange!(cardData as [AnyHashable : Any])
         }

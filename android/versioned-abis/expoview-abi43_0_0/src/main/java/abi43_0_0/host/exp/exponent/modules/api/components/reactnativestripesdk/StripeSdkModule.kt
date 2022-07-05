@@ -15,6 +15,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import abi43_0_0.com.facebook.react.bridge.*
 import abi43_0_0.com.facebook.react.module.annotations.ReactModule
 import com.stripe.android.*
+import com.stripe.android.core.AppInfo
 import com.stripe.android.googlepaylauncher.GooglePayLauncher
 import com.stripe.android.googlepaylauncher.GooglePayPaymentMethodLauncher
 import com.stripe.android.model.*

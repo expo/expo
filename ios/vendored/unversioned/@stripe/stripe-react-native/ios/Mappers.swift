@@ -82,7 +82,7 @@ class Mappers {
             return nil
         }
         let cardMap: NSDictionary = [
-            "brand": mapCardBrand(card?.brand) ?? NSNull(),
+            "brand": mapFromCardBrand(card?.brand) ?? NSNull(),
             "country": card?.country ?? NSNull(),
             "currency": card?.currency ?? NSNull(),
             "expMonth": card?.expMonth ?? NSNull(),
@@ -157,7 +157,6 @@ class Mappers {
             "card": mapFromCard(token.card) ?? NSNull(),
             "livemode": token.livemode,
             "type": mapFromTokenType(token.type) ?? NSNull(),
-
         ]
 
         return tokenMap
@@ -283,6 +282,7 @@ class Mappers {
         case STPPaymentMethodType.afterpayClearpay: return "AfterpayClearpay"
         case STPPaymentMethodType.klarna: return "Klarna"
         case STPPaymentMethodType.USBankAccount: return "USBankAccount"
+        case STPPaymentMethodType.payPal: return "PayPal"
         case STPPaymentMethodType.unknown: return "Unknown"
         default: return "Unknown"
         }
@@ -311,6 +311,7 @@ class Mappers {
             case "Klarna": return STPPaymentMethodType.klarna
             case "WeChatPay": return STPPaymentMethodType.weChatPay
             case "USBankAccount": return STPPaymentMethodType.USBankAccount
+            case "PayPal": return STPPaymentMethodType.payPal
             default: return STPPaymentMethodType.unknown
             }
         }
@@ -495,16 +496,18 @@ class Mappers {
         billing.phone = RCTConvert.nsString(billingDetails["phone"])
         billing.name = RCTConvert.nsString(billingDetails["name"])
 
-        let billingAddres = STPPaymentMethodAddress()
+        let address = STPPaymentMethodAddress()
 
-        billingAddres.city = RCTConvert.nsString(billingDetails["addressCity"])
-        billingAddres.postalCode = RCTConvert.nsString(billingDetails["addressPostalCode"])
-        billingAddres.country = RCTConvert.nsString(billingDetails["addressCountry"])
-        billingAddres.line1 = RCTConvert.nsString(billingDetails["addressLine1"])
-        billingAddres.line2 = RCTConvert.nsString(billingDetails["addressLine2"])
-        billingAddres.state = RCTConvert.nsString(billingDetails["addressState"])
+        if let addressMap = billingDetails["address"] as? NSDictionary {
+            address.city = RCTConvert.nsString(addressMap["city"])
+            address.postalCode = RCTConvert.nsString(addressMap["postalCode"])
+            address.country = RCTConvert.nsString(addressMap["country"])
+            address.line1 = RCTConvert.nsString(addressMap["line1"])
+            address.line2 = RCTConvert.nsString(addressMap["line2"])
+            address.state = RCTConvert.nsString(addressMap["state"])
+        }
 
-        billing.address = billingAddres
+        billing.address = address
 
         return billing
     }
@@ -513,14 +516,17 @@ class Mappers {
         guard let shippingDetails = shippingDetails else {
             return nil
         }
-        let shippingAddress = STPPaymentIntentShippingDetailsAddressParams(line1: shippingDetails["addressLine1"] as? String ?? "")
 
-        shippingAddress.city = shippingDetails["addressCity"] as? String
-        shippingAddress.postalCode = shippingDetails["addressPostalCode"] as? String
-        shippingAddress.country = shippingDetails["addressCountry"] as? String
-        shippingAddress.line1 = shippingDetails["addressLine1"] as? String ?? ""
-        shippingAddress.line2 = shippingDetails["addressLine2"] as? String
-        shippingAddress.state = shippingDetails["addressState"] as? String
+        let shippingAddress = STPPaymentIntentShippingDetailsAddressParams(line1: "")
+
+        if let addressMap = shippingDetails["address"] as? NSDictionary {
+            shippingAddress.city = addressMap["city"] as? String
+            shippingAddress.postalCode = addressMap["postalCode"] as? String
+            shippingAddress.country = addressMap["country"] as? String
+            shippingAddress.line1 = addressMap["line1"] as? String ?? ""
+            shippingAddress.line2 = addressMap["line2"] as? String
+            shippingAddress.state = addressMap["state"] as? String
+        }
 
         let shipping = STPPaymentIntentShippingDetailsParams(address: shippingAddress, name: shippingDetails["name"] as? String ?? "")
 
@@ -545,7 +551,7 @@ class Mappers {
         return billing
     }
 
-    class func mapCardBrand(_ brand: STPCardBrand?) -> String? {
+    class func mapFromCardBrand(_ brand: STPCardBrand?) -> String? {
         if let brand = brand {
             switch brand {
             case STPCardBrand.visa: return "Visa"
@@ -562,12 +568,29 @@ class Mappers {
         return nil
     }
 
+    class func mapToCardBrand(_ brand: String?) -> STPCardBrand {
+        if let brand = brand {
+            switch brand {
+            case "Visa": return STPCardBrand.visa
+            case "AmericanExpress" : return STPCardBrand.amex
+            case "MasterCard": return STPCardBrand.mastercard
+            case "Discover": return STPCardBrand.discover
+            case "JCB": return STPCardBrand.JCB
+            case "DinersClub": return STPCardBrand.dinersClub
+            case "UnionPay": return STPCardBrand.unionPay
+            case "Unknown": return STPCardBrand.unknown
+            default: return STPCardBrand.unknown
+            }
+        }
+        return STPCardBrand.unknown
+    }
+
     class func mapFromPaymentMethod(_ paymentMethod: STPPaymentMethod?) -> NSDictionary? {
         guard let paymentMethod = paymentMethod else {
             return nil
         }
         let card: NSDictionary = [
-            "brand": Mappers.mapCardBrand(paymentMethod.card?.brand) ?? NSNull(),
+            "brand": Mappers.mapFromCardBrand(paymentMethod.card?.brand) ?? NSNull(),
             "country": paymentMethod.card?.country ?? NSNull(),
             "expYear": paymentMethod.card?.expYear ?? NSNull(),
             "expMonth": paymentMethod.card?.expMonth ?? NSNull(),
@@ -604,7 +627,7 @@ class Mappers {
         ]
         let method: NSDictionary = [
             "id": paymentMethod.stripeId,
-            "type": Mappers.mapPaymentMethodType(type: paymentMethod.type),
+            "paymentMethodType": Mappers.mapPaymentMethodType(type: paymentMethod.type),
             "livemode": paymentMethod.liveMode,
             "customerId": paymentMethod.customerId ?? NSNull(),
             "billingDetails": Mappers.mapFromBillingDetails(billingDetails: paymentMethod.billingDetails),
@@ -698,7 +721,7 @@ class Mappers {
         if let lastSetupError = setupIntent.lastSetupError {
             let setupError: NSMutableDictionary = [
                 "code": lastSetupError.code ?? NSNull(),
-                "message": lastSetupError.description,
+                "message": lastSetupError.message ?? NSNull(),
                 "type": mapFromSetupIntentLastPaymentErrorType(lastSetupError.type) ?? NSNull(),
                 "declineCode": lastSetupError.declineCode ?? NSNull(),
                 "paymentMethod": mapFromPaymentMethod(lastSetupError.paymentMethod) ?? NSNull()
@@ -919,6 +942,15 @@ class Mappers {
         return "Unknown"
     }
 
+    class func mapToPKAddPassButtonStyle(style: String?) -> PKAddPassButtonStyle {
+        if let style = style {
+            if (style == "onDarkBackground") {
+                return .blackOutline
+            }
+        }
+        return .black
+    }
+
     class func mapFromUSBankAccountHolderType(type: STPPaymentMethodUSBankAccountHolderType?) -> String {
         if let type = type {
             switch type {
@@ -929,7 +961,7 @@ class Mappers {
         }
         return "Unknown"
     }
-    
+
     class func mapToUSBankAccountHolderType(type: String?) -> STPPaymentMethodUSBankAccountHolderType {
         switch type {
             case "Company": return STPPaymentMethodUSBankAccountHolderType.company
@@ -948,7 +980,7 @@ class Mappers {
         }
         return "Unknown"
     }
-    
+
     class func mapToUSBankAccountType(type: String?) -> STPPaymentMethodUSBankAccountType {
         switch type {
             case "Savings": return STPPaymentMethodUSBankAccountType.savings
