@@ -298,6 +298,13 @@ const config: VendoringTargetConfig = {
               symlinkFrameworkPath
             );
           }
+
+          // Workaround React-bridging header search path for react-native 0.69 with `generate_multiple_pod_projects=true`
+          if (!podspec.pod_target_xcconfig) {
+            podspec.pod_target_xcconfig = {};
+          }
+          podspec.pod_target_xcconfig['HEADER_SEARCH_PATHS'] =
+            '"$(PODS_ROOT)/Headers/Private/React-bridging/react/bridging" "$(PODS_CONFIGURATION_BUILD_DIR)/React-bridging/react_bridging.framework/Headers"';
         },
       },
     },
