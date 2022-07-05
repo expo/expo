@@ -23,7 +23,7 @@ export async function versionVendoredModulesAsync(
 ): Promise<void> {
   const prefix = `abi${sdkNumber}_0_0`;
   const config = vendoredModulesTransforms(prefix);
-  const baseTransforms = baseTransformsFactory(prefix);
+  const baseTransforms = await baseTransformsFactoryAsync(prefix);
   const unversionedDir = path.join(ANDROID_VENDORED_DIR, 'unversioned');
   const versionedDir = vendoredDirectoryForSDK(sdkNumber);
   let vendoredModuleNames = await getVendoredModuleNamesAsync(unversionedDir);
@@ -137,9 +137,38 @@ export async function removeVersionedVendoredModulesAsync(sdkNumber: number): Pr
 }
 
 /**
+ * Get the gradle dependency version from `android/expoview/build.gradle`
+ */
+async function getGradleDependencyVersionFromExpoViewAsync(
+  group: string,
+  name: string
+): Promise<string | null> {
+  const expoviewGradleFile = path.join(ANDROID_DIR, 'expoview', 'build.gradle');
+  const content = await fs.readFile(expoviewGradleFile, 'utf-8');
+  const searchPattern = new RegExp(
+    `\\b(api|implementation)[\\s(]['"]${group}:${name}:(.+?)['"]`,
+    'g'
+  );
+  const result = searchPattern.exec(content);
+  if (!result) {
+    return null;
+  }
+  return result[2];
+}
+
+/**
  * Generates base transforms to apply for all vendored modules.
  */
-function baseTransformsFactory(prefix: string): Required<FileTransforms> {
+async function baseTransformsFactoryAsync(prefix: string): Promise<Required<FileTransforms>> {
+  const fbjniVersion = await getGradleDependencyVersionFromExpoViewAsync(
+    'com.facebook.fbjni',
+    'fbjni-java-only'
+  );
+  const proguardAnnotationVersion = await getGradleDependencyVersionFromExpoViewAsync(
+    'com.facebook.yoga',
+    'proguard-annotations'
+  );
+
   return {
     path: [
       {
@@ -176,9 +205,9 @@ function baseTransformsFactory(prefix: string): Required<FileTransforms> {
           `implementation 'host.exp:reactandroid-${prefix}:1.0.0'` +
           '\n' +
           // Adding some compile time common dependencies where the versioned react-native AAR doesn't expose
-          `    compileOnly 'com.facebook.fbjni:fbjni:0.2.2'\n` +
-          `    compileOnly 'com.facebook.yoga:proguard-annotations:1.19.0'\n` +
-          `    compileOnly 'androidx.annotation:annotation:1.3.0'\n`,
+          `    compileOnly 'com.facebook.fbjni:fbjni:${fbjniVersion}'\n` +
+          `    compileOnly 'com.facebook.yoga:proguard-annotations:${proguardAnnotationVersion}'\n` +
+          `    compileOnly 'androidx.annotation:annotation:+'\n`,
       },
       {
         paths: 'build.gradle',
