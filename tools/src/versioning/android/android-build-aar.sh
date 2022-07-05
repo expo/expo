@@ -16,19 +16,15 @@ fi
 
 pushd $EXPO_ROOT_DIR/android
 
+export REACT_NATIVE_OVERRIDE_HERMES_DIR="$EXPO_ROOT_DIR/android/versioned-react-native/sdks/hermes"
+
 # Clean aar
 rm -rf expoview/libs/ReactAndroid-temp
-rm versioned-react-native/ReactAndroid/build/outputs/aar/ReactAndroid-release.aar
 
 # Build aar
 pushd versioned-react-native
-# The build directory sometimes has old .so files
-rm -rf ReactAndroid/build
 set -e
-./gradlew assembleRelease
-# 2021-03-23: hacky workaround for weird issue with missing .so libs
-# if we build the aar twice after cleaning, the libs will be packaged correctly
-./gradlew assembleRelease
+./gradlew :ReactAndroid:assembleRelease
 popd
 
 mkdir -p expoview/libs
