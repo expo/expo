@@ -72,7 +72,8 @@ def reactNativeArchitectures() {
 }
 
 def FOR_HERMES = false
-def HERMES_DIR = new File(["node", "--print", "require.resolve('hermes-engine/package.json')"].execute(null, rootDir).text.trim()).parent
+def HERMES_ENGINE_DIR = null
+def HERMES_AAR = null
 if (findProject(":app")) {
   def appProjectExt = project(":app").ext
   if (appProjectExt.has("react")) {
@@ -82,6 +83,25 @@ if (findProject(":app")) {
   }
 } else {
   FOR_HERMES = (findProperty('expo.jsEngine') ?: "jsc") == "hermes"
+}
+
+if (FOR_HERMES) {
+  // The `hermes-engine` package doesn't contain the correct version of the Hermes.
+  // The AAR we need to import is located in the React Native package.
+  // However, the version from RN doesn't include header files.
+  // To get those, we must fall back to the `hermes-engine` package.
+  HERMES_ENGINE_DIR = new File(["node", "--print", "require.resolve('hermes-engine/package.json')"].execute(null, rootDir).text.trim()).parent
+  if (REACT_NATIVE_BUILD_FROM_SOURCE) {
+    // TODO(@lukmccall): Use Hermes from the `ReactAndroid:hermes-engine`
+    HERMES_AAR = file("$HERMES_ENGINE_DIR/android/hermes-debug.aar")
+  } else {
+    def prebuiltAAR = fileTree(REACT_NATIVE_DIR).matching { include "**/hermes-engine/**/hermes-engine-*-debug.aar" }
+    if (prebuiltAAR.any()) {
+      HERMES_AAR = prebuiltAAR.singleFile
+    } else {
+      HERMES_AAR = file("$HERMES_ENGINE_DIR/android/hermes-debug.aar")
+    }
+  }
 }
 
 // Creating sources with comments
@@ -136,7 +156,7 @@ android {
           "-DREACT_NATIVE_TARGET_VERSION=${REACT_NATIVE_TARGET_VERSION}",
           "-DBOOST_VERSION=${BOOST_VERSION}",
           "-DFOR_HERMES=${FOR_HERMES}",
-          "-DHERMES_DIR=${HERMES_DIR}"
+          "-DHERMES_DIR=${HERMES_ENGINE_DIR}"
       }
     }
   }
@@ -244,7 +264,7 @@ dependencies {
   androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0"
 
   if (FOR_HERMES) {
-    androidTestImplementation files(new File(HERMES_DIR, "android/hermes-debug.aar"))
+    androidTestImplementation files(HERMES_AAR)
   } else {
     androidTestImplementation "org.webkit:android-jsc:+"
   }
@@ -407,12 +427,7 @@ task prepareHermes() {
     return
   }
 
-  def hermesAAR = file("$HERMES_DIR/android/hermes-debug.aar")
-  if (!hermesAAR.exists()) {
-    throw new GradleScriptException("The hermes-engine npm package is missing \"android/hermes-debug.aar\"", null)
-  }
-
-  def soFiles = zipTree(hermesAAR).matching({ it.include "**/*.so" })
+  def soFiles = zipTree(HERMES_AAR).matching({ it.include "**/*.so" })
 
   copy {
     from soFiles
