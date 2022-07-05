@@ -7,7 +7,7 @@ import path from 'path';
 import { podInstallAsync, Podspec, readPodspecAsync } from '../CocoaPods';
 import { IOS_DIR } from '../Constants';
 import logger from '../Logger';
-import { searchFilesAsync } from '../Utils';
+import { arrayize, searchFilesAsync } from '../Utils';
 import { copyVendoredFilesAsync } from './common';
 import { VendoringModuleConfig } from './types';
 
@@ -87,8 +87,11 @@ function createFilesPatterns(podspec: Podspec): string[] {
   );
 
   const subspecs = podspec.subspecs ?? [];
-  const defaultSubspecs = podspec.default_subspecs
-    ? subspecs.filter((spec) => podspec.default_subspecs.includes(spec.name))
+  const podspecDefaultSubspecsArray = podspec.default_subspecs
+    ? arrayize(podspec.default_subspecs)
+    : null;
+  const defaultSubspecs = podspecDefaultSubspecsArray
+    ? subspecs.filter((spec) => podspecDefaultSubspecsArray.includes(spec.name))
     : subspecs;
   for (const spec of defaultSubspecs) {
     result = result.concat(

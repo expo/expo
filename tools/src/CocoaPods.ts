@@ -21,7 +21,7 @@ export type Podspec = {
   dependencies: Record<string, any>;
   info_plist: Record<string, string>;
   ios?: Podspec;
-  default_subspecs: string[];
+  default_subspecs: string | string[];
   subspecs: Podspec[];
 };
 
