@@ -1,6 +1,7 @@
 import chalk from 'chalk';
 import fs from 'fs-extra';
 import glob from 'glob-promise';
+import once from 'lodash/once';
 import ncp from 'ncp';
 import path from 'path';
 import xcode from 'xcode';
@@ -200,6 +201,26 @@ const ReanimatedModifier: ModuleModifier = async function (
   await prepareIOSNativeFiles();
   await transformGestureHandlerImports();
 };
+
+const PickerModifier: ModuleModifier = once(async function (moduleConfig, clonedProjectPath) {
+  const addResourceImportAsync = async () => {
+    const files = [
+      `${clonedProjectPath}/android/src/main/java/com/reactnativecommunity/picker/ReactPicker.java`,
+      `${clonedProjectPath}/android/src/main/java/com/reactnativecommunity/picker/ReactPickerManager.java`,
+    ];
+    await Promise.all(
+      files
+        .map((file) => path.resolve(file))
+        .map(async (file) => {
+          let content = await fs.readFile(file, 'utf8');
+          content = content.replace(/^(package .+)$/gm, '$1\n\nimport host.exp.expoview.R;');
+          await fs.writeFile(file, content, 'utf8');
+        })
+    );
+  };
+
+  await addResourceImportAsync();
+});
 
 const GestureHandlerModifier: ModuleModifier = async function (
   moduleConfig: VendoredModuleConfig,
@@ -715,6 +736,7 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
   '@react-native-picker/picker': {
     repoUrl: 'https://github.com/react-native-picker/picker',
     installableInManagedApps: true,
+    moduleModifier: PickerModifier,
     steps: [
       {
         sourceIosPath: 'ios',

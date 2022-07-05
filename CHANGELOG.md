@@ -7,6 +7,7 @@ Package-specific changes not released in any SDK will be added here just before 
 
 ### 📚 3rd party library updates
 
+- Updated `@react-native-picker/picker` from `2.4.0` to `2.4.2`. ([#18098](https://github.com/expo/expo/pull/18098) by [@bbarthec](https://github.com/bbarthec))
 - Updated `lottie-react-native` from `5.0.1` to `5.1.3`. ([#18051](https://github.com/expo/expo/pull/18051) by [@lukmccall](https://github.com/lukmccall))
 - Updated `react-native-view-shot` from `3.1.2` to `3.3.0`. ([#18050](https://github.com/expo/expo/pull/18050) by [@lukmccall](https://github.com/lukmccall))
 - Updated `react-native-maps` from `0.30.2` to `0.31.1`. ([#18052](https://github.com/expo/expo/pull/18052) by [@lukmccall](https://github.com/lukmccall))
