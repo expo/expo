@@ -25,7 +25,7 @@ import versioned.host.exp.exponent.modules.api.*
 import versioned.host.exp.exponent.modules.api.cognito.RNAWSCognitoModule
 import versioned.host.exp.exponent.modules.api.components.datetimepicker.RNDateTimePickerPackage
 import versioned.host.exp.exponent.modules.api.components.gesturehandler.react.RNGestureHandlerModule
-import versioned.host.exp.exponent.modules.api.components.gesturehandler.react.RNGestureHandlerPackage
+import versioned.host.exp.exponent.modules.api.components.gesturehandler.RNGestureHandlerPackage
 import versioned.host.exp.exponent.modules.api.components.lottie.LottiePackage
 import versioned.host.exp.exponent.modules.api.components.maps.MapsPackage
 import versioned.host.exp.exponent.modules.api.components.maskedview.RNCMaskedViewPackage

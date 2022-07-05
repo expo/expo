@@ -25,6 +25,7 @@ interface VendoredModuleUpdateStep {
   /**
    * Hook that is fired by the end of vendoring an Android file.
    * You should use it to perform some extra operations that are not covered by the main flow.
+   * @deprecated Use {@link VendoredModuleConfig.moduleModifier} instead.
    */
   onDidVendorAndroidFile?: (file: string) => Promise<void>;
 }
@@ -42,6 +43,9 @@ interface VendoredModuleConfig {
   semverPrefix?: '~' | '^';
   skipCleanup?: boolean;
   steps: VendoredModuleUpdateStep[];
+  /**
+   * These modifiers are run before files are copied to the target directory.
+   */
   moduleModifier?: ModuleModifier;
   warnings?: string[];
 }
@@ -201,45 +205,80 @@ const GestureHandlerModifier: ModuleModifier = async function (
   moduleConfig: VendoredModuleConfig,
   clonedProjectPath: string
 ): Promise<void> {
-  const baseSrcDir = path.join(
-    clonedProjectPath,
-    'android',
-    'src',
-    'main',
-    'java',
-    'com',
-    'swmansion',
-    'gesturehandler',
-    'react'
-  );
-
   const addResourceImportAsync = async () => {
-    const files = [path.join(baseSrcDir, 'RNGestureHandlerButtonViewManager.kt')];
+    const files = [
+      `${clonedProjectPath}/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerButtonViewManager.kt`,
+    ];
     await Promise.all(
-      files.map(async (file) => {
-        let content = await fs.readFile(file, 'utf8');
-        content = content.replace(/^(package .+)$/gm, '$1\nimport host.exp.expoview.R');
-        await fs.writeFile(file, content, 'utf8');
-      })
+      files
+        .map((file) => path.resolve(file))
+        .map(async (file) => {
+          let content = await fs.readFile(file, 'utf8');
+          content = content.replace(/^(package .+)$/gm, '$1\nimport host.exp.expoview.R');
+          await fs.writeFile(file, content, 'utf8');
+        })
+    );
+  };
+
+  const replaceOrAddBuildConfigImportAsync = async () => {
+    const files = [
+      `${clonedProjectPath}/android/lib/src/main/java/com/swmansion/gesturehandler/GestureHandler.kt`,
+      `${clonedProjectPath}/android/src/main/java/com/swmansion/gesturehandler/RNGestureHandlerPackage.kt`,
+      `${clonedProjectPath}/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerModule.kt`,
+    ];
+    await Promise.all(
+      files
+        .map((file) => path.resolve(file))
+        .map(async (file) => {
+          let content = await fs.readFile(file, 'utf8');
+          content = content
+            .replace(/^.*\.BuildConfig$/gm, '')
+            .replace(/^(package .+)$/gm, '$1\nimport host.exp.expoview.BuildConfig');
+          await fs.writeFile(file, content, 'utf8');
+        })
     );
   };
 
   const transformImportsAsync = async () => {
-    const files = [path.join(baseSrcDir, 'RNGestureHandlerModule.kt')];
+    const files = [
+      `${clonedProjectPath}/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerModule.kt`,
+    ];
     await Promise.all(
-      files.map(async (file) => {
-        let content = await fs.readFile(file, 'utf8');
-        content = content.replace(
-          /^import com\.swmansion\.common\./gm,
-          'import versioned.host.exp.exponent.modules.api.components.gesturehandler.'
-        );
-        await fs.writeFile(file, content, 'utf8');
-      })
+      files
+        .map((file) => path.resolve(file))
+        .map(async (file) => {
+          let content = await fs.readFile(file, 'utf8');
+          content = content.replace(
+            /^import com\.swmansion\.common\./gm,
+            'import versioned.host.exp.exponent.modules.api.components.gesturehandler.'
+          );
+          await fs.writeFile(file, content, 'utf8');
+        })
+    );
+  };
+
+  const commentOurReanimatedCode = async () => {
+    const files = [
+      `${clonedProjectPath}/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerModule.kt`,
+    ];
+    await Promise.all(
+      files
+        .map((file) => path.resolve(file))
+        .map(async (file) => {
+          let content = await fs.readFile(file, 'utf8');
+          content = content.replace(
+            'ReanimatedEventDispatcher.sendEvent(event, reactApplicationContext)',
+            '// $& // COMMENTED OUT BY VENDORING SCRIPT'
+          );
+          await fs.writeFile(file, content, 'utf8');
+        })
     );
   };
 
   await addResourceImportAsync();
+  await replaceOrAddBuildConfigImportAsync();
   await transformImportsAsync();
+  await commentOurReanimatedCode();
 };
 
 const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
@@ -250,31 +289,39 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
     moduleModifier: GestureHandlerModifier,
     steps: [
       {
+        sourceAndroidPath: 'android/src/main/java/com/swmansion/gesturehandler',
+        targetAndroidPath: 'modules/api/components/gesturehandler',
+        sourceAndroidPackage: 'com.swmansion.gesturehandler',
+        targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.gesturehandler',
+      },
+      {
         sourceAndroidPath: 'android/lib/src/main/java/com/swmansion/gesturehandler',
         targetAndroidPath: 'modules/api/components/gesturehandler',
         sourceAndroidPackage: 'com.swmansion.gesturehandler',
         targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.gesturehandler',
+        cleanupTargetPath: false, // first step cleans parent directory
       },
       {
         sourceAndroidPath: 'android/common/src/main/java/com/swmansion/common',
         targetAndroidPath: 'modules/api/components/gesturehandler/common',
         sourceAndroidPackage: 'com.swmansion.common',
         targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.gesturehandler',
+        cleanupTargetPath: false, // first steps cleans parent directory
       },
       {
-        recursive: true,
-        sourceIosPath: 'ios',
-        targetIosPath: 'Api/Components/GestureHandler',
-        sourceAndroidPath: 'android/src/main/java/com/swmansion/gesturehandler/react',
-        targetAndroidPath: 'modules/api/components/gesturehandler/react',
+        sourceAndroidPath: 'android/src/paper/java/com/facebook/react/viewmanagers',
+        targetAndroidPath: '../../../../com/facebook/react/viewmanagers',
+        sourceAndroidPackage: 'com.facebook.react.viewmanagers',
+        targetAndroidPackage: 'com.facebook.react.viewmanagers',
+        cleanupTargetPath: false,
+      },
+      {
+        sourceAndroidPath: 'android/src/paper/java/com/swmansion/gesturehandler',
+        targetAndroidPath: 'modules/api/components/gesturehandler',
         sourceAndroidPackage: 'com.swmansion.gesturehandler',
         targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.gesturehandler',
+        cleanupTargetPath: false,
       },
-    ],
-    warnings: [
-      `NOTE: Any files in ${chalk.magenta(
-        'com.facebook.react'
-      )} will not be updated -- you'll need to add these to expoview manually!`,
     ],
   },
   'react-native-reanimated': {
