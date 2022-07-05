@@ -55,29 +55,31 @@ export function LegacyLaunchSection({ app }: { app: ProjectPageApp }) {
   const theme = useExpoTheme();
 
   return (
-    warning ?? (
-      <View>
-        <SectionHeader header="Classic Release Channels" style={{ paddingTop: 0 }} />
-        <View bg="default" overflow="hidden" rounded="large" border="default">
-          <TouchableOpacity
-            onPress={() => {
-              Linking.openURL(UrlUtils.normalizeUrl(app.fullName));
-            }}>
-            <Row padding="medium" justify="between" align="center" bg="default">
-              <Text size="medium" type="InterRegular">
-                default
-              </Text>
-              <OpenInternalIcon color={theme.icon.default} size={iconSize.tiny} />
-            </Row>
-          </TouchableOpacity>
+    <>
+      {warning ?? (
+        <View>
+          <SectionHeader header="Classic Release Channels" style={{ paddingTop: 0 }} />
+          <View bg="default" overflow="hidden" rounded="large" border="default">
+            <TouchableOpacity
+              onPress={() => {
+                Linking.openURL(UrlUtils.normalizeUrl(app.fullName));
+              }}>
+              <Row padding="medium" justify="between" align="center" bg="default">
+                <Text size="medium" type="InterRegular">
+                  default
+                </Text>
+                <OpenInternalIcon color={theme.icon.default} size={iconSize.tiny} />
+              </Row>
+            </TouchableOpacity>
+          </View>
+          <View padding="medium">
+            <Text size="small" color="secondary" type="InterRegular">
+              {moreLegacyBranchesText}
+            </Text>
+          </View>
         </View>
-        <View padding="medium">
-          <Text size="small" color="secondary" type="InterRegular">
-            {moreLegacyBranchesText}
-          </Text>
-        </View>
-        <Spacer.Vertical size="medium" />
-      </View>
-    )
+      )}
+      <Spacer.Vertical size="medium" />
+    </>
   );
 }
