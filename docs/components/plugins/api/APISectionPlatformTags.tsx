@@ -108,7 +108,7 @@ const platformTagStyle = css({
   'table &': {
     marginTop: 0,
     marginBottom: spacing[2],
-    padding: `0 ${spacing[1.5]}px`,
+    padding: `${spacing[0.5]}px ${spacing[1.5]}px`,
   },
 });
 
@@ -118,7 +118,7 @@ const platformTagFirstStyle = css({
 });
 
 const platformLabelStyle = css({
-  verticalAlign: 'text-top',
+  lineHeight: `${spacing[4]}px`,
 });
 
 const androidPlatformTagStyle = css({
