@@ -31,7 +31,7 @@ export const Table = ({
   </div>
 );
 
-const tableWrapperStyle = css({
+export const tableWrapperStyle = css({
   border: `1px solid ${theme.border.default}`,
   borderRadius: borderRadius.medium,
   overflowY: 'hidden',

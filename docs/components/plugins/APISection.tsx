@@ -112,7 +112,11 @@ const renderAPI = (
       entry => entry.name === 'defaultProps'
     )[0];
 
-    const enums = filterDataByKind(data, [TypeDocKind.Enum, TypeDocKind.LegacyEnum]);
+    const enums = filterDataByKind(
+      data,
+      [TypeDocKind.Enum, TypeDocKind.LegacyEnum],
+      entry => entry.name !== 'default'
+    );
     const interfaces = filterDataByKind(data, TypeDocKind.Interface);
     const constants = filterDataByKind(data, TypeDocKind.Variable, entry => isConstant(entry));
 
