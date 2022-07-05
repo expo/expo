@@ -23,10 +23,7 @@ internal struct MediaHandler {
   
   @available(iOS 14, *)
   internal func handleMultipleMedia(_ selection: [PHPickerResult], completion: @escaping (AsyncMultipleResult) -> Void) {
-    let compressionQuality = options.quality ?? DEFAULT_QUALITY
-    
     var results: [String: SelectedMediaInfo] = [:]
-    var exifData: [String: ExifInfo?] = [:]
     
     let dispatchGroup = DispatchGroup()
     let dispatchQueue = DispatchQueue(label: "expo.imagepicker.multipleMediaHandler")
@@ -35,61 +32,36 @@ internal struct MediaHandler {
       let identifier = item.assetIdentifier
       let itemProvider = item.itemProvider
       
-      if self.options.exif,
-         itemProvider.hasItemConformingToTypeIdentifier(UTType.image.identifier) {
-        
+      if itemProvider.hasItemConformingToTypeIdentifier(UTType.image.identifier) {
         dispatchGroup.enter()
-          itemProvider.loadDataRepresentation(forTypeIdentifier: UTType.image.identifier) { data, error in
-              guard let data = data,
-                    let cgImageSource = CGImageSourceCreateWithData(data as CFData, nil),
-                    let properties = CGImageSourceCopyPropertiesAtIndex(cgImageSource, 0, nil) else { return }
-//            let img = UIImage(data: data)
-            
-            let exif = ImageUtils.readExifFrom(imageMetadata: properties as! [String : Any])
+        handleImage(itemProvider: itemProvider) { result in
+          switch result {
+          case .failure(let exception):
+            return completion(.failure(exception))
+          case .success(let imageInfo):
             dispatchQueue.async {
-              exifData[identifier!] = exif
+              results[identifier!] = imageInfo
               dispatchGroup.leave()
             }
           }
-      }
-      
-      if itemProvider.canLoadObject(ofClass: UIImage.self) {
+        }
+      } else if itemProvider.hasItemConformingToTypeIdentifier(UTType.movie.identifier) {
         dispatchGroup.enter()
-        itemProvider.loadObject(ofClass: UIImage.self) { (image, error) in
-          guard error == nil,
-                let image = image as? UIImage else {
-            return completion(.failure(FailedToLoadImageException(error?.localizedDescription)))
+        handleVideo(itemProvider: itemProvider) { result in
+          switch result {
+          case .failure(let exception):
+            return completion(.failure(exception))
+          case .success(let videoInfo):
+            dispatchQueue.async {
+              results[identifier!] = videoInfo
+              dispatchGroup.leave()
+            }
           }
-          let fileExtension = ".jpg"
-          let imageData = image.jpegData(compressionQuality: compressionQuality)
-          let targetUrl = try! generateUrl(withFileExtension: fileExtension)
-          try! ImageUtils.write(imageData: imageData, to: targetUrl)
-          
-          let base64 = try! ImageUtils.optionallyReadBase64From(imageData: imageData,
-                                                               orImageFileUrl: targetUrl,
-                                                               tryReadingFile: false,
-                                                               shouldReadBase64: self.options.base64)
-          
-          dispatchQueue.async {
-            results[identifier!] = ImageInfo(uri: targetUrl.absoluteString,
-                                          width: image.size.width,
-                                          height: image.size.height,
-                                          base64: base64)
-            dispatchGroup.leave()
-          }
-        } // loadObject
-      } // canLoadObject
-      
+        }
+      }
     } // for
     
     dispatchGroup.notify(queue: .main) {
-      for key in results.keys {
-        if exifData[key] != nil, var image = results[key] as? ImageInfo {
-          image.exif = exifData[key]!
-          results[key] = image
-        }
-      }
-      
       completion(.success(ImagePickerMultipleResponse(results: Array(results.values))))
     }
   }
@@ -135,6 +107,44 @@ internal struct MediaHandler {
       return completion(.failure(UnexpectedException(error)))
     }
   }
+  
+  @available(iOS 14, *)
+  private func handleImage(itemProvider: NSItemProvider, completion: @escaping (Result<ImageInfo, Exception>) -> Void) {
+    itemProvider.loadDataRepresentation(forTypeIdentifier: UTType.image.identifier) { data, error in
+      guard error == nil,
+            let data = data,
+            let image = try? UIImage(data: data)
+      else {
+        return completion(.failure(FailedToLoadImageException(error?.localizedDescription)))
+      }
+      
+      var exif: ExifInfo? = nil
+      if self.options.exif,
+        let cgImageSource = CGImageSourceCreateWithData(data as CFData, nil),
+        let properties = CGImageSourceCopyPropertiesAtIndex(cgImageSource, 0, nil) {
+      
+         exif = ImageUtils.readExifFrom(imageMetadata: properties as! [String : Any])
+      }
+
+    let fileExtension = ".jpg"
+      let compressionQuality = self.options.quality ?? DEFAULT_QUALITY
+    let imageData = image.jpegData(compressionQuality: compressionQuality)
+    let targetUrl = try! generateUrl(withFileExtension: fileExtension)
+    try! ImageUtils.write(imageData: imageData, to: targetUrl)
+    
+    let base64 = try! ImageUtils.optionallyReadBase64From(imageData: imageData,
+                                                         orImageFileUrl: targetUrl,
+                                                         tryReadingFile: false,
+                                                         shouldReadBase64: self.options.base64)
+    
+      completion(.success(ImageInfo(uri: targetUrl.absoluteString,
+                                    width: image.size.width,
+                                    height: image.size.height,
+                                    base64: base64,
+                                    exif: exif)))
+      
+  } // loadObject
+  }
 
   // MARK: - Video
 
@@ -168,6 +178,37 @@ internal struct MediaHandler {
       return completion(.failure(exception))
     } catch {
       return completion(.failure(UnexpectedException(error)))
+    }
+  }
+  
+  @available(iOS 14, *)
+  private func handleVideo(itemProvider: NSItemProvider, completion: @escaping (Result<VideoInfo, Exception>) -> Void) {
+    itemProvider.loadFileRepresentation(forTypeIdentifier: UTType.movie.identifier) { [self] (url, error) in
+      guard error == nil,
+            let videoUrl = url as? URL
+      else {
+        return completion(.failure(FailedToLoadVideoException(error?.localizedDescription)))
+      }
+      
+      let targetUrl = try! generateUrl(withFileExtension: ".mov")
+
+      try! VideoUtils.tryCopyingVideo(at: videoUrl, to: targetUrl)
+
+      guard let size = VideoUtils.readSizeFrom(url: targetUrl) else {
+        return completion(.failure(FailedToReadVideoSizeException()))
+      }
+
+      // If video was edited (the duration is affected) then read the duration from the original edited video.
+      // Otherwise read the duration from the target video file.
+      // TODO: (@bbarthec): inspect whether it makes sense to read duration from two different assets
+//      let videoUrlToReadDurationFrom = self.options.allowsEditing ? pickedVideoUrl : targetUrl
+      let duration = VideoUtils.readDurationFrom(url: targetUrl)
+
+      let result = VideoInfo(uri: targetUrl.absoluteString,
+                                                         width: size.width,
+                                                         height: size.height,
+                                                         duration: duration)
+      completion(.success(result))
     }
   }
 

@@ -82,7 +82,7 @@ internal class FailedToReadImageException: Exception {
 
 internal class FailedToLoadImageException: GenericException<String?> {
   override var reason: String {
-    return "Failed to read picked image" + (param != nil ? ": \(param!)" : "")
+    "Failed to read picked image" + (param != nil ? ": \(param!)" : "")
   }
 }
 
@@ -101,6 +101,12 @@ internal class FailedToReadVideoSizeException: Exception {
 internal class FailedToReadVideoException: Exception {
   override var reason: String {
     "Failed to read picked video"
+  }
+}
+
+internal class FailedToLoadVideoException: GenericException<String?> {
+  override var reason: String {
+    "Failed to read picked video" + (param != nil ? ": \(param!)" : "")
   }
 }
 
