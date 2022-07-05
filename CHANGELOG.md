@@ -15,6 +15,8 @@ Package-specific changes not released in any SDK will be added here just before 
 - Updated `react-native-webview` from `11.18.1` to `11.22.4`. ([#18047](https://github.com/expo/expo/pull/18047) by [@lukmccall](https://github.com/lukmccall))
 - Updated `@react-native-community/datetimepicker` from `6.1.2` to `6.2.0`. ([#18046](https://github.com/expo/expo/pull/18046) by [@lukmccall](https://github.com/lukmccall))
 - Updated `react-native-gesture-handler` from `2.2.0` to `2.5.0`. ([#18026](https://github.com/expo/expo/pull/18026) by [@bbarthec](https://github.com/bbarthec))
+- Updated `react-native-screens` from `3.11.1` to `3.14.1`. ([#18086](https://github.com/expo/expo/pull/18086) by [@lukmccall](https://github.com/lukmccall))
+- Updated `react-native-reanimated` from `2.8.0` to `2.9.1`. ([#18085](https://github.com/expo/expo/pull/18085) by [@lukmccall](https://github.com/lukmccall))
 
 ### 🛠 Breaking changes
 
