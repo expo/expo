@@ -570,8 +570,8 @@ export const STYLES_SECONDARY = css({
 });
 
 const defaultValueContainerStyle = css({
-  marginTop: spacing[2]
-})
+  marginTop: spacing[2],
+});
 
 const deprecationNoticeStyle = css({
   marginBottom: spacing[2],

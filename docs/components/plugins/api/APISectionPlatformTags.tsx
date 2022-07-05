@@ -35,7 +35,7 @@ const getPlatformName = ({ text }: CommentTagData) => {
 };
 
 const renderPlatformIcon = (platform: CommentTagData) => {
-  const iconProps = { size: iconSize.micro, css: platformTagIconStyle };
+  const iconProps = { size: iconSize.micro };
 
   switch (getPlatformName(platform)) {
     case 'ios':
@@ -50,7 +50,6 @@ const renderPlatformIcon = (platform: CommentTagData) => {
           width={iconProps.size}
           height={iconProps.size}
           color={theme.palette.purple['900']}
-          css={iconProps.css}
         />
       );
     default:
@@ -83,7 +82,7 @@ export const PlatformTags = ({ comment, prefix, firstElement }: Props) => {
               platformName === 'expo' && expoPlatformStyle,
             ]}>
             {renderPlatformIcon(platform)}
-            {formatPlatformName(platform.text)}
+            <span css={platformLabelStyle}>{formatPlatformName(platform.text)}</span>
           </div>
         );
       })}
@@ -93,7 +92,7 @@ export const PlatformTags = ({ comment, prefix, firstElement }: Props) => {
 };
 
 const platformTagStyle = css({
-  display: 'inline-block',
+  display: 'inline-flex',
   backgroundColor: theme.background.tertiary,
   color: theme.text.default,
   fontSize: '90%',
@@ -103,6 +102,8 @@ const platformTagStyle = css({
   marginRight: spacing[2],
   borderRadius: borderRadius.small,
   border: `1px solid ${theme.border.default}`,
+  alignItems: 'center',
+  gap: spacing[1],
 
   'table &': {
     marginTop: 0,
@@ -116,10 +117,8 @@ const platformTagFirstStyle = css({
   marginTop: spacing[3],
 });
 
-const platformTagIconStyle = css({
-  marginRight: spacing[1],
-  marginBottom: spacing[0.5],
-  verticalAlign: 'middle',
+const platformLabelStyle = css({
+  verticalAlign: 'text-top',
 });
 
 const androidPlatformTagStyle = css({

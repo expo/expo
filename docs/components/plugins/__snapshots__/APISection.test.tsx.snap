@@ -4961,10 +4961,9 @@ OAuth 2.0 protocol
          
       </strong>
       <div
-        class="css-1jhkqst-platformTagStyle-platformTagFirstStyle-iosPlatformTagStyle-PlatformTags"
+        class="css-a7xwy7-platformTagStyle-platformTagFirstStyle-iosPlatformTagStyle-PlatformTags"
       >
         <svg
-          class="css-g1rf8s-platformTagIconStyle"
           color="var(--expo-theme-palette-blue-900)"
           fill="none"
           height="12"
@@ -4981,7 +4980,11 @@ OAuth 2.0 protocol
             fill="var(--expo-theme-palette-blue-900)"
           />
         </svg>
-        iOS 13.2+
+        <span
+          class="css-m237xp-platformLabelStyle"
+        >
+          iOS 13.2+
+        </span>
       </div>
       <br />
       <div
