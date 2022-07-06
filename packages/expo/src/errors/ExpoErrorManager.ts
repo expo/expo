@@ -2,9 +2,8 @@
 type CodedError = Error & { code?: string };
 
 let isErrorHandlingEnabled = true;
-let wasHit = false; // whether the original error handler was called
 
-const developmentBuildMessage = `If you're trying to use a module that is not supported in Expo Go, you can create a custom development build. See https://docs.expo.dev/development/introduction/ for more info.`;
+const developmentBuildMessage = `If you're trying to use a module that is not supported in Expo Go, you need to create a development build of your app. See https://docs.expo.dev/development/introduction/ for more info.`;
 
 function customizeUnavailableMessage(error: CodedError) {
   error.message += '\n\n' + developmentBuildMessage;
@@ -29,15 +28,8 @@ function customizeError(error: Error | CodedError) {
 
 function errorHandler(originalHandler, error, isFatal) {
   if (error instanceof Error) {
-    // Suppresses `"main" has not been registered` error only if it was caused by a different error.
-    // Otherwise, we want to show it, in case the user forgot to call `AppRegistry.registerComponent`.
-    if (wasHit && error.message?.includes('has not been registered. This can happen if')) {
-      return;
-    }
     customizeError(error);
   }
-
-  wasHit = true;
   originalHandler(error, isFatal);
 }
 
