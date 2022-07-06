@@ -141,6 +141,9 @@ public class ImagePickerModule: Module, OnMediaPickingResultHandler {
 
     configuration.selectionLimit = options.selectionLimit
     configuration.filter = options.mediaTypes.toPickerFilter()
+    if #available(iOS 15, *) {
+      configuration.selection = options.orderedSelection ? .ordered : .default
+    }
 
     let picker = PHPickerViewController(configuration: configuration)
 
