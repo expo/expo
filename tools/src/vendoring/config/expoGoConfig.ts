@@ -3,7 +3,7 @@ import fs from 'fs-extra';
 import path from 'path';
 
 import { Podspec } from '../../CocoaPods';
-import { EXPOTOOLS_DIR } from '../../Constants';
+import { EXPO_DIR, EXPOTOOLS_DIR } from '../../Constants';
 import logger from '../../Logger';
 import { applyPatchAsync } from '../../Utils';
 import { VendoringTargetConfig } from '../types';
@@ -287,13 +287,19 @@ const config: VendoringTargetConfig = {
           const vendoredCommonDir = path.join(vendoredRootDir, 'common');
           const vendoredFrameworks = podspec.ios?.vendored_frameworks ?? [];
           for (const framework of vendoredFrameworks) {
-            // copy prebuilt xcframework to `ios/vendored/common`
+            // create symlink from node_modules/@shopify/react-native-skia to common lib dir
+            const sourceFrameworkPath = path.join(
+              EXPO_DIR,
+              'node_modules/@shopify/react-native-skia',
+              framework
+            );
             const sharedFrameworkPath = path.join(vendoredCommonDir, path.basename(framework));
-            await fs.copy(path.join(sourceDirectory, framework), sharedFrameworkPath, {
-              overwrite: true,
-            });
+            await fs.symlink(
+              path.relative(path.dirname(sharedFrameworkPath), sourceFrameworkPath),
+              sharedFrameworkPath
+            );
 
-            // create symlink from common dir to module dir, because podspec cannot specify files out of its dir.
+            // create symlink from common lib dir to module dir, because podspec cannot specify files out of its dir.
             const symlinkFrameworkPath = path.join(targetDirectory, framework);
             await fs.ensureDir(path.dirname(symlinkFrameworkPath));
             await fs.symlink(
@@ -313,18 +319,30 @@ const config: VendoringTargetConfig = {
       android: {
         includeFiles: ['android/**', 'cpp/**'],
         async postCopyFilesHookAsync(sourceDirectory, targetDirectory) {
-          // copy skia static libraries to common directory
-          const commonLibsDir = path.join(targetDirectory, '..', '..', '..', 'common', 'libs');
-          await fs.ensureDir(commonLibsDir);
-          await fs.copy(path.join(sourceDirectory, 'libs', 'android'), commonLibsDir);
+          // create symlink from node_modules/@shopify/react-native-skia to common lib dir
+          const libs = ['libskia.a', 'libskshaper.a', 'libsvg.a'];
+          const archs = ['armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'];
+          for (const lib of libs) {
+            for (const arch of archs) {
+              const sourceLibPath = path.join(
+                EXPO_DIR,
+                'node_modules/@shopify/react-native-skia/libs/android',
+                arch,
+                lib
+              );
+              const commonLibPath = path.join(targetDirectory, '../../../common/libs', arch, lib);
+              await fs.ensureDir(path.dirname(commonLibPath));
+              await fs.symlink(
+                path.relative(path.dirname(commonLibPath), sourceLibPath),
+                commonLibPath
+              );
+            }
+          }
 
           // patch gradle and cmake files
           const patchFile = path.join(
             EXPOTOOLS_DIR,
-            'src',
-            'vendoring',
-            'config',
-            'react-native-skia.patch'
+            'src/vendoring/config/react-native-skia.patch'
           );
           const patchContent = await fs.readFile(patchFile, 'utf8');
           try {
