@@ -9883,6 +9883,24 @@ For some types, they will represent the area used by the scanner.
         </a>
       </div>
     </h3>
+    <p
+      class="css-101h856-paragraph-STYLES_PARAGRAPH"
+      data-text="true"
+    >
+      An object obtained by 
+      <code
+        class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+      >
+        getPermissionsAsync
+      </code>
+       and 
+      <code
+        class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+      >
+        requestPermissionsAsync
+      </code>
+       functions.
+    </p>
     <div
       class="css-1krql6p-STYLES_NESTED_SECTION_HEADER"
     >
@@ -9994,7 +10012,11 @@ For some types, they will represent the area used by the scanner.
             <td
               class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
-              -
+              <span>
+                Indicates if user can be asked again for specific permission.
+If not, one should be directed to the Settings app
+in order to enable/disable the permission.
+              </span>
             </td>
           </tr>
           <tr
@@ -10026,7 +10048,9 @@ For some types, they will represent the area used by the scanner.
             <td
               class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
-              -
+              <span>
+                Determines time when the permission expires.
+              </span>
             </td>
           </tr>
           <tr
@@ -10053,7 +10077,9 @@ For some types, they will represent the area used by the scanner.
             <td
               class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
-              -
+              <span>
+                A convenience boolean that indicates if the permission is granted.
+              </span>
             </td>
           </tr>
           <tr
@@ -10085,7 +10111,9 @@ For some types, they will represent the area used by the scanner.
             <td
               class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
-              -
+              <span>
+                Determines the status of the permission.
+              </span>
             </td>
           </tr>
         </tbody>
@@ -10272,6 +10300,12 @@ For some types, they will represent the area used by the scanner.
         DENIED
          ＝ "denied"
       </code>
+      <p
+        class="css-101h856-paragraph-STYLES_PARAGRAPH"
+        data-text="true"
+      >
+        User has denied the permission.
+      </p>
     </div>
     <div
       class="css-1sq1qpv-STYLES_APIBOX-enumContainerStyle-renderEnum"
@@ -10344,6 +10378,12 @@ For some types, they will represent the area used by the scanner.
         GRANTED
          ＝ "granted"
       </code>
+      <p
+        class="css-101h856-paragraph-STYLES_PARAGRAPH"
+        data-text="true"
+      >
+        User has granted the permission.
+      </p>
     </div>
     <div
       class="css-1sq1qpv-STYLES_APIBOX-enumContainerStyle-renderEnum"
@@ -10416,6 +10456,12 @@ For some types, they will represent the area used by the scanner.
         UNDETERMINED
          ＝ "undetermined"
       </code>
+      <p
+        class="css-101h856-paragraph-STYLES_PARAGRAPH"
+        data-text="true"
+      >
+        User hasn't granted or denied the permission yet.
+      </p>
     </div>
   </div>
 </div>
