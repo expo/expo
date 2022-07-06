@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix crash when picking a GIF image on iOS.
+- Fix crash when picking a GIF image on iOS. ([#18135](https://github.com/expo/expo/pull/18135) by [@barthap](https://github.com/barthap))
 
 ### 💡 Others
 
