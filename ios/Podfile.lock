@@ -2429,6 +2429,35 @@ PODS:
     - ReactCommon/turbomodule/core
   - react-native-segmented-control (2.4.0):
     - React-Core
+  - react-native-skia (0.1.134):
+    - React
+    - React-callinvoker
+    - React-Core
+    - react-native-skia/Api (= 0.1.134)
+    - react-native-skia/Jsi (= 0.1.134)
+    - react-native-skia/RNSkia (= 0.1.134)
+    - react-native-skia/SkiaHeaders (= 0.1.134)
+    - react-native-skia/Utils (= 0.1.134)
+  - react-native-skia/Api (0.1.134):
+    - React
+    - React-callinvoker
+    - React-Core
+  - react-native-skia/Jsi (0.1.134):
+    - React
+    - React-callinvoker
+    - React-Core
+  - react-native-skia/RNSkia (0.1.134):
+    - React
+    - React-callinvoker
+    - React-Core
+  - react-native-skia/SkiaHeaders (0.1.134):
+    - React
+    - React-callinvoker
+    - React-Core
+  - react-native-skia/Utils (0.1.134):
+    - React
+    - React-callinvoker
+    - React-Core
   - react-native-webview (11.22.4):
     - React-Core
   - React-perflogger (0.69.1)
@@ -3026,6 +3055,7 @@ DEPENDENCIES:
   - react-native-pager-view (from `./vendored/unversioned/react-native-pager-view`)
   - react-native-safe-area-context (from `./vendored/unversioned/react-native-safe-area-context`)
   - "react-native-segmented-control (from `./vendored/unversioned/@react-native-segmented-control/segmented-control`)"
+  - "react-native-skia (from `./vendored/unversioned/@shopify/react-native-skia`)"
   - react-native-webview (from `./vendored/unversioned/react-native-webview`)
   - React-perflogger (from `../react-native-lab/react-native/ReactCommon/reactperflogger`)
   - React-RCTActionSheet (from `../react-native-lab/react-native/Libraries/ActionSheetIOS`)
@@ -3934,6 +3964,8 @@ EXTERNAL SOURCES:
     :path: "./vendored/unversioned/react-native-safe-area-context"
   react-native-segmented-control:
     :path: "./vendored/unversioned/@react-native-segmented-control/segmented-control"
+  react-native-skia:
+    :path: "./vendored/unversioned/@shopify/react-native-skia"
   react-native-webview:
     :path: "./vendored/unversioned/react-native-webview"
   React-perflogger:
@@ -4432,6 +4464,7 @@ SPEC CHECKSUMS:
   react-native-pager-view: 95d0418c3c74279840abec6926653d32447bafb6
   react-native-safe-area-context: 6c12e3859b6f27b25de4fee8201cfb858432d8de
   react-native-segmented-control: 06607462630512ff8eef652ec560e6235a30cc3e
+  react-native-skia: 886dce8cc9dc9bb47d3e716e528bb81e45b4bff3
   react-native-webview: a1ed211d50a5047a4fe54e07140991e277cd66e6
   React-perflogger: c9161ff0f1c769993cd11d2751e4331ff4ceb7cd
   React-RCTActionSheet: 2d885b0bea76a5254ef852939273edd8de116180
