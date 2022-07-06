@@ -3,7 +3,7 @@ import path from 'path';
 
 import { copyFileWithTransformsAsync } from '../../Transforms';
 import { searchFilesAsync } from '../../Utils';
-import { expoviewTransforms } from './expoviewTransforms';
+import { expoviewTransforms } from './transforms/expoviewTransforms';
 
 export async function copyExpoviewAsync(sdkVersion: string, androidDir: string): Promise<void> {
   const abiVersion = `abi${sdkVersion.replace(/\./g, '_')}`;
@@ -40,6 +40,16 @@ export async function copyExpoviewAsync(sdkVersion: string, androidDir: string):
       settingsGradle.replace(
         /ADD_NEW_SUPPORTED_ABIS_HERE/,
         `ADD_NEW_SUPPORTED_ABIS_HERE\n    "${abiVersion}",`
+      )
+    );
+  }
+  const vendoredLinking = `useVendoredModulesForSettingsGradle('sdk${sdkVersion.split('.')[0]}')`;
+  if (!settingsGradle.match(vendoredLinking)) {
+    await fs.writeFile(
+      settingsGradlePath,
+      settingsGradle.replace(
+        /(^useVendoredModulesForSettingsGradle\('unversioned'\))/gm,
+        `$1\n${vendoredLinking}`
       )
     );
   }
