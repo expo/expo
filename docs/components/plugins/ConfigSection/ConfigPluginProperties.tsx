@@ -31,11 +31,10 @@ export const ConfigPluginProperties = ({ children, properties }: Props) => (
             <Cell>{!property.default ? '-' : <InlineCode>{property.default}</InlineCode>}</Cell>
             <Cell>
               {!!property.platform && (
-                <>
-                  <B>Only for:</B>{' '}
-                  <PlatformTags platforms={[{ text: property.platform, tag: 'platform' }]} />
-                  <br />
-                </>
+                <PlatformTags
+                  prefix="Only for:"
+                  platforms={[{ text: property.platform, tag: 'platform' }]}
+                />
               )}
               {property.description}
             </Cell>
