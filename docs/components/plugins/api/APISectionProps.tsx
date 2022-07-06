@@ -108,8 +108,7 @@ export const renderProp = (
       </HeaderComponent>
       <P>
         {flags?.isOptional && <span css={STYLES_SECONDARY}>Optional&emsp;&bull;&emsp;</span>}
-        <span css={STYLES_SECONDARY}>Type:</span>{' '}
-        {renderTypeOrSignatureType(type, signatures, true)}
+        <span css={STYLES_SECONDARY}>Type:</span> {renderTypeOrSignatureType(type, signatures)}
         {defaultValue && defaultValue !== UNKNOWN_VALUE ? (
           <span>
             <span css={STYLES_SECONDARY}>&emsp;&bull;&emsp;Default:</span>{' '}

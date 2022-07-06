@@ -1,3 +1,5 @@
+import { css } from '@emotion/react';
+import { theme, spacing, UndoIcon, iconSize } from '@expo/styleguide';
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
 
@@ -55,8 +57,9 @@ export const renderMethod = (
           <div css={STYLES_NESTED_SECTION_HEADER}>
             <H4>Returns</H4>
           </div>
-          <UL>
-            <LI returnType>
+          <UL hideBullets>
+            <LI>
+              <UndoIcon color={theme.icon.secondary} size={iconSize.small} css={returnIconStyles} />
               <InlineCode>{resolveTypeName(type)}</InlineCode>
             </LI>
           </UL>
@@ -78,5 +81,11 @@ const APISectionMethods = ({ data, apiName, header = 'Methods' }: APISectionMeth
       )}
     </>
   ) : null;
+
+const returnIconStyles = css({
+  transform: 'rotate(180deg)',
+  marginRight: spacing[2],
+  verticalAlign: 'middle',
+});
 
 export default APISectionMethods;

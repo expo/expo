@@ -72,6 +72,11 @@ export const mdComponents: MDComponents = {
   p: ({ children }) => (children ? <P>{children}</P> : null),
   strong: ({ children }) => <B>{children}</B>,
   span: ({ children }) => (children ? <span>{children}</span> : null),
+  table: ({ children }) => <Table>{children}</Table>,
+  thead: ({ children }) => <TableHead>{children}</TableHead>,
+  tr: ({ children }) => <Row>{children}</Row>,
+  th: ({ children }) => <HeaderCell>{children}</HeaderCell>,
+  td: ({ children }) => <Cell>{children}</Cell>,
 };
 
 export const mdInlineComponents: MDComponents = {
@@ -368,22 +373,30 @@ export const renderDefaultValue = (defaultValue?: string) =>
 
 export const renderTypeOrSignatureType = (
   type?: TypeDefinitionData,
-  signatures?: MethodSignatureData[],
-  includeParamType: boolean = false
+  signatures?: MethodSignatureData[]
 ) => {
-  if (type) {
-    return <InlineCode key={`signature-type-${type.name}`}>{resolveTypeName(type)}</InlineCode>;
-  } else if (signatures && signatures.length) {
-    return signatures.map(({ parameters }) =>
-      parameters && includeParamType
-        ? parameters.map(param => (
+  if (signatures && signatures.length) {
+    return (
+      <InlineCode key={`signature-type-${signatures[0].name}`}>
+        (
+        {signatures?.map(({ parameters }) =>
+          parameters?.map(param => (
             <span key={`signature-param-${param.name}`}>
               {param.name}
               {param.flags?.isOptional && '?'}: {resolveTypeName(param.type)}
             </span>
           ))
-        : listParams(parameters)
+        )}
+        ) =&gt;{' '}
+        {type ? (
+          <InlineCode key={`signature-type-${type.name}`}>{resolveTypeName(type)}</InlineCode>
+        ) : (
+          'void'
+        )}
+      </InlineCode>
     );
+  } else if (type) {
+    return <InlineCode key={`signature-type-${type.name}`}>{resolveTypeName(type)}</InlineCode>;
   }
   return undefined;
 };

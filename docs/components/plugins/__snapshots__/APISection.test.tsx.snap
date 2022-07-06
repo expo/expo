@@ -821,7 +821,14 @@ properties.
             Type:
           </span>
            
-          
+          <code
+            class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+          >
+            (
+            ) =&gt;
+             
+            void
+          </code>
         </p>
         <p
           class="css-101h856-paragraph-STYLES_PARAGRAPH"
@@ -899,7 +906,7 @@ in here.
         data-text="true"
       >
         <li
-          class="docs-list-item css-kaip35-STYLES_LIST_ITEM-LI"
+          class="docs-list-item css-k6alsv-STYLES_LIST_ITEM-LI"
         >
           <code
             class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
@@ -1216,12 +1223,30 @@ This should come from the user field of an
       </h4>
     </div>
     <ul
-      class="css-1qha16q-paragraph-STYLES_UNORDERED_LIST-UL"
+      class="css-1b15szc-paragraph-STYLES_UNORDERED_LIST-STYLES_NO_LIST_STYLE-UL"
       data-text="true"
     >
       <li
-        class="docs-list-item css-1yggycy-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
+        class="docs-list-item css-k6alsv-STYLES_LIST_ITEM-LI"
       >
+        <svg
+          class="css-1dx3xyv-returnIconStyles"
+          color="var(--expo-theme-icon-secondary)"
+          fill="none"
+          height="16"
+          role="img"
+          size="16"
+          viewBox="0 0 20 20"
+          width="16"
+        >
+          <title>
+            Undo-icon
+          </title>
+          <path
+            d="M7.982 7.664v3.98L0 6.657l7.982-4.99v3.98h6.941a5.044 5.044 0 015.044 5.045v7.938a1.009 1.009 0 11-2.017 0v-7.938a3.026 3.026 0 00-3.027-3.027h-6.94z"
+            fill="var(--expo-theme-icon-secondary)"
+          />
+        </svg>
         <code
           class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
         >
@@ -1385,12 +1410,30 @@ value depending on the state of the credential.
       </h4>
     </div>
     <ul
-      class="css-1qha16q-paragraph-STYLES_UNORDERED_LIST-UL"
+      class="css-1b15szc-paragraph-STYLES_UNORDERED_LIST-STYLES_NO_LIST_STYLE-UL"
       data-text="true"
     >
       <li
-        class="docs-list-item css-1yggycy-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
+        class="docs-list-item css-k6alsv-STYLES_LIST_ITEM-LI"
       >
+        <svg
+          class="css-1dx3xyv-returnIconStyles"
+          color="var(--expo-theme-icon-secondary)"
+          fill="none"
+          height="16"
+          role="img"
+          size="16"
+          viewBox="0 0 20 20"
+          width="16"
+        >
+          <title>
+            Undo-icon
+          </title>
+          <path
+            d="M7.982 7.664v3.98L0 6.657l7.982-4.99v3.98h6.941a5.044 5.044 0 015.044 5.045v7.938a1.009 1.009 0 11-2.017 0v-7.938a3.026 3.026 0 00-3.027-3.027h-6.94z"
+            fill="var(--expo-theme-icon-secondary)"
+          />
+        </svg>
         <code
           class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
         >
@@ -1628,12 +1671,30 @@ Calling this method will show the sign in modal before actually refreshing the u
       </h4>
     </div>
     <ul
-      class="css-1qha16q-paragraph-STYLES_UNORDERED_LIST-UL"
+      class="css-1b15szc-paragraph-STYLES_UNORDERED_LIST-STYLES_NO_LIST_STYLE-UL"
       data-text="true"
     >
       <li
-        class="docs-list-item css-1yggycy-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
+        class="docs-list-item css-k6alsv-STYLES_LIST_ITEM-LI"
       >
+        <svg
+          class="css-1dx3xyv-returnIconStyles"
+          color="var(--expo-theme-icon-secondary)"
+          fill="none"
+          height="16"
+          role="img"
+          size="16"
+          viewBox="0 0 20 20"
+          width="16"
+        >
+          <title>
+            Undo-icon
+          </title>
+          <path
+            d="M7.982 7.664v3.98L0 6.657l7.982-4.99v3.98h6.941a5.044 5.044 0 015.044 5.045v7.938a1.009 1.009 0 11-2.017 0v-7.938a3.026 3.026 0 00-3.027-3.027h-6.94z"
+            fill="var(--expo-theme-icon-secondary)"
+          />
+        </svg>
         <code
           class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
         >
@@ -1927,12 +1988,30 @@ the user, since this remains the same for apps released by the same developer.
       </h4>
     </div>
     <ul
-      class="css-1qha16q-paragraph-STYLES_UNORDERED_LIST-UL"
+      class="css-1b15szc-paragraph-STYLES_UNORDERED_LIST-STYLES_NO_LIST_STYLE-UL"
       data-text="true"
     >
       <li
-        class="docs-list-item css-1yggycy-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
+        class="docs-list-item css-k6alsv-STYLES_LIST_ITEM-LI"
       >
+        <svg
+          class="css-1dx3xyv-returnIconStyles"
+          color="var(--expo-theme-icon-secondary)"
+          fill="none"
+          height="16"
+          role="img"
+          size="16"
+          viewBox="0 0 20 20"
+          width="16"
+        >
+          <title>
+            Undo-icon
+          </title>
+          <path
+            d="M7.982 7.664v3.98L0 6.657l7.982-4.99v3.98h6.941a5.044 5.044 0 015.044 5.045v7.938a1.009 1.009 0 11-2.017 0v-7.938a3.026 3.026 0 00-3.027-3.027h-6.94z"
+            fill="var(--expo-theme-icon-secondary)"
+          />
+        </svg>
         <code
           class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
         >
@@ -2212,12 +2291,30 @@ from using
       </h4>
     </div>
     <ul
-      class="css-1qha16q-paragraph-STYLES_UNORDERED_LIST-UL"
+      class="css-1b15szc-paragraph-STYLES_UNORDERED_LIST-STYLES_NO_LIST_STYLE-UL"
       data-text="true"
     >
       <li
-        class="docs-list-item css-1yggycy-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
+        class="docs-list-item css-k6alsv-STYLES_LIST_ITEM-LI"
       >
+        <svg
+          class="css-1dx3xyv-returnIconStyles"
+          color="var(--expo-theme-icon-secondary)"
+          fill="none"
+          height="16"
+          role="img"
+          size="16"
+          viewBox="0 0 20 20"
+          width="16"
+        >
+          <title>
+            Undo-icon
+          </title>
+          <path
+            d="M7.982 7.664v3.98L0 6.657l7.982-4.99v3.98h6.941a5.044 5.044 0 015.044 5.045v7.938a1.009 1.009 0 11-2.017 0v-7.938a3.026 3.026 0 00-3.027-3.027h-6.94z"
+            fill="var(--expo-theme-icon-secondary)"
+          />
+        </svg>
         <code
           class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
         >
@@ -2495,12 +2592,30 @@ sign-out operation.
       </h4>
     </div>
     <ul
-      class="css-1qha16q-paragraph-STYLES_UNORDERED_LIST-UL"
+      class="css-1b15szc-paragraph-STYLES_UNORDERED_LIST-STYLES_NO_LIST_STYLE-UL"
       data-text="true"
     >
       <li
-        class="docs-list-item css-1yggycy-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
+        class="docs-list-item css-k6alsv-STYLES_LIST_ITEM-LI"
       >
+        <svg
+          class="css-1dx3xyv-returnIconStyles"
+          color="var(--expo-theme-icon-secondary)"
+          fill="none"
+          height="16"
+          role="img"
+          size="16"
+          viewBox="0 0 20 20"
+          width="16"
+        >
+          <title>
+            Undo-icon
+          </title>
+          <path
+            d="M7.982 7.664v3.98L0 6.657l7.982-4.99v3.98h6.941a5.044 5.044 0 015.044 5.045v7.938a1.009 1.009 0 11-2.017 0v-7.938a3.026 3.026 0 00-3.027-3.027h-6.94z"
+            fill="var(--expo-theme-icon-secondary)"
+          />
+        </svg>
         <code
           class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
         >
@@ -4345,7 +4460,14 @@ OAuth 2.0 protocol
             <td
               class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
             >
-              
+              <code
+                class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
+              >
+                (
+                ) =&gt;
+                 
+                void
+              </code>
             </td>
             <td
               class="css-10p2pvz-tableCellStyle-fitContentStyle-Cell"
@@ -7210,7 +7332,7 @@ Same as
         data-text="true"
       >
         <li
-          class="docs-list-item css-kaip35-STYLES_LIST_ITEM-LI"
+          class="docs-list-item css-k6alsv-STYLES_LIST_ITEM-LI"
         >
           <code
             class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
@@ -7475,12 +7597,30 @@ This can be used to quickly create specific permission hooks in every module.
       </h4>
     </div>
     <ul
-      class="css-1qha16q-paragraph-STYLES_UNORDERED_LIST-UL"
+      class="css-1b15szc-paragraph-STYLES_UNORDERED_LIST-STYLES_NO_LIST_STYLE-UL"
       data-text="true"
     >
       <li
-        class="docs-list-item css-1yggycy-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
+        class="docs-list-item css-k6alsv-STYLES_LIST_ITEM-LI"
       >
+        <svg
+          class="css-1dx3xyv-returnIconStyles"
+          color="var(--expo-theme-icon-secondary)"
+          fill="none"
+          height="16"
+          role="img"
+          size="16"
+          viewBox="0 0 20 20"
+          width="16"
+        >
+          <title>
+            Undo-icon
+          </title>
+          <path
+            d="M7.982 7.664v3.98L0 6.657l7.982-4.99v3.98h6.941a5.044 5.044 0 015.044 5.045v7.938a1.009 1.009 0 11-2.017 0v-7.938a3.026 3.026 0 00-3.027-3.027h-6.94z"
+            fill="var(--expo-theme-icon-secondary)"
+          />
+        </svg>
         <code
           class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
         >
@@ -7705,12 +7845,30 @@ This can be used to quickly create specific permission hooks in every module.
       </h4>
     </div>
     <ul
-      class="css-1qha16q-paragraph-STYLES_UNORDERED_LIST-UL"
+      class="css-1b15szc-paragraph-STYLES_UNORDERED_LIST-STYLES_NO_LIST_STYLE-UL"
       data-text="true"
     >
       <li
-        class="docs-list-item css-1yggycy-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
+        class="docs-list-item css-k6alsv-STYLES_LIST_ITEM-LI"
       >
+        <svg
+          class="css-1dx3xyv-returnIconStyles"
+          color="var(--expo-theme-icon-secondary)"
+          fill="none"
+          height="16"
+          role="img"
+          size="16"
+          viewBox="0 0 20 20"
+          width="16"
+        >
+          <title>
+            Undo-icon
+          </title>
+          <path
+            d="M7.982 7.664v3.98L0 6.657l7.982-4.99v3.98h6.941a5.044 5.044 0 015.044 5.045v7.938a1.009 1.009 0 11-2.017 0v-7.938a3.026 3.026 0 00-3.027-3.027h-6.94z"
+            fill="var(--expo-theme-icon-secondary)"
+          />
+        </svg>
         <code
           class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
         >
@@ -7892,12 +8050,30 @@ This can be used to quickly create specific permission hooks in every module.
       </h4>
     </div>
     <ul
-      class="css-1qha16q-paragraph-STYLES_UNORDERED_LIST-UL"
+      class="css-1b15szc-paragraph-STYLES_UNORDERED_LIST-STYLES_NO_LIST_STYLE-UL"
       data-text="true"
     >
       <li
-        class="docs-list-item css-1yggycy-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
+        class="docs-list-item css-k6alsv-STYLES_LIST_ITEM-LI"
       >
+        <svg
+          class="css-1dx3xyv-returnIconStyles"
+          color="var(--expo-theme-icon-secondary)"
+          fill="none"
+          height="16"
+          role="img"
+          size="16"
+          viewBox="0 0 20 20"
+          width="16"
+        >
+          <title>
+            Undo-icon
+          </title>
+          <path
+            d="M7.982 7.664v3.98L0 6.657l7.982-4.99v3.98h6.941a5.044 5.044 0 015.044 5.045v7.938a1.009 1.009 0 11-2.017 0v-7.938a3.026 3.026 0 00-3.027-3.027h-6.94z"
+            fill="var(--expo-theme-icon-secondary)"
+          />
+        </svg>
         <code
           class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
         >
@@ -8208,12 +8384,30 @@ the platform.
       </h4>
     </div>
     <ul
-      class="css-1qha16q-paragraph-STYLES_UNORDERED_LIST-UL"
+      class="css-1b15szc-paragraph-STYLES_UNORDERED_LIST-STYLES_NO_LIST_STYLE-UL"
       data-text="true"
     >
       <li
-        class="docs-list-item css-1yggycy-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
+        class="docs-list-item css-k6alsv-STYLES_LIST_ITEM-LI"
       >
+        <svg
+          class="css-1dx3xyv-returnIconStyles"
+          color="var(--expo-theme-icon-secondary)"
+          fill="none"
+          height="16"
+          role="img"
+          size="16"
+          viewBox="0 0 20 20"
+          width="16"
+        >
+          <title>
+            Undo-icon
+          </title>
+          <path
+            d="M7.982 7.664v3.98L0 6.657l7.982-4.99v3.98h6.941a5.044 5.044 0 015.044 5.045v7.938a1.009 1.009 0 11-2.017 0v-7.938a3.026 3.026 0 00-3.027-3.027h-6.94z"
+            fill="var(--expo-theme-icon-secondary)"
+          />
+        </svg>
         <code
           class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
         >
@@ -10395,12 +10589,30 @@ exports[`APISection expo-pedometer 1`] = `
       </h4>
     </div>
     <ul
-      class="css-1qha16q-paragraph-STYLES_UNORDERED_LIST-UL"
+      class="css-1b15szc-paragraph-STYLES_UNORDERED_LIST-STYLES_NO_LIST_STYLE-UL"
       data-text="true"
     >
       <li
-        class="docs-list-item css-1yggycy-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
+        class="docs-list-item css-k6alsv-STYLES_LIST_ITEM-LI"
       >
+        <svg
+          class="css-1dx3xyv-returnIconStyles"
+          color="var(--expo-theme-icon-secondary)"
+          fill="none"
+          height="16"
+          role="img"
+          size="16"
+          viewBox="0 0 20 20"
+          width="16"
+        >
+          <title>
+            Undo-icon
+          </title>
+          <path
+            d="M7.982 7.664v3.98L0 6.657l7.982-4.99v3.98h6.941a5.044 5.044 0 015.044 5.045v7.938a1.009 1.009 0 11-2.017 0v-7.938a3.026 3.026 0 00-3.027-3.027h-6.94z"
+            fill="var(--expo-theme-icon-secondary)"
+          />
+        </svg>
         <code
           class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
         >
@@ -10649,12 +10861,30 @@ exports[`APISection expo-pedometer 1`] = `
       </h4>
     </div>
     <ul
-      class="css-1qha16q-paragraph-STYLES_UNORDERED_LIST-UL"
+      class="css-1b15szc-paragraph-STYLES_UNORDERED_LIST-STYLES_NO_LIST_STYLE-UL"
       data-text="true"
     >
       <li
-        class="docs-list-item css-1yggycy-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
+        class="docs-list-item css-k6alsv-STYLES_LIST_ITEM-LI"
       >
+        <svg
+          class="css-1dx3xyv-returnIconStyles"
+          color="var(--expo-theme-icon-secondary)"
+          fill="none"
+          height="16"
+          role="img"
+          size="16"
+          viewBox="0 0 20 20"
+          width="16"
+        >
+          <title>
+            Undo-icon
+          </title>
+          <path
+            d="M7.982 7.664v3.98L0 6.657l7.982-4.99v3.98h6.941a5.044 5.044 0 015.044 5.045v7.938a1.009 1.009 0 11-2.017 0v-7.938a3.026 3.026 0 00-3.027-3.027h-6.94z"
+            fill="var(--expo-theme-icon-secondary)"
+          />
+        </svg>
         <code
           class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
         >
@@ -10884,12 +11114,30 @@ a start date that is more than seven days in the past returns only the available
       </h4>
     </div>
     <ul
-      class="css-1qha16q-paragraph-STYLES_UNORDERED_LIST-UL"
+      class="css-1b15szc-paragraph-STYLES_UNORDERED_LIST-STYLES_NO_LIST_STYLE-UL"
       data-text="true"
     >
       <li
-        class="docs-list-item css-1yggycy-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
+        class="docs-list-item css-k6alsv-STYLES_LIST_ITEM-LI"
       >
+        <svg
+          class="css-1dx3xyv-returnIconStyles"
+          color="var(--expo-theme-icon-secondary)"
+          fill="none"
+          height="16"
+          role="img"
+          size="16"
+          viewBox="0 0 20 20"
+          width="16"
+        >
+          <title>
+            Undo-icon
+          </title>
+          <path
+            d="M7.982 7.664v3.98L0 6.657l7.982-4.99v3.98h6.941a5.044 5.044 0 015.044 5.045v7.938a1.009 1.009 0 11-2.017 0v-7.938a3.026 3.026 0 00-3.027-3.027h-6.94z"
+            fill="var(--expo-theme-icon-secondary)"
+          />
+        </svg>
         <code
           class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
         >
@@ -11037,12 +11285,30 @@ available on this device.
       </h4>
     </div>
     <ul
-      class="css-1qha16q-paragraph-STYLES_UNORDERED_LIST-UL"
+      class="css-1b15szc-paragraph-STYLES_UNORDERED_LIST-STYLES_NO_LIST_STYLE-UL"
       data-text="true"
     >
       <li
-        class="docs-list-item css-1yggycy-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
+        class="docs-list-item css-k6alsv-STYLES_LIST_ITEM-LI"
       >
+        <svg
+          class="css-1dx3xyv-returnIconStyles"
+          color="var(--expo-theme-icon-secondary)"
+          fill="none"
+          height="16"
+          role="img"
+          size="16"
+          viewBox="0 0 20 20"
+          width="16"
+        >
+          <title>
+            Undo-icon
+          </title>
+          <path
+            d="M7.982 7.664v3.98L0 6.657l7.982-4.99v3.98h6.941a5.044 5.044 0 015.044 5.045v7.938a1.009 1.009 0 11-2.017 0v-7.938a3.026 3.026 0 00-3.027-3.027h-6.94z"
+            fill="var(--expo-theme-icon-secondary)"
+          />
+        </svg>
         <code
           class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
         >
@@ -11267,12 +11533,30 @@ provided with a single argument that is
       </h4>
     </div>
     <ul
-      class="css-1qha16q-paragraph-STYLES_UNORDERED_LIST-UL"
+      class="css-1b15szc-paragraph-STYLES_UNORDERED_LIST-STYLES_NO_LIST_STYLE-UL"
       data-text="true"
     >
       <li
-        class="docs-list-item css-1yggycy-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
+        class="docs-list-item css-k6alsv-STYLES_LIST_ITEM-LI"
       >
+        <svg
+          class="css-1dx3xyv-returnIconStyles"
+          color="var(--expo-theme-icon-secondary)"
+          fill="none"
+          height="16"
+          role="img"
+          size="16"
+          viewBox="0 0 20 20"
+          width="16"
+        >
+          <title>
+            Undo-icon
+          </title>
+          <path
+            d="M7.982 7.664v3.98L0 6.657l7.982-4.99v3.98h6.941a5.044 5.044 0 015.044 5.045v7.938a1.009 1.009 0 11-2.017 0v-7.938a3.026 3.026 0 00-3.027-3.027h-6.94z"
+            fill="var(--expo-theme-icon-secondary)"
+          />
+        </svg>
         <code
           class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
         >
