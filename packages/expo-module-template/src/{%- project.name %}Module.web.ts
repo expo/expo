@@ -10,6 +10,4 @@ export default {
   hello() {
     return 'Hello world! 👋';
   },
-  startObserving() {},
-  stopObserving() {},
 };
