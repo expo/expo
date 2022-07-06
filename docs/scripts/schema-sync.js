@@ -39,7 +39,7 @@ async function run() {
     try {
       console.log(`Fetching schema for ${version} from production...`);
       await fetchAndWriteSchema(version, false);
-    } catch (e) {
+    } catch {
       console.log(`Unable to fetch schema for ${version} from production, trying staging...`);
       await fetchAndWriteSchema(version, true);
     }

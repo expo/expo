@@ -25,10 +25,11 @@ export function AnalyticsProvider(props: AnalyticsProps) {
   return (
     <>
       <Script
+        id="gtm-script"
         strategy="lazyOnload"
         src={`https://www.googletagmanager.com/gtag/js?id=${MEASUREMENT_ID}`}
       />
-      <Script strategy="lazyOnload">{`
+      <Script id="gtm-init" strategy="lazyOnload">{`
         window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}
         gtag('js', new Date());
