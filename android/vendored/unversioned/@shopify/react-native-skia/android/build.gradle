@@ -260,7 +260,7 @@ def nativeBuildDependsOn(dependsOnTask, variant) {
 
 afterEvaluate {
   nativeBuildDependsOn(extractAARHeaders, null)
-  nativeBuildDependsOn(extractJNIFiles, null)  
+  nativeBuildDependsOn(extractJNIFiles, null)
 }
 
 tasks.whenTaskAdded { task ->
