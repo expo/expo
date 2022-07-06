@@ -1,10 +1,9 @@
-#include <tgmath.h>
-
 #import "DevMenuREABezierNode.h"
-#import "DevMenuREAUtils.h"
 #import "DevMenuREANodesManager.h"
+#import "DevMenuREAUtils.h"
 #import <React/RCTConvert.h>
 #import <React/RCTLog.h>
+#include <tgmath.h>
 
 #define EPS 1e-5
 
@@ -13,11 +12,12 @@
   NSNumber *_inputNodeID;
 }
 
-- (instancetype)initWithID:(DevMenuREANodeID)nodeID config:(NSDictionary<NSString *,id> *)config
+- (instancetype)initWithID:(DevMenuREANodeID)nodeID config:(NSDictionary<NSString *, id> *)config
 {
   if ((self = [super initWithID:nodeID config:config])) {
     _inputNodeID = [RCTConvert NSNumber:config[@"input"]];
-    DevMenuREA_LOG_ERROR_IF_NIL(_inputNodeID, @"Reanimated: First argument passed to bezier node is either of wrong type or is missing.");
+    DevMenuREA_LOG_ERROR_IF_NIL(
+        _inputNodeID, @"DevMenuReanimated: First argument passed to bezier node is either of wrong type or is missing.");
 
     CGFloat mX1 = [config[@"mX1"] doubleValue];
     CGFloat mY1 = [config[@"mY1"] doubleValue];
@@ -27,7 +27,7 @@
     // Calculate the polynomial coefficients, implicit first and last control points are (0,0) and (1,1).
     cx = 3.0 * mX1;
     bx = 3.0 * (mX2 - mX1) - cx;
-    ax = 1.0 - cx -bx;
+    ax = 1.0 - cx - bx;
 
     cy = 3.0 * mY1;
     by = 3.0 * (mY2 - mY1) - cy;
@@ -60,7 +60,7 @@
   // First try a few iterations of Newton's method -- normally very fast.
   for (t2 = x, i = 0; i < 8; i++) {
     x2 = [self sampleCurveX:t2] - x;
-    if (fabs (x2) < epsilon)
+    if (fabs(x2) < epsilon)
       return t2;
     d2 = [self sampleCurveDerivativeX:t2];
     if (fabs(d2) < 1e-6)

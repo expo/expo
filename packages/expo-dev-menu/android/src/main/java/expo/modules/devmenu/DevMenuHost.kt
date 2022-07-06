@@ -7,29 +7,34 @@ import com.facebook.hermes.reactexecutor.HermesExecutorFactory
 import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactPackage
-import com.facebook.react.bridge.JSIModulePackage
 import com.facebook.react.bridge.JavaScriptExecutorFactory
 import com.facebook.react.devsupport.DevServerHelper
 import com.facebook.react.jscexecutor.JSCExecutorFactory
 import com.facebook.react.modules.systeminfo.AndroidInfoHelpers
 import com.facebook.react.shell.MainReactPackage
 import com.facebook.soloader.SoLoader
+import devmenu.com.swmansion.gesturehandler.react.RNGestureHandlerPackage
+import devmenu.com.swmansion.reanimated.ReanimatedPackage
+import devmenu.com.th3rdwave.safeareacontext.SafeAreaContextPackage
 import expo.modules.devmenu.react.DevMenuReactInternalSettings
 import java.io.BufferedReader
 import java.io.FileNotFoundException
 import java.io.InputStreamReader
+
 /**
  * Class that represents react host used by dev menu.
  */
 class DevMenuHost(application: Application) : ReactNativeHost(application) {
+  private lateinit var reaPackage: ReanimatedPackage
 
   override fun getPackages(): List<ReactPackage> {
-    val packages = mutableListOf<ReactPackage>(
+    reaPackage = ReanimatedPackage()
+    val packages = mutableListOf(
       MainReactPackage(null),
       DevMenuPackage(),
-      getVendoredPackage("com.swmansion.reanimated.ReanimatedPackage"),
-      getVendoredPackage("com.swmansion.gesturehandler.react.RNGestureHandlerPackage"),
-      getVendoredPackage("com.th3rdwave.safeareacontext.SafeAreaContextPackage"),
+      RNGestureHandlerPackage(),
+      reaPackage,
+      SafeAreaContextPackage()
     )
 
     try {
@@ -44,10 +49,6 @@ class DevMenuHost(application: Application) : ReactNativeHost(application) {
     }
 
     return packages
-  }
-
-  override fun getJSIModulePackage(): JSIModulePackage {
-    return getVendoredJNIPackage("com.swmansion.reanimated.ReanimatedJSIModulePackage")
   }
 
   override fun getUseDeveloperSupport() = false // change it and run `yarn start` in `expo-dev-menu` to launch dev menu from local packager
@@ -68,6 +69,8 @@ class DevMenuHost(application: Application) : ReactNativeHost(application) {
 
   override fun createReactInstanceManager(): ReactInstanceManager {
     val reactInstanceManager = super.createReactInstanceManager()
+    reaPackage.instanceManager = reactInstanceManager
+
     if (useDeveloperSupport) {
       // To use a different packager url, we need to replace internal RN objects.
       try {
