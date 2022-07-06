@@ -31,10 +31,10 @@ const IGNORES_PATHS = ['.DS_Store', 'build', 'node_modules', 'package.json'];
 async function main(target: string | undefined, options: CommandOptions) {
   const targetDir = target ? path.join(CWD, target) : CWD;
 
+  await fs.ensureDir(targetDir);
   await confirmTargetDirAsync(targetDir);
 
   options.target = targetDir;
-  await fs.ensureDir(targetDir);
 
   const data = await askForSubstitutionDataAsync(targetDir, options);
   const packageManager = await resolvePackageManager();
