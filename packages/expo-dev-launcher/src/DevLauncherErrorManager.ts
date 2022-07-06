@@ -34,7 +34,10 @@ function customizeError(error: Error | CodedError) {
         break;
       }
     }
-  } else if (error.message.includes('Native module cannot be null')) {
+  } else if (
+    error.message.includes('Native module cannot be null') || // RN 0.64 and below message
+    error.message.includes('`new NativeEventEmitter()` requires a non-null argument.') // RN 0.65+ message
+  ) {
     customizeModuleIsMissingMessage(error);
   }
 }
