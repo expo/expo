@@ -17,7 +17,7 @@ public protocol ChainableException: Error, AnyObject {
   /**
    Sets the direct cause of the exception and returns itself.
    */
-  func causedBy(_ error: Error) -> Self
+  func causedBy(_ error: Error?) -> Self
 
   /**
    Tells whether any of the cause in chain is of given type.
@@ -34,8 +34,8 @@ public extension ChainableException {
   }
 
   @discardableResult
-  func causedBy(_ error: Error) -> Self {
-    cause = error
+  func causedBy(_ error: Error?) -> Self {
+    cause = error ?? cause
     return self
   }
 
