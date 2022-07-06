@@ -86,6 +86,10 @@ const summaryStyle = css({
   '&:hover span': {
     color: theme.text.secondary,
   },
+
+  '::-webkit-details-marker': {
+    display: 'none',
+  },
 });
 
 const markerWrapperStyle = css({
