@@ -85,20 +85,21 @@ public class ImagePickerModule: Module, OnMediaPickingResultHandler {
   }
 
   private func launchImagePicker(sourceType: UIImagePickerController.SourceType, options: ImagePickerOptions, promise: Promise) {
-    guard let currentViewController = self.appContext?.utilities?.currentViewController() else {
-      return promise.reject(MissingCurrentViewControllerException())
-    }
-
-    let imagePickerDelegate = ImagePickerHandler(onMediaPickingResultHandler: self, hideStatusBarWhenPresented: options.allowsEditing)
+    let imagePickerDelegate = ImagePickerHandler(onMediaPickingResultHandler: self, hideStatusBarWhenPresented: options.allowsEditing && !options.allowsMultipleSelection)
 
     let pickingContext = PickingContext(promise: promise,
                                         options: options,
                                         imagePickerHandler: imagePickerDelegate)
 
-    if #available(iOS 14, *), options.allowsMultipleSelection && !options.allowsEditing && sourceType != .camera {
-      self.launchMultiSelectPicker(pickingContext: pickingContext, currentViewController: currentViewController)
-      return
+    if #available(iOS 14, *), options.allowsMultipleSelection && sourceType != .camera {
+      self.launchMultiSelectPicker(pickingContext: pickingContext)
+    } else {
+      self.launchLegacyImagePicker(sourceType: sourceType, pickingContext: pickingContext)
     }
+  }
+
+  private func launchLegacyImagePicker(sourceType: UIImagePickerController.SourceType, pickingContext: PickingContext) {
+    let options = pickingContext.options
 
     let picker = UIImagePickerController()
 
@@ -119,40 +120,42 @@ public class ImagePickerModule: Module, OnMediaPickingResultHandler {
     picker.videoExportPreset = options.videoExportPreset.toAVAssetExportPreset()
     picker.videoQuality = options.videoQuality.toQualityType()
     picker.videoMaximumDuration = options.videoMaxDuration
-    picker.modalPresentationStyle = options.presentationStyle.toPresentationStyle()
 
     if options.allowsEditing {
       picker.allowsEditing = options.allowsEditing
       if options.videoMaxDuration > 600 {
-        return promise.reject(MaxDurationWhileEditingExceededException())
+        return pickingContext.promise.reject(MaxDurationWhileEditingExceededException())
       }
       if options.videoMaxDuration == 0 {
         picker.videoMaximumDuration = 600.0
       }
     }
 
-    picker.delegate = pickingContext.imagePickerHandler
-    picker.presentationController?.delegate = pickingContext.imagePickerHandler
-
-    // Store picking context as we're navigating to the different view controller (starting asynchronous flow)
-    self.currentPickingContext = pickingContext
-    currentViewController.present(picker, animated: true, completion: nil)
+    presentPickerUI(picker, pickingContext: pickingContext)
   }
 
   @available(iOS 14, *)
-  private func launchMultiSelectPicker(pickingContext: PickingContext,
-                                       currentViewController: UIViewController) {
+  private func launchMultiSelectPicker(pickingContext: PickingContext) {
     var configuration = PHPickerConfiguration(photoLibrary: PHPhotoLibrary.shared())
     // TODO: (barthap) Add configurable selection limit. 0 means unlimited
     configuration.selectionLimit = 0
     configuration.filter = pickingContext.options.mediaTypes.toPickerFilter()
 
     let picker = PHPickerViewController(configuration: configuration)
-    picker.delegate = pickingContext.imagePickerHandler
-    picker.presentationController?.delegate = pickingContext.imagePickerHandler
+
+    presentPickerUI(picker, pickingContext: pickingContext)
+  }
+
+  private func presentPickerUI(_ picker: PickerUIController, pickingContext context: PickingContext) {
+    guard let currentViewController = self.appContext?.utilities?.currentViewController() else {
+      return context.promise.reject(MissingCurrentViewControllerException())
+    }
+
+    picker.modalPresentationStyle = context.options.presentationStyle.toPresentationStyle()
+    picker.setResultHandler(context.imagePickerHandler)
 
     // Store picking context as we're navigating to the different view controller (starting asynchronous flow)
-    self.currentPickingContext = pickingContext
+    self.currentPickingContext = context
     currentViewController.present(picker, animated: true, completion: nil)
   }
 
@@ -167,7 +170,7 @@ public class ImagePickerModule: Module, OnMediaPickingResultHandler {
   func didPickMultipleMedia(selection: [PHPickerResult]) {
     guard let options = self.currentPickingContext?.options,
           let promise = self.currentPickingContext?.promise else {
-      NSLog("Picking operation context has been lost.")
+      log.error("Picking operation context has been lost.")
       return
     }
     guard let fileSystem = self.appContext?.fileSystem else {
@@ -191,7 +194,7 @@ public class ImagePickerModule: Module, OnMediaPickingResultHandler {
   func didPickMedia(mediaInfo: MediaInfo) {
     guard let options = self.currentPickingContext?.options,
           let promise = self.currentPickingContext?.promise else {
-      NSLog("Picking operation context has been lost.")
+      log.error("Picking operation context has been lost.")
       return
     }
     guard let fileSystem = self.appContext?.fileSystem else {

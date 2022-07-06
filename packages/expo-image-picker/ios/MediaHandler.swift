@@ -9,7 +9,7 @@ internal struct MediaHandler {
   internal weak var fileSystem: EXFileSystemInterface?
   internal let options: ImagePickerOptions
 
-  internal func handleMedia(_ mediaInfo: MediaInfo, completion: @escaping (AsyncResult) -> Void) {
+  internal func handleMedia(_ mediaInfo: MediaInfo, completion: @escaping (ImagePickerResult) -> Void) {
     let mediaType: String? = mediaInfo[UIImagePickerController.InfoKey.mediaType] as? String
     let imageType = kUTTypeImage as String
     let videoType = kUTTypeMovie as String
@@ -22,54 +22,46 @@ internal struct MediaHandler {
   }
 
   @available(iOS 14, *)
-  internal func handleMultipleMedia(_ selection: [PHPickerResult], completion: @escaping (AsyncResult) -> Void) {
-    var results: [String: SelectedMediaInfo] = [:]
+  internal func handleMultipleMedia(_ selection: [PHPickerResult], completion: @escaping (ImagePickerResult) -> Void) {
+    var results: [SelectedMediaInfo] = []
 
     let dispatchGroup = DispatchGroup()
     let dispatchQueue = DispatchQueue(label: "expo.imagepicker.multipleMediaHandler")
 
-    for item in selection {
-      let identifier = item.assetIdentifier
-      let itemProvider = item.itemProvider
-
-      if itemProvider.hasItemConformingToTypeIdentifier(UTType.image.identifier) {
-        dispatchGroup.enter()
-        handleImage(itemProvider: itemProvider) { result in
-          switch result {
-          case .failure(let exception):
-            return completion(.failure(exception))
-          case .success(let imageInfo):
-            dispatchQueue.async {
-              results[identifier!] = imageInfo
-              dispatchGroup.leave()
-            }
-          }
-        }
-      } else if itemProvider.hasItemConformingToTypeIdentifier(UTType.movie.identifier) {
-        dispatchGroup.enter()
-        handleVideo(itemProvider: itemProvider) { result in
-          switch result {
-          case .failure(let exception):
-            return completion(.failure(exception))
-          case .success(let videoInfo):
-            dispatchQueue.async {
-              results[identifier!] = videoInfo
-              dispatchGroup.leave()
-            }
-          }
+    let resultHandler = { (result: SelectedMediaResult) -> Void in
+      switch result {
+      case .failure(let exception):
+        return completion(.failure(exception))
+      case .success(let mediaInfo):
+        dispatchQueue.async {
+          results.append(mediaInfo)
+          dispatchGroup.leave()
         }
       }
-    } // for
+    }
+
+    for item in selection {
+      let itemProvider = item.itemProvider
+
+      dispatchGroup.enter()
+      if itemProvider.hasItemConformingToTypeIdentifier(UTType.image.identifier) {
+        handleImage(itemProvider: itemProvider, completion: resultHandler)
+      } else if itemProvider.hasItemConformingToTypeIdentifier(UTType.movie.identifier) {
+        handleVideo(itemProvider: itemProvider, completion: resultHandler)
+      } else {
+        completion(.failure(InvalidMediaTypeException(itemProvider.registeredTypeIdentifiers.first)))
+      }
+    }
 
     dispatchGroup.notify(queue: .main) {
-      completion(.success(ImagePickerMultipleResponse(results: Array(results.values))))
+      completion(.success(ImagePickerMultipleResponse(results: results)))
     }
   }
 
   // MARK: - Image
 
   // TODO: convert to async/await syntax once we drop support for iOS 12
-  private func handleImage(mediaInfo: MediaInfo, completion: @escaping (AsyncResult) -> Void) {
+  private func handleImage(mediaInfo: MediaInfo, completion: @escaping (ImagePickerResult) -> Void) {
     do {
       guard let image = ImageUtils.readImageFrom(mediaInfo: mediaInfo, shouldReadCroppedImage: options.allowsEditing) else {
         return completion(.failure(FailedToReadImageException()))
@@ -109,13 +101,13 @@ internal struct MediaHandler {
   }
 
   @available(iOS 14, *)
-  private func handleImage(itemProvider: NSItemProvider, completion: @escaping (Result<ImageInfo, Exception>) -> Void) {
+  private func handleImage(itemProvider: NSItemProvider, completion: @escaping (SelectedMediaResult) -> Void) {
     itemProvider.loadDataRepresentation(forTypeIdentifier: UTType.image.identifier) { rawData, error in
       do {
         guard error == nil,
               let rawData = rawData,
               let image = try? UIImage(data: rawData) else {
-          return completion(.failure(FailedToReadImageException().maybeCausedBy(error)))
+          return completion(.failure(FailedToReadImageException().causedBy(error)))
         }
 
         let (imageData, fileExtension) = try ImageUtils.readDataAndFileExtension(image: image,
@@ -150,7 +142,7 @@ internal struct MediaHandler {
   // MARK: - Video
 
   // TODO: convert to async/await syntax once we drop support for iOS 12
-  func handleVideo(mediaInfo: MediaInfo, completion: (AsyncResult) -> Void) {
+  func handleVideo(mediaInfo: MediaInfo, completion: (ImagePickerResult) -> Void) {
     do {
       guard let pickedVideoUrl = VideoUtils.readVideoUrlFrom(mediaInfo: mediaInfo) else {
         return completion(.failure(FailedToReadVideoException()))
@@ -183,12 +175,12 @@ internal struct MediaHandler {
   }
 
   @available(iOS 14, *)
-  private func handleVideo(itemProvider: NSItemProvider, completion: @escaping (Result<VideoInfo, Exception>) -> Void) {
+  private func handleVideo(itemProvider: NSItemProvider, completion: @escaping (SelectedMediaResult) -> Void) {
     itemProvider.loadFileRepresentation(forTypeIdentifier: UTType.movie.identifier) { [self] url, error in
       do {
         guard error == nil,
               let videoUrl = url as? URL else {
-          return completion(.failure(FailedToReadVideoException().maybeCausedBy(error)))
+          return completion(.failure(FailedToReadVideoException().causedBy(error)))
         }
 
         let targetUrl = try generateUrl(withFileExtension: ".mov")
@@ -403,14 +395,14 @@ private struct ImageUtils {
     }
 
     guard let imageUrl = mediaInfo[.referenceURL] as? URL else {
-      NSLog("Could not fetch metadata for image")
+      log.error("Could not fetch metadata for image")
       return completion(nil)
     }
 
     let assets = PHAsset.fetchAssets(withALAssetURLs: [imageUrl], options: nil)
 
     guard let asset = assets.firstObject else {
-      NSLog("Could not fetch metadata for image '\(imageUrl.absoluteString)'.")
+      log.error("Could not fetch metadata for image '\(imageUrl.absoluteString)'.")
       return completion(nil)
     }
 
@@ -420,7 +412,7 @@ private struct ImageUtils {
       guard let imageUrl = input?.fullSizeImageURL,
             let properties = CIImage(contentsOf: imageUrl)?.properties
       else {
-        NSLog("Could not fetch metadata for '\(imageUrl.absoluteString)'.")
+        log.error("Could not fetch metadata for '\(imageUrl.absoluteString)'.")
         return completion(nil)
       }
       let exif = ImageUtils.readExifFrom(imageMetadata: properties)

@@ -2,10 +2,9 @@
 
 import ExpoModulesCore
 
-internal enum AsyncResult {
-  case success(ImagePickerResponse)
-  case failure(Exception)
-}
+internal typealias ImagePickerResult = Result<ImagePickerResponse, Exception>
+
+internal typealias SelectedMediaResult = Result<SelectedMediaInfo, Exception>
 
 /**
  General protocol representing a picker response

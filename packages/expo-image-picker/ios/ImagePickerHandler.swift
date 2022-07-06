@@ -97,3 +97,25 @@ internal class ImagePickerHandler: NSObject,
     statusBarVisibilityController.maybePreserveVisibilityAndHideStatusBar(hideStatusBarWhenPresented)
   }
 }
+
+/**
+ Protocol that is a common type for supported picker controllers.
+ */
+internal protocol PickerUIController: UIViewController {
+  func setResultHandler(_ handler: ImagePickerHandler)
+}
+
+extension UIImagePickerController: PickerUIController {
+  func setResultHandler(_ handler: ImagePickerHandler) {
+    self.delegate = handler
+    self.presentationController?.delegate = handler
+  }
+}
+
+@available(iOS 14, *)
+extension PHPickerViewController: PickerUIController {
+  func setResultHandler(_ handler: ImagePickerHandler) {
+    self.delegate = handler
+    self.presentationController?.delegate = handler
+  }
+}
