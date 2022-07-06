@@ -294,6 +294,7 @@ const config: VendoringTargetConfig = {
               framework
             );
             const sharedFrameworkPath = path.join(vendoredCommonDir, path.basename(framework));
+            await fs.unlink(sharedFrameworkPath);
             await fs.symlink(
               path.relative(path.dirname(sharedFrameworkPath), sourceFrameworkPath),
               sharedFrameworkPath
@@ -332,6 +333,7 @@ const config: VendoringTargetConfig = {
               );
               const commonLibPath = path.join(targetDirectory, '../../../common/libs', arch, lib);
               await fs.ensureDir(path.dirname(commonLibPath));
+              await fs.unlink(commonLibPath);
               await fs.symlink(
                 path.relative(path.dirname(commonLibPath), sourceLibPath),
                 commonLibPath
