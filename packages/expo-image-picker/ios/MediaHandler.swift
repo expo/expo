@@ -170,8 +170,8 @@ private struct ImageUtils {
         throw FailedToReadImageDataException()
       }
 
-      // swiftlint:disable:next force_cast
-      guard let imageDestination = CGImageDestinationCreateWithData(data as! CFMutableData, kUTTypeGIF, 1, nil),
+      let mutableData = NSMutableData(data: data)
+      guard let imageDestination = CGImageDestinationCreateWithData(mutableData, kUTTypeGIF, 1, nil),
             let cgImage = image.cgImage
       else {
         throw FailedToCreateGifException()
