@@ -114,7 +114,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                   class="css-1gm7vyo-detailsStyle"
                 >
                   <summary
-                    class="css-wamx7z-summaryStyle"
+                    class="css-1g95ulf-summaryStyle"
                   >
                     <div
                       class="css-17fddbt-markerWrapperStyle"
@@ -240,7 +240,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                   class="css-1gm7vyo-detailsStyle"
                 >
                   <summary
-                    class="css-wamx7z-summaryStyle"
+                    class="css-1g95ulf-summaryStyle"
                   >
                     <div
                       class="css-17fddbt-markerWrapperStyle"
@@ -283,7 +283,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                   class="css-1gm7vyo-detailsStyle"
                 >
                   <summary
-                    class="css-wamx7z-summaryStyle"
+                    class="css-1g95ulf-summaryStyle"
                   >
                     <div
                       class="css-17fddbt-markerWrapperStyle"
@@ -409,7 +409,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                   class="css-1gm7vyo-detailsStyle"
                 >
                   <summary
-                    class="css-wamx7z-summaryStyle"
+                    class="css-1g95ulf-summaryStyle"
                   >
                     <div
                       class="css-17fddbt-markerWrapperStyle"
@@ -712,7 +712,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                   class="css-1gm7vyo-detailsStyle"
                 >
                   <summary
-                    class="css-wamx7z-summaryStyle"
+                    class="css-1g95ulf-summaryStyle"
                   >
                     <div
                       class="css-17fddbt-markerWrapperStyle"
