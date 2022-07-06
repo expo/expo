@@ -19,7 +19,8 @@ export async function setValueAsync(value: string) {
 
 // For now the events are not going through the JSI, so we have to use its bridge equivalent.
 // This will be fixed in the stable release and built into the module object.
-const emitter = new EventEmitter(NativeModulesProxy.<%- project.name %>);
+// Note: On web, NativeModulesProxy.<%- project.name %> is undefined, so we fall back to the directly imported implementation
+const emitter = new EventEmitter(NativeModulesProxy.<%- project.name %> ?? <%- project.name %>);
 
 export function addChangeListener(listener: (event: ChangeEventPayload) => void): Subscription {
   return emitter.addListener<ChangeEventPayload>('onChange', listener);
