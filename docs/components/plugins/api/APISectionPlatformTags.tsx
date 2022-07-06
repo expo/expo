@@ -61,14 +61,15 @@ type Props = {
   comment?: CommentData;
   prefix?: string;
   firstElement?: boolean;
+  platforms?: CommentTagData[];
 };
 
-export const PlatformTags = ({ comment, prefix, firstElement }: Props) => {
-  const platforms = getAllTagData('platform', comment);
-  return platforms?.length ? (
+export const PlatformTags = ({ comment, prefix, firstElement, platforms }: Props) => {
+  const platformsData = platforms || getAllTagData('platform', comment);
+  return platformsData?.length ? (
     <>
       {prefix && <B>{prefix}&ensp;</B>}
-      {platforms.map(platform => {
+      {platformsData.map(platform => {
         const platformName = getPlatformName(platform);
         return (
           <div
