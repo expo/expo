@@ -3,17 +3,12 @@ import React, { PropsWithChildren } from 'react';
 import { InlineCode } from '~/components/base/code';
 import { B, P } from '~/components/base/paragraph';
 import { H3 } from '~/components/plugins/Headings';
+import { PlatformTags } from '~/components/plugins/api/APISectionPlatformTags';
 import { Cell, HeaderCell, Row, Table, TableHead } from '~/ui/components/Table';
 
 type Props = PropsWithChildren<{
   properties: PluginProperty[];
 }>;
-
-const platformNames: Record<Exclude<PluginProperty['platform'], undefined>, string> = {
-  android: 'Android',
-  ios: 'iOS',
-  web: 'Web',
-};
 
 export const ConfigPluginProperties = ({ children, properties }: Props) => (
   <>
@@ -35,7 +30,13 @@ export const ConfigPluginProperties = ({ children, properties }: Props) => (
             </Cell>
             <Cell>{!property.default ? '-' : <InlineCode>{property.default}</InlineCode>}</Cell>
             <Cell>
-              {!!property.platform && <B>{platformNames[property.platform]} only </B>}
+              {!!property.platform && (
+                <>
+                  <B>Only for:</B>{' '}
+                  <PlatformTags platforms={[{ text: property.platform, tag: 'platform' }]} />
+                  <br />
+                </>
+              )}
               {property.description}
             </Cell>
           </Row>
