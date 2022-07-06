@@ -7,7 +7,7 @@
 ### 🎉 New features
 
 - Added web support and bundle splitting support to `DevLoadingView`. ([#17714](https://github.com/expo/expo/pull/17714) by [@EvanBacon](https://github.com/EvanBacon))
-- Add `ExpoErrorManager` to improve some commonly logged error messages.
+- Add `ExpoErrorManager` to improve some commonly logged error messages. ([#18064](https://github.com/expo/expo/pull/18064) by [@esamelson](https://github.com/esamelson))
 
 ### 🐛 Bug fixes
 
