@@ -3,6 +3,9 @@ import fs from 'fs-extra';
 import path from 'path';
 
 import { Podspec } from '../../CocoaPods';
+import { EXPOTOOLS_DIR } from '../../Constants';
+import logger from '../../Logger';
+import { applyPatchAsync } from '../../Utils';
 import { VendoringTargetConfig } from '../types';
 
 const config: VendoringTargetConfig = {
@@ -305,6 +308,37 @@ const config: VendoringTargetConfig = {
           }
           podspec.pod_target_xcconfig['HEADER_SEARCH_PATHS'] =
             '"$(PODS_ROOT)/Headers/Private/React-bridging/react/bridging" "$(PODS_CONFIGURATION_BUILD_DIR)/React-bridging/react_bridging.framework/Headers"';
+        },
+      },
+      android: {
+        includeFiles: ['android/**', 'cpp/**'],
+        async postCopyFilesHookAsync(sourceDirectory, targetDirectory) {
+          // copy skia static libraries to common directory
+          const commonLibsDir = path.join(targetDirectory, '..', '..', '..', 'common', 'libs');
+          await fs.ensureDir(commonLibsDir);
+          await fs.copy(path.join(sourceDirectory, 'libs', 'android'), commonLibsDir);
+
+          // patch gradle and cmake files
+          const patchFile = path.join(
+            EXPOTOOLS_DIR,
+            'src',
+            'vendoring',
+            'config',
+            'react-native-skia.patch'
+          );
+          const patchContent = await fs.readFile(patchFile, 'utf8');
+          try {
+            await applyPatchAsync({
+              patchContent,
+              cwd: targetDirectory,
+              stripPrefixNum: 0,
+            });
+          } catch (e) {
+            logger.error(
+              `Failed to apply patch: \`patch -p0 -d '${targetDirectory}' < ${patchFile}\``
+            );
+            throw e;
+          }
         },
       },
     },

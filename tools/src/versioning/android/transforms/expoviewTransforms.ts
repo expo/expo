@@ -1,13 +1,14 @@
 import escapeRegExp from 'lodash/escapeRegExp';
 
-import { transformString } from '../../Transforms';
-import { FileTransform, FileTransforms, StringTransform } from '../../Transforms.types';
-import { baseCmakeTransforms } from './cmakeTransforms';
-import { JniLibNames } from './libraries';
-import { packagesToKeep, packagesToRename } from './packagesConfig';
-import { deleteLinesBetweenTags } from './utils';
+import { transformString } from '../../../Transforms';
+import { FileTransform, FileTransforms, StringTransform } from '../../../Transforms.types';
+import { baseCmakeTransforms } from '../cmakeTransforms';
+import { JniLibNames } from '../libraries';
+import { packagesToKeep, packagesToRename } from '../packagesConfig';
+import { deleteLinesBetweenTags } from '../utils';
 
 export function expoviewTransforms(abiVersion: string): FileTransforms {
+  const sdkVersion = abiVersion.replace(/abi(\d+)_0_0/, 'sdk$1');
   return {
     path: [
       {
@@ -38,6 +39,11 @@ export function expoviewTransforms(abiVersion: string): FileTransforms {
         paths: './build.gradle',
         find: /.*WHEN_VERSIONING_UNCOMMENT_(TO_HERE|FROM_HERE).*\n/g,
         replaceWith: '',
+      },
+      {
+        paths: './build.gradle',
+        find: `useVendoredModulesForExpoView('unversioned')`,
+        replaceWith: `useVendoredModulesForExpoView('${sdkVersion}')`,
       },
       {
         paths: './src/main/AndroidManifest.xml',

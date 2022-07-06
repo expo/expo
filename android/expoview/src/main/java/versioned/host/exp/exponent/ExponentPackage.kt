@@ -7,6 +7,7 @@ import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.uimanager.ViewManager
+import com.shopify.reactnative.skia.RNSkiaPackage
 import expo.modules.adapters.react.ReactModuleRegistryProvider
 import expo.modules.core.interfaces.Package
 import expo.modules.core.interfaces.SingletonModule
@@ -135,6 +136,7 @@ class ExponentPackage : ReactPackage {
         nativeModules.addAll(MapsPackage().createNativeModules(reactContext))
         nativeModules.addAll(RNDateTimePickerPackage().createNativeModules(reactContext))
         nativeModules.addAll(stripePackage.createNativeModules(reactContext))
+        nativeModules.addAll(skiaPackage.createNativeModules(reactContext))
 
         // Call to create native modules has to be at the bottom --
         // -- ExpoModuleRegistryAdapter uses the list of native modules
@@ -178,7 +180,8 @@ class ExponentPackage : ReactPackage {
         RNCPickerPackage(),
         ReactSliderPackage(),
         PagerViewPackage(),
-        stripePackage
+        stripePackage,
+        skiaPackage
       )
     )
     viewManagers.addAll(moduleRegistryAdapter.createViewManagers(reactContext))
@@ -209,8 +212,9 @@ class ExponentPackage : ReactPackage {
     private val singletonModules = mutableListOf<SingletonModule>()
     private val singletonModulesClasses = mutableSetOf<Class<*>>()
 
-    // Need to avoid initializing 2 StripeSdkPackages
+    // Need to avoid initializing duplicated packages
     private val stripePackage = StripeSdkPackage()
+    private val skiaPackage = RNSkiaPackage()
 
     fun kernelExponentPackage(
       context: Context,

@@ -26,6 +26,9 @@ export type VendoringModuleConfig = {
   android?: VendoringModulePlatformConfig<{
     includeFiles?: string | string[];
     excludeFiles?: string | string[];
+
+    // using this hook to do some customization after copying vendoring files
+    postCopyFilesHookAsync?: (sourceDirectory: string, targetDirectory: string) => Promise<void>;
   }>;
 };
 

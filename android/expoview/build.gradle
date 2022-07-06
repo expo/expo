@@ -3,6 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'maven-publish'
 apply plugin: 'de.undercouch.download'
 apply plugin: 'kotlin-kapt'
+apply from: new File(rootDir, "versioning_linking.gradle")
 
 // WHEN_VERSIONING_REMOVE_FROM_HERE
 //maven repository info
@@ -421,6 +422,7 @@ dependencies {
   implementation "androidx.work:work-runtime:2.7.1"
 }
 
+useVendoredModulesForExpoView('unversioned')
 
 // WHEN_PREPARING_REANIMATED_REMOVE_FROM_HERE
 

@@ -10,6 +10,7 @@ pluginManagement {
 include ':app'
 
 apply from: new File(["node", "--print", "require.resolve('expo/package.json')"].execute(null, rootDir).text.trim(), "../scripts/autolinking.gradle")
+apply from: new File(rootDir, "versioning_linking.gradle")
 
 /* UNCOMMENT WHEN DISTRIBUTING
 useExpoModules([
@@ -68,4 +69,7 @@ useExpoModules([
         'expo-dev-client'
     ]
 ])
+
+useVendoredModulesForSettingsGradle('unversioned')
+
 // WHEN_DISTRIBUTING_REMOVE_TO_HERE
