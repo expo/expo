@@ -7,10 +7,10 @@ exports.getAutolinkedPackagesAsync = getAutolinkedPackagesAsync;
 exports.resolvePackagesList = resolvePackagesList;
 exports.shouldSkipAutoPlugin = shouldSkipAutoPlugin;
 
-function _autolinking() {
-  const data = require("expo-modules-autolinking/build/autolinking");
+function _importExpoModulesAutolinking() {
+  const data = require("./importExpoModulesAutolinking");
 
-  _autolinking = function () {
+  _importExpoModulesAutolinking = function () {
     return data;
   };
 
@@ -25,8 +25,9 @@ function _autolinking() {
  * @returns list of packages ex: `['expo-camera', 'react-native-screens']`
  */
 async function getAutolinkedPackagesAsync(projectRoot, platforms = ['ios', 'android']) {
-  const searchPaths = await (0, _autolinking().resolveSearchPathsAsync)(null, projectRoot);
-  const platformPaths = await Promise.all(platforms.map(platform => (0, _autolinking().findModulesAsync)({
+  const autolinking = (0, _importExpoModulesAutolinking().importExpoModulesAutolinking)(projectRoot);
+  const searchPaths = await autolinking.resolveSearchPathsAsync(null, projectRoot);
+  const platformPaths = await Promise.all(platforms.map(platform => autolinking.findModulesAsync({
     platform,
     searchPaths,
     silent: true
