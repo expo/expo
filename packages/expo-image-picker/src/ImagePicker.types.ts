@@ -364,6 +364,14 @@ export type ImagePickerOptions = {
    */
   allowsMultipleSelection?: boolean;
   /**
+   * The maximum number of items that user can select. Applicable when `allowsMultipleSelection` is enabled.
+   * Setting the value to `0` sets the selection limit to the maximum that the system supports.
+   *
+   * @platform ios 14+
+   * @default 0
+   */
+  selectionLimit?: number;
+  /**
    * Maximum duration, in seconds, for video recording. Setting this to `0` disables the limit.
    * Defaults to `0` (no limit).
    * - **On iOS**, when `allowsEditing` is set to `true`, maximum duration is limited to 10 minutes.
