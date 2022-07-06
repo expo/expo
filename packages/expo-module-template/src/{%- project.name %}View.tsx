@@ -1,9 +1,7 @@
 import { requireNativeViewManager } from 'expo-modules-core';
 import * as React from 'react';
 
-export type <%- project.name %>ViewProps = {
-  name: string;
-};
+import { <%- project.name %>ViewProps } from './<%- project.name %>.types';
 
 const NativeView: React.ComponentType<<%- project.name %>ViewProps> =
   requireNativeViewManager('<%- project.name %>');
