@@ -5,7 +5,7 @@ import path from 'path';
 
 import { ANDROID_DIR, PACKAGES_DIR, EXPOTOOLS_DIR } from '../../../Constants';
 import { getListOfPackagesAsync, Package } from '../../../Packages';
-import { runPatchAsync } from '../../../Patch';
+import { applyPatchAsync } from '../../../Utils';
 import { transformFileAsync, transformString } from '../../../Transforms';
 
 const CXX_EXPO_MODULE_PATCHES_DIR = path.join(
@@ -64,7 +64,7 @@ function isVersionableCxxExpoModule(pkg: Package) {
  * Applies versioning patch for building shared libraries
  */
 export function applyPatchForPackageAsync(packageName: string, patchContent: string) {
-  return runPatchAsync({
+  return applyPatchAsync({
     patchContent,
     reverse: false,
     cwd: path.join(PACKAGES_DIR, packageName),
@@ -76,7 +76,7 @@ export function applyPatchForPackageAsync(packageName: string, patchContent: str
  * Reverts versioning patch for building shared libraries
  */
 export function revertPatchForPackageAsync(packageName: string, patchContent: string) {
-  return runPatchAsync({
+  return applyPatchAsync({
     patchContent,
     reverse: true,
     cwd: path.join(PACKAGES_DIR, packageName),

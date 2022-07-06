@@ -5,7 +5,7 @@ import path from 'path';
 import { Podspec } from '../../CocoaPods';
 import { EXPOTOOLS_DIR } from '../../Constants';
 import logger from '../../Logger';
-import { runPatchAsync } from '../../Patch';
+import { applyPatchAsync } from '../../Utils';
 import { VendoringTargetConfig } from '../types';
 
 const config: VendoringTargetConfig = {
@@ -328,7 +328,7 @@ const config: VendoringTargetConfig = {
           );
           const patchContent = await fs.readFile(patchFile, 'utf8');
           try {
-            await runPatchAsync({
+            await applyPatchAsync({
               patchContent,
               cwd: targetDirectory,
               stripPrefixNum: 0,
