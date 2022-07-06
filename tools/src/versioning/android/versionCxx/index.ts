@@ -5,8 +5,8 @@ import path from 'path';
 
 import { ANDROID_DIR, PACKAGES_DIR, EXPOTOOLS_DIR } from '../../../Constants';
 import { getListOfPackagesAsync, Package } from '../../../Packages';
-import { applyPatchAsync } from '../../../Utils';
 import { transformFileAsync, transformString } from '../../../Transforms';
+import { applyPatchAsync } from '../../../Utils';
 
 const CXX_EXPO_MODULE_PATCHES_DIR = path.join(
   EXPOTOOLS_DIR,
