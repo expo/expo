@@ -1,0 +1,56 @@
+{
+  "cli": {
+    "version": ">= 0.52.0",
+    "requireCommit": true
+  },
+  "build": {
+    "base": {
+      "android": {
+        "image": "ubuntu-20.04-jdk-11-ndk-r21e",
+        "env": {
+          "EAS_BUILD_PLATFORM": "android",
+          "EAS_DANGEROUS_OVERRIDE_ANDROID_APPLICATION_ID": "host.exp.exponent"
+        }
+      },
+      "ios": {
+        "env": {
+          "EAS_BUILD_PLATFORM": "ios"
+        }
+      }
+    },
+    "versioned-client": {
+      "extends": "base",
+      "env": {
+        "EXPO_GO_BUILD_TYPE": "versioned-client"
+      },
+      "android": {
+        "gradleCommand": ":app:assembleVersionedRelease",
+        "env": {
+          "ANDROID_SDK_ROOT": "/home/expo/Android/Sdk"
+        }
+      },
+      "ios": {
+        "scheme": "Expo Go \\(versioned\\)",
+        "simulator": true,
+        "buildConfiguration": "Release"
+      }
+    },
+    "versioned-client-add-sdk": {
+      "extends": "base",
+      "env": {
+        "EXPO_GO_BUILD_TYPE": "versioned-client-add-sdk"
+      },
+      "android": {
+        "gradleCommand": ":app:assembleVersionedRelease",
+        "env": {
+          "ANDROID_SDK_ROOT": "/home/expo/Android/Sdk"
+        }
+      },
+      "ios": {
+        "scheme": "Expo Go (versioned)",
+        "simulator": true,
+        "buildConfiguration": "Release"
+      }
+    }
+  }
+}
