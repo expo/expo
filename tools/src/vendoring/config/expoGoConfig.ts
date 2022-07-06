@@ -326,11 +326,7 @@ const config: VendoringTargetConfig = {
             'config',
             'react-native-skia.patch'
           );
-          const patchContent = await fs.readFile(
-            patchFile,
-
-            'utf8'
-          );
+          const patchContent = await fs.readFile(patchFile, 'utf8');
           try {
             await runPatchAsync({
               patchContent,
