@@ -105,7 +105,7 @@ public class ImagePickerModule: Module, OnMediaPickingResultHandler {
 
     if sourceType == .camera {
 #if targetEnvironment(simulator)
-      return promise.reject(CameraUnavailableOnSimulatorException())
+      return pickingContext.promise.reject(CameraUnavailableOnSimulatorException())
 #else
       picker.sourceType = .camera
       picker.cameraDevice = options.cameraType == .front ? .front : .rear

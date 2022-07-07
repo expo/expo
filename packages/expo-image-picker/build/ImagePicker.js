@@ -162,7 +162,7 @@ export async function launchImageLibraryAsync(options) {
         throw new UnavailabilityError('ImagePicker', 'launchImageLibraryAsync');
     }
     if (options?.allowsEditing && options.allowsMultipleSelection) {
-        console.warn('[expo-image-picker] `allowsEditing` is not supported when `allowsMultipleSelection` is enabled and would be ignored.' +
+        console.warn('[expo-image-picker] `allowsEditing` is not supported when `allowsMultipleSelection` is enabled and will be ignored.' +
             "Disable either 'allowsEditing' or 'allowsMultipleSelection' in 'launchImageLibraryAsync' " +
             'to fix this warning.');
     }
