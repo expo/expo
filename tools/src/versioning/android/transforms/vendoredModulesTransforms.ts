@@ -38,6 +38,5 @@ export function exponentPackageTransforms(prefix: string): Record<string, String
         replaceWith: `import ${prefix}.$1`,
       },
     ],
-
   };
 }
