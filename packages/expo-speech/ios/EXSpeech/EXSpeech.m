@@ -95,6 +95,7 @@ EX_EXPORT_METHOD_AS(speak,
   if (_synthesizer == nil) {
     _synthesizer = [[AVSpeechSynthesizer alloc] init];
     _synthesizer.delegate = self;
+    _synthesizer.usesApplicationAudioSession = true;
   }
 
   AVSpeechUtterance *utterance = [[EXSpeechUtteranceWithId alloc] initWithString:text utteranceId:utteranceId];
