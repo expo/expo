@@ -22,6 +22,7 @@ Package-specific changes not released in any SDK will be added here just before 
 - Updated `@stripe/stripe-react-native` from `0.6.0` to `0.13.1`. ([#18072](https://github.com/expo/expo/pull/18072) by [@kudo](https://github.com/kudo))
 - Updated `react-native-safe-area-context` from `4.2.4` to `4.3.1`. ([#18048](https://github.com/expo/expo/pull/18048) by [@kudo](https://github.com/kudo))
 - Added `@shopify/react-native-skia@0.1.134`. ([#18120](https://github.com/expo/expo/pull/18120) by [@kudo](https://github.com/kudo))
+- Added `@shopify/flash-list@1.1.0`. ([#18137](https://github.com/expo/expo/pull/18137) by [@kudo](https://github.com/kudo))
 
 ### 🛠 Breaking changes
 
