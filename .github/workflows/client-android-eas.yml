@@ -1,4 +1,4 @@
-name: iOS Client - EAS Build
+name: Android Client - EAS Build
 
 on:
   workflow_dispatch:
@@ -7,19 +7,15 @@ on:
         type: 'choice'
         description: 'buildType'
         options: 
-          - versioned-client
+          - versioned-client-base
           - versioned-client-signed
   schedule:
     - cron: '20 5 * * 1,3,5' # 5:20 AM UTC time on every Monday, Wednesday and Friday
   pull_request:
     paths:
-      - .github/workflows/client-ios-eas.yml
-      - ios/**
-      - tools/src/dynamic-macros/**
-      - tools/src/commands/IosGenerateDynamicMacros.ts
-      - tools/src/client-build/**
-      - tools/src/commands/ClientBuild.ts
+      - .github/workflows/client-android.yml
       - secrets/**
+      - android/**
       - fastlane/**
       - Gemfile.lock
       - .ruby-version
@@ -27,13 +23,9 @@ on:
   push:
     branches: [main, sdk-*]
     paths:
-      - .github/workflows/client-ios.yml
-      - ios/**
-      - tools/src/dynamic-macros/**
-      - tools/src/commands/IosGenerateDynamicMacros.ts
-      - tools/src/client-build/**
-      - tools/src/commands/ClientBuild.ts
+      - .github/workflows/client-android.yml
       - secrets/**
+      - android/**
       - fastlane/**
       - Gemfile.lock
       - .ruby-version
@@ -69,7 +61,7 @@ jobs:
       - name: Install eas-cli
         run: npm install -g eas-cli
       - name: Build
-        run: eas build  -p ios --profile $PROFILE --non-interactive
+        run: eas build  -p android --profile $PROFILE --non-interactive
         working-directory: ./apps/eas-expo-go
         env:
           EXPO_TOKEN: ${{ secrets.EAS_BUILD_BOT_TOKEN }}
