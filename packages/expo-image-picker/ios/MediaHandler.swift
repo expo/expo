@@ -441,7 +441,6 @@ private struct ImageUtils {
   static func getGifDataFrom(image: UIImage,
                              compressionQuality quality: Double?,
                              initialMetadata: [String: Any]?) throws -> Data? {
-
     guard let data = image.jpegData(compressionQuality: quality ?? DEFAULT_QUALITY) else {
       throw FailedToReadImageDataException()
     }
