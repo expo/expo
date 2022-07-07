@@ -4,14 +4,10 @@
 
 ### 🛠 Breaking changes
 
-- Remove base mocked manifest and test both manifest types. ([#17402](https://github.com/expo/expo/pull/17402) by [@wschurman](https://github.com/wschurman))
-
 ### 🎉 New features
-
-- Make `jest-expo` compatible with Jest 28. ([#17874](https://github.com/expo/expo/pull/17874) by [@madhums](https://github.com/madhums))
 
 ### 🐛 Bug fixes
 
-- Added support for react-native-web 0.18. ([#18006](https://github.com/expo/expo/pull/18006) by [@kudo](https://github.com/kudo))
-
 ### 💡 Others
+
+- Rework `createPlatformResolver.js` to more closely reflect vanilla Jest behavior.([#16370](https://github.com/expo/expo/pull/16370)) by [@bridges-wood](https://github.com/bridges-wood)
