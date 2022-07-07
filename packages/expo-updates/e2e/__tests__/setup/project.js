@@ -115,6 +115,13 @@ async function setupAsync(workingDir, repoRoot, runtimeVersion) {
     }
   );
 
+  // enable proguard on Android
+  await fs.appendFile(
+    path.join(projectRoot, 'android', 'gradle.properties'),
+    '\nandroid.enableProguardInReleaseBuilds=true',
+    'utf-8'
+  );
+
   // copy App.js from test fixtures
   const appJsSourcePath = path.resolve(__dirname, '..', 'fixtures', 'App.js');
   const appJsDestinationPath = path.resolve(projectRoot, 'App.js');
