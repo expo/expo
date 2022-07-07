@@ -2,7 +2,7 @@ const path = require('path');
 
 const { buildAsync: buildAndroidAsync } = require('./build-android');
 const { buildAsync: buildIosAsync } = require('./build-ios');
-const { setupAsync } = require('./project');
+const { initAsync, setupBasicAppAsync, setupAssetsAppAsync } = require('./project');
 
 const repoRoot = process.env.EXPO_REPO_ROOT;
 const artifactsDest = process.env.ARTIFACTS_DEST;
@@ -11,7 +11,14 @@ const workingDir = path.resolve(repoRoot, '..');
 const runtimeVersion = '1.0.0';
 
 (async function () {
-  const projectRoot = await setupAsync(workingDir, repoRoot, runtimeVersion);
-  await buildAndroidAsync(projectRoot, artifactsDest);
-  await buildIosAsync(projectRoot, artifactsDest);
+  // const projectRoot = await initAsync(workingDir, repoRoot, runtimeVersion);
+
+  // await setupBasicAppAsync(projectRoot);
+  // await buildAndroidAsync(projectRoot, artifactsDest, 'basic');
+  // await buildIosAsync(projectRoot, artifactsDest, 'basic');
+
+  // await setupAssetsAppAsync(projectRoot);
+  const projectRoot = path.resolve(repoRoot, '..', 'updates-e2e');
+  // await buildAndroidAsync(projectRoot, artifactsDest, 'assets');
+  await buildIosAsync(projectRoot, artifactsDest, 'assets');
 })();

@@ -2,7 +2,7 @@ const spawnAsync = require('@expo/spawn-async');
 const fs = require('fs/promises');
 const path = require('path');
 
-async function setupAsync(workingDir, repoRoot, runtimeVersion) {
+async function initAsync(workingDir, repoRoot, runtimeVersion) {
   // initialize project
   await spawnAsync('expo-cli', ['init', 'updates-e2e', '--yes'], {
     cwd: workingDir,
@@ -122,6 +122,10 @@ async function setupAsync(workingDir, repoRoot, runtimeVersion) {
     'utf-8'
   );
 
+  return projectRoot;
+}
+
+async function setupBasicAppAsync(projectRoot) {
   // copy App.js from test fixtures
   const appJsSourcePath = path.resolve(__dirname, '..', 'fixtures', 'App.js');
   const appJsDestinationPath = path.resolve(projectRoot, 'App.js');
@@ -132,19 +136,57 @@ async function setupAsync(workingDir, repoRoot, runtimeVersion) {
   await fs.writeFile(appJsDestinationPath, appJsFileContents, 'utf-8');
 
   // export update for test server to host
+  await fs.rm(path.join(projectRoot, 'dist'), { force: true, recursive: true });
   await spawnAsync('expo-cli', ['export', '--public-url', 'https://u.expo.dev/dummy-url'], {
     cwd: projectRoot,
     stdio: 'inherit',
   });
 
   // copy exported update to artifacts
-  await fs.cp(path.join(projectRoot, 'dist'), path.join(process.env.ARTIFACTS_DEST, 'dist'), {
+  await fs.cp(path.join(projectRoot, 'dist'), path.join(process.env.ARTIFACTS_DEST, 'dist-basic'), {
     recursive: true,
   });
+}
 
-  return projectRoot;
+async function setupAssetsAppAsync(projectRoot) {
+  // copy App-assets.js from test fixtures
+  const appJsSourcePath = path.resolve(__dirname, '..', 'fixtures', 'App-assets.js');
+  const appJsDestinationPath = path.resolve(projectRoot, 'App.js');
+  let appJsFileContents = await fs.readFile(appJsSourcePath, 'utf-8');
+  appJsFileContents = appJsFileContents
+    .replace('UPDATES_HOST', process.env.UPDATES_HOST)
+    .replace('UPDATES_PORT', process.env.UPDATES_PORT);
+  await fs.writeFile(appJsDestinationPath, appJsFileContents, 'utf-8');
+
+  // copy png assets and install extra package
+  await fs.copyFile(
+    path.resolve(__dirname, '..', 'fixtures', 'test.png'),
+    path.join(projectRoot, 'test.png')
+  );
+  await spawnAsync('expo-cli', ['install', '@expo-google-fonts/inter'], {
+    cwd: projectRoot,
+    stdio: 'inherit',
+  });
+
+  // export update for test server to host
+  await fs.rm(path.join(projectRoot, 'dist'), { force: true, recursive: true });
+  await spawnAsync('expo-cli', ['export', '--public-url', 'https://u.expo.dev/dummy-url'], {
+    cwd: projectRoot,
+    stdio: 'inherit',
+  });
+
+  // copy exported update to artifacts
+  await fs.cp(
+    path.join(projectRoot, 'dist'),
+    path.join(process.env.ARTIFACTS_DEST, 'dist-assets'),
+    {
+      recursive: true,
+    }
+  );
 }
 
 module.exports = {
-  setupAsync,
+  initAsync,
+  setupBasicAppAsync,
+  setupAssetsAppAsync,
 };

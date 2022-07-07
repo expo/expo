@@ -5,7 +5,9 @@ import { setTimeout } from 'timers/promises';
 const app: any = express();
 let server: any;
 
-let notifyString: string | null = null;
+let responsesToServe: any[] = [];
+
+let notifyString: string | null | any = null;
 let updateRequest: any = null;
 let manifestToServe: any = null;
 let manifestHeadersToServe: any = null;
@@ -15,6 +17,10 @@ export function start(port: number) {
   if (!server) {
     server = app.listen(port);
   }
+}
+
+export function setResponses(responses: any[]) {
+  responsesToServe = responses;
 }
 
 export function stop() {
@@ -35,6 +41,7 @@ export function consumeRequestedStaticFiles() {
   return returnArray;
 }
 
+app.use(express.json());
 app.use('/static', (req: any, res: any, next: any) => {
   requestedStaticFiles.push(path.basename(req.url));
   next();
@@ -43,6 +50,16 @@ app.use('/static', express.static(path.resolve(__dirname, '..', '.static')));
 
 app.get('/notify/:string', (req: any, res: any) => {
   notifyString = req.params.string;
+  res.set('Cache-Control', 'no-store');
+  if (responsesToServe[0]) {
+    res.json(responsesToServe.shift());
+  } else {
+    res.send('Received request');
+  }
+});
+
+app.post('/post', (req: any, res: any) => {
+  notifyString = req.body;
   res.set('Cache-Control', 'no-store');
   res.send('Received request');
 });
@@ -54,7 +71,7 @@ export async function waitForResponse(timeout: number) {
     if (currentTime >= finishTime) {
       throw new Error('Timed out waiting for response');
     }
-    await setTimeout(50);
+    await setTimeout(1);
   }
 
   const response = notifyString;
