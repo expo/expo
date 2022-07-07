@@ -63,7 +63,9 @@ export function AppHeader({ navigation }) {
               <View>
                 {isAuthenticated ? (
                   <View rounded="full" padding="small">
-                    <Image size="xl" rounded="full" source={{ uri: selectedUserImage }} />
+                    <View bg="secondary" rounded="full">
+                      <Image size="xl" rounded="full" source={{ uri: selectedUserImage }} />
+                    </View>
                   </View>
                 ) : (
                   <View mx="small">
