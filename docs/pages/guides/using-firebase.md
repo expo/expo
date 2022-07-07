@@ -90,7 +90,7 @@ Now let's say we want another client to listen to updates to the high score of a
 import { getDatabase, ref, onValue } from 'firebase/database';
 
 setupHighscoreListener(userId) {
-const db = getDatabase();
+  const db = getDatabase();
   const reference = ref(db, 'users/' + userId);
   onValue(reference, (snapshot) => {
     const highscore = snapshot.val().highscore;
