@@ -2,11 +2,15 @@
 title: Upgrading Expo SDK
 ---
 
-If you are a couple of versions behind, upgrading your projects Expo SDK version can be difficult because of the amount of breaking changes and deprecations in each upgrade. Don't worry, here are all the breaking changes in each SDK version upgrade. We **strongly recommend** upgrading SDK versions incrementally if possible. Doing so will help you pinpoint breakages and issues that arise during the upgrade process.
+If you are behind a couple of versions, upgrading your project's Expo SDK version can be difficult because of the number of breaking changes and deprecations in each upgrade. Don't worry. This document links to all the breaking changes in each SDK version upgrade. We **strongly recommend** upgrading SDK versions incrementally if possible. Doing so will help you pinpoint breakages and issues that arise during the upgrade process.
 
-Expo maintains ~6 months of backwards compatibility. Once an SDK version has been deprecated, you will no longer be able to use the Expo Go app for development or build new binaries via `expo build`. You will still be able to publish updates via `expo publish`, and build using `eas build`, however. Deprecations **will not** affect standalone apps you have in production.
+Expo maintains ~6 months of backward compatibility. Once an SDK version has been deprecated, you will no longer be able to use the Expo Go app for development or build new binaries via `expo build`. However, you will still be able to publish updates via `expo publish`, and build using `eas build`. Deprecations **will not** affect standalone apps you have in production.
 
-> **Note**: If you are running ExpoKit inside a native project, upgrading will require extra steps. ExpoKit is deprecated and is no longer supported after SDK 38. We recommend [migrating existing ExpoKit projects to the bare workflow](../bare/migrating-from-expokit.md).
+> **Note**: If you are running ExpoKit inside a native project, upgrading will require extra steps. ExpoKit is deprecated and is no longer supported after SDK 38. We recommend [migrating existing ExpoKit projects to the bare workflow](/bare/migrating-from-expokit).
+
+## SDK 45
+
+[Blog Post](https://blog.expo.dev/expo-sdk-45-f4e332954a68)
 
 ## SDK 44
 
@@ -16,11 +20,11 @@ Expo maintains ~6 months of backwards compatibility. Once an SDK version has bee
 
 [Blog Post](https://blog.expo.dev/expo-sdk-43-aa9b3c7d5541)
 
-## SDK 42
+## SDK 42 [DEPRECATED]
 
 [Blog Post](https://blog.expo.dev/expo-sdk-42-579aee2348b6)
 
-## SDK 41
+## SDK 41 [DEPRECATED]
 
 [Blog Post](https://blog.expo.dev/expo-sdk-41-12cc5232f2ef)
 
@@ -66,7 +70,7 @@ Expo maintains ~6 months of backwards compatibility. Once an SDK version has bee
 
 #### Notes
 
-- You'll need to update your imports to match the new modular format. For example, if you currently have `import { FileSystem } from 'expo';`, you'll need to run `expo install expo-file-system` and then change your import to `import * as FileSystem from 'expo-file-system';`. We provide a [codemod](https://www.npmjs.com/package/expo-codemod) to help automate this.
+- You will need to update your imports to match the new modular format. For example, if you currently have `import { FileSystem } from 'expo';`, you will need to run `expo install expo-file-system` and then change your import to `import * as FileSystem from 'expo-file-system';`. We provide a [codemod](https://www.npmjs.com/package/expo-codemod) to help automate this.
 - There are a few small breaking API changes with this release. See the [changelog](https://github.com/expo/expo/tree/main/CHANGELOG.md) for the full list.
 
 ## SDK 33 [DEPRECATED]
@@ -90,7 +94,7 @@ Expo maintains ~6 months of backwards compatibility. Once an SDK version has bee
 
 #### Notes
 
-- You'll need to update your imports to match the new modular format. For example, if you currently have `import { FileSystem } from 'expo';`, you'll need to run `expo install expo-file-system` and then change your import to `import * as FileSystem from 'expo-file-system';`. We provide a [codemod](https://www.npmjs.com/package/expo-codemod) to help automate this.
+- You will need to update your imports to match the new modular format. For example, if you currently have `import { FileSystem } from 'expo';`, you will need to run `expo install expo-file-system` and then change your import to `import * as FileSystem from 'expo-file-system';`. We provide a [codemod](https://www.npmjs.com/package/expo-codemod) to help automate this.
 - There are several small breaking API changes with this release. See the [changelog](https://github.com/expo/expo/tree/main/CHANGELOG.md) for the full list.
 
 ## SDK 32 [DEPRECATED]
@@ -450,8 +454,4 @@ Secure Store
 
 Payments
 
-- We’d previously announced Stripe support on iOS as part of our experimental DangerZone APIs. The Payments API was using the Stripe SDK on iOS. We learned that Apple sometimes rejects apps which contain the Stripe SDK but don’t offer anything for sale. To help your App Review process go more smoothly, we’ve decided to remove the Stripe SDK and experimental Payments API from apps built with the Expo standalone builder. We’re still excited to give developers a way to let users pay for goods when they need to and we’ll announce more ways to do so shortly.
-
-```
-
-```
+- We had previously announced Stripe support on iOS as part of our experimental DangerZone APIs. The Payments API was using the Stripe SDK on iOS. We learned that Apple sometimes rejects apps which contain the Stripe SDK but don’t offer anything for sale. To help your App Review process go more smoothly, we have decided to remove the Stripe SDK and experimental Payments API from apps built with the Expo standalone builder. We are still excited to give developers a way to let users pay for goods when they need to and we will announce more ways to do so shortly.
