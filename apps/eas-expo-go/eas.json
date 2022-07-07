@@ -7,6 +7,12 @@
     "base": {
       "android": {
         "image": "ubuntu-20.04-jdk-11-ndk-r21e",
+        "cache": {
+          "key":  "hermes-2022-05-20-RNv0.69.0-ee8941b8874132b8f83e4486b63ed5c19fc3f111",
+          "customPaths": [
+            "../../android/sdks" 
+          ]
+        },
         "env": {
           "EAS_BUILD_PLATFORM": "android",
           "EAS_DANGEROUS_OVERRIDE_ANDROID_APPLICATION_ID": "host.exp.exponent"
@@ -18,17 +24,14 @@
         }
       }
     },
-    "versioned-client-base": {
+    "versioned-client": {
       "extends": "base",
       "env": {
-        "EXPO_GO_BUILD_TYPE": "versioned-client"
+        "EAS_BUILD_PROFILE": "versioned-client"
       },
       "android": {
         "gradleCommand": ":app:assembleVersionedDebug",
-        "withoutCredentials": true,
-        "env": {
-          "ANDROID_SDK_ROOT": "/home/expo/Android/Sdk"
-        }
+        "withoutCredentials": true
       },
       "ios": {
         "scheme": "Expo Go \\(versioned\\)",
@@ -37,21 +40,36 @@
       }
     },
     "versioned-client-signed": {
-      "extends": "versioned-client-base",
+      "extends": "versioned-client",
+      "env": {
+        "EAS_BUILD_PROFILE": "versioned-client-signed"
+      },
       "android": {
-        "gradleCommand": ":app:assembleVersionedRelease",
-        "env": {
-          "ANDROID_SDK_ROOT": "/home/expo/Android/Sdk"
-        }
+        "gradleCommand": ":app:bundleVersionedRelease"
       },
       "ios": {
         "simulator": false
       }
     },
     "versioned-client-add-sdk": {
-      "extends": "versioned-client-base",
+      "extends": "versioned-client",
       "env": {
-        "EXPO_GO_BUILD_TYPE": "versioned-client-add-sdk"
+        "EAS_BUILD_PROFILE": "versioned-client-add-sdk"
+      }
+    },
+    "unversioned-client": {
+      "extends": "base",
+      "env": {
+        "EAS_BUILD_PROFILE": "unversioned-client"
+      },
+      "android": {
+        "gradleCommand": ":app:assembleUnversionedDebug",
+        "withoutCredentials": true
+      },
+      "ios": {
+        "scheme": "Expo Go \\(unversioned\\)",
+        "simulator": true,
+        "buildConfiguration": "Release"
       }
     }
   }

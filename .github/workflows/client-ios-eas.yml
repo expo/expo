@@ -4,16 +4,19 @@ on:
   workflow_dispatch:
     inputs:
       buildType:
+        required: true
         type: 'choice'
         description: 'buildType'
         options: 
           - versioned-client
+          - unversioned-client
           - versioned-client-signed
   schedule:
     - cron: '20 5 * * 1,3,5' # 5:20 AM UTC time on every Monday, Wednesday and Friday
   pull_request:
     paths:
       - .github/workflows/client-ios-eas.yml
+      - apps/eas-expo-go/**
       - ios/**
       - tools/src/dynamic-macros/**
       - tools/src/commands/IosGenerateDynamicMacros.ts
@@ -27,7 +30,8 @@ on:
   push:
     branches: [main, sdk-*]
     paths:
-      - .github/workflows/client-ios.yml
+      - .github/workflows/client-ios-eas.yml
+      - apps/eas-expo-go/**
       - ios/**
       - tools/src/dynamic-macros/**
       - tools/src/commands/IosGenerateDynamicMacros.ts
@@ -69,8 +73,17 @@ jobs:
       - name: Install eas-cli
         run: npm install -g eas-cli
       - name: Build
-        run: eas build  -p ios --profile $PROFILE --non-interactive
-        working-directory: ./apps/eas-expo-go
+        uses: ./.github/actions/eas-build
+        id: build
+        with:
+          platform: 'ios'
+          profile: ${{ github.event.inputs.buildType || 'unversioned-client' }}
+          projectRoot: './apps/eas-expo-go'
+          expoToken: ${{ secrets.EAS_BUILD_BOT_TOKEN }}
+      - name: On workflow canceled
+        if: ${{ cancelled() && steps.build.outputs.build_id }}
+        run: eas build:cancel ${{ steps.build.outputs.build_id }}
+        working-directory: ./apps/eas-expo-go 
         env:
-          EXPO_TOKEN: ${{ secrets.EAS_BUILD_BOT_TOKEN }}
-          PROFILE: ${{ github.event.inputs.buildType || 'versioned-client-base' }}
+          EXPO_TOKEN: ${{ secrets.EAS_BUILD_BOT_TOKEN }} 
+          EAS_BUILD_PROFILE: ${{ github.event.inputs.buildType || 'unversioned-client' }}

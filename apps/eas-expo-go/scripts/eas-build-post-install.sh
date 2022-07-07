@@ -10,6 +10,10 @@ cat << EOF > ~/.config/direnv/direnv.toml
 prefix = [ "/" ]
 EOF
 
-if [ "$EXPO_GO_BUILD_TYPE" = "versioned-client-add-sdk" ]; then
+if [ "$EAS_BUILD_PLATFORM" = "ios" ]; then
+  direnv exec . et ios-generate-dynamic-macros
+fi
+
+if [ "$EAS_BUILD_PROFILE" = "versioned-client-add-sdk" ]; then
   direnv exec . et add-sdk --platform android --sdkVersion 46.0.0
 fi

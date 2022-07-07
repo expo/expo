@@ -1,9 +1,11 @@
 import { ExpoConfig } from '@expo/config';
 import assert from 'assert';
+
 const base = {
   owner: 'expo-ci',
 };
-const mapBuildTypeToConfig: Record<string, ExpoConfig> = {
+
+const mapBuildProfileToConfig: Record<string, ExpoConfig> = {
   'versioned-client-add-sdk': {
     ...base,
     slug: 'versioned-expo-go-add-sdk',
@@ -14,10 +16,20 @@ const mapBuildTypeToConfig: Record<string, ExpoConfig> = {
     slug: 'versioned-expo-go',
     name: 'Expo Go (versioned)',
   },
+  'versioned-client-signed': {
+    ...base,
+    slug: 'versioned-expo-go',
+    name: 'Expo Go (versioned)',
+  },
+  'unversioned-client': {
+    ...base,
+    slug: 'unversioned-expo-go',
+    name: 'Expo Go (unversioned)',
+  },
 };
 
-const buildType = process.env.EXPO_GO_BUILD_TYPE;
-assert(buildType && mapBuildTypeToConfig[buildType]);
+const buildType = process.env.EAS_BUILD_PROFILE;
+assert(buildType && mapBuildProfileToConfig[buildType]);
 
-const config = mapBuildTypeToConfig[buildType];
+const config = mapBuildProfileToConfig[buildType];
 export default config;
