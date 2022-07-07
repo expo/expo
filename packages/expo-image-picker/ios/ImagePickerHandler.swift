@@ -1,9 +1,13 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
+import PhotosUI
+
 /**
  Protocol that describes scenarios we care about while the user is picking media.
  */
 protocol OnMediaPickingResultHandler {
+  @available(iOS 14, *)
+  func didPickMultipleMedia(selection: [PHPickerResult])
   func didPickMedia(mediaInfo: MediaInfo)
   func didCancelPicking()
 }
@@ -18,6 +22,7 @@ protocol OnMediaPickingResultHandler {
  2) it separates some logic from the main module class and hopefully makes it cleaner.
  */
 internal class ImagePickerHandler: NSObject,
+                                   PHPickerViewControllerDelegate,
                                    UINavigationControllerDelegate,
                                    UIImagePickerControllerDelegate,
                                    UIAdaptivePresentationControllerDelegate {
@@ -33,6 +38,12 @@ internal class ImagePickerHandler: NSObject,
   private func handlePickedMedia(mediaInfo: MediaInfo) {
     statusBarVisibilityController.maybeRestoreStatusBarVisibility()
     onMediaPickingResultHandler.didPickMedia(mediaInfo: mediaInfo)
+  }
+
+  @available(iOS 14, *)
+  private func handlePickedMedia(selection: [PHPickerResult]) {
+    statusBarVisibilityController.maybeRestoreStatusBarVisibility()
+    onMediaPickingResultHandler.didPickMultipleMedia(selection: selection)
   }
 
   private func handlePickingCancellation() {
@@ -58,6 +69,22 @@ internal class ImagePickerHandler: NSObject,
     }
   }
 
+  // MARK: - PHPickerViewControllerDelegate
+
+  @available(iOS 14, *)
+  func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
+    DispatchQueue.main.async {
+      picker.dismiss(animated: true) { [weak self] in
+        // The PHPickerViewController returns empty collection when cancelled
+        if results.isEmpty {
+          self?.handlePickingCancellation()
+        } else {
+          self?.handlePickedMedia(selection: results)
+        }
+      }
+    }
+  }
+
   // MARK: - UIAdaptivePresentationControllerDelegate
 
   func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
@@ -68,5 +95,27 @@ internal class ImagePickerHandler: NSObject,
 
   func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
     statusBarVisibilityController.maybePreserveVisibilityAndHideStatusBar(hideStatusBarWhenPresented)
+  }
+}
+
+/**
+ Protocol that is a common type for supported picker controllers.
+ */
+internal protocol PickerUIController: UIViewController {
+  func setResultHandler(_ handler: ImagePickerHandler)
+}
+
+extension UIImagePickerController: PickerUIController {
+  func setResultHandler(_ handler: ImagePickerHandler) {
+    self.delegate = handler
+    self.presentationController?.delegate = handler
+  }
+}
+
+@available(iOS 14, *)
+extension PHPickerViewController: PickerUIController {
+  func setResultHandler(_ handler: ImagePickerHandler) {
+    self.delegate = handler
+    self.presentationController?.delegate = handler
   }
 }

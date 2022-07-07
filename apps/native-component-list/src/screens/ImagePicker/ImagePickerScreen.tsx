@@ -118,7 +118,12 @@ const LAUNCH_PICKER_PARAMETERS: FunctionParameter[] = [
           },
         ],
       },
-      { name: 'allowsMultipleSelection', type: 'boolean', initial: false, platforms: ['web'] },
+      {
+        name: 'allowsMultipleSelection',
+        type: 'boolean',
+        initial: false,
+        platforms: ['web', 'ios'],
+      },
       { name: 'videoMaxDuration', type: 'number', values: [0, 10, 60] },
       {
         name: 'presentationStyle',

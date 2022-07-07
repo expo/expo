@@ -2,6 +2,7 @@
 
 import ExpoModulesCore
 import MobileCoreServices
+import PhotosUI
 
 internal let DEFAULT_QUALITY = 0.2
 
@@ -39,6 +40,9 @@ internal struct ImagePickerOptions: Record {
   // TODO: (bbarthec): undocumented
   @Field
   var cameraType: CameraType = .back
+
+  @Field
+  var allowsMultipleSelection: Bool = false
 }
 
 internal enum PresentationStyle: String, EnumArgument {
@@ -119,6 +123,19 @@ internal enum MediaType: String, EnumArgument {
       return [kUTTypeMovie as String]
     case .all:
       return [kUTTypeImage as String, kUTTypeMovie as String]
+    }
+  }
+
+  @available(iOS 14, *)
+  func toPickerFilter() -> PHPickerFilter {
+    // TODO: (barthap) Maybe add support for live photos
+    switch self {
+    case .images:
+      return .images
+    case .videos:
+      return .videos
+    case .all:
+      return .any(of: [.images, .videos])
     }
   }
 }
