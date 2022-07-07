@@ -87,6 +87,9 @@ export class SessionUrlProvider {
 
   private static getHostAddressQueryParams(): ParsedQs | undefined {
     let hostUri: string | undefined =
+      // @ts-ignore: hostUri isn't defined on the expoClient type, because
+      // Constants.manifest is of type AppManifest while
+      // Constants.manifest2.extra.expoClient is of type ExpoConfig
       Constants.manifest?.hostUri ?? Constants.manifest2?.extra?.expoClient?.hostUri;
     if (
       !hostUri &&

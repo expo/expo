@@ -70,7 +70,9 @@ export class SessionUrlProvider {
         return redirectUrl;
     }
     static getHostAddressQueryParams() {
-        let hostUri = Constants.manifest?.hostUri ?? Constants.manifest2?.extra?.expoClient?.hostUri;
+        let hostUri = 
+        // @ts-ignore: hostUri doesn't appear to be defined on the expoClient type
+        Constants.manifest?.hostUri ?? Constants.manifest2?.extra?.expoClient?.hostUri;
         if (!hostUri &&
             (ExecutionEnvironment.StoreClient === Constants.executionEnvironment ||
                 Linking.resolveScheme({}))) {
