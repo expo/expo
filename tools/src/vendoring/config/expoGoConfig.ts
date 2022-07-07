@@ -362,6 +362,13 @@ const config: VendoringTargetConfig = {
         },
       },
     },
+    '@shopify/flash-list': {
+      source: 'https://github.com/Shopify/flash-list',
+      ios: {},
+      android: {
+        excludeFiles: ['**/src/test/**'],
+      },
+    },
   },
 };
 

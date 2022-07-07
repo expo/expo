@@ -2557,6 +2557,8 @@ PODS:
     - React-logger (= 0.69.1)
     - React-perflogger (= 0.69.1)
     - ReactCommon/turbomodule/core (= 0.69.1)
+  - RNFlashList (1.1.0):
+    - React-Core
   - RNGestureHandler (2.5.0):
     - React-Core
   - RNReanimated (2.9.1):
@@ -3069,6 +3071,7 @@ DEPENDENCIES:
   - React-RCTVibration (from `../react-native-lab/react-native/Libraries/Vibration`)
   - React-runtimeexecutor (from `../react-native-lab/react-native/ReactCommon/runtimeexecutor`)
   - ReactCommon/turbomodule/core (from `../react-native-lab/react-native/ReactCommon`)
+  - "RNFlashList (from `./vendored/unversioned/@shopify/flash-list`)"
   - RNGestureHandler (from `./vendored/unversioned/react-native-gesture-handler`)
   - RNReanimated (from `./vendored/unversioned/react-native-reanimated`)
   - RNScreens (from `./vendored/unversioned/react-native-screens`)
@@ -3992,6 +3995,8 @@ EXTERNAL SOURCES:
     :path: "../react-native-lab/react-native/ReactCommon/runtimeexecutor"
   ReactCommon:
     :path: "../react-native-lab/react-native/ReactCommon"
+  RNFlashList:
+    :path: "./vendored/unversioned/@shopify/flash-list"
   RNGestureHandler:
     :path: "./vendored/unversioned/react-native-gesture-handler"
   RNReanimated:
@@ -4478,6 +4483,7 @@ SPEC CHECKSUMS:
   React-RCTVibration: e8b7dd6635cc95689b5db643b5a3848f1e05b30b
   React-runtimeexecutor: 27f468c5576eaf05ffb7a907528e44c75a3fcbae
   ReactCommon: e30ec17dfb1d4c4f3419eac254350d6abca6d5a2
+  RNFlashList: 031c182b95ead44fd0715f6029a744cd5e10d51f
   RNGestureHandler: bad495418bcbd3ab47017a38d93d290ebd406f50
   RNReanimated: 5c8c17e26787fd8984cd5accdc70fef2ca70aafd
   RNScreens: aa9a97835afbbdc18a4757870b2b59b7d9fae16a

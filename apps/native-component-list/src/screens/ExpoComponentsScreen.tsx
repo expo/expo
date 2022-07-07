@@ -14,6 +14,7 @@ const screens = [
   'DateTimePicker',
   'DrawerLayoutAndroid',
   'FacebookAds',
+  'FlashList',
   'GL',
   'GestureHandlerList',
   'GestureHandlerPinch',

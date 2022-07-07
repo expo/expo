@@ -7,6 +7,7 @@ import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.uimanager.ViewManager
+import com.shopify.reactnative.flash_list.ReactNativeFlashListPackage
 import com.shopify.reactnative.skia.RNSkiaPackage
 import expo.modules.adapters.react.ReactModuleRegistryProvider
 import expo.modules.core.interfaces.Package
@@ -181,7 +182,8 @@ class ExponentPackage : ReactPackage {
         ReactSliderPackage(),
         PagerViewPackage(),
         stripePackage,
-        skiaPackage
+        skiaPackage,
+        ReactNativeFlashListPackage()
       )
     )
     viewManagers.addAll(moduleRegistryAdapter.createViewManagers(reactContext))
