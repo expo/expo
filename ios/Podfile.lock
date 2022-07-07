@@ -2021,7 +2021,7 @@ PODS:
     - UMAppLoader
   - EXTrackingTransparency (2.2.0):
     - ExpoModulesCore
-  - EXUpdates (0.13.2):
+  - EXUpdates (0.13.3):
     - ASN1Decoder (~> 1.8)
     - EASClient
     - EXManifests
@@ -2029,7 +2029,7 @@ PODS:
     - EXStructuredHeaders
     - EXUpdatesInterface
     - React-Core
-  - EXUpdates/Tests (0.13.2):
+  - EXUpdates/Tests (0.13.3):
     - ASN1Decoder (~> 1.8)
     - EASClient
     - EXManifests
@@ -4402,7 +4402,7 @@ SPEC CHECKSUMS:
   EXStructuredHeaders: 5d86829469399370a9fc7cb1e4391b09de87681d
   EXTaskManager: 80829d015808bbac6a292f9a3b7adf801c72cce6
   EXTrackingTransparency: e6193655ba7c4cf6c1493162b87c766a780f1f11
-  EXUpdates: 93746ba5262fe00409ea1d86114dbc78bdb47384
+  EXUpdates: a72ebd2d96c3c558c9f8c670f8a6b54d6828070a
   EXUpdatesInterface: 0b101ace1dbfa0f64260a5df31c71d03c66cca54
   EXVideoThumbnails: 19e055dc3245b53c536da9e0ef9c618fd2118297
   FacebookSDK: 4b9bb8e2824898b47f18c666dc145c09b40609e6

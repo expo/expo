@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fix proguard support in Android builds. ([#18035](https://github.com/expo/expo/pull/18035) by [@esamelson](https://github.com/esamelson))
-
 ### 💡 Others
+
+## 0.13.3 — 2022-07-07
+
+### 🐛 Bug fixes
+
+- Fix proguard support in Android builds. ([#18035](https://github.com/expo/expo/pull/18035) by [@esamelson](https://github.com/esamelson))
 
 ## 0.13.2 — 2022-06-03
 
