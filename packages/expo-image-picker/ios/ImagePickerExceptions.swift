@@ -32,6 +32,12 @@ internal class CameraUnavailableOnSimulatorException: Exception {
   }
 }
 
+internal class MultiselectUnavailableException: Exception {
+  override var reason: String {
+    "Multiple selection is only available on iOS 14+"
+  }
+}
+
 internal class MissingCurrentViewControllerException: Exception {
   override var reason: String {
     "Cannot determine currently presented view controller"
