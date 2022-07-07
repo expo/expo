@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 3.1.0 — 2022-07-07
+
+### 🐛 Bug fixes
+
 - Fixed clipboard listener returning invalid `contentTypes` value for images on Android. ([#17644](https://github.com/expo/expo/pull/17644) by [@barthap](https://github.com/barthap))
 - Fixed `setStringAsync` causing bouncing in Safari. ([#18010](https://github.com/expo/expo/pull/18010) by [@barthap](https://github.com/barthap))
 

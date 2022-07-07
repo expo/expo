@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Support `null` type in args to `executeSql`. ([#18078](https://github.com/expo/expo/pull/18078) by [@tsheaff](https://github.com/tsheaff))
-
 ### 💡 Others
+
+## 10.3.0 — 2022-07-07
+
+### 🐛 Bug fixes
+
+- Support `null` type in args to `executeSql`. ([#18078](https://github.com/expo/expo/pull/18078) by [@tsheaff](https://github.com/tsheaff))
 
 ## 10.2.0 — 2022-04-18
 

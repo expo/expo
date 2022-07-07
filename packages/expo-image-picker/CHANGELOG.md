@@ -6,6 +6,14 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 13.2.0 — 2022-07-07
+
+### 🎉 New features
+
 - On iOS 14+ added support for selecting multiple images/videos. ([#18102](https://github.com/expo/expo/pull/18102) by [@barthap](https://github.com/barthap))
 
 ### 🐛 Bug fixes
