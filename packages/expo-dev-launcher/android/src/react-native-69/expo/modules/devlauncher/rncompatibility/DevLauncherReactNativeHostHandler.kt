@@ -21,7 +21,6 @@ class DevLauncherReactNativeHostHandler(context: Context) : ReactNativeHostHandl
   override fun getJavaScriptExecutorFactory(): JavaScriptExecutorFactory? {
     val context = contextHolder.get() ?: return null
     val applicationContext = context.applicationContext
-
     return getAppJavaScriptExecutorFactory(applicationContext)
   }
 }
