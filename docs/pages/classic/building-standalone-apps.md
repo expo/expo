@@ -88,8 +88,8 @@ For Expo to handle the process, choose the first option in the command-line when
 Would you like to upload a keystore or have us generate one for you?
 If you don't know what this means, let us handle it! :)
 
-  1) Let Expo handle the process!
-  2) I want to upload my own keystore!
+1) Let Expo handle the process!
+2) I want to upload my own keystore!
 ```
 
 If you choose the first option, it is **strongly recommend** that you run the following command after the build process is complete and backup the keystore to a safe location:
