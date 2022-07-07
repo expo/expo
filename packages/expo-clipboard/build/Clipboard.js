@@ -63,7 +63,7 @@ export function hasStringAsync() {
  * Gets the URL from the user's clipboard.
  *
  * @returns A promise that fulfills to the URL in the clipboard.
- * @platform iOS
+ * @platform ios
  */
 export async function getUrlAsync() {
     if (!ExpoClipboard.getUrlAsync) {
@@ -75,7 +75,7 @@ export async function getUrlAsync() {
  * Sets a URL in the user's clipboard.
  *
  * @param url The URL to save to the clipboard.
- * @platform iOS
+ * @platform ios
  */
 export async function setUrlAsync(url) {
     if (!ExpoClipboard.setUrlAsync) {
@@ -87,7 +87,7 @@ export async function setUrlAsync(url) {
  * Returns whether the clipboard has a URL content.
  *
  * @returns A promise that fulfills to `true` if clipboard has URL content, resolves to `false` otherwise.
- * @platform iOS
+ * @platform ios
  */
 export async function hasUrlAsync() {
     if (!ExpoClipboard.hasUrlAsync) {
@@ -138,7 +138,7 @@ export async function setImageAsync(base64Image) {
     return ExpoClipboard.setImageAsync(base64Image);
 }
 /**
- * Returns whether the clipboard has a image content.
+ * Returns whether the clipboard has an image content.
  *
  * On web, this requires the user to grant your app permission to _"see text and images copied to the clipboard"_.
  *
