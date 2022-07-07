@@ -8,10 +8,14 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 0.10.0 — 2022-07-07
+
+### 🐛 Bug fixes
+
 - Added support for React Native 0.69.x ([#17629](https://github.com/expo/expo/pull/17629) by [@kudo](https://github.com/kudo))
 - Use regex to match ignored modules in `expo_patch_react_imports!` and fix iOS build errors when the project is inside `react-native` named folder. ([#17968](https://github.com/expo/expo/pull/17968) by [@dmnkgrc](https://github.com/dmnkgrc))
-
-### 💡 Others
 
 ## 0.9.0 — 2022-06-23
 

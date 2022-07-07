@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 11.1.0 — 2022-07-07
+
+### 💡 Others
+
 - Bumped `@typescript-eslint/*` dependencies from 5.14.0 to 5.27.0, to add the TypeScript 4.7 support. ([#17709](https://github.com/expo/expo/pull/17709) by [@Simek](https://github.com/Simek))
 - Bumped `eslint-plugin-import` from 2.25.4 to 2.26.0. ([#17709](https://github.com/expo/expo/pull/17709) by [@Simek](https://github.com/Simek))
 - Bumped `eslint-plugin-react` from 7.29.3 to 7.30.0. ([#17709](https://github.com/expo/expo/pull/17709) by [@Simek](https://github.com/Simek))

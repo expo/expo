@@ -4,10 +4,18 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 12.0.0 — 2022-07-07
+
+### 🛠 Breaking changes
+
 - Replace `RecordingOptions` related constants with enums. Check out the PR for the migration hints. ([#17954](https://github.com/expo/expo/pull/17954) by [@Simek](https://github.com/Simek))
 - Rename the `RecordingOptions` preset constant to `RecordingOptionsPresets` and edit export. Check out the PR for the migration hints. ([#17954](https://github.com/expo/expo/pull/17954) by [@Simek](https://github.com/Simek))
-
-### 🎉 New features
 
 ### 🐛 Bug fixes
 

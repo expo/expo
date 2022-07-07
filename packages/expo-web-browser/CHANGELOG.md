@@ -6,6 +6,14 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 11.0.0 — 2022-07-07
+
+### 🎉 New features
+
 - Native module on Android is now written in Kotlin using the new API. ([#17454](https://github.com/expo/expo/pull/17454) by [@barthap](https://github.com/barthap))
 
 ### 🐛 Bug fixes
