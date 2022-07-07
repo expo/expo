@@ -381,7 +381,7 @@ export type CameraProps = ViewProps & {
    * />
    * ```
    */
-  barCodeScannerSettings?: object;
+  barCodeScannerSettings?: BarCodeSettings;
   /**
    * Callback that is invoked when a bar code has been successfully scanned. The callback is provided with
    * an object of the [`BarCodeScanningResult`](#barcodescanningresult) shape, where the `type`
