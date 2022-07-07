@@ -430,6 +430,12 @@ export const Screens = [
     },
     name: 'SharedElement',
   },
+  {
+    getComponent() {
+      return optionalRequire(() => require('../screens/FlashListScreen'));
+    },
+    name: 'FlashList',
+  },
 ];
 
 function ExpoComponentsStackNavigator(props: { navigation: BottomTabNavigationProp<any> }) {

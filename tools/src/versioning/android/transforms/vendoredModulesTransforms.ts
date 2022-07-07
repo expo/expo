@@ -28,8 +28,14 @@ export function exponentPackageTransforms(prefix: string): Record<string, String
   return {
     '@shopify/react-native-skia': [
       {
-        find: 'import com.shopify',
-        replaceWith: `import ${prefix}.com.shopify`,
+        find: /\bimport (com.shopify.reactnative.skia.RNSkiaPackage)/g,
+        replaceWith: `import ${prefix}.$1`,
+      },
+    ],
+    '@shopify/flash-list': [
+      {
+        find: /\bimport (com.shopify.reactnative.flash_list.ReactNativeFlashListPackage)/g,
+        replaceWith: `import ${prefix}.$1`,
       },
     ],
   };
