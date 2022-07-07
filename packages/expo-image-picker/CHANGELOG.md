@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix crash when picking a GIF image on iOS. ([#18135](https://github.com/expo/expo/pull/18135) by [@barthap](https://github.com/barthap))
+
 ### 💡 Others
 
 - On Android migrated to the new `registerForActivityResult` mechanism. ([#17671](https://github.com/expo/expo/pull/17671), ([#17987](https://github.com/expo/expo/pull/17987) by [@bbarthec](https://github.com/bbarthec))

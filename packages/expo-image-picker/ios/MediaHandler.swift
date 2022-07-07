@@ -278,8 +278,8 @@ private struct ImageUtils {
         throw FailedToReadImageDataException()
       }
 
-      // swiftlint:disable:next force_cast
-      guard let imageDestination = CGImageDestinationCreateWithData(data as! CFMutableData, kUTTypeGIF, 1, nil),
+      let destinationData = NSMutableData()
+      guard let imageDestination = CGImageDestinationCreateWithData(destinationData, kUTTypeGIF, 1, nil),
             let cgImage = image.cgImage
       else {
         throw FailedToCreateGifException()
@@ -296,7 +296,7 @@ private struct ImageUtils {
         throw FailedToExportGifException()
       }
 
-      return (data, ".gif")
+      return (destinationData as Data, ".gif")
 
     default:
       let data = image.jpegData(compressionQuality: compressionQuality)
