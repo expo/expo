@@ -16,6 +16,58 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 <APIInstallSection />
 
+## Configuration in app.json / app.config.js
+
+<!-- update library name here -->
+
+You can configure `expo-contacts` using its built-in [config plugin](../../../guides/config-plugins.md) if you use config plugins in your project ([EAS Build](../../../build/introduction.md) or `expo run:[android|ios]`). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect.
+
+<ConfigClassic>
+
+<!-- this is a standard type of message that will apply to many libraries. if there are no usage description keys or permissions, then you may want to say something else here -->
+
+You can configure [the permissions for this library](#permissions) using [`ios.infoPlist`](../config/app.md#infoplist) and [`android.permissions`](../config/app.md#permissions).
+
+</ConfigClassic>
+
+<ConfigReactNative>
+
+<!-- update library name and link here -->
+
+Learn how to configure the native projects in the [installation instructions in the `expo-contacts` repository](https://github.com/expo/expo/tree/main/packages/expo-contacts#installation-in-bare-react-native-projects).
+
+</ConfigReactNative>
+
+<ConfigPluginExample>
+
+<!-- add some example usage of the plugin. you don't need to provide every option -->
+
+```json
+{
+  "expo": {
+    "plugins": [
+      [
+        "expo-contacts",
+        {
+          "contactsPermission": "The app accesses your contacts to let you share with your friends."
+        }
+      ]
+    ]
+  }
+}
+```
+
+</ConfigPluginExample>
+
+<!-- 
+  Look in the plugin directory for the library and see what the options are, then fill in the below table as needed. 
+  Here's an example plugin: https://github.com/expo/expo/blob/main/packages/expo-contacts/plugin/src/withContacts.ts
+-->
+
+<ConfigPluginProperties properties={[
+{ name: 'contactsPermission', platform: 'ios', description: 'A string to set the NSContactsUsageDescription permission message.', default: '"Allow $(PRODUCT_NAME) to access your contacts"' },
+]} />
+
 ## Usage
 
 <SnackInline label='Basic Contacts Usage' dependencies={['expo-contacts']}>
