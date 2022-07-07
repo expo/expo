@@ -58,7 +58,6 @@ type State = {
   isNetworkAvailable: boolean;
   isRefreshing: boolean;
   data?: Exclude<HomeScreenDataQuery['account']['byName'], null>;
-  loading: boolean;
 };
 
 type NavigationProps = StackScreenProps<HomeStackRoutes, 'Home'>;
@@ -72,7 +71,6 @@ export class HomeScreenView extends React.Component<Props, State> {
     isNetworkAvailable: Connectivity.isAvailable(),
     isRefreshing: false,
     data: this.props.initialData?.account.byName,
-    loading: !this.props.initialData?.account.byName, // if there is initial data, we're not loading
   };
 
   componentDidMount() {
@@ -225,7 +223,6 @@ export class HomeScreenView extends React.Component<Props, State> {
 
   private _startPollingForProjects = async () => {
     await this._fetchProjectsAsync();
-    this.setState({ loading: false });
     this._projectPolling = setInterval(this._fetchProjectsAsync, PROJECT_UPDATE_INTERVAL);
   };
 
