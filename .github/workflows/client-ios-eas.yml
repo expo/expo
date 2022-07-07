@@ -1,0 +1,68 @@
+name: iOS Client - EAS Build
+
+on:
+  workflow_dispatch: {}
+  schedule:
+    - cron: '20 5 * * 1,3,5' # 5:20 AM UTC time on every Monday, Wednesday and Friday
+  pull_request:
+    paths:
+      - .github/workflows/client-ios-eas.yml
+        #      - ios/**
+        #      - tools/src/dynamic-macros/**
+        #      - tools/src/commands/IosGenerateDynamicMacros.ts
+        #      - tools/src/client-build/**
+        #      - tools/src/commands/ClientBuild.ts
+        #      - secrets/**
+        #      - fastlane/**
+        #      - Gemfile.lock
+        #      - .ruby-version
+        #      - yarn.lock
+        #  push:
+        #    branches: [main, sdk-*]
+        #    paths:
+        #      - .github/workflows/client-ios.yml
+        #      - ios/**
+        #      - tools/src/dynamic-macros/**
+        #      - tools/src/commands/IosGenerateDynamicMacros.ts
+        #      - tools/src/client-build/**
+        #      - tools/src/commands/ClientBuild.ts
+        #      - secrets/**
+        #      - fastlane/**
+        #      - Gemfile.lock
+        #      - .ruby-version
+        #      - yarn.lock
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: 👀 Checkout
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+      - name: 🔓 Decrypt secrets if possible
+        uses: ./.github/actions/expo-git-decrypt
+        with:
+          key: ${{ secrets.GIT_CRYPT_KEY_BASE64 }}
+      - name: ➕ Add `bin` to GITHUB_PATH
+        run: echo "$(pwd)/bin" >> $GITHUB_PATH
+      - name: ♻️ Restore caches
+        uses: ./.github/actions/expo-caches
+        id: expo-caches
+        with:
+          yarn-workspace: 'true'
+          yarn-tools: 'true'
+      - name: 🧶 Yarn install
+        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
+        run: yarn install --frozen-lockfile
+      - name: Install eas-cli
+        run: npm install -g eas-cli
+      - name: Build
+        run: eas build  -p ios --profile=versioned-client --non-interactive
+        working-directory: ./apps/eas-expo-go
+        env:
+          EXPO_TOKEN: ${{ secrets.EAS_BUILD_BOT_TOKEN }}
