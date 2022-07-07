@@ -449,7 +449,7 @@ try {
 ```
 **server**
 
-please refer to [how to handle such requests](https://docs.expo.dev/versions/latest/sdk/filesystem/#how-to-handle-such-requests) with a simple Node.js server
+Please refer to the "[how to handle such requests](#how-to-handle-such-requests)" section - there is code for a simple Node.js server.
 
 #### Arguments
 
