@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Removed legacy Objective-C implementation and changed the pod name to `ExpoTrackingTransparency`.
+
 ## 2.3.0 — 2022-07-07
 
 ### 💡 Others
