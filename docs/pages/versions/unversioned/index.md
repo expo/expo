@@ -8,7 +8,7 @@ import { Terminal } from '~/ui/components/Snippet';
 
 <VersionedRedirectNotification />
 
-The Expo SDK provides access to device and system functionality such as contacts, camera, gyroscope sensor, GPS location, etc. To use these functionalities and may other, you can install any of the Expo SDK package using `expo-cli` with the `expo install` command. For example, in the command below, three different package are installed:
+The Expo SDK provides access to device and system functionality such as contacts, camera, gyroscope sensor, GPS location, etc., in form of packages. You can install the required Expo SDK package using the `expo-cli` with the `expo install` command. For example, in the command below, three different package are installed:
 
 <Terminal cmd={['$ expo install expo-camera expo-contacts expo-sensors']} />
 
