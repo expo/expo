@@ -8,6 +8,7 @@ import {
   Spacer,
   View,
   UserIcon,
+  scale,
 } from 'expo-dev-client-components';
 import * as React from 'react';
 
@@ -26,7 +27,7 @@ export function AppHeader({ navigation }) {
   };
 
   const isAuthenticated = userData != null;
-  const selectedUserImage = selectedAccount?.owner?.profilePhoto;
+  const selectedUserImage = selectedAccount?.owner?.profilePhoto ?? null;
 
   return (
     <>
@@ -53,7 +54,7 @@ export function AppHeader({ navigation }) {
             </Row>
           </View>
 
-          <View>
+          <View align="centered" style={{ justifyContent: 'flex-end' }}>
             <Button.ScaleOnPressContainer
               onPress={onUserProfilePress}
               minScale={0.85}
@@ -63,7 +64,11 @@ export function AppHeader({ navigation }) {
               <View>
                 {isAuthenticated ? (
                   <View rounded="full" padding="small">
-                    <Image size="xl" rounded="full" source={{ uri: selectedUserImage }} />
+                    <View height="xl" width="xl" bg="secondary" rounded="full">
+                      {selectedUserImage && (
+                        <Image size="xl" rounded="full" source={{ uri: selectedUserImage }} />
+                      )}
+                    </View>
                   </View>
                 ) : (
                   <View mx="small">
@@ -74,6 +79,20 @@ export function AppHeader({ navigation }) {
                 )}
               </View>
             </Button.ScaleOnPressContainer>
+            {!selectedUserImage && (
+              <Row
+                style={{
+                  height: scale[2],
+                  flexWrap: 'wrap',
+                  maxWidth: scale[16],
+                  paddingRight: scale[2],
+                  transform: [{ translateY: -scale[2] }],
+                }}>
+                <Text numberOfLines={1} size="small" align="center" weight="medium">
+                  {selectedAccount?.name}
+                </Text>
+              </Row>
+            )}
           </View>
         </Row>
       </View>
