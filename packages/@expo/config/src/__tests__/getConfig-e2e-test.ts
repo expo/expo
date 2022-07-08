@@ -60,7 +60,7 @@ describe(getConfig, () => {
       getConfig(projectRoot, {
         skipSDKVersionRequirement: true,
       })
-    ).toThrowErrorMatchingSnapshot();
+    ).toThrow(/Error reading Expo config.*?app.config.js/);
   });
 
   it('resolves plugins', () => {
