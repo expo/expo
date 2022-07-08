@@ -13,21 +13,9 @@ const Stack = createStackNavigator();
 export const Screens = [
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/FacebookAdsScreen'));
-    },
-    name: 'FacebookAds',
-  },
-  {
-    getComponent() {
       return optionalRequire(() => require('../screens/DrawerLayoutAndroidScreen'));
     },
     name: 'DrawerLayoutAndroid',
-  },
-  {
-    getComponent() {
-      return optionalRequire(() => require('../screens/AdMobScreen'));
-    },
-    name: 'Admob',
   },
   {
     getComponent() {
