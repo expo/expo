@@ -64,13 +64,7 @@ export default function AuthSessionScreen() {
             value={language}
             setValue={setLanguage}
           />
-          <H4>
-            ID:{' '}
-            {Constants.manifest?.originalFullName ||
-              Constants.manifest2?.extra?.expoClient?.originalFullName ||
-              Constants.manifest?.id ||
-              'unset'}
-          </H4>
+          <H4>ID: @community/native-component-list</H4>
         </View>
         <H2>Services</H2>
         <AuthSessionProviders
@@ -102,6 +96,7 @@ function AuthSessionProviders(props: {
     path: 'redirect',
     preferLocalhost: Platform.select({ android: false, default: true }),
     useProxy,
+    projectNameForProxy: '@community/native-component-list',
   });
 
   const options = {
@@ -151,6 +146,7 @@ function Google({ prompt, language, usePKCE }: any) {
     },
     {
       path: 'redirect',
+      projectNameForProxy: '@community/native-component-list',
       preferLocalhost: true,
     }
   );
@@ -182,6 +178,7 @@ function GoogleFirebase({ prompt, language, usePKCE }: any) {
     },
     {
       path: 'redirect',
+      projectNameForProxy: '@community/native-component-list',
       preferLocalhost: true,
     }
   );
@@ -522,6 +519,7 @@ function Facebook({ usePKCE, useProxy, language }: any) {
     {
       path: 'redirect',
       preferLocalhost: true,
+      projectNameForProxy: '@community/native-component-list',
       useProxy,
     }
   );
