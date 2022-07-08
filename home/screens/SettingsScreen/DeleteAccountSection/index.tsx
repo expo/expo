@@ -7,6 +7,7 @@ import { ActivityIndicator } from 'react-native';
 
 import { APIV2Client } from '../../../api/APIV2Client';
 import Analytics from '../../../api/Analytics';
+import { Button } from '../../../components/Button';
 import { SectionHeader } from '../../../components/SectionHeader';
 import { FormStates } from '../../../constants/FormStates';
 import { Permission, useDeleteAccountPermissionsQuery } from '../../../graphql/types';
@@ -36,6 +37,7 @@ export function DeleteAccountSection(props: Props) {
   const [formError, setFormError] = useState('');
   const secondFactorDevices = data?.me?.secondFactorDevices.filter(notEmpty);
   const hasSecondFactorDevices = secondFactorDevices && secondFactorDevices.length > 0;
+  const [showDeleteConfirmForm, setShowDeleteConfirmForm] = useState(false);
   const [visibleStep, setVisibleStep] = useState<'confirm' | 'password' | 'otp'>('confirm');
   const [passwordDialogConfig, setPasswordDialogConfig] = useState({
     onCancel: () => {},
@@ -45,6 +47,22 @@ export function DeleteAccountSection(props: Props) {
     onCancel: () => {},
     onConfirm: (_otp: string) => {},
   });
+
+  function resetState() {
+    setShowDeleteConfirmForm(false);
+    setFormState(FormStates.IDLE);
+    setFormError('');
+    setVisibleStep('confirm');
+    setPasswordDialogConfig({
+      onCancel: () => {},
+      onConfirm: (_password: string) => {},
+    });
+    setOTPDialogConfig({
+      onCancel: () => {},
+      onConfirm: (_otp: string) => {},
+    });
+  }
+
   const theme = useExpoTheme();
 
   const { setAccountName } = useAccountName();
@@ -163,42 +181,68 @@ export function DeleteAccountSection(props: Props) {
             activity.
           </Text>
           <Spacer.Vertical size="small" />
-          {formError ? (
+          {showDeleteConfirmForm ? (
             <>
-              <View bg="error" padding="medium" rounded="medium">
-                <Text>{formError}</Text>
-              </View>
+              {formError ? (
+                <>
+                  <View bg="error" padding="medium" rounded="medium">
+                    <Text>{formError}</Text>
+                  </View>
+                  <Spacer.Vertical size="small" />
+                </>
+              ) : null}
+              {formState === FormStates.LOADING || loading ? (
+                <ActivityIndicator color={theme.highlight.accent} />
+              ) : null}
+              {!canViewConfirmationForm ? (
+                <View rounded="medium" bg="secondary" padding="medium">
+                  <Row>
+                    <InfoIcon color={theme.icon.default} />
+                    <Spacer.Horizontal size="small" />
+                    <Text type="InterSemiBold">Cannot delete account</Text>
+                  </Row>
+                  <Spacer.Vertical size="small" />
+                  <Text type="InterRegular" size="medium">
+                    Your account is currently the sole owner of these organizations:{' '}
+                    <Text type="InterBold">
+                      {dependentAccounts.map((account) => account.name).join(', ')}
+                    </Text>
+                    . You must assign another owner or remove all other members from these
+                    organizations before you can delete your account.
+                  </Text>
+                </View>
+              ) : null}
+              {!(formState === FormStates.LOADING) &&
+              canViewConfirmationForm &&
+              visibleStep === 'confirm' ? (
+                <ConfirmationStep onSubmit={_onSubmit} />
+              ) : null}
+              {visibleStep === 'password' ? <PasswordStep {...passwordDialogConfig} /> : null}
+              {visibleStep === 'otp' ? <OTPStep {...OTPDialogConfig} /> : null}
               <Spacer.Vertical size="small" />
             </>
           ) : null}
-          {formState === FormStates.LOADING || loading ? (
-            <ActivityIndicator color={theme.highlight.accent} />
-          ) : null}
-          {!canViewConfirmationForm ? (
-            <View rounded="medium" bg="secondary" padding="medium">
-              <Row>
-                <InfoIcon color={theme.icon.default} />
-                <Spacer.Horizontal size="small" />
-                <Text type="InterSemiBold">Cannot delete account</Text>
-              </Row>
-              <Spacer.Vertical size="small" />
-              <Text type="InterRegular" size="medium">
-                Your account is currently the sole owner of these organizations:{' '}
-                <Text type="InterBold">
-                  {dependentAccounts.map((account) => account.name).join(', ')}
-                </Text>
-                . You must assign another owner or remove all other members from these organizations
-                before you can delete your account.
-              </Text>
-            </View>
-          ) : null}
-          {!(formState === FormStates.LOADING) &&
-          canViewConfirmationForm &&
-          visibleStep === 'confirm' ? (
-            <ConfirmationStep onSubmit={_onSubmit} />
-          ) : null}
-          {visibleStep === 'password' ? <PasswordStep {...passwordDialogConfig} /> : null}
-          {visibleStep === 'otp' ? <OTPStep {...OTPDialogConfig} /> : null}
+          <Row justify="end">
+            {showDeleteConfirmForm ? (
+              <Button
+                label="Cancel"
+                theme="secondary"
+                onPress={resetState}
+                style={{
+                  alignSelf: 'flex-start',
+                }}
+              />
+            ) : (
+              <Button
+                label="Delete Account"
+                theme="error"
+                onPress={() => setShowDeleteConfirmForm(true)}
+                style={{
+                  alignSelf: 'flex-start',
+                }}
+              />
+            )}
+          </Row>
         </View>
       </View>
     </View>
