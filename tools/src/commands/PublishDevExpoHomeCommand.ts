@@ -16,6 +16,7 @@ import AppConfig from '../typings/AppConfig';
 
 type ActionOptions = {
   dry: boolean;
+  sdkVersion?: string;
 };
 
 type ExpoCliStateObject = {
