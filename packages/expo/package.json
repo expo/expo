@@ -20,6 +20,7 @@
     "scripts",
     "tools",
     "AppEntry.js",
+    "Expo.podspec",
     "bundledNativeModules.json",
     "expo-module.config.json",
     "metro-config.js",
