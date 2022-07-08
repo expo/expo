@@ -53,6 +53,7 @@ export function AuthSection({
         onPress={(color) =>
           promptAsync({
             useProxy,
+            projectNameForProxy: '@community/native-component-list',
             // Tint the controller
             toolbarColor: color,
             // iOS -- unused, possibly should remove the types
