@@ -11933,7 +11933,8 @@ provided with a single argument that is
               <code
                 class="inline css-18wudxk-STYLES_INLINE_CODE-InlineCode"
               >
-                () =&gt;
+                (
+                ) =&gt;
                  
                 void
               </code>
