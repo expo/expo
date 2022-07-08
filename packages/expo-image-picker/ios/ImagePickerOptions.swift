@@ -46,7 +46,7 @@ internal struct ImagePickerOptions: Record {
   var allowsMultipleSelection: Bool = false
   
   @Field
-  var selectionLimit: Int?
+  var selectionLimit: Int = UNLIMITED_SELECTION
 }
 
 internal enum PresentationStyle: String, EnumArgument {

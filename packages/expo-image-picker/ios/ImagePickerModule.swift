@@ -139,7 +139,7 @@ public class ImagePickerModule: Module, OnMediaPickingResultHandler {
     var configuration = PHPickerConfiguration(photoLibrary: PHPhotoLibrary.shared())
     let options = pickingContext.options
 
-    configuration.selectionLimit = options.selectionLimit ?? UNLIMITED_SELECTION
+    configuration.selectionLimit = options.selectionLimit
     configuration.filter = options.mediaTypes.toPickerFilter()
 
     let picker = PHPickerViewController(configuration: configuration)
