@@ -16,6 +16,7 @@ import { AccountModal } from '../screens/AccountModal';
 import AudioDiagnosticsScreen from '../screens/AudioDiagnosticsScreen';
 import { BranchDetailsScreen } from '../screens/BranchDetailsScreen';
 import { BranchListScreen } from '../screens/BranchListScreen';
+import { DeleteAccountScreen } from '../screens/DeleteAccountScreen';
 import { DiagnosticsScreen } from '../screens/DiagnosticsScreen';
 import GeofencingScreen from '../screens/GeofencingScreen';
 import { HomeScreen } from '../screens/HomeScreen';
@@ -30,12 +31,12 @@ import {
   requestCameraPermissionsAsync,
 } from '../utils/PermissionUtils';
 import BottomTab, { getNavigatorProps } from './BottomTabNavigator';
-import { DiagnosticsStackRoutes, HomeStackRoutes } from './Navigation.types';
+import { DiagnosticsStackRoutes, HomeStackRoutes, SettingsStackRoutes } from './Navigation.types';
 import defaultNavigationOptions from './defaultNavigationOptions';
 
 // TODO(Bacon): Do we need to create a new one each time?
 const HomeStack = createStackNavigator<HomeStackRoutes>();
-const SettingsStack = createStackNavigator();
+const SettingsStack = createStackNavigator<SettingsStackRoutes>();
 
 function useThemeName() {
   const theme = useTheme();
@@ -103,6 +104,13 @@ function SettingsStackScreen() {
       initialRouteName="Settings"
       screenOptions={defaultNavigationOptions(themeName)}>
       <SettingsStack.Screen name="Settings" component={SettingsScreen} />
+      <SettingsStack.Screen
+        name="DeleteAccount"
+        component={DeleteAccountScreen}
+        options={{
+          title: 'Delete Account',
+        }}
+      />
     </SettingsStack.Navigator>
   );
 }

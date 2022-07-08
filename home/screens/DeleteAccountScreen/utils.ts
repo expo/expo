@@ -1,7 +1,7 @@
 import { ApolloClient } from '@apollo/client';
 
-import { APIV2Client } from '../../../api/APIV2Client';
-import { UserPermissionDataFragment, Permission } from '../../../graphql/types';
+import { APIV2Client } from '../../api/APIV2Client';
+import { UserPermissionDataFragment, Permission } from '../../graphql/types';
 
 export const handleAccountDeleteAsync = async (
   apiV2Client: APIV2Client,
