@@ -137,9 +137,10 @@ public class ImagePickerModule: Module, OnMediaPickingResultHandler {
   @available(iOS 14, *)
   private func launchMultiSelectPicker(pickingContext: PickingContext) {
     var configuration = PHPickerConfiguration(photoLibrary: PHPhotoLibrary.shared())
-    // TODO: (barthap) Add configurable selection limit. 0 means unlimited
-    configuration.selectionLimit = 0
-    configuration.filter = pickingContext.options.mediaTypes.toPickerFilter()
+    let options = pickingContext.options
+
+    configuration.selectionLimit = options.selectionLimit
+    configuration.filter = options.mediaTypes.toPickerFilter()
 
     let picker = PHPickerViewController(configuration: configuration)
 
