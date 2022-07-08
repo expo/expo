@@ -76,7 +76,7 @@ describe('APISection', () => {
 
   test('expo-pedometer', () => {
     const { container } = customRender(
-      <APISection packageName="expo-pedometer" forceVersion="v42.0.0" />
+      <APISection packageName="expo-pedometer" forceVersion="v45.0.0" />
     );
 
     expect(screen.getAllByRole('heading', { level: 2 })).toHaveLength(4);
