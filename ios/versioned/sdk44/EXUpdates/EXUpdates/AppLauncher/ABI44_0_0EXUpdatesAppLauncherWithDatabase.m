@@ -289,16 +289,30 @@ static NSString * const ABI44_0_0EXUpdatesAppLauncherErrorDomain = @"AppLauncher
     completion([NSError errorWithDomain:ABI44_0_0EXUpdatesAppLauncherErrorDomain code:1007 userInfo:@{NSLocalizedDescriptionKey: @"Failed to download asset with no URL provided"}], asset, assetLocalUrl);
   }
   dispatch_async([ABI44_0_0EXUpdatesFileDownloader assetFilesQueue], ^{
-    [self.downloader downloadFileFromURL:asset.url toPath:[assetLocalUrl path] successBlock:^(NSData *data, NSURLResponse *response) {
+    [self.downloader downloadFileFromURL:asset.url
+                                  toPath:[assetLocalUrl path]
+                            extraHeaders:asset.extraRequestHeaders ?: @{}
+                            successBlock:^(NSData *data, NSURLResponse *response) {
       dispatch_async(self->_launcherQueue, ^{
+        NSString *hashBase64String = [ABI44_0_0EXUpdatesUtils base64UrlEncodedSHA256WithData:data];
+        if (asset.expectedHash && ![asset.expectedHash isEqualToString:hashBase64String]) {
+          completion([NSError errorWithDomain:ABI44_0_0EXUpdatesAppLauncherErrorDomain
+                                         code:1016
+                                     userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithFormat:@"Asset hash invalid: %@; expectedHash: %@; actualHash: %@", asset.key, asset.expectedHash, hashBase64String]}],
+                     asset,
+                     assetLocalUrl);
+          return;
+        }
+        
         if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
           asset.headers = ((NSHTTPURLResponse *)response).allHeaderFields;
         }
-        asset.contentHash = [ABI44_0_0EXUpdatesUtils sha256WithData:data];
+        asset.contentHash = hashBase64String;
         asset.downloadTime = [NSDate date];
         completion(nil, asset, assetLocalUrl);
       });
-    } errorBlock:^(NSError *error, NSURLResponse *response) {
+    }
+                              errorBlock:^(NSError *error) {
       dispatch_async(self->_launcherQueue, ^{
         completion(error, asset, assetLocalUrl);
       });

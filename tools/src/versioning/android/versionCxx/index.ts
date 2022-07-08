@@ -6,6 +6,7 @@ import path from 'path';
 import { ANDROID_DIR, PACKAGES_DIR, EXPOTOOLS_DIR } from '../../../Constants';
 import { getListOfPackagesAsync, Package } from '../../../Packages';
 import { transformFileAsync, transformString } from '../../../Transforms';
+import { applyPatchAsync } from '../../../Utils';
 
 const CXX_EXPO_MODULE_PATCHES_DIR = path.join(
   EXPOTOOLS_DIR,
@@ -60,45 +61,26 @@ function isVersionableCxxExpoModule(pkg: Package) {
 }
 
 /**
- * Shared implementation for `applyPatchForPackageAsync` and `revertPatchForPackageAsync`
- */
-async function runPatchAsync(options: {
-  packageName: string;
-  patchContent: string;
-  reverse: boolean;
-}) {
-  const args = ['-p3']; // -pN passing to the `patch` command for striping slashed prefixes
-  if (options.reverse) {
-    args.push('-R');
-  }
-
-  const procPromise = spawnAsync('patch', args, {
-    cwd: path.join(PACKAGES_DIR, options.packageName),
-  });
-  procPromise.child.stdin?.write(options.patchContent);
-  procPromise.child.stdin?.end();
-  await procPromise;
-}
-
-/**
  * Applies versioning patch for building shared libraries
  */
-function applyPatchForPackageAsync(packageName: string, patchContent: string) {
-  return runPatchAsync({
-    packageName,
+export function applyPatchForPackageAsync(packageName: string, patchContent: string) {
+  return applyPatchAsync({
     patchContent,
     reverse: false,
+    cwd: path.join(PACKAGES_DIR, packageName),
+    stripPrefixNum: 3,
   });
 }
 
 /**
  * Reverts versioning patch for building shared libraries
  */
-function revertPatchForPackageAsync(packageName: string, patchContent: string) {
-  return runPatchAsync({
-    packageName,
+export function revertPatchForPackageAsync(packageName: string, patchContent: string) {
+  return applyPatchAsync({
     patchContent,
     reverse: true,
+    cwd: path.join(PACKAGES_DIR, packageName),
+    stripPrefixNum: 3,
   });
 }
 
@@ -147,14 +129,16 @@ async function versionJavaLoadersAsync(
     path.join(versionedAbiRoot, 'src', 'main', 'java', abiName, file)
   );
   await Promise.all(
-    versionedJavaFiles.map((file) =>
-      transformFileAsync(file, [
-        {
-          find: /\b((System|SoLoader)\.loadLibrary\("expo[^"]*)("\);?)/g,
-          replaceWith: `$1_${abiName}$3`,
-        },
-      ])
-    )
+    versionedJavaFiles.map(async (file) => {
+      if (await fs.pathExists(file)) {
+        await transformFileAsync(file, [
+          {
+            find: /\b((System|SoLoader)\.loadLibrary\("expo[^"]*)("\);?)/g,
+            replaceWith: `$1_${abiName}$3`,
+          },
+        ]);
+      }
+    })
   );
 }
 

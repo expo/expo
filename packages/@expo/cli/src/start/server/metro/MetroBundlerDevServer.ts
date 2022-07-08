@@ -2,9 +2,10 @@ import { prependMiddleware } from '@expo/dev-server';
 
 import { getFreePortAsync } from '../../../utils/port';
 import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
-import { UrlCreator } from '../UrlCreator';
+import { HistoryFallbackMiddleware } from '../middleware/HistoryFallbackMiddleware';
 import { InterstitialPageMiddleware } from '../middleware/InterstitialPageMiddleware';
 import { RuntimeRedirectMiddleware } from '../middleware/RuntimeRedirectMiddleware';
+import { ServeStaticMiddleware } from '../middleware/ServeStaticMiddleware';
 import { instantiateMetroAsync } from './instantiateMetro';
 
 /** Default port to use for apps running in Expo Go. */
@@ -18,8 +19,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     return 'metro';
   }
 
-  async startAsync(options: BundlerStartOptions): Promise<DevServerInstance> {
-    await this.stopAsync();
+  async resolvePortAsync(options: Partial<BundlerStartOptions> = {}): Promise<number> {
     const port =
       // If the manually defined port is busy then an error should be thrown...
       options.port ??
@@ -30,13 +30,17 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         : // Otherwise (running in Expo Go) use a free port that falls back on the classic 19000 port.
           await getFreePortAsync(EXPO_GO_METRO_PORT));
 
-    this.urlCreator = new UrlCreator(options.location, {
-      port,
-      getTunnelUrl: this.getTunnelUrl.bind(this),
-    });
+    return port;
+  }
+
+  protected async startImplementationAsync(
+    options: BundlerStartOptions
+  ): Promise<DevServerInstance> {
+    options.port = await this.resolvePortAsync(options);
+    this.urlCreator = this.getUrlCreator(options);
 
     const parsedOptions = {
-      port,
+      port: options.port,
       maxWorkers: options.maxWorkers,
       resetCache: options.resetDevServer,
 
@@ -80,6 +84,14 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     });
     middleware.use(deepLinkMiddleware.getHandler());
 
+    // Append support for redirecting unhandled requests to the index.html page on web.
+    if (this.isTargetingWeb()) {
+      // This MUST be after the manifest middleware so it doesn't have a chance to serve the template `public/index.html`.
+      middleware.use(new ServeStaticMiddleware(this.projectRoot).getHandler());
+
+      // This MUST run last since it's the fallback.
+      middleware.use(new HistoryFallbackMiddleware(manifestMiddleware.internal).getHandler());
+    }
     // Extend the close method to ensure that we clean up the local info.
     const originalClose = server.close.bind(server);
 
@@ -90,24 +102,20 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       });
     };
 
-    this.setInstance({
+    return {
       server,
       location: {
         // The port is the main thing we want to send back.
-        port,
+        port: options.port,
         // localhost isn't always correct.
         host: 'localhost',
         // http is the only supported protocol on native.
-        url: `http://localhost:${port}`,
+        url: `http://localhost:${options.port}`,
         protocol: 'http',
       },
       middleware,
       messageSocket,
-    });
-
-    await this.postStartAsync(options);
-
-    return this.instance!;
+    };
   }
 
   protected getConfigModuleIds(): string[] {

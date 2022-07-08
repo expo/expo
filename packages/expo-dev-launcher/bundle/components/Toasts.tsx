@@ -6,7 +6,9 @@ function ErrorToast({ children }) {
     <View mx="large">
       <View bg="error" padding="medium" rounded="medium" border="error">
         <View>
-          <Text color="error">{children}</Text>
+          <Text color="error" numberOfLines={4}>
+            {children}
+          </Text>
         </View>
       </View>
     </View>

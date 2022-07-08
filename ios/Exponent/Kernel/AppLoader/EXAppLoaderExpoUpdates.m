@@ -13,9 +13,11 @@
 #import "EXUpdatesDatabaseManager.h"
 #import "EXVersions.h"
 
-#if !defined(EX_DETACHED)
+#if defined(EX_DETACHED)
+#import "ExpoKit-Swift.h"
+#else
 #import "Expo_Go-Swift.h"
-#endif // !defined(EX_DETACHED)
+#endif // defined(EX_DETACHED)
 
 #import <EXUpdates/EXUpdatesAppLauncherNoDatabase.h>
 #import <EXUpdates/EXUpdatesAppLoaderTask.h>

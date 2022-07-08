@@ -1,4 +1,4 @@
-import { ColorValue, processColor } from 'react-native';
+import { ColorValue, Platform, processColor } from 'react-native';
 
 import ExpoSystemUI from './ExpoSystemUI';
 
@@ -12,7 +12,7 @@ import ExpoSystemUI from './ExpoSystemUI';
  * @param color Any valid [CSS 3 (SVG) color](http://www.w3.org/TR/css3-color/#svg-color).
  */
 export async function setBackgroundColorAsync(color: ColorValue): Promise<void> {
-  const colorNumber = processColor(color);
+  const colorNumber = Platform.OS === 'web' ? color : processColor(color);
   return await ExpoSystemUI.setBackgroundColorAsync(colorNumber);
 }
 

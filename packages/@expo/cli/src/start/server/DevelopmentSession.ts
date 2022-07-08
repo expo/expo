@@ -1,9 +1,14 @@
 import { ExpoConfig, getConfig } from '@expo/config';
 
 import { APISettings } from '../../api/settings';
-import { updateDevelopmentSessionAsync } from '../../api/updateDevelopmentSession';
+import {
+  closeDevelopmentSessionAsync,
+  updateDevelopmentSessionAsync,
+} from '../../api/updateDevelopmentSession';
 import { getUserAsync } from '../../api/user/user';
 import * as ProjectDevices from '../project/devices';
+
+const debug = require('debug')('expo:start:server:developmentSession') as typeof console.log;
 
 const UPDATE_FREQUENCY = 20 * 1000; // 20 seconds
 
@@ -40,18 +45,23 @@ export class DevelopmentSession {
     runtime: 'native' | 'web';
   }): Promise<void> {
     if (APISettings.isOffline) {
-      this.stop();
+      debug('Development session will not ping because the server is offline.');
+      this.stopNotifying();
       return;
     }
 
     const deviceIds = await this.getDeviceInstallationIdsAsync();
 
     if (!(await isAuthenticatedAsync()) && !deviceIds?.length) {
-      this.stop();
+      debug(
+        'Development session will not ping because the user is not authenticated and there are no devices.'
+      );
+      this.stopNotifying();
       return;
     }
 
     if (this.url) {
+      debug(`Development session ping (runtime: ${runtime}, url: ${this.url})`);
       await updateDevelopmentSessionAsync({
         url: this.url,
         runtime,
@@ -60,7 +70,7 @@ export class DevelopmentSession {
       });
     }
 
-    this.stop();
+    this.stopNotifying();
 
     this.timeout = setTimeout(() => this.startAsync({ exp, runtime }), UPDATE_FREQUENCY);
   }
@@ -72,10 +82,27 @@ export class DevelopmentSession {
   }
 
   /** Stop notifying the Expo servers that the development session is running. */
-  public stop() {
+  public stopNotifying() {
     if (this.timeout) {
       clearTimeout(this.timeout);
     }
     this.timeout = null;
+  }
+
+  public async closeAsync(): Promise<void> {
+    this.stopNotifying();
+
+    const deviceIds = await this.getDeviceInstallationIdsAsync();
+
+    if (!(await isAuthenticatedAsync()) && !deviceIds?.length) {
+      return;
+    }
+
+    if (this.url) {
+      await closeDevelopmentSessionAsync({
+        url: this.url,
+        deviceIds,
+      });
+    }
   }
 }

@@ -2,9 +2,11 @@
 title: Environment variables and secrets
 ---
 
+import { Collapsible } from '~/ui/components/Collapsible';
+
 The ["Environment variables in Expo"](/guides/environment-variables.md) guide presents several options for how you can access system environment variables to your app JavaScript code. This can be a useful way to inject values in your code, but [these values should not be secrets](/guides/environment-variables.md#security-considerations), and so the value it provides can be summarized as a convenience for accommodating certain development workflows.
 
-Using the techniques described in the environment variables document above, environment variables are inlined (the `process.env.X` text is replaced with its evaluated result) in your app's JavaScript code _at the the time that the app is built_, and included in the app bundle. This means that the substitution would occur on EAS Build servers and not on your development machine, so if you tried to run a build on EAS Build without explicitly providing values or fallbacks for the environment variables, then you are likely to encounter either a build-time or runtime error.
+Using the techniques described in the environment variables document above, environment variables are inlined (the `process.env.X` text is replaced with its evaluated result) in your app's JavaScript code _at the time that the app is built_, and included in the app bundle. This means that the substitution would occur on EAS Build servers and not on your development machine, so if you tried to run a build on EAS Build without explicitly providing values or fallbacks for the environment variables, then you are likely to encounter either a build-time or runtime error.
 
 ## Using plaintext environment variables
 
@@ -160,8 +162,7 @@ The following are two possible alternative approaches, each with different trade
 
 1. **Move values to application code and switch based on release channel**. Rather than putting configuration in environment variables and extras, create a JavaScript file, possibly named **Config.js**. This approach will work well for you as long as you don't need to use the configuration values to modify build time configuration, such as the `ios.bundleIdentifier`, `icon`, and so on. This approach also gives you the ability to promote updates between environments, because the configuration that is used will switch when it's loaded from a binary with a different release channel. It might look something like this:
 
-  <details>
-    <summary><strong>Config.js</strong></summary>
+  <Collapsible summary="Config.js">
 
   ```js
   import * as Updates from 'expo-updates';
@@ -182,12 +183,11 @@ The following are two possible alternative approaches, each with different trade
   export default Config;
   ```
 
-  </details>
+  </Collapsible>
 
 2. **Use a single environment variable to toggle configuration**. In our **eas.json** we can set an environment variable such as `APP_ENV` and then switch on that value inside of **app.config.js**. This way, we only have to be sure to set one environment variable: `APP_ENV=production expo publish`.
 
-  <details>
-    <summary><strong>eas.json</strong></summary>
+  <Collapsible summary="eas.json">
 
   ```json
   {
@@ -208,12 +208,9 @@ The following are two possible alternative approaches, each with different trade
   }
   ```
 
-  </details>
+  </Collapsible>
 
-  <div style={{marginTop: -20, display: 'block'}} />
-
-  <details>
-    <summary><strong>app.config.js</strong></summary>
+  <Collapsible summary="app.config.js">
 
   ```js
   let Config = {
@@ -237,9 +234,8 @@ The following are two possible alternative approaches, each with different trade
   };
   ```
 
-  </details>
+  </Collapsible>
 
-<div style={{marginTop: -20, display: 'block'}} />
 
 ### How are naming collisions between secrets and the `env` field in eas.json handled?
 

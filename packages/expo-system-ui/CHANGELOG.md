@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 1.3.0 — 2022-07-07
+
+### 🐛 Bug fixes
+
+- Fix color setting on web. ([#17558](https://github.com/expo/expo/pull/17558) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 💡 Others
+
+- Migrated Expo modules definitions to the new naming convention. ([#17193](https://github.com/expo/expo/pull/17193) by [@tsapeta](https://github.com/tsapeta))
+
 ## 1.2.0 — 2022-04-18
 
 ### 💡 Others

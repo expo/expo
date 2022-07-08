@@ -46,19 +46,23 @@ exports[`APISectionUtils.CommentTextBlock component comment with example 1`] = `
     
 from the Google Play Store. In practice, the referrer URL may not be a complete, absolute URL.
   </p>
-  <h4
-    class="css-838f5l-h4-h4-STYLES_H4"
-    data-heading="true"
+  <div
+    class="css-1krql6p-STYLES_NESTED_SECTION_HEADER"
   >
-    Example
-  </h4>
+    <h4
+      class="css-838f5l-h4-h4-STYLES_H4"
+      data-heading="true"
+    >
+      Example
+    </h4>
+  </div>
   <pre>
     <pre
       class="css-mv7gwa-STYLES_CODE_CONTAINER"
       data-text="true"
     >
       <code
-        class="css-149nz3h-STYLES_CODE_BLOCK"
+        class="css-16ve5fg-STYLES_CODE_BLOCK"
       >
         <span
           class="token keyword"

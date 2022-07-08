@@ -9,6 +9,11 @@
 
 current_shell=$(ps -cp "$$" -o comm='' | sed 's/^-//')
 
+# attempt to source via nvm
+if [ -f "$HOME/.nvm/nvm.sh" ]; then
+  . "$HOME/.nvm/nvm.sh"
+fi
+
 if [[ "$current_shell" == zsh ]]; then
    # Zsh's setup script order is:
    #   /etc/zshenv
@@ -28,7 +33,7 @@ if [[ "$current_shell" == zsh ]]; then
    if [ -f /etc/zshrc ]; then . /etc/zshrc; fi
    if [ -f ~/.zshrc ]; then . ~/.zshrc; fi
    if [ -f /etc/zlogin ]; then . /etc/zlogin; fi
-   if [ -f ~/zlogin ]; then . ~/zlogin; fi
+   if [ -f ~/.zlogin ]; then . ~/.zlogin; fi
 else
    # Bash's setup script order is:
    #   /etc/profile (if it exists)

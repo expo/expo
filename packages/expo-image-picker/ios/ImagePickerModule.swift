@@ -1,6 +1,7 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
 import UIKit
+import PhotosUI
 import ExpoModulesCore
 
 typealias MediaInfo = [UIImagePickerController.InfoKey: Any]
@@ -22,9 +23,9 @@ enum OperationType {
 public class ImagePickerModule: Module, OnMediaPickingResultHandler {
   public func definition() -> ModuleDefinition {
     // TODO: (@bbarthec) change to "ExpoImagePicker" and propagate to other platforms
-    name("ExponentImagePicker")
+    Name("ExponentImagePicker")
 
-    onCreate {
+    OnCreate {
       self.appContext?.permissions?.register([
         CameraPermissionRequester(),
         MediaLibraryPermissionRequester(),
@@ -32,23 +33,23 @@ public class ImagePickerModule: Module, OnMediaPickingResultHandler {
       ])
     }
 
-    function("getCameraPermissionsAsync", { (promise: Promise) in
+    AsyncFunction("getCameraPermissionsAsync", { (promise: Promise) in
       self.handlePermissionRequest(requesterClass: CameraPermissionRequester.self, operationType: .get, promise: promise)
     })
 
-    function("getMediaLibraryPermissionsAsync", { (writeOnly: Bool, promise: Promise) in
+    AsyncFunction("getMediaLibraryPermissionsAsync", { (writeOnly: Bool, promise: Promise) in
       self.handlePermissionRequest(requesterClass: self.getMediaLibraryPermissionRequester(writeOnly), operationType: .get, promise: promise)
     })
 
-    function("requestCameraPermissionsAsync", { (promise: Promise) in
+    AsyncFunction("requestCameraPermissionsAsync", { (promise: Promise) in
       self.handlePermissionRequest(requesterClass: CameraPermissionRequester.self, operationType: .ask, promise: promise)
     })
 
-    function("requestMediaLibraryPermissionsAsync", { (writeOnly: Bool, promise: Promise) in
+    AsyncFunction("requestMediaLibraryPermissionsAsync", { (writeOnly: Bool, promise: Promise) in
       self.handlePermissionRequest(requesterClass: self.getMediaLibraryPermissionRequester(writeOnly), operationType: .ask, promise: promise)
     })
 
-    function("launchCameraAsync", { (options: ImagePickerOptions, promise: Promise) -> Void in
+    AsyncFunction("launchCameraAsync", { (options: ImagePickerOptions, promise: Promise) -> Void in
       guard let permissions = self.appContext?.permissions else {
         return promise.reject(PermissionsModuleNotFoundException())
       }
@@ -58,11 +59,13 @@ public class ImagePickerModule: Module, OnMediaPickingResultHandler {
       }
 
       self.launchImagePicker(sourceType: .camera, options: options, promise: promise)
-    }).runOnQueue(DispatchQueue.main)
+    })
+    .runOnQueue(DispatchQueue.main)
 
-    function("launchImageLibraryAsync", { (options: ImagePickerOptions, promise: Promise) in
+    AsyncFunction("launchImageLibraryAsync", { (options: ImagePickerOptions, promise: Promise) in
       self.launchImagePicker(sourceType: .photoLibrary, options: options, promise: promise)
-    }).runOnQueue(DispatchQueue.main)
+    })
+    .runOnQueue(DispatchQueue.main)
   }
 
   private var currentPickingContext: PickingContext?
@@ -82,16 +85,27 @@ public class ImagePickerModule: Module, OnMediaPickingResultHandler {
   }
 
   private func launchImagePicker(sourceType: UIImagePickerController.SourceType, options: ImagePickerOptions, promise: Promise) {
-    guard let currentViewController = self.appContext?.utilities?.currentViewController() else {
-      return promise.reject(MissingCurrentViewControllerException())
-    }
+    let imagePickerDelegate = ImagePickerHandler(onMediaPickingResultHandler: self, hideStatusBarWhenPresented: options.allowsEditing && !options.allowsMultipleSelection)
 
-    let imagePickerDelegate = ImagePickerHandler(onMediaPickingResultHandler: self, hideStatusBarWhenPresented: options.allowsEditing)
+    let pickingContext = PickingContext(promise: promise,
+                                        options: options,
+                                        imagePickerHandler: imagePickerDelegate)
+
+    if #available(iOS 14, *), options.allowsMultipleSelection && sourceType != .camera {
+      self.launchMultiSelectPicker(pickingContext: pickingContext)
+    } else {
+      self.launchLegacyImagePicker(sourceType: sourceType, pickingContext: pickingContext)
+    }
+  }
+
+  private func launchLegacyImagePicker(sourceType: UIImagePickerController.SourceType, pickingContext: PickingContext) {
+    let options = pickingContext.options
+
     let picker = UIImagePickerController()
 
     if sourceType == .camera {
 #if targetEnvironment(simulator)
-      return promise.reject(CameraUnavailableOnSimulatorException())
+      return pickingContext.promise.reject(CameraUnavailableOnSimulatorException())
 #else
       picker.sourceType = .camera
       picker.cameraDevice = options.cameraType == .front ? .front : .rear
@@ -106,27 +120,46 @@ public class ImagePickerModule: Module, OnMediaPickingResultHandler {
     picker.videoExportPreset = options.videoExportPreset.toAVAssetExportPreset()
     picker.videoQuality = options.videoQuality.toQualityType()
     picker.videoMaximumDuration = options.videoMaxDuration
-    picker.modalPresentationStyle = options.presentationStyle.toPresentationStyle()
 
     if options.allowsEditing {
       picker.allowsEditing = options.allowsEditing
       if options.videoMaxDuration > 600 {
-        return promise.reject(MaxDurationWhileEditingExceededException())
+        return pickingContext.promise.reject(MaxDurationWhileEditingExceededException())
       }
       if options.videoMaxDuration == 0 {
         picker.videoMaximumDuration = 600.0
       }
     }
 
-    let pickingContext = PickingContext(promise: promise,
-                                        options: options,
-                                        imagePickerHandler: imagePickerDelegate)
+    presentPickerUI(picker, pickingContext: pickingContext)
+  }
 
-    picker.delegate = pickingContext.imagePickerHandler
-    picker.presentationController?.delegate = pickingContext.imagePickerHandler
+  @available(iOS 14, *)
+  private func launchMultiSelectPicker(pickingContext: PickingContext) {
+    var configuration = PHPickerConfiguration(photoLibrary: PHPhotoLibrary.shared())
+    let options = pickingContext.options
+
+    configuration.selectionLimit = options.selectionLimit
+    configuration.filter = options.mediaTypes.toPickerFilter()
+    if #available(iOS 15, *) {
+      configuration.selection = options.orderedSelection ? .ordered : .default
+    }
+
+    let picker = PHPickerViewController(configuration: configuration)
+
+    presentPickerUI(picker, pickingContext: pickingContext)
+  }
+
+  private func presentPickerUI(_ picker: PickerUIController, pickingContext context: PickingContext) {
+    guard let currentViewController = self.appContext?.utilities?.currentViewController() else {
+      return context.promise.reject(MissingCurrentViewControllerException())
+    }
+
+    picker.modalPresentationStyle = context.options.presentationStyle.toPresentationStyle()
+    picker.setResultHandler(context.imagePickerHandler)
 
     // Store picking context as we're navigating to the different view controller (starting asynchronous flow)
-    self.currentPickingContext = pickingContext
+    self.currentPickingContext = context
     currentViewController.present(picker, animated: true, completion: nil)
   }
 
@@ -137,17 +170,42 @@ public class ImagePickerModule: Module, OnMediaPickingResultHandler {
     self.currentPickingContext = nil
   }
 
-  func didPickMedia(mediaInfo: MediaInfo) {
+  @available(iOS 14, *)
+  func didPickMultipleMedia(selection: [PHPickerResult]) {
     guard let options = self.currentPickingContext?.options,
           let promise = self.currentPickingContext?.promise else {
-      NSLog("Picking operation context has been lost.")
+      log.error("Picking operation context has been lost.")
       return
     }
     guard let fileSystem = self.appContext?.fileSystem else {
       return promise.reject(FileSystemModuleNotFoundException())
     }
 
-    // Cleanup the currently stored picking context
+    let mediaHandler = MediaHandler(fileSystem: fileSystem,
+                                    options: options)
+
+    // Clean up the currently stored picking context
+    self.currentPickingContext = nil
+
+    mediaHandler.handleMultipleMedia(selection) { result -> Void in
+      switch result {
+      case .failure(let error): return promise.reject(error)
+      case .success(let response): return promise.resolve(response.dictionary)
+      }
+    }
+  }
+
+  func didPickMedia(mediaInfo: MediaInfo) {
+    guard let options = self.currentPickingContext?.options,
+          let promise = self.currentPickingContext?.promise else {
+      log.error("Picking operation context has been lost.")
+      return
+    }
+    guard let fileSystem = self.appContext?.fileSystem else {
+      return promise.reject(FileSystemModuleNotFoundException())
+    }
+
+    // Clean up the currently stored picking context
     self.currentPickingContext = nil
 
     let mediaHandler = MediaHandler(fileSystem: fileSystem,

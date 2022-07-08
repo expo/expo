@@ -1,5 +1,6 @@
 import { getConfig } from '@expo/config';
 
+import { asMock } from '../../../__tests__/asMock';
 import { AppIdResolver } from '../AppIdResolver';
 
 jest.mock('@expo/config', () => ({
@@ -13,9 +14,6 @@ jest.mock('@expo/config', () => ({
     },
   })),
 }));
-
-const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
-  fn as jest.MockedFunction<T>;
 
 function createAppIdResolver() {
   return new AppIdResolver('/', 'ios', 'foo.bar');

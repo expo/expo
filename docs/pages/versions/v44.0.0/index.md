@@ -4,13 +4,13 @@ hideTOC: true
 ---
 
 import VersionedRedirectNotification from '~/components/plugins/VersionedRedirectNotification';
-import TerminalBlock from '~/components/plugins/TerminalBlock';
+import { Terminal } from '~/ui/components/Snippet';
 
 <VersionedRedirectNotification />
 
 The Expo SDK provides access to device and system functionality such as contacts, camera, and GPS location. You install modules from the Expo SDK using `expo-cli` with the `expo install` command:
 
-<TerminalBlock cmd={['expo install expo-camera expo-contacts expo-sensors']} />
+<Terminal cmd={['$ expo install expo-camera expo-contacts expo-sensors']} />
 
 <br />
 

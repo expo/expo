@@ -40,42 +40,40 @@ it('runs `npx expo start --help`', async () => {
   const results = await execute('start', '--help');
   expect(results.stdout).toMatchInlineSnapshot(`
     "
-      Description
+      Info
         Start a local dev server for the app
 
       Usage
         $ npx expo start <dir>
 
-      <dir> is the directory of the Expo project.
-      Defaults to the current working directory.
-
       Options
+        <dir>                                  Directory of the Expo project. Default: Current working directory
         -a, --android                          Opens your app in Expo Go on a connected Android device
         -i, --ios                              Opens your app in Expo Go in a currently running iOS simulator on your computer
         -w, --web                              Opens your app in a web browser
-
+        
         -c, --clear                            Clear the bundler cache
         --max-workers <num>                    Maximum number of tasks to allow Metro to spawn
         --no-dev                               Bundle in production mode
         --minify                               Minify JavaScript
-
-        -m, --host <mode>                      lan, tunnel, localhost. Dev server hosting type. Default: lan.
-                                               - lan: Use the local network
-                                               - tunnel: Use any network by tunnel through ngrok
-                                               - localhost: Connect to the dev server over localhost
+        
+        -m, --host <mode>                      Dev server hosting type. Default: lan
+                                               lan: Use the local network
+                                               tunnel: Use any network by tunnel through ngrok
+                                               localhost: Connect to the dev server over localhost
         --tunnel                               Same as --host tunnel
         --lan                                  Same as --host lan
         --localhost                            Same as --host localhost
-
+        
         --offline                              Skip network requests and use anonymous manifest signatures
         --https                                Start the dev server with https protocol
         --scheme <scheme>                      Custom URI protocol to use when launching an app
         -p, --port <port>                      Port to start the dev server on (does not apply to web or tunnel). Default: 19000
-
+        
         --dev-client                           Experimental: Starts the bundler for use with the expo-development-client
         --force-manifest-type <manifest-type>  Override auto detection of manifest type
         --private-key-path <path>              Path to private key for code signing. Default: \\"private-key.pem\\" in the same directory as the certificate specified by the expo-updates configuration in app.json.
-        -h, --help                             output usage information
+        -h, --help                             Usage info
     "
   `);
 });
@@ -127,7 +125,11 @@ it(
     });
 
     console.log('Fetching manifest');
-    const results = await fetch('http://localhost:19000/').then((res) => res.json());
+    const results = await fetch('http://localhost:19000/', {
+      headers: {
+        'expo-platform': 'ios',
+      },
+    }).then((res) => res.json());
 
     // Required for Expo Go
     expect(results.packagerOpts).toStrictEqual({
@@ -148,7 +150,7 @@ it(
     expect(results.mainModuleName).toBe('node_modules/expo/AppEntry');
 
     // Manifest
-    expect(results.sdkVersion).toBe('44.0.0');
+    expect(results.sdkVersion).toBe('45.0.0');
     expect(results.slug).toBe('basic-start');
     expect(results.name).toBe('basic-start');
 

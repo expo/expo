@@ -1,4 +1,2 @@
-import { ConfigPlugin } from '@expo/config-plugins';
-import { IosProps } from './withDocumentPickerIOS';
-declare const _default: ConfigPlugin<void | IosProps>;
+declare const _default: import("@expo/config-plugins").ConfigPlugin<import("./withDocumentPickerIOS").IosProps>;
 export default _default;

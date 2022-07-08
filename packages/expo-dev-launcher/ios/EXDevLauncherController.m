@@ -13,6 +13,7 @@
 #import "EXDevLauncherRCTBridge.h"
 #import "EXDevLauncherManifestParser.h"
 #import "EXDevLauncherLoadingView.h"
+#import "EXDevLauncherRCTDevSettings.h"
 #import "EXDevLauncherInternal.h"
 #import "EXDevLauncherUpdatesHelper.h"
 #import "EXDevLauncherAuth.h"
@@ -36,8 +37,7 @@
 #define VERSION @ STRINGIZE2(EX_DEV_LAUNCHER_VERSION)
 #endif
 
-// Uncomment the below and set it to a React Native bundler URL to develop the launcher JS
-//  #define DEV_LAUNCHER_URL "http://localhost:8090//index.bundle?platform=ios&dev=true&minify=false"
+#define EX_DEV_LAUNCHER_PACKAGER_PATH @"index.bundle?platform=ios&dev=true&minify=false"
 
 @interface EXDevLauncherController ()
 
@@ -49,6 +49,7 @@
 @property (nonatomic, strong) EXDevLauncherRecentlyOpenedAppsRegistry *recentlyOpenedAppsRegistry;
 @property (nonatomic, strong) EXManifestsManifest *manifest;
 @property (nonatomic, strong) NSURL *manifestURL;
+@property (nonatomic, strong) NSURL *possibleManifestURL;
 @property (nonatomic, strong) EXDevLauncherErrorManager *errorManager;
 @property (nonatomic, strong) EXDevLauncherInstallationIDHelper *installationIDHelper;
 @property (nonatomic, assign) BOOL isStarted;
@@ -84,11 +85,12 @@
 - (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge
 {
   
-  NSMutableArray *modules = [[DevMenuVendoredModulesUtils vendoredModules] mutableCopy];
+  NSMutableArray *modules = [[DevMenuVendoredModulesUtils vendoredModules:bridge addReanimated2:FALSE] mutableCopy];
   
   [modules addObject:[RCTDevMenu new]];
   [modules addObject:[RCTAsyncLocalStorage new]];
   [modules addObject:[EXDevLauncherLoadingView new]];
+  [modules addObject:[EXDevLauncherRCTDevSettings new]];
   [modules addObject:[EXDevLauncherInternal new]];
   [modules addObject:[EXDevLauncherAuth new]];
   
@@ -102,20 +104,86 @@
   return nil;
 }
 
+// Expo developers: Enable the below code by running
+//     export EX_DEV_LAUNCHER_URL=http://localhost:8090
+// in your shell before doing pod install. This will cause the controller to see if
+// the expo-launcher packager is running, and if so, use that instead of
+// the prebuilt bundle.
+// See the pod_target_xcconfig definition in expo-dev-launcher.podspec
+
+- (nullable NSURL *)devLauncherBaseURL
+{
+#ifdef EX_DEV_LAUNCHER_URL
+  return [NSURL URLWithString:@EX_DEV_LAUNCHER_URL];
+#endif
+  return nil;
+}
+- (nullable NSURL *)devLauncherURL
+{
+#ifdef EX_DEV_LAUNCHER_URL
+  return [NSURL URLWithString:EX_DEV_LAUNCHER_PACKAGER_PATH
+                relativeToURL:[self devLauncherBaseURL]];
+#endif
+  return nil;
+}
+
+- (nullable NSURL *)devLauncherStatusURL
+{
+#ifdef EX_DEV_LAUNCHER_URL
+  return [NSURL URLWithString:@"status"
+                relativeToURL:[self devLauncherBaseURL]];
+#endif
+  return nil;
+}
+
+- (BOOL)isLauncherPackagerRunning
+{
+  // Shamelessly copied from RN core (RCTBundleURLProvider)
+
+  // If we are not running in the main thread, run away
+  if (![NSThread isMainThread]) {
+    return NO;
+  }
+
+  NSURL *url = [self devLauncherStatusURL];
+  NSURLSession *session = [NSURLSession sharedSession];
+  NSURLRequest *request = [NSURLRequest requestWithURL:url
+                                           cachePolicy:NSURLRequestUseProtocolCachePolicy
+                                       timeoutInterval:1];
+  __block NSURLResponse *response;
+  __block NSData *data;
+
+  dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+  [[session dataTaskWithRequest:request
+              completionHandler:^(NSData *d, NSURLResponse *res, __unused NSError *err) {
+                data = d;
+                response = res;
+                dispatch_semaphore_signal(semaphore);
+              }] resume];
+  dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+
+  NSString *status = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+  return [status isEqualToString:@"packager-status:running"];
+}
+
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
 {
-#ifdef DEV_LAUNCHER_URL
-  // LAN url for developing launcher JS
-  return [NSURL URLWithString:@(DEV_LAUNCHER_URL)];
-#else
+  NSURL *launcherURL = [self devLauncherURL];
+  if (launcherURL != nil && [self isLauncherPackagerRunning]) {
+    return launcherURL;
+  }
   NSURL *bundleURL = [[NSBundle mainBundle] URLForResource:@"EXDevLauncher" withExtension:@"bundle"];
   return [[NSBundle bundleWithURL:bundleURL] URLForResource:@"main" withExtension:@"jsbundle"];
-#endif
 }
 
 - (NSDictionary *)recentlyOpenedApps
 {
   return [_recentlyOpenedAppsRegistry recentlyOpenedApps];
+}
+
+- (void)clearRecentlyOpenedApps
+{
+  return [_recentlyOpenedAppsRegistry clearRegistry];
 }
 
 - (NSDictionary<UIApplicationLaunchOptionsKey, NSObject*> *)getLaunchOptions;
@@ -138,6 +206,14 @@
 - (NSURL * _Nullable)appManifestURL
 {
   return self.manifestURL;
+}
+
+- (nullable NSURL *)appManifestURLWithFallback
+{
+  if (_manifestURL) {
+    return _manifestURL;
+  }
+  return _possibleManifestURL;
 }
 
 - (UIWindow *)currentWindow
@@ -241,11 +317,14 @@
   rootViewController.view = rootView;
   _window.rootViewController = rootViewController;
 
-#if RCT_DEV && defined(DEV_LAUNCHER_URL)
+#if RCT_DEV
+  NSURL *url = [self devLauncherURL];
+  if (url != nil) {
     // Connect to the websocket
-    [[RCTPackagerConnection sharedPackagerConnection] setSocketConnectionURL:[NSURL URLWithString:@DEV_LAUNCHER_URL]];
+    [[RCTPackagerConnection sharedPackagerConnection] setSocketConnectionURL:url];
+  }
 #endif
-  
+
   [_window makeKeyAndVisible];
 }
 
@@ -255,24 +334,26 @@
     return [self _handleExternalDeepLink:url options:options];
   }
   
-  NSURL *appUrl = [EXDevLauncherURLHelper getAppURLFromDevLauncherURL:url];
-  if (appUrl) {
-    [self loadApp:appUrl onSuccess:nil onError:^(NSError *error) {
-      __weak typeof(self) weakSelf = self;
-      dispatch_async(dispatch_get_main_queue(), ^{
-        typeof(self) self = weakSelf;
-        if (!self) {
-          return;
-        }
-        
-        EXDevLauncherAppError *appError = [[EXDevLauncherAppError alloc] initWithMessage:error.description stack:nil];
-        [self.errorManager showError:appError];
-      });
-    }];
+  if (![EXDevLauncherURLHelper hasUrlQueryParam:url]) {
+    // edgecase: this is a dev launcher url but it doesnt specify what url to open
+    // fallback to navigating to the launcher home screen
+    [self navigateToLauncher];
     return true;
   }
   
-  [self navigateToLauncher];
+  [self loadApp:url onSuccess:nil onError:^(NSError *error) {
+    __weak typeof(self) weakSelf = self;
+    dispatch_async(dispatch_get_main_queue(), ^{
+      typeof(self) self = weakSelf;
+      if (!self) {
+        return;
+      }
+      
+      EXDevLauncherAppError *appError = [[EXDevLauncherAppError alloc] initWithMessage:error.description stack:nil];
+      [self.errorManager showError:appError];
+    });
+  }];
+  
   return true;
 }
 
@@ -292,7 +373,7 @@
   return true;
 }
 
-- (NSURL *)sourceUrl
+- (nullable NSURL *)sourceUrl
 {
   if (_shouldPreferUpdatesInterfaceSourceUrl && _updatesInterface && _updatesInterface.launchAssetURL) {
     return _updatesInterface.launchAssetURL;
@@ -314,8 +395,19 @@
   [self loadApp:url withProjectUrl:nil onSuccess:onSuccess onError:onError];
 }
 
-- (void)loadApp:(NSURL *)expoUrl withProjectUrl:(NSURL * _Nullable)projectUrl onSuccess:(void (^ _Nullable)(void))onSuccess onError:(void (^ _Nullable)(NSError *error))onError
+/**
+ * This method is the external entry point into loading an app with the dev launcher (e.g. via the
+ * dev launcher UI or a deep link). It takes a URL, determines what type of server it points to
+ * (react-native-cli, expo-cli, or published project), downloads a manifest if there is one,
+ * downloads all the project's assets (via expo-updates) in the case of a published project, and
+ * then calls `_initAppWithUrl:bundleUrl:manifest:` if successful.
+ */
+- (void)loadApp:(NSURL *)url withProjectUrl:(NSURL * _Nullable)projectUrl onSuccess:(void (^ _Nullable)(void))onSuccess onError:(void (^ _Nullable)(NSError *error))onError
 {
+  EXDevLauncherUrl *devLauncherUrl = [[EXDevLauncherUrl alloc] init:url];
+  NSURL *expoUrl = devLauncherUrl.url; 
+  [self _resetRemoteDebuggingForAppLoad];
+  _possibleManifestURL = expoUrl;
   BOOL isEASUpdate = [self isEASUpdateURL:expoUrl];
   
   // an update url requires a matching projectUrl
@@ -331,7 +423,6 @@
   }
   
   NSString *installationID = [_installationIDHelper getOrCreateInstallationID];
-  expoUrl = [EXDevLauncherURLHelper replaceEXPScheme:expoUrl to:@"http"];
 
   NSDictionary *updatesConfiguration = [EXDevLauncherUpdatesHelper createUpdatesConfigurationWithURL:expoUrl
                                                                                           projectURL:projectUrl
@@ -340,7 +431,7 @@
   void (^launchReactNativeApp)(void) = ^{
     self->_shouldPreferUpdatesInterfaceSourceUrl = NO;
     RCTDevLoadingViewSetEnabled(NO);
-    [self.recentlyOpenedAppsRegistry appWasOpened:expoUrl.absoluteString name:nil];
+    [self.recentlyOpenedAppsRegistry appWasOpened:[expoUrl absoluteString] queryParams:devLauncherUrl.queryParams manifest:nil];
     if ([expoUrl.path isEqual:@"/"] || [expoUrl.path isEqual:@""]) {
       [self _initAppWithUrl:expoUrl bundleUrl:[NSURL URLWithString:@"index.bundle?platform=ios&dev=true&minify=false" relativeToURL:expoUrl] manifest:nil];
     } else {
@@ -354,7 +445,7 @@
   void (^launchExpoApp)(NSURL *, EXManifestsManifest *) = ^(NSURL *bundleURL, EXManifestsManifest *manifest) {
     self->_shouldPreferUpdatesInterfaceSourceUrl = !manifest.isUsingDeveloperTool;
     RCTDevLoadingViewSetEnabled(manifest.isUsingDeveloperTool);
-    [self.recentlyOpenedAppsRegistry appWasOpened:expoUrl.absoluteString name:manifest.name];
+    [self.recentlyOpenedAppsRegistry appWasOpened:[expoUrl absoluteString] queryParams:devLauncherUrl.queryParams manifest:manifest];
     [self _initAppWithUrl:expoUrl bundleUrl:bundleURL manifest:manifest];
     if (onSuccess) {
       onSuccess();
@@ -419,10 +510,18 @@
   }];
 }
 
+/**
+ * Internal helper method for this class, which takes a bundle URL and (optionally) a manifest and
+ * launches the app in the bridge and UI.
+ *
+ * The bundle URL may point to a locally downloaded file (for published projects) or a remote
+ * packager server (for locally hosted projects in development).
+ */
 - (void)_initAppWithUrl:(NSURL *)appUrl bundleUrl:(NSURL *)bundleUrl manifest:(EXManifestsManifest * _Nullable)manifest
 {
   self.manifest = manifest;
   self.manifestURL = appUrl;
+  _possibleManifestURL = nil;
   __block UIInterfaceOrientation orientation = [EXDevLauncherManifestHelper exportManifestOrientation:manifest.orientation];
   __block UIColor *backgroundColor = [EXDevLauncherManifestHelper hexStringToColor:manifest.iosOrRootBackgroundColor];
   
@@ -643,7 +742,7 @@
   NSURL *url = [NSURL URLWithString:projectUrl];
   NSString *appId = [[url pathComponents] lastObject];
   
-  BOOL isModernManifestProtocol = [[url host] isEqualToString:@"u.expo.dev"];
+  BOOL isModernManifestProtocol = [[url host] isEqualToString:@"u.expo.dev"] || [[url host] isEqualToString:@"staging-u.expo.dev"];
   BOOL expoUpdatesInstalled = EXDevLauncherController.sharedInstance.updatesInterface != nil;
   BOOL hasAppId = appId.length > 0;
   
@@ -661,6 +760,25 @@
   [updatesConfig setObject:@(usesEASUpdates) forKey:@"usesEASUpdates"];
     
   return updatesConfig;
+}
+
+/**
+ * Reset remote debugging to its initial setting. Relies on behavior from react-native's
+ * RCTDevSettings.mm and must be kept in sync there.
+ */
+- (void)_resetRemoteDebuggingForAppLoad
+{
+  // Must be kept in sync with RCTDevSettings.mm
+  NSString *kRCTDevSettingsUserDefaultsKey = @"RCTDevMenu";
+  NSString *kRCTDevSettingIsDebuggingRemotely = @"isDebuggingRemotely";
+
+  NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+  NSMutableDictionary *existingSettings = ((NSDictionary *)[userDefaults objectForKey:kRCTDevSettingsUserDefaultsKey]).mutableCopy;
+  if (!existingSettings) {
+    return;
+  }
+  [existingSettings removeObjectForKey:kRCTDevSettingIsDebuggingRemotely];
+  [userDefaults setObject:existingSettings forKey:kRCTDevSettingsUserDefaultsKey];
 }
 
 

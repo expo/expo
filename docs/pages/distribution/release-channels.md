@@ -2,8 +2,8 @@
 title: Release channels
 ---
 
-import { InlineCode } from '~/components/base/code';
-import TerminalBlock from '~/components/plugins/TerminalBlock';
+import { ConfigClassic } from '~/components/plugins/ConfigSection';
+import { Terminal } from '~/ui/components/Snippet';
 
 > Release channels are used for our Classic Updates service. As of Dec 2021, we started previewing the next generation of our updates service: EAS Update. [Learn more](/eas-update).
 
@@ -18,7 +18,10 @@ Use release channels in Expo to send out different versions of your application 
 
 Publish your update on a release channel by running:
 
-<TerminalBlock cmd={['# Publish to release channel <your-channel>', 'expo publish --release-channel <your-channel>']} />
+<Terminal cmd={[
+  '# Publish to release channel <your-channel>',
+  '$ expo publish --release-channel <your-channel>'
+]} />
 
 Your team can see this release channel in the Expo Go app with a parameterized URL `https://exp.host/@username/yourApp?release-channel=<your-release-channel>`. If you do not specify a release channel, you will publish to the `default` channel.
 
@@ -40,7 +43,7 @@ A release channel name can only contain lowercase letters, numbers and special c
 
 Then, build your standalone app by running `eas build --profile <your-build-profile>` with the EAS CLI. The binary produced will only pull releases published under the specified release channel. If you do not specify a release channel, your binary will pull releases from the `default` release channel.
 
-<details><summary><strong>Are you using the classic build system?</strong> (<InlineCode>expo build:[android|ios]</InlineCode>)</summary> <p>
+<ConfigClassic>
 
 Build your standalone app by running
 
@@ -50,8 +53,7 @@ Build your standalone app by running
 
 with the Expo CLI. The binary produced will only pull releases published under the specified release channel. If you do not specify a release channel, your binary will pull releases from the `default` release channel.
 
-</p>
-</details>
+</ConfigClassic>
 
 ## Access Channel from Code
 
@@ -61,7 +63,7 @@ You can access the release channel your update is published under with the `Upda
 
 ## Example Workflow
 
-Consider a situation where you have a Staging stack for testing on Expo Go, and a Production stack for pushing through TestFlight, then promoting to the AppStore.
+Consider a situation where you have a Staging stack for testing on Expo Go, and a Production stack for pushing through TestFlight, then promoting to the App Store.
 
 On the staging stack, run `expo publish --release-channel staging`. Your test users can see the staging version of your app by specifying the release channel in the query parameter of the URL (ie)`https://exp.host/@username/yourApp?release-channel=staging`, then opening the URL in their web browser, and finally scanning the QR code with the Expo Go app. Alternatively, they can open that URL directly on their mobile device.
 
@@ -84,14 +86,13 @@ You can push updates to your app by publishing to the `prod-v1` release channel.
 
 If you have a new version that you don't want v1 users getting, release v2 of your app by running `expo publish --release-channel prod-v2`, setting the `releaseChannel` in your `prod` build profile to `prod-v2`, and building again with `eas build --platform ios --profile prod`. Only users with the `prod-v2` ipa will pull releases from that release channel.
 
-<details><summary><strong>Are you using the classic build system?</strong> (<InlineCode>expo build:[android|ios]</InlineCode>)</summary> <p>
+<ConfigClassic>
 
 On the production stack, release v1 of your app by running `expo publish --release-channel prod-v1`. You can build this version of your app into a standalone ipa by running `expo build:ios --release-channel prod-v1`. You can push updates to your app by publishing to the `prod-v1` release channel. The standalone app will update with the most recent compatible version of your app on the `prod-v1` release channel.
 
-If you have a new version that you dont want v1 users getting, release v2 of your app by running `expo publish --release-channel prod-v2` and building it with `expo build:ios --release-channel prod-v2`. Users with the `prod-v2` ipa will only be pulling releases from that release channel.
+If you have a new version that you don't want v1 users getting, release v2 of your app by running `expo publish --release-channel prod-v2` and building it with `expo build:ios --release-channel prod-v2`. Users with the `prod-v2` ipa will only be pulling releases from that release channel.
 
-</p>
-</details>
+</ConfigClassic>
 
 You can continue updating v1 of your app with `expo publish --release-channel prod-v1`, and users who haven't updated to the latest `prod-v2` ipa in the Apple App Store will continue receiving the latest `prod-v1` releases.
 
@@ -105,7 +106,7 @@ Environment variables don't exist explicitly, but you can utilize release channe
 
 Say you have a workflow of releasing builds like this:
 
-<TerminalBlock cmd={[
+<Terminal cmd={[
 '# Publish to release channel prod-v1',
 'expo publish --release-channel prod-v1',
 '',

@@ -365,6 +365,12 @@ export const Screens = [
   },
   {
     getComponent() {
+      return optionalRequire(() => require('../screens/Skia/SkiaScreen'));
+    },
+    name: 'Skia',
+  },
+  {
+    getComponent() {
       return optionalRequire(() => require('../screens/SVG/SVGScreen'));
     },
     name: 'SVG',
@@ -423,6 +429,12 @@ export const Screens = [
       return optionalRequire(() => require('../screens/SharedElementScreen'));
     },
     name: 'SharedElement',
+  },
+  {
+    getComponent() {
+      return optionalRequire(() => require('../screens/FlashListScreen'));
+    },
+    name: 'FlashList',
   },
 ];
 

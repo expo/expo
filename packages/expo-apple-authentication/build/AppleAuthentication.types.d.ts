@@ -231,7 +231,8 @@ export declare enum AppleAuthenticationButtonType {
      */
     CONTINUE = 1,
     /**
-     * "Sign up with Apple" *(requires iOS 13.2 or higher)*
+     * "Sign up with Apple"
+     * @platform ios 13.2+
      */
     SIGN_UP = 2
 }

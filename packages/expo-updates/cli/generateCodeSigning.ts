@@ -23,18 +23,18 @@ export const generateCodeSigning: Command = async (argv) => {
   if (args['--help']) {
     Log.exit(
       chalk`
-      {bold Description}
-      Generate expo-updates private key, public key, and code signing certificate using that public key (self-signed by the private key)
+{bold Description}
+Generate expo-updates private key, public key, and code signing certificate using that public key (self-signed by the private key)
 
-      {bold Usage}
-        $ npx expo-updates codesigning:generate
+{bold Usage}
+  {dim $} npx expo-updates codesigning:generate --key-output-directory <dir> --certificate-output-directory <dir> --certificate-validity-duration-years <num years> --certificate-common-name <name>
 
-        Options
-        --key-output-directory <string>                  Directory in which to put the generated private and public keys
-        --certificate-output-directory <string>          Directory in which to put the generated certificate
-        --certificate-validity-duration-years <number>   Validity duration in years
-        --certificate-common-name <string>               Common name attribute for certificate
-        -h, --help                                       Output usage information
+  Options
+  --key-output-directory <string>                  Directory in which to put the generated private and public keys
+  --certificate-output-directory <string>          Directory in which to put the generated certificate
+  --certificate-validity-duration-years <number>   Certificate validity duration in years (number of years before certificate needs rotation)
+  --certificate-common-name <string>               Common name attribute for certificate (generally the human readable name of the organization owning this application)
+  -h, --help                                       Output usage information
     `,
       0
     );

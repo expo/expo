@@ -12,12 +12,12 @@ LOCAL_MODULE := react_render_core
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/../../../
 
 LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp)
+LOCAL_SRC_FILES := $(subst $(LOCAL_PATH)/,,$(LOCAL_SRC_FILES))
 
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/../../../
 
 LOCAL_SHARED_LIBRARIES := \
-  libfolly_futures \
-  libfolly_json \
+  libfolly_runtime \
   libglog \
   libjsi \
   libreact_debug \

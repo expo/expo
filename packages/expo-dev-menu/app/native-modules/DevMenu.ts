@@ -1,4 +1,6 @@
-import { DeviceEventEmitter, NativeModules, EventSubscription } from 'react-native';
+import { DeviceEventEmitter, NativeModules, EventSubscription, Platform } from 'react-native';
+
+export type JSEngine = 'Hermes' | 'JSC';
 
 export type AppInfo = {
   appIcon?: string;
@@ -7,6 +9,7 @@ export type AppInfo = {
   appName?: string;
   sdkVersion?: string;
   runtimeVersion?: string;
+  engine?: JSEngine;
 };
 
 export type DevSettings = {
@@ -18,6 +21,7 @@ export type DevSettings = {
   isElementInspectorAvailable?: boolean;
   isHotLoadingAvailable?: boolean;
   isPerfMonitorAvailable?: boolean;
+  isJSInspectorAvailable?: boolean;
 };
 
 export type MenuPreferences = {
@@ -69,10 +73,25 @@ export async function toggleFastRefreshAsync() {
   return await dispatchCallableAsync('fast-refresh');
 }
 
+export async function openJSInspector() {
+  if (Platform.OS !== 'android') {
+    return;
+  }
+  return await dispatchCallableAsync('js-inspector');
+}
+
 export async function copyToClipboardAsync(content: string) {
   return await DevMenu.copyToClipboardAsync(content);
 }
 
 export async function setOnboardingFinishedAsync(isFinished: boolean) {
   return await DevMenu.setOnboardingFinished(isFinished);
+}
+
+export async function loadFontsAsync() {
+  return await DevMenu.loadFontsAsync();
+}
+
+export async function fireCallbackAsync(name: string) {
+  return await DevMenu.fireCallback(name).catch((error) => console.warn(error.message));
 }

@@ -76,7 +76,7 @@ export const PACKAGES_TO_PREBUILD = [
   'expo-splash-screen',
   // 'expo-sqlite',
   // 'expo-store-review',
-  'expo-structured-headers',
+  // 'expo-structured-headers',
   // 'expo-task-manager',
   // 'expo-updates',
   // 'expo-video-thumbnails',

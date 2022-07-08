@@ -11,7 +11,7 @@ const deviceMessage = Platform.select({
 });
 
 const simulatorMessage = Platform.select({
-  ios: `Since this is your first time opening this development build, we wanted to show you this menu and let you know that in a simulator you can press \u2318D (make sure that 'I/O \u279E Send Keyboard Input to Device' is enabled on your simulator) to get back to it at any time.`,
+  ios: `Since this is your first time opening this development build, we wanted to show you this menu and let you know that in a simulator you can press \u2318D (make sure that 'I/O \u279E Input \u279E Send Keyboard Input to Device' is enabled on your simulator) to get back to it at any time.`,
   android: `Since this is your first time opening this development build, we wanted to show you this menu and let you know that in an emulator you can press \u2318M on macOS or Ctrl+M on other platforms to get back to it at any time.`,
 });
 
@@ -40,12 +40,10 @@ export function Onboarding({ isDevice }: OnboardingProps) {
             <Spacer.Vertical size="medium" />
 
             <View>
-              <Text size="large" weight="medium">
-                {isDevice ? deviceMessage : simulatorMessage}
-              </Text>
+              <Text size="large">{isDevice ? deviceMessage : simulatorMessage}</Text>
 
               <Spacer.Vertical size="medium" />
-              <Text size="large" weight="medium">
+              <Text size="large">
                 Also, this menu is only available in development builds and won't be in any release
                 builds.
               </Text>

@@ -14,10 +14,12 @@ import {
 import * as React from 'react';
 import { Animated } from 'react-native';
 
+import { useUpdatesConfig } from '../providers/UpdatesConfigProvider';
 import { Branch } from '../queries/useBranchesForApp';
 import { Update } from '../queries/useUpdatesForBranch';
 import { ExtensionsStackParamList } from '../screens/ExtensionsStack';
 import { ActivityIndicator } from './ActivityIndicator';
+import { BasicButton } from './BasicButton';
 import { ListButton } from './ListButton';
 
 type EASBranchRowProps = {
@@ -25,24 +27,40 @@ type EASBranchRowProps = {
   isFirst?: boolean;
   isLast?: boolean;
   navigation: StackNavigationProp<ExtensionsStackParamList>;
+  isLoading?: boolean;
+  onUpdatePress: (update: Update) => void;
 };
 
-export function EASBranchRow({ branch, isFirst, isLast, navigation }: EASBranchRowProps) {
+export function EASBranchRow({
+  branch,
+  isFirst,
+  isLast,
+  isLoading,
+  onUpdatePress,
+  navigation,
+}: EASBranchRowProps) {
+  const loadingStyle = useLoadingContainerStyle(isLoading);
+
   const palette = useExpoPalette();
+  const { runtimeVersion } = useUpdatesConfig();
 
   const { name, updates } = branch;
   const latestUpdate = updates[0];
+  const isLatestUpdateCompatible = latestUpdate?.runtimeVersion === runtimeVersion;
 
   function onBranchPress() {
     navigation.navigate('Updates', { branchName: branch.name });
   }
 
   return (
-    <ListButton isFirst={isFirst} isLast={isLast} onPress={onBranchPress}>
-      <View>
-        <Row>
+    <Animated.View style={loadingStyle}>
+      <ListButton isFirst={isFirst} isLast={isLast} onPress={onBranchPress}>
+        <Row align="center">
           <Row
-            style={{ backgroundColor: palette.blue['100'] }}
+            shrink="1"
+            style={{
+              backgroundColor: palette.blue['100'],
+            }}
             py="tiny"
             px="1.5"
             rounded="medium"
@@ -52,10 +70,12 @@ export function EASBranchRow({ branch, isFirst, isLast, navigation }: EASBranchR
               resizeMethod="scale"
             />
             <Spacer.Horizontal size="tiny" />
-            <Text size="small">{`Branch: ${name}`}</Text>
+            <View shrink="1">
+              <Text size="small" numberOfLines={1}>{`Branch: ${name}`}</Text>
+            </View>
           </Row>
-
-          <View style={{ position: 'absolute', right: 0, top: scale.tiny }}>
+          <Spacer.Horizontal />
+          <View style={{ paddingLeft: scale.small }}>
             <ChevronRightIcon />
           </View>
         </Row>
@@ -79,17 +99,34 @@ export function EASBranchRow({ branch, isFirst, isLast, navigation }: EASBranchR
                 {`Published ${latestUpdate?.createdAt}`}
               </Text>
             </View>
-
             <Spacer.Horizontal size="large" />
+            <Spacer.Vertical size="small" />
+            <View align="centered" opacity={isLatestUpdateCompatible ? '1' : '0.5'}>
+              <BasicButton label="Open" size="small" onPress={() => onUpdatePress(latestUpdate)} />
+            </View>
           </Row>
         )}
+
         <Spacer.Vertical size="small" />
-      </View>
-    </ListButton>
+      </ListButton>
+
+      {isLoading && (
+        <View inset="full" align="centered">
+          <ActivityIndicator />
+        </View>
+      )}
+    </Animated.View>
   );
 }
 
-export function EASEmptyBranchRow({ branch, isFirst, isLast, navigation }: EASBranchRowProps) {
+type EASEmptyBranchRowProps = {
+  branch: Branch;
+  isFirst?: boolean;
+  isLast?: boolean;
+  navigation: StackNavigationProp<ExtensionsStackParamList>;
+};
+
+export function EASEmptyBranchRow({ branch, isFirst, isLast, navigation }: EASEmptyBranchRowProps) {
   const palette = useExpoPalette();
 
   const { name } = branch;
@@ -101,9 +138,12 @@ export function EASEmptyBranchRow({ branch, isFirst, isLast, navigation }: EASBr
   return (
     <ListButton isFirst={isFirst} isLast={isLast} onPress={onBranchPress}>
       <View>
-        <Row>
+        <Row align="center">
           <Row
-            style={{ backgroundColor: palette.blue['100'] }}
+            shrink="1"
+            style={{
+              backgroundColor: palette.blue['100'],
+            }}
             py="tiny"
             px="1.5"
             rounded="medium"
@@ -113,10 +153,12 @@ export function EASEmptyBranchRow({ branch, isFirst, isLast, navigation }: EASBr
               resizeMethod="scale"
             />
             <Spacer.Horizontal size="tiny" />
-            <Text size="small">{`Branch: ${name}`}</Text>
+            <View shrink="1">
+              <Text size="small" numberOfLines={1}>{`Branch: ${name}`}</Text>
+            </View>
           </Row>
-
-          <View style={{ position: 'absolute', right: 0, top: scale.tiny }}>
+          <Spacer.Horizontal />
+          <View style={{ paddingLeft: scale.small }}>
             <ChevronRightIcon />
           </View>
         </Row>
@@ -148,27 +190,10 @@ type EASUpdateRowProps = {
 };
 
 export function EASUpdateRow({ update, isFirst, isLast, isLoading, onPress }: EASUpdateRowProps) {
-  const animatedValue = React.useRef(new Animated.Value(0)).current;
-
-  React.useEffect(() => {
-    Animated.spring(animatedValue, {
-      toValue: isLoading ? 1 : 0,
-      useNativeDriver: true,
-    }).start();
-  }, [isLoading]);
-
-  const opacity = animatedValue.interpolate({
-    inputRange: [0, 1],
-    outputRange: [1, 0.7],
-  });
-
-  const scaledown = animatedValue.interpolate({
-    inputRange: [0, 1],
-    outputRange: [1, 0.975],
-  });
+  const loadingStyle = useLoadingContainerStyle(isLoading);
 
   return (
-    <Animated.View style={{ opacity, transform: [{ scale: scaledown }] }}>
+    <Animated.View style={loadingStyle}>
       <ListButton disabled={isLoading} isFirst={isFirst} isLast={isLast} onPress={onPress}>
         <View>
           <View style={{ position: 'absolute', right: 0, top: scale.tiny }}>
@@ -207,4 +232,30 @@ export function EASUpdateRow({ update, isFirst, isLast, isLoading, onPress }: EA
       )}
     </Animated.View>
   );
+}
+
+export function useLoadingContainerStyle(isLoading: boolean = false) {
+  const animatedValue = React.useRef(new Animated.Value(0)).current;
+
+  React.useEffect(() => {
+    Animated.spring(animatedValue, {
+      toValue: isLoading ? 1 : 0,
+      useNativeDriver: true,
+    }).start();
+  }, [isLoading]);
+
+  const opacity = animatedValue.interpolate({
+    inputRange: [0, 1],
+    outputRange: [1, 0.7],
+  });
+
+  const scaledown = animatedValue.interpolate({
+    inputRange: [0, 1],
+    outputRange: [1, 0.975],
+  });
+
+  return {
+    opacity,
+    transform: [{ scale: scaledown }],
+  };
 }

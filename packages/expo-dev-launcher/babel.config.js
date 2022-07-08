@@ -17,14 +17,14 @@ module.exports = function (api) {
   }
 
   const gestureHandler = tryResolveModule(
-    'expo-dev-menu/vendored/react-native-gesture-handler/src/index.js'
+    'expo-dev-menu/vendored/react-native-gesture-handler/src/index.ts'
   );
   const safeAreaContext = tryResolveModule(
     'expo-dev-menu/vendored/react-native-safe-area-context/src/index.tsx'
   );
 
   const gestureHandlerJest = tryResolveModule(
-    'expo-dev-menu/vendored/react-native-gesture-handler/src/jestSetup.js'
+    'expo-dev-menu/vendored/react-native-gesture-handler/jestSetup.js'
   );
 
   const alias = {};
@@ -43,6 +43,10 @@ module.exports = function (api) {
 
   return {
     presets: ['babel-preset-expo'],
-    plugins: [['babel-plugin-module-resolver', moduleResolverConfig]],
+    plugins: [
+      ['babel-plugin-module-resolver', moduleResolverConfig],
+      // required for react-native-reanimated "export * as default" pattern
+      '@babel/plugin-proposal-export-namespace-from',
+    ],
   };
 };

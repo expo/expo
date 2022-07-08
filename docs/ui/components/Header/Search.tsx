@@ -1,5 +1,5 @@
 import { css } from '@emotion/react';
-import { theme, breakpoints, iconSize, SearchIcon } from '@expo/styleguide';
+import { theme, breakpoints, iconSize, SearchIcon, SlashShortcutIcon } from '@expo/styleguide';
 import Router from 'next/router';
 import * as React from 'react';
 import { useEffect, useRef, useState } from 'react';
@@ -7,7 +7,6 @@ import { useEffect, useRef, useState } from 'react';
 import * as Utilities from '~/common/utilities';
 import { paragraph } from '~/components/base/typography';
 import { LATEST_VERSION } from '~/constants/versions';
-import { SlashShortcutIcon } from '~/ui/foundations/icons';
 
 type SearchProps = {
   version: string;

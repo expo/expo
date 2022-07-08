@@ -4,6 +4,8 @@ title: Using EAS Update with EAS CLI
 
 import ImageSpotlight from '~/components/plugins/ImageSpotlight'
 
+> EAS Update is currently available only to customers with an EAS subscription plan. [Sign up](https://expo.dev/accounts/[account]/settings/subscriptions).
+
 EAS Update works by linking _branches_ to _channels_. Channels are specified at build time and exist inside a build's native code. Branches are an ordered list of updates, similar to a Git branch, which is an ordered list of commits. With EAS Update, we can link any channel to any branch, allowing us to make different updates available to different builds.
 
 <ImageSpotlight alt={`Channel "production" linked to branch "version-1.0"`} src="/static/images/eas-update/channel-branch-link.png" />

@@ -424,6 +424,31 @@ Returns a Promise that resolves to an object with the following fields:
 
 Upload the contents of the file pointed by `fileUri` to the remote url.
 
+#### Example
+
+**client**
+```javascript
+import * as FileSystem from 'expo-file-system'
+
+try {
+  const response = await FileSystem.uploadAsync(
+    `http://192.168.0.1:1234/binary-upload`,
+    fileUri,
+    {
+      fieldName: "file",
+      httpMethod: "PATCH",
+      uploadType: FileSystem.FileSystemUploadType.BINARY_CONTENT,
+    }
+  )
+  console.log(JSON.stringify(response, null, 4))
+} catch(error) {
+  console.log(error)
+}
+```
+**server**
+
+Please refer to the "[how to handle such requests](#how-to-handle-such-requests)" section - there is code for a simple Node.js server.
+
 #### Arguments
 
 - **url (_string_)** -- The remote URL, where the file will be sent.

@@ -21,30 +21,21 @@ jobs:
   test:
     runs-on: ubuntu-20.04
     steps:
-      - name: 👀 Checkout a ref for the event
+      - name: 👀 Checkout
         uses: actions/checkout@v3
         with:
           fetch-depth: 100
-      - name: ♻️ Restore workspace node modules
-        uses: actions/cache@v2
-        id: node-modules-cache
+      - name: ♻️ Restore caches
+        uses: ./.github/actions/expo-caches
+        id: expo-caches
         with:
-          path: |
-            # See "workspaces" → "packages" in the root package.json for the source of truth of
-            # which node_modules are affected by the root yarn.lock
-            node_modules
-            apps/*/node_modules
-            home/node_modules
-            packages/*/node_modules
-            packages/@expo/*/node_modules
-            packages/@unimodules/*/node_modules
-            react-native-lab/react-native/node_modules
-          key: ${{ runner.os }}-modules-v2-${{ hashFiles('yarn.lock') }}
-      - name: 🧶 Install node modules in root dir
+          yarn-workspace: 'true'
+      - name: 🧶 Install workspace node modules
+        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
-      - name: Build CLI
+      - name: 🛠 Build expo-updates CLI
         run: yarn build:cli
         working-directory: packages/expo-updates
-      - name: Unit Test CLI
+      - name: 🧪 Run expo-updates CLI tests
         run: yarn test:cli
         working-directory: packages/expo-updates

@@ -4,6 +4,7 @@
 #import <EXUpdates/EXUpdatesCrypto.h>
 #import <EXUpdates/EXUpdatesEmbeddedAppLoader.h>
 #import <EXUpdates/EXUpdatesFileDownloader.h>
+#import <EXUpdates/EXUpdatesUtils.h>
 #import <ExpoModulesCore/EXUtilities.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -100,9 +101,10 @@ static NSString * const EXUpdatesRemoteAppLoaderErrorDomain = @"EXUpdatesRemoteA
       }
 
       [self->_downloader downloadFileFromURL:asset.url
+                               verifyingHash:asset.expectedHash
                                       toPath:[urlOnDisk path]
                                 extraHeaders:asset.extraRequestHeaders ?: @{}
-                                successBlock:^(NSData *data, NSURLResponse *response) {
+                                successBlock:^(NSData *data, NSURLResponse *response, NSString *base64URLEncodedSHA256Hash) {
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
           [self handleAssetDownloadWithData:data response:response asset:asset];
         });

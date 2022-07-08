@@ -185,7 +185,8 @@ export function dismissBrowser() {
  * after a user interaction. If the event is blocked, an error with code [`ERR_WEB_BROWSER_BLOCKED`](#errwebbrowserblocked) will be thrown.
  *
  * @param url The url to open in the web browser. This should be a login page.
- * @param redirectUrl _Optional_ - The url to deep link back into your app. By default, this will be [`Constants.linkingUrl`](./constants/#expoconstantslinkinguri).
+ * @param redirectUrl _Optional_ - The url to deep link back into your app.
+ * On web, this defaults to the output of [`Linking.createURL("")`](./linking/#linkingcreateurlpath-namedparameters).
  * @param options _Optional_ - An object extending the [`WebBrowserOpenOptions`](#webbrowseropenoptions).
  * If there is no native AuthSession implementation available (which is the case on Android)
  * these params will be used in the browser polyfill. If there is a native AuthSession implementation,
@@ -272,7 +273,7 @@ function _authSessionIsNativelySupported() {
     const versionNumber = parseInt(String(Platform.Version), 10);
     return versionNumber >= 11;
 }
-let _redirectHandler = null;
+let _redirectSubscription = null;
 /*
  * openBrowserAsync on Android doesn't wait until closed, so we need to polyfill
  * it with AppState
@@ -318,7 +319,7 @@ async function _openBrowserAndWaitAndroidAsync(startUrl, browserParams = {}) {
     return result;
 }
 async function _openAuthSessionPolyfillAsync(startUrl, returnUrl, browserParams = {}) {
-    if (_redirectHandler) {
+    if (_redirectSubscription) {
         throw new Error(`The WebBrowser's auth session is in an invalid state with a redirect handler set when it should not be`);
     }
     if (_onWebBrowserCloseAndroid) {
@@ -348,20 +349,21 @@ async function _openAuthSessionPolyfillAsync(startUrl, returnUrl, browserParams 
     }
 }
 function _stopWaitingForRedirect() {
-    if (!_redirectHandler) {
+    if (!_redirectSubscription) {
         throw new Error(`The WebBrowser auth session is in an invalid state with no redirect handler when one should be set`);
     }
-    Linking.removeEventListener('url', _redirectHandler);
-    _redirectHandler = null;
+    _redirectSubscription.remove();
+    _redirectSubscription = null;
 }
 function _waitForRedirectAsync(returnUrl) {
+    // Note that this Promise never resolves when `returnUrl` is nullish
     return new Promise((resolve) => {
-        _redirectHandler = (event) => {
-            if (event.url.startsWith(returnUrl)) {
+        const redirectHandler = (event) => {
+            if (returnUrl && event.url.startsWith(returnUrl)) {
                 resolve({ url: event.url, type: 'success' });
             }
         };
-        Linking.addEventListener('url', _redirectHandler);
+        _redirectSubscription = Linking.addEventListener('url', redirectHandler);
     });
 }
 //# sourceMappingURL=WebBrowser.js.map

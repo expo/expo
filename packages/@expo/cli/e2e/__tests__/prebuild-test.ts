@@ -47,25 +47,24 @@ it('runs `npx expo prebuild --help`', async () => {
   const results = await execute('prebuild', '--help');
   expect(results.stdout).toMatchInlineSnapshot(`
     "
-          Description
-            Create native iOS and Android project files before building natively.
+      Info
+        Create native iOS and Android project files for building natively
 
-          Usage
-            $ npx expo prebuild <dir>
+      Usage
+        $ npx expo prebuild <dir>
 
-          <dir> is the directory of the Expo project.
-          Defaults to the current working directory.
-
-          Options
-          --no-install                             Skip installing npm packages and CocoaPods.
-          --clean                                  Delete the native folders and regenerate them before applying changes
-          --npm                                    Use npm to install dependencies. (default when Yarn is not installed)
-          --template <template>                    Project template to clone from. File path pointing to a local tar file or a github repo
-          -p, --platform <all|android|ios>         Platforms to sync: ios, android, all. Default: all
-          --skip-dependency-update <dependencies>  Preserves versions of listed packages in package.json (comma separated list)
-          -h, --help                               Output usage information
-
-        "
+      Options
+        <dir>                                    Directory of the Expo project. Default: Current working directory
+        --no-install                             Skip installing npm packages and CocoaPods
+        --clean                                  Delete the native folders and regenerate them before applying changes
+        --npm                                    Use npm to install dependencies. Default when package-lock.json exists
+        --yarn                                   Use Yarn to install dependencies. Default when yarn.lock exists
+        --pnpm                                   Use pnpm to install dependencies. Default when pnpm-lock.yaml exists
+        --template <template>                    Project template to clone from. File path pointing to a local tar file or a github repo
+        -p, --platform <all|android|ios>         Platforms to sync: ios, android, all. Default: all
+        --skip-dependency-update <dependencies>  Preserves versions of listed packages in package.json (comma separated list)
+        -h, --help                               Usage info
+    "
   `);
 });
 
@@ -129,6 +128,7 @@ it(
     expect(files).toMatchInlineSnapshot(`
       Array [
         "App.js",
+        "android/.gitignore",
         "android/app/BUCK",
         "android/app/build.gradle",
         "android/app/build_defs.bzl",
@@ -139,6 +139,18 @@ it(
         "android/app/src/main/AndroidManifest.xml",
         "android/app/src/main/java/com/example/minimal/MainActivity.java",
         "android/app/src/main/java/com/example/minimal/MainApplication.java",
+        "android/app/src/main/java/com/example/minimal/newarchitecture/MainApplicationReactNativeHost.java",
+        "android/app/src/main/java/com/example/minimal/newarchitecture/components/MainComponentsRegistry.java",
+        "android/app/src/main/java/com/example/minimal/newarchitecture/modules/MainApplicationTurboModuleManagerDelegate.java",
+        "android/app/src/main/jni/Android.mk",
+        "android/app/src/main/jni/MainApplicationModuleProvider.cpp",
+        "android/app/src/main/jni/MainApplicationModuleProvider.h",
+        "android/app/src/main/jni/MainApplicationTurboModuleManagerDelegate.cpp",
+        "android/app/src/main/jni/MainApplicationTurboModuleManagerDelegate.h",
+        "android/app/src/main/jni/MainComponentsRegistry.cpp",
+        "android/app/src/main/jni/MainComponentsRegistry.h",
+        "android/app/src/main/jni/OnLoad.cpp",
+        "android/app/src/main/res/drawable/rn_edit_text_material.xml",
         "android/app/src/main/res/drawable/splashscreen.xml",
         "android/app/src/main/res/mipmap-hdpi/ic_launcher.png",
         "android/app/src/main/res/mipmap-hdpi/ic_launcher_round.png",
@@ -163,10 +175,11 @@ it(
         "android/settings.gradle",
         "app.json",
         "index.js",
+        "ios/.gitignore",
         "ios/Podfile",
         "ios/Podfile.properties.json",
         "ios/basicprebuild/AppDelegate.h",
-        "ios/basicprebuild/AppDelegate.m",
+        "ios/basicprebuild/AppDelegate.mm",
         "ios/basicprebuild/Images.xcassets/AppIcon.appiconset/Contents.json",
         "ios/basicprebuild/Images.xcassets/Contents.json",
         "ios/basicprebuild/Images.xcassets/SplashScreenBackground.imageset/Contents.json",
@@ -174,14 +187,12 @@ it(
         "ios/basicprebuild/Info.plist",
         "ios/basicprebuild/SplashScreen.storyboard",
         "ios/basicprebuild/Supporting/Expo.plist",
-        "ios/basicprebuild/basicprebuild-Bridging-Header.h",
         "ios/basicprebuild/basicprebuild.entitlements",
         "ios/basicprebuild/main.m",
         "ios/basicprebuild/noop-file.swift",
         "ios/basicprebuild.xcodeproj/project.pbxproj",
         "ios/basicprebuild.xcodeproj/project.xcworkspace/contents.xcworkspacedata",
         "ios/basicprebuild.xcodeproj/project.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist",
-        "ios/basicprebuild.xcodeproj/project.xcworkspace/xcuserdata/brentvatne.xcuserdatad/UserInterfaceState.xcuserstate",
         "ios/basicprebuild.xcodeproj/xcshareddata/xcschemes/basicprebuild.xcscheme",
         "metro.config.js",
         "package.json",

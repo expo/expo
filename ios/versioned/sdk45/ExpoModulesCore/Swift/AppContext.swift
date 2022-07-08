@@ -18,7 +18,7 @@ public final class AppContext {
   /**
    The legacy module registry with modules written in the old-fashioned way.
    */
-  public private(set) var legacyModuleRegistry: ABI45_0_0EXModuleRegistry?
+  public private(set) weak var legacyModuleRegistry: ABI45_0_0EXModuleRegistry?
 
   /**
    ABI45_0_0React bridge of the context's app.

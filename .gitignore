@@ -61,7 +61,9 @@ xcuserdata
 /android/versioned-react-native/ReactAndroid
 /android/versioned-react-native/ReactCommon
 /android/versioned-react-native/codegen
+/android/versioned-react-native/sdks
 ReactAndroid-temp.aar
+/android/ReactAndroid/prebuiltHermes
 
 # Tools
 jarjar-rules.txt
@@ -102,6 +104,7 @@ templates/**/yarn.lock
 /fastlane/report.xml
 /fastlane/Preview.html
 /fastlane/Deployment
+/fastlane/test_output
 /Preview.html
 /gc_keys.json
 /fastlane/gc_keys.json

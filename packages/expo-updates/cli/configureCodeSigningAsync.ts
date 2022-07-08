@@ -53,5 +53,5 @@ export async function configureCodeSigningAsync(
     }
   );
 
-  log(`Code signing configuration written to app.json.`);
+  log(`Code signing configuration written to app configuration.`);
 }

@@ -22,13 +22,16 @@ class TestCodedException(
  * exported function or to the module controller if the method doesn't exist in the module definition.
  *
  * Methods mapping:
- *   function("name") { args: ArgsType -> return ReturnType } can be invoked using one of the following methods mapping rules:
+ *   AsyncFunction("name") { args: ArgsType -> return ReturnType } can be invoked using one of the following methods mapping rules:
  *     - [non-promise mapping] fun ModuleTestInterface.name(args: ArgsType): ReturnType
  *     - [promise mapping] fun ModuleTestInterface.name(args: ArgsType, promise: Promise): Unit
  *
- *   function("name") { args: ArgsType, promise: Promise -> promise.resolve(ReturnType) } can be invoked using one of the following methods mapping rules:
+ *   AsyncFunction("name") { args: ArgsType, promise: Promise -> promise.resolve(ReturnType) } can be invoked using one of the following methods mapping rules:
  *     - [non-promise mapping] fun ModuleTestInterface.name(args: ArgsType): ReturnType
  *     - [promise mapping] fun ModuleTestInterface.name(args: ArgsType, promise: Promise): Unit
+ *
+ *   Function("name") { args: ArgsType -> return ReturnType } can be invoked using non-promise mapping only:
+ *     - fun ModuleTestInterface.name(args: ArgsType): ReturnType
  *
  * In tests, the non-promise mapping should be preferred if possible.
  * The promise mapping should be only used when dealing with native async code.
@@ -43,7 +46,9 @@ class ModuleMockInvocationHandler<T : Any>(
   private val holder: ModuleHolder
 ) : InvocationHandler {
   override fun invoke(proxy: Any, method: Method, args: Array<out Any>?): Any? {
-    if (!holder.definition.methods.containsKey(method.name)) {
+    if (!holder.definition.asyncFunctions.containsKey(method.name) &&
+      !holder.definition.syncFunctions.containsKey(method.name)
+    ) {
       return method.invoke(moduleController, *(args ?: emptyArray()))
     }
 
@@ -51,13 +56,23 @@ class ModuleMockInvocationHandler<T : Any>(
   }
 
   private fun callExportedFunction(methodName: String, args: Array<out Any>?): Any? {
-    val lastArg = args?.lastOrNull()
-    if (Promise::class.java.isInstance(lastArg)) {
-      promiseMappingCall(methodName, args!!.dropLast(1), lastArg as Promise)
-      return Unit
+    if (holder.definition.syncFunctions.containsKey(methodName)) {
+      // Call as a sync function
+      return holder.callSync(methodName, convertArgs(args?.asList() ?: emptyList()))
     }
 
-    return nonPromiseMappingCall(methodName, args)
+    if (holder.definition.asyncFunctions.containsKey(methodName)) {
+      // We know it's a async function, but we don't know which mapping we're using
+      val lastArg = args?.lastOrNull()
+      if (Promise::class.java.isInstance(lastArg)) {
+        promiseMappingCall(methodName, args!!.dropLast(1), lastArg as Promise)
+        return Unit
+      }
+
+      return nonPromiseMappingCall(methodName, args)
+    }
+
+    throw IllegalStateException("Module class method '$methodName' not found")
   }
 
   private fun nonPromiseMappingCall(methodName: String, args: Array<out Any>?): Any? {
@@ -96,6 +111,10 @@ class ModuleMockInvocationHandler<T : Any>(
 
   private fun promiseMappingCall(methodName: String, args: List<Any>, promise: Promise) {
     holder.call(methodName, convertArgs(args), promise)
+  }
+
+  private fun syncCall(methodName: String, args: Iterable<Any?>): Any? {
+    return holder.callSync(methodName, convertArgs(args))
   }
 
   private fun convertArgs(args: Iterable<Any?>): ReadableArray {

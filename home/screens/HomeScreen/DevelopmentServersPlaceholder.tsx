@@ -46,10 +46,19 @@ export function DevelopmentServersPlaceholder({ isAuthenticated }: Props) {
     <TouchableOpacity
       onPress={() => navigation.navigate('Account')}
       hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-      <View bg="default" padding="medium" border="default" rounded="large">
-        <Text type="InterRegular" style={{ lineHeight: 20 }}>
-          Sign in to your Expo account to see the projects you have recently been working on.
-        </Text>
+      <View bg="default" border="default" rounded="large">
+        <View padding="medium">
+          <Text type="InterRegular" style={{ lineHeight: 20 }}>
+            Press here to sign in to your Expo account and see the projects you have recently been
+            working on.
+          </Text>
+        </View>
+        {FeatureFlags.ENABLE_PROJECT_TOOLS && FeatureFlags.ENABLE_CLIPBOARD_BUTTON ? (
+          <DevelopmentServersOpenURL />
+        ) : null}
+        {FeatureFlags.ENABLE_PROJECT_TOOLS && FeatureFlags.ENABLE_QR_CODE_BUTTON ? (
+          <DevelopmentServersOpenQR />
+        ) : null}
       </View>
     </TouchableOpacity>
   );

@@ -1,3 +1,4 @@
+import { asMock } from '../../../../__tests__/asMock';
 import { CommandError } from '../../../../utils/errors';
 import { AndroidDeviceManager } from '../AndroidDeviceManager';
 import {
@@ -18,9 +19,6 @@ jest.mock('../adb', () => ({
   openAppIdAsync: jest.fn(),
   openUrlAsync: jest.fn(),
 }));
-
-const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
-  fn as jest.MockedFunction<T>;
 
 const asDevice = (device: Partial<Device>): Device => device as Device;
 

@@ -10,9 +10,10 @@ include $(CLEAR_VARS)
 LOCAL_MODULE := react_render_imagemanager
 
 LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp $(LOCAL_PATH)/platform/cxx/react/renderer/imagemanager/*.cpp)
+LOCAL_SRC_FILES := $(subst $(LOCAL_PATH)/,,$(LOCAL_SRC_FILES))
 
 LOCAL_SHARED_LIBRARIES := \
-  libfolly_json \
+  libfolly_runtime \
   libreact_debug \
   libreact_render_core \
   libreact_render_debug \

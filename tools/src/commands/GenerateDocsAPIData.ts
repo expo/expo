@@ -12,7 +12,7 @@ import logger from '../Logger';
 
 type ActionOptions = {
   packageName?: string;
-  version?: string;
+  sdk?: string;
 };
 
 type EntryPoint = string | string[];
@@ -27,6 +27,7 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-app-loading': ['index.ts'],
   'expo-apple-authentication': ['index.ts'],
   'expo-application': ['Application.ts'],
+  'expo-audio': [['Audio.ts', 'Audio.types.ts'], 'expo-av'],
   'expo-auth-session': ['AuthSession.ts'],
   'expo-asset': [['Asset.ts', 'AssetHooks.ts']],
   'expo-background-fetch': ['BackgroundFetch.ts'],
@@ -34,6 +35,7 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-barcode-scanner': ['BarCodeScanner.tsx'],
   'expo-blur': ['index.ts'],
   'expo-brightness': ['Brightness.ts'],
+  'expo-build-properties': [['withBuildProperties.ts', 'pluginConfig.ts']],
   'expo-calendar': ['Calendar.ts'],
   'expo-camera': ['index.ts'],
   'expo-cellular': ['Cellular.ts'],
@@ -87,7 +89,7 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
 
 const executeCommand = async (
   jsonFileName: string,
-  version: string,
+  sdk?: string,
   entryPoint: EntryPoint = 'index.ts',
   packageName: string = jsonFileName
 ) => {
@@ -96,7 +98,23 @@ const executeCommand = async (
   app.options.addReader(new TSConfigReader());
   app.options.addReader(new TypeDocReader());
 
-  const dataPath = path.join(EXPO_DIR, 'docs', 'public', 'static', 'data', version);
+  const dataPath = path.join(
+    EXPO_DIR,
+    'docs',
+    'public',
+    'static',
+    'data',
+    sdk ? `v${sdk}.0.0` : `unversioned`
+  );
+
+  if (!fs.existsSync(dataPath)) {
+    throw new Error(
+      `💥 The path for given SDK version do not exist!
+       Check if you have provided the correct major SDK version to the '--sdk' parameter.
+       Path: '${dataPath}'`
+    );
+  }
+
   const basePath = path.join(PACKAGES_DIR, packageName);
   const entriesPath = path.join(basePath, 'src');
   const tsConfigPath = path.join(basePath, 'tsconfig.json');
@@ -146,14 +164,14 @@ const executeCommand = async (
   }
 };
 
-async function action({ packageName, version = 'unversioned' }: ActionOptions) {
+async function action({ packageName, sdk }: ActionOptions) {
   const taskQueue = new TaskQueue(Promise as PromisyClass, os.cpus().length);
 
   try {
     if (packageName) {
       const packagesEntries = Object.entries(PACKAGES_MAPPING)
         .filter(([key, value]) => key === packageName || value.includes(packageName))
-        .map(([key, value]) => taskQueue.add(() => executeCommand(key, version, ...value)));
+        .map(([key, value]) => taskQueue.add(() => executeCommand(key, sdk, ...value)));
       if (packagesEntries.length) {
         await Promise.all(packagesEntries);
         logger.log(
@@ -164,7 +182,7 @@ async function action({ packageName, version = 'unversioned' }: ActionOptions) {
       }
     } else {
       const packagesEntries = Object.entries(PACKAGES_MAPPING).map(([key, value]) =>
-        taskQueue.add(() => executeCommand(key, version, ...value))
+        taskQueue.add(() => executeCommand(key, sdk, ...value))
       );
       await Promise.all(packagesEntries);
       logger.log(
@@ -182,10 +200,6 @@ export default (program: Command) => {
     .alias('gdad')
     .description(`Extract API data JSON files for docs using TypeDoc.`)
     .option('-p, --packageName <packageName>', 'Extract API data only for the specific package.')
-    .option(
-      '-v, --version <version>',
-      'Set the data output path to the specific version.',
-      'unversioned'
-    )
+    .option('-s, --sdk <version>', 'Set the data output path to the specific SDK version.')
     .asyncAction(action);
 };

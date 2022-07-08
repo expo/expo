@@ -21,16 +21,16 @@ export const configureCodeSigning: Command = async (argv) => {
   if (args['--help']) {
     Log.exit(
       chalk`
-      {bold Description}
-      Configure and validate expo-updates code signing for this project
+{bold Description}
+Configure expo-updates code signing for this project and verify setup
 
-      {bold Usage}
-        $ npx expo-updates codesigning:configure
+{bold Usage}
+  {dim $} npx expo-updates codesigning:configure --certificate-input-directory <dir> --key-input-directory <dir>
 
-        Options
-        --certificate-input-directory <string>     Directory containing code signing certificate
-        --key-input-directory <string>             Directory containing private and public keys
-        -h, --help               Output usage information
+  Options
+  --certificate-input-directory <string>     Directory containing code signing certificate
+  --key-input-directory <string>             Directory containing private and public keys
+  -h, --help                                 Output usage information
     `,
       0
     );

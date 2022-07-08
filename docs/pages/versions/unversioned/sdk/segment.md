@@ -8,7 +8,7 @@ import APISection from '~/components/plugins/APISection';
 import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
-> **Deprecated.** This module will be removed in SDK 46. We recommend using the official [@segment/analytics-react-native](https://github.com/segmentio/analytics-react-native) instead.
+> **Deprecated.** This module will be removed in SDK 46. There will be no replacement that works with the classic build service (`expo build`) because [the classic build service has been superseded by **EAS Build**](https://blog.expo.dev/turtle-goes-out-to-sea-d334db2a6b60). With **EAS Build*** and [Development Builds](/development/introduction.md), you should use official [@segment/analytics-react-native](https://github.com/segmentio/analytics-react-native) instead.
 
 **`expo-analytics-segment`** provides access to <https://segment.com/> mobile analytics. Wraps Segment's [iOS](https://segment.com/docs/sources/mobile/ios/) and [Android](https://segment.com/docs/sources/mobile/android/) sources.
 

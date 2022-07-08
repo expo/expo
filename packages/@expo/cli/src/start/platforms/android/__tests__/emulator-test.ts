@@ -1,6 +1,7 @@
 import spawnAsync from '@expo/spawn-async';
 import { spawn } from 'child_process';
 
+import { asMock } from '../../../../__tests__/asMock';
 import * as ADB from '../adb';
 import { listAvdsAsync, startDeviceAsync } from '../emulator';
 
@@ -12,9 +13,6 @@ jest.mock('../adb', () => ({
   listDevicesAsync: jest.fn(async () => []),
   startDeviceAsync: jest.fn(async () => {}),
 }));
-
-const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
-  fn as jest.MockedFunction<T>;
 
 describe(listAvdsAsync, () => {
   it(`returns list of avds`, async () => {

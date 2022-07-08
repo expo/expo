@@ -1,16 +1,10 @@
-import MaterialCommunityIcons from '@expo/vector-icons/build/MaterialCommunityIcons';
-import { useTheme } from '@react-navigation/native';
+import { iconSize, XIcon } from '@expo/styleguide-native';
+import { useExpoTheme } from 'expo-dev-client-components';
 import * as React from 'react';
-import {
-  Platform,
-  StyleSheet,
-  TouchableHighlight as TouchableHighlightRN,
-  View,
-} from 'react-native';
+import { Platform, TouchableHighlight as TouchableHighlightRN, View } from 'react-native';
 import { TouchableHighlight as TouchableHighlightGH } from 'react-native-gesture-handler';
 
 type Props = {
-  style: any;
   onPress: () => void;
 };
 
@@ -19,43 +13,17 @@ const TouchableHighlight = Platform.OS === 'android' ? TouchableHighlightGH : To
 
 const HIT_SLOP = { top: 15, bottom: 15, left: 15, right: 15 };
 
-function DevMenuCloseButton(props: Props) {
-  const onPress = () => {
-    if (props.onPress) {
-      props.onPress();
-    }
-  };
-
-  const theme = useTheme();
+export function DevMenuCloseButton({ onPress }: Props) {
+  const theme = useExpoTheme();
 
   return (
-    <View style={props.style}>
+    <View style={{ position: 'absolute', right: 16, top: 16, zIndex: 3 }}>
       <TouchableHighlight
-        style={styles.closeButton}
         onPress={onPress}
-        underlayColor={theme.dark ? '#333' : '#eee'}
+        underlayColor={theme.background.default}
         hitSlop={HIT_SLOP}>
-        <MaterialCommunityIcons
-          name="close"
-          size={20}
-          color="#2F9BE4"
-          style={styles.closeButtonIcon}
-        />
+        <XIcon size={iconSize.regular} color={theme.icon.default} />
       </TouchableHighlight>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  closeButton: {
-    paddingVertical: 6,
-    paddingHorizontal: 6,
-    borderRadius: 2,
-  },
-  closeButtonIcon: {
-    width: 20,
-    height: 20,
-  },
-});
-
-export default DevMenuCloseButton;

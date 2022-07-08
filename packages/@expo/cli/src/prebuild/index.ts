@@ -2,8 +2,7 @@
 import chalk from 'chalk';
 
 import { Command } from '../../bin/cli';
-import * as Log from '../log';
-import { assertArgs, getProjectRoot } from '../utils/args';
+import { assertArgs, getProjectRoot, printHelp } from '../utils/args';
 
 export const expoPrebuild: Command = async (argv) => {
   const args = assertArgs(
@@ -12,6 +11,8 @@ export const expoPrebuild: Command = async (argv) => {
       '--help': Boolean,
       '--clean': Boolean,
       '--npm': Boolean,
+      '--pnpm': Boolean,
+      '--yarn': Boolean,
       '--no-install': Boolean,
       '--template': String,
       '--platform': String,
@@ -25,28 +26,21 @@ export const expoPrebuild: Command = async (argv) => {
   );
 
   if (args['--help']) {
-    Log.exit(
-      chalk`
-      {bold Description}
-        Create native iOS and Android project files before building natively.
-
-      {bold Usage}
-        $ npx expo prebuild <dir>
-
-      <dir> is the directory of the Expo project.
-      Defaults to the current working directory.
-
-      Options
-      --no-install                             Skip installing npm packages and CocoaPods.
-      --clean                                  Delete the native folders and regenerate them before applying changes
-      --npm                                    Use npm to install dependencies. (default when Yarn is not installed)
-      --template <template>                    Project template to clone from. File path pointing to a local tar file or a github repo
-      -p, --platform <all|android|ios>         Platforms to sync: ios, android, all. Default: all
-      --skip-dependency-update <dependencies>  Preserves versions of listed packages in package.json (comma separated list)
-      -h, --help                               Output usage information
-
-    `,
-      0
+    printHelp(
+      `Create native iOS and Android project files for building natively`,
+      chalk`npx expo prebuild {dim <dir>}`,
+      [
+        chalk`<dir>                                    Directory of the Expo project. {dim Default: Current working directory}`,
+        `--no-install                             Skip installing npm packages and CocoaPods`,
+        `--clean                                  Delete the native folders and regenerate them before applying changes`,
+        chalk`--npm                                    Use npm to install dependencies. {dim Default when package-lock.json exists}`,
+        chalk`--yarn                                   Use Yarn to install dependencies. {dim Default when yarn.lock exists}`,
+        chalk`--pnpm                                   Use pnpm to install dependencies. {dim Default when pnpm-lock.yaml exists}`,
+        `--template <template>                    Project template to clone from. File path pointing to a local tar file or a github repo`,
+        chalk`-p, --platform <all|android|ios>         Platforms to sync: ios, android, all. {dim Default: all}`,
+        `--skip-dependency-update <dependencies>  Preserves versions of listed packages in package.json (comma separated list)`,
+        `-h, --help                               Usage info`,
+      ].join('\n')
     );
   }
 
@@ -55,7 +49,7 @@ export const expoPrebuild: Command = async (argv) => {
     // ./prebuildAsync
     { prebuildAsync },
     // ./resolveOptions
-    { resolvePlatformOption, resolveSkipDependencyUpdate },
+    { resolvePlatformOption, resolvePackageManagerOptions, resolveSkipDependencyUpdate },
     // ../utils/errors
     { logCmdError },
   ] = await Promise.all([
@@ -64,14 +58,17 @@ export const expoPrebuild: Command = async (argv) => {
     import('../utils/errors'),
   ]);
 
-  return prebuildAsync(getProjectRoot(args), {
-    // Parsed options
-    clean: args['--clean'],
-    packageManager: args['--npm'] ? 'npm' : 'yarn',
-    install: !args['--no-install'],
-    platforms: resolvePlatformOption(args['--platform']),
-    // TODO: Parse
-    skipDependencyUpdate: resolveSkipDependencyUpdate(args['--skip-dependency-update']),
-    template: args['--template'],
-  }).catch(logCmdError);
+  return (() => {
+    return prebuildAsync(getProjectRoot(args), {
+      // Parsed options
+      clean: args['--clean'],
+
+      packageManager: resolvePackageManagerOptions(args),
+      install: !args['--no-install'],
+      platforms: resolvePlatformOption(args['--platform']),
+      // TODO: Parse
+      skipDependencyUpdate: resolveSkipDependencyUpdate(args['--skip-dependency-update']),
+      template: args['--template'],
+    });
+  })().catch(logCmdError);
 };

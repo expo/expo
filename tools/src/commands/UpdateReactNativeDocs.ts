@@ -102,7 +102,7 @@ async function getOptions(input: Options): Promise<Options> {
   const answers = questions.length > 0 ? await inquirer.prompt(questions) : {};
 
   return {
-    sdk: `v${answers.sdk || input.sdk}`,
+    sdk: input.sdk === 'unversioned' ? 'unversioned' : `v${answers.sdk || input.sdk}`,
     from: answers.from || input.from,
     to: input.to || 'main',
   };

@@ -42,6 +42,7 @@ internal class CardChangedEvent constructor(viewTag: Int, private val cardDetail
 
     if (dangerouslyGetFullCardDetails) {
       eventData.putString("number", cardDetails["number"]?.toString()?.replace(" ", ""))
+      eventData.putString("cvc", cardDetails["cvc"]?.toString())
     }
 
     return eventData

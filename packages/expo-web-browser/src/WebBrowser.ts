@@ -1,5 +1,5 @@
 import { UnavailabilityError } from 'expo-modules-core';
-import { AppState, AppStateStatus, Linking, Platform } from 'react-native';
+import { AppState, AppStateStatus, Linking, Platform, EmitterSubscription } from 'react-native';
 
 import ExponentWebBrowser from './ExpoWebBrowser';
 import {
@@ -234,7 +234,8 @@ export function dismissBrowser(): void {
  * after a user interaction. If the event is blocked, an error with code [`ERR_WEB_BROWSER_BLOCKED`](#errwebbrowserblocked) will be thrown.
  *
  * @param url The url to open in the web browser. This should be a login page.
- * @param redirectUrl _Optional_ - The url to deep link back into your app. By default, this will be [`Constants.linkingUrl`](./constants/#expoconstantslinkinguri).
+ * @param redirectUrl _Optional_ - The url to deep link back into your app.
+ * On web, this defaults to the output of [`Linking.createURL("")`](./linking/#linkingcreateurlpath-namedparameters).
  * @param options _Optional_ - An object extending the [`WebBrowserOpenOptions`](#webbrowseropenoptions).
  * If there is no native AuthSession implementation available (which is the case on Android)
  * these params will be used in the browser polyfill. If there is a native AuthSession implementation,
@@ -248,7 +249,7 @@ export function dismissBrowser(): void {
  */
 export async function openAuthSessionAsync(
   url: string,
-  redirectUrl: string,
+  redirectUrl?: string | null,
   options: AuthSessionOpenOptions = {}
 ): Promise<WebBrowserAuthSessionResult> {
   if (_authSessionIsNativelySupported()) {
@@ -330,7 +331,7 @@ function _authSessionIsNativelySupported(): boolean {
   return versionNumber >= 11;
 }
 
-let _redirectHandler: ((event: RedirectEvent) => void) | null = null;
+let _redirectSubscription: EmitterSubscription | null = null;
 
 /*
  * openBrowserAsync on Android doesn't wait until closed, so we need to polyfill
@@ -389,10 +390,10 @@ async function _openBrowserAndWaitAndroidAsync(
 
 async function _openAuthSessionPolyfillAsync(
   startUrl: string,
-  returnUrl: string,
+  returnUrl: string | null | undefined,
   browserParams: WebBrowserOpenOptions = {}
 ): Promise<WebBrowserAuthSessionResult> {
-  if (_redirectHandler) {
+  if (_redirectSubscription) {
     throw new Error(
       `The WebBrowser's auth session is in an invalid state with a redirect handler set when it should not be`
     );
@@ -426,24 +427,27 @@ async function _openAuthSessionPolyfillAsync(
 }
 
 function _stopWaitingForRedirect() {
-  if (!_redirectHandler) {
+  if (!_redirectSubscription) {
     throw new Error(
       `The WebBrowser auth session is in an invalid state with no redirect handler when one should be set`
     );
   }
 
-  Linking.removeEventListener('url', _redirectHandler);
-  _redirectHandler = null;
+  _redirectSubscription.remove();
+  _redirectSubscription = null;
 }
 
-function _waitForRedirectAsync(returnUrl: string): Promise<WebBrowserRedirectResult> {
+function _waitForRedirectAsync(
+  returnUrl: string | null | undefined
+): Promise<WebBrowserRedirectResult> {
+  // Note that this Promise never resolves when `returnUrl` is nullish
   return new Promise((resolve) => {
-    _redirectHandler = (event: RedirectEvent) => {
-      if (event.url.startsWith(returnUrl)) {
+    const redirectHandler = (event: RedirectEvent) => {
+      if (returnUrl && event.url.startsWith(returnUrl)) {
         resolve({ url: event.url, type: 'success' });
       }
     };
 
-    Linking.addEventListener('url', _redirectHandler);
+    _redirectSubscription = Linking.addEventListener('url', redirectHandler);
   });
 }

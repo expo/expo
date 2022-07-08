@@ -1,25 +1,22 @@
+import { HomeFilledIcon, iconSize, RefreshIcon } from '@expo/styleguide-native';
 import MaterialCommunityIcons from '@expo/vector-icons/build/MaterialCommunityIcons';
-import React from 'react';
-import { Clipboard, PixelRatio, StyleSheet } from 'react-native';
+import { Divider, Row, Spacer, useExpoTheme, View } from 'expo-dev-client-components';
+import * as Font from 'expo-font';
+import React, { Fragment, useContext, useEffect, useRef } from 'react';
+import { Clipboard } from 'react-native';
 
-import { StyledView } from '../components/Views';
-import DevMenuBottomSheetContext, { Context } from './DevMenuBottomSheetContext';
-import DevMenuButton from './DevMenuButton';
-import DevMenuCloseButton from './DevMenuCloseButton';
+import { ClipboardIcon } from './ClipboardIcon';
+import DevMenuBottomSheetContext from './DevMenuBottomSheetContext';
+import { DevMenuButton } from './DevMenuButton';
+import { DevMenuCloseButton } from './DevMenuCloseButton';
+import { DevMenuItem } from './DevMenuItem';
 import * as DevMenu from './DevMenuModule';
-import DevMenuOnboarding from './DevMenuOnboarding';
-import DevMenuTaskInfo from './DevMenuTaskInfo';
+import { DevMenuOnboarding } from './DevMenuOnboarding';
+import { DevMenuTaskInfo } from './DevMenuTaskInfo';
 
 type Props = {
   task: { [key: string]: any };
   uuid: string;
-};
-
-type State = {
-  enableDevMenuTools: boolean;
-  devMenuItems: { [key: string]: any };
-  isOnboardingFinished: boolean;
-  isLoaded: boolean;
 };
 
 // These are defined in EXVersionManager.m in a dictionary, ordering needs to be
@@ -33,201 +30,187 @@ const DEV_MENU_ORDER = [
   'dev-inspector',
 ];
 
+function ThemedMaterialIcon({
+  name,
+}: {
+  name: React.ComponentProps<typeof MaterialCommunityIcons>['name'];
+}) {
+  const theme = useExpoTheme();
+  return <MaterialCommunityIcons name={name} size={iconSize.regular} color={theme.icon.default} />;
+}
+
 const MENU_ITEMS_ICON_MAPPINGS: {
-  [key: string]: React.ComponentProps<typeof MaterialCommunityIcons>['name'];
+  [key: string]: React.ReactNode;
 } = {
-  'dev-hmr': 'run-fast',
-  'dev-remote-debug': 'remote-desktop',
-  'dev-perf-monitor': 'speedometer',
-  'dev-inspector': 'border-style',
+  'dev-hmr': <ThemedMaterialIcon name="run-fast" />,
+  'dev-remote-debug': <ThemedMaterialIcon name="remote-desktop" />,
+  'dev-perf-monitor': <ThemedMaterialIcon name="speedometer" />,
+  'dev-inspector': <ThemedMaterialIcon name="border-style" />,
 };
 
-class DevMenuView extends React.PureComponent<Props, State> {
-  static contextType = DevMenuBottomSheetContext;
+export function DevMenuView({ uuid, task }: Props) {
+  const context = useContext(DevMenuBottomSheetContext);
 
-  // @ts-expect-error - the provided solution (declare operator) conflicts with @babel/plugin-transform-flow-strip-types
-  context!: Context;
+  const [enableDevMenuTools, setEnableDevMenuTools] = React.useState(false);
+  const [devMenuItems, setDevMenuItems] = React.useState<{ [key: string]: any }>({});
+  const [isOnboardingFinished, setIsOnboardingFinished] = React.useState(false);
+  const [isLoaded, setIsLoaded] = React.useState(false);
 
-  constructor(props: Props, context?: unknown) {
-    super(props, context);
+  const theme = useExpoTheme();
 
-    this.state = {
-      enableDevMenuTools: false,
-      devMenuItems: {},
-      isOnboardingFinished: false,
-      isLoaded: false,
-    };
-  }
+  const prevUUIDRef = useRef(uuid);
 
-  componentDidMount() {
-    this.loadStateAsync();
-  }
+  useEffect(function didMount() {
+    loadStateAsync();
+  }, []);
 
-  componentDidUpdate(prevProps: Props) {
-    if (this.props.uuid !== prevProps.uuid) {
-      this.loadStateAsync();
+  useEffect(
+    function loadStateWhenUUIDChanges() {
+      if (prevUUIDRef.current !== uuid) {
+        loadStateAsync();
+      }
+
+      prevUUIDRef.current = uuid;
+    },
+    [uuid]
+  );
+
+  async function collapse() {
+    if (context) {
+      await context.collapse();
     }
   }
 
-  collapse = async () => {
-    if (this.context) {
-      await this.context.collapse();
-    }
-  };
-
-  collapseAndCloseDevMenuAsync = async () => {
-    await this.collapse();
+  async function collapseAndCloseDevMenuAsync() {
+    await collapse();
     await DevMenu.closeAsync();
-  };
+  }
 
-  loadStateAsync = async () => {
-    this.setState({ isLoaded: false });
+  async function loadStateAsync() {
+    setIsLoaded(false);
 
     const [enableDevMenuTools, devMenuItems, isOnboardingFinished] = await Promise.all([
       DevMenu.doesCurrentTaskEnableDevtoolsAsync(),
       DevMenu.getItemsToShowAsync(),
       DevMenu.isOnboardingFinishedAsync(),
+      Font.loadAsync({
+        'Inter-Black': require('../assets/Inter/Inter-Black.otf'),
+        'Inter-BlackItalic': require('../assets/Inter/Inter-BlackItalic.otf'),
+        'Inter-Bold': require('../assets/Inter/Inter-Bold.otf'),
+        'Inter-BoldItalic': require('../assets/Inter/Inter-BoldItalic.otf'),
+        'Inter-ExtraBold': require('../assets/Inter/Inter-ExtraBold.otf'),
+        'Inter-ExtraBoldItalic': require('../assets/Inter/Inter-ExtraBoldItalic.otf'),
+        'Inter-ExtraLight': require('../assets/Inter/Inter-ExtraLight.otf'),
+        'Inter-ExtraLightItalic': require('../assets/Inter/Inter-ExtraLightItalic.otf'),
+        'Inter-Regular': require('../assets/Inter/Inter-Regular.otf'),
+        'Inter-Italic': require('../assets/Inter/Inter-Italic.otf'),
+        'Inter-Light': require('../assets/Inter/Inter-Light.otf'),
+        'Inter-LightItalic': require('../assets/Inter/Inter-LightItalic.otf'),
+        'Inter-Medium': require('../assets/Inter/Inter-Medium.otf'),
+        'Inter-MediumItalic': require('../assets/Inter/Inter-MediumItalic.otf'),
+        'Inter-SemiBold': require('../assets/Inter/Inter-SemiBold.otf'),
+        'Inter-SemiBoldItalic': require('../assets/Inter/Inter-SemiBoldItalic.otf'),
+        'Inter-Thin': require('../assets/Inter/Inter-Thin.otf'),
+        'Inter-ThinItalic': require('../assets/Inter/Inter-ThinItalic.otf'),
+      }),
     ]);
 
-    this.setState({
-      enableDevMenuTools,
-      devMenuItems,
-      isOnboardingFinished,
-      isLoaded: true,
-    });
-  };
+    setEnableDevMenuTools(enableDevMenuTools);
+    setDevMenuItems(devMenuItems);
+    setIsOnboardingFinished(isOnboardingFinished);
+    setIsLoaded(true);
+  }
 
-  onAppReload = () => {
-    this.collapse();
+  function onAppReload() {
+    collapse();
     DevMenu.reloadAppAsync();
-  };
+  }
 
-  onCopyTaskUrl = async () => {
-    const { manifestUrl } = this.props.task;
+  async function onCopyTaskUrl() {
+    const { manifestUrl } = task;
 
-    await this.collapseAndCloseDevMenuAsync();
+    await collapseAndCloseDevMenuAsync();
     Clipboard.setString(manifestUrl);
     alert(`Copied "${manifestUrl}" to the clipboard!`);
-  };
+  }
 
-  onGoToHome = () => {
-    this.collapse();
+  function onGoToHome() {
+    collapse();
     DevMenu.goToHomeAsync();
-  };
+  }
 
-  onPressDevMenuButton = (key: string) => {
+  function onPressDevMenuButton(key: string) {
     DevMenu.selectItemWithKeyAsync(key);
-  };
+  }
 
-  onOnboardingFinished = () => {
+  function onOnboardingFinished() {
     DevMenu.setOnboardingFinishedAsync(true);
-    this.setState({ isOnboardingFinished: true });
-  };
+    setIsOnboardingFinished(true);
+  }
 
-  maybeRenderDevMenuTools() {
-    const devMenuItems = Object.keys(this.state.devMenuItems).sort(
-      (a, b) => DEV_MENU_ORDER.indexOf(a) - DEV_MENU_ORDER.indexOf(b)
-    );
+  const sortedDevMenuItems = Object.keys(devMenuItems).sort(
+    (a, b) => DEV_MENU_ORDER.indexOf(a) - DEV_MENU_ORDER.indexOf(b)
+  );
 
-    if (this.state.enableDevMenuTools && this.state.devMenuItems) {
-      return (
-        <>
-          <StyledView style={styles.separator} />
-          {devMenuItems.map((key) => {
-            return this.renderDevMenuItem(key, this.state.devMenuItems[key]);
-          })}
-        </>
-      );
-    }
+  if (!isLoaded) {
     return null;
   }
 
-  renderDevMenuItem(key: string, item: any) {
-    const { label, isEnabled, detail } = item;
-
-    return (
-      <DevMenuButton
-        key={key}
-        buttonKey={key}
-        label={label}
-        onPress={this.onPressDevMenuButton}
-        icon={MENU_ITEMS_ICON_MAPPINGS[key]}
-        isEnabled={isEnabled}
-        detail={detail}
-      />
-    );
-  }
-
-  renderContent() {
-    const { task } = this.props;
-    const { isLoaded, isOnboardingFinished } = this.state;
-
-    if (!isLoaded) {
-      return null;
-    }
-
-    return (
-      <>
-        {!isOnboardingFinished && <DevMenuOnboarding onClose={this.onOnboardingFinished} />}
-
-        <DevMenuTaskInfo task={task} />
-
-        <StyledView style={styles.separator} />
-
-        <DevMenuButton buttonKey="reload" label="Reload" onPress={this.onAppReload} icon="reload" />
-        {task && task.manifestUrl && (
-          <DevMenuButton
-            buttonKey="copy"
-            label="Copy link to clipboard"
-            onPress={this.onCopyTaskUrl}
-            icon="clipboard-text"
-          />
-        )}
-        <DevMenuButton buttonKey="home" label="Go to Home" onPress={this.onGoToHome} icon="home" />
-
-        {this.maybeRenderDevMenuTools()}
-        <DevMenuCloseButton
-          style={styles.closeButton}
-          onPress={this.collapseAndCloseDevMenuAsync}
+  return (
+    <View bg="secondary" flex="1" roundedTop="large" overflow="hidden">
+      {!isOnboardingFinished && <DevMenuOnboarding onClose={onOnboardingFinished} />}
+      <DevMenuTaskInfo task={task} />
+      <Divider />
+      <Row align="center" padding="medium">
+        <DevMenuButton
+          buttonKey="reload"
+          label="Reload"
+          onPress={onAppReload}
+          icon={<RefreshIcon size={iconSize.small} color={theme.icon.default} />}
         />
-      </>
-    );
-  }
+        <Spacer.Horizontal size="medium" />
+        {task && task.manifestUrl && (
+          <>
+            <DevMenuButton
+              buttonKey="copy"
+              label="Copy Link"
+              onPress={onCopyTaskUrl}
+              icon={<ClipboardIcon size={iconSize.regular} color={theme.icon.default} />}
+            />
+            <Spacer.Horizontal size="medium" />
+          </>
+        )}
+        <DevMenuButton
+          buttonKey="home"
+          label="Go Home"
+          onPress={onGoToHome}
+          icon={<HomeFilledIcon size={iconSize.regular} color={theme.icon.default} />}
+        />
+      </Row>
+      {enableDevMenuTools && devMenuItems && (
+        <View padding="medium" style={{ paddingTop: 0 }}>
+          <View bg="default" rounded="large">
+            {sortedDevMenuItems.map((key, i) => {
+              const item = devMenuItems[key];
 
-  render() {
-    return (
-      <StyledView style={styles.container} darkBackgroundColor="#000">
-        {this.renderContent()}
-      </StyledView>
-    );
-  }
+              const { label, isEnabled } = item;
+              return (
+                <Fragment key={key}>
+                  <DevMenuItem
+                    buttonKey={key}
+                    label={label}
+                    onPress={onPressDevMenuButton}
+                    icon={MENU_ITEMS_ICON_MAPPINGS[key]}
+                    isEnabled={isEnabled}
+                  />
+                  {i < sortedDevMenuItems.length - 1 && <Divider />}
+                </Fragment>
+              );
+            })}
+          </View>
+        </View>
+      )}
+      <DevMenuCloseButton onPress={collapseAndCloseDevMenuAsync} />
+    </View>
+  );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingTop: 10,
-    borderTopLeftRadius: 10,
-    borderTopRightRadius: 10,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  buttonContainer: {
-    backgroundColor: 'transparent',
-  },
-  separator: {
-    borderTopWidth: 1 / PixelRatio.get(),
-    height: 12,
-    marginVertical: 4,
-    marginHorizontal: -1,
-  },
-  closeButton: {
-    position: 'absolute',
-    right: 12,
-    top: 12,
-    zIndex: 3, // should be higher than zIndex of onboarding container
-  },
-});
-
-export default DevMenuView;

@@ -10,13 +10,11 @@ import { HomeScreenDataQuery } from '../../graphql/types';
 import { useTheme } from '../../utils/useTheme';
 
 type Props = {
-  loading?: boolean;
   currentUser?: Exclude<HomeScreenDataQuery['account']['byName'], null>;
 };
 
-export function HomeScreenHeader({ currentUser, loading }: Props) {
+export function HomeScreenHeader({ currentUser }: Props) {
   const { theme, themeType } = useTheme();
-
   const navigation = useNavigation();
 
   async function onAccountButtonPress() {
@@ -26,41 +24,37 @@ export function HomeScreenHeader({ currentUser, loading }: Props) {
 
   let rightContent: React.ReactNode | null = null;
 
-  // when loading, show nothing to rather than a loading indicator to prevent flicker
-  if (!loading) {
-    // when user is logged in, show account button
-    if (currentUser) {
-      rightContent = (
-        <Button.Container onPress={onAccountButtonPress}>
-          {/* Show profile picture for personal accounts / accounts with members */}
-          {currentUser?.owner?.profilePhoto ? (
-            <Image size="xl" rounded="full" source={{ uri: currentUser.owner.profilePhoto }} />
-          ) : (
-            <View rounded="full" height="xl" width="xl" bg="secondary" align="centered">
-              <UsersIcon color={theme.icon.default} size={iconSize.small} />
-            </View>
-          )}
-        </Button.Container>
-      );
-    } else {
-      // when user is logged out, show log in button
-      rightContent = (
-        <TouchableOpacity
-          onPress={onAccountButtonPress}
-          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-          style={{
-            borderRadius: borderRadius.small,
-            padding: spacing[2],
-            backgroundColor: theme.button.ghost.background,
-            borderWidth: 1,
-            borderColor: theme.button.ghost.border,
-          }}>
-          <Button.Text type="InterSemiBold" color="ghost" size="small">
-            Log In
-          </Button.Text>
-        </TouchableOpacity>
-      );
-    }
+  if (currentUser) {
+    rightContent = (
+      <Button.Container onPress={onAccountButtonPress}>
+        {/* Show profile picture for personal accounts / accounts with members */}
+        {currentUser?.owner?.profilePhoto ? (
+          <Image size="xl" rounded="full" source={{ uri: currentUser.owner.profilePhoto }} />
+        ) : (
+          <View rounded="full" height="xl" width="xl" bg="secondary" align="centered">
+            <UsersIcon color={theme.icon.default} size={iconSize.small} />
+          </View>
+        )}
+      </Button.Container>
+    );
+  } else {
+    // when user is logged out, show log in button
+    rightContent = (
+      <TouchableOpacity
+        onPress={onAccountButtonPress}
+        hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+        style={{
+          borderRadius: borderRadius.small,
+          padding: spacing[2],
+          backgroundColor: theme.button.ghost.background,
+          borderWidth: 1,
+          borderColor: theme.button.ghost.border,
+        }}>
+        <Button.Text type="InterSemiBold" color="ghost" size="small">
+          Log In
+        </Button.Text>
+      </TouchableOpacity>
+    );
   }
 
   return (

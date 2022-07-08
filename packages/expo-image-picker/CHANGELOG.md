@@ -10,6 +10,32 @@
 
 ### 💡 Others
 
+## 13.2.0 — 2022-07-07
+
+### 🎉 New features
+
+- On iOS 14+ added support for selecting multiple images/videos. ([#18102](https://github.com/expo/expo/pull/18102) by [@barthap](https://github.com/barthap))
+
+### 🐛 Bug fixes
+
+- Fix crash when picking a GIF image on iOS. ([#18135](https://github.com/expo/expo/pull/18135) by [@barthap](https://github.com/barthap))
+
+### 💡 Others
+
+- On Android migrated to the new `registerForActivityResult` mechanism. ([#17671](https://github.com/expo/expo/pull/17671), ([#17987](https://github.com/expo/expo/pull/17987) by [@bbarthec](https://github.com/bbarthec))
+- Native module on Android is now written in Kotlin using [Sweet API](https://docs.expo.dev/modules/module-api). ([#17668](https://github.com/expo/expo/pull/17668) by [@bbarthec](https://github.com/bbarthec))
+- Migrated Expo modules definitions to the new naming convention. ([#17193](https://github.com/expo/expo/pull/17193) by [@tsapeta](https://github.com/tsapeta))
+
+## 13.1.1 — 2022-04-27
+
+_This version does not introduce any user-facing changes._
+
+## 13.1.0 — 2022-04-25
+
+### 🎉 New features
+
+- [plugin] Added ability to disable permissions. ([#17168](https://github.com/expo/expo/pull/17168) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 13.0.1 — 2022-04-20
 
 _This version does not introduce any user-facing changes._

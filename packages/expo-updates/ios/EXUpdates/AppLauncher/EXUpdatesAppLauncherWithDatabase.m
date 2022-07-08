@@ -117,6 +117,21 @@ static NSString * const EXUpdatesAppLauncherErrorDomain = @"AppLauncher";
   }
 }
 
++ (void)storedUpdateIdsInDatabase:(EXUpdatesDatabase *)database
+                       completion:(EXUpdatesAppLauncherQueryCompletionBlock)completionBlock
+{
+  dispatch_async(database.databaseQueue,^{
+    NSArray<NSUUID *> *readyUpdateIds;
+    NSError *dbError = nil;
+    readyUpdateIds = [database allUpdateIdsWithStatus:EXUpdatesUpdateStatusReady error:&dbError];
+    if (dbError != nil) {
+      completionBlock(dbError, @[]);
+    } else {
+      completionBlock(nil, readyUpdateIds);
+    }
+  });
+}
+
 - (BOOL)isUsingEmbeddedAssets
 {
   return _assetFilesMap == nil;
@@ -290,24 +305,15 @@ static NSString * const EXUpdatesAppLauncherErrorDomain = @"AppLauncher";
   }
   dispatch_async([EXUpdatesFileDownloader assetFilesQueue], ^{
     [self.downloader downloadFileFromURL:asset.url
+                           verifyingHash:asset.expectedHash
                                   toPath:[assetLocalUrl path]
                             extraHeaders:asset.extraRequestHeaders ?: @{}
-                            successBlock:^(NSData *data, NSURLResponse *response) {
+                            successBlock:^(NSData *data, NSURLResponse *response, NSString *base64URLEncodedSHA256Hash) {
       dispatch_async(self->_launcherQueue, ^{
-        NSString *hashBase64String = [EXUpdatesUtils base64UrlEncodedSHA256WithData:data];
-        if (asset.expectedHash && ![asset.expectedHash.lowercaseString isEqualToString:hashBase64String.lowercaseString]) {
-          completion([NSError errorWithDomain:EXUpdatesAppLauncherErrorDomain
-                                         code:1016
-                                     userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithFormat:@"Asset hash invalid: %@; expectedHash: %@; actualHash: %@", asset.key, asset.expectedHash.lowercaseString, hashBase64String.lowercaseString]}],
-                     asset,
-                     assetLocalUrl);
-          return;
-        }
-        
         if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
           asset.headers = ((NSHTTPURLResponse *)response).allHeaderFields;
         }
-        asset.contentHash = hashBase64String;
+        asset.contentHash = base64URLEncodedSHA256Hash;
         asset.downloadTime = [NSDate date];
         completion(nil, asset, assetLocalUrl);
       });

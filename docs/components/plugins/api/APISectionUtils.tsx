@@ -1,5 +1,5 @@
 import { css } from '@emotion/react';
-import { theme } from '@expo/styleguide';
+import { borderRadius, shadows, spacing, theme, typography } from '@expo/styleguide';
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -7,7 +7,7 @@ import remarkGfm from 'remark-gfm';
 import { Code, InlineCode } from '~/components/base/code';
 import { H4 } from '~/components/base/headings';
 import Link from '~/components/base/link';
-import { LI, UL } from '~/components/base/list';
+import { LI, UL, OL } from '~/components/base/list';
 import { B, P, Quote } from '~/components/base/paragraph';
 import {
   CommentData,
@@ -17,6 +17,11 @@ import {
   TypeDefinitionData,
   TypePropertyDataFlags,
 } from '~/components/plugins/api/APIDataTypes';
+import { PlatformTags } from '~/components/plugins/api/APISectionPlatformTags';
+import * as Constants from '~/constants/theme';
+import { Callout } from '~/ui/components/Callout';
+import { Cell, HeaderCell, Row, Table, TableHead } from '~/ui/components/Table';
+import { tableWrapperStyle } from '~/ui/components/Table/Table';
 
 const isDev = process.env.NODE_ENV === 'development';
 
@@ -48,6 +53,7 @@ export const mdComponents: MDComponents = {
     className ? <Code className={className}>{children}</Code> : <InlineCode>{children}</InlineCode>,
   h1: ({ children }) => <H4>{children}</H4>,
   ul: ({ children }) => <UL>{children}</UL>,
+  ol: ({ children }) => <OL>{children}</OL>,
   li: ({ children }) => <LI>{children}</LI>,
   a: ({ href, children }) => {
     if (
@@ -66,6 +72,11 @@ export const mdComponents: MDComponents = {
   p: ({ children }) => (children ? <P>{children}</P> : null),
   strong: ({ children }) => <B>{children}</B>,
   span: ({ children }) => (children ? <span>{children}</span> : null),
+  table: ({ children }) => <Table>{children}</Table>,
+  thead: ({ children }) => <TableHead>{children}</TableHead>,
+  tr: ({ children }) => <Row>{children}</Row>,
+  th: ({ children }) => <HeaderCell>{children}</HeaderCell>,
+  td: ({ children }) => <Cell>{children}</Cell>,
 };
 
 export const mdInlineComponents: MDComponents = {
@@ -310,41 +321,82 @@ export const resolveTypeName = ({
 
 export const parseParamName = (name: string) => (name.startsWith('__') ? name.substr(2) : name);
 
-export const renderParam = ({ comment, name, type, flags }: MethodParamData): JSX.Element => (
-  <LI key={`param-${name}`}>
-    <B>
-      {parseParamName(name)}
-      {flags?.isOptional && '?'} (<InlineCode>{resolveTypeName(type)}</InlineCode>)
-    </B>
-    <CommentTextBlock comment={comment} components={mdInlineComponents} withDash />
-  </LI>
+export const renderParamRow = ({ comment, name, type, flags }: MethodParamData): JSX.Element => {
+  const defaultValue = parseCommentContent(getTagData('default', comment)?.text);
+  return (
+    <Row key={`param-${name}`}>
+      <Cell>
+        <B>{parseParamName(name)}</B>
+        {renderFlags(flags)}
+      </Cell>
+      <Cell>
+        <InlineCode>{resolveTypeName(type)}</InlineCode>
+      </Cell>
+      <Cell>
+        <CommentTextBlock
+          comment={comment}
+          components={mdInlineComponents}
+          afterContent={renderDefaultValue(defaultValue)}
+          emptyCommentFallback="-"
+        />
+      </Cell>
+    </Row>
+  );
+};
+
+export const renderTableHeadRow = () => (
+  <TableHead>
+    <Row>
+      <HeaderCell>Name</HeaderCell>
+      <HeaderCell>Type</HeaderCell>
+      <HeaderCell>Description</HeaderCell>
+    </Row>
+  </TableHead>
+);
+
+export const renderParams = (parameters: MethodParamData[]) => (
+  <Table>
+    {renderTableHeadRow()}
+    <tbody>{parameters?.map(renderParamRow)}</tbody>
+  </Table>
 );
 
 export const listParams = (parameters: MethodParamData[]) =>
   parameters ? parameters?.map(param => parseParamName(param.name)).join(', ') : '';
 
+export const renderDefaultValue = (defaultValue?: string) =>
+  defaultValue ? (
+    <div css={defaultValueContainerStyle}>
+      <B>Default:</B> <InlineCode>{defaultValue}</InlineCode>
+    </div>
+  ) : undefined;
+
 export const renderTypeOrSignatureType = (
   type?: TypeDefinitionData,
-  signatures?: MethodSignatureData[],
-  includeParamType: boolean = false
+  signatures?: MethodSignatureData[]
 ) => {
-  if (type) {
-    return <InlineCode key={`signature-type-${type.name}`}>{resolveTypeName(type)}</InlineCode>;
-  } else if (signatures && signatures.length) {
-    return signatures.map(({ name, type, parameters }) => (
-      <InlineCode key={`signature-type-${name}`}>
+  if (signatures && signatures.length) {
+    return (
+      <InlineCode key={`signature-type-${signatures[0].name}`}>
         (
-        {parameters && includeParamType
-          ? parameters.map(param => (
-              <span key={`signature-param-${param.name}`}>
-                {param.name}
-                {param.flags?.isOptional && '?'}: {resolveTypeName(param.type)}
-              </span>
-            ))
-          : listParams(parameters)}
-        ) =&gt; {resolveTypeName(type)}
+        {signatures?.map(({ parameters }) =>
+          parameters?.map(param => (
+            <span key={`signature-param-${param.name}`}>
+              {param.name}
+              {param.flags?.isOptional && '?'}: {resolveTypeName(param.type)}
+            </span>
+          ))
+        )}
+        ) =&gt;{' '}
+        {type ? (
+          <InlineCode key={`signature-type-${type.name}`}>{resolveTypeName(type)}</InlineCode>
+        ) : (
+          'void'
+        )}
       </InlineCode>
-    ));
+    );
+  } else if (type) {
+    return <InlineCode key={`signature-type-${type.name}`}>{resolveTypeName(type)}</InlineCode>;
   }
   return undefined;
 };
@@ -361,9 +413,10 @@ export type CommentTextBlockProps = {
   comment?: CommentData;
   components?: MDComponents;
   withDash?: boolean;
-  beforeContent?: JSX.Element | null;
-  afterContent?: JSX.Element | null;
+  beforeContent?: JSX.Element;
+  afterContent?: JSX.Element;
   includePlatforms?: boolean;
+  emptyCommentFallback?: string;
 };
 
 export const parseCommentContent = (content?: string): string =>
@@ -380,30 +433,7 @@ export const getTagData = (tagName: string, comment?: CommentData) =>
 export const getAllTagData = (tagName: string, comment?: CommentData) =>
   comment?.tags?.filter(tag => tag.tag === tagName);
 
-const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
-
-const formatPlatformName = (name: string) => {
-  const cleanName = name.toLowerCase().replace('\n', '');
-  return cleanName.includes('ios')
-    ? cleanName.replace('ios', 'iOS')
-    : cleanName.includes('expo')
-    ? cleanName.replace('expo', 'Expo Go')
-    : capitalize(name);
-};
-
-export const getPlatformTags = (comment?: CommentData, breakLine: boolean = true) => {
-  const platforms = getAllTagData('platform', comment);
-  return platforms?.length ? (
-    <>
-      {platforms.map(platform => (
-        <div key={platform.text} css={STYLES_PLATFORM}>
-          {formatPlatformName(platform.text)} Only
-        </div>
-      ))}
-      {breakLine && <br />}
-    </>
-  ) : null;
-};
+export const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
 
 export const CommentTextBlock = ({
   comment,
@@ -412,6 +442,7 @@ export const CommentTextBlock = ({
   beforeContent,
   afterContent,
   includePlatforms = true,
+  emptyCommentFallback,
 }: CommentTextBlockProps) => {
   const shortText = comment?.shortText?.trim().length ? (
     <ReactMarkdown components={components} remarkPlugins={[remarkGfm]}>
@@ -424,6 +455,10 @@ export const CommentTextBlock = ({
     </ReactMarkdown>
   ) : null;
 
+  if (emptyCommentFallback && (!comment || (!shortText && !text))) {
+    return <>{emptyCommentFallback}</>;
+  }
+
   const examples = getAllTagData('example', comment);
   const exampleText = examples?.map((example, index) => (
     <React.Fragment key={'example-' + index}>
@@ -432,7 +467,9 @@ export const CommentTextBlock = ({
           <B>Example</B>
         </div>
       ) : (
-        <H4>Example</H4>
+        <div css={STYLES_NESTED_SECTION_HEADER}>
+          <H4>Example</H4>
+        </div>
       )}
       <ReactMarkdown components={components}>{example.text}</ReactMarkdown>
     </React.Fragment>
@@ -440,14 +477,16 @@ export const CommentTextBlock = ({
 
   const deprecation = getTagData('deprecated', comment);
   const deprecationNote = deprecation ? (
-    <Quote key="deprecation-note">
-      {deprecation.text.trim().length ? (
-        <ReactMarkdown
-          components={mdInlineComponents}>{`**Deprecated.** ${deprecation.text}`}</ReactMarkdown>
-      ) : (
-        <B>Deprecated</B>
-      )}
-    </Quote>
+    <div css={deprecationNoticeStyle}>
+      <Callout type="warning" key="deprecation-note">
+        {deprecation.text.trim().length ? (
+          <ReactMarkdown
+            components={mdInlineComponents}>{`**Deprecated.** ${deprecation.text}`}</ReactMarkdown>
+        ) : (
+          <B>Deprecated</B>
+        )}
+      </Callout>
+    </div>
   ) : null;
 
   const see = getTagData('see', comment);
@@ -458,12 +497,17 @@ export const CommentTextBlock = ({
     </Quote>
   ) : null;
 
+  const hasPlatforms = (getAllTagData('platform', comment)?.length || 0) > 0;
+
   return (
     <>
+      {!withDash && includePlatforms && hasPlatforms && (
+        <PlatformTags comment={comment} prefix="Only for:" />
+      )}
       {deprecationNote}
       {beforeContent}
       {withDash && (shortText || text) && ' - '}
-      {includePlatforms && getPlatformTags(comment, !withDash)}
+      {withDash && includePlatforms && <PlatformTags comment={comment} />}
       {shortText}
       {text}
       {afterContent}
@@ -479,36 +523,73 @@ export const getComponentName = (name?: string, children: PropData[] = []) => {
   return ctor?.signatures?.[0]?.type?.name ?? 'default';
 };
 
-export const STYLES_OPTIONAL = css`
-  color: ${theme.text.secondary};
-  font-size: 90%;
-  padding-top: 22px;
-`;
+export const STYLES_APIBOX = css({
+  borderRadius: borderRadius.medium,
+  borderWidth: 1,
+  borderStyle: 'solid',
+  borderColor: theme.border.default,
+  padding: `${spacing[1]}px ${spacing[5]}px`,
+  boxShadow: shadows.micro,
+  marginBottom: spacing[6],
+  overflowX: 'hidden',
 
-export const STYLES_SECONDARY = css`
-  color: ${theme.text.secondary};
-  font-size: 90%;
-  font-weight: 600;
-`;
+  h3: {
+    marginTop: spacing[4],
+  },
 
-export const STYLES_PLATFORM = css`
-  & {
-    display: inline-block;
-    background-color: ${theme.background.tertiary};
-    color: ${theme.text.default};
-    font-size: 90%;
-    font-weight: 700;
-    padding: 6px 12px;
-    margin-bottom: 8px;
-    margin-right: 8px;
-    border-radius: 4px;
-  }
+  [`.css-${tableWrapperStyle.name}`]: {
+    boxShadow: 'none',
+  },
 
-  table & {
-    margin-bottom: 1rem;
-  }
-`;
+  [`@media screen and (max-width: ${Constants.breakpoints.mobile})`]: {
+    padding: `0 ${spacing[4]}px`,
+  },
+});
 
-const STYLES_EXAMPLE_IN_TABLE = css`
-  margin: 8px 0;
-`;
+export const STYLES_APIBOX_NESTED = css({
+  boxShadow: 'none',
+});
+
+export const STYLES_NESTED_SECTION_HEADER = css({
+  display: 'flex',
+  borderTop: `1px solid ${theme.border.default}`,
+  borderBottom: `1px solid ${theme.border.default}`,
+  margin: `${spacing[6]}px -${spacing[5]}px ${spacing[4]}px`,
+  padding: `${spacing[2.5]}px ${spacing[5]}px`,
+  backgroundColor: theme.background.secondary,
+
+  h4: {
+    ...typography.fontSizes[16],
+    marginBottom: 0,
+  },
+});
+
+export const STYLES_NOT_EXPOSED_HEADER = css({
+  marginTop: spacing[5],
+  marginBottom: spacing[2],
+  display: 'inline-block',
+});
+
+export const STYLES_OPTIONAL = css({
+  color: theme.text.secondary,
+  fontSize: '90%',
+  paddingTop: 22,
+});
+
+export const STYLES_SECONDARY = css({
+  color: theme.text.secondary,
+  fontSize: '90%',
+  fontWeight: 600,
+});
+
+const defaultValueContainerStyle = css({
+  marginTop: spacing[2],
+});
+
+const deprecationNoticeStyle = css({
+  marginBottom: spacing[2],
+});
+
+const STYLES_EXAMPLE_IN_TABLE = css({
+  margin: `${spacing[2]}px 0`,
+});

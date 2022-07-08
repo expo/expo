@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 3.7.0 — 2022-07-07
+
+### 🎉 New features
+
+- Add projectNameForProxy option. ([#17327](https://github.com/expo/expo/pull/17327) by [@wschurman](https://github.com/wschurman))
+
 ## 3.6.0 — 2022-04-18
 
 ### 💡 Others

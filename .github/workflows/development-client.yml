@@ -21,40 +21,26 @@ concurrency:
 jobs:
   android:
     runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        ndk-version: [21.4.7075529]
     steps:
-      - name: Check out repository
+      - name: 👀 Checkout
         uses: actions/checkout@v3
+      - name: ➕ Add `bin` to GITHUB_PATH
+        run: echo "$(pwd)/bin" >> $GITHUB_PATH
+      - name: ♻️ Restore caches
+        uses: ./.github/actions/expo-caches
+        id: expo-caches
         with:
-          submodules: false
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-      - uses: actions/cache@v2
-        with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-      - run: yarn install --frozen-lockfile
-      - uses: actions/cache@v2
-        with:
-          path: ~/.gradle/caches
-          key: ${{ runner.os }}-gradle-${{ hashFiles('android/*.gradle*') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
-      - uses: actions/cache@v2
-        id: cache-android-ndk
-        with:
-          path: /usr/local/lib/android/sdk/ndk/21.4.7075529/
-          key: ${{ runner.os }}-ndk-21.4.7075529
-          restore-keys: |
-            ${{ runner.os }}-ndk-
-      - name: Install NDK
-        if: steps.cache-android-ndk.outputs.cache-hit != 'true'
-        run: |
-          sudo $ANDROID_SDK_ROOT/tools/bin/sdkmanager --install "ndk;21.4.7075529"
-      - run: yarn global add expo-cli
-      - run: echo "$(yarn global bin)" >> $GITHUB_PATH
+          yarn-workspace: 'true'
+          ndk: 'true'
+          ndk-version: ${{ matrix.ndk-version }}
+      - name: 🧶 Yarn install
+        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
+        run: yarn install --frozen-lockfile
+      - name: 🔧 Install Expo CLI
+        run: yarn global add expo-cli
       - name: Init new expo app
         working-directory: ../
         run: expo-cli init development-client-android-test --name development-client-android-test --yes
@@ -89,31 +75,29 @@ jobs:
       - name: Bump `android build tools`
         working-directory: ../development-client-android-test
         run: sed -i -e 's/com\.android\.tools\.build:gradle:3\..\../com\.android\.tools\.build:gradle:3\.5\.4/' ./android/build.gradle
-      - name: Build debug
+      - name: 🏗️ Build debug version
         env:
-          ANDROID_NDK_HOME: /usr/local/lib/android/sdk/ndk/21.4.7075529/
+          ANDROID_NDK_HOME: /usr/local/lib/android/sdk/ndk/${{ matrix.ndk-version }}/
         working-directory: ../development-client-android-test/android
         run: ./gradlew assembleDebug
 
   ios:
     runs-on: macos-11
     steps:
-      - name: Check out repository
+      - name: 👀 Checkout
         uses: actions/checkout@v3
+      - name: ➕ Add `bin` to GITHUB_PATH
+        run: echo "$(pwd)/bin" >> $GITHUB_PATH
+      - name: ♻️ Restore caches
+        uses: ./.github/actions/expo-caches
+        id: expo-caches
         with:
-          submodules: false
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-      - uses: actions/cache@v2
-        with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-      - run: yarn install --frozen-lockfile
-      - run: yarn global add expo-cli
-      - run: echo "$(yarn global bin)" >> $GITHUB_PATH
+          yarn-workspace: 'true'
+      - name: 🧶 Yarn install
+        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
+        run: yarn install --frozen-lockfile
+      - name: 🔧 Install Expo CLI
+        run: yarn global add expo-cli
       - name: Init new expo app
         working-directory: ../
         run: expo-cli init development-client-ios-test --name development-client-ios-test --yes
@@ -142,6 +126,6 @@ jobs:
       - name: Eject
         working-directory: ../development-client-ios-test
         run: expo-cli eject
-      - name: Build debug
+      - name: 🏗️ Build debug version
         working-directory: ../development-client-ios-test
         run: xcodebuild -workspace ios/developmentclientiostest.xcworkspace -scheme developmentclientiostest -configuration debug -sdk iphonesimulator -arch x86_64

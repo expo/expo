@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 10.4.0 — 2022-07-07
+
+### 💡 Others
+
+- Migrated Expo modules definitions to the new naming convention. ([#17193](https://github.com/expo/expo/pull/17193) by [@tsapeta](https://github.com/tsapeta))
+
 ## 10.3.1 — 2022-04-20
 
 ### 🐛 Bug fixes

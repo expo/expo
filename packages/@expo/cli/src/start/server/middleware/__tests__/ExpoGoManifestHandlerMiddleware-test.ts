@@ -6,6 +6,7 @@ import {
 } from '@expo/multipart-body-parser';
 import { vol } from 'memfs';
 
+import { asMock } from '../../../../__tests__/asMock';
 import { getProjectAsync } from '../../../../api/getProject';
 import { APISettings } from '../../../../api/settings';
 import { getUserAsync } from '../../../../api/user/user';
@@ -80,9 +81,6 @@ jest.mock('@expo/config', () => ({
 }));
 
 const asReq = (req: Partial<ServerRequest>) => req as ServerRequest;
-
-const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
-  fn as jest.MockedFunction<T>;
 
 async function getMultipartPartAsync(
   partName: string,

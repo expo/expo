@@ -1,8 +1,9 @@
 import { ExpoConfig } from '@expo/config';
 import { ModPlatform } from '@expo/config-plugins';
 
-import * as Log from '../log';
-import { installNodeDependenciesAsync, resolvePackageManager } from '../utils/nodeModules';
+import { installAsync } from '../install/installAsync';
+import { env } from '../utils/env';
+import { clearNodeModulesAsync } from '../utils/nodeModules';
 import { logNewSection } from '../utils/ora';
 import { profile } from '../utils/profile';
 import { clearNativeFolder, promptToClearMalformedNativeProjectsAsync } from './clearNativeFolder';
@@ -10,6 +11,8 @@ import { configureProjectAsync } from './configureProjectAsync';
 import { ensureConfigAsync } from './ensureConfigAsync';
 import { assertPlatforms, ensureValidPlatforms, resolveTemplateOption } from './resolveOptions';
 import { updateFromTemplateAsync } from './updateFromTemplate';
+
+const debug = require('debug')('expo:prebuild') as typeof console.log;
 
 export type PrebuildResults = {
   /** Expo config. */
@@ -22,8 +25,6 @@ export type PrebuildResults = {
   podInstall: boolean;
   /** Indicates if node modules were installed. */
   nodeInstall: boolean;
-  /** Indicates which package manager the project is using. */
-  packageManager: string;
 };
 
 /**
@@ -39,7 +40,7 @@ export async function prebuildAsync(
   projectRoot: string,
   options: {
     /** Should install node modules and cocoapods. */
-    install: boolean;
+    install?: boolean;
     /** List of platforms to prebuild. */
     platforms: ModPlatform[];
     /** Should delete the native folders before attempting to prebuild. */
@@ -47,7 +48,11 @@ export async function prebuildAsync(
     /** URL or file path to the prebuild template. */
     template?: string;
     /** Name of the node package manager to install with. */
-    packageManager?: 'npm' | 'yarn';
+    packageManager?: {
+      npm?: boolean;
+      yarn?: boolean;
+      pnpm?: boolean;
+    };
     /** List of node modules to skip updating. */
     skipDependencyUpdate?: string[];
   }
@@ -86,17 +91,14 @@ export async function prebuildAsync(
   );
 
   // Install node modules
-  const packageManager = resolvePackageManager({
-    install: options.install,
-    npm: options.packageManager === 'npm',
-    yarn: options.packageManager === 'yarn',
-  });
-
   if (options.install) {
-    await installNodeDependenciesAsync(projectRoot, packageManager, {
-      // We delete the dependencies when new ones are added because native packages are more fragile.
-      // npm doesn't work well so we always run the cleaning step when npm is used in favor of yarn.
-      clean: hasNewDependencies || packageManager === 'npm',
+    if (hasNewDependencies && options.packageManager?.npm) {
+      await clearNodeModulesAsync(projectRoot);
+    }
+
+    await installAsync([], {
+      ...options.packageManager,
+      silent: !env.EXPO_DEBUG,
     });
   }
 
@@ -120,12 +122,11 @@ export async function prebuildAsync(
 
     podsInstalled = await installCocoaPodsAsync(projectRoot);
   } else {
-    Log.debug('Skipped pod install');
+    debug('Skipped pod install');
   }
 
   return {
-    packageManager,
-    nodeInstall: options.install,
+    nodeInstall: !!options.install,
     podInstall: !podsInstalled,
     platforms: options.platforms,
     hasNewProjectFiles,

@@ -23,39 +23,31 @@ jobs:
   test:
     runs-on: ubuntu-20.04
     steps:
-      - name: 👀 Checkout a ref for the event
+      - name: 👀 Checkout
         uses: actions/checkout@v3
         with:
           fetch-depth: 100
       - name: ⬇️ Fetch commits from base branch
         run: git fetch origin ${{ github.event.before || github.base_ref || 'main' }}:${{ github.event.before || github.base_ref || 'main' }} --depth 100
         if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
-      - name: ♻️ Restore workspace node modules
-        uses: actions/cache@v2
-        id: node-modules-cache
+      - name: ♻️ Restore caches
+        uses: ./.github/actions/expo-caches
+        id: expo-caches
         with:
-          path: |
-            # See "workspaces" → "packages" in the root package.json for the source of truth of
-            # which node_modules are affected by the root yarn.lock
-            node_modules
-            apps/*/node_modules
-            home/node_modules
-            packages/*/node_modules
-            packages/@expo/*/node_modules
-            react-native-lab/react-native/node_modules
-          key: ${{ runner.os }}-modules-v2-${{ hashFiles('yarn.lock') }}
+          yarn-workspace: 'true'
       - name: 🧶 Install node modules in root dir
+        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
-      - name: Lint CLI
+      - name: 🚨 Lint CLI
         run: yarn lint --max-warnings 0
         working-directory: packages/@expo/cli
-      - name: Type Check CLI
+      - name: 🔎 Type Check CLI
         run: yarn typecheck
         working-directory: packages/@expo/cli
-      - name: Build CLI
+      - name: 🛠 Build CLI
         run: yarn prepare
         working-directory: packages/@expo/cli
-      - name: Unit Test CLI
+      - name: 🧪 Unit Test CLI
         run: yarn test
         working-directory: packages/@expo/cli
       - name: E2E Test CLI

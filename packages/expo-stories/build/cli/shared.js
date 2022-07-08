@@ -8,7 +8,7 @@ var path_1 = __importDefault(require("path"));
 exports.storiesDirName = '__generated__/stories';
 exports.defaultConfig = {
     projectRoot: process.cwd(),
-    watchRoot: process.cwd(),
+    watchRoots: [process.cwd()],
 };
 function getManifestFilePath(projectRoot) {
     var manifestFilePath = path_1.default.resolve(projectRoot, exports.storiesDirName, 'storyManifest.json');
@@ -29,8 +29,9 @@ function getStories(config) {
     return stories;
 }
 exports.getStories = getStories;
-function getStoriesDir(config) {
-    var storiesDir = path_1.default.resolve(config.projectRoot, exports.storiesDirName);
+function getStoriesDir(_a) {
+    var projectRoot = _a.projectRoot;
+    var storiesDir = path_1.default.resolve(projectRoot, exports.storiesDirName);
     return storiesDir;
 }
 exports.getStoriesDir = getStoriesDir;

@@ -14,7 +14,7 @@
 #import "ABI45_0_0RCTDefines.h"
 #import "ABI45_0_0RCTUtils.h"
 
-#if ABI45_0_0RCT_DEV
+#if TARGET_IPHONE_SIMULATOR
 
 @interface UIEvent (UIPhysicalKeyboardEvent)
 

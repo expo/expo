@@ -9,12 +9,14 @@
 
 @interface EXErrorView ()
 
-@property (nonatomic, strong) UILabel *lblError;
-@property (nonatomic, strong) UIButton *btnRetry;
-@property (nonatomic, strong) UIButton *btnBack;
-@property (nonatomic, strong) UILabel *lblUrl;
-@property (nonatomic, strong) UILabel *lblErrorDetail;
-@property (nonatomic, strong) UIScrollView *vContainer;
+@property (nonatomic, strong) IBOutlet UILabel *lblError;
+@property (nonatomic, strong) IBOutlet UIButton *btnRetry;
+@property (nonatomic, strong) IBOutlet UIButton *btnBack;
+@property (nonatomic, strong) IBOutlet UIStackView *btnStack;
+@property (nonatomic, strong) IBOutlet UIView *btnStackContainer;
+@property (nonatomic, strong) IBOutlet UILabel *lblUrl;
+@property (nonatomic, strong) IBOutlet UILabel *lblErrorDetail;
+@property (nonatomic, strong) IBOutlet UIScrollView *vContainer;
 
 - (void)_onTapRetry;
 
@@ -25,49 +27,15 @@
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if (self = [super initWithFrame:frame]) {
-    self.backgroundColor = [UIColor whiteColor];
-    
-    self.vContainer = [[UIScrollView alloc] init];
+    [[NSBundle mainBundle] loadNibNamed:@"EXErrorView" owner:self options:nil];
     [self addSubview:_vContainer];
-
-    // error description label
-    self.lblError = [[UILabel alloc] init];
-    _lblError.numberOfLines = 0;
-    _lblError.textAlignment = NSTextAlignmentCenter;
-    _lblError.font = [UIFont systemFontOfSize:14.0f];
-    [_vContainer addSubview:_lblError];
     
-    // retry button
-    self.btnRetry = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-    [_btnRetry setTitle:@"Try again" forState:UIControlStateNormal];
     [_btnRetry addTarget:self action:@selector(_onTapRetry) forControlEvents:UIControlEventTouchUpInside];
-    [_vContainer addSubview:_btnRetry];
-    
-    // back button
-    self.btnBack = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-    [_btnBack setTitle:@"Go back to Expo Home" forState:UIControlStateNormal];
     [_btnBack addTarget:self action:@selector(_onTapBack) forControlEvents:UIControlEventTouchUpInside];
-    [_vContainer addSubview:_btnBack];
     
     for (UIButton *btnToStyle in @[ _btnRetry, _btnBack ]) {
-      [btnToStyle setTintColor:[EXUtil colorWithRGB:0x49a7e8]];
-      [btnToStyle.titleLabel setFont:[UIFont boldSystemFontOfSize:14.0f]];
-    }
-    
-    // url label
-    self.lblUrl = [[UILabel alloc] init];
-    _lblUrl.numberOfLines = 0;
-    _lblUrl.textAlignment = NSTextAlignmentCenter;
-    [_vContainer addSubview:_lblUrl];
-
-    // error detail label
-    self.lblErrorDetail = [[UILabel alloc] init];
-    _lblErrorDetail.numberOfLines = 0;
-    _lblErrorDetail.textAlignment = NSTextAlignmentCenter;
-    [_vContainer addSubview:_lblErrorDetail];
-    
-    for (UILabel *lblToStyle in @[ _lblUrl, _lblErrorDetail ]) {
-      lblToStyle.font = [UIFont systemFontOfSize:14.0f];
+      btnToStyle.layer.cornerRadius = 4.0;
+      btnToStyle.layer.masksToBounds = YES;
     }
   }
   return self;
@@ -88,20 +56,6 @@
   switch (type) {
     case kEXFatalErrorTypeLoading: {
       _lblError.text = [NSString stringWithFormat:@"There was a problem loading %@.", appOwnerName];
-      if (_error.code == kCFURLErrorNotConnectedToInternet) {
-        _lblError.text = [NSString stringWithFormat:@"%@ Make sure you're connected to the internet.", _lblError.text];
-      } else if (_appRecord.appLoader.manifestUrl) {
-        NSString *url = _appRecord.appLoader.manifestUrl.absoluteString;
-        if ([self _urlLooksLikeLAN:url]) {
-          NSString *extraLANPermissionText = @"";
-          if (@available(iOS 14, *)) {
-            extraLANPermissionText = @", and that you have granted Expo Go the Local Network permission in the Settings app,";
-          }
-          _lblError.text = [NSString stringWithFormat:
-                            @"%@\n\nIt looks like you may be using a LAN URL. "
-                            "Make sure your device is on the same network as the server%@ or try using the tunnel connection type.", _lblError.text, extraLANPermissionText];
-        }
-      }
       break;
     }
     case kEXFatalErrorTypeException: {
@@ -116,6 +70,28 @@
 {
   _error = error;
   _lblErrorDetail.text = [error localizedDescription];
+  switch (_type) {
+    case kEXFatalErrorTypeLoading: {
+      if (_error.code == kCFURLErrorNotConnectedToInternet) {
+        _lblErrorDetail.text = [NSString stringWithFormat:@"%@ Make sure you're connected to the internet.", _lblErrorDetail.text];
+      } else if (_appRecord.appLoader.manifestUrl) {
+        NSString *url = _appRecord.appLoader.manifestUrl.absoluteString;
+        if ([self _urlLooksLikeLAN:url]) {
+          NSString *extraLANPermissionText = @"";
+          if (@available(iOS 14, *)) {
+            extraLANPermissionText = @", and that you have granted Expo Go the Local Network permission in the Settings app,";
+          }
+          _lblErrorDetail.text = [NSString stringWithFormat:
+                            @"%@\n\nIt looks like you may be using a LAN URL. "
+                            "Make sure your device is on the same network as the server%@ or try using the tunnel connection type.", _lblErrorDetail.text, extraLANPermissionText];
+        }
+      }
+      break;
+    }
+    case kEXFatalErrorTypeException: {
+      break;
+    }
+  }
   [self _resetUIState];
 }
 
@@ -128,30 +104,33 @@
 - (void)layoutSubviews
 {
   [super layoutSubviews];
-
-  _vContainer.frame = self.bounds;
-  CGFloat maxLabelWidth = self.bounds.size.width - 32.0f;
-
-  _lblError.frame = CGRectMake(0, 0, maxLabelWidth, CGFLOAT_MAX);
-  [_lblError sizeToFit];
-  _lblError.center = CGPointMake(self.bounds.size.width * 0.5f, self.bounds.size.height * 0.25f);
-
-  _btnRetry.frame = CGRectMake(0, 0, self.bounds.size.width, 24.0f);
-  _btnRetry.center = CGPointMake(_lblError.center.x, CGRectGetMaxY(_lblError.frame) + 32.0f);
+ 
+  if (@available(iOS 12.0, *)) {
+    switch (UIScreen.mainScreen.traitCollection.userInterfaceStyle) {
+      case UIUserInterfaceStyleDark:
+        self.backgroundColor = [EXUtil colorWithRGB:0x25292E];
+        break;
+      case UIUserInterfaceStyleLight:
+      case UIUserInterfaceStyleUnspecified:
+        break;
+      default:
+        break;
+    }
+  }
   
-  _btnBack.frame = CGRectMake(0, 0, self.bounds.size.width, 24.0f);
-  _btnBack.center = CGPointMake(_lblError.center.x, CGRectGetMaxY(_btnRetry.frame) + 24);
+  _vContainer.translatesAutoresizingMaskIntoConstraints = NO;
+
+  UILayoutGuide *guide = self.safeAreaLayoutGuide;
+  [_vContainer.leadingAnchor constraintEqualToAnchor:guide.leadingAnchor].active = YES;
+  [_vContainer.trailingAnchor constraintEqualToAnchor:guide.trailingAnchor].active = YES;
+  [_vContainer.topAnchor constraintEqualToAnchor:guide.topAnchor].active = YES;
+  [_vContainer.bottomAnchor constraintEqualToAnchor:guide.bottomAnchor].active = YES;
+
+  UIImage *btnRetryBgImage = [self imageWithSize:_btnRetry.frame.size color:  [EXUtil colorWithRGB:0x25292E]];
+  [_btnRetry setBackgroundImage:btnRetryBgImage forState:UIControlStateNormal];
   
-  _lblUrl.frame = CGRectMake(0, 0, self.bounds.size.width - 48.0f, CGFLOAT_MAX);
-  [_lblUrl sizeToFit];
-  _lblUrl.center = CGPointMake(_lblError.center.x, CGRectGetMaxY(_btnBack.frame) + 12.0f + CGRectGetMidY(_lblUrl.bounds));
-
-  _lblErrorDetail.frame = CGRectMake(0, 0, maxLabelWidth, CGFLOAT_MAX);
-  [_lblErrorDetail sizeToFit];
-
-  _lblErrorDetail.center = CGPointMake(_lblError.center.x, CGRectGetMaxY(_lblUrl.frame) + 24.0f + CGRectGetMidY(_lblErrorDetail.bounds));
-
-  _vContainer.contentSize = CGSizeMake(_vContainer.bounds.size.width, CGRectGetMaxY(_lblErrorDetail.frame) + 12.0f);
+  UIImage *btnBackBgImage = [self imageWithSize:_btnBack.frame.size color:  [EXUtil colorWithRGB:0xF0F1F2]];
+  [_btnBack setBackgroundImage:btnBackBgImage forState:UIControlStateNormal];
 }
 
 #pragma mark - Internal
@@ -195,6 +174,17 @@
 - (BOOL)_isDevDetached
 {
   return [EXEnvironment sharedEnvironment].isDetached && [EXEnvironment sharedEnvironment].isDebugXCodeScheme;
+}
+
+// for creating a filled button background in iOS < 15
+- (UIImage *)imageWithSize:(CGSize)size color:(UIColor *)color
+{
+  UIGraphicsBeginImageContextWithOptions(size, true, 0.0);
+  [color setFill];
+  UIRectFill(CGRectMake(0.0, 0.0, size.width, size.height));
+  UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
+  UIGraphicsEndImageContext();
+  return image;
 }
 
 @end

@@ -3,6 +3,7 @@ title: Linking
 ---
 
 import SnackInline from '~/components/plugins/SnackInline';
+import { Collapsible } from '~/ui/components/Collapsible';
 
 ## Introduction
 
@@ -134,7 +135,7 @@ It's possible that the user doesn't have the Lyft app installed, in which case y
 
 On iOS, `Linking.canOpenURL` requires additional configuration to query other apps' linking schemes. You can use the `ios.infoPlist` key in your **app.json** to specify a list of schemes your app needs to query. For example:
 
-```
+```json
   "infoPlist": {
     "LSApplicationQueriesSchemes": ["lyft"]
   }
@@ -154,7 +155,7 @@ In development, your app will live at a url like `exp://wg-qka.community.app.exp
 
 To link to your standalone app, you need to specify a scheme for your app. You can register for a scheme in your **app.json** by adding a string under the `scheme` key (use only lower case):
 
-```
+```json
 {
   "expo": {
     "scheme": "myapp"
@@ -201,7 +202,7 @@ See the examples below to see these in action.
 To pass some data into your app, you can append it as a path or query string on your url. `Linking.createURL(path, { queryParams })` will construct a working url automatically for you. You can use it like this:
 
 ```javascript
-let redirectUrl = Linking.createURL('path/into/app', {
+const redirectUrl = Linking.createURL('path/into/app', {
   queryParams: { hello: 'world' },
 });
 ```
@@ -236,7 +237,7 @@ The example project [examples/with-webbrowser-redirect](https://github.com/expo/
 
 ### Example: using linking for authentication
 
-A common use case for linking to your app is to redirect back to your app after opening a [WebBrowser](../versions/latest/sdk/webbrowser.md). For example, you can open a web browser session to your sign in screen and when the user has successfully signed in, you can have your website redirect back to your app by using the scheme and appending the authentication token and other data to the URL.
+A common use case for linking to your app is to redirect back to your app after opening a [WebBrowser](/versions/latest/sdk/webbrowser.md). For example, you can open a web browser session to your sign in screen and when the user has successfully signed in, you can have your website redirect back to your app by using the scheme and appending the authentication token and other data to the URL.
 
 **Note**: if try to use `Linking.openURL` to open the web browser for authentication then your app may be rejected by Apple on the grounds of a bad or confusing user experience. `WebBrowser.openBrowserAsync` opens the browser window in a modal, which looks and feels good and is Apple approved.
 
@@ -259,7 +260,7 @@ To implement universal links on iOS, you must first set up verification that you
 
 The AASA must be served from `/.well-known/apple-app-site-association` (with no extension). The AASA contains JSON which specifies your Apple app ID and a list of paths on your domain that should be handled by your mobile app. For example, if you want links of the format `https://www.myapp.io/records/123` to be opened by your mobile app, your AASA would have the following contents:
 
-```
+```json
 {
   "applinks": {
     "apps": [], // This is usually left empty, but still must be included
@@ -280,44 +281,41 @@ As of iOS 13, [a new `details` format is supported](https://developer.apple.com/
 - `appIDs` instead of `appID`, which makes it easier to associate multiple apps with the same configuration
 - an array of `components`, which allows you to specify fragments, exclude specific paths, and add comments
 
-<details><summary><h4>Here's the example AASA json from Apple's documentation:</h4></summary>
-<p>
+<Collapsible summary="Here's the example AASA json from Apple's documentation">
 
-```
+```json
 {
   "applinks": {
-      "details": [
-           {
-             "appIDs": [ "ABCDE12345.com.example.app", "ABCDE12345.com.example.app2" ],
-             "components": [
-               {
-                  "#": "no_universal_links",
-                  "exclude": true,
-                  "comment": "Matches any URL whose fragment equals no_universal_links and instructs the system not to open it as a universal link"
-               },
-               {
-                  "/": "/buy/*",
-                  "comment": "Matches any URL whose path starts with /buy/"
-               },
-               {
-                  "/": "/help/website/*",
-                  "exclude": true,
-                  "comment": "Matches any URL whose path starts with /help/website/ and instructs the system not to open it as a universal link"
-               },
-               {
-                  "/": "/help/*",
-                  "?": { "articleNumber": "????" },
-                  "comment": "Matches any URL whose path starts with /help/ and which has a query item with name 'articleNumber' and a value of exactly 4 characters"
-               }
-             ]
-           }
-       ]
-   }
+  "details": [
+    {
+      "appIDs": [ "ABCDE12345.com.example.app", "ABCDE12345.com.example.app2" ],
+      "components": [
+         {
+            "#": "no_universal_links",
+            "exclude": true,
+            "comment": "Matches any URL whose fragment equals no_universal_links and instructs the system not to open it as a universal link"
+         },
+         {
+            "/": "/buy/*",
+            "comment": "Matches any URL whose path starts with /buy/"
+         },
+         {
+            "/": "/help/website/*",
+            "exclude": true,
+            "comment": "Matches any URL whose path starts with /help/website/ and instructs the system not to open it as a universal link"
+         },
+         {
+            "/": "/help/*",
+            "?": { "articleNumber": "????" },
+            "comment": "Matches any URL whose path starts with /help/ and which has a query item with name 'articleNumber' and a value of exactly 4 characters"
+        }
+      ]
+    }
+  ]
 }
 ```
 
-</p>
-</details>
+</Collapsible>
 
 To support all iOS versions, you can provide both the above formats in your `details` key, but we recommend placing the configuration for more recent iOS versions first.
 
@@ -329,7 +327,7 @@ After deploying your AASA, you must also configure your app to use your associat
 
 1. Add the `associatedDomains` [configuration](/versions/latest/config/app/#associateddomains) to your **app.json**, and make sure to follow [Apple's specified format](https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_associated-domains). Make sure _not_ to include the protocol (`https`) in your URL (this is a common mistake, and will result in your universal links not working).
 
-2. Edit your App ID on the Apple developer portal and enable the "Associated Domains" application service. Go into the App IDs section and click on your App ID. Select Edit, check the Associated Domains checkbox and click Done. You will also need to regenerate your provisioning profile _after_ adding the service to the App ID. This can be done by clearing your provisioning profile (which can be done via `expo credentials:manager` or `eas credentials`, depending on if you use `expo build` or `eas build`, respectively). Next time you build your app, Expo will prompt you to create a new provisioning profile.
+2. Edit your App ID on the Apple Developer portal and enable the "Associated Domains" application service. Go into the App IDs section and click on your App ID. Select Edit, check the Associated Domains checkbox and click Done. You will also need to regenerate your provisioning profile _after_ adding the service to the App ID. This can be done by clearing your provisioning profile (which can be done via `expo credentials:manager` or `eas credentials`, depending on if you use `expo build` or `eas build`, respectively). Next time you build your app, Expo will prompt you to create a new provisioning profile.
 
 At this point, opening a link on your mobile device should now open your app! If it doesn't, re-check the previous steps to ensure that your AASA is valid, the path is specified in the AASA, and you have correctly configured your App ID in the Apple Developer Portal. Once you've got your app opening, move to the [Handling links into your app](#handling-links-into-your-app) section for details on how to handle the inbound link and show the user the content they requested.
 
@@ -337,7 +335,7 @@ At this point, opening a link on your mobile device should now open your app! If
 
 Implementing deep links on Android (without a custom URL scheme) is somewhat simpler than on iOS. You simply need to add `intentFilters` to the [Android section](/versions/latest/config/app/#android) of your **app.json**. The following basic configuration will cause your app to be presented in the standard Android dialog as an option for handling any record links to `myapp.io`:
 
-```
+```json
 "intentFilters": [
   {
     "action": "VIEW",
@@ -358,7 +356,7 @@ Implementing deep links on Android (without a custom URL scheme) is somewhat sim
 
 It may be desirable for links to your domain to always open your app (without presenting the user a dialog where they can choose the browser or a different handler). You can implement this with Android App Links, which use a similar verification process as Universal Links on iOS. First, you must publish a JSON file at `/.well-known/assetlinks.json` specifying your app ID and which links should be opened by your app. See [Android's documentation](https://developer.android.com/training/app-links/verify-site-associations) for details about formatting this file. Second, add `"autoVerify": true` to the intent filter in your **app.json**; this tells Android to check for your **assetlinks.json** on your server and register your app as the automatic handler for the specified paths:
 
-```
+```json
 "intentFilters": [
   {
     "action": "VIEW",

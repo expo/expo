@@ -8,9 +8,9 @@ export class PrerequisiteCommandError extends CommandError {
   }
 }
 
-export class Prerequisite {
+export class Prerequisite<T = void, TProps = void> {
   /** Memoized results of `assertImplementation` */
-  private _assertAsync: () => Promise<void>;
+  private _assertAsync: (props: TProps) => Promise<T>;
 
   constructor() {
     this._assertAsync = memoize(this.assertImplementation.bind(this));
@@ -20,17 +20,17 @@ export class Prerequisite {
   protected cachedError?: PrerequisiteCommandError;
 
   /** Reset the assertion memo and warning message. */
-  public resetAssertion() {
+  public resetAssertion(props: TProps) {
     this.cachedError = undefined;
     this._assertAsync = memoize(this.assertImplementation.bind(this));
   }
 
-  async assertAsync(): Promise<void> {
+  async assertAsync(props: TProps): Promise<T> {
     if (this.cachedError) {
       throw this.cachedError;
     }
     try {
-      return await this._assertAsync();
+      return await this._assertAsync(props);
     } catch (error) {
       if (error instanceof PrerequisiteCommandError) {
         this.cachedError = error;
@@ -40,7 +40,7 @@ export class Prerequisite {
   }
 
   /** Exposed for testing. */
-  async assertImplementation(): Promise<void> {
+  async assertImplementation(props: TProps): Promise<T> {
     throw new UnimplementedError();
   }
 }

@@ -7,7 +7,9 @@ import { EASBranchRow, EASEmptyBranchRow } from '../components/EASUpdatesRows';
 import { EmptyBranchesMessage } from '../components/EmptyBranchesMessage';
 import { FlatList } from '../components/FlatList';
 import { getRecentRuntime } from '../functions/getRecentRuntime';
+import { useOnUpdatePress } from '../hooks/useOnUpdatePress';
 import { useUpdatesConfig } from '../providers/UpdatesConfigProvider';
+import { useUser } from '../providers/UserContextProvider';
 import { Branch, useBranchesForApp } from '../queries/useBranchesForApp';
 import { ExtensionsStackParamList } from './ExtensionsStack';
 
@@ -17,6 +19,7 @@ type BranchesScreenProps = {
 
 export function BranchesScreen({ navigation }: BranchesScreenProps) {
   const { appId } = useUpdatesConfig();
+  const { isAuthenticated } = useUser();
   const {
     data: branches,
     emptyBranches,
@@ -27,14 +30,16 @@ export function BranchesScreen({ navigation }: BranchesScreenProps) {
     fetchNextPage,
     hasNextPage,
     refetch,
-  } = useBranchesForApp(appId);
+  } = useBranchesForApp(appId, isAuthenticated);
+
+  const { loadingUpdateId, onUpdatePress } = useOnUpdatePress();
 
   function Header() {
     if (branches.length > 0) {
       return (
         <View py="small" px="small">
           <Heading size="small" color="secondary">
-            Recently updated branches
+            Branches
           </Heading>
         </View>
       );
@@ -48,10 +53,32 @@ export function BranchesScreen({ navigation }: BranchesScreenProps) {
 
     return (
       <View>
+        {branches.length > 0 && hasNextPage && (
+          <View align="centered" mt="small">
+            <BasicButton
+              label="Load More"
+              size="small"
+              isLoading={isFetchingNextPage}
+              onPress={() => fetchNextPage()}
+            />
+          </View>
+        )}
+
         <RecentlyCreatedBranches branches={emptyBranches} navigation={navigation} />
 
+        {branches.length === 0 && hasNextPage && (
+          <View align="centered" mt="small">
+            <BasicButton
+              label="Load More"
+              size="small"
+              isLoading={isFetchingNextPage}
+              onPress={() => fetchNextPage()}
+            />
+          </View>
+        )}
+
         {incompatibleBranches.length > 0 && (
-          <View px="small">
+          <View px="small" mt="medium">
             <Text size="small" color="secondary">
               {getIncompatibleBranchMessage(incompatibleBranches.length)}
             </Text>
@@ -64,14 +91,6 @@ export function BranchesScreen({ navigation }: BranchesScreenProps) {
               </>
             )}
           </View>
-        )}
-
-        {hasNextPage && (
-          <BasicButton
-            label="Load More"
-            isLoading={isFetchingNextPage}
-            onPress={() => fetchNextPage()}
-          />
         )}
       </View>
     );
@@ -93,9 +112,17 @@ export function BranchesScreen({ navigation }: BranchesScreenProps) {
   function renderBranch({ index, item: branch }: { index: number; item: Branch }) {
     const isFirst = index === 0;
     const isLast = index === branches?.length - 1;
+    const isLoading = loadingUpdateId === branch.updates[0]?.id;
 
     return (
-      <EASBranchRow branch={branch} isFirst={isFirst} isLast={isLast} navigation={navigation} />
+      <EASBranchRow
+        branch={branch}
+        isFirst={isFirst}
+        isLast={isLast}
+        isLoading={isLoading}
+        navigation={navigation}
+        onUpdatePress={onUpdatePress}
+      />
     );
   }
 
@@ -106,7 +133,7 @@ export function BranchesScreen({ navigation }: BranchesScreenProps) {
         isRefreshing={isRefreshing}
         onRefresh={() => refetch()}
         ListHeaderComponent={Header}
-        extraData={{ length: branches.length, hasNextPage }}
+        extraData={{ length: branches.length, hasNextPage, loadingUpdateId }}
         data={branches}
         ItemSeparatorComponent={Divider}
         renderItem={renderBranch}

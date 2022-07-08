@@ -156,13 +156,13 @@ export declare type DetectionOptions = {
     /**
      * Minimal interval in milliseconds between two face detection events being submitted to JS.
      * Use, when you expect lots of faces for long time and are afraid of JS Bridge being overloaded.
-     * @default `0`
+     * @default 0
      */
     minDetectionInterval?: number;
     /**
      * Flag to enable tracking of faces between frames. If true, each face will be returned with
      * `faceID` attribute which should be consistent across frames.
-     * @default `false`
+     * @default false
      */
     tracking?: boolean;
 };

@@ -1,3 +1,4 @@
+import { asMock } from '../../../../__tests__/asMock';
 import { getReleasedVersionsAsync } from '../../../../api/getVersions';
 import { getVersionedNativeModulesAsync } from '../bundledNativeModules';
 import {
@@ -5,9 +6,6 @@ import {
   getRemoteVersionsForSdkAsync,
   getVersionedPackagesAsync,
 } from '../getVersionedPackages';
-
-const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
-  fn as jest.MockedFunction<T>;
 
 jest.mock('../../../../api/getVersions', () => ({
   getVersionsAsync: jest.fn(),

@@ -61,8 +61,12 @@ export function ProjectView({ loading, error, data, navigation }: Props) {
           <Spacer.Vertical size="xl" />
           <View bg="default" border="default" overflow="hidden" rounded="large">
             <ConstantItem title="Owner" value={app.username} />
-            <Divider style={{ height: 1 }} />
-            <ConstantItem title="SDK Version" value={app.sdkVersion} />
+            {app.sdkVersion !== '0.0.0' && (
+              <>
+                <Divider style={{ height: 1 }} />
+                <ConstantItem title="SDK Version" value={app.sdkVersion} />
+              </>
+            )}
           </View>
         </View>
       </ScrollView>

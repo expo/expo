@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalStdlibApi::class)
+@file:Suppress("FunctionName")
 
 package expo.modules.kotlin.views
 
@@ -8,11 +8,20 @@ import expo.modules.kotlin.modules.DefinitionMarker
 
 @DefinitionMarker
 class ViewGroupDefinitionBuilder {
-  @PublishedApi internal var addViewAction: AddViewAction? = null
-  @PublishedApi internal var getChildAtAction: GetChildAtAction? = null
-  @PublishedApi internal var getChildCountAction: GetChildCountAction? = null
-  @PublishedApi internal var removeViewAction: RemoveViewAction? = null
-  @PublishedApi internal var removeViewAtAction: RemoveViewAtAction? = null
+  @PublishedApi
+  internal var addViewAction: AddViewAction? = null
+
+  @PublishedApi
+  internal var getChildAtAction: GetChildAtAction? = null
+
+  @PublishedApi
+  internal var getChildCountAction: GetChildCountAction? = null
+
+  @PublishedApi
+  internal var removeViewAction: RemoveViewAction? = null
+
+  @PublishedApi
+  internal var removeViewAtAction: RemoveViewAtAction? = null
 
   fun build() = ViewGroupDefinition(
     addViewAction,
@@ -22,7 +31,7 @@ class ViewGroupDefinitionBuilder {
     removeViewAtAction
   )
 
-  inline fun <reified ParentViewType : ViewGroup, reified ChildViewType : View> addChildView(
+  inline fun <reified ParentViewType : ViewGroup, reified ChildViewType : View> AddChildView(
     noinline body: (parent: ParentViewType, child: ChildViewType, index: Int) -> Unit
   ) {
     addViewAction = { parent, child, index ->
@@ -30,7 +39,7 @@ class ViewGroupDefinitionBuilder {
     }
   }
 
-  inline fun <reified ParentViewType : ViewGroup> getChildCount(
+  inline fun <reified ParentViewType : ViewGroup> GetChildCount(
     noinline body: (view: ParentViewType) -> Int
   ) {
     getChildCountAction = { view ->
@@ -38,7 +47,7 @@ class ViewGroupDefinitionBuilder {
     }
   }
 
-  inline fun <reified ParentViewType : ViewGroup, reified ChildViewType : View> getChildViewAt(
+  inline fun <reified ParentViewType : ViewGroup, reified ChildViewType : View> GetChildViewAt(
     noinline body: (view: ParentViewType, index: Int) -> ChildViewType?
   ) {
     getChildAtAction = { view, index ->
@@ -46,7 +55,7 @@ class ViewGroupDefinitionBuilder {
     }
   }
 
-  inline fun <reified ParentViewType : ViewGroup> removeChildViewAt(
+  inline fun <reified ParentViewType : ViewGroup> RemoveChildViewAt(
     noinline body: (view: ParentViewType, index: Int) -> Unit
   ) {
     removeViewAtAction = { view, index ->
@@ -54,7 +63,7 @@ class ViewGroupDefinitionBuilder {
     }
   }
 
-  inline fun <reified ParentViewType : ViewGroup, reified ChildViewType : View> removeChildView(
+  inline fun <reified ParentViewType : ViewGroup, reified ChildViewType : View> RemoveChildView(
     noinline body: (parent: ParentViewType, child: ChildViewType) -> Unit
   ) {
     removeViewAction = { view, child ->

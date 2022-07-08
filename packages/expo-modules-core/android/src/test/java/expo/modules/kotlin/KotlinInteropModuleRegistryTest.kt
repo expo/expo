@@ -23,14 +23,14 @@ private class TestRecord : Record {
 
 private class TestModule_1 : Module() {
   override fun definition() = ModuleDefinition {
-    name("test-1")
-    function("f1") {
+    Name("test-1")
+    AsyncFunction("f1") {
       throw NullPointerException()
     }
-    function<Int, TestRecord>("f2") {
+    AsyncFunction<Int, TestRecord>("f2") {
       throw NullPointerException()
     }
-    constants {
+    Constants {
       mapOf(
         "c1" to 123,
         "c2" to "123"
@@ -41,15 +41,15 @@ private class TestModule_1 : Module() {
 
 private class TestModule_2 : Module() {
   override fun definition() = ModuleDefinition {
-    name("test-2")
-    function("f1") {
+    Name("test-2")
+    AsyncFunction("f1") {
       throw TestException()
     }
-    function("f2") { arg1: Int ->
+    AsyncFunction("f2") { arg1: Int ->
       arg1
     }
-    viewManager {
-      view { mockk() }
+    ViewManager {
+      View { mockk() }
     }
   }
 }

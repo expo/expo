@@ -15,6 +15,8 @@ import {
 } from '../utils/npm';
 import { isUrlOk } from '../utils/url';
 
+const debug = require('debug')('expo:prebuild:resolveTemplate') as typeof console.log;
+
 type RepoInfo = {
   username: string;
   name: string;
@@ -96,7 +98,7 @@ async function downloadAndExtractRepoAsync(
   const strip = filePath ? filePath.split('/').length + 1 : 1;
 
   const url = `https://codeload.github.com/${username}/${name}/tar.gz/${branch}`;
-  Log.debug('Downloading tarball from:', url);
+  debug('Downloading tarball from:', url);
   await extractNpmTarballFromUrlAsync(url, {
     cwd: root,
     name: projectName,

@@ -30,7 +30,7 @@ The following example demonstrates how you might use the `"production"` release 
 
 Your native runtime may change on each build, depending on whether you modify the code in a way that changes the API contract with JavaScript. If you publish a JavaScript bundle to a binary with an incompatible native runtime (for example, a function that the JavaScript bundle expects to exist does not exist) then your app may not work as expected or it may crash.
 
-We recommend using a different [runtime version](/distribution/runtime-versions.md) for each binary version of your app. Any time you change the native runtime (in managed apps, this happens if when you add or remove a native library, or modify **app.json**), you should increment the runtime version.
+We recommend using a different [runtime version](/distribution/runtime-versions.md) for each binary version of your app. Any time you change the native runtime (in managed apps, this happens when you add or remove a native library, or modify **app.json**), you should increment the runtime version.
 
 ## Previewing updates in development builds
 

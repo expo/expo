@@ -2,14 +2,12 @@ import { vol } from 'memfs';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
+import { asMock } from '../../../../__tests__/asMock';
 import * as Log from '../../../../log';
 import {
   logIncorrectDependencies,
   validateDependenciesVersionsAsync,
 } from '../validateDependenciesVersions';
-
-const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
-  fn as jest.MockedFunction<T>;
 
 jest.mock(`../../../../log`);
 jest.mock('../bundledNativeModules', () => ({

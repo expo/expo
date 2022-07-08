@@ -12,6 +12,8 @@ import { ensureDirectoryAsync } from './dir';
 import { CommandError } from './errors';
 import { extractAsync } from './tar';
 
+const debug = require('debug')('expo:utils:downloadAppAsync') as typeof console.log;
+
 const TIMER_DURATION = 30000;
 
 const pipeline = promisify(Stream.pipeline);
@@ -38,6 +40,7 @@ async function downloadAsync({
     });
   }
 
+  debug(`Downloading ${url} to ${outputPath}`);
   const res = await wrapFetchWithProgress(fetchInstance)(url, {
     timeout: TIMER_DURATION,
     onProgress,
@@ -71,6 +74,8 @@ export async function downloadAppAsync({
     // would corrupt the file causing tar to fail with `TAR_BAD_ARCHIVE`.
     const tmpPath = temporary.file({ name: path.basename(outputPath) });
     await downloadAsync({ url, outputPath: tmpPath, cacheDirectory, onProgress });
+    debug(`Extracting ${tmpPath} to ${outputPath}`);
+    await ensureDirectoryAsync(outputPath);
     await extractAsync(tmpPath, outputPath);
   } else {
     await ensureDirectoryAsync(path.dirname(outputPath));

@@ -65,7 +65,7 @@ EX_EXPORT_METHOD_AS(shareAsync,
 
 - (void)documentInteractionControllerDidDismissOpenInMenu:(UIDocumentInteractionController *)controller
 {
-  _pendingResolver(@{});
+  _pendingResolver(nil);
   _pendingResolver = nil;
 
   _documentInteractionController = nil;

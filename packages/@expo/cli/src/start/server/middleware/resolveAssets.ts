@@ -75,9 +75,11 @@ export async function resolveManifestAssets(
   {
     manifest,
     resolver,
+    strict,
   }: {
     manifest: ExpoConfig;
     resolver: (assetPath: string) => Promise<string>;
+    strict?: boolean;
   }
 ) {
   try {
@@ -120,6 +122,13 @@ export async function resolveManifestAssets(
     } else {
       Log.warn(
         `Warning: Unable to resolve manifest assets. Icons and fonts might not work. ${error.message}.`
+      );
+    }
+
+    if (strict) {
+      throw new CommandError(
+        'MANIFEST_ASSET',
+        'Failed to export manifest assets: ' + error.message
       );
     }
   }

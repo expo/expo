@@ -274,7 +274,13 @@ export declare type ImagePickerOptions = {
     /**
      * Whether to show a UI to edit the image after it is picked. On Android the user can crop and
      * rotate the image and on iOS simply crop it.
+     *
+     * > Cropping multiple images is not supported - this option is mutually exclusive with `allowsMultipleSelection`.
+     * > On iOS, this option is ignored if `allowsMultipleSelection` is enabled.
+     *
      * @default false
+     * @platform ios
+     * @platform android
      */
     allowsEditing?: boolean;
     /**
@@ -288,6 +294,12 @@ export declare type ImagePickerOptions = {
      * `1` means compress for maximum quality.
      * > Note: If the selected image has been compressed before, the size of the output file may be
      * > bigger than the size of the original image.
+     *
+     * > Note: On iOS, if a `.bmp` or `.png` image is selected from the library, this option is ignored.
+     *
+     * @default 0.2
+     * @platform ios
+     * @platform android
      */
     quality?: number;
     /**
@@ -320,9 +332,34 @@ export declare type ImagePickerOptions = {
     videoQuality?: UIImagePickerControllerQualityType;
     /**
      * Whether or not to allow selecting multiple media files at once.
+     *
+     * > Cropping multiple images is not supported - this option is mutually exclusive with `allowsEditing`.
+     * > If this option is enabled, then `allowsEditing` is ignored.
+     *
+     * @default false
+     * @platform ios 14+
      * @platform web
      */
     allowsMultipleSelection?: boolean;
+    /**
+     * The maximum number of items that user can select. Applicable when `allowsMultipleSelection` is enabled.
+     * Setting the value to `0` sets the selection limit to the maximum that the system supports.
+     *
+     * @platform ios 14+
+     * @default 0
+     */
+    selectionLimit?: number;
+    /**
+     * Whether to display number badges when assets are selected. The badges are numbered
+     * in selection order. Assets are then returned in the exact same order they were selected.
+     *
+     * > Assets should be returned in the selection order regardless of this option,
+     * > but there is no guarantee that it is always true when this option is disabled.
+     *
+     * @platform ios 15+
+     * @default false
+     */
+    orderedSelection?: boolean;
     /**
      * Maximum duration, in seconds, for video recording. Setting this to `0` disables the limit.
      * Defaults to `0` (no limit).

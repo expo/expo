@@ -24,6 +24,8 @@ public protocol ModulesProviderProtocol {
  */
 @objc
 open class ModulesProvider: NSObject, ModulesProviderProtocol {
+  public override required init() {}
+
   open func getModuleClasses() -> [AnyModule.Type] {
     return []
   }

@@ -8,7 +8,7 @@ class ConstantsSpec: ExpoSpec {
 
     it("takes closure resolving to dictionary") {
       let holder = mockModuleHolder(appContext) {
-        constants {
+        Constants {
           return ["test": 123]
         }
       }
@@ -17,15 +17,15 @@ class ConstantsSpec: ExpoSpec {
 
     it("takes the dictionary") {
       let holder = mockModuleHolder(appContext) {
-        constants(["test": 123])
+        Constants(["test": 123])
       }
       expect(holder.getConstants()["test"] as? Int) == 123
     }
 
     it("merges multiple constants definitions") {
       let holder = mockModuleHolder(appContext) {
-        constants(["test": 456, "test2": 789])
-        constants(["test": 123])
+        Constants(["test": 456, "test2": 789])
+        Constants(["test": 123])
       }
       let consts = holder.getConstants()
       expect(consts["test"] as? Int) == 123

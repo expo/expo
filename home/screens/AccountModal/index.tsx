@@ -1,14 +1,11 @@
 import { spacing } from '@expo/styleguide-native';
 import Ionicons from '@expo/vector-icons/build/Ionicons';
-import { useNavigation } from '@react-navigation/native';
 import { Text, View, useExpoTheme, Row, Spacer } from 'expo-dev-client-components';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { ActivityIndicator, Platform } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
 import { useHome_CurrentUserQuery } from '../../graphql/types';
-import { useSelector } from '../../redux/Hooks';
-import isUserAuthenticated from '../../utils/isUserAuthenticated';
 import { LoggedInAccountView } from './LoggedInAccountView';
 import { LoggedOutAccountView } from './LoggedOutAccountView';
 import { ModalHeader } from './ModalHeader';
@@ -17,23 +14,6 @@ export function AccountModal() {
   const theme = useExpoTheme();
 
   const { data, loading, error, refetch } = useHome_CurrentUserQuery();
-  const navigation = useNavigation();
-  const { isAuthenticated } = useSelector((data) => {
-    const isAuthenticated = isUserAuthenticated(data.session);
-    return {
-      isAuthenticated,
-    };
-  });
-
-  useEffect(() => {
-    // wait for redux action to dispatch so other queries can be fetched
-    if (isAuthenticated && !data?.viewer) {
-      // get accounts info after logging in, then dismiss the modal
-      refetch().then(() => {
-        navigation.goBack();
-      });
-    }
-  }, [isAuthenticated]);
 
   if (loading) {
     return (
@@ -107,7 +87,11 @@ export function AccountModal() {
       {data?.viewer?.accounts ? (
         <LoggedInAccountView accounts={data.viewer.accounts} />
       ) : (
-        <LoggedOutAccountView />
+        <LoggedOutAccountView
+          refetch={async () => {
+            await refetch();
+          }}
+        />
       )}
     </View>
   );

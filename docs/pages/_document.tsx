@@ -8,7 +8,6 @@ import { globalFonts } from '~/global-styles/fonts';
 import { globalNProgress } from '~/global-styles/nprogress';
 import { globalPrism } from '~/global-styles/prism';
 import { globalReset } from '~/global-styles/reset';
-import { globalTables } from '~/global-styles/tables';
 import { globalTippy } from '~/global-styles/tippy';
 
 export default class MyDocument extends Document<{ css?: string }> {
@@ -29,7 +28,6 @@ export default class MyDocument extends Document<{ css?: string }> {
               globalFonts,
               globalReset,
               globalNProgress,
-              globalTables,
               globalPrism,
               globalTippy,
               globalExtras,

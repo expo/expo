@@ -3,6 +3,9 @@ title: Using Hermes Engine
 sidebar_title: Using Hermes
 ---
 
+import { Collapsible } from '~/ui/components/Collapsible';
+import { Terminal } from '~/ui/components/Snippet';
+
 > Hermes is supported for apps built with [EAS Build](/build/introduction). There are no plans to backport support to `expo build`. [Jump to "Limitations"](#limitations).
 
 [Hermes](https://hermesengine.dev/) is a JavaScript engine optimized for React Native. By compiling JavaScript into bytecode ahead of time, Hermes can improve your app start-up time. The binary size of Hermes is also smaller than other JavaScript engines, such as JavaScriptCore (JSC). It also uses less memory at runtime, which is particularly valuable on lower-end Android devices.
@@ -47,8 +50,7 @@ To get started, open your **app.json** and add `jsEngine` field:
 
 Now you can build your app through `eas build` and your app will run with Hermes instead of JavaScriptCore.
 
-<details><summary><h4>Are you using an M1 Mac?</h4></summary>
-<p>
+<Collapsible summary="Are you using an M1 Mac?">
 
 When using Hermes for iOS, you may encounter the following error when building for the simulator:
 
@@ -86,13 +88,12 @@ This is [a known issue for React Native 0.64](https://github.com/facebook/hermes
 
 Reinstall Pods and clean Xcode build cache:
 
-```
-$ npx pod-install
-$ xcodebuild clean -workspace ios/{projectName}.xcworkspace -scheme {projectName}
-```
+<Terminal cmd={[
+  '$ npx pod-install',
+  '$ xcodebuild clean -workspace ios/{projectName}.xcworkspace -scheme {projectName}'
+]} />
 
-</p>
-</details>
+</Collapsible>
 
 ## Advanced setup
 

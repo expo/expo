@@ -1,9 +1,12 @@
 import spawnAsync from '@expo/spawn-async';
 import { execFileSync } from 'child_process';
 
-import * as Log from '../../../log';
+import { Log } from '../../../log';
 import { AbortCommandError } from '../../../utils/errors';
 import { installExitHooks } from '../../../utils/exit';
+import { assertSdkRoot } from './AndroidSdk';
+
+const debug = require('debug')('expo:start:platforms:android:adbServer') as typeof console.log;
 
 const BEGINNING_OF_ADB_ERROR_MESSAGE = 'error: ';
 
@@ -17,11 +20,16 @@ export class ADBServer {
 
   /** Returns the command line reference to ADB. */
   getAdbExecutablePath(): string {
-    // https://developer.android.com/studio/command-line/variables
-    // TODO: Add ANDROID_SDK_ROOT support as well https://github.com/expo/expo/pull/16516#discussion_r820037917
-    if (process.env.ANDROID_HOME) {
-      return `${process.env.ANDROID_HOME}/platform-tools/adb`;
+    try {
+      const sdkRoot = assertSdkRoot();
+      if (sdkRoot) {
+        return `${sdkRoot}/platform-tools/adb`;
+      }
+    } catch (error: any) {
+      Log.warn(error.message);
     }
+
+    Log.debug('Failed to resolve the Android SDK path, falling back to global adb executable');
     return 'adb';
   }
 
@@ -46,10 +54,10 @@ export class ADBServer {
 
   /** Kill the ADB server. */
   async stopAsync(): Promise<boolean> {
-    Log.debug('Stopping ADB server');
+    debug('Stopping ADB server');
 
     if (!this.isRunning) {
-      Log.debug('ADB server is not running');
+      debug('ADB server is not running');
       return false;
     }
     this.removeExitHook();
@@ -60,7 +68,7 @@ export class ADBServer {
       Log.error('Failed to stop ADB server: ' + error.message);
       return false;
     } finally {
-      Log.debug('Stopped ADB server');
+      debug('Stopped ADB server');
       this.isRunning = false;
     }
   }
@@ -72,7 +80,7 @@ export class ADBServer {
 
     await this.startAsync();
 
-    Log.debug([adb, ...args].join(' '));
+    debug([adb, ...args].join(' '));
     const result = await this.resolveAdbPromise(spawnAsync(adb, args));
     return result.output.join('\n');
   }
@@ -84,12 +92,14 @@ export class ADBServer {
 
     await this.startAsync();
 
-    return await this.resolveAdbPromise(
+    const results = await this.resolveAdbPromise(
       execFileSync(adb, args, {
         encoding: 'latin1',
         stdio: 'pipe',
       })
     );
+    debug('[ADB] File output:\n', results);
+    return results;
   }
 
   /** Formats error info. */

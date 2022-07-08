@@ -10,6 +10,40 @@
 
 ### 💡 Others
 
+## 1.0.0 — 2022-06-09
+
+_This version does not introduce any user-facing changes._
+
+## 0.10.0 — 2022-06-07
+
+_This version does not introduce any user-facing changes._
+
+## 0.9.6 — 2022-05-19
+
+_This version does not introduce any user-facing changes._
+
+## 0.9.5 — 2022-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 0.9.4 — 2022-05-05
+
+### 🐛 Bug fixes
+
+- Fix `no such module 'EXDevLauncher'` when compiling the release build on iOS. ([#17332](https://github.com/expo/expo/pull/17332) by [@lukmccall](https://github.com/lukmccall))
+
+## 0.9.3 — 2022-04-26
+
+_This version does not introduce any user-facing changes._
+
+## 0.9.2 — 2022-04-25
+
+_This version does not introduce any user-facing changes._
+
+## 0.9.1 — 2022-04-21
+
+_This version does not introduce any user-facing changes._
+
 ## 0.9.0 — 2022-04-20
 
 ### 🐛 Bug fixes

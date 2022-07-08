@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 14.3.0 — 2022-07-07
+
+### 🐛 Bug fixes
+
+- Fixed Android 12+ runtime crash caused by `PendingIntent` misconfiguration. ([#17333](https://github.com/expo/expo/pull/17333) by [@kudo](https://github.com/kudo))
+
 ## 14.2.1 — 2022-04-20
 
 _This version does not introduce any user-facing changes._

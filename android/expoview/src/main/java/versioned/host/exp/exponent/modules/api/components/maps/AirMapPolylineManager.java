@@ -6,6 +6,8 @@ import android.os.Build;
 import android.util.DisplayMetrics;
 import android.view.WindowManager;
 
+import androidx.annotation.Nullable;
+
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.common.MapBuilder;
@@ -18,8 +20,6 @@ import com.google.android.gms.maps.model.RoundCap;
 import com.google.android.gms.maps.model.SquareCap;
 
 import java.util.Map;
-
-import javax.annotation.Nullable;
 
 public class AirMapPolylineManager extends ViewGroupManager<AirMapPolyline> {
   private final DisplayMetrics metrics;

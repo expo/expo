@@ -2,10 +2,15 @@ import { vol } from 'memfs';
 import webpack from 'webpack';
 
 import { BundlerStartOptions } from '../../BundlerDevServer';
+import { getPlatformBundlers } from '../../platformBundlers';
 import { WebpackBundlerDevServer } from '../WebpackBundlerDevServer';
 
 jest.mock('../../../../log');
 jest.mock('../resolveFromProject');
+
+jest.mock('../compile', () => ({
+  compileAsync: jest.fn(),
+}));
 
 const originalCwd = process.cwd();
 
@@ -18,13 +23,29 @@ afterAll(() => {
 });
 
 async function getStartedDevServer(options: Partial<BundlerStartOptions> = {}) {
-  const devServer = new WebpackBundlerDevServer('/', false);
+  const devServer = new WebpackBundlerDevServer('/', getPlatformBundlers({}), false);
   devServer['getAvailablePortAsync'] = jest.fn(() => Promise.resolve(3000));
   // Tested in the superclass
   devServer['postStartAsync'] = jest.fn(async () => {});
   await devServer.startAsync({ location: {}, ...options });
   return devServer;
 }
+
+describe('bundleAsync', () => {
+  it(`bundles in dev mode`, async () => {
+    const devServer = new WebpackBundlerDevServer('/', getPlatformBundlers({}), false);
+
+    devServer['clearWebProjectCacheAsync'] = jest.fn();
+    devServer['loadConfigAsync'] = jest.fn(async () => ({}));
+
+    await devServer.bundleAsync({ mode: 'development', clear: true });
+    expect(devServer['clearWebProjectCacheAsync']).toBeCalled();
+    expect(devServer['loadConfigAsync']).toHaveBeenCalledWith({
+      isImageEditingEnabled: true,
+      mode: 'development',
+    });
+  });
+});
 
 describe('startAsync', () => {
   it(`starts webpack`, async () => {
@@ -68,12 +89,12 @@ describe('startAsync', () => {
 describe('getProjectConfigFilePath', () => {
   it(`loads from project`, async () => {
     vol.fromJSON({ 'webpack.config.js': '{}' }, '/');
-    const devServer = new WebpackBundlerDevServer('/');
+    const devServer = new WebpackBundlerDevServer('/', getPlatformBundlers({}));
     expect(devServer.getProjectConfigFilePath()).toBe('webpack.config.js');
   });
   it(`cannot load from project`, async () => {
     vol.fromJSON({ 'package.json': '{}' }, '/');
-    const devServer = new WebpackBundlerDevServer('/');
+    const devServer = new WebpackBundlerDevServer('/', getPlatformBundlers({}));
     expect(devServer.getProjectConfigFilePath()).toBe(null);
   });
 });

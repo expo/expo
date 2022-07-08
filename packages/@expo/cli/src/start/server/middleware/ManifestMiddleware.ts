@@ -5,10 +5,12 @@ import * as Log from '../../../log';
 import { stripExtension } from '../../../utils/url';
 import * as ProjectDevices from '../../project/devices';
 import { UrlCreator } from '../UrlCreator';
+import { getPlatformBundlers } from '../platformBundlers';
+import { createTemplateHtmlFromExpoConfigAsync } from '../webTemplate';
 import { ExpoMiddleware } from './ExpoMiddleware';
 import { resolveGoogleServicesFile, resolveManifestAssets } from './resolveAssets';
 import { resolveEntryPoint } from './resolveEntryPoint';
-import { RuntimePlatform } from './resolvePlatform';
+import { parsePlatformHeader, RuntimePlatform } from './resolvePlatform';
 import { ServerHeaders, ServerNext, ServerRequest, ServerResponse } from './server.types';
 
 /** Info about the computer hosting the dev server. */
@@ -55,6 +57,8 @@ export type ManifestMiddlewareOptions = {
 export abstract class ManifestMiddleware<
   TManifestRequestInfo extends ManifestRequestInfo
 > extends ExpoMiddleware {
+  private initialProjectConfig: ProjectConfig;
+
   constructor(protected projectRoot: string, protected options: ManifestMiddlewareOptions) {
     super(
       projectRoot,
@@ -63,6 +67,7 @@ export abstract class ManifestMiddleware<
        */
       ['/', '/manifest', '/index.exp']
     );
+    this.initialProjectConfig = getConfig(projectRoot);
   }
 
   /** Exposed for testing. */
@@ -140,6 +145,24 @@ export abstract class ManifestMiddleware<
     hostname?: string | null;
     mainModuleName: string;
   }): string {
+    const path = this._getBundleUrlPath({ platform, mainModuleName });
+
+    return (
+      this.options.constructUrl({
+        scheme: 'http',
+        // hostType: this.options.location.hostType,
+        hostname,
+      }) + path
+    );
+  }
+
+  public _getBundleUrlPath({
+    platform,
+    mainModuleName,
+  }: {
+    platform: string;
+    mainModuleName: string;
+  }): string {
     const queryParams = new URLSearchParams({
       platform: encodeURIComponent(platform),
       dev: String(this.options.mode !== 'production'),
@@ -151,15 +174,7 @@ export abstract class ManifestMiddleware<
       queryParams.append('minify', String(this.options.minify));
     }
 
-    const path = `/${encodeURI(mainModuleName)}.bundle?${queryParams.toString()}`;
-
-    return (
-      this.options.constructUrl({
-        scheme: 'http',
-        // hostType: this.options.location.hostType,
-        hostname,
-      }) + path
-    );
+    return `/${encodeURI(mainModuleName)}.bundle?${queryParams.toString()}`;
   }
 
   /** Log telemetry. */
@@ -221,11 +236,59 @@ export abstract class ManifestMiddleware<
     await resolveGoogleServicesFile(this.projectRoot, manifest);
   }
 
+  /**
+   * Web platforms should create an index.html response using the same script resolution as native.
+   *
+   * Instead of adding a `bundleUrl` to a `manifest.json` (native) we'll add a `<script src="">`
+   * to an `index.html`, this enables the web platform to load JavaScript from the server.
+   */
+  private async handleWebRequestAsync(req: ServerRequest, res: ServerResponse) {
+    const platform = 'web';
+    // Read from headers
+    const mainModuleName = this.resolveMainModuleName(this.initialProjectConfig, platform);
+    const bundleUrl = this._getBundleUrlPath({
+      platform,
+      mainModuleName,
+    });
+
+    res.setHeader('Content-Type', 'text/html');
+
+    res.end(
+      await createTemplateHtmlFromExpoConfigAsync(this.projectRoot, {
+        exp: this.initialProjectConfig.exp,
+        scripts: [bundleUrl],
+      })
+    );
+  }
+
+  /** Exposed for testing. */
+  async checkBrowserRequestAsync(req: ServerRequest, res: ServerResponse) {
+    // Read the config
+    const bundlers = getPlatformBundlers(this.initialProjectConfig.exp);
+    if (bundlers.web === 'metro') {
+      // NOTE(EvanBacon): This effectively disables the safety check we do on custom runtimes to ensure
+      // the `expo-platform` header is included. When `web.bundler=web`, if the user has non-standard Expo
+      // code loading then they'll get a web bundle without a clear assertion of platform support.
+      const platform = parsePlatformHeader(req);
+      // On web, serve the public folder
+      if (!platform || platform === 'web') {
+        await this.handleWebRequestAsync(req, res);
+        return true;
+      }
+    }
+    return false;
+  }
+
   async handleRequestAsync(
     req: ServerRequest,
     res: ServerResponse,
     next: ServerNext
   ): Promise<void> {
+    // First check for standard JavaScript runtimes (aka legacy browsers like Chrome).
+    if (await this.checkBrowserRequestAsync(req, res)) {
+      return;
+    }
+
     // Save device IDs for dev client.
     await this.saveDevicesAsync(req);
 

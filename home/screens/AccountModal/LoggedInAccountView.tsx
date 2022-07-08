@@ -63,6 +63,7 @@ export function LoggedInAccountView({ accounts }: Props) {
               <Row
                 justify="between"
                 padding="medium"
+                align="center"
                 bg="default"
                 border="default"
                 roundedTop={index === 0 ? 'large' : undefined}

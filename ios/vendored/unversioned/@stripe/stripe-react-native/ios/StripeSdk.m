@@ -108,16 +108,21 @@ RCT_EXTERN_METHOD(
                   )
 
 RCT_EXTERN_METHOD(
-                  verifyMicrodeposits:(NSString *)intentType
+                  verifyMicrodeposits:(BOOL)isPaymentIntent
                   clientSecret:(NSString *)clientSecret
                   params:(NSDictionary *)params
                   resolver: (RCTPromiseResolveBlock)resolve
                   rejecter: (RCTPromiseRejectBlock)reject
                   )
 RCT_EXTERN_METHOD(
-                  collectBankAccount:(NSString *)intentType
+                  collectBankAccount:(BOOL)isPaymentIntent
                   clientSecret:(NSString *)clientSecret
                   params:(NSDictionary *)params
+                  resolver: (RCTPromiseResolveBlock)resolve
+                  rejecter: (RCTPromiseRejectBlock)reject
+                  )
+RCT_EXTERN_METHOD(
+                  isCardInWallet:(NSDictionary *)params
                   resolver: (RCTPromiseResolveBlock)resolve
                   rejecter: (RCTPromiseRejectBlock)reject
                   )

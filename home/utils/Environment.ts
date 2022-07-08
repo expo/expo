@@ -6,13 +6,17 @@ import * as Kernel from '../kernel/Kernel';
 
 const PRODUCTION_EXPONENT_HOME_PROJECT_ID = '6b6c6660-df76-11e6-b9b4-59d1587e6774';
 
-const isProduction = !!(
+const isProductionClassicManifest =
   (Constants.manifest?.originalFullName === '@exponent/home' ||
     Constants.manifest?.id === '@exponent/home' ||
-    Constants.manifest?.projectId === PRODUCTION_EXPONENT_HOME_PROJECT_ID ||
-    Constants.manifest2?.extra?.eas?.projectId === PRODUCTION_EXPONENT_HOME_PROJECT_ID) &&
-  (Constants.manifest?.publishedTime || Constants.manifest2?.extra?.expoClient?.publishedTime)
-);
+    Constants.manifest?.projectId === PRODUCTION_EXPONENT_HOME_PROJECT_ID) &&
+  Constants.manifest?.publishedTime;
+
+const isProductionManifest =
+  Constants.manifest2?.extra?.eas?.projectId === PRODUCTION_EXPONENT_HOME_PROJECT_ID &&
+  !Constants.manifest2.extra.expoGo;
+
+const isProduction = isProductionClassicManifest || isProductionManifest;
 
 const IOSClientReleaseType = Kernel.iosClientReleaseType;
 

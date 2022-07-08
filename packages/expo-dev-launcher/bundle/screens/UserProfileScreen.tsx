@@ -11,7 +11,7 @@ import {
   XIcon,
 } from 'expo-dev-client-components';
 import * as React from 'react';
-import { ActivityIndicator } from 'react-native';
+import { ActivityIndicator, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { LogoutConfirmationModal } from '../components/LogoutConfirmationModal';
@@ -60,8 +60,8 @@ export function UserProfileScreen({ navigation }) {
   const isAuthenticated = userData != null;
 
   return (
-    <SafeAreaView>
-      <View>
+    <SafeAreaView style={{ flex: 1 }}>
+      <ScrollView style={{ flex: 1 }}>
         <View>
           <AccountScreenHeader onClosePress={onClosePress} />
 
@@ -84,7 +84,7 @@ export function UserProfileScreen({ navigation }) {
             )}
           </View>
         </View>
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -183,38 +183,57 @@ function UserAccountSelector({
   onSelectAccount,
   onLogoutPress,
 }: UserAccountSelectorProps) {
+  const accounts: UserAccount[] = [];
+  const orgs: UserAccount[] = [];
+
+  for (const account of userData.accounts) {
+    if (account != null) {
+      if (account.owner != null) {
+        accounts.push(account);
+      } else {
+        orgs.push(account);
+      }
+    }
+  }
+
+  const accountsSortedByType: UserAccount[] = [...accounts, ...orgs];
+
   return (
     <View>
       <View>
-        {userData.accounts
-          .filter((account) => account && account.owner)
-          .map((account, index, arr) => {
-            const isLast = index === arr.length - 1;
-            const isFirst = index === 0;
-            const isSelected = account.id === selectedAccount?.id;
+        {accountsSortedByType.map((account, index, arr) => {
+          const isLast = index === arr.length - 1;
+          const isFirst = index === 0;
+          const isSelected = account.id === selectedAccount?.id;
 
-            return (
-              <Button.ScaleOnPressContainer
-                key={account.id}
-                onPress={() => onSelectAccount(account)}
-                bg="default"
-                roundedBottom={isLast ? 'large' : 'none'}
-                roundedTop={isFirst ? 'large' : 'none'}>
-                <Row align="center" py="small" px="medium" bg="default">
-                  <Image size="large" rounded="full" source={{ uri: account.owner.profilePhoto }} />
-                  <Spacer.Horizontal size="small" />
+          return (
+            <Button.ScaleOnPressContainer
+              key={account.id}
+              onPress={() => onSelectAccount(account)}
+              bg="default"
+              roundedBottom={isLast ? 'large' : 'none'}
+              roundedTop={isFirst ? 'large' : 'none'}>
+              <Row align="center" py="small" px="medium" bg="default">
+                <View rounded="full" bg="secondary">
+                  <Image
+                    size="large"
+                    rounded="full"
+                    source={{ uri: account.owner?.profilePhoto }}
+                  />
+                </View>
+                <Spacer.Horizontal size="small" />
 
-                  <View>
-                    <Heading>{account.owner.username}</Heading>
-                  </View>
+                <View>
+                  <Heading>{account.owner?.username ?? account.name}</Heading>
+                </View>
 
-                  <Spacer.Vertical />
-                  {isSelected && <CheckIcon testID={`active-account-checkmark-${account.id}`} />}
-                </Row>
-                {!isLast && <Divider />}
-              </Button.ScaleOnPressContainer>
-            );
-          })}
+                <Spacer.Vertical />
+                {isSelected && <CheckIcon testID={`active-account-checkmark-${account.id}`} />}
+              </Row>
+              {!isLast && <Divider />}
+            </Button.ScaleOnPressContainer>
+          );
+        })}
       </View>
 
       <Spacer.Vertical size="medium" />

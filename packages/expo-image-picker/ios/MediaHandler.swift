@@ -3,12 +3,13 @@
 import ExpoModulesCore
 import MobileCoreServices
 import Photos
+import PhotosUI
 
 internal struct MediaHandler {
   internal weak var fileSystem: EXFileSystemInterface?
   internal let options: ImagePickerOptions
 
-  internal func handleMedia(_ mediaInfo: MediaInfo, completion: @escaping (AsyncResult) -> Void) {
+  internal func handleMedia(_ mediaInfo: MediaInfo, completion: @escaping (ImagePickerResult) -> Void) {
     let mediaType: String? = mediaInfo[UIImagePickerController.InfoKey.mediaType] as? String
     let imageType = kUTTypeImage as String
     let videoType = kUTTypeMovie as String
@@ -20,10 +21,50 @@ internal struct MediaHandler {
     }
   }
 
+  @available(iOS 14, *)
+  internal func handleMultipleMedia(_ selection: [PHPickerResult], completion: @escaping (ImagePickerResult) -> Void) {
+    var results: [String: SelectedMediaInfo] = [:]
+
+    let dispatchGroup = DispatchGroup()
+    let dispatchQueue = DispatchQueue(label: "expo.imagepicker.multipleMediaHandler")
+
+    let resultHandler = { (assetId: String?, result: SelectedMediaResult) -> Void in
+      switch result {
+      case .failure(let exception):
+        return completion(.failure(exception))
+      case .success(let mediaInfo):
+        dispatchQueue.async {
+          results[assetId!] = mediaInfo
+          dispatchGroup.leave()
+        }
+      }
+    }
+
+    for item in selection {
+      let itemProvider = item.itemProvider
+      let id = item.assetIdentifier
+
+      dispatchGroup.enter()
+      if itemProvider.hasItemConformingToTypeIdentifier(UTType.image.identifier) {
+        handleImage(itemProvider: itemProvider, assetId: id, completion: resultHandler)
+      } else if itemProvider.hasItemConformingToTypeIdentifier(UTType.movie.identifier) {
+        handleVideo(itemProvider: itemProvider, assetId: id, completion: resultHandler)
+      } else {
+        completion(.failure(InvalidMediaTypeException(itemProvider.registeredTypeIdentifiers.first)))
+      }
+    }
+
+    dispatchGroup.notify(queue: .main) {
+      // assign results in the order they were selected
+      let sortedResults = selection.map { results[$0.assetIdentifier!]! }
+      completion(.success(ImagePickerMultipleResponse(results: sortedResults)))
+    }
+  }
+
   // MARK: - Image
 
   // TODO: convert to async/await syntax once we drop support for iOS 12
-  private func handleImage(mediaInfo: MediaInfo, completion: @escaping (AsyncResult) -> Void) {
+  private func handleImage(mediaInfo: MediaInfo, completion: @escaping (ImagePickerResult) -> Void) {
     do {
       guard let image = ImageUtils.readImageFrom(mediaInfo: mediaInfo, shouldReadCroppedImage: options.allowsEditing) else {
         return completion(.failure(FailedToReadImageException()))
@@ -48,11 +89,11 @@ internal struct MediaHandler {
                                                            shouldReadBase64: self.options.base64)
 
       ImageUtils.optionallyReadExifFrom(mediaInfo: mediaInfo, shouldReadExif: self.options.exif) { exif in
-        let result: ImagePickerResponse = .image(ImageInfo(uri: targetUrl.absoluteString,
-                                                           width: image.size.width,
-                                                           height: image.size.height,
-                                                           base64: base64,
-                                                           exif: exif))
+        let result: ImagePickerSingleResponse = .image(ImageInfo(uri: targetUrl.absoluteString,
+                                                                 width: image.size.width,
+                                                                 height: image.size.height,
+                                                                 base64: base64,
+                                                                 exif: exif))
         completion(.success(result))
       }
     } catch let exception as Exception {
@@ -62,10 +103,51 @@ internal struct MediaHandler {
     }
   }
 
+  @available(iOS 14, *)
+  private func handleImage(itemProvider: NSItemProvider,
+                           assetId: String?,
+                           completion: @escaping (String?, SelectedMediaResult) -> Void) {
+    itemProvider.loadDataRepresentation(forTypeIdentifier: UTType.image.identifier) { rawData, error in
+      do {
+        guard error == nil,
+              let rawData = rawData,
+              let image = try? UIImage(data: rawData) else {
+          return completion(assetId, .failure(FailedToReadImageException().causedBy(error)))
+        }
+
+        let (imageData, fileExtension) = try ImageUtils.readDataAndFileExtension(image: image,
+                                                                                 itemProvider: itemProvider,
+                                                                                 options: self.options)
+
+        let targetUrl = try generateUrl(withFileExtension: fileExtension)
+        try ImageUtils.write(imageData: imageData, to: targetUrl)
+
+        // We need to get EXIF from original image data, as it is being lost in UIImage
+        let exif = ImageUtils.optionallyReadExifFrom(data: rawData, shouldReadExif: self.options.exif)
+
+        let base64 = try ImageUtils.optionallyReadBase64From(imageData: imageData,
+                                                             orImageFileUrl: targetUrl,
+                                                             tryReadingFile: false,
+                                                             shouldReadBase64: self.options.base64)
+
+        let result = ImageInfo(uri: targetUrl.absoluteString,
+                               width: image.size.width,
+                               height: image.size.height,
+                               base64: base64,
+                               exif: exif)
+        completion(assetId, .success(result))
+      } catch let exception as Exception {
+        return completion(assetId, .failure(exception))
+      } catch {
+        return completion(assetId, .failure(UnexpectedException(error)))
+      }
+    } // loadObject
+  }
+
   // MARK: - Video
 
   // TODO: convert to async/await syntax once we drop support for iOS 12
-  func handleVideo(mediaInfo: MediaInfo, completion: (AsyncResult) -> Void) {
+  func handleVideo(mediaInfo: MediaInfo, completion: (ImagePickerResult) -> Void) {
     do {
       guard let pickedVideoUrl = VideoUtils.readVideoUrlFrom(mediaInfo: mediaInfo) else {
         return completion(.failure(FailedToReadVideoException()))
@@ -85,15 +167,48 @@ internal struct MediaHandler {
       let videoUrlToReadDurationFrom = self.options.allowsEditing ? pickedVideoUrl : targetUrl
       let duration = VideoUtils.readDurationFrom(url: videoUrlToReadDurationFrom)
 
-      let result: ImagePickerResponse = .video(VideoInfo(uri: targetUrl.absoluteString,
-                                                         width: size.width,
-                                                         height: size.height,
-                                                         duration: duration))
+      let result: ImagePickerSingleResponse = .video(VideoInfo(uri: targetUrl.absoluteString,
+                                                               width: size.width,
+                                                               height: size.height,
+                                                               duration: duration))
       completion(.success(result))
     } catch let exception as Exception {
       return completion(.failure(exception))
     } catch {
       return completion(.failure(UnexpectedException(error)))
+    }
+  }
+
+  @available(iOS 14, *)
+  private func handleVideo(itemProvider: NSItemProvider,
+                           assetId: String?,
+                           completion: @escaping (String?, SelectedMediaResult) -> Void) {
+    itemProvider.loadFileRepresentation(forTypeIdentifier: UTType.movie.identifier) { [self] url, error in
+      do {
+        guard error == nil,
+              let videoUrl = url as? URL else {
+          return completion(assetId, .failure(FailedToReadVideoException().causedBy(error)))
+        }
+
+        let targetUrl = try generateUrl(withFileExtension: ".mov")
+        try VideoUtils.tryCopyingVideo(at: videoUrl, to: targetUrl)
+
+        guard let size = VideoUtils.readSizeFrom(url: targetUrl) else {
+          return completion(assetId, .failure(FailedToReadVideoSizeException()))
+        }
+
+        let duration = VideoUtils.readDurationFrom(url: targetUrl)
+
+        let result = VideoInfo(uri: targetUrl.absoluteString,
+                               width: size.width,
+                               height: size.height,
+                               duration: duration)
+        completion(assetId, .success(result))
+      } catch let exception as Exception {
+        return completion(assetId, .failure(exception))
+      } catch {
+        return completion(assetId, .failure(UnexpectedException(error)))
+      }
     }
   }
 
@@ -166,30 +281,37 @@ private struct ImageUtils {
       return (nil, ".bmp")
 
     case .some(let s) where s.contains("ext=GIF"):
-      guard let data = image.jpegData(compressionQuality: compressionQuality) else {
-        throw FailedToReadImageDataException()
-      }
+      let metadata = mediaInfo[.mediaMetadata] as? [String: Any]
+      
+      let gifData = try getGifDataFrom(image: image,
+                                       compressionQuality: options.quality,
+                                       initialMetadata: metadata)
 
-      // swiftlint:disable:next force_cast
-      guard let imageDestination = CGImageDestinationCreateWithData(data as! CFMutableData, kUTTypeGIF, 1, nil),
-            let cgImage = image.cgImage
-      else {
-        throw FailedToCreateGifException()
-      }
+      return (gifData, ".gif")
+    default:
+      let data = image.jpegData(compressionQuality: compressionQuality)
+      return (data, ".jpg")
+    }
+  }
 
-      var metadata = mediaInfo[.mediaMetadata] as? [String: Any] ?? [:]
-      if options.quality != nil {
-        metadata[kCGImageDestinationLossyCompressionQuality as String] = options.quality
-      }
+  @available(iOS 14, *)
+  static func readDataAndFileExtension(
+    image: UIImage,
+    itemProvider: NSItemProvider,
+    options: ImagePickerOptions
+  ) throws -> (imageData: Data?, fileExtension: String) {
+    let compressionQuality = options.quality ?? DEFAULT_QUALITY
+    let preferredFormat = itemProvider.registeredTypeIdentifiers.first
 
-      CGImageDestinationAddImage(imageDestination, cgImage, metadata as CFDictionary)
-
-      if !CGImageDestinationFinalize(imageDestination) {
-        throw FailedToExportGifException()
-      }
-
-      return (data, ".gif")
-
+    switch preferredFormat {
+    case UTType.png.identifier:
+      let data = image.pngData()
+      return (data, ".png")
+    case UTType.gif.identifier:
+      let gifData = try getGifDataFrom(image: image,
+                                       compressionQuality: options.quality,
+                                       initialMetadata: nil)
+      return (gifData, ".gif")
     default:
       let data = image.jpegData(compressionQuality: compressionQuality)
       return (data, ".jpg")
@@ -254,7 +376,7 @@ private struct ImageUtils {
   static func optionallyReadExifFrom(
     mediaInfo: MediaInfo,
     shouldReadExif: Bool,
-    completion: @escaping (_ result: [String: Any]?) -> Void
+    completion: @escaping (_ result: ExifInfo?) -> Void
   ) {
     if !shouldReadExif {
       return completion(nil)
@@ -268,14 +390,14 @@ private struct ImageUtils {
     }
 
     guard let imageUrl = mediaInfo[.referenceURL] as? URL else {
-      NSLog("Could not fetch metadata for image")
+      log.error("Could not fetch metadata for image")
       return completion(nil)
     }
 
     let assets = PHAsset.fetchAssets(withALAssetURLs: [imageUrl], options: nil)
 
     guard let asset = assets.firstObject else {
-      NSLog("Could not fetch metadata for image '\(imageUrl.absoluteString)'.")
+      log.error("Could not fetch metadata for image '\(imageUrl.absoluteString)'.")
       return completion(nil)
     }
 
@@ -285,7 +407,7 @@ private struct ImageUtils {
       guard let imageUrl = input?.fullSizeImageURL,
             let properties = CIImage(contentsOf: imageUrl)?.properties
       else {
-        NSLog("Could not fetch metadata for '\(imageUrl.absoluteString)'.")
+        log.error("Could not fetch metadata for '\(imageUrl.absoluteString)'.")
         return completion(nil)
       }
       let exif = ImageUtils.readExifFrom(imageMetadata: properties)
@@ -293,8 +415,17 @@ private struct ImageUtils {
     }
   }
 
-  static func readExifFrom(imageMetadata: [String: Any]) -> [String: Any] {
-    var exif: [String: Any] = imageMetadata[kCGImagePropertyExifDictionary as String] as? [String: Any] ?? [:]
+  static func optionallyReadExifFrom(data: Data, shouldReadExif: Bool) -> ExifInfo? {
+    if shouldReadExif,
+       let cgImageSource = CGImageSourceCreateWithData(data as CFData, nil),
+       let properties = CGImageSourceCopyPropertiesAtIndex(cgImageSource, 0, nil) {
+      return ImageUtils.readExifFrom(imageMetadata: properties as! [String: Any])
+    }
+    return nil
+  }
+
+  static func readExifFrom(imageMetadata: [String: Any]) -> ExifInfo {
+    var exif: ExifInfo = imageMetadata[kCGImagePropertyExifDictionary as String] as? ExifInfo ?? [:]
 
     // Copy ["{GPS}"]["<tag>"] to ["GPS<tag>"]
     let gps = imageMetadata[kCGImagePropertyGPSDictionary as String] as? [String: Any]
@@ -312,6 +443,40 @@ private struct ImageUtils {
     }
 
     return exif
+  }
+  
+  static func getGifDataFrom(image: UIImage,
+                             compressionQuality quality: Double?,
+                             initialMetadata: [String: Any]?) throws -> Data? {
+    guard let data = image.jpegData(compressionQuality: quality ?? DEFAULT_QUALITY) else {
+      throw FailedToReadImageDataException()
+    }
+
+    let destinationData = NSMutableData()
+    guard let imageDestination = CGImageDestinationCreateWithData(destinationData, kUTTypeGIF, 1, nil),
+          let cgImage = image.cgImage
+    else {
+      throw FailedToCreateGifException()
+    }
+
+    var metadata: [String: Any] = initialMetadata ?? [:]
+    if initialMetadata == nil,
+       let cgImageSource = CGImageSourceCreateWithData(data as CFData, nil),
+       let properties = CGImageSourceCopyPropertiesAtIndex(cgImageSource, 0, nil) as? [String: Any] {
+      metadata = properties
+    }
+
+    if quality != nil {
+      metadata[kCGImageDestinationLossyCompressionQuality as String] = quality
+    }
+
+    CGImageDestinationAddImage(imageDestination, cgImage, metadata as CFDictionary)
+
+    if !CGImageDestinationFinalize(imageDestination) {
+      throw FailedToExportGifException()
+    }
+
+    return destinationData as Data
   }
 }
 

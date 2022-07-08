@@ -63,6 +63,12 @@ public class DevMenuInternalModule: NSObject, RCTBridgeModule {
     manager.dispatchCallable(withId: callableId, args: args)
     resolve(nil)
   }
+  
+  @objc
+  func loadFontsAsync(_ resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
+    manager.loadFonts()
+    resolve(nil)
+  }
 
   @objc
   func hideMenu() {
@@ -89,5 +95,16 @@ public class DevMenuInternalModule: NSObject, RCTBridgeModule {
   func onScreenChangeAsync(_ currentScreen: String?, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
     manager.setCurrentScreen(currentScreen)
     resolve(nil)
+  }
+  
+  @objc
+  func fireCallback(_ name: String, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
+    
+    if (!manager.registeredCallbacks.contains(name)) {
+      return reject("ERR_DEVMENU_ACTION_FAILED", "\(name) is not a registered callback", nil)
+    }
+    manager.sendEventToDelegateBridge("registeredCallbackFired", data: name)
+    
+    return resolve(nil)
   }
 }

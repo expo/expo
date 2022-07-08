@@ -14,6 +14,7 @@ const screens = [
   'DateTimePicker',
   'DrawerLayoutAndroid',
   'FacebookAds',
+  'FlashList',
   'GL',
   'GestureHandlerList',
   'GestureHandlerPinch',
@@ -32,6 +33,7 @@ const screens = [
   'ProgressViewIOS',
   'QRCode',
   'Reanimated',
+  'Skia',
   'SVG',
   'Screens',
   'ScrollView',
@@ -57,7 +59,9 @@ export const ScreenItems = screens.map((name) => ({
 
 export default function ExpoComponentsScreen() {
   const renderItemRight = React.useCallback(
-    ({ name }) => <ExpoAPIIcon name={name} style={{ marginRight: 10, marginLeft: 6 }} />,
+    ({ name }: { name: string }) => (
+      <ExpoAPIIcon name={name} style={{ marginRight: 10, marginLeft: 6 }} />
+    ),
     []
   );
 

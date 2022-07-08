@@ -1,11 +1,14 @@
+import { getConfig } from '@expo/config';
 import { MetroDevServerOptions } from '@expo/dev-server';
 import http from 'http';
 import Metro from 'metro';
 import { Terminal } from 'metro-core';
 
 import { createDevServerMiddleware } from '../middleware/createDevServerMiddleware';
+import { getPlatformBundlers } from '../platformBundlers';
 import { MetroTerminalReporter } from './MetroTerminalReporter';
 import { importExpoMetroConfigFromProject, importMetroFromProject } from './resolveFromProject';
+import { withMetroMultiPlatform } from './withMetroMultiPlatform';
 
 // From expo/dev-server but with ability to use custom logger.
 type MessageSocket = {
@@ -38,9 +41,22 @@ export async function instantiateMetroAsync(
     },
   };
 
-  const metroConfig = await ExpoMetroConfig.loadAsync(projectRoot, { reporter, ...options });
+  let metroConfig = await ExpoMetroConfig.loadAsync(projectRoot, { reporter, ...options });
 
-  const { middleware, attachToServer } = createDevServerMiddleware({
+  // TODO: When we bring expo/metro-config into the expo/expo repo, then we can upstream this.
+  const { exp } = getConfig(projectRoot, { skipSDKVersionRequirement: true, skipPlugins: true });
+  const platformBundlers = getPlatformBundlers(exp);
+  metroConfig = withMetroMultiPlatform(projectRoot, metroConfig, platformBundlers);
+
+  const {
+    middleware,
+    attachToServer,
+
+    // New
+    websocketEndpoints,
+    eventsSocketEndpoint,
+    messageSocketEndpoint,
+  } = createDevServerMiddleware(projectRoot, {
     port: metroConfig.server.port,
     watchFolders: metroConfig.watchFolders,
   });
@@ -57,14 +73,27 @@ export async function instantiateMetroAsync(
   const server = await Metro.runServer(metroConfig, {
     // @ts-expect-error: TODO: Update the types.
     hmrEnabled: true,
+    websocketEndpoints,
   });
 
-  const { messageSocket, eventsSocket } = attachToServer(server);
-  reportEvent = eventsSocket.reportEvent;
+  if (attachToServer) {
+    // Expo SDK 44 and lower
+    const { messageSocket, eventsSocket } = attachToServer(server);
+    reportEvent = eventsSocket.reportEvent;
 
-  return {
-    server,
-    middleware,
-    messageSocket,
-  };
+    return {
+      server,
+      middleware,
+      messageSocket,
+    };
+  } else {
+    // RN +68 -- Expo SDK +45
+    reportEvent = eventsSocketEndpoint.reportEvent;
+
+    return {
+      server,
+      middleware,
+      messageSocket: messageSocketEndpoint,
+    };
+  }
 }

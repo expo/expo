@@ -25,6 +25,8 @@
   <uses-permission android:name="android.permission.VIBRATE" />
   <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT" />
   <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+  <uses-permission android:name="android.permission.HIGH_SAMPLING_RATE_SENSORS" />
+  <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
 
   <!-- These require runtime permissions on M -->
   <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
@@ -199,6 +201,9 @@
     <activity android:name="com.facebook.react.devsupport.DevSettingsActivity"/>
     <!-- WHEN_PREPARING_SHELL_REMOVE_FROM_HERE -->
     <!-- ADD DEV SETTINGS HERE -->
+    <!-- BEGIN_SDK_45 -->
+    <activity android:name="abi45_0_0.com.facebook.react.devsupport.DevSettingsActivity"/>
+    <!-- END_SDK_45 -->
     <!-- BEGIN_SDK_44 -->
     <activity android:name="abi44_0_0.com.facebook.react.devsupport.DevSettingsActivity"/>
     <!-- END_SDK_44 -->

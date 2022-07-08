@@ -7,25 +7,27 @@ import ExpoModulesTestCore
 class ExpoModulesSpec: ExpoSpec {
   override func spec() {
     let appContext = AppContext.create()
-    let interopBridge = SwiftInteropBridge(appContext: appContext)
     let runtime = appContext.runtime
     let testModuleName = "TestModule"
     let testFunctionName = "testFunction"
+    let throwingFunctionName = "throwingFunction"
+    let exceptionToThrow = Exception(name: "Some exception", description: "Exception description")
     let constantsDict: [String: Any] = [
       "expo": "is cool",
       "sdk": 45,
     ]
 
     beforeSuite {
-      try! appContext.installExpoModulesHostObject(interopBridge)
-
       appContext.moduleRegistry.register(holder: mockModuleHolder(appContext) {
-        $0.name(testModuleName)
+        Name(testModuleName)
 
-        constants(constantsDict)
+        Constants(constantsDict)
 
-        function(testFunctionName) { Double.pi }
-          .runSynchronously()
+        Function(testFunctionName) { Double.pi }
+
+        Function(throwingFunctionName) {
+          throw exceptionToThrow
+        }
       })
     }
 
@@ -70,6 +72,17 @@ class ExpoModulesSpec: ExpoSpec {
 
       it("calls function") {
         expect(try! runtime?.eval("ExpoModules.TestModule.\(testFunctionName)()").asDouble()) == Double.pi
+      }
+
+      it("throws from sync function") {
+        // Invoke the throwing function and return the error (eval shouldn't rethrow here)
+        let error = try! runtime!.eval("try { ExpoModules.TestModule.\(throwingFunctionName)() } catch (error) { error }").asObject()
+
+        // We just check if it contains the description — they won't be equal for the following reasons:
+        // - the `exceptionToThrow` is just the root cause, in fact it returns `FunctionCallException`
+        // - the debug description contains the file and line number, so it's hard to mock the `FunctionCallException`
+        // Ideally if we have a better way (error codes/names) to identify them w/o relying on the description that may change over time.
+        expect(error.getProperty("message").getString()).to(contain(exceptionToThrow.debugDescription))
       }
     }
   }

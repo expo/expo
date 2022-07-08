@@ -10,9 +10,9 @@ public class ImageManipulatorModule: Module {
   typealias SaveImageResult = (url: URL, data: Data)
 
   public func definition() -> ModuleDefinition {
-    name("ExpoImageManipulator")
+    Name("ExpoImageManipulator")
 
-    function("manipulateAsync", manipulateImage)
+    AsyncFunction("manipulateAsync", manipulateImage)
       .runOnQueue(.main)
   }
 

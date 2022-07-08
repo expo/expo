@@ -432,17 +432,6 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
   }];
 }
 
-- (void)fetchJSBundleWithManifest:(EXManifestsManifest *)manifest
-                     cacheBehavior:(EXCachedResourceBehavior)cacheBehavior
-                   timeoutInterval:(NSTimeInterval)timeoutInterval
-                          progress:(void (^ _Nullable )(EXLoadingProgress *))progressBlock
-                           success:(void (^)(NSData *))successBlock
-                             error:(void (^)(NSError *))errorBlock
-{
-  RCTAssert(_appFetcher != nil, @"Tried to fetch a JS Bundle before appFetcher was initialized");
-  [_appFetcher fetchJSBundleWithManifest:manifest cacheBehavior:cacheBehavior timeoutInterval:timeoutInterval progress:progressBlock success:successBlock error:errorBlock];
-}
-
 @end
 
 NS_ASSUME_NONNULL_END

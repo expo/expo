@@ -85,6 +85,10 @@ export type AuthRequestPromptOptions = Omit<WebBrowserOpenOptions, 'windowFeatur
    */
   useProxy?: boolean;
   /**
+   * Project name to use for the \`auth.expo.io\` proxy when `useProxy` is true.
+   */
+  projectNameForProxy?: string;
+  /**
    * URL options to be used when creating the redirect URL for the auth proxy.
    */
   proxyOptions?: Omit<CreateURLOptions, 'queryParams'> & { path?: string };

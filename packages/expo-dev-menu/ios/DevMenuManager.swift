@@ -409,6 +409,7 @@ open class DevMenuManager: NSObject {
     if DevMenuManager.fontsWereLoaded {
        return
     }
+    DevMenuManager.fontsWereLoaded = true
 
     let fonts = [
       "Inter-Black",
@@ -430,8 +431,12 @@ open class DevMenuManager: NSObject {
       var error: Unmanaged<CFError>?
       CTFontManagerRegisterGraphicsFont(font!, &error)
     }
-    
-    DevMenuManager.fontsWereLoaded = true
-    return
   }
+  
+  // captures any callbacks that are registered via the `registerDevMenuItems` module method
+  // it is set and unset by the public facing `DevMenuModule`
+  // when the DevMenuModule instance is unloaded (e.g between app loads) the callback list is reset to an empty array
+  @objc
+  public var registeredCallbacks: [String] = []
+
 }

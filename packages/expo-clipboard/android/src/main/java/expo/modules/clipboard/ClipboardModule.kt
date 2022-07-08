@@ -11,19 +11,12 @@ import android.text.Spanned
 import android.text.TextUtils
 import android.util.Log
 import androidx.core.os.bundleOf
-import expo.modules.core.errors.ModuleDestroyedException
 import expo.modules.core.utilities.ifNull
-import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.CodedException
+import expo.modules.kotlin.functions.Coroutine
 
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
-import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.launch
 import java.io.File
 
 private const val moduleName = "ExpoClipboard"
@@ -41,10 +34,10 @@ private enum class ContentType(val jsName: String) {
 
 class ClipboardModule : Module() {
   override fun definition() = ModuleDefinition {
-    name(moduleName)
+    Name(moduleName)
 
     // region Strings
-    function("getStringAsync") { options: GetStringOptions ->
+    AsyncFunction("getStringAsync") { options: GetStringOptions ->
       val item = clipboardManager.firstItem
       when (options.preferredFormat) {
         StringFormat.PLAIN -> item?.coerceToPlainText(context)
@@ -52,7 +45,7 @@ class ClipboardModule : Module() {
       } ?: ""
     }
 
-    function("setStringAsync") { content: String, options: SetStringOptions ->
+    AsyncFunction("setStringAsync") { content: String, options: SetStringOptions ->
       val clip = when (options.inputFormat) {
         StringFormat.PLAIN -> ClipData.newPlainText(null, content)
         StringFormat.HTML -> {
@@ -62,10 +55,10 @@ class ClipboardModule : Module() {
         }
       }
       clipboardManager.setPrimaryClip(clip)
-      return@function true
+      return@AsyncFunction true
     }
 
-    function("hasStringAsync") {
+    AsyncFunction("hasStringAsync") {
       clipboardManager
         .primaryClipDescription
         ?.hasTextContent
@@ -74,76 +67,63 @@ class ClipboardModule : Module() {
     // endregion
 
     // region Images
-    function("getImageAsync") { options: GetImageOptions, promise: Promise ->
+    AsyncFunction("getImageAsync") Coroutine { options: GetImageOptions ->
       val imageUri = clipboardManager
         .takeIf { clipboardHasItemWithType("image/*") }
         ?.firstItem
         ?.uri
         .ifNull {
-          promise.resolve(null)
-          return@function
+          return@Coroutine null
         }
 
-      val exceptionHandler = CoroutineExceptionHandler { _, err ->
+      try {
+        val imageResult = imageFromContentUri(context, imageUri, options)
+        return@Coroutine imageResult.toBundle()
+      } catch (err: Throwable) {
         err.printStackTrace()
-        val rejectionCause = when (err) {
+        throw when (err) {
           is CodedException -> err
           is SecurityException -> NoPermissionException(err)
           else -> PasteFailureException(err, kind = "image")
         }
-        promise.reject(rejectionCause)
-      }
-
-      moduleCoroutineScope.launch(exceptionHandler) {
-        val imageResult = imageFromContentUri(context, imageUri, options)
-        promise.resolve(imageResult.toBundle())
       }
     }
 
-    function("setImageAsync") { imageData: String, promise: Promise ->
-      val exceptionHandler = CoroutineExceptionHandler { _, err ->
+    AsyncFunction("setImageAsync") Coroutine { imageData: String ->
+      try {
+        val clip = clipDataFromBase64Image(context, imageData, clipboardCacheDir)
+        clipboardManager.setPrimaryClip(clip)
+      } catch (err: Throwable) {
         err.printStackTrace()
-        val rejectionCause = when (err) {
+        throw when (err) {
           is CodedException -> err
           else -> CopyFailureException(err, kind = "image")
         }
-        promise.reject(rejectionCause)
-      }
-
-      moduleCoroutineScope.launch(exceptionHandler) {
-        val clip = clipDataFromBase64Image(context, imageData, clipboardCacheDir)
-        clipboardManager.setPrimaryClip(clip)
-        promise.resolve(null)
       }
     }
 
-    function("hasImageAsync") {
+    AsyncFunction("hasImageAsync") {
       clipboardManager.primaryClipDescription?.hasMimeType("image/*") == true
     }
     //endregion
 
     // region Events
-    events(CLIPBOARD_CHANGED_EVENT_NAME)
+    Events(CLIPBOARD_CHANGED_EVENT_NAME)
 
-    onCreate {
+    OnCreate {
       clipboardEventEmitter = ClipboardEventEmitter()
       clipboardEventEmitter.attachListener()
     }
 
-    onDestroy {
+    OnDestroy {
       clipboardEventEmitter.detachListener()
-      try {
-        moduleCoroutineScope.cancel(ModuleDestroyedException())
-      } catch (e: IllegalStateException) {
-        // Ignore: The coroutine scope has no job in it
-      }
     }
 
-    onActivityEntersBackground {
+    OnActivityEntersBackground {
       clipboardEventEmitter.pauseListening()
     }
 
-    onActivityEntersForeground {
+    OnActivityEntersForeground {
       clipboardEventEmitter.resumeListening()
     }
     // endregion
@@ -157,8 +137,6 @@ class ClipboardModule : Module() {
   private val clipboardManager: ClipboardManager
     get() = context.getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager
       ?: throw ClipboardUnavailableException()
-
-  private val moduleCoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
   private val clipboardCacheDir: File by lazy {
     File(context.cacheDir, CLIPBOARD_DIRECTORY_NAME).also { it.mkdirs() }
@@ -188,7 +166,7 @@ class ClipboardModule : Module() {
               "contentTypes" to listOfNotNull(
                 ContentType.PLAIN_TEXT.takeIf { clip.hasTextContent },
                 ContentType.HTML.takeIf { clip.hasMimeType(ClipDescription.MIMETYPE_TEXT_HTML) },
-                ContentType.HTML.takeIf { clip.hasMimeType("image/*") }
+                ContentType.IMAGE.takeIf { clip.hasMimeType("image/*") }
               ).map { it.jsName }
             )
           )

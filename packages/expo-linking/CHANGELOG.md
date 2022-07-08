@@ -10,6 +10,13 @@
 
 ### 💡 Others
 
+## 3.2.0 — 2022-07-07
+
+### 🐛 Bug fixes
+
+- Fix bug in isExpoHosted for new manifests. ([#17402](https://github.com/expo/expo/pull/17402) by [@wschurman](https://github.com/wschurman))
+- Fix `addEventListener` not returning a subscription on web. ([#17925](https://github.com/expo/expo/pull/17925) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 3.1.0 — 2022-04-18
 
 ### 🎉 New features

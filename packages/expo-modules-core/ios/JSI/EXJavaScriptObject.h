@@ -1,20 +1,16 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
 #import <Foundation/Foundation.h>
-#import <React/RCTBridgeModule.h>
 
 #ifdef __cplusplus
 #import <jsi/jsi.h>
-#import <ReactCommon/CallInvoker.h>
 
 namespace jsi = facebook::jsi;
 #endif // __cplusplus
 
-typedef void (^JSAsyncFunctionBlock)(NSArray * _Nonnull, RCTPromiseResolveBlock _Nonnull, RCTPromiseRejectBlock _Nonnull);
-typedef id _Nullable (^JSSyncFunctionBlock)(NSArray * _Nonnull);
-
 @class EXJavaScriptRuntime;
 @class EXJavaScriptValue;
+@class EXJavaScriptWeakObject;
 
 /**
  The property descriptor options for the property being defined or modified.
@@ -74,24 +70,21 @@ NS_SWIFT_NAME(JavaScriptObject)
 - (void)setProperty:(nonnull NSString *)name value:(nullable id)value;
 
 /**
+ Defines a new property or modifies an existing property on the object using the property descriptor.
+ */
+- (void)defineProperty:(nonnull NSString *)name descriptor:(nonnull EXJavaScriptObject *)descriptor;
+
+/**
  Defines a new property or modifies an existing property on the object. Calls `Object.defineProperty` under the hood.
  */
 - (void)defineProperty:(nonnull NSString *)name value:(nullable id)value options:(EXJavaScriptObjectPropertyDescriptor)options;
 
-#pragma mark - Functions
+#pragma mark - WeakObject
 
-/**
- Sets given function block on the object as a host function returning a promise.
- */
-- (void)setAsyncFunction:(nonnull NSString *)key
-               argsCount:(NSInteger)argsCount
-                   block:(nonnull JSAsyncFunctionBlock)block;
+- (nonnull EXJavaScriptWeakObject *)createWeak;
 
-/**
- Sets given synchronous function block as a host function on the object.
- */
-- (void)setSyncFunction:(nonnull NSString *)name
-              argsCount:(NSInteger)argsCount
-                  block:(nonnull JSSyncFunctionBlock)block;
+#pragma mark - Deallocator
+
+- (void)setObjectDeallocator:(void (^ _Nonnull)(void))deallocatorBlock;
 
 @end

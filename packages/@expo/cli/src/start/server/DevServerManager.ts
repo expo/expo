@@ -1,12 +1,15 @@
 import { ExpoConfig, getConfig } from '@expo/config';
 import assert from 'assert';
+import chalk from 'chalk';
 
-import * as Log from '../../log';
 import { FileNotifier } from '../../utils/FileNotifier';
 import { logEvent } from '../../utils/analytics/rudderstackClient';
 import { ProjectPrerequisite } from '../doctor/Prerequisite';
 import * as AndroidDebugBridge from '../platforms/android/adb';
 import { BundlerDevServer, BundlerStartOptions } from './BundlerDevServer';
+import { getPlatformBundlers } from './platformBundlers';
+
+const debug = require('debug')('expo:start:server:devServerManager') as typeof console.log;
 
 export type MultiBundlerStartOptions = {
   type: keyof typeof BUNDLERS;
@@ -37,13 +40,19 @@ export class DevServerManager {
   }
 
   private watchBabelConfig() {
-    const notifier = new FileNotifier(this.projectRoot, [
-      './babel.config.js',
-      './babel.config.json',
-      './.babelrc.json',
-      './.babelrc',
-      './.babelrc.js',
-    ]);
+    const notifier = new FileNotifier(
+      this.projectRoot,
+      [
+        './babel.config.js',
+        './babel.config.json',
+        './.babelrc.json',
+        './.babelrc',
+        './.babelrc.js',
+      ],
+      {
+        additionalWarning: chalk` You may need to clear the bundler cache with the {bold --clear} flag for your changes to take effect.`,
+      }
+    );
 
     notifier.startObserving();
 
@@ -100,10 +109,15 @@ export class DevServerManager {
     if (server) {
       return;
     }
-    Log.debug('Starting webpack dev server');
+    const { exp } = getConfig(this.projectRoot, {
+      skipPlugins: true,
+      skipSDKVersionRequirement: true,
+    });
+    const bundler = getPlatformBundlers(exp).web;
+    debug(`Starting ${bundler} dev server for web`);
     return this.startAsync([
       {
-        type: 'webpack',
+        type: bundler,
         options: this.options,
       },
     ]);
@@ -117,10 +131,16 @@ export class DevServerManager {
       sdkVersion: exp.sdkVersion ?? null,
     });
 
+    const platformBundlers = getPlatformBundlers(exp);
+
     // Start all dev servers...
     for (const { type, options } of startOptions) {
       const BundlerDevServerClass = await BUNDLERS[type]();
-      const server = new BundlerDevServerClass(this.projectRoot, !!options?.devClient);
+      const server = new BundlerDevServerClass(
+        this.projectRoot,
+        platformBundlers,
+        !!options?.devClient
+      );
       await server.startAsync(options ?? this.options);
       devServers.push(server);
     }

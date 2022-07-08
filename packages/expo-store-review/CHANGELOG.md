@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 5.3.0 — 2022-07-07
+
+### 🐛 Bug fixes
+
+- Fixed null pointer exception when store review request failed on Android. ([#16365](https://github.com/expo/expo/pull/16365) by [@mariomurrent-softwaresolutions](https://github.com/mariomurrent-softwaresolutions))
+
 ## 5.2.0 — 2022-04-18
 
 ### ⚠️ Notices

@@ -33,7 +33,7 @@ def getRNVersion() {
 ensureDependeciesWereEvaluated(project)
 
 group = 'host.exp.exponent'
-version = '45.0.0-beta.2'
+version = '46.0.0-alpha.2'
 
 buildscript {
   def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
@@ -104,7 +104,7 @@ android {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 31)
     versionCode 1
-    versionName "45.0.0-beta.2"
+    versionName "46.0.0-alpha.2"
     consumerProguardFiles("proguard-rules.pro")
   }
   lintOptions {
@@ -120,10 +120,12 @@ android {
         srcDirs += new File(project.buildDir, generatedFilesSrcDir)
 
         def rnVersion = getRNVersion()
-        if (rnVersion >= versionToNumber(0, 67, 0)) {
+        if (rnVersion >= versionToNumber(0, 69, 0)) {
           srcDirs += "src/reactNativeHostWrapper"
+        } else if (rnVersion >= versionToNumber(0, 67, 0)) {
+          srcDirs += "src/reactNativeHostWrapper68"
         } else {
-          srcDirs += "src/legacyReactNativeHostWrapper"
+          srcDirs += "src/reactNativeHostWrapper64"
         }
       }
     }

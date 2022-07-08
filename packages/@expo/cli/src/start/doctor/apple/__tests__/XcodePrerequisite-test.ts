@@ -1,11 +1,9 @@
 import { execSync } from 'child_process';
 
+import { asMock } from '../../../../__tests__/asMock';
 import * as Log from '../../../../log';
 import { confirmAsync } from '../../../../utils/prompts';
 import { getXcodeVersionAsync, XcodePrerequisite } from '../XcodePrerequisite';
-
-const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
-  fn as jest.MockedFunction<T>;
 
 jest.mock(`../../../../log`);
 jest.mock('../../../../utils/prompts');

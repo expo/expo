@@ -5,7 +5,7 @@ import { AuthSessionOptions, AuthSessionRedirectUriOptions, AuthSessionResult } 
 import { DiscoveryDocument, fetchDiscoveryAsync, Issuer, IssuerOrDiscovery, ProviderMetadata, resolveDiscoveryAsync } from './Discovery';
 import { generateHexStringAsync } from './PKCE';
 /**
- * Initiate an authentication session with the given options. Only one `AuthSession` can be active at any given time in your application.
+ * Initiate a proxied authentication session with the given options. Only one `AuthSession` can be active at any given time in your application.
  * If you attempt to open a second session while one is still in progress, the second session will return a value to indicate that `AuthSession` is locked.
  *
  * @param options An object of type `AuthSessionOptions`.
@@ -77,7 +77,7 @@ export declare function getRedirectUrl(path?: string): string;
  * // Web prod: https://yourwebsite.com
  * ```
  */
-export declare function makeRedirectUri({ native, scheme, isTripleSlashed, queryParams, path, preferLocalhost, useProxy, }?: AuthSessionRedirectUriOptions): string;
+export declare function makeRedirectUri({ native, scheme, isTripleSlashed, queryParams, path, preferLocalhost, useProxy, projectNameForProxy, }?: AuthSessionRedirectUriOptions): string;
 /**
  * Build an `AuthRequest` and load it before returning.
  *

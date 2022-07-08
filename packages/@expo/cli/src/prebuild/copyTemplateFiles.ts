@@ -6,10 +6,11 @@ import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
 
-import * as Log from '../log';
 import { copySync, directoryExistsAsync } from '../utils/dir';
 import { mergeGitIgnorePaths } from '../utils/mergeGitIgnorePaths';
 import { isPkgMainExpoAppEntry } from './updatePackageJson';
+
+const debug = require('debug')('expo:prebuild:copyTemplateFiles') as typeof console.log;
 
 type CopyFilesResults = {
   /** Merge results for the root `.gitignore` file */
@@ -82,7 +83,7 @@ export async function copyTemplateFilesAsync(
     templateDirectory,
     platforms
   );
-  Log.debug(`All platforms have an internal gitignore: ${hasPlatformSpecificGitIgnores}`);
+  debug(`All platforms have an internal gitignore: ${hasPlatformSpecificGitIgnores}`);
   const gitignore = hasPlatformSpecificGitIgnores
     ? null
     : mergeGitIgnorePaths(
@@ -117,6 +118,8 @@ async function copyPathsFromTemplateAsync(
       skippedPaths.push(copyFilePath);
     }
   }
+  debug(`Copied files:`, copiedPaths);
+  debug(`Skipped files:`, copiedPaths);
   return { copiedPaths, skippedPaths };
 }
 
@@ -130,6 +133,7 @@ function getFilePathsToCopy(projectRoot: string, pkg: PackageJSONConfig, platfor
     targetPaths.push('index.js');
   }
 
+  debug(`Files to copy:`, targetPaths);
   return targetPaths;
 }
 

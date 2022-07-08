@@ -112,7 +112,7 @@ dependencies {
 
   api 'com.squareup.picasso:picasso:2.5.2'
   api 'com.google.android.gms:play-services-analytics:17.0.0'
-  api 'com.google.android.gms:play-services-maps:17.0.0'
+  api 'com.google.android.gms:play-services-maps:18.0.0'
   api 'com.google.android.gms:play-services-auth:17.0.0'
   api 'com.google.android.gms:play-services-location:17.0.0'
   api 'com.google.android.gms:play-services-fitness:17.0.0'
@@ -182,9 +182,8 @@ dependencies {
   api 'com.github.troZee:ViewPager2:v1.0.6'
 
   // stripe-react-native
-  implementation('com.stripe:stripe-android:19.3.1') {
-    exclude group:'com.google.android.gms', module:'play-services-wallet'
-  }
+  implementation('com.stripe:stripe-android:20.5.+')
+  implementation('com.stripe:financial-connections:20.5.+')
   implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.0'
   implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.3.1"
   implementation 'com.google.android.material:material:1.3.0'

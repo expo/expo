@@ -15,6 +15,7 @@ const defaultDevSettings: DevMenu.DevSettings = {
   isHotLoadingAvailable: true,
   isPerfMonitorAvailable: true,
   isRemoteDebuggingAvailable: true,
+  isJSInspectorAvailable: false,
 };
 
 const DevSettingsContext = React.createContext<DevMenu.DevSettings>(defaultDevSettings);
@@ -35,6 +36,12 @@ export function useDevSettings() {
   const [devSettings, setDevSettings] = React.useState<DevMenu.DevSettings>(
     initialDevSettings || defaultDevSettings
   );
+
+  React.useEffect(() => {
+    if (initialDevSettings) {
+      setDevSettings(initialDevSettings);
+    }
+  }, [initialDevSettings]);
 
   // toggle value so that there is no lag in response to user input
   // these values will update to the correct value after the native fn is executed via updateSettings()
@@ -82,6 +89,15 @@ export function useDevSettings() {
     bottomSheet.collapse();
   }, []);
 
+  const openRNDevMenu = React.useCallback(async () => {
+    await DevMenu.openDevMenuFromReactNative();
+  }, []);
+
+  const openJSInspector = React.useCallback(async () => {
+    await DevMenu.openJSInspector();
+    bottomSheet.collapse();
+  }, []);
+
   return {
     devSettings,
     actions: {
@@ -91,6 +107,8 @@ export function useDevSettings() {
       toggleFastRefresh,
       reload,
       navigateToLauncher,
+      openRNDevMenu,
+      openJSInspector,
     },
   };
 }

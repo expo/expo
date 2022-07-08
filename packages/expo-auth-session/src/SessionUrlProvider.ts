@@ -25,7 +25,7 @@ export class SessionUrlProvider {
     });
   }
 
-  getStartUrl(authUrl: string, returnUrl: string): string {
+  getStartUrl(authUrl: string, returnUrl: string, projectNameForProxy: string | undefined): string {
     if (Platform.OS === 'web' && !Platform.isDOMAvailable) {
       // Return nothing in SSR envs
       return '';
@@ -35,25 +35,26 @@ export class SessionUrlProvider {
       returnUrl,
     });
 
-    return `${this.getRedirectUrl()}/start?${queryString}`;
+    return `${this.getRedirectUrl({ projectNameForProxy })}/start?${queryString}`;
   }
 
-  getRedirectUrl(urlPath?: string): string {
+  getRedirectUrl(options: { projectNameForProxy?: string; urlPath?: string }): string {
     if (Platform.OS === 'web') {
       if (Platform.isDOMAvailable) {
-        return [window.location.origin, urlPath].filter(Boolean).join('/');
+        return [window.location.origin, options.urlPath].filter(Boolean).join('/');
       } else {
         // Return nothing in SSR envs
         return '';
       }
     }
 
-    const legacyExpoProjectId =
+    const legacyExpoProjectFullName =
+      options.projectNameForProxy ||
       Constants.manifest?.originalFullName ||
       Constants.manifest2?.extra?.expoClient?.originalFullName ||
       Constants.manifest?.id;
 
-    if (!legacyExpoProjectId) {
+    if (!legacyExpoProjectFullName) {
       let nextSteps = '';
       if (__DEV__) {
         if (Constants.executionEnvironment === ExecutionEnvironment.Bare) {
@@ -64,14 +65,21 @@ export class SessionUrlProvider {
             ' Please report this as a bug with the contents of `expo config --type public`.';
         }
       }
+
+      if (Constants.manifest2) {
+        nextSteps =
+          ' Prefer AuthRequest (with the useProxy option set to false) in combination with an Expo Development Client build of your application.' +
+          ' To continue using the AuthSession proxy, specify the project full name (@owner/slug) using the projectNameForProxy option.';
+      }
+
       throw new Error(
-        'Cannot use AuthSession proxy because the project ID is not defined.' + nextSteps
+        'Cannot use the AuthSession proxy because the project full name is not defined.' + nextSteps
       );
     }
 
-    const redirectUrl = `${SessionUrlProvider.BASE_URL}/${legacyExpoProjectId}`;
+    const redirectUrl = `${SessionUrlProvider.BASE_URL}/${legacyExpoProjectFullName}`;
     if (__DEV__) {
-      SessionUrlProvider.warnIfAnonymous(legacyExpoProjectId, redirectUrl);
+      SessionUrlProvider.warnIfAnonymous(legacyExpoProjectFullName, redirectUrl);
       // TODO: Verify with the dev server that the manifest is up to date.
     }
     return redirectUrl;
@@ -79,6 +87,9 @@ export class SessionUrlProvider {
 
   private static getHostAddressQueryParams(): ParsedQs | undefined {
     let hostUri: string | undefined =
+      // @ts-ignore: hostUri isn't defined on the expoClient type, because
+      // Constants.manifest is of type AppManifest while
+      // Constants.manifest2.extra.expoClient is of type ExpoConfig
       Constants.manifest?.hostUri ?? Constants.manifest2?.extra?.expoClient?.hostUri;
     if (
       !hostUri &&

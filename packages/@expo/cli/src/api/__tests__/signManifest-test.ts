@@ -1,10 +1,9 @@
 import nock from 'nock';
 
+import { asMock } from '../../__tests__/asMock';
 import { getExpoApiBaseUrl } from '../endpoint';
 import { signClassicExpoGoManifestAsync, signExpoGoManifestAsync } from '../signManifest';
 import { ensureLoggedInAsync } from '../user/actions';
-
-const asMock = (fn: any): jest.Mock => fn;
 
 jest.mock('../user/actions', () => ({
   ensureLoggedInAsync: jest.fn(),

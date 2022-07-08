@@ -1,3 +1,4 @@
+import { asMock } from '../../__tests__/asMock';
 import { Log } from '../../log';
 import {
   getVersionedDependenciesAsync,
@@ -6,9 +7,6 @@ import {
 import { confirmAsync } from '../../utils/prompts';
 import { checkPackagesAsync } from '../checkPackages';
 import { installPackagesAsync } from '../installAsync';
-
-const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
-  fn as jest.MockedFunction<T>;
 
 jest.mock('../../log');
 

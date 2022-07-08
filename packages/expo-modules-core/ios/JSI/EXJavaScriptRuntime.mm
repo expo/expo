@@ -82,33 +82,66 @@ using namespace facebook;
   return [[EXJavaScriptObject alloc] initWith:jsGlobalPtr runtime:self];
 }
 
-- (jsi::Function)createSyncFunction:(nonnull NSString *)name
-                          argsCount:(NSInteger)argsCount
-                              block:(nonnull JSSyncFunctionBlock)block
+- (nonnull EXJavaScriptObject *)createSyncFunction:(nonnull NSString *)name
+                                         argsCount:(NSInteger)argsCount
+                                             block:(nonnull JSSyncFunctionBlock)block
 {
-  return [self createHostFunction:name argsCount:argsCount block:^jsi::Value(jsi::Runtime &runtime, std::shared_ptr<react::CallInvoker> callInvoker, NSArray * _Nonnull arguments) {
-    return expo::convertObjCObjectToJSIValue(runtime, block(arguments));
-  }];
+  JSHostFunctionBlock hostFunctionBlock = ^jsi::Value(
+    jsi::Runtime &runtime,
+    std::shared_ptr<react::CallInvoker> callInvoker,
+    EXJavaScriptValue * _Nonnull thisValue,
+    NSArray<EXJavaScriptValue *> * _Nonnull arguments) {
+      NSError *error;
+      id result = block(thisValue, arguments, &error);
+
+      if (error == nil) {
+        return expo::convertObjCObjectToJSIValue(runtime, result);
+      } else {
+        throw jsi::JSError(runtime, [error.userInfo[@"message"] UTF8String]);
+      }
+    };
+  return [self createHostFunction:name argsCount:argsCount block:hostFunctionBlock];
 }
 
-- (jsi::Function)createAsyncFunction:(nonnull NSString *)name
-                           argsCount:(NSInteger)argsCount
-                               block:(nonnull JSAsyncFunctionBlock)block
+- (nonnull EXJavaScriptObject *)createAsyncFunction:(nonnull NSString *)name
+                                          argsCount:(NSInteger)argsCount
+                                              block:(nonnull JSAsyncFunctionBlock)block
 {
-  return [self createHostFunction:name argsCount:argsCount block:^jsi::Value(jsi::Runtime &runtime, std::shared_ptr<react::CallInvoker> callInvoker, NSArray *arguments) {
-    if (!callInvoker) {
-      // In mocked environment the call invoker may be null so it's not supported to call async functions.
-      // Testing async functions is a bit more complicated anyway. See `init` description for more.
-      throw jsi::JSError(runtime, "Calling async functions is not supported when the call invoker is unavailable");
-    }
-    // The function that is invoked as a setup of the EXJavaScript `Promise`.
-    auto promiseSetup = [callInvoker, block, arguments](jsi::Runtime &runtime, std::shared_ptr<Promise> promise) {
-      expo::callPromiseSetupWithBlock(runtime, callInvoker, promise, ^(RCTPromiseResolveBlock resolver, RCTPromiseRejectBlock rejecter) {
-        block(arguments, resolver, rejecter);
-      });
+  JSHostFunctionBlock hostFunctionBlock = ^jsi::Value(
+    jsi::Runtime &runtime,
+    std::shared_ptr<react::CallInvoker> callInvoker,
+    EXJavaScriptValue * _Nonnull thisValue,
+    NSArray<EXJavaScriptValue *> * _Nonnull arguments) {
+      if (!callInvoker) {
+        // In mocked environment the call invoker may be null so it's not supported to call async functions.
+        // Testing async functions is a bit more complicated anyway. See `init` description for more.
+        throw jsi::JSError(runtime, "Calling async functions is not supported when the call invoker is unavailable");
+      }
+      // The function that is invoked as a setup of the EXJavaScript `Promise`.
+      auto promiseSetup = [callInvoker, block, thisValue, arguments](jsi::Runtime &runtime, std::shared_ptr<Promise> promise) {
+        expo::callPromiseSetupWithBlock(runtime, callInvoker, promise, ^(RCTPromiseResolveBlock resolver, RCTPromiseRejectBlock rejecter) {
+          block(thisValue, arguments, resolver, rejecter);
+        });
+      };
+      return createPromiseAsJSIValue(runtime, promiseSetup);
     };
-    return createPromiseAsJSIValue(runtime, promiseSetup);
-  }];
+  return [self createHostFunction:name argsCount:argsCount block:hostFunctionBlock];
+}
+
+#pragma mark - Classes
+
+- (nonnull EXJavaScriptObject *)createClass:(nonnull NSString *)name
+                                constructor:(nonnull ClassConstructorBlock)constructor
+{
+  expo::ClassConstructor jsConstructor = [self, constructor](jsi::Runtime &runtime, const jsi::Value &thisValue, const jsi::Value *args, size_t count) {
+    std::shared_ptr<jsi::Object> thisPtr = std::make_shared<jsi::Object>(thisValue.asObject(runtime));
+    EXJavaScriptObject *caller = [[EXJavaScriptObject alloc] initWith:thisPtr runtime:self];
+    NSArray<EXJavaScriptValue *> *arguments = expo::convertJSIValuesToNSArray(self, args, count);
+
+    constructor(caller, arguments);
+  };
+  std::shared_ptr<jsi::Function> klass = expo::createClass(*_runtime, [name UTF8String], jsConstructor);
+  return [[EXJavaScriptObject alloc] initWith:klass runtime:self];
 }
 
 #pragma mark - Script evaluation
@@ -128,15 +161,21 @@ using namespace facebook;
       @"message": reason,
       @"stack": stack,
     }];
+  } catch (jsi::JSIException &error) {
+    NSString *reason = [NSString stringWithUTF8String:error.what()];
+    
+    @throw [NSException exceptionWithName:@"ScriptEvaluationException" reason:reason userInfo:@{
+      @"message": reason
+    }];
   }
   return [[EXJavaScriptValue alloc] initWithRuntime:self value:result];
 }
 
 #pragma mark - Private
 
-- (jsi::Function)createHostFunction:(nonnull NSString *)name
-                          argsCount:(NSInteger)argsCount
-                              block:(nonnull JSHostFunctionBlock)block
+- (nonnull EXJavaScriptObject *)createHostFunction:(nonnull NSString *)name
+                                         argsCount:(NSInteger)argsCount
+                                             block:(nonnull JSHostFunctionBlock)block
 {
   jsi::PropNameID propNameId = jsi::PropNameID::forAscii(*_runtime, [name UTF8String], [name length]);
   std::weak_ptr<react::CallInvoker> weakCallInvoker = _jsCallInvoker;
@@ -145,9 +184,13 @@ using namespace facebook;
     // there is no need to care about that for synchronous calls, so it's ensured in `createAsyncFunction` instead.
     auto callInvoker = weakCallInvoker.lock();
     NSArray<EXJavaScriptValue *> *arguments = expo::convertJSIValuesToNSArray(self, args, count);
-    return block(runtime, callInvoker, arguments);
+    std::shared_ptr<jsi::Value> thisValPtr = std::make_shared<jsi::Value>(runtime, std::move(thisVal));
+    EXJavaScriptValue *thisValue = [[EXJavaScriptValue alloc] initWithRuntime:self value:thisValPtr];
+
+    return block(runtime, callInvoker, thisValue, arguments);
   };
-  return jsi::Function::createFromHostFunction(*_runtime, propNameId, (unsigned int)argsCount, function);
+  std::shared_ptr<jsi::Object> fnPtr = std::make_shared<jsi::Object>(jsi::Function::createFromHostFunction(*_runtime, propNameId, (unsigned int)argsCount, function));
+  return [[EXJavaScriptObject alloc] initWith:fnPtr runtime:self];
 }
 
 @end

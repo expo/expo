@@ -64,6 +64,7 @@ export interface ModuleDescriptorIos {
   modules: string[];
   appDelegateSubscribers: string[];
   reactDelegateHandlers: string[];
+  debugOnly: boolean;
 }
 
 export type ModuleDescriptor = ModuleDescriptorAndroid | ModuleDescriptorIos;
@@ -113,6 +114,12 @@ export interface RawExpoModuleConfig {
      * To have multiple modules, string array is also supported.
      */
     swiftModuleName?: string | string[];
+
+    /**
+     * Whether this module will be added only to the debug configuration.
+     * Defaults to false.
+     */
+    debugOnly?: boolean;
   };
 
   /**

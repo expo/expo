@@ -10,15 +10,13 @@ const attributes = {
 };
 
 const STYLES_UNORDERED_LIST = css`
-  & {
-    ${paragraph}
-    list-style: disc;
-    margin-left: 1rem;
-    margin-bottom: 1rem;
+  ${paragraph}
+  list-style: disc;
+  margin-left: 1rem;
+  margin-bottom: 1rem;
 
-    .anchor-icon {
-      display: none;
-    }
+  .anchor-icon {
+    display: none;
   }
 
   table & {
@@ -35,10 +33,14 @@ const STYLES_UNORDERED_LIST = css`
   }
 `;
 
-const STYLES_NO_LIST_STYLE = css`
-  list-style: none;
-  margin-left: 0;
-`;
+const STYLES_NO_LIST_STYLE = css({
+  listStyle: 'none',
+  marginLeft: 0,
+
+  li: {
+    marginLeft: '0.25rem',
+  },
+});
 
 type ULProps = {
   hideBullets?: boolean;
@@ -69,6 +71,7 @@ export const OL: React.FC = ({ children }) => (
 );
 
 const STYLES_LIST_ITEM = css`
+  margin-left: 1rem;
   padding: 0.25rem 0;
   :before {
     font-size: 130%;
@@ -83,17 +86,6 @@ const STYLES_LIST_ITEM = css`
   }
 `;
 
-const STYLE_RETURN_LIST = css`
-  list-style-type: '⮑';
-  padding-left: 0.5rem;
-  margin-left: 0.25rem;
-
-  ::marker {
-    color: ${theme.icon.secondary};
-    font-size: 90%;
-  }
-`;
-
 const STYLE_PROP_LIST = css`
   ::marker {
     color: ${theme.text.secondary};
@@ -102,21 +94,13 @@ const STYLE_PROP_LIST = css`
 `;
 
 type LIProps = {
-  returnType?: boolean;
   propType?: boolean;
   customCss?: SerializedStyles;
 };
 
-export const LI: React.FC<LIProps> = ({ children, returnType, propType, customCss }) => {
+export const LI: React.FC<LIProps> = ({ children, propType, customCss }) => {
   return (
-    <li
-      css={[
-        STYLES_LIST_ITEM,
-        returnType && STYLE_RETURN_LIST,
-        propType && STYLE_PROP_LIST,
-        customCss,
-      ]}
-      className="docs-list-item">
+    <li css={[STYLES_LIST_ITEM, propType && STYLE_PROP_LIST, customCss]} className="docs-list-item">
       {children}
     </li>
   );

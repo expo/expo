@@ -20,13 +20,12 @@
 - (void)setUp
 {
   _config = [ABI44_0_0EXUpdatesConfig configWithDictionary:@{
-    @"ABI44_0_0EXUpdatesURL": @"https://exp.host/@test/test",
-    @"ABI44_0_0EXUpdatesUsesLegacyManifest": @(YES)
+    ABI44_0_0EXUpdatesConfigUpdateUrlKey: @"https://exp.host/@test/test",
   }];
 
   _selfHostedConfig = [ABI44_0_0EXUpdatesConfig configWithDictionary:@{
-    @"ABI44_0_0EXUpdatesURL": @"https://esamelson.github.io/self-hosting-test/ios-index.json",
-    @"ABI44_0_0EXUpdatesSDKVersion": @"38.0.0"
+    ABI44_0_0EXUpdatesConfigUpdateUrlKey: @"https://esamelson.github.io/self-hosting-test/ios-index.json",
+    ABI44_0_0EXUpdatesConfigSDKVersionKey: @"38.0.0"
   }];
 
   _database = [ABI44_0_0EXUpdatesDatabase new];
@@ -41,18 +40,18 @@
 {
   ABI44_0_0EXManifestsLegacyManifest *manifest = [[ABI44_0_0EXManifestsLegacyManifest alloc] initWithRawManifestJSON:@{}];
   NSURL *expected = [NSURL URLWithString:@"https://classic-assets.eascdn.net/~assets/"];
-  XCTAssert([expected isEqual:[ABI44_0_0EXUpdatesLegacyUpdate bundledAssetBaseUrlWithManifest:manifest config:[ABI44_0_0EXUpdatesConfig configWithDictionary:@{@"ABI44_0_0EXUpdatesURL": @"https://exp.host/@test/test"}]]]);
-  XCTAssert([expected isEqual:[ABI44_0_0EXUpdatesLegacyUpdate bundledAssetBaseUrlWithManifest:manifest config:[ABI44_0_0EXUpdatesConfig configWithDictionary:@{@"ABI44_0_0EXUpdatesURL": @"https://expo.io/@test/test"}]]]);
-  XCTAssert([expected isEqual:[ABI44_0_0EXUpdatesLegacyUpdate bundledAssetBaseUrlWithManifest:manifest config:[ABI44_0_0EXUpdatesConfig configWithDictionary:@{@"ABI44_0_0EXUpdatesURL": @"https://expo.test/@test/test"}]]]);
+  XCTAssert([expected isEqual:[ABI44_0_0EXUpdatesLegacyUpdate bundledAssetBaseUrlWithManifest:manifest config:[ABI44_0_0EXUpdatesConfig configWithDictionary:@{ABI44_0_0EXUpdatesConfigUpdateUrlKey: @"https://exp.host/@test/test"}]]]);
+  XCTAssert([expected isEqual:[ABI44_0_0EXUpdatesLegacyUpdate bundledAssetBaseUrlWithManifest:manifest config:[ABI44_0_0EXUpdatesConfig configWithDictionary:@{ABI44_0_0EXUpdatesConfigUpdateUrlKey: @"https://expo.io/@test/test"}]]]);
+  XCTAssert([expected isEqual:[ABI44_0_0EXUpdatesLegacyUpdate bundledAssetBaseUrlWithManifest:manifest config:[ABI44_0_0EXUpdatesConfig configWithDictionary:@{ABI44_0_0EXUpdatesConfigUpdateUrlKey: @"https://expo.test/@test/test"}]]]);
 }
 
 - (void)testBundledAssetBaseUrl_ExpoSubdomain
 {
   ABI44_0_0EXManifestsLegacyManifest *manifest = [[ABI44_0_0EXManifestsLegacyManifest alloc] initWithRawManifestJSON:@{}];
   NSURL *expected = [NSURL URLWithString:@"https://classic-assets.eascdn.net/~assets/"];
-  XCTAssert([expected isEqual:[ABI44_0_0EXUpdatesLegacyUpdate bundledAssetBaseUrlWithManifest:manifest config:[ABI44_0_0EXUpdatesConfig configWithDictionary:@{@"ABI44_0_0EXUpdatesURL": @"https://staging.exp.host/@test/test"}]]]);
-  XCTAssert([expected isEqual:[ABI44_0_0EXUpdatesLegacyUpdate bundledAssetBaseUrlWithManifest:manifest config:[ABI44_0_0EXUpdatesConfig configWithDictionary:@{@"ABI44_0_0EXUpdatesURL": @"https://staging.expo.io/@test/test"}]]]);
-  XCTAssert([expected isEqual:[ABI44_0_0EXUpdatesLegacyUpdate bundledAssetBaseUrlWithManifest:manifest config:[ABI44_0_0EXUpdatesConfig configWithDictionary:@{@"ABI44_0_0EXUpdatesURL": @"https://staging.expo.test/@test/test"}]]]);
+  XCTAssert([expected isEqual:[ABI44_0_0EXUpdatesLegacyUpdate bundledAssetBaseUrlWithManifest:manifest config:[ABI44_0_0EXUpdatesConfig configWithDictionary:@{ABI44_0_0EXUpdatesConfigUpdateUrlKey: @"https://staging.exp.host/@test/test"}]]]);
+  XCTAssert([expected isEqual:[ABI44_0_0EXUpdatesLegacyUpdate bundledAssetBaseUrlWithManifest:manifest config:[ABI44_0_0EXUpdatesConfig configWithDictionary:@{ABI44_0_0EXUpdatesConfigUpdateUrlKey: @"https://staging.expo.io/@test/test"}]]]);
+  XCTAssert([expected isEqual:[ABI44_0_0EXUpdatesLegacyUpdate bundledAssetBaseUrlWithManifest:manifest config:[ABI44_0_0EXUpdatesConfig configWithDictionary:@{ABI44_0_0EXUpdatesConfigUpdateUrlKey: @"https://staging.expo.test/@test/test"}]]]);
 }
 
 - (void)testBundledAssetBaseUrl_AssetUrlOverride_AbsoluteUrl

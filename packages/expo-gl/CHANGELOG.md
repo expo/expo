@@ -10,6 +10,25 @@
 
 ### 💡 Others
 
+## 11.4.0 — 2022-07-07
+
+### 🐛 Bug fixes
+
+- Stop rendering when app is backgrounded on iOS. ([#17463](https://github.com/expo/expo/pull/17463) by [@wkozyra95](https://github.com/wkozyra95))
+- Added support for React Native 0.69.x. ([#18006](https://github.com/expo/expo/pull/18006) by [@kudo](https://github.com/kudo))
+
+## 11.3.0 — 2022-04-27
+
+### 🐛 Bug fixes
+
+- Fix crash on android 11 by packaging worklet `jsi:Runtime*` inside ArrayBuffer. ([#17194](https://github.com/expo/expo/pull/17194) by [@wkozyra95](https://github.com/wkozyra95))
+
+## 11.2.2 — 2022-04-21
+
+### 🐛 Bug fixes
+
+- Fix import errors when option `inlineRequires` is enabled in `metro.config.js`. ([#17141](https://github.com/expo/expo/pull/17141) by [@wkozyra95](https://github.com/wkozyra95))
+
 ## 11.2.1 — 2022-04-20
 
 _This version does not introduce any user-facing changes._

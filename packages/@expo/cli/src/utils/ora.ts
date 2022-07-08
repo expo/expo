@@ -4,13 +4,9 @@ import oraReal, { Ora } from 'ora';
 // import * as Log from '../log';
 import { env } from './env';
 
-// eslint-disable-next-line no-console
 const logReal = console.log;
-// eslint-disable-next-line no-console
 const infoReal = console.info;
-// eslint-disable-next-line no-console
 const warnReal = console.warn;
-// eslint-disable-next-line no-console
 const errorReal = console.error;
 
 const runningSpinners: oraReal.Ora[] = [];
@@ -47,26 +43,18 @@ export function ora(options?: oraReal.Options | string): oraReal.Ora {
   };
 
   const wrapNativeLogs = (): void => {
-    // eslint-disable-next-line no-console
     console.log = (...args: any) => logWrap(logReal, args);
-    // eslint-disable-next-line no-console
     console.info = (...args: any) => logWrap(infoReal, args);
-    // eslint-disable-next-line no-console
     console.warn = (...args: any) => logWrap(warnReal, args);
-    // eslint-disable-next-line no-console
     console.error = (...args: any) => logWrap(errorReal, args);
 
     runningSpinners.push(spinner);
   };
 
   const resetNativeLogs = (): void => {
-    // eslint-disable-next-line no-console
     console.log = logReal;
-    // eslint-disable-next-line no-console
-    console.info = logReal;
-    // eslint-disable-next-line no-console
+    console.info = infoReal;
     console.warn = warnReal;
-    // eslint-disable-next-line no-console
     console.error = errorReal;
 
     const index = runningSpinners.indexOf(spinner);

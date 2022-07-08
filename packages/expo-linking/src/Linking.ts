@@ -24,7 +24,11 @@ function validateURL(url: string): void {
 function getHostUri(): string | null {
   if (Constants.manifest?.hostUri) {
     return Constants.manifest.hostUri;
+    // @ts-ignore: hostUri isn't defined on the expoClient type, because
+    // Constants.manifest is of type AppManifest while
+    // Constants.manifest2.extra.expoClient is of type ExpoConfig
   } else if (Constants.manifest2?.extra?.expoClient?.hostUri) {
+    // @ts-ignore
     return Constants.manifest2.extra.expoClient.hostUri;
   } else if (!hasCustomScheme()) {
     // we're probably not using up-to-date xdl, so just fake it for now
@@ -40,7 +44,8 @@ function isExpoHosted(): boolean {
   return !!(
     hostUri &&
     (/^(.*\.)?(expo\.io|exp\.host|exp\.direct|expo\.test)(:.*)?(\/.*)?$/.test(hostUri) ||
-      Constants.manifest?.developer)
+      Constants.manifest?.developer ||
+      Constants.manifest2?.extra?.expoGo?.developer)
   );
 }
 
@@ -269,6 +274,8 @@ export function addEventListener(type: 'url', handler: URLListener): EmitterSubs
  * @param handler An [`URLListener`](#urllistener) function that takes an `event` object of the type
  * [`EventType`](#eventype).
  * @see [React Native Docs Linking page](https://reactnative.dev/docs/linking#removeeventlistener).
+ *
+ * @deprecated Call `remove()` on the return value of `addEventListener()` instead.
  */
 export function removeEventListener(type: 'url', handler: URLListener): void {
   NativeLinking.removeEventListener(type, handler);
@@ -313,7 +320,6 @@ export async function sendIntent(action: string, extras?: SendIntentExtras[]): P
 // @needsAudit
 /**
  * Open the operating system settings app and displays the app’s custom settings, if it has any.
- * @platform ios
  */
 export async function openSettings(): Promise<void> {
   if (Platform.OS === 'web') {

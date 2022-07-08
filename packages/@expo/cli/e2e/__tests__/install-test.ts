@@ -45,23 +45,24 @@ it('runs `npx install install --help`', async () => {
   const results = await execute('install', '--help');
   expect(results.stdout).toMatchInlineSnapshot(`
     "
-      Description
+      Info
         Install a module or other package to a project
 
       Usage
-        $ npx expo install [packages...] [options]
+        $ npx expo install
 
       Options
-        --check     Check which installed packages need to be updated.
-        --fix       Automatically update any invalid package versions.
+        --check     Check which installed packages need to be updated
+        --fix       Automatically update any invalid package versions
         --npm       Use npm to install dependencies. Default when package-lock.json exists
         --yarn      Use Yarn to install dependencies. Default when yarn.lock exists
-        -h, --help  Output usage information
+        --pnpm      Use pnpm to install dependencies. Default when pnpm-lock.yaml exists
+        -h, --help  Usage info
 
       Additional options can be passed to the underlying install command by using --
-        $ expo install react -- --verbose
+        $ npx expo install react -- --verbose
         > yarn add react --verbose
-        "
+    "
   `);
 });
 
@@ -87,7 +88,7 @@ it(
     const pkg = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
 
     // Added expected package
-    expect(pkg.dependencies['expo-sms']).toBe('~10.1.0');
+    expect(pkg.dependencies['expo-sms']).toBe('~10.2.0');
     expect(pkg.devDependencies).toEqual({
       '@babel/core': '^7.12.9',
     });
@@ -120,16 +121,16 @@ it(
       await execa('node', [bin, 'install', '--check'], { cwd: projectRoot });
       throw new Error('SHOULD NOT HAPPEN');
     } catch (error) {
-      expect(error.stderr).toMatch(/expo-auth-session@1\.0\.0 - expected version: ~3\.5\.0/);
-      expect(error.stderr).toMatch(/expo-sms@1\.0\.0 - expected version: ~10\.1\.0/);
+      expect(error.stderr).toMatch(/expo-auth-session@1\.0\.0 - expected version: ~3\.\d\.\d/);
+      expect(error.stderr).toMatch(/expo-sms@1\.0\.0 - expected version: ~10\.\d\.\d/);
       expect(error.stderr).toMatch(
-        /npx expo install expo-auth-session@~3\.5\.0 expo-sms@~10\.1\.0/
+        /npx expo install expo-auth-session@~3\.\d\.\d expo-sms@~10\.\d\.\d/
       );
     }
 
     await expect(
       execa('node', [bin, 'install', 'expo-sms', '--check'], { cwd: projectRoot })
-    ).rejects.toThrowError(/expo-sms@1\.0\.0 - expected version: ~10\.1\.0/);
+    ).rejects.toThrowError(/expo-sms@1\.0\.0 - expected version: ~10\.\d\.\d/);
 
     // Check doesn't fix packages
     pkg = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
@@ -156,7 +157,7 @@ it(
     // Check doesn't fix packages
     let pkg = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
     // Added expected package
-    expect(pkg.dependencies['expo-sms']).toBe('~10.1.0');
+    expect(pkg.dependencies['expo-sms']).toBe('~10.2.0');
 
     // Didn't fix expo-auth-session since we didn't pass it in
     expect(pkg.dependencies['expo-auth-session']).toBe('1.0.0');
@@ -168,7 +169,7 @@ it(
     pkg = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
 
     // Didn't fix expo-auth-session since we didn't pass it in
-    expect(pkg.dependencies['expo-auth-session']).toBe('~3.5.0');
+    expect(pkg.dependencies['expo-auth-session']).toBe('~3.6.1');
   },
   // Could take 45s depending on how fast npm installs
   60 * 1000

@@ -152,7 +152,7 @@ export type MediaSubtype =
 export type MediaLibraryAssetInfoQueryOptions = {
   /**
    * Whether allow the asset to be downloaded from network. Only available in iOS with iCloud assets.
-   * @default `true`
+   * @default true
    */
   shouldDownloadFromNetwork?: boolean;
 };
@@ -248,7 +248,7 @@ export type AlbumsOptions = {
 export type AssetsOptions = {
   /**
    * The maximum number of items on a single page.
-   * @default `20`
+   * @default 20
    */
   first?: number;
   /**
@@ -270,7 +270,7 @@ export type AssetsOptions = {
   sortBy?: SortByValue[] | SortByValue;
   /**
    * An array of [MediaTypeValue](#expomedialibrarymediatypevalue)s or a single `MediaTypeValue`.
-   * @default `MediaType.photo`
+   * @default MediaType.photo
    */
   mediaType?: MediaTypeValue[] | MediaTypeValue;
   /**

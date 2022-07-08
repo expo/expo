@@ -7,6 +7,7 @@ import android.view.MotionEvent
 import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.bridge.ReadableMap
+import com.facebook.react.bridge.ReactApplicationContext
 import expo.interfaces.devmenu.DevMenuDelegateInterface
 import expo.interfaces.devmenu.DevMenuManagerInterface
 import expo.interfaces.devmenu.DevMenuPreferencesInterface
@@ -23,6 +24,8 @@ object DevMenuManager : DevMenuManagerInterface {
 
   var currentManifest: Manifest? = null
   var currentManifestURL: String? = null
+
+  var registeredCallbacks = arrayListOf<String>()
 
   fun getReactInstanceManager(): ReactInstanceManager? {
     return null
@@ -111,6 +114,10 @@ object DevMenuManager : DevMenuManagerInterface {
   }
 
   override suspend fun fetchDataSource(id: String): List<DevMenuDataSourceItem> {
+    throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
+  }
+
+  fun loadFonts(applicationContext: ReactApplicationContext) {
     throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
   }
 

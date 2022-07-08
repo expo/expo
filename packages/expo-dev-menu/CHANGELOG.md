@@ -8,7 +8,64 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] fix use_frameworks! compilation. ([#18073](https://github.com/expo/expo/pull/18073) by [@douglowder](https://github.com/douglowder))
+
 ### 💡 Others
+
+## 1.0.0 — 2022-06-09
+
+### 🐛 Bug fixes
+
+- Fixed the singleton `RCTBridge.currentBridge` instance value be override by expo-dev-menu bridge instance on iOS. ([#17780](https://github.com/expo/expo/pull/17780) by [@kudo](https://github.com/kudo))
+
+## 0.11.0 — 2022-06-07
+
+### 🎉 New features
+
+- Add JS API to register buttons in dev menu. ([#17528](https://github.com/expo/expo/pull/17528) by [@ajsmth](https://github.com/ajsmth))
+
+### 🐛 Bug fixes
+
+- Update dev settings when initial props change. ([#17663](https://github.com/expo/expo/pull/17663) by [@esamelson](https://github.com/esamelson))
+- Fix copy on onboarding screen re: location of "Send Keyboard Input to Device" in system menu. ([#17767](https://github.com/expo/expo/pull/17767) by [@esamelson](https://github.com/esamelson))
+- Restore JavaScript inspector menu item. ([#17762](https://github.com/expo/expo/pull/17762) by [@lukmccall](https://github.com/lukmccall))
+- Restore the ability to open React Native dev menu. ([#17762](https://github.com/expo/expo/pull/17762) by [@lukmccall](https://github.com/lukmccall))
+
+## 0.10.7 — 2022-05-19
+
+_This version does not introduce any user-facing changes._
+
+## 0.10.6 — 2022-05-06
+
+### 🐛 Bug fixes
+
+- Fix dev menu will reload the application when open for the first time while using Hermes. ([#17377](https://github.com/expo/expo/pull/17377) by [@lukmccall](https://github.com/lukmccall))
+
+## 0.10.5 — 2022-05-05
+
+### 🐛 Bug fixes
+
+- Fix `unresolved reference: loadFonts` in the release build on Android. ([#17241](https://github.com/expo/expo/pull/17241) by [@lukmccall](https://github.com/lukmccall))
+- Fix remote debugging crashing the application on iOS. ([#17248](https://github.com/expo/expo/pull/17248) by [@lukmccall](https://github.com/lukmccall))
+- Fix crashes when the app was launched from a deep link and the react-native-reanimated were installed on Android. ([#17282](https://github.com/expo/expo/pull/17282) by [@lukmccall](https://github.com/lukmccall))
+
+## 0.10.4 — 2022-04-26
+
+### 🐛 Bug fixes
+
+- Fix error on summoning dev-menu first time, that leads to the application freeze. ([#17215](https://github.com/expo/expo/pull/17215) by [@lukmccall](https://github.com/lukmccall))
+
+## 0.10.3 — 2022-04-25
+
+_This version does not introduce any user-facing changes._
+
+## 0.10.2 — 2022-04-21
+
+_This version does not introduce any user-facing changes._
+
+## 0.10.1 — 2022-04-21
+
+_This version does not introduce any user-facing changes._
 
 ## 0.10.0 — 2022-04-20
 

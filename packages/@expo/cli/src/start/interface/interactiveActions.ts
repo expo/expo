@@ -8,6 +8,8 @@ import { selectAsync } from '../../utils/prompts';
 import { DevServerManager } from '../server/DevServerManager';
 import { BLT, printHelp, printItem, printQRCode, printUsage, StartOptions } from './commandsTable';
 
+const debug = require('debug')('expo:start:interface:interactiveActions') as typeof console.log;
+
 /** Wraps the DevServerManager and adds an interface for user actions. */
 export class DevServerManagerActions {
   constructor(private devServerManager: DevServerManager) {}
@@ -36,15 +38,11 @@ export class DevServerManagerActions {
       }
     }
 
-    const webUrl = this.devServerManager
-      .getWebDevServer()
-      ?.getDevServerUrl({ hostType: 'localhost' });
+    const webDevServer = this.devServerManager.getWebDevServer();
+    const webUrl = webDevServer?.getDevServerUrl({ hostType: 'localhost' });
     if (webUrl) {
       Log.log();
-      Log.log(printItem(chalk`Webpack waiting on {underline ${webUrl}}`));
-      Log.log(
-        chalk.gray(printItem('Expo Webpack (web) is in beta, and subject to breaking changes!'))
-      );
+      Log.log(printItem(chalk`Web is waiting on {underline ${webUrl}}`));
     }
 
     printUsage(options, { verbose: false });
@@ -91,7 +89,7 @@ export class DevServerManagerActions {
       ]);
       this.devServerManager.broadcastMessage('sendDevCommand', { name: value });
     } catch (error: any) {
-      Log.debug(error);
+      debug(error);
       // do nothing
     } finally {
       printHelp();

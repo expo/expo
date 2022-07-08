@@ -1,11 +1,10 @@
 import { css } from '@emotion/react';
-import { theme, typography } from '@expo/styleguide';
+import { theme, typography, iconSize, ChevronDownIcon } from '@expo/styleguide';
 import { NextRouter } from 'next/router';
 import * as React from 'react';
 
 import stripVersionFromPath from '~/common/stripVersionFromPath';
 import { paragraph } from '~/components/base/typography';
-import ChevronDown from '~/components/icons/ChevronDown';
 import { NavigationRoute } from '~/types/common';
 
 const STYLES_TITLE = css`
@@ -61,7 +60,7 @@ export default class DocumentationSidebarCollapsible extends React.Component<Pro
 
     // default to always open
     this.state = {
-      isOpen: props.info.collapsed ? isOpen : true,
+      isOpen: props.info.expanded || isOpen,
     };
   }
 
@@ -131,7 +130,10 @@ export default class DocumentationSidebarCollapsible extends React.Component<Pro
       <div>
         <a css={STYLES_TITLE} onClick={this.toggleIsOpen}>
           {this.props.info.name}
-          <ChevronDown size={16} css={this.state.isOpen && STYLES_OPEN_CHEVRON_ICON} />
+          <ChevronDownIcon
+            size={iconSize.small}
+            css={this.state.isOpen && STYLES_OPEN_CHEVRON_ICON}
+          />
         </a>
         {this.state.isOpen && <div css={STYLES_SIDEBAR_INDENT}>{this.props.children}</div>}
       </div>

@@ -33,15 +33,15 @@ it('runs `npx expo whoami --help`', async () => {
   const results = await execute('whoami', '--help');
   expect(results.stdout).toMatchInlineSnapshot(`
     "
-          Description
-            Show the currently authenticated username
+      Info
+        Show the currently authenticated username
 
-          Usage
-            $ npx expo whoami
+      Usage
+        $ npx expo whoami
 
-          Options
-          -h, --help    Output usage information
-        "
+      Options
+        -h, --help    Usage info
+    "
   `);
 });
 

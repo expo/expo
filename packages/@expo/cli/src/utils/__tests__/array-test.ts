@@ -1,4 +1,4 @@
-import { findLastIndex, intersecting } from '../array';
+import { findLastIndex, intersecting, replaceValue } from '../array';
 
 describe(findLastIndex, () => {
   it('should return the last index of an item based on a given criteria', () => {
@@ -13,5 +13,12 @@ describe(intersecting, () => {
     const a = [1, 2, 3];
     const b = [1, 2, 3, 4, 5, 6];
     expect(intersecting(a, b)).toEqual([1, 2, 3]);
+  });
+});
+
+describe(replaceValue, () => {
+  it(`should replace a value in an array`, () => {
+    expect(replaceValue([1, 2, 3], 1, 2)).toEqual([2, 2, 3]);
+    expect(replaceValue([1, 2, 3], 4, 5)).toEqual([1, 2, 3]);
   });
 });

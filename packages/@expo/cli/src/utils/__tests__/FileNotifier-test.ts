@@ -1,12 +1,11 @@
 import { fs, vol } from 'memfs';
 
+import { asMock } from '../../__tests__/asMock';
 import * as Log from '../../log';
 import { FileNotifier } from '../FileNotifier';
 
 jest.mock('../../log');
 
-const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
-  fn as jest.MockedFunction<T>;
 const originalCwd = process.cwd();
 
 beforeEach(() => {
@@ -43,15 +42,20 @@ it('observes the first existing file', () => {
     },
     '/'
   );
-  const fileNotifier = new FileNotifier('./', [
-    // Skips this file
-    '.babelrc',
-    // Starts observing
-    'babel.config.js',
-  ]);
+  const fileNotifier = new FileNotifier(
+    './',
+    [
+      // Skips this file
+      '.babelrc',
+      // Starts observing
+      'babel.config.js',
+    ],
+    { additionalWarning: ' foobar' }
+  );
   expect(fileNotifier.startObserving()).toBe('babel.config.js');
 
   // We mock out the callback firing and test that a warning was logged.
   expect(Log.log).toBeCalledTimes(1);
   expect(Log.log).toBeCalledWith(expect.stringContaining('babel.config.js'));
+  expect(Log.log).toBeCalledWith(expect.stringContaining('foobar'));
 });

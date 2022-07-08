@@ -145,8 +145,6 @@ export function getTestModules() {
     );
     // Invalid placementId in CI (all tests fail)
     modules.push(optionalRequire(() => require('./tests/FBNativeAd')));
-    // Requires interaction (sign in popup)
-    modules.push(optionalRequire(() => require('./tests/GoogleSignIn')));
     // Popup to request device's location which uses Google's location service
     modules.push(LocationTestScreen);
     // Fails to redirect because of malformed URL in published version with release channel parameter
