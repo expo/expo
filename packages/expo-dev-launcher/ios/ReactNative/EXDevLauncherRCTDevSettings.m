@@ -6,6 +6,9 @@
 
 + (NSString *)moduleName
 {
+#ifdef EX_DEV_LAUNCHER_URL
+  return @"EXDevLauncherDevSettings";
+#endif
   return @"DevSettings";
 }
 
