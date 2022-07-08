@@ -5,6 +5,7 @@ import MobileCoreServices
 import PhotosUI
 
 internal let DEFAULT_QUALITY = 0.2
+internal let UNLIMITED_SELECTION = 0
 
 internal struct ImagePickerOptions: Record {
   @Field
@@ -43,6 +44,9 @@ internal struct ImagePickerOptions: Record {
 
   @Field
   var allowsMultipleSelection: Bool = false
+  
+  @Field
+  var selectionLimit: Int = UNLIMITED_SELECTION
 }
 
 internal enum PresentationStyle: String, EnumArgument {
