@@ -11,6 +11,19 @@ import { Directories } from '../expotools';
 
 const EXPO_DIR = Directories.getExpoRepositoryRootDir();
 
+async function promptToUseNextTag(): Promise<boolean> {
+  const choices = ['Tag this version only as "next"', 'Keep previous selections'];
+  const { selection } = await inquirer.prompt<{ selection: string }>([
+    {
+      type: 'list',
+      name: 'selection',
+      message: 'This version string appears to be prerelease. Options:',
+      choices,
+    },
+  ]);
+  return selection === choices[0];
+}
+
 async function promptForCustomTagAsync(): Promise<string> {
   const { customTag } = await inquirer.prompt<{ customTag: string }>([
     {
@@ -86,8 +99,6 @@ async function action(options) {
 
   const npmPublishTag = tags ? tags[0] : sdkTag; // Will either be the sdk-xx tag, or a custom string
 
-  console.log('tags = ' + JSON.stringify(tags));
-
   const availableProjectTemplates = await getAvailableProjectTemplatesAsync();
   const projectTemplatesToPublish = options.project
     ? availableProjectTemplates.filter(({ name }) => name.includes(options.project))
@@ -127,6 +138,8 @@ async function action(options) {
       },
     ]);
 
+    const choseNextTag = semver.prerelease(newVersion) ? await promptToUseNextTag() : false;
+
     // Update package version in `package.json`
     await JsonFile.setAsync(path.join(template.path, 'package.json'), 'version', newVersion);
 
@@ -154,7 +167,7 @@ async function action(options) {
     const moreArgs: string[] = [];
 
     // Assign custom tag in the publish command, so we don't accidentally publish as latest.
-    moreArgs.push('--tag', npmPublishTag);
+    moreArgs.push('--tag', choseNextTag ? 'next' : npmPublishTag);
 
     const logMessagePrefix = options.dry ? 'Dry run: ' : 'Command to execute: ';
 
@@ -166,8 +179,9 @@ async function action(options) {
         cwd: template.path,
       }));
 
-    if (tags && tags.length === 2) {
-      // Additional tag (latest, beta, or next) is added here
+    if (tags && tags.length === 2 && !choseNextTag) {
+      // If 'next', do not add 'latest' or 'beta'
+      // Additional tag (latest, beta) is added here
       console.log(
         `Assigning ${chalk.blue(`${tags[1]}`)} tag to ${chalk.green(template.name)}@${chalk.red(
           newVersion
