@@ -42,7 +42,9 @@ export async function action(
   await yarnInstall({ projectDir });
   await symlinkPackages({ packagesToSymlink, projectDir });
   await runExpoPrebuild({ projectDir });
-  await updateRNVersion({ projectDir, rnVersion });
+  if (rnVersion != null) {
+    await updateRNVersion({ rnVersion, projectDir });
+  }
   await createMetroConfig({ projectRoot: projectDir });
   await createScripts({ projectDir });
 
@@ -312,21 +314,11 @@ async function modifyAppJson({ projectDir, appName }: { projectDir: string; appN
   const pathToAppJson = path.resolve(projectDir, 'app.json');
   const json = await fs.readJson(pathToAppJson);
 
-  const strippedAppName = removeCharRecursive(appName, '-');
+  const strippedAppName = appName.replaceAll('-', '');
   json.expo.android = { package: `com.${strippedAppName}` };
   json.expo.ios = { bundleIdentifier: `com.${strippedAppName}` };
 
   await fs.writeJSON(pathToAppJson, json, { spaces: 2 });
-}
-
-function removeCharRecursive(str: string, charToReplace: string) {
-  let copy = str;
-
-  while (copy.includes(charToReplace)) {
-    copy = copy.replace(charToReplace, '');
-  }
-
-  return copy;
 }
 
 export default (program: Command) => {
