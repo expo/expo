@@ -861,6 +861,10 @@ export interface Web {
         };
         [k: string]: any;
     };
+    /**
+     * Sets the bundler to use for the web platform. Only supported in the local CLI `npx expo`.
+     */
+    bundler?: 'webpack' | 'metro';
     [k: string]: any;
 }
 export interface PublishHook {
