@@ -23,18 +23,18 @@ internal struct MediaHandler {
 
   @available(iOS 14, *)
   internal func handleMultipleMedia(_ selection: [PHPickerResult], completion: @escaping (ImagePickerResult) -> Void) {
-    var results: [SelectedMediaInfo] = []
+    var results: [String: SelectedMediaInfo] = [:]
 
     let dispatchGroup = DispatchGroup()
     let dispatchQueue = DispatchQueue(label: "expo.imagepicker.multipleMediaHandler")
 
-    let resultHandler = { (result: SelectedMediaResult) -> Void in
+    let resultHandler = { (assetId: String?, result: SelectedMediaResult) -> Void in
       switch result {
       case .failure(let exception):
         return completion(.failure(exception))
       case .success(let mediaInfo):
         dispatchQueue.async {
-          results.append(mediaInfo)
+          results[assetId!] = mediaInfo
           dispatchGroup.leave()
         }
       }
@@ -42,19 +42,22 @@ internal struct MediaHandler {
 
     for item in selection {
       let itemProvider = item.itemProvider
+      let id = item.assetIdentifier
 
       dispatchGroup.enter()
       if itemProvider.hasItemConformingToTypeIdentifier(UTType.image.identifier) {
-        handleImage(itemProvider: itemProvider, completion: resultHandler)
+        handleImage(itemProvider: itemProvider, assetId: id, completion: resultHandler)
       } else if itemProvider.hasItemConformingToTypeIdentifier(UTType.movie.identifier) {
-        handleVideo(itemProvider: itemProvider, completion: resultHandler)
+        handleVideo(itemProvider: itemProvider, assetId: id, completion: resultHandler)
       } else {
         completion(.failure(InvalidMediaTypeException(itemProvider.registeredTypeIdentifiers.first)))
       }
     }
 
     dispatchGroup.notify(queue: .main) {
-      completion(.success(ImagePickerMultipleResponse(results: results)))
+      // assign results in the order they were selected
+      let sortedResults = selection.map { results[$0.assetIdentifier!]! }
+      completion(.success(ImagePickerMultipleResponse(results: sortedResults)))
     }
   }
 
@@ -101,13 +104,15 @@ internal struct MediaHandler {
   }
 
   @available(iOS 14, *)
-  private func handleImage(itemProvider: NSItemProvider, completion: @escaping (SelectedMediaResult) -> Void) {
+  private func handleImage(itemProvider: NSItemProvider,
+                           assetId: String?,
+                           completion: @escaping (String?, SelectedMediaResult) -> Void) {
     itemProvider.loadDataRepresentation(forTypeIdentifier: UTType.image.identifier) { rawData, error in
       do {
         guard error == nil,
               let rawData = rawData,
               let image = try? UIImage(data: rawData) else {
-          return completion(.failure(FailedToReadImageException().causedBy(error)))
+          return completion(assetId, .failure(FailedToReadImageException().causedBy(error)))
         }
 
         let (imageData, fileExtension) = try ImageUtils.readDataAndFileExtension(image: image,
@@ -130,11 +135,11 @@ internal struct MediaHandler {
                                height: image.size.height,
                                base64: base64,
                                exif: exif)
-        completion(.success(result))
+        completion(assetId, .success(result))
       } catch let exception as Exception {
-        return completion(.failure(exception))
+        return completion(assetId, .failure(exception))
       } catch {
-        return completion(.failure(UnexpectedException(error)))
+        return completion(assetId, .failure(UnexpectedException(error)))
       }
     } // loadObject
   }
@@ -175,19 +180,21 @@ internal struct MediaHandler {
   }
 
   @available(iOS 14, *)
-  private func handleVideo(itemProvider: NSItemProvider, completion: @escaping (SelectedMediaResult) -> Void) {
+  private func handleVideo(itemProvider: NSItemProvider,
+                           assetId: String?,
+                           completion: @escaping (String?, SelectedMediaResult) -> Void) {
     itemProvider.loadFileRepresentation(forTypeIdentifier: UTType.movie.identifier) { [self] url, error in
       do {
         guard error == nil,
               let videoUrl = url as? URL else {
-          return completion(.failure(FailedToReadVideoException().causedBy(error)))
+          return completion(assetId, .failure(FailedToReadVideoException().causedBy(error)))
         }
 
         let targetUrl = try generateUrl(withFileExtension: ".mov")
         try VideoUtils.tryCopyingVideo(at: videoUrl, to: targetUrl)
 
         guard let size = VideoUtils.readSizeFrom(url: targetUrl) else {
-          return completion(.failure(FailedToReadVideoSizeException()))
+          return completion(assetId, .failure(FailedToReadVideoSizeException()))
         }
 
         let duration = VideoUtils.readDurationFrom(url: targetUrl)
@@ -196,11 +203,11 @@ internal struct MediaHandler {
                                width: size.width,
                                height: size.height,
                                duration: duration)
-        completion(.success(result))
+        completion(assetId, .success(result))
       } catch let exception as Exception {
-        return completion(.failure(exception))
+        return completion(assetId, .failure(exception))
       } catch {
-        return completion(.failure(UnexpectedException(error)))
+        return completion(assetId, .failure(UnexpectedException(error)))
       }
     }
   }

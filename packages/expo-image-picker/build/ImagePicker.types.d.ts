@@ -350,6 +350,17 @@ export declare type ImagePickerOptions = {
      */
     selectionLimit?: number;
     /**
+     * Whether to display number badges when assets are selected. The badges are numbered
+     * in selection order. Assets are then returned in the exact same order they were selected.
+     *
+     * > Assets should be returned in the selection order regardless of this option,
+     * > but there is no guarantee that it is always true when this option is disabled.
+     *
+     * @platform ios 15+
+     * @default false
+     */
+    orderedSelection?: boolean;
+    /**
      * Maximum duration, in seconds, for video recording. Setting this to `0` disables the limit.
      * Defaults to `0` (no limit).
      * - **On iOS**, when `allowsEditing` is set to `true`, maximum duration is limited to 10 minutes.
