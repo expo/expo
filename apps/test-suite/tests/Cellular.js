@@ -44,7 +44,7 @@ export async function test({ describe, it, expect, jasmine }) {
       it('returns an enum value of Cellular.Cellular Generation', async () => {
         let hasError = false;
         let cellularGeneration;
-        const CellularGenerationEnumValues = [0, 1, 2, 3];
+        const CellularGenerationEnumValues = [0, 1, 2, 3, 4];
 
         try {
           cellularGeneration = await Cellular.getCellularGenerationAsync();
