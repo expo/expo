@@ -11,7 +11,7 @@ import {
 import React, { useState } from 'react';
 import { Linking } from 'react-native';
 
-import { Button } from '../../../components/Button';
+import { Button } from '../../components/Button';
 
 const DELETE_ACCOUNT_STRING = 'I understand and I want to delete my account';
 
@@ -42,7 +42,7 @@ export function ConfirmationStep({ onSubmit }: Props) {
           <Text type="InterSemiBold">Tip</Text>
         </Row>
         <Spacer.Vertical size="small" />
-        <Text type="InterRegular" size="medium">
+        <Text type="InterRegular">
           Do you want to let someone else inherit your account? You can do so by{' '}
           <Text
             type="InterRegular"

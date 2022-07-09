@@ -9,7 +9,7 @@ import {
 } from 'expo-dev-client-components';
 import React, { useState } from 'react';
 
-import { Button } from '../../../components/Button';
+import { Button } from '../../components/Button';
 
 type Props = {
   onCancel: () => void;
