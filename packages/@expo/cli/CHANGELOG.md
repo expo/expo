@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Drop hardcoded web package versions in prerequisite.
+
 ## 0.2.0 — 2022-07-07
 
 ### 🛠 Breaking changes
