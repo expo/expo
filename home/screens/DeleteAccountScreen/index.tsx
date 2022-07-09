@@ -154,7 +154,7 @@ export function DeleteAccountScreen({
           <View>
             {formError ? (
               <>
-                <View bg="error" padding="medium" rounded="medium">
+                <View bg="error" padding="medium" rounded="medium" border="error">
                   <Text>{formError}</Text>
                 </View>
                 <Spacer.Vertical size="small" />
@@ -164,7 +164,7 @@ export function DeleteAccountScreen({
               <ActivityIndicator color={theme.highlight.accent} />
             ) : null}
             {!canViewConfirmationForm ? (
-              <View rounded="medium" bg="secondary" padding="medium">
+              <View rounded="medium" bg="secondary" padding="medium" border="default">
                 <Row>
                   <InfoIcon color={theme.icon.default} />
                   <Spacer.Horizontal size="small" />
