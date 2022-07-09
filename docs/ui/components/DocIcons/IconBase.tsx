@@ -22,7 +22,6 @@ export const IconBase = ({ color, small, Icon }: DocIconProps) => {
 
 const iconStyles = css({
   'table &': {
-    float: 'left',
-    marginRight: spacing[1.5],
+    verticalAlign: 'middle',
   },
 });
