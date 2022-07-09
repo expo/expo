@@ -86,12 +86,15 @@ export function LoggedInAccountView({ accounts }: Props) {
                       <>
                         {account.owner.fullName ? (
                           <>
-                            <Text type="InterBold" style={{ paddingRight: 16 }} numberOfLines={1}>
+                            <Text
+                              type="InterBold"
+                              style={{ paddingRight: spacing[4] }}
+                              numberOfLines={1}>
                               {account.owner.fullName}
                             </Text>
                             <Spacer.Vertical size="tiny" />
                             <Text
-                              style={{ paddingRight: 16 }}
+                              style={{ paddingRight: spacing[4] }}
                               color="secondary"
                               type="InterRegular"
                               numberOfLines={1}
@@ -100,13 +103,16 @@ export function LoggedInAccountView({ accounts }: Props) {
                             </Text>
                           </>
                         ) : (
-                          <Text type="InterBold" style={{ paddingRight: 16 }} numberOfLines={1}>
+                          <Text
+                            type="InterBold"
+                            style={{ paddingRight: spacing[4] }}
+                            numberOfLines={1}>
                             {account.owner.username}
                           </Text>
                         )}
                       </>
                     ) : (
-                      <Text type="InterBold" style={{ paddingRight: 16 }} numberOfLines={1}>
+                      <Text type="InterBold" style={{ paddingRight: spacing[4] }} numberOfLines={1}>
                         {account.name}
                       </Text>
                     )}
