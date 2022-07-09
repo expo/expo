@@ -13,6 +13,11 @@ export type HomeStackRoutes = {
   Project: { id: string };
 };
 
+export type SettingsStackRoutes = {
+  Settings: undefined;
+  DeleteAccount: { viewerUsername: string };
+};
+
 export type DiagnosticsStackRoutes = {
   Diagnostics: object;
   Audio: object;
