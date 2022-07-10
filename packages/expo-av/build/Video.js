@@ -114,6 +114,10 @@ class Video extends React.Component {
     unloadAsync = async () => {
         return this._performOperationAndHandleStatusAsync((tag) => ExponentAV.unloadForVideo(tag));
     };
+    componentWillUnmount() {
+        // Auto unload video to perform necessary cleanup safely
+        this.unloadAsync();
+    }
     /**
      * Set status API, only available while `isLoaded = true`.
      * @hidden
