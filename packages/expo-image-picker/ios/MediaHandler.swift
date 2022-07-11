@@ -90,10 +90,9 @@ internal struct MediaHandler {
                                                            orImageFileUrl: targetUrl,
                                                            tryReadingFile: fileWasCopied,
                                                            shouldReadBase64: self.options.base64)
-      let assetId = optionallyGetAssetID(from: mediaInfo, onlyIf: options.includeAssetId)
 
       ImageUtils.optionallyReadExifFrom(mediaInfo: mediaInfo, shouldReadExif: self.options.exif) { exif in
-        let result: ImagePickerSingleResponse = .image(ImageInfo(assetId: assetId,
+        let result: ImagePickerSingleResponse = .image(ImageInfo(assetId: asset?.localIdentifier,
                                                                  uri: targetUrl.absoluteString,
                                                                  width: image.size.width,
                                                                  height: image.size.height,
@@ -179,13 +178,13 @@ internal struct MediaHandler {
       // TODO: (@bbarthec): inspect whether it makes sense to read duration from two different assets
       let videoUrlToReadDurationFrom = self.options.allowsEditing ? pickedVideoUrl : targetUrl
       let duration = VideoUtils.readDurationFrom(url: videoUrlToReadDurationFrom)
-      let assetId = optionallyGetAssetID(from: mediaInfo, onlyIf: options.includeAssetId)
       
       let asset = mediaInfo[.phAsset] as? PHAsset
       let fileName = asset?.value(forKey: "filename") as? String
       let fileSize = getFileSize(from: targetUrl)
 
-      let result: ImagePickerSingleResponse = .video(VideoInfo(uri: targetUrl.absoluteString,
+      let result: ImagePickerSingleResponse = .video(VideoInfo(assetId: asset?.localIdentifier,
+                                                               uri: targetUrl.absoluteString,
                                                                width: dimensions.width,
                                                                height: dimensions.height,
                                                                fileName: fileName,
@@ -230,11 +229,11 @@ internal struct MediaHandler {
                                        exportPreset: options.videoExportPreset) { result in
           switch result {
           case .failure(let exception):
-            return completion(assetId, .failure(exception))
+            return completion(index, .failure(exception))
           case .success(let targetUrl):
             let fileName = itemProvider.suggestedName.map { $0 + transcodeFileExtension }
-            let videoResult = buildVideoResult(for: targetUrl, withName: fileName)
-            return completion(assetId, videoResult)
+            let videoResult = buildVideoResult(for: targetUrl, withName: fileName, andId: selectedVideo.assetIdentifier)
+            return completion(index, videoResult)
           }
         }
       } catch let exception as Exception {
@@ -258,22 +257,16 @@ internal struct MediaHandler {
     let url = URL(fileURLWithPath: path)
     return url
   }
-  
-  private func optionallyGetAssetID(from mediaInfo: MediaInfo, onlyIf shouldReadIt: Bool) -> String? {
-    if shouldReadIt, let phAsset = mediaInfo[.phAsset] as? PHAsset {
-      return phAsset.localIdentifier
-    }
-    return nil
-  }
 
-  private func buildVideoResult(for videoUrl: URL, withName fileName: String? = nil) -> SelectedMediaResult {
+  private func buildVideoResult(for videoUrl: URL, withName fileName: String?, andId assetId: String?) -> SelectedMediaResult {
     guard let size = VideoUtils.readSizeFrom(url: videoUrl) else {
       return .failure(FailedToReadVideoSizeException())
     }
     let duration = VideoUtils.readDurationFrom(url: videoUrl)
     let fileSize = getFileSize(from: videoUrl)
 
-    let result = VideoInfo(uri: videoUrl.absoluteString,
+    let result = VideoInfo(assetId: assetId,
+                           uri: videoUrl.absoluteString,
                            width: size.width,
                            height: size.height,
                            fileName: fileName,
