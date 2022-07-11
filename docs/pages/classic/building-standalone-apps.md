@@ -70,7 +70,7 @@ To build an APK, run the command:
 
 <Terminal cmd={['$ expo build:android -t apk']} />
 
-It is recommended to build an Android App Bundle (aab) for submitting the app to the Google Play Store. To build an aab, run the command:
+We recommend building an Android App Bundle (aab) for submitting the app to the Google Play Store. To build an aab, run the command:
 
 <Terminal cmd={['$ expo build:android -t app-bundle']} />
 
