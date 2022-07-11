@@ -89,8 +89,10 @@
   
   [modules addObject:[RCTDevMenu new]];
   [modules addObject:[RCTAsyncLocalStorage new]];
-  [modules addObject:[EXDevLauncherLoadingView new]];
+#ifndef EX_DEV_LAUNCHER_URL
   [modules addObject:[EXDevLauncherRCTDevSettings new]];
+#endif
+  [modules addObject:[EXDevLauncherLoadingView new]];
   [modules addObject:[EXDevLauncherInternal new]];
   [modules addObject:[EXDevLauncherAuth new]];
   
