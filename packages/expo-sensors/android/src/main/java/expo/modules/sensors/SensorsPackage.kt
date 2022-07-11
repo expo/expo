@@ -3,13 +3,15 @@ package expo.modules.sensors
 import android.content.Context
 import expo.modules.sensors.modules.AccelerometerModule
 import expo.modules.sensors.modules.BarometerModule
+import expo.modules.sensors.modules.LightSensorModule
 import expo.modules.sensors.modules.DeviceMotionModule
 import expo.modules.sensors.modules.GyroscopeModule
 import expo.modules.sensors.modules.MagnetometerModule
 import expo.modules.sensors.modules.MagnetometerUncalibratedModule
 import expo.modules.sensors.modules.PedometerModule
 import expo.modules.sensors.services.AccelerometerService
-import expo.modules.sensors.services.BarometerService
+import expo.modules.sensors.services.BarometerService 
+import expo.modules.sensors.services.LightSensorService
 import expo.modules.sensors.services.GravitySensorService
 import expo.modules.sensors.services.GyroscopeService
 import expo.modules.sensors.services.LinearAccelerationSensorService
@@ -26,6 +28,7 @@ class SensorsPackage : BasePackage() {
     return listOf<InternalModule>(
       AccelerometerService(context),
       BarometerService(context),
+      LightSensorService(context),
       GravitySensorService(context),
       GyroscopeService(context),
       LinearAccelerationSensorService(context),
@@ -40,6 +43,7 @@ class SensorsPackage : BasePackage() {
     return listOf<ExportedModule>(
       AccelerometerModule(context),
       BarometerModule(context),
+      LightSensorModule(context),
       GyroscopeModule(context),
       DeviceMotionModule(context),
       MagnetometerModule(context),
