@@ -25,6 +25,9 @@ internal struct ImagePickerOptions: Record {
 
   @Field
   var base64: Bool = false
+  
+  @Field
+  var includeAssetId: Bool = true
 
   @Field
   var videoExportPreset: VideoExportPreset = .passthrough

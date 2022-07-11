@@ -23,41 +23,38 @@ internal struct MediaHandler {
 
   @available(iOS 14, *)
   internal func handleMultipleMedia(_ selection: [PHPickerResult], completion: @escaping (ImagePickerResult) -> Void) {
-    var results: [String: SelectedMediaInfo] = [:]
+    var results = Array<SelectedMediaInfo?>(repeating: nil, count: selection.count)
 
     let dispatchGroup = DispatchGroup()
     let dispatchQueue = DispatchQueue(label: "expo.imagepicker.multipleMediaHandler")
 
-    let resultHandler = { (assetId: String?, result: SelectedMediaResult) -> Void in
+    let resultHandler = { (index: Int, result: SelectedMediaResult) -> Void in
       switch result {
       case .failure(let exception):
         return completion(.failure(exception))
       case .success(let mediaInfo):
         dispatchQueue.async {
-          results[assetId!] = mediaInfo
+          results[index] = mediaInfo
           dispatchGroup.leave()
         }
       }
     }
 
-    for item in selection {
-      let itemProvider = item.itemProvider
-      let id = item.assetIdentifier
+    for (index, selectedItem) in selection.enumerated() {
+      let itemProvider = selectedItem.itemProvider
 
       dispatchGroup.enter()
       if itemProvider.hasItemConformingToTypeIdentifier(UTType.image.identifier) {
-        handleImage(itemProvider: itemProvider, assetId: id, completion: resultHandler)
+        handleImage(from: selectedItem, atIndex: index, completion: resultHandler)
       } else if itemProvider.hasItemConformingToTypeIdentifier(UTType.movie.identifier) {
-        handleVideo(itemProvider: itemProvider, assetId: id, completion: resultHandler)
+        handleVideo(from: selectedItem, atIndex: index, completion: resultHandler)
       } else {
         completion(.failure(InvalidMediaTypeException(itemProvider.registeredTypeIdentifiers.first)))
       }
     }
 
     dispatchGroup.notify(queue: .main) {
-      // assign results in the order they were selected
-      let sortedResults = selection.map { results[$0.assetIdentifier!]! }
-      completion(.success(ImagePickerMultipleResponse(results: sortedResults)))
+      completion(.success(ImagePickerMultipleResponse(results: results.compactMap { $0 } )))
     }
   }
 
@@ -93,9 +90,11 @@ internal struct MediaHandler {
                                                            orImageFileUrl: targetUrl,
                                                            tryReadingFile: fileWasCopied,
                                                            shouldReadBase64: self.options.base64)
+      let assetId = optionallyGetAssetID(from: mediaInfo, onlyIf: options.includeAssetId)
 
       ImageUtils.optionallyReadExifFrom(mediaInfo: mediaInfo, shouldReadExif: self.options.exif) { exif in
-        let result: ImagePickerSingleResponse = .image(ImageInfo(uri: targetUrl.absoluteString,
+        let result: ImagePickerSingleResponse = .image(ImageInfo(assetId: assetId,
+                                                                 uri: targetUrl.absoluteString,
                                                                  width: image.size.width,
                                                                  height: image.size.height,
                                                                  fileName: fileName,
@@ -112,15 +111,16 @@ internal struct MediaHandler {
   }
 
   @available(iOS 14, *)
-  private func handleImage(itemProvider: NSItemProvider,
-                           assetId: String?,
-                           completion: @escaping (String?, SelectedMediaResult) -> Void) {
+  private func handleImage(from selectedImage: PHPickerResult,
+                           atIndex index: Int = -1,
+                           completion: @escaping (Int, SelectedMediaResult) -> Void) {
+    let itemProvider = selectedImage.itemProvider
     itemProvider.loadDataRepresentation(forTypeIdentifier: UTType.image.identifier) { rawData, error in
       do {
         guard error == nil,
               let rawData = rawData,
               let image = try? UIImage(data: rawData) else {
-          return completion(assetId, .failure(FailedToReadImageException().causedBy(error)))
+          return completion(index, .failure(FailedToReadImageException().causedBy(error)))
         }
 
         let (imageData, fileExtension) = try ImageUtils.readDataAndFileExtension(image: image,
@@ -140,18 +140,19 @@ internal struct MediaHandler {
                                                              tryReadingFile: false,
                                                              shouldReadBase64: self.options.base64)
 
-        let result = ImageInfo(uri: targetUrl.absoluteString,
+        let result = ImageInfo(assetId: selectedImage.assetIdentifier,
+                               uri: targetUrl.absoluteString,
                                width: image.size.width,
                                height: image.size.height,
                                fileName: fileName,
                                fileSize: fileSize,
                                base64: base64,
                                exif: exif)
-        completion(assetId, .success(result))
+        completion(index, .success(result))
       } catch let exception as Exception {
-        return completion(assetId, .failure(exception))
+        return completion(index, .failure(exception))
       } catch {
-        return completion(assetId, .failure(UnexpectedException(error)))
+        return completion(index, .failure(UnexpectedException(error)))
       }
     } // loadObject
   }
@@ -178,6 +179,7 @@ internal struct MediaHandler {
       // TODO: (@bbarthec): inspect whether it makes sense to read duration from two different assets
       let videoUrlToReadDurationFrom = self.options.allowsEditing ? pickedVideoUrl : targetUrl
       let duration = VideoUtils.readDurationFrom(url: videoUrlToReadDurationFrom)
+      let assetId = optionallyGetAssetID(from: mediaInfo, onlyIf: options.includeAssetId)
       
       let asset = mediaInfo[.phAsset] as? PHAsset
       let fileName = asset?.value(forKey: "filename") as? String
@@ -198,14 +200,15 @@ internal struct MediaHandler {
   }
 
   @available(iOS 14, *)
-  private func handleVideo(itemProvider: NSItemProvider,
-                           assetId: String?,
-                           completion: @escaping (String?, SelectedMediaResult) -> Void) {
+  private func handleVideo(from selectedVideo: PHPickerResult,
+                           atIndex index: Int = -1,
+                           completion: @escaping (Int, SelectedMediaResult) -> Void) {
+    let itemProvider = selectedVideo.itemProvider
     itemProvider.loadFileRepresentation(forTypeIdentifier: UTType.movie.identifier) { [self] url, error in
       do {
         guard error == nil,
               let videoUrl = url as? URL else {
-          return completion(assetId, .failure(FailedToReadVideoException().causedBy(error)))
+          return completion(index, .failure(FailedToReadVideoException().causedBy(error)))
         }
         
         // In case of passthrough, we want original file extension, mp4 otherwise
@@ -235,9 +238,9 @@ internal struct MediaHandler {
           }
         }
       } catch let exception as Exception {
-        return completion(assetId, .failure(exception))
+        return completion(index, .failure(exception))
       } catch {
-        return completion(assetId, .failure(UnexpectedException(error)))
+        return completion(index, .failure(UnexpectedException(error)))
       }
     }
   }
@@ -256,6 +259,13 @@ internal struct MediaHandler {
     return url
   }
   
+  private func optionallyGetAssetID(from mediaInfo: MediaInfo, onlyIf shouldReadIt: Bool) -> String? {
+    if shouldReadIt, let phAsset = mediaInfo[.phAsset] as? PHAsset {
+      return phAsset.localIdentifier
+    }
+    return nil
+  }
+
   private func buildVideoResult(for videoUrl: URL, withName fileName: String? = nil) -> SelectedMediaResult {
     guard let size = VideoUtils.readSizeFrom(url: videoUrl) else {
       return .failure(FailedToReadVideoSizeException())

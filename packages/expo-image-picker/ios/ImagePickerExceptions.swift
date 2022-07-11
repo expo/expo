@@ -26,6 +26,12 @@ internal class MissingCameraPermissionException: Exception {
   }
 }
 
+internal class MissingPhotoLibraryPermissionException: Exception {
+  override var reason: String {
+    "Missing photo library permission"
+  }
+}
+
 internal class CameraUnavailableOnSimulatorException: Exception {
   override var reason: String {
     "Camera not available on simulator"

@@ -133,21 +133,48 @@ public class ImagePickerModule: Module, OnMediaPickingResultHandler {
 
     presentPickerUI(picker, pickingContext: pickingContext)
   }
+  
+  @available(iOS 14, *)
+  private func createConfiguration(needAssetIds: Bool) throws -> PHPickerConfiguration {
+    // !includeIds - show full, empty constructor
+    // includeIds - permission:
+    // - full: show with full library
+    // - partial - show limited library
+    // - none - error
+    
+    if !needAssetIds {
+      return PHPickerConfiguration()
+    }
+    
+//    guard let permissions = self.appContext?.permissions else {
+//      throw PermissionsModuleNotFoundException()
+//    }
+//    guard permissions.hasGrantedPermission(usingRequesterClass: MediaLibraryPermissionRequester.self) else {
+//      throw MissingPhotoLibraryPermissionException()
+//    }
+  
+    return PHPickerConfiguration(photoLibrary: PHPhotoLibrary.shared())
+  }
 
   @available(iOS 14, *)
   private func launchMultiSelectPicker(pickingContext: PickingContext) {
-    var configuration = PHPickerConfiguration(photoLibrary: PHPhotoLibrary.shared())
     let options = pickingContext.options
 
-    configuration.selectionLimit = options.selectionLimit
-    configuration.filter = options.mediaTypes.toPickerFilter()
-    if #available(iOS 15, *) {
-      configuration.selection = options.orderedSelection ? .ordered : .default
+    do {
+      var configuration = try self.createConfiguration(needAssetIds: options.includeAssetId)
+      configuration.selectionLimit = options.selectionLimit ?? UNLIMITED_SELECTION
+      configuration.filter = options.mediaTypes.toPickerFilter()
+      if #available(iOS 15, *) {
+        configuration.selection = options.orderedSelection ? .ordered : .default
+      }
+
+      let picker = PHPickerViewController(configuration: configuration)
+      presentPickerUI(picker, pickingContext: pickingContext)
+    } catch let exception as Exception {
+      pickingContext.promise.reject(exception)
+    } catch {
+      pickingContext.promise.reject(error)
     }
-
-    let picker = PHPickerViewController(configuration: configuration)
-
-    presentPickerUI(picker, pickingContext: pickingContext)
   }
 
   private func presentPickerUI(_ picker: PickerUIController, pickingContext context: PickingContext) {

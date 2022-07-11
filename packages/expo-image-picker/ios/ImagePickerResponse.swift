@@ -57,12 +57,14 @@ internal typealias ExifInfo = [String: Any]
  */
 internal protocol SelectedMediaInfo {
   var dictionary: [String: Any] { get }
+  var assetId: String? { get }
 }
 
 /**
  Represents a single selected image
  */
 internal struct ImageInfo: SelectedMediaInfo {
+  let assetId: String?
   let type: String = "image"
   let uri: String
   let width: Double
@@ -81,6 +83,9 @@ internal struct ImageInfo: SelectedMediaInfo {
       "fileName": fileName,
       "fileSize": fileSize
     ]
+    if assetId != nil {
+      result["assetId"] = assetId
+    }
     if base64 != nil {
       result["base64"] = base64
     }
@@ -95,6 +100,7 @@ internal struct ImageInfo: SelectedMediaInfo {
  Represents a single selected video
  */
 internal struct VideoInfo: SelectedMediaInfo {
+  let assetId: String?
   let type: String = "video"
   let uri: String
   let width: Double
@@ -104,7 +110,7 @@ internal struct VideoInfo: SelectedMediaInfo {
   let duration: Double
 
   var dictionary: [String: Any] {
-    [
+    var result: [String: Any] = [
       "type": type,
       "uri": uri,
       "width": width,
@@ -113,5 +119,9 @@ internal struct VideoInfo: SelectedMediaInfo {
       "fileSize": fileSize,
       "duration": duration
     ]
+    if assetId != nil {
+      result["assetId"] = assetId
+    }
+    return result
   }
 }
