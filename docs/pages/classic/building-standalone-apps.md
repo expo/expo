@@ -78,7 +78,7 @@ When building an aab, make sure [Google Play App Signing](/app-signing/app-crede
 
 #### Generating keystore
 
-When building your app for the first time, you have to generate a [keystore](https://developer.android.com/training/articles/keystore). You can upload your own if you are familiar with process of generating keystore, or you can let Expo handle the process.
+When building your app for the first time, you'll have to generate a [keystore](https://developer.android.com/training/articles/keystore). You can upload your own if you are familiar with the process of generating keystores, or you can let Expo handle the process.
 
 For Expo to handle the process, choose the first option in the command-line when prompted for keystore:
 
