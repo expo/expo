@@ -31,7 +31,7 @@ The easiest way to create a bare React Native app with support for the Expo SDK 
 '$ npx create-react-native-app my-app',
 ]} cmdCopy="npx create-react-native-app my-app" />
 
-You can install and import any Expo SDK package using the `expo install` command. If you have an existing app that you would like to add Expo SDK packages to it, read about [integrating Expo SDK into existing apps](/bare/existing-apps).
+You can install and import any Expo SDK package using the `expo install` command. If you have an existing app that you would like to add Expo SDK packages to, read about [integrating Expo SDK into existing apps](/bare/existing-apps).
 
 ## Each Expo SDK version depends on a React Native version
 
