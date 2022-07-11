@@ -1,6 +1,6 @@
 ---
 title: LightSensor
-sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-sensors'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-46/packages/expo-sensors'
 packageName: 'expo-sensors'
 ---
 
@@ -132,7 +132,7 @@ const subscription = LightSensor.addListener((luminosity) => {
 
 #### Arguments
 
-- **listener (_function_)** -- A callback that is invoked when an LightSensor update is available. When invoked, the listener is provided a single argument that is the luminosity value.
+- **listener (_function_)** -- A callback that is invoked when a LightSensor update is available. When invoked, the listener is provided a single argument that is the luminosity value.
 
 #### Returns
 
@@ -145,8 +145,6 @@ Removes all listeners.
 ## Types
 
 ### `LightSensorMeasurement`
-
-The altitude data returned from the native sensors.
 
 ```typescript
 type LightSensorMeasurement = {
