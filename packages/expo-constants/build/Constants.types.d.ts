@@ -87,7 +87,12 @@ export declare type Manifest = {
     extra?: ManifestExtra;
 };
 export declare type ManifestExtra = ClientScopingConfig & {
-    expoClient?: ExpoConfig;
+    expoClient?: ExpoConfig & {
+        /**
+         * Only present during development using @expo/cli.
+         */
+        hostUri?: string;
+    };
     expoGo?: ExpoGoConfig;
     eas?: EASConfig;
 };
