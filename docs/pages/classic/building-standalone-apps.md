@@ -26,7 +26,7 @@ Developers using the **Windows** operating system must have WSL enabled. If you 
 
 ## 2. Configure app.json
 
-In the **app.json**, you have to add a set of configuration before running the build command. The code snippet below represents a minimal required version of the configuration:
+In **app.json**, you have to add a set of configurations before running the build command. The code snippet below represents a minimal required version of the configuration:
 
 ```json
 {
