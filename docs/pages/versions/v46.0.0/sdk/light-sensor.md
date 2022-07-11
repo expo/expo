@@ -28,7 +28,7 @@ import { StyleSheet, Text, TouchableOpacity, View, Platform } from 'react-native
 import { LightSensor } from 'expo-sensors';
 
 export default function App() {
-  const [luminusity, setLuminusity] = useState(null);
+  const [luminosity, setLuminosity] = useState(null);
 
   useEffect(() => {
     _toggle();
@@ -50,7 +50,7 @@ export default function App() {
 
   const _subscribe = () => {
     this._subscription = LightSensor.addListener(lightSensorData => {
-      setLuminusity(lightSensorData);
+      setLuminosity(lightSensorData);
     });
   };
 
