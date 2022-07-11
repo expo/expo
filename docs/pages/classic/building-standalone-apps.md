@@ -112,7 +112,7 @@ If you choose the first option when generating the keystore and later decide to 
 
 There are two types of build you can generate when building a standalone app for iOS: archive and simulator.
 
-Archive build is used for publishing your app to the Apple App Store or distributing it with services like TestFlight. To build an archive, run the command:
+Archive builds are used for submitting your app to the Apple App Store and distributing it with features like TestFlight. To build an iOS app archive, run:
 
 <Terminal cmd={['$ expo build:ios -t archive']} />
 
