@@ -3,6 +3,7 @@
 #include <memory>
 #include <utility>
 #include <vector>
+#include <numeric>
 
 #include <jsi/jsi.h>
 #include "JsiSkHostObjects.h"
@@ -84,6 +85,28 @@ namespace RNSkia
                 jsiWidths.setValueAtIndex(runtime, i, jsi::Value(SkScalarToDouble(static_cast<SkScalar *>(widthPtrs.data())[i])));
             }
             return jsiWidths;
+        }
+
+        JSI_HOST_FUNCTION(getTextWidth) {
+            auto str = arguments[0].asString(runtime).utf8(runtime);
+            auto numGlyphIDs = str.length();
+            std::vector<SkGlyphID> glyphs;
+            glyphs.resize(numGlyphIDs);
+            int glyphsSize = static_cast<int>(numGlyphIDs);
+            getObject()->textToGlyphs(str.c_str(), str.length(), SkTextEncoding::kUTF8,
+                                      static_cast<SkGlyphID *>(glyphs.data()), glyphsSize);
+            std::vector<SkScalar> widthPtrs;
+            widthPtrs.resize(numGlyphIDs);
+            if (count > 1)
+            {
+                auto paint = JsiSkPaint::fromValue(runtime, arguments[1]);
+                getObject()->getWidthsBounds(glyphs.data(), glyphsSize, static_cast<SkScalar *>(widthPtrs.data()), nullptr, paint.get());
+            }
+            else
+            {
+                getObject()->getWidthsBounds(glyphs.data(), glyphsSize, static_cast<SkScalar *>(widthPtrs.data()), nullptr, nullptr);
+            }
+            return jsi::Value(std::accumulate(widthPtrs.begin(), widthPtrs.end(), 0));
         }
 
         JSI_HOST_FUNCTION(getMetrics)
@@ -273,7 +296,8 @@ namespace RNSkia
             JSI_EXPORT_FUNC(JsiSkFont, setEmbolden),
             JSI_EXPORT_FUNC(JsiSkFont, setSubpixel),
             JSI_EXPORT_FUNC(JsiSkFont, setTypeface),
-            JSI_EXPORT_FUNC(JsiSkFont, getGlyphWidths))
+            JSI_EXPORT_FUNC(JsiSkFont, getGlyphWidths),
+            JSI_EXPORT_FUNC(JsiSkFont, getTextWidth))
 
         JsiSkFont(std::shared_ptr<RNSkPlatformContext> context, const SkFont &font)
             : JsiSkWrappingSharedPtrHostObject(std::move(context),
