@@ -2,7 +2,7 @@ import DeviceSensor from './DeviceSensor';
 import ExpoLightSensor from './ExpoLightSensor';
 
 export interface LightSensorMeasurement {
-  luminosity: number;
+  illuminance: number;
 }
 
 class LightSensor extends DeviceSensor<LightSensorMeasurement> {}

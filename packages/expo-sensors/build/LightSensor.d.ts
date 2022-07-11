@@ -1,6 +1,6 @@
 import DeviceSensor from './DeviceSensor';
 export interface LightSensorMeasurement {
-    luminosity: number;
+    illuminance: number;
 }
 declare class LightSensor extends DeviceSensor<LightSensorMeasurement> {
 }

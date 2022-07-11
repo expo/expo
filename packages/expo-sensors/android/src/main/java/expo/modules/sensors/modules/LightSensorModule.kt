@@ -20,11 +20,13 @@ class LightSensorModule(reactContext: Context?) : BaseSensorModule(reactContext)
     return moduleRegistry.getModule(LightSensorServiceInterface::class.java)
   }
 
+
   override fun eventToMap(sensorEvent: SensorEvent): Bundle {
     return Bundle().apply {
-      putDouble("luminosity", sensorEvent.values[0].toDouble())
+      putDouble("illuminance", sensorEvent.values[0].toDouble())
     }
   }
+
 
   @ExpoMethod
   fun startObserving(promise: Promise) {
