@@ -782,7 +782,7 @@ PODS:
     - React-RCTText
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNScreens (3.14.1):
+  - RNScreens (3.15.0):
     - React-Core
     - React-RCTImage
   - RNSharedElement (0.8.4):
@@ -1439,7 +1439,7 @@ SPEC CHECKSUMS:
   RNDateTimePicker: 30e6733efc179d1e49d6008ea5fce42cdc9aeeca
   RNGestureHandler: bad495418bcbd3ab47017a38d93d290ebd406f50
   RNReanimated: 2cf7451318bb9cc430abeec8d67693f9cf4e039c
-  RNScreens: aa9a97835afbbdc18a4757870b2b59b7d9fae16a
+  RNScreens: 4a1af06327774490d97342c00aee0c2bafb497b7
   RNSharedElement: eb7d506733952d58634f34c82ec17e82f557e377
   RNSVG: 302bfc9905bd8122f08966dc2ce2d07b7b52b9f8
   SDWebImage: 0905f1b7760fc8ac4198cae0036600d67478751e
