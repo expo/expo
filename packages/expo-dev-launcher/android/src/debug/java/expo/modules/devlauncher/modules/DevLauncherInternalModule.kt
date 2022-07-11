@@ -24,6 +24,8 @@ import org.koin.core.component.inject
 private const val ON_NEW_DEEP_LINK_EVENT = "expo.modules.devlauncher.onnewdeeplink"
 private const val CLIENT_PACKAGE_NAME = "host.exp.exponent"
 private val CLIENT_HOME_QR_SCANNER_DEEP_LINK = Uri.parse("expo-home://qr-scanner")
+private const val LAUNCHER_NAVIGATION_STATE_KEY = "expo.modules.devlauncher.navigation-state"
+
 
 class DevLauncherInternalModule(reactContext: ReactApplicationContext?) :
   ReactContextBaseJavaModule(reactContext), DevLauncherKoinComponent {
@@ -272,6 +274,27 @@ class DevLauncherInternalModule(reactContext: ReactApplicationContext?) :
   @ReactMethod
   fun loadFontsAsync(promise: Promise) {
     DevMenuManager.loadFonts(reactApplicationContext)
+    promise.resolve(null)
+  }
+
+  @ReactMethod
+  fun getNavigationState(promise: Promise) {
+    val sharedPreferences = reactApplicationContext.getSharedPreferences(LAUNCHER_NAVIGATION_STATE_KEY, Context.MODE_PRIVATE)
+    val serializedNavigationState = sharedPreferences.getString("navigationState", null) ?: ""
+    promise.resolve(serializedNavigationState)
+  }
+
+  @ReactMethod
+  fun saveNavigationState(serializedNavigationState: String, promise: Promise) {
+    val sharedPreferences = reactApplicationContext.getSharedPreferences(LAUNCHER_NAVIGATION_STATE_KEY, Context.MODE_PRIVATE)
+    sharedPreferences.edit().putString("navigationState", serializedNavigationState).apply()
+    promise.resolve(null)
+  }
+
+  @ReactMethod
+  fun clearNavigationState(promise: Promise) {
+    val sharedPreferences = reactApplicationContext.getSharedPreferences(LAUNCHER_NAVIGATION_STATE_KEY, Context.MODE_PRIVATE)
+    sharedPreferences.edit().clear().apply()
     promise.resolve(null)
   }
 }
