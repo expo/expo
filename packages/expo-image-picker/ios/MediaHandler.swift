@@ -83,6 +83,7 @@ internal struct MediaHandler {
         try ImageUtils.write(imageData: imageData, to: targetUrl)
       }
 
+      let fileSize = getFileSize(from: targetUrl)
       let base64 = try ImageUtils.optionallyReadBase64From(imageData: imageData,
                                                            orImageFileUrl: targetUrl,
                                                            tryReadingFile: fileWasCopied,
@@ -92,6 +93,7 @@ internal struct MediaHandler {
         let result: ImagePickerSingleResponse = .image(ImageInfo(uri: targetUrl.absoluteString,
                                                                  width: image.size.width,
                                                                  height: image.size.height,
+                                                                 fileSize: fileSize,
                                                                  base64: base64,
                                                                  exif: exif))
         completion(.success(result))
@@ -121,6 +123,7 @@ internal struct MediaHandler {
 
         let targetUrl = try generateUrl(withFileExtension: fileExtension)
         try ImageUtils.write(imageData: imageData, to: targetUrl)
+        let fileSize = getFileSize(from: targetUrl)
 
         // We need to get EXIF from original image data, as it is being lost in UIImage
         let exif = ImageUtils.optionallyReadExifFrom(data: rawData, shouldReadExif: self.options.exif)
@@ -133,6 +136,7 @@ internal struct MediaHandler {
         let result = ImageInfo(uri: targetUrl.absoluteString,
                                width: image.size.width,
                                height: image.size.height,
+                               fileSize: fileSize,
                                base64: base64,
                                exif: exif)
         completion(assetId, .success(result))
@@ -157,7 +161,7 @@ internal struct MediaHandler {
 
       try VideoUtils.tryCopyingVideo(at: pickedVideoUrl, to: targetUrl)
 
-      guard let size = VideoUtils.readSizeFrom(url: targetUrl) else {
+      guard let dimensions = VideoUtils.readSizeFrom(url: targetUrl) else {
         return completion(.failure(FailedToReadVideoSizeException()))
       }
 
@@ -166,10 +170,12 @@ internal struct MediaHandler {
       // TODO: (@bbarthec): inspect whether it makes sense to read duration from two different assets
       let videoUrlToReadDurationFrom = self.options.allowsEditing ? pickedVideoUrl : targetUrl
       let duration = VideoUtils.readDurationFrom(url: videoUrlToReadDurationFrom)
+      let fileSize = getFileSize(from: targetUrl)
 
       let result: ImagePickerSingleResponse = .video(VideoInfo(uri: targetUrl.absoluteString,
-                                                               width: size.width,
-                                                               height: size.height,
+                                                               width: dimensions.width,
+                                                               height: dimensions.height,
+                                                               fileSize: fileSize,
                                                                duration: duration))
       completion(.success(result))
     } catch let exception as Exception {
@@ -242,12 +248,24 @@ internal struct MediaHandler {
       return .failure(FailedToReadVideoSizeException())
     }
     let duration = VideoUtils.readDurationFrom(url: videoUrl)
+    let fileSize = getFileSize(from: videoUrl)
 
     let result = VideoInfo(uri: videoUrl.absoluteString,
                            width: size.width,
                            height: size.height,
+                           fileSize: fileSize,
                            duration: duration)
     return .success(result)
+  }
+  
+  private func getFileSize(from fileUrl: URL) -> Int? {
+    do {
+      let resources = try fileUrl.resourceValues(forKeys: [.fileSizeKey])
+      return resources.fileSize
+    } catch {
+      log.error("Failed to get file size for \(fileUrl.absoluteString)")
+      return nil
+    }
   }
 }
 
