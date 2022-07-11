@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fixed crash when remote debugging is enabled on Android. ([#18165](https://github.com/expo/expo/pull/18165) by [@kudo](https://github.com/kudo))
+- Fixed a crash when remote debugging is enabled on Android. ([#18165](https://github.com/expo/expo/pull/18165) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
