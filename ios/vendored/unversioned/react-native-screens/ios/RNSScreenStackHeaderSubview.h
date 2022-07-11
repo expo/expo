@@ -4,7 +4,7 @@
 #endif
 
 #import <React/RCTConvert.h>
-#import <react/RCTViewManager.h>
+#import <React/RCTViewManager.h>
 #import "RNSEnums.h"
 
 NS_ASSUME_NONNULL_BEGIN

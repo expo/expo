@@ -1992,7 +1992,7 @@ PODS:
     - React-RCTText
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNScreens (3.14.1):
+  - RNScreens (3.15.0):
     - React-Core
     - React-RCTImage
   - Stripe (22.4.0):
@@ -3459,7 +3459,7 @@ SPEC CHECKSUMS:
   RNFlashList: 031c182b95ead44fd0715f6029a744cd5e10d51f
   RNGestureHandler: bad495418bcbd3ab47017a38d93d290ebd406f50
   RNReanimated: 5c8c17e26787fd8984cd5accdc70fef2ca70aafd
-  RNScreens: aa9a97835afbbdc18a4757870b2b59b7d9fae16a
+  RNScreens: 4a1af06327774490d97342c00aee0c2bafb497b7
   Stripe: a925dfa9a7e51aa8f782f428abc10cb828b45a85
   stripe-react-native: 01069cba9dfaaf108df9c65a266ff753f311ddc8
   StripeApplePay: 369857bafe8baf02e31b47478db1574febd2a2f3
