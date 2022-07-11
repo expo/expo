@@ -12,7 +12,7 @@ The Expo SDK provides access to device and system functionality such as contacts
 
 <Terminal cmd={['$ expo install expo-camera expo-contacts expo-sensors']} />
 
-After installing one or more packages, you can import from it in your JavaScript code:
+After installing one or more packages, you can import them in your JavaScript code:
 
 ```javascript
 import { Camera } from 'expo-camera';
