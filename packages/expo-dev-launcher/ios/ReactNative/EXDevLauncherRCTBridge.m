@@ -29,8 +29,9 @@
  */
 - (RCTDevSettings *)devSettings
 {
-  //  uncomment below to enable fast refresh for development builds of DevLauncher
-  //  return super.devSettings;
+#ifdef EX_DEV_LAUNCHER_URL
+ return super.devSettings;
+#endif
  return nil;
 }
 
