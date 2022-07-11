@@ -67,6 +67,7 @@ internal struct ImageInfo: SelectedMediaInfo {
   let uri: String
   let width: Double
   let height: Double
+  let fileName: String?
   let fileSize: Int?
   let base64: String?
   let exif: ExifInfo?
@@ -77,6 +78,7 @@ internal struct ImageInfo: SelectedMediaInfo {
       "uri": uri,
       "width": width,
       "height": height,
+      "fileName": fileName,
       "fileSize": fileSize
     ]
     if base64 != nil {
@@ -97,6 +99,7 @@ internal struct VideoInfo: SelectedMediaInfo {
   let uri: String
   let width: Double
   let height: Double
+  let fileName: String?
   let fileSize: Int?
   let duration: Double
 
@@ -106,6 +109,7 @@ internal struct VideoInfo: SelectedMediaInfo {
       "uri": uri,
       "width": width,
       "height": height,
+      "fileName": fileName,
       "fileSize": fileSize,
       "duration": duration
     ]

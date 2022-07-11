@@ -83,7 +83,12 @@ internal struct MediaHandler {
         try ImageUtils.write(imageData: imageData, to: targetUrl)
       }
 
+      // as calling this already requires media library permission, we can access it here
+      // if user gave limited permissions, in the worst case this will be null
+      let asset = mediaInfo[.phAsset] as? PHAsset
+      let fileName = asset?.value(forKey: "filename") as? String
       let fileSize = getFileSize(from: targetUrl)
+      
       let base64 = try ImageUtils.optionallyReadBase64From(imageData: imageData,
                                                            orImageFileUrl: targetUrl,
                                                            tryReadingFile: fileWasCopied,
@@ -93,6 +98,7 @@ internal struct MediaHandler {
         let result: ImagePickerSingleResponse = .image(ImageInfo(uri: targetUrl.absoluteString,
                                                                  width: image.size.width,
                                                                  height: image.size.height,
+                                                                 fileName: fileName,
                                                                  fileSize: fileSize,
                                                                  base64: base64,
                                                                  exif: exif))
@@ -124,6 +130,7 @@ internal struct MediaHandler {
         let targetUrl = try generateUrl(withFileExtension: fileExtension)
         try ImageUtils.write(imageData: imageData, to: targetUrl)
         let fileSize = getFileSize(from: targetUrl)
+        let fileName = itemProvider.suggestedName.map { $0 + fileExtension }
 
         // We need to get EXIF from original image data, as it is being lost in UIImage
         let exif = ImageUtils.optionallyReadExifFrom(data: rawData, shouldReadExif: self.options.exif)
@@ -136,6 +143,7 @@ internal struct MediaHandler {
         let result = ImageInfo(uri: targetUrl.absoluteString,
                                width: image.size.width,
                                height: image.size.height,
+                               fileName: fileName,
                                fileSize: fileSize,
                                base64: base64,
                                exif: exif)
@@ -170,11 +178,15 @@ internal struct MediaHandler {
       // TODO: (@bbarthec): inspect whether it makes sense to read duration from two different assets
       let videoUrlToReadDurationFrom = self.options.allowsEditing ? pickedVideoUrl : targetUrl
       let duration = VideoUtils.readDurationFrom(url: videoUrlToReadDurationFrom)
+      
+      let asset = mediaInfo[.phAsset] as? PHAsset
+      let fileName = asset?.value(forKey: "filename") as? String
       let fileSize = getFileSize(from: targetUrl)
 
       let result: ImagePickerSingleResponse = .video(VideoInfo(uri: targetUrl.absoluteString,
                                                                width: dimensions.width,
                                                                height: dimensions.height,
+                                                               fileName: fileName,
                                                                fileSize: fileSize,
                                                                duration: duration))
       completion(.success(result))
@@ -217,7 +229,8 @@ internal struct MediaHandler {
           case .failure(let exception):
             return completion(assetId, .failure(exception))
           case .success(let targetUrl):
-            let videoResult = buildVideoResult(for: targetUrl)
+            let fileName = itemProvider.suggestedName.map { $0 + transcodeFileExtension }
+            let videoResult = buildVideoResult(for: targetUrl, withName: fileName)
             return completion(assetId, videoResult)
           }
         }
@@ -243,7 +256,7 @@ internal struct MediaHandler {
     return url
   }
   
-  private func buildVideoResult(for videoUrl: URL) -> SelectedMediaResult {
+  private func buildVideoResult(for videoUrl: URL, withName fileName: String? = nil) -> SelectedMediaResult {
     guard let size = VideoUtils.readSizeFrom(url: videoUrl) else {
       return .failure(FailedToReadVideoSizeException())
     }
@@ -253,6 +266,7 @@ internal struct MediaHandler {
     let result = VideoInfo(uri: videoUrl.absoluteString,
                            width: size.width,
                            height: size.height,
+                           fileName: fileName,
                            fileSize: fileSize,
                            duration: duration)
     return .success(result)
