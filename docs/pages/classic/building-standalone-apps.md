@@ -18,7 +18,7 @@ An Apple Developer account is required to build a standalone iOS app, but a Goog
 
 Expo CLI is a command-line application required to build standalone apps. It is installed as a global npm package. If you have not installed it, go through the [installation steps in the Expo CLI documentation](/workflow/expo-cli/#installation).
 
-You must have an Expo account created or logged. When running the build command, you can create a new one or log in to your existing account.
+You must have an Expo account and be logged in to create a build. When running the build command, you can create a new account or log in to an existing account.
 
 Developers using **Windows** operating system must have WSL enabled. If you do not have it installed, follow this [installation guide](https://docs.microsoft.com/en-us/windows/wsl/install). When it prompts for choosing a Linux distribution, we recommend picking Ubuntu from the Windows Store. Launch Ubuntu at least once and then use an admin PowerShell to run the command:
 
