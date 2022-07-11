@@ -74,7 +74,7 @@ We recommend building an Android App Bundle (aab) for submitting the app to the 
 
 <Terminal cmd={['$ expo build:android -t app-bundle']} />
 
-When building abb, you have to make sure the [Google Play App Signing](/app-signing/app-credentials) is enabled for your project. You can read more about it in the [Android documentation](https://developer.android.com/guide/app-bundle).
+When building an aab, make sure [Google Play App Signing](/app-signing/app-credentials) is enabled for your project. You can read more about it in the [Android documentation](https://developer.android.com/guide/app-bundle).
 
 #### Generating keystore
 
