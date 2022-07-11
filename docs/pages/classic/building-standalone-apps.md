@@ -120,7 +120,7 @@ Simulator builds are used to test a standalone app in an iOS simulator. To build
 
 <Terminal cmd={['$ expo build:ios -t simulator']} />
 
-Building for iOS, you can choose the option to let Expo create necessary credentials. You still have the choice to provide your own credentials. In this process, your Apple ID and password are used locally and are never saved on Expo's servers.
+When building for iOS, you can choose to let Expo create any necessary credentials that your app will need. However, you'll still have the choice to provide your own credentials if you'd like. During this process, Expo CLI will use your Apple ID and password. Your authentication information is only used locally on your computer and is never sent to Expo's servers.
 
 ```sh
 $ expo build:ios
