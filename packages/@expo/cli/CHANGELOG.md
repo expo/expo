@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 0.2.1 — 2022-07-11
+
+### 💡 Others
+
 - Drop hardcoded web package versions in prerequisite. ([#18172](https://github.com/expo/expo/pull/18172) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 0.2.0 — 2022-07-07
