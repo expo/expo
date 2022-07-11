@@ -1,7 +1,9 @@
 # Changelog
 
 ## Unpublished
-> \- Added supportf for the LightSensor  ([#13075](https://github.com/expo/expo/pull/18177) by [bearkillerPT](https://github.com/bearkillerPT). Also see [this](https://github.com/expo/expo/discussions/18101) discussion.
+
+- Added support for the light sensor on Android. ([#18177](https://github.com/expo/expo/pull/18177) by [bearkillerPT](https://github.com/bearkillerPT))
+
 ### 🛠 Breaking changes
 
 ### 🎉 New features
