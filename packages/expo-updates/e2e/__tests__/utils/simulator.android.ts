@@ -20,12 +20,12 @@ const ADB_PATH = (function () {
 
 const PACKAGE_NAME = 'dev.expo.updatese2e';
 const ACTIVITY_NAME = `${PACKAGE_NAME}/${PACKAGE_NAME}.MainActivity`;
-const APK_PATH = path.join(process.env.ARTIFACTS_DEST, 'android-release.apk');
 
 export const ExportedManifestFilename = 'android-index.json';
 
-export async function installApp() {
-  await spawnAsync(ADB_PATH, ['install', APK_PATH]);
+export async function installApp(suffix: string) {
+  const apkPath = path.join(process.env.ARTIFACTS_DEST, `android-release-${suffix}.apk`);
+  await spawnAsync(ADB_PATH, ['install', apkPath]);
 }
 
 export async function uninstallApp() {

@@ -11,14 +11,17 @@ const workingDir = path.resolve(repoRoot, '..');
 const runtimeVersion = '1.0.0';
 
 (async function () {
-  // const projectRoot = await initAsync(workingDir, repoRoot, runtimeVersion);
+  const projectRoot = await initAsync(workingDir, repoRoot, runtimeVersion);
 
-  // await setupBasicAppAsync(projectRoot);
-  // await buildAndroidAsync(projectRoot, artifactsDest, 'basic');
-  // await buildIosAsync(projectRoot, artifactsDest, 'basic');
+  await setupBasicAppAsync(projectRoot);
+  await buildAndroidAsync(projectRoot, artifactsDest, 'basic');
+  await buildIosAsync(projectRoot, artifactsDest, 'basic');
 
-  // await setupAssetsAppAsync(projectRoot);
-  const projectRoot = path.resolve(repoRoot, '..', 'updates-e2e');
-  // await buildAndroidAsync(projectRoot, artifactsDest, 'assets');
+  await setupAssetsAppAsync(projectRoot);
+  await buildAndroidAsync(projectRoot, artifactsDest, 'assets');
   await buildIosAsync(projectRoot, artifactsDest, 'assets');
+
+  // build the same app a second time for tests involving overwriting installation
+  await buildAndroidAsync(projectRoot, artifactsDest, 'assets2');
+  await buildIosAsync(projectRoot, artifactsDest, 'assets2');
 })();

@@ -26,34 +26,85 @@ const updateDistPath = path.join(projectRoot, 'dist-assets');
 
 describe('Asset deletion recovery', () => {
   afterEach(async () => {
-    // await Simulator.uninstallApp();
+    await Simulator.uninstallApp();
     Server.stop();
   });
 
   it('embedded assets deleted from internal storage should be re-copied', async () => {
     jest.setTimeout(300000 * TIMEOUT_BIAS);
     Server.start(SERVER_PORT);
-    Server.setResponses([{ command: 'clearExpoInternal' }, { command: 'readExpoInternal' }]);
-    const response = await Server.waitForResponse(10000 * TIMEOUT_BIAS);
-    expect(response).toBe('test');
 
-    const response2 = await Server.waitForResponse(10000 * TIMEOUT_BIAS);
-    if (!response2.success) {
-      throw new Error(response2.error);
-    }
-    expect(response2.success).toBe(true);
+    await Simulator.installApp('assets');
+    // set up promise before starting the app so the correct response is sent
+    const promise = Server.waitForRequest(10000 * TIMEOUT_BIAS, {
+      command: 'clearExpoInternal',
+    });
+    await Simulator.startApp();
+    await promise;
 
-    const response3 = await Server.waitForResponse(10000 * TIMEOUT_BIAS);
-    if (!response3.success) {
-      throw new Error(response3.error);
+    const clearAssetsMessage = await Server.waitForRequest(10000 * TIMEOUT_BIAS);
+    if (!clearAssetsMessage.success) {
+      throw new Error(clearAssetsMessage.error);
     }
-    expect(response3.success).toBe(true);
-    expect(response3.numFiles).toBe(1);
+    expect(clearAssetsMessage.numFilesBefore).toBeGreaterThanOrEqual(3); // JS bundle, png, ttf
+    expect(clearAssetsMessage.numFilesAfter).toBe(0);
+
+    await Simulator.stopApp();
+
+    // set up promise before starting the app so the correct response is sent
+    const promise2 = Server.waitForRequest(10000 * TIMEOUT_BIAS, {
+      command: 'readExpoInternal',
+    });
+    await Simulator.startApp();
+    await promise2;
+
+    const readAssetsMessage = await Server.waitForRequest(10000 * TIMEOUT_BIAS);
+    if (!readAssetsMessage.success) {
+      throw new Error(readAssetsMessage.error);
+    }
+    expect(readAssetsMessage.numFiles).toEqual(clearAssetsMessage.numFilesBefore);
+
+    expect(readAssetsMessage.updateId).toEqual(clearAssetsMessage.updateId);
   });
 
-  xit('embedded assets deleted from internal storage should be re-copied from a new embedded update', async () => {});
+  it('embedded assets deleted from internal storage should be re-copied from a new embedded update', async () => {
+    jest.setTimeout(300000 * TIMEOUT_BIAS);
+    Server.start(SERVER_PORT);
 
-  xit('assets in a downloaded update deleted from internal storage should be re-copied if embedded', async () => {});
+    await Simulator.installApp('assets');
+    // set up promise before starting the app so the correct response is sent
+    const promise = Server.waitForRequest(10000 * TIMEOUT_BIAS, {
+      command: 'clearExpoInternal',
+    });
+    await Simulator.startApp();
+    await promise;
 
-  xit('downloaded assets deleted from internal storage should be re-downloaded', async () => {});
+    const clearAssetsMessage = await Server.waitForRequest(10000 * TIMEOUT_BIAS);
+    if (!clearAssetsMessage.success) {
+      throw new Error(clearAssetsMessage.error);
+    }
+    expect(clearAssetsMessage.numFilesBefore).toBeGreaterThanOrEqual(3); // JS bundle, png, ttf
+    expect(clearAssetsMessage.numFilesAfter).toBe(0);
+
+    await Simulator.stopApp();
+
+    await Simulator.installApp('assets2');
+
+    // set up promise before starting the app so the correct response is sent
+    const promise2 = Server.waitForRequest(10000 * TIMEOUT_BIAS, {
+      command: 'readExpoInternal',
+    });
+    await Simulator.startApp();
+    await promise2;
+
+    const readAssetsMessage = await Server.waitForRequest(10000 * TIMEOUT_BIAS);
+    if (!readAssetsMessage.success) {
+      throw new Error(readAssetsMessage.error);
+    }
+    expect(readAssetsMessage.numFiles).toEqual(clearAssetsMessage.numFilesBefore);
+
+    expect(readAssetsMessage.updateId).not.toEqual(clearAssetsMessage.updateId);
+  });
+
+  xit('assets in a downloaded update deleted from internal storage should be re-copied or re-downloaded', async () => {});
 });

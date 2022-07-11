@@ -1,6 +1,7 @@
 import { Inter_900Black } from '@expo-google-fonts/inter';
 import { NativeModulesProxy } from 'expo-modules-core';
 import { StatusBar } from 'expo-status-bar';
+import * as Updates from 'expo-updates';
 import { useEffect } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
@@ -41,12 +42,22 @@ async function readExpoInternal() {
     const numFiles = await NativeModulesProxy.ExpoUpdatesE2ETest.readInternalAssetsFolderAsync();
     await fetchWithRetry(
       `http://${HOSTNAME}:${PORT}/post`,
-      JSON.stringify({ command: 'readExpoInternal', success: true, numFiles })
+      JSON.stringify({
+        command: 'readExpoInternal',
+        success: true,
+        updateId: Updates.updateId,
+        numFiles,
+      })
     );
   } catch (e) {
     await fetchWithRetry(
       `http://${HOSTNAME}:${PORT}/post`,
-      JSON.stringify({ command: 'readExpoInternal', success: false, error: e.message })
+      JSON.stringify({
+        command: 'readExpoInternal',
+        success: false,
+        updateId: Updates.updateId,
+        error: e.message,
+      })
     );
   }
 }
@@ -60,12 +71,23 @@ async function clearExpoInternal() {
       await NativeModulesProxy.ExpoUpdatesE2ETest.readInternalAssetsFolderAsync();
     await fetchWithRetry(
       `http://${HOSTNAME}:${PORT}/post`,
-      JSON.stringify({ command: 'clearExpoInternal', success: true, numFilesBefore, numFilesAfter })
+      JSON.stringify({
+        command: 'clearExpoInternal',
+        success: true,
+        updateId: Updates.updateId,
+        numFilesBefore,
+        numFilesAfter,
+      })
     );
   } catch (e) {
     await fetchWithRetry(
       `http://${HOSTNAME}:${PORT}/post`,
-      JSON.stringify({ command: 'clearExpoInternal', success: false, error: e.message })
+      JSON.stringify({
+        command: 'clearExpoInternal',
+        success: false,
+        updateId: Updates.updateId,
+        error: e.message,
+      })
     );
   }
 }

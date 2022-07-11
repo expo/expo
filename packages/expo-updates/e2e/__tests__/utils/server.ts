@@ -5,9 +5,9 @@ import { setTimeout } from 'timers/promises';
 const app: any = express();
 let server: any;
 
+let messages: any[] = [];
 let responsesToServe: any[] = [];
 
-let notifyString: string | null | any = null;
 let updateRequest: any = null;
 let manifestToServe: any = null;
 let manifestHeadersToServe: any = null;
@@ -19,16 +19,13 @@ export function start(port: number) {
   }
 }
 
-export function setResponses(responses: any[]) {
-  responsesToServe = responses;
-}
-
 export function stop() {
   if (server) {
     server.close();
     server = null;
   }
-  notifyString = null;
+  messages = [];
+  responsesToServe = [];
   updateRequest = null;
   manifestToServe = null;
   manifestHeadersToServe = null;
@@ -49,7 +46,7 @@ app.use('/static', (req: any, res: any, next: any) => {
 app.use('/static', express.static(path.resolve(__dirname, '..', '.static')));
 
 app.get('/notify/:string', (req: any, res: any) => {
-  notifyString = req.params.string;
+  messages.push(req.params.string);
   res.set('Cache-Control', 'no-store');
   if (responsesToServe[0]) {
     res.json(responsesToServe.shift());
@@ -59,24 +56,31 @@ app.get('/notify/:string', (req: any, res: any) => {
 });
 
 app.post('/post', (req: any, res: any) => {
-  notifyString = req.body;
+  messages.push(req.body);
   res.set('Cache-Control', 'no-store');
-  res.send('Received request');
+  if (responsesToServe[0]) {
+    res.json(responsesToServe.shift());
+  } else {
+    res.send('Received request');
+  }
 });
 
-export async function waitForResponse(timeout: number) {
+export async function waitForRequest(timeout: number, responseToServe?: { command: string }) {
   const finishTime = new Date().getTime() + timeout;
-  while (!notifyString) {
+
+  if (responseToServe) {
+    responsesToServe.push(responseToServe);
+  }
+
+  while (!messages.length) {
     const currentTime = new Date().getTime();
     if (currentTime >= finishTime) {
       throw new Error('Timed out waiting for response');
     }
-    await setTimeout(1);
+    await setTimeout(50);
   }
 
-  const response = notifyString;
-  notifyString = null;
-  return response;
+  return messages.shift();
 }
 
 app.get('/update', (req: any, res: any) => {
