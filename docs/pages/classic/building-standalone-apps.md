@@ -92,7 +92,7 @@ If you don't know what this means, let us handle it! :)
 2) I want to upload my own keystore!
 ```
 
-If you choose the first option, it is **strongly recommend** that you run the following command after the build process is complete and backup the keystore to a safe location:
+If you choose the first option, it is **strongly recommended** that you run the following command after the build process is complete. After running it, backup the keystore in a safe location:
 
 <Terminal cmd={['$ expo fetch:android:keystore']} />
 
