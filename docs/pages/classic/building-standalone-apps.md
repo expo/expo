@@ -20,7 +20,7 @@ Expo CLI is a command-line application required to build standalone apps. It is 
 
 You must have an Expo account and be logged in to create a build. When running the build command, you can create a new account or log in to an existing account.
 
-Developers using **Windows** operating system must have WSL enabled. If you do not have it installed, follow this [installation guide](https://docs.microsoft.com/en-us/windows/wsl/install). When it prompts for choosing a Linux distribution, we recommend picking Ubuntu from the Windows Store. Launch Ubuntu at least once and then use an admin PowerShell to run the command:
+Developers using the **Windows** operating system must have WSL enabled. If you do not have it installed, follow this [installation guide](https://docs.microsoft.com/en-us/windows/wsl/install). When it prompts for choosing a Linux distribution, we recommend picking Ubuntu from the Windows Store. Launch Ubuntu at least once and then use an admin PowerShell to run the command:
 
 <Terminal cmd={['$ Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux']} />
 
