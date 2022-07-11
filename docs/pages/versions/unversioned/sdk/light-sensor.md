@@ -122,7 +122,7 @@ Returns a promise which resolves into a boolean denoting the availability of the
 
 ### `LightSensor.addListener((data: LightSensorMeasurement) => void)`
 
-Subscribe for updates to the LightSensor.
+Subscribe for updates to the light sensor.
 
 ```js
 const subscription = LightSensor.addListener((luminosity) => {
