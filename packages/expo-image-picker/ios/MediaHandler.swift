@@ -207,21 +207,13 @@ internal struct MediaHandler {
                                        destinationUrl: transcodedUrl,
                                        outputFileType: transcodeFileType,
                                        exportPreset: options.videoExportPreset) { result in
-          if case .failure(let exception) = result {
+          switch result {
+          case .failure(let exception):
             return completion(assetId, .failure(exception))
+          case .success(let targetUrl):
+            let videoResult = buildVideoResult(for: targetUrl)
+            return completion(assetId, videoResult)
           }
-          let targetUrl = try! result.get()
-
-          guard let size = VideoUtils.readSizeFrom(url: targetUrl) else {
-            return completion(assetId, .failure(FailedToReadVideoSizeException()))
-          }
-          let duration = VideoUtils.readDurationFrom(url: targetUrl)
-
-          let result = VideoInfo(uri: targetUrl.absoluteString,
-                                 width: size.width,
-                                 height: size.height,
-                                 duration: duration)
-          completion(assetId, .success(result))
         }
       } catch let exception as Exception {
         return completion(assetId, .failure(exception))
@@ -243,6 +235,19 @@ internal struct MediaHandler {
     let path = fileSystem.generatePath(inDirectory: directory, withExtension: withFileExtension)
     let url = URL(fileURLWithPath: path)
     return url
+  }
+  
+  private func buildVideoResult(for videoUrl: URL) -> SelectedMediaResult {
+    guard let size = VideoUtils.readSizeFrom(url: videoUrl) else {
+      return .failure(FailedToReadVideoSizeException())
+    }
+    let duration = VideoUtils.readDurationFrom(url: videoUrl)
+
+    let result = VideoInfo(uri: videoUrl.absoluteString,
+                           width: size.width,
+                           height: size.height,
+                           duration: duration)
+    return .success(result)
   }
 }
 
