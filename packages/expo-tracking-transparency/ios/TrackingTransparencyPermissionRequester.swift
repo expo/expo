@@ -22,7 +22,19 @@ public class TrackingTransparencyPermissionRequester: NSObject, EXPermissionsReq
     var status: EXPermissionStatus
     
     if #available(iOS 14, *) {
-      var systemStatus = ATTrackingManager.trackingAuthorizationStatus
+      var systemStatus: ATTrackingManager.AuthorizationStatus
+      
+      let trackingUsageDescription = Bundle.main.object(forInfoDictionaryKey: "NSUserTrackingUsageDescription")
+      if trackingUsageDescription == nil {
+        EXFatal(EXErrorWithMessage("""
+        This app is missing 'NSUserTrackingUsageDescription' so tracking transparency will fail. \
+        Ensure that this key exists in app's Info.plist.
+        """))
+        systemStatus = .denied
+      } else {
+        systemStatus = ATTrackingManager.trackingAuthorizationStatus
+      }
+
       switch systemStatus {
       case .authorized:
         status = EXPermissionStatusGranted
