@@ -188,6 +188,9 @@ fileprivate func reformatStackSymbol(_ symbol: String) -> String {
 }
 
 fileprivate func describe(value: Any) -> String {
+  if let value = value as? String {
+    return value
+  }
   if let value = value as? CustomDebugStringConvertible {
     return value.debugDescription
   }
