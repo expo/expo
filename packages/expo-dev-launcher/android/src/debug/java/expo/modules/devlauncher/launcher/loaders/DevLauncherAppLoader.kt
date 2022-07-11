@@ -99,6 +99,13 @@ abstract class DevLauncherAppLoader(
 
   private fun maybeInitFlipper(appContext: Context, reactInstanceManager: ReactInstanceManager) {
     try {
+      val wasRunning = tryToStopFlipper()
+
+      // Flipper wasn't initialized in the MainApplication so we don't want to start it.
+      if (!wasRunning) {
+        return
+      }
+
       /*
       We use reflection here to pick up the class that initializes Flipper,
       since Flipper library is not available in release mode
@@ -117,5 +124,31 @@ abstract class DevLauncherAppLoader(
     } catch (e: InvocationTargetException) {
       e.printStackTrace()
     }
+  }
+
+  private fun tryToStopFlipper(): Boolean {
+    val androidFlipperClientClass = Class.forName("com.facebook.flipper.android.AndroidFlipperClient");
+    val getInstanceMethod = androidFlipperClientClass.getMethod("getInstanceIfInitialized")
+
+    val flipperClient = getInstanceMethod.invoke(null) ?: return false
+    val flipperClientClass = flipperClient.javaClass
+
+    val stopMethod = flipperClientClass.getMethod("stop")
+    val getPluginMethod = flipperClientClass.getMethod("getPlugin", String::class.java)
+
+    stopMethod.invoke(flipperClient)
+    val mClassIdentifierMapField = flipperClientClass.getDeclaredField("mClassIdentifierMap")
+    mClassIdentifierMapField.isAccessible = true
+    val pluginsMap = mClassIdentifierMapField.get(flipperClient) as Map<Class<*>, String>
+    val flipperPlugins = pluginsMap.map { (_, id) -> getPluginMethod.invoke(flipperClient, id) }
+
+    val flipperPluginClass = Class.forName("com.facebook.flipper.core.FlipperPlugin")
+    val removePluginMethod = flipperClientClass.getMethod("removePlugin", flipperPluginClass)
+
+    flipperPlugins.forEach {
+      removePluginMethod.invoke(flipperClient, it)
+    }
+
+    return true
   }
 }
