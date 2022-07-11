@@ -44,24 +44,28 @@ const InstallSection: React.FC<Props> = ({
   hideBareInstructions = false,
   cmd = [`$ expo install ${packageName}`],
   href = getPackageLink(packageName),
-}) => (
-  <>
-    <Terminal cmd={cmd} />
-    {hideBareInstructions ? null : (
-      <p css={STYLES_P}>
-        If you're installing this in a{' '}
-        <a css={STYLES_LINK} href="/introduction/managed-vs-bare/#bare-workflow">
-          bare React Native app
-        </a>
-        , you should also follow{' '}
-        <a css={STYLES_BOLD} href={href}>
-          these additional installation instructions
-        </a>
-        .
-      </p>
-    )}
-  </>
-);
+}) => {
+  const { sourceCodeUrl } = usePageMetadata();
+
+  return (
+    <>
+      <Terminal cmd={cmd} />
+      {hideBareInstructions ? null : (
+        <p css={STYLES_P}>
+          If you're installing this in a{' '}
+          <a css={STYLES_LINK} href="/introduction/managed-vs-bare/#bare-workflow">
+            bare React Native app
+          </a>
+          , you should also follow{' '}
+          <a css={STYLES_BOLD} href={sourceCodeUrl ?? href}>
+            these additional installation instructions
+          </a>
+          .
+        </p>
+      )}
+    </>
+  );
+};
 
 export default InstallSection;
 
