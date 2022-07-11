@@ -12,7 +12,7 @@ Classic Build service allows you to create standalone binaries for the Expo app 
 
 An Apple Developer account is required to build a standalone iOS app, but a Google Play Developer account is not required to build the standalone Android app. To submit to either app store, you need a developer account on that store.
 
-> We recommend you to read the best practices about [Deploying to App Stores](/distribution/app-stores) to ensure your app is in good shape to get accepted into the Apple and Google stores. Using this service, you can generate builds, but it's up to you to make your app awesome.
+> We recommend that you read the best practices about [Deploying to App Stores](/distribution/app-stores) to ensure your app gets accepted into the Apple and Google stores. Once you've created an amazing app, EAS Build can help you build it and then submit it to the app stores.
 
 ## 1. Install Expo CLI
 
