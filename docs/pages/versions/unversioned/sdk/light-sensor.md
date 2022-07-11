@@ -108,7 +108,7 @@ import { LightSensor } from 'expo-sensors';
 
 > You should always check the sensor availability before attempting to use it.
 
-Returns a promise which resolves into a boolean denoting the availability of the device LightSensor.
+Returns a promise which resolves into a boolean denoting the availability of the device light sensor.
 
 | OS      | Availability                |
 | ------- | --------------------------- |
