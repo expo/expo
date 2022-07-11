@@ -8,13 +8,8 @@ import android.util.SparseArray
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.webkit.WebView
-import androidx.annotation.UiThread
 import com.facebook.react.bridge.GuardedRunnable
 import com.facebook.react.bridge.ReactContext
-import com.facebook.react.bridge.ReadableMap
-import com.facebook.react.bridge.WritableMap
-import com.facebook.react.bridge.WritableNativeMap
-import com.facebook.react.uimanager.PixelUtil
 import com.facebook.react.uimanager.UIManagerModule
 
 import host.exp.expoview.BuildConfig

@@ -112,8 +112,8 @@ object ScreenWindowTraits {
                     // and consume all the top insets so no padding will be added under the status bar.
                     val decorView = activity.window.decorView
                     if (translucent) {
-                        decorView.setOnApplyWindowInsetsListener { v, insets ->
-                            val defaultInsets = v.onApplyWindowInsets(insets)
+                        ViewCompat.setOnApplyWindowInsetsListener(decorView) { v, insets ->
+                            val defaultInsets = ViewCompat.onApplyWindowInsets(v, insets)
                             defaultInsets.replaceSystemWindowInsets(
                                 defaultInsets.systemWindowInsetLeft,
                                 0,
@@ -122,7 +122,7 @@ object ScreenWindowTraits {
                             )
                         }
                     } else {
-                        decorView.setOnApplyWindowInsetsListener(null)
+                        ViewCompat.setOnApplyWindowInsetsListener(decorView, null)
                     }
                     ViewCompat.requestApplyInsets(decorView)
                 }
