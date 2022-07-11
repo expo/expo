@@ -112,6 +112,7 @@ Returns a promise which resolves into a boolean denoting the availability of the
 
 | OS      | Availability                |
 | ------- | --------------------------- |
+| iOS     | `N/A`                       |
 | Android | Android 2.3+ (API Level 9+) |
 | Web     | `N/A`                       |
 
@@ -131,7 +132,7 @@ const subscription = LightSensor.addListener((luminosity) => {
 
 #### Arguments
 
-- **listener (_function_)** -- A callback that is invoked when an LightSensor update is available. When invoked, the listener is provided a single argument that is an object containing: `pressure: number` (_`hPa`_). On **iOS** the `relativeAltitude: number` (_`meters`_) value will also be available.
+- **listener (_function_)** -- A callback that is invoked when an LightSensor update is available. When invoked, the listener is provided a single argument that is the luminosity value.
 
 #### Returns
 
