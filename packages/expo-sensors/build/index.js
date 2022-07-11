@@ -4,6 +4,7 @@ export { default as Barometer } from './Barometer';
 export { default as DeviceMotion } from './DeviceMotion';
 export { default as DeviceSensor } from './DeviceSensor';
 export { default as Gyroscope } from './Gyroscope';
+export { default as LightSensor } from './LightSensor';
 export { default as Magnetometer } from './Magnetometer';
 export { default as MagnetometerUncalibrated } from './MagnetometerUncalibrated';
 export { Pedometer };

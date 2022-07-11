@@ -1,6 +1,6 @@
 ---
 title: Sensors
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-46/packages/expo-sensors'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-sensors'
 packageName: 'expo-sensors'
 ---
 
@@ -28,6 +28,7 @@ import {
   Accelerometer,
   Barometer,
   Gyroscope,
+  LightSensor,
   Magnetometer,
   MagnetometerUncalibrated,
   Pedometer,
@@ -40,4 +41,5 @@ For more information, please see the documentation for the sensor you are intere
 - [Barometer](barometer.md)
 - [Gyroscope](gyroscope.md)
 - [Magnetometer](magnetometer.md)
+- [LightSensor](light-sensor.md)
 - [Pedometer](pedometer.md)

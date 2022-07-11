@@ -1,7 +1,7 @@
 # Changelog
 
 ## Unpublished
-
+> \- Added supportf for the LightSensor  ([#13075](https://github.com/expo/expo/pull/?) by [bearkillerPT](https://github.com/bearkillerPT)
 ### 🛠 Breaking changes
 
 ### 🎉 New features
