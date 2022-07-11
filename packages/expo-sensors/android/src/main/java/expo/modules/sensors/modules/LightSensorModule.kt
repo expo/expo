@@ -22,7 +22,6 @@ class LightSensorModule(reactContext: Context?) : BaseSensorModule(reactContext)
 
   override fun eventToMap(sensorEvent: SensorEvent): Bundle {
     return Bundle().apply {
-      // TODO: Bacon: Can we get relative altitude?
       putDouble("luminosity", sensorEvent.values[0].toDouble())
     }
   }
