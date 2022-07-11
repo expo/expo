@@ -153,7 +153,7 @@ If you are familiar with iOS credentials and plan to provide your own, use the [
 
 To build and distribute your app using Apple's Enterprise distribution, it is required that you are a member of the [Apple Developer Enterprise Program](https://developer.apple.com/programs/enterprise/).
 
-Expo Build Service supports Enterprise distribution. When you call `expo build:ios`, you just need to choose the correct team that is labeled with `(In-House)`.
+Expo's build service supports Enterprise distribution. When you run `expo build:ios`, you'll need to choose the correct team that is labeled with `(In-House)`.
 
 #### Adhoc distribution
 
