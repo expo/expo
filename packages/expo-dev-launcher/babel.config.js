@@ -43,6 +43,10 @@ module.exports = function (api) {
 
   return {
     presets: ['babel-preset-expo'],
-    plugins: [['babel-plugin-module-resolver', moduleResolverConfig]],
+    plugins: [
+      ['babel-plugin-module-resolver', moduleResolverConfig],
+      // required for react-native-reanimated "export * as default" pattern
+      '@babel/plugin-proposal-export-namespace-from',
+    ],
   };
 };

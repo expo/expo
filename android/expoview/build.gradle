@@ -70,6 +70,13 @@ def reactNativeArchitectures() {
     def value = project.getProperties().get("reactNativeArchitectures")
     return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
 }
+
+def prebuiltHermesDir = findProperty("expo.prebuiltHermesDir") ?: file("${project(':ReactAndroid').projectDir}/prebuiltHermes")
+def prebuiltHermesVersion = file("${prebuiltHermesDir}/.hermesversion").exists() ? file("${prebuiltHermesDir}/.hermesversion").text : null
+def currentHermesVersion = file("${rootDir}/sdks/.hermesversion").exists() ? file("${rootDir}/sdks/.hermesversion").text : null
+def buildHermesSource = currentHermesVersion != prebuiltHermesVersion
+logger.info(":expoview - buildHermesSource[${buildHermesSource}]")
+
 // WHEN_PREPARING_REANIMATED_REMOVE_TO_HERE
 
 
@@ -283,9 +290,14 @@ dependencies {
   // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
   api project(':ReactAndroid')
 
-  def hermesPath = "../../node_modules/hermes-engine/android/";
-  debugImplementation files(hermesPath + "hermes-debug.aar")
-  releaseImplementation files(hermesPath + "hermes-release.aar")
+  if (!buildHermesSource) {
+    debugImplementation(files("${prebuiltHermesDir}/hermes-engine-debug.aar"))
+    releaseImplementation(files("${prebuiltHermesDir}/hermes-engine-release.aar"))
+  } else {
+    implementation(project(':ReactAndroid:hermes-engine')) {
+      exclude(group:'com.facebook.fbjni', module: 'fbjni')
+    }
+  }
 
   // Expo modules
   api project(':expo')
@@ -302,9 +314,6 @@ dependencies {
   // BEGIN_SDK_44
   versionedApi 'host.exp:reactandroid-abi44_0_0:1.0.0'
   // END_SDK_44
-  // BEGIN_SDK_43
-  versionedApi 'host.exp:reactandroid-abi43_0_0:1.0.0'
-  // END_SDK_43
   // WHEN_PREPARING_SHELL_REMOVE_TO_HERE
   // WHEN_VERSIONING_REMOVE_TO_HERE
   // WHEN_DISTRIBUTING_REMOVE_TO_HERE
@@ -666,26 +675,6 @@ def getNdkBuildFullPath() {
 
 def getCmakeToolchainFile() {
   return "-DCMAKE_TOOLCHAIN_FILE=${getNdkBuildFullPath()}/../build/cmake/android.toolchain.cmake"
-}
-
-task prepareHermes() {
-  def hermesPackagePath = findNodeModulePath(projectDir, "hermes-engine")
-  if (!hermesPackagePath) {
-    throw new GradleScriptException("Could not find the hermes-engine npm package", null)
-  }
-
-  def hermesAAR = file("$hermesPackagePath/android/hermes-debug.aar")
-  if (!hermesAAR.exists()) {
-    throw new GradleScriptException("The hermes-engine npm package is missing \"android/hermes-debug.aar\"", null)
-  }
-
-  def soFiles = zipTree(hermesAAR).matching({ it.include "**/*.so" })
-
-  copy {
-    from soFiles
-    from "$reactNative/ReactAndroid/src/main/jni/first-party/hermes/Android.mk"
-    into "$thirdPartyNdkDir/hermes"
-  }
 }
 
 // Create Android.mk library module based on jsc from npm

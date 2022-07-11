@@ -98,6 +98,18 @@ internal class FailedToReadVideoException: Exception {
   }
 }
 
+internal class FailedToTranscodeVideoException: Exception {
+  override var reason: String {
+    "Failed to transcode picked video"
+  }
+}
+
+internal class UnsupportedVideoExportPresetException: GenericException<String> {
+  override var reason: String {
+    "Video cannot be transcoded with export preset: \(param)"
+  }
+}
+
 internal class FailedToPickVideoException: Exception {
   override var reason: String {
     "Video could not be picked"
