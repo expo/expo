@@ -187,7 +187,7 @@ If you use a Push Notifications Certificate and want to switch to a [Push Notifi
 
 ## 4. Wait for it to finish building
 
-Expo Build Service uses building machines to build your app. The build process starts as soon as one of the machines is free and ready to be used. To check how long the waiting time for your build is, visit [Turtle status](https://expo.dev/turtle-status) site.
+Expo's build service uses cloud services to build your app. The build process starts as soon as one of the machines is free and ready to be used. To check how long the waiting time for your build is, visit [Turtle status](https://expo.dev/turtle-status) site.
 
 Expo CLI prints a URL with a unique ID, such as `expo.dev/builds/some-unique-id`, for you to visit and check your build progress. You can also access build logs on this URL.
 
