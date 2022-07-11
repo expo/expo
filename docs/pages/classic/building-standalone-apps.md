@@ -98,7 +98,7 @@ If you choose the first option, it is **strongly recommended** that you run the 
 
 Once you submit the app to the Google Play Store, all future updates to that app **must** be signed with the same keystore that the Play Store initially accepted. If you do not have a local copy of your keystore, you will be unable to publish new versions of your app to the Play Store.
 
-For any reason you delete your project or clear your credentials in the future, you will not be able to submit any updates to your app without providing the same keystore. Your only option left is to generate a new keystore and re-upload your application as a new application.
+If for any reason you delete your project or clear your credentials in the future, you will not be able to submit any updates to your app without providing the same keystore. If you're unable to retrieve the keystone, your only option left is to generate a new keystore and re-upload your application as a new application.
 
 #### Uploading your keystore after publishing the app
 
