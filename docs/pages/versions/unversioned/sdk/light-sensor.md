@@ -99,20 +99,19 @@ const styles = StyleSheet.create({
 ## API
 
 ```js
-import { Barometer } from 'expo-sensors';
+import { LightSensor } from 'expo-sensors';
 ```
 
 ## Methods
 
-### `Barometer.isAvailableAsync()`
+### `LightSensor.isAvailableAsync()`
 
 > You should always check the sensor availability before attempting to use it.
 
-Returns a promise which resolves into a boolean denoting the availability of the device barometer.
+Returns a promise which resolves into a boolean denoting the availability of the device LightSensor.
 
 | OS      | Availability                |
 | ------- | --------------------------- |
-| iOS     | iOS 8+                      |
 | Android | Android 2.3+ (API Level 9+) |
 | Web     | `N/A`                       |
 
@@ -120,51 +119,48 @@ Returns a promise which resolves into a boolean denoting the availability of the
 
 - A promise that resolves to a `boolean` denoting the availability of the sensor.
 
-### `Barometer.addListener((data: BarometerMeasurement) => void)`
+### `LightSensor.addListener((data: LightSensorMeasurement) => void)`
 
-Subscribe for updates to the barometer.
+Subscribe for updates to the LightSensor.
 
 ```js
-const subscription = Barometer.addListener(({ pressure, relativeAltitude }) => {
-  console.log({ pressure, relativeAltitude });
+const subscription = LightSensor.addListener((luminosity) => {
+  console.log(luminosity);
 });
 ```
 
 #### Arguments
 
-- **listener (_function_)** -- A callback that is invoked when an barometer update is available. When invoked, the listener is provided a single argument that is an object containing: `pressure: number` (_`hPa`_). On **iOS** the `relativeAltitude: number` (_`meters`_) value will also be available.
+- **listener (_function_)** -- A callback that is invoked when an LightSensor update is available. When invoked, the listener is provided a single argument that is an object containing: `pressure: number` (_`hPa`_). On **iOS** the `relativeAltitude: number` (_`meters`_) value will also be available.
 
 #### Returns
 
 - A subscription that you can call `remove()` on when you would like to unsubscribe the listener.
 
-### `Barometer.removeAllListeners()`
+### `LightSensor.removeAllListeners()`
 
 Removes all listeners.
 
 ## Types
 
-### `BarometerMeasurement`
+### `LightSensorMeasurement`
 
 The altitude data returned from the native sensors.
 
 ```typescript
-type BarometerMeasurement = {
-  pressure: number;
-  /* iOS Only */
-  relativeAltitude?: number;
+type LightSensorMeasurement = {
+  luminosity: number;
 };
 ```
 
 | Name             | Type                                         | Format   | iOS | Android | Web |
 | ---------------- | -------------------------------------------- | -------- | --- | ------- | --- |
-| pressure         | `number`                                     | `hPa`    | ✅  | ✅      | ❌  |
-| relativeAltitude | <InlineCode>number \| undefined</InlineCode> | `meters` | ✅  | ❌      | ❌  |
+| luminosity         | `number`                                     | `lx`    | ❌  | ✅      | ❌  |
 
 ## Units and Providers
 
 | OS      | Units   | Provider                                                                                                | Description                                                                                                                         |
 | ------- | ------- | ------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| iOS     | _`hPa`_ | [`CMAltimeter`](https://developer.apple.com/documentation/coremotion/cmaltimeter)                       | Altitude events reflect the change in the current altitude, not the absolute altitude.                                              |
-| Android | _`hPa`_ | [`Sensor.TYPE_PRESSURE`](https://developer.android.com/reference/android/hardware/Sensor#TYPE_PRESSURE) | Monitoring air pressure changes.                                                                                                    |
-| Web     | `N/A`   | `N/A`                                                                                                   | This sensor is not available on the web and cannot be accessed. An `UnavailabilityError` will be thrown if you attempt to get data. |
+| iOS     | `N/A`   | Not implemented... see([here](https://github.com/expo/expo/discussions/18101))
+| Android | _`lx`_ | [`Sensor.TYPE_LIGHT`](https://developer.android.com/reference/android/hardware/Sensor#TYPE_LIGHT) | luminosity changes.                                                                                                    |
+| Web     | `N/A` |          Not implemented... see([here](https://github.com/expo/expo/discussions/18101))
