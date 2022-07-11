@@ -189,21 +189,32 @@ internal struct MediaHandler {
               let videoUrl = url as? URL else {
           return completion(assetId, .failure(FailedToReadVideoException().causedBy(error)))
         }
+        
+        // In case of passthrough, we want original file extension, mp4 otherwise
+        // TODO: (barthap) Support other file extensions?
+        let transcodeFileType = AVFileType.mp4
+        let transcodeFileExtension = ".mp4"
+        let originalExtension = ".\(videoUrl.pathExtension)"
 
-        let targetUrl = try generateUrl(withFileExtension: ".mov")
-        try VideoUtils.tryCopyingVideo(at: videoUrl, to: targetUrl)
-
-        guard let size = VideoUtils.readSizeFrom(url: targetUrl) else {
-          return completion(assetId, .failure(FailedToReadVideoSizeException()))
+        // We need to copy the result into a place that we control, because the picker
+        // can remove the original file during conversion.
+        // Also, the transcoding may need a separate url - one of these will be used as a final result
+        let assetUrl = try generateUrl(withFileExtension: originalExtension)
+        let transcodedUrl = try generateUrl(withFileExtension: transcodeFileExtension)
+        try VideoUtils.tryCopyingVideo(at: videoUrl, to: assetUrl)
+        
+        VideoUtils.transcodeVideoAsync(sourceAssetUrl: assetUrl,
+                                       destinationUrl: transcodedUrl,
+                                       outputFileType: transcodeFileType,
+                                       exportPreset: options.videoExportPreset) { result in
+          switch result {
+          case .failure(let exception):
+            return completion(assetId, .failure(exception))
+          case .success(let targetUrl):
+            let videoResult = buildVideoResult(for: targetUrl)
+            return completion(assetId, videoResult)
+          }
         }
-
-        let duration = VideoUtils.readDurationFrom(url: targetUrl)
-
-        let result = VideoInfo(uri: targetUrl.absoluteString,
-                               width: size.width,
-                               height: size.height,
-                               duration: duration)
-        completion(assetId, .success(result))
       } catch let exception as Exception {
         return completion(assetId, .failure(exception))
       } catch {
@@ -224,6 +235,19 @@ internal struct MediaHandler {
     let path = fileSystem.generatePath(inDirectory: directory, withExtension: withFileExtension)
     let url = URL(fileURLWithPath: path)
     return url
+  }
+  
+  private func buildVideoResult(for videoUrl: URL) -> SelectedMediaResult {
+    guard let size = VideoUtils.readSizeFrom(url: videoUrl) else {
+      return .failure(FailedToReadVideoSizeException())
+    }
+    let duration = VideoUtils.readDurationFrom(url: videoUrl)
+
+    let result = VideoInfo(uri: videoUrl.absoluteString,
+                           width: size.width,
+                           height: size.height,
+                           duration: duration)
+    return .success(result)
   }
 }
 
@@ -508,5 +532,46 @@ private struct VideoUtils {
   static func readVideoUrlFrom(mediaInfo: MediaInfo) -> URL? {
     return mediaInfo[.mediaURL] as? URL
         ?? mediaInfo[.referenceURL] as? URL
+  }
+  
+  /**
+   Asynchronously transcodes asset provided as `sourceAssetUrl` according to `exportPreset`.
+   Result URL is returned to the `completion` closure.
+   Transcoded video is saved at `destinationUrl`, unless `exportPreset` is set to `passthrough`.
+   In this case, `sourceAssetUrl` is returned.
+   */
+  static func transcodeVideoAsync(sourceAssetUrl: URL,
+                                  destinationUrl: URL,
+                                  outputFileType: AVFileType,
+                                  exportPreset: VideoExportPreset,
+                                  completion: @escaping (Result<URL, Exception>) -> Void) {
+    if case .passthrough = exportPreset {
+      return completion(.success((sourceAssetUrl)))
+    }
+    
+    let asset = AVURLAsset(url: sourceAssetUrl)
+    let preset = exportPreset.toAVAssetExportPreset()
+    AVAssetExportSession.determineCompatibility(ofExportPreset: preset,
+                                                with: asset,
+                                                outputFileType: outputFileType) { canBeTranscoded in
+      guard canBeTranscoded else {
+        return completion(.failure(UnsupportedVideoExportPresetException(preset.description)))
+      }
+      guard let exportSession = AVAssetExportSession(asset: asset,
+                                                     presetName: preset) else {
+        return completion(.failure(FailedToTranscodeVideoException()))
+      }
+      exportSession.outputFileType = outputFileType
+      exportSession.outputURL = destinationUrl
+      exportSession.exportAsynchronously {
+        switch exportSession.status {
+        case .failed:
+          let error = exportSession.error
+          completion(.failure(FailedToTranscodeVideoException().causedBy(error)))
+        default:
+          completion(.success((destinationUrl)))
+        }
+      }
+    }
   }
 }
