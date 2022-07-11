@@ -67,7 +67,7 @@ const renderTypePropertyRow = ({
     <Row key={name}>
       <Cell fitContent>
         <B>{name}</B>
-        {renderFlags(flags)}
+        {renderFlags(flags, initValue)}
       </Cell>
       <Cell fitContent>{renderTypeOrSignatureType(type, signatures)}</Cell>
       <Cell fitContent>
