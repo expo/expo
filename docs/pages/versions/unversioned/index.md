@@ -35,7 +35,7 @@ You can install and import any Expo SDK package using the `expo install` command
 
 ## Each Expo SDK version depends on a React Native version
 
-Every quarter there is a new Expo SDK release that typically updates to the latest stable version of React Native and includes a variety of bugfixes, features, and improvements to the Expo SDK.
+Every quarter there is a new Expo SDK release that typically updates to the latest stable version of React Native and includes a variety of bug fixes, features, and improvements to the Expo SDK.
 
 | Expo SDK Version | React Native Version |
 | ---------------- | -------------------- |
