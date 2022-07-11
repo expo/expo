@@ -1,0 +1,170 @@
+---
+title: LightSensor
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-sensors'
+packageName: 'expo-sensors'
+---
+
+import {APIInstallSection} from '~/components/plugins/InstallSection';
+import PlatformsSection from '~/components/plugins/PlatformsSection';
+import SnackInline from '~/components/plugins/SnackInline';
+
+import { InlineCode } from '~/components/base/code';
+
+`LightSensor` from **`expo-sensors`** provides access to the device light sensor to respond to changes in luminosity. `luminositt` is measured in _`Lux`_ or _`lx`_.
+
+<PlatformsSection android emulator />
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+<SnackInline label='Basic Light Sensor usage' dependencies={['expo-sensors']}>
+
+```jsx
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, Text, TouchableOpacity, View, Platform } from 'react-native';
+import { LightSensor } from 'expo-sensors';
+
+export default function App() {
+  const [luminusity, setLuminusity] = useState(null);
+
+  useEffect(() => {
+    _toggle();
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      _unsubscribe();
+    };
+  }, []);
+
+  const _toggle = () => {
+    if (this._subscription) {
+      _unsubscribe();
+    } else {
+      _subscribe();
+    }
+  };
+
+  const _subscribe = () => {
+    this._subscription = LightSensor.addListener(lightSensorData => {
+      setLuminusity(lightSensorData);
+    });
+  };
+
+  const _unsubscribe = () => {
+    this._subscription && this._subscription.remove();
+    this._subscription = null;
+  };
+
+  return (
+    <View style={styles.sensor}>
+      <Text>Light Sensor:</Text>
+      <Text>Luminosity: {Platform.OS === 'android' ? `${luminosity} lx` : `Only available on Android`}</Text>
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity onPress={_toggle} style={styles.button}>
+          <Text>Toggle</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+}
+
+/* @hide const styles = StyleSheet.create({ ... }); */
+const styles = StyleSheet.create({
+  buttonContainer: {
+    flexDirection: 'row',
+    alignItems: 'stretch',
+    marginTop: 15,
+  },
+  button: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#eee',
+    padding: 10,
+  },
+  sensor: {
+    marginTop: 45,
+    paddingHorizontal: 10,
+  },
+});
+/* @end */
+```
+
+</SnackInline>
+
+## API
+
+```js
+import { Barometer } from 'expo-sensors';
+```
+
+## Methods
+
+### `Barometer.isAvailableAsync()`
+
+> You should always check the sensor availability before attempting to use it.
+
+Returns a promise which resolves into a boolean denoting the availability of the device barometer.
+
+| OS      | Availability                |
+| ------- | --------------------------- |
+| iOS     | iOS 8+                      |
+| Android | Android 2.3+ (API Level 9+) |
+| Web     | `N/A`                       |
+
+#### Returns
+
+- A promise that resolves to a `boolean` denoting the availability of the sensor.
+
+### `Barometer.addListener((data: BarometerMeasurement) => void)`
+
+Subscribe for updates to the barometer.
+
+```js
+const subscription = Barometer.addListener(({ pressure, relativeAltitude }) => {
+  console.log({ pressure, relativeAltitude });
+});
+```
+
+#### Arguments
+
+- **listener (_function_)** -- A callback that is invoked when an barometer update is available. When invoked, the listener is provided a single argument that is an object containing: `pressure: number` (_`hPa`_). On **iOS** the `relativeAltitude: number` (_`meters`_) value will also be available.
+
+#### Returns
+
+- A subscription that you can call `remove()` on when you would like to unsubscribe the listener.
+
+### `Barometer.removeAllListeners()`
+
+Removes all listeners.
+
+## Types
+
+### `BarometerMeasurement`
+
+The altitude data returned from the native sensors.
+
+```typescript
+type BarometerMeasurement = {
+  pressure: number;
+  /* iOS Only */
+  relativeAltitude?: number;
+};
+```
+
+| Name             | Type                                         | Format   | iOS | Android | Web |
+| ---------------- | -------------------------------------------- | -------- | --- | ------- | --- |
+| pressure         | `number`                                     | `hPa`    | ✅  | ✅      | ❌  |
+| relativeAltitude | <InlineCode>number \| undefined</InlineCode> | `meters` | ✅  | ❌      | ❌  |
+
+## Units and Providers
+
+| OS      | Units   | Provider                                                                                                | Description                                                                                                                         |
+| ------- | ------- | ------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| iOS     | _`hPa`_ | [`CMAltimeter`](https://developer.apple.com/documentation/coremotion/cmaltimeter)                       | Altitude events reflect the change in the current altitude, not the absolute altitude.                                              |
+| Android | _`hPa`_ | [`Sensor.TYPE_PRESSURE`](https://developer.android.com/reference/android/hardware/Sensor#TYPE_PRESSURE) | Monitoring air pressure changes.                                                                                                    |
+| Web     | `N/A`   | `N/A`                                                                                                   | This sensor is not available on the web and cannot be accessed. An `UnavailabilityError` will be thrown if you attempt to get data. |
