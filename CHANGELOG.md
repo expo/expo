@@ -5,6 +5,8 @@ Package-specific changes not released in any SDK will be added here just before 
 
 ## Unpublished
 
+- Added support for the light sensor. ([#18177](https://github.com/expo/expo/pull/18177) by [bearkillerPT](https://github.com/bearkillerPT))
+
 ### 📚 3rd party library updates
 
 - Updated `@react-native-picker/picker` from `2.4.0` to `2.4.2`. ([#18098](https://github.com/expo/expo/pull/18098) by [@bbarthec](https://github.com/bbarthec))
