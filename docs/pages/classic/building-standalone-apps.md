@@ -161,7 +161,7 @@ Expo Build Service supports Enterprise distribution. When you call `expo build:i
 
 One of the easiest ways to test your standalone app is using a [simulator build](#building-for-ios) and then using TestFlight for your physical device for testing. However, if you want to build and install an app directly on a physical device through Xcode, follow the steps below to generate one using Expo CLI:
 
-- Generate preliminary certificate such as app identifier and distribution certificate by running the command:
+- Generate preliminary certificates such as app identifier and distribution certificate by running the command:
 
 <Terminal cmd={['$ expo build:ios']} />
 
