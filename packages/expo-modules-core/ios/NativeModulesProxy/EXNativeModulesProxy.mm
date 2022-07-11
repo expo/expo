@@ -202,8 +202,8 @@ RCT_EXPORT_MODULE(NativeUnimoduleProxy)
 - (void)setBridge:(RCTBridge *)bridge
 {
   ExpoBridgeModule* expoBridgeModule = [bridge moduleForClass:ExpoBridgeModule.class];
-  [expoBridgeModule legacyProxyDidSetBridgeWithLegacyModuleProxy:self
-                                            legacyModuleRegistry:_exModuleRegistry];
+  [expoBridgeModule legacyProxyDidSetBridgeWithLegacyModulesProxy:self
+                                             legacyModuleRegistry:_exModuleRegistry];
   _appContext = [expoBridgeModule appContext];
 
   if (!_bridge) {

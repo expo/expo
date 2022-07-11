@@ -54,10 +54,10 @@ public final class ExpoBridgeModule: NSObject, RCTBridgeModule {
    This should be called inside EXNativeModulesProxy.setBridge()
    */
   @objc
-  public func legacyProxyDidSetBridge(legacyModuleProxy: LegacyNativeModulesProxy,
+  public func legacyProxyDidSetBridge(legacyModulesProxy: LegacyNativeModulesProxy,
                                       legacyModuleRegistry: EXModuleRegistry) {
     appContext.legacyModuleRegistry = legacyModuleRegistry
-    appContext.legacyModulesProxy = legacyModuleProxy
+    appContext.legacyModulesProxy = legacyModulesProxy
     
     // we need to register all the modules after the legacy module registry is set
     // otherwise legacy modules (e.g. permissions) won't be available in OnCreate { }
