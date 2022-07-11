@@ -22,7 +22,11 @@ public struct Promise: AnyArgument {
   }
 
   public func reject(_ error: Error) {
-    rejecter(UnexpectedException(error))
+    if let exception = error as? Exception {
+      rejecter(exception)
+    } else {
+      rejecter(UnexpectedException(error))
+    }
   }
 
   public func reject(_ error: Exception) {
