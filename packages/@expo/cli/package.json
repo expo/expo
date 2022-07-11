@@ -38,7 +38,7 @@
   "dependencies": {
     "@babel/runtime": "^7.14.0",
     "@expo/code-signing-certificates": "^0.0.2",
-    "@expo/config": "~6.0.24",
+    "@expo/config": "~7.0.0",
     "@expo/config-plugins": "~5.0.0",
     "@expo/dev-server": "~0.1.110",
     "@expo/devcert": "^1.0.0",
