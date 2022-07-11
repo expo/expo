@@ -116,7 +116,7 @@ Archive builds are used for submitting your app to the Apple App Store and distr
 
 <Terminal cmd={['$ expo build:ios -t archive']} />
 
-Simulator build is used to test the standalone app on an iOS simulator. To build it, run the command:
+Simulator builds are used to test a standalone app in an iOS simulator. To build one, run:
 
 <Terminal cmd={['$ expo build:ios -t simulator']} />
 
