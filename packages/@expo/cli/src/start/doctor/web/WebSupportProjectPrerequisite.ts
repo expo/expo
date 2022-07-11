@@ -54,8 +54,8 @@ export class WebSupportProjectPrerequisite extends ProjectPrerequisite {
     const requiredPackages: ResolvedPackage[] = [
       // use react-native-web/package.json to skip node module cache issues when the user installs
       // the package and attempts to resolve the module in the same process.
-      { file: 'react-native-web/package.json', pkg: 'react-native-web', version: '~0.18.1' },
-      { file: 'react-dom/package.json', pkg: 'react-dom', version: '^18.0.0' },
+      { file: 'react-native-web/package.json', pkg: 'react-native-web' },
+      { file: 'react-dom/package.json', pkg: 'react-dom' },
     ];
 
     const bundler = getPlatformBundlers(exp).web;
@@ -66,7 +66,6 @@ export class WebSupportProjectPrerequisite extends ProjectPrerequisite {
         {
           file: '@expo/webpack-config/package.json',
           pkg: '@expo/webpack-config',
-          version: '~0.16.2',
           dev: true,
         }
       );
