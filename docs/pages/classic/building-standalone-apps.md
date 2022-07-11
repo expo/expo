@@ -51,7 +51,7 @@ Here are the required fields that you have to pay attention to when configuring 
 
 - Add fields such as `name`, `icon`, and `version`.
 - The iOS `bundleIdentifier` and Android `package` fields use reverse DNS notation but do not have to be related to a domain. Replace `"com.yourcompany.yourappname"` with whatever makes sense for your app.
-- The `slug` uses a URL as its value. It is the combination of username and the actual slug that your app's JavaScript is published to. For example: `expo.dev/@community/native-component-list`, where `community` is the username and `native-component-list` is the slug.
+- The `slug` should be a URL safe value. The slug will be included in the URL that your app's JavaScript is published to. For example: `expo.dev/@community/native-component-list`, where `community` is the username and `native-component-list` is the slug.
 - The `ios.buildNumber` and `android.versionCode` distinguish different binaries of your app. Make sure to increment these for each build you upload to the App Store or Google Play Store.
 
 There are other options you can add to **app.json**. For example, some developers like to configure their own build number, linking scheme, etc. We recommend you to go through [Configuration with app.json/app.config.js](/workflow/configuration) for the full specification. At this step, also check [Deploying to App Stores](/distribution/app-stores) documentation. It provides details on what type of metadata is required for App stores.
