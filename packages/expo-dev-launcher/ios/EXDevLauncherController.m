@@ -39,6 +39,9 @@
 
 #define EX_DEV_LAUNCHER_PACKAGER_PATH @"index.bundle?platform=ios&dev=true&minify=false"
 
+NSString *LAUNCHER_NAVIGATION_STATE_KEY = @"expo.modules.devlauncher.navigation-state";
+
+
 @interface EXDevLauncherController ()
 
 @property (nonatomic, weak) UIWindow *window;
@@ -783,5 +786,22 @@
   [userDefaults setObject:existingSettings forKey:kRCTDevSettingsUserDefaultsKey];
 }
 
+- (void)saveNavigationState:(NSString *)serializedNavigationState
+{
+  [[NSUserDefaults standardUserDefaults] setObject:serializedNavigationState forKey:LAUNCHER_NAVIGATION_STATE_KEY];
+  [[NSUserDefaults standardUserDefaults] synchronize];
+}
+
+- (void)clearNavigationState
+{
+  [[NSUserDefaults standardUserDefaults] removeObjectForKey:LAUNCHER_NAVIGATION_STATE_KEY];
+  [[NSUserDefaults standardUserDefaults] synchronize];
+}
+
+- (NSString *)getNavigationState
+{
+  NSString *serializedNavigationState = [[NSUserDefaults standardUserDefaults] objectForKey:LAUNCHER_NAVIGATION_STATE_KEY] ?: @"";
+  return serializedNavigationState;
+}
 
 @end

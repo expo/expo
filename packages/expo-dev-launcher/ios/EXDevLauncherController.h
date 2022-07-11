@@ -76,6 +76,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSDictionary *)getUpdatesConfig;
 
+- (void)saveNavigationState:(NSString *)serializedNavigationState;
+
+- (NSString *)getNavigationState;
+
+- (void)clearNavigationState;
+
 @end
 
 NS_ASSUME_NONNULL_END

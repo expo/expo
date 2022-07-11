@@ -178,4 +178,27 @@ RCT_EXPORT_METHOD(loadFontsAsync:(RCTPromiseResolveBlock)resolve
   [[DevMenuManager shared] loadFonts];
   resolve(nil);
 }
+
+RCT_EXPORT_METHOD(saveNavigationState:(NSString *)serializedNavigationState
+                  resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject)
+{
+  [[EXDevLauncherController sharedInstance] saveNavigationState:serializedNavigationState];
+  resolve(nil);
+}
+
+RCT_EXPORT_METHOD(getNavigationState:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject)
+{
+  NSString *serializedNavigationState = [[EXDevLauncherController sharedInstance] getNavigationState];
+  resolve(serializedNavigationState);
+}
+
+RCT_EXPORT_METHOD(clearNavigationState:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject)
+{
+  [[EXDevLauncherController sharedInstance] clearNavigationState];
+  resolve(nil);
+}
+
 @end

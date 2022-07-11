@@ -1,14 +1,17 @@
+import { useNavigation } from '@react-navigation/native';
 import * as React from 'react';
 
 import { Toasts } from '../components/Toasts';
 import { formatUpdateUrl } from '../functions/formatUpdateUrl';
-import { loadUpdate } from '../native-modules/DevLauncherInternal';
+import { loadUpdate, saveNavigationState } from '../native-modules/DevLauncherInternal';
 import { useToastStack } from '../providers/ToastStackProvider';
 import { useUpdatesConfig } from '../providers/UpdatesConfigProvider';
 import { Update } from '../queries/useUpdatesForBranch';
 
 export function useOnUpdatePress() {
   const toastStack = useToastStack();
+  const navigation = useNavigation();
+
   const { runtimeVersion, projectUrl } = useUpdatesConfig();
 
   const [loadingUpdateId, setLoadingUpdateId] = React.useState('');
@@ -35,6 +38,12 @@ export function useOnUpdatePress() {
         setLoadingUpdateId(update.id);
 
         const updateUrl = formatUpdateUrl(update.manifestPermalink, update.message);
+        const rootNavigation = navigation.getParent()?.getParent();
+
+        try {
+          const serializedNavigationState = JSON.stringify(rootNavigation?.getState());
+          saveNavigationState(serializedNavigationState);
+        } catch (error) {}
 
         return loadUpdate(updateUrl, projectUrl)
           .catch((error) => {
@@ -47,7 +56,7 @@ export function useOnUpdatePress() {
           .then(() => setLoadingUpdateId(''));
       }
     },
-    [runtimeVersion, projectUrl, toastStack]
+    [runtimeVersion, projectUrl, toastStack, navigation]
   );
 
   return {
