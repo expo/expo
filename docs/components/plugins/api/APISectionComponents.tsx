@@ -9,6 +9,7 @@ import {
   MethodSignatureData,
   PropsDefinitionData,
 } from '~/components/plugins/api/APIDataTypes';
+import { APISectionDeprecationNote } from '~/components/plugins/api/APISectionDeprecationNote';
 import APISectionProps from '~/components/plugins/api/APISectionProps';
 import {
   CommentTextBlock,
@@ -31,8 +32,10 @@ const renderComponent = (
 ): JSX.Element => {
   const resolvedType = extendedTypes?.length ? extendedTypes[0] : type;
   const resolvedName = getComponentName(name, children);
+  const extractedComment = getComponentComment(comment, signatures);
   return (
     <div key={`component-definition-${resolvedName}`} css={STYLES_APIBOX}>
+      <APISectionDeprecationNote comment={extractedComment} />
       <H3Code>
         <InlineCode>{resolvedName}</InlineCode>
       </H3Code>
@@ -41,7 +44,7 @@ const renderComponent = (
           <B>Type:</B> <InlineCode>{resolveTypeName(resolvedType)}</InlineCode>
         </P>
       )}
-      <CommentTextBlock comment={getComponentComment(comment, signatures)} />
+      <CommentTextBlock comment={extractedComment} />
       {componentsProps && componentsProps.length ? (
         <APISectionProps data={componentsProps} header={`${resolvedName}Props`} />
       ) : null}

@@ -10,6 +10,8 @@ import {
   PropsDefinitionData,
   TypeDefinitionData,
 } from '~/components/plugins/api/APIDataTypes';
+import { APISectionDeprecationNote } from '~/components/plugins/api/APISectionDeprecationNote';
+import { PlatformTags } from '~/components/plugins/api/APISectionPlatformTags';
 import {
   CommentTextBlock,
   getCommentOrSignatureComment,
@@ -99,8 +101,11 @@ export const renderProp = (
   exposeInSidebar?: boolean
 ) => {
   const HeaderComponent = exposeInSidebar ? H3Code : H4Code;
+  const extractedComment = getCommentOrSignatureComment(comment, signatures);
   return (
     <div key={`prop-entry-${name}`} css={[STYLES_APIBOX, !exposeInSidebar && STYLES_APIBOX_NESTED]}>
+      <APISectionDeprecationNote comment={extractedComment} />
+      <PlatformTags comment={comment} prefix="Only for:" firstElement />
       <HeaderComponent>
         <InlineCode customCss={!exposeInSidebar ? STYLES_NOT_EXPOSED_HEADER : undefined}>
           {name}
@@ -116,7 +121,7 @@ export const renderProp = (
           </span>
         ) : null}
       </P>
-      <CommentTextBlock comment={getCommentOrSignatureComment(comment, signatures)} />
+      <CommentTextBlock comment={extractedComment} includePlatforms={false} />
     </div>
   );
 };
@@ -129,6 +134,7 @@ const APISectionProps = ({ data, defaultProps, header = 'Props' }: APISectionPro
         <H2 key="props-header">{header}</H2>
       ) : (
         <div>
+          {baseProp && <APISectionDeprecationNote comment={baseProp.comment} />}
           <div css={STYLES_NESTED_SECTION_HEADER}>
             <H4 key={`${header}-props-header`}>{header}</H4>
           </div>

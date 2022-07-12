@@ -12,6 +12,8 @@ import {
   MethodSignatureData,
   PropData,
 } from '~/components/plugins/api/APIDataTypes';
+import { APISectionDeprecationNote } from '~/components/plugins/api/APISectionDeprecationNote';
+import { PlatformTags } from '~/components/plugins/api/APISectionPlatformTags';
 import {
   CommentTextBlock,
   getTagData,
@@ -108,6 +110,8 @@ const renderInterface = ({
 
   return (
     <div key={`interface-definition-${name}`} css={STYLES_APIBOX}>
+      <APISectionDeprecationNote comment={comment} />
+      <PlatformTags comment={comment} prefix="Only for:" firstElement />
       <H3Code>
         <InlineCode>{name}</InlineCode>
       </H3Code>
@@ -121,7 +125,7 @@ const renderInterface = ({
           ))}
         </P>
       ) : null}
-      <CommentTextBlock comment={comment} />
+      <CommentTextBlock comment={comment} includePlatforms={false} />
       {interfaceMethods.length ? (
         <>
           <div css={STYLES_NESTED_SECTION_HEADER}>

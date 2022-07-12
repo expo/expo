@@ -5,6 +5,7 @@ import React from 'react';
 import { InlineCode } from '~/components/base/code';
 import { H2, H3Code, H4Code } from '~/components/plugins/Headings';
 import { EnumDefinitionData, EnumValueData } from '~/components/plugins/api/APIDataTypes';
+import { APISectionDeprecationNote } from '~/components/plugins/api/APISectionDeprecationNote';
 import { PlatformTags } from '~/components/plugins/api/APISectionPlatformTags';
 import { CommentTextBlock, STYLES_APIBOX } from '~/components/plugins/api/APISectionUtils';
 
@@ -25,10 +26,12 @@ const sortByValue = (a: EnumValueData, b: EnumValueData) => {
 
 const renderEnum = ({ name, children, comment }: EnumDefinitionData): JSX.Element => (
   <div key={`enum-definition-${name}`} css={[STYLES_APIBOX, enumContentStyles]}>
+    <APISectionDeprecationNote comment={comment} />
+    <PlatformTags comment={comment} prefix="Only for:" firstElement />
     <H3Code>
       <InlineCode>{name}</InlineCode>
     </H3Code>
-    <CommentTextBlock comment={comment} />
+    <CommentTextBlock comment={comment} includePlatforms={false} />
     {children.sort(sortByValue).map((enumValue: EnumValueData) => (
       <div css={[STYLES_APIBOX, enumContainerStyle]} key={enumValue.name}>
         <PlatformTags comment={enumValue.comment} prefix="Only for:" firstElement />

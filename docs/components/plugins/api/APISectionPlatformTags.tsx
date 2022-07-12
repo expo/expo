@@ -27,10 +27,10 @@ const formatPlatformName = (name: string) => {
 };
 
 const getPlatformName = ({ text }: CommentTagData) => {
-  if (text.includes('ios')) return 'ios';
-  if (text.includes('android')) return 'android';
-  if (text.includes('web')) return 'web';
-  if (text.includes('expo')) return 'expo';
+  if (text.toLowerCase().includes('ios')) return 'ios';
+  if (text.toLowerCase().includes('android')) return 'android';
+  if (text.toLowerCase().includes('web')) return 'web';
+  if (text.toLowerCase().includes('expo')) return 'expo';
   return undefined;
 };
 
@@ -115,7 +115,7 @@ const platformTagStyle = css({
 
 const platformTagFirstStyle = css({
   marginBottom: 0,
-  marginTop: spacing[3],
+  marginTop: spacing[4],
 });
 
 const platformLabelStyle = css({

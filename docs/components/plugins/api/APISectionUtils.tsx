@@ -19,7 +19,6 @@ import {
 } from '~/components/plugins/api/APIDataTypes';
 import { PlatformTags } from '~/components/plugins/api/APISectionPlatformTags';
 import * as Constants from '~/constants/theme';
-import { Callout } from '~/ui/components/Callout';
 import { Cell, HeaderCell, Row, Table, TableHead } from '~/ui/components/Table';
 import { tableWrapperStyle } from '~/ui/components/Table/Table';
 
@@ -475,20 +474,6 @@ export const CommentTextBlock = ({
     </React.Fragment>
   ));
 
-  const deprecation = getTagData('deprecated', comment);
-  const deprecationNote = deprecation ? (
-    <div css={deprecationNoticeStyle}>
-      <Callout type="warning" key="deprecation-note">
-        {deprecation.text.trim().length ? (
-          <ReactMarkdown
-            components={mdInlineComponents}>{`**Deprecated.** ${deprecation.text}`}</ReactMarkdown>
-        ) : (
-          <B>Deprecated</B>
-        )}
-      </Callout>
-    </div>
-  ) : null;
-
   const see = getTagData('see', comment);
   const seeText = see ? (
     <Quote>
@@ -504,7 +489,6 @@ export const CommentTextBlock = ({
       {!withDash && includePlatforms && hasPlatforms && (
         <PlatformTags comment={comment} prefix="Only for:" />
       )}
-      {deprecationNote}
       {beforeContent}
       {withDash && (shortText || text) && ' - '}
       {withDash && includePlatforms && <PlatformTags comment={comment} />}
@@ -535,6 +519,11 @@ export const STYLES_APIBOX = css({
 
   h3: {
     marginTop: spacing[4],
+  },
+
+  th: {
+    color: theme.text.secondary,
+    padding: `${spacing[3]}px ${spacing[4]}px`,
   },
 
   [`.css-${tableWrapperStyle.name}`]: {
@@ -584,10 +573,6 @@ export const STYLES_SECONDARY = css({
 
 const defaultValueContainerStyle = css({
   marginTop: spacing[2],
-});
-
-const deprecationNoticeStyle = css({
-  marginBottom: spacing[2],
 });
 
 const STYLES_EXAMPLE_IN_TABLE = css({
