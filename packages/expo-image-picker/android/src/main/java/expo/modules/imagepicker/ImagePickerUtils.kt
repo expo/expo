@@ -1,7 +1,9 @@
 package expo.modules.imagepicker
 
+import android.content.ClipData
 import android.content.ContentResolver
 import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import android.media.MediaMetadataRetriever
 import android.net.Uri
@@ -98,6 +100,42 @@ internal fun String.toBitmapCompressFormat(): Bitmap.CompressFormat = when {
 
 internal fun MediaMetadataRetriever.extractInt(key: Int): Int {
   return this.extractMetadata(key)?.toInt() ?: throw FailedToExtractVideoMetadataException()
+}
+
+/**
+ * [Iterable] implementation for [ClipData] items
+ */
+val ClipData.items: Iterable<ClipData.Item>
+  get() = object : Iterable<ClipData.Item> {
+    override fun iterator() = object : Iterator<ClipData.Item> {
+      var index = 0
+      val count = itemCount
+
+      override fun hasNext(): Boolean = index < count
+
+      override fun next(): ClipData.Item = getItemAt(index++)
+    }
+  }
+
+/**
+ * Gets all data that is associated with this [Intent].
+ * Original data order is preserved.
+ *
+ * Adapted from [androidx.activity.result.contract.ActivityResultContracts.GetMultipleContents.getClipDataUris]
+ */
+internal fun Intent.getAllDataUris(): List<Uri> {
+  // Use a LinkedHashSet to maintain any ordering that may be present in the ClipData
+  val resultSet = LinkedHashSet<Uri>()
+
+  data
+    ?.let { resultSet.add(it) }
+
+  clipData
+    ?.items
+    ?.map { it.uri }
+    ?.let { resultSet.addAll(it) }
+
+  return resultSet.toList()
 }
 
 /**

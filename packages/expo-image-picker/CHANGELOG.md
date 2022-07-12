@@ -18,6 +18,7 @@ _This version does not introduce any user-facing changes._
 
 ### 🎉 New features
 
+- On Android added support for selecting multiple images/videos. ([#18161](https://github.com/expo/expo/pull/18161) by [@bbarthec](https://github.com/bbarthec))
 - On iOS 14+ added support for selecting multiple images/videos. ([#18102](https://github.com/expo/expo/pull/18102) by [@barthap](https://github.com/barthap))
 
 ### 🐛 Bug fixes

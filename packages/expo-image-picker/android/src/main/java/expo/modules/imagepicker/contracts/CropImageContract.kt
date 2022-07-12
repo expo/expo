@@ -70,6 +70,6 @@ internal class CropImageContract(
     val targetUri = requireNotNull(result.uri)
     val contentResolver = requireNotNull(appContextProvider.appContext.reactContext) { "React Application Context is null" }.contentResolver
     runBlocking { copyExifData(sourceUri, targetUri.toFile(), contentResolver) }
-    return ImagePickerContractResult.Success(MediaType.IMAGE to targetUri)
+    return ImagePickerContractResult.Success(listOf(MediaType.IMAGE to targetUri))
   }
 }
