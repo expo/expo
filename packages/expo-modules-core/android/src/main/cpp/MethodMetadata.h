@@ -117,7 +117,7 @@ private:
   jsi::Function createPromiseBody(
     jsi::Runtime &runtime,
     JSIInteropModuleRegistry *moduleRegistry,
-    jni::local_ref<jni::JArrayClass<jobject>::javaobject> &&args
+    std::vector<jvalue> &&args
   );
 
   std::vector<jvalue> convertJSIArgsToJNI(
@@ -125,7 +125,8 @@ private:
     JNIEnv *env,
     jsi::Runtime &rt,
     const jsi::Value *args,
-    size_t count
+    size_t count,
+    bool returnGlobalReferences
   );
 };
 } // namespace expo
