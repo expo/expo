@@ -1,7 +1,4 @@
-import crypto from 'crypto';
-import fs from 'fs';
 import path from 'path';
-import { Dictionary, serializeDictionary } from 'structured-headers';
 import { setTimeout } from 'timers/promises';
 import uuid from 'uuid/v4';
 
@@ -24,40 +21,7 @@ if (!repoRoot) {
 }
 
 const projectRoot = process.env.TEST_PROJECT_ROOT ?? path.resolve(repoRoot, '..', 'updates-e2e');
-const updateDistPath = path.join(projectRoot, 'dist-basic');
-const codeSigningPrivateKeyPath = path.join(projectRoot, 'keys', 'private-key.pem');
-
-async function getPrivateKeyAsync() {
-  const pemBuffer = fs.readFileSync(path.resolve(codeSigningPrivateKeyPath));
-  return pemBuffer.toString('utf8');
-}
-
-function signRSASHA256(data: string, privateKey: string) {
-  const sign = crypto.createSign('RSA-SHA256');
-  sign.update(data, 'utf8');
-  sign.end();
-  return sign.sign(privateKey, 'base64');
-}
-
-function convertToDictionaryItemsRepresentation(obj: { [key: string]: string }): Dictionary {
-  return new Map(
-    Object.entries(obj).map(([k, v]) => {
-      return [k, [v, new Map()]];
-    })
-  );
-}
-
-async function serveUpdateWithManifest(manifest: any) {
-  const privateKey = await getPrivateKeyAsync();
-  const manifestString = JSON.stringify(manifest);
-  const hashSignature = signRSASHA256(manifestString, privateKey);
-  const dictionary = convertToDictionaryItemsRepresentation({
-    sig: hashSignature,
-    keyid: 'main',
-  });
-  const signature = serializeDictionary(dictionary);
-  Server.serveManifest(manifest, { 'expo-protocol-version': '0', 'expo-signature': signature });
-}
+const updateDistPath = path.join(process.env.ARTIFACTS_DEST, 'dist-basic');
 
 afterEach(async () => {
   await Simulator.uninstallApp();
@@ -117,7 +81,7 @@ xtest('downloads and runs update, and updates current-update-id header', async (
   };
 
   Server.start(SERVER_PORT);
-  await serveUpdateWithManifest(manifest);
+  await Server.serveSignedManifest(manifest, projectRoot);
   await Simulator.installApp('basic');
   await Simulator.startApp();
   const firstRequest = await Server.waitForUpdateRequest(10000 * TIMEOUT_BIAS);
@@ -132,8 +96,8 @@ xtest('downloads and runs update, and updates current-update-id header', async (
   await Simulator.stopApp();
   await Simulator.startApp();
   const secondRequest = await Server.waitForUpdateRequest(10000 * TIMEOUT_BIAS);
-  const updatedResponse = await Server.waitForRequest(10000 * TIMEOUT_BIAS);
-  expect(updatedResponse).toBe(newNotifyString);
+  const updatedMessage = await Server.waitForRequest(10000 * TIMEOUT_BIAS);
+  expect(updatedMessage).toBe(newNotifyString);
 
   expect(secondRequest.headers['expo-embedded-update-id']).toBeDefined();
   expect(secondRequest.headers['expo-embedded-update-id']).toEqual(
@@ -165,7 +129,7 @@ xtest('does not run update with incorrect hash', async () => {
   };
 
   Server.start(SERVER_PORT);
-  await serveUpdateWithManifest(manifest);
+  await Server.serveSignedManifest(manifest, projectRoot);
   await Simulator.installApp('basic');
   await Simulator.startApp();
   await Server.waitForUpdateRequest(10000 * TIMEOUT_BIAS);
@@ -180,8 +144,8 @@ xtest('does not run update with incorrect hash', async () => {
   await Simulator.stopApp();
   await Simulator.startApp();
   await Server.waitForUpdateRequest(10000 * TIMEOUT_BIAS);
-  const updatedResponse = await Server.waitForRequest(10000 * TIMEOUT_BIAS);
-  expect(updatedResponse).toBe('test');
+  const updatedMessage = await Server.waitForRequest(10000 * TIMEOUT_BIAS);
+  expect(updatedMessage).toBe('test');
 });
 
 xtest('downloads and runs update with multiple assets', async () => {
@@ -225,7 +189,7 @@ xtest('downloads and runs update with multiple assets', async () => {
   };
 
   Server.start(SERVER_PORT);
-  await serveUpdateWithManifest(manifest);
+  await Server.serveSignedManifest(manifest, projectRoot);
   await Simulator.installApp('basic');
   await Simulator.startApp();
   const message = await Server.waitForRequest(10000 * TIMEOUT_BIAS);
@@ -238,8 +202,8 @@ xtest('downloads and runs update with multiple assets', async () => {
   // restart the app so it will launch the new update
   await Simulator.stopApp();
   await Simulator.startApp();
-  const updatedResponse = await Server.waitForRequest(10000 * TIMEOUT_BIAS);
-  expect(updatedResponse).toBe(newNotifyString);
+  const updatedMessage = await Server.waitForRequest(10000 * TIMEOUT_BIAS);
+  expect(updatedMessage).toBe(newNotifyString);
 });
 
 // important for usage accuracy
@@ -263,12 +227,12 @@ xtest('does not download any assets for an older update', async () => {
   };
 
   Server.start(SERVER_PORT);
-  await serveUpdateWithManifest(manifest);
+  await Server.serveSignedManifest(manifest, projectRoot);
   await Simulator.installApp('basic');
   await Simulator.startApp();
   await Server.waitForUpdateRequest(10000 * TIMEOUT_BIAS);
-  const firstResponse = await Server.waitForRequest(10000 * TIMEOUT_BIAS);
-  expect(firstResponse).toBe('test');
+  const firstMessage = await Server.waitForRequest(10000 * TIMEOUT_BIAS);
+  expect(firstMessage).toBe('test');
 
   // give the app time to load the new update in the background (i.e. to make sure it doesn't)
   await setTimeout(3000 * TIMEOUT_BIAS);
@@ -277,6 +241,6 @@ xtest('does not download any assets for an older update', async () => {
   // restart the app and make sure it's still running the initial update
   await Simulator.stopApp();
   await Simulator.startApp();
-  const secondResponse = await Server.waitForRequest(10000 * TIMEOUT_BIAS);
-  expect(secondResponse).toBe('test');
+  const secondMessage = await Server.waitForRequest(10000 * TIMEOUT_BIAS);
+  expect(secondMessage).toBe('test');
 });

@@ -125,6 +125,49 @@ async function initAsync(workingDir, repoRoot, runtimeVersion) {
   return projectRoot;
 }
 
+async function initWithPublishedPackagesAsync(workingDir, runtimeVersion) {
+  // initialize project
+  await spawnAsync('expo-cli', ['init', 'updates-e2e-old', '--yes'], {
+    cwd: workingDir,
+    stdio: 'inherit',
+  });
+  const projectRoot = path.join(workingDir, 'updates-e2e-old');
+
+  // add expo-updates
+  await spawnAsync('expo-cli', ['install', 'expo-updates'], {
+    cwd: projectRoot,
+    stdio: 'inherit',
+  });
+
+  // configure app.json
+  let appJson = JSON.parse(await fs.readFile(path.join(projectRoot, 'app.json'), 'utf-8'));
+  appJson = {
+    ...appJson,
+    expo: {
+      ...appJson.expo,
+      name: 'updates-e2e',
+      slug: 'updates-e2e',
+      runtimeVersion,
+      plugins: ['expo-updates'],
+      android: { ...appJson.android, package: 'dev.expo.updatese2e' },
+      ios: { ...appJson.ios, bundleIdentifier: 'dev.expo.updatese2e' },
+      updates: {
+        ...appJson.updates,
+        url: `http://${process.env.UPDATES_HOST}:${process.env.UPDATES_PORT}/update`,
+      },
+    },
+  };
+  await fs.writeFile(path.join(projectRoot, 'app.json'), JSON.stringify(appJson, null, 2), 'utf-8');
+
+  // prebuild
+  await spawnAsync('expo-cli', ['prebuild'], {
+    cwd: projectRoot,
+    stdio: 'inherit',
+  });
+
+  return projectRoot;
+}
+
 async function setupBasicAppAsync(projectRoot) {
   // copy App.js from test fixtures
   const appJsSourcePath = path.resolve(__dirname, '..', 'fixtures', 'App.js');
@@ -187,6 +230,7 @@ async function setupAssetsAppAsync(projectRoot) {
 
 module.exports = {
   initAsync,
+  initWithPublishedPackagesAsync,
   setupBasicAppAsync,
   setupAssetsAppAsync,
 };
