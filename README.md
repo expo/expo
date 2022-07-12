@@ -14,7 +14,7 @@
   <a aria-label="Join our forums" href="https://forums.expo.dev" target="_blank">
     <img alt="Forums" src="https://img.shields.io/badge/Ask%20Questions%20-blue.svg?style=flat-square&logo=discourse&logoWidth=15&labelColor=000000&color=4630EB" />
   </a>
-  <a aria-label="Join our Discord" href="https://discord.gg/4gtbPAdpaE" target="_blank">
+  <a aria-label="Join our Discord" href="https://chat.expo.dev" target="_blank">
     <img alt="Discord" src="https://img.shields.io/discord/695411232856997968.svg?style=flat-square&labelColor=000000&color=4630EB&logo=discord&logoColor=FFFFFF&label=" />
   </a>
   <a aria-label="Expo is free to use" href="https://github.com/expo/expo/blob/main/LICENSE" target="_blank">
