@@ -3,6 +3,7 @@ package expo.modules.imagepicker
 import android.content.ClipData
 import android.content.ContentResolver
 import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import android.media.MediaMetadataRetriever
 import android.net.Uri
@@ -115,6 +116,27 @@ val ClipData.items: Iterable<ClipData.Item>
       override fun next(): ClipData.Item = getItemAt(index++)
     }
   }
+
+/**
+ * Gets all data that is associated with this [Intent].
+ * Original data order is preserved.
+ *
+ * Adapted from [androidx.activity.result.contract.ActivityResultContracts.GetMultipleContents.getClipDataUris]
+ */
+internal fun Intent.getAllDataUris(): List<Uri> {
+  // Use a LinkedHashSet to maintain any ordering that may be present in the ClipData
+  val resultSet = LinkedHashSet<Uri>()
+
+  data
+    ?.let { resultSet.add(it) }
+
+  clipData
+    ?.items
+    ?.map { it.uri }
+    ?.let { resultSet.addAll(it) }
+
+  return resultSet.toList()
+}
 
 /**
  * Copy the media file from `sourceUri` to `destinationUri`.
