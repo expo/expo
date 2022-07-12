@@ -221,6 +221,15 @@ export type ImageInfo = {
    */
   uri: string;
   /**
+   * The unique ID that represents the picked image or video. It can be used by [expo-media-library](./media-library)
+   * to manage the picked asset.
+   *
+   * > This might be `null` when the ID is unavailable or the user gave limited permission to access the media library.
+   *
+   * @platform ios
+   */
+  assetId?: string | null;
+  /**
    * Width of the image or video.
    */
   width: number;

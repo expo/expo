@@ -63,6 +63,7 @@ internal protocol SelectedMediaInfo {
  Represents a single selected image
  */
 internal struct ImageInfo: SelectedMediaInfo {
+  let assetId: String?
   let type: String = "image"
   let uri: String
   let width: Double
@@ -76,6 +77,7 @@ internal struct ImageInfo: SelectedMediaInfo {
     var result: [String: Any] = [
       "type": type,
       "uri": uri,
+      "assetId": assetId,
       "width": width,
       "height": height,
       "fileName": fileName,
@@ -95,6 +97,7 @@ internal struct ImageInfo: SelectedMediaInfo {
  Represents a single selected video
  */
 internal struct VideoInfo: SelectedMediaInfo {
+  let assetId: String?
   let type: String = "video"
   let uri: String
   let width: Double
@@ -107,6 +110,7 @@ internal struct VideoInfo: SelectedMediaInfo {
     [
       "type": type,
       "uri": uri,
+      "assetId": assetId,
       "width": width,
       "height": height,
       "fileName": fileName,
