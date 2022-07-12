@@ -261,7 +261,7 @@ jsi::Function MethodMetadata::toAsyncFunction(
       // Creates a JSI promise
       jsi::Value promise = Promise.callAsConstructor(
         rt,
-        createPromiseBody(rt, moduleRegistry, tempArray)
+        createPromiseBody(rt, moduleRegistry, std::move(tempArray))
       );
       return promise;
     }
@@ -271,13 +271,13 @@ jsi::Function MethodMetadata::toAsyncFunction(
 jsi::Function MethodMetadata::createPromiseBody(
   jsi::Runtime &runtime,
   JSIInteropModuleRegistry *moduleRegistry,
-  jni::local_ref<jni::JArrayClass<jobject>::javaobject> &args
+  jni::local_ref<jni::JArrayClass<jobject>::javaobject> &&args
 ) {
   return jsi::Function::createFromHostFunction(
     runtime,
     jsi::PropNameID::forAscii(runtime, "promiseFn"),
     2,
-    [this, &args, moduleRegistry](
+    [this, args = std::move(args), moduleRegistry](
       jsi::Runtime &rt,
       const jsi::Value &thisVal,
       const jsi::Value *promiseConstructorArgs,
