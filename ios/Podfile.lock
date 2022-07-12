@@ -1250,12 +1250,6 @@ PODS:
   - DoubleConversion (1.1.6)
   - EASClient (0.3.0):
     - ExpoModulesCore
-  - EXAdsAdMob (13.1.0):
-    - ExpoModulesCore
-    - Google-Mobile-Ads-SDK (= 8.13.0)
-  - EXAdsFacebook (11.3.0):
-    - ExpoModulesCore
-    - FBAudienceNetwork (= 6.5.0)
   - EXAmplitude (11.3.0):
     - Amplitude (~> 6.0.0)
     - ExpoModulesCore
@@ -1298,10 +1292,6 @@ PODS:
     - ExpoModulesCore
   - EXErrorRecovery (3.2.0):
     - ExpoModulesCore
-  - EXFacebook (12.3.0):
-    - ExpoModulesCore
-    - FacebookSDK/CoreKit (= 9.2.0)
-    - FacebookSDK/LoginKit (= 9.2.0)
   - EXFaceDetector (11.3.0):
     - ExpoModulesCore
     - GoogleMLKit/FaceDetection (= 2.6.0)
@@ -1387,9 +1377,6 @@ PODS:
     - ExpoModulesCore
     - React-Core
   - EXSecureStore (11.3.0):
-    - ExpoModulesCore
-  - EXSegment (11.3.0):
-    - Analytics (= 4.0.4)
     - ExpoModulesCore
   - EXSensors (11.4.0):
     - ExpoModulesCore
@@ -2252,8 +2239,6 @@ DEPENDENCIES:
   - CocoaLumberjack (~> 3.5.3)
   - DoubleConversion (from `../react-native-lab/react-native/third-party-podspecs/DoubleConversion.podspec`)
   - EASClient (from `../packages/expo-eas-client/ios`)
-  - EXAdsAdMob (from `../packages/expo-ads-admob/ios`)
-  - EXAdsFacebook (from `../packages/expo-ads-facebook/ios`)
   - EXAmplitude (from `../packages/expo-analytics-amplitude/ios`)
   - EXAppleAuthentication (from `../packages/expo-apple-authentication/ios`)
   - EXApplication (from `../packages/expo-application/ios`)
@@ -2271,7 +2256,6 @@ DEPENDENCIES:
   - EXDevice (from `../packages/expo-device/ios`)
   - EXDocumentPicker (from `../packages/expo-document-picker/ios`)
   - EXErrorRecovery (from `../packages/expo-error-recovery/ios`)
-  - EXFacebook (from `../packages/expo-facebook/ios`)
   - EXFaceDetector (from `../packages/expo-face-detector/ios`)
   - EXFileSystem (from `../packages/expo-file-system/ios`)
   - EXFirebaseAnalytics (from `../packages/expo-firebase-analytics/ios`)
@@ -2308,7 +2292,6 @@ DEPENDENCIES:
   - EXScreenCapture (from `../packages/expo-screen-capture/ios`)
   - EXScreenOrientation (from `../packages/expo-screen-orientation/ios`)
   - EXSecureStore (from `../packages/expo-secure-store/ios`)
-  - EXSegment (from `../packages/expo-analytics-segment/ios`)
   - EXSensors (from `../packages/expo-sensors/ios`)
   - EXSharing (from `../packages/expo-sharing/ios`)
   - EXSMS (from `../packages/expo-sms/ios`)
@@ -2859,10 +2842,6 @@ EXTERNAL SOURCES:
     :podspec: "../react-native-lab/react-native/third-party-podspecs/DoubleConversion.podspec"
   EASClient:
     :path: "../packages/expo-eas-client/ios"
-  EXAdsAdMob:
-    :path: "../packages/expo-ads-admob/ios"
-  EXAdsFacebook:
-    :path: "../packages/expo-ads-facebook/ios"
   EXAmplitude:
     :path: "../packages/expo-analytics-amplitude/ios"
   EXAppleAuthentication:
@@ -2897,8 +2876,6 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-document-picker/ios"
   EXErrorRecovery:
     :path: "../packages/expo-error-recovery/ios"
-  EXFacebook:
-    :path: "../packages/expo-facebook/ios"
   EXFaceDetector:
     :path: "../packages/expo-face-detector/ios"
   EXFileSystem:
@@ -2971,8 +2948,6 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-screen-orientation/ios"
   EXSecureStore:
     :path: "../packages/expo-secure-store/ios"
-  EXSegment:
-    :path: "../packages/expo-analytics-segment/ios"
   EXSensors:
     :path: "../packages/expo-sensors/ios"
   EXSharing:
@@ -3316,8 +3291,6 @@ SPEC CHECKSUMS:
   CocoaLumberjack: 2f44e60eb91c176d471fdba43b9e3eae6a721947
   DoubleConversion: 831926d9b8bf8166fd87886c4abab286c2422662
   EASClient: a2581835cf9b97d0defd5d630fc6eb1bf77045e7
-  EXAdsAdMob: 049c9b40b6eb27902f475fb38557d5059c36c766
-  EXAdsFacebook: c423de06e52d0194040eaea0083324e7c9ba3862
   EXAmplitude: 4267966061296b7f015b0ac2384697d8568698d5
   EXAppleAuthentication: b9e9d8fa9b0cc5277b2121eb809cf0f57c2496a7
   EXApplication: a3415586288f8cbabbabbff72f3cff7fd526cd74
@@ -3335,7 +3308,6 @@ SPEC CHECKSUMS:
   EXDevice: 7647ca9b1fd8b269dfd896a7643d659343358054
   EXDocumentPicker: 027b15cd90ed2d6c6063dcc90369d23c7fa0f2a3
   EXErrorRecovery: 74d71ee59f6814315457b09d68e86aa95cc7d05d
-  EXFacebook: c6833736a932a227bcb395cb0a8d9f5d290bf844
   EXFaceDetector: 6e4d4a8ce54ebe3c939b287bd111a6c151dfbc43
   EXFileSystem: 5733242b9545bfebb5584769083de35d21578853
   EXFirebaseAnalytics: e266cdf636eb42fb05881d801acf1f5f4ff3bce5
@@ -3372,7 +3344,6 @@ SPEC CHECKSUMS:
   EXScreenCapture: 23de056fdb02edd1fb8f147b0fd198c6d5cada3d
   EXScreenOrientation: c309fed5399e482c6adebe14f41a7fd9001d7bde
   EXSecureStore: ac4b3c89dd5810528074d9422d5fed5a9e684467
-  EXSegment: c2b4b3ed41fccbfa6747378583e08bfb2375094b
   EXSensors: e31a265cb9085024c1d1c44c36523ea1905a98bf
   EXSharing: 8530ef08cb899328a7c61de7f4836af6208b567b
   EXSMS: 26f6d61a00a3a3fb125a233d81b1d3ab48303cef
@@ -3470,6 +3441,6 @@ SPEC CHECKSUMS:
   Yoga: 7ab6e3ee4ce47d7b789d1cb520163833e515f452
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 36be981ada3f4ab6169e5050570592ffeb4bf944
+PODFILE CHECKSUM: 103ae253f6d7ce15ff79fa4bd3079761c3f31a52
 
 COCOAPODS: 1.11.2

@@ -6,16 +6,6 @@ import React from 'react';
 import ExpoAPIIcon from '../components/ExpoAPIIcon';
 import ComponentListScreen from './ComponentListScreen';
 
-try {
-  require('react-native-branch').default.subscribe((bundle: any) => {
-    if (bundle && bundle.params && !bundle.error) {
-      // Alert.alert('Opened Branch link', JSON.stringify(bundle.params, null, 2));
-    }
-  });
-} catch {
-  // Branch is not available, do nothing
-}
-
 if (Platform.OS !== 'web') {
   Notifications.setNotificationHandler({
     handleNotification: async () => ({
@@ -30,7 +20,6 @@ const screens = [
   'Accelerometer',
   'ActionSheet',
   'Alert',
-  'Amplitude',
   'Appearance',
   'AppleAuthentication',
   'Audio',
@@ -39,7 +28,6 @@ const screens = [
   'BackgroundFetch',
   'BackgroundLocation',
   'Battery',
-  'Branch',
   'Brightness',
   'Calendars',
   'Cellular',
@@ -49,15 +37,12 @@ const screens = [
   'Device',
   'DocumentPicker',
   'FaceDetector',
-  'FacebookAppEvents',
-  'FacebookLogin',
   'FileSystem',
   'FirebaseRecaptcha',
   'Font',
   'Errors',
   'ExpoModules',
   'Geocoding',
-  'GoogleSignIn',
   'Haptics',
   'ImageManipulator',
   'ImagePicker',

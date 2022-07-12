@@ -66,7 +66,6 @@ export function getTestModules() {
     require('./tests/KeepAwake'),
     require('./tests/Blur'),
     require('./tests/LinearGradient'),
-    require('./tests/Facebook'),
     require('./tests/HTML'),
     require('./tests/FirebaseCore'),
     require('./tests/FirebaseAnalytics'),
@@ -125,26 +124,15 @@ export function getTestModules() {
     optionalRequire(() => require('./tests/Localization')),
     optionalRequire(() => require('./tests/Network')),
     optionalRequire(() => require('./tests/SecureStore')),
-    optionalRequire(() => require('./tests/Segment')),
     optionalRequire(() => require('./tests/Speech')),
     optionalRequire(() => require('./tests/Recording')),
     optionalRequire(() => require('./tests/ScreenOrientation')),
-    optionalRequire(() => require('./tests/AdMobInterstitial')),
-    optionalRequire(() => require('./tests/AdMobRewarded')),
-    optionalRequire(() => require('./tests/FBBannerAd')),
     optionalRequire(() => require('./tests/Notifications')),
     optionalRequire(() => require('./tests/NavigationBar')),
     optionalRequire(() => require('./tests/SystemUI'))
   );
 
   if (!isDeviceFarm()) {
-    // Times out sometimes
-    modules.push(
-      optionalRequire(() => require('./tests/AdMobPublisherBanner')),
-      optionalRequire(() => require('./tests/AdMobBanner'))
-    );
-    // Invalid placementId in CI (all tests fail)
-    modules.push(optionalRequire(() => require('./tests/FBNativeAd')));
     // Popup to request device's location which uses Google's location service
     modules.push(LocationTestScreen);
     // Fails to redirect because of malformed URL in published version with release channel parameter
