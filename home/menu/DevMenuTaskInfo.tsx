@@ -33,6 +33,14 @@ export function DevMenuTaskInfo({ task }: Props) {
           </Text>
           {sdkVersion && (
             <Text size="small" type="InterRegular" color="secondary">
+              SDK version:{' '}
+              <Text type="InterSemiBold" color="secondary" size="small">
+                {sdkVersion}
+              </Text>
+            </Text>
+          )}
+          {runtimeVersion && (
+            <Text size="small" type="InterRegular" color="secondary">
               Runtime version:{' '}
               <Text type="InterSemiBold" color="secondary" size="small">
                 {runtimeVersion}
