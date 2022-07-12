@@ -39,6 +39,7 @@
 
 #define EX_DEV_LAUNCHER_PACKAGER_PATH @"index.bundle?platform=ios&dev=true&minify=false"
 
+
 @interface EXDevLauncherController ()
 
 @property (nonatomic, weak) UIWindow *window;
@@ -782,6 +783,5 @@
   [existingSettings removeObjectForKey:kRCTDevSettingIsDebuggingRemotely];
   [userDefaults setObject:existingSettings forKey:kRCTDevSettingsUserDefaultsKey];
 }
-
 
 @end

@@ -1,4 +1,5 @@
 import {
+  consumeNavigationStateAsync,
   getBuildInfoAsync,
   getCrashReport,
   installationID,
@@ -27,6 +28,7 @@ const mockFns = [
   restoreUserAsync,
   getDevSessionsAsync,
   getCrashReport,
+  consumeNavigationStateAsync,
 ] as jest.Mock[];
 
 describe('getInitialData()', () => {
@@ -40,6 +42,7 @@ describe('getInitialData()', () => {
     expect(restoreUserAsync).not.toHaveBeenCalled();
     expect(getDevSessionsAsync).not.toHaveBeenCalled();
     expect(getCrashReport).not.toHaveBeenCalled();
+    expect(consumeNavigationStateAsync).not.toHaveBeenCalled();
 
     await getInitialData();
 
@@ -52,6 +55,7 @@ describe('getInitialData()', () => {
     expect(getMenuPreferencesAsync).toHaveBeenCalled();
     expect(restoreUserAsync).toHaveBeenCalled();
     expect(getCrashReport).toHaveBeenCalled();
+    expect(consumeNavigationStateAsync).toHaveBeenCalled();
   });
 
   test('queries dev sessions if logged in', async () => {
