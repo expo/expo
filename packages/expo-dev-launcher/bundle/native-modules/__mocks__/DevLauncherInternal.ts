@@ -9,7 +9,11 @@ export const getBuildInfoAsync = jest.fn().mockResolvedValue({
   hostUrl: '',
 });
 export const getPendingDeepLink = jest.fn().mockResolvedValue('');
-export const addDeepLinkListener = jest.fn().mockImplementation(() => jest.fn());
+export const addDeepLinkListener = jest.fn().mockImplementation(() => {
+  return {
+    remove: jest.fn(),
+  };
+});
 export const copyToClipboardAsync = jest.fn().mockResolvedValue(null);
 export const getRecentlyOpenedApps = jest.fn().mockResolvedValue([]);
 export const getCrashReport = jest.fn().mockResolvedValue(null);
@@ -24,3 +28,6 @@ export const updatesConfig = {
 };
 
 export const loadFontsAsync = jest.fn().mockResolvedValue(null);
+export const consumeNavigationStateAsync = jest.fn().mockResolvedValue(null);
+export const saveNavigationStateAsync = jest.fn().mockResolvedValue(null);
+export const clearNavigationStateAsync = jest.fn().mockResolvedValue(null);

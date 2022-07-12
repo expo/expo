@@ -24,6 +24,31 @@ export async function loadUpdate(updateUrl: string, projectUrl: string) {
   return await DevLauncher.loadUpdate(updateUrl, projectUrl);
 }
 
+export async function getNavigationStateAsync() {
+  return await DevLauncher.getNavigationState();
+}
+
+export async function consumeNavigationStateAsync() {
+  const serializedNavigationState = await DevLauncher.getNavigationState();
+  let navigationState;
+
+  try {
+    navigationState = JSON.parse(serializedNavigationState);
+  } catch (error) {}
+
+  // not necessary to await this as its effects are only applied on app launch
+  clearNavigationStateAsync();
+  return navigationState;
+}
+
+export async function saveNavigationStateAsync(navigationState: string) {
+  return await DevLauncher.saveNavigationState(navigationState);
+}
+
+export async function clearNavigationStateAsync() {
+  return await DevLauncher.clearNavigationState();
+}
+
 export async function getPendingDeepLink(): Promise<string | null> {
   return await DevLauncher.getPendingDeepLink();
 }

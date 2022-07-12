@@ -5,6 +5,7 @@ import {
   isDevice,
   updatesConfig,
   loadFontsAsync,
+  consumeNavigationStateAsync,
 } from '../native-modules/DevLauncherInternal';
 import { getMenuPreferencesAsync } from '../native-modules/DevMenuPreferences';
 import { AppProvidersProps } from '../providers/AppProviders';
@@ -14,11 +15,13 @@ import { getDevSessionsAsync } from './getDevSessionsAsync';
 import { restoreUserAsync } from './restoreUserAsync';
 
 export async function getInitialData(): Promise<Partial<AppProvidersProps>> {
-  const [initialBuildInfo, initialDevMenuPreferences, initialCrashReport] = await Promise.all([
-    getBuildInfoAsync(),
-    getMenuPreferencesAsync(),
-    getCrashReport(),
-  ]);
+  const [initialBuildInfo, initialDevMenuPreferences, initialCrashReport, initialNavigationState] =
+    await Promise.all([
+      getBuildInfoAsync(),
+      getMenuPreferencesAsync(),
+      getCrashReport(),
+      consumeNavigationStateAsync(),
+    ]);
 
   // todo - move this to native entirely? no need to run on app mount
   await loadFontsAsync();
@@ -58,5 +61,6 @@ export async function getInitialData(): Promise<Partial<AppProvidersProps>> {
     initialBuildInfo,
     initialDevMenuPreferences,
     initialCrashReport,
+    initialNavigationState,
   };
 }

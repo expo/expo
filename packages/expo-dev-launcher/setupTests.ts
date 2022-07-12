@@ -63,3 +63,10 @@ jest.mock('react-native-safe-area-context', () => {
   };
 });
 
+jest.mock('@react-navigation/native', () => {
+  const actualRequire = jest.requireActual('@react-navigation/native');
+  return {
+    ...actualRequire,
+    useNavigation: jest.fn(),
+  };
+});
