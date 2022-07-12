@@ -62,8 +62,8 @@
 /packages/expo-sensors                          @barthap
 /packages/expo-sharing                          @brentvatne
 /packages/expo-sms                              @brentvatne
-/packages/expo-speech                           @brentvatne
-/packages/expo-splash-screen                    @barthap @kudo @EvanBacon
+/packages/expo-speech                           @barthap
+/packages/expo-splash-screen                    @kudo @EvanBacon
 /packages/expo-sqlite                           @kudo
 /packages/expo-standard-web-crypto              @EvanBacon
 /packages/expo-status-bar                       @brentvatne
