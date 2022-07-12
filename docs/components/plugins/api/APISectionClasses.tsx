@@ -9,6 +9,7 @@ import {
   GeneratedData,
   PropData,
 } from '~/components/plugins/api/APIDataTypes';
+import { APISectionDeprecationNote } from '~/components/plugins/api/APISectionDeprecationNote';
 import { renderMethod } from '~/components/plugins/api/APISectionMethods';
 import { renderProp } from '~/components/plugins/api/APISectionProps';
 import {
@@ -47,6 +48,7 @@ const renderClass = (clx: ClassDefinitionData, hasMultipleClasses: boolean): JSX
 
   return (
     <div key={`class-definition-${name}`} css={STYLES_APIBOX}>
+      <APISectionDeprecationNote comment={comment} />
       {hasMultipleClasses ? (
         <H3Code>
           <InlineCode>{name}</InlineCode>
