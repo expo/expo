@@ -7,7 +7,6 @@ import { B, P } from '~/components/base/paragraph';
 import { H2, H3Code, H4 } from '~/components/plugins/Headings';
 import {
   CommentData,
-  CommentTagData,
   InterfaceDefinitionData,
   MethodSignatureData,
   PropData,
@@ -18,10 +17,12 @@ import {
   CommentTextBlock,
   getTagData,
   mdInlineComponents,
+  parseCommentContent,
   renderFlags,
   renderParamRow,
   renderTableHeadRow,
   resolveTypeName,
+  renderDefaultValue,
   STYLES_APIBOX,
   STYLES_NESTED_SECTION_HEADER,
 } from '~/components/plugins/api/APISectionUtils';
@@ -31,19 +32,14 @@ export type APISectionInterfacesProps = {
   data: InterfaceDefinitionData[];
 };
 
-const renderDefaultValue = (defaultValue?: CommentTagData) =>
-  defaultValue && (
-    <>
-      <br />
-      <br />
-      <B>Default:</B> <InlineCode>{defaultValue.text}</InlineCode>
-    </>
-  );
-
-const renderInterfaceComment = (comment?: CommentData, signatures?: MethodSignatureData[]) => {
+const renderInterfaceComment = (
+  comment?: CommentData,
+  signatures?: MethodSignatureData[],
+  defaultValue?: string
+) => {
   if (signatures && signatures.length) {
     const { type, parameters, comment: signatureComment } = signatures[0];
-    const defaultValue = getTagData('default', signatureComment);
+    const initValue = defaultValue || getTagData('default', signatureComment)?.text;
     return (
       <>
         {parameters?.length ? parameters.map(param => renderParamRow(param)) : null}
@@ -55,19 +51,19 @@ const renderInterfaceComment = (comment?: CommentData, signatures?: MethodSignat
             <CommentTextBlock
               comment={signatureComment}
               components={mdInlineComponents}
-              afterContent={renderDefaultValue(defaultValue)}
+              afterContent={renderDefaultValue(initValue)}
             />
           </>
         )}
       </>
     );
   } else {
-    const defaultValue = getTagData('default', comment);
+    const initValue = defaultValue || getTagData('default', comment)?.text;
     return (
       <CommentTextBlock
         comment={comment}
         components={mdInlineComponents}
-        afterContent={renderDefaultValue(defaultValue)}
+        afterContent={renderDefaultValue(initValue)}
         emptyCommentFallback="-"
       />
     );
@@ -80,17 +76,19 @@ const renderInterfacePropertyRow = ({
   type,
   comment,
   signatures,
+  defaultValue,
 }: PropData): JSX.Element => {
+  const initValue = parseCommentContent(defaultValue || getTagData('default', comment)?.text);
   return (
     <Row key={name}>
       <Cell fitContent>
         <B>{name}</B>
-        {renderFlags(flags)}
+        {renderFlags(flags, initValue)}
       </Cell>
       <Cell fitContent>
         <InlineCode>{resolveTypeName(type)}</InlineCode>
       </Cell>
-      <Cell fitContent>{renderInterfaceComment(comment, signatures)}</Cell>
+      <Cell fitContent>{renderInterfaceComment(comment, signatures, initValue)}</Cell>
     </Row>
   );
 };

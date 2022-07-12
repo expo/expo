@@ -320,13 +320,19 @@ export const resolveTypeName = ({
 
 export const parseParamName = (name: string) => (name.startsWith('__') ? name.substr(2) : name);
 
-export const renderParamRow = ({ comment, name, type, flags }: MethodParamData): JSX.Element => {
-  const defaultValue = parseCommentContent(getTagData('default', comment)?.text);
+export const renderParamRow = ({
+  comment,
+  name,
+  type,
+  flags,
+  defaultValue,
+}: MethodParamData): JSX.Element => {
+  const initValue = parseCommentContent(defaultValue || getTagData('default', comment)?.text);
   return (
     <Row key={`param-${name}`}>
       <Cell>
         <B>{parseParamName(name)}</B>
-        {renderFlags(flags)}
+        {renderFlags(flags, initValue)}
       </Cell>
       <Cell>
         <InlineCode>{resolveTypeName(type)}</InlineCode>
@@ -335,7 +341,7 @@ export const renderParamRow = ({ comment, name, type, flags }: MethodParamData):
         <CommentTextBlock
           comment={comment}
           components={mdInlineComponents}
-          afterContent={renderDefaultValue(defaultValue)}
+          afterContent={renderDefaultValue(initValue)}
           emptyCommentFallback="-"
         />
       </Cell>
@@ -364,7 +370,7 @@ export const listParams = (parameters: MethodParamData[]) =>
   parameters ? parameters?.map(param => parseParamName(param.name)).join(', ') : '';
 
 export const renderDefaultValue = (defaultValue?: string) =>
-  defaultValue ? (
+  defaultValue && defaultValue !== '...' ? (
     <div css={defaultValueContainerStyle}>
       <B>Default:</B> <InlineCode>{defaultValue}</InlineCode>
     </div>
@@ -400,8 +406,8 @@ export const renderTypeOrSignatureType = (
   return undefined;
 };
 
-export const renderFlags = (flags?: TypePropertyDataFlags) =>
-  flags?.isOptional ? (
+export const renderFlags = (flags?: TypePropertyDataFlags, defaultValue?: string) =>
+  flags?.isOptional || defaultValue ? (
     <>
       <br />
       <span css={STYLES_OPTIONAL}>(optional)</span>
