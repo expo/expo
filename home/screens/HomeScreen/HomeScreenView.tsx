@@ -222,8 +222,6 @@ export class HomeScreenView extends React.Component<Props, State> {
   };
 
   private _startPollingForProjects = async () => {
-    if (!this.props.isAuthenticated) return;
-
     await this._fetchProjectsAsync();
     this._projectPolling = setInterval(this._fetchProjectsAsync, PROJECT_UPDATE_INTERVAL);
   };
