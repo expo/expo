@@ -2,10 +2,9 @@ import { spacing } from '@expo/styleguide-native';
 import dedent from 'dedent';
 import { Divider, useExpoTheme, View } from 'expo-dev-client-components';
 import * as React from 'react';
-import { ActivityIndicator, ListRenderItem, View as RNView } from 'react-native';
+import { FlatList, ActivityIndicator, ListRenderItem, View as RNView } from 'react-native';
 import InfiniteScrollView from 'react-native-infinite-scroll-view';
 
-import { FlatList } from '../../components/FlatList';
 import PrimaryButton from '../../components/PrimaryButton';
 import { ProjectsListItem } from '../../components/ProjectsListItem';
 import { StyledText } from '../../components/Text';
