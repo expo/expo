@@ -111,7 +111,7 @@ function baseTransformsFactory(prefix: string): Required<FileTransforms> {
         replaceWith: `$1${prefix}$2`,
       },
       {
-        find: /\b(RCT|RNC|RNG|RNR|REA|RNS)(\w+)\b/g,
+        find: /\b(RCT|RNC|RNG|RNR|REA|RNS|YG)(\w+)\b/g,
         replaceWith: `${prefix}$1$2`,
       },
       {
@@ -123,9 +123,9 @@ function baseTransformsFactory(prefix: string): Required<FileTransforms> {
         replaceWith: `${prefix}React::`,
       },
       {
-        find: /using namespace (facebook|react)/g,
+        find: /namespace (facebook|react)/g,
         replaceWith: (_, p1) => {
-          return `using namespace ${prefix}${p1 === 'react' ? 'React' : p1}`;
+          return `namespace ${prefix}${p1 === 'react' ? 'React' : p1}`;
         },
       },
       {

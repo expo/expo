@@ -183,34 +183,23 @@ async function generateVersionedReactNativeAsync(versionName: string): Promise<v
   // Clone react native latest version
   console.log(`Copying files from ${chalk.magenta(RELATIVE_RN_PATH)} ...`);
 
-  await fs.copy(
-    path.join(EXPO_DIR, RELATIVE_RN_PATH, 'React'),
-    path.join(versionedReactNativePath, 'React')
-  );
-  await fs.copy(
-    path.join(EXPO_DIR, RELATIVE_RN_PATH, 'Libraries'),
-    path.join(versionedReactNativePath, 'Libraries')
-  );
-  await fs.copy(
-    path.join(EXPO_DIR, RELATIVE_RN_PATH, 'React.podspec'),
-    path.join(versionedReactNativePath, 'React.podspec')
-  );
-  await fs.copy(
-    path.join(EXPO_DIR, RELATIVE_RN_PATH, 'React-Core.podspec'),
-    path.join(versionedReactNativePath, 'React-Core.podspec')
-  );
-  await fs.copy(
-    path.join(EXPO_DIR, RELATIVE_RN_PATH, 'ReactCommon', 'ReactCommon.podspec'),
-    path.join(versionedReactNativePath, 'ReactCommon', 'ReactCommon.podspec')
-  );
-  await fs.copy(
-    path.join(EXPO_DIR, RELATIVE_RN_PATH, 'ReactCommon', 'React-Fabric.podspec'),
-    path.join(versionedReactNativePath, 'ReactCommon', 'React-Fabric.podspec')
-  );
-  await fs.copy(
-    path.join(EXPO_DIR, RELATIVE_RN_PATH, 'package.json'),
-    path.join(versionedReactNativePath, 'package.json')
-  );
+  const filesToCopy = [
+    'React',
+    'Libraries',
+    'React.podspec',
+    'React-Core.podspec',
+    'ReactCommon/ReactCommon.podspec',
+    'ReactCommon/React-Fabric.podspec',
+    'ReactCommon/React-bridging.podspec',
+    'package.json',
+  ];
+
+  for (const fileToCopy of filesToCopy) {
+    await fs.copy(
+      path.join(EXPO_DIR, RELATIVE_RN_PATH, fileToCopy),
+      path.join(versionedReactNativePath, fileToCopy)
+    );
+  }
 
   console.log(`Removing unnecessary ${chalk.magenta('*.js')} files ...`);
 

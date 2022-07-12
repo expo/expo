@@ -55,8 +55,15 @@ export function podspecTransforms(versionName: string): TransformPipeline {
       {
         // Fixes HEADER_SEARCH_PATHS
         paths: ['React-Core.podspec', 'ReactCommon.podspec'],
-        replace: /(Headers\/Private\/)(React-Core)/g,
-        with: `$1${versionName}$2`,
+        replace: /(Headers\/Private\/|_BUILD_DIR\)\/)(React-)(Core|bridging)/g,
+        with: `$1${versionName}$2$3`,
+      },
+
+      // React-bridging
+      {
+        paths: 'React-bridging.podspec',
+        replace: /\bheader_mappings_dir\s*=\s*"."/,
+        with: 'header_mappings_dir    = "react/bridging"',
       },
 
       // React-cxxreact
