@@ -22,6 +22,8 @@ void CachedReferencesRegistry::loadJClasses(JNIEnv *env) {
   loadJClass(env, "com/facebook/react/bridge/PromiseImpl", {
     {"<init>", "(Lcom/facebook/react/bridge/Callback;Lcom/facebook/react/bridge/Callback;)V"}
   });
+
+  loadJClass(env, "java/lang/Object", {});
 }
 
 void CachedReferencesRegistry::loadJClass(
