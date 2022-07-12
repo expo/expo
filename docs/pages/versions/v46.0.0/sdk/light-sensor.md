@@ -126,7 +126,7 @@ Subscribe for updates to the light sensor.
 
 ```js
 const subscription = LightSensor.addListener((luminosity) => {
-  console.log(luminosity);
+  console.log(luminosity.illuminance);
 });
 ```
 
