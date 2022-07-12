@@ -273,16 +273,18 @@ jsi::Function MethodMetadata::createPromiseBody(
   JSIInteropModuleRegistry *moduleRegistry,
   jni::local_ref<jni::JArrayClass<jobject>::javaobject> &&args
 ) {
+  auto globalArgs = jni::make_global(std::move(args));
   return jsi::Function::createFromHostFunction(
     runtime,
     jsi::PropNameID::forAscii(runtime, "promiseFn"),
     2,
-    [this, args = std::move(args), moduleRegistry](
+    [this, globalArgs = std::move(globalArgs), moduleRegistry](
       jsi::Runtime &rt,
       const jsi::Value &thisVal,
       const jsi::Value *promiseConstructorArgs,
       size_t promiseConstructorArgCount
     ) {
+      auto args = jni::make_local(globalArgs);
       if (promiseConstructorArgCount != 2) {
         throw std::invalid_argument("Promise fn arg count must be 2");
       }
@@ -323,7 +325,7 @@ jsi::Function MethodMetadata::createPromiseBody(
       // Cast in this place is safe, cause we know that this function expects promise.
       auto asyncFunction = jni::static_ref_cast<JNIAsyncFunctionBody>(this->jBodyReference);
       asyncFunction->invoke(
-        args,
+        std::move(args),
         promise
       );
 
