@@ -11,6 +11,7 @@ import {
   MethodSignatureData,
   PropData,
 } from '~/components/plugins/api/APIDataTypes';
+import { APISectionDeprecationNote } from '~/components/plugins/api/APISectionDeprecationNote';
 import { PlatformTags } from '~/components/plugins/api/APISectionPlatformTags';
 import {
   CommentTextBlock,
@@ -43,6 +44,7 @@ export const renderMethod = (
     <div
       key={`method-signature-${name}-${parameters?.length || 0}`}
       css={[STYLES_APIBOX, !exposeInSidebar && STYLES_APIBOX_NESTED]}>
+      <APISectionDeprecationNote comment={comment} />
       <PlatformTags comment={comment} prefix="Only for:" firstElement />
       <HeaderComponent>
         <InlineCode customCss={!exposeInSidebar ? STYLES_NOT_EXPOSED_HEADER : undefined}>

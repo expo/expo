@@ -28,7 +28,7 @@ abstract_target 'Expo Go' do
       'expo-dev-menu',
       'expo-dev-menu-interface',
       'expo-dev-launcher',
-      'expo-dev-client'
+      'expo-dev-client',
     ],
     # Modules for which to include Tests subspec
     tests: [

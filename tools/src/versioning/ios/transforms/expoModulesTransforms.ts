@@ -1,6 +1,6 @@
 import { FileTransforms } from '../../../Transforms.types';
 
-const objcFilesPattern = '*.{h,m,mm}';
+const objcFilesPattern = '*.{h,m,mm,cpp}';
 const swiftFilesPattern = '*.swift';
 
 export function expoModulesTransforms(prefix: string): FileTransforms {
@@ -30,7 +30,7 @@ export function expoModulesTransforms(prefix: string): FileTransforms {
       },
       {
         // Prefix symbols and imports.
-        find: /\b(EX|UM|RCT)/g,
+        find: /\b(EX|UM|RCT|ExpoBridgeModule)/g,
         replaceWith: `${prefix}$1`,
       },
 
@@ -43,8 +43,8 @@ export function expoModulesTransforms(prefix: string): FileTransforms {
       },
       {
         paths: swiftFilesPattern,
-        find: /@objc\((Expo|EX|EAS)\)/g,
-        replaceWith: `@objc(${prefix}$1)`,
+        find: /@objc\((Expo|EX|EAS)/g,
+        replaceWith: `@objc(${prefix}$1`,
       },
       {
         paths: swiftFilesPattern,
@@ -97,8 +97,8 @@ export function expoModulesTransforms(prefix: string): FileTransforms {
       {
         // Prefixes imports from other React Native libs
         paths: objcFilesPattern,
-        find: new RegExp(`#import <(ReactCommon|jsi)/(${prefix})?`, 'g'),
-        replaceWith: `#import <${prefix}$1/${prefix}`,
+        find: new RegExp(`#(import|include) <(ReactCommon|jsi)/(${prefix})?`, 'g'),
+        replaceWith: `#$1 <${prefix}$2/${prefix}`,
       },
       {
         // Prefixes versionable namespaces

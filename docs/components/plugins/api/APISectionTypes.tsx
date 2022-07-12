@@ -11,6 +11,7 @@ import {
   TypeGeneralData,
   TypeSignaturesData,
 } from '~/components/plugins/api/APIDataTypes';
+import { APISectionDeprecationNote } from '~/components/plugins/api/APISectionDeprecationNote';
 import {
   mdInlineComponents,
   resolveTypeName,
@@ -67,7 +68,7 @@ const renderTypePropertyRow = ({
     <Row key={name}>
       <Cell fitContent>
         <B>{name}</B>
-        {renderFlags(flags)}
+        {renderFlags(flags, initValue)}
       </Cell>
       <Cell fitContent>{renderTypeOrSignatureType(type, signatures)}</Cell>
       <Cell fitContent>
@@ -92,6 +93,7 @@ const renderType = ({
     // Object Types
     return (
       <div key={`type-definition-${name}`} css={STYLES_APIBOX}>
+        <APISectionDeprecationNote comment={comment} />
         <H3Code>
           <InlineCode>
             {name}
@@ -118,6 +120,7 @@ const renderType = ({
     if (propTypes.length) {
       return (
         <div key={`prop-type-definition-${name}`} css={STYLES_APIBOX}>
+          <APISectionDeprecationNote comment={comment} />
           <H3Code>
             <InlineCode>{name}</InlineCode>
           </H3Code>
@@ -139,6 +142,7 @@ const renderType = ({
     } else if (literalTypes.length) {
       return (
         <div key={`type-definition-${name}`} css={STYLES_APIBOX}>
+          <APISectionDeprecationNote comment={comment} />
           <H3Code>
             <InlineCode>{name}</InlineCode>
           </H3Code>
@@ -159,6 +163,7 @@ const renderType = ({
   } else if ((type.name === 'Record' && type.typeArguments) || type.type === 'reference') {
     return (
       <div key={`record-definition-${name}`} css={STYLES_APIBOX}>
+        <APISectionDeprecationNote comment={comment} />
         <H3Code>
           <InlineCode>{name}</InlineCode>
         </H3Code>
@@ -173,6 +178,7 @@ const renderType = ({
   } else if (type.type === 'intrinsic') {
     return (
       <div key={`generic-type-definition-${name}`} css={STYLES_APIBOX}>
+        <APISectionDeprecationNote comment={comment} />
         <H3Code>
           <InlineCode>{name}</InlineCode>
         </H3Code>
@@ -186,6 +192,7 @@ const renderType = ({
   } else if (type.type === 'conditional' && type.checkType) {
     return (
       <div key={`conditional-type-definition-${name}`} css={STYLES_APIBOX}>
+        <APISectionDeprecationNote comment={comment} />
         <H3Code>
           <InlineCode>
             {name}&lt;{type.checkType.name}&gt;

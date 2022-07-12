@@ -17,17 +17,27 @@ internal class MediaHandler(
     get() = requireNotNull(appContextProvider.appContext.reactContext) { "React Application Context is null" }
 
   internal suspend fun readExtras(
-    bareResult: Pair<MediaType, Uri>,
+    bareResult: List<Pair<MediaType, Uri>>,
     options: ImagePickerOptions,
-  ): ImagePickerMediaResponse = when (bareResult.first) {
-    MediaType.VIDEO -> handleVideo(bareResult.second)
-    MediaType.IMAGE -> handleImage(bareResult.second, options)
+  ): ImagePickerResponse {
+    val results = bareResult.map { (mediaType, uri) ->
+      when (mediaType) {
+        MediaType.VIDEO -> handleVideo(uri)
+        MediaType.IMAGE -> handleImage(uri, options)
+      }
+    }
+
+    return if (results.size == 1) {
+      results[0]
+    } else {
+      ImagePickerResponse.Multiple(results)
+    }
   }
 
   private suspend fun handleImage(
     sourceUri: Uri,
     options: ImagePickerOptions,
-  ): ImagePickerMediaResponse.Image {
+  ): ImagePickerResponse.Single.Image {
     val exporter: ImageExporter = if (options.quality == ImagePickerConstants.MAXIMUM_QUALITY) {
       RawImageExporter()
     } else {
@@ -43,7 +53,7 @@ internal class MediaHandler(
     val exif = options.exif.takeIf { it }
       ?.let { exportedImage.exif(context.contentResolver) }
 
-    return ImagePickerMediaResponse.Image(
+    return ImagePickerResponse.Single.Image(
       uri = Uri.fromFile(outputFile).toString(),
       width = exportedImage.width,
       height = exportedImage.height,
@@ -54,7 +64,7 @@ internal class MediaHandler(
 
   private suspend fun handleVideo(
     sourceUri: Uri,
-  ): ImagePickerMediaResponse.Video {
+  ): ImagePickerResponse.Single.Video {
     val outputFile = createOutputFile(context.cacheDir, ".mp4")
     copyFile(sourceUri, outputFile, context.contentResolver)
     val outputUri = outputFile.toUri()
@@ -64,7 +74,7 @@ internal class MediaHandler(
         setDataSource(context, outputUri)
       }
 
-      ImagePickerMediaResponse.Video(
+      ImagePickerResponse.Single.Video(
         uri = outputUri.toString(),
         width = metadataRetriever.extractInt(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH),
         height = metadataRetriever.extractInt(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT),

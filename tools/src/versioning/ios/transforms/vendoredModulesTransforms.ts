@@ -139,7 +139,7 @@ export default function vendoredModulesTransformsFactory(prefix: string): Config
         {
           // `RNG*` symbols are already prefixed at this point,
           // but there are some new symbols in RNGH that don't have "G".
-          paths: '*.{h,m}',
+          paths: '*.{h,m,mm}',
           find: /\bRN(\w+?)\b/g,
           replaceWith: `${prefix}RN$1`,
         },
