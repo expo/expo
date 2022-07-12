@@ -71,6 +71,12 @@ export function postTransforms(versionName: string): TransformPipeline {
         replace: /@interface (\w+) \((CertificateAdditions|Private)\)/g,
         with: `@interface $1 (${versionName}$2)`,
       },
+      {
+        // Fix prefixing imports from React-bridging
+        paths: 'ReactCommon',
+        replace: new RegExp(`(React)\\/${versionName}(bridging)\\/`, 'g'),
+        with: `$1/$2/${versionName}`,
+      },
 
       // Universal modules
       {
@@ -96,7 +102,11 @@ export function postTransforms(versionName: string): TransformPipeline {
         with: `${versionName}NSDictionary+$1.h`,
       },
       {
-        paths: [`${versionName}EXNotifications`, `${versionName}EXAppState`],
+        paths: [
+          `${versionName}EXNotifications`,
+          `${versionName}EXAppState`,
+          `${versionName}EXVersionManager`,
+        ],
         replace: new RegExp(`EXModuleRegistryHolder${versionName}React`, 'g'),
         with: 'EXModuleRegistryHolderReact',
       },
