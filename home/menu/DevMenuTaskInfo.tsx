@@ -12,9 +12,9 @@ type Props = {
 export function DevMenuTaskInfo({ task }: Props) {
   const taskUrl = task.manifestUrl ? FriendlyUrls.toFriendlyString(task.manifestUrl) : '';
   const manifest = task.manifestString && JSON.parse(task.manifestString);
-  const iconUrl = manifest && (manifest.iconUrl ?? manifest.extra.expoClient.iconUrl);
-  const taskName = manifest && (manifest.name ?? manifest.extra.expoClient.name);
-  const sdkVersion = manifest && (manifest.sdkVersion ?? manifest.extra.expoClient.sdkVersion);
+  const iconUrl = manifest && (manifest.iconUrl ?? manifest.extra?.expoClient?.iconUrl);
+  const taskName = manifest && (manifest.name ?? manifest.extra?.expoClient?.name);
+  const sdkVersion = manifest && (manifest.sdkVersion ?? manifest.extra?.expoClient?.sdkVersion);
   const runtimeVersion = manifest && manifest.runtimeVersion;
 
   const devServerName =
