@@ -225,10 +225,6 @@ Object {
       },
     },
     "pluginHistory": Object {
-      "expo-ads-admob": Object {
-        "name": "expo-ads-admob",
-        "version": "UNVERSIONED",
-      },
       "expo-apple-authentication": Object {
         "name": "expo-apple-authentication",
         "version": "UNVERSIONED",
@@ -243,10 +239,6 @@ Object {
       },
       "expo-document-picker": Object {
         "name": "expo-document-picker",
-        "version": "UNVERSIONED",
-      },
-      "expo-facebook": Object {
-        "name": "expo-facebook",
         "version": "UNVERSIONED",
       },
       "expo-navigation-bar": Object {
@@ -404,27 +396,10 @@ Object {
             "GOOGLE_SIGN_IN_CLIENT_ID",
           ],
         },
-        Object {
-          "CFBundleURLSchemes": Array [
-            "fb1234567890",
-          ],
-        },
       ],
       "CFBundleVersion": "6.5.0",
-      "FacebookAdvertiserIDCollectionEnabled": true,
-      "FacebookAppID": "1234567890",
-      "FacebookAutoInitEnabled": true,
-      "FacebookAutoLogAppEventsEnabled": true,
-      "FacebookDisplayName": "my-fb-test-app",
-      "GADApplicationIdentifier": "TEST_googleMobileAdsAppId",
       "GMSApiKey": "TEST_googleMapsApiKey",
       "ITSAppUsesNonExemptEncryption": true,
-      "LSApplicationQueriesSchemes": Array [
-        "fbapi",
-        "fb-messenger-api",
-        "fbauth2",
-        "fbshareextension",
-      ],
       "LSRequiresIPhoneOS": true,
       "NSAppTransportSecurity": Object {
         "NSAllowsArbitraryLoads": true,
@@ -435,14 +410,6 @@ Object {
         },
       },
       "NSLocationWhenInUseUsageDescription": "Allow $(PRODUCT_NAME) to access your location",
-      "SKAdNetworkItems": Array [
-        Object {
-          "SKAdNetworkIdentifier": "v9wttpbfk9.skadnetwork",
-        },
-        Object {
-          "SKAdNetworkIdentifier": "n38lu8286q.skadnetwork",
-        },
-      ],
       "UILaunchStoryboardName": "SplashScreen",
       "UIRequiredDeviceCapabilities": Array [
         "armv7",
@@ -808,74 +775,8 @@ Object {
                       "android:name": "com.facebook.react.devsupport.DevSettingsActivity",
                     },
                   },
-                  Object {
-                    "$": Object {
-                      "android:exported": "true",
-                      "android:name": "com.facebook.CustomTabActivity",
-                    },
-                    "intent-filter": Array [
-                      Object {
-                        "action": Array [
-                          Object {
-                            "$": Object {
-                              "android:name": "android.intent.action.VIEW",
-                            },
-                          },
-                        ],
-                        "category": Array [
-                          Object {
-                            "$": Object {
-                              "android:name": "android.intent.category.DEFAULT",
-                            },
-                          },
-                          Object {
-                            "$": Object {
-                              "android:name": "android.intent.category.BROWSABLE",
-                            },
-                          },
-                        ],
-                        "data": Array [
-                          Object {
-                            "$": Object {
-                              "android:scheme": "fb1234567890",
-                            },
-                          },
-                        ],
-                      },
-                    ],
-                  },
                 ],
                 "meta-data": Array [
-                  Object {
-                    "$": Object {
-                      "android:name": "com.facebook.sdk.ApplicationId",
-                      "android:value": "@string/facebook_app_id",
-                    },
-                  },
-                  Object {
-                    "$": Object {
-                      "android:name": "com.facebook.sdk.ApplicationName",
-                      "android:value": "my-fb-test-app",
-                    },
-                  },
-                  Object {
-                    "$": Object {
-                      "android:name": "com.facebook.sdk.AutoInitEnabled",
-                      "android:value": "true",
-                    },
-                  },
-                  Object {
-                    "$": Object {
-                      "android:name": "com.facebook.sdk.AutoLogAppEventsEnabled",
-                      "android:value": "true",
-                    },
-                  },
-                  Object {
-                    "$": Object {
-                      "android:name": "com.facebook.sdk.AdvertiserIDCollectionEnabled",
-                      "android:value": "true",
-                    },
-                  },
                   Object {
                     "$": Object {
                       "android:name": "io.branch.sdk.BranchKey",
@@ -916,18 +817,6 @@ Object {
                     "$": Object {
                       "android:name": "expo.modules.notifications.default_notification_color",
                       "android:resource": "@color/notification_icon_color",
-                    },
-                  },
-                  Object {
-                    "$": Object {
-                      "android:name": "com.google.android.gms.ads.APPLICATION_ID",
-                      "android:value": "MY_GOOGLE_MOBILE_ADS_APP_ID",
-                    },
-                  },
-                  Object {
-                    "$": Object {
-                      "android:name": "com.google.android.gms.ads.DELAY_APP_MEASUREMENT_INIT",
-                      "android:value": "false",
                     },
                   },
                   Object {
@@ -1034,12 +923,6 @@ Object {
                   "translatable": "false",
                 },
                 "_": "true",
-              },
-              Object {
-                "$": Object {
-                  "name": "facebook_app_id",
-                },
-                "_": "1234567890",
               },
             ],
           },
@@ -1155,27 +1038,10 @@ Object {
                 "GOOGLE_SIGN_IN_CLIENT_ID",
               ],
             },
-            Object {
-              "CFBundleURLSchemes": Array [
-                "fb1234567890",
-              ],
-            },
           ],
           "CFBundleVersion": "6.5.0",
-          "FacebookAdvertiserIDCollectionEnabled": true,
-          "FacebookAppID": "1234567890",
-          "FacebookAutoInitEnabled": true,
-          "FacebookAutoLogAppEventsEnabled": true,
-          "FacebookDisplayName": "my-fb-test-app",
-          "GADApplicationIdentifier": "TEST_googleMobileAdsAppId",
           "GMSApiKey": "TEST_googleMapsApiKey",
           "ITSAppUsesNonExemptEncryption": true,
-          "LSApplicationQueriesSchemes": Array [
-            "fbapi",
-            "fb-messenger-api",
-            "fbauth2",
-            "fbshareextension",
-          ],
           "LSRequiresIPhoneOS": true,
           "NSAppTransportSecurity": Object {
             "NSAllowsArbitraryLoads": true,
@@ -1186,14 +1052,6 @@ Object {
             },
           },
           "NSLocationWhenInUseUsageDescription": "Allow $(PRODUCT_NAME) to access your location",
-          "SKAdNetworkItems": Array [
-            Object {
-              "SKAdNetworkIdentifier": "v9wttpbfk9.skadnetwork",
-            },
-            Object {
-              "SKAdNetworkIdentifier": "n38lu8286q.skadnetwork",
-            },
-          ],
           "UILaunchStoryboardName": "SplashScreen",
           "UIRequiredDeviceCapabilities": Array [
             "armv7",
@@ -1439,10 +1297,6 @@ Object {
       },
     },
     "pluginHistory": Object {
-      "expo-ads-admob": Object {
-        "name": "expo-ads-admob",
-        "version": "UNVERSIONED",
-      },
       "expo-apple-authentication": Object {
         "name": "expo-apple-authentication",
         "version": "UNVERSIONED",
@@ -1457,10 +1311,6 @@ Object {
       },
       "expo-document-picker": Object {
         "name": "expo-document-picker",
-        "version": "UNVERSIONED",
-      },
-      "expo-facebook": Object {
-        "name": "expo-facebook",
         "version": "UNVERSIONED",
       },
       "expo-navigation-bar": Object {
@@ -1618,27 +1468,10 @@ Object {
             "GOOGLE_SIGN_IN_CLIENT_ID",
           ],
         },
-        Object {
-          "CFBundleURLSchemes": Array [
-            "fb1234567890",
-          ],
-        },
       ],
       "CFBundleVersion": "6.5.0",
-      "FacebookAdvertiserIDCollectionEnabled": true,
-      "FacebookAppID": "1234567890",
-      "FacebookAutoInitEnabled": true,
-      "FacebookAutoLogAppEventsEnabled": true,
-      "FacebookDisplayName": "my-fb-test-app",
-      "GADApplicationIdentifier": "TEST_googleMobileAdsAppId",
       "GMSApiKey": "TEST_googleMapsApiKey",
       "ITSAppUsesNonExemptEncryption": true,
-      "LSApplicationQueriesSchemes": Array [
-        "fbapi",
-        "fb-messenger-api",
-        "fbauth2",
-        "fbshareextension",
-      ],
       "LSRequiresIPhoneOS": true,
       "NSAppTransportSecurity": Object {
         "NSAllowsArbitraryLoads": true,
@@ -1649,14 +1482,6 @@ Object {
         },
       },
       "NSLocationWhenInUseUsageDescription": "Allow $(PRODUCT_NAME) to access your location",
-      "SKAdNetworkItems": Array [
-        Object {
-          "SKAdNetworkIdentifier": "v9wttpbfk9.skadnetwork",
-        },
-        Object {
-          "SKAdNetworkIdentifier": "n38lu8286q.skadnetwork",
-        },
-      ],
       "UILaunchStoryboardName": "SplashScreen",
       "UIRequiredDeviceCapabilities": Array [
         "armv7",
@@ -1911,78 +1736,12 @@ Object {
                       "android:name": "com.facebook.react.devsupport.DevSettingsActivity",
                     },
                   },
-                  Object {
-                    "$": Object {
-                      "android:exported": "true",
-                      "android:name": "com.facebook.CustomTabActivity",
-                    },
-                    "intent-filter": Array [
-                      Object {
-                        "action": Array [
-                          Object {
-                            "$": Object {
-                              "android:name": "android.intent.action.VIEW",
-                            },
-                          },
-                        ],
-                        "category": Array [
-                          Object {
-                            "$": Object {
-                              "android:name": "android.intent.category.DEFAULT",
-                            },
-                          },
-                          Object {
-                            "$": Object {
-                              "android:name": "android.intent.category.BROWSABLE",
-                            },
-                          },
-                        ],
-                        "data": Array [
-                          Object {
-                            "$": Object {
-                              "android:scheme": "fb1234567890",
-                            },
-                          },
-                        ],
-                      },
-                    ],
-                  },
                 ],
                 "meta-data": Array [
                   Object {
                     "$": Object {
                       "android:name": "expo.modules.updates.EXPO_UPDATE_URL",
                       "android:value": "https://exp.host/@bacon/mycoolapp",
-                    },
-                  },
-                  Object {
-                    "$": Object {
-                      "android:name": "com.facebook.sdk.ApplicationId",
-                      "android:value": "@string/facebook_app_id",
-                    },
-                  },
-                  Object {
-                    "$": Object {
-                      "android:name": "com.facebook.sdk.ApplicationName",
-                      "android:value": "my-fb-test-app",
-                    },
-                  },
-                  Object {
-                    "$": Object {
-                      "android:name": "com.facebook.sdk.AutoInitEnabled",
-                      "android:value": "true",
-                    },
-                  },
-                  Object {
-                    "$": Object {
-                      "android:name": "com.facebook.sdk.AutoLogAppEventsEnabled",
-                      "android:value": "true",
-                    },
-                  },
-                  Object {
-                    "$": Object {
-                      "android:name": "com.facebook.sdk.AdvertiserIDCollectionEnabled",
-                      "android:value": "true",
                     },
                   },
                   Object {
@@ -2019,18 +1778,6 @@ Object {
                     "$": Object {
                       "android:name": "expo.modules.notifications.default_notification_color",
                       "android:resource": "@color/notification_icon_color",
-                    },
-                  },
-                  Object {
-                    "$": Object {
-                      "android:name": "com.google.android.gms.ads.APPLICATION_ID",
-                      "android:value": "MY_GOOGLE_MOBILE_ADS_APP_ID",
-                    },
-                  },
-                  Object {
-                    "$": Object {
-                      "android:name": "com.google.android.gms.ads.DELAY_APP_MEASUREMENT_INIT",
-                      "android:value": "false",
                     },
                   },
                   Object {
@@ -2153,12 +1900,6 @@ Object {
                 },
                 "_": "true",
               },
-              Object {
-                "$": Object {
-                  "name": "facebook_app_id",
-                },
-                "_": "1234567890",
-              },
             ],
           },
         },
@@ -2267,27 +2008,10 @@ Object {
                 "GOOGLE_SIGN_IN_CLIENT_ID",
               ],
             },
-            Object {
-              "CFBundleURLSchemes": Array [
-                "fb1234567890",
-              ],
-            },
           ],
           "CFBundleVersion": "6.5.0",
-          "FacebookAdvertiserIDCollectionEnabled": true,
-          "FacebookAppID": "1234567890",
-          "FacebookAutoInitEnabled": true,
-          "FacebookAutoLogAppEventsEnabled": true,
-          "FacebookDisplayName": "my-fb-test-app",
-          "GADApplicationIdentifier": "TEST_googleMobileAdsAppId",
           "GMSApiKey": "TEST_googleMapsApiKey",
           "ITSAppUsesNonExemptEncryption": true,
-          "LSApplicationQueriesSchemes": Array [
-            "fbapi",
-            "fb-messenger-api",
-            "fbauth2",
-            "fbshareextension",
-          ],
           "LSRequiresIPhoneOS": true,
           "NSAppTransportSecurity": Object {
             "NSAllowsArbitraryLoads": true,
@@ -2298,14 +2022,6 @@ Object {
             },
           },
           "NSLocationWhenInUseUsageDescription": "Allow $(PRODUCT_NAME) to access your location",
-          "SKAdNetworkItems": Array [
-            Object {
-              "SKAdNetworkIdentifier": "v9wttpbfk9.skadnetwork",
-            },
-            Object {
-              "SKAdNetworkIdentifier": "n38lu8286q.skadnetwork",
-            },
-          ],
           "UILaunchStoryboardName": "SplashScreen",
           "UIRequiredDeviceCapabilities": Array [
             "armv7",
@@ -2552,10 +2268,6 @@ Object {
       },
     },
     "pluginHistory": Object {
-      "expo-ads-admob": Object {
-        "name": "expo-ads-admob",
-        "version": "UNVERSIONED",
-      },
       "expo-apple-authentication": Object {
         "name": "expo-apple-authentication",
         "version": "UNVERSIONED",
@@ -2570,10 +2282,6 @@ Object {
       },
       "expo-document-picker": Object {
         "name": "expo-document-picker",
-        "version": "UNVERSIONED",
-      },
-      "expo-facebook": Object {
-        "name": "expo-facebook",
         "version": "UNVERSIONED",
       },
       "expo-navigation-bar": Object {
@@ -2731,27 +2439,10 @@ Object {
             "GOOGLE_SIGN_IN_CLIENT_ID",
           ],
         },
-        Object {
-          "CFBundleURLSchemes": Array [
-            "fb1234567890",
-          ],
-        },
       ],
       "CFBundleVersion": "6.5.0",
-      "FacebookAdvertiserIDCollectionEnabled": true,
-      "FacebookAppID": "1234567890",
-      "FacebookAutoInitEnabled": true,
-      "FacebookAutoLogAppEventsEnabled": true,
-      "FacebookDisplayName": "my-fb-test-app",
-      "GADApplicationIdentifier": "TEST_googleMobileAdsAppId",
       "GMSApiKey": "TEST_googleMapsApiKey",
       "ITSAppUsesNonExemptEncryption": true,
-      "LSApplicationQueriesSchemes": Array [
-        "fbapi",
-        "fb-messenger-api",
-        "fbauth2",
-        "fbshareextension",
-      ],
       "LSRequiresIPhoneOS": true,
       "NSAppTransportSecurity": Object {
         "NSAllowsArbitraryLoads": true,
@@ -2762,14 +2453,6 @@ Object {
         },
       },
       "NSLocationWhenInUseUsageDescription": "Allow $(PRODUCT_NAME) to access your location",
-      "SKAdNetworkItems": Array [
-        Object {
-          "SKAdNetworkIdentifier": "v9wttpbfk9.skadnetwork",
-        },
-        Object {
-          "SKAdNetworkIdentifier": "n38lu8286q.skadnetwork",
-        },
-      ],
       "UILaunchStoryboardName": "SplashScreen",
       "UIRequiredDeviceCapabilities": Array [
         "armv7",

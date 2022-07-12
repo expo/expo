@@ -59,16 +59,6 @@ function _withIosIcons() {
   return data;
 }
 
-function _expoAdsAdmob() {
-  const data = _interopRequireDefault(require("./unversioned/expo-ads-admob/expo-ads-admob"));
-
-  _expoAdsAdmob = function () {
-    return data;
-  };
-
-  return data;
-}
-
 function _expoAppleAuthentication() {
   const data = _interopRequireDefault(require("./unversioned/expo-apple-authentication"));
 
@@ -103,16 +93,6 @@ function _expoDocumentPicker() {
   const data = _interopRequireDefault(require("./unversioned/expo-document-picker"));
 
   _expoDocumentPicker = function () {
-    return data;
-  };
-
-  return data;
-}
-
-function _expoFacebook() {
-  const data = _interopRequireDefault(require("./unversioned/expo-facebook/expo-facebook"));
-
-  _expoFacebook = function () {
     return data;
   };
 
@@ -187,7 +167,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 const debug = (0, _debug().default)('expo:prebuild-config');
 /**
  * Config plugin to apply all of the custom Expo iOS config plugins we support by default.
- * TODO: In the future most of this should go into versioned packages like expo-facebook, expo-updates, etc...
+ * TODO: In the future most of this should go into versioned packages like expo-updates, etc...
  */
 
 const withIosExpoPlugins = (config, {
@@ -205,7 +185,7 @@ const withIosExpoPlugins = (config, {
 };
 /**
  * Config plugin to apply all of the custom Expo Android config plugins we support by default.
- * TODO: In the future most of this should go into versioned packages like expo-facebook, expo-updates, etc...
+ * TODO: In the future most of this should go into versioned packages like expo-updates, etc...
  */
 
 
@@ -232,14 +212,14 @@ const withAndroidExpoPlugins = (config, props) => {
 
 
 exports.withAndroidExpoPlugins = withAndroidExpoPlugins;
-const versionedExpoSDKPackages = ['react-native-maps', 'expo-ads-admob', 'expo-apple-authentication', 'expo-contacts', 'expo-notifications', 'expo-updates', 'expo-branch', 'expo-navigation-bar', 'expo-document-picker', 'expo-facebook', 'expo-splash-screen', 'expo-system-ui'];
+const versionedExpoSDKPackages = ['react-native-maps', 'expo-apple-authentication', 'expo-contacts', 'expo-notifications', 'expo-updates', 'expo-branch', 'expo-navigation-bar', 'expo-document-picker', 'expo-splash-screen', 'expo-system-ui'];
 
 const withVersionedExpoSDKPlugins = (config, {
   expoUsername
 }) => {
-  return (0, _configPlugins().withPlugins)(config, [_reactNativeMaps().default, _expoAdsAdmob().default, _expoAppleAuthentication().default, _expoContacts().default, _expoNotifications().default, [_expoUpdates().default, {
+  return (0, _configPlugins().withPlugins)(config, [_reactNativeMaps().default, _expoAppleAuthentication().default, _expoContacts().default, _expoNotifications().default, [_expoUpdates().default, {
     expoUsername
-  }], _expoBranch().default, _expoDocumentPicker().default, _expoFacebook().default, // System UI must come before splash screen as they overlap
+  }], _expoBranch().default, _expoDocumentPicker().default, // System UI must come before splash screen as they overlap
   // and splash screen will warn about conflicting rules.
   _expoSystemUi().default, _expoSplashScreen().default, _expoNavigationBar().default]);
 };
@@ -256,7 +236,7 @@ function getLegacyExpoPlugins() {
 // These get applied automatically to create parity with expo build in eas build.
 
 
-const legacyExpoPlugins = ['expo-app-auth', 'expo-av', 'expo-background-fetch', 'expo-barcode-scanner', 'expo-brightness', 'expo-calendar', 'expo-camera', 'expo-cellular', 'expo-dev-menu', 'expo-dev-launcher', 'expo-dev-client', 'expo-image-picker', 'expo-file-system', 'expo-ads-facebook', 'expo-location', 'expo-media-library', 'expo-screen-orientation', 'expo-sensors', 'expo-task-manager', 'expo-local-authentication']; // Plugins that need to be automatically applied, but also get applied by expo-cli if the versioned plugin isn't available.
+const legacyExpoPlugins = ['expo-app-auth', 'expo-av', 'expo-background-fetch', 'expo-barcode-scanner', 'expo-brightness', 'expo-calendar', 'expo-camera', 'expo-cellular', 'expo-dev-menu', 'expo-dev-launcher', 'expo-dev-client', 'expo-image-picker', 'expo-file-system', 'expo-location', 'expo-media-library', 'expo-screen-orientation', 'expo-sensors', 'expo-task-manager', 'expo-local-authentication']; // Plugins that need to be automatically applied, but also get applied by expo-cli if the versioned plugin isn't available.
 // These are split up because the user doesn't need to be prompted to setup these packages.
 
 const expoManagedVersionedPlugins = ['expo-firebase-analytics', 'expo-firebase-core', 'expo-google-sign-in'];
