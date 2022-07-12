@@ -23,6 +23,7 @@ import {
   renderParams,
   renderTableHeadRow,
   renderDefaultValue,
+  STYLES_APIBOX,
 } from '~/components/plugins/api/APISectionUtils';
 import { Cell, Row, Table } from '~/ui/components/Table';
 
@@ -90,7 +91,7 @@ const renderType = ({
   if (type.declaration) {
     // Object Types
     return (
-      <div key={`type-definition-${name}`}>
+      <div key={`type-definition-${name}`} css={STYLES_APIBOX}>
         <H3Code>
           <InlineCode>
             {name}
@@ -116,7 +117,7 @@ const renderType = ({
     const propTypes = type.types.filter((t: TypeDefinitionData) => t.type === 'reflection');
     if (propTypes.length) {
       return (
-        <div key={`prop-type-definition-${name}`}>
+        <div key={`prop-type-definition-${name}`} css={STYLES_APIBOX}>
           <H3Code>
             <InlineCode>{name}</InlineCode>
           </H3Code>
@@ -137,7 +138,7 @@ const renderType = ({
       );
     } else if (literalTypes.length) {
       return (
-        <div key={`type-definition-${name}`}>
+        <div key={`type-definition-${name}`} css={STYLES_APIBOX}>
           <H3Code>
             <InlineCode>{name}</InlineCode>
           </H3Code>
@@ -157,7 +158,7 @@ const renderType = ({
     }
   } else if ((type.name === 'Record' && type.typeArguments) || type.type === 'reference') {
     return (
-      <div key={`record-definition-${name}`}>
+      <div key={`record-definition-${name}`} css={STYLES_APIBOX}>
         <H3Code>
           <InlineCode>{name}</InlineCode>
         </H3Code>
@@ -171,39 +172,44 @@ const renderType = ({
     );
   } else if (type.type === 'intrinsic') {
     return (
-      <div key={`generic-type-definition-${name}`}>
+      <div key={`generic-type-definition-${name}`} css={STYLES_APIBOX}>
         <H3Code>
           <InlineCode>{name}</InlineCode>
         </H3Code>
         <CommentTextBlock comment={comment} />
-        <B>Type: </B>
-        <InlineCode>{type.name}</InlineCode>
+        <P>
+          <B>Type: </B>
+          <InlineCode>{type.name}</InlineCode>
+        </P>
       </div>
     );
   } else if (type.type === 'conditional' && type.checkType) {
     return (
-      <div key={`conditional-type-definition-${name}`}>
+      <div key={`conditional-type-definition-${name}`} css={STYLES_APIBOX}>
         <H3Code>
           <InlineCode>
             {name}&lt;{type.checkType.name}&gt;
           </InlineCode>
         </H3Code>
         <CommentTextBlock comment={comment} />
-        <B>Generic: </B>
-        <InlineCode>
-          {type.checkType.name}
-          {typeParameter && <> extends {resolveTypeName(typeParameter[0].type)}</>}
-        </InlineCode>
-        <br />
-        <B>Type: </B>
-        <InlineCode>
-          {type.checkType.name}
-          {typeParameter && <> extends {type.extendsType && resolveTypeName(type.extendsType)}</>}
-          {' ? '}
-          {type.trueType && resolveTypeName(type.trueType)}
-          {' : '}
-          {type.falseType && resolveTypeName(type.falseType)}
-        </InlineCode>
+        <P>
+          <B>Generic: </B>
+          <InlineCode>
+            {type.checkType.name}
+            {typeParameter && <> extends {resolveTypeName(typeParameter[0].type)}</>}
+          </InlineCode>
+        </P>
+        <P>
+          <B>Type: </B>
+          <InlineCode>
+            {type.checkType.name}
+            {typeParameter && <> extends {type.extendsType && resolveTypeName(type.extendsType)}</>}
+            {' ? '}
+            {type.trueType && resolveTypeName(type.trueType)}
+            {' : '}
+            {type.falseType && resolveTypeName(type.falseType)}
+          </InlineCode>
+        </P>
       </div>
     );
   }

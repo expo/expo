@@ -31,7 +31,7 @@ describe('APISection', () => {
     );
 
     expect(screen.getAllByRole('heading', { level: 2 })).toHaveLength(5);
-    expect(screen.getAllByRole('heading', { level: 3 })).toHaveLength(20);
+    expect(screen.getAllByRole('heading', { level: 3 })).toHaveLength(19);
     expect(screen.getAllByRole('table')).toHaveLength(11);
 
     expect(screen.queryByText('Event Subscriptions'));
@@ -58,7 +58,7 @@ describe('APISection', () => {
     );
 
     expect(screen.getAllByRole('heading', { level: 2 })).toHaveLength(6);
-    expect(screen.getAllByRole('heading', { level: 3 })).toHaveLength(16);
+    expect(screen.getAllByRole('heading', { level: 3 })).toHaveLength(15);
 
     expect(screen.queryByText('Components'));
     expect(screen.queryByText('Hooks'));
@@ -76,7 +76,7 @@ describe('APISection', () => {
 
   test('expo-pedometer', () => {
     const { container } = customRender(
-      <APISection packageName="expo-pedometer" forceVersion="v42.0.0" />
+      <APISection packageName="expo-pedometer" forceVersion="v45.0.0" />
     );
 
     expect(screen.getAllByRole('heading', { level: 2 })).toHaveLength(4);

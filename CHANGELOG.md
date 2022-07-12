@@ -16,11 +16,13 @@ Package-specific changes not released in any SDK will be added here just before 
 - Updated `@react-native-community/datetimepicker` from `6.1.2` to `6.2.0`. ([#18046](https://github.com/expo/expo/pull/18046) by [@lukmccall](https://github.com/lukmccall))
 - Updated `react-native-gesture-handler` from `2.2.0` to `2.5.0`. ([#18026](https://github.com/expo/expo/pull/18026) by [@bbarthec](https://github.com/bbarthec))
 - Updated `@react-native-community/slider` from `4.2.1` to `4.2.3`. ([#18099](https://github.com/expo/expo/pull/18099)) by [@bbarthec](https://github.com/bbarthec))
-- Updated `react-native-screens` from `3.11.1` to `3.14.1`. ([#18086](https://github.com/expo/expo/pull/18086) by [@lukmccall](https://github.com/lukmccall))
+- Updated `react-native-screens` from `3.11.1` to `3.15.0`. ([#18086](https://github.com/expo/expo/pull/18086) by [@lukmccall](https://github.com/lukmccall), [#18175](https://github.com/expo/expo/pull/18175) by [@tsapeta](https://github.com/tsapeta))
 - Updated `react-native-reanimated` from `2.8.0` to `2.9.1`. ([#18085](https://github.com/expo/expo/pull/18085) by [@lukmccall](https://github.com/lukmccall))
 - Updated `react-native-pager-view` from `5.4.15` to `5.4.24`. ([#18084](https://github.com/expo/expo/pull/18084) by [@kudo](https://github.com/kudo))
 - Updated `@stripe/stripe-react-native` from `0.6.0` to `0.13.1`. ([#18072](https://github.com/expo/expo/pull/18072) by [@kudo](https://github.com/kudo))
 - Updated `react-native-safe-area-context` from `4.2.4` to `4.3.1`. ([#18048](https://github.com/expo/expo/pull/18048) by [@kudo](https://github.com/kudo))
+- Added `@shopify/react-native-skia@0.1.136`. ([#18120](https://github.com/expo/expo/pull/18120) and [#18187](https://github.com/expo/expo/pull/18187) by [@kudo](https://github.com/kudo))
+- Added `@shopify/flash-list@1.1.0`. ([#18137](https://github.com/expo/expo/pull/18137) by [@kudo](https://github.com/kudo))
 
 ### 🛠 Breaking changes
 

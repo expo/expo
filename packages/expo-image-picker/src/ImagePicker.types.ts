@@ -233,6 +233,19 @@ export type ImageInfo = {
    */
   type?: 'image' | 'video';
   /**
+   * Preferred filename to use when saving this item. This might be `null` when the name is unavailable
+   * or user gave limited permission to access the media library.
+   *
+   * @platform ios
+   */
+  fileName?: string | null;
+  /**
+   * File size of the picked image or video, in bytes.
+   *
+   * @platform ios
+   */
+  fileSize?: number;
+  /**
    * The `exif` field is included if the `exif` option is truthy, and is an object containing the
    * image's EXIF data. The names of this object's properties are EXIF tags and the values are the
    * respective EXIF values for those tags.
@@ -296,7 +309,13 @@ export type ImagePickerOptions = {
   /**
    * Whether to show a UI to edit the image after it is picked. On Android the user can crop and
    * rotate the image and on iOS simply crop it.
+   *
+   * > Cropping multiple images is not supported - this option is mutually exclusive with `allowsMultipleSelection`.
+   * > On iOS, this option is ignored if `allowsMultipleSelection` is enabled.
+   *
    * @default false
+   * @platform ios
+   * @platform android
    */
   allowsEditing?: boolean;
   /**
@@ -310,6 +329,12 @@ export type ImagePickerOptions = {
    * `1` means compress for maximum quality.
    * > Note: If the selected image has been compressed before, the size of the output file may be
    * > bigger than the size of the original image.
+   *
+   * > Note: On iOS, if a `.bmp` or `.png` image is selected from the library, this option is ignored.
+   *
+   * @default 0.2
+   * @platform ios
+   * @platform android
    */
   quality?: number;
   /**
@@ -342,9 +367,34 @@ export type ImagePickerOptions = {
   videoQuality?: UIImagePickerControllerQualityType;
   /**
    * Whether or not to allow selecting multiple media files at once.
+   *
+   * > Cropping multiple images is not supported - this option is mutually exclusive with `allowsEditing`.
+   * > If this option is enabled, then `allowsEditing` is ignored.
+   *
+   * @default false
+   * @platform ios 14+
    * @platform web
    */
   allowsMultipleSelection?: boolean;
+  /**
+   * The maximum number of items that user can select. Applicable when `allowsMultipleSelection` is enabled.
+   * Setting the value to `0` sets the selection limit to the maximum that the system supports.
+   *
+   * @platform ios 14+
+   * @default 0
+   */
+  selectionLimit?: number;
+  /**
+   * Whether to display number badges when assets are selected. The badges are numbered
+   * in selection order. Assets are then returned in the exact same order they were selected.
+   *
+   * > Assets should be returned in the selection order regardless of this option,
+   * > but there is no guarantee that it is always true when this option is disabled.
+   *
+   * @platform ios 15+
+   * @default false
+   */
+  orderedSelection?: boolean;
   /**
    * Maximum duration, in seconds, for video recording. Setting this to `0` disables the limit.
    * Defaults to `0` (no limit).

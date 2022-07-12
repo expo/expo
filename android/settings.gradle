@@ -10,6 +10,7 @@ pluginManagement {
 include ':app'
 
 apply from: new File(["node", "--print", "require.resolve('expo/package.json')"].execute(null, rootDir).text.trim(), "../scripts/autolinking.gradle")
+apply from: new File(rootDir, "versioning_linking.gradle")
 
 /* UNCOMMENT WHEN DISTRIBUTING
 useExpoModules([
@@ -52,7 +53,6 @@ project(":expo-random").projectDir = new File("../packages/expo-random/android")
     // ADD_NEW_SUPPORTED_ABIS_HERE
     "abi45_0_0",
     "abi44_0_0",
-    "abi43_0_0",
 ].forEach({ abiVariant ->
   include ":expoview-$abiVariant"
   project(":expoview-$abiVariant").projectDir = new File(rootDir, "versioned-abis/expoview-$abiVariant")
@@ -68,4 +68,7 @@ useExpoModules([
         'expo-dev-client'
     ]
 ])
+
+useVendoredModulesForSettingsGradle('unversioned')
+
 // WHEN_DISTRIBUTING_REMOVE_TO_HERE

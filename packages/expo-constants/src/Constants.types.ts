@@ -104,7 +104,12 @@ export type Manifest = {
 
 // @docsMissing
 export type ManifestExtra = ClientScopingConfig & {
-  expoClient?: ExpoConfig;
+  expoClient?: ExpoConfig & {
+    /**
+     * Only present during development using @expo/cli.
+     */
+    hostUri?: string;
+  };
   expoGo?: ExpoGoConfig;
   eas?: EASConfig;
 };

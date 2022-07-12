@@ -32,6 +32,12 @@ internal class CameraUnavailableOnSimulatorException: Exception {
   }
 }
 
+internal class MultiselectUnavailableException: Exception {
+  override var reason: String {
+    "Multiple selection is only available on iOS 14+"
+  }
+}
+
 internal class MissingCurrentViewControllerException: Exception {
   override var reason: String {
     "Cannot determine currently presented view controller"
@@ -89,6 +95,18 @@ internal class FailedToReadVideoSizeException: Exception {
 internal class FailedToReadVideoException: Exception {
   override var reason: String {
     "Failed to read picked video"
+  }
+}
+
+internal class FailedToTranscodeVideoException: Exception {
+  override var reason: String {
+    "Failed to transcode picked video"
+  }
+}
+
+internal class UnsupportedVideoExportPresetException: GenericException<String> {
+  override var reason: String {
+    "Video cannot be transcoded with export preset: \(param)"
   }
 }
 

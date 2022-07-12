@@ -6,14 +6,24 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 13.2.1 — 2022-07-11
+
+_This version does not introduce any user-facing changes._
+
+## 13.2.0 — 2022-07-07
+
+### 🎉 New features
+
 - Add getter for expo client config. ([#17865](https://github.com/expo/expo/pull/17865) by [@wschurman](https://github.com/wschurman))
 
 ### 🐛 Bug fixes
 
 - Improved support of nvm sourcing in iOS shell scripts. ([#17109](https://github.com/expo/expo/pull/17109) by [@liamronancb](https://github.com/liamronancb))
 - Fixed `source-login-scripts.sh` ~/zlogin typo. ([#17622](https://github.com/expo/expo/pull/17622) by [@vrgimael](https://github.com/vrgimael))
-
-### 💡 Others
 
 ## 13.1.0 — 2022-04-18
 

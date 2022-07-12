@@ -6,13 +6,25 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.11.1 — 2022-07-11
+
+### 🐛 Bug fixes
+
+- Fixed a crash when remote debugging is enabled on Android. ([#18165](https://github.com/expo/expo/pull/18165) by [@kudo](https://github.com/kudo))
+
+## 0.11.0 — 2022-07-07
+
+### 🎉 New features
+
 - Create `AppContext.registerForActivityResult` mechanism similar to [`ComponentActivity.registerForActivityResult`](https://developer.android.com/training/basics/intents/result)). ([#17572](https://github.com/expo/expo/pull/17572), ([#17987](https://github.com/expo/expo/pull/17987) by [@bbarthec](https://github.com/bbarthec))
 
 ### 🐛 Bug fixes
 
 - Added support for React Native 0.69.x ([#18006](https://github.com/expo/expo/pull/18006) by [@kudo](https://github.com/kudo))
-
-### 💡 Others
 
 ## 0.10.0 — 2022-06-23
 

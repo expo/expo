@@ -7,10 +7,18 @@ import { TextAlign } from './types';
 type CellProps = PropsWithChildren<{
   fitContent?: boolean;
   textAlign?: TextAlign;
+  colSpan?: number;
 }>;
 
-export const Cell = ({ children, fitContent = false, textAlign = TextAlign.Left }: CellProps) => (
-  <td css={[tableCellStyle, { textAlign }, fitContent && fitContentStyle]}>{children}</td>
+export const Cell = ({
+  children,
+  colSpan,
+  fitContent = false,
+  textAlign = TextAlign.Left,
+}: CellProps) => (
+  <td css={[tableCellStyle, { textAlign }, fitContent && fitContentStyle]} colSpan={colSpan}>
+    {children}
+  </td>
 );
 
 const tableCellStyle = css({

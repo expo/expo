@@ -29,9 +29,9 @@ const IGNORES_PATHS = ['.DS_Store', 'build', 'node_modules', 'package.json'];
  */
 async function main(target, options) {
     const targetDir = target ? path_1.default.join(CWD, target) : CWD;
+    await fs_extra_1.default.ensureDir(targetDir);
     await confirmTargetDirAsync(targetDir);
     options.target = targetDir;
-    await fs_extra_1.default.ensureDir(targetDir);
     const data = await askForSubstitutionDataAsync(targetDir, options);
     const packageManager = await (0, resolvePackageManager_1.resolvePackageManager)();
     const packagePath = options.source

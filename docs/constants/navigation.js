@@ -169,7 +169,6 @@ const general = [
     makePage('guides/setup-native-firebase.md'),
     makePage('guides/sharing-preview-releases.md'),
     makePage('guides/using-electron.md'),
-    makePage('guides/using-gatsby.md'),
     makePage('guides/using-hermes.md'),
     makePage('guides/using-nextjs.md'),
     makePage('guides/using-preact.md'),

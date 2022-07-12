@@ -5,7 +5,6 @@ import ComponentListScreen from './ComponentListScreen';
 
 const screens = [
   'ActivityIndicator',
-  'AdMob',
   'BarCodeScanner',
   'BlurView',
   'Button',
@@ -13,7 +12,7 @@ const screens = [
   'Checkbox',
   'DateTimePicker',
   'DrawerLayoutAndroid',
-  'FacebookAds',
+  'FlashList',
   'GL',
   'GestureHandlerList',
   'GestureHandlerPinch',
@@ -32,6 +31,7 @@ const screens = [
   'ProgressViewIOS',
   'QRCode',
   'Reanimated',
+  'Skia',
   'SVG',
   'Screens',
   'ScrollView',
