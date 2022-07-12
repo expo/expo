@@ -47,10 +47,10 @@ export default function App() {
       _subscribe();
     }
   };
-
+  
   const _subscribe = () => {
     this._subscription = LightSensor.addListener(lightSensorData => {
-      setLuminosity(lightSensorData);
+      setLuminusity(lightSensorData.illuminance);
     });
   };
 
@@ -108,7 +108,7 @@ import { LightSensor } from 'expo-sensors';
 
 > You should always check the sensor availability before attempting to use it.
 
-Returns a promise which resolves into a boolean denoting the availability of the device LightSensor.
+Returns a promise which resolves into a boolean denoting the availability of the device light sensor.
 
 | OS      | Availability                |
 | ------- | --------------------------- |
@@ -122,7 +122,7 @@ Returns a promise which resolves into a boolean denoting the availability of the
 
 ### `LightSensor.addListener((data: LightSensorMeasurement) => void)`
 
-Subscribe for updates to the LightSensor.
+Subscribe for updates to the light sensor.
 
 ```js
 const subscription = LightSensor.addListener((luminosity) => {

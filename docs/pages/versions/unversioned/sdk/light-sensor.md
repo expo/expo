@@ -47,10 +47,10 @@ export default function App() {
       _subscribe();
     }
   };
-
+  
   const _subscribe = () => {
     this._subscription = LightSensor.addListener(lightSensorData => {
-      setLuminosity(lightSensorData);
+      setLuminusity(lightSensorData.illuminance);
     });
   };
 
