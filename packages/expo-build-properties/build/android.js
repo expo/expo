@@ -12,43 +12,43 @@ const { createBuildGradlePropsConfigPlugin } = config_plugins_1.AndroidConfig.Bu
 exports.withAndroidBuildProperties = createBuildGradlePropsConfigPlugin([
     {
         propName: 'android.minSdkVersion',
-        propValueGetter: (config) => { var _a, _b; return (_b = (_a = config.android) === null || _a === void 0 ? void 0 : _a.minSdkVersion) === null || _b === void 0 ? void 0 : _b.toString(); },
+        propValueGetter: (config) => config.android?.minSdkVersion?.toString(),
     },
     {
         propName: 'android.compileSdkVersion',
-        propValueGetter: (config) => { var _a, _b; return (_b = (_a = config.android) === null || _a === void 0 ? void 0 : _a.compileSdkVersion) === null || _b === void 0 ? void 0 : _b.toString(); },
+        propValueGetter: (config) => config.android?.compileSdkVersion?.toString(),
     },
     {
         propName: 'android.targetSdkVersion',
-        propValueGetter: (config) => { var _a, _b; return (_b = (_a = config.android) === null || _a === void 0 ? void 0 : _a.targetSdkVersion) === null || _b === void 0 ? void 0 : _b.toString(); },
+        propValueGetter: (config) => config.android?.targetSdkVersion?.toString(),
     },
     {
         propName: 'android.buildToolsVersion',
-        propValueGetter: (config) => { var _a; return (_a = config.android) === null || _a === void 0 ? void 0 : _a.buildToolsVersion; },
+        propValueGetter: (config) => config.android?.buildToolsVersion,
     },
     {
         propName: 'android.kotlinVersion',
-        propValueGetter: (config) => { var _a; return (_a = config.android) === null || _a === void 0 ? void 0 : _a.kotlinVersion; },
+        propValueGetter: (config) => config.android?.kotlinVersion,
     },
     {
         propName: 'android.packagingOptions.pickFirsts',
-        propValueGetter: (config) => { var _a, _b, _c; return (_c = (_b = (_a = config.android) === null || _a === void 0 ? void 0 : _a.packagingOptions) === null || _b === void 0 ? void 0 : _b.pickFirst) === null || _c === void 0 ? void 0 : _c.join(','); },
+        propValueGetter: (config) => config.android?.packagingOptions?.pickFirst?.join(','),
     },
     {
         propName: 'android.packagingOptions.excludes',
-        propValueGetter: (config) => { var _a, _b, _c; return (_c = (_b = (_a = config.android) === null || _a === void 0 ? void 0 : _a.packagingOptions) === null || _b === void 0 ? void 0 : _b.exclude) === null || _c === void 0 ? void 0 : _c.join(','); },
+        propValueGetter: (config) => config.android?.packagingOptions?.exclude?.join(','),
     },
     {
         propName: 'android.packagingOptions.merges',
-        propValueGetter: (config) => { var _a, _b, _c; return (_c = (_b = (_a = config.android) === null || _a === void 0 ? void 0 : _a.packagingOptions) === null || _b === void 0 ? void 0 : _b.merge) === null || _c === void 0 ? void 0 : _c.join(','); },
+        propValueGetter: (config) => config.android?.packagingOptions?.merge?.join(','),
     },
     {
         propName: 'android.packagingOptions.doNotStrip',
-        propValueGetter: (config) => { var _a, _b, _c; return (_c = (_b = (_a = config.android) === null || _a === void 0 ? void 0 : _a.packagingOptions) === null || _b === void 0 ? void 0 : _b.doNotStrip) === null || _c === void 0 ? void 0 : _c.join(','); },
+        propValueGetter: (config) => config.android?.packagingOptions?.doNotStrip?.join(','),
     },
     {
         propName: 'android.enableProguardInReleaseBuilds',
-        propValueGetter: (config) => { var _a, _b; return (_b = (_a = config.android) === null || _a === void 0 ? void 0 : _a.enableProguardInReleaseBuilds) === null || _b === void 0 ? void 0 : _b.toString(); },
+        propValueGetter: (config) => config.android?.enableProguardInReleaseBuilds?.toString(),
     },
 ], 'withAndroidBuildProperties');
 /**
@@ -58,8 +58,7 @@ const withAndroidProguardRules = (config, props) => {
     return (0, config_plugins_1.withDangerousMod)(config, [
         'android',
         async (config) => {
-            var _a, _b;
-            const extraProguardRules = (_b = (_a = props.android) === null || _a === void 0 ? void 0 : _a.extraProguardRules) !== null && _b !== void 0 ? _b : null;
+            const extraProguardRules = props.android?.extraProguardRules ?? null;
             const proguardRulesFile = path_1.default.join(config.modRequest.platformProjectRoot, 'app', 'proguard-rules.pro');
             const contents = await fs_1.default.promises.readFile(proguardRulesFile, 'utf8');
             const newContents = updateAndroidProguardRules(contents, extraProguardRules);
