@@ -32,6 +32,7 @@ export type AppProvidersProps = {
   initialPendingDeepLink?: string;
   initialRecentlyOpenedApps?: RecentApp[];
   initialCrashReport?: CrashReport;
+  initialNavigationState?: any;
 };
 
 export function AppProviders({
@@ -43,6 +44,7 @@ export function AppProviders({
   initialPendingDeepLink,
   initialRecentlyOpenedApps,
   initialCrashReport,
+  initialNavigationState,
 }: AppProvidersProps) {
   const theme = useColorScheme();
   const isDark = theme === 'dark';
@@ -61,6 +63,7 @@ export function AppProviders({
                         <ToastStackProvider>
                           <PendingDeepLinkProvider initialPendingDeepLink={initialPendingDeepLink}>
                             <NavigationContainer
+                              initialState={initialNavigationState}
                               theme={isDark ? darkNavigationTheme : lightNavigationTheme}>
                               {children}
                             </NavigationContainer>
