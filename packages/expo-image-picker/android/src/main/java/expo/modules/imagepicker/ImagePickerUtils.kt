@@ -1,5 +1,6 @@
 package expo.modules.imagepicker
 
+import android.content.ClipData
 import android.content.ContentResolver
 import android.content.Context
 import android.graphics.Bitmap
@@ -99,6 +100,21 @@ internal fun String.toBitmapCompressFormat(): Bitmap.CompressFormat = when {
 internal fun MediaMetadataRetriever.extractInt(key: Int): Int {
   return this.extractMetadata(key)?.toInt() ?: throw FailedToExtractVideoMetadataException()
 }
+
+/**
+ * [Iterable] implementation for [ClipData] items
+ */
+val ClipData.items: Iterable<ClipData.Item>
+  get() = object : Iterable<ClipData.Item> {
+    override fun iterator() = object : Iterator<ClipData.Item> {
+      var index = 0
+      val count = itemCount
+
+      override fun hasNext(): Boolean = index < count
+
+      override fun next(): ClipData.Item = getItemAt(index++)
+    }
+  }
 
 /**
  * Copy the media file from `sourceUri` to `destinationUri`.
