@@ -70,11 +70,7 @@ export class SessionUrlProvider {
         return redirectUrl;
     }
     static getHostAddressQueryParams() {
-        let hostUri = 
-        // @ts-ignore: hostUri isn't defined on the expoClient type, because
-        // Constants.manifest is of type AppManifest while
-        // Constants.manifest2.extra.expoClient is of type ExpoConfig
-        Constants.manifest?.hostUri ?? Constants.manifest2?.extra?.expoClient?.hostUri;
+        let hostUri = Constants.manifest?.hostUri ?? Constants.manifest2?.extra?.expoClient?.hostUri;
         if (!hostUri &&
             (ExecutionEnvironment.StoreClient === Constants.executionEnvironment ||
                 Linking.resolveScheme({}))) {

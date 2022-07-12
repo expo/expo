@@ -1,5 +1,4 @@
 import { AppOwnership, ExecutionEnvironment } from 'expo-constants';
-import { ExpoClientConfig } from 'expo-constants/build/Constants.types';
 
 import { describeManifestTypes, mockConstants } from './ManifestTestUtils';
 
@@ -43,9 +42,10 @@ describe('Managed', () => {
       {
         extra: {
           expoClient: {
+            name: 'wat',
+            slug: 'wat',
             scheme: 'demo',
-            hostUri: 'exp.host/@test/test',
-          } as ExpoClientConfig,
+          },
         },
       }
     )((manifestObj) => {
@@ -70,8 +70,10 @@ describe('Managed', () => {
       {
         extra: {
           expoClient: {
+            name: 'wat',
+            slug: 'wat',
             scheme: 'demo',
-          } as ExpoClientConfig,
+          },
         },
       }
     )((manifestObj) => {
@@ -96,8 +98,10 @@ describe('Managed', () => {
       {
         extra: {
           expoClient: {
+            name: 'wat',
+            slug: 'wat',
             scheme: 'demo',
-          } as ExpoClientConfig,
+          },
         },
       }
     )((manifestObj) => {
@@ -128,9 +132,10 @@ describe('Managed', () => {
         {
           extra: {
             expoClient: {
+              name: 'wat',
+              slug: 'wat',
               scheme: 'demo',
-              hostUri: 'exp.host/@test/test',
-            } as ExpoClientConfig,
+            },
           },
         }
       )((manifestObj) => {
@@ -157,9 +162,10 @@ describe('Managed', () => {
         {
           extra: {
             expoClient: {
+              name: 'wat',
+              slug: 'wat',
               scheme: 'demo',
-              hostUri: 'exp.host/@test/test',
-            } as ExpoClientConfig,
+            },
           },
         }
       )((manifestObj) => {
@@ -193,9 +199,11 @@ describe('Managed', () => {
         {
           extra: {
             expoClient: {
+              name: 'wat',
+              slug: 'wat',
               scheme: 'demo',
               hostUri: '192.168.1.4:19000',
-            } as ExpoClientConfig,
+            },
             expoGo: {
               developer: {
                 projectRoot: '/Users/person/myapp',
@@ -239,8 +247,10 @@ describe('Managed', () => {
         {
           extra: {
             expoClient: {
+              name: 'wat',
+              slug: 'wat',
               originalFullName: '@test/originaltest',
-            } as ExpoClientConfig,
+            },
           },
         }
       )((manifestObj) => {

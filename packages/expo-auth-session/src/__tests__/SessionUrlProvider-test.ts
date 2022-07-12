@@ -1,5 +1,4 @@
 import { ExecutionEnvironment } from 'expo-constants';
-import { ExpoClientConfig } from 'expo-constants/build/Constants.types';
 import { Platform } from 'expo-modules-core';
 import { unmockAllProperties } from 'jest-expo';
 
@@ -17,9 +16,11 @@ describe('getStartUrl', () => {
     {
       extra: {
         expoClient: {
+          name: 'wat',
+          slug: 'wat',
           originalFullName: '@example/abc',
           scheme: 'my-app',
-        } as ExpoClientConfig,
+        },
       },
     }
   )((manifestObj) => {
@@ -90,9 +91,11 @@ describe(`getRedirectUrl`, () => {
         {
           extra: {
             expoClient: {
+              name: 'wat',
+              slug: 'wat',
               originalFullName: '@example/abc',
               scheme: 'my-app',
-            } as ExpoClientConfig,
+            },
           },
         }
       )((manifestObj) => {
@@ -117,9 +120,11 @@ describe(`getRedirectUrl`, () => {
           {
             extra: {
               expoClient: {
+                name: 'wat',
+                slug: 'wat',
                 originalFullName: undefined,
                 scheme: 'my-app',
-              } as ExpoClientConfig,
+              },
             },
           }
         )((manifestObj) => {
@@ -156,9 +161,11 @@ if (Platform.OS !== 'web') {
         {
           extra: {
             expoClient: {
+              name: 'wat',
+              slug: 'wat',
               scheme: 'my-app',
               hostUri: 'exp.host/@example/abc',
-            } as ExpoClientConfig,
+            },
           },
         }
       )((manifestObj) => {
@@ -179,9 +186,11 @@ if (Platform.OS !== 'web') {
         {
           extra: {
             expoClient: {
+              name: 'wat',
+              slug: 'wat',
               scheme: 'my-app',
               hostUri: 'exp.host/@example/abc',
-            } as ExpoClientConfig,
+            },
           },
         }
       )((manifestObj) => {
@@ -204,11 +213,10 @@ if (Platform.OS !== 'web') {
         { scheme: ['my-app-1', 'my-app-2'], hostUri: 'exp.host/@test/test' },
         {
           extra: {
-            // @ts-expect-error scheme not an array in typedefs
             expoClient: {
               scheme: ['my-app-1', 'my-app-2'],
               hostUri: 'exp.host/@test/test',
-            } as ExpoClientConfig,
+            },
           },
         }
       )((manifestObj) => {
@@ -230,9 +238,11 @@ if (Platform.OS !== 'web') {
         {
           extra: {
             expoClient: {
+              name: 'wat',
+              slug: 'wat',
               scheme: 'my-app',
               hostUri: 'exp.host/@example/abc?release-channel=release-channel',
-            } as ExpoClientConfig,
+            },
           },
         }
       )((manifestObj) => {
@@ -264,9 +274,11 @@ if (Platform.OS !== 'web') {
           {
             extra: {
               expoClient: {
+                name: 'wat',
+                slug: 'wat',
                 scheme: 'my-app',
                 hostUri: 'exp.host/@example/abc',
-              } as ExpoClientConfig,
+              },
             },
           }
         )((manifestObj) => {
@@ -287,9 +299,11 @@ if (Platform.OS !== 'web') {
           {
             extra: {
               expoClient: {
+                name: 'wat',
+                slug: 'wat',
                 scheme: undefined,
                 hostUri: 'exp.host/@test/test',
-              } as ExpoClientConfig,
+              },
             },
           }
         )((manifestObj) => {
@@ -310,9 +324,11 @@ if (Platform.OS !== 'web') {
           {
             extra: {
               expoClient: {
+                name: 'wat',
+                slug: 'wat',
                 scheme: 'my-app',
                 hostUri: 'exp.host/@example/abc',
-              } as ExpoClientConfig,
+              },
             },
           }
         )((manifestObj) => {
@@ -339,11 +355,12 @@ if (Platform.OS !== 'web') {
           { scheme: ['my-app-1', 'my-app-2'], hostUri: 'exp.host/@test/test' },
           {
             extra: {
-              // @ts-expect-error scheme not an array in typedefs
               expoClient: {
+                name: 'wat',
+                slug: 'wat',
                 scheme: ['my-app-1', 'my-app-2'],
                 hostUri: 'exp.host/@test/test',
-              } as ExpoClientConfig,
+              },
             },
           }
         )((manifestObj) => {
@@ -365,9 +382,11 @@ if (Platform.OS !== 'web') {
           {
             extra: {
               expoClient: {
+                name: 'wat',
+                slug: 'wat',
                 scheme: 'my-app',
                 hostUri: 'exp.host/@example/abc?release-channel=release-channel',
-              } as ExpoClientConfig,
+              },
             },
           }
         )((manifestObj) => {

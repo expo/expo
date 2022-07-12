@@ -24,11 +24,7 @@ function validateURL(url: string): void {
 function getHostUri(): string | null {
   if (Constants.manifest?.hostUri) {
     return Constants.manifest.hostUri;
-    // @ts-ignore: hostUri isn't defined on the expoClient type, because
-    // Constants.manifest is of type AppManifest while
-    // Constants.manifest2.extra.expoClient is of type ExpoConfig
   } else if (Constants.manifest2?.extra?.expoClient?.hostUri) {
-    // @ts-ignore
     return Constants.manifest2.extra.expoClient.hostUri;
   } else if (!hasCustomScheme()) {
     // we're probably not using up-to-date xdl, so just fake it for now
