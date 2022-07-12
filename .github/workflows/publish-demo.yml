@@ -51,14 +51,14 @@ jobs:
       - name: 🏗️ Build the NCL website
         working-directory: ./apps/native-component-list
         run: yarn build:web
-      - name: 🌐 Publish NCL website
-        working-directory: ./apps/native-component-list
-        env:
-          ZEIT_TOKEN: ${{ secrets.ZEIT_TOKEN }}
-          BUILD_ID: ${{ github.sha }}
-        run: npx now deploy web-build --env NODE_ENV=production --confirm --public --no-clipboard --token=${ZEIT_TOKEN} > deploy-url.txt
-      - name: ➕ Add deploy url to GITHUB_ENV
-        run: echo "ZEIT_DEPLOY=$(cat deploy-url.txt)" >> $GITHUB_ENV
+      # - name: 🌐 Publish NCL website
+      #   working-directory: ./apps/native-component-list
+      #   env:
+      #     ZEIT_TOKEN: ${{ secrets.ZEIT_TOKEN }}
+      #     BUILD_ID: ${{ github.sha }}
+      #   run: npx now deploy web-build --env NODE_ENV=production --confirm --public --no-clipboard --token=${ZEIT_TOKEN} > deploy-url.txt
+      # - name: ➕ Add deploy url to GITHUB_ENV
+      #   run: echo "ZEIT_DEPLOY=$(cat deploy-url.txt)" >> $GITHUB_ENV
 
       # Alias the now deployment URL
       #
