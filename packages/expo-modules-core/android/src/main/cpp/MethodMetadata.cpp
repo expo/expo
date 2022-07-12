@@ -292,7 +292,7 @@ jsi::Function MethodMetadata::createPromiseBody(
     runtime,
     jsi::PropNameID::forAscii(runtime, "promiseFn"),
     2,
-    [this, args, moduleRegistry](
+    [this, args = std::move(args), moduleRegistry](
       jsi::Runtime &rt,
       const jsi::Value &thisVal,
       const jsi::Value *promiseConstructorArgs,
