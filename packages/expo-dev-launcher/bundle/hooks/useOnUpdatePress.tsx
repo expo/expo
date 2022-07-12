@@ -3,7 +3,7 @@ import * as React from 'react';
 
 import { Toasts } from '../components/Toasts';
 import { formatUpdateUrl } from '../functions/formatUpdateUrl';
-import { loadUpdate, saveNavigationState } from '../native-modules/DevLauncherInternal';
+import { loadUpdate, saveNavigationStateAsync } from '../native-modules/DevLauncherInternal';
 import { useToastStack } from '../providers/ToastStackProvider';
 import { useUpdatesConfig } from '../providers/UpdatesConfigProvider';
 import { Update } from '../queries/useUpdatesForBranch';
@@ -42,7 +42,8 @@ export function useOnUpdatePress() {
 
         try {
           const serializedNavigationState = JSON.stringify(rootNavigation?.getState());
-          saveNavigationState(serializedNavigationState);
+          // not necessary to await this as its effects are only applied on app launch
+          saveNavigationStateAsync(serializedNavigationState);
         } catch (error) {}
 
         return loadUpdate(updateUrl, projectUrl)

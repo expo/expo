@@ -36,15 +36,16 @@ export async function consumeNavigationStateAsync() {
     navigationState = JSON.parse(serializedNavigationState);
   } catch (error) {}
 
-  clearNavigationState();
+  // not necessary to await this as its effects are only applied on app launch
+  clearNavigationStateAsync();
   return navigationState;
 }
 
-export async function saveNavigationState(navigationState: string) {
+export async function saveNavigationStateAsync(navigationState: string) {
   return await DevLauncher.saveNavigationState(navigationState);
 }
 
-export async function clearNavigationState() {
+export async function clearNavigationStateAsync() {
   return await DevLauncher.clearNavigationState();
 }
 

@@ -29,5 +29,5 @@ export const updatesConfig = {
 
 export const loadFontsAsync = jest.fn().mockResolvedValue(null);
 export const consumeNavigationStateAsync = jest.fn().mockResolvedValue(null);
-export const saveNavigationState = jest.fn().mockResolvedValue(null);
-export const clearNavigationState = jest.fn().mockResolvedValue(null);
+export const saveNavigationStateAsync = jest.fn().mockResolvedValue(null);
+export const clearNavigationStateAsync = jest.fn().mockResolvedValue(null);
