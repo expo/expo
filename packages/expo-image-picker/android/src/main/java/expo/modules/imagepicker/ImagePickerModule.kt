@@ -68,7 +68,7 @@ class ImagePickerModule : Module() {
       launchContract({ imageLibraryLauncher.launch(contractOptions) }, options)
     }
 
-    AsyncFunction("getPendingResultAsync") Coroutine { _: Promise ->
+    AsyncFunction("getPendingResultAsync") Coroutine { ->
       val (bareResult, options) = pendingMediaPickingResult ?: return@Coroutine null
 
       pendingMediaPickingResult = null
