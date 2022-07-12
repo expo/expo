@@ -232,7 +232,7 @@ internal struct MediaHandler {
             return completion(index, .failure(exception))
           case .success(let targetUrl):
             let fileName = itemProvider.suggestedName.map { $0 + transcodeFileExtension }
-            let videoResult = buildVideoResult(for: targetUrl, withName: fileName, andId: selectedVideo.assetIdentifier)
+            let videoResult = buildVideoResult(for: targetUrl, withName: fileName, assetId: selectedVideo.assetIdentifier)
             return completion(index, videoResult)
           }
         }
@@ -258,7 +258,7 @@ internal struct MediaHandler {
     return url
   }
 
-  private func buildVideoResult(for videoUrl: URL, withName fileName: String?, andId assetId: String?) -> SelectedMediaResult {
+  private func buildVideoResult(for videoUrl: URL, withName fileName: String?, assetId: String?) -> SelectedMediaResult {
     guard let size = VideoUtils.readSizeFrom(url: videoUrl) else {
       return .failure(FailedToReadVideoSizeException())
     }
