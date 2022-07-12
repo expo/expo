@@ -1,5 +1,4 @@
 import { ExecutionEnvironment } from 'expo-constants';
-import { ExpoClientConfig } from 'expo-constants/build/Constants.types';
 import { mockLinking, mockProperty, unmockAllProperties } from 'jest-expo';
 
 import { describeManifestTypes, mockConstants } from './ManifestTestUtils';
@@ -22,8 +21,10 @@ describeManifestTypes(
   {
     extra: {
       expoClient: {
+        name: 'wat',
+        slug: 'wat',
         originalFullName: '@example/abc',
-      } as ExpoClientConfig,
+      },
     },
   }
 )((manifestObj) => {
@@ -166,8 +167,10 @@ describeManifestTypes(
   {
     extra: {
       expoClient: {
+        name: 'wat',
+        slug: 'wat',
         originalFullName: '@anonymous/abc',
-      } as ExpoClientConfig,
+      },
     },
   }
 )((manifestObj) => {
