@@ -15,6 +15,7 @@
 - Fixed the application crashing when the user forces a dark mode only for the dev-client app in the system setting on Android. ([#17858](https://github.com/expo/expo/pull/17858) by [@lukmccall](https://github.com/lukmccall))
 - Fixed the error screen is sometimes empty on Android. ([#17857](https://github.com/expo/expo/pull/17857) by [@lukmccall](https://github.com/lukmccall))
 - Added support for React Native 0.69.x. ([#18006](https://github.com/expo/expo/pull/18006) by [@kudo](https://github.com/kudo))
+- Partially fixed retrieving the React Context from the Android Flipper plugin. ([#18105](https://github.com/expo/expo/pull/18105) by [@lukmccall](https://github.com/lukmccall))
 - Add support for improved missing module error messages in React Native 0.65+. ([#18064](https://github.com/expo/expo/pull/18064) by [@esamelson](https://github.com/esamelson))
 
 ### 💡 Others
