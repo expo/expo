@@ -8090,6 +8090,12 @@ This can be used to quickly create specific permission hooks in every module.
               >
                 barCodeTypes
               </strong>
+              <br />
+              <span
+                class="css-fbbx5x-STYLES_OPTIONAL"
+              >
+                (optional)
+              </span>
             </td>
             <td
               class="css-yr5jng-tableCellStyle-Cell"
