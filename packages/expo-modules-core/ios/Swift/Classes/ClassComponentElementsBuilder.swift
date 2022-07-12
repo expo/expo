@@ -12,7 +12,7 @@ public struct ClassComponentElementsBuilder<OwnerType> {
   /**
    Default implementation without any constraints that just returns type-erased element.
    */
-  static func buildExpression<ElementType: ClassComponentElement>(
+  public static func buildExpression<ElementType: ClassComponentElement>(
     _ element: ElementType
   ) -> AnyClassComponentElement {
     return element
@@ -23,7 +23,7 @@ public struct ClassComponentElementsBuilder<OwnerType> {
    we need to instruct the function to pass `this` to the closure
    as the first argument and deduct it from `argumentsCount`.
    */
-  static func buildExpression<ElementType: ClassComponentElement>(
+  public static func buildExpression<ElementType: ClassComponentElement>(
     _ element: ElementType
   ) -> AnyClassComponentElement where ElementType.OwnerType == OwnerType {
     if var function = element as? AnyFunction {
