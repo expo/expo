@@ -73,8 +73,8 @@
 /packages/expo-system-ui                        @EvanBacon
 /packages/expo-task-manager                     @tsapeta @bycedric
 /packages/expo-tracking-transparency            @tsapeta
-/packages/expo-updates                          @esamelson
-/packages/expo-updates-interface                @esamelson
+/packages/expo-updates                          @esamelson @wschurman @douglowder
+/packages/expo-updates-interface                @esamelson @wschurman @douglowder
 /packages/expo-video-thumbnails                 @tsapeta
 /packages/expo-web-browser                      @tsapeta @barthap
 /packages/expo-yarn-workspaces                  @ide
