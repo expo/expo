@@ -117,7 +117,7 @@ private:
   jsi::Function createPromiseBody(
     jsi::Runtime &runtime,
     JSIInteropModuleRegistry *moduleRegistry,
-    jni::local_ref<jni::JArrayClass<jobject>::javaobject> &&args
+    jni::local_ref<jni::JArrayClass<jobject>::javaobject> &args
   );
 
   std::vector<jvalue> convertJSIArgsToJNI(
