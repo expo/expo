@@ -122,7 +122,6 @@ const LAUNCH_PICKER_PARAMETERS: FunctionParameter[] = [
         name: 'allowsMultipleSelection',
         type: 'boolean',
         initial: false,
-        platforms: ['web', 'ios'],
       },
       {
         name: 'selectionLimit',

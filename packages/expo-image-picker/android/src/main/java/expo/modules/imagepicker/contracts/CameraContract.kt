@@ -37,7 +37,7 @@ internal class CameraContract(
       val contentResolver = requireNotNull(appContextProvider.appContext.reactContext) { "React Application Context is null. " }.contentResolver
       val uri = input.uri
       val type = uri.toMediaType(contentResolver)
-      ImagePickerContractResult.Success(type to uri)
+      ImagePickerContractResult.Success(listOf(type to uri))
     }
 }
 

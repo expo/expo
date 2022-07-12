@@ -15,6 +15,9 @@ internal class ImagePickerOptions : Record, Serializable {
   var allowsEditing: Boolean = false
 
   @Field
+  var allowsMultipleSelection: Boolean = false
+
+  @Field
   @FloatRange(from = 0.0, to = 1.0)
   var quality: Double = 0.2
 

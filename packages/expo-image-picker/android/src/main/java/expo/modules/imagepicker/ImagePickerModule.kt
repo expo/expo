@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalContracts::class)
-
 package expo.modules.imagepicker
 
 import android.Manifest
@@ -24,7 +22,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
-import kotlin.contracts.ExperimentalContracts
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
@@ -145,7 +142,7 @@ class ImagePickerModule : Module() {
    */
   private suspend fun launchPicker(
     pickerLauncher: suspend () -> ImagePickerContractResult,
-  ): Pair<MediaType, Uri> = withContext(Dispatchers.Main) {
+  ): List<Pair<MediaType, Uri>> = withContext(Dispatchers.Main) {
     when (val pickingResult = pickerLauncher()) {
       is ImagePickerContractResult.Success -> pickingResult.data
       is ImagePickerContractResult.Cancelled -> throw OperationCanceledException()
@@ -200,6 +197,6 @@ internal enum class PickingSource {
  * Simple data structure to hold the data that has to be preserved after the Activity is destroyed.
  */
 internal data class PendingMediaPickingResult(
-  val data: Pair<MediaType, Uri>,
+  val data: List<Pair<MediaType, Uri>>,
   val options: ImagePickerOptions
 )

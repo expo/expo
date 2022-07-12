@@ -9,32 +9,39 @@ internal class ImagePickerCancelledResponse : Record {
   val cancelled: Boolean = true
 }
 
-internal sealed class ImagePickerMediaResponse(
-  @Field val type: MediaType,
-  @Field val uri: String,
-  @Field val width: Int,
-  @Field val height: Int,
-) : Record {
+internal sealed class ImagePickerResponse : Record {
   @Field
   val cancelled: Boolean = false
 
-  class Image(
-    uri: String,
-    width: Int,
-    height: Int,
+  sealed class Single(
+    @Field val type: MediaType,
+    @Field val uri: String,
+    @Field val width: Int,
+    @Field val height: Int,
+  ) : ImagePickerResponse() {
+    class Image(
+      uri: String,
+      width: Int,
+      height: Int,
 
-    @Field val base64: String?,
-    @Field val exif: Bundle?
-  ) : ImagePickerMediaResponse(MediaType.IMAGE, uri, width, height)
+      @Field val base64: String?,
+      @Field val exif: Bundle?
+    ) : Single(MediaType.IMAGE, uri, width, height)
 
-  class Video(
-    uri: String,
-    width: Int,
-    height: Int,
+    class Video(
+      uri: String,
+      width: Int,
+      height: Int,
 
-    @Field val duration: Int,
-    @Field val rotation: Int
-  ) : ImagePickerMediaResponse(MediaType.VIDEO, uri, width, height)
+      @Field val duration: Int,
+      @Field val rotation: Int
+    ) : Single(MediaType.VIDEO, uri, width, height)
+  }
+
+  class Multiple(
+    @Field
+    val selected: List<Single>
+  ) : ImagePickerResponse()
 }
 
 enum class MediaType(val value: String) {
