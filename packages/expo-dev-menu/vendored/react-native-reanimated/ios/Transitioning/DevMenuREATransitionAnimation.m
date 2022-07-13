@@ -1,13 +1,11 @@
-#import <UIKit/UIKit.h>
-
 #import "DevMenuREATransitionAnimation.h"
-
+#import <UIKit/UIKit.h>
 
 #define DEFAULT_DURATION 0.25
 
 #if TARGET_IPHONE_SIMULATOR
 // Based on https://stackoverflow.com/a/13307674
-float UIAnimationDragCoefficient(void);
+float DevMenuUIAnimationDragCoefficient(void);
 #endif
 
 CGFloat DevMenuSimAnimationDragCoefficient()
@@ -31,7 +29,7 @@ CGFloat DevMenuSimAnimationDragCoefficient()
 
 + (DevMenuREATransitionAnimation *)transitionWithAnimation:(CAAnimation *)animation
                                               layer:(CALayer *)layer
-                                         andKeyPath:(NSString*)keyPath;
+                                         andKeyPath:(NSString *)keyPath;
 {
   DevMenuREATransitionAnimation *anim = [DevMenuREATransitionAnimation new];
   anim.animation = animation;
@@ -47,7 +45,7 @@ CGFloat DevMenuSimAnimationDragCoefficient()
   it calls mach_absolute_time() which is based on the last time the device booted
   which might cause the delay
   */
-  if (_delay > 0){
+  if (_delay > 0) {
     _animation.beginTime = CACurrentMediaTime() + _delay * DevMenuSimAnimationDragCoefficient();
   }
   _animation.duration = self.duration * DevMenuSimAnimationDragCoefficient();
