@@ -1250,9 +1250,6 @@ PODS:
   - DoubleConversion (1.1.6)
   - EASClient (0.3.0):
     - ExpoModulesCore
-  - EXAmplitude (11.3.0):
-    - Amplitude (~> 6.0.0)
-    - ExpoModulesCore
   - EXAppleAuthentication (4.3.0):
     - ExpoModulesCore
   - EXApplication (4.2.0):
@@ -2239,7 +2236,6 @@ DEPENDENCIES:
   - CocoaLumberjack (~> 3.5.3)
   - DoubleConversion (from `../react-native-lab/react-native/third-party-podspecs/DoubleConversion.podspec`)
   - EASClient (from `../packages/expo-eas-client/ios`)
-  - EXAmplitude (from `../packages/expo-analytics-amplitude/ios`)
   - EXAppleAuthentication (from `../packages/expo-apple-authentication/ios`)
   - EXApplication (from `../packages/expo-application/ios`)
   - EXAV (from `../packages/expo-av/ios`)
@@ -2842,8 +2838,6 @@ EXTERNAL SOURCES:
     :podspec: "../react-native-lab/react-native/third-party-podspecs/DoubleConversion.podspec"
   EASClient:
     :path: "../packages/expo-eas-client/ios"
-  EXAmplitude:
-    :path: "../packages/expo-analytics-amplitude/ios"
   EXAppleAuthentication:
     :path: "../packages/expo-apple-authentication/ios"
   EXApplication:
@@ -3291,7 +3285,6 @@ SPEC CHECKSUMS:
   CocoaLumberjack: 2f44e60eb91c176d471fdba43b9e3eae6a721947
   DoubleConversion: 5189b271737e1565bdce30deb4a08d647e3f5f54
   EASClient: a2581835cf9b97d0defd5d630fc6eb1bf77045e7
-  EXAmplitude: 4267966061296b7f015b0ac2384697d8568698d5
   EXAppleAuthentication: b9e9d8fa9b0cc5277b2121eb809cf0f57c2496a7
   EXApplication: a3415586288f8cbabbabbff72f3cff7fd526cd74
   EXAV: 382afad7f99c88020fdfd64a560d1579dcfd6723
