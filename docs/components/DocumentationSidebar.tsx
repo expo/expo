@@ -46,7 +46,6 @@ export default function DocumentationSidebar({ router, routes = [] }: SidebarPro
         const Component = renderTypes[route.type];
         return (
           !!Component && (
-            // @ts-ignore
             <Component key={`${route.type}-${route.name}`} router={router} route={route} />
           )
         );

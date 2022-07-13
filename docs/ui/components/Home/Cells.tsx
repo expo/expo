@@ -19,7 +19,6 @@ export const GridCell = ({
   style,
   css,
 }: PropsWithChildren<GridCellProps>) => (
-  // @ts-ignore
   <Col css={[cellWrapperStyle, css]} sm={sm} md={md} lg={lg} xl={xl} xxl={xxl}>
     <div css={cellStyle} style={style}>
       {children}
@@ -43,7 +42,6 @@ export const APIGridCell = ({
   lg = 6,
   xl = 3,
 }: APIGridCellProps) => (
-  // @ts-ignore
   <Col css={cellWrapperStyle} md={md} sm={sm} lg={lg} xl={xl}>
     <a href={link} css={[cellStyle, cellAPIStyle, cellHoverStyle]} style={style}>
       <div css={cellIconWrapperStyle}>{icon}</div>
@@ -69,7 +67,6 @@ export const CommunityGridCell = ({
   style,
   md = 6,
 }: CommunityGridCellProps) => (
-  // @ts-ignore
   <Col css={cellWrapperStyle} md={md}>
     <a href={link} css={[cellStyle, cellCommunityStyle, cellHoverStyle]} style={style}>
       <div css={[cellCommunityIconWrapperStyle, css({ backgroundColor: iconBackground })]}>

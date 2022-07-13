@@ -30,7 +30,6 @@ const createPermalinkedComponent = (
         nestingLevel={nestingLevel}
         customIconStyle={customIconStyle}
         additionalProps={props}>
-        {/* @ts-ignore */}
         <BaseComponent>{children}</BaseComponent>
       </Permalink>
     );

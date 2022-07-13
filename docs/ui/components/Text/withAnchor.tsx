@@ -21,7 +21,6 @@ export function withAnchor(Component: FC<TextComponentProps>) {
   function AnchorComponent({ id, children, ...rest }: TextComponentProps) {
     const slug = useSlug(id, children);
     return (
-      // @ts-ignore
       <Component css={headingStyle} data-id={slug} {...rest}>
         <span css={anchorStyle} id={slug} />
         <Link href={`#${slug}`} passHref>

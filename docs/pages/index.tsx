@@ -34,7 +34,6 @@ import { H1, H2, H3, P } from '~/ui/components/Text';
 
 export const CellContainer = ({ children, style }: PropsWithChildren<{ style?: object }>) => (
   // https://github.com/sealninja/react-grid-system/issues/175
-  // @ts-ignore
   <Container
     fluid
     style={{ paddingLeft: -15, paddingRight: -15, marginBottom: spacing[8], ...style }}>
@@ -62,7 +61,6 @@ const Home = () => {
       </Description>
       <Spacer />
       <CellContainer>
-        {/* @ts-ignore */}
         <Row>
           <GridCell
             xl={4}
@@ -132,7 +130,6 @@ const Home = () => {
       <H3>Learn more</H3>
       <Description>Try out Expo in minutes and learn how to get the most out of Expo.</Description>
       <CellContainer>
-        {/* @ts-ignore */}
         <Row>
           <GridCell
             xl={6}
@@ -220,7 +217,6 @@ const Home = () => {
         Expo supplies a vast array of SDK modules. You can also create your own.
       </Description>
       <CellContainer>
-        {/* @ts-ignore */}
         <Row>
           <APIGridCell
             title="Maps"
@@ -247,7 +243,6 @@ const Home = () => {
       <H3>Join the community</H3>
       <Description>See the source code, connect with others, and get connected.</Description>
       <CellContainer>
-        {/* @ts-ignore */}
         <Row>
           <CommunityGridCell
             title="GitHub"
@@ -263,7 +258,6 @@ const Home = () => {
             iconBackground="#3131E8"
           />
         </Row>
-        {/* @ts-ignore */}
         <Row>
           <CommunityGridCell
             title="Twitter"
@@ -279,7 +273,6 @@ const Home = () => {
             icon={<DiscourseIcon color={palette.white} />}
           />
         </Row>
-        {/* @ts-ignore */}
         <Row>
           <CommunityGridCell
             title="Reddit"
