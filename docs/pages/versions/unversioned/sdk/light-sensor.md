@@ -132,7 +132,7 @@ const subscription = LightSensor.addListener((luminosity) => {
 
 #### Arguments
 
-- **listener (_function_)** -- A callback that is invoked when a LightSensor update is available. When invoked, the listener is provided a single argument that is the luminosity value.
+- **listener (_function_)** -- A callback that is invoked when a LightSensor update is available. When invoked, the listener is provided a single argument that is the illuminance value.
 
 #### Returns
 
@@ -148,7 +148,7 @@ Removes all listeners.
 
 ```typescript
 type LightSensorMeasurement = {
-  luminosity: number;
+  illuminance: number;
 };
 ```
 
