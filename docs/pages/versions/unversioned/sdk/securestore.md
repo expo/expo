@@ -1,6 +1,6 @@
 ---
 title: SecureStore
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-secure-store'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-secure-store'
 packageName: 'expo-secure-store'
 ---
 

@@ -23,6 +23,7 @@ import android.view.ViewParent;
 
 import androidx.annotation.NonNull;
 
+import com.facebook.react.bridge.ColorPropConverter;
 import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
@@ -173,12 +174,17 @@ public class SvgView extends ReactViewGroup implements ReactCompoundView, ReactC
     }
 
     @ReactProp(name = "tintColor")
-    public void setTintColor(@Nullable Integer tintColor) {
-        if (tintColor == null) {
-            mTintColor = 0;
-        } else {
-            mTintColor = tintColor;
-        }
+    public void setTintColor(@Nullable Dynamic tintColor) {
+      switch (tintColor.getType()) {
+        case Map:
+          mTintColor = ColorPropConverter.getColor(tintColor.asMap(), getContext());
+          break;
+        case Number:
+          mTintColor = tintColor.asInt();
+          break;
+        default:
+          mTintColor = 0;
+      }
         invalidate();
         clearChildCache();
     }

@@ -5,11 +5,11 @@ sidebar_title: Existing Apps
 
 If you want to use parts of the Expo SDK in your existing React Native app, you are in the right place.
 
-**Most packages in the Expo SDK depend on a module tooling installed with the [expo](https://github.com/expo/expo/tree/master/packages/expo) package. Once it is installed and configured in your app, you can install other packages from the Expo SDK just as you would any other React Native library.**
+**Most packages in the Expo SDK depend on a module tooling installed with the [expo](https://github.com/expo/expo/tree/main/packages/expo) package. Once it is installed and configured in your app, you can install other packages from the Expo SDK just as you would any other React Native library.**
 
 ## Setting up the `expo` package
 
-Follow the the [installing Expo modules guide](../bare/installing-expo-modules.md). It should take about five minutes to configure in an existing app.
+Follow the [installing Expo modules guide](../bare/installing-expo-modules.md). It should take about five minutes to configure in an existing app.
 
 ## Install libraries from the Expo SDK
 

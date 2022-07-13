@@ -177,8 +177,8 @@ export interface InAppPurchase {
     orderId: string;
     /**
      * The application package from which the purchase originated.
-     * @example `com.example.myapp`
      * @platform android
+     * @example `com.example.myapp`
      */
     packageName?: string;
     /**
@@ -256,6 +256,7 @@ export declare type IAPPurchaseHistoryOptions = {
     /**
      * A boolean that indicates whether or not you want to make a network request
      * to sync expired/consumed purchases and those on other devices.
+     *
      * - If set to `true`, this method returns purchase details **only** for the user's currently
      *   owned items (active subscriptions and non-consumed one-time purchases). If set to `false`, it
      *   will make a network request and return the most recent purchase made by the user for each
@@ -265,9 +266,36 @@ export declare type IAPPurchaseHistoryOptions = {
      *   which only contains the purchase time, purchase token, and product ID, rather than all of the
      *   attributes found in the [`InAppPurchase`](#inapppurchase) type.
      *
-     * @default true
      * @platform android
+     * @default true
      */
     useGooglePlayCache: boolean;
 };
+/**
+ * The `purchaseItemAsync` billing context on Android.
+ * @platform android
+ */
+export interface IAPPurchaseItemOptions {
+    /**
+     * The `purchaseToken` of the purchase that the user is upgrading or downgrading from.
+     */
+    oldPurchaseToken?: string;
+    /**
+     * Account identifiers, both need to be provided to work with Google Play
+     */
+    accountIdentifiers?: {
+        /**
+         * The obfuscated account id of the user's Google Play account.
+         */
+        obfuscatedAccountId: string;
+        /**
+         * The obfuscated profile id of the user's Google Play account.
+         */
+        obfuscatedProfileId: string;
+    };
+    /**
+     * Whether the purchase is happening in a VR context.
+     */
+    isVrPurchaseFlow?: boolean;
+}
 //# sourceMappingURL=InAppPurchases.types.d.ts.map

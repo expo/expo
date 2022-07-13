@@ -1,3 +1,9 @@
+// 1. RCTEventEmitter was deprecated in favor of RCTModernEventEmitter interface
+// 2. Event#init() with only viewTag was deprecated in favor of two arg c-tor
+// 3. Event#receiveEvent() with 3 args was deprecated in favor of 4 args version
+// ref: https://github.com/facebook/react-native/commit/2fbbdbb2ce897e8da3f471b08b93f167d566db1d
+@file:Suppress("DEPRECATION")
+
 package versioned.host.exp.exponent.modules.api.components.gesturehandler.react
 
 import androidx.core.util.Pools
@@ -51,16 +57,16 @@ class RNGestureHandlerStateChangeEvent private constructor() : Event<RNGestureHa
         init(handler, newState, oldState, dataExtractor)
       }
 
-    fun <T : GestureHandler<T>> createEventData(
+    fun <T: GestureHandler<T>> createEventData(
       handler: T,
       dataExtractor: RNGestureHandlerEventDataExtractor<T>?,
       newState: Int,
       oldState: Int,
     ): WritableMap = Arguments.createMap().apply {
-      dataExtractor?.extractEventData(handler, this)
-      putInt("handlerTag", handler.tag)
-      putInt("state", newState)
-      putInt("oldState", oldState)
-    }
+        dataExtractor?.extractEventData(handler, this)
+        putInt("handlerTag", handler.tag)
+        putInt("state", newState)
+        putInt("oldState", oldState)
+      }
   }
 }

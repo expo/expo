@@ -30,6 +30,12 @@ Configuring the resizeMode or positioning of the splash screen with `splash` (or
 
 This often results in massive reductions in app size; managed apps built with EAS Build can be in the order of 10x smaller than the same app built with `expo build` ([learn why](https://blog.expo.dev/expo-managed-workflow-in-2021-5b887bbf7dbb)). The tradeoff here is that you need to be careful when publishing updates in order to avoid publishing an incompatible JavaScript bundle. Learn more in [updates](/build/updates.md).
 
+### Only files in your project folder that are not ignored in Git are uploaded to the build server
+
+ EAS Build builds your app like other CI services — in short, the entire project is uploaded securely to the cloud, then it is downloaded by a build server, the dependencies are installed, and the build is run ([learn more](/build-reference/ios-builds)). Everything needed to build your app must be included in the project that is uploaded. The default mechanism for packaging your project is roughly equivalent to `git clone --depth 1`, and so anything that is in your `.gitignore` will not be uploaded (learn more in ["How projects are uploaded to EAS Build"](https://expo.fyi/eas-build-archive)).
+ 
+Developers often run into this with their "Google Services File", which they reference in their **app.json** / **app.config.js** but ignore in Git. If anything in your project is ignored in Git but necessary for a successful build, you can either remove it from `.gitignore` and commit it, or [encode with base64 and store in EAS Secrets, then decode at build time](https://github.com/expo/fyi/blob/main/eas-build-archive.md#how-can-i-upload-files-to-eas-build-if-they-are-gitignored).
+
 ### The `--config` flag is not supported
 
 You may be using `expo build:[ios|android] --config app.production.json` to switch app configuration files used by your project &mdash; this is not supported in EAS Build, but it's easy to migrate to an alternative. Read more: ["Migrating away from the `--config` flag in Expo CLI"](https://expo.fyi/config-flag-migration).
@@ -76,7 +82,7 @@ Support for custom entry points is in progress and is coming soon.
 
 Classic builds had no knowledge of your repository set up, you could use a monorepo or birepo or trirepo, the service was entirely indifferent. As long as you were able to publish a bundle, that's all that was needed. EAS Build needs to be able to install all of your project dependencies and essentially set up your development environment inside of a worker, so in some cases that will require some additional configuration. Learn more: ["How to set up EAS Build with a monorepo"](/build-reference/how-tos.md#how-to-set-up-eas-build-with).
 
-> Work is in progress to improve monorepo support for EAS Build managed projects. We recommend using [expo-yarn-workspaces](https://github.com/expo/expo/blob/master/packages/expo-yarn-workspaces/README.md).
+> Work is in progress to improve monorepo support for EAS Build managed projects. We recommend using [expo-yarn-workspaces](https://github.com/expo/expo/tree/main/packages/expo-yarn-workspaces/README.md).
 
 ### Environment variables used by your app need to be defined for EAS Build
 
@@ -88,7 +94,7 @@ Learn more about how to securely store your `NPM_TOKEN` on EAS Build: ["Using pr
 
 ### `expo-branch` is not supported on EAS Build
 
-You will need to remove `expo-branch` from your app to build it with EAS Build. The plan is to add support to [react-native-branch](https://www.npmjs.com/package/react-native-branch), the library maintained by engineers at [Branch](https://branch.io/). If Branch support is a blocker for you, you can try to build your own [config plugin](/guides/config-plugins) to add `react-native-branch` to your app today.
+You will need to remove `expo-branch` from your app to build it with EAS Build. For **EAS Build**, you need to use the official [react-native-branch](https://github.com/BranchMetrics/react-native-branch-deep-linking-attribution) with [@config-plugins/react-native-branch](https://github.com/expo/config-plugins/tree/master/packages/react-native-branch) instead.
 
 ### `amazon-cognito-identity-js` is required if you use AWS Amplify
 

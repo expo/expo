@@ -8,9 +8,12 @@ import expo.modules.updates.launcher.Launcher.LauncherCallback
 import expo.modules.updates.loader.Loader
 import expo.modules.updates.loader.RemoteLoader
 import expo.modules.updates.manifest.UpdateManifest
+import expo.modules.updates.selectionpolicy.LauncherSelectionPolicySingleUpdate
 import expo.modules.updates.selectionpolicy.ReaperSelectionPolicyDevelopmentClient
 import expo.modules.updates.selectionpolicy.SelectionPolicy
 import expo.modules.updatesinterface.UpdatesInterface
+import expo.modules.updatesinterface.UpdatesInterface.QueryCallback
+import expo.modules.updatesinterface.UpdatesInterface.UpdateCallback
 import org.json.JSONObject
 import java.util.*
 
@@ -28,7 +31,7 @@ class UpdatesDevLauncherController : UpdatesInterface {
   override fun fetchUpdateWithConfiguration(
     configuration: HashMap<String, Any>,
     context: Context,
-    callback: UpdatesInterface.UpdateCallback
+    callback: UpdateCallback
   ) {
     val controller = UpdatesController.instance
     val updatesConfiguration = UpdatesConfiguration(context, configuration)
@@ -51,11 +54,14 @@ class UpdatesDevLauncherController : UpdatesInterface {
       updatesConfiguration,
       databaseHolder.database,
       controller.fileDownloader,
-      controller.updatesDirectory
+      controller.updatesDirectory,
+      null
     )
     loader.start(object : Loader.LoaderCallback {
       override fun onFailure(e: Exception) {
         databaseHolder.releaseDatabase()
+        // reset controller's configuration to what it was before this request
+        controller.updatesConfiguration = mTempConfiguration!!
         callback.onFailure(e)
       }
 
@@ -65,7 +71,7 @@ class UpdatesDevLauncherController : UpdatesInterface {
           callback.onSuccess(null)
           return
         }
-        launchNewestUpdate(updatesConfiguration, context, callback)
+        launchUpdate(update, updatesConfiguration, context, callback)
       }
 
       override fun onAssetLoaded(
@@ -83,12 +89,24 @@ class UpdatesDevLauncherController : UpdatesInterface {
     })
   }
 
-  private fun launchNewestUpdate(
+  private fun launchUpdate(
+    update: UpdateEntity,
     configuration: UpdatesConfiguration,
     context: Context,
-    callback: UpdatesInterface.UpdateCallback
+    callback: UpdateCallback
   ) {
     val controller = UpdatesController.instance
+
+    // ensure that we launch the update we want, even if it isn't the latest one
+    val currentSelectionPolicy = controller.selectionPolicy
+    controller.setNextSelectionPolicy(
+      SelectionPolicy(
+        LauncherSelectionPolicySingleUpdate(update.id),
+        currentSelectionPolicy.loaderSelectionPolicy,
+        currentSelectionPolicy.reaperSelectionPolicy
+      )
+    )
+
     val databaseHolder = controller.databaseHolder
     val launcher = DatabaseLauncher(
       configuration,
@@ -101,9 +119,9 @@ class UpdatesDevLauncherController : UpdatesInterface {
       object : LauncherCallback {
         override fun onFailure(e: Exception) {
           databaseHolder.releaseDatabase()
-          callback.onFailure(e)
           // reset controller's configuration to what it was before this request
           controller.updatesConfiguration = mTempConfiguration!!
+          callback.onFailure(e)
         }
 
         override fun onSuccess() {
@@ -124,6 +142,30 @@ class UpdatesDevLauncherController : UpdatesInterface {
     )
   }
 
+  override fun storedUpdateIdsWithConfiguration(configuration: HashMap<String, Any>, context: Context, callback: QueryCallback) {
+    val controller = UpdatesController.instance
+    val updatesConfiguration = UpdatesConfiguration(context, configuration)
+    if (updatesConfiguration.updateUrl == null || updatesConfiguration.scopeKey == null) {
+      callback.onFailure(Exception("Failed to load update: UpdatesConfiguration object must include a valid update URL"))
+      return
+    }
+    val updatesDirectory = controller.updatesDirectory
+    if (updatesDirectory == null) {
+      callback.onFailure(controller.updatesDirectoryException)
+      return
+    }
+    val databaseHolder = controller.databaseHolder
+    val launcher = DatabaseLauncher(
+      updatesConfiguration,
+      updatesDirectory,
+      controller.fileDownloader,
+      controller.selectionPolicy
+    )
+    val readyUpdateIds = launcher.getReadyUpdateIds(databaseHolder.database)
+    controller.databaseHolder.releaseDatabase()
+    callback.onSuccess(readyUpdateIds)
+  }
+
   companion object {
     private var singletonInstance: UpdatesDevLauncherController? = null
     val instance: UpdatesDevLauncherController
@@ -141,6 +183,7 @@ class UpdatesDevLauncherController : UpdatesInterface {
 
     private fun setDevelopmentSelectionPolicy() {
       val controller = UpdatesController.instance
+      controller.resetSelectionPolicyToDefault()
       val currentSelectionPolicy = controller.selectionPolicy
       controller.setDefaultSelectionPolicy(
         SelectionPolicy(

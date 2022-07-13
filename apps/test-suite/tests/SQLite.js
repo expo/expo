@@ -93,7 +93,7 @@ export function test(t) {
               resolve
             );
           });
-          db._db.close();
+          db.closeAsync();
         },
         30000
       );
@@ -347,6 +347,7 @@ export function test(t) {
         );
       });
     });
+
     if (Platform.OS !== 'web') {
       // It is not expected to work on web, since we cannot execute PRAGMA to enable foreign keys support
       t.it('should return correct rowsAffected value when deleting cascade', async () => {
@@ -438,6 +439,19 @@ export function test(t) {
             resolve
           );
         });
+      });
+    }
+
+    if (Platform.OS !== 'web') {
+      t.it('should delete db on filesystem from the `deleteAsync()` call', async () => {
+        const db = SQLite.openDatabase('test.db');
+        let fileInfo = await FS.getInfoAsync(`${FS.documentDirectory}SQLite/test.db`);
+        t.expect(fileInfo.exists).toBeTruthy();
+
+        await db.closeAsync();
+        await db.deleteAsync();
+        fileInfo = await FS.getInfoAsync(`${FS.documentDirectory}SQLite/test.db`);
+        t.expect(fileInfo.exists).toBeFalsy();
       });
     }
   });

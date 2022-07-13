@@ -160,7 +160,7 @@ export async function reverseGeocodeAsync(location, options) {
 /**
  * Checks user's permissions for accessing location.
  * @return A promise that fulfills with an object of type [LocationPermissionResponse](#locationpermissionresponse).
- * @deprecated __Deprecated.__ Use [`getForegroundPermissionsAsync`](#locationgetforegroundpermissionsasync) or [`getBackgroundPermissionsAsync`](#locationgetbackgroundpermissionsasync) instead.
+ * @deprecated Use [`getForegroundPermissionsAsync`](#locationgetforegroundpermissionsasync) or [`getBackgroundPermissionsAsync`](#locationgetbackgroundpermissionsasync) instead.
  */
 export async function getPermissionsAsync() {
     console.warn(`"getPermissionsAsync()" is now deprecated. Please use "getForegroundPermissionsAsync()" or "getBackgroundPermissionsAsync()" instead.`);
@@ -170,7 +170,7 @@ export async function getPermissionsAsync() {
 /**
  * Asks the user to grant permissions for location.
  * @return A promise that fulfills with an object of type [LocationPermissionResponse](#locationpermissionresponse).
- * @deprecated __Deprecated.__ Use [`requestForegroundPermissionsAsync`](#locationrequestforegroundpermissionsasync) or [`requestBackgroundPermissionsAsync`](#locationrequestbackgroundpermissionsasync) instead.
+ * @deprecated Use [`requestForegroundPermissionsAsync`](#locationrequestforegroundpermissionsasync) or [`requestBackgroundPermissionsAsync`](#locationrequestbackgroundpermissionsasync) instead.
  */
 export async function requestPermissionsAsync() {
     console.warn(`"requestPermissionsAsync()" is now deprecated. Please use "requestForegroundPermissionsAsync()" or "requestBackgroundPermissionsAsync()" instead.`);
@@ -266,9 +266,6 @@ export async function isBackgroundLocationAvailableAsync() {
 // @needsAudit
 /**
  * Registers for receiving location updates that can also come when the app is in the background.
- * @param taskName Name of the task receiving location updates.
- * @param options An object of options passed to the location manager.
- * @return A promise resolving once the task with location updates is registered.
  *
  * # Task parameters
  *
@@ -286,6 +283,11 @@ export async function isBackgroundLocationAvailableAsync() {
  *  console.log('Received new locations', locations);
  * });
  * ```
+ *
+ * @param taskName Name of the task receiving location updates.
+ * @param options An object of options passed to the location manager.
+ *
+ * @return A promise resolving once the task with location updates is registered.
  */
 export async function startLocationUpdatesAsync(taskName, options = { accuracy: LocationAccuracy.Balanced }) {
     _validateTaskName(taskName);
@@ -334,9 +336,6 @@ function _validateRegions(regions) {
  * be called with the region that the device enter to or exit from.
  * If you want to add or remove regions from already running geofencing task, you can just call
  * `startGeofencingAsync` again with the new array of regions.
- * @param taskName Name of the task that will be called when the device enters or exits from specified regions.
- * @param regions Array of region objects to be geofenced.
- * @return A promise resolving as soon as the task is registered.
  *
  * # Task parameters
  *
@@ -345,7 +344,12 @@ function _validateRegions(regions) {
  *    See [GeofencingEventType](#geofencingeventtype).
  *  - `region` - Object containing details about updated region. See [LocationRegion](#locationregion) for more details.
  *
- * # Example
+ * @param taskName Name of the task that will be called when the device enters or exits from specified regions.
+ * @param regions Array of region objects to be geofenced.
+ *
+ * @return A promise resolving as soon as the task is registered.
+ *
+ * @example
  * ```ts
  * import { GeofencingEventType } from 'expo-location';
  * import * as TaskManager from 'expo-task-manager';

@@ -10,6 +10,7 @@
 #import <EXUpdates/EXUpdatesSelectionPolicyFactory.h>
 #import <EXUpdates/EXUpdatesUtils.h>
 #import <EXUpdates/EXUpdatesBuildData.h>
+#import <ExpoModulesCore/EXDefines.h>
 #import <React/RCTReloadCommand.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -113,7 +114,11 @@ static NSString * const EXUpdatesErrorEventName = @"error";
     [launcher launchUpdateWithConfig:_config];
 
     if (_delegate) {
-      [_delegate appController:self didStartWithSuccess:self.launchAssetUrl != nil];
+      EX_WEAKIFY(self);
+      dispatch_async(dispatch_get_main_queue(), ^{
+        EX_ENSURE_STRONGIFY(self);
+        [self->_delegate appController:self didStartWithSuccess:self.launchAssetUrl != nil];
+      });
     }
 
     return;
@@ -180,7 +185,12 @@ static NSString * const EXUpdatesErrorEventName = @"error";
     view.backgroundColor = [UIColor whiteColor];
   }
   
+  if (window.rootViewController == nil) {
+      UIViewController *rootViewController = [UIViewController new];
+      window.rootViewController = rootViewController;
+  }
   window.rootViewController.view = view;
+  [window makeKeyAndVisible];
 
   [self start];
 }
@@ -357,7 +367,7 @@ static NSString * const EXUpdatesErrorEventName = @"error";
   }
 
   _remoteLoadStatus = EXUpdatesRemoteLoadStatusLoading;
-  EXUpdatesAppLoader *remoteAppLoader = [[EXUpdatesRemoteAppLoader alloc] initWithConfig:_config database:_database directory:_updatesDirectory completionQueue:_controllerQueue];
+  EXUpdatesAppLoader *remoteAppLoader = [[EXUpdatesRemoteAppLoader alloc] initWithConfig:_config database:_database directory:_updatesDirectory launchedUpdate:self.launchedUpdate completionQueue:_controllerQueue];
   [remoteAppLoader loadUpdateFromUrl:_config.updateUrl onManifest:^BOOL(EXUpdatesUpdate *update) {
     return [self->_selectionPolicy shouldLoadNewUpdate:update withLaunchedUpdate:self.launchedUpdate filters:update.manifestFilters];
   } asset:^(EXUpdatesAsset *asset, NSUInteger successfulAssetCount, NSUInteger failedAssetCount, NSUInteger totalAssetCount) {
@@ -423,9 +433,11 @@ static NSString * const EXUpdatesErrorEventName = @"error";
   [launcher launchUpdateWithConfig:_config];
 
   if (_delegate) {
-    [EXUpdatesUtils runBlockOnMainThread:^{
+    EX_WEAKIFY(self);
+    dispatch_async(dispatch_get_main_queue(), ^{
+      EX_ENSURE_STRONGIFY(self);
       [self->_delegate appController:self didStartWithSuccess:self.launchAssetUrl != nil];
-    }];
+    });
   }
 
   [_errorRecovery writeErrorOrExceptionToLog:error];

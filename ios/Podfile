@@ -5,7 +5,7 @@ require File.join(File.dirname(`node --print "require.resolve('expo/package.json
 install! 'cocoapods',
          :generate_multiple_pod_projects => true,
          :incremental_installation => true
-platform :ios, '12.0'
+platform :ios, '12.4'
 inhibit_all_warnings!
 
 # Disable expo-updates auto create manifest in podspec script_phase
@@ -28,15 +28,17 @@ abstract_target 'Expo Go' do
       'expo-dev-menu',
       'expo-dev-menu-interface',
       'expo-dev-launcher',
-      'expo-dev-client'
+      'expo-dev-client',
     ],
     # Modules for which to include Tests subspec
     tests: [
+      'expo-eas-client',
       'expo-modules-core',
       'expo-updates',
       'expo-manifests',
       'expo-json-utils',
       'expo-structured-headers',
+      'expo-clipboard',
     ],
     flags: {
       :inhibit_warnings => false
@@ -52,6 +54,9 @@ abstract_target 'Expo Go' do
   # Build React Native with RCT_DEV enabled and RCT_ENABLE_INSPECTOR and
   # RCT_ENABLE_PACKAGER_CONNECTION disabled
   post_install do |installer|
+    # Workaround build error for Folly
+    __apply_Xcode_12_5_M1_post_install_workaround(installer) if installer.pods_project
+
     # Disabled as of CocoaPods 1.8.0.beta1 since pods_project seems to be nil
     # installer.pods_project.main_group.tab_width = '2';
     # installer.pods_project.main_group.indent_width = '2';
@@ -77,6 +82,13 @@ abstract_target 'Expo Go' do
         end
       end
 
+      if pod_name.end_with?('EXUpdates')
+        target_installation_result.native_target.build_configurations.each do |config|
+          config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)']
+          config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'SUPPRESS_EXPO_UPDATES_SERVICE=1'
+        end
+      end
+
       # Build React Native with RCT_DEV enabled and RCT_ENABLE_INSPECTOR and
       # RCT_ENABLE_PACKAGER_CONNECTION disabled
       next unless pod_name.start_with?('React')
@@ -84,7 +96,7 @@ abstract_target 'Expo Go' do
         config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)']
         config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'RCT_DEV=1'
         config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'RCT_ENABLE_INSPECTOR=0'
-        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'ENABLE_PACKAGER_CONNECTION=0'
+        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'RCT_DEV_SETTINGS_ENABLE_PACKAGER_CONNECTION=0'
       end
     end
   end
@@ -106,9 +118,12 @@ abstract_target 'Expo Go' do
   end
 
   target 'Tests' do
-    inherit! :search_paths
+    # `ExpoModulesTestCore` has implicit dependency to `React-Core` which has a resource bundle.
+    # To prevent CocoaPods generating new `React-Core` resource bundle and the strange `React-Core-60309c9c` target,
+    # this test target should inherit all properties from parents.
+    inherit! :complete
 
-    pod 'Quick', :podspec => './Quick.podspec'
+    pod 'ExpoModulesTestCore', :path => "../packages/expo-modules-test-core/ios"
     pod 'Nimble', :podspec => './Nimble.podspec'
   end
 end

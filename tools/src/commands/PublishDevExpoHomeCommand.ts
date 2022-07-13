@@ -1,6 +1,7 @@
 import { Command } from '@expo/commander';
 import JsonFile from '@expo/json-file';
 import chalk from 'chalk';
+import { hashElement } from 'folder-hash';
 import fs from 'fs-extra';
 import os from 'os';
 import path from 'path';
@@ -10,11 +11,12 @@ import semver from 'semver';
 import * as ExpoCLI from '../ExpoCLI';
 import { getNewestSDKVersionAsync } from '../ProjectVersions';
 import { deepCloneObject } from '../Utils';
-import { Directories, HashDirectory, XDL } from '../expotools';
+import { Directories, XDL } from '../expotools';
 import AppConfig from '../typings/AppConfig';
 
 type ActionOptions = {
   dry: boolean;
+  sdkVersion?: string;
 };
 
 type ExpoCliStateObject = {
@@ -45,8 +47,11 @@ export async function findTargetSdkVersionAsync(): Promise<string> {
 /**
  * Sets `sdkVersion` and `version` fields in app configuration if needed.
  */
-export async function maybeUpdateHomeSdkVersionAsync(appJson: AppConfig): Promise<void> {
-  const targetSdkVersion = await findTargetSdkVersionAsync();
+export async function maybeUpdateHomeSdkVersionAsync(
+  appJson: AppConfig,
+  explicitSdkVersion?: string | null
+): Promise<void> {
+  const targetSdkVersion = explicitSdkVersion ?? (await findTargetSdkVersionAsync());
 
   if (appJson.expo.sdkVersion !== targetSdkVersion) {
     console.log(`Updating home's sdkVersion to ${chalk.cyan(targetSdkVersion)}...`);
@@ -147,10 +152,13 @@ async function action(options: ActionOptions): Promise<void> {
     throw new Error('EXPO_HOME_DEV_ACCOUNT_PASSWORD must be set in your environment.');
   }
 
-  const expoHomeHash = await HashDirectory.hashDirectoryWithVersionsAsync(EXPO_HOME_PATH);
+  const expoHomeHashNode = await hashElement(EXPO_HOME_PATH, {
+    encoding: 'hex',
+    folders: { exclude: ['.expo', 'node_modules'] },
+  });
   const appJsonFilePath = path.join(EXPO_HOME_PATH, 'app.json');
-  const slug = `expo-home-dev-${expoHomeHash}`;
-  const url = `exp://expo.io/@${EXPO_HOME_DEV_ACCOUNT_USERNAME!}/${slug}`;
+  const slug = `expo-home-dev-${expoHomeHashNode.hash}`;
+  const url = `exp://exp.host/@${EXPO_HOME_DEV_ACCOUNT_USERNAME!}/${slug}`;
   const appJsonFile = new JsonFile<AppConfig>(appJsonFilePath);
   const appJson = await appJsonFile.readAsync();
 
@@ -160,7 +168,7 @@ async function action(options: ActionOptions): Promise<void> {
   console.log('Getting expo-cli state of the current session...');
   const cliStateBackup = await getExpoCliStateAsync();
 
-  await maybeUpdateHomeSdkVersionAsync(appJson);
+  await maybeUpdateHomeSdkVersionAsync(appJson, options.sdkVersion);
 
   console.log(`Modifying home's slug to ${chalk.green(slug)}...`);
   appJson.expo.slug = slug;
@@ -225,6 +233,10 @@ export default (program: Command) => {
       '-d, --dry',
       'Whether to skip `expo publish` command. Despite this, some files might be changed after running this script.',
       false
+    )
+    .option(
+      '-s, --sdkVersion [string]',
+      'SDK version the published app should use. Defaults to the newest available SDK set in the Expo Go project.'
     )
     .asyncAction(action);
 };

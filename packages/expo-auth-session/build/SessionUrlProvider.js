@@ -1,6 +1,5 @@
 import Constants, { ExecutionEnvironment } from 'expo-constants';
 import * as Linking from 'expo-linking';
-import { resolveScheme } from 'expo-linking/build/Schemes';
 import { Platform } from 'expo-modules-core';
 import qs from 'qs';
 export class SessionUrlProvider {
@@ -14,12 +13,12 @@ export class SessionUrlProvider {
         }
         return Linking.createURL(path, {
             // The redirect URL doesn't matter for the proxy as long as it's valid, so silence warnings if needed.
-            scheme: options?.scheme ?? resolveScheme({ isSilent: true }),
+            scheme: options?.scheme ?? Linking.resolveScheme({ isSilent: true }),
             queryParams,
             isTripleSlashed: options?.isTripleSlashed,
         });
     }
-    getStartUrl(authUrl, returnUrl) {
+    getStartUrl(authUrl, returnUrl, projectNameForProxy) {
         if (Platform.OS === 'web' && !Platform.isDOMAvailable) {
             // Return nothing in SSR envs
             return '';
@@ -28,22 +27,23 @@ export class SessionUrlProvider {
             authUrl,
             returnUrl,
         });
-        return `${this.getRedirectUrl()}/start?${queryString}`;
+        return `${this.getRedirectUrl({ projectNameForProxy })}/start?${queryString}`;
     }
-    getRedirectUrl(urlPath) {
+    getRedirectUrl(options) {
         if (Platform.OS === 'web') {
             if (Platform.isDOMAvailable) {
-                return [window.location.origin, urlPath].filter(Boolean).join('/');
+                return [window.location.origin, options.urlPath].filter(Boolean).join('/');
             }
             else {
                 // Return nothing in SSR envs
                 return '';
             }
         }
-        const legacyExpoProjectId = Constants.manifest?.originalFullName ||
+        const legacyExpoProjectFullName = options.projectNameForProxy ||
+            Constants.manifest?.originalFullName ||
             Constants.manifest2?.extra?.expoClient?.originalFullName ||
             Constants.manifest?.id;
-        if (!legacyExpoProjectId) {
+        if (!legacyExpoProjectFullName) {
             let nextSteps = '';
             if (__DEV__) {
                 if (Constants.executionEnvironment === ExecutionEnvironment.Bare) {
@@ -55,11 +55,16 @@ export class SessionUrlProvider {
                         ' Please report this as a bug with the contents of `expo config --type public`.';
                 }
             }
-            throw new Error('Cannot use AuthSession proxy because the project ID is not defined.' + nextSteps);
+            if (Constants.manifest2) {
+                nextSteps =
+                    ' Prefer AuthRequest (with the useProxy option set to false) in combination with an Expo Development Client build of your application.' +
+                        ' To continue using the AuthSession proxy, specify the project full name (@owner/slug) using the projectNameForProxy option.';
+            }
+            throw new Error('Cannot use the AuthSession proxy because the project full name is not defined.' + nextSteps);
         }
-        const redirectUrl = `${SessionUrlProvider.BASE_URL}/${legacyExpoProjectId}`;
+        const redirectUrl = `${SessionUrlProvider.BASE_URL}/${legacyExpoProjectFullName}`;
         if (__DEV__) {
-            SessionUrlProvider.warnIfAnonymous(legacyExpoProjectId, redirectUrl);
+            SessionUrlProvider.warnIfAnonymous(legacyExpoProjectFullName, redirectUrl);
             // TODO: Verify with the dev server that the manifest is up to date.
         }
         return redirectUrl;
@@ -67,7 +72,8 @@ export class SessionUrlProvider {
     static getHostAddressQueryParams() {
         let hostUri = Constants.manifest?.hostUri ?? Constants.manifest2?.extra?.expoClient?.hostUri;
         if (!hostUri &&
-            (ExecutionEnvironment.StoreClient === Constants.executionEnvironment || resolveScheme({}))) {
+            (ExecutionEnvironment.StoreClient === Constants.executionEnvironment ||
+                Linking.resolveScheme({}))) {
             if (!Constants.linkingUri) {
                 hostUri = '';
             }

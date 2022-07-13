@@ -1,8 +1,6 @@
 import { css } from '@emotion/react';
-import { theme } from '@expo/styleguide';
+import { theme, typography } from '@expo/styleguide';
 import * as React from 'react';
-
-import * as Constants from '~/constants/theme';
 
 const MDX_CLASS_NAME_TO_TAB_NAME: Record<string, string> = {
   'language-swift': 'Swift',
@@ -18,24 +16,24 @@ const CodeSamplesCSS = css`
   display: flex;
   flex-direction: row;
   max-width: 100%;
-  margin: 20px 0px;
+  margin: 20px 0;
 
   .code-block-column {
     display: flex;
     flex-direction: column;
     flex: 1;
     margin-right: -1px;
-    min-width: 0px;
+    min-width: 0;
 
     pre {
-      border-top-left-radius: 0px;
-      border-top-right-radius: 0px;
+      border-top-left-radius: 0;
+      border-top-right-radius: 0;
     }
     &:not(:first-child) pre {
-      border-bottom-left-radius: 0px;
+      border-bottom-left-radius: 0;
     }
     &:not(:last-child) pre {
-      border-bottom-right-radius: 0px;
+      border-bottom-right-radius: 0;
     }
     &:first-child .code-block-header {
       border-top-left-radius: 4px;
@@ -51,18 +49,32 @@ const CodeSamplesCSS = css`
     border-bottom-width: 0px;
 
     span {
+      ${typography.fontSizes[15]}
       color: ${theme.text.default};
-      font-family: ${Constants.fonts.mono};
-      font-size: 15px;
+      font-family: ${typography.fontFaces.mono};
     }
   }
   .code-block-content {
     flex: 1;
-    overflow-x: scroll;
+    overflow-x: auto;
 
     pre {
       height: 100%;
-      margin: 0px;
+      margin: 0;
+
+      ::-webkit-scrollbar {
+        height: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: ${theme.background.secondary};
+      }
+      ::-webkit-scrollbar-thumb {
+        background: ${theme.background.tertiary};
+        border-radius: 10px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: ${theme.background.quaternary};
+      }
     }
   }
 `;

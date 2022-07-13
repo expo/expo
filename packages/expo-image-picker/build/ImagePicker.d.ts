@@ -6,7 +6,7 @@ import { CameraPermissionResponse, CameraRollPermissionResponse, MediaLibraryPer
  */
 export declare function getCameraPermissionsAsync(): Promise<CameraPermissionResponse>;
 /**
- * @deprecated Deprecated. Use `getMediaLibraryPermissionsAsync()` instead.
+ * @deprecated Use `getMediaLibraryPermissionsAsync()` instead.
  */
 export declare function getCameraRollPermissionsAsync(): Promise<MediaLibraryPermissionResponse>;
 /**
@@ -22,7 +22,7 @@ export declare function getMediaLibraryPermissionsAsync(writeOnly?: boolean): Pr
  */
 export declare function requestCameraPermissionsAsync(): Promise<CameraPermissionResponse>;
 /**
- * @deprecated Deprecated. Use `requestMediaLibraryPermissionsAsync()` instead.
+ * @deprecated Use `requestMediaLibraryPermissionsAsync()` instead.
  */
 export declare function requestCameraRollPermissionsAsync(): Promise<MediaLibraryPermissionResponse>;
 /**

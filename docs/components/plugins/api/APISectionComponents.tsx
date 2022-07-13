@@ -7,21 +7,20 @@ import {
   CommentData,
   GeneratedData,
   MethodSignatureData,
-  PropData,
   PropsDefinitionData,
 } from '~/components/plugins/api/APIDataTypes';
+import { APISectionDeprecationNote } from '~/components/plugins/api/APISectionDeprecationNote';
 import APISectionProps from '~/components/plugins/api/APISectionProps';
-import { CommentTextBlock, resolveTypeName } from '~/components/plugins/api/APISectionUtils';
+import {
+  CommentTextBlock,
+  resolveTypeName,
+  getComponentName,
+  STYLES_APIBOX,
+} from '~/components/plugins/api/APISectionUtils';
 
 export type APISectionComponentsProps = {
   data: GeneratedData[];
   componentsProps: PropsDefinitionData[];
-};
-
-const getComponentName = (name?: string, children: PropData[] = []) => {
-  if (name && name !== 'default') return name;
-  const ctor = children.filter((child: PropData) => child.name === 'constructor')[0];
-  return ctor?.signatures?.[0]?.type?.name ?? 'default';
 };
 
 const getComponentComment = (comment: CommentData, signatures: MethodSignatureData[]) =>
@@ -33,8 +32,10 @@ const renderComponent = (
 ): JSX.Element => {
   const resolvedType = extendedTypes?.length ? extendedTypes[0] : type;
   const resolvedName = getComponentName(name, children);
+  const extractedComment = getComponentComment(comment, signatures);
   return (
-    <div key={`component-definition-${resolvedName}`}>
+    <div key={`component-definition-${resolvedName}`} css={STYLES_APIBOX}>
+      <APISectionDeprecationNote comment={extractedComment} />
       <H3Code>
         <InlineCode>{resolvedName}</InlineCode>
       </H3Code>
@@ -43,7 +44,7 @@ const renderComponent = (
           <B>Type:</B> <InlineCode>{resolveTypeName(resolvedType)}</InlineCode>
         </P>
       )}
-      <CommentTextBlock comment={getComponentComment(comment, signatures)} />
+      <CommentTextBlock comment={extractedComment} />
       {componentsProps && componentsProps.length ? (
         <APISectionProps data={componentsProps} header={`${resolvedName}Props`} />
       ) : null}
@@ -58,7 +59,9 @@ const APISectionComponents = ({ data, componentsProps }: APISectionComponentsPro
       {data.map(component =>
         renderComponent(
           component,
-          componentsProps.filter(cp => cp.name.includes(component.name))
+          componentsProps.filter(cp =>
+            cp.name.includes(getComponentName(component.name, component.children))
+          )
         )
       )}
     </>

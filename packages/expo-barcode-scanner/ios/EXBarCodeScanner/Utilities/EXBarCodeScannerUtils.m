@@ -8,21 +8,27 @@
 
 + (NSDictionary *)validBarCodeTypes
 {
-  return @{
-           @"upc_e" : AVMetadataObjectTypeUPCECode,
-           @"code39" : AVMetadataObjectTypeCode39Code,
-           @"code39mod43" : AVMetadataObjectTypeCode39Mod43Code,
-           @"ean13" : AVMetadataObjectTypeEAN13Code,
-           @"ean8" : AVMetadataObjectTypeEAN8Code,
-           @"code93" : AVMetadataObjectTypeCode93Code,
-           @"code128" : AVMetadataObjectTypeCode128Code,
-           @"pdf417" : AVMetadataObjectTypePDF417Code,
-           @"qr" : AVMetadataObjectTypeQRCode,
-           @"aztec" : AVMetadataObjectTypeAztecCode,
-           @"interleaved2of5" : AVMetadataObjectTypeInterleaved2of5Code,
-           @"itf14" : AVMetadataObjectTypeITF14Code,
-           @"datamatrix" : AVMetadataObjectTypeDataMatrixCode,
-           };
+    NSMutableDictionary *validTypes = [@{
+      @"upc_e" : AVMetadataObjectTypeUPCECode,
+      @"code39" : AVMetadataObjectTypeCode39Code,
+      @"code39mod43" : AVMetadataObjectTypeCode39Mod43Code,
+      @"ean13" : AVMetadataObjectTypeEAN13Code,
+      @"ean8" : AVMetadataObjectTypeEAN8Code,
+      @"code93" : AVMetadataObjectTypeCode93Code,
+      @"code128" : AVMetadataObjectTypeCode128Code,
+      @"pdf417" : AVMetadataObjectTypePDF417Code,
+      @"qr" : AVMetadataObjectTypeQRCode,
+      @"aztec" : AVMetadataObjectTypeAztecCode,
+      @"interleaved2of5" : AVMetadataObjectTypeInterleaved2of5Code,
+      @"itf14" : AVMetadataObjectTypeITF14Code,
+      @"datamatrix" : AVMetadataObjectTypeDataMatrixCode,
+    } mutableCopy];
+#ifdef __IPHONE_15_4
+    if (@available(iOS 15.4, *)) {
+      validTypes[@"codabar"] = AVMetadataObjectTypeCodabarCode;
+    }
+#endif
+    return validTypes;
 }
 
 + (AVCaptureVideoOrientation)videoOrientationForInterfaceOrientation:(UIInterfaceOrientation)orientation
@@ -137,6 +143,13 @@
       return AVMetadataObjectTypePDF417Code;
     case kBarcodeFormatCode39:
       return AVMetadataObjectTypeCode39Code;
+    case kBarcodeFormatCodabar:
+#ifdef __IPHONE_15_4
+      if (@available(iOS 15.4, *)) {
+        return AVMetadataObjectTypeCodabarCode;
+      }
+#endif
+      return @"unknown";
     default:
       return @"unknown";
   }

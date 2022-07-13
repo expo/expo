@@ -1,37 +1,32 @@
-import path from 'path';
-import fs from 'fs-extra';
 import chalk from 'chalk';
+import fs from 'fs-extra';
 import glob from 'glob-promise';
+import path from 'path';
 
+import { IOS_DIR } from '../Constants';
 import logger from '../Logger';
-import XcodeProject from './XcodeProject';
+import { Package } from '../Packages';
 import {
   createSpecFromPodspecAsync,
   generateXcodeProjectAsync,
   INFO_PLIST_FILENAME,
 } from './XcodeGen';
+import XcodeProject from './XcodeProject';
 import { Flavor, Framework, XcodebuildSettings } from './XcodeProject.types';
-import { Package } from '../Packages';
-import { IOS_DIR } from '../Constants';
 
 const PODS_DIR = path.join(IOS_DIR, 'Pods');
 
 // We will be increasing this list slowly. Once all are enabled,
 // find a better way to ignore some packages that shouldn't be prebuilt (like interfaces).
 export const PACKAGES_TO_PREBUILD = [
-  // 'expo-ads-admob',
-  // 'expo-ads-facebook',
-  // 'expo-analytics-amplitude',
-  // 'expo-analytics-segment',
   // 'expo-app-auth',
   // 'expo-apple-authentication',
   // 'expo-application',
-  // 'expo-av',
+  'expo-av',
   // 'expo-background-fetch',
   'expo-barcode-scanner',
   // 'expo-battery',
   // 'expo-blur',
-  'expo-branch',
   // 'expo-brightness',
   // 'expo-calendar',
   'expo-camera',
@@ -42,15 +37,13 @@ export const PACKAGES_TO_PREBUILD = [
   // 'expo-device',
   // 'expo-document-picker',
   // 'expo-error-recovery',
-  'expo-face-detector',
-  'expo-facebook',
+  // 'expo-face-detector',
   'expo-file-system',
   // 'expo-firebase-analytics',
   // 'expo-firebase-core',
   // 'expo-font',
   'expo-gl-cpp',
   'expo-gl',
-  'expo-google-sign-in',
   // 'expo-haptics',
   // 'expo-image-loader',
   // 'expo-image-manipulator',
@@ -76,7 +69,7 @@ export const PACKAGES_TO_PREBUILD = [
   'expo-splash-screen',
   // 'expo-sqlite',
   // 'expo-store-review',
-  'expo-structured-headers',
+  // 'expo-structured-headers',
   // 'expo-task-manager',
   // 'expo-updates',
   // 'expo-video-thumbnails',

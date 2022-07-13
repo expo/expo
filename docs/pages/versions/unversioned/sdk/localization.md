@@ -1,6 +1,6 @@
 ---
 title: Localization
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-localization'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-localization'
 packageName: 'expo-localization'
 ---
 

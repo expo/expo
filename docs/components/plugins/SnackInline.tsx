@@ -1,9 +1,9 @@
+import { spacing, theme, ArrowUpRightIcon } from '@expo/styleguide';
 import * as React from 'react';
 
-import { SNACK_URL, getSnackFiles } from '../../common/snack';
-
-import DocumentationPageContext from '~/components/DocumentationPageContext';
-import { ExternalLink } from '~/components/icons/ExternalLink';
+import { SNACK_URL, getSnackFiles } from '~/common/snack';
+import { PageApiVersionContext } from '~/providers/page-api-version';
+import { Button } from '~/ui/components/Button';
 
 const DEFAULT_PLATFORM = 'android';
 const LATEST_VERSION = `v${require('../../package.json').version}`;
@@ -20,7 +20,7 @@ type Props = {
 };
 
 export default class SnackInline extends React.Component<Props> {
-  static contextType = DocumentationPageContext;
+  static contextType = PageApiVersionContext;
   contentRef = React.createRef<HTMLDivElement>();
 
   static defaultProps = {
@@ -72,7 +72,7 @@ export default class SnackInline extends React.Component<Props> {
 
   render() {
     return (
-      <div>
+      <div style={{ marginBottom: spacing[4] }}>
         <div
           ref={this.contentRef}
           style={this.props.contentHidden ? { display: 'none' } : undefined}>
@@ -104,9 +104,12 @@ export default class SnackInline extends React.Component<Props> {
               )}
             />
           )}
-          <button className="snack-inline-example-button" disabled={!this.state.ready}>
-            <ExternalLink size={16} /> {this.props.buttonTitle || 'Try this example on Snack'}
-          </button>
+          <Button
+            disabled={!this.state.ready}
+            iconRight={<ArrowUpRightIcon color={theme.palette.white} />}
+            type="submit">
+            {this.props.buttonTitle || 'Try this example on Snack'}
+          </Button>
         </form>
       </div>
     );

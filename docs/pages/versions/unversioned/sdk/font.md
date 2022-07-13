@@ -1,6 +1,6 @@
 ---
 title: Font
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-font'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-font'
 packageName: 'expo-font'
 ---
 

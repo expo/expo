@@ -2,7 +2,7 @@ import React from 'react';
 import { View, StyleSheet, Pressable } from 'react-native';
 import Animated from 'react-native-reanimated';
 
-import { BottomSheet } from '../components/redesign/BottomSheet';
+import { BottomSheet } from '../components/BottomSheet';
 import { hideMenu, subscribeToCloseEvents, subscribeToOpenEvents } from '../native-modules/DevMenu';
 
 const { onChange, cond, eq, call, Value } = Animated;
@@ -42,8 +42,12 @@ export function BottomSheetProvider({ children }: BottomSheetProviderProps) {
 
   const callbackNode = React.useRef(new Value(0));
 
+  function hideApp() {
+    hideMenu();
+  }
+
   const trackCallbackNode = React.useRef(
-    onChange(callbackNode.current, cond(eq(callbackNode.current, 0), call([], hideMenu)))
+    onChange(callbackNode.current, cond(eq(callbackNode.current, 0), call([], hideApp)))
   );
 
   const backgroundOpacity = callbackNode.current.interpolate({

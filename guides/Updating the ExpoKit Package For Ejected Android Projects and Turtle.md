@@ -16,7 +16,7 @@ This document will guide you through the process of creating a new version of pr
 
     **Why:** Turtle uses projects differently than developers of ejected projects, so we need to test this workflow separately.
 
-    **How:** Given you pushed the changes to `sdk-XX` branch, open (or create if needed) a pull request of `sdk-XX` to `master`, go to _Checks_ tab, open `shell_app` CI workflow results for that branch and approve the `shell_app_android_approve_build` job from `shell_app` workflow. Wait for the `shell_app_android_build` job to finish, then copy the URL printed at the end and follow Turtle instructions of deploying a new version of SDK to staging. When deployed, run `EXPO_STAGING=1 expo build:android` in an upcoming SDK unejected project.
+    **How:** Given you pushed the changes to `sdk-XX` branch, open (or create if needed) a pull request of `sdk-XX` to `main`, go to _Checks_ tab, open `shell_app` CI workflow results for that branch and approve the `shell_app_android_approve_build` job from `shell_app` workflow. Wait for the `shell_app_android_build` job to finish, then copy the URL printed at the end and follow Turtle instructions of deploying a new version of SDK to staging. When deployed, run `EXPO_STAGING=1 expo build:android` in an upcoming SDK unejected project.
 
 3. **Publish template to production**
 

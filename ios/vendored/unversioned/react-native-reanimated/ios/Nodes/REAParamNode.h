@@ -1,4 +1,4 @@
-#import "REAValueNode.h"
+#import <RNReanimated/REAValueNode.h>
 
 @interface REAParamNode : REAValueNode
 

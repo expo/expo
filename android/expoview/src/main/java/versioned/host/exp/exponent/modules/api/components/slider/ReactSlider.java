@@ -12,7 +12,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.util.AttributeSet;
-import android.view.MotionEvent;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityManager;
 import androidx.appcompat.widget.AppCompatSeekBar;
@@ -25,7 +24,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import javax.annotation.Nullable;
-
+import com.facebook.react.modules.i18nmanager.I18nUtil;
 /**
  * Slider that behaves more like the iOS one, for consistency.
  *
@@ -56,6 +55,8 @@ public class ReactSlider extends AppCompatSeekBar {
    */
   private double mValue = 0;
 
+  private boolean isSliding = false;
+
   /** If zero it's determined automatically. */
   private double mStep = 0;
 
@@ -67,6 +68,8 @@ public class ReactSlider extends AppCompatSeekBar {
 
   public ReactSlider(Context context, @Nullable AttributeSet attrs, int style) {
     super(context, attrs, style);
+    I18nUtil sharedI18nUtilInstance = I18nUtil.getInstance();
+    super.setLayoutDirection(sharedI18nUtilInstance.isRTL(context) ? LAYOUT_DIRECTION_RTL : LAYOUT_DIRECTION_LTR);
     disableStateListAnimatorIfNeeded();
   }
 
@@ -97,6 +100,14 @@ public class ReactSlider extends AppCompatSeekBar {
   /* package */ void setStep(double step) {
     mStep = step;
     updateAll();
+  }
+
+  boolean isSliding() {
+    return isSliding;
+  }
+
+  void isSliding(boolean isSliding) {
+    this.isSliding = isSliding;
   }
 
   void setAccessibilityUnits(String accessibilityUnits) {
@@ -141,17 +152,6 @@ public class ReactSlider extends AppCompatSeekBar {
       Timer timer = new Timer();
       timer.schedule(task, 1000);
     }
-  }
-
-  @Override
-  public boolean onTouchEvent(MotionEvent arg0) {
-    super.onTouchEvent(arg0);
-
-    if (arg0.getActionMasked() == MotionEvent.ACTION_DOWN && this.isEnabled() == false) {
-      announceForAccessibility("slider disabled");
-    }
-    // Returns: True if the view handled the hover event
-    return true;
   }
 
   public void setupAccessibility(int index) {

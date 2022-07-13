@@ -20,7 +20,7 @@ export type MediaLibraryPermissionResponse = PermissionResponse & {
 // @needsAudit
 /**
  * An alias for the `MediaLibraryPermissionResponse` object.
- * @deprecated Deprecated. Use `ImagePicker.MediaLibraryPermissionResponse` instead.
+ * @deprecated Use `ImagePicker.MediaLibraryPermissionResponse` instead.
  */
 export type CameraRollPermissionResponse = MediaLibraryPermissionResponse;
 
@@ -138,17 +138,79 @@ export enum UIImagePickerControllerQualityType {
   IFrame960x540 = 5,
 }
 
-// @docsMissing
+/**
+ * Picker presentation style. Its values are directly mapped to the [`UIModalPresentationStyle`](https://developer.apple.com/documentation/uikit/uiviewcontroller/1621355-modalpresentationstyle).
+ *
+ * @platform ios
+ */
 export enum UIImagePickerPresentationStyle {
-  FullScreen = 0,
-  PageSheet = 1,
-  FormSheet = 2,
-  CurrentContext = 3,
-  OverFullScreen = 5,
-  OverCurrentContext = 6,
-  Popover = 7,
-  BlurOverFullScreen = 8,
-  Automatic = -2,
+  /**
+   * A presentation style in which the presented picker covers the screen.
+   */
+  FULL_SCREEN = 'fullScreen',
+  /**
+   * A presentation style that partially covers the underlying content.
+   */
+  PAGE_SHEET = 'pageSheet',
+  /**
+   * A presentation style that displays the picker centered in the screen.
+   */
+  FORM_SHEET = 'formSheet',
+  /**
+   * A presentation style where the picker is displayed over the app's content.
+   */
+  CURRENT_CONTEXT = 'currentContext',
+  /**
+   * A presentation style in which the picker view covers the screen.
+   */
+  OVER_FULL_SCREEN = 'overFullScreen',
+  /**
+   * A presentation style where the picker is displayed over the app's content.
+   */
+  OVER_CURRENT_CONTEXT = 'overCurrentContext',
+  /**
+   * A presentation style where the picker is displayed in a popover view.
+   */
+  POPOVER = 'popover',
+  /**
+   * The default presentation style chosen by the system.
+   * On older iOS versions, falls back to `WebBrowserPresentationStyle.FullScreen`.
+   *
+   * @platform ios 13+
+   */
+  AUTOMATIC = 'automatic',
+  /**
+   * @deprecated Use `UIImagePickerPresentationStyle.FULL_SCREEN` instead.
+   */
+  FullScreen = 'fullScreen',
+  /**
+   * @deprecated Use `UIImagePickerPresentationStyle.PAGE_SHEET` instead.
+   */
+  PageSheet = 'pageSheet',
+  /**
+   * @deprecated Use `UIImagePickerPresentationStyle.FORM_SHEET` instead.
+   */
+  FormSheet = 'formSheet',
+  /**
+   * @deprecated Use `UIImagePickerPresentationStyle.CURRENT_CONTEXT` instead.
+   */
+  CurrentContext = 'currentContext',
+  /**
+   * @deprecated Use `UIImagePickerPresentationStyle.OVER_FULL_SCREEN` instead.
+   */
+  OverFullScreen = 'overFullScreen',
+  /**
+   * @deprecated Use `UIImagePickerPresentationStyle.OVER_CURRENT_CONTEXT` instead.
+   */
+  OverCurrentContext = 'overCurrentContext',
+  /**
+   * @deprecated Use `UIImagePickerPresentationStyle.POPOVER` instead.
+   */
+  Popover = 'popover',
+  /**
+   * @deprecated Use `UIImagePickerPresentationStyle.AUTOMATIC` instead.
+   */
+  Automatic = 'automatic',
 }
 
 // @needsAudit
@@ -158,6 +220,15 @@ export type ImageInfo = {
    * an image) and `width` and `height` specify the dimensions of the media.
    */
   uri: string;
+  /**
+   * The unique ID that represents the picked image or video. It can be used by [expo-media-library](./media-library)
+   * to manage the picked asset.
+   *
+   * > This might be `null` when the ID is unavailable or the user gave limited permission to access the media library.
+   *
+   * @platform ios
+   */
+  assetId?: string | null;
   /**
    * Width of the image or video.
    */
@@ -170,6 +241,19 @@ export type ImageInfo = {
    * The type of the asset.
    */
   type?: 'image' | 'video';
+  /**
+   * Preferred filename to use when saving this item. This might be `null` when the name is unavailable
+   * or user gave limited permission to access the media library.
+   *
+   * @platform ios
+   */
+  fileName?: string | null;
+  /**
+   * File size of the picked image or video, in bytes.
+   *
+   * @platform ios
+   */
+  fileSize?: number;
   /**
    * The `exif` field is included if the `exif` option is truthy, and is an object containing the
    * image's EXIF data. The names of this object's properties are EXIF tags and the values are the
@@ -234,7 +318,13 @@ export type ImagePickerOptions = {
   /**
    * Whether to show a UI to edit the image after it is picked. On Android the user can crop and
    * rotate the image and on iOS simply crop it.
+   *
+   * > Cropping multiple images is not supported - this option is mutually exclusive with `allowsMultipleSelection`.
+   * > On iOS, this option is ignored if `allowsMultipleSelection` is enabled.
+   *
    * @default false
+   * @platform ios
+   * @platform android
    */
   allowsEditing?: boolean;
   /**
@@ -248,6 +338,12 @@ export type ImagePickerOptions = {
    * `1` means compress for maximum quality.
    * > Note: If the selected image has been compressed before, the size of the output file may be
    * > bigger than the size of the original image.
+   *
+   * > Note: On iOS, if a `.bmp` or `.png` image is selected from the library, this option is ignored.
+   *
+   * @default 0.2
+   * @platform ios
+   * @platform android
    */
   quality?: number;
   /**
@@ -268,7 +364,7 @@ export type ImagePickerOptions = {
    * Specify preset which will be used to compress selected video.
    * @default ImagePicker.VideoExportPreset.Passthrough
    * @platform ios 11+
-   * @deprecated Deprecated. See [`videoExportPreset`](https://developer.apple.com/documentation/uikit/uiimagepickercontroller/2890964-videoexportpreset?language=objc)
+   * @deprecated See [`videoExportPreset`](https://developer.apple.com/documentation/uikit/uiimagepickercontroller/2890964-videoexportpreset?language=objc)
    * in Apple documentation.
    */
   videoExportPreset?: VideoExportPreset;
@@ -280,9 +376,34 @@ export type ImagePickerOptions = {
   videoQuality?: UIImagePickerControllerQualityType;
   /**
    * Whether or not to allow selecting multiple media files at once.
+   *
+   * > Cropping multiple images is not supported - this option is mutually exclusive with `allowsEditing`.
+   * > If this option is enabled, then `allowsEditing` is ignored.
+   *
+   * @default false
+   * @platform ios 14+
    * @platform web
    */
   allowsMultipleSelection?: boolean;
+  /**
+   * The maximum number of items that user can select. Applicable when `allowsMultipleSelection` is enabled.
+   * Setting the value to `0` sets the selection limit to the maximum that the system supports.
+   *
+   * @platform ios 14+
+   * @default 0
+   */
+  selectionLimit?: number;
+  /**
+   * Whether to display number badges when assets are selected. The badges are numbered
+   * in selection order. Assets are then returned in the exact same order they were selected.
+   *
+   * > Assets should be returned in the selection order regardless of this option,
+   * > but there is no guarantee that it is always true when this option is disabled.
+   *
+   * @platform ios 15+
+   * @default false
+   */
+  orderedSelection?: boolean;
   /**
    * Maximum duration, in seconds, for video recording. Setting this to `0` disables the limit.
    * Defaults to `0` (no limit).

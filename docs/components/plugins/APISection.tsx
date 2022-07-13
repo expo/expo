@@ -1,6 +1,5 @@
-import React, { useContext } from 'react';
+import React from 'react';
 
-import DocumentationPageContext from '~/components/DocumentationPageContext';
 import { P } from '~/components/base/paragraph';
 import { ClassDefinitionData, GeneratedData } from '~/components/plugins/api/APIDataTypes';
 import APISectionClasses from '~/components/plugins/api/APISectionClasses';
@@ -11,7 +10,8 @@ import APISectionInterfaces from '~/components/plugins/api/APISectionInterfaces'
 import APISectionMethods from '~/components/plugins/api/APISectionMethods';
 import APISectionProps from '~/components/plugins/api/APISectionProps';
 import APISectionTypes from '~/components/plugins/api/APISectionTypes';
-import { TypeDocKind } from '~/components/plugins/api/APISectionUtils';
+import { TypeDocKind, getComponentName } from '~/components/plugins/api/APISectionUtils';
+import { usePageApiVersion } from '~/providers/page-api-version';
 
 const LATEST_VERSION = `v${require('~/package.json').version}`;
 
@@ -19,6 +19,7 @@ type Props = {
   packageName: string;
   apiName?: string;
   forceVersion?: string;
+  strictTypes?: boolean;
 };
 
 const filterDataByKind = (
@@ -42,13 +43,21 @@ const isListener = ({ name }: GeneratedData) =>
 
 const isProp = ({ name }: GeneratedData) => name.includes('Props') && name !== 'ErrorRecoveryProps';
 
-const isComponent = ({ type, extendedTypes, signatures }: GeneratedData) =>
-  (type?.name && ['React.FC', 'ForwardRefExoticComponent'].includes(type?.name)) ||
-  (extendedTypes && extendedTypes.length ? extendedTypes[0].name === 'Component' : false) ||
-  (signatures && signatures[0]
-    ? signatures[0].type.name === 'Element' ||
+const isComponent = ({ type, extendedTypes, signatures }: GeneratedData) => {
+  if (type?.name && ['React.FC', 'ForwardRefExoticComponent'].includes(type?.name)) {
+    return true;
+  } else if (extendedTypes && extendedTypes.length) {
+    return extendedTypes[0].name === 'Component';
+  } else if (signatures && signatures.length) {
+    if (
+      signatures[0].type.name === 'Element' ||
       (signatures[0].parameters && signatures[0].parameters[0].name === 'props')
-    : false);
+    ) {
+      return true;
+    }
+  }
+  return false;
+};
 
 const isConstant = ({ name, type }: GeneratedData) =>
   !['default', 'Constants', 'EventEmitter'].includes(name) &&
@@ -58,6 +67,7 @@ const renderAPI = (
   packageName: string,
   version: string = 'unversioned',
   apiName?: string,
+  strictTypes: boolean = false,
   isTestMode: boolean = false
 ): JSX.Element => {
   try {
@@ -84,7 +94,8 @@ const renderAPI = (
           entry.type.types ||
           entry.type.type ||
           entry.type.typeArguments
-        )
+        ) &&
+        (strictTypes && apiName ? entry.name.startsWith(apiName) : true)
     );
 
     const props = filterDataByKind(
@@ -101,7 +112,11 @@ const renderAPI = (
       entry => entry.name === 'defaultProps'
     )[0];
 
-    const enums = filterDataByKind(data, [TypeDocKind.Enum, TypeDocKind.LegacyEnum]);
+    const enums = filterDataByKind(
+      data,
+      [TypeDocKind.Enum, TypeDocKind.LegacyEnum],
+      entry => entry.name !== 'default'
+    );
     const interfaces = filterDataByKind(data, TypeDocKind.Interface);
     const constants = filterDataByKind(data, TypeDocKind.Variable, entry => isConstant(entry));
 
@@ -110,7 +125,9 @@ const renderAPI = (
       [TypeDocKind.Variable, TypeDocKind.Class, TypeDocKind.Function],
       entry => isComponent(entry)
     );
-    const componentsPropNames = components.map(component => `${component.name}Props`);
+    const componentsPropNames = components.map(
+      ({ name, children }) => `${getComponentName(name, children)}Props`
+    );
     const componentsProps = filterDataByKind(props, TypeDocKind.TypeAlias, entry =>
       componentsPropNames.includes(entry.name)
     );
@@ -165,17 +182,17 @@ const renderAPI = (
         <APISectionEnums data={enums} />
       </>
     );
-  } catch (error) {
+  } catch {
     return <P>No API data file found, sorry!</P>;
   }
 };
 
-const APISection = ({ packageName, apiName, forceVersion }: Props) => {
-  const { version } = useContext(DocumentationPageContext);
+const APISection = ({ packageName, apiName, forceVersion, strictTypes = false }: Props) => {
+  const { version } = usePageApiVersion();
   const resolvedVersion =
     forceVersion ||
     (version === 'unversioned' ? version : version === 'latest' ? LATEST_VERSION : version);
-  return renderAPI(packageName, resolvedVersion, apiName, !!forceVersion);
+  return renderAPI(packageName, resolvedVersion, apiName, strictTypes, !!forceVersion);
 };
 
 export default APISection;

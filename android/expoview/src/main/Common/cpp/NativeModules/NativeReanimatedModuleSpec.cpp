@@ -1,9 +1,10 @@
 #include "NativeReanimatedModuleSpec.h"
 
+#define SPEC_PREFIX(FN_NAME) __hostFunction_NativeReanimatedModuleSpec_##FN_NAME
+
 namespace reanimated {
 
-static jsi::Value
-__hostFunction_NativeReanimatedModuleSpec_installCoreFunctions(
+static jsi::Value SPEC_PREFIX(installCoreFunctions)(
     jsi::Runtime &rt,
     TurboModule &turboModule,
     const jsi::Value *args,
@@ -15,7 +16,7 @@ __hostFunction_NativeReanimatedModuleSpec_installCoreFunctions(
 
 // SharedValue
 
-static jsi::Value __hostFunction_NativeReanimatedModuleSpec_makeShareable(
+static jsi::Value SPEC_PREFIX(makeShareable)(
     jsi::Runtime &rt,
     TurboModule &turboModule,
     const jsi::Value *args,
@@ -24,7 +25,7 @@ static jsi::Value __hostFunction_NativeReanimatedModuleSpec_makeShareable(
       ->makeShareable(rt, std::move(args[0]));
 }
 
-static jsi::Value __hostFunction_NativeReanimatedModuleSpec_makeMutable(
+static jsi::Value SPEC_PREFIX(makeMutable)(
     jsi::Runtime &rt,
     TurboModule &turboModule,
     const jsi::Value *args,
@@ -33,7 +34,7 @@ static jsi::Value __hostFunction_NativeReanimatedModuleSpec_makeMutable(
       ->makeMutable(rt, std::move(args[0]));
 }
 
-static jsi::Value __hostFunction_NativeReanimatedModuleSpec_makeRemote(
+static jsi::Value SPEC_PREFIX(makeRemote)(
     jsi::Runtime &rt,
     TurboModule &turboModule,
     const jsi::Value *args,
@@ -42,7 +43,7 @@ static jsi::Value __hostFunction_NativeReanimatedModuleSpec_makeRemote(
       ->makeRemote(rt, std::move(args[0]));
 }
 
-static jsi::Value __hostFunction_NativeReanimatedModuleSpec_startMapper(
+static jsi::Value SPEC_PREFIX(startMapper)(
     jsi::Runtime &rt,
     TurboModule &turboModule,
     const jsi::Value *args,
@@ -57,7 +58,7 @@ static jsi::Value __hostFunction_NativeReanimatedModuleSpec_startMapper(
           std::move(args[4]));
 }
 
-static jsi::Value __hostFunction_NativeReanimatedModuleSpec_stopMapper(
+static jsi::Value SPEC_PREFIX(stopMapper)(
     jsi::Runtime &rt,
     TurboModule &turboModule,
     const jsi::Value *args,
@@ -67,8 +68,7 @@ static jsi::Value __hostFunction_NativeReanimatedModuleSpec_stopMapper(
   return jsi::Value::undefined();
 }
 
-static jsi::Value
-__hostFunction_NativeReanimatedModuleSpec_registerEventHandler(
+static jsi::Value SPEC_PREFIX(registerEventHandler)(
     jsi::Runtime &rt,
     TurboModule &turboModule,
     const jsi::Value *args,
@@ -77,8 +77,7 @@ __hostFunction_NativeReanimatedModuleSpec_registerEventHandler(
       ->registerEventHandler(rt, std::move(args[0]), std::move(args[1]));
 }
 
-static jsi::Value
-__hostFunction_NativeReanimatedModuleSpec_unregisterEventHandler(
+static jsi::Value SPEC_PREFIX(unregisterEventHandler)(
     jsi::Runtime &rt,
     TurboModule &turboModule,
     const jsi::Value *args,
@@ -88,7 +87,7 @@ __hostFunction_NativeReanimatedModuleSpec_unregisterEventHandler(
   return jsi::Value::undefined();
 }
 
-static jsi::Value __hostFunction_NativeReanimatedModuleSpec_getViewProp(
+static jsi::Value SPEC_PREFIX(getViewProp)(
     jsi::Runtime &rt,
     TurboModule &turboModule,
     const jsi::Value *args,
@@ -99,8 +98,7 @@ static jsi::Value __hostFunction_NativeReanimatedModuleSpec_getViewProp(
   return jsi::Value::undefined();
 }
 
-static jsi::Value
-__hostFunction_NativeReanimatedModuleSpec_enableLayoutAnimations(
+static jsi::Value SPEC_PREFIX(enableLayoutAnimations)(
     jsi::Runtime &rt,
     TurboModule &turboModule,
     const jsi::Value *args,
@@ -110,33 +108,60 @@ __hostFunction_NativeReanimatedModuleSpec_enableLayoutAnimations(
   return jsi::Value::undefined();
 }
 
+static jsi::Value SPEC_PREFIX(registerSensor)(
+    jsi::Runtime &rt,
+    TurboModule &turboModule,
+    const jsi::Value *args,
+    size_t count) {
+  return static_cast<NativeReanimatedModuleSpec *>(&turboModule)
+      ->registerSensor(
+          rt, std::move(args[0]), std::move(args[1]), std::move(args[2]));
+}
+
+static jsi::Value SPEC_PREFIX(unregisterSensor)(
+    jsi::Runtime &rt,
+    TurboModule &turboModule,
+    const jsi::Value *args,
+    size_t count) {
+  static_cast<NativeReanimatedModuleSpec *>(&turboModule)
+      ->unregisterSensor(rt, std::move(args[0]));
+  return jsi::Value::undefined();
+}
+
+static jsi::Value SPEC_PREFIX(configureProps)(
+    jsi::Runtime &rt,
+    TurboModule &turboModule,
+    const jsi::Value *args,
+    size_t count) {
+  static_cast<NativeReanimatedModuleSpec *>(&turboModule)
+      ->configureProps(rt, std::move(args[0]), std::move(args[1]));
+  return jsi::Value::undefined();
+}
+
 NativeReanimatedModuleSpec::NativeReanimatedModuleSpec(
     std::shared_ptr<CallInvoker> jsInvoker)
     : TurboModule("NativeReanimated", jsInvoker) {
-  methodMap_["installCoreFunctions"] = MethodMetadata{
-      1, __hostFunction_NativeReanimatedModuleSpec_installCoreFunctions};
+  methodMap_["installCoreFunctions"] =
+      MethodMetadata{1, SPEC_PREFIX(installCoreFunctions)};
 
-  methodMap_["makeShareable"] = MethodMetadata{
-      1, __hostFunction_NativeReanimatedModuleSpec_makeShareable};
-  methodMap_["makeMutable"] =
-      MethodMetadata{1, __hostFunction_NativeReanimatedModuleSpec_makeMutable};
-  methodMap_["makeRemote"] =
-      MethodMetadata{1, __hostFunction_NativeReanimatedModuleSpec_makeRemote};
+  methodMap_["makeShareable"] = MethodMetadata{1, SPEC_PREFIX(makeShareable)};
+  methodMap_["makeMutable"] = MethodMetadata{1, SPEC_PREFIX(makeMutable)};
+  methodMap_["makeRemote"] = MethodMetadata{1, SPEC_PREFIX(makeRemote)};
 
-  methodMap_["startMapper"] =
-      MethodMetadata{5, __hostFunction_NativeReanimatedModuleSpec_startMapper};
-  methodMap_["stopMapper"] =
-      MethodMetadata{1, __hostFunction_NativeReanimatedModuleSpec_stopMapper};
+  methodMap_["startMapper"] = MethodMetadata{5, SPEC_PREFIX(startMapper)};
+  methodMap_["stopMapper"] = MethodMetadata{1, SPEC_PREFIX(stopMapper)};
 
-  methodMap_["registerEventHandler"] = MethodMetadata{
-      2, __hostFunction_NativeReanimatedModuleSpec_registerEventHandler};
-  methodMap_["unregisterEventHandler"] = MethodMetadata{
-      1, __hostFunction_NativeReanimatedModuleSpec_unregisterEventHandler};
+  methodMap_["registerEventHandler"] =
+      MethodMetadata{2, SPEC_PREFIX(registerEventHandler)};
+  methodMap_["unregisterEventHandler"] =
+      MethodMetadata{1, SPEC_PREFIX(unregisterEventHandler)};
 
-  methodMap_["getViewProp"] =
-      MethodMetadata{3, __hostFunction_NativeReanimatedModuleSpec_getViewProp};
-  methodMap_["enableLayoutAnimations"] = MethodMetadata{
-      2, __hostFunction_NativeReanimatedModuleSpec_enableLayoutAnimations};
+  methodMap_["getViewProp"] = MethodMetadata{3, SPEC_PREFIX(getViewProp)};
+  methodMap_["enableLayoutAnimations"] =
+      MethodMetadata{2, SPEC_PREFIX(enableLayoutAnimations)};
+  methodMap_["registerSensor"] = MethodMetadata{3, SPEC_PREFIX(registerSensor)};
+  methodMap_["unregisterSensor"] =
+      MethodMetadata{1, SPEC_PREFIX(unregisterSensor)};
+  methodMap_["configureProps"] = MethodMetadata{2, SPEC_PREFIX(configureProps)};
 }
-
 } // namespace reanimated

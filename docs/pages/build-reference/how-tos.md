@@ -49,7 +49,7 @@ This is an example of how your package.json might look like:
 
 - Run all EAS CLI commands from the root of the app directory. For example: if your project exists inside of your git repository at `apps/my-app`, then run `eas build` from there.
 - All files related to EAS Build, such as **eas.json** and **credentials.json**, should be in the root of the app directory. If you have multiple apps that use EAS Build in your monorepo, each app directory will have its own copy of these files.
-- **If you are building a managed project in a monorepo**, please refer to [byCedric/eas-monorepo-example](https://github.com/byCedric/eas-monorepo-example) for a working example. You will need to set up [symlinks with expo-yarn-workspaces](https://github.com/byCedric/eas-monorepo-example/blob/dc62206a23f591923a38c0c6ea5d94b84ede6df4/apps/managed/package.json#L45-L63) in order to ensure that Expo module packages can be resolved. A better solution for this is in progress and should be available by SDK 43.
+- **If you are building a managed project in a monorepo**, please refer to the ["Working with Monorepos" guide](/guides/monorepos.md).
 - If your project needs additional setup beyond what is provided, add a `postinstall` step to **package.json** in your project that builds all necessary dependencies in other workspaces. For example:
 
 ```json
@@ -68,9 +68,9 @@ See [Using private npm packages](/build-reference/private-npm-packages) to learn
 
 By default the EAS npm cache won't work with yarn v1, because `yarn.lock` files contain URLs to registries for every package and yarn does not provide any way to override it. The issue is fixed in yarn v2, but the yarn team does not plan to backport it to yarn v1. If you want to take advantage of the npm cache, you can use the `eas-build-pre-install` script to override the registry in your `yarn.lock`.
 
-e.g.
+#### Example
 
-```
+```json
 {
  "scripts": {
     "eas-build-pre-install": "bash -c \"[ ! -z \\\"$EAS_BUILD_NPM_CACHE_URL\\\" ] && sed -i -e \\\"s#https://registry.yarnpkg.com#$EAS_BUILD_NPM_CACHE_URL#g\\\" yarn.lock\" || true"

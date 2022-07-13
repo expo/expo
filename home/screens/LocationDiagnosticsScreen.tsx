@@ -1,4 +1,5 @@
-import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
+import FontAwesome from '@expo/vector-icons/build/FontAwesome';
+import MaterialIcons from '@expo/vector-icons/build/MaterialIcons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Location from 'expo-location';
 import * as Permissions from 'expo-permissions';
@@ -273,7 +274,7 @@ async function getSavedLocations() {
   try {
     const item = await AsyncStorage.getItem(STORAGE_KEY);
     return item ? JSON.parse(item) : [];
-  } catch (e) {
+  } catch {
     return [];
   }
 }

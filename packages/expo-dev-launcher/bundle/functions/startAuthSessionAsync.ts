@@ -1,8 +1,7 @@
 import url from 'url';
 
 import { websiteOrigin } from '../apiClient';
-import { getAuthSchemeAsync } from '../native-modules/DevMenuInternal';
-import { openAuthSessionAsync } from '../native-modules/DevMenuWebBrowser';
+import { openAuthSessionAsync, getAuthSchemeAsync } from '../native-modules/DevLauncherAuth';
 
 export async function startAuthSessionAsync(type: 'signup' | 'login') {
   const scheme = await getAuthSchemeAsync();

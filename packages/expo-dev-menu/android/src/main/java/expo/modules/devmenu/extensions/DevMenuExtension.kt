@@ -26,7 +26,8 @@ class DevMenuExtension(reactContext: ReactApplicationContext) :
       return@export
     }
 
-    val reactInstanceManager = settings.manager.getSession()?.reactInstanceManager
+    val manager = DevMenuManager
+    val reactInstanceManager = manager.getReactInstanceManager()
     if (reactInstanceManager == null) {
       Log.w(DEV_MENU_TAG, "Couldn't export dev-menu items, because the react instance manager isn't present.")
       return@export
@@ -82,15 +83,6 @@ class DevMenuExtension(reactContext: ReactApplicationContext) :
 
     if (devSettings is DevInternalSettings) {
       action("js-inspector", devDelegate::openJsInspector) {
-        isAvailable = {
-          val metroHost = "http://${devSettings.packagerConnectionSettings.debugServerHost}"
-          var result: Boolean
-          runBlocking {
-            result = DevMenuManager.metroClient
-              .queryJSInspectorAvailability(metroHost, reactApplicationContext.packageName)
-          }
-          result
-        }
         label = { "Open JavaScript Inspector" }
         glyphName = { "language-javascript" }
         importance = DevMenuItemImportance.LOW.value

@@ -110,6 +110,6 @@ Inside of package.json, set the repository and bugs URLs to the Expo repository.
   "bugs": {
     "url": "https://github.com/expo/expo/issues"
   },
-  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-sms"
+  "homepage": "https://github.com/expo/expo/tree/main/packages/expo-sms"
 }
 ```

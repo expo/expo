@@ -1,6 +1,6 @@
 ---
 title: Camera
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-camera'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-camera'
 packageName: 'expo-camera'
 ---
 
@@ -19,10 +19,6 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 <APIInstallSection />
 
-## Configuration
-
-In managed apps, `Camera` requires `Permissions.CAMERA`. Video recording requires `Permissions.AUDIO_RECORDING`.
-
 ## Usage
 
 > ⚠️ Only one Camera preview can be active at any given time. If you have multiple screens in your app, you should unmount `Camera` components whenever a screen is unfocused.
@@ -32,11 +28,11 @@ In managed apps, `Camera` requires `Permissions.CAMERA`. Video recording require
 ```jsx
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
-import { Camera } from 'expo-camera';
+import { Camera, CameraType } from 'expo-camera';
 
 export default function App() {
   const [hasPermission, setHasPermission] = useState(null);
-  const [type, setType] = useState(Camera.Constants.Type.back);
+  const [type, setType] = useState(CameraType.back);
 
   useEffect(() => {
     (async () => {
@@ -58,11 +54,7 @@ export default function App() {
           <TouchableOpacity
             style={styles.button}
             onPress={() => {
-              setType(
-                type === Camera.Constants.Type.back
-                  ? Camera.Constants.Type.front
-                  : Camera.Constants.Type.back
-              );
+              setType(type === CameraType.back ? CameraType.front : CameraType.back);
             }}>
             <Text style={styles.text}> Flip </Text>
           </TouchableOpacity>

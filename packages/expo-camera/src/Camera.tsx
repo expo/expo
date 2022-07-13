@@ -130,7 +130,7 @@ export default class Camera extends React.Component<CameraProps> {
 
   // @needsAudit
   /**
-   * @deprecated Deprecated. Use `getCameraPermissionsAsync` or `getMicrophonePermissionsAsync` instead.
+   * @deprecated Use `getCameraPermissionsAsync` or `getMicrophonePermissionsAsync` instead.
    * Checks user's permissions for accessing camera.
    */
   static async getPermissionsAsync(): Promise<PermissionResponse> {

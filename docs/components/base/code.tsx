@@ -1,12 +1,11 @@
 import { css } from '@emotion/react';
-import { theme } from '@expo/styleguide';
+import { SerializedStyles } from '@emotion/serialize';
+import { theme, typography } from '@expo/styleguide';
 import { Language, Prism } from 'prism-react-renderer';
 import * as React from 'react';
 import tippy, { roundArrow } from 'tippy.js';
 
 import { installLanguages } from './languages';
-
-import * as Constants from '~/constants/theme';
 
 installLanguages(Prism);
 
@@ -16,7 +15,7 @@ const attributes = {
 
 const STYLES_CODE_BLOCK = css`
   color: ${theme.text.default};
-  font-family: ${Constants.fontFamilies.mono};
+  font-family: ${typography.fontFaces.mono};
   font-size: 13px;
   line-height: 20px;
   white-space: inherit;
@@ -30,7 +29,7 @@ const STYLES_CODE_BLOCK = css`
       ${theme.highlight.emphasis} 0px 0px 10px, ${theme.highlight.emphasis} 0px 0px 10px;
   }
 
-  .code-annotation:hover {
+  .code-annotation.with-tooltip:hover {
     cursor: pointer;
     animation: none;
     opacity: 0.8;
@@ -47,7 +46,7 @@ const STYLES_CODE_BLOCK = css`
 
 const STYLES_INLINE_CODE = css`
   color: ${theme.text.default};
-  font-family: ${Constants.fontFamilies.mono};
+  font-family: ${typography.fontFaces.mono};
   font-size: 0.825em;
   white-space: pre-wrap;
   display: inline;
@@ -94,7 +93,7 @@ export class Code extends React.Component<Props> {
   }
 
   private runTippy() {
-    tippy('.code-annotation', {
+    tippy('.code-annotation.with-tooltip', {
       allowHTML: true,
       theme: 'expo',
       placement: 'top',
@@ -114,7 +113,11 @@ export class Code extends React.Component<Props> {
       .replace(
         /<span class="token comment">&lt;!-- @info (.*?)--><\/span>\s*/g,
         (match, content) => {
-          return `<span class="code-annotation" data-tippy-content="${this.escapeHtml(content)}">`;
+          return content
+            ? `<span class="code-annotation with-tooltip" data-tippy-content="${this.escapeHtml(
+                content
+              )}">`
+            : '<span class="code-annotation">';
         }
       )
       .replace(
@@ -131,7 +134,11 @@ export class Code extends React.Component<Props> {
   private replaceHashCommentsWithAnnotations(value: string) {
     return value
       .replace(/<span class="token comment"># @info (.*?)#<\/span>\s*/g, (match, content) => {
-        return `<span class="code-annotation" data-tippy-content="${this.escapeHtml(content)}">`;
+        return content
+          ? `<span class="code-annotation with-tooltip" data-tippy-content="${this.escapeHtml(
+              content
+            )}">`
+          : '<span class="code-annotation">';
       })
       .replace(/<span class="token comment"># @hide (.*?)#<\/span>\s*/g, (match, content) => {
         return `<span><span class="code-hidden">%%placeholder-start%%</span><span class="code-placeholder">${this.escapeHtml(
@@ -144,7 +151,11 @@ export class Code extends React.Component<Props> {
   private replaceSlashCommentsWithAnnotations(value: string) {
     return value
       .replace(/<span class="token comment">\/\* @info (.*?)\*\/<\/span>\s*/g, (match, content) => {
-        return `<span class="code-annotation" data-tippy-content="${this.escapeHtml(content)}">`;
+        return content
+          ? `<span class="code-annotation with-tooltip" data-tippy-content="${this.escapeHtml(
+              content
+            )}">`
+          : '<span class="code-annotation">';
       })
       .replace(/<span class="token comment">\/\* @hide (.*?)\*\/<\/span>\s*/g, (match, content) => {
         return `<span><span class="code-hidden">%%placeholder-start%%</span><span class="code-placeholder">${this.escapeHtml(
@@ -162,7 +173,7 @@ export class Code extends React.Component<Props> {
 
     // Allow for code blocks without a language.
     if (lang) {
-      // sh isn't supported, use Use sh to match js, and ts
+      // sh isn't supported, use sh to match js, and ts
       if (lang in remapLanguages) {
         lang = remapLanguages[lang];
       }
@@ -182,7 +193,7 @@ export class Code extends React.Component<Props> {
       }
     }
 
-    // Remove leading newline if it exists (because inside <pre> all whitespace is dislayed as is by the browser, and
+    // Remove leading newline if it exists (because inside <pre> all whitespace is displayed as is by the browser, and
     // sometimes, Prism adds a newline before the code)
     if (html.startsWith('\n')) {
       html = html.replace('\n', '');
@@ -202,8 +213,8 @@ const remapLanguages: Record<string, string> = {
   rb: 'ruby',
 };
 
-export const InlineCode: React.FC = ({ children }) => (
-  <code css={STYLES_INLINE_CODE} className="inline">
+export const InlineCode: React.FC<{ customCss?: SerializedStyles }> = ({ children, customCss }) => (
+  <code css={[STYLES_INLINE_CODE, customCss]} className="inline">
     {children}
   </code>
 );

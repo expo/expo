@@ -3,7 +3,7 @@ import React from 'react';
 import { InlineCode } from '~/components/base/code';
 import { UL, LI } from '~/components/base/list';
 import { B, P } from '~/components/base/paragraph';
-import { H2, H3Code, H4 } from '~/components/plugins/Headings';
+import { H2, H3Code } from '~/components/plugins/Headings';
 import {
   PropData,
   TypeDeclarationContentData,
@@ -11,17 +11,22 @@ import {
   TypeGeneralData,
   TypeSignaturesData,
 } from '~/components/plugins/api/APIDataTypes';
+import { APISectionDeprecationNote } from '~/components/plugins/api/APISectionDeprecationNote';
 import {
   mdInlineComponents,
   resolveTypeName,
   renderFlags,
-  renderParam,
   CommentTextBlock,
   parseCommentContent,
   renderTypeOrSignatureType,
   getCommentOrSignatureComment,
   getTagData,
+  renderParams,
+  renderTableHeadRow,
+  renderDefaultValue,
+  STYLES_APIBOX,
 } from '~/components/plugins/api/APISectionUtils';
+import { Cell, Row, Table } from '~/ui/components/Table';
 
 export type APISectionTypesProps = {
   data: TypeGeneralData[];
@@ -43,16 +48,10 @@ const defineLiteralType = (types: TypeDefinitionData[]): JSX.Element | null => {
 };
 
 const renderTypeDeclarationTable = ({ children }: TypeDeclarationContentData): JSX.Element => (
-  <table key={`type-declaration-table-${children?.map(child => child.name).join('-')}`}>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
+  <Table key={`type-declaration-table-${children?.map(child => child.name).join('-')}`}>
+    {renderTableHeadRow()}
     <tbody>{children?.map(renderTypePropertyRow)}</tbody>
-  </table>
+  </Table>
 );
 
 const renderTypePropertyRow = ({
@@ -66,28 +65,21 @@ const renderTypePropertyRow = ({
   const initValue = parseCommentContent(defaultValue || getTagData('default', comment)?.text);
   const commentData = getCommentOrSignatureComment(comment, signatures);
   return (
-    <tr key={name}>
-      <td>
+    <Row key={name}>
+      <Cell fitContent>
         <B>{name}</B>
-        {renderFlags(flags)}
-      </td>
-      <td>{renderTypeOrSignatureType(type, signatures)}</td>
-      <td>
-        {commentData ? (
-          <CommentTextBlock comment={commentData} components={mdInlineComponents} />
-        ) : (
-          '-'
-        )}
-        {initValue ? (
-          <>
-            <br />
-            <br />
-            <B>Default: </B>
-            <InlineCode>{initValue}</InlineCode>
-          </>
-        ) : null}
-      </td>
-    </tr>
+        {renderFlags(flags, initValue)}
+      </Cell>
+      <Cell fitContent>{renderTypeOrSignatureType(type, signatures)}</Cell>
+      <Cell fitContent>
+        <CommentTextBlock
+          comment={commentData}
+          components={mdInlineComponents}
+          afterContent={renderDefaultValue(initValue)}
+          emptyCommentFallback="-"
+        />
+      </Cell>
+    </Row>
   );
 };
 
@@ -100,7 +92,8 @@ const renderType = ({
   if (type.declaration) {
     // Object Types
     return (
-      <div key={`type-definition-${name}`}>
+      <div key={`type-definition-${name}`} css={STYLES_APIBOX}>
+        <APISectionDeprecationNote comment={comment} />
         <H3Code>
           <InlineCode>
             {name}
@@ -113,8 +106,7 @@ const renderType = ({
           ? type.declaration.signatures.map(({ parameters, comment }: TypeSignaturesData) => (
               <div key={`type-definition-signature-${name}`}>
                 <CommentTextBlock comment={comment} />
-                {parameters ? <H4>Arguments</H4> : null}
-                {parameters ? <UL>{parameters?.map(renderParam)}</UL> : null}
+                {parameters && renderParams(parameters)}
               </div>
             ))
           : null}
@@ -127,7 +119,8 @@ const renderType = ({
     const propTypes = type.types.filter((t: TypeDefinitionData) => t.type === 'reflection');
     if (propTypes.length) {
       return (
-        <div key={`prop-type-definition-${name}`}>
+        <div key={`prop-type-definition-${name}`} css={STYLES_APIBOX}>
+          <APISectionDeprecationNote comment={comment} />
           <H3Code>
             <InlineCode>{name}</InlineCode>
           </H3Code>
@@ -148,7 +141,8 @@ const renderType = ({
       );
     } else if (literalTypes.length) {
       return (
-        <div key={`type-definition-${name}`}>
+        <div key={`type-definition-${name}`} css={STYLES_APIBOX}>
+          <APISectionDeprecationNote comment={comment} />
           <H3Code>
             <InlineCode>{name}</InlineCode>
           </H3Code>
@@ -168,7 +162,8 @@ const renderType = ({
     }
   } else if ((type.name === 'Record' && type.typeArguments) || type.type === 'reference') {
     return (
-      <div key={`record-definition-${name}`}>
+      <div key={`record-definition-${name}`} css={STYLES_APIBOX}>
+        <APISectionDeprecationNote comment={comment} />
         <H3Code>
           <InlineCode>{name}</InlineCode>
         </H3Code>
@@ -182,39 +177,46 @@ const renderType = ({
     );
   } else if (type.type === 'intrinsic') {
     return (
-      <div key={`generic-type-definition-${name}`}>
+      <div key={`generic-type-definition-${name}`} css={STYLES_APIBOX}>
+        <APISectionDeprecationNote comment={comment} />
         <H3Code>
           <InlineCode>{name}</InlineCode>
         </H3Code>
         <CommentTextBlock comment={comment} />
-        <B>Type: </B>
-        <InlineCode>{type.name}</InlineCode>
+        <P>
+          <B>Type: </B>
+          <InlineCode>{type.name}</InlineCode>
+        </P>
       </div>
     );
   } else if (type.type === 'conditional' && type.checkType) {
     return (
-      <div key={`conditional-type-definition-${name}`}>
+      <div key={`conditional-type-definition-${name}`} css={STYLES_APIBOX}>
+        <APISectionDeprecationNote comment={comment} />
         <H3Code>
           <InlineCode>
             {name}&lt;{type.checkType.name}&gt;
           </InlineCode>
         </H3Code>
         <CommentTextBlock comment={comment} />
-        <B>Generic: </B>
-        <InlineCode>
-          {type.checkType.name}
-          {typeParameter && <> extends {resolveTypeName(typeParameter[0].type)}</>}
-        </InlineCode>
-        <br />
-        <B>Type: </B>
-        <InlineCode>
-          {type.checkType.name}
-          {typeParameter && <> extends {type.extendsType && resolveTypeName(type.extendsType)}</>}
-          {' ? '}
-          {type.trueType && resolveTypeName(type.trueType)}
-          {' : '}
-          {type.falseType && resolveTypeName(type.falseType)}
-        </InlineCode>
+        <P>
+          <B>Generic: </B>
+          <InlineCode>
+            {type.checkType.name}
+            {typeParameter && <> extends {resolveTypeName(typeParameter[0].type)}</>}
+          </InlineCode>
+        </P>
+        <P>
+          <B>Type: </B>
+          <InlineCode>
+            {type.checkType.name}
+            {typeParameter && <> extends {type.extendsType && resolveTypeName(type.extendsType)}</>}
+            {' ? '}
+            {type.trueType && resolveTypeName(type.trueType)}
+            {' : '}
+            {type.falseType && resolveTypeName(type.falseType)}
+          </InlineCode>
+        </P>
       </div>
     );
   }

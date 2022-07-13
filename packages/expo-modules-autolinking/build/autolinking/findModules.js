@@ -14,11 +14,6 @@ const mergeLinkingOptions_1 = require("./mergeLinkingOptions");
 // Names of the config files. From lowest to highest priority.
 const EXPO_MODULE_CONFIG_FILENAMES = ['unimodule.json', 'expo-module.config.json'];
 /**
- * Custom `require` that resolves from the current working dir instead of this script path.
- * **Requires Node v12.2.0**
- */
-const projectRequire = (0, module_1.createRequire)(mergeLinkingOptions_1.projectPackageJsonPath);
-/**
  * Searches for modules to link based on given config.
  */
 async function findModulesAsync(providedOptions) {
@@ -109,11 +104,14 @@ function addRevisionToResults(results, name, revision) {
  * // Given the following file exists: /foo/myapp/modules/mymodule/expo-module.config.json
  * await findPackagesConfigPathsAsync('/foo/myapp/modules');
  * // returns ['mymodule/expo-module.config.json']
+ *
+ * await findPackagesConfigPathsAsync('/foo/myapp/modules/mymodule');
+ * // returns ['expo-module.config.json']
  * ```
  */
 async function findPackagesConfigPathsAsync(searchPath) {
     const bracedFilenames = '{' + EXPO_MODULE_CONFIG_FILENAMES.join(',') + '}';
-    const paths = await (0, fast_glob_1.default)([`*/${bracedFilenames}`, `@*/*/${bracedFilenames}`], {
+    const paths = await (0, fast_glob_1.default)([`*/${bracedFilenames}`, `@*/*/${bracedFilenames}`, `./${bracedFilenames}`], {
         cwd: searchPath,
     });
     // If the package has multiple configs (e.g. `unimodule.json` and `expo-module.config.json` during the transition time)
@@ -183,6 +181,11 @@ function filterToProjectDependencies(results, options = {}) {
                 }
                 else {
                     try {
+                        /**
+                         * Custom `require` that resolves from the current working dir instead of this script path.
+                         * **Requires Node v12.2.0**
+                         */
+                        const projectRequire = (0, module_1.createRequire)(packageJsonPath);
                         dependencyPackageJsonPath = projectRequire.resolve(`${dependencyName}/package.json`);
                     }
                     catch (error) {

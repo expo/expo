@@ -4,10 +4,10 @@ import glob from 'glob-promise';
 import inquirer from 'inquirer';
 import path from 'path';
 
-import { podInstallAsync, readPodspecAsync } from '../CocoaPods';
+import { podInstallAsync, Podspec, readPodspecAsync } from '../CocoaPods';
 import { IOS_DIR } from '../Constants';
 import logger from '../Logger';
-import { searchFilesAsync } from '../Utils';
+import { arrayize, searchFilesAsync } from '../Utils';
 import { copyVendoredFilesAsync } from './common';
 import { VendoringModuleConfig } from './types';
 
@@ -31,12 +31,7 @@ export async function vendorAsync(
   const podspec = await readPodspecAsync(podspecPath);
 
   // Get a list of source files specified by the podspec.
-  const filesPatterns = ([] as string[]).concat(
-    podspec.source_files,
-    podspec.ios?.source_files ?? [],
-    podspec.preserve_paths ?? []
-  );
-
+  const filesPatterns = createFilesPatterns(podspec);
   const files = await searchFilesAsync(sourceDirectory, filesPatterns);
 
   await copyVendoredFilesAsync(files, {
@@ -47,7 +42,7 @@ export async function vendorAsync(
 
   // We may need to transform the podspec as well. As we have an access to its JSON representation,
   // it seems better to modify the object directly instead of string-transforming.
-  config.mutatePodspec?.(podspec);
+  await config.mutatePodspec?.(podspec, sourceDirectory, targetDirectory);
 
   // Save the dynamic ruby podspec as a static JSON file, so there is no need
   // to copy `package.json` files, which are often being read by the podspecs.
@@ -82,4 +77,29 @@ async function promptToReinstallPodsAsync(): Promise<boolean> {
     },
   ]);
   return reinstall;
+}
+
+function createFilesPatterns(podspec: Podspec): string[] {
+  let result = ([] as string[]).concat(
+    podspec.source_files,
+    podspec.ios?.source_files ?? [],
+    podspec.preserve_paths ?? []
+  );
+
+  const subspecs = podspec.subspecs ?? [];
+  const podspecDefaultSubspecsArray = podspec.default_subspecs
+    ? arrayize(podspec.default_subspecs)
+    : null;
+  const defaultSubspecs = podspecDefaultSubspecsArray
+    ? subspecs.filter((spec) => podspecDefaultSubspecsArray.includes(spec.name))
+    : subspecs;
+  for (const spec of defaultSubspecs) {
+    result = result.concat(
+      spec.source_files,
+      spec.ios?.source_files ?? [],
+      spec.preserve_paths ?? []
+    );
+  }
+
+  return result;
 }

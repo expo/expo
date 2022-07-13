@@ -1,6 +1,6 @@
-#import "REAJSCallNode.h"
-#import "REAModule.h"
-#import "REANodesManager.h"
+#import <RNReanimated/REAJSCallNode.h>
+#import <RNReanimated/REAModule.h>
+#import <RNReanimated/REANodesManager.h>
 
 @implementation REAJSCallNode {
   NSArray<NSNumber *> *_input;

@@ -1,3 +1,4 @@
+import JsonFile from '@expo/json-file';
 import chalk from 'chalk';
 import fs from 'fs-extra';
 import glob from 'glob-promise';
@@ -50,6 +51,7 @@ export async function versionVendoredModulesAsync(
         },
       });
     }
+    await postTransformHooks[name]?.(sourceDirectory, targetDirectory);
   }
 }
 
@@ -109,7 +111,7 @@ function baseTransformsFactory(prefix: string): Required<FileTransforms> {
         replaceWith: `$1${prefix}$2`,
       },
       {
-        find: /\b(RCT|RNC|RNG|RNR|REA|RNS)(\w+)\b/g,
+        find: /\b(RCT|RNC|RNG|RNR|REA|RNS|YG)(\w+)\b/g,
         replaceWith: `${prefix}$1$2`,
       },
       {
@@ -121,9 +123,9 @@ function baseTransformsFactory(prefix: string): Required<FileTransforms> {
         replaceWith: `${prefix}React::`,
       },
       {
-        find: /using namespace (facebook|react)/g,
+        find: /namespace (facebook|react)/g,
         replaceWith: (_, p1) => {
-          return `using namespace ${prefix}${p1 === 'react' ? 'React' : p1}`;
+          return `namespace ${prefix}${p1 === 'react' ? 'React' : p1}`;
         },
       },
       {
@@ -181,6 +183,20 @@ function baseTransformsFactory(prefix: string): Required<FileTransforms> {
     ],
   };
 }
+
+/**
+ * Provides a hook for vendored module to do some custom tasks after transforming files
+ */
+type PostTramsformHook = (sourceDirectory: string, targetDirectory: string) => Promise<void>;
+const postTransformHooks: Record<string, PostTramsformHook> = {
+  '@shopify/react-native-skia': async (sourceDirectory: string, targetDirectory: string) => {
+    const podspecPath = (await glob('*.podspec.json', { cwd: targetDirectory, absolute: true }))[0];
+    const podspec = await JsonFile.readAsync(podspecPath);
+    // remove the shared vendored_frameworks
+    delete podspec?.['ios']?.['vendored_frameworks'];
+    await JsonFile.writeAsync(podspecPath, podspec);
+  },
+};
 
 /**
  * Returns the vendored directory for given SDK number.

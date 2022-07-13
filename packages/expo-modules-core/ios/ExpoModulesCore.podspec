@@ -22,6 +22,10 @@ Pod::Spec.new do |s|
     'DEFINES_MODULE' => 'YES',
     'CLANG_CXX_LANGUAGE_STANDARD' => 'c++14',
     'SWIFT_COMPILATION_MODE' => 'wholemodule',
+    'HEADER_SEARCH_PATHS' => "\"$(PODS_ROOT)/Headers/Private/React-bridging/react/bridging\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-bridging/react_bridging.framework/Headers\"",
+  }
+  s.user_target_xcconfig = {
+    "HEADER_SEARCH_PATHS" => "\"${PODS_CONFIGURATION_BUILD_DIR}/ExpoModulesCore/Swift Compatibility Header\" \"$(PODS_ROOT)/Headers/Private/React-bridging/react/bridging\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-bridging/react_bridging.framework/Headers\"",
   }
 
   s.dependency 'React-Core'
@@ -31,15 +35,14 @@ Pod::Spec.new do |s|
     s.source_files = '**/*.h'
     s.vendored_frameworks = "#{s.name}.xcframework"
   else
-    s.source_files = '**/*.{h,m,mm,swift}'
+    s.source_files = '**/*.{h,m,mm,swift,cpp}'
   end
 
   s.exclude_files = 'Tests/'
   s.private_header_files = ['**/*+Private.h', '**/Swift.h']
 
   s.test_spec 'Tests' do |test_spec|
-    test_spec.dependency 'Quick'
-    test_spec.dependency 'Nimble'
+    test_spec.dependency 'ExpoModulesTestCore'
 
     test_spec.source_files = 'Tests/**/*.{m,swift}'
   end

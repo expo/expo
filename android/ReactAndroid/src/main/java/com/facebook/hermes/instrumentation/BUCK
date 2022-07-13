@@ -3,6 +3,7 @@ load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "FBJNI_TARGET", "react_nat
 rn_android_library(
     name = "instrumentation",
     srcs = ["HermesMemoryDumper.java"],
+    autoglob = False,
     visibility = [
         "PUBLIC",
     ],
@@ -11,7 +12,11 @@ rn_android_library(
 rn_android_library(
     name = "hermes_samplingprofiler",
     srcs = ["HermesSamplingProfiler.java"],
-    labels = ["supermodule:xplat/default/public.react_native.infra"],
+    autoglob = False,
+    labels = [
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
+        "supermodule:xplat/default/public.react_native.infra",
+    ],
     visibility = ["PUBLIC"],
     deps = [
         react_native_dep("java/com/facebook/proguard/annotations:annotations"),
@@ -29,8 +34,13 @@ rn_xplat_cxx_library(
     ],
     headers = ["HermesSamplingProfiler.h"],
     header_namespace = "",
-    compiler_flags = ["-fexceptions"],
-    labels = ["supermodule:xplat/default/public.react_native.infra"],
+    compiler_flags_enable_exceptions = True,  # TODO: is this necessary?
+    compiler_flags_enable_rtti = True,  # TODO: is this necessary?
+    fbandroid_allow_jni_merging = True,
+    labels = [
+        "pfh:ReactNative_CommonInfrastructurePlaceholder",
+        "supermodule:xplat/default/public.react_native.infra",
+    ],
     platforms = ANDROID,
     soname = "libjsijniprofiler.$(ext)",
     visibility = [

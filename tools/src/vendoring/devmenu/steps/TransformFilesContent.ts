@@ -1,8 +1,9 @@
-import { Task } from './Task';
-import path from 'path';
 import chalk from 'chalk';
 import fs from 'fs-extra';
+import path from 'path';
+
 import { findFiles } from '../utils';
+import { Task } from './Task';
 
 export type FileContentTransformStepSettings = {
   source?: string;
@@ -30,8 +31,8 @@ export class TransformFilesContent extends Task {
     this.replace = replace;
   }
 
-  protected overrideWorkingDirectory(): string | undefined {
-    return this.source;
+  protected overrideWorkingDirectory(): string {
+    return this.source || '<workingDirectory>';
   }
 
   async execute() {
@@ -39,7 +40,7 @@ export class TransformFilesContent extends Task {
 
     this.logSubStep(
       `🔄 find ${chalk.yellow(this.find.toString())} in ${chalk.green(
-        this.overrideWorkingDirectory() || '<workingDirectory>'
+        this.overrideWorkingDirectory()
       )}/${chalk.yellow(this.filePattern)} and replace with ${chalk.magenta(this.replace)}`
     );
 

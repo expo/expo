@@ -4,10 +4,12 @@ import android.content.Context
 import android.util.Log
 import android.view.MotionEvent
 import android.view.ViewGroup
+import android.view.ViewParent
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.common.ReactConstants
 import com.facebook.react.uimanager.RootView
+import com.facebook.react.views.modal.ReactModalHostView
 import com.facebook.react.views.view.ReactViewGroup
 
 class RNGestureHandlerRootView(context: Context?) : ReactViewGroup(context) {
@@ -49,6 +51,8 @@ class RNGestureHandlerRootView(context: Context?) : ReactViewGroup(context) {
 
       var parent = viewGroup.parent
       while (parent != null) {
+        // our own deprecated root view
+        @Suppress("DEPRECATION")
         if (parent is RNGestureHandlerEnabledRootView || parent is RNGestureHandlerRootView) {
           return true
         }

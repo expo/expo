@@ -1,6 +1,6 @@
 {
   "name": "expo-structured-headers",
-  "version": "2.1.0",
+  "version": "2.2.1",
   "description": "Expo module implementation of a parser based on https://httpwg.org/specs/rfc8941.html",
   "main": "index.js",
   "keywords": [
@@ -18,5 +18,5 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-structured-headers"
+  "homepage": "https://github.com/expo/expo/tree/main/packages/expo-structured-headers"
 }

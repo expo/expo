@@ -29,7 +29,7 @@ class CustomHeadersOkHttpDataSourceFactory(
   }
 
   override fun createDataSourceInternal(defaultRequestProperties: RequestProperties): OkHttpDataSource {
-    return OkHttpDataSource(callFactory, userAgent, null, cacheControl, defaultRequestProperties)
+    return OkHttpDataSource(callFactory, userAgent, cacheControl, defaultRequestProperties)
   }
 
   init {

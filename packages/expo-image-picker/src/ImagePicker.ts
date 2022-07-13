@@ -68,7 +68,7 @@ export async function getCameraPermissionsAsync(): Promise<CameraPermissionRespo
 }
 
 /**
- * @deprecated Deprecated. Use `getMediaLibraryPermissionsAsync()` instead.
+ * @deprecated Use `getMediaLibraryPermissionsAsync()` instead.
  */
 export async function getCameraRollPermissionsAsync(): Promise<MediaLibraryPermissionResponse> {
   console.warn(
@@ -100,7 +100,7 @@ export async function requestCameraPermissionsAsync(): Promise<CameraPermissionR
 }
 
 /**
- * @deprecated Deprecated. Use `requestMediaLibraryPermissionsAsync()` instead.
+ * @deprecated Use `requestMediaLibraryPermissionsAsync()` instead.
  */
 export async function requestCameraRollPermissionsAsync(): Promise<MediaLibraryPermissionResponse> {
   console.warn(
@@ -228,6 +228,13 @@ export async function launchImageLibraryAsync<T extends ImagePickerOptions>(
 ): Promise<ExpandImagePickerResult<T>> {
   if (!ExponentImagePicker.launchImageLibraryAsync) {
     throw new UnavailabilityError('ImagePicker', 'launchImageLibraryAsync');
+  }
+  if (options?.allowsEditing && options.allowsMultipleSelection) {
+    console.warn(
+      '[expo-image-picker] `allowsEditing` is not supported when `allowsMultipleSelection` is enabled and will be ignored.' +
+        "Disable either 'allowsEditing' or 'allowsMultipleSelection' in 'launchImageLibraryAsync' " +
+        'to fix this warning.'
+    );
   }
   return await ExponentImagePicker.launchImageLibraryAsync(options ?? {});
 }

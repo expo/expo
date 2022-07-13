@@ -31,20 +31,6 @@ void RuntimeDecorator::decorateRuntime(
       rt, "_LABEL", jsi::String::createFromAscii(rt, label));
 
   jsi::Object dummyGlobal(rt);
-  auto dummyFunction = [](jsi::Runtime &rt,
-                          const jsi::Value &thisValue,
-                          const jsi::Value *args,
-                          size_t count) -> jsi::Value {
-    return jsi::Value::undefined();
-  };
-  jsi::Function __reanimatedWorkletInit = jsi::Function::createFromHostFunction(
-      rt,
-      jsi::PropNameID::forAscii(rt, "__reanimatedWorkletInit"),
-      1,
-      dummyFunction);
-
-  dummyGlobal.setProperty(
-      rt, "__reanimatedWorkletInit", __reanimatedWorkletInit);
   rt.global().setProperty(rt, "global", dummyGlobal);
 
   rt.global().setProperty(rt, "jsThis", jsi::Value::undefined());
@@ -85,21 +71,27 @@ void RuntimeDecorator::decorateRuntime(
           1,
           setGlobalConsole));
 
+  auto chronoNow = [](jsi::Runtime &rt,
+                      const jsi::Value &thisValue,
+                      const jsi::Value *args,
+                      size_t count) -> jsi::Value {
+    double now = std::chrono::system_clock::now().time_since_epoch() /
+        std::chrono::milliseconds(1);
+    return jsi::Value(now);
+  };
+
   rt.global().setProperty(
       rt,
       "_chronoNow",
       jsi::Function::createFromHostFunction(
-          rt,
-          jsi::PropNameID::forAscii(rt, "_chronoNow"),
-          0,
-          [](jsi::Runtime &rt,
-             const jsi::Value &thisValue,
-             const jsi::Value *args,
-             size_t count) -> jsi::Value {
-            double now = std::chrono::system_clock::now().time_since_epoch() /
-                std::chrono::milliseconds(1);
-            return jsi::Value(now);
-          }));
+          rt, jsi::PropNameID::forAscii(rt, "_chronoNow"), 0, chronoNow));
+  jsi::Object performance(rt);
+  performance.setProperty(
+      rt,
+      "now",
+      jsi::Function::createFromHostFunction(
+          rt, jsi::PropNameID::forAscii(rt, "now"), 0, chronoNow));
+  rt.global().setProperty(rt, "performance", performance);
 }
 
 void RuntimeDecorator::decorateUIRuntime(
@@ -109,6 +101,8 @@ void RuntimeDecorator::decorateUIRuntime(
     const ScrollToFunction scrollTo,
     const MeasuringFunction measure,
     const TimeProviderFunction getCurrentTime,
+    const RegisterSensorFunction registerSensor,
+    const UnregisterSensorFunction unregisterSensor,
     const SetGestureStateFunction setGestureState,
     std::shared_ptr<LayoutAnimationsProxy> layoutAnimationsProxy) {
   RuntimeDecorator::decorateRuntime(rt, "UI");

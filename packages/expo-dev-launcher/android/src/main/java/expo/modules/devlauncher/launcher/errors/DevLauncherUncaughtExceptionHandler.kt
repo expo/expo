@@ -2,15 +2,21 @@ package expo.modules.devlauncher.launcher.errors
 
 import android.app.Activity
 import android.app.Application
+import android.content.Context
+import android.net.Uri
 import android.os.Bundle
 import android.os.Process
 import android.util.Log
+import expo.modules.devlauncher.DevLauncherController
+import expo.modules.devlauncher.koin.DevLauncherKoinContext
+import expo.modules.devlauncher.logs.DevLauncherRemoteLogManager
 import java.lang.ref.WeakReference
 import java.util.*
 import kotlin.concurrent.schedule
 import kotlin.system.exitProcess
 
 class DevLauncherUncaughtExceptionHandler(
+  private val controller: DevLauncherController,
   application: Application,
   private val defaultUncaughtHandler: Thread.UncaughtExceptionHandler?
 ) : Thread.UncaughtExceptionHandler {
@@ -41,18 +47,20 @@ class DevLauncherUncaughtExceptionHandler(
 
       override fun onActivityDestroyed(activity: Activity) = Unit
     })
-
   }
 
   override fun uncaughtException(thread: Thread, exception: Throwable) {
     // The same exception can be reported multiple times.
     // We handle only the first one.
-    if (exceptionWasReported) {
+    if (exceptionWasReported || DevLauncherErrorActivity.isVisible()) {
       return
     }
 
     exceptionWasReported = true
     Log.e("DevLauncher", "DevLauncher tries to handle uncaught exception.", exception)
+    tryToSaveException(exception)
+    tryToSendExceptionToBundler(exception)
+
     applicationHolder.get()?.let {
       DevLauncherErrorActivity.showFatalError(
         it,
@@ -62,7 +70,7 @@ class DevLauncherUncaughtExceptionHandler(
 
     // We don't know if the error screen will show up.
     // For instance, if the exception was thrown in `MainApplication.onCreate` method,
-    // the erorr screen won't show up.  
+    // the error screen won't show up.
     // That's why we schedule a simple function which will check
     // if the error was handle properly or will fallback
     // to the default exception handler.
@@ -83,5 +91,47 @@ class DevLauncherUncaughtExceptionHandler(
         exitProcess(0)
       }
     }
+  }
+
+  private fun tryToSaveException(exception: Throwable) {
+    val context = DevLauncherKoinContext.app.koin.getOrNull<Context>() ?: return
+    val errorRegistry = DevLauncherErrorRegistry(context)
+    errorRegistry.storeException(exception)
+  }
+
+  private fun tryToSendExceptionToBundler(exception: Throwable) {
+    if (
+      controller.mode != DevLauncherController.Mode.APP ||
+      !controller.appHost.hasInstance() ||
+      controller.appHost.reactInstanceManager.currentReactContext === null
+    ) {
+      return
+    }
+
+    try {
+      val url = getLogsUrl()
+      val remoteLogManager = DevLauncherRemoteLogManager(DevLauncherKoinContext.app.koin.get(), url)
+        .apply {
+          deferError("Your app just crashed. See the error below.")
+          deferError(exception)
+        }
+      remoteLogManager.sendSync()
+    } catch (e: Throwable) {
+      Log.e("DevLauncher", "Couldn't send an exception to bundler. $e", e)
+    }
+  }
+
+  private fun getLogsUrl(): Uri {
+    val logsUrlFromManifest = controller.manifest?.getLogUrl()
+    if (logsUrlFromManifest.isNullOrEmpty()) {
+      return Uri.parse(logsUrlFromManifest)
+    }
+
+    return Uri
+      .parse(controller.appHost.reactInstanceManager.devSupportManager.sourceUrl)
+      .buildUpon()
+      .path("logs")
+      .clearQuery()
+      .build()
   }
 }

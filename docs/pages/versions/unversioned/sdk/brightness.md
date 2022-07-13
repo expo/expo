@@ -1,6 +1,6 @@
 ---
 title: Brightness
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-brightness'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-brightness'
 packageName: 'expo-brightness'
 ---
 

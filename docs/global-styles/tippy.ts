@@ -1,8 +1,7 @@
 import { css } from '@emotion/react';
-import { palette } from '@expo/styleguide';
+import { palette, typography } from '@expo/styleguide';
 
 import { paragraph } from '~/components/base/typography';
-import * as Constants from '~/constants/theme';
 
 export const globalTippy = css`
   div.tippy-box {
@@ -19,7 +18,7 @@ export const globalTippy = css`
   .tippy-box[data-theme~='expo'] .tippy-content {
     ${paragraph};
     color: ${palette.dark.gray[900]};
-    font-family: ${Constants.fonts.book};
+    font-family: ${typography.fontFaces.regular};
     font-weight: 400;
     font-size: 16px;
     line-height: 160%;

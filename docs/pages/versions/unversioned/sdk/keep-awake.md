@@ -1,6 +1,6 @@
 ---
 title: KeepAwake
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-keep-awake'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-keep-awake'
 packageName: 'expo-keep-awake'
 ---
 

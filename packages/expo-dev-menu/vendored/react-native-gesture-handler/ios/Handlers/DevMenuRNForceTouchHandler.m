@@ -20,15 +20,19 @@
   UITouch *_firstTouch;
 }
 
+static const CGFloat defaultForce = 0;
+static const CGFloat defaultMinForce = 0.2;
+static const CGFloat defaultMaxForce = NAN;
+static const BOOL defaultFeedbackOnActivation = NO;
 
 - (id)initWithGestureHandler:(DevMenuRNGestureHandler*)gestureHandler
 {
   if ((self = [super initWithTarget:gestureHandler action:@selector(handleGesture:)])) {
     _gestureHandler = gestureHandler;
-    _force = 0;
-    _minForce = 0.2;
-    _maxForce = NAN;
-    _feedbackOnActivation = NO;
+    _force = defaultForce;
+    _minForce = defaultMinForce;
+    _maxForce = defaultMaxForce;
+    _feedbackOnActivation = defaultFeedbackOnActivation;
   }
   return self;
 }
@@ -40,6 +44,8 @@
     return;
   }
   [super touchesBegan:touches withEvent:event];
+  [_gestureHandler.pointerTracker touchesBegan:touches withEvent:event];
+  
   _firstTouch = [touches anyObject];
   [self handleForceWithTouches:touches];
   self.state = UIGestureRecognizerStatePossible;
@@ -52,6 +58,7 @@
     return;
   }
   [super touchesMoved:touches withEvent:event];
+  [_gestureHandler.pointerTracker touchesMoved:touches withEvent:event];
   
   [self handleForceWithTouches:touches];
   
@@ -92,6 +99,7 @@
     return;
   }
   [super touchesEnded:touches withEvent:event];
+  [_gestureHandler.pointerTracker touchesEnded:touches withEvent:event];
   if (self.state == UIGestureRecognizerStateBegan || self.state == UIGestureRecognizerStateChanged) {
     self.state = UIGestureRecognizerStateEnded;
   } else {
@@ -99,11 +107,18 @@
   }
 }
 
+- (void)touchesCancelled:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+{
+  [super touchesCancelled:touches withEvent:event];
+  [_gestureHandler.pointerTracker touchesCancelled:touches withEvent:event];
+}
+
 - (void)handleForceWithTouches:(NSSet<UITouch *> *)touches {
   _force = _firstTouch.force / _firstTouch.maximumPossibleForce;
 }
 
 - (void)reset {
+  [_gestureHandler.pointerTracker reset];
   [super reset];
   _force = 0;
   _firstTouch = NULL;
@@ -119,6 +134,16 @@
     _recognizer = [[DevMenuRNForceTouchGestureRecognizer alloc] initWithGestureHandler:self];
   }
   return self;
+}
+
+- (void)resetConfig
+{
+  [super resetConfig];
+  DevMenuRNForceTouchGestureRecognizer *recognizer = (DevMenuRNForceTouchGestureRecognizer *)_recognizer;
+  
+  recognizer.feedbackOnActivation = defaultFeedbackOnActivation;
+  recognizer.maxForce = defaultMaxForce;
+  recognizer.minForce = defaultMinForce;
 }
 
 - (void)configure:(NSDictionary *)config

@@ -3,6 +3,9 @@ title: Using Hermes Engine
 sidebar_title: Using Hermes
 ---
 
+import { Collapsible } from '~/ui/components/Collapsible';
+import { Terminal } from '~/ui/components/Snippet';
+
 > Hermes is supported for apps built with [EAS Build](/build/introduction). There are no plans to backport support to `expo build`. [Jump to "Limitations"](#limitations).
 
 [Hermes](https://hermesengine.dev/) is a JavaScript engine optimized for React Native. By compiling JavaScript into bytecode ahead of time, Hermes can improve your app start-up time. The binary size of Hermes is also smaller than other JavaScript engines, such as JavaScriptCore (JSC). It also uses less memory at runtime, which is particularly valuable on lower-end Android devices.
@@ -11,17 +14,17 @@ A limitation with JavaScriptCore is that the debugger does not work with modules
 
 ## Android setup
 
-> Hermes for Android is supported from SDK 42 and above. For bare apps created before SDK 42, [follow these instructions to update your project configuration](https://expo.fyi/hermes-android-config).
+> Hermes for Android is supported from SDK 42 and above in Expo Go, [development builds](/development/introduction.md) built with `expo-dev-client` and standalone apps built with EAS Build. For bare apps created before SDK 42, [follow these instructions to update your project configuration](https://expo.fyi/hermes-android-config).
 
 To get started, open your **app.json** and add `jsEngine` field:
 
 <!-- prettier-ignore -->
-```json
+```js
 {
   "expo": {
     /* @info Add the "jsEngine" field here. Supported values are "hermes" or "jsc" */
     "jsEngine": "hermes"
-  /* @end */
+   /* @end */
   }
 }
 ```
@@ -30,12 +33,12 @@ Now you can build an APK or AAB through `eas build` and your app will run with H
 
 ## iOS setup
 
-> Hermes for iOS is supported from SDK 43 and above. For bare apps created before SDK 43, [follow these instructions to update your project configuration](https://expo.fyi/hermes-ios-config).
+> Hermes for iOS is supported from SDK 43 and above in [development builds](/development/introduction.md) using `expo-dev-client` and standalone apps built with EAS Build. Hermes is not supported in Expo Go for iOS. For bare apps created before SDK 43, [follow these instructions to update your project configuration](https://expo.fyi/hermes-ios-config).
 
 To get started, open your **app.json** and add `jsEngine` field:
 
 <!-- prettier-ignore -->
-```json
+```js
 {
   "expo": {
     /* @info Add the "jsEngine" field here. Supported values are "hermes" or "jsc" */
@@ -47,8 +50,7 @@ To get started, open your **app.json** and add `jsEngine` field:
 
 Now you can build your app through `eas build` and your app will run with Hermes instead of JavaScriptCore.
 
-<details><summary><h4>Are you using an M1 Mac?</h4></summary>
-<p>
+<Collapsible summary="Are you using an M1 Mac?">
 
 When using Hermes for iOS, you may encounter the following error when building for the simulator:
 
@@ -86,13 +88,12 @@ This is [a known issue for React Native 0.64](https://github.com/facebook/hermes
 
 Reinstall Pods and clean Xcode build cache:
 
-```
-$ npx pod-install
-$ xcodebuild clean -workspace ios/{projectName}.xcworkspace -scheme {projectName}
-```
+<Terminal cmd={[
+  '$ npx pod-install',
+  '$ xcodebuild clean -workspace ios/{projectName}.xcworkspace -scheme {projectName}'
+]} />
 
-</p>
-</details>
+</Collapsible>
 
 ## Advanced setup
 
@@ -101,7 +102,7 @@ $ xcodebuild clean -workspace ios/{projectName}.xcworkspace -scheme {projectName
 You may want to use Hermes on one platform and JSC on another. One way to do this is to set the `"jsEngine"` to `"hermes"` at the top level and then override it with `"jsc"` under the `"ios"` key. You may alternatively prefer to explicitly set `"hermes"` on just the `"android"` key in this case.
 
 <!-- prettier-ignore -->
-```json
+```js
 {
   "expo": {
     "jsEngine": "hermes",

@@ -3,7 +3,8 @@ title: Using Sentry
 ---
 
 import PlatformsSection from '~/components/plugins/PlatformsSection';
-import TerminalBlock from '~/components/plugins/TerminalBlock';
+import { Collapsible } from '~/ui/components/Collapsible';
+import { Terminal } from '~/ui/components/Snippet';
 
 [Sentry](http://getsentry.com/) is a crash reporting platform that provides you with "real-time insight into production deployments with info to reproduce and fix crashes".
 
@@ -31,8 +32,8 @@ Before getting real-time updates on errors and making your app generally incredi
 1. [Sign up for Sentry](https://sentry.io/signup/) (it's free), and create a project in your Dashboard. Take note of your **organization name**, **project name**, and **`DSN`**; you'll need them later.
 
    - **organization name** is available in your `Organization settings` tab
-   - **project name** is available in your project's `Settings` > `General Settings` tab
-   - **`DSN`** is available in your project's `Settings` > `Client Keys` tab
+   - **project name** is available in your project's `Settings` > `Projects` tab (find it in the list)
+   - **`DSN`** is avalable in your project's `Settings` > `Projects` > **Project name** > `Client Keys (DSN)` tab
 
 2. Go to the [Sentry API section](https://sentry.io/settings/account/api/auth-tokens/), and create an **auth token**. The token requires the scopes: `org:read`, `project:releases`, and `project:write`. Save this, too.
 
@@ -42,13 +43,15 @@ Once you have each of these: organization name, project name, DSN, and auth toke
 
 In your project directory, run:
 
-<TerminalBlock cmd={['expo install sentry-expo']} />
+<Terminal cmd={['$ expo install sentry-expo']} />
 
 > If you're using SDK 39 or lower, run `yarn add sentry-expo@~3.0.0`
 
 `sentry-expo` also requires some additional dependencies, otherwise it won't work properly. To install them, run:
 
-<TerminalBlock cmd={['expo install expo-application expo-constants expo-device expo-updates @sentry/react-native']} />
+<Terminal 
+  cmd={['$ expo install expo-application expo-constants expo-device expo-updates @sentry/react-native']}
+/>
 
 ### Step 2: Code
 
@@ -110,8 +113,7 @@ The correct `authToken` value can be generated from the [Sentry API page ](https
 > SENTRY_PROJECT=myCoolProject expo publish
 > ```
 
-<details><summary><h4>Additional configuration options</h4></summary>
-<p>
+<Collapsible summary="Additional configuration options">
 
 In addition to the required config fields above, you can also provide these **optional** fields:
 
@@ -129,8 +131,7 @@ In addition to the required config fields above, you can also provide these **op
 > - release = SENTRY_RELEASE
 > - url = SENTRY_URL
 
-</p>
-</details>
+</Collapsible>
 
 #### Add the Config Plugin
 

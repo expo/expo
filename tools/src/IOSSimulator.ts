@@ -1,6 +1,6 @@
+import spawnAsync from '@expo/spawn-async';
 import { spawn } from 'child_process';
 import { Transform, TransformCallback, TransformOptions } from 'stream';
-import spawnAsync from '@expo/spawn-async';
 
 /**
  * Starts an arbitrary iOS simulator so that simctl can reference a "booted" simulator.
@@ -23,7 +23,7 @@ export async function installSimulatorAppAsync(
   try {
     await spawnAsync('xcrun', ['simctl', 'install', simulatorId, archivePath]);
   } catch (e) {
-    let error = new Error(e.stderr);
+    const error = new Error(e.stderr);
     (error as any).status = e.status;
     throw error;
   }
@@ -36,7 +36,7 @@ export async function launchSimulatorAppAsync(
   try {
     await spawnAsync('xcrun', ['simctl', 'launch', simulatorId, bundleIdentifier]);
   } catch (e) {
-    let error = new Error(e.stderr);
+    const error = new Error(e.stderr);
     (error as any).status = e.status;
     throw error;
   }
@@ -72,7 +72,7 @@ export class IOSLogStream extends Transform {
     let entry;
     try {
       entry = JSON.parse(data.toString('utf8'));
-    } catch (e) {}
+    } catch {}
 
     if (entry?.eventMessage) {
       this.push(entry);

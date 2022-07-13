@@ -39,7 +39,8 @@ export interface TaskManagerTaskBody<T = object> {
  */
 export interface TaskManagerTaskBodyExecutionInfo {
   /**
-   * __(iOS only)__ State of the application.
+   * State of the application.
+   * @platform ios
    */
   appState?: 'active' | 'background' | 'inactive';
   /**

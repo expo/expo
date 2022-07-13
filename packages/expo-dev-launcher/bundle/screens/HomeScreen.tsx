@@ -12,20 +12,28 @@ import {
   TerminalIcon,
   ChevronRightIcon,
   InfoIcon,
+  scale,
+  useExpoPalette,
+  BranchIcon,
 } from 'expo-dev-client-components';
 import * as React from 'react';
-import { ScrollView } from 'react-native';
+import { Animated, ScrollView } from 'react-native';
 
-import { AppHeader } from '../components/redesign/AppHeader';
-import { DevServerExplainerModal } from '../components/redesign/DevServerExplainerModal';
-import { LoadAppErrorModal } from '../components/redesign/LoadAppErrorModal';
-import { PulseIndicator } from '../components/redesign/PulseIndicator';
-import { UrlDropdown } from '../components/redesign/UrlDropdown';
-import { useBuildInfo } from '../hooks/useBuildInfo';
-import { useDevSessions } from '../hooks/useDevSessions';
-import { useModalStack } from '../hooks/useModalStack';
-import { useRecentlyOpenedApps } from '../hooks/useRecentlyOpenedApps';
-import { loadApp } from '../native-modules/DevLauncherInternal';
+import { AppHeader } from '../components/AppHeader';
+import { DevServerExplainerModal } from '../components/DevServerExplainerModal';
+import { useLoadingContainerStyle } from '../components/EASUpdatesRows';
+import { LoadAppErrorModal } from '../components/LoadAppErrorModal';
+import { PulseIndicator } from '../components/PulseIndicator';
+import { Toasts } from '../components/Toasts';
+import { UrlDropdown } from '../components/UrlDropdown';
+import { formatUpdateUrl } from '../functions/formatUpdateUrl';
+import { loadApp, loadUpdate } from '../native-modules/DevLauncherInternal';
+import { useCrashReport } from '../providers/CrashReportProvider';
+import { useDevSessions } from '../providers/DevSessionsProvider';
+import { useModalStack } from '../providers/ModalStackProvider';
+import { RecentApp, useRecentlyOpenedApps } from '../providers/RecentlyOpenedAppsProvider';
+import { useToastStack } from '../providers/ToastStackProvider';
+import { useUpdatesConfig } from '../providers/UpdatesConfigProvider';
 import { DevSession } from '../types';
 
 export type HomeScreenProps = {
@@ -42,10 +50,14 @@ export function HomeScreen({
   navigation,
 }: HomeScreenProps) {
   const modalStack = useModalStack();
-  const { data: devSessions, pollAsync, isFetching } = useDevSessions();
+  const [inputValue, setInputValue] = React.useState('');
+  const [loadingUrl, setLoadingUrl] = React.useState('');
 
-  const buildInfo = useBuildInfo();
-  const { appName, appIcon } = buildInfo;
+  const { data: devSessions, pollAsync, isFetching } = useDevSessions();
+  const toastStack = useToastStack();
+  const { projectUrl } = useUpdatesConfig();
+
+  const crashReport = useCrashReport();
 
   const initialDevSessionData = React.useRef(devSessions);
 
@@ -55,13 +67,15 @@ export function HomeScreen({
     }
   }, [fetchOnMount, pollInterval, pollAmount, pollAsync]);
 
-  const onLoadUrl = (url: string) => {
-    loadApp(url).catch((error) => {
-      modalStack.push({
-        title: 'Error loading app',
-        element: <LoadAppErrorModal message={error.message} />,
-      });
+  const onLoadUrl = async (url: string) => {
+    setLoadingUrl(url);
+
+    await loadApp(url).catch((error) => {
+      setLoadingUrl('');
+      modalStack.push(() => <LoadAppErrorModal message={error.message} />);
     });
+
+    setLoadingUrl('');
   };
 
   const onDevSessionPress = async (devSession: DevSession) => {
@@ -76,46 +90,59 @@ export function HomeScreen({
     pollAsync({ pollAmount, pollInterval });
   };
 
-  const onUserProfilePress = () => {
-    navigation.navigate('User Profile');
-  };
-
-  const onAppPress = async (url: string) => {
-    onLoadUrl(url);
+  const onRecentAppPress = async (app: RecentApp) => {
+    if (app.isEASUpdate) {
+      const updateUrl = formatUpdateUrl(app.url, app.updateMessage);
+      loadUpdate(updateUrl, projectUrl).catch((error) => {
+        toastStack.push(() => <Toasts.Error>{error.message}</Toasts.Error>, {
+          durationMs: 10000,
+        });
+      });
+    } else {
+      onLoadUrl(app.url);
+    }
   };
 
   const onDevServerQuestionPress = () => {
-    modalStack.push({ title: 'Development servers', element: <DevServerExplainerModal /> });
+    modalStack.push(() => <DevServerExplainerModal />);
+  };
+
+  const onCrashReportPress = () => {
+    navigation.navigate('Crash Report', crashReport);
   };
 
   return (
-    <View>
-      <View bg="default">
-        <AppHeader
-          title={appName}
-          appImageUri={appIcon}
-          subtitle="Development App"
-          onUserProfilePress={onUserProfilePress}
-        />
-      </View>
-      <ScrollView contentContainerStyle={{ paddingBottom: 120 }}>
+    <View testID="DevLauncherMainScreen">
+      <AppHeader navigation={navigation} />
+      <ScrollView contentContainerStyle={{ paddingBottom: scale['48'] }}>
+        {crashReport && (
+          <View px="medium" py="small" mt="small">
+            <Button.ScaleOnPressContainer onPress={onCrashReportPress} bg="default" rounded="large">
+              <Row align="center" padding="medium" bg="default">
+                <Button.Text color="default">
+                  The last time you tried to open an app the development build crashed. Tap to get
+                  more information.
+                </Button.Text>
+              </Row>
+            </Button.ScaleOnPressContainer>
+          </View>
+        )}
         <View py="large">
-          <Row px="medium" align="center">
-            <View px="small">
+          <Row px="small" align="center">
+            <View px="medium">
               <TerminalIcon />
             </View>
-            <Heading size="small" color="secondary">
-              Development servers
-            </Heading>
+            <Heading color="secondary">Development servers</Heading>
 
-            <Spacer.Horizontal size="flex" />
+            <Spacer.Horizontal />
+
             {devSessions.length > 0 && (
               <Button.ScaleOnPressContainer
                 bg="ghost"
                 rounded="full"
                 minScale={0.85}
                 onPress={onDevServerQuestionPress}>
-                <View rounded="full" padding="small">
+                <View rounded="full" padding="tiny">
                   <InfoIcon />
                 </View>
               </Button.ScaleOnPressContainer>
@@ -129,11 +156,13 @@ export function HomeScreen({
               {devSessions.length === 0 && (
                 <>
                   <View padding="medium" bg="default" roundedTop="large">
-                    <Text size="medium">Start a local development server with:</Text>
+                    <Text>Start a local development server with:</Text>
                     <Spacer.Vertical size="small" />
 
                     <View bg="secondary" border="default" rounded="medium" padding="medium">
-                      <Text type="mono">expo start --dev-client</Text>
+                      <Text type="mono" size="small">
+                        expo start --dev-client
+                      </Text>
                     </View>
 
                     <Spacer.Vertical size="small" />
@@ -155,13 +184,18 @@ export function HomeScreen({
               <FetchDevSessionsRow isFetching={isFetching} onRefetchPress={onRefetchPress} />
               <Divider />
 
-              <UrlDropdown onSubmit={onUrlSubmit} />
+              <UrlDropdown
+                onSubmit={onUrlSubmit}
+                inputValue={inputValue}
+                setInputValue={setInputValue}
+                isLoading={inputValue !== '' && inputValue === loadingUrl}
+              />
             </View>
           </View>
 
           <Spacer.Vertical size="medium" />
 
-          <RecentlyOpenedApps onAppPress={onAppPress} />
+          <RecentlyOpenedApps onRecentAppPress={onRecentAppPress} loadingUrl={loadingUrl} />
         </View>
       </ScrollView>
     </View>
@@ -178,14 +212,20 @@ function FetchDevSessionsRow({ isFetching, onRefetchPress }: FetchDevSessionsRow
   const backgroundColor = isFetching ? theme.status.info : theme.status.default;
 
   return (
-    <Button.ScaleOnPressContainer onPress={onRefetchPress} disabled={isFetching} bg="default">
-      <Row align="center" padding="medium">
-        <PulseIndicator isActive={isFetching} color={backgroundColor} />
-        <Spacer.Horizontal size="small" />
+    <Button.ScaleOnPressContainer
+      onPress={onRefetchPress}
+      disabled={isFetching}
+      bg="default"
+      rounded="none">
+      <Row align="center" padding="medium" bg="default">
+        <View width="6">
+          <PulseIndicator isActive={isFetching} color={backgroundColor} />
+        </View>
+
         <Button.Text color="default">
-          {isFetching ? 'Searching for development servers...' : 'Refetch development servers'}
+          {isFetching ? 'Searching for development servers...' : 'Fetch development servers'}
         </Button.Text>
-        <Spacer.Horizontal size="flex" />
+        <Spacer.Horizontal />
         {!isFetching && <RefreshIcon />}
       </Row>
     </Button.ScaleOnPressContainer>
@@ -212,7 +252,7 @@ function DevSessionList({ devSessions = [], onDevSessionPress }: DevSessionListP
               roundedTop="large"
               roundedBottom="none"
               bg="default">
-              <Row align="center" padding="medium">
+              <Row align="center" padding="medium" bg="default">
                 <StatusIndicator size="small" status="success" />
                 <Spacer.Horizontal size="small" />
                 <View flex="1">
@@ -232,47 +272,164 @@ function DevSessionList({ devSessions = [], onDevSessionPress }: DevSessionListP
   );
 }
 
-function RecentlyOpenedApps({ onAppPress }) {
-  const { data: apps } = useRecentlyOpenedApps();
+function RecentlyOpenedApps({ onRecentAppPress, loadingUrl }) {
+  const { data: apps, clear: clearRecentlyOpenedApps } = useRecentlyOpenedApps();
 
   if (apps.length === 0) {
     return null;
   }
 
+  function renderRow(app: RecentApp) {
+    const label = app.name ?? app.url;
+
+    if (app.isEASUpdate && app.updateMessage != null) {
+      return (
+        <RecentEASUpdateRow
+          label={label}
+          url={app.url}
+          message={app.updateMessage}
+          branchName={app.branchName}
+        />
+      );
+    }
+
+    return <RecentLocalPackagerRow label={label} url={app.url} />;
+  }
+
   return (
     <View px="medium">
-      <View padding="medium">
-        <Heading size="small" color="secondary">
-          Recently opened
-        </Heading>
-      </View>
+      <Row align="center" py="small">
+        <Spacer.Horizontal size="small" />
+
+        <Heading color="secondary">Recently opened</Heading>
+        <Spacer.Horizontal />
+
+        <Button.ScaleOnPressContainer bg="ghost" onPress={clearRecentlyOpenedApps}>
+          <View rounded="medium" px="small" py="micro">
+            <Heading size="small" weight="semibold" color="secondary">
+              Reset
+            </Heading>
+          </View>
+        </Button.ScaleOnPressContainer>
+      </Row>
 
       <View>
         {apps.map((app, index, arr) => {
           const isFirst = index === 0;
           const isLast = index === arr.length - 1;
-          const label = app.name ?? app.url;
+          const isLoading = app.url === loadingUrl;
 
           return (
-            <View key={app.url}>
+            <LoadingContainer key={app.id} isLoading={isLoading}>
               <Button.ScaleOnPressContainer
-                onPress={() => onAppPress(app.url)}
+                onPress={() => onRecentAppPress(app)}
                 roundedTop={isFirst ? 'large' : 'none'}
                 roundedBottom={isLast ? 'large' : 'none'}
+                py="small"
                 bg="default">
-                <Row align="center" padding="medium">
-                  <StatusIndicator size="small" status="success" />
-                  <Spacer.Horizontal size="small" />
-                  <Button.Text color="default">{label}</Button.Text>
-                  <Spacer.Horizontal size="flex" />
-                  <ChevronRightIcon />
-                </Row>
+                {renderRow(app)}
               </Button.ScaleOnPressContainer>
               {!isLast && <Divider />}
-            </View>
+            </LoadingContainer>
           );
         })}
       </View>
+    </View>
+  );
+}
+
+function LoadingContainer({ children, isLoading }) {
+  const style = useLoadingContainerStyle(isLoading);
+  return <Animated.View style={style}>{children}</Animated.View>;
+}
+
+function RecentLocalPackagerRow({ label, url }) {
+  return (
+    <>
+      <Row align="center" px="medium" bg="default">
+        <StatusIndicator size="small" status="success" />
+        <Spacer.Horizontal size="small" />
+        <View flex="1">
+          <Button.Text color="default" numberOfLines={1}>
+            {label}
+          </Button.Text>
+        </View>
+        <ChevronRightIcon />
+      </Row>
+
+      <Row px="medium" align="center" bg="default">
+        <Spacer.Vertical size="tiny" />
+        <Spacer.Horizontal size="large" />
+        <Row
+          style={{
+            flexWrap: 'wrap',
+            flexShrink: 1,
+          }}>
+          <Text size="small" color="secondary" numberOfLines={1}>
+            {url}
+          </Text>
+        </Row>
+      </Row>
+    </>
+  );
+}
+
+function RecentEASUpdateRow({ label, url, branchName, message }) {
+  const palette = useExpoPalette();
+  return (
+    <View>
+      <Row align="center" px="medium" bg="default">
+        <Row
+          shrink="1"
+          style={{
+            backgroundColor: palette.blue['100'],
+          }}
+          py="tiny"
+          px="1.5"
+          rounded="medium"
+          align="center">
+          <BranchIcon
+            style={{ maxHeight: 10, maxWidth: 12, resizeMode: 'contain' }}
+            resizeMethod="scale"
+          />
+          <Spacer.Horizontal size="tiny" />
+          <View shrink="1">
+            <Text size="small" numberOfLines={1}>{`Branch: ${branchName}`}</Text>
+          </View>
+        </Row>
+
+        <Spacer.Horizontal />
+
+        <ChevronRightIcon />
+      </Row>
+
+      <Spacer.Vertical size="small" bg="default" />
+
+      {Boolean(message) && (
+        <>
+          <Row px="medium" align="center" bg="default">
+            <View>
+              <Heading size="small" numberOfLines={1}>
+                {`Update "${message}"`}
+              </Heading>
+            </View>
+          </Row>
+
+          <Spacer.Vertical size="micro" bg="default" />
+        </>
+      )}
+
+      <Row px="medium" align="center" bg="default">
+        <Row
+          style={{
+            flexWrap: 'wrap',
+            flexShrink: 1,
+          }}>
+          <Text size="small" color="secondary" numberOfLines={1}>
+            {url}
+          </Text>
+        </Row>
+      </Row>
     </View>
   );
 }

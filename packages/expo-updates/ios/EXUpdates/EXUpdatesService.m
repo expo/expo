@@ -1,6 +1,7 @@
 // Copyright 2020-present 650 Industries. All rights reserved.
 
 #import <EXUpdates/EXUpdatesAppController.h>
+#import <EXUpdates/EXUpdatesEmbeddedAppLoader.h>
 #import <EXUpdates/EXUpdatesService.h>
 #import <ExpoModulesCore/EXUtilities.h>
 
@@ -12,11 +13,17 @@ EX_REGISTER_MODULE();
 
 + (const NSArray<Protocol *> *)exportedInterfaces
 {
+#if SUPPRESS_EXPO_UPDATES_SERVICE // used in Expo Go
+  return @[];
+#endif
   return @[@protocol(EXUpdatesModuleInterface)];
 }
 
 - (EXUpdatesConfig *)config
 {
+#if SUPPRESS_EXPO_UPDATES_SERVICE // used in Expo Go
+  return nil;
+#endif
   return EXUpdatesAppController.sharedInstance.config;
 }
 
@@ -33,6 +40,11 @@ EX_REGISTER_MODULE();
 - (NSURL *)directory
 {
   return EXUpdatesAppController.sharedInstance.updatesDirectory;
+}
+
+- (nullable EXUpdatesUpdate *)embeddedUpdate
+{
+  return [EXUpdatesEmbeddedAppLoader embeddedManifestWithConfig:self.config database:self.database];
 }
 
 - (nullable EXUpdatesUpdate *)launchedUpdate

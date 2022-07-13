@@ -1,6 +1,6 @@
 ---
 title: Updates
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-updates'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-updates'
 packageName: 'expo-updates'
 ---
 

@@ -101,6 +101,7 @@ public class AirMapOverlay extends AirMapFeature implements ImageReadable {
     options.positionFromBounds(bounds);
     options.zIndex(zIndex);
     options.bearing(bearing);
+    options.transparency(transparency);
     return options;
   }
 

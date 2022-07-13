@@ -12,7 +12,7 @@ import MainTabNavigator from './MainTabNavigator';
 const Switch = createStackNavigator();
 
 export const linking = {
-  prefixes: [Linking.makeUrl('/')],
+  prefixes: [Linking.createURL('/')],
   config: {
     screens: {
       main: {

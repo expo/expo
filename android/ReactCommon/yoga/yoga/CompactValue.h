@@ -1,11 +1,13 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
 #pragma once
+
+#ifdef __cplusplus
 
 #include "YGValue.h"
 #include "YGMacros.h"
@@ -125,8 +127,8 @@ public:
     data.repr &= ~PERCENT_BIT;
     data.repr += BIAS;
 
-    return YGValue{data.value,
-                   payload_.repr & 0x40000000 ? YGUnitPercent : YGUnitPoint};
+    return YGValue{
+        data.value, payload_.repr & 0x40000000 ? YGUnitPercent : YGUnitPoint};
   }
 
   bool isUndefined() const noexcept {
@@ -182,3 +184,5 @@ constexpr bool operator!=(CompactValue a, CompactValue b) noexcept {
 } // namespace detail
 } // namespace yoga
 } // namespace facebook
+
+#endif

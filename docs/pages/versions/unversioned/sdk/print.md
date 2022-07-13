@@ -1,6 +1,6 @@
 ---
 title: Print
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-print'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-print'
 packageName: 'expo-print'
 ---
 

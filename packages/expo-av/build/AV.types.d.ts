@@ -4,13 +4,14 @@ export declare enum PitchCorrectionQuality {
     Medium,
     High
 }
-export declare type AVPlaybackSource = number | {
+export declare type AVPlaybackSource = number | AVPlaybackSourceObject | Asset;
+export declare type AVPlaybackSourceObject = {
     uri: string;
     overrideFileExtensionAndroid?: string;
     headers?: {
         [fieldName: string]: string;
     };
-} | Asset;
+};
 export declare type AVPlaybackNativeSource = {
     uri: string;
     overridingExtension?: string | null;
@@ -18,14 +19,22 @@ export declare type AVPlaybackNativeSource = {
         [fieldName: string]: string;
     };
 };
+/**
+ * Object passed to the `onMetadataUpdate` function.
+ */
 export declare type AVMetadata = {
+    /**
+     * A string with the title of the sound object.
+     */
     title?: string;
 };
-export declare type AVPlaybackStatus = {
+export declare type AVPlaybackStatus = AVPlaybackStatusError | AVPlaybackStatusSuccess;
+export declare type AVPlaybackStatusError = {
     isLoaded: false;
     androidImplementation?: string;
     error?: string;
-} | {
+};
+export declare type AVPlaybackStatusSuccess = {
     isLoaded: true;
     androidImplementation?: string;
     uri: string;
@@ -58,5 +67,9 @@ export declare type AVPlaybackStatusToSet = {
     isMuted?: boolean;
     isLooping?: boolean;
     pitchCorrectionQuality?: PitchCorrectionQuality;
+};
+export declare type AVPlaybackTolerance = {
+    toleranceMillisBefore?: number;
+    toleranceMillisAfter?: number;
 };
 //# sourceMappingURL=AV.types.d.ts.map

@@ -9,9 +9,10 @@ import Constants, { ExecutionEnvironment } from 'expo-constants';
 import * as Font from 'expo-font';
 import { NativeModulesProxy, Platform } from 'expo-modules-core';
 import React from 'react';
-import { AppRegistry, StyleSheet } from 'react-native';
+import { AppRegistry, ErrorUtils, StyleSheet } from 'react-native';
 
 import DevAppContainer from './environment/DevAppContainer';
+import { createErrorHandler } from './errors/ExpoErrorManager';
 
 // Represents an app running in the store client or an app built with the legacy `expo build` command.
 // `false` when running in bare workflow, custom dev clients, or `eas build`s (managed or bare).
@@ -22,7 +23,17 @@ const isManagedEnvironment =
 
 // If expo-font is installed and the style preprocessor is available, use it to parse fonts.
 if (StyleSheet.setStyleAttributePreprocessor) {
-  StyleSheet.setStyleAttributePreprocessor('fontFamily', Font.processFontFamily);
+  if (__DEV__) {
+    // Temporarily disable console.warn() in dev mode,
+    // because the experimented `StyleSheet.setStyleAttributePreprocessor` will show a warning about
+    // `Overwriting fontFamily style attribute preprocessor`.
+    const originalConsoleWarn = global.console.warn;
+    global.console.warn = () => {};
+    StyleSheet.setStyleAttributePreprocessor('fontFamily', Font.processFontFamily);
+    global.console.warn = originalConsoleWarn;
+  } else {
+    StyleSheet.setStyleAttributePreprocessor('fontFamily', Font.processFontFamily);
+  }
 }
 
 // Asserts if bare workflow isn't setup correctly.
@@ -37,6 +48,12 @@ if (NativeModulesProxy.ExpoUpdates?.isMissingRuntimeVersion) {
   } else {
     throw new Error(message);
   }
+}
+
+if (Constants.executionEnvironment === ExecutionEnvironment.StoreClient) {
+  // set up some improvements to commonly logged error messages stemming from react-native
+  const globalHandler = ErrorUtils.getGlobalHandler();
+  ErrorUtils.setGlobalHandler(createErrorHandler(globalHandler));
 }
 
 // Having two if statements will enable terser to remove the entire block.

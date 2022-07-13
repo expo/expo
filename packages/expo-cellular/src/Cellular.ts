@@ -21,7 +21,7 @@ export { CellularGeneration };
  * ```ts
  * Cellular.allowsVoip; // true or false
  * ```
- * @deprecated Deprecated field, use [`allowsVoipAsync()`](#allowsvoipasync) instead.
+ * @deprecated Use [`allowsVoipAsync()`](#allowsvoipasync) instead.
  *
  */
 export const allowsVoip: boolean | null = ExpoCellular ? ExpoCellular.allowsVoip : null;
@@ -44,7 +44,7 @@ export const allowsVoip: boolean | null = ExpoCellular ? ExpoCellular.allowsVoip
  * ```ts
  * Cellular.carrier; // "T-Mobile" or "Verizon"
  * ```
- * @deprecated Deprecated field, use [`getCarrierNameAsync()`](#getcarriernameasync) instead.
+ * @deprecated Use [`getCarrierNameAsync()`](#getcarriernameasync) instead.
  *
  */
 export const carrier: string | null = ExpoCellular ? ExpoCellular.carrier : null;
@@ -63,7 +63,7 @@ export const carrier: string | null = ExpoCellular ? ExpoCellular.carrier : null
  * ```ts
  * Cellular.isoCountryCode; // "us" or "au"
  * ```
- * @deprecated Deprecated field, use [`getIsoCountryCodeAsync()`](#getisocountrycodeAsync) instead.
+ * @deprecated Use [`getIsoCountryCodeAsync()`](#getisocountrycodeAsync) instead.
  *
  */
 export const isoCountryCode: string | null = ExpoCellular ? ExpoCellular.isoCountryCode : null;
@@ -83,7 +83,7 @@ export const isoCountryCode: string | null = ExpoCellular ? ExpoCellular.isoCoun
  * ```ts
  * Cellular.mobileCountryCode; // "310"
  * ```
- * @deprecated Deprecated field, use [`getMobileCountryCodeAsync()`](#getmobilecountrycodeasync) instead.
+ * @deprecated Use [`getMobileCountryCodeAsync()`](#getmobilecountrycodeasync) instead.
  *
  */
 export const mobileCountryCode: string | null = ExpoCellular
@@ -104,7 +104,7 @@ export const mobileCountryCode: string | null = ExpoCellular
  * ```ts
  * Cellular.mobileNetworkCode; // "260"
  * ```
- * @deprecated Deprecated field, use [`getMobileNetworkCodeAsync()`](#getmobilenetworkcodeasync) instead.
+ * @deprecated Use [`getMobileNetworkCodeAsync()`](#getmobilenetworkcodeasync) instead.
  *
  */
 export const mobileNetworkCode: string | null = ExpoCellular

@@ -1,7 +1,7 @@
 # Git and Code Reviews at Expo
 
 - [Git](#git)
-  - [“master” is green](#-master--is-green)
+  - [“main” is green](#-main--is-green)
   - [Develop on feature branches](#develop-on-feature-branches)
   - [One idea = one commit](#one-idea---one-commit)
   - [Rebasing: a linear history](#rebasing--a-linear-history)
@@ -19,15 +19,15 @@
 
 # Git
 
-Expo’s code is stored in Git repositories, including the Expo platform repository. We generally develop on feature branches and then rebase those commits on top of the “master” branch. All of the Git repositories keep a linear history, which makes it easier to read the history, bisect issues, and revert commits.
+Expo’s code is stored in Git repositories, including the Expo platform repository. We generally develop on feature branches and then rebase those commits on top of the “main” branch. All of the Git repositories keep a linear history, which makes it easier to read the history, bisect issues, and revert commits.
 
-## “master” is green
+## “main” is green
 
-Almost all the code we write ends up on master (there are a few exceptions for bug fixes to existing releases, covered later). Since the whole team is working with master, we need to keep it in working condition and try to keep all tests passing and “green”.
+Almost all the code we write ends up on main (there are a few exceptions for bug fixes to existing releases, covered later). Since the whole team is working with main, we need to keep it in working condition and try to keep all tests passing and “green”.
 
 ## Develop on feature branches
 
-We often work on new features on their own branches. This is the first step towards sending your code for review, and it also makes it easier to work on several features concurrently or switch back to master when you need to.
+We often work on new features on their own branches. This is the first step towards sending your code for review, and it also makes it easier to work on several features concurrently or switch back to main when you need to.
 
 Name your branches something memorable for yourself. It’s common to accrue old branches and is helpful if you can quickly remember why you made them.
 
@@ -37,7 +37,7 @@ Commits that are focused on one concept are easier to understand for the reviewe
 
 ## Rebasing: a linear history
 
-We rebase commits on top of master instead of merging them. The team’s understanding of Git and some of our tools revolve around a linear history — always rebase. Git can default `git pull` to rebase instead of merge on a per-branch basis. Tell it to use rebasing for your existing branches and all new branches with:
+We rebase commits on top of main instead of merging them. The team’s understanding of Git and some of our tools revolve around a linear history — always rebase. Git can default `git pull` to rebase instead of merge on a per-branch basis. Tell it to use rebasing for your existing branches and all new branches with:
 
 ```sh
 # Set rebase=true for your existing branches
@@ -50,15 +50,15 @@ git config branch.autosetuprebase always
 
 ## Pull and rebase often
 
-Keep your master branch up to date. If you make your master branch use rebasing by default (see above), just run `git pull` on master.
+Keep your main branch up to date. If you make your main branch use rebasing by default (see above), just run `git pull` on main.
 
-Rebasing your feature branches often (`git rebase master`) also increases the likelihood your code works with master and decreases the likelihood of a large merge conflict instead of smaller ones.
+Rebasing your feature branches often (`git rebase main`) also increases the likelihood your code works with main and decreases the likelihood of a large merge conflict instead of smaller ones.
 
-If you’ve rebased a branch that you’ve sent for code review, you’ll need to force-push it to the remote branch on GitHub with `git push --force`. The Expo repository is configured to block accidental force-pushes to master.
+If you’ve rebased a branch that you’ve sent for code review, you’ll need to force-push it to the remote branch on GitHub with `git push --force`. The Expo repository is configured to block accidental force-pushes to main.
 
 ## Commit often
 
-On larger projects, send PRs and land them on master often. This makes each PR easier to review and gives you faster feedback on whether you’re working in the right direction. Frequent commits also reduce large spikes in the time you’re asking from your reviewer and reduce sudden changes to the codebase that may break something. They also help reduce the size of merge conflicts your teammates may encounter after pulling and rebasing on top of your changes. Keep your feature branches close to master.
+On larger projects, send PRs and land them on main often. This makes each PR easier to review and gives you faster feedback on whether you’re working in the right direction. Frequent commits also reduce large spikes in the time you’re asking from your reviewer and reduce sudden changes to the codebase that may break something. They also help reduce the size of merge conflicts your teammates may encounter after pulling and rebasing on top of your changes. Keep your feature branches close to main.
 
 ## Squash before pushing
 
@@ -68,7 +68,7 @@ If you have more than one commit, squash them together before pushing if they ar
 
 ## Code behind feature flags
 
-Use simple flags — even a Boolean variable at the top of your file — to gate code that isn’t ready for production but that you still are committing to master. This way you can commit often without necessarily putting your code into action. It also lends itself to code that is easier to enable or disable experimentally without a lot of commitment.
+Use simple flags — even a Boolean variable at the top of your file — to gate code that isn’t ready for production but that you still are committing to main. This way you can commit often without necessarily putting your code into action. It also lends itself to code that is easier to enable or disable experimentally without a lot of commitment.
 
 ## Communicate with test plans
 

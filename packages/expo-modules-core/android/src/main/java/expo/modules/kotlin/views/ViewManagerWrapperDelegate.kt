@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import android.view.View
 import com.facebook.react.bridge.ReadableMap
+import com.facebook.react.common.MapBuilder
 import expo.modules.core.utilities.ifNull
 import expo.modules.kotlin.ModuleHolder
 import expo.modules.kotlin.callbacks.ViewCallbackDelegate
@@ -13,6 +14,9 @@ import kotlin.reflect.jvm.isAccessible
 class ViewManagerWrapperDelegate(internal var moduleHolder: ModuleHolder) {
   private val definition: ViewManagerDefinition
     get() = requireNotNull(moduleHolder.definition.viewManagerDefinition)
+
+  internal val viewGroupDefinition: ViewGroupDefinition?
+    get() = definition.viewGroupDefinition
 
   val name: String
     get() = moduleHolder.name
@@ -33,15 +37,16 @@ class ViewManagerWrapperDelegate(internal var moduleHolder: ModuleHolder) {
     definition.onViewDestroys?.invoke(view)
 
   fun getExportedCustomDirectEventTypeConstants(): Map<String, Any>? {
-    return definition
+    val builder = MapBuilder.builder<String, Any>()
+    definition
       .callbacksDefinition
       ?.names
-      ?.map {
-        it to mapOf(
-          "registrationName" to it
+      ?.forEach {
+        builder.put(
+          it, MapBuilder.of<String, Any>("registrationName", it)
         )
       }
-      ?.toMap()
+    return builder.build()
   }
 
   private fun configureView(view: View) {

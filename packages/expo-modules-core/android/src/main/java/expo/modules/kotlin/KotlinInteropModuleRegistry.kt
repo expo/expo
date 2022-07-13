@@ -41,26 +41,25 @@ class KotlinInteropModuleRegistry(
   }
 
   fun exportedModulesConstants(): Map<ModuleName, ModuleConstants> {
-    return registry
-      .map { holder ->
-        holder.name to holder.definition.constantsProvider()
-      }
-      .toMap()
+    return registry.associate { holder ->
+      holder.name to holder.definition.constantsProvider()
+    }
   }
 
   fun exportMethods(exportKey: (String, List<ModuleMethodInfo>) -> Unit = { _, _ -> }): Map<ModuleName, List<ModuleMethodInfo>> {
-    return registry
-      .map { holder ->
-        val methodsInfo = holder.definition.methods.map { (name, method) ->
+    return registry.associate { holder ->
+      val methodsInfo = holder
+        .definition
+        .asyncFunctions
+        .map { (name, method) ->
           mapOf(
             "name" to name,
             "argumentsCount" to method.argsCount
           )
         }
-        exportKey(holder.name, methodsInfo)
-        holder.name to methodsInfo
-      }
-      .toMap()
+      exportKey(holder.name, methodsInfo)
+      holder.name to methodsInfo
+    }
   }
 
   fun exportViewManagers(): List<ViewManager<*, *>> {
@@ -73,6 +72,17 @@ class KotlinInteropModuleRegistry(
           expo.modules.core.ViewManager.ViewManagerType.GROUP -> GroupViewManagerWrapper(wrapperDelegate)
         }
       }
+  }
+
+  fun viewManagersMetadata(): Map<String, Map<String, Any>> {
+    return registry
+      .filter { it.definition.viewManagerDefinition != null }
+      .map { holder ->
+        holder.name to mapOf(
+          "propsNames" to (holder.definition.viewManagerDefinition?.propsNames ?: emptyList())
+        )
+      }
+      .toMap()
   }
 
   fun extractViewManagersDelegateHolders(viewManagers: List<ViewManager<*, *>>): List<ViewWrapperDelegateHolder> =
@@ -96,12 +106,11 @@ class KotlinInteropModuleRegistry(
       }
   }
 
-  fun exportedViewManagersNames(): List<String> =
-    registry
-      .filter { it.definition.viewManagerDefinition != null }
-      .map { it.definition.name }
-
   fun onDestroy() {
     appContext.onDestroy()
+  }
+
+  fun installJSIInterop() {
+    appContext.installJSIInterop()
   }
 }

@@ -7,6 +7,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.media.AudioDeviceInfo;
 import android.media.AudioManager;
 import android.media.MediaRecorder;
 import android.net.Uri;
@@ -14,16 +15,21 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
 
+import com.facebook.jni.HybridData;
+
 import expo.modules.core.ModuleRegistry;
 import expo.modules.core.Promise;
 import expo.modules.core.arguments.ReadableArguments;
+import expo.modules.core.interfaces.DoNotStrip;
 import expo.modules.core.interfaces.InternalModule;
+import expo.modules.core.interfaces.JavaScriptContextProvider;
 import expo.modules.core.interfaces.LifecycleEventListener;
 import expo.modules.core.interfaces.services.EventEmitter;
 import expo.modules.core.interfaces.services.UIManager;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -38,10 +44,17 @@ import expo.modules.av.player.PlayerData;
 import expo.modules.av.video.VideoView;
 import expo.modules.av.video.VideoViewWrapper;
 import expo.modules.interfaces.permissions.Permissions;
+import expo.modules.interfaces.permissions.PermissionsResponseListener;
+
+import com.facebook.react.turbomodule.core.CallInvokerHolderImpl;
 
 import static android.media.MediaRecorder.MEDIA_RECORDER_INFO_MAX_FILESIZE_REACHED;
 
 public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFocusChangeListener, MediaRecorder.OnInfoListener, AVManagerInterface, InternalModule {
+  static {
+    System.loadLibrary("expo-av");
+  }
+
   private static final String AUDIO_MODE_SHOULD_DUCK_KEY = "shouldDuckAndroid";
   private static final String AUDIO_MODE_INTERRUPTION_MODE_KEY = "interruptionModeAndroid";
   private static final String AUDIO_MODE_PLAY_THROUGH_EARPIECE = "playThroughEarpieceAndroid";
@@ -56,6 +69,13 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
   private static final String RECORDING_OPTION_NUMBER_OF_CHANNELS_KEY = "numberOfChannels";
   private static final String RECORDING_OPTION_BIT_RATE_KEY = "bitRate";
   private static final String RECORDING_OPTION_MAX_FILE_SIZE_KEY = "maxFileSize";
+
+  private static final String RECORDING_INPUT_NAME_KEY = "name";
+  private static final String RECORDING_INPUT_TYPE_KEY = "type";
+  private static final String RECORDING_INPUT_UID_KEY = "uid";
+
+  @DoNotStrip
+  private final HybridData mHybridData;
 
   private boolean mShouldRouteThroughEarpiece = false;
 
@@ -112,6 +132,26 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
     mContext.registerReceiver(mNoisyAudioStreamReceiver,
       new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY));
     mIsRegistered = true;
+
+
+    mHybridData = initHybrid();
+  }
+
+  @Override
+  protected void finalize() throws Throwable {
+    super.finalize();
+    mHybridData.resetNative();
+  }
+
+  @SuppressWarnings("JavaJniMissingFunction")
+  private native HybridData initHybrid();
+  @SuppressWarnings("JavaJniMissingFunction")
+  private native void installJSIBindings(long jsRuntimePointer, CallInvokerHolderImpl jsCallInvokerHolder);
+
+  @SuppressWarnings("unused")
+  @DoNotStrip
+  private PlayerData getMediaPlayerById(int id) {
+    return mSoundMap.get(id);
   }
 
   @Override
@@ -119,14 +159,27 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
     return mModuleRegistry;
   }
 
+  private UIManager getUIManager() {
+    return mModuleRegistry.getModule(UIManager.class);
+  }
+
   @Override
   public void onCreate(ModuleRegistry moduleRegistry) {
     if (mModuleRegistry != null) {
-      mModuleRegistry.getModule(UIManager.class).unregisterLifecycleEventListener(this);
+      getUIManager().unregisterLifecycleEventListener(this);
     }
     mModuleRegistry = moduleRegistry;
     if (mModuleRegistry != null) {
-      mModuleRegistry.getModule(UIManager.class).registerLifecycleEventListener(this);
+      final UIManager uiManager = getUIManager();
+
+      uiManager.registerLifecycleEventListener(this);
+      uiManager.runOnClientCodeQueueThread(() -> {
+        final JavaScriptContextProvider jsContextProvider = mModuleRegistry.getModule(JavaScriptContextProvider.class);
+        final long jsContextRef = jsContextProvider.getJavaScriptContextRef();
+        if (jsContextRef != 0) {
+          installJSIBindings(jsContextRef, jsContextProvider.getJSCallInvokerHolder());
+        }
+      });
     }
   }
 
@@ -318,7 +371,7 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
   public void setAudioIsEnabled(final Boolean value) {
     mEnabled = value;
     if (!value) {
-      abandonAudioFocus();
+      getUIManager().runOnUiQueueThread(this::abandonAudioFocus);
     }
   }
 
@@ -327,7 +380,7 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
     mShouldDuckAudio = map.getBoolean(AUDIO_MODE_SHOULD_DUCK_KEY);
     if (!mShouldDuckAudio) {
       mIsDuckingAudio = false;
-      updateDuckStatusForAllPlayersPlaying();
+      getUIManager().runOnUiQueueThread(this::updateDuckStatusForAllPlayersPlaying);
     }
 
     if (map.containsKey(AUDIO_MODE_PLAY_THROUGH_EARPIECE)) {
@@ -369,69 +422,79 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
 
   @Override
   public void loadForSound(final ReadableArguments source, final ReadableArguments status, final Promise promise) {
-    final int key = mSoundMapKeyCount++;
-    final PlayerData data = PlayerData.createUnloadedPlayerData(this, mContext, source, status.toBundle());
-    data.setErrorListener(new PlayerData.ErrorListener() {
-      @Override
-      public void onError(final String error) {
-        removeSoundForKey(key);
-      }
-    });
-    mSoundMap.put(key, data);
-    data.load(status.toBundle(), new PlayerData.LoadCompletionListener() {
-      @Override
-      public void onLoadSuccess(final Bundle status) {
-        promise.resolve(Arrays.asList(key, status));
-      }
+    getUIManager().runOnUiQueueThread(() -> {
+      final int key = mSoundMapKeyCount++;
+      final PlayerData data = PlayerData.createUnloadedPlayerData(this, mContext, source, status.toBundle());
+      data.setErrorListener(new PlayerData.ErrorListener() {
+        @Override
+        public void onError(final String error) {
+          removeSoundForKey(key);
+        }
+      });
+      mSoundMap.put(key, data);
+      data.load(status.toBundle(), new PlayerData.LoadCompletionListener() {
+        @Override
+        public void onLoadSuccess(final Bundle status) {
+          promise.resolve(Arrays.asList(key, status));
+        }
 
-      @Override
-      public void onLoadError(final String error) {
-        mSoundMap.remove(key);
-        promise.reject("E_LOAD_ERROR", error, null);
-      }
-    });
+        @Override
+        public void onLoadError(final String error) {
+          mSoundMap.remove(key);
+          promise.reject("E_LOAD_ERROR", error, null);
+        }
+      });
 
-    data.setStatusUpdateListener(new PlayerData.StatusUpdateListener() {
-      @Override
-      public void onStatusUpdate(final Bundle status) {
-        Bundle payload = new Bundle();
-        payload.putInt("key", key);
-        payload.putBundle("status", status);
-        sendEvent("didUpdatePlaybackStatus", payload);
-      }
+      data.setStatusUpdateListener(new PlayerData.StatusUpdateListener() {
+        @Override
+        public void onStatusUpdate(final Bundle status) {
+          Bundle payload = new Bundle();
+          payload.putInt("key", key);
+          payload.putBundle("status", status);
+          sendEvent("didUpdatePlaybackStatus", payload);
+        }
+      });
     });
   }
 
   @Override
   public void unloadForSound(final Integer key, final Promise promise) {
-    if (tryGetSoundForKey(key, promise) != null) {
-      removeSoundForKey(key);
-      promise.resolve(PlayerData.getUnloadedStatus());
-    } // Otherwise, tryGetSoundForKey has already rejected the promise.
+    getUIManager().runOnUiQueueThread(() -> {
+      if (tryGetSoundForKey(key, promise) != null) {
+        removeSoundForKey(key);
+        promise.resolve(PlayerData.getUnloadedStatus());
+      } // Otherwise, tryGetSoundForKey has already rejected the promise.
+    });
   }
 
   @Override
   public void setStatusForSound(final Integer key, final ReadableArguments status, final Promise promise) {
-    final PlayerData data = tryGetSoundForKey(key, promise);
-    if (data != null) {
-      data.setStatus(status.toBundle(), promise);
-    } // Otherwise, tryGetSoundForKey has already rejected the promise.
+    getUIManager().runOnUiQueueThread(() -> {
+      final PlayerData data = tryGetSoundForKey(key, promise);
+      if (data != null) {
+        data.setStatus(status.toBundle(), promise);
+      } // Otherwise, tryGetSoundForKey has already rejected the promise.
+    });
   }
 
   @Override
   public void replaySound(final Integer key, final ReadableArguments status, final Promise promise) {
-    final PlayerData data = tryGetSoundForKey(key, promise);
-    if (data != null) {
-      data.setStatus(status.toBundle(), promise);
-    } // Otherwise, tryGetSoundForKey has already rejected the promise.
+    getUIManager().runOnUiQueueThread(() -> {
+      final PlayerData data = tryGetSoundForKey(key, promise);
+      if (data != null) {
+        data.setStatus(status.toBundle(), promise);
+      } // Otherwise, tryGetSoundForKey has already rejected the promise.
+    });
   }
 
   @Override
   public void getStatusForSound(final Integer key, final Promise promise) {
-    final PlayerData data = tryGetSoundForKey(key, promise);
-    if (data != null) {
-      promise.resolve(data.getStatus());
-    } // Otherwise, tryGetSoundForKey has already rejected the promise.
+    getUIManager().runOnUiQueueThread(() -> {
+      final PlayerData data = tryGetSoundForKey(key, promise);
+      if (data != null) {
+        promise.resolve(data.getStatus());
+      } // Otherwise, tryGetSoundForKey has already rejected the promise.
+    });
   }
 
   // Unified playback API - Video
@@ -443,7 +506,7 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
   // Rejects the promise if the VideoView is not found, otherwise executes the callback.
   private void tryRunWithVideoView(final Integer tag, final VideoViewCallback callback, final Promise promise) {
     if (mModuleRegistry != null) {
-      UIManager uiManager = mModuleRegistry.getModule(UIManager.class);
+      UIManager uiManager = getUIManager();
       if (uiManager != null) {
         uiManager.addUIBlock(tag, new UIManager.UIBlock<VideoViewWrapper>() {
           @Override
@@ -514,8 +577,16 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
 
   // Recording API
 
+  public boolean hasAudioPermission() {
+    return mModuleRegistry.getModule(Permissions.class).hasGrantedPermissions(Manifest.permission.RECORD_AUDIO);
+  }
+
+  public void requestAudioPermission(PermissionsResponseListener permissionsResponseListener) {
+    mModuleRegistry.getModule(Permissions.class).askForPermissions(permissionsResponseListener, Manifest.permission.RECORD_AUDIO);
+  }
+
   private boolean isMissingAudioRecordingPermissions() {
-    return !mModuleRegistry.getModule(Permissions.class).hasGrantedPermissions(Manifest.permission.RECORD_AUDIO);
+    return !hasAudioPermission();
   }
 
   // Rejects the promise and returns false if the MediaRecorder is not found.
@@ -667,6 +738,131 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
     map.putString("uri", Uri.fromFile(new File(mAudioRecordingFilePath)).toString());
     map.putBundle("status", getAudioRecorderStatus());
     promise.resolve(map);
+  }
+
+  private AudioDeviceInfo getDeviceInfoFromUid(String uid) {
+    AudioDeviceInfo deviceInfo = null;
+    if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.M) {
+      return deviceInfo;
+    }
+
+    int id = Integer.valueOf(uid);
+    AudioDeviceInfo[] audioDevices = mAudioManager.getDevices(AudioManager.GET_DEVICES_INPUTS);
+    for (AudioDeviceInfo device : audioDevices) {
+      int deviceId = device.getId();
+      if (deviceId == id) {
+        return device;
+      }
+    }
+    return null;
+  }
+
+  private Bundle getMapFromDeviceInfo(AudioDeviceInfo deviceInfo) {
+    Bundle map = new Bundle();
+    if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.M) {
+      return map;
+    }
+    int type = deviceInfo.getType();
+    String typeStr = String.valueOf(type);
+    if (type == AudioDeviceInfo.TYPE_BUILTIN_MIC) {
+      typeStr = "MicrophoneBuiltIn";
+    } else if (type == AudioDeviceInfo.TYPE_BLUETOOTH_SCO) {
+      typeStr = "BluetoothSCO";
+    } else if (type == AudioDeviceInfo.TYPE_BLUETOOTH_A2DP) {
+      typeStr = "BluetoothA2DP";
+    } else if (type == AudioDeviceInfo.TYPE_TELEPHONY) {
+      typeStr = "Telephony";
+    } else if (type == AudioDeviceInfo.TYPE_WIRED_HEADSET) {
+      typeStr = "MicrophoneWired";
+    }
+    map.putString(RECORDING_INPUT_NAME_KEY, deviceInfo.getProductName().toString());
+    map.putString(RECORDING_INPUT_TYPE_KEY, typeStr);
+    map.putString(RECORDING_INPUT_UID_KEY, String.valueOf(deviceInfo.getId()));
+    return map;
+  }
+
+  @Override
+  public void getCurrentInput(final Promise promise) {
+    AudioDeviceInfo deviceInfo = null;
+    if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.P){
+      promise.reject("E_AUDIO_VERSIONINCOMPATIBLE", "Getting current audio input is not supported on devices running Android version lower than Android 9.0");
+      return;
+    } else  {
+
+      try {
+        // getRoutedDevice() is the most reliable way to return the actual mic input, however it
+        // only returns a valid device when actively recording, and may throw otherwise.
+        // https://developer.android.com/reference/android/media/MediaRecorder#getRoutedDevice()
+        deviceInfo = mAudioRecorder.getRoutedDevice();
+      } catch (Exception e) {
+        // Noop if this throws, try alternate method of determining current input below.
+      }
+
+      // If no routed device is found try preferred device
+      deviceInfo = mAudioRecorder.getPreferredDevice();
+
+      if (deviceInfo == null) {
+        // If no preferred device is found, set it to the first built-in input we can find
+        AudioDeviceInfo[] audioDevices = mAudioManager.getDevices(AudioManager.GET_DEVICES_INPUTS);
+        for (int i = 0; i < audioDevices.length; i++) {
+          AudioDeviceInfo availableDeviceInfo = audioDevices[i];
+          int type = availableDeviceInfo.getType();
+          if (type == AudioDeviceInfo.TYPE_BUILTIN_MIC) {
+            deviceInfo = availableDeviceInfo;
+            mAudioRecorder.setPreferredDevice(deviceInfo);
+            break;
+          }
+        }
+      }
+    }
+
+    if (deviceInfo != null) {
+      final Bundle map = getMapFromDeviceInfo(deviceInfo);
+      promise.resolve(map);
+    } else {
+      promise.reject("E_AUDIO_DEVICENOTFOUND", "Cannot get current input, AudioDeviceInfo not found.");
+    }
+  }
+
+  @Override
+  public void getAvailableInputs(final Promise promise) {
+    if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.M){
+      promise.reject("E_AUDIO_VERSIONINCOMPATIBLE", "Getting available inputs is not supported on devices running Android version lower than Android 6.0");
+    } else {
+      ArrayList<Bundle> devices = new ArrayList();
+      AudioDeviceInfo[] audioDevices = mAudioManager.getDevices(AudioManager.GET_DEVICES_INPUTS);
+      for (AudioDeviceInfo deviceInfo : audioDevices) {
+        int type = deviceInfo.getType();
+        if (type == AudioDeviceInfo.TYPE_BUILTIN_MIC || type == AudioDeviceInfo.TYPE_BLUETOOTH_SCO || type == AudioDeviceInfo.TYPE_WIRED_HEADSET) {
+          final Bundle map = getMapFromDeviceInfo(deviceInfo);
+          devices.add(map);
+        }
+      }
+      promise.resolve(devices);
+    }
+  }
+
+  @Override
+  public void setInput(final String uid, final Promise promise) {
+    AudioDeviceInfo deviceInfo = getDeviceInfoFromUid(uid);
+    boolean success = false;
+    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
+      if (deviceInfo != null && deviceInfo.getType() == AudioDeviceInfo.TYPE_BLUETOOTH_SCO) {
+        mAudioManager.startBluetoothSco();
+      } else {
+        mAudioManager.stopBluetoothSco();
+      }
+
+      success = mAudioRecorder.setPreferredDevice(deviceInfo);
+
+    } else {
+      promise.reject("E_AUDIO_VERSIONINCOMPATIBLE", "Setting input is not supported on devices running Android version lower than Android 9.0");
+    }
+    if (success) {
+      promise.resolve(success);
+    } else {
+      promise.reject("E_AUDIO_SETINPUTFAIL", "Could not set preferred device input.");
+    }
   }
 
   @Override

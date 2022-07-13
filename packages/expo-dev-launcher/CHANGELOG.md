@@ -6,11 +6,128 @@
 
 ### 🎉 New features
 
+- Include extra information in the recently opened list ([#17633](https://github.com/expo/expo/pull/17633) by [@ajsmth](https://github.com/ajsmth))
+- Add debug settings for EAS Updates (admin only) ([#17842](https://github.com/expo/expo/pull/17842) by [@ajsmth](https://github.com/ajsmth))
+- Add organizations to account selector ([#18152](https://github.com/expo/expo/pull/18152) by [@ajsmth](https://github.com/ajsmth))
+- Restore navigation state after loading an update ([#18189](https://github.com/expo/expo/pull/18189) by [@ajsmth](https://github.com/ajsmth))
+
 ### 🐛 Bug fixes
 
-- Fix build errors on React Native 0.66 caused by `okio` and `okhttp`. ([#15632](https://github.com/expo/expo/pull/15632) by [@kudo](https://github.com/kudo))
+- Fixed the application crashing when the user forces a dark mode only for the dev-client app in the system setting on Android. ([#17858](https://github.com/expo/expo/pull/17858) by [@lukmccall](https://github.com/lukmccall))
+- Fixed the error screen is sometimes empty on Android. ([#17857](https://github.com/expo/expo/pull/17857) by [@lukmccall](https://github.com/lukmccall))
+- Added support for React Native 0.69.x. ([#18006](https://github.com/expo/expo/pull/18006) by [@kudo](https://github.com/kudo))
+- Partially fixed retrieving the React Context from the Android Flipper plugin. ([#18105](https://github.com/expo/expo/pull/18105) by [@lukmccall](https://github.com/lukmccall))
+- Add support for improved missing module error messages in React Native 0.65+. ([#18064](https://github.com/expo/expo/pull/18064) by [@esamelson](https://github.com/esamelson))
 
 ### 💡 Others
+
+- [Android] Get downloaded update IDs. ([#17933](https://github.com/expo/expo/pull/17933) by [@douglowder](https://github.com/douglowder))
+
+## 1.0.0 — 2022-06-09
+
+### 🐛 Bug fixes
+
+- Fixed the singleton `RCTBridge.currentBridge` instance value be override by expo-dev-launcher bridge instance on iOS. ([#17780](https://github.com/expo/expo/pull/17780) by [@kudo](https://github.com/kudo))
+
+## 0.11.7 — 2022-06-07
+
+### 🐛 Bug fixes
+
+- Fix opening published EAS Update from URL on Android. ([#17734](https://github.com/expo/expo/pull/17734) by [@esamelson](https://github.com/esamelson))
+
+### 💡 Others
+
+- Stop persisting remote debugging setting between app loads on iOS. ([#17650](https://github.com/expo/expo/pull/17650) by [@esamelson](https://github.com/esamelson))
+- Autodetect dev-launcher packager on iOS. ([#17712](https://github.com/expo/expo/pull/17712) by [@douglowder](https://github.com/douglowder))
+
+## 0.11.6 — 2022-05-19
+
+_This version does not introduce any user-facing changes._
+
+## 0.11.5 — 2022-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 0.11.4 — 2022-05-05
+
+### 🐛 Bug fixes
+
+- Fix crash on initial deep link ([#17268](https://github.com/expo/expo/pull/17268) by [@ajsmth](https://github.com/ajsmth))
+- Fix remote debugging crashing the application on iOS. ([#17248](https://github.com/expo/expo/pull/17248) by [@lukmccall](https://github.com/lukmccall))
+- Fix reload button on iOS native error screen in certain cases. ([#17272](https://github.com/expo/expo/pull/17272) by [@esamelson](https://github.com/esamelson))
+- Fix infinite query refetching on extensions panel. ([#17314](https://github.com/expo/expo/pull/17314) by [@ajsmth](https://github.com/ajsmth))
+- Fix airplane mode hanging on splash screen. ([#17325](https://github.com/expo/expo/pull/17325) by [@ajsmth](https://github.com/ajsmth))
+
+## 0.11.3 — 2022-04-26
+
+### 🐛 Bug fixes
+
+- Fix the error screen sometimes not showing on iOS. ([#17216](https://github.com/expo/expo/pull/17216) by [@lukmccall](https://github.com/lukmccall))
+
+## 0.11.2 — 2022-04-25
+
+_This version does not introduce any user-facing changes._
+
+## 0.11.1 — 2022-04-21
+
+_This version does not introduce any user-facing changes._
+
+## 0.11.0 — 2022-04-20
+
+### 🎉 New features
+
+- Add expo-modules and ReactDelegate-based automatic setup on iOS. ([#16190](https://github.com/expo/expo/pull/16190) by [@esamelson](https://github.com/esamelson))
+- Add support for auto-setup with updates integration on iOS. ([#16230](https://github.com/expo/expo/pull/16230) by [@esamelson](https://github.com/esamelson))
+- Send uncaught exceptions to the bundler server if possible. ([#15938](https://github.com/expo/expo/pull/15938) & [#15964](https://github.com/expo/expo/pull/15964) by [@lukmccall](https://github.com/lukmccall))
+- Add support for React Native `0.67.X`. ([#16038](https://github.com/expo/expo/pull/16038) by [@kudo](https://github.com/kudo))
+- Add the crash report screen. ([#16341](https://github.com/expo/expo/pull/16341) by [@lukmccall](https://github.com/lukmccall))
+- Add the `isDevelopmentBuild` function to determine if you are running in a development build. ([#16486](https://github.com/expo/expo/pull/16486) by [@lukmccall](https://github.com/lukmccall))
+- Add expo-modules automatic setup on Android. ([#16441](https://github.com/expo/expo/pull/16441) by [@esamelson](https://github.com/esamelson))
+- Add support for auto-setup with updates integration on Android. ([#16442](https://github.com/expo/expo/pull/16442) by [@esamelson](https://github.com/esamelson))
+- Remove regex-based config plugin mods in SDK 45+ projects. ([#16495](https://github.com/expo/expo/pull/16495) by [@esamelson](https://github.com/esamelson))
+- Restore ability of host apps to disable dev client. ([#16521](https://github.com/expo/expo/pull/16521) by [@esamelson](https://github.com/esamelson))
+
+### 🐛 Bug fixes
+
+- Fix `androidNavigationBar` app.json config settings having no effect at runtime ([#15030](https://github.com/expo/expo/issues/15030)). ([#16711](https://github.com/expo/expo/pull/16711) by [@esamelson](https://github.com/esamelson))
+- Removed the unused `jcenter()` maven dependencies. ([#16846](https://github.com/expo/expo/pull/16846) by [@kudo](https://github.com/kudo))
+- Fix app not appearing after deeplinking from cold boot on iOS. ([#17010](https://github.com/expo/expo/pull/17010) by [@ajsmth](https://github.com/ajsmth))
+- Fix `RCTStatusBarManager module requires that the UIViewControllerBasedStatusBarAppearance to be false.` on iOS. ([#17022](https://github.com/expo/expo/pull/17022) by [@lukmccall](https://github.com/lukmccall))
+- Fix loading published projects on Android. ([#17069](https://github.com/expo/expo/pull/17069) by [@esamelson](https://github.com/esamelson))
+
+### 💡 Others
+
+- Move unrelated dev-menu functions into dev-launcher. ([#16124](https://github.com/expo/expo/pull/16124) by [@ajsmth](https://github.com/ajsmth))
+- Simplify dev-launcher / dev-menu relationship on iOS. ([#16067](https://github.com/expo/expo/pull/16067) by [@ajsmth](https://github.com/ajsmth))
+- Simplify dev-launcher / dev-menu relationship on Android. ([#16228](https://github.com/expo/expo/pull/16228) by [@ajsmth](https://github.com/ajsmth))
+- Compatibility with expo-dev-menu auto-setup on iOS. ([#16496](https://github.com/expo/expo/pull/16496) by [@esamelson](https://github.com/esamelson))
+- Remove initialization side effects. ([#16522](https://github.com/expo/expo/pull/16522) by [@esamelson](https://github.com/esamelson))
+- Use expo-manifests `logUrl` getter instead of accessing raw JSON. ([#16709](https://github.com/expo/expo/pull/16709) by [@esamelson](https://github.com/esamelson))
+- Add ability for to launch a specific update through expo-updates-interface. ([#16865](https://github.com/expo/expo/pull/16865) by [@esamelson](https://github.com/esamelson))
+- Remove config plugin for better error handling in index.js ([#17025](https://github.com/expo/expo/pull/17025) by [@lukmccall](https://github.com/lukmccall))
+
+### ⚠️ Notices
+
+- On Android bump `compileSdkVersion` to `31`, `targetSdkVersion` to `31` and `Java` version to `11`. ([#16941](https://github.com/expo/expo/pull/16941) by [@bbarthec](https://github.com/bbarthec))
+
+## 0.10.4 — 2022-02-07
+
+### 🐛 Bug fixes
+
+- Fix opening published projects on Android. ([#16157](https://github.com/expo/expo/pull/16157) by [@esamelson](https://github.com/esamelson))
+
+## 0.10.3 — 2022-02-01
+
+### 🐛 Bug fixes
+
+- Added `android:exported="true"` to the activity, cause on Android 12 and higher it needs to [explicity declared](https://developer.android.com/about/versions/12/behavior-changes-12#exported). ([#16367](https://github.com/expo/expo/pull/16367) by [@wbroek](https://github.com/wbroek))
+- Fix build errors on React Native 0.66 caused by `okio` and `okhttp`. ([#15632](https://github.com/expo/expo/pull/15632) by [@kudo](https://github.com/kudo))
+- Fix `Plugin with id 'maven' not found` build error from Android Gradle 7. ([#16080](https://github.com/expo/expo/pull/16080) by [@kudo](https://github.com/kudo))
+- Fix regression in deep linking configuration. ([#16125](https://github.com/expo/expo/pull/16125) by [@ajsmth](https://github.com/ajsmth))
+
+## 0.10.2 — 2022-01-18
+
+_This version does not introduce any user-facing changes._
 
 ## 0.10.1 — 2022-01-17
 
@@ -46,7 +163,7 @@
 
 ### 🎉 New features
 
-- Added support for th React Native `0.66.X`. ([#15242](https://github.com/expo/expo/pull/15242) by [@lukmccall](https://github.com/lukmccall))
+- Added support for React Native `0.66.X`. ([#15242](https://github.com/expo/expo/pull/15242) by [@lukmccall](https://github.com/lukmccall))
 
 ### 🐛 Bug fixes
 

@@ -2,7 +2,9 @@
 title: Triggering builds from CI
 ---
 
+import { ConfigClassic } from '~/components/plugins/ConfigSection';
 import { InlineCode } from '~/components/base/code';
+import { Collapsible } from '~/ui/components/Collapsible';
 
 This document outlines how to trigger builds on EAS for your app from a CI environment such as GitHub Actions.
 
@@ -18,12 +20,11 @@ If you have run `eas build -p [all|ios|android]` successfully before, then you c
 
 If you haven't done this yet, please refer to the [Creating your first build](setup.md) guide and return here when you're ready.
 
-<details><summary><strong>Are you using the classic build system?</strong> (<InlineCode>expo build:[android|ios]</InlineCode>)</summary> <p>
+<ConfigClassic>
 
 Learn how to [build standalone apps on your CI with our classic build service](/classic/turtle-cli.md).
 
-</p>
-</details>
+</ConfigClassic>
 
 ## Configure your app for CI
 
@@ -49,6 +50,19 @@ Next, we need to ensure that we can authenticate ourselves on CI as the owner of
 
 See [the guide for personal access tokens](/accounts/programmatic-access.md#personal-account-personal-access-tokens) to learn how to create access tokens.
 
+### (Optional) Provide an ASC Api Token for your Apple Team
+
+In the event your iOS credentials need to be repaired, we will need an ASC API key to authenticate ourselves to Apple in CI. A common case is when your provisioning profile needs to be re-signed.
+
+You will need to create an [API Key](https://expo.fyi/creating-asc-api-key). Next, you will need to gather information about your [Apple Team](https://expo.fyi/apple-team). 
+
+Using the information you've gathered, pass it into the build command through environment variables. You will need to pass in the following:
+- `EXPO_ASC_API_KEY_PATH`: the path to your ASC API Key .p8 file, e.g. /path/to/key/AuthKey_SFB993FB5F.p8
+- `EXPO_ASC_KEY_ID`: the key ID of your ASC API Key, e.g. SFB993FB5F.
+- `EXPO_ASC_ISSUER_ID`: the issuer ID of your ASC API Key, e.g. f9675cff-f45d-4116-bd2c-2372142cee09.
+- `EXPO_APPLE_TEAM_ID`: your Apple Team ID, e.g. 77KQ969CHE.
+- `EXPO_APPLE_TEAM_TYPE`: your Apple Team Type. Valid types are `IN_HOUSE`, `COMPANY_OR_ORGANIZATION`, or `INDIVIDUAL`. 
+
 ### Trigger new builds
 
 Now that we're authenticated with Expo CLI, we can create the build step.
@@ -61,8 +75,7 @@ npx eas-cli build --platform all --non-interactive
 
 This will trigger a new build on EAS and print the URLs for the built files after the build completes.
 
-<details><summary>Travis CI</summary>
-<p>
+<Collapsible summary="Travis CI">
 
 ```yaml
 ---
@@ -87,11 +100,9 @@ jobs:
 
 > Put this into `.travis.yml` in the root of your repository.
 
-</p>
-</details>
+</Collapsible>
 
-<details><summary>GitLab CI</summary>
-<p>
+<Collapsible summary="GitLab CI">
 
 ```yaml
 image: node:alpine
@@ -99,13 +110,17 @@ image: node:alpine
 cache:
   key: ${CI_COMMIT_REF_SLUG}
   paths:
-    - ~/.npm
+    - .npm
+    # or with yarn:
+    #- .yarn
 
 stages:
   - build
 
 before_script:
-  - npm ci
+  - npm ci --cache .npm
+  # or with yarn:
+  #- yarn install --cache-folder .yarn
 
 eas-build:
   stage: build
@@ -116,11 +131,9 @@ eas-build:
 
 > Put this into `.gitlab-ci.yml` in the root of your repository.
 
-</p>
-</details>
+</Collapsible>
 
-<details><summary>Bitbucket Pipelines</summary>
-<p>
+<Collapsible summary="Bitbucket Pipelines">
 
 ```yaml
 image: node:alpine
@@ -144,11 +157,9 @@ pipelines:
 
 > Put this into `bitbucket-pipelines.yml` in the root of your repository.
 
-</p>
-</details>
+</Collapsible>
 
-<details><summary>CircleCI</summary>
-<p>
+<Collapsible summary="CircleCI">
 
 ```yaml
 version: 2.1
@@ -182,48 +193,39 @@ workflows:
 
 > Put this into `.circleci/config.yml` in the root of your repository.
 
-</p>
-</details>
+</Collapsible>
 
-<details><summary>GitHub Actions</summary>
-<p>
+<Collapsible summary="GitHub Actions">
 
 ```yaml
 name: EAS Build
 on:
+  workflow_dispatch:
   push:
     branches:
       - master
-  workflow_dispatch:
-
 jobs:
   build:
     name: Install and build
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v1
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
         with:
           node-version: 16.x
-
-      - name: Setup Expo
-        uses: expo/expo-github-action@v5
+          cache: npm
+      - name: Setup Expo and EAS
+        uses: expo/expo-github-action@v7
         with:
-          expo-version: 4.x
-          expo-token: ${{ secrets.EXPO_TOKEN }}
-          expo-cache: true
-
+          expo-version: 5.x
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
       - name: Install dependencies
         run: npm ci
-
       - name: Build on EAS
-        run: npx eas-cli build --platform all --non-interactive
+        run: eas build --platform all --non-interactive
 ```
 
 > Put this into `.github/workflows/eas-build.yml` in the root of your repository.
 
-</p>
-</details>
+</Collapsible>

@@ -1,6 +1,7 @@
 package expo.modules.medialibrary
 
 import android.Manifest.permission.*
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -339,11 +340,17 @@ class MediaLibraryModule(
       ?.hasGrantedPermissions(WRITE_EXTERNAL_STORAGE)
       ?.not() ?: false
 
+  @SuppressLint("InlinedApi")
   private fun getManifestPermissions(writeOnly: Boolean): Array<String> {
+    // ACCESS_MEDIA_LOCATION should not be requested if it's absent in android-manifest
+    val shouldAddMediaLocationAccess =
+      Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q &&
+        MediaLibraryUtils.hasManifestPermission(context, ACCESS_MEDIA_LOCATION)
+
     return listOfNotNull(
       WRITE_EXTERNAL_STORAGE,
       READ_EXTERNAL_STORAGE.takeIf { !writeOnly },
-      ACCESS_MEDIA_LOCATION.takeIf { Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q }
+      ACCESS_MEDIA_LOCATION.takeIf { shouldAddMediaLocationAccess }
     ).toTypedArray()
   }
 

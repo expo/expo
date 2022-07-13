@@ -1,9 +1,15 @@
 package versioned.host.exp.exponent.modules.api.components.gesturehandler
+import host.exp.expoview.BuildConfig
 
+import android.app.Activity
+import android.content.Context
+import android.content.ContextWrapper
+import android.graphics.Rect
 import android.view.MotionEvent
 import android.view.MotionEvent.PointerCoords
 import android.view.MotionEvent.PointerProperties
 import android.view.View
+import android.view.Window
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.bridge.WritableArray
@@ -15,6 +21,7 @@ import java.util.*
 open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestureHandlerT>> {
   private val trackedPointerIDs = IntArray(MAX_POINTERS_COUNT)
   private var trackedPointersIDsCount = 0
+  private val windowOffset = IntArray(2) { 0 }
   var tag = 0
   var view: View? = null
     private set
@@ -28,7 +35,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     private set
   var isEnabled = true
     private set
-  var usesDeviceEvents = false
+  var actionType = 0
 
   var changedTouchesPayload: WritableArray? = null
     private set
@@ -40,6 +47,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     private set
   private val trackedPointers: Array<PointerData?> = Array(MAX_POINTERS_COUNT) { null }
   var needsPointerData = false
+
 
   private var hitSlop: FloatArray? = null
   var eventCoalescingKey: Short = 0
@@ -66,14 +74,11 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
   protected inline fun applySelf(block: ConcreteGestureHandlerT.() -> Unit): ConcreteGestureHandlerT =
     self().apply { block() }
 
-  // set and accessed only by the orchestrator
+  // properties set and accessed only by the orchestrator
   var activationIndex = 0
-
-  // set and accessed only by the orchestrator
   var isActive = false
-
-  // set and accessed only by the orchestrator
   var isAwaiting = false
+  var shouldResetProgress = false
 
   open fun dispatchStateChange(newState: Int, prevState: Int) {
     onTouchEventListener?.onStateChange(self(), newState, prevState)
@@ -122,15 +127,11 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
   }
 
   fun setManualActivation(manualActivation: Boolean): ConcreteGestureHandlerT =
-    applySelf { this.manualActivation = manualActivation }
+      applySelf { this.manualActivation = manualActivation }
 
   fun setHitSlop(
-    leftPad: Float,
-    topPad: Float,
-    rightPad: Float,
-    bottomPad: Float,
-    width: Float,
-    height: Float,
+    leftPad: Float, topPad: Float, rightPad: Float, bottomPad: Float,
+    width: Float, height: Float,
   ): ConcreteGestureHandlerT = applySelf {
     if (hitSlop == null) {
       hitSlop = FloatArray(6)
@@ -161,6 +162,29 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     state = STATE_UNDETERMINED
     this.view = view
     this.orchestrator = orchestrator
+
+    val decorView = getWindow(view?.context)?.decorView
+    if (decorView != null) {
+      val frame = Rect()
+      decorView.getWindowVisibleDisplayFrame(frame)
+      windowOffset[0] = frame.left
+      windowOffset[1] = frame.top
+    } else {
+      windowOffset[0] = 0
+      windowOffset[1] = 0
+    }
+
+    onPrepare()
+  }
+
+  protected open fun onPrepare() {}
+
+  private fun getWindow(context: Context?): Window? {
+    if (context == null) return null
+    if (context is Activity) return context.window
+    if (context is ContextWrapper) return getWindow(context.baseContext)
+
+    return null
   }
 
   private fun findNextLocalPointerId(): Int {
@@ -234,9 +258,9 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     }
     initPointerProps(trackedPointersIDsCount)
     var count = 0
-    val oldX = event.x
-    val oldY = event.y
-    event.setLocation(event.rawX, event.rawY)
+    val deltaX = event.rawX - event.x
+    val deltaY = event.rawY - event.y
+    event.offsetLocation(deltaX, deltaY)
     var index = 0
     val size = event.pointerCount
     while (index < size) {
@@ -254,7 +278,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     }
 
     // introduced in 1.11.0, remove if crashes are not reported
-    if (pointerProps.isEmpty() || pointerCoords.isEmpty()) {
+    if(pointerProps.isEmpty()|| pointerCoords.isEmpty()){
       throw IllegalStateException("pointerCoords.size=${pointerCoords.size}, pointerProps.size=${pointerProps.size}")
     }
 
@@ -265,8 +289,8 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
         event.eventTime,
         action,
         count,
-        pointerProps, /* props are copied and hence it is safe to use static array here */
-        pointerCoords, /* same applies to coords */
+        pointerProps,  /* props are copied and hence it is safe to use static array here */
+        pointerCoords,  /* same applies to coords */
         event.metaState,
         event.buttonState,
         event.xPrecision,
@@ -279,8 +303,8 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     } catch (e: IllegalArgumentException) {
       throw AdaptEventException(this, event, e)
     }
-    event.setLocation(oldX, oldY)
-    result.setLocation(oldX, oldY)
+    event.offsetLocation(-deltaX, -deltaY)
+    result.offsetLocation(-deltaX, -deltaY)
     return result
   }
 
@@ -289,8 +313,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     handler: GestureHandler<*>,
     event: MotionEvent,
     e: IllegalArgumentException
-  ) : Exception(
-    """
+  ) : Exception("""
     handler: ${handler::class.simpleName}
     state: ${handler.state}
     view: ${handler.view}
@@ -298,23 +321,32 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     isEnabled: ${handler.isEnabled}
     isActive: ${handler.isActive}
     isAwaiting: ${handler.isAwaiting}
-    trackedPointersCount: ${handler.trackedPointersCount}
+    trackedPointersCount: ${handler.trackedPointersIDsCount}
     trackedPointers: ${handler.trackedPointerIDs.joinToString(separator = ", ")}
     while handling event: $event
-    """.trimIndent(),
-    e
-  )
+  """.trimIndent(), e) {}
 
   fun handle(origEvent: MotionEvent) {
-    if (!isEnabled ||
-      state == STATE_CANCELLED ||
-      state == STATE_FAILED ||
-      state == STATE_END ||
-      trackedPointersIDsCount < 1
-    ) {
+    if (!isEnabled
+      || state == STATE_CANCELLED
+      || state == STATE_FAILED
+      || state == STATE_END
+      || trackedPointersIDsCount < 1) {
       return
     }
-    val event = adaptEvent(origEvent)
+
+    // a workaround for https://github.com/software-mansion/react-native-gesture-handler/issues/1188
+    val event = if (BuildConfig.DEBUG) {
+      adaptEvent(origEvent)
+    } else {
+      try {
+        adaptEvent(origEvent)
+      } catch (e: AdaptEventException) {
+        fail()
+        return
+      }
+    }
+
     x = event.x
     y = event.y
     numberOfPointers = event.pointerCount
@@ -345,11 +377,11 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     val offsetY = event.rawY - event.y
 
     trackedPointers[pointerId] = PointerData(
-      pointerId,
-      event.getX(event.actionIndex),
-      event.getY(event.actionIndex),
-      event.getX(event.actionIndex) + offsetX,
-      event.getY(event.actionIndex) + offsetY,
+        pointerId,
+        event.getX(event.actionIndex),
+        event.getY(event.actionIndex),
+        event.getX(event.actionIndex) + offsetX - windowOffset[0],
+        event.getY(event.actionIndex) + offsetY - windowOffset[1],
     )
     trackedPointersCount++
     addChangedPointer(trackedPointers[pointerId]!!)
@@ -367,11 +399,11 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     val offsetY = event.rawY - event.y
 
     trackedPointers[pointerId] = PointerData(
-      pointerId,
-      event.getX(event.actionIndex),
-      event.getY(event.actionIndex),
-      event.getX(event.actionIndex) + offsetX,
-      event.getY(event.actionIndex) + offsetY,
+        pointerId,
+        event.getX(event.actionIndex),
+        event.getY(event.actionIndex),
+        event.getX(event.actionIndex) + offsetX - windowOffset[0],
+        event.getY(event.actionIndex) + offsetY - windowOffset[1],
     )
     addChangedPointer(trackedPointers[pointerId]!!)
     trackedPointers[pointerId] = null
@@ -394,8 +426,8 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
       if (pointer.x != event.getX(i) || pointer.y != event.getY(i)) {
         pointer.x = event.getX(i)
         pointer.y = event.getY(i)
-        pointer.absoluteX = event.getX(i) + offsetX
-        pointer.absoluteY = event.getY(i) + offsetY
+        pointer.absoluteX = event.getX(i) + offsetX - windowOffset[0]
+        pointer.absoluteY = event.getY(i) + offsetY - windowOffset[1]
 
         addChangedPointer(pointer)
         pointersAdded++
@@ -510,11 +542,11 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
   }
 
   fun wantEvents(): Boolean {
-    return isEnabled &&
-      state != STATE_FAILED &&
-      state != STATE_CANCELLED &&
-      state != STATE_END &&
-      trackedPointersIDsCount > 0
+    return isEnabled
+      && state != STATE_FAILED
+      && state != STATE_CANCELLED
+      && state != STATE_END
+      && trackedPointersIDsCount > 0
   }
 
   open fun shouldRequireToWaitForFailure(handler: GestureHandler<*>): Boolean {
@@ -624,6 +656,10 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     }
   }
 
+  // responsible for resetting the state of handler upon activation (may be called more than once
+  // if the handler is waiting for failure of other one)
+  open fun resetProgress() {}
+
   protected open fun onHandle(event: MotionEvent) {
     moveToState(STATE_FAILED)
   }
@@ -658,6 +694,11 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
   val lastRelativePositionY: Float
     get() = lastAbsolutePositionY - lastEventOffsetY
 
+  val lastPositionInWindowX: Float
+    get() = lastAbsolutePositionX - windowOffset[0]
+  val lastPositionInWindowY: Float
+    get() = lastAbsolutePositionY - windowOffset[1]
+
   companion object {
     const val STATE_UNDETERMINED = 0
     const val STATE_FAILED = 1
@@ -676,6 +717,10 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     const val DIRECTION_LEFT = 2
     const val DIRECTION_UP = 4
     const val DIRECTION_DOWN = 8
+    const val ACTION_TYPE_REANIMATED_WORKLET = 1
+    const val ACTION_TYPE_NATIVE_ANIMATED_EVENT = 2
+    const val ACTION_TYPE_JS_FUNCTION_OLD_API = 3
+    const val ACTION_TYPE_JS_FUNCTION_NEW_API = 4
     private const val MAX_POINTERS_COUNT = 12
     private lateinit var pointerProps: Array<PointerProperties?>
     private lateinit var pointerCoords: Array<PointerCoords?>

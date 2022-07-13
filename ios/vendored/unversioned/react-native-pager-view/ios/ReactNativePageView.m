@@ -19,7 +19,7 @@
 @property(nonatomic, weak) UIView *currentView;
 
 @property(nonatomic, strong) NSHashTable<UIViewController *> *cachedControllers;
-@property (nonatomic, assign) CGPoint lastContentOffset;
+@property(nonatomic, assign) CGPoint lastContentOffset;
 
 - (void)goTo:(NSInteger)index animated:(BOOL)animated;
 - (void)shouldScroll:(BOOL)scrollEnabled;
@@ -44,7 +44,7 @@
         _dismissKeyboard = UIScrollViewKeyboardDismissModeNone;
         _coalescingKey = 0;
         _eventDispatcher = eventDispatcher;
-        _cachedControllers = [NSHashTable weakObjectsHashTable];
+        _cachedControllers = [NSHashTable hashTableWithOptions:NSHashTableStrongMemory];
         _overdrag = NO;
         _layoutDirection = @"ltr";
         _previousBounds = CGRectMake(0, 0, 0, 0);
@@ -89,6 +89,10 @@
         [self embed];
         [self setupInitialController];
     }
+
+    if (self.reactViewController.navigationController != nil && self.reactViewController.navigationController.interactivePopGestureRecognizer != nil) {
+        [self.scrollView.panGestureRecognizer requireGestureRecognizerToFail:self.reactViewController.navigationController.interactivePopGestureRecognizer];
+    }
 }
 
 - (void)embed {
@@ -103,7 +107,7 @@
         if([subview isKindOfClass:UIScrollView.class]){
             ((UIScrollView *)subview).delegate = self;
             ((UIScrollView *)subview).keyboardDismissMode = _dismissKeyboard;
-            ((UIScrollView *)subview).delaysContentTouches = NO;
+            ((UIScrollView *)subview).delaysContentTouches = YES;
             self.scrollView = (UIScrollView *)subview;
         }
     }
@@ -178,8 +182,25 @@
     if (self.reactPageViewController == nil) {
         return;
     }
+
+    NSArray *currentVCs = self.reactPageViewController.viewControllers;
+    if (currentVCs.count == 1 && [currentVCs.firstObject isEqual:controller]) {
+        // see: 
+        // 1) https://github.com/callstack/react-native-pager-view/pull/462
+        // 2) https://github.com/callstack/react-native-pager-view/issues/566
+        [self.reactPageViewController setViewControllers:@[controller]
+                                               direction:direction
+                                                animated:YES
+                                              completion:nil];
+        return;
+    }
+
     __weak ReactNativePageView *weakSelf = self;
     uint16_t coalescingKey = _coalescingKey++;
+    
+    if (animated == YES) {
+        self.animating = YES;
+    }
     
     [self.reactPageViewController setViewControllers:@[controller]
                                            direction:direction
@@ -188,6 +209,10 @@
         __strong typeof(self) strongSelf = weakSelf;
         strongSelf.currentIndex = index;
         strongSelf.currentView = controller.view;
+        
+        if (finished) {
+            strongSelf.animating = NO;
+        }
         
         if (strongSelf.eventDispatcher) {
             if (strongSelf.lastReportedIndex != strongSelf.currentIndex) {
@@ -250,22 +275,22 @@
             if (i == _currentIndex) {
                 continue;
             }
-            [self goToViewController:i direction:direction animated:animated shouldCallOnPageSelected: i == index];
+            [self goToViewController:i direction:direction animated:(!self.animating && i == index && animated) shouldCallOnPageSelected: i == index];
         }
     }
     
     if (!isForward && diff > 0) {
         for (NSInteger i=_currentIndex; i>=index; i--) {
             // Prevent removal of one or many pages at a time
-            if (index == _currentIndex || i >= numberOfPages) {
+            if (i == _currentIndex || i >= numberOfPages) {
                 continue;
             }
-            [self goToViewController:i direction:direction animated:animated shouldCallOnPageSelected: i == index];
+            [self goToViewController:i direction:direction animated:(!self.animating && i == index && animated) shouldCallOnPageSelected: i == index];
         }
     }
     
     if (diff == 0) {
-        [self goToViewController:index direction:direction animated:animated shouldCallOnPageSelected:YES];
+        [self goToViewController:index direction:direction animated:NO shouldCallOnPageSelected:YES];
     }
 }
 

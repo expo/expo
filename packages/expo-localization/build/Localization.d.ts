@@ -44,6 +44,8 @@ export declare const locale: string;
 /**
  * List of all the native languages provided by the user settings.
  * These are returned in the order the user defines in their device settings.
+ *
+ * @example `['en', 'en-US', 'zh-Hans', 'zh-Hans-CN', 'en-emodeng']`
  */
 export declare const locales: string[];
 /**

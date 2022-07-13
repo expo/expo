@@ -26,33 +26,48 @@ module Expo
       end
 
       global_flags = @options.fetch(:flags, {})
-      tests = @options.fetch(:tests, [])
 
       project_directory = Pod::Config.instance.project_root
 
       UI.section 'Using Expo modules' do
         @packages.each { |package|
-          # The module can already be added to the target, in which case we can just skip it.
-          # This allows us to add a pod before `use_expo_modules` to provide custom flags.
-          if @target_definition.dependencies.any? { |dependency| dependency.name == package.pod_name }
-            UI.message '— ' << package.name.green << ' is already added to the target'.yellow
-            next
-          end
+          package.pods.each { |pod|
+            # The module can already be added to the target, in which case we can just skip it.
+            # This allows us to add a pod before `use_expo_modules` to provide custom flags.
+            if @target_definition.dependencies.any? { |dependency| dependency.name == pod.pod_name }
+              UI.message '— ' << package.name.green << ' is already added to the target'.yellow
+              next
+            end
 
-          podspec_dir_path = Pathname.new(package.podspec_dir).relative_path_from(project_directory).to_path
+            podspec_dir_path = Pathname.new(pod.podspec_dir).relative_path_from(project_directory).to_path
 
-          pod_options = {
-            :path => podspec_dir_path,
-            :testspecs => tests.include?(package.name) ? ['Tests'] : []
-          }.merge(global_flags, package.flags)
+            pod_options = {
+              :path => podspec_dir_path,
+              :configuration => package.debugOnly ? ['Debug'] : [] # An empty array means all configurations
+            }.merge(global_flags, package.flags)
 
-          # Install the pod.
-          @podfile.pod(package.pod_name, pod_options)
+            if links_for_testing?
+              podspec_file_path = File.join(podspec_dir_path, pod.pod_name + ".podspec")
+              podspec = Pod::Specification.from_file(podspec_file_path)
+              test_specs_names = podspec.test_specs.map { |test_spec|
+                test_spec.name.delete_prefix(podspec.name + "/")
+              }
 
-          # TODO: Can remove this once we move all the interfaces into the core.
-          next if package.pod_name.end_with?('Interface')
+              # Jump to the next package when it doesn't have any test specs (except interfaces, they're required)
+              # TODO: Can remove interface check once we move all the interfaces into the core.
+              next if test_specs_names.empty? && !pod.pod_name.end_with?('Interface')
 
-          UI.message "— #{package.name.green} (#{package.version})"
+              pod_options[:testspecs] = test_specs_names
+            end
+
+            # Install the pod.
+            @podfile.pod(pod.pod_name, pod_options)
+
+            # TODO: Can remove this once we move all the interfaces into the core.
+            next if pod.pod_name.end_with?('Interface')
+
+            UI.message "— #{package.name.green} (#{package.version})"
+          }
         }
       end
       self
@@ -76,6 +91,15 @@ module Expo
     # Returns the provider name which is also a name of the generated file
     public def modules_provider_name
       @options.fetch(:providerName, Constants::MODULES_PROVIDER_FILE_NAME)
+    end
+
+    public def links_for_testing?
+      @options.fetch(:testsOnly, false)
+    end
+
+    # For now there is no need to generate the modules provider for testing.
+    public def should_generate_modules_provider?
+      return !links_for_testing?
     end
 
     # privates

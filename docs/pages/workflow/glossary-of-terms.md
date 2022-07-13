@@ -27,7 +27,7 @@ The command-line tool for working with EAS. <!-- Pending creation of eas-cli [Re
 The term "eject" was popularized by [create-react-app](https://github.com/facebookincubator/create-react-app), and it is used in Expo to describe leaving the cozy comfort of the standard Expo development environment, where you do not have to deal with build configuration or native code. When you "eject" from Expo, you have two choices:
 
 - _Eject to bare workflow_, where you jump between [workflows](../introduction/managed-vs-bare.md) and move into the bare workflow, where you can continue to use Expo APIs but have access and full control over your native iOS and Android projects.
-- _Eject to ExpoKit_, where you get the native projects along with [ExpoKit](#expokit). This option is deprecated and support for ExpoKit will be removed after SDK 38. We recommend ejecting to the bare workflow instead.
+- _Eject to ExpoKit_, where you get the native projects along with [ExpoKit](#expokit). This option is deprecated and support for ExpoKit was removed after SDK 38.
 
 ### Emulator
 
@@ -49,10 +49,6 @@ The iOS and Android app that runs Expo apps. When you want to run your app outsi
 
 The former name for the [Expo Go](#expo-go) app.
 
-### Expo Dev Tools
-
-Expo Developer Tools is a web browser based UI included in [Expo CLI](#expo-cli).
-
 ### Expo SDK
 
 The Expo SDK provides access to device/system functionality such as camera, push notification, contacts, file system, and more. Scroll to the SDK API reference in the documentation navigation to see a full list of APIs and to explore them. [Read more about the Expo SDK](/versions/latest/). [Find it on GitHub](https://github.com/expo/expo-sdk).
@@ -61,7 +57,7 @@ The Expo SDK provides access to device/system functionality such as camera, push
 
 ExpoKit is an Objective-C and Java library that allows you to use the [Expo SDK](#expo-sdk) and platform and your existing Expo project as part of a larger standard native project — one that you would normally create using Xcode, Android Studio, or `react-native init`. [Read more](../expokit/eject.md).
 
-**ExpoKit is deprecated and support for ExpoKit will be removed after SDK 38. We recommend ejecting to the bare workflow instead.**
+**Support for ExpoKit ended after SDK 38. Expo modules can implement support for custom native configuration, and projects that need even more custom native code can [expose their Android Studio and Xcode projects with `expo prebuild`](/workflow/customizing/).**
 
 ### iOS
 
@@ -77,7 +73,7 @@ An Expo app manifest is similar to a [web app manifest](https://developer.mozill
 
 ### Native Directory
 
-The React Native ecosystem has thousands of libraries. Without a purpose-built tool, it's hard to know what the libraries are, to search through them, to determine the quality, try them out, and filter out the libraries that won't work for your project (some don't work with Expo, some don't work with Android or iOS). [Native Directory](http://native.directory/) is a website that aims to solve this problem, we recommend you use it to find packages to use in your projects.
+The React Native ecosystem has thousands of libraries. Without a purpose-built tool, it's hard to know what the libraries are, to search through them, to determine the quality, try them out, and filter out the libraries that won't work for your project (some don't work with Expo, some don't work with Android or iOS). [React Native Directory](https://reactnative.directory/) is a website that aims to solve this problem, we recommend you use it to find packages to use in your projects.
 
 ### npm
 

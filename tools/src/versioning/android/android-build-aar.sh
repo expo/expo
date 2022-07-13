@@ -9,21 +9,22 @@ ABI_VERSION_NUMBER=`echo $1 | sed 's/\./_/g'`
 ABI_VERSION="abi$ABI_VERSION_NUMBER"
 TOOLS_DIR=`pwd`
 
+SED_INPLACE_OPT=(-i '')
+if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+  SED_INPLACE_OPT=(-i)
+fi
+
 pushd $EXPO_ROOT_DIR/android
+
+export REACT_NATIVE_OVERRIDE_HERMES_DIR="$EXPO_ROOT_DIR/android/versioned-react-native/sdks/hermes"
 
 # Clean aar
 rm -rf expoview/libs/ReactAndroid-temp
-rm versioned-react-native/ReactAndroid/build/outputs/aar/ReactAndroid-release.aar
 
 # Build aar
 pushd versioned-react-native
-# The build directory sometimes has old .so files
-rm -rf ReactAndroid/build
 set -e
-./gradlew assembleRelease
-# 2021-03-23: hacky workaround for weird issue with missing .so libs
-# if we build the aar twice after cleaning, the libs will be packaged correctly
-./gradlew assembleRelease
+./gradlew :ReactAndroid:assembleRelease
 popd
 
 mkdir -p expoview/libs
@@ -68,7 +69,7 @@ while read FILE
 do
   while read PACKAGE
   do
-    sed -i '' "s/$PACKAGE/$ABI_VERSION.$PACKAGE/g" $FILE
+    sed "${SED_INPLACE_OPT[@]}" "s/$PACKAGE/$ABI_VERSION.$PACKAGE/g" $FILE
   done < $TOOLS_DIR/android-packages-to-rename.txt
 done < annotations_xmls
 rm annotations_xmls
@@ -91,7 +92,7 @@ java -jar $TOOLS_DIR/jarjar-1.4.1.jar process jarjar-rules.txt expoview/libs/Rea
 
 pushd expoview/libs/ReactAndroid-temp
 # Update the manifest. This is used for deduping in the build process
-sed -i '' "s/com\.facebook\.react/$ABI_VERSION\.com\.facebook\.react/g" AndroidManifest.xml
+sed "${SED_INPLACE_OPT[@]}" "s/com\.facebook\.react/$ABI_VERSION\.com\.facebook\.react/g" AndroidManifest.xml
 
 # Can't rename libc++_shared so remove. We share the copy from ReactAndroid.
 rm -rf jni/*/libc++_shared.so
@@ -117,11 +118,11 @@ NEWLINE='\
 SED_APPEND_COMMAND=" a$NEWLINE"
 REPLACE_TEXT='DO NOT MODIFY'
 ADD_NEW_SDKS_HERE='ADD_NEW_SDKS_HERE'
-sed -i '' "/$ADD_NEW_SDKS_HERE/$SED_APPEND_COMMAND$NEWLINE$NEWLINE\ \ \/\/ BEGIN_SDK_$MAJOR_ABI_VERSION$NEWLINE\ \ versionedImplementation(project(':expoview-$ABI_VERSION'))$NEWLINE\ \ \/\/ END_SDK_$MAJOR_ABI_VERSION$NEWLINE" app/build.gradle
-sed -i '' "/$REPLACE_TEXT/$SED_APPEND_COMMAND\ \ \/\/ BEGIN_SDK_$MAJOR_ABI_VERSION$NEWLINE\ \ versionedApi 'host.exp:reactandroid-$ABI_VERSION:1.0.0'$NEWLINE\ \ \/\/ END_SDK_$MAJOR_ABI_VERSION$NEWLINE" expoview/build.gradle
+sed "${SED_INPLACE_OPT[@]}" "/$ADD_NEW_SDKS_HERE/$SED_APPEND_COMMAND$NEWLINE$NEWLINE\ \ \/\/ BEGIN_SDK_$MAJOR_ABI_VERSION$NEWLINE\ \ versionedImplementation(project(':expoview-$ABI_VERSION'))$NEWLINE\ \ \/\/ END_SDK_$MAJOR_ABI_VERSION$NEWLINE" app/build.gradle
+sed "${SED_INPLACE_OPT[@]}" "/$REPLACE_TEXT/$SED_APPEND_COMMAND\ \ \/\/ BEGIN_SDK_$MAJOR_ABI_VERSION$NEWLINE\ \ versionedApi 'host.exp:reactandroid-$ABI_VERSION:1.0.0'$NEWLINE\ \ \/\/ END_SDK_$MAJOR_ABI_VERSION$NEWLINE" expoview/build.gradle
 
 # Update Constants.java
-sed -i '' "/$REPLACE_TEXT/$SED_APPEND_COMMAND\ \ \ \ \/\/ BEGIN_SDK_$MAJOR_ABI_VERSION$NEWLINE\ \ \ \ abiVersions.add(\"$ORIGINAL_ABI_VERSION\");$NEWLINE\ \ \ \ \/\/ END_SDK_$MAJOR_ABI_VERSION$NEWLINE" expoview/src/main/java/host/exp/exponent/Constants.java
+sed "${SED_INPLACE_OPT[@]}" "/$REPLACE_TEXT/$SED_APPEND_COMMAND\ \ \ \ \/\/ BEGIN_SDK_$MAJOR_ABI_VERSION$NEWLINE\ \ \ \ abiVersions.add(\"$ORIGINAL_ABI_VERSION\");$NEWLINE\ \ \ \ \/\/ END_SDK_$MAJOR_ABI_VERSION$NEWLINE" expoview/src/main/java/host/exp/exponent/Constants.java
 
 # Add new version
 
@@ -132,8 +133,8 @@ sed -i '' "/$REPLACE_TEXT/$SED_APPEND_COMMAND\ \ \ \ \/\/ BEGIN_SDK_$MAJOR_ABI_V
 BACK_BUTTON_HANDLER_CLASS='com.facebook.react.modules.core.DefaultHardwareBackBtnHandler'
 PERMISSION_AWARE_ACTIVITY_CLASS='com.facebook.react.modules.core.PermissionAwareActivity'
 PERMISSION_LISTENER_CLASS='com.facebook.react.modules.core.PermissionListener'
-find expoview/src/versioned/java/host/exp/exponent -iname '*.java' -type f -print0 | xargs -0 sed -i '' -e "s/ADD_NEW_SDKS_HERE/BEGIN_SDK_$MAJOR_ABI_VERSION$NEWLINE\ \ \ \ $ABI_VERSION\.$BACK_BUTTON_HANDLER_CLASS,$NEWLINE\ \ \ \ $ABI_VERSION\.$PERMISSION_AWARE_ACTIVITY_CLASS,$NEWLINE\ \ \ \ \/\/ END_SDK_$MAJOR_ABI_VERSION$NEWLINE\ \ \ \ \/\/ ADD_NEW_SDKS_HERE/" 
+find expoview/src/versioned/java/host/exp/exponent -iname '*.java' -type f -print0 | xargs -0 sed "${SED_INPLACE_OPT[@]}" -e "s/ADD_NEW_SDKS_HERE/BEGIN_SDK_$MAJOR_ABI_VERSION$NEWLINE\ \ \ \ $ABI_VERSION\.$BACK_BUTTON_HANDLER_CLASS,$NEWLINE\ \ \ \ $ABI_VERSION\.$PERMISSION_AWARE_ACTIVITY_CLASS,$NEWLINE\ \ \ \ \/\/ END_SDK_$MAJOR_ABI_VERSION$NEWLINE\ \ \ \ \/\/ ADD_NEW_SDKS_HERE/"
 # Add implementation of PermissionAwareActivity.requestPermissions
-find expoview/src/versioned/java/host/exp/exponent -iname '*.java' -type f -print0 | xargs -0 sed -i '' "s/ADD_NEW_PERMISSION_AWARE_ACTIVITY_IMPLEMENTATION_HERE/BEGIN_SDK_$MAJOR_ABI_VERSION$NEWLINE\ \ \ \ @Override$NEWLINE\ \ \ \ public\ void\ requestPermissions(String\[\]\ strings\,\ int\ i\,\ $ABI_VERSION\.$PERMISSION_LISTENER_CLASS\ permissionListener)\ {$NEWLINE\ \ \ \ \ \ super\.requestPermissions(strings\,\ i\,\ permissionListener::onRequestPermissionsResult);$NEWLINE\ \ \ \ }$NEWLINE\ \ \ \ \/\/ END_SDK_$MAJOR_ABI_VERSION$NEWLINE\ \ \ \ \/\/ ADD_NEW_PERMISSION_AWARE_ACTIVITY_IMPLEMENTATION_HERE/"
+find expoview/src/versioned/java/host/exp/exponent -iname '*.java' -type f -print0 | xargs -0 sed "${SED_INPLACE_OPT[@]}" "s/ADD_NEW_PERMISSION_AWARE_ACTIVITY_IMPLEMENTATION_HERE/BEGIN_SDK_$MAJOR_ABI_VERSION$NEWLINE\ \ \ \ @Override$NEWLINE\ \ \ \ public\ void\ requestPermissions(String\[\]\ strings\,\ int\ i\,\ $ABI_VERSION\.$PERMISSION_LISTENER_CLASS\ permissionListener)\ {$NEWLINE\ \ \ \ \ \ super\.requestPermissions(strings\,\ i\,\ permissionListener::onRequestPermissionsResult);$NEWLINE\ \ \ \ }$NEWLINE\ \ \ \ \/\/ END_SDK_$MAJOR_ABI_VERSION$NEWLINE\ \ \ \ \/\/ ADD_NEW_PERMISSION_AWARE_ACTIVITY_IMPLEMENTATION_HERE/"
 
 popd

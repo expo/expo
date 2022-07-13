@@ -22,7 +22,7 @@ static NSString * const EXUpdatesUtilsErrorDomain = @"EXUpdatesUtils";
   }
 }
 
-+ (NSString *)sha256WithData:(NSData *)data
++ (NSString *)hexEncodedSHA256WithData:(NSData *)data
 {
   uint8_t digest[CC_SHA256_DIGEST_LENGTH];
   CC_SHA256(data.bytes, (CC_LONG)data.length, digest);
@@ -34,6 +34,19 @@ static NSString * const EXUpdatesUtilsErrorDomain = @"EXUpdatesUtils";
   }
 
   return output;
+}
+
++ (NSString *)base64UrlEncodedSHA256WithData:(NSData *)data
+{
+  uint8_t digest[CC_SHA256_DIGEST_LENGTH];
+  CC_SHA256(data.bytes, (CC_LONG)data.length, digest);
+  NSString *base64String = [[NSData dataWithBytes:digest length:CC_SHA256_DIGEST_LENGTH] base64EncodedStringWithOptions:0];
+  
+  // ref. https://datatracker.ietf.org/doc/html/rfc4648#section-5
+  return [[[base64String
+            stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"="]] // remove extra padding
+           stringByReplacingOccurrencesOfString:@"+" withString:@"-"] // replace "+" character w/ "-"
+          stringByReplacingOccurrencesOfString:@"/" withString:@"_"]; // replace "/" character w/ "_"
 }
 
 + (nullable NSURL *)initializeUpdatesDirectoryWithError:(NSError ** _Nullable)error

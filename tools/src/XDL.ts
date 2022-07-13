@@ -43,6 +43,6 @@ export async function publishProjectWithExpoCliAsync(
   }
 
   await ExpoCLI.runExpoCliAsync('publish', publishArgs, {
-    root: projectRoot,
+    cwd: projectRoot,
   });
 }
