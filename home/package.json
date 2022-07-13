@@ -32,7 +32,6 @@
     "dedent": "^0.7.0",
     "es6-error": "^4.1.1",
     "expo": "~46.0.0-alpha.0",
-    "expo-analytics-amplitude": "~11.3.0",
     "expo-asset": "~8.6.0",
     "expo-barcode-scanner": "~11.4.0",
     "expo-blur": "~11.2.0",

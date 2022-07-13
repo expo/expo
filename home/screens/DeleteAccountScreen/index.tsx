@@ -8,7 +8,6 @@ import { StyleSheet, ActivityIndicator } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 import { APIV2Client } from '../../api/APIV2Client';
-import Analytics from '../../api/Analytics';
 import { FormStates } from '../../constants/FormStates';
 import { Permission, useDeleteAccountPermissionsQuery } from '../../graphql/types';
 import { SettingsStackRoutes } from '../../navigation/Navigation.types';
@@ -108,11 +107,9 @@ export function DeleteAccountScreen({
           password,
           otp
         );
-        Analytics.track(Analytics.events.USER_DELETED_ACCOUNT);
       } else {
         setFormState(FormStates.LOADING);
         await handleAccountDeleteAsync(apiV2Client, apolloClient, clearSessionSecretData, password);
-        Analytics.track(Analytics.events.USER_DELETED_ACCOUNT);
       }
     } catch (error) {
       const errorMessage = (error as Error).message;
