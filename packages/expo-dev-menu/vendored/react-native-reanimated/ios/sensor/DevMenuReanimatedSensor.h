@@ -1,4 +1,5 @@
-#if __has_include(<CoreMotion/CoreMotion.h>)
+// TODO(@lukmccall): reanable when `Undefined symbols for architecture x86_64: "_OBJC_CLASS_$_CMMotionManager"` error in tests is fixed
+#if __has_include(<CoreMotion/CoreMotion.h>) && false
 #import <CoreMotion/CoreMotion.h>
 #endif
 #import "DevMenuReanimatedSensorType.h"
@@ -7,7 +8,7 @@
   DevMenuReanimatedSensorType _sensorType;
   double _interval;
   double _lastTimestamp;
-#if !TARGET_OS_TV
+#if !TARGET_OS_TV && false
   CMMotionManager *_motionManager;
 #endif
   void (^_setter)(double[]);

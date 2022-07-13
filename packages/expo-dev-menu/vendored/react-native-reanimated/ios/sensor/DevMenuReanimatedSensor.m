@@ -1,6 +1,6 @@
 #import "DevMenuReanimatedSensor.h"
 
-#if __has_include(<CoreMotion/CoreMotion.h>)
+#if __has_include(<CoreMotion/CoreMotion.h>) && false
 @implementation DevMenuReanimatedSensor
 
 - (instancetype)init:(DevMenuReanimatedSensorType)sensorType interval:(int)interval setter:(void (^)(double[]))setter
