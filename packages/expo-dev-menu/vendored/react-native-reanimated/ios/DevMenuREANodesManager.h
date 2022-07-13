@@ -1,5 +1,4 @@
 #import <Foundation/Foundation.h>
-
 #import "DevMenuREANode.h"
 #import <React/RCTBridgeModule.h>
 #import <React/RCTUIManager.h>
@@ -19,10 +18,9 @@ typedef void (^DevMenuREAEventHandler)(NSString *eventName, id<RCTEvent> event);
 @property (nonatomic, nullable) NSSet<NSString *> *uiProps;
 @property (nonatomic, nullable) NSSet<NSString *> *nativeProps;
 
-- (nonnull instancetype)initWithModule:(DevMenuREAModule *)reanimatedModule
-                             uiManager:(nonnull RCTUIManager *)uiManager;
+- (nonnull instancetype)initWithModule:(DevMenuREAModule *)reanimatedModule uiManager:(nonnull RCTUIManager *)uiManager;
 
-- (DevMenuREANode* _Nullable)findNodeByID:(nonnull DevMenuREANodeID)nodeID;
+- (DevMenuREANode *_Nullable)findNodeByID:(nonnull DevMenuREANodeID)nodeID;
 
 - (void)invalidate;
 
@@ -34,31 +32,26 @@ typedef void (^DevMenuREAEventHandler)(NSString *eventName, id<RCTEvent> event);
 - (void)postRunUpdatesAfterAnimation;
 - (void)registerEventHandler:(DevMenuREAEventHandler)eventHandler;
 - (void)enqueueUpdateViewOnNativeThread:(nonnull NSNumber *)reactTag
-                               viewName:(NSString *) viewName
+                               viewName:(NSString *)viewName
                             nativeProps:(NSMutableDictionary *)nativeProps
                        trySynchronously:(BOOL)trySync;
-- (void)getValue:(DevMenuREANodeID)nodeID
-        callback:(RCTResponseSenderBlock)callback;
+- (void)getValue:(DevMenuREANodeID)nodeID callback:(RCTResponseSenderBlock)callback;
 
 // graph
 
-- (void)createNode:(nonnull DevMenuREANodeID)tag
-            config:(NSDictionary<NSString *, id> *__nonnull)config;
+- (void)createNode:(nonnull DevMenuREANodeID)tag config:(NSDictionary<NSString *, id> *__nonnull)config;
 
 - (void)dropNode:(nonnull DevMenuREANodeID)tag;
 
-- (void)connectNodes:(nonnull DevMenuREANodeID)parentID
-             childID:(nonnull DevMenuREANodeID)childID;
+- (void)connectNodes:(nonnull DevMenuREANodeID)parentID childID:(nonnull DevMenuREANodeID)childID;
 
-- (void)disconnectNodes:(nonnull DevMenuREANodeID)parentID
-                childID:(nonnull DevMenuREANodeID)childID;
+- (void)disconnectNodes:(nonnull DevMenuREANodeID)parentID childID:(nonnull DevMenuREANodeID)childID;
 
 - (void)connectNodeToView:(nonnull DevMenuREANodeID)nodeID
                   viewTag:(nonnull NSNumber *)viewTag
                  viewName:(nonnull NSString *)viewName;
 
-- (void)disconnectNodeFromView:(nonnull DevMenuREANodeID)nodeID
-                       viewTag:(nonnull NSNumber *)viewTag;
+- (void)disconnectNodeFromView:(nonnull DevMenuREANodeID)nodeID viewTag:(nonnull NSNumber *)viewTag;
 
 - (void)attachEvent:(nonnull NSNumber *)viewTag
           eventName:(nonnull NSString *)eventName
@@ -70,20 +63,21 @@ typedef void (^DevMenuREAEventHandler)(NSString *eventName, id<RCTEvent> event);
 
 // configuration
 
-- (void)configureProps:(nonnull NSSet<NSString *> *)nativeProps
-               uiProps:(nonnull NSSet<NSString *> *)uiProps;
+- (void)configureUiProps:(nonnull NSSet<NSString *> *)uiPropsSet
+          andNativeProps:(nonnull NSSet<NSString *> *)nativePropsSet;
 
 - (void)updateProps:(nonnull NSDictionary *)props
       ofViewWithTag:(nonnull NSNumber *)viewTag
            withName:(nonnull NSString *)viewName;
 
-- (NSString*)obtainProp:(nonnull NSNumber *)viewTag
-          propName:(nonnull NSString *)propName;
+- (NSString *)obtainProp:(nonnull NSNumber *)viewTag propName:(nonnull NSString *)propName;
 
 // events
 
 - (void)dispatchEvent:(id<RCTEvent>)event;
 
 - (void)setValueForNodeID:(nonnull NSNumber *)nodeID value:(nonnull NSNumber *)newValue;
+
+- (void)maybeFlushUpdateBuffer;
 
 @end

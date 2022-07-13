@@ -1,28 +1,27 @@
-#import "DevMenuREANodesManager.h"
-
-#import <React/RCTConvert.h>
-
-#import "Nodes/DevMenuREANode.h"
-#import "Nodes/DevMenuREAPropsNode.h"
-#import "Nodes/DevMenuREAStyleNode.h"
-#import "Nodes/DevMenuREATransformNode.h"
-#import "Nodes/DevMenuREAValueNode.h"
-#import "Nodes/DevMenuREABlockNode.h"
-#import "Nodes/DevMenuREACondNode.h"
-#import "Nodes/DevMenuREAOperatorNode.h"
-#import "Nodes/DevMenuREASetNode.h"
-#import "Nodes/DevMenuREADebugNode.h"
-#import "Nodes/DevMenuREAClockNodes.h"
-#import "Nodes/DevMenuREAJSCallNode.h"
-#import "Nodes/DevMenuREABezierNode.h"
-#import "Nodes/DevMenuREAEventNode.h"
+#import "DevMenuREAAlwaysNode.h"
+#import "DevMenuREABezierNode.h"
+#import "DevMenuREABlockNode.h"
+#import "DevMenuREACallFuncNode.h"
+#import "DevMenuREAClockNodes.h"
+#import "DevMenuREAConcatNode.h"
+#import "DevMenuREACondNode.h"
+#import "DevMenuREADebugNode.h"
+#import "DevMenuREAEventNode.h"
+#import "DevMenuREAFunctionNode.h"
+#import "DevMenuREAJSCallNode.h"
 #import "DevMenuREAModule.h"
-#import "Nodes/DevMenuREAAlwaysNode.h"
-#import "Nodes/DevMenuREAConcatNode.h"
-#import "Nodes/DevMenuREAParamNode.h"
-#import "Nodes/DevMenuREAFunctionNode.h"
-#import "Nodes/DevMenuREACallFuncNode.h"
+#import "DevMenuREANode.h"
+#import "DevMenuREANodesManager.h"
+#import "DevMenuREAOperatorNode.h"
+#import "DevMenuREAParamNode.h"
+#import "DevMenuREAPropsNode.h"
+#import "DevMenuREASetNode.h"
+#import "DevMenuREAStyleNode.h"
+#import "DevMenuREATransformNode.h"
+#import "DevMenuREAValueNode.h"
+#import <React/RCTConvert.h>
 #import <React/RCTShadowView.h>
+#import <stdatomic.h>
 
 // Interface below has been added in order to use private methods of RCTUIManager,
 // RCTUIManager#UpdateView is a React Method which is exported to JS but in
@@ -30,17 +29,15 @@
 // RCTUIManager#setNeedsLayout is a method which updated layout only which
 // in its turn will trigger relayout if no batch has been activated
 
-@interface RCTUIManager ()
+@interface RCTUIManager (DevMenu)
 
-- (void)updateView:(nonnull NSNumber *)reactTag
-          viewName:(NSString *)viewName
-             props:(NSDictionary *)props;
+- (void)updateView:(nonnull NSNumber *)reactTag viewName:(NSString *)viewName props:(NSDictionary *)props;
 
 - (void)setNeedsLayout;
 
 @end
 
-@interface RCTUIManager (SyncUpdates)
+@interface RCTUIManager (DevMenuSyncUpdates)
 
 - (BOOL)hasEnqueuedUICommands;
 
@@ -48,7 +45,18 @@
 
 @end
 
-@implementation RCTUIManager (SyncUpdates)
+@interface DevMenuComponentUpdate : NSObject
+
+@property (nonnull) NSMutableDictionary *props;
+@property (nonnull) NSNumber *viewTag;
+@property (nonnull) NSString *viewName;
+
+@end
+
+@implementation DevMenuComponentUpdate
+@end
+
+@implementation RCTUIManager (DevMenuSyncUpdates)
 
 - (BOOL)hasEnqueuedUICommands
 {
@@ -84,13 +92,11 @@
 
 @end
 
-@interface DevMenuREANodesManager() <RCTUIManagerObserver>
+@interface DevMenuREANodesManager () <RCTUIManagerObserver>
 
 @end
 
-
-@implementation DevMenuREANodesManager
-{
+@implementation DevMenuREANodesManager {
   NSMutableDictionary<DevMenuREANodeID, DevMenuREANode *> *_nodes;
   NSMapTable<NSString *, DevMenuREANode *> *_eventMapping;
   NSMutableArray<id<RCTEvent>> *_eventQueue;
@@ -103,10 +109,12 @@
   BOOL _tryRunBatchUpdatesSynchronously;
   DevMenuREAEventHandler _eventHandler;
   volatile void (^_mounting)(void);
+  NSMutableDictionary<NSNumber *, DevMenuComponentUpdate *> *_componentUpdateBuffer;
+  volatile atomic_bool _shouldFlushUpdateBuffer;
+  NSMutableDictionary<NSNumber *, UIView *> *_viewRegistry;
 }
 
-- (instancetype)initWithModule:(DevMenuREAModule *)reanimatedModule
-                     uiManager:(RCTUIManager *)uiManager
+- (instancetype)initWithModule:(DevMenuREAModule *)reanimatedModule uiManager:(RCTUIManager *)uiManager
 {
   if ((self = [super init])) {
     _reanimatedModule = reanimatedModule;
@@ -118,9 +126,13 @@
     _wantRunUpdates = NO;
     _onAnimationCallbacks = [NSMutableArray new];
     _operationsInBatch = [NSMutableArray new];
+    _componentUpdateBuffer = [NSMutableDictionary new];
+    _viewRegistry = [_uiManager valueForKey:@"_viewRegistry"];
+    _shouldFlushUpdateBuffer = false;
   }
-    
+
   _displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(onAnimationFrame:)];
+  _displayLink.preferredFramesPerSecond = 120; // will fallback to 60 fps for devices without Pro Motion display
   [_displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
   [_displayLink setPaused:true];
   return self;
@@ -129,7 +141,7 @@
 - (void)invalidate
 {
   _eventHandler = nil;
-  [self stopUpdatingOnAnimationFrame];
+  [_displayLink invalidate];
 }
 
 - (void)operationsBatchDidComplete
@@ -172,14 +184,14 @@
 
 - (void)startUpdatingOnAnimationFrame
 {
-    // Setting _currentAnimationTimestamp here is connected with manual triggering of performOperations
-    // in operationsBatchDidComplete. If new node has been created and clock has not been started,
-    // _displayLink won't be initialized soon enough and _displayLink.timestamp will be 0.
-    // However, CADisplayLink is using CACurrentMediaTime so if there's need to perform one more
-    // evaluation, it could be used it here. In usual case, CACurrentMediaTime is not being used in
-    // favor of setting it with _displayLink.timestamp in onAnimationFrame method.
-    _currentAnimationTimestamp = CACurrentMediaTime();
-    [_displayLink setPaused:false];
+  // Setting _currentAnimationTimestamp here is connected with manual triggering of performOperations
+  // in operationsBatchDidComplete. If new node has been created and clock has not been started,
+  // _displayLink won't be initialized soon enough and _displayLink.timestamp will be 0.
+  // However, CADisplayLink is using CACurrentMediaTime so if there's need to perform one more
+  // evaluation, it could be used it here. In usual case, CACurrentMediaTime is not being used in
+  // favor of setting it with _displayLink.timestamp in onAnimationFrame method.
+  _currentAnimationTimestamp = CACurrentMediaTime();
+  [_displayLink setPaused:false];
 }
 
 - (void)stopUpdatingOnAnimationFrame
@@ -217,7 +229,8 @@
   }
 }
 
-- (BOOL)uiManager:(RCTUIManager *)manager performMountingWithBlock:(RCTUIManagerMountingBlock)block {
+- (BOOL)uiManager:(RCTUIManager *)manager performMountingWithBlock:(RCTUIManagerMountingBlock)block
+{
   RCTAssert(_mounting == nil, @"Mouting block is expected to not be set");
   _mounting = block;
   return YES;
@@ -234,7 +247,7 @@
 
     BOOL trySynchronously = _tryRunBatchUpdatesSynchronously;
     _tryRunBatchUpdatesSynchronously = NO;
-    
+
     __weak __typeof(self) weakSelf = self;
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
     RCTExecuteOnUIManagerQueue(^{
@@ -243,27 +256,27 @@
         return;
       }
       BOOL canUpdateSynchronously = trySynchronously && ![strongSelf.uiManager hasEnqueuedUICommands];
-      
+
       if (!canUpdateSynchronously) {
         dispatch_semaphore_signal(semaphore);
       }
-      
+
       for (int i = 0; i < copiedOperationsQueue.count; i++) {
         copiedOperationsQueue[i](strongSelf.uiManager);
       }
-      
+
       if (canUpdateSynchronously) {
         [strongSelf.uiManager runSyncUIUpdatesWithObserver:self];
         dispatch_semaphore_signal(semaphore);
       }
-      //In case canUpdateSynchronously=true we still have to send uiManagerWillPerformMounting event 
-      //to observers because some components (e.g. TextInput) update their UIViews only on that event.
+      // In case canUpdateSynchronously=true we still have to send uiManagerWillPerformMounting event
+      // to observers because some components (e.g. TextInput) update their UIViews only on that event.
       [strongSelf.uiManager setNeedsLayout];
     });
     if (trySynchronously) {
       dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
     }
-    
+
     if (_mounting) {
       _mounting();
       _mounting = nil;
@@ -273,9 +286,10 @@
 }
 
 - (void)enqueueUpdateViewOnNativeThread:(nonnull NSNumber *)reactTag
-                               viewName:(NSString *) viewName
+                               viewName:(NSString *)viewName
                             nativeProps:(NSMutableDictionary *)nativeProps
-                       trySynchronously:(BOOL)trySync {
+                       trySynchronously:(BOOL)trySync
+{
   if (trySync) {
     _tryRunBatchUpdatesSynchronously = YES;
   }
@@ -284,49 +298,48 @@
   }];
 }
 
-- (void)getValue:(DevMenuREANodeID)nodeID
-        callback:(RCTResponseSenderBlock)callback
+- (void)getValue:(DevMenuREANodeID)nodeID callback:(RCTResponseSenderBlock)callback
 {
   id val = _nodes[nodeID].value;
   if (val) {
-    callback(@[val]);
+    callback(@[ val ]);
   } else {
     // NULL is not an object and it's not possible to pass it as callback's argument
-    callback(@[[NSNull null]]);
+    callback(@[ [NSNull null] ]);
   }
 }
 
-#pragma mark -- Graph
+#pragma mark-- Graph
 
-- (void)createNode:(DevMenuREANodeID)nodeID
-            config:(NSDictionary<NSString *, id> *)config
+- (void)createNode:(DevMenuREANodeID)nodeID config:(NSDictionary<NSString *, id> *)config
 {
   static NSDictionary *map;
   static dispatch_once_t mapToken;
   dispatch_once(&mapToken, ^{
-    map = @{@"props": [DevMenuREAPropsNode class],
-            @"style": [DevMenuREAStyleNode class],
-            @"transform": [DevMenuREATransformNode class],
-            @"value": [DevMenuREAValueNode class],
-            @"block": [DevMenuREABlockNode class],
-            @"cond": [DevMenuREACondNode class],
-            @"op": [DevMenuREAOperatorNode class],
-            @"set": [DevMenuREASetNode class],
-            @"debug": [DevMenuREADebugNode class],
-            @"clock": [DevMenuREAClockNode class],
-            @"clockStart": [DevMenuREAClockStartNode class],
-            @"clockStop": [DevMenuREAClockStopNode class],
-            @"clockTest": [DevMenuREAClockTestNode class],
-            @"call": [DevMenuREAJSCallNode class],
-            @"bezier": [DevMenuREABezierNode class],
-            @"event": [DevMenuREAEventNode class],
-            @"always": [DevMenuREAAlwaysNode class],
-            @"concat": [DevMenuREAConcatNode class],
-            @"param": [DevMenuREAParamNode class],
-            @"func": [DevMenuREAFunctionNode class],
-            @"callfunc": [DevMenuREACallFuncNode class]
-//            @"listener": nil,
-            };
+    map = @{
+      @"props" : [DevMenuREAPropsNode class],
+      @"style" : [DevMenuREAStyleNode class],
+      @"transform" : [DevMenuREATransformNode class],
+      @"value" : [DevMenuREAValueNode class],
+      @"block" : [DevMenuREABlockNode class],
+      @"cond" : [DevMenuREACondNode class],
+      @"op" : [DevMenuREAOperatorNode class],
+      @"set" : [DevMenuREASetNode class],
+      @"debug" : [DevMenuREADebugNode class],
+      @"clock" : [DevMenuREAClockNode class],
+      @"clockStart" : [DevMenuREAClockStartNode class],
+      @"clockStop" : [DevMenuREAClockStopNode class],
+      @"clockTest" : [DevMenuREAClockTestNode class],
+      @"call" : [DevMenuREAJSCallNode class],
+      @"bezier" : [DevMenuREABezierNode class],
+      @"event" : [DevMenuREAEventNode class],
+      @"always" : [DevMenuREAAlwaysNode class],
+      @"concat" : [DevMenuREAConcatNode class],
+      @"param" : [DevMenuREAParamNode class],
+      @"func" : [DevMenuREAFunctionNode class],
+      @"callfunc" : [DevMenuREACallFuncNode class]
+      //            @"listener": nil,
+    };
   });
 
   NSString *nodeType = [RCTConvert NSString:config[@"type"]];
@@ -378,9 +391,7 @@
   [parentNode removeChild:childNode];
 }
 
-- (void)connectNodeToView:(DevMenuREANodeID)nodeID
-                  viewTag:(NSNumber *)viewTag
-                 viewName:(NSString *)viewName
+- (void)connectNodeToView:(DevMenuREANodeID)nodeID viewTag:(NSNumber *)viewTag viewName:(NSString *)viewName
 {
   RCTAssertParam(nodeID);
   DevMenuREANode *node = _nodes[nodeID];
@@ -391,8 +402,7 @@
   }
 }
 
-- (void)disconnectNodeFromView:(DevMenuREANodeID)nodeID
-                       viewTag:(NSNumber *)viewTag
+- (void)disconnectNodeFromView:(DevMenuREANodeID)nodeID viewTag:(NSNumber *)viewTag
 {
   RCTAssertParam(nodeID);
   DevMenuREANode *node = _nodes[nodeID];
@@ -403,36 +413,26 @@
   }
 }
 
-- (void)attachEvent:(NSNumber *)viewTag
-          eventName:(NSString *)eventName
-        eventNodeID:(DevMenuREANodeID)eventNodeID
+- (void)attachEvent:(NSNumber *)viewTag eventName:(NSString *)eventName eventNodeID:(DevMenuREANodeID)eventNodeID
 {
   RCTAssertParam(eventNodeID);
   DevMenuREANode *eventNode = _nodes[eventNodeID];
   RCTAssert([eventNode isKindOfClass:[DevMenuREAEventNode class]], @"Event node is of an invalid type");
 
-  NSString *key = [NSString stringWithFormat:@"%@%@",
-                   viewTag,
-                   RCTNormalizeInputEventName(eventName)];
+  NSString *key = [NSString stringWithFormat:@"%@%@", viewTag, RCTNormalizeInputEventName(eventName)];
   RCTAssert([_eventMapping objectForKey:key] == nil, @"Event handler already set for the given view and event type");
   [_eventMapping setObject:eventNode forKey:key];
 }
 
-- (void)detachEvent:(NSNumber *)viewTag
-          eventName:(NSString *)eventName
-        eventNodeID:(DevMenuREANodeID)eventNodeID
+- (void)detachEvent:(NSNumber *)viewTag eventName:(NSString *)eventName eventNodeID:(DevMenuREANodeID)eventNodeID
 {
-  NSString *key = [NSString stringWithFormat:@"%@%@",
-                   viewTag,
-                   RCTNormalizeInputEventName(eventName)];
+  NSString *key = [NSString stringWithFormat:@"%@%@", viewTag, RCTNormalizeInputEventName(eventName)];
   [_eventMapping removeObjectForKey:key];
 }
 
 - (void)processEvent:(id<RCTEvent>)event
 {
-  NSString *key = [NSString stringWithFormat:@"%@%@",
-                   event.viewTag,
-                   RCTNormalizeInputEventName(event.eventName)];
+  NSString *key = [NSString stringWithFormat:@"%@%@", event.viewTag, RCTNormalizeInputEventName(event.eventName)];
   DevMenuREAEventNode *eventNode = [_eventMapping objectForKey:key];
   [eventNode processEvent:event];
 }
@@ -465,18 +465,14 @@
 
 - (void)dispatchEvent:(id<RCTEvent>)event
 {
-  NSString *key = [NSString stringWithFormat:@"%@%@",
-                   event.viewTag,
-                   RCTNormalizeInputEventName(event.eventName)];
+  NSString *key = [NSString stringWithFormat:@"%@%@", event.viewTag, RCTNormalizeInputEventName(event.eventName)];
 
-  NSString *eventHash = [NSString stringWithFormat:@"%@%@",
-  event.viewTag,
-  event.eventName];
+  NSString *eventHash = [NSString stringWithFormat:@"%@%@", event.viewTag, event.eventName];
 
   if (_eventHandler != nil) {
     __weak DevMenuREAEventHandler eventHandler = _eventHandler;
     __weak __typeof(self) weakSelf = self;
-    RCTExecuteOnMainQueue(^void(){
+    RCTExecuteOnMainQueue(^void() {
       __typeof__(self) strongSelf = weakSelf;
       if (strongSelf == nil) {
         return;
@@ -506,11 +502,16 @@
   }
 }
 
-- (void)configureProps:(NSSet<NSString *> *)nativeProps
-               uiProps:(NSSet<NSString *> *)uiProps
+- (void)configureUiProps:(nonnull NSSet<NSString *> *)uiPropsSet
+          andNativeProps:(nonnull NSSet<NSString *> *)nativePropsSet
 {
-  _uiProps = uiProps;
-  _nativeProps = nativeProps;
+  _uiProps = uiPropsSet;
+  _nativeProps = nativePropsSet;
+}
+
+- (BOOL)isNotNativeViewFullyMounted:(NSNumber *)viewTag
+{
+  return _viewRegistry[viewTag].superview == nil;
 }
 
 - (void)setValueForNodeID:(nonnull NSNumber *)nodeID value:(nonnull NSNumber *)newValue
@@ -527,12 +528,30 @@
       ofViewWithTag:(nonnull NSNumber *)viewTag
            withName:(nonnull NSString *)viewName
 {
+  DevMenuComponentUpdate *lastSnapshot = _componentUpdateBuffer[viewTag];
+  if ([self isNotNativeViewFullyMounted:viewTag] || lastSnapshot != nil) {
+    if (lastSnapshot == nil) {
+      DevMenuComponentUpdate *propsSnapshot = [DevMenuComponentUpdate new];
+      propsSnapshot.props = [props mutableCopy];
+      propsSnapshot.viewTag = viewTag;
+      propsSnapshot.viewName = viewName;
+      _componentUpdateBuffer[viewTag] = propsSnapshot;
+      atomic_store(&_shouldFlushUpdateBuffer, true);
+    } else {
+      NSMutableDictionary *lastProps = lastSnapshot.props;
+      for (NSString *key in props) {
+        [lastProps setValue:props[key] forKey:key];
+      }
+    }
+    return;
+  }
+
   // TODO: refactor PropsNode to also use this function
   NSMutableDictionary *uiProps = [NSMutableDictionary new];
   NSMutableDictionary *nativeProps = [NSMutableDictionary new];
   NSMutableDictionary *jsProps = [NSMutableDictionary new];
 
-  void (^addBlock)(NSString *key, id obj, BOOL * stop) = ^(NSString *key, id obj, BOOL * stop){
+  void (^addBlock)(NSString *key, id obj, BOOL *stop) = ^(NSString *key, id obj, BOOL *stop) {
     if ([self.uiProps containsObject:key]) {
       uiProps[key] = obj;
     } else if ([self.nativeProps containsObject:key]) {
@@ -545,36 +564,63 @@
   [props enumerateKeysAndObjectsUsingBlock:addBlock];
 
   if (uiProps.count > 0) {
-    [self.uiManager
-     synchronouslyUpdateViewOnUIThread:viewTag
-     viewName:viewName
-     props:uiProps];
-    }
-    if (nativeProps.count > 0) {
-      [self enqueueUpdateViewOnNativeThread:viewTag viewName:viewName nativeProps:nativeProps trySynchronously:YES];
-    }
-    if (jsProps.count > 0) {
-      [self.reanimatedModule sendEventWithName:@"onReanimatedPropsChange"
-                                          body:@{@"viewTag": viewTag, @"props": jsProps }];
-    }
+    [self.uiManager synchronouslyUpdateViewOnUIThread:viewTag viewName:viewName props:uiProps];
+  }
+  if (nativeProps.count > 0) {
+    [self enqueueUpdateViewOnNativeThread:viewTag viewName:viewName nativeProps:nativeProps trySynchronously:YES];
+  }
+  if (jsProps.count > 0) {
+    [self.reanimatedModule sendEventWithName:@"onReanimatedPropsChange"
+                                        body:@{@"viewTag" : viewTag, @"props" : jsProps}];
+  }
 }
 
-- (NSString*)obtainProp:(nonnull NSNumber *)viewTag
-               propName:(nonnull NSString *)propName
+- (NSString *)obtainProp:(nonnull NSNumber *)viewTag propName:(nonnull NSString *)propName
 {
-    UIView* view = [self.uiManager viewForReactTag:viewTag];
-    
-    NSString* result = [NSString stringWithFormat:@"error: unknown propName %@, currently supported: opacity, zIndex", propName];
-    
-    if ([propName isEqualToString:@"opacity"]) {
-        CGFloat alpha = view.alpha;
-        result = [@(alpha) stringValue];
-    } else if ([propName isEqualToString:@"zIndex"]) {
-        NSInteger zIndex = view.reactZIndex;
-        result = [@(zIndex) stringValue];
+  UIView *view = [self.uiManager viewForReactTag:viewTag];
+
+  NSString *result =
+      [NSString stringWithFormat:@"error: unknown propName %@, currently supported: opacity, zIndex", propName];
+
+  if ([propName isEqualToString:@"opacity"]) {
+    CGFloat alpha = view.alpha;
+    result = [@(alpha) stringValue];
+  } else if ([propName isEqualToString:@"zIndex"]) {
+    NSInteger zIndex = view.reactZIndex;
+    result = [@(zIndex) stringValue];
+  }
+
+  return result;
+}
+
+- (void)maybeFlushUpdateBuffer
+{
+  RCTAssertUIManagerQueue();
+  bool shouldFlushUpdateBuffer = atomic_load(&_shouldFlushUpdateBuffer);
+  if (!shouldFlushUpdateBuffer) {
+    return;
+  }
+
+  __weak __typeof(self) weakSelf = self;
+  [_uiManager addUIBlock:^(__unused RCTUIManager *manager, __unused NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+    __typeof__(self) strongSelf = weakSelf;
+    if (strongSelf == nil) {
+      return;
     }
-    
-    return result;
+    atomic_store(&strongSelf->_shouldFlushUpdateBuffer, false);
+    NSMutableDictionary *componentUpdateBuffer = [strongSelf->_componentUpdateBuffer copy];
+    strongSelf->_componentUpdateBuffer = [NSMutableDictionary new];
+    for (NSNumber *tag in componentUpdateBuffer) {
+      DevMenuComponentUpdate *componentUpdate = componentUpdateBuffer[tag];
+      if (componentUpdate == Nil) {
+        continue;
+      }
+      [strongSelf updateProps:componentUpdate.props
+                ofViewWithTag:componentUpdate.viewTag
+                     withName:componentUpdate.viewName];
+    }
+    [strongSelf performOperations];
+  }];
 }
 
 @end

@@ -1,24 +1,26 @@
 import { Dimensions } from 'react-native';
-import { BaseAnimationBuilder } from '../animationBuilder/BaseAnimationBuilder';
+import { ComplexAnimationBuilder } from '../animationBuilder';
 import {
-  EntryExitAnimationBuild,
+  EntryExitAnimationFunction,
   IEntryExitAnimationBuilder,
 } from '../animationBuilder/commonTypes';
 
 const { width } = Dimensions.get('window');
 
 export class RollInLeft
-  extends BaseAnimationBuilder
-  implements IEntryExitAnimationBuilder {
+  extends ComplexAnimationBuilder
+  implements IEntryExitAnimationBuilder
+{
   static createInstance(): RollInLeft {
     return new RollInLeft();
   }
 
-  build: EntryExitAnimationBuild = () => {
+  build = (): EntryExitAnimationFunction => {
     const delayFunction = this.getDelayFunction();
     const [animation, config] = this.getAnimationAndConfig();
-    const delay = this.delayV;
+    const delay = this.getDelay();
     const callback = this.callbackV;
+    const initialValues = this.initialValues;
 
     return () => {
       'worklet';
@@ -31,6 +33,7 @@ export class RollInLeft
         },
         initialValues: {
           transform: [{ translateX: -width }, { rotate: '-180deg' }],
+          ...initialValues,
         },
         callback: callback,
       };
@@ -39,17 +42,19 @@ export class RollInLeft
 }
 
 export class RollInRight
-  extends BaseAnimationBuilder
-  implements IEntryExitAnimationBuilder {
+  extends ComplexAnimationBuilder
+  implements IEntryExitAnimationBuilder
+{
   static createInstance(): RollInRight {
     return new RollInRight();
   }
 
-  build: EntryExitAnimationBuild = () => {
+  build = (): EntryExitAnimationFunction => {
     const delayFunction = this.getDelayFunction();
     const [animation, config] = this.getAnimationAndConfig();
-    const delay = this.delayV;
+    const delay = this.getDelay();
     const callback = this.callbackV;
+    const initialValues = this.initialValues;
 
     return () => {
       'worklet';
@@ -62,6 +67,7 @@ export class RollInRight
         },
         initialValues: {
           transform: [{ translateX: width }, { rotate: '180deg' }],
+          ...initialValues,
         },
         callback: callback,
       };
@@ -70,17 +76,19 @@ export class RollInRight
 }
 
 export class RollOutLeft
-  extends BaseAnimationBuilder
-  implements IEntryExitAnimationBuilder {
+  extends ComplexAnimationBuilder
+  implements IEntryExitAnimationBuilder
+{
   static createInstance(): RollOutLeft {
     return new RollOutLeft();
   }
 
-  build: EntryExitAnimationBuild = () => {
+  build = (): EntryExitAnimationFunction => {
     const delayFunction = this.getDelayFunction();
     const [animation, config] = this.getAnimationAndConfig();
-    const delay = this.delayV;
+    const delay = this.getDelay();
     const callback = this.callbackV;
+    const initialValues = this.initialValues;
 
     return () => {
       'worklet';
@@ -93,6 +101,7 @@ export class RollOutLeft
         },
         initialValues: {
           transform: [{ translateX: 0 }, { rotate: '0deg' }],
+          ...initialValues,
         },
         callback: callback,
       };
@@ -101,17 +110,19 @@ export class RollOutLeft
 }
 
 export class RollOutRight
-  extends BaseAnimationBuilder
-  implements IEntryExitAnimationBuilder {
+  extends ComplexAnimationBuilder
+  implements IEntryExitAnimationBuilder
+{
   static createInstance(): RollOutRight {
     return new RollOutRight();
   }
 
-  build: EntryExitAnimationBuild = () => {
+  build = (): EntryExitAnimationFunction => {
     const delayFunction = this.getDelayFunction();
     const [animation, config] = this.getAnimationAndConfig();
-    const delay = this.delayV;
+    const delay = this.getDelay();
     const callback = this.callbackV;
+    const initialValues = this.initialValues;
 
     return () => {
       'worklet';
@@ -124,6 +135,7 @@ export class RollOutRight
         },
         initialValues: {
           transform: [{ translateX: 0 }, { rotate: '0deg' }],
+          ...initialValues,
         },
         callback: callback,
       };

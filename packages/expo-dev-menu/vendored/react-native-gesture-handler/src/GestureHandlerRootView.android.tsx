@@ -5,7 +5,7 @@ import { GestureHandlerRootViewProps } from './GestureHandlerRootView';
 const GestureHandlerRootViewNative = requireNativeComponent(
   'GestureHandlerRootView'
 );
-
+  
 export default function GestureHandlerRootView({
   children,
   ...rest

@@ -25,4 +25,6 @@ if (EXPO_BUNDLE_APP) {
   config.transformer.enableBabelRCLookup = true;
 }
 
+config.resolver.blockList.push(/\breact-native-lab\b/);
+
 module.exports = config;

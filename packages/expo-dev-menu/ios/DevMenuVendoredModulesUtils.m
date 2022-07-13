@@ -10,6 +10,7 @@
 #if __has_include("DevMenuREAModule.h")
 #import "DevMenuREAModule.h"
 #import "DevMenuREAEventDispatcher.h"
+#import "DevMenuREAUIManager.h"
 #endif
 
 #if __has_include("DevMenuRNGestureHandlerModule.h")
@@ -36,9 +37,9 @@
     // Creates a `DevMenuREAEventDispatcher`
     // It was moved from the `REAJSIExecutorRuntimeInstaller` function
     [modules addObject:[DevMenuREAEventDispatcher new]];
+
+    [modules addObject:[DevMenuREAModule new]];
   }
-  
-  [modules addObject:[DevMenuREAModule new]];
 #endif
 #if __has_include("DevMenuRNGestureHandlerModule.h")
   [modules addObject:[DevMenuRNGestureHandlerModule new]];

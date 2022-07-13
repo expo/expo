@@ -1,9 +1,8 @@
-#import <UIKit/UIKit.h>
 #import <QuartzCore/QuartzCore.h>
-#import <React/RCTView.h>
-
 #import "DevMenuREATransitionAnimation.h"
 #import "DevMenuREATransitionValues.h"
+#import <React/RCTView.h>
+#import <UIKit/UIKit.h>
 
 // TODO: fix below implementation
 #define IS_LAYOUT_ONLY(view) ([view isKindOfClass:[RCTView class]] && view.backgroundColor == nil)
@@ -53,12 +52,13 @@ typedef NS_ENUM(NSInteger, DevMenuREATransitionPropagationType) {
 - (void)playInRoot:(UIView *)root;
 - (DevMenuREATransitionValues *)findStartValuesForKey:(NSNumber *)key;
 - (DevMenuREATransitionValues *)findEndValuesForKey:(NSNumber *)key;
-- (DevMenuREATransitionAnimation *)animationForTransitioning:(DevMenuREATransitionValues*)startValues
-                                               endValues:(DevMenuREATransitionValues*)endValues
-                                                 forRoot:(UIView *)root;
-- (NSArray<DevMenuREATransitionAnimation*> *)animationsForTransitioning:(NSMutableDictionary<NSNumber*, DevMenuREATransitionValues*> *)startValues
-                                                          endValues:(NSMutableDictionary<NSNumber*, DevMenuREATransitionValues*> *)endValues
-                                                            forRoot:(UIView *)root;
+- (DevMenuREATransitionAnimation *)animationForTransitioning:(DevMenuREATransitionValues *)startValues
+                                            endValues:(DevMenuREATransitionValues *)endValues
+                                              forRoot:(UIView *)root;
+- (NSArray<DevMenuREATransitionAnimation *> *)
+    animationsForTransitioning:(NSMutableDictionary<NSNumber *, DevMenuREATransitionValues *> *)startValues
+                     endValues:(NSMutableDictionary<NSNumber *, DevMenuREATransitionValues *> *)endValues
+                       forRoot:(UIView *)root;
 
 + (DevMenuREATransition *)inflate:(NSDictionary *)config;
 @end

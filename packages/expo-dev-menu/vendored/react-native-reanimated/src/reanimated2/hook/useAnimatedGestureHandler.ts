@@ -1,6 +1,5 @@
 import { MutableRefObject } from 'react';
 import { WorkletFunction } from '../commonTypes';
-import { isWeb } from '../PlatformChecker';
 import WorkletEventHandler from '../WorkletEventHandler';
 import { Context, DependencyList } from './commonTypes';
 import { useEvent, useHandler } from './Hooks';
@@ -46,7 +45,7 @@ export function useAnimatedGestureHandler<
 >(
   handlers: GestureHandlers<T, TContext>,
   dependencies?: DependencyList
-): MutableRefObject<WorkletEventHandler | null> | ((e: T) => void) {
+): MutableRefObject<WorkletEventHandler<T> | null> | ((e: T) => void) {
   const { context, doDependenciesDiffer, useWeb } = useHandler<T, TContext>(
     handlers,
     dependencies
@@ -98,7 +97,7 @@ export function useAnimatedGestureHandler<
     }
   };
 
-  if (isWeb()) {
+  if (useWeb) {
     return handler;
   }
 

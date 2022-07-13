@@ -20,7 +20,7 @@ module.exports = function (api) {
       './vendored/react-native-gesture-handler/jestSetup.js'
     );
 
-    const reanimated = tryResolveModule('./vendored/react-native-reanimated/src/Animated.js');
+    const reanimated = tryResolveModule('./vendored/react-native-reanimated/src/index.ts');
     const safeAreaContext = tryResolveModule(
       './vendored/react-native-safe-area-context/src/index.tsx'
     );

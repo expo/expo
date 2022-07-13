@@ -10,6 +10,7 @@ export type FileContentTransformStepSettings = {
   filePattern: string;
   find: string;
   replace: string;
+  debug?: boolean;
 };
 
 /**
@@ -22,13 +23,15 @@ export class TransformFilesContent extends Task {
   protected readonly filePattern: string;
   protected readonly find: RegExp;
   protected readonly replace: string;
+  protected readonly debug: boolean;
 
-  constructor({ source, filePattern, find, replace }: FileContentTransformStepSettings) {
+  constructor({ source, filePattern, find, replace, debug }: FileContentTransformStepSettings) {
     super();
     this.source = source;
     this.filePattern = filePattern;
     this.find = new RegExp(find, 'gm');
     this.replace = replace;
+    this.debug = debug || false;
   }
 
   protected overrideWorkingDirectory(): string {
@@ -45,6 +48,9 @@ export class TransformFilesContent extends Task {
     );
 
     const files = await findFiles(workDirectory, this.filePattern);
+    if (this.debug) {
+      this.logDebugInfo('Files: ' + files.join('\n'));
+    }
     await Promise.all(
       files.map(async (file) => {
         const content = await fs.readFile(file, 'utf8');
@@ -76,6 +82,6 @@ export const renameIOSSymbols = (settings: {
 }): TransformFilesContent => {
   return new TransformFilesContent({
     ...settings,
-    filePattern: path.join('ios', '**', '*.@(h|m)'),
+    filePattern: path.join('ios', '**', '*.@(h|m|mm)'),
   });
 };

@@ -4,13 +4,12 @@
   NSNumber *_value;
 }
 
-- (instancetype)initWithID:(DevMenuREANodeID)nodeID
-                    config:(NSDictionary<NSString *, id> *)config
+- (instancetype)initWithID:(DevMenuREANodeID)nodeID config:(NSDictionary<NSString *, id> *)config
 {
-    if (self = [super initWithID:nodeID config:config]) {
-        _value = config[@"value"];
-    }
-    return self;
+  if (self = [super initWithID:nodeID config:config]) {
+    _value = config[@"value"];
+  }
+  return self;
 }
 
 - (void)setValue:(NSNumber *)value
@@ -25,4 +24,3 @@
 }
 
 @end
-

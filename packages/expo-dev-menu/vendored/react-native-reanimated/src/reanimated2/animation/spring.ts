@@ -2,12 +2,11 @@ import { defineAnimation } from './util';
 import {
   Animation,
   AnimationCallback,
-  PrimitiveValue,
+  AnimatableValue,
   Timestamp,
-} from './commonTypes';
+} from '../commonTypes';
 
 interface SpringConfig {
-  // [key: string]: any;
   mass?: number;
   stiffness?: number;
   overshootClamping?: boolean;
@@ -18,8 +17,8 @@ interface SpringConfig {
 }
 
 export interface SpringAnimation extends Animation<SpringAnimation> {
-  current: PrimitiveValue;
-  toValue: PrimitiveValue;
+  current: AnimatableValue;
+  toValue: AnimatableValue;
   velocity: number;
   lastTimestamp: Timestamp;
 }
@@ -31,7 +30,7 @@ export interface InnerSpringAnimation
 }
 
 export function withSpring(
-  toValue: PrimitiveValue,
+  toValue: AnimatableValue,
   userConfig?: SpringConfig,
   callback?: AnimationCallback
 ): Animation<SpringAnimation> {
@@ -131,6 +130,8 @@ export function withSpring(
           animation.velocity = 0;
           animation.current = toValue;
         }
+        // clear lastTimestamp to avoid using stale value by the next spring animation that starts after this one
+        animation.lastTimestamp = 0;
         return true;
       }
       return false;

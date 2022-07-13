@@ -13,7 +13,7 @@ typedef facebook::react::HermesExecutorFactory ExecutorFactory;
 typedef facebook::react::JSCExecutorFactory ExecutorFactory;
 #endif
 
-#import "REAInitializer.h"
+#import "DevMenuREAInitializer.h"
 
 #import <React/RCTCxxBridgeDelegate.h>
 //#import <EXDevMenu-Swift.h>
@@ -33,7 +33,7 @@ typedef facebook::react::JSCExecutorFactory ExecutorFactory;
 
 - (std::unique_ptr<facebook::react::JSExecutorFactory>)jsExecutorFactoryForBridge:(RCTBridge *)bridge
 {
-  const auto installer = devmenureanimated::REAJSIExecutorRuntimeInstaller(bridge, NULL);
+  const auto installer = devmenureanimated::DevMenuREAJSIExecutorRuntimeInstaller(bridge, NULL);
 
 #if RNVERSION >= 64
   // installs globals such as console, nativePerformanceNow, etc.

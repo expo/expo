@@ -15,7 +15,6 @@ import {
   ViewStyle,
   TextStyle,
 } from 'react-native';
-import { Animation, AnimationObject } from './animation/commonTypes';
 import { Context } from './hook/commonTypes';
 
 export type TransformProperty =
@@ -52,13 +51,19 @@ export interface WorkletFunction {
   _closure?: Context;
   __workletHash?: number;
   __optimalization?: number;
-  __worklet?: boolean;
 }
 
 export interface BasicWorkletFunction<T> extends WorkletFunction {
   (): T;
 }
 
+export interface BasicWorkletFunctionOptional<T> extends WorkletFunction {
+  (): Partial<T>;
+}
+
+export interface NativeEvent<T> {
+  nativeEvent: T;
+}
 export interface ComplexWorkletFunction<A extends any[], R>
   extends WorkletFunction {
   (...args: A): R;
@@ -76,3 +81,67 @@ export type NestedObjectValues<T> =
 export interface AdapterWorkletFunction extends WorkletFunction {
   (value: NestedObject<string | number | AnimationObject>): void;
 }
+
+export type AnimatableValue = number | string | Array<number>;
+
+export interface AnimationObject {
+  [key: string]: any;
+  callback: AnimationCallback;
+  current?: AnimatableValue;
+  toValue?: AnimationObject['current'];
+  startValue?: AnimationObject['current'];
+  finished?: boolean;
+  strippedCurrent?: number;
+  cancelled?: boolean;
+
+  __prefix?: string;
+  __suffix?: string;
+  onFrame: (animation: any, timestamp: Timestamp) => boolean;
+  onStart: (
+    nextAnimation: any,
+    current: any,
+    timestamp: Timestamp,
+    previousAnimation: any
+  ) => void;
+}
+
+export interface Animation<T extends AnimationObject> extends AnimationObject {
+  onFrame: (animation: T, timestamp: Timestamp) => boolean;
+  onStart: (
+    nextAnimation: T,
+    current: T extends NumericAnimation ? number : AnimatableValue,
+    timestamp: Timestamp,
+    previousAnimation: T
+  ) => void;
+}
+
+export interface NumericAnimation {
+  current?: number;
+}
+
+export type AnimationCallback = (
+  finished?: boolean,
+  current?: AnimatableValue
+) => void;
+
+export type Timestamp = number;
+
+export type Value3D = {
+  x: number;
+  y: number;
+  z: number;
+};
+
+export type SensorValue3D = SharedValue<Value3D>;
+
+export type ValueRotation = {
+  qw: number;
+  qx: number;
+  qy: number;
+  qz: number;
+  yaw: number;
+  pitch: number;
+  roll: number;
+};
+
+export type SensorValueRotation = SharedValue<ValueRotation>;

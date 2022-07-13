@@ -1,6 +1,6 @@
 import { RefObject } from 'react';
 import { NativeScrollEvent } from 'react-native';
-import { WorkletFunction } from '../commonTypes';
+import { NativeEvent, WorkletFunction } from '../commonTypes';
 import WorkletEventHandler from '../WorkletEventHandler';
 import { Context, DependencyList } from './commonTypes';
 import { useEvent, useHandler } from './Hooks';
@@ -10,7 +10,7 @@ export interface ScrollHandler<TContext extends Context>
   (event: NativeScrollEvent, context?: TContext): void;
 }
 
-interface ScrollEvent extends NativeScrollEvent {
+interface ScrollEvent extends NativeScrollEvent, NativeEvent<ScrollEvent> {
   eventName: string;
 }
 export interface ScrollHandlers<TContext extends Context> {
@@ -25,7 +25,7 @@ export interface ScrollHandlers<TContext extends Context> {
 export function useAnimatedScrollHandler<TContext extends Context>(
   handlers: ScrollHandlers<TContext> | ScrollHandler<TContext>,
   dependencies?: DependencyList
-): RefObject<WorkletEventHandler> {
+): RefObject<WorkletEventHandler<ScrollEvent>> {
   // case when handlers is a function
   const scrollHandlers: ScrollHandlers<TContext> =
     typeof handlers === 'function' ? { onScroll: handlers } : handlers;

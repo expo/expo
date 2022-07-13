@@ -1,14 +1,11 @@
+#import "DevMenuREANodesManager.h"
 #import "DevMenuREAStyleNode.h"
 
-#import "DevMenuREANodesManager.h"
-
-@implementation DevMenuREAStyleNode
-{
+@implementation DevMenuREAStyleNode {
   NSMutableDictionary<NSString *, DevMenuREANodeID> *_styleConfig;
 }
 
-- (instancetype)initWithID:(DevMenuREANodeID)nodeID
-                    config:(NSDictionary<NSString *, id> *)config;
+- (instancetype)initWithID:(DevMenuREANodeID)nodeID config:(NSDictionary<NSString *, id> *)config;
 {
   if ((self = [super initWithID:nodeID config:config])) {
     _styleConfig = config[@"style"];

@@ -1,26 +1,44 @@
-/* global _WORKLET _measure _scrollTo */
+/* global _WORKLET _measure _scrollTo _setGestureState */
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck
+import { Component } from 'react';
 import { findNodeHandle } from 'react-native';
-import { isChromeDebugger } from './PlatformChecker';
+import { RefObjectFunction } from './commonTypes';
+import { shouldBeUseWeb } from './PlatformChecker';
 
-export function getTag(view) {
+export function getTag(
+  view: null | number | React.Component<any, any> | React.ComponentClass<any>
+): null | number {
   return findNodeHandle(view);
 }
 
-/**
- * fields that can be accessed:
- *  x
- *  y
- *  width
- *  height
- *  pageX
- *  pageY
- */
-export function measure(animatedRef) {
+export interface MeasuredDimensions {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  pageX: number;
+  pageY: number;
+}
+
+const isNativeIndefined = shouldBeUseWeb();
+
+export function measure(
+  animatedRef: RefObjectFunction<Component>
+): MeasuredDimensions {
   'worklet';
-  if (!_WORKLET && !isChromeDebugger()) {
-    throw new Error('(measure) method cannot be used on RN side!');
+  if (!_WORKLET || isNativeIndefined) {
+    console.warn(
+      '[reanimated.measure] method cannot be used for web or Chrome Debugger'
+    );
+    return {
+      x: NaN,
+      y: NaN,
+      width: NaN,
+      height: NaN,
+      pageX: NaN,
+      pageY: NaN,
+    };
   }
   const viewTag = animatedRef();
   const result = _measure(viewTag);
@@ -30,11 +48,27 @@ export function measure(animatedRef) {
   return result;
 }
 
-export function scrollTo(animatedRef, x, y, animated) {
+export function scrollTo(
+  animatedRef: RefObjectFunction<Component>,
+  x: number,
+  y: number,
+  animated: boolean
+): void {
   'worklet';
-  if (!_WORKLET && !isChromeDebugger()) {
+  if (!_WORKLET || isNativeIndefined) {
     return;
   }
   const viewTag = animatedRef();
   _scrollTo(viewTag, x, y, animated);
+}
+
+export function setGestureState(handlerTag: number, newState: number): void {
+  'worklet';
+  if (!_WORKLET || isNativeIndefined) {
+    console.warn(
+      '[Reanimated] You can not use setGestureState in non-worklet function.'
+    );
+    return;
+  }
+  _setGestureState(handlerTag, newState);
 }

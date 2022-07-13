@@ -9,11 +9,8 @@
 /* eslint no-bitwise: 0 */
 import { Platform } from 'react-native';
 import { makeRemote, makeShareable, isConfigured } from './core';
-import { interpolate } from './interpolation';
-// @ts-ignore JS file
-import { Extrapolate } from '../reanimated1/derived';
 
-interface RBG {
+interface RGB {
   r: number;
   g: number;
   b: number;
@@ -67,7 +64,8 @@ function getMatchers(): Matchers {
       'hsla' + call(NUMBER, PERCENTAGE, PERCENTAGE, NUMBER)
     );
     cachedMatchers.hex3 = /^#([0-9a-fA-F]{1})([0-9a-fA-F]{1})([0-9a-fA-F]{1})$/;
-    cachedMatchers.hex4 = /^#([0-9a-fA-F]{1})([0-9a-fA-F]{1})([0-9a-fA-F]{1})([0-9a-fA-F]{1})$/;
+    cachedMatchers.hex4 =
+      /^#([0-9a-fA-F]{1})([0-9a-fA-F]{1})([0-9a-fA-F]{1})([0-9a-fA-F]{1})$/;
     cachedMatchers.hex6 = /^#([0-9a-fA-F]{6})$/;
     cachedMatchers.hex8 = /^#([0-9a-fA-F]{8})$/;
   }
@@ -475,9 +473,9 @@ export const rgbaColor = (
  * 0 <= r, g, b <= 255
  * returns 0 <= h, s, v <= 1
  */
-function RGBtoHSV(rgb: RBG): HSV;
-function RGBtoHSV(r: number, g: number, b: number): HSV;
-function RGBtoHSV(r: any, g?: any, b?: any): HSV {
+export function RGBtoHSV(rgb: RGB): HSV;
+export function RGBtoHSV(r: number, g: number, b: number): HSV;
+export function RGBtoHSV(r: any, g?: any, b?: any): HSV {
   'worklet';
   /* eslint-disable */
   if (arguments.length === 1) {
@@ -528,8 +526,8 @@ function RGBtoHSV(r: any, g?: any, b?: any): HSV {
  * 0 <= h, s, v <= 1
  * returns 0 <= r, g, b <= 255
  */
-function HSVtoRGB(hsv: HSV): RBG;
-function HSVtoRGB(h: number, s: number, v: number): RBG;
+function HSVtoRGB(hsv: HSV): RGB;
+function HSVtoRGB(h: number, s: number, v: number): RGB;
 function HSVtoRGB(h: any, s?: any, v?: any) {
   'worklet';
   /* eslint-disable */
@@ -652,144 +650,3 @@ export function toRGBA(HSVA: ParsedColorArray): string {
   const { r, g, b } = HSVtoRGB(HSVA[0], HSVA[1], HSVA[2]);
   return `rgba(${r}, ${g}, ${b}, ${HSVA[3]})`;
 }
-
-const interpolateColorsHSV = (
-  value: number,
-  inputRange: readonly number[],
-  colors: InterpolateCacheHSV
-) => {
-  'worklet';
-  const h = interpolate(value, inputRange, colors.h, Extrapolate.CLAMP);
-  const s = interpolate(value, inputRange, colors.s, Extrapolate.CLAMP);
-  const v = interpolate(value, inputRange, colors.v, Extrapolate.CLAMP);
-  return hsvToColor(h, s, v);
-};
-
-const interpolateColorsRGB = (
-  value: number,
-  inputRange: readonly number[],
-  colors: InterpolateCacheRGBA
-) => {
-  'worklet';
-  const r = interpolate(value, inputRange, colors.r, Extrapolate.CLAMP);
-  const g = interpolate(value, inputRange, colors.g, Extrapolate.CLAMP);
-  const b = interpolate(value, inputRange, colors.b, Extrapolate.CLAMP);
-  const a = interpolate(value, inputRange, colors.a, Extrapolate.CLAMP);
-  return rgbaColor(r, g, b, a);
-};
-
-interface InterpolateCacheRGBA {
-  r: number[];
-  g: number[];
-  b: number[];
-  a: number[];
-}
-
-const BUFFER_SIZE = 200;
-const hashOrderRGBA: any = new ArrayBuffer(BUFFER_SIZE);
-let curentHashIndexRGBA = 0;
-const interpolateCacheRGBA: { [name: string]: InterpolateCacheRGBA } = {};
-
-const getInterpolateCacheRGBA = (
-  colors: readonly (string | number)[]
-): InterpolateCacheRGBA => {
-  'worklet';
-  const hash = colors.join('');
-  const cache = interpolateCacheRGBA[hash];
-  if (cache !== undefined) {
-    return cache;
-  }
-
-  const r = [];
-  const g = [];
-  const b = [];
-  const a = [];
-  for (let i = 0; i < colors.length; ++i) {
-    const color = colors[i];
-    const proocessedColor = processColor(color);
-    // explicit check in case if processedColor is 0
-    if (proocessedColor !== null && proocessedColor !== undefined) {
-      r.push(red(proocessedColor));
-      g.push(green(proocessedColor));
-      b.push(blue(proocessedColor));
-      a.push(opacity(proocessedColor));
-    }
-  }
-  const newCache = { r, g, b, a };
-  const overrideHash = hashOrderRGBA[curentHashIndexRGBA];
-  if (overrideHash) {
-    delete interpolateCacheRGBA[overrideHash];
-  }
-  interpolateCacheRGBA[hash] = newCache;
-  hashOrderRGBA[curentHashIndexRGBA] = hash;
-  curentHashIndexRGBA = (curentHashIndexRGBA + 1) % BUFFER_SIZE;
-  return newCache;
-};
-
-interface InterpolateCacheHSV {
-  h: number[];
-  s: number[];
-  v: number[];
-}
-
-const hashOrderHSV: any = new ArrayBuffer(BUFFER_SIZE);
-let curentHashIndexHSV = 0;
-const interpolateCacheHSV: { [name: string]: InterpolateCacheHSV } = {};
-
-const getInterpolateCacheHSV = (
-  colors: readonly (string | number)[]
-): InterpolateCacheHSV => {
-  'worklet';
-  const hash = colors.join('');
-  const cache = interpolateCacheHSV[hash];
-  if (cache !== undefined) {
-    return cache;
-  }
-
-  const h = [];
-  const s = [];
-  const v = [];
-  for (let i = 0; i < colors.length; ++i) {
-    const color = colors[i];
-    const proocessedColor = RGBtoHSV(processColor(color) as any);
-    if (proocessedColor) {
-      h.push(proocessedColor.h);
-      s.push(proocessedColor.s);
-      v.push(proocessedColor.v);
-    }
-  }
-  const newCache = { h, s, v };
-  const overrideHash = hashOrderHSV[curentHashIndexHSV];
-  if (overrideHash) {
-    delete interpolateCacheHSV[overrideHash];
-  }
-  interpolateCacheHSV[hash] = newCache;
-  hashOrderHSV[curentHashIndexHSV] = hash;
-  curentHashIndexHSV = (curentHashIndexHSV + 1) % BUFFER_SIZE;
-  return newCache;
-};
-
-export const interpolateColor = (
-  value: number,
-  inputRange: readonly number[],
-  outputRange: readonly (string | number)[],
-  colorSpace: 'RGB' | 'HSV' = 'RGB'
-): string | number => {
-  'worklet';
-  if (colorSpace === 'HSV') {
-    return interpolateColorsHSV(
-      value,
-      inputRange,
-      getInterpolateCacheHSV(outputRange)
-    );
-  } else if (colorSpace === 'RGB') {
-    return interpolateColorsRGB(
-      value,
-      inputRange,
-      getInterpolateCacheRGBA(outputRange)
-    );
-  }
-  throw new Error(
-    `invalid color space provided: ${colorSpace}. Supported values are: ['RGB', 'HSV']`
-  );
-};

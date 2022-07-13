@@ -1,20 +1,20 @@
 export { BaseAnimationBuilder } from './BaseAnimationBuilder';
-export { BaseBounceAnimationBuilder } from './BaseBounceAnimationBuilder';
-export { LayoutAnimationBuilder, Layout } from './LayoutAnimationBuilder';
+export { ComplexAnimationBuilder } from './ComplexAnimationBuilder';
 export { Keyframe } from './Keyframe';
 export {
   LayoutAnimation,
   AnimationFunction,
-  EntryExitAnimationsValues,
+  EntryAnimationsValues,
+  ExitAnimationsValues,
   EntryExitAnimationFunction,
-  EntryExitAnimationBuild,
+  AnimationConfigFunction,
+  IEntryAnimationBuilder,
+  IExitAnimationBuilder,
   LayoutAnimationsValues,
   LayoutAnimationFunction,
   ILayoutAnimationBuilder,
   BaseLayoutAnimationConfig,
   BaseBuilderAnimationConfig,
   LayoutAnimationAndConfig,
-  BounceBuilderAnimationConfig,
   IEntryExitAnimationBuilder,
-  LayoutAnimationBuild,
 } from './commonTypes';

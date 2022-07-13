@@ -128,15 +128,13 @@ export default function interpolate(value, config) {
   const right = extrapolateRight || extrapolate;
   let output = interpolateInternal(value, inputRange, outputRange);
 
-  if (left === Extrapolate.EXTEND) {
-  } else if (left === Extrapolate.CLAMP) {
+  if (left === Extrapolate.CLAMP) {
     output = cond(lessThan(value, inputRange[0]), outputRange[0], output);
   } else if (left === Extrapolate.IDENTITY) {
     output = cond(lessThan(value, inputRange[0]), value, output);
   }
 
-  if (right === Extrapolate.EXTEND) {
-  } else if (right === Extrapolate.CLAMP) {
+  if (right === Extrapolate.CLAMP) {
     output = cond(
       greaterThan(value, inputRange[inputRange.length - 1]),
       outputRange[outputRange.length - 1],

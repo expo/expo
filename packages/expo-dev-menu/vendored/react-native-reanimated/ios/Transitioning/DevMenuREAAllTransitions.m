@@ -1,7 +1,6 @@
-#import <React/RCTViewManager.h>
-
-#import "DevMenuREAAllTransitions.h"
 #import "RCTConvert+DevMenuREATransition.h"
+#import "DevMenuREAAllTransitions.h"
+#import <React/RCTViewManager.h>
 
 @interface DevMenuREASnapshotRemover : NSObject <CAAnimationDelegate>
 @end
@@ -33,7 +32,7 @@
   if (self = [super initWithConfig:config]) {
     _sequence = [RCTConvert BOOL:config[@"sequence"]];
     NSArray *transitions = [RCTConvert NSArray:config[@"transitions"]];
-    NSMutableArray<DevMenuREATransition*> *inflated = [NSMutableArray new];
+    NSMutableArray<DevMenuREATransition *> *inflated = [NSMutableArray new];
     for (NSDictionary *transitionConfig in transitions) {
       [inflated addObject:[DevMenuREATransition inflate:transitionConfig]];
       inflated.lastObject.parent = self;
@@ -51,9 +50,10 @@
   return self;
 }
 
-- (NSArray<DevMenuREATransitionAnimation *> *)animationsForTransitioning:(NSMutableDictionary<NSNumber *,DevMenuREATransitionValues *> *)startValues
-                                                           endValues:(NSMutableDictionary<NSNumber *,DevMenuREATransitionValues *> *)endValues
-                                                             forRoot:(UIView *)root
+- (NSArray<DevMenuREATransitionAnimation *> *)
+    animationsForTransitioning:(NSMutableDictionary<NSNumber *, DevMenuREATransitionValues *> *)startValues
+                     endValues:(NSMutableDictionary<NSNumber *, DevMenuREATransitionValues *> *)endValues
+                       forRoot:(UIView *)root
 {
   CFTimeInterval delay = self.delay;
   NSMutableArray *animations = [NSMutableArray new];
@@ -74,7 +74,6 @@
 
 @end
 
-
 @implementation DevMenuREAVisibilityTransition
 
 - (instancetype)initWithConfig:(NSDictionary *)config
@@ -85,23 +84,19 @@
   return self;
 }
 
-- (DevMenuREATransitionAnimation *)appearView:(UIView *)view
-                                 inParent:(UIView *)parent
-                                  forRoot:(UIView *)root
+- (DevMenuREATransitionAnimation *)appearView:(UIView *)view inParent:(UIView *)parent forRoot:(UIView *)root
 {
   return nil;
 }
 
-- (DevMenuREATransitionAnimation *)disappearView:(UIView *)view
-                                  fromParent:(UIView *)parent
-                                     forRoot:(UIView *)root
+- (DevMenuREATransitionAnimation *)disappearView:(UIView *)view fromParent:(UIView *)parent forRoot:(UIView *)root
 {
   return nil;
 }
 
 - (DevMenuREATransitionAnimation *)animationForTransitioning:(DevMenuREATransitionValues *)startValues
-                                               endValues:(DevMenuREATransitionValues *)endValues
-                                                 forRoot:(UIView *)root
+                                            endValues:(DevMenuREATransitionValues *)endValues
+                                              forRoot:(UIView *)root
 {
   BOOL isViewAppearing = (startValues == nil);
   if (isViewAppearing && !IS_LAYOUT_ONLY(endValues.view)) {
@@ -123,7 +118,6 @@
 
 @end
 
-
 @implementation DevMenuREAInTransition
 - (instancetype)initWithConfig:(NSDictionary *)config
 {
@@ -132,9 +126,7 @@
   return self;
 }
 
-- (DevMenuREATransitionAnimation *)appearView:(UIView *)view
-                                 inParent:(UIView *)parent
-                                  forRoot:(UIView *)root
+- (DevMenuREATransitionAnimation *)appearView:(UIView *)view inParent:(UIView *)parent forRoot:(UIView *)root
 {
   CABasicAnimation *animation;
   switch (self.animationType) {
@@ -186,7 +178,6 @@
 }
 @end
 
-
 @implementation DevMenuREAOutTransition
 - (instancetype)initWithConfig:(NSDictionary *)config
 {
@@ -195,9 +186,7 @@
   return self;
 }
 
-- (DevMenuREATransitionAnimation *)disappearView:(UIView *)view
-                               fromParent:(UIView *)parent
-                                  forRoot:(UIView *)root
+- (DevMenuREATransitionAnimation *)disappearView:(UIView *)view fromParent:(UIView *)parent forRoot:(UIView *)root
 {
   if (self.animationType == DevMenuREATransitionAnimationTypeNone) {
     return nil;
@@ -262,12 +251,11 @@
 }
 @end
 
-
 @implementation DevMenuREAChangeTransition
 
 - (DevMenuREATransitionAnimation *)animationForTransitioning:(DevMenuREATransitionValues *)startValues
-                                               endValues:(DevMenuREATransitionValues *)endValues
-                                                 forRoot:(UIView *)root
+                                            endValues:(DevMenuREATransitionValues *)endValues
+                                              forRoot:(UIView *)root
 {
   if (startValues == nil || endValues == nil || endValues.view.window == nil) {
     return nil;
