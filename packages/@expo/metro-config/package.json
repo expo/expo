@@ -33,7 +33,7 @@
     "transformer"
   ],
   "dependencies": {
-    "@expo/config": "6.0.24",
+    "@expo/config": "7.0.0",
     "@expo/json-file": "8.2.36",
     "chalk": "^4.1.0",
     "debug": "^4.3.2",
@@ -43,12 +43,7 @@
     "sucrase": "^3.20.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.15.5",
-    "expo": "45",
-    "metro": "~0.64.0",
-    "metro-babel-transformer": "~0.64.0",
-    "metro-config": "~0.64.0",
-    "react-native": "~0.64.3"
+    "@babel/core": "^7.15.5"
   },
   "publishConfig": {
     "access": "public"

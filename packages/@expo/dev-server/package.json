@@ -45,9 +45,7 @@
     "temp-dir": "^2.0.0"
   },
   "devDependencies": {
-    "@react-native-community/cli-server-api": "^7.0.3",
-    "@types/connect": "^3.4.33",
-    "metro-inspector-proxy": "^0.64.0"
+    "@types/connect": "^3.4.33"
   },
   "publishConfig": {
     "access": "public"
