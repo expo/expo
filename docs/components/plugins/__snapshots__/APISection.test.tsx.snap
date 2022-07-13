@@ -888,7 +888,7 @@ in here.
         </div>
       </h4>
       <ul
-        class="css-1ctgl6-UL"
+        class="css-is4ysz-UL"
         data-text="true"
       >
         <li
@@ -1195,7 +1195,7 @@ This should come from the user field of an
       </h4>
     </div>
     <ul
-      class="css-14j21uw-UL"
+      class="css-11d2x0b-UL"
       data-text="true"
     >
       <li
@@ -1382,7 +1382,7 @@ value depending on the state of the credential.
       </h4>
     </div>
     <ul
-      class="css-14j21uw-UL"
+      class="css-11d2x0b-UL"
       data-text="true"
     >
       <li
@@ -1643,7 +1643,7 @@ Calling this method will show the sign in modal before actually refreshing the u
       </h4>
     </div>
     <ul
-      class="css-14j21uw-UL"
+      class="css-11d2x0b-UL"
       data-text="true"
     >
       <li
@@ -1960,7 +1960,7 @@ the user, since this remains the same for apps released by the same developer.
       </h4>
     </div>
     <ul
-      class="css-14j21uw-UL"
+      class="css-11d2x0b-UL"
       data-text="true"
     >
       <li
@@ -2263,7 +2263,7 @@ from using
       </h4>
     </div>
     <ul
-      class="css-14j21uw-UL"
+      class="css-11d2x0b-UL"
       data-text="true"
     >
       <li
@@ -2564,7 +2564,7 @@ sign-out operation.
       </h4>
     </div>
     <ul
-      class="css-14j21uw-UL"
+      class="css-11d2x0b-UL"
       data-text="true"
     >
       <li
@@ -7174,7 +7174,7 @@ Same as
         </div>
       </h4>
       <ul
-        class="css-1ctgl6-UL"
+        class="css-is4ysz-UL"
         data-text="true"
       >
         <li
@@ -7443,7 +7443,7 @@ This can be used to quickly create specific permission hooks in every module.
       </h4>
     </div>
     <ul
-      class="css-14j21uw-UL"
+      class="css-11d2x0b-UL"
       data-text="true"
     >
       <li
@@ -7691,7 +7691,7 @@ This can be used to quickly create specific permission hooks in every module.
       </h4>
     </div>
     <ul
-      class="css-14j21uw-UL"
+      class="css-11d2x0b-UL"
       data-text="true"
     >
       <li
@@ -7896,7 +7896,7 @@ This can be used to quickly create specific permission hooks in every module.
       </h4>
     </div>
     <ul
-      class="css-14j21uw-UL"
+      class="css-11d2x0b-UL"
       data-text="true"
     >
       <li
@@ -8222,7 +8222,7 @@ the platform.
       </h4>
     </div>
     <ul
-      class="css-14j21uw-UL"
+      class="css-11d2x0b-UL"
       data-text="true"
     >
       <li
@@ -10459,7 +10459,7 @@ exports[`APISection expo-pedometer 1`] = `
       </h4>
     </div>
     <ul
-      class="css-14j21uw-UL"
+      class="css-11d2x0b-UL"
       data-text="true"
     >
       <li
@@ -10731,7 +10731,7 @@ exports[`APISection expo-pedometer 1`] = `
       </h4>
     </div>
     <ul
-      class="css-14j21uw-UL"
+      class="css-11d2x0b-UL"
       data-text="true"
     >
       <li
@@ -10970,7 +10970,7 @@ a start date that is more than seven days in the past returns only the available
       </h4>
     </div>
     <ul
-      class="css-14j21uw-UL"
+      class="css-11d2x0b-UL"
       data-text="true"
     >
       <li
@@ -11141,7 +11141,7 @@ available on this device.
       </h4>
     </div>
     <ul
-      class="css-14j21uw-UL"
+      class="css-11d2x0b-UL"
       data-text="true"
     >
       <li
@@ -11389,7 +11389,7 @@ provided with a single argument that is
       </h4>
     </div>
     <ul
-      class="css-14j21uw-UL"
+      class="css-11d2x0b-UL"
       data-text="true"
     >
       <li
