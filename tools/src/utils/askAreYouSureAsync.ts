@@ -10,18 +10,4 @@ export default async function askAreYouSureAsync(): Promise<boolean> {
     },
   ]);
   return selection;
-  // Alternate implementation below
-  /*
-  const choices = ['Yes', 'No'];
-  const { selection } = await inquirer.prompt<{ selection: string }>([
-    {
-      type: 'list',
-      name: 'selection',
-      message: 'Are you sure?',
-      choices,
-      default: 'No',
-    },
-  ]);
-  return selection === 'Yes';
-   */
 }
