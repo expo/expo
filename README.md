@@ -7,7 +7,7 @@
   </a>
 </p>
 
-<p align="center">1
+<p align="center">
    <a aria-label="SDK version" href="https://www.npmjs.com/package/expo" target="_blank">
     <img alt="Expo SDK version" src="https://img.shields.io/npm/v/expo.svg?style=flat-square&label=SDK&labelColor=000000&color=4630EB" />
   </a>
