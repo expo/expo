@@ -87,10 +87,10 @@ jsi::Runtime *JavaScriptRuntime::get() {
 jni::local_ref<JavaScriptValue::javaobject>
 JavaScriptRuntime::evaluateScript(const std::string &script) {
   auto scriptBuffer = std::make_shared<jsi::StringBuffer>(script);
-  std::shared_ptr<jsi::Value> result;
   try {
-    result = std::make_shared<jsi::Value>(
-      runtime->evaluateJavaScript(scriptBuffer, "<<evaluated>>")
+    return JavaScriptValue::newObjectCxxArgs(
+      weak_from_this(),
+      std::make_shared<jsi::Value>(runtime->evaluateJavaScript(scriptBuffer, "<<evaluated>>"))
     );
   } catch (const jsi::JSError &error) {
     jni::throwNewJavaException(
@@ -107,8 +107,6 @@ JavaScriptRuntime::evaluateScript(const std::string &script) {
       ).get()
     );
   }
-
-  return JavaScriptValue::newObjectCxxArgs(weak_from_this(), result);
 }
 
 jni::local_ref<JavaScriptObject::javaobject> JavaScriptRuntime::global() {
