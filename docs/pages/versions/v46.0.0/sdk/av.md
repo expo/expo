@@ -2,7 +2,7 @@
 title: AV
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-46/packages/expo-av'
 packageName: 'expo-av'
----s
+---
 
 import {APIInstallSection} from '~/components/plugins/InstallSection';
 import APISection from '~/components/plugins/APISection';
