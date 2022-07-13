@@ -11,11 +11,8 @@ declare module 'metro-config' {
     Server,
     TransformVariants,
   } from 'metro';
-
-  // TODO: import { CacheStore } from 'metro-cache';
-  type CacheStore = unknown;
-  // TODO: import { CustomResolver } from 'metro-resolver';
-  type CustomResolver = unknown;
+  import { CustomResolver } from 'metro-resolver';
+  import { CacheStore } from 'metro-cache';
 
   import type { BasicSourceMap, MixedSourceMap } from 'metro-source-map';
 

@@ -71,7 +71,6 @@ export async function instantiateMetroAsync(
   };
 
   const server = await Metro.runServer(metroConfig, {
-    // @ts-expect-error: TODO: Update the types.
     hmrEnabled: true,
     websocketEndpoints,
   });
