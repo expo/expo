@@ -35,18 +35,17 @@ const runtimeVersion = '1.0.0';
       'Missing one or more environment variables; see instructions in e2e/__tests__/setup/index.js'
     );
   }
-  // const projectRoot = await initAsync(workingDir, repoRoot, runtimeVersion);
+  const projectRoot = await initAsync(workingDir, repoRoot, runtimeVersion);
 
-  // await setupBasicAppAsync(projectRoot);
-  // await buildAndroidAsync(projectRoot, artifactsDest, 'basic');
-  // await buildIosAsync(projectRoot, artifactsDest, 'basic');
+  await setupBasicAppAsync(projectRoot);
+  await buildAndroidAsync(projectRoot, artifactsDest, 'basic');
+  await buildIosAsync(projectRoot, artifactsDest, 'basic');
 
-  const projectRoot = path.resolve(repoRoot, '..', 'updates-e2e');
   await setupAssetsAppAsync(projectRoot);
-  // await buildAndroidAsync(projectRoot, artifactsDest, 'assets');
+  await buildAndroidAsync(projectRoot, artifactsDest, 'assets');
   await buildIosAsync(projectRoot, artifactsDest, 'assets');
 
   // build the same app a second time for tests involving overwriting installation
-  // await buildAndroidAsync(projectRoot, artifactsDest, 'assets2');
+  await buildAndroidAsync(projectRoot, artifactsDest, 'assets2');
   await buildIosAsync(projectRoot, artifactsDest, 'assets2');
 })();

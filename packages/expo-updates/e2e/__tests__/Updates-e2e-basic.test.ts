@@ -28,7 +28,7 @@ afterEach(async () => {
   Server.stop();
 });
 
-xtest('starts app, stops, and starts again', async () => {
+test('starts app, stops, and starts again', async () => {
   jest.setTimeout(300000 * TIMEOUT_BIAS);
   Server.start(SERVER_PORT);
   await Simulator.installApp('basic');
@@ -46,7 +46,7 @@ xtest('starts app, stops, and starts again', async () => {
   expect(message2).toBe('test');
 });
 
-xtest('initial request includes correct update-id headers', async () => {
+test('initial request includes correct update-id headers', async () => {
   jest.setTimeout(300000 * TIMEOUT_BIAS);
   Server.start(SERVER_PORT);
   await Simulator.installApp('basic');
@@ -60,7 +60,7 @@ xtest('initial request includes correct update-id headers', async () => {
   );
 });
 
-xtest('downloads and runs update, and updates current-update-id header', async () => {
+test('downloads and runs update, and updates current-update-id header', async () => {
   jest.setTimeout(300000 * TIMEOUT_BIAS);
   const bundleFilename = 'bundle1.js';
   const newNotifyString = 'test-update-1';
@@ -107,7 +107,7 @@ xtest('downloads and runs update, and updates current-update-id header', async (
   expect(secondRequest.headers['expo-current-update-id']).toEqual(manifest.id);
 });
 
-xtest('does not run update with incorrect hash', async () => {
+test('does not run update with incorrect hash', async () => {
   jest.setTimeout(300000 * TIMEOUT_BIAS);
   const bundleFilename = 'bundle-invalid-hash.js';
   const newNotifyString = 'test-update-invalid-hash';
@@ -148,7 +148,7 @@ xtest('does not run update with incorrect hash', async () => {
   expect(updatedMessage).toBe('test');
 });
 
-xtest('downloads and runs update with multiple assets', async () => {
+test('downloads and runs update with multiple assets', async () => {
   jest.setTimeout(300000 * TIMEOUT_BIAS);
   const bundleFilename = 'bundle2.js';
   const newNotifyString = 'test-update-2';
@@ -207,7 +207,7 @@ xtest('downloads and runs update with multiple assets', async () => {
 });
 
 // important for usage accuracy
-xtest('does not download any assets for an older update', async () => {
+test('does not download any assets for an older update', async () => {
   jest.setTimeout(300000 * TIMEOUT_BIAS);
   const bundleFilename = 'bundle-old.js';
   const hash = await copyBundleToStaticFolder(updateDistPath, bundleFilename, 'test-update-older');
