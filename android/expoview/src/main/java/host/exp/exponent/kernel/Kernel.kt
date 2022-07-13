@@ -16,7 +16,6 @@ import android.os.Bundle
 import android.os.Handler
 import android.util.Log
 import android.widget.Toast
-import com.facebook.internal.BundleJSONConverter
 import com.facebook.proguard.annotations.DoNotStrip
 import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactRootView
@@ -57,6 +56,7 @@ import host.exp.exponent.storage.ExponentDB
 import host.exp.exponent.storage.ExponentSharedPreferences
 import host.exp.exponent.utils.AsyncCondition
 import host.exp.exponent.utils.AsyncCondition.AsyncConditionListener
+import host.exp.exponent.utils.BundleJSONConverter
 import host.exp.expoview.BuildConfig
 import host.exp.expoview.ExpoViewBuildConfig
 import host.exp.expoview.Exponent

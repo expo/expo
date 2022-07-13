@@ -153,6 +153,17 @@ dependencies {
     }
   }
 
+  // expo-ads-facebook
+  api 'com.facebook.android:audience-network-sdk:6.5.0'
+
+  // expo-facebook
+  api 'com.facebook.android:facebook-core:9.0.0'
+  api 'com.facebook.android:facebook-login:9.0.0'
+
+  // expo-segment
+  api 'com.segment.analytics.android:analytics:4.10.4'
+  api 'com.segment.analytics.android.integrations:firebase:2.+@aar'
+
   api 'com.google.firebase:firebase-core:17.2.3'
   api 'com.google.firebase:firebase-messaging:21.1.0'
   api 'com.google.maps.android:android-maps-utils:0.5'
