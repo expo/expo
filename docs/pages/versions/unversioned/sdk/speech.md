@@ -9,7 +9,7 @@ import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
 
-**`expo-speech`** provides an API that allows you to utilize Text-to-speech functionality in your app.
+**`expo-speech`** provides an API that allows you to utilize Text-to-speech functionality in your app. The Text-to-speech uses the same audio session as the application and will match the audio behavior of [`Audio.setAudioModeAsync()`](https://docs.expo.dev/versions/latest/sdk/audio/#audiosetaudiomodeasyncmode)
 
 <PlatformsSection android emulator ios simulator web />
 
