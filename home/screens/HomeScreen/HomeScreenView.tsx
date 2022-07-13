@@ -234,6 +234,8 @@ export class HomeScreenView extends React.Component<Props, State> {
   };
 
   private _fetchProjectsAsync = async () => {
+    if (!this.props.isAuthenticated) return;
+
     const { accountName } = this.props;
 
     try {

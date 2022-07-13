@@ -7,7 +7,6 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 import url from 'url';
 
 import Analytics from '../../api/Analytics';
-import ApolloClient from '../../api/ApolloClient';
 import Config from '../../api/Config';
 import { useDispatch, useSelector } from '../../redux/Hooks';
 import SessionActions from '../../redux/SessionActions';
@@ -40,7 +39,6 @@ export function LoggedOutAccountView({ refetch }: Props) {
       // after logging in, wait for redux action to dispatch, refetch with new sessionSecret, then dismiss modal
       if (isFinishedAuthenticating && sessionSecretExists) {
         try {
-          await ApolloClient.resetStore();
           await refetch();
         } finally {
           // in the case that it rejects, we still want to dismiss the modal
