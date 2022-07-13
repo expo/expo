@@ -8,6 +8,7 @@ import semver from 'semver';
 
 import { getAvailableProjectTemplatesAsync } from '../ProjectTemplates';
 import { Directories } from '../expotools';
+import askAreYouSureAsync from '../utils/askAreYouSureAsync';
 
 const EXPO_DIR = Directories.getExpoRepositoryRootDir();
 
@@ -117,6 +118,8 @@ async function action(options) {
     '\n'
   );
 
+  const npmCommandParams: { path: string; args: string[] }[] = [];
+
   for (const template of projectTemplatesToPublish) {
     const { newVersion } = await inquirer.prompt<{ newVersion: string }>([
       {
@@ -162,49 +165,56 @@ async function action(options) {
       );
     }
 
-    console.log(`Publishing ${chalk.green(template.name)}@${chalk.red(newVersion)}...`);
+    console.log(
+      `Queuing command to publish ${chalk.green(template.name)}@${chalk.red(newVersion)}...`
+    );
 
     const moreArgs: string[] = [];
 
     // Assign custom tag in the publish command, so we don't accidentally publish as latest.
     moreArgs.push('--tag', choseNextTag ? 'next' : npmPublishTag);
 
-    const logMessagePrefix = options.dry ? 'Dry run: ' : 'Command to execute: ';
-
     // Publish to NPM registry
-    console.log(logMessagePrefix + 'npm publish ' + ['--access', 'public', ...moreArgs].join(' '));
-    options.dry ||
-      (await spawnAsync('npm', ['publish', '--access', 'public', ...moreArgs], {
-        stdio: 'inherit',
-        cwd: template.path,
-      }));
+    const publishCommandArgs: string[] = ['publish', '--access', 'public', ...moreArgs];
+    npmCommandParams.push({ path: template.path, args: publishCommandArgs });
 
     if (tags && tags.length === 2 && !choseNextTag) {
       // If 'next', do not add 'latest' or 'beta'
       // Additional tag (latest, beta) is added here
       console.log(
-        `Assigning ${chalk.blue(`${tags[1]}`)} tag to ${chalk.green(template.name)}@${chalk.red(
-          newVersion
-        )}...`
+        `Queuing command to assign ${chalk.blue(`${tags[1]}`)} tag to ${chalk.green(
+          template.name
+        )}@${chalk.red(newVersion)}...`
       );
 
-      // Add the tag to the new version
-      console.log(
-        logMessagePrefix +
-          'npm ' +
-          ['dist-tag', 'add', `${template.name}@${newVersion}`, `${tags[1]}`].join(' ')
-      );
-      options.dry ||
-        (await spawnAsync(
-          'npm',
-          ['dist-tag', 'add', `${template.name}@${newVersion}`, `${tags[1]}`],
-          {
-            stdio: 'inherit',
-            cwd: template.path,
-          }
-        ));
+      const tagCommandArgs: string[] = [
+        'dist-tag',
+        'add',
+        `${template.name}@${newVersion}`,
+        `${tags[1]}`,
+      ];
+      npmCommandParams.push({ path: template.path, args: tagCommandArgs });
     }
     console.log();
+  }
+
+  console.log('You are about to execute the following NPM commands:');
+  npmCommandParams.forEach((params) => {
+    console.log(`    npm ${params.args.join(' ')}`);
+  });
+
+  const reallyPublish = await askAreYouSureAsync();
+
+  if (reallyPublish) {
+    for (const params of npmCommandParams) {
+      // Safety first:
+      // If options.dry, don't actually execute npm even if user says yes above
+      const cmd = options.dry ? 'echo' : 'npm';
+      await spawnAsync(cmd, params.args, {
+        stdio: 'inherit',
+        cwd: params.path,
+      });
+    }
   }
 }
 
@@ -217,7 +227,10 @@ export default (program) => {
       'Expo SDK version that the templates are compatible with. (optional)'
     )
     .option('-p, --project [string]', 'Name of the template project to publish. (optional)')
-    .option('-d, --dry', 'Run the script in the dry mode, that is without publishing.')
+    .option(
+      '-d, --dry',
+      'Run the script in the dry mode, which echoes command arguments instead of executing npm.'
+    )
     .description('Publishes project templates under `templates` directory.')
     .asyncAction(action);
 };
