@@ -15,7 +15,14 @@ async function newStep(title, action, options = {}) {
         ...options,
     });
     step.start();
-    return await action(step);
+    try {
+        return await action(step);
+    }
+    catch (error) {
+        step.fail();
+        console.error(error);
+        process.exit(1);
+    }
 }
 exports.newStep = newStep;
 //# sourceMappingURL=utils.js.map

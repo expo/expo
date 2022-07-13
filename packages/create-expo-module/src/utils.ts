@@ -17,5 +17,12 @@ export async function newStep<Result>(
   });
 
   step.start();
-  return await action(step);
+
+  try {
+    return await action(step);
+  } catch (error) {
+    step.fail();
+    console.error(error);
+    process.exit(1);
+  }
 }

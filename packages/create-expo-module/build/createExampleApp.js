@@ -106,32 +106,20 @@ async function modifyPackageJson(appPath) {
  */
 async function prebuildExampleApp(exampleAppPath) {
     await (0, utils_1.newStep)('Prebuilding the example app', async (step) => {
-        try {
-            await (0, spawn_async_1.default)('expo', ['prebuild', '--no-install'], {
-                cwd: exampleAppPath,
-                stdio: ['ignore', 'ignore', 'pipe'],
-            });
-            step.succeed('Prebuilt the example app');
-        }
-        catch (error) {
-            step.fail(error.stderr);
-            process.exit(1);
-        }
+        await (0, spawn_async_1.default)('expo', ['prebuild', '--no-install'], {
+            cwd: exampleAppPath,
+            stdio: ['ignore', 'ignore', 'pipe'],
+        });
+        step.succeed('Prebuilt the example app');
     });
 }
 /**
  * Runs `pod install` in the iOS project at the given path.
  */
 async function podInstall(appPath) {
-    try {
-        await (0, spawn_async_1.default)('pod', ['install'], {
-            cwd: path_1.default.join(appPath, 'ios'),
-            stdio: ['ignore', 'ignore', 'pipe'],
-        });
-    }
-    catch (error) {
-        console.error(error.stderr);
-        process.exit(1);
-    }
+    await (0, spawn_async_1.default)('pod', ['install'], {
+        cwd: path_1.default.join(appPath, 'ios'),
+        stdio: ['ignore', 'ignore', 'pipe'],
+    });
 }
 //# sourceMappingURL=createExampleApp.js.map

@@ -134,16 +134,11 @@ async function modifyPackageJson(appPath: string): Promise<void> {
  */
 async function prebuildExampleApp(exampleAppPath: string): Promise<void> {
   await newStep('Prebuilding the example app', async (step) => {
-    try {
-      await spawnAsync('expo', ['prebuild', '--no-install'], {
-        cwd: exampleAppPath,
-        stdio: ['ignore', 'ignore', 'pipe'],
-      });
-      step.succeed('Prebuilt the example app');
-    } catch (error: any) {
-      step.fail(error.stderr);
-      process.exit(1);
-    }
+    await spawnAsync('expo', ['prebuild', '--no-install'], {
+      cwd: exampleAppPath,
+      stdio: ['ignore', 'ignore', 'pipe'],
+    });
+    step.succeed('Prebuilt the example app');
   });
 }
 
@@ -151,13 +146,8 @@ async function prebuildExampleApp(exampleAppPath: string): Promise<void> {
  * Runs `pod install` in the iOS project at the given path.
  */
 async function podInstall(appPath: string): Promise<void> {
-  try {
-    await spawnAsync('pod', ['install'], {
-      cwd: path.join(appPath, 'ios'),
-      stdio: ['ignore', 'ignore', 'pipe'],
-    });
-  } catch (error: any) {
-    console.error(error.stderr);
-    process.exit(1);
-  }
+  await spawnAsync('pod', ['install'], {
+    cwd: path.join(appPath, 'ios'),
+    stdio: ['ignore', 'ignore', 'pipe'],
+  });
 }
