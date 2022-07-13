@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Expo Speech uses the [Application Audio Session](https://developer.apple.com/documentation/avfaudio/avspeechsynthesizer/3362518-usesapplicationaudiosession). ([#18153](https://github.com/expo/expo/pull/18153) by [@robertjcolley](https://github.com/robertjcolley))
+
 ### 💡 Others
 
 ## 10.3.0 — 2022-07-07
