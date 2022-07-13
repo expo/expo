@@ -13,7 +13,6 @@ import com.facebook.react.ReactRootView
 import com.facebook.soloader.SoLoader
 import com.squareup.leakcanary.LeakCanary
 import de.greenrobot.event.EventBus
-import expo.modules.analytics.amplitude.AmplitudePackage
 import expo.modules.barcodescanner.BarCodeScannerPackage
 import expo.modules.camera.CameraPackage
 import expo.modules.constants.ConstantsPackage
@@ -149,7 +148,6 @@ open class HomeActivity : BaseExperienceActivity() {
         FontLoaderPackage(),
         BarCodeScannerPackage(),
         KeepAwakePackage(),
-        AmplitudePackage(),
         CameraPackage(),
         FaceDetectorPackage(),
         MediaLibraryPackage(),

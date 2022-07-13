@@ -1,6 +1,5 @@
 package versioned.host.exp.exponent
 
-import expo.modules.analytics.amplitude.AmplitudePackage
 import expo.modules.application.ApplicationPackage
 import expo.modules.av.AVPackage
 import expo.modules.backgroundfetch.BackgroundFetchPackage
@@ -66,7 +65,6 @@ object ExperiencePackagePicker : ModulesProvider {
   private val EXPO_MODULES_PACKAGES = listOf(
     AVPackage(),
     ApplicationPackage(),
-    AmplitudePackage(),
     BatteryPackage(),
     BackgroundFetchPackage(),
     BarCodeScannerPackage(),
