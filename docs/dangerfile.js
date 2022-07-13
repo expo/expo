@@ -1,5 +1,5 @@
 import { warn } from 'danger';
-const fs = require('fs');
+import fs from 'fs';
 
 function warnIfOnlyOneVersionChanged() {
   const LATEST_VERSION = JSON.parse(fs.readFileSync('./package.json')).version;
