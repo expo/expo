@@ -20,7 +20,7 @@ export type BundledNativeModules = Record<string, string>;
  *   {
  *     id: "79285187-e5c4-47f7-b6a9-664f5d16f0db",
  *     sdkVersion: "41.0.0",
- *     npmPackage: "expo-analytics-amplitude",
+ *     npmPackage: "expo-camera",
  *     versionRange: "~10.1.0",
  *     createdAt: "2021-04-29T09:34:32.825Z",
  *     updatedAt: "2021-04-29T09:34:32.825Z"
