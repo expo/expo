@@ -1,9 +1,7 @@
 /* eslint-disable import/order */
 const { copySync, removeSync } = require('fs-extra');
-const merge = require('lodash/merge');
 const { join } = require('path');
 const semver = require('semver');
-const { ESBuildMinifyPlugin } = require('esbuild-loader');
 const { info: logInfo } = require('next/dist/build/output/log');
 
 const navigation = require('./constants/navigation');
@@ -12,14 +10,6 @@ const { version, betaVersion } = require('./package.json');
 
 // To generate a sitemap, we need context about the supported versions and navigational data
 const createSitemap = require('./scripts/create-sitemap');
-
-// Determine if we are using esbuild for MDX transpiling
-const enableEsbuild = !!process.env.USE_ESBUILD;
-logInfo(
-  enableEsbuild
-    ? 'Using esbuild for MDX files, USE_ESBUILD set to true'
-    : 'Using babel for MDX files, USE_ESBUILD not set'
-);
 
 // Prepare the latest version by copying the actual exact latest version
 const vLatest = join('pages', 'versions', `v${version}/`);
@@ -32,39 +22,33 @@ logInfo(`Copied latest Expo SDK version from v${version}`);
 module.exports = {
   trailingSlash: true,
   pageExtensions: ['js', 'jsx', 'ts', 'tsx', 'md', 'mdx'],
+  compiler: { emotion: true },
+  swcMinify: true,
   // Next 11 does not support ESLint v8, enable it when we upgrade to 12
   eslint: { ignoreDuringBuilds: true },
-  // Keep using webpack 4, webpack 5 causes some issues. See: https://github.com/expo/expo/pull/12794
-  webpack5: false,
   webpack: (config, options) => {
     // Add preval support for `constants/*` only and move it to the `.next/preval` cache.
     // It's to prevent over-usage and separate the cache to allow manually invalidation.
     // See: https://github.com/kentcdodds/babel-plugin-preval/issues/19
     config.module.rules.push({
-      test: /.jsx?$/,
+      test: /.js$/,
       include: [join(__dirname, 'constants')],
-      use: merge({}, options.defaultLoaders.babel, {
+      use: {
+        loader: 'babel-loader',
         options: {
           // Keep this path in sync with package.json and other scripts that clear the cache
           cacheDirectory: '.next/preval',
           plugins: ['preval'],
+          presets: ['next/babel'],
         },
-      }),
+      },
     });
 
     // Add support for MDX with our custom loader and esbuild
     config.module.rules.push({
-      test: /.mdx?$/, // load both .md and .mdx files
+      test: /.mdx?$/,
       use: [
-        !enableEsbuild
-          ? options.defaultLoaders.babel
-          : {
-              loader: 'esbuild-loader',
-              options: {
-                loader: 'tsx',
-                target: 'es2017',
-              },
-            },
+        options.defaultLoaders.babel,
         {
           loader: '@mdx-js/loader',
           options: {
@@ -81,19 +65,7 @@ module.exports = {
     });
 
     // Fix inline or browser MDX usage: https://mdxjs.com/getting-started/webpack#running-mdx-in-the-browser
-    // Webpack 4
-    config.node = { fs: 'empty' };
-    // Webpack 5
-    // config.resolve.fallback = { fs: false, path: require.resolve('path-browserify') };
-
-    // Add the esbuild plugin only when using esbuild
-    if (enableEsbuild) {
-      config.optimization.minimizer = [
-        new ESBuildMinifyPlugin({
-          target: 'es2017',
-        }),
-      ];
-    }
+    config.resolve.fallback = { fs: false, path: require.resolve('path-browserify') };
 
     return config;
   },

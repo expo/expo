@@ -29,13 +29,13 @@ const CodeSamplesCSS = css`
       border-top-left-radius: 0;
       border-top-right-radius: 0;
     }
-    &:not(:first-child) pre {
+    &:not(:first-of-type) pre {
       border-bottom-left-radius: 0;
     }
     &:not(:last-child) pre {
       border-bottom-right-radius: 0;
     }
-    &:first-child .code-block-header {
+    &:first-of-type .code-block-header {
       border-top-left-radius: 4px;
     }
     &:last-child .code-block-header {
