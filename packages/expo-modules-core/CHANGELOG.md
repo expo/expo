@@ -8,7 +8,15 @@
 
 ### 🐛 Bug fixes
 
+- Fix dangling pointer in the fbjni from the MethodMetadata::createPromiseBody on Android. ([#18206](https://github.com/expo/expo/pull/18206) by [@lukmccall](https://github.com/lukmccall))
+
 ### 💡 Others
+
+## 0.11.1 — 2022-07-11
+
+### 🐛 Bug fixes
+
+- Fixed a crash when remote debugging is enabled on Android. ([#18165](https://github.com/expo/expo/pull/18165) by [@kudo](https://github.com/kudo))
 
 ## 0.11.0 — 2022-07-07
 

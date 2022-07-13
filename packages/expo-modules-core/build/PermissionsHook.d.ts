@@ -18,6 +18,6 @@ export declare type PermissionHookOptions<Options extends object> = PermissionHo
  * Create a new permission hook with the permission methods built-in.
  * This can be used to quickly create specific permission hooks in every module.
  */
-export declare function createPermissionHook<Permission extends PermissionResponse, Options extends object>(methods: PermissionHookMethods<Permission, Options>): (options?: PermissionHookOptions<Options>) => [Permission | null, RequestPermissionMethod<Permission>, GetPermissionMethod<Permission>];
+export declare function createPermissionHook<Permission extends PermissionResponse, Options extends object>(methods: PermissionHookMethods<Permission, Options>): (options?: PermissionHookOptions<Options> | undefined) => [Permission | null, RequestPermissionMethod<Permission>, GetPermissionMethod<Permission>];
 export {};
 //# sourceMappingURL=PermissionsHook.d.ts.map

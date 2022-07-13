@@ -89,13 +89,15 @@ class AppContext(
   fun installJSIInterop() {
     jsiInterop = JSIInteropModuleRegistry(this)
     val reactContext = reactContextHolder.get() ?: return
-    reactContext.javaScriptContextHolder?.get()?.let {
-      jsiInterop.installJSI(
-        it,
-        reactContext.catalystInstance.jsCallInvokerHolder as CallInvokerHolderImpl,
-        reactContext.catalystInstance.nativeCallInvokerHolder as CallInvokerHolderImpl
-      )
-    }
+    reactContext.javaScriptContextHolder?.get()
+      ?.takeIf { it != 0L }
+      ?.let {
+        jsiInterop.installJSI(
+          it,
+          reactContext.catalystInstance.jsCallInvokerHolder as CallInvokerHolderImpl,
+          reactContext.catalystInstance.nativeCallInvokerHolder as CallInvokerHolderImpl
+        )
+      }
   }
 
   /**
