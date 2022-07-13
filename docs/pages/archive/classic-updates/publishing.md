@@ -4,6 +4,8 @@ title: Publishing updates
 
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 
+> This doc was archived in August 2022 and will not receive any further updates. Please use EAS Update instead. [Learn more](/eas-update/introduction)
+
 While you’re developing your project, you’re writing code on your
 computer, and when you use Expo CLI, a server and the Metro bundler run on your machine and bundle up all your source code and make
 it available from a URL. Your URL for a project you’re working on
@@ -45,7 +47,7 @@ open it.
 
 ## What version of the app will my users get?
 
-Your users will get the most recent compatible release that was pushed to a [release channel](../distribution/release-channels.md). Factors that affect compatibility:
+Your users will get the most recent compatible release that was pushed to a [release channel](./release-channels). Factors that affect compatibility:
 
 - sdkVersion (standalone apps are built to support only a single SDK version)
 - platform
@@ -54,28 +56,24 @@ Your users will get the most recent compatible release that was pushed to a [rel
 The following flowchart shows how we determine which release to return to a user:
 
 <ImageSpotlight
-  alt="Serving Flowchart"
-  src="/static/images/release-channels-flowchart.png"
-  style={{ maxWidth: 600 }}
+alt="Serving Flowchart"
+src="/static/images/release-channels-flowchart.png"
+style={{ maxWidth: 600 }}
 />
 
 ## Deploying to the App Store and Play Store
 
 When you're ready to distribute your app to end-users, you can create a
 standalone app binary (an ipa or apk file) and put it in the iOS App
-Store and the Google Play Store. See [Distributing Your App](../distribution/introduction.md).
+Store and the Google Play Store.
 
 The standalone app knows to look for updates at your app's published
 url, and if you publish an update then the next time a user opens your
-app they will automatically download the new version. The functionality
-is similar to [CodePush](https://microsoft.github.io/code-push/), but it
-is built into Expo so you don't need to install anything.
-
-To configure the way your app handles JS updates, see [Offline Support](../guides/offline-support.md).
+app they will automatically download the new version.
 
 ## Uploading Assets to the CDN
 
-In order for assets to be uploaded to the CDN, they must be explicitly required somewhere in your application's code. Conditionally requiring assets will result in the Metro bundler being unable to detect them and therefore they will not be uploaded when you publish your project. A great way to ensure your assets will be uploaded is to make use of [pre-loading and caching assets](../guides/preloading-and-caching-assets.md).
+In order for assets to be uploaded to the CDN, they must be explicitly required somewhere in your application's code. Conditionally requiring assets will result in the Metro bundler being unable to detect them and therefore they will not be uploaded when you publish your project.
 
 ## Limitations
 
@@ -116,6 +114,6 @@ them. Public projects might be surfaced to other developers.
 
 ## How do I remove a managed Expo project that I published?
 
-The default [privacy setting](../workflow/configuration.md) for managed apps is `unlisted` so nobody can find your app unless you share the link with them.
+The default privacy setting for managed apps is `unlisted` so nobody can find your app unless you share the link with them.
 
-If you really want your published app to be 'unpublished', check out our guide on [Advanced Release Channels](../distribution/advanced-release-channels.md), which explains how to roll back.
+If you really want your published app to be 'unpublished', check out our guide on [Advanced Release Channels](./advanced-release-channels), which explains how to roll back.
