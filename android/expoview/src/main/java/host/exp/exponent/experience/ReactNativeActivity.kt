@@ -18,7 +18,6 @@ import androidx.annotation.UiThread
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.facebook.infer.annotation.Assertions
-import com.facebook.internal.BundleJSONConverter
 import com.facebook.react.devsupport.DoubleTapReloadRecognizer
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler
 import com.facebook.react.modules.core.PermissionAwareActivity
@@ -40,6 +39,7 @@ import host.exp.exponent.kernel.services.ErrorRecoveryManager
 import host.exp.exponent.kernel.services.ExpoKernelServiceRegistry
 import host.exp.exponent.notifications.ExponentNotification
 import host.exp.exponent.storage.ExponentSharedPreferences
+import host.exp.exponent.utils.BundleJSONConverter
 import host.exp.exponent.utils.ExperienceActivityUtils
 import host.exp.exponent.utils.ScopedPermissionsRequester
 import host.exp.expoview.Exponent

@@ -1,9 +1,6 @@
 package versioned.host.exp.exponent
 
-import expo.modules.ads.admob.AdMobPackage
-import expo.modules.ads.facebook.AdsFacebookPackage
 import expo.modules.analytics.amplitude.AmplitudePackage
-import expo.modules.analytics.segment.SegmentPackage
 import expo.modules.application.ApplicationPackage
 import expo.modules.av.AVPackage
 import expo.modules.backgroundfetch.BackgroundFetchPackage
@@ -22,7 +19,6 @@ import expo.modules.device.DevicePackage
 import expo.modules.documentpicker.DocumentPickerPackage
 import expo.modules.easclient.EASClientModule
 import expo.modules.errorrecovery.ErrorRecoveryPackage
-import expo.modules.facebook.FacebookPackage
 import expo.modules.facedetector.FaceDetectorPackage
 import expo.modules.filesystem.FileSystemPackage
 import expo.modules.firebase.analytics.FirebaseAnalyticsPackage
@@ -69,8 +65,6 @@ import expo.modules.webbrowser.WebBrowserModule
 object ExperiencePackagePicker : ModulesProvider {
   private val EXPO_MODULES_PACKAGES = listOf(
     AVPackage(),
-    AdMobPackage(),
-    AdsFacebookPackage(),
     ApplicationPackage(),
     AmplitudePackage(),
     BatteryPackage(),
@@ -84,7 +78,6 @@ object ExperiencePackagePicker : ModulesProvider {
     DevicePackage(),
     DocumentPickerPackage(),
     ErrorRecoveryPackage(),
-    FacebookPackage(),
     FaceDetectorPackage(),
     FileSystemPackage(),
     FirebaseCorePackage(),
@@ -111,7 +104,6 @@ object ExperiencePackagePicker : ModulesProvider {
     ScreenCapturePackage(),
     ScreenOrientationPackage(),
     SecureStorePackage(),
-    SegmentPackage(),
     SensorsPackage(),
     SharingPackage(),
     SpeechPackage(),

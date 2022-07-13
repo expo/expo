@@ -3,7 +3,6 @@ package host.exp.exponent
 
 import android.os.Debug
 import androidx.multidex.MultiDexApplication
-import com.facebook.ads.AudienceNetworkAds
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.soloader.SoLoader
 import host.exp.exponent.analytics.Analytics
@@ -62,7 +61,6 @@ abstract class ExpoApplication : MultiDexApplication() {
     NativeModuleDepsProvider.instance.inject(ExpoApplication::class.java, this)
 
     BranchManager.initialize(this)
-    AudienceNetworkAds.initialize(this)
 
     try {
       // Remove the badge count on weird launchers
