@@ -24,9 +24,6 @@ module.exports = {
   pageExtensions: ['js', 'jsx', 'ts', 'tsx', 'md', 'mdx'],
   compiler: { emotion: true },
   swcMinify: true,
-  typescript: {
-    ignoreBuildErrors: true,
-  },
   // Next 11 does not support ESLint v8, enable it when we upgrade to 12
   eslint: { ignoreDuringBuilds: true },
   webpack: (config, options) => {
