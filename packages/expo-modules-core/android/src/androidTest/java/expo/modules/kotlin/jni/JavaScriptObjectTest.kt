@@ -170,11 +170,13 @@ class JavaScriptObjectTest {
         }
       }
     ) {
-      val result = evaluateScript("""
+      val result = evaluateScript(
+        """
         const x = {};
         ExpoModules.TestModule.f(x);
         x
-      """.trimIndent()).getObject()
+        """.trimIndent()
+      ).getObject()
 
       Truth.assertThat(result.getProperty("expo").getDouble().toInt()).isEqualTo(123)
       Truth.assertThat(receivedObject!!.getProperty("expo").getDouble().toInt()).isEqualTo(123)
