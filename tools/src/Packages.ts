@@ -360,7 +360,7 @@ export async function getListOfPackagesAsync(): Promise<Package[]> {
   if (!cachedPackages) {
     const paths = await glob('**/package.json', {
       cwd: PACKAGES_DIR,
-      ignore: ['**/example/**', '**/node_modules/**'],
+      ignore: ['**/example/**', '**/node_modules/**', '**/__tests__/**', '**/__mocks__/**'],
     });
     cachedPackages = paths
       .map((packageJsonPath) => {
