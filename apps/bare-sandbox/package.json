@@ -45,8 +45,6 @@
         }
       },
       "exclude": [
-        "expo-analytics-amplitude",
-        "expo-analytics-segment",
         "expo-app-auth",
         "expo-av",
         "expo-background-fetch",
@@ -62,7 +60,6 @@
         "expo-document-picker",
         "expo-error-recovery",
         "expo-face-detector",
-        "expo-facebook",
         "expo-file-system",
         "expo-firebase-analytics",
         "expo-firebase-core",
