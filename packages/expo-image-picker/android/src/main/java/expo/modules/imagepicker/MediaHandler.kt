@@ -59,6 +59,7 @@ internal class MediaHandler(
       height = exportedImage.height,
       base64 = base64,
       exif = exif,
+      assetId = sourceUri.getMediaStoreAssetId()
     )
   }
 
@@ -80,6 +81,7 @@ internal class MediaHandler(
         height = metadataRetriever.extractInt(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT),
         duration = metadataRetriever.extractInt(MediaMetadataRetriever.METADATA_KEY_DURATION),
         rotation = metadataRetriever.extractInt(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION),
+        assetId = sourceUri.getMediaStoreAssetId()
       )
     } catch (cause: FailedToExtractVideoMetadataException) {
       throw FailedToExtractVideoMetadataException(outputFile, cause)

@@ -206,12 +206,14 @@ export declare type ImageInfo = {
      */
     uri: string;
     /**
-     * The unique ID that represents the picked image or video. It can be used by [expo-media-library](./media-library)
-     * to manage the picked asset.
+     * The unique ID that represents the picked image or video, if picked from the library. It can be used
+     * by [expo-media-library](./media-library) to manage the picked asset.
      *
      * > This might be `null` when the ID is unavailable or the user gave limited permission to access the media library.
+     * > On Android, the ID is unavailable when the user selects a photo by directly browsing file system.
      *
      * @platform ios
+     * @platform android
      */
     assetId?: string | null;
     /**
