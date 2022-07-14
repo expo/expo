@@ -73,17 +73,38 @@ jobs:
       - name: Install eas-cli
         run: npm install -g eas-cli
       - name: Build
-        uses: ./.github/actions/eas-build
+        uses: ./.github/actions/eas-build-start
         id: build
         with:
           platform: 'ios'
           profile: ${{ github.event.inputs.buildType || 'unversioned-client' }}
           projectRoot: './apps/eas-expo-go'
           expoToken: ${{ secrets.EAS_BUILD_BOT_TOKEN }}
-      - name: On workflow canceled
-        if: ${{ cancelled() && steps.build.outputs.build_id }}
-        run: eas build:cancel ${{ steps.build.outputs.build_id }}
-        working-directory: ./apps/eas-expo-go 
-        env:
-          EXPO_TOKEN: ${{ secrets.EAS_BUILD_BOT_TOKEN }} 
-          EAS_BUILD_PROFILE: ${{ github.event.inputs.buildType || 'unversioned-client' }}
+    outputs:
+      build_id: ${{ steps.build.outputs.build_id }}
+  check:
+    runs-on: ubuntu-20.04
+    needs: build
+    steps:
+      - name: 👀 Checkout
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+      - name: 🧶 Yarn install
+        run: yarn install --frozen-lockfile
+      - name: Install eas-cli
+        run: npm install -g eas-cli
+      - name: Build
+        uses: ./.github/actions/eas-build-check
+        with:
+          platform: 'ios'
+          profile: ${{ github.event.inputs.buildType || 'unversioned-client' }}
+          projectRoot: './apps/eas-expo-go'
+          expoToken: ${{ secrets.EAS_BUILD_BOT_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          build_id: ${{ needs.build.outputs.build_id }}
+      - uses: LouisBrunner/checks-action@v1.2.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          name: Expo Go - test
+          status: in_progress

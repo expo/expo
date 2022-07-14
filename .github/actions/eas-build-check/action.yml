@@ -1,0 +1,59 @@
+name: 'EAS Build'
+description: 'Composite action to check status of eas build'
+
+inputs:
+  platform:
+    description: 'platform'
+    required: true
+  profile:
+    description: 'Build profile from eas.json'
+    required: true
+  projectRoot:
+    description: 'Relative path to root of the EAS project'
+    required: true
+  expoToken:
+    description: 'Expo token'
+    required: true
+  token:
+    description: 'Expo token'
+    required: true
+  build_id:
+    description: 'Build ID'
+    required: true
+
+outputs:
+  build_id:
+    description: "EAS Build ID"
+    value: ${{ steps.build_start.outputs.build_id }}
+
+runs:
+  using: 'composite'
+  steps:
+    - uses: LouisBrunner/checks-action@v1.2.0
+      with:
+        token: ${{ inputs.token }}
+        name: Expo Go - ${{ inputs.platform }}
+        status: in_progress
+    - name: Wait for build to finish
+      id: check
+      shell: bash
+      run: | 
+        STATUS=$(eas build:view $BUILD_ID --json 2>/dev/null | jq -r ".status")
+        if [[ "$STATUS" == "ERRORED" || "$STATUS" == "CANCELLED" ]]; then
+          echo ::set-output name=status::"failure"
+        elif [[ "$STATUS" == "FINISHED" ]]; then
+          echo ::set-output name=status::"success"
+        else
+          echo ::set-output name=status::"in_progress"
+        fi
+      working-directory: ${{ inputs.projectRoot }}
+      env:
+        EXPO_TOKEN: ${{ inputs.expoToken }}
+        EAS_BUILD_PROFILE: ${{ inputs.profile }}
+        BUILD_ID: ${{ steps.build_start.outputs.build_id }}
+    - uses: LouisBrunner/checks-action@v1.2.0
+      with:
+        token: ${{ inputs.token }}
+        name: Expo Go - ${{ inputs.platform }}
+        status: ${{ steps.check.outputs.status }}
+
