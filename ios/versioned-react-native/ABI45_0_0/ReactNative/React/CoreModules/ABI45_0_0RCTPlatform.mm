@@ -51,24 +51,24 @@ ABI45_0_0RCT_EXPORT_MODULE(PlatformConstants)
 }
 
 // TODO: Use the generated struct return type.
-- (ModuleConstants<JS::NativePlatformConstantsIOS::Constants>)constantsToExport
+- (ModuleConstants<ABI45_0_0JS::NativePlatformConstantsIOS::Constants>)constantsToExport
 {
-  return (ModuleConstants<JS::NativePlatformConstantsIOS::Constants>)[self getConstants];
+  return (ModuleConstants<ABI45_0_0JS::NativePlatformConstantsIOS::Constants>)[self getConstants];
 }
 
-- (ModuleConstants<JS::NativePlatformConstantsIOS::Constants>)getConstants
+- (ModuleConstants<ABI45_0_0JS::NativePlatformConstantsIOS::Constants>)getConstants
 {
-  __block ModuleConstants<JS::NativePlatformConstantsIOS::Constants> constants;
+  __block ModuleConstants<ABI45_0_0JS::NativePlatformConstantsIOS::Constants> constants;
   ABI45_0_0RCTUnsafeExecuteOnMainQueueSync(^{
     UIDevice *device = [UIDevice currentDevice];
     auto versions = ABI45_0_0RCTGetreactNativeVersion();
-    constants = typedConstants<JS::NativePlatformConstantsIOS::Constants>({
+    constants = typedConstants<ABI45_0_0JS::NativePlatformConstantsIOS::Constants>({
         .forceTouchAvailable = ABI45_0_0RCTForceTouchAvailable() ? true : false,
         .osVersion = [device systemVersion],
         .systemName = [device systemName],
         .interfaceIdiom = interfaceIdiom([device userInterfaceIdiom]),
         .isTesting = ABI45_0_0RCTRunningInTestEnvironment() ? true : false,
-        .reactNativeVersion = JS::NativePlatformConstantsIOS::ConstantsreactNativeVersion::Builder(
+        .reactNativeVersion = ABI45_0_0JS::NativePlatformConstantsIOS::ConstantsreactNativeVersion::Builder(
             {.minor = [versions[@"minor"] doubleValue],
              .major = [versions[@"major"] doubleValue],
              .patch = [versions[@"patch"] doubleValue],
