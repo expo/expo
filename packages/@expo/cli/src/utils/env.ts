@@ -83,6 +83,11 @@ class Env {
   get EXPO_PUBLIC_FOLDER(): string {
     return string('EXPO_PUBLIC_FOLDER', 'public');
   }
+
+  /** The public folder but falling back to the default value used for expo/webpack-config. */
+  get EXPO_PUBLIC_FOLDER__legacy(): string {
+    return string('EXPO_PUBLIC_FOLDER', 'web');
+  }
 }
 
 export const env = new Env();

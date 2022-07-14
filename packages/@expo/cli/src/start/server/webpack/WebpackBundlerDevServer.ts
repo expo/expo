@@ -16,6 +16,7 @@ import { choosePortAsync } from '../../../utils/port';
 import { createProgressBar } from '../../../utils/progress';
 import { ensureDotExpoProjectDirectoryInitialized } from '../../project/dotExpo';
 import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
+import { AssetRedirectMiddleware } from '../middleware/AssetRedirectMiddleware';
 import { compileAsync } from './compile';
 import {
   importExpoWebpackConfigFromProject,
@@ -273,6 +274,11 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
         compiler: webpack.Compiler
       ) => {
         originalBefore(app, server, compiler);
+
+        // Support react-native-skia on Webpack for web.
+        app.use(
+          new AssetRedirectMiddleware(this.projectRoot, env.EXPO_PUBLIC_FOLDER__legacy).getHandler()
+        );
 
         if (nativeMiddleware?.middleware) {
           app.use(nativeMiddleware.middleware);

@@ -1,4 +1,6 @@
+import { existsSync } from 'fs-extra';
 import path from 'path';
+import resolveFrom from 'resolve-from';
 import send from 'send';
 import { parse } from 'url';
 
@@ -38,6 +40,13 @@ export class ServeStaticMiddleware {
 
       debug(`Maybe serve static:`, pathname);
       const stream = send(req, pathname, opts);
+
+      if (!existsSync(path.join(publicPath, pathname))) {
+        if (pathname === '/static/js/canvaskit.wasm') {
+          console.log('redirect canvas kit');
+          stream.redirect(resolveFrom(this.projectRoot, 'canvaskit-wasm/bin/full/canvaskit.wasm'));
+        }
+      }
 
       // add file listener for fallthrough
       let forwardError = false;

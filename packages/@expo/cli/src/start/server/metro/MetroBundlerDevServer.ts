@@ -1,7 +1,9 @@
 import { prependMiddleware } from '@expo/dev-server';
 
+import { env } from '../../../utils/env';
 import { getFreePortAsync } from '../../../utils/port';
 import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
+import { AssetRedirectMiddleware } from '../middleware/AssetRedirectMiddleware';
 import { HistoryFallbackMiddleware } from '../middleware/HistoryFallbackMiddleware';
 import { InterstitialPageMiddleware } from '../middleware/InterstitialPageMiddleware';
 import { RuntimeRedirectMiddleware } from '../middleware/RuntimeRedirectMiddleware';
@@ -65,6 +67,13 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     prependMiddleware(middleware, manifestMiddleware);
 
     middleware.use(new InterstitialPageMiddleware(this.projectRoot).getHandler());
+
+    if (this.isTargetingWeb()) {
+      // Support react-native-skia on Metro web.
+      middleware.use(
+        new AssetRedirectMiddleware(this.projectRoot, env.EXPO_PUBLIC_FOLDER).getHandler()
+      );
+    }
 
     const deepLinkMiddleware = new RuntimeRedirectMiddleware(this.projectRoot, {
       onDeepLink: ({ runtime }) => {
