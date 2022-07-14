@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] fix use_frameworks! compilation. ([#18073](https://github.com/expo/expo/pull/18073) by [@douglowder](https://github.com/douglowder))
-
 ### 💡 Others
+
+## 1.0.1 — 2022-07-14
+
+### 🐛 Bug fixes
+
+- [iOS] fix use_frameworks! compilation. ([#18073](https://github.com/expo/expo/pull/18073) by [@douglowder](https://github.com/douglowder))
 
 ## 1.0.0 — 2022-06-09
 
