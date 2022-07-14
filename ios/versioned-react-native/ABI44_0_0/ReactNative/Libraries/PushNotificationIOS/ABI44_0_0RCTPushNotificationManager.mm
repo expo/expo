@@ -284,7 +284,7 @@ ABI44_0_0RCT_EXPORT_METHOD(getApplicationIconBadgeNumber:(ABI44_0_0RCTResponseSe
   callback(@[@(ABI44_0_0RCTSharedApplication().applicationIconBadgeNumber)]);
 }
 
-ABI44_0_0RCT_EXPORT_METHOD(requestPermissions:(JS::NativePushNotificationManagerIOS::SpecRequestPermissionsPermission &)permissions
+ABI44_0_0RCT_EXPORT_METHOD(requestPermissions:(ABI44_0_0JS::NativePushNotificationManagerIOS::SpecRequestPermissionsPermission &)permissions
                  resolve:(ABI44_0_0RCTPromiseResolveBlock)resolve
                  reject:(ABI44_0_0RCTPromiseRejectBlock)reject)
 {
@@ -349,7 +349,7 @@ static inline NSDictionary *ABI44_0_0RCTSettingsDictForUNNotificationSettings(BO
   return @{@"alert": @(alert), @"badge": @(badge), @"sound": @(sound)};
 }
 
-ABI44_0_0RCT_EXPORT_METHOD(presentLocalNotification:(JS::NativePushNotificationManagerIOS::Notification &)notification)
+ABI44_0_0RCT_EXPORT_METHOD(presentLocalNotification:(ABI44_0_0JS::NativePushNotificationManagerIOS::Notification &)notification)
 {
   NSMutableDictionary *notificationDict = [NSMutableDictionary new];
   notificationDict[@"alertTitle"] = notification.alertTitle();
@@ -370,7 +370,7 @@ ABI44_0_0RCT_EXPORT_METHOD(presentLocalNotification:(JS::NativePushNotificationM
   [ABI44_0_0RCTSharedApplication() presentLocalNotificationNow:[ABI44_0_0RCTConvert UILocalNotification:notificationDict]];
 }
 
-ABI44_0_0RCT_EXPORT_METHOD(scheduleLocalNotification:(JS::NativePushNotificationManagerIOS::Notification &)notification)
+ABI44_0_0RCT_EXPORT_METHOD(scheduleLocalNotification:(ABI44_0_0JS::NativePushNotificationManagerIOS::Notification &)notification)
 {
   NSMutableDictionary *notificationDict = [NSMutableDictionary new];
   notificationDict[@"alertTitle"] = notification.alertTitle();
@@ -488,7 +488,7 @@ ABI44_0_0RCT_EXPORT_METHOD(getApplicationIconBadgeNumber:(ABI44_0_0RCTResponseSe
   ABI44_0_0RCTLogError(@"Not implemented: %@", NSStringFromSelector(_cmd));
 }
 
-ABI44_0_0RCT_EXPORT_METHOD(requestPermissions:(JS::NativePushNotificationManagerIOS::SpecRequestPermissionsPermission &)permissions
+ABI44_0_0RCT_EXPORT_METHOD(requestPermissions:(ABI44_0_0JS::NativePushNotificationManagerIOS::SpecRequestPermissionsPermission &)permissions
                  resolve:(ABI44_0_0RCTPromiseResolveBlock)resolve
                  reject:(ABI44_0_0RCTPromiseRejectBlock)reject)
 {
@@ -505,12 +505,12 @@ ABI44_0_0RCT_EXPORT_METHOD(checkPermissions:(ABI44_0_0RCTResponseSenderBlock)cal
   ABI44_0_0RCTLogError(@"Not implemented: %@", NSStringFromSelector(_cmd));
 }
 
-ABI44_0_0RCT_EXPORT_METHOD(presentLocalNotification:(JS::NativePushNotificationManagerIOS::Notification &)notification)
+ABI44_0_0RCT_EXPORT_METHOD(presentLocalNotification:(ABI44_0_0JS::NativePushNotificationManagerIOS::Notification &)notification)
 {
   ABI44_0_0RCTLogError(@"Not implemented: %@", NSStringFromSelector(_cmd));
 }
 
-ABI44_0_0RCT_EXPORT_METHOD(scheduleLocalNotification:(JS::NativePushNotificationManagerIOS::Notification &)notification)
+ABI44_0_0RCT_EXPORT_METHOD(scheduleLocalNotification:(ABI44_0_0JS::NativePushNotificationManagerIOS::Notification &)notification)
 {
   ABI44_0_0RCTLogError(@"Not implemented: %@", NSStringFromSelector(_cmd));
 }

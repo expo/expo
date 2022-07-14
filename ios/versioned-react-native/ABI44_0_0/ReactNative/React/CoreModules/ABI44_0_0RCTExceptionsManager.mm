@@ -132,7 +132,7 @@ ABI44_0_0RCT_EXPORT_METHOD(reportUnhandledException : (NSString *)message stack 
 
 ABI44_0_0RCT_EXPORT_METHOD(dismissRedbox) {}
 
-ABI44_0_0RCT_EXPORT_METHOD(reportException : (JS::NativeExceptionsManager::ExceptionData &)data)
+ABI44_0_0RCT_EXPORT_METHOD(reportException : (ABI44_0_0JS::NativeExceptionsManager::ExceptionData &)data)
 {
   NSString *message = data.message();
   double exceptionId = data.id_();
