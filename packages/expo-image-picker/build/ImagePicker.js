@@ -118,7 +118,7 @@ export async function getPendingResultAsync() {
 /**
  * Display the system UI for taking a photo with the camera. Requires `Permissions.CAMERA`.
  * On Android and iOS 10 `Permissions.CAMERA_ROLL` is also required. On mobile web, this must be
- * called immediately in a user interaction like a button press, otherwise the browser will bloc
+ * called immediately in a user interaction like a button press, otherwise the browser will block
  * the request without a warning.
  * > **Note:** Make sure that you handle `MainActivity` destruction on **Android**. See [ImagePicker.getPendingResultAsync](#imagepickergetpendingresultasync).
  * > **Notes for Web:** The system UI can only be shown after user activation (e.g. a `Button` press).
