@@ -3,6 +3,7 @@ package expo.modules.imagepicker
 import android.content.Context
 import android.media.MediaMetadataRetriever
 import android.net.Uri
+import android.provider.DocumentsContract
 import android.util.Base64
 import androidx.core.net.toUri
 import expo.modules.imagepicker.exporters.CompressionImageExporter
@@ -59,6 +60,7 @@ internal class MediaHandler(
       height = exportedImage.height,
       base64 = base64,
       exif = exif,
+      assetId = getAssetIdFromUri(sourceUri)
     )
   }
 
@@ -80,9 +82,39 @@ internal class MediaHandler(
         height = metadataRetriever.extractInt(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT),
         duration = metadataRetriever.extractInt(MediaMetadataRetriever.METADATA_KEY_DURATION),
         rotation = metadataRetriever.extractInt(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION),
+        assetId = getAssetIdFromUri(sourceUri)
       )
     } catch (cause: FailedToExtractVideoMetadataException) {
       throw FailedToExtractVideoMetadataException(outputFile, cause)
     }
   }
+}
+
+/**
+ * Checks whether this [Uri] is a `com.android.providers.media.documents` provider uri
+ */
+val Uri.isMediaProviderUri
+  get() = this.authority == "com.android.providers.media.documents"
+
+/**
+ * Checks whether this [Uri] is a `com.android.providers.downloads.documents` provider uri
+ */
+val Uri.isDownloadsProviderUri
+  get() = this.authority == "com.android.providers.downloads.documents"
+
+val Uri.supportsExternalContentQuery
+  get() = isMediaProviderUri || (
+    isDownloadsProviderUri
+      && DocumentsContract
+      .getDocumentId(this)
+      .startsWith("msf:")
+    )
+
+private fun getAssetIdFromUri(uri: Uri): String? {
+  if (uri.supportsExternalContentQuery) {
+    val rawId = DocumentsContract.getDocumentId(uri)
+    return if (rawId.contains(':')) rawId.split(':')[1] else rawId
+  }
+
+  return null
 }
