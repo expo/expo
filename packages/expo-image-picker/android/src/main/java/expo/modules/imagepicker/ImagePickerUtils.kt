@@ -7,6 +7,7 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.media.MediaMetadataRetriever
 import android.net.Uri
+import android.provider.DocumentsContract
 import android.util.Log
 import android.webkit.MimeTypeMap
 import androidx.core.content.FileProvider
@@ -205,4 +206,38 @@ internal suspend fun copyExifData(
   } catch (cause: FileNotFoundException) {
     throw FailedToWriteFileException(targetFile, cause)
   }
+}
+
+/**
+ * Checks whether this [Uri] is a `com.android.providers.media.documents` provider uri
+ */
+internal val Uri.isMediaProviderUri
+  get() = this.authority == "com.android.providers.media.documents"
+
+/**
+ * Checks whether this [Uri] is a `com.android.providers.downloads.documents` provider uri
+ */
+internal val Uri.isDownloadsProviderUri
+  get() = this.authority == "com.android.providers.downloads.documents"
+
+/**
+ * Checks whether asset represented by this [Uri] can be queried in media store
+ */
+internal val Uri.isMediaStoreAssetUri
+  get() = isMediaProviderUri || (
+    isDownloadsProviderUri &&
+      DocumentsContract
+        .getDocumentId(this)
+        .startsWith("msf:")
+    )
+
+/**
+ * If the URI represents a media store asset, this returns its ID. Otherwise, returns `null`.
+ */
+internal fun Uri.getMediaStoreAssetId(): String? {
+  if (isMediaStoreAssetUri) {
+    val rawId = DocumentsContract.getDocumentId(this)
+    return if (rawId.contains(':')) rawId.split(':')[1] else rawId
+  }
+  return null
 }
