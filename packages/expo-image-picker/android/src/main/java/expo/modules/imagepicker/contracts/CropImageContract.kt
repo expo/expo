@@ -27,16 +27,7 @@ internal class CropImageContract(
   override fun createIntent(context: Context, input: CropImageContractOptions) = Intent(context, CropImageActivity::class.java).apply {
     val mediaType = expo.modules.imagepicker.getType(context.contentResolver, input.sourceUri)
     val compressFormat = mediaType.toBitmapCompressFormat()
-
-    /**
-     * for `IMAGE LIBRARY` we need to create a new file as up to this point we've been operating on the original media asset
-     * for `CAMERA` we do not have to do it as it's already been created at the beginning of the picking process
-     */
-    val outputUri: Uri = if (input.pickingSource == PickingSource.IMAGE_LIBRARY) {
-      createOutputFile(context.cacheDir, compressFormat.toImageFileExtension()).toUri()
-    } else {
-      input.sourceUri
-    }
+    val outputUri = createOutputFile(context.cacheDir, compressFormat.toImageFileExtension()).toUri()
 
     putExtra(
       CropImage.CROP_IMAGE_EXTRA_BUNDLE,
@@ -69,12 +60,11 @@ internal class CropImageContract(
     val targetUri = requireNotNull(result.uriContent)
     val contentResolver = requireNotNull(appContextProvider.appContext.reactContext) { "React Application Context is null" }.contentResolver
     runBlocking { copyExifData(input.sourceUri, targetUri.toFile(), contentResolver) }
-    return ImagePickerContractResult.Success(listOf(MediaType.IMAGE to targetUri), input.pickingSource)
+    return ImagePickerContractResult.Success(listOf(MediaType.IMAGE to targetUri))
   }
 }
 
 internal data class CropImageContractOptions(
   val sourceUri: Uri,
   val options: ImagePickerOptions,
-  val pickingSource: PickingSource,
 ) : Serializable

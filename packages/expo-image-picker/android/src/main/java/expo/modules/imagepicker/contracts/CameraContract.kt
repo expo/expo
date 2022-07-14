@@ -42,7 +42,7 @@ internal class CameraContract(
     } else {
       val uri = input.uri
       val type = uri.toMediaType(contentResolver)
-      ImagePickerContractResult.Success(listOf(type to uri), PickingSource.CAMERA)
+      ImagePickerContractResult.Success(listOf(type to uri))
     }
 }
 

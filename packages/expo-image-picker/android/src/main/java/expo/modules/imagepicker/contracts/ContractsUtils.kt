@@ -8,13 +8,5 @@ import expo.modules.imagepicker.MediaType
  */
 internal sealed class ImagePickerContractResult private constructor() {
   class Cancelled : ImagePickerContractResult()
-  class Success(
-    val data: List<Pair<MediaType, Uri>>,
-    val pickingSource: PickingSource,
-  ) : ImagePickerContractResult()
-}
-
-internal enum class PickingSource {
-  CAMERA,
-  IMAGE_LIBRARY,
+  class Success(val data: List<Pair<MediaType, Uri>>) : ImagePickerContractResult()
 }

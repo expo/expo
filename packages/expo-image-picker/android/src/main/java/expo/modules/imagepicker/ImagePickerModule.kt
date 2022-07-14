@@ -6,7 +6,6 @@ import android.content.Intent
 import android.net.Uri
 import expo.modules.core.errors.ModuleNotFoundException
 import android.os.OperationCanceledException
-import expo.modules.imagepicker.contracts.*
 import expo.modules.imagepicker.contracts.CameraContract
 import expo.modules.imagepicker.contracts.CameraContractOptions
 import expo.modules.imagepicker.contracts.CropImageContract
@@ -14,7 +13,6 @@ import expo.modules.imagepicker.contracts.CropImageContractOptions
 import expo.modules.imagepicker.contracts.ImageLibraryContract
 import expo.modules.imagepicker.contracts.ImageLibraryContractOptions
 import expo.modules.imagepicker.contracts.ImagePickerContractResult
-import expo.modules.imagepicker.contracts.PickingSource
 import expo.modules.interfaces.permissions.Permissions
 import expo.modules.interfaces.permissions.PermissionsStatus
 import expo.modules.kotlin.Promise
@@ -136,7 +134,7 @@ class ImagePickerModule : Module() {
         && result.data[0].first == MediaType.IMAGE
       ) {
         result = launchPicker {
-          cropImageLauncher.launch(CropImageContractOptions(result.data[0].second, options, result.pickingSource))
+          cropImageLauncher.launch(CropImageContractOptions(result.data[0].second, options))
         }
       }
       mediaHandler.readExtras(result.data, options)
