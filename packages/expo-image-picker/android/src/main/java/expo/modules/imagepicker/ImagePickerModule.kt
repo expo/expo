@@ -91,7 +91,7 @@ class ImagePickerModule : Module() {
           ) { input, result -> handleResultUponActivityDestruction(result, input.options) }
           cropImageLauncher = appContext.registerForActivityResult(
             CropImageContract(this@ImagePickerModule),
-          ) { input, result -> handleResultUponActivityDestruction(result, input.options)}
+          ) { input, result -> handleResultUponActivityDestruction(result, input.options) }
         }
       }
     }
@@ -128,10 +128,10 @@ class ImagePickerModule : Module() {
     return try {
       var result = launchPicker(pickerLauncher)
       if (
-        !options.allowsMultipleSelection
-        && options.allowsEditing
-        && result.data.size == 1
-        && result.data[0].first == MediaType.IMAGE
+        !options.allowsMultipleSelection &&
+        options.allowsEditing &&
+        result.data.size == 1 &&
+        result.data[0].first == MediaType.IMAGE
       ) {
         result = launchPicker {
           cropImageLauncher.launch(CropImageContractOptions(result.data[0].second, options))
