@@ -15,7 +15,8 @@ class CardFormViewManager : SimpleViewManager<CardFormView>() {
   override fun getExportedCustomDirectEventTypeConstants(): MutableMap<String, Any> {
     return MapBuilder.of(
       CardFocusEvent.EVENT_NAME, MapBuilder.of("registrationName", "onFocusChange"),
-      CardFormCompleteEvent.EVENT_NAME, MapBuilder.of("registrationName", "onFormComplete"))
+      CardFormCompleteEvent.EVENT_NAME, MapBuilder.of("registrationName", "onFormComplete")
+    )
   }
 
   override fun receiveCommand(root: CardFormView, commandId: String?, args: ReadableArray?) {
@@ -36,10 +37,10 @@ class CardFormViewManager : SimpleViewManager<CardFormView>() {
     view.setPostalCodeEnabled(postalCodeEnabled)
   }
 
-   @ReactProp(name = "placeholders")
-   fun setPlaceHolders(view: CardFormView, placeholders: ReadableMap) {
-     view.setPlaceHolders(placeholders)
-   }
+  @ReactProp(name = "placeholders")
+  fun setPlaceHolders(view: CardFormView, placeholders: ReadableMap) {
+    view.setPlaceHolders(placeholders)
+  }
 
   @ReactProp(name = "autofocus")
   fun setAutofocus(view: CardFormView, autofocus: Boolean = false) {

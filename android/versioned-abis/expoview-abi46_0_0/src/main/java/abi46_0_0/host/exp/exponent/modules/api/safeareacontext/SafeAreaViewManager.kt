@@ -7,7 +7,6 @@ import abi46_0_0.com.facebook.react.uimanager.StateWrapper
 import abi46_0_0.com.facebook.react.uimanager.ThemedReactContext
 import abi46_0_0.com.facebook.react.uimanager.ViewManagerDelegate
 import abi46_0_0.com.facebook.react.uimanager.annotations.ReactProp
-import abi46_0_0.host.exp.exponent.modules.api.safeareacontext.RNCSafeAreaViewManagerInterface
 import abi46_0_0.com.facebook.react.views.view.ReactViewGroup
 import abi46_0_0.com.facebook.react.views.view.ReactViewManager
 import java.util.*
@@ -63,9 +62,9 @@ class SafeAreaViewManager : ReactViewManager(), RNCSafeAreaViewManagerInterface<
   }
 
   override fun updateState(
-      view: ReactViewGroup,
-      props: ReactStylesDiffMap?,
-      stateWrapper: StateWrapper?
+    view: ReactViewGroup,
+    props: ReactStylesDiffMap?,
+    stateWrapper: StateWrapper?
   ): Any? {
     (view as SafeAreaView).fabricViewStateManager.setStateWrapper(stateWrapper)
     return null

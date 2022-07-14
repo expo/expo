@@ -13,7 +13,8 @@ import abi46_0_0.com.facebook.react.viewmanagers.RNGestureHandlerRootViewManager
  * to be provided.
  */
 @ReactModule(name = RNGestureHandlerRootViewManager.REACT_CLASS)
-class RNGestureHandlerRootViewManager : ViewGroupManager<RNGestureHandlerRootView>(),
+class RNGestureHandlerRootViewManager :
+  ViewGroupManager<RNGestureHandlerRootView>(),
   RNGestureHandlerRootViewManagerInterface<RNGestureHandlerRootView> {
   private val mDelegate: ViewManagerDelegate<RNGestureHandlerRootView>
 
@@ -41,7 +42,8 @@ class RNGestureHandlerRootViewManager : ViewGroupManager<RNGestureHandlerRootVie
     RNGestureHandlerEvent.EVENT_NAME to
       mutableMapOf("registrationName" to RNGestureHandlerEvent.EVENT_NAME),
     RNGestureHandlerStateChangeEvent.EVENT_NAME to
-      mutableMapOf("registrationName" to RNGestureHandlerStateChangeEvent.EVENT_NAME))
+      mutableMapOf("registrationName" to RNGestureHandlerStateChangeEvent.EVENT_NAME)
+  )
 
   companion object {
     const val REACT_CLASS = "RNGestureHandlerRootView"

@@ -11,37 +11,37 @@ import abi46_0_0.com.facebook.react.viewmanagers.RNSScreenStackHeaderSubviewMana
 
 @ReactModule(name = ScreenStackHeaderSubviewManager.REACT_CLASS)
 class ScreenStackHeaderSubviewManager : ViewGroupManager<ScreenStackHeaderSubview>(), RNSScreenStackHeaderSubviewManagerInterface<ScreenStackHeaderSubview> {
-    private val mDelegate: ViewManagerDelegate<ScreenStackHeaderSubview>
+  private val mDelegate: ViewManagerDelegate<ScreenStackHeaderSubview>
 
-    init {
-        mDelegate = RNSScreenStackHeaderSubviewManagerDelegate<ScreenStackHeaderSubview, ScreenStackHeaderSubviewManager>(this)
-    }
+  init {
+    mDelegate = RNSScreenStackHeaderSubviewManagerDelegate<ScreenStackHeaderSubview, ScreenStackHeaderSubviewManager>(this)
+  }
 
-    override fun getName(): String {
-        return REACT_CLASS
-    }
+  override fun getName(): String {
+    return REACT_CLASS
+  }
 
-    override fun createViewInstance(context: ThemedReactContext): ScreenStackHeaderSubview {
-        return ScreenStackHeaderSubview(context)
-    }
+  override fun createViewInstance(context: ThemedReactContext): ScreenStackHeaderSubview {
+    return ScreenStackHeaderSubview(context)
+  }
 
-    @ReactProp(name = "type")
-    override fun setType(view: ScreenStackHeaderSubview, type: String?) {
-        view.type = when (type) {
-            "left" -> ScreenStackHeaderSubview.Type.LEFT
-            "center" -> ScreenStackHeaderSubview.Type.CENTER
-            "right" -> ScreenStackHeaderSubview.Type.RIGHT
-            "back" -> ScreenStackHeaderSubview.Type.BACK
-            "searchBar" -> ScreenStackHeaderSubview.Type.SEARCH_BAR
-            else -> throw JSApplicationIllegalArgumentException("Unknown type $type")
-        }
+  @ReactProp(name = "type")
+  override fun setType(view: ScreenStackHeaderSubview, type: String?) {
+    view.type = when (type) {
+      "left" -> ScreenStackHeaderSubview.Type.LEFT
+      "center" -> ScreenStackHeaderSubview.Type.CENTER
+      "right" -> ScreenStackHeaderSubview.Type.RIGHT
+      "back" -> ScreenStackHeaderSubview.Type.BACK
+      "searchBar" -> ScreenStackHeaderSubview.Type.SEARCH_BAR
+      else -> throw JSApplicationIllegalArgumentException("Unknown type $type")
     }
+  }
 
-    protected override fun getDelegate(): ViewManagerDelegate<ScreenStackHeaderSubview> {
-        return mDelegate
-    }
+  protected override fun getDelegate(): ViewManagerDelegate<ScreenStackHeaderSubview> {
+    return mDelegate
+  }
 
-    companion object {
-        const val REACT_CLASS = "RNSScreenStackHeaderSubview"
-    }
+  companion object {
+    const val REACT_CLASS = "RNSScreenStackHeaderSubview"
+  }
 }

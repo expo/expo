@@ -541,12 +541,16 @@ class PaymentMethodCreateParamsFactory(
         getValOr(
           params,
           "accountType",
-          null)),
+          null
+        )
+      ),
       mapToUSBankAccountHolderType(
         getValOr(
           params,
           "accountHolderType",
-          null))
+          null
+        )
+      )
     )
 
     return PaymentMethodCreateParams.Companion.create(

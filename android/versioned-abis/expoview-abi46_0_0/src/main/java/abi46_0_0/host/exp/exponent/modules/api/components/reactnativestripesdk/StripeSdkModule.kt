@@ -142,9 +142,10 @@ class StripeSdkModule(reactContext: ReactApplicationContext) : ReactContextBaseJ
   private fun payWithFpx() {
     getCurrentActivityOrResolveWithError(confirmPromise)?.let {
       AddPaymentMethodActivityStarter(it)
-        .startForResult(AddPaymentMethodActivityStarter.Args.Builder()
-                          .setPaymentMethodType(PaymentMethod.Type.Fpx)
-                          .build()
+        .startForResult(
+          AddPaymentMethodActivityStarter.Args.Builder()
+            .setPaymentMethodType(PaymentMethod.Type.Fpx)
+            .build()
         )
     }
   }
@@ -203,7 +204,8 @@ class StripeSdkModule(reactContext: ReactApplicationContext) : ReactContextBaseJ
           val paymentMethodMap: WritableMap = mapFromPaymentMethod(result)
           promise.resolve(createResult("paymentMethod", paymentMethodMap))
         }
-      })
+      }
+    )
   }
 
   @ReactMethod
@@ -269,7 +271,6 @@ class StripeSdkModule(reactContext: ReactApplicationContext) : ReactContextBaseJ
         promise.resolve(createError(CreateTokenErrorType.Failed.toString(), it.message))
       }
     }
-
   }
 
   private fun createTokenFromCard(params: ReadableMap, promise: Promise) {

@@ -214,4 +214,3 @@ dependencies {
 }
 
 useVendoredModulesForExpoView('sdk46')
-

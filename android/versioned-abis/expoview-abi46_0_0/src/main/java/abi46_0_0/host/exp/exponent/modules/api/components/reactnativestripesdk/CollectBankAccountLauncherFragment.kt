@@ -21,13 +21,16 @@ class CollectBankAccountLauncherFragment(
   private val publishableKey: String,
   private val clientSecret: String,
   private val isPaymentIntent: Boolean,
-  private val collectParams:  CollectBankAccountConfiguration.USBankAccount,
+  private val collectParams: CollectBankAccountConfiguration.USBankAccount,
   private val promise: Promise
 ) : Fragment() {
   private lateinit var collectBankAccountLauncher: CollectBankAccountLauncher
 
-  override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                            savedInstanceState: Bundle?): View {
+  override fun onCreateView(
+    inflater: LayoutInflater,
+    container: ViewGroup?,
+    savedInstanceState: Bundle?
+  ): View {
     collectBankAccountLauncher = createBankAccountLauncher()
 
     return FrameLayout(requireActivity()).also {
@@ -38,7 +41,8 @@ class CollectBankAccountLauncherFragment(
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(
       view,
-      savedInstanceState)
+      savedInstanceState
+    )
 
     if (isPaymentIntent) {
       collectBankAccountLauncher.presentWithPaymentIntent(

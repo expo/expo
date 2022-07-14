@@ -27,14 +27,15 @@ class SafeAreaContextPackage : TurboReactPackage() {
     for (moduleClass in moduleList) {
       val reactModule = moduleClass.getAnnotation(ReactModule::class.java) ?: continue
       reactModuleInfoMap[reactModule.name] =
-          ReactModuleInfo(
-              reactModule.name,
-              moduleClass.name,
-              true,
-              reactModule.needsEagerInit,
-              reactModule.hasConstants,
-              reactModule.isCxxModule,
-              TurboModule::class.java.isAssignableFrom(moduleClass))
+        ReactModuleInfo(
+          reactModule.name,
+          moduleClass.name,
+          true,
+          reactModule.needsEagerInit,
+          reactModule.hasConstants,
+          reactModule.isCxxModule,
+          TurboModule::class.java.isAssignableFrom(moduleClass)
+        )
     }
     return ReactModuleInfoProvider { reactModuleInfoMap }
   }

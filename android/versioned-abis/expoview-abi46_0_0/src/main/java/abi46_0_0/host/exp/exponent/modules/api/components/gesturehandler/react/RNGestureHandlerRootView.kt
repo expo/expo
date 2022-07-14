@@ -4,12 +4,10 @@ import android.content.Context
 import android.util.Log
 import android.view.MotionEvent
 import android.view.ViewGroup
-import android.view.ViewParent
 import abi46_0_0.com.facebook.react.bridge.ReactContext
 import abi46_0_0.com.facebook.react.bridge.UiThreadUtil
 import abi46_0_0.com.facebook.react.common.ReactConstants
 import abi46_0_0.com.facebook.react.uimanager.RootView
-import abi46_0_0.com.facebook.react.views.modal.ReactModalHostView
 import abi46_0_0.com.facebook.react.views.view.ReactViewGroup
 
 class RNGestureHandlerRootView(context: Context?) : ReactViewGroup(context) {
