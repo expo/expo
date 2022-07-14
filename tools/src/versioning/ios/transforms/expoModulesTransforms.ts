@@ -51,6 +51,12 @@ export function expoModulesTransforms(prefix: string): FileTransforms {
         find: /r(eactTag)/gi,
         replaceWith: (_, p1) => `${prefix.toLowerCase()}R${p1}`,
       },
+      {
+        // Prefixes name of the Expo modules provider.
+        paths: swiftFilesPattern,
+        find: /"(ExpoModulesProvider)"/g,
+        replaceWith: `"${prefix}$1"`,
+      },
 
       // Only Objective-C
 
@@ -81,18 +87,6 @@ export function expoModulesTransforms(prefix: string): FileTransforms {
         paths: objcFilesPattern,
         find: /@import (Expo|EX|EAS)(\w+)/g,
         replaceWith: `@import ${prefix}$1$2`,
-      },
-      {
-        // Prefixes Objective-C name of the Swift modules provider.
-        paths: ['EXNativeModulesProxy.mm'],
-        find: 'NSClassFromString(@"ExpoModulesProvider")',
-        replaceWith: `NSClassFromString(@"${prefix}ExpoModulesProvider")`,
-      },
-      {
-        // Prefixes Objective-C name of the Swift modules provider.
-        paths: ['EXNativeModulesProxy.mm'],
-        find: '[NSString stringWithFormat:@"%@.ExpoModulesProvider"',
-        replaceWith: `[NSString stringWithFormat:@"%@.${prefix}ExpoModulesProvider"`,
       },
       {
         // Prefixes imports from other React Native libs
