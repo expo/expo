@@ -29,7 +29,7 @@ class UpdatesE2ETestModule(context: Context) : ExportedModule(context) {
       if (!assetsFolder!!.exists()) {
         return promise.resolve(0)
       }
-      val count = assetsFolder.walk().count()
+      val count = assetsFolder.walk().count() - 1 // subtract one for the folder itself, which is included in walk()
       promise.resolve(count)
     } catch (e: Throwable) {
       promise.reject(e)
