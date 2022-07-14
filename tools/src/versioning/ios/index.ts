@@ -92,7 +92,7 @@ async function namespaceReactNativeFilesAsync(filenames, versionPrefix, versione
     // filter transformRules to patterns which apply to this dirname
     const filteredTransformRules =
       transformRulesCache[dirname] || _getTransformRulesForDirname(transformRules, dirname);
-    transformRulesCache[dirname] = transformRules;
+    transformRulesCache[dirname] = filteredTransformRules;
 
     // Perform sed find & replace.
     for (const rule of filteredTransformRules) {
@@ -1079,21 +1079,8 @@ function _getReactNativeTransformRules(versionPrefix, reactPodName) {
       pattern: `s/\\([^+]\\)AIR/\\1${versionPrefix}AIR/g`,
     },
     {
-      pattern: `s/\\([^A-Za-z0-9_]\\)EX/\\1${versionPrefix}EX/g`,
-    },
-    {
-      pattern: `s/\\([^A-Za-z0-9_]\\)UM/\\1${versionPrefix}UM/g`,
-    },
-    {
-      pattern: `s/\\([^A-Za-z0-9_+]\\)ART/\\1${versionPrefix}ART/g`,
-    },
-    {
-      paths: 'Components',
-      pattern: `s/\\([^A-Za-z0-9_+]\\)SM/\\1${versionPrefix}SM/g`,
-    },
-    {
-      paths: 'Core/Api',
-      pattern: `s/\\([^A-Za-z0-9_+]\\)RN/\\1${versionPrefix}RN/g`,
+      flags: '-Ei',
+      pattern: `s/(^|[^A-Za-z0-9_+])(RN|REA|EX|UM|ART|SM)/\\1${versionPrefix}\\2/g`,
     },
     {
       paths: 'Core/Api',
@@ -1114,10 +1101,6 @@ function _getReactNativeTransformRules(versionPrefix, reactPodName) {
     {
       // React will be prefixed in a moment
       pattern: `s/#import <${versionPrefix}RCTAnimation/#import <React/g`,
-    },
-    {
-      paths: 'Core/Api/Reanimated',
-      pattern: `s/\\([^A-Za-z0-9_+]\\)REA/\\1${versionPrefix}REA/g`,
     },
     {
       pattern: `s/^REA/${versionPrefix}REA/g`,
