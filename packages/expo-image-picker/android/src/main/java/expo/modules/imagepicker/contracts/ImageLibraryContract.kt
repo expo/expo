@@ -42,11 +42,11 @@ internal class ImageLibraryContract(
       ImagePickerContractResult.Cancelled()
     } else if (input.options.allowsMultipleSelection) {
       val uris = requireNotNull(intent).getAllDataUris()
-      ImagePickerContractResult.Success(uris.map { uri -> uri.toMediaType(contentResolver) to uri })
+      ImagePickerContractResult.Success(uris.map { uri -> uri.toMediaType(contentResolver) to uri }, PickingSource.IMAGE_LIBRARY)
     } else {
       val uri = requireNotNull(requireNotNull(intent).data)
       val type = uri.toMediaType(contentResolver)
-      ImagePickerContractResult.Success(listOf(type to uri))
+      ImagePickerContractResult.Success(listOf(type to uri), PickingSource.IMAGE_LIBRARY)
     }
 }
 
