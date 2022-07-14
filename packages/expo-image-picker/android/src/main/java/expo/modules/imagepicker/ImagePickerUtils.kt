@@ -208,6 +208,39 @@ internal suspend fun copyExifData(
   }
 }
 
+/*
+Getting asset ID (and metadata) on Android is not that obvious. When getting a `content://` URI
+using `ACTION_GET_CONTENT` or `ACTION_OPEN_DOCUMENT` intents, there are 3 possible ways:
+
+1. When the user selects a photo from **Images** section of the picker (on the left drawer)
+  In this case we get a URI from `com.android.providers.media.MediaDocumentsProvider`,
+  that inherits from `DocumentsProvider`. The URI looks like this:
+  ```
+  com.android.providers.media.documents/document/image:56
+  ```
+  In this case, the `56` is the ID we're looking for.
+
+2. When the user selects a photo from **Downloads** section, another content provider is used:
+  `DownloadStorageProvider` which is a bit different, and also differs depending on Android version:
+  - On API 29+ it also inherits from `com.android.providers.downloads.DocumentsProvider`
+    and the URI looks like this:
+    ```
+    com.android.providers.downloads.documents/document/msf:56
+    ```
+    Where "msf" is abbr. of "media store file" and 56 is our asset ID
+  - On API <29 it looks similar:
+    ```
+    com.android.providers.downloads.documents/document/128
+    ```
+    but the 128 is an internal ID of downloads provider, unrelated to media store asset ID.
+
+3. When the user selects a photo by browsing the filesystem, the URI looks like this:
+  ```
+  com.android.externalstorage.documents/document/primary:Download:filename.jpg
+  ```
+  No ID in this case
+ */
+
 /**
  * Checks whether this [Uri] is a `com.android.providers.media.documents` provider uri
  */
@@ -221,7 +254,7 @@ internal val Uri.isDownloadsProviderUri
   get() = this.authority == "com.android.providers.downloads.documents"
 
 /**
- * Checks whether asset represented by this [Uri] can be queried in media store
+ * Checks whether asset represented by this [Uri] can be queried in the media store
  */
 internal val Uri.isMediaStoreAssetUri
   get() = isMediaProviderUri || (
@@ -233,6 +266,8 @@ internal val Uri.isMediaStoreAssetUri
 
 /**
  * If the URI represents a media store asset, this returns its ID. Otherwise, returns `null`.
+ *
+ * See the detailed explanation above in this file (ImagePickerUtils.kt).
  */
 internal fun Uri.getMediaStoreAssetId(): String? {
   if (isMediaStoreAssetUri) {
