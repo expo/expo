@@ -23,6 +23,8 @@ class DevLauncherUrl(var url: Uri) {
         val queryUrl = Uri.parse(queryParams["url"])
         url = replaceEXPScheme(queryUrl, "http")
       }
+    } else {
+      url = replaceEXPScheme(url, "http")
     }
   }
 }

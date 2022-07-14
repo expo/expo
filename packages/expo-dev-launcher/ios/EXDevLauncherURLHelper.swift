@@ -21,6 +21,8 @@ public class EXDevLauncherUrl: NSObject {
           self.url = EXDevLauncherURLHelper.replaceEXPScheme(urlFromParam, to: "http")
         }
       }
+    } else {
+      self.url = EXDevLauncherURLHelper.replaceEXPScheme(self.url, to: "http")
     }
     
     super.init()
