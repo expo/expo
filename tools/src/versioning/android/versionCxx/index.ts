@@ -88,7 +88,7 @@ export function revertPatchForPackageAsync(packageName: string, patchContent: st
  * Builds shared libraries
  */
 async function buildSoLibsAsync(packageName: string) {
-  await spawnAsync('./gradlew', [`:${packageName}:copyReleaseJniLibsProjectOnly`], {
+  await spawnAsync('./gradlew', [`:${packageName}:copyReleaseJniLibsProjectAndLocalJars`], {
     cwd: ANDROID_DIR,
   });
 }
@@ -103,9 +103,10 @@ async function copyPrebuiltSoLibsAsync(packageName: string, versionedAbiRoot: st
     'android',
     'build',
     'intermediates',
-    'library_jni',
+    'stripped_native_libs',
     'release',
-    'jni'
+    'out',
+    'lib'
   );
 
   const jniLibsRoot = path.join(versionedAbiRoot, 'src', 'main', 'jniLibs');

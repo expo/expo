@@ -75,7 +75,7 @@ async function maybePrebuildSharedLibsAsync(module: string, sdkNumber: number) {
   const gradleProject = module.replace(/\//g, '_');
   await spawnAsync(
     './gradlew',
-    [`:vendored_sdk${sdkNumber}_${gradleProject}:copyReleaseJniLibsProjectOnly`],
+    [`:vendored_sdk${sdkNumber}_${gradleProject}:copyReleaseJniLibsProjectAndLocalJars`],
     {
       cwd: ANDROID_DIR,
       // Uncomment the following line for verbose building output
@@ -88,14 +88,15 @@ async function maybePrebuildSharedLibsAsync(module: string, sdkNumber: number) {
     moduleRootDir,
     'build',
     'intermediates',
-    'library_jni',
+    'stripped_native_libs',
     'release',
-    'jni'
+    'out',
+    'lib'
   );
   const libFiles = await glob('**/*.so', {
     cwd: buildLibDir,
   });
-  assert(libFiles.length >= 0);
+  assert(libFiles.length > 0);
   await Promise.all(
     libFiles.map(async (file) => {
       const srcPath = path.join(buildLibDir, file);
