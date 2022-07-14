@@ -8,9 +8,8 @@
       "android": {
         "image": "ubuntu-20.04-jdk-11-ndk-r21e",
         "cache": {
-          "key":  "hermes-2022-05-20-RNv0.69.0-ee8941b8874132b8f83e4486b63ed5c19fc3f111",
           "customPaths": [
-            "../../android/sdks" 
+            "../../android/ReactAndroid/prebuiltHermes"
           ]
         },
         "env": {
