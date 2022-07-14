@@ -15,7 +15,7 @@ export default {
     };
   },
 
-  signOut({ retainApolloStore = false }: { retainApolloStore?: boolean } = {}): AppThunk {
+  signOut(): AppThunk {
     return async (dispatch: AppDispatch) => {
       const session = await LocalStorage.getSessionAsync();
       if (session) {
@@ -30,9 +30,7 @@ export default {
 
       await LocalStorage.clearHistoryAsync();
 
-      if (!retainApolloStore) {
-        ApolloClient.resetStore();
-      }
+      ApolloClient.resetStore();
 
       return dispatch({
         type: 'signOut',
