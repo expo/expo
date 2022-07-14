@@ -19,6 +19,7 @@ import { selectPackagesToPublish } from './selectPackagesToPublish';
 import { updateAndroidProjects } from './updateAndroidProjects';
 import { updateBundledNativeModulesFile } from './updateBundledNativeModulesFile';
 import { updateIosProjects } from './updateIosProjects';
+import { updateModuleTemplate } from './updateModuleTemplate';
 import { updatePackageVersions } from './updatePackageVersions';
 import { updateWorkspaceProjects } from './updateWorkspaceProjects';
 
@@ -38,6 +39,7 @@ export const publishPackagesPipeline = new Task<TaskArgs>(
       selectPackagesToPublish,
       updatePackageVersions,
       updateBundledNativeModulesFile,
+      updateModuleTemplate,
       updateWorkspaceProjects,
       updateAndroidProjects,
       updateIosProjects,
