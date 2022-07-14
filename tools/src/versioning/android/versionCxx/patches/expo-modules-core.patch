@@ -119,23 +119,23 @@ diff --git a/packages/expo-modules-core/android/src/main/cpp/JNIFunctionBody.cpp
 index ae14c3396a..c2fe1fce5f 100644
 --- a/packages/expo-modules-core/android/src/main/cpp/JNIFunctionBody.cpp
 +++ b/packages/expo-modules-core/android/src/main/cpp/JNIFunctionBody.cpp
-@@ -13,7 +13,7 @@ JNIFunctionBody::invoke(jni::local_ref<jni::JArrayClass<jobject>> &&args) {
+@@ -14,7 +14,7 @@
    // Because of that, it can't be cached - we will try to invoke the nonexistent method
    // if we receive an object of a different class than the one used to obtain the method id.
    // The only cacheable method id can be obtain from the base class.
 -  static const auto method = jni::findClassLocal("expo/modules/kotlin/jni/JNIFunctionBody")
 +  static const auto method = jni::findClassLocal("{VERSIONED_ABI_NAME}/expo/modules/kotlin/jni/JNIFunctionBody")
-     ->getMethod<
-       react::ReadableNativeArray::javaobject(jni::local_ref<jni::JArrayClass<jobject>>)
-     >(
-@@ -32,7 +32,7 @@ void JNIAsyncFunctionBody::invoke(
+     ->getMethod<jni::local_ref<react::ReadableNativeArray::javaobject>(jobjectArray)>(
+       "invoke",
+       "([Ljava/lang/Object;)Lcom/facebook/react/bridge/ReadableNativeArray;"
+@@ -32,7 +32,7 @@
    // Because of that, it can't be cached - we will try to invoke the nonexistent method
    // if we receive an object of a different class than the one used to obtain the method id.
    // The only cacheable method id can be obtain from the base class.
 -  static const auto method = jni::findClassLocal("expo/modules/kotlin/jni/JNIAsyncFunctionBody")
 +  static const auto method = jni::findClassLocal("{VERSIONED_ABI_NAME}/expo/modules/kotlin/jni/JNIAsyncFunctionBody")
      ->getMethod<
-       void(jni::local_ref<jni::JArrayClass<jobject>>, jobject)
+       void(jobjectArray , jobject)
      >(
 diff --git a/packages/expo-modules-core/android/src/main/cpp/JNIFunctionBody.h b/packages/expo-modules-core/android/src/main/cpp/JNIFunctionBody.h
 index 4d86132af1..b96eeb3303 100644
