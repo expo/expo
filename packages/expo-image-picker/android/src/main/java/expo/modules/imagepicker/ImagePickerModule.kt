@@ -8,6 +8,8 @@ import expo.modules.core.errors.ModuleNotFoundException
 import android.os.OperationCanceledException
 import expo.modules.imagepicker.contracts.CameraContract
 import expo.modules.imagepicker.contracts.CameraContractOptions
+import expo.modules.imagepicker.contracts.CropImageContract
+import expo.modules.imagepicker.contracts.CropImageContractOptions
 import expo.modules.imagepicker.contracts.ImageLibraryContract
 import expo.modules.imagepicker.contracts.ImageLibraryContractOptions
 import expo.modules.imagepicker.contracts.ImagePickerContractResult
@@ -87,6 +89,9 @@ class ImagePickerModule : Module() {
           imageLibraryLauncher = appContext.registerForActivityResult(
             ImageLibraryContract(this@ImagePickerModule),
           ) { input, result -> handleResultUponActivityDestruction(result, input.options) }
+          cropImageLauncher = appContext.registerForActivityResult(
+            CropImageContract(this@ImagePickerModule),
+          ) { input, result -> handleResultUponActivityDestruction(result, input.options) }
         }
       }
     }
@@ -103,6 +108,7 @@ class ImagePickerModule : Module() {
 
   private lateinit var cameraLauncher: AppContextActivityResultLauncher<CameraContractOptions, ImagePickerContractResult>
   private lateinit var imageLibraryLauncher: AppContextActivityResultLauncher<ImageLibraryContractOptions, ImagePickerContractResult>
+  private lateinit var cropImageLauncher: AppContextActivityResultLauncher<CropImageContractOptions, ImagePickerContractResult>
 
   /**
    * Stores result for an operation that has been interrupted by the activity destruction.
@@ -120,8 +126,18 @@ class ImagePickerModule : Module() {
     options: ImagePickerOptions,
   ): Any {
     return try {
-      val bareResult = launchPicker(pickerLauncher)
-      mediaHandler.readExtras(bareResult, options)
+      var result = launchPicker(pickerLauncher)
+      if (
+        !options.allowsMultipleSelection &&
+        options.allowsEditing &&
+        result.data.size == 1 &&
+        result.data[0].first == MediaType.IMAGE
+      ) {
+        result = launchPicker {
+          cropImageLauncher.launch(CropImageContractOptions(result.data[0].second, options))
+        }
+      }
+      mediaHandler.readExtras(result.data, options)
     } catch (cause: OperationCanceledException) {
       ImagePickerCancelledResponse()
     }
@@ -142,9 +158,9 @@ class ImagePickerModule : Module() {
    */
   private suspend fun launchPicker(
     pickerLauncher: suspend () -> ImagePickerContractResult,
-  ): List<Pair<MediaType, Uri>> = withContext(Dispatchers.Main) {
+  ): ImagePickerContractResult.Success = withContext(Dispatchers.Main) {
     when (val pickingResult = pickerLauncher()) {
-      is ImagePickerContractResult.Success -> pickingResult.data
+      is ImagePickerContractResult.Success -> pickingResult
       is ImagePickerContractResult.Cancelled -> throw OperationCanceledException()
     }
   }
@@ -186,11 +202,6 @@ class ImagePickerModule : Module() {
   }
 
   // endregion
-}
-
-internal enum class PickingSource {
-  CAMERA,
-  IMAGE_LIBRARY
 }
 
 /**
