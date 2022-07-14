@@ -47,7 +47,8 @@ internal class CropImageContract(
         CropImage.CROP_IMAGE_EXTRA_OPTIONS to CropImageOptions().apply {
           outputCompressFormat = compressFormat
           outputCompressQuality = (this@CropImageContract.options.quality * 100).toInt()
-          this.outputUri = outputUri
+
+          this.customOutputUri = outputUri
 
           this@CropImageContract.options.aspect?.let { (x, y) ->
             aspectRatioX = x
@@ -67,7 +68,7 @@ internal class CropImageContract(
     if (resultCode == Activity.RESULT_CANCELED || result == null) {
       return ImagePickerContractResult.Cancelled()
     }
-    val targetUri = requireNotNull(result.uri)
+    val targetUri = requireNotNull(result.uriContent)
     val contentResolver = requireNotNull(appContextProvider.appContext.reactContext) { "React Application Context is null" }.contentResolver
     runBlocking { copyExifData(sourceUri, targetUri.toFile(), contentResolver) }
     return ImagePickerContractResult.Success(listOf(MediaType.IMAGE to targetUri))
