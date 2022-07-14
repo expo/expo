@@ -384,6 +384,7 @@ NS_ASSUME_NONNULL_BEGIN
     dispatch_once(&once, ^{
       UIViewController *rootViewController = [UIApplication sharedApplication].keyWindow.rootViewController;
       [splashScreenService hideSplashScreenFor:rootViewController
+                                       options:EXSplashScreenDefault
                                successCallback:^(BOOL hasEffect){}
                                failureCallback:^(NSString * _Nonnull message) {
         EXLogWarn(@"Hiding splash screen from root view controller did not succeed: %@", message);
@@ -395,6 +396,7 @@ NS_ASSUME_NONNULL_BEGIN
   dispatch_async(dispatch_get_main_queue(), ^{
     EX_ENSURE_STRONGIFY(self);
     [splashScreenService showSplashScreenFor:self
+                                     options:EXSplashScreenDefault
                     splashScreenViewProvider:provider
                              successCallback:hideRootViewControllerSplashScreen
                              failureCallback:^(NSString *message){ EXLogWarn(@"%@", message); }];
@@ -415,6 +417,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.managedSplashScreenController = [[EXManagedAppSplashScreenViewController alloc] initWithRootView:rootView
                                                                                                  splashScreenView:splashScreenView];
     [splashScreenService showSplashScreenFor:self
+                                     options:EXSplashScreenDefault
                       splashScreenController:self.managedSplashScreenController
                              successCallback:^{}
                              failureCallback:^(NSString *message){ EXLogWarn(@"%@", message); }];
