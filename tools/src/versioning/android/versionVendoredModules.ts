@@ -191,8 +191,8 @@ async function baseTransformsFactoryAsync(prefix: string): Promise<Required<File
     path: [
       {
         // For package renaming, src/main/java/* -> src/main/java/abiN/*
-        find: /\/java\//,
-        replaceWith: `/java/${prefix}/`,
+        find: /\/(java|kotlin)\//,
+        replaceWith: `/$1/${prefix}/`,
       },
     ],
     content: [
@@ -218,7 +218,7 @@ async function baseTransformsFactoryAsync(prefix: string): Promise<Required<File
       },
       {
         paths: 'build.gradle',
-        find: `implementation 'com.facebook.react:react-native:+'`,
+        find: /\b(compileOnly|implementation)\s+['"]com.facebook.react:react-native:.+['"]/gm,
         replaceWith:
           `implementation 'host.exp:reactandroid-${prefix}:1.0.0'` +
           '\n' +
