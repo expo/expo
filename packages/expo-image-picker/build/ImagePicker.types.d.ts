@@ -212,6 +212,7 @@ export declare type ImageInfo = {
      * > This might be `null` when the ID is unavailable or the user gave limited permission to access the media library.
      *
      * @platform ios
+     * @platform android
      */
     assetId?: string | null;
     /**
