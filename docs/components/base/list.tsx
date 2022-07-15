@@ -98,7 +98,11 @@ type LIProps = {
   customCss?: SerializedStyles;
 };
 
-export const LI: React.FC<React.PropsWithChildren<LIProps>> = ({ children, propType, customCss }) => {
+export const LI: React.FC<React.PropsWithChildren<LIProps>> = ({
+  children,
+  propType,
+  customCss,
+}) => {
   return (
     <li css={[STYLES_LIST_ITEM, propType && STYLE_PROP_LIST, customCss]} className="docs-list-item">
       {children}

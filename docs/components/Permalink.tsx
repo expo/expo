@@ -61,7 +61,12 @@ const STYLES_PERMALINK_ICON = css`
   }
 `;
 
-const PermalinkBase: React.FC<React.PropsWithChildren<BaseProps>> = ({ component, children, className, ...rest }) =>
+const PermalinkBase: React.FC<React.PropsWithChildren<BaseProps>> = ({
+  component,
+  children,
+  className,
+  ...rest
+}) =>
   React.cloneElement(
     component,
     {
