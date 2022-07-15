@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-const PermaLink: React.FC = () => (
+const PermaLink: React.FC<React.PropsWithChildren<unknown>> = () => (
   <svg
     aria-label="permalink"
     className="anchor-icon"

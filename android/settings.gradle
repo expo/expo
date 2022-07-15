@@ -51,6 +51,7 @@ project(":expo-random").projectDir = new File("../packages/expo-random/android")
 
 [
     // ADD_NEW_SUPPORTED_ABIS_HERE
+    "abi46_0_0",
     "abi45_0_0",
     "abi44_0_0",
 ].forEach({ abiVariant ->
@@ -70,5 +71,6 @@ useExpoModules([
 ])
 
 useVendoredModulesForSettingsGradle('unversioned')
+useVendoredModulesForSettingsGradle('sdk46')
 
 // WHEN_DISTRIBUTING_REMOVE_TO_HERE

@@ -179,10 +179,10 @@ const STYLES_CENTER_WRAPPER = css`
   margin: auto;
 `;
 
-type ScrollContainerProps = {
+type ScrollContainerProps = React.PropsWithChildren<{
   scrollPosition?: number;
   scrollHandler?: () => void;
-};
+}>;
 
 class ScrollContainer extends React.Component<ScrollContainerProps> {
   scrollRef = React.createRef<HTMLDivElement>();
@@ -210,7 +210,7 @@ class ScrollContainer extends React.Component<ScrollContainerProps> {
   }
 }
 
-type Props = {
+type Props = React.PropsWithChildren<{
   onContentScroll?: (scrollTop: number) => void;
   isMenuActive: boolean;
   tocVisible: boolean;
@@ -219,7 +219,7 @@ type Props = {
   sidebarScrollPosition: number;
   sidebar: React.ReactNode;
   sidebarRight: React.ReactElement;
-};
+}>;
 
 export default class DocumentationNestedScrollLayout extends React.Component<Props> {
   static defaultProps = {

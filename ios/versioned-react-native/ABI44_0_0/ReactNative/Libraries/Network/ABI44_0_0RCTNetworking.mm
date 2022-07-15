@@ -668,7 +668,7 @@ ABI44_0_0RCT_EXPORT_MODULE()
 
 #pragma mark - JS API
 
-ABI44_0_0RCT_EXPORT_METHOD(sendRequest:(JS::NativeNetworkingIOS::SpecSendRequestQuery &)query
+ABI44_0_0RCT_EXPORT_METHOD(sendRequest:(ABI44_0_0JS::NativeNetworkingIOS::SpecSendRequestQuery &)query
                   callback:(ABI44_0_0RCTResponseSenderBlock)responseSender)
 {
   NSDictionary *queryDict = @{

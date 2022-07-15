@@ -44,7 +44,13 @@ type Props = {
   loop?: boolean;
 };
 
-const Video: React.FC<Props> = ({ controls, spaceAfter, url, file, loop = true }: Props) => {
+const Video: React.FC<React.PropsWithChildren<Props>> = ({
+  controls,
+  spaceAfter,
+  url,
+  file,
+  loop = true,
+}: Props) => {
   const [hover, setHover] = useState(false);
   const [forceShowControls, setForceShowControls] = useState(false);
   const marginBottom = getInitialMarginBottom(spaceAfter);
@@ -60,7 +66,7 @@ const Video: React.FC<Props> = ({ controls, spaceAfter, url, file, loop = true }
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}>
       <VisibilitySensor partialVisibility={isMobileOrTablet}>
-        {({ isVisible }) => (
+        {({ isVisible }: { isVisible: boolean }) => (
           <div
             style={{
               position: 'relative',

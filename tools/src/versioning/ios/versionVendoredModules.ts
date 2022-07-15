@@ -141,6 +141,14 @@ function baseTransformsFactory(prefix: string): Required<FileTransforms> {
         replaceWith: (_, p1) => `${prefix.toLowerCase()}R${p1}`,
       },
       {
+        // Modules written in Swift are registered using `RCT_EXTERN_MODULE` macro in Objective-C.
+        // These modules are usually unprefixed at this point as they don't include any common prefixes (e.g. RCT, RNC).
+        // We have to remap them to prefixed names. It's necessary for at least Stripe, Lottie and FlashList.
+        paths: '*.m',
+        find: new RegExp(`RCT_EXTERN_MODULE\\((?!${prefix})(\\w+)`, 'g'),
+        replaceWith: `RCT_EXTERN_REMAP_MODULE($1, ${prefix}$1`,
+      },
+      {
         find: /<jsi\/(.*)\.h>/,
         replaceWith: `<${prefix}jsi/${prefix}$1.h>`,
       },

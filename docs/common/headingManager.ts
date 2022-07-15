@@ -100,7 +100,7 @@ export class HeadingManager {
    * @returns {Object} Newly created heading instance
    */
   addHeading(
-    title: string | object,
+    title: React.ReactNode,
     nestingLevel?: number,
     additionalProps?: AdditionalProps,
     id?: string

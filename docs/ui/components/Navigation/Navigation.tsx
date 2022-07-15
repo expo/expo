@@ -40,7 +40,7 @@ const navigationStyle = css({
   },
 });
 
-const renderers: Record<NavigationType, FC<NavigationRenderProps>> = {
+const renderers: Record<NavigationType, FC<React.PropsWithChildren<NavigationRenderProps>>> = {
   section: SectionList,
   group: GroupList,
   page: PageLink,

@@ -169,6 +169,11 @@ class Video extends React.Component<VideoProps, VideoState> implements Playback 
     );
   };
 
+  componentWillUnmount() {
+    // Auto unload video to perform necessary cleanup safely
+    this.unloadAsync();
+  }
+
   /**
    * Set status API, only available while `isLoaded = true`.
    * @hidden
