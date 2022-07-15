@@ -25,7 +25,9 @@ open class CodedException(
     providedCode = code
   }
 
-  constructor(message: String) : this(message, null)
+  constructor(code: String, message: String) : this(code, message, null)
+
+  constructor(message: String) : this(message, null, null)
 
   constructor(cause: Throwable) : this(cause.localizedMessage, cause)
 

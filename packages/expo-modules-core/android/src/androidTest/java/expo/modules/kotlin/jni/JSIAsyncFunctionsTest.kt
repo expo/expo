@@ -3,9 +3,12 @@
 package expo.modules.kotlin.jni
 
 import com.google.common.truth.Truth
+import expo.modules.kotlin.exception.CodedException
+import expo.modules.kotlin.exception.JavaScriptEvaluateException
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import org.junit.Assert
 import org.junit.Test
 
 class JSIAsyncFunctionsTest {
@@ -158,5 +161,39 @@ class JSIAsyncFunctionsTest {
       Truth.assertThat(x).isEqualTo(123)
       Truth.assertThat(s).isEqualTo("expo")
     }
+  }
+
+  @Test
+  fun coded_error_should_be_converted() = withJSIInterop(
+    inlineModule {
+      Name("TestModule")
+      AsyncFunction("f") { ->
+        throw CodedException("Code", "Message")
+      }
+    }
+  ) { methodQueue ->
+    val exception = Assert.assertThrows(PromiseException::class.java) {
+      waitForAsyncFunction(methodQueue, "ExpoModules.TestModule.f()")
+    }
+
+    Truth.assertThat(exception.code).isEqualTo("Code")
+    Truth.assertThat(exception.message).contains("Message")
+  }
+
+  @Test
+  fun arbitrary_error_should_be_converted() = withJSIInterop(
+    inlineModule {
+      Name("TestModule")
+      AsyncFunction("f") { ->
+        throw IllegalStateException()
+      }
+    }
+  ) { methodQueue ->
+    val exception = Assert.assertThrows(PromiseException::class.java) {
+      waitForAsyncFunction(methodQueue, "ExpoModules.TestModule.f()")
+    }
+
+    Truth.assertThat(exception.code).isEqualTo("ERR_UNEXPECTED")
+    Truth.assertThat(exception.message).contains("java.lang.IllegalStateException")
   }
 }

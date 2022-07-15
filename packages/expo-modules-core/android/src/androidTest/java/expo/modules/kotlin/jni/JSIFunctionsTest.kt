@@ -3,6 +3,8 @@
 package expo.modules.kotlin.jni
 
 import com.google.common.truth.Truth
+import expo.modules.kotlin.exception.CodedException
+import expo.modules.kotlin.exception.JavaScriptEvaluateException
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -193,5 +195,71 @@ class JSIFunctionsTest {
       Truth.assertThat(x).isEqualTo(123)
       Truth.assertThat(s).isEqualTo("expo")
     }
+  }
+
+  @Test
+  fun coded_error_should_be_converted() = withJSIInterop(
+    inlineModule {
+      Name("TestModule")
+      Function("f") { ->
+        throw CodedException("Code", "Message")
+      }
+    }
+  ) {
+    val exception = evaluateScript(
+      """
+      let exception = null;
+      try {
+        ExpoModules.TestModule.f()
+      } catch (e) {
+        if (e instanceof global.ExpoModulesCore_CodedError) {
+          exception = e;
+        }
+      }
+      exception
+      """.trimIndent()
+    ).getObject()
+
+    Truth.assertThat(exception.getProperty("code").getString()).isEqualTo("Code")
+    Truth.assertThat(exception.getProperty("message").getString()).contains("Message")
+  }
+
+  @Test
+  fun arbitrary_error_should_be_converted() = withJSIInterop(
+    inlineModule {
+      Name("TestModule")
+      Function("f") { ->
+        throw IllegalStateException()
+      }
+    }
+  ) {
+    val exception = evaluateScript(
+      """
+      let exception = null;
+      try {
+        ExpoModules.TestModule.f()
+      } catch (e) {
+        if (e instanceof global.ExpoModulesCore_CodedError) {
+          exception = e;
+        }
+      }
+      exception
+      """.trimIndent()
+    ).getObject()
+
+    Truth.assertThat(exception.getProperty("code").getString()).isEqualTo("ERR_UNEXPECTED")
+    Truth.assertThat(exception.getProperty("message").getString()).contains("java.lang.IllegalStateException")
+  }
+
+  @Test(expected = JavaScriptEvaluateException::class)
+  fun uncaught_error_should_be_piped_to_host_language() = withJSIInterop(
+    inlineModule {
+      Name("TestModule")
+      Function("f") { ->
+        throw IllegalStateException()
+      }
+    }
+  ) {
+    evaluateScript("ExpoModules.TestModule.f()")
   }
 }
