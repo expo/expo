@@ -108,7 +108,6 @@ export async function bundleAsync(
   let config = await ExpoMetroConfig.loadAsync(projectRoot, { reporter, ...options });
   config = withMetroMultiPlatform(projectRoot, config, getPlatformBundlers(exp));
 
-  // @ts-expect-error
   const metroServer = await metro.runMetro(config, {
     watch: false,
   });
@@ -143,6 +142,7 @@ export async function bundleAsync(
     terminalReporter.update({
       buildID,
       type: 'bundle_build_started',
+      // @ts-expect-error: TODO
       bundleDetails,
     });
     try {

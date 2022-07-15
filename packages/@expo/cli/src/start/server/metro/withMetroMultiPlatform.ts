@@ -18,7 +18,7 @@ function withWebPolyfills(config: ConfigT): ConfigT {
     ? config.serializer.getPolyfills.bind(config.serializer)
     : () => [];
 
-  const getPolyfills = (ctx: { platform?: string }): readonly string[] => {
+  const getPolyfills = (ctx: { platform: string | null | undefined }): readonly string[] => {
     if (ctx.platform === 'web') {
       return [
         // TODO: runtime polyfills, i.e. Fast Refresh, error overlay, React Dev Tools...
