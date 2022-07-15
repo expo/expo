@@ -93,7 +93,11 @@ type TooltipProps = {
   topOffset: number;
 };
 
-const Tooltip: React.FC<TooltipProps> = ({ children, isCode, topOffset }) => (
+const Tooltip: React.FC<React.PropsWithChildren<TooltipProps>> = ({
+  children,
+  isCode,
+  topOffset,
+}) => (
   <div css={[STYLES_TOOLTIP, isCode && STYLES_CODE_TOOLTIP]} style={{ right: 20, top: topOffset }}>
     {children}
   </div>

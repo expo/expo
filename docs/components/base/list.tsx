@@ -46,7 +46,7 @@ type ULProps = {
   hideBullets?: boolean;
 };
 
-export const UL: React.FC<ULProps> = ({ children, hideBullets }) => (
+export const UL: React.FC<React.PropsWithChildren<ULProps>> = ({ children, hideBullets }) => (
   <ul {...attributes} css={[STYLES_UNORDERED_LIST, hideBullets && STYLES_NO_LIST_STYLE]}>
     {children}
   </ul>
@@ -64,7 +64,7 @@ const STYLES_ORDERED_LIST = css`
   }
 `;
 
-export const OL: React.FC = ({ children }) => (
+export const OL: React.FC<React.PropsWithChildren<unknown>> = ({ children }) => (
   <ol {...attributes} css={STYLES_ORDERED_LIST}>
     {children}
   </ol>
@@ -98,7 +98,11 @@ type LIProps = {
   customCss?: SerializedStyles;
 };
 
-export const LI: React.FC<LIProps> = ({ children, propType, customCss }) => {
+export const LI: React.FC<React.PropsWithChildren<LIProps>> = ({
+  children,
+  propType,
+  customCss,
+}) => {
   return (
     <li css={[STYLES_LIST_ITEM, propType && STYLE_PROP_LIST, customCss]} className="docs-list-item">
       {children}

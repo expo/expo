@@ -16,7 +16,7 @@ const STYLES_PARAGRAPH = css`
   margin-bottom: 1rem;
 `;
 
-export const P: React.FC = ({ children }) => (
+export const P: React.FC<React.PropsWithChildren<unknown>> = ({ children }) => (
   <p {...attributes} css={STYLES_PARAGRAPH}>
     {children}
   </p>
@@ -29,7 +29,7 @@ const STYLES_BOLD_PARAGRAPH = css`
   font-weight: 500;
 `;
 
-export const B: React.FC = ({ children }) => (
+export const B: React.FC<React.PropsWithChildren<unknown>> = ({ children }) => (
   <strong css={STYLES_BOLD_PARAGRAPH}>{children}</strong>
 );
 
@@ -50,7 +50,7 @@ const STYLES_PARAGRAPH_DIV = css`
   }
 `;
 
-export const PDIV: React.FC = ({ children }) => {
+export const PDIV: React.FC<React.PropsWithChildren<unknown>> = ({ children }) => {
   const isWider = (children as JSX.Element)?.props?.snackId;
   return (
     <div {...attributes} css={STYLES_PARAGRAPH_DIV} className={isWider ? 'is-wider' : ''}>
@@ -100,7 +100,7 @@ function firstChild<T>(children: T | T[]): T {
   return children;
 }
 
-function captureEmoji(children: React.ReactNode) {
+function captureEmoji(children: React.ReactNode | React.ReactNode[]) {
   const child = firstChild(children);
 
   if (typeof child === 'string') {
@@ -112,42 +112,50 @@ function captureEmoji(children: React.ReactNode) {
   }
 }
 
-function removeEmoji(emoji: string, children: string[]) {
+function removeEmoji(emoji: string, children: React.ReactNode | React.ReactNode[]) {
   const child = firstChild(children) || '';
 
-  const modifiedChild = child.replace(emoji, '');
+  if (typeof child === 'string') {
+    const modifiedChild = child.replace(emoji, '');
 
-  if (Array.isArray(children)) {
-    return [modifiedChild, ...children.slice(1)];
-  } else {
-    return modifiedChild;
+    if (Array.isArray(children)) {
+      return [modifiedChild, ...children.slice(1)];
+    } else {
+      return modifiedChild;
+    }
   }
+
+  return child;
 }
 
-export const Quote = ({ children, ...rest }: { children: JSX.Element | JSX.Element[] }) => {
+export const Quote = ({ children, ...rest }: React.PropsWithChildren<object>) => {
   let icon: React.ReactNode = (
     <div style={{ marginTop: 2 }}>
       <InfoIcon size={iconSize.small} />
     </div>
   );
 
-  const newChildren: JSX.Element[] = React.Children.map(children, child => {
-    const emoji = captureEmoji(child?.props?.children);
+  // todo(simek): Refactor this component
+  const newChildren = React.Children.map(children, child => {
+    // @ts-ignore
+    const { props } = child;
+    const emoji = captureEmoji(props?.children);
 
     if (emoji) {
       icon = emoji;
+      const childData = Object.assign({}, child) || {};
 
       return {
-        ...child,
+        ...childData,
         props: {
-          ...child?.props,
-          children: removeEmoji(emoji, child?.props?.children),
+          ...props,
+          children: removeEmoji(emoji, props?.children),
         },
       };
     }
 
     return child;
-  });
+  }) as React.ReactNode;
 
   return (
     <blockquote {...attributes} css={STYLES_BLOCKQUOTE} {...rest}>

@@ -2677,7 +2677,6 @@ sign-out operation.
               class="inline css-1fz3od4-InlineCode"
             >
               AppleAuthenticationCredential
-              
             </code>
           </span>
           <span
@@ -3160,7 +3159,6 @@ developers.
               class="inline css-1fz3od4-InlineCode"
             >
               AppleAuthenticationFullName
-              
             </code>
           </span>
           <span
@@ -3464,7 +3462,6 @@ may be
               class="inline css-1fz3od4-InlineCode"
             >
               AppleAuthenticationRefreshOptions
-              
             </code>
           </span>
           <span
@@ -3757,7 +3754,6 @@ OAuth 2.0 protocol
               class="inline css-1fz3od4-InlineCode"
             >
               AppleAuthenticationSignInOptions
-              
             </code>
           </span>
           <span
@@ -4067,7 +4063,6 @@ OAuth 2.0 protocol
               class="inline css-1fz3od4-InlineCode"
             >
               AppleAuthenticationSignOutOptions
-              
             </code>
           </span>
           <span
@@ -4297,7 +4292,6 @@ OAuth 2.0 protocol
               class="inline css-1fz3od4-InlineCode"
             >
               Subscription
-              
             </code>
           </span>
           <span
@@ -8361,7 +8355,6 @@ code.
               class="inline css-1fz3od4-InlineCode"
             >
               BarCodeBounds
-              
             </code>
           </span>
           <span
@@ -8664,7 +8657,6 @@ code.
               class="inline css-1fz3od4-InlineCode"
             >
               BarCodeEventCallbackArguments
-              
             </code>
           </span>
           <span
@@ -8789,7 +8781,6 @@ code.
               class="inline css-1fz3od4-InlineCode"
             >
               BarCodePoint
-              
             </code>
           </span>
           <span
@@ -9086,7 +9077,6 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
               class="inline css-1fz3od4-InlineCode"
             >
               BarCodeScannerResult
-              
             </code>
           </span>
           <span
@@ -9390,7 +9380,6 @@ For some types, they will represent the area used by the scanner.
               class="inline css-1fz3od4-InlineCode"
             >
               BarCodeSize
-              
             </code>
           </span>
           <span
@@ -11526,7 +11515,6 @@ provided with a single argument that is
               class="inline css-1fz3od4-InlineCode"
             >
               PedometerResult
-              
             </code>
           </span>
           <span
@@ -11857,7 +11845,6 @@ provided with a single argument that is
               class="inline css-1fz3od4-InlineCode"
             >
               Subscription
-              
             </code>
           </span>
           <span

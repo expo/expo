@@ -2,13 +2,13 @@ import { spacing, theme, ArrowUpRightIcon } from '@expo/styleguide';
 import * as React from 'react';
 
 import { SNACK_URL, getSnackFiles } from '~/common/snack';
-import { PageApiVersionContext } from '~/providers/page-api-version';
+import { PageApiVersionContext, PageApiVersionContextType } from '~/providers/page-api-version';
 import { Button } from '~/ui/components/Button';
 
 const DEFAULT_PLATFORM = 'android';
 const LATEST_VERSION = `v${require('../../package.json').version}`;
 
-type Props = {
+type Props = React.PropsWithChildren<{
   dependencies: string[];
   label?: string;
   defaultPlatform?: string;
@@ -17,7 +17,7 @@ type Props = {
   platforms?: string[];
   buttonTitle?: string;
   contentHidden?: boolean;
-};
+}>;
 
 export default class SnackInline extends React.Component<Props> {
   static contextType = PageApiVersionContext;
@@ -42,7 +42,7 @@ export default class SnackInline extends React.Component<Props> {
   // find the examples in the static dir, and we don't have a `latest` version
   // there, but we do have `unversioned`.
   private getSelectedDocsVersion = () => {
-    const { version } = this.context;
+    const { version } = this.context as PageApiVersionContextType;
     return version === 'latest' ? LATEST_VERSION : version;
   };
 
