@@ -266,20 +266,23 @@ class ImagePickerModule(
 
     exifDataHandler = ExifDataHandler(uri)
     val intent = Intent(context, CropImageActivity::class.java).apply {
-      putExtra(CropImage.CROP_IMAGE_EXTRA_BUNDLE, bundleOf(
-        CropImage.CROP_IMAGE_EXTRA_SOURCE to uri,
-        CropImage.CROP_IMAGE_EXTRA_OPTIONS to options {
-          pickerOptions.forceAspect?.let { (x, y) ->
-            setAspectRatio((x as Number).toInt(), (y as Number).toInt())
-            setFixAspectRatio(true)
-            setInitialCropWindowPaddingRatio(0f)
-          }
+      putExtra(
+        CropImage.CROP_IMAGE_EXTRA_BUNDLE,
+        bundleOf(
+          CropImage.CROP_IMAGE_EXTRA_SOURCE to uri,
+          CropImage.CROP_IMAGE_EXTRA_OPTIONS to options {
+            pickerOptions.forceAspect?.let { (x, y) ->
+              setAspectRatio((x as Number).toInt(), (y as Number).toInt())
+              setFixAspectRatio(true)
+              setInitialCropWindowPaddingRatio(0f)
+            }
 
-          setOutputUri(fileUri)
-          setOutputCompressFormat(compressFormat)
-          setOutputCompressQuality(pickerOptions.quality)
-        }.cropImageOptions.also { it.validate() }
-      ))
+            setOutputUri(fileUri)
+            setOutputCompressFormat(compressFormat)
+            setOutputCompressQuality(pickerOptions.quality)
+          }.cropImageOptions.also { it.validate() }
+        )
+      )
     }
     startActivityOnResult(intent, CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE, promise, pickerOptions)
   }
