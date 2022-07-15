@@ -1,5 +1,13 @@
 import { css } from '@emotion/react';
-import { borderRadius, palette, shadows, spacing, theme, typography } from '@expo/styleguide';
+import {
+  ArrowRightIcon,
+  borderRadius,
+  palette,
+  shadows,
+  spacing,
+  theme,
+  typography,
+} from '@expo/styleguide';
 import React, { PropsWithChildren } from 'react';
 import { Col, ColProps } from 'react-grid-system';
 
@@ -47,7 +55,7 @@ export const APIGridCell = ({
       <div css={cellIconWrapperStyle}>{icon}</div>
       <div css={cellTitleWrapperStyle}>
         {title}
-        <span css={cellTitleArrow}>{'->'}</span>
+        <ArrowRightIcon color={theme.icon.secondary} />
       </div>
     </a>
   </Col>
@@ -87,11 +95,19 @@ const cellWrapperStyle = css`
 
 const cellHoverStyle = css`
   & {
-    transition: box-shadow 200ms;
+    transition: box-shadow 300ms;
+
+    svg {
+      transition: transform 300ms;
+    }
   }
 
   &:hover {
     box-shadow: ${shadows.tiny};
+
+    svg {
+      transform: scale(1.1);
+    }
   }
 `;
 
@@ -132,13 +148,7 @@ const cellTitleWrapperStyle = css({
   fontFamily: typography.fontStacks.medium,
   lineHeight: '30px',
   color: theme.text.default,
-});
-
-const cellTitleArrow = css({
-  ...typography.fontSizes[18],
-  float: 'right',
-  color: theme.icon.secondary,
-  letterSpacing: 0,
+  alignItems: 'center',
 });
 
 const cellCommunityStyle = css({
@@ -151,9 +161,9 @@ const cellCommunityStyle = css({
 });
 
 const cellCommunityIconWrapperStyle = css({
-  height: 32,
-  width: 32,
-  minWidth: 32,
+  height: 48,
+  width: 48,
+  minWidth: 48,
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
