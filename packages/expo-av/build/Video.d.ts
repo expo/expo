@@ -39,6 +39,7 @@ declare class Video extends React.Component<VideoProps, VideoState> implements P
      * @hidden
      */
     unloadAsync: () => Promise<AVPlaybackStatus>;
+    componentWillUnmount(): void;
     /**
      * Set status API, only available while `isLoaded = true`.
      * @hidden

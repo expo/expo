@@ -99,6 +99,8 @@ The rest of the API on the `Video` component `ref` is the same as the API for `A
 
 - `videoRef.unloadAsync()`
 
+  This cleanup function will be automatically called in the `Video` component's `componentWillUnmount`.
+
 - `videoRef.getStatusAsync()`
 
 - `videoRef.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate)`

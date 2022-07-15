@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Automatically unload `Video` component before React Native initiates an unmount to prevent memory leak crashes. ([#18076](https://github.com/expo/expo/pull/18173) by [@hirbod](https://github.com/hirbod) and [@Pickleboyonline](https://github.com/Pickleboyonline))
+
 ### 💡 Others
 
 ## 12.0.0 — 2022-07-07
