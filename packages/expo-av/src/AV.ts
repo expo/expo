@@ -251,6 +251,7 @@ export interface Playback extends AV {
 
   /**
    * Unloads the media from memory. `loadAsync()` must be called again in order to be able to play the media.
+   * > This cleanup function will be automatically called in the `Video` component's `componentWillUnmount`.
    * @return A `Promise` that is fulfilled with the `AVPlaybackStatus` of the `playbackObject` once it is unloaded, or rejects if unloading failed.
    */
   unloadAsync(): Promise<AVPlaybackStatus>;
