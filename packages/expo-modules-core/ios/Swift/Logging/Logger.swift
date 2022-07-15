@@ -15,7 +15,10 @@ public class Logger {
 
   private var handlers: [LogHandler] = []
 
-  init(category: String = "main") {
+  /**
+   Exposed for use by Swift wrappers
+   */
+  public init(category: String) {
     self.category = category
 
     if #available(macOS 11.0, iOS 14.0, watchOS 7.0, tvOS 14.0, *) {
@@ -34,6 +37,14 @@ public class Logger {
   }
 
   // MARK: - Public logging functions
+
+  /**
+   Exposed for use by Swift wrappers
+    Application code should call one of the LogType-specific methods below
+   */
+  public func log(type: LogType = .trace, _ items: Any...) {
+    log(type: type, items)
+  }
 
   /**
    The most verbose log level that captures all the details about the behavior of the implementation.
@@ -139,7 +150,7 @@ public class Logger {
     }
     let endTime = DispatchTime.now()
     let diff = Double(endTime.uptimeNanoseconds - startTime.uptimeNanoseconds) / 1_000_000
-    log(type: .timer, "Timer '\(id)' has finished in: \(diff) seconds")
+    log(type: .timer, "Timer '\(id)' has finished in: \(diff) ms")
     timers.removeValue(forKey: id)
   }
 
@@ -177,17 +188,13 @@ public class Logger {
       }
     }
   }
-
-  private func log(type: LogType = .trace, _ items: Any...) {
-    log(type: type, items)
-  }
 }
 
-fileprivate func reformatStackSymbol(_ symbol: String) -> String {
+private func reformatStackSymbol(_ symbol: String) -> String {
   return symbol.replacingOccurrences(of: #"^\d+\s+"#, with: "", options: .regularExpression)
 }
 
-fileprivate func describe(value: Any) -> String {
+private func describe(value: Any) -> String {
   if let value = value as? String {
     return value
   }

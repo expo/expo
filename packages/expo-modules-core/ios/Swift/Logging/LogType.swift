@@ -5,7 +5,7 @@ import os.log
 /**
  An enum with available log types.
  */
-public enum LogType: Int {
+@objc public enum LogType: Int {
   case trace = 0
   case timer = 1
   case stacktrace = 2
@@ -14,6 +14,27 @@ public enum LogType: Int {
   case warn = 5
   case error = 6
   case fatal = 7
+
+  public var asString: String {
+    switch self {
+    case .trace:
+      return "trace"
+    case .timer:
+      return "timer"
+    case .stacktrace:
+      return "stacktrace"
+    case .debug:
+      return "debug"
+    case .info:
+      return "info"
+    case .warn:
+      return "warn"
+    case .error:
+      return "error"
+    case .fatal:
+      return "fatal"
+    }
+  }
 
   /**
    The string that is used to prefix the messages of this log type.

@@ -12,6 +12,10 @@
 
 ### 💡 Others
 
+### ⚠️ Notices
+
+- Logger changes. ([#18251](https://github.com/expo/expo/pull/18251) by [@douglowder](https://github.com/douglowder))
+
 ## 0.11.1 — 2022-07-11
 
 ### 🐛 Bug fixes
