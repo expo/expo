@@ -2,22 +2,26 @@
 title: Account Types
 ---
 
+import ImageSpotlight from '~/components/plugins/ImageSpotlight'
+
 ## Personal Accounts
 
-Every user of Expo has their own Personal Account. With this account, we can safely identify you as the developer or owner of an app. You can use Personal Accounts for all features Expo has to offer. In cases where you take an action that doesn't specify which account it should belong to, it will default to your Personal Account
+When you [create a new account](https://expo.dev/signup) with Expo, you are creating a Personal Account. This account type is your individual account. Expo uses this account type to safely identify you as your application's developer or owner. A Personal Account has access to all features provided by Expo.
 
-> This account is just for you, **never share access to this account for any reason.**
+Personal Accounts are referred to as the default account type in the scenarios where you take action, but the activity does not specify which account it should belong.
+
+> This account is just for you. Never share access to this account for any reason.
 
 ## Organizations
 
-If you are creating a project that may need to outlive your involvement with it, for instance a professional project for a company you work for, we recommend you create a new Organization for that project.
+When creating a project that needs to outlive your involvement with it, for instance, a professional project for a company you work for, we recommend you create a new Organization for that project.
 
-Common situations where Organizations are useful:
+Common situations where Organizations are helpful:
 
 - Transferring control of a project
 - Sharing access with others
 - Isolating expenses for work projects that you need to submit expenses for
-- Structuring projects for different contexts (e.g. work for different clients)
+- Structuring projects for different contexts, such as working for different clients
 
 |                                                                     | Personal Accounts | Organization |
 | ------------------------------------------------------------------- | ----------------- | ------------ |
@@ -31,18 +35,31 @@ Common situations where Organizations are useful:
 
 ### Creating New Organizations
 
-To create a new Organization, visit [expo.dev/create-organization](https://expo.dev/create-organization) and sign in to your Personal Account.
-You can also create a new Organization by selecting "New Organization" from the account selection dropdown at the top of your dashboard.
+To create a new Organization, log in to your Personal Account and open the link [expo.dev/create-organization](https://expo.dev/create-organization).
 
-You'll need to choose a name for your Organization. To associate projects with an Organization, you will need to add the [Owner key](/versions/latest/config/app/#owner) to your project's app.json.
+If you are logged in to your Personal Account, you can create a new Organization from the dashboard:
+
+- Select your account's user name from the top menu bar. It will open a dropdown menu.
+
+<ImageSpotlight alt="Open the dropdown menu on the dashboard." src="/static/images/accounts/dropdown-menu.jpg" style={{maxWidth: 720}} />
+
+- Select Create Organization under Organizations in the dropdown.
+
+<ImageSpotlight alt="Select Create Organization in the dropdown to create a new organization." src="/static/images/accounts/create-organization.jpg" style={{maxWidth: 720}} />
+
+- Choose a name for your Organization and select the Create button.
+
+After creating a new Organization, you are redirected to the new dashboard page. To associate projects with an Organization, you have to add the [Owner key](/versions/latest/config/app/#owner) under the `"expo"` key to your project's **app.json**.
 
 ### Converting Personal Accounts into Organizations
 
-If you have projects under a Personal Account that you would rather have as an Organization, it is simple and safe to convert to any project created under your Personal Account to an Organization. Simply visit [expo.dev/settings](https://expo.dev/settings) and follow the prompts under **Convert your account into an Organization**.
+When you have projects under a Personal Account that you want to be under an Organization, you can convert your Personal Account into an Organization. In the User Settings of your account, go to [Convert your account into an organization](https://expo.dev/settings#convert-account) section and follow the steps the process includes.
 
-You will need to assign a Personal Account to manage the Organization as part of this process (You can create a new one if you don't already have another account).
+<ImageSpotlight alt="Convert your account into an organization setting." src="/static/images/accounts/convert-to-organization.jpg" style={{maxWidth: 720}} />
 
-We have taken a lot of care to make sure that all of the functionality that you and your users rely on will continue work as expected, meaning:
+You will need to assign a Personal Account to manage the Organization as part of this process. You can create a new personal account if you do not have another one.
+
+When you are going through this process, we took a lot of care to make sure that all of the functionality that you and your users rely on will continue to work as expected:
 
 - You can continue to deliver updates and push notifications to your users.
 - You will still be able to use any iOS or Android credentials stored on Expo's servers.
@@ -52,19 +69,19 @@ We have taken a lot of care to make sure that all of the functionality that you 
 
 ### Renaming an Account
 
-Accounts may be renamed a limited number of times. Simply visit [the account settings page](https://expo.dev/accounts/[account]/settings) and follow the prompts under **Rename Account**.
+Accounts can be renamed a limited number of times. Visit [the account settings](https://expo.dev/accounts/[account]/settings) and follow the steps under [Rename Account](https://expo.dev/settings#rename-account).
+
+<ImageSpotlight alt="Rename account settings." src="/static/images/accounts/rename-account.jpg" style={{maxWidth: 720}} />
+
+One caveat to remember when renaming accounts is that the new app published for your projects belonging to renamed accounts must be on SDK 43 or higher.
+
+## Transferring Projects Between Accounts
+
+Projects can be transferred a limited number of times. Visit [the project settings page](https://expo.dev/accounts/[account]/projects/[project]/settings) and follow the steps under **Transfer project**.
 
 #### Some caveats
 
-- New publishes for projects belonging to renamed accounts must be on SDK 43 or higher.
+- The person performing the transfer must have the Owner role on both the source and destination accounts.
+- New publish for a renamed project must be on SDK 43 or higher.
 
-### Transferring Projects Between Accounts
-
-Projects may be renamed a limited number of times. Simply visit [the project settings page](https://expo.dev/accounts/[account]/projects/[project]/settings) and follow the prompts under **Transfer project**.
-
-#### Some caveats
-
-- The person performing the transfer must have "Owner" role on both the source and destination accounts.
-- New publishes for renamed project must be on SDK 43 or higher.
-
-> 💡 In the case where a project on your Personal or Organization Account (`source`) is sold/given to another company/person (receiving party) and the receiving party does not want to grant you Owner access to their `destination` account, you can create a new Organization Account (`escrow`), grant the receiving party Owner access, and transfer the project to the `escrow` account. The receiving party then can transfer it to the `destination` account from the `escrow` account.
+> In a scenario where a project on your Personal or Organization Account (`source`) is sold/given to another company/person (receiving party), and the receiving party does not want to grant you Owner access to their `destination` account, you can create a new Organization Account (`escrow`), grant the receiving party Owner access, and transfer the project to the `escrow` account. The receiving party then can transfer it to the `destination` account from the `escrow` account.
