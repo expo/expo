@@ -4,23 +4,15 @@ labels: 'needs review'
 body:
   - type: markdown
     attributes:
-      value: Thanks for taking the time to file a bug report! Please fill out this form as completely as possible.
+      value: Thanks for taking the time to file a bug report! If you are convinced that you have found a bug in Expo tools, this is the right place. Please fill out this entire form.
   - type: markdown
     attributes:
-      value: If you leave out sections there is a high likelihood your issue will be closed. If you have a question, not a bug report, please post it on our [forums](https://forums.expo.dev/) instead.
+      value: If you have a question or you think your issue might be caused by your application code, you can get help from the community on the [forums](https://forums.expo.dev/) or on [Discord](https://chat.expo.dev).
   - type: textarea
     attributes:
       label: Summary
-      description: Describe the issue in 1 or 2 sentences
-      placeholder: Clearly describe what the expected behavior is vs. what is actually happening. This should be as short as possible, while still communicating all the necessary information. If your summary is just 'X library/method isn't working', then you need to continue debugging yourself and provide more information.
-    validations:
-      required: true
-  - type: dropdown
-    attributes:
-      label: Managed or bare workflow? If you have `ios/` or `android/` directories in your project, the answer is bare!
-      options:
-        - managed
-        - bare
+      description: Describe the issue
+      placeholder: Clearly describe what the expected behavior is vs. what is actually happening. Try to be concise and precise. If all you have to report is that 'X library/method isn't working', then will need to [continue debugging on your own](https://expo.fyi/manual-debugging) to more precisely articulate your issue before proceeding.
     validations:
       required: true
   - type: dropdown
@@ -31,12 +23,9 @@ body:
         - Android
         - iOS
         - Web
+        - Not Applicable
     validations:
       required: true
-  - type: input
-    attributes:
-      label: SDK Version (managed workflow only)
-      description: What version of the Expo SDK are you using?
   - type: textarea
     attributes:
       label: Environment
@@ -45,13 +34,10 @@ body:
       required: true
   - type: textarea
     attributes:
-      label: Reproducible demo
-      description: 'This should include as little code as possible, do not simply link your entire project. Sharing a link to a [Snack](https://snack.expo.dev/) is a GREAT way to provide a reproducible demo :) If a reproducible demo is not provided, it is very likely your issue will be closed. Read [here more guidance](https://stackoverflow.com/help/mcve).'
+      label: Minimal reproducible example
+      description: 'This should include as little code as possible, and no extraneous dependencies. Do not share your entire project. Sharing a link to a [Snack](https://snack.expo.dev/) is often the best approach, but in some cases a GitHub repository is required. If a reproducible demo is not provided, your issue will be closed. You must also test your issue against the latest SDK version to ensure that it hasn't already been resolved. [Learn more about creating a minimal reproducible example](https://stackoverflow.com/help/mcve).'
     validations:
       required: true
   - type: markdown
     attributes:
-      value: Please make sure contributors can run your code and follow the steps your provided in order to reproduce the bug.
-  - type: markdown
-    attributes:
-      value: "**Realize that it is up to you to debug your code and be as certain as possible that the bug is with Expo, not with your own app.** [Here's an excellent guide to debugging you can follow](https://gist.github.com/brentvatne/5ac00cba0c70b7a06b89a56787d6bc4a)."
+`     value: Please make sure contributors can run your Snack or repository, and you explain how to reproduce the issue once the example is running.
