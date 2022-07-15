@@ -1,5 +1,5 @@
 diff --git a/packages/expo-modules-core/android/CMakeLists.txt b/packages/expo-modules-core/android/CMakeLists.txt
-index d710ce4f8f..3562c513b3 100644
+index d710ce4f8f..305e29f6c4 100644
 --- a/packages/expo-modules-core/android/CMakeLists.txt
 +++ b/packages/expo-modules-core/android/CMakeLists.txt
 @@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.4.1)
@@ -70,7 +70,7 @@ index d710ce4f8f..3562c513b3 100644
          NO_CMAKE_FIND_ROOT_PATH
  )
 diff --git a/packages/expo-modules-core/android/build.gradle b/packages/expo-modules-core/android/build.gradle
-index 37f9d48029..2ed8dc1e09 100644
+index 2a9aecc5ee..ee62584679 100644
 --- a/packages/expo-modules-core/android/build.gradle
 +++ b/packages/expo-modules-core/android/build.gradle
 @@ -55,6 +55,10 @@ def REACT_NATIVE_DIR = REACT_NATIVE_BUILD_FROM_SOURCE
@@ -84,7 +84,7 @@ index 37f9d48029..2ed8dc1e09 100644
  
  def reactProperties = new Properties()
  file("$REACT_NATIVE_DIR/ReactAndroid/gradle.properties").withInputStream { reactProperties.load(it) }
-@@ -270,7 +274,7 @@ task createNativeDepsDirectories() {
+@@ -290,7 +294,7 @@ task createNativeDepsDirectories() {
  // JNI
  def extractReactNativeAAR = { buildType ->
    def suffix = buildType == 'Debug' ? '-debug' : '-release'
@@ -93,8 +93,23 @@ index 37f9d48029..2ed8dc1e09 100644
    if (rnAARs.isEmpty()) {
      rnAARs = fileTree(REACT_NATIVE_DIR).matching { include "**/react-native/**/*.aar" }
    }
+diff --git a/packages/expo-modules-core/android/src/main/cpp/CachedReferencesRegistry.cpp b/packages/expo-modules-core/android/src/main/cpp/CachedReferencesRegistry.cpp
+index 6a92150cef..c656ead0e1 100644
+--- a/packages/expo-modules-core/android/src/main/cpp/CachedReferencesRegistry.cpp
++++ b/packages/expo-modules-core/android/src/main/cpp/CachedReferencesRegistry.cpp
+@@ -19,8 +19,8 @@ void CachedReferencesRegistry::loadJClasses(JNIEnv *env) {
+     {"<init>", "(Z)V"}
+   });
+ 
+-  loadJClass(env, "com/facebook/react/bridge/PromiseImpl", {
+-    {"<init>", "(Lcom/facebook/react/bridge/Callback;Lcom/facebook/react/bridge/Callback;)V"}
++  loadJClass(env, "{VERSIONED_ABI_NAME}/com/facebook/react/bridge/PromiseImpl", {
++    {"<init>", "(L{VERSIONED_ABI_NAME}/com/facebook/react/bridge/Callback;L{VERSIONED_ABI_NAME}/com/facebook/react/bridge/Callback;)V"}
+   });
+ 
+   loadJClass(env, "java/lang/Object", {});
 diff --git a/packages/expo-modules-core/android/src/main/cpp/Exceptions.h b/packages/expo-modules-core/android/src/main/cpp/Exceptions.h
-index 3565306601..984166f10f 100644
+index 3565306601..f1773f0ae3 100644
 --- a/packages/expo-modules-core/android/src/main/cpp/Exceptions.h
 +++ b/packages/expo-modules-core/android/src/main/cpp/Exceptions.h
 @@ -17,7 +17,7 @@ namespace expo {
@@ -116,10 +131,10 @@ index 3565306601..984166f10f 100644
    static jni::local_ref<JavaScriptEvaluateException> create(
      const std::string &message,
 diff --git a/packages/expo-modules-core/android/src/main/cpp/JNIFunctionBody.cpp b/packages/expo-modules-core/android/src/main/cpp/JNIFunctionBody.cpp
-index ae14c3396a..c2fe1fce5f 100644
+index d9ac4a3361..61c6d766bd 100644
 --- a/packages/expo-modules-core/android/src/main/cpp/JNIFunctionBody.cpp
 +++ b/packages/expo-modules-core/android/src/main/cpp/JNIFunctionBody.cpp
-@@ -14,7 +14,7 @@
+@@ -14,10 +14,10 @@ JNIFunctionBody::invoke(jobjectArray args) {
    // Because of that, it can't be cached - we will try to invoke the nonexistent method
    // if we receive an object of a different class than the one used to obtain the method id.
    // The only cacheable method id can be obtain from the base class.
@@ -127,8 +142,12 @@ index ae14c3396a..c2fe1fce5f 100644
 +  static const auto method = jni::findClassLocal("{VERSIONED_ABI_NAME}/expo/modules/kotlin/jni/JNIFunctionBody")
      ->getMethod<jni::local_ref<react::ReadableNativeArray::javaobject>(jobjectArray)>(
        "invoke",
-       "([Ljava/lang/Object;)Lcom/facebook/react/bridge/ReadableNativeArray;"
-@@ -32,7 +32,7 @@
+-      "([Ljava/lang/Object;)Lcom/facebook/react/bridge/ReadableNativeArray;"
++      "([Ljava/lang/Object;)L{VERSIONED_ABI_NAME}/com/facebook/react/bridge/ReadableNativeArray;"
+     );
+ 
+   return method(this->self(), args);
+@@ -32,7 +32,7 @@ void JNIAsyncFunctionBody::invoke(
    // Because of that, it can't be cached - we will try to invoke the nonexistent method
    // if we receive an object of a different class than the one used to obtain the method id.
    // The only cacheable method id can be obtain from the base class.
@@ -138,7 +157,7 @@ index ae14c3396a..c2fe1fce5f 100644
        void(jobjectArray , jobject)
      >(
 diff --git a/packages/expo-modules-core/android/src/main/cpp/JNIFunctionBody.h b/packages/expo-modules-core/android/src/main/cpp/JNIFunctionBody.h
-index 4d86132af1..b96eeb3303 100644
+index 9125e980ee..d0bb26ac53 100644
 --- a/packages/expo-modules-core/android/src/main/cpp/JNIFunctionBody.h
 +++ b/packages/expo-modules-core/android/src/main/cpp/JNIFunctionBody.h
 @@ -15,7 +15,7 @@ namespace expo {
@@ -160,7 +179,7 @@ index 4d86132af1..b96eeb3303 100644
    /**
     * Invokes a Kotlin's implementation of this async function.
 diff --git a/packages/expo-modules-core/android/src/main/cpp/JSIInteropModuleRegistry.h b/packages/expo-modules-core/android/src/main/cpp/JSIInteropModuleRegistry.h
-index 32fbabd146..f94b37ee16 100644
+index 32fbabd146..f249eb6017 100644
 --- a/packages/expo-modules-core/android/src/main/cpp/JSIInteropModuleRegistry.h
 +++ b/packages/expo-modules-core/android/src/main/cpp/JSIInteropModuleRegistry.h
 @@ -25,7 +25,7 @@ namespace expo {
@@ -173,7 +192,7 @@ index 32fbabd146..f94b37ee16 100644
  
    static jni::local_ref<jhybriddata> initHybrid(jni::alias_ref<jhybridobject> jThis);
 diff --git a/packages/expo-modules-core/android/src/main/cpp/JavaScriptModuleObject.h b/packages/expo-modules-core/android/src/main/cpp/JavaScriptModuleObject.h
-index 994df84423..c22a1ec267 100644
+index 994df84423..700d19f4e3 100644
 --- a/packages/expo-modules-core/android/src/main/cpp/JavaScriptModuleObject.h
 +++ b/packages/expo-modules-core/android/src/main/cpp/JavaScriptModuleObject.h
 @@ -28,7 +28,7 @@ class JSIInteropModuleRegistry;
@@ -186,7 +205,7 @@ index 994df84423..c22a1ec267 100644
  
    static jni::local_ref<jhybriddata> initHybrid(jni::alias_ref<jhybridobject> jThis);
 diff --git a/packages/expo-modules-core/android/src/main/cpp/JavaScriptObject.h b/packages/expo-modules-core/android/src/main/cpp/JavaScriptObject.h
-index 1a4bd3fdb2..6ccc28b07d 100644
+index 1a4bd3fdb2..4173fb0849 100644
 --- a/packages/expo-modules-core/android/src/main/cpp/JavaScriptObject.h
 +++ b/packages/expo-modules-core/android/src/main/cpp/JavaScriptObject.h
 @@ -25,7 +25,7 @@ class JavaScriptRuntime;
@@ -199,7 +218,7 @@ index 1a4bd3fdb2..6ccc28b07d 100644
  
    static void registerNatives();
 diff --git a/packages/expo-modules-core/android/src/main/cpp/JavaScriptValue.h b/packages/expo-modules-core/android/src/main/cpp/JavaScriptValue.h
-index 1f016714bc..3fe3c32737 100644
+index 1f016714bc..b501cd8faa 100644
 --- a/packages/expo-modules-core/android/src/main/cpp/JavaScriptValue.h
 +++ b/packages/expo-modules-core/android/src/main/cpp/JavaScriptValue.h
 @@ -23,7 +23,7 @@ class JavaScriptObject;
@@ -211,3 +230,20 @@ index 1f016714bc..3fe3c32737 100644
    static auto constexpr TAG = "JavaScriptValue";
  
    static void registerNatives();
+diff --git a/packages/expo-modules-core/android/src/main/cpp/MethodMetadata.cpp b/packages/expo-modules-core/android/src/main/cpp/MethodMetadata.cpp
+index 60e89e24f3..0875510097 100644
+--- a/packages/expo-modules-core/android/src/main/cpp/MethodMetadata.cpp
++++ b/packages/expo-modules-core/android/src/main/cpp/MethodMetadata.cpp
+@@ -321,10 +321,10 @@ jsi::Function MethodMetadata::createPromiseBody(
+       JNIEnv *env = jni::Environment::current();
+ 
+       auto &jPromise = CachedReferencesRegistry::instance()->getJClass(
+-        "com/facebook/react/bridge/PromiseImpl");
++        "{VERSIONED_ABI_NAME}/com/facebook/react/bridge/PromiseImpl");
+       jmethodID jPromiseConstructor = jPromise.getMethod(
+         "<init>",
+-        "(Lcom/facebook/react/bridge/Callback;Lcom/facebook/react/bridge/Callback;)V"
++        "(L{VERSIONED_ABI_NAME}/com/facebook/react/bridge/Callback;L{VERSIONED_ABI_NAME}/com/facebook/react/bridge/Callback;)V"
+       );
+ 
+       // Creates a promise object

@@ -75,6 +75,9 @@ public class Constants {
     // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
     // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
     // ADD ABI VERSIONS HERE DO NOT MODIFY
+    // BEGIN_SDK_46
+    abiVersions.add("46.0.0");
+    // END_SDK_46
     // BEGIN_SDK_45
     abiVersions.add("45.0.0");
     // END_SDK_45
