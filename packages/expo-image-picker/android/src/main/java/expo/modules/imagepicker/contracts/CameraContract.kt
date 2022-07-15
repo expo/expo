@@ -1,6 +1,7 @@
 package expo.modules.imagepicker.contracts
 
 import android.app.Activity
+import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -21,6 +22,11 @@ import java.io.Serializable
 internal class CameraContract(
   private val appContextProvider: AppContextProvider,
 ) : AppContextActivityResultContract<CameraContractOptions, ImagePickerContractResult> {
+  val contentResolver: ContentResolver
+    get() = requireNotNull(appContextProvider.appContext.reactContext) {
+      "React Application Context is null"
+    }.contentResolver
+
   override fun createIntent(context: Context, input: CameraContractOptions): Intent =
     Intent(input.options.mediaTypes.toCameraIntentAction())
       .putExtra(MediaStore.EXTRA_OUTPUT, input.uri)
@@ -34,7 +40,6 @@ internal class CameraContract(
     if (resultCode == Activity.RESULT_CANCELED) {
       ImagePickerContractResult.Cancelled()
     } else {
-      val contentResolver = requireNotNull(appContextProvider.appContext.reactContext) { "React Application Context is null. " }.contentResolver
       val uri = input.uri
       val type = uri.toMediaType(contentResolver)
       ImagePickerContractResult.Success(listOf(type to uri))
@@ -42,6 +47,9 @@ internal class CameraContract(
 }
 
 internal data class CameraContractOptions(
+  /**
+   * Destination file in a form of content-[Uri] to save results coming from camera to.
+   */
   val uri: Uri,
   val options: ImagePickerOptions,
 ) : Serializable

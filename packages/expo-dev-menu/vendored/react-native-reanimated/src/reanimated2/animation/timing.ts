@@ -4,8 +4,8 @@ import {
   Animation,
   AnimationCallback,
   Timestamp,
-  PrimitiveValue,
-} from './commonTypes';
+  AnimatableValue,
+} from '../commonTypes';
 
 interface TimingConfig {
   duration?: number;
@@ -15,11 +15,11 @@ interface TimingConfig {
 export interface TimingAnimation extends Animation<TimingAnimation> {
   type: string;
   easing: EasingFn;
-  startValue: PrimitiveValue;
+  startValue: AnimatableValue;
   startTime: Timestamp;
   progress: number;
-  toValue: PrimitiveValue;
-  current: PrimitiveValue;
+  toValue: AnimatableValue;
+  current: AnimatableValue;
 }
 
 export interface InnerTimingAnimation
@@ -29,7 +29,7 @@ export interface InnerTimingAnimation
 }
 
 export function withTiming(
-  toValue: PrimitiveValue,
+  toValue: AnimatableValue,
   userConfig?: TimingConfig,
   callback?: AnimationCallback
 ): Animation<TimingAnimation> {
@@ -80,7 +80,9 @@ export function withTiming(
         // new timing over the old one with the same parameters. If so, we want
         // to copy animation timeline properties
         animation.startTime = (previousAnimation as TimingAnimation).startTime;
-        animation.startValue = (previousAnimation as TimingAnimation).startValue;
+        animation.startValue = (
+          previousAnimation as TimingAnimation
+        ).startValue;
       } else {
         animation.startTime = now;
         animation.startValue = value;

@@ -8,38 +8,43 @@ const spawn_async_1 = __importDefault(require("@expo/spawn-async"));
 const fs_extra_1 = __importDefault(require("fs-extra"));
 const path_1 = __importDefault(require("path"));
 const packageManager_1 = require("./packageManager");
+const utils_1 = require("./utils");
 // These dependencies will be removed from the example app (`expo init` adds them)
 const DEPENDENCIES_TO_REMOVE = ['expo-status-bar', 'expo-splash-screen'];
 /**
  * Initializes a new Expo project as an example app.
  */
 async function createExampleApp(data, targetDir, packageManager) {
-    console.log('🎭 Creating the example app...');
     const exampleProjectSlug = `${data.project.slug}-example`;
-    await (0, spawn_async_1.default)('expo', ['init', exampleProjectSlug, '--template', 'expo-template-blank-typescript'], {
-        cwd: targetDir,
-        stdio: ['ignore', 'ignore', 'inherit'],
+    await (0, utils_1.newStep)('Initializing the example app', async (step) => {
+        await (0, spawn_async_1.default)('expo', ['init', exampleProjectSlug, '--template', 'expo-template-blank-typescript'], {
+            cwd: targetDir,
+            stdio: ['ignore', 'ignore', 'inherit'],
+        });
+        step.succeed('Initialized the example app');
     });
     // `expo init` creates a new folder with the same name as the project slug
     const appTmpPath = path_1.default.join(targetDir, exampleProjectSlug);
     // Path to the target example dir
     const appTargetPath = path_1.default.join(targetDir, 'example');
-    console.log('🛠  Configuring the example app...');
-    // "example" folder already exists and contains template files,
-    // that should replace these created by `expo init`.
-    await moveFiles(appTargetPath, appTmpPath);
-    // Cleanup the "example" dir
-    await fs_extra_1.default.rmdir(appTargetPath);
-    // Move the temporary example app to "example" dir
-    await fs_extra_1.default.rename(appTmpPath, appTargetPath);
-    await addMissingAppConfigFields(appTargetPath, data);
-    console.log('👷 Prebuilding the example app...');
+    await (0, utils_1.newStep)('Configuring the example app', async (step) => {
+        // "example" folder already exists and contains template files,
+        // that should replace these created by `expo init`.
+        await moveFiles(appTargetPath, appTmpPath);
+        // Cleanup the "example" dir
+        await fs_extra_1.default.rmdir(appTargetPath);
+        // Move the temporary example app to "example" dir
+        await fs_extra_1.default.rename(appTmpPath, appTargetPath);
+        await addMissingAppConfigFields(appTargetPath, data);
+        step.succeed('Configured the example app');
+    });
     await prebuildExampleApp(appTargetPath);
     await modifyPackageJson(appTargetPath);
-    console.log('📦 Installing dependencies in the example app...');
-    await (0, packageManager_1.installDependencies)(packageManager, appTargetPath);
-    console.log('🥥 Installing iOS pods in the example app...');
-    await podInstall(appTargetPath);
+    await (0, utils_1.newStep)('Installing dependencies in the example app', async (step) => {
+        await (0, packageManager_1.installDependencies)(packageManager, appTargetPath);
+        await podInstall(appTargetPath);
+        step.succeed('Installed dependencies in the example app');
+    });
 }
 exports.createExampleApp = createExampleApp;
 /**
@@ -100,30 +105,21 @@ async function modifyPackageJson(appPath) {
  * Runs `expo prebuild` in the example app.
  */
 async function prebuildExampleApp(exampleAppPath) {
-    try {
+    await (0, utils_1.newStep)('Prebuilding the example app', async (step) => {
         await (0, spawn_async_1.default)('expo', ['prebuild', '--no-install'], {
             cwd: exampleAppPath,
             stdio: ['ignore', 'ignore', 'pipe'],
         });
-    }
-    catch (error) {
-        console.error(error.stderr);
-        process.exit(1);
-    }
+        step.succeed('Prebuilt the example app');
+    });
 }
 /**
  * Runs `pod install` in the iOS project at the given path.
  */
 async function podInstall(appPath) {
-    try {
-        await (0, spawn_async_1.default)('pod', ['install'], {
-            cwd: path_1.default.join(appPath, 'ios'),
-            stdio: ['ignore', 'ignore', 'pipe'],
-        });
-    }
-    catch (error) {
-        console.error(error.stderr);
-        process.exit(1);
-    }
+    await (0, spawn_async_1.default)('pod', ['install'], {
+        cwd: path_1.default.join(appPath, 'ios'),
+        stdio: ['ignore', 'ignore', 'pipe'],
+    });
 }
 //# sourceMappingURL=createExampleApp.js.map

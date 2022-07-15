@@ -355,7 +355,7 @@ dependencies {
   releaseApi 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta1'
   api 'commons-io:commons-io:2.6'
   api 'me.leolin:ShortcutBadger:1.1.4@aar'
-  implementation "com.github.CanHub:Android-Image-Cropper:1.1.1"
+  implementation "com.github.CanHub:Android-Image-Cropper:4.3.0"
   api 'commons-codec:commons-codec:1.10'
   api 'net.openid:appauth:0.7.1'
   api 'com.airbnb.android:lottie:3.4.0'
@@ -739,8 +739,8 @@ task extractSOFiles {
 }
 
 project.afterEvaluate {
-  def nativeBuildTask = tasks.findByName("copyUnversionedReleaseJniLibsProjectOnly")  // for expoview
-                        ?: tasks.findByName("copyReleaseJniLibsProjectOnly") // for expoview-${abiName}
+  def nativeBuildTask = tasks.findByName("copyUnversionedReleaseJniLibsProjectAndLocalJars")  // for expoview
+                        ?: tasks.findByName("copyReleaseJniLibsProjectAndLocalJars") // for expoview-${abiName}
   if (nativeBuildTask) {
     packageNdkLibs.dependsOn nativeBuildTask
   }
@@ -761,8 +761,8 @@ project.afterEvaluate {
 }
 
 task packageNdkLibs(type: Copy) {
-  from("$buildDir/intermediates/library_jni/unversionedRelease/jni") // for expoview
-  from("$buildDir/intermediates/library_jni/release/jni") // for expoview-${abiName}
+  from("$buildDir/intermediates/stripped_native_libs/unversionedRelease/out/lib") // for expoview
+  from("$buildDir/intermediates/stripped_native_libs/release/out/lib") // for expoview-${abiName}
   include("**/libreanimated*.so")
   into("$projectDir/src/main/jniLibs")
 }

@@ -15,6 +15,7 @@ const validate_npm_package_name_1 = __importDefault(require("validate-npm-packag
 const createExampleApp_1 = require("./createExampleApp");
 const packageManager_1 = require("./packageManager");
 const resolvePackageManager_1 = require("./resolvePackageManager");
+const utils_1 = require("./utils");
 const packageJson = require('../package.json');
 // `yarn run` may change the current working dir, then we should use `INIT_CWD` env.
 const CWD = process.env.INIT_CWD || process.cwd();
@@ -37,23 +38,21 @@ async function main(target, options) {
     const packagePath = options.source
         ? path_1.default.join(CWD, options.source)
         : await downloadPackageAsync(targetDir);
-    const files = await getFilesAsync(packagePath);
-    console.log('🎨 Creating Expo module from the template files...');
-    // Iterate through all template files.
-    for (const file of files) {
-        const renderedRelativePath = ejs_1.default.render(file.replace(/^\$/, ''), data, {
-            openDelimiter: '{',
-            closeDelimiter: '}',
-            escape: (value) => value.replace('.', path_1.default.sep),
+    await (0, utils_1.newStep)('Creating the module from template files', async (step) => {
+        await createModuleFromTemplate(packagePath, targetDir, data);
+        step.succeed('Created the module from template files');
+    });
+    await (0, utils_1.newStep)('Installing module dependencies', async (step) => {
+        await (0, packageManager_1.installDependencies)(packageManager, targetDir);
+        step.succeed('Installed module dependencies');
+    });
+    await (0, utils_1.newStep)('Compiling TypeScript files', async (step) => {
+        await (0, spawn_async_1.default)(packageManager, ['run', 'build'], {
+            cwd: targetDir,
+            stdio: 'ignore',
         });
-        const fromPath = path_1.default.join(packagePath, file);
-        const toPath = path_1.default.join(targetDir, renderedRelativePath);
-        const template = await fs_extra_1.default.readFile(fromPath, { encoding: 'utf8' });
-        const renderedContent = ejs_1.default.render(template, data);
-        await fs_extra_1.default.outputFile(toPath, renderedContent, { encoding: 'utf8' });
-    }
-    // Install dependencies and build
-    await postActionsAsync(packageManager, targetDir);
+        step.succeed('Compiled TypeScript files');
+    });
     if (!options.source) {
         // Files in the downloaded tarball are wrapped in `package` dir.
         // We should remove it after all.
@@ -69,6 +68,7 @@ async function main(target, options) {
         // Create "example" folder
         await (0, createExampleApp_1.createExampleApp)(data, targetDir, packageManager);
     }
+    console.log();
     console.log('✅ Successfully created Expo module');
 }
 /**
@@ -116,25 +116,34 @@ async function npmWhoamiAsync(targetDir) {
  * Downloads the template from NPM registry.
  */
 async function downloadPackageAsync(targetDir) {
-    const tarballUrl = await getNpmTarballUrl('expo-module-template');
-    console.log('⬇️  Downloading module template from npm...');
-    await (0, download_tarball_1.default)({
-        url: tarballUrl,
-        dir: targetDir,
+    return await (0, utils_1.newStep)('Downloading module template from npm', async (step) => {
+        const tarballUrl = await getNpmTarballUrl('expo-module-template');
+        await (0, download_tarball_1.default)({
+            url: tarballUrl,
+            dir: targetDir,
+        });
+        step.succeed('Downloaded module template from npm');
+        return path_1.default.join(targetDir, 'package');
     });
-    return path_1.default.join(targetDir, 'package');
 }
 /**
- * Installs dependencies and builds TypeScript files.
+ * Creates the module based on the `ejs` template (e.g. `expo-module-template` package).
  */
-async function postActionsAsync(packageManager, targetDir) {
-    console.log('📦 Installing module dependencies...');
-    await (0, packageManager_1.installDependencies)(packageManager, targetDir);
-    console.log('🛠  Compiling TypeScript files...');
-    await (0, spawn_async_1.default)(packageManager, ['run', 'build'], {
-        cwd: targetDir,
-        stdio: 'ignore',
-    });
+async function createModuleFromTemplate(templatePath, targetPath, data) {
+    const files = await getFilesAsync(templatePath);
+    // Iterate through all template files.
+    for (const file of files) {
+        const renderedRelativePath = ejs_1.default.render(file.replace(/^\$/, ''), data, {
+            openDelimiter: '{',
+            closeDelimiter: '}',
+            escape: (value) => value.replace('.', path_1.default.sep),
+        });
+        const fromPath = path_1.default.join(templatePath, file);
+        const toPath = path_1.default.join(targetPath, renderedRelativePath);
+        const template = await fs_extra_1.default.readFile(fromPath, { encoding: 'utf8' });
+        const renderedContent = ejs_1.default.render(template, data);
+        await fs_extra_1.default.outputFile(toPath, renderedContent, { encoding: 'utf8' });
+    }
 }
 /**
  * Asks the user for some data necessary to render the template.

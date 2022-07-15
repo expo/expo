@@ -1,59 +1,47 @@
 import { defineAnimation } from './util';
 import {
   Timestamp,
-  HigherOrderAnimation,
-  AnimationCallback,
-  PrimitiveValue,
+  AnimatableValue,
   AnimationObject,
   Animation,
-} from './commonTypes';
-import {
   AnimatedStyle,
   NestedObject,
   NestedObjectValues,
-  StyleProps,
 } from '../commonTypes';
+import { StyleLayoutAnimation } from './commonTypes';
 import { withTiming } from './timing';
-
-export interface StyleLayoutAnimation extends HigherOrderAnimation {
-  current: StyleProps;
-  styleAnimations: AnimatedStyle;
-  onFrame: (animation: StyleLayoutAnimation, timestamp: Timestamp) => boolean;
-  onStart: (
-    nextAnimation: StyleLayoutAnimation,
-    current: AnimatedStyle,
-    timestamp: Timestamp,
-    previousAnimation: StyleLayoutAnimation
-  ) => void;
-  callback?: AnimationCallback;
-}
+import { ColorProperties } from '../UpdateProps';
+import { processColor } from '../Colors';
 
 // resolves path to value for nested objects
 // if path cannot be resolved returns undefined
-function resolvePath<T>(
+export function resolvePath<T>(
   obj: NestedObject<T>,
-  path: PrimitiveValue[] | PrimitiveValue
+  path: AnimatableValue[] | AnimatableValue
 ): NestedObjectValues<T> | undefined {
   'worklet';
-  const keys: PrimitiveValue[] = Array.isArray(path) ? path : [path];
+  const keys: AnimatableValue[] = Array.isArray(path) ? path : [path];
   return keys.reduce<NestedObjectValues<T> | undefined>((acc, current) => {
     if (Array.isArray(acc) && typeof current === 'number') {
       return acc[current];
-    } else if (typeof acc === 'object' && current in acc) {
-      return (acc as { [key: string]: NestedObjectValues<T> })[current];
+    } else if (typeof acc === 'object' && (current as number | string) in acc) {
+      return (acc as { [key: string]: NestedObjectValues<T> })[
+        current as number | string
+      ];
     }
     return undefined;
   }, obj);
 }
 
 // set value at given path
-function setPath<T>(
+type Path = Array<string | number> | string | number;
+export function setPath<T>(
   obj: NestedObject<T>,
-  path: PrimitiveValue[] | PrimitiveValue,
+  path: Path,
   value: NestedObjectValues<T>
-) {
+): void {
   'worklet';
-  const keys: PrimitiveValue[] = Array.isArray(path) ? path : [path];
+  const keys: Path = Array.isArray(path) ? path : [path];
   let currObj: NestedObjectValues<T> = obj;
   for (let i = 0; i < keys.length - 1; i++) {
     // creates entry if there isn't one
@@ -69,14 +57,13 @@ function setPath<T>(
     currObj = currObj[keys[i]];
   }
 
-  (currObj as { [key: string]: NestedObjectValues<T> })[
-    keys[keys.length - 1]
-  ] = value;
+  (currObj as { [key: string]: NestedObjectValues<T> })[keys[keys.length - 1]] =
+    value;
 }
 
 interface NestedObjectEntry<T> {
   value: NestedObjectValues<T>;
-  path: PrimitiveValue[];
+  path: (string | number)[];
 }
 
 export function withStyleAnimation(
@@ -95,7 +82,8 @@ export function withStyleAnimation(
         { value: animation.styleAnimations, path: [] },
       ];
       while (entriesToCheck.length > 0) {
-        const currentEntry: NestedObjectEntry<AnimationObject> = entriesToCheck.pop() as NestedObjectEntry<AnimationObject>;
+        const currentEntry: NestedObjectEntry<AnimationObject> =
+          entriesToCheck.pop() as NestedObjectEntry<AnimationObject>;
         if (Array.isArray(currentEntry.value)) {
           for (let index = 0; index < currentEntry.value.length; index++) {
             entriesToCheck.push({
@@ -115,7 +103,8 @@ export function withStyleAnimation(
             });
           }
         } else {
-          const currentStyleAnimation: AnimationObject = currentEntry.value as AnimationObject;
+          const currentStyleAnimation: AnimationObject =
+            currentEntry.value as AnimationObject;
           if (currentStyleAnimation.finished) {
             continue;
           }
@@ -131,6 +120,13 @@ export function withStyleAnimation(
           } else {
             stillGoing = true;
           }
+
+          if (ColorProperties.includes(currentEntry.path[0] as string)) {
+            currentStyleAnimation.current = processColor(
+              currentStyleAnimation.current
+            ) as number;
+          }
+
           setPath(
             animation.current,
             currentEntry.path,
@@ -148,13 +144,13 @@ export function withStyleAnimation(
       previousAnimation: StyleLayoutAnimation
     ): void => {
       const entriesToCheck: NestedObjectEntry<
-        AnimationObject | PrimitiveValue
+        AnimationObject | AnimatableValue
       >[] = [{ value: styleAnimations, path: [] }];
       while (entriesToCheck.length > 0) {
         const currentEntry: NestedObjectEntry<
-          AnimationObject | PrimitiveValue
+          AnimationObject | AnimatableValue
         > = entriesToCheck.pop() as NestedObjectEntry<
-          AnimationObject | PrimitiveValue
+          AnimationObject | AnimatableValue
         >;
         if (Array.isArray(currentEntry.value)) {
           for (let index = 0; index < currentEntry.value.length; index++) {
@@ -189,7 +185,7 @@ export function withStyleAnimation(
             !currentEntry.value.onStart
           ) {
             currentAnimation = withTiming(
-              currentEntry.value as PrimitiveValue,
+              currentEntry.value as AnimatableValue,
               { duration: 0 }
             );
             setPath(
@@ -216,7 +212,8 @@ export function withStyleAnimation(
           styleAnimations,
         ];
         while (animationsToCheck.length > 0) {
-          const currentAnimation: NestedObjectValues<AnimationObject> = animationsToCheck.pop() as NestedObjectValues<AnimationObject>;
+          const currentAnimation: NestedObjectValues<AnimationObject> =
+            animationsToCheck.pop() as NestedObjectValues<AnimationObject>;
           if (Array.isArray(currentAnimation)) {
             for (const element of currentAnimation) {
               animationsToCheck.push(element);
@@ -229,7 +226,8 @@ export function withStyleAnimation(
               animationsToCheck.push(value);
             }
           } else {
-            const currentStyleAnimation: AnimationObject = currentAnimation as AnimationObject;
+            const currentStyleAnimation: AnimationObject =
+              currentAnimation as AnimationObject;
             if (
               !currentStyleAnimation.finished &&
               currentStyleAnimation.callback

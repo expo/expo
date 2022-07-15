@@ -10,8 +10,9 @@ import validateNpmPackage from 'validate-npm-package-name';
 
 import { createExampleApp } from './createExampleApp';
 import { installDependencies } from './packageManager';
-import { PackageManagerName, resolvePackageManager } from './resolvePackageManager';
+import { resolvePackageManager } from './resolvePackageManager';
 import { CommandOptions, CustomPromptObject, SubstitutionData } from './types';
+import { newStep } from './utils';
 
 const packageJson = require('../package.json');
 
@@ -41,27 +42,24 @@ async function main(target: string | undefined, options: CommandOptions) {
   const packagePath = options.source
     ? path.join(CWD, options.source)
     : await downloadPackageAsync(targetDir);
-  const files = await getFilesAsync(packagePath);
 
-  console.log('🎨 Creating Expo module from the template files...');
+  await newStep('Creating the module from template files', async (step) => {
+    await createModuleFromTemplate(packagePath, targetDir, data);
+    step.succeed('Created the module from template files');
+  });
 
-  // Iterate through all template files.
-  for (const file of files) {
-    const renderedRelativePath = ejs.render(file.replace(/^\$/, ''), data, {
-      openDelimiter: '{',
-      closeDelimiter: '}',
-      escape: (value: string) => value.replace('.', path.sep),
+  await newStep('Installing module dependencies', async (step) => {
+    await installDependencies(packageManager, targetDir);
+    step.succeed('Installed module dependencies');
+  });
+
+  await newStep('Compiling TypeScript files', async (step) => {
+    await spawnAsync(packageManager, ['run', 'build'], {
+      cwd: targetDir,
+      stdio: 'ignore',
     });
-    const fromPath = path.join(packagePath, file);
-    const toPath = path.join(targetDir, renderedRelativePath);
-    const template = await fs.readFile(fromPath, { encoding: 'utf8' });
-    const renderedContent = ejs.render(template, data);
-
-    await fs.outputFile(toPath, renderedContent, { encoding: 'utf8' });
-  }
-
-  // Install dependencies and build
-  await postActionsAsync(packageManager, targetDir);
+    step.succeed('Compiled TypeScript files');
+  });
 
   if (!options.source) {
     // Files in the downloaded tarball are wrapped in `package` dir.
@@ -79,6 +77,7 @@ async function main(target: string | undefined, options: CommandOptions) {
     await createExampleApp(data, targetDir, packageManager);
   }
 
+  console.log();
   console.log('✅ Successfully created Expo module');
 }
 
@@ -132,29 +131,44 @@ async function npmWhoamiAsync(targetDir: string): Promise<string | null> {
  * Downloads the template from NPM registry.
  */
 async function downloadPackageAsync(targetDir: string): Promise<string> {
-  const tarballUrl = await getNpmTarballUrl('expo-module-template');
+  return await newStep('Downloading module template from npm', async (step) => {
+    const tarballUrl = await getNpmTarballUrl('expo-module-template');
 
-  console.log('⬇️  Downloading module template from npm...');
+    await downloadTarball({
+      url: tarballUrl,
+      dir: targetDir,
+    });
 
-  await downloadTarball({
-    url: tarballUrl,
-    dir: targetDir,
+    step.succeed('Downloaded module template from npm');
+
+    return path.join(targetDir, 'package');
   });
-  return path.join(targetDir, 'package');
 }
 
 /**
- * Installs dependencies and builds TypeScript files.
+ * Creates the module based on the `ejs` template (e.g. `expo-module-template` package).
  */
-async function postActionsAsync(packageManager: PackageManagerName, targetDir: string) {
-  console.log('📦 Installing module dependencies...');
-  await installDependencies(packageManager, targetDir);
+async function createModuleFromTemplate(
+  templatePath: string,
+  targetPath: string,
+  data: SubstitutionData
+) {
+  const files = await getFilesAsync(templatePath);
 
-  console.log('🛠  Compiling TypeScript files...');
-  await spawnAsync(packageManager, ['run', 'build'], {
-    cwd: targetDir,
-    stdio: 'ignore',
-  });
+  // Iterate through all template files.
+  for (const file of files) {
+    const renderedRelativePath = ejs.render(file.replace(/^\$/, ''), data, {
+      openDelimiter: '{',
+      closeDelimiter: '}',
+      escape: (value: string) => value.replace('.', path.sep),
+    });
+    const fromPath = path.join(templatePath, file);
+    const toPath = path.join(targetPath, renderedRelativePath);
+    const template = await fs.readFile(fromPath, { encoding: 'utf8' });
+    const renderedContent = ejs.render(template, data);
+
+    await fs.outputFile(toPath, renderedContent, { encoding: 'utf8' });
+  }
 }
 
 /**

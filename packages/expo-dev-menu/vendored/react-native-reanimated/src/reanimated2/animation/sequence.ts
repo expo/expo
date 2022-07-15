@@ -1,18 +1,11 @@
 import { defineAnimation } from './util';
+import { NextAnimation, SequenceAnimation } from './commonTypes';
 import {
   Animation,
-  Timestamp,
-  NextAnimation,
-  PrimitiveValue,
-  HigherOrderAnimation,
+  AnimatableValue,
   AnimationObject,
-} from './commonTypes';
-
-export interface SequenceAnimation
-  extends Animation<SequenceAnimation>,
-    HigherOrderAnimation {
-  animationIndex: number;
-}
+  Timestamp,
+} from '../commonTypes';
 
 export function withSequence(
   ..._animations: NextAnimation<AnimationObject>[]
@@ -66,15 +59,10 @@ export function withSequence(
 
       function onStart(
         animation: SequenceAnimation,
-        value: PrimitiveValue,
+        value: AnimatableValue,
         now: Timestamp,
         previousAnimation: SequenceAnimation
       ): void {
-        if (animations.length === 1) {
-          throw Error(
-            'withSequence() animation require more than one animation as argument'
-          );
-        }
         animation.animationIndex = 0;
         if (previousAnimation === undefined) {
           previousAnimation = animations[
