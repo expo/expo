@@ -9,11 +9,6 @@ export default function vendoredModulesTransformsFactory(prefix: string): Config
     '@stripe/stripe-react-native': {
       content: [
         {
-          paths: '*.m',
-          find: /RCT_EXTERN_MODULE\((ApplePayButtonManager|CardFieldManager|AuBECSDebitFormManager|StripeSdk|StripeContainerManager|CardFormManager)/,
-          replaceWith: `RCT_EXTERN_REMAP_MODULE($1, ${prefix}$1`,
-        },
-        {
           paths: '',
           find: /\.reactFocus\(/,
           replaceWith: `.${prefix.toLowerCase()}ReactFocus(`,
@@ -22,11 +17,6 @@ export default function vendoredModulesTransformsFactory(prefix: string): Config
     },
     'lottie-react-native': {
       content: [
-        {
-          paths: 'LRNAnimationViewManagerObjC.m',
-          find: /RCT_EXTERN_MODULE\(/,
-          replaceWith: `RCT_EXTERN_REMAP_MODULE(LottieAnimationView, ${prefix}`,
-        },
         {
           paths: 'ContainerView.swift',
           find: /\breactSetFrame/g,
