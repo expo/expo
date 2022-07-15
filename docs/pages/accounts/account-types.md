@@ -6,7 +6,7 @@ import ImageSpotlight from '~/components/plugins/ImageSpotlight'
 
 ## Personal Accounts
 
-When you [create a new account](https://expo.dev/signup) with Expo, you are creating a Personal Account. This account type is your individual account. Expo uses this account type to safely identify you as your application's developer or owner. A Personal Account has access to all features provided by Expo.
+When you [create a new account](https://expo.dev/signup) with Expo, you are creating a Personal Account. This account is your individual account. Expo uses this account to safely identify you as your application's developer or owner. A Personal Account has access to all features provided by Expo.
 
 Personal Accounts are referred to as the default account type in the scenarios where you take action, but the activity does not specify which account it should belong.
 
