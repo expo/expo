@@ -8,6 +8,14 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+typedef NS_OPTIONS(NSUInteger, ABI44_0_0EXSplashScreenOptions) {
+   ABI44_0_0EXSplashScreenDefault = 0,
+
+   // Show splash screen even it was already shown before.
+   // e.g. show splash screen again when reloading apps,
+   ABI44_0_0EXSplashScreenForceShow = 1 << 0,
+ };
+
 /**
 * Entry point for handling SplashScreen associated mechanism.
 * This class has state based on the following relation { ViewController -> ApplicationSplashScreenState }.
@@ -18,13 +26,15 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * Overloaded method. See main method below.
  */
-- (void)showSplashScreenFor:(UIViewController *)viewController;
+- (void)showSplashScreenFor:(UIViewController *)viewController
+                    options:(ABI44_0_0EXSplashScreenOptions)options;
 
 /**
  * Entry point for SplashScreen unimodule.
  * Registers SplashScreen for given viewController and presents it in that viewController.
  */
 - (void)showSplashScreenFor:(UIViewController *)viewController
+                    options:(ABI44_0_0EXSplashScreenOptions)options
    splashScreenViewProvider:(id<ABI44_0_0EXSplashScreenViewProvider>)splashScreenViewProvider
             successCallback:(void (^)(void))successCallback
             failureCallback:(void (^)(NSString *message))failureCallback;
@@ -34,6 +44,7 @@ NS_ASSUME_NONNULL_BEGIN
  * Registers SplashScreen for given viewController and ABI44_0_0EXSplashController and presents it in that viewController.
  */
 -(void)showSplashScreenFor:(UIViewController *)viewController
+                   options:(ABI44_0_0EXSplashScreenOptions)options
     splashScreenController:(ABI44_0_0EXSplashScreenViewController *)splashScreenController
            successCallback:(void (^)(void))successCallback
            failureCallback:(void (^)(NSString *message))failureCallback;
@@ -42,6 +53,7 @@ NS_ASSUME_NONNULL_BEGIN
  * Hides SplashScreen for given viewController.
  */
 - (void)hideSplashScreenFor:(UIViewController *)viewController
+                    options:(ABI44_0_0EXSplashScreenOptions)options
             successCallback:(void (^)(BOOL hasEffect))successCallback
             failureCallback:(void (^)(NSString *message))failureCallback;
 
@@ -49,6 +61,7 @@ NS_ASSUME_NONNULL_BEGIN
  * Prevents SplashScreen from default autohiding.
  */
 - (void)preventSplashScreenAutoHideFor:(UIViewController *)viewController
+                               options:(ABI44_0_0EXSplashScreenOptions)options
                        successCallback:(void (^)(BOOL hasEffect))successCallback
                        failureCallback:(void (^)(NSString *message))failureCallback;
 
