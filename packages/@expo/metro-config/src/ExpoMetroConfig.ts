@@ -8,6 +8,7 @@ import { Reporter } from 'metro';
 import type MetroConfig from 'metro-config';
 import path from 'path';
 import resolveFrom from 'resolve-from';
+import { URL } from 'url';
 
 import { getModulesPaths } from './getModulesPaths';
 import { getWatchFolders } from './getWatchFolders';
@@ -53,6 +54,16 @@ export const INTERNAL_CALLSITES_REGEX = new RegExp(
     `\\[native code\\]`,
   ].join('|')
 );
+
+function isUrl(value: string): boolean {
+  try {
+    // eslint-disable-next-line no-new
+    new URL(value);
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 export interface DefaultConfigOptions {
   target?: ProjectTarget;
@@ -225,7 +236,7 @@ export function getDefaultConfig(
       resolverMainFields,
       platforms: ['ios', 'android', 'native', 'testing'],
       assetExts: metroDefaultValues.resolver.assetExts.filter(
-        assetExt => !sourceExts.includes(assetExt)
+        (assetExt) => !sourceExts.includes(assetExt)
       ),
       sourceExts,
       nodeModulesPaths,
@@ -241,7 +252,17 @@ export function getDefaultConfig(
       port: Number(process.env.RCT_METRO_PORT) || 8081,
     },
     symbolicator: {
-      customizeFrame: frame => {
+      customizeFrame: (frame) => {
+        if (frame.file && isUrl(frame.file)) {
+          return {
+            ...frame,
+            // HACK: This prevents Metro from attempting to read the invalid file URL it sent us.
+            lineNumber: null,
+            column: null,
+            // This prevents the invalid frame from being shown by default.
+            collapse: true,
+          };
+        }
         let collapse = Boolean(frame.file && INTERNAL_CALLSITES_REGEX.test(frame.file));
 
         if (!collapse) {
