@@ -16,10 +16,10 @@ type Options = {
   baseNestingLevel?: number;
 };
 
-type PermalinkedComponent = React.FC<{ level?: number } & AdditionalProps>;
+type PermalinkedComponent = React.FC<React.PropsWithChildren<{ level?: number } & AdditionalProps>>;
 
 const createPermalinkedComponent = (
-  BaseComponent: React.ComponentType,
+  BaseComponent: React.ComponentType<React.PropsWithChildren<unknown>>,
   options?: Options
 ): PermalinkedComponent => {
   const { customIconStyle, baseNestingLevel } = options || {};

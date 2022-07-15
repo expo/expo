@@ -156,7 +156,7 @@ const SidebarWithHeadingManager = withHeadingManager(function SidebarWithHeading
   ...props
 }) {
   return <DocumentationSidebarRight {...props} ref={reactRef} />;
-}) as React.FC<Props & { reactRef: React.Ref<DocumentationSidebarRight> }>;
+}) as React.FC<React.PropsWithChildren<Props & { reactRef: React.Ref<DocumentationSidebarRight> }>>;
 
 SidebarWithHeadingManager.displayName = 'SidebarRightRefWrapper';
 

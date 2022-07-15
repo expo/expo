@@ -30,7 +30,7 @@ const STYLES_BUTTON = css`
   margin-bottom: ${spacing[4]}px;
 `;
 
-export const CreateAppButton: React.FC<{ href: string; name: string }> = ({ href, name }) => (
+export const CreateAppButton: React.FC<React.PropsWithChildren<{ href: string; name: string }>> = ({ href, name }) => (
   <Button
     css={STYLES_BUTTON}
     href={href}
@@ -40,7 +40,7 @@ export const CreateAppButton: React.FC<{ href: string; name: string }> = ({ href
   </Button>
 );
 
-export const SocialGrid: React.FC = ({ children }) => (
+export const SocialGrid: React.FC<React.PropsWithChildren<object>> = ({ children }) => (
   <div
     style={{
       gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
@@ -52,12 +52,12 @@ export const SocialGrid: React.FC = ({ children }) => (
   </div>
 );
 
-export const SocialGridItem: React.FC<{
+export const SocialGridItem: React.FC<React.PropsWithChildren<{
   title: string;
   image?: string;
   href?: string;
   protocol: string[];
-}> = ({ title, protocol = [], image, href }) => (
+}>> = ({ title, protocol = [], image, href }) => (
   <a
     href={href}
     css={STYLES_LINK}

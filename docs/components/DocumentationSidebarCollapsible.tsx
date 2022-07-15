@@ -40,10 +40,10 @@ if (typeof window !== 'undefined' && !window.hasOwnProperty('sidebarState')) {
   window.sidebarState = {};
 }
 
-type Props = {
+type Props = React.PropsWithChildren<{
   router: NextRouter;
   info: NavigationRoute;
-};
+}>;
 
 type State = {
   isOpen: boolean;
