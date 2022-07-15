@@ -135,22 +135,42 @@ export const Quote = ({ children, ...rest }: React.PropsWithChildren<object>) =>
     </div>
   );
 
-  const newChildren = React.Children.map(children, child => {
+  // @ts-ignore
+  // const newChildren = React.Children.map(children, ({ props }: React.ReactNode) => {
+  //   const emoji = captureEmoji(props?.children);
+  //
+  //   if (emoji) {
+  //     icon = emoji;
+  //
+  //     return {
+  //       ...rest,
+  //       props: {
+  //         ...props,
+  //         children: removeEmoji(emoji, props?.children),
+  //       },
+  //     };
+  //   }
+  // }) as React.ReactNode | React.ReactNode[];
+
+  const newChildren: JSX.Element[] = React.Children.map(children, child => {
     // @ts-ignore
-    const { props, ...rest } = child ?? {};
+    const { props } = child;
     const emoji = captureEmoji(props?.children);
 
     if (emoji) {
       icon = emoji;
+      const childData = Object.assign({}, child) || {};
 
       return {
-        ...rest,
+        ...childData,
         props: {
           ...props,
           children: removeEmoji(emoji, props?.children),
         },
       };
     }
+
+    return child;
   });
 
   return (
