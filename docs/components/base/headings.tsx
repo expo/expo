@@ -16,7 +16,7 @@ const STYLES_H1 = css`
   border-bottom: 1px solid ${theme.border.default};
 `;
 
-export const H1: React.FC = ({ children }) => (
+export const H1: React.FC<React.PropsWithChildren<unknown>> = ({ children }) => (
   <h1 {...attributes} css={STYLES_H1}>
     {children}
   </h1>
@@ -37,7 +37,7 @@ const STYLES_H2 = css`
   }
 `;
 
-export const H2: React.FC = ({ children }) => (
+export const H2: React.FC<React.PropsWithChildren<unknown>> = ({ children }) => (
   <h2 {...attributes} css={STYLES_H2}>
     {children}
   </h2>
@@ -56,7 +56,7 @@ const STYLES_H3 = css`
   }
 `;
 
-export const H3: React.FC = ({ children }) => (
+export const H3: React.FC<React.PropsWithChildren<unknown>> = ({ children }) => (
   <h3 {...attributes} css={STYLES_H3}>
     {children}
   </h3>
@@ -74,7 +74,7 @@ const STYLES_H4 = css`
   }
 `;
 
-export const H4: React.FC = ({ children, ...rest }) => (
+export const H4: React.FC<React.PropsWithChildren<unknown>> = ({ children, ...rest }) => (
   <h4 {...attributes} css={STYLES_H4} {...rest}>
     {children}
   </h4>

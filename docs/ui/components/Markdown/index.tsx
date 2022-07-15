@@ -10,7 +10,7 @@ import { TextElement } from '~/ui/components/Text/types';
 import { withAnchor } from '~/ui/components/Text/withAnchor';
 
 type Config = ConfigStyles & {
-  Component: ComponentType<ComponentProps> | string;
+  Component: ComponentType<React.PropsWithChildren<ComponentProps>> | string;
 };
 
 type ConfigStyles = {

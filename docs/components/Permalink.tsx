@@ -11,7 +11,6 @@ type BaseProps = {
 };
 
 type EnhancedProps = {
-  children: React.ReactNode;
   nestingLevel?: number;
   additionalProps?: AdditionalProps;
   customIconStyle?: React.CSSProperties;
@@ -62,7 +61,12 @@ const STYLES_PERMALINK_ICON = css`
   }
 `;
 
-const PermalinkBase: React.FC<BaseProps> = ({ component, children, className, ...rest }) =>
+const PermalinkBase: React.FC<React.PropsWithChildren<BaseProps>> = ({
+  component,
+  children,
+  className,
+  ...rest
+}) =>
   React.cloneElement(
     component,
     {
@@ -78,7 +82,7 @@ const PermalinkBase: React.FC<BaseProps> = ({ component, children, className, ..
  * - nestingLevel: Sidebar heading level override
  * - additionalProps: Additional properties passed to component
  */
-const Permalink: React.FC<EnhancedProps> = withHeadingManager(props => {
+const Permalink: React.FC<React.PropsWithChildren<EnhancedProps>> = withHeadingManager(props => {
   // NOTE(jim): Not the greatest way to generate permalinks.
   // for now I've shortened the length of permalinks.
   const component = props.children as JSX.Element;

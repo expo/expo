@@ -9,7 +9,7 @@ type CreateHeading = (
   Component: React.ElementType,
   defaultLevel: number,
   type?: HeadingType
-) => React.FC;
+) => React.FC<React.PropsWithChildren<unknown>>;
 
 /**
  * Decorates component with a permalink at specified heading level

@@ -16,7 +16,7 @@ type CalloutType = 'info' | 'warning' | 'error';
 
 type CalloutProps = PropsWithChildren<{
   type?: CalloutType;
-  icon?: ComponentType<IconProps> | string;
+  icon?: ComponentType<React.PropsWithChildren<IconProps>> | string;
 }>;
 
 export const Callout = ({ type = 'info', icon, children, ...rest }: CalloutProps) => {

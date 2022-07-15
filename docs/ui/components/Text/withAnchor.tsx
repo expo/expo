@@ -17,7 +17,7 @@ export const AnchorContext = createContext<GithubSlugger | null>(null);
  *   - children of the component
  *   - anchor hover icon
  */
-export function withAnchor(Component: FC<TextComponentProps>) {
+export function withAnchor(Component: FC<React.PropsWithChildren<TextComponentProps>>) {
   function AnchorComponent({ id, children, ...rest }: TextComponentProps) {
     const slug = useSlug(id, children);
     return (

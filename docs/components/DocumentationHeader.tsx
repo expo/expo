@@ -241,7 +241,7 @@ type SectionContainerProps = {
   className?: string;
 };
 
-const SectionContainer: React.FC<SectionContainerProps> = ({
+const SectionContainer: React.FC<React.PropsWithChildren<SectionContainerProps>> = ({
   spaceBetween = 0,
   spaceAround = 0,
   children,

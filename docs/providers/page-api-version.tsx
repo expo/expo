@@ -7,10 +7,16 @@ export const PageApiVersionContext = createContext({
   /** If the current URL has a version defined */
   hasVersion: false,
   /** Change the URL to the select version  */
-  setVersion: (newVersion: string): void => {
+  setVersion: newVersion => {
     throw new Error('PageApiVersionContext not found');
   },
-});
+} as PageApiVersionContextType);
+
+export type PageApiVersionContextType = {
+  version: string;
+  hasVersion: boolean;
+  setVersion: (newVersion: string) => void;
+};
 
 type Props = PropsWithChildren<{
   /** The router containing the current URL info of the page, possibly containing the API version */

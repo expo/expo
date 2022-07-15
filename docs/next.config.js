@@ -24,8 +24,6 @@ module.exports = {
   pageExtensions: ['js', 'jsx', 'ts', 'tsx', 'md', 'mdx'],
   compiler: { emotion: true },
   swcMinify: true,
-  // Next 11 does not support ESLint v8, enable it when we upgrade to 12
-  eslint: { ignoreDuringBuilds: true },
   webpack: (config, options) => {
     // Add preval support for `constants/*` only and move it to the `.next/preval` cache.
     // It's to prevent over-usage and separate the cache to allow manually invalidation.

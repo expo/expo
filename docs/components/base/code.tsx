@@ -83,7 +83,7 @@ type Props = {
   className?: string;
 };
 
-export class Code extends React.Component<Props> {
+export class Code extends React.Component<React.PropsWithChildren<Props>> {
   componentDidMount() {
     this.runTippy();
   }
@@ -213,7 +213,10 @@ const remapLanguages: Record<string, string> = {
   rb: 'ruby',
 };
 
-export const InlineCode: React.FC<{ customCss?: SerializedStyles }> = ({ children, customCss }) => (
+export const InlineCode: React.FC<React.PropsWithChildren<{ customCss?: SerializedStyles }>> = ({
+  children,
+  customCss,
+}) => (
   <code css={[STYLES_INLINE_CODE, customCss]} className="inline">
     {children}
   </code>

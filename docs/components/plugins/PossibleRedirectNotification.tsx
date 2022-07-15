@@ -3,7 +3,9 @@ import * as React from 'react';
 import { P } from '~/components/base/paragraph';
 import { CONTAINER_STYLE } from '~/components/plugins/VersionedRedirectNotification';
 
-const PossibleRedirectNotification: React.FC<{ newUrl: string }> = ({ newUrl }) => {
+const PossibleRedirectNotification: React.FC<React.PropsWithChildren<{ newUrl: string }>> = ({
+  newUrl,
+}) => {
   const [targetId, setTargetId] = React.useState<string | null>(null);
 
   // We could add a listener on `window.onhashchange` but

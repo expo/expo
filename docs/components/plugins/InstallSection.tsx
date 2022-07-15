@@ -39,7 +39,7 @@ type Props = {
 const getPackageLink = (packageNames: string) =>
   `https://github.com/expo/expo/tree/main/packages/${packageNames.split(' ')[0]}`;
 
-const InstallSection: React.FC<Props> = ({
+const InstallSection: React.FC<React.PropsWithChildren<Props>> = ({
   packageName,
   hideBareInstructions = false,
   cmd = [`$ expo install ${packageName}`],
@@ -69,7 +69,7 @@ const InstallSection: React.FC<Props> = ({
 
 export default InstallSection;
 
-export const APIInstallSection: React.FC<Props> = props => {
+export const APIInstallSection: React.FC<React.PropsWithChildren<Props>> = props => {
   const { packageName } = usePageMetadata();
   return <InstallSection {...props} packageName={props.packageName ?? packageName} />;
 };
