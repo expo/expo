@@ -1,7 +1,9 @@
 import { css } from '@emotion/react';
 import {
   ArrowRightIcon,
+  ArrowUpRightIcon,
   borderRadius,
+  iconSize,
   palette,
   shadows,
   spacing,
@@ -80,10 +82,11 @@ export const CommunityGridCell = ({
       <div css={[cellCommunityIconWrapperStyle, css({ backgroundColor: iconBackground })]}>
         {icon}
       </div>
-      <div>
+      <div css={cellCommunityContentStyle}>
         <span css={cellCommunityTitleStyle}>{title}</span>
         <P css={cellCommunityDescriptionStyle}>{description}</P>
       </div>
+      <ArrowUpRightIcon color={theme.icon.secondary} css={cellCommunityLinkIconStyle} />
     </a>
   </Col>
 );
@@ -171,6 +174,10 @@ const cellCommunityIconWrapperStyle = css({
   marginRight: spacing[3],
 });
 
+const cellCommunityContentStyle = css({
+  flexGrow: 1,
+});
+
 const cellCommunityTitleStyle = css({
   ...typography.fontSizes[16],
   fontFamily: typography.fontStacks.medium,
@@ -182,4 +189,10 @@ const cellCommunityTitleStyle = css({
 const cellCommunityDescriptionStyle = css({
   ...typography.fontSizes[14],
   color: theme.text.secondary,
+});
+
+const cellCommunityLinkIconStyle = css({
+  marginLeft: spacing[1.5],
+  alignSelf: 'center',
+  minWidth: iconSize.regular,
 });
