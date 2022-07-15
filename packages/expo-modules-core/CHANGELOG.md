@@ -2,13 +2,11 @@
 
 ## Unpublished
 
-
-- Added the interface for the light sensor support on Android. ([#18225](https://github.com/expo/expo/pull/18225) by [bearkillerPT](https://github.com/bearkillerPT))
-
-
 ### 🛠 Breaking changes
 
 ### 🎉 New features
+
+- Added the interface for the light sensor support on Android. ([#18225](https://github.com/expo/expo/pull/18225) by [bearkillerPT](https://github.com/bearkillerPT))
 
 ### 🐛 Bug fixes
 
