@@ -775,19 +775,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                   </svg>
                 </div>
               </div>
-              <div>
-                <div
-                  class=" css-izsx1d-PDIV"
-                  data-text="true"
-                >
-                   
-                  [{
-"autoVerify": true,
-"data": {"host": "*.example.com"
-}
-}]
-                </div>
-              </div>
+              <div />
             </blockquote>
           </td>
         </tr>

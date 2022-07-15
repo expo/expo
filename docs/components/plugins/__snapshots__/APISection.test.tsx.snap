@@ -260,25 +260,7 @@ not appear on the screen.
           </svg>
         </div>
       </div>
-      <div>
-        <strong
-          class="css-1k788ud-B"
-        >
-          See: 
-        </strong>
-        <span>
-          <a
-            class="css-ccg2mn-ExternalLink"
-            href="https://developer.apple.com/documentation/authenticationservices/asauthorizationappleidbutton"
-            rel="noopener noreferrer"
-          >
-            Apple
-Documentation
-          </a>
-          
-for more details.
-        </span>
-      </div>
+      <div />
     </blockquote>
     <div>
       <div
@@ -1125,18 +1107,7 @@ This should come from the user field of an
           </svg>
         </div>
       </div>
-      <div>
-        
-
-        <strong
-          class="css-1k788ud-B"
-        >
-          Note:
-        </strong>
-         This method must be tested on a real device. On the iOS simulator it always throws an error.
-        
-
-      </div>
+      <div />
     </blockquote>
     <div
       class="css-1hrx9ne-APISectionMethods"
@@ -2677,7 +2648,6 @@ sign-out operation.
               class="inline css-1fz3od4-InlineCode"
             >
               AppleAuthenticationCredential
-              
             </code>
           </span>
           <span
@@ -2778,25 +2748,7 @@ which contains all of the pertinent user and credential information.
           </svg>
         </div>
       </div>
-      <div>
-        <strong
-          class="css-1k788ud-B"
-        >
-          See: 
-        </strong>
-        <span>
-          <a
-            class="css-ccg2mn-ExternalLink"
-            href="https://developer.apple.com/documentation/authenticationservices/asauthorizationappleidcredential"
-            rel="noopener noreferrer"
-          >
-            Apple
-Documentation
-          </a>
-          
-for more details.
-        </span>
-      </div>
+      <div />
     </blockquote>
     <div
       class="css-rufzkc-Table"
@@ -3160,7 +3112,6 @@ developers.
               class="inline css-1fz3od4-InlineCode"
             >
               AppleAuthenticationFullName
-              
             </code>
           </span>
           <span
@@ -3464,7 +3415,6 @@ may be
               class="inline css-1fz3od4-InlineCode"
             >
               AppleAuthenticationRefreshOptions
-              
             </code>
           </span>
           <span
@@ -3542,25 +3492,7 @@ You must include the ID string of the user whose credentials you'd like to refre
           </svg>
         </div>
       </div>
-      <div>
-        <strong
-          class="css-1k788ud-B"
-        >
-          See: 
-        </strong>
-        <span>
-          <a
-            class="css-ccg2mn-ExternalLink"
-            href="https://developer.apple.com/documentation/authenticationservices/asauthorizationopenidrequest"
-            rel="noopener noreferrer"
-          >
-            Apple
-Documentation
-          </a>
-          
-for more details.
-        </span>
-      </div>
+      <div />
     </blockquote>
     <div
       class="css-rufzkc-Table"
@@ -3757,7 +3689,6 @@ OAuth 2.0 protocol
               class="inline css-1fz3od4-InlineCode"
             >
               AppleAuthenticationSignInOptions
-              
             </code>
           </span>
           <span
@@ -3835,25 +3766,7 @@ None of these options are required.
           </svg>
         </div>
       </div>
-      <div>
-        <strong
-          class="css-1k788ud-B"
-        >
-          See: 
-        </strong>
-        <span>
-          <a
-            class="css-ccg2mn-ExternalLink"
-            href="https://developer.apple.com/documentation/authenticationservices/asauthorizationopenidrequest"
-            rel="noopener noreferrer"
-          >
-            Apple
-Documentation
-          </a>
-          
-for more details.
-        </span>
-      </div>
+      <div />
     </blockquote>
     <div
       class="css-rufzkc-Table"
@@ -4067,7 +3980,6 @@ OAuth 2.0 protocol
               class="inline css-1fz3od4-InlineCode"
             >
               AppleAuthenticationSignOutOptions
-              
             </code>
           </span>
           <span
@@ -4145,25 +4057,7 @@ You must include the ID string of the user to sign out.
           </svg>
         </div>
       </div>
-      <div>
-        <strong
-          class="css-1k788ud-B"
-        >
-          See: 
-        </strong>
-        <span>
-          <a
-            class="css-ccg2mn-ExternalLink"
-            href="https://developer.apple.com/documentation/authenticationservices/asauthorizationopenidrequest"
-            rel="noopener noreferrer"
-          >
-            Apple
-Documentation
-          </a>
-          
-for more details.
-        </span>
-      </div>
+      <div />
     </blockquote>
     <div
       class="css-rufzkc-Table"
@@ -4297,7 +4191,6 @@ OAuth 2.0 protocol
               class="inline css-1fz3od4-InlineCode"
             >
               Subscription
-              
             </code>
           </span>
           <span
@@ -5202,25 +5095,7 @@ OAuth 2.0 protocol
           </svg>
         </div>
       </div>
-      <div>
-        <strong
-          class="css-1k788ud-B"
-        >
-          See: 
-        </strong>
-        <span>
-          <a
-            class="css-ccg2mn-ExternalLink"
-            href="https://developer.apple.com/documentation/authenticationservices/asauthorizationappleidprovidercredentialstate"
-            rel="noopener noreferrer"
-          >
-            Apple
-Documentation
-          </a>
-          
-for more details.
-        </span>
-      </div>
+      <div />
     </blockquote>
     <div
       class="css-1xaswp1-APISectionEnums"
@@ -5965,14 +5840,7 @@ for more details.
           </svg>
         </div>
       </div>
-      <div>
-        
-
-        Note that it is possible that you will not be granted all of the scopes which you request.
-You will still need to handle null values for any fields you request.
-        
-
-      </div>
+      <div />
     </blockquote>
     <blockquote
       class="css-1yla49y-Quote"
@@ -6000,25 +5868,7 @@ You will still need to handle null values for any fields you request.
           </svg>
         </div>
       </div>
-      <div>
-        <strong
-          class="css-1k788ud-B"
-        >
-          See: 
-        </strong>
-        <span>
-          <a
-            class="css-ccg2mn-ExternalLink"
-            href="https://developer.apple.com/documentation/authenticationservices/asauthorizationscope"
-            rel="noopener noreferrer"
-          >
-            Apple
-Documentation
-          </a>
-          
-for more details.
-        </span>
-      </div>
+      <div />
     </blockquote>
     <div
       class="css-1xaswp1-APISectionEnums"
@@ -6255,25 +6105,7 @@ for more details.
           </svg>
         </div>
       </div>
-      <div>
-        <strong
-          class="css-1k788ud-B"
-        >
-          See: 
-        </strong>
-        <span>
-          <a
-            class="css-ccg2mn-ExternalLink"
-            href="https://developer.apple.com/documentation/authenticationservices/asuserdetectionstatus"
-            rel="noopener noreferrer"
-          >
-            Apple
-Documentation
-          </a>
-          
-for more details.
-        </span>
-      </div>
+      <div />
     </blockquote>
     <div
       class="css-1xaswp1-APISectionEnums"
@@ -6957,32 +6789,7 @@ provided with an
               </svg>
             </div>
           </div>
-          <div>
-            
-
-            <strong
-              class="css-1k788ud-B"
-            >
-              Note:
-            </strong>
-             Passing 
-            <code
-              class="inline css-1fz3od4-InlineCode"
-            >
-              undefined
-            </code>
-             to the 
-            <code
-              class="inline css-1fz3od4-InlineCode"
-            >
-              onBarCodeScanned
-            </code>
-             prop will result in no scanning. This
-can be used to effectively "pause" the scanner so that it doesn't continually scan even after
-data has been retrieved.
-            
-
-          </div>
+          <div />
         </blockquote>
       </div>
       <div
@@ -8141,18 +7948,7 @@ the platform.
                     </svg>
                   </div>
                 </div>
-                <div>
-                  
-
-                  <strong
-                    class="css-1k788ud-B"
-                  >
-                    Note:
-                  </strong>
-                   Only QR codes are supported on iOS.
-                  
-
-                </div>
+                <div />
               </blockquote>
             </td>
           </tr>
@@ -8361,7 +8157,6 @@ code.
               class="inline css-1fz3od4-InlineCode"
             >
               BarCodeBounds
-              
             </code>
           </span>
           <span
@@ -8664,7 +8459,6 @@ code.
               class="inline css-1fz3od4-InlineCode"
             >
               BarCodeEventCallbackArguments
-              
             </code>
           </span>
           <span
@@ -8789,7 +8583,6 @@ code.
               class="inline css-1fz3od4-InlineCode"
             >
               BarCodePoint
-              
             </code>
           </span>
           <span
@@ -9086,7 +8879,6 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
               class="inline css-1fz3od4-InlineCode"
             >
               BarCodeScannerResult
-              
             </code>
           </span>
           <span
@@ -9146,44 +8938,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
           </svg>
         </div>
       </div>
-      <div>
-        
-
-        <strong
-          class="css-1k788ud-B"
-        >
-          Note:
-        </strong>
-         
-        <code
-          class="inline css-1fz3od4-InlineCode"
-        >
-          bounds
-        </code>
-         and 
-        <code
-          class="inline css-1fz3od4-InlineCode"
-        >
-          cornerPoints
-        </code>
-         are not always available. On iOS, for 
-        <code
-          class="inline css-1fz3od4-InlineCode"
-        >
-          code39
-        </code>
-         and 
-        <code
-          class="inline css-1fz3od4-InlineCode"
-        >
-          pdf417
-        </code>
-        
-you don't get those values. Moreover, on iOS, those values don't have to bounds the whole barcode.
-For some types, they will represent the area used by the scanner.
-        
-
-      </div>
+      <div />
     </blockquote>
     <div
       class="css-rufzkc-Table"
@@ -9390,7 +9145,6 @@ For some types, they will represent the area used by the scanner.
               class="inline css-1fz3od4-InlineCode"
             >
               BarCodeSize
-              
             </code>
           </span>
           <span
@@ -10839,14 +10593,7 @@ exports[`APISection expo-pedometer 1`] = `
           </svg>
         </div>
       </div>
-      <div>
-        
-
-        Only the past seven days worth of data is stored and available for you to retrieve. Specifying
-a start date that is more than seven days in the past returns only the available data.
-        
-
-      </div>
+      <div />
     </blockquote>
   </div>
   <div
@@ -11526,7 +11273,6 @@ provided with a single argument that is
               class="inline css-1fz3od4-InlineCode"
             >
               PedometerResult
-              
             </code>
           </span>
           <span
@@ -11857,7 +11603,6 @@ provided with a single argument that is
               class="inline css-1fz3od4-InlineCode"
             >
               Subscription
-              
             </code>
           </span>
           <span
