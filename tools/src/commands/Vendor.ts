@@ -83,7 +83,7 @@ function getReanimatedPipe() {
         replace: 'Ldevmenu/com/swmansion/reanimated',
       }),
       new TransformFilesContent({
-        filePattern: 'android/**/NativeProxy.java',
+        filePattern: 'android/**/*.@(java|kt)',
         find: 'System\\.loadLibrary\\("reanimated"\\)',
         replace: 'System.loadLibrary("devmenureanimated")',
       }),
