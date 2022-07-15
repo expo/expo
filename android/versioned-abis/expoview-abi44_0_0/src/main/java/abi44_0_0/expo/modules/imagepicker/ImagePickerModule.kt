@@ -39,7 +39,6 @@ import abi44_0_0.expo.modules.interfaces.permissions.PermissionsResponseListener
 import abi44_0_0.expo.modules.interfaces.permissions.PermissionsStatus
 import androidx.core.os.bundleOf
 import com.canhub.cropper.CropImageActivity
-import com.canhub.cropper.CropImageOptions
 import com.canhub.cropper.options
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -266,20 +265,23 @@ class ImagePickerModule(
     }
 
     val intent = Intent(context, CropImageActivity::class.java).apply {
-      putExtra(CropImage.CROP_IMAGE_EXTRA_BUNDLE, bundleOf(
-        CropImage.CROP_IMAGE_EXTRA_SOURCE to uri,
-        CropImage.CROP_IMAGE_EXTRA_OPTIONS to options {
-          pickerOptions.forceAspect?.let { (x, y) ->
-            setAspectRatio((x as Number).toInt(), (y as Number).toInt())
-            setFixAspectRatio(true)
-            setInitialCropWindowPaddingRatio(0f)
-          }
+      putExtra(
+        CropImage.CROP_IMAGE_EXTRA_BUNDLE,
+        bundleOf(
+          CropImage.CROP_IMAGE_EXTRA_SOURCE to uri,
+          CropImage.CROP_IMAGE_EXTRA_OPTIONS to options {
+            pickerOptions.forceAspect?.let { (x, y) ->
+              setAspectRatio((x as Number).toInt(), (y as Number).toInt())
+              setFixAspectRatio(true)
+              setInitialCropWindowPaddingRatio(0f)
+            }
 
-          setOutputUri(fileUri)
-          setOutputCompressFormat(compressFormat)
-          setOutputCompressQuality(pickerOptions.quality)
-        }.cropImageOptions.also { it.validate() }
-      ))
+            setOutputUri(fileUri)
+            setOutputCompressFormat(compressFormat)
+            setOutputCompressQuality(pickerOptions.quality)
+          }.cropImageOptions.also { it.validate() }
+        )
+      )
     }
     exifDataHandler = ExifDataHandler(uri)
     startActivityOnResult(intent, CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE, promise, pickerOptions)
