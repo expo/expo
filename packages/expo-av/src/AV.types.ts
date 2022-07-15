@@ -55,7 +55,6 @@ export type AVPlaybackSourceObject = {
   overrideFileExtensionAndroid?: string;
   /**
    * An optional headers object passed in a network request.
-   * @platform android
    */
   headers?: Record<string, string>;
 };
@@ -228,6 +227,8 @@ export type AVPlaybackStatusToSet = {
   shouldPlay?: boolean;
   /**
    * The current rate of the media.
+   * @platform android API 23+
+   * @platform ios
    */
   rate?: number;
   /**
@@ -236,10 +237,12 @@ export type AVPlaybackStatusToSet = {
   shouldCorrectPitch?: boolean;
   /**
    * The current volume of the audio for this media.
+   * > Note that this only affect the audio of this `playbackObject` and do NOT affect the system volume.
    */
   volume?: number;
   /**
    * A boolean describing if the audio of this media is currently muted.
+   * > Note that this only affect the audio of this `playbackObject` and do NOT affect the system volume.
    */
   isMuted?: boolean;
   /**
