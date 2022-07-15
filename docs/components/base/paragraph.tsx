@@ -135,24 +135,8 @@ export const Quote = ({ children, ...rest }: React.PropsWithChildren<object>) =>
     </div>
   );
 
-  // @ts-ignore
-  // const newChildren = React.Children.map(children, ({ props }: React.ReactNode) => {
-  //   const emoji = captureEmoji(props?.children);
-  //
-  //   if (emoji) {
-  //     icon = emoji;
-  //
-  //     return {
-  //       ...rest,
-  //       props: {
-  //         ...props,
-  //         children: removeEmoji(emoji, props?.children),
-  //       },
-  //     };
-  //   }
-  // }) as React.ReactNode | React.ReactNode[];
-
-  const newChildren: JSX.Element[] = React.Children.map(children, child => {
+  // todo(simek): Refactor this component
+  const newChildren = React.Children.map(children, child => {
     // @ts-ignore
     const { props } = child;
     const emoji = captureEmoji(props?.children);
@@ -171,7 +155,7 @@ export const Quote = ({ children, ...rest }: React.PropsWithChildren<object>) =>
     }
 
     return child;
-  });
+  }) as React.ReactNode;
 
   return (
     <blockquote {...attributes} css={STYLES_BLOCKQUOTE} {...rest}>
