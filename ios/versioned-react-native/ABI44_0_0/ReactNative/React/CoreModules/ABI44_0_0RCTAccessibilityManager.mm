@@ -242,7 +242,7 @@ ABI44_0_0RCT_EXPORT_MODULE()
 }
 
 ABI44_0_0RCT_EXPORT_METHOD(setAccessibilityContentSizeMultipliers
-                  : (JS::NativeAccessibilityManager::SpecSetAccessibilityContentSizeMultipliersJSMultipliers &)
+                  : (ABI44_0_0JS::NativeAccessibilityManager::SpecSetAccessibilityContentSizeMultipliersJSMultipliers &)
                       JSMultipliers)
 {
   NSMutableDictionary<NSString *, NSNumber *> *multipliers = [NSMutableDictionary new];

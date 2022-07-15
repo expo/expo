@@ -52,14 +52,14 @@ ABI44_0_0RCT_EXPORT_MODULE()
   return self;
 }
 
-- (ABI44_0_0facebook::ABI44_0_0React::ModuleConstants<JS::NativeSettingsManager::Constants>)constantsToExport
+- (ABI44_0_0facebook::ABI44_0_0React::ModuleConstants<ABI44_0_0JS::NativeSettingsManager::Constants>)constantsToExport
 {
-  return (ABI44_0_0facebook::ABI44_0_0React::ModuleConstants<JS::NativeSettingsManager::Constants>)[self getConstants];
+  return (ABI44_0_0facebook::ABI44_0_0React::ModuleConstants<ABI44_0_0JS::NativeSettingsManager::Constants>)[self getConstants];
 }
 
-- (ABI44_0_0facebook::ABI44_0_0React::ModuleConstants<JS::NativeSettingsManager::Constants>)getConstants
+- (ABI44_0_0facebook::ABI44_0_0React::ModuleConstants<ABI44_0_0JS::NativeSettingsManager::Constants>)getConstants
 {
-  return ABI44_0_0facebook::ABI44_0_0React::typedConstants<JS::NativeSettingsManager::Constants>({
+  return ABI44_0_0facebook::ABI44_0_0React::typedConstants<ABI44_0_0JS::NativeSettingsManager::Constants>({
     .settings = ABI44_0_0RCTJSONClean([_defaults dictionaryRepresentation])
   });
 }

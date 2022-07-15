@@ -65,7 +65,7 @@ ABI44_0_0RCT_EXPORT_MODULE()
 ABI44_0_0RCT_EXPORT_METHOD(connect
                   : (NSURL *)URL protocols
                   : (NSArray *)protocols options
-                  : (JS::NativeWebSocketModule::SpecConnectOptions &)options socketID
+                  : (ABI44_0_0JS::NativeWebSocketModule::SpecConnectOptions &)options socketID
                   : (double)socketID)
 {
   NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:URL];

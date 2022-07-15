@@ -221,7 +221,7 @@ ABI45_0_0RCT_EXPORT_METHOD(stopListeningToAnimatedNodeValue:(double)tag)
 
 ABI45_0_0RCT_EXPORT_METHOD(addAnimatedEventToView:(double)viewTag
                   eventName:(nonnull NSString *)eventName
-                  eventMapping:(JS::NativeAnimatedModule::EventMapping &)eventMapping)
+                  eventMapping:(ABI45_0_0JS::NativeAnimatedModule::EventMapping &)eventMapping)
 {
   NSMutableDictionary *eventMappingDict = [NSMutableDictionary new];
   eventMappingDict[@"nativeEventPath"] = ABI45_0_0RCTConvertVecToArray(eventMapping.nativeEventPath());

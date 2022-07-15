@@ -51,9 +51,9 @@ namespace ABI44_0_0facebook {
   } // namespace ABI44_0_0React
 } // namespace ABI44_0_0facebook
 @implementation ABI44_0_0RCTCxxConvert (NativeAccessibilityManager_SpecSetAccessibilityContentSizeMultipliersJSMultipliers)
-+ (ABI44_0_0RCTManagedPointer *)JS_NativeAccessibilityManager_SpecSetAccessibilityContentSizeMultipliersJSMultipliers:(id)json
++ (ABI44_0_0RCTManagedPointer *)ABI44_0_0JS_NativeAccessibilityManager_SpecSetAccessibilityContentSizeMultipliersJSMultipliers:(id)json
 {
-  return ABI44_0_0facebook::ABI44_0_0React::managedPointer<JS::NativeAccessibilityManager::SpecSetAccessibilityContentSizeMultipliersJSMultipliers>(json);
+  return ABI44_0_0facebook::ABI44_0_0React::managedPointer<ABI44_0_0JS::NativeAccessibilityManager::SpecSetAccessibilityContentSizeMultipliersJSMultipliers>(json);
 }
 @end
 namespace ABI44_0_0facebook {
@@ -117,7 +117,7 @@ namespace ABI44_0_0facebook {
         
         
         methodMap_["setAccessibilityContentSizeMultipliers"] = MethodMetadata {1, __hostFunction_NativeAccessibilityManagerSpecJSI_setAccessibilityContentSizeMultipliers};
-        setMethodArgConversionSelector(@"setAccessibilityContentSizeMultipliers", 0, @"JS_NativeAccessibilityManager_SpecSetAccessibilityContentSizeMultipliersJSMultipliers:");
+        setMethodArgConversionSelector(@"setAccessibilityContentSizeMultipliers", 0, @"ABI44_0_0JS_NativeAccessibilityManager_SpecSetAccessibilityContentSizeMultipliersJSMultipliers:");
         
         methodMap_["setAccessibilityFocus"] = MethodMetadata {1, __hostFunction_NativeAccessibilityManagerSpecJSI_setAccessibilityFocus};
         
@@ -128,15 +128,15 @@ namespace ABI44_0_0facebook {
   } // namespace ABI44_0_0React
 } // namespace ABI44_0_0facebook
 @implementation ABI44_0_0RCTCxxConvert (NativeActionSheetManager_SpecShowActionSheetWithOptionsOptions)
-+ (ABI44_0_0RCTManagedPointer *)JS_NativeActionSheetManager_SpecShowActionSheetWithOptionsOptions:(id)json
++ (ABI44_0_0RCTManagedPointer *)ABI44_0_0JS_NativeActionSheetManager_SpecShowActionSheetWithOptionsOptions:(id)json
 {
-  return ABI44_0_0facebook::ABI44_0_0React::managedPointer<JS::NativeActionSheetManager::SpecShowActionSheetWithOptionsOptions>(json);
+  return ABI44_0_0facebook::ABI44_0_0React::managedPointer<ABI44_0_0JS::NativeActionSheetManager::SpecShowActionSheetWithOptionsOptions>(json);
 }
 @end
 @implementation ABI44_0_0RCTCxxConvert (NativeActionSheetManager_SpecShowShareActionSheetWithOptionsOptions)
-+ (ABI44_0_0RCTManagedPointer *)JS_NativeActionSheetManager_SpecShowShareActionSheetWithOptionsOptions:(id)json
++ (ABI44_0_0RCTManagedPointer *)ABI44_0_0JS_NativeActionSheetManager_SpecShowShareActionSheetWithOptionsOptions:(id)json
 {
-  return ABI44_0_0facebook::ABI44_0_0React::managedPointer<JS::NativeActionSheetManager::SpecShowShareActionSheetWithOptionsOptions>(json);
+  return ABI44_0_0facebook::ABI44_0_0React::managedPointer<ABI44_0_0JS::NativeActionSheetManager::SpecShowShareActionSheetWithOptionsOptions>(json);
 }
 @end
 namespace ABI44_0_0facebook {
@@ -154,17 +154,17 @@ namespace ABI44_0_0facebook {
       : ObjCTurboModule(params) {
         
         methodMap_["showActionSheetWithOptions"] = MethodMetadata {2, __hostFunction_NativeActionSheetManagerSpecJSI_showActionSheetWithOptions};
-        setMethodArgConversionSelector(@"showActionSheetWithOptions", 0, @"JS_NativeActionSheetManager_SpecShowActionSheetWithOptionsOptions:");
+        setMethodArgConversionSelector(@"showActionSheetWithOptions", 0, @"ABI44_0_0JS_NativeActionSheetManager_SpecShowActionSheetWithOptionsOptions:");
         
         methodMap_["showShareActionSheetWithOptions"] = MethodMetadata {3, __hostFunction_NativeActionSheetManagerSpecJSI_showShareActionSheetWithOptions};
-        setMethodArgConversionSelector(@"showShareActionSheetWithOptions", 0, @"JS_NativeActionSheetManager_SpecShowShareActionSheetWithOptionsOptions:");
+        setMethodArgConversionSelector(@"showShareActionSheetWithOptions", 0, @"ABI44_0_0JS_NativeActionSheetManager_SpecShowShareActionSheetWithOptionsOptions:");
     }
   } // namespace ABI44_0_0React
 } // namespace ABI44_0_0facebook
 @implementation ABI44_0_0RCTCxxConvert (NativeAlertManager_Args)
-+ (ABI44_0_0RCTManagedPointer *)JS_NativeAlertManager_Args:(id)json
++ (ABI44_0_0RCTManagedPointer *)ABI44_0_0JS_NativeAlertManager_Args:(id)json
 {
-  return ABI44_0_0facebook::ABI44_0_0React::managedPointer<JS::NativeAlertManager::Args>(json);
+  return ABI44_0_0facebook::ABI44_0_0React::managedPointer<ABI44_0_0JS::NativeAlertManager::Args>(json);
 }
 @end
 namespace ABI44_0_0facebook {
@@ -178,14 +178,14 @@ namespace ABI44_0_0facebook {
       : ObjCTurboModule(params) {
         
         methodMap_["alertWithArgs"] = MethodMetadata {2, __hostFunction_NativeAlertManagerSpecJSI_alertWithArgs};
-        setMethodArgConversionSelector(@"alertWithArgs", 0, @"JS_NativeAlertManager_Args:");
+        setMethodArgConversionSelector(@"alertWithArgs", 0, @"ABI44_0_0JS_NativeAlertManager_Args:");
     }
   } // namespace ABI44_0_0React
 } // namespace ABI44_0_0facebook
 @implementation ABI44_0_0RCTCxxConvert (NativeAnimatedModule_EventMapping)
-+ (ABI44_0_0RCTManagedPointer *)JS_NativeAnimatedModule_EventMapping:(id)json
++ (ABI44_0_0RCTManagedPointer *)ABI44_0_0JS_NativeAnimatedModule_EventMapping:(id)json
 {
-  return ABI44_0_0facebook::ABI44_0_0React::managedPointer<JS::NativeAnimatedModule::EventMapping>(json);
+  return ABI44_0_0facebook::ABI44_0_0React::managedPointer<ABI44_0_0JS::NativeAnimatedModule::EventMapping>(json);
 }
 @end
 namespace ABI44_0_0facebook {
@@ -337,7 +337,7 @@ namespace ABI44_0_0facebook {
         
         
         methodMap_["addAnimatedEventToView"] = MethodMetadata {3, __hostFunction_NativeAnimatedModuleSpecJSI_addAnimatedEventToView};
-        setMethodArgConversionSelector(@"addAnimatedEventToView", 2, @"JS_NativeAnimatedModule_EventMapping:");
+        setMethodArgConversionSelector(@"addAnimatedEventToView", 2, @"ABI44_0_0JS_NativeAnimatedModule_EventMapping:");
         
         methodMap_["removeAnimatedEventFromView"] = MethodMetadata {3, __hostFunction_NativeAnimatedModuleSpecJSI_removeAnimatedEventFromView};
         
@@ -351,9 +351,9 @@ namespace ABI44_0_0facebook {
   } // namespace ABI44_0_0React
 } // namespace ABI44_0_0facebook
 @implementation ABI44_0_0RCTCxxConvert (NativeAnimatedTurboModule_EventMapping)
-+ (ABI44_0_0RCTManagedPointer *)JS_NativeAnimatedTurboModule_EventMapping:(id)json
++ (ABI44_0_0RCTManagedPointer *)ABI44_0_0JS_NativeAnimatedTurboModule_EventMapping:(id)json
 {
-  return ABI44_0_0facebook::ABI44_0_0React::managedPointer<JS::NativeAnimatedTurboModule::EventMapping>(json);
+  return ABI44_0_0facebook::ABI44_0_0React::managedPointer<ABI44_0_0JS::NativeAnimatedTurboModule::EventMapping>(json);
 }
 @end
 namespace ABI44_0_0facebook {
@@ -505,7 +505,7 @@ namespace ABI44_0_0facebook {
         
         
         methodMap_["addAnimatedEventToView"] = MethodMetadata {3, __hostFunction_NativeAnimatedTurboModuleSpecJSI_addAnimatedEventToView};
-        setMethodArgConversionSelector(@"addAnimatedEventToView", 2, @"JS_NativeAnimatedTurboModule_EventMapping:");
+        setMethodArgConversionSelector(@"addAnimatedEventToView", 2, @"ABI44_0_0JS_NativeAnimatedTurboModule_EventMapping:");
         
         methodMap_["removeAnimatedEventFromView"] = MethodMetadata {3, __hostFunction_NativeAnimatedTurboModuleSpecJSI_removeAnimatedEventFromView};
         
@@ -1023,15 +1023,15 @@ namespace ABI44_0_0facebook {
   } // namespace ABI44_0_0React
 } // namespace ABI44_0_0facebook
 @implementation ABI44_0_0RCTCxxConvert (NativeExceptionsManager_StackFrame)
-+ (ABI44_0_0RCTManagedPointer *)JS_NativeExceptionsManager_StackFrame:(id)json
++ (ABI44_0_0RCTManagedPointer *)ABI44_0_0JS_NativeExceptionsManager_StackFrame:(id)json
 {
-  return ABI44_0_0facebook::ABI44_0_0React::managedPointer<JS::NativeExceptionsManager::StackFrame>(json);
+  return ABI44_0_0facebook::ABI44_0_0React::managedPointer<ABI44_0_0JS::NativeExceptionsManager::StackFrame>(json);
 }
 @end
 @implementation ABI44_0_0RCTCxxConvert (NativeExceptionsManager_ExceptionData)
-+ (ABI44_0_0RCTManagedPointer *)JS_NativeExceptionsManager_ExceptionData:(id)json
++ (ABI44_0_0RCTManagedPointer *)ABI44_0_0JS_NativeExceptionsManager_ExceptionData:(id)json
 {
-  return ABI44_0_0facebook::ABI44_0_0React::managedPointer<JS::NativeExceptionsManager::ExceptionData>(json);
+  return ABI44_0_0facebook::ABI44_0_0React::managedPointer<ABI44_0_0JS::NativeExceptionsManager::ExceptionData>(json);
 }
 @end
 namespace ABI44_0_0facebook {
@@ -1067,7 +1067,7 @@ namespace ABI44_0_0facebook {
         
         
         methodMap_["reportException"] = MethodMetadata {1, __hostFunction_NativeExceptionsManagerSpecJSI_reportException};
-        setMethodArgConversionSelector(@"reportException", 0, @"JS_NativeExceptionsManager_ExceptionData:");
+        setMethodArgConversionSelector(@"reportException", 0, @"ABI44_0_0JS_NativeExceptionsManager_ExceptionData:");
         
         methodMap_["updateExceptionMessage"] = MethodMetadata {3, __hostFunction_NativeExceptionsManagerSpecJSI_updateExceptionMessage};
         
@@ -1101,9 +1101,9 @@ namespace ABI44_0_0facebook {
   } // namespace ABI44_0_0React
 } // namespace ABI44_0_0facebook
 @implementation ABI44_0_0RCTCxxConvert (NativeFrameRateLogger_SpecSetGlobalOptionsOptions)
-+ (ABI44_0_0RCTManagedPointer *)JS_NativeFrameRateLogger_SpecSetGlobalOptionsOptions:(id)json
++ (ABI44_0_0RCTManagedPointer *)ABI44_0_0JS_NativeFrameRateLogger_SpecSetGlobalOptionsOptions:(id)json
 {
-  return ABI44_0_0facebook::ABI44_0_0React::managedPointer<JS::NativeFrameRateLogger::SpecSetGlobalOptionsOptions>(json);
+  return ABI44_0_0facebook::ABI44_0_0React::managedPointer<ABI44_0_0JS::NativeFrameRateLogger::SpecSetGlobalOptionsOptions>(json);
 }
 @end
 namespace ABI44_0_0facebook {
@@ -1129,7 +1129,7 @@ namespace ABI44_0_0facebook {
       : ObjCTurboModule(params) {
         
         methodMap_["setGlobalOptions"] = MethodMetadata {1, __hostFunction_NativeFrameRateLoggerSpecJSI_setGlobalOptions};
-        setMethodArgConversionSelector(@"setGlobalOptions", 0, @"JS_NativeFrameRateLogger_SpecSetGlobalOptionsOptions:");
+        setMethodArgConversionSelector(@"setGlobalOptions", 0, @"ABI44_0_0JS_NativeFrameRateLogger_SpecSetGlobalOptionsOptions:");
         
         methodMap_["setContext"] = MethodMetadata {1, __hostFunction_NativeFrameRateLoggerSpecJSI_setContext};
         
@@ -1203,27 +1203,27 @@ namespace ABI44_0_0facebook {
   } // namespace ABI44_0_0React
 } // namespace ABI44_0_0facebook
 @implementation ABI44_0_0RCTCxxConvert (NativeImageEditor_OptionsOffset)
-+ (ABI44_0_0RCTManagedPointer *)JS_NativeImageEditor_OptionsOffset:(id)json
++ (ABI44_0_0RCTManagedPointer *)ABI44_0_0JS_NativeImageEditor_OptionsOffset:(id)json
 {
-  return ABI44_0_0facebook::ABI44_0_0React::managedPointer<JS::NativeImageEditor::OptionsOffset>(json);
+  return ABI44_0_0facebook::ABI44_0_0React::managedPointer<ABI44_0_0JS::NativeImageEditor::OptionsOffset>(json);
 }
 @end
 @implementation ABI44_0_0RCTCxxConvert (NativeImageEditor_OptionsSize)
-+ (ABI44_0_0RCTManagedPointer *)JS_NativeImageEditor_OptionsSize:(id)json
++ (ABI44_0_0RCTManagedPointer *)ABI44_0_0JS_NativeImageEditor_OptionsSize:(id)json
 {
-  return ABI44_0_0facebook::ABI44_0_0React::managedPointer<JS::NativeImageEditor::OptionsSize>(json);
+  return ABI44_0_0facebook::ABI44_0_0React::managedPointer<ABI44_0_0JS::NativeImageEditor::OptionsSize>(json);
 }
 @end
 @implementation ABI44_0_0RCTCxxConvert (NativeImageEditor_OptionsDisplaySize)
-+ (ABI44_0_0RCTManagedPointer *)JS_NativeImageEditor_OptionsDisplaySize:(id)json
++ (ABI44_0_0RCTManagedPointer *)ABI44_0_0JS_NativeImageEditor_OptionsDisplaySize:(id)json
 {
-  return ABI44_0_0facebook::ABI44_0_0React::managedPointer<JS::NativeImageEditor::OptionsDisplaySize>(json);
+  return ABI44_0_0facebook::ABI44_0_0React::managedPointer<ABI44_0_0JS::NativeImageEditor::OptionsDisplaySize>(json);
 }
 @end
 @implementation ABI44_0_0RCTCxxConvert (NativeImageEditor_Options)
-+ (ABI44_0_0RCTManagedPointer *)JS_NativeImageEditor_Options:(id)json
++ (ABI44_0_0RCTManagedPointer *)ABI44_0_0JS_NativeImageEditor_Options:(id)json
 {
-  return ABI44_0_0facebook::ABI44_0_0React::managedPointer<JS::NativeImageEditor::Options>(json);
+  return ABI44_0_0facebook::ABI44_0_0React::managedPointer<ABI44_0_0JS::NativeImageEditor::Options>(json);
 }
 @end
 namespace ABI44_0_0facebook {
@@ -1237,7 +1237,7 @@ namespace ABI44_0_0facebook {
       : ObjCTurboModule(params) {
         
         methodMap_["cropImage"] = MethodMetadata {4, __hostFunction_NativeImageEditorSpecJSI_cropImage};
-        setMethodArgConversionSelector(@"cropImage", 1, @"JS_NativeImageEditor_Options:");
+        setMethodArgConversionSelector(@"cropImage", 1, @"ABI44_0_0JS_NativeImageEditor_Options:");
     }
   } // namespace ABI44_0_0React
 } // namespace ABI44_0_0facebook
@@ -1279,15 +1279,15 @@ namespace ABI44_0_0facebook {
   } // namespace ABI44_0_0React
 } // namespace ABI44_0_0facebook
 @implementation ABI44_0_0RCTCxxConvert (NativeImagePickerIOS_SpecOpenCameraDialogConfig)
-+ (ABI44_0_0RCTManagedPointer *)JS_NativeImagePickerIOS_SpecOpenCameraDialogConfig:(id)json
++ (ABI44_0_0RCTManagedPointer *)ABI44_0_0JS_NativeImagePickerIOS_SpecOpenCameraDialogConfig:(id)json
 {
-  return ABI44_0_0facebook::ABI44_0_0React::managedPointer<JS::NativeImagePickerIOS::SpecOpenCameraDialogConfig>(json);
+  return ABI44_0_0facebook::ABI44_0_0React::managedPointer<ABI44_0_0JS::NativeImagePickerIOS::SpecOpenCameraDialogConfig>(json);
 }
 @end
 @implementation ABI44_0_0RCTCxxConvert (NativeImagePickerIOS_SpecOpenSelectDialogConfig)
-+ (ABI44_0_0RCTManagedPointer *)JS_NativeImagePickerIOS_SpecOpenSelectDialogConfig:(id)json
++ (ABI44_0_0RCTManagedPointer *)ABI44_0_0JS_NativeImagePickerIOS_SpecOpenSelectDialogConfig:(id)json
 {
-  return ABI44_0_0facebook::ABI44_0_0React::managedPointer<JS::NativeImagePickerIOS::SpecOpenSelectDialogConfig>(json);
+  return ABI44_0_0facebook::ABI44_0_0React::managedPointer<ABI44_0_0JS::NativeImagePickerIOS::SpecOpenSelectDialogConfig>(json);
 }
 @end
 namespace ABI44_0_0facebook {
@@ -1327,10 +1327,10 @@ namespace ABI44_0_0facebook {
         
         
         methodMap_["openCameraDialog"] = MethodMetadata {3, __hostFunction_NativeImagePickerIOSSpecJSI_openCameraDialog};
-        setMethodArgConversionSelector(@"openCameraDialog", 0, @"JS_NativeImagePickerIOS_SpecOpenCameraDialogConfig:");
+        setMethodArgConversionSelector(@"openCameraDialog", 0, @"ABI44_0_0JS_NativeImagePickerIOS_SpecOpenCameraDialogConfig:");
         
         methodMap_["openSelectDialog"] = MethodMetadata {3, __hostFunction_NativeImagePickerIOSSpecJSI_openSelectDialog};
-        setMethodArgConversionSelector(@"openSelectDialog", 0, @"JS_NativeImagePickerIOS_SpecOpenSelectDialogConfig:");
+        setMethodArgConversionSelector(@"openSelectDialog", 0, @"ABI44_0_0JS_NativeImagePickerIOS_SpecOpenSelectDialogConfig:");
         
         methodMap_["clearAllPendingVideos"] = MethodMetadata {0, __hostFunction_NativeImagePickerIOSSpecJSI_clearAllPendingVideos};
         
@@ -1560,9 +1560,9 @@ namespace ABI44_0_0facebook {
   } // namespace ABI44_0_0React
 } // namespace ABI44_0_0facebook
 @implementation ABI44_0_0RCTCxxConvert (NativeNetworkingIOS_SpecSendRequestQuery)
-+ (ABI44_0_0RCTManagedPointer *)JS_NativeNetworkingIOS_SpecSendRequestQuery:(id)json
++ (ABI44_0_0RCTManagedPointer *)ABI44_0_0JS_NativeNetworkingIOS_SpecSendRequestQuery:(id)json
 {
-  return ABI44_0_0facebook::ABI44_0_0React::managedPointer<JS::NativeNetworkingIOS::SpecSendRequestQuery>(json);
+  return ABI44_0_0facebook::ABI44_0_0React::managedPointer<ABI44_0_0JS::NativeNetworkingIOS::SpecSendRequestQuery>(json);
 }
 @end
 namespace ABI44_0_0facebook {
@@ -1592,7 +1592,7 @@ namespace ABI44_0_0facebook {
       : ObjCTurboModule(params) {
         
         methodMap_["sendRequest"] = MethodMetadata {2, __hostFunction_NativeNetworkingIOSSpecJSI_sendRequest};
-        setMethodArgConversionSelector(@"sendRequest", 0, @"JS_NativeNetworkingIOS_SpecSendRequestQuery:");
+        setMethodArgConversionSelector(@"sendRequest", 0, @"ABI44_0_0JS_NativeNetworkingIOS_SpecSendRequestQuery:");
         
         methodMap_["abortRequest"] = MethodMetadata {1, __hostFunction_NativeNetworkingIOSSpecJSI_abortRequest};
         
@@ -1625,15 +1625,15 @@ namespace ABI44_0_0facebook {
   } // namespace ABI44_0_0React
 } // namespace ABI44_0_0facebook
 @implementation ABI44_0_0RCTCxxConvert (NativePushNotificationManagerIOS_SpecRequestPermissionsPermission)
-+ (ABI44_0_0RCTManagedPointer *)JS_NativePushNotificationManagerIOS_SpecRequestPermissionsPermission:(id)json
++ (ABI44_0_0RCTManagedPointer *)ABI44_0_0JS_NativePushNotificationManagerIOS_SpecRequestPermissionsPermission:(id)json
 {
-  return ABI44_0_0facebook::ABI44_0_0React::managedPointer<JS::NativePushNotificationManagerIOS::SpecRequestPermissionsPermission>(json);
+  return ABI44_0_0facebook::ABI44_0_0React::managedPointer<ABI44_0_0JS::NativePushNotificationManagerIOS::SpecRequestPermissionsPermission>(json);
 }
 @end
 @implementation ABI44_0_0RCTCxxConvert (NativePushNotificationManagerIOS_Notification)
-+ (ABI44_0_0RCTManagedPointer *)JS_NativePushNotificationManagerIOS_Notification:(id)json
++ (ABI44_0_0RCTManagedPointer *)ABI44_0_0JS_NativePushNotificationManagerIOS_Notification:(id)json
 {
-  return ABI44_0_0facebook::ABI44_0_0React::managedPointer<JS::NativePushNotificationManagerIOS::Notification>(json);
+  return ABI44_0_0facebook::ABI44_0_0React::managedPointer<ABI44_0_0JS::NativePushNotificationManagerIOS::Notification>(json);
 }
 @end
 namespace ABI44_0_0facebook {
@@ -1720,7 +1720,7 @@ namespace ABI44_0_0facebook {
         
         
         methodMap_["requestPermissions"] = MethodMetadata {1, __hostFunction_NativePushNotificationManagerIOSSpecJSI_requestPermissions};
-        setMethodArgConversionSelector(@"requestPermissions", 0, @"JS_NativePushNotificationManagerIOS_SpecRequestPermissionsPermission:");
+        setMethodArgConversionSelector(@"requestPermissions", 0, @"ABI44_0_0JS_NativePushNotificationManagerIOS_SpecRequestPermissionsPermission:");
         
         methodMap_["abandonPermissions"] = MethodMetadata {0, __hostFunction_NativePushNotificationManagerIOSSpecJSI_abandonPermissions};
         
@@ -1729,10 +1729,10 @@ namespace ABI44_0_0facebook {
         
         
         methodMap_["presentLocalNotification"] = MethodMetadata {1, __hostFunction_NativePushNotificationManagerIOSSpecJSI_presentLocalNotification};
-        setMethodArgConversionSelector(@"presentLocalNotification", 0, @"JS_NativePushNotificationManagerIOS_Notification:");
+        setMethodArgConversionSelector(@"presentLocalNotification", 0, @"ABI44_0_0JS_NativePushNotificationManagerIOS_Notification:");
         
         methodMap_["scheduleLocalNotification"] = MethodMetadata {1, __hostFunction_NativePushNotificationManagerIOSSpecJSI_scheduleLocalNotification};
-        setMethodArgConversionSelector(@"scheduleLocalNotification", 0, @"JS_NativePushNotificationManagerIOS_Notification:");
+        setMethodArgConversionSelector(@"scheduleLocalNotification", 0, @"ABI44_0_0JS_NativePushNotificationManagerIOS_Notification:");
         
         methodMap_["cancelAllLocalNotifications"] = MethodMetadata {0, __hostFunction_NativePushNotificationManagerIOSSpecJSI_cancelAllLocalNotifications};
         
@@ -1840,9 +1840,9 @@ namespace ABI44_0_0facebook {
   } // namespace ABI44_0_0React
 } // namespace ABI44_0_0facebook
 @implementation ABI44_0_0RCTCxxConvert (NativeShareModule_SpecShareContent)
-+ (ABI44_0_0RCTManagedPointer *)JS_NativeShareModule_SpecShareContent:(id)json
++ (ABI44_0_0RCTManagedPointer *)ABI44_0_0JS_NativeShareModule_SpecShareContent:(id)json
 {
-  return ABI44_0_0facebook::ABI44_0_0React::managedPointer<JS::NativeShareModule::SpecShareContent>(json);
+  return ABI44_0_0facebook::ABI44_0_0React::managedPointer<ABI44_0_0JS::NativeShareModule::SpecShareContent>(json);
 }
 @end
 namespace ABI44_0_0facebook {
@@ -1856,7 +1856,7 @@ namespace ABI44_0_0facebook {
       : ObjCTurboModule(params) {
         
         methodMap_["share"] = MethodMetadata {2, __hostFunction_NativeShareModuleSpecJSI_share};
-        setMethodArgConversionSelector(@"share", 0, @"JS_NativeShareModule_SpecShareContent:");
+        setMethodArgConversionSelector(@"share", 0, @"ABI44_0_0JS_NativeShareModule_SpecShareContent:");
     }
   } // namespace ABI44_0_0React
 } // namespace ABI44_0_0facebook
@@ -2011,9 +2011,9 @@ namespace ABI44_0_0facebook {
   } // namespace ABI44_0_0React
 } // namespace ABI44_0_0facebook
 @implementation ABI44_0_0RCTCxxConvert (NativeWebSocketModule_SpecConnectOptions)
-+ (ABI44_0_0RCTManagedPointer *)JS_NativeWebSocketModule_SpecConnectOptions:(id)json
++ (ABI44_0_0RCTManagedPointer *)ABI44_0_0JS_NativeWebSocketModule_SpecConnectOptions:(id)json
 {
-  return ABI44_0_0facebook::ABI44_0_0React::managedPointer<JS::NativeWebSocketModule::SpecConnectOptions>(json);
+  return ABI44_0_0facebook::ABI44_0_0React::managedPointer<ABI44_0_0JS::NativeWebSocketModule::SpecConnectOptions>(json);
 }
 @end
 namespace ABI44_0_0facebook {
@@ -2051,7 +2051,7 @@ namespace ABI44_0_0facebook {
       : ObjCTurboModule(params) {
         
         methodMap_["connect"] = MethodMetadata {4, __hostFunction_NativeWebSocketModuleSpecJSI_connect};
-        setMethodArgConversionSelector(@"connect", 2, @"JS_NativeWebSocketModule_SpecConnectOptions:");
+        setMethodArgConversionSelector(@"connect", 2, @"ABI44_0_0JS_NativeWebSocketModule_SpecConnectOptions:");
         
         methodMap_["send"] = MethodMetadata {2, __hostFunction_NativeWebSocketModuleSpecJSI_send};
         

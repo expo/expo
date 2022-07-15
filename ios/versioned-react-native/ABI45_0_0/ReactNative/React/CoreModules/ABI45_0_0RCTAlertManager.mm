@@ -68,7 +68,7 @@ ABI45_0_0RCT_EXPORT_MODULE()
  * The key from the `buttons` dictionary is passed back in the callback on click.
  * Buttons are displayed in the order they are specified.
  */
-ABI45_0_0RCT_EXPORT_METHOD(alertWithArgs : (JS::NativeAlertManager::Args &)args callback : (ABI45_0_0RCTResponseSenderBlock)callback)
+ABI45_0_0RCT_EXPORT_METHOD(alertWithArgs : (ABI45_0_0JS::NativeAlertManager::Args &)args callback : (ABI45_0_0RCTResponseSenderBlock)callback)
 {
   NSString *title = [ABI45_0_0RCTConvert NSString:args.title()];
   NSString *message = [ABI45_0_0RCTConvert NSString:args.message()];

@@ -48,7 +48,7 @@ namespace ABI45_0_0facebook {
     };
   } // namespace ABI45_0_0React
 } // namespace ABI45_0_0facebook
-namespace JS {
+namespace ABI45_0_0JS {
   namespace NativeAccessibilityManager {
     struct SpecSetAccessibilityContentSizeMultipliersJSMultipliers {
       folly::Optional<double> extraSmall() const;
@@ -72,9 +72,9 @@ namespace JS {
 }
 
 @interface ABI45_0_0RCTCxxConvert (NativeAccessibilityManager_SpecSetAccessibilityContentSizeMultipliersJSMultipliers)
-+ (ABI45_0_0RCTManagedPointer *)JS_NativeAccessibilityManager_SpecSetAccessibilityContentSizeMultipliersJSMultipliers:(id)json;
++ (ABI45_0_0RCTManagedPointer *)ABI45_0_0JS_NativeAccessibilityManager_SpecSetAccessibilityContentSizeMultipliersJSMultipliers:(id)json;
 @end
-namespace JS {
+namespace ABI45_0_0JS {
   namespace NativeAccessibilityManager {
     struct SpecAnnounceForAccessibilityWithOptionsOptions {
       folly::Optional<bool> queue() const;
@@ -87,7 +87,7 @@ namespace JS {
 }
 
 @interface ABI45_0_0RCTCxxConvert (NativeAccessibilityManager_SpecAnnounceForAccessibilityWithOptionsOptions)
-+ (ABI45_0_0RCTManagedPointer *)JS_NativeAccessibilityManager_SpecAnnounceForAccessibilityWithOptionsOptions:(id)json;
++ (ABI45_0_0RCTManagedPointer *)ABI45_0_0JS_NativeAccessibilityManager_SpecAnnounceForAccessibilityWithOptionsOptions:(id)json;
 @end
 @protocol ABI45_0_0NativeAccessibilityManagerSpec <ABI45_0_0RCTBridgeModule, ABI45_0_0RCTTurboModule>
 
@@ -103,11 +103,11 @@ namespace JS {
                                   onError:(ABI45_0_0RCTResponseSenderBlock)onError;
 - (void)getCurrentVoiceOverState:(ABI45_0_0RCTResponseSenderBlock)onSuccess
                          onError:(ABI45_0_0RCTResponseSenderBlock)onError;
-- (void)setAccessibilityContentSizeMultipliers:(JS::NativeAccessibilityManager::SpecSetAccessibilityContentSizeMultipliersJSMultipliers &)JSMultipliers;
+- (void)setAccessibilityContentSizeMultipliers:(ABI45_0_0JS::NativeAccessibilityManager::SpecSetAccessibilityContentSizeMultipliersJSMultipliers &)JSMultipliers;
 - (void)setAccessibilityFocus:(double)ABI45_0_0ReactTag;
 - (void)announceForAccessibility:(NSString *)announcement;
 - (void)announceForAccessibilityWithOptions:(NSString *)announcement
-                                    options:(JS::NativeAccessibilityManager::SpecAnnounceForAccessibilityWithOptionsOptions &)options;
+                                    options:(ABI45_0_0JS::NativeAccessibilityManager::SpecAnnounceForAccessibilityWithOptionsOptions &)options;
 
 @end
 namespace ABI45_0_0facebook {
@@ -121,7 +121,7 @@ namespace ABI45_0_0facebook {
     };
   } // namespace ABI45_0_0React
 } // namespace ABI45_0_0facebook
-namespace JS {
+namespace ABI45_0_0JS {
   namespace NativeActionSheetManager {
     struct SpecShowActionSheetWithOptionsOptions {
       NSString *title() const;
@@ -143,9 +143,9 @@ namespace JS {
 }
 
 @interface ABI45_0_0RCTCxxConvert (NativeActionSheetManager_SpecShowActionSheetWithOptionsOptions)
-+ (ABI45_0_0RCTManagedPointer *)JS_NativeActionSheetManager_SpecShowActionSheetWithOptionsOptions:(id)json;
++ (ABI45_0_0RCTManagedPointer *)ABI45_0_0JS_NativeActionSheetManager_SpecShowActionSheetWithOptionsOptions:(id)json;
 @end
-namespace JS {
+namespace ABI45_0_0JS {
   namespace NativeActionSheetManager {
     struct SpecShowShareActionSheetWithOptionsOptions {
       NSString *message() const;
@@ -165,13 +165,13 @@ namespace JS {
 }
 
 @interface ABI45_0_0RCTCxxConvert (NativeActionSheetManager_SpecShowShareActionSheetWithOptionsOptions)
-+ (ABI45_0_0RCTManagedPointer *)JS_NativeActionSheetManager_SpecShowShareActionSheetWithOptionsOptions:(id)json;
++ (ABI45_0_0RCTManagedPointer *)ABI45_0_0JS_NativeActionSheetManager_SpecShowShareActionSheetWithOptionsOptions:(id)json;
 @end
 @protocol ABI45_0_0NativeActionSheetManagerSpec <ABI45_0_0RCTBridgeModule, ABI45_0_0RCTTurboModule>
 
-- (void)showActionSheetWithOptions:(JS::NativeActionSheetManager::SpecShowActionSheetWithOptionsOptions &)options
+- (void)showActionSheetWithOptions:(ABI45_0_0JS::NativeActionSheetManager::SpecShowActionSheetWithOptionsOptions &)options
                           callback:(ABI45_0_0RCTResponseSenderBlock)callback;
-- (void)showShareActionSheetWithOptions:(JS::NativeActionSheetManager::SpecShowShareActionSheetWithOptionsOptions &)options
+- (void)showShareActionSheetWithOptions:(ABI45_0_0JS::NativeActionSheetManager::SpecShowShareActionSheetWithOptionsOptions &)options
                         failureCallback:(ABI45_0_0RCTResponseSenderBlock)failureCallback
                         successCallback:(ABI45_0_0RCTResponseSenderBlock)successCallback;
 
@@ -187,7 +187,7 @@ namespace ABI45_0_0facebook {
     };
   } // namespace ABI45_0_0React
 } // namespace ABI45_0_0facebook
-namespace JS {
+namespace ABI45_0_0JS {
   namespace NativeAlertManager {
     struct Args {
       NSString *title() const;
@@ -207,11 +207,11 @@ namespace JS {
 }
 
 @interface ABI45_0_0RCTCxxConvert (NativeAlertManager_Args)
-+ (ABI45_0_0RCTManagedPointer *)JS_NativeAlertManager_Args:(id)json;
++ (ABI45_0_0RCTManagedPointer *)ABI45_0_0JS_NativeAlertManager_Args:(id)json;
 @end
 @protocol ABI45_0_0NativeAlertManagerSpec <ABI45_0_0RCTBridgeModule, ABI45_0_0RCTTurboModule>
 
-- (void)alertWithArgs:(JS::NativeAlertManager::Args &)args
+- (void)alertWithArgs:(ABI45_0_0JS::NativeAlertManager::Args &)args
              callback:(ABI45_0_0RCTResponseSenderBlock)callback;
 
 @end
@@ -226,7 +226,7 @@ namespace ABI45_0_0facebook {
     };
   } // namespace ABI45_0_0React
 } // namespace ABI45_0_0facebook
-namespace JS {
+namespace ABI45_0_0JS {
   namespace NativeAnimatedModule {
     struct EventMapping {
       ABI45_0_0facebook::ABI45_0_0React::LazyVector<NSString *> nativeEventPath() const;
@@ -240,7 +240,7 @@ namespace JS {
 }
 
 @interface ABI45_0_0RCTCxxConvert (NativeAnimatedModule_EventMapping)
-+ (ABI45_0_0RCTManagedPointer *)JS_NativeAnimatedModule_EventMapping:(id)json;
++ (ABI45_0_0RCTManagedPointer *)ABI45_0_0JS_NativeAnimatedModule_EventMapping:(id)json;
 @end
 @protocol ABI45_0_0NativeAnimatedModuleSpec <ABI45_0_0RCTBridgeModule, ABI45_0_0RCTTurboModule>
 
@@ -275,7 +275,7 @@ saveValueCallback:(ABI45_0_0RCTResponseSenderBlock)saveValueCallback;
 - (void)dropAnimatedNode:(double)tag;
 - (void)addAnimatedEventToView:(double)viewTag
                      eventName:(NSString *)eventName
-                  eventMapping:(JS::NativeAnimatedModule::EventMapping &)eventMapping;
+                  eventMapping:(ABI45_0_0JS::NativeAnimatedModule::EventMapping &)eventMapping;
 - (void)removeAnimatedEventFromView:(double)viewTag
                           eventName:(NSString *)eventName
                     animatedNodeTag:(double)animatedNodeTag;
@@ -294,7 +294,7 @@ namespace ABI45_0_0facebook {
     };
   } // namespace ABI45_0_0React
 } // namespace ABI45_0_0facebook
-namespace JS {
+namespace ABI45_0_0JS {
   namespace NativeAnimatedTurboModule {
     struct EventMapping {
       ABI45_0_0facebook::ABI45_0_0React::LazyVector<NSString *> nativeEventPath() const;
@@ -308,7 +308,7 @@ namespace JS {
 }
 
 @interface ABI45_0_0RCTCxxConvert (NativeAnimatedTurboModule_EventMapping)
-+ (ABI45_0_0RCTManagedPointer *)JS_NativeAnimatedTurboModule_EventMapping:(id)json;
++ (ABI45_0_0RCTManagedPointer *)ABI45_0_0JS_NativeAnimatedTurboModule_EventMapping:(id)json;
 @end
 @protocol ABI45_0_0NativeAnimatedTurboModuleSpec <ABI45_0_0RCTBridgeModule, ABI45_0_0RCTTurboModule>
 
@@ -343,7 +343,7 @@ saveValueCallback:(ABI45_0_0RCTResponseSenderBlock)saveValueCallback;
 - (void)dropAnimatedNode:(double)tag;
 - (void)addAnimatedEventToView:(double)viewTag
                      eventName:(NSString *)eventName
-                  eventMapping:(JS::NativeAnimatedTurboModule::EventMapping &)eventMapping;
+                  eventMapping:(ABI45_0_0JS::NativeAnimatedTurboModule::EventMapping &)eventMapping;
 - (void)removeAnimatedEventFromView:(double)viewTag
                           eventName:(NSString *)eventName
                     animatedNodeTag:(double)animatedNodeTag;
@@ -380,7 +380,7 @@ namespace ABI45_0_0facebook {
     };
   } // namespace ABI45_0_0React
 } // namespace ABI45_0_0facebook
-namespace JS {
+namespace ABI45_0_0JS {
   namespace NativeAppState {
     struct Constants {
 
@@ -413,8 +413,8 @@ namespace JS {
                      error:(ABI45_0_0RCTResponseSenderBlock)error;
 - (void)addListener:(NSString *)eventName;
 - (void)removeListeners:(double)count;
-- (ABI45_0_0facebook::ABI45_0_0React::ModuleConstants<JS::NativeAppState::Constants::Builder>)constantsToExport;
-- (ABI45_0_0facebook::ABI45_0_0React::ModuleConstants<JS::NativeAppState::Constants::Builder>)getConstants;
+- (ABI45_0_0facebook::ABI45_0_0React::ModuleConstants<ABI45_0_0JS::NativeAppState::Constants::Builder>)constantsToExport;
+- (ABI45_0_0facebook::ABI45_0_0React::ModuleConstants<ABI45_0_0JS::NativeAppState::Constants::Builder>)getConstants;
 
 @end
 namespace ABI45_0_0facebook {
@@ -499,7 +499,7 @@ namespace ABI45_0_0facebook {
     };
   } // namespace ABI45_0_0React
 } // namespace ABI45_0_0facebook
-namespace JS {
+namespace ABI45_0_0JS {
   namespace NativeBlobModule {
     struct Constants {
 
@@ -537,8 +537,8 @@ namespace JS {
 - (void)createFromParts:(NSArray *)parts
                  withId:(NSString *)withId;
 - (void)release:(NSString *)blobId;
-- (ABI45_0_0facebook::ABI45_0_0React::ModuleConstants<JS::NativeBlobModule::Constants::Builder>)constantsToExport;
-- (ABI45_0_0facebook::ABI45_0_0React::ModuleConstants<JS::NativeBlobModule::Constants::Builder>)getConstants;
+- (ABI45_0_0facebook::ABI45_0_0React::ModuleConstants<ABI45_0_0JS::NativeBlobModule::Constants::Builder>)constantsToExport;
+- (ABI45_0_0facebook::ABI45_0_0React::ModuleConstants<ABI45_0_0JS::NativeBlobModule::Constants::Builder>)getConstants;
 
 @end
 namespace ABI45_0_0facebook {
@@ -695,7 +695,7 @@ namespace ABI45_0_0facebook {
     };
   } // namespace ABI45_0_0React
 } // namespace ABI45_0_0facebook
-namespace JS {
+namespace ABI45_0_0JS {
   namespace NativeDeviceInfo {
     struct DisplayMetrics {
 
@@ -725,7 +725,7 @@ namespace JS {
     };
   }
 }
-namespace JS {
+namespace ABI45_0_0JS {
   namespace NativeDeviceInfo {
     struct DisplayMetricsAndroid {
 
@@ -756,16 +756,16 @@ namespace JS {
     };
   }
 }
-namespace JS {
+namespace ABI45_0_0JS {
   namespace NativeDeviceInfo {
     struct DimensionsPayload {
 
       struct Builder {
         struct Input {
-          folly::Optional<JS::NativeDeviceInfo::DisplayMetrics::Builder> window;
-          folly::Optional<JS::NativeDeviceInfo::DisplayMetrics::Builder> screen;
-          folly::Optional<JS::NativeDeviceInfo::DisplayMetricsAndroid::Builder> windowPhysicalPixels;
-          folly::Optional<JS::NativeDeviceInfo::DisplayMetricsAndroid::Builder> screenPhysicalPixels;
+          folly::Optional<ABI45_0_0JS::NativeDeviceInfo::DisplayMetrics::Builder> window;
+          folly::Optional<ABI45_0_0JS::NativeDeviceInfo::DisplayMetrics::Builder> screen;
+          folly::Optional<ABI45_0_0JS::NativeDeviceInfo::DisplayMetricsAndroid::Builder> windowPhysicalPixels;
+          folly::Optional<ABI45_0_0JS::NativeDeviceInfo::DisplayMetricsAndroid::Builder> screenPhysicalPixels;
         };
 
         /** Initialize with a set of values */
@@ -786,13 +786,13 @@ namespace JS {
     };
   }
 }
-namespace JS {
+namespace ABI45_0_0JS {
   namespace NativeDeviceInfo {
     struct Constants {
 
       struct Builder {
         struct Input {
-          ABI45_0_0RCTRequired<JS::NativeDeviceInfo::DimensionsPayload::Builder> Dimensions;
+          ABI45_0_0RCTRequired<ABI45_0_0JS::NativeDeviceInfo::DimensionsPayload::Builder> Dimensions;
           folly::Optional<bool> isIPhoneX_deprecated;
         };
 
@@ -816,8 +816,8 @@ namespace JS {
 }
 @protocol ABI45_0_0NativeDeviceInfoSpec <ABI45_0_0RCTBridgeModule, ABI45_0_0RCTTurboModule>
 
-- (ABI45_0_0facebook::ABI45_0_0React::ModuleConstants<JS::NativeDeviceInfo::Constants::Builder>)constantsToExport;
-- (ABI45_0_0facebook::ABI45_0_0React::ModuleConstants<JS::NativeDeviceInfo::Constants::Builder>)getConstants;
+- (ABI45_0_0facebook::ABI45_0_0React::ModuleConstants<ABI45_0_0JS::NativeDeviceInfo::Constants::Builder>)constantsToExport;
+- (ABI45_0_0facebook::ABI45_0_0React::ModuleConstants<ABI45_0_0JS::NativeDeviceInfo::Constants::Builder>)getConstants;
 
 @end
 namespace ABI45_0_0facebook {
@@ -831,7 +831,7 @@ namespace ABI45_0_0facebook {
     };
   } // namespace ABI45_0_0React
 } // namespace ABI45_0_0facebook
-namespace JS {
+namespace ABI45_0_0JS {
   namespace NativeExceptionsManager {
     struct StackFrame {
       folly::Optional<double> column() const;
@@ -848,16 +848,16 @@ namespace JS {
 }
 
 @interface ABI45_0_0RCTCxxConvert (NativeExceptionsManager_StackFrame)
-+ (ABI45_0_0RCTManagedPointer *)JS_NativeExceptionsManager_StackFrame:(id)json;
++ (ABI45_0_0RCTManagedPointer *)ABI45_0_0JS_NativeExceptionsManager_StackFrame:(id)json;
 @end
-namespace JS {
+namespace ABI45_0_0JS {
   namespace NativeExceptionsManager {
     struct ExceptionData {
       NSString *message() const;
       NSString *originalMessage() const;
       NSString *name() const;
       NSString *componentStack() const;
-      ABI45_0_0facebook::ABI45_0_0React::LazyVector<JS::NativeExceptionsManager::StackFrame> stack() const;
+      ABI45_0_0facebook::ABI45_0_0React::LazyVector<ABI45_0_0JS::NativeExceptionsManager::StackFrame> stack() const;
       double id_() const;
       bool isFatal() const;
       id<NSObject> _Nullable extraData() const;
@@ -870,7 +870,7 @@ namespace JS {
 }
 
 @interface ABI45_0_0RCTCxxConvert (NativeExceptionsManager_ExceptionData)
-+ (ABI45_0_0RCTManagedPointer *)JS_NativeExceptionsManager_ExceptionData:(id)json;
++ (ABI45_0_0RCTManagedPointer *)ABI45_0_0JS_NativeExceptionsManager_ExceptionData:(id)json;
 @end
 @protocol ABI45_0_0NativeExceptionsManagerSpec <ABI45_0_0RCTBridgeModule, ABI45_0_0RCTTurboModule>
 
@@ -880,7 +880,7 @@ namespace JS {
 - (void)reportSoftException:(NSString *)message
                       stack:(NSArray *)stack
                 exceptionId:(double)exceptionId;
-- (void)reportException:(JS::NativeExceptionsManager::ExceptionData &)data;
+- (void)reportException:(ABI45_0_0JS::NativeExceptionsManager::ExceptionData &)data;
 - (void)updateExceptionMessage:(NSString *)message
                          stack:(NSArray *)stack
                    exceptionId:(double)exceptionId;
@@ -921,7 +921,7 @@ namespace ABI45_0_0facebook {
     };
   } // namespace ABI45_0_0React
 } // namespace ABI45_0_0facebook
-namespace JS {
+namespace ABI45_0_0JS {
   namespace NativeFrameRateLogger {
     struct SpecSetGlobalOptionsOptions {
       folly::Optional<bool> debug() const;
@@ -935,11 +935,11 @@ namespace JS {
 }
 
 @interface ABI45_0_0RCTCxxConvert (NativeFrameRateLogger_SpecSetGlobalOptionsOptions)
-+ (ABI45_0_0RCTManagedPointer *)JS_NativeFrameRateLogger_SpecSetGlobalOptionsOptions:(id)json;
++ (ABI45_0_0RCTManagedPointer *)ABI45_0_0JS_NativeFrameRateLogger_SpecSetGlobalOptionsOptions:(id)json;
 @end
 @protocol ABI45_0_0NativeFrameRateLoggerSpec <ABI45_0_0RCTBridgeModule, ABI45_0_0RCTTurboModule>
 
-- (void)setGlobalOptions:(JS::NativeFrameRateLogger::SpecSetGlobalOptionsOptions &)options;
+- (void)setGlobalOptions:(ABI45_0_0JS::NativeFrameRateLogger::SpecSetGlobalOptionsOptions &)options;
 - (void)setContext:(NSString *)context;
 - (void)beginScroll;
 - (void)endScroll;
@@ -976,7 +976,7 @@ namespace ABI45_0_0facebook {
     };
   } // namespace ABI45_0_0React
 } // namespace ABI45_0_0facebook
-namespace JS {
+namespace ABI45_0_0JS {
   namespace NativeI18nManager {
     struct Constants {
 
@@ -1010,8 +1010,8 @@ namespace JS {
 - (void)allowRTL:(BOOL)allowRTL;
 - (void)forceRTL:(BOOL)forceRTL;
 - (void)swapLeftAndRightInRTL:(BOOL)flipStyles;
-- (ABI45_0_0facebook::ABI45_0_0React::ModuleConstants<JS::NativeI18nManager::Constants::Builder>)constantsToExport;
-- (ABI45_0_0facebook::ABI45_0_0React::ModuleConstants<JS::NativeI18nManager::Constants::Builder>)getConstants;
+- (ABI45_0_0facebook::ABI45_0_0React::ModuleConstants<ABI45_0_0JS::NativeI18nManager::Constants::Builder>)constantsToExport;
+- (ABI45_0_0facebook::ABI45_0_0React::ModuleConstants<ABI45_0_0JS::NativeI18nManager::Constants::Builder>)getConstants;
 
 @end
 namespace ABI45_0_0facebook {
@@ -1025,7 +1025,7 @@ namespace ABI45_0_0facebook {
     };
   } // namespace ABI45_0_0React
 } // namespace ABI45_0_0facebook
-namespace JS {
+namespace ABI45_0_0JS {
   namespace NativeImageEditor {
     struct OptionsOffset {
       double x() const;
@@ -1039,9 +1039,9 @@ namespace JS {
 }
 
 @interface ABI45_0_0RCTCxxConvert (NativeImageEditor_OptionsOffset)
-+ (ABI45_0_0RCTManagedPointer *)JS_NativeImageEditor_OptionsOffset:(id)json;
++ (ABI45_0_0RCTManagedPointer *)ABI45_0_0JS_NativeImageEditor_OptionsOffset:(id)json;
 @end
-namespace JS {
+namespace ABI45_0_0JS {
   namespace NativeImageEditor {
     struct OptionsSize {
       double width() const;
@@ -1055,9 +1055,9 @@ namespace JS {
 }
 
 @interface ABI45_0_0RCTCxxConvert (NativeImageEditor_OptionsSize)
-+ (ABI45_0_0RCTManagedPointer *)JS_NativeImageEditor_OptionsSize:(id)json;
++ (ABI45_0_0RCTManagedPointer *)ABI45_0_0JS_NativeImageEditor_OptionsSize:(id)json;
 @end
-namespace JS {
+namespace ABI45_0_0JS {
   namespace NativeImageEditor {
     struct OptionsDisplaySize {
       double width() const;
@@ -1071,14 +1071,14 @@ namespace JS {
 }
 
 @interface ABI45_0_0RCTCxxConvert (NativeImageEditor_OptionsDisplaySize)
-+ (ABI45_0_0RCTManagedPointer *)JS_NativeImageEditor_OptionsDisplaySize:(id)json;
++ (ABI45_0_0RCTManagedPointer *)ABI45_0_0JS_NativeImageEditor_OptionsDisplaySize:(id)json;
 @end
-namespace JS {
+namespace ABI45_0_0JS {
   namespace NativeImageEditor {
     struct Options {
-      JS::NativeImageEditor::OptionsOffset offset() const;
-      JS::NativeImageEditor::OptionsSize size() const;
-      folly::Optional<JS::NativeImageEditor::OptionsDisplaySize> displaySize() const;
+      ABI45_0_0JS::NativeImageEditor::OptionsOffset offset() const;
+      ABI45_0_0JS::NativeImageEditor::OptionsSize size() const;
+      folly::Optional<ABI45_0_0JS::NativeImageEditor::OptionsDisplaySize> displaySize() const;
       NSString *resizeMode() const;
       folly::Optional<bool> allowExternalStorage() const;
 
@@ -1090,12 +1090,12 @@ namespace JS {
 }
 
 @interface ABI45_0_0RCTCxxConvert (NativeImageEditor_Options)
-+ (ABI45_0_0RCTManagedPointer *)JS_NativeImageEditor_Options:(id)json;
++ (ABI45_0_0RCTManagedPointer *)ABI45_0_0JS_NativeImageEditor_Options:(id)json;
 @end
 @protocol ABI45_0_0NativeImageEditorSpec <ABI45_0_0RCTBridgeModule, ABI45_0_0RCTTurboModule>
 
 - (void)cropImage:(NSString *)uri
-         cropData:(JS::NativeImageEditor::Options &)cropData
+         cropData:(ABI45_0_0JS::NativeImageEditor::Options &)cropData
   successCallback:(ABI45_0_0RCTResponseSenderBlock)successCallback
     errorCallback:(ABI45_0_0RCTResponseSenderBlock)errorCallback;
 
@@ -1145,7 +1145,7 @@ namespace ABI45_0_0facebook {
     };
   } // namespace ABI45_0_0React
 } // namespace ABI45_0_0facebook
-namespace JS {
+namespace ABI45_0_0JS {
   namespace NativeImagePickerIOS {
     struct SpecOpenCameraDialogConfig {
       bool unmirrorFrontFacingCamera() const;
@@ -1159,9 +1159,9 @@ namespace JS {
 }
 
 @interface ABI45_0_0RCTCxxConvert (NativeImagePickerIOS_SpecOpenCameraDialogConfig)
-+ (ABI45_0_0RCTManagedPointer *)JS_NativeImagePickerIOS_SpecOpenCameraDialogConfig:(id)json;
++ (ABI45_0_0RCTManagedPointer *)ABI45_0_0JS_NativeImagePickerIOS_SpecOpenCameraDialogConfig:(id)json;
 @end
-namespace JS {
+namespace ABI45_0_0JS {
   namespace NativeImagePickerIOS {
     struct SpecOpenSelectDialogConfig {
       bool showImages() const;
@@ -1175,16 +1175,16 @@ namespace JS {
 }
 
 @interface ABI45_0_0RCTCxxConvert (NativeImagePickerIOS_SpecOpenSelectDialogConfig)
-+ (ABI45_0_0RCTManagedPointer *)JS_NativeImagePickerIOS_SpecOpenSelectDialogConfig:(id)json;
++ (ABI45_0_0RCTManagedPointer *)ABI45_0_0JS_NativeImagePickerIOS_SpecOpenSelectDialogConfig:(id)json;
 @end
 @protocol ABI45_0_0NativeImagePickerIOSSpec <ABI45_0_0RCTBridgeModule, ABI45_0_0RCTTurboModule>
 
 - (void)canRecordVideos:(ABI45_0_0RCTResponseSenderBlock)callback;
 - (void)canUseCamera:(ABI45_0_0RCTResponseSenderBlock)callback;
-- (void)openCameraDialog:(JS::NativeImagePickerIOS::SpecOpenCameraDialogConfig &)config
+- (void)openCameraDialog:(ABI45_0_0JS::NativeImagePickerIOS::SpecOpenCameraDialogConfig &)config
          successCallback:(ABI45_0_0RCTResponseSenderBlock)successCallback
           cancelCallback:(ABI45_0_0RCTResponseSenderBlock)cancelCallback;
-- (void)openSelectDialog:(JS::NativeImagePickerIOS::SpecOpenSelectDialogConfig &)config
+- (void)openSelectDialog:(ABI45_0_0JS::NativeImagePickerIOS::SpecOpenSelectDialogConfig &)config
          successCallback:(ABI45_0_0RCTResponseSenderBlock)successCallback
           cancelCallback:(ABI45_0_0RCTResponseSenderBlock)cancelCallback;
 - (void)clearAllPendingVideos;
@@ -1264,7 +1264,7 @@ namespace ABI45_0_0facebook {
     };
   } // namespace ABI45_0_0React
 } // namespace ABI45_0_0facebook
-namespace JS {
+namespace ABI45_0_0JS {
   namespace NativeJSDevSupport {
     struct Constants {
 
@@ -1297,8 +1297,8 @@ namespace JS {
 - (void)onSuccess:(NSString *)data;
 - (void)onFailure:(double)errorCode
             error:(NSString *)error;
-- (ABI45_0_0facebook::ABI45_0_0React::ModuleConstants<JS::NativeJSDevSupport::Constants::Builder>)constantsToExport;
-- (ABI45_0_0facebook::ABI45_0_0React::ModuleConstants<JS::NativeJSDevSupport::Constants::Builder>)getConstants;
+- (ABI45_0_0facebook::ABI45_0_0React::ModuleConstants<ABI45_0_0JS::NativeJSDevSupport::Constants::Builder>)constantsToExport;
+- (ABI45_0_0facebook::ABI45_0_0React::ModuleConstants<ABI45_0_0JS::NativeJSDevSupport::Constants::Builder>)getConstants;
 
 @end
 namespace ABI45_0_0facebook {
@@ -1394,7 +1394,7 @@ namespace ABI45_0_0facebook {
     };
   } // namespace ABI45_0_0React
 } // namespace ABI45_0_0facebook
-namespace JS {
+namespace ABI45_0_0JS {
   namespace NativeNetworkingIOS {
     struct SpecSendRequestQuery {
       NSString *method() const;
@@ -1414,11 +1414,11 @@ namespace JS {
 }
 
 @interface ABI45_0_0RCTCxxConvert (NativeNetworkingIOS_SpecSendRequestQuery)
-+ (ABI45_0_0RCTManagedPointer *)JS_NativeNetworkingIOS_SpecSendRequestQuery:(id)json;
++ (ABI45_0_0RCTManagedPointer *)ABI45_0_0JS_NativeNetworkingIOS_SpecSendRequestQuery:(id)json;
 @end
 @protocol ABI45_0_0NativeNetworkingIOSSpec <ABI45_0_0RCTBridgeModule, ABI45_0_0RCTTurboModule>
 
-- (void)sendRequest:(JS::NativeNetworkingIOS::SpecSendRequestQuery &)query
+- (void)sendRequest:(ABI45_0_0JS::NativeNetworkingIOS::SpecSendRequestQuery &)query
            callback:(ABI45_0_0RCTResponseSenderBlock)callback;
 - (void)abortRequest:(double)requestId;
 - (void)clearCookies:(ABI45_0_0RCTResponseSenderBlock)callback;
@@ -1437,7 +1437,7 @@ namespace ABI45_0_0facebook {
     };
   } // namespace ABI45_0_0React
 } // namespace ABI45_0_0facebook
-namespace JS {
+namespace ABI45_0_0JS {
   namespace NativePlatformConstantsIOS {
     struct ConstantsreactNativeVersion {
 
@@ -1467,14 +1467,14 @@ namespace JS {
     };
   }
 }
-namespace JS {
+namespace ABI45_0_0JS {
   namespace NativePlatformConstantsIOS {
     struct Constants {
 
       struct Builder {
         struct Input {
           ABI45_0_0RCTRequired<bool> isTesting;
-          ABI45_0_0RCTRequired<JS::NativePlatformConstantsIOS::ConstantsreactNativeVersion::Builder> reactNativeVersion;
+          ABI45_0_0RCTRequired<ABI45_0_0JS::NativePlatformConstantsIOS::ConstantsreactNativeVersion::Builder> reactNativeVersion;
           ABI45_0_0RCTRequired<bool> forceTouchAvailable;
           ABI45_0_0RCTRequired<NSString *> osVersion;
           ABI45_0_0RCTRequired<NSString *> systemName;
@@ -1501,8 +1501,8 @@ namespace JS {
 }
 @protocol ABI45_0_0NativePlatformConstantsIOSSpec <ABI45_0_0RCTBridgeModule, ABI45_0_0RCTTurboModule>
 
-- (ABI45_0_0facebook::ABI45_0_0React::ModuleConstants<JS::NativePlatformConstantsIOS::Constants::Builder>)constantsToExport;
-- (ABI45_0_0facebook::ABI45_0_0React::ModuleConstants<JS::NativePlatformConstantsIOS::Constants::Builder>)getConstants;
+- (ABI45_0_0facebook::ABI45_0_0React::ModuleConstants<ABI45_0_0JS::NativePlatformConstantsIOS::Constants::Builder>)constantsToExport;
+- (ABI45_0_0facebook::ABI45_0_0React::ModuleConstants<ABI45_0_0JS::NativePlatformConstantsIOS::Constants::Builder>)getConstants;
 
 @end
 namespace ABI45_0_0facebook {
@@ -1516,7 +1516,7 @@ namespace ABI45_0_0facebook {
     };
   } // namespace ABI45_0_0React
 } // namespace ABI45_0_0facebook
-namespace JS {
+namespace ABI45_0_0JS {
   namespace NativePushNotificationManagerIOS {
     struct SpecRequestPermissionsPermission {
       bool alert() const;
@@ -1531,9 +1531,9 @@ namespace JS {
 }
 
 @interface ABI45_0_0RCTCxxConvert (NativePushNotificationManagerIOS_SpecRequestPermissionsPermission)
-+ (ABI45_0_0RCTManagedPointer *)JS_NativePushNotificationManagerIOS_SpecRequestPermissionsPermission:(id)json;
++ (ABI45_0_0RCTManagedPointer *)ABI45_0_0JS_NativePushNotificationManagerIOS_SpecRequestPermissionsPermission:(id)json;
 @end
-namespace JS {
+namespace ABI45_0_0JS {
   namespace NativePushNotificationManagerIOS {
     struct Notification {
       NSString *alertTitle() const;
@@ -1554,7 +1554,7 @@ namespace JS {
 }
 
 @interface ABI45_0_0RCTCxxConvert (NativePushNotificationManagerIOS_Notification)
-+ (ABI45_0_0RCTManagedPointer *)JS_NativePushNotificationManagerIOS_Notification:(id)json;
++ (ABI45_0_0RCTManagedPointer *)ABI45_0_0JS_NativePushNotificationManagerIOS_Notification:(id)json;
 @end
 @protocol ABI45_0_0NativePushNotificationManagerIOSSpec <ABI45_0_0RCTBridgeModule, ABI45_0_0RCTTurboModule>
 
@@ -1562,13 +1562,13 @@ namespace JS {
                        fetchResult:(NSString *)fetchResult;
 - (void)setApplicationIconBadgeNumber:(double)num;
 - (void)getApplicationIconBadgeNumber:(ABI45_0_0RCTResponseSenderBlock)callback;
-- (void)requestPermissions:(JS::NativePushNotificationManagerIOS::SpecRequestPermissionsPermission &)permission
+- (void)requestPermissions:(ABI45_0_0JS::NativePushNotificationManagerIOS::SpecRequestPermissionsPermission &)permission
                    resolve:(ABI45_0_0RCTPromiseResolveBlock)resolve
                     reject:(ABI45_0_0RCTPromiseRejectBlock)reject;
 - (void)abandonPermissions;
 - (void)checkPermissions:(ABI45_0_0RCTResponseSenderBlock)callback;
-- (void)presentLocalNotification:(JS::NativePushNotificationManagerIOS::Notification &)notification;
-- (void)scheduleLocalNotification:(JS::NativePushNotificationManagerIOS::Notification &)notification;
+- (void)presentLocalNotification:(ABI45_0_0JS::NativePushNotificationManagerIOS::Notification &)notification;
+- (void)scheduleLocalNotification:(ABI45_0_0JS::NativePushNotificationManagerIOS::Notification &)notification;
 - (void)cancelAllLocalNotifications;
 - (void)cancelLocalNotifications:(NSDictionary *)userInfo;
 - (void)getInitialNotification:(ABI45_0_0RCTPromiseResolveBlock)resolve
@@ -1634,7 +1634,7 @@ namespace ABI45_0_0facebook {
     };
   } // namespace ABI45_0_0React
 } // namespace ABI45_0_0facebook
-namespace JS {
+namespace ABI45_0_0JS {
   namespace NativeSettingsManager {
     struct Constants {
 
@@ -1665,8 +1665,8 @@ namespace JS {
 
 - (void)setValues:(NSDictionary *)values;
 - (void)deleteValues:(NSArray *)values;
-- (ABI45_0_0facebook::ABI45_0_0React::ModuleConstants<JS::NativeSettingsManager::Constants::Builder>)constantsToExport;
-- (ABI45_0_0facebook::ABI45_0_0React::ModuleConstants<JS::NativeSettingsManager::Constants::Builder>)getConstants;
+- (ABI45_0_0facebook::ABI45_0_0React::ModuleConstants<ABI45_0_0JS::NativeSettingsManager::Constants::Builder>)constantsToExport;
+- (ABI45_0_0facebook::ABI45_0_0React::ModuleConstants<ABI45_0_0JS::NativeSettingsManager::Constants::Builder>)getConstants;
 
 @end
 namespace ABI45_0_0facebook {
@@ -1680,7 +1680,7 @@ namespace ABI45_0_0facebook {
     };
   } // namespace ABI45_0_0React
 } // namespace ABI45_0_0facebook
-namespace JS {
+namespace ABI45_0_0JS {
   namespace NativeShareModule {
     struct SpecShareContent {
       NSString *title() const;
@@ -1694,11 +1694,11 @@ namespace JS {
 }
 
 @interface ABI45_0_0RCTCxxConvert (NativeShareModule_SpecShareContent)
-+ (ABI45_0_0RCTManagedPointer *)JS_NativeShareModule_SpecShareContent:(id)json;
++ (ABI45_0_0RCTManagedPointer *)ABI45_0_0JS_NativeShareModule_SpecShareContent:(id)json;
 @end
 @protocol ABI45_0_0NativeShareModuleSpec <ABI45_0_0RCTBridgeModule, ABI45_0_0RCTTurboModule>
 
-- (void)share:(JS::NativeShareModule::SpecShareContent &)content
+- (void)share:(ABI45_0_0JS::NativeShareModule::SpecShareContent &)content
   dialogTitle:(NSString *)dialogTitle
       resolve:(ABI45_0_0RCTPromiseResolveBlock)resolve
        reject:(ABI45_0_0RCTPromiseRejectBlock)reject;
@@ -1732,7 +1732,7 @@ namespace ABI45_0_0facebook {
     };
   } // namespace ABI45_0_0React
 } // namespace ABI45_0_0facebook
-namespace JS {
+namespace ABI45_0_0JS {
   namespace NativeSourceCode {
     struct Constants {
 
@@ -1761,8 +1761,8 @@ namespace JS {
 }
 @protocol ABI45_0_0NativeSourceCodeSpec <ABI45_0_0RCTBridgeModule, ABI45_0_0RCTTurboModule>
 
-- (ABI45_0_0facebook::ABI45_0_0React::ModuleConstants<JS::NativeSourceCode::Constants::Builder>)constantsToExport;
-- (ABI45_0_0facebook::ABI45_0_0React::ModuleConstants<JS::NativeSourceCode::Constants::Builder>)getConstants;
+- (ABI45_0_0facebook::ABI45_0_0React::ModuleConstants<ABI45_0_0JS::NativeSourceCode::Constants::Builder>)constantsToExport;
+- (ABI45_0_0facebook::ABI45_0_0React::ModuleConstants<ABI45_0_0JS::NativeSourceCode::Constants::Builder>)getConstants;
 
 @end
 namespace ABI45_0_0facebook {
@@ -1776,7 +1776,7 @@ namespace ABI45_0_0facebook {
     };
   } // namespace ABI45_0_0React
 } // namespace ABI45_0_0facebook
-namespace JS {
+namespace ABI45_0_0JS {
   namespace NativeStatusBarManagerIOS {
     struct Constants {
 
@@ -1814,8 +1814,8 @@ namespace JS {
         animated:(BOOL)animated;
 - (void)setHidden:(BOOL)hidden
     withAnimation:(NSString *)withAnimation;
-- (ABI45_0_0facebook::ABI45_0_0React::ModuleConstants<JS::NativeStatusBarManagerIOS::Constants::Builder>)constantsToExport;
-- (ABI45_0_0facebook::ABI45_0_0React::ModuleConstants<JS::NativeStatusBarManagerIOS::Constants::Builder>)getConstants;
+- (ABI45_0_0facebook::ABI45_0_0React::ModuleConstants<ABI45_0_0JS::NativeStatusBarManagerIOS::Constants::Builder>)constantsToExport;
+- (ABI45_0_0facebook::ABI45_0_0React::ModuleConstants<ABI45_0_0JS::NativeStatusBarManagerIOS::Constants::Builder>)getConstants;
 
 @end
 namespace ABI45_0_0facebook {
@@ -1871,7 +1871,7 @@ namespace ABI45_0_0facebook {
     };
   } // namespace ABI45_0_0React
 } // namespace ABI45_0_0facebook
-namespace JS {
+namespace ABI45_0_0JS {
   namespace NativeWebSocketModule {
     struct SpecConnectOptions {
       id<NSObject> _Nullable headers() const;
@@ -1884,13 +1884,13 @@ namespace JS {
 }
 
 @interface ABI45_0_0RCTCxxConvert (NativeWebSocketModule_SpecConnectOptions)
-+ (ABI45_0_0RCTManagedPointer *)JS_NativeWebSocketModule_SpecConnectOptions:(id)json;
++ (ABI45_0_0RCTManagedPointer *)ABI45_0_0JS_NativeWebSocketModule_SpecConnectOptions:(id)json;
 @end
 @protocol ABI45_0_0NativeWebSocketModuleSpec <ABI45_0_0RCTBridgeModule, ABI45_0_0RCTTurboModule>
 
 - (void)connect:(NSString *)url
       protocols:(NSArray * _Nullable)protocols
-        options:(JS::NativeWebSocketModule::SpecConnectOptions &)options
+        options:(ABI45_0_0JS::NativeWebSocketModule::SpecConnectOptions &)options
        socketID:(double)socketID;
 - (void)send:(NSString *)message
  forSocketID:(double)forSocketID;
@@ -1916,235 +1916,235 @@ namespace ABI45_0_0facebook {
   } // namespace ABI45_0_0React
 } // namespace ABI45_0_0facebook
 
-inline folly::Optional<double> JS::NativeAccessibilityManager::SpecSetAccessibilityContentSizeMultipliersJSMultipliers::extraSmall() const
+inline folly::Optional<double> ABI45_0_0JS::NativeAccessibilityManager::SpecSetAccessibilityContentSizeMultipliersJSMultipliers::extraSmall() const
 {
   id const p = _v[@"extraSmall"];
   return ABI45_0_0RCTBridgingToOptionalDouble(p);
 }
-inline folly::Optional<double> JS::NativeAccessibilityManager::SpecSetAccessibilityContentSizeMultipliersJSMultipliers::small() const
+inline folly::Optional<double> ABI45_0_0JS::NativeAccessibilityManager::SpecSetAccessibilityContentSizeMultipliersJSMultipliers::small() const
 {
   id const p = _v[@"small"];
   return ABI45_0_0RCTBridgingToOptionalDouble(p);
 }
-inline folly::Optional<double> JS::NativeAccessibilityManager::SpecSetAccessibilityContentSizeMultipliersJSMultipliers::medium() const
+inline folly::Optional<double> ABI45_0_0JS::NativeAccessibilityManager::SpecSetAccessibilityContentSizeMultipliersJSMultipliers::medium() const
 {
   id const p = _v[@"medium"];
   return ABI45_0_0RCTBridgingToOptionalDouble(p);
 }
-inline folly::Optional<double> JS::NativeAccessibilityManager::SpecSetAccessibilityContentSizeMultipliersJSMultipliers::large() const
+inline folly::Optional<double> ABI45_0_0JS::NativeAccessibilityManager::SpecSetAccessibilityContentSizeMultipliersJSMultipliers::large() const
 {
   id const p = _v[@"large"];
   return ABI45_0_0RCTBridgingToOptionalDouble(p);
 }
-inline folly::Optional<double> JS::NativeAccessibilityManager::SpecSetAccessibilityContentSizeMultipliersJSMultipliers::extraLarge() const
+inline folly::Optional<double> ABI45_0_0JS::NativeAccessibilityManager::SpecSetAccessibilityContentSizeMultipliersJSMultipliers::extraLarge() const
 {
   id const p = _v[@"extraLarge"];
   return ABI45_0_0RCTBridgingToOptionalDouble(p);
 }
-inline folly::Optional<double> JS::NativeAccessibilityManager::SpecSetAccessibilityContentSizeMultipliersJSMultipliers::extraExtraLarge() const
+inline folly::Optional<double> ABI45_0_0JS::NativeAccessibilityManager::SpecSetAccessibilityContentSizeMultipliersJSMultipliers::extraExtraLarge() const
 {
   id const p = _v[@"extraExtraLarge"];
   return ABI45_0_0RCTBridgingToOptionalDouble(p);
 }
-inline folly::Optional<double> JS::NativeAccessibilityManager::SpecSetAccessibilityContentSizeMultipliersJSMultipliers::extraExtraExtraLarge() const
+inline folly::Optional<double> ABI45_0_0JS::NativeAccessibilityManager::SpecSetAccessibilityContentSizeMultipliersJSMultipliers::extraExtraExtraLarge() const
 {
   id const p = _v[@"extraExtraExtraLarge"];
   return ABI45_0_0RCTBridgingToOptionalDouble(p);
 }
-inline folly::Optional<double> JS::NativeAccessibilityManager::SpecSetAccessibilityContentSizeMultipliersJSMultipliers::accessibilityMedium() const
+inline folly::Optional<double> ABI45_0_0JS::NativeAccessibilityManager::SpecSetAccessibilityContentSizeMultipliersJSMultipliers::accessibilityMedium() const
 {
   id const p = _v[@"accessibilityMedium"];
   return ABI45_0_0RCTBridgingToOptionalDouble(p);
 }
-inline folly::Optional<double> JS::NativeAccessibilityManager::SpecSetAccessibilityContentSizeMultipliersJSMultipliers::accessibilityLarge() const
+inline folly::Optional<double> ABI45_0_0JS::NativeAccessibilityManager::SpecSetAccessibilityContentSizeMultipliersJSMultipliers::accessibilityLarge() const
 {
   id const p = _v[@"accessibilityLarge"];
   return ABI45_0_0RCTBridgingToOptionalDouble(p);
 }
-inline folly::Optional<double> JS::NativeAccessibilityManager::SpecSetAccessibilityContentSizeMultipliersJSMultipliers::accessibilityExtraLarge() const
+inline folly::Optional<double> ABI45_0_0JS::NativeAccessibilityManager::SpecSetAccessibilityContentSizeMultipliersJSMultipliers::accessibilityExtraLarge() const
 {
   id const p = _v[@"accessibilityExtraLarge"];
   return ABI45_0_0RCTBridgingToOptionalDouble(p);
 }
-inline folly::Optional<double> JS::NativeAccessibilityManager::SpecSetAccessibilityContentSizeMultipliersJSMultipliers::accessibilityExtraExtraLarge() const
+inline folly::Optional<double> ABI45_0_0JS::NativeAccessibilityManager::SpecSetAccessibilityContentSizeMultipliersJSMultipliers::accessibilityExtraExtraLarge() const
 {
   id const p = _v[@"accessibilityExtraExtraLarge"];
   return ABI45_0_0RCTBridgingToOptionalDouble(p);
 }
-inline folly::Optional<double> JS::NativeAccessibilityManager::SpecSetAccessibilityContentSizeMultipliersJSMultipliers::accessibilityExtraExtraExtraLarge() const
+inline folly::Optional<double> ABI45_0_0JS::NativeAccessibilityManager::SpecSetAccessibilityContentSizeMultipliersJSMultipliers::accessibilityExtraExtraExtraLarge() const
 {
   id const p = _v[@"accessibilityExtraExtraExtraLarge"];
   return ABI45_0_0RCTBridgingToOptionalDouble(p);
 }
-inline folly::Optional<bool> JS::NativeAccessibilityManager::SpecAnnounceForAccessibilityWithOptionsOptions::queue() const
+inline folly::Optional<bool> ABI45_0_0JS::NativeAccessibilityManager::SpecAnnounceForAccessibilityWithOptionsOptions::queue() const
 {
   id const p = _v[@"queue"];
   return ABI45_0_0RCTBridgingToOptionalBool(p);
 }
-inline NSString *JS::NativeActionSheetManager::SpecShowActionSheetWithOptionsOptions::title() const
+inline NSString *ABI45_0_0JS::NativeActionSheetManager::SpecShowActionSheetWithOptionsOptions::title() const
 {
   id const p = _v[@"title"];
   return ABI45_0_0RCTBridgingToOptionalString(p);
 }
-inline NSString *JS::NativeActionSheetManager::SpecShowActionSheetWithOptionsOptions::message() const
+inline NSString *ABI45_0_0JS::NativeActionSheetManager::SpecShowActionSheetWithOptionsOptions::message() const
 {
   id const p = _v[@"message"];
   return ABI45_0_0RCTBridgingToOptionalString(p);
 }
-inline folly::Optional<ABI45_0_0facebook::ABI45_0_0React::LazyVector<NSString *>> JS::NativeActionSheetManager::SpecShowActionSheetWithOptionsOptions::options() const
+inline folly::Optional<ABI45_0_0facebook::ABI45_0_0React::LazyVector<NSString *>> ABI45_0_0JS::NativeActionSheetManager::SpecShowActionSheetWithOptionsOptions::options() const
 {
   id const p = _v[@"options"];
   return ABI45_0_0RCTBridgingToOptionalVec(p, ^NSString *(id itemValue_0) { return ABI45_0_0RCTBridgingToString(itemValue_0); });
 }
-inline folly::Optional<ABI45_0_0facebook::ABI45_0_0React::LazyVector<double>> JS::NativeActionSheetManager::SpecShowActionSheetWithOptionsOptions::destructiveButtonIndices() const
+inline folly::Optional<ABI45_0_0facebook::ABI45_0_0React::LazyVector<double>> ABI45_0_0JS::NativeActionSheetManager::SpecShowActionSheetWithOptionsOptions::destructiveButtonIndices() const
 {
   id const p = _v[@"destructiveButtonIndices"];
   return ABI45_0_0RCTBridgingToOptionalVec(p, ^double(id itemValue_0) { return ABI45_0_0RCTBridgingToDouble(itemValue_0); });
 }
-inline folly::Optional<double> JS::NativeActionSheetManager::SpecShowActionSheetWithOptionsOptions::cancelButtonIndex() const
+inline folly::Optional<double> ABI45_0_0JS::NativeActionSheetManager::SpecShowActionSheetWithOptionsOptions::cancelButtonIndex() const
 {
   id const p = _v[@"cancelButtonIndex"];
   return ABI45_0_0RCTBridgingToOptionalDouble(p);
 }
-inline folly::Optional<double> JS::NativeActionSheetManager::SpecShowActionSheetWithOptionsOptions::anchor() const
+inline folly::Optional<double> ABI45_0_0JS::NativeActionSheetManager::SpecShowActionSheetWithOptionsOptions::anchor() const
 {
   id const p = _v[@"anchor"];
   return ABI45_0_0RCTBridgingToOptionalDouble(p);
 }
-inline folly::Optional<double> JS::NativeActionSheetManager::SpecShowActionSheetWithOptionsOptions::tintColor() const
+inline folly::Optional<double> ABI45_0_0JS::NativeActionSheetManager::SpecShowActionSheetWithOptionsOptions::tintColor() const
 {
   id const p = _v[@"tintColor"];
   return ABI45_0_0RCTBridgingToOptionalDouble(p);
 }
-inline folly::Optional<double> JS::NativeActionSheetManager::SpecShowActionSheetWithOptionsOptions::cancelButtonTintColor() const
+inline folly::Optional<double> ABI45_0_0JS::NativeActionSheetManager::SpecShowActionSheetWithOptionsOptions::cancelButtonTintColor() const
 {
   id const p = _v[@"cancelButtonTintColor"];
   return ABI45_0_0RCTBridgingToOptionalDouble(p);
 }
-inline NSString *JS::NativeActionSheetManager::SpecShowActionSheetWithOptionsOptions::userInterfaceStyle() const
+inline NSString *ABI45_0_0JS::NativeActionSheetManager::SpecShowActionSheetWithOptionsOptions::userInterfaceStyle() const
 {
   id const p = _v[@"userInterfaceStyle"];
   return ABI45_0_0RCTBridgingToOptionalString(p);
 }
-inline folly::Optional<ABI45_0_0facebook::ABI45_0_0React::LazyVector<double>> JS::NativeActionSheetManager::SpecShowActionSheetWithOptionsOptions::disabledButtonIndices() const
+inline folly::Optional<ABI45_0_0facebook::ABI45_0_0React::LazyVector<double>> ABI45_0_0JS::NativeActionSheetManager::SpecShowActionSheetWithOptionsOptions::disabledButtonIndices() const
 {
   id const p = _v[@"disabledButtonIndices"];
   return ABI45_0_0RCTBridgingToOptionalVec(p, ^double(id itemValue_0) { return ABI45_0_0RCTBridgingToDouble(itemValue_0); });
 }
-inline NSString *JS::NativeActionSheetManager::SpecShowShareActionSheetWithOptionsOptions::message() const
+inline NSString *ABI45_0_0JS::NativeActionSheetManager::SpecShowShareActionSheetWithOptionsOptions::message() const
 {
   id const p = _v[@"message"];
   return ABI45_0_0RCTBridgingToOptionalString(p);
 }
-inline NSString *JS::NativeActionSheetManager::SpecShowShareActionSheetWithOptionsOptions::url() const
+inline NSString *ABI45_0_0JS::NativeActionSheetManager::SpecShowShareActionSheetWithOptionsOptions::url() const
 {
   id const p = _v[@"url"];
   return ABI45_0_0RCTBridgingToOptionalString(p);
 }
-inline NSString *JS::NativeActionSheetManager::SpecShowShareActionSheetWithOptionsOptions::subject() const
+inline NSString *ABI45_0_0JS::NativeActionSheetManager::SpecShowShareActionSheetWithOptionsOptions::subject() const
 {
   id const p = _v[@"subject"];
   return ABI45_0_0RCTBridgingToOptionalString(p);
 }
-inline folly::Optional<double> JS::NativeActionSheetManager::SpecShowShareActionSheetWithOptionsOptions::anchor() const
+inline folly::Optional<double> ABI45_0_0JS::NativeActionSheetManager::SpecShowShareActionSheetWithOptionsOptions::anchor() const
 {
   id const p = _v[@"anchor"];
   return ABI45_0_0RCTBridgingToOptionalDouble(p);
 }
-inline folly::Optional<double> JS::NativeActionSheetManager::SpecShowShareActionSheetWithOptionsOptions::tintColor() const
+inline folly::Optional<double> ABI45_0_0JS::NativeActionSheetManager::SpecShowShareActionSheetWithOptionsOptions::tintColor() const
 {
   id const p = _v[@"tintColor"];
   return ABI45_0_0RCTBridgingToOptionalDouble(p);
 }
-inline folly::Optional<double> JS::NativeActionSheetManager::SpecShowShareActionSheetWithOptionsOptions::cancelButtonTintColor() const
+inline folly::Optional<double> ABI45_0_0JS::NativeActionSheetManager::SpecShowShareActionSheetWithOptionsOptions::cancelButtonTintColor() const
 {
   id const p = _v[@"cancelButtonTintColor"];
   return ABI45_0_0RCTBridgingToOptionalDouble(p);
 }
-inline folly::Optional<ABI45_0_0facebook::ABI45_0_0React::LazyVector<NSString *>> JS::NativeActionSheetManager::SpecShowShareActionSheetWithOptionsOptions::excludedActivityTypes() const
+inline folly::Optional<ABI45_0_0facebook::ABI45_0_0React::LazyVector<NSString *>> ABI45_0_0JS::NativeActionSheetManager::SpecShowShareActionSheetWithOptionsOptions::excludedActivityTypes() const
 {
   id const p = _v[@"excludedActivityTypes"];
   return ABI45_0_0RCTBridgingToOptionalVec(p, ^NSString *(id itemValue_0) { return ABI45_0_0RCTBridgingToString(itemValue_0); });
 }
-inline NSString *JS::NativeActionSheetManager::SpecShowShareActionSheetWithOptionsOptions::userInterfaceStyle() const
+inline NSString *ABI45_0_0JS::NativeActionSheetManager::SpecShowShareActionSheetWithOptionsOptions::userInterfaceStyle() const
 {
   id const p = _v[@"userInterfaceStyle"];
   return ABI45_0_0RCTBridgingToOptionalString(p);
 }
-inline NSString *JS::NativeAlertManager::Args::title() const
+inline NSString *ABI45_0_0JS::NativeAlertManager::Args::title() const
 {
   id const p = _v[@"title"];
   return ABI45_0_0RCTBridgingToOptionalString(p);
 }
-inline NSString *JS::NativeAlertManager::Args::message() const
+inline NSString *ABI45_0_0JS::NativeAlertManager::Args::message() const
 {
   id const p = _v[@"message"];
   return ABI45_0_0RCTBridgingToOptionalString(p);
 }
-inline folly::Optional<ABI45_0_0facebook::ABI45_0_0React::LazyVector<id<NSObject> >> JS::NativeAlertManager::Args::buttons() const
+inline folly::Optional<ABI45_0_0facebook::ABI45_0_0React::LazyVector<id<NSObject> >> ABI45_0_0JS::NativeAlertManager::Args::buttons() const
 {
   id const p = _v[@"buttons"];
   return ABI45_0_0RCTBridgingToOptionalVec(p, ^id<NSObject> (id itemValue_0) { return itemValue_0; });
 }
-inline NSString *JS::NativeAlertManager::Args::type() const
+inline NSString *ABI45_0_0JS::NativeAlertManager::Args::type() const
 {
   id const p = _v[@"type"];
   return ABI45_0_0RCTBridgingToOptionalString(p);
 }
-inline NSString *JS::NativeAlertManager::Args::defaultValue() const
+inline NSString *ABI45_0_0JS::NativeAlertManager::Args::defaultValue() const
 {
   id const p = _v[@"defaultValue"];
   return ABI45_0_0RCTBridgingToOptionalString(p);
 }
-inline NSString *JS::NativeAlertManager::Args::cancelButtonKey() const
+inline NSString *ABI45_0_0JS::NativeAlertManager::Args::cancelButtonKey() const
 {
   id const p = _v[@"cancelButtonKey"];
   return ABI45_0_0RCTBridgingToOptionalString(p);
 }
-inline NSString *JS::NativeAlertManager::Args::destructiveButtonKey() const
+inline NSString *ABI45_0_0JS::NativeAlertManager::Args::destructiveButtonKey() const
 {
   id const p = _v[@"destructiveButtonKey"];
   return ABI45_0_0RCTBridgingToOptionalString(p);
 }
-inline NSString *JS::NativeAlertManager::Args::keyboardType() const
+inline NSString *ABI45_0_0JS::NativeAlertManager::Args::keyboardType() const
 {
   id const p = _v[@"keyboardType"];
   return ABI45_0_0RCTBridgingToOptionalString(p);
 }
-inline ABI45_0_0facebook::ABI45_0_0React::LazyVector<NSString *> JS::NativeAnimatedModule::EventMapping::nativeEventPath() const
+inline ABI45_0_0facebook::ABI45_0_0React::LazyVector<NSString *> ABI45_0_0JS::NativeAnimatedModule::EventMapping::nativeEventPath() const
 {
   id const p = _v[@"nativeEventPath"];
   return ABI45_0_0RCTBridgingToVec(p, ^NSString *(id itemValue_0) { return ABI45_0_0RCTBridgingToString(itemValue_0); });
 }
-inline folly::Optional<double> JS::NativeAnimatedModule::EventMapping::animatedValueTag() const
+inline folly::Optional<double> ABI45_0_0JS::NativeAnimatedModule::EventMapping::animatedValueTag() const
 {
   id const p = _v[@"animatedValueTag"];
   return ABI45_0_0RCTBridgingToOptionalDouble(p);
 }
-inline ABI45_0_0facebook::ABI45_0_0React::LazyVector<NSString *> JS::NativeAnimatedTurboModule::EventMapping::nativeEventPath() const
+inline ABI45_0_0facebook::ABI45_0_0React::LazyVector<NSString *> ABI45_0_0JS::NativeAnimatedTurboModule::EventMapping::nativeEventPath() const
 {
   id const p = _v[@"nativeEventPath"];
   return ABI45_0_0RCTBridgingToVec(p, ^NSString *(id itemValue_0) { return ABI45_0_0RCTBridgingToString(itemValue_0); });
 }
-inline folly::Optional<double> JS::NativeAnimatedTurboModule::EventMapping::animatedValueTag() const
+inline folly::Optional<double> ABI45_0_0JS::NativeAnimatedTurboModule::EventMapping::animatedValueTag() const
 {
   id const p = _v[@"animatedValueTag"];
   return ABI45_0_0RCTBridgingToOptionalDouble(p);
 }
 
-inline JS::NativeAppState::Constants::Builder::Builder(const Input i) : _factory(^{
+inline ABI45_0_0JS::NativeAppState::Constants::Builder::Builder(const Input i) : _factory(^{
   NSMutableDictionary *d = [NSMutableDictionary new];
   auto initialAppState = i.initialAppState.get();
   d[@"initialAppState"] = initialAppState;
   return d;
 }) {}
-inline JS::NativeAppState::Constants::Builder::Builder(Constants i) : _factory(^{
+inline ABI45_0_0JS::NativeAppState::Constants::Builder::Builder(Constants i) : _factory(^{
   return i.unsafeRawValue();
 }) {}
 
 
 
-inline JS::NativeBlobModule::Constants::Builder::Builder(const Input i) : _factory(^{
+inline ABI45_0_0JS::NativeBlobModule::Constants::Builder::Builder(const Input i) : _factory(^{
   NSMutableDictionary *d = [NSMutableDictionary new];
   auto BLOB_URI_SCHEME = i.BLOB_URI_SCHEME.get();
   d[@"BLOB_URI_SCHEME"] = BLOB_URI_SCHEME;
@@ -2152,7 +2152,7 @@ inline JS::NativeBlobModule::Constants::Builder::Builder(const Input i) : _facto
   d[@"BLOB_URI_HOST"] = BLOB_URI_HOST;
   return d;
 }) {}
-inline JS::NativeBlobModule::Constants::Builder::Builder(Constants i) : _factory(^{
+inline ABI45_0_0JS::NativeBlobModule::Constants::Builder::Builder(Constants i) : _factory(^{
   return i.unsafeRawValue();
 }) {}
 
@@ -2162,7 +2162,7 @@ inline JS::NativeBlobModule::Constants::Builder::Builder(Constants i) : _factory
 
 
 
-inline JS::NativeDeviceInfo::DisplayMetrics::Builder::Builder(const Input i) : _factory(^{
+inline ABI45_0_0JS::NativeDeviceInfo::DisplayMetrics::Builder::Builder(const Input i) : _factory(^{
   NSMutableDictionary *d = [NSMutableDictionary new];
   auto width = i.width.get();
   d[@"width"] = @(width);
@@ -2174,10 +2174,10 @@ inline JS::NativeDeviceInfo::DisplayMetrics::Builder::Builder(const Input i) : _
   d[@"fontScale"] = @(fontScale);
   return d;
 }) {}
-inline JS::NativeDeviceInfo::DisplayMetrics::Builder::Builder(DisplayMetrics i) : _factory(^{
+inline ABI45_0_0JS::NativeDeviceInfo::DisplayMetrics::Builder::Builder(DisplayMetrics i) : _factory(^{
   return i.unsafeRawValue();
 }) {}
-inline JS::NativeDeviceInfo::DisplayMetricsAndroid::Builder::Builder(const Input i) : _factory(^{
+inline ABI45_0_0JS::NativeDeviceInfo::DisplayMetricsAndroid::Builder::Builder(const Input i) : _factory(^{
   NSMutableDictionary *d = [NSMutableDictionary new];
   auto width = i.width.get();
   d[@"width"] = @(width);
@@ -2191,10 +2191,10 @@ inline JS::NativeDeviceInfo::DisplayMetricsAndroid::Builder::Builder(const Input
   d[@"densityDpi"] = @(densityDpi);
   return d;
 }) {}
-inline JS::NativeDeviceInfo::DisplayMetricsAndroid::Builder::Builder(DisplayMetricsAndroid i) : _factory(^{
+inline ABI45_0_0JS::NativeDeviceInfo::DisplayMetricsAndroid::Builder::Builder(DisplayMetricsAndroid i) : _factory(^{
   return i.unsafeRawValue();
 }) {}
-inline JS::NativeDeviceInfo::DimensionsPayload::Builder::Builder(const Input i) : _factory(^{
+inline ABI45_0_0JS::NativeDeviceInfo::DimensionsPayload::Builder::Builder(const Input i) : _factory(^{
   NSMutableDictionary *d = [NSMutableDictionary new];
   auto window = i.window;
   d[@"window"] = window.hasValue() ? window.value().buildUnsafeRawValue() : nil;
@@ -2206,10 +2206,10 @@ inline JS::NativeDeviceInfo::DimensionsPayload::Builder::Builder(const Input i) 
   d[@"screenPhysicalPixels"] = screenPhysicalPixels.hasValue() ? screenPhysicalPixels.value().buildUnsafeRawValue() : nil;
   return d;
 }) {}
-inline JS::NativeDeviceInfo::DimensionsPayload::Builder::Builder(DimensionsPayload i) : _factory(^{
+inline ABI45_0_0JS::NativeDeviceInfo::DimensionsPayload::Builder::Builder(DimensionsPayload i) : _factory(^{
   return i.unsafeRawValue();
 }) {}
-inline JS::NativeDeviceInfo::Constants::Builder::Builder(const Input i) : _factory(^{
+inline ABI45_0_0JS::NativeDeviceInfo::Constants::Builder::Builder(const Input i) : _factory(^{
   NSMutableDictionary *d = [NSMutableDictionary new];
   auto Dimensions = i.Dimensions.get();
   d[@"Dimensions"] = Dimensions.buildUnsafeRawValue();
@@ -2217,87 +2217,87 @@ inline JS::NativeDeviceInfo::Constants::Builder::Builder(const Input i) : _facto
   d[@"isIPhoneX_deprecated"] = isIPhoneX_deprecated.hasValue() ? @((BOOL)isIPhoneX_deprecated.value()) : nil;
   return d;
 }) {}
-inline JS::NativeDeviceInfo::Constants::Builder::Builder(Constants i) : _factory(^{
+inline ABI45_0_0JS::NativeDeviceInfo::Constants::Builder::Builder(Constants i) : _factory(^{
   return i.unsafeRawValue();
 }) {}
-inline folly::Optional<double> JS::NativeExceptionsManager::StackFrame::column() const
+inline folly::Optional<double> ABI45_0_0JS::NativeExceptionsManager::StackFrame::column() const
 {
   id const p = _v[@"column"];
   return ABI45_0_0RCTBridgingToOptionalDouble(p);
 }
-inline NSString *JS::NativeExceptionsManager::StackFrame::file() const
+inline NSString *ABI45_0_0JS::NativeExceptionsManager::StackFrame::file() const
 {
   id const p = _v[@"file"];
   return ABI45_0_0RCTBridgingToOptionalString(p);
 }
-inline folly::Optional<double> JS::NativeExceptionsManager::StackFrame::lineNumber() const
+inline folly::Optional<double> ABI45_0_0JS::NativeExceptionsManager::StackFrame::lineNumber() const
 {
   id const p = _v[@"lineNumber"];
   return ABI45_0_0RCTBridgingToOptionalDouble(p);
 }
-inline NSString *JS::NativeExceptionsManager::StackFrame::methodName() const
+inline NSString *ABI45_0_0JS::NativeExceptionsManager::StackFrame::methodName() const
 {
   id const p = _v[@"methodName"];
   return ABI45_0_0RCTBridgingToString(p);
 }
-inline folly::Optional<bool> JS::NativeExceptionsManager::StackFrame::collapse() const
+inline folly::Optional<bool> ABI45_0_0JS::NativeExceptionsManager::StackFrame::collapse() const
 {
   id const p = _v[@"collapse"];
   return ABI45_0_0RCTBridgingToOptionalBool(p);
 }
-inline NSString *JS::NativeExceptionsManager::ExceptionData::message() const
+inline NSString *ABI45_0_0JS::NativeExceptionsManager::ExceptionData::message() const
 {
   id const p = _v[@"message"];
   return ABI45_0_0RCTBridgingToString(p);
 }
-inline NSString *JS::NativeExceptionsManager::ExceptionData::originalMessage() const
+inline NSString *ABI45_0_0JS::NativeExceptionsManager::ExceptionData::originalMessage() const
 {
   id const p = _v[@"originalMessage"];
   return ABI45_0_0RCTBridgingToOptionalString(p);
 }
-inline NSString *JS::NativeExceptionsManager::ExceptionData::name() const
+inline NSString *ABI45_0_0JS::NativeExceptionsManager::ExceptionData::name() const
 {
   id const p = _v[@"name"];
   return ABI45_0_0RCTBridgingToOptionalString(p);
 }
-inline NSString *JS::NativeExceptionsManager::ExceptionData::componentStack() const
+inline NSString *ABI45_0_0JS::NativeExceptionsManager::ExceptionData::componentStack() const
 {
   id const p = _v[@"componentStack"];
   return ABI45_0_0RCTBridgingToOptionalString(p);
 }
-inline ABI45_0_0facebook::ABI45_0_0React::LazyVector<JS::NativeExceptionsManager::StackFrame> JS::NativeExceptionsManager::ExceptionData::stack() const
+inline ABI45_0_0facebook::ABI45_0_0React::LazyVector<ABI45_0_0JS::NativeExceptionsManager::StackFrame> ABI45_0_0JS::NativeExceptionsManager::ExceptionData::stack() const
 {
   id const p = _v[@"stack"];
-  return ABI45_0_0RCTBridgingToVec(p, ^JS::NativeExceptionsManager::StackFrame(id itemValue_0) { return JS::NativeExceptionsManager::StackFrame(itemValue_0); });
+  return ABI45_0_0RCTBridgingToVec(p, ^ABI45_0_0JS::NativeExceptionsManager::StackFrame(id itemValue_0) { return ABI45_0_0JS::NativeExceptionsManager::StackFrame(itemValue_0); });
 }
-inline double JS::NativeExceptionsManager::ExceptionData::id_() const
+inline double ABI45_0_0JS::NativeExceptionsManager::ExceptionData::id_() const
 {
   id const p = _v[@"id"];
   return ABI45_0_0RCTBridgingToDouble(p);
 }
-inline bool JS::NativeExceptionsManager::ExceptionData::isFatal() const
+inline bool ABI45_0_0JS::NativeExceptionsManager::ExceptionData::isFatal() const
 {
   id const p = _v[@"isFatal"];
   return ABI45_0_0RCTBridgingToBool(p);
 }
-inline id<NSObject> _Nullable JS::NativeExceptionsManager::ExceptionData::extraData() const
+inline id<NSObject> _Nullable ABI45_0_0JS::NativeExceptionsManager::ExceptionData::extraData() const
 {
   id const p = _v[@"extraData"];
   return p;
 }
 
-inline folly::Optional<bool> JS::NativeFrameRateLogger::SpecSetGlobalOptionsOptions::debug() const
+inline folly::Optional<bool> ABI45_0_0JS::NativeFrameRateLogger::SpecSetGlobalOptionsOptions::debug() const
 {
   id const p = _v[@"debug"];
   return ABI45_0_0RCTBridgingToOptionalBool(p);
 }
-inline folly::Optional<bool> JS::NativeFrameRateLogger::SpecSetGlobalOptionsOptions::reportStackTraces() const
+inline folly::Optional<bool> ABI45_0_0JS::NativeFrameRateLogger::SpecSetGlobalOptionsOptions::reportStackTraces() const
 {
   id const p = _v[@"reportStackTraces"];
   return ABI45_0_0RCTBridgingToOptionalBool(p);
 }
 
-inline JS::NativeI18nManager::Constants::Builder::Builder(const Input i) : _factory(^{
+inline ABI45_0_0JS::NativeI18nManager::Constants::Builder::Builder(const Input i) : _factory(^{
   NSMutableDictionary *d = [NSMutableDictionary new];
   auto isRTL = i.isRTL.get();
   d[@"isRTL"] = @(isRTL);
@@ -2307,81 +2307,81 @@ inline JS::NativeI18nManager::Constants::Builder::Builder(const Input i) : _fact
   d[@"localeIdentifier"] = localeIdentifier;
   return d;
 }) {}
-inline JS::NativeI18nManager::Constants::Builder::Builder(Constants i) : _factory(^{
+inline ABI45_0_0JS::NativeI18nManager::Constants::Builder::Builder(Constants i) : _factory(^{
   return i.unsafeRawValue();
 }) {}
-inline double JS::NativeImageEditor::OptionsOffset::x() const
+inline double ABI45_0_0JS::NativeImageEditor::OptionsOffset::x() const
 {
   id const p = _v[@"x"];
   return ABI45_0_0RCTBridgingToDouble(p);
 }
-inline double JS::NativeImageEditor::OptionsOffset::y() const
+inline double ABI45_0_0JS::NativeImageEditor::OptionsOffset::y() const
 {
   id const p = _v[@"y"];
   return ABI45_0_0RCTBridgingToDouble(p);
 }
-inline double JS::NativeImageEditor::OptionsSize::width() const
+inline double ABI45_0_0JS::NativeImageEditor::OptionsSize::width() const
 {
   id const p = _v[@"width"];
   return ABI45_0_0RCTBridgingToDouble(p);
 }
-inline double JS::NativeImageEditor::OptionsSize::height() const
+inline double ABI45_0_0JS::NativeImageEditor::OptionsSize::height() const
 {
   id const p = _v[@"height"];
   return ABI45_0_0RCTBridgingToDouble(p);
 }
-inline double JS::NativeImageEditor::OptionsDisplaySize::width() const
+inline double ABI45_0_0JS::NativeImageEditor::OptionsDisplaySize::width() const
 {
   id const p = _v[@"width"];
   return ABI45_0_0RCTBridgingToDouble(p);
 }
-inline double JS::NativeImageEditor::OptionsDisplaySize::height() const
+inline double ABI45_0_0JS::NativeImageEditor::OptionsDisplaySize::height() const
 {
   id const p = _v[@"height"];
   return ABI45_0_0RCTBridgingToDouble(p);
 }
-inline JS::NativeImageEditor::OptionsOffset JS::NativeImageEditor::Options::offset() const
+inline ABI45_0_0JS::NativeImageEditor::OptionsOffset ABI45_0_0JS::NativeImageEditor::Options::offset() const
 {
   id const p = _v[@"offset"];
-  return JS::NativeImageEditor::OptionsOffset(p);
+  return ABI45_0_0JS::NativeImageEditor::OptionsOffset(p);
 }
-inline JS::NativeImageEditor::OptionsSize JS::NativeImageEditor::Options::size() const
+inline ABI45_0_0JS::NativeImageEditor::OptionsSize ABI45_0_0JS::NativeImageEditor::Options::size() const
 {
   id const p = _v[@"size"];
-  return JS::NativeImageEditor::OptionsSize(p);
+  return ABI45_0_0JS::NativeImageEditor::OptionsSize(p);
 }
-inline folly::Optional<JS::NativeImageEditor::OptionsDisplaySize> JS::NativeImageEditor::Options::displaySize() const
+inline folly::Optional<ABI45_0_0JS::NativeImageEditor::OptionsDisplaySize> ABI45_0_0JS::NativeImageEditor::Options::displaySize() const
 {
   id const p = _v[@"displaySize"];
-  return (p == nil ? folly::none : folly::make_optional(JS::NativeImageEditor::OptionsDisplaySize(p)));
+  return (p == nil ? folly::none : folly::make_optional(ABI45_0_0JS::NativeImageEditor::OptionsDisplaySize(p)));
 }
-inline NSString *JS::NativeImageEditor::Options::resizeMode() const
+inline NSString *ABI45_0_0JS::NativeImageEditor::Options::resizeMode() const
 {
   id const p = _v[@"resizeMode"];
   return ABI45_0_0RCTBridgingToOptionalString(p);
 }
-inline folly::Optional<bool> JS::NativeImageEditor::Options::allowExternalStorage() const
+inline folly::Optional<bool> ABI45_0_0JS::NativeImageEditor::Options::allowExternalStorage() const
 {
   id const p = _v[@"allowExternalStorage"];
   return ABI45_0_0RCTBridgingToOptionalBool(p);
 }
 
-inline bool JS::NativeImagePickerIOS::SpecOpenCameraDialogConfig::unmirrorFrontFacingCamera() const
+inline bool ABI45_0_0JS::NativeImagePickerIOS::SpecOpenCameraDialogConfig::unmirrorFrontFacingCamera() const
 {
   id const p = _v[@"unmirrorFrontFacingCamera"];
   return ABI45_0_0RCTBridgingToBool(p);
 }
-inline bool JS::NativeImagePickerIOS::SpecOpenCameraDialogConfig::videoMode() const
+inline bool ABI45_0_0JS::NativeImagePickerIOS::SpecOpenCameraDialogConfig::videoMode() const
 {
   id const p = _v[@"videoMode"];
   return ABI45_0_0RCTBridgingToBool(p);
 }
-inline bool JS::NativeImagePickerIOS::SpecOpenSelectDialogConfig::showImages() const
+inline bool ABI45_0_0JS::NativeImagePickerIOS::SpecOpenSelectDialogConfig::showImages() const
 {
   id const p = _v[@"showImages"];
   return ABI45_0_0RCTBridgingToBool(p);
 }
-inline bool JS::NativeImagePickerIOS::SpecOpenSelectDialogConfig::showVideos() const
+inline bool ABI45_0_0JS::NativeImagePickerIOS::SpecOpenSelectDialogConfig::showVideos() const
 {
   id const p = _v[@"showVideos"];
   return ABI45_0_0RCTBridgingToBool(p);
@@ -2389,7 +2389,7 @@ inline bool JS::NativeImagePickerIOS::SpecOpenSelectDialogConfig::showVideos() c
 
 
 
-inline JS::NativeJSDevSupport::Constants::Builder::Builder(const Input i) : _factory(^{
+inline ABI45_0_0JS::NativeJSDevSupport::Constants::Builder::Builder(const Input i) : _factory(^{
   NSMutableDictionary *d = [NSMutableDictionary new];
   auto ERROR_CODE_EXCEPTION = i.ERROR_CODE_EXCEPTION.get();
   d[@"ERROR_CODE_EXCEPTION"] = @(ERROR_CODE_EXCEPTION);
@@ -2397,54 +2397,54 @@ inline JS::NativeJSDevSupport::Constants::Builder::Builder(const Input i) : _fac
   d[@"ERROR_CODE_VIEW_NOT_FOUND"] = @(ERROR_CODE_VIEW_NOT_FOUND);
   return d;
 }) {}
-inline JS::NativeJSDevSupport::Constants::Builder::Builder(Constants i) : _factory(^{
+inline ABI45_0_0JS::NativeJSDevSupport::Constants::Builder::Builder(Constants i) : _factory(^{
   return i.unsafeRawValue();
 }) {}
 
 
 
 
-inline NSString *JS::NativeNetworkingIOS::SpecSendRequestQuery::method() const
+inline NSString *ABI45_0_0JS::NativeNetworkingIOS::SpecSendRequestQuery::method() const
 {
   id const p = _v[@"method"];
   return ABI45_0_0RCTBridgingToString(p);
 }
-inline NSString *JS::NativeNetworkingIOS::SpecSendRequestQuery::url() const
+inline NSString *ABI45_0_0JS::NativeNetworkingIOS::SpecSendRequestQuery::url() const
 {
   id const p = _v[@"url"];
   return ABI45_0_0RCTBridgingToString(p);
 }
-inline id<NSObject>  JS::NativeNetworkingIOS::SpecSendRequestQuery::data() const
+inline id<NSObject>  ABI45_0_0JS::NativeNetworkingIOS::SpecSendRequestQuery::data() const
 {
   id const p = _v[@"data"];
   return p;
 }
-inline id<NSObject>  JS::NativeNetworkingIOS::SpecSendRequestQuery::headers() const
+inline id<NSObject>  ABI45_0_0JS::NativeNetworkingIOS::SpecSendRequestQuery::headers() const
 {
   id const p = _v[@"headers"];
   return p;
 }
-inline NSString *JS::NativeNetworkingIOS::SpecSendRequestQuery::responseType() const
+inline NSString *ABI45_0_0JS::NativeNetworkingIOS::SpecSendRequestQuery::responseType() const
 {
   id const p = _v[@"responseType"];
   return ABI45_0_0RCTBridgingToString(p);
 }
-inline bool JS::NativeNetworkingIOS::SpecSendRequestQuery::incrementalUpdates() const
+inline bool ABI45_0_0JS::NativeNetworkingIOS::SpecSendRequestQuery::incrementalUpdates() const
 {
   id const p = _v[@"incrementalUpdates"];
   return ABI45_0_0RCTBridgingToBool(p);
 }
-inline double JS::NativeNetworkingIOS::SpecSendRequestQuery::timeout() const
+inline double ABI45_0_0JS::NativeNetworkingIOS::SpecSendRequestQuery::timeout() const
 {
   id const p = _v[@"timeout"];
   return ABI45_0_0RCTBridgingToDouble(p);
 }
-inline bool JS::NativeNetworkingIOS::SpecSendRequestQuery::withCredentials() const
+inline bool ABI45_0_0JS::NativeNetworkingIOS::SpecSendRequestQuery::withCredentials() const
 {
   id const p = _v[@"withCredentials"];
   return ABI45_0_0RCTBridgingToBool(p);
 }
-inline JS::NativePlatformConstantsIOS::ConstantsreactNativeVersion::Builder::Builder(const Input i) : _factory(^{
+inline ABI45_0_0JS::NativePlatformConstantsIOS::ConstantsreactNativeVersion::Builder::Builder(const Input i) : _factory(^{
   NSMutableDictionary *d = [NSMutableDictionary new];
   auto major = i.major.get();
   d[@"major"] = @(major);
@@ -2456,10 +2456,10 @@ inline JS::NativePlatformConstantsIOS::ConstantsreactNativeVersion::Builder::Bui
   d[@"prerelease"] = prerelease.hasValue() ? @((double)prerelease.value()) : nil;
   return d;
 }) {}
-inline JS::NativePlatformConstantsIOS::ConstantsreactNativeVersion::Builder::Builder(ConstantsreactNativeVersion i) : _factory(^{
+inline ABI45_0_0JS::NativePlatformConstantsIOS::ConstantsreactNativeVersion::Builder::Builder(ConstantsreactNativeVersion i) : _factory(^{
   return i.unsafeRawValue();
 }) {}
-inline JS::NativePlatformConstantsIOS::Constants::Builder::Builder(const Input i) : _factory(^{
+inline ABI45_0_0JS::NativePlatformConstantsIOS::Constants::Builder::Builder(const Input i) : _factory(^{
   NSMutableDictionary *d = [NSMutableDictionary new];
   auto isTesting = i.isTesting.get();
   d[@"isTesting"] = @(isTesting);
@@ -2475,101 +2475,101 @@ inline JS::NativePlatformConstantsIOS::Constants::Builder::Builder(const Input i
   d[@"interfaceIdiom"] = interfaceIdiom;
   return d;
 }) {}
-inline JS::NativePlatformConstantsIOS::Constants::Builder::Builder(Constants i) : _factory(^{
+inline ABI45_0_0JS::NativePlatformConstantsIOS::Constants::Builder::Builder(Constants i) : _factory(^{
   return i.unsafeRawValue();
 }) {}
-inline bool JS::NativePushNotificationManagerIOS::SpecRequestPermissionsPermission::alert() const
+inline bool ABI45_0_0JS::NativePushNotificationManagerIOS::SpecRequestPermissionsPermission::alert() const
 {
   id const p = _v[@"alert"];
   return ABI45_0_0RCTBridgingToBool(p);
 }
-inline bool JS::NativePushNotificationManagerIOS::SpecRequestPermissionsPermission::badge() const
+inline bool ABI45_0_0JS::NativePushNotificationManagerIOS::SpecRequestPermissionsPermission::badge() const
 {
   id const p = _v[@"badge"];
   return ABI45_0_0RCTBridgingToBool(p);
 }
-inline bool JS::NativePushNotificationManagerIOS::SpecRequestPermissionsPermission::sound() const
+inline bool ABI45_0_0JS::NativePushNotificationManagerIOS::SpecRequestPermissionsPermission::sound() const
 {
   id const p = _v[@"sound"];
   return ABI45_0_0RCTBridgingToBool(p);
 }
-inline NSString *JS::NativePushNotificationManagerIOS::Notification::alertTitle() const
+inline NSString *ABI45_0_0JS::NativePushNotificationManagerIOS::Notification::alertTitle() const
 {
   id const p = _v[@"alertTitle"];
   return ABI45_0_0RCTBridgingToOptionalString(p);
 }
-inline folly::Optional<double> JS::NativePushNotificationManagerIOS::Notification::fireDate() const
+inline folly::Optional<double> ABI45_0_0JS::NativePushNotificationManagerIOS::Notification::fireDate() const
 {
   id const p = _v[@"fireDate"];
   return ABI45_0_0RCTBridgingToOptionalDouble(p);
 }
-inline NSString *JS::NativePushNotificationManagerIOS::Notification::alertBody() const
+inline NSString *ABI45_0_0JS::NativePushNotificationManagerIOS::Notification::alertBody() const
 {
   id const p = _v[@"alertBody"];
   return ABI45_0_0RCTBridgingToOptionalString(p);
 }
-inline NSString *JS::NativePushNotificationManagerIOS::Notification::alertAction() const
+inline NSString *ABI45_0_0JS::NativePushNotificationManagerIOS::Notification::alertAction() const
 {
   id const p = _v[@"alertAction"];
   return ABI45_0_0RCTBridgingToOptionalString(p);
 }
-inline id<NSObject> _Nullable JS::NativePushNotificationManagerIOS::Notification::userInfo() const
+inline id<NSObject> _Nullable ABI45_0_0JS::NativePushNotificationManagerIOS::Notification::userInfo() const
 {
   id const p = _v[@"userInfo"];
   return p;
 }
-inline NSString *JS::NativePushNotificationManagerIOS::Notification::category() const
+inline NSString *ABI45_0_0JS::NativePushNotificationManagerIOS::Notification::category() const
 {
   id const p = _v[@"category"];
   return ABI45_0_0RCTBridgingToOptionalString(p);
 }
-inline NSString *JS::NativePushNotificationManagerIOS::Notification::repeatInterval() const
+inline NSString *ABI45_0_0JS::NativePushNotificationManagerIOS::Notification::repeatInterval() const
 {
   id const p = _v[@"repeatInterval"];
   return ABI45_0_0RCTBridgingToOptionalString(p);
 }
-inline folly::Optional<double> JS::NativePushNotificationManagerIOS::Notification::applicationIconBadgeNumber() const
+inline folly::Optional<double> ABI45_0_0JS::NativePushNotificationManagerIOS::Notification::applicationIconBadgeNumber() const
 {
   id const p = _v[@"applicationIconBadgeNumber"];
   return ABI45_0_0RCTBridgingToOptionalDouble(p);
 }
-inline folly::Optional<bool> JS::NativePushNotificationManagerIOS::Notification::isSilent() const
+inline folly::Optional<bool> ABI45_0_0JS::NativePushNotificationManagerIOS::Notification::isSilent() const
 {
   id const p = _v[@"isSilent"];
   return ABI45_0_0RCTBridgingToOptionalBool(p);
 }
 
 
-inline JS::NativeSettingsManager::Constants::Builder::Builder(const Input i) : _factory(^{
+inline ABI45_0_0JS::NativeSettingsManager::Constants::Builder::Builder(const Input i) : _factory(^{
   NSMutableDictionary *d = [NSMutableDictionary new];
   auto settings = i.settings.get();
   d[@"settings"] = settings;
   return d;
 }) {}
-inline JS::NativeSettingsManager::Constants::Builder::Builder(Constants i) : _factory(^{
+inline ABI45_0_0JS::NativeSettingsManager::Constants::Builder::Builder(Constants i) : _factory(^{
   return i.unsafeRawValue();
 }) {}
-inline NSString *JS::NativeShareModule::SpecShareContent::title() const
+inline NSString *ABI45_0_0JS::NativeShareModule::SpecShareContent::title() const
 {
   id const p = _v[@"title"];
   return ABI45_0_0RCTBridgingToOptionalString(p);
 }
-inline NSString *JS::NativeShareModule::SpecShareContent::message() const
+inline NSString *ABI45_0_0JS::NativeShareModule::SpecShareContent::message() const
 {
   id const p = _v[@"message"];
   return ABI45_0_0RCTBridgingToOptionalString(p);
 }
 
-inline JS::NativeSourceCode::Constants::Builder::Builder(const Input i) : _factory(^{
+inline ABI45_0_0JS::NativeSourceCode::Constants::Builder::Builder(const Input i) : _factory(^{
   NSMutableDictionary *d = [NSMutableDictionary new];
   auto scriptURL = i.scriptURL.get();
   d[@"scriptURL"] = scriptURL;
   return d;
 }) {}
-inline JS::NativeSourceCode::Constants::Builder::Builder(Constants i) : _factory(^{
+inline ABI45_0_0JS::NativeSourceCode::Constants::Builder::Builder(Constants i) : _factory(^{
   return i.unsafeRawValue();
 }) {}
-inline JS::NativeStatusBarManagerIOS::Constants::Builder::Builder(const Input i) : _factory(^{
+inline ABI45_0_0JS::NativeStatusBarManagerIOS::Constants::Builder::Builder(const Input i) : _factory(^{
   NSMutableDictionary *d = [NSMutableDictionary new];
   auto HEIGHT = i.HEIGHT.get();
   d[@"HEIGHT"] = @(HEIGHT);
@@ -2577,12 +2577,12 @@ inline JS::NativeStatusBarManagerIOS::Constants::Builder::Builder(const Input i)
   d[@"DEFAULT_BACKGROUND_COLOR"] = DEFAULT_BACKGROUND_COLOR.hasValue() ? @((double)DEFAULT_BACKGROUND_COLOR.value()) : nil;
   return d;
 }) {}
-inline JS::NativeStatusBarManagerIOS::Constants::Builder::Builder(Constants i) : _factory(^{
+inline ABI45_0_0JS::NativeStatusBarManagerIOS::Constants::Builder::Builder(Constants i) : _factory(^{
   return i.unsafeRawValue();
 }) {}
 
 
-inline id<NSObject> _Nullable JS::NativeWebSocketModule::SpecConnectOptions::headers() const
+inline id<NSObject> _Nullable ABI45_0_0JS::NativeWebSocketModule::SpecConnectOptions::headers() const
 {
   id const p = _v[@"headers"];
   return p;

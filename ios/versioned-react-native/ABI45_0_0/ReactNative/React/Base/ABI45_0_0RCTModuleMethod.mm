@@ -371,7 +371,7 @@ ABI45_0_0RCT_EXTERN_C_END
         NSDictionary *errorJSON = ABI45_0_0RCTJSErrorFromCodeMessageAndNSError(code, message, error);
         [bridge enqueueCallback:json args:@[ errorJSON ]];
       });
-    } else if ([typeName hasPrefix:@"JS::"]) {
+    } else if ([typeName hasPrefix:@"ABI45_0_0JS::"]) {
       NSString *selectorNameForCxxType =
           [[typeName stringByReplacingOccurrencesOfString:@"::" withString:@"_"] stringByAppendingString:@":"];
       selector = NSSelectorFromString(selectorNameForCxxType);

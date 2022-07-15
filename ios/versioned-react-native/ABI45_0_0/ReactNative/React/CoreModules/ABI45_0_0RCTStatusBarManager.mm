@@ -175,11 +175,11 @@ ABI45_0_0RCT_EXPORT_METHOD(setNetworkActivityIndicatorVisible : (BOOL)visible)
   ABI45_0_0RCTSharedApplication().networkActivityIndicatorVisible = visible;
 }
 
-- (ABI45_0_0facebook::ABI45_0_0React::ModuleConstants<JS::NativeStatusBarManagerIOS::Constants>)getConstants
+- (ABI45_0_0facebook::ABI45_0_0React::ModuleConstants<ABI45_0_0JS::NativeStatusBarManagerIOS::Constants>)getConstants
 {
-  __block ABI45_0_0facebook::ABI45_0_0React::ModuleConstants<JS::NativeStatusBarManagerIOS::Constants> constants;
+  __block ABI45_0_0facebook::ABI45_0_0React::ModuleConstants<ABI45_0_0JS::NativeStatusBarManagerIOS::Constants> constants;
   ABI45_0_0RCTUnsafeExecuteOnMainQueueSync(^{
-    constants = ABI45_0_0facebook::ABI45_0_0React::typedConstants<JS::NativeStatusBarManagerIOS::Constants>({
+    constants = ABI45_0_0facebook::ABI45_0_0React::typedConstants<ABI45_0_0JS::NativeStatusBarManagerIOS::Constants>({
         .HEIGHT = ABI45_0_0RCTSharedApplication().statusBarFrame.size.height,
         .DEFAULT_BACKGROUND_COLOR = folly::none,
     });
@@ -188,9 +188,9 @@ ABI45_0_0RCT_EXPORT_METHOD(setNetworkActivityIndicatorVisible : (BOOL)visible)
   return constants;
 }
 
-- (ABI45_0_0facebook::ABI45_0_0React::ModuleConstants<JS::NativeStatusBarManagerIOS::Constants>)constantsToExport
+- (ABI45_0_0facebook::ABI45_0_0React::ModuleConstants<ABI45_0_0JS::NativeStatusBarManagerIOS::Constants>)constantsToExport
 {
-  return (ABI45_0_0facebook::ABI45_0_0React::ModuleConstants<JS::NativeStatusBarManagerIOS::Constants>)[self getConstants];
+  return (ABI45_0_0facebook::ABI45_0_0React::ModuleConstants<ABI45_0_0JS::NativeStatusBarManagerIOS::Constants>)[self getConstants];
 }
 
 - (std::shared_ptr<ABI45_0_0facebook::ABI45_0_0React::TurboModule>)getTurboModule:

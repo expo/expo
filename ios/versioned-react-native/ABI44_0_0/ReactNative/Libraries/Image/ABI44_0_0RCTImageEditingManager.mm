@@ -39,7 +39,7 @@ ABI44_0_0RCT_EXPORT_MODULE()
  *        All units are in px (not points).
  */
 ABI44_0_0RCT_EXPORT_METHOD(cropImage:(NSURLRequest *)imageRequest
-                  cropData:(JS::NativeImageEditor::Options &)cropData
+                  cropData:(ABI44_0_0JS::NativeImageEditor::Options &)cropData
                   successCallback:(ABI44_0_0RCTResponseSenderBlock)successCallback
                   errorCallback:(ABI44_0_0RCTResponseSenderBlock)errorCallback)
 {
@@ -55,7 +55,7 @@ ABI44_0_0RCT_EXPORT_METHOD(cropImage:(NSURLRequest *)imageRequest
   };
   
   // We must keep a copy of cropData so that we can access data from it at a later time
-  JS::NativeImageEditor::Options cropDataCopy = cropData;
+  ABI44_0_0JS::NativeImageEditor::Options cropDataCopy = cropData;
 
   [[_bridge moduleForName:@"ImageLoader" lazilyLoadIfNecessary:YES]
    loadImageWithURLRequest:imageRequest callback:^(NSError *error, UIImage *image) {

@@ -17,9 +17,9 @@
  *
  * The ABI45_0_0NativeModuleSpec will define a constantsToExport method which you can implement as follows:
  *
- * - (nonnull ModuleConstants<JS::Constants>)constantsToExport
+ * - (nonnull ModuleConstants<ABI45_0_0JS::Constants>)constantsToExport
  * {
- *   return typedConstants<JS::Constants>({ ... });
+ *   return typedConstants<ABI45_0_0JS::Constants>({ ... });
  * }
  */
 

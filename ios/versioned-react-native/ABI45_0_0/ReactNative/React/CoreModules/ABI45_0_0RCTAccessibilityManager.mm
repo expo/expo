@@ -255,7 +255,7 @@ ABI45_0_0RCT_EXPORT_MODULE()
 }
 
 ABI45_0_0RCT_EXPORT_METHOD(setAccessibilityContentSizeMultipliers
-                  : (JS::NativeAccessibilityManager::SpecSetAccessibilityContentSizeMultipliersJSMultipliers &)
+                  : (ABI45_0_0JS::NativeAccessibilityManager::SpecSetAccessibilityContentSizeMultipliersJSMultipliers &)
                       JSMultipliers)
 {
   NSMutableDictionary<NSString *, NSNumber *> *multipliers = [NSMutableDictionary new];
@@ -303,7 +303,7 @@ ABI45_0_0RCT_EXPORT_METHOD(announceForAccessibility : (NSString *)announcement)
 
 ABI45_0_0RCT_EXPORT_METHOD(announceForAccessibilityWithOptions
                   : (NSString *)announcement options
-                  : (JS::NativeAccessibilityManager::SpecAnnounceForAccessibilityWithOptionsOptions &)options)
+                  : (ABI45_0_0JS::NativeAccessibilityManager::SpecAnnounceForAccessibilityWithOptionsOptions &)options)
 {
   if (@available(iOS 11.0, *)) {
     NSMutableDictionary<NSString *, NSNumber *> *attrsDictionary = [NSMutableDictionary new];
