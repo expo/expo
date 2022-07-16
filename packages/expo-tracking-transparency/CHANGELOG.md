@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 2.3.1 — 2022-07-16
+
+### 💡 Others
+
 - Removed legacy Objective-C implementation and changed the pod name to `ExpoTrackingTransparency`. ([#18157](https://github.com/expo/expo/pull/18157) by [@barthap](https://github.com/barthap))
 
 ## 2.3.0 — 2022-07-07

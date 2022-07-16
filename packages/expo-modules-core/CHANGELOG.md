@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fix dangling pointer in the fbjni from the MethodMetadata::createPromiseBody on Android. ([#18206](https://github.com/expo/expo/pull/18206) by [@lukmccall](https://github.com/lukmccall))
-
 ### 💡 Others
+
+## 0.11.2 — 2022-07-16
+
+### 🐛 Bug fixes
+
+- Fix dangling pointer in the fbjni from the MethodMetadata::createPromiseBody on Android. ([#18206](https://github.com/expo/expo/pull/18206) by [@lukmccall](https://github.com/lukmccall))
 
 ## 0.11.1 — 2022-07-11
 
