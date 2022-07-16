@@ -7,5 +7,4 @@ module.exports = {
   clearMocks: true,
   rootDir: path.resolve(__dirname),
   displayName: require('./package').name,
-  roots: ['__mocks__', 'src'],
 };
