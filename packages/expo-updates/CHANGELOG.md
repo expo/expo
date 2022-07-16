@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Logging and log reading. ([#18284](https://github.com/expo/expo/pull/18284) by [@douglowder](https://github.com/douglowder))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
