@@ -239,7 +239,7 @@ export async function bundleAsync(
   };
 
   try {
-    const intermediateOutputs = await Promise.all(bundles.map(bundle => buildAsync(bundle)));
+    const intermediateOutputs = await Promise.all(bundles.map((bundle) => buildAsync(bundle)));
     const bundleOutputs: BundleOutput[] = [];
     for (let i = 0; i < bundles.length; ++i) {
       // hermesc does not support parallel building even we spawn processes.

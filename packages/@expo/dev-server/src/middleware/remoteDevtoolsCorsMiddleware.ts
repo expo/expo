@@ -21,10 +21,10 @@ export function remoteDevtoolsCorsMiddleware(
       // Prevent metro overwrite Access-Control-Allow-Origin header
       const setHeader = res.setHeader.bind(res);
       res.setHeader = (key, ...args) => {
-        if (key === 'Access-Control-Allow-Origin') {
-          return;
+        if (key !== 'Access-Control-Allow-Origin') {
+          setHeader(key, ...args);
         }
-        setHeader(key, ...args);
+        return res;
       };
     }
   }

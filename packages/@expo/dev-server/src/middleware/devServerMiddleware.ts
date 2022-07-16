@@ -38,9 +38,8 @@ export function createDevServerMiddleware(
     logger: Log;
   }
 ) {
-  const { createDevServerMiddleware, securityHeadersMiddleware } = importCliServerApiFromProject(
-    projectRoot
-  );
+  const { createDevServerMiddleware, securityHeadersMiddleware } =
+    importCliServerApiFromProject(projectRoot);
   const {
     middleware,
     // @ts-expect-error: Old API

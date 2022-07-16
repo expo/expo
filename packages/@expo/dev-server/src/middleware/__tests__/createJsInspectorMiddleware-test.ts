@@ -14,9 +14,11 @@ describe('createJsInspectorMiddleware', () => {
     const req = createRequest(`http://localhost:8081/inspector?applicationId=${app.description}`);
     const res = createMockedResponse();
     const next = jest.fn();
-    (JsInspector.queryInspectorAppAsync as jest.MockedFunction<
-      typeof JsInspector.queryInspectorAppAsync
-    >).mockReturnValue(Promise.resolve(app));
+    (
+      JsInspector.queryInspectorAppAsync as jest.MockedFunction<
+        typeof JsInspector.queryInspectorAppAsync
+      >
+    ).mockReturnValue(Promise.resolve(app));
 
     const middlewareAsync = createJsInspectorMiddleware();
     await middlewareAsync(req, res as ServerResponse, next);
@@ -31,9 +33,11 @@ describe('createJsInspectorMiddleware', () => {
     );
     const res = createMockedResponse();
     const next = jest.fn();
-    (JsInspector.queryInspectorAppAsync as jest.MockedFunction<
-      typeof JsInspector.queryInspectorAppAsync
-    >).mockReturnValue(Promise.resolve(app));
+    (
+      JsInspector.queryInspectorAppAsync as jest.MockedFunction<
+        typeof JsInspector.queryInspectorAppAsync
+      >
+    ).mockReturnValue(Promise.resolve(app));
 
     const middlewareAsync = createJsInspectorMiddleware();
     await middlewareAsync(req, res as ServerResponse, next);
@@ -45,9 +49,11 @@ describe('createJsInspectorMiddleware', () => {
     const req = createRequest('http://localhost:8081/inspector?applicationId=nonExistentApp');
     const res = createMockedResponse();
     const next = jest.fn();
-    (JsInspector.queryInspectorAppAsync as jest.MockedFunction<
-      typeof JsInspector.queryInspectorAppAsync
-    >).mockReturnValue(Promise.resolve(null));
+    (
+      JsInspector.queryInspectorAppAsync as jest.MockedFunction<
+        typeof JsInspector.queryInspectorAppAsync
+      >
+    ).mockReturnValue(Promise.resolve(null));
 
     const middlewareAsync = createJsInspectorMiddleware();
     await middlewareAsync(req, res as ServerResponse, next);
@@ -74,9 +80,11 @@ describe('createJsInspectorMiddleware', () => {
     );
     const res = createMockedResponse();
     const next = jest.fn();
-    (JsInspector.queryInspectorAppAsync as jest.MockedFunction<
-      typeof JsInspector.queryInspectorAppAsync
-    >).mockReturnValue(Promise.resolve(app));
+    (
+      JsInspector.queryInspectorAppAsync as jest.MockedFunction<
+        typeof JsInspector.queryInspectorAppAsync
+      >
+    ).mockReturnValue(Promise.resolve(app));
 
     const middlewareAsync = createJsInspectorMiddleware();
     await middlewareAsync(req, res as ServerResponse, next);

@@ -127,8 +127,8 @@ describe('maybeThrowFromInconsistentEngineAsync - common', () => {
     jest.resetModules();
     jest.doMock('fs-extra');
     fs = require('fs-extra');
-    maybeThrowFromInconsistentEngineAsync = require('../HermesBundler')
-      .maybeThrowFromInconsistentEngineAsync;
+    maybeThrowFromInconsistentEngineAsync =
+      require('../HermesBundler').maybeThrowFromInconsistentEngineAsync;
   });
   afterAll(() => {
     jest.dontMock('fs-extra');
@@ -160,8 +160,8 @@ describe('maybeThrowFromInconsistentEngineAsync - android', () => {
     jest.resetModules();
     jest.doMock('fs-extra');
     fs = require('fs-extra');
-    maybeThrowFromInconsistentEngineAsync = require('../HermesBundler')
-      .maybeThrowFromInconsistentEngineAsync;
+    maybeThrowFromInconsistentEngineAsync =
+      require('../HermesBundler').maybeThrowFromInconsistentEngineAsync;
   });
   afterAll(() => {
     jest.dontMock('fs-extra');
@@ -358,8 +358,8 @@ describe('maybeThrowFromInconsistentEngineAsync - ios', () => {
     jest.resetModules();
     jest.doMock('fs-extra');
     fs = require('fs-extra');
-    maybeThrowFromInconsistentEngineAsync = require('../HermesBundler')
-      .maybeThrowFromInconsistentEngineAsync;
+    maybeThrowFromInconsistentEngineAsync =
+      require('../HermesBundler').maybeThrowFromInconsistentEngineAsync;
   });
   afterAll(() => {
     jest.dontMock('fs-extra');

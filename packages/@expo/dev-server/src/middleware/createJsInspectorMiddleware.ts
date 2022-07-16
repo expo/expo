@@ -42,6 +42,6 @@ function getServerBase(req: IncomingMessage): string {
   const scheme =
     req.socket instanceof TLSSocket && req.socket.encrypted === true ? 'https' : 'http';
   const { localAddress, localPort } = req.socket;
-  const address = net.isIPv6(localAddress) ? `[${localAddress}]` : localAddress;
+  const address = localAddress && net.isIPv6(localAddress) ? `[${localAddress}]` : localAddress;
   return `${scheme}:${address}:${localPort}`;
 }
