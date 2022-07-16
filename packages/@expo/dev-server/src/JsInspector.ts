@@ -46,7 +46,7 @@ export async function queryInspectorAppAsync(
   appId: string
 ): Promise<MetroInspectorProxyApp | null> {
   const apps = await queryAllInspectorAppsAsync(metroServerOrigin);
-  return apps.find(app => app.description === appId) ?? null;
+  return apps.find((app) => app.description === appId) ?? null;
 }
 
 export async function queryAllInspectorAppsAsync(
@@ -55,7 +55,7 @@ export async function queryAllInspectorAppsAsync(
   const resp = await fetch(`${metroServerOrigin}/json/list`);
   const apps: MetroInspectorProxyApp[] = transformApps(await resp.json());
   // Only use targets with better reloading support
-  return apps.filter(app => app.title === 'React Native Experimental (Improved Chrome Reloads)');
+  return apps.filter((app) => app.title === 'React Native Experimental (Improved Chrome Reloads)');
 }
 
 // The description of `React Native Experimental (Improved Chrome Reloads)` target is `don't use` from metro.
@@ -71,7 +71,7 @@ function transformApps(apps: MetroInspectorProxyApp[]): MetroInspectorProxyApp[]
     }
   }
 
-  return apps.map(app => {
+  return apps.map((app) => {
     if (app.description === "don't use") {
       const deviceId = app.id.split('-')[0];
       app.description = deviceIdToAppId[deviceId] ?? app.description;

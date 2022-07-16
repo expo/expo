@@ -1,4 +1,5 @@
 /// <reference types="expo__bunyan" />
+/// <reference types="ws" />
 import Log from '@expo/bunyan';
 /**
  * Extends the default `createDevServerMiddleware` and adds some Expo CLI-specific dev middleware
@@ -25,20 +26,20 @@ export declare function createDevServerMiddleware(projectRoot: string, { watchFo
     middleware: any;
     attachToServer: any;
     debuggerProxyEndpoint: {
-        server: any;
+        server: import("ws").Server<import("ws").WebSocket>;
         isDebuggerConnected: () => boolean;
     };
     messageSocketEndpoint: {
-        server: any;
+        server: import("ws").Server<import("ws").WebSocket>;
         broadcast: (method: string, params?: Record<string, any> | undefined) => void;
     };
     eventsSocketEndpoint: {
-        server: any;
+        server: import("ws").Server<import("ws").WebSocket>;
         reportEvent: (event: any) => void;
     };
     websocketEndpoints: {
-        '/debugger-proxy': any;
-        '/message': any;
-        '/events': any;
+        '/debugger-proxy': import("ws").Server<import("ws").WebSocket>;
+        '/message': import("ws").Server<import("ws").WebSocket>;
+        '/events': import("ws").Server<import("ws").WebSocket>;
     };
 };

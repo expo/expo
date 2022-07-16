@@ -23,7 +23,7 @@ export function replaceMiddlewareWith(
   sourceMiddleware: HandleFunction,
   targetMiddleware: HandleFunction
 ) {
-  const item = app.stack.find(middleware => middleware.handle === sourceMiddleware);
+  const item = app.stack.find((middleware) => middleware.handle === sourceMiddleware);
   if (item) {
     item.handle = targetMiddleware;
   }
