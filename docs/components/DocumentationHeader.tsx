@@ -233,26 +233,25 @@ const HEADER_RIGHT = css`
   gap: 12px;
 `;
 
-type SectionContainerProps = {
-  children: JSX.Element[];
+type SectionContainerProps = React.PropsWithChildren<{
   spaceBetween?: number;
   spaceAround?: number;
   style?: React.CSSProperties;
   className?: string;
-};
+}>;
 
-const SectionContainer: React.FC<React.PropsWithChildren<SectionContainerProps>> = ({
+const SectionContainer = ({
   spaceBetween = 0,
   spaceAround = 0,
   children,
   style,
   className,
-}) => {
+}: SectionContainerProps) => {
   return (
     <div
       className={className}
       style={{ display: 'flex', paddingLeft: spaceAround, paddingRight: spaceAround, ...style }}>
-      {children.map((child, i) => (
+      {React.Children.map(children, (child, i) => (
         <div key={i.toString()} style={{ paddingLeft: i === 0 ? 0 : spaceBetween }}>
           {child}
         </div>
