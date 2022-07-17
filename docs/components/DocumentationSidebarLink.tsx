@@ -74,6 +74,7 @@ export default class DocumentationSidebarLink extends React.Component<
 > {
   componentDidMount() {
     // Consistent link behavior across dev server and static export
+    // @ts-ignore
     global.__NEXT_DATA__.nextExport = true;
   }
 
