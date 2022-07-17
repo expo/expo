@@ -131,6 +131,13 @@ export function expoModulesTransforms(prefix: string): FileTransforms {
         find: new RegExp(`\b(!?${prefix})(\w+-umbrella\.h)\b`, 'g'),
         replaceWith: `${prefix}$1`,
       },
+
+      {
+        // Dynamically remove the prefix from the "moduleName" method in the view manager adapter.
+        paths: 'EXViewManagerAdapter.{m,mm}',
+        find: /return (NSStringFromClass\(self\));/g,
+        replaceWith: `NSString *className = $1;\n  return [className hasPrefix:@"${prefix}"] ? [className substringFromIndex:${prefix.length}] : className;`,
+      },
     ],
   };
 }
