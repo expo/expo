@@ -12,7 +12,7 @@
   "dependencies": {
     "expo": "~46.0.0-alpha.0",
     "expo-camera": "~12.3.0",
-    "expo-dev-client": "~1.0.0",
+    "expo-dev-client": "~1.1.0",
     "expo-error-recovery": "~3.2.0",
     "expo-face-detector": "~11.3.0",
     "expo-image": "~0.2.0",
