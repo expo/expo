@@ -41,7 +41,7 @@ ABI46_0_0EX_EXPORT_METHOD_AS(getApplicationReleaseTypeAsync, getApplicationRelea
 ABI46_0_0EX_EXPORT_METHOD_AS(getPushNotificationServiceEnvironmentAsync, getPushNotificationServiceEnvironmentAsyncWithResolver:(ABI46_0_0EXPromiseResolveBlock)resolve rejecter:(ABI46_0_0EXPromiseRejectBlock)reject)
 {
   ABI46_0_0EXProvisioningProfile *mainProvisioningProfile = [ABI46_0_0EXProvisioningProfile mainProvisioningProfile];
-  resolve([mainProvisioningProfile notificationServiceEnvironment]);
+  resolve(ABI46_0_0EXNullIfNil([mainProvisioningProfile notificationServiceEnvironment]));
 }
 
 - (NSDictionary *)constantsToExport
