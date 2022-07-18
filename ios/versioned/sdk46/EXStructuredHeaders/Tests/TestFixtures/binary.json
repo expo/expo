@@ -1,0 +1,76 @@
+[
+    {
+        "name": "basic binary",
+        "raw": [":aGVsbG8=:"],
+        "header_type": "item",
+        "expected": [
+            {"__type": "binary", "value": "NBSWY3DP"},
+            []]
+    },
+    {
+        "name": "empty binary",
+        "raw": ["::"],
+        "header_type": "item",
+        "expected": [
+            {"__type": "binary", "value": ""},
+            []]
+    },
+    {
+        "name": "bad paddding",
+        "raw": [":aGVsbG8:"],
+        "header_type": "item",
+        "expected": [
+            {"__type": "binary", "value": "NBSWY3DP"},
+            []],
+        "can_fail": true,
+        "canonical": [":aGVsbG8=:"]
+    },
+    {
+        "name": "bad end delimiter",
+        "raw": [":aGVsbG8="],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "extra whitespace",
+        "raw": [":aGVsb G8=:"],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "extra chars",
+        "raw": [":aGVsbG!8=:"],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "suffix chars",
+        "raw": [":aGVsbG8=!:"],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "non-zero pad bits",
+        "raw": [":iZ==:"],
+        "header_type": "item",
+        "expected": [
+            {"__type": "binary", "value": "RE======"},
+            []],
+        "can_fail": true,
+        "canonical": [":iQ==:"]
+    },
+    {
+        "name": "non-ASCII binary",
+        "raw": [":/+Ah:"],
+        "header_type": "item",
+        "expected": [
+            {"__type": "binary", "value": "77QCC==="},
+            []]
+    },
+    {
+        "name": "base64url binary",
+        "raw": [":_-Ah:"],
+        "header_type": "item",
+        "must_fail": true
+    }
+]

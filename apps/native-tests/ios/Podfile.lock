@@ -9,7 +9,7 @@ PODS:
     - ExpoModulesCore
   - EASClient/Tests (0.3.0):
     - ExpoModulesCore
-  - EXImage (0.2.2):
+  - EXImage (0.2.3):
     - React-Core
     - SDWebImage (~> 5.0)
     - SDWebImageSVGKitPlugin (~> 1.3)
@@ -17,21 +17,21 @@ PODS:
     - SVGKit (~> 2.1)
   - EXJSONUtils (0.3.0)
   - EXJSONUtils/Tests (0.3.0)
-  - EXManifests (0.3.0):
+  - EXManifests (0.3.1):
     - EXJSONUtils
-  - EXManifests/Tests (0.3.0):
+  - EXManifests/Tests (0.3.1):
     - EXJSONUtils
-  - Expo (46.0.0-alpha.3):
+  - Expo (46.0.0-beta.1):
     - ExpoModulesCore
-  - expo-dev-launcher (1.0.0):
+  - expo-dev-launcher (1.0.1):
     - EXManifests
-    - expo-dev-launcher/Main (= 1.0.0)
+    - expo-dev-launcher/Main (= 1.0.1)
     - expo-dev-menu
     - expo-dev-menu-interface
     - ExpoModulesCore
     - EXUpdatesInterface
     - React-Core
-  - expo-dev-launcher/Main (1.0.0):
+  - expo-dev-launcher/Main (1.0.1):
     - EXManifests
     - expo-dev-launcher/Unsafe
     - expo-dev-menu
@@ -39,7 +39,7 @@ PODS:
     - ExpoModulesCore
     - EXUpdatesInterface
     - React-Core
-  - expo-dev-launcher/Tests (1.0.0):
+  - expo-dev-launcher/Tests (1.0.1):
     - EXManifests
     - expo-dev-menu
     - expo-dev-menu-interface
@@ -50,27 +50,27 @@ PODS:
     - Quick
     - React-Core
     - React-CoreModules
-  - expo-dev-launcher/Unsafe (1.0.0):
+  - expo-dev-launcher/Unsafe (1.0.1):
     - EXManifests
     - expo-dev-menu
     - expo-dev-menu-interface
     - ExpoModulesCore
     - EXUpdatesInterface
     - React-Core
-  - expo-dev-menu (1.0.0):
-    - expo-dev-menu/Main (= 1.0.0)
+  - expo-dev-menu (1.0.1):
+    - expo-dev-menu/Main (= 1.0.1)
   - expo-dev-menu-interface (0.7.0)
   - expo-dev-menu-interface/Tests (0.7.0):
     - Nimble
     - Quick
-  - expo-dev-menu/GestureHandler (1.0.0)
-  - expo-dev-menu/Main (1.0.0):
+  - expo-dev-menu/GestureHandler (1.0.1)
+  - expo-dev-menu/Main (1.0.1):
     - EXManifests
     - expo-dev-menu-interface
     - expo-dev-menu/Vendored
     - ExpoModulesCore
     - React-Core
-  - expo-dev-menu/Reanimated (1.0.0):
+  - expo-dev-menu/Reanimated (1.0.1):
     - DoubleConversion
     - FBLazyVector
     - FBReactNativeSpec
@@ -98,15 +98,15 @@ PODS:
     - React-RCTVibration
     - ReactCommon/turbomodule/core
     - Yoga
-  - expo-dev-menu/SafeAreaView (1.0.0)
-  - expo-dev-menu/Tests (1.0.0):
+  - expo-dev-menu/SafeAreaView (1.0.1)
+  - expo-dev-menu/Tests (1.0.1):
     - Nimble
     - Quick
     - React-CoreModules
-  - expo-dev-menu/UITests (1.0.0):
+  - expo-dev-menu/UITests (1.0.1):
     - React
     - React-CoreModules
-  - expo-dev-menu/Vendored (1.0.0):
+  - expo-dev-menu/Vendored (1.0.1):
     - expo-dev-menu/GestureHandler
     - expo-dev-menu/Reanimated
     - expo-dev-menu/SafeAreaView
@@ -115,10 +115,10 @@ PODS:
   - ExpoClipboard/Tests (3.1.0):
     - ExpoModulesCore
     - ExpoModulesTestCore
-  - ExpoModulesCore (0.11.1):
+  - ExpoModulesCore (0.11.2):
     - React-Core
     - ReactCommon/turbomodule/core
-  - ExpoModulesCore/Tests (0.11.1):
+  - ExpoModulesCore/Tests (0.11.2):
     - ExpoModulesTestCore
     - React-Core
     - ReactCommon/turbomodule/core
@@ -128,7 +128,7 @@ PODS:
     - Quick (~> 5.0.0)
   - EXStructuredHeaders (2.2.1)
   - EXStructuredHeaders/Tests (2.2.1)
-  - EXUpdates (0.14.1):
+  - EXUpdates (0.14.2):
     - ASN1Decoder (~> 1.8)
     - EASClient
     - EXManifests
@@ -136,7 +136,7 @@ PODS:
     - EXStructuredHeaders
     - EXUpdatesInterface
     - React-Core
-  - EXUpdates/Tests (0.14.1):
+  - EXUpdates/Tests (0.14.2):
     - ASN1Decoder (~> 1.8)
     - EASClient
     - EXManifests
@@ -660,18 +660,18 @@ SPEC CHECKSUMS:
   CocoaLumberjack: 543c79c114dadc3b1aba95641d8738b06b05b646
   DoubleConversion: 5189b271737e1565bdce30deb4a08d647e3f5f54
   EASClient: a2581835cf9b97d0defd5d630fc6eb1bf77045e7
-  EXImage: b41d1f72f0565a9f62ab0c6dde0d4d6d3c68c226
+  EXImage: d5bf0125e80d274e7a1490ec0fc64788ab0ac886
   EXJSONUtils: 2a74b8f40f1523cc3f92af99c91aa78201737a77
-  EXManifests: 0c6134b7b6f3236a93a778c3f44ba1cfb3f9fa3d
-  Expo: b9da3af7a8040755ca090c0429fce978e5667449
-  expo-dev-launcher: fd6c935d293bf696c56c912c2b9266e0678bd7f5
-  expo-dev-menu: 950c0d2465e5595e9865603ddf626c667c0ff97a
+  EXManifests: b38dc61303f5eede990b4c8ecbfac32f82160e65
+  Expo: 36a160f35a39dbc456837fd4fc85c3ebc2f230ff
+  expo-dev-launcher: 140fb42289033cd676200087a574852caf33b068
+  expo-dev-menu: 5d4a5cc3d68ab864b919ade5b53a4f383709e4e8
   expo-dev-menu-interface: db5495dd7206992a94ce35c51391f139ae26f2b7
   ExpoClipboard: 7a5a26a3119bd1d0337ee065db3bf5d8a40e23a1
-  ExpoModulesCore: a1065bd7370013a0c1d652a587f14c1243ca499e
+  ExpoModulesCore: 27e36fe2d9bea0afd3b52abaed687218763b1882
   ExpoModulesTestCore: 2e17c4bd60381d996f5dc78b65172241e81eea59
   EXStructuredHeaders: 5d86829469399370a9fc7cb1e4391b09de87681d
-  EXUpdates: 804bd5f1ee4a74a465f90e82224bae3d6e8b077c
+  EXUpdates: c60841bd5e3a2f0b9dbc271886636098145ac0e1
   EXUpdatesInterface: 2bbc11815dfa2ec3fc02e5534c7592c6b42b5327
   FBLazyVector: 068141206af867f72854753423d0117c4bf53419
   FBReactNativeSpec: cd96f63a3968bfb774ff319e692444c844a70089

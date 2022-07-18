@@ -129,7 +129,7 @@ const renderInterface = ({
           <div css={STYLES_NESTED_SECTION_HEADER}>
             <H4>{name} Methods</H4>
           </div>
-          {interfaceMethods.map(method => renderMethod(method))}
+          {interfaceMethods.map(method => renderMethod(method, { exposeInSidebar: false }))}
         </>
       ) : undefined}
       {interfaceFields.length ? (

@@ -6,6 +6,28 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 1.1.0 — 2022-07-18
+
+### 🎉 New features
+
+- Added support for React Native 0.69.X. ([#18006](https://github.com/expo/expo/pull/18006) by [@kudo](https://github.com/kudo) & [#18182](https://github.com/expo/expo/pull/18182) by [@lukmccall](https://github.com/lukmccall))
+
+### 🐛 Bug fixes
+
+- Add support for improved missing module error messages in React Native 0.65+. ([#18064](https://github.com/expo/expo/pull/18064) by [@esamelson](https://github.com/esamelson))
+
+### 💡 Others
+
+- [Android] Get downloaded update IDs. ([#17933](https://github.com/expo/expo/pull/17933) by [@douglowder](https://github.com/douglowder))
+
+## 1.0.1 — 2022-07-14
+
+### 🎉 New features
+
 - Include extra information in the recently opened list ([#17633](https://github.com/expo/expo/pull/17633) by [@ajsmth](https://github.com/ajsmth))
 - Add debug settings for EAS Updates (admin only) ([#17842](https://github.com/expo/expo/pull/17842) by [@ajsmth](https://github.com/ajsmth))
 - Add organizations to account selector ([#18152](https://github.com/expo/expo/pull/18152) by [@ajsmth](https://github.com/ajsmth))
@@ -15,13 +37,7 @@
 
 - Fixed the application crashing when the user forces a dark mode only for the dev-client app in the system setting on Android. ([#17858](https://github.com/expo/expo/pull/17858) by [@lukmccall](https://github.com/lukmccall))
 - Fixed the error screen is sometimes empty on Android. ([#17857](https://github.com/expo/expo/pull/17857) by [@lukmccall](https://github.com/lukmccall))
-- Added support for React Native 0.69.x. ([#18006](https://github.com/expo/expo/pull/18006) by [@kudo](https://github.com/kudo))
 - Partially fixed retrieving the React Context from the Android Flipper plugin. ([#18105](https://github.com/expo/expo/pull/18105) by [@lukmccall](https://github.com/lukmccall))
-- Add support for improved missing module error messages in React Native 0.65+. ([#18064](https://github.com/expo/expo/pull/18064) by [@esamelson](https://github.com/esamelson))
-
-### 💡 Others
-
-- [Android] Get downloaded update IDs. ([#17933](https://github.com/expo/expo/pull/17933) by [@douglowder](https://github.com/douglowder))
 
 ## 1.0.0 — 2022-06-09
 

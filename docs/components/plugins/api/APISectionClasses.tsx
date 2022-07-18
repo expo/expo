@@ -116,9 +116,7 @@ const renderClass = (clx: ClassDefinitionData, hasMultipleClasses: boolean): JSX
           ) : (
             <H2>{name} Methods</H2>
           )}
-          {methods.map((method, index) =>
-            renderMethod(method, index, methods.length, undefined, undefined, !hasMultipleClasses)
-          )}
+          {methods.map(method => renderMethod(method, { exposeInSidebar: !hasMultipleClasses }))}
         </>
       )}
     </div>

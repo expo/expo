@@ -2,14 +2,19 @@
 title: First steps
 ---
 
+import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
 import { Terminal } from '~/ui/components/Snippet';
 
 In this tutorial we are going to build an app for iOS, and Android that allows you to share photos with your friends! Of course there are already plenty of apps that let you share photos from your phone, you just can't do it with _your own app_. Let's remedy that.
 
 ## Before we get started
 
-- ✅ This tutorial assumes that you have installed Expo CLI and the Expo Go app, and that you have initialized and run a simple app successfully. If this is you, please continue reading this page!
-- 🛑 If you don't have a "Hello, world!" app running on your machine yet, please refer back to the ["Installation"](/get-started/installation) and ["Create a new app"](/get-started/create-a-new-app) guides.
+- <YesIcon />{' '}
+
+  **This tutorial assumes that you have installed Expo CLI and the Expo Go app**, and that you have initialized and run a simple app successfully. If this is you, please continue reading this page!
+- <NoIcon />{' '}
+
+  **If you don't have a "Hello, world!" app running on your machine yet**, please refer back to the ["Installation"](/get-started/installation) and ["Create a new app"](/get-started/create-a-new-app) guides.
 
 ## Initialize a new app
 

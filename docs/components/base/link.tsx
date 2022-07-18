@@ -24,18 +24,18 @@ function isLinkAbsolute(href?: string) {
   return href?.includes('://');
 }
 
-const Link: React.FC<LinkProps> = props =>
+const Link: React.FC<React.PropsWithChildren<LinkProps>> = props =>
   isLinkAbsolute(props.href) ? <ExternalLink {...props} /> : <InternalLink {...props} />;
 
 export default Link;
 
-export const InternalLink: React.FC<LinkProps> = ({ href, children }) => (
+export const InternalLink: React.FC<React.PropsWithChildren<LinkProps>> = ({ href, children }) => (
   <NextLink href={href || ''} passHref>
     <a css={STYLES_EXTERNAL_LINK}>{children}</a>
   </NextLink>
 );
 
-export const ExternalLink: React.FC<LinkProps> = ({ href, children }) => (
+export const ExternalLink: React.FC<React.PropsWithChildren<LinkProps>> = ({ href, children }) => (
   <a href={href} css={STYLES_EXTERNAL_LINK} rel="noopener noreferrer">
     {children}
   </a>

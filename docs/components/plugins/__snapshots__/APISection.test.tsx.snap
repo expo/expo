@@ -282,7 +282,7 @@ for more details.
     </blockquote>
     <div>
       <div
-        class="css-10fk490-APISectionProps"
+        class="css-kdvl5-APISectionProps"
       >
         <h4
           class="  css-crowgh-H4"
@@ -1139,7 +1139,7 @@ This should come from the user field of an
       </div>
     </blockquote>
     <div
-      class="css-1hrx9ne-APISectionMethods"
+      class="css-1remai5-APISectionMethods"
     >
       <h4
         class="  css-crowgh-H4"
@@ -1326,7 +1326,7 @@ value depending on the state of the credential.
       Determine if the current device's operating system supports Apple authentication.
     </p>
     <div
-      class="css-1hrx9ne-APISectionMethods"
+      class="css-1remai5-APISectionMethods"
     >
       <h4
         class="  css-crowgh-H4"
@@ -1587,7 +1587,7 @@ value depending on the state of the credential.
 Calling this method will show the sign in modal before actually refreshing the user credentials.
     </p>
     <div
-      class="css-1hrx9ne-APISectionMethods"
+      class="css-1remai5-APISectionMethods"
     >
       <h4
         class="  css-crowgh-H4"
@@ -1904,7 +1904,7 @@ You can use
 the user, since this remains the same for apps released by the same developer.
     </p>
     <div
-      class="css-1hrx9ne-APISectionMethods"
+      class="css-1remai5-APISectionMethods"
     >
       <h4
         class="  css-crowgh-H4"
@@ -2207,7 +2207,7 @@ from using
        methods.
     </p>
     <div
-      class="css-1hrx9ne-APISectionMethods"
+      class="css-1remai5-APISectionMethods"
     >
       <h4
         class="  css-crowgh-H4"
@@ -2508,7 +2508,7 @@ sign-out operation.
       </table>
     </div>
     <div
-      class="css-1hrx9ne-APISectionMethods"
+      class="css-1remai5-APISectionMethods"
     >
       <h4
         class="  css-crowgh-H4"
@@ -2677,7 +2677,6 @@ sign-out operation.
               class="inline css-1fz3od4-InlineCode"
             >
               AppleAuthenticationCredential
-              
             </code>
           </span>
           <span
@@ -3160,7 +3159,6 @@ developers.
               class="inline css-1fz3od4-InlineCode"
             >
               AppleAuthenticationFullName
-              
             </code>
           </span>
           <span
@@ -3464,7 +3462,6 @@ may be
               class="inline css-1fz3od4-InlineCode"
             >
               AppleAuthenticationRefreshOptions
-              
             </code>
           </span>
           <span
@@ -3757,7 +3754,6 @@ OAuth 2.0 protocol
               class="inline css-1fz3od4-InlineCode"
             >
               AppleAuthenticationSignInOptions
-              
             </code>
           </span>
           <span
@@ -4067,7 +4063,6 @@ OAuth 2.0 protocol
               class="inline css-1fz3od4-InlineCode"
             >
               AppleAuthenticationSignOutOptions
-              
             </code>
           </span>
           <span
@@ -4297,7 +4292,6 @@ OAuth 2.0 protocol
               class="inline css-1fz3od4-InlineCode"
             >
               Subscription
-              
             </code>
           </span>
           <span
@@ -6652,7 +6646,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
     </p>
     <div>
       <div
-        class="css-10fk490-APISectionProps"
+        class="css-kdvl5-APISectionProps"
       >
         <h4
           class="  css-crowgh-H4"
@@ -7387,7 +7381,7 @@ Same as
 This can be used to quickly create specific permission hooks in every module.
     </p>
     <div
-      class="css-1hrx9ne-APISectionMethods"
+      class="css-1remai5-APISectionMethods"
     >
       <h4
         class="  css-crowgh-H4"
@@ -7635,7 +7629,7 @@ This can be used to quickly create specific permission hooks in every module.
       Checks user's permissions for accessing the camera.
     </p>
     <div
-      class="css-1hrx9ne-APISectionMethods"
+      class="css-1remai5-APISectionMethods"
     >
       <h4
         class="  css-crowgh-H4"
@@ -7840,7 +7834,7 @@ This can be used to quickly create specific permission hooks in every module.
       .
     </p>
     <div
-      class="css-1hrx9ne-APISectionMethods"
+      class="css-1remai5-APISectionMethods"
     >
       <h4
         class="  css-crowgh-H4"
@@ -8166,7 +8160,7 @@ the platform.
       Scan bar codes from the image given by the URL.
     </p>
     <div
-      class="css-1hrx9ne-APISectionMethods"
+      class="css-1remai5-APISectionMethods"
     >
       <h4
         class="  css-crowgh-H4"
@@ -8294,6 +8288,352 @@ code.
     >
       <span
         class="css-120d683"
+        id="interfaces"
+      />
+      <a
+        class="css-8y2kaf"
+        href="#interfaces"
+      >
+        <span
+          class="css-6n7j50"
+        >
+          Interfaces
+        </span>
+        <span
+          class="css-1eysgws"
+        >
+          <svg
+            aria-label="permalink"
+            class="anchor-icon"
+            fill="none"
+            height="24"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+              stroke="#9B9B9B"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+            <path
+              d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+              stroke="#9B9B9B"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </svg>
+        </span>
+      </a>
+    </div>
+  </h2>
+  <div
+    class="css-dox4n0-APISectionInterfaces"
+  >
+    <h3
+      class="css-6kh5nb-H3"
+      data-heading="true"
+    >
+      <div
+        class="css-79elbk"
+      >
+        <span
+          class="css-120d683"
+          id="permissionresponse"
+        />
+        <a
+          class="css-8y2kaf"
+          href="#permissionresponse"
+        >
+          <span
+            class="css-6n7j50"
+          >
+            <code
+              class="inline css-1fz3od4-InlineCode"
+            >
+              PermissionResponse
+            </code>
+          </span>
+          <span
+            class="css-1eysgws"
+          >
+            <svg
+              aria-label="permalink"
+              class="anchor-icon"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </span>
+        </a>
+      </div>
+    </h3>
+    <p
+      class="css-1bjvyhe-P"
+      data-text="true"
+    >
+      An object obtained by 
+      <code
+        class="inline css-1fz3od4-InlineCode"
+      >
+        getPermissionsAsync
+      </code>
+       and 
+      <code
+        class="inline css-1fz3od4-InlineCode"
+      >
+        requestPermissionsAsync
+      </code>
+       functions.
+    </p>
+    <div
+      class="css-1smmlx-APISectionInterfaces"
+    >
+      <h4
+        class="  css-crowgh-H4"
+        data-components-heading="true"
+        data-heading="true"
+      >
+        <div
+          class="css-79elbk"
+        >
+          <span
+            class="css-120d683"
+            id="permissionresponse--properties"
+          />
+          <a
+            class="css-8y2kaf"
+            href="#permissionresponse--properties"
+          >
+            <span
+              class="css-6n7j50"
+            >
+              PermissionResponse
+               Properties
+            </span>
+            <span
+              class="css-1eysgws"
+            >
+              <svg
+                aria-label="permalink"
+                class="anchor-icon"
+                fill="none"
+                height="24"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                  stroke="#9B9B9B"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+                <path
+                  d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                  stroke="#9B9B9B"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+              </svg>
+            </span>
+          </a>
+        </div>
+      </h4>
+    </div>
+    <div
+      class="css-rufzkc-Table"
+    >
+      <table
+        class="css-1gg2jm1-Table"
+      >
+        <thead
+          class="css-3b8qij-TableHead"
+        >
+          <tr
+            class="css-1cjtxd5-Row"
+          >
+            <th
+              class="css-1p6k6di-HeaderCell"
+            >
+              Name
+            </th>
+            <th
+              class="css-1p6k6di-HeaderCell"
+            >
+              Type
+            </th>
+            <th
+              class="css-1p6k6di-HeaderCell"
+            >
+              Description
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            class="css-1cjtxd5-Row"
+          >
+            <td
+              class="css-1uzovlc-Cell"
+            >
+              <strong
+                class="css-1k788ud-B"
+              >
+                canAskAgain
+              </strong>
+            </td>
+            <td
+              class="css-1uzovlc-Cell"
+            >
+              <code
+                class="inline css-1fz3od4-InlineCode"
+              >
+                boolean
+              </code>
+            </td>
+            <td
+              class="css-1uzovlc-Cell"
+            >
+              <span>
+                Indicates if user can be asked again for specific permission.
+If not, one should be directed to the Settings app
+in order to enable/disable the permission.
+              </span>
+            </td>
+          </tr>
+          <tr
+            class="css-1cjtxd5-Row"
+          >
+            <td
+              class="css-1uzovlc-Cell"
+            >
+              <strong
+                class="css-1k788ud-B"
+              >
+                expires
+              </strong>
+            </td>
+            <td
+              class="css-1uzovlc-Cell"
+            >
+              <code
+                class="inline css-1fz3od4-InlineCode"
+              >
+                <a
+                  class="css-153g748-InternalLink"
+                  href="/#permissionexpiration"
+                >
+                  PermissionExpiration
+                </a>
+              </code>
+            </td>
+            <td
+              class="css-1uzovlc-Cell"
+            >
+              <span>
+                Determines time when the permission expires.
+              </span>
+            </td>
+          </tr>
+          <tr
+            class="css-1cjtxd5-Row"
+          >
+            <td
+              class="css-1uzovlc-Cell"
+            >
+              <strong
+                class="css-1k788ud-B"
+              >
+                granted
+              </strong>
+            </td>
+            <td
+              class="css-1uzovlc-Cell"
+            >
+              <code
+                class="inline css-1fz3od4-InlineCode"
+              >
+                boolean
+              </code>
+            </td>
+            <td
+              class="css-1uzovlc-Cell"
+            >
+              <span>
+                A convenience boolean that indicates if the permission is granted.
+              </span>
+            </td>
+          </tr>
+          <tr
+            class="css-1cjtxd5-Row"
+          >
+            <td
+              class="css-1uzovlc-Cell"
+            >
+              <strong
+                class="css-1k788ud-B"
+              >
+                status
+              </strong>
+            </td>
+            <td
+              class="css-1uzovlc-Cell"
+            >
+              <code
+                class="inline css-1fz3od4-InlineCode"
+              >
+                <a
+                  class="css-153g748-InternalLink"
+                  href="/#permissionstatus"
+                >
+                  PermissionStatus
+                </a>
+              </code>
+            </td>
+            <td
+              class="css-1uzovlc-Cell"
+            >
+              <span>
+                Determines the status of the permission.
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <h2
+    class="css-1azb2g5-H2"
+    data-heading="true"
+  >
+    <div
+      class="css-79elbk"
+    >
+      <span
+        class="css-120d683"
         id="types"
       />
       <a
@@ -8361,7 +8701,6 @@ code.
               class="inline css-1fz3od4-InlineCode"
             >
               BarCodeBounds
-              
             </code>
           </span>
           <span
@@ -8664,7 +9003,6 @@ code.
               class="inline css-1fz3od4-InlineCode"
             >
               BarCodeEventCallbackArguments
-              
             </code>
           </span>
           <span
@@ -8789,7 +9127,6 @@ code.
               class="inline css-1fz3od4-InlineCode"
             >
               BarCodePoint
-              
             </code>
           </span>
           <span
@@ -9086,7 +9423,6 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
               class="inline css-1fz3od4-InlineCode"
             >
               BarCodeScannerResult
-              
             </code>
           </span>
           <span
@@ -9390,7 +9726,6 @@ For some types, they will represent the area used by the scanner.
               class="inline css-1fz3od4-InlineCode"
             >
               BarCodeSize
-              
             </code>
           </span>
           <span
@@ -9597,352 +9932,6 @@ For some types, they will represent the area used by the scanner.
         .
       </span>
     </p>
-  </div>
-  <h2
-    class="css-1azb2g5-H2"
-    data-heading="true"
-  >
-    <div
-      class="css-79elbk"
-    >
-      <span
-        class="css-120d683"
-        id="interfaces"
-      />
-      <a
-        class="css-8y2kaf"
-        href="#interfaces"
-      >
-        <span
-          class="css-6n7j50"
-        >
-          Interfaces
-        </span>
-        <span
-          class="css-1eysgws"
-        >
-          <svg
-            aria-label="permalink"
-            class="anchor-icon"
-            fill="none"
-            height="24"
-            viewBox="0 0 24 24"
-            width="24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-              stroke="#9B9B9B"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-            />
-            <path
-              d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-              stroke="#9B9B9B"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-            />
-          </svg>
-        </span>
-      </a>
-    </div>
-  </h2>
-  <div
-    class="css-dox4n0-APISectionInterfaces"
-  >
-    <h3
-      class="css-6kh5nb-H3"
-      data-heading="true"
-    >
-      <div
-        class="css-79elbk"
-      >
-        <span
-          class="css-120d683"
-          id="permissionresponse"
-        />
-        <a
-          class="css-8y2kaf"
-          href="#permissionresponse"
-        >
-          <span
-            class="css-6n7j50"
-          >
-            <code
-              class="inline css-1fz3od4-InlineCode"
-            >
-              PermissionResponse
-            </code>
-          </span>
-          <span
-            class="css-1eysgws"
-          >
-            <svg
-              aria-label="permalink"
-              class="anchor-icon"
-              fill="none"
-              height="24"
-              viewBox="0 0 24 24"
-              width="24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                stroke="#9B9B9B"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-              />
-              <path
-                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                stroke="#9B9B9B"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-              />
-            </svg>
-          </span>
-        </a>
-      </div>
-    </h3>
-    <p
-      class="css-1bjvyhe-P"
-      data-text="true"
-    >
-      An object obtained by 
-      <code
-        class="inline css-1fz3od4-InlineCode"
-      >
-        getPermissionsAsync
-      </code>
-       and 
-      <code
-        class="inline css-1fz3od4-InlineCode"
-      >
-        requestPermissionsAsync
-      </code>
-       functions.
-    </p>
-    <div
-      class="css-1wqx0od-APISectionInterfaces"
-    >
-      <h4
-        class="  css-crowgh-H4"
-        data-components-heading="true"
-        data-heading="true"
-      >
-        <div
-          class="css-79elbk"
-        >
-          <span
-            class="css-120d683"
-            id="permissionresponse--properties"
-          />
-          <a
-            class="css-8y2kaf"
-            href="#permissionresponse--properties"
-          >
-            <span
-              class="css-6n7j50"
-            >
-              PermissionResponse
-               Properties
-            </span>
-            <span
-              class="css-1eysgws"
-            >
-              <svg
-                aria-label="permalink"
-                class="anchor-icon"
-                fill="none"
-                height="24"
-                viewBox="0 0 24 24"
-                width="24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-                <path
-                  d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-              </svg>
-            </span>
-          </a>
-        </div>
-      </h4>
-    </div>
-    <div
-      class="css-rufzkc-Table"
-    >
-      <table
-        class="css-1gg2jm1-Table"
-      >
-        <thead
-          class="css-3b8qij-TableHead"
-        >
-          <tr
-            class="css-1cjtxd5-Row"
-          >
-            <th
-              class="css-1p6k6di-HeaderCell"
-            >
-              Name
-            </th>
-            <th
-              class="css-1p6k6di-HeaderCell"
-            >
-              Type
-            </th>
-            <th
-              class="css-1p6k6di-HeaderCell"
-            >
-              Description
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            class="css-1cjtxd5-Row"
-          >
-            <td
-              class="css-1uzovlc-Cell"
-            >
-              <strong
-                class="css-1k788ud-B"
-              >
-                canAskAgain
-              </strong>
-            </td>
-            <td
-              class="css-1uzovlc-Cell"
-            >
-              <code
-                class="inline css-1fz3od4-InlineCode"
-              >
-                boolean
-              </code>
-            </td>
-            <td
-              class="css-1uzovlc-Cell"
-            >
-              <span>
-                Indicates if user can be asked again for specific permission.
-If not, one should be directed to the Settings app
-in order to enable/disable the permission.
-              </span>
-            </td>
-          </tr>
-          <tr
-            class="css-1cjtxd5-Row"
-          >
-            <td
-              class="css-1uzovlc-Cell"
-            >
-              <strong
-                class="css-1k788ud-B"
-              >
-                expires
-              </strong>
-            </td>
-            <td
-              class="css-1uzovlc-Cell"
-            >
-              <code
-                class="inline css-1fz3od4-InlineCode"
-              >
-                <a
-                  class="css-153g748-InternalLink"
-                  href="/#permissionexpiration"
-                >
-                  PermissionExpiration
-                </a>
-              </code>
-            </td>
-            <td
-              class="css-1uzovlc-Cell"
-            >
-              <span>
-                Determines time when the permission expires.
-              </span>
-            </td>
-          </tr>
-          <tr
-            class="css-1cjtxd5-Row"
-          >
-            <td
-              class="css-1uzovlc-Cell"
-            >
-              <strong
-                class="css-1k788ud-B"
-              >
-                granted
-              </strong>
-            </td>
-            <td
-              class="css-1uzovlc-Cell"
-            >
-              <code
-                class="inline css-1fz3od4-InlineCode"
-              >
-                boolean
-              </code>
-            </td>
-            <td
-              class="css-1uzovlc-Cell"
-            >
-              <span>
-                A convenience boolean that indicates if the permission is granted.
-              </span>
-            </td>
-          </tr>
-          <tr
-            class="css-1cjtxd5-Row"
-          >
-            <td
-              class="css-1uzovlc-Cell"
-            >
-              <strong
-                class="css-1k788ud-B"
-              >
-                status
-              </strong>
-            </td>
-            <td
-              class="css-1uzovlc-Cell"
-            >
-              <code
-                class="inline css-1fz3od4-InlineCode"
-              >
-                <a
-                  class="css-153g748-InternalLink"
-                  href="/#permissionstatus"
-                >
-                  PermissionStatus
-                </a>
-              </code>
-            </td>
-            <td
-              class="css-1uzovlc-Cell"
-            >
-              <span>
-                Determines the status of the permission.
-              </span>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
   </div>
   <h2
     class="css-1azb2g5-H2"
@@ -10403,7 +10392,7 @@ exports[`APISection expo-pedometer 1`] = `
       </div>
     </h3>
     <div
-      class="css-1hrx9ne-APISectionMethods"
+      class="css-1remai5-APISectionMethods"
     >
       <h4
         class="  css-crowgh-H4"
@@ -10675,7 +10664,7 @@ exports[`APISection expo-pedometer 1`] = `
       Get the step count between two dates.
     </p>
     <div
-      class="css-1hrx9ne-APISectionMethods"
+      class="css-1remai5-APISectionMethods"
     >
       <h4
         class="  css-crowgh-H4"
@@ -10914,7 +10903,7 @@ a start date that is more than seven days in the past returns only the available
       Returns whether the pedometer is enabled on the device.
     </p>
     <div
-      class="css-1hrx9ne-APISectionMethods"
+      class="css-1remai5-APISectionMethods"
     >
       <h4
         class="  css-crowgh-H4"
@@ -11085,7 +11074,7 @@ available on this device.
       </div>
     </h3>
     <div
-      class="css-1hrx9ne-APISectionMethods"
+      class="css-1remai5-APISectionMethods"
     >
       <h4
         class="  css-crowgh-H4"
@@ -11333,7 +11322,7 @@ provided with a single argument that is
       Subscribe to pedometer updates.
     </p>
     <div
-      class="css-1hrx9ne-APISectionMethods"
+      class="css-1remai5-APISectionMethods"
     >
       <h4
         class="  css-crowgh-H4"
@@ -11459,6 +11448,324 @@ provided with a single argument that is
     >
       <span
         class="css-120d683"
+        id="interfaces"
+      />
+      <a
+        class="css-8y2kaf"
+        href="#interfaces"
+      >
+        <span
+          class="css-6n7j50"
+        >
+          Interfaces
+        </span>
+        <span
+          class="css-1eysgws"
+        >
+          <svg
+            aria-label="permalink"
+            class="anchor-icon"
+            fill="none"
+            height="24"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+              stroke="#9B9B9B"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+            <path
+              d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+              stroke="#9B9B9B"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </svg>
+        </span>
+      </a>
+    </div>
+  </h2>
+  <div
+    class="css-dox4n0-APISectionInterfaces"
+  >
+    <h3
+      class="css-6kh5nb-H3"
+      data-heading="true"
+    >
+      <div
+        class="css-79elbk"
+      >
+        <span
+          class="css-120d683"
+          id="permissionresponse"
+        />
+        <a
+          class="css-8y2kaf"
+          href="#permissionresponse"
+        >
+          <span
+            class="css-6n7j50"
+          >
+            <code
+              class="inline css-1fz3od4-InlineCode"
+            >
+              PermissionResponse
+            </code>
+          </span>
+          <span
+            class="css-1eysgws"
+          >
+            <svg
+              aria-label="permalink"
+              class="anchor-icon"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </span>
+        </a>
+      </div>
+    </h3>
+    <div
+      class="css-1smmlx-APISectionInterfaces"
+    >
+      <h4
+        class="  css-crowgh-H4"
+        data-components-heading="true"
+        data-heading="true"
+      >
+        <div
+          class="css-79elbk"
+        >
+          <span
+            class="css-120d683"
+            id="permissionresponse--properties"
+          />
+          <a
+            class="css-8y2kaf"
+            href="#permissionresponse--properties"
+          >
+            <span
+              class="css-6n7j50"
+            >
+              PermissionResponse
+               Properties
+            </span>
+            <span
+              class="css-1eysgws"
+            >
+              <svg
+                aria-label="permalink"
+                class="anchor-icon"
+                fill="none"
+                height="24"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                  stroke="#9B9B9B"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+                <path
+                  d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                  stroke="#9B9B9B"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+              </svg>
+            </span>
+          </a>
+        </div>
+      </h4>
+    </div>
+    <div
+      class="css-rufzkc-Table"
+    >
+      <table
+        class="css-1gg2jm1-Table"
+      >
+        <thead
+          class="css-3b8qij-TableHead"
+        >
+          <tr
+            class="css-1cjtxd5-Row"
+          >
+            <th
+              class="css-1p6k6di-HeaderCell"
+            >
+              Name
+            </th>
+            <th
+              class="css-1p6k6di-HeaderCell"
+            >
+              Type
+            </th>
+            <th
+              class="css-1p6k6di-HeaderCell"
+            >
+              Description
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            class="css-1cjtxd5-Row"
+          >
+            <td
+              class="css-1uzovlc-Cell"
+            >
+              <strong
+                class="css-1k788ud-B"
+              >
+                canAskAgain
+              </strong>
+            </td>
+            <td
+              class="css-1uzovlc-Cell"
+            >
+              <code
+                class="inline css-1fz3od4-InlineCode"
+              >
+                boolean
+              </code>
+            </td>
+            <td
+              class="css-1uzovlc-Cell"
+            >
+              -
+            </td>
+          </tr>
+          <tr
+            class="css-1cjtxd5-Row"
+          >
+            <td
+              class="css-1uzovlc-Cell"
+            >
+              <strong
+                class="css-1k788ud-B"
+              >
+                expires
+              </strong>
+            </td>
+            <td
+              class="css-1uzovlc-Cell"
+            >
+              <code
+                class="inline css-1fz3od4-InlineCode"
+              >
+                <a
+                  class="css-153g748-InternalLink"
+                  href="/#permissionexpiration"
+                >
+                  PermissionExpiration
+                </a>
+              </code>
+            </td>
+            <td
+              class="css-1uzovlc-Cell"
+            >
+              -
+            </td>
+          </tr>
+          <tr
+            class="css-1cjtxd5-Row"
+          >
+            <td
+              class="css-1uzovlc-Cell"
+            >
+              <strong
+                class="css-1k788ud-B"
+              >
+                granted
+              </strong>
+            </td>
+            <td
+              class="css-1uzovlc-Cell"
+            >
+              <code
+                class="inline css-1fz3od4-InlineCode"
+              >
+                boolean
+              </code>
+            </td>
+            <td
+              class="css-1uzovlc-Cell"
+            >
+              -
+            </td>
+          </tr>
+          <tr
+            class="css-1cjtxd5-Row"
+          >
+            <td
+              class="css-1uzovlc-Cell"
+            >
+              <strong
+                class="css-1k788ud-B"
+              >
+                status
+              </strong>
+            </td>
+            <td
+              class="css-1uzovlc-Cell"
+            >
+              <code
+                class="inline css-1fz3od4-InlineCode"
+              >
+                <a
+                  class="css-153g748-InternalLink"
+                  href="/#permissionstatus"
+                >
+                  PermissionStatus
+                </a>
+              </code>
+            </td>
+            <td
+              class="css-1uzovlc-Cell"
+            >
+              -
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <h2
+    class="css-1azb2g5-H2"
+    data-heading="true"
+  >
+    <div
+      class="css-79elbk"
+    >
+      <span
+        class="css-120d683"
         id="types"
       />
       <a
@@ -11526,7 +11833,6 @@ provided with a single argument that is
               class="inline css-1fz3od4-InlineCode"
             >
               PedometerResult
-              
             </code>
           </span>
           <span
@@ -11857,7 +12163,6 @@ provided with a single argument that is
               class="inline css-1fz3od4-InlineCode"
             >
               Subscription
-              
             </code>
           </span>
           <span
@@ -11951,324 +12256,6 @@ provided with a single argument that is
               <span>
                 A method to unsubscribe the listener.
               </span>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-  <h2
-    class="css-1azb2g5-H2"
-    data-heading="true"
-  >
-    <div
-      class="css-79elbk"
-    >
-      <span
-        class="css-120d683"
-        id="interfaces"
-      />
-      <a
-        class="css-8y2kaf"
-        href="#interfaces"
-      >
-        <span
-          class="css-6n7j50"
-        >
-          Interfaces
-        </span>
-        <span
-          class="css-1eysgws"
-        >
-          <svg
-            aria-label="permalink"
-            class="anchor-icon"
-            fill="none"
-            height="24"
-            viewBox="0 0 24 24"
-            width="24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-              stroke="#9B9B9B"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-            />
-            <path
-              d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-              stroke="#9B9B9B"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-            />
-          </svg>
-        </span>
-      </a>
-    </div>
-  </h2>
-  <div
-    class="css-dox4n0-APISectionInterfaces"
-  >
-    <h3
-      class="css-6kh5nb-H3"
-      data-heading="true"
-    >
-      <div
-        class="css-79elbk"
-      >
-        <span
-          class="css-120d683"
-          id="permissionresponse"
-        />
-        <a
-          class="css-8y2kaf"
-          href="#permissionresponse"
-        >
-          <span
-            class="css-6n7j50"
-          >
-            <code
-              class="inline css-1fz3od4-InlineCode"
-            >
-              PermissionResponse
-            </code>
-          </span>
-          <span
-            class="css-1eysgws"
-          >
-            <svg
-              aria-label="permalink"
-              class="anchor-icon"
-              fill="none"
-              height="24"
-              viewBox="0 0 24 24"
-              width="24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                stroke="#9B9B9B"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-              />
-              <path
-                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                stroke="#9B9B9B"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-              />
-            </svg>
-          </span>
-        </a>
-      </div>
-    </h3>
-    <div
-      class="css-1wqx0od-APISectionInterfaces"
-    >
-      <h4
-        class="  css-crowgh-H4"
-        data-components-heading="true"
-        data-heading="true"
-      >
-        <div
-          class="css-79elbk"
-        >
-          <span
-            class="css-120d683"
-            id="permissionresponse--properties"
-          />
-          <a
-            class="css-8y2kaf"
-            href="#permissionresponse--properties"
-          >
-            <span
-              class="css-6n7j50"
-            >
-              PermissionResponse
-               Properties
-            </span>
-            <span
-              class="css-1eysgws"
-            >
-              <svg
-                aria-label="permalink"
-                class="anchor-icon"
-                fill="none"
-                height="24"
-                viewBox="0 0 24 24"
-                width="24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-                <path
-                  d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-              </svg>
-            </span>
-          </a>
-        </div>
-      </h4>
-    </div>
-    <div
-      class="css-rufzkc-Table"
-    >
-      <table
-        class="css-1gg2jm1-Table"
-      >
-        <thead
-          class="css-3b8qij-TableHead"
-        >
-          <tr
-            class="css-1cjtxd5-Row"
-          >
-            <th
-              class="css-1p6k6di-HeaderCell"
-            >
-              Name
-            </th>
-            <th
-              class="css-1p6k6di-HeaderCell"
-            >
-              Type
-            </th>
-            <th
-              class="css-1p6k6di-HeaderCell"
-            >
-              Description
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            class="css-1cjtxd5-Row"
-          >
-            <td
-              class="css-1uzovlc-Cell"
-            >
-              <strong
-                class="css-1k788ud-B"
-              >
-                canAskAgain
-              </strong>
-            </td>
-            <td
-              class="css-1uzovlc-Cell"
-            >
-              <code
-                class="inline css-1fz3od4-InlineCode"
-              >
-                boolean
-              </code>
-            </td>
-            <td
-              class="css-1uzovlc-Cell"
-            >
-              -
-            </td>
-          </tr>
-          <tr
-            class="css-1cjtxd5-Row"
-          >
-            <td
-              class="css-1uzovlc-Cell"
-            >
-              <strong
-                class="css-1k788ud-B"
-              >
-                expires
-              </strong>
-            </td>
-            <td
-              class="css-1uzovlc-Cell"
-            >
-              <code
-                class="inline css-1fz3od4-InlineCode"
-              >
-                <a
-                  class="css-153g748-InternalLink"
-                  href="/#permissionexpiration"
-                >
-                  PermissionExpiration
-                </a>
-              </code>
-            </td>
-            <td
-              class="css-1uzovlc-Cell"
-            >
-              -
-            </td>
-          </tr>
-          <tr
-            class="css-1cjtxd5-Row"
-          >
-            <td
-              class="css-1uzovlc-Cell"
-            >
-              <strong
-                class="css-1k788ud-B"
-              >
-                granted
-              </strong>
-            </td>
-            <td
-              class="css-1uzovlc-Cell"
-            >
-              <code
-                class="inline css-1fz3od4-InlineCode"
-              >
-                boolean
-              </code>
-            </td>
-            <td
-              class="css-1uzovlc-Cell"
-            >
-              -
-            </td>
-          </tr>
-          <tr
-            class="css-1cjtxd5-Row"
-          >
-            <td
-              class="css-1uzovlc-Cell"
-            >
-              <strong
-                class="css-1k788ud-B"
-              >
-                status
-              </strong>
-            </td>
-            <td
-              class="css-1uzovlc-Cell"
-            >
-              <code
-                class="inline css-1fz3od4-InlineCode"
-              >
-                <a
-                  class="css-153g748-InternalLink"
-                  href="/#permissionstatus"
-                >
-                  PermissionStatus
-                </a>
-              </code>
-            </td>
-            <td
-              class="css-1uzovlc-Cell"
-            >
-              -
             </td>
           </tr>
         </tbody>
