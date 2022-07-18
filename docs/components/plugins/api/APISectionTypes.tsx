@@ -128,7 +128,9 @@ const renderType = ({
           {type.type === 'intersection' ? (
             <P>
               <InlineCode>
-                {type.types.filter(type => type.type === 'reference').map(resolveTypeName)}
+                {type.types
+                  .filter(type => type.type === 'reference')
+                  .map(validType => resolveTypeName(validType))}
               </InlineCode>{' '}
               extended by:
             </P>
