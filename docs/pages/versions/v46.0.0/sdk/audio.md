@@ -187,3 +187,7 @@ import { Audio } from 'expo-av';
 ```
 
 <APISection packageName="expo-audio" apiName="Audio" />
+
+## Unified API
+
+The rest of the API on the `Sound.Audio` is the same as the API for `Video` component `ref` - see the [AV documentation](av/#playback) for further information.

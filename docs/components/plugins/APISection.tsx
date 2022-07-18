@@ -177,8 +177,8 @@ const renderAPI = (
           apiName={apiName}
           header="Event Subscriptions"
         />
-        <APISectionTypes data={types} />
         <APISectionInterfaces data={interfaces} />
+        <APISectionTypes data={types} />
         <APISectionEnums data={enums} />
       </>
     );

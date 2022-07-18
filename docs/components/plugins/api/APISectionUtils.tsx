@@ -124,9 +124,9 @@ const replaceableTypes: Partial<Record<string, string>> = {
 };
 
 const hardcodedTypeLinks: Record<string, string> = {
-  AVPlaybackSource: '/versions/latest/sdk/av/#playback-api',
-  AVPlaybackStatus: '/versions/latest/sdk/av/#playback-status',
-  AVPlaybackStatusToSet: '/versions/latest/sdk/av/#default-initial--avplaybackstatustoset',
+  AVPlaybackSource: '/versions/latest/sdk/av/#avplaybacksource',
+  AVPlaybackStatus: '/versions/latest/sdk/av/#avplaybackstatus',
+  AVPlaybackStatusToSet: '/versions/latest/sdk/av/#avplaybackstatustoset',
   Date: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date',
   Element: 'https://www.typescriptlang.org/docs/handbook/jsx.html#function-component',
   Error: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error',
@@ -158,27 +158,37 @@ const renderWithLink = (name: string, type?: string) => {
 };
 
 const renderUnion = (types: TypeDefinitionData[]) =>
-  types.map(resolveTypeName).map((valueToRender, index) => (
-    <span key={`union-type-${index}`}>
-      {valueToRender}
-      {index + 1 !== types.length && ' | '}
-    </span>
-  ));
+  types
+    .map(type => resolveTypeName(type))
+    .map((valueToRender, index) => (
+      <span key={`union-type-${index}`}>
+        {valueToRender}
+        {index + 1 !== types.length && ' | '}
+      </span>
+    ));
 
-export const resolveTypeName = ({
-  elements,
-  elementType,
-  name,
-  type,
-  types,
-  typeArguments,
-  declaration,
-  value,
-  queryType,
-  operator,
-  objectType,
-  indexType,
-}: TypeDefinitionData): string | JSX.Element | (string | JSX.Element)[] => {
+export const resolveTypeName = (
+  typeDefinition: TypeDefinitionData
+): string | JSX.Element | (string | JSX.Element)[] => {
+  if (!typeDefinition) {
+    return 'undefined';
+  }
+
+  const {
+    elements,
+    elementType,
+    name,
+    type,
+    types,
+    typeArguments,
+    declaration,
+    value,
+    queryType,
+    operator,
+    objectType,
+    indexType,
+  } = typeDefinition;
+
   try {
     if (name) {
       if (type === 'reference') {
@@ -269,7 +279,8 @@ export const resolveTypeName = ({
           {'{ '}
           {declaration?.children.map((child: PropData, i) => (
             <span key={`reflection-${name}-${i}`}>
-              {child.name + ': ' + resolveTypeName(child.type)}
+              {child.name + ': '}
+              {resolveTypeName(child.type)}
               {i + 1 !== declaration?.children?.length ? ', ' : null}
             </span>
           ))}
@@ -555,7 +566,9 @@ export const STYLES_NESTED_SECTION_HEADER = css({
 
   h4: {
     ...typography.fontSizes[16],
+    fontFamily: typography.fontFaces.medium,
     marginBottom: 0,
+    color: theme.text.secondary,
   },
 });
 
