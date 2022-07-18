@@ -5,7 +5,7 @@ maxHeadingDepth: 4
 
 import { Terminal } from '~/ui/components/Snippet';
 
-Expo CLI is the primary command-line interface between a developer and Expo tools. It is used for a variety of tasks, such as:
+Expo CLI is a command-line interface between a developer and Expo tools. It is used for a variety of tasks, such as:
 
 - To run a project's [development server](/guides/how-expo-works/#expo-development-server), view logs, open the app in a simulator, etc., during the development phase of an app
 - Logging into your Expo account
