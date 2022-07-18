@@ -1897,9 +1897,9 @@ PODS:
     - ExpoModulesCore
   - EXAppleAuthentication (4.3.0):
     - ExpoModulesCore
-  - EXApplication (4.2.0):
+  - EXApplication (4.2.1):
     - ExpoModulesCore
-  - EXAV (12.0.1):
+  - EXAV (12.0.2):
     - ExpoModulesCore
     - React-runtimeexecutor
     - ReactCommon
@@ -1975,7 +1975,7 @@ PODS:
     - ExpoModulesCore
   - EXPermissions (13.2.0):
     - ExpoModulesCore
-  - Expo (46.0.0-beta.1):
+  - Expo (46.0.0-beta.2):
     - ExpoModulesCore
   - ExpoCellular (4.3.0):
     - ExpoModulesCore
@@ -1998,7 +1998,7 @@ PODS:
     - ExpoModulesCore
   - ExpoMailComposer (11.3.0):
     - ExpoModulesCore
-  - ExpoModulesCore (0.11.2):
+  - ExpoModulesCore (0.11.3):
     - React-Core
     - ReactCommon/turbomodule/core
   - ExpoModulesTestCore (0.9.0):
@@ -4358,8 +4358,8 @@ SPEC CHECKSUMS:
   DoubleConversion: 5189b271737e1565bdce30deb4a08d647e3f5f54
   EASClient: a2581835cf9b97d0defd5d630fc6eb1bf77045e7
   EXAppleAuthentication: b9e9d8fa9b0cc5277b2121eb809cf0f57c2496a7
-  EXApplication: a3415586288f8cbabbabbff72f3cff7fd526cd74
-  EXAV: 1ee1d409910d958695d0757a78e60282c6253ddf
+  EXApplication: 31dc4d571e6bc5c4b2a280244d74237669e7baab
+  EXAV: 3aa2d849d691bb71751bbeefc1ed58d1a5d74f36
   EXBackgroundFetch: 6e0952481a966c4c0580009a7e5d0f95cb531373
   EXBarCodeScanner: 557c131b375dc861595867eece49a619bfd076dd
   EXBattery: f81f2ece048150431f12792abb552dcba8794364
@@ -4389,7 +4389,7 @@ SPEC CHECKSUMS:
   EXNetwork: cba9570f90f4f27ce938afd57810b484febf1fab
   EXNotifications: 8df33b5e99f125ee729ef04c9c67ae60906833e8
   EXPermissions: 3dbb869e7f96a5711314f73d48ddc2f28009a7f6
-  Expo: 36a160f35a39dbc456837fd4fc85c3ebc2f230ff
+  Expo: 07c19c114b08c8f1510ea5ba15bcf429021d3877
   ExpoCellular: 23bb55684199be008505ac08b79140b6a81a9e81
   ExpoClipboard: 7a5a26a3119bd1d0337ee065db3bf5d8a40e23a1
   ExpoCrypto: e534314db0e1a17ae12b5140d529bd0c5efcbc6a
@@ -4400,7 +4400,7 @@ SPEC CHECKSUMS:
   ExpoLinearGradient: 1a3af07c6dab3c612967a294836df9ae717431df
   ExpoLocalization: 63204f4b9d4f653469d266332ceaa6c6ac8a305d
   ExpoMailComposer: 49d37f2c7b0da7e7e4a0d1371c55b3c8302178cd
-  ExpoModulesCore: 27e36fe2d9bea0afd3b52abaed687218763b1882
+  ExpoModulesCore: 8303cc952788be09fc6eab62815d257016ae6dec
   ExpoModulesTestCore: 2e17c4bd60381d996f5dc78b65172241e81eea59
   ExpoRandom: f9f1faa299a40733867f344d6b7bfa2d1f4ab04d
   ExpoSystemUI: 9f550a8055e315f7b0c4da208de27e45fe7da0fb
