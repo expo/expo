@@ -139,7 +139,7 @@ public class Logger {
     }
     let endTime = DispatchTime.now()
     let diff = Double(endTime.uptimeNanoseconds - startTime.uptimeNanoseconds) / 1_000_000
-    log(type: .timer, "Timer '\(id)' has finished in: \(diff) seconds")
+    log(type: .timer, "Timer '\(id)' has finished in: \(diff) ms")
     timers.removeValue(forKey: id)
   }
 
@@ -183,11 +183,11 @@ public class Logger {
   }
 }
 
-fileprivate func reformatStackSymbol(_ symbol: String) -> String {
+private func reformatStackSymbol(_ symbol: String) -> String {
   return symbol.replacingOccurrences(of: #"^\d+\s+"#, with: "", options: .regularExpression)
 }
 
-fileprivate func describe(value: Any) -> String {
+private func describe(value: Any) -> String {
   if let value = value as? String {
     return value
   }
