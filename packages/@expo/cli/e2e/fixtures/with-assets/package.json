@@ -5,7 +5,7 @@
     "react": "18.0.0",
     "react-native": "0.69.1",
     "react-dom": "18.0.0",
-    "react-native-web": "~0.18.1"
+    "react-native-web": "~0.18.6"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9"
