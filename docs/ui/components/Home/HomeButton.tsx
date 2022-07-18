@@ -27,13 +27,13 @@ export const HomeButton = ({ children, style, href, ...rest }: ButtonProps) => (
 const iconAnimation = css(`
   & {
     svg {
-      transition: transform 300ms;
+      transition: transform 0.4s;
     }
   }
 
   &:hover {
-    svg {
-      transform: scale(1.1);
+    svg[role=img] {
+      transform: translateX(2px);
     }
   }
 `);

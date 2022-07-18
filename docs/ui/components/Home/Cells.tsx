@@ -78,7 +78,7 @@ export const CommunityGridCell = ({
   md = 6,
 }: CommunityGridCellProps) => (
   <Col css={cellWrapperStyle} md={md}>
-    <a href={link} css={[cellStyle, cellCommunityStyle, cellHoverStyle]} style={style}>
+    <a href={link} css={[cellStyle, cellCommunityStyle, cellCommunityHoverStyle]} style={style}>
       <div css={[cellCommunityIconWrapperStyle, css({ backgroundColor: iconBackground })]}>
         {icon}
       </div>
@@ -98,10 +98,10 @@ const cellWrapperStyle = css`
 
 const cellHoverStyle = css`
   & {
-    transition: box-shadow 300ms;
+    transition: box-shadow 0.4s;
 
     svg {
-      transition: transform 300ms;
+      transition: transform 0.4s;
     }
   }
 
@@ -110,6 +110,10 @@ const cellHoverStyle = css`
 
     svg {
       transform: scale(1.1);
+    }
+
+    svg[role='img'] {
+      transform: translateX(2px);
     }
   }
 `;
@@ -196,3 +200,27 @@ const cellCommunityLinkIconStyle = css({
   alignSelf: 'center',
   minWidth: iconSize.regular,
 });
+
+const cellCommunityHoverStyle = css`
+  & {
+    transition: box-shadow 0.4s;
+
+    svg {
+      transition: transform 0.4s;
+    }
+  }
+
+  &:hover {
+    box-shadow: ${shadows.tiny};
+
+    svg {
+      transform: scale(1.1);
+    }
+
+    svg[class='css-${cellCommunityLinkIconStyle.name}'] {
+      transform: translateX(2px);
+    }
+  }
+`;
+
+console.warn(cellCommunityLinkIconStyle.name)
