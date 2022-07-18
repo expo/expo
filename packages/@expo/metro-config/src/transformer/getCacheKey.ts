@@ -12,6 +12,6 @@ export const cacheKeyParts = [
 // Matches upstream
 export function getCacheKey(): string {
   const key = crypto.createHash('md5');
-  cacheKeyParts.forEach(part => key.update(part));
+  cacheKeyParts.forEach((part) => key.update(part));
   return key.digest('hex');
 }
