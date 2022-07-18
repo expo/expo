@@ -15,8 +15,11 @@ inputs:
     description: 'Expo token'
     required: true
   resourceClass:
-    description: 'Eas instance resource class'
+    description: 'EAS instance resource class'
     required: true
+  noWait:
+    description: 'Exit immediately after build is scheduled'
+    required: false
 
 outputs:
   build_id:
@@ -26,7 +29,7 @@ outputs:
 runs:
   using: 'composite'
   steps:
-    - name: Build start
+    - name: Start build
       shell: bash
       id: build_start
       run: |
@@ -40,6 +43,7 @@ runs:
         EAS_DANGEROUS_OVERRIDE_ANDROID_APPLICATION_ID: host.exp.exponent
     - name: Wait for build to finish
       shell: bash
+      if: ${{ !inputs.noWait }}
       run: |
         while true
         do

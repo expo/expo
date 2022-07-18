@@ -21,6 +21,11 @@ const mapBuildProfileToConfig: Record<string, ExpoConfig> = {
     slug: 'versioned-expo-go',
     name: 'Expo Go (versioned)',
   },
+  'versioned-client-signed-apk': {
+    ...base,
+    slug: 'versioned-expo-go',
+    name: 'Expo Go (versioned)',
+  },
   'unversioned-client': {
     ...base,
     slug: 'unversioned-expo-go',

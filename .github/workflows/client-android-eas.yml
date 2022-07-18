@@ -11,30 +11,20 @@ on:
           - versioned-client
           - unversioned-client
           - versioned-client-signed
+          - versioned-client-signed-apk
           - versioned-client-add-sdk
   schedule:
-    - cron: '20 5 * * 1,3,5' # 5:20 AM UTC time on every Monday, Wednesday and Friday
+    # 5:20 AM UTC time on every Monday, Wednesday and Friday
+    # Build a versioned client
+    - cron: '20 5 * * 1,3,5'
+    # 5:20 AM UTC time on every Monday
+    # Run versioning process for the next sdk and build a versioned client
+    - cron: '20 5 * * 1'
   pull_request:
     paths:
       - .github/workflows/client-android-eas.yml
       - apps/eas-expo-go/**
-      - secrets/**
-      - android/**
-      - fastlane/**
-      - Gemfile.lock
-      - .ruby-version
-      - yarn.lock
-  push:
-    branches: [main, sdk-*]
-    paths:
-      - .github/workflows/client-android-eas.yml
-      - apps/eas-expo-go/**
-      - secrets/**
-      - android/**
-      - fastlane/**
-      - Gemfile.lock
-      - .ruby-version
-      - yarn.lock
+
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
@@ -82,9 +72,13 @@ jobs:
         id: profile
         run: |
           DISPATCH_PROFILE="${{ github.event.inputs.buildType }}"
-          IS_VERSIONED=${{ steps.flavor.outputs.versioned }}
+          IS_VERSIONED="${{ steps.flavor.outputs.versioned }}"
           if [[ ! -z "$DISPATCH_PROFILE" ]]; then
             echo ::set-output name=profile::"$DISPATCH_PROFILE"
+          elif [[ "${{ github.event.schedule }}" == "20 5 * * 1,3,5" ]]; then
+            echo ::set-output name=profile::"versioned-client"
+          elif [[ "${{ github.event.schedule }}" == "20 5 * * 1" ]]; then
+            echo ::set-output name=profile::"versioned-client-add-sdk"
           elif [[ "$IS_VERSIONED" == "true" ]]; then
             echo ::set-output name=profile::"versioned-client"
           else
@@ -99,6 +93,7 @@ jobs:
           projectRoot: './apps/eas-expo-go'
           expoToken: ${{ secrets.EAS_BUILD_BOT_TOKEN }}
           resourceClass: large
+          noWait: ${{ github.event.schedule }}
       - name: On workflow canceled
         if: ${{ cancelled() && steps.build.outputs.build_id }}
         run: eas build:cancel ${{ steps.build.outputs.build_id }}

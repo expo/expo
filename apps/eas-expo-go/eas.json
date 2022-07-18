@@ -50,6 +50,15 @@
         "simulator": false
       }
     },
+    "versioned-client-signed-apk": {
+      "extends": "versioned-client-signed",
+      "env": {
+        "EAS_BUILD_PROFILE": "versioned-client-signed-apk"
+      },
+      "android": {
+        "gradleCommand": ":app:assembleVersionedRelease"
+      }
+    },
     "versioned-client-add-sdk": {
       "extends": "versioned-client",
       "env": {
