@@ -225,7 +225,7 @@ export function getDefaultConfig(
       resolverMainFields,
       platforms: ['ios', 'android', 'native', 'testing'],
       assetExts: metroDefaultValues.resolver.assetExts.filter(
-        assetExt => !sourceExts.includes(assetExt)
+        (assetExt) => !sourceExts.includes(assetExt)
       ),
       sourceExts,
       nodeModulesPaths,
@@ -241,7 +241,7 @@ export function getDefaultConfig(
       port: Number(process.env.RCT_METRO_PORT) || 8081,
     },
     symbolicator: {
-      customizeFrame: frame => {
+      customizeFrame: (frame) => {
         let collapse = Boolean(frame.file && INTERNAL_CALLSITES_REGEX.test(frame.file));
 
         if (!collapse) {

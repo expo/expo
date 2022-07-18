@@ -12,7 +12,7 @@ export function createModuleMatcher({
   const moduleMatchersGroup = moduleIds.join('|');
 
   const moduleMatcherId =
-    '^' + [modulePathsGroup, moduleMatchersGroup].map(value => `(?:${value})`).join('/');
+    '^' + [modulePathsGroup, moduleMatchersGroup].map((value) => `(?:${value})`).join('/');
 
   return new RegExp(moduleMatcherId);
 }

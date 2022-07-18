@@ -15,12 +15,12 @@ export function globAllPackageJsonPaths(
   linkedPackages: string[]
 ): string[] {
   return linkedPackages
-    .map(glob => {
+    .map((glob) => {
       return globSync(path.join(glob, 'package.json').replace(/\\/g, '/'), {
         cwd: workspaceProjectRoot,
         absolute: true,
         ignore: ['**/@(Carthage|Pods|node_modules)/**'],
-      }).map(pkgPath => {
+      }).map((pkgPath) => {
         try {
           JsonFile.read(pkgPath);
           return pkgPath;
@@ -32,7 +32,7 @@ export function globAllPackageJsonPaths(
     })
     .flat()
     .filter(Boolean)
-    .map(p => path.join(p as string));
+    .map((p) => path.join(p as string));
 }
 
 function getWorkspacePackagesArray({ workspaces }: any): string[] {
@@ -83,7 +83,7 @@ export function getWatchFolders(projectRoot: string): string[] {
 
   return uniqueItems([
     path.join(workspaceRoot, 'node_modules'),
-    ...packages.map(pkg => path.dirname(pkg)),
+    ...packages.map((pkg) => path.dirname(pkg)),
   ]);
 }
 
