@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Clarify that `getIosPushNotificationServiceEnvironmentAsync` returns `null` on the simulator.
+
 ## 4.2.0 — 2022-07-07
 
 _This version does not introduce any user-facing changes._
