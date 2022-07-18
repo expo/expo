@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add `EXPO_EDITOR` environment variable for overriding the `EDITOR` variable. This is used in the `expo start` Terminal UI when pressing `o`.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
