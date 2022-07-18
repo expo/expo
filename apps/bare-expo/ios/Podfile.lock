@@ -6,9 +6,9 @@ PODS:
   - DoubleConversion (1.1.6)
   - EASClient (0.3.0):
     - ExpoModulesCore
-  - EXApplication (4.2.0):
+  - EXApplication (4.2.1):
     - ExpoModulesCore
-  - EXAV (12.0.1):
+  - EXAV (12.0.2):
     - ExpoModulesCore
     - React-runtimeexecutor
     - ReactCommon
@@ -88,7 +88,7 @@ PODS:
     - ExpoModulesCore
   - EXPermissions (13.2.0):
     - ExpoModulesCore
-  - Expo (46.0.0-beta.1):
+  - Expo (46.0.0-beta.2):
     - ExpoModulesCore
   - expo-dev-client (1.1.0):
     - EXManifests
@@ -190,7 +190,7 @@ PODS:
     - ExpoModulesCore
   - ExpoMailComposer (11.3.0):
     - ExpoModulesCore
-  - ExpoModulesCore (0.11.2):
+  - ExpoModulesCore (0.11.3):
     - React-Core
     - ReactCommon/turbomodule/core
   - ExpoRandom (12.3.0):
@@ -1259,8 +1259,8 @@ SPEC CHECKSUMS:
   CocoaLumberjack: 543c79c114dadc3b1aba95641d8738b06b05b646
   DoubleConversion: 5189b271737e1565bdce30deb4a08d647e3f5f54
   EASClient: a2581835cf9b97d0defd5d630fc6eb1bf77045e7
-  EXApplication: a3415586288f8cbabbabbff72f3cff7fd526cd74
-  EXAV: 1ee1d409910d958695d0757a78e60282c6253ddf
+  EXApplication: 31dc4d571e6bc5c4b2a280244d74237669e7baab
+  EXAV: 3aa2d849d691bb71751bbeefc1ed58d1a5d74f36
   EXBackgroundFetch: 6e0952481a966c4c0580009a7e5d0f95cb531373
   EXBarCodeScanner: 557c131b375dc861595867eece49a619bfd076dd
   EXBattery: f81f2ece048150431f12792abb552dcba8794364
@@ -1291,7 +1291,7 @@ SPEC CHECKSUMS:
   EXNetwork: cba9570f90f4f27ce938afd57810b484febf1fab
   EXNotifications: 8df33b5e99f125ee729ef04c9c67ae60906833e8
   EXPermissions: 3dbb869e7f96a5711314f73d48ddc2f28009a7f6
-  Expo: 36a160f35a39dbc456837fd4fc85c3ebc2f230ff
+  Expo: 07c19c114b08c8f1510ea5ba15bcf429021d3877
   expo-dev-client: acd4d098c436a1da6f4f82d423667a99d2bfdd67
   expo-dev-launcher: b9e03e61711f7af7bf8ecdd1e746f93075658a80
   expo-dev-menu: 34863a7d20a97ba439c4b5983d83318be40e3bbc
@@ -1306,7 +1306,7 @@ SPEC CHECKSUMS:
   ExpoLinearGradient: 1a3af07c6dab3c612967a294836df9ae717431df
   ExpoLocalization: 63204f4b9d4f653469d266332ceaa6c6ac8a305d
   ExpoMailComposer: 49d37f2c7b0da7e7e4a0d1371c55b3c8302178cd
-  ExpoModulesCore: 27e36fe2d9bea0afd3b52abaed687218763b1882
+  ExpoModulesCore: 8303cc952788be09fc6eab62815d257016ae6dec
   ExpoRandom: f9f1faa299a40733867f344d6b7bfa2d1f4ab04d
   ExpoSystemUI: 9f550a8055e315f7b0c4da208de27e45fe7da0fb
   ExpoTrackingTransparency: 0a84ca31052b1d62b21afdffc43093c37c06e698

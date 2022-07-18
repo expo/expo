@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fixed unhandled promise rejection when `Video` is unmounted. ([#18281](https://github.com/expo/expo/pull/18281) by [@barthap](https://github.com/barthap))
-
 ### 💡 Others
+
+## 12.0.2 — 2022-07-18
+
+### 🐛 Bug fixes
+
+- Fixed unhandled promise rejection when `Video` is unmounted. ([#18281](https://github.com/expo/expo/pull/18281) by [@barthap](https://github.com/barthap))
 
 ## 12.0.1 — 2022-07-16
 
