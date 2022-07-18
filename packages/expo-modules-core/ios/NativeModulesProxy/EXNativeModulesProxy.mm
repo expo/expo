@@ -390,7 +390,7 @@ RCT_EXPORT_METHOD(callMethod:(NSString *)moduleName methodNameOrKey:(id)methodNa
 {
   // Hacky way to get a dictionary with `RCTComponentData` from UIManager.
   NSMutableDictionary<NSString *, RCTComponentData *> *componentDataByName = [bridge.uiManager valueForKey:@"_componentDataByName"];
-  NSString *className = NSStringFromClass(moduleClass);
+  NSString *className = [moduleClass moduleName] ?: NSStringFromClass(moduleClass);
 
   if ([moduleClass isSubclassOfClass:[RCTViewManager class]] && !componentDataByName[className]) {
     RCTComponentData *componentData = [[RCTComponentData alloc] initWithManagerClass:moduleClass bridge:bridge eventDispatcher:bridge.eventDispatcher];

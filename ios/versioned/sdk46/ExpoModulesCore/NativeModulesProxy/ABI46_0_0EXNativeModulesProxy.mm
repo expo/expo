@@ -390,7 +390,7 @@ ABI46_0_0RCT_EXPORT_METHOD(callMethod:(NSString *)moduleName methodNameOrKey:(id
 {
   // Hacky way to get a dictionary with `ABI46_0_0RCTComponentData` from UIManager.
   NSMutableDictionary<NSString *, ABI46_0_0RCTComponentData *> *componentDataByName = [bridge.uiManager valueForKey:@"_componentDataByName"];
-  NSString *className = NSStringFromClass(moduleClass);
+  NSString *className = [moduleClass moduleName] ?: NSStringFromClass(moduleClass);
 
   if ([moduleClass isSubclassOfClass:[ABI46_0_0RCTViewManager class]] && !componentDataByName[className]) {
     ABI46_0_0RCTComponentData *componentData = [[ABI46_0_0RCTComponentData alloc] initWithManagerClass:moduleClass bridge:bridge eventDispatcher:bridge.eventDispatcher];
