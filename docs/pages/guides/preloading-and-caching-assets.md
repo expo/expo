@@ -28,7 +28,7 @@ Assets are cached differently depending on where they are stored and how they ar
 
 To download and cache the images saved to the local filesystem, use [`Asset.fromModule(image).downloadAsync()`](/versions/latest/sdk/asset). For images with remote URLs, use `Image.prefetch(image)`.
 
-Fonts are pre-loaded using `Font.loadAsync(font)`. The `font` argument in this method is an object such as: `{OpenSans: require('./assets/fonts/OpenSans.ttf')}`. `@expo/vector-icons` provides a helpful shortcut for this object as `FontAwesome.font` in the example below:
+Fonts are pre-loaded using `Font.loadAsync(font)`. The `font` argument in this method is an object such as: `{OpenSans: require('./assets/fonts/OpenSans.ttf')}`. `@expo/vector-icons` provides a helpful shortcut for this object as `FontAwesome.font` in the follwing example:
 
 <SnackInline
 label="Pre-loading and Caching Assets"
