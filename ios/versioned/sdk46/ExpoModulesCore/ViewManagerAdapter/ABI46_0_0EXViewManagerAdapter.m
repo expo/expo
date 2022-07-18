@@ -23,7 +23,8 @@
 
 + (NSString *)moduleName
 {
-  return NSStringFromClass(self);
+  NSString *className = NSStringFromClass(self);
+  return [className hasPrefix:@"ABI46_0_0"] ? [className substringFromIndex:9] : className;
 }
 
 - (UIView *)view
