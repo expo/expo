@@ -11,6 +11,7 @@ on:
           - versioned-client
           - unversioned-client
           - versioned-client-signed
+          - versioned-client-add-sdk
   schedule:
     - cron: '20 5 * * 1,3,5' # 5:20 AM UTC time on every Monday, Wednesday and Friday
   pull_request:
@@ -72,12 +73,34 @@ jobs:
         run: yarn install --frozen-lockfile
       - name: Install eas-cli
         run: npm install -g eas-cli
+      - name: 🔎 Check which flavor to build
+        id: flavor
+        uses: dorny/paths-filter@v2
+        with:
+          # this action fails when base is not set on schedule event
+          base: ${{ github.ref }}
+          filters: |
+            versioned:
+              - ios/versioned-react-native/**
+              - ios/Exponent/Versioned/**
+      - name: Resolve profile
+        id: profile
+        run: |
+          DISPATCH_PROFILE="${{ github.event.inputs.buildType }}"
+          IS_VERSIONED=${{ steps.flavor.outputs.versioned }}
+          if [[ ! -z "$DISPATCH_PROFILE" ]]; then
+            echo ::set-output name=profile::"$DISPATCH_PROFILE"
+          elif [[ "$IS_VERSIONED" == "true" ]]; then
+            echo ::set-output name=profile::"versioned-client"
+          else
+            echo ::set-output name=profile::"unversioned-client"
+          fi
       - name: Build
         uses: ./.github/actions/eas-build
         id: build
         with:
           platform: 'ios'
-          profile: ${{ github.event.inputs.buildType || 'unversioned-client' }}
+          profile: ${{ steps.profile.outputs.profile  }}
           projectRoot: './apps/eas-expo-go'
           expoToken: ${{ secrets.EAS_BUILD_BOT_TOKEN }}
           resourceClass: default
@@ -87,4 +110,4 @@ jobs:
         working-directory: ./apps/eas-expo-go
         env:
           EXPO_TOKEN: ${{ secrets.EAS_BUILD_BOT_TOKEN }}
-          EAS_BUILD_PROFILE: ${{ github.event.inputs.buildType || 'unversioned-client' }}
+          EAS_BUILD_PROFILE: ${{ steps.profile.outputs.profile  }}
