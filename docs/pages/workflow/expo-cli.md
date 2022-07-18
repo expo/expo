@@ -9,7 +9,7 @@ Expo CLI is the primary command-line interface between a developer and Expo tool
 
 - To run a project's [development server](/guides/how-expo-works/#expo-development-server), view logs, open the app in a simulator, etc., during the development phase of an app
 - [Publishing](publishing) an app's JavaScript and other assets and managing to release them as updates
-- [Building binaries](/distribution/building-standalone-apps) (`.aab` and `.ipa` files) and [uploading them to app stores](/distribution/uploading-apps)
+- [Building binaries](/distribution/building-standalone-apps) (`.aab`, `.apk`, and `.ipa` files) and [uploading them to app stores](/distribution/uploading-apps)
 - Managing Apple Credentials and Google Keystores
 
 > With **Expo SDK 46**, we are migrating to a new suite of tooling that is versioned with the `expo` package. Use `npx create-expo-app` to initialize a new Expo project instead of `expo init`.
