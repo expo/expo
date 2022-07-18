@@ -4,6 +4,7 @@ title: Installing Expo modules
 
 import InstallSection from '~/components/plugins/InstallSection';
 import ConfigurationDiff from '~/components/plugins/ConfigurationDiff';
+import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
 
 > Are you migrating from `react-native-unimodules`? If yes, please refer to [the Expo modules migration guide](https://expo.fyi/expo-modules-migration).
 
@@ -21,8 +22,13 @@ Aside from initializing a new project with `expo-cli`, the easiest way to get up
 
 <InstallSection packageName="expo" cmd={["# Install and configure the expo package automatically", "npx install-expo-modules@latest"]} hideBareInstructions />
 
-- ✅ **When the command succeeds**, you will be able to add any Expo module in your app! Proceed to [Usage](#usage) for more information.
-- ❌ **If the command fails**, please follow the manual installation instructions. Updating code programmatically can be tricky, and if your project deviates significantly from a default React Native project, then you need to perform manual installation and adapt the instructions here to your codebase.
+- <YesIcon small />{' '}
+
+  **When the command succeeds**, you will be able to add any Expo module in your app! Proceed to [Usage](#usage) for more information.
+
+- <NoIcon small />{' '}
+
+  **If the command fails**, please follow the manual installation instructions. Updating code programmatically can be tricky, and if your project deviates significantly from a default React Native project, then you need to perform manual installation and adapt the instructions here to your codebase.
 
 ## Manual installation
 

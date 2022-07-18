@@ -3,6 +3,8 @@ title: Workflows
 sidebar_title: Workflows
 ---
 
+import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
+
 The two approaches to building applications with Expo tools are called the "managed" and "bare" workflows.
 
 - With the _managed workflow_ you only write JavaScript / TypeScript and Expo tools and services take care of everything else for you.
@@ -30,16 +32,16 @@ In the bare workflow the developer has complete control, along with the complexi
 
 ## Workflow comparison
 
-| Feature                                                      | Managed workflow | Bare workflow                                                      |
-| ------------------------------------------------------------ | ---------------- | ------------------------------------------------------------------ |
-| Develop apps with **only** JavaScript/TypeScript             | ✅               |                                                                    |
-| Use Expo build service to create your iOS and Android builds | ✅               | ✅ ([with EAS Build](/build/introduction.md))                      |
-| Use Expo's push notification service                         | ✅               | ✅                                                                 |
-| Use Expo's updates features                                  | ✅               | ✅                                                                 |
-| Develop with the Expo Go app                                 | ✅               | ✅ (if you follow [these guidelines](../bare/using-expo-client.md)) |
-| Access to Expo SDK                                           | ✅               | ✅                                                                 |
-| Add custom native code and manage native dependencies        | ✅               | ✅                                                                 |
-| Develop in Xcode and Android Studio                          |                  | ✅                                                                 |
+| Feature                                                      | Managed workflow | Bare workflow                                                                |
+| ------------------------------------------------------------ |------------------|------------------------------------------------------------------------------|
+| Develop apps with **only** JavaScript/TypeScript             | <YesIcon />      | <NoIcon />                                                                   |
+| Use Expo build service to create your iOS and Android builds | <YesIcon />      | <YesIcon /> ([with EAS Build](/build/introduction.md))                       |
+| Use Expo's push notification service                         | <YesIcon />      | <YesIcon />                                                                  |
+| Use Expo's updates features                                  | <YesIcon />      | <YesIcon />                                                                  |
+| Develop with the Expo Go app                                 | <YesIcon />      | <YesIcon /> (if you follow [these guidelines](../bare/using-expo-client.md)) |
+| Access to Expo SDK                                           | <YesIcon />      | <YesIcon />                                                                  |
+| Add custom native code and manage native dependencies        | <YesIcon />      | <YesIcon />                                                                  |
+| Develop in Xcode and Android Studio                          | <NoIcon />       | <YesIcon />                                                                  |
 
 ## Which workflow is right for me?
 
