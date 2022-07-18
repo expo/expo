@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- Clarify that `getIosPushNotificationServiceEnvironmentAsync` returns `null` on the simulator.
+- Clarify that `getIosPushNotificationServiceEnvironmentAsync` returns `null` on the simulator. ([#18282](https://github.com/expo/expo/pull/18282) by [@tsapeta](https://github.com/tsapeta))
 
 ## 4.2.0 — 2022-07-07
 
