@@ -170,8 +170,15 @@ class Video extends React.Component<VideoProps, VideoState> implements Playback 
   };
 
   componentWillUnmount() {
-    // Auto unload video to perform necessary cleanup safely
-    this.unloadAsync();
+    try {
+      // Auto unload video to perform necessary cleanup safely
+      this.unloadAsync();
+    } catch {
+      // Ignored. Sometimes the unloadAsync code is executed when video is already unloaded.
+      // In such cases, it throws:
+      // "[Unhandled promise rejection: Error: Invalid view returned from registry,
+      //  expecting EXVideo, got: (null)]"
+    }
   }
 
   /**
