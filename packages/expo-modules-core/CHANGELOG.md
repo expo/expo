@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- Logger changes. ([#18271](https://github.com/expo/expo/pull/18271) by [@douglowder](https://github.com/douglowder))
+- Changed access levels in the Logger and fixed the timer to log milliseconds instead of seconds. ([#18271](https://github.com/expo/expo/pull/18271) by [@douglowder](https://github.com/douglowder))
 
 ### ⚠️ Notices
 
