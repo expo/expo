@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+- Changed access levels in the Logger and fixed the timer to log milliseconds instead of seconds. ([#18271](https://github.com/expo/expo/pull/18271) by [@douglowder](https://github.com/douglowder))
+
+### ⚠️ Notices
+
 ## 0.11.2 — 2022-07-16
 
 ### 🐛 Bug fixes
