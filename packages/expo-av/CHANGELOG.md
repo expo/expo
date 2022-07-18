@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fixed unhandled promise rejection when `Video` is unmounted.
+- Fixed unhandled promise rejection when `Video` is unmounted. ([#18281](https://github.com/expo/expo/pull/18281) by [@barthap](https://github.com/barthap))
 
 ### 💡 Others
 
