@@ -67,6 +67,16 @@ function _resolveFrom() {
   return data;
 }
 
+function _url() {
+  const data = require("url");
+
+  _url = function () {
+    return data;
+  };
+
+  return data;
+}
+
 function _getModulesPaths() {
   const data = require("./getModulesPaths");
 
@@ -116,6 +126,16 @@ const INTERNAL_CALLSITES_REGEX = new RegExp(['/Libraries/Renderer/implementation
 'node_modules/@babel/runtime/.+\\.js$', // Block native code invocations
 `\\[native code\\]`].join('|'));
 exports.INTERNAL_CALLSITES_REGEX = INTERNAL_CALLSITES_REGEX;
+
+function isUrl(value) {
+  try {
+    // eslint-disable-next-line no-new
+    new (_url().URL)(value);
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 function readIsLegacyImportsEnabled(projectRoot) {
   const config = (0, _config().getConfig)(projectRoot, {
@@ -281,6 +301,16 @@ function getDefaultConfig(projectRoot, options = {}) {
     },
     symbolicator: {
       customizeFrame: frame => {
+        if (frame.file && isUrl(frame.file)) {
+          return { ...frame,
+            // HACK: This prevents Metro from attempting to read the invalid file URL it sent us.
+            lineNumber: null,
+            column: null,
+            // This prevents the invalid frame from being shown by default.
+            collapse: true
+          };
+        }
+
         let collapse = Boolean(frame.file && INTERNAL_CALLSITES_REGEX.test(frame.file));
 
         if (!collapse) {
