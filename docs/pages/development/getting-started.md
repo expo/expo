@@ -69,7 +69,7 @@ Instead, all you need to do to start developing is to run:
 
 and scanning the resulting QR code with your system camera or QR code reader (if you want to develop against a physical device)
 
-or pressing the "a" or "i" keys (to open the app in your Android or iPhone emulator or simulator respectively).
+or pressing the <kbd>a</kbd> or <kbd>i</kbd> keys (to open the app in your Android or iPhone emulator or simulator respectively).
 
 Now make some changes to your project code and see them reflected on your device!
 
@@ -181,4 +181,4 @@ const styles = StyleSheet.create({
 
 ## Debugging your app
 
-When you need to, you can access the menu by pressing Cmd-d in Expo CLI or by shaking your phone or tablet. Here you'll be able to access all of the functions of your development build, access any debugging functionality you need, or switch to a different version of your app.
+When you need to, you can access the menu by pressing <kbd>⌘</kbd>+<kbd>d</kbd>/<kbd>ctrl</kbd>+<kbd>d</kbd> in Expo CLI or by shaking your phone or tablet. Here you'll be able to access all of the functions of your development build, access any debugging functionality you need, or switch to a different version of your app.
