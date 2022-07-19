@@ -4,11 +4,13 @@ import { HeadingManager } from '~/common/headingManager';
 
 export const HeadingsContext = React.createContext<HeadingManager | null>(null);
 
+export type HeadingManagerProps = { headingManager: HeadingManager };
+
 const withHeadingManager =
   <P extends object>(
-    Component: React.ComponentType<React.PropsWithChildren<P & { headingManager: HeadingManager }>>
+    Component: React.ComponentType<React.PropsWithChildren<P & HeadingManagerProps>>
   ) =>
-  (props: P) =>
+  (props: React.PropsWithChildren<P>) =>
     (
       <HeadingsContext.Consumer>
         {headingManager => <Component headingManager={headingManager!} {...props} />}

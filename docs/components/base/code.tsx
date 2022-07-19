@@ -213,10 +213,9 @@ const remapLanguages: Record<string, string> = {
   rb: 'ruby',
 };
 
-export const InlineCode: React.FC<React.PropsWithChildren<{ customCss?: SerializedStyles }>> = ({
-  children,
-  customCss,
-}) => (
+type InlineCodeProps = React.PropsWithChildren<{ customCss?: SerializedStyles }>;
+
+export const InlineCode = ({ children, customCss }: InlineCodeProps) => (
   <code css={[STYLES_INLINE_CODE, customCss]} className="inline">
     {children}
   </code>

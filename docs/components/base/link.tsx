@@ -3,9 +3,9 @@ import { theme } from '@expo/styleguide';
 import NextLink from 'next/link';
 import * as React from 'react';
 
-type LinkProps = {
+type LinkProps = React.PropsWithChildren<{
   href?: string;
-};
+}>;
 
 const STYLES_EXTERNAL_LINK = css`
   color: ${theme.link.default};
@@ -24,18 +24,18 @@ function isLinkAbsolute(href?: string) {
   return href?.includes('://');
 }
 
-const Link: React.FC<React.PropsWithChildren<LinkProps>> = props =>
+const Link = (props: LinkProps) =>
   isLinkAbsolute(props.href) ? <ExternalLink {...props} /> : <InternalLink {...props} />;
 
 export default Link;
 
-export const InternalLink: React.FC<React.PropsWithChildren<LinkProps>> = ({ href, children }) => (
+export const InternalLink = ({ href, children }: LinkProps) => (
   <NextLink href={href || ''} passHref>
     <a css={STYLES_EXTERNAL_LINK}>{children}</a>
   </NextLink>
 );
 
-export const ExternalLink: React.FC<React.PropsWithChildren<LinkProps>> = ({ href, children }) => (
+export const ExternalLink = ({ href, children }: LinkProps) => (
   <a href={href} css={STYLES_EXTERNAL_LINK} rel="noopener noreferrer">
     {children}
   </a>

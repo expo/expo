@@ -51,7 +51,7 @@ type Props = {
   style?: React.CSSProperties;
 };
 
-const VersionSelector: React.FC<React.PropsWithChildren<Props>> = ({ style }) => {
+const VersionSelector = ({ style }: Props) => {
   const { version, hasVersion, setVersion } = usePageApiVersion();
 
   if (!hasVersion) {
