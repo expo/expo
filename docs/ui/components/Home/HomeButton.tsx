@@ -18,22 +18,7 @@ export const HomeButton = ({ children, style, href, ...rest }: ButtonProps) => (
       bottom: 28,
       zIndex: 10,
       ...style,
-    }}
-    css={iconAnimation}>
+    }}>
     {children}
   </Button>
 );
-
-const iconAnimation = css(`
-  & {
-    svg {
-      transition: transform 0.4s;
-    }
-  }
-
-  &:hover {
-    svg[role=img] {
-      transform: translateX(2px);
-    }
-  }
-`);

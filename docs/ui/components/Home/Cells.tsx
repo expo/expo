@@ -98,10 +98,10 @@ const cellWrapperStyle = css`
 
 const cellHoverStyle = css`
   & {
-    transition: box-shadow 0.4s;
+    transition: box-shadow 200ms;
 
     svg {
-      transition: transform 0.4s;
+      transition: transform 200ms;
     }
   }
 
@@ -109,11 +109,11 @@ const cellHoverStyle = css`
     box-shadow: ${shadows.tiny};
 
     svg {
-      transform: scale(1.1);
+      transform: scale(1.05);
     }
 
     svg[role='img'] {
-      transform: translateX(2px);
+      transform: none;
     }
   }
 `;
@@ -203,10 +203,10 @@ const cellCommunityLinkIconStyle = css({
 
 const cellCommunityHoverStyle = css`
   & {
-    transition: box-shadow 0.4s;
+    transition: box-shadow 200ms;
 
     svg {
-      transition: transform 0.4s;
+      transition: transform 200ms;
     }
   }
 
@@ -214,13 +214,7 @@ const cellCommunityHoverStyle = css`
     box-shadow: ${shadows.tiny};
 
     svg {
-      transform: scale(1.1);
-    }
-
-    svg[class='css-${cellCommunityLinkIconStyle.name}'] {
-      transform: translateX(2px);
+      transform: scale(1.075);
     }
   }
 `;
-
-console.warn(cellCommunityLinkIconStyle.name)
