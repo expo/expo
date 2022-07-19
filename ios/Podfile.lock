@@ -1897,7 +1897,7 @@ PODS:
     - ExpoModulesCore
   - EXAppleAuthentication (4.3.0):
     - ExpoModulesCore
-  - EXApplication (4.2.1):
+  - EXApplication (4.2.2):
     - ExpoModulesCore
   - EXAV (12.0.2):
     - ExpoModulesCore
@@ -1975,7 +1975,7 @@ PODS:
     - ExpoModulesCore
   - EXPermissions (13.2.0):
     - ExpoModulesCore
-  - Expo (46.0.0-beta.2):
+  - Expo (46.0.0-beta.3):
     - ExpoModulesCore
   - ExpoCellular (4.3.0):
     - ExpoModulesCore
@@ -4358,7 +4358,7 @@ SPEC CHECKSUMS:
   DoubleConversion: 5189b271737e1565bdce30deb4a08d647e3f5f54
   EASClient: a2581835cf9b97d0defd5d630fc6eb1bf77045e7
   EXAppleAuthentication: b9e9d8fa9b0cc5277b2121eb809cf0f57c2496a7
-  EXApplication: 31dc4d571e6bc5c4b2a280244d74237669e7baab
+  EXApplication: e418d737a036e788510f2c4ad6c10a7d54d18586
   EXAV: 3aa2d849d691bb71751bbeefc1ed58d1a5d74f36
   EXBackgroundFetch: 6e0952481a966c4c0580009a7e5d0f95cb531373
   EXBarCodeScanner: 557c131b375dc861595867eece49a619bfd076dd
@@ -4389,7 +4389,7 @@ SPEC CHECKSUMS:
   EXNetwork: cba9570f90f4f27ce938afd57810b484febf1fab
   EXNotifications: 8df33b5e99f125ee729ef04c9c67ae60906833e8
   EXPermissions: 3dbb869e7f96a5711314f73d48ddc2f28009a7f6
-  Expo: 07c19c114b08c8f1510ea5ba15bcf429021d3877
+  Expo: c9c0a4c87fce36e8bed7281f1682090b4bc94b25
   ExpoCellular: 23bb55684199be008505ac08b79140b6a81a9e81
   ExpoClipboard: 7a5a26a3119bd1d0337ee065db3bf5d8a40e23a1
   ExpoCrypto: e534314db0e1a17ae12b5140d529bd0c5efcbc6a
@@ -4425,7 +4425,7 @@ SPEC CHECKSUMS:
   FacebookSDK: 4b9bb8e2824898b47f18c666dc145c09b40609e6
   FBAudienceNetwork: cfe55330dcc4e9a1df083c34a346ca7f8e32951e
   FBLazyVector: 068141206af867f72854753423d0117c4bf53419
-  FBReactNativeSpec: 4819c7518a9fcc413ca59be3b56db3249e5fc2f6
+  FBReactNativeSpec: fc8dd5f7df3c4ce5cc0e0ad76ed957b6ae34c2a6
   FBSDKCoreKit: dace5abafc2fd9272733e6d027bcf18102712117
   Firebase: 7e8fe528c161b9271d365217a74c16aaf834578e
   FirebaseAnalytics: 2fc3876e2eb347673ad2f35e249ae7b15d6c88f5

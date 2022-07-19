@@ -6,13 +6,19 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.2.3 — 2022-07-19
+
+### 🎉 New features
+
 - Add `EXPO_EDITOR` environment variable for overriding the `EDITOR` variable. This is used in the `expo start` Terminal UI when pressing `o`. ([#18285](https://github.com/expo/expo/pull/18285) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
 - Fix bug preventing the installation of beta clients. ([#18298](https://github.com/expo/expo/pull/18298) by [@EvanBacon](https://github.com/EvanBacon))
-
-### 💡 Others
 
 ## 0.2.2 — 2022-07-18
 
