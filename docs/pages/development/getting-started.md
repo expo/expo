@@ -69,7 +69,7 @@ Instead, all you need to do to start developing is to run:
 
 and scanning the resulting QR code with your system camera or QR code reader (if you want to develop against a physical device)
 
-or pressing the <kbd>a</kbd> or <kbd>i</kbd> keys (to open the app in your Android or iPhone emulator or simulator respectively).
+or pressing the <kbd>A</kbd> or <kbd>I</kbd> keys (to open the app in your Android or iPhone emulator or simulator respectively).
 
 Now make some changes to your project code and see them reflected on your device!
 
