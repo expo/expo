@@ -17176,10 +17176,10 @@ react-native-view-shot@3.3.0:
   resolved "https://registry.yarnpkg.com/react-native-view-shot/-/react-native-view-shot-3.3.0.tgz#7f0c6d2e09e5af770f5b74231a72625b379d60f8"
   integrity sha512-dc3ZHCd0lvn1jtSI8bPQDta8YxzCvZ73vA8zzFH4S3TRlXLe8r5DF3wUUBlWv1p/bxbEa/A0J4kMUPeVt/v8TQ==
 
-react-native-web@~0.18.6:
-  version "0.18.6"
-  resolved "https://registry.yarnpkg.com/react-native-web/-/react-native-web-0.18.6.tgz#cebc9f2a23d818f223b9f535a3b6eeaa9023a0bc"
-  integrity sha512-z0NxWgi0m9tCa+DNZOU0DY+tGwAnG/hcaSNzcqeEyXtI1b460Dyqtq64ky/4G7O/9+pcTp5x5hSaHE+BPWYoGA==
+react-native-web@~0.18.7:
+  version "0.18.7"
+  resolved "https://registry.yarnpkg.com/react-native-web/-/react-native-web-0.18.7.tgz#2b688502b3d389c49346fa3d8c9a20cfd52f507f"
+  integrity sha512-5DwcsrAqLjOvzJJk/XPozEtqCOF3hrCJ55buLOEPMxvS8lKxRdeMF9SZUI2zyqE8JcMFGtQzLhWAZGeaTrXaRg==
   dependencies:
     "@babel/runtime" "^7.18.6"
     create-react-class "^15.7.0"
