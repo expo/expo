@@ -1,4 +1,3 @@
-import { css } from '@emotion/react';
 import { spacing, typography } from '@expo/styleguide';
 import React from 'react';
 
