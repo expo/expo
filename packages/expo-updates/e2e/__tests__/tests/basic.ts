@@ -199,7 +199,7 @@ export default () =>
         ].map(async (sourceFilename, index) => {
           const destinationFilename = `asset${index}.jpg`;
           const hash = await copyAssetToStaticFolder(
-            path.join(__dirname, 'assets', sourceFilename),
+            path.resolve(__dirname, '..', 'assets', sourceFilename),
             destinationFilename
           );
           return {
