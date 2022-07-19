@@ -6,7 +6,24 @@ import { guessEditor, openInEditorAsync } from '../editor';
 
 jest.mock('../../log');
 
+const original_EXPO_EDITOR = process.env.EXPO_EDITOR;
+
+afterAll(() => {
+  process.env.EXPO_EDITOR = original_EXPO_EDITOR;
+});
+
 describe(guessEditor, () => {
+  beforeEach(() => {
+    delete process.env.EXPO_EDITOR;
+  });
+
+  it(`uses EXPO_EDITOR as the highest priority setting if defined`, () => {
+    process.env.EXPO_EDITOR = 'bacon';
+    guessEditor();
+
+    expect(editors.getEditor).toBeCalledWith('bacon');
+  });
+
   it(`defaults to vscode if the default editor cannot be guessed`, () => {
     asMock(editors.defaultEditor).mockImplementationOnce(() => {
       throw new Error('Could not guess default editor');

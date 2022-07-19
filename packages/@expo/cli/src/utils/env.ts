@@ -83,6 +83,11 @@ class Env {
   get EXPO_PUBLIC_FOLDER(): string {
     return string('EXPO_PUBLIC_FOLDER', 'public');
   }
+
+  /** Higher priority `$EDIOTR` variable for indicating which editor to use when pressing `o` in the Terminal UI. */
+  get EXPO_EDITOR(): string {
+    return string('EXPO_EDITOR', '');
+  }
 }
 
 export const env = new Env();
