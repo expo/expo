@@ -101,9 +101,10 @@
   "react-native-svg": "12.3.0",
   "react-native-view-shot": "3.3.0",
   "react-native-webview": "11.22.4",
-  "sentry-expo": "^4.0.0",
+  "sentry-expo": "~5.0.0",
   "unimodules-app-loader": "~3.1.0",
   "unimodules-image-loader-interface": "~6.1.0",
   "@shopify/react-native-skia": "0.1.136",
-  "@shopify/flash-list": "1.1.0"
+  "@shopify/flash-list": "1.1.0",
+  "@sentry/react-native": "^4.1.3"
 }
