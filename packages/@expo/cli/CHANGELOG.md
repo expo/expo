@@ -10,7 +10,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix bug preventing the installation of beta clients.
+- Fix bug preventing the installation of beta clients. ([#18298](https://github.com/expo/expo/pull/18298) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 
