@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 4.2.2 — 2022-07-19
+
+_This version does not introduce any user-facing changes._
+
 ## 4.2.1 — 2022-07-18
 
 ### 💡 Others
