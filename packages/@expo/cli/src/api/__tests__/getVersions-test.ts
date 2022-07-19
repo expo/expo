@@ -1,5 +1,4 @@
 import nock from 'nock';
-import { parse } from 'semver';
 
 import { getExpoApiBaseUrl } from '../endpoint';
 import { getVersionsAsync } from '../getVersions';

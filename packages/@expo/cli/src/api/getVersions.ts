@@ -1,6 +1,4 @@
-import { env } from '../utils/env';
 import { CommandError } from '../utils/errors';
-import { pickBy } from '../utils/obj';
 import { createCachedFetch } from './rest/client';
 
 /** Represents version info for a particular SDK. */
