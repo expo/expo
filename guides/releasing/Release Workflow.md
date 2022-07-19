@@ -473,17 +473,21 @@ Once everything above is completed and Apple has approved Expo Go (iOS) for the 
 
 **How:**
 
-- For each of the following packages, run `et update-versions -k 'relatedPackages.<package-name>' -v '^X.Y.Z'`
-  - `@babel/core`
-  - `@expo/webpack-config`
-  - `@types/react-dom`
-  - `@types/react-native`
-  - `@types/react`
-  - `babel-preset-expo`
+- For each of the following packages, run et update-versions -k 'relatedPackages.<package-name>' -v '^X.Y.Z'`
   - `jest`
-  - `react-native-web`
   - `typescript`
-- One way to get the right version numbers is to run `yarn why <package-name>` to see which version is used by apps in the expo/expo repo. Generally the version numbers should have a carat (`^`) except for `react-native-unimodules`, which should have a tilde (`~`).
+  - `@babel/core`
+  - `@expo/config`
+  - `@types/react`
+  - `@types/react-dom`
+  - `react-native-web`
+  - `babel-preset-expo`
+  - `@types/react-native`
+  - `@expo/config-plugins`
+  - `@expo/webpack-config`
+  - `@expo/prebuild-config`
+  - `expo-modules-autolinking`
+- One way to get the right version numbers is to run `yarn why <package-name>` to see which version is used by apps in the expo/expo repo. Generally the version numbers should use the caret (`^`) semver symbol, please refer to the semver symbol used for the package on the most recent release on the versions endpoint.
 
 ## 5.4. Re-publish project templates
 
