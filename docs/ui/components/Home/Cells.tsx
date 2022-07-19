@@ -222,5 +222,3 @@ const cellCommunityHoverStyle = css`
     }
   }
 `;
-
-console.warn(cellCommunityLinkIconStyle.name)
