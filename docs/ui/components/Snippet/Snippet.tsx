@@ -4,14 +4,20 @@ import React, { PropsWithChildren } from 'react';
 
 type SnippetProps = {
   style?: SerializedStyles;
+  includeMargin?: boolean;
 };
 
-export const Snippet = ({ children, style }: PropsWithChildren<SnippetProps>) => (
-  <div css={[containerStyle, css(style)]}>{children}</div>
+export const Snippet = ({
+  children,
+  style,
+  includeMargin = true,
+}: PropsWithChildren<SnippetProps>) => (
+  <div css={[containerStyle, includeMargin && containerMarginStyle, css(style)]}>{children}</div>
 );
 
-const containerStyle = css`
-  display: flex;
-  flex-direction: column;
-  margin-bottom: ${spacing[4]}px;
-`;
+const containerStyle = css({
+  display: 'flex',
+  flexDirection: 'column',
+});
+
+const containerMarginStyle = css({ marginBottom: spacing[4] });

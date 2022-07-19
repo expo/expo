@@ -13,11 +13,18 @@ type TerminalProps = {
   cmd: string[];
   cmdCopy?: string;
   hideOverflow?: boolean;
+  includeMargin?: boolean;
   title?: string;
 };
 
-export const Terminal = ({ cmd, cmdCopy, hideOverflow, title = 'Terminal' }: TerminalProps) => (
-  <Snippet style={wrapperStyle}>
+export const Terminal = ({
+  cmd,
+  cmdCopy,
+  hideOverflow,
+  includeMargin = true,
+  title = 'Terminal',
+}: TerminalProps) => (
+  <Snippet style={wrapperStyle} includeMargin={includeMargin}>
     <SnippetHeader alwaysDark title={title}>
       {renderCopyButton({ cmd, cmdCopy })}
     </SnippetHeader>
