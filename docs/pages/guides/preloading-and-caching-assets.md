@@ -24,24 +24,21 @@ Images with paths matching the given patterns will be bundled into your native b
 
 ### Pre-loading and Caching Assets
 
-Assets are cached differently depending on where they're stored and how they're used. This guide offers best practices for making sure you only download assets when you need to. In order to keep the loading screen visible while caching assets, it's also a good idea to render [AppLoading](../versions/latest/sdk/app-loading.md#app-loading) and only that component until everything is ready.
+Assets are cached differently depending on where they are stored and how they are used. This section offers best practices to ensure you only download assets when needed. To keep the loading screen visible while caching assets, it's a good idea to render a [SplashScreen](/versions/latest/sdk/splash-screen/) until everything is ready.
 
-For images that saved to the local filesytem, use [`Asset.fromModule(image).downloadAsync()`](../versions/latest/sdk/asset.md) to download and cache the image. There is also a [loadAsync()](../versions/latest/sdk/asset.md#expoassetloadasyncmodules) helper method to cache a batch of assets.
+To download and cache the images saved to the local filesystem, use [`Asset.fromModule(image).downloadAsync()`](/versions/latest/sdk/asset). For images with remote URLs, use `Image.prefetch(image)`.
 
-For web images, use `Image.prefetch(image)`. Continue referencing the image normally, e.g. with `<Image source={require('path/to/image.png')} />`.
-
-Fonts are pre-loaded using `Font.loadAsync(font)`. The `font`
-argument in this case is an object such as the following: `{OpenSans: require('./assets/fonts/OpenSans.ttf')}`. `@expo/vector-icons` provides a helpful shortcut for this object, which you see below as `FontAwesome.font`.
+Fonts are pre-loaded using `Font.loadAsync(font)`. The `font` argument in this method is an object such as: `{OpenSans: require('./assets/fonts/OpenSans.ttf')}`. `@expo/vector-icons` provides a helpful shortcut for this object as `FontAwesome.font` in the following example:
 
 <SnackInline
 label="Pre-loading and Caching Assets"
-dependencies={['expo-font', 'expo-asset', 'expo-app-loading', '@expo/vector-icons']}
+dependencies={['expo-font', 'expo-asset', 'expo-splash-screen', '@expo/vector-icons', '@expo/vector-icons/FontAwesome']}
 files={{'assets/images/circle.jpg': 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/42f59672cb9eb70368b00921c0cc60b7'}}>
 
 ```jsx
-import * as React from 'react';
-import { View, Text, Image } from 'react-native';
-import AppLoading from 'expo-app-loading';
+import React, { useState, useEffect } from 'react';
+import { View, Text, Image, StyleSheet } from 'react-native';
+import * as SplashScreen from 'expo-splash-screen';
 import * as Font from 'expo-font';
 import { Asset } from 'expo-asset';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
@@ -60,45 +57,65 @@ function cacheFonts(fonts) {
   return fonts.map(font => Font.loadAsync(font));
 }
 
-export default class AppContainer extends React.Component {
-  state = {
-    isReady: false,
-  };
+export default function App() {
+  const [appIsReady, setAppIsReady] = useState(false);
 
-  async _loadAssetsAsync() {
-    const imageAssets = cacheImages([
-      'https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png',
-      require('./assets/images/circle.jpg'),
-    ]);
+  // Load any resources or data that you need prior to rendering the app
+  useEffect(() => {
+    async function loadResourcesAndDataAsync() {
+      try {
+        SplashScreen.preventAutoHideAsync();
 
-    const fontAssets = cacheFonts([FontAwesome.font]);
+        const imageAssets = cacheImages([
+          'https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png',
+          require('./assets/images/circle.jpg'),
+        ]);
 
-    await Promise.all([...imageAssets, ...fontAssets]);
-  }
+        const fontAssets = cacheFonts([FontAwesome.font]);
 
-  render() {
-    if (!this.state.isReady) {
-      return (
-        <AppLoading
-          startAsync={this._loadAssetsAsync}
-          onFinish={() => this.setState({ isReady: true })}
-          onError={console.warn}
-        />
-      );
+        await Promise.all([...imageAssets, ...fontAssets]);
+      } catch (e) {
+        // You might want to provide this error information to an error reporting service
+        console.warn(e);
+      } finally {
+        setAppIsReady(true);
+        SplashScreen.hideAsync();
+      }
     }
 
-    return (
-      <View>
-        <Text>Hello world, this is my app.</Text>
-      </View>
-    );
+    loadResourcesAndDataAsync();
+  }, []);
+
+  if (!appIsReady) {
+    return null;
   }
+
+  return (
+    <View style={styles.container}>
+      <Text>Hello world, this is my app.</Text>
+    </View>
+  );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});
 ```
 
 </SnackInline>
 
-See a full working example in [this Expo template project](https://github.com/expo/expo/blob/sdk-43/templates/expo-template-tabs/App.tsx). You can also run `npx create-expo-app --template tabs`, which will set you up locally with the same template.
+To use the local image asset, you can continue referencing the source of the image normally in your project, for example:
+
+```jsx
+<Image source={require('path/to/image.png')} />
+```
+
+See the complete working example in [Expo's tabs template project](https://github.com/expo/expo/blob/main/templates/expo-template-tabs/App.tsx). You can also run `npx create-expo-app --template tabs` to set up a local project with the same template.
 
 ### Publishing Assets
 
