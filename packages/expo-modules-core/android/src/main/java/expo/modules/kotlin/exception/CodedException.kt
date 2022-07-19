@@ -12,7 +12,7 @@ import kotlin.reflect.KType
 @DoNotStrip
 open class CodedException(
   message: String?,
-  cause: Throwable?
+  cause: Throwable? = null
 ) : Exception(message, cause) {
   // We need that secondary property, cause we can't access
   // the javaClass property in the constructor.
@@ -21,15 +21,11 @@ open class CodedException(
   val code
     get() = providedCode ?: inferCode(javaClass)
 
-  constructor(code: String, message: String?, cause: Throwable?) : this(message, cause) {
+  constructor(code: String, message: String?, cause: Throwable? = null) : this(message = message, cause = cause) {
     providedCode = code
   }
 
-  constructor(code: String, message: String) : this(code, message, null)
-
-  constructor(message: String) : this(message, null, null)
-
-  constructor(cause: Throwable) : this(cause.localizedMessage, cause)
+  constructor(cause: Throwable) : this(message = cause.localizedMessage, cause = cause)
 
   constructor() : this(null, null)
 
