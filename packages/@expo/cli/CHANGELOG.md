@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Add mock `--non-interactive` flag to hide `eas update` errors.
+
 ### 💡 Others
 
 ## 0.2.3 — 2022-07-19
