@@ -6,7 +6,7 @@ const { boolish } = require('getenv');
 run();
 
 function run() {
-  // Use new beta CLI by default.
+  // Use new local CLI by default.
   if (boolish('EXPO_USE_LOCAL_CLI', true)) {
     return spawn(require.resolve('@expo/cli'), process.argv.slice(2), { stdio: 'inherit' }).on(
       'exit',
