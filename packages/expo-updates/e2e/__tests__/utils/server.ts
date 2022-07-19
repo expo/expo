@@ -78,7 +78,7 @@ export async function waitForRequest(timeout: number, responseToServe?: { comman
   while (!messages.length) {
     const currentTime = new Date().getTime();
     if (currentTime >= finishTime) {
-      throw new Error('Timed out waiting for response');
+      throw new Error('Timed out waiting for message');
     }
     await setTimeout(50);
   }
