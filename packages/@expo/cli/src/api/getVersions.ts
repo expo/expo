@@ -43,8 +43,8 @@ export async function getVersionsAsync({
   const fetchAsync = createCachedFetch({
     skipCache,
     cacheDirectory: 'versions-cache',
-    // We'll use a 1 week cache for versions so older versions get flushed out eventually.
-    ttl: 1000 * 60 * 60 * 24 * 7,
+    // We'll use a 5 minute cache to ensure we stay relatively up to date.
+    ttl: 1000 * 60 * 5,
   });
 
   const results = await fetchAsync('versions/latest');
