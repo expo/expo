@@ -18,7 +18,21 @@ jest.mock('../bundledNativeModules', () => ({
 describe(getVersionedPackagesAsync, () => {
   it('should return versioned packages', async () => {
     asMock(getVersionedNativeModulesAsync).mockResolvedValueOnce({});
-
+    asMock(getVersionsAsync).mockResolvedValueOnce({
+      sdkVersions: {
+        '1.0.0': {
+          relatedPackages: {
+            '@expo/vector-icons': '3.0.0',
+            'react-native': 'default',
+            react: 'default',
+            'react-dom': 'default',
+            'expo-sms': 'default',
+          },
+          facebookReactVersion: 'facebook-react',
+          facebookReactNativeVersion: 'facebook-rn',
+        },
+      },
+    } as any);
     const { packages, messages } = await getVersionedPackagesAsync('/', {
       sdkVersion: '1.0.0',
       packages: ['@expo/vector-icons', 'react@next', 'expo-camera', 'uuid@^3.4.0'],
