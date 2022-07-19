@@ -21,21 +21,20 @@ Common situations where Organizations are useful:
 
 |                                                                     | Personal Accounts | Organization |
 | ------------------------------------------------------------------- | ----------------- | ------------ |
-| **Create Projects**                                                 | ✅                 | ✅            |
-| **Build projects to submit to App Store and Play Store**            | ✅                 | ✅            |
-| **Release bug fixes with updates**                                  | ✅                 | ✅            |
-| **Transfer control of individual projects to another user**         | ✅                 | ✅
-| **Transfer control of all projects to another user**                |                   | ✅            |
-| **Programmatic access with limited privileges**                     |                   | ✅            |
-| **Designate multiple users who have complete control of a project** |                   | ✅            |
+| **Create Projects**                                                 | ✅                | ✅           |
+| **Build projects to submit to App Store and Play Store**            | ✅                | ✅           |
+| **Release bug fixes with updates**                                  | ✅                | ✅           |
+| **Transfer control of individual projects to another user**         | ✅                | ✅           |
+| **Transfer control of all projects to another user**                |                   | ✅           |
+| **Programmatic access with limited privileges**                     |                   | ✅           |
+| **Designate multiple users who have complete control of a project** |                   | ✅           |
 
 ### Creating New Organizations
 
 To create a new Organization, visit [expo.dev/create-organization](https://expo.dev/create-organization) and sign in to your Personal Account.
 You can also create a new Organization by selecting "New Organization" from the account selection dropdown at the top of your dashboard.
 
-You'll need to choose a name for your Organization. Once you have created the organization, you will not be able to rename it.
-To associate projects with an Organization, you will need to add the [Owner key](/versions/latest/config/app/#owner) to your project's app.json
+You'll need to choose a name for your Organization. To associate projects with an Organization, you will need to add the [Owner key](/versions/latest/config/app/#owner) to your project's app.json
 
 ### Converting Personal Accounts into Organizations
 
