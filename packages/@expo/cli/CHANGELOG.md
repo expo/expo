@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix bug preventing the installation of beta clients.
+
 ### 💡 Others
 
 ## 0.2.2 — 2022-07-18
