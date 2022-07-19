@@ -50,12 +50,12 @@ app.get('/notify/:string', (req: any, res: any) => {
   res.send('Received request');
 });
 
-export async function waitForResponse(timeout: number) {
+export async function waitForRequest(timeout: number) {
   const finishTime = new Date().getTime() + timeout;
   while (!notifyString) {
     const currentTime = new Date().getTime();
     if (currentTime >= finishTime) {
-      throw new Error('Timed out waiting for response');
+      throw new Error('Timed out waiting for message');
     }
     await setTimeout(50);
   }

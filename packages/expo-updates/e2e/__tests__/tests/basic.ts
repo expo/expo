@@ -35,17 +35,17 @@ export default () =>
       Server.start(SERVER_PORT);
       await Simulator.installApp();
       await Simulator.startApp();
-      const response = await Server.waitForResponse(10000 * TIMEOUT_BIAS);
-      expect(response).toBe('test');
+      const message = await Server.waitForRequest(10000 * TIMEOUT_BIAS);
+      expect(message).toBe('test');
       await Simulator.stopApp();
 
-      await expect(Server.waitForResponse(5000 * TIMEOUT_BIAS)).rejects.toThrow(
-        'Timed out waiting for response'
+      await expect(Server.waitForRequest(5000 * TIMEOUT_BIAS)).rejects.toThrow(
+        'Timed out waiting for message'
       );
 
       await Simulator.startApp();
-      const response2 = await Server.waitForResponse(10000 * TIMEOUT_BIAS);
-      expect(response2).toBe('test');
+      const message2 = await Server.waitForRequest(10000 * TIMEOUT_BIAS);
+      expect(message2).toBe('test');
     });
 
     it('initial request includes correct update-id headers', async () => {
@@ -87,8 +87,8 @@ export default () =>
       await Simulator.installApp();
       await Simulator.startApp();
       const firstRequest = await Server.waitForUpdateRequest(10000 * TIMEOUT_BIAS);
-      const response = await Server.waitForResponse(10000 * TIMEOUT_BIAS);
-      expect(response).toBe('test');
+      const message = await Server.waitForRequest(10000 * TIMEOUT_BIAS);
+      expect(message).toBe('test');
 
       // give the app time to load the new update in the background
       await setTimeout(2000 * TIMEOUT_BIAS);
@@ -98,8 +98,8 @@ export default () =>
       await Simulator.stopApp();
       await Simulator.startApp();
       const secondRequest = await Server.waitForUpdateRequest(10000 * TIMEOUT_BIAS);
-      const updatedResponse = await Server.waitForResponse(10000 * TIMEOUT_BIAS);
-      expect(updatedResponse).toBe(newNotifyString);
+      const updatedMessage = await Server.waitForRequest(10000 * TIMEOUT_BIAS);
+      expect(updatedMessage).toBe(newNotifyString);
 
       expect(secondRequest.headers['expo-embedded-update-id']).toBeDefined();
       expect(secondRequest.headers['expo-embedded-update-id']).toEqual(
@@ -135,8 +135,8 @@ export default () =>
       await Simulator.installApp();
       await Simulator.startApp();
       await Server.waitForUpdateRequest(10000 * TIMEOUT_BIAS);
-      const response = await Server.waitForResponse(10000 * TIMEOUT_BIAS);
-      expect(response).toBe('test');
+      const message = await Server.waitForRequest(10000 * TIMEOUT_BIAS);
+      expect(message).toBe('test');
 
       // give the app time to load the new update in the background
       await setTimeout(2000 * TIMEOUT_BIAS);
@@ -146,8 +146,8 @@ export default () =>
       await Simulator.stopApp();
       await Simulator.startApp();
       await Server.waitForUpdateRequest(10000 * TIMEOUT_BIAS);
-      const updatedResponse = await Server.waitForResponse(10000 * TIMEOUT_BIAS);
-      expect(updatedResponse).toBe('test');
+      const updatedMessage = await Server.waitForRequest(10000 * TIMEOUT_BIAS);
+      expect(updatedMessage).toBe('test');
     });
 
     it('downloads and runs update with multiple assets', async () => {
@@ -194,8 +194,8 @@ export default () =>
       await Server.serveSignedManifest(manifest, projectRoot);
       await Simulator.installApp();
       await Simulator.startApp();
-      const response = await Server.waitForResponse(10000 * TIMEOUT_BIAS);
-      expect(response).toBe('test');
+      const message = await Server.waitForRequest(10000 * TIMEOUT_BIAS);
+      expect(message).toBe('test');
 
       // give the app time to load the new update in the background
       await setTimeout(2000 * TIMEOUT_BIAS);
@@ -204,8 +204,8 @@ export default () =>
       // restart the app so it will launch the new update
       await Simulator.stopApp();
       await Simulator.startApp();
-      const updatedResponse = await Server.waitForResponse(10000 * TIMEOUT_BIAS);
-      expect(updatedResponse).toBe(newNotifyString);
+      const updatedMessage = await Server.waitForRequest(10000 * TIMEOUT_BIAS);
+      expect(updatedMessage).toBe(newNotifyString);
     });
 
     // important for usage accuracy
@@ -237,8 +237,8 @@ export default () =>
       await Simulator.installApp();
       await Simulator.startApp();
       await Server.waitForUpdateRequest(10000 * TIMEOUT_BIAS);
-      const firstResponse = await Server.waitForResponse(10000 * TIMEOUT_BIAS);
-      expect(firstResponse).toBe('test');
+      const firstMessage = await Server.waitForRequest(10000 * TIMEOUT_BIAS);
+      expect(firstMessage).toBe('test');
 
       // give the app time to load the new update in the background (i.e. to make sure it doesn't)
       await setTimeout(3000 * TIMEOUT_BIAS);
@@ -247,7 +247,7 @@ export default () =>
       // restart the app and make sure it's still running the initial update
       await Simulator.stopApp();
       await Simulator.startApp();
-      const secondResponse = await Server.waitForResponse(10000 * TIMEOUT_BIAS);
-      expect(secondResponse).toBe('test');
+      const secondMessage = await Server.waitForRequest(10000 * TIMEOUT_BIAS);
+      expect(secondMessage).toBe('test');
     });
   });
