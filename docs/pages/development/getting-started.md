@@ -181,4 +181,4 @@ const styles = StyleSheet.create({
 
 ## Debugging your app
 
-When you need to, you can access the menu by pressing <kbd>⌘</kbd>+<kbd>d</kbd>/<kbd>ctrl</kbd>+<kbd>d</kbd> in Expo CLI or by shaking your phone or tablet. Here you'll be able to access all of the functions of your development build, access any debugging functionality you need, or switch to a different version of your app.
+When you need to, you can access the menu by pressing <kbd>⌘</kbd> + <kbd>D</kbd> or <kbd>Ctrl</kbd> + <kbd>D</kbd> in Expo CLI or by shaking your phone or tablet. Here you'll be able to access all of the functions of your development build, access any debugging functionality you need, or switch to a different version of your app.
