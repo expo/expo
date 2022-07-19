@@ -2,12 +2,12 @@ import spawnAsync from '@expo/spawn-async';
 import path from 'path';
 
 const BUNDLE_IDENTIFIER = 'dev.expo.updatese2e';
-const APP_PATH = path.join(process.env.ARTIFACTS_DEST, 'ios-release.app');
 
 export const ExportedManifestFilename = 'ios-index.json';
 
-export async function installApp() {
-  await spawnAsync('xcrun', ['simctl', 'install', 'booted', APP_PATH]);
+export async function installApp(suffix: string) {
+  const appPath = path.join(process.env.ARTIFACTS_DEST, `ios-release-${suffix}.app`);
+  await spawnAsync('xcrun', ['simctl', 'install', 'booted', appPath]);
 }
 
 export async function uninstallApp() {
