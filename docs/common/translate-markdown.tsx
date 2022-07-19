@@ -16,14 +16,14 @@ type Options = {
   baseNestingLevel?: number;
 };
 
-type PermalinkedComponent = React.FC<React.PropsWithChildren<{ level?: number } & AdditionalProps>>;
+type PermalinkedComponentProps = React.PropsWithChildren<{ level?: number } & AdditionalProps>;
 
 const createPermalinkedComponent = (
-  BaseComponent: React.ComponentType<React.PropsWithChildren<unknown>>,
+  BaseComponent: React.ComponentType<React.PropsWithChildren<object>>,
   options?: Options
-): PermalinkedComponent => {
+) => {
   const { customIconStyle, baseNestingLevel } = options || {};
-  return ({ children, level, ...props }) => {
+  return ({ children, level, ...props }: PermalinkedComponentProps) => {
     const nestingLevel = baseNestingLevel != null ? (level ?? 0) + baseNestingLevel : undefined;
     return (
       <Permalink

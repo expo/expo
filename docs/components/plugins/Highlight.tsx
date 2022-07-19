@@ -7,7 +7,7 @@ const STYLES_HIGHLIGHT = css`
     ${theme.highlight.emphasis} 0px 0px 10px, ${theme.highlight.emphasis} 0px 0px 10px;
 `;
 
-const Highlight: React.FC<React.PropsWithChildren<unknown>> = ({ children }) => (
+const Highlight = ({ children }: React.PropsWithChildren<object>) => (
   <span css={STYLES_HIGHLIGHT}>{children}</span>
 );
 

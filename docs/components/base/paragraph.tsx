@@ -1,7 +1,7 @@
 import { css } from '@emotion/react';
 import { theme, typography, iconSize, InfoIcon } from '@expo/styleguide';
 import emojiRegex from 'emoji-regex';
-import * as React from 'react';
+import { Children, PropsWithChildren, ReactNode, BlockquoteHTMLAttributes } from 'react';
 
 import { paragraph } from './typography';
 
@@ -16,7 +16,7 @@ const STYLES_PARAGRAPH = css`
   margin-bottom: 1rem;
 `;
 
-export const P: React.FC<React.PropsWithChildren<unknown>> = ({ children }) => (
+export const P = ({ children }: PropsWithChildren<object>) => (
   <p {...attributes} css={STYLES_PARAGRAPH}>
     {children}
   </p>
@@ -29,7 +29,7 @@ const STYLES_BOLD_PARAGRAPH = css`
   font-weight: 500;
 `;
 
-export const B: React.FC<React.PropsWithChildren<unknown>> = ({ children }) => (
+export const B = ({ children }: PropsWithChildren<object>) => (
   <strong css={STYLES_BOLD_PARAGRAPH}>{children}</strong>
 );
 
@@ -50,7 +50,7 @@ const STYLES_PARAGRAPH_DIV = css`
   }
 `;
 
-export const PDIV: React.FC<React.PropsWithChildren<unknown>> = ({ children }) => {
+export const PDIV = ({ children }: PropsWithChildren<object>) => {
   const isWider = (children as JSX.Element)?.props?.snackId;
   return (
     <div {...attributes} css={STYLES_PARAGRAPH_DIV} className={isWider ? 'is-wider' : ''}>
@@ -100,7 +100,7 @@ function firstChild<T>(children: T | T[]): T {
   return children;
 }
 
-function captureEmoji(children: React.ReactNode | React.ReactNode[]) {
+function captureEmoji(children: ReactNode | ReactNode[]) {
   const child = firstChild(children);
 
   if (typeof child === 'string') {
@@ -112,7 +112,7 @@ function captureEmoji(children: React.ReactNode | React.ReactNode[]) {
   }
 }
 
-function removeEmoji(emoji: string, children: React.ReactNode | React.ReactNode[]) {
+function removeEmoji(emoji: string, children: ReactNode | ReactNode[]) {
   const child = firstChild(children) || '';
 
   if (typeof child === 'string') {
@@ -128,38 +128,39 @@ function removeEmoji(emoji: string, children: React.ReactNode | React.ReactNode[
   return child;
 }
 
-export const Quote = ({ children, ...rest }: React.PropsWithChildren<object>) => {
-  let icon: React.ReactNode = (
+export const Quote = ({
+  children,
+  ...rest
+}: PropsWithChildren<BlockquoteHTMLAttributes<HTMLQuoteElement>>) => {
+  let icon = (
     <div style={{ marginTop: 2 }}>
       <InfoIcon size={iconSize.small} />
     </div>
   );
 
-  // todo(simek): Refactor this component
-  const newChildren = React.Children.map(children, child => {
-    // @ts-ignore
-    const { props } = child;
+  const newChildren = Children.map(children, child => {
+    const { props } = child as JSX.Element;
     const emoji = captureEmoji(props?.children);
 
     if (emoji) {
-      icon = emoji;
-      const childData = Object.assign({}, child) || {};
+      icon = <div>{emoji}</div>;
+      const updatedChildren = removeEmoji(emoji, props?.children);
 
-      return {
-        ...childData,
+      return Object.assign({}, child, {
+        children: updatedChildren,
         props: {
           ...props,
           children: removeEmoji(emoji, props?.children),
         },
-      };
+      });
     }
 
     return child;
-  }) as React.ReactNode;
+  });
 
   return (
     <blockquote {...attributes} css={STYLES_BLOCKQUOTE} {...rest}>
-      <div>{icon}</div>
+      {icon}
       <div>{newChildren}</div>
     </blockquote>
   );
