@@ -7,8 +7,7 @@
   "sideEffects": [
     "*.fx.js",
     "*.fx.web.js"
-  ],
-  "scripts": {
+  ], "scripts": {
     "build": "expo-module build",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
@@ -41,7 +40,9 @@
     "invariant": "^2.2.4",
     "md5-file": "^3.2.3",
     "path-browserify": "^1.0.0",
-    "url-parse": "^1.5.9"
+    "url-parse": "^1.5.9",
+    "expo-constants": "~13.2.2",
+    "expo-file-system": "~14.1.0"
   },
   "devDependencies": {
     "@testing-library/react-hooks": "^7.0.1",
