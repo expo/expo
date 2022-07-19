@@ -55,7 +55,7 @@
   "homepage": "https://github.com/expo/expo/tree/main/packages/expo",
   "dependencies": {
     "@babel/runtime": "^7.14.0",
-    "@expo/cli": "0.2.3",
+    "@expo/cli": "0.2.4",
     "@expo/vector-icons": "^13.0.0",
     "babel-preset-expo": "~9.2.0",
     "cross-spawn": "^6.0.5",

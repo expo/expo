@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Add mock `--non-interactive` flag to hide `eas update` errors. ([#18299](https://github.com/expo/expo/pull/18299) by [@EvanBacon](https://github.com/EvanBacon))
-
 ### 💡 Others
+
+## 0.2.4 — 2022-07-19
+
+### 🐛 Bug fixes
+
+- Add mock `--non-interactive` flag to hide `eas update` errors. ([#18299](https://github.com/expo/expo/pull/18299) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 0.2.3 — 2022-07-19
 
