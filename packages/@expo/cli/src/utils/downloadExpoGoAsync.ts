@@ -1,7 +1,7 @@
 import { getExpoHomeDirectory } from '@expo/config/build/getUserState';
 import path from 'path';
 
-import { getReleasedVersionsAsync, SDKVersion } from '../api/getVersions';
+import { getVersionsAsync, SDKVersion } from '../api/getVersions';
 import { downloadAppAsync } from './downloadAppAsync';
 import { CommandError } from './errors';
 import { profile } from './profile';
@@ -58,8 +58,14 @@ export async function downloadExpoGoAsync(
         `Unable to determine which Expo Go version to install (platform: ${platform})`
       );
     }
-    const versions = await getReleasedVersionsAsync();
+    const { sdkVersions: versions } = await getVersionsAsync();
+
     const version = versions[sdkVersion];
+    if (!version) {
+      throw new CommandError(
+        `Unable to find a version of Expo Go for SDK ${sdkVersion} (platform: ${platform})`
+      );
+    }
     debug(`Installing Expo Go version for SDK ${sdkVersion} at URL: ${version[versionsKey]}`);
     url = version[versionsKey] as string;
   }

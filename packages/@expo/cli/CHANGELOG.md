@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix bug preventing the installation of beta clients. ([#18298](https://github.com/expo/expo/pull/18298) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 💡 Others
 
 ## 0.2.2 — 2022-07-18
