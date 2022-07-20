@@ -117,8 +117,8 @@ if (!isSubcommand) {
     'build:android': 'eas build -p android',
     'client:install:ios': 'npx expo start --ios',
     'client:install:android': 'npx expo start --android',
-    doctor: 'expo doctor',
-    upgrade: 'expo upgrade',
+    doctor: 'expo-cli doctor',
+    upgrade: 'expo-cli upgrade',
     'customize:web': 'npx expo customize',
 
     publish: 'eas update',
