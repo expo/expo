@@ -7,14 +7,26 @@ import os.log
 
 import ExpoModulesCore
 
+internal class CoreLogger: ExpoModulesCore.Logger {
+  override func messages(type: LogType = .trace, _ items: [Any]) -> [String] {
+    return items
+      .map { describe(value: $0) }
+      .joined(separator: " ")
+      .split(whereSeparator: \.isNewline)
+      .map { "\($0)" }
+  }
+}
+
 @available(macOS 12.0, iOS 15.0, watchOS 8.0, tvOS 15.0, *)
 @objc(EXUpdatesLogger)
 public class UpdatesLogger: NSObject {
 
-  private let osLogger: os.Logger
+  private let logger: CoreLogger
+
+  public static let LOG_CATEGORY = "expo-updates"
 
   public override init() {
-    osLogger = os.Logger(subsystem: "dev.expo.modules", category: "expo-updates")
+    logger = CoreLogger(category: UpdatesLogger.LOG_CATEGORY)
   }
 
   // MARK: - Public logging functions
@@ -26,7 +38,8 @@ public class UpdatesLogger: NSObject {
     updateId: String?,
     assetId: String?
   ) {
-    log(message: message, code: code, level: .trace, updateId: updateId, assetId: assetId)
+    let entry = logEntryMessage(message: message, code: code, level: .trace, updateId: updateId, assetId: assetId)
+    logger.trace(entry)
   }
 
   @objc(trace:code:)
@@ -44,7 +57,8 @@ public class UpdatesLogger: NSObject {
     updateId: String?,
     assetId: String?
   ) {
-    log(message: message, code: code, level: .debug, updateId: updateId, assetId: assetId)
+    let entry = logEntryMessage(message: message, code: code, level: .debug, updateId: updateId, assetId: assetId)
+    logger.debug(entry)
   }
 
   @objc(debug:code:)
@@ -62,7 +76,8 @@ public class UpdatesLogger: NSObject {
     updateId: String?,
     assetId: String?
   ) {
-    log(message: message, code: code, level: .info, updateId: updateId, assetId: assetId)
+    let entry = logEntryMessage(message: message, code: code, level: .info, updateId: updateId, assetId: assetId)
+    logger.info(entry)
   }
 
   @objc(info:code:)
@@ -80,7 +95,8 @@ public class UpdatesLogger: NSObject {
     updateId: String?,
     assetId: String?
   ) {
-    log(message: message, code: code, level: .warn, updateId: updateId, assetId: assetId)
+    let entry = logEntryMessage(message: message, code: code, level: .warn, updateId: updateId, assetId: assetId)
+    logger.warn(entry)
   }
 
   @objc(warn:code:)
@@ -98,7 +114,8 @@ public class UpdatesLogger: NSObject {
     updateId: String?,
     assetId: String?
   ) {
-    log(message: message, code: code, level: .error, updateId: updateId, assetId: assetId)
+    let entry = logEntryMessage(message: message, code: code, level: .error, updateId: updateId, assetId: assetId)
+    logger.error(entry)
   }
 
   @objc(error:code:)
@@ -116,7 +133,8 @@ public class UpdatesLogger: NSObject {
     updateId: String?,
     assetId: String?
   ) {
-    log(message: message, code: code, level: .fatal, updateId: updateId, assetId: assetId)
+    let entry = logEntryMessage(message: message, code: code, level: .fatal, updateId: updateId, assetId: assetId)
+    logger.fatal(entry)
   }
 
   @objc(fatal:code:)
@@ -129,13 +147,13 @@ public class UpdatesLogger: NSObject {
 
   // MARK: - Private methods
 
-  func log(
+  func logEntryMessage(
     message: String,
     code: UpdatesErrorCode = .None,
     level: ExpoModulesCore.LogType = .trace,
     updateId: String?,
     assetId: String?
-  ) {
+  ) -> String{
     // Get stacktrace:
     // - Only for log level error or fatal
     // - Since this is called by a public method above, drop this frame
@@ -154,6 +172,6 @@ public class UpdatesLogger: NSObject {
       assetId: assetId,
       stacktrace: symbols
     )
-    osLogger.log(level: level.toOSLogType(), "\(logEntry.asString() ?? logEntry.message)")
+    return "\(logEntry.asString() ?? logEntry.message)"
   }
 }

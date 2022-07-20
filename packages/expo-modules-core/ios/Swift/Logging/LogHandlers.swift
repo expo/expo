@@ -19,7 +19,7 @@ internal class OSLogHandler: LogHandler {
   private let osLogger: os.Logger
 
   required init(category: String) {
-    osLogger = os.Logger(subsystem: "dev.expo.modules", category: category)
+    osLogger = os.Logger(subsystem: Logger.LOG_SUBSYSTEM, category: category)
   }
 
   func log(type: LogType, _ message: String) {

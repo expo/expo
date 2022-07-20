@@ -38,7 +38,7 @@ public class UpdatesLogReader: NSObject {
 
       // Fetch log objects, selecting our subsystem and category
       let predicate = NSPredicate(format: "category == %@ AND subsystem = %@",
-                                      argumentArray: ["expo-updates", "dev.expo.modules"])
+                                  argumentArray: [UpdatesLogger.LOG_CATEGORY, Logger.LOG_SUBSYSTEM])
       let allEntries = try logStore.getEntries(at: position, matching: predicate)
 
       // Extract just the log message strings
