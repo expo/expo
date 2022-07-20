@@ -1,6 +1,6 @@
-#include "Mapper.h"
-#include "MutableValue.h"
-#include "SharedParent.h"
+#include "DevMenuMapper.h"
+#include "DevMenuMutableValue.h"
+#include "DevMenuSharedParent.h"
 
 namespace devmenureanimated {
 

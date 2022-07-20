@@ -1,8 +1,8 @@
-#include "MapperRegistry.h"
+#include "DevMenuMapperRegistry.h"
 #include <array>
 #include <map>
 #include <set>
-#include "Mapper.h"
+#include "DevMenuMapper.h"
 
 namespace devmenureanimated {
 

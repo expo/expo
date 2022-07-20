@@ -5,8 +5,8 @@
 #include <memory>
 #include <string>
 #include <unordered_map>
-#include "LayoutAnimationsProxy.h"
-#include "PlatformDepMethodsHolder.h"
+#include "DevMenuLayoutAnimationsProxy.h"
+#include "DevMenuPlatformDepMethodsHolder.h"
 
 using namespace facebook;
 

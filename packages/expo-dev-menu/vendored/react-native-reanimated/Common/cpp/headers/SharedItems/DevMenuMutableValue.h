@@ -5,11 +5,11 @@
 #include <memory>
 #include <mutex>
 #include <vector>
-#include "JSIStoreValueUser.h"
-#include "LayoutAnimationsProxy.h"
-#include "MutableValueSetterProxy.h"
-#include "RuntimeManager.h"
-#include "SharedParent.h"
+#include "DevMenuJSIStoreValueUser.h"
+#include "DevMenuLayoutAnimationsProxy.h"
+#include "DevMenuMutableValueSetterProxy.h"
+#include "DevMenuRuntimeManager.h"
+#include "DevMenuSharedParent.h"
 
 using namespace facebook;
 

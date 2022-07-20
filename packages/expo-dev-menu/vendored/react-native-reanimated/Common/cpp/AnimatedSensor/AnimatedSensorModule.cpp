@@ -1,6 +1,6 @@
-#include "AnimatedSensorModule.h"
-#include "MutableValue.h"
-#include "ValueWrapper.h"
+#include "DevMenuAnimatedSensorModule.h"
+#include "DevMenuMutableValue.h"
+#include "DevMenuValueWrapper.h"
 
 namespace devmenureanimated {
 

@@ -1,4 +1,4 @@
-#include "FeaturesConfig.h"
+#include "DevMenuFeaturesConfig.h"
 
 namespace devmenureanimated {
 bool FeaturesConfig::_isLayoutAnimationEnabled = false;

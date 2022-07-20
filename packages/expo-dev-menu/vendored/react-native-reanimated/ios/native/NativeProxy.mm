@@ -1,4 +1,4 @@
-#import "LayoutAnimationsProxy.h"
+#import "DevMenuLayoutAnimationsProxy.h"
 #import "NativeMethods.h"
 #import "NativeProxy.h"
 #import "DevMenuREAAnimationsManager.h"

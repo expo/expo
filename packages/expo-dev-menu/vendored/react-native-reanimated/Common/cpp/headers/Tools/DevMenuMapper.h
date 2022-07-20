@@ -4,8 +4,8 @@
 #include <stdio.h>
 #include <memory>
 #include <vector>
-#include "NativeReanimatedModule.h"
-#include "ShareableValue.h"
+#include "DevMenuNativeReanimatedModule.h"
+#include "DevMenuShareableValue.h"
 
 using namespace facebook;
 

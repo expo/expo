@@ -1,4 +1,4 @@
-#import "ReanimatedHiddenHeaders.h"
+#import "DevMenuReanimatedHiddenHeaders.h"
 #include <stdio.h>
 
 namespace devmenureanimated {

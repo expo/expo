@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed compatibility with the `react-native-reanimated` on iOS. ([#18306](https://github.com/expo/expo/pull/18306) by [@lukmccall](https://github.com/lukmccall))
+
 ### 💡 Others
 
 ## 1.1.0 — 2022-07-18

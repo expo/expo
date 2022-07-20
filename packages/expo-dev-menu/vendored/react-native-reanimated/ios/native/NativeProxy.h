@@ -1,6 +1,6 @@
 #if __cplusplus
 
-#import "NativeReanimatedModule.h"
+#import "DevMenuNativeReanimatedModule.h"
 #import <React/RCTEventDispatcher.h>
 #include <memory>
 

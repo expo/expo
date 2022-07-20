@@ -3,9 +3,9 @@
 #include <memory>
 #include <vector>
 
-#include "FrozenObject.h"
-#include "JSIStoreValueUser.h"
-#include "SharedParent.h"
+#include "DevMenuFrozenObject.h"
+#include "DevMenuJSIStoreValueUser.h"
+#include "DevMenuSharedParent.h"
 
 using namespace facebook;
 

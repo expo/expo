@@ -1,7 +1,7 @@
-#include "RemoteObject.h"
+#include "DevMenuRemoteObject.h"
 #include <jsi/jsi.h>
-#include "RuntimeDecorator.h"
-#include "SharedParent.h"
+#include "DevMenuRuntimeDecorator.h"
+#include "DevMenuSharedParent.h"
 
 using namespace facebook;
 

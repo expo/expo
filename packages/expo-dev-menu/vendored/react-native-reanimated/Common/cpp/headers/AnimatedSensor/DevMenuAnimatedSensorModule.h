@@ -3,8 +3,8 @@
 #include <jsi/jsi.h>
 #include <unordered_set>
 
-#include "PlatformDepMethodsHolder.h"
-#include "RuntimeManager.h"
+#include "DevMenuPlatformDepMethodsHolder.h"
+#include "DevMenuRuntimeManager.h"
 
 namespace devmenureanimated {
 
