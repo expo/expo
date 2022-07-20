@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Ensure `expo build:web` recommends running `expo export:web` in the migration warning.
+- Ensure `expo build:web` recommends running `expo export:web` in the migration warning. ([#18312](https://github.com/expo/expo/pull/18312) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 
