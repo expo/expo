@@ -119,17 +119,17 @@ PODS:
     - ExpoModulesCore
     - EXUpdatesInterface
     - React-Core
-  - expo-dev-menu (1.1.0):
-    - expo-dev-menu/Main (= 1.1.0)
+  - expo-dev-menu (1.1.1):
+    - expo-dev-menu/Main (= 1.1.1)
   - expo-dev-menu-interface (0.7.1)
-  - expo-dev-menu/GestureHandler (1.1.0)
-  - expo-dev-menu/Main (1.1.0):
+  - expo-dev-menu/GestureHandler (1.1.1)
+  - expo-dev-menu/Main (1.1.1):
     - EXManifests
     - expo-dev-menu-interface
     - expo-dev-menu/Vendored
     - ExpoModulesCore
     - React-Core
-  - expo-dev-menu/Reanimated (1.1.0):
+  - expo-dev-menu/Reanimated (1.1.1):
     - DoubleConversion
     - FBLazyVector
     - FBReactNativeSpec
@@ -157,15 +157,15 @@ PODS:
     - React-RCTVibration
     - ReactCommon/turbomodule/core
     - Yoga
-  - expo-dev-menu/SafeAreaView (1.1.0)
-  - expo-dev-menu/Tests (1.1.0):
+  - expo-dev-menu/SafeAreaView (1.1.1)
+  - expo-dev-menu/Tests (1.1.1):
     - Nimble
     - Quick
     - React-CoreModules
-  - expo-dev-menu/UITests (1.1.0):
+  - expo-dev-menu/UITests (1.1.1):
     - React
     - React-CoreModules
-  - expo-dev-menu/Vendored (1.1.0):
+  - expo-dev-menu/Vendored (1.1.1):
     - expo-dev-menu/GestureHandler
     - expo-dev-menu/Reanimated
     - expo-dev-menu/SafeAreaView
@@ -1294,7 +1294,7 @@ SPEC CHECKSUMS:
   Expo: 5961b98e58f99a0daadae52fbc5ea92d3fc7f896
   expo-dev-client: acd4d098c436a1da6f4f82d423667a99d2bfdd67
   expo-dev-launcher: b9e03e61711f7af7bf8ecdd1e746f93075658a80
-  expo-dev-menu: 34863a7d20a97ba439c4b5983d83318be40e3bbc
+  expo-dev-menu: f12ade8672206e00ff7c761c423cb7782d1fc241
   expo-dev-menu-interface: 74897b3e648ea6d911ac7a12df03eb3969383e8e
   ExpoCellular: 23bb55684199be008505ac08b79140b6a81a9e81
   ExpoClipboard: 7a5a26a3119bd1d0337ee065db3bf5d8a40e23a1
