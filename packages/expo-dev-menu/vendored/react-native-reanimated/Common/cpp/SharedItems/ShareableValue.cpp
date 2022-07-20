@@ -1,11 +1,11 @@
 #include <cxxabi.h>
-#include "FrozenObject.h"
-#include "MutableValue.h"
-#include "MutableValueSetterProxy.h"
-#include "RemoteObject.h"
-#include "RuntimeDecorator.h"
-#include "RuntimeManager.h"
-#include "SharedParent.h"
+#include "DevMenuFrozenObject.h"
+#include "DevMenuMutableValue.h"
+#include "DevMenuMutableValueSetterProxy.h"
+#include "DevMenuRemoteObject.h"
+#include "DevMenuRuntimeDecorator.h"
+#include "DevMenuRuntimeManager.h"
+#include "DevMenuSharedParent.h"
 
 namespace devmenureanimated {
 class ShareableValue;

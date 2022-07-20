@@ -5,14 +5,14 @@
 #include <string>
 #include <vector>
 
-#include "AnimatedSensorModule.h"
-#include "ErrorHandler.h"
-#include "LayoutAnimationsProxy.h"
-#include "NativeReanimatedModuleSpec.h"
-#include "PlatformDepMethodsHolder.h"
-#include "RuntimeDecorator.h"
-#include "RuntimeManager.h"
-#include "Scheduler.h"
+#include "DevMenuAnimatedSensorModule.h"
+#include "DevMenuErrorHandler.h"
+#include "DevMenuLayoutAnimationsProxy.h"
+#include "DevMenuNativeReanimatedModuleSpec.h"
+#include "DevMenuPlatformDepMethodsHolder.h"
+#include "DevMenuRuntimeDecorator.h"
+#include "DevMenuRuntimeManager.h"
+#include "DevMenuScheduler.h"
 
 namespace devmenureanimated {
 
