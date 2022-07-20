@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Ensure `expo build:web` recommends running `expo export:web` in the migration warning.
+
 ### 💡 Others
 
 ## 0.2.5 — 2022-07-19

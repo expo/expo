@@ -127,7 +127,7 @@ if (!isSubcommand) {
     'publish:history': 'eas update',
     'publish:details': 'eas update',
 
-    'build:web': 'npx expo export',
+    'build:web': 'npx expo export:web',
 
     'credentials:manager': `eas credentials`,
     'fetch:ios:certs': `eas credentials`,
