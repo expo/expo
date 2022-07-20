@@ -2,12 +2,11 @@
 
 import Dispatch
 
-public let log = Logger(category: Logger.LOG_CATEGORY)
+public let log = Logger(category: Logger.EXPO_LOG_CATEGORY)
 
-open class Logger {
-
-  public static let LOG_SUBSYSTEM = "dev.expo.modules"
-  public static let LOG_CATEGORY = "expo"
+public class Logger {
+  public static let EXPO_MODULES_LOG_SUBSYSTEM = "dev.expo.modules"
+  public static let EXPO_LOG_CATEGORY = "expo"
 
   #if DEBUG || EXPO_CONFIGURATION_DEBUG
   private var minLevel: LogType = .trace
@@ -163,39 +162,17 @@ open class Logger {
     return Logger(category: category)
   }
 
-  // MARK: - Convert items to messages (can be overridden by subclasses)
-
-  open func messages(type: LogType = .trace, _ items: [Any]) -> [String] {
-
-    return items
-      .map { describe(value: $0) }
-      .joined(separator: " ")
-      .split(whereSeparator: \.isNewline)
-      .map { "\(type.prefix) \($0)" }
-  }
-
-  // MARK: - Describe items as strings
-
-  public func describe(value: Any) -> String {
-    if let value = value as? String {
-      return value
-    }
-    if let value = value as? CustomDebugStringConvertible {
-      return value.debugDescription
-    }
-    if let value = value as? CustomStringConvertible {
-      return value.description
-    }
-    return String(describing: value)
-  }
-
   // MARK: - Private logging functions
 
   private func log(type: LogType = .trace, _ items: [Any]) {
     guard type.rawValue >= minLevel.rawValue else {
       return
     }
-    let messages = messages(type: type, items)
+    let messages = items
+      .map { describe(value: $0) }
+      .joined(separator: " ")
+      .split(whereSeparator: \.isNewline)
+      .map { "\(type.prefix) \($0)" }
 
     handlers.forEach { handler in
       messages.forEach { message in
@@ -213,3 +190,15 @@ private func reformatStackSymbol(_ symbol: String) -> String {
   return symbol.replacingOccurrences(of: #"^\d+\s+"#, with: "", options: .regularExpression)
 }
 
+private func describe(value: Any) -> String {
+  if let value = value as? String {
+    return value
+  }
+  if let value = value as? CustomDebugStringConvertible {
+    return value.debugDescription
+  }
+  if let value = value as? CustomStringConvertible {
+    return value.description
+  }
+  return String(describing: value)
+}

@@ -12,26 +12,21 @@ import SafariServices
 @available(macOS 12.0, iOS 15.0, watchOS 8.0, tvOS 15.0, *)
 @objc(EXUpdatesLogReader)
 public class UpdatesLogReader: NSObject {
-
+  /**
+   Get expo-updates logs newer than the given date
+   Returns the log entries unpacked as dictionaries
+   Maximum of one day lookback is allowed
+   */
   @objc(getLogEntriesNewerThan:)
   public func getLogEntries(newerThan: Date) -> [[String: Any]] {
-    let strings: [String] = getLogEntries(newerThan: newerThan)
-    var result: [[String: Any]] = []
-    strings.forEach { s in
-      let entry = UpdatesLogEntry.create(from: s)
-      if (entry != nil) {
-        let dict = entry?.asDict()
-        if (dict != nil) {
-          result.append(dict!)
-        }
+    return getLogEntries(newerThan: newerThan)
+      .compactMap { logEntryString in
+        UpdatesLogEntry.create(from: logEntryString)?.asDict()
       }
-    }
-    return result
   }
 
   /**
    Get expo-updates logs newer than the given date
-   Returns an Objective-C NSArray of either strings or NSDictionary objects
    Returned strings are all in the JSON format of UpdatesLogEntry
    Maximum of one day lookback is allowed
    */
@@ -39,10 +34,10 @@ public class UpdatesLogReader: NSObject {
   public func getLogEntries(newerThan: Date) -> [String] {
     var result: [String] = []
     do {
-      let earliestDate = Date().addingTimeInterval(-86400)
+      let earliestDate = Date().addingTimeInterval(-86_400)
       let dateToUse = newerThan.timeIntervalSince1970 < earliestDate.timeIntervalSince1970 ?
-      earliestDate :
-      newerThan
+        earliestDate :
+        newerThan
 
       let logStore = try OSLogStore(scope: .currentProcessIdentifier)
       // Get all the logs since the given date.
@@ -50,34 +45,18 @@ public class UpdatesLogReader: NSObject {
 
       // Fetch log objects, selecting our subsystem and category
       let predicate = NSPredicate(format: "category == %@ AND subsystem = %@",
-                                  argumentArray: [UpdatesLogger.LOG_CATEGORY, Logger.LOG_SUBSYSTEM])
+                                  argumentArray: [UpdatesLogger.EXPO_UPDATES_LOG_CATEGORY, Logger.EXPO_MODULES_LOG_SUBSYSTEM])
       let allEntries = try logStore.getEntries(at: position, matching: predicate)
 
-      // Extract just the log message strings
-      let allEntriesMessages = allEntries
+      // Extract just the log message strings, removing the first two characters added
+      // by ExpoModulesCore.Logger
+      result = allEntries
           .compactMap { $0 as? OSLogEntryLog }
-          .compactMap { $0.composedMessage }
-      for entry in allEntriesMessages.enumerated() {
-        let json = entry.element as String
-        result.append(json)
-      }
+          .compactMap { String($0.composedMessage.suffix(from: $0.composedMessage.index($0.composedMessage.startIndex, offsetBy: 2)))
+          }
     } catch {
       result.append("Error occurred in UpdatesLogReader: \(error.localizedDescription)")
     }
     return result
-  }
-  
-  /**
-   Convenience method for returning expo-updates logs from last hour
-   */
-  @objc public func logEntriesInLastHour() -> [String] {
-    return getLogEntries(newerThan: Date().addingTimeInterval(-3600))
-  }
-
-  /**
-   Convenience method for returning expo-updates logs from last day
-   */
-  @objc public func logEntriesInLastDay() -> [String] {
-    return getLogEntries(newerThan: Date().addingTimeInterval(-86400))
   }
 }

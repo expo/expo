@@ -21,7 +21,7 @@ public struct UpdatesLogEntry: Codable {
     do {
       let jsonEncoder = JSONEncoder()
       let jsonData = try jsonEncoder.encode(self)
-      return String(data: jsonData, encoding: .utf8) ?? nil
+      return String(data: jsonData, encoding: .utf8)
     } catch {
       return nil
     }
@@ -31,7 +31,7 @@ public struct UpdatesLogEntry: Codable {
    Returns a Dictionary representation from this UpdatesLogEntry object
    */
   public func asDict() -> [String: Any] {
-    var result = Dictionary<String, Any>()
+    var result = [String: Any]()
     result["timestamp"] = timestamp
     result["message"] = message
     result["code"] = code
@@ -62,4 +62,3 @@ public struct UpdatesLogEntry: Codable {
     }
   }
 }
-

@@ -6,28 +6,13 @@ import os.log
 import ExpoModulesCore
 
 /**
- Subclass of Logger that overrides the format of log messages
- */
-internal class CoreLogger: ExpoModulesCore.Logger {
-  override func messages(type: LogType = .trace, _ items: [Any]) -> [String] {
-    return items
-      .map { describe(value: $0) }
-      .joined(separator: " ")
-      .split(whereSeparator: \.isNewline)
-      .map { "\($0)" }
-  }
-}
-
-/**
  Class that implements logging for expo-updates in its own os.log category
  */
-@available(macOS 12.0, iOS 15.0, watchOS 8.0, tvOS 15.0, *)
 @objc(EXUpdatesLogger)
 public class UpdatesLogger: NSObject {
+  public static let EXPO_UPDATES_LOG_CATEGORY = "expo-updates"
 
-  public static let LOG_CATEGORY = "expo-updates"
-
-  private let logger = CoreLogger(category: UpdatesLogger.LOG_CATEGORY)
+  private let logger = ExpoModulesCore.Logger(category: UpdatesLogger.EXPO_UPDATES_LOG_CATEGORY)
 
   // MARK: - Public logging functions
 
@@ -153,15 +138,16 @@ public class UpdatesLogger: NSObject {
     level: ExpoModulesCore.LogType = .trace,
     updateId: String?,
     assetId: String?
-  ) -> String{
+  ) -> String {
     // Get stacktrace:
     // - Only for log level error or fatal
     // - Since this is called by a public method above, drop this frame
     //   and the one below
-    let symbols = (level == .error || level == .fatal) ? ( Thread.callStackSymbols.dropFirst().dropFirst().map { s in
-      s.replacingOccurrences(of: #"^\d+\s+"#, with: "", options: .regularExpression)
-    }
-    ) : nil
+    let symbols = (level == .error || level == .fatal) ?
+      ( Thread.callStackSymbols.dropFirst().dropFirst().map { s in
+          s.replacingOccurrences(of: #"^\d+\s+"#, with: "", options: .regularExpression)
+      }
+      ) : nil
 
     let logEntry = UpdatesLogEntry(
       timestamp: UInt(Date().timeIntervalSince1970),
