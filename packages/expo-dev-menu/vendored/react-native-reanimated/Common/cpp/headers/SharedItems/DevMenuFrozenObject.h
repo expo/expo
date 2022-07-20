@@ -5,9 +5,9 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
-#include "RuntimeManager.h"
-#include "SharedParent.h"
-#include "WorkletsCache.h"
+#include "DevMenuRuntimeManager.h"
+#include "DevMenuSharedParent.h"
+#include "DevMenuWorkletsCache.h"
 
 using namespace facebook;
 

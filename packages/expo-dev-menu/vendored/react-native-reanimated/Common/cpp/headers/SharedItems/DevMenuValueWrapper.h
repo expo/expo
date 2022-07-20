@@ -4,10 +4,10 @@
 #include <memory>
 #include <string>
 #include <vector>
-#include "HostFunctionHandler.h"
-#include "JSIStoreValueUser.h"
-#include "SharedParent.h"
-#include "WorkletsCache.h"
+#include "DevMenuHostFunctionHandler.h"
+#include "DevMenuJSIStoreValueUser.h"
+#include "DevMenuSharedParent.h"
+#include "DevMenuWorkletsCache.h"
 
 namespace devmenureanimated {
 
