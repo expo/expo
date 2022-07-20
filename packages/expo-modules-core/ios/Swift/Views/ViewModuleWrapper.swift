@@ -117,6 +117,11 @@ public final class ViewModuleWrapper: RCTViewManager, DynamicModuleWrapperProtoc
     }
   }
 
+  @objc
+  public func getViewClass() -> UIView.Type? {
+    return wrappedModuleHolder.viewManager?.getViewClass()
+  }
+
   /**
    Creates a subclass of `ViewModuleWrapper` in runtime. The new class overrides `moduleName` stub.
    */

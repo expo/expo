@@ -1,0 +1,24 @@
+{
+  "name": "fabric-tester",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "expo start --dev-client",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
+    "web": "expo start --web",
+    "eject": "expo eject"
+  },
+  "dependencies": {
+    "expo": "~46.0.0-beta.2",
+    "react": "18.0.0",
+    "react-dom": "18.0.0",
+    "react-native": "0.69.1",
+    "react-native-web": "~0.18.1",
+    "expo-linear-gradient": "~11.4.0",
+    "expo-splash-screen": "~0.16.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.12.9"
+  },
+  "private": true
+}

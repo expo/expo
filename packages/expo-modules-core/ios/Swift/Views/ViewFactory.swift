@@ -4,12 +4,12 @@ import UIKit
  A definition of the view factory that creates views.
  */
 internal struct ViewFactory: ViewManagerDefinitionComponent {
-  typealias FactoryClosureType = () -> UIView
+  let factory: () -> UIView
+  let viewType: UIView.Type
 
-  let factory: FactoryClosureType
-
-  init(_ factory: @escaping FactoryClosureType) {
+  init<ViewType: UIView>(_ factory: @escaping () -> ViewType) {
     self.factory = factory
+    self.viewType = ViewType.self
   }
 
   func create() -> UIView {

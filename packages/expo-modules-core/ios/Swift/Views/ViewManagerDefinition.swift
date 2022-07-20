@@ -46,6 +46,10 @@ public final class ViewManagerDefinition: ObjectDefinition {
     return factory?.create()
   }
 
+  func getViewClass() -> UIView.Type? {
+    return factory?.viewType
+  }
+
   /**
    Returns props definitions as a dictionary where the keys are the prop names.
    */

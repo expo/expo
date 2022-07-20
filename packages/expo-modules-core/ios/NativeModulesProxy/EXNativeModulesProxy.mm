@@ -8,6 +8,10 @@
 #import <React/RCTModuleData.h>
 #import <React/RCTEventDispatcherProtocol.h>
 
+#ifdef RN_FABRIC_ENABLED
+#import <React/RCTComponentViewFactory.h>
+#endif
+
 #import <jsi/jsi.h>
 
 #import <ExpoModulesCore/EXNativeModulesProxy.h>
@@ -379,6 +383,12 @@ RCT_EXPORT_METHOD(callMethod:(NSString *)moduleName methodNameOrKey:(id)methodNa
                                                                   managerClass:wrappedViewModuleClass
                                                                         bridge:bridge];
   componentDataByName[className] = componentData;
+
+#ifdef RN_FABRIC_ENABLED
+  Class viewClass = [ExpoFabricView makeClassCopyForAppContext:_appContext moduleName:className];
+  [[RCTComponentViewFactory currentComponentViewFactory] registerComponentViewClass:viewClass];
+#endif
+
   return wrappedViewModuleClass;
 }
 
