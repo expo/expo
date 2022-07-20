@@ -384,6 +384,7 @@ export type ImagePickerOptions = {
    *
    * @default false
    * @platform ios 14+
+   * @platform android
    * @platform web
    */
   allowsMultipleSelection?: boolean;
