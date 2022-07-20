@@ -24,11 +24,11 @@ React Native includes some very useful tools for development: remote JavaScript 
 
 The Developer Menu gives you access to a host of features that make development and debugging much easier. Invoking it depends on the device where you are running your application:
 
-- Terminal UI: Press `m` in the terminal to open the menu on connected iOS and Android
+- Terminal UI: Press <kbd>M</kbd> in the terminal to open the menu on connected iOS and Android
 - iOS Device: Shake the device a little bit.
-- iOS Simulator: Hit `Ctrl-Cmd-Z` on a Mac in the emulator to simulate the shake gesture, or press `Cmd+D`.
+- iOS Simulator: Hit <kbd>Ctrl</kbd> + <kbd>⌘</kbd> + <kbd>Z</kbd> on a Mac in the emulator to simulate the shake gesture, or press <kbd>⌘</kbd> + <kbd>D</kbd>.
 - Android Device: Shake the device vertically a little bit.
-- Android Emulator: Either hit `Cmd+M`, or run `adb shell input keyevent 82` in your terminal window.
+- Android Emulator: Either hit <kbd>⌘</kbd> + <kbd>M</kbd> or <kbd>Ctrl</kbd> + <kbd>M</kbd> or run `adb shell input keyevent 82` in your terminal window.
 
 ## Production Mode
 
