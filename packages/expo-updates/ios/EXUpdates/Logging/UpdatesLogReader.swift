@@ -55,7 +55,8 @@ public class UpdatesLogReader: NSObject {
           .compactMap { String($0.composedMessage.suffix(from: $0.composedMessage.index($0.composedMessage.startIndex, offsetBy: 2)))
           }
     } catch {
-      result.append("Error occurred in UpdatesLogReader: \(error.localizedDescription)")
+      // If an error happened reading the OSLogStore, surface the error as an UpdatesLogEntry with the right shape
+      result.append(UpdatesLogEntry(timestamp: UInt(Date().timeIntervalSince1970), message: "Error reading OSLogStore: \(error.localizedDescription)", code: UpdatesErrorCode.None.asString, level: "\(LogType.error)", updateId: nil, assetId: nil, stacktrace: UpdatesLogEntry.currentStackTrace()).asString() ?? "")
     }
     return result
   }

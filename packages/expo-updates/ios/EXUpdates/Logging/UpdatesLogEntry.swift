@@ -44,6 +44,8 @@ public struct UpdatesLogEntry: Codable {
         nsstack.add(s)
       }
       result["stacktrace"] = nsstack
+    } else {
+      result["stacktrace"] = NSNull()
     }
     return result
   }
@@ -60,5 +62,17 @@ public struct UpdatesLogEntry: Codable {
     } catch {
       return nil
     }
+  }
+
+  /**
+   Utility method to construct stacktrace as a string array for log entries
+   */
+  private static let STACKTRACE_MAX_LENGTH = 20
+
+  public static func currentStackTrace() -> [String] {
+    return [String](Thread.callStackSymbols.dropFirst().dropFirst().prefix(STACKTRACE_MAX_LENGTH))
+      .map { stackframe in
+        stackframe.replacingOccurrences(of: #"^\d+\s+"#, with: "", options: .regularExpression)
+      }
   }
 }

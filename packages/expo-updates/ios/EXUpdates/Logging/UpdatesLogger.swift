@@ -143,12 +143,7 @@ public class UpdatesLogger: NSObject {
     // - Only for log level error or fatal
     // - Since this is called by a public method above, drop this frame
     //   and the one below
-    let symbols = (level == .error || level == .fatal) ?
-      ( Thread.callStackSymbols.dropFirst().dropFirst().map { s in
-          s.replacingOccurrences(of: #"^\d+\s+"#, with: "", options: .regularExpression)
-      }
-      ) : nil
-
+    let symbols = (level == .error || level == .fatal) ? UpdatesLogEntry.currentStackTrace() : nil
     let logEntry = UpdatesLogEntry(
       timestamp: UInt(Date().timeIntervalSince1970),
       message: message,

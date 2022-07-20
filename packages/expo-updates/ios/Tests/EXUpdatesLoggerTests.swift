@@ -6,8 +6,7 @@ import XCTest
 @testable import ExpoModulesCore
 
 @available(macOS 12.0, iOS 15.0, watchOS 8.0, tvOS 15.0, *)
-class EXUpdatesLoggerTests : XCTestCase {
-
+class EXUpdatesLoggerTests: XCTestCase {
   func test_BasicLoggingWorks() {
     let logger = UpdatesLogger()
     let logReader = UpdatesLogReader()
