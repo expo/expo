@@ -1,8 +1,8 @@
-#include "LayoutAnimationsProxy.h"
-#include "FrozenObject.h"
-#include "MutableValue.h"
-#include "ShareableValue.h"
-#include "ValueWrapper.h"
+#include "DevMenuLayoutAnimationsProxy.h"
+#include "DevMenuFrozenObject.h"
+#include "DevMenuMutableValue.h"
+#include "DevMenuShareableValue.h"
+#include "DevMenuValueWrapper.h"
 
 namespace devmenureanimated {
 

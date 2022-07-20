@@ -3,7 +3,7 @@
 #include <jsi/jsi.h>
 #include <memory>
 #include <utility>
-#include "SharedParent.h"
+#include "DevMenuSharedParent.h"
 
 using namespace facebook;
 
