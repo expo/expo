@@ -1,9 +1,10 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
-// Schema for the fields in expo-updates log message JSON strings
-
 import Foundation
 
+/**
+ Schema for the fields in expo-updates log message JSON strings
+ */
 public struct UpdatesLogEntry: Codable {
   var timestamp: UInt // seconds since 1/1/1970 UTC
   var message: String
@@ -26,8 +27,11 @@ public struct UpdatesLogEntry: Codable {
     }
   }
 
-  public func asDict() -> NSDictionary {
-    let result = NSMutableDictionary()
+  /**
+   Returns a Dictionary representation from this UpdatesLogEntry object
+   */
+  public func asDict() -> [String: Any] {
+    var result = Dictionary<String, Any>()
     result["timestamp"] = timestamp
     result["message"] = message
     result["code"] = code

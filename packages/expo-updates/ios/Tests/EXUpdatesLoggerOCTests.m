@@ -30,7 +30,6 @@ typedef enum {
 API_AVAILABLE(ios(15.0))
 @interface EXUpdatesLogReader : NSObject
 
-- (NSArray * _Nonnull)getLogEntries;
 - (NSArray * _Nonnull)getLogEntriesNewerThan:(NSDate * _Nonnull)epoch;
 
 @end
@@ -81,4 +80,4 @@ API_AVAILABLE(ios(15.0))
 }
 
 @end
-*/
+ */

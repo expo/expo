@@ -22,14 +22,14 @@ class EXUpdatesLoggerTests : XCTestCase {
     logger.warn(message: "Warning message", code: .AssetsFailedToLoad, updateId: "myUpdateId", assetId: "myAssetId")
 
     // Use reader to retrieve messages, get the last one written
-    let logEntries: NSArray? = logReader.getLogEntries(newerThan: epoch, returnEntriesAs: "NSString")
+    let logEntries: [String] = logReader.getLogEntries(newerThan: epoch)
 
     // Verify number of log entries and decoded values
-    XCTAssertTrue(logEntries?.count ?? 0 >= 2)
+    XCTAssertTrue(logEntries.count >= 2)
 
     // Check number of entries and values in each entry
 
-    let logEntryText: String = logEntries![logEntries!.count - 2] as! String
+    let logEntryText: String = logEntries[logEntries.count - 2]
 
     let logEntry = UpdatesLogEntry.create(from: logEntryText)
     XCTAssertTrue(logEntry?.timestamp == UInt(epoch.timeIntervalSince1970))
@@ -40,7 +40,7 @@ class EXUpdatesLoggerTests : XCTestCase {
     XCTAssertNil(logEntry?.assetId)
     XCTAssertNotNil(logEntry?.stacktrace)
 
-    let logEntryText2: String = logEntries!.lastObject as! String
+    let logEntryText2: String = logEntries[logEntries.count - 1] as String
     let logEntry2 = UpdatesLogEntry.create(from: logEntryText2)
     XCTAssertTrue(logEntry2?.timestamp == UInt(epoch.timeIntervalSince1970))
     XCTAssertTrue(logEntry2?.message == "Warning message")
@@ -66,10 +66,10 @@ class EXUpdatesLoggerTests : XCTestCase {
     otherLogger.error("Bogus")
 
     // Get all entries newer than the date
-    let logEntries: NSArray? = logReader.getLogEntries(newerThan: epoch, returnEntriesAs: "NSString")
+    let logEntries: [String] = logReader.getLogEntries(newerThan: epoch)
 
     // Verify that only the expected message shows up in the reader
-    let logEntryText: String = logEntries![logEntries!.count - 1] as! String
+    let logEntryText: String = logEntries[logEntries.count - 1] as String
     XCTAssertFalse(logEntryText.contains("Bogus"))
     XCTAssertTrue(logEntryText.contains("Test message"))
   }

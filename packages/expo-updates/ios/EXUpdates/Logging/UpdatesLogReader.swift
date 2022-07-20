@@ -1,20 +1,32 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
-// Reads expo-updates logs
-
 import Foundation
 import OSLog
 
 import ExpoModulesCore
 import SafariServices
 
+/**
+ Class to read expo-updates logs using OSLogReader
+ */
 @available(macOS 12.0, iOS 15.0, watchOS 8.0, tvOS 15.0, *)
 @objc(EXUpdatesLogReader)
 public class UpdatesLogReader: NSObject {
 
   @objc(getLogEntriesNewerThan:)
-  public func getLogEntries(newerThan: Date) -> NSArray {
-    return getLogEntries(newerThan: newerThan, returnEntriesAs: "NSDictionary")
+  public func getLogEntries(newerThan: Date) -> [[String: Any]] {
+    let strings: [String] = getLogEntries(newerThan: newerThan)
+    var result: [[String: Any]] = []
+    strings.forEach { s in
+      let entry = UpdatesLogEntry.create(from: s)
+      if (entry != nil) {
+        let dict = entry?.asDict()
+        if (dict != nil) {
+          result.append(dict!)
+        }
+      }
+    }
+    return result
   }
 
   /**
@@ -23,9 +35,9 @@ public class UpdatesLogReader: NSObject {
    Returned strings are all in the JSON format of UpdatesLogEntry
    Maximum of one day lookback is allowed
    */
-  @objc(getLogEntriesNewerThan:returnEntriesAs:)
-  public func getLogEntries(newerThan: Date, returnEntriesAs: String = "NSDictionary") -> NSArray {
-    let result = NSMutableArray()
+  @objc(getLogEntryStringsNewerThan:)
+  public func getLogEntries(newerThan: Date) -> [String] {
+    var result: [String] = []
     do {
       let earliestDate = Date().addingTimeInterval(-86400)
       let dateToUse = newerThan.timeIntervalSince1970 < earliestDate.timeIntervalSince1970 ?
@@ -47,15 +59,10 @@ public class UpdatesLogReader: NSObject {
           .compactMap { $0.composedMessage }
       for entry in allEntriesMessages.enumerated() {
         let json = entry.element as String
-        if returnEntriesAs == "NSString" {
-          result.add(json)
-          continue
-        }
-        let logEntry = UpdatesLogEntry.create(from: json)
-        result.add(logEntry!.asDict())
+        result.append(json)
       }
     } catch {
-      result.add("Error occurred in UpdatesLogReader: \(error.localizedDescription)")
+      result.append("Error occurred in UpdatesLogReader: \(error.localizedDescription)")
     }
     return result
   }
@@ -63,14 +70,14 @@ public class UpdatesLogReader: NSObject {
   /**
    Convenience method for returning expo-updates logs from last hour
    */
-  @objc public func logEntriesInLastHour() -> NSArray {
+  @objc public func logEntriesInLastHour() -> [String] {
     return getLogEntries(newerThan: Date().addingTimeInterval(-3600))
   }
 
   /**
    Convenience method for returning expo-updates logs from last day
    */
-  @objc public func logEntriesInLastDay() -> NSArray {
+  @objc public func logEntriesInLastDay() -> [String] {
     return getLogEntries(newerThan: Date().addingTimeInterval(-86400))
   }
 }

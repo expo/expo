@@ -1,9 +1,10 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
-// Error codes for expo-updates logs
-
 import Foundation
 
+/**
+ Error codes for expo-updates logs
+ */
 @objc(EXUpdatesErrorCode)
 public enum UpdatesErrorCode: Int {
   case None = 0
