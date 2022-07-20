@@ -205,6 +205,7 @@ async function askForSubstitutionDataAsync(
       type: 'text',
       name: 'description',
       message: 'How would you describe the module?',
+      initial: 'My new module',
       validate: (input) => !!input || 'Cannot be empty',
     },
     {
