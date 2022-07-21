@@ -46,7 +46,10 @@ const renderComponent = (
       )}
       <CommentTextBlock comment={extractedComment} />
       {componentsProps && componentsProps.length ? (
-        <APISectionProps data={componentsProps} header={`${resolvedName}Props`} />
+        <APISectionProps
+          data={componentsProps}
+          header={componentsProps.length === 1 ? 'Props' : `${resolvedName}Props`}
+        />
       ) : null}
     </div>
   );
@@ -55,7 +58,7 @@ const renderComponent = (
 const APISectionComponents = ({ data, componentsProps }: APISectionComponentsProps) =>
   data?.length ? (
     <>
-      <H2 key="components-header">Components</H2>
+      <H2 key="components-header">{data.length === 1 ? 'Component' : 'Components'}</H2>
       {data.map(component =>
         renderComponent(
           component,

@@ -86,6 +86,7 @@ export const mdInlineComponents: MDComponents = {
 const nonLinkableTypes = [
   'ColorValue',
   'Component',
+  'ComponentClass',
   'E',
   'EventSubscription',
   'File',
@@ -127,6 +128,7 @@ const hardcodedTypeLinks: Record<string, string> = {
   AVPlaybackSource: '/versions/latest/sdk/av/#avplaybacksource',
   AVPlaybackStatus: '/versions/latest/sdk/av/#avplaybackstatus',
   AVPlaybackStatusToSet: '/versions/latest/sdk/av/#avplaybackstatustoset',
+  Blob: 'https://developer.mozilla.org/en-US/docs/Web/API/Blob',
   Date: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date',
   Element: 'https://www.typescriptlang.org/docs/handbook/jsx.html#function-component',
   Error: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error',
@@ -140,6 +142,8 @@ const hardcodedTypeLinks: Record<string, string> = {
   View: '/versions/latest/react-native/view',
   ViewProps: '/versions/latest/react-native/view#props',
   ViewStyle: '/versions/latest/react-native/view-style-props',
+  WebGL2RenderingContext: 'https://developer.mozilla.org/en-US/docs/Web/API/WebGL2RenderingContext',
+  WebGLFramebuffer: 'https://developer.mozilla.org/en-US/docs/Web/API/WebGLFramebuffer',
 };
 
 const renderWithLink = (name: string, type?: string) => {

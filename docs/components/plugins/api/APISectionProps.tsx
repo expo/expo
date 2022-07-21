@@ -130,7 +130,7 @@ const APISectionProps = ({ data, defaultProps, header = 'Props' }: APISectionPro
   const baseProp = data.find(prop => prop.name === header);
   return data?.length ? (
     <>
-      {header === 'Props' ? (
+      {data?.length === 1 || header === 'Props' ? (
         <H2 key="props-header">{header}</H2>
       ) : (
         <div>
@@ -142,7 +142,7 @@ const APISectionProps = ({ data, defaultProps, header = 'Props' }: APISectionPro
         </div>
       )}
       {data.map((propsDefinition: PropsDefinitionData) =>
-        renderProps(propsDefinition, defaultProps, header === 'Props')
+        renderProps(propsDefinition, defaultProps, data?.length === 1 || header === 'Props')
       )}
     </>
   ) : null;

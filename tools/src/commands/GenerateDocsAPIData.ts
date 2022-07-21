@@ -48,6 +48,7 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-firebase-analytics': ['Analytics.ts'],
   'expo-firebase-core': ['FirebaseCore.ts'],
   'expo-font': ['index.ts'],
+  'expo-gl': ['index.ts'],
   'expo-haptics': ['Haptics.ts'],
   'expo-image-manipulator': ['ImageManipulator.ts'],
   'expo-image-picker': ['ImagePicker.ts'],

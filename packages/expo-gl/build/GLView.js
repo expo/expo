@@ -5,22 +5,43 @@ import { configureLogging } from './GLUtils';
 import { createWorkletContextProvider } from './GLWorkletContextProvider';
 const { ExponentGLObjectManager, ExponentGLViewManager } = NativeModulesProxy;
 const NativeView = requireNativeViewManager('ExponentGLView');
+// @needsAudit
 /**
- * A component that acts as an OpenGL render target
+ * A View that acts as an OpenGL ES render target. On mounting, an OpenGL ES context is created.
+ * Its drawing buffer is presented as the contents of the View every frame.
  */
 export class GLView extends React.Component {
     static NativeView;
     static defaultProps = {
         msaaSamples: 4,
     };
+    /**
+     * Imperative API that creates headless context which is devoid of underlying view.
+     * It's useful for headless rendering or in case you want to keep just one context per application and share it between multiple components.
+     * It is slightly faster than usual context as it doesn't swap framebuffers and doesn't present them on the canvas,
+     * however it may require you to take a snapshot in order to present its results.
+     * Also, keep in mind that you need to set up a viewport and create your own framebuffer and texture that you will be drawing to, before you take a snapshot.
+     * @return A promise that resolves to WebGL context object. See [WebGL API](#webgl-api) for more details.
+     */
     static async createContextAsync() {
         const { exglCtxId } = await ExponentGLObjectManager.createContextAsync();
         return getGl(exglCtxId);
     }
+    /**
+     * Destroys given context.
+     * @param exgl WebGL context to destroy.
+     * @return A promise that resolves to boolean value that is `true` if given context existed and has been destroyed successfully.
+     */
     static async destroyContextAsync(exgl) {
         const exglCtxId = getContextId(exgl);
         return ExponentGLObjectManager.destroyContextAsync(exglCtxId);
     }
+    /**
+     * Takes a snapshot of the framebuffer and saves it as a file to app's cache directory.
+     * @param exgl WebGL context to take a snapshot from.
+     * @param options
+     * @return A promise that resolves to `GLSnapshot` object.
+     */
     static async takeSnapshotAsync(exgl, options = {}) {
         const exglCtxId = getContextId(exgl);
         return ExponentGLObjectManager.takeSnapshotAsync(exglCtxId, options);
@@ -54,12 +75,14 @@ export class GLView extends React.Component {
             this.props.onContextCreate(gl);
         }
     };
+    // @docsMissing
     async startARSessionAsync() {
         if (!ExponentGLViewManager.startARSessionAsync) {
             throw new UnavailabilityError('expo-gl', 'startARSessionAsync');
         }
         return await ExponentGLViewManager.startARSessionAsync(findNodeHandle(this.nativeRef));
     }
+    // @docsMissing
     async createCameraTextureAsync(cameraRefOrHandle) {
         if (!ExponentGLObjectManager.createCameraTextureAsync) {
             throw new UnavailabilityError('expo-gl', 'createCameraTextureAsync');
@@ -72,12 +95,18 @@ export class GLView extends React.Component {
         const { exglObjId } = await ExponentGLObjectManager.createCameraTextureAsync(exglCtxId, cameraTag);
         return { id: exglObjId };
     }
+    // @docsMissing
     async destroyObjectAsync(glObject) {
         if (!ExponentGLObjectManager.destroyObjectAsync) {
             throw new UnavailabilityError('expo-gl', 'destroyObjectAsync');
         }
         return await ExponentGLObjectManager.destroyObjectAsync(glObject.id);
     }
+    /**
+     * Same as static [`takeSnapshotAsync()`](#glviewtakesnapshotasyncgl-options),
+     * but uses WebGL context that is associated with the view on which the method is called.
+     * @param options
+     */
     async takeSnapshotAsync(options = {}) {
         if (!GLView.takeSnapshotAsync) {
             throw new UnavailabilityError('expo-gl', 'takeSnapshotAsync');
