@@ -26,9 +26,9 @@ The Developer Menu gives you access to a host of features that make development 
 
 - Terminal UI: Press <kbd>M</kbd> in the terminal to open the menu on connected iOS and Android
 - iOS Device: Shake the device a little bit.
-- iOS Simulator: Hit <kbd>Ctrl</kbd> + <kbd>⌘</kbd> + <kbd>Z</kbd> on a Mac in the emulator to simulate the shake gesture, or press <kbd>⌘</kbd> + <kbd>D</kbd>.
+- iOS Simulator: Hit <kbd>Ctrl</kbd> + <kbd>Cmd ⌘</kbd> + <kbd>Z</kbd> on a Mac in the emulator to simulate the shake gesture, or press <kbd>Cmd ⌘</kbd> + <kbd>D</kbd>.
 - Android Device: Shake the device vertically a little bit.
-- Android Emulator: Either hit <kbd>⌘</kbd> + <kbd>M</kbd> or <kbd>Ctrl</kbd> + <kbd>M</kbd> or run `adb shell input keyevent 82` in your terminal window.
+- Android Emulator: Either hit <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> or <kbd>Ctrl</kbd> + <kbd>M</kbd> or run `adb shell input keyevent 82` in your terminal window.
 
 ## Production Mode
 

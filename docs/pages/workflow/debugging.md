@@ -64,9 +64,9 @@ Below are a few tools we recommend, and use ourselves, when it comes to debuggin
 This menu gives you access to several functions which are useful for debugging, and is built into the Expo Go app. The way you open it is a bit different depending on where you're running the Expo Go app:
 
 - iOS Device: Shake the device a little bit, or touch 3 fingers to the screen.
-- iOS Simulator: Hit <kbd>Ctrl</kbd> + <kbd>⌘</kbd> + <kbd>Z</kbd> on a Mac in the emulator to simulate the shake gesture, or press <kbd>⌘</kbd> + <kbd>D</kbd>.
+- iOS Simulator: Hit <kbd>Ctrl</kbd> + <kbd>Cmd ⌘</kbd> + <kbd>Z</kbd> on a Mac in the emulator to simulate the shake gesture, or press <kbd>Cmd ⌘</kbd> + <kbd>D</kbd>.
 - Android Device: Shake the device vertically a little bit, or run `adb shell input keyevent 82` in your terminal window if your device is connected via USB.
-- Android Emulator: Either hit <kbd>⌘</kbd> + <kbd>M</kbd> or <kbd>Ctrl</kbd> + <kbd>M</kbd> or run `adb shell input keyevent 82` in your terminal window.
+- Android Emulator: Either hit <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> or <kbd>Ctrl</kbd> + <kbd>M</kbd> or run `adb shell input keyevent 82` in your terminal window.
 
 The Developer Menu gives you a couple different functionalities. A few are pretty self-explanatory, like:
 
@@ -101,7 +101,7 @@ You can install it via the [release page](https://github.com/jhen0409/react-nati
 
 ### Startup
 
-After firing up React Native Debugger, you'll need to specify the port (shortcuts: <kbd>⌘</kbd> + <kbd>T</kbd> on macOS, <kbd>Ctrl</kbd> + <kbd>T</kbd> on Linux/Windows) to `19000` (if you use SDK <= 39, the port should be `19001`>). After that, run your project with `expo start`, and select `Debug remote JS` from the Developer Menu. The debugger should automatically connect.
+After firing up React Native Debugger, you'll need to specify the port (shortcuts: <kbd>Cmd ⌘</kbd> + <kbd>T</kbd> on macOS, <kbd>Ctrl</kbd> + <kbd>T</kbd> on Linux/Windows) to `19000` (if you use SDK <= 39, the port should be `19001`>). After that, run your project with `expo start`, and select `Debug remote JS` from the Developer Menu. The debugger should automatically connect.
 
 In the debugger console, you can see the Element tree, as well as the props, state, and children of whatever element you select. You also have the Chrome console on the right, and if you type `$r` in the console, you will see the breakdown of your selected element.
 
@@ -127,7 +127,7 @@ There are however [some limitations](https://github.com/jhen0409/react-native-de
 [Redux](https://redux.js.org/) is a popular library for managing and centralizing application state shared throughout the app. You can use Redux DevTools on React Native Debugger for debugging the application's state changes. The setup is as follows:
 
 1. Download React Native Debugger from the [releases page](https://github.com/jhen0409/react-native-debugger/releases).
-2. Open the app, press <kbd>⌘</kbd> + <kbd>T</kbd> or <kbd>Ctrl</kbd> + <kbd>T</kbd> to open a new window, then set the port to 19000.
+2. Open the app, press <kbd>Cmd ⌘</kbd> + <kbd>T</kbd> or <kbd>Ctrl</kbd> + <kbd>T</kbd> to open a new window, then set the port to 19000.
 3. Start your app, open the in-app developer menu, and select “Debug JS Remotely.”
 4. Configure `__REDUX_DEVTOOLS_EXTENSION__` as [shown here](https://github.com/zalmoxisus/redux-devtools-extension#11-basic-store).
 
