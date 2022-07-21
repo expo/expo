@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- [Android] Logging and log reading. ([#18318](https://github.com/expo/expo/pull/18318) by [@douglowder](https://github.com/douglowder))
+- [Android] New logger and log reader for unifying logging support in expo-updates. ([#18318](https://github.com/expo/expo/pull/18318) by [@douglowder](https://github.com/douglowder))
 
 ### 🐛 Bug fixes
 
