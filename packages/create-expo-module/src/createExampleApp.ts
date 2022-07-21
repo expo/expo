@@ -18,7 +18,19 @@ export async function createExampleApp(
   targetDir: string,
   packageManager: PackageManagerName
 ): Promise<void> {
+  // Package name for the example app
   const exampleProjectSlug = `${data.project.slug}-example`;
+
+  // `expo init` creates a new folder with the same name as the project slug
+  const appTmpPath = path.join(targetDir, exampleProjectSlug);
+
+  // Path to the target example dir
+  const appTargetPath = path.join(targetDir, 'example');
+
+  if (!(await fs.pathExists(appTargetPath))) {
+    // The template doesn't include the example app, so just skip this phase
+    return;
+  }
 
   await newStep('Initializing the example app', async (step) => {
     await spawnAsync(
@@ -31,12 +43,6 @@ export async function createExampleApp(
     );
     step.succeed('Initialized the example app');
   });
-
-  // `expo init` creates a new folder with the same name as the project slug
-  const appTmpPath = path.join(targetDir, exampleProjectSlug);
-
-  // Path to the target example dir
-  const appTargetPath = path.join(targetDir, 'example');
 
   await newStep('Configuring the example app', async (step) => {
     // "example" folder already exists and contains template files,
