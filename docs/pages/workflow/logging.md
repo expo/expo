@@ -30,7 +30,7 @@ The following instructions apply to macOS.
 
 #### Option 1: Use GUI log
 
-- In simulator, press <kbd>⌘</kbd> + <kbd>/</kbd>, _or_ go to `Debug -> Open System Log` -- both of these open a log window that displays all of the logs from your device, including the logs from your Expo app.
+- In simulator, press <kbd>Cmd ⌘</kbd> + <kbd>/</kbd>, _or_ go to `Debug -> Open System Log` -- both of these open a log window that displays all of the logs from your device, including the logs from your Expo app.
 
 #### Option 2: Open it in terminal
 
