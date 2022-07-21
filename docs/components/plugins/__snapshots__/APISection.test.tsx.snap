@@ -4981,7 +4981,7 @@ OAuth 2.0 protocol
          
       </strong>
       <div
-        class="css-1sodslb-PlatformTags"
+        class="css-1xwiwui-PlatformTag"
       >
         <svg
           color="var(--expo-theme-palette-blue-900)"
@@ -5001,7 +5001,7 @@ OAuth 2.0 protocol
           />
         </svg>
         <span
-          class="css-vefllk-PlatformTags"
+          class="css-1y4xxhe-PlatformTag"
         >
           iOS 13.2+
         </span>

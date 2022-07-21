@@ -17,7 +17,7 @@ import {
   TypeDefinitionData,
   TypePropertyDataFlags,
 } from '~/components/plugins/api/APIDataTypes';
-import { PlatformTags } from '~/components/plugins/api/APISectionPlatformTags';
+import { APISectionPlatformTags } from '~/components/plugins/api/APISectionPlatformTags';
 import * as Constants from '~/constants/theme';
 import { Cell, HeaderCell, Row, Table, TableHead } from '~/ui/components/Table';
 import { tableWrapperStyle } from '~/ui/components/Table/Table';
@@ -504,11 +504,11 @@ export const CommentTextBlock = ({
   return (
     <>
       {!withDash && includePlatforms && hasPlatforms && (
-        <PlatformTags comment={comment} prefix="Only for:" />
+        <APISectionPlatformTags comment={comment} prefix="Only for:" />
       )}
       {beforeContent}
       {withDash && (shortText || text) && ' - '}
-      {withDash && includePlatforms && <PlatformTags comment={comment} />}
+      {withDash && includePlatforms && <APISectionPlatformTags comment={comment} />}
       {shortText}
       {text}
       {afterContent}
