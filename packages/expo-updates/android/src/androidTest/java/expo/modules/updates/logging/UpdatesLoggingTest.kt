@@ -54,7 +54,8 @@ class UpdatesLoggingTest : TestCase() {
     Thread.sleep(2000)
     val secondTime = Date()
     logger.error("Message 2", UpdatesErrorCode.NoUpdatesAvailable)
-
+    Thread.sleep(1000)
+    val thirdTime = Date()
     val reader = UpdatesLogReader()
 
     val firstLogs = reader.getLogEntries(firstTime)
@@ -66,5 +67,8 @@ class UpdatesLoggingTest : TestCase() {
     Assert.assertEquals(1, secondLogs.size)
     Assert.assertEquals("Message 2", UpdatesLogEntry.create(secondLogs[0]).message)
     Assert.assertEquals(MAX_FRAMES_IN_STACKTRACE, UpdatesLogEntry.create(secondLogs[0]).stacktrace?.size)
+
+    val thirdLogs = reader.getLogEntries(thirdTime)
+    Assert.assertEquals(0, thirdLogs.size)
   }
 }
