@@ -6,11 +6,11 @@
 
 ### 🎉 New features
 
-- Logging and log reading. ([#18284](https://github.com/expo/expo/pull/18284) by [@douglowder](https://github.com/douglowder))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- [iOS] New logger and log reader for unifying logging support in expo-updates. ([#18284](https://github.com/expo/expo/pull/18284) by [@douglowder](https://github.com/douglowder))
 
 ## 0.14.2 — 2022-07-16
 

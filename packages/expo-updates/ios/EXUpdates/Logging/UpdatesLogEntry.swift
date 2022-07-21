@@ -43,11 +43,7 @@ public struct UpdatesLogEntry: Codable {
       result["assetId"] = assetId
     }
     if let stacktrace = stacktrace {
-      var nsstack = [String]()
-      for s in stacktrace {
-        nsstack.append(s)
-      }
-      result["stacktrace"] = nsstack
+      result["stacktrace"] = stacktrace
     }
     return result
   }
