@@ -37,7 +37,11 @@ async function main(target: string | undefined, options: CommandOptions) {
 
   options.target = targetDir;
 
-  const data = await askForSubstitutionDataAsync(targetDir, options);
+  const data = await askForSubstitutionDataAsync(targetDir);
+
+  // Make one line break between prompts and progress logs
+  console.log();
+
   const packageManager = await resolvePackageManager();
   const packagePath = options.source
     ? path.join(CWD, options.source)
@@ -116,18 +120,6 @@ async function getNpmTarballUrl(packageName: string, version: string = 'latest')
 }
 
 /**
- * Gets the username of currently logged in user. Used as a default in the prompt asking for the module author.
- */
-async function npmWhoamiAsync(targetDir: string): Promise<string | null> {
-  try {
-    const { stdout } = await spawnAsync('npm', ['whoami'], { cwd: targetDir });
-    return stdout.trim();
-  } catch {
-    return null;
-  }
-}
-
-/**
  * Downloads the template from NPM registry.
  */
 async function downloadPackageAsync(targetDir: string): Promise<string> {
@@ -202,8 +194,8 @@ async function askForSubstitutionDataAsync(targetDir: string): Promise<Substitut
       description,
       package: projectPackage,
     },
-    author,
-    license,
+    author: `${authorName} <${authorEmail}> (${authorUrl})`,
+    license: 'MIT',
     repo,
   };
 }
@@ -246,12 +238,6 @@ program
     '-s, --source <source_dir>',
     'Local path to the template. By default it downloads `expo-module-template` from NPM.'
   )
-  .option('-n, --name <module_name>', 'Name of the native module.')
-  .option('-d, --description <description>', 'Description of the module.')
-  .option('-p, --package <package>', 'The Android package name.')
-  .option('-a, --author <author>', 'The author name.')
-  .option('-l, --license <license>', 'The license that the module is distributed with.')
-  .option('-r, --repo <repo_url>', 'The URL to the repository.')
   .option('--with-readme', 'Whether to include README.md file.', false)
   .option('--with-changelog', 'Whether to include CHANGELOG.md file.', false)
   .option('--no-example', 'Whether to skip creating the example app.', false)

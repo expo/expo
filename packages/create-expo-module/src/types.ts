@@ -6,12 +6,6 @@ import { PromptObject } from 'prompts';
 export type CommandOptions = {
   target: string;
   source?: string;
-  name?: string;
-  description?: string;
-  package?: string;
-  author?: string;
-  license?: string;
-  repo?: string;
   withReadme: boolean;
   withChangelog: boolean;
   example: boolean;
