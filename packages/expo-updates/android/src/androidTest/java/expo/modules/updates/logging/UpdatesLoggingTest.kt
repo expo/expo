@@ -1,9 +1,5 @@
 package expo.modules.updates.logging
 
-import expo.modules.updates.logging.UpdatesErrorCode
-import expo.modules.updates.logging.UpdatesLogEntry
-import expo.modules.updates.logging.UpdatesLogReader
-import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.logging.UpdatesLogger.Companion.MAX_FRAMES_IN_STACKTRACE
 import junit.framework.TestCase
 import org.junit.Assert
@@ -44,9 +40,10 @@ class UpdatesLoggingTest : TestCase() {
     logger.warn("Test message", UpdatesErrorCode.JSRuntimeError)
     val now = Date()
     val nowTimestamp = now.time / 1000
+    val expectedLogEntryString = "{\"timestamp\":$nowTimestamp,\"message\":\"Test message\",\"code\":\"JSRuntimeError\",\"level\":\"warn\"}"
     val sinceThen = Date(now.time - 5000)
     val logs = UpdatesLogReader().getLogEntries(sinceThen)
-    Assert.assertTrue(logs.any { it.contains("{\"timestamp\":$nowTimestamp,\"message\":\"Test message\",\"code\":\"JSRuntimeError\",\"level\":\"warn\"}") })
+    Assert.assertTrue(logs.any { it == expectedLogEntryString })
   }
 
   @Test
@@ -56,19 +53,18 @@ class UpdatesLoggingTest : TestCase() {
     logger.info("Message 1", UpdatesErrorCode.None)
     Thread.sleep(2000)
     val secondTime = Date()
-    Thread.sleep(2000)
     logger.error("Message 2", UpdatesErrorCode.NoUpdatesAvailable)
 
     val reader = UpdatesLogReader()
 
     val firstLogs = reader.getLogEntries(firstTime)
-    Assert.assertEquals(2, firstlogs.size)
+    Assert.assertEquals(2, firstLogs.size)
     Assert.assertEquals("Message 1", UpdatesLogEntry.create(firstLogs[0]).message)
     Assert.assertEquals("Message 2", UpdatesLogEntry.create(firstLogs[1]).message)
 
     val secondLogs = reader.getLogEntries(secondTime)
-    Assert.assertEquals(1, secondlogs.size)
-    Assert.assertEquals("Message 2", UpdatesLogEntry.create(secondLogs.[0]).message)
+    Assert.assertEquals(1, secondLogs.size)
+    Assert.assertEquals("Message 2", UpdatesLogEntry.create(secondLogs[0]).message)
     Assert.assertEquals(MAX_FRAMES_IN_STACKTRACE, UpdatesLogEntry.create(secondLogs[0]).stacktrace?.size)
   }
 }

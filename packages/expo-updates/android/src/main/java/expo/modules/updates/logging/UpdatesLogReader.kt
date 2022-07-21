@@ -1,7 +1,3 @@
-// Copyright 2022-present 650 Industries. All rights reserved.
-
-// Reads expo-updates logs
-
 package expo.modules.updates.logging
 
 import java.io.BufferedReader
@@ -9,6 +5,9 @@ import java.io.IOException
 import java.io.InputStreamReader
 import java.util.*
 
+/**
+ * Class for reading expo-updates logs
+ */
 class UpdatesLogReader {
 
   /**
@@ -18,16 +17,32 @@ class UpdatesLogReader {
   fun getLogEntries(newerThan: Date): List<String> {
     val result: MutableList<String> = mutableListOf()
     val epochTimestamp = newerThan.time / 1000
-    val pid = android.os.Process.myPid().toString()
-    val process = Runtime.getRuntime().exec("logcat -d -s ${UpdatesLogger.LOGGING_TAG} -vlong")
-    return process.inputStream.bufferedReader().useLines { lines ->
-      lines
-        .chunked(2)
-        .filter { linePair -> linePair.first().contains(pid) }
-        .map { linePair -> UpdatesLogEntry.create(linePair.last()) }
-        .filter { entry -> entry.timestamp > epochTimestamp  }
-        .map { entry -> entry.asString() }
-        .toList()
+    val pid = "${android.os.Process.myPid()}"
+    try {
+      // Use logcat to read just logs with our tag, in long format (message on separate line)
+      val process = Runtime.getRuntime().exec("logcat -d -s ${UpdatesLogger.EXPO_UPDATES_LOGGING_TAG} -vlong")
+      val bufferedReader = BufferedReader(
+        InputStreamReader(process.inputStream)
+      )
+      var line: String? = ""
+      var writeThisLine = false
+      while (bufferedReader.readLine().also { line = it } != null) {
+        if (writeThisLine) {
+          // Check that it is a valid JSON string
+          val entry = UpdatesLogEntry.create(line ?: "")
+          // Check that timestamp is equal to or later than the passed in date before writing
+          if (entry?.timestamp >= epochTimestamp) {
+            result.add(line ?: "")
+          }
+          writeThisLine = false
+        }
+        if ((line ?: "").contains(pid)) {
+          // Line has our PID, so write the next line if needed
+          writeThisLine = true
+        }
+      }
+    } catch (e: IOException) {
     }
+    return result
   }
 }

@@ -1,12 +1,11 @@
-// Copyright 2022-present 650 Industries. All rights reserved.
-
-// Class that implements logging for expo-updates with its own logcat tag
-
 package expo.modules.updates.logging
 
 import android.util.Log
 import java.util.*
 
+/**
+ * Class that implements logging for expo-updates with its own logcat tag
+ */
 class UpdatesLogger {
 
   fun trace(
@@ -126,23 +125,23 @@ class UpdatesLogger {
     val logEntry = UpdatesLogEntry(
       timestamp,
       message,
-      UpdatesErrorCode.asString(code),
-      UpdatesLogType.asString(level),
+      code.code,
+      level.type,
       updateId,
       assetId,
       stacktrace
     )
     when (UpdatesLogType.toOSLogType(level)) {
-      Log.DEBUG -> Log.d(LOGGING_TAG, logEntry.asString())
-      Log.INFO -> Log.i(LOGGING_TAG, logEntry.asString())
-      Log.WARN -> Log.w(LOGGING_TAG, logEntry.asString())
-      Log.ERROR -> Log.e(LOGGING_TAG, logEntry.asString())
-      Log.ASSERT -> Log.e(LOGGING_TAG, logEntry.asString())
+      Log.DEBUG -> Log.d(EXPO_UPDATES_LOGGING_TAG, logEntry.asString())
+      Log.INFO -> Log.i(EXPO_UPDATES_LOGGING_TAG, logEntry.asString())
+      Log.WARN -> Log.w(EXPO_UPDATES_LOGGING_TAG, logEntry.asString())
+      Log.ERROR -> Log.e(EXPO_UPDATES_LOGGING_TAG, logEntry.asString())
+      Log.ASSERT -> Log.e(EXPO_UPDATES_LOGGING_TAG, logEntry.asString())
     }
   }
 
   companion object {
-    const val LOGGING_TAG = "dev.expo.updates" // All logs use this tag
+    const val EXPO_UPDATES_LOGGING_TAG = "dev.expo.updates" // All logs use this tag
     const val MAX_FRAMES_IN_STACKTRACE = 20
   }
 }
