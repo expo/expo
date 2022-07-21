@@ -15,13 +15,13 @@ This step is very easy but it takes a while. Open up the Mac App Store, search f
 
 ## Step 2: Install Xcode Command Line Tools
 
-Open Xcode, then choose "Preferences..." from the Xcode menu (or press ⌘+,). Go to the Locations panel and install the tools by selecting the most recent version in the Command Line Tools dropdown.
+Open Xcode, then choose "Preferences..." from the Xcode menu (or press <kbd>Cmd ⌘</kbd> + <kbd>,</kbd>). Go to the Locations panel and install the tools by selecting the most recent version in the Command Line Tools dropdown.
 
 <ImageSpotlight alt="Xcode preferences" src="/static/images/xcode-command-line.png" containerStyle={{ paddingBottom: 0 }} />
 
 ## Step 3: Try it out
 
-Run your app with `expo-cli` and press `i` from the command line. You may get a warning about needing to accept the Xcode license. Run the command that it suggests. Open your app again, success! Or no? If no, please seek help on StackOverflow, Google, or the [Expo CLI section of the forums](https://forums.expo.dev/c/expo-cli). The troubleshooting tips below may be helpful too.
+Run your app with `expo-cli` and press <kbd>I</kbd> from the command line. You may get a warning about needing to accept the Xcode license. Run the command that it suggests. Open your app again, success! Or no? If no, please seek help on StackOverflow, Google, or the [Expo CLI section of the forums](https://forums.expo.dev/c/expo-cli). The troubleshooting tips below may be helpful too.
 
 <Video file="open-in-ios-simulator.mp4" />
 

@@ -11,7 +11,7 @@ import {
   TypeDefinitionData,
 } from '~/components/plugins/api/APIDataTypes';
 import { APISectionDeprecationNote } from '~/components/plugins/api/APISectionDeprecationNote';
-import { PlatformTags } from '~/components/plugins/api/APISectionPlatformTags';
+import { APISectionPlatformTags } from '~/components/plugins/api/APISectionPlatformTags';
 import {
   CommentTextBlock,
   getCommentOrSignatureComment,
@@ -105,7 +105,7 @@ export const renderProp = (
   return (
     <div key={`prop-entry-${name}`} css={[STYLES_APIBOX, !exposeInSidebar && STYLES_APIBOX_NESTED]}>
       <APISectionDeprecationNote comment={extractedComment} />
-      <PlatformTags comment={comment} prefix="Only for:" firstElement />
+      <APISectionPlatformTags comment={comment} prefix="Only for:" firstElement />
       <HeaderComponent>
         <InlineCode customCss={!exposeInSidebar ? STYLES_NOT_EXPOSED_HEADER : undefined}>
           {name}
