@@ -1,14 +1,12 @@
-import { PlatformName } from '../../types/common';
-
 import { H3 } from '~/components/plugins/Headings';
 import { PlatformTags } from '~/components/plugins/PlatformTag';
 import { STYLES_APIBOX } from '~/components/plugins/api/APISectionUtils';
+import { PlatformName } from '~/types/common';
 
-type APIBoxProps = {
+type APIBoxProps = React.PropsWithChildren<{
   header?: string;
   platforms?: PlatformName[];
-  children: JSX.Element[];
-};
+}>;
 
 export const APIBox = ({ header, platforms, children }: APIBoxProps) => {
   return (
