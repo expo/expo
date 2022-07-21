@@ -38,25 +38,18 @@ data class UpdatesLogEntry(
 
   companion object {
     fun create(json: String): UpdatesLogEntry {
-      val jsonObject = JSONTokener(json).nextValue() as JSONObject
-      val timestamp = jsonObject.getLong("timestamp")
-      val message = jsonObject.getString("message")
-      val code = jsonObject.getString("code")
-      val level = jsonObject.getString("level")
-      val updateId = jsonObject.optString("updateId", null)
-      val assetId = jsonObject.optString("assetId", null)
-      val jsonArray = jsonObject.optJSONArray("stacktrace")
-
-      var stacktrace: List<String>? = null
-
-      if (jsonArray != null) {
-        stacktrace = mutableListOf()
-        for (i in 0 until jsonArray.length()) {
-          stacktrace.add(jsonArray.getString(i))
+      val jsonObject = JSONObject(json)
+      return UpdatesLogEntry(
+        jsonObject.require("timestamp"), 
+        jsonObject.require("message"), 
+        jsonObject.require("code"), 
+        jsonObject.require("level"), 
+        jsonObject.getNullable("updateId"), 
+        jsonObject.getNullable("assetId"),
+        jsonObject.getNullable<JSONArray>("stacktrace")?.let { jsonArray ->
+          List(jsonArray.length()) { i -> jsonArray.getString(i) }
         }
-      }
-
-      return UpdatesLogEntry(timestamp, message, code, level, updateId, assetId, stacktrace)
+      )
     }
   }
 }
