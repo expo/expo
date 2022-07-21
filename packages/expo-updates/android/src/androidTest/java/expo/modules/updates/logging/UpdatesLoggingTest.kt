@@ -1,4 +1,4 @@
-package expo.modules.updates
+package expo.modules.updates.logging
 
 import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogEntry
