@@ -37,3 +37,5 @@ export type CustomPromptObject = PromptObject & {
   name: string;
   resolvedValue?: string | null;
 };
+
+export type Answers = Record<string, string>;

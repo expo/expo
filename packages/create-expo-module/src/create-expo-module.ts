@@ -6,12 +6,12 @@ import ejs from 'ejs';
 import fs from 'fs-extra';
 import path from 'path';
 import prompts from 'prompts';
-import validateNpmPackage from 'validate-npm-package-name';
 
 import { createExampleApp } from './createExampleApp';
 import { installDependencies } from './packageManager';
+import getPrompts from './prompts';
 import { resolvePackageManager } from './resolvePackageManager';
-import { CommandOptions, CustomPromptObject, SubstitutionData } from './types';
+import { CommandOptions, SubstitutionData } from './types';
 import { newStep } from './utils';
 
 const packageJson = require('../package.json');
@@ -175,77 +175,24 @@ async function createModuleFromTemplate(
  * Asks the user for some data necessary to render the template.
  * Some values may already be provided by command options, the prompt is skipped in that case.
  */
-async function askForSubstitutionDataAsync(
-  targetDir: string,
-  options: CommandOptions
-): Promise<SubstitutionData> {
-  const defaultPackageSlug = path.basename(targetDir);
-  const useDefaultSlug = options.target && validateNpmPackage(defaultPackageSlug);
-  const defaultProjectName = defaultPackageSlug
-    .replace(/^./, (match) => match.toUpperCase())
-    .replace(/\W+(\w)/g, (_, p1) => p1.toUpperCase());
-
-  const promptQueries: CustomPromptObject[] = [
-    {
-      type: 'text',
-      name: 'slug',
-      message: 'What is the package slug?',
-      initial: defaultPackageSlug,
-      resolvedValue: useDefaultSlug ? defaultPackageSlug : null,
-      validate: (input) =>
-        validateNpmPackage(input).validForNewPackages || 'Must be a valid npm package name',
-    },
-    {
-      type: 'text',
-      name: 'name',
-      message: 'What is the project name?',
-      initial: defaultProjectName,
-    },
-    {
-      type: 'text',
-      name: 'description',
-      message: 'How would you describe the module?',
-      initial: 'My new module',
-      validate: (input) => !!input || 'Cannot be empty',
-    },
-    {
-      type: 'text',
-      name: 'package',
-      message: 'What is the Android package name?',
-      initial: `expo.modules.${defaultPackageSlug.replace(/\W/g, '').toLowerCase()}`,
-    },
-    {
-      type: 'text',
-      name: 'author',
-      message: 'Who is the author?',
-      initial: (await npmWhoamiAsync(targetDir)) ?? '',
-    },
-    {
-      type: 'text',
-      name: 'license',
-      message: 'What is the license?',
-      initial: 'MIT',
-    },
-    {
-      type: 'text',
-      name: 'repo',
-      message: 'What is the repository URL?',
-      validate: (input) => /^https?:\/\//.test(input) || 'Must be a valid URL',
-    },
-  ];
+async function askForSubstitutionDataAsync(targetDir: string): Promise<SubstitutionData> {
+  const promptQueries = await getPrompts(targetDir);
 
   // Stop the process when the user cancels/exits the prompt.
   const onCancel = () => {
     process.exit(0);
   };
 
-  const answers: Record<string, string> = {};
-  for (const query of promptQueries) {
-    const { name, resolvedValue } = query;
-    answers[name] = resolvedValue ?? options[name] ?? (await prompts(query, { onCancel }))[name];
-  }
-
-  const { slug, name, description, package: projectPackage, author, license, repo } = answers;
+  const {
+    slug,
+    name,
+    description,
+    package: projectPackage,
+    authorName,
+    authorEmail,
+    authorUrl,
+    repo,
+  } = await prompts(promptQueries, { onCancel });
 
   return {
     project: {
