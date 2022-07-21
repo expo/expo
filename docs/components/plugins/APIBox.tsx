@@ -13,8 +13,8 @@ type APIBoxProps = {
 export const APIBox = ({ header, platforms, children }: APIBoxProps) => {
   return (
     <div css={STYLES_APIBOX}>
+      {platforms && <PlatformTags prefix="Only for:" platforms={platforms} firstElement />}
       {header && <H3>{header}</H3>}
-      {platforms && <PlatformTags prefix="Only for:" platforms={platforms} />}
       {children}
     </div>
   );
