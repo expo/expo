@@ -37,17 +37,19 @@ const formatPlatformName = (name: PlatformName) => {
 };
 
 export const PlatformTag = ({ platform, firstElement }: PlatformTagProps) => {
+  const platformName = getPlatformName(platform);
+
   return (
     <div
       css={[
         platformTagStyle,
         firstElement && platformTagFirstStyle,
-        platform === 'android' && androidPlatformTagStyle,
-        platform === 'ios' && iosPlatformTagStyle,
-        platform === 'web' && webPlatformTagStyle,
-        platform === 'expo' && expoPlatformStyle,
+        platformName === 'android' && androidPlatformTagStyle,
+        platformName === 'ios' && iosPlatformTagStyle,
+        platformName === 'web' && webPlatformTagStyle,
+        platformName === 'expo' && expoPlatformStyle,
       ]}>
-      <PlatformIcon platform={platform} />
+      <PlatformIcon platform={platformName} />
       <span css={platformLabelStyle}>{formatPlatformName(platform)}</span>
     </div>
   );
@@ -57,7 +59,7 @@ export const PlatformTags = ({ prefix, firstElement, platforms }: PlatformTagsPr
   return platforms?.length ? (
     <>
       {prefix && <B>{prefix}&ensp;</B>}
-      {platforms.map(getPlatformName).map(platform => {
+      {platforms.map(platform => {
         return <PlatformTag key={platform} platform={platform} firstElement={firstElement} />;
       })}
       {prefix && <br />}
