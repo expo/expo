@@ -19,31 +19,15 @@ class UpdatesLogReader {
     val result: MutableList<String> = mutableListOf()
     val epochTimestamp = newerThan.time / 1000
     val pid = android.os.Process.myPid().toString()
-    try {
-      // Use logcat to read just logs with our tag, in long format (message on separate line)
-      val process = Runtime.getRuntime().exec("logcat -d -s ${UpdatesLogger.LOGGING_TAG} -vlong")
-      val bufferedReader = BufferedReader(
-        InputStreamReader(process.inputStream)
-      )
-      var line: String? = ""
-      var writeThisLine = false
-      while (bufferedReader.readLine().also { line = it } != null) {
-        if (writeThisLine) {
-          // Check that it is a valid JSON string
-          val entry = UpdatesLogEntry.create(line ?: "")
-          // Check that timestamp is equal to or later than the passed in date before writing
-          if (entry?.timestamp >= epochTimestamp) {
-            result.add(line ?: "")
-          }
-          writeThisLine = false
-        }
-        if ((line ?: "").contains(pid)) {
-          // Line has our PID, so write the next line if needed
-          writeThisLine = true
-        }
-      }
-    } catch (e: IOException) {
+    val process = Runtime.getRuntime().exec("logcat -d -s ${UpdatesLogger.LOGGING_TAG} -vlong")
+    return process.inputStream.bufferedReader().useLines { lines ->
+      lines
+        .chunked(2)
+        .filter { linePair -> linePair.first().contains(pid) }
+        .map { linePair -> UpdatesLogEntry.create(linePair.last()) }
+        .filter { entry -> entry.timestamp > epochTimestamp  }
+        .map { entry -> entry.asString() }
+        .toList()
     }
-    return result
   }
 }
