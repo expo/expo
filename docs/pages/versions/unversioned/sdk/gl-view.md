@@ -91,7 +91,7 @@ Any WebGL-supporting library that expects a [WebGLRenderingContext](https://www.
 
 ## Integration with Reanimated worklets
 
-To use this API inside Reanimated worklet you need to pass the GL context ID to the worklet and recreate the GL object like in the example bellow.
+To use this API inside Reanimated worklet, you need to pass the GL context ID to the worklet and recreate the GL object like in the example below.
 
 <SnackInline label='GL usage in reanimated worklet' dependencies={['expo-gl', 'react-native-reanimated']}>
 
@@ -139,7 +139,7 @@ Check [Reanimated documentation](https://docs.swmansion.com/react-native-reanima
 
 ## Remote Debugging & GLView
 
-This API does not function as intended with remote debugging enabled. The React Native debugger runs JavaScript on your computer (not the mobile device itself), and GLView requires synchronous native calls (which are not supported in Chrome).
+This API does not function as intended with remote debugging enabled. The React Native debugger runs JavaScript on your computer, not the mobile device. GLView requires synchronous native calls that are not supported in Chrome.
 
 ## API
 
@@ -151,8 +151,11 @@ import { GLView } from 'expo-gl';
 
 ## WebGL API
 
-Once the component is mounted and the OpenGL ES context has been created, the `gl` object received through the `onContextCreate` prop becomes the interface to the OpenGL ES context, providing a WebGL API. It resembles a [WebGL2RenderingContext](https://www.khronos.org/registry/webgl/specs/latest/2.0/#3.7) in the WebGL 2 spec. However, some older Android devices may not support WebGL2 features. To check whether the device supports WebGL2 it's recommended to use `gl instanceof WebGL2RenderingContext`.
-An additional method `gl.endFrameEXP()` is present which notifies the context that the current frame is ready to be presented. This is similar to a 'swap buffers' API call in other OpenGL platforms.
+Once the component is mounted and the OpenGL ES context has been created, the `gl` object received through the `onContextCreate` prop becomes the interface to the OpenGL ES context, providing a WebGL API. It resembles a [WebGL2RenderingContext](https://www.khronos.org/registry/webgl/specs/latest/2.0/#3.7) in the WebGL 2 spec.
+
+Some older Android devices may not support WebGL2 features. To check whether the device supports WebGL2 it's recommended to use `gl instanceof WebGL2RenderingContext`.
+
+An additional method `gl.endFrameEXP()` is present, which notifies the context that the current frame is ready to present. This is similar to a 'swap buffers' API call in other OpenGL platforms.
 
 The following WebGL2RenderingContext methods are currently unimplemented:
 
@@ -177,6 +180,8 @@ The following WebGL2RenderingContext methods are currently unimplemented:
 - `getSyncParameter()`
 - `getActiveUniformBlockParameter()`
 
-The `pixels` argument of [`texImage2D()`](https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/texImage2D) must be `null`, an `ArrayBuffer` with pixel data, or an object of the form `{ localUri }` where `localUri` is the `file://` URI of an image in the device's file system. Thus an `Asset` object could be used once `.downloadAsync()` has been called on it (and completed) to fetch the resource.
+The `pixels` argument of [`texImage2D()`](https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/texImage2D) must be `null`, an `ArrayBuffer` with pixel data, or an object of the form `{ localUri }` where `localUri` is the `file://` URI of an image in the device's file system. Thus, an `Asset` object is used once `.downloadAsync()` has been called on it (and completed) to fetch the resource.
 
-For efficiency reasons the current implementations of the methods don't perform type or bounds checking on their arguments. So, passing invalid arguments could cause a native crash. We plan to update the API to perform argument checking in upcoming SDK versions. Currently the priority for error checking is low since engines generally don't rely on the OpenGL API to perform argument checking and, even otherwise, checks performed by the underlying OpenGL ES implementation are often sufficient.
+For efficiency reasons, the current implementations of the methods don't perform type or bounds checking on their arguments. So, passing invalid arguments may cause a native crash. There are plans to update the API to perform argument checking in upcoming SDK versions. 
+
+Currently, the priority for error checking is low since engines generally don't rely on the OpenGL API to perform argument checking; otherwise, checks performed by the underlying OpenGL ES implementation are often sufficient.
