@@ -72,7 +72,7 @@ class UpdatesLoggingTest : TestCase() {
     Assert.assertEquals("Message 1", UpdatesLogEntry.create(firstLogs[0]).message)
     Assert.assertEquals("Message 2", UpdatesLogEntry.create(firstLogs[1]).message)
 
-    val secondlogs = reader.getLogEntries(secondTime)
+    val secondLogs = reader.getLogEntries(secondTime)
     Assert.assertEquals(1, secondlogs.size)
     Assert.assertEquals("Message 2", UpdatesLogEntry.create(secondlogs?.get(0)).message)
     Assert.assertEquals(MAX_FRAMES_IN_STACKTRACE, UpdatesLogEntry.create(secondlogs?.get(0)).stacktrace?.size)
