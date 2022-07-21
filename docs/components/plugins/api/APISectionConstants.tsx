@@ -5,7 +5,7 @@ import { B, P } from '~/components/base/paragraph';
 import { H2, H3Code } from '~/components/plugins/Headings';
 import { ConstantDefinitionData } from '~/components/plugins/api/APIDataTypes';
 import { APISectionDeprecationNote } from '~/components/plugins/api/APISectionDeprecationNote';
-import { PlatformTags } from '~/components/plugins/api/APISectionPlatformTags';
+import { APISectionPlatformTags } from '~/components/plugins/api/APISectionPlatformTags';
 import {
   CommentTextBlock,
   resolveTypeName,
@@ -23,7 +23,7 @@ const renderConstant = (
 ): JSX.Element => (
   <div key={`constant-definition-${name}`} css={STYLES_APIBOX}>
     <APISectionDeprecationNote comment={comment} />
-    <PlatformTags comment={comment} prefix="Only for:" firstElement />
+    <APISectionPlatformTags comment={comment} prefix="Only for:" firstElement />
     <H3Code>
       <InlineCode>
         {apiName ? `${apiName}.` : ''}

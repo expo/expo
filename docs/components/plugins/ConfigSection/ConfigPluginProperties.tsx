@@ -3,7 +3,7 @@ import React, { PropsWithChildren } from 'react';
 import { InlineCode } from '~/components/base/code';
 import { P } from '~/components/base/paragraph';
 import { H3 } from '~/components/plugins/Headings';
-import { PlatformTags } from '~/components/plugins/api/APISectionPlatformTags';
+import { APISectionPlatformTags } from '~/components/plugins/api/APISectionPlatformTags';
 import { Cell, HeaderCell, Row, Table, TableHead } from '~/ui/components/Table';
 
 type Props = PropsWithChildren<{
@@ -31,7 +31,7 @@ export const ConfigPluginProperties = ({ children, properties }: Props) => (
             <Cell>{!property.default ? '-' : <InlineCode>{property.default}</InlineCode>}</Cell>
             <Cell>
               {!!property.platform && (
-                <PlatformTags
+                <APISectionPlatformTags
                   prefix="Only for:"
                   platforms={[{ text: property.platform, tag: 'platform' }]}
                 />
