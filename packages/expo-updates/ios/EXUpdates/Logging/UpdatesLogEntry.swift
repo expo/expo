@@ -57,8 +57,7 @@ public struct UpdatesLogEntry: Codable {
     do {
       let jsonDecoder = JSONDecoder()
       guard let jsonData = from.data(using: .utf8) else { return nil }
-      let logEntry: UpdatesLogEntry = try jsonDecoder.decode(UpdatesLogEntry.self, from: jsonData)
-      return logEntry
+      return try jsonDecoder.decode(UpdatesLogEntry.self, from: jsonData)
     } catch {
       return nil
     }
