@@ -46,13 +46,7 @@ class UpdatesLoggingTest : TestCase() {
     val nowTimestamp = now.time / 1000
     val sinceThen = Date(now.time - 5000)
     val logs = UpdatesLogReader().getLogEntries(sinceThen)
-    var testPassed = false
-    for (log in logs) {
-      if (log.contains("{\"timestamp\":$nowTimestamp,\"message\":\"Test message\",\"code\":\"JSRuntimeError\",\"level\":\"warn\"}")) {
-        testPassed = true
-      }
-    }
-    Assert.assertTrue(testPassed)
+    Assert.assertTrue(logs.any { it.contains("{\"timestamp\":$nowTimestamp,\"message\":\"Test message\",\"code\":\"JSRuntimeError\",\"level\":\"warn\"}") })
   }
 
   @Test
