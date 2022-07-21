@@ -36,16 +36,18 @@ public struct UpdatesLogEntry: Codable {
     result["message"] = message
     result["code"] = code
     result["level"] = level
-    result["updateId"] = updateId != nil ? updateId : NSNull()
-    result["assetId"] = assetId != nil ? assetId : NSNull()
+    if (updateId != nil) {
+      result["updateId"] = updateId
+    }
+    if (assetId != nil) {
+      result["assetId"] = assetId
+    }
     if stacktrace != nil {
       let nsstack = NSMutableArray()
       for s in stacktrace! {
         nsstack.add(s)
       }
       result["stacktrace"] = nsstack
-    } else {
-      result["stacktrace"] = NSNull()
     }
     return result
   }

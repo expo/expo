@@ -35,21 +35,21 @@ class EXUpdatesLogReaderTests: XCTestCase {
 
     let logEntry: [String: Any] = logEntries[logEntries.count - 2]
 
-    XCTAssertTrue(logEntry["timestamp"] as! UInt == UInt(epoch.timeIntervalSince1970))
-    XCTAssertTrue(logEntry["message"] as! String == "Test message")
-    XCTAssertTrue(logEntry["code"] as! String == "NoUpdatesAvailable")
-    XCTAssertTrue(logEntry["level"] as! String == "error")
-    XCTAssertTrue(logEntry["updateId"] as! NSNull == NSNull())
-    XCTAssertTrue(logEntry["assetId"] as! NSNull == NSNull())
-    XCTAssertTrue((logEntry["stacktrace"] as! [String]).count > 0)
+    XCTAssertTrue(logEntry["timestamp"] as? UInt == UInt(epoch.timeIntervalSince1970))
+    XCTAssertTrue(logEntry["message"] as? String == "Test message")
+    XCTAssertTrue(logEntry["code"] as? String == "NoUpdatesAvailable")
+    XCTAssertTrue(logEntry["level"] as? String == "error")
+    XCTAssertNil(logEntry["updateId"])
+    XCTAssertNil(logEntry["assetId"])
+    XCTAssertFalse((logEntry["stacktrace"] as? [String] ?? []).isEmpty)
 
     let logEntry2: [String: Any] = logEntries[logEntries.count - 1]
-    XCTAssertTrue(logEntry2["timestamp"] as! UInt == UInt(epoch.timeIntervalSince1970))
-    XCTAssertTrue(logEntry2["message"] as! String == "Warning message")
-    XCTAssertTrue(logEntry2["code"] as! String == "AssetsFailedToLoad")
-    XCTAssertTrue(logEntry2["level"] as! String == "warn")
-    XCTAssertTrue(logEntry2["updateId"] as! String == "myUpdateId")
-    XCTAssertTrue(logEntry2["assetId"] as! String == "myAssetId")
-    XCTAssertTrue(logEntry2["stacktrace"] as! NSNull == NSNull())
+    XCTAssertTrue(logEntry2["timestamp"] as? UInt == UInt(epoch.timeIntervalSince1970))
+    XCTAssertTrue(logEntry2["message"] as? String == "Warning message")
+    XCTAssertTrue(logEntry2["code"] as? String == "AssetsFailedToLoad")
+    XCTAssertTrue(logEntry2["level"] as? String == "warn")
+    XCTAssertTrue(logEntry2["updateId"] as? String == "myUpdateId")
+    XCTAssertTrue(logEntry2["assetId"] as? String == "myAssetId")
+    XCTAssertNil(logEntry2["stacktrace"])
 }
 }
