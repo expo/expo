@@ -48,7 +48,9 @@ public class UpdatesLogReader: NSObject {
     // Extract just the log message strings, removing the first two characters added
     // by ExpoModulesCore.Logger
     return allEntries
-        .compactMap { String($0.composedMessage.suffix(from: $0.composedMessage.index($0.composedMessage.startIndex, offsetBy: 2)))
-        }
+          .compactMap { entry in
+            let suffixFrom = entry.composedMessage.index(entry.composedMessage.startIndex, offsetBy: 2)
+            return String(entry.composedMessage.suffix(from: suffixFrom))
+          }
   }
 }

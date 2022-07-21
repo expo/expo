@@ -36,16 +36,16 @@ public struct UpdatesLogEntry: Codable {
     result["message"] = message
     result["code"] = code
     result["level"] = level
-    if (updateId != nil) {
+    if let updateId = updateId {
       result["updateId"] = updateId
     }
-    if (assetId != nil) {
+    if let assetId = assetId {
       result["assetId"] = assetId
     }
-    if stacktrace != nil {
-      let nsstack = NSMutableArray()
-      for s in stacktrace! {
-        nsstack.add(s)
+    if let stacktrace = stacktrace {
+      var nsstack = [String]()
+      for s in stacktrace {
+        nsstack.append(s)
       }
       result["stacktrace"] = nsstack
     }
@@ -65,11 +65,11 @@ public struct UpdatesLogEntry: Codable {
     }
   }
 
+  private static let STACKTRACE_MAX_LENGTH = 20
+
   /**
    Utility method to construct stacktrace as a string array for log entries
    */
-  private static let STACKTRACE_MAX_LENGTH = 20
-
   public static func currentStackTrace() -> [String] {
     return [String](Thread.callStackSymbols.dropFirst().dropFirst().prefix(STACKTRACE_MAX_LENGTH))
       .map { stackframe in
