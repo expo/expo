@@ -18,7 +18,7 @@ class UpdatesLogReader {
   fun getLogEntries(newerThan: Date): List<String> {
     val result: MutableList<String> = mutableListOf()
     val epochTimestamp = newerThan.time / 1000
-    val pid = "${android.os.Process.myPid()}"
+    val pid = android.os.Process.myPid().toString()
     try {
       // Use logcat to read just logs with our tag, in long format (message on separate line)
       val process = Runtime.getRuntime().exec("logcat -d -s ${UpdatesLogger.LOGGING_TAG} -vlong")
