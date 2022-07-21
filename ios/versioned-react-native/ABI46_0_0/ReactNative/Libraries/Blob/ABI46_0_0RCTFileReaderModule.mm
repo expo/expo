@@ -31,24 +31,26 @@ ABI46_0_0RCT_EXPORT_METHOD(readAsText:(NSDictionary<NSString *, id> *)blob
                   reject:(ABI46_0_0RCTPromiseRejectBlock)reject)
 {
   ABI46_0_0RCTBlobManager *blobManager = [_moduleRegistry moduleForName:"BlobModule"];
-  NSData *data = [blobManager resolve:blob];
+  dispatch_async(blobManager.methodQueue, ^{
+    NSData *data = [blobManager resolve:blob];
 
-  if (data == nil) {
-    reject(ABI46_0_0RCTErrorUnspecified,
-           [NSString stringWithFormat:@"Unable to resolve data for blob: %@", [ABI46_0_0RCTConvert NSString:blob[@"blobId"]]], nil);
-  } else {
-    NSStringEncoding stringEncoding;
-
-    if (encoding == nil) {
-      stringEncoding = NSUTF8StringEncoding;
+    if (data == nil) {
+      reject(ABI46_0_0RCTErrorUnspecified,
+             [NSString stringWithFormat:@"Unable to resolve data for blob: %@", [ABI46_0_0RCTConvert NSString:blob[@"blobId"]]], nil);
     } else {
-      stringEncoding = CFStringConvertEncodingToNSStringEncoding(CFStringConvertIANACharSetNameToEncoding((CFStringRef) encoding));
+      NSStringEncoding stringEncoding;
+
+      if (encoding == nil) {
+        stringEncoding = NSUTF8StringEncoding;
+      } else {
+        stringEncoding = CFStringConvertEncodingToNSStringEncoding(CFStringConvertIANACharSetNameToEncoding((CFStringRef) encoding));
+      }
+
+      NSString *text = [[NSString alloc] initWithData:data encoding:stringEncoding];
+
+      resolve(text);
     }
-
-    NSString *text = [[NSString alloc] initWithData:data encoding:stringEncoding];
-
-    resolve(text);
-  }
+  });
 }
 
 ABI46_0_0RCT_EXPORT_METHOD(readAsDataURL:(NSDictionary<NSString *, id> *)blob
@@ -56,19 +58,21 @@ ABI46_0_0RCT_EXPORT_METHOD(readAsDataURL:(NSDictionary<NSString *, id> *)blob
                   reject:(ABI46_0_0RCTPromiseRejectBlock)reject)
 {
   ABI46_0_0RCTBlobManager *blobManager = [_moduleRegistry moduleForName:"BlobModule"];
-  NSData *data = [blobManager resolve:blob];
+  dispatch_async(blobManager.methodQueue, ^{
+    NSData *data = [blobManager resolve:blob];
 
-  if (data == nil) {
-    reject(ABI46_0_0RCTErrorUnspecified,
-           [NSString stringWithFormat:@"Unable to resolve data for blob: %@", [ABI46_0_0RCTConvert NSString:blob[@"blobId"]]], nil);
-  } else {
-    NSString *type = [ABI46_0_0RCTConvert NSString:blob[@"type"]];
-    NSString *text = [NSString stringWithFormat:@"data:%@;base64,%@",
-                      type != nil && [type length] > 0 ? type : @"application/octet-stream",
-                      [data base64EncodedStringWithOptions:0]];
+    if (data == nil) {
+      reject(ABI46_0_0RCTErrorUnspecified,
+             [NSString stringWithFormat:@"Unable to resolve data for blob: %@", [ABI46_0_0RCTConvert NSString:blob[@"blobId"]]], nil);
+    } else {
+      NSString *type = [ABI46_0_0RCTConvert NSString:blob[@"type"]];
+      NSString *text = [NSString stringWithFormat:@"data:%@;base64,%@",
+                        type != nil && [type length] > 0 ? type : @"application/octet-stream",
+                        [data base64EncodedStringWithOptions:0]];
 
-    resolve(text);
-  }
+      resolve(text);
+    }
+  });
 }
 
 - (std::shared_ptr<ABI46_0_0facebook::ABI46_0_0React::TurboModule>)getTurboModule:(const ABI46_0_0facebook::ABI46_0_0React::ObjCTurboModule::InitParams &)params
