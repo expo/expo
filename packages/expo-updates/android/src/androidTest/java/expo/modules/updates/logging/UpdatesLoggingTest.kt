@@ -67,7 +67,7 @@ class UpdatesLoggingTest : TestCase() {
 
     val reader = UpdatesLogReader()
 
-    val firstlogs = reader.getLogEntries(firstTime)
+    val firstLogs = reader.getLogEntries(firstTime)
     Assert.assertEquals(2, firstlogs.size)
     Assert.assertEquals("Message 1", UpdatesLogEntry.create(firstLogs[0]).message)
     Assert.assertEquals("Message 2", UpdatesLogEntry.create(firstLogs[1]).message)
