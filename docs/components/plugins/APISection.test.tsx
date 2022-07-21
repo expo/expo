@@ -31,7 +31,7 @@ describe('APISection', () => {
     );
 
     expect(screen.getAllByRole('heading', { level: 2 })).toHaveLength(6);
-    expect(screen.getAllByRole('heading', { level: 3 })).toHaveLength(19);
+    expect(screen.getAllByRole('heading', { level: 3 })).toHaveLength(25);
     expect(screen.getAllByRole('table')).toHaveLength(11);
 
     expect(screen.queryByText('Event Subscriptions'));
@@ -58,7 +58,7 @@ describe('APISection', () => {
     );
 
     expect(screen.getAllByRole('heading', { level: 2 })).toHaveLength(7);
-    expect(screen.getAllByRole('heading', { level: 3 })).toHaveLength(15);
+    expect(screen.getAllByRole('heading', { level: 3 })).toHaveLength(19);
 
     expect(screen.queryByText('Components'));
     expect(screen.queryByText('Hooks'));
@@ -67,9 +67,9 @@ describe('APISection', () => {
     expect(screen.queryByDisplayValue('BarCodeScannerProps'));
     expect(screen.queryByDisplayValue('Subscription'));
     expect(screen.queryByDisplayValue('usePermissions'));
+    expect(screen.queryByDisplayValue('Inherited Props'));
 
     expect(screen.queryAllByText('Constants')).toHaveLength(0);
-    expect(screen.queryAllByText('Props')).toHaveLength(0);
 
     expect(container).toMatchSnapshot();
   });
