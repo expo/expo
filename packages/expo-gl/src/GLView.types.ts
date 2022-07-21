@@ -66,12 +66,12 @@ export type GLSnapshot = {
 };
 
 // @docsMissing
-export type ExpoWebGLRenderingContext = WebGL2RenderingContext & {
+export interface ExpoWebGLRenderingContext extends WebGL2RenderingContext {
   contextId: number;
   endFrameEXP(): void;
   flushEXP(): void;
   __expoSetLogging(option: GLLoggingOption): void;
-};
+}
 
 // @docsMissing
 export type ComponentOrHandle = null | number | Component<any, any> | ComponentClass<any>;

@@ -18,6 +18,7 @@ import {
 } from './GLView.types';
 import { createWorkletContextProvider } from './GLWorkletContextProvider';
 
+// @docsMissing
 export type WebGLObject = {
   id: number;
 };

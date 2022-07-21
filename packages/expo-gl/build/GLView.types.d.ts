@@ -58,12 +58,12 @@ export declare type GLSnapshot = {
      */
     height: number;
 };
-export declare type ExpoWebGLRenderingContext = WebGL2RenderingContext & {
+export interface ExpoWebGLRenderingContext extends WebGL2RenderingContext {
     contextId: number;
     endFrameEXP(): void;
     flushEXP(): void;
     __expoSetLogging(option: GLLoggingOption): void;
-};
+}
 export declare type ComponentOrHandle = null | number | Component<any, any> | ComponentClass<any>;
 export declare type GLViewProps = {
     /**
