@@ -30,7 +30,7 @@ describe('APISection', () => {
       <APISection packageName="expo-apple-authentication" forceVersion="unversioned" />
     );
 
-    expect(screen.getAllByRole('heading', { level: 2 })).toHaveLength(5);
+    expect(screen.getAllByRole('heading', { level: 2 })).toHaveLength(6);
     expect(screen.getAllByRole('heading', { level: 3 })).toHaveLength(19);
     expect(screen.getAllByRole('table')).toHaveLength(11);
 
@@ -57,7 +57,7 @@ describe('APISection', () => {
       />
     );
 
-    expect(screen.getAllByRole('heading', { level: 2 })).toHaveLength(6);
+    expect(screen.getAllByRole('heading', { level: 2 })).toHaveLength(7);
     expect(screen.getAllByRole('heading', { level: 3 })).toHaveLength(15);
 
     expect(screen.queryByText('Components'));
