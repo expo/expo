@@ -11,7 +11,7 @@
 ### 💡 Others
 
 - Merge `GLViewProps` and `BaseGLViewProps` into one type - `GLViewProps`. ([#18322](https://github.com/expo/expo/pull/18322) by [@Simek](https://github.com/Simek))
-- Rename web specific prop types from `GLViewProps` to `GLViewWebProps`. ([#18322](https://github.com/expo/expo/pull/18322) by [@Simek](https://github.com/Simek))
+- Rename Web-specific prop types from `GLViewProps` to `GLViewWebProps`. ([#18322](https://github.com/expo/expo/pull/18322) by [@Simek](https://github.com/Simek))
 
 ## 11.4.0 — 2022-07-07
 
