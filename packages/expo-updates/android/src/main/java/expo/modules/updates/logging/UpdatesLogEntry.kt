@@ -18,22 +18,22 @@ data class UpdatesLogEntry(
   val stacktrace: List<String>?,
 ) {
   fun asString(): String {
-    val o = JSONObject()
-    o.put("timestamp", timestamp)
-    o.put("message", message)
-    o.put("code", code)
-    o.put("level", level)
-    if (updateId != null) {
-      o.put("updateId", updateId)
-    }
-    if (assetId != null) {
-      o.put("assetId", assetId)
-    }
-    if (stacktrace != null && stacktrace.isNotEmpty()) {
-      val a = JSONArray(stacktrace)
-      o.put("stacktrace", a)
-    }
-    return o.toString()
+    return JSONObject(mapOf(
+      "timestamp" to timestamp,
+      "message" to message,
+      "code" to code,
+      "level" to level
+    )).apply {
+      if (updateId != null) {
+        put("updateId", updateId)
+      }
+      if (assetId != null) {
+        put("assetId", assetId)
+      }
+      if (stacktrace != null && stacktrace.isNotEmpty()) {
+        put("stacktrace", JSONArray(stacktrace))
+      }
+    }.toString()
   }
 
   companion object {
