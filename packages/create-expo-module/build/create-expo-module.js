@@ -11,9 +11,9 @@ const ejs_1 = __importDefault(require("ejs"));
 const fs_extra_1 = __importDefault(require("fs-extra"));
 const path_1 = __importDefault(require("path"));
 const prompts_1 = __importDefault(require("prompts"));
-const validate_npm_package_name_1 = __importDefault(require("validate-npm-package-name"));
 const createExampleApp_1 = require("./createExampleApp");
 const packageManager_1 = require("./packageManager");
+const prompts_2 = __importDefault(require("./prompts"));
 const resolvePackageManager_1 = require("./resolvePackageManager");
 const utils_1 = require("./utils");
 const packageJson = require('../package.json');
@@ -33,7 +33,9 @@ async function main(target, options) {
     await fs_extra_1.default.ensureDir(targetDir);
     await confirmTargetDirAsync(targetDir);
     options.target = targetDir;
-    const data = await askForSubstitutionDataAsync(targetDir, options);
+    const data = await askForSubstitutionDataAsync(targetDir);
+    // Make one line break between prompts and progress logs
+    console.log();
     const packageManager = await (0, resolvePackageManager_1.resolvePackageManager)();
     const packagePath = options.source
         ? path_1.default.join(CWD, options.source)
@@ -101,18 +103,6 @@ async function getNpmTarballUrl(packageName, version = 'latest') {
     return stdout.trim();
 }
 /**
- * Gets the username of currently logged in user. Used as a default in the prompt asking for the module author.
- */
-async function npmWhoamiAsync(targetDir) {
-    try {
-        const { stdout } = await (0, spawn_async_1.default)('npm', ['whoami'], { cwd: targetDir });
-        return stdout.trim();
-    }
-    catch {
-        return null;
-    }
-}
-/**
  * Downloads the template from NPM registry.
  */
 async function downloadPackageAsync(targetDir) {
@@ -149,69 +139,13 @@ async function createModuleFromTemplate(templatePath, targetPath, data) {
  * Asks the user for some data necessary to render the template.
  * Some values may already be provided by command options, the prompt is skipped in that case.
  */
-async function askForSubstitutionDataAsync(targetDir, options) {
-    var _a, _b;
-    const defaultPackageSlug = path_1.default.basename(targetDir);
-    const useDefaultSlug = options.target && (0, validate_npm_package_name_1.default)(defaultPackageSlug);
-    const defaultProjectName = defaultPackageSlug
-        .replace(/^./, (match) => match.toUpperCase())
-        .replace(/\W+(\w)/g, (_, p1) => p1.toUpperCase());
-    const promptQueries = [
-        {
-            type: 'text',
-            name: 'slug',
-            message: 'What is the package slug?',
-            initial: defaultPackageSlug,
-            resolvedValue: useDefaultSlug ? defaultPackageSlug : null,
-            validate: (input) => (0, validate_npm_package_name_1.default)(input).validForNewPackages || 'Must be a valid npm package name',
-        },
-        {
-            type: 'text',
-            name: 'name',
-            message: 'What is the project name?',
-            initial: defaultProjectName,
-        },
-        {
-            type: 'text',
-            name: 'description',
-            message: 'How would you describe the module?',
-            validate: (input) => !!input || 'Cannot be empty',
-        },
-        {
-            type: 'text',
-            name: 'package',
-            message: 'What is the Android package name?',
-            initial: `expo.modules.${defaultPackageSlug.replace(/\W/g, '').toLowerCase()}`,
-        },
-        {
-            type: 'text',
-            name: 'author',
-            message: 'Who is the author?',
-            initial: (_a = (await npmWhoamiAsync(targetDir))) !== null && _a !== void 0 ? _a : '',
-        },
-        {
-            type: 'text',
-            name: 'license',
-            message: 'What is the license?',
-            initial: 'MIT',
-        },
-        {
-            type: 'text',
-            name: 'repo',
-            message: 'What is the repository URL?',
-            validate: (input) => /^https?:\/\//.test(input) || 'Must be a valid URL',
-        },
-    ];
+async function askForSubstitutionDataAsync(targetDir) {
+    const promptQueries = await (0, prompts_2.default)(targetDir);
     // Stop the process when the user cancels/exits the prompt.
     const onCancel = () => {
         process.exit(0);
     };
-    const answers = {};
-    for (const query of promptQueries) {
-        const { name, resolvedValue } = query;
-        answers[name] = (_b = resolvedValue !== null && resolvedValue !== void 0 ? resolvedValue : options[name]) !== null && _b !== void 0 ? _b : (await (0, prompts_1.default)(query, { onCancel }))[name];
-    }
-    const { slug, name, description, package: projectPackage, author, license, repo } = answers;
+    const { slug, name, description, package: projectPackage, authorName, authorEmail, authorUrl, repo, } = await (0, prompts_1.default)(promptQueries, { onCancel });
     return {
         project: {
             slug,
@@ -220,8 +154,8 @@ async function askForSubstitutionDataAsync(targetDir, options) {
             description,
             package: projectPackage,
         },
-        author,
-        license,
+        author: `${authorName} <${authorEmail}> (${authorUrl})`,
+        license: 'MIT',
         repo,
     };
 }
@@ -252,12 +186,6 @@ program
     .description(packageJson.description)
     .arguments('[target_dir]')
     .option('-s, --source <source_dir>', 'Local path to the template. By default it downloads `expo-module-template` from NPM.')
-    .option('-n, --name <module_name>', 'Name of the native module.')
-    .option('-d, --description <description>', 'Description of the module.')
-    .option('-p, --package <package>', 'The Android package name.')
-    .option('-a, --author <author>', 'The author name.')
-    .option('-l, --license <license>', 'The license that the module is distributed with.')
-    .option('-r, --repo <repo_url>', 'The URL to the repository.')
     .option('--with-readme', 'Whether to include README.md file.', false)
     .option('--with-changelog', 'Whether to include CHANGELOG.md file.', false)
     .option('--no-example', 'Whether to skip creating the example app.', false)
