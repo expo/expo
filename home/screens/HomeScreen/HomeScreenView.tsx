@@ -254,6 +254,7 @@ export class HomeScreenView extends React.Component<Props, State> {
               variables: {
                 accountName,
               },
+              fetchPolicy: 'network-only',
             })
           : new Promise<undefined>((resolve) => {
               resolve(undefined);
