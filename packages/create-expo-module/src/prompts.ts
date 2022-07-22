@@ -26,13 +26,14 @@ export default async function getPrompts(targetDir: string): Promise<PromptObjec
           .replace(/^./, (match) => match.toUpperCase())
           .replace(/\W+(\w)/g, (_, p1) => p1.toUpperCase());
       },
+      validate: (input) => !!input || 'The native module name cannot be empty',
     },
     {
       type: 'text',
       name: 'description',
       message: 'How would you describe the module?',
       initial: 'My new module',
-      validate: (input) => !!input || 'Cannot be empty',
+      validate: (input) => !!input || 'The description cannot be empty',
     },
     {
       type: 'text',
@@ -45,6 +46,7 @@ export default async function getPrompts(targetDir: string): Promise<PromptObjec
           .toLowerCase();
         return `expo.modules.${namespace}`;
       },
+      validate: (input) => !!input || 'The Android package name cannot be empty',
     },
     {
       type: 'text',
