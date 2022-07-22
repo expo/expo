@@ -96,6 +96,9 @@ templates/**/Pods/**
 templates/**/Podfile.lock
 templates/**/yarn.lock
 
+# EYW template
+/packages/expo-yarn-workspaces/workspace-template/yarn.lock
+
 # Codemod
 .codemod.bookmark
 
