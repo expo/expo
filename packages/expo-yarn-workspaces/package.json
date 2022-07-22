@@ -16,7 +16,7 @@
   ],
   "scripts": {
     "lint": "eslint .",
-    "pretest": "cd workspace-template && yarn",
+    "pretest": "cd workspace-template && yarn --no-lockfile",
     "test": "jest ."
   },
   "dependencies": {
