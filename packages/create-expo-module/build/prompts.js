@@ -19,19 +19,21 @@ async function getPrompts(targetDir) {
         {
             type: 'text',
             name: 'name',
-            message: 'What is the project name?',
+            message: 'What is the native module name?',
             initial: (_, answers) => {
                 return answers.slug
+                    .replace(/^@/, '')
                     .replace(/^./, (match) => match.toUpperCase())
                     .replace(/\W+(\w)/g, (_, p1) => p1.toUpperCase());
             },
+            validate: (input) => !!input || 'The native module name cannot be empty',
         },
         {
             type: 'text',
             name: 'description',
             message: 'How would you describe the module?',
             initial: 'My new module',
-            validate: (input) => !!input || 'Cannot be empty',
+            validate: (input) => !!input || 'The description cannot be empty',
         },
         {
             type: 'text',
@@ -44,6 +46,7 @@ async function getPrompts(targetDir) {
                     .toLowerCase();
                 return `expo.modules.${namespace}`;
             },
+            validate: (input) => !!input || 'The Android package name cannot be empty',
         },
         {
             type: 'text',
