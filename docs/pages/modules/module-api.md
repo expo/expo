@@ -353,38 +353,38 @@ Defines module's lifecycle listener that is called when the app context owning t
 
 Defines the listener that is called when the app is about to enter the foreground mode.
 
-> Note: This function is not available on Android — you may want to use [`OnActivityEntersForeground`](#onactivityentersforeground--) instead.
+> Note: This function is not available on Android — you may want to use [`OnActivityEntersForeground`](#onactivityentersforeground) instead.
 
 </APIBox>
 <APIBox header="OnAppEntersBackground" platforms={["ios"]}>
 
 Defines the listener that is called when the app enters the background mode.
 
-> Note: This function is not available on Android — you may want to use [`OnActivityEntersBackground`](#onactivityentersbackground--) instead.
+> Note: This function is not available on Android — you may want to use [`OnActivityEntersBackground`](#onactivityentersbackground) instead.
 
 </APIBox>
 <APIBox header="OnAppBecomesActive" platforms={["ios"]}>
 
 Defines the listener that is called when the app becomes active again (after `OnAppEntersForeground`).
 
-> Note: This function is not available on Android — you may want to use [`OnActivityEntersForeground`](#onactivityentersforeground--) instead.
+> Note: This function is not available on Android — you may want to use [`OnActivityEntersForeground`](#onactivityentersforeground) instead.
 
 </APIBox>
 <APIBox header="OnActivityEntersForeground" platforms={["android"]}>
 
-> Note: This function is not available on iOS — you may want to use [`OnAppEntersForeground`](#onappentersforeground--) instead.
+> Note: This function is not available on iOS — you may want to use [`OnAppEntersForeground`](#onappentersforeground) instead.
 
 </APIBox>
 <APIBox header="OnActivityEntersBackground" platforms={["android"]}>
 
-> Note: This function is not available on iOS — you may want to use [`OnAppEntersBackground`](#onappentersbackground--) instead.
+> Note: This function is not available on iOS — you may want to use [`OnAppEntersBackground`](#onappentersbackground) instead.
 
 </APIBox>
 <APIBox header="OnActivityDestroys" platforms={["android"]}>
 
 Defines the listener that is called when the activity owning the JavaScript context is about to be destroyed.
 
-> Note: This function is not available on iOS — you may want to use [`OnAppEntersBackground`](#onappentersbackground--) instead.
+> Note: This function is not available on iOS — you may want to use [`OnAppEntersBackground`](#onappentersbackground) instead.
 
 </APIBox>
 
