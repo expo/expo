@@ -60,7 +60,7 @@ function BranchList({ data, appId, loadMoreAsync }: Props) {
   const isLoading = React.useRef<null | boolean>(false);
   const theme = useExpoTheme();
 
-  const extractKey = React.useCallback((item: BranchManifest) => item.id, []);
+  const extractKey = (item: BranchManifest) => item.id;
 
   const handleLoadMoreAsync = async () => {
     if (isLoading.current) return;
@@ -98,7 +98,7 @@ function BranchList({ data, appId, loadMoreAsync }: Props) {
         />
       );
     },
-    []
+    [appId, data]
   );
 
   return (

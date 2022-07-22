@@ -108,7 +108,7 @@ export function ProjectList(props: Props) {
 function ProjectListView({ data, loadMoreAsync }: Props) {
   const isLoading = React.useRef<null | boolean>(false);
   const theme = useExpoTheme();
-  const extractKey = React.useCallback((item: CommonAppDataFragment) => item.id, []);
+  const extractKey = (item: CommonAppDataFragment) => item.id;
 
   const handleLoadMoreAsync = async () => {
     if (isLoading.current) return;
@@ -127,20 +127,23 @@ function ProjectListView({ data, loadMoreAsync }: Props) {
   const totalAppCount = data.appCount ?? 0;
   const canLoadMore = currentAppCount < totalAppCount;
 
-  const renderItem: ListRenderItem<CommonAppDataFragment> = ({ item: app, index }) => {
-    return (
-      <ProjectsListItem
-        key={app.id}
-        id={app.id}
-        name={app.name}
-        imageURL={app.iconUrl || undefined}
-        subtitle={app.packageName || app.fullName}
-        sdkVersion={app.sdkVersion}
-        first={index === 0}
-        last={index === (data.apps ?? []).length - 1}
-      />
-    );
-  };
+  const renderItem: ListRenderItem<CommonAppDataFragment> = React.useCallback(
+    ({ item: app, index }) => {
+      return (
+        <ProjectsListItem
+          key={app.id}
+          id={app.id}
+          name={app.name}
+          imageURL={app.iconUrl || undefined}
+          subtitle={app.packageName || app.fullName}
+          sdkVersion={app.sdkVersion}
+          first={index === 0}
+          last={index === (data.apps ?? []).length - 1}
+        />
+      );
+    },
+    [data.apps]
+  );
 
   return (
     <View
