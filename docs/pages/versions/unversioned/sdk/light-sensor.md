@@ -10,7 +10,7 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 import { InlineCode } from '~/components/base/code';
 
-`LightSensor` from **`expo-sensors`** provides access to the device light sensor to respond to changes in illuminance. `illuminance` is measured in _`Lux`_ or _`lx`_.
+`LightSensor` from `expo-sensors` provides access to the device's light sensor to respond to illuminance changes. `illuminance` is measured in `Lux` or `lx`.
 
 <PlatformsSection android emulator />
 
