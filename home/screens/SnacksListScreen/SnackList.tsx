@@ -51,7 +51,7 @@ function SnackList({ data, loadMoreAsync }: Props) {
   const isLoading = React.useRef<null | boolean>(false);
   const theme = useExpoTheme();
 
-  const extractKey = React.useCallback((item: CommonSnackDataFragment) => item.slug, []);
+  const extractKey = (item: CommonSnackDataFragment) => item.id;
 
   const handleLoadMoreAsync = async () => {
     if (isLoading.current) return;
@@ -80,22 +80,21 @@ function SnackList({ data, loadMoreAsync }: Props) {
     }
   };
 
-  const renderItem = React.useCallback(
-    ({ item: snack, index }: { item: CommonSnackDataFragment; index: number }) => {
-      return (
-        <SnacksListItem
-          key={index.toString()}
-          url={snack.fullName}
-          name={snack.name}
-          description={snack.description}
-          isDraft={snack.isDraft}
-          first={index === 0}
-          last={index === data.length - 1}
-        />
-      );
-    },
-    []
-  );
+  const renderItem = ({ item: snack, index }: { item: CommonSnackDataFragment; index: number }) => {
+    console.log({ snack });
+
+    return (
+      <SnacksListItem
+        key={snack.id}
+        url={snack.fullName}
+        name={snack.name}
+        description={snack.description}
+        isDraft={snack.isDraft}
+        first={index === 0}
+        last={index === data.length - 1}
+      />
+    );
+  };
 
   return (
     <View

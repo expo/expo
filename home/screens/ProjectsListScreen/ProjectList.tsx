@@ -108,7 +108,7 @@ export function ProjectList(props: Props) {
 function ProjectListView({ data, loadMoreAsync }: Props) {
   const isLoading = React.useRef<null | boolean>(false);
   const theme = useExpoTheme();
-  const extractKey = React.useCallback((item: CommonAppDataFragment) => item.id, []);
+  const extractKey = (item: CommonAppDataFragment) => item.id;
 
   const handleLoadMoreAsync = async () => {
     if (isLoading.current) return;
