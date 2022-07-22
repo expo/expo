@@ -85,18 +85,21 @@ function BranchList({ data, appId, loadMoreAsync }: Props) {
     }
   };
 
-  const renderItem = ({ item: branch, index }: { item: BranchManifest; index: number }) => {
-    return (
-      <BranchListItem
-        key={branch.id}
-        appId={appId}
-        name={branch.name}
-        latestUpdate={branch.latestUpdate}
-        first={index === 0}
-        last={index === data.length - 1}
-      />
-    );
-  };
+  const renderItem = React.useCallback(
+    ({ item: branch, index }: { item: BranchManifest; index: number }) => {
+      return (
+        <BranchListItem
+          key={branch.id}
+          appId={appId}
+          name={branch.name}
+          latestUpdate={branch.latestUpdate}
+          first={index === 0}
+          last={index === data.length - 1}
+        />
+      );
+    },
+    [appId, data]
+  );
 
   return (
     <View
