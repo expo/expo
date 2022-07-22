@@ -15,7 +15,16 @@ const DEPENDENCIES_TO_REMOVE = ['expo-status-bar', 'expo-splash-screen'];
  * Initializes a new Expo project as an example app.
  */
 async function createExampleApp(data, targetDir, packageManager) {
+    // Package name for the example app
     const exampleProjectSlug = `${data.project.slug}-example`;
+    // `expo init` creates a new folder with the same name as the project slug
+    const appTmpPath = path_1.default.join(targetDir, exampleProjectSlug);
+    // Path to the target example dir
+    const appTargetPath = path_1.default.join(targetDir, 'example');
+    if (!(await fs_extra_1.default.pathExists(appTargetPath))) {
+        // The template doesn't include the example app, so just skip this phase
+        return;
+    }
     await (0, utils_1.newStep)('Initializing the example app', async (step) => {
         await (0, spawn_async_1.default)('expo', ['init', exampleProjectSlug, '--template', 'expo-template-blank-typescript'], {
             cwd: targetDir,
@@ -23,10 +32,6 @@ async function createExampleApp(data, targetDir, packageManager) {
         });
         step.succeed('Initialized the example app');
     });
-    // `expo init` creates a new folder with the same name as the project slug
-    const appTmpPath = path_1.default.join(targetDir, exampleProjectSlug);
-    // Path to the target example dir
-    const appTargetPath = path_1.default.join(targetDir, 'example');
     await (0, utils_1.newStep)('Configuring the example app', async (step) => {
         // "example" folder already exists and contains template files,
         // that should replace these created by `expo init`.
