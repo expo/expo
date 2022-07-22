@@ -19,9 +19,10 @@ export default async function getPrompts(targetDir: string): Promise<PromptObjec
     {
       type: 'text',
       name: 'name',
-      message: 'What is the project name?',
+      message: 'What is the native module name?',
       initial: (_, answers: Answers<string>) => {
         return answers.slug
+          .replace(/^@/, '')
           .replace(/^./, (match) => match.toUpperCase())
           .replace(/\W+(\w)/g, (_, p1) => p1.toUpperCase());
       },
