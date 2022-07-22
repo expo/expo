@@ -13,7 +13,7 @@ import expo.modules.sensors.services.AccelerometerService
 import expo.modules.sensors.services.BarometerService
 import expo.modules.sensors.services.GravitySensorService
 import expo.modules.sensors.services.GyroscopeService
-import expo.modules.sensors.modules.LightSensorService
+import expo.modules.sensors.services.LightSensorService
 import expo.modules.sensors.services.LinearAccelerationSensorService
 import expo.modules.sensors.services.MagnetometerService
 import expo.modules.sensors.services.MagnetometerUncalibratedService
