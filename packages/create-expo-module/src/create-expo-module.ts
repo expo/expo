@@ -6,12 +6,12 @@ import ejs from 'ejs';
 import fs from 'fs-extra';
 import path from 'path';
 import prompts from 'prompts';
-import validateNpmPackage from 'validate-npm-package-name';
 
 import { createExampleApp } from './createExampleApp';
 import { installDependencies } from './packageManager';
+import getPrompts from './prompts';
 import { resolvePackageManager } from './resolvePackageManager';
-import { CommandOptions, CustomPromptObject, SubstitutionData } from './types';
+import { CommandOptions, SubstitutionData } from './types';
 import { newStep } from './utils';
 
 const packageJson = require('../package.json');
@@ -37,7 +37,11 @@ async function main(target: string | undefined, options: CommandOptions) {
 
   options.target = targetDir;
 
-  const data = await askForSubstitutionDataAsync(targetDir, options);
+  const data = await askForSubstitutionDataAsync(targetDir);
+
+  // Make one line break between prompts and progress logs
+  console.log();
+
   const packageManager = await resolvePackageManager();
   const packagePath = options.source
     ? path.join(CWD, options.source)
@@ -116,18 +120,6 @@ async function getNpmTarballUrl(packageName: string, version: string = 'latest')
 }
 
 /**
- * Gets the username of currently logged in user. Used as a default in the prompt asking for the module author.
- */
-async function npmWhoamiAsync(targetDir: string): Promise<string | null> {
-  try {
-    const { stdout } = await spawnAsync('npm', ['whoami'], { cwd: targetDir });
-    return stdout.trim();
-  } catch {
-    return null;
-  }
-}
-
-/**
  * Downloads the template from NPM registry.
  */
 async function downloadPackageAsync(targetDir: string): Promise<string> {
@@ -175,76 +167,24 @@ async function createModuleFromTemplate(
  * Asks the user for some data necessary to render the template.
  * Some values may already be provided by command options, the prompt is skipped in that case.
  */
-async function askForSubstitutionDataAsync(
-  targetDir: string,
-  options: CommandOptions
-): Promise<SubstitutionData> {
-  const defaultPackageSlug = path.basename(targetDir);
-  const useDefaultSlug = options.target && validateNpmPackage(defaultPackageSlug);
-  const defaultProjectName = defaultPackageSlug
-    .replace(/^./, (match) => match.toUpperCase())
-    .replace(/\W+(\w)/g, (_, p1) => p1.toUpperCase());
-
-  const promptQueries: CustomPromptObject[] = [
-    {
-      type: 'text',
-      name: 'slug',
-      message: 'What is the package slug?',
-      initial: defaultPackageSlug,
-      resolvedValue: useDefaultSlug ? defaultPackageSlug : null,
-      validate: (input) =>
-        validateNpmPackage(input).validForNewPackages || 'Must be a valid npm package name',
-    },
-    {
-      type: 'text',
-      name: 'name',
-      message: 'What is the project name?',
-      initial: defaultProjectName,
-    },
-    {
-      type: 'text',
-      name: 'description',
-      message: 'How would you describe the module?',
-      validate: (input) => !!input || 'Cannot be empty',
-    },
-    {
-      type: 'text',
-      name: 'package',
-      message: 'What is the Android package name?',
-      initial: `expo.modules.${defaultPackageSlug.replace(/\W/g, '').toLowerCase()}`,
-    },
-    {
-      type: 'text',
-      name: 'author',
-      message: 'Who is the author?',
-      initial: (await npmWhoamiAsync(targetDir)) ?? '',
-    },
-    {
-      type: 'text',
-      name: 'license',
-      message: 'What is the license?',
-      initial: 'MIT',
-    },
-    {
-      type: 'text',
-      name: 'repo',
-      message: 'What is the repository URL?',
-      validate: (input) => /^https?:\/\//.test(input) || 'Must be a valid URL',
-    },
-  ];
+async function askForSubstitutionDataAsync(targetDir: string): Promise<SubstitutionData> {
+  const promptQueries = await getPrompts(targetDir);
 
   // Stop the process when the user cancels/exits the prompt.
   const onCancel = () => {
     process.exit(0);
   };
 
-  const answers: Record<string, string> = {};
-  for (const query of promptQueries) {
-    const { name, resolvedValue } = query;
-    answers[name] = resolvedValue ?? options[name] ?? (await prompts(query, { onCancel }))[name];
-  }
-
-  const { slug, name, description, package: projectPackage, author, license, repo } = answers;
+  const {
+    slug,
+    name,
+    description,
+    package: projectPackage,
+    authorName,
+    authorEmail,
+    authorUrl,
+    repo,
+  } = await prompts(promptQueries, { onCancel });
 
   return {
     project: {
@@ -254,8 +194,8 @@ async function askForSubstitutionDataAsync(
       description,
       package: projectPackage,
     },
-    author,
-    license,
+    author: `${authorName} <${authorEmail}> (${authorUrl})`,
+    license: 'MIT',
     repo,
   };
 }
@@ -298,12 +238,6 @@ program
     '-s, --source <source_dir>',
     'Local path to the template. By default it downloads `expo-module-template` from NPM.'
   )
-  .option('-n, --name <module_name>', 'Name of the native module.')
-  .option('-d, --description <description>', 'Description of the module.')
-  .option('-p, --package <package>', 'The Android package name.')
-  .option('-a, --author <author>', 'The author name.')
-  .option('-l, --license <license>', 'The license that the module is distributed with.')
-  .option('-r, --repo <repo_url>', 'The URL to the repository.')
   .option('--with-readme', 'Whether to include README.md file.', false)
   .option('--with-changelog', 'Whether to include CHANGELOG.md file.', false)
   .option('--no-example', 'Whether to skip creating the example app.', false)
