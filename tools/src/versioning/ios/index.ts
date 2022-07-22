@@ -356,6 +356,11 @@ async function generateReactNativePodScriptAsync(
         path: 'react_native_pods.rb',
         ...stringTransform,
       })),
+      {
+        paths: ['react_native_pods.rb', 'script_phases.rb'],
+        find: /\b(get_script_phases_with_codegen_discovery|get_script_phases_no_codegen_discovery|get_script_template)\b/g,
+        replaceWith: `$1_${versionName}`,
+      },
     ],
   };
 
