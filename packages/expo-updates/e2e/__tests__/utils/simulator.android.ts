@@ -23,8 +23,8 @@ const ACTIVITY_NAME = `${PACKAGE_NAME}/${PACKAGE_NAME}.MainActivity`;
 
 export const ExportedManifestFilename = 'android-index.json';
 
-export async function installApp(suffix: string) {
-  const apkPath = path.join(process.env.ARTIFACTS_DEST, `android-release-${suffix}.apk`);
+export async function installApp(fileSuffix: string) {
+  const apkPath = path.join(process.env.ARTIFACTS_DEST, `android-release-${fileSuffix}.apk`);
   await spawnAsync(ADB_PATH, ['install', apkPath]);
 }
 
