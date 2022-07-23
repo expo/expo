@@ -12,7 +12,7 @@ exports[`DocumentationSidebarRight correctly matches snapshot 1`] = `
       style="padding-left: 0px;"
     >
       <span
-        class="css-xylk9"
+        class="css-12j5c3t"
       >
         Base level heading
       </span>
@@ -23,7 +23,7 @@ exports[`DocumentationSidebarRight correctly matches snapshot 1`] = `
       style="padding-left: 12px;"
     >
       <span
-        class="css-xylk9"
+        class="css-12j5c3t"
       >
         Level 3 subheading
       </span>
@@ -34,7 +34,7 @@ exports[`DocumentationSidebarRight correctly matches snapshot 1`] = `
       style="padding-left: 12px;"
     >
       <span
-        class="css-j5q6kw"
+        class="css-1ta84j1"
       >
         Code heading depth 1
       </span>
