@@ -3,7 +3,6 @@ package host.exp.exponent
 
 import android.content.Context
 import android.net.Uri
-import android.os.Build
 import android.util.Log
 import expo.modules.jsonutils.getNullable
 import expo.modules.manifests.core.LegacyManifest

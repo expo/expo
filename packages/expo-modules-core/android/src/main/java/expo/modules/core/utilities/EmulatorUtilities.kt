@@ -1,4 +1,4 @@
-package expo.modules.core.utilities;
+package expo.modules.core.utilities
 
 import android.os.Build
 import java.util.*
