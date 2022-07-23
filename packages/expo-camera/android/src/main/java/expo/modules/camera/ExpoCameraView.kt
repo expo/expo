@@ -27,9 +27,9 @@ import expo.modules.camera.tasks.BarCodeScannerAsyncTask
 import expo.modules.camera.tasks.FaceDetectorTask
 import expo.modules.camera.utils.FileSystemUtils
 import expo.modules.camera.utils.ImageDimensions
-import expo.modules.camera.utils.EmulatorUtils
 import expo.modules.core.ModuleRegistryDelegate
 import expo.modules.core.Promise
+import expo.modules.core.utilities.EmulatorUtilities
 import expo.modules.core.interfaces.LifecycleEventListener
 import expo.modules.core.interfaces.services.UIManager
 import expo.modules.core.interfaces.services.EventEmitter
@@ -208,7 +208,7 @@ class ExpoCameraView(
       if (isPaused && !isCameraOpened || isNew) {
         isPaused = false
         isNew = false
-        if (!EmulatorUtils.isRunningOnEmulator()) {
+        if (!EmulatorUtilities.isRunningOnEmulator()) {
           start()
           val faceDetectorProvider: FaceDetectorProviderInterface? by moduleRegistry()
           faceDetector = faceDetectorProvider?.createFaceDetectorWithContext(context)

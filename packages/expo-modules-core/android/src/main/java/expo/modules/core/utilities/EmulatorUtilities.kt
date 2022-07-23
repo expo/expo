@@ -1,9 +1,9 @@
-package expo.modules.camera.utils
+package expo.modules.core.utilities;
 
 import android.os.Build
 import java.util.*
 
-object EmulatorUtils {
+object EmulatorUtilities {
   fun isRunningOnEmulator(): Boolean {
     return Build.FINGERPRINT.startsWith("generic") ||
       Build.FINGERPRINT.startsWith("unknown") ||

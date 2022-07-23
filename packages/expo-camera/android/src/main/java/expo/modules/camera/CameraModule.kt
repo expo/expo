@@ -6,13 +6,13 @@ import android.content.Context
 import com.google.android.cameraview.AspectRatio
 
 import expo.modules.camera.tasks.ResolveTakenPictureAsyncTask
-import expo.modules.camera.utils.EmulatorUtils
 import expo.modules.core.ExportedModule
 import expo.modules.core.ModuleRegistry
 import expo.modules.core.interfaces.ExpoMethod
 import expo.modules.core.ModuleRegistryDelegate
 import expo.modules.core.Promise
 import expo.modules.core.interfaces.services.UIManager
+import expo.modules.core.utilities.EmulatorUtilities
 import expo.modules.interfaces.permissions.Permissions
 
 import java.lang.Exception
@@ -86,7 +86,7 @@ class CameraModule(
       viewTag,
       object : UIManager.UIBlock<ExpoCameraView> {
         override fun resolve(view: ExpoCameraView) {
-          if (!EmulatorUtils.isRunningOnEmulator()) {
+          if (!EmulatorUtilities.isRunningOnEmulator()) {
             if (view.isCameraOpened) {
               view.takePicture(options, promise, cacheDirectory)
             } else {

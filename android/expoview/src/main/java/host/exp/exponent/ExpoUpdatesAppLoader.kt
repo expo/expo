@@ -7,6 +7,7 @@ import android.os.Build
 import android.util.Log
 import expo.modules.jsonutils.getNullable
 import expo.modules.manifests.core.LegacyManifest
+import expo.modules.core.utilities.EmulatorUtilities
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.UpdatesUtils
 import expo.modules.updates.db.DatabaseHolder
@@ -414,29 +415,7 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
     }
 
   private val isRunningOnEmulator: Boolean
-    get() = Build.FINGERPRINT.startsWith("generic") ||
-      Build.FINGERPRINT.startsWith("unknown") ||
-      Build.MODEL.contains("google_sdk") ||
-      Build.MODEL.lowercase(Locale.ROOT).contains("droid4x") ||
-      Build.MODEL.contains("Emulator") ||
-      Build.MODEL.contains("Android SDK built for x86") ||
-      Build.MANUFACTURER.contains("Genymotion") ||
-      Build.HARDWARE.contains("goldfish") ||
-      Build.HARDWARE.contains("ranchu") ||
-      Build.HARDWARE.contains("vbox86") ||
-      Build.PRODUCT.contains("sdk") ||
-      Build.PRODUCT.contains("google_sdk") ||
-      Build.PRODUCT.contains("sdk_google") ||
-      Build.PRODUCT.contains("sdk_x86") ||
-      Build.PRODUCT.contains("vbox86p") ||
-      Build.PRODUCT.contains("emulator") ||
-      Build.PRODUCT.contains("simulator") ||
-      Build.BOARD.lowercase(Locale.ROOT).contains("nox") ||
-      Build.BOOTLOADER.lowercase(Locale.ROOT).contains("nox") ||
-      Build.HARDWARE.lowercase(Locale.ROOT).contains("nox") ||
-      Build.PRODUCT.lowercase(Locale.ROOT).contains("nox") ||
-      Build.SERIAL.lowercase(Locale.ROOT).contains("nox") ||
-      (Build.BRAND.startsWith("generic") && Build.DEVICE.startsWith("generic"))
+    get() = EmulatorUtilities.isRunningOnEmulator()
 
   private val clientEnvironment: String
     get() = if (Constants.isStandaloneApp()) {
