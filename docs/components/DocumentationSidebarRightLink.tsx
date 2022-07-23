@@ -30,11 +30,11 @@ const STYLES_LINK_HEADER = css`
   font-family: ${typography.fontFaces.medium};
 `;
 
-const STYLES_LINK_LABEL = css(`
+const STYLES_LINK_LABEL = css`
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;`
-);
+  white-space: nowrap;
+`;
 
 const STYLES_LINK_CODE = css`
   font-family: ${typography.fontFaces.mono};
