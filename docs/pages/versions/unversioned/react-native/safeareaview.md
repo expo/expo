@@ -11,6 +11,8 @@ The purpose of `SafeAreaView` is to render content within the safe area boundari
 
 To use, wrap your top level view with a `SafeAreaView` with a `flex: 1` style applied to it. You may also want to use a background color that matches your application's design.
 
+**Note: The `flex: 1` is required so the `SafeAreaView` will [fill all the available space](https://reactnative.dev/docs/height-and-width#flex-dimensions).**
+
 ```js
 import React from 'react';
 import { StyleSheet, Text, SafeAreaView } from 'react-native';
@@ -25,7 +27,7 @@ const App = () => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flex: 1, // required, so the SafeAreaView has a height greater than zero
   },
 });
 
