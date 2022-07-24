@@ -9,5 +9,5 @@ else
     yarn
 fi
 
-../../tools/bin/expotools.js android-generate-dynamic-macros --configuration $1 --bare
+node ../../tools/bin/expotools.js android-generate-dynamic-macros --configuration $1 --bare
 echo " ✅ Generete dynamic macros"

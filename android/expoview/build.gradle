@@ -238,9 +238,9 @@ class GenerateDynamicMacrosPlugin implements Plugin<Project> {
       workingDir '../../tools/bin'
 
       if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-        commandLine 'cmd.exe', '/c', "expotools.js android-generate-dynamic-macros --configuration ${configuration}"
+        commandLine 'cmd.exe', '/c', "node expotools.js android-generate-dynamic-macros --configuration ${configuration}"
       } else {
-        commandLine "./expotools.js", "android-generate-dynamic-macros", "--configuration", configuration
+        commandLine "node", "./expotools.js", "android-generate-dynamic-macros", "--configuration", configuration
       }
     }
   }
