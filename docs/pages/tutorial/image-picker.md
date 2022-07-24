@@ -34,7 +34,6 @@ With the library installed in our project, we can now actually use it.
 
 <!-- prettier-ignore -->
 ```js
-import React from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 /* @info Import the ImagePicker */import * as ImagePicker from 'expo-image-picker';/* @end */
 
@@ -87,6 +86,7 @@ Now we will take the data that we get from the image picker and use it to show t
 
 <!-- prettier-ignore -->
 ```js
+/* @info Import React to use useState */import React from 'react';/* @end */
 export default function App() {
   /* @info Initialize a variable to hold our selected image data */const [selectedImage, setSelectedImage] = React.useState(null);/* @end */
 
