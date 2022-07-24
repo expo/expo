@@ -28,10 +28,13 @@ fi
 if [[ -n "$NODE_BINARY" && -x "$NODE_BINARY" ]]; then
   echo "Node found at: ${NODE_BINARY}"
 else
-  echo "[ERROR] You need to configure your node path in the \`.xcode.env\` file environment. " \
-    "You can set it up quickly by running: " \
-    'echo "export NODE_BINARY=\$(command -v node)" > .xcode.env ' \
-    "in the ios folder. This is needed by React Native to work correctly. "
+  cat >&2 << EOF
+[ERROR] Could not find "node" while running an Xcode build script. You need to specify the path to your Node.js executable by defining an environment variable named NODE_BINARY in your project's .xcode.env or .xcode.env.local file. You can set this up quickly by running:
+
+  echo "export NODE_BINARY=\$(command -v node)" >> .xcode.env
+
+in the ios folder of your project.
+EOF
   exit 1
 fi
 

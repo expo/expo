@@ -1,3 +1,4 @@
+require 'open3'
 require 'pathname'
 
 
@@ -7,7 +8,14 @@ def maybe_generate_xcode_env_file!()
   if File.exists?(xcode_env_file)
     return
   end
-  node_path = `command -v node`.strip!
-  File.write(xcode_env_file, "export NODE_BINARY=\"#{node_path}\"\n")
-  Pod::UI.info "Auto-generating `.xcode.env.local` with $NODE_BINARY=#{node_path}"
+
+  # Adding the meta character `;` at the end of command for Ruby `Kernel.exec` to execute the command in shell.
+  stdout, stderr, status = Open3.capture3('command -v node;')
+  node_path = stdout.strip
+  if !stderr.empty? || status.exitstatus != 0 || node_path.empty?
+    Pod::UI.warn "Unable to generate `.xcode.env.local` for Node.js binary path: #{stderr}"
+  else
+    Pod::UI.info "Auto-generating `.xcode.env.local` with $NODE_BINARY=#{node_path}"
+    File.write(xcode_env_file, "export NODE_BINARY=\"#{node_path}\"\n")
+  end
 end
