@@ -14,7 +14,7 @@
     "expo-status-bar": "~1.4.0",
     "react": "18.0.0",
     "react-dom": "18.0.0",
-    "react-native": "0.69.1",
+    "react-native": "0.69.3",
     "react-native-web": "~0.18.7"
   },
   "devDependencies": {
