@@ -120,7 +120,7 @@ There are however [some limitations](https://github.com/jhen0409/react-native-de
 - [mitmproxy](https://medium.com/@rotxed/how-to-debug-http-s-traffic-on-android-7fbe5d2a34#.hnhanhyoz)
 - [Fiddler](http://www.telerik.com/fiddler)
 
-> 💡 In bare workflow apps you can use [Flipper](https://fbflipper.com/) to inspect network traffic.
+> In bare workflow apps you can use [Flipper](https://fbflipper.com/) to inspect network traffic.
 
 ## Debugging Redux
 

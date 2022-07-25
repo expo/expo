@@ -99,11 +99,11 @@ If you answered yes to any of these questions and the library is not part of the
 
 Many libraries you can use with Expo and React Native will not be compatible with Expo Go or `expo build:ios|android`. If you need any of them to build your app, you can create a [development build](../development/introduction.md) for your project using [EAS Build](../build/introduction.md) or [eject to the bare workflow](../workflow/customizing.md).
 
-> 🙏 If you want some help determining library compatibility, [please create an issue on the React Native Directory repository](https://github.com/react-native-community/directory/issues/new/choose) and let us know. This will not just help you, it will help to ensure that other developers have an easy answer in the future!
+> If you want some help determining library compatibility, [please create an issue on the React Native Directory repository](https://github.com/react-native-community/directory/issues/new/choose) and let us know. This will not just help you, it will help to ensure that other developers have an easy answer in the future!
 
 ### Installing a Third-Party Library
 
-> 💡 We recommend always using `expo install` instead of `npm install` or `yarn add` directly because it allows `expo-cli` to pick a compatible version of a library when possible and also warn you about known incompatibilities.
+> We recommend always using `expo install` instead of `npm install` or `yarn add` directly because it allows `expo-cli` to pick a compatible version of a library when possible and also warn you about known incompatibilities.
 
 Once you have determined if the library is compatible, use `expo-cli` to install the package:
 
