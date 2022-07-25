@@ -13,7 +13,7 @@ You get a highly performant React website with progressive web app features enab
 
 <H2 sidebarTitle="Progressive Web Apps">
 
-<a href="https://developers.google.com/web/progressive-web-apps/">
+<a href="https://web.dev/progressive-web-apps/">
 Progressive Web Apps
 </a>
 </H2>
