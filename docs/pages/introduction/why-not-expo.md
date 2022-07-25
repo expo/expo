@@ -114,5 +114,5 @@ Configuring app icons, launch screen, and so on must be configured in the native
 
 If you've been reading along each section of the introduction then you will have a pretty good high-level understanding of Expo tools.
 
-- If you have heard enough and want to get to coding, [jump ahead to "Installation"](/get-started/installation.md).
-- If you have some unanswered questions, [continue to the "Common Questions" page](/introduction/faq.md).
+- If you have heard enough and want to get to coding, [jump ahead to "Installation"](/get-started/installation).
+- If you have some unanswered questions, [continue to the "Common Questions" page](/introduction/faq).
