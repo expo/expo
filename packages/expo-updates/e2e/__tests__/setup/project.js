@@ -2,6 +2,62 @@ const spawnAsync = require('@expo/spawn-async');
 const fs = require('fs/promises');
 const path = require('path');
 
+async function prepareLocalUpdatesModule(repoRoot) {
+  // copy UpdatesE2ETest exported module into the local package
+  await fs.copyFile(
+    path.resolve(__dirname, '..', 'fixtures', 'EXUpdatesE2ETestModule.h'),
+    path.join(repoRoot, 'packages', 'expo-updates', 'ios', 'EXUpdates', 'EXUpdatesE2ETestModule.h')
+  );
+  await fs.copyFile(
+    path.resolve(__dirname, '..', 'fixtures', 'EXUpdatesE2ETestModule.m'),
+    path.join(repoRoot, 'packages', 'expo-updates', 'ios', 'EXUpdates', 'EXUpdatesE2ETestModule.m')
+  );
+  await fs.copyFile(
+    path.resolve(__dirname, '..', 'fixtures', 'UpdatesE2ETestModule.kt'),
+    path.join(
+      repoRoot,
+      'packages',
+      'expo-updates',
+      'android',
+      'src',
+      'main',
+      'java',
+      'expo',
+      'modules',
+      'updates',
+      'UpdatesE2ETestModule.kt'
+    )
+  );
+
+  // export module from UpdatesPackage on Android
+  const updatesPackageFilePath = path.join(
+    repoRoot,
+    'packages',
+    'expo-updates',
+    'android',
+    'src',
+    'main',
+    'java',
+    'expo',
+    'modules',
+    'updates',
+    'UpdatesPackage.kt'
+  );
+  let updatesPackageFileContents = await fs.readFile(updatesPackageFilePath, 'utf8');
+  if (!updatesPackageFileContents) {
+    throw new Error('Failed to read UpdatesPackage.kt; was the file renamed or moved?');
+  }
+  updatesPackageFileContents = updatesPackageFileContents.replace(
+    'UpdatesModule(context) as ExportedModule',
+    'UpdatesModule(context) as ExportedModule, UpdatesE2ETestModule(context)'
+  );
+  // make sure the insertion worked
+  if (!updatesPackageFileContents.includes('UpdatesE2ETestModule(context)')) {
+    throw new Error('Failed to modify UpdatesPackage.kt to insert UpdatesE2ETestModule');
+  }
+  await fs.writeFile(updatesPackageFilePath, updatesPackageFileContents, 'utf8');
+}
+
 async function initAsync(workingDir, repoRoot, runtimeVersion) {
   // initialize project
   await spawnAsync('expo-cli', ['init', 'updates-e2e', '--yes'], {
@@ -9,6 +65,8 @@ async function initAsync(workingDir, repoRoot, runtimeVersion) {
     stdio: 'inherit',
   });
   const projectRoot = path.join(workingDir, 'updates-e2e');
+
+  await prepareLocalUpdatesModule(repoRoot);
 
   // add local dependencies
   let packageJson = JSON.parse(await fs.readFile(path.join(projectRoot, 'package.json'), 'utf-8'));
