@@ -103,7 +103,11 @@ EX_EXPORT_METHOD_AS(speak,
   NSString *voice = options[@"voice"];
   NSNumber *pitch = options[@"pitch"];
   NSNumber *rate = options[@"rate"];
+  NSNumber *useSharedAudioSession = options[@"useSharedAudioSession"];
 
+  if (useSharedAudioSession != nil) {
+    _synthesizer.usesApplicationAudioSession = useSharedAudioSession.boolValue;
+  }
   if (language != nil) {
     utterance.voice = [AVSpeechSynthesisVoice voiceWithLanguage:language];
   }

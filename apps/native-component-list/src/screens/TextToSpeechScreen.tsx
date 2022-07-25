@@ -46,6 +46,7 @@ interface State {
   selectedExample: { language: string; text: string };
   inProgress: boolean;
   paused: boolean;
+  useSharedAudioSession: boolean;
   pitch: number;
   rate: number;
   voiceList?: { name: string; identifier: string }[];
@@ -63,6 +64,7 @@ export default class TextToSpeechScreen extends React.Component<{}, State> {
     selectedExample: EXAMPLES[0],
     inProgress: false,
     paused: false,
+    useSharedAudioSession: false,
     pitch: 1,
     rate: 0.75,
   };
@@ -143,6 +145,12 @@ export default class TextToSpeechScreen extends React.Component<{}, State> {
             disabled={this.state.inProgress}
           />
         </View>
+        <View style={styles.controlRow}>
+          <Button
+            onPress={this._changeUseSharedAudioSession}
+            title={`useSharedAudioSession (${this.state.useSharedAudioSession})`}
+          />
+        </View>
       </ScrollView>
     );
   }
@@ -160,6 +168,7 @@ export default class TextToSpeechScreen extends React.Component<{}, State> {
       language: this.state.selectedExample.language,
       pitch: this.state.pitch,
       rate: this.state.rate,
+      useSharedAudioSession: this.state.useSharedAudioSession,
       onStart: start,
       onDone: complete,
       onStopped: complete,
@@ -214,6 +223,13 @@ export default class TextToSpeechScreen extends React.Component<{}, State> {
     this.setState((state) => ({
       ...state,
       rate: state.rate - 0.1,
+    }));
+  };
+
+  _changeUseSharedAudioSession = () => {
+    this.setState((state) => ({
+      ...state,
+      useSharedAudioSession: !state.useSharedAudioSession,
     }));
   };
 
