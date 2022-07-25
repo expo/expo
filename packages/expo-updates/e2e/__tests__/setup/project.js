@@ -25,6 +25,7 @@ async function setupAsync(workingDir, repoRoot, runtimeVersion) {
       'expo-json-utils': 'file:../expo/packages/expo-json-utils',
       'expo-keep-awake': 'file:../expo/packages/expo-keep-awake',
       'expo-manifests': 'file:../expo/packages/expo-manifests',
+      'expo-modules-autolinking': 'file:../expo/packages/expo-modules-autolinking',
       'expo-modules-core': 'file:../expo/packages/expo-modules-core',
       'expo-structured-headers': 'file:../expo/packages/expo-structured-headers',
       'expo-updates-interface': 'file:../expo/packages/expo-updates-interface',

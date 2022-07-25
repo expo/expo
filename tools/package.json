@@ -13,12 +13,8 @@
     "build": "tsc",
     "watch": "tsc --watch",
     "clean": "rm -rf build cache",
-    "et": "bin/expotools.js",
+    "et": "node bin/expotools.js",
     "lint": "eslint ./src"
-  },
-  "bin": {
-    "et": "bin/expotools.js",
-    "expotools": "bin/expotools.js"
   },
   "author": "support@expo.dev",
   "license": "MIT",

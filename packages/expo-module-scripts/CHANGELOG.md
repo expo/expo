@@ -14,6 +14,7 @@
 - Fixed `expo-module prepare` error if target packages contain temporary kotlin build files. ([#17023](https://github.com/expo/expo/pull/17023) by [@kudo](https://github.com/kudo))
 - Improved support of nvm sourcing in iOS shell scripts. ([#17109](https://github.com/expo/expo/pull/17109) by [@liamronancb](https://github.com/liamronancb))
 - Fixed `source-login-scripts.sh` ~/zlogin typo. ([#17622](https://github.com/expo/expo/pull/17622) by [@vrgimael](https://github.com/vrgimael))
+- Deprecated the unreliable `source-login-scripts.sh` and sourcing the Node.js binary path from `.xcode.env` and `.xcode.env.local`. ([#18330](https://github.com/expo/expo/pull/18330) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
