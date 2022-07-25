@@ -8,7 +8,9 @@ import { setTimeout } from 'timers/promises';
 const app: any = express();
 let server: any;
 
-let notifyString: string | null = null;
+let messages: any[] = [];
+let responsesToServe: any[] = [];
+
 let updateRequest: any = null;
 let manifestToServe: any = null;
 let manifestHeadersToServe: any = null;
@@ -25,7 +27,8 @@ export function stop() {
     server.close();
     server = null;
   }
-  notifyString = null;
+  messages = [];
+  responsesToServe = [];
   updateRequest = null;
   manifestToServe = null;
   manifestHeadersToServe = null;
@@ -38,6 +41,7 @@ export function consumeRequestedStaticFiles() {
   return returnArray;
 }
 
+app.use(express.json());
 app.use('/static', (req: any, res: any, next: any) => {
   requestedStaticFiles.push(path.basename(req.url));
   next();
@@ -45,14 +49,33 @@ app.use('/static', (req: any, res: any, next: any) => {
 app.use('/static', express.static(path.resolve(__dirname, '..', '.static')));
 
 app.get('/notify/:string', (req: any, res: any) => {
-  notifyString = req.params.string;
+  messages.push(req.params.string);
   res.set('Cache-Control', 'no-store');
-  res.send('Received request');
+  if (responsesToServe[0]) {
+    res.json(responsesToServe.shift());
+  } else {
+    res.send('Received request');
+  }
 });
 
-export async function waitForRequest(timeout: number) {
+app.post('/post', (req: any, res: any) => {
+  messages.push(req.body);
+  res.set('Cache-Control', 'no-store');
+  if (responsesToServe[0]) {
+    res.json(responsesToServe.shift());
+  } else {
+    res.send('Received request');
+  }
+});
+
+export async function waitForRequest(timeout: number, responseToServe?: { command: string }) {
   const finishTime = new Date().getTime() + timeout;
-  while (!notifyString) {
+
+  if (responseToServe) {
+    responsesToServe.push(responseToServe);
+  }
+
+  while (!messages.length) {
     const currentTime = new Date().getTime();
     if (currentTime >= finishTime) {
       throw new Error('Timed out waiting for message');
@@ -60,9 +83,7 @@ export async function waitForRequest(timeout: number) {
     await setTimeout(50);
   }
 
-  const response = notifyString;
-  notifyString = null;
-  return response;
+  return messages.shift();
 }
 
 app.get('/update', (req: any, res: any) => {

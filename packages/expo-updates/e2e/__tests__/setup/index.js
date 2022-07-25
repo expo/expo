@@ -46,4 +46,8 @@ const runtimeVersion = '1.0.0';
   await setupAssetsAppAsync(projectRoot);
   await buildAndroidAsync(projectRoot, artifactsDest, 'assets');
   await buildIosAsync(projectRoot, artifactsDest, 'assets');
+
+  // build the same app a second time for tests involving overwriting installation
+  await buildAndroidAsync(projectRoot, artifactsDest, 'assets2');
+  await buildIosAsync(projectRoot, artifactsDest, 'assets2');
 })();
