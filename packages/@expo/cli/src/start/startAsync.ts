@@ -4,7 +4,6 @@ import chalk from 'chalk';
 import * as Log from '../log';
 import getDevClientProperties from '../utils/analytics/getDevClientProperties';
 import { logEvent } from '../utils/analytics/rudderstackClient';
-import { env } from '../utils/env';
 import { installExitHooks } from '../utils/exit';
 import { isInteractive } from '../utils/interactive';
 import { profile } from '../utils/profile';
