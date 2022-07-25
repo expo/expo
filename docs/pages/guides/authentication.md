@@ -1962,23 +1962,22 @@ const discovery = {
 export default function App() {
   const [request, response, promptAsync] = useAuthRequest(
     {
+      responseType: ResponseType.Token,
       clientId: 'CLIENT_ID',
       redirectUri: makeRedirectUri({
         /* @info The URI <code>[scheme]://</code> to be used in bare and standalone. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
         scheme: 'your.app'
         /* @end */
       }),
-      scopes: ['openid', 'user_read', 'analytics:read:games'],
+      scopes: ['user:read:email', 'analytics:read:games'],
     },
     discovery
   );
 
   React.useEffect(() => {
-    if (response?.type === 'success') {
-      /* @info Exchange the code for an access token in a server. Alternatively you can use the <b>Implicit</b> auth method. */
-      const { code } = response.params;
-      /* @end */
-    }
+    if (response && response.type === 'success') {
+      const token = response.params.access_token;
+      }
   }, [response]);
 
   return (
