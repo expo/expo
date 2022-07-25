@@ -129,7 +129,7 @@ export interface Playback extends AV {
      * This is equivalent to `playbackObject.setStatusAsync({ volume })`.
      * @param volume A number between `0.0` (silence) and `1.0` (maximum volume).
      */
-    setVolumeAsync(volume: number): Promise<AVPlaybackStatus>;
+    setVolumeAsync(volume: number, audioPan?: number): Promise<AVPlaybackStatus>;
     /**
      * This is equivalent to `playbackObject.setStatusAsync({ isMuted })`.
      * @param isMuted A boolean describing if the audio of this media should be muted.
@@ -159,7 +159,7 @@ export declare const PlaybackMixin: {
     stopAsync(): Promise<AVPlaybackStatus>;
     setPositionAsync(positionMillis: number, tolerances?: AVPlaybackTolerance): Promise<AVPlaybackStatus>;
     setRateAsync(rate: number, shouldCorrectPitch?: boolean, pitchCorrectionQuality?: PitchCorrectionQuality): Promise<AVPlaybackStatus>;
-    setVolumeAsync(volume: number): Promise<AVPlaybackStatus>;
+    setVolumeAsync(volume: number, audioPan?: number | undefined): Promise<AVPlaybackStatus>;
     setIsMutedAsync(isMuted: boolean): Promise<AVPlaybackStatus>;
     setIsLoopingAsync(isLooping: boolean): Promise<AVPlaybackStatus>;
     setProgressUpdateIntervalAsync(progressUpdateIntervalMillis: number): Promise<AVPlaybackStatus>;

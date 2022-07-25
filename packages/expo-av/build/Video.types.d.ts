@@ -189,6 +189,11 @@ export declare type VideoProps = {
      */
     isMuted?: boolean;
     /**
+     * The desired audio panning value of the audio for this media. This value must be between `-1.0` (full left) and `1.0` (full right).
+     * See the [AV documentation](./av) for more information.
+     */
+    audioPan?: number;
+    /**
      * A boolean describing if the media should play once (`false`) or loop indefinitely (`true`).
      * See the [AV documentation](./av) for more information.
      */

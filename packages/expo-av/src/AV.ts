@@ -319,6 +319,7 @@ export interface Playback extends AV {
   /**
    * This is equivalent to `playbackObject.setStatusAsync({ volume })`.
    * @param volume A number between `0.0` (silence) and `1.0` (maximum volume).
+   * @param audioPan A number between `-1.0` (full left) and `1.0` (full right).
    */
   setVolumeAsync(volume: number, audioPan?: number): Promise<AVPlaybackStatus>;
 
