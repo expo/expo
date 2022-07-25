@@ -7,7 +7,7 @@ import { signClassicExpoGoManifestAsync } from '../../../api/signManifest';
 import UserSettings from '../../../api/user/UserSettings';
 import { ANONYMOUS_USERNAME, getUserAsync } from '../../../api/user/user';
 import * as Log from '../../../log';
-import { logEvent } from '../../../utils/analytics/rudderstackClient';
+import { logEventAsync } from '../../../utils/analytics/rudderstackClient';
 import { memoize } from '../../../utils/fn';
 import { learnMore } from '../../../utils/link';
 import { stripPort } from '../../../utils/url';
@@ -80,7 +80,7 @@ export class ClassicManifestMiddleware extends ManifestMiddleware<ClassicManifes
 
   protected trackManifest(version?: string) {
     // Log analytics
-    logEvent('Serve Manifest', {
+    logEventAsync('Serve Manifest', {
       sdkVersion: version ?? null,
     });
   }

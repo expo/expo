@@ -102,6 +102,7 @@ if (!isSubcommand && args['--help']) {
   For more info run a command with the {bold --help} flag
     {dim $} npx expo start --help
 `);
+
   process.exit(0);
 }
 
@@ -150,6 +151,7 @@ if (!isSubcommand) {
     'upload:ios': `eas submit -p ios`,
   };
 
+  // TODO: Log telemetry about invalid command used.
   const subcommand = args._[0];
   if (subcommand in migrationMap) {
     const replacement = migrationMap[subcommand];
@@ -181,4 +183,17 @@ if (args['--help']) {
 process.on('SIGINT', () => process.exit(0));
 process.on('SIGTERM', () => process.exit(0));
 
-commands[command]().then((exec) => exec(commandArgs));
+commands[command]().then((exec) => {
+  exec(commandArgs);
+
+  // NOTE(EvanBacon): Track some basic telemetry events indicating the command
+  // that was run. This can be disabled with the $EXPO_NO_TELEMETRY environment variable.
+  // We do this to determine how well deprecations are going before removing a command.
+  const { logEventAsync } =
+    require('../src/utils/analytics/rudderstackClient') as typeof import('../src/utils/analytics/rudderstackClient');
+  logEventAsync('action', {
+    action: `expo ${command}`,
+    source: 'expo/cli',
+    source_version: process.env.__EXPO_VERSION,
+  });
+});

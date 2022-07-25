@@ -1,7 +1,7 @@
 import { getConfig } from '@expo/config';
 import assert from 'assert';
 
-import { logEvent } from '../../utils/analytics/rudderstackClient';
+import { logEventAsync } from '../../utils/analytics/rudderstackClient';
 import { CommandError, UnimplementedError } from '../../utils/errors';
 import { learnMore } from '../../utils/link';
 import { AppIdResolver } from './AppIdResolver';
@@ -66,7 +66,7 @@ export class PlatformManager<
     await deviceManager.activateWindowAsync();
     await deviceManager.openUrlAsync(url);
 
-    logEvent('Open Url on Device', {
+    await logEventAsync('Open Url on Device', {
       platform: this.props.platform,
       installedExpo,
     });
@@ -101,7 +101,7 @@ export class PlatformManager<
     }
 
     // TODO: Rethink analytics
-    logEvent('Open Url on Device', {
+    await logEventAsync('Open Url on Device', {
       platform: this.props.platform,
       installedExpo: false,
     });
