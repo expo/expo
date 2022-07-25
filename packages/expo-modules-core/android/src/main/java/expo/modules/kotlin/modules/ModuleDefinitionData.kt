@@ -4,10 +4,7 @@ import expo.modules.kotlin.ConcatIterator
 import expo.modules.kotlin.ModuleHolder
 import expo.modules.kotlin.events.EventListener
 import expo.modules.kotlin.events.EventName
-import expo.modules.kotlin.events.EventsDefinition
-import expo.modules.kotlin.functions.AsyncFunction
-import expo.modules.kotlin.functions.SuspendFunctionComponentBuilder
-import expo.modules.kotlin.functions.SyncFunctionComponent
+import expo.modules.kotlin.objects.ObjectDefinitionData
 import expo.modules.kotlin.views.ViewManagerDefinition
 
 /**
@@ -16,13 +13,9 @@ import expo.modules.kotlin.views.ViewManagerDefinition
  */
 class ModuleDefinitionData(
   val name: String,
-  val constantsProvider: () -> Map<String, Any?>,
-  val syncFunctions: Map<String, SyncFunctionComponent>,
-  val asyncFunctions: Map<String, AsyncFunction>,
-  val suspendFunctionBuilders: List<SuspendFunctionComponentBuilder>,
+  val objectDefinition: ObjectDefinitionData,
   val viewManagerDefinition: ViewManagerDefinition? = null,
   val eventListeners: Map<EventName, EventListener> = emptyMap(),
-  val eventsDefinition: EventsDefinition? = null
 )
 
 /**
@@ -35,14 +28,13 @@ class ProcessedModuleDefinition(
   moduleHolder: ModuleHolder
 ) {
   val name = data.name
-  val constantsProvider = data.constantsProvider
-  val syncFunctions = data.syncFunctions
-  val asyncFunctions = data.asyncFunctions + data.suspendFunctionBuilders.associate { builder ->
-    builder.name to builder.build((moduleHolder))
-  }
+  val constantsProvider = data.objectDefinition.constantsProvider
+  val syncFunctions = data.objectDefinition.syncFunctions
+  val asyncFunctions = data.objectDefinition.asyncFunctions + data.objectDefinition.buildSuspendFunctions(moduleHolder)
   val viewManagerDefinition = data.viewManagerDefinition
   val eventListeners = data.eventListeners
-  val eventsDefinition = data.eventsDefinition
+  val eventsDefinition = data.objectDefinition.eventsDefinition
+  val properties = data.objectDefinition.properties
 
   val functions
     get() = ConcatIterator(syncFunctions.values.iterator(), asyncFunctions.values.iterator())

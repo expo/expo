@@ -6,11 +6,11 @@ import { Dimensions } from 'react-native';
 import Canvas from './Canvas';
 import { WebGLObject } from './GLView';
 import {
-  BaseGLViewProps,
-  ComponentOrHandle,
+  GLViewProps,
   ExpoWebGLRenderingContext,
   GLSnapshot,
   SnapshotOptions,
+  ComponentOrHandle,
 } from './GLView.types';
 
 function getImageForAsset(asset: {
@@ -78,21 +78,15 @@ function ensureContext(
   return asExpoContext(context as ExpoWebGLRenderingContext);
 }
 
-export interface GLViewProps extends BaseGLViewProps {
+// @needsAudit @docsMissing
+export type GLViewWebProps = GLViewProps & {
   onContextCreate: (gl: WebGLRenderingContext) => void;
   onContextRestored?: (gl?: WebGLRenderingContext) => void;
   onContextLost?: () => void;
   webglContextAttributes?: WebGLContextAttributes;
-  /**
-   * [iOS only] Number of samples for Apple's built-in multisampling.
-   */
-  msaaSamples: number;
-
-  /**
-   * A ref callback for the native GLView
-   */
+  // type overwrite
   nativeRef_EXPERIMENTAL?(callback: ComponentOrHandle | HTMLCanvasElement | null);
-}
+};
 
 async function getBlobFromWebGLRenderingContext(
   gl: WebGLRenderingContext,
@@ -122,7 +116,7 @@ async function getBlobFromWebGLRenderingContext(
   };
 }
 
-export class GLView extends React.Component<GLViewProps> {
+export class GLView extends React.Component<GLViewWebProps> {
   canvas?: HTMLCanvasElement;
 
   gl?: WebGLRenderingContext;
@@ -191,7 +185,7 @@ export class GLView extends React.Component<GLViewProps> {
     return <Canvas {...domProps} canvasRef={this.setCanvasRef} />;
   }
 
-  componentDidUpdate(prevProps: GLViewProps) {
+  componentDidUpdate(prevProps) {
     const { webglContextAttributes } = this.props;
     if (this.canvas && webglContextAttributes !== prevProps.webglContextAttributes) {
       this.onContextLost(null);

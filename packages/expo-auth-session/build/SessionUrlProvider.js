@@ -40,8 +40,7 @@ export class SessionUrlProvider {
             }
         }
         const legacyExpoProjectFullName = options.projectNameForProxy ||
-            Constants.manifest?.originalFullName ||
-            Constants.manifest2?.extra?.expoClient?.originalFullName ||
+            Constants.expoConfig?.originalFullName ||
             Constants.manifest?.id;
         if (!legacyExpoProjectFullName) {
             let nextSteps = '';

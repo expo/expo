@@ -1,7 +1,7 @@
 import { css } from '@emotion/react';
 import { theme } from '@expo/styleguide';
 import { useRouter } from 'next/router';
-import React, { ComponentType, useMemo } from 'react';
+import React, { FC, useMemo } from 'react';
 
 import { ApiVersionSelect } from './ApiVersionSelect';
 import { GroupList } from './GroupList';
@@ -40,7 +40,7 @@ const navigationStyle = css({
   },
 });
 
-const renderers: Record<NavigationType, ComponentType<NavigationRenderProps>> = {
+const renderers: Record<NavigationType, FC<React.PropsWithChildren<NavigationRenderProps>>> = {
   section: SectionList,
   group: GroupList,
   page: PageLink,

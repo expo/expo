@@ -33,6 +33,12 @@ class ModuleHolder(val module: Module) {
           .forEach { function ->
             function.attachToJSObject(module.appContext, this)
           }
+
+        definition
+          .properties
+          .forEach { (_, prop) ->
+            prop.attachToJSObject(this)
+          }
       }
   }
 

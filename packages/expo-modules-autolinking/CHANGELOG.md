@@ -6,13 +6,30 @@
 
 ### 🎉 New features
 
+- Added a feature to automatically generate `.xcode.env.local` with correct `$NODE_BINARY` path when running `pod install`. ([#18330](https://github.com/expo/expo/pull/18330) by [@kudo](https://github.com/kudo))
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.10.0 — 2022-07-07
+
+### 🐛 Bug fixes
+
+- Added support for React Native 0.69.x ([#17629](https://github.com/expo/expo/pull/17629) by [@kudo](https://github.com/kudo))
+- Use regex to match ignored modules in `expo_patch_react_imports!` and fix iOS build errors when the project is inside `react-native` named folder. ([#17968](https://github.com/expo/expo/pull/17968) by [@dmnkgrc](https://github.com/dmnkgrc))
+
+## 0.9.0 — 2022-06-23
+
+### 🎉 New features
+
 - The `searchPaths` and `nativeModulesDir` options now support direct paths to specific module directories. ([#17922](https://github.com/expo/expo/pull/17922) by [@barthap](https://github.com/barthap))
+
+## 0.8.1 — 2022-05-12
 
 ### 🐛 Bug fixes
 
 - Fixed an infinite loop when the **package.json** is placed at the root path. ([#17440](https://github.com/expo/expo/pull/17440) by [@tsapeta](https://github.com/tsapeta))
-
-### 💡 Others
 
 ## 0.8.0 — 2022-05-06
 

@@ -4,6 +4,20 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 46.0.1 — 2022-07-11
+
+_This version does not introduce any user-facing changes._
+
+## 46.0.0 — 2022-07-07
+
+### 🛠 Breaking changes
+
 - Remove base mocked manifest and test both manifest types. ([#17402](https://github.com/expo/expo/pull/17402) by [@wschurman](https://github.com/wschurman))
 
 ### 🎉 New features
@@ -12,4 +26,4 @@
 
 ### 🐛 Bug fixes
 
-### 💡 Others
+- Added support for react-native-web 0.18. ([#18006](https://github.com/expo/expo/pull/18006) by [@kudo](https://github.com/kudo))

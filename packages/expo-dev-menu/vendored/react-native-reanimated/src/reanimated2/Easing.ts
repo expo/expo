@@ -109,7 +109,10 @@ function cubic(t: number): number {
  */
 function poly(n: number): EasingFn {
   'worklet';
-  return (t) => Math.pow(t, n);
+  return (t) => {
+    'worklet';
+    return Math.pow(t, n);
+  };
 }
 
 /**
@@ -171,7 +174,10 @@ function elastic(bounciness = 1): EasingFn {
  */
 function back(s = 1.70158): (t: number) => number {
   'worklet';
-  return (t) => t * t * ((s + 1) * t - s);
+  return (t) => {
+    'worklet';
+    return t * t * ((s + 1) * t - s);
+  };
 }
 
 /**
@@ -219,6 +225,16 @@ function bezier(
       return Bezier(x1, y1, x2, y2);
     },
   };
+}
+
+function bezierFn(
+  x1: number,
+  y1: number,
+  x2: number,
+  y2: number
+): (x: number) => number {
+  'worklet';
+  return Bezier(x1, y1, x2, y2);
 }
 
 /**
@@ -269,6 +285,7 @@ const EasingObject = {
   back,
   bounce,
   bezier,
+  bezierFn,
   in: in_,
   out,
   inOut,
@@ -301,7 +318,7 @@ function createChecker(
     }
     // @ts-ignore this is implicitly any - TODO
     const res = worklet.apply(this, arguments);
-    if (!_WORKLET && res && typeof res === 'function' && res.__worklet) {
+    if (!_WORKLET && res && typeof res === 'function' && res.__workletHash) {
       return createChecker(res, workletName, arguments);
     }
     return res;

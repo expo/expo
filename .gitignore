@@ -61,7 +61,9 @@ xcuserdata
 /android/versioned-react-native/ReactAndroid
 /android/versioned-react-native/ReactCommon
 /android/versioned-react-native/codegen
+/android/versioned-react-native/sdks
 ReactAndroid-temp.aar
+/android/ReactAndroid/prebuiltHermes
 
 # Tools
 jarjar-rules.txt
@@ -93,6 +95,9 @@ templates/**/android/app/build
 templates/**/Pods/**
 templates/**/Podfile.lock
 templates/**/yarn.lock
+
+# EYW template
+/packages/expo-yarn-workspaces/workspace-template/yarn.lock
 
 # Codemod
 .codemod.bookmark
@@ -143,3 +148,4 @@ docs/pages/versions/*/react-native/*.diff
 # iOS
 /ios/Pods
 /ios/build
+**/ios/.xcode.env.local

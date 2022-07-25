@@ -20,13 +20,13 @@ Sometimes you'll be able to tell exactly what's wrong just by the [stacktrace](.
 
 - Search for the error message in Google and [Stack Overflow](https://stackoverflow.com/questions), it's likely you're not the first person to ever run into this
 - **Isolate the code that's throwing the error**. This step is _vital_ in fixing obscure errors. To do this:
-  - Revert back to a working version of your code (this may even be a completely blank `expo init` project)
+  - Revert back to a working version of your code (this may even be a completely blank `npx create-expo-app` project)
   - Apply your recent changes piece by piece, until it breaks
     - If the code you're adding in each "piece" is complex, you may want to simplify what you're doing. For example, if you use a state management library like Redux, you can try removing that from the equation completely to see if the issue lies in your state management (which is really common in React apps)
   - This should narrow down the possible sources of the error, and provide you with more information to search the internet for others who have had the same problem
 - Use breakpoints (or `console.log`s) to check and make sure a certain piece of code is being run, or that a variable has a certain value. Using `console.log` for debugging isn't considered the best practice, but it's fast, easy, and oftentimes provides some illuminating information
 
-If you are able to simplify your code as much as possible, tracking down the source of an error gets exponentially easier. That's exactly why so many open source repos require a [minimal reproducible demo](https://stackoverflow.com/help/minimal-reproducible-example) in their bug reports- it ensures you have isolated the issue and identified exactly where the problem lies! If your app is too large and complex to do that, try and extract the functionality you're trying to add to its own blank `expo init` project, and go from there.
+If you are able to simplify your code as much as possible, tracking down the source of an error gets exponentially easier. That's exactly why so many open source repos require a [minimal reproducible demo](https://stackoverflow.com/help/minimal-reproducible-example) in their bug reports- it ensures you have isolated the issue and identified exactly where the problem lies! If your app is too large and complex to do that, try and extract the functionality you're trying to add to its own blank `npx create-expo-app` project, and go from there.
 
 ## Production errors
 
@@ -64,9 +64,9 @@ Below are a few tools we recommend, and use ourselves, when it comes to debuggin
 This menu gives you access to several functions which are useful for debugging, and is built into the Expo Go app. The way you open it is a bit different depending on where you're running the Expo Go app:
 
 - iOS Device: Shake the device a little bit, or touch 3 fingers to the screen.
-- iOS Simulator: Hit `Ctrl-Cmd-Z` on a Mac in the emulator to simulate the shake gesture, or press `Cmd+D`.
+- iOS Simulator: Hit <kbd>Ctrl</kbd> + <kbd>Cmd ⌘</kbd> + <kbd>Z</kbd> on a Mac in the emulator to simulate the shake gesture, or press <kbd>Cmd ⌘</kbd> + <kbd>D</kbd>.
 - Android Device: Shake the device vertically a little bit, or run `adb shell input keyevent 82` in your terminal window if your device is connected via USB.
-- Android Emulator: Either hit `Cmd+M` (`Ctrl+M` on Windows), or run `adb shell input keyevent 82` in your terminal window.
+- Android Emulator: Either hit <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> or <kbd>Ctrl</kbd> + <kbd>M</kbd> or run `adb shell input keyevent 82` in your terminal window.
 
 The Developer Menu gives you a couple different functionalities. A few are pretty self-explanatory, like:
 
@@ -101,7 +101,7 @@ You can install it via the [release page](https://github.com/jhen0409/react-nati
 
 ### Startup
 
-After firing up React Native Debugger, you'll need to specify the port (shortcuts: `Command+T` on macOS, `Ctrl+T` on Linux/Windows) to `19000` (if you use SDK <= 39, the port should be `19001`>). After that, run your project with `expo start`, and select `Debug remote JS` from the Developer Menu. The debugger should automatically connect.
+After firing up React Native Debugger, you'll need to specify the port (shortcuts: <kbd>Cmd ⌘</kbd> + <kbd>T</kbd> on macOS, <kbd>Ctrl</kbd> + <kbd>T</kbd> on Linux/Windows) to `19000` (if you use SDK <= 39, the port should be `19001`>). After that, run your project with `expo start`, and select `Debug remote JS` from the Developer Menu. The debugger should automatically connect.
 
 In the debugger console, you can see the Element tree, as well as the props, state, and children of whatever element you select. You also have the Chrome console on the right, and if you type `$r` in the console, you will see the breakdown of your selected element.
 
@@ -127,7 +127,7 @@ There are however [some limitations](https://github.com/jhen0409/react-native-de
 [Redux](https://redux.js.org/) is a popular library for managing and centralizing application state shared throughout the app. You can use Redux DevTools on React Native Debugger for debugging the application's state changes. The setup is as follows:
 
 1. Download React Native Debugger from the [releases page](https://github.com/jhen0409/react-native-debugger/releases).
-2. Open the app, press `⌘+t`/`ctrl+t` to open new window, then set the port to 19000.
+2. Open the app, press <kbd>Cmd ⌘</kbd> + <kbd>T</kbd> or <kbd>Ctrl</kbd> + <kbd>T</kbd> to open a new window, then set the port to 19000.
 3. Start your app, open the in-app developer menu, and select “Debug JS Remotely.”
 4. Configure `__REDUX_DEVTOOLS_EXTENSION__` as [shown here](https://github.com/zalmoxisus/redux-devtools-extension#11-basic-store).
 
@@ -138,8 +138,8 @@ You're now good to go! If you are experiencing any issues or want to learn more 
 React DevTools is a great way to get a look at each of your components' props and state. First, you'll need to run
 
 <Terminal
-  cmdCopy="npm install -g react-devtools"
-  cmd={['# Install React DevTools with npm', '$ npm install -g react-devtools', '', '# If you are using Expo SDK <= 37: npm install -g react-devtools@^3']}
+cmdCopy="npm install -g react-devtools"
+cmd={['# Install React DevTools with npm', '$ npm install -g react-devtools', '', '# If you are using Expo SDK <= 37: npm install -g react-devtools@^3']}
 />
 
 (if you don't want to install it globally, run `npm install --dev react-devtools` to install it as a project dependency).

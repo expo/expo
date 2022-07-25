@@ -8,6 +8,7 @@ expo.modules.core.interfaces.Consumer
 expo.modules.core.interfaces.SingletonModule
 expo.modules.jsonutils
 expo.modules.manifests
+expo.modules.notifications.BuildConfig
 expo.modules.notifications.notifications.model
 expo.modules.notifications.notifications.enums
 expo.modules.notifications.badge.interfaces.BadgeManager
@@ -30,7 +31,7 @@ expo.modules.updates.loader
 expo.modules.updates.manifest
 expo.modules.updates.selectionpolicy
 expo.modules.updates.UpdatesDevLauncherController
-expo.modules.splashscreen.singletons.SplashScreen
+expo.modules.splashscreen.singletons
 expo.modules.splashscreen.SplashScreenViewProvider
 expo.modules.splashscreen.SplashScreenImageResizeMode
 com.facebook.proguard.annotations.DoNotStrip

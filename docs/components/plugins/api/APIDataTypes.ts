@@ -66,6 +66,7 @@ export type MethodParamData = {
   type: TypeDefinitionData;
   comment?: CommentData;
   flags?: TypePropertyDataFlags;
+  defaultValue?: string;
 };
 
 export type TypePropertyDataFlags = {

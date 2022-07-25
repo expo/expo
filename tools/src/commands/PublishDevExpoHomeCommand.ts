@@ -16,6 +16,7 @@ import AppConfig from '../typings/AppConfig';
 
 type ActionOptions = {
   dry: boolean;
+  sdkVersion?: string;
 };
 
 type ExpoCliStateObject = {
@@ -46,8 +47,11 @@ export async function findTargetSdkVersionAsync(): Promise<string> {
 /**
  * Sets `sdkVersion` and `version` fields in app configuration if needed.
  */
-export async function maybeUpdateHomeSdkVersionAsync(appJson: AppConfig): Promise<void> {
-  const targetSdkVersion = await findTargetSdkVersionAsync();
+export async function maybeUpdateHomeSdkVersionAsync(
+  appJson: AppConfig,
+  explicitSdkVersion?: string | null
+): Promise<void> {
+  const targetSdkVersion = explicitSdkVersion ?? (await findTargetSdkVersionAsync());
 
   if (appJson.expo.sdkVersion !== targetSdkVersion) {
     console.log(`Updating home's sdkVersion to ${chalk.cyan(targetSdkVersion)}...`);
@@ -164,7 +168,7 @@ async function action(options: ActionOptions): Promise<void> {
   console.log('Getting expo-cli state of the current session...');
   const cliStateBackup = await getExpoCliStateAsync();
 
-  await maybeUpdateHomeSdkVersionAsync(appJson);
+  await maybeUpdateHomeSdkVersionAsync(appJson, options.sdkVersion);
 
   console.log(`Modifying home's slug to ${chalk.green(slug)}...`);
   appJson.expo.slug = slug;
@@ -229,6 +233,10 @@ export default (program: Command) => {
       '-d, --dry',
       'Whether to skip `expo publish` command. Despite this, some files might be changed after running this script.',
       false
+    )
+    .option(
+      '-s, --sdkVersion [string]',
+      'SDK version the published app should use. Defaults to the newest available SDK set in the Expo Go project.'
     )
     .asyncAction(action);
 };

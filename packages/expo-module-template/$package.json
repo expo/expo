@@ -13,7 +13,12 @@
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"
   },
-  "keywords": ["react-native", "expo", "<%- project.slug %>", "<%- project.name %>"],
+  "keywords": [
+    "react-native",
+    "expo",
+    "<%- project.slug %>",
+    "<%- project.name %>"
+  ],
   "repository": "<%- repo %>",
   "bugs": {
     "url": "<%- repo %>/issues"
@@ -24,9 +29,11 @@
   "dependencies": {},
   "devDependencies": {
     "expo-module-scripts": "^2.0.0",
-    "expo-modules-core": "^0.9.0"
+    "expo-modules-core": "^0.11.3"
   },
   "peerDependencies": {
-    "expo": "*"
+    "expo": "*",
+    "react": "*",
+    "react-native": "*"
   }
 }

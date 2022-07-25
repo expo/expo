@@ -51,6 +51,8 @@ public:
 
   bool isFunction();
 
+  bool isArray();
+
   bool isObject();
 
   bool getBool();
@@ -60,6 +62,8 @@ public:
   std::string getString();
 
   jni::local_ref<jni::HybridClass<JavaScriptObject>::javaobject> getObject();
+
+  jni::local_ref<jni::JArrayClass<JavaScriptValue::javaobject>> getArray();
 
 private:
   friend HybridBase;

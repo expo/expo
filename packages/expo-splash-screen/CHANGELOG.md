@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 0.16.1 — 2022-07-16
+
+### 🐛 Bug fixes
+
+- Fixed splash screen not showing when reloading apps on iOS. ([#18229](https://github.com/expo/expo/pull/18229) by [@kudo](https://github.com/kudo))
+
+## 0.16.0 — 2022-07-07
+
+_This version does not introduce any user-facing changes._
+
 ## 0.15.1 — 2022-04-27
 
 _This version does not introduce any user-facing changes._

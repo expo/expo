@@ -6,8 +6,9 @@
 #import <react/renderer/components/safeareacontext/RNCSafeAreaViewComponentDescriptor.h>
 #import <react/renderer/components/safeareacontext/RNCSafeAreaViewShadowNode.h>
 
-#import "RCTConversions.h"
-#import "RCTFabricComponentsPlugins.h"
+#import <React/RCTConversions.h>
+#import <React/RCTFabricComponentsPlugins.h>
+
 #import "RNCSafeAreaProviderComponentView.h"
 #import "RNCSafeAreaUtils.h"
 
@@ -55,15 +56,11 @@ using namespace facebook::react;
   [self updateStateIfNecessary];
 
   if (previousProviderView != _providerView) {
-    [NSNotificationCenter.defaultCenter
-     removeObserver:self
-     name:RNCSafeAreaDidChange
-     object:previousProviderView];
-    [NSNotificationCenter.defaultCenter
-     addObserver:self
-     selector:@selector(safeAreaProviderInsetsDidChange:)
-     name:RNCSafeAreaDidChange
-     object:_providerView];
+    [NSNotificationCenter.defaultCenter removeObserver:self name:RNCSafeAreaDidChange object:previousProviderView];
+    [NSNotificationCenter.defaultCenter addObserver:self
+                                           selector:@selector(safeAreaProviderInsetsDidChange:)
+                                               name:RNCSafeAreaDidChange
+                                             object:_providerView];
   }
 }
 

@@ -234,7 +234,7 @@ function normalizePopupFeaturesString(options) {
         for (const pair of windowFeaturePairs) {
             const [key, value] = pair.trim().split('=');
             if (key && value) {
-                windowFeaturePairs[key] = value;
+                windowFeatures[key] = value;
             }
         }
     }

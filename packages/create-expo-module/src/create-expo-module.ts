@@ -5,9 +5,14 @@ import downloadTarball from 'download-tarball';
 import ejs from 'ejs';
 import fs from 'fs-extra';
 import path from 'path';
-import prompts, { PromptObject } from 'prompts';
+import prompts from 'prompts';
 
-import { PackageManagerName, resolvePackageManager } from './resolvePackageManager';
+import { createExampleApp } from './createExampleApp';
+import { installDependencies } from './packageManager';
+import getPrompts from './prompts';
+import { resolvePackageManager } from './resolvePackageManager';
+import { CommandOptions, SubstitutionData } from './types';
+import { newStep } from './utils';
 
 const packageJson = require('../package.json');
 
@@ -19,43 +24,6 @@ const CWD = process.env.INIT_CWD || process.cwd();
 const IGNORES_PATHS = ['.DS_Store', 'build', 'node_modules', 'package.json'];
 
 /**
- * Possible command options.
- */
-type CommandOptions = {
-  target: string;
-  source?: string;
-  name?: string;
-  description?: string;
-  package?: string;
-  author?: string;
-  license?: string;
-  repo?: string;
-  withReadme: boolean;
-  withChangelog: boolean;
-};
-
-/**
- * Represents an object that is passed to `ejs` when rendering the template.
- */
-type SubstitutionData = {
-  project: {
-    slug: string;
-    name: string;
-    version: string;
-    description: string;
-    package: string;
-  };
-  author: string;
-  license: string;
-  repo: string;
-};
-
-type CustomPromptObject = PromptObject & {
-  name: string;
-  resolvedValue?: string | null;
-};
-
-/**
  * The main function of the command.
  *
  * @param target Path to the directory where to create the module. Defaults to current working dir.
@@ -64,34 +32,38 @@ type CustomPromptObject = PromptObject & {
 async function main(target: string | undefined, options: CommandOptions) {
   const targetDir = target ? path.join(CWD, target) : CWD;
 
+  await fs.ensureDir(targetDir);
   await confirmTargetDirAsync(targetDir);
 
   options.target = targetDir;
-  await fs.ensureDir(targetDir);
 
-  const data = await askForSubstitutionDataAsync(targetDir, options);
+  const data = await askForSubstitutionDataAsync(targetDir);
+
+  // Make one line break between prompts and progress logs
+  console.log();
+
   const packageManager = await resolvePackageManager();
   const packagePath = options.source
     ? path.join(CWD, options.source)
     : await downloadPackageAsync(targetDir);
-  const files = await getFilesAsync(packagePath);
 
-  console.log('🎨 Creating Expo module from the template files...');
+  await newStep('Creating the module from template files', async (step) => {
+    await createModuleFromTemplate(packagePath, targetDir, data);
+    step.succeed('Created the module from template files');
+  });
 
-  // Iterate through all template files.
-  for (const file of files) {
-    const renderedRelativePath = ejs.render(file.replace(/^\$/, ''), data, {
-      openDelimiter: '{',
-      closeDelimiter: '}',
-      escape: (value: string) => value.replace('.', path.sep),
+  await newStep('Installing module dependencies', async (step) => {
+    await installDependencies(packageManager, targetDir);
+    step.succeed('Installed module dependencies');
+  });
+
+  await newStep('Compiling TypeScript files', async (step) => {
+    await spawnAsync(packageManager, ['run', 'build'], {
+      cwd: targetDir,
+      stdio: 'ignore',
     });
-    const fromPath = path.join(packagePath, file);
-    const toPath = path.join(targetDir, renderedRelativePath);
-    const template = await fs.readFile(fromPath, { encoding: 'utf8' });
-    const renderedContent = ejs.render(template, data);
-
-    await fs.outputFile(toPath, renderedContent, { encoding: 'utf8' });
-  }
+    step.succeed('Compiled TypeScript files');
+  });
 
   if (!options.source) {
     // Files in the downloaded tarball are wrapped in `package` dir.
@@ -104,10 +76,12 @@ async function main(target: string | undefined, options: CommandOptions) {
   if (!options.withChangelog) {
     await fs.remove(path.join(targetDir, 'CHANGELOG.md'));
   }
+  if (options.example) {
+    // Create "example" folder
+    await createExampleApp(data, targetDir, packageManager);
+  }
 
-  // Install dependencies and build
-  await postActionsAsync(packageManager, targetDir);
-
+  console.log();
   console.log('✅ Successfully created Expo module');
 }
 
@@ -146,119 +120,71 @@ async function getNpmTarballUrl(packageName: string, version: string = 'latest')
 }
 
 /**
- * Gets the username of currently logged in user. Used as a default in the prompt asking for the module author.
- */
-async function npmWhoamiAsync(targetDir: string): Promise<string | null> {
-  try {
-    const { stdout } = await spawnAsync('npm', ['whoami'], { cwd: targetDir });
-    return stdout.trim();
-  } catch {
-    return null;
-  }
-}
-
-/**
  * Downloads the template from NPM registry.
  */
 async function downloadPackageAsync(targetDir: string): Promise<string> {
-  const tarballUrl = await getNpmTarballUrl('expo-module-template');
+  return await newStep('Downloading module template from npm', async (step) => {
+    const tarballUrl = await getNpmTarballUrl('expo-module-template');
 
-  console.log('⬇️  Downloading module template from npm...');
+    await downloadTarball({
+      url: tarballUrl,
+      dir: targetDir,
+    });
 
-  await downloadTarball({
-    url: tarballUrl,
-    dir: targetDir,
+    step.succeed('Downloaded module template from npm');
+
+    return path.join(targetDir, 'package');
   });
-  return path.join(targetDir, 'package');
 }
 
 /**
- * Installs dependencies and builds TypeScript files.
+ * Creates the module based on the `ejs` template (e.g. `expo-module-template` package).
  */
-async function postActionsAsync(packageManager: PackageManagerName, targetDir: string) {
-  async function run(...args: string[]) {
-    await spawnAsync(packageManager, args, {
-      cwd: targetDir,
-      stdio: 'ignore',
+async function createModuleFromTemplate(
+  templatePath: string,
+  targetPath: string,
+  data: SubstitutionData
+) {
+  const files = await getFilesAsync(templatePath);
+
+  // Iterate through all template files.
+  for (const file of files) {
+    const renderedRelativePath = ejs.render(file.replace(/^\$/, ''), data, {
+      openDelimiter: '{',
+      closeDelimiter: '}',
+      escape: (value: string) => value.replace('.', path.sep),
     });
+    const fromPath = path.join(templatePath, file);
+    const toPath = path.join(targetPath, renderedRelativePath);
+    const template = await fs.readFile(fromPath, { encoding: 'utf8' });
+    const renderedContent = ejs.render(template, data);
+
+    await fs.outputFile(toPath, renderedContent, { encoding: 'utf8' });
   }
-
-  console.log('📦 Installing dependencies...');
-  await run('install');
-
-  console.log('🛠  Compiling TypeScript files...');
-  await run('run', 'build');
 }
 
 /**
  * Asks the user for some data necessary to render the template.
  * Some values may already be provided by command options, the prompt is skipped in that case.
  */
-async function askForSubstitutionDataAsync(
-  targetDir: string,
-  options: CommandOptions
-): Promise<SubstitutionData> {
-  const defaultPackageSlug = path.basename(targetDir);
-  const defaultProjectName = defaultPackageSlug
-    .replace(/^./, (match) => match.toUpperCase())
-    .replace(/\W+(\w)/g, (_, p1) => p1.toUpperCase());
-
-  const promptQueries: CustomPromptObject[] = [
-    {
-      type: 'text',
-      name: 'slug',
-      message: 'What is the package slug?',
-      initial: defaultPackageSlug,
-      resolvedValue: options.target ? defaultPackageSlug : null,
-    },
-    {
-      type: 'text',
-      name: 'name',
-      message: 'What is the project name?',
-      initial: defaultProjectName,
-    },
-    {
-      type: 'text',
-      name: 'description',
-      message: 'How would you describe the module?',
-    },
-    {
-      type: 'text',
-      name: 'package',
-      message: 'What is the Android package name?',
-      initial: `expo.modules.${defaultPackageSlug.replace(/\W/g, '').toLowerCase()}`,
-    },
-    {
-      type: 'text',
-      name: 'author',
-      message: 'Who is the author?',
-      initial: (await npmWhoamiAsync(targetDir)) ?? '',
-    },
-    {
-      type: 'text',
-      name: 'license',
-      message: 'What is the license?',
-      initial: 'MIT',
-    },
-    {
-      type: 'text',
-      name: 'repo',
-      message: 'What is the repository URL?',
-    },
-  ];
+async function askForSubstitutionDataAsync(targetDir: string): Promise<SubstitutionData> {
+  const promptQueries = await getPrompts(targetDir);
 
   // Stop the process when the user cancels/exits the prompt.
   const onCancel = () => {
     process.exit(0);
   };
 
-  const answers: Record<string, string> = {};
-  for (const query of promptQueries) {
-    const { name, resolvedValue } = query;
-    answers[name] = resolvedValue ?? options[name] ?? (await prompts(query, { onCancel }))[name];
-  }
-
-  const { slug, name, description, package: projectPackage, author, license, repo } = answers;
+  const {
+    slug,
+    name,
+    description,
+    package: projectPackage,
+    authorName,
+    authorEmail,
+    authorUrl,
+    repo,
+  } = await prompts(promptQueries, { onCancel });
 
   return {
     project: {
@@ -268,8 +194,8 @@ async function askForSubstitutionDataAsync(
       description,
       package: projectPackage,
     },
-    author,
-    license,
+    author: `${authorName} <${authorEmail}> (${authorUrl})`,
+    license: 'MIT',
     repo,
   };
 }
@@ -312,14 +238,9 @@ program
     '-s, --source <source_dir>',
     'Local path to the template. By default it downloads `expo-module-template` from NPM.'
   )
-  .option('-n, --name <module_name>', 'Name of the native module.')
-  .option('-d, --description <description>', 'Description of the module.')
-  .option('-p, --package <package>', 'The Android package name.')
-  .option('-a, --author <author>', 'The author name.')
-  .option('-l, --license <license>', 'The license that the module is distributed with.')
-  .option('-r, --repo <repo_url>', 'The URL to the repository.')
   .option('--with-readme', 'Whether to include README.md file.', false)
   .option('--with-changelog', 'Whether to include CHANGELOG.md file.', false)
+  .option('--no-example', 'Whether to skip creating the example app.', false)
   .action(main);
 
 program.parse(process.argv);

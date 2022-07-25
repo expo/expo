@@ -3,6 +3,7 @@ title: App credentials explained
 ---
 
 import { ConfigClassic } from '~/components/plugins/ConfigSection';
+import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
 
 Expo automates the process of signing your app for iOS and Android, but in both cases you can choose to provide your own overrides. [EAS Build](/build/introduction.md) can generate signed or unsigned applications, but in order to distribute your application through the stores, it **must** be a signed application.
 
@@ -43,11 +44,11 @@ Provisioning profiles expire after 12 months, but this won't affect apps in prod
 
 ### Summary
 
-| Credential               | Limit Per Account | App-specific? | Can be revoked with no production side effects? | Used at... |
-| ------------------------ | ----------------- | ------------- | ----------------------------------------------- | ---------- |
-| Distribution Certificate | 2                 | ❌            | ✅                                              | Build time |
-| Push Notification Key    | 2                 | ❌            | ❌                                              | Run time   |
-| Provisioning Profile     | Unlimited         | ✅            | ✅                                              | Build time |
+| Credential               | Limit Per Account | App-specific? | Can be revoked with no production side effects? | Used at…   |
+|--------------------------|-------------------|---------------|-------------------------------------------------|------------|
+| Distribution Certificate | 2                 | <NoIcon />    | <YesIcon />                                     | Build time |
+| Push Notification Key    | 2                 | <NoIcon />    | <NoIcon />                                      | Run time   |
+| Provisioning Profile     | Unlimited         | <YesIcon />   | <YesIcon />                                     | Build time |
 
 ### Clearing Credentials
 

@@ -1,11 +1,14 @@
+import { getConfig } from '@expo/config';
 import { MetroDevServerOptions } from '@expo/dev-server';
 import http from 'http';
 import Metro from 'metro';
 import { Terminal } from 'metro-core';
 
 import { createDevServerMiddleware } from '../middleware/createDevServerMiddleware';
+import { getPlatformBundlers } from '../platformBundlers';
 import { MetroTerminalReporter } from './MetroTerminalReporter';
 import { importExpoMetroConfigFromProject, importMetroFromProject } from './resolveFromProject';
+import { withMetroMultiPlatform } from './withMetroMultiPlatform';
 
 // From expo/dev-server but with ability to use custom logger.
 type MessageSocket = {
@@ -38,7 +41,12 @@ export async function instantiateMetroAsync(
     },
   };
 
-  const metroConfig = await ExpoMetroConfig.loadAsync(projectRoot, { reporter, ...options });
+  let metroConfig = await ExpoMetroConfig.loadAsync(projectRoot, { reporter, ...options });
+
+  // TODO: When we bring expo/metro-config into the expo/expo repo, then we can upstream this.
+  const { exp } = getConfig(projectRoot, { skipSDKVersionRequirement: true, skipPlugins: true });
+  const platformBundlers = getPlatformBundlers(exp);
+  metroConfig = withMetroMultiPlatform(projectRoot, metroConfig, platformBundlers);
 
   const {
     middleware,
@@ -63,7 +71,6 @@ export async function instantiateMetroAsync(
   };
 
   const server = await Metro.runServer(metroConfig, {
-    // @ts-expect-error: TODO: Update the types.
     hmrEnabled: true,
     websocketEndpoints,
   });

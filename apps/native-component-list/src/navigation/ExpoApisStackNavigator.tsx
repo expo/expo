@@ -30,12 +30,6 @@ export const Screens = [
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/Amplitude/AmplitudeScreen'));
-    },
-    name: 'Amplitude',
-  },
-  {
-    getComponent() {
       return optionalRequire(() => require('../screens/Clipboard/ClipboardScreen'));
     },
     name: 'Clipboard',
@@ -112,12 +106,6 @@ export const Screens = [
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/BranchScreen'));
-    },
-    name: 'Branch',
-  },
-  {
-    getComponent() {
       return optionalRequire(() => require('../screens/BrightnessScreen'));
     },
     name: 'Brightness',
@@ -139,18 +127,6 @@ export const Screens = [
       return optionalRequire(() => require('../screens/LocalizationScreen'));
     },
     name: 'Localization',
-  },
-  {
-    getComponent() {
-      return optionalRequire(() => require('../screens/FacebookAppEventsScreen'));
-    },
-    name: 'FacebookAppEvents',
-  },
-  {
-    getComponent() {
-      return optionalRequire(() => require('../screens/FacebookLoginScreen'));
-    },
-    name: 'FacebookLogin',
   },
   {
     getComponent() {

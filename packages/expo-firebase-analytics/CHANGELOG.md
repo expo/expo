@@ -10,6 +10,14 @@
 
 ### 💡 Others
 
+## 7.1.1 — 2022-07-16
+
+_This version does not introduce any user-facing changes._
+
+## 7.1.0 — 2022-07-07
+
+_This version does not introduce any user-facing changes._
+
 ## 7.0.0 — 2022-04-18
 
 ### 🛠 Breaking changes

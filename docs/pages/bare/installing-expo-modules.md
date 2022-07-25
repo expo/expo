@@ -4,6 +4,7 @@ title: Installing Expo modules
 
 import InstallSection from '~/components/plugins/InstallSection';
 import ConfigurationDiff from '~/components/plugins/ConfigurationDiff';
+import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
 
 > Are you migrating from `react-native-unimodules`? If yes, please refer to [the Expo modules migration guide](https://expo.fyi/expo-modules-migration).
 
@@ -11,7 +12,7 @@ In order to use Expo modules in your app, you will need to install and configure
 
 The `expo` package has a small footprint; it includes only a minimal set of packages that are needed in nearly every app and the module and autolinking infrastructure that other Expo SDK packages are built with. Once the `expo` package is installed and configured in your project, you can use `expo install` to add any other Expo module from the SDK.
 
-The easiest way to get started with Expo modules is to initialize a new bare workflow project with Expo CLI: `expo init --template bare-minimum`.
+The easiest way to get started with Expo modules is to initialize a new bare workflow project with: `npx create-expo-app --template bare-minimum`.
 
 If you have an existing project without Expo modules installed (perhaps created with `npx react-native init`), please follow the automatic or manual installation instructions below.
 
@@ -21,8 +22,13 @@ Aside from initializing a new project with `expo-cli`, the easiest way to get up
 
 <InstallSection packageName="expo" cmd={["# Install and configure the expo package automatically", "npx install-expo-modules@latest"]} hideBareInstructions />
 
-- ✅ **When the command succeeds**, you will be able to add any Expo module in your app! Proceed to [Usage](#usage) for more information.
-- ❌ **If the command fails**, please follow the manual installation instructions. Updating code programmatically can be tricky, and if your project deviates significantly from a default React Native project, then you need to perform manual installation and adapt the instructions here to your codebase.
+- <YesIcon small />{' '}
+
+  **When the command succeeds**, you will be able to add any Expo module in your app! Proceed to [Usage](#usage) for more information.
+
+- <NoIcon small />{' '}
+
+  **If the command fails**, please follow the manual installation instructions. Updating code programmatically can be tricky, and if your project deviates significantly from a default React Native project, then you need to perform manual installation and adapt the instructions here to your codebase.
 
 ## Manual installation
 
@@ -37,6 +43,8 @@ Once installation is complete, apply the changes from the following diffs to con
 ### Configuration for iOS
 
 <ConfigurationDiff source="/static/diffs/expo-ios.diff" />
+
+Optionally, you can also add additional delegate methods to your **AppDelegate.mm**. Some libraries may require them, so unless you have a good reason to leave them out, it is recommended to add them. [See delegate methods in AppDelegate.mm](https://github.com/expo/expo/blob/b7c0356c697ef2cf46388e5742d67b7b48adc97f/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.mm#L75-L102).
 
 Save all of your changes. In Xcode, update the iOS Deployment Target under `Target → Build Settings → Deployment` to `iOS 12.0`. The last step is to install the project's CocoaPods again in order to pull in Expo modules that are detected by `use_expo_modules!` directive that we added to the `Podfile`:
 

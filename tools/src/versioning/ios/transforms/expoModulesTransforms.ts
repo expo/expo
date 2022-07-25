@@ -1,6 +1,6 @@
 import { FileTransforms } from '../../../Transforms.types';
 
-const objcFilesPattern = '*.{h,m,mm}';
+const objcFilesPattern = '*.{h,m,mm,cpp}';
 const swiftFilesPattern = '*.swift';
 
 export function expoModulesTransforms(prefix: string): FileTransforms {
@@ -30,7 +30,7 @@ export function expoModulesTransforms(prefix: string): FileTransforms {
       },
       {
         // Prefix symbols and imports.
-        find: /\b(EX|UM|RCT)/g,
+        find: /\b(EX|UM|RCT|ExpoBridgeModule)/g,
         replaceWith: `${prefix}$1`,
       },
 
@@ -43,13 +43,19 @@ export function expoModulesTransforms(prefix: string): FileTransforms {
       },
       {
         paths: swiftFilesPattern,
-        find: /@objc\((Expo|EX|EAS)\)/g,
-        replaceWith: `@objc(${prefix}$1)`,
+        find: /@objc\((Expo|EX|EAS)/g,
+        replaceWith: `@objc(${prefix}$1`,
       },
       {
         paths: swiftFilesPattern,
         find: /r(eactTag)/gi,
         replaceWith: (_, p1) => `${prefix.toLowerCase()}R${p1}`,
+      },
+      {
+        // Prefixes name of the Expo modules provider.
+        paths: swiftFilesPattern,
+        find: /"(ExpoModulesProvider)"/g,
+        replaceWith: `"${prefix}$1"`,
       },
 
       // Only Objective-C
@@ -83,22 +89,10 @@ export function expoModulesTransforms(prefix: string): FileTransforms {
         replaceWith: `@import ${prefix}$1$2`,
       },
       {
-        // Prefixes Objective-C name of the Swift modules provider.
-        paths: ['EXNativeModulesProxy.mm'],
-        find: 'NSClassFromString(@"ExpoModulesProvider")',
-        replaceWith: `NSClassFromString(@"${prefix}ExpoModulesProvider")`,
-      },
-      {
-        // Prefixes Objective-C name of the Swift modules provider.
-        paths: ['EXNativeModulesProxy.mm'],
-        find: '[NSString stringWithFormat:@"%@.ExpoModulesProvider"',
-        replaceWith: `[NSString stringWithFormat:@"%@.${prefix}ExpoModulesProvider"`,
-      },
-      {
         // Prefixes imports from other React Native libs
         paths: objcFilesPattern,
-        find: new RegExp(`#import <(ReactCommon|jsi)/(${prefix})?`, 'g'),
-        replaceWith: `#import <${prefix}$1/${prefix}`,
+        find: new RegExp(`#(import|include) <(ReactCommon|jsi)/(${prefix})?`, 'g'),
+        replaceWith: `#$1 <${prefix}$2/${prefix}`,
       },
       {
         // Prefixes versionable namespaces
@@ -136,6 +130,13 @@ export function expoModulesTransforms(prefix: string): FileTransforms {
         // Use negative look ahead regexp for `prefix` to prevent duplicated versioning
         find: new RegExp(`\b(!?${prefix})(\w+-umbrella\.h)\b`, 'g'),
         replaceWith: `${prefix}$1`,
+      },
+
+      {
+        // Dynamically remove the prefix from the "moduleName" method in the view manager adapter.
+        paths: 'EXViewManagerAdapter.{m,mm}',
+        find: /return (NSStringFromClass\(self\));/g,
+        replaceWith: `NSString *className = $1;\n  return [className hasPrefix:@"${prefix}"] ? [className substringFromIndex:${prefix.length}] : className;`,
       },
     ],
   };

@@ -130,7 +130,7 @@ export async function getIosApplicationReleaseTypeAsync() {
  * Gets the current [Apple Push Notification (APN)](https://developer.apple.com/documentation/bundleresources/entitlements/aps-environment?language=objc)
  * service environment.
  * @return Returns a promise fulfilled with the string, either `'development'` or `'production'`,
- * based on the current APN environment.
+ * based on the current APN environment, or `null` on the simulator as it does not support registering with APNs.
  * @platform ios
  */
 export async function getIosPushNotificationServiceEnvironmentAsync() {

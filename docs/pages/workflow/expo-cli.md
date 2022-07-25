@@ -5,29 +5,40 @@ maxHeadingDepth: 4
 
 import { Terminal } from '~/ui/components/Snippet';
 
-Expo CLI is a command line app that is the main interface between a developer and Expo tools. You'll use it for a variety of tasks, such as:
+Expo CLI is a command-line interface between a developer and Expo tools. It is used for a variety of tasks, such as:
 
-- Creating new projects
-- Developing your app: running the project server, viewing logs, opening your app in a simulator
-- [Publishing](publishing.md) your app JavaScript and other assets and managing releasing them as updates
-- [Building binaries](/distribution/building-standalone-apps.md) (`aab` and `ipa` files) to be [uploaded to the App Store and Play Store](/distribution/uploading-apps.md)
+- To run a project's [development server](/guides/how-expo-works/#expo-development-server), view logs, open the app in a simulator, etc., during the development phase of an app
+- Logging into your Expo account
+- [Publishing](publishing) an app's JavaScript and other assets and managing to release them as updates
 - Managing Apple Credentials and Google Keystores
 
-You may use the CLI in your terminal or use the web based interface (it opens automatically by default, or you can press d from the CLI to open it on demand). The web interface enables you to use some of the most often used features from a quick-to-use graphical interface. We’ve only scratched the surface of what expo-cli can do so far. Be sure to check out all the possible commands below!
+> With **Expo SDK 46**, we are migrating to a new suite of tooling that is versioned with the `expo` package. Use `npx create-expo-app` to initialize a new Expo project instead of `expo init`.
+
+We have only scratched the surface of what you can do with Expo CLI. This page contains a complete list of all available Expo CLI commands, alongside optional parameters for additional behavior.
 
 ## Installation
+
+Expo CLI is installed as a global npm package on your development machine. To download and install it, run the following command:
 
 <Terminal cmd={['$ npm install -g expo-cli']} />
 
 ## Checking CLI Version
 
-Run `expo --version` to determine what version you are currently working with.
+To check the current version of Expo CLI you are using, use the `--version` option.
+
+<Terminal cmd={['$ expo --version']} />
 
 ## Commands
 
-The commands listed below are derived from the latest version of Expo CLI. You can view the list of commands available with your version in your terminal using `expo --help`. To learn more about a specific command and its options use `expo [command] --help`.
+You can view the list of commands available with your version in your terminal using the `--help` option.
+
+<Terminal cmd={['$ expo --help']} />
+
+To learn more about a specific command and its options, use `expo [command] --help`.
 
 <Terminal cmd={[`# Usage: expo [command] [options]`]} />
+
+You will find a list of all commands derived from the latest version of Expo CLI.
 
 <!-- BEGIN GENERATED BLOCK. DO NOT MODIFY MANUALLY. https://github.com/expo/expo-cli/blob/main/packages/expo-cli/scripts/introspect.ts -->
 

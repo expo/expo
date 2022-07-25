@@ -1,6 +1,7 @@
 import chalk from 'chalk';
 import fs from 'fs-extra';
 import glob from 'glob-promise';
+import once from 'lodash/once';
 import ncp from 'ncp';
 import path from 'path';
 import xcode from 'xcode';
@@ -25,6 +26,7 @@ interface VendoredModuleUpdateStep {
   /**
    * Hook that is fired by the end of vendoring an Android file.
    * You should use it to perform some extra operations that are not covered by the main flow.
+   * @deprecated Use {@link VendoredModuleConfig.moduleModifier} instead.
    */
   onDidVendorAndroidFile?: (file: string) => Promise<void>;
 }
@@ -42,6 +44,9 @@ interface VendoredModuleConfig {
   semverPrefix?: '~' | '^';
   skipCleanup?: boolean;
   steps: VendoredModuleUpdateStep[];
+  /**
+   * These modifiers are run before files are copied to the target directory.
+   */
   moduleModifier?: ModuleModifier;
   warnings?: string[];
 }
@@ -197,49 +202,148 @@ const ReanimatedModifier: ModuleModifier = async function (
   await transformGestureHandlerImports();
 };
 
-const GestureHandlerModifier: ModuleModifier = async function (
-  moduleConfig: VendoredModuleConfig,
-  clonedProjectPath: string
-): Promise<void> {
-  const baseSrcDir = path.join(
-    clonedProjectPath,
-    'android',
-    'src',
-    'main',
-    'java',
-    'com',
-    'swmansion',
-    'gesturehandler',
-    'react'
-  );
-
+const PickerModifier: ModuleModifier = once(async function (moduleConfig, clonedProjectPath) {
   const addResourceImportAsync = async () => {
-    const files = [path.join(baseSrcDir, 'RNGestureHandlerButtonViewManager.kt')];
+    const files = [
+      `${clonedProjectPath}/android/src/main/java/com/reactnativecommunity/picker/ReactPicker.java`,
+      `${clonedProjectPath}/android/src/main/java/com/reactnativecommunity/picker/ReactPickerManager.java`,
+    ];
     await Promise.all(
-      files.map(async (file) => {
-        let content = await fs.readFile(file, 'utf8');
-        content = content.replace(/^(package .+)$/gm, '$1\nimport host.exp.expoview.R');
-        await fs.writeFile(file, content, 'utf8');
-      })
-    );
-  };
-
-  const transformImportsAsync = async () => {
-    const files = [path.join(baseSrcDir, 'RNGestureHandlerModule.kt')];
-    await Promise.all(
-      files.map(async (file) => {
-        let content = await fs.readFile(file, 'utf8');
-        content = content.replace(
-          /^import com\.swmansion\.common\./gm,
-          'import versioned.host.exp.exponent.modules.api.components.gesturehandler.'
-        );
-        await fs.writeFile(file, content, 'utf8');
-      })
+      files
+        .map((file) => path.resolve(file))
+        .map(async (file) => {
+          let content = await fs.readFile(file, 'utf8');
+          content = content.replace(/^(package .+)$/gm, '$1\n\nimport host.exp.expoview.R;');
+          await fs.writeFile(file, content, 'utf8');
+        })
     );
   };
 
   await addResourceImportAsync();
+});
+
+const GestureHandlerModifier: ModuleModifier = async function (
+  moduleConfig: VendoredModuleConfig,
+  clonedProjectPath: string
+): Promise<void> {
+  const addResourceImportAsync = async () => {
+    const files = [
+      `${clonedProjectPath}/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerButtonViewManager.kt`,
+    ];
+    await Promise.all(
+      files
+        .map((file) => path.resolve(file))
+        .map(async (file) => {
+          let content = await fs.readFile(file, 'utf8');
+          content = content.replace(/^(package .+)$/gm, '$1\nimport host.exp.expoview.R');
+          await fs.writeFile(file, content, 'utf8');
+        })
+    );
+  };
+
+  const replaceOrAddBuildConfigImportAsync = async () => {
+    const files = [
+      `${clonedProjectPath}/android/lib/src/main/java/com/swmansion/gesturehandler/GestureHandler.kt`,
+      `${clonedProjectPath}/android/src/main/java/com/swmansion/gesturehandler/RNGestureHandlerPackage.kt`,
+      `${clonedProjectPath}/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerModule.kt`,
+    ];
+    await Promise.all(
+      files
+        .map((file) => path.resolve(file))
+        .map(async (file) => {
+          let content = await fs.readFile(file, 'utf8');
+          content = content
+            .replace(/^.*\.BuildConfig$/gm, '')
+            .replace(/^(package .+)$/gm, '$1\nimport host.exp.expoview.BuildConfig');
+          await fs.writeFile(file, content, 'utf8');
+        })
+    );
+  };
+
+  const transformImportsAsync = async () => {
+    const files = [
+      `${clonedProjectPath}/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerModule.kt`,
+    ];
+    await Promise.all(
+      files
+        .map((file) => path.resolve(file))
+        .map(async (file) => {
+          let content = await fs.readFile(file, 'utf8');
+          content = content.replace(
+            /^import com\.swmansion\.common\./gm,
+            'import versioned.host.exp.exponent.modules.api.components.gesturehandler.'
+          );
+          await fs.writeFile(file, content, 'utf8');
+        })
+    );
+  };
+
+  const commentOurReanimatedCode = async () => {
+    const files = [
+      `${clonedProjectPath}/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerModule.kt`,
+    ];
+    await Promise.all(
+      files
+        .map((file) => path.resolve(file))
+        .map(async (file) => {
+          let content = await fs.readFile(file, 'utf8');
+          content = content.replace(
+            'ReanimatedEventDispatcher.sendEvent(event, reactApplicationContext)',
+            '// $& // COMMENTED OUT BY VENDORING SCRIPT'
+          );
+          await fs.writeFile(file, content, 'utf8');
+        })
+    );
+  };
+
+  await addResourceImportAsync();
+  await replaceOrAddBuildConfigImportAsync();
   await transformImportsAsync();
+  await commentOurReanimatedCode();
+};
+
+const ScreensModifier: ModuleModifier = async function (
+  moduleConfig: VendoredModuleConfig,
+  clonedProjectPath: string
+): Promise<void> {
+  const viewmanagersExpoviewDir = path.join(
+    ANDROID_DIR,
+    'expoview',
+    'src',
+    'main',
+    'java',
+    'com',
+    'facebook',
+    'react',
+    'viewmanagers'
+  );
+
+  const copyPaperViewManager = async () => {
+    await fs.remove(viewmanagersExpoviewDir); // clean
+    // copy
+    await new Promise<void>((res, rej) => {
+      ncp(
+        path.join(
+          clonedProjectPath,
+          'android',
+          'src',
+          'paper',
+          'java',
+          'com',
+          'facebook',
+          'react',
+          'viewmanagers'
+        ),
+        viewmanagersExpoviewDir,
+        { dereference: true },
+        () => {
+          res();
+        }
+      );
+    });
+  };
+
+  await copyPaperViewManager();
 };
 
 const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
@@ -250,31 +354,39 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
     moduleModifier: GestureHandlerModifier,
     steps: [
       {
+        sourceAndroidPath: 'android/src/main/java/com/swmansion/gesturehandler',
+        targetAndroidPath: 'modules/api/components/gesturehandler',
+        sourceAndroidPackage: 'com.swmansion.gesturehandler',
+        targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.gesturehandler',
+      },
+      {
         sourceAndroidPath: 'android/lib/src/main/java/com/swmansion/gesturehandler',
         targetAndroidPath: 'modules/api/components/gesturehandler',
         sourceAndroidPackage: 'com.swmansion.gesturehandler',
         targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.gesturehandler',
+        cleanupTargetPath: false, // first step cleans parent directory
       },
       {
         sourceAndroidPath: 'android/common/src/main/java/com/swmansion/common',
         targetAndroidPath: 'modules/api/components/gesturehandler/common',
         sourceAndroidPackage: 'com.swmansion.common',
         targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.gesturehandler',
+        cleanupTargetPath: false, // first steps cleans parent directory
       },
       {
-        recursive: true,
-        sourceIosPath: 'ios',
-        targetIosPath: 'Api/Components/GestureHandler',
-        sourceAndroidPath: 'android/src/main/java/com/swmansion/gesturehandler/react',
-        targetAndroidPath: 'modules/api/components/gesturehandler/react',
+        sourceAndroidPath: 'android/src/paper/java/com/facebook/react/viewmanagers',
+        targetAndroidPath: '../../../../com/facebook/react/viewmanagers',
+        sourceAndroidPackage: 'com.facebook.react.viewmanagers',
+        targetAndroidPackage: 'com.facebook.react.viewmanagers',
+        cleanupTargetPath: false,
+      },
+      {
+        sourceAndroidPath: 'android/src/paper/java/com/swmansion/gesturehandler',
+        targetAndroidPath: 'modules/api/components/gesturehandler',
         sourceAndroidPackage: 'com.swmansion.gesturehandler',
         targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.gesturehandler',
+        cleanupTargetPath: false,
       },
-    ],
-    warnings: [
-      `NOTE: Any files in ${chalk.magenta(
-        'com.facebook.react'
-      )} will not be updated -- you'll need to add these to expoview manually!`,
     ],
   },
   'react-native-reanimated': {
@@ -331,6 +443,7 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
     repoUrl: 'https://github.com/software-mansion/react-native-screens.git',
     installableInManagedApps: true,
     semverPrefix: '~',
+    moduleModifier: ScreensModifier,
     steps: [
       {
         sourceIosPath: 'ios',
@@ -350,6 +463,14 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
               find: /(?=^class ScreenStackHeaderConfig\()/m,
               replaceWith: `import host.exp.expoview.BuildConfig\nimport host.exp.expoview.R\n\n`,
             },
+            'RNScreensPackage.kt': {
+              find: /(?=^class RNScreensPackage\ :)/m,
+              replaceWith: `import host.exp.expoview.BuildConfig\n\n`,
+            },
+            'Screen.kt': {
+              find: /(?=^@SuppressLint\(\"ViewConstructor\"\)\nclass Screen)/m,
+              replaceWith: `import host.exp.expoview.BuildConfig\n\n`,
+            },
           };
 
           const fileConfig = CHANGES[filename];
@@ -364,6 +485,13 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
           );
           await fs.writeFile(file, newFileContent, 'utf8');
         },
+      },
+      {
+        cleanupTargetPath: false,
+        sourceAndroidPath: 'android/src/paper/java/com/swmansion/rnscreens',
+        targetAndroidPath: 'modules/api/screens',
+        sourceAndroidPackage: 'com.swmansion.rnscreens',
+        targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.screens',
       },
     ],
   },
@@ -447,14 +575,14 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
     installableInManagedApps: true,
     steps: [
       {
-        sourceIosPath: 'lib/ios/AirGoogleMaps',
+        sourceIosPath: 'ios/AirGoogleMaps',
         targetIosPath: 'Api/Components/GoogleMaps',
       },
       {
         recursive: true,
-        sourceIosPath: 'lib/ios/AirMaps',
+        sourceIosPath: 'ios/AirMaps',
         targetIosPath: 'Api/Components/Maps',
-        sourceAndroidPath: 'lib/android/src/main/java/com/airbnb/android/react/maps',
+        sourceAndroidPath: 'android/src/main/java/com/airbnb/android/react/maps',
         targetAndroidPath: 'modules/api/components/maps',
         sourceAndroidPackage: 'com.airbnb.android.react.maps',
         targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.maps',
@@ -608,6 +736,7 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
   '@react-native-picker/picker': {
     repoUrl: 'https://github.com/react-native-picker/picker',
     installableInManagedApps: true,
+    moduleModifier: PickerModifier,
     steps: [
       {
         sourceIosPath: 'ios',

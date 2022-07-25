@@ -39,7 +39,7 @@ jobs:
   build:
     runs-on: ubuntu-20.04
     env:
-      GRADLE_OPTS: -Dorg.gradle.jvmargs=-Xmx2048m -XX:MaxMetaspaceSize=1024m
+      GRADLE_OPTS: -Dorg.gradle.jvmargs=-Xmx4096m -XX:MaxMetaspaceSize=1024m
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v3
@@ -61,6 +61,7 @@ jobs:
           yarn-workspace: 'true'
           yarn-tools: 'true'
           gradle: 'true'
+          hermes-engine-aar: 'true'
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: 🧶 Yarn install

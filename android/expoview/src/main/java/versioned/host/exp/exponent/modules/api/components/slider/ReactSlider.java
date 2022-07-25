@@ -24,7 +24,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import javax.annotation.Nullable;
-
+import com.facebook.react.modules.i18nmanager.I18nUtil;
 /**
  * Slider that behaves more like the iOS one, for consistency.
  *
@@ -68,6 +68,8 @@ public class ReactSlider extends AppCompatSeekBar {
 
   public ReactSlider(Context context, @Nullable AttributeSet attrs, int style) {
     super(context, attrs, style);
+    I18nUtil sharedI18nUtilInstance = I18nUtil.getInstance();
+    super.setLayoutDirection(sharedI18nUtilInstance.isRTL(context) ? LAYOUT_DIRECTION_RTL : LAYOUT_DIRECTION_LTR);
     disableStateListAnimatorIfNeeded();
   }
 

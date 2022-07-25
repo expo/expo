@@ -16,9 +16,9 @@ If you're just starting your project, you can create a new project from our temp
 
 If you have an existing project, you'll need to [install the package and make a few changes](installation.md) to your **AppDelegate.m**, **MainActivity.java** and **MainApplication.java**.
 
-If you created your project with `expo init`, or you already have `expo` and/or other Expo modules up and running, use the tabs marked **With Expo modules**.
+If you created your project with `expo init` or `create-expo-app`, or you already have `expo` and/or other Expo modules up and running, use the tabs marked **With Expo modules**.
 
-If you created your project with `expo init` before SDK 43 and have `react-native-unimodules` up and running, use the tabs marked **With unimodules**. When you're ready, consider upgrading to the newer Expo modules by [following these steps](https://expo.fyi/expo-modules-migration).
+If you created your project with `expo init` or `create-expo-app` before SDK 43 and have `react-native-unimodules` up and running, use the tabs marked **With unimodules**. When you're ready, consider upgrading to the newer Expo modules by [following these steps](https://expo.fyi/expo-modules-migration).
 
 If you created your project with `npx react-native init` and do not have any other Expo packages installed, **starting from version `0.8.0` you'll need to [install Expo modules](../bare/installing-expo-modules)** in order to use `expo-dev-client`.
 

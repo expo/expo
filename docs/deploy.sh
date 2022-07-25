@@ -117,6 +117,11 @@ redirects[modules]=modules/overview/
 redirects[module-api]=modules/module-api/
 redirects[module-config]=modules/module-config/
 
+redirects[introduction/walkthrough]=tutorial/planning/
+
+# Guides that have been deleted
+redirects[guides/using-gatsby]=guides/
+
 echo "::group::[5/6] Add custom redirects"
 for i in "${!redirects[@]}" # iterate over keys
 do

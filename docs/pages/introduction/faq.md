@@ -42,7 +42,7 @@ Yes! All Expo tools and services work great in any React Native app. For example
 
 The fastest way to share your managed Expo project is to publish it and open it in a development client app. You can publish it by installing `expo-updates` in your project and running `expo publish`. This gives your app a URL; you can share this URL with anybody who has the Expo Go app for Android or the [Development Build](/development/introduction.md) for your app for iOS or Android, and they can open your app immediately.
 
-When you're ready, you can create a standalone app (**.ipa** and **.aab**) for submission to Apple and Google's app stores. Expo will build the binary for you when you run one command; see [Building Standalone Apps](distribution/app-stores.md). Apple charges $99/year to publish your app in the App Store and Google charges a $25 one-time fee for the Play Store. You can also use [internal distribution](//build/internal-distribution.md) to share your app with ad-hoc or enterprise provisioning on iOS and an APK on Android.
+When you're ready, you can create a standalone app (**.ipa** and **.aab**) for submission to Apple and Google's app stores. Expo will build the binary for you when you run one command; see [Building Standalone Apps](/distribution/app-stores). Apple charges $99/year to publish your app in the App Store and Google charges a $25 one-time fee for the Play Store. You can also use [internal distribution](/build/internal-distribution) to share your app with ad-hoc or enterprise provisioning on iOS and an APK on Android.
 
 </Collapsible>
 

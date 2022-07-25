@@ -1,7 +1,10 @@
+@file:OptIn(ExperimentalCoroutinesApi::class)
+
 package expo.modules.kotlin.jni
 
 import com.google.common.truth.Truth
 import io.mockk.mockk
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Before
 import org.junit.Test
 
@@ -60,5 +63,31 @@ class JavaScriptValueTest {
     val properties = jsObject.getPropertyNames()
     Truth.assertThat(properties).hasLength(1)
     Truth.assertThat(properties).isEqualTo(arrayOf("p1"))
+  }
+
+  @Test
+  fun should_be_passed_as_a_reference() {
+    var receivedObject: JavaScriptObject? = null
+    withJSIInterop(
+      inlineModule {
+        Name("TestModule")
+        Function("f") { jsValue: JavaScriptValue ->
+          val jsObject = jsValue.getObject()
+          receivedObject = jsObject
+          jsObject.setProperty("expo", 123)
+        }
+      }
+    ) {
+      val result = evaluateScript(
+        """
+        const x = {};
+        ExpoModules.TestModule.f(x);
+        x
+        """.trimIndent()
+      ).getObject()
+
+      Truth.assertThat(result.getProperty("expo").getDouble().toInt()).isEqualTo(123)
+      Truth.assertThat(receivedObject!!.getProperty("expo").getDouble().toInt()).isEqualTo(123)
+    }
   }
 }

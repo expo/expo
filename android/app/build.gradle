@@ -34,8 +34,8 @@ android {
     targetSdkVersion safeExtGet("targetSdkVersion", 31)
     // ADD VERSIONS HERE
     // BEGIN VERSIONS
-    versionCode 161
-    versionName '2.22.3'
+    versionCode 172
+    versionName '2.25.0'
     // END VERSIONS
 
     multiDexEnabled true
@@ -146,7 +146,7 @@ dependencies {
 
   implementation 'com.squareup.picasso:picasso:2.5.2'
   implementation 'com.google.android.gms:play-services-analytics:16.0.1'
-  implementation 'com.google.android.gms:play-services-maps:15.0.1'
+  implementation 'com.google.android.gms:play-services-maps:18.0.0'
   implementation 'com.google.android.gms:play-services-auth:15.0.1'
   implementation 'com.google.android.gms:play-services-location:15.0.1'
   debugImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta1'
@@ -213,6 +213,11 @@ dependencies {
   // ADD_NEW_SDKS_HERE
 
 
+  // BEGIN_SDK_46
+  versionedImplementation(project(':expoview-abi46_0_0'))
+  // END_SDK_46
+
+
   // BEGIN_SDK_45
   versionedImplementation(project(':expoview-abi45_0_0'))
   // END_SDK_45
@@ -221,11 +226,6 @@ dependencies {
   // BEGIN_SDK_44
   versionedImplementation(project(':expoview-abi44_0_0'))
   // END_SDK_44
-
-
-  // BEGIN_SDK_43
-  versionedImplementation(project(':expoview-abi43_0_0'))
-  // END_SDK_43
 
   // This is not needed in shell apps, the Amplitude module will include this dep if installed
   implementation 'com.amplitude:android-sdk:2.23.2'

@@ -4,6 +4,7 @@ import {
   iconSize,
   theme,
   typography,
+  spacing,
   ErrorIcon,
   InfoIcon,
   WarningIcon,
@@ -15,7 +16,7 @@ type CalloutType = 'info' | 'warning' | 'error';
 
 type CalloutProps = PropsWithChildren<{
   type?: CalloutType;
-  icon?: ComponentType<IconProps> | string;
+  icon?: ComponentType<React.PropsWithChildren<IconProps>> | string;
 }>;
 
 export const Callout = ({ type = 'info', icon, children, ...rest }: CalloutProps) => {
@@ -55,12 +56,13 @@ const containerStyle = css({
   border: `1px solid ${theme.border.default}`,
   borderRadius: borderRadius.medium,
   display: 'flex',
-  padding: '1rem',
+  padding: `${spacing[3]}px ${spacing[4]}px`,
 });
 
 const iconStyle = css({
   fontStyle: 'normal',
-  marginRight: '0.5rem',
+  marginRight: spacing[2],
+  marginTop: spacing[1],
   userSelect: 'none',
 });
 

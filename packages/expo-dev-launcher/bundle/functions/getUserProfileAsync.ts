@@ -15,7 +15,7 @@ export type UserData = {
 export type UserAccount = {
   id: string;
   name: string;
-  owner: {
+  owner?: {
     username: string;
     fullName?: string;
     profilePhoto?: string;

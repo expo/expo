@@ -8,27 +8,54 @@ import semver from 'semver';
 
 import { getAvailableProjectTemplatesAsync } from '../ProjectTemplates';
 import { Directories } from '../expotools';
+import askAreYouSureAsync from '../utils/askAreYouSureAsync';
 
 const EXPO_DIR = Directories.getExpoRepositoryRootDir();
 
-async function shouldAssignLatestTagAsync(
-  templateName: string,
-  templateVersion: string
-): Promise<boolean> {
-  const { assignLatestTag } = await inquirer.prompt<{ assignLatestTag: boolean }>([
+async function promptToUseNextTag(): Promise<boolean> {
+  const choices = ['Tag this version only as "next"', 'Keep previous selections'];
+  const { selection } = await inquirer.prompt<{ selection: string }>([
     {
-      type: 'confirm',
-      name: 'assignLatestTag',
-      message: `Do you want to assign ${chalk.blue('latest')} tag to ${chalk.green(
-        templateName
-      )}@${chalk.red(templateVersion)}?`,
-      default: true,
+      type: 'list',
+      name: 'selection',
+      message: 'This version string appears to be prerelease. Options:',
+      choices,
     },
   ]);
-  return assignLatestTag;
+  return selection === choices[0];
+}
+
+async function promptForCustomTagAsync(): Promise<string> {
+  const { customTag } = await inquirer.prompt<{ customTag: string }>([
+    {
+      type: 'input',
+      name: 'customTag',
+      message: 'Enter custom tag string:',
+      default: 'custom',
+      validate(value: string) {
+        if (!value.match(/[a-zA-Z]/)) {
+          return 'Tag must have at least one alpha character';
+        }
+        if (value[0].match(/[0-9]/)) {
+          return `${value} starts with a number and is not recommended as a tag.`;
+        }
+        if (value[0] === 'v') {
+          return `${value} starts with "v" and is not recommended as a tag.`;
+        }
+        if (semver.valid(value)) {
+          return `${value} is a version string and not recommended as a tag.`;
+        }
+        return true;
+      },
+    },
+  ]);
+  return customTag;
 }
 
 async function action(options) {
+  // Uncomment the line below when testing changes to this script
+  // to prevent accidental npm publishing and tagging
+  // options.dry = true;
   if (!options.sdkVersion) {
     const { version: expoSdkVersion } = await JsonFile.readAsync<{ version: string }>(
       path.join(EXPO_DIR, 'packages/expo/package.json')
@@ -51,6 +78,28 @@ async function action(options) {
     options.sdkVersion = sdkVersion;
   }
 
+  const sdkTag = `sdk-${semver.major(options.sdkVersion)}`;
+
+  const tagOptions = new Map<string, string[]>();
+  tagOptions.set(`${sdkTag} and latest`, [sdkTag, 'latest']);
+  tagOptions.set(`${sdkTag} and beta`, [sdkTag, 'beta']);
+  tagOptions.set(sdkTag, [sdkTag]);
+
+  const { tagChoice } = await inquirer.prompt<{ tagChoice: string }>([
+    {
+      type: 'list',
+      name: 'tagChoice',
+      prefix: '❔',
+      message: 'Which tags would you like to use?',
+      choices: [...tagOptions.keys(), 'custom'],
+    },
+  ]);
+
+  const tags =
+    tagChoice === 'custom' ? [await promptForCustomTagAsync()] : tagOptions.get(tagChoice);
+
+  const npmPublishTag = tags ? tags[0] : sdkTag; // Will either be the sdk-xx tag, or a custom string
+
   const availableProjectTemplates = await getAvailableProjectTemplatesAsync();
   const projectTemplatesToPublish = options.project
     ? availableProjectTemplates.filter(({ name }) => name.includes(options.project))
@@ -68,6 +117,8 @@ async function action(options) {
     projectTemplatesToPublish.map(({ name }) => chalk.green(name)).join(chalk.grey(', ')),
     '\n'
   );
+
+  const npmCommandParams: { path: string; args: string[] }[] = [];
 
   for (const template of projectTemplatesToPublish) {
     const { newVersion } = await inquirer.prompt<{ newVersion: string }>([
@@ -90,15 +141,7 @@ async function action(options) {
       },
     ]);
 
-    // Obtain the tag for the template.
-    const { tag } = await inquirer.prompt<{ tag: string }>([
-      {
-        type: 'input',
-        name: 'tag',
-        message: `How to tag ${chalk.green(template.name)}@${chalk.red(newVersion)}?`,
-        default: semver.prerelease(newVersion) ? 'next' : `sdk-${semver.major(options.sdkVersion)}`,
-      },
-    ]);
+    const choseNextTag = semver.prerelease(newVersion) ? await promptToUseNextTag() : false;
 
     // Update package version in `package.json`
     await JsonFile.setAsync(path.join(template.path, 'package.json'), 'version', newVersion);
@@ -122,37 +165,56 @@ async function action(options) {
       );
     }
 
-    console.log(`Publishing ${chalk.green(template.name)}@${chalk.red(newVersion)}...`);
+    console.log(
+      `Queuing command to publish ${chalk.green(template.name)}@${chalk.red(newVersion)}...`
+    );
 
     const moreArgs: string[] = [];
 
-    if (tag) {
-      // Assign custom tag in the publish command, so we don't accidentally publish as latest.
-      moreArgs.push('--tag', tag);
-    }
+    // Assign custom tag in the publish command, so we don't accidentally publish as latest.
+    moreArgs.push('--tag', choseNextTag ? 'next' : npmPublishTag);
 
     // Publish to NPM registry
-    options.dry ||
-      (await spawnAsync('npm', ['publish', '--access', 'public', ...moreArgs], {
-        stdio: 'inherit',
-        cwd: template.path,
-      }));
+    const publishCommandArgs: string[] = ['publish', '--access', 'public', ...moreArgs];
+    npmCommandParams.push({ path: template.path, args: publishCommandArgs });
 
-    if (tag && (await shouldAssignLatestTagAsync(template.name, newVersion))) {
+    if (tags && tags.length === 2 && !choseNextTag) {
+      // If 'next', do not add 'latest' or 'beta'
+      // Additional tag (latest, beta) is added here
       console.log(
-        `Assigning ${chalk.blue('latest')} tag to ${chalk.green(template.name)}@${chalk.red(
-          newVersion
-        )}...`
+        `Queuing command to assign ${chalk.blue(`${tags[1]}`)} tag to ${chalk.green(
+          template.name
+        )}@${chalk.red(newVersion)}...`
       );
 
-      // Add the latest tag to the new version
-      options.dry ||
-        (await spawnAsync('npm', ['dist-tag', 'add', `${template.name}@${newVersion}`, 'latest'], {
-          stdio: 'inherit',
-          cwd: template.path,
-        }));
+      const tagCommandArgs: string[] = [
+        'dist-tag',
+        'add',
+        `${template.name}@${newVersion}`,
+        `${tags[1]}`,
+      ];
+      npmCommandParams.push({ path: template.path, args: tagCommandArgs });
     }
     console.log();
+  }
+
+  console.log('You are about to execute the following NPM commands:');
+  npmCommandParams.forEach((params) => {
+    console.log(`    npm ${params.args.join(' ')}`);
+  });
+
+  const reallyPublish = await askAreYouSureAsync();
+
+  if (reallyPublish) {
+    for (const params of npmCommandParams) {
+      // Safety first:
+      // If options.dry, don't actually execute npm even if user says yes above
+      const cmd = options.dry ? 'echo' : 'npm';
+      await spawnAsync(cmd, params.args, {
+        stdio: 'inherit',
+        cwd: params.path,
+      });
+    }
   }
 }
 
@@ -165,7 +227,10 @@ export default (program) => {
       'Expo SDK version that the templates are compatible with. (optional)'
     )
     .option('-p, --project [string]', 'Name of the template project to publish. (optional)')
-    .option('-d, --dry', 'Run the script in the dry mode, that is without publishing.')
+    .option(
+      '-d, --dry',
+      'Run the script in the dry mode, which echoes command arguments instead of executing npm.'
+    )
     .description('Publishes project templates under `templates` directory.')
     .asyncAction(action);
 };

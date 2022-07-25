@@ -12,5 +12,5 @@
     "noImplicitAny": true
   },
   "include": ["./src"],
-  "exclude": ["**/__mocks__/*", "**/__tests__/*"]
+  "exclude": ["**/__mocks__/*", "**/__tests__/*", "**/__stories__/*"]
 }

@@ -49,16 +49,16 @@ ABI44_0_0RCT_EXPORT_MODULE()
   return dispatch_get_main_queue();
 }
 
-- (ABI44_0_0facebook::ABI44_0_0React::ModuleConstants<JS::NativeAppState::Constants>)constantsToExport
+- (ABI44_0_0facebook::ABI44_0_0React::ModuleConstants<ABI44_0_0JS::NativeAppState::Constants>)constantsToExport
 {
-  return (ABI44_0_0facebook::ABI44_0_0React::ModuleConstants<JS::NativeAppState::Constants>)[self getConstants];
+  return (ABI44_0_0facebook::ABI44_0_0React::ModuleConstants<ABI44_0_0JS::NativeAppState::Constants>)[self getConstants];
 }
 
-- (ABI44_0_0facebook::ABI44_0_0React::ModuleConstants<JS::NativeAppState::Constants>)getConstants
+- (ABI44_0_0facebook::ABI44_0_0React::ModuleConstants<ABI44_0_0JS::NativeAppState::Constants>)getConstants
 {
-  __block ABI44_0_0facebook::ABI44_0_0React::ModuleConstants<JS::NativeAppState::Constants> constants;
+  __block ABI44_0_0facebook::ABI44_0_0React::ModuleConstants<ABI44_0_0JS::NativeAppState::Constants> constants;
   ABI44_0_0RCTUnsafeExecuteOnMainQueueSync(^{
-    constants = ABI44_0_0facebook::ABI44_0_0React::typedConstants<JS::NativeAppState::Constants>({
+    constants = ABI44_0_0facebook::ABI44_0_0React::typedConstants<ABI44_0_0JS::NativeAppState::Constants>({
         .initialAppState = ABI44_0_0RCTCurrentAppState(),
     });
   });

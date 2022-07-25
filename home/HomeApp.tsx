@@ -1,4 +1,3 @@
-import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 import { darkTheme, lightTheme } from '@expo/styleguide-native';
 import Ionicons from '@expo/vector-icons/build/Ionicons';
 import MaterialIcons from '@expo/vector-icons/build/MaterialIcons';
@@ -204,9 +203,7 @@ export default function HomeApp() {
             backgroundColor,
           },
         ]}>
-        <ActionSheetProvider>
-          <Navigation theme={theme === 'light' ? ColorTheme.LIGHT : ColorTheme.DARK} />
-        </ActionSheetProvider>
+        <Navigation theme={theme === 'light' ? ColorTheme.LIGHT : ColorTheme.DARK} />
       </View>
     </ThemeProvider>
   );

@@ -37,6 +37,9 @@ import abi44_0_0.expo.modules.interfaces.permissions.Permissions
 import abi44_0_0.expo.modules.interfaces.permissions.PermissionsResponse
 import abi44_0_0.expo.modules.interfaces.permissions.PermissionsResponseListener
 import abi44_0_0.expo.modules.interfaces.permissions.PermissionsStatus
+import androidx.core.os.bundleOf
+import com.canhub.cropper.CropImageActivity
+import com.canhub.cropper.options
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
@@ -261,19 +264,27 @@ class ImagePickerModule(
       return
     }
 
-    val cropImageBuilder = CropImage.activity(uri).apply {
-      pickerOptions.forceAspect?.let { (x, y) ->
-        setAspectRatio((x as Number).toInt(), (y as Number).toInt())
-        setFixAspectRatio(true)
-        setInitialCropWindowPaddingRatio(0f)
-      }
+    val intent = Intent(context, CropImageActivity::class.java).apply {
+      putExtra(
+        CropImage.CROP_IMAGE_EXTRA_BUNDLE,
+        bundleOf(
+          CropImage.CROP_IMAGE_EXTRA_SOURCE to uri,
+          CropImage.CROP_IMAGE_EXTRA_OPTIONS to options {
+            pickerOptions.forceAspect?.let { (x, y) ->
+              setAspectRatio((x as Number).toInt(), (y as Number).toInt())
+              setFixAspectRatio(true)
+              setInitialCropWindowPaddingRatio(0f)
+            }
 
-      setOutputUri(fileUri)
-      setOutputCompressFormat(compressFormat)
-      setOutputCompressQuality(pickerOptions.quality)
+            setOutputUri(fileUri)
+            setOutputCompressFormat(compressFormat)
+            setOutputCompressQuality(pickerOptions.quality)
+          }.cropImageOptions.also { it.validate() }
+        )
+      )
     }
     exifDataHandler = ExifDataHandler(uri)
-    startActivityOnResult(cropImageBuilder.getIntent(context), CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE, promise, pickerOptions)
+    startActivityOnResult(intent, CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE, promise, pickerOptions)
   }
 
   //endregion
@@ -356,16 +367,18 @@ class ImagePickerModule(
     val contentResolver = activity.application.contentResolver
 
     if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
-      val result = CropImage.getActivityResult(intent).ifNull {
+      val result = intent?.getParcelableExtra(CropImage.CROP_IMAGE_EXTRA_RESULT) as? CropImage.ActivityResult?
+      if (result == null || resultCode == Activity.RESULT_CANCELED) {
         promise.reject(ImagePickerConstants.ERR_CROPPING_FAILURE, ImagePickerConstants.CROPPING_FAILURE_MESSAGE)
         return
       }
-      val exporter = CropImageExporter(result.rotation, result.cropRect, pickerOptions.isBase64)
+
+      val exporter = CropImageExporter(result.rotation, result.cropRect!!, pickerOptions.isBase64)
       ImageResultTask(
         promise,
-        result.uri,
+        result.uriContent!!,
         contentResolver,
-        CropFileProvider(result.uri),
+        CropFileProvider(result.uriContent!!),
         pickerOptions.isAllowsEditing,
         pickerOptions.isExif,
         exporter,

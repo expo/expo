@@ -39,6 +39,7 @@
 
 #define EX_DEV_LAUNCHER_PACKAGER_PATH @"index.bundle?platform=ios&dev=true&minify=false"
 
+
 @interface EXDevLauncherController ()
 
 @property (nonatomic, weak) UIWindow *window;
@@ -89,8 +90,10 @@
   
   [modules addObject:[RCTDevMenu new]];
   [modules addObject:[RCTAsyncLocalStorage new]];
-  [modules addObject:[EXDevLauncherLoadingView new]];
+#ifndef EX_DEV_LAUNCHER_URL
   [modules addObject:[EXDevLauncherRCTDevSettings new]];
+#endif
+  [modules addObject:[EXDevLauncherLoadingView new]];
   [modules addObject:[EXDevLauncherInternal new]];
   [modules addObject:[EXDevLauncherAuth new]];
   
@@ -780,6 +783,5 @@
   [existingSettings removeObjectForKey:kRCTDevSettingIsDebuggingRemotely];
   [userDefaults setObject:existingSettings forKey:kRCTDevSettingsUserDefaultsKey];
 }
-
 
 @end

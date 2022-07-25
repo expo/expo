@@ -18,8 +18,16 @@ class SyncFunctionComponent(
     return body(convertArgs(args))
   }
 
+  fun call(args: Array<Any?>): Any? {
+    return body(convertArgs(args))
+  }
+
   override fun attachToJSObject(appContext: AppContext, jsObject: JavaScriptModuleObject) {
-    jsObject.registerSyncFunction(name, argsCount) { args ->
+    jsObject.registerSyncFunction(
+      name,
+      argsCount,
+      getCppRequiredTypes()
+    ) { args ->
       val result = call(args)
       val convertedResult = JSTypeConverter.convertToJSValue(result)
       return@registerSyncFunction Arguments.fromJavaArgs(arrayOf(convertedResult))

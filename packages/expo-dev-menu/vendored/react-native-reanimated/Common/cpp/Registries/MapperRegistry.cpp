@@ -1,8 +1,8 @@
 #include "DevMenuMapperRegistry.h"
-#include "DevMenuMapper.h"
-#include <map>
 #include <array>
+#include <map>
 #include <set>
+#include "DevMenuMapper.h"
 
 namespace devmenureanimated {
 
@@ -21,7 +21,7 @@ void MapperRegistry::execute(jsi::Runtime &rt) {
     updateOrder();
     updatedSinceLastExecute = false;
   }
-  for (auto & mapper : sortedMappers) {
+  for (auto &mapper : sortedMappers) {
     if (mapper->dirty) {
       mapper->execute(rt);
     }
@@ -39,16 +39,18 @@ void MapperRegistry::updateOrder() { // Topological sorting
     std::shared_ptr<Mapper> mapper;
     std::shared_ptr<MutableValue> mutableValue;
 
-    NodeID(std::shared_ptr<Mapper> mapper) {
+    explicit NodeID(std::shared_ptr<Mapper> mapper) {
       if (mapper == nullptr) {
-        throw std::runtime_error("Graph couldn't be sorted (Mapper cannot be nullptr)");
+        throw std::runtime_error(
+            "Graph couldn't be sorted (Mapper cannot be nullptr)");
       }
       this->mapper = mapper;
     }
 
-    NodeID(std::shared_ptr<MutableValue> mutableValue) {
+    explicit NodeID(std::shared_ptr<MutableValue> mutableValue) {
       if (mutableValue == nullptr) {
-        throw std::runtime_error("Graph couldn't be sorted (Mutable cannot be nullptr)");
+        throw std::runtime_error(
+            "Graph couldn't be sorted (Mutable cannot be nullptr)");
       }
       this->mutableValue = mutableValue;
     }
@@ -57,8 +59,7 @@ void MapperRegistry::updateOrder() { // Topological sorting
       return mutableValue != nullptr;
     }
 
-    bool operator<(const NodeID& other) const
-    {
+    bool operator<(const NodeID &other) const {
       if (isMutable() != other.isMutable())
         return isMutable() < other.isMutable();
 
@@ -72,29 +73,31 @@ void MapperRegistry::updateOrder() { // Topological sorting
 
   std::map<NodeID, int> deg;
 
-  std::map<std::shared_ptr<MutableValue>, std::vector<std::shared_ptr<Mapper>>> mappersThatUseSharedValue;
+  std::map<std::shared_ptr<MutableValue>, std::vector<std::shared_ptr<Mapper>>>
+      mappersThatUseSharedValue;
 
   std::set<std::pair<int, NodeID>> nodes;
 
-  std::function<void(NodeID)> update = [&] (NodeID id) {
+  std::function<void(NodeID)> update = [&](NodeID id) {
     auto entry = std::make_pair(deg[id], id);
-    if (nodes.find(entry) == nodes.end()) return;
+    if (nodes.find(entry) == nodes.end())
+      return;
     nodes.erase(entry);
     entry.first--;
     deg[id]--;
     nodes.insert(entry);
   };
 
-  for (auto & entry : mappers) {
+  for (auto &entry : mappers) {
     auto id = NodeID(entry.second);
-    auto & mapper = entry.second;
+    auto &mapper = entry.second;
     deg[id] = mapper->inputs.size();
     nodes.insert(std::make_pair(deg[id], id));
 
     for (auto sharedValue : mapper->inputs) {
       auto sharedValueID = NodeID(sharedValue);
       mappersThatUseSharedValue[sharedValue].push_back(mapper);
-      if (deg.count(sharedValue) == 0) {
+      if (deg.count(sharedValueID) == 0) {
         deg[sharedValueID] = 0;
       }
     }
@@ -104,14 +107,14 @@ void MapperRegistry::updateOrder() { // Topological sorting
     }
   }
 
-  for (auto & entry : deg) {
+  for (auto &entry : deg) {
     auto id = entry.first;
     if (id.isMutable()) {
       nodes.insert(std::make_pair(entry.second, id));
     }
   }
 
-  while (nodes.size() > 0 and nodes.begin()->first == 0) {
+  while (nodes.size() > 0 && nodes.begin()->first == 0) {
     auto entry = *nodes.begin();
     nodes.erase(entry);
 
@@ -120,7 +123,7 @@ void MapperRegistry::updateOrder() { // Topological sorting
 
     if (id.isMutable()) {
       for (auto id : mappersThatUseSharedValue[id.mutableValue]) {
-        toUpdate.push_back(id);
+        toUpdate.push_back(NodeID(id));
       }
     } else {
       for (auto sharedValue : id.mapper->outputs) {
@@ -130,7 +133,8 @@ void MapperRegistry::updateOrder() { // Topological sorting
       sortedMappers.push_back(id.mapper);
     }
 
-    for (auto & id : toUpdate) update(id);
+    for (auto &id : toUpdate)
+      update(id);
   }
 
   if (nodes.size() > 0) {
@@ -138,4 +142,4 @@ void MapperRegistry::updateOrder() { // Topological sorting
   }
 }
 
-}
+} // namespace devmenureanimated

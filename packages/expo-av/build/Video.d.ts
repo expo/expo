@@ -39,6 +39,7 @@ declare class Video extends React.Component<VideoProps, VideoState> implements P
      * @hidden
      */
     unloadAsync: () => Promise<AVPlaybackStatus>;
+    componentWillUnmount(): void;
     /**
      * Set status API, only available while `isLoaded = true`.
      * @hidden
@@ -49,7 +50,16 @@ declare class Video extends React.Component<VideoProps, VideoState> implements P
      */
     replayAsync: (status?: AVPlaybackStatusToSet) => Promise<AVPlaybackStatus>;
     /**
-     * @hidden
+     * Sets a function to be called regularly with the `AVPlaybackStatus` of the playback object.
+     *
+     * `onPlaybackStatusUpdate` will be called whenever a call to the API for this playback object completes
+     * (such as `setStatusAsync()`, `getStatusAsync()`, or `unloadAsync()`), nd will also be called at regular intervals
+     * while the media is in the loaded state.
+     *
+     * Set `progressUpdateIntervalMillis` via `setStatusAsync()` or `setProgressUpdateIntervalAsync()` to modify
+     * the interval with which `onPlaybackStatusUpdate` is called while loaded.
+     *
+     * @param onPlaybackStatusUpdate A function taking a single parameter `AVPlaybackStatus`.
      */
     setOnPlaybackStatusUpdate(onPlaybackStatusUpdate: ((status: AVPlaybackStatus) => void) | null): void;
     playAsync: () => Promise<AVPlaybackStatus>;

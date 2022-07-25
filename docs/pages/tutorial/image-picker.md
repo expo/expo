@@ -6,7 +6,7 @@ import SnackInline from '~/components/plugins/SnackInline';
 import Video from '~/components/plugins/Video';
 import { Terminal } from '~/ui/components/Snippet';
 
-So far we have been using code from React and React Native in our app. React gives us a nice way to build components and React Native gives us pre-built components that work on iOS, Android, and web &mdash; like `View`, `Text`, `TouchableOpacity`. React Native does _not_ provide us with an image picker. For this, we can use an Expo library called [expo-image-picker](../versions/latest/sdk/imagepicker.md):
+So far we have been using code from React and React Native in our app. React gives us a nice way to build components and React Native gives us pre-built components that work on iOS, Android, and web &mdash; like `View`, `Text`, `TouchableOpacity`. React Native does _not_ provide us with an image picker. For this, we can use an Expo library called [expo-image-picker](/versions/latest/sdk/imagepicker):
 
 > **`expo-image-picker`** provides access to the system's UI for selecting images and videos from the phone's library or taking a photo with the camera.
 
@@ -87,6 +87,10 @@ Now we will take the data that we get from the image picker and use it to show t
 
 <!-- prettier-ignore -->
 ```js
+/* @info Import React to use useState */import React from 'react';/* @end */
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
+
 export default function App() {
   /* @info Initialize a variable to hold our selected image data */const [selectedImage, setSelectedImage] = React.useState(null);/* @end */
 
@@ -153,4 +157,4 @@ Your app should now look and behave like this:
 
 > 👀 You might expect that because we gave our image an equal width and height it would be a square, but in the above video it's rectangular. This is because of `resizeMode`, an image style property that lets us control how the image is resized to fit the given dimensions. Try switching it from `contain` to `stretch` or `cover` to see other behaviors.
 
-🥳 We have made great progress! Up next, [let's make it possible to share the image](../tutorial/sharing.md).
+🥳 We have made great progress! Up next, [let's make it possible to share the image](/tutorial/sharing).

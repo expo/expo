@@ -103,8 +103,19 @@ export default {
           throw new CopyFailureException(e.message);
         }
       }
-      default:
-        return this.setString(text);
+      default: {
+        try {
+          if (!navigator.clipboard) {
+            throw new Error();
+          }
+          await navigator.clipboard.writeText(text);
+          return true;
+        } catch {
+          // we can fall back to legacy behavior in any kind of failure
+          // including navigator.clipboard unavailability
+          return this.setString(text);
+        }
+      }
     }
   },
   async hasStringAsync(): Promise<boolean> {

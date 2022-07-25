@@ -13,12 +13,8 @@
     "build": "tsc",
     "watch": "tsc --watch",
     "clean": "rm -rf build cache",
-    "et": "bin/expotools.js",
+    "et": "node bin/expotools.js",
     "lint": "eslint ./src"
-  },
-  "bin": {
-    "et": "bin/expotools.js",
-    "expotools": "bin/expotools.js"
   },
   "author": "support@expo.dev",
   "license": "MIT",
@@ -34,6 +30,7 @@
     "chalk": "^4.1.2",
     "cli-table3": "^0.6.1",
     "cwait": "^1.1.2",
+    "diff": "^5.1.0",
     "express": "^4.17.3",
     "folder-hash": "^4.0.2",
     "fs-extra": "^10.0.1",
@@ -69,21 +66,22 @@
   },
   "devDependencies": {
     "@babel/core": "^7.16.0",
+    "@types/diff": "^5.0.2",
     "@types/folder-hash": "^4.0.1",
     "@types/fs-extra": "^9.0.13",
     "@types/http-proxy": "^1.17.8",
     "@types/inquirer": "^8.2.1",
     "@types/ip": "^1.1.0",
     "@types/klaw-sync": "^6.0.1",
-    "@types/node": "^14.18.12",
+    "@types/node": "16.11.43",
     "@types/node-fetch": "^2.6.1",
     "@types/semver": "^7.3.9",
     "@types/uuid": "^3.4.4",
     "babel-preset-expo": "^9.0.2",
-    "eslint": "^8.12.0",
-    "eslint-config-universe": "11.0.0-beta.0",
+    "eslint": "^8.20.0",
+    "eslint-config-universe": "^11.0.0",
     "eslint-plugin-lodash": "^7.4.0",
-    "prettier": "^2.6.2",
+    "prettier": "^2.7.1",
     "typescript": "~4.6.4"
   }
 }

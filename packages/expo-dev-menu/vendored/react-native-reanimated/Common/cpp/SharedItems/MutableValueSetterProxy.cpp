@@ -1,17 +1,18 @@
 #include "DevMenuMutableValueSetterProxy.h"
-#include "DevMenuSharedParent.h"
-#include "DevMenuMutableValue.h"
 #include <jsi/jsi.h>
+#include "DevMenuMutableValue.h"
+#include "DevMenuSharedParent.h"
 
 using namespace facebook;
 
 namespace devmenureanimated {
 
-void MutableValueSetterProxy::set(jsi::Runtime &rt, const jsi::PropNameID &name, const jsi::Value &newValue) {
+void MutableValueSetterProxy::set(
+    jsi::Runtime &rt,
+    const jsi::PropNameID &name,
+    const jsi::Value &newValue) {
   auto propName = name.utf8(rt);
-  if (propName == "value") {
-    // you call `this.value` inside of value setter, we should throw
-  } else if (propName == "_value") {
+  if (propName == "_value") {
     mutableValue->setValue(rt, newValue);
   } else if (propName == "_animation") {
     // TODO: assert to allow animation to be set from UI only
@@ -19,10 +20,14 @@ void MutableValueSetterProxy::set(jsi::Runtime &rt, const jsi::PropNameID &name,
       mutableValue->animation = mutableValue->getWeakRef(rt);
     }
     *mutableValue->animation.lock() = jsi::Value(rt, newValue);
+  } else if (propName == "value") {
+    // you call `this.value` inside of value setter, we should throw
   }
 }
 
-jsi::Value MutableValueSetterProxy::get(jsi::Runtime &rt, const jsi::PropNameID &name) {
+jsi::Value MutableValueSetterProxy::get(
+    jsi::Runtime &rt,
+    const jsi::PropNameID &name) {
   auto propName = name.utf8(rt);
 
   if (propName == "value") {
@@ -39,5 +44,4 @@ jsi::Value MutableValueSetterProxy::get(jsi::Runtime &rt, const jsi::PropNameID 
   return jsi::Value::undefined();
 }
 
-}
-
+} // namespace devmenureanimated

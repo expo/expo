@@ -28,7 +28,7 @@ final public class WebBrowserModule: Module {
 
     // MARK: - AuthSession
 
-    AsyncFunction("openAuthSessionAsync") { (authUrl: URL, redirectUrl: URL, options: AuthSessionOptions, promise: Promise) throws in
+    AsyncFunction("openAuthSessionAsync") { (authUrl: URL, redirectUrl: URL?, options: AuthSessionOptions, promise: Promise) throws in
       guard self.currentAuthSession?.isOpen != true else {
         throw WebBrowserAlreadyOpenException()
       }

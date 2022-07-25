@@ -8,7 +8,6 @@ class StripeContainerManager : ViewGroupManager<StripeContainerView>() {
   override fun getName() = "StripeContainer"
 
   @ReactProp(name = "keyboardShouldPersistTaps")
-  @SuppressWarnings("unused")
   fun setKeyboardShouldPersistTaps(view: StripeContainerView, keyboardShouldPersistTaps: Boolean) {
     view.setKeyboardShouldPersistTaps(keyboardShouldPersistTaps)
   }

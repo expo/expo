@@ -67,6 +67,15 @@ export function ProjectView({ loading, error, data, navigation }: Props) {
                 <ConstantItem title="SDK Version" value={app.sdkVersion} />
               </>
             )}
+            {app.latestReleaseForReleaseChannel?.runtimeVersion && (
+              <>
+                <Divider style={{ height: 1 }} />
+                <ConstantItem
+                  title="Runtime Version"
+                  value={app.latestReleaseForReleaseChannel?.runtimeVersion}
+                />
+              </>
+            )}
           </View>
         </View>
       </ScrollView>
