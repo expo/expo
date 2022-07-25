@@ -7,15 +7,11 @@ import * as Simulator from './simulator';
 
 const STATIC_FOLDER_PATH = path.resolve(__dirname, '..', '.static');
 const EXPORT_PUBLIC_URL = 'https://u.expo.dev/dummy-url';
-let bundlePath: string | null = null;
 
 function findBundlePath(updateDistPath: string): string {
-  if (!bundlePath) {
-    const classicManifest = require(path.join(updateDistPath, Simulator.ExportedManifestFilename));
-    const { bundleUrl }: { bundleUrl: string } = classicManifest;
-    bundlePath = path.join(updateDistPath, bundleUrl.replace(EXPORT_PUBLIC_URL, ''));
-  }
-  return bundlePath;
+  const classicManifest = require(path.join(updateDistPath, Simulator.ExportedManifestFilename));
+  const { bundleUrl }: { bundleUrl: string } = classicManifest;
+  return path.join(updateDistPath, bundleUrl.replace(EXPORT_PUBLIC_URL, ''));
 }
 
 export async function copyBundleToStaticFolder(

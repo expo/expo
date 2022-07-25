@@ -2,7 +2,7 @@ const spawnAsync = require('@expo/spawn-async');
 const fs = require('fs/promises');
 const path = require('path');
 
-async function buildAsync(projectRoot, destinationFolder) {
+async function buildAsync(projectRoot, destinationFolder, fileSuffix) {
   await spawnAsync(
     'xcodebuild',
     [
@@ -23,7 +23,7 @@ async function buildAsync(projectRoot, destinationFolder) {
       stdio: 'inherit',
     }
   );
-  const destinationPath = path.join(destinationFolder, `ios-release.app`);
+  const destinationPath = path.join(destinationFolder, `ios-release-${fileSuffix}.app`);
   await fs.cp(
     path.join(
       projectRoot,
