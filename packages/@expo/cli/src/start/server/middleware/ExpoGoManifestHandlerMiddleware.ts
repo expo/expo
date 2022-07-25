@@ -11,7 +11,7 @@ import { APISettings } from '../../../api/settings';
 import { signExpoGoManifestAsync } from '../../../api/signManifest';
 import UserSettings from '../../../api/user/UserSettings';
 import { ANONYMOUS_USERNAME, getUserAsync } from '../../../api/user/user';
-import { logEvent } from '../../../utils/analytics/rudderstackClient';
+import { logEventAsync } from '../../../utils/analytics/rudderstackClient';
 import {
   CodeSigningInfo,
   getCodeSigningInfoAsync,
@@ -199,7 +199,7 @@ export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware<ExpoGoMa
   }
 
   protected trackManifest(version?: string) {
-    logEvent('Serve Expo Updates Manifest', {
+    logEventAsync('Serve Expo Updates Manifest', {
       runtimeVersion: version,
     });
   }
