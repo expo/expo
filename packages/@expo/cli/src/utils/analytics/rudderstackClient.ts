@@ -2,9 +2,9 @@ import RudderAnalytics from '@expo/rudder-sdk-node';
 import * as ciInfo from 'ci-info';
 import os from 'os';
 import { v4 as uuidv4 } from 'uuid';
-import { getUserAsync } from '../../api/user/user';
 
 import UserSettings from '../../api/user/UserSettings';
+import { getUserAsync } from '../../api/user/user';
 import { env } from '../env';
 
 const PLATFORM_TO_ANALYTICS_PLATFORM: { [platform: string]: string } = {
