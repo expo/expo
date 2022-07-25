@@ -3,6 +3,7 @@ title: Fonts
 ---
 
 import SnackInline from '~/components/plugins/SnackInline';
+import { YesIcon } from '~/ui/components/DocIcons';
 
 Both iOS and Android and most desktop operating systems come with their own set of platform fonts but if you want to inject some more brand personality into your app, a well picked font can go a long way. And since each
 operating system has its own set of platform fonts, if you want to produce an experience that is consistent for all users, you'll want to use your own fonts in your project. This guide will show you how to do that.
@@ -112,19 +113,19 @@ If you need to use another format, you may need to [customize the Metro bundler 
 
 But, for reference, here is a table of which formats work on which platforms.
 
-| Format | Web | iOS | Android |
-| ------ | --- | --- | ------- |
-| ttf    | ✅  | ✅  | ✅      |
-| otf    | ✅  | ✅  | ✅      |
-| woff   | ✅  | ✅  |         |
-| woff2  | ✅  | ✅  |         |
-| dfont  |     |     | ✅      |
-| svg    | ✳️  |     |         |
-| eot    | ✳️  |     |         |
-| fon    |     |     |         |
-| bdf    |     |     |         |
-| ps     |     |     |         |
-| ttc    |     |     |         |
+| Format | Web         | iOS         | Android     |
+| ------ | ----------- | ----------- | ----------- |
+| ttf    | <YesIcon /> | <YesIcon /> | <YesIcon /> |
+| otf    | <YesIcon /> | <YesIcon /> | <YesIcon /> |
+| woff   | <YesIcon /> | <YesIcon /> |             |
+| woff2  | <YesIcon /> | <YesIcon /> |             |
+| dfont  |             |             | <YesIcon /> |
+| svg    | <YesIcon /> |             |             |
+| eot    | <YesIcon /> |             |             |
+| fon    |             |             |             |
+| bdf    |             |             |             |
+| ps     |             |             |             |
+| ttc    |             |             |             |
 
 ### Platform built-in fonts
 
