@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix small race condition in recovery code on Android where in very rare scenarios, a bundle could be downloaded twice.
+
 ### 💡 Others
 
 - [iOS] New logger and log reader for unifying logging support in expo-updates. ([#18284](https://github.com/expo/expo/pull/18284) by [@douglowder](https://github.com/douglowder))
