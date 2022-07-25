@@ -5,12 +5,6 @@ import { PromptObject } from 'prompts';
 export declare type CommandOptions = {
     target: string;
     source?: string;
-    name?: string;
-    description?: string;
-    package?: string;
-    author?: string;
-    license?: string;
-    repo?: string;
     withReadme: boolean;
     withChangelog: boolean;
     example: boolean;
@@ -34,3 +28,4 @@ export declare type CustomPromptObject = PromptObject & {
     name: string;
     resolvedValue?: string | null;
 };
+export declare type Answers = Record<string, string>;

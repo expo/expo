@@ -11,16 +11,16 @@ exports[`APISection expo-apple-authentication 1`] = `
     >
       <span
         class="css-120d683"
-        id="components"
+        id="component"
       />
       <a
         class="css-8y2kaf"
-        href="#components"
+        href="#component"
       >
         <span
           class="css-6n7j50"
         >
-          Components
+          Component
         </span>
         <span
           class="css-1eysgws"
@@ -278,71 +278,63 @@ for more details.
         </span>
       </div>
     </blockquote>
-    <div>
+    <h2
+      class="css-1azb2g5-H2"
+      data-heading="true"
+    >
       <div
-        class="css-kdvl5-APISectionProps"
+        class="css-79elbk"
       >
-        <h4
-          class="  css-crowgh-H4"
-          data-components-heading="true"
-          data-heading="true"
+        <span
+          class="css-120d683"
+          id="props"
+        />
+        <a
+          class="css-8y2kaf"
+          href="#props"
         >
-          <div
-            class="css-79elbk"
+          <span
+            class="css-6n7j50"
           >
-            <span
-              class="css-120d683"
-              id="appleauthenticationbuttonprops"
-            />
-            <a
-              class="css-8y2kaf"
-              href="#appleauthenticationbuttonprops"
+            Props
+          </span>
+          <span
+            class="css-1eysgws"
+          >
+            <svg
+              aria-label="permalink"
+              class="anchor-icon"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
             >
-              <span
-                class="css-6n7j50"
-              >
-                AppleAuthenticationButtonProps
-              </span>
-              <span
-                class="css-1eysgws"
-              >
-                <svg
-                  aria-label="permalink"
-                  class="anchor-icon"
-                  fill="none"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  width="24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                    stroke="#9B9B9B"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                  />
-                  <path
-                    d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                    stroke="#9B9B9B"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                  />
-                </svg>
-              </span>
-            </a>
-          </div>
-        </h4>
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </span>
+        </a>
       </div>
-    </div>
+    </h2>
     <div>
       <div
-        class="css-11owc2z-APISectionProps"
+        class="css-1k62do8-APISectionProps"
       >
-        <h4
-          class="  css-crowgh-H4"
-          data-components-heading="true"
+        <h3
+          class="css-6kh5nb-H3"
           data-heading="true"
         >
           <div
@@ -360,7 +352,7 @@ for more details.
                 class="css-6n7j50"
               >
                 <code
-                  class="inline css-1vg7x8p-InlineCode"
+                  class="inline css-1fz3od4-InlineCode"
                 >
                   buttonStyle
                 </code>
@@ -395,7 +387,7 @@ for more details.
               </span>
             </a>
           </div>
-        </h4>
+        </h3>
         <p
           class="css-1bjvyhe-P"
           data-text="true"
@@ -425,11 +417,10 @@ for more details.
         </p>
       </div>
       <div
-        class="css-11owc2z-APISectionProps"
+        class="css-1k62do8-APISectionProps"
       >
-        <h4
-          class="  css-crowgh-H4"
-          data-components-heading="true"
+        <h3
+          class="css-6kh5nb-H3"
           data-heading="true"
         >
           <div
@@ -447,7 +438,7 @@ for more details.
                 class="css-6n7j50"
               >
                 <code
-                  class="inline css-1vg7x8p-InlineCode"
+                  class="inline css-1fz3od4-InlineCode"
                 >
                   buttonType
                 </code>
@@ -482,7 +473,7 @@ for more details.
               </span>
             </a>
           </div>
-        </h4>
+        </h3>
         <p
           class="css-1bjvyhe-P"
           data-text="true"
@@ -512,11 +503,10 @@ for more details.
         </p>
       </div>
       <div
-        class="css-11owc2z-APISectionProps"
+        class="css-1k62do8-APISectionProps"
       >
-        <h4
-          class="  css-crowgh-H4"
-          data-components-heading="true"
+        <h3
+          class="css-6kh5nb-H3"
           data-heading="true"
         >
           <div
@@ -534,7 +524,7 @@ for more details.
                 class="css-6n7j50"
               >
                 <code
-                  class="inline css-1vg7x8p-InlineCode"
+                  class="inline css-1fz3od4-InlineCode"
                 >
                   cornerRadius
                 </code>
@@ -569,7 +559,7 @@ for more details.
               </span>
             </a>
           </div>
-        </h4>
+        </h3>
         <p
           class="css-1bjvyhe-P"
           data-text="true"
@@ -606,11 +596,10 @@ for more details.
         </p>
       </div>
       <div
-        class="css-11owc2z-APISectionProps"
+        class="css-1k62do8-APISectionProps"
       >
-        <h4
-          class="  css-crowgh-H4"
-          data-components-heading="true"
+        <h3
+          class="css-6kh5nb-H3"
           data-heading="true"
         >
           <div
@@ -628,7 +617,7 @@ for more details.
                 class="css-6n7j50"
               >
                 <code
-                  class="inline css-1vg7x8p-InlineCode"
+                  class="inline css-1fz3od4-InlineCode"
                 >
                   style
                 </code>
@@ -663,7 +652,7 @@ for more details.
               </span>
             </a>
           </div>
-        </h4>
+        </h3>
         <p
           class="css-1bjvyhe-P"
           data-text="true"
@@ -737,11 +726,10 @@ properties.
         </p>
       </div>
       <div
-        class="css-11owc2z-APISectionProps"
+        class="css-1k62do8-APISectionProps"
       >
-        <h4
-          class="  css-crowgh-H4"
-          data-components-heading="true"
+        <h3
+          class="css-6kh5nb-H3"
           data-heading="true"
         >
           <div
@@ -759,7 +747,7 @@ properties.
                 class="css-6n7j50"
               >
                 <code
-                  class="inline css-1vg7x8p-InlineCode"
+                  class="inline css-1fz3od4-InlineCode"
                 >
                   onPress
                 </code>
@@ -794,7 +782,7 @@ properties.
               </span>
             </a>
           </div>
-        </h4>
+        </h3>
         <p
           class="css-1bjvyhe-P"
           data-text="true"
@@ -833,9 +821,8 @@ properties.
 in here.
         </p>
       </div>
-      <h4
-        class="  css-crowgh-H4"
-        data-components-heading="true"
+      <h3
+        class="css-6kh5nb-H3"
         data-heading="true"
       >
         <div
@@ -884,7 +871,7 @@ in here.
             </span>
           </a>
         </div>
-      </h4>
+      </h3>
       <ul
         class="css-is4ysz-UL"
         data-text="true"
@@ -4981,7 +4968,7 @@ OAuth 2.0 protocol
          
       </strong>
       <div
-        class="css-1sodslb-PlatformTags"
+        class="css-1xwiwui-PlatformTag"
       >
         <svg
           color="var(--expo-theme-palette-blue-900)"
@@ -5001,7 +4988,7 @@ OAuth 2.0 protocol
           />
         </svg>
         <span
-          class="css-vefllk-PlatformTags"
+          class="css-1y4xxhe-PlatformTag"
         >
           iOS 13.2+
         </span>
@@ -6498,16 +6485,16 @@ exports[`APISection expo-barcode-scanner 1`] = `
     >
       <span
         class="css-120d683"
-        id="components"
+        id="component"
       />
       <a
         class="css-8y2kaf"
-        href="#components"
+        href="#component"
       >
         <span
           class="css-6n7j50"
         >
-          Components
+          Component
         </span>
         <span
           class="css-1eysgws"
@@ -6624,71 +6611,63 @@ exports[`APISection expo-barcode-scanner 1`] = `
         &gt;
       </code>
     </p>
-    <div>
+    <h2
+      class="css-1azb2g5-H2"
+      data-heading="true"
+    >
       <div
-        class="css-kdvl5-APISectionProps"
+        class="css-79elbk"
       >
-        <h4
-          class="  css-crowgh-H4"
-          data-components-heading="true"
-          data-heading="true"
+        <span
+          class="css-120d683"
+          id="props"
+        />
+        <a
+          class="css-8y2kaf"
+          href="#props"
         >
-          <div
-            class="css-79elbk"
+          <span
+            class="css-6n7j50"
           >
-            <span
-              class="css-120d683"
-              id="barcodescannerprops"
-            />
-            <a
-              class="css-8y2kaf"
-              href="#barcodescannerprops"
+            Props
+          </span>
+          <span
+            class="css-1eysgws"
+          >
+            <svg
+              aria-label="permalink"
+              class="anchor-icon"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
             >
-              <span
-                class="css-6n7j50"
-              >
-                BarCodeScannerProps
-              </span>
-              <span
-                class="css-1eysgws"
-              >
-                <svg
-                  aria-label="permalink"
-                  class="anchor-icon"
-                  fill="none"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  width="24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                    stroke="#9B9B9B"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                  />
-                  <path
-                    d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                    stroke="#9B9B9B"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                  />
-                </svg>
-              </span>
-            </a>
-          </div>
-        </h4>
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </span>
+        </a>
       </div>
-    </div>
+    </h2>
     <div>
       <div
-        class="css-11owc2z-APISectionProps"
+        class="css-1k62do8-APISectionProps"
       >
-        <h4
-          class="  css-crowgh-H4"
-          data-components-heading="true"
+        <h3
+          class="css-6kh5nb-H3"
           data-heading="true"
         >
           <div
@@ -6706,7 +6685,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
                 class="css-6n7j50"
               >
                 <code
-                  class="inline css-1vg7x8p-InlineCode"
+                  class="inline css-1fz3od4-InlineCode"
                 >
                   barCodeTypes
                 </code>
@@ -6741,7 +6720,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
               </span>
             </a>
           </div>
-        </h4>
+        </h3>
         <p
           class="css-1bjvyhe-P"
           data-text="true"
@@ -6805,11 +6784,10 @@ minimize battery usage.
         </p>
       </div>
       <div
-        class="css-11owc2z-APISectionProps"
+        class="css-1k62do8-APISectionProps"
       >
-        <h4
-          class="  css-crowgh-H4"
-          data-components-heading="true"
+        <h3
+          class="css-6kh5nb-H3"
           data-heading="true"
         >
           <div
@@ -6827,7 +6805,7 @@ minimize battery usage.
                 class="css-6n7j50"
               >
                 <code
-                  class="inline css-1vg7x8p-InlineCode"
+                  class="inline css-1fz3od4-InlineCode"
                 >
                   onBarCodeScanned
                 </code>
@@ -6862,7 +6840,7 @@ minimize battery usage.
               </span>
             </a>
           </div>
-        </h4>
+        </h3>
         <p
           class="css-1bjvyhe-P"
           data-text="true"
@@ -6958,11 +6936,10 @@ data has been retrieved.
         </blockquote>
       </div>
       <div
-        class="css-11owc2z-APISectionProps"
+        class="css-1k62do8-APISectionProps"
       >
-        <h4
-          class="  css-crowgh-H4"
-          data-components-heading="true"
+        <h3
+          class="css-6kh5nb-H3"
           data-heading="true"
         >
           <div
@@ -6980,7 +6957,7 @@ data has been retrieved.
                 class="css-6n7j50"
               >
                 <code
-                  class="inline css-1vg7x8p-InlineCode"
+                  class="inline css-1fz3od4-InlineCode"
                 >
                   type
                 </code>
@@ -7015,7 +6992,7 @@ data has been retrieved.
               </span>
             </a>
           </div>
-        </h4>
+        </h3>
         <p
           class="css-1bjvyhe-P"
           data-text="true"
@@ -7093,9 +7070,8 @@ Same as
           .
         </p>
       </div>
-      <h4
-        class="  css-crowgh-H4"
-        data-components-heading="true"
+      <h3
+        class="css-6kh5nb-H3"
         data-heading="true"
       >
         <div
@@ -7144,7 +7120,7 @@ Same as
             </span>
           </a>
         </div>
-      </h4>
+      </h3>
       <ul
         class="css-is4ysz-UL"
         data-text="true"

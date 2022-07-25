@@ -6,6 +6,7 @@ import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
 
 Before creating a new Expo app, you have to make sure that:
+
 - Expo CLI is installed on your development machine
 - Expo Go app is installed on your iOS or Android physical device or emulator
 
@@ -14,11 +15,11 @@ If you have not installed any of these tools, go back to the [Installation](/get
 ## Initializing the project
 
 <Terminal cmd={[
-  '# Create a project named my-app',
-  '$ npx create-expo-app my-app',
-  '',
-  '# Navigate to the project directory',
-  '$ cd my-app'
+'# Create a project named my-app',
+'$ npx create-expo-app my-app',
+'',
+'# Navigate to the project directory',
+'$ cd my-app'
 ]} cmdCopy="npx create-expo-app my-app && cd my-app" />
 
 ## Starting the development server
@@ -54,9 +55,9 @@ If it still doesn't work, it may be due to the router configuration &mdash; this
 
 If you are using a simulator or emulator, you may find the following Expo CLI keyboard shortcuts to be useful to open the app on any of the following platforms:
 
-- Pressing `i` will open in an [iOS simulator](/workflow/ios-simulator).
-- Pressing `a` will open in an [Android Emulator or connected device](/workflow/android-studio-emulator).
-- Pressing `w` will open in a web browser. Expo supports all major browsers.
+- Pressing <kbd>I</kbd> will open in an [iOS simulator](/workflow/ios-simulator).
+- Pressing <kbd>A</kbd> will open in an [Android Emulator or connected device](/workflow/android-studio-emulator).
+- Pressing <kbd>W</kbd> will open in a web browser. Expo supports all major browsers.
 
 </Collapsible>
 
@@ -70,7 +71,7 @@ Expo Go is configured by default to automatically reload the app whenever a file
 
 - Make sure the you have the [development mode enabled in Expo CLI](/workflow/development-mode#development-mode).
 - Close the Expo app and reopen it.
-- Once the app is open again, shake your device to reveal the developer menu. If you are using an emulator, press `⌘+d` for iOS or `ctrl+m` for Android.
+- Once the app is open again, shake your device to reveal the developer menu. If you are using an emulator, press <kbd>Cmd ⌘</kbd> + <kbd>D</kbd> for iOS or <kbd>Ctrl</kbd> + <kbd>M</kbd> for Android.
 - If you see `Enable Fast Refresh`, press it. If you see `Disable Fast Refresh`, dismiss the developer menu. Now try making another change.
 
   ![In-app developer menu](/static/images/developer-menu.png)

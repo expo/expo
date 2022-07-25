@@ -1,8 +1,8 @@
 #import <Foundation/Foundation.h>
-#import "FeaturesConfig.h"
+#import "DevMenuFeaturesConfig.h"
 #import "DevMenuREAIOSScheduler.h"
 #import "DevMenuREAUIManager.h"
-#import "Scheduler.h"
+#import "DevMenuScheduler.h"
 #import <React/RCTComponentData.h>
 #import <React/RCTLayoutAnimation.h>
 #import <React/RCTLayoutAnimationGroup.h>

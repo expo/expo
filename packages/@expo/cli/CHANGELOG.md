@@ -10,7 +10,19 @@
 
 ### 🐛 Bug fixes
 
+- Ensure `expo build:web` recommends running `expo export:web` in the migration warning. ([#18312](https://github.com/expo/expo/pull/18312) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 💡 Others
+
+## 0.2.5 — 2022-07-19
+
+_This version does not introduce any user-facing changes._
+
+## 0.2.4 — 2022-07-19
+
+### 🐛 Bug fixes
+
+- Add mock `--non-interactive` flag to hide `eas update` errors. ([#18299](https://github.com/expo/expo/pull/18299) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 0.2.3 — 2022-07-19
 

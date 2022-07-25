@@ -61,7 +61,7 @@ export function withExpoPuppeteer(config: any = {}): { [key: string]: any } {
     }
     command = ofCommands(commands);
   } else {
-    command = `expo start:web ${projectPath} --non-interactive --https`;
+    command = `expo-cli start:web ${projectPath} --non-interactive --https`;
     defaultURL = `https://localhost:${serverPort}`;
   }
 

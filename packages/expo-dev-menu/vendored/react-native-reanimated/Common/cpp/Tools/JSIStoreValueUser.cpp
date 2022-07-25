@@ -1,5 +1,5 @@
-#include "JSIStoreValueUser.h"
-#include "RuntimeManager.h"
+#include "DevMenuJSIStoreValueUser.h"
+#include "DevMenuRuntimeManager.h"
 #ifdef ONANDROID
 #include <AndroidScheduler.h>
 #endif

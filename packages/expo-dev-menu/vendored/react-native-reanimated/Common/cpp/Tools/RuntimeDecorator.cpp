@@ -1,10 +1,10 @@
-#include "RuntimeDecorator.h"
+#include "DevMenuRuntimeDecorator.h"
 #include <chrono>
 #include <memory>
 #include <unordered_map>
-#include "LayoutAnimationsProxy.h"
-#include "MutableValue.h"
-#include "ReanimatedHiddenHeaders.h"
+#include "DevMenuLayoutAnimationsProxy.h"
+#include "DevMenuMutableValue.h"
+#include "DevMenuReanimatedHiddenHeaders.h"
 
 namespace devmenureanimated {
 

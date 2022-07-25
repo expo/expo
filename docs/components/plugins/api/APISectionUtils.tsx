@@ -17,7 +17,7 @@ import {
   TypeDefinitionData,
   TypePropertyDataFlags,
 } from '~/components/plugins/api/APIDataTypes';
-import { PlatformTags } from '~/components/plugins/api/APISectionPlatformTags';
+import { APISectionPlatformTags } from '~/components/plugins/api/APISectionPlatformTags';
 import * as Constants from '~/constants/theme';
 import { Cell, HeaderCell, Row, Table, TableHead } from '~/ui/components/Table';
 import { tableWrapperStyle } from '~/ui/components/Table/Table';
@@ -86,6 +86,7 @@ export const mdInlineComponents: MDComponents = {
 const nonLinkableTypes = [
   'ColorValue',
   'Component',
+  'ComponentClass',
   'E',
   'EventSubscription',
   'File',
@@ -127,6 +128,7 @@ const hardcodedTypeLinks: Record<string, string> = {
   AVPlaybackSource: '/versions/latest/sdk/av/#avplaybacksource',
   AVPlaybackStatus: '/versions/latest/sdk/av/#avplaybackstatus',
   AVPlaybackStatusToSet: '/versions/latest/sdk/av/#avplaybackstatustoset',
+  Blob: 'https://developer.mozilla.org/en-US/docs/Web/API/Blob',
   Date: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date',
   Element: 'https://www.typescriptlang.org/docs/handbook/jsx.html#function-component',
   Error: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error',
@@ -140,6 +142,8 @@ const hardcodedTypeLinks: Record<string, string> = {
   View: '/versions/latest/react-native/view',
   ViewProps: '/versions/latest/react-native/view#props',
   ViewStyle: '/versions/latest/react-native/view-style-props',
+  WebGL2RenderingContext: 'https://developer.mozilla.org/en-US/docs/Web/API/WebGL2RenderingContext',
+  WebGLFramebuffer: 'https://developer.mozilla.org/en-US/docs/Web/API/WebGLFramebuffer',
 };
 
 const renderWithLink = (name: string, type?: string) => {
@@ -504,11 +508,11 @@ export const CommentTextBlock = ({
   return (
     <>
       {!withDash && includePlatforms && hasPlatforms && (
-        <PlatformTags comment={comment} prefix="Only for:" />
+        <APISectionPlatformTags comment={comment} prefix="Only for:" />
       )}
       {beforeContent}
       {withDash && (shortText || text) && ' - '}
-      {withDash && includePlatforms && <PlatformTags comment={comment} />}
+      {withDash && includePlatforms && <APISectionPlatformTags comment={comment} />}
       {shortText}
       {text}
       {afterContent}

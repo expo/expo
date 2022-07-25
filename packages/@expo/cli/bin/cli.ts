@@ -41,6 +41,9 @@ const args = arg(
     // Types
     '--version': Boolean,
     '--help': Boolean,
+    // NOTE(EvanBacon): This is here to silence warnings from processes that
+    // expect the global expo-cli.
+    '--non-interactive': Boolean,
 
     // Aliases
     '-v': '--version',
@@ -55,6 +58,10 @@ if (args['--version']) {
   // Version is added in the build script.
   console.log(process.env.__EXPO_VERSION);
   process.exit(0);
+}
+
+if (args['--non-interactive']) {
+  console.warn(chalk.yellow`  {bold --non-interactive} is not supported, use {bold $CI=1} instead`);
 }
 
 // Check if we are running `npx expo <subcommand>` or `npx expo`
@@ -104,13 +111,14 @@ if (!isSubcommand) {
   const migrationMap: Record<string, string> = {
     init: 'npx create-expo-app',
     eject: 'npx expo prebuild',
+    web: 'npx expo start --web',
     'start:web': 'npx expo start --web',
     'build:ios': 'eas build -p ios',
     'build:android': 'eas build -p android',
     'client:install:ios': 'npx expo start --ios',
     'client:install:android': 'npx expo start --android',
-    doctor: 'expo doctor',
-    upgrade: 'expo upgrade',
+    doctor: 'expo-cli doctor',
+    upgrade: 'expo-cli upgrade',
     'customize:web': 'npx expo customize',
 
     publish: 'eas update',
@@ -119,7 +127,7 @@ if (!isSubcommand) {
     'publish:history': 'eas update',
     'publish:details': 'eas update',
 
-    'build:web': 'npx expo export',
+    'build:web': 'npx expo export:web',
 
     'credentials:manager': `eas credentials`,
     'fetch:ios:certs': `eas credentials`,

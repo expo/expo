@@ -2,9 +2,12 @@
 
 import Dispatch
 
-public let log = Logger(category: "expo")
+public let log = Logger(category: Logger.EXPO_LOG_CATEGORY)
 
 public class Logger {
+  public static let EXPO_MODULES_LOG_SUBSYSTEM = "dev.expo.modules"
+  public static let EXPO_LOG_CATEGORY = "expo"
+
   #if DEBUG || EXPO_CONFIGURATION_DEBUG
   private var minLevel: LogType = .trace
   #else
@@ -15,7 +18,7 @@ public class Logger {
 
   private var handlers: [LogHandler] = []
 
-  init(category: String = "main") {
+  public init(category: String = "main") {
     self.category = category
 
     if #available(macOS 11.0, iOS 14.0, watchOS 7.0, tvOS 14.0, *) {
