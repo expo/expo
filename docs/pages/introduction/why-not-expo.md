@@ -16,7 +16,7 @@ With the release of Expo Application Services, the managed workflow has far fewe
   - Any 3rd party push notification service can support managed workflow apps.
   - Native libraries that integrate with proprietary services can support managed workflow apps.
 - Apps built with EAS Build can be as small as you want, since the entire Expo SDK is no longer bundled in by default.
-- Apps built with EAS Build can target children under 13 years old
+- Apps built with EAS Build can target children under 13 years old.
 
 These changes mean Expo can fit many more use cases than before.
 
@@ -92,9 +92,9 @@ Apps built with `eas build -p ios|android` [include only your app's explicit nat
 
 ## Limitations of the bare workflow
 
-In the bare workflow we have full access to the underlying native projects and any native code. It's a "bare" native project with React Native and one or more packages from the Expo SDK installed. Anything that you can do in a native project is possible here.
+In the bare workflow, we have full access to the underlying native projects and any native code. It's a "bare" native project with React Native and one or more packages from the Expo SDK installed. Anything that you can do in a native project is possible here.
 
-The following list is therefore specifically oriented towards to the limitations that exist around using Expo tools and services in the bare workflow.
+The following list is therefore specifically oriented towards the limitations that exist around using Expo tools and services in the bare workflow.
 
 <Collapsible summary={<span><span className="strike">Build service only works in the managed workflow</span> (✅ Resolved in December 2020)</span>}>
 
