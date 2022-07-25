@@ -4327,7 +4327,7 @@ SPEC CHECKSUMS:
   ABI46_0_0react-native-pager-view: 6811eabddc3dd8f24272e66842c8587a3589e894
   ABI46_0_0react-native-safe-area-context: 93911af12fe871df4eb3eba1d9b6acd8ec9525d1
   ABI46_0_0react-native-segmented-control: 88712b954346b6e10d4d463a5e56232154244a71
-  ABI46_0_0react-native-skia: 3ad8c10c5fac413576c8ab7fc87a7763fcf73f5a
+  ABI46_0_0react-native-skia: fbd5f7b80fb88676d81acaaa5ce0eaa2e26fc519
   ABI46_0_0react-native-webview: 6914e1a2f14e0ca64ad70510bf5a645790766577
   ABI46_0_0React-perflogger: 072d224605a449c872a8e089b72e3401603b92ab
   ABI46_0_0React-RCTActionSheet: 62f6aaee6fef914858813e3f7aaacda4d48359f2
@@ -4425,7 +4425,7 @@ SPEC CHECKSUMS:
   FacebookSDK: 4b9bb8e2824898b47f18c666dc145c09b40609e6
   FBAudienceNetwork: cfe55330dcc4e9a1df083c34a346ca7f8e32951e
   FBLazyVector: 068141206af867f72854753423d0117c4bf53419
-  FBReactNativeSpec: fc8dd5f7df3c4ce5cc0e0ad76ed957b6ae34c2a6
+  FBReactNativeSpec: 4819c7518a9fcc413ca59be3b56db3249e5fc2f6
   FBSDKCoreKit: dace5abafc2fd9272733e6d027bcf18102712117
   Firebase: 7e8fe528c161b9271d365217a74c16aaf834578e
   FirebaseAnalytics: 2fc3876e2eb347673ad2f35e249ae7b15d6c88f5
