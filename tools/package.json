@@ -16,10 +16,6 @@
     "et": "node bin/expotools.js",
     "lint": "eslint ./src"
   },
-  "bin": {
-    "et": "node bin/expotools.js",
-    "expotools": "node bin/expotools.js"
-  },
   "author": "support@expo.dev",
   "license": "MIT",
   "dependencies": {
