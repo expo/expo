@@ -107,8 +107,6 @@ runs:
       id: tools-modules-cache
       with:
         path: |
-          bin/et
-          bin/expotools
           tools/node_modules
         key: ${{ runner.os }}-tools-modules-${{ hashFiles('tools/yarn.lock') }}
 
