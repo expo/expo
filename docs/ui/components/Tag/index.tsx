@@ -64,7 +64,7 @@ export const PlatformTag = ({ platform, firstElement, toc }: PlatformTagProps) =
         platformName === 'expo' && getTagStyle('purple'),
         toc && tagToCStyle,
       ]}>
-      <PlatformIcon platform={platformName} />
+      {!toc && <PlatformIcon platform={platformName} />}
       <span css={labelStyle}>{formatName(platform)}</span>
     </div>
   );
@@ -118,8 +118,4 @@ const tagToCStyle = css({
   marginRight: 0,
   marginLeft: spacing[1],
   padding: `0px ${spacing[1.5]}px`,
-
-  svg: {
-    display: 'none',
-  },
 });
