@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Deprecated the unreliable `source-login-scripts.sh` and sourcing the Node.js binary path from `.xcode.env` and `.xcode.env.local`. ([#18330](https://github.com/expo/expo/pull/18330) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 13.2.2 — 2022-07-16

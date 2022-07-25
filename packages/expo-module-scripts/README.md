@@ -67,7 +67,7 @@ Running `yarn` will now run the `prepare` script, which generates any missing fi
 
 Besides, running `yarn prepare` script will also synchronize optional files from `expo-module-scripts` when the file is present and contains the `@generated` pattern:
 
-- [`source-login-scripts.sh`](./templates/scripts/source-login-scripts.sh): An Xcode build phase script helper for Node.js binary resolution. For example, we need to source login shell configs for `nvm`.
+- [`with-node.sh`](./templates/scripts/with-node.sh): An Xcode build phase script helper for Node.js binary resolution. It sources the project's **.xcode.env** and **.xcode.env.local** files, which may define an environment variable named `NODE_BINARY` to specify the file path of the Node.js binary to run.
 
 ### 🔌 Config Plugin
 
