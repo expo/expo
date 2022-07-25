@@ -88,8 +88,8 @@ Add `expo.hooks` to your project's `app.json` (or `app.config.js`) file:
         {
           "file": "sentry-expo/upload-sourcemaps",
           "config": {
-            "organization": "your sentry organization's short name here",
-            "project": "your sentry project's name here",
+            "organization": "your sentry organization slug here",
+            "project": "your sentry project name here",
             "authToken": "your auth token here"
           }
         }
