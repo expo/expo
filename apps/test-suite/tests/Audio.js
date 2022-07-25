@@ -532,7 +532,7 @@ export function test(t) {
       testVolumeFailure('negative', { volume: -0.5 });
 
       testVolumeFailure('too small', { volume: 1, audioPan: -1.1 });
-      testVolumeFailure('too big', { volume: 1, audioPan: 1.1});
+      testVolumeFailure('too big', { volume: 1, audioPan: 1.1 });
     });
 
     t.describe('Audio.setIsMutedAsync', () => {
