@@ -88,7 +88,7 @@ Apps built with `eas build -p ios|android` [include only your app's explicit nat
 
 </Collapsible>
 
-> 👉 We are either actively working on or planning to build solutions to all of the limitations listed above, and if you think anything is missing, please bring it to our attention by posting to our [feature requests board](https://expo.canny.io/feature-requests) or the [forums](https://forums.expo.dev/).
+> We are either actively working on or planning to build solutions to all of the limitations listed above, and if you think anything is missing, please bring it to our attention by posting to our [feature requests board](https://expo.canny.io/feature-requests) or the [forums](https://forums.expo.dev/).
 
 ## Limitations of the bare workflow
 
@@ -114,5 +114,5 @@ Configuring app icons, launch screen, and so on must be configured in the native
 
 If you've been reading along each section of the introduction then you will have a pretty good high-level understanding of Expo tools.
 
-- 👩‍💻 If you have heard enough and want to get to coding, [jump ahead to "Installation"](/get-started/installation.md).
-- ⁉️ If you have some unanswered questions, [continue to the "Common Questions" page](/introduction/faq.md).
+- If you have heard enough and want to get to coding, [jump ahead to "Installation"](/get-started/installation.md).
+- If you have some unanswered questions, [continue to the "Common Questions" page](/introduction/faq.md).

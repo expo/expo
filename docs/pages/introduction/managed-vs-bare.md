@@ -10,7 +10,7 @@ The two approaches to building applications with Expo tools are called the "mana
 - With the _managed workflow_ you only write JavaScript / TypeScript and Expo tools and services take care of everything else for you.
 - In the _bare workflow_ you can use any Expo library and service, and you are responsible for the native iOS and Android projects.
 
-> 💡 **If you've used React Native without any Expo tools** then you have used the "bare workflow", but the name probably doesn't sound familiar. It's easier to talk about something when it has a name, so we call this "bare" – somewhat in jest, and because of the existing term "bare metal". If you have direct access to the native code it's a _bare_ project. The ["Already used React Native?"](../workflow/already-used-react-native.md) page might be useful for you to quickly understand where Expo fits in.
+> **If you've used React Native without any Expo tools** then you have used the "bare workflow", but the name probably doesn't sound familiar. It's easier to talk about something when it has a name, so we call this "bare" – somewhat in jest, and because of the existing term "bare metal". If you have direct access to the native code it's a _bare_ project. The ["Already used React Native?"](../workflow/already-used-react-native.md) page might be useful for you to quickly understand where Expo fits in.
 
 ## Managed workflow
 
@@ -33,7 +33,7 @@ In the bare workflow the developer has complete control, along with the complexi
 ## Workflow comparison
 
 | Feature                                                      | Managed workflow | Bare workflow                                                                |
-| ------------------------------------------------------------ |------------------|------------------------------------------------------------------------------|
+| ------------------------------------------------------------ | ---------------- | ---------------------------------------------------------------------------- |
 | Develop apps with **only** JavaScript/TypeScript             | <YesIcon />      | <NoIcon />                                                                   |
 | Use Expo build service to create your iOS and Android builds | <YesIcon />      | <YesIcon /> ([with EAS Build](/build/introduction.md))                       |
 | Use Expo's push notification service                         | <YesIcon />      | <YesIcon />                                                                  |
@@ -45,12 +45,12 @@ In the bare workflow the developer has complete control, along with the complexi
 
 ## Which workflow is right for me?
 
-- 🚫🔒**Expo never locks you in**, you can generate the native iOS and Android projects from your managed project at any time you like. You can use one library or service or many, in managed or bare projects.
-- 🆕**If you are new to mobile development** or **new to development in general** we recommend that you use the managed workflow. There is a huge amount of complexity that comes along with the native development toolchain and the managed workflow allows you to deal with that complexity only when absolutely necessary.
-- 🧠 **If you are more experienced** it also doesn't hurt to start every new project with the managed workflow and only generate the native projects when needed.
+- **Expo never locks you in**, you can generate the native iOS and Android projects from your managed project at any time you like. You can use one library or service or many, in managed or bare projects.
+- **If you are new to mobile development** or **new to development in general** we recommend that you use the managed workflow. There is a huge amount of complexity that comes along with the native development toolchain and the managed workflow allows you to deal with that complexity only when absolutely necessary.
+- **If you are more experienced** it also doesn't hurt to start every new project with the managed workflow and only generate the native projects when needed.
 
 In summary, use the bare workflow when you need it due to limitations, otherwise use the managed workflow, and you most likely want to start with the managed workflow.
 
 ## Up next
 
-- 📺 Text can only go so far - if you want a more complete picture of building an app end-to-end with the managed workflow, [you should continue to the Walkthrough page](../introduction/walkthrough.md). There are a bunch of videos and it's easy to skim through, and you should leave it with a better sense of what building a managed app looks like. [Go watch them now.](../introduction/walkthrough.md)
+- Text can only go so far - if you want a more complete picture of building an app end-to-end with the managed workflow, [you should continue to the Walkthrough page](../introduction/walkthrough.md). There are a bunch of videos and it's easy to skim through, and you should leave it with a better sense of what building a managed app looks like. [Go watch them now.](../introduction/walkthrough.md)
