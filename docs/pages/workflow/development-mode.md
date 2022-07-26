@@ -35,7 +35,7 @@ The Developer Menu gives you access to a host of features that make development 
 Production mode is most useful for two things:
 
 - Testing your app's performance, as Development slows your app down considerably
-- Catching bugs that only show up in production 🐛
+- Catching bugs that only show up in production
 
 The easiest way to simulate how your project will run on end users' devices is with the command
 

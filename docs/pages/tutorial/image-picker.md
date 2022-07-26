@@ -16,15 +16,15 @@ To use expo-image-picker in our project, we first need to install it.
 
 In your project directory, run the following command:
 
-<Terminal cmd={['$ expo install expo-image-picker']} /> 
+<Terminal cmd={['$ expo install expo-image-picker']} />
 
 This will tell npm (or yarn) to install a version of the `expo-image-picker` library that is compatible with your project. That's it!
 
 <Video file={"tutorial/cli-install.mp4"} />
 
-> 🔢 The version numbers you see here may be different depending on when you do this tutorial.
+> The version numbers you see here may be different depending on when you do this tutorial.
 
-> 🧶 expo-cli used yarn in this video instead of npm. The installation text will be slightly different if you do not have yarn installed. It's fine.
+> expo-cli used yarn in this video instead of npm. The installation text will be slightly different if you do not have yarn installed. It's fine.
 
 ## Picking an image
 
@@ -77,7 +77,7 @@ You should see something like this when you run your app and use the picker:
 
 <Video file="tutorial/cli-logs.mp4" />
 
-> 💡 You can see the logs in your expo-cli terminal session or in the browser-based developer tools if you prefer it. To see the logs in Snack, press "Logs" in the footer.
+> You can see the logs in your expo-cli terminal session or in the browser-based developer tools if you prefer it. To see the logs in Snack, press "Logs" in the footer.
 
 ## Using the selected image
 
@@ -157,4 +157,4 @@ Your app should now look and behave like this:
 
 > 👀 You might expect that because we gave our image an equal width and height it would be a square, but in the above video it's rectangular. This is because of `resizeMode`, an image style property that lets us control how the image is resized to fit the given dimensions. Try switching it from `contain` to `stretch` or `cover` to see other behaviors.
 
-🥳 We have made great progress! Up next, [let's make it possible to share the image](/tutorial/sharing).
+We have made great progress! Up next, [let's make it possible to share the image](/tutorial/sharing).
