@@ -149,7 +149,7 @@ This is Vercel's preferred method for deploying Next.js projects to production.
 A lot of libraries in the React ecosystem use the `setImmediate()` API (like `react-native-reanimated`), which Next.js doesn't polyfill by default. To fix this you can polyfill it yourself.
 
 - Install: `yarn add setimmediate`
-- Import in **pages/\_app.js**, at the top of the file:
+- Import in **pages/_app.js**, at the top of the file:
   ```js
   import 'setimmediate';
   ```
