@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Speed up native device opening for iOS and Android.
+
 ### 💡 Others
 
 ## 0.2.6 — 2022-07-25
