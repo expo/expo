@@ -2,8 +2,7 @@ import { css } from '@emotion/react';
 import { theme, typography } from '@expo/styleguide';
 import * as React from 'react';
 
-import { BASE_HEADING_LEVEL, Heading, HeadingType } from '../common/headingManager';
-
+import { BASE_HEADING_LEVEL, Heading, HeadingType } from '~/common/headingManager';
 import { paragraph } from '~/components/base/typography';
 import { Tag } from '~/ui/components/Tag';
 
@@ -63,6 +62,10 @@ const STYLES_TOOLTIP = css`
 const STYLES_CODE_TOOLTIP = css`
   font-family: ${typography.fontFaces.mono};
   font-size: 11px;
+`;
+
+const STYLES_TAG_CONTAINER = css`
+  display: inline-flex;
 `;
 
 const NESTING_OFFSET = 12;
@@ -153,9 +156,9 @@ const DocumentationSidebarRightLink = React.forwardRef<HTMLAnchorElement, Sideba
           css={[STYLES_LINK, isNested && STYLES_LINK_HEADER, isActive && STYLES_LINK_ACTIVE]}>
           <span css={[STYLES_LINK_LABEL, isCode && STYLES_LINK_CODE]}>{displayTitle}</span>
           {tags && tags.length ? (
-            <div css={css({ display: 'inline-flex' })}>
-              {tags.map((tag: string) => (
-                <Tag toc name={tag} />
+            <div css={STYLES_TAG_CONTAINER}>
+              {tags.map(tag => (
+                <Tag name={tag} type="toc" />
               ))}
             </div>
           ) : undefined}
