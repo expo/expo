@@ -104,7 +104,7 @@ it(
     const pkg = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
 
     // Deleted
-    expect(pkg.main).not.toBeDefined();
+    expect(pkg.main).toBe('node_modules/expo/AppEntry.js');
 
     // Added new packages
     expect(Object.keys(pkg.dependencies).sort()).toStrictEqual([
@@ -174,7 +174,6 @@ it(
         "android/gradlew.bat",
         "android/settings.gradle",
         "app.json",
-        "index.js",
         "ios/.gitignore",
         "ios/Podfile",
         "ios/Podfile.properties.json",
