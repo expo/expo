@@ -36,6 +36,7 @@ import java.util.Set;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import expo.modules.core.Promise;
+import expo.modules.core.arguments.MapArguments;
 import expo.modules.core.arguments.ReadableArguments;
 import expo.modules.core.interfaces.services.EventEmitter;
 
@@ -137,11 +138,10 @@ public class BillingManager implements PurchasesUpdatedListener {
    * Start a purchase or subscription replace flow
    */
   public void purchaseItemAsync(final String skuId, @Nullable final ReadableArguments details, final Promise promise) {
-    String oldPurchaseToken = details.getString("oldPurchaseToken");
-    ReadableArguments accountIdentifiers = details.getArguments("accountIdentifiers");
-    String obfuscatedAccountId = accountIdentifiers.getString("obfuscatedAccountId");
-    String obfuscatedProfileId = accountIdentifiers.getString("obfuscatedProfileId");
-    Boolean isVrPurchaseFlow = details.getBoolean("isVrPurchaseFlow");
+    ReadableArguments d = details != null ? details : new MapArguments();
+    String oldPurchaseToken = d.getString("oldPurchaseToken");
+    ReadableArguments accountIdentifiers = d.getArguments("accountIdentifiers");
+    Boolean isVrPurchaseFlow = d.getBoolean("isVrPurchaseFlow");
 
     Runnable purchaseFlowRequest = new Runnable() {
       @Override
@@ -164,9 +164,13 @@ public class BillingManager implements PurchasesUpdatedListener {
          * For Android billing to work without a 'Something went wrong on our end. Please try again.'
          * error, we must provide BOTH obfuscatedAccountId and obfuscatedProfileId.
          */
-        if (obfuscatedAccountId != null && obfuscatedProfileId != null) {
-          purchaseParams.setObfuscatedAccountId(obfuscatedAccountId);
-          purchaseParams.setObfuscatedProfileId(obfuscatedProfileId);
+        if (accountIdentifiers != null) {
+          String obfuscatedAccountId = accountIdentifiers.getString("obfuscatedAccountId");
+          String obfuscatedProfileId = accountIdentifiers.getString("obfuscatedProfileId");
+          if (obfuscatedAccountId != null && obfuscatedProfileId != null) {
+            purchaseParams.setObfuscatedAccountId(obfuscatedAccountId);
+            purchaseParams.setObfuscatedProfileId(obfuscatedProfileId);
+          }
         }
 
         // false will be the default, unless true is passed
