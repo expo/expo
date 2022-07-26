@@ -1,4 +1,3 @@
-import { PackageJSONConfig } from '@expo/config';
 import { ModPlatform } from '@expo/config-plugins';
 import { MergeResults } from '@expo/config-plugins/build/utils/generateCode';
 import chalk from 'chalk';
