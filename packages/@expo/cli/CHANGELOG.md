@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Drop support for copying `index.js` and removing `main` field in `package.json` during `expo prebuild` in favor of native build scripts which resolve the user-defined entry file.
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
