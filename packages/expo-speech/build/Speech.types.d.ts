@@ -15,6 +15,7 @@ export declare type SpeechOptions = {
     rate?: number;
     /**
      * if true, the speech follows the same behavior as `Audio.setAudioModeAsync()`
+     * @platform ios
      */
     useSharedAudioSession?: boolean;
     /**
