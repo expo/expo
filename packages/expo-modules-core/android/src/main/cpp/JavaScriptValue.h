@@ -3,6 +3,7 @@
 #pragma once
 
 #include "JSIObjectWrapper.h"
+#include "WeakRuntimeHolder.h"
 
 #include <fbjni/fbjni.h>
 #include <jsi/jsi.h>
@@ -30,6 +31,11 @@ public:
 
   JavaScriptValue(
     std::weak_ptr<JavaScriptRuntime> runtime,
+    std::shared_ptr<jsi::Value> jsValue
+  );
+
+  JavaScriptValue(
+    WeakRuntimeHolder runtime,
     std::shared_ptr<jsi::Value> jsValue
   );
 
@@ -68,7 +74,7 @@ public:
 private:
   friend HybridBase;
 
-  std::weak_ptr<JavaScriptRuntime> runtimeHolder;
+  WeakRuntimeHolder runtimeHolder;
   std::shared_ptr<jsi::Value> jsValue;
 
   jni::local_ref<jstring> jniKind();
