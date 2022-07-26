@@ -3,7 +3,7 @@ title: Config Plugins
 ---
 
 import { Terminal } from '~/ui/components/Snippet';
-import {YesIcon, NoIcon} from '~/ui/components/DocIcons';
+import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
 
 > This guide applies to SDK 41+ projects. The Expo Go app doesn't support custom native modules.
 
