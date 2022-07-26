@@ -11,8 +11,6 @@ Package-specific changes not released in any SDK will be added here just before 
 
 ### 🎉 New features
 
-- adds the option to Expo Speech to usethe [Application Audio Session](https://developer.apple.com/documentation/avfaudio/avspeechsynthesizer/3362518-usesapplicationaudiosession). ([#18374](https://github.com/expo/expo/pull/18374) by [@robertjcolley](https://github.com/robertjcolley))
-
 ### 🐛 Bug fixes
 
 ## 46.0.0 — 2022-07-19
