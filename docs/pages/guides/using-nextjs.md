@@ -11,7 +11,7 @@ import { Collapsible } from '~/ui/components/Collapsible';
 
 Using Expo with Next.js means you can share all of your existing components and APIs across your mobile and web. Next.js has its own Webpack config so **you'll need to start your web projects with the `next-cli` and not with `expo start:web`.**
 
-> 💡 Next.js can only be used with Expo for web, this doesn't provide Server-Side Rendering (SSR) for native apps.
+> Next.js can only be used with Expo for web, this doesn't provide Server-Side Rendering (SSR) for native apps.
 
 ## TL;DR:
 
@@ -19,7 +19,7 @@ Using Expo with Next.js means you can share all of your existing components and 
 - Start: `yarn next dev`
 - Open: `http://localhost:3000/`
 
-## 🏁 Setup
+## Setup
 
 To get started, create a new project with [the template](https://github.com/expo/examples/tree/master/with-nextjs):
 
@@ -76,13 +76,13 @@ Optionally you can set the project up manually (not recommended).
 
 <Collapsible summary="Instructions">
 
-- Re-export the custom `Document` component in the **pages/_document.js** file of your Next.js project.
+- Re-export the custom `Document` component in the **pages/\_document.js** file of your Next.js project.
 
   - This will ensure `react-native-web` styling works.
-  - You can run `yarn next-expo -c` then select **pages/_document.js**
+  - You can run `yarn next-expo -c` then select **pages/\_document.js**
   - Or you can create the file - `mkdir pages; touch pages/_document.js`
 
-  **pages/_document.js**
+  **pages/\_document.js**
 
   ```js
   export { default } from '@expo/next-adapter/document';
@@ -116,10 +116,7 @@ Optionally you can set the project up manually (not recommended).
 
   const nextConfig = {};
 
-  module.exports = withPlugins(
-    [withTM, [withExpo, { projectRoot: __dirname }]],
-    nextConfig
-  );
+  module.exports = withPlugins([withTM, [withExpo, { projectRoot: __dirname }]], nextConfig);
   ```
 
 - You can now start your Expo web + Next.js project with `yarn next dev` 🎉
@@ -147,7 +144,7 @@ This is Vercel's preferred method for deploying Next.js projects to production.
 
 ### Polyfill setImmediate
 
-> 💡 Fixes `setImmediate is not defined` error.
+> Fixes `setImmediate is not defined` error.
 
 A lot of libraries in the React ecosystem use the `setImmediate()` API (like `react-native-reanimated`), which Next.js doesn't polyfill by default. To fix this you can polyfill it yourself.
 
@@ -268,7 +265,7 @@ export default function FontDemo() {
 
 Generate static Next.js files into your project.
 
-#### ⚙️ CLI Options
+#### CLI Options
 
 For more information run `yarn next-expo --help` (or `-h`)
 
@@ -308,7 +305,7 @@ module.exports = withExpo({
 
 ### Document
 
-Next.js uses the **pages/_document.js** file to augment your app's `<html>` and `<body>` tags. Learn more [here](https://nextjs.org/docs#custom-document).
+Next.js uses the **pages/\_document.js** file to augment your app's `<html>` and `<body>` tags. Learn more [here](https://nextjs.org/docs#custom-document).
 
 This adapter provides a default `Document` (extended from Next.js's Document) that you can use to skip all of the React Native setup.
 
@@ -373,8 +370,6 @@ If you would like to help make Next.js support in Expo better, please feel free 
 If you have any problems rendering a certain component with SSR then you can submit fixes to the expo/expo repo:
 
 - [Expo SDK packages][expo-packages]
-
-Thanks so much 👋
 
 <!-- Footer -->
 

@@ -7,12 +7,11 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 Let's imagine that our designer has provided us with a beautiful logo:
 
-
 <ImageSpotlight alt="A pretty bad logo with the text 'Image Share' and the emoji of the sun behind mountains" src="/static/images/tutorial/logo.png" style={{maxWidth: 305, maxHeight: 159}} />
 
 Save this image to the **assets** directory inside of your project and call it **logo.png**.
 
-> 💡 An "asset" is any file that your project uses that is not code. Images, videos, sounds, and fonts are all considered to be assets.
+> An "asset" is any file that your project uses that is not code. Images, videos, sounds, and fonts are all considered to be assets.
 
 ## Displaying the image in the app
 
@@ -89,7 +88,7 @@ const styles = StyleSheet.create({
 
 <br />
 
-> 🤔 **What's a URI? Is that like a URL?** Yes, you can use the terms interchangeably. Technically there are some subtle differences in meaning, but this typically won't matter for your usage with Expo. Documentation will tell you whether to use `uri` or `url`.
+> **What's a URI? Is that like a URL?** Yes, you can use the terms interchangeably. Technically there are some subtle differences in meaning, but this typically won't matter for your usage with Expo. Documentation will tell you whether to use `uri` or `url`.
 
 ## Time for a code organization break!
 

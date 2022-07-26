@@ -123,6 +123,6 @@ const styles = StyleSheet.create({
 
 <br />
 
-> 📜 Yikes, these code snippets are getting long. For the rest of the tutorial we'll show only relevant code here, and you can click through to Snack to see the full code.
+> Yikes, these code snippets are getting long. For the rest of the tutorial we'll show only relevant code here, and you can click through to Snack to see the full code.
 
 - We have a button! We can now make that button do what we want it to do: open an "image picker" - a screen with a gallery of images on your device. [Continue to the next section](/tutorial/image-picker).

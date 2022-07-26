@@ -4,6 +4,7 @@ title: Linking
 
 import SnackInline from '~/components/plugins/SnackInline';
 import { Collapsible } from '~/ui/components/Collapsible';
+import { YesIcon } from '~/ui/components/DocIcons';
 
 ## Introduction
 
@@ -23,12 +24,12 @@ Deep linking with schemes isn't the only linking tool available to you. It is of
 
 As mentioned in the introduction, there are some URL schemes for core functionality that exist on every platform. The following is a non-exhaustive list, but covers the most commonly used schemes.
 
-| Scheme           | Description                                   | iOS | Android |
-| ---------------- | --------------------------------------------- | --- | ------- |
-| `mailto`         | Open mail app, eg: `mailto: support@expo.dev` | ✅  | ✅      |
-| `tel`            | Open phone app, eg: `tel:+123456789`          | ✅  | ✅      |
-| `sms`            | Open SMS app, eg: `sms:+123456789`            | ✅  | ✅      |
-| `https` / `http` | Open web browser app, eg: `https://expo.dev`  | ✅  | ✅      |
+| Scheme           | Description                                   | iOS         | Android     |
+| ---------------- | --------------------------------------------- | ----------- | ----------- |
+| `mailto`         | Open mail app, eg: `mailto: support@expo.dev` | <YesIcon /> | <YesIcon /> |
+| `tel`            | Open phone app, eg: `tel:+123456789`          | <YesIcon /> | <YesIcon /> |
+| `sms`            | Open SMS app, eg: `sms:+123456789`            | <YesIcon /> | <YesIcon /> |
+| `https` / `http` | Open web browser app, eg: `https://expo.dev`  | <YesIcon /> | <YesIcon /> |
 
 ### Opening links from your app
 
@@ -223,7 +224,11 @@ When [handling the URL that is used to open/foreground your app](#handling-urls-
 _handleUrl = ({ url }) => {
   this.setState({ url });
   let { hostname, path, queryParams } = Linking.parse(url);
-  alert(`Linked to app with hostname: ${hostname}, path: ${path} and data: ${JSON.stringify(queryParams)}`);
+  alert(
+    `Linked to app with hostname: ${hostname}, path: ${path} and data: ${JSON.stringify(
+      queryParams
+    )}`
+  );
 };
 ```
 
@@ -264,10 +269,12 @@ The AASA must be served from `/.well-known/apple-app-site-association` (with no 
 {
   "applinks": {
     "apps": [], // This is usually left empty, but still must be included
-    "details": [{
-      "appID": "LKWJEF.io.myapp.example",
-      "paths": ["/records/*"]
-    }]
+    "details": [
+      {
+        "appID": "LKWJEF.io.myapp.example",
+        "paths": ["/records/*"]
+      }
+    ]
   }
 }
 ```

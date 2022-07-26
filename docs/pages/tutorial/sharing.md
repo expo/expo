@@ -72,7 +72,7 @@ export default function App() {
 
 <Video file={"tutorial/sharing-native.mp4"} />
 
-🥰 Everything is working great! The operating system share dialog opens up and is ready to share our selected image. 
+Everything is working great! The operating system share dialog opens up and is ready to share our selected image.
 
 ## Platform differences with web
 

@@ -14,7 +14,7 @@ Expo and React Native are similar to React. You'll have to learn a new set of co
 
 <Collapsible summary="What is the difference between Expo and React Native?">
 
-Learn more about this on the [Already used React Native?](/workflow/already-used-react-native.md) page.
+Learn more about this on the [Already used React Native?](/workflow/already-used-react-native) page.
 
 </Collapsible>
 
@@ -28,13 +28,13 @@ The Expo platform is [free and open source](https://blog.expo.dev/exponent-is-fr
 
 <Collapsible summary="How do I add custom native code to my Expo managed project?">
 
-Expo Go includes the most features from the [Expo SDK](/versions/latest/). To use other native modules in a managed project, you can use [Development Builds](/development/introduction.md).
+Expo Go includes the most features from the [Expo SDK](/versions/latest/). To use other native modules in a managed project, you can use [Development Builds](/development/introduction).
 
 </Collapsible>
 
 <Collapsible summary="Can I use parts of Expo in my app that I created with React Native CLI?">
 
-Yes! All Expo tools and services work great in any React Native app. For example, you can use any part of the [Expo SDK](/versions/latest/), [expo-dev-client](/development/installation.md) and EAS Build, Submit, and Update — they work great! [Learn more about installing Expo modules in your app](/bare/installing-expo-modules.md) and [how to get set up with EAS Build](/build/introduction.md).
+Yes! All Expo tools and services work great in any React Native app. For example, you can use any part of the [Expo SDK](/versions/latest/), [expo-dev-client](/development/installation) and EAS Build, Submit, and Update — they work great! [Learn more about installing Expo modules in your app](/bare/installing-expo-modules) and [how to get set up with EAS Build](/build/introduction).
 
 </Collapsible>
 
@@ -54,4 +54,4 @@ Expo supports Android 5+ and iOS 11+.
 
 ## Up next
 
-- 👩‍💻 The time has come to write some code. Almost. First we need to install a couple tools. [Continue to "Installation"](/get-started/installation.md).
+The time has come to write some code. Almost. First, we need to install a couple tools. [Continue to "Installation"](/get-started/installation).

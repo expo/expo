@@ -30,7 +30,7 @@ Add the `expo-dev-client` library to your package.json.
 
 <InstallSection packageName="expo-development-client" cmd={["npm install expo-dev-client"]} hideBareInstructions />
 
-### 🍏 iOS
+### iOS
 
 <Tabs tabs={["SDK 45+", "SDK below 45"]}>
 
@@ -62,9 +62,9 @@ To do that, open Xcode and go to General > Deployment Info, and select an iOS ve
 
 </Tabs >
 
-### 🤖 Android
+### Android
 
-No additional changes are needed to install the package on Android. 🎉
+No additional changes are needed to install the package on Android.
 
 ## 2. Basic configuration
 
@@ -74,13 +74,13 @@ Development builds use deep links to open projects from the QR code. If you have
 
 See the [uri-scheme package](https://www.npmjs.com/package/uri-scheme) for more information.
 
-### 🍏 iOS
+### iOS
 
 <Tabs tabs={["SDK 45+/expo-modules-core@0.9.1+", "With Expo modules", "With unimodules"]}>
 
 <Tab >
 
-No additional changes are needed to configure the package on iOS. 🎉
+No additional changes are needed to configure the package on iOS.
 
 </Tab >
 
@@ -100,13 +100,13 @@ Make the following changes to allow the `expo-dev-client` library to control pro
 
 </Tabs>
 
-### 🤖 Android
+### Android
 
 <Tabs tabs={["SDK 45+/expo-modules-core@0.9.1+", "With Expo modules", "With unimodules"]}>
 
 <Tab >
 
-No additional changes are needed to configure the package on Android. 🎉
+No additional changes are needed to configure the package on Android.
 
 </Tab >
 

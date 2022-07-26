@@ -7,28 +7,28 @@ import { H2 } from '~/components/plugins/Headings';
 
 If you build your native mobile app with Expo then you can also run it directly in the browser with the CLI and universal Expo SDK. The web part of your app runs with [React Native for web](https://github.com/necolas/react-native-web) which powers massive websites and progressive web apps like [Twitter](https://mobile.twitter.com/), and [Major League Soccer](https://matchcenter.mlssoccer.com/). The Expo SDK also utilizes native browser functionality like Video, Camera, and Gestures without the need for a custom native browser.
 
-## 🔎 How does it work
+## How does it work
 
 You get a highly performant React website with progressive web app features enabled from the start. Because there is no "magical" canvas work going on in the background, you get a fully accessible website with a great lighthouse score right from the start.
 
-<H2 sidebarTitle="📱 Progressive Web Apps">
-📱 
-<a href="https://developers.google.com/web/progressive-web-apps/">
+<H2 sidebarTitle="Progressive Web Apps">
+
+<a href="https://web.dev/progressive-web-apps/">
 Progressive Web Apps
 </a>
 </H2>
 
 Expo makes it easy to create PWAs by generating web app data from your app config. You can add offline support to fully enable PWA features in your website. Run your app on a variety of different devices and reach a much wider user-base with a feature-filled PWA.
 
-- ⭐️ **Share Icons:** Automatically reuse the App Icon and Splash Screens from your mobile app!
-- 💬 **Native Features:** Use secure features like the Sharing API in your PWA.
-- 🌗 **Dark Mode:** Make your site accessible with the appearance API.
+- **Share Icons:** Automatically reuse the App Icon and Splash Screens from your mobile app!
+- **Native Features:** Use secure features like the Sharing API in your PWA.
+- **Dark Mode:** Make your site accessible with the appearance API.
 
 [Read more about building a Progressive Web App with Expo Web](../guides/progressive-web-apps.md).
 
 <!-- - Password Sharing: Expo can automatically link your native app to your website with tools like Apple App-site Association which means your users can sign-in on one platform and auto-fill on another. -->
 
-## 🎨 Highly Customizable
+## Highly Customizable
 
 You can use Expo for web with any of your favorite frameworks to create whatever experience your project calls for!
 
@@ -36,7 +36,7 @@ You can use Expo for web with any of your favorite frameworks to create whatever
 - [**Gatsby:**](https://dev.to/evanbacon/gatsby-react-native-for-web-expo-2kgc) Prerender your static-site.
 - [**Storybook:**](https://github.com/expo/examples/tree/master/with-storybook) Create and test beautiful design languages.
 
-## 🏁 Up Next
+## Up Next
 
 - Check out how to [Add Web Support to Your Project](../guides/running-in-the-browser.md#adding-web-support-to-expo-projects).
 - Learn about creating [Responsive web apps with Expo](https://blog.expo.dev/media-queries-with-react-native-for-ios-android-and-web-e0b73ed5777b).

@@ -2,7 +2,7 @@
 title: Developing With ExpoKit
 ---
 
-> 🚫 ExpoKit is deprecated and is no longer supported after SDK 38. If you need to make customizations to your Expo project, we recommend using the [bare workflow](../workflow/customizing.md) instead.
+> ExpoKit is deprecated and is no longer supported after SDK 38. If you need to make customizations to your Expo project, we recommend using the [bare workflow](../workflow/customizing.md) instead.
 
 ExpoKit is an Objective-C and Java library that allows you to use the Expo platform with a
 native iOS/Android project.
@@ -109,74 +109,77 @@ with
 
 If upgrading from SDK 32 or below:
 
-1. If you haven't already done so install `react-native-unimodules@^0.7.0` in your project (`yarn add -D react-native-unimodules@^0.7.0` or `npm install --save-dev react-native-unimodules@^0.7.0` if you prefer npm over Yarn).
-2. Remove the list of unimodules' dependencies:
-   ```ruby
-     pod 'EXAdsAdMob',
-       :path => "../node_modules/expo-ads-admob/ios"
-     pod 'EXSegment',
-       :path => "../node_modules/expo-analytics-segment/ios"
-     pod 'EXAppAuth',
-       :path => "../node_modules/expo-app-auth/ios"
-     # and so on...
-   ```
-   and instead add:
-   ```ruby
-     # Install unimodules
-     require_relative '../node_modules/react-native-unimodules/cocoapods.rb'
-     use_unimodules!
-   ```
-   This will introduce your project to autoinstallable unimodules. More information can be found on the [`react-native-unimodules` repository](https://github.com/expo/expo/tree/main/packages/react-native-unimodules).
-3. Upgrade CocoaPods to some version higher or equal 1.6. (At the moment of writing the latest version is 1.7.1, we have tested it works. You will probably need to run `gem update cocoapods`, but the exact command will depend on your setup.)
-4. Change the whole `post_install` block at the bottom of the `Podfile` to
+1.  If you haven't already done so install `react-native-unimodules@^0.7.0` in your project (`yarn add -D react-native-unimodules@^0.7.0` or `npm install --save-dev react-native-unimodules@^0.7.0` if you prefer npm over Yarn).
+2.  Remove the list of unimodules' dependencies:
+    ```ruby
+      pod 'EXAdsAdMob',
+        :path => "../node_modules/expo-ads-admob/ios"
+      pod 'EXSegment',
+        :path => "../node_modules/expo-analytics-segment/ios"
+      pod 'EXAppAuth',
+        :path => "../node_modules/expo-app-auth/ios"
+      # and so on...
+    ```
+    and instead add:
+    ```ruby
+      # Install unimodules
+      require_relative '../node_modules/react-native-unimodules/cocoapods.rb'
+      use_unimodules!
+    ```
+    This will introduce your project to autoinstallable unimodules. More information can be found on the [`react-native-unimodules` repository](https://github.com/expo/expo/tree/main/packages/react-native-unimodules).
+3.  Upgrade CocoaPods to some version higher or equal 1.6. (At the moment of writing the latest version is 1.7.1, we have tested it works. You will probably need to run `gem update cocoapods`, but the exact command will depend on your setup.)
+4.  Change the whole `post_install` block at the bottom of the `Podfile` to
 
-   ```ruby
-   post_install do |installer|
-     installer.pods_project.main_group.tab_width = '2';
-     installer.pods_project.main_group.indent_width = '2';
+    ```ruby
+    post_install do |installer|
+      installer.pods_project.main_group.tab_width = '2';
+      installer.pods_project.main_group.indent_width = '2';
 
-     installer.target_installation_results.pod_target_installation_results
-       .each do |pod_name, target_installation_result|
+      installer.target_installation_results.pod_target_installation_results
+        .each do |pod_name, target_installation_result|
 
-       if pod_name == 'ExpoKit'
+        if pod_name == 'ExpoKit'
+          target_installation_result.native_target.build_configurations.each do |config|
+            config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)']
+            config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'EX_DETACHED=1'
+
+            # Enable Google Maps support
+            config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'HAVE_GOOGLE_MAPS=1'
+            config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'HAVE_GOOGLE_MAPS_UTILS=1'
+          end
+        end
+    ```
+
+         if ['Amplitude','Analytics','AppAuth','Branch','CocoaLumberjack','FBSDKCoreKit','FBSDKLoginKit','FBSDKShareKit','GPUImage','JKBigInteger2'].include? pod_name
+           target_installation_result.native_target.build_configurations.each do |config|
+             config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '10.0'
+           end
+         end
+
+         # Can't specify this in the React podspec because we need to use those podspecs for detached
+         # projects which don't reference ExponentCPP.
+         if pod_name.start_with?('React')
+           target_installation_result.native_target.build_configurations.each do |config|
+             config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '10.0'
+             config.build_settings['HEADER_SEARCH_PATHS'] ||= ['$(inherited)']
+           end
+         end
+
+         # Build React Native with RCT_DEV enabled and RCT_ENABLE_INSPECTOR and
+         # RCT_ENABLE_PACKAGER_CONNECTION disabled
+         next unless pod_name == 'React'
          target_installation_result.native_target.build_configurations.each do |config|
            config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)']
-           config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'EX_DETACHED=1'
-
-           # Enable Google Maps support
-           config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'HAVE_GOOGLE_MAPS=1'
-           config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'HAVE_GOOGLE_MAPS_UTILS=1'
+           config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'RCT_DEV=1'
+           config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'RCT_ENABLE_INSPECTOR=0'
+           config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'ENABLE_PACKAGER_CONNECTION=0'
          end
-       end
-   ```
 
-
-        if ['Amplitude','Analytics','AppAuth','Branch','CocoaLumberjack','FBSDKCoreKit','FBSDKLoginKit','FBSDKShareKit','GPUImage','JKBigInteger2'].include? pod_name
-          target_installation_result.native_target.build_configurations.each do |config|
-            config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '10.0'
-          end
-        end
-
-        # Can't specify this in the React podspec because we need to use those podspecs for detached
-        # projects which don't reference ExponentCPP.
-        if pod_name.start_with?('React')
-          target_installation_result.native_target.build_configurations.each do |config|
-            config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '10.0'
-            config.build_settings['HEADER_SEARCH_PATHS'] ||= ['$(inherited)']
-          end
-        end
-
-        # Build React Native with RCT_DEV enabled and RCT_ENABLE_INSPECTOR and
-        # RCT_ENABLE_PACKAGER_CONNECTION disabled
-        next unless pod_name == 'React'
-        target_installation_result.native_target.build_configurations.each do |config|
-          config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)']
-          config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'RCT_DEV=1'
-          config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'RCT_ENABLE_INSPECTOR=0'
-          config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'ENABLE_PACKAGER_CONNECTION=0'
-        end
-      end
     end
+    end
+
+    ```
+
     ```
 
 If upgrading from SDK 31 or below, you'll need to refactor your `AppDelegate` class as we moved its Expo-related part to a separate `EXStandaloneAppDelegate` class owned by `ExpoKit` to simplify future upgrade processes as much as possible. As of SDK 32, your `AppDelegate` class needs to subclass `EXStandaloneAppDelegate`.

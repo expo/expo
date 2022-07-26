@@ -2,7 +2,7 @@
 title: Overview
 ---
 
-> 🚫 ExpoKit is deprecated and is no longer supported after SDK 38. If you need to make customizations to your Expo project, use [development builds on EAS Build or use `prebuild` to generate the native projects locally](../workflow/customizing.md).**
+> ExpoKit is deprecated and is no longer supported after SDK 38. If you need to make customizations to your Expo project, use [development builds on EAS Build or use `prebuild` to generate the native projects locally](../workflow/customizing.md).
 
 ExpoKit is an Objective-C and Java library that allows you to use the Expo platform and your existing Expo project as part of a larger standard native project -- one that you would normally create using Xcode, Android Studio, or `react-native init`.
 

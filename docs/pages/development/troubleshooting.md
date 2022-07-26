@@ -22,7 +22,7 @@ If you are building for iOS and getting an error that looks something like this:
   12 | import expo-dev-menu
 ```
 
-you have an outdated version of `expo-modules-autolinking` (below 0.7.x) installed as a transitive dependency in your project.
+You have an outdated version of `expo-modules-autolinking` (below 0.7.x) installed as a transitive dependency in your project.
 
 A common reason for this is installing `expo-cli` or `eas-cli` as dependencies of your project, rather than globally as we recommend; removing those packages should fix the error.
 
