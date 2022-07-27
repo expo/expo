@@ -4,7 +4,7 @@ title: TypeScript
 
 import { Terminal } from '~/ui/components/Snippet';
 
-> 💡 Example project: [with-typescript](https://github.com/expo/examples/tree/master/with-typescript)
+> Example project: [with-typescript](https://github.com/expo/examples/tree/master/with-typescript)
 
 Expo has first-class support for [TypeScript](https://www.typescriptlang.org/). The JavaScript interface of the Expo SDK is completely written in TypeScript.
 
@@ -22,7 +22,7 @@ You can now run `yarn tsc` or `npx tsc` to typecheck the project.
 
 ## Base configuration
 
-> 💡 You can disable the TypeScript setup in Expo CLI with the environment variable `EXPO_NO_TYPESCRIPT_SETUP=1`
+> You can disable the TypeScript setup in Expo CLI with the environment variable `EXPO_NO_TYPESCRIPT_SETUP=1`
 
 An Expo app's **tsconfig.json** should extend the `expo/tsconfig.base` by default. This sets the following default [compiler options][tsc-compileroptions] (which can be overwritten in your project's **tsconfig.json**):
 

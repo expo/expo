@@ -7,13 +7,20 @@
 ### 🎉 New features
 
 - Disable interactive prompts in non TTY processes. ([#18300](https://github.com/expo/expo/pull/18300) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.2.6 — 2022-07-25
+
+### 🎉 New features
+
 - Add telemetry event tracking a command run. ([#17948](https://github.com/expo/expo/pull/17948) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
 - Ensure `expo build:web` recommends running `expo export:web` in the migration warning. ([#18312](https://github.com/expo/expo/pull/18312) by [@EvanBacon](https://github.com/EvanBacon))
-
-### 💡 Others
 
 ## 0.2.5 — 2022-07-19
 

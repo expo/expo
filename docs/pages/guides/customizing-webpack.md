@@ -21,7 +21,7 @@ If you create a new Webpack config or make any changes to it you'll need to rest
 const createExpoWebpackConfigAsync = require('@expo/webpack-config');
 
 // Expo CLI will await this method so you can optionally return a promise.
-module.exports = async function(env, argv) {
+module.exports = async function (env, argv) {
   const config = await createExpoWebpackConfigAsync(env, argv);
   // If you want to add a new alias to the config.
   config.resolve.alias['moduleA'] = 'moduleB';
@@ -47,7 +47,7 @@ React Native for web uses [some advanced browser features](https://github.com/ne
 
 ### ResizeObserver
 
-👉 [Browser support](https://caniuse.com/#feat=resizeobserver)
+- [Browser support](https://caniuse.com/#feat=resizeobserver)
 
 **TL;DR:** To fully support `onLayout` install `resize-observer-polyfill`.
 

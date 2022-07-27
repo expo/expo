@@ -71,7 +71,7 @@ jobs:
         if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
       - name: 📱 Run instrumented unit tests
-        timeout-minutes: 40
+        timeout-minutes: 45
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: ${{ matrix.api-level }}
@@ -79,6 +79,7 @@ jobs:
           arch: x86_64
           force-avd-creation: false
           script: expotools android-native-unit-tests --type instrumented
+          disk-size: 2048M
       - name: 💾 Save test results
         if: always()
         uses: actions/upload-artifact@v3

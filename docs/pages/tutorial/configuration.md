@@ -17,7 +17,7 @@ After telling our designers that we need a 1242px width by 2436px height splash 
 
 <br />
 
-> 🐜 **What is this? A splash screen for ants?!** No, it's just scaled down here to fit more easily on this page 😅
+> **What is this? A splash screen for ants?!** No, it's just scaled down here to fit more easily on this page 😅
 
 Save this image to the **assets** directory inside of your project and call it **splash.png** &mdash; replace the existing file. Reload your app and you should see something like this:
 
@@ -38,7 +38,7 @@ SplashScreen.preventAutoHideAsync();
 setTimeout(SplashScreen.hideAsync, 5000);
 ```
 
-🚨 _Don't forget to remove this code when you are done testing your splash screen!_
+_Don't forget to remove this code when you are done testing your splash screen!_
 
 </Collapsible>
 

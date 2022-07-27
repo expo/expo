@@ -13,11 +13,11 @@ Expo tools try to handle smoothing over these differences between iOS, Android, 
 1. It isn't always available on web.
 2. We can't share local file URIs on web.
 
-> 🤥 It's actually technically possible in the latest versions of Chrome for Android to share files, but it's very new and not yet supported by `expo-sharing`, so we will ignore that here for now.
+> It's actually technically possible in the latest versions of Chrome for Android to share files, but it's very new and not yet supported by `expo-sharing`, so we will ignore that here for now.
 
 ## A workaround for sharing on web
 
-We are going to work around spotty support for the Web Share API and the lack of support for sharing files from our device by uploading the file to some web service and then letting the users copy the URL. 
+We are going to work around spotty support for the Web Share API and the lack of support for sharing files from our device by uploading the file to some web service and then letting the users copy the URL.
 
 To install a library to handle uploading the file for us run:
 
