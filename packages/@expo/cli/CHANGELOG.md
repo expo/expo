@@ -4,13 +4,17 @@
 
 ### 🛠 Breaking changes
 
-- Change `expo` to `expo-internal` (DO NOT USE) for `@expo/cli`. ([#17468](https://github.com/expo/expo/pull/17468) by [@EvanBacon](https://github.com/EvanBacon))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 0.1.6 — 2022-07-27
+
+### 🛠 Breaking changes
+
+- Change `expo` to `expo-internal` (DO NOT USE) for `@expo/cli`. ([#17468](https://github.com/expo/expo/pull/17468) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 0.1.4 — 2022-05-05
 

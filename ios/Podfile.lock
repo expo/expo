@@ -1949,7 +1949,7 @@ PODS:
     - ExpoModulesCore
   - EXPermissions (13.2.0):
     - ExpoModulesCore
-  - Expo (45.0.6):
+  - Expo (45.0.7):
     - ExpoModulesCore
   - ExpoCellular (4.2.0):
     - ExpoModulesCore
@@ -4332,7 +4332,7 @@ SPEC CHECKSUMS:
   boost: a7c83b31436843459a1961bfd74b96033dc77234
   Branch: 9a37f707974a128c37829033c49018b79c7e7a2d
   CocoaLumberjack: 2f44e60eb91c176d471fdba43b9e3eae6a721947
-  DoubleConversion: 831926d9b8bf8166fd87886c4abab286c2422662
+  DoubleConversion: 5189b271737e1565bdce30deb4a08d647e3f5f54
   EASClient: 93565f4d024559b75eac62bc7d50acaa354614f6
   EXAdsAdMob: 05a1a4ac070911e300d12114c4121706f8146d2d
   EXAdsFacebook: 1c5084ce46173ccbef5c3918436234ade2513bfa
@@ -4372,7 +4372,7 @@ SPEC CHECKSUMS:
   EXNetwork: 116e5ec043168904c1f24a2e96a8361063e57d26
   EXNotifications: eb9e61011ee44c8df295bbd6a44fe44a6c817808
   EXPermissions: 3dbb869e7f96a5711314f73d48ddc2f28009a7f6
-  Expo: 3df4af520db4f37f9821ba732ce9ac0dc67bb7b8
+  Expo: 6ec27de07f8e42911fbcce14f9b068dfec1c1231
   ExpoCellular: b5daa3b732c0c9841979c39988062e50e70dc053
   ExpoClipboard: e2dda22be0524595a5eeead51665f60729829123
   ExpoCrypto: d0d0f3e20875dc450b4ec88f0fb608da5c2c6c17
@@ -4416,7 +4416,7 @@ SPEC CHECKSUMS:
   FirebaseCoreDiagnostics: fd0c8490f34287229c1d6c103d3a55f81ec85712
   FirebaseInstallations: 7d1d967a307c12f1aadd76844fc321cef699b1ce
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
-  glog: 476ee3e89abb49e07f822b48323c51c57124b572
+  glog: 3d02b25ca00c2d456734d0bcff864cbc62f6ae1a
   Google-Maps-iOS-Utils: c32891ff472eaaa1fca032beedafa1a013af7875
   Google-Mobile-Ads-SDK: 05e5d68bb42a61b2e5bef336a52789785605aa22
   GoogleAppMeasurement: 71156240babd3cc6ced03e0d54816f01a880c730
@@ -4445,7 +4445,7 @@ SPEC CHECKSUMS:
   PromisesObjC: 99b6f43f9e1044bd87a95a60beff28c2c44ddb72
   Protobuf: 66e2f3b26a35e4cc379831f4ced538274ee4b923
   Quick: f58aae30d750b27918005b93d870c187353a7bf0
-  RCT-Folly: 4d8508a426467c48885f1151029bc15fa5d7b3b8
+  RCT-Folly: b9d9fe1fc70114b751c076104e52f3b1b5e5a95a
   RCTRequired: 00581111c53531e39e3c6346ef0d2c0cf52a5a37
   RCTTypeSafety: 07e03ee7800e7dd65cba8e52ad0c2edb06c96604
   React: e61f4bf3c573d0c61c56b53dc3eb1d9daf0768a0
