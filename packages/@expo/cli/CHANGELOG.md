@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Speed up native device opening for iOS and Android.
+- Speed up native device opening for iOS and Android. ([#18385](https://github.com/expo/expo/pull/18385) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 
