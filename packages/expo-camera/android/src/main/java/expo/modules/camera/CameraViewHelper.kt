@@ -109,6 +109,21 @@ object CameraViewHelper {
   }
 
   @JvmStatic
+  fun setExifData(baseExif: ExifInterface, exifMap: Map<String, Any>) {
+    for ((type, name) in exifTags) {
+      exifMap.get(name)?.let {
+        // Convert possible type to string before putting into baseExif
+        when(it::class.simpleName) {
+          "String" -> baseExif.setAttribute(name, it)
+          "Double" -> baseExif.setAttribute(name, it.toBigDecimal().toPlainString())
+          "Int" -> baseExif.setAttribute(name, it.toBigDecimal().toPlainString())
+          "Boolean" -> baseExif.setAttribute(name, it.toString())
+        }
+      }
+    }
+  }
+
+  @JvmStatic
   @Throws(IOException::class)
   fun addExifData(baseExif: ExifInterface, additionalExif: ExifInterface) {
     for (tagInfo in exifTags) {

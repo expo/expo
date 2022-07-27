@@ -35,6 +35,7 @@ private const val BASE64_KEY = "base64"
 private const val HEIGHT_KEY = "height"
 private const val WIDTH_KEY = "width"
 private const val EXIF_KEY = "exif"
+private const val ADDITIONAL_EXIF_KEY = "additionalExif"
 private const val DATA_KEY = "data"
 private const val URI_KEY = "uri"
 private const val ID_KEY = "id"
@@ -80,6 +81,12 @@ class ResolveTakenPictureAsyncTask(
         val response = Bundle()
 
         val exifInterface = ExifInterface(inputStream)
+
+        // If there are additional exif data, insert it here
+        if (options[ADDITIONAL_EXIF_KEY] != null) {
+          setExifData(exifInterface, options[ADDITIONAL_EXIF_KEY])
+        }
+
         // Get orientation of the image from mImageData via inputStream
         val orientation = exifInterface.getAttributeInt(
           ExifInterface.TAG_ORIENTATION,
