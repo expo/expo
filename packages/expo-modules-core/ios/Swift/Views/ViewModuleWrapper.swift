@@ -122,13 +122,15 @@ public final class ViewModuleWrapper: RCTViewManager, DynamicModuleWrapperProtoc
     return wrappedModuleHolder.viewManager?.getViewClass()
   }
 
+  public static let viewManagerAdapterPrefix = "ViewManagerAdapter_"
+
   /**
    Creates a subclass of `ViewModuleWrapper` in runtime. The new class overrides `moduleName` stub.
    */
   @objc
   public static func createViewModuleWrapperClass(module: ViewModuleWrapper) -> ViewModuleWrapper.Type? {
     // We're namespacing the view name so we know it uses our architecture.
-    let prefixedViewName = "ViewManagerAdapter_\(module.name())"
+    let prefixedViewName = "\(viewManagerAdapterPrefix)\(module.name())"
 
     return prefixedViewName.withCString { viewNamePtr in
       // Create a new class that inherits from `ViewModuleWrapper`. The class name passed here, doesn't work for Swift classes,

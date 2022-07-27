@@ -30,6 +30,7 @@
 
 @property (nonatomic, strong, nullable) UIView *contentView;
 
+- (void)updateProp:(nonnull NSString *)propName withValue:(nonnull id)value;
 - (nullable EXAppContext *)__injectedAppContext;
 - (nonnull NSString *)__injectedModuleName;
 

@@ -1,13 +1,58 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
-#import <react/renderer/componentregistry/ComponentDescriptorProvider.h>
-
-#import <ExpoModulesCore/EXJSIConversions.h>
 #import <ExpoModulesCore/ExpoFabricEnabledBaseView.h>
+
+#import <react/renderer/componentregistry/ComponentDescriptorProvider.h>
+#import <ExpoModulesCore/EXJSIConversions.h>
 #import <ExpoModulesCore/ExpoViewComponentDescriptor.h>
 #import <ExpoModulesCore/Swift.h>
 
 using namespace expo;
+
+namespace {
+
+id convertFollyDynamicToId(const folly::dynamic &dyn)
+{
+  // I could imagine an implementation which avoids copies by wrapping the
+  // dynamic in a derived class of NSDictionary.  We can do that if profiling
+  // implies it will help.
+
+  switch (dyn.type()) {
+    case folly::dynamic::NULLT:
+      return (id)kCFNull;
+    case folly::dynamic::BOOL:
+      return dyn.getBool() ? @YES : @NO;
+    case folly::dynamic::INT64:
+      return @(dyn.getInt());
+    case folly::dynamic::DOUBLE:
+      return @(dyn.getDouble());
+    case folly::dynamic::STRING:
+      return [[NSString alloc] initWithBytes:dyn.c_str() length:dyn.size() encoding:NSUTF8StringEncoding];
+    case folly::dynamic::ARRAY: {
+      NSMutableArray *array = [[NSMutableArray alloc] initWithCapacity:dyn.size()];
+      for (const auto &elem : dyn) {
+        id value = convertFollyDynamicToId(elem);
+        if (value) {
+          [array addObject:value];
+        }
+      }
+      return array;
+    }
+    case folly::dynamic::OBJECT: {
+      NSMutableDictionary *dict = [[NSMutableDictionary alloc] initWithCapacity:dyn.size()];
+      for (const auto &elem : dyn.items()) {
+        id key = convertFollyDynamicToId(elem.first);
+        id value = convertFollyDynamicToId(elem.second);
+        if (key && value) {
+          dict[key] = value;
+        }
+      }
+      return dict;
+    }
+  }
+}
+
+} // namespace
 
 @implementation ExpoFabricEnabledBaseView
 
@@ -37,24 +82,22 @@ using namespace expo;
 - (void)updateProps:(const facebook::react::Props::Shared &)props oldProps:(const facebook::react::Props::Shared &)oldProps
 {
   const auto &newViewProps = *std::static_pointer_cast<ExpoViewProps const>(props);
-
-  EXJavaScriptRuntime *runtime = [[self __injectedAppContext] runtime];
-  jsi::Runtime *jsiRuntime = [runtime get];
-
-  const jsi::Value &rawProps = newViewProps.getValue();
-
-  if (rawProps.isObject()) {
-    jsi::Object obj = rawProps.asObject(*jsiRuntime);
-    jsi::Value proxiedProps = obj.getProperty(*jsiRuntime, "proxiedProperties");
-
-    if (proxiedProps.isObject()) {
-      NSDictionary *obj = convertJSIValueToObjCObject(*jsiRuntime, proxiedProps, nullptr);
-
-      NSLog(@"%@", obj);
+  auto proxiedProperties = newViewProps.proxiedProperties;
+  if (proxiedProperties.isObject()) {
+    for (auto& item : proxiedProperties.items()) {
+      NSString *name = [NSString stringWithCString:item.first.c_str() encoding:NSUTF8StringEncoding];
+      id value = convertFollyDynamicToId(item.second);
+      [self updateProp:name withValue:value];
     }
   }
 
   [super updateProps:props oldProps:oldProps];
+}
+
+#pragma mark - Methods to override in Swift
+
+- (void)updateProp:(nonnull NSString *)propName withValue:(nonnull id)value
+{
 }
 
 #pragma mark - Methods to override in the class copy
