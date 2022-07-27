@@ -85,6 +85,10 @@ class DatabaseLauncher(
 
     localAssetFiles = mutableMapOf<AssetEntity, String>().apply {
       for (asset in assetEntities) {
+        if (asset.id == launchAsset.id) {
+          // we took care of this one above
+          continue
+        }
         val filename = asset.relativePath
         if (filename != null) {
           val assetFile = ensureAssetExists(asset, database, context)

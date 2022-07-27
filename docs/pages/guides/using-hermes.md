@@ -54,7 +54,7 @@ Now you can build your app through `eas build` and your app will run with Hermes
 
 When using Hermes for iOS, you may encounter the following error when building for the simulator:
 
-> ❌ `ld: building for iOS Simulator, but linking in dylib built for iOS, file '/path/to/projectName/ios/Pods/hermes-engine/destroot/Library/Frameworks/iphoneos/hermes.framework/hermes' for architecture arm64`
+> `ld: building for iOS Simulator, but linking in dylib built for iOS, file '/path/to/projectName/ios/Pods/hermes-engine/destroot/Library/Frameworks/iphoneos/hermes.framework/hermes' for architecture arm64`
 
 This is [a known issue for React Native 0.64](https://github.com/facebook/hermes/issues/468); to workaround it, you can add the following patch to your `ios/Podfile`:
 
@@ -89,8 +89,8 @@ This is [a known issue for React Native 0.64](https://github.com/facebook/hermes
 Reinstall Pods and clean Xcode build cache:
 
 <Terminal cmd={[
-  '$ npx pod-install',
-  '$ xcodebuild clean -workspace ios/{projectName}.xcworkspace -scheme {projectName}'
+'$ npx pod-install',
+'$ xcodebuild clean -workspace ios/{projectName}.xcworkspace -scheme {projectName}'
 ]} />
 
 </Collapsible>
@@ -130,7 +130,7 @@ Alternatively, you can use the JavaScript inspector from the following tools:
 - [Open Google Chrome DevTools manually](https://reactnative.dev/docs/hermes#debugging-js-on-hermes-using-google-chromes-devtools)
 - [Flipper](https://fbflipper.com/)
 
-> 💡 [Development builds](/development/introduction.md) built with `expo-dev-client` simplify this process by integrating directly with the JavaScript inspector in Hermes.
+> [Development builds](/development/introduction.md) built with `expo-dev-client` simplify this process by integrating directly with the JavaScript inspector in Hermes.
 
 ## Limitations
 

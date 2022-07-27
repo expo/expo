@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix null error in purchaseItemAsync when details argument is not passed [#18272](https://github.com/expo/expo/pull/18272)
+
 ### 💡 Others
 
 ## 13.1.0 — 2022-07-07
