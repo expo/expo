@@ -167,7 +167,7 @@ class JSIAsyncFunctionsTest {
     inlineModule {
       Name("TestModule")
       AsyncFunction("f") { ->
-        throw CodedException("Code", "Message")
+        throw CodedException("Code", "Message", null)
       }
     }
   ) { methodQueue ->

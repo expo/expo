@@ -76,4 +76,4 @@ internal inline fun JSIInteropModuleRegistry.waitForAsyncFunction(
   return global().getProperty("promiseResult")
 }
 
-class PromiseException(code: String, message: String) : CodedException(code, message)
+class PromiseException(code: String, message: String) : CodedException(code, message, null)

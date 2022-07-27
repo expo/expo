@@ -202,7 +202,7 @@ class JSIFunctionsTest {
     inlineModule {
       Name("TestModule")
       Function("f") { ->
-        throw CodedException("Code", "Message")
+        throw CodedException("Code", "Message", null)
       }
     }
   ) {
