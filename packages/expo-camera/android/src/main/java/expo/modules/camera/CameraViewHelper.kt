@@ -121,6 +121,14 @@ object CameraViewHelper {
         }
       }
     }
+
+    if (exifMap.containsKey(ExifInterface.TAG_GPS_LATITUDE) && exifMap.containsKey(ExifInterface.TAG_GPS_LONGITUDE)) {
+      baseExif.setLatLong(exifMap.get(ExifInterface.TAG_GPS_LATITUDE),
+        exifMap.get(ExifInterface.TAG_GPS_LONGITUDE));
+    }
+    if(exifMap.containsKey(ExifInterface.TAG_GPS_ALTITUDE)){
+      baseExif.setAltitude(exifMap.get(ExifInterface.TAG_GPS_ALTITUDE));
+    }
   }
 
   @JvmStatic
