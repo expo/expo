@@ -44,7 +44,7 @@ To create and share a development build with your team, you can run the followin
 
 <Terminal cmd={["$ eas build --profile development --platform android"]} cmdCopy="eas build --profile development --platform android" />
 
-To share the build with your team, direct them to the build page on https://expo.dev. There, they'll be able to download the app directly on their device.
+To share the build with your team, direct them to the build page in [Expo Dashboard](https://expo.dev/accounts/[account]/projects/[project]/builds). There, they'll be able to download the app directly on their device.
 
 </Tab>
 <Tab>
@@ -57,7 +57,7 @@ You can register an iOS device and install a provisioning profile with the follo
 Once you've registered all iOS devices you'll want to run your development build on, you can run the following to create a build ready for internal distribution:
 <Terminal cmd={["$ eas build --profile development --platform ios"]} />
 
-To share the build with your team, direct them to the build page on https://expo.dev. There, they'll be able to download the app directly on their device.
+To share the build with your team, direct them to the build page in [Expo Dashboard](https://expo.dev/accounts/[account]/projects/[project]/builds). There, they'll be able to download the app directly on their device.
 
 Note: If you register any new iOS devices, you'll need create a new development build. Learn more about [internal distribution](/build/internal-distribution).
 
