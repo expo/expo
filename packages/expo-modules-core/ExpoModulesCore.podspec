@@ -1,6 +1,6 @@
 require 'json'
 
-package = JSON.parse(File.read(File.join(__dir__, '..', 'package.json')))
+package = JSON.parse(File.read(File.join(__dir__, 'package.json')))
 
 Pod::Spec.new do |s|
   s.name           = 'ExpoModulesCore'
@@ -31,19 +31,19 @@ Pod::Spec.new do |s|
   s.dependency 'React-Core'
   s.dependency 'ReactCommon/turbomodule/core'
 
-  if !$ExpoUseSources&.include?(package['name']) && ENV['EXPO_USE_SOURCE'].to_i == 0 && File.exist?("#{s.name}.xcframework") && Gem::Version.new(Pod::VERSION) >= Gem::Version.new('1.10.0')
-    s.source_files = '**/*.h'
-    s.vendored_frameworks = "#{s.name}.xcframework"
+  if !$ExpoUseSources&.include?(package['name']) && ENV['EXPO_USE_SOURCE'].to_i == 0 && File.exist?("ios/#{s.name}.xcframework") && Gem::Version.new(Pod::VERSION) >= Gem::Version.new('1.10.0')
+    s.source_files = 'ios/**/*.h', 'common/cpp/**/*.h'
+    s.vendored_frameworks = "ios/#{s.name}.xcframework"
   else
-    s.source_files = '**/*.{h,m,mm,swift,cpp}'
+    s.source_files = 'ios/**/*.{h,m,mm,swift,cpp}', 'common/cpp/**/*.{h,cpp}'
   end
 
-  s.exclude_files = 'Tests/'
-  s.private_header_files = ['**/*+Private.h', '**/Swift.h']
+  s.exclude_files = 'ios/Tests/'
+  s.private_header_files = ['ios/**/*+Private.h', 'ios/**/Swift.h']
 
   s.test_spec 'Tests' do |test_spec|
     test_spec.dependency 'ExpoModulesTestCore'
 
-    test_spec.source_files = 'Tests/**/*.{m,swift}'
+    test_spec.source_files = 'ios/Tests/**/*.{m,swift}'
   end
 end
