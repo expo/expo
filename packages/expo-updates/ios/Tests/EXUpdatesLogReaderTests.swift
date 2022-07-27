@@ -35,7 +35,7 @@ class EXUpdatesLogReaderTests: XCTestCase {
 
     let logEntry: [String: Any] = logEntries[logEntries.count - 2]
 
-    XCTAssertTrue(logEntry["timestamp"] as? UInt == UInt(epoch.timeIntervalSince1970))
+    XCTAssertTrue(logEntry["timestamp"] as? UInt == UInt(epoch.timeIntervalSince1970) * 1000)
     XCTAssertTrue(logEntry["message"] as? String == "Test message")
     XCTAssertTrue(logEntry["code"] as? String == "NoUpdatesAvailable")
     XCTAssertTrue(logEntry["level"] as? String == "error")
@@ -44,7 +44,7 @@ class EXUpdatesLogReaderTests: XCTestCase {
     XCTAssertFalse((logEntry["stacktrace"] as? [String] ?? []).isEmpty)
 
     let logEntry2: [String: Any] = logEntries[logEntries.count - 1]
-    XCTAssertTrue(logEntry2["timestamp"] as? UInt == UInt(epoch.timeIntervalSince1970))
+    XCTAssertTrue(logEntry2["timestamp"] as? UInt == UInt(epoch.timeIntervalSince1970) * 1000)
     XCTAssertTrue(logEntry2["message"] as? String == "Warning message")
     XCTAssertTrue(logEntry2["code"] as? String == "AssetsFailedToLoad")
     XCTAssertTrue(logEntry2["level"] as? String == "warn")

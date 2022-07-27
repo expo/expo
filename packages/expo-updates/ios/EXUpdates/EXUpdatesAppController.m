@@ -13,6 +13,12 @@
 #import <ExpoModulesCore/EXDefines.h>
 #import <React/RCTReloadCommand.h>
 
+#if __has_include(<EXUpdates/EXUpdates-Swift.h>)
+#import <EXUpdates/EXUpdates-Swift.h>
+#else
+#import "EXUpdates-Swift.h"
+#endif
+
 NS_ASSUME_NONNULL_BEGIN
 
 static NSString * const EXUpdatesAppControllerErrorDomain = @"EXUpdatesAppController";
@@ -43,6 +49,8 @@ static NSString * const EXUpdatesErrorEventName = @"error";
 
 @property (nonatomic, readwrite, assign) EXUpdatesRemoteLoadStatus remoteLoadStatus;
 
+@property (nonatomic, strong) EXUpdatesLogger *logger;
+
 @end
 
 @implementation EXUpdatesAppController
@@ -56,6 +64,7 @@ static NSString * const EXUpdatesErrorEventName = @"error";
       theController = [[EXUpdatesAppController alloc] init];
     }
   });
+
   return theController;
 }
 
@@ -71,6 +80,9 @@ static NSString * const EXUpdatesErrorEventName = @"error";
     _controllerQueue = dispatch_queue_create("expo.controller.ControllerQueue", DISPATCH_QUEUE_SERIAL);
     _isStarted = NO;
     _remoteLoadStatus = EXUpdatesRemoteLoadStatusIdle;
+    _logger = [EXUpdatesLogger new];
+    [_logger info:@"EXUpdatesAppController sharedInstance created"
+             code:EXUpdatesErrorCodeNone];
   }
   return self;
 }
@@ -246,6 +258,7 @@ static NSString * const EXUpdatesErrorEventName = @"error";
 
 - (void)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask didStartLoadingUpdate:(EXUpdatesUpdate *)update
 {
+  [_logger info:@"EXUpdatesAppController appLoaderTask didStartLoadingUpdate" code:EXUpdatesErrorCodeNone updateId:[update.updateId UUIDString] assetId:nil];
   _remoteLoadStatus = EXUpdatesRemoteLoadStatusLoading;
 }
 
@@ -257,6 +270,7 @@ static NSString * const EXUpdatesErrorEventName = @"error";
     _remoteLoadStatus = EXUpdatesRemoteLoadStatusIdle;
   }
   _launcher = launcher;
+  [_logger info:@"EXUpdatesAppController appLoaderTask didFinishWithLauncher" code:EXUpdatesErrorCodeNone];
   if (self->_delegate) {
     [EXUpdatesUtils runBlockOnMainThread:^{
       [self->_delegate appController:self didStartWithSuccess:YES];
@@ -266,6 +280,7 @@ static NSString * const EXUpdatesErrorEventName = @"error";
 
 - (void)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask didFinishWithError:(NSError *)error
 {
+  [_logger error:@"EXUpdatesAppController appLoaderTask didFinishWithError" code:EXUpdatesErrorCodeUpdateFailedToLoad];
   [self _emergencyLaunchWithFatalError:error];
 }
 
