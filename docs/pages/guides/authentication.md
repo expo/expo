@@ -1968,7 +1968,7 @@ export default function App() {
         scheme: 'your.app'
         /* @end */
       }),
-      scopes: ['openid', 'user_read', 'analytics:read:games'],
+      scopes: ['user:read:email', 'analytics:read:games'],
     },
     discovery
   );
@@ -2031,7 +2031,7 @@ export default function App() {
         scheme: 'your.app'
         /* @end */
       }),
-      scopes: ['openid', 'user_read', 'analytics:read:games'],
+      scopes: ['user:read:email', 'analytics:read:games'],
     },
     discovery
   );
