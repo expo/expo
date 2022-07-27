@@ -40,7 +40,7 @@
     "@expo/code-signing-certificates": "^0.0.2",
     "@expo/config": "~6.0.23",
     "@expo/config-plugins": "~4.1.4",
-    "@expo/dev-server": "~0.1.110",
+    "@expo/dev-server": "0.1.116",
     "@expo/devcert": "^1.0.0",
     "@expo/json-file": "^8.2.35",
     "@expo/metro-config": "0.3.19",
