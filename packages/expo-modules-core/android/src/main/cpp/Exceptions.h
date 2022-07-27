@@ -4,6 +4,8 @@
 
 #include <fbjni/fbjni.h>
 
+#include <optional>
+
 namespace jni = facebook::jni;
 
 namespace expo {
@@ -20,6 +22,10 @@ public:
   static auto constexpr kJavaDescriptor = "Lexpo/modules/kotlin/exception/CodedException;";
 
   static jni::local_ref<CodedException> create(const std::string &message);
+
+  std::string getCode();
+
+  std::optional<std::string> getLocalizedMessage();
 };
 
 /**

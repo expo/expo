@@ -13,7 +13,7 @@ import expo.modules.core.interfaces.DoNotStrip
  */
 @Suppress("KotlinJniMissingFunction")
 @DoNotStrip
-class JavaScriptModuleObject {
+class JavaScriptModuleObject(val name: String) {
   // Has to be called "mHybridData" - fbjni uses it via reflection
   @DoNotStrip
   private val mHybridData = initHybrid()

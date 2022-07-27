@@ -5,7 +5,9 @@ import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.KPromiseWrapper
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.CodedException
+import expo.modules.kotlin.exception.FunctionCallException
 import expo.modules.kotlin.exception.UnexpectedException
+import expo.modules.kotlin.exception.exceptionDecorator
 import expo.modules.kotlin.jni.JavaScriptModuleObject
 import expo.modules.kotlin.types.AnyType
 import kotlinx.coroutines.launch
@@ -31,7 +33,11 @@ abstract class AsyncFunction(
       val kotlinPromise = KPromiseWrapper(bridgePromise as com.facebook.react.bridge.Promise)
       appContext.modulesQueue.launch {
         try {
-          call(args, kotlinPromise)
+          exceptionDecorator({
+            FunctionCallException(jsObject.name, name, it)
+          }) {
+            call(args, kotlinPromise)
+          }
         } catch (e: CodedException) {
           kotlinPromise.reject(e)
         } catch (e: Throwable) {
