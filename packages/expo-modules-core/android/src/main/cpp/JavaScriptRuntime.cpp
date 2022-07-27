@@ -80,8 +80,8 @@ JavaScriptRuntime::JavaScriptRuntime(
   this->runtime = std::shared_ptr<jsi::Runtime>(std::shared_ptr<jsi::Runtime>(), runtime);
 }
 
-jsi::Runtime *JavaScriptRuntime::get() {
-  return runtime.get();
+jsi::Runtime &JavaScriptRuntime::get() const {
+  return *runtime;
 }
 
 jni::local_ref<JavaScriptValue::javaobject>

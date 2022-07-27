@@ -53,7 +53,7 @@ public:
   /**
    * Returns the underlying runtime object.
    */
-  jsi::Runtime *get();
+  jsi::Runtime &get() const;
 
   /**
    * Evaluates given JavaScript source code.
