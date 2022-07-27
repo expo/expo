@@ -4,8 +4,8 @@ import wrapAnsi from 'wrap-ansi';
 
 import { installAsync } from '../../../install/installAsync';
 import * as Log from '../../../log';
-import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
+import { isInteractive } from '../../../utils/interactive';
 import { logNewSection } from '../../../utils/ora';
 import { confirmAsync } from '../../../utils/prompts';
 import { getMissingPackagesAsync, ResolvedPackage } from './getMissingPackages';
@@ -18,7 +18,7 @@ export async function ensureDependenciesAsync(
     warningMessage,
     installMessage,
     // Don't prompt in CI
-    skipPrompt = env.CI,
+    skipPrompt = !isInteractive(),
   }: {
     exp?: ExpoConfig;
     installMessage: string;

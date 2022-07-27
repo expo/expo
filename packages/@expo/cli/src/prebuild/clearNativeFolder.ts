@@ -5,7 +5,7 @@ import path from 'path';
 
 import * as Log from '../log';
 import { directoryExistsAsync } from '../utils/dir';
-import { env } from '../utils/env';
+import { isInteractive } from '../utils/interactive';
 import { logNewSection } from '../utils/ora';
 import { confirmAsync } from '../utils/prompts';
 
@@ -130,7 +130,7 @@ export async function promptToClearMalformedNativeProjectsAsync(
   if (
     // If the process is non-interactive, default to clearing the malformed native project.
     // This would only happen on re-running eject.
-    env.CI ||
+    !isInteractive() ||
     // Prompt to clear the native folders.
     (await confirmAsync({
       message: `${message}, would you like to clear the project files and reinitialize them?`,
