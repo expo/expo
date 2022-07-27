@@ -71,7 +71,7 @@ export default [
     name: 'expoCli',
     type: 'string',
     description: [
-      '**Deprecated**: Version of [expo-cli](https://www.npmjs.com/package/expo-cli) used to [prebuild](../../workflow/expo-cli/#expo-prebuild) your app. It\'s only use when prebuilding apps that use Expo SDK <=45. For newer SDKs, EAS Build will use the versioned Expo CLI. It comes with the `expo` package installed in your project ([learn more](/workflow/expo-cli)). You can opt out of using the versioned Expo CLI by setting the `EXPO_USE_GLOBAL_CLI=1` env variable in the build profile. Also, it does not have any effect on bare projects.',
+      '**Deprecated**: Version of [expo-cli](https://www.npmjs.com/package/expo-cli) used to [prebuild](../../workflow/expo-cli/#expo-prebuild) your app. It\'s only use when prebuilding apps that use Expo SDK <=45. For newer SDKs, EAS Build will use the versioned Expo CLI. It comes with the `expo` package installed in your project ([learn more](/workflow/expo-cli)). You can opt out of using the versioned Expo CLI by setting the `EXPO_USE_LOCAL_CLI=0` env variable in the build profile. Also, it does not have any effect on bare projects.',
     ],
   },
   {
