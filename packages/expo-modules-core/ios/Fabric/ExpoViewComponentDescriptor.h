@@ -10,8 +10,9 @@ namespace expo {
 
 class ExpoViewComponentDescriptor : public facebook::react::ConcreteComponentDescriptor<ExpoViewShadowNode> {
  public:
-  ExpoViewComponentDescriptor(facebook::react::ComponentDescriptorParameters const &parameters)
-    : facebook::react::ConcreteComponentDescriptor<ExpoViewShadowNode>(parameters) {}
+  ExpoViewComponentDescriptor(facebook::react::ComponentDescriptorParameters const &parameters);
+
+  facebook::react::ComponentName getComponentName() const override;
 };
 
 } // namespace expo
