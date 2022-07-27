@@ -151,6 +151,12 @@ export type CameraPictureOptions = {
    */
   exif?: boolean;
   /**
+   * Additional EXIF data to be included for the image. Only useful when exif option is set to true.
+   * @platform android
+   * @platform ios
+   */
+  additionalExif?: { [name: string]: any };
+  /**
    * A callback invoked when picture is saved. If set, the promise of this method will resolve immediately with no data after picture is captured.
    * The data that it should contain will be passed to this callback. If displaying or processing a captured photo right after taking it
    * is not your case, this callback lets you skip waiting for it to be saved.
