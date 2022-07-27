@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 
 import { Log } from '../log';
-import { env } from '../utils/env';
+import { isInteractive } from '../utils/interactive';
 
 /** Log the device argument to use for the next run: `Using --device foobar` */
 export function logDeviceArgument(id: string) {
@@ -11,7 +11,7 @@ export function logDeviceArgument(id: string) {
 export function logProjectLogsLocation() {
   Log.log(
     chalk`\n› Logs for your project will appear below.${
-      env.CI ? '' : chalk.dim(` Press Ctrl+C to exit.`)
+      isInteractive() ? chalk.dim(` Press Ctrl+C to exit.`) : ''
     }`
   );
 }

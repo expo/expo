@@ -9,10 +9,8 @@ jest.mock('../AppleDevice', () => ({
   runOnDevice: jest.fn(async () => {}),
 }));
 
-jest.mock('../../../../utils/env', () => ({
-  env: {
-    CI: false,
-  },
+jest.mock('../../../../utils/interactive', () => ({
+  isInteractive: jest.fn(() => true),
 }));
 
 const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
