@@ -12,6 +12,7 @@ class ExpoViewComponentDescriptor : public facebook::react::ConcreteComponentDes
  public:
   ExpoViewComponentDescriptor(facebook::react::ComponentDescriptorParameters const &parameters);
 
+  facebook::react::ComponentHandle getComponentHandle() const override;
   facebook::react::ComponentName getComponentName() const override;
 };
 

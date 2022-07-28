@@ -8,6 +8,10 @@ ExpoViewComponentDescriptor::ExpoViewComponentDescriptor(facebook::react::Compon
   : facebook::react::ConcreteComponentDescriptor<ExpoViewShadowNode>(parameters) {
 }
 
+facebook::react::ComponentHandle ExpoViewComponentDescriptor::getComponentHandle() const {
+  return reinterpret_cast<facebook::react::ComponentHandle>(getComponentName());
+}
+
 facebook::react::ComponentName ExpoViewComponentDescriptor::getComponentName() const {
   return std::static_pointer_cast<std::string const>(this->flavor_)->c_str();
 }

@@ -72,9 +72,10 @@ id convertFollyDynamicToId(const folly::dynamic &dyn)
 + (facebook::react::ComponentDescriptorProvider)componentDescriptorProvider
 {
   auto flavor = std::make_shared<std::string const>([NSStringFromClass([self class]) UTF8String]);
+  auto componentName = facebook::react::ComponentName{flavor->c_str()};
   return facebook::react::ComponentDescriptorProvider {
-    expo::ExpoViewComponentDescriptor::ConcreteShadowNode::Handle(),
-    facebook::react::ComponentName{flavor->c_str()},
+    reinterpret_cast<facebook::react::ComponentHandle>(componentName),
+    componentName,
     flavor,
     &facebook::react::concreteComponentDescriptorConstructor<expo::ExpoViewComponentDescriptor>
   };
