@@ -11,7 +11,7 @@ export default [
     enum: ['local', 'remote'],
     description: [
       'The source of credentials used to sign build artifacts.',
-      ' - `local` - if you want to provide your own `credentials.json` file. ([learn more on this here](/app-signing/local-credentials)).',
+      ' - `local` - if you want to provide your own `credentials.json` file. ([Learn more on this here](/app-signing/local-credentials).)',
       ' - `remote` - if you want to use the credentials managed by EAS (this is the default option).'
     ],
   },
@@ -71,7 +71,7 @@ export default [
     name: 'expoCli',
     type: 'string',
     description: [
-      'Version of [expo-cli](https://www.npmjs.com/package/expo-cli) used to [prebuild](../../workflow/expo-cli/#expo-prebuild) your app. It does not have any effect on bare projects.',
+      '**Deprecated**: Version of [expo-cli](https://www.npmjs.com/package/expo-cli) used to [prebuild](../../workflow/expo-cli/#expo-prebuild) your app. It only affects managed projects on Expo SDK 45 and lower. For newer SDKs, EAS Build will use the versioned Expo CLI. It comes with the `expo` package installed in your project ([learn more](/workflow/expo-cli)). You can opt out of using the versioned Expo CLI by setting the `EXPO_USE_LOCAL_CLI=0` env variable in the build profile.',
     ],
   },
   {
