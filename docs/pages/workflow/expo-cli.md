@@ -44,6 +44,16 @@ You will find a list of all commands derived from the latest version of Expo CLI
 
 > Based on `expo-cli` v5.2.0
 
+## Autocomplete
+
+You can get IDE-style autocompletions for Expo with <a href="https://fig.io/" target="_blank"><img src="https://fig.io/badges/Logo.svg" width="15" height="15"/></a> [Fig](https://fig.io/). It works in bash, zsh, and fish.
+
+To install, run:
+
+```shell
+brew install fig
+```
+
 ---
 
 ### Core
