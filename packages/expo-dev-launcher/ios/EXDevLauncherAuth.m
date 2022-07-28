@@ -115,4 +115,19 @@ RCT_EXPORT_METHOD(getAuthSchemeAsync:(RCTPromiseResolveBlock)resolve
   }
 }
 
+RCT_EXPORT_METHOD(setSessionAsync:(NSString *)session
+                   resolver:(RCTPromiseResolveBlock)resolve
+                   rejecter:(RCTPromiseRejectBlock)reject)
+ {
+   [[NSUserDefaults standardUserDefaults] setObject:session forKey:@"expo-session-secret"];
+   resolve(nil);
+ }
+
+ RCT_EXPORT_METHOD(restoreSessionAsync:(RCTPromiseResolveBlock)resolve
+                   rejecter:(RCTPromiseRejectBlock)reject)
+ {
+   NSString *session = [[NSUserDefaults standardUserDefaults] objectForKey:@"expo-session-secret"];
+   resolve(session);
+ }
+
 @end
