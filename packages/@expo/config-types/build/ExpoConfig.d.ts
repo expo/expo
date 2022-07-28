@@ -42,7 +42,7 @@ export interface ExpoConfig {
      * 'android.versionCode'/'ios.buildNumber' or to `{"policy": "appVersion"}` to use just 'version' field.
      */
     runtimeVersion?: string | {
-        policy: 'nativeVersion' | 'sdkVersion' | 'appVersion';
+        policy: RuntimeVersionPolicy;
     };
     /**
      * Your app version. In addition to this field, you'll also use `ios.buildNumber` and `android.versionCode` — read more about how to version your app [here](https://docs.expo.dev/distribution/app-stores/#versioning-your-app). On iOS this corresponds to `CFBundleShortVersionString`, and on Android, this corresponds to `versionName`. The required format can be found [here](https://developer.apple.com/documentation/bundleresources/information_property_list/cfbundleshortversionstring).
@@ -488,7 +488,7 @@ export interface IOS {
      * to `{"policy": "appVersion"}` to use just 'version' field.
      */
     runtimeVersion?: string | {
-        policy: 'nativeVersion' | 'sdkVersion' | 'appVersion';
+        policy: RuntimeVersionPolicy;
     };
 }
 /**
@@ -730,7 +730,7 @@ export interface Android {
      * to `{"policy": "appVersion"}` to use just 'version' field.
      */
     runtimeVersion?: string | {
-        policy: 'nativeVersion' | 'sdkVersion' | 'appVersion';
+        policy: RuntimeVersionPolicy;
     };
 }
 export interface AndroidIntentFiltersData {
@@ -877,3 +877,4 @@ export interface PublishHook {
     };
     [k: string]: any;
 }
+export declare type RuntimeVersionPolicy = 'sdkVersion' | 'nativeVersion' | 'appVersion';
