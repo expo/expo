@@ -12,10 +12,13 @@ import com.facebook.react.ReactActivityDelegate
 import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactRootView
 import com.facebook.react.bridge.ReactContext
+
+import expo.modules.core.utilities.EmulatorUtilities
 import expo.modules.devlauncher.koin.DevLauncherKoinComponent
 import expo.modules.devlauncher.splashscreen.DevLauncherSplashScreen
 import expo.modules.devlauncher.splashscreen.DevLauncherSplashScreenProvider
 import expo.modules.devmenu.DevMenuManager
+
 import org.koin.core.component.inject
 
 const val SEARCH_FOR_ROOT_VIEW_INTERVAL = 20L
@@ -84,7 +87,7 @@ class DevLauncherActivity : ReactActivity(), ReactInstanceManager.ReactInstanceE
   }
 
   private val isSimulator
-    get() = Build.FINGERPRINT.contains("vbox") || Build.FINGERPRINT.contains("generic")
+    get() = EmulatorUtilities.isRunningOnEmulator()
 
   private fun searchForRootView() {
     if (rootView != null) {
