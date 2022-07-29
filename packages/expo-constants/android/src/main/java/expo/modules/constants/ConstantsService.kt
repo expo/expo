@@ -77,7 +77,7 @@ open class ConstantsService(private val context: Context) : InternalModule, Cons
 
   override fun getDeviceYearClass() = YearClass.get(context)
 
-  override fun getIsDevice() = !isRunningOnEmulator
+  override fun getIsDevice() = !EmulatorUtilities.isRunningOnEmulator()
 
   override fun getStatusBarHeight() = statusBarHeightInternal
 
