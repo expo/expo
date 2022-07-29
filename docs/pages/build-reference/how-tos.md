@@ -18,7 +18,7 @@ There are three EAS Build-specific npm hooks that you can set in your package.js
   - iOS - runs after `yarn install` and `pod install`.
 - `eas-build-on-success` - this hook is triggered at the end of the build process if the build was successful.
 - `eas-build-on-error` - this hook is triggered at the end of the build process if the build failed.
-- `eas-build-on-success` - this hook is triggered at the end of the build process. You can check the build's status with the `EAS_BUILD_STATUS` environment variable. It's either `finished` or `errored`.
+- `eas-build-on-complete` - this hook is triggered at the end of the build process. You can check the build's status with the `EAS_BUILD_STATUS` environment variable. It's either `finished` or `errored`.
 
 This is an example of how your package.json might look like:
 
