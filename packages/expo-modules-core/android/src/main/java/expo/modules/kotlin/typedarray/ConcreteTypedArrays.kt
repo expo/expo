@@ -9,8 +9,8 @@ private inline fun AnyTypedArray.checkIfInRange(index: Int) {
   }
 }
 
-class Int8Array(private val rawArray: JavaScriptTypedArray)
-  : AnyTypedArray by rawArray, GenericTypedArray<Byte> {
+class Int8Array(private val rawArray: JavaScriptTypedArray) :
+  AnyTypedArray by rawArray, GenericTypedArray<Byte> {
   override operator fun get(index: Int): Byte {
     checkIfInRange(index)
     return readByte(index)
@@ -22,8 +22,8 @@ class Int8Array(private val rawArray: JavaScriptTypedArray)
   }
 }
 
-class Int16Array(private val rawArray: JavaScriptTypedArray)
-  : AnyTypedArray by rawArray, GenericTypedArray<Short> {
+class Int16Array(private val rawArray: JavaScriptTypedArray) :
+  AnyTypedArray by rawArray, GenericTypedArray<Short> {
   override operator fun get(index: Int): Short {
     checkIfInRange(index)
     return read2Byte(index * 2)
@@ -35,8 +35,8 @@ class Int16Array(private val rawArray: JavaScriptTypedArray)
   }
 }
 
-class Int32Array(private val rawArray: JavaScriptTypedArray)
-  : AnyTypedArray by rawArray, GenericTypedArray<Int> {
+class Int32Array(private val rawArray: JavaScriptTypedArray) :
+  AnyTypedArray by rawArray, GenericTypedArray<Int> {
   override operator fun get(index: Int): Int {
     checkIfInRange(index)
     return read4Byte(index * 4)
@@ -48,8 +48,8 @@ class Int32Array(private val rawArray: JavaScriptTypedArray)
   }
 }
 
-class Uint8Array(private val rawArray: JavaScriptTypedArray)
-  : AnyTypedArray by rawArray, GenericTypedArray<UByte> {
+class Uint8Array(private val rawArray: JavaScriptTypedArray) :
+  AnyTypedArray by rawArray, GenericTypedArray<UByte> {
   override operator fun get(index: Int): UByte {
     checkIfInRange(index)
     return readByte(index).toUByte()
@@ -61,8 +61,8 @@ class Uint8Array(private val rawArray: JavaScriptTypedArray)
   }
 }
 
-class Uint8ClampedArray(private val rawArray: JavaScriptTypedArray)
-  : AnyTypedArray by rawArray, GenericTypedArray<UByte> {
+class Uint8ClampedArray(private val rawArray: JavaScriptTypedArray) :
+  AnyTypedArray by rawArray, GenericTypedArray<UByte> {
   override operator fun get(index: Int): UByte {
     checkIfInRange(index)
     return readByte(index).toUByte()
@@ -74,8 +74,8 @@ class Uint8ClampedArray(private val rawArray: JavaScriptTypedArray)
   }
 }
 
-class Uint16Array(private val rawArray: JavaScriptTypedArray)
-  : AnyTypedArray by rawArray, GenericTypedArray<UShort> {
+class Uint16Array(private val rawArray: JavaScriptTypedArray) :
+  AnyTypedArray by rawArray, GenericTypedArray<UShort> {
   override operator fun get(index: Int): UShort {
     checkIfInRange(index)
     return read2Byte(index * 2).toUShort()
@@ -87,8 +87,8 @@ class Uint16Array(private val rawArray: JavaScriptTypedArray)
   }
 }
 
-class Uint32Array(private val rawArray: JavaScriptTypedArray)
-  : AnyTypedArray by rawArray, GenericTypedArray<UInt> {
+class Uint32Array(private val rawArray: JavaScriptTypedArray) :
+  AnyTypedArray by rawArray, GenericTypedArray<UInt> {
   override operator fun get(index: Int): UInt {
     checkIfInRange(index)
     return read4Byte(index * 4).toUInt()
@@ -100,8 +100,8 @@ class Uint32Array(private val rawArray: JavaScriptTypedArray)
   }
 }
 
-class Float32Array(private val rawArray: JavaScriptTypedArray)
-  : AnyTypedArray by rawArray, GenericTypedArray<Float> {
+class Float32Array(private val rawArray: JavaScriptTypedArray) :
+  AnyTypedArray by rawArray, GenericTypedArray<Float> {
   override operator fun get(index: Int): Float {
     checkIfInRange(index)
     return readFloat(index * 4)
@@ -113,8 +113,8 @@ class Float32Array(private val rawArray: JavaScriptTypedArray)
   }
 }
 
-class Float64Array(private val rawArray: JavaScriptTypedArray)
-  : AnyTypedArray by rawArray, GenericTypedArray<Double> {
+class Float64Array(private val rawArray: JavaScriptTypedArray) :
+  AnyTypedArray by rawArray, GenericTypedArray<Double> {
 
   override operator fun get(index: Int): Double {
     checkIfInRange(index)
@@ -127,8 +127,8 @@ class Float64Array(private val rawArray: JavaScriptTypedArray)
   }
 }
 
-class BigInt64Array(private val rawArray: JavaScriptTypedArray)
-  : AnyTypedArray by rawArray, GenericTypedArray<Long> {
+class BigInt64Array(private val rawArray: JavaScriptTypedArray) :
+  AnyTypedArray by rawArray, GenericTypedArray<Long> {
   override operator fun get(index: Int): Long {
     checkIfInRange(index)
     return read8Byte(index * 8)
@@ -140,8 +140,8 @@ class BigInt64Array(private val rawArray: JavaScriptTypedArray)
   }
 }
 
-class BigUint64Array(private val rawArray: JavaScriptTypedArray)
-  : AnyTypedArray by rawArray, GenericTypedArray<ULong> {
+class BigUint64Array(private val rawArray: JavaScriptTypedArray) :
+  AnyTypedArray by rawArray, GenericTypedArray<ULong> {
   override operator fun get(index: Int): ULong {
     checkIfInRange(index)
     return read8Byte(index * 8).toULong()

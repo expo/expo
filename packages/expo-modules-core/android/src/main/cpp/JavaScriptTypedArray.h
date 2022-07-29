@@ -2,7 +2,7 @@
 
 #include "TypedArray.h"
 #include "JavaScriptObject.h"
-#include "JavaScriptRuntime.h"
+#include "WeakRuntimeHolder.h"
 
 #include <fbjni/fbjni.h>
 #include <fbjni/ByteBuffer.h>
@@ -11,6 +11,8 @@
 #include <memory>
 
 namespace expo {
+
+class JavaScriptRuntime;
 
 namespace jni = facebook::jni;
 namespace jsi = facebook::jsi;
@@ -25,6 +27,11 @@ public:
 
   JavaScriptTypedArray(
     std::weak_ptr<JavaScriptRuntime> runtime,
+    std::shared_ptr<jsi::Object> jsObject
+  );
+
+  JavaScriptTypedArray(
+    WeakRuntimeHolder runtime,
     std::shared_ptr<jsi::Object> jsObject
   );
 

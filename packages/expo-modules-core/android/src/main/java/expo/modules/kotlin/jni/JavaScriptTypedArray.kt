@@ -25,8 +25,8 @@ enum class TypedArrayKind(val value: Int = nextValue()) {
 
 @Suppress("KotlinJniMissingFunction")
 @DoNotStrip
-class JavaScriptTypedArray @DoNotStrip constructor(hybridData: HybridData)
-  : JavaScriptObject(hybridData), AnyTypedArray {
+class JavaScriptTypedArray @DoNotStrip constructor(hybridData: HybridData) :
+  JavaScriptObject(hybridData), AnyTypedArray {
 
   override val kind: TypedArrayKind by lazy {
     val rawKind = getRawKind()

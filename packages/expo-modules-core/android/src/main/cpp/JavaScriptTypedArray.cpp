@@ -1,13 +1,25 @@
 #include "JavaScriptTypedArray.h"
 
+#include "JavaScriptRuntime.h"
+
 namespace expo {
+
+JavaScriptTypedArray::JavaScriptTypedArray(
+  WeakRuntimeHolder runtime,
+  std::shared_ptr<jsi::Object> jsObject
+) : jni::HybridClass<JavaScriptTypedArray, JavaScriptObject>(std::move(runtime),
+                                                             std::move(jsObject)) {
+  jsi::Runtime &jsRuntime = runtimeHolder.getJSRuntime();
+  typedArrayWrapper = std::make_shared<expo::TypedArray>(jsRuntime, *get());
+  rawPointer = static_cast<char *>(typedArrayWrapper->getRawPointer(jsRuntime));
+}
 
 JavaScriptTypedArray::JavaScriptTypedArray(
   std::weak_ptr<JavaScriptRuntime> runtime,
   std::shared_ptr<jsi::Object> jsObject
 ) : jni::HybridClass<JavaScriptTypedArray, JavaScriptObject>(std::move(runtime),
                                                              std::move(jsObject)) {
-  jsi::Runtime &jsRuntime = *runtimeHolder.lock()->get();
+  jsi::Runtime &jsRuntime = runtimeHolder.getJSRuntime();
   typedArrayWrapper = std::make_shared<expo::TypedArray>(jsRuntime, *get());
   rawPointer = static_cast<char *>(typedArrayWrapper->getRawPointer(jsRuntime));
 }
@@ -36,15 +48,12 @@ void JavaScriptTypedArray::registerNatives() {
 }
 
 int JavaScriptTypedArray::getRawKind() {
-  auto runtime = runtimeHolder.lock();
-  assert(runtime != nullptr);
-  return (int) typedArrayWrapper->getKind(*runtime->get());
+  jsi::Runtime &jsRuntime = runtimeHolder.getJSRuntime();
+  return (int) typedArrayWrapper->getKind(jsRuntime);
 }
 
 jni::local_ref<jni::JByteBuffer> JavaScriptTypedArray::toDirectBuffer() {
-  auto runtime = runtimeHolder.lock();
-  assert(runtime != nullptr);
-  jsi::Runtime &jsRuntime = *runtime->get();
+  jsi::Runtime &jsRuntime = runtimeHolder.getJSRuntime();
 
   auto byteLength = typedArrayWrapper->byteLength(jsRuntime);
   auto byteOffset = typedArrayWrapper->byteOffset(jsRuntime);

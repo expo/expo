@@ -77,6 +77,7 @@ public:
   jni::local_ref<jni::JArrayClass<JavaScriptValue::javaobject>> getArray();
 
   jni::local_ref<JavaScriptTypedArray::javaobject> getTypedArray();
+
 private:
   friend HybridBase;
 

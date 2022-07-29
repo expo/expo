@@ -129,10 +129,7 @@ bool JavaScriptValue::isObject() {
 
 bool JavaScriptValue::isTypedArray() {
   if (jsValue->isObject()) {
-    auto runtime = runtimeHolder.lock();
-    assert(runtime != nullptr);
-
-    jsi::Runtime &jsRuntime = *runtime->get();
+    jsi::Runtime &jsRuntime = runtimeHolder.getJSRuntime();
     return expo::isTypedArray(jsRuntime, jsValue->getObject(jsRuntime));
   }
   return false;
@@ -187,9 +184,8 @@ jni::local_ref<jstring> JavaScriptValue::jniGetString() {
 }
 
 jni::local_ref<JavaScriptTypedArray::javaobject> JavaScriptValue::getTypedArray() {
-  auto runtime = runtimeHolder.lock();
-  assert(runtime != nullptr);
-  auto jsObject = std::make_shared<jsi::Object>(jsValue->getObject(*runtime->get()));
+  auto &jsRuntime = runtimeHolder.getJSRuntime();
+  auto jsObject = std::make_shared<jsi::Object>(jsValue->getObject(jsRuntime));
   return JavaScriptTypedArray::newObjectCxxArgs(runtimeHolder, jsObject);
 }
 } // namespace expo
