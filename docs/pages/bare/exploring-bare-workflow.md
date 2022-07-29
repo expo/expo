@@ -17,7 +17,7 @@ If you’re just starting a new bare project then you should initialize it with 
 
 ### Existing React Native apps
 
-If you already have a React Native project that has been created with `react-native init`, `ignite init`, or another similar tool, we'll need to install and configure the `expo` package to enable you to use packages from the Expo SDK. For this, we will run `npx install-expo-modules`.
+If you already have a React Native project that has been created with `react-native init`, `ignite init`, or another similar tool, we'll need to install and configure the `expo` package to enable you to use packages from the Expo SDK. For this, we will run `npx install expo-modules`.
 
 ### Existing Expo managed workflow apps
 
