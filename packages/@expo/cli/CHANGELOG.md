@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Disable interactive prompts in non TTY processes. ([#18300](https://github.com/expo/expo/pull/18300) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

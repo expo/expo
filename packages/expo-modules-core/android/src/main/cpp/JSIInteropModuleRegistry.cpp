@@ -59,7 +59,7 @@ void JSIInteropModuleRegistry::installJSI(
 
 void JSIInteropModuleRegistry::installJSIForTests() {
   runtimeHolder = std::make_shared<JavaScriptRuntime>();
-  jsi::Runtime &jsiRuntime = *runtimeHolder->get();
+  jsi::Runtime &jsiRuntime = runtimeHolder->get();
 
   auto expoModules = std::make_shared<ExpoModulesHostObject>(this);
   auto expoModulesObject = jsi::Object::createFromHostObject(jsiRuntime, expoModules);
