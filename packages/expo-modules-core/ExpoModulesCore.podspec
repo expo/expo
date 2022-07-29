@@ -48,7 +48,12 @@ Pod::Spec.new do |s|
     s.source_files = 'ios/**/*.{h,m,mm,swift,cpp}', 'common/cpp/**/*.{h,cpp}'
   end
 
-  s.exclude_files = 'ios/Tests/'
+  exclude_files = ['ios/Tests/']
+  if !fabric_enabled
+    exclude_files.append('ios/Fabric/')
+  end
+  s.exclude_files = exclude_files
+
   s.private_header_files = ['ios/**/*+Private.h', 'ios/**/Swift.h']
 
   s.test_spec 'Tests' do |test_spec|
