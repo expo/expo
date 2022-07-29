@@ -6,6 +6,8 @@ You can access this documentation online at https://docs.expo.dev/. It's built u
 
 > **Contributors:** Please make sure that you edit the docs in the `pages/versions/unversioned` directory if you want your changes to apply to the next SDK version too!
 
+> If you are looking for Expo Documentation Writing Style guidelines, please refer [Expo Documentation Style Guide](https://github.com/expo/expo/blob/main/guides/Expo%20Documentation%20Writing%20Style%20Guide.md).
+
 ## Running Locally
 
 Download the copy of this repository.
@@ -253,6 +255,7 @@ import { Tab, Tabs } from '~/components/plugins/Tabs';
 </Tab>
 </Tabs>
 ```
+
 n.b. The components should not be indented or they will not be parsed correctly.
 
 ### Excluding pages from Docsearch

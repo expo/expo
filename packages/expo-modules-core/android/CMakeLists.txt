@@ -12,13 +12,16 @@ if (${NATIVE_DEBUG})
 endif ()
 
 set(SRC_DIR ${CMAKE_SOURCE_DIR}/src)
+set(COMMON_DIR ${CMAKE_SOURCE_DIR}/../common/cpp)
 file(GLOB sources_android "${SRC_DIR}/main/cpp/*.cpp")
+file(GLOB common_sources "${COMMON_DIR}/*.cpp")
 
 # shared
 
 add_library(
         ${PACKAGE_NAME}
         SHARED
+        ${common_sources}
         ${sources_android}
 )
 
@@ -51,7 +54,8 @@ target_include_directories(
         "${BUILD_DIR}/third-party-ndk/boost/boost_${BOOST_VERSION}"
         "${BUILD_DIR}/third-party-ndk/double-conversion"
         "${BUILD_DIR}/third-party-ndk/folly"
-        ${libfbjni_include_DIRS}
+        "${libfbjni_include_DIRS}"
+        "${COMMON_DIR}"
 )
 
 # find libraries

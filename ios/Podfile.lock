@@ -3033,7 +3033,7 @@ DEPENDENCIES:
   - ExpoLinearGradient (from `../packages/expo-linear-gradient/ios`)
   - ExpoLocalization (from `../packages/expo-localization/ios`)
   - ExpoMailComposer (from `../packages/expo-mail-composer/ios`)
-  - ExpoModulesCore (from `../packages/expo-modules-core/ios`)
+  - ExpoModulesCore (from `../packages/expo-modules-core`)
   - ExpoModulesTestCore (from `../packages/expo-modules-test-core/ios`)
   - ExpoRandom (from `../packages/expo-random/ios`)
   - ExpoSystemUI (from `../packages/expo-system-ui/ios`)
@@ -3891,7 +3891,7 @@ EXTERNAL SOURCES:
   ExpoMailComposer:
     :path: "../packages/expo-mail-composer/ios"
   ExpoModulesCore:
-    :path: "../packages/expo-modules-core/ios"
+    :path: "../packages/expo-modules-core"
   ExpoModulesTestCore:
     :path: "../packages/expo-modules-test-core/ios"
   ExpoRandom:
@@ -4400,7 +4400,7 @@ SPEC CHECKSUMS:
   ExpoLinearGradient: 1a3af07c6dab3c612967a294836df9ae717431df
   ExpoLocalization: 63204f4b9d4f653469d266332ceaa6c6ac8a305d
   ExpoMailComposer: 49d37f2c7b0da7e7e4a0d1371c55b3c8302178cd
-  ExpoModulesCore: 8303cc952788be09fc6eab62815d257016ae6dec
+  ExpoModulesCore: 3b1f7ef6c4b6cfdb0258aea75e2b906cbff60420
   ExpoModulesTestCore: 2e17c4bd60381d996f5dc78b65172241e81eea59
   ExpoRandom: f9f1faa299a40733867f344d6b7bfa2d1f4ab04d
   ExpoSystemUI: 9f550a8055e315f7b0c4da208de27e45fe7da0fb

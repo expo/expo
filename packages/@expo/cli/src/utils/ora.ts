@@ -3,6 +3,7 @@ import oraReal, { Ora } from 'ora';
 
 // import * as Log from '../log';
 import { env } from './env';
+import { isInteractive } from './interactive';
 
 const logReal = console.log;
 const infoReal = console.info;
@@ -23,7 +24,7 @@ export function getAllSpinners() {
  */
 export function ora(options?: oraReal.Options | string): oraReal.Ora {
   const inputOptions = typeof options === 'string' ? { text: options } : options || {};
-  const disabled = env.CI || env.EXPO_DEBUG;
+  const disabled = !isInteractive() || env.EXPO_DEBUG;
   const spinner = oraReal({
     // Ensure our non-interactive mode emulates CI mode.
     isEnabled: !disabled,
