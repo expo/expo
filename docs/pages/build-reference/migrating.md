@@ -32,8 +32,8 @@ This often results in massive reductions in app size; managed apps built with EA
 
 ### Only files in your project folder that are not ignored in Git are uploaded to the build server
 
- EAS Build builds your app like other CI services — in short, the entire project is uploaded securely to the cloud, then it is downloaded by a build server, the dependencies are installed, and the build is run ([learn more](/build-reference/ios-builds)). Everything needed to build your app must be included in the project that is uploaded. The default mechanism for packaging your project is roughly equivalent to `git clone --depth 1`, and so anything that is in your `.gitignore` will not be uploaded (learn more in ["How projects are uploaded to EAS Build"](https://expo.fyi/eas-build-archive)).
- 
+EAS Build builds your app like other CI services — in short, the entire project is uploaded securely to the cloud, then it is downloaded by a build server, the dependencies are installed, and the build is run ([learn more](/build-reference/ios-builds)). Everything needed to build your app must be included in the project that is uploaded. The default mechanism for packaging your project is roughly equivalent to `git clone --depth 1`, and so anything that is in your `.gitignore` will not be uploaded (learn more in ["How projects are uploaded to EAS Build"](https://expo.fyi/eas-build-archive)).
+
 Developers often run into this with their "Google Services File", which they reference in their **app.json** / **app.config.js** but ignore in Git. If anything in your project is ignored in Git but necessary for a successful build, you can either remove it from `.gitignore` and commit it, or [encode with base64 and store in EAS Secrets, then decode at build time](https://github.com/expo/fyi/blob/main/eas-build-archive.md#how-can-i-upload-files-to-eas-build-if-they-are-gitignored).
 
 ### The `--config` flag is not supported
@@ -67,6 +67,8 @@ Only the second purpose applies with the new build system. All assets referenced
 
 ### Custom `"main"` entry point in **package.json** is not yet supported
 
+> Support for custom entry points is available in SDK +47
+
 If your app depends on a custom `"main"` entry point, you will need to remove that field from **package.json** and then create **index.js** in the root of your project and use [registerRootComponent](/versions/latest/sdk/register-root-component/) to register your root component. For example, if your app root component lives in **src/App.tsx**, your **index.js** should look like the following:
 
 ```js
@@ -75,8 +77,6 @@ import App from './src/App';
 
 registerRootComponent(App);
 ```
-
-Support for custom entry points is in progress and is coming soon.
 
 ### Monorepos may require additional setup
 
