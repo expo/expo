@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- Update docs to remove mentions of `expo start:web`.
+- Update docs to remove mentions of `expo start:web`. ([#18419](https://github.com/expo/expo/pull/18419) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 11.0.0 — 2022-07-07
 
