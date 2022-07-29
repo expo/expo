@@ -5,13 +5,15 @@ public class ExpoFabricView: ExpoFabricEnabledBaseView {
   weak var appContext: AppContext? { __injectedAppContext() }
   lazy var moduleName: String = __injectedModuleName()
   lazy var moduleHolder: ModuleHolder? = appContext?.moduleRegistry.get(moduleHolderForName: moduleName)
+  lazy var legacyViewManager = appContext?.legacyModuleRegistry?.getAllViewManagers()
+                                 .filter { $0.viewName() == moduleName }.first
   lazy var viewManagerPropDict: [String: AnyViewProp]? = moduleHolder?.viewManager?.propsDict()
 
   @objc
   public init() {
     super.init(frame: .zero)
 
-    guard let view = moduleHolder?.definition.viewManager?.createView() else {
+    guard let view = moduleHolder?.definition.viewManager?.createView() ?? legacyViewManager?.view() else {
       fatalError()
     }
     self.contentView = view
@@ -46,11 +48,16 @@ public class ExpoFabricView: ExpoFabricEnabledBaseView {
   // MARK - overrides for ExpoFabricEnabledBaseView
 
   override public func updateProp(_ propName: String, withValue value: Any) {
-    if let view = self.contentView, let prop = viewManagerPropDict?[propName] {
+    guard let view = self.contentView else {
+      return
+    }
+    if let _ = moduleHolder, let prop = viewManagerPropDict?[propName] {
       // TODO: @tsapeta: Figure out better way to rethrow errors from here.
       // Adding `throws` keyword to the function results in different
       // method signature in Objective-C. Maybe just call `RCTLogError`?
       try? prop.set(value: value, onView: view)
+    } else if let _ = legacyViewManager {
+      legacyViewManager?.updateProp(propName, withValue: value, on: view)
     }
   }
 }

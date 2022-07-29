@@ -406,6 +406,13 @@ RCT_EXPORT_METHOD(callMethod:(NSString *)moduleName methodNameOrKey:(id)methodNa
     RCTComponentData *componentData = [[RCTComponentData alloc] initWithManagerClass:moduleClass bridge:bridge eventDispatcher:bridge.eventDispatcher];
     componentDataByName[className] = componentData;
   }
+
+#ifdef RN_FABRIC_ENABLED
+  if ([className hasPrefix:@"ViewManagerAdapter_"]) {
+    Class viewClass = [ExpoFabricView makeClassCopyForAppContext:_appContext className:className];
+    [[RCTComponentViewFactory currentComponentViewFactory] registerComponentViewClass:viewClass];
+  }
+#endif
 }
 
 - (void)assignExportedMethodsKeys:(NSMutableArray<NSMutableDictionary<const NSString *, id> *> *)exportedMethods forModuleName:(const NSString *)moduleName
