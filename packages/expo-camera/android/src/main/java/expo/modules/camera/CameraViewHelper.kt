@@ -110,24 +110,24 @@ object CameraViewHelper {
 
   @JvmStatic
   fun setExifData(baseExif: ExifInterface, exifMap: Map<String, Any>) {
-    for ((type, name) in exifTags) {
-      exifMap.get(name)?.let {
+    for ((_, name) in exifTags) {
+      exifMap[name]?.let {
         // Convert possible type to string before putting into baseExif
         when(it::class.simpleName) {
-          "String" -> baseExif.setAttribute(name, it)
-          "Double" -> baseExif.setAttribute(name, it.toBigDecimal().toPlainString())
-          "Int" -> baseExif.setAttribute(name, it.toBigDecimal().toPlainString())
-          "Boolean" -> baseExif.setAttribute(name, it.toString())
+          "String" -> baseExif.setAttribute(name, it as String)
+          "Double" -> baseExif.setAttribute(name, (it as Double).toBigDecimal().toPlainString())
+          "Int" -> baseExif.setAttribute(name, (it as Int).toBigDecimal().toPlainString())
+          "Boolean" -> baseExif.setAttribute(name, (it as Boolean).toString())
         }
       }
     }
 
     if (exifMap.containsKey(ExifInterface.TAG_GPS_LATITUDE) && exifMap.containsKey(ExifInterface.TAG_GPS_LONGITUDE)) {
-      baseExif.setLatLong(exifMap.get(ExifInterface.TAG_GPS_LATITUDE),
-        exifMap.get(ExifInterface.TAG_GPS_LONGITUDE));
+      baseExif.setLatLong(exifMap[ExifInterface.TAG_GPS_LATITUDE] as Double,
+        exifMap[ExifInterface.TAG_GPS_LONGITUDE] as Double)
     }
     if(exifMap.containsKey(ExifInterface.TAG_GPS_ALTITUDE)){
-      baseExif.setAltitude(exifMap.get(ExifInterface.TAG_GPS_ALTITUDE));
+      baseExif.setAltitude(exifMap[ExifInterface.TAG_GPS_ALTITUDE] as Double)
     }
   }
 

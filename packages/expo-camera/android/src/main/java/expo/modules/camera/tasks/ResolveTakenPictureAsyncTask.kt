@@ -12,6 +12,7 @@ import androidx.exifinterface.media.ExifInterface
 
 import expo.modules.camera.CameraViewHelper.getExifData
 import expo.modules.camera.CameraViewHelper.addExifData
+import expo.modules.camera.CameraViewHelper.setExifData
 import expo.modules.camera.utils.FileSystemUtils
 import expo.modules.core.Promise
 
@@ -84,7 +85,7 @@ class ResolveTakenPictureAsyncTask(
 
         // If there are additional exif data, insert it here
         if (options[ADDITIONAL_EXIF_KEY] != null) {
-          setExifData(exifInterface, options[ADDITIONAL_EXIF_KEY])
+          setExifData(exifInterface, options[ADDITIONAL_EXIF_KEY] as Map<String, Any>)
         }
 
         // Get orientation of the image from mImageData via inputStream
