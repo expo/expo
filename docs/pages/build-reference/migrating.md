@@ -56,6 +56,10 @@ Given that we no longer publish the app prior to builds, there is no update mani
 
 The `Constants.appOwnership` field no longer exists in standalone apps produced by EAS Build. If you were previously testing the environment with something like `const isStandaloneApp = Constants.appOwnership === "standalone"` then you can invert the logic: `const isStandaloneApp = Constants.appOwnership !== "expo"`.
 
+### Push Tokens May Be Duplicated Before and After EAS Migration
+
+The Notifications API uses `Constants.Manifest.Id` to determine the default `experienceId` if none is specified when calling `getExpoPushTokenAsync`. These defaults may change in EAS build due to the aforementioned differences in the availability of `Constants.Manifest`, leading to the generation of multiple valid Push Tokens for a single device before and after EAS migration. To avoid duplicate notifications, refrain from using any push tokens generated before EAS Migration and specify your experience ID in calls to `getExpoPushTokenAsync` per the new [documentation](https://docs.expo.dev/versions/latest/sdk/notifications/#getexpopushtokenasyncoptions-expotokenoptions-expopushtoken).
+
 ### All assets referenced in source code are bundled
 
 With classic builds, `assetBundlePatterns` serves two purposes:
