@@ -10,8 +10,6 @@
 
 ### 💡 Others
 
-- Update docs to remove mentions of `expo start:web`.
-
 ## 11.0.0 — 2022-07-07
 
 ### 🎉 New features
