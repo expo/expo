@@ -167,9 +167,13 @@ declare module 'metro' {
     onError?: (arg0: Error & { code?: string }) => void;
     onReady?: (server: HttpServer | HttpsServer) => void;
     runInspectorProxy?: boolean;
+    /** @deprecated */
     secure?: boolean;
+    /** @deprecated */
     secureCert?: string;
+    /** @deprecated */
     secureKey?: string;
+    secureServerOptions?: import('https').ServerOptions;
     websocketEndpoints?: object;
   };
 
@@ -393,9 +397,7 @@ declare module 'metro' {
 
     getCreateModuleId(): (path: string) => number;
 
-    build(
-      options: BundleOptions
-    ): Promise<{
+    build(options: BundleOptions): Promise<{
       code: string;
       map: string;
     }>;

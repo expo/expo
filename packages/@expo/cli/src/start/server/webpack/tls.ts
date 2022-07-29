@@ -10,14 +10,25 @@ import { ensureDotExpoProjectDirectoryInitialized } from '../../project/dotExpo'
 // TODO: Move to doctor as a prereq.
 
 /** Ensure TLS is setup and environment variables are set. */
-export async function ensureEnvironmentSupportsTLSAsync(projectRoot: string) {
+export async function ensureEnvironmentSupportsTLSAsync(projectRoot: string): Promise<
+  | false
+  | {
+      keyPath: string;
+      certPath: string;
+    }
+> {
   if (!process.env.SSL_CRT_FILE || !process.env.SSL_KEY_FILE) {
     const tls = await getTLSCertAsync(projectRoot);
     if (tls) {
       process.env.SSL_CRT_FILE = tls.certPath;
       process.env.SSL_KEY_FILE = tls.keyPath;
     }
+    return tls;
   }
+  return {
+    keyPath: process.env.SSL_KEY_FILE,
+    certPath: process.env.SSL_CRT_FILE,
+  };
 }
 
 /** Create TLS and write to files in the temporary directory. Exposed for testing. */

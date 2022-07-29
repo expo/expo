@@ -18,7 +18,9 @@ type MessageSocket = {
 /** The most generic possible setup for Metro bundler. */
 export async function instantiateMetroAsync(
   projectRoot: string,
-  options: Omit<MetroDevServerOptions, 'logger'>
+  options: Omit<MetroDevServerOptions, 'logger'> & {
+    secureServerOptions?: import('https').ServerOptions;
+  }
 ): Promise<{
   server: http.Server;
   middleware: any;
@@ -73,6 +75,7 @@ export async function instantiateMetroAsync(
   const server = await Metro.runServer(metroConfig, {
     hmrEnabled: true,
     websocketEndpoints,
+    secureServerOptions: options.secureServerOptions,
   });
 
   if (attachToServer) {

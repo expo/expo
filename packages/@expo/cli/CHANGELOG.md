@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add HTTPS support to Metro dev server via `expo start --https`.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

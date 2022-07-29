@@ -1,11 +1,14 @@
 import { prependMiddleware } from '@expo/dev-server';
+import fs from 'fs';
 
+import { Log } from '../../../log';
 import { getFreePortAsync } from '../../../utils/port';
 import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
 import { HistoryFallbackMiddleware } from '../middleware/HistoryFallbackMiddleware';
 import { InterstitialPageMiddleware } from '../middleware/InterstitialPageMiddleware';
 import { RuntimeRedirectMiddleware } from '../middleware/RuntimeRedirectMiddleware';
 import { ServeStaticMiddleware } from '../middleware/ServeStaticMiddleware';
+import { ensureEnvironmentSupportsTLSAsync } from '../webpack/tls';
 import { instantiateMetroAsync } from './instantiateMetro';
 
 /** Default port to use for apps running in Expo Go. */
@@ -13,6 +16,8 @@ const EXPO_GO_METRO_PORT = 19000;
 
 /** Default port to use for apps that run in standard React Native projects or Expo Dev Clients. */
 const DEV_CLIENT_METRO_PORT = 8081;
+
+const debug = require('debug')('expo:start:server:metro:devServer') as typeof console.log;
 
 export class MetroBundlerDevServer extends BundlerDevServer {
   get name(): string {
@@ -37,9 +42,14 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     options: BundlerStartOptions
   ): Promise<DevServerInstance> {
     options.port = await this.resolvePortAsync(options);
-    this.urlCreator = this.getUrlCreator(options);
+    this.urlCreator = this.getUrlCreator({
+      ...options,
+      location: {
+        scheme: options.https ? 'https' : 'http',
+      },
+    });
 
-    const parsedOptions = {
+    const parsedOptions: Parameters<typeof instantiateMetroAsync>[1] = {
       port: options.port,
       maxWorkers: options.maxWorkers,
       resetCache: options.resetDevServer,
@@ -48,6 +58,20 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       // TODO: Deprecate this property when expo-cli goes away.
       unversioned: false,
     };
+
+    if (options.https) {
+      debug('Configuring TLS to enable HTTPS support');
+      const tlsConfig = await ensureEnvironmentSupportsTLSAsync(this.projectRoot).catch((error) => {
+        Log.error(`Error creating TLS certificates: ${error}`);
+      });
+      if (tlsConfig) {
+        debug('Using secure server options', tlsConfig);
+        parsedOptions.secureServerOptions = {
+          key: await fs.promises.readFile(tlsConfig.keyPath),
+          cert: await fs.promises.readFile(tlsConfig.certPath),
+        };
+      }
+    }
 
     const { server, middleware, messageSocket } = await instantiateMetroAsync(
       this.projectRoot,
@@ -102,6 +126,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       });
     };
 
+    const protocol = options.https ? 'https' : 'http';
+
     return {
       server,
       location: {
@@ -110,8 +136,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         // localhost isn't always correct.
         host: 'localhost',
         // http is the only supported protocol on native.
-        url: `http://localhost:${options.port}`,
-        protocol: 'http',
+        url: `${protocol}://localhost:${options.port}`,
+        protocol,
       },
       middleware,
       messageSocket,
