@@ -29,7 +29,7 @@ PODS:
     - ExpoModulesCore
   - EXCamera (12.3.0):
     - ExpoModulesCore
-  - EXConstants (13.2.2):
+  - EXConstants (13.2.3):
     - ExpoModulesCore
   - EXContacts (10.3.0):
     - ExpoModulesCore
@@ -88,7 +88,7 @@ PODS:
     - ExpoModulesCore
   - EXPermissions (13.2.0):
     - ExpoModulesCore
-  - Expo (46.0.0-beta.6):
+  - Expo (46.0.1):
     - ExpoModulesCore
   - expo-dev-client (1.1.1):
     - EXManifests
@@ -180,7 +180,7 @@ PODS:
   - ExpoImageManipulator (10.4.0):
     - EXImageLoader
     - ExpoModulesCore
-  - ExpoImagePicker (13.3.0):
+  - ExpoImagePicker (13.3.1):
     - ExpoModulesCore
   - ExpoKeepAwake (10.2.0):
     - ExpoModulesCore
@@ -1267,7 +1267,7 @@ SPEC CHECKSUMS:
   EXBrightness: b6550cfe265e2131a0ddc7ebe97697813199850d
   EXCalendar: 0a9ccd782a7a63034fc92d18cf23ca25414593bc
   EXCamera: 53abc2585c4c91211fe001ef6e39250b319545bb
-  EXConstants: 190bee713ca3659b41d93aa3ee25af10aa50d833
+  EXConstants: 75c40827af38bd6bfcf69f880a5b45037eeff9c9
   EXContacts: 328bac11a6c78d71a7fa5b5e7256b0bf63f35020
   EXDevice: 7647ca9b1fd8b269dfd896a7643d659343358054
   EXDocumentPicker: 027b15cd90ed2d6c6063dcc90369d23c7fa0f2a3
@@ -1290,7 +1290,7 @@ SPEC CHECKSUMS:
   EXNetwork: cba9570f90f4f27ce938afd57810b484febf1fab
   EXNotifications: 8df33b5e99f125ee729ef04c9c67ae60906833e8
   EXPermissions: 3dbb869e7f96a5711314f73d48ddc2f28009a7f6
-  Expo: 5961b98e58f99a0daadae52fbc5ea92d3fc7f896
+  Expo: 2e971038053b3bb72a7c603ebc4f564bc30be4d2
   expo-dev-client: b2b9124ff8cab657d9edffee3d46e48a90eac8d2
   expo-dev-launcher: e1eff308b69593cf37a84ce130fda99313828ada
   expo-dev-menu: f12ade8672206e00ff7c761c423cb7782d1fc241
@@ -1300,7 +1300,7 @@ SPEC CHECKSUMS:
   ExpoCrypto: e534314db0e1a17ae12b5140d529bd0c5efcbc6a
   ExpoHaptics: efe9e68e9dfe0d15c183c0c70a25f3874124ab9e
   ExpoImageManipulator: f4e286afa83c1c618de8701b0812ee0b647895fc
-  ExpoImagePicker: 307cc3d615d00c1b2513cd47463421d9cbaa03b8
+  ExpoImagePicker: ca4207f2952a78e6dac2d7852d7e170dd2eaf1d0
   ExpoKeepAwake: 0e8f18142e71bbf2c7f6aa66ebed249ba1420320
   ExpoLinearGradient: 1a3af07c6dab3c612967a294836df9ae717431df
   ExpoLocalization: 63204f4b9d4f653469d266332ceaa6c6ac8a305d
