@@ -39,12 +39,20 @@ final class BlurEffectView: UIVisualEffectView {
 
   override func draw(_ rect: CGRect) {
     super.draw(rect)
-    effect = nil
-    animator?.stopAnimation(true)
-    animator = UIViewPropertyAnimator(duration: 1, curve: .linear) { [unowned self] in
-      self.effect = visualEffect
+    setupBlurAsync()
+  }
+
+  private func setupBlurAsync() {
+    // In react native fabric mode, animations are disabled during mount transaction.
+    // We should setup animations in next run loop.
+    DispatchQueue.main.async { [unowned self] in
+      effect = nil
+      animator?.stopAnimation(true)
+      animator = UIViewPropertyAnimator(duration: 1, curve: .linear) { [unowned self] in
+        self.effect = visualEffect
+      }
+      animator?.fractionComplete = CGFloat(intensity)
     }
-    animator?.fractionComplete = CGFloat(intensity)
   }
 }
 
