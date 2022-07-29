@@ -16,28 +16,12 @@ const STYLES_LINK = css`
   transition: 50ms ease color;
   align-items: center;
   padding-left: 22px;
-
-  :visited {
-    color: ${theme.text.secondary};
-  }
-
-  :hover {
-    color: ${theme.text.secondary};
-  }
 `;
 
 const STYLES_LINK_ACTIVE = css`
   font-family: ${typography.fontFaces.medium};
   color: ${theme.text.default};
   padding-left: 0;
-
-  :visited {
-    color: ${theme.text.default};
-  }
-
-  :hover {
-    color: ${theme.text.default};
-  }
 `;
 
 const STYLES_CONTAINER = css`
@@ -52,6 +36,10 @@ const STYLES_ACTIVE_CONTAINER = css`
   background: ${theme.background.default};
   border-radius: ${borderRadius.small}px;
   box-shadow: ${shadows.micro};
+  
+  [data-expo-theme="dark"] & {
+    background-color: ${theme.background.tertiary};
+  },
 `;
 
 const STYLES_ACTIVE_BULLET = css`

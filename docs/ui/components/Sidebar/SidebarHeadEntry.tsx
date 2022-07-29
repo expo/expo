@@ -48,6 +48,10 @@ const activeEntryContainerStyle = css({
   background: theme.background.default,
   borderRadius: borderRadius.small,
   boxShadow: shadows.micro,
+
+  '[data-expo-theme="dark"] &': {
+    backgroundColor: theme.background.tertiary,
+  },
 });
 
 const entryIconStyle = css({

@@ -12,7 +12,7 @@ const STYLES_SIDEBAR = css`
   padding: 16px 20px 16px 16px;
   width: 280px;
   position: relative;
-  background: ${theme.background.screen};
+  background: ${theme.background.secondary};
 
   @media screen and (max-width: ${Constants.breakpoints.mobile}) {
     width: 100%;

@@ -95,7 +95,7 @@ const STYLES_SIDEBAR = css`
   height: 100%;
   overflow: hidden;
   transition: 200ms ease max-width;
-  background: ${theme.background.screen};
+  background: ${theme.background.secondary};
 
   @media screen and (max-width: 1200px) {
     max-width: 280px;
