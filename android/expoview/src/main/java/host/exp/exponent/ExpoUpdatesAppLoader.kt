@@ -419,7 +419,7 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
   private val clientEnvironment: String
     get() = if (Constants.isStandaloneApp()) {
       "STANDALONE"
-    } else if (isRunningOnEmulator) {
+    } else if (EmulatorUtilities.isRunningOnEmulator()) {
       "EXPO_SIMULATOR"
     } else {
       "EXPO_DEVICE"
