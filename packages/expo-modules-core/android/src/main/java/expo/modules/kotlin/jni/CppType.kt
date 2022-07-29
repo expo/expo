@@ -15,5 +15,6 @@ enum class CppType(val value: Int) {
   JS_OBJECT(nextValue()),
   JS_VALUE(nextValue()),
   READABLE_ARRAY(nextValue()),
-  READABLE_MAP(nextValue());
+  READABLE_MAP(nextValue()),
+  TYPED_ARRAY(nextValue());
 }

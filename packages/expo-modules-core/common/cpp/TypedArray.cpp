@@ -38,6 +38,10 @@ size_t TypedArray::byteOffset(jsi::Runtime &runtime) const {
   return getProperty(runtime, "byteOffset").asNumber();
 }
 
+size_t TypedArray::byteLength(jsi::Runtime &runtime) const {
+  return getProperty(runtime, "byteLength").asNumber();
+}
+
 jsi::ArrayBuffer TypedArray::getBuffer(jsi::Runtime &runtime) const {
   auto buffer = getProperty(runtime, "buffer");
   if (buffer.isObject() && buffer.asObject(runtime).isArrayBuffer(runtime)) {
