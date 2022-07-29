@@ -2,6 +2,8 @@
 title: Testing with Jest
 ---
 
+import { Terminal } from '~/ui/components/Snippet';
+
 This guide explains how to set up Jest in your project, write a unit test, write a snapshot test, and common problems people encounter when using **Jest** in React Native.
 
 [Jest](https://jestjs.io) is the most widely used JavaScript unit testing framework, so you may already be familiar with it.
@@ -10,7 +12,9 @@ This guide explains how to set up Jest in your project, write a unit test, write
 
 The first thing we'll want to do is to install `jest-expo`, it's a Jest preset that mocks out the native side of the Expo SDK and handles most of configurations for you.
 
-To install the compatible version of `jest-expo` for your project, run: `expo install jest-expo jest`
+To install the compatible version of `jest-expo` for your project, run:
+
+<Terminal cmd={[ '$ expo install jest-expo jest' ]} />
 
 Then, we need to add/update **package.json** to include:
 
@@ -44,6 +48,17 @@ We would like to point out [`transformIgnorePatterns`](https://jestjs.io/docs/co
   "transformIgnorePatterns": [
     "node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base|react-native-svg)"
   ]
+}
+```
+
+By default, Jest runs the code as JavaScript and only supports Node.js based syntax. If your project uses syntax such as importing files with **.jsx** or **.tsx** extensions, use [`transform`](https://jestjs.io/docs/code-transformation) configuration option and explicitly define `babel-jest` as the transformer.
+
+```json
+"jest": {
+  ...
+  "transform": {
+    "\\.[jt]sx?$": "babel-jest"
+  }
 }
 ```
 
