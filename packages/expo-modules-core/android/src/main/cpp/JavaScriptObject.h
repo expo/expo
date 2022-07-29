@@ -59,10 +59,12 @@ public:
 
   void setProperty(const std::string &name, jsi::Value value);
 
-private:
-  friend HybridBase;
+protected:
   WeakRuntimeHolder runtimeHolder;
   std::shared_ptr<jsi::Object> jsObject;
+
+private:
+  friend HybridBase;
 
   bool jniHasProperty(jni::alias_ref<jstring> name);
 

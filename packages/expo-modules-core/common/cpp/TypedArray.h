@@ -2,6 +2,8 @@
 
 #ifdef __cplusplus
 
+#pragma once
+
 #include <jsi/jsi.h>
 
 namespace jsi = facebook::jsi;
@@ -33,6 +35,8 @@ class TypedArray : public jsi::Object {
   TypedArrayKind getKind(jsi::Runtime &runtime) const;
 
   size_t byteOffset(jsi::Runtime &runtime) const;
+
+  size_t byteLength(jsi::Runtime &runtime) const;
 
   jsi::ArrayBuffer getBuffer(jsi::Runtime &runtime) const;
 

@@ -9,7 +9,7 @@ import expo.modules.core.interfaces.DoNotStrip
  */
 @Suppress("KotlinJniMissingFunction")
 @DoNotStrip
-class JavaScriptObject @DoNotStrip private constructor(@DoNotStrip private val mHybridData: HybridData) {
+open class JavaScriptObject @DoNotStrip internal constructor(@DoNotStrip private val mHybridData: HybridData) {
   /**
    * The property descriptor options for the property being defined or modified.
    */

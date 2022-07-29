@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - Add better JSI error handling on Android. ([#18259](https://github.com/expo/expo/pull/18259) by [@lukmccall](https://github.com/lukmccall))
+- Experimental support for typed arrays on iOS. ([#18379](https://github.com/expo/expo/pull/18379) by [@lukmccall](https://github.com/lukmccall))
 
 ### 🐛 Bug fixes
 

@@ -4,6 +4,7 @@
 #include "JavaScriptModuleObject.h"
 #include "JavaScriptValue.h"
 #include "JavaScriptObject.h"
+#include "JavaScriptTypedArray.h"
 #include "CachedReferencesRegistry.h"
 
 #include <jni.h>
@@ -19,5 +20,6 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *) {
     expo::JavaScriptModuleObject::registerNatives();
     expo::JavaScriptValue::registerNatives();
     expo::JavaScriptObject::registerNatives();
+    expo::JavaScriptTypedArray::registerNatives();
   });
 }

@@ -2,6 +2,7 @@
 #include "JSIInteropModuleRegistry.h"
 #include "JavaScriptValue.h"
 #include "JavaScriptObject.h"
+#include "JavaScriptTypedArray.h"
 #include "CachedReferencesRegistry.h"
 #include "Exceptions.h"
 
@@ -109,6 +110,13 @@ std::vector<jvalue> MethodMetadata::convertJSIArgsToJNI(
     } else if (desiredType & CppType::JS_OBJECT) {
       jarg->l = makeGlobalIfNecessary(
         JavaScriptObject::newObjectCxxArgs(
+          moduleRegistry->runtimeHolder->weak_from_this(),
+          std::make_shared<jsi::Object>(arg->getObject(rt))
+        ).release()
+      );
+    } else if (desiredType & CppType::TYPED_ARRAY) {
+      jarg->l = makeGlobalIfNecessary(
+        JavaScriptTypedArray::newObjectCxxArgs(
           moduleRegistry->runtimeHolder->weak_from_this(),
           std::make_shared<jsi::Object>(arg->getObject(rt))
         ).release()

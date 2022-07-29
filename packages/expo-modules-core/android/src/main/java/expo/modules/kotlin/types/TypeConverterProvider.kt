@@ -6,8 +6,20 @@ import com.facebook.react.bridge.Dynamic
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
 import expo.modules.kotlin.exception.MissingTypeConverter
+import expo.modules.kotlin.typedarray.BigInt64Array
+import expo.modules.kotlin.typedarray.BigUint64Array
+import expo.modules.kotlin.typedarray.Float32Array
+import expo.modules.kotlin.typedarray.Float64Array
+import expo.modules.kotlin.typedarray.Int16Array
+import expo.modules.kotlin.typedarray.Int32Array
+import expo.modules.kotlin.typedarray.Int8Array
 import expo.modules.kotlin.jni.JavaScriptObject
 import expo.modules.kotlin.jni.JavaScriptValue
+import expo.modules.kotlin.typedarray.AnyTypedArray
+import expo.modules.kotlin.typedarray.Uint16Array
+import expo.modules.kotlin.typedarray.Uint32Array
+import expo.modules.kotlin.typedarray.Uint8Array
+import expo.modules.kotlin.typedarray.Uint8ClampedArray
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.records.RecordTypeConverter
 import kotlin.reflect.KClass
@@ -120,6 +132,19 @@ object TypeConverterProviderImpl : TypeConverterProvider {
 
       JavaScriptValue::class.createType(nullable = isOptional) to JavaScriptValueTypeConvert(isOptional),
       JavaScriptObject::class.createType(nullable = isOptional) to JavaScriptObjectTypeConverter(isOptional),
+
+      Int8Array::class.createType(nullable = isOptional) to Int8ArrayTypeConverter(isOptional),
+      Int16Array::class.createType(nullable = isOptional) to Int16ArrayTypeConverter(isOptional),
+      Int32Array::class.createType(nullable = isOptional) to Int32ArrayTypeConverter(isOptional),
+      Uint8Array::class.createType(nullable = isOptional) to Uint8ArrayTypeConverter(isOptional),
+      Uint8ClampedArray::class.createType(nullable = isOptional) to Uint8ClampedArrayTypeConverter(isOptional),
+      Uint16Array::class.createType(nullable = isOptional) to Uint16ArrayTypeConverter(isOptional),
+      Uint32Array::class.createType(nullable = isOptional) to Uint32ArrayTypeConverter(isOptional),
+      Float32Array::class.createType(nullable = isOptional) to Float32ArrayTypeConverter(isOptional),
+      Float64Array::class.createType(nullable = isOptional) to Float64ArrayTypeConverter(isOptional),
+      BigInt64Array::class.createType(nullable = isOptional) to BigInt64ArrayTypeConverter(isOptional),
+      BigUint64Array::class.createType(nullable = isOptional) to BigUint64ArrayTypeConverter(isOptional),
+      AnyTypedArray::class.createType(nullable = isOptional) to TypedArrayTypeConverter(isOptional),
 
       Any::class.createType(nullable = isOptional) to AnyTypeConverter(isOptional),
     )

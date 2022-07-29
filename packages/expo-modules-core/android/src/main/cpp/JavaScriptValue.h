@@ -4,6 +4,7 @@
 
 #include "JSIObjectWrapper.h"
 #include "WeakRuntimeHolder.h"
+#include "JavaScriptTypedArray.h"
 
 #include <fbjni/fbjni.h>
 #include <jsi/jsi.h>
@@ -17,6 +18,8 @@ namespace expo {
 class JavaScriptRuntime;
 
 class JavaScriptObject;
+
+class JavaScriptTypedArray;
 
 /**
  * Represents any JavaScript value. Its purpose is to expose the `jsi::Value` API back to Kotlin.
@@ -61,6 +64,8 @@ public:
 
   bool isObject();
 
+  bool isTypedArray();
+
   bool getBool();
 
   double getDouble();
@@ -70,6 +75,8 @@ public:
   jni::local_ref<jni::HybridClass<JavaScriptObject>::javaobject> getObject();
 
   jni::local_ref<jni::JArrayClass<JavaScriptValue::javaobject>> getArray();
+
+  jni::local_ref<JavaScriptTypedArray::javaobject> getTypedArray();
 
 private:
   friend HybridBase;

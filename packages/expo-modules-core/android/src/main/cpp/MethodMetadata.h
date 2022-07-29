@@ -28,7 +28,8 @@ enum CppType {
   JS_OBJECT = 1 << 3,
   JS_VALUE = 1 << 4,
   READABLE_ARRAY = 1 << 5,
-  READABLE_MAP = 1 << 6
+  READABLE_MAP = 1 << 6,
+  TYPED_ARRAY = 1 << 7
 };
 
 /**
