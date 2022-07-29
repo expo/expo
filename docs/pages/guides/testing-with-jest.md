@@ -10,7 +10,7 @@ This guide explains how to set up Jest in your project, write a unit test, write
 
 ## Installation
 
-The first thing we'll want to do is to install `jest-expo`, it's a Jest preset that mocks out the native side of the Expo SDK and handles most of configurations for you.
+The first thing we'll want to do is to install `jest-expo`, it's a Jest preset that mocks out the native side of the Expo SDK and handles most of the configurations for you.
 
 To install the compatible version of `jest-expo` for your project, run:
 
