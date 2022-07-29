@@ -11,8 +11,6 @@ const PAGES_DIR = path.resolve(__dirname, '../pages');
 
 // TODO(cedric): refactor docs to get rid of the directory lists
 
-/** Manual list of directories to pull in to the getting started tutorial */
-const startingDirectories = ['introduction', 'get-started', 'tutorial', 'next-steps'];
 /** Manual list of directories to categorize as "EAS content" */
 const easDirectories = ['eas', 'build', 'app-signing', 'build-reference', 'submit'];
 /** Private preview section which isn't linked in the documentation */
@@ -28,17 +26,12 @@ const generalDirectories = fs
     name =>
       name !== 'api' &&
       name !== 'versions' &&
-      ![
-        ...startingDirectories,
-        ...previewDirectories,
-        ...featurePreviewDirectories,
-        ...easDirectories,
-      ].includes(name)
+      ![...previewDirectories, ...featurePreviewDirectories, ...easDirectories].includes(name)
   );
 
 // --- Navigation ---
 
-const starting = [
+const general = [
   makeSection(
     'Get Started',
     [
@@ -82,9 +75,6 @@ const starting = [
     ],
     { expanded: true }
   ),
-];
-
-const general = [
   makeSection('Fundamentals', [
     makePage('workflow/expo-cli.md'),
     makePage('workflow/using-libraries.md'),
@@ -347,7 +337,6 @@ const reference = VERSIONS.reduce(
 );
 
 module.exports = {
-  starting,
   general,
   eas,
   preview,
@@ -355,7 +344,6 @@ module.exports = {
   /** @type {any} */
   reference: { ...reference, latest: reference[LATEST_VERSION] },
   generalDirectories,
-  startingDirectories,
   previewDirectories,
   easDirectories,
   featurePreviewDirectories,

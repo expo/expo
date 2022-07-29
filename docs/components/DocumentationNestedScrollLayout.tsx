@@ -6,6 +6,7 @@ import { theme } from '@expo/styleguide';
 import * as React from 'react';
 
 import * as Constants from '~/constants/theme';
+import { SidebarHead } from '~/ui/components/Sidebar/SidebarHead';
 
 const STYLES_GLOBAL = css`
   html {
@@ -66,20 +67,11 @@ const STYLES_HEADER = css`
   flex-shrink: 0;
   width: 100%;
 
-  @media screen and (min-width: ${Constants.breakpoints.mobile}) {
-    border-bottom: 1px solid ${theme.border.default};
-  }
-
   @media screen and (max-width: ${Constants.breakpoints.mobile}) {
     position: sticky;
     top: -57px;
     z-index: 3;
-  }
-`;
-
-const SHOW_SEARCH_AND_MENU = css`
-  @media screen and (max-width: ${Constants.breakpoints.mobile}) {
-    top: 0px;
+    max-height: 100vh;
   }
 `;
 
@@ -179,6 +171,11 @@ const STYLES_CENTER_WRAPPER = css`
   margin: auto;
 `;
 
+const STYLES_NO_SCROLL = css`
+  overflow: hidden;
+  display: none;
+`;
+
 type ScrollContainerProps = React.PropsWithChildren<{
   scrollPosition?: number;
   scrollHandler?: () => void;
@@ -212,12 +209,12 @@ class ScrollContainer extends React.Component<ScrollContainerProps> {
 
 type Props = React.PropsWithChildren<{
   onContentScroll?: (scrollTop: number) => void;
-  isMenuActive: boolean;
+  isMobileMenuVisible: boolean;
   tocVisible: boolean;
-  isMobileSearchActive: boolean;
   header: React.ReactNode;
   sidebarScrollPosition: number;
   sidebar: React.ReactNode;
+  sidebarActiveGroup: string;
   sidebarRight: React.ReactElement;
 }>;
 
@@ -239,35 +236,37 @@ export default class DocumentationNestedScrollLayout extends React.Component<Pro
   };
 
   render() {
-    const { isMobileSearchActive, isMenuActive, sidebarScrollPosition } = this.props;
-
-    if (isMenuActive) {
-      window.scrollTo(0, 0);
-    }
+    const {
+      header,
+      sidebar,
+      sidebarActiveGroup,
+      sidebarRight,
+      sidebarScrollPosition,
+      isMobileMenuVisible,
+      tocVisible,
+      children,
+    } = this.props;
 
     return (
       <div css={STYLES_CONTAINER}>
         <Global styles={STYLES_GLOBAL} />
-        <div css={[STYLES_HEADER, (isMobileSearchActive || isMenuActive) && SHOW_SEARCH_AND_MENU]}>
-          {this.props.header}
-        </div>
+        <div css={STYLES_HEADER}>{header}</div>
         <div css={STYLES_CONTENT}>
           <div css={[STYLES_SIDEBAR, STYLES_LEFT]}>
+            <SidebarHead sidebarActiveGroup={sidebarActiveGroup} />
             <ScrollContainer ref={this.sidebarRef} scrollPosition={sidebarScrollPosition}>
-              {this.props.sidebar}
+              {sidebar}
             </ScrollContainer>
           </div>
-
-          <div css={STYLES_CENTER}>
+          <div css={[STYLES_CENTER, isMobileMenuVisible && STYLES_NO_SCROLL]}>
             <ScrollContainer ref={this.contentRef} scrollHandler={this.scrollHandler}>
-              <div css={STYLES_CENTER_WRAPPER}>{this.props.children}</div>
+              <div css={STYLES_CENTER_WRAPPER}>{children}</div>
             </ScrollContainer>
           </div>
-
-          {this.props.tocVisible && (
+          {tocVisible && (
             <div css={[STYLES_SIDEBAR, STYLES_RIGHT]}>
               <ScrollContainer ref={this.sidebarRightRef}>
-                {React.cloneElement(this.props.sidebarRight, {
+                {React.cloneElement(sidebarRight, {
                   selfRef: this.sidebarRightRef,
                   contentRef: this.contentRef,
                 })}

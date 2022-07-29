@@ -7,14 +7,26 @@ import { Search } from './Search';
 import { ThemeSelector } from './ThemeSelector';
 
 import { Button } from '~/ui/components/Button';
+import { SidebarHead } from '~/ui/components/Sidebar';
 import { BOLD } from '~/ui/components/Text';
 
-export const Header = () => {
+type HeaderProps = {
+  sidebar: React.ReactNode;
+  sidebarActiveGroup: string;
+  isMobileMenuVisible: boolean;
+  setMobileMenuVisible: (isMobileMenuVisible: boolean) => void;
+};
+
+export const Header = ({
+  sidebar,
+  sidebarActiveGroup,
+  isMobileMenuVisible,
+  setMobileMenuVisible,
+}: HeaderProps) => {
   const [isMobileSearchVisible, setMobileSearchVisible] = useState(false);
-  const [isMobileMenuVisible, setMobileMenuVisible] = useState(false);
   return (
     <>
-      <nav css={containerStyle}>
+      <nav css={[containerStyle, isMobileMenuVisible]}>
         <div css={[columnStyle, leftColumnStyle]}>
           <Logo />
         </div>
@@ -36,8 +48,8 @@ export const Header = () => {
             theme="transparent"
             css={[mobileButtonStyle, isMobileMenuVisible && mobileButtonActiveStyle]}
             onClick={() => {
+              setMobileMenuVisible(!isMobileMenuVisible);
               setMobileSearchVisible(false);
-              setMobileMenuVisible(prevState => !prevState);
             }}>
             <HamburgerIcon size={iconSize.small} color={theme.icon.default} />
           </Button>
@@ -52,6 +64,12 @@ export const Header = () => {
             <ThemeSelector />
           </div>
         </nav>
+      )}
+      {isMobileMenuVisible && (
+        <div css={mobileSidebarStyle}>
+          <SidebarHead sidebarActiveGroup={sidebarActiveGroup} />
+          {sidebar}
+        </div>
       )}
       {isMobileSearchVisible && (
         <nav css={[containerStyle, showOnMobileStyle]}>
@@ -133,4 +151,10 @@ const mobileButtonActiveStyle = css`
 
 const mobileSearchInputStyle = css`
   margin: 0;
+`;
+
+const mobileSidebarStyle = css`
+  background-color: ${theme.background.secondary};
+  height: calc(100vh - (60px * 2));
+  overflow: auto;
 `;
