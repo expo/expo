@@ -1,6 +1,7 @@
+import { Video, AVPlaybackStatus } from 'expo-av';
 import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import {
   Button,
   Image,
@@ -33,7 +34,9 @@ export default function App() {
           colors={reverse ? ['yellow', 'blue'] : ['blue', 'yellow']}
           end={reverse ? { x: 1.0, y: 0.5 } : { x: 0.5, y: 1.0 }}
         />
+
         <BlueExample />
+        <VideoExample />
       </ScrollView>
     </SafeAreaView>
   );
@@ -55,6 +58,34 @@ export function BlueExample() {
       <BlurView intensity={20} tint="dark" style={styles.blurContainer}>
         <Text style={[styles.text, { color: '#fff' }]}>{text}</Text>
       </BlurView>
+    </View>
+  );
+}
+
+export function VideoExample() {
+  const video = useRef(null);
+  const [status, setStatus] = useState({});
+  return (
+    <View style={styles.videoExample}>
+      <Video
+        ref={video}
+        style={styles.video}
+        source={{
+          uri: 'https://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4',
+        }}
+        useNativeControls
+        resizeMode="contain"
+        isLooping
+        onPlaybackStatusUpdate={(status) => setStatus(() => status)}
+      />
+      <View style={styles.buttons}>
+        <Button
+          title={status.isPlaying ? 'Pause' : 'Play'}
+          onPress={() =>
+            status.isPlaying ? video.current.pauseAsync() : video.current.playAsync()
+          }
+        />
+      </View>
     </View>
   );
 }
@@ -92,5 +123,21 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     textAlign: 'center',
+  },
+  videoExample: {
+    height: 640,
+    marginTop: 64,
+    justifyContent: 'center',
+    backgroundColor: '#ecf0f1',
+  },
+  video: {
+    alignSelf: 'center',
+    width: 320,
+    height: 200,
+  },
+  buttons: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });

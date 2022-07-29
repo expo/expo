@@ -14,6 +14,7 @@
     "react-dom": "18.0.0",
     "react-native": "0.69.3",
     "react-native-web": "~0.18.1",
+    "expo-av": "~12.0.2",
     "expo-blur": "~11.2.0",
     "expo-linear-gradient": "~11.4.0",
     "expo-splash-screen": "~0.16.1"
