@@ -3,6 +3,7 @@ package expo.modules.device
 import expo.modules.core.ExportedModule
 import expo.modules.core.Promise
 import expo.modules.core.interfaces.ExpoMethod
+import expo.modules.core.utilities.EmulatorUtilities
 
 import com.facebook.device.yearclass.YearClass
 
@@ -37,7 +38,7 @@ class DeviceModule(private val mContext: Context) : ExportedModule(mContext) {
   }
 
   override fun getConstants(): Map<String, Any> = mapOf(
-    "isDevice" to (!isRunningOnGenymotion && !isRunningOnStockEmulator),
+    "isDevice" to !isRunningOnEmulator,
     "brand" to Build.BRAND,
     "manufacturer" to Build.MANUFACTURER,
     "modelName" to Build.MODEL,
@@ -96,7 +97,7 @@ class DeviceModule(private val mContext: Context) : ExportedModule(mContext) {
   @ExpoMethod
   fun isRootedExperimentalAsync(promise: Promise) {
     var isRooted = false
-    val isDevice = !isRunningOnGenymotion && !isRunningOnStockEmulator
+    val isDevice = !isRunningOnEmulator
 
     try {
       val buildTags = Build.TAGS
@@ -151,10 +152,8 @@ class DeviceModule(private val mContext: Context) : ExportedModule(mContext) {
   companion object {
     private val TAG = DeviceModule::class.java.simpleName
 
-    private val isRunningOnGenymotion: Boolean
-      get() = Build.FINGERPRINT.contains("vbox")
-    private val isRunningOnStockEmulator: Boolean
-      get() = Build.FINGERPRINT.contains("generic")
+    private val isRunningOnEmulator: Boolean
+      get() = EmulatorUtilities.isRunningOnEmulator()
 
     private fun getDeviceType(context: Context): DeviceType {
       // Detect TVs via UI mode (Android TVs) or system features (Fire TV).

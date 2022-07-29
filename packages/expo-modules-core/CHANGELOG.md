@@ -13,6 +13,8 @@
 
 ### 💡 Others
 
+- Centralized Android emulator detection for native code and added checks to pick up additional emulator types in `EmulatorUtilities`. ([#16177](https://github.com/expo/expo/pull/16177)) by [@kbrandwijk](https://github.com/kbrandwijk), [@keith-kurak](https://github.com/keith-kurak))
+
 ## 0.11.3 — 2022-07-18
 
 ### 💡 Others
