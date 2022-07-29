@@ -12,12 +12,13 @@ There are three EAS Build-specific npm hooks that you can set in your package.js
 
 - `eas-build-pre-install` - executed before EAS Build runs `yarn install`.
 - `eas-build-post-install` - the behavior depends on the platform and project type:
-  - for managed Android project, it will run after `yarn install` and `expo prebuild` have completed.
-  - for bare Android project, it will run after `yarn install` has completed.
-  - for both bare and managed iOS projects, it will run after `yarn install` and `pod install` have completed.
+  - Android
+    - managed projects - runs after `yarn install` and `expo prebuild`.
+    - bare projects - runs after `yarn install`.
+  - iOS - runs after `yarn install` and `pod install`.
 - `eas-build-on-success` - this hook is triggered at the end of the build process if the build was successful.
 - `eas-build-on-error` - this hook is triggered at the end of the build process if the build failed.
-- `eas-build-on-success` - this hook is triggered at the end of the build process. You can check a status of the build using `EAS_BUILD_STATUS` environment variable, it will be set to `finished` or `errored`.
+- `eas-build-on-success` - this hook is triggered at the end of the build process. You can check the build's status with the `EAS_BUILD_STATUS` environment variable. It's either `finished` or `errored`.
 
 This is an example of how your package.json might look like:
 
