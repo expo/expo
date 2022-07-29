@@ -63,7 +63,7 @@ export class PlatformManager<
     const { exp } = getConfig(this.projectRoot);
     const installedExpo = await deviceManager.ensureExpoGoAsync(exp.sdkVersion);
 
-    await deviceManager.activateWindowAsync();
+    deviceManager.activateWindowAsync();
     await deviceManager.openUrlAsync(url);
 
     await logEventAsync('Open Url on Device', {

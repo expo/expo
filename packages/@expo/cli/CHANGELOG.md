@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Speed up native device opening for iOS and Android. ([#18385](https://github.com/expo/expo/pull/18385) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 💡 Others
 
 ## 0.2.6 — 2022-07-25
