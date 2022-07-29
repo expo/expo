@@ -2,6 +2,7 @@
 import JsonFile from '@expo/json-file';
 import execa from 'execa';
 import fs from 'fs/promises';
+import { sync as globSync } from 'glob';
 import klawSync from 'klaw-sync';
 import path from 'path';
 
@@ -16,6 +17,28 @@ import {
 
 const originalForceColor = process.env.FORCE_COLOR;
 const originalCI = process.env.CI;
+
+const templateFolder = path.join(__dirname, '../../../../../templates/expo-template-bare-minimum/');
+
+function getTemplatePath() {
+  const results = globSync(`*.tgz`, {
+    absolute: true,
+    cwd: templateFolder,
+  });
+
+  return results[0];
+}
+
+async function ensureTemplatePathAsync() {
+  let templatePath = getTemplatePath();
+  if (templatePath) return templatePath;
+  await execa('npm', ['pack'], { cwd: templateFolder });
+
+  templatePath = getTemplatePath();
+  if (templatePath) return templatePath;
+
+  throw new Error('Could not find template tarball');
+}
 
 beforeAll(async () => {
   await fs.mkdir(projectRoot, { recursive: true });
@@ -87,7 +110,13 @@ it(
   async () => {
     const projectRoot = await setupTestProjectAsync('basic-prebuild', 'with-blank');
     // `npx expo prebuild --no-install`
-    await execa('node', [bin, 'prebuild', '--no-install'], { cwd: projectRoot });
+
+    const templateFolder = await ensureTemplatePathAsync();
+    console.log('Using local template:', templateFolder);
+
+    await execa('node', [bin, 'prebuild', '--no-install', '--template', templateFolder], {
+      cwd: projectRoot,
+    });
 
     // List output files with sizes for snapshotting.
     // This is to make sure that any changes to the output are intentional.
@@ -176,6 +205,7 @@ it(
         "app.json",
         "index.js",
         "ios/.gitignore",
+        "ios/.xcode.env",
         "ios/Podfile",
         "ios/Podfile.properties.json",
         "ios/basicprebuild/AppDelegate.h",
