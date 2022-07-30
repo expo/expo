@@ -13,11 +13,11 @@ This guide explains the standard configuration and tools for working on universa
 
 # Generating a new universal module using `expo-cli` command
 
-`expo-cli` has specific command that would generate universal module that support TypeScript!
+`expo/tools` has specific command that would generate universal module that support TypeScript!
 Run:
 
-- `expo generate-module [new module directory]`
-  - optional `[new module directory]` parameter lets you specify module name (e.g. `expo generate-module expo-test-module` would create `expo-test-module`. If ommited, the script will prompt you about it.
+- `yarn et cu --name [new module name]` inside the `tools` directory
+  - `[new module name]` parameter lets you specify module name (e.g. `et cu expo-test-module` would create `expo-test-module`. If ommited, the script will prompt you about it.
   - optional `--template <template directory>` will try to use provided `<template directory>` in universal module creation.
 
 # The Standard Configuration
