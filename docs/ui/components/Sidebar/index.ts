@@ -6,3 +6,4 @@ export { SidebarHeadEntry } from './SidebarHeadEntry';
 export { SidebarLink } from './SidebarLink';
 export { SidebarSection } from './SidebarSection';
 export { SidebarTitle } from './SidebarTitle';
+export { VersionSelector } from './VersionSelector';

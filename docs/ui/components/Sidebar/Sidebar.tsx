@@ -2,9 +2,8 @@ import { css } from '@emotion/react';
 import { theme, spacing } from '@expo/styleguide';
 import React from 'react';
 
-import { SidebarGroup, SidebarSection } from './index';
+import { SidebarGroup, SidebarSection, VersionSelector } from './index';
 
-import VersionSelector from '~/components/VersionSelector';
 import * as Constants from '~/constants/theme';
 import { NavigationType, NavigationRoute } from '~/types/common';
 
@@ -21,7 +20,7 @@ const STYLES_SIDEBAR = css`
 
 const STYLES_SIDEBAR_FADE = css`
   background: linear-gradient(${theme.background.secondary} 20%, transparent);
-  height: 32px;
+  height: 20px;
   width: 274px;
   position: fixed;
   margin-top: -${spacing[4]}px;

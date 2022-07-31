@@ -122,7 +122,8 @@ const searchContainerStyle = css`
   align-items: flex-end;
   width: 100%;
   // Current doc container max-width - padding, to match page max width
-  max-width: calc(${breakpoints.large} - (56px * 2));
+  max-width: calc(${breakpoints.large}px - (50px * 2));
+  margin-left: 24px;
 
   @media screen and (max-width: ${breakpoints.medium}px) {
     display: none;

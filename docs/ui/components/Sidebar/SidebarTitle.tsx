@@ -19,4 +19,5 @@ const STYLES_TITLE = css({
   paddingBottom: spacing[2],
   marginRight: -spacing[5],
   color: theme.text.default,
+  userSelect: 'none',
 });
