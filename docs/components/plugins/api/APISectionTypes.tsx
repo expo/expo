@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 
 import { InlineCode } from '~/components/base/code';
 import { UL, LI } from '~/components/base/list';
@@ -24,6 +24,7 @@ import {
   renderParams,
   renderTableHeadRow,
   renderDefaultValue,
+  renderIndexSignature,
   STYLES_APIBOX,
 } from '~/components/plugins/api/APISectionUtils';
 import { Cell, Row, Table } from '~/ui/components/Table';
@@ -47,10 +48,16 @@ const defineLiteralType = (types: TypeDefinitionData[]): JSX.Element | null => {
   return null;
 };
 
-const renderTypeDeclarationTable = ({ children }: TypeDeclarationContentData): JSX.Element => (
+const renderTypeDeclarationTable = ({
+  children,
+  indexSignature,
+}: TypeDeclarationContentData): JSX.Element => (
   <Table key={`type-declaration-table-${children?.map(child => child.name).join('-')}`}>
     {renderTableHeadRow()}
-    <tbody>{children?.map(renderTypePropertyRow)}</tbody>
+    <tbody>
+      {children?.map(renderTypePropertyRow)}
+      {indexSignature?.parameters && indexSignature.parameters.map(renderTypePropertyRow)}
+    </tbody>
   </Table>
 );
 
@@ -61,6 +68,7 @@ const renderTypePropertyRow = ({
   comment,
   defaultValue,
   signatures,
+  kind,
 }: PropData): JSX.Element => {
   const initValue = parseCommentContent(defaultValue || getTagData('default', comment)?.text);
   const commentData = getCommentOrSignatureComment(comment, signatures);
@@ -69,6 +77,7 @@ const renderTypePropertyRow = ({
       <Cell fitContent>
         <B>{name}</B>
         {renderFlags(flags, initValue)}
+        {kind && renderIndexSignature(kind)}
       </Cell>
       <Cell fitContent>{renderTypeOrSignatureType(type, signatures)}</Cell>
       <Cell fitContent>
@@ -127,17 +136,18 @@ const renderType = ({
           <CommentTextBlock comment={comment} />
           {type.type === 'intersection' ? (
             <P>
-              <InlineCode>
-                {type.types
-                  .filter(type => type.type === 'reference')
-                  .map(validType => resolveTypeName(validType))}
-              </InlineCode>{' '}
+              {type.types
+                .filter(type => type.type === 'reference')
+                .map(validType => (
+                  <Fragment key={`intersection-type-${validType.name}`}>
+                    <InlineCode>{resolveTypeName(validType)}</InlineCode>{' '}
+                  </Fragment>
+                ))}
               extended by:
             </P>
           ) : null}
           {propTypes.map(
-            propType =>
-              propType?.declaration?.children && renderTypeDeclarationTable(propType.declaration)
+            propType => propType.declaration && renderTypeDeclarationTable(propType.declaration)
           )}
         </div>
       );
