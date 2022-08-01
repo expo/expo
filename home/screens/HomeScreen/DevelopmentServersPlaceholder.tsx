@@ -28,7 +28,7 @@ export function DevelopmentServersPlaceholder({ isAuthenticated }: Props) {
           bg="secondary"
           style={{ marginBottom: spacing[2] }}>
           <Text size="small" type="mono">
-            expo start
+            npx expo start
           </Text>
         </View>
         <Text size="small" type="InterRegular">
