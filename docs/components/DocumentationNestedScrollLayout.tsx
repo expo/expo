@@ -134,7 +134,7 @@ const STYLES_CENTER = css`
 const STYLES_SCROLL_CONTAINER = css`
   height: 100%;
   width: 100%;
-  padding-bottom: 36px;
+  padding-bottom: 24px;
   overflow-y: scroll;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
@@ -176,6 +176,7 @@ const STYLES_HIDDEN = css`
 `;
 
 type ScrollContainerProps = React.PropsWithChildren<{
+  className?: string;
   scrollPosition?: number;
   scrollHandler?: () => void;
 }>;
@@ -199,7 +200,11 @@ class ScrollContainer extends React.Component<ScrollContainerProps> {
 
   render() {
     return (
-      <div css={STYLES_SCROLL_CONTAINER} ref={this.scrollRef} onScroll={this.props.scrollHandler}>
+      <div
+        css={STYLES_SCROLL_CONTAINER}
+        className={this.props.className}
+        ref={this.scrollRef}
+        onScroll={this.props.scrollHandler}>
         {this.props.children}
       </div>
     );
@@ -253,7 +258,10 @@ export default class DocumentationNestedScrollLayout extends React.Component<Pro
         <div css={STYLES_CONTENT}>
           <div css={[STYLES_SIDEBAR, STYLES_LEFT]}>
             <SidebarHead sidebarActiveGroup={sidebarActiveGroup} />
-            <ScrollContainer ref={this.sidebarRef} scrollPosition={sidebarScrollPosition}>
+            <ScrollContainer
+              ref={this.sidebarRef}
+              scrollPosition={sidebarScrollPosition}
+              css={css({ height: 'calc(100% - 190px)' })}>
               {sidebar}
             </ScrollContainer>
           </div>

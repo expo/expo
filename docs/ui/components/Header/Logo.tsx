@@ -31,6 +31,7 @@ const linkStyle = css`
 
 const logoStyle = css`
   height: 20px;
+  margin-top: 1px;
 `;
 
 const chevronStyle = css`
@@ -53,6 +54,7 @@ const showOnMobile = css`
 
   @media screen and (max-width: ${breakpoints.medium}px) {
     display: block;
+    margin-top: 0;
     margin-right: ${spacing[1.5]}px;
   }
 `;

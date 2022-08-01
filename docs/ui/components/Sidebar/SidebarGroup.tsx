@@ -39,5 +39,5 @@ const shouldSkipTitle = (info: NavigationRoute, parentGroup?: NavigationRoute) =
 };
 
 const STYLES_SECTION_CATEGORY = css({
-  marginBottom: spacing[3],
+  marginBottom: spacing[5],
 });
