@@ -60,9 +60,12 @@ class DocumentationPageWithApiVersion extends React.Component<Props, State> {
   private sidebarRightRef = React.createRef<SidebarRightComponentType>();
 
   componentDidMount() {
-    Router.events.on('routeChangeStart', () => {
+    Router.events.on('routeChangeStart', url => {
       if (this.layoutRef.current) {
-        window.__sidebarScroll = this.layoutRef.current.getSidebarScrollTop();
+        window.__sidebarScroll =
+          this.getActiveTopLevelSection() !== this.getActiveTopLevelSection(url)
+            ? 0
+            : this.layoutRef.current.getSidebarScrollTop();
       }
     });
     window.addEventListener('resize', this.handleResize);
@@ -79,28 +82,28 @@ class DocumentationPageWithApiVersion extends React.Component<Props, State> {
     }
   };
 
-  private pathStartsWith = (name: string) => {
-    return this.props.router.pathname.startsWith(`/${name}`);
+  private pathStartsWith = (name: string, path: string = this.props.router.pathname) => {
+    return path.startsWith(`/${name}`);
   };
 
-  private isReferencePath = () => {
-    return this.pathStartsWith('versions');
+  private isReferencePath = (path?: string) => {
+    return this.pathStartsWith('versions', path);
   };
 
-  private isGeneralPath = () => {
-    return navigation.generalDirectories.some(this.pathStartsWith);
+  private isGeneralPath = (path?: string) => {
+    return navigation.generalDirectories.some(name => this.pathStartsWith(name, path));
   };
 
-  private isFeaturePreviewPath = () => {
-    return navigation.featurePreviewDirectories.some(this.pathStartsWith);
+  private isFeaturePreviewPath = (path?: string) => {
+    return navigation.featurePreviewDirectories.some(name => this.pathStartsWith(name, path));
   };
 
-  private isPreviewPath = () => {
-    return navigation.previewDirectories.some(this.pathStartsWith);
+  private isPreviewPath = (path?: string) => {
+    return navigation.previewDirectories.some(name => this.pathStartsWith(name, path));
   };
 
-  private isEasPath = () => {
-    return navigation.easDirectories.some(this.pathStartsWith);
+  private isEasPath = (path?: string) => {
+    return navigation.easDirectories.some(name => this.pathStartsWith(name, path));
   };
 
   private getCanonicalUrl = () => {
@@ -130,16 +133,16 @@ class DocumentationPageWithApiVersion extends React.Component<Props, State> {
     }
   };
 
-  private getActiveTopLevelSection = () => {
-    if (this.isReferencePath()) {
+  private getActiveTopLevelSection = (path?: string) => {
+    if (this.isReferencePath(path)) {
       return 'reference';
-    } else if (this.isGeneralPath()) {
+    } else if (this.isGeneralPath(path)) {
       return 'general';
-    } else if (this.isFeaturePreviewPath()) {
+    } else if (this.isFeaturePreviewPath(path)) {
       return 'featurePreview';
-    } else if (this.isPreviewPath()) {
+    } else if (this.isPreviewPath(path)) {
       return 'preview';
-    } else if (this.isEasPath()) {
+    } else if (this.isEasPath(path)) {
       return 'eas';
     }
 

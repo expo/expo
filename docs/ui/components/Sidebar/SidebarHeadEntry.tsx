@@ -36,6 +36,7 @@ const entryContainerStyle = css({
   cursor: 'pointer',
   display: 'flex',
   alignItems: 'center',
+  userSelect: 'none',
 
   '&:last-of-type': {
     marginBottom: 0,
