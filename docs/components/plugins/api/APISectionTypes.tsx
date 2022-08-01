@@ -81,6 +81,7 @@ const renderTypePropertyRow = ({
       </Cell>
       <Cell fitContent>{renderTypeOrSignatureType(type, signatures)}</Cell>
       <Cell fitContent>
+        <APISectionDeprecationNote comment={comment} />
         <CommentTextBlock
           comment={commentData}
           components={mdInlineComponents}
