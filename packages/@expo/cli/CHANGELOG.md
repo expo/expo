@@ -10,7 +10,7 @@
 
 ### 🐛 Bug fixes
 
-- Add web support check to metro web in `expo start`.
+- Add web support check to metro web in `expo start`. ([#18428](https://github.com/expo/expo/pull/18428) by [@EvanBacon](https://github.com/EvanBacon))
 - Speed up native device opening for iOS and Android. ([#18385](https://github.com/expo/expo/pull/18385) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
