@@ -7,17 +7,16 @@ import {
   typography,
   ChevronDownIcon,
   Logo as LogoIcon,
+  WordMarkLogo,
 } from '@expo/styleguide';
 import React from 'react';
 
-import { BOLD, LinkBase } from '~/ui/components/Text';
+import { LinkBase } from '~/ui/components/Text';
 
 export const Logo = () => (
   <LinkBase css={linkStyle} href="/">
-    <div css={logoStyle}>
-      <LogoIcon color={theme.text.default} style={{ height: 20 }} />
-    </div>
-    <BOLD css={titleStyle}>Expo</BOLD>
+    <WordMarkLogo color={theme.text.default} css={[logoStyle, hideOnMobile]} />
+    <LogoIcon color={theme.text.default} css={[logoStyle, showOnMobile]} />
     <ChevronDownIcon size={iconSize.regular} css={chevronStyle} color={theme.icon.secondary} />
     <span css={subtitleStyle}>Docs</span>
   </LinkBase>
@@ -31,9 +30,7 @@ const linkStyle = css`
 `;
 
 const logoStyle = css`
-  float: left;
-  padding-top: 2px;
-  margin-right: ${spacing[1.5]}px;
+  height: 20px;
 `;
 
 const chevronStyle = css`
@@ -45,11 +42,18 @@ const chevronStyle = css`
   }
 `;
 
-const titleStyle = css`
-  ${typography.fontSizes[20]}
-
+const hideOnMobile = css`
   @media screen and (max-width: ${breakpoints.medium}px) {
     display: none;
+  }
+`;
+
+const showOnMobile = css`
+  display: none;
+
+  @media screen and (max-width: ${breakpoints.medium}px) {
+    display: block;
+    margin-right: ${spacing[1.5]}px;
   }
 `;
 

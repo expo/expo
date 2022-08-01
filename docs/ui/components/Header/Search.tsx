@@ -127,6 +127,7 @@ const searchContainerStyle = css`
 
   @media screen and (max-width: ${breakpoints.medium}px) {
     display: none;
+    margin-left: 0;
   }
 
   .searchbox {

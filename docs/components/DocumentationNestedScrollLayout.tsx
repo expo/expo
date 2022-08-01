@@ -171,8 +171,7 @@ const STYLES_CENTER_WRAPPER = css`
   margin: auto;
 `;
 
-const STYLES_NO_SCROLL = css`
-  overflow: hidden;
+const STYLES_HIDDEN = css`
   display: none;
 `;
 
@@ -258,7 +257,7 @@ export default class DocumentationNestedScrollLayout extends React.Component<Pro
               {sidebar}
             </ScrollContainer>
           </div>
-          <div css={[STYLES_CENTER, isMobileMenuVisible && STYLES_NO_SCROLL]}>
+          <div css={[STYLES_CENTER, isMobileMenuVisible && STYLES_HIDDEN]}>
             <ScrollContainer ref={this.contentRef} scrollHandler={this.scrollHandler}>
               <div css={STYLES_CENTER_WRAPPER}>{children}</div>
             </ScrollContainer>

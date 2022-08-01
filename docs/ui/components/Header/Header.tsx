@@ -13,6 +13,7 @@ import { BOLD } from '~/ui/components/Text';
 type HeaderProps = {
   sidebar: React.ReactNode;
   sidebarActiveGroup: string;
+  tocVisible: boolean;
   isMobileMenuVisible: boolean;
   setMobileMenuVisible: (isMobileMenuVisible: boolean) => void;
 };
@@ -20,6 +21,7 @@ type HeaderProps = {
 export const Header = ({
   sidebar,
   sidebarActiveGroup,
+  tocVisible,
   isMobileMenuVisible,
   setMobileMenuVisible,
 }: HeaderProps) => {
@@ -27,11 +29,12 @@ export const Header = ({
   return (
     <>
       <nav css={[containerStyle, isMobileMenuVisible]}>
-        <div css={[columnStyle, leftColumnStyle]}>
+        <div css={[columnStyle, leftColumnStyle, !tocVisible && noTocLeftStyle]}>
           <Logo />
         </div>
-        <Search version="latest" css={hideOnMobileStyle} />
-        <div css={[columnStyle, rightColumnStyle, hideOnMobileStyle]}>
+        <Search version="latest" />
+        <div
+          css={[columnStyle, rightColumnStyle, !tocVisible && noTocRightStyle, hideOnMobileStyle]}>
           <ThemeSelector />
         </div>
         <div css={[columnStyle, rightColumnStyle, showOnMobileStyle]}>
@@ -110,6 +113,12 @@ const leftColumnStyle = css`
   }
 `;
 
+const noTocLeftStyle = css`
+  @media screen and (min-width: 1580px) {
+    margin-right: 248px;
+  }
+`;
+
 const rightColumnStyle = css`
   flex-basis: 288px;
   width: 288px;
@@ -119,6 +128,11 @@ const rightColumnStyle = css`
     flex-basis: auto;
     width: auto;
   }
+`;
+
+const noTocRightStyle = css`
+  flex-basis: 256px;
+  width: 256px;
 `;
 
 const showOnMobileStyle = css`

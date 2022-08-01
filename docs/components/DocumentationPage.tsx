@@ -1,6 +1,5 @@
 import { css } from '@emotion/react';
 import { theme } from '@expo/styleguide';
-import some from 'lodash/some';
 import Router, { NextRouter } from 'next/router';
 import * as React from 'react';
 
@@ -75,36 +74,33 @@ class DocumentationPageWithApiVersion extends React.Component<Props, State> {
 
   private handleResize = () => {
     if (WindowUtils.getViewportSize().width >= Constants.breakpoints.mobileValue) {
+      this.setState({ isMobileMenuVisible: false });
       window.scrollTo(0, 0);
     }
   };
 
+  private pathStartsWith = (name: string) => {
+    return this.props.router.pathname.startsWith(`/${name}`);
+  };
+
   private isReferencePath = () => {
-    return this.props.router.pathname.startsWith('/versions');
+    return this.pathStartsWith('versions');
   };
 
   private isGeneralPath = () => {
-    return some(navigation.generalDirectories, name =>
-      this.props.router.pathname.startsWith(`/${name}`)
-    );
+    return navigation.generalDirectories.some(this.pathStartsWith);
   };
 
   private isFeaturePreviewPath = () => {
-    return some(navigation.featurePreviewDirectories, name =>
-      this.props.router.pathname.startsWith(`/${name}`)
-    );
+    return navigation.featurePreviewDirectories.some(this.pathStartsWith);
   };
 
   private isPreviewPath = () => {
-    return some(navigation.previewDirectories, name =>
-      this.props.router.pathname.startsWith(`/${name}`)
-    );
+    return navigation.previewDirectories.some(this.pathStartsWith);
   };
 
   private isEasPath = () => {
-    return some(navigation.easDirectories, name =>
-      this.props.router.pathname.startsWith(`/${name}`)
-    );
+    return navigation.easDirectories.some(this.pathStartsWith);
   };
 
   private getCanonicalUrl = () => {
@@ -160,6 +156,7 @@ class DocumentationPageWithApiVersion extends React.Component<Props, State> {
       <Header
         sidebar={sidebarElement}
         sidebarActiveGroup={sidebarActiveGroup}
+        tocVisible={this.props.tocVisible}
         isMobileMenuVisible={this.state.isMobileMenuVisible}
         setMobileMenuVisible={isMobileMenuVisible => this.setState({ isMobileMenuVisible })}
       />
