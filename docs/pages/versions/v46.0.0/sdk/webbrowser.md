@@ -89,5 +89,4 @@ You're method can still run in an async function but there cannot be any long ru
 
 **Web only:** The current environment doesn't support crypto. Ensure you are running from a secure origin (https).
 
-When using Expo CLI you can run `expo start:web --https` or `expo start --web --https` to open your web page in a secure development environment.
-
+> **Tip:** You can run `npx expo start --web --https` to open your web page in a secure development environment.

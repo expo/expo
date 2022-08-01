@@ -6,17 +6,15 @@ import { InlineCode } from '~/components/base/code';
 
 A progressive web app (or PWA for short) is a website that can be installed on the user's device and used offline. If you build your native app with Expo, then Expo CLI can generate a lot of the PWA automatically based on how the native app works. Ex: icons, splash screens, orientation, etc. Just [add service workers](https://expo.fyi/enabling-web-service-workers) to get a complete PWA.
 
-You can test your PWA in an Emulator and Simulator by running `expo start:web --https --ios --android` then installing the PWA via the mobile browser.
-
 ## Usage
 
-Expo web projects generate PWA assets and manifests by default, you only need to [add offline web support](https://expo.fyi/enabling-web-service-workers) to get a full PWA. You can disable asset and manifest generation by passing the `--no-pwa` to `expo build:web`, this won't effect favicon generation.
+Expo web projects generate PWA assets and manifests by default, you only need to [add offline web support](https://expo.fyi/enabling-web-service-workers) to get a full PWA.
 
-When you run `expo build:web` the Webpack config reads your **app.config.js** (or **app.json**) and generates a PWA from it.
+When you run `npx expo export:web` (`expo build:web` for SDK 45 and lower) the Webpack config reads your **app.config.js** (or **app.json**) and generates a PWA from it.
 
 The following properties can be used to customize your PWA:
 
-| **app.config.js**                                             | **manifest.json**               | **index.html**                                            |
+| **app.config.js**                                           | **manifest.json**             | **index.html**                                          |
 | ----------------------------------------------------------- | ----------------------------- | ------------------------------------------------------- |
 | `web.backgroundColor`                                       | `background_color`            |                                                         |
 | <InlineCode>web.description \| description</InlineCode>     | `description`                 | `<meta name="description" />`                           |
@@ -115,7 +113,7 @@ export default {
 
 Under the hood `@expo/webpack-config` uses a CLI called `expo-pwa`. If you want more control on how PWAs are generated, you can use the `expo-pwa` CLI directly.
 
-Firstly, you'll need to eject the **web/index.html** with `expo customize:web`. Now you can generate custom files and link them in the **web/index.html**. `@expo/webpack-config` will check to see if assets are linked first before attempting to generate new ones.
+Firstly, you'll need to eject the **web/index.html** with `npx expo customize`. Now you can generate custom files and link them in the **web/index.html**. `@expo/webpack-config` will check to see if assets are linked first before attempting to generate new ones.
 
 #### manifest.json
 
@@ -126,6 +124,6 @@ Firstly, you'll need to eject the **web/index.html** with `expo customize:web`. 
 <link rel="manifest" href="/manifest.json" />
 ```
 
-Now `expo build:web` will copy the **web/manifest.json** file into the build folder and skip converting the **app.config.js** or **app.json** into a **manifest.json**.
+Now `npx expo export:web` will copy the **web/manifest.json** file into the build folder and skip converting the **app.config.js** or **app.json** into a **manifest.json**.
 
 Note that if the `icons` property is not defined then the build step will still attempt to generate and append Chrome icons to your **manifest.json**.
