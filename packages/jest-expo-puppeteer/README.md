@@ -84,7 +84,7 @@ module.exports = withExpoPuppeteer({
 
 ## Running in watch mode
 
-Because [jest-puppeteer doesn't start the server in watch mode](https://github.com/smooth-code/jest-puppeteer/issues/229) you will need to start the Webpack server manually. A simple way to do this is by opening a new terminal window and running: `WEB_PORT=5000 expo start --https`. For usage with non-expo frameworks, you'll need to change the port to `8000` or whichever port your tool recommends.
+Because [jest-puppeteer doesn't start the server in watch mode](https://github.com/smooth-code/jest-puppeteer/issues/229) you will need to start the Webpack server manually. A simple way to do this is by opening a new terminal window and running: `WEB_PORT=5000 npx expo start --https`. For usage with non-expo frameworks, you'll need to change the port to `8000` or whichever port your tool recommends.
 
 ## Usage in Circle CI
 
