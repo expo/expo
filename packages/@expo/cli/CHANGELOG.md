@@ -14,6 +14,8 @@
 
 ### 💡 Others
 
+- Add warning about malformed project when running prebuild in non-interactive mode.
+
 ## 0.2.6 — 2022-07-25
 
 ### 🎉 New features
