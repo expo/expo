@@ -1,6 +1,6 @@
 import { borderRadius } from '@expo/styleguide-native';
-import Constants from 'expo-constants';
 import { View, Text, Button, useExpoTheme, Spacer } from 'expo-dev-client-components';
+import { isDevice } from 'expo-device';
 import React from 'react';
 import { Platform, StyleSheet, TouchableOpacity as TouchableOpacityRN } from 'react-native';
 import { TouchableOpacity as TouchableOpacityGH } from 'react-native-gesture-handler';
@@ -19,7 +19,7 @@ const KEYBOARD_CODES: { [key: string]: string } = {
 
 const ONBOARDING_MESSAGE = (() => {
   let fragment;
-  if (Constants.isDevice) {
+  if (isDevice) {
     if (Platform.OS === 'ios') {
       fragment =
         'you can shake your device or long press anywhere on the screen with three fingers';
