@@ -37,6 +37,10 @@ export function getUpdateUrl(
   return `https://exp.host/@${user}/${config.slug}`;
 }
 
+export function getAppVersion(config: Pick<ExpoConfig, 'version'>): string {
+  return config.version ?? '1.0.0';
+}
+
 export function getNativeVersion(
   config: Pick<ExpoConfig, 'version'> & {
     android?: Pick<Android, 'versionCode'>;
@@ -116,6 +120,8 @@ export function getRuntimeVersion(
 
   if (typeof runtimeVersion === 'string') {
     return runtimeVersion;
+  } else if (runtimeVersion.policy === 'appVersion') {
+    return getAppVersion(config);
   } else if (runtimeVersion.policy === 'nativeVersion') {
     return getNativeVersion(config, platform);
   } else if (runtimeVersion.policy === 'sdkVersion') {
@@ -128,7 +134,7 @@ export function getRuntimeVersion(
   throw new Error(
     `"${
       typeof runtimeVersion === 'object' ? JSON.stringify(runtimeVersion) : runtimeVersion
-    }" is not a valid runtime version. getRuntimeVersion only supports a string, "sdkVersion", or "nativeVersion" policy.`
+    }" is not a valid runtime version. getRuntimeVersion only supports a string, "sdkVersion", "appVersion", or "nativeVersion" policy.`
   );
 }
 

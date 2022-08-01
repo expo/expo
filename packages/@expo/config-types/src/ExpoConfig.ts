@@ -40,9 +40,10 @@ export interface ExpoConfig {
    * **Note: Don't use this property unless you are sure what you're doing**
    *
    * The runtime version associated with this manifest.
-   * Set this to `{"policy": "nativeVersion"}` to generate it automatically.
+   * Set this to `{"policy": "nativeVersion"}` to generate it automatically based on the 'version' and
+   * 'android.versionCode'/'ios.buildNumber' or to `{"policy": "appVersion"}` to use just 'version' field.
    */
-  runtimeVersion?: string | { policy: 'nativeVersion' | 'sdkVersion' };
+  runtimeVersion?: string | { policy: RuntimeVersionPolicy };
   /**
    * Your app version. In addition to this field, you'll also use `ios.buildNumber` and `android.versionCode` — read more about how to version your app [here](https://docs.expo.dev/distribution/app-stores/#versioning-your-app). On iOS this corresponds to `CFBundleShortVersionString`, and on Android, this corresponds to `versionName`. The required format can be found [here](https://developer.apple.com/documentation/bundleresources/information_property_list/cfbundleshortversionstring).
    */
@@ -485,9 +486,10 @@ export interface IOS {
    * **Note: Don't use this property unless you are sure what you're doing**
    *
    * The runtime version associated with this manifest for the iOS platform. If provided, this will override the top level runtimeVersion key.
-   * Set this to `{"policy": "nativeVersion"}` to generate it automatically.
+   * Set this to `{"policy": "nativeVersion"}` to generate it automatically based on the 'version' and 'ios.buildNumber' or
+   * to `{"policy": "appVersion"}` to use just 'version' field.
    */
-  runtimeVersion?: string | { policy: 'nativeVersion' | 'sdkVersion' };
+  runtimeVersion?: string | { policy: RuntimeVersionPolicy };
 }
 /**
  * Configuration that is specific to the Android platform.
@@ -724,9 +726,10 @@ export interface Android {
    * **Note: Don't use this property unless you are sure what you're doing**
    *
    * The runtime version associated with this manifest for the Android platform. If provided, this will override the top level runtimeVersion key.
-   * Set this to `{"policy": "nativeVersion"}` to generate it automatically.
+   * Set this to `{"policy": "nativeVersion"}` to generate it automatically based on the 'version' and 'versionCode' or
+   * to `{"policy": "appVersion"}` to use just 'version' field.
    */
-  runtimeVersion?: string | { policy: 'nativeVersion' | 'sdkVersion' };
+  runtimeVersion?: string | { policy: RuntimeVersionPolicy };
 }
 export interface AndroidIntentFiltersData {
   /**
@@ -873,6 +876,7 @@ export interface Web {
   bundler?: 'webpack' | 'metro';
   [k: string]: any;
 }
+
 export interface PublishHook {
   file?: string;
   config?: {
@@ -880,3 +884,5 @@ export interface PublishHook {
   };
   [k: string]: any;
 }
+
+export type RuntimeVersionPolicy = 'sdkVersion' | 'nativeVersion' | 'appVersion';
