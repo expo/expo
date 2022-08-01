@@ -77,7 +77,7 @@ The reason it automatically includes the polyfill is because `react-native-web` 
 
 ## Editing static files
 
-You can also use `npx expo customize` to generate the static project files: **index.html**, **serve.json**, etc...
+You can also use `npx expo customize` to generate the static project files: **index.html**, **serve.json**, etc.
 These can be used to customize your project in a more familiar way.
 
 All of the files you select from the terminal prompt will be copied to a `web/` folder in your project's root directory. Think of this folder like `public/` in Create React App. We use "web" instead of "public" because Expo Webpack is web-only, the static folder does not work for iOS or Android apps. For mobile platforms, we similarly put platform-specific project files in `/ios` and `/android` folders.
