@@ -3,6 +3,7 @@ title: Customizing Metro
 ---
 
 import { Terminal } from '~/ui/components/Snippet';
+import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
 
 When you run `expo start`, the CLI uses [Metro](https://facebook.github.io/metro/) to bundle JavaScript for Android and iOS platforms. By default Expo CLI will use the Metro configuration defined in the [`@expo/metro-config`](https://github.com/expo/expo-cli/tree/main/packages/metro-config) package (re-exported from `expo` as `expo/metro-config` in SDK 41 and greater). You can add custom options for Metro by creating a file named **metro.config.js** in the project root directory.
 
@@ -32,8 +33,7 @@ To add to a value, such as an array of file extensions, defined in the default c
 
 > Metro web support is an experimental feature in Expo SDK 46 and only works with the [local Expo CLI](https://blog.expo.dev/new-versioned-expo-cli-cf6e10632656).
 
-By default, Expo CLI uses Webpack as the bundler on web platforms, this is because Metro historically did not support web.
-Using different bundlers across platforms leads to some critical divergence in how your app works across platforms. Features like Fast Refresh which work on native don't work on web, and important production functionality like assets are treated differently across bundlers.
+By default, Expo CLI uses Webpack as the bundler on web platforms, this is because Metro historically did not support web. Using different bundlers across platforms leads to some critical divergence in how your app works across platforms. Features like Fast Refresh which work on native don't work on web, and important production functionality like assets are treated differently across bundlers.
 
 By utilizing Metro across all platforms you can have a more universal development experience. You also get to utilize shared cached chunks across platforms meaning faster iteration speed when working across platforms. Project upgrades can also be easier since there are less dependencies (`webpack`, `webpack-dev-server`) you need to update between versions.
 
@@ -43,8 +43,7 @@ Learn once, bundle everywhere!
 
 ### Expo Webpack vs. Expo Metro
 
-Universal Expo Metro is designed to be fully universal, meaning any web bundling features should also work on native too.
-Because of this we make some breaking changes between the two bundler implementations, carefully check the difference if you're moving from Webpack to Metro.
+Universal Expo Metro is designed to be fully universal, meaning any web bundling features should also work on native too. Because of this we make some breaking changes between the two bundler implementations, carefully check the difference if you're moving from Webpack to Metro.
 
 | Feature          | Metro                | Webpack                |
 | ---------------- | -------------------- | ---------------------- |
@@ -54,11 +53,11 @@ Because of this we make some breaking changes between the two bundler implementa
 | Static folder    | `public/`            | `web/`                 |
 | Config file      | `metro.config.js`    | `webpack.config.js`    |
 | Default config   | `@expo/metro-config` | `@expo/webpack-config` |
-| Fast Refresh     | WIP (coming soon)    | ❌                     |
-| Tree Shaking     | ❌                   | ✅                     |
-| CSS Handling     | ❌                   | ✅                     |
-| Asset Manifests  | ❌                   | ✅                     |
-| Bundle Splitting | WIP (pending native) | ✅                     |
+| Fast Refresh     | WIP (coming soon)    | <NoIcon />             |
+| Tree Shaking     | <NoIcon />           | <YesIcon />            |
+| CSS Handling     | <NoIcon />           | <YesIcon />            |
+| Asset Manifests  | <NoIcon />           | <YesIcon />            |
+| Bundle Splitting | WIP (pending native) | <YesIcon />            |
 
 Note that aliases, resolution, and other bundler features are now universal across platforms as well!
 
@@ -124,7 +123,7 @@ The most common example of this is the `public/favicon.ico` which is used by web
 
 You can overwrite the default `index.html` in Metro web by creating a `public/index.html` file in your project.
 
-In the future, this will work universally across platforms with EAS Update hosting. Currently the feature is web-only based on the static host used for the native app, e.g. the legacy Expo service updates does not support this feature.
+In the future, this will work universally across platforms with EAS Update hosting. Currently the feature is web-only based on the static host used for the native app, for example, the legacy Expo service updates does not support this feature.
 
 ## Examples
 
