@@ -90,7 +90,7 @@ registerRootComponent(App);
 
 > **Example:** The website [beatgig.com][beatgig] uses Expo web + Next.js to achieve SSR in the browser.
 
-By default Expo is rendering your web app as a "single page application" or SPA, this rendering pattern is the closest to how native rendering works. If you'd like to render your Expo web using "server-side rendering" (SSR) or "static site generation" (SSG) then you should try using the Expo SDK with another tool like Gatsby, Next.js, Remix, etc. the caveat being that these tools are less universal and require a bit more effort to share code across platforms.
+By default, Expo is rendering your web app as a "single page application" or SPA. This rendering pattern is the closest to how native rendering works. If you'd like to render your Expo web using "server-side rendering" (SSR) or "static site generation" (SSG) then you should try using the Expo SDK with another tool like Gatsby, Next.js, Remix, etc. The caveat is that these tools are less universal and require a bit more effort to share code across platforms.
 
 The ability to use Expo web with these other React frameworks is what makes it the most powerful way to build a universal app. The possibilities are endless and you won't hit a theoretic performance wall in the future.
 
