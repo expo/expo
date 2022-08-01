@@ -2,6 +2,7 @@ import { Android, ExpoConfig, IOS } from '@expo/config-types';
 export declare type ExpoConfigUpdates = Pick<ExpoConfig, 'sdkVersion' | 'owner' | 'runtimeVersion' | 'updates' | 'slug'>;
 export declare function getExpoUpdatesPackageVersion(projectRoot: string): string | null;
 export declare function getUpdateUrl(config: Pick<ExpoConfigUpdates, 'owner' | 'slug' | 'updates'>, username: string | null): string | null;
+export declare function getAppVersion(config: Pick<ExpoConfig, 'version'>): string;
 export declare function getNativeVersion(config: Pick<ExpoConfig, 'version'> & {
     android?: Pick<Android, 'versionCode'>;
     ios?: Pick<IOS, 'buildNumber'>;

@@ -159,7 +159,7 @@ describe(getRuntimeVersion, () => {
     const runtimeVersion = '42';
     expect(getRuntimeVersion({ ios: { runtimeVersion } }, 'ios')).toBe(runtimeVersion);
   });
-  it('works if the runtimeVersion is a policy', () => {
+  it('works if the runtimeVersion is a nativeVersion policy', () => {
     const version = '1';
     const buildNumber = '2';
     expect(
@@ -169,6 +169,16 @@ describe(getRuntimeVersion, () => {
       )
     ).toBe(`${version}(${buildNumber})`);
   });
+  it('works if the runtimeVersion is an appVersion policy', () => {
+    const version = '1';
+    const buildNumber = '2';
+    expect(
+      getRuntimeVersion(
+        { version, runtimeVersion: { policy: 'appVersion' }, ios: { buildNumber } },
+        'ios'
+      )
+    ).toBe(version);
+  });
   it('returns null if no runtime version is supplied', () => {
     expect(getRuntimeVersion({}, 'ios')).toEqual(null);
   });
@@ -176,12 +186,12 @@ describe(getRuntimeVersion, () => {
     expect(() => {
       getRuntimeVersion({ runtimeVersion: 1 } as any, 'ios');
     }).toThrow(
-      `"1" is not a valid runtime version. getRuntimeVersion only supports a string, "sdkVersion", or "nativeVersion" policy.`
+      `"1" is not a valid runtime version. getRuntimeVersion only supports a string, "sdkVersion", "appVersion", or "nativeVersion" policy.`
     );
     expect(() => {
       getRuntimeVersion({ runtimeVersion: { policy: 'unsupportedPlugin' } } as any, 'ios');
     }).toThrow(
-      `"{"policy":"unsupportedPlugin"}" is not a valid runtime version. getRuntimeVersion only supports a string, "sdkVersion", or "nativeVersion" policy.`
+      `"{"policy":"unsupportedPlugin"}" is not a valid runtime version. getRuntimeVersion only supports a string, "sdkVersion", "appVersion", or "nativeVersion" policy.`
     );
   });
 });

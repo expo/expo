@@ -3,6 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.getAppVersion = getAppVersion;
 exports.getExpoUpdatesPackageVersion = getExpoUpdatesPackageVersion;
 exports.getNativeVersion = getNativeVersion;
 exports.getRuntimeVersion = getRuntimeVersion;
@@ -118,6 +119,12 @@ function getUpdateUrl(config, username) {
   return `https://exp.host/@${user}/${config.slug}`;
 }
 
+function getAppVersion(config) {
+  var _config$version;
+
+  return (_config$version = config.version) !== null && _config$version !== void 0 ? _config$version : '1.0.0';
+}
+
 function getNativeVersion(config, platform) {
   const version = _().IOSConfig.Version.getVersion(config);
 
@@ -200,6 +207,8 @@ function getRuntimeVersion(config, platform) {
 
   if (typeof runtimeVersion === 'string') {
     return runtimeVersion;
+  } else if (runtimeVersion.policy === 'appVersion') {
+    return getAppVersion(config);
   } else if (runtimeVersion.policy === 'nativeVersion') {
     return getNativeVersion(config, platform);
   } else if (runtimeVersion.policy === 'sdkVersion') {
@@ -210,7 +219,7 @@ function getRuntimeVersion(config, platform) {
     return (0, _sdkRuntimeVersions().getRuntimeVersionForSDKVersion)(config.sdkVersion);
   }
 
-  throw new Error(`"${typeof runtimeVersion === 'object' ? JSON.stringify(runtimeVersion) : runtimeVersion}" is not a valid runtime version. getRuntimeVersion only supports a string, "sdkVersion", or "nativeVersion" policy.`);
+  throw new Error(`"${typeof runtimeVersion === 'object' ? JSON.stringify(runtimeVersion) : runtimeVersion}" is not a valid runtime version. getRuntimeVersion only supports a string, "sdkVersion", "appVersion", or "nativeVersion" policy.`);
 }
 
 function getSDKVersion(config) {
