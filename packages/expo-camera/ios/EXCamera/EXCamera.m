@@ -491,12 +491,6 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
             gpsDict[(NSString *)kCGImagePropertyGPSAltitude] = @(fabs([additionalExif[@"GPSAltitude"] floatValue]));
             gpsDict[(NSString *)kCGImagePropertyGPSAltitudeRef] = [additionalExif[@"GPSAltitude"] floatValue] >= 0 ? @(0) : @(1);
         }
-
-        if(!updatedExif[(NSString *)kCGImagePropertyGPSDictionary]){
-            updatedExif[(NSString *)kCGImagePropertyGPSDictionary] = gpsDict;
-        } else {
-            [updatedExif[(NSString *)kCGImagePropertyGPSDictionary] addEntriesFromDictionary:gpsDict];
-        }
         
         if(!updatedMetadata[(NSString *)kCGImagePropertyGPSDictionary]){
             updatedMetadata[(NSString *)kCGImagePropertyGPSDictionary] = gpsDict;
