@@ -73,7 +73,7 @@ With this **eas.json**, the version for all builds will be based on the value fr
 
 ## Remote version source
 
-You can configure your project to rely on EAS servers to store and manage the version of your app, to do that add `{ "cli": { "appVersionSource": "remote" } }` in your **eas.json**. The remote version will be initialized with the value from a local project — if you would like to explicitly set the value directly, or EAS CLI is not able to detect what version an app is on, you can use the `eas build:version:set` command. EAS stores version information scoped by account, slug, platform, and application ID/bundle identifier — so, for example, if you are building variants with different application IDs or bundle identifiers, versioning will be independent for each of them.
+You can configure your project to rely on EAS servers to store and manage the version of your app. Add `{ "cli": { "appVersionSource": "remote" } }` in your **eas.json**. The remote version will be initialized with the value from the local project. If you would like to explicitly set the value directly, or EAS CLI is not able to detect what version the app is on, you can use the `eas build:version:set` command. EAS stores version information scoped by account, slug, platform, and application ID/bundle identifier — so, for example, if you are building variants with different application IDs or bundle identifiers, versioning will be independent for each of them.
 
 If you want to build your project locally in Android Studio or Xcode using the same version stored remotely on EAS, you can update your local project with the remote versions using `eas build:version:sync`.
 
@@ -89,17 +89,17 @@ When using a remote app version source, the values in **app.json** will not be u
 
 ### Recommended workflow
 
-The main goal of this feature is to avoid manual changes to the project every time you are uploading a new archive to run it on TestFlight / Play Store testing channels. When you are doing a production release, the user-facing version change should be explicit.
+The main goal of this feature is to avoid manual changes to the project every time you are uploading a new archive to run it on TestFlight/Play Store testing channels. When you are doing a production release, the user-facing version change should be explicit.
 
 We recommend updating `version` field after a new build goes live in the store, especially if you are using `expo-updates` with an automatic runtime version policy. This marks the beginning of a new development cycle for a new version of your app. [Learn more about deployment patterns](/eas-update/deployment-patterns.md).
 
 ## Local version source
 
-By default, the source of truth for a project versions is the local project source code itself. In this case, EAS does not write to the project, it reads the values and builds projects as they are.
+By default, the source of truth for project versions is the local project source code itself. In this case, EAS does not write to the project, it reads the values and builds projects as they are.
 
 You may opt in to auto incrementing versions locally with the `autoIncrement` option on a build profile, but it comes with some limitations.
 
-In the case of bare React Native projects, values in native code take priority, and `expo-constants` and `expo-updates` read values from **app.json**. If you rely on version values from a manifest, you should keep them in sync with native code. Keeping these values in sync is especially important if you are using EAS Update with the runtime policy set to `"runtimeVersion": { "policy": "nativeVersion" }`, because it mismatched versions may result in the delivery of updates to the wrong version of an application. We recommend using `expo-application` to read the version instead of depending on values from **app.json**.
+In the case of bare React Native projects, values in native code take precedence, and `expo-constants` and `expo-updates` read values from **app.json**. If you rely on version values from a manifest, you should keep them in sync with native code. Keeping these values in sync is especially important if you are using EAS Update with the runtime policy set to `"runtimeVersion": { "policy": "nativeVersion" }`, because mismatched versions may result in the delivery of updates to the wrong version of an application. We recommend using `expo-application` to read the version instead of depending on values from **app.json**.
 
 ### Limitations
 
