@@ -469,6 +469,8 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
     updatedExif[(NSString *)kCGImagePropertyExifPixelYDimension] = @(width);
     updatedExif[(NSString *)kCGImagePropertyExifPixelXDimension] = @(height);
       
+    NSMutableDictionary *updatedMetadata = [metadata mutableCopy];
+      
     if(options[@"additionalExif"] && [options[@"additionalExif"] isKindOfClass:[NSDictionary class]]) {
         NSDictionary *additionalExif = options[@"additionalExif"];
         [updatedExif addEntriesFromDictionary:additionalExif];
@@ -495,13 +497,18 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
         } else {
             [updatedExif[(NSString *)kCGImagePropertyGPSDictionary] addEntriesFromDictionary:gpsDict];
         }
+        
+        if(!updatedMetadata[(NSString *)kCGImagePropertyGPSDictionary]){
+            updatedMetadata[(NSString *)kCGImagePropertyGPSDictionary] = gpsDict;
+        } else {
+            [updatedMetadata[(NSString *)kCGImagePropertyGPSDictionary] addEntriesFromDictionary:gpsDict];
+        }
     }
       
     response[@"exif"] = updatedExif;
     
-    NSMutableDictionary *updatedMetadata = [metadata mutableCopy];
     updatedMetadata[(NSString *)kCGImagePropertyExifDictionary] = updatedExif;
-    
+ 
     // UIImage does not contain metadata information. We need to add them to CGImage manually.
     processedImageData = [EXCameraUtils dataFromImage:takenImage withMetadata:updatedMetadata imageQuality:quality];
   } else {
