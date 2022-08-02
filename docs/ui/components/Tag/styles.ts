@@ -20,6 +20,10 @@ export const tagStyle = css({
     marginBottom: spacing[2],
     padding: `${spacing[0.5]}px ${spacing[1.5]}px`,
   },
+
+  'nav &': {
+    whiteSpace: 'pre',
+  },
 });
 
 export const tagFirstStyle = css({

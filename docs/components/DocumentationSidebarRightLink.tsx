@@ -95,7 +95,7 @@ const isOverflowing = (el: HTMLElement) => {
   }
 
   const childrenWidth = Array.from(el.children).reduce((sum, child) => sum + child.scrollWidth, 0);
-  return childrenWidth >= el.scrollWidth;
+  return childrenWidth >= el.scrollWidth - parseInt(el.style.paddingLeft, 10);
 };
 
 type TooltipProps = React.PropsWithChildren<{
