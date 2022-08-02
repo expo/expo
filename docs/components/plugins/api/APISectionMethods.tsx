@@ -15,6 +15,7 @@ import { APISectionDeprecationNote } from '~/components/plugins/api/APISectionDe
 import { APISectionPlatformTags } from '~/components/plugins/api/APISectionPlatformTags';
 import {
   CommentTextBlock,
+  getTagNamesList,
   listParams,
   mdComponents,
   renderParams,
@@ -48,7 +49,7 @@ export const renderMethod = (
       css={[STYLES_APIBOX, !exposeInSidebar && STYLES_APIBOX_NESTED]}>
       <APISectionDeprecationNote comment={comment} />
       <APISectionPlatformTags comment={comment} prefix="Only for:" firstElement />
-      <HeaderComponent>
+      <HeaderComponent tags={getTagNamesList(comment)}>
         <InlineCode customCss={!exposeInSidebar ? STYLES_NOT_EXPOSED_HEADER : undefined}>
           {apiName && `${apiName}.`}
           {header !== 'Hooks' ? `${name}(${listParams(parameters)})` : name}

@@ -7,25 +7,37 @@ exports[`DocumentationSidebarRight correctly matches snapshot 1`] = `
     data-sidebar="true"
   >
     <a
-      class="css-133kli4"
+      class="css-10qhea3"
       href="#base-level-heading"
       style="padding-left: 0px;"
     >
-      Base level heading
+      <span
+        class="css-12j5c3t"
+      >
+        Base level heading
+      </span>
     </a>
     <a
-      class="css-i9elgv"
+      class="css-1e15kg4"
       href="#level-3-subheading"
-      style="padding-left: 16px;"
+      style="padding-left: 12px;"
     >
-      Level 3 subheading
+      <span
+        class="css-12j5c3t"
+      >
+        Level 3 subheading
+      </span>
     </a>
     <a
-      class="css-fft23p"
+      class="css-1e15kg4"
       href="#code-heading-depth-1"
-      style="padding-left: 16px;"
+      style="padding-left: 12px;"
     >
-      Code heading depth 1
+      <span
+        class="css-1ta84j1"
+      >
+        Code heading depth 1
+      </span>
     </a>
   </nav>
 </div>

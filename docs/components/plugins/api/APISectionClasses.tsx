@@ -15,6 +15,7 @@ import { renderProp } from '~/components/plugins/api/APISectionProps';
 import {
   CommentTextBlock,
   getTagData,
+  getTagNamesList,
   mdComponents,
   resolveTypeName,
   STYLES_APIBOX,
@@ -50,7 +51,7 @@ const renderClass = (clx: ClassDefinitionData, hasMultipleClasses: boolean): JSX
     <div key={`class-definition-${name}`} css={STYLES_APIBOX}>
       <APISectionDeprecationNote comment={comment} />
       {hasMultipleClasses ? (
-        <H3Code>
+        <H3Code tags={getTagNamesList(comment)}>
           <InlineCode>{name}</InlineCode>
         </H3Code>
       ) : (

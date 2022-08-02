@@ -469,6 +469,13 @@ export const getTagData = (tagName: string, comment?: CommentData) =>
 export const getAllTagData = (tagName: string, comment?: CommentData) =>
   comment?.tags?.filter(tag => tag.tag === tagName);
 
+export const getTagNamesList = (comment?: CommentData) =>
+  comment && [
+    ...(getAllTagData('platform', comment)?.map(platformData => platformData.text) || []),
+    ...(getTagData('deprecated', comment) ? ['deprecated'] : []),
+    ...(getTagData('experimental', comment) ? ['experimental'] : []),
+  ];
+
 export const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
 
 export const CommentTextBlock = ({

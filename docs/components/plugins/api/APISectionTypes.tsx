@@ -26,6 +26,7 @@ import {
   renderDefaultValue,
   renderIndexSignature,
   STYLES_APIBOX,
+  getTagNamesList,
 } from '~/components/plugins/api/APISectionUtils';
 import { Cell, Row, Table } from '~/ui/components/Table';
 
@@ -104,7 +105,7 @@ const renderType = ({
     return (
       <div key={`type-definition-${name}`} css={STYLES_APIBOX}>
         <APISectionDeprecationNote comment={comment} />
-        <H3Code>
+        <H3Code tags={getTagNamesList(comment)}>
           <InlineCode>
             {name}
             {type.declaration.signatures ? '()' : ''}
@@ -131,7 +132,7 @@ const renderType = ({
       return (
         <div key={`prop-type-definition-${name}`} css={STYLES_APIBOX}>
           <APISectionDeprecationNote comment={comment} />
-          <H3Code>
+          <H3Code tags={getTagNamesList(comment)}>
             <InlineCode>{name}</InlineCode>
           </H3Code>
           <CommentTextBlock comment={comment} />
@@ -156,7 +157,7 @@ const renderType = ({
       return (
         <div key={`type-definition-${name}`} css={STYLES_APIBOX}>
           <APISectionDeprecationNote comment={comment} />
-          <H3Code>
+          <H3Code tags={getTagNamesList(comment)}>
             <InlineCode>{name}</InlineCode>
           </H3Code>
           <CommentTextBlock comment={comment} />
@@ -177,7 +178,7 @@ const renderType = ({
     return (
       <div key={`record-definition-${name}`} css={STYLES_APIBOX}>
         <APISectionDeprecationNote comment={comment} />
-        <H3Code>
+        <H3Code tags={getTagNamesList(comment)}>
           <InlineCode>{name}</InlineCode>
         </H3Code>
         <UL>
@@ -192,7 +193,7 @@ const renderType = ({
     return (
       <div key={`generic-type-definition-${name}`} css={STYLES_APIBOX}>
         <APISectionDeprecationNote comment={comment} />
-        <H3Code>
+        <H3Code tags={getTagNamesList(comment)}>
           <InlineCode>{name}</InlineCode>
         </H3Code>
         <CommentTextBlock comment={comment} />
@@ -206,7 +207,7 @@ const renderType = ({
     return (
       <div key={`conditional-type-definition-${name}`} css={STYLES_APIBOX}>
         <APISectionDeprecationNote comment={comment} />
-        <H3Code>
+        <H3Code tags={getTagNamesList(comment)}>
           <InlineCode>
             {name}&lt;{type.checkType.name}&gt;
           </InlineCode>

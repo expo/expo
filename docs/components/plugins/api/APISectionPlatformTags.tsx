@@ -1,8 +1,8 @@
 import React from 'react';
 
-import { PlatformTags } from '~/components/plugins/PlatformTag';
 import { CommentData, CommentTagData } from '~/components/plugins/api/APIDataTypes';
 import { getAllTagData } from '~/components/plugins/api/APISectionUtils';
+import { PlatformTags } from '~/ui/components/Tag';
 
 type Props = {
   comment?: CommentData;

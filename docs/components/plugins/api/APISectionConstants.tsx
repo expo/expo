@@ -8,6 +8,7 @@ import { APISectionDeprecationNote } from '~/components/plugins/api/APISectionDe
 import { APISectionPlatformTags } from '~/components/plugins/api/APISectionPlatformTags';
 import {
   CommentTextBlock,
+  getTagNamesList,
   resolveTypeName,
   STYLES_APIBOX,
 } from '~/components/plugins/api/APISectionUtils';
@@ -24,7 +25,7 @@ const renderConstant = (
   <div key={`constant-definition-${name}`} css={STYLES_APIBOX}>
     <APISectionDeprecationNote comment={comment} />
     <APISectionPlatformTags comment={comment} prefix="Only for:" firstElement />
-    <H3Code>
+    <H3Code tags={getTagNamesList(comment)}>
       <InlineCode>
         {apiName ? `${apiName}.` : ''}
         {name}
