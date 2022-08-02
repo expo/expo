@@ -25,6 +25,7 @@ import {
   renderDefaultValue,
   STYLES_APIBOX,
   STYLES_NESTED_SECTION_HEADER,
+  getTagNamesList,
 } from '~/components/plugins/api/APISectionUtils';
 import { Cell, Row, Table } from '~/ui/components/Table';
 
@@ -114,7 +115,7 @@ const renderInterface = ({
     <div key={`interface-definition-${name}`} css={STYLES_APIBOX}>
       <APISectionDeprecationNote comment={comment} />
       <APISectionPlatformTags comment={comment} prefix="Only for:" firstElement />
-      <H3Code>
+      <H3Code tags={getTagNamesList(comment)}>
         <InlineCode>{name}</InlineCode>
       </H3Code>
       {extendedTypes?.length ? (
