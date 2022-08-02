@@ -4,7 +4,7 @@ import * as React from 'react';
 
 import TabIcon from '../components/TabIcon';
 import ExpoApis from '../screens/ExpoApisScreen';
-import getStackConfig from './StackConfig';
+import { BaseStackNavigator } from './BaseStackNavigator';
 import { optionalRequire } from './routeBuilder';
 
 const Stack = createStackNavigator();
@@ -435,18 +435,20 @@ export const Screens = [
 
 function ExpoApisStackNavigator(props: { navigation: BottomTabNavigationProp<any> }) {
   return (
-    <Stack.Navigator {...props} {...getStackConfig(props)}>
+    <BaseStackNavigator Stack={Stack} {...props}>
       <Stack.Screen name="ExpoApis" options={{ title: 'APIs in Expo SDK' }} component={ExpoApis} />
 
       {Screens.map(({ name, options, getComponent }) => (
         <Stack.Screen name={name} key={name} getComponent={getComponent} options={options || {}} />
       ))}
-    </Stack.Navigator>
+    </BaseStackNavigator>
   );
 }
+
 const icon = ({ focused }: { focused: boolean }) => {
   return <TabIcon name="code-tags" focused={focused} />;
 };
+
 ExpoApisStackNavigator.navigationOptions = {
   title: 'APIs',
   tabBarLabel: 'APIs',

@@ -5,7 +5,7 @@ import * as React from 'react';
 import TabIcon from '../components/TabIcon';
 import { Layout } from '../constants';
 import ExpoComponents from '../screens/ExpoComponentsScreen';
-import getStackConfig from './StackConfig';
+import { BaseStackNavigator } from './BaseStackNavigator';
 import { optionalRequire } from './routeBuilder';
 
 const Stack = createStackNavigator();
@@ -428,7 +428,7 @@ export const Screens = [
 
 function ExpoComponentsStackNavigator(props: { navigation: BottomTabNavigationProp<any> }) {
   return (
-    <Stack.Navigator {...props} {...getStackConfig(props)}>
+    <BaseStackNavigator Stack={Stack} {...props}>
       <Stack.Screen
         name="ExpoComponents"
         options={{ title: Layout.isSmallDevice ? 'Expo SDK Components' : 'Components in Expo SDK' }}
@@ -437,13 +437,14 @@ function ExpoComponentsStackNavigator(props: { navigation: BottomTabNavigationPr
       {Screens.map(({ name, getComponent, options }) => (
         <Stack.Screen name={name} key={name} getComponent={getComponent} options={options ?? {}} />
       ))}
-    </Stack.Navigator>
+    </BaseStackNavigator>
   );
 }
 
 const icon = ({ focused }: { focused: boolean }) => {
   return <TabIcon name="react" focused={focused} />;
 };
+
 ExpoComponentsStackNavigator.navigationOptions = {
   title: 'Components',
   tabBarLabel: 'Components',

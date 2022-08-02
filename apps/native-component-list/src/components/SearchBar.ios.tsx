@@ -1,4 +1,4 @@
-import Ionicons from '@expo/vector-icons/build/Ionicons';
+import { SearchIcon } from '@expo/styleguide-native';
 import { useNavigation } from '@react-navigation/native';
 import React from 'react';
 import {
@@ -13,6 +13,8 @@ import {
   View,
 } from 'react-native';
 
+import useTheme from '../theme/useTheme';
+
 const Layout = {
   window: {
     width: Dimensions.get('window').width,
@@ -21,11 +23,14 @@ const Layout = {
 const SearchContainerHorizontalMargin = 10;
 const SearchContainerWidth = Layout.window.width - SearchContainerHorizontalMargin * 2;
 
-const SearchIcon = () => (
-  <View style={styles.searchIconContainer}>
-    <Ionicons name="ios-search" size={18} color="#ccc" />
-  </View>
-);
+const SearchIconComponent = () => {
+  const { theme } = useTheme();
+  return (
+    <View style={styles.searchIconContainer}>
+      <SearchIcon size={14} color={theme.icon.secondary} />
+    </View>
+  );
+};
 
 export default function SearchBar({
   textColor,
@@ -48,6 +53,7 @@ export default function SearchBar({
   onChangeQuery?: (query: string) => void;
   onCancelPress?: (goBack: () => void) => void;
 }) {
+  const { theme } = useTheme();
   const navigation = useNavigation();
   const [text, setText] = React.useState(initialValue);
   const [showCancelButton, setShowCancelButton] = React.useState(false);
@@ -110,7 +116,11 @@ export default function SearchBar({
 
   return (
     <View style={styles.container}>
-      <View style={[styles.searchContainer, { width: inputWidth }]}>
+      <View
+        style={[
+          styles.searchContainer,
+          { width: inputWidth, backgroundColor: theme.background.tertiary },
+        ]}>
         <TextInput
           ref={_textInput}
           clearButtonMode="while-editing"
@@ -124,8 +134,7 @@ export default function SearchBar({
           onSubmitEditing={_handleSubmit}
           style={[styles.searchInput, searchInputStyle]}
         />
-
-        <SearchIcon />
+        <SearchIconComponent />
       </View>
 
       <View
@@ -170,7 +179,6 @@ const styles = StyleSheet.create({
   searchContainer: {
     height: 30,
     width: SearchContainerWidth,
-    backgroundColor: '#f2f2f2',
     borderRadius: 5,
     marginHorizontal: SearchContainerHorizontalMargin,
     marginTop: 10,
@@ -179,7 +187,7 @@ const styles = StyleSheet.create({
   searchIconContainer: {
     position: 'absolute',
     left: 7,
-    top: 6,
+    top: 8,
     bottom: 0,
   },
   searchInput: {

@@ -1,15 +1,14 @@
 import {
   createDrawerNavigator,
   DrawerContentComponentProps,
-  DrawerContentOptions,
   DrawerContentScrollView,
   DrawerItemList,
 } from '@react-navigation/drawer';
 import * as React from 'react';
 import { Platform, ScrollViewProps, StyleSheet, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import useTheme from 'src/theme/useTheme';
 
-import { Colors } from '../constants';
 import Screens from './MainNavigators';
 import createTabNavigator from './createTabNavigator';
 
@@ -23,7 +22,7 @@ function CustomDrawerContent({
 }: ScrollViewProps & {
   children?: React.ReactNode;
   hideLabels?: boolean;
-} & DrawerContentComponentProps<DrawerContentOptions>) {
+} & DrawerContentComponentProps) {
   return (
     <DrawerContentScrollView {...props}>
       <DrawerItemList {...props} labelStyle={hideLabels ? { display: 'none' } : undefined} />
@@ -32,6 +31,7 @@ function CustomDrawerContent({
 }
 
 export default function MainTabbedNavigator(props: any) {
+  const { theme } = useTheme();
   const { width } = useWindowDimensions();
   const { left } = useSafeAreaInsets();
   const isMobile = width <= 640;
@@ -50,20 +50,17 @@ export default function MainTabbedNavigator(props: any) {
         // or material-bottom-tabs navigator
         // material-bottom-tabs props
         shifting
-        activeTintColor={Colors.tabIconSelected}
-        inactiveTintColor={Colors.tabIconDefault}
-        barStyle={{
-          backgroundColor: Colors.tabBar,
-          borderTopWidth: StyleSheet.hairlineWidth,
-          borderTopColor: Colors.tabIconDefault,
-        }}
+        activeTintColor={theme.link.default}
+        inactiveTintColor={theme.icon.secondary}
         // bottom-tabs props
         tabBarOptions={{
           style: {
-            backgroundColor: Colors.tabBar,
+            backgroundColor: theme.background.default,
+            borderTopWidth: StyleSheet.hairlineWidth,
+            borderTopColor: theme.border.default,
           },
-          activeTintColor: Colors.tabIconSelected,
-          inactiveTintColor: Colors.tabIconDefault,
+          activeTintColor: theme.link.default,
+          inactiveTintColor: theme.text.secondary,
         }}>
         {Object.entries(Screens).map(([name, Screen]) => (
           <Tab.Screen

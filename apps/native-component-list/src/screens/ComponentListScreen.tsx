@@ -1,10 +1,9 @@
-import Ionicons from '@expo/vector-icons/build/Ionicons';
+import { ChevronRightIcon } from '@expo/styleguide-native';
 import { Link, useLinkProps } from '@react-navigation/native';
 import React from 'react';
 import {
   FlatList,
   ListRenderItem,
-  PixelRatio,
   StatusBar,
   StyleSheet,
   Text,
@@ -15,6 +14,8 @@ import {
   useWindowDimensions,
 } from 'react-native';
 import { useSafeArea } from 'react-native-safe-area-context';
+
+import useTheme from '../theme/useTheme';
 
 interface ListElement {
   name: string;
@@ -33,6 +34,7 @@ function LinkButton({
   children,
   ...rest
 }: React.ComponentProps<typeof Link> & { disabled?: boolean; children?: React.ReactNode }) {
+  const { theme } = useTheme();
   const { onPress, ...props } = useLinkProps({ to, action });
 
   const [isPressed, setIsPressed] = React.useState(false);
@@ -52,7 +54,7 @@ function LinkButton({
         {...rest}
         style={[
           {
-            backgroundColor: isPressed ? '#dddddd' : undefined,
+            backgroundColor: isPressed ? theme.background.tertiary : undefined,
           },
           rest.style,
         ]}>
@@ -62,7 +64,11 @@ function LinkButton({
   }
 
   return (
-    <TouchableHighlight underlayColor="#dddddd" onPress={onPress} {...props} {...rest}>
+    <TouchableHighlight
+      underlayColor={theme.background.tertiary}
+      onPress={onPress}
+      {...props}
+      {...rest}>
       {children}
     </TouchableHighlight>
   );
@@ -73,6 +79,7 @@ export default function ComponentListScreen(props: Props) {
     StatusBar.setHidden(false);
   }, []);
 
+  const { theme } = useTheme();
   const { width } = useWindowDimensions();
   const isMobile = width <= 640;
 
@@ -82,14 +89,22 @@ export default function ComponentListScreen(props: Props) {
   const renderExampleSection: ListRenderItem<ListElement> = ({ item }) => {
     const { route, name: exampleName, isAvailable } = item;
     return (
-      <LinkButton disabled={!isAvailable} to={route ?? exampleName} style={[styles.rowTouchable]}>
+      <LinkButton
+        disabled={!isAvailable}
+        to={route ?? exampleName}
+        style={[
+          styles.rowTouchable,
+          {
+            borderColor: theme.border.default,
+          },
+        ]}>
         <View
           pointerEvents="none"
           style={[styles.row, !isAvailable && styles.disabledRow, { paddingRight: 10 + right }]}>
           {props.renderItemRight && props.renderItemRight(item)}
-          <Text style={styles.rowLabel}>{exampleName}</Text>
+          <Text style={[styles.rowLabel, { color: theme.text.default }]}>{exampleName}</Text>
           <Text style={styles.rowDecorator}>
-            <Ionicons name="chevron-forward" size={18} color="#595959" />
+            <ChevronRightIcon size={18} color={theme.icon.secondary} />
           </Text>
         </View>
       </LinkButton>
@@ -116,7 +131,13 @@ export default function ComponentListScreen(props: Props) {
       removeClippedSubviews={false}
       keyboardShouldPersistTaps="handled"
       keyboardDismissMode="on-drag"
-      contentContainerStyle={{ backgroundColor: '#fff', paddingBottom: isMobile ? 0 : bottom }}
+      style={{
+        backgroundColor: theme.background.screen,
+      }}
+      contentContainerStyle={{
+        backgroundColor: theme.background.default,
+        paddingBottom: isMobile ? 0 : bottom,
+      }}
       data={sortedApis}
       keyExtractor={keyExtractor}
       renderItem={renderExampleSection}
@@ -141,8 +162,7 @@ const styles = StyleSheet.create({
     paddingRight: 4,
   },
   rowTouchable: {
-    borderBottomWidth: 1.0 / PixelRatio.get(),
-    borderBottomColor: '#dddddd',
+    borderBottomWidth: StyleSheet.hairlineWidth,
   },
   disabledRow: {
     opacity: 0.3,
