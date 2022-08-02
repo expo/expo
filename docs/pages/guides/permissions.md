@@ -38,7 +38,7 @@ Apps using dangerous or signature permissions without valid reasons _may be reje
 
 In the bare workflow, permissions are controlled in your project **AndroidManifest.xml**.
 
-Some Expo and React Native modules include permissions by default. For example, if you use `expo-location`, the `ACCESS_COARSE_LOCATION`, `ACCESS_FINE_LOCATION` and `FOREGROUND_SERVICE` are added to your app's permissions automatically. To limit the permissions your bare workflow app requires, see the [exclude Android Permissions](#exclude-android-permissions).
+Some Expo and React Native modules include permissions by default. For example, if you use `expo-location`, the `ACCESS_COARSE_LOCATION`, `ACCESS_FINE_LOCATION` and `FOREGROUND_SERVICE` are added to your app's permissions automatically. To limit the permissions your bare workflow app requires, see [Excluding Android Permissions](#excluding-android-permissions).
 
 Apps using dangerous or signature permissions without valid reasons _may be rejected by Google_. Make sure you follow the [Android permissions best practices](https://developer.android.com/training/permissions/usage-notes) when submitting your app.
 
