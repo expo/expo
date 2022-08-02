@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.4.1)
 
+project(expo-modules-core)
+
 set(CMAKE_VERBOSE_MAKEFILE ON)
 set(CMAKE_ANDROID_STL_TYPE c++_shared)
 set(CMAKE_CXX_STANDARD 17)
@@ -24,6 +26,14 @@ add_library(
         ${common_sources}
         ${sources_android}
 )
+
+
+if(IS_NEW_ARCHITECTURE_ENABLED)
+  add_subdirectory(Fabric)
+  set(NEW_ARCHITECTURE_DEPENDENCIES "fabric")
+else()
+  set(NEW_ARCHITECTURE_DEPENDENCIES "")
+endif()
 
 # Extracted AAR: ${BUILD_DIR}/react-native-0*/jni/${ANDROID_ABI}
 file(GLOB LIBRN_DIR "${REACT_NATIVE_SO_DIR}/${ANDROID_ABI}")
@@ -150,6 +160,7 @@ if (${FOR_HERMES})
             ${FOLLY_LIB}
             ${REACT_NATIVE_MODULES_CORE}
             android
+            ${NEW_ARCHITECTURE_DEPENDENCIES}
     )
 else ()
     target_link_libraries(
@@ -162,5 +173,6 @@ else ()
             ${FOLLY_LIB}
             ${REACT_NATIVE_MODULES_CORE}
             android
+            ${NEW_ARCHITECTURE_DEPENDENCIES}
     )
 endif ()

@@ -122,6 +122,8 @@ if (FOR_HERMES) {
 // END HERMES
 
 
+def isNewArchitectureEnabled = findProperty("newArchEnabled") == "true"
+
 // Creating sources with comments
 task androidSourcesJar(type: Jar) {
   classifier = 'sources'
@@ -174,7 +176,11 @@ android {
           "-DREACT_NATIVE_TARGET_VERSION=${REACT_NATIVE_TARGET_VERSION}",
           "-DBOOST_VERSION=${BOOST_VERSION}",
           "-DFOR_HERMES=${FOR_HERMES}",
-          "-DHERMES_HEADER_DIR=${HERMES_HEADER_DIR}"
+          "-DHERMES_HEADER_DIR=${HERMES_HEADER_DIR}",
+          "-DIS_NEW_ARCHITECTURE_ENABLED=${isNewArchitectureEnabled}",
+          "-DPROJECT_BUILD_DIR=$buildDir",
+          "-DREACT_ANDROID_DIR=${REACT_NATIVE_DIR}/ReactAndroid",
+          "-DREACT_ANDROID_BUILD_DIR=${REACT_NATIVE_DIR}/ReactAndroid/build"
       }
     }
   }
@@ -459,11 +465,41 @@ task prepareHermes(dependsOn: createNativeDepsDirectories) {
 
 task prepareThirdPartyNdkHeaders(dependsOn: [prepareBoost, prepareDoubleConversion, prepareFolly, prepareHermes]) {}
 
+def packageReactNdkDebugLibs = tasks.register("packageReactNdkDebugLibs", Copy) {
+  dependsOn(":ReactAndroid:packageReactNdkDebugLibsForBuck")
+  from("$REACT_NATIVE_DIR/ReactAndroid/src/main/jni/prebuilt/lib")
+  into("$buildDir/react-ndk/exported")
+}
+def packageReactNdkReleaseLibs = tasks.register("packageReactNdkReleaseLibs", Copy) {
+  dependsOn(":ReactAndroid:packageReactNdkReleaseLibsForBuck")
+  from("$REACT_NATIVE_DIR/ReactAndroid/src/main/jni/prebuilt/lib")
+  into("$buildDir/react-ndk/exported")
+}
+
 afterEvaluate {
   extractAARHeaders.dependsOn(prepareThirdPartyNdkHeaders)
   extractJNIFiles.dependsOn(prepareThirdPartyNdkHeaders)
   if (hasHermesProject && !prebuiltHermesCacheHit) {
     prepareHermes.dependsOn(":ReactAndroid:hermes-engine:assembleDebug")
+  }
+
+  if (isNewArchitectureEnabled) {
+    preDebugBuild.dependsOn(packageReactNdkDebugLibs)
+    preReleaseBuild.dependsOn(packageReactNdkReleaseLibs)
+
+    // Due to a bug inside AGP, we have to explicitly set a dependency
+    // between configureCMake* tasks and the preBuild tasks.
+    // This can be removed once this is solved: https://issuetracker.google.com/issues/207403732
+    configureCMakeDebug.dependsOn(preDebugBuild)
+    configureCMakeRelWithDebInfo.dependsOn(preReleaseBuild)
+    reactNativeArchitectures().each { architecture ->
+      tasks.findByName("configureCMakeDebug[${architecture}]")?.configure {
+        dependsOn("preDebugBuild")
+      }
+      tasks.findByName("configureCMakeRelWithDebInfo[${architecture}]")?.configure {
+        dependsOn("preReleaseBuild")
+      }
+    }
   }
 }
 
