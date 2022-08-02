@@ -7,7 +7,11 @@ import { H2, H3Code, H4Code } from '~/components/plugins/Headings';
 import { EnumDefinitionData, EnumValueData } from '~/components/plugins/api/APIDataTypes';
 import { APISectionDeprecationNote } from '~/components/plugins/api/APISectionDeprecationNote';
 import { APISectionPlatformTags } from '~/components/plugins/api/APISectionPlatformTags';
-import { CommentTextBlock, STYLES_APIBOX } from '~/components/plugins/api/APISectionUtils';
+import {
+  CommentTextBlock,
+  getTagNamesList,
+  STYLES_APIBOX,
+} from '~/components/plugins/api/APISectionUtils';
 
 export type APISectionEnumsProps = {
   data: EnumDefinitionData[];
@@ -28,7 +32,7 @@ const renderEnum = ({ name, children, comment }: EnumDefinitionData): JSX.Elemen
   <div key={`enum-definition-${name}`} css={[STYLES_APIBOX, enumContentStyles]}>
     <APISectionDeprecationNote comment={comment} />
     <APISectionPlatformTags comment={comment} prefix="Only for:" firstElement />
-    <H3Code>
+    <H3Code tags={getTagNamesList(comment)}>
       <InlineCode>{name}</InlineCode>
     </H3Code>
     <CommentTextBlock comment={comment} includePlatforms={false} />

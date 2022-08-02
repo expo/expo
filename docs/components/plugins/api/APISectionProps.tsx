@@ -16,6 +16,7 @@ import {
   CommentTextBlock,
   getCommentOrSignatureComment,
   getTagData,
+  getTagNamesList,
   renderTypeOrSignatureType,
   resolveTypeName,
   STYLES_APIBOX,
@@ -106,7 +107,7 @@ export const renderProp = (
     <div key={`prop-entry-${name}`} css={[STYLES_APIBOX, !exposeInSidebar && STYLES_APIBOX_NESTED]}>
       <APISectionDeprecationNote comment={extractedComment} />
       <APISectionPlatformTags comment={comment} prefix="Only for:" firstElement />
-      <HeaderComponent>
+      <HeaderComponent tags={getTagNamesList(comment)}>
         <InlineCode customCss={!exposeInSidebar ? STYLES_NOT_EXPOSED_HEADER : undefined}>
           {name}
         </InlineCode>
