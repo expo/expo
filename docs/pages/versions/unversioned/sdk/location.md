@@ -9,6 +9,7 @@ import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
 import { AndroidPermissions } from '~/components/plugins/permissions';
+import { ConfigClassic, ConfigReactNative } from '~/components/plugins/ConfigSection';
 
 `expo-location` allows reading geolocation information from the device. Your app can poll for the current location or subscribe to location update events.
 
@@ -22,14 +23,21 @@ import { AndroidPermissions } from '~/components/plugins/permissions';
 
 ### Android permissions
 
-- This module requires the permissions for approximate and exact device location. It also needs the foreground service permission to subscribe to location updates, while the app is in use. The `android.permission.ACCESS_COARSE_LOCATION`, `ACCESS_FINE_LOCATION`, and `FOREGROUND_SERVICE` permissions are automatically added.
-- In order to use background location features, you also must add the `android.permission.ACCESS_BACKGROUND_LOCATION` and [submit your app for review and request access to use the background location permission](https://support.google.com/googleplay/android-developer/answer/9799150?hl=en).
+The `expo-location` module requires permission for approximate (`ACCESS_COARSE_LOCATION`) and precise (`ACCESS_FINE_LOCATION`) device location in the `android.permission` property in **app.json**. It also needs the foreground service permission (`FOREGROUND_SERVICE`) to subscribe to location updates while the app is in use. When you install this module in your Expo project, all of the three permissions are added automatically.
+
+To use background location features, you must add the `ACCESS_BACKGROUND_LOCATION` and [submit your app for review and request access to use the background location permission](https://support.google.com/googleplay/android-developer/answer/9799150?hl=en).
 
 <AndroidPermissions permissions={['ACCESS_COARSE_LOCATION', 'ACCESS_FINE_LOCATION', 'FOREGROUND_SERVICE', 'ACCESS_BACKGROUND_LOCATION']} />
 
+#### Excluding a permission
+
+When your Expo project doesn't benefit from having a particular permission included, you can omit it. For example, if your application doesn't need access to the precise location, you can exclude the `ACCESS_FINE_LOCATION` permission.
+
+To learn more on how to exclude a permission, see [Excluding Android permissions](/guides/permissions/#excluding-android-permissions).
+
 ### Background Location Methods
 
-In order to use Background Location methods, the following requirements apply:
+To use Background Location methods, the following requirements apply:
 
 - Location permissions must be granted. On iOS it must be granted with `Always` option.
 - **(_iOS only_)** `"location"` background mode must be specified in **Info.plist** file. See [background tasks configuration guide](task-manager.md#configuration).
@@ -37,7 +45,7 @@ In order to use Background Location methods, the following requirements apply:
 
 ### Geofencing Methods
 
-In order to use Geofencing methods, the following requirements apply:
+To use Geofencing methods, the following requirements apply:
 
 - Location permissions must be granted. On iOS it must be granted with `Always` option.
 - The Geofencing task must be defined in the top-level scope, using [TaskManager.defineTask](task-manager.md#taskmanagerdefinetasktaskname-task).

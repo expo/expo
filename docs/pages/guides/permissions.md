@@ -2,6 +2,8 @@
 title: Permissions
 ---
 
+import { ConfigClassic, ConfigReactNative } from '~/components/plugins/ConfigSection';
+
 When you are creating an app that requires access to potentially sensitive information on a user's device, such as their location or contacts, you need to ask for the user's permission first. For example, to access the user's media library, you will need to use [MediaLibrary.requestPermissionsAsync()](../../versions/latest/sdk/media-library.md#medialibraryrequestpermissionsasync).
 
 In Expo Go, there isn't much you need to think about to interact with permissions beyond requesting permissions before using certain APIs. This changes when you want to deploy your app to an app store. Please read the [permissions on iOS](#ios) and [permissions on Android](#android) sections carefully before deploying your app to stores. If you don't configure or explain the permissions properly **it may result in your app getting rejected or pulled from the stores**. Read more about deploying to the stores in the [App Store Deployment Guide](../../../distribution/app-stores.md#system-permissions-dialogs-on-ios).
@@ -26,29 +28,53 @@ You can find the full list of available properties in [Apple's InfoPlistKeyRefer
 
 ### Managed workflow
 
-On Android, permissions are little bit simpler than iOS. In the managed workflow, permissions are controlled via the `android.permissions` property in your [**app.json** file](../../workflow/configuration.md#android). In the bare workflow, they have to be defined in your **AndroidManifest.xml**.
+On Android, permissions are a bit simpler than iOS. In the managed workflow, permissions are controlled via the `android.permissions` property in the [**app.json**](/versions/latest/config/app/#android).
 
-Some Expo and React Native modules include permissions by default. If you use `expo-location`, for example, both the `ACCESS_COARSE_LOCATION` and `ACCESS_FINE_LOCATION` are implied and added to your app's permissions automatically.
+Some Expo and React Native modules include permissions by default. For example, if you use `expo-location`, the `ACCESS_COARSE_LOCATION`, `ACCESS_FINE_LOCATION` and `FOREGROUND_SERVICE` are added to your app's permissions automatically. [See the `android.permissions` documentation](/versions/latest/config/app.md#permissions) to learn about which permissions are always included. To limit the permissions your managed workflow app requires, see [Excluding Android Permissions](#excluding-android-permissions).
 
-To limit the permissions your managed workflow app requires, set the `android.permissions` property in your [**app.json** file](../../workflow/configuration.md#android) to list only the permissions you need, and Expo will also include the minimum permissions it requires to run. See the [`Permission types`](#permission-types) below to learn about which Android permissions are added. You can find a full list of all available permissions in the [Android Manifest.permissions reference](https://developer.android.com/reference/android/Manifest.permission).
-
-- [See the `android.permissions` documentation](/versions/latest/config/app.md#permissions) to learn about which permissions are always included.
-- Apps using dangerous or signature permissions without valid reasons _may be rejected by Google_. Make sure you follow the [Android permissions best practices](https://developer.android.com/training/permissions/usage-notes) when submitting your app.
-- By default, the permissions implied by the modules you installed are added to the **AndroidManifest.xml** at build time. To exclude permissions, you have to define the `android.permissions` manifest property.
+Apps using dangerous or signature permissions without valid reasons _may be rejected by Google_. Make sure you follow the [Android permissions best practices](https://developer.android.com/training/permissions/usage-notes) when submitting your app.
 
 ### Bare workflow
 
 In the bare workflow, permissions are controlled in your project **AndroidManifest.xml**.
 
-Some Expo and React Native modules include permissions by default. If you use `expo-location`, for example, both the `ACCESS_COARSE_LOCATION` and `ACCESS_FINE_LOCATION` are implied and added to your app's permissions automatically. To limit the permissions your managed workflow app requires, add them them to a [list of explicitly excluded permissions](#excluding-android-permissions).
+Some Expo and React Native modules include permissions by default. For example, if you use `expo-location`, the `ACCESS_COARSE_LOCATION`, `ACCESS_FINE_LOCATION` and `FOREGROUND_SERVICE` are added to your app's permissions automatically. To limit the permissions your bare workflow app requires, see the [exclude Android Permissions](#exclude-android-permissions).
 
 Apps using dangerous or signature permissions without valid reasons _may be rejected by Google_. Make sure you follow the [Android permissions best practices](https://developer.android.com/training/permissions/usage-notes) when submitting your app.
 
-#### Excluding Android permissions
+### Excluding Android permissions
 
-When adding Expo and other React Native modules to your project, certain Android permissions might be implied automatically. The modules should only add relevant permissions **required** to use the module, however, sometimes you may want to remove some of these permissions.
+When adding Expo and other React Native modules to your project, certain Android permissions might be implied automatically. The modules should only add relevant permissions **required** to use the module. However, sometimes you may want to remove some of these permissions.
+
+For example, using `expo-location` module, the `ACCESS_COARSE_LOCATION`, `ACCESS_FINE_LOCATION` and `FOREGROUND_SERVICE` are added to your app's permissions automatically. If your application doesn't need access to the precise location, you can exclude the `ACCESS_FINE_LOCATION` permission.
+
+When you are building your app with [EAS Build](/build/introduction/), you can use a [Config Plugin](/guides/config-plugins/#using-a-plugin-in-your-app) in **app.json** or **app.config.json** to exclude a permission. In the example config below, the `ACCESS_FINE_LOCATION` is omitted when the app is built using EAS:
+
+```json
+{
+  "expo": {
+    "plugins": [
+      "expo-location": {
+        "withBlockedPermission": ["ACCESS_FINE_LOCATION"]
+      }
+    ]
+  }
+}
+```
+
+<ConfigClassic>
+
+To limit the permissions your managed workflow app requires, set the `android.permissions` property in your **app.json** to list only the permissions you need, and Expo will also include the minimum permissions it requires to run.
+
+Learn how to configure permissions with the [app manifest `permissions` property](/versions/latest/config/app/#permissions).
+
+</ConfigClassic>
+
+<ConfigReactNative>
 
 Since the `android.permissions` manifest property doesn't work in the bare workflow, you'll need to edit **AndroidManifest.xml** to exclude specific permissions from the build. You can do that with the `tools:node="remove"` attribute on the `<use-permission>` tag.
+
+> You can find a full list of all available permissions in the [Android Manifest.permissions reference](https://developer.android.com/reference/android/Manifest.permission).
 
 ```xml
 <manifest xmlns:tools="http://schemas.android.com/tools">
@@ -57,6 +83,8 @@ Since the `android.permissions` manifest property doesn't work in the bare workf
 ```
 
 > **Note:** you have to define the `xmlns:tools` attribute on `<manifest>` before you can use the `tools:node` attribute on permissions.
+
+</ConfigReactNative>
 
 ## Permissions on Web
 
