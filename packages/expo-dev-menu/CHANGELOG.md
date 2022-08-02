@@ -8,9 +8,27 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] fix use_frameworks! compilation. ([#18073](https://github.com/expo/expo/pull/18073) by [@douglowder](https://github.com/douglowder))
-
 ### 💡 Others
+
+- Refactored inline Android emulator checks to use enhanced checking in `EmulatorUtilities.isRunningOnEmulator()`. ([#16177](https://github.com/expo/expo/pull/16177)) by [@kbrandwijk](https://github.com/kbrandwijk), [@keith-kurak](https://github.com/keith-kurak))
+
+## 1.1.1 — 2022-07-20
+
+### 🐛 Bug fixes
+
+- Fixed compatibility with the `react-native-reanimated` on iOS. ([#18306](https://github.com/expo/expo/pull/18306) by [@lukmccall](https://github.com/lukmccall))
+
+## 1.1.0 — 2022-07-18
+
+### 🎉 New features
+
+- Added support for React Native 0.69.X. ([#18006](https://github.com/expo/expo/pull/18006) by [@kudo](https://github.com/kudo) & [#18182](https://github.com/expo/expo/pull/18182) by [@lukmccall](https://github.com/lukmccall))
+
+## 1.0.1 — 2022-07-14
+
+### 🐛 Bug fixes
+
+- [iOS] fix use_frameworks! compilation. ([#18073](https://github.com/expo/expo/pull/18073) by [@douglowder](https://github.com/douglowder))
 
 ## 1.0.0 — 2022-06-09
 

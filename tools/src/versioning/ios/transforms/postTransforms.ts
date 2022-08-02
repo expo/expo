@@ -77,6 +77,13 @@ export function postTransforms(versionName: string): TransformPipeline {
         replace: new RegExp(`(React)\\/${versionName}(bridging)\\/`, 'g'),
         with: `$1/$2/${versionName}`,
       },
+      {
+        // Codegen adds methods to `RCTCxxConvert` that start with `JS_`, which refer to `JS::`
+        // C++ namespace that we prefix, so these methods must be prefixed as well.
+        paths: ['FBReactNativeSpec.h', 'FBReactNativeSpec-generated.mm'],
+        replace: /(RCTManagedPointer \*\))(JS_)/g,
+        with: `$1${versionName}$2`,
+      },
 
       // Universal modules
       {

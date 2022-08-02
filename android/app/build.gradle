@@ -34,8 +34,8 @@ android {
     targetSdkVersion safeExtGet("targetSdkVersion", 31)
     // ADD VERSIONS HERE
     // BEGIN VERSIONS
-    versionCode 161
-    versionName '2.22.3'
+    versionCode 173
+    versionName '2.25.1'
     // END VERSIONS
 
     multiDexEnabled true
@@ -211,6 +211,11 @@ dependencies {
   // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
 
   // ADD_NEW_SDKS_HERE
+
+
+  // BEGIN_SDK_46
+  versionedImplementation(project(':expoview-abi46_0_0'))
+  // END_SDK_46
 
 
   // BEGIN_SDK_45

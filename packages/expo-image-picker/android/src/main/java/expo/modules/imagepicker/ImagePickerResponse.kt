@@ -18,24 +18,27 @@ internal sealed class ImagePickerResponse : Record {
     @Field val uri: String,
     @Field val width: Int,
     @Field val height: Int,
+    @Field val assetId: String?,
   ) : ImagePickerResponse() {
     class Image(
       uri: String,
       width: Int,
       height: Int,
+      assetId: String?,
 
       @Field val base64: String?,
       @Field val exif: Bundle?
-    ) : Single(MediaType.IMAGE, uri, width, height)
+    ) : Single(MediaType.IMAGE, uri, width, height, assetId)
 
     class Video(
       uri: String,
       width: Int,
       height: Int,
+      assetId: String?,
 
       @Field val duration: Int,
       @Field val rotation: Int
-    ) : Single(MediaType.VIDEO, uri, width, height)
+    ) : Single(MediaType.VIDEO, uri, width, height, assetId)
   }
 
   class Multiple(

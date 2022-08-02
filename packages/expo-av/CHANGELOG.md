@@ -6,9 +6,23 @@
 
 ### 🎉 New features
 
+- Added support for audio panning on Android (MediaPlayer implementation only) via `audioPan` prop. ([#15530](https://github.com/expo/expo/pull/15530) by [@DominickVale](https://github.com/DominickVale))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 12.0.2 — 2022-07-18
+
+### 🐛 Bug fixes
+
+- Fixed unhandled promise rejection when `Video` is unmounted. ([#18281](https://github.com/expo/expo/pull/18281) by [@barthap](https://github.com/barthap))
+
+## 12.0.1 — 2022-07-16
+
+### 🐛 Bug fixes
+
+- Automatically unload `Video` component before React Native initiates an unmount to prevent memory leak crashes. ([#18173](https://github.com/expo/expo/pull/18173) by [@hirbod](https://github.com/hirbod) and [@Pickleboyonline](https://github.com/Pickleboyonline))
 
 ## 12.0.0 — 2022-07-07
 
@@ -39,7 +53,7 @@
 
 ### 🐛 Bug fixes
 
-- On iOS fix crash caused by updating `AVPlaybackStatus` from both `<Video />` props and  the Playback API at the same time. Also prevented a crash on iOS caused by removing the Video without unlisting its underlying native `EXAVPlayerData` as an observer. ([#17036](https://github.com/expo/expo/pull/17036) by [@Pickleboyonline](https://github.com/Pickleboyonline))
+- On iOS fix crash caused by updating `AVPlaybackStatus` from both `<Video />` props and the Playback API at the same time. Also prevented a crash on iOS caused by removing the Video without unlisting its underlying native `EXAVPlayerData` as an observer. ([#17036](https://github.com/expo/expo/pull/17036) by [@Pickleboyonline](https://github.com/Pickleboyonline))
 
 ## 11.2.0 — 2022-04-18
 

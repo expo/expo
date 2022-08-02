@@ -34,6 +34,9 @@ export function mockConstants(
   jest.doMock('expo-constants', () => {
     const ConstantsModule = jest.requireActual('expo-constants');
     const { default: Constants } = ConstantsModule;
+    const expoConfig = mockManifest.manifest
+      ? mockManifest.manifest
+      : mockManifest.manifest2?.extra?.expoClient;
     return {
       ...ConstantsModule,
       // must explicitly include this in order to mock both default and named exports
@@ -42,6 +45,7 @@ export function mockConstants(
         ...Constants,
         ...constants,
         ...mockManifest,
+        expoConfig,
       },
     };
   });

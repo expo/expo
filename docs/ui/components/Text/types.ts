@@ -15,6 +15,7 @@ export enum TextElement {
   UL = 'ul',
   OL = 'ol',
   PRE = 'pre',
+  KBD = 'kbd',
 }
 
 export type TextWeight = keyof typeof typography.utility.weight;

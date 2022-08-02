@@ -2,7 +2,9 @@
 #include "JSIInteropModuleRegistry.h"
 #include "JavaScriptValue.h"
 #include "JavaScriptObject.h"
+#include "JavaScriptTypedArray.h"
 #include "CachedReferencesRegistry.h"
+#include "Exceptions.h"
 
 #include <utility>
 
@@ -112,6 +114,13 @@ std::vector<jvalue> MethodMetadata::convertJSIArgsToJNI(
           std::make_shared<jsi::Object>(arg->getObject(rt))
         ).release()
       );
+    } else if (desiredType & CppType::TYPED_ARRAY) {
+      jarg->l = makeGlobalIfNecessary(
+        JavaScriptTypedArray::newObjectCxxArgs(
+          moduleRegistry->runtimeHolder->weak_from_this(),
+          std::make_shared<jsi::Object>(arg->getObject(rt))
+        ).release()
+      );
     } else if (arg->isNull() || arg->isUndefined()) {
       jarg->l = nullptr;
     } else if (arg->isNumber()) {
@@ -190,12 +199,41 @@ jsi::Function MethodMetadata::toSyncFunction(
       const jsi::Value *args,
       size_t count
     ) -> jsi::Value {
-      return this->callSync(
-        rt,
-        moduleRegistry,
-        args,
-        count
-      );
+      try {
+        return this->callSync(
+          rt,
+          moduleRegistry,
+          args,
+          count
+        );
+      } catch (jni::JniException &jniException) {
+        jni::local_ref<jni::JThrowable> unboxedThrowable = jniException.getThrowable();
+        if (unboxedThrowable->isInstanceOf(CodedException::javaClassLocal())) {
+          auto codedException = jni::static_ref_cast<CodedException>(unboxedThrowable);
+          auto code = codedException->getCode();
+          auto message = codedException->getLocalizedMessage();
+
+          if (rt.global().hasProperty(rt, "ExpoModulesCore_CodedError")) {
+            auto jsCodedError = rt.global()
+              .getProperty(rt, "ExpoModulesCore_CodedError")
+              .asObject(rt)
+              .asFunction(rt);
+
+            throw jsi::JSError(
+              message.value_or(""),
+              rt,
+              jsCodedError.callAsConstructor(
+                rt,
+                jsi::String::createFromUtf8(rt, code),
+                jsi::String::createFromUtf8(rt, message.value_or(""))
+              )
+            );
+          }
+        }
+
+        // Rethrow error if we can't wrap it.
+        throw;
+      }
     });
 }
 

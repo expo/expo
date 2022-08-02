@@ -88,12 +88,12 @@ const isOverflowing = (el: HTMLElement) => {
   return el.clientWidth < el.scrollWidth;
 };
 
-type TooltipProps = {
+type TooltipProps = React.PropsWithChildren<{
   isCode?: boolean;
   topOffset: number;
-};
+}>;
 
-const Tooltip: React.FC<TooltipProps> = ({ children, isCode, topOffset }) => (
+const Tooltip = ({ children, isCode, topOffset }: TooltipProps) => (
   <div css={[STYLES_TOOLTIP, isCode && STYLES_CODE_TOOLTIP]} style={{ right: 20, top: topOffset }}>
     {children}
   </div>

@@ -17,10 +17,11 @@ import {
   TypeDefinitionData,
   TypePropertyDataFlags,
 } from '~/components/plugins/api/APIDataTypes';
-import { PlatformTags } from '~/components/plugins/api/APISectionPlatformTags';
+import { APISectionPlatformTags } from '~/components/plugins/api/APISectionPlatformTags';
 import * as Constants from '~/constants/theme';
 import { Cell, HeaderCell, Row, Table, TableHead } from '~/ui/components/Table';
 import { tableWrapperStyle } from '~/ui/components/Table/Table';
+import { A } from '~/ui/components/Text';
 
 const isDev = process.env.NODE_ENV === 'development';
 
@@ -33,6 +34,7 @@ export enum TypeDocKind {
   Interface = 256,
   Property = 1024,
   Method = 2048,
+  Parameter = 32768,
   TypeAlias = 4194304,
 }
 
@@ -86,11 +88,11 @@ export const mdInlineComponents: MDComponents = {
 const nonLinkableTypes = [
   'ColorValue',
   'Component',
+  'ComponentClass',
   'E',
   'EventSubscription',
   'File',
   'FileList',
-  'Manifest',
   'NativeSyntheticEvent',
   'ParsedQs',
   'ServiceActionResult',
@@ -124,13 +126,15 @@ const replaceableTypes: Partial<Record<string, string>> = {
 };
 
 const hardcodedTypeLinks: Record<string, string> = {
-  AVPlaybackSource: '/versions/latest/sdk/av/#playback-api',
-  AVPlaybackStatus: '/versions/latest/sdk/av/#playback-status',
-  AVPlaybackStatusToSet: '/versions/latest/sdk/av/#default-initial--avplaybackstatustoset',
+  AVPlaybackSource: '/versions/latest/sdk/av/#avplaybacksource',
+  AVPlaybackStatus: '/versions/latest/sdk/av/#avplaybackstatus',
+  AVPlaybackStatusToSet: '/versions/latest/sdk/av/#avplaybackstatustoset',
+  Blob: 'https://developer.mozilla.org/en-US/docs/Web/API/Blob',
   Date: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date',
   Element: 'https://www.typescriptlang.org/docs/handbook/jsx.html#function-component',
   Error: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error',
-  ExpoConfig: 'https://github.com/expo/expo-cli/blob/main/packages/config-types/src/ExpoConfig.ts',
+  ExpoConfig:
+    'https://github.com/expo/expo/blob/main/packages/%40expo/config-types/src/ExpoConfig.ts',
   MessageEvent: 'https://developer.mozilla.org/en-US/docs/Web/API/MessageEvent',
   Omit: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#omittype-keys',
   Pick: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#picktype-keys',
@@ -140,6 +144,8 @@ const hardcodedTypeLinks: Record<string, string> = {
   View: '/versions/latest/react-native/view',
   ViewProps: '/versions/latest/react-native/view#props',
   ViewStyle: '/versions/latest/react-native/view-style-props',
+  WebGL2RenderingContext: 'https://developer.mozilla.org/en-US/docs/Web/API/WebGL2RenderingContext',
+  WebGLFramebuffer: 'https://developer.mozilla.org/en-US/docs/Web/API/WebGLFramebuffer',
 };
 
 const renderWithLink = (name: string, type?: string) => {
@@ -158,27 +164,37 @@ const renderWithLink = (name: string, type?: string) => {
 };
 
 const renderUnion = (types: TypeDefinitionData[]) =>
-  types.map(resolveTypeName).map((valueToRender, index) => (
-    <span key={`union-type-${index}`}>
-      {valueToRender}
-      {index + 1 !== types.length && ' | '}
-    </span>
-  ));
+  types
+    .map(type => resolveTypeName(type))
+    .map((valueToRender, index) => (
+      <span key={`union-type-${index}`}>
+        {valueToRender}
+        {index + 1 !== types.length && ' | '}
+      </span>
+    ));
 
-export const resolveTypeName = ({
-  elements,
-  elementType,
-  name,
-  type,
-  types,
-  typeArguments,
-  declaration,
-  value,
-  queryType,
-  operator,
-  objectType,
-  indexType,
-}: TypeDefinitionData): string | JSX.Element | (string | JSX.Element)[] => {
+export const resolveTypeName = (
+  typeDefinition: TypeDefinitionData
+): string | JSX.Element | (string | JSX.Element)[] => {
+  if (!typeDefinition) {
+    return 'undefined';
+  }
+
+  const {
+    elements,
+    elementType,
+    name,
+    type,
+    types,
+    typeArguments,
+    declaration,
+    value,
+    queryType,
+    operator,
+    objectType,
+    indexType,
+  } = typeDefinition;
+
   try {
     if (name) {
       if (type === 'reference') {
@@ -269,7 +285,8 @@ export const resolveTypeName = ({
           {'{ '}
           {declaration?.children.map((child: PropData, i) => (
             <span key={`reflection-${name}-${i}`}>
-              {child.name + ': ' + resolveTypeName(child.type)}
+              {child.name + ': '}
+              {resolveTypeName(child.type)}
               {i + 1 !== declaration?.children?.length ? ', ' : null}
             </span>
           ))}
@@ -407,12 +424,26 @@ export const renderTypeOrSignatureType = (
 };
 
 export const renderFlags = (flags?: TypePropertyDataFlags, defaultValue?: string) =>
-  flags?.isOptional || defaultValue ? (
+  (flags?.isOptional || defaultValue) && (
     <>
       <br />
       <span css={STYLES_OPTIONAL}>(optional)</span>
     </>
-  ) : undefined;
+  );
+
+export const renderIndexSignature = (kind: TypeDocKind) =>
+  kind === TypeDocKind.Parameter && (
+    <>
+      <br />
+      <A
+        css={STYLES_OPTIONAL}
+        href="https://www.typescriptlang.org/docs/handbook/2/objects.html#index-signatures"
+        openInNewTab
+        isStyled>
+        (index signature)
+      </A>
+    </>
+  );
 
 export type CommentTextBlockProps = {
   comment?: CommentData;
@@ -493,11 +524,11 @@ export const CommentTextBlock = ({
   return (
     <>
       {!withDash && includePlatforms && hasPlatforms && (
-        <PlatformTags comment={comment} prefix="Only for:" />
+        <APISectionPlatformTags comment={comment} prefix="Only for:" />
       )}
       {beforeContent}
       {withDash && (shortText || text) && ' - '}
-      {withDash && includePlatforms && <PlatformTags comment={comment} />}
+      {withDash && includePlatforms && <APISectionPlatformTags comment={comment} />}
       {shortText}
       {text}
       {afterContent}
@@ -555,7 +586,9 @@ export const STYLES_NESTED_SECTION_HEADER = css({
 
   h4: {
     ...typography.fontSizes[16],
+    fontFamily: typography.fontFaces.medium,
     marginBottom: 0,
+    color: theme.text.secondary,
   },
 });
 

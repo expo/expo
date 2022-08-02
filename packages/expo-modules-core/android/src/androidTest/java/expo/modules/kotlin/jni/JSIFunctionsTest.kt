@@ -3,8 +3,13 @@
 package expo.modules.kotlin.jni
 
 import com.google.common.truth.Truth
+import expo.modules.kotlin.exception.CodedException
+import expo.modules.kotlin.exception.JavaScriptEvaluateException
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.typedarray.Float32Array
+import expo.modules.kotlin.typedarray.Int32Array
+import expo.modules.kotlin.typedarray.Int8Array
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Test
 
@@ -193,5 +198,113 @@ class JSIFunctionsTest {
       Truth.assertThat(x).isEqualTo(123)
       Truth.assertThat(s).isEqualTo("expo")
     }
+  }
+
+  @Test
+  fun coded_error_should_be_converted() = withJSIInterop(
+    inlineModule {
+      Name("TestModule")
+      Function("f") { ->
+        throw CodedException("Code", "Message", null)
+      }
+    }
+  ) {
+    val exception = evaluateScript(
+      """
+      let exception = null;
+      try {
+        ExpoModules.TestModule.f()
+      } catch (e) {
+        if (e instanceof global.ExpoModulesCore_CodedError) {
+          exception = e;
+        }
+      }
+      exception
+      """.trimIndent()
+    ).getObject()
+
+    Truth.assertThat(exception.getProperty("code").getString()).isEqualTo("Code")
+    Truth.assertThat(exception.getProperty("message").getString()).contains("Message")
+  }
+
+  @Test
+  fun arbitrary_error_should_be_converted() = withJSIInterop(
+    inlineModule {
+      Name("TestModule")
+      Function("f") { ->
+        throw IllegalStateException()
+      }
+    }
+  ) {
+    val exception = evaluateScript(
+      """
+      let exception = null;
+      try {
+        ExpoModules.TestModule.f()
+      } catch (e) {
+        if (e instanceof global.ExpoModulesCore_CodedError) {
+          exception = e;
+        }
+      }
+      exception
+      """.trimIndent()
+    ).getObject()
+
+    Truth.assertThat(exception.getProperty("code").getString()).isEqualTo("ERR_UNEXPECTED")
+    Truth.assertThat(exception.getProperty("message").getString()).contains("java.lang.IllegalStateException")
+  }
+
+  @Test(expected = JavaScriptEvaluateException::class)
+  fun uncaught_error_should_be_piped_to_host_language() = withJSIInterop(
+    inlineModule {
+      Name("TestModule")
+      Function("f") { ->
+        throw IllegalStateException()
+      }
+    }
+  ) {
+    evaluateScript("ExpoModules.TestModule.f()")
+  }
+
+  @Test
+  fun typed_arrays_should_be_obtainable_as_function_argument() = withJSIInterop(
+    inlineModule {
+      Name("TestModule")
+      Function("f") { intArray: Int32Array, floatArray: Float32Array, byteArray: Int8Array ->
+        Truth.assertThat(intArray[0]).isEqualTo(1)
+        Truth.assertThat(intArray[1]).isEqualTo(2)
+        Truth.assertThat(intArray[2]).isEqualTo(3)
+
+        Truth.assertThat(floatArray[0]).isEqualTo(1f)
+        Truth.assertThat(floatArray[1]).isEqualTo(2f)
+        Truth.assertThat(floatArray[2]).isEqualTo(3f)
+
+        Truth.assertThat(byteArray[0]).isEqualTo(1.toByte())
+        Truth.assertThat(byteArray[1]).isEqualTo(2.toByte())
+        Truth.assertThat(byteArray[2]).isEqualTo(3.toByte())
+      }
+    }
+  ) {
+    evaluateScript("ExpoModules.TestModule.f(new Int32Array([1,2,3]), new Float32Array([1.0,2.0,3.0]), new Int8Array([1,2,3]))")
+  }
+
+  @Test
+  fun typed_arrays_should_not_copy_content() = withJSIInterop(
+    inlineModule {
+      Name("TestModule")
+      Function("f") { intArray: Int32Array ->
+        intArray[1] = 999
+      }
+    }
+  ) {
+    evaluateScript(
+      """
+      const typedArray = new Int32Array([1,2,3]);
+      ExpoModules.TestModule.f(typedArray);
+      if (typedArray[0] !== 1 || typedArray[1] !== 999 || typedArray[2] !== 3) {
+        throw new Error("Array was copied")
+      }
+      """.trimIndent()
+    )
   }
 }

@@ -80,17 +80,7 @@ export declare type VideoFullscreenUpdateEvent = {
 export declare type VideoProps = {
     /**
      * The source of the video data to display. If this prop is `null`, or left blank, the video component will display nothing.
-     * Note that this can also be set on the `ref` via `loadAsync()`. See below or the [AV documentation](./av) for further information.
-     *
-     * The following forms for the source are supported:
-     * - A dictionary of the form `{ uri: string, headers?: { [string]: string }, overrideFileExtensionAndroid?: string }` with a network URL
-     *   pointing to a video file on the web, an optional headers object passed in a network request to the `uri` and an optional
-     *   Android-specific `overrideFileExtensionAndroid` string overriding extension inferred from the URL.
-     *   The `overrideFileExtensionAndroid` property may come in handy if the player receives an URL like `example.com/play` which redirects
-     *   to `example.com/player.m3u8`. Setting this property to `m3u8` would allow the Android player to properly infer the content type
-     *   of the media and use proper media file reader.
-     * - `require('path/to/file')` for a video file asset in the source code directory.
-     * - An [`Asset`](asset) object for a video file asset.
+     * Note that this can also be set on the `ref` via `loadAsync()`. See the [AV documentation](./av) for further information.
      *
      * @see
      * - The [Android developer documentation](https://developer.android.com/guide/topics/media/media-formats#video-formats)
@@ -198,6 +188,11 @@ export declare type VideoProps = {
      * See the [AV documentation](./av) for more information.
      */
     isMuted?: boolean;
+    /**
+     * The desired audio panning value of the audio for this media. This value must be between `-1.0` (full left) and `1.0` (full right).
+     * See the [AV documentation](./av) for more information.
+     */
+    audioPan?: number;
     /**
      * A boolean describing if the media should play once (`false`) or loop indefinitely (`true`).
      * See the [AV documentation](./av) for more information.

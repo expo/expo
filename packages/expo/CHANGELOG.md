@@ -10,6 +10,44 @@
 
 ### 💡 Others
 
+## 46.0.1 — 2022-07-25
+
+_This version does not introduce any user-facing changes._
+
+## 46.0.0 — 2022-07-25
+
+_This version does not introduce any user-facing changes._
+
+## 46.0.0-beta.7 — 2022-07-25
+
+### 🎉 New features
+
+- Added a feature to automatically generate `.xcode.env.local` with correct `$NODE_BINARY` path when running `pod install`. ([#18330](https://github.com/expo/expo/pull/18330) by [@kudo](https://github.com/kudo))
+
+## 46.0.0-beta.6 — 2022-07-19
+
+_This version does not introduce any user-facing changes._
+
+## 46.0.0-beta.5 — 2022-07-19
+
+_This version does not introduce any user-facing changes._
+
+## 46.0.0-beta.4 — 2022-07-19
+
+_This version does not introduce any user-facing changes._
+
+## 46.0.0-beta.3 — 2022-07-19
+
+_This version does not introduce any user-facing changes._
+
+## 46.0.0-beta.2 — 2022-07-18
+
+_This version does not introduce any user-facing changes._
+
+## 46.0.0-beta.1 — 2022-07-16
+
+_This version does not introduce any user-facing changes._
+
 ## 46.0.0-alpha.3 — 2022-07-11
 
 _This version does not introduce any user-facing changes._

@@ -12,7 +12,7 @@ import {
   PropData,
 } from '~/components/plugins/api/APIDataTypes';
 import { APISectionDeprecationNote } from '~/components/plugins/api/APISectionDeprecationNote';
-import { PlatformTags } from '~/components/plugins/api/APISectionPlatformTags';
+import { APISectionPlatformTags } from '~/components/plugins/api/APISectionPlatformTags';
 import {
   CommentTextBlock,
   listParams,
@@ -31,13 +31,15 @@ export type APISectionMethodsProps = {
   header?: string;
 };
 
+export type RenderMethodOptions = {
+  apiName?: string;
+  header?: string;
+  exposeInSidebar?: boolean;
+};
+
 export const renderMethod = (
   { signatures = [] }: MethodDefinitionData | PropData,
-  index?: number,
-  dataLength?: number,
-  apiName?: string,
-  header?: string,
-  exposeInSidebar: boolean = true
+  { apiName, header, exposeInSidebar = true }: RenderMethodOptions = {}
 ): JSX.Element[] => {
   const HeaderComponent = exposeInSidebar ? H3Code : H4Code;
   return signatures.map(({ name, parameters, comment, type }: MethodSignatureData) => (
@@ -45,7 +47,7 @@ export const renderMethod = (
       key={`method-signature-${name}-${parameters?.length || 0}`}
       css={[STYLES_APIBOX, !exposeInSidebar && STYLES_APIBOX_NESTED]}>
       <APISectionDeprecationNote comment={comment} />
-      <PlatformTags comment={comment} prefix="Only for:" firstElement />
+      <APISectionPlatformTags comment={comment} prefix="Only for:" firstElement />
       <HeaderComponent>
         <InlineCode customCss={!exposeInSidebar ? STYLES_NOT_EXPOSED_HEADER : undefined}>
           {apiName && `${apiName}.`}
@@ -78,8 +80,8 @@ const APISectionMethods = ({ data, apiName, header = 'Methods' }: APISectionMeth
   data?.length ? (
     <>
       <H2 key="methods-header">{header}</H2>
-      {data.map((method: MethodDefinitionData | PropData, index: number) =>
-        renderMethod(method, index, data.length, apiName, header)
+      {data.map((method: MethodDefinitionData | PropData) =>
+        renderMethod(method, { apiName, header })
       )}
     </>
   ) : null;

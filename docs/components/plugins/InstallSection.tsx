@@ -29,22 +29,22 @@ const STYLES_LINK = css`
   }
 `;
 
-type Props = {
+type InstallSectionProps = React.PropsWithChildren<{
   packageName: string;
   hideBareInstructions?: boolean;
   cmd?: string[];
   href?: string;
-};
+}>;
 
 const getPackageLink = (packageNames: string) =>
   `https://github.com/expo/expo/tree/main/packages/${packageNames.split(' ')[0]}`;
 
-const InstallSection: React.FC<Props> = ({
+const InstallSection = ({
   packageName,
   hideBareInstructions = false,
   cmd = [`$ expo install ${packageName}`],
   href = getPackageLink(packageName),
-}) => {
+}: InstallSectionProps) => {
   const { sourceCodeUrl } = usePageMetadata();
 
   return (
@@ -69,7 +69,7 @@ const InstallSection: React.FC<Props> = ({
 
 export default InstallSection;
 
-export const APIInstallSection: React.FC<Props> = props => {
+export const APIInstallSection = (props: InstallSectionProps) => {
   const { packageName } = usePageMetadata();
   return <InstallSection {...props} packageName={props.packageName ?? packageName} />;
 };

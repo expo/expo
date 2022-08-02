@@ -178,6 +178,7 @@ export type TypeDeclarationContentData = {
   kind?: TypeDocKind;
   indexSignature?: TypeSignaturesData;
   signatures?: TypeSignaturesData[];
+  parameters?: PropData[];
   children?: PropData[];
 };
 

@@ -14,7 +14,7 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 ## Installation
 
-<InstallSection packageName="lottie-react-native" href="https://github.com/lottie-react-native/lottie-react-native" />
+<APIInstallSection packageName="lottie-react-native" href="https://github.com/lottie-react-native/lottie-react-native" />
 
 ## Usage
 

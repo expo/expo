@@ -41,6 +41,9 @@ const args = arg(
     // Types
     '--version': Boolean,
     '--help': Boolean,
+    // NOTE(EvanBacon): This is here to silence warnings from processes that
+    // expect the global expo-cli.
+    '--non-interactive': Boolean,
 
     // Aliases
     '-v': '--version',
@@ -55,6 +58,10 @@ if (args['--version']) {
   // Version is added in the build script.
   console.log(process.env.__EXPO_VERSION);
   process.exit(0);
+}
+
+if (args['--non-interactive']) {
+  console.warn(chalk.yellow`  {bold --non-interactive} is not supported, use {bold $CI=1} instead`);
 }
 
 // Check if we are running `npx expo <subcommand>` or `npx expo`
@@ -95,6 +102,7 @@ if (!isSubcommand && args['--help']) {
   For more info run a command with the {bold --help} flag
     {dim $} npx expo start --help
 `);
+
   process.exit(0);
 }
 
@@ -104,13 +112,14 @@ if (!isSubcommand) {
   const migrationMap: Record<string, string> = {
     init: 'npx create-expo-app',
     eject: 'npx expo prebuild',
+    web: 'npx expo start --web',
     'start:web': 'npx expo start --web',
     'build:ios': 'eas build -p ios',
     'build:android': 'eas build -p android',
     'client:install:ios': 'npx expo start --ios',
     'client:install:android': 'npx expo start --android',
-    doctor: 'expo doctor',
-    upgrade: 'expo upgrade',
+    doctor: 'expo-cli doctor',
+    upgrade: 'expo-cli upgrade',
     'customize:web': 'npx expo customize',
 
     publish: 'eas update',
@@ -119,7 +128,7 @@ if (!isSubcommand) {
     'publish:history': 'eas update',
     'publish:details': 'eas update',
 
-    'build:web': 'npx expo export',
+    'build:web': 'npx expo export:web',
 
     'credentials:manager': `eas credentials`,
     'fetch:ios:certs': `eas credentials`,
@@ -142,6 +151,7 @@ if (!isSubcommand) {
     'upload:ios': `eas submit -p ios`,
   };
 
+  // TODO: Log telemetry about invalid command used.
   const subcommand = args._[0];
   if (subcommand in migrationMap) {
     const replacement = migrationMap[subcommand];
@@ -173,4 +183,17 @@ if (args['--help']) {
 process.on('SIGINT', () => process.exit(0));
 process.on('SIGTERM', () => process.exit(0));
 
-commands[command]().then((exec) => exec(commandArgs));
+commands[command]().then((exec) => {
+  exec(commandArgs);
+
+  // NOTE(EvanBacon): Track some basic telemetry events indicating the command
+  // that was run. This can be disabled with the $EXPO_NO_TELEMETRY environment variable.
+  // We do this to determine how well deprecations are going before removing a command.
+  const { logEventAsync } =
+    require('../src/utils/analytics/rudderstackClient') as typeof import('../src/utils/analytics/rudderstackClient');
+  logEventAsync('action', {
+    action: `expo ${command}`,
+    source: 'expo/cli',
+    source_version: process.env.__EXPO_VERSION,
+  });
+});

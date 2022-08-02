@@ -17,19 +17,13 @@ function guardPermission() {
     }
 }
 async function _subscribeDeviceToPushNotificationsAsync() {
-    const vapidPublicKey = 
     // @ts-expect-error: TODO: not on the schema
-    Constants.manifest?.notification?.vapidPublicKey ??
-        // @ts-expect-error: TODO: not on the schema
-        Constants.manifest2?.extra?.expoClient?.notification?.vapidPublicKey;
+    const vapidPublicKey = Constants.expoConfig?.notification?.vapidPublicKey;
     if (!vapidPublicKey) {
         throw new CodedError('ERR_NOTIFICATIONS_PUSH_WEB_MISSING_CONFIG', 'You must provide `notification.vapidPublicKey` in `app.json` to use push notifications on web. Learn more: https://docs.expo.dev/versions/latest/guides/using-vapid/.');
     }
-    const serviceWorkerPath = 
     // @ts-expect-error: TODO: not on the schema
-    Constants.manifest?.notification.serviceWorkerPath ??
-        // @ts-expect-error: TODO: not on the schema
-        Constants.manifest2?.extra?.expoClient?.notification?.serviceWorkerPath;
+    const serviceWorkerPath = Constants.expoConfig?.notification?.serviceWorkerPath;
     if (!serviceWorkerPath) {
         throw new CodedError('ERR_NOTIFICATIONS_PUSH_MISSING_CONFIGURATION', 'You must specify `notification.serviceWorkerPath` in `app.json` to use push notifications on the web. Please provide the path to the service worker that will handle notifications.');
     }
@@ -71,9 +65,7 @@ async function _subscribeDeviceToPushNotificationsAsync() {
     // We wrap it with `fromExpoWebClient` to make sure other message
     // will not override content such as `notificationIcon`.
     // https://stackoverflow.com/a/35729334/2603230
-    const notificationIcon = (Constants.manifest?.notification ??
-        Constants.manifest2?.extra?.expoClient?.notification ??
-        {}).icon;
+    const notificationIcon = (Constants.expoConfig?.notification ?? {}).icon;
     await registration.active.postMessage(JSON.stringify({ fromExpoWebClient: { notificationIcon } }));
     return subscriptionObject;
 }

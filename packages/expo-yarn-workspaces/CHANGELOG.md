@@ -10,6 +10,14 @@
 
 ### 💡 Others
 
+## 2.0.2 — 2022-07-25
+
+_This version does not introduce any user-facing changes._
+
+## 2.0.1 — 2022-07-16
+
+_This version does not introduce any user-facing changes._
+
 ## 2.0.0 — 2022-04-18
 
 ### 🛠 Breaking changes

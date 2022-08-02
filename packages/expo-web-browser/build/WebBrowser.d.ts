@@ -70,9 +70,8 @@ export declare function openBrowserAsync(url: string, browserParams?: WebBrowser
 export declare function dismissBrowser(): void;
 /**
  * # On iOS:
- * Opens the url with Safari in a modal using `SFAuthenticationSession` on iOS 11 and greater,
- * and falling back on a `SFSafariViewController`. The user will be asked whether to allow the app
- * to authenticate using the given url.
+ * Opens the url with Safari in a modal using `ASWebAuthenticationSession`. The user will be asked
+ * whether to allow the app to authenticate using the given url.
  *
  * # On Android:
  * This will be done using a "custom Chrome tabs" browser, [AppState](../react-native/appstate/),

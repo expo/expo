@@ -135,15 +135,18 @@ export async function getIosApplicationReleaseTypeAsync(): Promise<ApplicationRe
   return await ExpoApplication.getApplicationReleaseTypeAsync();
 }
 
+// @docsMissing
+export type PushNotificationServiceEnvironment = 'development' | 'production' | null;
+
 // @needsAudit
 /**
  * Gets the current [Apple Push Notification (APN)](https://developer.apple.com/documentation/bundleresources/entitlements/aps-environment?language=objc)
  * service environment.
  * @return Returns a promise fulfilled with the string, either `'development'` or `'production'`,
- * based on the current APN environment.
+ * based on the current APN environment, or `null` on the simulator as it does not support registering with APNs.
  * @platform ios
  */
-export async function getIosPushNotificationServiceEnvironmentAsync(): Promise<string> {
+export async function getIosPushNotificationServiceEnvironmentAsync(): Promise<PushNotificationServiceEnvironment> {
   if (!ExpoApplication.getPushNotificationServiceEnvironmentAsync) {
     throw new UnavailabilityError('expo-application', 'getPushNotificationServiceEnvironmentAsync');
   }

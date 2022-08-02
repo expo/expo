@@ -6,13 +6,26 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 13.3.1 — 2022-07-25
+
+_This version does not introduce any user-facing changes._
+
+## 13.3.0 — 2022-07-16
+
+### 🎉 New features
+
 - On iOS 14+ added support for selection limit and on iOS 15+ for ordered selection. ([#18142](https://github.com/expo/expo/pull/18142), [#18143](https://github.com/expo/expo/pull/18143) by [@barthap](https://github.com/barthap))
-- On iOS, the picker now resolves file name, size and media library asset ID. ([#18179](https://github.com/expo/expo/pull/18179), [#18185](https://github.com/expo/expo/pull/18185) by [@barthap](https://github.com/barthap))
+- The picker now resolves media library asset ID. ([#18236](https://github.com/expo/expo/pull/18236), [#18185](https://github.com/expo/expo/pull/18185) by [@barthap](https://github.com/barthap))
+- On iOS, the picker now resolves file name and size and media library asset ID. ([#18179](https://github.com/expo/expo/pull/18179) by [@barthap](https://github.com/barthap))
 - On Android added support for selecting multiple images/videos. ([#18161](https://github.com/expo/expo/pull/18161) by [@bbarthec](https://github.com/bbarthec))
 
 ### 🐛 Bug fixes
 
-### 💡 Others
+- On Android restored support for `allowsEditing` option that was disabled when migrating to `registerForActivityResult` mechanism. ([#17963](https://github.com/expo/expo/pull/17963) by [@bbarthec](https://github.com/bbarthec))
 
 ## 13.2.1 — 2022-07-11
 
@@ -30,7 +43,7 @@ _This version does not introduce any user-facing changes._
 
 ### 💡 Others
 
-- On Android migrated to the new `registerForActivityResult` mechanism. ([#17671](https://github.com/expo/expo/pull/17671), ([#17987](https://github.com/expo/expo/pull/17987) by [@bbarthec](https://github.com/bbarthec))
+- On Android migrated to the new `registerForActivityResult` mechanism. This migration disables `allowsEditing` option. ([#17671](https://github.com/expo/expo/pull/17671), ([#17987](https://github.com/expo/expo/pull/17987) by [@bbarthec](https://github.com/bbarthec))
 - Native module on Android is now written in Kotlin using [Sweet API](https://docs.expo.dev/modules/module-api). ([#17668](https://github.com/expo/expo/pull/17668) by [@bbarthec](https://github.com/bbarthec))
 - Migrated Expo modules definitions to the new naming convention. ([#17193](https://github.com/expo/expo/pull/17193) by [@tsapeta](https://github.com/tsapeta))
 

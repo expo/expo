@@ -29,7 +29,7 @@ The easiest and most **highly** recommended way to improve you project is to opt
 '$ npx expo-optimize',
 ]} />
 
-## 📦 What Makes My App Large?
+## What Makes My App Large?
 
 To inspect bundle sizes, you can use a Webpack plugin called [_Webpack Bundle Analyzer_](https://github.com/webpack-contrib/webpack-bundle-analyzer). This plugin will help you visualize the size of your static bundles. You can use this to identify unwanted large packages that you may not have bundled intentionally.
 
@@ -37,8 +37,7 @@ To inspect bundle sizes, you can use a Webpack plugin called [_Webpack Bundle An
 
 1. Install the bundle analyzer:
    <Terminal cmd={['$ yarn add -D webpack-bundle-analyzer']} />
-2. Reveal the Webpack Config: 
-   * Run `expo customize:web` and select **webpack.config.js**.
+2. Reveal the Webpack config by running `npx expo customize webpack.config.js`.
 3. Customize the config to generate a web report:
 
 ```js
@@ -66,18 +65,18 @@ module.exports = async (env, argv) => {
 
 If you want to track down why a package was included, you can build your project in [debug mode](https://github.com/expo/expo-cli/blob/af9e390b74dcb7a0132e73b34ea0cdb9437a771c/packages/xdl/src/Web.ts#L69-L92).
 
-<Terminal cmd={['$ EXPO_WEB_DEBUG=true expo build:web']} />
+<Terminal cmd={['$ EXPO_WEB_DEBUG=true npx expo export:web']} />
 
 > This will make your bundle much larger, and you shouldn't publish your project in this state.
 
 You can now search for unwanted packages by name and see which files or methods are preventing them from being tree-shaken.
 
-## ⚡️ Lighthouse
+## Lighthouse
 
 Lighthouse is a great way to see how fast, accessible, and performant your website is.
 You can test your project with the _Audit_ tab in Chrome, or with the [**Lighthouse CLI**][lighthouse].
 
-After creating a production build with `expo build:web` and serving it somewhere, run Lighthouse with the URL your site is hosted at.
+After creating a production build with `npx expo export:web` and serving it somewhere, run Lighthouse with the URL your site is hosted at.
 
 ```sh
 lighthouse <url> --view

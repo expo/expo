@@ -303,6 +303,18 @@ export class Sound implements Playback {
     return status;
   };
 
+  /**
+   * Sets a function to be called regularly with the `AVPlaybackStatus` of the playback object.
+   *
+   * `onPlaybackStatusUpdate` will be called whenever a call to the API for this playback object completes
+   * (such as `setStatusAsync()`, `getStatusAsync()`, or `unloadAsync()`), nd will also be called at regular intervals
+   * while the media is in the loaded state.
+   *
+   * Set `progressUpdateIntervalMillis` via `setStatusAsync()` or `setProgressUpdateIntervalAsync()` to modify
+   * the interval with which `onPlaybackStatusUpdate` is called while loaded.
+   *
+   * @param onPlaybackStatusUpdate A function taking a single parameter `AVPlaybackStatus`.
+   */
   setOnPlaybackStatusUpdate(onPlaybackStatusUpdate: ((status: AVPlaybackStatus) => void) | null) {
     this._onPlaybackStatusUpdate = onPlaybackStatusUpdate;
     this.getStatusAsync();
@@ -423,7 +435,7 @@ export class Sound implements Playback {
     shouldCorrectPitch: boolean,
     pitchCorrectionQuality?: PitchCorrectionQuality
   ) => Promise<AVPlaybackStatus>;
-  setVolumeAsync!: (volume: number) => Promise<AVPlaybackStatus>;
+  setVolumeAsync!: (volume: number, audioPan?: number) => Promise<AVPlaybackStatus>;
   setIsMutedAsync!: (isMuted: boolean) => Promise<AVPlaybackStatus>;
   setIsLoopingAsync!: (isLooping: boolean) => Promise<AVPlaybackStatus>;
   setProgressUpdateIntervalAsync!: (

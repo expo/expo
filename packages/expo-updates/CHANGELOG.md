@@ -6,9 +6,25 @@
 
 ### 🎉 New features
 
+- [Android] New logger and log reader for unifying logging support in expo-updates. ([#18318](https://github.com/expo/expo/pull/18318) by [@douglowder](https://github.com/douglowder))
+
 ### 🐛 Bug fixes
 
+- Fix small race condition in recovery code on Android where in very rare scenarios, a bundle could be downloaded twice. ([#18377](https://github.com/expo/expo/pull/18377) by [@esamelson](https://github.com/esamelson))
+
 ### 💡 Others
+
+- [iOS] New logger and log reader for unifying logging support in expo-updates. ([#18284](https://github.com/expo/expo/pull/18284) by [@douglowder](https://github.com/douglowder))
+
+## 0.14.3 — 2022-07-25
+
+### 🐛 Bug fixes
+
+- Deprecated the unreliable `source-login-scripts.sh` and sourcing the Node.js binary path from `.xcode.env` and `.xcode.env.local`. ([#18330](https://github.com/expo/expo/pull/18330) by [@kudo](https://github.com/kudo))
+
+## 0.14.2 — 2022-07-16
+
+_This version does not introduce any user-facing changes._
 
 ## 0.14.1 — 2022-07-11
 
