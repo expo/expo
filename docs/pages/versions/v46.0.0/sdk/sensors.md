@@ -28,7 +28,6 @@ import {
   Accelerometer,
   Barometer,
   Gyroscope,
-  LightSensor,
   Magnetometer,
   MagnetometerUncalibrated,
   Pedometer,
@@ -41,5 +40,4 @@ For more information, please see the documentation for the sensor you are intere
 - [Barometer](barometer.md)
 - [Gyroscope](gyroscope.md)
 - [Magnetometer](magnetometer.md)
-- [LightSensor](light-sensor.md)
 - [Pedometer](pedometer.md)
