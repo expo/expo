@@ -19,7 +19,7 @@ Before we begin communicating directly with APNs & FCM, there is one client-side
 import * as Notifications from 'expo-notifications';
 ...
 - const token = (await Notifications.getExpoPushTokenAsync()).data;
-+ const token = (await Notifications.getDevicePushTokenAsync()).data:
++ const token = (await Notifications.getDevicePushTokenAsync()).data;
 // send token off to your server
 ```
 
