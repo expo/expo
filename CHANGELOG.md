@@ -11,6 +11,8 @@ Package-specific changes not released in any SDK will be added here just before 
 
 ### 🎉 New features
 
+- Dummy change. Should be caught by bot
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
