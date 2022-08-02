@@ -8,6 +8,10 @@ Expo maintains ~6 months of backward compatibility. Once an SDK version has been
 
 > **Note**: If you are running ExpoKit inside a native project, upgrading will require extra steps. ExpoKit is deprecated and is no longer supported after SDK 38. We recommend [migrating existing ExpoKit projects to the bare workflow](/bare/migrating-from-expokit).
 
+## SDK 46
+
+[Blog Post](https://blog.expo.dev/expo-sdk-46-c2a1655f63f7)
+
 ## SDK 45
 
 [Blog Post](https://blog.expo.dev/expo-sdk-45-f4e332954a68)
