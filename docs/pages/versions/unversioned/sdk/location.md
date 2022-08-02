@@ -10,7 +10,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
 import { AndroidPermissions } from '~/components/plugins/permissions';
 
-**`expo-location`** allows reading geolocation information from the device. Your app can poll for the current location or subscribe to location update events.
+`expo-location` allows reading geolocation information from the device. Your app can poll for the current location or subscribe to location update events.
 
 <PlatformsSection android emulator ios simulator web />
 
