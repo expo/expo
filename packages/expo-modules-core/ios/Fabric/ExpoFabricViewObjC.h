@@ -6,31 +6,37 @@
 #ifdef __cplusplus
 #import <React/RCTViewComponentView.h>
 
-@interface ExpoFabricEnabledBaseView : RCTViewComponentView
+@interface ExpoFabricViewObjC : RCTViewComponentView
 @end
 
 #else
 
 // Interface visible in Swift
-@interface ExpoFabricEnabledBaseView
+@interface ExpoFabricViewObjC
 @end
 
 #endif // __cplusplus
 #else // Paper
 #import <React/RCTView.h>
 
-@interface ExpoFabricEnabledBaseView : RCTView
+@interface ExpoFabricViewObjC : RCTView
 @end
 
 #endif // RN_FABRIC_ENABLED
 
 @class EXAppContext;
 
-@interface ExpoFabricEnabledBaseView (ExpoFabricViewInterface)
+// Addition to the interface that is visible in both Swift and Objective-C
+@interface ExpoFabricViewObjC (ExpoFabricViewInterface)
 
 @property (nonatomic, strong, nullable) UIView *contentView;
 
 - (void)updateProp:(nonnull NSString *)propName withValue:(nonnull id)value;
+
+- (void)prepareForRecycle;
+
+#pragma mark - Methods injected to the class in runtime
+
 - (nullable EXAppContext *)__injectedAppContext;
 - (nonnull NSString *)__injectedModuleName;
 

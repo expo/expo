@@ -1,7 +1,7 @@
-import { Video, AVPlaybackStatus } from 'expo-av';
+import { Video } from 'expo-av';
 import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import {
   Button,
   Image,
@@ -13,33 +13,53 @@ import {
   ScrollView,
 } from 'react-native';
 
-export default function App() {
-  const isFabricEnabled = global.nativeFabricUIManager != null;
-  const [reverse, setReverse] = useState(false);
+function randomColor() {
+  return '#' + ((Math.random() * 0xffffff) << 0).toString(16).padStart(6, '0');
+}
 
-  return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView>
-        <Text style={[styles.text, { marginVertical: 64 }]}>
-          isFabricEnabled: {isFabricEnabled + ''}
-        </Text>
-        <Button
-          title="toggle linear gradient style"
-          onPress={() => {
-            setReverse(!reverse);
-          }}
-        />
-        <LinearGradient
-          style={styles.gradient}
-          colors={reverse ? ['yellow', 'blue'] : ['blue', 'yellow']}
-          end={reverse ? { x: 1.0, y: 0.5 } : { x: 0.5, y: 1.0 }}
-        />
+export default class App extends React.PureComponent {
+  state = {
+    reverse: false,
+    mounted: true,
+    colors: Array(3).fill(0).map(randomColor),
+  };
 
-        <BlueExample />
-        <VideoExample />
-      </ScrollView>
-    </SafeAreaView>
-  );
+  toggleMounted = () => {
+    this.setState((state) => ({ mounted: !state.mounted }));
+  };
+
+  randomizeColors = () => {
+    this.setState({ colors: Array(3).fill(0).map(randomColor) });
+  };
+
+  render() {
+    const { reverse, mounted, colors } = this.state;
+    const isFabricEnabled = global.nativeFabricUIManager != null;
+
+    return (
+      <SafeAreaView style={styles.container}>
+        <ScrollView>
+          <Text style={[styles.text, { marginVertical: 40 }]}>
+            isFabricEnabled: {isFabricEnabled + ''}
+          </Text>
+
+          <Button title={mounted ? 'Unmount view' : 'Mount view'} onPress={this.toggleMounted} />
+          <Button title="Randomize colors" onPress={this.randomizeColors} disabled={!mounted} />
+
+          {mounted && (
+            <LinearGradient
+              style={styles.gradient}
+              colors={colors}
+              end={reverse ? { x: 1.0, y: 0.5 } : { x: 0.5, y: 1.0 }}
+            />
+          )}
+
+          {/* <BlueExample /> */}
+          {/* <VideoExample /> */}
+        </ScrollView>
+      </SafeAreaView>
+    );
+  }
 }
 
 export function BlueExample() {
@@ -101,8 +121,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   gradient: {
-    width: 400,
-    height: 200,
+    height: 300,
+    margin: 20,
   },
   blurExample: {
     height: 640,

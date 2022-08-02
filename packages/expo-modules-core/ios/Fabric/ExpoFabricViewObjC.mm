@@ -1,6 +1,6 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
-#import <ExpoModulesCore/ExpoFabricEnabledBaseView.h>
+#import <ExpoModulesCore/ExpoFabricViewObjC.h>
 
 #import <react/renderer/componentregistry/ComponentDescriptorProvider.h>
 #import <ExpoModulesCore/EXJSIConversions.h>
@@ -54,7 +54,7 @@ id convertFollyDynamicToId(const folly::dynamic &dyn)
 
 } // namespace
 
-@implementation ExpoFabricEnabledBaseView
+@implementation ExpoFabricViewObjC
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
@@ -100,19 +100,20 @@ id convertFollyDynamicToId(const folly::dynamic &dyn)
 
 - (void)updateProp:(nonnull NSString *)propName withValue:(nonnull id)value
 {
+  // Implemented in `ExpoFabricView.swift`
 }
 
-#pragma mark - Methods to override in the class copy
+#pragma mark - Methods to override in the subclass
 
 - (nullable EXAppContext *)__injectedAppContext
 {
-  [NSException raise:@"UninjectedException" format:@"The AppContext must be injected in the copy of 'ExpoFabricView' class"];
+  [NSException raise:@"UninjectedException" format:@"The AppContext must be injected in the subclass of 'ExpoFabricView'"];
   return nil;
 }
 
 - (nonnull NSString *)__injectedModuleName
 {
-  [NSException raise:@"UninjectedException" format:@"The module name must be injected in the copy of 'ExpoFabricView' class"];
+  [NSException raise:@"UninjectedException" format:@"The module name must be injected in the subclass of 'ExpoFabricView'"];
   return nil;
 }
 
