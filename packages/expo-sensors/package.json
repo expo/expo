@@ -21,6 +21,7 @@
     "accelerometer",
     "devicemotion",
     "gyroscope",
+    "lightsensor",
     "magnetometer",
     "pedometer",
     "barometer"

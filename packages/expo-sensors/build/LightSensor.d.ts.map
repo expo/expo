@@ -1,0 +1,1 @@
+{"version":3,"file":"LightSensor.d.ts","sourceRoot":"","sources":["../src/LightSensor.ts"],"names":[],"mappings":"AAAA,OAAO,YAAY,MAAM,gBAAgB,CAAC;AAG1C,MAAM,WAAW,sBAAsB;IACrC,WAAW,EAAE,MAAM,CAAC;CACrB;AAED,cAAM,WAAY,SAAQ,YAAY,CAAC,sBAAsB,CAAC;CAAG;;AAEjE,wBAAwE"}
