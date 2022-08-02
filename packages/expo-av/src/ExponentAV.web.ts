@@ -83,6 +83,7 @@ function getStatusFromMedia(media?: HTMLMediaElement): AVPlaybackStatus {
     // TODO: Bacon: This seems too complicated right now: https://webaudio.github.io/web-audio-api/#dom-biquadfilternode-frequency
     shouldCorrectPitch: false,
     volume: media.volume,
+    audioPan: 0,
     isMuted: media.muted,
     isLooping: media.loop,
     didJustFinish: media.ended,

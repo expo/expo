@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added support for audio panning on Android (MediaPlayer implementation only) via `audioPan` prop. ([#15530](https://github.com/expo/expo/pull/15530) by [@DominickVale](https://github.com/DominickVale))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
