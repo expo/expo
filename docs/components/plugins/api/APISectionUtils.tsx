@@ -21,6 +21,7 @@ import { APISectionPlatformTags } from '~/components/plugins/api/APISectionPlatf
 import * as Constants from '~/constants/theme';
 import { Cell, HeaderCell, Row, Table, TableHead } from '~/ui/components/Table';
 import { tableWrapperStyle } from '~/ui/components/Table/Table';
+import { A } from '~/ui/components/Text';
 
 const isDev = process.env.NODE_ENV === 'development';
 
@@ -33,6 +34,7 @@ export enum TypeDocKind {
   Interface = 256,
   Property = 1024,
   Method = 2048,
+  Parameter = 32768,
   TypeAlias = 4194304,
 }
 
@@ -91,7 +93,6 @@ const nonLinkableTypes = [
   'EventSubscription',
   'File',
   'FileList',
-  'Manifest',
   'NativeSyntheticEvent',
   'ParsedQs',
   'ServiceActionResult',
@@ -132,7 +133,8 @@ const hardcodedTypeLinks: Record<string, string> = {
   Date: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date',
   Element: 'https://www.typescriptlang.org/docs/handbook/jsx.html#function-component',
   Error: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error',
-  ExpoConfig: 'https://github.com/expo/expo-cli/blob/main/packages/config-types/src/ExpoConfig.ts',
+  ExpoConfig:
+    'https://github.com/expo/expo/blob/main/packages/%40expo/config-types/src/ExpoConfig.ts',
   MessageEvent: 'https://developer.mozilla.org/en-US/docs/Web/API/MessageEvent',
   Omit: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#omittype-keys',
   Pick: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#picktype-keys',
@@ -422,12 +424,26 @@ export const renderTypeOrSignatureType = (
 };
 
 export const renderFlags = (flags?: TypePropertyDataFlags, defaultValue?: string) =>
-  flags?.isOptional || defaultValue ? (
+  (flags?.isOptional || defaultValue) && (
     <>
       <br />
       <span css={STYLES_OPTIONAL}>(optional)</span>
     </>
-  ) : undefined;
+  );
+
+export const renderIndexSignature = (kind: TypeDocKind) =>
+  kind === TypeDocKind.Parameter && (
+    <>
+      <br />
+      <A
+        css={STYLES_OPTIONAL}
+        href="https://www.typescriptlang.org/docs/handbook/2/objects.html#index-signatures"
+        openInNewTab
+        isStyled>
+        (index signature)
+      </A>
+    </>
+  );
 
 export type CommentTextBlockProps = {
   comment?: CommentData;

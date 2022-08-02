@@ -6,6 +6,8 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.bridge.ReadableMap
+
+import expo.modules.core.utilities.EmulatorUtilities
 import expo.modules.devmenu.modules.internals.DevMenuInternalFontManagerModule
 import expo.modules.devmenu.modules.internals.DevMenuInternalMenuControllerModule
 
@@ -64,7 +66,7 @@ class DevMenuInternalModule(
   override fun getName() = "ExpoDevMenuInternal"
 
   private val doesDeviceSupportKeyCommands
-    get() = Build.FINGERPRINT.contains("vbox") || Build.FINGERPRINT.contains("generic")
+    get() = EmulatorUtilities.isRunningOnEmulator()
 
   override fun getConstants(): Map<String, Any> {
     return mapOf(

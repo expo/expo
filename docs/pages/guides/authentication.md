@@ -176,7 +176,7 @@ export default function App() {
 - Setup redirect URIs: Your Project > Permitted Redirect URIs: (be sure to save after making changes).
   - _Expo Go_: `exp://localhost:19000/--/`
   - _Web dev_: `https://localhost:19006`
-    - Run `expo start:web --https` to run with **https**, auth won't work otherwise.
+    - Run `expo start --web --https` to run with **https**, auth won't work otherwise.
     - Adding a slash to the end of the URL doesn't matter.
   - _Standalone and Bare_: `your-scheme://`
     - Scheme should be specified in app.json `expo.scheme: 'your-scheme'`, then added to the app code with `makeRedirectUri({ native: 'your-scheme://' })`)
@@ -1081,7 +1081,7 @@ Expo web client ID for use in the browser.
 - Give it a name (e.g. "Web App").
 - **URIs** (Authorized JavaScript origins): https://localhost:19006 & https://yourwebsite.com
 - **Authorized redirect URIs**: https://localhost:19006 & https://yourwebsite.com
-- To test this be sure to start your app with `expo start:web --https`.
+- To test this be sure to start your app with `expo start --web --https`.
 
 <Tabs tabs={["Standard", "Firebase"]}>
 <Tab>
@@ -1683,7 +1683,7 @@ export default function App() {
   - _Expo Go_: `exp://localhost:19000/--/`
   - _Web dev_: `https://localhost:19006`
     - Important: Ensure there's no slash at the end of the URL unless manually changed in the app code with `makeRedirectUri({ path: '/' })`.
-    - Run `expo start:web --https` to run with **https**, auth won't work otherwise.
+    - Run `expo start --web --https` to run with **https**, auth won't work otherwise.
   - _Custom app_: `your-scheme://`
     - Scheme should be specified in app.json `expo.scheme: 'your-scheme'`, then added to the app code with `makeRedirectUri({ native: 'your-scheme://' })`)
   - _Proxy_: `https://auth.expo.io/@username/slug`
@@ -1757,7 +1757,6 @@ export default function App() {
 </Tab>
 
 <Tab>
-
 
 <!-- prettier-ignore -->
 ```tsx

@@ -8,7 +8,7 @@ sidebar_title: Using Preact
 [Preact](https://preactjs.com/) is a 3kb alternative to React. Using Preact in a blank `react-native-web` project can lower your GZipped bundle by nearly 24kb.
 
 - Install Preact (requires Preact 10+): `yarn add preact-responder-event-plugin preact`
-- Run `expo customize:web` and select **webpack.config.js**
+- Run `npx expo customize webpack.config.js` to generate a `./webpack.config.js` file in your project.
 - Modify the webpack config to use Preact instead of React:
 
   ```js
@@ -41,4 +41,4 @@ sidebar_title: Using Preact
   };
   ```
 
-- That's it! Running `expo build:web` will now produce a significantly smaller bundle.
+- That's it! Running `npx expo export:web` will now produce a significantly smaller bundle.

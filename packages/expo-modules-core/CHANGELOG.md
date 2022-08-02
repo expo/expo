@@ -7,10 +7,13 @@
 ### 🎉 New features
 
 - Add better JSI error handling on Android. ([#18259](https://github.com/expo/expo/pull/18259) by [@lukmccall](https://github.com/lukmccall))
+- Experimental support for typed arrays on iOS. ([#18379](https://github.com/expo/expo/pull/18379) by [@lukmccall](https://github.com/lukmccall))
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- Centralized Android emulator detection for native code and added checks to pick up additional emulator types in `EmulatorUtilities`. ([#16177](https://github.com/expo/expo/pull/16177)) by [@kbrandwijk](https://github.com/kbrandwijk), [@keith-kurak](https://github.com/keith-kurak))
 
 ## 0.11.3 — 2022-07-18
 
