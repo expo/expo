@@ -15,7 +15,7 @@ class UpdatesLogReader {
    */
   @Throws(IOException::class)
   fun getLogEntries(newerThan: Date): List<String> {
-    val epochTimestamp = newerThan.time / 1000
+    val epochTimestamp = newerThan.time
     val pid = "${android.os.Process.myPid()}"
     // Use logcat to read just logs with our tag, in long format
     val process = Runtime.getRuntime().exec("logcat -d -s ${UpdatesLogger.EXPO_UPDATES_LOGGING_TAG} -vlong")

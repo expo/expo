@@ -145,7 +145,7 @@ public class UpdatesLogger: NSObject {
     //   and the one below
     let symbols = (level == .error || level == .fatal) ? UpdatesLogEntry.currentStackTrace() : nil
     let logEntry = UpdatesLogEntry(
-      timestamp: UInt(Date().timeIntervalSince1970),
+      timestamp: UInt(Date().timeIntervalSince1970) * 1000,
       message: message,
       code: code.asString,
       level: "\(level)",

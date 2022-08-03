@@ -111,7 +111,7 @@ class UpdatesLogger {
     updateId: String?,
     assetId: String?
   ) {
-    val timestamp = Date().time / 1000
+    val timestamp = Date().time
 
     val stacktrace = when (level) {
       // Limit stack to 20 frames

@@ -36,7 +36,7 @@ class EXUpdatesLoggerTests: XCTestCase {
     let logEntryText: String = logEntries[logEntries.count - 2]
 
     let logEntry = UpdatesLogEntry.create(from: logEntryText)
-    XCTAssertTrue(logEntry?.timestamp == UInt(epoch.timeIntervalSince1970))
+    XCTAssertTrue(logEntry?.timestamp == UInt(epoch.timeIntervalSince1970) * 1000)
     XCTAssertTrue(logEntry?.message == "Test message")
     XCTAssertTrue(logEntry?.code == "NoUpdatesAvailable")
     XCTAssertTrue(logEntry?.level == "error")
@@ -46,7 +46,7 @@ class EXUpdatesLoggerTests: XCTestCase {
 
     let logEntryText2: String = logEntries[logEntries.count - 1] as String
     let logEntry2 = UpdatesLogEntry.create(from: logEntryText2)
-    XCTAssertTrue(logEntry2?.timestamp == UInt(epoch.timeIntervalSince1970))
+    XCTAssertTrue(logEntry2?.timestamp == UInt(epoch.timeIntervalSince1970) * 1000)
     XCTAssertTrue(logEntry2?.message == "Warning message")
     XCTAssertTrue(logEntry2?.code == "AssetsFailedToLoad")
     XCTAssertTrue(logEntry2?.level == "warn")
