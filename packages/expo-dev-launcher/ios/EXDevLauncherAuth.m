@@ -100,7 +100,7 @@ RCT_EXPORT_METHOD(getAuthSchemeAsync:(RCTPromiseResolveBlock)resolve
   NSArray<NSDictionary*> *urlTypes = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleURLTypes"];
   
   if (urlTypes != nil) {
-    for (int i = 1; i <= urlTypes.count; i++) {
+    for (int i = 0; i < urlTypes.count; i++) {
       NSDictionary *urlType = urlTypes[i];
       NSArray<NSString*> *schemes = urlType[@"CFBundleURLSchemes"];
       
