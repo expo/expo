@@ -4,7 +4,6 @@ import Git from '../Git';
 import * as GitHub from '../GitHub';
 import logger from '../Logger';
 import { COMMENT_HEADER, generateReportFromOutputs } from './reports';
-import checkGlobalChangelog from './reviewers/checkGlobalChangelog';
 import checkMissingChangelogs from './reviewers/checkMissingChangelogs';
 import reviewChangelogEntries from './reviewers/reviewChangelogEntries';
 import reviewForbiddenFiles from './reviewers/reviewForbiddenFiles';
@@ -28,10 +27,6 @@ const REVIEWERS: Reviewer[] = [
   {
     id: 'changelog-review',
     action: reviewChangelogEntries,
-  },
-  {
-    id: 'global-changelog-checks',
-    action: checkGlobalChangelog,
   },
   {
     id: 'file-checks',
