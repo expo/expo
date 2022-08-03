@@ -73,6 +73,63 @@ export declare type UpdateEvent = {
     message?: string;
 };
 /**
+ * An object representing a single log entry from expo-updates logging on the client.
+ */
+export declare type UpdatesLogEntry = {
+    /**
+     * The time the log was written, in milliseconds since Jan 1 1970 UTC.
+     */
+    timestamp: number;
+    /**
+     * The log entry message.
+     */
+    message: string;
+    /**
+     * One of the defined code values for expo-updates log entries.
+     */
+    code: UpdatesLogEntryCode;
+    /**
+     * One of the defined log level or severity values.
+     */
+    level: UpdatesLogEntryLevel;
+    /**
+     * If present, the unique ID of an update associated with this log entry.
+     */
+    updateId?: string;
+    /**
+     * If present, the unique ID or hash of an asset associated with this log entry.
+     */
+    assetId?: string;
+    /**
+     * If present, an iOS or Android native stack trace associated with this log entry.
+     */
+    stacktrace?: string[];
+};
+/**
+ * The possible code values for expo-updates log entries
+ */
+export declare enum UpdatesLogEntryCode {
+    NONE = "None",
+    NO_UPDATES_AVAILABLE = "NoUpdatesAvailable",
+    UPDATE_ASSETS_NOT_AVAILABLE = "UpdateAssetsNotAvailable",
+    UPDATE_SERVER_UNREACHABLE = "UpdateServerUnreachable",
+    UPDATE_HAS_INVALID_SIGNATURE = "UpdateHasInvalidSignature",
+    UPDATE_FAILED_TO_LOAD = "UpdateFailedToLoad",
+    ASSETS_FAILED_TO_LOAD = "AssetsFailedToLoad",
+    JS_RUNTIME_ERROR = "JSRuntimeError"
+}
+/**
+ * The possible log levels for expo-updates log entries
+ */
+export declare enum UpdatesLogEntryLevel {
+    TRACE = "trace",
+    DEBUG = "debug",
+    INFO = "info",
+    WARN = "warn",
+    ERROR = "error",
+    FATAL = "fatal"
+}
+/**
  * @hidden
  */
 export declare type LocalAssets = Record<string, string>;
