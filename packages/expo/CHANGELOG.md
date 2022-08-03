@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed `FabricUIManager` errors when turning on new architecture mode on Android. ([#18472](https://github.com/expo/expo/pull/18472) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 46.0.1 — 2022-07-25
