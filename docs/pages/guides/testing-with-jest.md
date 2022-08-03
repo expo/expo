@@ -30,7 +30,12 @@ Then, we need to add/update **package.json** to include:
 
 Now let's add `react-test-renderer` to our project. Pick a version that is compatible with the React version used by your project. For example, if you use React 17.x then you should install `react-test-renderer@17`:
 
-`yarn add react-test-renderer@17 --dev` **or** `npm i react-test-renderer@17 --save-dev`
+<Terminal cmd={[
+'# Using yarn',
+'$ yarn add react-test-renderer@17 --dev',
+'# Using npm',
+'$ npm i react-test-renderer@17 --save-dev'
+]}/>
 
 That's it! Now we can start writing Jest tests!
 
@@ -48,17 +53,6 @@ We would like to point out [`transformIgnorePatterns`](https://jestjs.io/docs/co
   "transformIgnorePatterns": [
     "node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base|react-native-svg)"
   ]
-}
-```
-
-By default, Jest runs the code as JavaScript and only supports Node.js based syntax. If your project uses syntax such as importing files with **.jsx** or **.tsx** extensions, use [`transform`](https://jestjs.io/docs/code-transformation) configuration option and explicitly define `babel-jest` as the transformer.
-
-```json
-"jest": {
-  ...
-  "transform": {
-    "\\.[jt]sx?$": "babel-jest"
-  }
 }
 ```
 
