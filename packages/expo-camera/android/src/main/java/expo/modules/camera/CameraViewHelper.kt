@@ -115,7 +115,7 @@ object CameraViewHelper {
         // Convert possible type to string before putting into baseExif
         when(it) {
           is String -> baseExif.setAttribute(name, it)
-          is Number -> baseExif.setAttribute(name, it.toBigDecimal().toPlainString())
+          is Number -> baseExif.setAttribute(name, it.toDouble().toBigDecimal().toPlainString())
           is Boolean -> baseExif.setAttribute(name, it.toString())
         }
       }
