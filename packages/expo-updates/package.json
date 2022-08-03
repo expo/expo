@@ -40,9 +40,9 @@
   },
   "dependencies": {
     "@expo/code-signing-certificates": "0.0.1",
-    "@expo/config": "^6.0.14",
+    "@expo/config": "~6.0.23",
     "@expo/config-plugins": "^4.0.14",
-    "@expo/metro-config": "~0.3.7",
+    "@expo/metro-config": "0.3.19",
     "arg": "4.1.0",
     "expo-eas-client": "~0.2.0",
     "expo-manifests": "~0.3.0",
