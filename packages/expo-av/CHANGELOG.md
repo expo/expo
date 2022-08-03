@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed promise rejection catching when `Video` is unmounted. ([#18471](https://github.com/expo/expo/pull/18471) by [@barthap](https://github.com/barthap))
+
 ### 💡 Others
 
 ## 12.0.2 — 2022-07-18
