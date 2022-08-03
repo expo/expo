@@ -41,7 +41,4 @@ public protocol DevMenuManagerProtocol {
   @objc
   @discardableResult
   func toggleMenu() -> Bool
-
-  @objc
-  var expoApiClient: DevMenuExpoApiClientProtocol { get }
 }

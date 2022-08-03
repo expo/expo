@@ -276,36 +276,10 @@
   [self _removeInitModuleObserver];
 
   _launcherBridge = [[EXDevLauncherRCTBridge alloc] initWithDelegate:self launchOptions:_launchOptions];
-  
-  NSMutableDictionary *insets = [NSMutableDictionary new];
-  [insets setObject:@(0) forKey:@"top"];
-  [insets setObject:@(0) forKey:@"right"];
-  [insets setObject:@(0) forKey:@"bottom"];
-  [insets setObject:@(0) forKey:@"left"];
-  
-  if (@available(iOS 11.0, *)) {
-    UIWindow* window = [[UIApplication sharedApplication] keyWindow];
-    UIEdgeInsets safeAreaInsets = window.safeAreaInsets;
-    
-    [insets setObject:@(safeAreaInsets.top) forKey:@"top"];
-    [insets setObject:@(safeAreaInsets.right) forKey:@"right"];
-    [insets setObject:@(safeAreaInsets.bottom) forKey:@"bottom"];
-    [insets setObject:@(safeAreaInsets.left) forKey:@"left"];
-  }
-  
 
   RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:_launcherBridge
                                                    moduleName:@"main"
-                                            initialProperties:@{
-                                              @"insets": insets,
-                                              @"isSimulator":
-                                                              #if TARGET_IPHONE_SIMULATOR
-                                                              @YES
-                                                              #else
-                                                              @NO
-                                                              #endif
-                                              
-                                            }];
+                                            initialProperties:@{}];
 
   [self _ensureUserInterfaceStyleIsInSyncWithTraitEnv:rootView];
   

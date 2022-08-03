@@ -21,9 +21,7 @@ import { UserProfileScreen } from './screens/UserProfileScreen';
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
-type LauncherAppProps = {
-  isSimulator?: boolean;
-};
+type LauncherAppProps = {};
 
 export function App(props: LauncherAppProps) {
   return (

@@ -55,8 +55,6 @@ open class DevMenuManager: NSObject {
   var packagerConnectionHandler: DevMenuPackagerConnectionHandler?
   lazy var extensionSettings: DevMenuExtensionSettingsProtocol = DevMenuExtensionDefaultSettings(manager: self)
   var canLaunchDevMenuOnStart = true
-
-  public var expoApiClient: DevMenuExpoApiClientProtocol = DevMenuExpoApiClient()
   
   /**
    Shared singleton instance.
@@ -103,10 +101,7 @@ open class DevMenuManager: NSObject {
   public var currentManifestURL: URL?
   
   
-  @objc
-  public func setSession(_ session: String) {
-    self.expoApiClient.setSessionSecret(session)
-  }
+
 
   @objc
   public func autoLaunch(_ shouldRemoveObserver: Bool = true) {
