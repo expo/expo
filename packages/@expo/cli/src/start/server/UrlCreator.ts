@@ -148,10 +148,15 @@ function joinUrlComponents({ protocol, hostname, port }: Partial<UrlComponents>)
   // This is because Android React Native WebSocket implementation is not spec compliant and fails without a port:
   // `E unknown:ReactNative: java.lang.IllegalArgumentException: Invalid URL port: "-1"`
   // Invoked first in `metro-runtime/src/modules/HMRClient.js`
-  const validPort = port || '80';
+  const validPort = port ?? '80';
   const validProtocol = protocol ? `${protocol}://` : '';
 
-  return `${validProtocol}${hostname}:${validPort}`;
+  let url = `${validProtocol}${hostname}`;
+
+  if (validPort) {
+    url += `:${validPort}`;
+  }
+  return url;
 }
 
 /** @deprecated */
