@@ -2,7 +2,7 @@
 title: EAS Build hooks
 ---
 
-There are five EAS Build-specific npm hooks that you can set in your package.json. See the [Android build process](android-builds.md) and [iOS build process](ios-builds.md) docs to get a better understanding about the internals of the build process.
+There are five EAS Build-specific npm hooks that you can set in your **package.json**. See the [Android build process](android-builds.md) and [iOS build process](ios-builds.md) docs to get a better understanding about the internals of the build process.
 
 - `eas-build-pre-install` - executed before EAS Build runs `yarn install`.
 - `eas-build-post-install` - the behavior depends on the platform and project type:
@@ -14,7 +14,7 @@ There are five EAS Build-specific npm hooks that you can set in your package.jso
 - `eas-build-on-error` - this hook is triggered at the end of the build process if the build failed.
 - `eas-build-on-complete` - this hook is triggered at the end of the build process. You can check the build's status with the `EAS_BUILD_STATUS` environment variable. It's either `finished` or `errored`.
 
-This is an example of how your package.json might look like:
+This is an example of how your **package.json** might look like:
 
 ```json
 {
