@@ -151,7 +151,7 @@ export type CameraPictureOptions = {
    */
   exif?: boolean;
   /**
-   * Additional EXIF data to be included for the image. Only useful when exif option is set to true.
+   * Additional EXIF data to be included for the image. Only useful when `exif` option is set to `true`.
    * @platform android
    * @platform ios
    */
