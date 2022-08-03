@@ -93,8 +93,7 @@ open class ReactNativeHostWrapperBase(
       reactNativeHostHandlers.forEach { handler ->
         handler.onRegisterJSIModules(reactApplicationContext, jsContext, useDeveloperSupport)
       }
-      userJSIModulePackage?.getJSIModules(reactApplicationContext, jsContext)
-      return emptyList()
+      return userJSIModulePackage?.getJSIModules(reactApplicationContext, jsContext)?.toList() ?: emptyList()
     }
   }
 
