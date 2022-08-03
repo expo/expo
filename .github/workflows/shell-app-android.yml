@@ -1,12 +1,13 @@
+# Github workflows need to exist on the 'main' branch
+# in order to be run on other branches using workflow_dispatch.
+# The actual workflow is loaded from the target branch
+# (the one we dispatch the workflow to run on)
+# so we need a minimal failing job on main just to be able
+# to trigger the workflow on other (usually sdk-xx) branches
 name: Android Shell App
 
 on:
   workflow_dispatch: {}
-  schedule:
-    - cron: '20 5 * * 2,4,6' # 5:20 AM UTC time on every Tuesday, Thursday and Saturday
-  push:
-    paths:
-      - .github/workflows/shell-app-android.yml
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
@@ -15,82 +16,9 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-20.04
-    strategy:
-      matrix:
-        ndk-version: [21.4.7075529]
     steps:
-      - name: 👀 Checkout
-        uses: actions/checkout@v3
-        with:
-          submodules: true
-      - name: 🔨 Use JDK 11
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'temurin'
-          java-version: '11'
-      - name: ➕ Add `EXPO_ROOT_DIR` to GITHUB_ENV
-        run: echo "EXPO_ROOT_DIR=$(pwd)" >> $GITHUB_ENV
-      - name: ➕ Add `bin` to GITHUB_PATH
-        run: echo "$(pwd)/bin" >> $GITHUB_PATH
-      - name: ♻️ Restore caches
-        uses: ./.github/actions/expo-caches
-        id: expo-caches
-        with:
-          yarn-workspace: 'true'
-          git-lfs: 'true'
-          ndk: 'true'
-          ndk-version: ${{ matrix.ndk-version }}
-          hermes-engine-aar: 'true'
-      - name: 🚚 Pull Git LFS files
-        run: git lfs pull
-      - name: 🧶 Yarn install
-        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
-        run: yarn install --frozen-lockfile
-      - name: 🏗️ Build Android packages
-        env:
-          ANDROID_NDK_HOME: /usr/local/lib/android/sdk/ndk/${{ matrix.ndk-version }}/
-        run: expotools android-build-packages --packages all
-      - name: 🧹 Clean Android build artifacts that would needlessly bloat the shell app
-        env:
-          ANDROID_NDK_HOME: /usr/local/lib/android/sdk/ndk/${{ matrix.ndk-version }}/
-        run: ./gradlew clean
-        working-directory: android
-      - name: 🏗️ Build shell app tarball
-        run: ./buildAndroidTarballLocally.sh
-      - name: 📦️ Make an artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: android-shell-app
-          path: artifacts/android-shell-builder.tar.gz
-      - name: 📤️ Upload shell app tarball to S3
-        if: ${{ github.event_name == 'workflow_dispatch' }}
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: 'us-east-1'
-          S3_URI: s3://exp-artifacts/android-shell-builder-${{ github.sha }}.tar.gz
+      - name: Fail workflow
         run: |
-          aws s3 cp --acl public-read artifacts/android-shell-builder.tar.gz $S3_URI
-          echo "Release tarball uploaded to $S3_URI"
-          echo "You can deploy this by updating or creating a new file in https://github.com/expo/turtle/tree/master/shellTarballs/android"
-          echo "Then follow the deployment instructions: https://github.com/expo/turtle-deploy"
-      - name: 🏷️ Set the description for Slack message
-        if: ${{ github.event_name != 'push' }}
-        run: |
-          if [ ${{ github.event_name }} == 'schedule' ]; then
-            echo "SLACK_MESSAGE_DESCRIPTION=scheduled" >> $GITHUB_ENV
-          else
-            echo "SLACK_MESSAGE_DESCRIPTION=triggered by ${{ github.actor }}" >> $GITHUB_ENV
-          fi
-      - name: 🔔 Notify on Slack
-        uses: 8398a7/action-slack@v3
-        if: ${{ github.event_name != 'push' }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_ANDROID }}
-          MATRIX_CONTEXT: ${{ toJson(matrix) }}
-        with:
-          channel: '#expo-android'
-          status: ${{ job.status }}
-          fields: job,message,ref,eventName,author,took
-          author_name: Android Shell App (${{ env.SLACK_MESSAGE_DESCRIPTION }})
+          echo "Shell apps were dropped on 'main'. " \
+          "Did you forget to select the SDK release branch when dispatching workflow?"
+          exit 1
