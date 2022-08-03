@@ -1,37 +1,64 @@
 package expo.modules.updates.logging
 
-import java.io.IOException
+import android.content.Context
+import expo.modules.core.logging.PersistentFileLog
+import expo.modules.updates.logging.UpdatesLogger.Companion.EXPO_UPDATES_LOGGING_TAG
+import java.lang.Error
+import java.lang.Long.max
 import java.util.*
-import kotlin.jvm.Throws
 
 /**
  * Class for reading expo-updates logs
  */
-class UpdatesLogReader {
+class UpdatesLogReader(
+  private val context: Context
+) {
+
+  /**
+   * Purge expo-updates logs older than the given date
+   */
+  fun purgeLogEntries(
+    olderThan: Date = Date(Date().time - ONE_DAY_MILLISECONDS),
+    completionHandler: ((_: Error?) -> Unit)
+  ) {
+    val epochTimestamp = _epochFromDate(olderThan)
+    persistentLog.filterEntries(
+      { entryString -> _entryStringLaterThanTimestamp(entryString, epochTimestamp) },
+      {
+        completionHandler(it)
+      }
+    )
+  }
 
   /**
    Get expo-updates logs newer than the given date
    Returns a list of strings in the JSON format of UpdatesLogEntry
    */
-  @Throws(IOException::class)
   fun getLogEntries(newerThan: Date): List<String> {
-    val epochTimestamp = newerThan.time
-    val pid = "${android.os.Process.myPid()}"
-    // Use logcat to read just logs with our tag, in long format
-    val process = Runtime.getRuntime().exec("logcat -d -s ${UpdatesLogger.EXPO_UPDATES_LOGGING_TAG} -vlong")
-    return process.inputStream.bufferedReader().useLines { lines ->
-      // Format is one header line, followed by three lines per entry
-      // First line has the tag, timestamp, pid, etc.
-      // Second line has our log message
-      // Third line is empty
-      lines
-        .drop(1)
-        .chunked(3)
-        .filter { lineTriple -> lineTriple[0].contains(pid) }
-        .map { lineTriple -> UpdatesLogEntry.create(lineTriple[1]) }
-        .filter { entry -> entry.timestamp >= epochTimestamp }
-        .map { entry -> entry.asString() }
-        .toList()
+    val epochTimestamp = _epochFromDate(newerThan)
+    return persistentLog.readEntries()
+      .filter { entryString -> _entryStringLaterThanTimestamp(entryString, epochTimestamp) }
+  }
+
+  private val persistentLog = PersistentFileLog(EXPO_UPDATES_LOGGING_TAG, context)
+
+  private fun _entryStringLaterThanTimestamp(entryString: String, timestamp: Long): Boolean {
+    val entry = UpdatesLogEntry.create(entryString)
+    return when (entry) {
+      null -> false
+      else -> {
+        entry.timestamp >= timestamp
+      }
     }
+  }
+
+  private fun _epochFromDate(date: Date): Long {
+    val earliestEpoch = Date().time - ONE_DAY_MILLISECONDS
+    val epoch = date.time
+    return max(epoch, earliestEpoch)
+  }
+
+  companion object {
+    private val ONE_DAY_MILLISECONDS = 86400
   }
 }

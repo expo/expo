@@ -30,6 +30,7 @@ import expo.modules.updates.loader.LoaderTask
 import expo.modules.updates.loader.LoaderTask.BackgroundUpdateStatus
 import expo.modules.updates.loader.LoaderTask.LoaderTaskCallback
 import expo.modules.updates.loader.RemoteLoader
+import expo.modules.updates.logging.UpdatesLogReader
 import expo.modules.updates.manifest.UpdateManifest
 import expo.modules.updates.selectionpolicy.SelectionPolicy
 import expo.modules.updates.selectionpolicy.SelectionPolicyFactory
@@ -37,7 +38,7 @@ import java.io.File
 import java.lang.ref.WeakReference
 
 class UpdatesController private constructor(
-  context: Context,
+  val context: Context,
   var updatesConfiguration: UpdatesConfiguration
 ) {
   private var reactNativeHost: WeakReference<ReactNativeHost>? = if (context is ReactApplication) {
@@ -59,6 +60,14 @@ class UpdatesController private constructor(
     if (!::databaseHandler.isInitialized) {
       databaseHandlerThread.start()
       databaseHandler = Handler(databaseHandlerThread.looper)
+    }
+  }
+
+  private fun purgeUpdatesLogsOlderThanOneDay() {
+    UpdatesLogReader(context).purgeLogEntries {
+      if (it != null) {
+        Log.e(TAG, "UpdatesLogReader: error in purgeLogEntries", it)
+      }
     }
   }
 
@@ -213,6 +222,8 @@ class UpdatesController private constructor(
       notifyController()
       return
     }
+
+    purgeUpdatesLogsOlderThanOneDay()
 
     initializeDatabaseHandler()
     initializeErrorRecovery(context)

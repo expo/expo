@@ -12,7 +12,7 @@ import ExpoModulesCore
 public class UpdatesLogger: NSObject {
   public static let EXPO_UPDATES_LOG_CATEGORY = "expo-updates"
 
-  private let logger = ExpoModulesCore.Logger(category: UpdatesLogger.EXPO_UPDATES_LOG_CATEGORY)
+  private let logger = ExpoModulesCore.Logger(category: UpdatesLogger.EXPO_UPDATES_LOG_CATEGORY, options: .Persistent)
 
   // MARK: - Public logging functions
 
@@ -130,9 +130,7 @@ public class UpdatesLogger: NSObject {
     fatal(message: message, code: code, updateId: nil, assetId: nil)
   }
 
-  // MARK: - Private methods
-
-  func logEntryString(
+  public func logEntryString(
     message: String,
     code: UpdatesErrorCode = .None,
     level: ExpoModulesCore.LogType = .trace,
@@ -145,7 +143,7 @@ public class UpdatesLogger: NSObject {
     //   and the one below
     let symbols = (level == .error || level == .fatal) ? UpdatesLogEntry.currentStackTrace() : nil
     let logEntry = UpdatesLogEntry(
-      timestamp: UInt(Date().timeIntervalSince1970) * 1000,
+      timestamp: UInt(Date().timeIntervalSince1970) * 1_000,
       message: message,
       code: code.asString,
       level: "\(level)",

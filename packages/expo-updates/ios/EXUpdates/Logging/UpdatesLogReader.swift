@@ -8,9 +8,11 @@ import ExpoModulesCore
 /**
  Class to read expo-updates logs using OSLogReader
  */
-@available(macOS 12.0, iOS 15.0, watchOS 8.0, tvOS 15.0, *)
 @objc(EXUpdatesLogReader)
 public class UpdatesLogReader: NSObject {
+  private let serialQueue = DispatchQueue(label: "dev.expo.updates.logging.reader")
+  private let logPersistence = PersistentFileLog(category: UpdatesLogger.EXPO_UPDATES_LOG_CATEGORY)
+
   /**
    Get expo-updates logs newer than the given date
    Returns the log entries unpacked as dictionaries
@@ -18,9 +20,13 @@ public class UpdatesLogReader: NSObject {
    */
   @objc(getLogEntriesNewerThan:error:)
   public func getLogEntries(newerThan: Date) throws -> [[String: Any]] {
-    return try getLogEntries(newerThan: newerThan)
-      .compactMap { logEntryString in
-        UpdatesLogEntry.create(from: logEntryString)?.asDict()
+    let epoch = _epochFromDate(date: newerThan)
+    return logPersistence.readEntries()
+      .compactMap { entryString in
+        _logStringToFilteredLogEntry(entryString: entryString, epoch: epoch)
+      }
+      .compactMap { entry in
+        entry.asDict()
       }
   }
 
@@ -29,28 +35,56 @@ public class UpdatesLogReader: NSObject {
    Returned strings are all in the JSON format of UpdatesLogEntry
    Maximum of one day lookback is allowed
    */
-  @objc(getLogEntryStringsNewerThan:error:)
-  public func getLogEntries(newerThan: Date) throws -> [String] {
-    let earliestDate = Date().addingTimeInterval(-86_400)
-    let dateToUse = newerThan.timeIntervalSince1970 < earliestDate.timeIntervalSince1970 ?
+  @objc(getLogEntryStringsNewerThan:)
+  public func getLogEntries(newerThan: Date) -> [String] {
+    let epoch = _epochFromDate(date: newerThan)
+    return logPersistence.readEntries()
+      .compactMap { entryString in
+        _logStringToFilteredLogEntry(entryString: entryString, epoch: epoch)
+      }
+      .compactMap { entry in
+        entry.asString()
+      }
+  }
+
+  /**
+   Purge all log entries written more than one day ago
+   */
+  @objc(purgeLogEntries:)
+  public func purgeLogEntries(completion: @escaping (_:Error?) -> Void) {
+    purgeLogEntries(
+      olderThan: Date().addingTimeInterval(-UpdatesLogReader.MAXIMUM_LOOKBACK_INTERVAL),
+      completion: completion
+    )
+  }
+
+  /**
+   Purge all log entries written prior to the given date
+   */
+  @objc(purgeLogEntriesOlderThan:completion:)
+  public func purgeLogEntries(olderThan: Date, completion: @escaping (_:Error?) -> Void) {
+    let epoch = _epochFromDate(date: olderThan)
+    logPersistence.filterEntries(filter: { entryString in
+      self._logStringToFilteredLogEntry(entryString: entryString, epoch: epoch) != nil
+    }, {error in
+      completion(error)
+    })
+  }
+
+  private func _logStringToFilteredLogEntry(entryString: String, epoch: UInt) -> UpdatesLogEntry? {
+    let suffixFrom = entryString.index(entryString.startIndex, offsetBy: 2)
+    let entryStringSuffix = String(entryString.suffix(from: suffixFrom))
+    let entry = UpdatesLogEntry.create(from: entryStringSuffix)
+    return entry?.timestamp ?? 0 >= epoch ? entry : nil
+  }
+
+  private static let MAXIMUM_LOOKBACK_INTERVAL: TimeInterval = 86_400 // 1 day
+
+  private func _epochFromDate(date: Date) -> UInt {
+    let earliestDate = Date().addingTimeInterval(-UpdatesLogReader.MAXIMUM_LOOKBACK_INTERVAL)
+    let dateToUse = date.timeIntervalSince1970 < earliestDate.timeIntervalSince1970 ?
       earliestDate :
-      newerThan
-
-    let logStore = try OSLogStore(scope: .currentProcessIdentifier)
-    // Get all the logs since the given date.
-    let position = logStore.position(date: dateToUse)
-
-    // Fetch log objects, selecting our subsystem and category
-    let predicate = NSPredicate(format: "category == %@ AND subsystem = %@",
-                                argumentArray: [UpdatesLogger.EXPO_UPDATES_LOG_CATEGORY, Logger.EXPO_MODULES_LOG_SUBSYSTEM])
-    let allEntries = try logStore.getEntries(at: position, matching: predicate)
-
-    // Extract just the log message strings, removing the first two characters added
-    // by ExpoModulesCore.Logger
-    return allEntries
-          .compactMap { entry in
-            let suffixFrom = entry.composedMessage.index(entry.composedMessage.startIndex, offsetBy: 2)
-            return String(entry.composedMessage.suffix(from: suffixFrom))
-          }
+      date
+    return UInt(dateToUse.timeIntervalSince1970) * 1_000
   }
 }

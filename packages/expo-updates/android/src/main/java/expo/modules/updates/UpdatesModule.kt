@@ -45,7 +45,7 @@ class UpdatesModule(
   }
 
   override fun getConstants(): Map<String, Any> {
-    UpdatesLogger().info("UpdatesModule: getConstants called", UpdatesErrorCode.None)
+    UpdatesLogger(context).info("UpdatesModule: getConstants called", UpdatesErrorCode.None)
     val constants = mutableMapOf<String, Any>()
     try {
       val updatesServiceLocal: UpdatesInterface? = updatesService
@@ -255,27 +255,28 @@ class UpdatesModule(
   @ExpoMethod
   fun readLogEntriesAsync(maxAge: Long, promise: Promise) {
     AsyncTask.execute {
-      val reader = UpdatesLogReader()
+      val reader = UpdatesLogReader(context)
       val date = Date()
       val epoch = Date(date.time - maxAge)
-      val results = reader.getLogEntries(epoch).map {
-        val entry = UpdatesLogEntry.create(it)
-        Bundle().apply {
-          putLong("timestamp", entry.timestamp)
-          putString("message", entry.message)
-          putString("code", entry.code)
-          putString("level", entry.level)
-          if (entry.updateId != null) {
-            putString("updateId", entry.updateId)
-          }
-          if (entry.assetId != null) {
-            putString("assetId", entry.assetId)
-          }
-          if (entry.stacktrace != null) {
-            putStringArray("stacktrace", entry.stacktrace.toTypedArray())
+      val results = reader.getLogEntries(epoch)
+        .mapNotNull { UpdatesLogEntry.create(it) }
+        .mapNotNull { entry ->
+          Bundle().apply {
+            putLong("timestamp", entry.timestamp)
+            putString("message", entry.message)
+            putString("code", entry.code)
+            putString("level", entry.level)
+            if (entry.updateId != null) {
+              putString("updateId", entry.updateId)
+            }
+            if (entry.assetId != null) {
+              putString("assetId", entry.assetId)
+            }
+            if (entry.stacktrace != null) {
+              putStringArray("stacktrace", entry.stacktrace.toTypedArray())
+            }
           }
         }
-      }
       promise.resolve(results)
     }
   }
@@ -283,8 +284,17 @@ class UpdatesModule(
   @ExpoMethod
   fun clearLogEntriesAsync(promise: Promise) {
     AsyncTask.execute {
-      // This method is a no-op until persistent logs are implemented
-      promise.resolve(null)
+      val reader = UpdatesLogReader(context)
+      reader.purgeLogEntries(
+        olderThan = Date(),
+        {
+          if (it != null) {
+            promise.reject(it)
+          } else {
+            promise.resolve(null)
+          }
+        }
+      )
     }
   }
 
