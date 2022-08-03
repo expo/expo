@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- On iOS and Android, added new `additionalExif` parameter to `takePictureAsync()` method so that users can add extra information to the photos, such as GPS coordinates. (by [@alexyangjie](https://github.com/alexyangjie))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
