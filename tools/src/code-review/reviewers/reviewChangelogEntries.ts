@@ -2,12 +2,17 @@ import parseDiff from 'parse-diff';
 import path from 'path';
 
 import { Changelog } from '../../Changelogs';
+import { EXPO_DIR } from '../../Constants';
 import { PullRequest } from '../../GitHub';
 import * as Markdown from '../../Markdown';
 import { ReviewComment, ReviewInput, ReviewOutput, ReviewStatus } from '../types';
 
 export default async function ({ pullRequest, diff }: ReviewInput): Promise<ReviewOutput> {
-  const changelogs = diff.filter((fileDiff) => path.basename(fileDiff.to!) === 'CHANGELOG.md');
+  const changelogs = diff.filter(
+    (fileDiff) =>
+      // find all CHANGELOG.md files, except the global one
+      path.basename(fileDiff.to!) === 'CHANGELOG.md' && path.dirname(fileDiff.path) !== EXPO_DIR
+  );
   const comments: ReviewComment[] = [];
 
   for (const changelogDiff of changelogs) {

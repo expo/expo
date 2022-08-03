@@ -480,6 +480,7 @@ module.exports = {
           { name: 'checkForUpdateAsync', argumentsCount: 0, key: 0 },
           { name: 'reload', argumentsCount: 0, key: 1 },
           { name: 'fetchUpdateAsync', argumentsCount: 0, key: 2 },
+          { name: 'readLogEntriesAsync', argumentsCount: 1, key: 3 },
         ],
         ExpoVideoManager: [{ name: 'setFullscreen', argumentsCount: 2, key: 0 }],
         ExpoVideoThumbnails: [{ name: 'getThumbnail', argumentsCount: 2, key: 0 }],
