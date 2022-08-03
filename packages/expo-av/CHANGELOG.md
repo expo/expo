@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed promise rejection catching when `Video` is unmounted.
+
 ### 💡 Others
 
 ## 12.0.2 — 2022-07-18
