@@ -113,11 +113,10 @@ object CameraViewHelper {
     for ((_, name) in exifTags) {
       exifMap[name]?.let {
         // Convert possible type to string before putting into baseExif
-        when(it::class.simpleName) {
-          "String" -> baseExif.setAttribute(name, it as String)
-          "Double" -> baseExif.setAttribute(name, (it as Double).toBigDecimal().toPlainString())
-          "Int" -> baseExif.setAttribute(name, (it as Int).toBigDecimal().toPlainString())
-          "Boolean" -> baseExif.setAttribute(name, (it as Boolean).toString())
+        when(it) {
+          is String -> baseExif.setAttribute(name, it)
+          is Number -> baseExif.setAttribute(name, it.toBigDecimal().toPlainString())
+          is Boolean -> baseExif.setAttribute(name, it.toString())
         }
       }
     }
