@@ -137,6 +137,9 @@ export async function promptToClearMalformedNativeProjectsAsync(
       initial: true,
     }))
   ) {
+    if (!isInteractive()) {
+      Log.warn(`${message}, project files will be cleared and reinitialized.`);
+    }
     await clearNativeFolder(projectRoot, platforms);
   } else {
     // Warn the user that the process may fail.
