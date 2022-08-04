@@ -16,7 +16,7 @@ export const EASIcon = ({ size = iconSize.regular, className }: IconProps) => {
         width="19.5"
         height="19.5"
         rx="2.75"
-        fill="#EDE9FF"
+        fill="#EDE9FFCC"
         stroke="#A193F9"
         strokeWidth="0.5"
       />

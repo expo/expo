@@ -31,6 +31,7 @@ const linkStyle = css`
   flex-direction: row;
   align-items: center;
   text-decoration: none;
+  user-select: none;
 `;
 
 const logoStyle = css`

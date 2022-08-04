@@ -42,7 +42,7 @@ export const Header = ({
               setMobileMenuVisible(false);
               setMobileSearchVisible(prevState => !prevState);
             }}>
-            <SearchIcon size={iconSize.small} color={theme.icon.default} />
+            <SearchIcon size={iconSize.small} />
           </Button>
           <Button
             theme="transparent"
@@ -51,7 +51,7 @@ export const Header = ({
               setMobileMenuVisible(!isMobileMenuVisible);
               setMobileSearchVisible(false);
             }}>
-            <HamburgerIcon size={iconSize.small} color={theme.icon.default} />
+            <HamburgerIcon size={iconSize.small} />
           </Button>
         </div>
       </nav>
