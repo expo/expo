@@ -8,6 +8,8 @@ import {
   ChevronRightIcon,
   Logo as LogoIcon,
   WordMarkLogo,
+  shadows,
+  borderRadius,
 } from '@expo/styleguide';
 import React from 'react';
 
@@ -20,7 +22,7 @@ export const Logo = () => (
       <LogoIcon color={theme.text.default} css={[logoStyle, showOnMobile]} />
     </LinkBase>
     <ChevronRightIcon size={iconSize.regular} css={chevronStyle} color={theme.icon.secondary} />
-    <LinkBase css={linkStyle} href="/">
+    <LinkBase css={[linkStyle, boxedHoverStyle]} href="/">
       <span css={subtitleStyle}>Docs</span>
     </LinkBase>
   </>
@@ -32,6 +34,19 @@ const linkStyle = css`
   align-items: center;
   text-decoration: none;
   user-select: none;
+  border: 1px solid transparent;
+  border-radius: ${borderRadius.small}px;
+`;
+
+const boxedHoverStyle = css`
+  padding: ${spacing[1]}px ${spacing[2.5]}px;
+  transition: border 100ms, background 100m, box-shadow 100ms;
+
+  &:hover {
+    border: 1px solid ${theme.border.default};
+    background: ${theme.background.secondary};
+    box-shadow: ${shadows.micro};
+  }
 `;
 
 const logoStyle = css`
@@ -40,10 +55,10 @@ const logoStyle = css`
 `;
 
 const chevronStyle = css`
-  margin: 0 ${spacing[2]}px;
+  margin-left: ${spacing[2.5]}px;
 
   @media screen and (max-width: ${breakpoints.medium}px) {
-    margin-left: ${spacing[0.5]}px;
+    margin-left: ${spacing[1.5]}px;
   }
 `;
 

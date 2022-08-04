@@ -15,7 +15,7 @@ const STYLES_LINK = css`
   color: ${theme.text.secondary};
   transition: 50ms ease color;
   align-items: center;
-  padding-left: 22px;
+  padding-left: 20px;
 
   &:hover {
     color: ${theme.text.default};
@@ -40,6 +40,7 @@ const STYLES_ACTIVE_CONTAINER = css`
   background: ${theme.background.default};
   border-radius: ${borderRadius.small}px;
   box-shadow: ${shadows.micro};
+  margin-left: -${spacing[0.5]}px;
   
   [data-expo-theme="dark"] & {
     background-color: ${theme.background.tertiary};

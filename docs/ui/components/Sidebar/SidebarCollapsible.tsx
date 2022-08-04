@@ -17,7 +17,7 @@ const STYLES_TITLE = css`
   align-items: center;
   position: relative;
   margin-bottom: ${spacing[2]}px;
-  font-family: ${typography.fontFaces.medium};
+  font-family: ${typography.fontFaces.semiBold};
   user-select: none;
   min-height: 32px;
   color: ${theme.text.default};

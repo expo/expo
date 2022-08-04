@@ -28,16 +28,16 @@ export const SidebarHeadEntry = ({ href, title, isActive, Icon }: SidebarHeadEnt
 
 const entryContainerStyle = css({
   ...typography.fontSizes[15],
-  minHeight: 36,
+  minHeight: 38,
   lineHeight: '100%',
   padding: `${spacing[1.5]}px ${spacing[3]}px`,
   color: theme.text.secondary,
-  marginBottom: spacing[1],
+  marginBottom: spacing[1.5],
   cursor: 'pointer',
   display: 'flex',
   alignItems: 'center',
   userSelect: 'none',
-  transition: '50ms ease color',
+  transition: 'color 100ms',
 
   '&:last-of-type': {
     marginBottom: 0,
