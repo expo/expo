@@ -48,13 +48,13 @@ Let's convert this to **app.config.js** so we can make it more dynamic:
 
 ```javascript
 export default {
-  name: "MyApp",
-  slug: "my-app",
+  name: 'MyApp',
+  slug: 'my-app',
   ios: {
-    bundleIdentifier: "com.myapp",
+    bundleIdentifier: 'com.myapp',
   },
   android: {
-    package: "com.myapp",
+    package: 'com.myapp',
   },
 };
 ```
@@ -62,18 +62,18 @@ export default {
 Now let's switch out the iOS `bundleIdentifier` and Android `package` (which becomes the Application ID) based on the presence of an environment variable in **app.config.js**:
 
 ```js
-const IS_DEV = process.env.APP_VARIANT === "development";
+const IS_DEV = process.env.APP_VARIANT === 'development';
 
 export default {
   // You can also switch out the app icon and other properties to further
   // differentiate the app on your device.
-  name: IS_DEV ? "MyApp (Dev)" : "MyApp",
-  slug: "my-app",
+  name: IS_DEV ? 'MyApp (Dev)' : 'MyApp',
+  slug: 'my-app',
   ios: {
-    bundleIdentifier: IS_DEV ? "com.myapp.dev" : "com.myapp",
+    bundleIdentifier: IS_DEV ? 'com.myapp.dev' : 'com.myapp',
   },
   android: {
-    package: IS_DEV ? "com.myapp.dev" : "com.myapp",
+    package: IS_DEV ? 'com.myapp.dev' : 'com.myapp',
   },
 };
 ```
@@ -100,7 +100,7 @@ Now when you run `eas build --profile development`, the environment variable `AP
 
 When you run `eas build --profile production` the `APP_VARIANT` variable environment will not be set, and the build will run as the production variant.
 
-> **Note**: if you use `expo-updates` to publish JavaScript updates to your app, you should be cautious to set the correct environment variables for the app variant that you are publishing for when you run the `expo publish` command. Refer to the EAS Build ["Environment variables and secrets" guide](/build/updates.md) for more information.
+> **Note**: if you use EAS Update to publish JavaScript updates of your app, you should be cautious to set the correct environment variables for the app variant that you are publishing for when you run the `eas update` command. Refer to the EAS Build ["Environment variables and secrets" guide](/build/updates.md) for more information.
 
 ## Example: configuring development and production variants in a bare project
 
@@ -170,15 +170,16 @@ android {
 ```
 
 The rest of the configuration at this point is not specific to EAS, it's the same as it would be for any Android project with flavors. There are a few common configurations that you might want to apply to your project:
- - To change the name of the app built with the development profile, create a **android/app/src/development/res/value/strings.xml** file.
-    ```xml
-    <resources>
-        <string name="app_name">MyApp - Dev</string>
-    </resources>
-    ```
- - To change the icon of the app built with the development profile, create `android/app/src/development/res/mipmap-*` directories with appropriate assets (you can copy them from **android/app/src/main/res** and replace the icon files).
- - To specify **google-services.json** for a specific flavor put it in a **android/app/src/{flavor}/google-services.json** file.
- - To configure sentry, add `project.ext.sentryCli = [ flavorAware: true ]` to **android/app/build.gradle** and name your properties file `android/sentry-{flavor}-{buildType}.properties` (e.g. **android/sentry-production-release.properties**)
+
+- To change the name of the app built with the development profile, create a **android/app/src/development/res/value/strings.xml** file.
+  ```xml
+  <resources>
+      <string name="app_name">MyApp - Dev</string>
+  </resources>
+  ```
+- To change the icon of the app built with the development profile, create `android/app/src/development/res/mipmap-*` directories with appropriate assets (you can copy them from **android/app/src/main/res** and replace the icon files).
+- To specify **google-services.json** for a specific flavor put it in a **android/app/src/{flavor}/google-services.json** file.
+- To configure sentry, add `project.ext.sentryCli = [ flavorAware: true ]` to **android/app/build.gradle** and name your properties file `android/sentry-{flavor}-{buildType}.properties` (e.g. **android/sentry-production-release.properties**)
 
 ### iOS
 
@@ -232,6 +233,7 @@ Open project in Xcode, click on the project name in the navigation panel, right 
 Rename the target to something more meaningful, e.g. `myapp copy` -> `myapp-dev`.
 
 Configure a scheme for the new target:
+
 - Go to `Product` -> `Scheme` -> `Manage schemes`.
 - Find scheme `myapp copy` on the list.
 - Change scheme name `myapp copy` -> `myapp-dev`.
@@ -240,6 +242,7 @@ Configure a scheme for the new target:
 <ImageSpotlight alt="Xcode scheme list" src="/static/images/eas-build/variants/2-scheme-list.png" style={{maxWidth: 720}} />
 
 By default, the newly created target has separate **Info.plist** file (in our case it's **ios/myapp copy-Info.plist**). To simplify your project we recommend using the same file for all targets:
+
 - Delete **./ios/myapp copy-Info.plist**.
 - Click on the new target.
 - Go to `Build Settings` tab.
@@ -250,11 +253,13 @@ By default, the newly created target has separate **Info.plist** file (in our ca
 <ImageSpotlight alt="Xcode build settings" src="/static/images/eas-build/variants/3-target-build-settings.png" style={{maxWidth: 720}} />
 
 To change the display name:
+
 - Open **Info.plist** and add key `Bundle display name` with value `$(DISPLAY_NAME)`.
 - Open `Build Settings` for both targets and find `User-Defined` section.
 - Add key `DISPLAY_NAME` with the name you want to use for that target.
 
 To change the app icon:
+
 - Create a new image set (you can create it from the existing image set for the current icon, it's usually named `AppIcon`)
 - Open `Build Settings` for the target that you want to change icon.
 - Find `Asset Catalog Compiler - Options` section.

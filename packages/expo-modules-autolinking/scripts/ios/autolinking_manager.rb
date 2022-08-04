@@ -26,6 +26,8 @@ module Expo
       end
 
       global_flags = @options.fetch(:flags, {})
+      tests_only = @options.fetch(:testsOnly, false)
+      include_tests = @options.fetch(:includeTests, false)
 
       project_directory = Pod::Config.instance.project_root
 
@@ -46,7 +48,7 @@ module Expo
               :configuration => package.debugOnly ? ['Debug'] : [] # An empty array means all configurations
             }.merge(global_flags, package.flags)
 
-            if links_for_testing?
+            if tests_only || include_tests
               podspec_file_path = File.join(podspec_dir_path, pod.pod_name + ".podspec")
               podspec = Pod::Specification.from_file(podspec_file_path)
               test_specs_names = podspec.test_specs.map { |test_spec|
@@ -55,7 +57,7 @@ module Expo
 
               # Jump to the next package when it doesn't have any test specs (except interfaces, they're required)
               # TODO: Can remove interface check once we move all the interfaces into the core.
-              next if test_specs_names.empty? && !pod.pod_name.end_with?('Interface')
+              next if tests_only && test_specs_names.empty? && !pod.pod_name.end_with?('Interface')
 
               pod_options[:testspecs] = test_specs_names
             end
@@ -93,13 +95,9 @@ module Expo
       @options.fetch(:providerName, Constants::MODULES_PROVIDER_FILE_NAME)
     end
 
-    public def links_for_testing?
-      @options.fetch(:testsOnly, false)
-    end
-
     # For now there is no need to generate the modules provider for testing.
     public def should_generate_modules_provider?
-      return !links_for_testing?
+      return !@options.fetch(:testsOnly, false)
     end
 
     # privates

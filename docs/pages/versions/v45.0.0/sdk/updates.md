@@ -20,7 +20,7 @@ The `expo-updates` library allows you to programmatically control and respond to
 
 Most of the methods and constants in this module can only be used or tested in release mode; they do not make sense in debug builds where you always load the latest JavaScript from your computer while in development.
 
-**To test manual updates in the Expo Go app**, run `expo publish` and then open the published version of your app with Expo Go.
+**To test manual updates in the Expo Go app**, run [`eas update`](/eas-update/introduction) and then open the published version of your app with Expo Go.
 
 **To test manual updates with managed workflow standalone apps**, you can create a [simulator build](/build-reference/simulators.md) or [APK](/build-reference/apk.md), or make a release build locally with `expo run:ios --configuration Release` and `expo run:android --variant release`.
 
