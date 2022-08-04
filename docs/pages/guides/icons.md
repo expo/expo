@@ -14,7 +14,7 @@ In the example below, the component loads the `Ionicons` font, and renders a che
 
 <SnackEmbed snackId="@amanhimself/expo-vector-icons-ionicons-example" preview platform="web" />
 
-> **Note:** As with [any custom font](using-custom-fonts.md#using-custom-fonts) in Expo, you may want to preload icon fonts before rendering your app. The font object is available as a static property on the font component, so in the case above it is `Ionicons.font`, which evaluates to `{ionicons: require('path/to/ionicons.ttf')}`.
+> **Note:** As with [any custom font](using-custom-fonts.md#using-custom-fonts) in Expo, you may want to preload icon fonts before rendering your app. The font object is available as a static property on the font component, so in the case above it is `Ionicons.font`, which evaluates to `{ionicons: require('path/to/ionicons.ttf')}`. Read more on about [pre-loading and caching assets](preloading-and-caching-assets#pre-loading-and-caching-assets).
 
 ## Custom Icon Fonts
 
