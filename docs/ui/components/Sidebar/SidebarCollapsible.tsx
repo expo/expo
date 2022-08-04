@@ -6,8 +6,13 @@ import React, { useState } from 'react';
 import stripVersionFromPath from '~/common/stripVersionFromPath';
 import { NavigationRoute } from '~/types/common';
 
+const STYLES_CHEVRON_ICON = css({
+  marginRight: spacing[2],
+  transition: '100ms ease transform',
+});
+
 const STYLES_TITLE = css`
-  ${typography.fontSizes[14]}
+  ${typography.fontSizes[15]}
   display: flex;
   align-items: center;
   position: relative;
@@ -21,10 +26,6 @@ const STYLES_TITLE = css`
     cursor: pointer;
   }
 `;
-
-const STYLES_CHEVRON_ICON = css({
-  marginRight: spacing[2],
-});
 
 const STYLES_CLOSED_CHEVRON_ICON = css({
   transform: 'rotate(-90deg)',

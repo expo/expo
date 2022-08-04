@@ -8,7 +8,7 @@ import stripVersionFromPath from '~/common/stripVersionFromPath';
 import { NavigationRoute } from '~/types/common';
 
 const STYLES_LINK = css`
-  ${typography.fontSizes[14]}
+  ${typography.fontSizes[15]}
   display: flex;
   flex-direction: row;
   text-decoration: none;
@@ -16,6 +16,10 @@ const STYLES_LINK = css`
   transition: 50ms ease color;
   align-items: center;
   padding-left: 22px;
+
+  &:hover {
+    color: ${theme.text.default};
+  }
 `;
 
 const STYLES_LINK_ACTIVE = css`

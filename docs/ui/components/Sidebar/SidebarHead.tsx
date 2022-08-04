@@ -19,7 +19,7 @@ export const SidebarHead = ({ sidebarActiveGroup }: SidebarHeadProps) => {
     <div css={sidebarHeadContainer}>
       <SidebarHeadEntry
         href="/"
-        title="Documentation"
+        title="Guides"
         Icon={sidebarActiveGroup === 'general' ? DocumentationIcon : DocumentationInactiveIcon}
         isActive={sidebarActiveGroup === 'general'}
       />
@@ -38,7 +38,7 @@ export const SidebarHead = ({ sidebarActiveGroup }: SidebarHeadProps) => {
       {shouldShowFeaturePreviewLink() && (
         <SidebarHeadEntry
           href="/feature-preview"
-          title="What's New"
+          title="Feature Preview"
           Icon={
             sidebarActiveGroup === 'featurePreview' || sidebarActiveGroup === 'preview'
               ? PreviewIcon

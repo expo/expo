@@ -90,6 +90,8 @@ const STYLES_CONTENT = css`
 `;
 
 const STYLES_SIDEBAR = css`
+  display: flex;
+  flex-direction: column;
   flex-shrink: 0;
   max-width: 280px;
   height: 100%;
@@ -258,10 +260,7 @@ export default class DocumentationNestedScrollLayout extends React.Component<Pro
         <div css={STYLES_CONTENT}>
           <div css={[STYLES_SIDEBAR, STYLES_LEFT]}>
             <SidebarHead sidebarActiveGroup={sidebarActiveGroup} />
-            <ScrollContainer
-              ref={this.sidebarRef}
-              scrollPosition={sidebarScrollPosition}
-              css={css({ height: 'calc(100% - 190px)' })}>
+            <ScrollContainer ref={this.sidebarRef} scrollPosition={sidebarScrollPosition}>
               {sidebar}
             </ScrollContainer>
           </div>

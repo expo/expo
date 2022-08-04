@@ -86,7 +86,7 @@ export const Header = ({
 const containerStyle = css`
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   position: relative;
   background-color: ${theme.background.default};
   z-index: 2;
@@ -95,6 +95,7 @@ const containerStyle = css`
   height: 60px;
   box-sizing: border-box;
   border-bottom: 1px solid ${theme.border.default};
+  gap: ${spacing[4]}px;
 `;
 
 const columnStyle = css`
@@ -106,6 +107,8 @@ const columnStyle = css`
 const leftColumnStyle = css`
   flex-basis: 256px;
   width: 256px;
+  flex-grow: 1;
+  align-items: center;
 
   @media screen and (max-width: ${breakpoints.medium}px) {
     flex-basis: auto;
@@ -120,8 +123,6 @@ const noTocLeftStyle = css`
 `;
 
 const rightColumnStyle = css`
-  flex-basis: 288px;
-  width: 288px;
   justify-content: flex-end;
 
   @media screen and (max-width: ${breakpoints.medium}px) {

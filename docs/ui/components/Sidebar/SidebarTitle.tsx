@@ -9,7 +9,7 @@ export const SidebarTitle = ({ children }: SidebarTitleProps) => (
 );
 
 const STYLES_TITLE = css({
-  ...typography.fontSizes[14],
+  ...typography.fontSizes[15],
   display: 'block',
   position: 'relative',
   marginBottom: spacing[3],
@@ -18,6 +18,6 @@ const STYLES_TITLE = css({
   paddingLeft: spacing[6],
   paddingBottom: spacing[2],
   marginRight: -spacing[5],
-  color: theme.text.default,
+  color: theme.text.secondary,
   userSelect: 'none',
 });

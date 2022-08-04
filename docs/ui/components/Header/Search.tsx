@@ -120,10 +120,8 @@ const searchContainerStyle = css`
   display: flex;
   position: relative;
   align-items: flex-end;
-  width: 100%;
-  // Current doc container max-width - padding, to match page max width
-  max-width: calc(${breakpoints.large}px - (50px * 2));
-  margin-left: 24px;
+  max-width: 460px;
+  flex-grow: 1;
 
   @media screen and (max-width: ${breakpoints.medium}px) {
     display: none;
@@ -185,5 +183,6 @@ const mobileSearchContainerStyle = css`
 
   @media screen and (max-width: ${breakpoints.medium}px) {
     display: flex;
+    max-width: 100%;
   }
 `;

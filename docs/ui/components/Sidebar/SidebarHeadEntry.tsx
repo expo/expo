@@ -27,7 +27,7 @@ export const SidebarHeadEntry = ({ href, title, isActive, Icon }: SidebarHeadEnt
 };
 
 const entryContainerStyle = css({
-  ...typography.fontSizes[14],
+  ...typography.fontSizes[15],
   minHeight: 36,
   lineHeight: '100%',
   padding: `${spacing[1.5]}px ${spacing[3]}px`,
@@ -37,9 +37,14 @@ const entryContainerStyle = css({
   display: 'flex',
   alignItems: 'center',
   userSelect: 'none',
+  transition: '50ms ease color',
 
   '&:last-of-type': {
     marginBottom: 0,
+  },
+
+  '&:hover': {
+    color: theme.text.default,
   },
 });
 

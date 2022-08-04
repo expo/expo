@@ -5,7 +5,7 @@ import {
   iconSize,
   spacing,
   typography,
-  ChevronDownIcon,
+  ChevronRightIcon,
   Logo as LogoIcon,
   WordMarkLogo,
 } from '@expo/styleguide';
@@ -14,12 +14,16 @@ import React from 'react';
 import { LinkBase } from '~/ui/components/Text';
 
 export const Logo = () => (
-  <LinkBase css={linkStyle} href="/">
-    <WordMarkLogo color={theme.text.default} css={[logoStyle, hideOnMobile]} />
-    <LogoIcon color={theme.text.default} css={[logoStyle, showOnMobile]} />
-    <ChevronDownIcon size={iconSize.regular} css={chevronStyle} color={theme.icon.secondary} />
-    <span css={subtitleStyle}>Docs</span>
-  </LinkBase>
+  <>
+    <LinkBase css={linkStyle} href="https://expo.dev" openInNewTab>
+      <WordMarkLogo color={theme.text.default} css={[logoStyle, hideOnMobile]} />
+      <LogoIcon color={theme.text.default} css={[logoStyle, showOnMobile]} />
+    </LinkBase>
+    <ChevronRightIcon size={iconSize.regular} css={chevronStyle} color={theme.icon.secondary} />
+    <LinkBase css={linkStyle} href="/">
+      <span css={subtitleStyle}>Docs</span>
+    </LinkBase>
+  </>
 );
 
 const linkStyle = css`
@@ -35,7 +39,6 @@ const logoStyle = css`
 `;
 
 const chevronStyle = css`
-  transform: rotate(-90deg);
   margin: 0 ${spacing[2]}px;
 
   @media screen and (max-width: ${breakpoints.medium}px) {
