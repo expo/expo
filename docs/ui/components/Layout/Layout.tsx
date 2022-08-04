@@ -37,7 +37,6 @@ export const Layout = ({
     <Header
       sidebar={<Sidebar />}
       sidebarActiveGroup="general"
-      tocVisible
       isMobileMenuVisible={false}
       setMobileMenuVisible={() => undefined}
     />

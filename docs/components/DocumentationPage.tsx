@@ -159,7 +159,6 @@ class DocumentationPageWithApiVersion extends React.Component<Props, State> {
       <Header
         sidebar={sidebarElement}
         sidebarActiveGroup={sidebarActiveGroup}
-        tocVisible={this.props.tocVisible}
         isMobileMenuVisible={this.state.isMobileMenuVisible}
         setMobileMenuVisible={isMobileMenuVisible => this.setState({ isMobileMenuVisible })}
       />
