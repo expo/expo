@@ -117,11 +117,6 @@ public final class ViewModuleWrapper: RCTViewManager, DynamicModuleWrapperProtoc
     }
   }
 
-  @objc
-  public func getViewClass() -> UIView.Type? {
-    return wrappedModuleHolder.viewManager?.getViewClass()
-  }
-
   public static let viewManagerAdapterPrefix = "ViewManagerAdapter_"
 
   /**
