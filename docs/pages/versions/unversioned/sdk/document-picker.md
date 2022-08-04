@@ -23,13 +23,13 @@ Provides access to the system's UI for selecting documents from the available pr
 
 ### Managed workflow
 
-For iOS, outside of the Expo Go app, the DocumentPicker module requires the iCloud entitlement to work properly. You need to set the `usesIcloudStorage` key to `true` in your **app.json** file as specified [here](../../../workflow/configuration.md#ios).
+For iOS, outside of the Expo Go app, the DocumentPicker module requires the [iCloud Services Entitlement](https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_icloud-services) to work properly. You need to take the following steps:
 
-In addition, you'll also need to enable the iCloud Application Service in your App identifier. This can be done in the detail of your [App ID in the Apple Developer interface](https://developer.apple.com/account/ios/identifier/bundle).
+- Set the `usesIcloudStorage` key to `true` in your **app.json** as specified [configuration properties](/versions/latest/config/app/#usesicloudstorage).
+- You need to enable the iCloud Application Service in your App identifier. This can be done in the detail of your [App ID in the Apple Developer interface](https://developer.apple.com/account/ios/identifier/bundle).
+- Enable iCloud service with CloudKit support, and create an iCloud Container. When registering the new Container, you are asked to provide a description and identifier for the container. You may enter any name under the description. Under the identifier, add `iCloud.<your_bundle_identifier>`.
 
-Enable iCloud service with CloudKit support, create one iCloud Container, and name it `iCloud.<your_bundle_identifier>`.
-
-And finally, to apply those changes, you'll need to revoke your existing provisioning profile and run `expo build:ios -c`
+To apply these changes, you have to revoke your existing provisioning profile and use [EAS Build](/build/introduction/) to build the app binaries.
 
 ### Bare workflow
 
