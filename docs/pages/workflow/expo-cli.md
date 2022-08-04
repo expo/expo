@@ -280,6 +280,18 @@ Expo CLI provides authentication methods for use in the `npx expo start` command
 
 These credentials are shared across Expo CLI and EAS CLI.
 
+## Customizing
+
+Sometimes you may want to customize a project file which would otherwise be managed in-memory by the CLI. When you utilize tools other than Expo CLI, you'll need to have the default config files present, otherwise your app may not work as expected. You can generate files by running:
+
+<Terminal cmd={['$ npx expo customize']} />
+
+From here, you can choose to generate basic project files like:
+
+- `babel.config.js` -- The Babel configuration. This is required to be present if you plan to use tooling other than Expo CLI to bundle your project.
+- `webpack.config.js` -- The default Webpack config for web development.
+- `metro.config.js` -- The default Metro config for universal development. This is required for usage with the React Native community CLI.
+
 ## Environment Variables
 
 - `EXPO_NO_WEB_SETUP` (**boolean**) prevents the CLI from forcing web dependencies (`react-dom`, `react-native-web`, `@expo/webpack-config`) to be installed before using web functionality. This is useful for cases where you wish to perform non-standard web development.
