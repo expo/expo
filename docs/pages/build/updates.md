@@ -1,25 +1,23 @@
 ---
-title: Using expo-updates
+title: Using EAS Update
 ---
 
-> This guide references Classic Updates service. As of Dec 2021, we started previewing the next generation of our updates service: EAS Update. [Learn more](/eas-update).
+EAS Build includes some special affordances for Expo's [`expo-updates`](/versions/latest/sdk/updates.md) library. In particular, you can configure the `channel` property in **eas.json** and EAS Build will take care of updating it in your native project at build time. Not sure what a channel is? [Learn more about channels](eas-update/how-eas-update-works/#distributing-builds). This document covers concerns specific to using `expo-updates` with EAS Build; for more general information about configuring the expo-updates library with EAS Update, refer to the [EAS Update getting started doc](/eas-update/getting-started).
 
-EAS Build includes some special affordances for Expo's [`expo-updates`](/versions/latest/sdk/updates.md) library. In particular, you can configure the release channel in **eas.json** and EAS Build will take care of updating it in your native project at build time. Not sure what a release channel is? [Learn more about release channels](/distribution/release-channels.md). This document covers concerns specific to using `expo-updates` with EAS Build; for more general information about configuring `expo-updates`, refer to the ["Configuring Updates" guide](/guides/configuring-updates.md).
+## Setting the channel for a build profile
 
-## Setting the release channel for a build profile
+Each [build profile](./eas-json.md#build-profiles) can be assigned to a channel, so updates for builds produced for a given profile will pull only those releases that are published to its channel.
 
-Each [build profile](./eas-json.md#build-profiles) can be assigned to a release channel, so updates for builds produced for a given profile will pull only those releases that are published to its release channel. If a release channel is not specified, the value will be `"default"`.
-
-The following example demonstrates how you might use the `"production"` release channel for production builds, and the `"staging"` release channel for test builds distributed with [internal distribution](internal-distribution.md).
+The following example demonstrates how you might use the `"production"` channel for production builds, and the `"staging"` channel for test builds distributed with [internal distribution](internal-distribution.md).
 
 ```json
 {
   "build": {
     "production": {
-      "releaseChannel": "production"
+      "channel": "production"
     },
     "preview": {
-      "releaseChannel": "staging",
+      "channel": "staging",
       "distribution": "internal"
     }
   }
@@ -36,6 +34,6 @@ We recommend using a different [runtime version](/distribution/runtime-versions.
 
 Updates published with the `runtimeVersion` field can't be loaded in Expo Go; instead, you should use [expo-dev-client](/clients/introduction.md) to create a development build.
 
-## Environment variables and `expo publish`
+## Environment variables and `eas update`
 
-Environment variables set on the `env` field in build profiles are not available when you run `expo publish`. Learn more in the ["Environment variables and secrets" guide](/build-reference/variables.md).
+Environment variables set on the `env` field in build profiles are not available when you run `eas update`. Learn more about using [environment variables with EAS Update](/eas-update/environment-variables).

@@ -125,4 +125,4 @@ You can also package your Expo app into a standalone binary for submission to th
 There are two options to choose from when it comes to building your Expo app:
 
 - (**Recommended**) The new EAS Build system, which has support for any 3rd party library. For more information, see [Creating your first build](/build/setup.md).
-- The classic `expo build` system, which only supports native libraries included in the Expo SDK. For more information on classic builds, see [here](/classic/building-standalone-apps.md).
+- The classic `expo build` system, which only supports native libraries included in the Expo SDK. For more information, see [classic builds](/archive/classic-updates/building-standalone-apps.md).

@@ -105,7 +105,7 @@ For more information, see [Expo CLI](../workflow/expo-cli.md).
 # Generate main.js
 lein prod-build
 
-expo publish
+eas update
 ```
 
 This will publish your app to a persistent URL on Expo, for example: <https://expo.dev/@community/startr>

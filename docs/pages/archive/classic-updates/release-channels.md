@@ -5,7 +5,7 @@ title: Release channels
 import { ConfigClassic } from '~/components/plugins/ConfigSection';
 import { Terminal } from '~/ui/components/Snippet';
 
-> Release channels are used for our Classic Updates service. As of Dec 2021, we started previewing the next generation of our updates service: EAS Update. [Learn more](/eas-update).
+> This doc was archived in August 2022 and will not receive any further updates. Please use EAS Update instead. [Learn more](/eas-update/introduction)
 
 ## Introduction
 
@@ -19,8 +19,8 @@ Use release channels in Expo to send out different versions of your application 
 Publish your update on a release channel by running:
 
 <Terminal cmd={[
-  '# Publish to release channel <your-channel>',
-  '$ expo publish --release-channel <your-channel>'
+'# Publish to release channel <your-channel>',
+'$ expo publish --release-channel <your-channel>'
 ]} />
 
 Your team can see this release channel in the Expo Go app with a parameterized URL `https://exp.host/@username/yourApp?release-channel=<your-release-channel>`. If you do not specify a release channel, you will publish to the `default` channel.
@@ -29,7 +29,7 @@ A release channel name can only contain lowercase letters, numbers and special c
 
 ## Build with release channels
 
-[Set your release channel](/build/updates.md) in the build profile in **eas.json**:
+Set your release channel in the build profile in **eas.json**:
 
 ```json
 {
@@ -98,7 +98,7 @@ You can continue updating v1 of your app with `expo publish --release-channel pr
 
 ## Using release channels in the bare workflow
 
-You can edit the native project's release channel by modifying the `EXUpdatesReleaseChannel` key in **Expo.plist** (iOS) or the `releaseChannel` meta-data tag value in **AndroidManifest.xml** (Android). [Read this guide](/bare/updating-your-app.md) for more information on configuring updates in a bare app.
+You can edit the native project's release channel by modifying the `EXUpdatesReleaseChannel` key in **Expo.plist** (iOS) or the `releaseChannel` meta-data tag value in **AndroidManifest.xml** (Android). [Read this guide](./updating-your-app) for more information on configuring updates in a bare app.
 
 ## Using release channels for Environment Variable Configuration
 

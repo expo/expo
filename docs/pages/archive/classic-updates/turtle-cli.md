@@ -2,9 +2,9 @@
 title: Building Standalone Apps on Your CI
 ---
 
-> Using [EAS Build](/build/introduction.md)? Check out ["Running builds on your own infrastructure"](/build-reference/local-builds.md) and ["Triggering builds from CI"](/build/building-on-ci.md).
+> This doc was archived in August 2022 and will not receive any further updates. SDK 46 is the last SDK supported by Classic Builds and the Classic Build service will stop running for all SDK versions after January 4, 2023. Check out [Running builds on your own infrastructure](/build-reference/local-builds.md) and [Triggering builds from CI](/build/building-on-ci.md).
 
-> **NOTE:** macOS is required to build standalone iOS apps.
+> **Note:** macOS is required to build standalone iOS apps.
 
 This guide describes an advanced feature of Expo. In most cases you can build
 standalone Expo apps using Expo's build services as described in the guide
@@ -67,8 +67,8 @@ Turtle CLI makes use of exactly the same codebase which is running on our server
 This means you're required to publish your app to Expo's servers or host it on your own server **prior to building it with Turtle CLI**.
 Whether you want Expo to host your app, or you'd like to do it yourself, all you need to do is follow the appropriate guide:
 
-- [Publishing an app to Expo's servers](/workflow/publishing.md)
-- [Hosting an app on your own server](/distribution/hosting-your-app.md)
+- [Publishing an app to Expo's servers](/archive/classic-updates/publishing.md)
+- [Hosting an app on your own server](/distribution/custom-updates-server.md)
 
 ## Start the build
 

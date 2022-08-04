@@ -137,8 +137,8 @@ const RENAMED_PAGES: Record<string, string> = {
   '/guides/': '/workflow/exploring-managed-workflow/',
   '/versions/latest/sdk/': '/versions/latest/',
   '/versions/latest/sdk/overview/': '/versions/latest/',
-  '/guides/building-standalone-apps/': '/classic/building-standalone-apps/',
-  '/distribution/building-standalone-apps/': '/classic/building-standalone-apps/',
+  '/guides/building-standalone-apps/': '/archive/classic-updates/building-standalone-apps/',
+  '/distribution/building-standalone-apps/': '/archive/classic-updates/building-standalone-apps/',
   '/guides/genymotion/': '/workflow/android-studio-emulator/',
   '/workflow/upgrading-expo/': '/workflow/upgrading-expo-sdk-walkthrough/',
   '/workflow/create-react-native-app/': '/workflow/glossary-of-terms/#create-react-native-app',
@@ -152,7 +152,8 @@ const RENAMED_PAGES: Record<string, string> = {
   // Lots of old links pointing to guides when they have moved elsewhere
   '/guides/configuration/': '/workflow/configuration/',
   '/guides/expokit/': '/expokit/overview/',
-  '/guides/publishing/': '/workflow/publishing/',
+  '/guides/publishing/': '/archive/classic-updates/publishing/',
+  '/workflow/publishing/': '/archive/classic-updates/publishing/',
   '/guides/linking/': '/workflow/linking/',
   '/guides/up-and-running/': '/get-started/installation/',
   '/guides/debugging/': '/workflow/debugging/',
@@ -179,7 +180,7 @@ const RENAMED_PAGES: Record<string, string> = {
 
   // Additional redirects based on Sentry (04/28/2020)
   '/next-steps/installation/': '/get-started/installation/',
-  '/guides/release-channels/': '/distribution/release-channels/',
+  '/guides/release-channels/': '/archive/classic-updates/release-channels/',
 
   // Redirects based on Next 9 upgrade (09/11/2020)
   '/api/': '/versions/latest/',
@@ -218,9 +219,21 @@ const RENAMED_PAGES: Record<string, string> = {
   '/versions/v43.0.0/sdk/permissions/': '/guides/permissions/',
   '/versions/latest/sdk/permissions/': '/guides/permissions/',
 
-  // updates
-  '/guides/configuring-ota-updates/': '/guides/configuring-updates/',
-
   // Redirect Gatsby guide to index guides page
   '/guides/using-gatsby/': '/guides/',
+
+  // Classic updates moved to archive
+  '/guides/configuring-ota-updates/': '/archive/classic-updates/getting-started/',
+  '/guides/configuring-updates/': '/archive/classic-updates/getting-started/',
+  '/distribution/release-channels/': '/archive/classic-updates/release-channels/',
+  '/distribution/advanced-release-channels/': '/archive/classic-updates/advanced-release-channels/',
+  '/distribution/optimizing-updates/': '/archive/classic-updates/optimizing-updates/',
+  '/eas-update/custom-updates-server/': '/distribution/custom-updates-server/',
+  '/guides/offline-support/': '/archive/classic-updates/offline-support/',
+  '/guides/preloading-and-caching-assets/':
+    '/archive/classic-updates/preloading-and-caching-assets/',
+  '/eas-update/bare-react-native/': '/bare/updating-your-app/',
+  '/worfkflow/publishing/': '/archive/classic-updates/publishing/',
+  '/classic/building-standalone-apps/': '/archive/classic-updates/building-standalone-apps/',
+  '/classic/turtle-cli/': '/archive/classic-updates/turtle-cli/',
 };

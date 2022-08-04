@@ -14,4 +14,4 @@ Read the full pitch at [expo.dev/eas](https://expo.dev/eas), or follow the links
 
 <BoxLink title="EAS Submit" description="Upload your app to the Apple App Store or Google Play Store from the cloud with one CLI command. Learn more." href="/submit/introduction" />
 
-<BoxLink title="EAS Update (In Preview)" description="Address small bugs and push quick fixes directly to end-users. Learn more." href="/eas-update/introduction" />
+<BoxLink title="EAS Update" description="Address small bugs and push quick fixes directly to end-users. Learn more." href="/eas-update/introduction" />

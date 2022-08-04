@@ -57,7 +57,7 @@ The build webhook payload looks something like this:
     "distribution": "store",
     "appIdentifier": "com.expo.example",
     "gitCommitHash": "564b61ebdd403d28b5dc616a12ce160b91585b5b",
-    "releaseChannel": "default",
+    "": "default",
     "appBuildVersion": "6",
     "trackingContext": {
       "platform": "android",

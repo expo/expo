@@ -2,11 +2,11 @@
 title: Advanced release channels
 ---
 
-> Release channels are used for our Classic Updates service. As of Dec 2021, we started previewing the next generation of our updates service: EAS Update. [Learn more](/eas-update).
+> This doc was archived in August 2022 and will not receive any further updates. Please use EAS Update instead. [Learn more](/eas-update/introduction)
 
 ## Introduction
 
-For a quick introduction to release channels, read [this](release-channels.md).
+For a quick introduction to release channels, read [this](./release-channels.md).
 
 When you publish your app by running `expo publish --release-channel staging`, it creates:
 

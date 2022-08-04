@@ -21,9 +21,7 @@ Expo extends the React Native platform by offering additional, battle-tested mod
 
 Managed Expo projects also offer updates and a push notification service.
 
-- If you've ever been in a situation where you find a spelling mistake in your app and have to wait for Apple to approve a change, you'll appreciate updates - these changes will appear as soon as you run `expo publish`! You aren't limited to text either, this applies to assets like images and configuration updates too!
-
-There's no need to re-build or redeploy your app to the App Store and Play Store. It's like [Code Push](https://microsoft.github.io/code-push/) if you've used that before. There are a few limitations, however. [Read about those here](../workflow/publishing.md#limitations).
+- If you've ever been in a situation where you find a spelling mistake in your app and have to wait for Apple to approve a change, you'll appreciate updates - these changes will appear as soon as you run `eas update`. You aren't limited to text either, this applies to assets like images and configuration updates too!
 
 Expo offers a shared configuration file we call a _manifest_.
 
@@ -77,16 +75,16 @@ If you prefer to build your app on your own machine, you can [follow these steps
 When developing a managed Expo project, you have the option to use command line tools instead. Here are some of our friends' favorite commands and workflows:
 
 <Terminal cmd={[
-  '# start expo server, clear cache, load only on localhost and open on iOS simulator',
-  '$ expo start -c --localhost --ios'
+'# start expo server, clear cache, load only on localhost and open on iOS simulator',
+'$ expo start -c --localhost --ios'
 ]} />
 
 <Terminal cmd={[
-  "# start expo server (don't clear cache) and run expo on a tunnel so you can share it with anyone!", 
-  '$ expo start --tunnel'
+"# start expo server (don't clear cache) and run expo on a tunnel so you can share it with anyone!",
+'$ expo start --tunnel'
 ]} />
 
 <Terminal cmd={[
-  "# send a link to a friend's email so they can view on their phone exactly what I'm working on",
-  '$ expo send -s example@domain.com'
+"# send a link to a friend's email so they can view on their phone exactly what I'm working on",
+'$ expo send -s example@domain.com'
 ]} />

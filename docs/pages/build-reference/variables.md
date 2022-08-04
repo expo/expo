@@ -124,7 +124,7 @@ After creating a secret, you can read it on subsequent EAS Build jobs with `proc
 
 Environment variables can be tricky to use if you don't have the correct mental model for how they work. In this section we're going to clarify common sources of confusion, oriented around use cases.
 
-### Can I share environment variables defined in eas.json with `expo start` and `expo publish`?
+### Can I share environment variables defined in eas.json with `expo start` and `eas update`?
 
 When you define environment variables on build profiles in **eas.json**, they will not be available for local development when you run `expo start`. A concern that developers often raise about this is that they now have to duplicate their configuration in multiple places, leading to additional maintenance effort and possible bugs when values go out of sync. If you find yourself in this situation, one possible solution is to move your configuration out of environment variables and into JavaScript. For example, imagine we had the following **eas.json**:
 
@@ -132,14 +132,14 @@ When you define environment variables on build profiles in **eas.json**, they wi
 {
   "build": {
     "production": {
-      "releaseChannel": "production",
+      "channel": "production",
       "env": {
         "API_URL": "https://api.production.com",
         "ENABLE_HIDDEN_FEATURES": 0
       }
     },
     "preview": {
-      "releaseChannel": "staging",
+      "channel": "staging",
       "env": {
         "API_URL": "https://api.staging.com",
         "ENABLE_HIDDEN_FEATURES": 1
@@ -162,86 +162,85 @@ export default {
 }
 ```
 
-Using this approach, we would always need to remember to run `API_URL=https://api.staging.com ENABLE_HIDDEN_FEATURES=1 expo publish` when updating staging, and something similar for production. If we forgot the `ENABLE_HIDDEN_FEATURES=0` flag when publishing to production, we might end up rolling out untested features to production, and if we forgot the `API_URL` value, then users would be pointed to `https://localhost:3000`!
+Using this approach, we would always need to remember to run `API_URL=https://api.staging.com ENABLE_HIDDEN_FEATURES=1 eas update` when updating staging, and something similar for production. If we forgot the `ENABLE_HIDDEN_FEATURES=0` flag when publishing to production, we might end up rolling out untested features to production, and if we forgot the `API_URL` value, then users would be pointed to `https://localhost:3000`!
 
 The following are two possible alternative approaches, each with different tradeoffs.
 
-1. **Move values to application code and switch based on release channel**. Rather than putting configuration in environment variables and extras, create a JavaScript file, possibly named **Config.js**. This approach will work well for you as long as you don't need to use the configuration values to modify build time configuration, such as the `ios.bundleIdentifier`, `icon`, and so on. This approach also gives you the ability to promote updates between environments, because the configuration that is used will switch when it's loaded from a binary with a different release channel. It might look something like this:
+1. **Move values to application code and switch based on channel**. Rather than putting configuration in environment variables and extras, create a JavaScript file, possibly named **Config.js**. This approach will work well for you as long as you don't need to use the configuration values to modify build time configuration, such as the `ios.bundleIdentifier`, `icon`, and so on. This approach also gives you the ability to promote updates between environments, because the configuration that is used will switch when it's loaded from a binary with a different channel. It might look something like this:
 
   <Collapsible summary="Config.js">
 
-  ```js
-  import * as Updates from 'expo-updates';
+    ```js
+    import * as Updates from 'expo-updates';
 
-  let Config = {
-    apiUrl: 'https://localhost:3000',
-    enableHiddenFeatures: true,
-  };
+    let Config = {
+      apiUrl: 'https://localhost:3000',
+      enableHiddenFeatures: true,
+    };
 
-  if (Updates.releaseChannel === 'production') {
-    Config.apiUrl = 'https://api.production.com';
-    Config.enableHiddenFeatures = false;
-  } else if (Updates.releaseChannel === 'staging') {
-    Config.apiUrl = 'https://api.staging.com';
-    Config.enableHiddenFeatures = true;
-  }
+    if (Updates.channel === 'production') {
+      Config.apiUrl = 'https://api.production.com';
+      Config.enableHiddenFeatures = false;
+    } else {
+      Config.apiUrl = 'https://api.staging.com';
+      Config.enableHiddenFeatures = true;
+    }
 
-  export default Config;
-  ```
+    export default Config;
+    ```
 
   </Collapsible>
 
-2. **Use a single environment variable to toggle configuration**. In our **eas.json** we can set an environment variable such as `APP_ENV` and then switch on that value inside of **app.config.js**. This way, we only have to be sure to set one environment variable: `APP_ENV=production expo publish`.
+2. **Use a single environment variable to toggle configuration**. In our **eas.json** we can set an environment variable such as `APP_ENV` and then switch on that value inside of **app.config.js**. This way, we only have to be sure to set one environment variable: `APP_ENV=production eas update`.
 
   <Collapsible summary="eas.json">
 
-  ```json
-  {
-    "build": {
-      "production": {
-        "releaseChannel": "production",
-        "env": {
-          "APP_ENV": "production"
-        }
-      },
-      "preview": {
-        "releaseChannel": "staging",
-        "env": {
-          "APP_ENV": "staging"
+    ```json
+    {
+      "build": {
+        "production": {
+          "channel": "production",
+          "env": {
+            "APP_ENV": "production"
+          }
+        },
+        "preview": {
+          "channel": "staging",
+          "env": {
+            "APP_ENV": "staging"
+          }
         }
       }
     }
-  }
-  ```
+    ```
 
   </Collapsible>
 
   <Collapsible summary="app.config.js">
 
-  ```js
-  let Config = {
-    apiUrl: 'https://localhost:3000',
-    enableHiddenFeatures: true,
-  };
+    ```js
+    let Config = {
+      apiUrl: 'https://localhost:3000',
+      enableHiddenFeatures: true,
+    };
 
-  if (process.env.APP_ENV === 'production') {
-    Config.apiUrl = 'https://api.production.com';
-    Config.enableHiddenFeatures = false;
-  } else if (process.env.APP_ENV === 'staging') {
-    Config.apiUrl = 'https://api.staging.com';
-    Config.enableHiddenFeatures = true;
-  }
+    if (process.env.APP_ENV === 'production') {
+      Config.apiUrl = 'https://api.production.com';
+      Config.enableHiddenFeatures = false;
+    } else if (process.env.APP_ENV === 'staging') {
+      Config.apiUrl = 'https://api.staging.com';
+      Config.enableHiddenFeatures = true;
+    }
 
-  export default {
-    // ...
-    extra: {
-      ...Config,
-    },
-  };
-  ```
+    export default {
+      // ...
+      extra: {
+        ...Config,
+      },
+    };
+    ```
 
   </Collapsible>
-
 
 ### How are naming collisions between secrets and the `env` field in eas.json handled?
 

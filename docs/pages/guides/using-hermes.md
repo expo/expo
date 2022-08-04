@@ -117,7 +117,7 @@ You may want to use Hermes on one platform and JSC on another. One way to do thi
 
 ## Publish updates
 
-Publishing updates with `expo publish` and `expo export` will generate Hermes bytecode bundles and their source maps.
+Publishing updates with `eas update` and `expo export --experimental-bundle` will generate Hermes bytecode bundles and their source maps.
 
 Please note that the Hermes bytecode format may change between different versions of `hermes-engine` — an update produced for a specific version of Hermes will not run on a different version of Hermes. Updating the Hermes version can be thought of in the same way as updating any other native module, and so if you update the `hermes-engine` version you should also update the `runtimeVersion` in **app.json**. If you don't do this, your app may crash on launch because the update may be loaded by an existing binary that uses an older version of `hermes-engine` that is incompatible with the updated bytecode format. See ["Update Compatibility"](/bare/updating-your-app/#update-compatibility) for more information.
 

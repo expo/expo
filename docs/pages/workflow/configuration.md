@@ -30,7 +30,7 @@ Most configuration from **app.json** is accessible at runtime from your JavaScri
 For more customization you can use the JavaScript and TypeScript **app.config.js**, or **app.config.ts**. These configs have the following properties:
 
 - Comments, variables, and single quotes!
-- Importing/requiring other JavaScript files. Using import/export syntax in external files is not supported. All imported files must be transpiled to support your current version of Node.js. 
+- Importing/requiring other JavaScript files. Using import/export syntax in external files is not supported. All imported files must be transpiled to support your current version of Node.js.
 - TypeScript support with nullish coalescing and optional chaining.
 - Updated whenever Metro bundler reloads.
 - Provide environment information to your app.
@@ -101,7 +101,7 @@ module.exports = () => {
 };
 ```
 
-To use this configuration with Expo CLI commands, set the environment variable either for specific commands or in your shell profile. To set environment variables for specific commands, prefix the command with the variables and values, for example: `MY_ENVIRONMENT=production expo publish` (this is not anything unique to Expo CLI). On Windows you can approximate this with `npx cross-env MY_ENVIRONMENT=production expo publish`, or use whichever other mechanism that you are comfortable with for environment variables.
+To use this configuration with Expo CLI commands, set the environment variable either for specific commands or in your shell profile. To set environment variables for specific commands, prefix the command with the variables and values, for example: `MY_ENVIRONMENT=production eas update` (this is not anything unique to Expo CLI). On Windows you can approximate this with `npx cross-env MY_ENVIRONMENT=production eas update`, or use whichever other mechanism that you are comfortable with for environment variables.
 
 ### Using TypeScript for configuration: app.config.ts instead of app.config.js
 

@@ -4,6 +4,8 @@ title: Optimizing Updates
 
 import { Terminal } from '~/ui/components/Snippet';
 
+> This doc was archived in August 2022 and will not receive any further updates. Please use EAS Update instead. [Learn more](/eas-update/introduction)
+
 ## What's in an update?
 
 An update for an Expo app comprises the JavaScript, manifest, images, and other assets that a compatible Expo client app, such as Expo Go and production apps, can download and run.
@@ -35,8 +37,8 @@ Many images can be reduced by more than 30% in size if they haven't been previou
 Another way to optimize images is to re-encode them using an optimizer like [expo-optimize](https://github.com/expo/expo-cli/tree/main/packages/expo-optimize#-welcome-to-expo-optimize), which optimizes all compatible images in you Expo project:
 
 <Terminal cmd={[
-  '$ npm install -g sharp-cli',
-  '$ npx expo-optimize <project-directory> [options]',
+'$ npm install -g sharp-cli',
+'$ npx expo-optimize <project-directory> [options]',
 ]} />
 
 There are many other image optimizers you may like to use like [jpegoptim](https://github.com/tjko/jpegoptim), [guetzli](https://github.com/google/guetzli), [pngcrush](https://pmt.sourceforge.io/pngcrush/), or [optipng](http://optipng.sourceforge.net/). [imagemin](https://github.com/imagemin/imagemin) is another program and JS library that supports plugins for various optimizers. There are also many online services that can optimize your images for you.
@@ -60,4 +62,4 @@ With `expo-updates` you can also host updates on your own servers, which may sup
 
 ## Self-hosting your updates
 
-In addition to building your app on your own computer, you can host your updates on your own servers. Read more about [Hosting Updates on Your Servers](/distribution/hosting-your-app).
+In addition to building your app on your own computer, you can host your updates on your own servers. Read more about [Hosting Updates on Your Servers](/archive/classic-updates/hosting-your-app).

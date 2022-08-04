@@ -150,7 +150,7 @@ If you don't specify this list, `Linking.canOpenURL` may return `false` regardle
 
 Before continuing it's worth taking a moment to learn how to link to your app within the Expo Go app. Expo Go uses the `exp://` scheme, but if we link to `exp://` without any address afterwards, it will open the app to the main screen.
 
-In development, your app will live at a url like `exp://wg-qka.community.app.exp.direct:80`. When it's deployed, it will be at a URL like `exp://exp.host/@community/with-webbrowser-redirect`. If you create a website with a link like `<a href="exp://expo.dev/@community/with-webbrowser-redirect">Open my project</a>`, then open that site on your device and click the link, it will open your app within the Expo Go app. You can link to it from another app by using `Linking.openURL` too.
+In development, your app will live at a url like `exp://wg-qka.community.app.exp.direct:80`. When it's deployed, it will be at a URL like `exp://u.expo.dev/[project-id]?channel-name=[channel-name]&runtime-version=[runtime-version]`. If you create a website with a link like `<a href="exp://u.expo.dev/F767ADF57-B487-4D8F-9522-85549C39F43F?channel-name=main&runtime-version=exposdk:45.0.0">Open my project</a>`, then open that site on your device and click the link, it will open your app within the Expo Go app. You can link to it from another app by using `Linking.openURL` too.
 
 ### In a standalone app
 
@@ -176,7 +176,7 @@ If your app is ejected, note that like some other parts of **app.json**, changin
 
 To save you the trouble of inserting a bunch of conditionals based on the environment that you're in and hardcoding urls, we provide some helper methods in our extension of the `Linking` module. When you want to provide a service with a url that it needs to redirect back into your app, you can call `Linking.createURL()` and it will resolve to the following:
 
-- _Published app in Expo Go_: `exp://exp.host/@community/with-webbrowser-redirect`
+- _Published app in Expo Go_: `exp://u.expo.dev/[project-id]?channel-name=[channel-name]&runtime-version=[runtime-version]`
 - _Published app in standalone_: `myapp://`
 - _Development in Expo Go_: `exp://127.0.0.1:19000`
 
@@ -210,7 +210,7 @@ const redirectUrl = Linking.createURL('path/into/app', {
 
 This will resolve into the following, depending on the environment:
 
-- _Published app in Expo Go_: `exp://exp.host/@community/with-webbrowser-redirect/--/path/into/app?hello=world`
+- _Published app in Expo Go_: `exp://u.expo.dev/[project-id]?channel-name=[channel-name]&runtime-version=[runtime-version]/--/path/into/app?hello=world`
 - _Published app in standalone_: `myapp://path/into/app?hello=world`
 - _Development in Expo Go_: `exp://127.0.0.1:19000/--/path/into/app?hello=world`
 
@@ -389,7 +389,7 @@ This is the easiest way to set up deep links into your app because it requires a
 
 The main problem is that if the user does not have your app installed and follows a link to your app with its custom scheme, their operating system will indicate that the page couldn't be opened but not give much more information. This is not a great experience. There is no way to work around this in the browser.
 
-Additionally, many messaging apps do not autolink URLs with custom schemes -- for example, `exp://exp.host/@community/native-component-list` might just show up as plain text in your browser rather than as a link ([exp://exp.host/@community/native-component-list](exp://exp.host/@community/native-component-list)).
+Additionally, many messaging apps do not autolink URLs with custom schemes -- for example, `exp://u.expo.dev/[project-id]?channel-name=[channel-name]&runtime-version=[runtime-version]` might just show up as plain text in your browser rather than as a link ([exp://u.expo.dev/[project-id]?channel-name=[channel-name]&runtime-version=[runtime-version]](#)).
 
 An example of this is Gmail which strips the href property from links of most apps, a trick to use is to link to a regular https url instead of your app's custom scheme, this will open the user's web browser. Browsers do not usually strip the href property so you can host a file online that redirects the user to your app's custom schemes.
 
