@@ -109,6 +109,7 @@ object CameraViewHelper {
   }
 
   @JvmStatic
+  @Throws(IllegalArgumentException::class)
   fun setExifData(baseExif: ExifInterface, exifMap: Map<String, Any>) {
     for ((_, name) in exifTags) {
       exifMap[name]?.let {
@@ -121,11 +122,16 @@ object CameraViewHelper {
       }
     }
 
-    if (exifMap.containsKey(ExifInterface.TAG_GPS_LATITUDE) && exifMap.containsKey(ExifInterface.TAG_GPS_LONGITUDE)) {
+    if (exifMap.containsKey(ExifInterface.TAG_GPS_LATITUDE)
+      && exifMap.containsKey(ExifInterface.TAG_GPS_LONGITUDE)
+      && exifMap[ExifInterface.TAG_GPS_LATITUDE] is Number
+      && exifMap[ExifInterface.TAG_GPS_LONGITUDE] is Number) {
       baseExif.setLatLong(exifMap[ExifInterface.TAG_GPS_LATITUDE] as Double,
         exifMap[ExifInterface.TAG_GPS_LONGITUDE] as Double)
     }
-    if(exifMap.containsKey(ExifInterface.TAG_GPS_ALTITUDE)){
+
+    if(exifMap.containsKey(ExifInterface.TAG_GPS_ALTITUDE)
+      && exifMap[ExifInterface.TAG_GPS_ALTITUDE] is Number){
       baseExif.setAltitude(exifMap[ExifInterface.TAG_GPS_ALTITUDE] as Double)
     }
   }

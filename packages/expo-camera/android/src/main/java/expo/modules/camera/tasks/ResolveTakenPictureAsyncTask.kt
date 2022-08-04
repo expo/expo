@@ -26,6 +26,7 @@ import java.lang.Exception
 private const val DIRECTORY_NOT_FOUND_MSG = "Documents directory of the app could not be found."
 private const val UNKNOWN_IO_EXCEPTION_MSG = "An unknown I/O exception has occurred."
 private const val UNKNOWN_EXCEPTION_MSG = "An unknown exception has occurred."
+private const val PARAMETER_EXCEPTION_MSG = "An incompatible parameter has been passed in. "
 private const val ERROR_TAG = "E_TAKING_PICTURE_FAILED"
 private const val DIRECTORY_NAME = "Camera"
 private const val EXTENSION = ".jpg"
@@ -139,6 +140,7 @@ class ResolveTakenPictureAsyncTask(
       when (e) {
         is Resources.NotFoundException -> promise.reject(ERROR_TAG, DIRECTORY_NOT_FOUND_MSG, e)
         is IOException -> promise.reject(ERROR_TAG, UNKNOWN_IO_EXCEPTION_MSG, e)
+        is IllegalArgumentException -> promise.reject(ERROR_TAG, PARAMETER_EXCEPTION_MSG, e)
         else -> promise.reject(ERROR_TAG, UNKNOWN_EXCEPTION_MSG, e)
       }
       e.printStackTrace()
