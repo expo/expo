@@ -264,6 +264,7 @@ const eas = [
       makeGroup('Reference', [
         makePage('build-reference/eas-json.md'),
         makePage('build-reference/migrating.md'),
+        makePage('build-reference/npm-hooks.md'),
         makePage('build-reference/how-tos.md'),
         makePage('build-reference/private-npm-packages.md'),
         makePage('build-reference/variables.md'),
