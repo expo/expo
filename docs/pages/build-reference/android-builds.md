@@ -30,23 +30,27 @@ Next, this is what happens when EAS Build picks up your request:
 
 1. Download the project tarball from a private AWS S3 bucket and unpack it.
 1. Create `.npmrc` if `NPM_TOKEN` is set. ([Learn more](/build-reference/private-npm-packages).)
-1. Run the `eas-build-pre-install` script from package.json if defined.
+1. Run the `eas-build-pre-install` script from **package.json** if defined.
 1. Run `npm install` in the project root (or `yarn install` if `yarn.lock` exists).
 1. Run `expo doctor` to diagnose potential issues with your project configuration.
 1. Additional step for **managed** projects: Run `expo prebuild` to convert the project to a bare one. This step will use the versioned Expo CLI for projects that use Expo SDK 46+. You can still choose to use the (deprecated) global Expo CLI installation by setting `EXPO_USE_LOCAL_CLI=0` in the build profile.
 1. Restore a previously saved cache identified by the `cache.key` value in the build profile. ([Learn more](../build/eas-json/).)
-1. Run the `eas-build-post-install` script from package.json if defined.
+1. Run the `eas-build-post-install` script from **package.json** if defined.
 1. Restore the keystore (if it was included in the build request).
 1. Inject the signing configuration into **build.gradle**. [Learn more](#configuring-gradle).
 1. Run `./gradlew COMMAND` in the **android** directory inside your project.
 
    - `COMMAND` is the command defined in your **eas.json** at `builds.android.PROFILE_NAME.gradleCommand`. It defaults to `:app:bundleRelease` which produces the AAB (Android App Bundle).
 
-1. Run the `eas-build-pre-upload-artifacts` script from package.json if defined.
+1. **Deprecated:** Run the `eas-build-pre-upload-artifacts` script from **package.json** if defined.
 1. Store a cache of files and directories defined in the build profile. Subsequent builds will restore this cache. ([Learn more](../build/eas-json/).)
 1. Upload the build artifact to AWS S3.
 
    - The artifact path can be configured in **eas.json** at `builds.android.PROFILE_NAME.artifactPath`. It defaults to `android/app/build/outputs/**/*.{apk,aab}`. We're using the [fast-glob](https://github.com/mrmlnc/fast-glob#pattern-syntax) package for pattern matching.
+
+1. If the build was successful: run the `eas-build-on-success` script from **package.json** if defined.
+1. If the build failed: run the `eas-build-on-error` script from **package.json** if defined.
+1. Run the `eas-build-on-complete` script from **package.json** if defined. The `EAS_BUILD_STATUS` env variable is set to either `finished` or `errored`.
 
 ## Project Auto-Configuration
 
