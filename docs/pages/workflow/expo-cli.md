@@ -5,6 +5,8 @@ maxHeadingDepth: 4
 
 import { Terminal } from '~/ui/components/Snippet';
 
+> This doc refers to the Local Expo CLI (SDK 46 and greater). Here are the docs for the: [legacy Global Expo CLI](/workflow/legacy-expo-cli/)
+
 The Expo CLI enables you to do the following:
 
 - Start a server for developing your app: `npx expo start`.
