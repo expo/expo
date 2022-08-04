@@ -94,10 +94,10 @@ redirects[faq/react-native-version-mismatch]=troubleshooting/react-native-versio
 redirects[faq/clear-cache-windows]=troubleshooting/clear-cache-windows/
 redirects[faq/clear-cache-macos-linux]=troubleshooting/clear-cache-macos-linux/
 redirects[faq/application-has-not-been-registered]=troubleshooting/application-has-not-been-registered/
-redirects[distribution/building-standalone-apps]=classic/building-standalone-apps/
+redirects[distribution/building-standalone-apps]=archive/classic-updates/building-standalone-apps/
 redirects[build-reference/build-webhook]=eas/webhooks/
 redirects[distribution/webhooks]=eas/webhooks/
-redirects[distribution/turtle-cli]=classic/turtle-cli/
+redirects[distribution/turtle-cli]=archive/classic-updates/turtle-cli/
 redirects[distribution/app-signing]=app-signing/app-credentials/
 redirects[guides/adhoc-builds]=archived/adhoc-builds/
 # clients is now development
@@ -121,6 +121,19 @@ redirects[introduction/walkthrough]=tutorial/planning/
 
 # Guides that have been deleted
 redirects[guides/using-gatsby]=guides/
+
+# Moved classic updates
+redirects[distribution/release-channels]=archive/classic-updates/release-channels
+redirects[distribution/advanced-release-channels]=archive/classic-updates/advanced-release-channels
+redirects[distribution/optimizing-updates]=archive/classic-updates/optimizing-updates
+redirects[eas-update/custom-updates-server]=distribution/custom-updates-server
+redirects[guides/offline-support]=archive/classic-updates/offline-support
+redirects[guides/preloading-and-caching-assets]=archive/classic-updates/preloading-and-caching-assets
+redirects[guides/configuring-updates]=archive/classic-updates/configuring-updates
+redirects[eas-update/bare-react-native]=bare/updating-your-app
+redirects[worfkflow/publishing]=archive/classic-updates/publishing
+redirects[classic/building-standalone-apps/]=archive/classic-updates/building-standalone-apps/
+redirects[classic/turtle-cli/]=archive/classic-updates/turtle-cli/
 
 echo "::group::[5/6] Add custom redirects"
 for i in "${!redirects[@]}" # iterate over keys
