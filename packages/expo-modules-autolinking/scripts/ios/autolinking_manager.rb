@@ -95,10 +95,6 @@ module Expo
       @options.fetch(:providerName, Constants::MODULES_PROVIDER_FILE_NAME)
     end
 
-    public def links_for_testing?
-      return @options.fetch(:testsOnly, false) || @options.fetch(:includeTests, false)
-    end
-
     # For now there is no need to generate the modules provider for testing.
     public def should_generate_modules_provider?
       return !@options.fetch(:testsOnly, false)
