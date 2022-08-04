@@ -85,9 +85,9 @@ class ResolveTakenPictureAsyncTask(
         val exifInterface = ExifInterface(inputStream)
 
         // If there are additional exif data, insert it here
-        if (options[ADDITIONAL_EXIF_KEY] != null) {
-          setExifData(exifInterface, options[ADDITIONAL_EXIF_KEY] as Map<String, Any>)
-        }
+	options[ADDITIONAL_EXIF_KEY] as? Map<String, Any>?.let {
+	  setExifData(exifInterface, it)
+	}
 
         // Get orientation of the image from mImageData via inputStream
         val orientation = exifInterface.getAttributeInt(
