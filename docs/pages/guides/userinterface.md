@@ -12,6 +12,6 @@ Below (in no particular order) are some of the most popular UI Libraries. Test t
 - [NativeBase](https://nativebase.io/), and their [docs](https://docs.nativebase.io/)
 - [React Native UI Kitten](https://github.com/akveo/react-native-ui-kitten), and their [docs](https://akveo.github.io/react-native-ui-kitten/docs/getting-started/what-is-ui-kitten#what-is-ui-kitten)
 - [React Native iOS Kit](https://github.com/callstack/react-native-ios-kit), and their [docs](https://callstack.github.io/react-native-ios-kit/docs/installation)
-- [Fluent UI](https://developer.microsoft.com/en-us/fluentui#/), and their [docs](https://developer.microsoft.com/en-us/fluentui#/get-started)
+- [Fluent UI](https://github.com/microsoft/fluentui-react-native), and their [docs](https://developer.microsoft.com/en-us/fluentui#/get-started)
 
 > **Note:** As with any library, it's always best to find one with a large and active community. This way, help is easy to come by. Check out any project's GitHub page to see what the activity is like.
