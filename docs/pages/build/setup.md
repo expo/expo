@@ -108,7 +108,7 @@ After you have confirmed that you have an Apple App Store or a Google Play Store
 
 <Terminal cmd={['$ eas build --platform ios']} />
 
-> You can attach a message to the build by passing `--message` to the build command, e.g. `eas build --platform ios --message "Some message"`. The message will appear on the website. It comes in handy when you want to leave a note with the purpose of the build for your team.
+> You can attach a message to the build by passing `--message` to the build command, for example, `eas build --platform ios --message "Some message"`. The message will appear on the website. It comes in handy when you want to leave a note with the purpose of the build for your team.
 
 Alternatively, you can use `--platform all` option to build for Android and iOS at the same time:
 
