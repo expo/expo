@@ -326,7 +326,7 @@
         return;
       }
       
-      EXDevLauncherAppError *appError = [[EXDevLauncherAppError alloc] initWithMessage:error.description stack:nil];
+      EXDevLauncherAppError *appError = [[EXDevLauncherAppError alloc] initWithMessage:error.localizedDescription stack:nil];
       [self.errorManager showError:appError];
     });
   }];
