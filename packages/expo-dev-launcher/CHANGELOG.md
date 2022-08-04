@@ -11,6 +11,7 @@
 ### 💡 Others
 
 - Refactored inline Android emulator checks to use enhanced checking in `EmulatorUtilities.isRunningOnEmulator()`. ([#16177](https://github.com/expo/expo/pull/16177)) by [@kbrandwijk](https://github.com/kbrandwijk), [@keith-kurak](https://github.com/keith-kurak))
+- Made deep link error screen on iOS show a friendlier message. ([#18467](https://github.com/expo/expo/pull/18467) by [@esamelson](https://github.com/esamelson))
 
 ## 1.1.1 — 2022-07-20
 
