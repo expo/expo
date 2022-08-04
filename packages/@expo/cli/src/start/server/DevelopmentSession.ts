@@ -6,6 +6,7 @@ import {
   updateDevelopmentSessionAsync,
 } from '../../api/updateDevelopmentSession';
 import { getUserAsync } from '../../api/user/user';
+import { Log } from '../../log';
 import * as ProjectDevices from '../project/devices';
 
 const debug = require('debug')('expo:start:server:developmentSession') as typeof console.log;
@@ -62,12 +63,16 @@ export class DevelopmentSession {
 
     if (this.url) {
       debug(`Development session ping (runtime: ${runtime}, url: ${this.url})`);
-      await updateDevelopmentSessionAsync({
-        url: this.url,
-        runtime,
-        exp,
-        deviceIds,
-      });
+      try {
+        await updateDevelopmentSessionAsync({
+          url: this.url,
+          runtime,
+          exp,
+          deviceIds,
+        });
+      } catch (error) {
+        Log.warn(`Non-fatal error updating development session API: ${error}`);
+      }
     }
 
     this.stopNotifying();
