@@ -165,6 +165,7 @@ android {
     consumerProguardFiles 'proguard-rules.pro'
     versionCode 1
     versionName "0.11.3"
+    buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled.toString()
 
     testInstrumentationRunner "expo.modules.TestRunner"
 
@@ -200,15 +201,24 @@ android {
     // Theses files are intermediated linking files to build modules-core and should not be in final package.
     def sharedLibraries = [
       "**/libc++_shared.so",
-      "**/libreactnativejni.so",
-      "**/libreact_nativemodule_core.so",
-      "**/libglog.so",
-      "**/libjscexecutor.so",
+      "**/libfabricjni.so",
       "**/libfbjni.so",
       "**/libfolly_json.so",
       "**/libfolly_runtime.so",
+      "**/libglog.so",
       "**/libhermes.so",
+      "**/libjscexecutor.so",
       "**/libjsi.so",
+      "**/libreactnativejni.so",
+      "**/libreact_debug.so",
+      "**/libreact_render_debug.so",
+      "**/libreact_render_graphics.so",
+      "**/libreact_render_core.so",
+      "**/libreact_render_componentregistry.so",
+      "**/libreact_render_mapbuffer.so",
+      "**/librrc_view.so",
+      "**/libruntimeexecutor.so",
+      "**/libyoga.so",
     ]
 
     // In android (instrumental) tests, we want to package all so files to enable our JSI functionality.

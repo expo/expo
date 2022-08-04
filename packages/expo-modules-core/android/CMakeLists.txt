@@ -20,6 +20,8 @@ file(GLOB common_sources "${COMMON_DIR}/*.cpp")
 
 # shared
 
+add_library(CommonSettings INTERFACE)
+
 add_library(
         ${PACKAGE_NAME}
         SHARED
@@ -27,13 +29,24 @@ add_library(
         ${sources_android}
 )
 
-
 if(IS_NEW_ARCHITECTURE_ENABLED)
   add_subdirectory(Fabric)
   set(NEW_ARCHITECTURE_DEPENDENCIES "fabric")
+  set(NEW_ARCHITECTURE_COMPILE_OPTIONS "-DIS_NEW_ARCHITECTURE_ENABLED=1")
 else()
   set(NEW_ARCHITECTURE_DEPENDENCIES "")
+  set(NEW_ARCHITECTURE_COMPILE_OPTIONS "")
 endif()
+
+target_compile_options(CommonSettings INTERFACE
+  -O2
+  -frtti
+  -fexceptions
+  -Wall
+  -fstack-protector-all
+  -DFOR_HERMES=${FOR_HERMES}
+  "${NEW_ARCHITECTURE_COMPILE_OPTIONS}"
+)
 
 # Extracted AAR: ${BUILD_DIR}/react-native-0*/jni/${ANDROID_ABI}
 file(GLOB LIBRN_DIR "${REACT_NATIVE_SO_DIR}/${ANDROID_ABI}")
@@ -66,6 +79,7 @@ target_include_directories(
         "${BUILD_DIR}/third-party-ndk/folly"
         "${libfbjni_include_DIRS}"
         "${COMMON_DIR}"
+        "${CMAKE_SOURCE_DIR}/Fabric"
 )
 
 # find libraries
@@ -141,17 +155,12 @@ target_compile_options(
         -DFOLLY_HAVE_MEMRCHR=1
         -DFOLLY_USE_LIBCPP=1
         -DFOLLY_MOBILE=1
-        -DFOR_HERMES=${FOR_HERMES}
-        -O2
-        -frtti
-        -fexceptions
-        -Wall
-        -fstack-protector-all
 )
 
 if (${FOR_HERMES})
     target_link_libraries(
             ${PACKAGE_NAME}
+            CommonSettings
             ${LOG_LIB}
             ${FBJNI_LIB}
             ${JSI_LIB}
@@ -165,6 +174,7 @@ if (${FOR_HERMES})
 else ()
     target_link_libraries(
             ${PACKAGE_NAME}
+            CommonSettings
             ${LOG_LIB}
             ${FBJNI_LIB}
             ${JSI_LIB}

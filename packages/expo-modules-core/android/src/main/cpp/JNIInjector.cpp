@@ -7,6 +7,10 @@
 #include "JavaScriptTypedArray.h"
 #include "JavaReferencesCache.h"
 
+#if IS_NEW_ARCHITECTURE_ENABLED
+#include "FabricComponentsRegistry.h"
+#endif
+
 #include <jni.h>
 #include <fbjni/fbjni.h>
 
@@ -21,5 +25,8 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *) {
     expo::JavaScriptValue::registerNatives();
     expo::JavaScriptObject::registerNatives();
     expo::JavaScriptTypedArray::registerNatives();
+#if IS_NEW_ARCHITECTURE_ENABLED
+    expo::FabricComponentsRegistry::registerNatives();
+#endif
   });
 }
