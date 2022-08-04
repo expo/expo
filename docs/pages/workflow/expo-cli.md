@@ -269,11 +269,21 @@ Prebuild generates template files before modifying them with Expo Config Plugins
 
 Expo dev tools collect anonymous data about general usage, this helps us know when a command is safe to deprecate (low usage), or when a feature is not working as expected. Telemetry is completely optional and you can opt out by using the `EXPO_NO_TELEMETRY=1` environment variable.
 
+## Authentication
+
+Expo CLI provides authentication methods for use in the `npx expo start` command. Authentication is used to "code sign" manifests for secure OTA usage. Think of this like HTTPS in web.
+
+1. Register an account with `npx expo register`.
+2. Login to your account with `npx expo login`.
+3. Check which account is currently authenticated with `npx expo whoami`.
+4. Logout with `npx expo logout`.
+
+These credentials are shared across Expo CLI and EAS CLI.
+
 ## Environment Variables
 
 - `EXPO_NO_WEB_SETUP` (**boolean**) prevents the CLI from forcing web dependencies (`react-dom`, `react-native-web`, `@expo/webpack-config`) to be installed before using web functionality. This is useful for cases where you wish to perform non-standard web development.
 - `EXPO_NO_TYPESCRIPT_SETUP` (**boolean**) prevents the CLI from forcing TypeScript to be configured on `npx expo start`. [Learn more](/guides/typescript/).
-
 - `DEBUG=expo:*` (**string**) enables debug logs for the CLI, you can configure this using the [`debug` convention](https://github.com/debug-js/debug#conventions).
 - `EXPO_DEBUG` (**boolean**) an alias for `DEBUG=expo:*`.
 - `EXPO_PROFILE` (**boolean**) enable profiling stats for the CLI, this does not profile your application.
