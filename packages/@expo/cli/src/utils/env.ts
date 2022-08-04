@@ -88,6 +88,26 @@ class Env {
   get EXPO_EDITOR(): string {
     return string('EXPO_EDITOR', '');
   }
+
+  /**
+   * Overwrite the dev server URL, disregarding the `--port`, `--host`, `--tunnel`, `--lan`, `--localhost` arguments.
+   * This is useful for browser editors that require custom proxy URLs.
+   *
+   * The URL will not be used verbatim unless `EXPO_NO_DEFAULT_PORT=true` is also set,
+   * otherwise a `:80` port will be added for Android support.
+   */
+  get EXPO_PACKAGER_PROXY_URL(): string {
+    return string('EXPO_PACKAGER_PROXY_URL', '');
+  }
+
+  /**
+   * Disable the enforced `:80` port when using custom dev server URLs.
+   * This can break the incomplete Android WebSocket implementation but allows
+   * `EXPO_PACKAGER_PROXY_URL` to work as expected.
+   * */
+  get EXPO_NO_DEFAULT_PORT(): boolean {
+    return boolish('EXPO_NO_DEFAULT_PORT', false);
+  }
 }
 
 export const env = new Env();
