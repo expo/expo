@@ -3,7 +3,6 @@ title: Using Custom Fonts
 sidebar_title: Using Custom Fonts
 ---
 
-import SnackInline from '~/components/plugins/SnackInline';
 import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
 import SnackEmbed from '~/components/plugins/SnackEmbed';
 import { Terminal } from '~/ui/components/Snippet';

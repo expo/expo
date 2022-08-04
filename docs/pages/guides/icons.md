@@ -2,7 +2,6 @@
 title: Icons
 ---
 
-import SnackInline from '~/components/plugins/SnackInline';
 import SnackEmbed from '~/components/plugins/SnackEmbed';
 
 As trendy as it is these days, not every app has to use emojis for all icons -- maybe you want to pull in a popular set through an icon font like FontAwesome, Glyphicons or Ionicons, or you just use some PNGs that you carefully picked out on [The Noun Project](https://thenounproject.com/). Let's look at how to do both of these approaches.
