@@ -57,7 +57,7 @@ These metadata items include:
 - `hideFromSearch`: Whether to hide the page from Algolia search results. Defaults to `false`.
 - `hideInSidebar`: Whether to hide this page from the sidebar. Defaults to `false`.
 - `hideTOC`: Whether to hide the table of contents (appears on the right sidebar). Defaults to `false`.
-- `sidebarTitle`: The title of the page to display in the sidebar. Defaults to the page title.
+- `sidebar_title`: The title of the page to display in the sidebar. Defaults to the page title.
 
 ### Editing Code
 
