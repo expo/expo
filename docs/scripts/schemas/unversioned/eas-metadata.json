@@ -1,0 +1,760 @@
+{
+  "$schema": "http://json-schema.org/draft-06/schema",
+  "type": "object",
+  "definitions": {
+    "apple": {
+      "AppleKidsAge": {
+        "enum": ["FIVE_AND_UNDER", "SIX_TO_EIGHT", "NINE_TO_ELEVEN"]
+      },
+      "AppleRating": {
+        "enum": ["NONE", "INFREQUENT_OR_MILD", "FREQUENT_OR_INTENSE"]
+      },
+      "AppleCategory": {
+        "type": "array",
+        "description": "App Store categories for the app, can add up to two categories. The first item in this list is the primary category, the second is the secondary and optional category. `STICKERS` and `GAMES` categories can add up to two additional subcategories, written as nested array.",
+        "markdownDescription": "App Store categories for the app, can add up to two categories. The first item in this list is the primary category, the second is the secondary and optional category. `STICKERS` and `GAMES` categories can add up to two additional subcategories, written as nested array. E.g.\n\n- `[\"SPORTS\"]`\n- `[\"SPORTS\", \"LIFESTYLE\"]`\n- `[[\"GAMES\", \"GAMES_CARD\"], \"ENTERTAINMENT\"]`\n- `[\"GAMES\", \"WEATHER\"]`",
+        "minItems": 1,
+        "maxItems": 2,
+        "uniqueItems": true,
+        "defaultSnippets": [
+          {
+            "label": "Basic categories",
+            "description": "Add two simple categories",
+            "body": ["$1", "$2"]
+          },
+          {
+            "label": "Category with subcategories",
+            "description": "Add a category containing subcategories",
+            "body": [["${1|GAMES,STICKERS|}", "$3", "$4"]]
+          }
+        ],
+        "items": {
+          "oneOf": [
+            {
+              "$ref": "#/definitions/apple/AppleCategory/categories/root"
+            },
+            {
+              "$ref": "#/definitions/apple/AppleCategory/categories/parent"
+            },
+            {
+              "type": "array",
+              "description": "The GAMES category can have additional subcategories",
+              "minItems": 1,
+              "maxItems": 3,
+              "uniqueItems": true,
+              "items": [
+                {
+                  "const": "GAMES"
+                },
+                {
+                  "$ref": "#/definitions/apple/AppleCategory/categories/games"
+                },
+                {
+                  "$ref": "#/definitions/apple/AppleCategory/categories/games"
+                }
+              ]
+            },
+            {
+              "type": "array",
+              "description": "The STICKERS category can have additional subcategories",
+              "minItems": 1,
+              "maxItems": 3,
+              "uniqueItems": true,
+              "items": [
+                {
+                  "const": "STICKERS"
+                },
+                {
+                  "$ref": "#/definitions/apple/AppleCategory/categories/stickers"
+                },
+                {
+                  "$ref": "#/definitions/apple/AppleCategory/categories/stickers"
+                }
+              ]
+            }
+          ]
+        },
+        "categories": {
+          "root": {
+            "enum": [
+              "BUSINESS",
+              "SOCIAL_NETWORKING",
+              "MEDICAL",
+              "FOOD_AND_DRINK",
+              "EDUCATION",
+              "BOOKS",
+              "SPORTS",
+              "FINANCE",
+              "REFERENCE",
+              "GRAPHICS_AND_DESIGN",
+              "DEVELOPER_TOOLS",
+              "HEALTH_AND_FITNESS",
+              "MUSIC",
+              "WEATHER",
+              "TRAVEL",
+              "ENTERTAINMENT",
+              "LIFESTYLE",
+              "MAGAZINES_AND_NEWSPAPERS",
+              "UTILITIES",
+              "SHOPPING",
+              "PRODUCTIVITY",
+              "NEWS",
+              "PHOTO_AND_VIDEO",
+              "NAVIGATION"
+            ]
+          },
+          "parent": {
+            "enum": ["GAMES", "STICKERS"]
+          },
+          "games": {
+            "enum": [
+              "GAMES_SPORTS",
+              "GAMES_WORD",
+              "GAMES_MUSIC",
+              "GAMES_ADVENTURE",
+              "GAMES_ACTION",
+              "GAMES_ROLE_PLAYING",
+              "GAMES_CASUAL",
+              "GAMES_BOARD",
+              "GAMES_TRIVIA",
+              "GAMES_CARD",
+              "GAMES_PUZZLE",
+              "GAMES_CASINO",
+              "GAMES_STRATEGY",
+              "GAMES_SIMULATION",
+              "GAMES_RACING",
+              "GAMES_FAMILY"
+            ]
+          },
+          "stickers": {
+            "enum": [
+              "STICKERS_PLACES_AND_OBJECTS",
+              "STICKERS_EMOJI_AND_EXPRESSIONS",
+              "STICKERS_CELEBRATIONS",
+              "STICKERS_CELEBRITIES",
+              "STICKERS_MOVIES_AND_TV",
+              "STICKERS_SPORTS_AND_ACTIVITIES",
+              "STICKERS_EATING_AND_DRINKING",
+              "STICKERS_CHARACTERS",
+              "STICKERS_ANIMALS",
+              "STICKERS_FASHION",
+              "STICKERS_ART",
+              "STICKERS_GAMING",
+              "STICKERS_KIDS_AND_FAMILY",
+              "STICKERS_PEOPLE",
+              "STICKERS_MUSIC"
+            ]
+          }
+        }
+      },
+      "AppleInfo": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["title", "privacyPolicyUrl"],
+        "defaultSnippets": [
+          {
+            "label": "Basic",
+            "description": "Create the minimum required locale properties",
+            "body": {
+              "title": "${1:App title}",
+              "privacyPolicyUrl": "https://${3:www.}"
+            }
+          },
+          {
+            "label": "Full",
+            "description": "Create all available locale properties",
+            "body": {
+              "title": "${1:App title}",
+              "subtitle": "${2:Subtitle for your app}",
+              "description": "${3:A longer description of what your app does}",
+              "keywords": ["${4:keyword}"],
+              "releaseNotes": "${5:Bug fixes and improved stability}",
+              "promoText": "${6:Short tagline for your app}",
+              "marketingUrl": "https://${7:www.}",
+              "supportUrl": "https://${8:www.}",
+              "privacyPolicyUrl": "https://${9:www.}",
+              "privacyChoicesUrl": "https://${10:www.}"
+            }
+          }
+        ],
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Name of the app in the store. This should be similar to the installed app name.",
+            "minLength": 2,
+            "maxLength": 30,
+            "meta": {
+              "storeInfo": "The name will be reviewed before it is made available on the App Store."
+            }
+          },
+          "subtitle": {
+            "type": "string",
+            "description": "Subtext for the app. Example: 'A Fun Game For Friends'",
+            "maxLength": 30,
+            "meta": {
+              "storeInfo": "The subtitle will be reviewed before it is made available on the App Store."
+            }
+          },
+          "description": {
+            "type": "string",
+            "description": "Main description of what the app does",
+            "minLength": 10,
+            "maxLength": 4000,
+            "meta": {
+              "versioned": true,
+              "liveEdits": true
+            }
+          },
+          "keywords": {
+            "type": "array",
+            "description": "List of keywords to help users find the app in the App Store",
+            "uniqueItems": true,
+            "items": {
+              "maxLength": 100,
+              "type": "string"
+            },
+            "meta": {
+              "versioned": true
+            }
+          },
+          "releaseNotes": {
+            "type": "string",
+            "description": "Changes since the last public version",
+            "maxLength": 4000,
+            "meta": {
+              "versioned": true,
+              "liveEdits": true
+            }
+          },
+          "promoText": {
+            "type": "string",
+            "description": "Short tagline for the app",
+            "maxLength": 170,
+            "meta": {
+              "versioned": true,
+              "liveEdits": true,
+              "aso": false
+            }
+          },
+          "marketingUrl": {
+            "type": "string",
+            "description": "URL to the app marketing page",
+            "maxLength": 255,
+            "meta": {
+              "versioned": true,
+              "liveEdits": true
+            }
+          },
+          "supportUrl": {
+            "type": "string",
+            "description": "URL to the app support page",
+            "maxLength": 255,
+            "meta": {
+              "versioned": true,
+              "liveEdits": true
+            }
+          },
+          "privacyPolicyText": {
+            "type": "string",
+            "description": "Privacy policy for Apple TV"
+          },
+          "privacyPolicyUrl": {
+            "type": "string",
+            "description": "A URL that links to your privacy policy. A privacy policy is required for all apps.",
+            "maxLength": 255,
+            "meta": {
+              "versioned": true,
+              "liveEdits": true
+            }
+          },
+          "privacyChoicesUrl": {
+            "type": "string",
+            "description": "A URL where users can modify and delete the data collected from the app, or decide how their data is used and shared.",
+            "maxLength": 255,
+            "meta": {
+              "versioned": true,
+              "liveEdits": true,
+              "optional": true
+            }
+          }
+        }
+      },
+      "AppleAdvisory": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "alcoholTobaccoOrDrugUseOrReferences",
+          "contests",
+          "gamblingSimulated",
+          "horrorOrFearThemes",
+          "matureOrSuggestiveThemes",
+          "medicalOrTreatmentInformation",
+          "profanityOrCrudeHumor",
+          "sexualContentGraphicAndNudity",
+          "sexualContentOrNudity",
+          "violenceCartoonOrFantasy",
+          "violenceRealistic",
+          "violenceRealisticProlongedGraphicOrSadistic",
+          "gambling",
+          "unrestrictedWebAccess",
+          "kidsAgeBand",
+          "seventeenPlus"
+        ],
+        "defaultSnippets": [
+          {
+            "label": "Basic",
+            "description": "Create an advisory that disables all age-rated properties, for when your app does nothing",
+            "body": {
+              "alcoholTobaccoOrDrugUseOrReferences": "NONE",
+              "contests": "NONE",
+              "gamblingSimulated": "NONE",
+              "horrorOrFearThemes": "NONE",
+              "matureOrSuggestiveThemes": "NONE",
+              "medicalOrTreatmentInformation": "NONE",
+              "profanityOrCrudeHumor": "NONE",
+              "sexualContentGraphicAndNudity": "NONE",
+              "sexualContentOrNudity": "NONE",
+              "violenceCartoonOrFantasy": "NONE",
+              "violenceRealistic": "NONE",
+              "violenceRealisticProlongedGraphicOrSadistic": "NONE",
+              "gambling": false,
+              "unrestrictedWebAccess": false,
+              "kidsAgeBand": null,
+              "seventeenPlus": false
+            }
+          },
+          {
+            "label": "Full",
+            "description": "Create an advisory that enables some of the age-rated properties",
+            "body": {
+              "alcoholTobaccoOrDrugUseOrReferences": "${1|NONE,INFREQUENT_OR_MILD,FREQUENT_OR_INTENSE|}",
+              "contests": "${2|NONE,INFREQUENT_OR_MILD,FREQUENT_OR_INTENSE|}",
+              "gamblingSimulated": "${3|NONE,INFREQUENT_OR_MILD,FREQUENT_OR_INTENSE|}",
+              "horrorOrFearThemes": "${4|NONE,INFREQUENT_OR_MILD,FREQUENT_OR_INTENSE|}",
+              "matureOrSuggestiveThemes": "${5|NONE,INFREQUENT_OR_MILD,FREQUENT_OR_INTENSE|}",
+              "medicalOrTreatmentInformation": "${6|NONE,INFREQUENT_OR_MILD,FREQUENT_OR_INTENSE|}",
+              "profanityOrCrudeHumor": "${7|NONE,INFREQUENT_OR_MILD,FREQUENT_OR_INTENSE|}",
+              "sexualContentGraphicAndNudity": "${8|NONE,INFREQUENT_OR_MILD,FREQUENT_OR_INTENSE|}",
+              "sexualContentOrNudity": "${9|NONE,INFREQUENT_OR_MILD,FREQUENT_OR_INTENSE|}",
+              "violenceCartoonOrFantasy": "${10|NONE,INFREQUENT_OR_MILD,FREQUENT_OR_INTENSE|}",
+              "violenceRealistic": "${11|NONE,INFREQUENT_OR_MILD,FREQUENT_OR_INTENSE|}",
+              "violenceRealisticProlongedGraphicOrSadistic": "${12|NONE,INFREQUENT_OR_MILD,FREQUENT_OR_INTENSE|}",
+              "unrestrictedWebAccess": false,
+              "gambling": false,
+              "kidsAgeBand": null,
+              "seventeenPlus": false
+            }
+          }
+        ],
+        "properties": {
+          "alcoholTobaccoOrDrugUseOrReferences": {
+            "$ref": "#/definitions/apple/AppleRating",
+            "description": "Does the app contain alcohol, tobacco, or drug use or references?"
+          },
+          "contests": {
+            "$ref": "#/definitions/apple/AppleRating",
+            "description": "Does the app contain contests?"
+          },
+          "gamblingSimulated": {
+            "$ref": "#/definitions/apple/AppleRating",
+            "description": "Does the app contain simulated gambling?"
+          },
+          "medicalOrTreatmentInformation": {
+            "$ref": "#/definitions/apple/AppleRating",
+            "description": "Does the app contain medical or treatment information?"
+          },
+          "profanityOrCrudeHumor": {
+            "$ref": "#/definitions/apple/AppleRating",
+            "description": "Does the app contain profanity or crude humor?"
+          },
+          "sexualContentGraphicAndNudity": {
+            "$ref": "#/definitions/apple/AppleRating",
+            "description": "Does the app contain graphic sexual content and nudity?"
+          },
+          "sexualContentOrNudity": {
+            "$ref": "#/definitions/apple/AppleRating",
+            "description": "Does the app contain sexual content or nudity?"
+          },
+          "horrorOrFearThemes": {
+            "$ref": "#/definitions/apple/AppleRating",
+            "description": "Does the app contain horror or fear themes?"
+          },
+          "matureOrSuggestiveThemes": {
+            "$ref": "#/definitions/apple/AppleRating",
+            "description": "Does the app contain mature or suggestive themes?"
+          },
+          "violenceCartoonOrFantasy": {
+            "$ref": "#/definitions/apple/AppleRating",
+            "description": "Does the app contain cartoon or fantasy violence?"
+          },
+          "violenceRealisticProlongedGraphicOrSadistic": {
+            "$ref": "#/definitions/apple/AppleRating",
+            "description": "Does the app contain prolonged graphic or sadistic realistic violence?"
+          },
+          "violenceRealistic": {
+            "$ref": "#/definitions/apple/AppleRating",
+            "description": "Does the app contain realistic violence?"
+          },
+          "unrestrictedWebAccess": {
+            "type": "boolean",
+            "description": "Does your app contain unrestricted web access, such as with an embedded browser?"
+          },
+          "gambling": {
+            "type": "boolean",
+            "description": "Does your app contain gambling?"
+          },
+          "kidsAgeBand": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/definitions/apple/AppleKidsAge"
+              }
+            ],
+            "description": "When parents visit the Kids category on the App Store, they expect the apps they find will protect their children’s data, provide only age-appropriate content, and require a parental gate in order to link out of the app, request permissions, or present purchasing opportunities. It’s critical that no personally identifiable information or device information be transmitted to third parties, and that advertisements are human-reviewed for age appropriateness in order to be displayed.\n@see https://developer.apple.com/news/?id=091202019a",
+            "markdownDescription": "When parents visit the Kids category on the App Store, they expect the apps they find will protect their children’s data, provide only age-appropriate content, and require a parental gate in order to link out of the app, request permissions, or present purchasing opportunities. It’s critical that no personally identifiable information or device information be transmitted to third parties, and that advertisements are human-reviewed for age appropriateness in order to be displayed.\n\n[Learn more](https://developer.apple.com/news/?id=091202019a)"
+          },
+          "seventeenPlus": {
+            "type": "boolean",
+            "description": "If your app rates 12+ or lower, and you believe its content may not be suitable for children under 17, you can manually set the age rating to 17+.\n@see https://help.apple.com/app-store-connect/#/dev599d50efb",
+            "markdownDescription": "If your app rates 12+ or lower, and you believe its content may not be suitable for children under 17, you can manually set the age rating to 17+.\n\n[Learn more](https://help.apple.com/app-store-connect/#/dev599d50efb)"
+          }
+        }
+      },
+      "AppleRelease": {
+        "type": "object",
+        "description": "Configure how the app is released in the app store.",
+        "additionalProperties": false,
+        "properties": {
+          "automaticRelease": {
+            "description": "If and how the app should automatically be released when approved by App Store review.",
+            "markdownDescription": "If and how the app should automatically be released when approved by App Store review.\n- `false` - Manually release the app after store approval. (default behavior)\n- `true` - Automatically release after store approval.\n- `Date` - Automatically schedule release on this date, after store approval.\n\nApple does not guarantee that your app is available at the chosen scheduled release date.",
+            "oneOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "boolean"
+              }
+            ],
+            "defaultSnippets": [
+              {
+                "label": "Manual release",
+                "description": "Manually release the app after store approval",
+                "body": false
+              },
+              {
+                "label": "Automatic release",
+                "description": "Automatically release the app after store approval",
+                "body": true
+              },
+              {
+                "label": "Scheduled release",
+                "description": "Automatically release the app on this date, and store approval",
+                "body": "$CURRENT_YEAR-${1:$CURRENT_MONTH}-${2:$CURRENT_DATE}T${3:$CURRENT_HOUR}:00:00+00:00"
+              }
+            ]
+          },
+          "phasedRelease": {
+            "type": "boolean",
+            "description": "Phased release for automatic updates lets you gradually release this update over a 7-day period to users who have turned on automatic updates. Keep in mind that this version will still be available to all users as a manual update from the App Store. You can pause the phased release for up to 30 days or release this update to all users at any time.\n@see https://help.apple.com/app-store-connect/#/dev3d65fcee1",
+            "markdownDescription": "Phased release for automatic updates lets you gradually release this update over a 7-day period to users who have turned on automatic updates.\n\nKeep in mind that this version will still be available to all users as a manual update from the App Store.\n\nYou can pause the phased release for up to 30 days or release this update to all users at any time.\n\n[Learn More](https://help.apple.com/app-store-connect/#/dev3d65fcee1)"
+          }
+        }
+      },
+      "AppleReview": {
+        "type": "object",
+        "description": "Info provided to the App Store review team to help them understand how to use your app.",
+        "required": ["firstName", "lastName", "email", "phone"],
+        "defaultSnippets": [
+          {
+            "label": "Basic",
+            "description": "Only define the contact details in case communcation is needed with the App Store review team.",
+            "body": {
+              "firstName": "$1",
+              "lastName": "$2",
+              "email": "$3",
+              "phone": "+$4"
+            }
+          },
+          {
+            "label": "Full",
+            "description": "Define the demo account credentials, additional info, and contact details for the App Store review team.",
+            "body": {
+              "firstName": "$1",
+              "lastName": "$2",
+              "email": "$3",
+              "phone": "+$4",
+              "demoUsername": "$5",
+              "demoPassword": "$6",
+              "demoRequired": true,
+              "notes": "$7"
+            }
+          }
+        ],
+        "properties": {
+          "firstName": {
+            "type": "string",
+            "description": "First name of contact in case communication is needed with the App Store review team.",
+            "minLength": 1
+          },
+          "lastName": {
+            "type": "string",
+            "description": "Last name of contact in case communication is needed with the App Store review team.",
+            "minLength": 1
+          },
+          "email": {
+            "type": "string",
+            "description": "Email address of contact in case communication is needed with the App Store review team.",
+            "format": "email"
+          },
+          "phone": {
+            "type": "string",
+            "description": "Phone number of contact in case communication is needed with the App Store review team. Preface the phone number with ‘+’ followed by the country code (for example, +44 844 209 0611)"
+          },
+          "demoUsername": {
+            "type": "string",
+            "description": "The user name to sign in to your app to review its features."
+          },
+          "demoPassword": {
+            "type": "string",
+            "description": "The password to sign in to your app to review its features."
+          },
+          "demoRequired": {
+            "type": "boolean",
+            "description": "A Boolean value that indicates if sign-in information is required to review all the features of your app. If users sign in using social media, provide information for an account for review. Credentials must be valid and active for duration of review.",
+            "markdownDescription": "A Boolean value that indicates if sign-in information is required to review all the features of your app. If users sign in using social media, provide information for an account for review.\n\n**Credentials must be valid and active for duration of review.**"
+          },
+          "notes": {
+            "type": "string",
+            "description": "Additional information about your app that can help during the review process. Do not include demo account details.",
+            "markdownDescription": "Additional information about your app that can help during the review process.\n\n**Do not include demo account details.**",
+            "minLength": 2,
+            "maxLength": 4000
+          }
+        }
+      }
+    },
+    "AppleConfig": {
+      "type": "object",
+      "description": "Configuration that is specific to the Apple App Store.",
+      "additionalProperties": false,
+      "properties": {
+        "version": {
+          "type": "string",
+          "description": "The version string to edit, or create, if it doesn't exist. All the metadata will be stored on this app version.",
+          "minLength": 1,
+          "defaultSnippets": [
+            {
+              "body": "${1:1}.${2:0}"
+            }
+          ]
+        },
+        "copyright": {
+          "type": "string",
+          "description": "The updated company copyright. Example: 2021 Evan Bacon",
+          "defaultSnippets": [
+            {
+              "body": "$CURRENT_YEAR ${1:name}"
+            }
+          ],
+          "meta": {
+            "versioned": true,
+            "liveEdits": true,
+            "storeInfo": "The name of the person or entity that owns the exclusive rights to your app, preceded by the year the rights were obtained (for example, \"2008 Acme Inc.\"). Do not provide a URL."
+          }
+        },
+        "advisory": {
+          "$ref": "#/definitions/apple/AppleAdvisory"
+        },
+        "categories": {
+          "$ref": "#/definitions/apple/AppleCategory"
+        },
+        "info": {
+          "description": "Localized core app info",
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "ar-SA": {
+              "$ref": "#/definitions/apple/AppleInfo",
+              "description": "Arabic"
+            },
+            "ca": {
+              "$ref": "#/definitions/apple/AppleInfo",
+              "description": "Catalan"
+            },
+            "zh-Hans": {
+              "$ref": "#/definitions/apple/AppleInfo",
+              "description": "Chinese (Simplified)"
+            },
+            "zh-Hant": {
+              "$ref": "#/definitions/apple/AppleInfo",
+              "description": "Chinese (Traditional)"
+            },
+            "hr": {
+              "$ref": "#/definitions/apple/AppleInfo",
+              "description": "Croatian"
+            },
+            "cs": {
+              "$ref": "#/definitions/apple/AppleInfo",
+              "description": "Czech"
+            },
+            "da": {
+              "$ref": "#/definitions/apple/AppleInfo",
+              "description": "Danish"
+            },
+            "nl-NL": {
+              "$ref": "#/definitions/apple/AppleInfo",
+              "description": "Dutch"
+            },
+            "en-AU": {
+              "$ref": "#/definitions/apple/AppleInfo",
+              "description": "English (Australia)"
+            },
+            "en-CA": {
+              "$ref": "#/definitions/apple/AppleInfo",
+              "description": "English (Canada)"
+            },
+            "en-GB": {
+              "$ref": "#/definitions/apple/AppleInfo",
+              "description": "English (U.K.)"
+            },
+            "en-US": {
+              "$ref": "#/definitions/apple/AppleInfo",
+              "description": "English (U.S.)"
+            },
+            "fi": {
+              "$ref": "#/definitions/apple/AppleInfo",
+              "description": "Finnish"
+            },
+            "fr-FR": {
+              "$ref": "#/definitions/apple/AppleInfo",
+              "description": "French"
+            },
+            "fr-CA": {
+              "$ref": "#/definitions/apple/AppleInfo",
+              "description": "French (Canada)"
+            },
+            "de-DE": {
+              "$ref": "#/definitions/apple/AppleInfo",
+              "description": "German"
+            },
+            "el": {
+              "$ref": "#/definitions/apple/AppleInfo",
+              "description": "Greek"
+            },
+            "he": {
+              "$ref": "#/definitions/apple/AppleInfo",
+              "description": "Hebrew"
+            },
+            "hi": {
+              "$ref": "#/definitions/apple/AppleInfo",
+              "description": "Hindi"
+            },
+            "hu": {
+              "$ref": "#/definitions/apple/AppleInfo",
+              "description": "Hungarian"
+            },
+            "id": {
+              "$ref": "#/definitions/apple/AppleInfo",
+              "description": "Indonesian"
+            },
+            "it": {
+              "$ref": "#/definitions/apple/AppleInfo",
+              "description": "Italian"
+            },
+            "ja": {
+              "$ref": "#/definitions/apple/AppleInfo",
+              "description": "Japanese"
+            },
+            "ko": {
+              "$ref": "#/definitions/apple/AppleInfo",
+              "description": "Korean"
+            },
+            "ms": {
+              "$ref": "#/definitions/apple/AppleInfo",
+              "description": "Malay"
+            },
+            "no": {
+              "$ref": "#/definitions/apple/AppleInfo",
+              "description": "Norwegian"
+            },
+            "pl": {
+              "$ref": "#/definitions/apple/AppleInfo",
+              "description": "Polish"
+            },
+            "pt-BR": {
+              "$ref": "#/definitions/apple/AppleInfo",
+              "description": "Portuguese (Brazil)"
+            },
+            "pt-PT": {
+              "$ref": "#/definitions/apple/AppleInfo",
+              "description": "Portuguese (Portugal)"
+            },
+            "ro": {
+              "$ref": "#/definitions/apple/AppleInfo",
+              "description": "Romanian"
+            },
+            "ru": {
+              "$ref": "#/definitions/apple/AppleInfo",
+              "description": "Russian"
+            },
+            "sk": {
+              "$ref": "#/definitions/apple/AppleInfo",
+              "description": "Slovak"
+            },
+            "es-MX": {
+              "$ref": "#/definitions/apple/AppleInfo",
+              "description": "Spanish (Mexico)"
+            },
+            "es-ES": {
+              "$ref": "#/definitions/apple/AppleInfo",
+              "description": "Spanish (Spain)"
+            },
+            "sv": {
+              "$ref": "#/definitions/apple/AppleInfo",
+              "description": "Swedish"
+            },
+            "th": {
+              "$ref": "#/definitions/apple/AppleInfo",
+              "description": "Thai"
+            },
+            "tr": {
+              "$ref": "#/definitions/apple/AppleInfo",
+              "description": "Turkish"
+            },
+            "uk": {
+              "$ref": "#/definitions/apple/AppleInfo",
+              "description": "Ukrainian"
+            },
+            "vi": {
+              "$ref": "#/definitions/apple/AppleInfo",
+              "description": "Vietnamese"
+            }
+          }
+        },
+        "release": {
+          "$ref": "#/definitions/apple/AppleRelease",
+          "description": "Release strategy"
+        },
+        "review": {
+          "$ref": "#/definitions/apple/AppleReview",
+          "description": "Info for the App Store reviewer"
+        }
+      }
+    }
+  },
+  "properties": {
+    "configVersion": {
+      "const": 0,
+      "description": "The EAS metadata store configuration version"
+    },
+    "apple": {
+      "$ref": "#/definitions/AppleConfig"
+    }
+  },
+  "additionalProperties": false,
+  "required": ["configVersion", "apple"]
+}
