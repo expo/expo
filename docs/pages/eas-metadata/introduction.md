@@ -16,4 +16,4 @@ EAS Metadata makes this easier by allowing users to configure the app store info
 
 ### Get started
 
-<BoxLink title="Getting started" href="/eas-metadata/getting-started" description="Configure EAS Metadata from scratch, or use an existing app to generate the local store configuration." />
+<BoxLink title="Getting started" href="/eas-metadata/getting-started" description="Configure EAS Metadata from scratch, or use an existing app to generate the store config." />
