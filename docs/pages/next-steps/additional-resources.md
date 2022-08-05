@@ -42,4 +42,5 @@ The following resources are useful for learning Expo and some of the projects th
 
 ## JavaScript
 
+- [ES6 by Wes Bos](https://es6.io/) (paid)
 - [ES6 Katas](http://es6katas.org/) - exercises to familiarize yourself with new JavaScript features used in React Native
