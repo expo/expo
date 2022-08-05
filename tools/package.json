@@ -23,7 +23,7 @@
     "@expo/json-file": "^8.2.34",
     "@expo/spawn-async": "^1.6.0",
     "@expo/xcodegen": "2.18.0-patch.1",
-    "@expo/xdl": "^59.2.0",
+    "@expo/xdl": "^59.2.1",
     "@octokit/rest": "^18.12.0",
     "aws-sdk": "^2.814.0",
     "body-parser": "^1.20.0",

@@ -1414,10 +1414,10 @@
   resolved "https://registry.yarnpkg.com/@expo/xcodegen/-/xcodegen-2.18.0-patch.1.tgz#40514e973ee6769e5abd5d1c16d40dbe85c1d9aa"
   integrity sha512-Caz2ChzVe/U3GkaK+DKlXqYorARzLZ1yM6D03LHvasnyA4T+pW6DGXHPy7cfK5AlbsV6Fi5ZtZ9gqW4jGWIFwQ==
 
-"@expo/xdl@^59.2.0":
-  version "59.2.0"
-  resolved "https://registry.yarnpkg.com/@expo/xdl/-/xdl-59.2.0.tgz#2bb1808959a68e27cfad403dbef53b7f86b26d97"
-  integrity sha512-AxWXcK5XiUXEHt7Bo+Nz8BvGhFOriKj1l1os9DOESEfJrLpP5T7i+VkbQ6ueFIZ/DpzZFueSA9J5uAsQppJ6Iw==
+"@expo/xdl@^59.2.1":
+  version "59.2.1"
+  resolved "https://registry.yarnpkg.com/@expo/xdl/-/xdl-59.2.1.tgz#af9b29a494a26817d6f096b808343ef6b16eec6a"
+  integrity sha512-EZmKZc2I3aNpWKw4T+sdmHmPMPdHLnwWJNKUcIjY6yuSVy7fChih0jAKe2Kn0PMy1iO+xRA+NHh5CgN9a7aYFw==
   dependencies:
     "@expo/bunyan" "4.0.0"
     "@expo/config" "3.3.30"
