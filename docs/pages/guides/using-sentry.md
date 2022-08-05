@@ -55,6 +55,8 @@ cmd={['$ expo install expo-application expo-constants expo-device expo-updates @
 
 ### Step 2: Code
 
+#### Config
+
 Add the following to your app's main file (usually `App.js`):
 
 ```js
@@ -65,12 +67,25 @@ Sentry.init({
   enableInExpoDevelopment: true,
   debug: true, // If `true`, Sentry will try to print out useful debugging information if something goes wrong with sending the event. Set it to `false` in production
 });
+```
 
+#### Usage
+
+Depending on which platform you are (mobile or web), use the following functions in order to capture/catch exceptions:
+
+```js
 // Access any @sentry/react-native exports via:
 Sentry.Native.*
 
 // Access any @sentry/browser exports via:
 Sentry.Browser.*
+
+// Example:
+try {
+  // your code
+} catch (error) {
+  Sentry.Native.captureException(error);
+}
 ```
 
 ### Step 3: App Config
