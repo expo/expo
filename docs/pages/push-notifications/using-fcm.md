@@ -46,7 +46,7 @@ Note that FCM is not currently available for Expo iOS apps.
 
 > **Note:** Firebase will create an API key in the Google Cloud Platform console with a name like `Android key (auto created by Firebase)`. **This is not always the same key as the one found in `google-services.json`. Always confirm your key and associated restrictions in the Google Cloud Platform console.**
 
-> If you have multiple Android Apps in your Firebase project the `google-services.json` might contain duplicated data under the `client` array, this may cause issues when your App is fetching the push notification token. **Be sure to only have one client object with the correct keys and metadata in `google-services.json`**.
+> Firebase projects with multiple Android Apps might contain duplicated data under the `client` array in the download `google-services.json`, this may cause issues when the App is fetching the push notification token. **Be sure to only have one client object with the correct keys and metadata in `google-services.json`**.
 
 6. Finally, make a new build of your app by running `eas build --platform android` (or `expo build:android` if you're using the classic build system).
 
