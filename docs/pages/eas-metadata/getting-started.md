@@ -7,19 +7,19 @@ import { Terminal } from '~/ui/components/Snippet';
 
 > ⚠️ EAS Metadata is in beta and subject to breaking changes.
 
-EAS Metadata helps you prepare your app for review in the app stores and helps you prevent common pitfalls that often could lead to an app rejection.
+EAS Metadata helps you prepare your app for review in the app stores and helps you prevent common pitfalls that may lead to a rejected app submission.
 
 ## Prerequisites
 
-EAS Metadata is available starting from EAS CLI >= 0.54.0, and _only supports the App Store_.
+EAS Metadata is available starting from EAS CLI >= 0.54.0, and _currently_ only supports the Apple App Store.
 
 ## Create a local store configuration
 
-We first need to create our local **store.config.json** to get started. This file keeps track of all the information for the app stores. If you have an existing app in the stores, you can generate the configuration file by running:
+To get started, create a **store.config.json** in your project root directory. This file keeps track of all the information for the app stores. If you have an existing app in the stores, you can generate the configuration file by running:
 
 <Terminal cmd={['$ eas metadata:pull']} />
 
-If you don't have an app in the stores, you can create the **store.config.json** manually.
+If you don't have an app in the stores there will not be any metadata to pull, and you can initialize the **store.config.json** manually.
 
 ```json
 {
@@ -40,7 +40,7 @@ If you don't have an app in the stores, you can create the **store.config.json**
 }
 ```
 
-> By default EAS Metadata will use the **store.config.json** file in your project. You can change the name and location of the file by [configuring the `metadataPath` on the EAS Submit](../submit/eas-json.md#metadatapath) profile.
+> EAS Metadata will use the **store.config.json** file in the project root by default; you can change the name and location of the file by [configuring the `metadataPath` on the EAS Submit profile](../submit/eas-json.md#metadatapath).
 
 ## Update the local store configuration
 
