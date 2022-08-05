@@ -17,34 +17,36 @@ Note that FCM is not currently available for Expo iOS apps.
 
 4. In your app.json, add an `android.googleServicesFile` field with the relative path to the `google-services.json` file you just downloaded. If you placed it in the root directory, this will probably look like
 
-  ```javascript
-  {
+```javascript
+{
+  ...
+  "android": {
+    "googleServicesFile": "./google-services.json",
     ...
-    "android": {
-      "googleServicesFile": "./google-services.json",
-      ...
-    }
   }
-  ```
+}
+```
 
 5. Confirm that your API key in `google-services.json` has the correct "API restrictions" in the [Google Cloud Platform API Credentials console](https://console.cloud.google.com/apis/credentials). For push notifications to work correctly, Firebase requires the API key to either be unrestricted (the key can call any API), or have access to both `Firebase Cloud Messaging API` and `Firebase Installations API`. The API key can be found under the `client.api_key.current_key` field in `google-services.json`.
 
-  ```javascript
-  {
-    ...
-    "client": [
-      {
-        "api_key": [
-          {
-            "current_key" "<your Google Cloud Platform API key>",
-          }
-        ],
-      }
-    ]
-  }
-  ```
+```javascript
+{
+  ...
+  "client": [
+    {
+      "api_key": [
+        {
+          "current_key" "<your Google Cloud Platform API key>",
+        }
+      ],
+    }
+  ]
+}
+```
 
-  > **Note:** Firebase will create an API key in the Google Cloud Platform console with a name like `Android key (auto created by Firebase)`. **This is not always the same key as the one found in `google-services.json`. Always confirm your key and associated restrictions in the Google Cloud Platform console.**
+> **Note:** Firebase will create an API key in the Google Cloud Platform console with a name like `Android key (auto created by Firebase)`. **This is not always the same key as the one found in `google-services.json`. Always confirm your key and associated restrictions in the Google Cloud Platform console.**
+
+> If you have multiple Android Apps in your Firebase project the `google-services.json` might contain duplicated data under the `client` array, this may cause issues when your App is fetching the push notification token. **Be sure to only have one client object with the correct keys and metadata in `google-services.json`**.
 
 6. Finally, make a new build of your app by running `eas build --platform android` (or `expo build:android` if you're using the classic build system).
 
@@ -63,7 +65,7 @@ In order for Expo to send notifications from our servers using your credentials,
 
 2. Click on the **Cloud Messaging** tab in the Settings pane.
 
-3. Copy the token listed next to **Server key**. 
+3. Copy the token listed next to **Server key**.
 
 > ** Note:** Server Key is only available in **Cloud Messaging API (Legacy)**, which may be Disabled by default. Enable it by clicking the 3-dot menu > Manage API in Google Cloud Console and follow the flow there. Once the legacy messaging API is enabled, you should see Server Key in that section.
 
