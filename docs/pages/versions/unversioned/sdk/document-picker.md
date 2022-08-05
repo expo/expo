@@ -28,6 +28,19 @@ For iOS, outside of the Expo Go app, the DocumentPicker module requires the [iCl
 - Set the `usesIcloudStorage` key to `true` in your **app.json** as specified [configuration properties](/versions/latest/config/app/#usesicloudstorage).
 - You need to enable the iCloud Application Service in your App identifier. This can be done in the detail of your [App ID in the Apple Developer interface](https://developer.apple.com/account/ios/identifier/bundle).
 - Enable iCloud service with CloudKit support, and create an iCloud Container. When registering the new Container, you are asked to provide a description and identifier for the container. You may enter any name under the description. Under the identifier, add `iCloud.<your_bundle_identifier>`.
+- Define a plugin in your `app.json` file to define a `iCloudContainerEnvironment` entitlement for your app:
+
+```
+    "plugins": [
+        [
+            "expo-document-picker",
+                {
+                    "iCloudContainerEnvironment": "Production"
+                }
+        ]
+    ],
+
+```
 
 To apply these changes, you have to revoke your existing provisioning profile and use [EAS Build](/build/introduction/) to build the app binaries.
 
