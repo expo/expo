@@ -46,6 +46,18 @@ const EXPOVIEW_PKG = {
   sourceDir: path.join(ANDROID_DIR, 'expoview'),
   buildDirRelative: path.join('host', 'exp', 'exponent', 'expoview'),
 };
+const VENDORED_PKGS = [
+  {
+    name: 'vendored_unversioned_@shopify_flash-list',
+    sourceDir: path.join(ANDROID_DIR, 'vendored', 'unversioned', '@shopify', 'flash-list'),
+    buildDirRelative: path.join('com', 'shopify'),
+  },
+  {
+    name: 'vendored_unversioned_@shopify_react-native-skia',
+    sourceDir: path.join(ANDROID_DIR, 'vendored', 'unversioned', '@shopify', 'react-native-skia'),
+    buildDirRelative: path.join('com', 'shopify'),
+  },
+];
 
 async function _findUnimodules(pkgDir: string): Promise<Package[]> {
   const unimodules: Package[] = [];
@@ -307,7 +319,12 @@ async function action(options: ActionOptions) {
 
   // packages must stay in this order --
   // ReactAndroid MUST be first and expoview MUST be last
-  const packages: Package[] = [REACT_ANDROID_PKG, ...detachableUniversalModules, EXPOVIEW_PKG];
+  const packages: Package[] = [
+    REACT_ANDROID_PKG,
+    ...detachableUniversalModules,
+    ...VENDORED_PKGS,
+    EXPOVIEW_PKG,
+  ];
   let packagesToBuild: string[] = [];
 
   const expoviewBuildGradle = await fs.readFile(path.join(ANDROID_DIR, 'expoview', 'build.gradle'));

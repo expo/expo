@@ -69,3 +69,32 @@ dependencies {
     androidTestImplementation("androidx.test:runner:${_androidTestRunnerVersion}")
     androidTestImplementation("androidx.test:rules:${_androidTestRunnerVersion}")
 }
+
+apply plugin: 'maven-publish'
+
+group = 'com.shopify'
+version = '1.1.0'
+
+// Creating sources with comments
+task androidSourcesJar(type: Jar) {
+  classifier = 'sources'
+  from android.sourceSets.main.java.srcDirs
+}
+
+afterEvaluate {
+  publishing {
+    publications {
+      release(MavenPublication) {
+        from components.release
+        artifactId = 'flash-list'
+        // Add additional sourcesJar to artifacts
+        artifact(androidSourcesJar)
+      }
+    }
+    repositories {
+      maven {
+        url = mavenLocal().url
+      }
+    }
+  }
+}

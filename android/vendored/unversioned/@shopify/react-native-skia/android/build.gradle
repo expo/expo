@@ -274,3 +274,27 @@ tasks.whenTaskAdded { task ->
     task.dependsOn(":ReactAndroid:copy${currentBuildType}JniLibsProjectOnly")
   }
 }
+
+
+apply plugin: 'maven-publish'
+
+group = 'com.shopify'
+version = '0.1.136'
+
+afterEvaluate {
+  publishing {
+    publications {
+      release(MavenPublication) {
+        from components.release
+        artifactId = 'react-native-skia'
+        // Add additional sourcesJar to artifacts
+        artifact(androidSourcesJar)
+      }
+    }
+    repositories {
+      maven {
+        url = mavenLocal().url
+      }
+    }
+  }
+}

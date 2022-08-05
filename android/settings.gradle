@@ -31,6 +31,8 @@ useExpoModules([
 
 include ':expo'
 project(':expo').projectDir = new File('../packages/expo/android')
+
+useVendoredModulesForSettingsGradle('unversioned')
 END UNCOMMENT WHEN DISTRIBUTING */
 
 
