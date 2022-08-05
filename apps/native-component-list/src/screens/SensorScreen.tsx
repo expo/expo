@@ -19,6 +19,7 @@ export default class SensorScreen extends React.Component {
         <MagnetometerSensor />
         <MagnetometerUncalibratedSensor />
         <BarometerSensor />
+        <LightSensor />
         <DeviceMotionSensor />
       </ScrollView>
     );
@@ -176,6 +177,16 @@ class BarometerSensor extends SensorBlock<Sensors.BarometerMeasurement> {
     <View>
       <Text>Pressure: {this.state.data.pressure}</Text>
       <Text>Relative Altitude: {this.state.data.relativeAltitude}</Text>
+    </View>
+  );
+}
+
+class LightSensor extends SensorBlock<Sensors.LightSensorMeasurement> {
+  getName = () => 'LightSensor';
+  getSensor = () => Sensors.LightSensor;
+  renderData = () => (
+    <View>
+      <Text>Illuminance: {this.state.data.illuminance}</Text>
     </View>
   );
 }
