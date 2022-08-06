@@ -2,6 +2,8 @@
 title: EAS Build hooks
 ---
 
+import { Collapsible } from '~/ui/components/Collapsible';
+
 There are five EAS Build-specific npm hooks that you can set in your **package.json**. See the [Android build process](android-builds.md) and [iOS build process](ios-builds.md) docs to get a better understanding about the internals of the build process.
 
 - `eas-build-pre-install` - executed before EAS Build runs `yarn install`.
@@ -18,28 +20,79 @@ This is an example of how your **package.json** might look like:
 
 ```json
 {
-  "main": "index.js",
+  "name": "my-app",
   "scripts": {
     "eas-build-pre-install": "echo 123",
     "eas-build-post-install": "echo 456",
     "eas-build-on-success": "echo 789",
     "eas-build-on-error": "echo 012",
-    "android": "expo run:android",
-    "ios": "expo run:ios",
-    "web": "expo start --web",
-    "start": "react-native start",
+    "start": "expo start",
     "test": "jest"
   },
   "dependencies": {
-    "expo": "~40.0.0"
+    "expo": "~46.0.0"
     // ...
-  },
-  "devDependencies": {
-    // ...
-  },
-  "jest": {
-    "preset": "react-native"
-  },
-  "private": true
+  }
 }
 ```
+
+## Platform-specific hook behavior
+
+If you would like to run a script (or some part of a script) only for iOS builds or only for Android builds, you can fork the behavior depending on the platform within the script; iOS builds run on macOS (Darwin) and Android builds run on Ubuntu (Linux). See examples for common ways to do this through a shell script or a Node script below.
+
+<Collapsible summary="Example package.json and shell script">
+
+```json
+{
+  "name": "my-app",
+  "scripts": {
+    "eas-build-pre-install": "./pre-install",
+    "start": "expo start",
+    // ...
+  },
+  "dependencies": {
+    // ...
+  }
+}
+```
+
+```bash
+#!/bin/bash
+# This is a file called "pre-install" in the root of the project
+
+unamestr=$(uname)
+if [[ "$unamestr" == 'Linux' ]]; then
+	echo "Linux detected, run commands for Android builds here"
+elif [[ "$unamestr" == 'Darwin' ]]; then
+	echo "macOS detected, run commands for iOS builds here"
+fi
+```
+
+</Collapsible>
+
+<Collapsible summary="Example package.json and Node script">
+
+```json
+{
+  "name": "my-app",
+  "scripts": {
+    "eas-build-pre-install": "node pre-install.js",
+    "start": "expo start",
+    // ...
+  },
+  "dependencies": {
+    // ...
+  }
+}
+```
+
+```javascript
+// This is a file called "pre-install.js" in the root of the project
+if (process.platform === 'linux') {
+  console.log('Linux detected, run commands for Android builds here');
+} else if (process.platform === 'darwin') {
+  console.log('macOS detected, run commands for iOS builds here');
+}
+```
+
+</Collapsible>
