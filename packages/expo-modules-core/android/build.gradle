@@ -422,7 +422,7 @@ task prepareFolly(dependsOn: [downloadFolly], type: Copy) {
 }
 // END FOLLy
 
-task prepareHermes() {
+task prepareHermes(dependsOn: createNativeDepsDirectories) {
   if (!FOR_HERMES) {
     return
   }
@@ -444,7 +444,7 @@ afterEvaluate {
 }
 
 tasks.whenTaskAdded { task ->
-  if (!task.name.contains("Clean") && (task.name.contains('externalNativeBuild') || task.name.startsWith('configureCMake'))) {
+  if (!task.name.contains("Clean") && (task.name.contains('externalNativeBuild') || task.name.startsWith('configureCMake') || task.name.startsWith('buildCMake'))) {
     def buildType = task.name.endsWith('Debug') ? 'Debug' : 'Release'
     task.dependsOn(extractAARHeaders)
     task.dependsOn(extractJNIFiles)

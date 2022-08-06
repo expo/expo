@@ -14,6 +14,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix issue with Android builds when gradle clean and build were called concurrently.  ([#18518](https://github.com/expo/expo/pull/18518) by [EdwardDrapkin](https://github.com/EdwardDrapkin))
+
 ### 💡 Others
 
 - Centralized Android emulator detection for native code and added checks to pick up additional emulator types in `EmulatorUtilities`. ([#16177](https://github.com/expo/expo/pull/16177)) by [@kbrandwijk](https://github.com/kbrandwijk), [@keith-kurak](https://github.com/keith-kurak))
