@@ -8,6 +8,10 @@
 #import <React/RCTModuleData.h>
 #import <React/RCTEventDispatcherProtocol.h>
 
+#ifdef RN_FABRIC_ENABLED
+#import <React/RCTComponentViewFactory.h>
+#endif
+
 #import <jsi/jsi.h>
 
 #import <ExpoModulesCore/EXNativeModulesProxy.h>
@@ -379,6 +383,12 @@ RCT_EXPORT_METHOD(callMethod:(NSString *)moduleName methodNameOrKey:(id)methodNa
                                                                   managerClass:wrappedViewModuleClass
                                                                         bridge:bridge];
   componentDataByName[className] = componentData;
+
+#ifdef RN_FABRIC_ENABLED
+  Class viewClass = [ExpoFabricView makeClassForAppContext:_appContext className:className];
+  [[RCTComponentViewFactory currentComponentViewFactory] registerComponentViewClass:viewClass];
+#endif
+
   return wrappedViewModuleClass;
 }
 
@@ -396,6 +406,13 @@ RCT_EXPORT_METHOD(callMethod:(NSString *)moduleName methodNameOrKey:(id)methodNa
     RCTComponentData *componentData = [[RCTComponentData alloc] initWithManagerClass:moduleClass bridge:bridge eventDispatcher:bridge.eventDispatcher];
     componentDataByName[className] = componentData;
   }
+
+#ifdef RN_FABRIC_ENABLED
+  if ([className hasPrefix:@"ViewManagerAdapter_"]) {
+    Class viewClass = [ExpoFabricView makeClassForAppContext:_appContext className:className];
+    [[RCTComponentViewFactory currentComponentViewFactory] registerComponentViewClass:viewClass];
+  }
+#endif
 }
 
 - (void)assignExportedMethodsKeys:(NSMutableArray<NSMutableDictionary<const NSString *, id> *> *)exportedMethods forModuleName:(const NSString *)moduleName

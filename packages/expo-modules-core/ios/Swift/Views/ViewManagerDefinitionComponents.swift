@@ -13,7 +13,7 @@ public func view(_ closure: @escaping () -> UIView) -> ViewManagerDefinitionComp
 /**
  Defines the factory creating a native view when the module is used as a view.
  */
-public func View(_ closure: @escaping () -> UIView) -> ViewManagerDefinitionComponent {
+public func View<ViewType: UIView>(_ closure: @escaping () -> ViewType) -> ViewManagerDefinitionComponent {
   return ViewFactory(closure)
 }
 

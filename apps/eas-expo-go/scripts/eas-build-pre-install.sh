@@ -23,6 +23,11 @@ cat << EOF > $ROOT_DIR/.gitmodules
   url = https://github.com/expo/react-native.git
   branch = exp-latest
   update = checkout
+[submodule "apps/fabric-tester"]
+  path = apps/fabric-tester
+  url = https://github.com/expo/fabric-tester.git
+  branch = main
+  update = checkout
 EOF
 
 git submodule update --init
