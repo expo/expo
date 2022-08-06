@@ -2,13 +2,13 @@
 
 include(Android-prebuilt.cmake)
 
+set(COMMON_FABRIC_DIR ${COMMON_DIR}/fabric)
 file(GLOB SOURCES "*.cpp")
+file(GLOB COMMON_FABRIC_SOURCES "${COMMON_FABRIC_DIR}/*.cpp")
 
 add_library(fabric STATIC
+  ${COMMON_FABRIC_SOURCES}
   ${SOURCES}
-  "../../common/cpp/fabric/ExpoViewComponentDescriptor.cpp"
-  "../../common/cpp/fabric/ExpoViewProps.cpp"
-  "../../common/cpp/fabric/ExpoViewShadowNode.cpp"
 )
 
 target_compile_options(fabric PRIVATE
@@ -17,7 +17,7 @@ target_compile_options(fabric PRIVATE
 
 target_include_directories(fabric PRIVATE
   "${REACT_NATIVE_DIR}/ReactCommon"
-  "../../common/cpp/fabric"
+  "${COMMON_FABRIC_DIR}"
 )
 
 target_link_libraries(fabric

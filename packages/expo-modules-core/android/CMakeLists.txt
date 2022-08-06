@@ -31,7 +31,7 @@ add_library(
 )
 
 if(IS_NEW_ARCHITECTURE_ENABLED)
-  add_subdirectory(Fabric)
+  add_subdirectory("${SRC_DIR}/fabric")
   set(NEW_ARCHITECTURE_DEPENDENCIES "fabric")
   set(NEW_ARCHITECTURE_COMPILE_OPTIONS "-DIS_NEW_ARCHITECTURE_ENABLED=1")
 else()
@@ -80,7 +80,7 @@ target_include_directories(
         "${BUILD_DIR}/third-party-ndk/folly"
         "${libfbjni_include_DIRS}"
         "${COMMON_DIR}"
-        "${CMAKE_SOURCE_DIR}/Fabric"
+        "${SRC_DIR}/fabric"
 )
 
 # find libraries
