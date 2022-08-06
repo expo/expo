@@ -78,7 +78,7 @@ Depending on which platform you are (mobile or web), use the following functions
 // Sentry.Native.*
 
 // Access any @sentry/browser exports via:
-Sentry.Browser.*
+// Sentry.Browser.*
 
 // Example:
 try {
