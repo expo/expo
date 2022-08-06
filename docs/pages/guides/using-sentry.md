@@ -55,7 +55,7 @@ cmd={['$ expo install expo-application expo-constants expo-device expo-updates @
 
 ### Step 2: Code
 
-#### Config
+#### Configuration
 
 Add the following to your app's main file (usually `App.js`):
 
