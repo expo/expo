@@ -18,18 +18,13 @@ export default async function ({ pullRequest, diff }: ReviewInput): Promise<Revi
   // Iterate over diffs of Swift files
   for (const fileDiff of swiftFiles) {
     // Read file's content at the PR head commit
-    const newFileContent = await Git.readFileAsync(fileDiff.to!, pullRequest.head.sha);
+    const newFileContent = await Git.readFileAsync(pullRequest.head.sha, fileDiff.to!);
 
     // Lint the new content
     const violations = await lintStringAsync(newFileContent);
 
-    // Count the position for review comments
-    let position = 0;
-
     for (const chunk of fileDiff.chunks) {
       for (const change of chunk.changes) {
-        position++;
-
         // Only added lines can violate the rules
         if (change.type !== 'add') {
           continue;
@@ -44,13 +39,11 @@ export default async function ({ pullRequest, diff }: ReviewInput): Promise<Revi
 
           comments.push({
             path: fileDiff.to!,
-            position,
+            line: violationAtLine.line,
             body: commentBodyForViolation(violationAtLine),
           });
         }
       }
-      // Position needs to be incremented after each chunk too.
-      position++;
     }
   }
 
@@ -76,9 +69,9 @@ export default async function ({ pullRequest, diff }: ReviewInput): Promise<Revi
 function severityToEmoji(severity: LintViolation['severity']): string {
   switch (severity) {
     case 'error':
-      return '❌';
+      return '🔴';
     case 'warning':
-      return '⚠️ ';
+      return '🟠';
     default:
       return '';
   }
