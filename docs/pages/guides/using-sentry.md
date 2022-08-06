@@ -75,7 +75,7 @@ Depending on which platform you are (mobile or web), use the following functions
 
 ```js
 // Access any @sentry/react-native exports via:
-Sentry.Native.*
+// Sentry.Native.*
 
 // Access any @sentry/browser exports via:
 Sentry.Browser.*
