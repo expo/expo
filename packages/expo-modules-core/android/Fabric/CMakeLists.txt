@@ -6,11 +6,9 @@ file(GLOB SOURCES "*.cpp")
 
 add_library(fabric STATIC
   ${SOURCES}
-  "../../ios/Fabric/ExpoViewComponentDescriptor.cpp"
-  "../../ios/Fabric/ExpoViewEventEmitter.cpp"
-  "../../ios/Fabric/ExpoViewProps.cpp"
-  "../../ios/Fabric/ExpoViewShadowNode.cpp"
-  "../../ios/Fabric/ExpoViewState.cpp"
+  "../../common/cpp/fabric/ExpoViewComponentDescriptor.cpp"
+  "../../common/cpp/fabric/ExpoViewProps.cpp"
+  "../../common/cpp/fabric/ExpoViewShadowNode.cpp"
 )
 
 target_compile_options(fabric PRIVATE
@@ -19,7 +17,7 @@ target_compile_options(fabric PRIVATE
 
 target_include_directories(fabric PRIVATE
   "${REACT_NATIVE_DIR}/ReactCommon"
-  "../../ios/Fabric"
+  "../../common/cpp/fabric"
 )
 
 target_link_libraries(fabric
