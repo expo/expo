@@ -71,7 +71,7 @@ Sentry.init({
 
 #### Usage
 
-Depending on which platform you are (mobile or web), use the following functions in order to capture/catch exceptions:
+Depending on which platform you are on (mobile or web), use the following functions in order to capture/catch exceptions:
 
 ```js
 // Access any @sentry/react-native exports via:
