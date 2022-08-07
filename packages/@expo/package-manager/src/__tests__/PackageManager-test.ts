@@ -1,10 +1,9 @@
 import spawnAsync from '@expo/spawn-async';
 import { vol } from 'memfs';
 
-import { createForProject, getModulesPath, getPossibleProjectRoot, isUsingYarn } from '../index';
+import { createForProject, getModulesPath, getPossibleProjectRoot, isUsingYarn } from '..';
 
 jest.mock('fs');
-
 jest.mock(`@expo/spawn-async`, () => {
   const actualModule = jest.requireActual('@expo/spawn-async');
 
