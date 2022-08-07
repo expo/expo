@@ -77,7 +77,7 @@ export async function getVersionAsync(): Promise<string | null> {
   try {
     const { stdout } = await runAsync(['version']);
     return stdout.trim();
-  } catch (error) {
+  } catch {
     return null;
   }
 }
@@ -90,8 +90,8 @@ export async function lintStringAsync(str: string): Promise<LintViolation[]> {
 
   // @ts-ignore
   const child = promise.child as ChildProcess;
-  child.stdin.write(str);
-  child.stdin.end();
+  child.stdin?.write(str);
+  child.stdin?.end();
 
   let stdout: string;
   try {
