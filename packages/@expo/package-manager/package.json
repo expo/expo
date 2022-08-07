@@ -2,7 +2,8 @@
   "name": "@expo/package-manager",
   "version": "0.0.56",
   "description": "A library for installing and finding packages in a node project",
-  "main": "build",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
   "scripts": {
     "watch": "tsc --watch --preserveWatchOutput",
     "build": "tsc",
@@ -13,8 +14,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/expo/expo-cli.git",
-    "directory": "packages/package-manager"
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/@expo/package-manager"
   },
   "keywords": [
     "react-native",
@@ -27,9 +28,9 @@
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/expo/expo-cli/issues"
+    "url": "https://github.com/expo/expo/issues"
   },
-  "homepage": "https://github.com/expo/expo-cli/tree/main/packages/package-manager#readme",
+  "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/package-manager#readme",
   "files": [
     "build"
   ],
