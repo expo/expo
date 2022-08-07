@@ -109,8 +109,31 @@ identifier_name:
   max_length:
     warning: 35
     error: 50
-  validates_start_with_lowercase: false
-  allowed_symbols: ['_']
+  validates_start_with_lowercase: true
+  # Ignore Sweet API components as they intentionally start with the uppercase letter.
+  allowed_symbols:
+    [
+      '_',
+      'AsyncFunction',
+      'Class',
+      'Constants',
+      'Constructor',
+      'Events',
+      'Function',
+      'Name',
+      'OnAppBecomesActive',
+      'OnAppContextDestroys',
+      'OnAppEntersBackground',
+      'OnAppEntersForeground',
+      'OnCreate',
+      'OnDestroy',
+      'OnStartObserving',
+      'OnStopObserving',
+      'Prop',
+      'Property',
+      'View',
+      'ViewManager',
+    ]
 
 # Files should not contain leading whitespace.
 leading_whitespace: warning
