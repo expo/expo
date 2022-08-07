@@ -1,7 +1,6 @@
 import { SpawnResult } from '@expo/spawn-async';
 import swiftlint from '@expo/swiftlint';
 import { ChildProcess } from 'child_process';
-import { EOL } from 'os';
 
 import { EXPO_DIR } from '../Constants';
 
@@ -92,7 +91,7 @@ export async function lintStringAsync(str: string): Promise<LintViolation[]> {
   // @ts-ignore
   const child = promise.child as ChildProcess;
   child.stdin.write(str);
-  child.stdin.end(EOL);
+  child.stdin.end();
 
   let stdout: string;
   try {

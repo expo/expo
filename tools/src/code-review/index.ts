@@ -92,8 +92,7 @@ export async function reviewPullRequestAsync(prNumber: number) {
 
   // Gather comments that will be part of the review.
   const reviewComments = getReviewCommentsFromOutputs(outputs);
-  console.log(reviewComments);
-  process.exit(0);
+
   // Get lists of existing reports and reviews. We'll delete them once the new ones are submitted.
   const outdatedReports = await findExistingReportsAsync(prNumber, user.id);
   const outdatedReviews = await findExistingReviewsAsync(prNumber, user.id);
