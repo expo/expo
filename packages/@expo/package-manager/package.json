@@ -1,0 +1,56 @@
+{
+  "name": "@expo/package-manager",
+  "version": "0.0.56",
+  "description": "A library for installing and finding packages in a node project",
+  "main": "build",
+  "scripts": {
+    "watch": "tsc --watch --preserveWatchOutput",
+    "build": "tsc",
+    "prepare": "yarn run clean && yarn build",
+    "clean": "rimraf build ./tsconfig.tsbuildinfo",
+    "lint": "eslint .",
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo-cli.git",
+    "directory": "packages/package-manager"
+  },
+  "keywords": [
+    "react-native",
+    "package-manager",
+    "package-json",
+    "node",
+    "yarn",
+    "yarnpkg",
+    "pnpm"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/expo/expo-cli/issues"
+  },
+  "homepage": "https://github.com/expo/expo-cli/tree/main/packages/package-manager#readme",
+  "files": [
+    "build"
+  ],
+  "dependencies": {
+    "@expo/json-file": "8.2.36",
+    "@expo/spawn-async": "^1.5.0",
+    "ansi-regex": "^5.0.0",
+    "chalk": "^4.0.0",
+    "find-up": "^5.0.0",
+    "find-yarn-workspace-root": "~2.0.0",
+    "npm-package-arg": "^7.0.0",
+    "rimraf": "^3.0.2",
+    "split": "^1.0.1",
+    "sudo-prompt": "9.1.1"
+  },
+  "devDependencies": {
+    "@types/npm-package-arg": "^6.1.0",
+    "@types/rimraf": "^3.0.0",
+    "@types/split": "^1.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
