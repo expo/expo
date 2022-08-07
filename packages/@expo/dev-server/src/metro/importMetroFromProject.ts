@@ -63,9 +63,15 @@ export function importExpoMetroConfigFromProject(
   return importFromProject(projectRoot, '@expo/metro-config');
 }
 
-export function importHermesCommandFromProject(projectRoot: string): string {
+export function importHermesCommandFromProject(
+  projectRoot: string,
+  isBundledHermes: boolean
+): string {
   const platformExecutable = getHermesCommandPlatform();
-  return resolveFromProject(projectRoot, `hermes-engine/${platformExecutable}`);
+  return resolveFromProject(
+    projectRoot,
+    `${isBundledHermes ? 'react-native/sdks/hermesc' : 'hermes-engine'}/${platformExecutable}`
+  );
 }
 
 function getHermesCommandPlatform(): string {
