@@ -91,8 +91,6 @@ const nonLinkableTypes = [
   'ComponentClass',
   'E',
   'EventSubscription',
-  'File',
-  'FileList',
   'NativeSyntheticEvent',
   'ParsedQs',
   'ServiceActionResult',
@@ -135,6 +133,8 @@ const hardcodedTypeLinks: Record<string, string> = {
   Error: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error',
   ExpoConfig:
     'https://github.com/expo/expo/blob/main/packages/%40expo/config-types/src/ExpoConfig.ts',
+  File: 'https://developer.mozilla.org/en-US/docs/Web/API/File',
+  FileList: 'https://developer.mozilla.org/en-US/docs/Web/API/FileList',
   MessageEvent: 'https://developer.mozilla.org/en-US/docs/Web/API/MessageEvent',
   Omit: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#omittype-keys',
   Pick: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#picktype-keys',
