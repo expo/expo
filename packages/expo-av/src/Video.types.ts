@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { ImageProps, ViewProps } from 'react-native';
+import { ImageProps, ViewProps, StyleProp, ViewStyle } from 'react-native';
 
 import {
   AVPlaybackNativeSource,
@@ -247,6 +247,10 @@ export type VideoProps = {
    * @hidden
    */
   rotation?: number;
+  /**
+   * @hidden
+   */
+  videoStyle?: StyleProp<ViewStyle>;
 } & ViewProps;
 
 /**
@@ -263,6 +267,7 @@ export type VideoNativeProps = {
   onReadyForDisplay?: (event: { nativeEvent: VideoReadyForDisplayEvent }) => void;
   onFullscreenUpdate?: (event: { nativeEvent: VideoFullscreenUpdateEvent }) => void;
   useNativeControls?: boolean;
+  videoStyle?: StyleProp<ViewStyle>;
 } & ViewProps;
 
 // @docsMissing
