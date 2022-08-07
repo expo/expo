@@ -35,7 +35,7 @@ A Personal Account is the default account type. For example, your Personal Accou
 
 ## Teams
 
-> For all new accounts where you want to share access, we recommend you [create a new Organization](#organizations) Account. It allows more flexibility in role assignments and allows you to keep some projects private to you. However, a Team Account is still a viable way to give other users access to all your projects, just keep in mind that no projects in your account can be private to you if you make a Team Account unless you remove all members.
+> **Note**: For all new accounts where you want to share access, we recommend you [create a new Organization](#organizations) Account. It allows more flexibility in role assignments and allows you to keep some projects private to you. However, a Team Account is still a viable way to give other users access to all your projects, just keep in mind that no projects in your account can be private to you if you make a Team Account unless you remove all members.
 
 To create a Team Account, simply [invite Team members](/accounts/working-together/#adding-members) to a Personal Account. An email will be sent that prompts them to create a Personal Expo Account if they do not already have one. In a Team Account, the team's creator has the Owner role only.
 
