@@ -4,7 +4,7 @@ title: Testing with Jest
 
 import { Terminal } from '~/ui/components/Snippet';
 
-[Jest](https://jestjs.io) is the most widely used JavaScript unit testing framework. This guide explains how to set up Jest in your project, write a unit test, write a snapshot test, and common problems people encounter when using **Jest** in React Native.
+[Jest](https://jestjs.io) is the most widely used JavaScript unit testing framework. This guide explains how to set up Jest in your project, write a unit test, write a snapshot test, and common problems people encounter when using Jest in React Native.
 
 ## Installation
 
