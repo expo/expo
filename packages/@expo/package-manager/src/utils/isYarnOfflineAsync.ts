@@ -16,8 +16,8 @@ export function getNpmProxy(): string | null {
 }
 
 function isUrlAvailableAsync(url: string): Promise<boolean> {
-  return new Promise<boolean>(resolve => {
-    dns.lookup(url, err => {
+  return new Promise<boolean>((resolve) => {
+    dns.lookup(url, (err) => {
       resolve(!err);
     });
   });

@@ -300,7 +300,7 @@ describe('isAvailable', () => {
     await fs.ensureDir(projectRoot);
 
     let message = '';
-    console.log = jest.fn(msg => (message = msg));
+    console.log = jest.fn((msg) => (message = msg));
 
     expect(CocoaPodsPackageManager.isAvailable(projectRoot, false)).toBe(false);
     expect(console.log).toBeCalledTimes(1);

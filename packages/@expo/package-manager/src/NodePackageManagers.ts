@@ -99,7 +99,7 @@ export class NpmPackageManager implements PackageManager {
       await this._runAsync([
         'install',
         '--save',
-        ...unversioned.map(spec => spec.raw),
+        ...unversioned.map((spec) => spec.raw),
         ...parameters,
       ]);
     }
@@ -118,7 +118,7 @@ export class NpmPackageManager implements PackageManager {
       await this._runAsync(['install']);
     }
     if (unversioned.length) {
-      await this._runAsync(['install', '--save-dev', ...unversioned.map(spec => spec.raw)]);
+      await this._runAsync(['install', '--save-dev', ...unversioned.map((spec) => spec.raw)]);
     }
   }
 
@@ -179,8 +179,8 @@ export class NpmPackageManager implements PackageManager {
       unversioned: npmPackageArg.Result[];
     } = { versioned: [], unversioned: [] };
     names
-      .map(name => npmPackageArg(name))
-      .forEach(spec => {
+      .map((name) => npmPackageArg(name))
+      .forEach((spec) => {
         if (spec.rawSpec) {
           result.versioned.push(spec);
         } else {
@@ -196,7 +196,7 @@ export class NpmPackageManager implements PackageManager {
   ) {
     const pkgPath = path.join(this.options.cwd || '.', 'package.json');
     const pkg = await JsonFile.readAsync(pkgPath);
-    specs.forEach(spec => {
+    specs.forEach((spec) => {
       pkg[packageType] = pkg[packageType] || {};
       // @ts-ignore
       pkg[packageType][spec.name!] = spec.rawSpec;

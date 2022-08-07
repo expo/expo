@@ -63,7 +63,7 @@ export function findWorkspaceRoot(
     return strategies[packageManager](projectRoot);
   }
 
-  for (const strategy of managerResolutionOrder.map(name => strategies[name])) {
+  for (const strategy of managerResolutionOrder.map((name) => strategies[name])) {
     const root = strategy(projectRoot);
     if (root) {
       return root;

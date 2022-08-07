@@ -476,7 +476,7 @@ export function getImprovedPodInstallError(
     if (error.stdout) {
       const cocoapodsDebugInfo = error.stdout.split(os.EOL);
       // The troubleshooting info starts with `[!]`, capture everything after that.
-      const firstWarning = cocoapodsDebugInfo.findIndex(v => v.startsWith('[!]'));
+      const firstWarning = cocoapodsDebugInfo.findIndex((v) => v.startsWith('[!]'));
       if (firstWarning !== -1) {
         const warning = cocoapodsDebugInfo.slice(firstWarning).join(os.EOL);
         error.message += `\n\n${chalk.gray(warning)}`;

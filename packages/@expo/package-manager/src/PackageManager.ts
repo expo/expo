@@ -23,7 +23,7 @@ export async function spawnSudoAsync(command: string[], spawnOptions: SpawnOptio
   // sudo prompt only seems to work on win32 machines.
   if (process.platform === 'win32') {
     return new Promise((resolve, reject) => {
-      sudo.exec(command.join(' '), { name: 'pod install' }, error => {
+      sudo.exec(command.join(' '), { name: 'pod install' }, (error) => {
         if (error) {
           reject(error);
         }
