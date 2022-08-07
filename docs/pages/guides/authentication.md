@@ -1041,10 +1041,7 @@ This can only be used in standalone and bare workflow apps. This method cannot b
 - Your app needs to conform to the URI scheme matching your bundle identifier.
   - _Standalone_: Automatically added, do nothing.
   - _Bare workflow_: Run `npx uri-scheme add <your bundle id> --ios`
-- To test this you can:
-  1. Eject to bare: `expo prebuild` and run `yarn ios`
-  2. Build a simulator app: `expo build:ios -t simulator` on `eas build`
-  3. Build a production IPA: `expo build:ios` or `eas build`
+- To test this you can use `expo run:ios` or create a development build.
 - Whenever you change the values in **app.json** you'll need to rebuild the native app.
 
 **Troubleshooting**
@@ -1064,11 +1061,9 @@ This can only be used in Standalone, and bare workflow apps. This method cannot 
   - _Standalone_: Automatically added, do nothing.
   - _Bare workflow_: Run `npx uri-scheme add <your android.package> --android`
 - **Signing-certificate fingerprint**:
-  - Run `expo credentials:manager -p android` then select "Update upload Keystore" -> "Generate new keystore" -> "Go back to experience overview"
-  - Copy your "Google Certificate Fingerprint", it will output a string that looks like `A1:B2:C3` but longer.
-- To test this you can:
-  1. Eject to bare: `expo prebuild` and run `yarn android`
-  2. Build a production APK: `expo build:android`
+  - Run `eas credentials` then select "Android" and then pick a build profile.
+  - Copy your "SHA1 Fingerprint"
+- To test this you can use `expo run:android` or create a development build.
 - Whenever you change the values in **app.json** you'll need to rebuild the native app.
 
 #### Web Apps
