@@ -438,7 +438,7 @@ export function getPodRepoUpdateMessage(errorOutput: string) {
  */
 export function getImprovedPodInstallError(
   error: SpawnResult & Error,
-  { cwd = process.cwd() }: { cwd?: string }
+  { cwd = process.cwd() }: Pick<SpawnOptions, 'cwd'>
 ): Error {
   // Collect all of the spawn info.
   const errorOutput = error.output.join(os.EOL).trim();

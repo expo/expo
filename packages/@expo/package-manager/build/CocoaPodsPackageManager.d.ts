@@ -68,6 +68,4 @@ export declare function getPodRepoUpdateMessage(errorOutput: string): {
  * @param error Error from CocoaPods CLI `pod install` command.
  * @returns
  */
-export declare function getImprovedPodInstallError(error: SpawnResult & Error, { cwd }: {
-    cwd?: string;
-}): Error;
+export declare function getImprovedPodInstallError(error: SpawnResult & Error, { cwd }: Pick<SpawnOptions, 'cwd'>): Error;

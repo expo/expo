@@ -1,6 +1,15 @@
 import { SpawnOptions } from '@expo/spawn-async';
 import { Logger, PackageManager } from './PackageManager';
+import { PnpmPackageManager } from './PnpmPackageManager';
 export declare type NodePackageManager = 'yarn' | 'npm' | 'pnpm';
+/**
+ * Disable various postinstall scripts
+ * - https://github.com/opencollective/opencollective-postinstall/pull/9
+ */
+export declare const DISABLE_ADS_ENV: {
+    DISABLE_OPENCOLLECTIVE: string;
+    ADBLOCK: string;
+};
 export declare class NpmPackageManager implements PackageManager {
     options: SpawnOptions;
     private log;
@@ -39,27 +48,6 @@ export declare class YarnPackageManager implements PackageManager {
     addWithParametersAsync(names: string[], parameters?: string[]): Promise<void>;
     addAsync(...names: string[]): Promise<void>;
     addDevAsync(...names: string[]): Promise<void>;
-    removeAsync(...names: string[]): Promise<void>;
-    versionAsync(): Promise<string>;
-    getConfigAsync(key: string): Promise<string>;
-    removeLockfileAsync(): Promise<void>;
-    cleanAsync(): Promise<void>;
-    private _runAsync;
-}
-export declare class PnpmPackageManager implements PackageManager {
-    options: SpawnOptions;
-    private log;
-    constructor({ cwd, log, silent }: {
-        cwd: string;
-        log?: Logger;
-        silent?: boolean;
-    });
-    get name(): string;
-    installAsync(): Promise<void>;
-    addWithParametersAsync(names: string[], parameters: string[]): Promise<void>;
-    addAsync(...names: string[]): Promise<void>;
-    addDevAsync(...names: string[]): Promise<void>;
-    addGlobalAsync(...names: string[]): Promise<void>;
     removeAsync(...names: string[]): Promise<void>;
     versionAsync(): Promise<string>;
     getConfigAsync(key: string): Promise<string>;

@@ -104,7 +104,7 @@ export class PnpmPackageManager {
 
   async removeLockfileAsync() {
     assert(this.options.cwd, 'cwd required for PnpmPackageManager.removeLockfileAsync');
-    const lockfilePath = path.join(this.options.cwd, 'pnpm-lock.yaml');
+    const lockfilePath = path.join(this.options.cwd.toString(), 'pnpm-lock.yaml');
     if (fs.existsSync(lockfilePath)) {
       rimraf.sync(lockfilePath);
     }
@@ -112,7 +112,7 @@ export class PnpmPackageManager {
 
   async cleanAsync() {
     assert(this.options.cwd, 'cwd required for PnpmPackageManager.cleanAsync');
-    const nodeModulesPath = path.join(this.options.cwd, 'node_modules');
+    const nodeModulesPath = path.join(this.options.cwd.toString(), 'node_modules');
     if (fs.existsSync(nodeModulesPath)) {
       rimraf.sync(nodeModulesPath);
     }

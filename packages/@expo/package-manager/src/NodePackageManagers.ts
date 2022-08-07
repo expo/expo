@@ -140,7 +140,7 @@ export class NpmPackageManager implements PackageManager {
     if (!this.options.cwd) {
       throw new Error('cwd required for NpmPackageManager.removeLockfileAsync');
     }
-    const lockfilePath = path.join(this.options.cwd, 'package-lock.json');
+    const lockfilePath = path.join(this.options.cwd.toString(), 'package-lock.json');
     if (existsSync(lockfilePath)) {
       rimraf.sync(lockfilePath);
     }
@@ -150,7 +150,7 @@ export class NpmPackageManager implements PackageManager {
     if (!this.options.cwd) {
       throw new Error('cwd required for NpmPackageManager.cleanAsync');
     }
-    const nodeModulesPath = path.join(this.options.cwd, 'node_modules');
+    const nodeModulesPath = path.join(this.options.cwd.toString(), 'node_modules');
     if (existsSync(nodeModulesPath)) {
       rimraf.sync(nodeModulesPath);
     }
@@ -194,7 +194,7 @@ export class NpmPackageManager implements PackageManager {
     specs: npmPackageArg.Result[],
     packageType: 'dependencies' | 'devDependencies'
   ) {
-    const pkgPath = path.join(this.options.cwd || '.', 'package.json');
+    const pkgPath = path.join(this.options.cwd?.toString() || '.', 'package.json');
     const pkg = await JsonFile.readAsync(pkgPath);
     specs.forEach((spec) => {
       pkg[packageType] = pkg[packageType] || {};
@@ -288,7 +288,7 @@ export class YarnPackageManager implements PackageManager {
     if (!this.options.cwd) {
       throw new Error('cwd required for YarnPackageManager.removeLockfileAsync');
     }
-    const lockfilePath = path.join(this.options.cwd, 'yarn-lock.json');
+    const lockfilePath = path.join(this.options.cwd.toString(), 'yarn-lock.json');
     if (existsSync(lockfilePath)) {
       rimraf.sync(lockfilePath);
     }
@@ -298,7 +298,7 @@ export class YarnPackageManager implements PackageManager {
     if (!this.options.cwd) {
       throw new Error('cwd required for YarnPackageManager.cleanAsync');
     }
-    const nodeModulesPath = path.join(this.options.cwd, 'node_modules');
+    const nodeModulesPath = path.join(this.options.cwd.toString(), 'node_modules');
     if (existsSync(nodeModulesPath)) {
       rimraf.sync(nodeModulesPath);
     }
