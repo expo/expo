@@ -10,7 +10,7 @@ import { Terminal } from '~/ui/components/Snippet';
 
 To get started, you'll need to install `jest-expo`. It's a Jest preset that mocks out the native side of the Expo SDK and handles most of the configurations for you.
 
-To install the compatible version of `jest-expo` for your project, run:
+To install a compatible version of `jest-expo` for your project, run:
 
 <Terminal cmd={[ '$ expo install jest-expo jest' ]} />
 
