@@ -71,7 +71,7 @@ The `ExpoPushToken` will never "expire" but if one of your users uninstalls the 
 
 ### Push notifications work in development, but not after I build the app
 
-This strongly indicates that you have either misconfigured your credentials, or didn't configure them at all. In the Expo Go app, you rely on Expo's credentials so that you don't need to worry about it, and setup is as easy as possible. But when you build your own app for the stores, you need to use your own credentials. On iOS, this is handled via your [push key](/app-signing/app-credentials/#push-notification-keys) (revoking the push key associated with your app **will result in your notifications failing to be delivered**. To fix that, add a new push key with `expo credentials:manager`). On Android, all you need to do is follow [this guide](/push-notifications/using-fcm.md). **Please note** that after setting up Android FCM credentials, you will need to rebuild your app.
+This strongly indicates that you have either misconfigured your credentials, or didn't configure them at all. In the Expo Go app, you rely on Expo's credentials so that you don't need to worry about it, and setup is as easy as possible. But when you build your own app for the stores, you need to use your own credentials. On iOS, this is handled via your [push key](/app-signing/app-credentials/#push-notification-keys) (revoking the push key associated with your app **will result in your notifications failing to be delivered**. To fix that, add a new push key with `eas credentials`). On Android, all you need to do is follow [this guide](/push-notifications/using-fcm.md). **Please note** that after setting up Android FCM credentials, you will need to rebuild your app.
 
 Expo abstracts the majority of credential management away so that you can focus on building your app, but if you want to understand it on a deeper level, read our [guide to app signing](/app-signing/app-credentials.md).
 
@@ -100,7 +100,7 @@ Expo's connections to Apple and Google are encrypted and use HTTPS.
 
 ### How do I handle expired push notification credentials?
 
-When your push notification credentials have expired, run `expo credentials:manager -p ios` which will provide a list of actions to choose from. Select the removal of your expired credentials and then select "Add new Push Notifications Key".
+When your push notification credentials have expired, run `eas credentials`, choose iOS and a build profile, then remove your push notification key and generate a new one.
 
 ### What delivery guarantees are there for push notifications?
 
