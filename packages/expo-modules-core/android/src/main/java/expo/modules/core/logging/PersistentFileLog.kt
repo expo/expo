@@ -1,12 +1,12 @@
 package expo.modules.core.logging
 
 import android.content.Context
-import android.os.AsyncTask
 import java.io.File
 import java.io.FileInputStream
 import java.io.IOException
-import java.lang.Error
 import java.nio.charset.Charset
+import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.*
 
 /**
  * A thread-safe class for reading and writing line-separated strings to a flat file
@@ -15,8 +15,8 @@ import java.nio.charset.Charset
  * for the current process, and cannot access anything logged before the current process started).
  *
  * All write access to the file goes through asynchronous public methods managed by
- * AsyncTask.SERIAL_EXECUTOR, to ensure that multiple instances accessing the file
- * will have thread-safe access.
+ * a static serial dispatch queue implemented with Kotlin coroutines. This ensures that
+ * multiple instances accessing the file will have thread-safe access.
  *
  * The only operations supported are
  * - Read the file (synchronous)
@@ -45,7 +45,7 @@ class PersistentFileLog(
    * Since logging may not require a result handler, the handler parameter is optional
    */
   fun appendEntry(entry: String, completionHandler: ((_: Error?) -> Unit) = { error -> }) {
-    AsyncTask.SERIAL_EXECUTOR.execute {
+    _queue.add {
       try {
         this._ensureFileExists()
         val text = when (this._getFileSize()) {
@@ -66,7 +66,7 @@ class PersistentFileLog(
    * Filter existing entries and remove ones where filter(entry) == false
    */
   fun filterEntries(filter: (_: String) -> Boolean, completionHandler: (_: Error?) -> Unit) {
-    AsyncTask.SERIAL_EXECUTOR.execute {
+    _queue.add {
       try {
         this._ensureFileExists()
         val contents = this._readFileSync()
@@ -83,7 +83,7 @@ class PersistentFileLog(
    * Clear all entries from the log file
    */
   fun clearEntries(completionHandler: (_: Error?) -> Unit) {
-    AsyncTask.SERIAL_EXECUTOR.execute {
+    _queue.add {
       try {
         this._deleteFileSync()
         completionHandler.invoke(null)
@@ -96,6 +96,8 @@ class PersistentFileLog(
   // Private functions
 
   private val filePath = context.filesDir.path + "/" + category
+
+  private val executor = Thread()
 
   private fun _ensureFileExists() {
     val fd = File(filePath)
@@ -142,10 +144,33 @@ class PersistentFileLog(
     }
   }
 
-  private fun _stringToList(text: String): List<String> {
+  fun _stringToList(text: String): List<String> {
     return when (text.length) {
       0 -> listOf<String>()
       else -> text.split("\n")
     }
+  }
+
+  companion object {
+    private val _queue = PersistentFileLogSerialDispatchQueue()
+  }
+}
+
+// Private serial dispatch queue
+
+internal typealias PersistentFileLogSerialDispatchQueueBlock = () -> Unit
+
+internal class PersistentFileLogSerialDispatchQueue() {
+  private val channel = Channel<PersistentFileLogSerialDispatchQueueBlock>(Channel.BUFFERED)
+
+  // Queue a block in the channel
+  fun add(block: PersistentFileLogSerialDispatchQueueBlock) = runBlocking { channel.send(block) }
+
+  fun stop() = sc.cancel()
+
+  // On creation, this starts and runs for the lifetime of the app, pulling blocks off the channel
+  // and running them as needed
+  private val sc = GlobalScope.launch {
+    while (true) { channel.receive()() }
   }
 }

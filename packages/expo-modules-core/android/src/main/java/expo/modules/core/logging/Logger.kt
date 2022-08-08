@@ -5,8 +5,8 @@ import android.util.Log
 import expo.modules.BuildConfig
 
 /**
-Native Android logging class for Expo, with options to direct logs
-to different destinations.
+ * Native Android logging class for Expo, with options to direct logs
+ * to different destinations.
  */
 class Logger(
   /**
