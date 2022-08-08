@@ -119,6 +119,10 @@ export type VideoProps = {
    * An optional property to pass custom styles to the poster image.
    */
   posterStyle?: ImageProps['style'];
+  /**
+   * An optional property to pass custom styles to the <Video /> component.
+   */
+  videoStyle?: StyleProp<ViewStyle>;
 
   // Callbacks
   /**
@@ -247,10 +251,6 @@ export type VideoProps = {
    * @hidden
    */
   rotation?: number;
-  /**
-   * @hidden
-   */
-  videoStyle?: StyleProp<ViewStyle>;
 } & ViewProps;
 
 /**
