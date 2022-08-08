@@ -27,7 +27,7 @@ export default () => ({
 });
 ```
 
-The code above sets the `extra` property. Now, we need to set and get the variable in our project.
+The code above sets the `extra` property to an object with the environment variable as a member. Now, we need to set and get the variable in our project.
 
 ## Setting and getting environment variables during development
 
@@ -64,7 +64,7 @@ To set the `API_URL` environment variable during a build, we can include an `"en
 
 Once we run a command like `eas build --profile production`, the `"env"` property in the "production" build profile will set the `API_URL` to `https://prod.example.com/` inside the build.
 
-To access it, we can use the `expo-constants` library. It's located under the `Constants.expoConfig.API_URL` property.
+To access it, we can use the `expo-constants` library. It's located under the `Constants.expoConfig.extra.API_URL` property.
 
 ## Setting and getting environment variables when publishing an update
 
@@ -90,7 +90,7 @@ Many developers often create a file named **Env.ts** in their project, which the
 import * as Constants from 'expo-constants';
 
 function getApiUrl() {
-  const API_URL = Constants.expoConfig.API_URL;
+  const API_URL = Constants.expoConfig.extra.API_URL;
 
   if (!API_URL) {
     throw new Error('API_URL is missing.');
