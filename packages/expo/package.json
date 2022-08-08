@@ -64,7 +64,7 @@
     "expo-constants": "~13.2.3",
     "expo-file-system": "~14.1.0",
     "expo-font": "~10.2.0",
-    "expo-keep-awake": "~10.2.0",
+    "expo-keep-awake": "~10.2.1",
     "expo-modules-autolinking": "0.10.1",
     "expo-modules-core": "0.11.3",
     "fbemitter": "^3.0.0",
