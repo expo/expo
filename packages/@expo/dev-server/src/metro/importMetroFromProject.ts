@@ -65,7 +65,28 @@ export function importExpoMetroConfigFromProject(
 
 export function importHermesCommandFromProject(projectRoot: string): string {
   const platformExecutable = getHermesCommandPlatform();
-  return resolveFromProject(projectRoot, `hermes-engine/${platformExecutable}`);
+  const hermescLocations = [
+    // Override hermesc dir by environment variables
+    process.env['REACT_NATIVE_OVERRIDE_HERMES_DIR']
+      ? `${process.env['REACT_NATIVE_OVERRIDE_HERMES_DIR']}/build/bin/hermesc`
+      : '',
+
+    // Building hermes from source
+    'react-native/ReactAndroid/hermes-engine/build/hermes/bin/hermesc',
+
+    // Prebuilt hermesc in official react-native 0.69+
+    `react-native/sdks/hermesc/${platformExecutable}`,
+
+    // Legacy hermes-engine package
+    `hermes-engine/${platformExecutable}`,
+  ];
+
+  for (const location of hermescLocations) {
+    try {
+      return resolveFromProject(projectRoot, location);
+    } catch (e: any) {}
+  }
+  throw new Error('Cannot find the hermesc executable.');
 }
 
 function getHermesCommandPlatform(): string {
