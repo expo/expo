@@ -19,20 +19,18 @@ class UpdatesLogReader(
    */
   fun purgeLogEntries(
     olderThan: Date = Date(Date().time - ONE_DAY_MILLISECONDS),
-    completionHandler: ((_: Error?) -> Unit)
+    completionHandler: (_: Error?) -> Unit
   ) {
     val epochTimestamp = _epochFromDate(olderThan)
     persistentLog.filterEntries(
       { entryString -> _entryStringLaterThanTimestamp(entryString, epochTimestamp) },
-      {
-        completionHandler(it)
-      }
+      completionHandler
     )
   }
 
   /**
-   Get expo-updates logs newer than the given date
-   Returns a list of strings in the JSON format of UpdatesLogEntry
+   * Get expo-updates logs newer than the given date
+   * Returns a list of strings in the JSON format of UpdatesLogEntry
    */
   fun getLogEntries(newerThan: Date): List<String> {
     val epochTimestamp = _epochFromDate(newerThan)
@@ -46,9 +44,7 @@ class UpdatesLogReader(
     val entry = UpdatesLogEntry.create(entryString)
     return when (entry) {
       null -> false
-      else -> {
-        entry.timestamp >= timestamp
-      }
+      else -> entry.timestamp >= timestamp
     }
   }
 

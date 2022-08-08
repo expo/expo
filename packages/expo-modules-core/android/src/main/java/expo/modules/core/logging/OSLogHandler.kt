@@ -3,7 +3,7 @@ package expo.modules.core.logging
 import android.util.Log
 
 /**
-Simple log handler that forwards all logs to Android native Log class.
+ * Simple log handler that forwards all logs to Android native Log class.
  */
 internal class OSLogHandler(
   override val category: String,

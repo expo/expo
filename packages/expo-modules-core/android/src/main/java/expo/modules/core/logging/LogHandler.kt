@@ -1,7 +1,7 @@
 package expo.modules.core.logging
 
 /**
-The interface that needs to be implemented by log handlers.
+ * The interface that needs to be implemented by log handlers.
  */
 interface LogHandler {
   /**

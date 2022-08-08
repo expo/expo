@@ -19,12 +19,12 @@ public struct LoggerOptions: OptionSet {
    Including this option will result in logs being written using os.log() or print(),
    depending on the iOS version
    */
-  public static let OS    = LoggerOptions(rawValue: 1 << 0)
+  public static let OS = LoggerOptions(rawValue: 1 << 0)
   /**
    Including this option will result in logs being written to a flat file, as
    strings separated by carriage returns.
    */
-  public static let File  = LoggerOptions(rawValue: 1 << 1)
+  public static let File = LoggerOptions(rawValue: 1 << 1)
 
   /**
    The default will be the OS option only

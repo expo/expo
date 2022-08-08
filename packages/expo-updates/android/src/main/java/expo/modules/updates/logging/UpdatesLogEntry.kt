@@ -41,9 +41,9 @@ data class UpdatesLogEntry(
 
   companion object {
     fun create(json: String): UpdatesLogEntry? {
-      try {
+      return try {
         val jsonObject = JSONObject(json)
-        return UpdatesLogEntry(
+        UpdatesLogEntry(
           jsonObject.require("timestamp"),
           jsonObject.require("message"),
           jsonObject.require("code"),
@@ -55,7 +55,7 @@ data class UpdatesLogEntry(
           }
         )
       } catch (e: JSONException) {
-        return null
+        null
       }
     }
   }

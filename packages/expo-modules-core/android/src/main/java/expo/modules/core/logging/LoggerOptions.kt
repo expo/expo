@@ -3,8 +3,8 @@ package expo.modules.core.logging
 import java.util.*
 
 /**
-A class defining the logging options that are currently supported.
-Future options may include writing to a DB or other destinations
+ * A class defining the logging options that are currently supported.
+ * Future options may include writing to a DB or other destinations
  */
 class LoggerOptions(
   private val bitSet: BitSet

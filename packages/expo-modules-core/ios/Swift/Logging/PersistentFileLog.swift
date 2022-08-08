@@ -142,8 +142,9 @@ public class PersistentFileLog {
 
   private func _stringToList(_ contents: String?) -> [String] {
     // If null contents, or 0 length contents, return empty list
-    return (contents != nil && contents?.lengthOfBytes(using: .utf8) ?? 0 > 0) ?
-      contents?.components(separatedBy: "\n") ?? [] :
-      []
+    guard let contents = contents, !contents.isEmpty else {
+      return []
+    }
+    return contents.components(separatedBy: "\n")
   }
 }

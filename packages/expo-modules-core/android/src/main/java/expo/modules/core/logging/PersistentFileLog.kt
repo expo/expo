@@ -31,7 +31,7 @@ class PersistentFileLog(
 ) {
 
   /**
-   Read entries from log file
+   * Read entries from log file
    */
   fun readEntries(): List<String> {
     if (0L == _getFileSize()) {
@@ -41,8 +41,8 @@ class PersistentFileLog(
   }
 
   /**
-   Append entry to the log file
-   Since logging may not require a result handler, the handler parameter is optional
+   * Append entry to the log file
+   * Since logging may not require a result handler, the handler parameter is optional
    */
   fun appendEntry(entry: String, completionHandler: ((_: Error?) -> Unit) = { error -> }) {
     AsyncTask.SERIAL_EXECUTOR.execute {
@@ -63,7 +63,7 @@ class PersistentFileLog(
   }
 
   /**
-   Filter existing entries and remove ones where filter(entry) == false
+   * Filter existing entries and remove ones where filter(entry) == false
    */
   fun filterEntries(filter: (_: String) -> Boolean, completionHandler: (_: Error?) -> Unit) {
     AsyncTask.SERIAL_EXECUTOR.execute {
@@ -79,6 +79,9 @@ class PersistentFileLog(
     }
   }
 
+  /**
+   * Clear all entries from the log file
+   */
   fun clearEntries(completionHandler: (_: Error?) -> Unit) {
     AsyncTask.SERIAL_EXECUTOR.execute {
       try {
@@ -142,13 +145,7 @@ class PersistentFileLog(
   private fun _stringToList(text: String): List<String> {
     return when (text.length) {
       0 -> listOf<String>()
-      else -> {
-        text.split("\n")
-      }
+      else -> text.split("\n")
     }
-  }
-
-  companion object {
-    val EXPO_UPDATES_FILE_NAME = "dev.expo.updates.logging.txt"
   }
 }
