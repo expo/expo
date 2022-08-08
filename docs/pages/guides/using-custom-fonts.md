@@ -17,15 +17,13 @@ The first thing you need is a font file. For the purpose of a working example, w
 
 ### Supported font formats
 
-The two officially supported font formats for the Expo platform are OTF and TTF. You should use one of those formats whenever you can. If your font is in another format, try to convert it to one of those formats.
-
-These are the only font formats that work consistently in Expo across web, Android, and iOS.
+The two officially supported font formats that work consistently in Expo across, web, Android and iOS are OTF and TTF. If your font is in another format, you will require to set up an [advanced configuration](#beyond-otf-and-ttf) for your project.
 
 If you have both OTF and TTF versions of a font, prefer OTF. OTF is a newer format and **.otf** files are often smaller than **.ttf** files. Sometimes OTF files render slightly better in certain contexts. In general, both formats are very similar and perfectly acceptable.
 
 ### Beyond OTF and TTF
 
-If you need to use another format, you may need to [customize the Metro bundler configuration](/guides/customizing-metro) to get anything other than TTF and OTF to work. In general, just don't do that unless you are really sure you want to. Trying to render a font format that a platform doesn't support may, in some cases, cause your app to crash.
+If your font is in another format, you may need to [customize the Metro bundler configuration](/guides/customizing-metro) to get anything other than TTF and OTF to work. In general, just don't do that unless you are really sure you want to. In some cases, trying to render a font format that a platform doesn't support may cause your app to crash.
 
 For reference, the following table provides what formats work on which platforms:
 
@@ -96,7 +94,7 @@ If you don't want to use a custom font, your best bet is to use the platform def
 
 If you are curious, [Nader Dabit](https://twitter.com/dabit3) maintains a [list of fonts always available on iOS and Android](https://github.com/react-native-training/react-native-fonts).
 
-On web, there are a number of generic font families that you can specify. Different browsers, and operating systems are configured to use different fonts for each of these font family specifications. For example, Safari on an iPhone uses San Francisco as its default for `sans-serif` while Microsoft Edge on Windows uses Arial. Similarly, Chrome on Android uses Roboto, though OnePlus phones often use Slate, and so on.
+On web, there are several generic font families that you can specify. Different browsers and operating systems are configured to use different fonts for each of these font family specifications. For example, Safari on an iPhone uses San Francisco as its default for `sans-serif` while Microsoft Edge on Windows uses Arial. Similarly, Chrome on Android uses Roboto, though OnePlus phones often use Slate, and so on.
 
 - `sans-serif`
 - `serif`
@@ -104,7 +102,7 @@ On web, there are a number of generic font families that you can specify. Differ
 - `fantasy`
 - `cursive`
 
-In general, your safest bets are just to use the system default which will usually be an easy-to-read sans-serif font that the user of any system should be familiar with; or to use your own custom font so you have precise control over what the user will see.
+In general, your safest bets are just to use the system default which usually is an easy-to-read sans-serif font that the user of any system should be familiar with. However, don't be surprised when the system default font is changed to use another font that is not easy to read but at the same time, is supported on the platform or the device. In this case, use your own custom font so you have precise control over what the user will see.
 
 ## Using a Google Font
 

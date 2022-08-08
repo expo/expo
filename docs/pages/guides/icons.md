@@ -4,7 +4,7 @@ title: Icons
 
 import SnackEmbed from '~/components/plugins/SnackEmbed';
 
-As trendy as it is these days, not every app has to use emojis for all icons -- maybe you want to pull in a popular set through an icon font like FontAwesome, Glyphicons or Ionicons, or you just use some PNGs that you carefully picked out on [The Noun Project](https://thenounproject.com/). Let's look at how to do both of these approaches.
+As trendy as it is these days, not every app has to use emoji for all icons -- maybe you want to pull in a popular set through an icon font like FontAwesome, Glyphicons or Ionicons, or you just use some PNGs that you carefully picked out on [The Noun Project](https://thenounproject.com/). Let's look at how to do both of these approaches.
 
 ## @expo/vector-icons
 
@@ -51,7 +51,7 @@ See the example below that uses the `useFonts` hook to load the font:
 
 ### createIconSetFromFontello
 
-The `@expo/vector-icons` library provides `createIconSetFromIcoMoon` method to create a custom font based on an [Fontello](http://fontello.com/) config file. You have to save the **config.json** and **.ttf** somewhere convenient in your project, preferably in the `assets/*` folder, and then load the font using either `useFonts` hook or `Font.loadAsync` method from `expo-font`.
+The `@expo/vector-icons` library provides `createIconSetFromFontello` method to create a custom font based on a [Fontello](http://fontello.com/) config file. You have to save the **config.json** and **.ttf** somewhere convenient in your project, preferably in the `assets/*` folder, and then load the font using either `useFonts` hook or `Font.loadAsync` method from `expo-font`.
 
 It follows the similar configuration as `createIconSetFromIcoMoon` as shown in the example:
 
@@ -72,7 +72,7 @@ You can use the `Image` component from React Native to display an icon. The `sou
 
 <SnackEmbed snackId="@amanhimself/image-icons-expo-example" preview platform="web" />
 
-You can also provide different versions of your icon at various pixel densities. The `Image` component takes care of using the image with appropriate pixel density automatically. For example, if the image has variants like `icon@2x.png` and `icon@3x.png`, the `@2x` suffix is served for a device's screen density such as iPhone 7 and the `@3x` suffix is served for a device's screen density such as iPhone 7 Plus. [You can learn more about serving different densities in React Native documentation](https://reactnative.dev/docs/images#static-image-resources).
+You can also provide different versions of your icon at various pixel densities. The `Image` component takes care of using the image with appropriate pixel density automatically. For example, if the image has variants like `icon@2x.png` and `icon@3x.png`, the `@2x` suffix is served for a device's screen density for older devices such as iPhone 8 and the `@3x` suffix is served for a device's screen density on newer devices such as iPhone 13. [You can learn more about serving different densities in React Native documentation](https://reactnative.dev/docs/images#static-image-resources).
 
 ## Button Component
 
