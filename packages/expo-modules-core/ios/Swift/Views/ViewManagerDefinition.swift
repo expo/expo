@@ -3,7 +3,7 @@ import UIKit
 /**
  The definition of the view manager. It's part of the module definition to scope only view-related definitions.
  */
-public final class ViewManagerDefinition: ObjectDefinition {
+public class ViewManagerDefinition: ObjectDefinition {
   /**
    The view factory that lets us create views.
    */
