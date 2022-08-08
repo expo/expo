@@ -45,3 +45,4 @@ async function isYarnOfflineAsync() {
     return !(await isUrlAvailableAsync(hostname));
 }
 exports.default = isYarnOfflineAsync;
+//# sourceMappingURL=isYarnOfflineAsync.js.map

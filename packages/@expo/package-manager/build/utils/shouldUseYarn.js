@@ -18,3 +18,4 @@ function shouldUseYarn() {
     }
 }
 exports.default = shouldUseYarn;
+//# sourceMappingURL=shouldUseYarn.js.map

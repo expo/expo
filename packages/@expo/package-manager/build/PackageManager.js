@@ -31,3 +31,4 @@ async function spawnSudoAsync(command, spawnOptions) {
     }
 }
 exports.spawnSudoAsync = spawnSudoAsync;
+//# sourceMappingURL=PackageManager.js.map

@@ -294,3 +294,4 @@ function getModulesPath(projectRoot) {
     return path_1.default.resolve(projectRoot, 'node_modules');
 }
 exports.getModulesPath = getModulesPath;
+//# sourceMappingURL=NodePackageManagers.js.map

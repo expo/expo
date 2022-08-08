@@ -28,3 +28,4 @@ Object.defineProperty(exports, "shouldUseYarn", { enumerable: true, get: functio
 var isYarnOfflineAsync_1 = require("./utils/isYarnOfflineAsync");
 Object.defineProperty(exports, "isYarnOfflineAsync", { enumerable: true, get: function () { return __importDefault(isYarnOfflineAsync_1).default; } });
 __exportStar(require("./utils/nodeWorkspaces"), exports);
+//# sourceMappingURL=index.js.map

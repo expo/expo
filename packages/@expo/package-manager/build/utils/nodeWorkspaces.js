@@ -113,3 +113,4 @@ function isUsingNpm(projectRoot) {
     return !!resolvePackageManager(projectRoot, 'npm');
 }
 exports.isUsingNpm = isUsingNpm;
+//# sourceMappingURL=nodeWorkspaces.js.map

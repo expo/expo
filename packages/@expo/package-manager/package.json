@@ -6,7 +6,7 @@
   "types": "build/index.d.ts",
   "scripts": {
     "watch": "tsc --watch --preserveWatchOutput",
-    "build": "tsc",
+    "build": "tsc --sourceMap",
     "prepare": "yarn run clean && yarn build",
     "clean": "rimraf build ./tsconfig.tsbuildinfo",
     "lint": "eslint .",
