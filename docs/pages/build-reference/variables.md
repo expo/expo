@@ -181,7 +181,7 @@ The following are two possible alternative approaches, each with different trade
     if (Updates.channel === 'production') {
       Config.apiUrl = 'https://api.production.com';
       Config.enableHiddenFeatures = false;
-    } else {
+    } else if (Updates.channel === 'staging') {
       Config.apiUrl = 'https://api.staging.com';
       Config.enableHiddenFeatures = true;
     }
