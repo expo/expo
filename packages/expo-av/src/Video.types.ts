@@ -120,7 +120,7 @@ export type VideoProps = {
    */
   posterStyle?: ImageProps['style'];
   /**
-   * An optional property to pass custom styles to the <Video /> component.
+   * An optional property to pass custom styles to the internal video component.
    */
   videoStyle?: StyleProp<ViewStyle>;
 
