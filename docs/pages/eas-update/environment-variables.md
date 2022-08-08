@@ -10,7 +10,7 @@ To expose environment variables in our project, we'll have to set up our app con
 
 First, we'll need to rename **app.json** to **app.config.js**, which will allow us to export our app's config, including JavaScript variables.
 
-Next, we'll add an `API_URL` environment variable (for example) to our project.
+Next, we'll add an `API_URL` environment variable (as an example) to our project.
 
 To add it to our app config, we'll add it under the `expo.extra` property.
 
@@ -78,7 +78,7 @@ When EAS CLI creates the update, it will set the `API_URL` to `https://prod.exam
 
 To access it, we can use the `expo-constants` library. It's located under the `Constants.expoConfig.API_URL` property.
 
-> Note: we could also use the `expo-updates` library to access `API_URL`. It is under `Updates.manifest?.extra?.expoClient?.extra?.eas?.API_URL`. However, `Updates.manifest` is only present when an update is currently running. If the project is in development, `Updates.manifest` will be `undefined`. In addition, if a build is running without an update (e.g. it was just downloaded or there are no updates yet), `Updates.manifest` will also be `undefined`.
+> Note: We could also use the `expo-updates` library to access `API_URL`. It is under `Updates.manifest?.extra?.expoClient?.extra?.eas?.API_URL`. However, `Updates.manifest` is only present when an update is currently running. If the project is in development, `Updates.manifest` will be `undefined`. In addition, if a build is running without an update (for example, it was just downloaded or there are no updates yet), `Updates.manifest` will also be `undefined`.
 
 ## Creating an Env.ts file to get environment variables
 
