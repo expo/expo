@@ -51,7 +51,7 @@ class DevMenuHost(application: Application) : ReactNativeHost(application) {
     return packages
   }
 
-  override fun getUseDeveloperSupport() = false // change it and run `yarn start` in `expo-dev-menu` to launch dev menu from local packager
+  override fun getUseDeveloperSupport() = true // change it and run `yarn start` in `expo-dev-menu` to launch dev menu from local packager
 
   override fun getBundleAssetName() = "EXDevMenuApp.android.js"
 

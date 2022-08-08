@@ -568,7 +568,6 @@ export class BottomSheet extends React.Component<Props, State> {
           s.__initialized && s.setValue(sortedPropsSnapPoints[0].val - sortedPropsSnapPoints[i].val)
       );
       snapPoints = state.snapPoints;
-      console.log({ sortedPropsSnapPoints });
     } else {
       snapPoints = sortedPropsSnapPoints.map(
         (p) => new Value(sortedPropsSnapPoints[0].val - p.val)
