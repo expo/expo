@@ -4,7 +4,7 @@ title: Runtime Versions
 
 > Custom runtime versions are not supported on the classic build system (`expo build`); these apps will always use the SDK version as the basis for determining runtime compatibility.
 
-Every update targets one [compatible](../workflow/publishing/#what-version-of-the-app-will-my) runtime. Each time you build a binary for your app it includes the native code present at the time of the build and only that code, and this unique combination and configuration of the build is what is represented by the runtime version.
+Every update targets one compatible runtime. Each time you build a binary for your app it includes the native code present at the time of the build and only that code, and this unique combination and configuration of the build is what is represented by the runtime version.
 
 By default, the runtime version is determined by the Expo SDK version, but this will not adequately describe the different runtime versions of your app if you build more than once per SDK release. In this case, you will need to specify a `runtimeVersion` to ensure your updates are delivered only to compatible builds. This `runtimeVersion` should be updated whenever you update your project's native modules and change the JS–native interface.
 
@@ -12,7 +12,7 @@ The runtime version string must conform to [this format](/versions/latest/config
 
 ## Setting the runtime version for an update
 
-[Updates](/workflow/publishing.md#how-to-publish) published with the runtime version set in **app.json** will be delivered to builds running the same runtime version, and only to those builds.
+Updates published with the runtime version set in **app.json** will be delivered to builds running the same runtime version, and only to those builds.
 
 ```json
 {
@@ -59,7 +59,7 @@ For an Android build, add a `<meta-data>` element to the **AndroidManifest.xml**
 
 Yes, if you want to be able to control the runtime version on a platform level, you can:
 
-1. Have platform specific release channels: `ios-production`, `android-production`.
+1. Have platform specific channels: `ios-production`, `android-production`.
 2. Have platform specific runtime versions: `ios-1.0.0`, `android-1.0.0`.
 
 However, you cannot set a platform specific configuration field such as `ios.runtimeVersion` or `android.runtimeVersion`

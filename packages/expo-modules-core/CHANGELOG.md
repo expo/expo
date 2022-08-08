@@ -10,8 +10,11 @@
 - Add better JSI error handling on Android. ([#18259](https://github.com/expo/expo/pull/18259) by [@lukmccall](https://github.com/lukmccall))
 - Experimental support for typed arrays on Android. ([#18379](https://github.com/expo/expo/pull/18379) by [@lukmccall](https://github.com/lukmccall))
 - Using JSI instead of the bridge to call native methods also on legacy modules on iOS. ([#18438](https://github.com/expo/expo/pull/18438) by [@tsapeta](https://github.com/tsapeta))
+- Experimental support for Fabric on iOS (currently supported only by `expo-linear-gradient`). ([#18500](https://github.com/expo/expo/pull/18500) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🐛 Bug fixes
+
+- Fix issue with Android builds when gradle clean and build were called concurrently.  ([#18518](https://github.com/expo/expo/pull/18518) by [EdwardDrapkin](https://github.com/EdwardDrapkin))
 
 ### 💡 Others
 

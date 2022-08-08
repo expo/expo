@@ -49,8 +49,8 @@ In your project directory, run:
 
 `sentry-expo` also requires some additional dependencies, otherwise it won't work properly. To install them, run:
 
-<Terminal 
-  cmd={['$ expo install expo-application expo-constants expo-device expo-updates @sentry/react-native']}
+<Terminal
+cmd={['$ expo install expo-application expo-constants expo-device expo-updates @sentry/react-native']}
 />
 
 ### Step 2: Code
@@ -162,9 +162,9 @@ to your root project file (usually **App.js**), so make sure you remove it (but 
 
 ## Sourcemaps
 
-With the `postPublish` hook in place, now all you need to do is run `expo publish` and the sourcemaps will be uploaded automatically. We automatically assign a unique release version for Sentry each time you hit publish, based on the version you specify in **app.json** and a release id on our backend -- this means that if you forget to update the version but hit publish, you will still get a unique Sentry release. If you're not familiar with publishing on Expo, you can [read more about it here](../workflow/publishing.md).
+With the `postPublish` hook in place, now all you need to do is run `expo publish` and the sourcemaps will be uploaded automatically. We automatically assign a unique release version for Sentry each time you hit publish, based on the version you specify in **app.json** and a release id on our backend -- this means that if you forget to update the version but hit publish, you will still get a unique Sentry release.
 
-> This hook can also be used as a `postExport` hook if you're [self-hosting your updates](../distribution/hosting-your-app.md).
+> This hook can also be used as a `postExport` hook if you're [self-hosting your updates](../distribution/custom-updates-server.md).
 
 ### "No publish builds"
 

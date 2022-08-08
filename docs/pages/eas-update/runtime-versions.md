@@ -4,8 +4,6 @@ title: Runtime versions and updates
 
 import ImageSpotlight from '~/components/plugins/ImageSpotlight'
 
-> EAS Update is currently available only to customers with an EAS subscription plan. [Sign up](https://expo.dev/accounts/[account]/settings/subscriptions).
-
 Runtime versions are a property that guarantees compatibility between a build's native code and an update. When a project is made into a build, the build will contain some native code that cannot be changed with an update. Therefore, an update must be compatible with a build's native code to run on the build.
 
 To illustrate how builds and updates interact, take a look at the following diagram:
