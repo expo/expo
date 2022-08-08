@@ -6,7 +6,6 @@ Object.defineProperty(exports, "__esModule", {
 exports.buildHermesBundleAsync = buildHermesBundleAsync;
 exports.createHermesSourcemapAsync = createHermesSourcemapAsync;
 exports.getHermesBytecodeBundleVersionAsync = getHermesBytecodeBundleVersionAsync;
-exports.isBundledHermes = isBundledHermes;
 exports.isEnableHermesManaged = isEnableHermesManaged;
 exports.isHermesBytecodeBundleAsync = isHermesBytecodeBundleAsync;
 exports.maybeInconsistentEngineAndroidAsync = maybeInconsistentEngineAndroidAsync;
@@ -117,11 +116,7 @@ function isEnableHermesManaged(expoConfig, platform) {
   }
 }
 
-function isBundledHermes(expoConfig) {
-  return gteSdkVersion(expoConfig, '46.0.0');
-}
-
-async function buildHermesBundleAsync(projectRoot, code, map, isBundledHermes, optimize = false) {
+async function buildHermesBundleAsync(projectRoot, code, map, optimize = false) {
   const tempDir = _path().default.join(_os().default.tmpdir(), `expo-bundler-${_process().default.pid}`);
 
   await _fsExtra().default.ensureDir(tempDir);
@@ -136,7 +131,7 @@ async function buildHermesBundleAsync(projectRoot, code, map, isBundledHermes, o
 
     const tempHbcFile = _path().default.join(tempDir, 'index.hbc');
 
-    const hermesCommand = (0, _importMetroFromProject().importHermesCommandFromProject)(projectRoot, isBundledHermes);
+    const hermesCommand = (0, _importMetroFromProject().importHermesCommandFromProject)(projectRoot);
     const args = ['-emit-binary', '-out', tempHbcFile, tempBundleFile, '-output-source-map'];
 
     if (optimize) {

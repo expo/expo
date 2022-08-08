@@ -32,10 +32,6 @@ export function isEnableHermesManaged(expoConfig: ExpoConfig, platform: Platform
   }
 }
 
-export function isBundledHermes(expoConfig: ExpoConfig): boolean {
-  return gteSdkVersion(expoConfig, '46.0.0');
-}
-
 interface HermesBundleOutput {
   hbc: Uint8Array;
   sourcemap: string;
@@ -44,7 +40,6 @@ export async function buildHermesBundleAsync(
   projectRoot: string,
   code: string,
   map: string,
-  isBundledHermes: boolean,
   optimize: boolean = false
 ): Promise<HermesBundleOutput> {
   const tempDir = path.join(os.tmpdir(), `expo-bundler-${process.pid}`);
@@ -56,7 +51,7 @@ export async function buildHermesBundleAsync(
     await fs.writeFile(tempSourcemapFile, map);
 
     const tempHbcFile = path.join(tempDir, 'index.hbc');
-    const hermesCommand = importHermesCommandFromProject(projectRoot, isBundledHermes);
+    const hermesCommand = importHermesCommandFromProject(projectRoot);
     const args = ['-emit-binary', '-out', tempHbcFile, tempBundleFile, '-output-source-map'];
     if (optimize) {
       args.push('-O');

@@ -8,7 +8,6 @@ import type Metro from 'metro';
 
 import {
   buildHermesBundleAsync,
-  isBundledHermes,
   isEnableHermesManaged,
   maybeThrowFromInconsistentEngineAsync,
 } from './HermesBundler';
@@ -231,7 +230,6 @@ export async function bundleAsync(
         projectRoot,
         bundleOutput.code,
         bundleOutput.map,
-        isBundledHermes(expoConfig),
         bundle.minify
       );
       bundleOutput.hermesBytecodeBundle = hermesBundleOutput.hbc;

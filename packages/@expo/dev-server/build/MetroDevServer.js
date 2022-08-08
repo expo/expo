@@ -281,7 +281,7 @@ async function bundleAsync(projectRoot, expoConfig, options, bundles) {
       options.logger.info({
         tag: 'expo'
       }, `💿 ${platformTag} Building Hermes bytecode for the bundle`);
-      const hermesBundleOutput = await (0, _HermesBundler().buildHermesBundleAsync)(projectRoot, bundleOutput.code, bundleOutput.map, (0, _HermesBundler().isBundledHermes)(expoConfig), bundle.minify);
+      const hermesBundleOutput = await (0, _HermesBundler().buildHermesBundleAsync)(projectRoot, bundleOutput.code, bundleOutput.map, bundle.minify);
       bundleOutput.hermesBytecodeBundle = hermesBundleOutput.hbc;
       bundleOutput.hermesSourcemap = hermesBundleOutput.sourcemap;
     }

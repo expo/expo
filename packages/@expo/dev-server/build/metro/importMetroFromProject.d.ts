@@ -10,4 +10,4 @@ export declare function importInspectorProxyServerFromProject(projectRoot: strin
     InspectorProxy: any;
 };
 export declare function importExpoMetroConfigFromProject(projectRoot: string): typeof import('@expo/metro-config');
-export declare function importHermesCommandFromProject(projectRoot: string, isBundledHermes: boolean): string;
+export declare function importHermesCommandFromProject(projectRoot: string): string;

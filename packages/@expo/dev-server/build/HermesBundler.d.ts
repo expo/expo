@@ -1,11 +1,10 @@
 import type { ExpoConfig, Platform } from '@expo/config';
 export declare function isEnableHermesManaged(expoConfig: ExpoConfig, platform: Platform): boolean;
-export declare function isBundledHermes(expoConfig: ExpoConfig): boolean;
 interface HermesBundleOutput {
     hbc: Uint8Array;
     sourcemap: string;
 }
-export declare function buildHermesBundleAsync(projectRoot: string, code: string, map: string, isBundledHermes: boolean, optimize?: boolean): Promise<HermesBundleOutput>;
+export declare function buildHermesBundleAsync(projectRoot: string, code: string, map: string, optimize?: boolean): Promise<HermesBundleOutput>;
 export declare function createHermesSourcemapAsync(projectRoot: string, sourcemap: string, hermesMapFile: string): Promise<string>;
 export declare function parseGradleProperties(content: string): Record<string, string>;
 export declare function maybeThrowFromInconsistentEngineAsync(projectRoot: string, configFilePath: string, platform: string, isHermesManaged: boolean): Promise<void>;
