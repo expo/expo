@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed `the function must be called on main queue` error when the app is reload from the error screen on iOS.
+
 ### 💡 Others
 
 - Refactored inline Android emulator checks to use enhanced checking in `EmulatorUtilities.isRunningOnEmulator()`. ([#16177](https://github.com/expo/expo/pull/16177)) by [@kbrandwijk](https://github.com/kbrandwijk), [@keith-kurak](https://github.com/keith-kurak))
