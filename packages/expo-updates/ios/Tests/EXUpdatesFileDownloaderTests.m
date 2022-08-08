@@ -148,4 +148,24 @@
   XCTAssertEqualObjects(@"custom", [actual valueForHTTPHeaderField:@"expo-updates-environment"]);
 }
 
+- (void)testAssetExtraHeaders_ObjectTypes
+{
+  EXUpdatesConfig *config = [EXUpdatesConfig configWithDictionary:@{
+    EXUpdatesConfigUpdateUrlKey: @"https://u.expo.dev/00000000-0000-0000-0000-000000000000",
+    EXUpdatesConfigRuntimeVersionKey: @"1.0"
+  }];
+  EXUpdatesFileDownloader *downloader = [[EXUpdatesFileDownloader alloc] initWithUpdatesConfig:config];
+
+  NSDictionary *extraHeaders = @{
+    @"expo-string": @"test",
+    @"expo-number": @(47.5),
+    @"expo-boolean": @YES
+  };
+
+  NSURLRequest *actual = [downloader createGenericRequestWithURL:[NSURL URLWithString:@"https://u.expo.dev/00000000-0000-0000-0000-000000000000"] extraHeaders:extraHeaders];
+  XCTAssertEqualObjects(@"test", [actual valueForHTTPHeaderField:@"expo-string"]);
+  XCTAssertEqualObjects(@"47.5", [actual valueForHTTPHeaderField:@"expo-number"]);
+  XCTAssertEqualObjects(@"true", [actual valueForHTTPHeaderField:@"expo-boolean"]);
+}
+
 @end
