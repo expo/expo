@@ -85,7 +85,7 @@ class ResolveTakenPictureAsyncTask(
         val exifInterface = ExifInterface(inputStream)
 
         // If there are additional exif data, insert it here
-	options[ADDITIONAL_EXIF_KEY] as? Map<String, Any>?.let {
+	(options[ADDITIONAL_EXIF_KEY] as? Map<String, Any>)?.let {
 	  setExifData(exifInterface, it)
 	}
 
