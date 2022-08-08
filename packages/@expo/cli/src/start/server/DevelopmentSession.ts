@@ -6,7 +6,6 @@ import {
   updateDevelopmentSessionAsync,
 } from '../../api/updateDevelopmentSession';
 import { getUserAsync } from '../../api/user/user';
-import { Log } from '../../log';
 import * as ProjectDevices from '../project/devices';
 
 const debug = require('debug')('expo:start:server:developmentSession') as typeof console.log;
