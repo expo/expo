@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { ImageProps, ViewProps } from 'react-native';
+import { ImageProps, ViewProps, StyleProp, ViewStyle } from 'react-native';
 
 import {
   AVPlaybackNativeSource,
@@ -119,6 +119,10 @@ export type VideoProps = {
    * An optional property to pass custom styles to the poster image.
    */
   posterStyle?: ImageProps['style'];
+  /**
+   * An optional property to pass custom styles to the internal video component.
+   */
+  videoStyle?: StyleProp<ViewStyle>;
 
   // Callbacks
   /**
@@ -263,6 +267,7 @@ export type VideoNativeProps = {
   onReadyForDisplay?: (event: { nativeEvent: VideoReadyForDisplayEvent }) => void;
   onFullscreenUpdate?: (event: { nativeEvent: VideoFullscreenUpdateEvent }) => void;
   useNativeControls?: boolean;
+  videoStyle?: StyleProp<ViewStyle>;
 } & ViewProps;
 
 // @docsMissing

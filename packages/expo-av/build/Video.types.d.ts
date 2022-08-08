@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { ImageProps, ViewProps } from 'react-native';
+import { ImageProps, ViewProps, StyleProp, ViewStyle } from 'react-native';
 import { AVPlaybackNativeSource, AVPlaybackSource, AVPlaybackStatus, AVPlaybackStatusToSet } from './AV';
 export declare type VideoNaturalSize = {
     /**
@@ -99,6 +99,10 @@ export declare type VideoProps = {
      * An optional property to pass custom styles to the poster image.
      */
     posterStyle?: ImageProps['style'];
+    /**
+     * An optional property to pass custom styles to the internal video component.
+     */
+    videoStyle?: StyleProp<ViewStyle>;
     /**
      * A function to be called regularly with the `AVPlaybackStatus` of the video. You will likely be using this a lot.
      * See the [AV documentation](av.md) for further information on `onPlaybackStatusUpdate`, and the interval at which it is called.
@@ -245,6 +249,7 @@ export declare type VideoNativeProps = {
         nativeEvent: VideoFullscreenUpdateEvent;
     }) => void;
     useNativeControls?: boolean;
+    videoStyle?: StyleProp<ViewStyle>;
 } & ViewProps;
 export declare type VideoState = {
     showPoster: boolean;
