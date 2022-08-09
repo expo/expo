@@ -1,6 +1,7 @@
 import { MessageSocket } from '@expo/dev-server';
 import assert from 'assert';
 import openBrowserAsync from 'better-opn';
+import chalk from 'chalk';
 import resolveFrom from 'resolve-from';
 
 import { APISettings } from '../../api/settings';
@@ -242,7 +243,18 @@ export abstract class BundlerDevServer {
       // This URL will be used on external devices so the computer IP won't be relevant.
       this.isTargetingNative()
         ? this.getNativeRuntimeUrl()
-        : this.getDevServerUrl({ hostType: 'localhost' })
+        : this.getDevServerUrl({ hostType: 'localhost' }),
+      (error) => {
+        Log.error(
+          chalk.red(
+            '\nAn unexpected error occurred while updating the Dev Client API. This project will not appear in the "Development servers" section of the Expo Go app until this process has been restarted.'
+          )
+        );
+        Log.exception(error);
+        this.devSession?.closeAsync().catch((error) => {
+          debug('[dev-session] error closing: ' + error.message);
+        });
+      }
     );
 
     await this.devSession.startAsync({
