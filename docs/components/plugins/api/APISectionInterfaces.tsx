@@ -25,6 +25,7 @@ import {
   renderDefaultValue,
   STYLES_APIBOX,
   STYLES_NESTED_SECTION_HEADER,
+  getTagNamesList,
 } from '~/components/plugins/api/APISectionUtils';
 import { Cell, Row, Table } from '~/ui/components/Table';
 
@@ -48,6 +49,7 @@ const renderInterfaceComment = (
         {signatureComment && (
           <>
             <br />
+            <APISectionDeprecationNote comment={comment} />
             <CommentTextBlock
               comment={signatureComment}
               components={mdInlineComponents}
@@ -60,12 +62,15 @@ const renderInterfaceComment = (
   } else {
     const initValue = defaultValue || getTagData('default', comment)?.text;
     return (
-      <CommentTextBlock
-        comment={comment}
-        components={mdInlineComponents}
-        afterContent={renderDefaultValue(initValue)}
-        emptyCommentFallback="-"
-      />
+      <>
+        <APISectionDeprecationNote comment={comment} />
+        <CommentTextBlock
+          comment={comment}
+          components={mdInlineComponents}
+          afterContent={renderDefaultValue(initValue)}
+          emptyCommentFallback="-"
+        />
+      </>
     );
   }
 };
@@ -110,7 +115,7 @@ const renderInterface = ({
     <div key={`interface-definition-${name}`} css={STYLES_APIBOX}>
       <APISectionDeprecationNote comment={comment} />
       <APISectionPlatformTags comment={comment} prefix="Only for:" firstElement />
-      <H3Code>
+      <H3Code tags={getTagNamesList(comment)}>
         <InlineCode>{name}</InlineCode>
       </H3Code>
       {extendedTypes?.length ? (

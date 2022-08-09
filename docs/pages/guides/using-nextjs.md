@@ -9,7 +9,7 @@ import { Collapsible } from '~/ui/components/Collapsible';
 
 [Next.js][nextjs] is a React framework that provides simple page-based routing as well as server-side rendering. To use Next.js with Expo for web we recommend that you use a library called [`@expo/next-adapter`][next-adapter] to handle the configuration and integration of the tools.
 
-Using Expo with Next.js means you can share all of your existing components and APIs across your mobile and web. Next.js has its own Webpack config so **you'll need to start your web projects with the `next-cli` and not with `expo start:web`.**
+Using Expo with Next.js means you can share all of your existing components and APIs across your mobile and web. Next.js has its own Webpack config so **you'll need to start your web projects with the `next-cli` and not with `expo start`.**
 
 > Next.js can only be used with Expo for web, this doesn't provide Server-Side Rendering (SSR) for native apps.
 
@@ -149,7 +149,7 @@ This is Vercel's preferred method for deploying Next.js projects to production.
 A lot of libraries in the React ecosystem use the `setImmediate()` API (like `react-native-reanimated`), which Next.js doesn't polyfill by default. To fix this you can polyfill it yourself.
 
 - Install: `yarn add setimmediate`
-- Import in **pages/_app.js**, at the top of the file:
+- Import in **pages/\_app.js**, at the top of the file:
   ```js
   import 'setimmediate';
   ```

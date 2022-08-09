@@ -56,7 +56,7 @@ export default class App extends React.Component {
   async _cacheResourcesAsync() {
     const images = [require('./assets/snack-icon.png')];
 
-    /* @info Read more about <a href='../guides/preloading-and-caching-assets.html'>Preloading and Caching Assets</a> */
+    /* @info Read more about <a href='../archive/classic-updates/preloading-and-caching-assets.html'>Preloading and Caching Assets</a> */
     const cacheImages = images.map(image => {
       return Asset.fromModule(image).downloadAsync();
     }); /* @end */

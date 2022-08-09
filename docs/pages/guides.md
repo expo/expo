@@ -24,7 +24,6 @@ In this section we cover topics related to building, shipping, and updating your
 
 - [Distributing your App on the App Store and Play Store](distribution/introduction.md)
 - [App Signing](app-signing/app-credentials.md)
-- [Release Channels](distribution/release-channels.md)
 
 ### Development Builds
 
@@ -69,7 +68,6 @@ This section covers user interface topics such as:
 
 This section contains guides on various topics, like:
 
-- [Configuring Updates](guides/configuring-updates.md)
 - [Setting up Routing and Navigation](guides/routing-and-navigation.md)
 - [App Permissions](guides/permissions.md)
 

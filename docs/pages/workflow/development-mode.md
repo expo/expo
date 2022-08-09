@@ -6,7 +6,7 @@ sidebar_title: Development and Production
 import Video from '~/components/plugins/Video'
 import { Terminal } from '~/ui/components/Snippet';
 
-Your project will always run in one of two modes: development or production. By default, running your project locally with `expo start` runs it in development mode, whereas a published project (via `expo publish`), or any standalone apps, will run in production mode.
+Your project will always run in one of two modes: development or production. By default, running your project locally with `expo start` runs it in development mode, whereas a published project (via `eas update`), or any standalone apps, will run in production mode.
 
 Production mode [minifies your code](https://www.imperva.com/learn/performance/minification/) and better represents the performance your app will have on end users' devices. Development mode includes useful warnings and gives you access to tools that make development and debugging easier. Let's look at each of these modes more in detail and learn how you can toggle between them.
 

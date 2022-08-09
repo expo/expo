@@ -1,5 +1,5 @@
 import { EventSubscription } from 'fbemitter';
-import { LocalAssets, Manifest, UpdateCheckResult, UpdateEvent, UpdateFetchResult } from './Updates.types';
+import { LocalAssets, Manifest, UpdateCheckResult, UpdateEvent, UpdateFetchResult, UpdatesLogEntry } from './Updates.types';
 export * from './Updates.types';
 /**
  * The UUID that uniquely identifies the currently running update if `expo-updates` is enabled. The
@@ -96,6 +96,28 @@ export declare function reloadAsync(): Promise<void>;
  * timeout communicating with the server.
  */
 export declare function checkForUpdateAsync(): Promise<UpdateCheckResult>;
+/**
+ * Retrieves the most recent expo-updates log entries.
+ *
+ * @param maxAge Sets the max age of retrieved log entries in milliseconds. Default to 3600000 ms (1 hour).
+ *
+ * @return A promise that fulfills with an array of [`UpdatesLogEntry`](#updateslogentry) objects;
+ *
+ * The promise rejects if there is an unexpected error in retrieving the logs.
+ */
+export declare function readLogEntriesAsync(maxAge?: number): Promise<UpdatesLogEntry[]>;
+/**
+ * Clears existing expo-updates log entries.
+ *
+ * > For now, this operation does nothing on the client.  Once log persistence has been
+ * > implemented, this operation will actually remove existing logs.
+ *
+ * @return A promise that fulfills if the clear operation was successful.
+ *
+ * The promise rejects if there is an unexpected error in clearing the logs.
+ *
+ */
+export declare function clearLogEntriesAsync(): Promise<void>;
 /**
  * Downloads the most recently deployed update to your project from server to the device's local
  * storage. This method cannot be used in development mode, and the returned promise will be

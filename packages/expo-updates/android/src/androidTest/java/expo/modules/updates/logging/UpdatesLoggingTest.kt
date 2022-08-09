@@ -39,11 +39,15 @@ class UpdatesLoggingTest : TestCase() {
     val logger = UpdatesLogger()
     logger.warn("Test message", UpdatesErrorCode.JSRuntimeError)
     val now = Date()
-    val nowTimestamp = now.time / 1000
-    val expectedLogEntryString = "{\"timestamp\":$nowTimestamp,\"message\":\"Test message\",\"code\":\"JSRuntimeError\",\"level\":\"warn\"}"
+    val expectedLogEntry = UpdatesLogEntry(now.time, "Test message", UpdatesErrorCode.JSRuntimeError.code, UpdatesLogType.Warn.type, null, null, null)
     val sinceThen = Date(now.time - 5000)
     val logs = UpdatesLogReader().getLogEntries(sinceThen)
-    Assert.assertTrue(logs.any { it == expectedLogEntryString })
+    Assert.assertTrue(logs.size > 0)
+    val actualLogEntry = UpdatesLogEntry.create(logs[logs.size - 1])
+    Assert.assertEquals(expectedLogEntry.timestamp / 1000, actualLogEntry.timestamp / 1000)
+    Assert.assertEquals(expectedLogEntry.message, actualLogEntry.message)
+    Assert.assertEquals(expectedLogEntry.code, actualLogEntry.code)
+    Assert.assertEquals(expectedLogEntry.level, actualLogEntry.level)
   }
 
   @Test

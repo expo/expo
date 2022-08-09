@@ -36,8 +36,8 @@ Add a [splash screen](../guides/splash-screens.md), the very first thing your us
 You'll use the **app.json** file to specify the version of your app, but there are a few different fields each with specific functionality.
 
 - [`version`](../versions/latest/config/app/#version) will apply both to iOS and Android. For iOS, this corresponds to `CFBundleShortVersionString`, and for Android this corresponds to `versionName`. This is your user-facing version string for both platforms.
-- [`android.versionCode`](../versions/latest/config/app/#versioncode) functions as your internal Android version number. This will be used to distinguish different binaries of your app.
-- [`ios.buildNumber`](../versions/latest/config/app/#buildnumber) functions as your internal iOS version number, and corresponds to `CFBundleVersion`. This will be used to distinguish different binaries of your app.
+- [`android.versionCode`](../versions/latest/config/app/#versioncode) functions as your internal Android version number. This will be used to distinguish different binaries of your app. You can let EAS manage and increment this value for you by switching to the [remote version source](../build-reference/app-versions/#remote-version-source).
+- [`ios.buildNumber`](../versions/latest/config/app/#buildnumber) functions as your internal iOS version number, and corresponds to `CFBundleVersion`. This will be used to distinguish different binaries of your app. You can let EAS manage and increment this value for you by switching to the [remote version source](../build-reference/app-versions/#remote-version-source).
 
 To access these values at runtime, you can use the [Expo Application API](../versions/latest/sdk/application.md):
 
