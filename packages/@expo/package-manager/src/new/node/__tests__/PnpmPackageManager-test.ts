@@ -1,0 +1,298 @@
+import spawnAsync from '@expo/spawn-async';
+import { vol } from 'memfs';
+import path from 'path';
+
+import { PnpmPackageManager } from '../PnpmPackageManager';
+
+jest.mock('@expo/spawn-async');
+jest.mock('fs');
+
+const mockedSpawnAsync = spawnAsync as jest.MockedFunction<typeof spawnAsync>;
+
+describe('PnpmPackageManager', () => {
+  const projectRoot = '/project/with-pnpm';
+
+  it('name is set to pnpm', () => {
+    const pnpm = new PnpmPackageManager({ cwd: projectRoot });
+    expect(pnpm.name).toBe('pnpm');
+  });
+
+  describe('runAsync', () => {
+    it('adds a single package with custom parameters', async () => {
+      const pnpm = new PnpmPackageManager({ cwd: projectRoot });
+      await pnpm.runAsync(['add', '--save-peer', '@babel/core']);
+
+      expect(spawnAsync).toBeCalledWith(
+        'pnpm',
+        ['add', '--save-peer', '@babel/core'],
+        expect.objectContaining({ cwd: projectRoot })
+      );
+    });
+
+    it('adds multiple packages with custom parameters', async () => {
+      const pnpm = new PnpmPackageManager({ cwd: projectRoot });
+      await pnpm.runAsync(['add', '--save-peer', '@babel/core', '@babel/runtime']);
+
+      expect(spawnAsync).toBeCalledWith(
+        'pnpm',
+        ['add', '--save-peer', '@babel/core', '@babel/runtime'],
+        expect.objectContaining({ cwd: projectRoot })
+      );
+    });
+  });
+
+  describe('versionAsync', () => {
+    it('returns version from pnpm', async () => {
+      mockedSpawnAsync.mockResolvedValue({ stdout: '7.0.0\n' } as any);
+
+      const pnpm = new PnpmPackageManager({ cwd: projectRoot });
+
+      expect(await pnpm.versionAsync()).toBe('7.0.0');
+      expect(spawnAsync).toBeCalledWith('pnpm', ['--version'], expect.anything());
+    });
+  });
+
+  describe('getConfigAsync', () => {
+    it('returns a configuration key from pnpm', async () => {
+      mockedSpawnAsync.mockResolvedValue({ stdout: 'https://custom.registry.org/\n' } as any);
+
+      const pnpm = new PnpmPackageManager({ cwd: projectRoot });
+
+      expect(await pnpm.configAsync('registry')).toBe('https://custom.registry.org/');
+      expect(spawnAsync).toBeCalledWith('pnpm', ['config', 'get', 'registry'], expect.anything());
+    });
+  });
+
+  describe('installAsync', () => {
+    it('runs normal installation', async () => {
+      const pnpm = new PnpmPackageManager({ cwd: projectRoot });
+      await pnpm.installAsync();
+
+      expect(spawnAsync).toBeCalledWith(
+        'pnpm',
+        ['install'],
+        expect.objectContaining({ cwd: projectRoot })
+      );
+    });
+
+    it('runs installation with flags', async () => {
+      const pnpm = new PnpmPackageManager({ cwd: projectRoot });
+      await pnpm.installAsync(['--ignore-scripts']);
+
+      expect(spawnAsync).toBeCalledWith(
+        'pnpm',
+        ['install', '--ignore-scripts'],
+        expect.objectContaining({ cwd: projectRoot })
+      );
+    });
+  });
+
+  describe('uninstallAsync', () => {
+    afterEach(() => vol.reset());
+
+    it('removes node_modules folder relative to cwd', async () => {
+      vol.fromJSON({
+        [path.join(projectRoot, 'package.json')]: '{}',
+        [path.join(projectRoot, 'node_modules/expo/package.json')]: '{}',
+      });
+
+      const pnpm = new PnpmPackageManager({ cwd: projectRoot });
+      await pnpm.uninstallAsync();
+
+      expect(vol.existsSync(path.join(projectRoot, 'node_modules'))).toBe(false);
+    });
+
+    it('skips removing non-existing node_modules folder', async () => {
+      vol.fromJSON({
+        [path.join(projectRoot, 'package.json')]: '{}',
+      });
+
+      const pnpm = new PnpmPackageManager({ cwd: projectRoot });
+      await pnpm.uninstallAsync();
+
+      expect(vol.existsSync(path.join(projectRoot, 'node_modules'))).toBe(false);
+    });
+
+    it('fails when no cwd is provided', async () => {
+      const pnpm = new PnpmPackageManager({ cwd: undefined });
+      await expect(pnpm.uninstallAsync()).rejects.toThrow('cwd is required');
+    });
+  });
+
+  describe('addAsync', () => {
+    it('installs project without packages', async () => {
+      const pnpm = new PnpmPackageManager({ cwd: projectRoot });
+      await pnpm.addAsync();
+
+      expect(spawnAsync).toBeCalledWith(
+        'pnpm',
+        ['install'],
+        expect.objectContaining({ cwd: projectRoot })
+      );
+    });
+
+    it('adds a single package to dependencies', async () => {
+      const pnpm = new PnpmPackageManager({ cwd: projectRoot });
+      await pnpm.addAsync(['@react-navigation/native']);
+
+      expect(spawnAsync).toBeCalledWith(
+        'pnpm',
+        ['add', '@react-navigation/native'],
+        expect.objectContaining({ cwd: projectRoot })
+      );
+    });
+
+    it('adds multiple packages to dependencies', async () => {
+      const pnpm = new PnpmPackageManager({ cwd: projectRoot });
+      await pnpm.addAsync(['@react-navigation/native', '@react-navigation/drawer']);
+
+      expect(spawnAsync).toBeCalledWith(
+        'pnpm',
+        ['add', '@react-navigation/native', '@react-navigation/drawer'],
+        expect.objectContaining({ cwd: projectRoot })
+      );
+    });
+  });
+
+  describe('addDevAsync', () => {
+    it('installs project without packages', async () => {
+      const pnpm = new PnpmPackageManager({ cwd: projectRoot });
+      await pnpm.addDevAsync();
+
+      expect(spawnAsync).toBeCalledWith(
+        'pnpm',
+        ['install'],
+        expect.objectContaining({ cwd: projectRoot })
+      );
+    });
+
+    it('adds a single package to dev dependencies', async () => {
+      const pnpm = new PnpmPackageManager({ cwd: projectRoot });
+      await pnpm.addDevAsync(['eslint']);
+
+      expect(spawnAsync).toBeCalledWith(
+        'pnpm',
+        ['add', '--save-dev', 'eslint'],
+        expect.objectContaining({ cwd: projectRoot })
+      );
+    });
+
+    it('adds multiple packages to dev dependencies', async () => {
+      const pnpm = new PnpmPackageManager({ cwd: projectRoot });
+      await pnpm.addDevAsync(['eslint', 'prettier']);
+
+      expect(spawnAsync).toBeCalledWith(
+        'pnpm',
+        ['add', '--save-dev', 'eslint', 'prettier'],
+        expect.objectContaining({ cwd: projectRoot })
+      );
+    });
+  });
+
+  describe('addGlobalAsync', () => {
+    it('installs project without packages', async () => {
+      const pnpm = new PnpmPackageManager({ cwd: projectRoot });
+      await pnpm.addGlobalAsync();
+
+      expect(spawnAsync).toBeCalledWith(
+        'pnpm',
+        ['install'],
+        expect.objectContaining({ cwd: projectRoot })
+      );
+    });
+
+    it('adds a single package globally', async () => {
+      const pnpm = new PnpmPackageManager({ cwd: projectRoot });
+      await pnpm.addGlobalAsync(['expo-cli@^5']);
+
+      expect(spawnAsync).toBeCalledWith(
+        'pnpm',
+        ['add', '--global', 'expo-cli@^5'],
+        expect.anything()
+      );
+    });
+
+    it('adds multiple packages globally', async () => {
+      const pnpm = new PnpmPackageManager({ cwd: projectRoot });
+      await pnpm.addGlobalAsync(['expo-cli@^5', 'eas-cli']);
+
+      expect(spawnAsync).toBeCalledWith(
+        'pnpm',
+        ['add', '--global', 'expo-cli@^5', 'eas-cli'],
+        expect.anything()
+      );
+    });
+  });
+
+  describe('removeAsync', () => {
+    it('removes a single package', async () => {
+      const pnpm = new PnpmPackageManager({ cwd: projectRoot });
+      await pnpm.removeAsync(['metro']);
+
+      expect(spawnAsync).toBeCalledWith(
+        'pnpm',
+        ['remove', 'metro'],
+        expect.objectContaining({ cwd: projectRoot })
+      );
+    });
+
+    it('removes multiple packages', async () => {
+      const pnpm = new PnpmPackageManager({ cwd: projectRoot });
+      await pnpm.removeAsync(['metro', 'jest-haste-map']);
+
+      expect(spawnAsync).toBeCalledWith(
+        'pnpm',
+        ['remove', 'metro', 'jest-haste-map'],
+        expect.objectContaining({ cwd: projectRoot })
+      );
+    });
+  });
+
+  describe('removeDevAsync', () => {
+    it('removes a single package', async () => {
+      const pnpm = new PnpmPackageManager({ cwd: projectRoot });
+      await pnpm.removeDevAsync(['metro']);
+
+      expect(spawnAsync).toBeCalledWith(
+        'pnpm',
+        ['remove', '--save-dev', 'metro'],
+        expect.objectContaining({ cwd: projectRoot })
+      );
+    });
+
+    it('removes multiple packages', async () => {
+      const pnpm = new PnpmPackageManager({ cwd: projectRoot });
+      await pnpm.removeDevAsync(['metro', 'jest-haste-map']);
+
+      expect(spawnAsync).toBeCalledWith(
+        'pnpm',
+        ['remove', '--save-dev', 'metro', 'jest-haste-map'],
+        expect.objectContaining({ cwd: projectRoot })
+      );
+    });
+  });
+
+  describe('removeGlobalAsync', () => {
+    it('removes a single package', async () => {
+      const pnpm = new PnpmPackageManager({ cwd: projectRoot });
+      await pnpm.removeGlobalAsync(['expo-cli']);
+
+      expect(spawnAsync).toBeCalledWith(
+        'pnpm',
+        ['remove', '--global', 'expo-cli'],
+        expect.objectContaining({ cwd: projectRoot })
+      );
+    });
+
+    it('removes multiple packages', async () => {
+      const pnpm = new PnpmPackageManager({ cwd: projectRoot });
+      await pnpm.removeGlobalAsync(['expo-cli', 'eas-cli']);
+
+      expect(spawnAsync).toBeCalledWith(
+        'pnpm',
+        ['remove', '--global', 'expo-cli', 'eas-cli'],
+        expect.objectContaining({ cwd: projectRoot })
+      );
+    });
+  });
+});
