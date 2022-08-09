@@ -79,7 +79,7 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, RCTB
     let rootView = RCTRootView(bridge: bridge!, moduleName: self.rootViewModuleName!, initialProperties: self.rootViewInitialProperties)
     rootView.backgroundColor = self.deferredRootView?.backgroundColor ?? UIColor.white
     let window = getWindow()
-  
+
     // NOTE: this order of assignment seems to actually have an effect on behaviour
     // direct assignment of window.rootViewController.view = rootView does not work
     let rootViewController = self.reactDelegate?.createRootViewController()

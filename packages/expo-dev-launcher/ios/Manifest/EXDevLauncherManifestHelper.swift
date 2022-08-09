@@ -28,7 +28,7 @@ public class EXDevLauncherManifestHelper: NSObject {
     } else if orientation == "landscape" {
       orientationMask = .landscape
     }
-    
+
     return defaultOrientationForOrientationMask(orientationMask)
   }
 

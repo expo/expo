@@ -43,7 +43,7 @@ class DevMenuViewController: UIViewController {
     forceRootViewToRenderHack()
     reactRootView?.becomeFirstResponder()
   }
-  
+
   override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
     get {
       return UIInterfaceOrientationMask.all

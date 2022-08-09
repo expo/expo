@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add landscape orienation support. ([#18509](https://github.com/expo/expo/pull/18509)) by [@ajsmth](https://github.com/ajsmth)
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
