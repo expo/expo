@@ -2,7 +2,7 @@ package expo.modules.kotlin.jni
 
 import com.facebook.jni.HybridData
 import expo.modules.core.interfaces.DoNotStrip
-import expo.modules.kotlin.typedarray.AnyTypedArray
+import expo.modules.kotlin.typedarray.TypedArray
 import java.nio.ByteBuffer
 
 private var nextValue = 1
@@ -26,7 +26,7 @@ enum class TypedArrayKind(val value: Int = nextValue()) {
 @Suppress("KotlinJniMissingFunction")
 @DoNotStrip
 class JavaScriptTypedArray @DoNotStrip constructor(hybridData: HybridData) :
-  JavaScriptObject(hybridData), AnyTypedArray {
+  JavaScriptObject(hybridData), TypedArray {
 
   override val kind: TypedArrayKind by lazy {
     val rawKind = getRawKind()

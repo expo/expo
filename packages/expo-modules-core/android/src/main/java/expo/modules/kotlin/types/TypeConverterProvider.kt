@@ -15,7 +15,7 @@ import expo.modules.kotlin.typedarray.Int32Array
 import expo.modules.kotlin.typedarray.Int8Array
 import expo.modules.kotlin.jni.JavaScriptObject
 import expo.modules.kotlin.jni.JavaScriptValue
-import expo.modules.kotlin.typedarray.AnyTypedArray
+import expo.modules.kotlin.typedarray.TypedArray
 import expo.modules.kotlin.typedarray.Uint16Array
 import expo.modules.kotlin.typedarray.Uint32Array
 import expo.modules.kotlin.typedarray.Uint8Array
@@ -144,7 +144,7 @@ object TypeConverterProviderImpl : TypeConverterProvider {
       Float64Array::class.createType(nullable = isOptional) to Float64ArrayTypeConverter(isOptional),
       BigInt64Array::class.createType(nullable = isOptional) to BigInt64ArrayTypeConverter(isOptional),
       BigUint64Array::class.createType(nullable = isOptional) to BigUint64ArrayTypeConverter(isOptional),
-      AnyTypedArray::class.createType(nullable = isOptional) to TypedArrayTypeConverter(isOptional),
+      TypedArray::class.createType(nullable = isOptional) to TypedArrayTypeConverter(isOptional),
 
       Any::class.createType(nullable = isOptional) to AnyTypeConverter(isOptional),
     )

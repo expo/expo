@@ -3,7 +3,10 @@ package expo.modules.kotlin.typedarray
 import expo.modules.kotlin.jni.TypedArrayKind
 import java.nio.ByteBuffer
 
-interface AnyTypedArray {
+/**
+ * The base interface for any type of the typed array.
+ */
+interface TypedArray {
   /**
    * Returns the kind of the typed array, such as `Int8Array` or `Float32Array`.
    */
