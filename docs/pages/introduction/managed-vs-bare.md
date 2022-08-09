@@ -104,14 +104,6 @@ For returning users, we are very pleased to say:
 - Expo's NEW _Managed Workflow_ supports any custom native code.
 - Expo's NEW _Bare Workflow_ is a first-class solution that supports all Expo services, libraries, and the Expo CLI.
 
-The managed workflow is kind of like [Rails](https://rubyonrails.org/) and [Create React App](https://github.com/facebook/create-react-app), but for React Native.
-
-Developers build managed workflow apps using [Expo CLI](/workflow/expo-cli.md) on their computer and a development client on their mobile devices (either the Expo Go app for more simple projects or a [development build](/development/introduction) when your project grows). Managed workflows apps typically use one or more Expo services, such as [push notifications](/push-notifications/overview), [build](/classic/building-standalone-apps/), and [updates](/eas-update/getting-started).
-
-**Expo manages the native iOS and Android native code**. A developer using the managed workflow doesn't use Xcode or Android Studio often (although it may be useful for debugging), they write JavaScript code and manage configuration, such as the app icon and splash screen, through [app.json / app.config.js](/workflow/configuration) or [config plugins](/guides/config-plugins). The Expo SDK exposes an increasingly comprehensive set of APIs that give you the power to access device capabilities like the camera, biometric authentication, file system, haptics, and so on. Developers can also make use of most [libraries in the React Native ecosystem](https://reactnative.directory/), ([learn more](/workflow/using-libraries)).
-
-While you can do a lot with the managed workflow, you can't do _everything_ with it, so what are your options when you encounter a [limitation](../introduction/why-not-expo.md)?
-
 ## Up next
 
 Text can only go so far - if you want a more complete picture of building an app end-to-end with the managed workflow, [you should continue to the Walkthrough page](/introduction/walkthrough). There are a bunch of videos and it's easy to skim through, and you should leave it with a better sense of what building a managed app looks like. [Go watch them now.](/introduction/walkthrough)
