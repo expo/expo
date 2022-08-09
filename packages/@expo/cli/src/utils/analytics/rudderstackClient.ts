@@ -1,7 +1,6 @@
 import RudderAnalytics from '@expo/rudder-sdk-node';
 import * as ciInfo from 'ci-info';
 import os from 'os';
-import { v4 as uuidv4 } from 'uuid';
 
 import UserSettings from '../../api/user/UserSettings';
 import { getUserAsync } from '../../api/user/user';
@@ -21,7 +20,7 @@ let identifyData: {
   traits: Record<string, any>;
 } | null = null;
 
-function getClient(): RudderAnalytics {
+export function getRudderAnalyticsClient(): RudderAnalytics {
   if (client) {
     return client;
   }
@@ -56,7 +55,7 @@ export async function setUserDataAsync(userId: string, traits: Record<string, an
     traits,
   };
 
-  ensureIdentified();
+  identifyIfNotYetIdentified();
 }
 
 type Event =
@@ -73,13 +72,16 @@ export function logEvent(event: Event, properties: Record<string, any> = {}): vo
     return;
   }
 
-  ensureIdentified();
+  identifyIfNotYetIdentified();
 
-  const { userId, deviceId } = identifyData ?? {};
+  if (!identifyData) {
+    return;
+  }
+  const { userId, deviceId } = identifyData;
   const commonEventProperties = { source_version: process.env.__EXPO_VERSION, source: 'expo' };
 
-  const identity = { userId: userId ?? undefined, anonymousId: deviceId ?? uuidv4() };
-  getClient().track({
+  const identity = { userId, anonymousId: deviceId };
+  getRudderAnalyticsClient().track({
     event,
     properties: { ...properties, ...commonEventProperties },
     ...identity,
@@ -96,14 +98,21 @@ export async function logEventAsync(
     return;
   }
 
-  await getUserAsync().catch(() => null);
-  ensureIdentified();
+  // this has the side effect of calling `setUserData` which fetches the user and populates identifyData
+  try {
+    await getUserAsync();
+  } catch {}
 
-  const { userId, deviceId } = identifyData ?? {};
+  identifyIfNotYetIdentified();
+
+  if (!identifyData) {
+    return;
+  }
+  const { userId, deviceId } = identifyData;
   const commonEventProperties = { source_version: process.env.__EXPO_VERSION, source: 'expo' };
 
-  const identity = { userId: userId ?? undefined, anonymousId: deviceId ?? uuidv4() };
-  getClient().track({
+  const identity = { userId, anonymousId: deviceId };
+  getRudderAnalyticsClient().track({
     event,
     properties: { ...properties, ...commonEventProperties },
     ...identity,
@@ -111,12 +120,12 @@ export async function logEventAsync(
   });
 }
 
-function ensureIdentified(): void {
+function identifyIfNotYetIdentified(): void {
   if (env.EXPO_NO_TELEMETRY || identified || !identifyData) {
     return;
   }
 
-  getClient().identify({
+  getRudderAnalyticsClient().identify({
     userId: identifyData.userId,
     anonymousId: identifyData.deviceId,
     traits: identifyData.traits,
