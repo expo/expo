@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fixed `the function must be called on main queue` error when the app is reload from the error screen on iOS.
+- Fixed `the function must be called on main queue` error when the app is reload from the error screen on iOS. ([#18563](https://github.com/expo/expo/pull/18563) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 
