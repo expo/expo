@@ -263,6 +263,8 @@
 
 - (void)navigateToLauncher
 {
+  NSAssert([NSThread isMainThread], @"This function must be called on main thread");
+
   [_appBridge invalidate];
   [self invalidateDevMenuApp];
   
