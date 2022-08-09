@@ -2,12 +2,56 @@
 title: Glossary of terms
 ---
 
+### Expo Install
+
+Refers to the command `npx expo install` from [Expo CLI](#expo-cli). This command is used to install packages that work with the currently installed version of `expo` in the project. Not all packages are supported.
+
+### Expo Start
+
+Refers to the command `npx expo start` from [Expo CLI](#expo-cli). This command is used to start a local [development server](#development-server) that a [client](#expo-client) connects to in order to interact with the [Metro bundler](#metro-bundler).
+
+### Development Server
+
+A development server (or dev server) is a server that is started locally, usually by running `npx expo start` from [Expo CLI](#expo-cli). The development server is typically hosted on `http://localhost:19000`. The development server hosts a [manifest](#manifest) from `/` which the client uses to request the JavaScript bundle from the bundler.
+
+### Entry Point
+
+The entry point usually refers to the initial JavaScript file used to load an application. In apps using [Expo CLI](#expo-cli), the default entry point is `./node_modules/expo/AppEntry.js` which simply imports the file `./App.js` from the root project directory and registers it as the initial component in the native app.
+
+### Platform extensions
+
+Platform extensions are a feature of the [Metro bundler](#metro-bundler) which enable users to substitute files on a per-platform basis given a specific filename. For example if a project has a `./index.js` file and a `./index.ios.js` file, then the `index.ios.js` will be used when bundling for iOS and the `index.js` file will be used when bundling for all other platforms.
+
+By default, platform extensions are resolved in `@expo/metro-config` using the following formula:
+
+- iOS: `*.ios.js`, `*.native.js`, `*.js`
+- Android: `*.android.js`, `*.native.js`, `*.js`
+- Web: `*.web.js`, `*.js`
+
+<!-- TODO: Multi-Resolution Asset Extensions -->
+
+### Yarn Workspaces
+
+The [monorepo](#monorepo) solution we recommend for Expo users. Yarn workspaces can be configured using the package [`expo-yarn-workspaces`](https://github.com/expo/expo/tree/main/packages/expo-yarn-workspaces).
+
+### Monorepo
+
+A project that has multiple sub-projects which are all linked together via the package manager. A monorepo is a great way to link custom native packages to your application.
+
+### CocoaPods
+
+The iOS package manager, used to link native modules to the native iOS project. This package manager is configured using the `ios/Podfile`, and updated when a user runs `pod install` in the `ios` directory.
+
+### Gradle
+
+The Android package manager and build tools.
+
 ### Autolinking
 
 A cross-platform tool for automatically linking native modules to native apps via native package managers.
 
-- On iOS the tool is used in CocoaPods `ios/Podfile` and invoked during `pod install`
-- On Android the tool is used in the `android/app/build.gradle` and invoked during the Gradle sync process.
+- On iOS the tool is used in [CocoaPods](#cocoapods) `ios/Podfile` and invoked during `pod install`
+- On Android the tool is used in the `android/app/build.gradle` and invoked during the [Gradle](#gradle) sync process.
 
 There are two versions of Autolinking: Expo
 
@@ -228,6 +272,10 @@ Formerly Facebook, Meta is the group that develops [React Native](#react-native)
 ### Remote Debugging
 
 Remote Debugging (AKA Async Chrome Debugging) is an experimental system for debugging React Native apps. The system works by executing the application JavaScript in a Chrome tab's web worker, then sending native commands over websockets to the native device. The benefit being you could use the built-in Chrome break points and network inspector to debug your application. This system does not work with JSI's synchronous calls, meaning it's not a reliable way to debug modern React Native apps. A better alternative to debugging React Native is to use [Hermes](#hermes-engine) as you can connect Chrome Dev Tools to it.
+
+### Metro Config
+
+The optional `metro.config.js` file used to configure [Metro bundler](#metro-bundler). This should extend the package `@expo/metro-config` when using [Expo CLI](#expo-cli). [Learn more](/guides/customizing-metro.md).
 
 ### Flipper
 
