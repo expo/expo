@@ -67,29 +67,9 @@ type Event =
   | 'dev client start command'
   | 'dev client run command';
 
-export function logEvent(event: Event, properties: Record<string, any> = {}): void {
-  if (env.EXPO_NO_TELEMETRY) {
-    return;
-  }
-
-  identifyIfNotYetIdentified();
-
-  if (!identifyData) {
-    return;
-  }
-  const { userId, deviceId } = identifyData;
-  const commonEventProperties = { source_version: process.env.__EXPO_VERSION, source: 'expo' };
-
-  const identity = { userId, anonymousId: deviceId };
-  getRudderAnalyticsClient().track({
-    event,
-    properties: { ...properties, ...commonEventProperties },
-    ...identity,
-    context: getContext(),
-  });
-}
-
-/** Log event while ensuring the user is identified. */
+/**
+ * Log an event, ensuring the user is identified before logging the event.
+ **/
 export async function logEventAsync(
   event: Event,
   properties: Record<string, any> = {}
