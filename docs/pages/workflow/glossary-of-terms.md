@@ -2,17 +2,116 @@
 title: Glossary of terms
 ---
 
-### app.json
+### Autolinking
 
-**app.json** is a file that exists for every Expo project and it is used to configure your project, for example the name, icon, and splash screen. [Read more in "Configuration with app.json / app.config.js"](configuration.md)
+A cross-platform tool for automatically linking native modules to native apps via native package managers.
 
-### create-react-native-app
+- On iOS the tool is used in CocoaPods `ios/Podfile` and invoked during `pod install`
+- On Android the tool is used in the `android/app/build.gradle` and invoked during the Gradle sync process.
 
-Formerly the React Native equivalent of [create-react-app](https://github.com/facebookincubator/create-react-app). This has since been replaced with `expo-cli`.
+There are two versions of Autolinking: Expo
 
-### detach
+The default [Prebuild](#prebuild) template includes support for [community Autolinking](#community-autolinking) along with the original [Expo Autolinking](#expo-autolinking).
 
-The term "detach" was previously used in Expo to mean [ejecting](#eject) your app to use [ExpoKit](#expokit).
+### Expo Autolinking
+
+The original [Autolinking](#autolinking) system that is designed for project's using `expo-modules-core`. This system links modules based on the existence of a `expo-module.config.json` file in the library's root directory.
+
+### Community Autolinking
+
+This refers to the React Native community [fork](https://github.com/react-native-community/cli/issues/248#issue-422591744) of the original [Autolinking](#autolinking) that was made by Expo.
+
+### Expo Module Config
+
+A file named `expo-module.config.json` that lives in the root directory of a [native module](#native-module). [Learn more](/modules/module-config/).
+
+### Native Module
+
+A module written in native code that exposes native platform functionality to the JavaScript engine via the JS global. This functionality is usually accessed via `import { NativeModules } from 'react-native';`
+
+### Expo Config
+
+A file named `app.json`, `app.config.json`, `app.config.js`, or `app.config.ts` in the root of a project directory. [Learn more](configuration.md).
+
+This file is used for the following purposes:
+
+- Configuring how [Expo CLI](#expo-cli) works.
+- Generating a project's public [manifest](#manifest) in EAS Update (think index.html but for native apps).
+- Adding Expo [Config Plugins](#config-plugin) and configuring how `npx expo prebuild` generates native code.
+
+### Dangerous Mods
+
+Config [modifiers](#config-mods) that apply unstable changes to a native project during [prebuild](#prebuild). Use of these modifiers is unpredictable and prone to breaking changes between major version bumps in [Expo SDK](#expo-sdk).
+
+### TypeScript
+
+TypeScript is a strongly typed programming language that builds on JavaScript, giving you better tooling at any scale. The Expo SDK is written in TypeScript, we highly recommend using it. [Learn more](/guides/typescript/).
+
+### Sweet API
+
+The Swift and Kotlin API for writing React Native modules. This API is provided by the library `expo-modules-core` which is shipped with the `expo` package. [Learn more](/modules/module-api/).
+
+### EAS Metadata
+
+A command line tool for uploading and downloading Apple App Store metadata as JSON. This tool is available in the `eas-cli` package and should be used to improve the iOS submission process.
+
+### create-expo-app
+
+A standalone command line tool (CLI) for bootstrapping new React Native apps with the `expo` package installed.
+
+This package can be used by running:
+
+- `npx create-expo-app`
+- `yarn create expo-app`
+- `npm create expo-app`
+
+### Local Expo CLI
+
+The package `@expo/cli` which is installed with the `expo` package. This is sometimes referred to as the "Versioned Expo CLI" because it is installed inside of the user's project as opposed to the now deprecated `expo-cli` which was installed globally.
+
+### Config Plugin
+
+A JavaScript function that is used to append [config mods](#config-mods) to the [Expo Config](#expo-config) for use in [Prebuild](#prebuild). [Learn more](/guides/config-plugins).
+
+### Config Introspection
+
+A process for evaluating the results of [`expo prebuild`](#prebuild) in-memory without persisting any code changes. This is used in [auto capability signing](#auto-capability-signing) to determine what the entitlements file will look like without generating any native code. This process is also used in the [vscode expo](#vscode-expo) extension to debug [config mods](#config-mods).
+
+### Config Mods
+
+Async functions that are appended to the [Expo Config](#expo-config) for use in [Prebuild](#prebuild). This functions are given a singe native file, modify it, and return the results that should be persisted to the project. Config Mods are chained together and come from the package `@expo/config-plugins`. [Learn more](/guides/config-plugins).
+
+### VSCode Expo
+
+The VSCode extension for improving the developer experience of working with Expo config files. This extension provides autocomplete and intellisense for the [Expo Config](#expo-config), [Store Config](#store-config), [Expo Module Config](#expo-module-config), and [EAS Config](#eas-config). [Learn more](https://marketplace.visualstudio.com/items?itemName=byCedric.vscode-expo).
+
+### Metro Bundler
+
+The bundler used for converting JavaScript files and assets into a format that runs on a native client. This bundler is maintained by Meta and used pretty much exclusively for React Native. [Learn more](https://facebook.github.io/metro).
+
+### Babel
+
+Transpiler used for removing language features that aren't available in the runtime's JavaScript engine. [Metro](#metro-bundler) uses Babel internally. Project's can configure how Babel is used by modifying the `babel.config.js` file in their project directory. This file is optional when using [Expo CLI](#expo-cli). Expo projects should extend the default Babel preset [`babel-preset-expo`](https://github.com/expo/expo/tree/main/packages/babel-preset-expo).
+
+### Auto Capability Signing
+
+A feature of EAS build that automatically enables or disables [Apple capabilities](#apple-capabilities) based on the project's entitlements file. [Learn more](/build-reference/ios-capabilities/).
+
+### Apple Capabilities
+
+Cloud services provided by Apple. These services must be enabled for an application in the [Apple Developer Portal](#apple-developer-portal).
+
+### Apple Developer Portal
+
+Apple's [official website](https://developer.apple.com/) for managing application code signing. EAS Credentials automate most of the common reasons a developer might visit this website when developing an app.
+
+### Prebuild
+
+The process of generating the temporary native `/ios` and `/android` folders for a project based on the [Expo Config](#expo-config). This process is performed by running `npx expo prebuild` in a project directory.
+
+### Expo CLI
+
+The command-line tool for working with Expo. [Read more](expo-cli.md). This term now refers to the [Local Expo CLI](#local-expo-cli), but historically referred to the [Global Expo CLI](#global-expo-cli).
 
 ### EAS
 
@@ -22,12 +121,13 @@ The term "detach" was previously used in Expo to mean [ejecting](#eject) your ap
 
 The command-line tool for working with EAS. <!-- Pending creation of eas-cli [Read more](eas-cli.md). -->
 
-### eject
+### Store Config
 
-The term "eject" was popularized by [create-react-app](https://github.com/facebookincubator/create-react-app), and it is used in Expo to describe leaving the cozy comfort of the standard Expo development environment, where you do not have to deal with build configuration or native code. When you "eject" from Expo, you have two choices:
+The `store.config.json` file used to configure [EAS Metadata](#eas-metadata). This file can be generated from an existing App Store entry using `eas metadata:pull`.
 
-- _Eject to bare workflow_, where you jump between [workflows](../introduction/managed-vs-bare.md) and move into the bare workflow, where you can continue to use Expo APIs but have access and full control over your native iOS and Android projects.
-- _Eject to ExpoKit_, where you get the native projects along with [ExpoKit](#expokit). This option is deprecated and support for ExpoKit was removed after SDK 38.
+### EAS Config
+
+The `eas.json` file used to configure [EAS CLI](#eas-cli).
 
 ### Emulator
 
@@ -36,10 +136,6 @@ Emulator is used to describe software emulators of Android devices on your compu
 ### Experience
 
 A synonym for app that usually implies something more single-use and smaller in scope, sometimes artistic and whimsical.
-
-### Expo CLI
-
-The command-line tool for working with Expo. [Read more](expo-cli.md).
 
 ### Expo Go
 
@@ -53,19 +149,13 @@ The former name for the [Expo Go](#expo-go) app.
 
 The Expo SDK provides access to device/system functionality such as camera, push notification, contacts, file system, and more. Scroll to the SDK API reference in the documentation navigation to see a full list of APIs and to explore them. [Read more about the Expo SDK](/versions/latest/). [Find it on GitHub](https://github.com/expo/expo-sdk).
 
-### ExpoKit
-
-ExpoKit is an Objective-C and Java library that allows you to use the [Expo SDK](#expo-sdk) and platform and your existing Expo project as part of a larger standard native project — one that you would normally create using Xcode, Android Studio, or `react-native init`. [Read more](../expokit/eject.md).
-
-**Support for ExpoKit ended after SDK 38. Expo modules can implement support for custom native configuration, and projects that need even more custom native code can [expose their Android Studio and Xcode projects with `expo prebuild`](/workflow/customizing/).**
-
 ### iOS
 
 The operating system used on iPhone, iPad, and Apple TV. Expo currently runs on iOS for iPhone and iPad.
 
 ### Linking
 
-Linking can mean [deep linking into apps similar to how you link to websites on the web](linking.md) or [linking native libraries into your ejected ExpoKit app](../expokit/expokit.md#changing-native-dependencies).
+Linking can mean [deep linking into apps similar to how you link to websites on the web](linking.md) or [autolinking](#autolinking).
 
 ### Manifest
 
@@ -91,13 +181,13 @@ Automates the process of installing, upgrading, configuring, and removing librar
 
 We use the word "publish" as a synonym for "deploy". When you publish an app, it becomes available at a persistent URL from Expo Go, or in the case of [Standalone apps](#standalone-app), it updates the app.
 
+### Watchman
+
+The file watcher used by [Metro](#metro-bundler) to perform hot reloads during development. Watchman contains native code and may cause issues when installing globally. Watchman is maintained by Meta and used in Jest.
+
 ### React Native
 
 "React Native lets you build mobile apps using only JavaScript. It uses the same design as React, letting you compose a rich mobile UI from declarative components." [Read more](https://reactnative.dev/).
-
-### Shell app
-
-Another term we occasionally use for [Standalone app](#standalone-app).
 
 ### Simulator
 
@@ -115,10 +205,101 @@ We use the word "slug" in [app.json](#appjson) to refer to the name to use for y
 
 An application binary that can be submitted to the iOS App Store or Android Play Store. [Read more in "Building Standalone Apps"](../distribution/building-standalone-apps.md).
 
-### XDE
-
-XDE was a desktop tool with a graphical user interface (GUI) for working with Expo projects. It's been replaced by [Expo CLI](#expo-cli), which now provides both command line and web interfaces.
-
 ### yarn
 
 A package manager for JavaScript. [Read more](https://yarnpkg.com/)
+
+### Yoga
+
+A native cross-platform library used by React Native internally to provide FlexBox support to native views. React Native styles are passed to Yoga to layout and style elements on the screen. [Learn more](https://github.com/facebook/yoga).
+
+### JavaScript Engine
+
+A native package that can evaluate JavaScript on-device. In React Native we often use JavaScriptCore by Apple. Other options include [Hermes](#hermes-engine) by Meta, and V8 by Google.
+
+### Hermes Engine
+
+A JavaScript engine developed by Meta for use with React Native. Hermes uses Bytecode to improve startup time. Hermes is better at debugging than JavaScriptCore as it implements parts of the [Chrome DevTools Protocol](https://chromedevtools.github.io/devtools-protocol/).
+
+### Meta
+
+Formerly Facebook, Meta is the group that develops [React Native](#react-native), [Metro Bundler](#metro-bundler), [Hermes Engine](#hermes-engine), [Yoga](#yoga) and more. The Expo team collaborates with Meta to deliver the best possible developer experience.
+
+### Remote Debugging
+
+Remote Debugging (AKA Async Chrome Debugging) is an experimental system for debugging React Native apps. The system works by executing the application JavaScript in a Chrome tab's web worker, then sending native commands over websockets to the native device. The benefit being you could use the built-in Chrome break points and network inspector to debug your application. This system does not work with JSI's synchronous calls, meaning it's not a reliable way to debug modern React Native apps. A better alternative to debugging React Native is to use [Hermes](#hermes-engine) as you can connect Chrome Dev Tools to it.
+
+### Flipper
+
+A mobile app debugger. [Learn more](https://fbflipper.com/). We do not enable Flipper in the default [Prebuild](#prebuild) template due to instability concerns.
+
+### Software Mansion
+
+A development agency in Krakow, Poland. Maintainers of `react-native-gesture-handler`, `react-native-screens`, and `react-native-reanimated`. The platform team at Expo is compromised of a number of contractors from Software Mansion. All of Software Mansion's core React Native libraries are supported in [Expo Go](#expo-go).
+
+### React Navigation
+
+The preferred navigation library for React Native apps, developed and sponsored by the Expo team.
+
+### React Native Web
+
+A high-performing abstraction on top of `react-dom` which enables core primitives from [React Native](#react-native) to run in the browser. React Native for web (AKA RNW) was developed at Twitter and is currently used for their main website https://twitter.com. [Expo SDK](#expo-sdk) and [Expo CLI](#expo-cli) have first-class support for RNW.
+
+### Fabric
+
+The React Native rendering system, used to create an manage native views. [Learn more](https://reactnative.dev/architecture/fabric-renderer).
+
+<!-- Deprecated Terms -->
+
+### app.json
+
+An [Expo Config](#expo-config) file.
+
+### create-react-native-app
+
+A standalone command line tool (CLI) for bootstrapping new React Native apps with the `expo` package installed and the native code generated. This CLI also enables the use of bootstrapping from an example project in [expo/examples](https://github.com/expo/examples).
+
+This package can be used by running:
+
+- `npx create-expo-app`
+- `yarn create expo-app`
+- `npm create expo-app`
+
+### detach
+
+> Deprecated term
+
+The term "detach" was previously used in Expo to mean [ejecting](#eject) your app to use [ExpoKit](#expokit).
+
+### eject
+
+> Deprecated term
+
+The term "eject" was popularized by [create-react-app](https://github.com/facebookincubator/create-react-app), and it is used in Expo to describe leaving the cozy comfort of the standard Expo development environment, where you do not have to deal with build configuration or native code. When you "eject" from Expo, you have two choices:
+
+- _Eject to bare workflow_, where you jump between [workflows](../introduction/managed-vs-bare.md) and move into the bare workflow, where you can continue to use Expo APIs but have access and full control over your native iOS and Android projects.
+- _Eject to ExpoKit_, where you get the native projects along with [ExpoKit](#expokit). This option is deprecated and support for ExpoKit was removed after SDK 38.
+
+### ExpoKit
+
+> Deprecated term
+
+ExpoKit is an Objective-C and Java library that allows you to use the [Expo SDK](#expo-sdk) and platform and your existing Expo project as part of a larger standard native project — one that you would normally create using Xcode, Android Studio, or `react-native init`. [Read more](../expokit/eject.md).
+
+**Support for ExpoKit ended after SDK 38. Expo modules can implement support for custom native configuration, and projects that need even more custom native code can [expose their Android Studio and Xcode projects with `expo prebuild`](/workflow/customizing/).**
+
+### Global Expo CLI
+
+The package `expo-cli` which was installed globally on the user's machine and used across all projects. This CLI was introduced in SDK 30 (2018), and deprecated in favor of the [Local Expo CLI](#local-expo-cli) in SDK 46 (2022).
+
+### Shell app
+
+> Deprecated term
+
+Another term we occasionally use for [Standalone app](#standalone-app).
+
+### XDE
+
+> Deprecated term
+
+XDE was a desktop tool with a graphical user interface (GUI) for working with Expo projects. It's been replaced by [Expo CLI](#expo-cli), which now provides both command line and web interfaces.
