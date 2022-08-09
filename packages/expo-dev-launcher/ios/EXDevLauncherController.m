@@ -263,6 +263,8 @@
 
 - (void)navigateToLauncher
 {
+  NSAssert([NSThread isMainThread], @"This function must be called on main thread");
+
   [_appBridge invalidate];
   [self invalidateDevMenuApp];
   
@@ -325,8 +327,11 @@
       if (!self) {
         return;
       }
-      
-      EXDevLauncherAppError *appError = [[EXDevLauncherAppError alloc] initWithMessage:error.localizedDescription stack:nil];
+
+      EXDevLauncherUrl *devLauncherUrl = [[EXDevLauncherUrl alloc] init:url];
+      NSURL *appUrl = devLauncherUrl.url;
+      NSString *errorMessage = [NSString stringWithFormat:@"Failed to load app from %@ with error: %@", appUrl.absoluteString, error.localizedDescription];
+      EXDevLauncherAppError *appError = [[EXDevLauncherAppError alloc] initWithMessage:errorMessage stack:nil];
       [self.errorManager showError:appError];
     });
   }];
