@@ -6,11 +6,17 @@ public typealias PersistentFileLogFilter = (_: String) -> Bool
 public typealias PersistentFileLogCompletionHandler = (_:Error?) -> Void
 
 /**
- * A thread-safe class for reading and writing line-separated strings to a flat file. The main use case is for logging specific errors or events, and ensuring that the logs persist across application crashes and restarts (for example, OSLogReader can only read system logs for the current process, and cannot access anything logged before the current process started).
+ * A thread-safe class for reading and writing line-separated strings to a flat file.
+ * The main use case is for logging specific errors or events, and ensuring that the
+ * logs persist across application crashes and restarts (for example, OSLogReader can
+ * only read system logs for the current process, and cannot access anything logged
+ * before the current process started).
  *
- * All write access to the file goes through asynchronous public methods managed by a serial dispatch queue.
+ * All write access to the file goes through asynchronous public methods managed by a
+ * serial dispatch queue.
  *
- * The dispatch queue is global, to ensure that multiple instances accessing the same file will have thread-safe access.
+ * The dispatch queue is global, to ensure that multiple instances accessing the same
+ * file will have thread-safe access.
  *
  * The only operations supported are
  * - Read the file (synchronous)
@@ -35,7 +41,7 @@ public class PersistentFileLog {
    Read entries from log file
    */
   public func readEntries() -> [String] {
-    if 0 == _getFileSize() {
+    if _getFileSize() == 0 {
       return []
     }
     do {
