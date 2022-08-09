@@ -28,7 +28,7 @@ const CONFIGURATIONS = {
 
 function getReanimatedPipe() {
   console.warn(
-    'You have to adjust the installation steps of the react-native-reanimated to work well with the react-native-gesture-handler. For more information go to the https://github.com/expo/expo/pull/17878'
+    'You have to adjust the installation steps of the react-native-reanimated to work well with the react-native-gesture-handler. For more information go to the https://github.com/expo/expo/pull/17878 and https://github.com/expo/expo/pull/18562'
   );
   const destination = 'packages/expo-dev-menu/vendored/react-native-reanimated';
 
