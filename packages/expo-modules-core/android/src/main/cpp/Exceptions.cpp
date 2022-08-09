@@ -17,7 +17,8 @@ std::string CodedException::getCode() {
 }
 
 std::optional<std::string> CodedException::getLocalizedMessage() {
-  const auto getLocalizedMessage = this->getClass()->getMethod<jni::JString()>("getLocalizedMessage");
+  const auto getLocalizedMessage = this->getClass()
+    ->getMethod<jni::JString()>("getLocalizedMessage");
   const auto message = getLocalizedMessage(this->self());
   if (message != nullptr) {
     return message->toStdString();
@@ -33,6 +34,12 @@ jni::local_ref<JavaScriptEvaluateException> JavaScriptEvaluateException::create(
   return JavaScriptEvaluateException::newInstance(
     jni::make_jstring(message),
     jni::make_jstring(jsStack)
+  );
+}
+
+jni::local_ref<UnexpectedException> UnexpectedException::create(const std::string &message) {
+  return UnexpectedException::newInstance(
+    jni::make_jstring(message)
   );
 }
 } // namespace expo

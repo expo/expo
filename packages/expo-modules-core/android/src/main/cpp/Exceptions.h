@@ -41,4 +41,17 @@ public:
     const std::string &jsStack
   );
 };
+
+/**
+ * A convenient wrapper for the Kotlin UnexpectedException.
+ */
+class UnexpectedException
+  : public jni::JavaClass<UnexpectedException, CodedException> {
+public:
+  static auto constexpr kJavaDescriptor = "Lexpo/modules/kotlin/exception/UnexpectedException;";
+
+  static jni::local_ref<UnexpectedException> create(
+    const std::string &message
+  );
+};
 } // namespace expo
