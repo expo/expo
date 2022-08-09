@@ -21,10 +21,8 @@ using MethodHashMap = std::unordered_map<
 
 /**
  * Singleton registry used to store references to often used Java classes.
- *
- * TODO(@lukmccall): also store reference to jsi objects like `Promise`.
  */
-class CachedReferencesRegistry {
+class JavaCachedReferencesRegistry {
 public:
   /**
    * An entry in the Java class registry.
@@ -47,14 +45,14 @@ public:
     MethodHashMap methods;
   };
 
-  CachedReferencesRegistry(CachedReferencesRegistry const &) = delete;
+  JavaCachedReferencesRegistry(JavaCachedReferencesRegistry const &) = delete;
 
-  CachedReferencesRegistry &operator=(CachedReferencesRegistry const &) = delete;
+  JavaCachedReferencesRegistry &operator=(JavaCachedReferencesRegistry const &) = delete;
 
   /**
    * Gets a singleton instance
    */
-  static std::shared_ptr<CachedReferencesRegistry> instance();
+  static std::shared_ptr<JavaCachedReferencesRegistry> instance();
 
   /**
    * Gets a cached Java class entry.
@@ -67,7 +65,7 @@ public:
   void loadJClasses(JNIEnv *env);
 
 private:
-  CachedReferencesRegistry() = default;
+  JavaCachedReferencesRegistry() = default;
 
   std::unordered_map<std::string, CachedJClass> jClassRegistry;
 
@@ -76,5 +74,53 @@ private:
     const std::string &name,
     const std::vector<std::pair<std::string, std::string>> &methods
   );
+};
+
+/**
+ * Registry used to store references to often used JS objects like Promise.
+ * The object lifetime should be bound with the JS runtime.
+ */
+class JSCachedReferencesRegistry {
+public:
+  enum class JSKeys {
+    PROMISE,
+    CODED_ERROR
+  };
+
+  JSCachedReferencesRegistry() = delete;
+
+  JSCachedReferencesRegistry(jsi::Runtime &runtime);
+
+  /**
+   * Gets a cached object.
+   */
+  template<class T, typename std::enable_if_t<std::is_base_of_v<jsi::Object, T>, int> = 0>
+  T &getObject(JSKeys key) {
+    return static_cast<T &>(*jsObjectRegistry.at(key));
+  }
+
+  /**
+   * Gets a cached object if present. Otherwise, returns nullptr.
+   */
+  template<class T, typename std::enable_if_t<std::is_base_of_v<jsi::Object, T>, int> = 0>
+  T *getOptionalObject(JSKeys key) {
+    auto result = jsObjectRegistry.find(key);
+    if (result == jsObjectRegistry.end()) {
+      return nullptr;
+    }
+
+    jsi::Object &object = *result->second;
+    return &static_cast<T &>(object);
+  }
+
+  /**
+   * Gets a cached jsi::PropNameID or creates a new one for the provided string.
+   */
+  jsi::PropNameID &getPropNameID(jsi::Runtime &runtime, const std::string &name);
+
+private:
+  std::unordered_map<JSKeys, std::unique_ptr<jsi::Object>> jsObjectRegistry;
+
+  std::unordered_map<std::string, std::unique_ptr<jsi::PropNameID>> propNameIDRegistry;
 };
 } // namespace expo
