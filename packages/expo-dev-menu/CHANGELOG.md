@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix the duplicated `DevMenuRNGestureHandlerStateManager.h` output file compilation error on iOS. ([#18562](https://github.com/expo/expo/pull/18562) by [@lukmccall](https://github.com/lukmccall))
+
 ### 💡 Others
 
 ## 1.1.1 — 2022-07-20
