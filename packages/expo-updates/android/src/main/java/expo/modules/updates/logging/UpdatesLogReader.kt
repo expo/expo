@@ -21,9 +21,9 @@ class UpdatesLogReader(
     olderThan: Date = Date(Date().time - ONE_DAY_MILLISECONDS),
     completionHandler: (_: Error?) -> Unit
   ) {
-    val epochTimestamp = _epochFromDate(olderThan)
+    val epochTimestamp = epochFromDate(olderThan)
     persistentLog.filterEntries(
-      { entryString -> _entryStringLaterThanTimestamp(entryString, epochTimestamp) },
+      { entryString -> entryStringLaterThanTimestamp(entryString, epochTimestamp) },
       completionHandler
     )
   }
@@ -33,14 +33,14 @@ class UpdatesLogReader(
    * Returns a list of strings in the JSON format of UpdatesLogEntry
    */
   fun getLogEntries(newerThan: Date): List<String> {
-    val epochTimestamp = _epochFromDate(newerThan)
+    val epochTimestamp = epochFromDate(newerThan)
     return persistentLog.readEntries()
-      .filter { entryString -> _entryStringLaterThanTimestamp(entryString, epochTimestamp) }
+      .filter { entryString -> entryStringLaterThanTimestamp(entryString, epochTimestamp) }
   }
 
   private val persistentLog = PersistentFileLog(EXPO_UPDATES_LOGGING_TAG, context)
 
-  private fun _entryStringLaterThanTimestamp(entryString: String, timestamp: Long): Boolean {
+  private fun entryStringLaterThanTimestamp(entryString: String, timestamp: Long): Boolean {
     val entry = UpdatesLogEntry.create(entryString)
     return when (entry) {
       null -> false
@@ -48,7 +48,7 @@ class UpdatesLogReader(
     }
   }
 
-  private fun _epochFromDate(date: Date): Long {
+  private fun epochFromDate(date: Date): Long {
     val earliestEpoch = Date().time - ONE_DAY_MILLISECONDS
     val epoch = date.time
     return max(epoch, earliestEpoch)

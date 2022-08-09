@@ -34,10 +34,10 @@ class PersistentFileLog(
    * Read entries from log file
    */
   fun readEntries(): List<String> {
-    if (0L == _getFileSize()) {
+    if (0L == getFileSize()) {
       return listOf()
     }
-    return _readFileSync()
+    return readFileSync()
   }
 
   /**
@@ -45,16 +45,16 @@ class PersistentFileLog(
    * Since logging may not require a result handler, the handler parameter is optional
    */
   fun appendEntry(entry: String, completionHandler: ((_: Error?) -> Unit) = { error -> }) {
-    _queue.add {
+    queue.add {
       try {
-        this._ensureFileExists()
-        val text = when (this._getFileSize()) {
+        this.ensureFileExists()
+        val text = when (this.getFileSize()) {
           0L -> entry
           else -> {
             "\n" + entry
           }
         }
-        this._appendTextToFile(text)
+        this.appendTextToFile(text)
         completionHandler.invoke(null)
       } catch (e: Error) {
         completionHandler.invoke(e)
@@ -66,12 +66,12 @@ class PersistentFileLog(
    * Filter existing entries and remove ones where filter(entry) == false
    */
   fun filterEntries(filter: (_: String) -> Boolean, completionHandler: (_: Error?) -> Unit) {
-    _queue.add {
+    queue.add {
       try {
-        this._ensureFileExists()
-        val contents = this._readFileSync()
+        this.ensureFileExists()
+        val contents = this.readFileSync()
         val reducedContents = contents.filter(filter)
-        this._writeFileSync(reducedContents)
+        this.writeFileSync(reducedContents)
         completionHandler.invoke(null)
       } catch (e: Throwable) {
         completionHandler.invoke(Error(e))
@@ -83,9 +83,9 @@ class PersistentFileLog(
    * Clear all entries from the log file
    */
   fun clearEntries(completionHandler: (_: Error?) -> Unit) {
-    _queue.add {
+    queue.add {
       try {
-        this._deleteFileSync()
+        this.deleteFileSync()
         completionHandler.invoke(null)
       } catch (e: Error) {
         completionHandler.invoke(e)
@@ -97,9 +97,7 @@ class PersistentFileLog(
 
   private val filePath = context.filesDir.path + "/" + category
 
-  private val executor = Thread()
-
-  private fun _ensureFileExists() {
+  private fun ensureFileExists() {
     val fd = File(filePath)
     if (!fd.exists()) {
       val success = fd.createNewFile()
@@ -109,7 +107,7 @@ class PersistentFileLog(
     }
   }
 
-  private fun _getFileSize(): Long {
+  private fun getFileSize(): Long {
     val fd = File(filePath)
     if (!fd.exists()) {
       return 0L
@@ -125,26 +123,26 @@ class PersistentFileLog(
     return size
   }
 
-  private fun _appendTextToFile(text: String) {
+  private fun appendTextToFile(text: String) {
     File(filePath).appendText(text, Charset.defaultCharset())
   }
 
-  private fun _readFileSync(): List<String> {
-    return _stringToList(File(filePath).readText(Charset.defaultCharset()))
+  private fun readFileSync(): List<String> {
+    return stringToList(File(filePath).readText(Charset.defaultCharset()))
   }
 
-  private fun _writeFileSync(entries: List<String>) {
+  private fun writeFileSync(entries: List<String>) {
     File(filePath).writeText(entries.joinToString("\n"), Charset.defaultCharset())
   }
 
-  private fun _deleteFileSync() {
+  private fun deleteFileSync() {
     val fd = File(filePath)
     if (fd.exists()) {
       fd.delete()
     }
   }
 
-  fun _stringToList(text: String): List<String> {
+  fun stringToList(text: String): List<String> {
     return when (text.length) {
       0 -> listOf<String>()
       else -> text.split("\n")
@@ -152,7 +150,7 @@ class PersistentFileLog(
   }
 
   companion object {
-    private val _queue = PersistentFileLogSerialDispatchQueue()
+    private val queue = PersistentFileLogSerialDispatchQueue()
   }
 }
 
