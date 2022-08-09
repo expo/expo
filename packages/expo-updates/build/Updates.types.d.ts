@@ -34,11 +34,21 @@ export declare type UpdateCheckResult = {
      * `true` if an update is available, `false` if the app is already running the latest available
      * update.
      */
-    isAvailable: boolean;
+    isAvailable: true;
     /**
      * If `isAvailable` is `true`, the manifest of the available update, and `undefined` otherwise.
      */
-    manifest?: Manifest;
+    manifest: Manifest;
+} | {
+    /**
+     * `true` if an update is available, `false` if the app is already running the latest available
+     * update.
+     */
+    isAvailable: false;
+    /**
+     * If `isAvailable` is `true`, the manifest of the available update, and `undefined` otherwise.
+     */
+    manifest: undefined;
 };
 /**
  * The result of fetching a new update.
@@ -48,11 +58,21 @@ export declare type UpdateFetchResult = {
      * `true` if the fetched bundle is new (that is, a different version than what's currently
      * running), `false` otherwise.
      */
-    isNew: boolean;
+    isNew: true;
     /**
      * If `isNew` is `true`, the manifest of the newly downloaded update, and `undefined` otherwise.
      */
-    manifest?: Manifest;
+    manifest: Manifest;
+} | {
+    /**
+     * `true` if the fetched bundle is new (that is, a different version than what's currently
+     * running), `false` otherwise.
+     */
+    isNew: false;
+    /**
+     * If `isNew` is `true`, the manifest of the newly downloaded update, and `undefined` otherwise.
+     */
+    manifest: undefined;
 };
 /**
  * An object that is passed into each event listener when an auto-update check occurs.
