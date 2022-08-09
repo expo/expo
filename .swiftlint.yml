@@ -109,8 +109,31 @@ identifier_name:
   max_length:
     warning: 35
     error: 50
-  validates_start_with_lowercase: false
-  allowed_symbols: ['_']
+  validates_start_with_lowercase: true
+  # Ignore Sweet API components as they intentionally start with the uppercase letter.
+  allowed_symbols:
+    [
+      '_',
+      'AsyncFunction',
+      'Class',
+      'Constants',
+      'Constructor',
+      'Events',
+      'Function',
+      'Name',
+      'OnAppBecomesActive',
+      'OnAppContextDestroys',
+      'OnAppEntersBackground',
+      'OnAppEntersForeground',
+      'OnCreate',
+      'OnDestroy',
+      'OnStartObserving',
+      'OnStopObserving',
+      'Prop',
+      'Property',
+      'View',
+      'ViewManager',
+    ]
 
 # Files should not contain leading whitespace.
 leading_whitespace: warning
@@ -139,6 +162,11 @@ multiline_literal_brackets: warning
 # Functions and methods parameters should be either on the same line, or one per line.
 multiline_parameters:
   severity: warning
+
+# Types should be nested at most 1 level deep, and functions should be nested at most 2 levels deep.
+nesting:
+  type_level: 1
+  function_level: 2
 
 # Multiline parameters should have their surrounding brackets in a new line.
 multiline_parameters_brackets: warning
