@@ -14,7 +14,7 @@ import expo.modules.kotlin.typedarray.Int8Array
 import expo.modules.kotlin.jni.JavaScriptObject
 import expo.modules.kotlin.jni.JavaScriptTypedArray
 import expo.modules.kotlin.jni.JavaScriptValue
-import expo.modules.kotlin.typedarray.AnyTypedArray
+import expo.modules.kotlin.typedarray.TypedArray
 import expo.modules.kotlin.typedarray.Uint16Array
 import expo.modules.kotlin.typedarray.Uint32Array
 import expo.modules.kotlin.typedarray.Uint8Array
@@ -120,7 +120,7 @@ class JavaScriptObjectTypeConverter(isOptional: Boolean) : TypeConverter<JavaScr
   override fun getCppRequiredTypes(): List<CppType> = listOf(CppType.JS_OBJECT)
 }
 
-abstract class BaseTypeArrayConverter<T : AnyTypedArray>(isOptional: Boolean) : TypeConverter<T>(isOptional) {
+abstract class BaseTypeArrayConverter<T : TypedArray>(isOptional: Boolean) : TypeConverter<T>(isOptional) {
   abstract fun wrapJavaScriptTypedArray(value: JavaScriptTypedArray): T
 
   override fun convertNonOptional(value: Any): T = wrapJavaScriptTypedArray(value as JavaScriptTypedArray)
@@ -172,6 +172,6 @@ class BigUint64ArrayTypeConverter(isOptional: Boolean) : BaseTypeArrayConverter<
   override fun wrapJavaScriptTypedArray(value: JavaScriptTypedArray) = BigUint64Array(value)
 }
 
-class TypedArrayTypeConverter(isOptional: Boolean) : BaseTypeArrayConverter<AnyTypedArray>(isOptional) {
-  override fun wrapJavaScriptTypedArray(value: JavaScriptTypedArray): AnyTypedArray = value
+class TypedArrayTypeConverter(isOptional: Boolean) : BaseTypeArrayConverter<TypedArray>(isOptional) {
+  override fun wrapJavaScriptTypedArray(value: JavaScriptTypedArray): TypedArray = value
 }
