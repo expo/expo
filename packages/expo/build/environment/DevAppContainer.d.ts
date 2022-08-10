@@ -1,7 +1,5 @@
 import * as React from 'react';
-export default class DevAppContainer extends React.Component<{
+export default function DevAppContainer({ children }: {
     children?: React.ReactNode;
-}> {
-    render(): JSX.Element;
-}
+}): JSX.Element;
 //# sourceMappingURL=DevAppContainer.d.ts.map

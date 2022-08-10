@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Convert `DevAppContainer` to functional React component.
+
 ## 46.0.1 — 2022-07-25
 
 _This version does not introduce any user-facing changes._
