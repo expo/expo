@@ -52,13 +52,13 @@ You can find all available options for the **store.config.json** in the [store c
 
 ## Upload a new app version
 
-Before we can upload the **store.config.json**, you must upload a new binary of your app. You can [read more about uploading new binaries to stores here.](../distribution/uploading-apps.md).
+Before you can upload the **store.config.json**, you must upload a new binary of your app. [Read more about uploading new binaries to stores](../distribution/uploading-apps.md).
 
 After the binary is submitted and processed, we can upload the **store.config.json** to the app stores.
 
 ## Upload the store config
 
-When you are happy with the **store.config.json** settings, we can start syncing that data to the app stores. All we need to do is one command:
+When you are happy with the **store.config.json** settings, start syncing that data to the app stores. All you need to do is run the following command:
 
 <Terminal cmd={['$ eas metadata:push']} />
 
