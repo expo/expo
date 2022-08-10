@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fixed node executable resolution errors on iOS when `pod install` is executed from package.json `scripts`. ([#18580](https://github.com/expo/expo/pull/18580) by [@kudo](https://github.com/kudo))
-
 ### 💡 Others
+
+## 0.10.2 — 2022-08-10
+
+### 🐛 Bug fixes
+
+- Fixed node executable resolution errors on iOS when `pod install` is executed from package.json `scripts`. ([#18580](https://github.com/expo/expo/pull/18580) by [@kudo](https://github.com/kudo))
 
 ## 0.10.1 — 2022-07-25
 
