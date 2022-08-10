@@ -68,7 +68,6 @@
     "expo-modules-autolinking": "0.10.1",
     "expo-modules-core": "0.11.3",
     "getenv": "^1.0.0",
-    "invariant": "^2.2.4",
     "md5-file": "^3.2.3",
     "node-fetch": "^2.6.7",
     "uuid": "^3.4.0"
@@ -77,7 +76,6 @@
     "expo-error-recovery": "~3.2.0"
   },
   "devDependencies": {
-    "@types/invariant": "^2.2.33",
     "@types/react": "~18.0.14",
     "@types/react-native": "~0.69.1",
     "@types/react-test-renderer": "^18.0.0",
