@@ -2,7 +2,6 @@ package expo.modules.webbrowser
 
 import expo.modules.core.errors.CurrentActivityNotFoundException
 import android.content.Intent
-import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.text.TextUtils
@@ -11,7 +10,6 @@ import androidx.core.os.bundleOf
 import expo.modules.core.utilities.ifNull
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
-import java.lang.IllegalArgumentException
 
 private const val SERVICE_PACKAGE_KEY = "servicePackage"
 private const val BROWSER_PACKAGES_KEY = "browserPackages"
@@ -108,19 +106,15 @@ class WebBrowserModule : Module() {
 
   private fun createCustomTabsIntent(options: OpenBrowserOptions): Intent {
     val builder = CustomTabsIntent.Builder()
-    val color = options.toolbarColor
-    val secondaryColor = options.secondaryToolbarColor
 
-    try {
-      if (!TextUtils.isEmpty(color)) {
-        val intColor = Color.parseColor(color)
-        builder.setToolbarColor(intColor)
-      }
-      if (!TextUtils.isEmpty(secondaryColor)) {
-        val intSecondaryColor = Color.parseColor(secondaryColor)
-        builder.setSecondaryToolbarColor(intSecondaryColor)
-      }
-    } catch (ignored: IllegalArgumentException) {
+    val color = options.toolbarColor
+    if (color != null) {
+      builder.setToolbarColor(color)
+    }
+
+    val secondaryColor = options.secondaryToolbarColor
+    if (secondaryColor != null) {
+      builder.setSecondaryToolbarColor(secondaryColor)
     }
 
     builder.setShowTitle(options.showTitle)
