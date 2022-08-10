@@ -4,6 +4,7 @@ import {
   getContext,
   getRudderAnalyticsClient,
   logEventAsync,
+  resetInternalStateForTesting,
   setUserDataAsync,
 } from '../rudderstackClient';
 
@@ -12,11 +13,8 @@ jest.mock('ci-info', () => ({ isCI: true, isPR: true, name: 'GitHub Actions' }))
 jest.mock('@expo/rudder-sdk-node');
 
 describe(logEventAsync, () => {
-  // order of these tests matters since the module retains state
-
-  it('does not log when the user has not been identified', async () => {
-    await logEventAsync('Start Project');
-    expect(getRudderAnalyticsClient().track).not.toHaveBeenCalled();
+  beforeEach(() => {
+    resetInternalStateForTesting();
   });
 
   it('logs when the user has been identified', async () => {
@@ -29,6 +27,11 @@ describe(logEventAsync, () => {
       properties: { source: 'expo', source_version: undefined },
       userId: 'fake',
     });
+  });
+
+  it('does not log when the user has not been identified', async () => {
+    await logEventAsync('Start Project');
+    expect(getRudderAnalyticsClient().track).not.toHaveBeenCalled();
   });
 });
 

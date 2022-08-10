@@ -20,6 +20,12 @@ let identifyData: {
   traits: Record<string, any>;
 } | null = null;
 
+export function resetInternalStateForTesting() {
+  identified = false;
+  identifyData = null;
+  client = null;
+}
+
 export function getRudderAnalyticsClient(): RudderAnalytics {
   if (client) {
     return client;
