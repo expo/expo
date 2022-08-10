@@ -3,13 +3,13 @@ import React from 'react';
 import { InlineCode } from '~/components/base/code';
 import { B, P } from '~/components/base/paragraph';
 import { H2, H3Code } from '~/components/plugins/Headings';
+import { APIDataType } from '~/components/plugins/api/APIDataType';
 import { ConstantDefinitionData } from '~/components/plugins/api/APIDataTypes';
 import { APISectionDeprecationNote } from '~/components/plugins/api/APISectionDeprecationNote';
 import { APISectionPlatformTags } from '~/components/plugins/api/APISectionPlatformTags';
 import {
   CommentTextBlock,
   getTagNamesList,
-  resolveTypeName,
   STYLES_APIBOX,
 } from '~/components/plugins/api/APISectionUtils';
 
@@ -33,7 +33,7 @@ const renderConstant = (
     </H3Code>
     {type && (
       <P>
-        <B>Type:</B> <InlineCode>{resolveTypeName(type)}</InlineCode>
+        <B>Type:</B> <APIDataType typeDefinition={type} />
       </P>
     )}
     <CommentTextBlock comment={comment} includePlatforms={false} />

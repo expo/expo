@@ -50,7 +50,7 @@ export const renderMethod = (
       <APISectionDeprecationNote comment={comment} />
       <APISectionPlatformTags comment={comment} prefix="Only for:" firstElement />
       <HeaderComponent tags={getTagNamesList(comment)}>
-        <InlineCode customCss={!exposeInSidebar ? STYLES_NOT_EXPOSED_HEADER : undefined}>
+        <InlineCode css={!exposeInSidebar ? STYLES_NOT_EXPOSED_HEADER : undefined}>
           {apiName && `${apiName}.`}
           {header !== 'Hooks' ? `${name}(${listParams(parameters)})` : name}
         </InlineCode>

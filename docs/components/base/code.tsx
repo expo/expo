@@ -1,5 +1,4 @@
 import { css } from '@emotion/react';
-import { SerializedStyles } from '@emotion/serialize';
 import { theme, typography } from '@expo/styleguide';
 import { Language, Prism } from 'prism-react-renderer';
 import * as React from 'react';
@@ -19,14 +18,14 @@ const STYLES_CODE_BLOCK = css`
   font-size: 13px;
   line-height: 20px;
   white-space: inherit;
-  padding: 0px;
-  margin: 0px;
+  padding: 0;
+  margin: 0;
 
   .code-annotation {
     transition: 200ms ease all;
     transition-property: text-shadow, opacity;
-    text-shadow: ${theme.highlight.emphasis} 0px 0px 10px, ${theme.highlight.emphasis} 0px 0px 10px,
-      ${theme.highlight.emphasis} 0px 0px 10px, ${theme.highlight.emphasis} 0px 0px 10px;
+    text-shadow: ${theme.highlight.emphasis} 0 0 10px, ${theme.highlight.emphasis} 0 0 10px,
+      ${theme.highlight.emphasis} 0 0 10px, ${theme.highlight.emphasis} 0 0 10px;
   }
 
   .code-annotation.with-tooltip:hover {
@@ -213,10 +212,36 @@ const remapLanguages: Record<string, string> = {
   rb: 'ruby',
 };
 
-type InlineCodeProps = React.PropsWithChildren<{ customCss?: SerializedStyles }>;
+type InlineCodeProps = React.PropsWithChildren<{ className?: string }>;
 
-export const InlineCode = ({ children, customCss }: InlineCodeProps) => (
-  <code css={[STYLES_INLINE_CODE, customCss]} className="inline">
+export const InlineCode = ({ children, className }: InlineCodeProps) => (
+  <code css={STYLES_INLINE_CODE} className={className ? `inline ${className}` : 'inline'}>
     {children}
   </code>
 );
+
+const codeBlockContainerStyle = {
+  margin: 0,
+  padding: `3px 6px`,
+};
+
+const codeBlockInlineContainerStyle = {
+  display: 'inline-flex',
+};
+
+type CodeBlockProps = React.PropsWithChildren<{ inline?: boolean }>;
+
+export const CodeBlock = ({ children, inline = false }: CodeBlockProps) => {
+  const Element = inline ? 'span' : 'pre';
+  return (
+    <Element
+      css={[
+        STYLES_CODE_CONTAINER,
+        codeBlockContainerStyle,
+        inline && codeBlockInlineContainerStyle,
+      ]}
+      {...attributes}>
+      <code css={[STYLES_CODE_BLOCK, { fontSize: '80%' }]}>{children}</code>
+    </Element>
+  );
+};

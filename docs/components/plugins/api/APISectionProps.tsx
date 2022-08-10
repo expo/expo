@@ -108,7 +108,7 @@ export const renderProp = (
       <APISectionDeprecationNote comment={extractedComment} />
       <APISectionPlatformTags comment={comment} prefix="Only for:" firstElement />
       <HeaderComponent tags={getTagNamesList(comment)}>
-        <InlineCode customCss={!exposeInSidebar ? STYLES_NOT_EXPOSED_HEADER : undefined}>
+        <InlineCode css={!exposeInSidebar ? STYLES_NOT_EXPOSED_HEADER : undefined}>
           {name}
         </InlineCode>
       </HeaderComponent>

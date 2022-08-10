@@ -38,7 +38,7 @@ exports[`APISectionUtils.CommentTextBlock component comment with example 1`] = `
       rel="noopener noreferrer"
     >
       <code
-        class="inline css-1fz3od4-InlineCode"
+        class="inline css-16lpqq8-InlineCode"
       >
         Install Referrer API
       </code>
@@ -62,7 +62,7 @@ from the Google Play Store. In practice, the referrer URL may not be a complete,
       data-text="true"
     >
       <code
-        class="css-1d2rcfd"
+        class="css-tqrxwq"
       >
         <span
           class="token keyword"
@@ -390,17 +390,24 @@ exports[`APISectionUtils.resolveTypeName generic type in Promise 1`] = `
 
 exports[`APISectionUtils.resolveTypeName object reflection 1`] = `
 <div>
-  { 
+  {
+
   <span>
+      
     target: 
     number
     , 
+    
+
   </span>
   <span>
+      
     value: 
     boolean
+    
+
   </span>
-   }
+  }
 </div>
 `;
 
