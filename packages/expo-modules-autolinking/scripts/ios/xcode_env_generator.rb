@@ -10,7 +10,7 @@ def maybe_generate_xcode_env_file!()
   end
 
   # Adding the meta character `;` at the end of command for Ruby `Kernel.exec` to execute the command in shell.
-  stdout, stderr, status = Open3.capture3('command -v node;')
+  stdout, stderr, status = Open3.capture3('node --print "process.argv[0]";')
   node_path = stdout.strip
   if !stderr.empty? || status.exitstatus != 0 || node_path.empty?
     Pod::UI.warn "Unable to generate `.xcode.env.local` for Node.js binary path: #{stderr}"
