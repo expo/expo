@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Support CSS colors in `controlsColor`, `toolbarColor` and `secondaryToolbarColor` options. ([#18586](https://github.com/expo/expo/pull/18586) by [@janicduplessis](https://github.com/janicduplessis))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
