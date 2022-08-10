@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add landscape orienation support. ([#18509](https://github.com/expo/expo/pull/18509)) by [@ajsmth](https://github.com/ajsmth)
+
 ### 🐛 Bug fixes
 
 - Fixed `the function must be called on main queue` error when the app is reload from the error screen on iOS. ([#18563](https://github.com/expo/expo/pull/18563) by [@lukmccall](https://github.com/lukmccall))

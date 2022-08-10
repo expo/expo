@@ -79,8 +79,12 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, RCTB
     let rootView = RCTRootView(bridge: bridge!, moduleName: self.rootViewModuleName!, initialProperties: self.rootViewInitialProperties)
     rootView.backgroundColor = self.deferredRootView?.backgroundColor ?? UIColor.white
     let window = getWindow()
-    window.rootViewController = self.reactDelegate?.createRootViewController()
-    window.rootViewController!.view = rootView
+
+    // NOTE: this order of assignment seems to actually have an effect on behaviour
+    // direct assignment of window.rootViewController.view = rootView does not work
+    let rootViewController = self.reactDelegate?.createRootViewController()
+    rootViewController!.view = rootView
+    window.rootViewController = rootViewController
     window.makeKeyAndVisible()
 
     // it is purposeful that we don't clean up saved properties here, because we may initialize

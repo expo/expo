@@ -5,7 +5,9 @@ import UIKit
 @objc
 public class EXDevLauncherManifestHelper: NSObject {
   private static func defaultOrientationForOrientationMask(_ orientationMask: UIInterfaceOrientationMask) -> UIInterfaceOrientation {
-    if orientationMask.contains(.portrait) {
+    if orientationMask.contains(.all) {
+      return UIInterfaceOrientation.unknown
+    } else  if orientationMask.contains(.portrait) {
       return UIInterfaceOrientation.portrait
     } else if orientationMask.contains(.landscapeLeft) {
       return UIInterfaceOrientation.landscapeLeft

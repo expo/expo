@@ -8,8 +8,8 @@ class EXDevLauncherManifestHelperTests: XCTestCase {
   func testExportManifestOrientation() {
     XCTAssertEqual(UIInterfaceOrientation.portrait, EXDevLauncherManifestHelper.exportManifestOrientation("portrait"))
     XCTAssertEqual(UIInterfaceOrientation.landscapeLeft, EXDevLauncherManifestHelper.exportManifestOrientation("landscape"))
-    XCTAssertEqual(UIInterfaceOrientation.portrait, EXDevLauncherManifestHelper.exportManifestOrientation("default"))
-    XCTAssertEqual(UIInterfaceOrientation.portrait, EXDevLauncherManifestHelper.exportManifestOrientation("unsupported-value"))
+    XCTAssertEqual(UIInterfaceOrientation.unknown, EXDevLauncherManifestHelper.exportManifestOrientation("default"))
+    XCTAssertEqual(UIInterfaceOrientation.unknown, EXDevLauncherManifestHelper.exportManifestOrientation("unsupported-value"))
   }
 
   func testExportManifestUserInterfaceStyle() {
