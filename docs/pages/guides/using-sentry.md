@@ -83,7 +83,7 @@ Depending on which platform you are on (mobile or web), use the following method
 // Access any @sentry/browser exports via:
 // Sentry.Browser.*
 
-// Example:
+// The following example uses `captureException()` from Sentry.Native.* to capture errors:
 try {
   // your code
 } catch (error) {
