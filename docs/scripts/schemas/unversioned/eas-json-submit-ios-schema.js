@@ -71,4 +71,11 @@ export default [
       'The Bundle identifier that will be used when accessing submit credentials managed by Expo, it does not have any effect if you are using local credentials. In most cases this value will be autodetected, but if you have multiple Xcode schemes and targets, this value might be necessary.',
     ],
   },
+  {
+    name: 'metadataPath',
+    type: 'string',
+    description: [
+      'The path to your store configuration file. [Learn more](https://docs.expo.dev/eas-metadata/introduction/).'
+    ],
+  }
 ];

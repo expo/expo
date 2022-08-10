@@ -116,6 +116,8 @@ redirects[clients/upgrading]=development/upgrading/
 redirects[modules]=modules/overview/
 redirects[module-api]=modules/module-api/
 redirects[module-config]=modules/module-config/
+# EAS Metadata
+redirects[eas-metadata]=eas-metadata/introduction/
 
 redirects[introduction/walkthrough]=tutorial/planning/
 
