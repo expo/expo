@@ -4,6 +4,8 @@
 
 #include "JavaScriptRuntime.h"
 #include "JavaScriptObject.h"
+#include "JavaScriptTypedArray.h"
+#include "TypedArray.h"
 
 namespace expo {
 void JavaScriptValue::registerNatives() {
@@ -17,12 +19,14 @@ void JavaScriptValue::registerNatives() {
                    makeNativeMethod("isSymbol", JavaScriptValue::isSymbol),
                    makeNativeMethod("isFunction", JavaScriptValue::isFunction),
                    makeNativeMethod("isArray", JavaScriptValue::isArray),
+                   makeNativeMethod("isTypedArray", JavaScriptValue::isTypedArray),
                    makeNativeMethod("isObject", JavaScriptValue::isObject),
                    makeNativeMethod("getBool", JavaScriptValue::getBool),
                    makeNativeMethod("getDouble", JavaScriptValue::getDouble),
                    makeNativeMethod("getString", JavaScriptValue::jniGetString),
                    makeNativeMethod("getObject", JavaScriptValue::getObject),
                    makeNativeMethod("getArray", JavaScriptValue::getArray),
+                   makeNativeMethod("getTypedArray", JavaScriptValue::getTypedArray),
                  });
 }
 
@@ -123,6 +127,14 @@ bool JavaScriptValue::isObject() {
   return jsValue->isObject();
 }
 
+bool JavaScriptValue::isTypedArray() {
+  if (jsValue->isObject()) {
+    jsi::Runtime &jsRuntime = runtimeHolder.getJSRuntime();
+    return expo::isTypedArray(jsRuntime, jsValue->getObject(jsRuntime));
+  }
+  return false;
+}
+
 bool JavaScriptValue::getBool() {
   return jsValue->getBool();
 }
@@ -166,9 +178,14 @@ jni::local_ref<jstring> JavaScriptValue::jniKind() {
   auto result = kind();
   return jni::make_jstring(result);
 }
-
 jni::local_ref<jstring> JavaScriptValue::jniGetString() {
   auto result = getString();
   return jni::make_jstring(result);
+}
+
+jni::local_ref<JavaScriptTypedArray::javaobject> JavaScriptValue::getTypedArray() {
+  auto &jsRuntime = runtimeHolder.getJSRuntime();
+  auto jsObject = std::make_shared<jsi::Object>(jsValue->getObject(jsRuntime));
+  return JavaScriptTypedArray::newObjectCxxArgs(runtimeHolder, jsObject);
 }
 } // namespace expo

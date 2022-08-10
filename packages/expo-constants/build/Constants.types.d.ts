@@ -160,12 +160,9 @@ export declare type ExpoClientConfig = ExpoConfig & {
     currentFullName?: string;
 };
 /**
- * @hidden
- * A classic manifest https://docs.expo.dev/guides/how-expo-works/#expo-manifest
+ * Represents an intersection of all possible Config types.
  */
-export declare type AppManifest = ExpoClientConfig & ExpoGoConfig & EASConfig & ClientScopingConfig & {
-    [key: string]: any;
-};
+export declare type AppManifest = ExpoClientConfig & ExpoGoConfig & EASConfig & ClientScopingConfig & Record<string, any>;
 export interface PlatformManifest {
     ios?: IOSManifest;
     android?: AndroidManifest;

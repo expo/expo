@@ -1,4 +1,3 @@
-import { createSymbolicateMiddleware } from '@expo/dev-server/build/webpack/symbolicateMiddleware';
 import chalk from 'chalk';
 import type { Application } from 'express';
 import fs from 'fs';
@@ -25,8 +24,6 @@ import {
 import { ensureEnvironmentSupportsTLSAsync } from './tls';
 
 const debug = require('debug')('expo:start:server:webpack:devServer') as typeof console.log;
-
-type AnyCompiler = webpack.Compiler | webpack.MultiCompiler;
 
 export type WebpackConfiguration = webpack.Configuration & {
   devServer?: {
@@ -116,11 +113,9 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
 
   private async createNativeDevServerMiddleware({
     port,
-    compiler,
     options,
   }: {
     port: number;
-    compiler: AnyCompiler;
     options: BundlerStartOptions;
   }) {
     if (!this.isTargetingNative()) {
@@ -138,14 +133,8 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
 
     const middleware = await this.getManifestMiddlewareAsync(options);
 
-    nativeMiddleware.middleware.use(middleware).use(
-      '/symbolicate',
-      createSymbolicateMiddleware({
-        projectRoot: this.projectRoot,
-        compiler,
-        logger: nativeMiddleware.logger,
-      })
-    );
+    nativeMiddleware.middleware.use(middleware);
+
     return nativeMiddleware;
   }
 
@@ -262,7 +251,6 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
       // Create the middleware required for interacting with a native runtime (Expo Go, or a development build).
       nativeMiddleware = await this.createNativeDevServerMiddleware({
         port,
-        compiler,
         options,
       });
       // Inject the native manifest middleware.

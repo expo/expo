@@ -16,6 +16,7 @@ import {
   resolveTypeName,
   getComponentName,
   STYLES_APIBOX,
+  getTagNamesList,
 } from '~/components/plugins/api/APISectionUtils';
 
 export type APISectionComponentsProps = {
@@ -36,7 +37,7 @@ const renderComponent = (
   return (
     <div key={`component-definition-${resolvedName}`} css={STYLES_APIBOX}>
       <APISectionDeprecationNote comment={extractedComment} />
-      <H3Code>
+      <H3Code tags={getTagNamesList(comment)}>
         <InlineCode>{resolvedName}</InlineCode>
       </H3Code>
       {resolvedType && (

@@ -468,11 +468,41 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
     NSMutableDictionary *updatedExif = [EXCameraUtils updateExifMetadata:metadata[(NSString *)kCGImagePropertyExifDictionary] withAdditionalData:@{ @"Orientation": @([EXCameraUtils exportImageOrientation:takenImage.imageOrientation]) }];
     updatedExif[(NSString *)kCGImagePropertyExifPixelYDimension] = @(width);
     updatedExif[(NSString *)kCGImagePropertyExifPixelXDimension] = @(height);
+      
+    NSMutableDictionary *updatedMetadata = [metadata mutableCopy];
+      
+    if(options[@"additionalExif"] && [options[@"additionalExif"] isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *additionalExif = options[@"additionalExif"];
+        [updatedExif addEntriesFromDictionary:additionalExif];
+        NSMutableDictionary *gpsDict = [[NSMutableDictionary alloc] init];
+
+        // Handle the format of GPS coordinates
+        if(additionalExif[@"GPSLatitude"]){
+            gpsDict[(NSString *)kCGImagePropertyGPSLatitude] = @(fabs([additionalExif[@"GPSLatitude"] floatValue]));
+            gpsDict[(NSString *)kCGImagePropertyGPSLatitudeRef] = [additionalExif[@"GPSLatitude"] floatValue] >= 0 ? @"N" : @"S";
+        }
+        
+        if(additionalExif[@"GPSLongitude"]){
+            gpsDict[(NSString *)kCGImagePropertyGPSLongitude] = @(fabs([additionalExif[@"GPSLongitude"] floatValue]));
+            gpsDict[(NSString *)kCGImagePropertyGPSLongitudeRef] = [additionalExif[@"GPSLongitude"] floatValue] >= 0 ? @"E" : @"W";
+        }
+        
+        if(additionalExif[@"GPSAltitude"]){
+            gpsDict[(NSString *)kCGImagePropertyGPSAltitude] = @(fabs([additionalExif[@"GPSAltitude"] floatValue]));
+            gpsDict[(NSString *)kCGImagePropertyGPSAltitudeRef] = [additionalExif[@"GPSAltitude"] floatValue] >= 0 ? @(0) : @(1);
+        }
+        
+        if(!updatedMetadata[(NSString *)kCGImagePropertyGPSDictionary]){
+            updatedMetadata[(NSString *)kCGImagePropertyGPSDictionary] = gpsDict;
+        } else {
+            [updatedMetadata[(NSString *)kCGImagePropertyGPSDictionary] addEntriesFromDictionary:gpsDict];
+        }
+    }
+      
     response[@"exif"] = updatedExif;
     
-    NSMutableDictionary *updatedMetadata = [metadata mutableCopy];
     updatedMetadata[(NSString *)kCGImagePropertyExifDictionary] = updatedExif;
-    
+ 
     // UIImage does not contain metadata information. We need to add them to CGImage manually.
     processedImageData = [EXCameraUtils dataFromImage:takenImage withMetadata:updatedMetadata imageQuality:quality];
   } else {

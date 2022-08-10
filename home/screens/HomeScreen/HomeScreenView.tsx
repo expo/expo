@@ -1,7 +1,7 @@
 import { spacing } from '@expo/styleguide-native';
 import { StackScreenProps } from '@react-navigation/stack';
-import Constants from 'expo-constants';
 import { View, Divider, Spacer } from 'expo-dev-client-components';
+import { isDevice } from 'expo-device';
 import * as React from 'react';
 import {
   Alert,
@@ -295,7 +295,7 @@ export class HomeScreenView extends React.Component<Props, State> {
 
     const baseMessage = `Make sure you are signed in to the same Expo account on your computer and this app. Also verify that your computer is connected to the internet, and ideally to the same Wi-Fi network as your mobile device. Lastly, ensure that you are using the latest version of Expo CLI. Pull to refresh to update.`;
     const message = Platform.select({
-      ios: Constants.isDevice
+      ios: isDevice
         ? baseMessage
         : `${baseMessage} If this still doesn't work, press the + icon on the header to type the project URL manually.`,
       android: baseMessage,

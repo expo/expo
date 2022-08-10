@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added `includeTests` option to `use_expo_modules!` to include test specs from autolinked modules. ([#18496](https://github.com/expo/expo/pull/18496) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

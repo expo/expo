@@ -6,7 +6,6 @@ import android.view.KeyEvent
 import android.view.MotionEvent
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.bridge.ReadableMap
-import expo.interfaces.devmenu.expoapi.DevMenuExpoApiClientInterface
 import expo.interfaces.devmenu.items.DevMenuDataSourceItem
 import kotlinx.coroutines.CoroutineScope
 
@@ -89,11 +88,6 @@ interface DevMenuManagerInterface {
    * Set the current screen on which all action will be dispatched.
    */
   fun setCurrentScreen(screen: String?)
-
-  /**
-   * @return a instance of [DevMenuExpoApiClientInterface]
-   */
-  fun getExpoApiClient(): DevMenuExpoApiClientInterface
 
   /**
    * Sends an event to the delegate's bridge if exists.

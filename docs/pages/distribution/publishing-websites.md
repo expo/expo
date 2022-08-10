@@ -5,12 +5,12 @@ title: Publishing Websites
 ## Creating a Build
 
 - Optimize the assets for speed - `npx expo-optimize` (formerly `expo optimize`)
-- Bundle the project for production - `expo build:web`
+- Bundle the project for production - `npx expo export:web` (`expo build:web` in the legacy Expo CLI).
   - Creates a production ready static bundle in the `web-build/` directory. Don't edit this folder directly.
   - Uses Webpack to [optimize the project.][webpack-optimize]
   - If you make any changes to your project, you'll need to re-build for production.
-  - For more help use `expo build:web --help`
-  - To speed up builds you can skip the PWA asset generation with `expo build:web --no-pwa`
+  - For more help use `npx expo export:web --help`
+  <!-- - To speed up builds you can skip the PWA asset generation with `expo build:web --no-pwa` -->
 - You can now deploy or host this anywhere you like.
 
 **Tips**
@@ -58,7 +58,7 @@ Vercel has a single-command zero-config deployment flow. You can use `vercel` to
 
 1. [Install the Vercel CLI](https://vercel.com/download).
 
-2. Build your Expo web app with `expo build:web`.
+2. Build your Expo web app with `npx expo export:web` (SDK 45 and lower should use `expo build:web` via the legacy global Expo CLI).
 
 3. To deploy:
 
@@ -118,13 +118,15 @@ yarn add -D gh-pages
 
 Add the following to your **package.json**:
 
+> In projects running SDK 45 or lower, use `expo build:web` instead of `expo export:web`.
+
 ```js
 /* package.json */
 {
     "homepage": "http://evanbacon.github.io/expo-gh-pages",
     "scripts": {
         "deploy": "gh-pages -d web-build",
-        "predeploy": "expo build:web"
+        "predeploy": "expo export:web"
     }
 }
 ```
@@ -178,10 +180,11 @@ Here are the formal instructions for deploying to GitHub Pages:
    "scripts": {
      /* ... */
      "deploy": "gh-pages -d web-build",
-     "predeploy": "expo build:web"
+     "predeploy": "expo export:web"
    }
    ```
 
+   > In projects running SDK 45 or lower, use `expo build:web` instead of `expo export:web`.
    > `predeploy` is automatically run before `deploy`.
 
 5. **Generate a _production build_ of your app, and deploy it to GitHub Pages.** (2 minutes)
@@ -215,10 +218,12 @@ In the existing `scripts` property, add a `predeploy` property and a `deploy` pr
 ```js
 "scripts": {
   /* ... */
-  "predeploy": "expo build:web",
+  "predeploy": "expo export:web",
   "deploy-hosting": "npm run predeploy && firebase deploy --only hosting",
 }
 ```
+
+> In projects running SDK 45 or lower, use `expo build:web` instead of `expo export:web`.
 
 Run the `npm run deploy-hosting` command to deploy.
 

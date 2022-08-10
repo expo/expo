@@ -115,16 +115,13 @@ class Video extends React.Component {
         return this._performOperationAndHandleStatusAsync((tag) => ExponentAV.unloadForVideo(tag));
     };
     componentWillUnmount() {
-        try {
-            // Auto unload video to perform necessary cleanup safely
-            this.unloadAsync();
-        }
-        catch {
-            // Ignored. Sometimes the unloadAsync code is executed when video is already unloaded.
+        // Auto unload video to perform necessary cleanup safely
+        this.unloadAsync().catch(() => {
+            // Ignored rejection. Sometimes the unloadAsync code is executed when video is already unloaded.
             // In such cases, it throws:
             // "[Unhandled promise rejection: Error: Invalid view returned from registry,
             //  expecting EXVideo, got: (null)]"
-        }
+        });
     }
     /**
      * Set status API, only available while `isLoaded = true`.
@@ -250,6 +247,7 @@ class Video extends React.Component {
                 ...Object.keys(status),
             ]),
             style: StyleSheet.flatten([_STYLES.base, this.props.style]),
+            videoStyle: StyleSheet.flatten([_STYLES.video, this.props.videoStyle]),
             source,
             resizeMode: nativeResizeMode,
             status,
@@ -261,7 +259,7 @@ class Video extends React.Component {
             onFullscreenUpdate: this._nativeOnFullscreenUpdate,
         };
         return (React.createElement(View, { style: nativeProps.style, pointerEvents: "box-none" },
-            React.createElement(ExponentVideo, { ref: this._nativeRef, ...nativeProps, style: _STYLES.video }),
+            React.createElement(ExponentVideo, { ref: this._nativeRef, ...nativeProps, style: nativeProps.videoStyle }),
             this._renderPoster()));
     }
 }

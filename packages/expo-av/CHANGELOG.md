@@ -6,7 +6,12 @@
 
 ### 🎉 New features
 
+- Added support for audio panning on Android (MediaPlayer implementation only) via `audioPan` prop. ([#15530](https://github.com/expo/expo/pull/15530) by [@DominickVale](https://github.com/DominickVale))
+- Added `videoStyle` prop for Video component. ([#18549](https://github.com/expo/expo/pull/18549) by [@alantoa](https://github.com/alantoa))
+
 ### 🐛 Bug fixes
+
+- Fixed promise rejection catching when `Video` is unmounted. ([#18471](https://github.com/expo/expo/pull/18471) by [@barthap](https://github.com/barthap))
 
 ### 💡 Others
 

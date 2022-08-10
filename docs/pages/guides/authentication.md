@@ -176,7 +176,7 @@ export default function App() {
 - Setup redirect URIs: Your Project > Permitted Redirect URIs: (be sure to save after making changes).
   - _Expo Go_: `exp://localhost:19000/--/`
   - _Web dev_: `https://localhost:19006`
-    - Run `expo start:web --https` to run with **https**, auth won't work otherwise.
+    - Run `expo start --web --https` to run with **https**, auth won't work otherwise.
     - Adding a slash to the end of the URL doesn't matter.
   - _Standalone and Bare_: `your-scheme://`
     - Scheme should be specified in app.json `expo.scheme: 'your-scheme'`, then added to the app code with `makeRedirectUri({ native: 'your-scheme://' })`)
@@ -214,7 +214,7 @@ const discovery = {
 
 const redirectUri = makeRedirectUri({
   /* @info The URI <code>[scheme]://</code> to be used in bare and standalone. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
-  scheme: 'your.app'  
+  scheme: 'your.app'
 /* @end */});
 
 const CLIENT_ID = "CLIENT_ID";
@@ -1041,10 +1041,7 @@ This can only be used in standalone and bare workflow apps. This method cannot b
 - Your app needs to conform to the URI scheme matching your bundle identifier.
   - _Standalone_: Automatically added, do nothing.
   - _Bare workflow_: Run `npx uri-scheme add <your bundle id> --ios`
-- To test this you can:
-  1. Eject to bare: `expo prebuild` and run `yarn ios`
-  2. Build a simulator app: `expo build:ios -t simulator` on `eas build`
-  3. Build a production IPA: `expo build:ios` or `eas build`
+- To test this you can use `expo run:ios` or create a development build.
 - Whenever you change the values in **app.json** you'll need to rebuild the native app.
 
 **Troubleshooting**
@@ -1064,11 +1061,9 @@ This can only be used in Standalone, and bare workflow apps. This method cannot 
   - _Standalone_: Automatically added, do nothing.
   - _Bare workflow_: Run `npx uri-scheme add <your android.package> --android`
 - **Signing-certificate fingerprint**:
-  - Run `expo credentials:manager -p android` then select "Update upload Keystore" -> "Generate new keystore" -> "Go back to experience overview"
-  - Copy your "Google Certificate Fingerprint", it will output a string that looks like `A1:B2:C3` but longer.
-- To test this you can:
-  1. Eject to bare: `expo prebuild` and run `yarn android`
-  2. Build a production APK: `expo build:android`
+  - Run `eas credentials` then select "Android" and then pick a build profile.
+  - Copy your "SHA1 Fingerprint"
+- To test this you can use `expo run:android` or create a development build.
 - Whenever you change the values in **app.json** you'll need to rebuild the native app.
 
 #### Web Apps
@@ -1081,7 +1076,7 @@ Expo web client ID for use in the browser.
 - Give it a name (e.g. "Web App").
 - **URIs** (Authorized JavaScript origins): https://localhost:19006 & https://yourwebsite.com
 - **Authorized redirect URIs**: https://localhost:19006 & https://yourwebsite.com
-- To test this be sure to start your app with `expo start:web --https`.
+- To test this be sure to start your app with `expo start --web --https`.
 
 <Tabs tabs={["Standard", "Firebase"]}>
 <Tab>
@@ -1683,7 +1678,7 @@ export default function App() {
   - _Expo Go_: `exp://localhost:19000/--/`
   - _Web dev_: `https://localhost:19006`
     - Important: Ensure there's no slash at the end of the URL unless manually changed in the app code with `makeRedirectUri({ path: '/' })`.
-    - Run `expo start:web --https` to run with **https**, auth won't work otherwise.
+    - Run `expo start --web --https` to run with **https**, auth won't work otherwise.
   - _Custom app_: `your-scheme://`
     - Scheme should be specified in app.json `expo.scheme: 'your-scheme'`, then added to the app code with `makeRedirectUri({ native: 'your-scheme://' })`)
   - _Proxy_: `https://auth.expo.io/@username/slug`
@@ -1757,7 +1752,6 @@ export default function App() {
 </Tab>
 
 <Tab>
-
 
 <!-- prettier-ignore -->
 ```tsx
@@ -2311,7 +2305,13 @@ Here are a few examples of some common redirect URI patterns you may end up usin
 
 #### Expo Proxy
 
-> `https://auth.expo.io/@yourname/your-app`
+```
+https://auth.expo.io/@username/app-slug
+
+# Example
+https://auth.expo.io/@johnsample/my-app
+
+```
 
 - **Environment:** Development or production projects in Expo Go, or in a standalone build.
 - **Create:** Use `AuthSession.makeRedirectUri({ useProxy: true })` to create this URI.
@@ -2321,9 +2321,15 @@ Here are a few examples of some common redirect URI patterns you may end up usin
 
 #### Published project in the Expo Go app
 
-> `exp://exp.host/@yourname/your-app`
+```
+exp://u.expo.dev/[project-id]?channel-name=[channel-name]&runtime-version=[runtime-version]
 
-- **Environment:** Production projects that you `expo publish`'d and opened in the Expo Go app.
+# Example
+
+exp://u.expo.dev/F767ADF57-B487-4D8F-9522-85549C39F43F?channel-name=main&runtime-version=exposdk:45.0.0
+```
+
+- **Environment:** Production projects that you `eas update`'d and opened in the Expo Go app.
 - **Create:** Use `AuthSession.makeRedirectUri({ useProxy: false })` to create this URI.
   - The link is constructed from your Expo username and the Expo app name, which are appended to the Expo Go app URI scheme.
   - You could also create this link with using `Linking.makeUrl()` from `expo-linking`.
@@ -2359,7 +2365,7 @@ In some cases there will be anywhere between 1 to 3 slashes (`/`).
   - `your.app:///` -> `makeRedirectUri({ scheme: 'your.app', isTripleSlashed: true })`
   - `your.app:/authorize` -> `makeRedirectUri({ native: 'your.app:/authorize' })`
   - `your.app://auth?foo=bar` -> `makeRedirectUri({ scheme: 'your.app', path: 'auth', queryParams: { foo: 'bar' } })`
-  - `exp://exp.host/@yourname/your-app` -> `makeRedirectUri({ useProxy: true })`
+  - `exp://u.expo.dev/[project-id]?channel-name=[channel-name]&runtime-version=[runtime-version]` -> `makeRedirectUri({ useProxy: true })`
   - This link can often be created automatically but we recommend you define the `scheme` property at least. The entire URL can be overridden in custom apps by passing the `native` property. Often this will be used for providers like Google or Okta which require you to use a custom native URI redirect. You can add, list, and open URI schemes using `npx uri-scheme`.
   - If you change the `expo.scheme` after ejecting then you'll need to use the `expo apply` command to apply the changes to your native project, then rebuild them (`yarn ios`, `yarn android`).
 - **Usage:** `promptAsync({ redirectUri })`

@@ -48,11 +48,12 @@ export class ExpoGoInstaller<IDevice> {
     const cacheId = `${this.platform}-${deviceManager.identifier}`;
 
     if (ExpoGoInstaller.cache[cacheId]) {
+      debug('skipping subsequent upgrade check');
       return false;
     }
+    ExpoGoInstaller.cache[cacheId] = true;
     if (await this.isClientOutdatedAsync(deviceManager)) {
       // Only prompt once per device, per run.
-      ExpoGoInstaller.cache[cacheId] = true;
       const confirm = await confirmAsync({
         initial: true,
         message: `Expo Go on ${deviceManager.name} is outdated, would you like to upgrade?`,

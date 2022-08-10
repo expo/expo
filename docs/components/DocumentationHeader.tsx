@@ -20,7 +20,6 @@ import { Search } from './icons/Search';
 
 import { paragraph } from '~/components/base/typography';
 import AlgoliaSearch from '~/components/plugins/AlgoliaSearch';
-import { shouldShowFeaturePreviewLink } from '~/constants/FeatureFlags';
 import * as Constants from '~/constants/theme';
 
 const STYLES_LOGO = css`
@@ -394,19 +393,6 @@ export default class DocumentationHeader extends React.PureComponent<Props> {
               <span css={SECTION_LINK_TEXT}>API Reference</span>
             </a>
           </Link>
-          {shouldShowFeaturePreviewLink() ? (
-            <Link href="/feature-preview" passHref>
-              <a
-                css={[
-                  SECTION_LINK,
-                  this.props.activeSection === 'featurePreview' && SECTION_LINK_ACTIVE,
-                ]}>
-                <span css={SECTION_LINK_TEXT}>Feature Preview</span>
-              </a>
-            </Link>
-          ) : (
-            <span />
-          )}
         </SectionContainer>
       </div>
     );

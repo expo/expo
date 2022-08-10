@@ -3,7 +3,7 @@ title: Module API
 ---
 
 import { CodeBlocksTable } from '~/components/plugins/CodeBlocksTable';
-import { PlatformTag } from '~/components/plugins/PlatformTag';
+import { PlatformTag } from '~/ui/components/Tag';
 import { APIBox } from '~/components/plugins/APIBox';
 
 > Note: This API is still experimental and subject to change. Some features that you need may not be implemented yet.
