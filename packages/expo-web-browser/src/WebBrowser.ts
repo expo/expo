@@ -219,7 +219,7 @@ export function dismissBrowser(): void {
  *
  * How this works on web:
  * - A crypto state will be created for verifying the redirect.
- *   - This means you need to run with `expo start:web --https`
+ *   - This means you need to run with `npx expo start --https`
  * - The state will be added to the window's `localstorage`. This ensures that auth cannot complete
  *   unless it's done from a page running with the same origin as it was started.
  *   Ex: if `openAuthSessionAsync` is invoked on `https://localhost:19006`, then `maybeCompleteAuthSession`
