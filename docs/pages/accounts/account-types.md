@@ -102,6 +102,8 @@ Projects can be transferred a limited number of times. A user must be an Owner o
 
 Before transferring a project, make sure that your it is on Expo SDK 43 or above. If not, you must upgrade it and rebuild it for OTA updates to continue to work on that project.
 
+> **Note**: If you want to transfer the ownership of a project from your Personal or Organization Account (source) to another person or company (destination), and you cannot be given "Owner or "Admin" permissions on the destination account, you can create an escrow account (a new Organization Account). This solves the problem that a user must be an "Owner" or "Admin" on both source and destination accounts to transfer projects between them. Once the escrow account is created, you can grant the ultimate destination account member the Owner role on the escrow account and safely transfer the project to the escrow account. The receiving person or company can then transfer it to their destination account from the escrow account without having had access to the destination account itself.
+
 ## Teams
 
 > **Note**: For all new accounts where you want to share access, we recommend you to [create a new Organization](#organizations) Account. It allows more flexibility in role assignments and allows you to keep some projects private to you. Creating a Team Account is deprecated.
@@ -109,5 +111,3 @@ Before transferring a project, make sure that your it is on Expo SDK 43 or above
 To create a Team Account, simply [invite Team members](/accounts/working-together/#adding-members) to a Personal Account. An email will be sent that prompts them to create a Personal Expo Account if they do not already have one. Only the person (for whom a Personal Account was automatically created) is the Owner of that Personal Account and, therefore, the Team Account.
 
 For members to access the Team projects, they select the Owner’s account name from the dropdown in the top left under "Teams". The Owner can login to their Personal Account and manage it as usual.
-
-> **Note**: If you want to transfer the ownership of a project from your Personal or Organization Account (source) to another person or company (destination), and you cannot be given "Owner or "Admin" permissions on the destination account, you can create an escrow account (a new Organization Account). This solves the problem that a user must be an "Owner" or "Admin" on both source and destination accounts to transfer projects between them. Once the escrow account is created, you can grant the ultimate destination account member the Owner role on the escrow account and safely transfer the project to the escrow account. The receiving person or company can then transfer it to their destination account from the escrow account without having had access to the destination account itself.
