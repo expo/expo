@@ -7,10 +7,9 @@ import org.junit.Test
 
 class PersistentFileLogTest : TestCase() {
 
-  private val asyncTestUtil = AsyncTestUtil()
-
   @Test
   fun testPersistentLog() {
+    val asyncTestUtil = AsyncTestUtil()
     val instrumentationContext = InstrumentationRegistry.getInstrumentation().context
     val persistentLog = PersistentFileLog("dev.expo.modules.core.logging.test", instrumentationContext)
 

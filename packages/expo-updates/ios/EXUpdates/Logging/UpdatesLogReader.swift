@@ -4,6 +4,7 @@ import Foundation
 import OSLog
 
 import ExpoModulesCore
+import SafariServices
 
 /**
  Class to read expo-updates logs using OSLogReader
@@ -23,10 +24,7 @@ public class UpdatesLogReader: NSObject {
     let epoch = epochFromDate(date: newerThan)
     return logPersistence.readEntries()
       .compactMap { entryString in
-        logStringToFilteredLogEntry(entryString: entryString, epoch: epoch)
-      }
-      .compactMap { entry in
-        entry.asDict()
+        logStringToFilteredLogEntry(entryString: entryString, epoch: epoch)?.asDict()
       }
   }
 
@@ -40,10 +38,7 @@ public class UpdatesLogReader: NSObject {
     let epoch = epochFromDate(date: newerThan)
     return logPersistence.readEntries()
       .compactMap { entryString in
-        logStringToFilteredLogEntry(entryString: entryString, epoch: epoch)
-      }
-      .compactMap { entry in
-        entry.asString()
+        logStringToFilteredLogEntry(entryString: entryString, epoch: epoch)?.asString()
       }
   }
 
@@ -51,7 +46,7 @@ public class UpdatesLogReader: NSObject {
    Purge all log entries written more than one day ago
    */
   @objc(purgeLogEntries:)
-  public func purgeLogEntries(completion: @escaping (_:Error?) -> Void) {
+  public func purgeLogEntries(completion: @escaping (Error?) -> Void) {
     purgeLogEntries(
       olderThan: Date().addingTimeInterval(-UpdatesLogReader.MAXIMUM_LOOKBACK_INTERVAL),
       completion: completion
@@ -62,7 +57,7 @@ public class UpdatesLogReader: NSObject {
    Purge all log entries written prior to the given date
    */
   @objc(purgeLogEntriesOlderThan:completion:)
-  public func purgeLogEntries(olderThan: Date, completion: @escaping (_:Error?) -> Void) {
+  public func purgeLogEntries(olderThan: Date, completion: @escaping (Error?) -> Void) {
     let epoch = epochFromDate(date: olderThan)
     logPersistence.filterEntries(filter: { entryString in
       self.logStringToFilteredLogEntry(entryString: entryString, epoch: epoch) != nil
@@ -72,6 +67,9 @@ public class UpdatesLogReader: NSObject {
   }
 
   private func logStringToFilteredLogEntry(entryString: String, epoch: UInt) -> UpdatesLogEntry? {
+    if entryString.lengthOfBytes(using: .utf8) < 2 {
+      return nil
+    }
     let suffixFrom = entryString.index(entryString.startIndex, offsetBy: 2)
     let entryStringSuffix = String(entryString.suffix(from: suffixFrom))
     let entry = UpdatesLogEntry.create(from: entryStringSuffix)

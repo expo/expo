@@ -16,10 +16,9 @@ import java.util.*
 
 class UpdatesLoggingTest : TestCase() {
 
-  private val asyncTestUtil = AsyncTestUtil()
-
   @Before
   fun setup() {
+    val asyncTestUtil = AsyncTestUtil()
     val instrumentationContext = InstrumentationRegistry.getInstrumentation().context
     val persistentLog = PersistentFileLog(EXPO_UPDATES_LOGGING_TAG, instrumentationContext)
 
@@ -66,6 +65,7 @@ class UpdatesLoggingTest : TestCase() {
 
   @Test
   fun testOneLogAppears() {
+    val asyncTestUtil = AsyncTestUtil()
     val instrumentationContext = InstrumentationRegistry.getInstrumentation().context
     val logger = UpdatesLogger(instrumentationContext)
     val now = Date()
@@ -84,6 +84,7 @@ class UpdatesLoggingTest : TestCase() {
 
   @Test
   fun testLogReaderTimeLimit() {
+    val asyncTestUtil = AsyncTestUtil()
     val instrumentationContext = InstrumentationRegistry.getInstrumentation().context
     val logger = UpdatesLogger(instrumentationContext)
     val reader = UpdatesLogReader(instrumentationContext)
@@ -125,6 +126,7 @@ class UpdatesLoggingTest : TestCase() {
 
   @Test
   fun testBridgeMethods() {
+    val asyncTestUtil = AsyncTestUtil()
     val instrumentationContext = InstrumentationRegistry.getInstrumentation().context
     val logger = UpdatesLogger(instrumentationContext)
     logger.warn("Test message", UpdatesErrorCode.JSRuntimeError)

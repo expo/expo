@@ -18,10 +18,10 @@ class EXUpdatesLogReaderTests: XCTestCase {
     let epoch = Date()
 
     // Write a log message
-    logErrorSync(message: "Test message", code: .NoUpdatesAvailable)
+    logErrorSync(message: "Test message", code: .noUpdatesAvailable)
 
     // Write another log message
-    logWarnSync(message: "Warning message", code: .AssetsFailedToLoad, updateId: "myUpdateId", assetId: "myAssetId")
+    logWarnSync(message: "Warning message", code: .assetsFailedToLoad, updateId: "myUpdateId", assetId: "myAssetId")
 
     // Use reader to retrieve messages
     var logEntries: [[String: Any]] = []
@@ -60,11 +60,11 @@ class EXUpdatesLogReaderTests: XCTestCase {
     let logReader = UpdatesLogReader()
 
     let date1 = Date()
-    logErrorSync(message: "Test message", code: .NoUpdatesAvailable)
+    logErrorSync(message: "Test message", code: .noUpdatesAvailable)
     RunLoop.current.run(until: Date().addingTimeInterval(1))
 
     let date2 = Date()
-    logWarnSync(message: "Warning message", code: .AssetsFailedToLoad, updateId: "myUpdateId", assetId: "myAssetId")
+    logWarnSync(message: "Warning message", code: .assetsFailedToLoad, updateId: "myUpdateId", assetId: "myAssetId")
 
     let entries1: [String] = logReader.getLogEntries(newerThan: date1)
     XCTAssertEqual(2, entries1.count)

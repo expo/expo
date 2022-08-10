@@ -3,40 +3,6 @@ import ExpoModulesTestCore
 @testable import ExpoModulesCore
 
 class PersistentFileLogSpec: ExpoSpec {
-  let serialQueue = DispatchQueue(label: "dev.expo.modules.test.persistentlog")
-
-  let log = PersistentFileLog(category: "dev.expo.modules.test.persistentlog")
-
-  func clearEntriesSync() {
-    serialQueue.sync {
-      let sem = DispatchSemaphore(value: 0)
-      log.clearEntries { _ in
-        sem.signal()
-      }
-      sem.wait()
-    }
-  }
-
-  func filterEntriesSync(filter: @escaping PersistentFileLogFilter) {
-    serialQueue.sync {
-      let sem = DispatchSemaphore(value: 0)
-      log.filterEntries(filter: filter) { _ in
-        sem.signal()
-      }
-      sem.wait()
-    }
-  }
-
-  func appendEntrySync(entry: String) {
-    serialQueue.sync {
-      let sem = DispatchSemaphore(value: 0)
-      log.appendEntry(entry: entry) { _ in
-        sem.signal()
-      }
-      sem.wait()
-    }
-  }
-
   override func spec() {
     beforeEach {
       self.clearEntriesSync()
@@ -76,6 +42,42 @@ class PersistentFileLogSpec: ExpoSpec {
       expect(entries).notTo(beNil())
       expect(entries.count).to(be(1))
       expect(entries[0]).to(equal("Test string 2"))
+    }
+  }
+
+  // Private fields and methods
+
+  let serialQueue = DispatchQueue(label: "dev.expo.modules.test.persistentlog")
+
+  let log = PersistentFileLog(category: "dev.expo.modules.test.persistentlog")
+
+  func clearEntriesSync() {
+    serialQueue.sync {
+      let sem = DispatchSemaphore(value: 0)
+      log.clearEntries { _ in
+        sem.signal()
+      }
+      sem.wait()
+    }
+  }
+
+  func filterEntriesSync(filter: @escaping PersistentFileLogFilter) {
+    serialQueue.sync {
+      let sem = DispatchSemaphore(value: 0)
+      log.filterEntries(filter: filter) { _ in
+        sem.signal()
+      }
+      sem.wait()
+    }
+  }
+
+  func appendEntrySync(entry: String) {
+    serialQueue.sync {
+      let sem = DispatchSemaphore(value: 0)
+      log.appendEntry(entry: entry) { _ in
+        sem.signal()
+      }
+      sem.wait()
     }
   }
 }

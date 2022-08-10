@@ -15,13 +15,10 @@ class LoggerOptions(
   }
 
   companion object {
-    val OS = LoggerOptions(BitSet.valueOf(longArrayOf(1L)))
-    val File = LoggerOptions(BitSet.valueOf(longArrayOf(2L)))
+    val logToOS = LoggerOptions(BitSet.valueOf(longArrayOf(1L)))
+    val logToFile = LoggerOptions(BitSet.valueOf(longArrayOf(2L)))
 
-    val Standard = LoggerOptions(OS.bitSet)
-    val Persistent = union(listOf(OS, File))
-
-    private fun union(loggerOptions: List<LoggerOptions>): LoggerOptions {
+    fun union(loggerOptions: List<LoggerOptions>): LoggerOptions {
       val result = BitSet.valueOf(longArrayOf(0L))
       loggerOptions.forEach { loggerOption ->
         result.or(loggerOption.bitSet)

@@ -111,7 +111,11 @@ class UpdatesLogger(
 
   // Private methods and fields
 
-  private val logger = Logger(EXPO_UPDATES_LOGGING_TAG, context, LoggerOptions.Persistent)
+  private val logger = Logger(
+    EXPO_UPDATES_LOGGING_TAG,
+    context,
+    LoggerOptions.union(listOf(LoggerOptions.logToOS, LoggerOptions.logToFile))
+  )
 
   private fun logEntryString(
     message: String,

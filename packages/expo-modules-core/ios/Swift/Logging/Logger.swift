@@ -17,23 +17,14 @@ public struct LoggerOptions: OptionSet {
 
   /**
    Including this option will result in logs being written using os.log() or print(),
-   depending on the iOS version
+   depending on the iOS version.
    */
-  public static let OS = LoggerOptions(rawValue: 1 << 0)
+  public static let logToOS = LoggerOptions(rawValue: 1 << 0)
   /**
    Including this option will result in logs being written to a flat file, as
    strings separated by carriage returns.
    */
-  public static let File = LoggerOptions(rawValue: 1 << 1)
-
-  /**
-   The default will be the OS option only
-   */
-  public static let Standard: LoggerOptions = [.OS]
-  /**
-   This will log to both the OS and a flat file
-   */
-  public static let Persistent: LoggerOptions = [.OS, .File]
+  public static let logToFile = LoggerOptions(rawValue: 1 << 1)
 }
 
 /**
@@ -54,13 +45,13 @@ public class Logger {
 
   private var handlers: [LogHandler] = []
 
-  public init(category: String = "main", options: LoggerOptions = .Standard) {
+  public init(category: String = "main", options: LoggerOptions = [.logToOS]) {
     self.category = category
 
-    if options.contains(.File) {
+    if options.contains(.logToFile) {
       addHandler(withType: PersistentFileLogHandler.self)
     }
-    if options.contains(.OS) {
+    if options.contains(.logToOS) {
       if #available(macOS 11.0, iOS 14.0, watchOS 7.0, tvOS 14.0, *) {
         addHandler(withType: OSLogHandler.self)
       } else {

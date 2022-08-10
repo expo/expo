@@ -15,10 +15,10 @@ class EXUpdatesLoggerTests: XCTestCase {
     let epoch = Date()
 
     // Write a log message
-    logger.error(message: "Test message", code: .NoUpdatesAvailable)
+    logger.error(message: "Test message", code: .noUpdatesAvailable)
 
     // Write another log message
-    logger.warn(message: "Warning message", code: .AssetsFailedToLoad, updateId: "myUpdateId", assetId: "myAssetId")
+    logger.warn(message: "Warning message", code: .assetsFailedToLoad, updateId: "myUpdateId", assetId: "myAssetId")
 
     RunLoop.current.run(until: Date().addingTimeInterval(1))
 

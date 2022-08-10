@@ -25,10 +25,10 @@ class Logger(
 ) {
 
   private val handlers = mutableListOf<LogHandler>().apply {
-    if (options.contains(LoggerOptions.OS)) {
+    if (options.contains(LoggerOptions.logToOS)) {
       this.add(OSLogHandler(category))
     }
-    if (options.contains(LoggerOptions.File)) {
+    if (options.contains(LoggerOptions.logToFile)) {
       this.add(PersistentFileLogHandler(category, context))
     }
   }.toList()

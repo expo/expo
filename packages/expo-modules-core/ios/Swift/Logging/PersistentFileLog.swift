@@ -2,8 +2,8 @@
 
 import Foundation
 
-public typealias PersistentFileLogFilter = (_: String) -> Bool
-public typealias PersistentFileLogCompletionHandler = (_:Error?) -> Void
+public typealias PersistentFileLogFilter = (String) -> Bool
+public typealias PersistentFileLogCompletionHandler = (Error?) -> Void
 
 /**
  * A thread-safe class for reading and writing line-separated strings to a flat file.
@@ -59,12 +59,7 @@ public class PersistentFileLog {
   public func appendEntry(entry: String, _ completionHandler: PersistentFileLogCompletionHandler? = nil) {
     PersistentFileLog.serialQueue.async {
       self.ensureFileExists()
-      let size = self.getFileSize()
-      if size == 0 {
-        self.appendTextToFile(text: entry)
-      } else {
-        self.appendTextToFile(text: "\n" + entry)
-      }
+      self.appendTextToFile(text: entry + "\n")
       completionHandler?(nil)
     }
   }
