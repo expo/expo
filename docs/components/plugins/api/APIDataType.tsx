@@ -9,7 +9,7 @@ const typeDefinitionContainsObject = (typDef: TypeDefinitionData) =>
 
 type APIDataTypeProps = { typeDefinition: TypeDefinitionData; inline?: boolean };
 
-export const APIDataType = ({ typeDefinition, inline = false }: APIDataTypeProps) => {
+export const APIDataType = ({ typeDefinition, inline = true }: APIDataTypeProps) => {
   const { type, declaration, types, elementType, typeArguments } = typeDefinition;
 
   const isObjectDefinition = type === 'reflection' && declaration?.children;

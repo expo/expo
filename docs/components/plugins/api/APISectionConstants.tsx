@@ -33,7 +33,7 @@ const renderConstant = (
     </H3Code>
     {type && (
       <P>
-        <B>Type:</B> <APIDataType inline typeDefinition={type} />
+        <B>Type:</B> <APIDataType typeDefinition={type} />
       </P>
     )}
     <CommentTextBlock comment={comment} includePlatforms={false} />
