@@ -1,7 +1,4 @@
 import './environment/validate.fx';
-// load remote logging for compatibility with custom development clients
-import './environment/logging.fx';
-import './environment/react-native-logs.fx';
 // load expo-asset immediately to set a custom `source` transformer in React Native
 import 'expo-asset';
 
@@ -28,7 +25,7 @@ if (StyleSheet.setStyleAttributePreprocessor) {
     // because the experimented `StyleSheet.setStyleAttributePreprocessor` will show a warning about
     // `Overwriting fontFamily style attribute preprocessor`.
     const originalConsoleWarn = global.console.warn;
-    global.console.warn = () => {};
+    global.console.warn = () => { };
     StyleSheet.setStyleAttributePreprocessor('fontFamily', Font.processFontFamily);
     global.console.warn = originalConsoleWarn;
   } else {

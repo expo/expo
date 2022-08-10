@@ -4,6 +4,9 @@
 
 ### 🛠 Breaking changes
 
+- Drop `Logs` module export.
+- Drop support for `logUrl` endpoint (legacy `expo-cli` logging will no longer work).
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes

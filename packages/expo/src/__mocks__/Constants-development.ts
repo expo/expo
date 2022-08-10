@@ -12,7 +12,6 @@ MockConstants.__rawManifest_TEST = {
   developer: {
     projectRoot: '/home/test/project',
   },
-  logUrl: 'https://localhost:19001/logs',
 };
 
 // @ts-ignore: change this to use "export" instead if possible

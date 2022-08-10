@@ -146,7 +146,6 @@ it(
     );
     expect(results.debuggerHost).toBe('127.0.0.1:19000');
     expect(results.hostUri).toBe('127.0.0.1:19000');
-    expect(results.logUrl).toBe('http://127.0.0.1:19000/logs');
     expect(results.mainModuleName).toBe('node_modules/expo/AppEntry');
 
     // Manifest
