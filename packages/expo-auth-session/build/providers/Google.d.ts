@@ -31,7 +31,7 @@ export interface GoogleAuthRequestConfig extends ProviderAuthRequestConfig {
      * - Give it a name (e.g. "Web App").
      * - **URIs** (Authorized JavaScript origins): https://localhost:19006 & https://yourwebsite.com
      * - **Authorized redirect URIs**: https://localhost:19006 & https://yourwebsite.com
-     * - To test this be sure to start your app with `expo start:web --https`.
+     * - To test this be sure to start your app with `npx expo start --https`.
      */
     webClientId?: string;
     /**

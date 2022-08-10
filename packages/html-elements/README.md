@@ -105,13 +105,13 @@ Other features not implemented in this package can be found in different parts o
 | ------------------------------- | :------------------: | :--------------------------------------------------------------------------------------------------------------------: |
 | `<audio />`                     |       `Audio`        |                                                 [`expo-av`][ex-audio]                                                  |
 | `<button />`                    |     `<Button />`     |                                                     `react-native`                                                     |
-| `<input type="text" />`         |    `<TextInput />`    |                                                     `react-native`                                                     |
+| `<input type="text" />`         |   `<TextInput />`    |                                                     `react-native`                                                     |
 | `<input type="file" />`         |    `ImagePicker`     |                                            [`expo-image-picker`][ex-ipick]                                             |
 | `<input type="file" />`         |   `DocumentPicker`   |                                           [`expo-document-picker`][ex-dpick]                                           |
 | `<canvas />`                    |     `<GLView />`     |                                     [`expo-gl`][ex-gl] & [Expo Canvas][ex-canvas]                                      |
 | `<iframe />`                    |    `<WebView />`     | [`<WebView />`][ex-webview]. `@react-native-community/web-view` is not maintained by Expo and doesn't have web support |
-| [`<link />`][html-link]         |         None         |              Eject the `index.html` with `expo customize:web` and link resources directly with `<link />`              |
-| [`<noscript />`][html-noscript] |         None         |                Eject the `index.html` with `expo customize:web` and use `<noscript />` directly as HTML                |
+| [`<link />`][html-link]         |         None         |                Eject the `index.html` with `npx expo customize` and link resources directly with `<link />`                |
+| [`<noscript />`][html-noscript] |         None         |                  Eject the `index.html` with `npx expo customize` and use `<noscript />` directly as HTML                  |
 | `<div />`                       |      `<View />`      |                                                     `react-native`                                                     |
 | `<img />`                       |     `<Image />`      |                                                     `react-native`                                                     |
 | `<span />`                      |      `<Text />`      |                                                     `react-native`                                                     |
@@ -393,8 +393,8 @@ export default () => (
 
 Standard paragraph element.
 
-| Platform  | Output                                                        |
-| --------- | ------------------------------------------------------------- |
+| Platform  | Output                                                     |
+| --------- | ---------------------------------------------------------- |
 | Universal | `<Text style={{ fontSize: 14, marginVertical: '1em' }} />` |
 
 ### `<B/>`

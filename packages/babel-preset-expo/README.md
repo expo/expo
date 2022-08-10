@@ -4,7 +4,7 @@ This preset extends the default React Native preset (`metro-react-native-babel-p
 
 You can use this preset in any React Native project as a drop-in replacement for `metro-react-native-babel-preset`. If your project isn't using native font loading or web support then this preset will only add support for decorators with `@babel/plugin-proposal-decorators` - this is mostly used for supporting legacy community libraries.
 
-If you start your **web** project with `@expo/webpack-config` or `expo start:web` and your project doesn't contain a `babel.config.js` or a `.babelrc` then it will default to using `babel-preset-expo` for loading.
+If you start your **web** project with `@expo/webpack-config` or `npx expo start` and your project doesn't contain a `babel.config.js` or a `.babelrc` then it will default to using `babel-preset-expo` for loading.
 
 If you have problems with the code in this repository, please file issues & bug reports
 at https://github.com/expo/expo. Thanks!
