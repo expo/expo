@@ -4,11 +4,28 @@ title: Glossary of terms
 
 ### Expo Install
 
-Refers to the command `npx expo install` from [Expo CLI](#expo-cli). This command is used to install packages that work with the currently installed version of `expo` in the project. Not all packages are supported.
+Refers to the command `npx expo install` from [Expo CLI](#expo-cli). This command is used to install NPM packages containing [native modules](#native-module) that work with the currently installed version of `expo` in the project. Not all packages are supported. This command wraps the globally installed [package managers](#package-manager).
 
 ### Expo Start
 
 Refers to the command `npx expo start` from [Expo CLI](#expo-cli). This command is used to start a local [development server](#development-server) that a [client](#expo-client) connects to in order to interact with the [Metro bundler](#metro-bundler).
+
+### Expo Export
+
+Refers to the command `npx expo export` from [Expo CLI](#expo-cli). This command is used to bundle the application JavaScript and assets, then export them into a static folder that can be uploaded to a hosting service like [EAS Update](#eas-update), and embedded in a [native runtime](#native-runtime) for offline use.
+
+### EAS Update
+
+1. The cloud hosting service [EAS Update](/eas-update/introduction/) that is used for OTA Updates.
+2. The CLI command `eas update` from [EAS CLI](#eas-cli) that is used to publish static files to the cloud hosting service.
+
+### Dev Clients
+
+A [native runtime](#native-runtime) that has been built in development mode, these builds often include the `expo-dev-client` [native module](#native-module) for improved debugging.
+
+### Native Runtime
+
+A native application containing a [JavaScript engine](#javascript-engine), and is capable of running a React application. This includes [Expo Go](#expo-go), [dev clients](#dev-clients), [standalone apps](#standalone-app), and even web browsers like Chrome.
 
 ### Development Server
 
@@ -55,7 +72,19 @@ A cross-platform tool for automatically linking native modules to native apps vi
 
 There are two versions of Autolinking: Expo
 
-The default [Prebuild](#prebuild) template includes support for [community Autolinking](#community-autolinking) along with the original [Expo Autolinking](#expo-autolinking).
+The default [Prebuild template](#prebuild-template) includes support for [Expo Autolinking](#expo-autolinking), and the [Community Autolinking](#community-autolinking) fork.
+
+### Prebuild Template
+
+The React Native project template that is used as the first step of [Prebuilding](#prebuild). This template is versioned with the [Expo SDK](#expo-sdk), and the template is chosen based on the installed version of `expo` in a project. After the template is cloned, `npx expo prebuild` will evaluate the [Expo Config](#expo-config) and run the [Config mods](#config-mods) which modify various files in the template.
+
+Although the template can be changed by using the `npx expo prebuild --template /path/to/template` flag, the default prebuild template contains important initial defaults that the `npx expo prebuild` command makes assumptions about.
+
+The default template currently lives here: [`expo-template-bare-minimum`](https://github.com/expo/expo/tree/main/templates/expo-template-bare-minimum).
+
+### FYI
+
+Sometimes referred to as "Expo FYI", this is a collection of tailored solutions to complex issues that lives at [expo.fyi](https://expo.fyi/). FYI links are utilized throughout Expo's developer tooling to help provide a better developer experience to users.
 
 ### Expo Autolinking
 
@@ -63,7 +92,7 @@ The original [Autolinking](#autolinking) system that is designed for project's u
 
 ### Community Autolinking
 
-This refers to the React Native community [fork](https://github.com/react-native-community/cli/issues/248#issue-422591744) of the original [Autolinking](#autolinking) that was made by Expo.
+This refers to the React Native community [fork](https://github.com/react-native-community/cli/issues/248#issue-422591744) of the [Expo Autolinking](#expo-autolinking). The requirements for linking a module different to [Expo Autolinking](#expo-autolinking) but the implementation is the same.
 
 ### Expo Module Config
 
@@ -131,7 +160,11 @@ The VSCode extension for improving the developer experience of working with Expo
 
 ### Metro Bundler
 
-The bundler used for converting JavaScript files and assets into a format that runs on a native client. This bundler is maintained by Meta and used pretty much exclusively for React Native. [Learn more](https://facebook.github.io/metro).
+The bundler used for converting JavaScript files and assets into a format that runs on a native client. This bundler is maintained by Meta and used exclusively for React Native apps. [Learn more](https://facebook.github.io/metro).
+
+### Webpack
+
+The bundler used by [Expo CLI](#expo-cli) for developing [`react-native-web`](#react-native-web) apps.
 
 ### Babel
 
@@ -151,7 +184,12 @@ Apple's [official website](https://developer.apple.com/) for managing applicatio
 
 ### Prebuild
 
-The process of generating the temporary native `/ios` and `/android` folders for a project based on the [Expo Config](#expo-config). This process is performed by running `npx expo prebuild` in a project directory.
+The process of generating the temporary native `/ios` and `/android` folders for a React Native project based on the [Expo Config](#expo-config). This process is performed by running the command `npx expo prebuild` from [Expo CLI](#expo-cli) in a project directory.
+
+See Also:
+
+- [Prebuild template](#prebuild-template).
+- [Autolinking](#autolinking).
 
 ### Expo CLI
 
@@ -171,7 +209,7 @@ The `store.config.json` file used to configure [EAS Metadata](#eas-metadata). Th
 
 ### EAS Config
 
-The `eas.json` file used to configure [EAS CLI](#eas-cli).
+The `eas.json` file used to configure [EAS CLI](#eas-cli). [Learn more](/build/eas-json/).
 
 ### Emulator
 
@@ -195,7 +233,11 @@ The Expo SDK provides access to device/system functionality such as camera, push
 
 ### iOS
 
-The operating system used on iPhone, iPad, and Apple TV. Expo currently runs on iOS for iPhone and iPad.
+The operating system used on iPhone, iPad, and Apple TV. [Expo Go](#expo-go) currently runs on iOS for iPhone and iPad.
+
+### Android
+
+The mobile operating system sponsored by Google for use with "Android" devices.
 
 ### Linking
 
@@ -275,7 +317,7 @@ Remote Debugging (AKA Async Chrome Debugging) is an experimental system for debu
 
 ### Metro Config
 
-The optional `metro.config.js` file used to configure [Metro bundler](#metro-bundler). This should extend the package `@expo/metro-config` when using [Expo CLI](#expo-cli). [Learn more](/guides/customizing-metro.md).
+The `metro.config.js` file used to configure [Metro bundler](#metro-bundler). This should extend the package `@expo/metro-config` when using [Expo CLI](#expo-cli). [Learn more](/guides/customizing-metro.md).
 
 ### Flipper
 
@@ -295,7 +337,7 @@ A high-performing abstraction on top of `react-dom` which enables core primitive
 
 ### Fabric
 
-The React Native rendering system, used to create an manage native views. [Learn more](https://reactnative.dev/architecture/fabric-renderer).
+The React Native rendering system, used to create an manage native views. [Learn more](https://reactnative.dev/architecture/fabric-renderer). This package supports [iOS](#ios) and [Android](#android).
 
 <!-- Deprecated Terms -->
 
