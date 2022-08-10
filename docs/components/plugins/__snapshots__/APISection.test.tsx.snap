@@ -75,7 +75,7 @@ exports[`APISection expo-apple-authentication 1`] = `
             class="css-6n7j50"
           >
             <code
-              class="inline css-1fz3od4-InlineCode"
+              class="inline css-16lpqq8-InlineCode"
             >
               AppleAuthenticationButton
             </code>
@@ -122,7 +122,7 @@ exports[`APISection expo-apple-authentication 1`] = `
       </strong>
        
       <code
-        class="inline css-1fz3od4-InlineCode"
+        class="inline css-16lpqq8-InlineCode"
       >
         React.FC
         &lt;
@@ -156,7 +156,7 @@ available via the provided properties.
         href="/#isavailableasync"
       >
         <code
-          class="inline css-1fz3od4-InlineCode"
+          class="inline css-16lpqq8-InlineCode"
         >
           AppleAuthentication.isAvailableAsync()
         </code>
@@ -164,14 +164,14 @@ available via the provided properties.
       
 resolves to 
       <code
-        class="inline css-1fz3od4-InlineCode"
+        class="inline css-16lpqq8-InlineCode"
       >
         true
       </code>
       . This component will render nothing if it is not available, and you will get
 a warning in development mode (
       <code
-        class="inline css-1fz3od4-InlineCode"
+        class="inline css-16lpqq8-InlineCode"
       >
         __DEV__ === true
       </code>
@@ -185,40 +185,40 @@ a warning in development mode (
     >
       The properties of this component extend from 
       <code
-        class="inline css-1fz3od4-InlineCode"
+        class="inline css-16lpqq8-InlineCode"
       >
         View
       </code>
       ; however, you should not attempt to set
 
       <code
-        class="inline css-1fz3od4-InlineCode"
+        class="inline css-16lpqq8-InlineCode"
       >
         backgroundColor
       </code>
        or 
       <code
-        class="inline css-1fz3od4-InlineCode"
+        class="inline css-16lpqq8-InlineCode"
       >
         borderRadius
       </code>
        with the 
       <code
-        class="inline css-1fz3od4-InlineCode"
+        class="inline css-16lpqq8-InlineCode"
       >
         style
       </code>
        property. This will not work and is against
 the App Store Guidelines. Instead, you should use the 
       <code
-        class="inline css-1fz3od4-InlineCode"
+        class="inline css-16lpqq8-InlineCode"
       >
         buttonStyle
       </code>
        property to choose one of the
 predefined color styles and the 
       <code
-        class="inline css-1fz3od4-InlineCode"
+        class="inline css-16lpqq8-InlineCode"
       >
         cornerRadius
       </code>
@@ -352,7 +352,7 @@ for more details.
                 class="css-6n7j50"
               >
                 <code
-                  class="inline css-1fz3od4-InlineCode"
+                  class="inline css-1lmmqpm-InlineCode"
                 >
                   buttonStyle
                 </code>
@@ -399,7 +399,7 @@ for more details.
           </span>
            
           <code
-            class="inline css-1fz3od4-InlineCode"
+            class="inline css-16lpqq8-InlineCode"
           >
             <a
               class="css-153g748-InternalLink"
@@ -438,7 +438,7 @@ for more details.
                 class="css-6n7j50"
               >
                 <code
-                  class="inline css-1fz3od4-InlineCode"
+                  class="inline css-1lmmqpm-InlineCode"
                 >
                   buttonType
                 </code>
@@ -485,7 +485,7 @@ for more details.
           </span>
            
           <code
-            class="inline css-1fz3od4-InlineCode"
+            class="inline css-16lpqq8-InlineCode"
           >
             <a
               class="css-153g748-InternalLink"
@@ -524,7 +524,7 @@ for more details.
                 class="css-6n7j50"
               >
                 <code
-                  class="inline css-1fz3od4-InlineCode"
+                  class="inline css-1lmmqpm-InlineCode"
                 >
                   cornerRadius
                 </code>
@@ -576,7 +576,7 @@ for more details.
           </span>
            
           <code
-            class="inline css-1fz3od4-InlineCode"
+            class="inline css-16lpqq8-InlineCode"
           >
             number
           </code>
@@ -588,7 +588,7 @@ for more details.
           The border radius to use when rendering the button. This works similarly to
 
           <code
-            class="inline css-1fz3od4-InlineCode"
+            class="inline css-16lpqq8-InlineCode"
           >
             style.borderRadius
           </code>
@@ -617,7 +617,7 @@ for more details.
                 class="css-6n7j50"
               >
                 <code
-                  class="inline css-1fz3od4-InlineCode"
+                  class="inline css-1lmmqpm-InlineCode"
                 >
                   style
                 </code>
@@ -669,7 +669,7 @@ for more details.
           </span>
            
           <code
-            class="inline css-1fz3od4-InlineCode"
+            class="inline css-16lpqq8-InlineCode"
           >
             StyleProp
             &lt;
@@ -711,13 +711,13 @@ for more details.
         >
           The custom style to apply to the button. Should not include 
           <code
-            class="inline css-1fz3od4-InlineCode"
+            class="inline css-16lpqq8-InlineCode"
           >
             backgroundColor
           </code>
            or 
           <code
-            class="inline css-1fz3od4-InlineCode"
+            class="inline css-16lpqq8-InlineCode"
           >
             borderRadius
           </code>
@@ -747,7 +747,7 @@ properties.
                 class="css-6n7j50"
               >
                 <code
-                  class="inline css-1fz3od4-InlineCode"
+                  class="inline css-1lmmqpm-InlineCode"
                 >
                   onPress
                 </code>
@@ -794,7 +794,7 @@ properties.
           </span>
            
           <code
-            class="inline css-1fz3od4-InlineCode"
+            class="inline css-16lpqq8-InlineCode"
           >
             (
             ) =&gt;
@@ -812,7 +812,7 @@ properties.
             href="/#isavailableasync"
           >
             <code
-              class="inline css-1fz3od4-InlineCode"
+              class="inline css-16lpqq8-InlineCode"
             >
               AppleAuthentication.signInAsync
             </code>
@@ -880,7 +880,7 @@ in here.
           class="docs-list-item css-l157nt-LI"
         >
           <code
-            class="inline css-1fz3od4-InlineCode"
+            class="inline css-16lpqq8-InlineCode"
           >
             <a
               class="css-153g748-InternalLink"
@@ -966,7 +966,7 @@ in here.
             class="css-6n7j50"
           >
             <code
-              class="inline css-1fz3od4-InlineCode"
+              class="inline css-1lmmqpm-InlineCode"
             >
               getCredentialStateAsync(user)
             </code>
@@ -1048,7 +1048,7 @@ in here.
               class="css-t44xva-Cell"
             >
               <code
-                class="inline css-1fz3od4-InlineCode"
+                class="inline css-16lpqq8-InlineCode"
               >
                 string
               </code>
@@ -1064,7 +1064,7 @@ This should come from the user field of an
                   href="/#appleauthenticationcredentialstate"
                 >
                   <code
-                    class="inline css-1fz3od4-InlineCode"
+                    class="inline css-16lpqq8-InlineCode"
                   >
                     AppleAuthenticationCredential
                   </code>
@@ -1203,7 +1203,7 @@ This should come from the user field of an
           />
         </svg>
         <code
-          class="inline css-1fz3od4-InlineCode"
+          class="inline css-16lpqq8-InlineCode"
         >
           <a
             class="css-ccg2mn-ExternalLink"
@@ -1235,7 +1235,7 @@ This should come from the user field of an
         href="/#appleauthenticationcredentialstate"
       >
         <code
-          class="inline css-1fz3od4-InlineCode"
+          class="inline css-16lpqq8-InlineCode"
         >
           AppleAuthenticationCredentialState
         </code>
@@ -1266,7 +1266,7 @@ value depending on the state of the credential.
             class="css-6n7j50"
           >
             <code
-              class="inline css-1fz3od4-InlineCode"
+              class="inline css-1lmmqpm-InlineCode"
             >
               isAvailableAsync()
             </code>
@@ -1390,7 +1390,7 @@ value depending on the state of the credential.
           />
         </svg>
         <code
-          class="inline css-1fz3od4-InlineCode"
+          class="inline css-16lpqq8-InlineCode"
         >
           <a
             class="css-ccg2mn-ExternalLink"
@@ -1413,13 +1413,13 @@ value depending on the state of the credential.
     >
       A promise that fulfills with 
       <code
-        class="inline css-1fz3od4-InlineCode"
+        class="inline css-16lpqq8-InlineCode"
       >
         true
       </code>
        if the system supports Apple authentication, and 
       <code
-        class="inline css-1fz3od4-InlineCode"
+        class="inline css-16lpqq8-InlineCode"
       >
         false
       </code>
@@ -1448,7 +1448,7 @@ value depending on the state of the credential.
             class="css-6n7j50"
           >
             <code
-              class="inline css-1fz3od4-InlineCode"
+              class="inline css-1lmmqpm-InlineCode"
             >
               refreshAsync(options)
             </code>
@@ -1530,7 +1530,7 @@ value depending on the state of the credential.
               class="css-t44xva-Cell"
             >
               <code
-                class="inline css-1fz3od4-InlineCode"
+                class="inline css-16lpqq8-InlineCode"
               >
                 <a
                   class="css-153g748-InternalLink"
@@ -1550,7 +1550,7 @@ value depending on the state of the credential.
                   href="/#appleauthenticationrefreshoptions"
                 >
                   <code
-                    class="inline css-1fz3od4-InlineCode"
+                    class="inline css-16lpqq8-InlineCode"
                   >
                     AppleAuthenticationRefreshOptions
                   </code>
@@ -1651,7 +1651,7 @@ Calling this method will show the sign in modal before actually refreshing the u
           />
         </svg>
         <code
-          class="inline css-1fz3od4-InlineCode"
+          class="inline css-16lpqq8-InlineCode"
         >
           <a
             class="css-ccg2mn-ExternalLink"
@@ -1683,7 +1683,7 @@ Calling this method will show the sign in modal before actually refreshing the u
         href="/#appleauthenticationcredential"
       >
         <code
-          class="inline css-1fz3od4-InlineCode"
+          class="inline css-16lpqq8-InlineCode"
         >
           AppleAuthenticationCredential
         </code>
@@ -1691,7 +1691,7 @@ Calling this method will show the sign in modal before actually refreshing the u
       
 object after a successful authentication, and rejects with 
       <code
-        class="inline css-1fz3od4-InlineCode"
+        class="inline css-16lpqq8-InlineCode"
       >
         ERR_CANCELED
       </code>
@@ -1721,7 +1721,7 @@ refresh operation.
             class="css-6n7j50"
           >
             <code
-              class="inline css-1fz3od4-InlineCode"
+              class="inline css-1lmmqpm-InlineCode"
             >
               signInAsync(options)
             </code>
@@ -1809,7 +1809,7 @@ refresh operation.
               class="css-t44xva-Cell"
             >
               <code
-                class="inline css-1fz3od4-InlineCode"
+                class="inline css-16lpqq8-InlineCode"
               >
                 <a
                   class="css-153g748-InternalLink"
@@ -1829,7 +1829,7 @@ refresh operation.
                   href="/#appleauthenticationsigninoptions"
                 >
                   <code
-                    class="inline css-1fz3od4-InlineCode"
+                    class="inline css-16lpqq8-InlineCode"
                   >
                     AppleAuthenticationSignInOptions
                   </code>
@@ -1878,7 +1878,7 @@ You can use
         href="/#appleauthenticationcredential"
       >
         <code
-          class="inline css-1fz3od4-InlineCode"
+          class="inline css-16lpqq8-InlineCode"
         >
           AppleAuthenticationCredential.user
         </code>
@@ -1968,7 +1968,7 @@ the user, since this remains the same for apps released by the same developer.
           />
         </svg>
         <code
-          class="inline css-1fz3od4-InlineCode"
+          class="inline css-16lpqq8-InlineCode"
         >
           <a
             class="css-ccg2mn-ExternalLink"
@@ -2000,7 +2000,7 @@ the user, since this remains the same for apps released by the same developer.
         href="/#appleauthenticationcredential"
       >
         <code
-          class="inline css-1fz3od4-InlineCode"
+          class="inline css-16lpqq8-InlineCode"
         >
           AppleAuthenticationCredential
         </code>
@@ -2008,7 +2008,7 @@ the user, since this remains the same for apps released by the same developer.
       
 object after a successful authentication, and rejects with 
       <code
-        class="inline css-1fz3od4-InlineCode"
+        class="inline css-16lpqq8-InlineCode"
       >
         ERR_CANCELED
       </code>
@@ -2038,7 +2038,7 @@ sign-in operation.
             class="css-6n7j50"
           >
             <code
-              class="inline css-1fz3od4-InlineCode"
+              class="inline css-1lmmqpm-InlineCode"
             >
               signOutAsync(options)
             </code>
@@ -2120,7 +2120,7 @@ sign-in operation.
               class="css-t44xva-Cell"
             >
               <code
-                class="inline css-1fz3od4-InlineCode"
+                class="inline css-16lpqq8-InlineCode"
               >
                 <a
                   class="css-153g748-InternalLink"
@@ -2140,7 +2140,7 @@ sign-in operation.
                   href="/#appleauthenticationsignoutoptions"
                 >
                   <code
-                    class="inline css-1fz3od4-InlineCode"
+                    class="inline css-16lpqq8-InlineCode"
                   >
                     AppleAuthenticationSignOutOptions
                   </code>
@@ -2171,7 +2171,7 @@ from using
         href="/#signinasync"
       >
         <code
-          class="inline css-1fz3od4-InlineCode"
+          class="inline css-16lpqq8-InlineCode"
         >
           signInAsync
         </code>
@@ -2182,7 +2182,7 @@ from using
         href="/#refreshasync"
       >
         <code
-          class="inline css-1fz3od4-InlineCode"
+          class="inline css-16lpqq8-InlineCode"
         >
           refreshAsync
         </code>
@@ -2271,7 +2271,7 @@ from using
           />
         </svg>
         <code
-          class="inline css-1fz3od4-InlineCode"
+          class="inline css-16lpqq8-InlineCode"
         >
           <a
             class="css-ccg2mn-ExternalLink"
@@ -2303,7 +2303,7 @@ from using
         href="/#appleauthenticationcredential"
       >
         <code
-          class="inline css-1fz3od4-InlineCode"
+          class="inline css-16lpqq8-InlineCode"
         >
           AppleAuthenticationCredential
         </code>
@@ -2311,7 +2311,7 @@ from using
       
 object after a successful authentication, and rejects with 
       <code
-        class="inline css-1fz3od4-InlineCode"
+        class="inline css-16lpqq8-InlineCode"
       >
         ERR_CANCELED
       </code>
@@ -2392,7 +2392,7 @@ sign-out operation.
             class="css-6n7j50"
           >
             <code
-              class="inline css-1fz3od4-InlineCode"
+              class="inline css-1lmmqpm-InlineCode"
             >
               addRevokeListener(listener)
             </code>
@@ -2474,7 +2474,7 @@ sign-out operation.
               class="css-t44xva-Cell"
             >
               <code
-                class="inline css-1fz3od4-InlineCode"
+                class="inline css-16lpqq8-InlineCode"
               >
                 () =&gt;
                  
@@ -2572,7 +2572,7 @@ sign-out operation.
           />
         </svg>
         <code
-          class="inline css-1fz3od4-InlineCode"
+          class="inline css-16lpqq8-InlineCode"
         >
           <a
             class="css-153g748-InternalLink"
@@ -2657,7 +2657,7 @@ sign-out operation.
             class="css-6n7j50"
           >
             <code
-              class="inline css-1fz3od4-InlineCode"
+              class="inline css-16lpqq8-InlineCode"
             >
               AppleAuthenticationCredential
             </code>
@@ -2703,7 +2703,7 @@ sign-out operation.
         href="/#appleauthenticationsigninasyncoptions"
       >
         <code
-          class="inline css-1fz3od4-InlineCode"
+          class="inline css-16lpqq8-InlineCode"
         >
           AppleAuthentication.signInAsync()
         </code>
@@ -2715,7 +2715,7 @@ sign-out operation.
         href="/#appleauthenticationrefreshasyncoptions"
       >
         <code
-          class="inline css-1fz3od4-InlineCode"
+          class="inline css-16lpqq8-InlineCode"
         >
           AppleAuthentication.refreshAsync()
         </code>
@@ -2726,7 +2726,7 @@ sign-out operation.
         href="/#appleauthenticationsignoutasyncoptions"
       >
         <code
-          class="inline css-1fz3od4-InlineCode"
+          class="inline css-16lpqq8-InlineCode"
         >
           AppleAuthentication.signOutAsync()
         </code>
@@ -2824,7 +2824,7 @@ for more details.
               class="css-1uzovlc-Cell"
             >
               <code
-                class="inline css-1fz3od4-InlineCode"
+                class="inline css-16lpqq8-InlineCode"
               >
                 <span>
                   string
@@ -2842,7 +2842,7 @@ for more details.
                 A short-lived session token used by your app for proof of authorization when interacting with
 the app's server counterpart. Unlike 
                 <code
-                  class="inline css-1fz3od4-InlineCode"
+                  class="inline css-16lpqq8-InlineCode"
                 >
                   user
                 </code>
@@ -2866,7 +2866,7 @@ the app's server counterpart. Unlike
               class="css-1uzovlc-Cell"
             >
               <code
-                class="inline css-1fz3od4-InlineCode"
+                class="inline css-16lpqq8-InlineCode"
               >
                 <span>
                   string
@@ -2883,7 +2883,7 @@ the app's server counterpart. Unlike
               <span>
                 The user's email address. Might not be present if you didn't request the 
                 <code
-                  class="inline css-1fz3od4-InlineCode"
+                  class="inline css-16lpqq8-InlineCode"
                 >
                   EMAIL
                 </code>
@@ -2910,7 +2910,7 @@ an Apple domain.
               class="css-1uzovlc-Cell"
             >
               <code
-                class="inline css-1fz3od4-InlineCode"
+                class="inline css-16lpqq8-InlineCode"
               >
                 <span>
                   <a
@@ -2932,19 +2932,19 @@ an Apple domain.
               <span>
                 The user's name. May be 
                 <code
-                  class="inline css-1fz3od4-InlineCode"
+                  class="inline css-16lpqq8-InlineCode"
                 >
                   null
                 </code>
                  or contain 
                 <code
-                  class="inline css-1fz3od4-InlineCode"
+                  class="inline css-16lpqq8-InlineCode"
                 >
                   null
                 </code>
                  values if you didn't request the 
                 <code
-                  class="inline css-1fz3od4-InlineCode"
+                  class="inline css-16lpqq8-InlineCode"
                 >
                   FULL_NAME
                 </code>
@@ -2970,7 +2970,7 @@ your app.
               class="css-1uzovlc-Cell"
             >
               <code
-                class="inline css-1fz3od4-InlineCode"
+                class="inline css-16lpqq8-InlineCode"
               >
                 <span>
                   string
@@ -3005,7 +3005,7 @@ your app.
               class="css-1uzovlc-Cell"
             >
               <code
-                class="inline css-1fz3od4-InlineCode"
+                class="inline css-16lpqq8-InlineCode"
               >
                 <a
                   class="css-153g748-InternalLink"
@@ -3039,7 +3039,7 @@ your app.
               class="css-1uzovlc-Cell"
             >
               <code
-                class="inline css-1fz3od4-InlineCode"
+                class="inline css-16lpqq8-InlineCode"
               >
                 <span>
                   string
@@ -3056,7 +3056,7 @@ your app.
               <span>
                 An arbitrary string that your app provided as 
                 <code
-                  class="inline css-1fz3od4-InlineCode"
+                  class="inline css-16lpqq8-InlineCode"
                 >
                   state
                 </code>
@@ -3064,14 +3064,14 @@ your app.
 credential. Used to verify that the response was from the request you made. Can be used to
 avoid replay attacks. If you did not provide 
                 <code
-                  class="inline css-1fz3od4-InlineCode"
+                  class="inline css-16lpqq8-InlineCode"
                 >
                   state
                 </code>
                  when making the sign-in request, this field
 will be 
                 <code
-                  class="inline css-1fz3od4-InlineCode"
+                  class="inline css-16lpqq8-InlineCode"
                 >
                   null
                 </code>
@@ -3095,7 +3095,7 @@ will be
               class="css-1uzovlc-Cell"
             >
               <code
-                class="inline css-1fz3od4-InlineCode"
+                class="inline css-16lpqq8-InlineCode"
               >
                 string
               </code>
@@ -3137,7 +3137,7 @@ developers.
             class="css-6n7j50"
           >
             <code
-              class="inline css-1fz3od4-InlineCode"
+              class="inline css-16lpqq8-InlineCode"
             >
               AppleAuthenticationFullName
             </code>
@@ -3180,7 +3180,7 @@ developers.
       An object representing the tokenized portions of the user's full name. Any of all of the fields
 may be 
       <code
-        class="inline css-1fz3od4-InlineCode"
+        class="inline css-16lpqq8-InlineCode"
       >
         null
       </code>
@@ -3232,7 +3232,7 @@ may be
               class="css-1uzovlc-Cell"
             >
               <code
-                class="inline css-1fz3od4-InlineCode"
+                class="inline css-16lpqq8-InlineCode"
               >
                 <span>
                   string
@@ -3265,7 +3265,7 @@ may be
               class="css-1uzovlc-Cell"
             >
               <code
-                class="inline css-1fz3od4-InlineCode"
+                class="inline css-16lpqq8-InlineCode"
               >
                 <span>
                   string
@@ -3298,7 +3298,7 @@ may be
               class="css-1uzovlc-Cell"
             >
               <code
-                class="inline css-1fz3od4-InlineCode"
+                class="inline css-16lpqq8-InlineCode"
               >
                 <span>
                   string
@@ -3331,7 +3331,7 @@ may be
               class="css-1uzovlc-Cell"
             >
               <code
-                class="inline css-1fz3od4-InlineCode"
+                class="inline css-16lpqq8-InlineCode"
               >
                 <span>
                   string
@@ -3364,7 +3364,7 @@ may be
               class="css-1uzovlc-Cell"
             >
               <code
-                class="inline css-1fz3od4-InlineCode"
+                class="inline css-16lpqq8-InlineCode"
               >
                 <span>
                   string
@@ -3397,7 +3397,7 @@ may be
               class="css-1uzovlc-Cell"
             >
               <code
-                class="inline css-1fz3od4-InlineCode"
+                class="inline css-16lpqq8-InlineCode"
               >
                 <span>
                   string
@@ -3440,7 +3440,7 @@ may be
             class="css-6n7j50"
           >
             <code
-              class="inline css-1fz3od4-InlineCode"
+              class="inline css-16lpqq8-InlineCode"
             >
               AppleAuthenticationRefreshOptions
             </code>
@@ -3486,7 +3486,7 @@ may be
         href="/#appleauthenticationrefreshasyncoptions"
       >
         <code
-          class="inline css-1fz3od4-InlineCode"
+          class="inline css-16lpqq8-InlineCode"
         >
           AppleAuthentication.refreshAsync()
         </code>
@@ -3590,7 +3590,7 @@ for more details.
               class="css-1uzovlc-Cell"
             >
               <code
-                class="inline css-1fz3od4-InlineCode"
+                class="inline css-16lpqq8-InlineCode"
               >
                 <a
                   class="css-153g748-InternalLink"
@@ -3609,7 +3609,7 @@ for more details.
 choose to deny your app access to any scope at the time of logging in. You will still need to
 handle 
                 <code
-                  class="inline css-1fz3od4-InlineCode"
+                  class="inline css-16lpqq8-InlineCode"
                 >
                   null
                 </code>
@@ -3617,13 +3617,13 @@ handle
 will only be provided to you the first time each user signs into your app; in subsequent
 requests they will be 
                 <code
-                  class="inline css-1fz3od4-InlineCode"
+                  class="inline css-16lpqq8-InlineCode"
                 >
                   null
                 </code>
                 . Defaults to 
                 <code
-                  class="inline css-1fz3od4-InlineCode"
+                  class="inline css-16lpqq8-InlineCode"
                 >
                   []
                 </code>
@@ -3653,7 +3653,7 @@ requests they will be
               class="css-1uzovlc-Cell"
             >
               <code
-                class="inline css-1fz3od4-InlineCode"
+                class="inline css-16lpqq8-InlineCode"
               >
                 string
               </code>
@@ -3693,7 +3693,7 @@ OAuth 2.0 protocol
               class="css-1uzovlc-Cell"
             >
               <code
-                class="inline css-1fz3od4-InlineCode"
+                class="inline css-16lpqq8-InlineCode"
               >
                 string
               </code>
@@ -3730,7 +3730,7 @@ OAuth 2.0 protocol
             class="css-6n7j50"
           >
             <code
-              class="inline css-1fz3od4-InlineCode"
+              class="inline css-16lpqq8-InlineCode"
             >
               AppleAuthenticationSignInOptions
             </code>
@@ -3776,7 +3776,7 @@ OAuth 2.0 protocol
         href="/#appleauthenticationsigninasyncoptions"
       >
         <code
-          class="inline css-1fz3od4-InlineCode"
+          class="inline css-16lpqq8-InlineCode"
         >
           AppleAuthentication.signInAsync()
         </code>
@@ -3880,7 +3880,7 @@ for more details.
               class="css-1uzovlc-Cell"
             >
               <code
-                class="inline css-1fz3od4-InlineCode"
+                class="inline css-16lpqq8-InlineCode"
               >
                 string
               </code>
@@ -3924,7 +3924,7 @@ for more details.
               class="css-1uzovlc-Cell"
             >
               <code
-                class="inline css-1fz3od4-InlineCode"
+                class="inline css-16lpqq8-InlineCode"
               >
                 <a
                   class="css-153g748-InternalLink"
@@ -3943,7 +3943,7 @@ for more details.
 choose to deny your app access to any scope at the time of logging in. You will still need to
 handle 
                 <code
-                  class="inline css-1fz3od4-InlineCode"
+                  class="inline css-16lpqq8-InlineCode"
                 >
                   null
                 </code>
@@ -3951,13 +3951,13 @@ handle
 will only be provided to you the first time each user signs into your app; in subsequent
 requests they will be 
                 <code
-                  class="inline css-1fz3od4-InlineCode"
+                  class="inline css-16lpqq8-InlineCode"
                 >
                   null
                 </code>
                 . Defaults to 
                 <code
-                  class="inline css-1fz3od4-InlineCode"
+                  class="inline css-16lpqq8-InlineCode"
                 >
                   []
                 </code>
@@ -3987,7 +3987,7 @@ requests they will be
               class="css-1uzovlc-Cell"
             >
               <code
-                class="inline css-1fz3od4-InlineCode"
+                class="inline css-16lpqq8-InlineCode"
               >
                 string
               </code>
@@ -4037,7 +4037,7 @@ OAuth 2.0 protocol
             class="css-6n7j50"
           >
             <code
-              class="inline css-1fz3od4-InlineCode"
+              class="inline css-16lpqq8-InlineCode"
             >
               AppleAuthenticationSignOutOptions
             </code>
@@ -4083,7 +4083,7 @@ OAuth 2.0 protocol
         href="/#appleauthenticationsignoutasyncoptions"
       >
         <code
-          class="inline css-1fz3od4-InlineCode"
+          class="inline css-16lpqq8-InlineCode"
         >
           AppleAuthentication.signOutAsync()
         </code>
@@ -4187,7 +4187,7 @@ for more details.
               class="css-1uzovlc-Cell"
             >
               <code
-                class="inline css-1fz3od4-InlineCode"
+                class="inline css-16lpqq8-InlineCode"
               >
                 string
               </code>
@@ -4227,7 +4227,7 @@ OAuth 2.0 protocol
               class="css-1uzovlc-Cell"
             >
               <code
-                class="inline css-1fz3od4-InlineCode"
+                class="inline css-16lpqq8-InlineCode"
               >
                 string
               </code>
@@ -4264,7 +4264,7 @@ OAuth 2.0 protocol
             class="css-6n7j50"
           >
             <code
-              class="inline css-1fz3od4-InlineCode"
+              class="inline css-16lpqq8-InlineCode"
             >
               Subscription
             </code>
@@ -4346,7 +4346,7 @@ OAuth 2.0 protocol
               class="css-1uzovlc-Cell"
             >
               <code
-                class="inline css-1fz3od4-InlineCode"
+                class="inline css-16lpqq8-InlineCode"
               >
                 (
                 ) =&gt;
@@ -4439,7 +4439,7 @@ OAuth 2.0 protocol
             class="css-6n7j50"
           >
             <code
-              class="inline css-1fz3od4-InlineCode"
+              class="inline css-16lpqq8-InlineCode"
             >
               AppleAuthenticationButtonStyle
             </code>
@@ -4485,7 +4485,7 @@ OAuth 2.0 protocol
         href="/#appleauthenticationappleauthenticationbutton"
       >
         <code
-          class="inline css-1fz3od4-InlineCode"
+          class="inline css-16lpqq8-InlineCode"
         >
           AppleAuthenticationButton
         </code>
@@ -4518,7 +4518,7 @@ OAuth 2.0 protocol
                 class="css-6n7j50"
               >
                 <code
-                  class="inline css-1fz3od4-InlineCode"
+                  class="inline css-16lpqq8-InlineCode"
                 >
                   WHITE
                 </code>
@@ -4556,7 +4556,7 @@ OAuth 2.0 protocol
         </h4>
       </div>
       <code
-        class="inline css-1vjeiem-InlineCode"
+        class="inline css-t7whmz-APISectionEnums"
       >
         AppleAuthenticationButtonStyle
         .
@@ -4596,7 +4596,7 @@ OAuth 2.0 protocol
                 class="css-6n7j50"
               >
                 <code
-                  class="inline css-1fz3od4-InlineCode"
+                  class="inline css-16lpqq8-InlineCode"
                 >
                   WHITE_OUTLINE
                 </code>
@@ -4634,7 +4634,7 @@ OAuth 2.0 protocol
         </h4>
       </div>
       <code
-        class="inline css-1vjeiem-InlineCode"
+        class="inline css-t7whmz-APISectionEnums"
       >
         AppleAuthenticationButtonStyle
         .
@@ -4674,7 +4674,7 @@ OAuth 2.0 protocol
                 class="css-6n7j50"
               >
                 <code
-                  class="inline css-1fz3od4-InlineCode"
+                  class="inline css-16lpqq8-InlineCode"
                 >
                   BLACK
                 </code>
@@ -4712,7 +4712,7 @@ OAuth 2.0 protocol
         </h4>
       </div>
       <code
-        class="inline css-1vjeiem-InlineCode"
+        class="inline css-t7whmz-APISectionEnums"
       >
         AppleAuthenticationButtonStyle
         .
@@ -4749,7 +4749,7 @@ OAuth 2.0 protocol
             class="css-6n7j50"
           >
             <code
-              class="inline css-1fz3od4-InlineCode"
+              class="inline css-16lpqq8-InlineCode"
             >
               AppleAuthenticationButtonType
             </code>
@@ -4795,7 +4795,7 @@ OAuth 2.0 protocol
         href="/#appleauthenticationappleauthenticationbutton"
       >
         <code
-          class="inline css-1fz3od4-InlineCode"
+          class="inline css-16lpqq8-InlineCode"
         >
           AppleAuthenticationButton
         </code>
@@ -4828,7 +4828,7 @@ OAuth 2.0 protocol
                 class="css-6n7j50"
               >
                 <code
-                  class="inline css-1fz3od4-InlineCode"
+                  class="inline css-16lpqq8-InlineCode"
                 >
                   SIGN_IN
                 </code>
@@ -4866,7 +4866,7 @@ OAuth 2.0 protocol
         </h4>
       </div>
       <code
-        class="inline css-1vjeiem-InlineCode"
+        class="inline css-t7whmz-APISectionEnums"
       >
         AppleAuthenticationButtonType
         .
@@ -4906,7 +4906,7 @@ OAuth 2.0 protocol
                 class="css-6n7j50"
               >
                 <code
-                  class="inline css-1fz3od4-InlineCode"
+                  class="inline css-16lpqq8-InlineCode"
                 >
                   CONTINUE
                 </code>
@@ -4944,7 +4944,7 @@ OAuth 2.0 protocol
         </h4>
       </div>
       <code
-        class="inline css-1vjeiem-InlineCode"
+        class="inline css-t7whmz-APISectionEnums"
       >
         AppleAuthenticationButtonType
         .
@@ -5017,7 +5017,7 @@ OAuth 2.0 protocol
                 class="css-6n7j50"
               >
                 <code
-                  class="inline css-1fz3od4-InlineCode"
+                  class="inline css-16lpqq8-InlineCode"
                 >
                   SIGN_UP
                 </code>
@@ -5055,7 +5055,7 @@ OAuth 2.0 protocol
         </h4>
       </div>
       <code
-        class="inline css-1vjeiem-InlineCode"
+        class="inline css-t7whmz-APISectionEnums"
       >
         AppleAuthenticationButtonType
         .
@@ -5092,7 +5092,7 @@ OAuth 2.0 protocol
             class="css-6n7j50"
           >
             <code
-              class="inline css-1fz3od4-InlineCode"
+              class="inline css-16lpqq8-InlineCode"
             >
               AppleAuthenticationCredentialState
             </code>
@@ -5138,7 +5138,7 @@ OAuth 2.0 protocol
         href="/#appleauthenticationgetcredentialstateasyncuser"
       >
         <code
-          class="inline css-1fz3od4-InlineCode"
+          class="inline css-16lpqq8-InlineCode"
         >
           AppleAuthentication.getCredentialStateAsync()
         </code>
@@ -5215,7 +5215,7 @@ for more details.
                 class="css-6n7j50"
               >
                 <code
-                  class="inline css-1fz3od4-InlineCode"
+                  class="inline css-16lpqq8-InlineCode"
                 >
                   REVOKED
                 </code>
@@ -5253,7 +5253,7 @@ for more details.
         </h4>
       </div>
       <code
-        class="inline css-1vjeiem-InlineCode"
+        class="inline css-t7whmz-APISectionEnums"
       >
         AppleAuthenticationCredentialState
         .
@@ -5287,7 +5287,7 @@ for more details.
                 class="css-6n7j50"
               >
                 <code
-                  class="inline css-1fz3od4-InlineCode"
+                  class="inline css-16lpqq8-InlineCode"
                 >
                   AUTHORIZED
                 </code>
@@ -5325,7 +5325,7 @@ for more details.
         </h4>
       </div>
       <code
-        class="inline css-1vjeiem-InlineCode"
+        class="inline css-t7whmz-APISectionEnums"
       >
         AppleAuthenticationCredentialState
         .
@@ -5359,7 +5359,7 @@ for more details.
                 class="css-6n7j50"
               >
                 <code
-                  class="inline css-1fz3od4-InlineCode"
+                  class="inline css-16lpqq8-InlineCode"
                 >
                   NOT_FOUND
                 </code>
@@ -5397,7 +5397,7 @@ for more details.
         </h4>
       </div>
       <code
-        class="inline css-1vjeiem-InlineCode"
+        class="inline css-t7whmz-APISectionEnums"
       >
         AppleAuthenticationCredentialState
         .
@@ -5431,7 +5431,7 @@ for more details.
                 class="css-6n7j50"
               >
                 <code
-                  class="inline css-1fz3od4-InlineCode"
+                  class="inline css-16lpqq8-InlineCode"
                 >
                   TRANSFERRED
                 </code>
@@ -5469,7 +5469,7 @@ for more details.
         </h4>
       </div>
       <code
-        class="inline css-1vjeiem-InlineCode"
+        class="inline css-t7whmz-APISectionEnums"
       >
         AppleAuthenticationCredentialState
         .
@@ -5500,7 +5500,7 @@ for more details.
             class="css-6n7j50"
           >
             <code
-              class="inline css-1fz3od4-InlineCode"
+              class="inline css-16lpqq8-InlineCode"
             >
               AppleAuthenticationOperation
             </code>
@@ -5562,7 +5562,7 @@ for more details.
                 class="css-6n7j50"
               >
                 <code
-                  class="inline css-1fz3od4-InlineCode"
+                  class="inline css-16lpqq8-InlineCode"
                 >
                   IMPLICIT
                 </code>
@@ -5600,7 +5600,7 @@ for more details.
         </h4>
       </div>
       <code
-        class="inline css-1vjeiem-InlineCode"
+        class="inline css-t7whmz-APISectionEnums"
       >
         AppleAuthenticationOperation
         .
@@ -5640,7 +5640,7 @@ for more details.
                 class="css-6n7j50"
               >
                 <code
-                  class="inline css-1fz3od4-InlineCode"
+                  class="inline css-16lpqq8-InlineCode"
                 >
                   LOGIN
                 </code>
@@ -5678,7 +5678,7 @@ for more details.
         </h4>
       </div>
       <code
-        class="inline css-1vjeiem-InlineCode"
+        class="inline css-t7whmz-APISectionEnums"
       >
         AppleAuthenticationOperation
         .
@@ -5712,7 +5712,7 @@ for more details.
                 class="css-6n7j50"
               >
                 <code
-                  class="inline css-1fz3od4-InlineCode"
+                  class="inline css-16lpqq8-InlineCode"
                 >
                   REFRESH
                 </code>
@@ -5750,7 +5750,7 @@ for more details.
         </h4>
       </div>
       <code
-        class="inline css-1vjeiem-InlineCode"
+        class="inline css-t7whmz-APISectionEnums"
       >
         AppleAuthenticationOperation
         .
@@ -5784,7 +5784,7 @@ for more details.
                 class="css-6n7j50"
               >
                 <code
-                  class="inline css-1fz3od4-InlineCode"
+                  class="inline css-16lpqq8-InlineCode"
                 >
                   LOGOUT
                 </code>
@@ -5822,7 +5822,7 @@ for more details.
         </h4>
       </div>
       <code
-        class="inline css-1vjeiem-InlineCode"
+        class="inline css-t7whmz-APISectionEnums"
       >
         AppleAuthenticationOperation
         .
@@ -5853,7 +5853,7 @@ for more details.
             class="css-6n7j50"
           >
             <code
-              class="inline css-1fz3od4-InlineCode"
+              class="inline css-16lpqq8-InlineCode"
             >
               AppleAuthenticationScope
             </code>
@@ -5899,7 +5899,7 @@ for more details.
         href="/#appleauthenticationsigninasyncoptions"
       >
         <code
-          class="inline css-1fz3od4-InlineCode"
+          class="inline css-16lpqq8-InlineCode"
         >
           AppleAuthentication.signInAsync()
         </code>
@@ -6009,7 +6009,7 @@ for more details.
                 class="css-6n7j50"
               >
                 <code
-                  class="inline css-1fz3od4-InlineCode"
+                  class="inline css-16lpqq8-InlineCode"
                 >
                   FULL_NAME
                 </code>
@@ -6047,7 +6047,7 @@ for more details.
         </h4>
       </div>
       <code
-        class="inline css-1vjeiem-InlineCode"
+        class="inline css-t7whmz-APISectionEnums"
       >
         AppleAuthenticationScope
         .
@@ -6081,7 +6081,7 @@ for more details.
                 class="css-6n7j50"
               >
                 <code
-                  class="inline css-1fz3od4-InlineCode"
+                  class="inline css-16lpqq8-InlineCode"
                 >
                   EMAIL
                 </code>
@@ -6119,7 +6119,7 @@ for more details.
         </h4>
       </div>
       <code
-        class="inline css-1vjeiem-InlineCode"
+        class="inline css-t7whmz-APISectionEnums"
       >
         AppleAuthenticationScope
         .
@@ -6150,7 +6150,7 @@ for more details.
             class="css-6n7j50"
           >
             <code
-              class="inline css-1fz3od4-InlineCode"
+              class="inline css-16lpqq8-InlineCode"
             >
               AppleAuthenticationUserDetectionStatus
             </code>
@@ -6262,7 +6262,7 @@ for more details.
                 class="css-6n7j50"
               >
                 <code
-                  class="inline css-1fz3od4-InlineCode"
+                  class="inline css-16lpqq8-InlineCode"
                 >
                   UNSUPPORTED
                 </code>
@@ -6300,7 +6300,7 @@ for more details.
         </h4>
       </div>
       <code
-        class="inline css-1vjeiem-InlineCode"
+        class="inline css-t7whmz-APISectionEnums"
       >
         AppleAuthenticationUserDetectionStatus
         .
@@ -6340,7 +6340,7 @@ for more details.
                 class="css-6n7j50"
               >
                 <code
-                  class="inline css-1fz3od4-InlineCode"
+                  class="inline css-16lpqq8-InlineCode"
                 >
                   UNKNOWN
                 </code>
@@ -6378,7 +6378,7 @@ for more details.
         </h4>
       </div>
       <code
-        class="inline css-1vjeiem-InlineCode"
+        class="inline css-t7whmz-APISectionEnums"
       >
         AppleAuthenticationUserDetectionStatus
         .
@@ -6418,7 +6418,7 @@ for more details.
                 class="css-6n7j50"
               >
                 <code
-                  class="inline css-1fz3od4-InlineCode"
+                  class="inline css-16lpqq8-InlineCode"
                 >
                   LIKELY_REAL
                 </code>
@@ -6456,7 +6456,7 @@ for more details.
         </h4>
       </div>
       <code
-        class="inline css-1vjeiem-InlineCode"
+        class="inline css-t7whmz-APISectionEnums"
       >
         AppleAuthenticationUserDetectionStatus
         .
@@ -6549,7 +6549,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
             class="css-6n7j50"
           >
             <code
-              class="inline css-1fz3od4-InlineCode"
+              class="inline css-16lpqq8-InlineCode"
             >
               BarCodeScanner
             </code>
@@ -6596,7 +6596,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
       </strong>
        
       <code
-        class="inline css-1fz3od4-InlineCode"
+        class="inline css-16lpqq8-InlineCode"
       >
         Component
         &lt;
@@ -6685,7 +6685,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
                 class="css-6n7j50"
               >
                 <code
-                  class="inline css-1fz3od4-InlineCode"
+                  class="inline css-1lmmqpm-InlineCode"
                 >
                   barCodeTypes
                 </code>
@@ -6737,7 +6737,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
           </span>
            
           <code
-            class="inline css-1fz3od4-InlineCode"
+            class="inline css-16lpqq8-InlineCode"
           >
             string[]
           </code>
@@ -6748,14 +6748,14 @@ exports[`APISection expo-barcode-scanner 1`] = `
         >
           An array of bar code types. Usage: 
           <code
-            class="inline css-1fz3od4-InlineCode"
+            class="inline css-16lpqq8-InlineCode"
           >
             BarCodeScanner.Constants.BarCodeType.&lt;codeType&gt;
           </code>
            where
 
           <code
-            class="inline css-1fz3od4-InlineCode"
+            class="inline css-16lpqq8-InlineCode"
           >
             codeType
           </code>
@@ -6776,7 +6776,7 @@ minimize battery usage.
         >
           For example: 
           <code
-            class="inline css-1fz3od4-InlineCode"
+            class="inline css-16lpqq8-InlineCode"
           >
             barCodeTypes={[BarCodeScanner.Constants.BarCodeType.qr]}
           </code>
@@ -6805,7 +6805,7 @@ minimize battery usage.
                 class="css-6n7j50"
               >
                 <code
-                  class="inline css-1fz3od4-InlineCode"
+                  class="inline css-1lmmqpm-InlineCode"
                 >
                   onBarCodeScanned
                 </code>
@@ -6857,7 +6857,7 @@ minimize battery usage.
           </span>
            
           <code
-            class="inline css-1fz3od4-InlineCode"
+            class="inline css-16lpqq8-InlineCode"
           >
             <a
               class="css-153g748-InternalLink"
@@ -6917,13 +6917,13 @@ provided with an
             </strong>
              Passing 
             <code
-              class="inline css-1fz3od4-InlineCode"
+              class="inline css-16lpqq8-InlineCode"
             >
               undefined
             </code>
              to the 
             <code
-              class="inline css-1fz3od4-InlineCode"
+              class="inline css-16lpqq8-InlineCode"
             >
               onBarCodeScanned
             </code>
@@ -6957,7 +6957,7 @@ data has been retrieved.
                 class="css-6n7j50"
               >
                 <code
-                  class="inline css-1fz3od4-InlineCode"
+                  class="inline css-1lmmqpm-InlineCode"
                 >
                   type
                 </code>
@@ -7009,7 +7009,7 @@ data has been retrieved.
           </span>
            
           <code
-            class="inline css-1fz3od4-InlineCode"
+            class="inline css-16lpqq8-InlineCode"
           >
             <span>
               'front'
@@ -7031,7 +7031,7 @@ data has been retrieved.
             </span>
              
             <code
-              class="inline css-1fz3od4-InlineCode"
+              class="inline css-16lpqq8-InlineCode"
             >
               Type.back
 
@@ -7044,26 +7044,26 @@ data has been retrieved.
         >
           Camera facing. Use one of 
           <code
-            class="inline css-1fz3od4-InlineCode"
+            class="inline css-16lpqq8-InlineCode"
           >
             BarCodeScanner.Constants.Type
           </code>
           . Use either 
           <code
-            class="inline css-1fz3od4-InlineCode"
+            class="inline css-16lpqq8-InlineCode"
           >
             Type.front
           </code>
            or 
           <code
-            class="inline css-1fz3od4-InlineCode"
+            class="inline css-16lpqq8-InlineCode"
           >
             Type.back
           </code>
           .
 Same as 
           <code
-            class="inline css-1fz3od4-InlineCode"
+            class="inline css-16lpqq8-InlineCode"
           >
             Camera.Constants.Type
           </code>
@@ -7129,7 +7129,7 @@ Same as
           class="docs-list-item css-l157nt-LI"
         >
           <code
-            class="inline css-1fz3od4-InlineCode"
+            class="inline css-16lpqq8-InlineCode"
           >
             <a
               class="css-153g748-InternalLink"
@@ -7215,7 +7215,7 @@ Same as
             class="css-6n7j50"
           >
             <code
-              class="inline css-1fz3od4-InlineCode"
+              class="inline css-1lmmqpm-InlineCode"
             >
               usePermissions
             </code>
@@ -7303,7 +7303,7 @@ Same as
               class="css-t44xva-Cell"
             >
               <code
-                class="inline css-1fz3od4-InlineCode"
+                class="inline css-16lpqq8-InlineCode"
               >
                 <a
                   class="css-153g748-InternalLink"
@@ -7416,7 +7416,7 @@ This can be used to quickly create specific permission hooks in every module.
           />
         </svg>
         <code
-          class="inline css-1fz3od4-InlineCode"
+          class="inline css-16lpqq8-InlineCode"
         >
           [
           <span>
@@ -7539,7 +7539,7 @@ This can be used to quickly create specific permission hooks in every module.
             class="css-6n7j50"
           >
             <code
-              class="inline css-1fz3od4-InlineCode"
+              class="inline css-1lmmqpm-InlineCode"
             >
               BarCodeScanner.
               getPermissionsAsync()
@@ -7664,7 +7664,7 @@ This can be used to quickly create specific permission hooks in every module.
           />
         </svg>
         <code
-          class="inline css-1fz3od4-InlineCode"
+          class="inline css-16lpqq8-InlineCode"
         >
           <a
             class="css-ccg2mn-ExternalLink"
@@ -7696,7 +7696,7 @@ This can be used to quickly create specific permission hooks in every module.
         href="/#permissionresponse"
       >
         <code
-          class="inline css-1fz3od4-InlineCode"
+          class="inline css-16lpqq8-InlineCode"
         >
           PermissionResponse
         </code>
@@ -7726,7 +7726,7 @@ This can be used to quickly create specific permission hooks in every module.
             class="css-6n7j50"
           >
             <code
-              class="inline css-1fz3od4-InlineCode"
+              class="inline css-1lmmqpm-InlineCode"
             >
               BarCodeScanner.
               requestPermissionsAsync()
@@ -7775,13 +7775,13 @@ This can be used to quickly create specific permission hooks in every module.
     >
       On iOS this will require apps to specify the 
       <code
-        class="inline css-1fz3od4-InlineCode"
+        class="inline css-16lpqq8-InlineCode"
       >
         NSCameraUsageDescription
       </code>
        entry in the 
       <code
-        class="inline css-1fz3od4-InlineCode"
+        class="inline css-16lpqq8-InlineCode"
       >
         Info.plist
       </code>
@@ -7869,7 +7869,7 @@ This can be used to quickly create specific permission hooks in every module.
           />
         </svg>
         <code
-          class="inline css-1fz3od4-InlineCode"
+          class="inline css-16lpqq8-InlineCode"
         >
           <a
             class="css-ccg2mn-ExternalLink"
@@ -7901,7 +7901,7 @@ This can be used to quickly create specific permission hooks in every module.
         href="/#permissionresponse"
       >
         <code
-          class="inline css-1fz3od4-InlineCode"
+          class="inline css-16lpqq8-InlineCode"
         >
           PermissionResponse
         </code>
@@ -7931,7 +7931,7 @@ This can be used to quickly create specific permission hooks in every module.
             class="css-6n7j50"
           >
             <code
-              class="inline css-1fz3od4-InlineCode"
+              class="inline css-1lmmqpm-InlineCode"
             >
               BarCodeScanner.
               scanFromURLAsync(url, barCodeTypes)
@@ -8014,7 +8014,7 @@ This can be used to quickly create specific permission hooks in every module.
               class="css-t44xva-Cell"
             >
               <code
-                class="inline css-1fz3od4-InlineCode"
+                class="inline css-16lpqq8-InlineCode"
               >
                 string
               </code>
@@ -8049,7 +8049,7 @@ This can be used to quickly create specific permission hooks in every module.
               class="css-t44xva-Cell"
             >
               <code
-                class="inline css-1fz3od4-InlineCode"
+                class="inline css-16lpqq8-InlineCode"
               >
                 string[]
               </code>
@@ -8193,7 +8193,7 @@ the platform.
           />
         </svg>
         <code
-          class="inline css-1fz3od4-InlineCode"
+          class="inline css-16lpqq8-InlineCode"
         >
           <a
             class="css-ccg2mn-ExternalLink"
@@ -8222,7 +8222,7 @@ the platform.
     >
       A possibly empty array of objects of the 
       <code
-        class="inline css-1fz3od4-InlineCode"
+        class="inline css-16lpqq8-InlineCode"
       >
         BarCodeScannerResult
       </code>
@@ -8304,7 +8304,7 @@ code.
             class="css-6n7j50"
           >
             <code
-              class="inline css-1fz3od4-InlineCode"
+              class="inline css-16lpqq8-InlineCode"
             >
               PermissionResponse
             </code>
@@ -8346,13 +8346,13 @@ code.
     >
       An object obtained by 
       <code
-        class="inline css-1fz3od4-InlineCode"
+        class="inline css-16lpqq8-InlineCode"
       >
         getPermissionsAsync
       </code>
        and 
       <code
-        class="inline css-1fz3od4-InlineCode"
+        class="inline css-16lpqq8-InlineCode"
       >
         requestPermissionsAsync
       </code>
@@ -8461,7 +8461,7 @@ code.
               class="css-1uzovlc-Cell"
             >
               <code
-                class="inline css-1fz3od4-InlineCode"
+                class="inline css-16lpqq8-InlineCode"
               >
                 boolean
               </code>
@@ -8492,7 +8492,7 @@ in order to enable/disable the permission.
               class="css-1uzovlc-Cell"
             >
               <code
-                class="inline css-1fz3od4-InlineCode"
+                class="inline css-16lpqq8-InlineCode"
               >
                 <a
                   class="css-153g748-InternalLink"
@@ -8526,7 +8526,7 @@ in order to enable/disable the permission.
               class="css-1uzovlc-Cell"
             >
               <code
-                class="inline css-1fz3od4-InlineCode"
+                class="inline css-16lpqq8-InlineCode"
               >
                 boolean
               </code>
@@ -8555,7 +8555,7 @@ in order to enable/disable the permission.
               class="css-1uzovlc-Cell"
             >
               <code
-                class="inline css-1fz3od4-InlineCode"
+                class="inline css-16lpqq8-InlineCode"
               >
                 <a
                   class="css-153g748-InternalLink"
@@ -8650,7 +8650,7 @@ in order to enable/disable the permission.
             class="css-6n7j50"
           >
             <code
-              class="inline css-1fz3od4-InlineCode"
+              class="inline css-16lpqq8-InlineCode"
             >
               BarCodeBounds
             </code>
@@ -8732,7 +8732,7 @@ in order to enable/disable the permission.
               class="css-1uzovlc-Cell"
             >
               <code
-                class="inline css-1fz3od4-InlineCode"
+                class="inline css-16lpqq8-InlineCode"
               >
                 <a
                   class="css-153g748-InternalLink"
@@ -8766,7 +8766,7 @@ in order to enable/disable the permission.
               class="css-1uzovlc-Cell"
             >
               <code
-                class="inline css-1fz3od4-InlineCode"
+                class="inline css-16lpqq8-InlineCode"
               >
                 <a
                   class="css-153g748-InternalLink"
@@ -8810,7 +8810,7 @@ in order to enable/disable the permission.
             class="css-6n7j50"
           >
             <code
-              class="inline css-1fz3od4-InlineCode"
+              class="inline css-16lpqq8-InlineCode"
             >
               BarCodeEvent
             </code>
@@ -8851,7 +8851,7 @@ in order to enable/disable the permission.
       data-text="true"
     >
       <code
-        class="inline css-1fz3od4-InlineCode"
+        class="inline css-16lpqq8-InlineCode"
       >
         <a
           class="css-153g748-InternalLink"
@@ -8915,7 +8915,7 @@ in order to enable/disable the permission.
               class="css-1uzovlc-Cell"
             >
               <code
-                class="inline css-1fz3od4-InlineCode"
+                class="inline css-16lpqq8-InlineCode"
               >
                 number
               </code>
@@ -8952,7 +8952,7 @@ in order to enable/disable the permission.
             class="css-6n7j50"
           >
             <code
-              class="inline css-1fz3od4-InlineCode"
+              class="inline css-16lpqq8-InlineCode"
             >
               BarCodeEventCallbackArguments
             </code>
@@ -9034,7 +9034,7 @@ in order to enable/disable the permission.
               class="css-1uzovlc-Cell"
             >
               <code
-                class="inline css-1fz3od4-InlineCode"
+                class="inline css-16lpqq8-InlineCode"
               >
                 <a
                   class="css-153g748-InternalLink"
@@ -9076,7 +9076,7 @@ in order to enable/disable the permission.
             class="css-6n7j50"
           >
             <code
-              class="inline css-1fz3od4-InlineCode"
+              class="inline css-16lpqq8-InlineCode"
             >
               BarCodePoint
             </code>
@@ -9165,7 +9165,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
               class="css-1uzovlc-Cell"
             >
               <code
-                class="inline css-1fz3od4-InlineCode"
+                class="inline css-16lpqq8-InlineCode"
               >
                 number
               </code>
@@ -9176,7 +9176,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
               <span>
                 The 
                 <code
-                  class="inline css-1fz3od4-InlineCode"
+                  class="inline css-16lpqq8-InlineCode"
                 >
                   x
                 </code>
@@ -9200,7 +9200,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
               class="css-1uzovlc-Cell"
             >
               <code
-                class="inline css-1fz3od4-InlineCode"
+                class="inline css-16lpqq8-InlineCode"
               >
                 number
               </code>
@@ -9211,7 +9211,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
               <span>
                 The 
                 <code
-                  class="inline css-1fz3od4-InlineCode"
+                  class="inline css-16lpqq8-InlineCode"
                 >
                   y
                 </code>
@@ -9245,7 +9245,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
             class="css-6n7j50"
           >
             <code
-              class="inline css-1fz3od4-InlineCode"
+              class="inline css-16lpqq8-InlineCode"
             >
               BarCodeScannedCallback
               ()
@@ -9329,7 +9329,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
                 class="css-t44xva-Cell"
               >
                 <code
-                  class="inline css-1fz3od4-InlineCode"
+                  class="inline css-16lpqq8-InlineCode"
                 >
                   <a
                     class="css-153g748-InternalLink"
@@ -9372,7 +9372,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
             class="css-6n7j50"
           >
             <code
-              class="inline css-1fz3od4-InlineCode"
+              class="inline css-16lpqq8-InlineCode"
             >
               BarCodeScannerResult
             </code>
@@ -9442,25 +9442,25 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
         </strong>
          
         <code
-          class="inline css-1fz3od4-InlineCode"
+          class="inline css-16lpqq8-InlineCode"
         >
           bounds
         </code>
          and 
         <code
-          class="inline css-1fz3od4-InlineCode"
+          class="inline css-16lpqq8-InlineCode"
         >
           cornerPoints
         </code>
          are not always available. On iOS, for 
         <code
-          class="inline css-1fz3od4-InlineCode"
+          class="inline css-16lpqq8-InlineCode"
         >
           code39
         </code>
          and 
         <code
-          class="inline css-1fz3od4-InlineCode"
+          class="inline css-16lpqq8-InlineCode"
         >
           pdf417
         </code>
@@ -9523,7 +9523,7 @@ For some types, they will represent the area used by the scanner.
               class="css-1uzovlc-Cell"
             >
               <code
-                class="inline css-1fz3od4-InlineCode"
+                class="inline css-16lpqq8-InlineCode"
               >
                 <a
                   class="css-153g748-InternalLink"
@@ -9570,7 +9570,7 @@ For some types, they will represent the area used by the scanner.
               class="css-1uzovlc-Cell"
             >
               <code
-                class="inline css-1fz3od4-InlineCode"
+                class="inline css-16lpqq8-InlineCode"
               >
                 <a
                   class="css-153g748-InternalLink"
@@ -9605,7 +9605,7 @@ For some types, they will represent the area used by the scanner.
               class="css-1uzovlc-Cell"
             >
               <code
-                class="inline css-1fz3od4-InlineCode"
+                class="inline css-16lpqq8-InlineCode"
               >
                 string
               </code>
@@ -9634,7 +9634,7 @@ For some types, they will represent the area used by the scanner.
               class="css-1uzovlc-Cell"
             >
               <code
-                class="inline css-1fz3od4-InlineCode"
+                class="inline css-16lpqq8-InlineCode"
               >
                 string
               </code>
@@ -9673,7 +9673,7 @@ For some types, they will represent the area used by the scanner.
             class="css-6n7j50"
           >
             <code
-              class="inline css-1fz3od4-InlineCode"
+              class="inline css-16lpqq8-InlineCode"
             >
               BarCodeSize
             </code>
@@ -9755,7 +9755,7 @@ For some types, they will represent the area used by the scanner.
               class="css-1uzovlc-Cell"
             >
               <code
-                class="inline css-1fz3od4-InlineCode"
+                class="inline css-16lpqq8-InlineCode"
               >
                 number
               </code>
@@ -9784,7 +9784,7 @@ For some types, they will represent the area used by the scanner.
               class="css-1uzovlc-Cell"
             >
               <code
-                class="inline css-1fz3od4-InlineCode"
+                class="inline css-16lpqq8-InlineCode"
               >
                 number
               </code>
@@ -9823,7 +9823,7 @@ For some types, they will represent the area used by the scanner.
             class="css-6n7j50"
           >
             <code
-              class="inline css-1fz3od4-InlineCode"
+              class="inline css-16lpqq8-InlineCode"
             >
               PermissionHookOptions
             </code>
@@ -9867,7 +9867,7 @@ For some types, they will represent the area used by the scanner.
        
       <span>
         <code
-          class="inline css-1fz3od4-InlineCode"
+          class="inline css-16lpqq8-InlineCode"
         >
           PermissionHookBehavior
         </code>
@@ -9875,7 +9875,7 @@ For some types, they will represent the area used by the scanner.
       </span>
       <span>
         <code
-          class="inline css-1fz3od4-InlineCode"
+          class="inline css-16lpqq8-InlineCode"
         >
           Options
         </code>
@@ -9956,7 +9956,7 @@ For some types, they will represent the area used by the scanner.
             class="css-6n7j50"
           >
             <code
-              class="inline css-1fz3od4-InlineCode"
+              class="inline css-16lpqq8-InlineCode"
             >
               PermissionStatus
             </code>
@@ -10018,7 +10018,7 @@ For some types, they will represent the area used by the scanner.
                 class="css-6n7j50"
               >
                 <code
-                  class="inline css-1fz3od4-InlineCode"
+                  class="inline css-16lpqq8-InlineCode"
                 >
                   DENIED
                 </code>
@@ -10056,7 +10056,7 @@ For some types, they will represent the area used by the scanner.
         </h4>
       </div>
       <code
-        class="inline css-1vjeiem-InlineCode"
+        class="inline css-t7whmz-APISectionEnums"
       >
         PermissionStatus
         .
@@ -10096,7 +10096,7 @@ For some types, they will represent the area used by the scanner.
                 class="css-6n7j50"
               >
                 <code
-                  class="inline css-1fz3od4-InlineCode"
+                  class="inline css-16lpqq8-InlineCode"
                 >
                   GRANTED
                 </code>
@@ -10134,7 +10134,7 @@ For some types, they will represent the area used by the scanner.
         </h4>
       </div>
       <code
-        class="inline css-1vjeiem-InlineCode"
+        class="inline css-t7whmz-APISectionEnums"
       >
         PermissionStatus
         .
@@ -10174,7 +10174,7 @@ For some types, they will represent the area used by the scanner.
                 class="css-6n7j50"
               >
                 <code
-                  class="inline css-1fz3od4-InlineCode"
+                  class="inline css-16lpqq8-InlineCode"
                 >
                   UNDETERMINED
                 </code>
@@ -10212,7 +10212,7 @@ For some types, they will represent the area used by the scanner.
         </h4>
       </div>
       <code
-        class="inline css-1vjeiem-InlineCode"
+        class="inline css-t7whmz-APISectionEnums"
       >
         PermissionStatus
         .
@@ -10305,7 +10305,7 @@ exports[`APISection expo-pedometer 1`] = `
             class="css-6n7j50"
           >
             <code
-              class="inline css-1fz3od4-InlineCode"
+              class="inline css-1lmmqpm-InlineCode"
             >
               getPermissionsAsync()
             </code>
@@ -10423,7 +10423,7 @@ exports[`APISection expo-pedometer 1`] = `
           />
         </svg>
         <code
-          class="inline css-1fz3od4-InlineCode"
+          class="inline css-16lpqq8-InlineCode"
         >
           <a
             class="css-ccg2mn-ExternalLink"
@@ -10468,7 +10468,7 @@ exports[`APISection expo-pedometer 1`] = `
             class="css-6n7j50"
           >
             <code
-              class="inline css-1fz3od4-InlineCode"
+              class="inline css-1lmmqpm-InlineCode"
             >
               getStepCountAsync(start, end)
             </code>
@@ -10550,7 +10550,7 @@ exports[`APISection expo-pedometer 1`] = `
               class="css-t44xva-Cell"
             >
               <code
-                class="inline css-1fz3od4-InlineCode"
+                class="inline css-16lpqq8-InlineCode"
               >
                 <a
                   class="css-ccg2mn-ExternalLink"
@@ -10585,7 +10585,7 @@ exports[`APISection expo-pedometer 1`] = `
               class="css-t44xva-Cell"
             >
               <code
-                class="inline css-1fz3od4-InlineCode"
+                class="inline css-16lpqq8-InlineCode"
               >
                 <a
                   class="css-ccg2mn-ExternalLink"
@@ -10695,7 +10695,7 @@ exports[`APISection expo-pedometer 1`] = `
           />
         </svg>
         <code
-          class="inline css-1fz3od4-InlineCode"
+          class="inline css-16lpqq8-InlineCode"
         >
           <a
             class="css-ccg2mn-ExternalLink"
@@ -10727,7 +10727,7 @@ exports[`APISection expo-pedometer 1`] = `
         href="/#pedometerresult"
       >
         <code
-          class="inline css-1fz3od4-InlineCode"
+          class="inline css-16lpqq8-InlineCode"
         >
           PedometerResult
         </code>
@@ -10808,7 +10808,7 @@ a start date that is more than seven days in the past returns only the available
             class="css-6n7j50"
           >
             <code
-              class="inline css-1fz3od4-InlineCode"
+              class="inline css-1lmmqpm-InlineCode"
             >
               isAvailableAsync()
             </code>
@@ -10932,7 +10932,7 @@ a start date that is more than seven days in the past returns only the available
           />
         </svg>
         <code
-          class="inline css-1fz3od4-InlineCode"
+          class="inline css-16lpqq8-InlineCode"
         >
           <a
             class="css-ccg2mn-ExternalLink"
@@ -10955,7 +10955,7 @@ a start date that is more than seven days in the past returns only the available
     >
       Returns a promise that fulfills with a 
       <code
-        class="inline css-1fz3od4-InlineCode"
+        class="inline css-16lpqq8-InlineCode"
       >
         boolean
       </code>
@@ -10985,7 +10985,7 @@ available on this device.
             class="css-6n7j50"
           >
             <code
-              class="inline css-1fz3od4-InlineCode"
+              class="inline css-1lmmqpm-InlineCode"
             >
               requestPermissionsAsync()
             </code>
@@ -11103,7 +11103,7 @@ available on this device.
           />
         </svg>
         <code
-          class="inline css-1fz3od4-InlineCode"
+          class="inline css-16lpqq8-InlineCode"
         >
           <a
             class="css-ccg2mn-ExternalLink"
@@ -11148,7 +11148,7 @@ available on this device.
             class="css-6n7j50"
           >
             <code
-              class="inline css-1fz3od4-InlineCode"
+              class="inline css-1lmmqpm-InlineCode"
             >
               watchStepCount(callback)
             </code>
@@ -11230,7 +11230,7 @@ available on this device.
               class="css-t44xva-Cell"
             >
               <code
-                class="inline css-1fz3od4-InlineCode"
+                class="inline css-16lpqq8-InlineCode"
               >
                 <a
                   class="css-153g748-InternalLink"
@@ -11251,7 +11251,7 @@ provided with a single argument that is
                   href="/#pedometerresult"
                 >
                   <code
-                    class="inline css-1fz3od4-InlineCode"
+                    class="inline css-16lpqq8-InlineCode"
                   >
                     PedometerResult
                   </code>
@@ -11351,7 +11351,7 @@ provided with a single argument that is
           />
         </svg>
         <code
-          class="inline css-1fz3od4-InlineCode"
+          class="inline css-16lpqq8-InlineCode"
         >
           <a
             class="css-153g748-InternalLink"
@@ -11372,7 +11372,7 @@ provided with a single argument that is
         href="/#subscription"
       >
         <code
-          class="inline css-1fz3od4-InlineCode"
+          class="inline css-16lpqq8-InlineCode"
         >
           Subscription
         </code>
@@ -11380,7 +11380,7 @@ provided with a single argument that is
        that enables you to call
 
       <code
-        class="inline css-1fz3od4-InlineCode"
+        class="inline css-16lpqq8-InlineCode"
       >
         remove()
       </code>
@@ -11460,7 +11460,7 @@ provided with a single argument that is
             class="css-6n7j50"
           >
             <code
-              class="inline css-1fz3od4-InlineCode"
+              class="inline css-16lpqq8-InlineCode"
             >
               PermissionResponse
             </code>
@@ -11599,7 +11599,7 @@ provided with a single argument that is
               class="css-1uzovlc-Cell"
             >
               <code
-                class="inline css-1fz3od4-InlineCode"
+                class="inline css-16lpqq8-InlineCode"
               >
                 boolean
               </code>
@@ -11626,7 +11626,7 @@ provided with a single argument that is
               class="css-1uzovlc-Cell"
             >
               <code
-                class="inline css-1fz3od4-InlineCode"
+                class="inline css-16lpqq8-InlineCode"
               >
                 <a
                   class="css-153g748-InternalLink"
@@ -11658,7 +11658,7 @@ provided with a single argument that is
               class="css-1uzovlc-Cell"
             >
               <code
-                class="inline css-1fz3od4-InlineCode"
+                class="inline css-16lpqq8-InlineCode"
               >
                 boolean
               </code>
@@ -11685,7 +11685,7 @@ provided with a single argument that is
               class="css-1uzovlc-Cell"
             >
               <code
-                class="inline css-1fz3od4-InlineCode"
+                class="inline css-16lpqq8-InlineCode"
               >
                 <a
                   class="css-153g748-InternalLink"
@@ -11778,7 +11778,7 @@ provided with a single argument that is
             class="css-6n7j50"
           >
             <code
-              class="inline css-1fz3od4-InlineCode"
+              class="inline css-16lpqq8-InlineCode"
             >
               PedometerResult
             </code>
@@ -11860,7 +11860,7 @@ provided with a single argument that is
               class="css-1uzovlc-Cell"
             >
               <code
-                class="inline css-1fz3od4-InlineCode"
+                class="inline css-16lpqq8-InlineCode"
               >
                 number
               </code>
@@ -11899,7 +11899,7 @@ provided with a single argument that is
             class="css-6n7j50"
           >
             <code
-              class="inline css-1fz3od4-InlineCode"
+              class="inline css-16lpqq8-InlineCode"
             >
               PedometerUpdateCallback
               ()
@@ -11983,7 +11983,7 @@ provided with a single argument that is
                 class="css-t44xva-Cell"
               >
                 <code
-                  class="inline css-1fz3od4-InlineCode"
+                  class="inline css-16lpqq8-InlineCode"
                 >
                   <a
                     class="css-153g748-InternalLink"
@@ -12026,7 +12026,7 @@ provided with a single argument that is
             class="css-6n7j50"
           >
             <code
-              class="inline css-1fz3od4-InlineCode"
+              class="inline css-16lpqq8-InlineCode"
             >
               PermissionExpiration
             </code>
@@ -12070,7 +12070,7 @@ provided with a single argument that is
        
       <span>
         <code
-          class="inline css-1fz3od4-InlineCode"
+          class="inline css-16lpqq8-InlineCode"
         >
           'never'
         </code>
@@ -12078,7 +12078,7 @@ provided with a single argument that is
       </span>
       <span>
         <code
-          class="inline css-1fz3od4-InlineCode"
+          class="inline css-16lpqq8-InlineCode"
         >
           number
         </code>
@@ -12108,7 +12108,7 @@ provided with a single argument that is
             class="css-6n7j50"
           >
             <code
-              class="inline css-1fz3od4-InlineCode"
+              class="inline css-16lpqq8-InlineCode"
             >
               Subscription
             </code>
@@ -12190,7 +12190,7 @@ provided with a single argument that is
               class="css-1uzovlc-Cell"
             >
               <code
-                class="inline css-1fz3od4-InlineCode"
+                class="inline css-16lpqq8-InlineCode"
               >
                 (
                 ) =&gt;
@@ -12283,7 +12283,7 @@ provided with a single argument that is
             class="css-6n7j50"
           >
             <code
-              class="inline css-1fz3od4-InlineCode"
+              class="inline css-16lpqq8-InlineCode"
             >
               PermissionStatus
             </code>
@@ -12345,7 +12345,7 @@ provided with a single argument that is
                 class="css-6n7j50"
               >
                 <code
-                  class="inline css-1fz3od4-InlineCode"
+                  class="inline css-16lpqq8-InlineCode"
                 >
                   DENIED
                 </code>
@@ -12383,7 +12383,7 @@ provided with a single argument that is
         </h4>
       </div>
       <code
-        class="inline css-1vjeiem-InlineCode"
+        class="inline css-t7whmz-APISectionEnums"
       >
         PermissionStatus
         .
@@ -12417,7 +12417,7 @@ provided with a single argument that is
                 class="css-6n7j50"
               >
                 <code
-                  class="inline css-1fz3od4-InlineCode"
+                  class="inline css-16lpqq8-InlineCode"
                 >
                   GRANTED
                 </code>
@@ -12455,7 +12455,7 @@ provided with a single argument that is
         </h4>
       </div>
       <code
-        class="inline css-1vjeiem-InlineCode"
+        class="inline css-t7whmz-APISectionEnums"
       >
         PermissionStatus
         .
@@ -12489,7 +12489,7 @@ provided with a single argument that is
                 class="css-6n7j50"
               >
                 <code
-                  class="inline css-1fz3od4-InlineCode"
+                  class="inline css-16lpqq8-InlineCode"
                 >
                   UNDETERMINED
                 </code>
@@ -12527,7 +12527,7 @@ provided with a single argument that is
         </h4>
       </div>
       <code
-        class="inline css-1vjeiem-InlineCode"
+        class="inline css-t7whmz-APISectionEnums"
       >
         PermissionStatus
         .

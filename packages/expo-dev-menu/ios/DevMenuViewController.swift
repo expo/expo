@@ -44,21 +44,9 @@ class DevMenuViewController: UIViewController {
     reactRootView?.becomeFirstResponder()
   }
 
-  override var shouldAutorotate: Bool {
-    get {
-      return true
-    }
-  }
-
   override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
     get {
-      return UIInterfaceOrientationMask.portrait
-    }
-  }
-
-  override var preferredInterfaceOrientationForPresentation: UIInterfaceOrientation {
-    get {
-      return UIInterfaceOrientation.portrait
+      return UIInterfaceOrientationMask.all
     }
   }
 
