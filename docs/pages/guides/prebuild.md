@@ -65,9 +65,9 @@ It is also theoretically possible to make clean builds take seconds rather than 
 
 ## Templates
 
-You can customize how the native folders are generated while remaining in the managed workflow by building [Expo Config Plugins](/guides/config-plugins/). Many config plugins already exist for lots of modifications, you can find an [incomplete list here](https://github.com/expo/config-plugins).
+You can customize how the native folders are generated while remaining in the managed workflow by building [Expo Config Plugins][config-plugins]. Many config plugins already exist for lots of modifications, you can find an [incomplete list here][config-plugins-repo].
 
-Prebuild generates template files before modifying them with Expo Config Plugins. The template files are versioned and come from the NPM package [`expo-template-bare-minimum`](https://github.com/expo/expo/tree/main/templates/expo-template-bare-minimum). You can change which template is used by passing `--template /path/to/template.tgz` to the `npx expo prebuild` command. This is not recommended as the base modifiers in `@expo/prebuild-config` make some undocumented assumptions about the template files.
+Prebuild generates template files before modifying them with Expo Config Plugins. The template files are versioned and come from the NPM package [`expo-template-bare-minimum`][template]. You can change which template is used by passing `--template /path/to/template.tgz` to the `npx expo prebuild` command. This is not recommended as the base modifiers in `@expo/prebuild-config` make some undocumented assumptions about the template files.
 
 ## Side-Effects
 
@@ -106,8 +106,10 @@ This quickly grows to become a massive technical debt. Here are a few reasons wh
 
 These native development issues are crippling at scale, to combat them we created the `npx expo prebuild` command and [Expo Config Plugins][config-plugins]. if you aren't satisfied with how prebuild works you can simply develop your app without it and continue to utilize the rest of the Expo developer tools.
 
-[native-modules]: cite-needed
-[eas]: cite-needed
-[expo-go]: cite-needed
+[config-plugins-repo]: https://github.com/expo/config-plugins
+[template]: https://github.com/expo/expo/tree/main/templates/expo-template-bare-minimum
+[native-modules]: /workflow/glossary-of-terms/#native-module
+[eas]: /eas
+[expo-go]: https://expo.dev/expo-go
 [config-plugins]: /guides/config-plugins/
 [expo-config]: /workflow/configuration/
