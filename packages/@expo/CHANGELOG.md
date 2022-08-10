@@ -10,4 +10,6 @@
 
 ### 🐛 Bug fixes
 
+- Fix incorrect hermesc path on SDK 46. ([#18548](https://github.com/expo/expo/pull/18548) by [@thespacemanatee](https://github.com/thespacemanatee))
+
 ### 💡 Others
