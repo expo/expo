@@ -38,7 +38,7 @@ exports[`APISectionUtils.CommentTextBlock component comment with example 1`] = `
       rel="noopener noreferrer"
     >
       <code
-        class="inline undefined css-16lpqq8-InlineCode"
+        class="inline css-16lpqq8-InlineCode"
       >
         Install Referrer API
       </code>

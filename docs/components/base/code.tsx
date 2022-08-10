@@ -215,7 +215,7 @@ const remapLanguages: Record<string, string> = {
 type InlineCodeProps = React.PropsWithChildren<{ className?: string }>;
 
 export const InlineCode = ({ children, className }: InlineCodeProps) => (
-  <code css={STYLES_INLINE_CODE} className={`inline ${className}`}>
+  <code css={STYLES_INLINE_CODE} className={className ? `inline ${className}` : 'inline'}>
     {children}
   </code>
 );
