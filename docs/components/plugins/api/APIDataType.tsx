@@ -12,19 +12,19 @@ type APIDataTypeProps = { typeDefinition: TypeDefinitionData; inline?: boolean }
 export const APIDataType = ({ typeDefinition, inline = true }: APIDataTypeProps) => {
   const { type, declaration, types, elementType, typeArguments } = typeDefinition;
 
-  const isObjectDefinition = type === 'reflection' && declaration?.children;
+  const isObjectDefinition = type === 'reflection' && declaration?.children?.length;
   const isIntersectionWithObject =
     type === 'intersection' && types?.filter(typeDefinitionContainsObject).length;
   const isUnionWithObject =
     elementType &&
     elementType.type === 'union' &&
     types?.filter(typeDefinitionContainsObject).length;
-  const isObjectsWrapped =
+  const isObjectWrapped =
     type === 'reference' &&
     typeArguments &&
     typeArguments?.filter(typeDefinitionContainsObject).length;
 
-  return isObjectDefinition || isIntersectionWithObject || isUnionWithObject || isObjectsWrapped ? (
+  return isObjectDefinition || isIntersectionWithObject || isUnionWithObject || isObjectWrapped ? (
     <CodeBlock inline={inline} key={typeDefinition.name}>
       {resolveTypeName(typeDefinition)}
     </CodeBlock>
