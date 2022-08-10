@@ -11,6 +11,7 @@
 ### 🎉 New features
 
 ### 🐛 Bug fixes
+- Changed `requireAuthentication` option to also require biometrics on iOS (matches Android behavior) ([#18591](https://github.com/expo/expo/pull/18591) by [@stefan-schweiger](https://github.com/stefan-schweiger))
 
 ### 💡 Others
 
