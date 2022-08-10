@@ -4,7 +4,7 @@ export declare type RedirectEvent = {
 export declare type WebBrowserWindowFeatures = Record<string, number | boolean | string>;
 export declare type WebBrowserOpenOptions = {
     /**
-     * Color of the toolbar in either `#AARRGGBB` or `#RRGGBB` format.
+     * Color of the toolbar.
      */
     toolbarColor?: string;
     /**
@@ -18,7 +18,7 @@ export declare type WebBrowserOpenOptions = {
      */
     enableBarCollapsing?: boolean;
     /**
-     * Color of the secondary toolbar in either `#AARRGGBB` or `#RRGGBB` format.
+     * Color of the secondary toolbar.
      * @platform android
      */
     secondaryToolbarColor?: string;
@@ -47,7 +47,7 @@ export declare type WebBrowserOpenOptions = {
      */
     createTask?: boolean;
     /**
-     * Tint color for controls in SKSafariViewController in `#AARRGGBB` or `#RRGGBB` format.
+     * Tint color for controls in SKSafariViewController.
      * @platform ios
      */
     controlsColor?: string;
