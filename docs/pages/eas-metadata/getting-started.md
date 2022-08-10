@@ -13,7 +13,7 @@ EAS Metadata helps you prepare your app for review by uploading most of the requ
 
 EAS Metadata is available starting from EAS CLI >= 0.54.0, and _currently_ only supports the Apple App Store.
 
-If you are using vscode, also make sure to [install the Expo plugin](https://github.com/expo/vscode-expo) for **store.config.json** auto-completion.
+If you are using VSCode, make sure to [install the Expo plugin](https://github.com/expo/vscode-expo) for **store.config.json** auto-completion.
 
 ## Create the store config
 
@@ -46,7 +46,7 @@ If you don't have an app in the stores, EAS Metadata can't pull that information
 
 ## Update the store config
 
-Now it's time to edit the **store.config.json** file and customize it to your app needs. A complete overview of what can be defined is coming soon. In the meantime, you can use the [vscode Expo plugin](https://github.com/expo/vscode-expo) and use the auto-completion.
+Now it's time to edit the **store.config.json** file and customize it to your app needs. A complete overview of what can be defined is coming soon. In the meantime, you can use the [VSCode Expo plugin](https://github.com/expo/vscode-expo) and use the auto-completion.
 <!-- Disabled due to missing config overview
 You can find all available options for the **store.config.json** in the [store configuration reference](./store-json.md). -->
 
