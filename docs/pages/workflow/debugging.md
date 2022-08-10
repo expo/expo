@@ -34,12 +34,12 @@ You can perform full native debugging with Xcode and Android Studio by generatin
 
 #### Xcode
 
-> **Hint**: This is only available for macOS users.
+> **Note**: This is only available for macOS users.
 
 1. Generate the native code for your project with: `npx expo prebuild -p ios`
    1. You can delete the `/ios` folder when you're done to ensure your project remains managed by Expo CLI. Keeping the folder and manually modifying it outside of `npx expo prebuild` means you'll need to manually upgrade and configure native libraries (Bare Workflow).
 2. Open the project in Xcode `xed ios`
-3. Build the app with <kbd>⌘r</kbd> (command R) or by pressing the play button in the upper left corner of Xcode.
+3. Build the app with <kbd>Cmd ⌘</kbd> + <kbd>R</kbd> or by pressing the play button in the upper left corner of Xcode.
 4. You can utilize **lldb** and all of the other Xcode debugging tools to examine the native runtime.
 
 When you're done, simply delete the native folder with `rm -rf ios` to continue having your code managed by Expo.
@@ -49,7 +49,7 @@ When you're done, simply delete the native folder with `rm -rf ios` to continue 
 1. Generate the native code for your project with: `npx expo prebuild -p android`
    1. You can delete the `/android` folder when you're done to ensure your project remains managed by Expo CLI. Keeping the folder and manually modifying it outside of `npx expo prebuild` means you'll need to manually upgrade and configure native libraries (Bare Workflow).
 2. Open the project in Android Studio: `open -a /Applications/Android\ Studio.app ./android`
-3. Build the app from Android Studio and connect the debugger. Refer to the [Google docs for more info](https://developer.android.com/studio/debug#startdebug).
+3. Build the app from Android Studio and connect the debugger. Refer to the [Google docs for more information](https://developer.android.com/studio/debug#startdebug).
 
 When you're done, simply delete the native folder with `rm -rf android` to continue having your code managed by Expo.
 
