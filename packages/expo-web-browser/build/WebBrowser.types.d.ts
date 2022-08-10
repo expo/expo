@@ -4,7 +4,7 @@ export declare type RedirectEvent = {
 export declare type WebBrowserWindowFeatures = Record<string, number | boolean | string>;
 export declare type WebBrowserOpenOptions = {
     /**
-     * Color of the toolbar.
+     * Color of the toolbar. Supports React Native [color formats](https://reactnative.dev/docs/colors).
      */
     toolbarColor?: string;
     /**
@@ -18,7 +18,7 @@ export declare type WebBrowserOpenOptions = {
      */
     enableBarCollapsing?: boolean;
     /**
-     * Color of the secondary toolbar.
+     * Color of the secondary toolbar. Supports React Native [color formats](https://reactnative.dev/docs/colors).
      * @platform android
      */
     secondaryToolbarColor?: string;
@@ -47,7 +47,7 @@ export declare type WebBrowserOpenOptions = {
      */
     createTask?: boolean;
     /**
-     * Tint color for controls in SKSafariViewController.
+     * Tint color for controls in SKSafariViewController. Supports React Native [color formats](https://reactnative.dev/docs/colors).
      * @platform ios
      */
     controlsColor?: string;

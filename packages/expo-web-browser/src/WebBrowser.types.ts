@@ -8,7 +8,7 @@ export type WebBrowserWindowFeatures = Record<string, number | boolean | string>
 // @needsAudit
 export type WebBrowserOpenOptions = {
   /**
-   * Color of the toolbar.
+   * Color of the toolbar. Supports React Native [color formats](https://reactnative.dev/docs/colors).
    */
   toolbarColor?: string;
   /**
@@ -22,7 +22,7 @@ export type WebBrowserOpenOptions = {
    */
   enableBarCollapsing?: boolean;
   /**
-   * Color of the secondary toolbar.
+   * Color of the secondary toolbar. Supports React Native [color formats](https://reactnative.dev/docs/colors).
    * @platform android
    */
   secondaryToolbarColor?: string;
@@ -51,7 +51,7 @@ export type WebBrowserOpenOptions = {
    */
   createTask?: boolean;
   /**
-   * Tint color for controls in SKSafariViewController.
+   * Tint color for controls in SKSafariViewController. Supports React Native [color formats](https://reactnative.dev/docs/colors).
    * @platform ios
    */
   controlsColor?: string;
