@@ -84,7 +84,7 @@ export function importHermesCommandFromProject(projectRoot: string): string {
   for (const location of hermescLocations) {
     try {
       return resolveFromProject(projectRoot, location);
-    } catch (e: any) {}
+    } catch {}
   }
   throw new Error('Cannot find the hermesc executable.');
 }
