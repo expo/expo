@@ -146,6 +146,10 @@ public class PersistentFileLog {
     guard let contents = contents, !contents.isEmpty else {
       return []
     }
-    return contents.components(separatedBy: "\n")
+    return contents
+      .components(separatedBy: "\n")
+      .filter {entryString in
+        !entryString.isEmpty
+      }
   }
 }
