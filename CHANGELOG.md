@@ -12,8 +12,6 @@ Package-specific changes not released in any SDK will be added here just before 
 ### 🎉 New features
 
 ### 🐛 Bug fixes
-- **`expo-secure-store`**
-  - Changed `requireAuthentication` option to also require biometrics on iOS (matches Android behavior) ([#18591](https://github.com/expo/expo/pull/18591) by [@stefan-schweiger](https://github.com/stefan-schweiger))
 
 ### 💡 Others
 
