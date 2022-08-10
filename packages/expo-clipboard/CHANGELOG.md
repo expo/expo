@@ -10,7 +10,17 @@
 
 ### 💡 Others
 
+## 3.1.0 — 2022-07-07
+
+### 🐛 Bug fixes
+
+- Fixed clipboard listener returning invalid `contentTypes` value for images on Android. ([#17644](https://github.com/expo/expo/pull/17644) by [@barthap](https://github.com/barthap))
+- Fixed `setStringAsync` causing bouncing in Safari. ([#18010](https://github.com/expo/expo/pull/18010) by [@barthap](https://github.com/barthap))
+
+### 💡 Others
+
 - Migrated Expo modules definitions to the new naming convention. ([#17193](https://github.com/expo/expo/pull/17193) by [@tsapeta](https://github.com/tsapeta))
+- Migrated Android module to use Sweet API coroutines. ([#18036](https://github.com/expo/expo/pull/18036) by [@barthap](https://github.com/barthap))
 
 ## 3.0.1 — 2022-04-20
 

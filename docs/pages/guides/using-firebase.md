@@ -2,6 +2,8 @@
 title: Using Firebase
 ---
 
+import { Terminal } from '~/ui/components/Snippet';
+
 [Firebase](https://firebase.google.com/) gives you functionality like analytics, databases, messaging and crash reporting so you can move quickly and focus on your users. Firebase is built on Google infrastructure and scales automatically, for even the largest apps.
 
 > This guide uses `firebase@9.1.0`. As of SDK 43, the Expo SDK no longer enforces or recommends any specific version of Firebase to use in your app. If you are using an older version of the `firebase` library in your project you may have to adapt the code examples below to match the version that you are using, with the help of the [Firebase JS SDK documentation](https://github.com/firebase/firebase-js-sdk).
@@ -10,7 +12,7 @@ title: Using Firebase
 
 If you'd like to use Firebase in the Expo Go app with the managed workflow, we'd recommend using the [Firebase JS SDK](https://github.com/firebase/firebase-js-sdk). It supports Authentication, Firestore & Realtime databases, Storage, and Functions on React Native. Other modules like Analytics are [not supported through the Firebase JS SDK](https://firebase.google.com/support/guides/environments_js-sdk), but you can use [expo-firebase-analytics](/versions/latest/sdk/firebase-analytics) for that.
 
-If you'd like access to the full suite of native firebase tools, we recommend using the [react-native-firebase](https://github.com/invertase/react-native-firebase) library and creating [a development build] of your app (/development/introduction.md) using a built-in [config plugin].
+If you'd like access to the full suite of native firebase tools, we recommend using the [react-native-firebase](https://github.com/invertase/react-native-firebase) library and creating [a development build](/development/introduction) of your app using a built-in [config plugin](/guides/config-plugins).
 
 > **Note:** This guide mostly covers Firebase Realtime Database (and some Firestore as well). For more background on why some Firebase services are not supported, please refer to the ["What goes into the Expo SDK?" FYI page](https://expo.fyi/whats-in-the-sdk).
 
@@ -18,7 +20,7 @@ If you'd like access to the full suite of native firebase tools, we recommend us
 
 First we need to setup a Firebase Account and create a new project. We will be using the JavaScript SDK provided by Firebase, so pull it into your Expo project.
 
-`expo install firebase`.
+<Terminal cmd={['$ expo install firebase']} />
 
 [Firebase Console](http://console.firebase.google.com/) provides you with an API key, and other identifiers for your project needed for initialization. [firebase-web-start](https://firebase.google.com/docs/database/web/start) has a detailed description of what each field means and where to find them in your console.
 
@@ -87,7 +89,8 @@ Now let's say we want another client to listen to updates to the high score of a
 ```javascript
 import { getDatabase, ref, onValue } from 'firebase/database';
 
-setupHighscoreListener(userId) {const db = getDatabase();
+setupHighscoreListener(userId) {
+  const db = getDatabase();
   const reference = ref(db, 'users/' + userId);
   onValue(reference, (snapshot) => {
     const highscore = snapshot.val().highscore;
@@ -120,7 +123,7 @@ You can add whichever provider makes sense for you, or even add multiple provide
 
 ### Phone Authentication
 
-To use phone authentication, you'll need the `expo-firebase-recaptcha` package. It provides a reCAPTCHA widget which is neccessary to verify that you are not a bot.
+To use phone authentication, you'll need the `expo-firebase-recaptcha` package. It provides a reCAPTCHA widget which is necessary to verify that you are not a bot.
 
 Please follow the instructions for the [expo-firebase-recaptcha](/versions/latest/sdk/firebase-recaptcha) package on how to use phone auth.
 
@@ -240,7 +243,7 @@ This sample was borrowed and edited from [this forum post](https://forums.expo.d
 
 In order to record analytics events, the Expo Firebase Core and Analytics packages needs to be installed.
 
-`expo install expo-firebase-analytics`
+<Terminal cmd={['$ expo install expo-firebase-analytics']} />
 
 This package uses the native Firebase SDK in standalone apps and bare apps and a JavaScript based implementation on Expo Go.
 

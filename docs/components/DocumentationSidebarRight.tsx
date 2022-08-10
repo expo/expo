@@ -4,7 +4,9 @@ import * as React from 'react';
 import { BASE_HEADING_LEVEL, Heading, HeadingManager } from '../common/headingManager';
 import DocumentationSidebarRightLink from './DocumentationSidebarRightLink';
 
-import withHeadingManager from '~/components/page-higher-order/withHeadingManager';
+import withHeadingManager, {
+  HeadingManagerProps,
+} from '~/components/page-higher-order/withHeadingManager';
 import * as Constants from '~/constants/theme';
 
 const STYLES_SIDEBAR = css`
@@ -33,11 +35,11 @@ const isDynamicScrollAvailable = () => {
   return true;
 };
 
-type Props = {
+type Props = React.PropsWithChildren<{
   maxNestingDepth?: number;
   selfRef?: React.RefObject<any>;
   contentRef?: React.RefObject<any>;
-};
+}>;
 
 type PropsWithHM = Props & { headingManager: HeadingManager };
 
@@ -151,12 +153,14 @@ class DocumentationSidebarRight extends React.Component<PropsWithHM, State> {
   };
 }
 
+type ReactRefProps = { reactRef: React.Ref<DocumentationSidebarRight> };
+
 const SidebarWithHeadingManager = withHeadingManager(function SidebarWithHeadingManager({
   reactRef,
   ...props
-}) {
+}: Props & HeadingManagerProps & ReactRefProps) {
   return <DocumentationSidebarRight {...props} ref={reactRef} />;
-}) as React.FC<Props & { reactRef: React.Ref<DocumentationSidebarRight> }>;
+}) as React.FC<Props & ReactRefProps>;
 
 SidebarWithHeadingManager.displayName = 'SidebarRightRefWrapper';
 

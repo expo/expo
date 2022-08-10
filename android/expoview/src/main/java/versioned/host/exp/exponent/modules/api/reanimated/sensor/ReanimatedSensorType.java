@@ -1,11 +1,13 @@
 package versioned.host.exp.exponent.modules.api.reanimated.sensor;
 
+import android.hardware.Sensor;
+
 public enum ReanimatedSensorType {
-  ACCELEROMETER(1),
-  GYROSCOPE(2),
-  GRAVITY(3),
-  MAGNETIC_FIELD(4),
-  ROTATION_VECTOR(5);
+  ACCELEROMETER(Sensor.TYPE_ACCELEROMETER),
+  GYROSCOPE(Sensor.TYPE_GYROSCOPE),
+  GRAVITY(Sensor.TYPE_GRAVITY),
+  MAGNETIC_FIELD(Sensor.TYPE_MAGNETIC_FIELD),
+  ROTATION_VECTOR(Sensor.TYPE_ROTATION_VECTOR);
 
   private final int type;
 

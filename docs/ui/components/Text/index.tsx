@@ -1,5 +1,5 @@
 import { css, SerializedStyles } from '@emotion/react';
-import { theme, typography } from '@expo/styleguide';
+import { theme, typography, spacing, borderRadius } from '@expo/styleguide';
 import React from 'react';
 
 import { LinkBase, LinkProps } from './Link';
@@ -72,6 +72,18 @@ export const DEMI = createTextComponent(TextElement.SPAN, css(typography.utility
 export const UL = createTextComponent(TextElement.UL, css([typography.body.ul, listStyle]));
 export const OL = createTextComponent(TextElement.OL, css([typography.body.ol, listStyle]));
 export const PRE = createTextComponent(TextElement.PRE, css(typography.utility.pre));
+
+const kbdStyle = css({
+  fontFamily: typography.fontFaces.medium,
+  color: theme.text.secondary,
+  padding: `${spacing[0.5]}px ${spacing[1.5]}px`,
+  boxShadow: `0 0.1rem 0 1px ${theme.border.default}`,
+  borderRadius: borderRadius.small,
+  position: 'relative',
+  top: -1,
+});
+
+export const KBD = createTextComponent(TextElement.KBD, css([typography.utility.pre, kbdStyle]));
 
 export const A = (props: Omit<LinkProps, 'router'> & { isStyled?: boolean }) => {
   const { isStyled, ...rest } = props;

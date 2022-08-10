@@ -9,18 +9,17 @@ import {
   ChevronDownIcon,
   shadows,
   typography,
+  DocsLogo,
+  XIcon,
+  HamburgerIcon,
 } from '@expo/styleguide';
 import Link from 'next/link';
 import * as React from 'react';
 
-import { MoreHorizontal } from './icons/MoreHorizontal';
-import { SDK } from './icons/SDK';
 import { Search } from './icons/Search';
-import { X } from './icons/X';
 
 import { paragraph } from '~/components/base/typography';
 import AlgoliaSearch from '~/components/plugins/AlgoliaSearch';
-import { shouldShowFeaturePreviewLink } from '~/constants/FeatureFlags';
 import * as Constants from '~/constants/theme';
 
 const STYLES_LOGO = css`
@@ -233,26 +232,25 @@ const HEADER_RIGHT = css`
   gap: 12px;
 `;
 
-type SectionContainerProps = {
-  children: JSX.Element[];
+type SectionContainerProps = React.PropsWithChildren<{
   spaceBetween?: number;
   spaceAround?: number;
   style?: React.CSSProperties;
   className?: string;
-};
+}>;
 
-const SectionContainer: React.FC<SectionContainerProps> = ({
+const SectionContainer = ({
   spaceBetween = 0,
   spaceAround = 0,
   children,
   style,
   className,
-}) => {
+}: SectionContainerProps) => {
   return (
     <div
       className={className}
       style={{ display: 'flex', paddingLeft: spaceAround, paddingRight: spaceAround, ...style }}>
-      {children.map((child, i) => (
+      {React.Children.map(children, (child, i) => (
         <div key={i.toString()} style={{ paddingLeft: i === 0 ? 0 : spaceBetween }}>
           {child}
         </div>
@@ -319,7 +317,7 @@ export default class DocumentationHeader extends React.PureComponent<Props> {
               <Link href="/" passHref>
                 <a css={STYLES_UNSTYLED_ANCHOR}>
                   <span css={STYLES_LOGO}>
-                    <SDK />
+                    <DocsLogo color={theme.text.default} style={{ width: 26, height: 26 }} />
                   </span>
                 </a>
               </Link>
@@ -346,14 +344,14 @@ export default class DocumentationHeader extends React.PureComponent<Props> {
                   <Search />
                 </span>
                 <span css={STYLES_MENU_BUTTON} onClick={this.props.onShowMenu}>
-                  <MoreHorizontal />
+                  <HamburgerIcon />
                 </span>
               </div>
             )}
 
             {this.props.isMenuActive && (
               <span css={STYLES_MENU_BUTTON} onClick={this.props.onHideMenu}>
-                <X />
+                <XIcon />
               </span>
             )}
           </div>
@@ -395,19 +393,6 @@ export default class DocumentationHeader extends React.PureComponent<Props> {
               <span css={SECTION_LINK_TEXT}>API Reference</span>
             </a>
           </Link>
-          {shouldShowFeaturePreviewLink() ? (
-            <Link href="/feature-preview" passHref>
-              <a
-                css={[
-                  SECTION_LINK,
-                  this.props.activeSection === 'featurePreview' && SECTION_LINK_ACTIVE,
-                ]}>
-                <span css={SECTION_LINK_TEXT}>Feature Preview</span>
-              </a>
-            </Link>
-          ) : (
-            <span />
-          )}
         </SectionContainer>
       </div>
     );

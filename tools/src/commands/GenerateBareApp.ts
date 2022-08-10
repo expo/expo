@@ -5,21 +5,24 @@ import path from 'path';
 
 import { EXPO_DIR, PACKAGES_DIR } from '../Constants';
 import { runExpoCliAsync } from '../ExpoCLI';
+import { GitDirectory } from '../Git';
 
-type GenerateBareAppOptions = {
+export type GenerateBareAppOptions = {
   name?: string;
   template?: string;
   clean?: boolean;
+  localTemplate?: boolean;
   outDir?: string;
   rnVersion?: string;
 };
 
-async function action(
+export async function action(
   packageNames: string[],
   {
     name: appName = 'my-generated-bare-app',
     outDir = 'bare-apps',
     template = 'expo-template-bare-minimum',
+    localTemplate = false,
     clean = false,
     rnVersion,
   }: GenerateBareAppOptions
@@ -28,45 +31,68 @@ async function action(
   // if appName === ''
   // if packageNames.length === 0
 
-  const workspaceDir = path.resolve(process.cwd(), outDir);
-  const projectDir = path.resolve(process.cwd(), workspaceDir, appName);
+  const { workspaceDir, projectDir } = getDirectories({ name: appName, outDir });
+
   const packagesToSymlink = await getPackagesToSymlink({ packageNames, workspaceDir });
 
-  await createProjectDirectory({ clean, projectDir, workspaceDir, appName, template });
+  await cleanIfNeeded({ clean, projectDir, workspaceDir });
+  await createProjectDirectory({ workspaceDir, appName, template, localTemplate });
   await modifyPackageJson({ packagesToSymlink, projectDir });
+  await modifyAppJson({ projectDir, appName });
   await yarnInstall({ projectDir });
   await symlinkPackages({ packagesToSymlink, projectDir });
   await runExpoPrebuild({ projectDir });
-  await updateRNVersion({ projectDir, rnVersion });
-  await createMetroConfig({ workspaceRoot: EXPO_DIR, projectRoot: projectDir });
-  await applyGradleFlipperFixtures({ projectDir });
+  if (rnVersion != null) {
+    await updateRNVersion({ rnVersion, projectDir });
+  }
+  await createMetroConfig({ projectRoot: projectDir });
+  await createScripts({ projectDir });
+
   // reestablish symlinks - some might be wiped out from prebuild
   await symlinkPackages({ projectDir, packagesToSymlink });
+  await stageAndCommitInitialChanges({ projectDir });
 
   console.log(`Project created in ${projectDir}!`);
 }
 
-async function createProjectDirectory({
-  clean,
-  workspaceDir,
-  projectDir,
-  appName,
-  template,
-}: {
-  clean: boolean;
-  workspaceDir: string;
-  projectDir: string;
-  appName: string;
-  template: string;
-}) {
+export function getDirectories({
+  name: appName = 'my-generated-bare-app',
+  outDir = 'bare-apps',
+}: GenerateBareAppOptions) {
+  const workspaceDir = path.resolve(process.cwd(), outDir);
+  const projectDir = path.resolve(process.cwd(), workspaceDir, appName);
+
+  return {
+    workspaceDir,
+    projectDir,
+  };
+}
+
+async function cleanIfNeeded({ workspaceDir, projectDir, clean }) {
   console.log('Creating project');
 
-  if (!fs.existsSync(workspaceDir)) {
-    fs.mkdirSync(workspaceDir);
-  }
+  await fs.mkdirs(workspaceDir);
 
   if (clean) {
     await fs.remove(projectDir);
+  }
+}
+
+async function createProjectDirectory({
+  workspaceDir,
+  appName,
+  template,
+  localTemplate,
+}: {
+  workspaceDir: string;
+  appName: string;
+  template: string;
+  localTemplate: boolean;
+}) {
+  if (localTemplate) {
+    const pathToBareTemplate = path.resolve(EXPO_DIR, 'templates', 'expo-template-bare-minimum');
+    const pathToWorkspace = path.resolve(workspaceDir, appName);
+    return fs.copy(pathToBareTemplate, pathToWorkspace, { recursive: true });
   }
 
   return await runExpoCliAsync('init', [appName, '--no-install', '--template', template], {
@@ -76,7 +102,7 @@ async function createProjectDirectory({
 }
 
 function getDefaultPackagesToSymlink({ workspaceDir }: { workspaceDir: string }) {
-  const defaultPackagesToSymlink: string[] = ['expo', 'expo-modules-autolinking'];
+  const defaultPackagesToSymlink: string[] = ['expo'];
 
   const isInExpoRepo = workspaceDir.startsWith(EXPO_DIR);
 
@@ -105,7 +131,7 @@ function getDefaultPackagesToSymlink({ workspaceDir }: { workspaceDir: string })
   return defaultPackagesToSymlink;
 }
 
-async function getPackagesToSymlink({
+export async function getPackagesToSymlink({
   packageNames,
   workspaceDir,
 }: {
@@ -157,9 +183,13 @@ async function modifyPackageJson({
   const pkgPath = path.resolve(projectDir, 'package.json');
   const pkg = await fs.readJSON(pkgPath);
 
+  pkg.expo = pkg.expo ?? {};
+  pkg.expo.symlinks = pkg.expo.symlinks ?? [];
+
   packagesToSymlink.forEach((packageName) => {
     const packageJson = require(path.resolve(PACKAGES_DIR, packageName, 'package.json'));
     pkg.dependencies[packageName] = packageJson.version ?? '*';
+    pkg.expo.symlinks.push(packageName);
   });
 
   await fs.outputJson(path.resolve(projectDir, 'package.json'), pkg, { spaces: 2 });
@@ -170,7 +200,7 @@ async function yarnInstall({ projectDir }: { projectDir: string }) {
   return await spawnAsync('yarn', [], { cwd: projectDir, stdio: 'ignore' });
 }
 
-async function symlinkPackages({
+export async function symlinkPackages({
   packagesToSymlink,
   projectDir,
 }: {
@@ -182,7 +212,7 @@ async function symlinkPackages({
     const expoPackagePath = path.resolve(PACKAGES_DIR, packageName);
 
     if (fs.existsSync(projectPackagePath)) {
-      fs.rmdirSync(projectPackagePath, { recursive: true });
+      fs.rmSync(projectPackagePath, { recursive: true });
     }
 
     fs.symlinkSync(expoPackagePath, projectPackagePath);
@@ -216,13 +246,7 @@ async function runExpoPrebuild({ projectDir }: { projectDir: string }) {
   return await runExpoCliAsync('prebuild', ['--no-install'], { cwd: projectDir });
 }
 
-async function createMetroConfig({
-  workspaceRoot,
-  projectRoot,
-}: {
-  workspaceRoot: string;
-  projectRoot: string;
-}) {
+async function createMetroConfig({ projectRoot }: { projectRoot: string }) {
   console.log('Adding metro.config.js for project');
 
   const template = `// Learn more https://docs.expo.io/guides/customizing-metro
@@ -231,13 +255,13 @@ const path = require('path');
 
 const config = getDefaultConfig('${projectRoot}');
 
-// 1. Watch all files within the monorepo
-config.watchFolders = ['${workspaceRoot}'];
+// 1. Watch expo packages within the monorepo
+config.watchFolders = ['${PACKAGES_DIR}'];
 
 // 2. Let Metro know where to resolve packages, and in what order
 config.resolver.nodeModulesPaths = [
   path.resolve('${projectRoot}', 'node_modules'),
-  path.resolve('${workspaceRoot}', 'packages'),
+  path.resolve('${PACKAGES_DIR}'),
 ];
 
 // Use Node-style module resolution instead of Haste everywhere
@@ -258,16 +282,43 @@ module.exports = config;
   });
 }
 
-async function applyGradleFlipperFixtures({ projectDir }: { projectDir: string }) {
-  // prebuild is updating the gradle.properties FLIPPER_VERSION which causes SoLoader crash on launch
-  const gradlePropertiesPath = path.resolve(projectDir, 'android', 'gradle.properties');
-  const gradleProperties = await fs.readFile(gradlePropertiesPath, { encoding: 'utf-8' });
-  const updatedGradleProperies = gradleProperties.replace(
-    `FLIPPER_VERSION=0.54.0`,
-    `FLIPPER_VERSION=0.99.0`
-  );
-  console.log(`Overriding the gradle.properties to FLIPPER_VERSION=0.99.0`);
-  await fs.outputFile(gradlePropertiesPath, updatedGradleProperies);
+async function createScripts({ projectDir }) {
+  const scriptsDir = path.resolve(projectDir, 'scripts');
+  await fs.mkdir(scriptsDir);
+
+  const scriptsToCopy = path.resolve(EXPO_DIR, 'template-files/generate-bare-app/scripts');
+  await fs.copy(scriptsToCopy, scriptsDir, { recursive: true });
+
+  const pkgJsonPath = path.resolve(projectDir, 'package.json');
+  const pkgJson = await fs.readJSON(pkgJsonPath);
+  pkgJson.scripts['package:add'] = `node scripts/addPackages.js ${EXPO_DIR} ${projectDir}`;
+  pkgJson.scripts['package:remove'] = `node scripts/removePackages.js ${EXPO_DIR} ${projectDir}`;
+  pkgJson.scripts['clean'] =
+    'watchman watch-del-all &&  rm -fr $TMPDIR/metro-cache && rm $TMPDIR/haste-map-*';
+  pkgJson.scripts['ios'] = 'expo run:ios';
+  pkgJson.scripts['android'] = 'expo run:android';
+
+  await fs.writeJSON(pkgJsonPath, pkgJson, { spaces: 2 });
+
+  console.log('Added package scripts!');
+}
+
+async function stageAndCommitInitialChanges({ projectDir }) {
+  const gitDirectory = new GitDirectory(projectDir);
+  await gitDirectory.initAsync();
+  await gitDirectory.addFilesAsync(['.']);
+  await gitDirectory.commitAsync({ title: 'Initialized bare app!' });
+}
+
+async function modifyAppJson({ projectDir, appName }: { projectDir: string; appName: string }) {
+  const pathToAppJson = path.resolve(projectDir, 'app.json');
+  const json = await fs.readJson(pathToAppJson);
+
+  const strippedAppName = appName.replaceAll('-', '');
+  json.expo.android = { package: `com.${strippedAppName}` };
+  json.expo.ios = { bundleIdentifier: `com.${strippedAppName}` };
+
+  await fs.writeJSON(pathToAppJson, json, { spaces: 2 });
 }
 
 export default (program: Command) => {
@@ -279,6 +330,11 @@ export default (program: Command) => {
     .option('--rnVersion <string>', 'Version of react-native to include')
     .option('-o, --outDir <string>', 'Specifies the directory to build the project in')
     .option('-t, --template <string>', 'Specify the expo template to use as the project starter')
+    .option(
+      '--localTemplate',
+      'Copy the localTemplate expo-template-bare-minimum from the expo repo',
+      false
+    )
     .description(`Generates a bare app with the specified packages symlinked`)
     .asyncAction(action);
 };

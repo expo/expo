@@ -12,8 +12,11 @@ import com.facebook.react.bridge.GuardedRunnable
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.uimanager.UIManagerModule
 
+import host.exp.expoview.BuildConfig
+
 @SuppressLint("ViewConstructor")
-class Screen constructor(context: ReactContext?) : ViewGroup(context) {
+class Screen constructor(context: ReactContext?) : FabricEnabledViewGroup(context) {
+
     var fragment: ScreenFragment? = null
     var container: ScreenContainer<*>? = null
     var activityState: ActivityState? = null
@@ -62,16 +65,24 @@ class Screen constructor(context: ReactContext?) : ViewGroup(context) {
         if (changed) {
             val width = r - l
             val height = b - t
-            val reactContext = context as ReactContext
-            reactContext.runOnNativeModulesQueueThread(
-                object : GuardedRunnable(reactContext) {
-                    override fun runGuarded() {
-                        reactContext
-                            .getNativeModule(UIManagerModule::class.java)
-                            ?.updateNodeSize(id, width, height)
-                    }
-                })
+            if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
+                updateScreenSizeFabric(width, height)
+            } else {
+                updateScreenSizePaper(width, height)
+            }
         }
+    }
+
+    private fun updateScreenSizePaper(width: Int, height: Int) {
+        val reactContext = context as ReactContext
+        reactContext.runOnNativeModulesQueueThread(
+            object : GuardedRunnable(reactContext) {
+                override fun runGuarded() {
+                    reactContext
+                        .getNativeModule(UIManagerModule::class.java)
+                        ?.updateNodeSize(id, width, height)
+                }
+            })
     }
 
     val headerConfig: ScreenStackHeaderConfig?

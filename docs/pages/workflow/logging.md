@@ -10,7 +10,7 @@ When you open an app that is being served from Expo CLI, the app will send logs 
 
 ### Viewing logs with Expo CLI
 
-If you use our command line tool Expo CLI, bundler logs and app logs will both automatically stream as long as your project is running. To stop your project (and end the logs stream), terminate the process with `ctrl+C`.
+If you use our command line tool Expo CLI, bundler logs and app logs will both automatically stream as long as your project is running. To stop your project (and end the logs stream), terminate the process with <kbd>Ctrl</kbd> + <kbd>C</kbd>.
 
 ## Optional: Manually access device logs
 
@@ -30,7 +30,7 @@ The following instructions apply to macOS.
 
 #### Option 1: Use GUI log
 
-- In simulator, press `⌘ + /`, _or_ go to `Debug -> Open System Log` -- both of these open a log window that displays all of the logs from your device, including the logs from your Expo app.
+- In simulator, press <kbd>Cmd ⌘</kbd> + <kbd>/</kbd>, _or_ go to `Debug -> Open System Log` -- both of these open a log window that displays all of the logs from your device, including the logs from your Expo app.
 
 #### Option 2: Open it in terminal
 

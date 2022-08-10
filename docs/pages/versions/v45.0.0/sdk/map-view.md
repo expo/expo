@@ -1,6 +1,6 @@
 ---
 title: MapView
-sourceCodeUrl: 'https://github.com/react-native-community/react-native-maps'
+sourceCodeUrl: 'https://github.com/react-native-maps/react-native-maps'
 packageName: 'react-native-maps'
 ---
 
@@ -18,7 +18,7 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 ## Usage
 
-See full documentation at [react-native-community/react-native-maps](https://github.com/react-native-community/react-native-maps).
+See full documentation at [react-native-maps/react-native-maps](https://github.com/react-native-maps/react-native-maps).
 
 <SnackInline label='MapView' dependencies={['react-native-maps']}>
 
@@ -70,7 +70,7 @@ No additional configuration is necessary to use `react-native-maps` in Expo Go. 
   - Go to the [Google Play Console](https://play.google.com/console) → (your app) → Setup → App Integrity
   - Copy the value of _SHA-1 certificate fingerprint_
 - **If you are sideloading your APK or deploying it to another store**, you will need to have [created a standalone app](../../../distribution/building-standalone-apps.md), then run `expo fetch:android:hashes` and copy the _Google Certificate Fingerprint_.
-- **If you are running a _debug_ build (development client or local debug build)**, your Android app will be signed using the debug keystore. See the instructions [below](#how-to-retrieve-your-debug-keystore-fingerprint-android-only) on how to retrieve your fingerprint.
+- **If you are running a _debug_ build (development client or local debug build)**, your Android app will be signed using the debug keystore. See the instructions [below](#how-to-retrieve-your-debug-keystore-fingerprint) on how to retrieve your fingerprint.
 
 #### 3. Create an API key
 
@@ -139,7 +139,7 @@ To use this in web, add the following script to your **web/index.html**. This sc
 
 ## How to retrieve your debug keystore fingerprint (Android only)
  
-When building a debug version of your application outside of Expo Go (for example, when using a [development client](https://docs.expo.dev/development/introduction/) or a standalone debug build), your app will be signed with the debug keystore on Android.
+When building a debug version of your application outside of Expo Go (for example, when using a [development client](/development/introduction/) or a standalone debug build), your app will be signed with the debug keystore on Android.
 > All standard Expo templates use a debug keystore with fingerprint `5E:8F:16:06:2E:A3:CD:2C:4A:0D:54:78:76:BA:A6:F3:8C:AB:F6:25`, that you can enter directly in the Google Cloud Credential Manager. So if you are using one of the standard Expo templates, you don't need to perform the steps below.
 
 The debug keystore location and password is defined in your `android/app/build.gradle` file like this:

@@ -3,24 +3,15 @@ title: Using Electron with Expo for Web
 sidebar_title: Using Electron
 ---
 
-> 🚨 Electron support is an experimental community project, so the workflow is suboptimal and subject to breaking changes. If you find bugs please report them on [expo/expo-electron-adapter](https://github.com/expo/expo-electron-adapter/issues).
+> Electron support is an experimental community project, so the workflow is suboptimal and subject to breaking changes. If you find bugs please report them on [expo/expo-electron-adapter](https://github.com/expo/expo-electron-adapter/issues).
 
 [Electron][electron] is a framework for creating desktop apps that run in a Chromium wrapper. Using Expo with Electron will enable you to use your existing components to build OSX, Windows, and Linux apps.
 
 To simplify this we created the package `@expo/electron-adapter` which wraps [`electron-webpack`][electron-webpack] and adds support for Expo web and other universal React packages.
 
-- [🏁 Setup](#-setup)
-- [⚽️ Usage](#️-usage)
-  - [Starting a project](#starting-a-project)
-  - [Customizing the main process](#customizing-the-main-process)
-  - [Building your project](#building-your-project)
-- [🧸 Behavior](#-behavior)
-- [Contributing](#contributing)
-- [Learn more about Electron](#learn-more-about-electron)
+## Setup
 
-## 🏁 Setup
-
-- Create a new Expo project - `expo init`
+- Create a new Expo project - `yarn create expo-app`
 - Install - `yarn add -D @expo/electron-adapter`
 - Bootstrap Electron - `yarn expo-electron`
 
@@ -38,7 +29,7 @@ To simplify this we created the package `@expo/electron-adapter` which wraps [`e
     });
     ```
 
-## ⚽️ Usage
+## Usage
 
 ### Starting a project
 
@@ -62,7 +53,7 @@ To simplify this we created the package `@expo/electron-adapter` which wraps [`e
 - Use the builder with: `yarn electron-webpack && yarn electron-builder --dir -c.compression=store -c.mac.identity=null` (`-c.compression=store` speeds the builds up a lot, delete this for actual production builds)
 - Learn more about configuring your build here: [Configuring electron-builder][electron-builder-config]
 
-## 🧸 Behavior
+## Behavior
 
 - Webpack now resolves files with **.electron.js** & **.web.js** extensions in that order. If you want to use `electron` features then put them in a file like **foo.electron.js**.
 - Every universal package you have installed will be transpiled automatically, this includes packages that start with the name: `expo`, `@expo`, `@unimodules`, `@react-navigation`, `react-navigation`, `react-native`. You can add more by appending them to the array for key `expo.web.build.babel.include` in your **app.json** (this feature is experimental and subject to change).
@@ -72,9 +63,6 @@ To simplify this we created the package `@expo/electron-adapter` which wraps [`e
 If you would like to help make Electron support in Expo better, please feel free to open a PR or submit an issue:
 
 - [Expo Electron Adapter](https://github.com/expo/expo-electron-adapter)
-
-If you want to add first-class electron support to any of the Unimodules then you can submit PRs to the expo/expo repo:
-
 - [Expo SDK packages][expo-packages]
 
 ## Learn more about Electron

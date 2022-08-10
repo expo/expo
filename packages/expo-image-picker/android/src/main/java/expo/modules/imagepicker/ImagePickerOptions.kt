@@ -1,58 +1,79 @@
 package expo.modules.imagepicker
 
-import expo.modules.core.Promise
-import expo.modules.core.utilities.ifNull
+import java.io.Serializable
+import android.net.Uri
+import android.provider.MediaStore
+import androidx.annotation.FloatRange
+import androidx.annotation.IntRange
+import expo.modules.imagepicker.contracts.CameraContractOptions
+import expo.modules.imagepicker.contracts.ImageLibraryContractOptions
+import expo.modules.kotlin.records.Field
+import expo.modules.kotlin.records.Record
 
-data class ImagePickerOptions(
-  val quality: Int,
-  val isAllowsEditing: Boolean,
-  val forceAspect: List<*>?,
-  val isBase64: Boolean,
-  val mediaTypes: MediaTypes,
-  val isExif: Boolean,
-  val videoMaxDuration: Int
-) {
-  companion object {
-    fun optionsFromMap(options: Map<String, Any?>, promise: Promise): ImagePickerOptions? {
-      val quality = options[ImagePickerConstants.OPTION_QUALITY]?.let {
-        if (it is Number) {
-          return@let (it.toDouble() * 100).toInt()
-        }
+internal class ImagePickerOptions : Record, Serializable {
+  @Field
+  var allowsEditing: Boolean = false
 
-        promise.reject(ImagePickerConstants.ERR_INVALID_OPTION, "Quality can not be `null`.")
-        return null
-      } ?: ImagePickerConstants.DEFAULT_QUALITY
+  @Field
+  var allowsMultipleSelection: Boolean = false
 
-      val isAllowsEditing = options[ImagePickerConstants.OPTION_ALLOWS_EDITING] as? Boolean ?: false
+  @Field
+  @FloatRange(from = 0.0, to = 1.0)
+  var quality: Double = 0.2
 
-      val forceAspect: List<*>? = options[ImagePickerConstants.OPTION_ASPECT]?.let {
-        if (it is List<*> && it.size == 2 && it[0] is Number && it[1] is Number) {
-          return@let it
-        }
+  @Field
+  var base64: Boolean = false
 
-        promise.reject(ImagePickerConstants.ERR_INVALID_OPTION, "'Aspect option must be of form [Number, Number]")
-        return null
-      }
+  @Field
+  var exif: Boolean = false
 
-      val isBase64 = options[ImagePickerConstants.OPTION_BASE64] as? Boolean ?: false
-      val mediaTypes = MediaTypes.fromString(
-        options[ImagePickerConstants.OPTION_MEDIA_TYPES] as? String ?: "Images"
-      ).ifNull {
-        promise.reject(ImagePickerConstants.ERR_INVALID_OPTION, "Unknown media types: ${options[ImagePickerConstants.OPTION_MEDIA_TYPES]}")
-        return null
-      }
-      val isExif = options[ImagePickerConstants.OPTION_EXIF] as? Boolean ?: false
+  @Field
+  var mediaTypes: MediaTypes = MediaTypes.IMAGES
 
-      val videoMaxDuration = options[ImagePickerConstants.OPTION_VIDEO_MAX_DURATION]?.let {
-        if (it is Number && it.toInt() >= 0) {
-          return@let it.toInt()
-        }
+  @IntRange(from = 0)
+  var videoMaxDuration: Int = 0
 
-        promise.reject(ImagePickerConstants.ERR_INVALID_OPTION, "videoMaxDuration must be a non-negative integer")
-        return null
-      } ?: 0
+  @Field
+  var aspect: Pair<Int, Int>? = null
 
-      return ImagePickerOptions(quality, isAllowsEditing, forceAspect, isBase64, mediaTypes, isExif, videoMaxDuration)
+  fun toCameraContractOptions(uri: Uri) = CameraContractOptions(uri, this)
+
+  fun toImageLibraryContractOptions() = ImageLibraryContractOptions(this)
+}
+
+internal enum class MediaTypes(val value: String) {
+  IMAGES("Images"),
+  VIDEOS("Videos"),
+  ALL("All");
+
+  fun toMimeType(): String {
+    return when (this) {
+      IMAGES -> ImageAllMimeType
+      VIDEOS -> VideoAllMimeType
+      ALL -> AllMimeType
     }
+  }
+
+  fun toFileExtension(): String {
+    return when (this) {
+      VIDEOS -> ".mp4"
+      else -> ".jpeg"
+    }
+  }
+
+  /**
+   * Return [MediaStore]'s intent capture action associated with given media types
+   */
+  fun toCameraIntentAction(): String {
+    return when (this) {
+      VIDEOS -> MediaStore.ACTION_VIDEO_CAPTURE
+      else -> MediaStore.ACTION_IMAGE_CAPTURE
+    }
+  }
+
+  private companion object {
+    const val ImageAllMimeType = "image/*"
+    const val VideoAllMimeType = "video/*"
+    const val AllMimeType = "*/*"
   }
 }

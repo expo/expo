@@ -1,27 +1,29 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-nocheck
-export default class MapperRegistry {
-  sortedMappers = [];
-  mappers = new Map();
+import { JSReanimated } from './commonTypes';
+import Mapper from './Mapper';
+
+export default class MapperRegistry<T> {
+  sortedMappers: Mapper<T>[] = [];
+  mappers: Map<number, Mapper<T>> = new Map();
+  _module: JSReanimated;
 
   updatedSinceLastExecute = false;
 
-  constructor(module) {
+  constructor(module: JSReanimated) {
     this._module = module;
   }
 
-  startMapper(mapper) {
+  startMapper(mapper: Mapper<T>): number {
     this.mappers.set(mapper.id, mapper);
     this.updatedSinceLastExecute = true;
     return mapper.id;
   }
 
-  stopMapper(id) {
+  stopMapper(id: number): void {
     this.mappers.delete(id);
     this.updatedSinceLastExecute = true;
   }
 
-  execute() {
+  execute(): void {
     if (this.updatedSinceLastExecute) {
       this.updateOrder();
       this.updatedSinceLastExecute = false;
@@ -35,10 +37,10 @@ export default class MapperRegistry {
     }
   }
 
-  updateOrder() {
+  updateOrder(): void {
     const nodes = [...this.mappers.values()].map((mapper) => new Node(mapper));
 
-    const mappersById = {};
+    const mappersById: Record<number, Mapper<T>> = {};
     this.mappers.forEach((mapper) => {
       mappersById[mapper.id] = mapper;
     });
@@ -75,9 +77,9 @@ export default class MapperRegistry {
       }
     }
 
-    const post = {};
+    const post: Record<number, number> = {};
     let postCounter = 1;
-    const dfs = (node) => {
+    const dfs = (node: Node<T>) => {
       const index = nodes.indexOf(node);
       if (index === -1) {
         // this node has already been handled
@@ -99,7 +101,8 @@ export default class MapperRegistry {
     while (nodes.length) dfs(nodes[0]);
 
     const postArray = Object.keys(post).map((key) => {
-      return [key, post[key]];
+      const num = parseInt(key);
+      return [num, post[num]];
     });
     postArray.sort((a, b) => {
       return b[1] - a[1];
@@ -114,16 +117,16 @@ export default class MapperRegistry {
     }
   }
 
-  get needRunOnRender() {
+  get needRunOnRender(): boolean {
     return this.updatedSinceLastExecute;
   }
 }
 
-class Node {
-  mapper = null;
-  children = [];
+class Node<T> {
+  mapper: Mapper<T>;
+  children: Node<T>[];
 
-  constructor(mapper, _parents = [], children = []) {
+  constructor(mapper: Mapper<T>, children = []) {
     this.mapper = mapper;
     this.children = children;
   }

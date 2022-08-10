@@ -22,10 +22,10 @@ const STYLES_SECTION_CATEGORY = css`
   margin-bottom: 24px;
 `;
 
-type SidebarProps = {
+type SidebarProps = React.PropsWithChildren<{
   router: NextRouter;
   routes?: NavigationRoute[];
-};
+}>;
 
 type SidebarNodeProps = Pick<SidebarProps, 'router'> & {
   route: NavigationRoute;

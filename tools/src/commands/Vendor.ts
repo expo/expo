@@ -5,19 +5,20 @@ import os from 'os';
 import path from 'path';
 
 import {
+  Append,
   Clone,
   CopyFiles,
   Pipe,
+  Platform,
+  prefixPackage,
+  RemoveDirectory,
+  renameClass,
+  renameIOSFiles,
+  renameIOSSymbols,
   TransformFilesContent,
   TransformFilesName,
-  RemoveDirectory,
-  prefixPackage,
-  renameIOSSymbols,
-  renameIOSFiles,
-  Platform,
-  renameClass,
-  Append,
 } from '../vendoring/devmenu';
+import { RemoveFiles } from '../vendoring/devmenu/steps/RemoveFiles';
 
 const CONFIGURATIONS = {
   '[dev-menu] reanimated': getReanimatedPipe(),
@@ -26,6 +27,9 @@ const CONFIGURATIONS = {
 };
 
 function getReanimatedPipe() {
+  console.warn(
+    'You have to adjust the installation steps of the react-native-reanimated to work well with the react-native-gesture-handler. For more information go to the https://github.com/expo/expo/pull/17878 and https://github.com/expo/expo/pull/18562'
+  );
   const destination = 'packages/expo-dev-menu/vendored/react-native-reanimated';
 
   // prettier-ignore
@@ -33,14 +37,29 @@ function getReanimatedPipe() {
     'all',
       new Clone({
         url: 'git@github.com:software-mansion/react-native-reanimated.git',
-        tag: '1.13.0',
+        tag: '2.9.1',
       }),
       new RemoveDirectory({
         name: 'clean vendored folder',
         target: destination,
       }),
+      new TransformFilesContent({
+        filePattern: '**/*.@(h|cpp)',
+        find: 'namespace reanimated',
+        replace: 'namespace devmenureanimated',
+      }),
+      new TransformFilesContent({
+         filePattern: '**/*.@(h|cpp)',
+         find: 'reanimated::',
+         replace: 'devmenureanimated::',
+       }),
+      new TransformFilesContent({
+        filePattern: 'Common/**/ReanimatedHiddenHeaders.h',
+        find: 'Common/cpp',
+        replace: 'vendored/react-native-reanimated/Common/cpp',
+      }),
       new CopyFiles({
-        filePattern: ['src/**/*.*', '*.d.ts'],
+        filePattern: ['src/**/*.*', '*.d.ts', 'plugin.js', 'Common/**/*.@(h|cpp)'],
         to: destination,
       }),
 
@@ -49,25 +68,86 @@ function getReanimatedPipe() {
         packageName: 'com.swmansion.reanimated',
         prefix: 'devmenu',
       }),
+      prefixPackage({
+        packageName: 'com.swmansion.common',
+        prefix: 'devmenu',
+      }),
       renameClass({
         filePattern: 'android/**/*.@(java|kt)',
         className: 'UIManagerReanimatedHelper',
         newClassName: 'DevMenuUIManagerReanimatedHelper'
       }),
-      new CopyFiles({
-        subDirectory: 'android/src/main/java/com/swmansion',
-        filePattern: '**/*.@(java|kt|xml)',
-        to: path.join(destination, 'android/devmenu/com/swmansion'),
+       new TransformFilesContent({
+        filePattern: 'android/src/main/cpp/**/*.@(h|cpp)',
+        find: 'Lcom/swmansion/reanimated',
+        replace: 'Ldevmenu/com/swmansion/reanimated',
       }),
-      new CopyFiles({
-        subDirectory: 'android/src/main/java/com/facebook',
-        filePattern: '**/*.@(java|kt|xml)',
-        to: path.join(destination, 'android/com/facebook'),
+      new TransformFilesContent({
+        filePattern: 'android/**/*.@(java|kt)',
+        find: 'System\\.loadLibrary\\("reanimated"\\)',
+        replace: 'System.loadLibrary("devmenureanimated")',
       }),
-
-    'ios',
+      new TransformFilesContent({
+        filePattern: 'android/CMakeLists.txt',
+        find: 'set \\(PACKAGE_NAME "reanimated"\\)',
+        replace: 'set (PACKAGE_NAME "devmenureanimated")',
+      }),
       new TransformFilesName({
-        filePattern: 'ios/**/*REA*.@(m|h)',
+        filePattern: 'android/**/ReanimatedUIManager.java',
+        find: 'ReanimatedUIManager',
+        replace: 'DevMenuReanimatedUIManager',
+      }),
+      new TransformFilesContent({
+        filePattern: 'android/**/*.@(java|kt)',
+        find: 'ReaUiImplementationProvider',
+        replace: 'DevMenuReaUiImplementationProvider',
+      }),
+      new TransformFilesContent({
+        filePattern: 'android/**/*.@(java|kt)',
+        find: 'ReanimatedUIManager',
+        replace: 'DevMenuReanimatedUIManager',
+      }),
+      new TransformFilesName({
+        filePattern: 'android/**/ReanimatedUIImplementation.java',
+        find: 'ReanimatedUIImplementation',
+        replace: 'DevMenuReanimatedUIImplementation',
+      }),
+      new TransformFilesContent({
+        filePattern: 'android/**/*.@(java|kt)',
+        find: 'ReanimatedUIImplementation',
+        replace: 'DevMenuReanimatedUIImplementation',
+      }),
+      new TransformFilesContent({
+        filePattern: 'android/**/ReanimatedPackage.java',
+        find: 'public class ReanimatedPackage extends TurboReactPackage implements ReactPackage {',
+        replace: 'public class ReanimatedPackage extends TurboReactPackage implements ReactPackage {\n  public ReactInstanceManager instanceManager;\n',
+      }),
+      new TransformFilesContent({
+        filePattern: 'android/**/ReanimatedPackage.java',
+        find: 'public ReactInstanceManager getReactInstanceManager(ReactApplicationContext reactContext) {',
+        replace: 'public ReactInstanceManager getReactInstanceManager(ReactApplicationContext reactContext) {\nreturn instanceManager;\n',
+      }),
+    'ios',
+      new RemoveFiles({
+        filePattern: 'ios/native/UIResponder+*'
+      }),
+      new TransformFilesContent({
+        filePattern: 'ios/**/*.@(h|mm)',
+        find: 'namespace reanimated',
+        replace: 'namespace devmenureanimated',
+      }),
+      new TransformFilesContent({
+         filePattern: 'ios/**/*.@(h|mm)',
+         find: 'reanimated::',
+         replace: 'devmenureanimated::',
+       }),
+      new TransformFilesContent({
+        filePattern: 'ios/**/*.@(h|m|mm)',
+        find: '#import <RNReanimated\\/(.*)>',
+        replace: '#import "$1"',
+      }),
+      new TransformFilesName({
+        filePattern: 'ios/**/*REA*.@(h|m|mm)',
         find: 'REA',
         replace: 'DevMenuREA',
       }),
@@ -75,20 +155,39 @@ function getReanimatedPipe() {
         find: 'REA',
         replace: 'DevMenuREA',
       }),
+      new TransformFilesName({
+        filePattern: 'ios/**/*Reanimated*.@(h|m|mm)',
+        find: 'Reanimated',
+        replace: 'DevMenuReanimated',
+      }),
+      renameIOSSymbols({
+        find: 'Reanimated',
+        replace: 'DevMenuReanimated',
+      }),
       new TransformFilesContent({
-        filePattern: 'ios/**/*.@(m|h)',
+        filePattern: 'ios/**/*.@(h|m|mm)',
         find: 'SimAnimationDragCoefficient',
         replace: 'DevMenuSimAnimationDragCoefficient',
       }),
       new TransformFilesContent({
-        filePattern: 'ios/**/*.@(m|h)',
+        filePattern: 'ios/**/*.@(h|m|mm)',
         find: '^RCT_EXPORT_MODULE\\((.*)\\)',
         replace: '+ (NSString *)moduleName { return @"$1"; }',
       }),
+      new TransformFilesName({
+        filePattern: 'ios/RNGestureHandlerStateManager.h',
+        find: 'RNGestureHandlerStateManager',
+        replace: 'DevMenuRNGestureHandlerStateManager',
+      }),
+      new TransformFilesContent({
+        filePattern: 'ios/**/*.@(h|m|mm)',
+        find: 'RNGestureHandlerStateManager',
+        replace: 'DevMenuRNGestureHandlerStateManager',
+      }),
       new CopyFiles({
-        filePattern: 'ios/**/*.@(m|h)',
+        filePattern: 'ios/**/*.@(m|h|mm)',
         to: destination,
-      })
+      }),
   );
 }
 
@@ -100,15 +199,20 @@ function getGestureHandlerPipe() {
     'all',
       new Clone({
         url: 'git@github.com:software-mansion/react-native-gesture-handler.git',
-        tag: '1.7.0',
+        tag: '2.1.2',
       }),
       new RemoveDirectory({
         name: 'clean vendored folder',
         target: destination,
       }),
       new CopyFiles({
-        filePattern: ['*.js', 'touchables/*.js', '*.d.ts'],
+        subDirectory: 'src',
+        filePattern: ['**/*.ts', '**/*.tsx'],
         to: path.join(destination, 'src'),
+      }),
+      new CopyFiles({
+        filePattern: 'jestSetup.js',
+        to: destination,
       }),
 
     'android',
@@ -128,6 +232,11 @@ function getGestureHandlerPipe() {
       }),
       new CopyFiles({
         subDirectory: 'android/lib/src/main/java',
+        filePattern: '**/*.@(java|kt|xml)',
+        to: path.join(destination, 'android/devmenu'),
+      }),
+      new CopyFiles({
+        subDirectory: 'android/common/src/main/java',
         filePattern: '**/*.@(java|kt|xml)',
         to: path.join(destination, 'android/devmenu'),
       }),
@@ -168,7 +277,7 @@ function getGestureHandlerPipe() {
 `
       }),
       new CopyFiles({
-        filePattern: 'ios/**/*.@(m|h)',
+        filePattern: 'ios/**/*.@(h|m)',
         to: destination,
       })
   );
@@ -242,7 +351,6 @@ function getSafeAreaPipe() {
         find: '^RCT_EXPORT_MODULE\\((.*)\\)',
         replace: '+ (NSString *)moduleName { return @"RNCSafeAreaView"; }',
       }),
-      
       new TransformFilesContent({
         filePattern: 'ios/**/DevMenuRNCSafeAreaProviderManager.@(m|h)',
         find: 'constantsToExport',

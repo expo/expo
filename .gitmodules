@@ -8,3 +8,8 @@
   url = git@github.com:expo/react-native.git
   branch = exp-latest
   update = checkout
+[submodule "apps/fabric-tester"]
+  path = apps/fabric-tester
+  url = git@github.com:expo/fabric-tester.git
+  branch = main
+  update = checkout

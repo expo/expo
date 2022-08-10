@@ -7,6 +7,7 @@ import com.airbnb.lottie.LottieAnimationView;
 import com.airbnb.lottie.LottieDrawable;
 import com.airbnb.lottie.LottieProperty;
 import com.airbnb.lottie.RenderMode;
+import com.airbnb.lottie.TextDelegate;
 import com.airbnb.lottie.SimpleColorFilter;
 import com.airbnb.lottie.model.KeyPath;
 import com.airbnb.lottie.value.LottieValueCallback;
@@ -44,6 +45,7 @@ public class LottieAnimationViewPropertyManager {
   private String imageAssetsFolder;
   private Boolean enableMergePaths;
   private ReadableArray colorFilters;
+  private ReadableArray textFilters;
   private RenderMode renderMode;
 
   public LottieAnimationViewPropertyManager(LottieAnimationView view) {
@@ -91,6 +93,10 @@ public class LottieAnimationViewPropertyManager {
     this.colorFilters = colorFilters;
   }
 
+  public void setTextFilters(ReadableArray textFilters) {
+    this.textFilters = textFilters;
+  }
+
   /**
    * Updates the view with changed fields.
    * Majority of the properties here are independent so they are has to be reset to null
@@ -104,6 +110,17 @@ public class LottieAnimationViewPropertyManager {
     LottieAnimationView view = viewWeakReference.get();
     if (view == null) {
       return;
+    }
+
+    if (textFilters != null && textFilters.size() > 0) {
+      TextDelegate textDelegate = new TextDelegate(view);
+      for (int i = 0; i < textFilters.size(); i++) {
+        ReadableMap current = textFilters.getMap(i);
+        String searchText = current.getString("find");
+        String replacementText = current.getString("replace");
+        textDelegate.setText(searchText, replacementText);
+      }
+      view.setTextDelegate(textDelegate);
     }
 
     if (animationJson != null) {

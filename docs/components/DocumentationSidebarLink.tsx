@@ -69,9 +69,12 @@ type Props = {
   info: NavigationRoute;
 };
 
-export default class DocumentationSidebarLink extends React.Component<Props> {
+export default class DocumentationSidebarLink extends React.Component<
+  React.PropsWithChildren<Props>
+> {
   componentDidMount() {
     // Consistent link behavior across dev server and static export
+    // @ts-ignore
     global.__NEXT_DATA__.nextExport = true;
   }
 

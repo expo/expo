@@ -1,7 +1,7 @@
 import { spacing } from '@expo/styleguide-native';
 import { StackScreenProps } from '@react-navigation/stack';
-import Constants from 'expo-constants';
 import { View, Divider, Spacer } from 'expo-dev-client-components';
+import { isDevice } from 'expo-device';
 import * as React from 'react';
 import {
   Alert,
@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 
 import FeatureFlags from '../../FeatureFlags';
-import ApiV2HttpClient from '../../api/ApiV2HttpClient';
+import { APIV2Client } from '../../api/APIV2Client';
 import ApolloClient from '../../api/ApolloClient';
 import Connectivity from '../../api/Connectivity';
 import ScrollView from '../../components/NavigationScrollView';
@@ -58,7 +58,6 @@ type State = {
   isNetworkAvailable: boolean;
   isRefreshing: boolean;
   data?: Exclude<HomeScreenDataQuery['account']['byName'], null>;
-  loading: boolean;
 };
 
 type NavigationProps = StackScreenProps<HomeStackRoutes, 'Home'>;
@@ -72,7 +71,6 @@ export class HomeScreenView extends React.Component<Props, State> {
     isNetworkAvailable: Connectivity.isAvailable(),
     isRefreshing: false,
     data: this.props.initialData?.account.byName,
-    loading: !this.props.initialData?.account.byName, // if there is initial data, we're not loading
   };
 
   componentDidMount() {
@@ -81,7 +79,7 @@ export class HomeScreenView extends React.Component<Props, State> {
 
     // @evanbacon: Without this setTimeout, the state doesn't update correctly and the "Recently in Development" items don't load for 10 seconds.
     setTimeout(() => {
-      this._startPollingForProjects();
+      if (this.props.isAuthenticated) this._startPollingForProjects();
     }, 1);
 
     // NOTE(brentvatne): if we add QR code button to the menu again, we'll need to
@@ -106,7 +104,7 @@ export class HomeScreenView extends React.Component<Props, State> {
 
     return (
       <View style={styles.container}>
-        <HomeScreenHeader currentUser={data} loading={this.state.loading} />
+        <HomeScreenHeader currentUser={data} />
         <ScrollView
           refreshControl={
             <RefreshControl refreshing={isRefreshing} onRefresh={this._handleRefreshAsync} />
@@ -189,6 +187,10 @@ export class HomeScreenView extends React.Component<Props, State> {
       this._fetchProjectsAsync();
     }
 
+    if (!prevProps.isAuthenticated && this.props.isAuthenticated) {
+      this._startPollingForProjects();
+    }
+
     if (prevProps.isAuthenticated && !this.props.isAuthenticated) {
       // Remove all projects except Snack, because they are tied to device id
       // Fix this lint warning when converting to hooks
@@ -196,6 +198,8 @@ export class HomeScreenView extends React.Component<Props, State> {
       this.setState(({ projects }) => ({
         projects: projects.filter((p) => p.source === 'snack'),
       }));
+
+      this._stopPollingForProjects();
     }
   }
 
@@ -219,7 +223,6 @@ export class HomeScreenView extends React.Component<Props, State> {
 
   private _startPollingForProjects = async () => {
     await this._fetchProjectsAsync();
-    this.setState({ loading: false });
     this._projectPolling = setInterval(this._fetchProjectsAsync, PROJECT_UPDATE_INTERVAL);
   };
 
@@ -231,14 +234,19 @@ export class HomeScreenView extends React.Component<Props, State> {
   };
 
   private _fetchProjectsAsync = async () => {
+    if (!this.props.isAuthenticated) return;
+
     const { accountName } = this.props;
 
     try {
-      const api = new ApiV2HttpClient();
+      const api = new APIV2Client();
 
       const [projects, graphQLResponse] = await Promise.all([
-        api.getAsync('development-sessions', {
-          deviceId: getSnackId(),
+        api.sendAuthenticatedApiV2Request<DevSession[]>('development-sessions', {
+          method: 'GET',
+          searchParams: {
+            deviceId: getSnackId(),
+          },
         }),
         accountName
           ? ApolloClient.query<HomeScreenDataQuery, HomeScreenDataQueryVariables>({
@@ -246,6 +254,7 @@ export class HomeScreenView extends React.Component<Props, State> {
               variables: {
                 accountName,
               },
+              fetchPolicy: 'network-only',
             })
           : new Promise<undefined>((resolve) => {
               resolve(undefined);
@@ -286,7 +295,7 @@ export class HomeScreenView extends React.Component<Props, State> {
 
     const baseMessage = `Make sure you are signed in to the same Expo account on your computer and this app. Also verify that your computer is connected to the internet, and ideally to the same Wi-Fi network as your mobile device. Lastly, ensure that you are using the latest version of Expo CLI. Pull to refresh to update.`;
     const message = Platform.select({
-      ios: Constants.isDevice
+      ios: isDevice
         ? baseMessage
         : `${baseMessage} If this still doesn't work, press the + icon on the header to type the project URL manually.`,
       android: baseMessage,

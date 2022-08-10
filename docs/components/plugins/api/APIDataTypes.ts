@@ -66,6 +66,7 @@ export type MethodParamData = {
   type: TypeDefinitionData;
   comment?: CommentData;
   flags?: TypePropertyDataFlags;
+  defaultValue?: string;
 };
 
 export type TypePropertyDataFlags = {
@@ -177,6 +178,7 @@ export type TypeDeclarationContentData = {
   kind?: TypeDocKind;
   indexSignature?: TypeSignaturesData;
   signatures?: TypeSignaturesData[];
+  parameters?: PropData[];
   children?: PropData[];
 };
 

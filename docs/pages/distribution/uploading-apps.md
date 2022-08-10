@@ -2,7 +2,7 @@
 title: Uploading Apps to the Apple App Store and Google Play
 ---
 
-import { InlineCode } from '~/components/base/code';
+import { ConfigClassic } from '~/components/plugins/ConfigSection';
 
 This guide will help you upload your Expo standalone apps to Apple TestFlight and to Google Play.
 You'll need a paid developer account for each platform for which you wish to upload and publish an app. You can create an Apple Developer account on [Apple's developer site](https://developer.apple.com/account/) and a Google Play Developer account on the [Google Play Console sign-up page](https://play.google.com/apps/publish/signup/).
@@ -11,12 +11,11 @@ You'll need a paid developer account for each platform for which you wish to upl
 
 To learn how to build native binaries, see [Creating your first build](/build/setup.md) or [Building on CI](/build/building-on-ci.md).
 
-<details><summary><strong>Are you using the classic build system?</strong> (<InlineCode>expo build:[android|ios]</InlineCode>)</summary> <p>
+<ConfigClassic>
 
-To learn how to build native binaries, see [Building Standalone Apps](/classic/building-standalone-apps.md) or [Building Standalone Apps on Your CI](/classic/turtle-cli.md).
+To learn how to build native binaries, see [Building Standalone Apps](/archive/classic-updates/building-standalone-apps.md) or [Building Standalone Apps on Your CI](/archive/classic-updates/turtle-cli.md).
 
-</p>
-</details>
+</ConfigClassic>
 
 ## 2. Start the upload
 
@@ -64,8 +63,8 @@ To upload your iOS app to TestFlight, run `eas submit -p ios`. [Learn more about
 Start by creating an app profile in App Store Connect, if you haven't already:
 
 1. Go to https://appstoreconnect.apple.com/apps and sign in. Make sure you've accepted the terms.
-2. Click the blue plus button by the Apps header, then click "New App". 
-3. Add your app's name, language, bundle identifier, and SKU (this isn't seen by end users, it can be any unique string. A common choice is your app's bundle ID, then something like "\_1", e.g. "com.exampleco.appname_1"). 
+2. Click the blue plus button by the Apps header, then click "New App".
+3. Add your app's name, language, bundle identifier, and SKU (this isn't seen by end users, it can be any unique string. A common choice is your app's bundle ID, then something like "\_1", e.g. "com.exampleco.appname_1").
 4. Click create. If it succeeds, then you've created your application record and you can proceed to .
 
 #### Uploading with Transporter

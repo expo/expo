@@ -8,9 +8,7 @@ import android.app.Activity
 import android.content.pm.ActivityInfo
 import android.graphics.Color
 import android.os.Build
-import android.view.View
 import android.view.ViewParent
-import android.view.WindowManager
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
@@ -64,12 +62,12 @@ object ScreenWindowTraits {
         UiThreadUtil.runOnUiThread(
             object : GuardedRunnable(context) {
                 override fun runGuarded() {
-                    activity
-                        .window
-                        .addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-                    val curColor = activity.window.statusBarColor
+                    val window = activity.window
+                    val curColor: Int = window.statusBarColor
                     val colorAnimation = ValueAnimator.ofObject(ArgbEvaluator(), curColor, color)
-                    colorAnimation.addUpdateListener { animator -> activity.window.statusBarColor = (animator.animatedValue as Int) }
+                    colorAnimation.addUpdateListener { animator ->
+                        window.statusBarColor = animator.animatedValue as Int
+                    }
                     if (animated) {
                         colorAnimation.setDuration(300).startDelay = 0
                     } else {
@@ -89,13 +87,10 @@ object ScreenWindowTraits {
 
         UiThreadUtil.runOnUiThread {
             val decorView = activity.window.decorView
-            var systemUiVisibilityFlags = decorView.systemUiVisibility
-            systemUiVisibilityFlags = if ("dark" == style) {
-                systemUiVisibilityFlags or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-            } else {
-                systemUiVisibilityFlags and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR.inv()
-            }
-            decorView.systemUiVisibility = systemUiVisibilityFlags
+            val window = activity.window
+            val controller = WindowInsetsControllerCompat(window, decorView)
+
+            controller.isAppearanceLightStatusBars = style == "dark"
         }
     }
 
@@ -117,8 +112,8 @@ object ScreenWindowTraits {
                     // and consume all the top insets so no padding will be added under the status bar.
                     val decorView = activity.window.decorView
                     if (translucent) {
-                        decorView.setOnApplyWindowInsetsListener { v, insets ->
-                            val defaultInsets = v.onApplyWindowInsets(insets)
+                        ViewCompat.setOnApplyWindowInsetsListener(decorView) { v, insets ->
+                            val defaultInsets = ViewCompat.onApplyWindowInsets(v, insets)
                             defaultInsets.replaceSystemWindowInsets(
                                 defaultInsets.systemWindowInsetLeft,
                                 0,
@@ -127,7 +122,7 @@ object ScreenWindowTraits {
                             )
                         }
                     } else {
-                        decorView.setOnApplyWindowInsetsListener(null)
+                        ViewCompat.setOnApplyWindowInsetsListener(decorView, null)
                     }
                     ViewCompat.requestApplyInsets(decorView)
                 }
@@ -140,13 +135,14 @@ object ScreenWindowTraits {
         }
         val screenForHidden = findScreenForTrait(screen, WindowTraits.HIDDEN)
         val hidden = screenForHidden?.isStatusBarHidden ?: false
+        val window = activity.window
+        val controller = WindowInsetsControllerCompat(window, window.decorView)
+
         UiThreadUtil.runOnUiThread {
             if (hidden) {
-                activity.window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
-                activity.window.clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN)
+                controller.hide(WindowInsetsCompat.Type.statusBars())
             } else {
-                activity.window.addFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN)
-                activity.window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
+                controller.show(WindowInsetsCompat.Type.statusBars())
             }
         }
     }
@@ -163,8 +159,10 @@ object ScreenWindowTraits {
         val screenForNavBarColor = findScreenForTrait(screen, WindowTraits.NAVIGATION_BAR_COLOR)
         val color = screenForNavBarColor?.navigationBarColor ?: window.navigationBarColor
 
-        WindowInsetsControllerCompat(window, window.decorView).isAppearanceLightNavigationBars =
-            isColorLight(color)
+        UiThreadUtil.runOnUiThread {
+            WindowInsetsControllerCompat(window, window.decorView).isAppearanceLightNavigationBars =
+                isColorLight(color)
+        }
         window.navigationBarColor = color
     }
 

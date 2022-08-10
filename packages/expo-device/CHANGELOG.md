@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+- Refactored inline emulator checks to use enhanced checking in `EmulatorUtilities.isRunningOnEmulator() `. ([#16177](https://github.com/expo/expo/pull/16177)) by [@kbrandwijk](https://github.com/kbrandwijk), [@keith-kurak](https://github.com/keith-kurak))
+
+## 4.3.0 — 2022-07-07
+
+_This version does not introduce any user-facing changes._
+
 ## 4.2.0 — 2022-04-18
 
 ### ⚠️ Notices

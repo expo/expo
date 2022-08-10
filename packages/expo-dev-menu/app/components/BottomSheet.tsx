@@ -613,7 +613,7 @@ export class BottomSheet extends React.Component<Props, State> {
               ],
             },
           ]}>
-          <Animated.View style={[styles.container, { height: this.height }]}>
+          <Animated.View style={[styles.container]}>
             <PanGestureHandler
               ref={this.panRef}
               onGestureEvent={this.handlePan}
@@ -623,7 +623,6 @@ export class BottomSheet extends React.Component<Props, State> {
                   <View style={styles.fullscreenView}>
                     <Animated.View
                       style={{
-                        ...StyleSheet.absoluteFillObject,
                         transform: [
                           {
                             translateY: this.translateY as any,
@@ -638,7 +637,9 @@ export class BottomSheet extends React.Component<Props, State> {
                         // We saved screen heigh to apply it when we come back to the same screen later.
                         this.handleContentHeightChange(height);
                       }}>
-                      {this.props.children}
+                      <Animated.View style={[{ minHeight: this.height }]}>
+                        {this.props.children}
+                      </Animated.View>
                     </Animated.View>
                   </View>
                 </TapGestureHandler>

@@ -19,7 +19,7 @@ The important thing is to **publish a new update with a fix as soon as possible 
 
 The first thing to try is rolling back to an older update that you know was working. **However, this may not always be safe;** your broken update may, for example, have modified persistent state (such as data stored in AsyncStorage or on the device's file system) in a non-backwards-compatible way. It's important to test in a staging environment that emulates an end user's device state as closely as possible—i.e. load the broken update and then roll back.
 
-If you can identify an older update that is safe to roll back to, you can do so using [EAS Update's `republish` option](/eas-update/eas-update-and-eas-cli/#republish-a-previous-update-within-a-branch). If you're using classic Expo-hosted updates (`expo publish`) or hosting your updates on your own server, you'll need to publish a new update with your old code in order to generate an update with a new ID and publish date.
+If you can identify an older update that is safe to roll back to, you can do so using [EAS Update's `republish` option](/eas-update/eas-update-and-eas-cli/#republish-a-previous-update-within-a-branch).
 
 If you cannot identify an older update that is safe to roll back to, you'll need to fix forward. While it's best to roll out a fix as quickly as possible, you should take the time to ensure your fix is solid, and know that even users who download your broken update in the meantime should be able to download your fix.
 
@@ -39,7 +39,7 @@ If your app throws a fatal error when executing JS which is early enough in the 
 
 If `expo-updates` catches a JS error, what will happen next depends on whether React Native has fired the native "content appeared" event (`RCTContentDidAppearNotification` on iOS, or `ReactMarkerConstants.CONTENT_APPEARED` on Android)—approximately when your app's first view has been rendered on the screen—for this particular update, either on this launch or a previous one.
 
-> 💡 **Why this distinction?** In some cases `expo-updates` may try to automatically roll back to an older (working) update, but this can be dangerous if your new update has modified persistent state in a non-backwards compatible way. We assume that if the error occurs before the first view has rendered, no such code has been able to execute, and so rolling back is safe. After this point `expo-updates` will only fix forward and will not roll back.
+> **Why this distinction?** In some cases `expo-updates` may try to automatically roll back to an older (working) update, but this can be dangerous if your new update has modified persistent state in a non-backwards compatible way. We assume that if the error occurs before the first view has rendered, no such code has been able to execute, and so rolling back is safe. After this point `expo-updates` will only fix forward and will not roll back.
 
 ### If content has appeared
 

@@ -4,12 +4,18 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const spawn_async_1 = __importDefault(require("@expo/spawn-async"));
+const chalk_1 = __importDefault(require("chalk"));
 const commander_1 = require("commander");
 const download_tarball_1 = __importDefault(require("download-tarball"));
 const ejs_1 = __importDefault(require("ejs"));
 const fs_extra_1 = __importDefault(require("fs-extra"));
 const path_1 = __importDefault(require("path"));
 const prompts_1 = __importDefault(require("prompts"));
+const createExampleApp_1 = require("./createExampleApp");
+const packageManager_1 = require("./packageManager");
+const prompts_2 = __importDefault(require("./prompts"));
+const resolvePackageManager_1 = require("./resolvePackageManager");
+const utils_1 = require("./utils");
 const packageJson = require('../package.json');
 // `yarn run` may change the current working dir, then we should use `INIT_CWD` env.
 const CWD = process.env.INIT_CWD || process.cwd();
@@ -24,28 +30,31 @@ const IGNORES_PATHS = ['.DS_Store', 'build', 'node_modules', 'package.json'];
  */
 async function main(target, options) {
     const targetDir = target ? path_1.default.join(CWD, target) : CWD;
-    options.target = targetDir;
     await fs_extra_1.default.ensureDir(targetDir);
-    const data = await askForSubstitutionDataAsync(targetDir, options);
-    const packageManager = await selectPackageManagerAsync();
+    await confirmTargetDirAsync(targetDir);
+    options.target = targetDir;
+    const data = await askForSubstitutionDataAsync(targetDir);
+    // Make one line break between prompts and progress logs
+    console.log();
+    const packageManager = await (0, resolvePackageManager_1.resolvePackageManager)();
     const packagePath = options.source
         ? path_1.default.join(CWD, options.source)
         : await downloadPackageAsync(targetDir);
-    const files = await getFilesAsync(packagePath);
-    console.log('🎨 Creating Expo module from the template files...');
-    // Iterate through all template files.
-    for (const file of files) {
-        const renderedRelativePath = ejs_1.default.render(file.replace(/^\$/, ''), data, {
-            openDelimiter: '{',
-            closeDelimiter: '}',
-            escape: (value) => value.replace('.', path_1.default.sep),
+    await (0, utils_1.newStep)('Creating the module from template files', async (step) => {
+        await createModuleFromTemplate(packagePath, targetDir, data);
+        step.succeed('Created the module from template files');
+    });
+    await (0, utils_1.newStep)('Installing module dependencies', async (step) => {
+        await (0, packageManager_1.installDependencies)(packageManager, targetDir);
+        step.succeed('Installed module dependencies');
+    });
+    await (0, utils_1.newStep)('Compiling TypeScript files', async (step) => {
+        await (0, spawn_async_1.default)(packageManager, ['run', 'build'], {
+            cwd: targetDir,
+            stdio: 'ignore',
         });
-        const fromPath = path_1.default.join(packagePath, file);
-        const toPath = path_1.default.join(targetDir, renderedRelativePath);
-        const template = await fs_extra_1.default.readFile(fromPath, { encoding: 'utf8' });
-        const renderedContent = ejs_1.default.render(template, data);
-        await fs_extra_1.default.outputFile(toPath, renderedContent, { encoding: 'utf8' });
-    }
+        step.succeed('Compiled TypeScript files');
+    });
     if (!options.source) {
         // Files in the downloaded tarball are wrapped in `package` dir.
         // We should remove it after all.
@@ -57,8 +66,11 @@ async function main(target, options) {
     if (!options.withChangelog) {
         await fs_extra_1.default.remove(path_1.default.join(targetDir, 'CHANGELOG.md'));
     }
-    // Install dependencies and build
-    await postActionsAsync(packageManager, targetDir);
+    if (options.example) {
+        // Create "example" folder
+        await (0, createExampleApp_1.createExampleApp)(data, targetDir, packageManager);
+    }
+    console.log();
     console.log('✅ Successfully created Expo module');
 }
 /**
@@ -91,118 +103,49 @@ async function getNpmTarballUrl(packageName, version = 'latest') {
     return stdout.trim();
 }
 /**
- * Gets the username of currently logged in user. Used as a default in the prompt asking for the module author.
- */
-async function npmWhoamiAsync(targetDir) {
-    try {
-        const { stdout } = await (0, spawn_async_1.default)('npm', ['whoami'], { cwd: targetDir });
-        return stdout.trim();
-    }
-    catch {
-        return null;
-    }
-}
-/**
  * Downloads the template from NPM registry.
  */
 async function downloadPackageAsync(targetDir) {
-    const tarballUrl = await getNpmTarballUrl('expo-module-template');
-    console.log('⬇️  Downloading module template from npm...');
-    await (0, download_tarball_1.default)({
-        url: tarballUrl,
-        dir: targetDir,
-    });
-    return path_1.default.join(targetDir, 'package');
-}
-/**
- * Asks whether to use Yarn or npm as a dependency package manager.
- */
-async function selectPackageManagerAsync() {
-    const { packageManager } = await (0, prompts_1.default)({
-        type: 'select',
-        name: 'packageManager',
-        message: 'Which package manager do you want to use to install dependencies?',
-        choices: [
-            { title: 'yarn', value: 'yarn' },
-            { title: 'npm', value: 'npm' },
-        ],
-    });
-    return packageManager;
-}
-/**
- * Installs dependencies and builds TypeScript files.
- */
-async function postActionsAsync(packageManager, targetDir) {
-    async function run(...args) {
-        await (0, spawn_async_1.default)(packageManager, args, {
-            cwd: targetDir,
-            stdio: 'ignore',
+    return await (0, utils_1.newStep)('Downloading module template from npm', async (step) => {
+        const tarballUrl = await getNpmTarballUrl('expo-module-template');
+        await (0, download_tarball_1.default)({
+            url: tarballUrl,
+            dir: targetDir,
         });
+        step.succeed('Downloaded module template from npm');
+        return path_1.default.join(targetDir, 'package');
+    });
+}
+/**
+ * Creates the module based on the `ejs` template (e.g. `expo-module-template` package).
+ */
+async function createModuleFromTemplate(templatePath, targetPath, data) {
+    const files = await getFilesAsync(templatePath);
+    // Iterate through all template files.
+    for (const file of files) {
+        const renderedRelativePath = ejs_1.default.render(file.replace(/^\$/, ''), data, {
+            openDelimiter: '{',
+            closeDelimiter: '}',
+            escape: (value) => value.replace('.', path_1.default.sep),
+        });
+        const fromPath = path_1.default.join(templatePath, file);
+        const toPath = path_1.default.join(targetPath, renderedRelativePath);
+        const template = await fs_extra_1.default.readFile(fromPath, { encoding: 'utf8' });
+        const renderedContent = ejs_1.default.render(template, data);
+        await fs_extra_1.default.outputFile(toPath, renderedContent, { encoding: 'utf8' });
     }
-    console.log('📦 Installing dependencies...');
-    await run('install');
-    console.log('🛠  Compiling TypeScript files...');
-    await run('run', 'build');
 }
 /**
  * Asks the user for some data necessary to render the template.
  * Some values may already be provided by command options, the prompt is skipped in that case.
  */
-async function askForSubstitutionDataAsync(targetDir, options) {
-    var _a, _b;
-    const defaultPackageSlug = path_1.default.basename(targetDir);
-    const defaultProjectName = defaultPackageSlug
-        .replace(/^./, (match) => match.toUpperCase())
-        .replace(/\W+(\w)/g, (_, p1) => p1.toUpperCase());
-    const promptQueries = [
-        {
-            type: 'text',
-            name: 'slug',
-            message: 'What is the package slug?',
-            initial: defaultPackageSlug,
-            resolvedValue: options.target ? defaultPackageSlug : null,
-        },
-        {
-            type: 'text',
-            name: 'name',
-            message: 'What is the project name?',
-            initial: defaultProjectName,
-        },
-        {
-            type: 'text',
-            name: 'description',
-            message: 'How would you describe the module?',
-        },
-        {
-            type: 'text',
-            name: 'package',
-            message: 'What is the Android package name?',
-            initial: `expo.modules.${defaultPackageSlug.replace(/\W/g, '').toLowerCase()}`,
-        },
-        {
-            type: 'text',
-            name: 'author',
-            message: 'Who is the author?',
-            initial: (_a = (await npmWhoamiAsync(targetDir))) !== null && _a !== void 0 ? _a : '',
-        },
-        {
-            type: 'text',
-            name: 'license',
-            message: 'What is the license?',
-            initial: 'MIT',
-        },
-        {
-            type: 'text',
-            name: 'repo',
-            message: 'What is the repository URL?',
-        },
-    ];
-    const answers = {};
-    for (const query of promptQueries) {
-        const { name, resolvedValue } = query;
-        answers[name] = (_b = resolvedValue !== null && resolvedValue !== void 0 ? resolvedValue : options[name]) !== null && _b !== void 0 ? _b : (await (0, prompts_1.default)(query))[name];
-    }
-    const { slug, name, description, package: projectPackage, author, license, repo } = answers;
+async function askForSubstitutionDataAsync(targetDir) {
+    const promptQueries = await (0, prompts_2.default)(targetDir);
+    // Stop the process when the user cancels/exits the prompt.
+    const onCancel = () => {
+        process.exit(0);
+    };
+    const { slug, name, description, package: projectPackage, authorName, authorEmail, authorUrl, repo, } = await (0, prompts_1.default)(promptQueries, { onCancel });
     return {
         project: {
             slug,
@@ -211,10 +154,30 @@ async function askForSubstitutionDataAsync(targetDir, options) {
             description,
             package: projectPackage,
         },
-        author,
-        license,
+        author: `${authorName} <${authorEmail}> (${authorUrl})`,
+        license: 'MIT',
         repo,
     };
+}
+/**
+ * Checks whether the target directory is empty and if not, asks the user to confirm if he wants to continue.
+ */
+async function confirmTargetDirAsync(targetDir) {
+    const files = await fs_extra_1.default.readdir(targetDir);
+    if (files.length === 0) {
+        return;
+    }
+    const { shouldContinue } = await (0, prompts_1.default)({
+        type: 'confirm',
+        name: 'shouldContinue',
+        message: `The target directory ${chalk_1.default.magenta(targetDir)} is not empty.\nDo you want to continue anyway?`,
+        initial: true,
+    }, {
+        onCancel: () => false,
+    });
+    if (!shouldContinue) {
+        process.exit(0);
+    }
 }
 const program = new commander_1.Command();
 program
@@ -223,14 +186,9 @@ program
     .description(packageJson.description)
     .arguments('[target_dir]')
     .option('-s, --source <source_dir>', 'Local path to the template. By default it downloads `expo-module-template` from NPM.')
-    .option('-n, --name <module_name>', 'Name of the native module.')
-    .option('-d, --description <description>', 'Description of the module.')
-    .option('-p, --package <package>', 'The Android package name.')
-    .option('-a, --author <author>', 'The author name.')
-    .option('-l, --license <license>', 'The license that the module is distributed with.')
-    .option('-r, --repo <repo_url>', 'The URL to the repository.')
     .option('--with-readme', 'Whether to include README.md file.', false)
     .option('--with-changelog', 'Whether to include CHANGELOG.md file.', false)
+    .option('--no-example', 'Whether to skip creating the example app.', false)
     .action(main);
 program.parse(process.argv);
 //# sourceMappingURL=create-expo-module.js.map

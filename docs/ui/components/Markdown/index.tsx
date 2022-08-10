@@ -4,14 +4,13 @@ import React, { ComponentType, PropsWithChildren } from 'react';
 
 import { Blockquote } from './Blockquote';
 
-import { DETAILS, SUMMARY } from '~/ui/components/Collapsible';
 import { Cell, HeaderCell, Row, Table, TableHead } from '~/ui/components/Table';
 import { A, CODE, P, BOLD, UL, OL, LI, createTextComponent } from '~/ui/components/Text';
 import { TextElement } from '~/ui/components/Text/types';
 import { withAnchor } from '~/ui/components/Text/withAnchor';
 
 type Config = ConfigStyles & {
-  Component: ComponentType<ComponentProps> | string;
+  Component: ComponentType<React.PropsWithChildren<ComponentProps>> | string;
 };
 
 type ConfigStyles = {
@@ -115,15 +114,6 @@ const markdownStyles: Record<string, Config | null> = {
   a: {
     Component: A,
     css: typography.utility.anchor,
-  },
-  details: {
-    Component: DETAILS,
-    style: {
-      marginBottom: 16,
-    },
-  },
-  summary: {
-    Component: SUMMARY,
   },
   table: {
     Component: Table,

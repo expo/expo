@@ -40,3 +40,9 @@ export type NavigationRoute = {
   weight?: number;
   children?: NavigationRoute[];
 };
+
+/**
+ * Available platforms supported by our APIs.
+ * Temporarily it also accepts other strings for compatibility reasons.
+ */
+export type PlatformName = 'ios' | 'android' | 'web' | 'expo' | string;

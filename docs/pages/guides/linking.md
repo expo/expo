@@ -3,6 +3,8 @@ title: Linking
 ---
 
 import SnackInline from '~/components/plugins/SnackInline';
+import { Collapsible } from '~/ui/components/Collapsible';
+import { YesIcon } from '~/ui/components/DocIcons';
 
 ## Introduction
 
@@ -22,12 +24,12 @@ Deep linking with schemes isn't the only linking tool available to you. It is of
 
 As mentioned in the introduction, there are some URL schemes for core functionality that exist on every platform. The following is a non-exhaustive list, but covers the most commonly used schemes.
 
-| Scheme           | Description                                   | iOS | Android |
-| ---------------- | --------------------------------------------- | --- | ------- |
-| `mailto`         | Open mail app, eg: `mailto: support@expo.dev` | ✅  | ✅      |
-| `tel`            | Open phone app, eg: `tel:+123456789`          | ✅  | ✅      |
-| `sms`            | Open SMS app, eg: `sms:+123456789`            | ✅  | ✅      |
-| `https` / `http` | Open web browser app, eg: `https://expo.dev`  | ✅  | ✅      |
+| Scheme           | Description                                   | iOS         | Android     |
+| ---------------- | --------------------------------------------- | ----------- | ----------- |
+| `mailto`         | Open mail app, eg: `mailto: support@expo.dev` | <YesIcon /> | <YesIcon /> |
+| `tel`            | Open phone app, eg: `tel:+123456789`          | <YesIcon /> | <YesIcon /> |
+| `sms`            | Open SMS app, eg: `sms:+123456789`            | <YesIcon /> | <YesIcon /> |
+| `https` / `http` | Open web browser app, eg: `https://expo.dev`  | <YesIcon /> | <YesIcon /> |
 
 ### Opening links from your app
 
@@ -134,7 +136,7 @@ It's possible that the user doesn't have the Lyft app installed, in which case y
 
 On iOS, `Linking.canOpenURL` requires additional configuration to query other apps' linking schemes. You can use the `ios.infoPlist` key in your **app.json** to specify a list of schemes your app needs to query. For example:
 
-```
+```json
   "infoPlist": {
     "LSApplicationQueriesSchemes": ["lyft"]
   }
@@ -148,13 +150,13 @@ If you don't specify this list, `Linking.canOpenURL` may return `false` regardle
 
 Before continuing it's worth taking a moment to learn how to link to your app within the Expo Go app. Expo Go uses the `exp://` scheme, but if we link to `exp://` without any address afterwards, it will open the app to the main screen.
 
-In development, your app will live at a url like `exp://wg-qka.community.app.exp.direct:80`. When it's deployed, it will be at a URL like `exp://exp.host/@community/with-webbrowser-redirect`. If you create a website with a link like `<a href="exp://expo.dev/@community/with-webbrowser-redirect">Open my project</a>`, then open that site on your device and click the link, it will open your app within the Expo Go app. You can link to it from another app by using `Linking.openURL` too.
+In development, your app will live at a url like `exp://wg-qka.community.app.exp.direct:80`. When it's deployed, it will be at a URL like `exp://u.expo.dev/[project-id]?channel-name=[channel-name]&runtime-version=[runtime-version]`. If you create a website with a link like `<a href="exp://u.expo.dev/F767ADF57-B487-4D8F-9522-85549C39F43F?channel-name=main&runtime-version=exposdk:45.0.0">Open my project</a>`, then open that site on your device and click the link, it will open your app within the Expo Go app. You can link to it from another app by using `Linking.openURL` too.
 
 ### In a standalone app
 
 To link to your standalone app, you need to specify a scheme for your app. You can register for a scheme in your **app.json** by adding a string under the `scheme` key (use only lower case):
 
-```
+```json
 {
   "expo": {
     "scheme": "myapp"
@@ -174,7 +176,7 @@ If your app is ejected, note that like some other parts of **app.json**, changin
 
 To save you the trouble of inserting a bunch of conditionals based on the environment that you're in and hardcoding urls, we provide some helper methods in our extension of the `Linking` module. When you want to provide a service with a url that it needs to redirect back into your app, you can call `Linking.createURL()` and it will resolve to the following:
 
-- _Published app in Expo Go_: `exp://exp.host/@community/with-webbrowser-redirect`
+- _Published app in Expo Go_: `exp://u.expo.dev/[project-id]?channel-name=[channel-name]&runtime-version=[runtime-version]`
 - _Published app in standalone_: `myapp://`
 - _Development in Expo Go_: `exp://127.0.0.1:19000`
 
@@ -201,14 +203,14 @@ See the examples below to see these in action.
 To pass some data into your app, you can append it as a path or query string on your url. `Linking.createURL(path, { queryParams })` will construct a working url automatically for you. You can use it like this:
 
 ```javascript
-let redirectUrl = Linking.createURL('path/into/app', {
+const redirectUrl = Linking.createURL('path/into/app', {
   queryParams: { hello: 'world' },
 });
 ```
 
 This will resolve into the following, depending on the environment:
 
-- _Published app in Expo Go_: `exp://exp.host/@community/with-webbrowser-redirect/--/path/into/app?hello=world`
+- _Published app in Expo Go_: `exp://u.expo.dev/[project-id]?channel-name=[channel-name]&runtime-version=[runtime-version]/--/path/into/app?hello=world`
 - _Published app in standalone_: `myapp://path/into/app?hello=world`
 - _Development in Expo Go_: `exp://127.0.0.1:19000/--/path/into/app?hello=world`
 
@@ -222,7 +224,11 @@ When [handling the URL that is used to open/foreground your app](#handling-urls-
 _handleUrl = ({ url }) => {
   this.setState({ url });
   let { hostname, path, queryParams } = Linking.parse(url);
-  alert(`Linked to app with hostname: ${hostname}, path: ${path} and data: ${JSON.stringify(queryParams)}`);
+  alert(
+    `Linked to app with hostname: ${hostname}, path: ${path} and data: ${JSON.stringify(
+      queryParams
+    )}`
+  );
 };
 ```
 
@@ -236,7 +242,7 @@ The example project [examples/with-webbrowser-redirect](https://github.com/expo/
 
 ### Example: using linking for authentication
 
-A common use case for linking to your app is to redirect back to your app after opening a [WebBrowser](../versions/latest/sdk/webbrowser.md). For example, you can open a web browser session to your sign in screen and when the user has successfully signed in, you can have your website redirect back to your app by using the scheme and appending the authentication token and other data to the URL.
+A common use case for linking to your app is to redirect back to your app after opening a [WebBrowser](/versions/latest/sdk/webbrowser.md). For example, you can open a web browser session to your sign in screen and when the user has successfully signed in, you can have your website redirect back to your app by using the scheme and appending the authentication token and other data to the URL.
 
 **Note**: if try to use `Linking.openURL` to open the web browser for authentication then your app may be rejected by Apple on the grounds of a bad or confusing user experience. `WebBrowser.openBrowserAsync` opens the browser window in a modal, which looks and feels good and is Apple approved.
 
@@ -259,14 +265,16 @@ To implement universal links on iOS, you must first set up verification that you
 
 The AASA must be served from `/.well-known/apple-app-site-association` (with no extension). The AASA contains JSON which specifies your Apple app ID and a list of paths on your domain that should be handled by your mobile app. For example, if you want links of the format `https://www.myapp.io/records/123` to be opened by your mobile app, your AASA would have the following contents:
 
-```
+```json
 {
   "applinks": {
     "apps": [], // This is usually left empty, but still must be included
-    "details": [{
-      "appID": "LKWJEF.io.myapp.example",
-      "paths": ["/records/*"]
-    }]
+    "details": [
+      {
+        "appID": "LKWJEF.io.myapp.example",
+        "paths": ["/records/*"]
+      }
+    ]
   }
 }
 ```
@@ -280,44 +288,41 @@ As of iOS 13, [a new `details` format is supported](https://developer.apple.com/
 - `appIDs` instead of `appID`, which makes it easier to associate multiple apps with the same configuration
 - an array of `components`, which allows you to specify fragments, exclude specific paths, and add comments
 
-<details><summary><h4>Here's the example AASA json from Apple's documentation:</h4></summary>
-<p>
+<Collapsible summary="Here's the example AASA json from Apple's documentation">
 
-```
+```json
 {
   "applinks": {
-      "details": [
-           {
-             "appIDs": [ "ABCDE12345.com.example.app", "ABCDE12345.com.example.app2" ],
-             "components": [
-               {
-                  "#": "no_universal_links",
-                  "exclude": true,
-                  "comment": "Matches any URL whose fragment equals no_universal_links and instructs the system not to open it as a universal link"
-               },
-               {
-                  "/": "/buy/*",
-                  "comment": "Matches any URL whose path starts with /buy/"
-               },
-               {
-                  "/": "/help/website/*",
-                  "exclude": true,
-                  "comment": "Matches any URL whose path starts with /help/website/ and instructs the system not to open it as a universal link"
-               },
-               {
-                  "/": "/help/*",
-                  "?": { "articleNumber": "????" },
-                  "comment": "Matches any URL whose path starts with /help/ and which has a query item with name 'articleNumber' and a value of exactly 4 characters"
-               }
-             ]
-           }
-       ]
-   }
+  "details": [
+    {
+      "appIDs": [ "ABCDE12345.com.example.app", "ABCDE12345.com.example.app2" ],
+      "components": [
+         {
+            "#": "no_universal_links",
+            "exclude": true,
+            "comment": "Matches any URL whose fragment equals no_universal_links and instructs the system not to open it as a universal link"
+         },
+         {
+            "/": "/buy/*",
+            "comment": "Matches any URL whose path starts with /buy/"
+         },
+         {
+            "/": "/help/website/*",
+            "exclude": true,
+            "comment": "Matches any URL whose path starts with /help/website/ and instructs the system not to open it as a universal link"
+         },
+         {
+            "/": "/help/*",
+            "?": { "articleNumber": "????" },
+            "comment": "Matches any URL whose path starts with /help/ and which has a query item with name 'articleNumber' and a value of exactly 4 characters"
+        }
+      ]
+    }
+  ]
 }
 ```
 
-</p>
-</details>
+</Collapsible>
 
 To support all iOS versions, you can provide both the above formats in your `details` key, but we recommend placing the configuration for more recent iOS versions first.
 
@@ -337,7 +342,7 @@ At this point, opening a link on your mobile device should now open your app! If
 
 Implementing deep links on Android (without a custom URL scheme) is somewhat simpler than on iOS. You simply need to add `intentFilters` to the [Android section](/versions/latest/config/app/#android) of your **app.json**. The following basic configuration will cause your app to be presented in the standard Android dialog as an option for handling any record links to `myapp.io`:
 
-```
+```json
 "intentFilters": [
   {
     "action": "VIEW",
@@ -358,7 +363,7 @@ Implementing deep links on Android (without a custom URL scheme) is somewhat sim
 
 It may be desirable for links to your domain to always open your app (without presenting the user a dialog where they can choose the browser or a different handler). You can implement this with Android App Links, which use a similar verification process as Universal Links on iOS. First, you must publish a JSON file at `/.well-known/assetlinks.json` specifying your app ID and which links should be opened by your app. See [Android's documentation](https://developer.android.com/training/app-links/verify-site-associations) for details about formatting this file. Second, add `"autoVerify": true` to the intent filter in your **app.json**; this tells Android to check for your **assetlinks.json** on your server and register your app as the automatic handler for the specified paths:
 
-```
+```json
 "intentFilters": [
   {
     "action": "VIEW",
@@ -384,7 +389,7 @@ This is the easiest way to set up deep links into your app because it requires a
 
 The main problem is that if the user does not have your app installed and follows a link to your app with its custom scheme, their operating system will indicate that the page couldn't be opened but not give much more information. This is not a great experience. There is no way to work around this in the browser.
 
-Additionally, many messaging apps do not autolink URLs with custom schemes -- for example, `exp://exp.host/@community/native-component-list` might just show up as plain text in your browser rather than as a link ([exp://exp.host/@community/native-component-list](exp://exp.host/@community/native-component-list)).
+Additionally, many messaging apps do not autolink URLs with custom schemes -- for example, `exp://u.expo.dev/[project-id]?channel-name=[channel-name]&runtime-version=[runtime-version]` might just show up as plain text in your browser rather than as a link ([exp://u.expo.dev/[project-id]?channel-name=[channel-name]&runtime-version=[runtime-version]](#)).
 
 An example of this is Gmail which strips the href property from links of most apps, a trick to use is to link to a regular https url instead of your app's custom scheme, this will open the user's web browser. Browsers do not usually strip the href property so you can host a file online that redirects the user to your app's custom schemes.
 

@@ -10,6 +10,7 @@ import SnackInline from '~/components/plugins/SnackInline';
 import ImageSpotlight from '~/components/plugins/ImageSpotlight'
 import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
+import { Collapsible } from '~/ui/components/Collapsible';
 
 The **`expo-notifications`** provides an API to fetch push notification tokens and to present, schedule, receive and respond to notifications.
 
@@ -125,7 +126,7 @@ As mentioned, the most common reasons for this issue are either an invalid Inter
 
 Here are a few ways people claim to have solved this problem, maybe one of these will help you solve it, too!
 
-<details><summary><strong>Read the Apple's <a href="https://developer.apple.com/library/archive/technotes/tn2265/_index.html">Technical Note on troubleshooting push notifications</a></strong></summary> <p>
+<Collapsible summary={<span>Read the Apple's <a href="https://developer.apple.com/library/archive/technotes/tn2265/_index.html">Technical Note on troubleshooting push notifications</a></span>}>
 
 Go read the Apple's [Technical Note on troubleshooting push notifications](https://developer.apple.com/library/archive/technotes/tn2265/_index.html)! This the single most reliable source of information on this problem. To help you grasp what they're suggesting:
 
@@ -133,37 +134,32 @@ Go read the Apple's [Technical Note on troubleshooting push notifications](https
 - Make sure your app configuration is set properly for registering for push notifications (for bare workflow check out [this guide](https://developer.apple.com/library/ios/documentation/IDEs/Conceptual/AppDistributionGuide/AddingCapabilities/AddingCapabilities.html#//apple_ref/doc/uid/TP40012582-CH26-SW6), for managed workflow this is done automatically for you by `expo-cli`) as also suggested by [this StackOverflow answer](https://stackoverflow.com/a/10791240/1123156).
 - If you're in bare workflow you may want to try to debug this even further by logging persistent connection debug information as outlined by [this StackOverflow answer](https://stackoverflow.com/a/8036052/1123156).
 
-</p>
-</details>
+</Collapsible>
 
-<details><summary><strong>Try again in a little while</strong></summary> <p>
+<Collapsible summary="Try again in a little while">
 
 - APNS servers near the device may be down as indicated by [this forum thread](https://developer.apple.com/forums/thread/52224). Take a walk and try again later!
 - Try again in a few days time as suggested by [this GitHub comment](https://github.com/expo/expo/issues/10369#issuecomment-717872956).
 
-</p>
-</details>
+</Collapsible>
 
-<details><summary><strong>Disable network sharing on your device</strong></summary> <p>
+<Collapsible summary="Disable network sharing on your device">
 
 You may need to disable network sharing as this may impact the registration as suggested by [this StackOverflow answer](https://stackoverflow.com/a/59156989/1123156).
 
-</p>
-</details>
+</Collapsible>
 
-<details><summary><strong>Restart your device</strong></summary> <p>
+<Collapsible summary="Restart your device">
 
 If you just changed the APNS servers where the app should be registering (by installing a TestFlight build over an Xcode build on the same device) you may need to restart your device as suggested by [this StackOverflow answer](https://stackoverflow.com/a/59864028/1123156).
 
-</p>
-</details>
+</Collapsible>
 
-<details><summary><strong>Setup your device with a SIM card</strong></summary> <p>
+<Collapsible summary="Setup your device with a SIM card">
 
 If the device you're experiencing this on hasn't been setup with a SIM card it looks like configuring it may help mitigate this bug as suggested by [this StackOverflow answer](https://stackoverflow.com/a/19432504/1123156).
 
-</p>
-</details>
+</Collapsible>
 
 ## API
 
@@ -173,7 +169,7 @@ import * as Notifications from 'expo-notifications';
 
 Check out the Snack below to see Notifications in action, but be sure to use a physical device! Push notifications don't work on simulators/emulators.
 
-<SnackInline label='Push Notifications' dependencies={['expo-constants', 'expo-permissions', 'expo-notifications']}>
+<SnackInline label='Push Notifications' dependencies={['expo-device', 'expo-permissions', 'expo-notifications']}>
 
 ```js
 import * as Device from 'expo-device';
@@ -218,8 +214,7 @@ export default function App() {
         flex: 1,
         alignItems: 'center',
         justifyContent: 'space-around',
-      }}
-    >
+      }}>
       <Text>Your expo push token: {expoPushToken}</Text>
       <View style={{ alignItems: 'center', justifyContent: 'center' }}>
         <Text>Title: {notification && notification.request.content.title} </Text>
@@ -334,7 +329,7 @@ await Notifications.scheduleNotificationAsync({
 
 You can also manually add notification files to your Android and iOS projects if you prefer:
 
-<details><summary><strong>Manually adding notification sounds on Android</strong></summary> <p>
+<Collapsible summary="Manually adding notification sounds on Android">
 
 On Androids 8.0+, playing a custom sound for a notification requires more than setting the `sound` property on the `NotificationContentInput`. You will _also_ need to configure the `NotificationChannel` with the appropriate `sound`, and use it when sending/scheduling the notification.
 
@@ -362,10 +357,9 @@ await Notifications.scheduleNotificationAsync({
 });
 ```
 
-</p>
-</details>
+</Collapsible>
 
-<details><summary><strong>Manually adding notification sounds on iOS</strong></summary> <p>
+<Collapsible summary="Manually adding notification sounds on iOS">
 
 On iOS, all that's needed is to place your sound file in your Xcode project (see the screenshot below), and then specify the sound file in your `NotificationContentInput`, like this:
 
@@ -384,8 +378,7 @@ await Notifications.scheduleNotificationAsync({
 
 <ImageSpotlight alt="notification.wav inside of app resources in Xcode project organizer" src="/static/images/notification-sound-ios.jpeg" style={{maxWidth: 305}} />
 
-</p>
-</details>
+</Collapsible>
 
 ## Android push notification payload specification
 
@@ -411,7 +404,7 @@ Returns an Expo token that can be used to send a push notification to the device
 
 This method makes a request to Expo's servers, so it can reject in cases where the request itself fails (like due to the device being offline, experiencing a network timeout, or other HTTPS request failures). To provide offline support to your users, you should `try/catch` this method and implement retry logic to attempt to get the push token later, once the device is back online.
 
-> **Note:** For Expo's backend to be able to send notifications to your app, you will need to provide it with push notification keys. This can be done using `expo-cli` (`expo credentials:manager`). [Read more in the “Upload notifications credentials” guide](../../../push-notifications/push-notifications-setup.md#credentials).
+> **Note:** For Expo's backend to be able to send notifications to your app, you will need to provide it with push notification keys. This can be done using EAS CLI (`eas credentials`). [Read more in the “Upload notifications credentials” guide](../../../push-notifications/push-notifications-setup.md#credentials).
 
 #### Arguments
 
@@ -1070,7 +1063,7 @@ async function scheduleAndCancel() {
     content: {
       title: 'Hey!',
     },
-    trigger: { seconds: 5, repeats: true },
+    trigger: { seconds: 60, repeats: true },
   });
   await Notifications.cancelScheduledNotificationAsync(identifier);
 }
@@ -1762,6 +1755,8 @@ export type DateTriggerInput = Date | number | { channelId?: string; date: Date 
 #### `TimeIntervalTriggerInput`
 
 A trigger that will cause the notification to be delivered once or many times (depends on the `repeats` field) after `seconds` time elapse.
+
+> **On iOS**, when `repeats` is `true`, the time interval must be 60 seconds or greater. Otherwise, the notification won't be triggered.
 
 ```ts
 export interface TimeIntervalTriggerInput {

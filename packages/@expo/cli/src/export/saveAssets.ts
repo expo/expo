@@ -5,12 +5,14 @@ import * as Log from '../log';
 import { chunk } from '../utils/array';
 import { copyAsync } from '../utils/dir';
 
+const debug = require('debug')('expo:export:saveAssets') as typeof console.log;
+
 export type ManifestAsset = { fileHashes: string[]; files: string[]; hash: string };
 
 export type Asset = ManifestAsset | BundleAssetWithFileHashes;
 
 function logAssetTask(projectRoot: string, action: 'uploading' | 'saving', pathName: string) {
-  Log.debug(`${action} ${pathName}`);
+  debug(`${action} ${pathName}`);
 
   const relativePath = pathName.replace(projectRoot, '');
   Log.log(`${action} ${relativePath}`);

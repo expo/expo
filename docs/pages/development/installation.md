@@ -8,17 +8,17 @@ import ConfigurationDiff from '~/components/plugins/ConfigurationDiff';
 import { Tab, Tabs } from '~/components/plugins/Tabs';
 import { Terminal } from '~/ui/components/Snippet';
 
-The installation steps on this page are only required to add the `expo-dev-client` library to a React Native or Bare project. To add a the `expo-dev-client` library to an existing managed project, see our [Getting Started guide](getting-started.md).
+The installation steps on this page are only required to add the `expo-dev-client` library to a React Native or Bare project. To add the `expo-dev-client` library to an existing managed project, see our [Getting Started guide](getting-started.md).
 
 If you're just starting your project, you can create a new project from our template with:
 
-<Terminal cmd={["$ npx crna -t with-dev-client"]} cmdCopy="npx crna -t with-dev-client" />
+<Terminal cmd={["$ npx crna -t with-dev-client"]} />
 
 If you have an existing project, you'll need to [install the package and make a few changes](installation.md) to your **AppDelegate.m**, **MainActivity.java** and **MainApplication.java**.
 
-If you created your project with `expo init`, or you already have `expo` and/or other Expo modules up and running, use the tabs marked **With Expo modules**.
+If you created your project with `expo init` or `create-expo-app`, or you already have `expo` and/or other Expo modules up and running, use the tabs marked **With Expo modules**.
 
-If you created your project with `expo init` before SDK 43 and have `react-native-unimodules` up and running, use the tabs marked **With unimodules**. When you're ready, consider upgrading to the newer Expo modules by [following these steps](https://expo.fyi/expo-modules-migration).
+If you created your project with `expo init` or `create-expo-app` before SDK 43 and have `react-native-unimodules` up and running, use the tabs marked **With unimodules**. When you're ready, consider upgrading to the newer Expo modules by [following these steps](https://expo.fyi/expo-modules-migration).
 
 If you created your project with `npx react-native init` and do not have any other Expo packages installed, **starting from version `0.8.0` you'll need to [install Expo modules](../bare/installing-expo-modules)** in order to use `expo-dev-client`.
 
@@ -30,7 +30,7 @@ Add the `expo-dev-client` library to your package.json.
 
 <InstallSection packageName="expo-development-client" cmd={["npm install expo-dev-client"]} hideBareInstructions />
 
-### 🍏 iOS
+### iOS
 
 <Tabs tabs={["SDK 45+", "SDK below 45"]}>
 
@@ -62,9 +62,9 @@ To do that, open Xcode and go to General > Deployment Info, and select an iOS ve
 
 </Tabs >
 
-### 🤖 Android
+### Android
 
-No additional changes are needed to install the package on Android. 🎉
+No additional changes are needed to install the package on Android.
 
 ## 2. Basic configuration
 
@@ -74,13 +74,13 @@ Development builds use deep links to open projects from the QR code. If you have
 
 See the [uri-scheme package](https://www.npmjs.com/package/uri-scheme) for more information.
 
-### 🍏 iOS
+### iOS
 
 <Tabs tabs={["SDK 45+/expo-modules-core@0.9.1+", "With Expo modules", "With unimodules"]}>
 
 <Tab >
 
-No additional changes are needed to configure the package on iOS. 🎉
+No additional changes are needed to configure the package on iOS.
 
 </Tab >
 
@@ -100,13 +100,13 @@ Make the following changes to allow the `expo-dev-client` library to control pro
 
 </Tabs>
 
-### 🤖 Android
+### Android
 
 <Tabs tabs={["SDK 45+/expo-modules-core@0.9.1+", "With Expo modules", "With unimodules"]}>
 
 <Tab >
 
-No additional changes are needed to configure the package on Android. 🎉
+No additional changes are needed to configure the package on Android.
 
 </Tab >
 

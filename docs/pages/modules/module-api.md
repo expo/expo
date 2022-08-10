@@ -3,6 +3,8 @@ title: Module API
 ---
 
 import { CodeBlocksTable } from '~/components/plugins/CodeBlocksTable';
+import { PlatformTag } from '~/ui/components/Tag';
+import { APIBox } from '~/components/plugins/APIBox';
 
 > Note: This API is still experimental and subject to change. Some features that you need may not be implemented yet.
 
@@ -55,17 +57,17 @@ class MyModule : Module() {
 
 ### 2. Set up module config
 
-Add your classes to iOS and/or Android `modulesClassNames` in the [module config](module-config).
+Add your classes to iOS and/or Android `modules` in the [module config](module-config).
 
 <CodeBlocksTable tabs={["expo-module.config.json"]}>
 
 ```json
 {
   "ios": {
-    "modulesClassNames": ["MyModule"]
+    "modules": ["MyModule"]
   },
   "android": {
-    "modulesClassNames": ["my.module.package.MyModule"]
+    "modules": ["my.module.package.MyModule"]
   }
 }
 ```
@@ -84,19 +86,19 @@ Now that the class is set up and linked, you can start to add functionality. The
 
 As you might have noticed in the snippets above, each module class must implement the `definition` function. The definition consists of components that describe the module's functionality and behavior.
 
-### `name`
+<APIBox header="Name">
 
 Sets the name of the module that JavaScript code will use to refer to the module. Takes a string as an argument. Can be inferred from module's class name, but it's recommended to set it explicitly for clarity.
 
 <CodeBlocksTable tabs={["Swift / Kotlin"]}>
 
 ```swift
-name("MyModuleName")
+Name("MyModuleName")
 ```
 
 </CodeBlocksTable>
-
-### `constants`
+</APIBox>
+<APIBox header="Constants">
 
 Sets constant properties on the module. Can take a dictionary or a closure that returns a dictionary.
 
@@ -104,12 +106,12 @@ Sets constant properties on the module. Can take a dictionary or a closure that 
 
 ```swift
 // Created from the dictionary
-constants([
+Constants([
   "PI": Double.pi
 ])
 
 // or returned by the closure
-constants {
+Constants {
   return [
     "PI": Double.pi
   ]
@@ -118,41 +120,80 @@ constants {
 
 ```kotlin
 // Passed as arguments
-constants(
+Constants(
   "PI" to kotlin.math.PI
 )
 
 // or returned by the closure
-constants {
-  return@constants mapOf(
+Constants {
+  return@Constants mapOf(
     "PI" to kotlin.math.PI
   )
 }
 ```
 
 </CodeBlocksTable>
+</APIBox>
+<APIBox header="Function">
 
-### `function`
-
-Defines a native function that will be exported to JavaScript.
+Defines a native synchronous function that will be exported to JavaScript. Synchronous means that when the function is executed in JavaScript, its native code is run on the same thread and blocks further execution of the script until the native function returns.
 
 #### Arguments
 
 - **name**: `String` — Name of the function that you'll call from JavaScript.
 - **body**: `(args...) -> ReturnType` — The closure to run when the function is called.
 
-All functions return a `Promise` to JavaScript and are asynchronous from the perspective of the JavaScript runtime. However, if the type of the last argument is `Promise`, the function is considered to be asynchronous on the native side and it will wait for the promise to be resolved or rejected before the response is passed back to JavaScript. Otherwise, the function is immediately resolved with the returned value or rejected if it throws an error. Note that this is different than synchronous/asynchronous calls in JavaScript — at this moment all functions are _asynchronous_ from the JavaScript perspective.
-
-The function can receive up to 8 arguments (including the promise). This is due to the limitations of generics in both Swift and Kotlin, because this component must be implemented separately for each number of arguments.
+The function can receive up to 8 arguments. This is due to the limitations of generics in both Swift and Kotlin, because this component must be implemented separately for each arity.
 
 <CodeBlocksTable>
 
 ```swift
-function("syncFunction") { (message: String) in
+Function("syncFunction") { (message: String) in
   return message
 }
+```
 
-function("asyncFunction") { (message: String, promise: Promise) in
+```kotlin
+Function("syncFunction") { message: String ->
+  return@Function message
+}
+```
+
+```javascript
+import { requireNativeModule } from 'expo-modules-core';
+
+// Assume that we have named the module "MyModule"
+const MyModule = requireNativeModule('MyModule');
+
+function getMessage() {
+  return MyModule.syncFunction('bar');
+}
+```
+
+</CodeBlocksTable>
+</APIBox>
+<APIBox header="AsyncFunction">
+
+Defines a JavaScript function that always returns a `Promise` and whose native code is by default dispatched on the different thread than the JavaScript runtime runs on.
+
+#### Arguments
+
+- **name**: `String` — Name of the function that you'll call from JavaScript.
+- **body**: `(args...) -> ReturnType` — The closure to run when the function is called.
+
+If the type of the last argument is `Promise`, the function will wait for the promise to be resolved or rejected before the response is passed back to JavaScript. Otherwise, the function is immediately resolved with the returned value or rejected if it throws an exception.
+The function can receive up to 8 arguments (including the promise).
+
+It is recommended to use `AsyncFunction` over `Function` when it:
+
+- does I/O bound tasks such as sending network requests or interacting with the file system
+- needs to be run on different thread, e.g. the main UI thread for UI-related tasks
+- is an extensive or long-lasting operation that would block the JavaScript thread which in turn would reduce the responsiveness of the application
+
+<CodeBlocksTable>
+
+```swift
+AsyncFunction("asyncFunction") { (message: String, promise: Promise) in
   DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
     promise.resolve(message)
   }
@@ -160,11 +201,7 @@ function("asyncFunction") { (message: String, promise: Promise) in
 ```
 
 ```kotlin
-function("syncFunction") { message: String ->
-  return@function message
-}
-
-function("asyncFunction") { message: String, promise: Promise ->
+AsyncFunction("asyncFunction") { message: String, promise: Promise ->
   launch(Dispatchers.Main) {
     promise.resolve(message)
   }
@@ -172,39 +209,35 @@ function("asyncFunction") { message: String, promise: Promise ->
 ```
 
 ```javascript
-import { NativeModulesProxy } from 'expo-modules-core';
+import { requireNativeModule } from 'expo-modules-core';
 
 // Assume that we have named the module "MyModule"
-const { MyModule } = NativeModulesProxy;
+const MyModule = requireNativeModule('MyModule');
 
-async function getMessage() {
-  // Functions that are synchronous on the native side are still asynchronous to
-  // JavaScript and return a promise
-  const message = await MyModule.syncFunction('foo');
-  const otherMessage = await MyModule.asyncFunction('bar');
-  console.log(`${message} ${otherMessage}); // foo bar
+async function getMessageAsync() {
+  return await MyModule.asyncFunction('bar');
 }
 ```
 
 </CodeBlocksTable>
-
-### `events`
+</APIBox>
+<APIBox header="Events">
 
 Defines event names that the module can send to JavaScript.
 
 <CodeBlocksTable>
 
 ```swift
-events("onCameraReady", "onPictureSaved", "onBarCodeScanned")
+Events("onCameraReady", "onPictureSaved", "onBarCodeScanned")
 ```
 
 ```kotlin
-events("onCameraReady", "onPictureSaved", "onBarCodeScanned")
+Events("onCameraReady", "onPictureSaved", "onBarCodeScanned")
 ```
 
 </CodeBlocksTable>
-
-### `view`
+</APIBox>
+<APIBox header="View">
 
 Defines the factory creating a native view, when the module is used as a view.
 On Android, the factory function also receives [Android Context](https://developer.android.com/reference/android/content/Context) which is required to create any view.
@@ -212,20 +245,20 @@ On Android, the factory function also receives [Android Context](https://develop
 <CodeBlocksTable>
 
 ```swift
-view {
+View {
   UITextView()
 }
 ```
 
 ```kotlin
-view { context ->
+View { context ->
   TextView(context)
 }
 ```
 
 </CodeBlocksTable>
-
-### `prop`
+</APIBox>
+<APIBox header="Prop">
 
 Defines a setter for the view prop of given name.
 
@@ -234,18 +267,18 @@ Defines a setter for the view prop of given name.
 - **name**: `String` — Name of view prop that you want to define a setter.
 - **setter**: `(view: ViewType, value: ValueType) -> ()` — Closure that is invoked when the view rerenders.
 
-This property can only be used within a [`viewManager`](#viewmanager) closure.
+This property can only be used within a [`ViewManager`](#viewmanager) closure.
 
 <CodeBlocksTable>
 
 ```swift
-prop("background") { (view: UIView, color: UIColor) in
+Prop("background") { (view: UIView, color: UIColor) in
   view.backgroundColor = color
 }
 ```
 
 ```kotlin
-prop("background") { view: View, @ColorInt color: Int ->
+Prop("background") { view: View, @ColorInt color: Int ->
   view.setBackgroundColor(color)
 }
 ```
@@ -254,31 +287,32 @@ prop("background") { view: View, @ColorInt color: Int ->
 
 > Note: Props of function type (callbacks) are not supported yet.
 
-### `viewManager`
+</APIBox>
+<APIBox header="ViewManager">
 
-Enables the module to be used as a view manager. The view manager definition is built from the definition components used in the closure passed to `viewManager`. Definition components that are accepted as part of the view manager definition: [`view`](#view), [`prop`](#prop).
+Enables the module to be used as a view manager. The view manager definition is built from the definition components used in the closure passed to `viewManager`. Definition components that are accepted as part of the view manager definition: [`View`](#view), [`Prop`](#prop).
 
 <CodeBlocksTable>
 
 ```swift
-viewManager {
-  view {
+ViewManager {
+  View {
     UIView()
   }
 
-  prop("isHidden") { (view: UIView, hidden: Bool) in
+  Prop("isHidden") { (view: UIView, hidden: Bool) in
     view.isHidden = hidden
   }
 }
 ```
 
 ```kotlin
-viewManager {
-  view { context ->
+ViewManager {
+  View { context ->
     View(context)
   }
 
-  prop("isHidden") { view: View, hidden: Bool ->
+  Prop("isHidden") { view: View, hidden: Bool ->
     view.isVisible = !hidden
   }
 }
@@ -286,65 +320,81 @@ viewManager {
 
 </CodeBlocksTable>
 
-### `onCreate`
+> Note: The API for view managers is still experimental and subject to change.
+> We are investigating how to integrate it with [React Native's new architecture (Fabric)](https://reactnative.dev/architecture/fabric-renderer) which may require us to make some API changes.
+
+</APIBox>
+<APIBox header="OnCreate">
 
 Defines module's lifecycle listener that is called right after module initialization. If you need to set up something when the module gets initialized, use this instead of module's class initializer.
 
-### `onDestroy`
+</APIBox>
+<APIBox header="OnDestroy">
 
 Defines module's lifecycle listener that is called when the module is about to be deallocated. Use it instead of module's class destructor.
 
-### `onStartObserving`
+</APIBox>
+<APIBox header="OnStartObserving">
 
 Defines the function that is invoked when the first event listener is added.
 
-### `onStopObserving`
+</APIBox>
+<APIBox header="OnStopObserving">
 
 Defines the function that is invoked when all event listeners are removed.
 
-### `onAppContextDestroys`
+</APIBox>
+<APIBox header="OnAppContextDestroys">
 
 Defines module's lifecycle listener that is called when the app context owning the module is about to be deallocated.
 
-### `onAppEntersForeground` 🍏
+</APIBox>
+<APIBox header="OnAppEntersForeground" platforms={["ios"]}>
 
 Defines the listener that is called when the app is about to enter the foreground mode.
 
-> Note: This function is not available on Android — you may want to use [`onActivityEntersForeground`](#onactivityentersforeground--) instead.
+> Note: This function is not available on Android — you may want to use [`OnActivityEntersForeground`](#onactivityentersforeground) instead.
 
-### `onAppEntersBackground` 🍏
+</APIBox>
+<APIBox header="OnAppEntersBackground" platforms={["ios"]}>
 
 Defines the listener that is called when the app enters the background mode.
 
-> Note: This function is not available on Android — you may want to use [`onActivityEntersBackground`](#onactivityentersbackground--) instead.
+> Note: This function is not available on Android — you may want to use [`OnActivityEntersBackground`](#onactivityentersbackground) instead.
 
-### `onAppBecomesActive` 🍏
+</APIBox>
+<APIBox header="OnAppBecomesActive" platforms={["ios"]}>
 
-Defines the listener that is called when the app becomes active again (after `onAppEntersForeground`).
+Defines the listener that is called when the app becomes active again (after `OnAppEntersForeground`).
 
-> Note: This function is not available on Android — you may want to use [`onActivityEntersForeground`](#onactivityentersforeground--) instead.
+> Note: This function is not available on Android — you may want to use [`OnActivityEntersForeground`](#onactivityentersforeground) instead.
 
-### `onActivityEntersForeground` 🤖
+</APIBox>
+<APIBox header="OnActivityEntersForeground" platforms={["android"]}>
 
-> Note: This function is not available on iOS — you may want to use [`onAppEntersForeground`](#onappentersforeground--) instead.
+> Note: This function is not available on iOS — you may want to use [`OnAppEntersForeground`](#onappentersforeground) instead.
 
-### `onActivityEntersBackground` 🤖
+</APIBox>
+<APIBox header="OnActivityEntersBackground" platforms={["android"]}>
 
-> Note: This function is not available on iOS — you may want to use [`onAppEntersBackground`](#onappentersbackground--) instead.
+> Note: This function is not available on iOS — you may want to use [`OnAppEntersBackground`](#onappentersbackground) instead.
 
-### `onActivityDestroys` 🤖
+</APIBox>
+<APIBox header="OnActivityDestroys" platforms={["android"]}>
 
 Defines the listener that is called when the activity owning the JavaScript context is about to be destroyed.
 
-> Note: This function is not available on iOS — you may want to use [`onAppEntersBackground`](#onappentersbackground--) instead.
+> Note: This function is not available on iOS — you may want to use [`OnAppEntersBackground`](#onappentersbackground) instead.
+
+</APIBox>
 
 ## Argument Types
 
 Fundamentally, only primitive and serializable data can be passed back and forth between the runtimes. However, usually native modules need to receive custom data structures — more sophisticated than just the dictionary/map where the values are of unknown (`Any`) type and so each value has to be validated and casted on its own. The Expo module API provides protocols to make it more convenient to work with data objects, to provide automatic validation, and finally, to ensure native type-safety on each object member.
 
-### Convertibles
+<APIBox header="Convertibles">
 
-_Convertibles_ are native types that can be initialized from certain specific kinds of data received from JavaScript. Such types are allowed to be used as an argument type in `function`'s body. As a good example, when the `CGPoint` type is used as a function argument type, its instance can be created from an array of two numbers (_x_, _y_) or a JavaScript object with numeric `x` and `y` properties.
+_Convertibles_ are native types that can be initialized from certain specific kinds of data received from JavaScript. Such types are allowed to be used as an argument type in `Function`'s body. For example, when the `CGPoint` type is used as a function argument type, its instance can be created from an array of two numbers `(_x_, _y_)` or a JavaScript object with numeric `x` and `y` properties.
 
 Some common iOS types from `CoreGraphics` and `UIKit` system frameworks are already made convertible.
 
@@ -359,7 +409,8 @@ Some common iOS types from `CoreGraphics` and `UIKit` system frameworks are alre
 | `CGColor`   | Color hex strings in formats: `#RRGGBB`, `#RRGGBBAA`, `#RGB`, `#RGBA`                                              |
 | `UIColor`   | Color hex strings in formats: `#RRGGBB`, `#RRGGBBAA`, `#RGB`, `#RGBA`                                              |
 
-### Records
+</APIBox>
+<APIBox header="Records">
 
 _Record_ is a convertible type and an equivalent of the dictionary (Swift) or map (Kotlin), but represented as a struct where each field can have its own type and provide a default value.
 
@@ -378,7 +429,7 @@ struct FileReadOptions: Record {
 }
 
 // Now this record can be used as an argument of the functions or the view prop setters.
-function("readFile") { (path: String, options: FileReadOptions) -> String in
+Function("readFile") { (path: String, options: FileReadOptions) -> String in
   // Read the file using given `options`
 }
 ```
@@ -396,14 +447,14 @@ class FileReadOptions : Record {
 }
 
 // Now this record can be used as an argument of the functions or the view prop setters.
-function("readFile") { path: String, options: FileReadOptions ->
+Function("readFile") { path: String, options: FileReadOptions ->
   // Read the file using given `options`
 }
 ```
 
 </CodeBlocksTable>
-
-### Enums
+</APIBox>
+<APIBox header="Enums">
 
 With enums we can go even further with the above example (with `FileReadOptions` record) and limit supported encodings to `"utf8"` and `"base64"`. To use an enum as an argument or record field, it must represent a primitive value (e.g. `String`, `Int`) and conform to `EnumArgument`.
 
@@ -437,6 +488,7 @@ class FileReadOptions : Record {
 ```
 
 </CodeBlocksTable>
+</APIBox>
 
 ## Examples
 
@@ -445,9 +497,9 @@ class FileReadOptions : Record {
 ```swift
 public class MyModule: Module {
   public func definition() -> ModuleDefinition {
-    name("MyFirstExpoModule")
+    Name("MyFirstExpoModule")
 
-    function("hello") { (name: String) in
+    Function("hello") { (name: String) in
       return "Hello \(name)!"
     }
   }
@@ -457,9 +509,9 @@ public class MyModule: Module {
 ```kotlin
 class MyModule : Module() {
   override fun definition() = ModuleDefinition {
-    name("MyFirstExpoModule")
+    Name("MyFirstExpoModule")
 
-    function("hello") { name: String ->
+    Function("hello") { name: String ->
       return "Hello $name!"
     }
   }

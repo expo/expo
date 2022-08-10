@@ -22,7 +22,11 @@ public struct Promise: AnyArgument {
   }
 
   public func reject(_ error: Error) {
-    rejecter(UnexpectedException(error))
+    if let exception = error as? Exception {
+      rejecter(exception)
+    } else {
+      rejecter(UnexpectedException(error))
+    }
   }
 
   public func reject(_ error: Exception) {
@@ -31,5 +35,14 @@ public struct Promise: AnyArgument {
 
   public func reject(_ code: String, _ description: String) {
     rejecter(Exception(name: code, description: description))
+  }
+
+  public func settle<ValueType, ExceptionType: Exception>(with result: Result<ValueType, ExceptionType>) {
+    switch result {
+    case .success(let value):
+      resolve(value)
+    case .failure(let exception):
+      reject(exception)
+    }
   }
 }

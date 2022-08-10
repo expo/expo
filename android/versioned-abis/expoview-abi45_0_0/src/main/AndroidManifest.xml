@@ -271,7 +271,7 @@
             android:name="com.canhub.cropper.CropImageActivity"
             android:theme="@style/Base.Theme.AppCompat" /> <!-- https://developer.android.com/guide/topics/manifest/provider-element.html -->
         <provider
-            android:name="expo.modules.imagepicker.ImagePickerFileProvider"
+            android:name="abi45_0_0.expo.modules.imagepicker.ImagePickerFileProvider"
             android:authorities="${applicationId}.ImagePickerFileProvider"
             android:exported="false"
             android:grantUriPermissions="true" >
@@ -316,6 +316,15 @@
                 <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
             </intent-filter>
         </receiver>
+
+        <activity android:name="abi45_0_0.expo.modules.notifications.service.NotificationForwarderActivity"
+          android:theme="@android:style/Theme.Translucent.NoTitleBar"
+          android:exported="false"
+          android:excludeFromRecents="true"
+          android:noHistory="true"
+          android:launchMode="standard"
+          android:taskAffinity=""
+          />
 
         <provider
             android:name="expo.modules.sharing.SharingFileProvider"

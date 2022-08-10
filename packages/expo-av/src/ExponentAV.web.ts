@@ -2,7 +2,7 @@ import { PermissionResponse, PermissionStatus, SyntheticPlatformEmitter } from '
 
 import type { AVPlaybackNativeSource, AVPlaybackStatus, AVPlaybackStatusToSet } from './AV.types';
 import type { RecordingStatus } from './Audio/Recording.types';
-import { RECORDING_OPTIONS_PRESET_HIGH_QUALITY } from './Audio/RecordingConstants';
+import { RecordingOptionsPresets } from './Audio/RecordingConstants';
 
 async function getPermissionWithQueryAsync(
   name: PermissionNameWithAdditionalValues
@@ -83,6 +83,7 @@ function getStatusFromMedia(media?: HTMLMediaElement): AVPlaybackStatus {
     // TODO: Bacon: This seems too complicated right now: https://webaudio.github.io/web-audio-api/#dom-biquadfilternode-frequency
     shouldCorrectPitch: false,
     volume: media.volume,
+    audioPan: 0,
     isMuted: media.muted,
     isLooping: media.loop,
     didJustFinish: media.ended,
@@ -252,7 +253,7 @@ export default {
 
     mediaRecorder = new (window as any).MediaRecorder(
       stream,
-      options?.web || RECORDING_OPTIONS_PRESET_HIGH_QUALITY.web
+      options?.web || RecordingOptionsPresets.HIGH_QUALITY.web
     );
 
     mediaRecorder.addEventListener('pause', () => {

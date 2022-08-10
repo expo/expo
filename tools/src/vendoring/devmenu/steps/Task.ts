@@ -43,11 +43,11 @@ export abstract class Task {
    */
   protected getWorkingDirectory(): string {
     const overrideValue = this.overrideWorkingDirectory();
-    if (overrideValue) {
+    if (overrideValue && overrideValue !== '<workingDirectory>') {
       return toRepoPath(overrideValue);
     }
 
-    return toRepoPath(this.workingDirectory!);
+    return this.workingDirectory!;
   }
 
   /**

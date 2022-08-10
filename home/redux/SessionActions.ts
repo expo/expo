@@ -1,4 +1,3 @@
-import Analytics from '../api/Analytics';
 import ApolloClient from '../api/ApolloClient';
 import AuthApi from '../api/AuthApi';
 import LocalStorage from '../storage/LocalStorage';
@@ -16,7 +15,7 @@ export default {
     };
   },
 
-  signOut({ retainApolloStore = false }: { retainApolloStore?: boolean } = {}): AppThunk {
+  signOut(): AppThunk {
     return async (dispatch: AppDispatch) => {
       const session = await LocalStorage.getSessionAsync();
       if (session) {
@@ -27,15 +26,11 @@ export default {
           console.error('Something went wrong when signing out:', e);
         }
         await LocalStorage.removeSessionAsync();
-        Analytics.track(Analytics.events.USER_LOGGED_OUT);
       }
 
       await LocalStorage.clearHistoryAsync();
 
-      Analytics.identify(null);
-      if (!retainApolloStore) {
-        ApolloClient.resetStore();
-      }
+      ApolloClient.resetStore();
 
       return dispatch({
         type: 'signOut',

@@ -16,7 +16,6 @@ import android.os.Bundle
 import android.os.Handler
 import android.util.Log
 import android.widget.Toast
-import com.facebook.internal.BundleJSONConverter
 import com.facebook.proguard.annotations.DoNotStrip
 import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactRootView
@@ -29,7 +28,7 @@ import com.facebook.react.modules.network.ReactCookieJarContainer
 import com.facebook.react.shell.MainReactPackage
 import com.facebook.soloader.SoLoader
 import de.greenrobot.event.EventBus
-import expo.modules.notifications.service.NotificationsService.Companion.getNotificationResponseFromIntent
+import expo.modules.notifications.service.NotificationsService.Companion.getNotificationResponseFromOpenIntent
 import expo.modules.notifications.service.delegates.ExpoHandlingDelegate
 import expo.modules.manifests.core.Manifest
 import host.exp.exponent.*
@@ -57,6 +56,7 @@ import host.exp.exponent.storage.ExponentDB
 import host.exp.exponent.storage.ExponentSharedPreferences
 import host.exp.exponent.utils.AsyncCondition
 import host.exp.exponent.utils.AsyncCondition.AsyncConditionListener
+import host.exp.exponent.utils.BundleJSONConverter
 import host.exp.expoview.BuildConfig
 import host.exp.expoview.ExpoViewBuildConfig
 import host.exp.expoview.Exponent
@@ -527,7 +527,7 @@ class Kernel : KernelInterface() {
   }
 
   private fun openExperienceFromNotificationIntent(intent: Intent): Boolean {
-    val response = getNotificationResponseFromIntent(intent)
+    val response = getNotificationResponseFromOpenIntent(intent)
     val experienceScopeKey = ScopedNotificationsUtils.getExperienceScopeKey(response) ?: return false
     val exponentDBObject = try {
       val exponentDBObjectInner = ExponentDB.experienceScopeKeyToExperienceSync(experienceScopeKey)
@@ -648,20 +648,27 @@ class Kernel : KernelInterface() {
     }
     ErrorActivity.clearErrorList()
     val tasks: List<AppTask> = experienceActivityTasks
-    var existingTask: AppTask? = null
-    for (i in tasks.indices) {
-      val task = tasks[i]
-      val baseIntent = task.taskInfo.baseIntent
-      if (baseIntent.hasExtra(KernelConstants.MANIFEST_URL_KEY) && (
-        baseIntent.getStringExtra(
-            KernelConstants.MANIFEST_URL_KEY
-          ) == manifestUrl
-        )
-      ) {
-        existingTask = task
-        break
+    var existingTask: AppTask? = run {
+      for (i in tasks.indices) {
+        val task = tasks[i]
+        // When deep linking from `NotificationForwarderActivity`, the task will finish immediately.
+        // There is race condition to retrieve the taskInfo from the finishing task.
+        // Uses try-catch to handle the cases.
+        try {
+          val baseIntent = task.taskInfo.baseIntent
+          if (baseIntent.hasExtra(KernelConstants.MANIFEST_URL_KEY) && (
+            baseIntent.getStringExtra(
+                KernelConstants.MANIFEST_URL_KEY
+              ) == manifestUrl
+            )
+          ) {
+            return@run task
+          }
+        } catch (e: Exception) {}
       }
+      return@run null
     }
+
     if (isOptimistic && existingTask == null) {
       openOptimisticExperienceActivity(manifestUrl)
     }

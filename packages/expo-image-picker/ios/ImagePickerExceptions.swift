@@ -26,9 +26,21 @@ internal class MissingCameraPermissionException: Exception {
   }
 }
 
+internal class MissingPhotoLibraryPermissionException: Exception {
+  override var reason: String {
+    "Missing photo library permission"
+  }
+}
+
 internal class CameraUnavailableOnSimulatorException: Exception {
   override var reason: String {
     "Camera not available on simulator"
+  }
+}
+
+internal class MultiselectUnavailableException: Exception {
+  override var reason: String {
+    "Multiple selection is only available on iOS 14+"
   }
 }
 
@@ -89,6 +101,18 @@ internal class FailedToReadVideoSizeException: Exception {
 internal class FailedToReadVideoException: Exception {
   override var reason: String {
     "Failed to read picked video"
+  }
+}
+
+internal class FailedToTranscodeVideoException: Exception {
+  override var reason: String {
+    "Failed to transcode picked video"
+  }
+}
+
+internal class UnsupportedVideoExportPresetException: GenericException<String> {
+  override var reason: String {
+    "Video cannot be transcoded with export preset: \(param)"
   }
 }
 

@@ -122,6 +122,10 @@ class DocumentationPageWithApiVersion extends React.Component<Props, State> {
     return this.props.router.pathname.startsWith('/versions');
   };
 
+  private isArchivePath = () => {
+    return this.props.router.pathname.startsWith('/archive');
+  };
+
   private isGeneralPath = () => {
     return some(navigation.generalDirectories, name =>
       this.props.router.pathname.startsWith(`/${name}`)
@@ -134,12 +138,6 @@ class DocumentationPageWithApiVersion extends React.Component<Props, State> {
       some(navigation.startingDirectories, name =>
         this.props.router.pathname.startsWith(`/${name}`)
       )
-    );
-  };
-
-  private isFeaturePreviewPath = () => {
-    return some(navigation.featurePreviewDirectories, name =>
-      this.props.router.pathname.startsWith(`/${name}`)
     );
   };
 
@@ -189,12 +187,12 @@ class DocumentationPageWithApiVersion extends React.Component<Props, State> {
       return 'general';
     } else if (this.isGettingStartedPath()) {
       return 'starting';
-    } else if (this.isFeaturePreviewPath()) {
-      return 'featurePreview';
     } else if (this.isPreviewPath()) {
       return 'preview';
     } else if (this.isEasPath()) {
       return 'eas';
+    } else if (this.isArchivePath()) {
+      return 'archive';
     }
 
     return 'general';
@@ -259,7 +257,7 @@ class DocumentationPageWithApiVersion extends React.Component<Props, State> {
         isMobileSearchActive={this.state.isMobileSearchActive}
         onContentScroll={handleContentScroll}
         sidebarScrollPosition={sidebarScrollPosition}>
-        <Head title={title}>
+        <Head title={this.props.title}>
           {algoliaTag !== null && <meta name="docsearch:version" content={algoliaTag} />}
           <meta property="og:title" content={title} />
           <meta property="og:type" content="website" />

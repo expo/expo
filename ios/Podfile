@@ -5,7 +5,7 @@ require File.join(File.dirname(`node --print "require.resolve('expo/package.json
 install! 'cocoapods',
          :generate_multiple_pod_projects => true,
          :incremental_installation => true
-platform :ios, '12.0'
+platform :ios, '12.4'
 inhibit_all_warnings!
 
 # Disable expo-updates auto create manifest in podspec script_phase
@@ -28,17 +28,9 @@ abstract_target 'Expo Go' do
       'expo-dev-menu',
       'expo-dev-menu-interface',
       'expo-dev-launcher',
-      'expo-dev-client'
+      'expo-dev-client',
     ],
-    # Modules for which to include Tests subspec
-    tests: [
-      'expo-eas-client',
-      'expo-modules-core',
-      'expo-updates',
-      'expo-manifests',
-      'expo-json-utils',
-      'expo-structured-headers',
-    ],
+    includeTests: true,
     flags: {
       :inhibit_warnings => false
     }
@@ -78,6 +70,13 @@ abstract_target 'Expo Go' do
         target_installation_result.native_target.build_configurations.each do |config|
           config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)']
           config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'BRANCH_EXCLUDE_IDFA_CODE=1'
+        end
+      end
+
+      if pod_name.end_with?('EXUpdates')
+        target_installation_result.native_target.build_configurations.each do |config|
+          config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)']
+          config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'SUPPRESS_EXPO_UPDATES_SERVICE=1'
         end
       end
 

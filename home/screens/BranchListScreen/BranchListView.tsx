@@ -1,11 +1,10 @@
 import { spacing } from '@expo/styleguide-native';
 import { Divider, useExpoTheme, View } from 'expo-dev-client-components';
 import * as React from 'react';
-import { ActivityIndicator, View as RNView } from 'react-native';
+import { FlatList, ActivityIndicator, View as RNView } from 'react-native';
 import InfiniteScrollView from 'react-native-infinite-scroll-view';
 
 import { BranchListItem } from '../../components/BranchListItem';
-import { FlatList } from '../../components/FlatList';
 import { BranchesForProjectQuery } from '../../graphql/types';
 
 type BranchManifest = {
@@ -61,7 +60,7 @@ function BranchList({ data, appId, loadMoreAsync }: Props) {
   const isLoading = React.useRef<null | boolean>(false);
   const theme = useExpoTheme();
 
-  const extractKey = React.useCallback((item) => item.id, []);
+  const extractKey = (item: BranchManifest) => item.id;
 
   const handleLoadMoreAsync = async () => {
     if (isLoading.current) return;
@@ -86,18 +85,21 @@ function BranchList({ data, appId, loadMoreAsync }: Props) {
     }
   };
 
-  const renderItem = React.useCallback(({ item: branch, index }) => {
-    return (
-      <BranchListItem
-        key={branch.id}
-        appId={appId}
-        name={branch.name}
-        latestUpdate={branch.latestUpdate}
-        first={index === 0}
-        last={index === data.length - 1}
-      />
-    );
-  }, []);
+  const renderItem = React.useCallback(
+    ({ item: branch, index }: { item: BranchManifest; index: number }) => {
+      return (
+        <BranchListItem
+          key={branch.id}
+          appId={appId}
+          name={branch.name}
+          latestUpdate={branch.latestUpdate}
+          first={index === 0}
+          last={index === data.length - 1}
+        />
+      );
+    },
+    [appId, data]
+  );
 
   return (
     <View

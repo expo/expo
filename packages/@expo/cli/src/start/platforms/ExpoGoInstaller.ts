@@ -7,6 +7,8 @@ import { logNewSection } from '../../utils/ora';
 import { confirmAsync } from '../../utils/prompts';
 import type { DeviceManager } from './DeviceManager';
 
+const debug = require('debug')('expo:utils:ExpoGoInstaller') as typeof console.log;
+
 /** Given a platform, appId, and sdkVersion, this module will ensure that Expo Go is up-to-date on the provided device. */
 export class ExpoGoInstaller<IDevice> {
   // Keep a list of [platform-deviceId] so we can prevent asking multiple times if a user wants to upgrade.
@@ -27,8 +29,8 @@ export class ExpoGoInstaller<IDevice> {
       return true;
     }
     const version = await this._getExpectedClientVersionAsync();
-    Log.debug(`Expected Expo Go version: ${version}, installed version: ${installedVersion}`);
-    return version ? semver.lt(installedVersion, version) : true;
+    debug(`Expected Expo Go version: ${version}, installed version: ${installedVersion}`);
+    return version ? !semver.eq(installedVersion, version) : true;
   }
 
   /** Returns the expected version of Expo Go given the project SDK Version. Exposed for testing. */
@@ -46,11 +48,12 @@ export class ExpoGoInstaller<IDevice> {
     const cacheId = `${this.platform}-${deviceManager.identifier}`;
 
     if (ExpoGoInstaller.cache[cacheId]) {
+      debug('skipping subsequent upgrade check');
       return false;
     }
+    ExpoGoInstaller.cache[cacheId] = true;
     if (await this.isClientOutdatedAsync(deviceManager)) {
       // Only prompt once per device, per run.
-      ExpoGoInstaller.cache[cacheId] = true;
       const confirm = await confirmAsync({
         initial: true,
         message: `Expo Go on ${deviceManager.name} is outdated, would you like to upgrade?`,

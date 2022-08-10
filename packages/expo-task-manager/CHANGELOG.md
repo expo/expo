@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 10.3.0 — 2022-07-07
+
+_This version does not introduce any user-facing changes._
+
 ## 10.2.1 — 2022-04-25
 
 ### 🐛 Bug fixes

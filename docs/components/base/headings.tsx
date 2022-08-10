@@ -4,6 +4,8 @@ import * as React from 'react';
 
 import { h1, h2, h3, h4 } from './typography';
 
+type HeadingProps = React.PropsWithChildren<React.HTMLAttributes<HTMLHeadingElement>>;
+
 const attributes = {
   'data-heading': true,
 };
@@ -16,7 +18,7 @@ const STYLES_H1 = css`
   border-bottom: 1px solid ${theme.border.default};
 `;
 
-export const H1: React.FC = ({ children }) => (
+export const H1 = ({ children }: HeadingProps) => (
   <h1 {...attributes} css={STYLES_H1}>
     {children}
   </h1>
@@ -37,7 +39,7 @@ const STYLES_H2 = css`
   }
 `;
 
-export const H2: React.FC = ({ children }) => (
+export const H2 = ({ children }: HeadingProps) => (
   <h2 {...attributes} css={STYLES_H2}>
     {children}
   </h2>
@@ -56,7 +58,7 @@ const STYLES_H3 = css`
   }
 `;
 
-export const H3: React.FC = ({ children }) => (
+export const H3 = ({ children }: HeadingProps) => (
   <h3 {...attributes} css={STYLES_H3}>
     {children}
   </h3>
@@ -74,7 +76,7 @@ const STYLES_H4 = css`
   }
 `;
 
-export const H4: React.FC = ({ children, ...rest }) => (
+export const H4 = ({ children, ...rest }: HeadingProps) => (
   <h4 {...attributes} css={STYLES_H4} {...rest}>
     {children}
   </h4>

@@ -33,10 +33,14 @@ class DevMenuInternalMenuControllerModule(private val reactContext: ReactContext
   }
 
   override fun openDevMenuFromReactNative() {
-    devMenuManager.getReactInstanceManager()?.devSupportManager?.let {
-      devMenuManager.closeMenu()
-      it.devSupportEnabled = true
-      it.showDevOptionsDialog()
+    val instanceManager = devMenuManager.getReactInstanceManager() ?: return
+    val devSupportManager = instanceManager.devSupportManager
+    val activity = instanceManager.currentReactContext?.currentActivity ?: return
+
+    devMenuManager.closeMenu()
+    activity.runOnUiThread {
+      devSupportManager.devSupportEnabled = true
+      devSupportManager.showDevOptionsDialog()
     }
   }
 
@@ -63,5 +67,14 @@ class DevMenuInternalMenuControllerModule(private val reactContext: ReactContext
     val clip = ClipData.newPlainText(null, content)
     clipboard.setPrimaryClip(clip)
     promise.resolve(null)
+  }
+
+  override fun fireCallback(name: String, promise: Promise) {
+    if (!devMenuManager.registeredCallbacks.contains(name)) {
+      return promise.reject("ERR_DEVMENU_CALLBACK_FAILED", "Callback with name: $name is not registered")
+    }
+
+    devMenuManager.sendEventToDelegateBridge("registeredCallbackFired", name)
+    return promise.resolve(null)
   }
 }

@@ -270,6 +270,8 @@ export function addEventListener(type: 'url', handler: URLListener): EmitterSubs
  * @param handler An [`URLListener`](#urllistener) function that takes an `event` object of the type
  * [`EventType`](#eventype).
  * @see [React Native Docs Linking page](https://reactnative.dev/docs/linking#removeeventlistener).
+ *
+ * @deprecated Call `remove()` on the return value of `addEventListener()` instead.
  */
 export function removeEventListener(type: 'url', handler: URLListener): void {
   NativeLinking.removeEventListener(type, handler);
@@ -314,7 +316,6 @@ export async function sendIntent(action: string, extras?: SendIntentExtras[]): P
 // @needsAudit
 /**
  * Open the operating system settings app and displays the app’s custom settings, if it has any.
- * @platform ios
  */
 export async function openSettings(): Promise<void> {
   if (Platform.OS === 'web') {

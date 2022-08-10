@@ -15,10 +15,10 @@ function dismissPopup() {
     }
     popupWindow.close();
     if (listenerMap.has(popupWindow)) {
-        const { listener, appStateListener, interval } = listenerMap.get(popupWindow);
+        const { listener, appStateSubscription, interval } = listenerMap.get(popupWindow);
         clearInterval(interval);
         window.removeEventListener('message', listener);
-        AppState.removeEventListener('change', appStateListener);
+        appStateSubscription.remove();
         listenerMap.delete(popupWindow);
         const handle = window.localStorage.getItem(getHandle());
         if (handle) {
@@ -138,7 +138,7 @@ export default {
                     }
                 }
             };
-            AppState.addEventListener('change', appStateListener);
+            const appStateSubscription = AppState.addEventListener('change', appStateListener);
             // Check if the window has been closed every second.
             const interval = setInterval(() => {
                 if (popupWindow?.closed) {
@@ -152,7 +152,7 @@ export default {
             listenerMap.set(popupWindow, {
                 listener,
                 interval,
-                appStateListener,
+                appStateSubscription,
             });
         });
     },
@@ -234,7 +234,7 @@ function normalizePopupFeaturesString(options) {
         for (const pair of windowFeaturePairs) {
             const [key, value] = pair.trim().split('=');
             if (key && value) {
-                windowFeaturePairs[key] = value;
+                windowFeatures[key] = value;
             }
         }
     }

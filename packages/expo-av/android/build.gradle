@@ -5,7 +5,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'maven-publish'
 
 group = 'host.exp.exponent'
-version = '11.2.2'
+version = '12.0.2'
 
 def REACT_NATIVE_DIR = new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim()).parent
 def RN_BUILD_FROM_SOURCE = findProject(":ReactAndroid") != null
@@ -87,7 +87,7 @@ android {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 31)
     versionCode 24
-    versionName "11.2.2"
+    versionName "12.0.2"
 
     externalNativeBuild {
       cmake {
@@ -150,20 +150,6 @@ dependencies {
   compileOnly 'com.facebook.fbjni:fbjni:0.2.2'
   extractHeaders 'com.facebook.fbjni:fbjni:0.2.2:headers'
   extractJNI 'com.facebook.fbjni:fbjni:0.2.2'
-  def rnAARs = fileTree(RN_AAR_DIR).matching { include "**/*.aar" }
-  if (rnAARs.any()) {
-    // node_modules/react-native has a .aar, extract headers
-    if (rnAARs.size() > 1) {
-      logger.error("More than one React Native AAR file has been found:")
-      rnAARs.each {println(it) }
-      throw new GradleException("Multiple React Native AARs found:\n${rnAARs.join("\n")}" +
-          "\nRemove the old ones and try again")
-    }
-    def rnAAR = rnAARs.singleFile
-    extractJNI(files(rnAAR))
-  } else {
-    // there is no prebuilt react-native.aar, this is most likely Expo Go
-  }
 
   api 'com.google.android.exoplayer:exoplayer:2.13.3'
   api 'com.google.android.exoplayer:extension-okhttp:2.13.3'
@@ -175,6 +161,43 @@ dependencies {
   testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.5.1"
 
   testImplementation 'io.mockk:mockk:1.12.3'
+}
+
+def extractReactNativeAAR = { buildType ->
+  def suffix = buildType == 'Debug' ? '-debug' : '-release'
+  def rnAARs = fileTree(RN_AAR_DIR).matching { include "**/react-native/**/*${suffix}.aar" }
+  if (rnAARs.isEmpty()) {
+    rnAARs = fileTree(RN_AAR_DIR).matching { include "**/react-native/**/*.aar" }
+  }
+  if (rnAARs.any()) {
+    // node_modules/react-native has a .aar, extract headers
+    if (rnAARs.size() > 1) {
+      logger.error("More than one React Native AAR file has been found:")
+      rnAARs.each {println(it) }
+      throw new GradleException("Multiple React Native AARs found:\n${rnAARs.join("\n")}" +
+          "\nRemove the old ones and try again")
+    }
+  }
+  def rnAAR = rnAARs.singleFile
+  def file = rnAAR.absoluteFile
+  def packageName = file.name.tokenize('-')[0]
+  copy {
+    from zipTree(file)
+    into "$buildDir/$file.name"
+    include "jni/**/*"
+  }
+}
+
+task extractReactNativeAARRelease {
+  doLast {
+    extractReactNativeAAR('Release')
+  }
+}
+
+task extractReactNativeAARDebug {
+  doLast {
+    extractReactNativeAAR('Debug')
+  }
 }
 
 task extractAARHeaders {
@@ -205,11 +228,13 @@ task extractJNIFiles {
 
 tasks.whenTaskAdded { task ->
   if (!task.name.contains("Clean") && (task.name.contains('externalNativeBuild') || task.name.startsWith('configureCMake'))) {
+    def buildType = task.name.endsWith('Debug') ? 'Debug' : 'Release'
     task.dependsOn(extractAARHeaders)
     task.dependsOn(extractJNIFiles)
     if (RN_BUILD_FROM_SOURCE) {
-      def buildType = task.name.endsWith('Debug') ? 'Debug' : 'Release'
       task.dependsOn(":ReactAndroid:copy${buildType}JniLibsProjectOnly")
+    } else {
+      task.dependsOn("extractReactNativeAAR${buildType}")
     }
   } else if (task.name.startsWith('generateJsonModel') && RN_BUILD_FROM_SOURCE) {
     def buildType = task.name.endsWith('Debug') ? 'Debug' : 'Release'

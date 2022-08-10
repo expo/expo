@@ -19,7 +19,7 @@ import java.util.*
 @Database(
   entities = [UpdateEntity::class, UpdateAssetEntity::class, AssetEntity::class, JSONDataEntity::class],
   exportSchema = false,
-  version = 10
+  version = 11
 )
 @TypeConverters(Converters::class)
 abstract class UpdatesDatabase : RoomDatabase() {
@@ -43,11 +43,22 @@ abstract class UpdatesDatabase : RoomDatabase() {
           .addMigrations(MIGRATION_7_8)
           .addMigrations(MIGRATION_8_9)
           .addMigrations(MIGRATION_9_10)
+          .addMigrations(MIGRATION_10_11)
           .fallbackToDestructiveMigration()
           .allowMainThreadQueries()
           .build()
       }
       return instance!!
+    }
+
+    private fun SupportSQLiteDatabase.runInTransaction(block: SupportSQLiteDatabase.() -> Unit) {
+      beginTransaction()
+      try {
+        block()
+        setTransactionSuccessful()
+      } finally {
+        endTransaction()
+      }
     }
 
     private fun SupportSQLiteDatabase.runInTransactionWithForeignKeysOff(block: SupportSQLiteDatabase.() -> Unit) {
@@ -150,18 +161,16 @@ abstract class UpdatesDatabase : RoomDatabase() {
 
     val MIGRATION_9_10: Migration = object : Migration(9, 10) {
       override fun migrate(database: SupportSQLiteDatabase) {
-        // https://www.sqlite.org/lang_altertable.html#otheralter
-        try {
-          database.execSQL("PRAGMA foreign_keys=OFF")
-          database.beginTransaction()
-          try {
-            database.execSQL("ALTER TABLE `assets` ADD COLUMN `expected_hash` TEXT")
-            database.setTransactionSuccessful()
-          } finally {
-            database.endTransaction()
-          }
-        } finally {
-          database.execSQL("PRAGMA foreign_keys=ON")
+        database.runInTransactionWithForeignKeysOff {
+          execSQL("ALTER TABLE `assets` ADD COLUMN `expected_hash` TEXT")
+        }
+      }
+    }
+
+    val MIGRATION_10_11: Migration = object : Migration(10, 11) {
+      override fun migrate(database: SupportSQLiteDatabase) {
+        database.runInTransaction {
+          execSQL("UPDATE `assets` SET `expected_hash` = NULL")
         }
       }
     }

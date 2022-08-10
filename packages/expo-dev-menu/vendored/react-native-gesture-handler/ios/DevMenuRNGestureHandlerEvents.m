@@ -25,6 +25,22 @@
                            @"numberOfPointers": @(numberOfTouches)}];
 }
 
++ (DevMenuRNGestureHandlerEventExtraData *)forPosition:(CGPoint)position
+                           withAbsolutePosition:(CGPoint)absolutePosition
+                            withNumberOfTouches:(NSUInteger)numberOfTouches
+                                   withDuration:(NSUInteger)duration
+{
+    return [[DevMenuRNGestureHandlerEventExtraData alloc]
+            initWithData:@{
+                           @"x": @(position.x),
+                           @"y": @(position.y),
+                           @"absoluteX": @(absolutePosition.x),
+                           @"absoluteY": @(absolutePosition.y),
+                           @"numberOfPointers": @(numberOfTouches),
+                           @"duration":@(duration)
+            }];
+}
+
 + (DevMenuRNGestureHandlerEventExtraData *)forPan:(CGPoint)position
                       withAbsolutePosition:(CGPoint)absolutePosition
                            withTranslation:(CGPoint)translation
@@ -85,6 +101,24 @@
                            @"anchorY": @(anchorPoint.y),
                            @"velocity": SAFE_VELOCITY(velocity),
                            @"numberOfPointers": @(numberOfTouches)}];
+}
+
++ (DevMenuRNGestureHandlerEventExtraData *)forEventType:(DevMenuRNTouchEventType)eventType
+                             withChangedPointers:(NSArray<NSDictionary *> *)changedPointers
+                                 withAllPointers:(NSArray<NSDictionary *> *)allPointers
+                             withNumberOfTouches:(NSUInteger)numberOfTouches
+{
+    if (changedPointers == nil || allPointers == nil) {
+        changedPointers = @[];
+        allPointers = @[];
+        eventType = DevMenuRNTouchEventTypeUndetermined;
+    }
+  
+    return [[DevMenuRNGestureHandlerEventExtraData alloc]
+            initWithData:@{@"eventType": @(eventType),
+                         @"changedTouches": changedPointers,
+                         @"allTouches": allPointers,
+                         @"numberOfTouches": @(numberOfTouches)}];
 }
 
 + (DevMenuRNGestureHandlerEventExtraData *)forPointerInside:(BOOL)pointerInside

@@ -11,7 +11,7 @@ module Expo
       # Find the targets that use expo modules and need the modules provider
       targets_with_modules_provider = targets.select do |target|
         autolinking_manager = target.target_definition.autolinking_manager
-        autolinking_manager.present?
+        autolinking_manager.present? && autolinking_manager.should_generate_modules_provider?
       end
 
       # Find existing PBXGroup for modules providers.
@@ -105,7 +105,7 @@ module Expo
     def self.set_autolinking_configuration(project)
       project.native_targets.each do |native_target|
         native_target.build_configurations.each do |build_configuration|
-          configuration_flag = "-D #{CONFIGURATION_FLAG_PREFIX}#{build_configuration.name.upcase}"
+          configuration_flag = "-D #{CONFIGURATION_FLAG_PREFIX}#{build_configuration.debug? ? "DEBUG" : "RELEASE"}"          
           build_settings = build_configuration.build_settings
 
           # For some targets it might be `nil` by default which is an equivalent to `$(inherited)`

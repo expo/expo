@@ -1,11 +1,10 @@
 import { css } from '@emotion/react';
-import { borderRadius, iconSize, shadows, spacing, theme } from '@expo/styleguide';
+import { borderRadius, iconSize, shadows, spacing, theme, ChevronDownIcon } from '@expo/styleguide';
 import React from 'react';
 
 import { VERSIONS, LATEST_VERSION, BETA_VERSION } from '~/constants/versions';
 import { usePageApiVersion } from '~/providers/page-api-version';
 import { LABEL } from '~/ui/components/Text';
-import { ChevronDownIcon } from '~/ui/foundations/icons';
 
 // TODO(cedric): move this to a generic select input, so we can reuse it in the color scheme selector
 

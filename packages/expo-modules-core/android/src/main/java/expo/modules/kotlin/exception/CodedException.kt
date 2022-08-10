@@ -1,6 +1,7 @@
 package expo.modules.kotlin.exception
 
 import com.facebook.react.bridge.ReadableType
+import expo.modules.core.interfaces.DoNotStrip
 import java.util.*
 import kotlin.reflect.KProperty1
 import kotlin.reflect.KType
@@ -8,9 +9,10 @@ import kotlin.reflect.KType
 /**
  * A class for errors specifying its `code` and providing the `description`.
  */
+@DoNotStrip
 open class CodedException(
   message: String?,
-  cause: Throwable?
+  cause: Throwable? = null
 ) : Exception(message, cause) {
   // We need that secondary property, cause we can't access
   // the javaClass property in the constructor.
@@ -19,13 +21,11 @@ open class CodedException(
   val code
     get() = providedCode ?: inferCode(javaClass)
 
-  constructor(code: String, message: String?, cause: Throwable?) : this(message, cause) {
+  constructor(code: String, message: String?, cause: Throwable?) : this(message = message, cause = cause) {
     providedCode = code
   }
 
-  constructor(message: String) : this(message, null)
-
-  constructor(cause: Throwable) : this(cause.localizedMessage, cause)
+  constructor(cause: Throwable) : this(message = cause.localizedMessage, cause = cause)
 
   constructor() : this(null, null)
 
@@ -151,4 +151,15 @@ internal class CollectionElementCastException(
 ) : DecoratedException(
   message = "Cannot cast '${providedType.name}' to '$elementType' required by the collection of type: '$collectionType'.",
   cause
+)
+
+@DoNotStrip
+class JavaScriptEvaluateException(
+  message: String,
+  val jsStack: String
+) : CodedException(
+  message = """
+  Cannot evaluate JavaScript code: $message.
+  $jsStack
+  """.trimIndent()
 )

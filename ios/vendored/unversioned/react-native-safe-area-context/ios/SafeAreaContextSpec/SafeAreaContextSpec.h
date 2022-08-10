@@ -22,7 +22,7 @@
 #import <React/RCTCxxConvert.h>
 #import <React/RCTManagedPointer.h>
 #import <ReactCommon/RCTTurboModule.h>
-#import <folly/Optional.h>
+#import <optional>
 #import <vector>
 
 namespace JS {
@@ -119,7 +119,7 @@ namespace JS {
 
       struct Builder {
         struct Input {
-          folly::Optional<JS::NativeSafeAreaContext::ConstantsInitialWindowMetrics::Builder> initialWindowMetrics;
+          std::optional<JS::NativeSafeAreaContext::ConstantsInitialWindowMetrics::Builder> initialWindowMetrics;
         };
 
         /** Initialize with a set of values */
@@ -201,7 +201,7 @@ inline JS::NativeSafeAreaContext::ConstantsInitialWindowMetrics::Builder::Builde
 inline JS::NativeSafeAreaContext::Constants::Builder::Builder(const Input i) : _factory(^{
   NSMutableDictionary *d = [NSMutableDictionary new];
   auto initialWindowMetrics = i.initialWindowMetrics;
-  d[@"initialWindowMetrics"] = initialWindowMetrics.hasValue() ? initialWindowMetrics.value().buildUnsafeRawValue() : nil;
+  d[@"initialWindowMetrics"] = initialWindowMetrics.has_value() ? initialWindowMetrics.value().buildUnsafeRawValue() : nil;
   return d;
 }) {}
 inline JS::NativeSafeAreaContext::Constants::Builder::Builder(Constants i) : _factory(^{

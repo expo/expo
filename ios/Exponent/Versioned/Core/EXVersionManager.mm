@@ -38,6 +38,7 @@
 #import <ExpoModulesCore/EXDefines.h>
 #import <ExpoModulesCore/EXModuleRegistry.h>
 #import <ExpoModulesCore/EXModuleRegistryDelegate.h>
+#import <ExpoModulesCore/EXModuleRegistryHolderReactModule.h>
 #import <ExpoModulesCore/EXNativeModulesProxy.h>
 #import <EXMediaLibrary/EXMediaLibraryImageLoader.h>
 #import <EXFileSystem/EXFileSystem.h>
@@ -378,8 +379,13 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
                                                                            scopeKey:self.manifest.scopeKey
                                                                            manifest:self.manifest
                                                                  withKernelServices:services];
-  NSArray<id<RCTBridgeModule>> *expoModules = [moduleRegistryAdapter extraModulesForModuleRegistry:moduleRegistry];
-  [extraModules addObjectsFromArray:expoModules];
+
+  // Adding EXNativeModulesProxy with the custom moduleRegistry.
+  EXNativeModulesProxy *expoNativeModulesProxy = [[EXNativeModulesProxy alloc] initWithCustomModuleRegistry:moduleRegistry];
+  [extraModules addObject:expoNativeModulesProxy];
+
+  // Adding the way to access the module registry from RCTBridgeModules.
+  [extraModules addObject:[[EXModuleRegistryHolderReactModule alloc] initWithModuleRegistry:moduleRegistry]];
 
   if (!RCTTurboModuleEnabled()) {
     [extraModules addObject:[self getModuleInstanceFromClass:[self getModuleClassFromName:"DevSettings"]]];

@@ -2,14 +2,14 @@ import * as React from 'react';
 
 import Permalink from '../Permalink';
 
-import { HeadingType } from '~/common/headingManager';
+import { AdditionalProps, HeadingType } from '~/common/headingManager';
 import { H1 as RawH1, H2 as RawH2, H3 as RawH3, H4 as RawH4 } from '~/components/base/headings';
 
 type CreateHeading = (
   Component: React.ElementType,
   defaultLevel: number,
   type?: HeadingType
-) => React.FC;
+) => React.FC<React.PropsWithChildren<AdditionalProps>>;
 
 /**
  * Decorates component with a permalink at specified heading level
@@ -19,13 +19,12 @@ type CreateHeading = (
  */
 const createHeading: CreateHeading =
   (Component, defaultLevel, type = HeadingType.Text) =>
-  ({ children, ...props }) => {
-    return (
+  ({ children, ...props }) =>
+    (
       <Permalink nestingLevel={defaultLevel} additionalProps={{ sidebarType: type, ...props }}>
         <Component>{children}</Component>
       </Permalink>
     );
-  };
 
 export const H1 = createHeading(RawH1, 1);
 export const H2 = createHeading(RawH2, 2);

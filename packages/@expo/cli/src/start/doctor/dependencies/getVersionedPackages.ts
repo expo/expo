@@ -1,8 +1,11 @@
 import npmPackageArg from 'npm-package-arg';
 
-import { getReleasedVersionsAsync, SDKVersion } from '../../../api/getVersions';
-import * as Log from '../../../log';
+import { getVersionsAsync, SDKVersion } from '../../../api/getVersions';
 import { getVersionedNativeModulesAsync } from './bundledNativeModules';
+
+const debug = require('debug')(
+  'expo:doctor:dependencies:getVersionedPackages'
+) as typeof console.log;
 
 export type DependencyList = Record<string, string>;
 
@@ -52,11 +55,11 @@ export async function getRemoteVersionsForSdkAsync({
   sdkVersion,
   skipCache,
 }: { sdkVersion?: string; skipCache?: boolean } = {}): Promise<DependencyList> {
-  const sdkVersions = await getReleasedVersionsAsync({ skipCache });
+  const { sdkVersions } = await getVersionsAsync({ skipCache });
 
   // We only want versioned dependencies so skip if they cannot be found.
   if (!sdkVersion || !(sdkVersion in sdkVersions)) {
-    Log.debug(
+    debug(
       `Skipping versioned dependencies because the SDK version is not found. (sdkVersion: ${sdkVersion}, available: ${Object.keys(
         sdkVersions
       ).join(', ')})`

@@ -2,6 +2,9 @@
 title: Config Plugins
 ---
 
+import { Terminal } from '~/ui/components/Snippet';
+import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
+
 > This guide applies to SDK 41+ projects. The Expo Go app doesn't support custom native modules.
 
 When adding a native module to your project, most of the setup can be done automatically by installing the module in your project, but some modules require a more complex setup. For instance, say you installed `expo-camera` in your bare project, you now need to configure the native app to enable camera permissions — this is where config plugins come in. Config plugins are a system for extending the Expo config and customizing the prebuild phase of managed builds.
@@ -10,7 +13,7 @@ Internally Expo CLI uses config plugins to generate and configure all the native
 
 You can think of plugins like a bundler for native projects, and running `expo prebuild` as a way to bundle the projects by evaluating all the project plugins. Doing so will generate `ios` and `android` directories. These directories can be modified manually after being generated, but then they can no longer be safely regenerated without potentially overwriting manual modifications.
 
-**Quick facts**
+#### Quick facts
 
 - Plugins are functions that can change values on your Expo config.
 - Plugins are mostly meant to be used with [`expo prebuild`][cli-prebuild] or `eas build` commands.
@@ -18,7 +21,7 @@ You can think of plugins like a bundler for native projects, and running `expo p
 - `mods` are async functions that modify native project files, such as source code or configuration (plist, xml) files.
 - Changes performed with `mods` will require rebuilding the affected native projects.
 - `mods` are removed from the public app manifest.
-- 💡 Everything in the Expo config must be able to be converted to JSON (with the exception of the `mods` field). So no async functions outside of `mods` in your config plugins!
+- Everything in the Expo config must be able to be converted to JSON (with the exception of the `mods` field). So no async functions outside of `mods` in your config plugins!
 
 ## Using a plugin in your app
 
@@ -28,9 +31,7 @@ For instance, `expo-camera` has a plugin that adds camera permissions to the **I
 
 Install it in your project:
 
-```sh
-expo install expo-camera
-```
+<Terminal cmd={['$ expo install expo-camera']} />
 
 In your app's Expo config (**app.json**, or **app.config.js**), add `expo-camera` to the list of plugins:
 
@@ -64,7 +65,7 @@ For instance, if you add a plugin that adds permission messages to your app, the
 
 And that's it! Now you're using Config plugins. No more having to interact with the native projects!
 
-> 💡 Check out all the different ways you can import `plugins`: [plugin module resolution](#plugin-module-resolution)
+> Check out all the different ways you can import `plugins`: [plugin module resolution](#plugin-module-resolution)
 
 ## What are plugins
 
@@ -361,8 +362,13 @@ The strings passed to the `plugins` array can be resolved in a few different way
 
 You can quickly create a plugin in your project and use it in your config.
 
-- ✅ `'./my-config-plugin'`
-- ❌ `'./my-config-plugin.js'`
+- <YesIcon />{' '}
+
+  `'./my-config-plugin'`
+
+- <NoIcon />{' '}
+
+  `'./my-config-plugin.js'`
 
 ```
 ╭── app.config.js ➡️ Expo Config
@@ -374,8 +380,13 @@ You can quickly create a plugin in your project and use it in your config.
 Sometimes you want your package to export React components and also support a plugin. To do this, multiple entry points need to be used because the transpilation (Babel preset) may be different.
 If an **app.plugin.js** file is present in the root of a Node module's folder, it'll be used instead of the package's `main` file.
 
-- ✅ `'expo-splash-screen'`
-- ❌ `'expo-splash-screen/app.plugin.js'`
+- <YesIcon />{' '}
+
+  `'expo-splash-screen'`
+
+- <NoIcon />{' '}
+
+  `'expo-splash-screen/app.plugin.js'`
 
 ```
 ╭── app.config.js ➡️ Expo Config
@@ -389,8 +400,13 @@ If an **app.plugin.js** file is present in the root of a Node module's folder, i
 
 A config plugin in a node module (without an **app.plugin.js**) will use the `main` file defined in the **package.json**.
 
-- ✅ `'expo-splash-screen'`
-- ❌ `'expo-splash-screen/build/index'`
+- <YesIcon />{' '}
+
+  `'expo-splash-screen'`
+
+- <NoIcon />{' '}
+
+  `'expo-splash-screen/build/index'`
 
 ```
 ╭── app.config.js ➡️ Expo Config
@@ -401,8 +417,13 @@ A config plugin in a node module (without an **app.plugin.js**) will use the `ma
 
 ### Project folder
 
-- ✅ `'./my-config-plugin'`
-- ❌ `'./my-config-plugin.js'`
+- <YesIcon />{' '}
+
+  `'./my-config-plugin'`
+
+- <NoIcon />{' '}
+
+  `'./my-config-plugin.js'`
 
 This is different to how Node modules work because **app.plugin.js** won't be resolved by default in a directory. You'll have to manually specify `./my-config-plugin/app.plugin.js` to use it, otherwise **index.js** in the directory will be used.
 
@@ -417,8 +438,13 @@ This is different to how Node modules work because **app.plugin.js** won't be re
 If a file inside a Node module is specified, then the module's root **app.plugin.js** resolution will be skipped. This is referred to as "reaching inside a package" and is considered **bad form**.
 We support this to make testing, and plugin authoring easier, but we don't expect library authors to expose their plugins like this as a public API.
 
-- ❌ `'expo-splash-screen/build/index.js'`
-- ❌ `'expo-splash-screen/build'`
+- <NoIcon />{' '}
+
+  `'expo-splash-screen/build/index.js'`
+
+- <NoIcon />{' '}
+
+  `'expo-splash-screen/build'`
 
 ```
 ╭── app.config.js ➡️ Expo Config
@@ -647,7 +673,7 @@ export default createRunOncePlugin(
 - **Leverage built-in plugins**: Account for built-in plugins from the [prebuild config](https://github.com/expo/expo-cli/blob/master/packages/prebuild-config/src/plugins/withDefaultPlugins.ts). Some features are included for historical reasons, like the ability to automatically copy and link [Google services files](https://github.com/expo/expo-cli/blob/3a0ef962a27525a0fe4b7e5567fb7b3fb18ec786/packages/config-plugins/src/ios/Google.ts#L15) defined in the Expo config. If there is overlap, then maybe recommend the user uses the built-in types to keep your plugin as simple as possible.
 - **Split up plugins by platform**: For example — `withIosSplash`, `withAndroidSplash`. This makes using the `--platform` flag in `expo prebuild` a bit easier to follow in `EXPO_DEBUG` mode.
 - **Unit test your plugin**: Write Jest tests for complex modifications. If your plugin requires access to the filesystem, use a mock system (we strongly recommend [`memfs`][memfs]), you can see examples of this in the [`expo-notifications`](https://github.com/expo/expo/blob/fc3fb2e81ad3a62332fa1ba6956c1df1c3186464/packages/expo-notifications/plugin/src/__tests__/withNotificationsAndroid-test.ts#L34) plugin tests.
-  - Notice the root [**/__mocks__**](https://github.com/expo/expo/tree/main/packages/expo-notifications/plugin/__mocks__) folder and [**plugin/jest.config.js**](https://github.com/expo/expo/tree/main/packages/expo-notifications/plugin/jest.config.js).
+  - Notice the root [**/**mocks\*\*\*\*](https://github.com/expo/expo/tree/main/packages/expo-notifications/plugin/__mocks__) folder and [**plugin/jest.config.js**](https://github.com/expo/expo/tree/main/packages/expo-notifications/plugin/jest.config.js).
 - A TypeScript plugin is always better than a JavaScript plugin. Check out the [`expo-module-script` plugin][ems-plugin] tooling for more info.
 - Do not modify the `sdkVersion` via a config plugin, this can break commands like `expo install` and cause other unexpected issues.
 
@@ -1082,7 +1108,7 @@ Please add the following to your Expo config
 
 [config-docs]: /versions/latest/config/app/
 [prebuild-config]: https://github.com/expo/expo-cli/tree/main/packages/prebuild-config#readme
-[cli-prebuild]: /workflow/expo-cli/#eject
+[cli-prebuild]: /workflow/expo-cli/#expo-prebuild
 [configplugin]: https://github.com/expo/expo-cli/blob/3a0ef962a27525a0fe4b7e5567fb7b3fb18ec786/packages/config-plugins/src/Plugin.types.ts#L76
 [source-template]: https://github.com/expo/expo/tree/main/templates/expo-template-bare-minimum
 [expo-beta-docs]: https://github.com/expo/expo/tree/main/guides/releasing/Release%20Workflow.md#stage-5---beta-release

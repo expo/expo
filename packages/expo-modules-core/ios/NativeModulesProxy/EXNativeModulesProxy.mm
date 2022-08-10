@@ -8,6 +8,10 @@
 #import <React/RCTModuleData.h>
 #import <React/RCTEventDispatcherProtocol.h>
 
+#ifdef RN_FABRIC_ENABLED
+#import <React/RCTComponentViewFactory.h>
+#endif
+
 #import <jsi/jsi.h>
 
 #import <ExpoModulesCore/EXNativeModulesProxy.h>
@@ -27,6 +31,46 @@ static const NSString *exportedConstantsKeyPath = @"modulesConstants";
 static const NSString *methodInfoKeyKey = @"key";
 static const NSString *methodInfoNameKey = @"name";
 static const NSString *methodInfoArgumentsCountKey = @"argumentsCount";
+
+@interface EXModulesProxyConfig ()
+
+@property (readonly) NSMutableDictionary *exportedConstants;
+@property (readonly) NSMutableDictionary *methodNames;
+@property (readonly) NSMutableDictionary *viewManagerMetadata;
+
+@end
+
+@implementation EXModulesProxyConfig
+
+- (instancetype)initWithConstants:(nonnull NSDictionary *)constants
+                      methodNames:(nonnull NSDictionary *)methodNames
+                     viewManagers:(nonnull NSDictionary *)viewManagerMetadata
+{
+  if (self = [super init]) {
+    _exportedConstants = constants;
+    _methodNames = methodNames;
+    _viewManagerMetadata = viewManagerMetadata;
+  }
+  return self;
+}
+
+- (void)addEntriesFromConfig:(nonnull const EXModulesProxyConfig*)config
+{
+  [_exportedConstants addEntriesFromDictionary:config.exportedConstants];
+  [_methodNames addEntriesFromDictionary:config.methodNames];
+  [_viewManagerMetadata addEntriesFromDictionary:config.viewManagerMetadata];
+}
+
+- (nonnull NSDictionary<NSString *, id> *)toDictionary
+{
+  NSMutableDictionary <NSString *, id> *constantsAccumulator = [NSMutableDictionary dictionary];
+  constantsAccumulator[viewManagersMetadataKeyPath] = _viewManagerMetadata;
+  constantsAccumulator[exportedConstantsKeyPath] = _exportedConstants;
+  constantsAccumulator[exportedMethodsNamesKeyPath] = _methodNames;
+  return constantsAccumulator;
+}
+
+@end
 
 @interface RCTBridge (RegisterAdditionalModuleClasses)
 
@@ -56,6 +100,7 @@ static const NSString *methodInfoArgumentsCountKey = @"argumentsCount";
 }
 
 @synthesize bridge = _bridge;
+@synthesize nativeModulesConfig = _nativeModulesConfig;
 
 RCT_EXPORT_MODULE(NativeUnimoduleProxy)
 
@@ -75,6 +120,18 @@ RCT_EXPORT_MODULE(NativeUnimoduleProxy)
 }
 
 /**
+ The initializer for Expo Go to pass a custom `EXModuleRegistry`
+ other than the default one from `EXModuleRegistryProvider`.
+ The `EXModuleRegistry` is still owned by this class.
+ */
+- (instancetype)initWithCustomModuleRegistry:(nonnull EXModuleRegistry *)moduleRegistry
+{
+  self = [self initWithModuleRegistry:moduleRegistry];
+  self.ownsModuleRegistry = YES;
+  return self;
+}
+
+/**
  Convenience initializer used by React Native in the new setup, where the modules are registered automatically.
  */
 - (instancetype)init
@@ -89,8 +146,12 @@ RCT_EXPORT_MODULE(NativeUnimoduleProxy)
   return YES;
 }
 
-- (NSDictionary *)constantsToExport
+- (nonnull EXModulesProxyConfig *)nativeModulesConfig
 {
+  if (_nativeModulesConfig) {
+    return _nativeModulesConfig;
+  }
+  
   NSMutableDictionary <NSString *, id> *exportedModulesConstants = [NSMutableDictionary dictionary];
   // Grab all the constants exported by modules
   for (EXExportedModule *exportedModule in [_exModuleRegistry getAllExportedModules]) {
@@ -100,7 +161,6 @@ RCT_EXPORT_MODULE(NativeUnimoduleProxy)
       continue;
     }
   }
-  [exportedModulesConstants addEntriesFromDictionary:[_appContext exportedModulesConstants]];
 
   // Also add `exportedMethodsNames`
   NSMutableDictionary<const NSString *, NSMutableArray<NSMutableDictionary<const NSString *, id> *> *> *exportedMethodsNamesAccumulator = [NSMutableDictionary dictionary];
@@ -117,10 +177,7 @@ RCT_EXPORT_MODULE(NativeUnimoduleProxy)
     }];
     [self assignExportedMethodsKeys:exportedMethodsNamesAccumulator[exportedModuleName] forModuleName:exportedModuleName];
   }
-
-  // Add entries from Swift modules
-  [exportedMethodsNamesAccumulator addEntriesFromDictionary:[_appContext exportedFunctionNames]];
-
+  
   // Also, add `viewManagersMetadata` for sanity check and testing purposes -- with names we know what managers to mock on UIManager
   NSArray<EXViewManager *> *viewManagers = [_exModuleRegistry getAllViewManagers];
   NSMutableDictionary<NSString *, NSDictionary *> *viewManagersMetadata = [[NSMutableDictionary alloc] initWithCapacity:[viewManagers count]];
@@ -130,22 +187,28 @@ RCT_EXPORT_MODULE(NativeUnimoduleProxy)
       @"propsNames": [[viewManager getPropsNames] allKeys]
     };
   }
+  
+  EXModulesProxyConfig *config = [[EXModulesProxyConfig alloc] initWithConstants:exportedModulesConstants
+                                                                     methodNames:exportedMethodsNamesAccumulator
+                                                                    viewManagers:viewManagersMetadata];
+  // decorate legacy config with sweet expo-modules config
+  [config addEntriesFromConfig:[_appContext expoModulesConfig]];
+  
+  _nativeModulesConfig = config;
+  return config;
+}
 
-  // Add entries from Swift view managers
-  [viewManagersMetadata addEntriesFromDictionary:[_appContext viewManagersMetadata]];
-
-  NSMutableDictionary <NSString *, id> *constantsAccumulator = [NSMutableDictionary dictionary];
-  constantsAccumulator[viewManagersMetadataKeyPath] = viewManagersMetadata;
-  constantsAccumulator[exportedConstantsKeyPath] = exportedModulesConstants;
-  constantsAccumulator[exportedMethodsNamesKeyPath] = exportedMethodsNamesAccumulator;
-
-  return constantsAccumulator;
+- (nonnull NSDictionary *)constantsToExport
+{
+  return [self.nativeModulesConfig toDictionary];
 }
 
 - (void)setBridge:(RCTBridge *)bridge
 {
-  _appContext = [(ExpoBridgeModule *)[bridge moduleForClass:ExpoBridgeModule.class] appContext];
-  [_appContext setLegacyModuleRegistry:_exModuleRegistry];
+  ExpoBridgeModule* expoBridgeModule = [bridge moduleForClass:ExpoBridgeModule.class];
+  [expoBridgeModule legacyProxyDidSetBridgeWithLegacyModulesProxy:self
+                                             legacyModuleRegistry:_exModuleRegistry];
+  _appContext = [expoBridgeModule appContext];
 
   if (!_bridge) {
     // The `setBridge` can be called during module setup or after. Registering more modules
@@ -320,6 +383,12 @@ RCT_EXPORT_METHOD(callMethod:(NSString *)moduleName methodNameOrKey:(id)methodNa
                                                                   managerClass:wrappedViewModuleClass
                                                                         bridge:bridge];
   componentDataByName[className] = componentData;
+
+#ifdef RN_FABRIC_ENABLED
+  Class viewClass = [ExpoFabricView makeClassForAppContext:_appContext className:className];
+  [[RCTComponentViewFactory currentComponentViewFactory] registerComponentViewClass:viewClass];
+#endif
+
   return wrappedViewModuleClass;
 }
 
@@ -331,12 +400,19 @@ RCT_EXPORT_METHOD(callMethod:(NSString *)moduleName methodNameOrKey:(id)methodNa
 {
   // Hacky way to get a dictionary with `RCTComponentData` from UIManager.
   NSMutableDictionary<NSString *, RCTComponentData *> *componentDataByName = [bridge.uiManager valueForKey:@"_componentDataByName"];
-  NSString *className = NSStringFromClass(moduleClass);
+  NSString *className = [moduleClass moduleName] ?: NSStringFromClass(moduleClass);
 
   if ([moduleClass isSubclassOfClass:[RCTViewManager class]] && !componentDataByName[className]) {
     RCTComponentData *componentData = [[RCTComponentData alloc] initWithManagerClass:moduleClass bridge:bridge eventDispatcher:bridge.eventDispatcher];
     componentDataByName[className] = componentData;
   }
+
+#ifdef RN_FABRIC_ENABLED
+  if ([className hasPrefix:@"ViewManagerAdapter_"]) {
+    Class viewClass = [ExpoFabricView makeClassForAppContext:_appContext className:className];
+    [[RCTComponentViewFactory currentComponentViewFactory] registerComponentViewClass:viewClass];
+  }
+#endif
 }
 
 - (void)assignExportedMethodsKeys:(NSMutableArray<NSMutableDictionary<const NSString *, id> *> *)exportedMethods forModuleName:(const NSString *)moduleName

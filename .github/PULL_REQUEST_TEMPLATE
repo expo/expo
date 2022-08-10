@@ -23,5 +23,5 @@ Please check the appropriate items below if they apply to your diff. This is req
 -->
 
 - [ ] Documentation is up to date to reflect these changes (eg: https://docs.expo.dev and README.md).
-- [ ] This diff will work correctly for `expo build` (eg: updated `@expo/xdl`).
+- [ ] Conforms with the [Documentation Writing Style Guide](https://github.com/expo/expo/blob/main/guides/Expo%20Documentation%20Writing%20Style%20Guide.md)
 - [ ] This diff will work correctly for `expo prebuild` & EAS Build (eg: updated a module plugin).

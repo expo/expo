@@ -1,3 +1,6 @@
+import fs from 'fs-extra';
+import glob from 'glob-promise';
+
 import { spawnAsync, spawnJSONCommandAsync } from './Utils';
 
 export const EXPO_DEVELOPERS_TEAM_NAME = 'expo:developers';
@@ -19,6 +22,9 @@ export type PackageViewType = null | {
   description: string;
   author: string;
   gitHead: string;
+  dist: {
+    tarball: string;
+  };
   // and more but these are the basic ones, we shouldn't need more.
   [key: string]: unknown;
 };
@@ -39,6 +45,26 @@ export async function getPackageViewAsync(
   } catch {
     return null;
   }
+}
+
+/**
+ * Download npm tarball
+ */
+export async function downloadPackageTarballAsync(
+  targetDir: string,
+  packageName: string,
+  version?: string
+): Promise<string> {
+  await fs.ensureDir(targetDir);
+  await spawnAsync('npm', ['pack', version ? `${packageName}@${version}` : packageName], {
+    cwd: targetDir,
+    stdio: 'ignore',
+  });
+  const result = await glob('*.tgz', { cwd: targetDir });
+  if (result.length === 0) {
+    throw new Error('Download tarball not found');
+  }
+  return result[0];
 }
 
 /**

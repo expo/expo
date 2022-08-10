@@ -9,6 +9,8 @@ export interface PluginConfigType {
  * Config for Android native build properties
  */
 export interface PluginConfigTypeAndroid {
+    /** Override the default `minSdkVersion` version number in `build.gradle` */
+    minSdkVersion?: number;
     /** Override the default `compileSdkVersion` version number in `build.gradle` */
     compileSdkVersion?: number;
     /** Override the default `targetSdkVersion` version number in `build.gradle` */

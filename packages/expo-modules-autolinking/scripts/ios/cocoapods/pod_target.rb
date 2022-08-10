@@ -29,7 +29,7 @@ module Pod
       # strip expo go versioning prefix
       normalized_name = name.gsub(/^ABI\d+_\d+_\d+/, '')
 
-      if ['React-Core'].include?(normalized_name) && product_module_name != name
+      if ['React-Core', 'React-RCTFabric'].include?(normalized_name) && product_module_name != name
         return sandbox.public_headers.root + name + product_module_name
       end
       return nil

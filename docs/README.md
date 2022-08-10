@@ -6,6 +6,8 @@ You can access this documentation online at https://docs.expo.dev/. It's built u
 
 > **Contributors:** Please make sure that you edit the docs in the `pages/versions/unversioned` directory if you want your changes to apply to the next SDK version too!
 
+> If you are looking for Expo Documentation Writing Style guidelines, please refer [Expo Documentation Style Guide](https://github.com/expo/expo/blob/main/guides/Expo%20Documentation%20Writing%20Style%20Guide.md).
+
 ## Running Locally
 
 Download the copy of this repository.
@@ -55,7 +57,7 @@ These metadata items include:
 - `hideFromSearch`: Whether to hide the page from Algolia search results. Defaults to `false`.
 - `hideInSidebar`: Whether to hide this page from the sidebar. Defaults to `false`.
 - `hideTOC`: Whether to hide the table of contents (appears on the right sidebar). Defaults to `false`.
-- `sidebarTitle`: The title of the page to display in the sidebar. Defaults to the page title.
+- `sidebar_title`: The title of the page to display in the sidebar. Defaults to the page title.
 
 ### Editing Code
 
@@ -253,6 +255,7 @@ import { Tab, Tabs } from '~/components/plugins/Tabs';
 </Tab>
 </Tabs>
 ```
+
 n.b. The components should not be indented or they will not be parsed correctly.
 
 ### Excluding pages from Docsearch
@@ -266,6 +269,28 @@ Please note that `hideFromSearch` only prevents the page from showing up in the 
 Certain directories are excluded from the sidebar in order to prevent it from getting too long and unnavigable. You can find a list of these directories, and add new ones, in **navigation.js** under `hiddenSections`.
 
 If you just want to hide a single page from the sidebar, set `hideInSidebar: true` in the page metadata.
+
+### Use `Terminal` component for shell commands snippets
+
+Whenever shell commands are used or referred, use `Terminal` component to make the code snippets copy/pasteable. This component can be imported in any markdown file.
+
+```jsx
+import { Terminal } from '~/ui/components/Snippet';
+
+// for single command and one prop
+<Terminal cmd={["$ expo install package"]} />
+
+// for multiple commands
+
+<Terminal cmd={[
+  "# Create a new native project",
+  "$ npx create-expo-app --template bare-minimum",
+  "",
+  "# If you don’t have expo-cli yet, get it",
+  "$ npm i -g expo-cli",
+  "",
+]} cmdCopy="npx create-expo-app --template bare-minimum && npm i -g expo-cli" />
+```
 
 ### Prettier
 

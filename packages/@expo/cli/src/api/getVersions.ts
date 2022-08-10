@@ -1,6 +1,4 @@
-import { env } from '../utils/env';
 import { CommandError } from '../utils/errors';
-import { pickBy } from '../utils/obj';
 import { createCachedFetch } from './rest/client';
 
 /** Represents version info for a particular SDK. */
@@ -45,8 +43,8 @@ export async function getVersionsAsync({
   const fetchAsync = createCachedFetch({
     skipCache,
     cacheDirectory: 'versions-cache',
-    // We'll use a 1 week cache for versions so older versions get flushed out eventually.
-    ttl: 1000 * 60 * 60 * 24 * 7,
+    // We'll use a 5 minute cache to ensure we stay relatively up to date.
+    ttl: 1000 * 60 * 5,
   });
 
   const results = await fetchAsync('versions/latest');
@@ -58,18 +56,4 @@ export async function getVersionsAsync({
   }
   const json = await results.json();
   return json.data;
-}
-
-/** Get the currently released version while also accounting for if the user is running in `EXPO_BETA` mode. */
-export async function getReleasedVersionsAsync({
-  skipCache,
-}: { skipCache?: boolean } = {}): Promise<SDKVersions> {
-  // NOTE(brentvatne): it is possible for an unreleased version to be published to
-  // the versions endpoint, but in some cases we only want to list out released
-  // versions
-  const { sdkVersions } = await getVersionsAsync({ skipCache });
-  return pickBy(
-    sdkVersions,
-    (data, _sdkVersionString) => !!data.releaseNoteUrl || (env.EXPO_BETA && data.beta)
-  );
 }

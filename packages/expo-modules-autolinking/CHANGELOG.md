@@ -6,12 +6,48 @@
 
 ### 🎉 New features
 
+- Added `includeTests` option to `use_expo_modules!` to include test specs from autolinked modules. ([#18496](https://github.com/expo/expo/pull/18496) by [@tsapeta](https://github.com/tsapeta))
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.10.1 — 2022-07-25
+
+### 🎉 New features
+
+- Added a feature to automatically generate `.xcode.env.local` with correct `$NODE_BINARY` path when running `pod install`. ([#18330](https://github.com/expo/expo/pull/18330) by [@kudo](https://github.com/kudo))
+
+## 0.10.0 — 2022-07-07
+
+### 🐛 Bug fixes
+
+- Added support for React Native 0.69.x ([#17629](https://github.com/expo/expo/pull/17629) by [@kudo](https://github.com/kudo))
+- Use regex to match ignored modules in `expo_patch_react_imports!` and fix iOS build errors when the project is inside `react-native` named folder. ([#17968](https://github.com/expo/expo/pull/17968) by [@dmnkgrc](https://github.com/dmnkgrc))
+
+## 0.9.0 — 2022-06-23
+
+### 🎉 New features
+
+- The `searchPaths` and `nativeModulesDir` options now support direct paths to specific module directories. ([#17922](https://github.com/expo/expo/pull/17922) by [@barthap](https://github.com/barthap))
+
+## 0.8.1 — 2022-05-12
+
+### 🐛 Bug fixes
+
+- Fixed an infinite loop when the **package.json** is placed at the root path. ([#17440](https://github.com/expo/expo/pull/17440) by [@tsapeta](https://github.com/tsapeta))
+
+## 0.8.0 — 2022-05-06
+
+### 🎉 New features
+
 - Add `ios.debugOnly` to module config. ([#17331](https://github.com/expo/expo/pull/17331) by [@lukmccall](https://github.com/lukmccall))
 - Setting `EXPO_CONFIGURATION_DEBUG` or `EXPO_CONFIGURATION_RELEASE` Swift flags on project targets. ([#17378](https://github.com/expo/expo/pull/17378) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🐛 Bug fixes
 
 - Fix debug-only modules weren't installed if the `DEBUG` flag wasn't present in `OTHER_SWIFT_FLAGS`. ([#17383](https://github.com/expo/expo/pull/17383) by [@lukmccall](https://github.com/lukmccall))
+- Fix iOS build if project config name is other than RELEASE or DEBUG ([#17439](https://github.com/expo/expo/pull/17439) by [@uloco](https://github.com/uloco))
 
 ### 💡 Others
 

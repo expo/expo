@@ -1,7 +1,7 @@
 import React from 'react';
+import ReactMarkdown from 'react-markdown';
 
 import { InlineCode } from '~/components/base/code';
-import { UL } from '~/components/base/list';
 import { B, P } from '~/components/base/paragraph';
 import { H2, H3Code, H4 } from '~/components/plugins/Headings';
 import {
@@ -9,11 +9,17 @@ import {
   GeneratedData,
   PropData,
 } from '~/components/plugins/api/APIDataTypes';
+import { APISectionDeprecationNote } from '~/components/plugins/api/APISectionDeprecationNote';
 import { renderMethod } from '~/components/plugins/api/APISectionMethods';
 import { renderProp } from '~/components/plugins/api/APISectionProps';
 import {
   CommentTextBlock,
+  getTagData,
+  getTagNamesList,
+  mdComponents,
   resolveTypeName,
+  STYLES_APIBOX,
+  STYLES_NESTED_SECTION_HEADER,
   TypeDocKind,
 } from '~/components/plugins/api/APISectionUtils';
 
@@ -27,17 +33,25 @@ const isProp = (child: PropData) =>
   !child.name.startsWith('_') &&
   !child.implementationOf;
 
-const isMethod = (child: PropData) => child.kind === TypeDocKind.Method && !child.overwrites;
+const isMethod = (child: PropData) =>
+  child.kind === TypeDocKind.Method &&
+  !child.overwrites &&
+  !child.name.startsWith('_') &&
+  !child?.implementationOf;
 
 const renderClass = (clx: ClassDefinitionData, hasMultipleClasses: boolean): JSX.Element => {
   const { name, comment, type, extendedTypes, children, implementedTypes } = clx;
   const properties = children?.filter(isProp);
-  const methods = children?.filter(isMethod);
+  const methods = children
+    ?.filter(isMethod)
+    .sort((a: PropData, b: PropData) => a.name.localeCompare(b.name));
+  const returnComment = getTagData('returns', comment);
 
   return (
-    <div key={`class-definition-${name}`}>
+    <div key={`class-definition-${name}`} css={STYLES_APIBOX}>
+      <APISectionDeprecationNote comment={comment} />
       {hasMultipleClasses ? (
-        <H3Code>
+        <H3Code tags={getTagNamesList(comment)}>
           <InlineCode>{name}</InlineCode>
         </H3Code>
       ) : (
@@ -70,34 +84,42 @@ const renderClass = (clx: ClassDefinitionData, hasMultipleClasses: boolean): JSX
         </P>
       )}
       <CommentTextBlock comment={comment} />
+      {returnComment && (
+        <>
+          <div css={STYLES_NESTED_SECTION_HEADER}>
+            <H4>Returns</H4>
+          </div>
+          <ReactMarkdown components={mdComponents}>{returnComment.text}</ReactMarkdown>
+        </>
+      )}
       {properties?.length ? (
         <>
           {hasMultipleClasses ? (
-            <>
+            <div css={STYLES_NESTED_SECTION_HEADER}>
               <H4>{name} Properties</H4>
-              <br />
-            </>
+            </div>
           ) : (
             <H2>{name} Properties</H2>
           )}
-          <UL>
+          <div>
             {properties.map(property =>
               renderProp(property, property?.defaultValue, !hasMultipleClasses)
-            )}
-          </UL>
-        </>
-      ) : null}
-      {methods?.length ? (
-        <>
-          {hasMultipleClasses ? <H4>{name} Methods</H4> : <H2>{name} Methods</H2>}
-          <div style={{ paddingLeft: 8 }}>
-            {methods.map((method, index) =>
-              renderMethod(method, index, methods.length, undefined, undefined, !hasMultipleClasses)
             )}
           </div>
         </>
       ) : null}
-      <hr />
+      {methods?.length && (
+        <>
+          {hasMultipleClasses ? (
+            <div css={STYLES_NESTED_SECTION_HEADER}>
+              <H4>{name} Methods</H4>
+            </div>
+          ) : (
+            <H2>{name} Methods</H2>
+          )}
+          {methods.map(method => renderMethod(method, { exposeInSidebar: !hasMultipleClasses }))}
+        </>
+      )}
     </div>
   );
 };

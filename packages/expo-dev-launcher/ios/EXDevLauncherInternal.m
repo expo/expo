@@ -13,6 +13,7 @@
 @import EXDevMenu;
 
 NSString *ON_NEW_DEEP_LINK_EVENT = @"expo.modules.devlauncher.onnewdeeplink";
+NSString *LAUNCHER_NAVIGATION_STATE_KEY = @"expo.modules.devlauncher.navigation-state";
 
 @implementation EXDevLauncherInternal
 
@@ -89,10 +90,6 @@ NSString *ON_NEW_DEEP_LINK_EVENT = @"expo.modules.devlauncher.onnewdeeplink";
   NSString *sanitizedUrl = [urlString stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
   
   NSURL *url = [NSURL URLWithString:sanitizedUrl];
-
-  if ([EXDevLauncherURLHelper isDevLauncherURL:url]) {
-    url = [EXDevLauncherURLHelper getAppURLFromDevLauncherURL:url];
-  }
   
   return url;
 }
@@ -154,6 +151,12 @@ RCT_EXPORT_METHOD(getRecentlyOpenedApps:(RCTPromiseResolveBlock)resolve
   resolve([[EXDevLauncherController sharedInstance] recentlyOpenedApps]);
 }
 
+RCT_EXPORT_METHOD(clearRecentlyOpenedApps:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
+{
+  [[EXDevLauncherController sharedInstance] clearRecentlyOpenedApps];
+  resolve(nil);
+}
+
 RCT_EXPORT_METHOD(getBuildInfo:(RCTPromiseResolveBlock)resolve
                    rejecter:(RCTPromiseRejectBlock)reject)
 {
@@ -176,4 +179,29 @@ RCT_EXPORT_METHOD(loadFontsAsync:(RCTPromiseResolveBlock)resolve
   [[DevMenuManager shared] loadFonts];
   resolve(nil);
 }
+
+RCT_EXPORT_METHOD(saveNavigationState:(NSString *)serializedNavigationState
+                  resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject)
+{
+  [[NSUserDefaults standardUserDefaults] setObject:serializedNavigationState forKey:LAUNCHER_NAVIGATION_STATE_KEY];
+   [[NSUserDefaults standardUserDefaults] synchronize];
+  resolve(nil);
+}
+
+RCT_EXPORT_METHOD(getNavigationState:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject)
+{
+  NSString *serializedNavigationState = [[NSUserDefaults standardUserDefaults] objectForKey:LAUNCHER_NAVIGATION_STATE_KEY] ?: @"";
+  resolve(serializedNavigationState);
+}
+
+RCT_EXPORT_METHOD(clearNavigationState:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject)
+{
+  [[NSUserDefaults standardUserDefaults] removeObjectForKey:LAUNCHER_NAVIGATION_STATE_KEY];
+  [[NSUserDefaults standardUserDefaults] synchronize];
+  resolve(nil);
+}
+
 @end

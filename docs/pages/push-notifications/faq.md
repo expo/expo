@@ -3,6 +3,8 @@ title: Push Notifications Troubleshooting & FAQ
 sidebar_title: Troubleshooting and FAQ
 ---
 
+import { Collapsible } from '~/ui/components/Collapsible';
+
 This is a collection of FAQs and common issues when setting up push notifications with Expo. This document covers the `expo-notifications` client-side library, as well as Expo's push notification service.
 
 ### How much does Expo's push notification service cost?
@@ -37,8 +39,8 @@ Push notifications have a lot of moving parts, so this can be due to a wide vari
 
 You can also narrow things even further by testing [local notifications](/versions/v40.0.0/sdk/notifications.md#schedulenotificationasyncnotificationrequest-notificationrequestinput-promisestring) in your app. This will ensure all of your client-side logic is correct, and narrow things down to the server side or app credentials.
 
-<details><summary><h4>See here for some quick terminal commands you can use to get the push receipt.</h4></summary>
-<p>
+<Collapsible summary="See here for some quick terminal commands you can use to get the push receipt">
+
 1. Send a notification:
 
 ```sh
@@ -59,8 +61,7 @@ curl -H "Content-Type: application/json" -X POST "https://exp.host/--/api/v2/pus
 }'
 ```
 
-</p>
-</details>
+</Collapsible>
 
 ### How often does the `ExpoPushToken` change?
 
@@ -70,7 +71,7 @@ The `ExpoPushToken` will never "expire" but if one of your users uninstalls the 
 
 ### Push notifications work in development, but not after I build the app
 
-This strongly indicates that you have either misconfigured your credentials, or didn't configure them at all. In the Expo Go app, you rely on Expo's credentials so that you don't need to worry about it, and setup is as easy as possible. But when you build your own app for the stores, you need to use your own credentials. On iOS, this is handled via your [push key](/app-signing/app-credentials/#push-notification-keys) (revoking the push key associated with your app **will result in your notifications failing to be delivered**. To fix that, add a new push key with `expo credentials:manager`). On Android, all you need to do is follow [this guide](/push-notifications/using-fcm.md). **Please note** that after setting up Android FCM credentials, you will need to rebuild your app.
+This strongly indicates that you have either misconfigured your credentials, or didn't configure them at all. In the Expo Go app, you rely on Expo's credentials so that you don't need to worry about it, and setup is as easy as possible. But when you build your own app for the stores, you need to use your own credentials. On iOS, this is handled via your [push key](/app-signing/app-credentials/#push-notification-keys) (revoking the push key associated with your app **will result in your notifications failing to be delivered**. To fix that, add a new push key with `eas credentials`). On Android, all you need to do is follow [this guide](/push-notifications/using-fcm.md). **Please note** that after setting up Android FCM credentials, you will need to rebuild your app.
 
 Expo abstracts the majority of credential management away so that you can focus on building your app, but if you want to understand it on a deeper level, read our [guide to app signing](/app-signing/app-credentials.md).
 
@@ -99,7 +100,7 @@ Expo's connections to Apple and Google are encrypted and use HTTPS.
 
 ### How do I handle expired push notification credentials?
 
-When your push notification credentials have expired, run `expo credentials:manager -p ios` which will provide a list of actions to choose from. Select the removal of your expired credentials and then select "Add new Push Notifications Key".
+When your push notification credentials have expired, run `eas credentials`, choose iOS and a build profile, then remove your push notification key and generate a new one.
 
 ### What delivery guarantees are there for push notifications?
 

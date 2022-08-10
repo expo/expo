@@ -16,7 +16,7 @@
   "dependencies": {
     "ABI44_0_0React-Core": [],
     "Stripe": [
-      "~> 22.0.0"
+      "~> 22.4.0"
     ]
   },
   "pod_target_xcconfig": {

@@ -5,6 +5,7 @@ import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactPackageTurboModuleManagerDelegate
 import com.facebook.react.common.SurfaceDelegateFactory
 import com.facebook.react.devsupport.DevSupportManagerFactory
+import com.facebook.react.devsupport.interfaces.RedBoxHandler
 
 class ReactNativeHostWrapper(
   application: Application,
@@ -28,5 +29,9 @@ class ReactNativeHostWrapper(
 
   override fun getSurfaceDelegateFactory(): SurfaceDelegateFactory {
     return host.surfaceDelegateFactory
+  }
+
+  override fun getRedBoxHandler(): RedBoxHandler? {
+    return invokeDelegateMethod("getRedBoxHandler")
   }
 }

@@ -5,6 +5,8 @@ import android.net.Uri
 import expo.modules.updatesinterface.UpdatesInterface
 import org.json.JSONObject
 import java.lang.Exception
+import java.util.*
+import kotlin.collections.HashMap
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
@@ -15,29 +17,32 @@ suspend fun UpdatesInterface.loadUpdate(
   shouldContinue: (manifest: JSONObject) -> Boolean
 ): UpdatesInterface.Update =
   suspendCoroutine { cont ->
-    this.fetchUpdateWithConfiguration(configuration, context, object : UpdatesInterface.UpdateCallback {
-      override fun onSuccess(update: UpdatesInterface.Update?) {
-        // if the update is null, we previously aborted the fetch, so we've already resumed
-        update?.let { cont.resume(update) }
-      }
-      override fun onFailure(e: Exception?) {
-        cont.resumeWithException(e ?: Exception("There was an unexpected error loading the update."))
-      }
-      override fun onProgress(successfulAssetCount: Int, failedAssetCount: Int, totalAssetCount: Int) = Unit
-      override fun onManifestLoaded(manifest: JSONObject): Boolean {
-        return if (shouldContinue(manifest)) {
-          true
-        } else {
-          cont.resume(object : UpdatesInterface.Update {
-            override fun getLaunchAssetPath(): String {
-              throw Exception("Tried to access launch asset path for a manifest that was not loaded")
-            }
-            override fun getManifest(): JSONObject = manifest
-          })
-          false
+    this.fetchUpdateWithConfiguration(
+      configuration, context,
+      object : UpdatesInterface.UpdateCallback {
+        override fun onSuccess(update: UpdatesInterface.Update?) {
+          // if the update is null, we previously aborted the fetch, so we've already resumed
+          update?.let { cont.resume(update) }
+        }
+        override fun onFailure(e: Exception?) {
+          cont.resumeWithException(e ?: Exception("There was an unexpected error loading the update."))
+        }
+        override fun onProgress(successfulAssetCount: Int, failedAssetCount: Int, totalAssetCount: Int) = Unit
+        override fun onManifestLoaded(manifest: JSONObject): Boolean {
+          return if (shouldContinue(manifest)) {
+            true
+          } else {
+            cont.resume(object : UpdatesInterface.Update {
+              override fun getLaunchAssetPath(): String {
+                throw Exception("Tried to access launch asset path for a manifest that was not loaded")
+              }
+              override fun getManifest(): JSONObject = manifest
+            })
+            false
+          }
         }
       }
-    })
+    )
   }
 
 fun createUpdatesConfigurationWithUrl(url: Uri, projectUrl: Uri, installationID: String?): HashMap<String, Any> {

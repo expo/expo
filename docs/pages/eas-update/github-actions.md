@@ -8,8 +8,8 @@ A GitHub Action is a cloud function that runs every time an event on GitHub occu
 
 We can configure GitHub Actions to run on any GitHub event. One of the most common use cases is to publish an update when code is pushed. Below are the steps to publish an update every time an update is pushed:
 
-1. Create a file path named **.github/workflows/update.yml** at the root of your project.
-2. Inside **update.yml**, copy and paste this code:
+1. Create a file path named `.github/workflows/update.yml` at the root of your project.
+2. Inside `update.yml`, copy and paste this code:
 
    ```yaml
    name: update

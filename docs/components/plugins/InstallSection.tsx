@@ -29,43 +29,47 @@ const STYLES_LINK = css`
   }
 `;
 
-type Props = {
+type InstallSectionProps = React.PropsWithChildren<{
   packageName: string;
   hideBareInstructions?: boolean;
   cmd?: string[];
   href?: string;
-};
+}>;
 
 const getPackageLink = (packageNames: string) =>
   `https://github.com/expo/expo/tree/main/packages/${packageNames.split(' ')[0]}`;
 
-const InstallSection: React.FC<Props> = ({
+const InstallSection = ({
   packageName,
   hideBareInstructions = false,
   cmd = [`$ expo install ${packageName}`],
   href = getPackageLink(packageName),
-}) => (
-  <div>
-    <Terminal cmd={cmd} cmdCopy={cmd[0].slice(2)} />
-    {hideBareInstructions ? null : (
-      <p css={STYLES_P}>
-        If you're installing this in a{' '}
-        <a css={STYLES_LINK} href="/introduction/managed-vs-bare/#bare-workflow">
-          bare React Native app
-        </a>
-        , you should also follow{' '}
-        <a css={STYLES_BOLD} href={href}>
-          these additional installation instructions
-        </a>
-        .
-      </p>
-    )}
-  </div>
-);
+}: InstallSectionProps) => {
+  const { sourceCodeUrl } = usePageMetadata();
+
+  return (
+    <>
+      <Terminal cmd={cmd} />
+      {hideBareInstructions ? null : (
+        <p css={STYLES_P}>
+          If you're installing this in a{' '}
+          <a css={STYLES_LINK} href="/introduction/managed-vs-bare/#bare-workflow">
+            bare React Native app
+          </a>
+          , you should also follow{' '}
+          <a css={STYLES_BOLD} href={sourceCodeUrl ?? href}>
+            these additional installation instructions
+          </a>
+          .
+        </p>
+      )}
+    </>
+  );
+};
 
 export default InstallSection;
 
-export const APIInstallSection: React.FC<Props> = props => {
+export const APIInstallSection = (props: InstallSectionProps) => {
   const { packageName } = usePageMetadata();
   return <InstallSection {...props} packageName={props.packageName ?? packageName} />;
 };

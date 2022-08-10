@@ -8,7 +8,52 @@
 
 ### 🐛 Bug fixes
 
+- Fix the duplicated `DevMenuRNGestureHandlerStateManager.h` output file compilation error on iOS. ([#18562](https://github.com/expo/expo/pull/18562) by [@lukmccall](https://github.com/lukmccall))
+
 ### 💡 Others
+
+- Refactored inline Android emulator checks to use enhanced checking in `EmulatorUtilities.isRunningOnEmulator()`. ([#16177](https://github.com/expo/expo/pull/16177)) by [@kbrandwijk](https://github.com/kbrandwijk), [@keith-kurak](https://github.com/keith-kurak))
+
+## 1.1.1 — 2022-07-20
+
+### 🐛 Bug fixes
+
+- Fixed compatibility with the `react-native-reanimated` on iOS. ([#18306](https://github.com/expo/expo/pull/18306) by [@lukmccall](https://github.com/lukmccall))
+
+## 1.1.0 — 2022-07-18
+
+### 🎉 New features
+
+- Added support for React Native 0.69.X. ([#18006](https://github.com/expo/expo/pull/18006) by [@kudo](https://github.com/kudo) & [#18182](https://github.com/expo/expo/pull/18182) by [@lukmccall](https://github.com/lukmccall))
+
+## 1.0.1 — 2022-07-14
+
+### 🐛 Bug fixes
+
+- [iOS] fix use_frameworks! compilation. ([#18073](https://github.com/expo/expo/pull/18073) by [@douglowder](https://github.com/douglowder))
+
+## 1.0.0 — 2022-06-09
+
+### 🐛 Bug fixes
+
+- Fixed the singleton `RCTBridge.currentBridge` instance value be override by expo-dev-menu bridge instance on iOS. ([#17780](https://github.com/expo/expo/pull/17780) by [@kudo](https://github.com/kudo))
+
+## 0.11.0 — 2022-06-07
+
+### 🎉 New features
+
+- Add JS API to register buttons in dev menu. ([#17528](https://github.com/expo/expo/pull/17528) by [@ajsmth](https://github.com/ajsmth))
+
+### 🐛 Bug fixes
+
+- Update dev settings when initial props change. ([#17663](https://github.com/expo/expo/pull/17663) by [@esamelson](https://github.com/esamelson))
+- Fix copy on onboarding screen re: location of "Send Keyboard Input to Device" in system menu. ([#17767](https://github.com/expo/expo/pull/17767) by [@esamelson](https://github.com/esamelson))
+- Restore JavaScript inspector menu item. ([#17762](https://github.com/expo/expo/pull/17762) by [@lukmccall](https://github.com/lukmccall))
+- Restore the ability to open React Native dev menu. ([#17762](https://github.com/expo/expo/pull/17762) by [@lukmccall](https://github.com/lukmccall))
+
+## 0.10.7 — 2022-05-19
+
+_This version does not introduce any user-facing changes._
 
 ## 0.10.6 — 2022-05-06
 

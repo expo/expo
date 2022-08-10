@@ -6,9 +6,20 @@
 
 ### 🎉 New features
 
+- On iOS and Android, added new `additionalExif` parameter to `takePictureAsync()` method so that users can add extra information to the photos, such as GPS coordinates. ([#18469](https://github.com/expo/expo/pull/18469) by [@alexyangjie](https://github.com/alexyangjie))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- Refactored inline Android emulator checks to use enhanced checking in `EmulatorUtilities.isRunningOnEmulator()`. ([#16177](https://github.com/expo/expo/pull/16177)) by [@kbrandwijk](https://github.com/kbrandwijk), [@keith-kurak](https://github.com/keith-kurak))
+
+## 12.3.0 — 2022-07-07
+
+### 🐛 Bug fixes
+
+- On Web prevent the QR worker to be immediately cleaned up after finishing it's job to allow reusing it later (e.g. do not re-download every script upon repetitive worker launch). ([#15369](https://github.com/expo/expo/pull/15369) by [@jer-sen](https://github.com/jer-sen) and [#17833](https://github.com/expo/expo/pull/17833) by [@bbarthec](https://github.com/bbarthec))
+- Fix bug on Android that would only allow you to scan one bar code. ([#17655](https://github.com/expo/expo/pull/17655) by [@witheroux](https://github.com/witheroux))
 
 ## 12.2.0 — 2022-04-18
 

@@ -18,7 +18,6 @@ The `expo-dev-client` library supports loading published EAS Updates through cha
    exp+[project-slug]://expo-development-client/?url=[https://u.expo.dev/project-id]?channel-name=[channel]
 
    # Example
-
    exp+form-duo://expo-development-client/?url=https://u.expo.dev/675cb1f0-fa3c-11e8-ac99-6374d9643cb2?channel-name=preview
    ```
 

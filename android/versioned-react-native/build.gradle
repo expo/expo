@@ -2,7 +2,8 @@
 
 buildscript {
     ext {
-        gradlePluginVersion = '7.0.4'
+        gradlePluginVersion = '7.1.1'
+        kotlinVersion = '1.6.10'
     }
     repositories {
         google()
@@ -13,6 +14,7 @@ buildscript {
         classpath "com.android.tools.build:gradle:${gradlePluginVersion}"
         classpath 'de.undercouch:gradle-download-task:4.1.2'
         classpath "com.facebook.react:react-native-gradle-plugin"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files

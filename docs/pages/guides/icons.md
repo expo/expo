@@ -4,11 +4,11 @@ title: Icons
 
 import SnackInline from '~/components/plugins/SnackInline';
 
-As trendy as it is these days, not every app has to use emoji for all icons 😳 -- maybe you want to pull in a popular set through an icon font like FontAwesome, Glyphicons or Ionicons, or you just use some PNGs that you carefully picked out on [The Noun Project](https://thenounproject.com/). Let's look at how to do both of these approaches.
+As trendy as it is these days, not every app has to use emoji for all icons -- maybe you want to pull in a popular set through an icon font like FontAwesome, Glyphicons or Ionicons, or you just use some PNGs that you carefully picked out on [The Noun Project](https://thenounproject.com/). Let's look at how to do both of these approaches.
 
 ## @expo/vector-icons
 
-This library is installed by default on the template project that get through `expo init` -- it is part of the `expo` package. It includes popular icon sets and you can browse all of the icons using [icons.expo.fyi](https://icons.expo.fyi).
+This library is installed by default on the template project that get through `npx create-expo-app` -- it is part of the `expo` package. It includes popular icon sets and you can browse all of the icons using [icons.expo.fyi](https://icons.expo.fyi).
 
 <SnackInline label='Vector icons' dependencies={['@expo/vector-icons']}>
 
@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
 
 This component loads the Ionicons font if it hasn't been loaded already, and renders a checkmark icon that I found through the vector-icons directory mentioned above. `@expo/vector-icons` is built on top of [react-native-vector-icons](https://github.com/oblador/react-native-vector-icons) and uses a similar API.
 
-> **Note:** As with [any custom font](using-custom-fonts.md#using-custom-fonts) in Expo, you may want to preload icon fonts before rendering your app. The font object is available as a static property on the font component, so in the case above it is `Ionicons.font`, which evaluates to `{ionicons: require('path/to/ionicons.ttf')}`. [Read more about preloading assets](preloading-and-caching-assets.md).
+> **Note:** As with [any custom font](using-custom-fonts.md#using-custom-fonts) in Expo, you may want to preload icon fonts before rendering your app. The font object is available as a static property on the font component, so in the case above it is `Ionicons.font`, which evaluates to `{ionicons: require('path/to/ionicons.ttf')}`.
 
 ## Custom Icon Fonts
 

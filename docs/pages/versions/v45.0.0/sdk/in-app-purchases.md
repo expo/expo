@@ -8,23 +8,19 @@ import {APIInstallSection} from '~/components/plugins/InstallSection';
 import APISection from '~/components/plugins/APISection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
+> ⚠️ **Development of `expo-in-app-purchases` is currently paused to focus on other projects**. Alternative libraries include [`react-native-iap`](https://github.com/dooboolab/react-native-iap) and [`react-native-purchases` from RevenueCat](https://www.revenuecat.com/blog/using-revenuecat-with-expos-managed-workflow/).
+
 **`expo-in-app-purchases`** provides an API to accept payments for in-app products. Internally this relies on the [Google Play Billing](https://developer.android.com/google/play/billing/billing_library_overview) library on Android and the [Storekit](https://developer.apple.com/documentation/storekit?language=objc) framework on iOS.
 
 <PlatformsSection android ios />
 
 ## Installation
 
-<APIInstallSection hideBareInstructions />
+<APIInstallSection hideBareInstructions cmd={['$ npm install expo-in-app-purchases']} />
 
-This module is currently only available in the [bare](../../../introduction/managed-vs-bare.md#bare-workflow) workflow.
+This module is currently only available in the [bare](/introduction/managed-vs-bare.md#bare-workflow) workflow.
 
 You must ensure that you have [installed and configured Expo modules](/bare/installing-expo-modules.md) before continuing.
-
-### Add the package to your dependencies
-
-```
-npm install expo-in-app-purchases
-```
 
 ### Configure for iOS
 

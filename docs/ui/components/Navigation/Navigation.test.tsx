@@ -1,5 +1,4 @@
-import { render } from '@testing-library/react';
-import { useRouter } from 'next/router';
+import { render, screen } from '@testing-library/react';
 import React from 'react';
 import node from 'unist-builder';
 import visit from 'unist-util-visit';
@@ -7,7 +6,11 @@ import visit from 'unist-util-visit';
 import { findActiveRoute, Navigation } from './Navigation';
 import { NavigationNode } from './types';
 
-jest.mock('next/router');
+jest.mock('next/router', () => ({
+  useRouter: jest.fn().mockReturnValue({
+    query: {},
+  }),
+}));
 
 /** A set of navigation nodes to test with */
 const nodes: NavigationNode[] = [
@@ -35,37 +38,33 @@ const nodes: NavigationNode[] = [
 ];
 
 describe(Navigation, () => {
-  beforeEach(() => {
-    jest.mocked(useRouter).mockReturnValue({ pathname: '/' } as any);
-  });
-
   it('renders pages', () => {
     const section = getNode(nodes, { name: 'Get started' });
-    const { getByText } = render(<Navigation routes={children(section)} />);
+    render(<Navigation routes={children(section)} />);
     // Get started ->
-    expect(getByText('Introduction')).toBeInTheDocument();
-    expect(getByText('Create a new app')).toBeInTheDocument();
-    expect(getByText('Errors and debugging')).toBeInTheDocument();
+    expect(screen.getByText('Introduction')).toBeInTheDocument();
+    expect(screen.getByText('Create a new app')).toBeInTheDocument();
+    expect(screen.getByText('Errors and debugging')).toBeInTheDocument();
   });
 
   it('renders pages inside groups', () => {
     const section = getNode(nodes, { name: 'Tutorial' });
-    const { getByText } = render(<Navigation routes={children(section)} />);
+    render(<Navigation routes={children(section)} />);
     // Tutorial ->
-    expect(getByText('Building apps')).toBeInTheDocument();
+    expect(screen.getByText('Building apps')).toBeInTheDocument();
     // Tutorial -> Building apps ->
-    expect(getByText('Building for store')).toBeInTheDocument();
-    expect(getByText('Submitting to store')).toBeInTheDocument();
+    expect(screen.getByText('Building for store')).toBeInTheDocument();
+    expect(screen.getByText('Submitting to store')).toBeInTheDocument();
   });
 
   it('renders pages inside groups inside sections', () => {
-    const { getByText } = render(<Navigation routes={nodes} />);
+    render(<Navigation routes={nodes} />);
     // Get started ->
-    expect(getByText('Introduction')).toBeInTheDocument();
+    expect(screen.getByText('Introduction')).toBeInTheDocument();
     // Tutorial -> First steps ->
-    expect(getByText('Adding an image')).toBeInTheDocument();
+    expect(screen.getByText('Adding an image')).toBeInTheDocument();
     // Tutorial -> Building apps ->
-    expect(getByText('Submitting to store')).toBeInTheDocument();
+    expect(screen.getByText('Submitting to store')).toBeInTheDocument();
   });
 });
 

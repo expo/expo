@@ -13,7 +13,7 @@ public func view(_ closure: @escaping () -> UIView) -> ViewManagerDefinitionComp
 /**
  Defines the factory creating a native view when the module is used as a view.
  */
-public func View(_ closure: @escaping () -> UIView) -> ViewManagerDefinitionComponent {
+public func View<ViewType: UIView>(_ closure: @escaping () -> ViewType) -> ViewManagerDefinitionComponent {
   return ViewFactory(closure)
 }
 
@@ -29,7 +29,7 @@ public func prop<ViewType: UIView, PropType: AnyArgument>(
 ) -> ViewManagerDefinitionComponent {
   return ConcreteViewProp(
     name: name,
-    propType: ArgumentType(PropType.self),
+    propType: ~PropType.self,
     setter: setter
   )
 }
@@ -43,7 +43,7 @@ public func Prop<ViewType: UIView, PropType: AnyArgument>(
 ) -> ViewManagerDefinitionComponent {
   return ConcreteViewProp(
     name: name,
-    propType: ArgumentType(PropType.self),
+    propType: ~PropType.self,
     setter: setter
   )
 }

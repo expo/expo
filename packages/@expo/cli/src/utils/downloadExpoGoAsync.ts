@@ -1,12 +1,13 @@
 import { getExpoHomeDirectory } from '@expo/config/build/getUserState';
 import path from 'path';
 
-import { getReleasedVersionsAsync, SDKVersion } from '../api/getVersions';
-import * as Log from '../log';
+import { getVersionsAsync, SDKVersion } from '../api/getVersions';
 import { downloadAppAsync } from './downloadAppAsync';
 import { CommandError } from './errors';
 import { profile } from './profile';
 import { createProgressBar } from './progress';
+
+const debug = require('debug')('expo:utils:downloadExpoGo') as typeof console.log;
 
 const platformSettings: Record<
   string,
@@ -57,9 +58,15 @@ export async function downloadExpoGoAsync(
         `Unable to determine which Expo Go version to install (platform: ${platform})`
       );
     }
-    const versions = await getReleasedVersionsAsync();
+    const { sdkVersions: versions } = await getVersionsAsync();
+
     const version = versions[sdkVersion];
-    Log.debug(`Installing Expo Go version for SDK ${sdkVersion} at URL: ${version[versionsKey]}`);
+    if (!version) {
+      throw new CommandError(
+        `Unable to find a version of Expo Go for SDK ${sdkVersion} (platform: ${platform})`
+      );
+    }
+    debug(`Installing Expo Go version for SDK ${sdkVersion} at URL: ${version[versionsKey]}`);
     url = version[versionsKey] as string;
   }
 
@@ -67,8 +74,8 @@ export async function downloadExpoGoAsync(
 
   try {
     const outputPath = getFilePath(filename);
-    Log.debug(`Downloading Expo Go from "${url}" to "${outputPath}".`);
-    Log.debug(
+    debug(`Downloading Expo Go from "${url}" to "${outputPath}".`);
+    debug(
       `The requested copy of Expo Go might already be cached in: "${getExpoHomeDirectory()}". You can disable the cache with EXPO_NO_CACHE=1`
     );
     await profile(downloadAppAsync)({

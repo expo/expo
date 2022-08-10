@@ -36,9 +36,11 @@ ABI45_0_0EX_REGISTER_SINGLETON_MODULE(SplashScreen);
 }
 
 - (void)showSplashScreenFor:(UIViewController *)viewController
+                    options:(ABI45_0_0EXSplashScreenOptions)options
 {
   id<ABI45_0_0EXSplashScreenViewProvider> splashScreenViewProvider = [ABI45_0_0EXSplashScreenViewNativeProvider new];
   return [self showSplashScreenFor:viewController
+                           options:options
           splashScreenViewProvider:splashScreenViewProvider
                    successCallback:^{}
                    failureCallback:^(NSString *message){ ABI45_0_0EXLogWarn(@"%@", message); }];
@@ -46,6 +48,7 @@ ABI45_0_0EX_REGISTER_SINGLETON_MODULE(SplashScreen);
 
 
 - (void)showSplashScreenFor:(UIViewController *)viewController
+                    options:(ABI45_0_0EXSplashScreenOptions)options
    splashScreenViewProvider:(id<ABI45_0_0EXSplashScreenViewProvider>)splashScreenViewProvider
             successCallback:(void (^)(void))successCallback
             failureCallback:(void (^)(NSString * _Nonnull))failureCallback
@@ -61,12 +64,14 @@ ABI45_0_0EX_REGISTER_SINGLETON_MODULE(SplashScreen);
                                                                                                splashScreenView:splashScreenView];
   
   [self showSplashScreenFor:viewController
+                    options:options
      splashScreenController:splashScreenController
             successCallback:successCallback
             failureCallback:failureCallback];
 }
 
 - (void)showSplashScreenFor:(UIViewController *)viewController
+                    options:(ABI45_0_0EXSplashScreenOptions)options
      splashScreenController:(ABI45_0_0EXSplashScreenViewController *)splashScreenController
             successCallback:(void (^)(void))successCallback
             failureCallback:(void (^)(NSString * _Nonnull))failureCallback
@@ -81,6 +86,7 @@ ABI45_0_0EX_REGISTER_SINGLETON_MODULE(SplashScreen);
 }
 
 - (void)preventSplashScreenAutoHideFor:(UIViewController *)viewController
+                               options:(ABI45_0_0EXSplashScreenOptions)options
                        successCallback:(void (^)(BOOL hasEffect))successCallback
                        failureCallback:(void (^)(NSString * _Nonnull))failureCallback
 {
@@ -93,6 +99,7 @@ ABI45_0_0EX_REGISTER_SINGLETON_MODULE(SplashScreen);
 }
 
 - (void)hideSplashScreenFor:(UIViewController *)viewController
+                    options:(ABI45_0_0EXSplashScreenOptions)options
             successCallback:(void (^)(BOOL hasEffect))successCallback
             failureCallback:(void (^)(NSString * _Nonnull))failureCallback
 {
@@ -113,6 +120,7 @@ ABI45_0_0EX_REGISTER_SINGLETON_MODULE(SplashScreen);
   BOOL needsHide = [[self.splashScreenControllers objectForKey:viewController] needsHideOnAppContentDidAppear];
   if (needsHide) {
     [self hideSplashScreenFor:viewController
+                      options:ABI45_0_0EXSplashScreenDefault
               successCallback:^(BOOL hasEffect){}
               failureCallback:^(NSString *message){}];
   }
@@ -126,6 +134,7 @@ ABI45_0_0EX_REGISTER_SINGLETON_MODULE(SplashScreen);
   BOOL needsShow = [[self.splashScreenControllers objectForKey:viewController] needsShowOnAppContentWillReload];
   if (needsShow) {
     [self showSplashScreenFor:viewController
+                      options:ABI45_0_0EXSplashScreenForceShow
        splashScreenController:[self.splashScreenControllers objectForKey:viewController]
               successCallback:^{}
               failureCallback:^(NSString *message){}];
@@ -138,7 +147,7 @@ ABI45_0_0EX_REGISTER_SINGLETON_MODULE(SplashScreen);
 {
   UIViewController *rootViewController = [[application keyWindow] rootViewController];
   if (rootViewController) {
-    [self showSplashScreenFor:rootViewController];
+    [self showSplashScreenFor:rootViewController options:ABI45_0_0EXSplashScreenDefault];
   }
 
   [self addRootViewControllerListener];
@@ -180,7 +189,7 @@ ABI45_0_0EX_REGISTER_SINGLETON_MODULE(SplashScreen);
     UIViewController *newRootViewController = change[@"new"];
     if (newRootViewController != nil) {
       [self removeRootViewControllerListener];
-      [self showSplashScreenFor:newRootViewController];
+      [self showSplashScreenFor:newRootViewController options:ABI45_0_0EXSplashScreenDefault];
       [self addRootViewControllerListener];
     }
   }
@@ -190,9 +199,9 @@ ABI45_0_0EX_REGISTER_SINGLETON_MODULE(SplashScreen);
       UIViewController *viewController = (UIViewController *)newView.nextResponder;
       // To show splash screen as soon as possible, we do not wait for hiding callback and call showSplashScreen immediately.
       // GCD main queue should keep the calls in sequence.
-      [self hideSplashScreenFor:viewController successCallback:^(BOOL hasEffect){} failureCallback:^(NSString *message){}];
+      [self hideSplashScreenFor:viewController options:ABI45_0_0EXSplashScreenDefault successCallback:^(BOOL hasEffect){} failureCallback:^(NSString *message){}];
       [self.splashScreenControllers removeObjectForKey:viewController];
-      [self showSplashScreenFor:viewController];
+      [self showSplashScreenFor:viewController options:ABI45_0_0EXSplashScreenDefault];
     }
   }
 }

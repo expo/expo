@@ -18,6 +18,7 @@ const REACT_NATIVE_SUBMODULE_PATH = getReactNativeSubmoduleDir();
 const REACT_ANDROID_PATH = path.join(ANDROID_DIR, 'ReactAndroid');
 const REACT_COMMON_PATH = path.join(ANDROID_DIR, 'ReactCommon');
 const REACT_ANDROID_GRADLE_PATH = path.join(REACT_ANDROID_PATH, 'build.gradle');
+const REACT_SDKS_PATHS = path.join(ANDROID_DIR, 'sdks');
 
 async function checkoutReactNativeSubmoduleAsync(checkoutRef: string): Promise<void> {
   await spawnAsync('git', ['fetch'], {
@@ -34,6 +35,10 @@ async function updateReactAndroidAsync(sdkVersion: string): Promise<void> {
 
   console.log(`Cleaning ${chalk.magenta(path.relative(EXPO_DIR, REACT_COMMON_PATH))}...`);
   await fs.remove(REACT_COMMON_PATH);
+
+  console.log(`Syncing ${chalk.magenta(path.relative(EXPO_DIR, REACT_SDKS_PATHS))}...`);
+  await fs.remove(REACT_SDKS_PATHS);
+  await fs.copy(path.join(REACT_NATIVE_SUBMODULE_PATH, 'sdks'), REACT_SDKS_PATHS);
 
   console.log(
     `Running ${chalk.blue('ReactAndroidCodeTransformer')} with ${chalk.yellow(
@@ -65,7 +70,7 @@ async function updateReactAndroidAsync(sdkVersion: string): Promise<void> {
     },
     {
       find: /compileSdkVersion\s+\d+/,
-      replaceWith: 'compileSdkVersion 30',
+      replaceWith: 'compileSdkVersion 31',
     },
   ]);
 }
