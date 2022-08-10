@@ -57,7 +57,7 @@ cmd={['$ expo install expo-application expo-constants expo-device expo-updates @
 
 #### Configuration
 
-Add the following to your app's main file (usually `App.js`):
+Add the following to your app's main file such as **App.js**:
 
 ```js
 import * as Sentry from 'sentry-expo';
@@ -71,7 +71,10 @@ Sentry.init({
 
 #### Usage
 
-Depending on which platform you are on (mobile or web), use the following functions in order to capture/catch exceptions:
+Depending on which platform you are on (mobile or web), use the following methods to access any `@sentry/*` methods for instrumentation, performance, capturing exceptions and so on:
+
+- For React Native, access any `@sentry/react-native` exports with `Sentry.Native.*`
+- For web, access any `@sentry/browser` exports with `Sentry.Browser.*`
 
 ```js
 // Access any @sentry/react-native exports via:
@@ -88,7 +91,7 @@ try {
 }
 ```
 
-### Step 3: App Config
+### Step 3: App Configuration
 
 #### Configure your `postPublish` hook
 
