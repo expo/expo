@@ -55,7 +55,9 @@ cmd={['$ expo install expo-application expo-constants expo-device expo-updates @
 
 ### Step 2: Code
 
-Add the following to your app's main file (usually `App.js`):
+#### Configuration
+
+Add the following to your app's main file such as **App.js**:
 
 ```js
 import * as Sentry from 'sentry-expo';
@@ -65,15 +67,31 @@ Sentry.init({
   enableInExpoDevelopment: true,
   debug: true, // If `true`, Sentry will try to print out useful debugging information if something goes wrong with sending the event. Set it to `false` in production
 });
-
-// Access any @sentry/react-native exports via:
-Sentry.Native.*
-
-// Access any @sentry/browser exports via:
-Sentry.Browser.*
 ```
 
-### Step 3: App Config
+#### Usage
+
+Depending on which platform you are on (mobile or web), use the following methods to access any `@sentry/*` methods for instrumentation, performance, capturing exceptions and so on:
+
+- For React Native, access any `@sentry/react-native` exports with `Sentry.Native.*`
+- For web, access any `@sentry/browser` exports with `Sentry.Browser.*`
+
+```js
+// Access any @sentry/react-native exports via:
+// Sentry.Native.*
+
+// Access any @sentry/browser exports via:
+// Sentry.Browser.*
+
+// The following example uses `captureException()` from Sentry.Native.* to capture errors:
+try {
+  // your code
+} catch (error) {
+  Sentry.Native.captureException(error);
+}
+```
+
+### Step 3: App Configuration
 
 #### Configure your `postPublish` hook
 
