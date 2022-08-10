@@ -65,9 +65,9 @@ The example below is Step 3 in the conversion process on a Personal Account with
 
 After completing the conversion process, you can no longer log in as the old Personal Account's user. To continue using Expo services, you will log into [expo.dev](https://expo.dev/) with the user you selected or created to manage the Organization Account. Then, select the organization from the top left dropdown to access the organization.
 
-### Inviting other members
+### Inviting members
 
-Since the Organization is a shared container with your team members, you can invite other members to it. To invite a new member:
+Since the Organization is a shared container with your team, you can invite other members to it. To invite a new member:
 
 - From the Organization's dashboard, select Organization settings from the sidebar. This will open all the settings available for the organization.
 - In Account settings, select Members from the sidebar.
