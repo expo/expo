@@ -13,25 +13,26 @@ class Logger(
    * String that defines the tag used with the Android native logger, and
    * also used to derive the file name for logging to a file
    */
-  val category: String,
+  category: String,
   /**
    * Android context is required if logging to a file
    */
-  val context: Context,
+  context: Context,
   /**
    * One of the predefined LoggerOptions values
    */
-  val options: LoggerOptions
+  options: LoggerOptions
 ) {
 
-  private var handlers = mutableListOf<LogHandler>().also {
+  private val handlers = mutableListOf<LogHandler>().apply {
     if (options.contains(LoggerOptions.OS)) {
-      it.add(OSLogHandler(category))
+      this.add(OSLogHandler(category))
     }
     if (options.contains(LoggerOptions.File)) {
-      it.add(PersistentFileLogHandler(category, context))
+      this.add(PersistentFileLogHandler(category, context))
     }
-  }
+  }.toList()
+
   private val minOSLevel = when (BuildConfig.DEBUG) {
     true -> Log.DEBUG
     else -> Log.INFO

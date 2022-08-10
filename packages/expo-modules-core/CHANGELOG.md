@@ -11,7 +11,6 @@
 - Experimental support for typed arrays on Android. ([#18379](https://github.com/expo/expo/pull/18379) by [@lukmccall](https://github.com/lukmccall))
 - Using JSI instead of the bridge to call native methods also on legacy modules on iOS. ([#18438](https://github.com/expo/expo/pull/18438) by [@tsapeta](https://github.com/tsapeta))
 - Experimental support for Fabric on iOS (currently supported only by `expo-linear-gradient`). ([#18500](https://github.com/expo/expo/pull/18500) by [@tsapeta](https://github.com/tsapeta))
-- Implement persistent logging to a flat file; add Logger and associated classes to Android. ([#18513](https://github.com/expo/expo/pull/18513) by [@douglowder](https://github.com/douglowder))
 - Add Logger support for writing logs to a file; add Logger and associated classes to Android. ([#18513](https://github.com/expo/expo/pull/18513) by [@douglowder](https://github.com/douglowder))
 
 ### 🐛 Bug fixes

@@ -2,7 +2,6 @@ package expo.modules.core.logging
 
 import android.content.Context
 import java.io.File
-import java.io.FileInputStream
 import java.io.IOException
 import java.nio.charset.Charset
 import kotlinx.coroutines.*
@@ -26,8 +25,8 @@ import kotlinx.coroutines.channels.*
  *
  */
 class PersistentFileLog(
-  private val category: String,
-  private val context: Context
+  category: String,
+  context: Context
 ) {
 
   /**
@@ -37,14 +36,14 @@ class PersistentFileLog(
     if (0L == getFileSize()) {
       return listOf()
     }
-    return readFileSync()
+    return readFileLinesSync()
   }
 
   /**
    * Append entry to the log file
    * Since logging may not require a result handler, the handler parameter is optional
    */
-  fun appendEntry(entry: String, completionHandler: ((_: Error?) -> Unit) = { error -> }) {
+  fun appendEntry(entry: String, completionHandler: ((_: Error?) -> Unit) = { }) {
     queue.add {
       try {
         this.ensureFileExists()
@@ -69,9 +68,9 @@ class PersistentFileLog(
     queue.add {
       try {
         this.ensureFileExists()
-        val contents = this.readFileSync()
+        val contents = this.readFileLinesSync()
         val reducedContents = contents.filter(filter)
-        this.writeFileSync(reducedContents)
+        this.writeFileLinesSync(reducedContents)
         completionHandler.invoke(null)
       } catch (e: Throwable) {
         completionHandler.invoke(Error(e))
@@ -108,13 +107,13 @@ class PersistentFileLog(
   }
 
   private fun getFileSize(): Long {
-    val fd = File(filePath)
-    if (!fd.exists()) {
+    val file = File(filePath)
+    if (!file.exists()) {
       return 0L
     }
     var size = 0L
     try {
-      FileInputStream(fd).use {
+      file.inputStream().use {
         size = it.channel.size()
       }
     } catch (e: IOException) {
@@ -127,11 +126,11 @@ class PersistentFileLog(
     File(filePath).appendText(text, Charset.defaultCharset())
   }
 
-  private fun readFileSync(): List<String> {
+  private fun readFileLinesSync(): List<String> {
     return stringToList(File(filePath).readText(Charset.defaultCharset()))
   }
 
-  private fun writeFileSync(entries: List<String>) {
+  private fun writeFileLinesSync(entries: List<String>) {
     File(filePath).writeText(entries.joinToString("\n"), Charset.defaultCharset())
   }
 
@@ -142,9 +141,9 @@ class PersistentFileLog(
     }
   }
 
-  fun stringToList(text: String): List<String> {
+  private fun stringToList(text: String): List<String> {
     return when (text.length) {
-      0 -> listOf<String>()
+      0 -> listOf()
       else -> text.split("\n")
     }
   }
@@ -158,7 +157,7 @@ class PersistentFileLog(
 
 internal typealias PersistentFileLogSerialDispatchQueueBlock = () -> Unit
 
-internal class PersistentFileLogSerialDispatchQueue() {
+internal class PersistentFileLogSerialDispatchQueue {
   private val channel = Channel<PersistentFileLogSerialDispatchQueueBlock>(Channel.BUFFERED)
 
   // Queue a block in the channel
@@ -168,6 +167,7 @@ internal class PersistentFileLogSerialDispatchQueue() {
 
   // On creation, this starts and runs for the lifetime of the app, pulling blocks off the channel
   // and running them as needed
+  @OptIn(DelicateCoroutinesApi::class)
   private val sc = GlobalScope.launch {
     while (true) { channel.receive()() }
   }

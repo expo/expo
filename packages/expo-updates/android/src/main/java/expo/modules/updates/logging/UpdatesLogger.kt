@@ -10,7 +10,7 @@ import java.util.*
  * Class that implements logging for expo-updates with its own logcat tag
  */
 class UpdatesLogger(
-  private val context: Context
+  context: Context
 ) {
 
   fun trace(

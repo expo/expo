@@ -11,7 +11,7 @@ import java.util.*
  * Class for reading expo-updates logs
  */
 class UpdatesLogReader(
-  private val context: Context
+  context: Context
 ) {
 
   /**
@@ -23,7 +23,7 @@ class UpdatesLogReader(
   ) {
     val epochTimestamp = epochFromDate(olderThan)
     persistentLog.filterEntries(
-      { entryString -> entryStringLaterThanTimestamp(entryString, epochTimestamp) },
+      { entryString -> isEntryStringLaterThanTimestamp(entryString, epochTimestamp) },
       completionHandler
     )
   }
@@ -35,26 +35,26 @@ class UpdatesLogReader(
   fun getLogEntries(newerThan: Date): List<String> {
     val epochTimestamp = epochFromDate(newerThan)
     return persistentLog.readEntries()
-      .filter { entryString -> entryStringLaterThanTimestamp(entryString, epochTimestamp) }
+      .filter { entryString -> isEntryStringLaterThanTimestamp(entryString, epochTimestamp) }
   }
 
   private val persistentLog = PersistentFileLog(EXPO_UPDATES_LOGGING_TAG, context)
 
-  private fun entryStringLaterThanTimestamp(entryString: String, timestamp: Long): Boolean {
-    val entry = UpdatesLogEntry.create(entryString)
-    return when (entry) {
-      null -> false
-      else -> entry.timestamp >= timestamp
-    }
+  private fun isEntryStringLaterThanTimestamp(entryString: String, timestamp: Long): Boolean {
+    val entry = UpdatesLogEntry.create(entryString) ?: return false
+    return entry.timestamp >= timestamp
   }
 
   private fun epochFromDate(date: Date): Long {
+    // Returns the epoch (milliseconds since 1/1/1970)
+    // If date is earlier than one day ago, then the epoch for one day ago is returned
+    // instead
     val earliestEpoch = Date().time - ONE_DAY_MILLISECONDS
     val epoch = date.time
     return max(epoch, earliestEpoch)
   }
 
   companion object {
-    private val ONE_DAY_MILLISECONDS = 86400
+    private const val ONE_DAY_MILLISECONDS = 86400
   }
 }

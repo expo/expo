@@ -16,15 +16,18 @@ import java.util.*
 
 class UpdatesLoggingTest : TestCase() {
 
+  private val asyncTestUtil = AsyncTestUtil()
+
   @Before
   fun setup() {
     val instrumentationContext = InstrumentationRegistry.getInstrumentation().context
     val persistentLog = PersistentFileLog(EXPO_UPDATES_LOGGING_TAG, instrumentationContext)
-    asyncMethodRunning = true
+
+    asyncTestUtil.asyncMethodRunning = true
     persistentLog.clearEntries {
-      asyncMethodRunning = false
+      asyncTestUtil.asyncMethodRunning = false
     }
-    waitForAsyncMethodToFinish("clearEntries timed out", 1000)
+    asyncTestUtil.waitForAsyncMethodToFinish("clearEntries timed out", 1000)
   }
 
   @Test
@@ -68,7 +71,7 @@ class UpdatesLoggingTest : TestCase() {
     val now = Date()
     val expectedLogEntry = UpdatesLogEntry(now.time, "Test message", UpdatesErrorCode.JSRuntimeError.code, LogType.Warn.type, null, null, null)
     logger.warn("Test message", UpdatesErrorCode.JSRuntimeError)
-    waitForTimeout(500)
+    asyncTestUtil.waitForTimeout(500)
     val sinceThen = Date(now.time - 5000)
     val logs = UpdatesLogReader(instrumentationContext).getLogEntries(sinceThen)
     Assert.assertTrue(logs.size > 0)
@@ -87,10 +90,10 @@ class UpdatesLoggingTest : TestCase() {
 
     val firstTime = Date()
     logger.info("Message 1", UpdatesErrorCode.None)
-    waitForTimeout(500)
+    asyncTestUtil.waitForTimeout(500)
     val secondTime = Date()
     logger.error("Message 2", UpdatesErrorCode.NoUpdatesAvailable)
-    waitForTimeout(500)
+    asyncTestUtil.waitForTimeout(500)
     val thirdTime = Date()
 
     val firstLogs = reader.getLogEntries(firstTime)
@@ -106,16 +109,15 @@ class UpdatesLoggingTest : TestCase() {
     val thirdLogs = reader.getLogEntries(thirdTime)
     Assert.assertEquals(0, thirdLogs.size)
 
-    asyncMethodRunning = true
+    asyncTestUtil.asyncMethodRunning = true
     var err: Error? = null
     reader.purgeLogEntries(
-      secondTime,
-      {
-        err = it
-        asyncMethodRunning = false
-      }
-    )
-    waitForAsyncMethodToFinish("purgeLogEntries timed out", 1000)
+      secondTime
+    ) {
+      err = it
+      asyncTestUtil.asyncMethodRunning = false
+    }
+    asyncTestUtil.waitForAsyncMethodToFinish("purgeLogEntries timed out", 1000)
     val purgedLogs = reader.getLogEntries(firstTime)
     Assert.assertEquals(1, purgedLogs.size)
     Assert.assertEquals("Message 2", UpdatesLogEntry.create(purgedLogs[0])?.message)
@@ -126,9 +128,9 @@ class UpdatesLoggingTest : TestCase() {
     val instrumentationContext = InstrumentationRegistry.getInstrumentation().context
     val logger = UpdatesLogger(instrumentationContext)
     logger.warn("Test message", UpdatesErrorCode.JSRuntimeError)
-    waitForTimeout(500)
+    asyncTestUtil.waitForTimeout(500)
     val updatesModule = UpdatesModule(instrumentationContext)
-    asyncMethodRunning = true
+    asyncTestUtil.asyncMethodRunning = true
     var entries: List<Bundle>? = null
     var rejected = false
     updatesModule.readLogEntriesAsync(
@@ -136,15 +138,15 @@ class UpdatesLoggingTest : TestCase() {
       PromiseTestWrapper(
         resolve = { result ->
           entries = result as? List<Bundle>
-          asyncMethodRunning = false
+          asyncTestUtil.asyncMethodRunning = false
         },
         reject = { code, message, e ->
           rejected = true
-          asyncMethodRunning = false
+          asyncTestUtil.asyncMethodRunning = false
         }
       )
     )
-    waitForAsyncMethodToFinish("readLogEntriesAsync timed out", 1000)
+    asyncTestUtil.waitForAsyncMethodToFinish("readLogEntriesAsync timed out", 1000)
     Assert.assertFalse(rejected)
     Assert.assertNotNull(entries)
     Assert.assertEquals(1, entries?.size)
@@ -152,62 +154,62 @@ class UpdatesLoggingTest : TestCase() {
     Assert.assertEquals("Test message", bundle?.get("message"))
 
     rejected = false
-    asyncMethodRunning = true
+    asyncTestUtil.asyncMethodRunning = true
     updatesModule.clearLogEntriesAsync(
       PromiseTestWrapper(
         resolve = {
-          asyncMethodRunning = false
+          asyncTestUtil.asyncMethodRunning = false
         },
         reject = { _, _, _ ->
           rejected = true
-          asyncMethodRunning = false
+          asyncTestUtil.asyncMethodRunning = false
         }
       )
     )
-    waitForAsyncMethodToFinish("clearLogEntriesAsync timed out", 1000)
+    asyncTestUtil.waitForAsyncMethodToFinish("clearLogEntriesAsync timed out", 1000)
     Assert.assertFalse(rejected)
 
     entries = null
     rejected = false
-    asyncMethodRunning = true
+    asyncTestUtil.asyncMethodRunning = true
     updatesModule.readLogEntriesAsync(
       1000L,
       PromiseTestWrapper(
         resolve = { result ->
           entries = result as? List<Bundle>
-          asyncMethodRunning = false
+          asyncTestUtil.asyncMethodRunning = false
         },
         reject = { code, message, e ->
           rejected = true
-          asyncMethodRunning = false
+          asyncTestUtil.asyncMethodRunning = false
         }
       )
     )
-    waitForAsyncMethodToFinish("readLogEntriesAsync timed out", 1000000)
+    asyncTestUtil.waitForAsyncMethodToFinish("readLogEntriesAsync timed out", 1000000)
     Assert.assertFalse(rejected)
     Assert.assertNotNull(entries)
     Assert.assertEquals(0, entries?.size)
   }
 
-  // Private methods and fields
+  internal class AsyncTestUtil {
+    var asyncMethodRunning = false
 
-  private var asyncMethodRunning = false
+    fun waitForAsyncMethodToFinish(failureMessage: String, timeout: Long) {
+      val end = System.currentTimeMillis() + timeout
 
-  private fun waitForAsyncMethodToFinish(failureMessage: String, timeout: Long) {
-    val end = System.currentTimeMillis() + timeout
-
-    while (asyncMethodRunning) {
-      if (System.currentTimeMillis() > end) {
-        Assert.fail(failureMessage)
+      while (asyncMethodRunning) {
+        if (System.currentTimeMillis() > end) {
+          Assert.fail(failureMessage)
+        }
+        Thread.sleep(16)
       }
-      Thread.sleep(16)
     }
-  }
 
-  private fun waitForTimeout(timeout: Long) {
-    val end = System.currentTimeMillis() + timeout
-    while (System.currentTimeMillis() < end) {
-      Thread.sleep(16)
+    fun waitForTimeout(timeout: Long) {
+      val end = System.currentTimeMillis() + timeout
+      while (System.currentTimeMillis() < end) {
+        Thread.sleep(16)
+      }
     }
   }
 

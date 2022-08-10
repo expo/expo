@@ -41,11 +41,11 @@ public class PersistentFileLog {
    Read entries from log file
    */
   public func readEntries() -> [String] {
-    if _getFileSize() == 0 {
+    if getFileSize() == 0 {
       return []
     }
     do {
-      return try self._readFileSync()
+      return try self.readFileSync()
     } catch {
       return []
     }
@@ -58,12 +58,12 @@ public class PersistentFileLog {
    */
   public func appendEntry(entry: String, _ completionHandler: PersistentFileLogCompletionHandler? = nil) {
     PersistentFileLog.serialQueue.async {
-      self._ensureFileExists()
-      let size = self._getFileSize()
+      self.ensureFileExists()
+      let size = self.getFileSize()
       if size == 0 {
-        self._appendTextToFile(text: entry)
+        self.appendTextToFile(text: entry)
       } else {
-        self._appendTextToFile(text: "\n" + entry)
+        self.appendTextToFile(text: "\n" + entry)
       }
       completionHandler?(nil)
     }
@@ -74,11 +74,11 @@ public class PersistentFileLog {
    */
   public func filterEntries(filter: @escaping PersistentFileLogFilter, _ completionHandler: @escaping PersistentFileLogCompletionHandler) {
     PersistentFileLog.serialQueue.async {
-      self._ensureFileExists()
+      self.ensureFileExists()
       do {
-        let contents = try self._readFileSync()
+        let contents = try self.readFileSync()
         let newcontents = contents.filter { entry in filter(entry) }
-        try self._writeFileSync(newcontents)
+        try self.writeFileSync(newcontents)
         completionHandler(nil)
       } catch {
         completionHandler(error)
@@ -92,7 +92,7 @@ public class PersistentFileLog {
   public func clearEntries(_ completionHandler: @escaping PersistentFileLogCompletionHandler) {
     PersistentFileLog.serialQueue.async {
       do {
-        try self._deleteFileSync()
+        try self.deleteFileSync()
         completionHandler(nil)
       } catch {
         completionHandler(error)
@@ -102,13 +102,13 @@ public class PersistentFileLog {
 
   // MARK: - Private methods
 
-  private func _ensureFileExists() {
+  private func ensureFileExists() {
     if !FileManager.default.fileExists(atPath: filePath) {
       FileManager.default.createFile(atPath: filePath, contents: nil)
     }
   }
 
-  private func _getFileSize() -> Int {
+  private func getFileSize() -> Int {
     // Gets the file size, or returns 0 if the file does not exist
     do {
       let attrs: [FileAttributeKey: Any?] = try FileManager.default.attributesOfItem(atPath: filePath)
@@ -118,7 +118,7 @@ public class PersistentFileLog {
     }
   }
 
-  private func _appendTextToFile(text: String) {
+  private func appendTextToFile(text: String) {
     if let data = text.data(using: .utf8) {
       if let fileHandle = FileHandle(forWritingAtPath: filePath) {
         fileHandle.seekToEndOfFile()
@@ -128,25 +128,25 @@ public class PersistentFileLog {
     }
   }
 
-  private func _readFileSync() throws -> [String] {
-    return try _stringToList(String(contentsOfFile: filePath, encoding: .utf8))
+  private func readFileSync() throws -> [String] {
+    return try stringToList(String(contentsOfFile: filePath, encoding: .utf8))
   }
 
-  private func _writeFileSync(_ contents: [String]) throws {
+  private func writeFileSync(_ contents: [String]) throws {
     if contents.isEmpty {
-      try _deleteFileSync()
+      try deleteFileSync()
       return
     }
     try contents.joined(separator: "\n").write(toFile: filePath, atomically: true, encoding: .utf8)
   }
 
-  private func _deleteFileSync() throws {
+  private func deleteFileSync() throws {
     if FileManager.default.fileExists(atPath: filePath) {
       try FileManager.default.removeItem(atPath: filePath)
     }
   }
 
-  private func _stringToList(_ contents: String?) -> [String] {
+  private func stringToList(_ contents: String?) -> [String] {
     // If null contents, or 0 length contents, return empty list
     guard let contents = contents, !contents.isEmpty else {
       return []

@@ -20,10 +20,10 @@ public class UpdatesLogReader: NSObject {
    */
   @objc(getLogEntriesNewerThan:error:)
   public func getLogEntries(newerThan: Date) throws -> [[String: Any]] {
-    let epoch = _epochFromDate(date: newerThan)
+    let epoch = epochFromDate(date: newerThan)
     return logPersistence.readEntries()
       .compactMap { entryString in
-        _logStringToFilteredLogEntry(entryString: entryString, epoch: epoch)
+        logStringToFilteredLogEntry(entryString: entryString, epoch: epoch)
       }
       .compactMap { entry in
         entry.asDict()
@@ -37,10 +37,10 @@ public class UpdatesLogReader: NSObject {
    */
   @objc(getLogEntryStringsNewerThan:)
   public func getLogEntries(newerThan: Date) -> [String] {
-    let epoch = _epochFromDate(date: newerThan)
+    let epoch = epochFromDate(date: newerThan)
     return logPersistence.readEntries()
       .compactMap { entryString in
-        _logStringToFilteredLogEntry(entryString: entryString, epoch: epoch)
+        logStringToFilteredLogEntry(entryString: entryString, epoch: epoch)
       }
       .compactMap { entry in
         entry.asString()
@@ -63,15 +63,15 @@ public class UpdatesLogReader: NSObject {
    */
   @objc(purgeLogEntriesOlderThan:completion:)
   public func purgeLogEntries(olderThan: Date, completion: @escaping (_:Error?) -> Void) {
-    let epoch = _epochFromDate(date: olderThan)
+    let epoch = epochFromDate(date: olderThan)
     logPersistence.filterEntries(filter: { entryString in
-      self._logStringToFilteredLogEntry(entryString: entryString, epoch: epoch) != nil
+      self.logStringToFilteredLogEntry(entryString: entryString, epoch: epoch) != nil
     }, {error in
       completion(error)
     })
   }
 
-  private func _logStringToFilteredLogEntry(entryString: String, epoch: UInt) -> UpdatesLogEntry? {
+  private func logStringToFilteredLogEntry(entryString: String, epoch: UInt) -> UpdatesLogEntry? {
     let suffixFrom = entryString.index(entryString.startIndex, offsetBy: 2)
     let entryStringSuffix = String(entryString.suffix(from: suffixFrom))
     let entry = UpdatesLogEntry.create(from: entryStringSuffix)
@@ -80,7 +80,7 @@ public class UpdatesLogReader: NSObject {
 
   private static let MAXIMUM_LOOKBACK_INTERVAL: TimeInterval = 86_400 // 1 day
 
-  private func _epochFromDate(date: Date) -> UInt {
+  private func epochFromDate(date: Date) -> UInt {
     let earliestDate = Date().addingTimeInterval(-UpdatesLogReader.MAXIMUM_LOOKBACK_INTERVAL)
     let dateToUse = date.timeIntervalSince1970 < earliestDate.timeIntervalSince1970 ?
       earliestDate :

@@ -260,7 +260,7 @@ class UpdatesModule(
       val epoch = Date(date.time - maxAge)
       val results = reader.getLogEntries(epoch)
         .mapNotNull { UpdatesLogEntry.create(it) }
-        .mapNotNull { entry ->
+        .map { entry ->
           Bundle().apply {
             putLong("timestamp", entry.timestamp)
             putString("message", entry.message)
@@ -286,15 +286,18 @@ class UpdatesModule(
     AsyncTask.execute {
       val reader = UpdatesLogReader(context)
       reader.purgeLogEntries(
-        olderThan = Date(),
-        {
-          if (it != null) {
-            promise.reject(it)
-          } else {
-            promise.resolve(null)
-          }
+        olderThan = Date()
+      ) { error ->
+        if (error != null) {
+          promise.reject(
+            "ERR_UPDATES_READ_LOGS",
+            "There was an error when clearing the expo-updates log file",
+            error
+          )
+        } else {
+          promise.resolve(null)
         }
-      )
+      }
     }
   }
 

@@ -11,7 +11,7 @@ internal class PersistentFileLogHandler(
   override val additionalInfo: Context
 ) : LogHandler {
 
-  private var persistentFileLog: PersistentFileLog = PersistentFileLog(category, additionalInfo)
+  private val persistentFileLog = PersistentFileLog(category, additionalInfo)
 
   override fun log(type: LogType, message: String) {
     persistentFileLog.appendEntry(message)
