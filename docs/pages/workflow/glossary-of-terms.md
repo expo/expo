@@ -362,9 +362,9 @@ TypeScript is a strongly typed programming language that builds on JavaScript, g
 
 Traditionally, apps for iOS and Android are updated by submitting an updated binary to the App and Play stores. Updates allow you to push an update to your app without the overhead of submitting a new release to the stores. [Read more in "Publishing"](publishing.md).
 
-### VSCode Expo
+### VS Code Expo
 
-The VSCode extension for improving the developer experience of working with Expo config files. This extension provides autocomplete and intellisense for the [Expo Config](#expo-config), [Store Config](#store-config), [Expo Module Config](#expo-module-config), and [EAS Config](#eas-config). [Learn more](https://marketplace.visualstudio.com/items?itemName=byCedric.vscode-expo).
+The VS Code extension for improving the developer experience of working with Expo config files. This extension provides autocomplete and intellisense for the [Expo Config](#expo-config), [Store Config](#store-config), [Expo Module Config](#expo-module-config), and [EAS Config](#eas-config). [Learn more](https://marketplace.visualstudio.com/items?itemName=byCedric.vscode-expo).
 
 ### Watchman
 
