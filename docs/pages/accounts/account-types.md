@@ -10,7 +10,7 @@ An Expo account is a container that holds Expo projects and allows for different
 
 When you [sign up for an account](https://expo.dev/signup) with Expo, a Personal Account is automatically created for you. This account is a good place to work on your personal projects.
 
-> **Note**: You must not share authentication credentials for your Personal Account with anyone for any reason. Members can log in to their Personal Accounts to access any Team or Organization they are part of. Access to these accounts is available from the dropdown in the top left corner of the dashboard on [expo.dev](https://expo.dev).
+> **Note**: You must not share authentication credentials for your Personal Account with anyone for any reason.
 
 ## Organizations
 
@@ -20,7 +20,7 @@ You can invite other members to your Organization Account, then give these membe
 
 It may be useful to create an Organization when:
 
-- You think you may need to transfer control of a project in the future. Organizations are transferred more easily than personal projects.
+- You think you may need to transfer control of that Organization's projects in the future.
 - Sharing one or multiple projects with a team of collaborators.
 - More than one [Owner](/accounts/working-together/#managing-access) needs to be assigned.
 - Expenses need to be isolated.
@@ -63,28 +63,28 @@ The example below is Step 3 in the conversion process on a Personal Account with
 
 <ImageSpotlight alt="Example demonstrating the Step 3 of the conversion process." src="/static/images/accounts/converting-personal-account.jpg" style={{maxWidth: 720}} />
 
-After completing the conversion process, you can no longer log in as the old Personal Account's user. To continue using Expo services, you will log into [expo.dev](https://expo.dev/) with the user you selected or created to manage the Organization Account. Then, select the organization from the top left dropdown to access the organization.
+After completing the conversion process, you will no longer be able to log in as the your old user. To continue using Expo services, log into [expo.dev](https://expo.dev/) with the user you selected or created during the conversion process. Then, select the organization from the top left dropdown to access the organization.
 
 ### Inviting members
 
-Since the Organization is a shared container with your team, you can invite other members to it. To invite a new member:
+Other Expo users can be invited to join your Organization. To invite a new member:
 
 - From the Organization's dashboard, select Organization settings from the sidebar. This will open all the settings available for the organization.
 - In Account settings, select Members from the sidebar.
 - Under Members, click the button "Invite Member". This will open a form to invite a member to the organization.
-- In the form, enter the email of the member you want to invite and select their role. For more information, see [role privileges](/accounts/working-together/#managing-access).
+- In the form, enter the email of the user you want to invite and select the role they should have upon joining the organization. For more information, see [role privileges](/accounts/working-together/#managing-access).
 
 <ImageSpotlight alt="Example demonstrating multiple members in an organization." src="/static/images/accounts/members.jpg" style={{maxWidth: 720}} />
 
 When inviting a new member, keep in mind:
 
-- Only a member with an Admin or an Owner role can invite others.
-- Member with an Owner role can give members/invitees any role.
-- Member with an Admin role can only give members/invitees up to and including Admin role.
+- Only members with an Admin or an Owner role can invite others.
+- Members with an Owner role can grant members and invitees any role.
+- Members with an Admin role can only give members and invitees up to and including Admin role (every role but Owner).
 
 ### Renaming an Account
 
-Accounts can be renamed a limited number of times. Only Owners can rename accounts. Visit [the account settings](https://expo.dev/accounts/[account]/settings) and follow the steps under [Rename Account](https://expo.dev/settings#rename-account).
+Accounts can be renamed a limited number of times. Only Owners can rename accounts. To rename an account, visit [the account settings](https://expo.dev/accounts/[account]/settings) and follow the steps under [Rename Account](https://expo.dev/accounts/[account]/settings#rename-account).
 
 <ImageSpotlight alt="Rename Account settings panel." src="/static/images/accounts/rename-account.jpg" style={{maxWidth: 720}} />
 
@@ -100,14 +100,12 @@ Projects can be transferred a limited number of times. A user must be an Owner o
 
 #### Caveats
 
-Before transferring a project, make sure that your it is on Expo SDK 43 or above. If not, you must upgrade it and rebuild it for OTA updates to continue to work on that project.
+Before transferring a project, make sure that it is on Expo SDK 43 or above. If not, you must upgrade it and rebuild it for OTA updates to continue to work on that project.
 
 > **Note**: If you want to transfer the ownership of a project from your Personal or Organization Account (source) to another person or company (destination), and you cannot be given "Owner or "Admin" permissions on the destination account, you can create an escrow account (a new Organization Account). This solves the problem that a user must be an "Owner" or "Admin" on both source and destination accounts to transfer projects between them. Once the escrow account is created, you can grant the ultimate destination account member the Owner role on the escrow account and safely transfer the project to the escrow account. The receiving person or company can then transfer it to their destination account from the escrow account without having had access to the destination account itself.
 
 ## Teams
 
-> **Note**: For all new accounts where you want to share access, we recommend you to [create a new Organization](#organizations) Account. It allows more flexibility in role assignments and allows you to keep some projects private to you. Creating a Team Account is deprecated.
+> **Note**: For all new accounts where you want to share access, we recommend you to [create a new Organization](#organizations) Account. It allows more flexibility in role assignments Creating a Team Account is deprecated.
 
-To create a Team Account, simply [invite Team members](/accounts/working-together/#adding-members) to a Personal Account. An email will be sent that prompts them to create a Personal Expo Account if they do not already have one. Only the person (for whom a Personal Account was automatically created) is the Owner of that Personal Account and, therefore, the Team Account.
-
-For members to access the Team projects, they select the Owner’s account name from the dropdown in the top left under "Teams". The Owner can login to their Personal Account and manage it as usual.
+To create a Team Account, simply [invite Team members](/accounts/working-together/#adding-members) to a Personal Account.
