@@ -3,25 +3,32 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.getSubstitutionDataPrompts = exports.getSlugPrompt = void 0;
 const path_1 = __importDefault(require("path"));
 const validate_npm_package_name_1 = __importDefault(require("validate-npm-package-name"));
 const utils_1 = require("./utils");
-async function getPrompts(targetDir) {
-    const targetBasename = path_1.default.basename(targetDir);
+function getSlugPrompt(customTargetPath) {
+    const targetBasename = customTargetPath && path_1.default.basename(customTargetPath);
+    const initial = targetBasename && (0, validate_npm_package_name_1.default)(targetBasename).validForNewPackages
+        ? targetBasename
+        : 'my-module';
+    return {
+        type: 'text',
+        name: 'slug',
+        message: 'What is the name of the npm package?',
+        initial,
+        validate: (input) => (0, validate_npm_package_name_1.default)(input).validForNewPackages || 'Must be a valid npm package name',
+    };
+}
+exports.getSlugPrompt = getSlugPrompt;
+async function getSubstitutionDataPrompts(slug) {
     return [
-        {
-            type: 'text',
-            name: 'slug',
-            message: 'What is the name of the npm package?',
-            initial: (0, validate_npm_package_name_1.default)(targetBasename).validForNewPackages ? targetBasename : undefined,
-            validate: (input) => (0, validate_npm_package_name_1.default)(input).validForNewPackages || 'Must be a valid npm package name',
-        },
         {
             type: 'text',
             name: 'name',
             message: 'What is the native module name?',
-            initial: (_, answers) => {
-                return answers.slug
+            initial: () => {
+                return slug
                     .replace(/^@/, '')
                     .replace(/^./, (match) => match.toUpperCase())
                     .replace(/\W+(\w)/g, (_, p1) => p1.toUpperCase());
@@ -39,8 +46,8 @@ async function getPrompts(targetDir) {
             type: 'text',
             name: 'package',
             message: 'What is the Android package name?',
-            initial: (_, answers) => {
-                const namespace = answers.slug
+            initial: () => {
+                const namespace = slug
                     .replace(/\W/g, '')
                     .replace(/^(expo|reactnative)/, '')
                     .toLowerCase();
@@ -71,10 +78,10 @@ async function getPrompts(targetDir) {
             type: 'text',
             name: 'repo',
             message: 'What is the URL for the repository?',
-            initial: async (_, answers) => await (0, utils_1.guessRepoUrl)(answers.authorUrl, answers.slug),
+            initial: async (_, answers) => await (0, utils_1.guessRepoUrl)(answers.authorUrl, slug),
             validate: (input) => /^https?:\/\//.test(input) || 'Must be a valid URL',
         },
     ];
 }
-exports.default = getPrompts;
+exports.getSubstitutionDataPrompts = getSubstitutionDataPrompts;
 //# sourceMappingURL=prompts.js.map
