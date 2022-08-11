@@ -61,7 +61,7 @@ async function getPackageGitLogsAsync(
 
   const commits = await gitDir.logAsync({
     fromCommit,
-    toCommit: 'head',
+    toCommit: 'HEAD',
   });
 
   const gitFiles = await gitDir.logFilesAsync({

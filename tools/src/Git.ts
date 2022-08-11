@@ -221,7 +221,7 @@ export class GitDirectory {
    */
   async logAsync(options: GitLogOptions = {}): Promise<GitLog[]> {
     const fromCommit = options.fromCommit ?? '';
-    const toCommit = options.toCommit ?? 'head';
+    const toCommit = options.toCommit ?? 'HEAD';
     const commitSeparator = options.symmetricDifference ? '...' : '..';
     const paths = options.paths ?? ['.'];
     const cherryPickOptions = options.cherryPick
