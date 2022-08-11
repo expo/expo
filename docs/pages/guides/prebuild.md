@@ -2,7 +2,7 @@
 title: Prebuild
 ---
 
-import SnackInline from '~/components/plugins/SnackInline';
+import { Terminal } from '~/ui/components/Snippet';
 
 Before a native app can be compiled, the native source code must be generated. Expo CLI provides a unique and powerful system called _prebuilding_, which generates the native code for your project based on four factors:
 
