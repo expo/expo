@@ -36,57 +36,73 @@ export type Manifest = ClassicManifest | typeof Constants.manifest2;
 // in the future
 
 /**
+ * The successful result of checking for a new update.
+ */
+type UpdateCheckResultSuccess = {
+  /**
+   * `true` if an update is available, `false` if the app is already running the latest available
+   * update.
+   */
+  isAvailable: true;
+  /**
+   * If `isAvailable` is `true`, the manifest of the available update, and `undefined` otherwise.
+   */
+  manifest: Manifest;
+};
+
+/**
+ * The failed result of checking for a new update.
+ */
+type UpdateCheckResultFailure = {
+  /**
+   * `true` if an update is available, `false` if the app is already running the latest available
+   * update.
+   */
+  isAvailable: false;
+  /**
+   * If `isAvailable` is `true`, the manifest of the available update, and `undefined` otherwise.
+   */
+  manifest: undefined;
+};
+
+/**
  * The result of checking for a new update.
  */
-export type UpdateCheckResult =
-  | {
-      /**
-       * `true` if an update is available, `false` if the app is already running the latest available
-       * update.
-       */
-      isAvailable: true;
-      /**
-       * If `isAvailable` is `true`, the manifest of the available update, and `undefined` otherwise.
-       */
-      manifest: Manifest;
-    }
-  | {
-      /**
-       * `true` if an update is available, `false` if the app is already running the latest available
-       * update.
-       */
-      isAvailable: false;
-      /**
-       * If `isAvailable` is `true`, the manifest of the available update, and `undefined` otherwise.
-       */
-      manifest: undefined;
-    };
+export type UpdateCheckResult = UpdateCheckResultSuccess | UpdateCheckResultFailure;
+
+/**
+ * The successful result of fetching a new update.
+ */
+type UpdateFetchResultSuccess = {
+  /**
+   * Signifies that the fetched bundle is new (that is, a different version than what's currently
+   * running).
+   */
+  isNew: true;
+  /**
+   * The manifest of the newly downloaded update.
+   */
+  manifest: Manifest;
+};
+
+/**
+ * The failed result of fetching a new update.
+ */
+type UpdateFetchResultFailure = {
+  /**
+   * Signifies that the fetched bundle is the same as version which is currently running.
+   */
+  isNew: false;
+  /**
+   * No manifest, since there is no update.
+   */
+  manifest: undefined;
+};
 
 /**
  * The result of fetching a new update.
  */
-export type UpdateFetchResult =
-  | {
-      /**
-       * Signifies that the fetched bundle is new (that is, a different version than what's currently
-       * running).
-       */
-      isNew: true;
-      /**
-       * The manifest of the newly downloaded update.
-       */
-      manifest: Manifest;
-    }
-  | {
-      /**
-       * Signifies that the fetched bundle is the same as version which is currently running.
-       */
-      isNew: false;
-      /**
-       * No manifest, since there is no update.
-       */
-      manifest: undefined;
-    };
+export type UpdateFetchResult = UpdateFetchResultSuccess | UpdateFetchResultFailure;
 
 /**
  * An object that is passed into each event listener when an auto-update check occurs.

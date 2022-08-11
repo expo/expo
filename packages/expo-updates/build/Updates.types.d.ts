@@ -27,9 +27,9 @@ export declare type ClassicManifest = typeof Constants.manifest;
  */
 export declare type Manifest = ClassicManifest | typeof Constants.manifest2;
 /**
- * The result of checking for a new update.
+ * The successful result of checking for a new update.
  */
-export declare type UpdateCheckResult = {
+declare type UpdateCheckResultSuccess = {
     /**
      * `true` if an update is available, `false` if the app is already running the latest available
      * update.
@@ -39,7 +39,11 @@ export declare type UpdateCheckResult = {
      * If `isAvailable` is `true`, the manifest of the available update, and `undefined` otherwise.
      */
     manifest: Manifest;
-} | {
+};
+/**
+ * The failed result of checking for a new update.
+ */
+declare type UpdateCheckResultFailure = {
     /**
      * `true` if an update is available, `false` if the app is already running the latest available
      * update.
@@ -51,29 +55,40 @@ export declare type UpdateCheckResult = {
     manifest: undefined;
 };
 /**
- * The result of fetching a new update.
+ * The result of checking for a new update.
  */
-export declare type UpdateFetchResult = {
+export declare type UpdateCheckResult = UpdateCheckResultSuccess | UpdateCheckResultFailure;
+/**
+ * The successful result of fetching a new update.
+ */
+declare type UpdateFetchResultSuccess = {
     /**
-     * `true` if the fetched bundle is new (that is, a different version than what's currently
-     * running), `false` otherwise.
+     * Signifies that the fetched bundle is new (that is, a different version than what's currently
+     * running).
      */
     isNew: true;
     /**
-     * If `isNew` is `true`, the manifest of the newly downloaded update, and `undefined` otherwise.
+     * The manifest of the newly downloaded update.
      */
     manifest: Manifest;
-} | {
+};
+/**
+ * The failed result of fetching a new update.
+ */
+declare type UpdateFetchResultFailure = {
     /**
-     * `true` if the fetched bundle is new (that is, a different version than what's currently
-     * running), `false` otherwise.
+     * Signifies that the fetched bundle is the same as version which is currently running.
      */
     isNew: false;
     /**
-     * If `isNew` is `true`, the manifest of the newly downloaded update, and `undefined` otherwise.
+     * No manifest, since there is no update.
      */
     manifest: undefined;
 };
+/**
+ * The result of fetching a new update.
+ */
+export declare type UpdateFetchResult = UpdateFetchResultSuccess | UpdateFetchResultFailure;
 /**
  * An object that is passed into each event listener when an auto-update check occurs.
  */
@@ -153,4 +168,5 @@ export declare enum UpdatesLogEntryLevel {
  * @hidden
  */
 export declare type LocalAssets = Record<string, string>;
+export {};
 //# sourceMappingURL=Updates.types.d.ts.map
