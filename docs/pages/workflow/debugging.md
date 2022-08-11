@@ -28,11 +28,36 @@ Sometimes you'll be able to tell exactly what's wrong just by the [stacktrace](.
 
 If you are able to simplify your code as much as possible, tracking down the source of an error gets exponentially easier. That's exactly why so many open source repos require a [minimal reproducible demo](https://stackoverflow.com/help/minimal-reproducible-example) in their bug reports- it ensures you have isolated the issue and identified exactly where the problem lies! If your app is too large and complex to do that, try and extract the functionality you're trying to add to its own blank `npx create-expo-app` project, and go from there.
 
+### Native Debugging
+
+You can perform full native debugging with Xcode and Android Studio by generating the source code locally and building from source.
+
+#### Xcode
+
+> **Note**: This is only available for macOS users.
+
+1. Generate the native code for your project with: `npx expo prebuild -p ios`
+   1. You can delete the `/ios` folder when you're done to ensure your project remains managed by Expo CLI. Keeping the folder and manually modifying it outside of `npx expo prebuild` means you'll need to manually upgrade and configure native libraries (Bare Workflow).
+2. Open the project in Xcode `xed ios`
+3. Build the app with <kbd>Cmd ⌘</kbd> + <kbd>R</kbd> or by pressing the play button in the upper left corner of Xcode.
+4. You can utilize **lldb** and all of the other Xcode debugging tools to examine the native runtime.
+
+When you're done, simply delete the native folder with `rm -rf ios` to continue having your code managed by Expo.
+
+#### Android Studio
+
+1. Generate the native code for your project with: `npx expo prebuild -p android`
+   1. You can delete the `/android` folder when you're done to ensure your project remains managed by Expo CLI. Keeping the folder and manually modifying it outside of `npx expo prebuild` means you'll need to manually upgrade and configure native libraries (Bare Workflow).
+2. Open the project in Android Studio: `open -a /Applications/Android\ Studio.app ./android`
+3. Build the app from Android Studio and connect the debugger. Refer to the [Google docs for more information](https://developer.android.com/studio/debug#startdebug).
+
+When you're done, simply delete the native folder with `rm -rf android` to continue having your code managed by Expo.
+
 ## Production errors
 
 Errors or bugs in your production app can be much harder to solve, mainly because you have less context around the error (i.e. where, how, and why did the error occur?). **The best first step in addressing a production error is to reproduce it locally.** Once you reproduce an error locally, you can follow the [development debugging process](#development-errors) to isolate and address the root cause.
 
-> **Hint**: sometimes, running your app in "production mode" locally will show errors that normally wouldn't be thrown. You can run an app locally in production by running `expo start --no-dev --minify`. "--no-dev" tells the server not to be run in development mode, and "--minify" will minify your code the same way it is for production JavaScript bundles.
+> **Hint**: sometimes, running your app in "production mode" locally will show errors that normally wouldn't be thrown. You can run an app locally in production by running `npx expo start --no-dev --minify`. "--no-dev" tells the server not to be run in development mode, and "--minify" will minify your code the same way it is for production JavaScript bundles.
 
 Using an automated error logging system like [Sentry](../guides/using-sentry.md) is a huge help in identifying, tracking, and resolving JavaScript errors in your production app. This will give you a good sense of how many people are running into an error, and how often.
 
