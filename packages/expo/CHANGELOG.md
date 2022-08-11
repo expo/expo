@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- Add `@expo/config-plugins` dependency for packages that have a peer dependency on `expo`.
+- Add `@expo/config-plugins` dependency for packages that have a peer dependency on `expo`. ([#18595](https://github.com/expo/expo/pull/18595) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 46.0.1 — 2022-07-25
 
