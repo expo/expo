@@ -68,23 +68,22 @@ export type UpdateCheckResult =
 export type UpdateFetchResult =
   | {
       /**
-       * `true` if the fetched bundle is new (that is, a different version than what's currently
-       * running), `false` otherwise.
+       * Signifies that the fetched bundle is new (that is, a different version than what's currently
+       * running).
        */
       isNew: true;
       /**
-       * If `isNew` is `true`, the manifest of the newly downloaded update, and `undefined` otherwise.
+       * The manifest of the newly downloaded update.
        */
       manifest: Manifest;
     }
   | {
       /**
-       * `true` if the fetched bundle is new (that is, a different version than what's currently
-       * running), `false` otherwise.
+       * Signifies that the fetched bundle is the same as version which is currently running.
        */
       isNew: false;
       /**
-       * If `isNew` is `true`, the manifest of the newly downloaded update, and `undefined` otherwise.
+       * No manifest, since there is no update.
        */
       manifest: undefined;
     };
