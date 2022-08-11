@@ -205,7 +205,7 @@ The React Native rendering system that is used to create and manage native views
 
 ### Flipper
 
-A mobile app debugger. [Learn more](https://fbflipper.com/). We do not enable Flipper in the default [Prebuild](#prebuild) template due to instability concerns.
+A mobile app debugger. We do not enable Flipper in the default [Prebuild](#prebuild) template due to instability concerns. For more information, see [Flipper documentation](https://fbflipper.com/).
 
 ### FYI
 
@@ -269,7 +269,7 @@ The React Native ecosystem has thousands of libraries. Without a purpose-built t
 
 ### Native Module
 
-A module written in native code that exposes native platform functionality to the JavaScript engine via the JS global. This functionality is usually accessed via `import { NativeModules } from 'react-native';`
+A module written in native code that exposes native platform functionality to the JavaScript engine via the JS global. This functionality is usually accessed via `import { NativeModules } from 'react-native';`.
 
 ### Native Runtime
 
@@ -285,7 +285,7 @@ Automates the process of installing, upgrading, configuring, and removing librar
 
 ### Platform extensions
 
-Platform extensions are a feature of the [Metro bundler](#metro-bundler) which enable users to substitute files on a per-platform basis given a specific filename. For example if a project has a `./index.js` file and a `./index.ios.js` file, then the `index.ios.js` will be used when bundling for iOS and the `index.js` file will be used when bundling for all other platforms.
+Platform extensions are a feature of the [Metro bundler](#metro-bundler) which enable users to substitute files on a per-platform basis given a specific filename. For example, if a project has a `./index.js` file and a `./index.ios.js` file, then the `index.ios.js` will be used when bundling for iOS, and the `index.js` file will be used when bundling for all other platforms.
 
 By default, platform extensions are resolved in `@expo/metro-config` using the following formula:
 
@@ -299,7 +299,7 @@ By default, platform extensions are resolved in `@expo/metro-config` using the f
 
 The process of generating the temporary native `/ios` and `/android` folders for a React Native project based on the [Expo Config](#expo-config). This process is performed by running the command `npx expo prebuild` from [Expo CLI](#expo-cli) in a project directory.
 
-See Also:
+See also:
 
 - [Prebuild template](#prebuild-template).
 - [Autolinking](#autolinking).
@@ -322,7 +322,7 @@ We use the word "publish" as a synonym for "deploy". When you publish an app, it
 
 ### React Native Web
 
-A high-performing abstraction on top of `react-dom` which enables core primitives from [React Native](#react-native) to run in the browser. React Native for web (AKA RNW) was developed at Twitter and is currently used for their main website https://twitter.com. [Expo SDK](#expo-sdk) and [Expo CLI](#expo-cli) have first-class support for RNW.
+A high-performing abstraction on top of `react-dom` which enables core primitives from [React Native](#react-native) to run in the browser. React Native for web (also known as RNW) was developed at Twitter and is currently used for their main website https://twitter.com. [Expo SDK](#expo-sdk) and [Expo CLI](#expo-cli) have first-class support for RNW.
 
 ### React Navigation
 
@@ -330,7 +330,7 @@ The preferred navigation library for React Native apps, developed and sponsored 
 
 ### Remote Debugging
 
-Remote Debugging (AKA Async Chrome Debugging) is an experimental system for debugging React Native apps. The system works by executing the application JavaScript in a Chrome tab's web worker, then sending native commands over websockets to the native device. The benefit being you could use the built-in Chrome break points and network inspector to debug your application. This system does not work with JSI's synchronous calls, meaning it's not a reliable way to debug modern React Native apps. A better alternative to debugging React Native is to use [Hermes](#hermes-engine) as you can connect Chrome Dev Tools to it.
+Remote Debugging (also known as Async Chrome Debugging) is an experimental system for debugging React Native apps. The system works by executing the application JavaScript in a Chrome tab's web worker, then sending native commands over websockets to the native device. The benefit being you could use the built-in Chrome break points and network inspector to debug your application. This system does not work with JSI's synchronous calls, meaning it's not a reliable way to debug modern React Native apps. A better alternative to debugging React Native is to use [Hermes](#hermes-engine) as you can connect Chrome Dev Tools to it.
 
 ### Shell app
 
@@ -364,19 +364,19 @@ The `store.config.json` file used to configure [EAS Metadata](#eas-metadata). Th
 
 ### Sweet API
 
-The Swift and Kotlin API for writing React Native modules. This API is provided by the library `expo-modules-core` which is shipped with the `expo` package. [Learn more](/modules/module-api/).
+The Swift and Kotlin API for writing React Native modules. This API is provided by the library `expo-modules-core` which is shipped with the `expo` package. For more information, see [Module API](/modules/module-api/).
 
 ### TypeScript
 
-TypeScript is a strongly typed programming language that builds on JavaScript, giving you better tooling at any scale. The Expo SDK is written in TypeScript, we highly recommend using it. [Learn more](/guides/typescript/).
+TypeScript is a strongly typed programming language that builds on JavaScript, giving you better tooling at any scale. The Expo SDK is written in TypeScript, we highly recommend using it. For more information, see our [TypeScript guide](/guides/typescript/).
 
 ### Updates
 
-Traditionally, apps for iOS and Android are updated by submitting an updated binary to the App and Play stores. Updates allow you to push an update to your app without the overhead of submitting a new release to the stores. [Read more in "Publishing"](publishing.md).
+Traditionally, apps for iOS and Android are updated by submitting an updated binary to the App and Play stores. Updates allow you to push an update to your app without the overhead of submitting a new release to the stores. For more information, see our [Publishing](publishing.md) documentation.
 
 ### VS Code Expo
 
-The VS Code extension for improving the developer experience of working with Expo config files. This extension provides autocomplete and intellisense for the [Expo Config](#expo-config), [Store Config](#store-config), [Expo Module Config](#expo-module-config), and [EAS Config](#eas-config). [Learn more](https://marketplace.visualstudio.com/items?itemName=byCedric.vscode-expo).
+The VSCode extension for improving the developer experience of working with Expo config files. This extension provides autocomplete and intellisense for the [Expo Config](#expo-config), [Store Config](#store-config), [Expo Module Config](#expo-module-config), and [EAS Config](#eas-config). For more information, see the [VSCode Expo extension](https://marketplace.visualstudio.com/items?itemName=byCedric.vscode-expo).
 
 ### Watchman
 
@@ -402,4 +402,4 @@ The [monorepo](#monorepo) solution we recommend for Expo users. Yarn workspaces 
 
 ### Yoga
 
-A native cross-platform library used by React Native internally to provide FlexBox support to native views. React Native styles are passed to Yoga to layout and style elements on the screen. [Learn more](https://github.com/facebook/yoga).
+A native cross-platform library used by React Native internally to provide FlexBox support to native views. React Native styles are passed to Yoga to layout and style elements on the screen. For more information, see [Yoga](https://github.com/facebook/yoga) documentation.
