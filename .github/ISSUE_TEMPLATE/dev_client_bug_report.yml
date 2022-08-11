@@ -55,8 +55,8 @@ body:
     attributes:
       label: Reproducible demo
       description: |
-        This should include as little code as possible, and no extraneous dependencies. Do not share your entire project.
-        If a reproducible demo is not provided, your issue will be closed. If you link to a project that contains multiple non-Expo-core modules, it is unlikely to help us narrow down the cause of your issue more quickly. 
+        This should include as little code as possible, and no extraneous dependencies. Do not share your entire project. If a reproducible demo is not provided, your issue will be closed. 
+        If you link to a project that contains multiple non-Expo-core modules, it is unlikely to help us narrow down the cause of your issue more quickly. 
         Learn more about creating a minimal reproducible example](https://stackoverflow.com/help/mcve).
     validations:
       required: true
