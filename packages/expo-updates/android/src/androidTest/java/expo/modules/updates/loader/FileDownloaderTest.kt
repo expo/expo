@@ -69,12 +69,15 @@ class FileDownloaderTest {
       put("expo-string", "test")
       put("expo-number", 47.5)
       put("expo-boolean", true)
+      put("expo-null", JSONObject.NULL)
     }
 
+    // manifest extraHeaders should have their values coerced to strings
     val actual = FileDownloader.createRequestForManifest(config, extraHeaders, context)
     Assert.assertEquals("test", actual.header("expo-string"))
     Assert.assertEquals("47.5", actual.header("expo-number"))
     Assert.assertEquals("true", actual.header("expo-boolean"))
+    Assert.assertEquals("null", actual.header(("expo-null")))
   }
 
   @Test
@@ -137,6 +140,7 @@ class FileDownloaderTest {
       put("expo-string", "test")
       put("expo-number", 47.5)
       put("expo-boolean", true)
+      put("expo-null", JSONObject.NULL)
     }
 
     val assetEntity = AssetEntity("test", "jpg").apply {
@@ -144,11 +148,12 @@ class FileDownloaderTest {
       extraRequestHeaders = extraHeaders
     }
 
-    // assetRequestHeaders should not be able to override preset headers
+    // assetRequestHeaders should have their values coerced to strings
     val actual = FileDownloader.createRequestForAsset(assetEntity, config, context)
     Assert.assertEquals("test", actual.header("expo-string"))
     Assert.assertEquals("47.5", actual.header("expo-number"))
     Assert.assertEquals("true", actual.header("expo-boolean"))
+    Assert.assertEquals("null", actual.header("expo-null"))
   }
 
   @Test

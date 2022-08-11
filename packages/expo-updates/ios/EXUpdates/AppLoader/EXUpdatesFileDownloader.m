@@ -624,6 +624,8 @@ certificateChainFromManifestResponse:(nullable NSString *)certificateChainFromMa
       } else {
         [request setValue:((NSNumber *)value).stringValue forHTTPHeaderField:key];
       }
+    } else if ([value isKindOfClass:[NSNull class]]) {
+      [request setValue:@"null" forHTTPHeaderField:key];
     } else {
       [request setValue:[(NSObject *)value description] forHTTPHeaderField:key];
     }

@@ -45,17 +45,19 @@
     EXUpdatesConfigRuntimeVersionKey: @"1.0"
   }];
   EXUpdatesFileDownloader *downloader = [[EXUpdatesFileDownloader alloc] initWithUpdatesConfig:config];
-
+  
   NSDictionary *extraHeaders = @{
     @"expo-string": @"test",
     @"expo-number": @(47.5),
-    @"expo-boolean": @YES
+    @"expo-boolean": @YES,
+    @"expo-null": NSNull.null
   };
 
   NSURLRequest *actual = [downloader createManifestRequestWithURL:[NSURL URLWithString:@"https://u.expo.dev/00000000-0000-0000-0000-000000000000"] extraHeaders:extraHeaders];
   XCTAssertEqualObjects(@"test", [actual valueForHTTPHeaderField:@"expo-string"]);
   XCTAssertEqualObjects(@"47.5", [actual valueForHTTPHeaderField:@"expo-number"]);
   XCTAssertEqualObjects(@"true", [actual valueForHTTPHeaderField:@"expo-boolean"]);
+  XCTAssertEqualObjects(@"null", [actual valueForHTTPHeaderField:@"expo-null"]);
 }
 
 - (void)testExtraHeaders_OverrideOrder
@@ -159,13 +161,15 @@
   NSDictionary *extraHeaders = @{
     @"expo-string": @"test",
     @"expo-number": @(47.5),
-    @"expo-boolean": @YES
+    @"expo-boolean": @YES,
+    @"expo-null": NSNull.null
   };
 
   NSURLRequest *actual = [downloader createGenericRequestWithURL:[NSURL URLWithString:@"https://u.expo.dev/00000000-0000-0000-0000-000000000000"] extraHeaders:extraHeaders];
   XCTAssertEqualObjects(@"test", [actual valueForHTTPHeaderField:@"expo-string"]);
   XCTAssertEqualObjects(@"47.5", [actual valueForHTTPHeaderField:@"expo-number"]);
   XCTAssertEqualObjects(@"true", [actual valueForHTTPHeaderField:@"expo-boolean"]);
+  XCTAssertEqualObjects(@"null", [actual valueForHTTPHeaderField:@"expo-null"]);
 }
 
 @end
