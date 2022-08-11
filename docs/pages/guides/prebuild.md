@@ -21,7 +21,7 @@ Prebuild can be used by running:
 
 This creates the `ios/` and `android/` folders for running your React code. If you modify the generated directories manually then you risk losing your changes the next time you run `npx expo prebuild --clean`. Instead, you should create [Expo Config Plugins][config-plugins] which modify the native directories safely during prebuild.
 
-You can stop using prebuild at anytime and continue developing your native app manually but we don't recommend this for the reasons listed in [philosophy](#philosophy).
+We highly recommend using Prebuild for the reasons listed in the [pitch](#pitch) section, but the system is [fully optional](#optionality) and you can stop using it at any time.
 
 ## Platforms
 
@@ -85,30 +85,47 @@ The convenience change to the `scripts` field is the only thing that alters how 
 
 ## Optionality
 
-Prebuilding is completely optional and does not disqualify a project from using other Expo features. We created the designation _bare workflow_ to refer projects that do not use `npx expo prebuild`.
+Prebuilding is completely optional and does not disqualify a project from using other features or services offered by Expo. We created the designation _bare workflow_ to refer projects that do not use `npx expo prebuild`.
 
 Everything offered by Expo including [EAS][eas], Expo CLI, and the libraries in the Expo SDK are built to **fully support** the _bare workflow_ as this is a minimum requirement for supporting projects using `npx expo prebuild`.
 
 The main exception is the [Expo Go][expo-go] app which has partial support for the _bare workflow_, given the project in question only utilizes native features that are already available in the Expo Go app.
 
-We develop new [Native Modules][native-modules] without using `npx expo prebuild` as it's currently the fastest way to do so, however we recommend users building apps with Expo attempt to use prebuild as much as possible for the reasons listed in the [philosophy](#philosophy).
+We develop new [Native Modules][native-modules] without using `npx expo prebuild` as it's currently the fastest way to do so, however we recommend users building apps with Expo attempt to use Prebuild as much as possible for the reasons listed in the [pitch](#pitch) section.
 
-## Philosophy
+## Pitch
 
-A single native project on its own is very complicated to maintain, scale, and grow. In a cross-platform app, you have multiple native projects that you must maintain and keep updated. These aren't standard projects either, they have a custom native framework, React, installed -- adding to the complexity.
+A single native project on its own is very complicated to maintain, scale, and grow. In a cross-platform app, you have multiple native projects that you must maintain and keep updated. To streamline this process we created the _optional_ Expo Prebuild system. Below are a few issues we've identified with native development and some corresponding reasons we believe Expo Prebuild solves these issues.
 
-This quickly grows to become a massive technical debt. Here are a few reasons why:
+### Sensible upgrades
 
-- Cross-platform configuration like the app icon, name, splash screen, etc. must be implemented manually in native code, these are often implemented very differently across platforms.
-- Building native code requires a basic familiarity with that native platform's default tooling leading to a fairly difficult learning curve. In cross-platform, this curve is multiplied by the amount of platforms you wish to develop for. Cross-platform tooling doesn't solve this issue if you need to drop down and implement many features individually, instead it often creates a harder system for developing apps.
-- Most complex native packages have additional setup required, for example a camera library requires permission settings be added to the iOS `Info.plist` and the Android `AndroidManifest.xml` file. This additional setup can be considered a side-effect that makes it harder to upgrade or uninstall a library. When you miss side-effects they become orphaned code that you cannot trace back to any particular package, this code builds up and makes your project harder to maintain.
-- When you bootstrap a native app, it has a bunch of preset values and code that you don't need to understand in order to get started. Eventually you'll want to upgrade your native application and now you'll need to be acutely familiar with how all of the initial code works in order to safely upgrade it. This is extremely challenging and users will either upgrade their app incorrectly, missing crucial changes, or they'll bootstrap a new app and copy all of their source code into the new application.
+Building native code requires a basic familiarity with that native platform's default tooling leading to a fairly difficult learning curve. In cross-platform, this curve is multiplied by the amount of platforms you wish to develop for. Cross-platform tooling doesn't solve this issue if you need to drop down and implement many features individually, instead it often creates a harder system for developing apps.
 
-These native development issues are crippling at scale, to combat them we created the _optional_ Expo Prebuild feature.
+When you bootstrap a native app, it has a bunch of preset values and code that you don't need to understand in order to get started. Eventually you'll want to upgrade your native application and now you'll need to be acutely familiar with how all of the initial code works in order to safely upgrade it. This is extremely challenging and users will either upgrade their app incorrectly, missing crucial changes, or they'll bootstrap a new app and copy all of their source code into the new application.
+
+**With Prebuild** upgrading is much closer to upgrading a pure JavaScript application. Simply bump the versions in your `package.json` and regenerate the native project.
+
+### Cross-platform configuration
+
+Cross-platform configuration like the app icon, name, splash screen, etc. must be implemented manually in native code, these are often implemented very differently across platforms.
+
+**With Prebuild** cross-platform configuration is handled at the Config Plugin level and the user often just has to set a single value like `"icon": "./icon.png"` to have all icon generation taken care of.
+
+### Dependency side-effects
+
+Most complex native packages have additional setup required, for example a camera library requires permission settings be added to the iOS `Info.plist` and the Android `AndroidManifest.xml` file. This additional setup can be considered a disjointed side-effect of a package. Pasting required side-effect code into your project's native files can lead to difficult native compilation errors, it's also hard for library authors to document every possible combination of code blocks to paste.
+
+**With Prebuild** library authors, who know how configure their library better than anyone, can create a testable and versioned script (Expo Config Plugin) to automate adding the required configuration side-effects. This means library side-effects can be more expressive, powerful, and stable. For native code side-effects, we also provide: [AppDelegate Subscribers](/modules/appdelegate-subscribers) and [Android Lifecycle Listeners](/modules/android-lifecycle-listeners) which come standard in the default [Prebuild template](#templates).
+
+### Orphaned code
+
+When you uninstall a package you have to be certain you removed all of the side-effects required to make that package work. If you miss anything, it leads to orphaned code that you cannot trace back to any particular package, this code builds up and makes your project harder to understand and maintain.
+
+**With Prebuild** the only side-effect is the Config Plugin entry in a project's Expo config (`app.json`), which will fail to evaluate when the corresponding package has been uninstalled, meaning it's nearly impossible to create orphaned configuration.
 
 ## Anti Pitch
 
-Here are some reasons _Expo Prebuilding_ may not be the right fit for a particular project, and a few notes on how we plan on alleviating them eventually.
+Here are some reasons _Expo Prebuilding_ might **not** be the right fit for a particular project. There are also some notes on how we plan on alleviating the existing drawbacks eventually.
 
 ### React Native versioning
 
