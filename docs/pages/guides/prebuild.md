@@ -9,7 +9,7 @@ Before a native app can be compiled, the native source code must be generated. E
 1. The [Expo Config][expo-config] file (`app.json`, `app.config.js`).
 2. Arguments passed to the `npx expo prebuild` command.
 3. Version of `expo` that's installed in the project.
-4. Expo Autolinking, which finds native modules in your `package.json` and automatically links them as CocoaPods on iOS and Gradle packages on Android.
+4. Expo [Autolinking](/workflow/glossary-of-terms#autolinking), which finds native modules in your `package.json` and automatically links them as CocoaPods on iOS and Gradle packages on Android.
 
 ## Usage
 
@@ -17,7 +17,7 @@ Prebuild can be used by running:
 
 <Terminal cmd={[
 '$ npx expo prebuild',
-]} />
+]} cmdCopy="npx expo prebuild" />
 
 This creates the `ios/` and `android/` folders for running your React code. If you modify the generated directories manually then you risk losing your changes the next time you run `npx expo prebuild --clean`. Instead, you should create [Expo Config Plugins][config-plugins] which modify the native directories safely during prebuild.
 
@@ -29,7 +29,7 @@ Prebuild currently supports iOS and Android, web support is not required as the 
 
 <Terminal cmd={[
 '$ npx expo prebuild --platform ios',
-]} />
+]} cmdCopy="npx expo prebuild --platform ios"/>
 
 ## Dependencies
 
@@ -39,7 +39,7 @@ You can skip changing NPM package versions with the `--skip-dependency-update` f
 
 <Terminal cmd={[
 '$ npx expo prebuild --skip-dependency-update react-native,react',
-]} />
+]} cmdCopy="npx expo npx expo prebuild --skip-dependency-update react-native,react"/>
 
 ## Package Manager
 
@@ -59,9 +59,9 @@ You can disable the check by enabling the environment variable `EXPO_NO_GIT_STAT
 
 The purpose of the prompt is to encourage managed workflow users to add the `/ios` and `/android` folders to the project's `.gitignore`, ensuring that the project is always managed. This can however make custom config plugins harder to develop so we haven't introduced any mechanism to enforce this behavior.
 
-Advanced projects may need to swap between workflows often, building custom functionality natively in Xcode and Android Studio, then moving it to project-level config plugins, and repeating. As the Expo Config Plugin ecosystem matures, the need to develop like plugins like this will be drastically reduced.
+Advanced projects may need to swap between workflows often, building custom functionality natively in Xcode and Android Studio, then moving that functionality into local Config Plugins, and repeating. As the Expo Config Plugin ecosystem matures, the need to develop plugins like this will be drastically reduced.
 
-It is also theoretically possible to make clean builds take seconds rather than minutes, meaning `--clean` could become the default behavior in the future.
+<!-- It is also theoretically possible to make clean builds take seconds rather than minutes, meaning `--clean` could become the default behavior in the future. -->
 
 ## Templates
 
@@ -105,6 +105,42 @@ This quickly grows to become a massive technical debt. Here are a few reasons wh
 - When you bootstrap a native app, it has a bunch of preset values and code that you don't need to understand in order to get started. Eventually you'll want to upgrade your native application and now you'll need to be acutely familiar with how all of the initial code works in order to safely upgrade it. This is extremely challenging and users will either upgrade their app incorrectly, missing crucial changes, or they'll bootstrap a new app and copy all of their source code into the new application.
 
 These native development issues are crippling at scale, to combat them we created the `npx expo prebuild` command and [Expo Config Plugins][config-plugins]. if you aren't satisfied with how prebuild works you can simply develop your app without it and continue to utilize the rest of the Expo developer tools.
+
+## Anti Pitch
+
+Here are some reasons _Expo Prebuilding_ may not be the right fit for a particular project, and a few notes on how we plan on alleviating them eventually.
+
+### React Native versioning
+
+`npx expo prebuild` generates native code based on the version of `expo` a project has installed, so a project with SDK 46 (`expo@46.0.0`) would generate a `react-native@0.69.4` app.
+
+Expo has a quarterly release cycle, whereas `react-native` releases major versions at random intervals, with stability patches following a few weeks after. This means there are times where you cannot use `npx expo prebuild` with the latest release of React Native. This could potentially be circumvented by using a custom [Prebuild template](#templates), but this is not recommended.
+
+If React Native moves to a more predictable and stable release schedule then we could potentially add support during a beta release period.
+
+### Platform compatibility
+
+Prebuild can only be used for native platforms that are supported by the Expo SDK. This means iOS and Android for the time being. With the exception of web, which doesn't require `npx expo prebuild` since it uses the browser instead of a custom native runtime.
+
+We plan to support more platforms in the future, but team size and limited resources prevent us from being able to maintain them at the moment. The stability of out-of-tree platforms like `react-native-macos` and `react-native-windows` are also considered.
+
+You can still use prebuild for your `ios`, and `android` projects but any extra platforms will have to be configured manually in the meantime.
+
+### Standard native development is slower
+
+All native changes must be added with Expo Modules Core and Config Plugins. This means if you want to add some quick native file to your project the old fashion way, then your better off adding the file manually and working your way back into the system via a monorepo (we recommend [expo-yarn-workspaces](https://www.npmjs.com/package/expo-yarn-workspaces)). We plan to speed this process up by adding functionality to Expo Autolinking that finds project native files outside of the native folders and links them before building.
+
+If you want to do something like modifying the gradle properties file, you'll have to write a plugin for that [example](https://github.com/expo/expo/blob/1c994bb042ad47fbf6878e3b5793d4545f2d1208/apps/native-component-list/app.config.js#L21-L28). Of course this could be easily automated with helper plugin libraries, but it is a bit slower if you need to do it often.
+
+### Config Plugin support
+
+Not all packages support _Expo Prebuilding_ yet. If you find a library that requires extra setup after installation and doesn't have an Expo Config Plugin, you should open a PR or an issue so that the maintainer is aware of the feature request.
+
+Some packages like [`react-native-blurhash`](https://github.com/mrousavy/react-native-blurhash) don't require any additional native setup so they don't even need a Config Plugin!
+
+Other packages like [`react-native-ble-plx`](https://github.com/Polidea/react-native-ble-plx) do require additional setup and therefore require a Config Plugin to be used with `npx expo prebuild` (in this case there's an external plugin called [`@config-plugins/react-native-ble-plx`](https://github.com/expo/config-plugins/tree/main/packages/react-native-ble-plx)).
+
+Alternatively, we also have a repo for [out-of-tree Expo Config Plugins][config-plugins-repo] which provides plugins for popular packages that haven't adopted the system yet. Think of this like [DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped) for TypeScript. We prefer packages ship their own Expo Config Plugin to ensure versioning is always aligned, but if they haven't adopted the system yet, the community can easily get unblocked.
 
 [config-plugins-repo]: https://github.com/expo/config-plugins
 [template]: https://github.com/expo/expo/tree/main/templates/expo-template-bare-minimum
