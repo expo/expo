@@ -69,12 +69,15 @@ class FileDownloaderTest {
       put("expo-string", "test")
       put("expo-number", 47.5)
       put("expo-boolean", true)
+      put("expo-null", JSONObject.NULL)
     }
 
+    // manifest extraHeaders should have their values coerced to strings
     val actual = FileDownloader.createRequestForManifest(config, extraHeaders, context)
     Assert.assertEquals("test", actual.header("expo-string"))
     Assert.assertEquals("47.5", actual.header("expo-number"))
     Assert.assertEquals("true", actual.header("expo-boolean"))
+    Assert.assertEquals("null", actual.header(("expo-null")))
   }
 
   @Test
@@ -121,6 +124,36 @@ class FileDownloaderTest {
     val actual = FileDownloader.createRequestForAsset(assetEntity, config, context)
     Assert.assertEquals("android", actual.header("expo-platform"))
     Assert.assertEquals("custom", actual.header("expo-updates-environment"))
+  }
+
+  @Test
+  @Throws(JSONException::class)
+  fun testAssetExtraHeaders_ObjectTypes() {
+    val configMap = mapOf<String, Any>(
+      "updateUrl" to Uri.parse("https://u.expo.dev/00000000-0000-0000-0000-000000000000"),
+      "runtimeVersion" to "1.0",
+    )
+
+    val config = UpdatesConfiguration(null, configMap)
+
+    val extraHeaders = JSONObject().apply {
+      put("expo-string", "test")
+      put("expo-number", 47.5)
+      put("expo-boolean", true)
+      put("expo-null", JSONObject.NULL)
+    }
+
+    val assetEntity = AssetEntity("test", "jpg").apply {
+      url = Uri.parse("https://example.com")
+      extraRequestHeaders = extraHeaders
+    }
+
+    // assetRequestHeaders should have their values coerced to strings
+    val actual = FileDownloader.createRequestForAsset(assetEntity, config, context)
+    Assert.assertEquals("test", actual.header("expo-string"))
+    Assert.assertEquals("47.5", actual.header("expo-number"))
+    Assert.assertEquals("true", actual.header("expo-boolean"))
+    Assert.assertEquals("null", actual.header("expo-null"))
   }
 
   @Test

@@ -472,6 +472,17 @@ open class FileDownloader(private val client: OkHttpClient) {
       throw IOException("No compatible manifest found. SDK Versions supported: " + configuration.sdkVersion + " Provided manifestString: " + manifestString)
     }
 
+    private fun Request.Builder.addHeadersFromJSONObject(headers: JSONObject?): Request.Builder {
+      if (headers == null) {
+        return this
+      }
+
+      headers.keys().asSequence().forEach { key ->
+        header(key, headers.require<Any>(key).toString())
+      }
+      return this
+    }
+
     internal fun createRequestForAsset(
       assetEntity: AssetEntity,
       configuration: UpdatesConfiguration,
@@ -479,13 +490,7 @@ open class FileDownloader(private val client: OkHttpClient) {
     ): Request {
       return Request.Builder()
         .url(assetEntity.url!!.toString())
-        .apply {
-          assetEntity.extraRequestHeaders?.let { headers ->
-            headers.keys().asSequence().forEach { key ->
-              header(key, headers.require(key))
-            }
-          }
-        }
+        .addHeadersFromJSONObject(assetEntity.extraRequestHeaders)
         .header("Expo-Platform", "android")
         .header("Expo-API-Version", "1")
         .header("Expo-Updates-Environment", "BARE")
@@ -505,16 +510,7 @@ open class FileDownloader(private val client: OkHttpClient) {
     ): Request {
       return Request.Builder()
         .url(configuration.updateUrl.toString())
-        .apply {
-          // apply extra headers before anything else, so they don't override preset headers
-          if (extraHeaders != null) {
-            val keySet = extraHeaders.keys()
-            while (keySet.hasNext()) {
-              val key = keySet.next()
-              header(key, extraHeaders.optString(key, ""))
-            }
-          }
-        }
+        .addHeadersFromJSONObject(extraHeaders)
         .header("Accept", "multipart/mixed,application/expo+json,application/json")
         .header("Expo-Platform", "android")
         .header("Expo-API-Version", "1")
