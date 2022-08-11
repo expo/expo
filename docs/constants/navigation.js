@@ -14,7 +14,15 @@ const PAGES_DIR = path.resolve(__dirname, '../pages');
 /** Manual list of directories to pull in to the getting started tutorial */
 const startingDirectories = ['introduction', 'get-started', 'tutorial', 'next-steps'];
 /** Manual list of directories to categorize as "EAS content" */
-const easDirectories = ['eas', 'build', 'app-signing', 'build-reference', 'submit'];
+const easDirectories = [
+  'eas',
+  'build',
+  'app-signing',
+  'build-reference',
+  'submit',
+  'eas-update',
+  'eas-metadata',
+];
 /** Manual list of directories to categorize as "Archive content" */
 const archiveDirectories = ['archive'];
 /** Private preview section which isn't linked in the documentation */
@@ -351,6 +359,15 @@ const archive = [
     {
       expanded: true,
     }
+  ),
+  makeSection(
+    'EAS Metadata',
+    [
+      makePage('eas-metadata/introduction.md'),
+      makePage('eas-metadata/getting-started.md'),
+      // makePage('eas-metadata/store-json.md'), Disabled due to missing config overview
+    ],
+    { expanded: true }
   ),
 ];
 
