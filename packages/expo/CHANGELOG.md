@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Convert `DevAppContainer` to functional React component. ([#18597](https://github.com/expo/expo/pull/18597) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 46.0.1 — 2022-07-25
 
 _This version does not introduce any user-facing changes._
