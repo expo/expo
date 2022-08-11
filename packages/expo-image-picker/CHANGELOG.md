@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Drop `@expo/config-plugins` dependency in favor of peer dependency on `expo`.
+
 ## 13.3.1 — 2022-07-25
 
 _This version does not introduce any user-facing changes._
