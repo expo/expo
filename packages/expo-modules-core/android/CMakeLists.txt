@@ -47,7 +47,7 @@ target_include_directories(
         "${REACT_NATIVE_DIR}/ReactCommon/react/nativemodule/core"
         "${REACT_NATIVE_DIR}/ReactCommon/callinvoker"
         "${REACT_NATIVE_DIR}/ReactCommon/jsi"
-        "${HERMES_DIR}/android/include"
+        "${HERMES_HEADER_DIR}"
         "${BUILD_DIR}/third-party-ndk/boost/boost_${BOOST_VERSION}"
         "${BUILD_DIR}/third-party-ndk/double-conversion"
         "${BUILD_DIR}/third-party-ndk/folly"
