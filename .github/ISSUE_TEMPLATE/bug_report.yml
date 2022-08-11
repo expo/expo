@@ -11,8 +11,7 @@ body:
   - type: textarea
     attributes:
       label: Summary
-      description: Describe the issue
-      placeholder: >
+      description: |
         Clearly describe what the expected behavior is and what instead is actually happening. Be concise and precise in your description. 
         Ex: if you report that "X library/method isn't working", then you will need to [continue debugging on your own](https://expo.fyi/manual-debugging) to more precisely define your issue before proceeding.
     validations:
@@ -37,7 +36,7 @@ body:
   - type: textarea
     attributes:
       label: Minimal reproducible example
-      description: >
+      description: |
         This should include as little code as possible, and no extraneous dependencies. Do not share your entire project. 
         Sharing a link to a [Snack](https://snack.expo.dev/) is often the best approach, but in some cases a GitHub repository is required. 
         If a reproducible demo is not provided, your issue will be closed. You must also test your issue against the latest SDK version to ensure that it hasn't already been resolved. 
