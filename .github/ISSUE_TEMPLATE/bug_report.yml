@@ -11,8 +11,9 @@ body:
   - type: textarea
     attributes:
       label: Summary
-      description: Describe the issue
-      placeholder: 'Clearly describe what the expected behavior is and what instead is actually happening. Be concise and precise in your description. Ex: if you report that "X library/method is not working", then you will need to [continue debugging on your own](https://expo.fyi/manual-debugging) to more precisely define your issue before proceeding.'
+      description: |
+        Clearly describe what the expected behavior is and what instead is actually happening. Be concise and precise in your description. 
+        Ex: if you report that "X library/method isn't working", then you will need to [continue debugging on your own](https://expo.fyi/manual-debugging) to more precisely define your issue before proceeding.
     validations:
       required: true
   - type: dropdown
@@ -29,15 +30,19 @@ body:
   - type: textarea
     attributes:
       label: Environment
-      placeholder: Run `npx expo-env-info` and paste the output here
+      description: Run the `npx expo-env-info` command and paste its output in the field below.
     validations:
       required: true
   - type: textarea
     attributes:
       label: Minimal reproducible example
-      description: 'This should include as little code as possible, and no extraneous dependencies. Do not share your entire project. Sharing a link to a [Snack](https://snack.expo.dev/) is often the best approach, but in some cases a GitHub repository is required. If a reproducible demo is not provided, your issue will be closed. You must also test your issue against the latest SDK version to ensure that it hasn't already been resolved. [Learn more about creating a minimal reproducible example](https://stackoverflow.com/help/mcve).'
+      description: |
+        This should include as little code as possible, and no extraneous dependencies. Do not share your entire project. 
+        Sharing a link to a [Snack](https://snack.expo.dev/) is often the best approach, but in some cases a GitHub repository is required. 
+        If a reproducible demo is not provided, your issue will be closed. You must also test your issue against the latest SDK version to ensure that it hasn't already been resolved. 
+        [Learn more about creating a minimal reproducible example](https://stackoverflow.com/help/mcve).
     validations:
       required: true
   - type: markdown
     attributes:
-`     value: Please make sure contributors can run your Snack or repository, and you explain how to reproduce the issue once the example is running.
+     value: Please make sure contributors can run your Snack or repository, and you explain how to reproduce the issue once the example is running.
