@@ -26,10 +26,10 @@ A feature of EAS build that automatically enables or disables [Apple capabilitie
 
 A cross-platform tool for automatically linking native modules to native apps via native package managers.
 
-- On iOS the tool is used in [CocoaPods](#cocoapods) `ios/Podfile` and invoked during `pod install`
+- On iOS the tool is used in [CocoaPods](#cocoapods) `ios/Podfile` and invoked during `pod install`.
 - On Android the tool is used in the `android/app/build.gradle` and invoked during the [Gradle](#gradle) sync process.
 
-There are two versions of Autolinking: Expo
+There are two versions of Autolinking: [Expo Autolinking](#expo-autolinking), and [Community Autolinking](#community-autolinking).
 
 The default [Prebuild template](#prebuild-template) includes support for [Expo Autolinking](#expo-autolinking), and the [Community Autolinking](#community-autolinking) fork.
 
