@@ -217,7 +217,7 @@ The package `expo-cli` which was installed globally on the user's machine and us
 
 ### Gradle
 
-The Android package manager and build tools.
+Gradle is a build automation tool for multi-language software development. It controls the development process in the tasks of compilation and packaging to testing, deployment, and publishing.
 
 ### Hermes Engine
 
@@ -257,7 +257,7 @@ The bundler used for converting JavaScript files and assets into a format that r
 
 ### Metro Config
 
-The `metro.config.js` file used to configure [Metro bundler](#metro-bundler). This should extend the package `@expo/metro-config` when using [Expo CLI](#expo-cli). [Learn more](/guides/customizing-metro.md).
+The `metro.config.js` file used to configure [Metro bundler](#metro-bundler). This should extend the package `@expo/metro-config` when using [Expo CLI](#expo-cli). For more information, see [Customizing Metro](/guides/customizing-metro.md).
 
 ### Monorepo
 
