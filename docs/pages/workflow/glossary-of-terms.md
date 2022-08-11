@@ -47,11 +47,11 @@ This refers to the React Native community [fork](https://github.com/react-native
 
 ### Config Introspection
 
-A process for evaluating the results of [`expo prebuild`](#prebuild) in-memory without persisting any code changes. This is used in [auto capability signing](#auto-capability-signing) to determine what the entitlements file will look like without generating any native code. This process is also used in the [vscode expo](#vscode-expo) extension to debug [config mods](#config-mods).
+A process for evaluating the results of [`expo prebuild`](#prebuild) in-memory without persisting any code changes. This is used in [Auto Capability Signing](#auto-capability-signing) to determine what the entitlements file will look like without generating any native code. This process is also used in the [VS Code Expo](#vscode-expo) extension to debug [Config Mods](#config-mods).
 
 ### Config Mods
 
-Async functions that are appended to the [Expo Config](#expo-config) for use in [Prebuild](#prebuild). This functions are given a singe native file, modify it, and return the results that should be persisted to the project. Config Mods are chained together and come from the package `@expo/config-plugins`. [Learn more](/guides/config-plugins).
+Async functions that are appended to the [Expo Config](#expo-config) for use in [Prebuild](#prebuild). These functions are given a single native file to modify like Info.plist or AndroidManifest.xml. Config Mods are chained together and come from the package `@expo/config-plugins`. For more information, see [Config Plugins](/guides/config-plugins).
 
 ### Config Plugin
 
