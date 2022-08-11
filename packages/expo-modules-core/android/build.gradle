@@ -71,8 +71,15 @@ def reactNativeArchitectures() {
   return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
 }
 
+// HERMES
+def prebuiltHermesDir = findProperty("expo.prebuiltHermesDir") ?: file("${REACT_NATIVE_DIR}/ReactAndroid/prebuiltHermes")
+def prebuiltHermesVersion = file("${prebuiltHermesDir}/.hermesversion").exists() ? file("${prebuiltHermesDir}/.hermesversion").text : null
+def currentHermesVersion = file("${REACT_NATIVE_DIR}/sdks/.hermesversion").exists() ? file("${REACT_NATIVE_DIR}/sdks/.hermesversion").text : null
+def hasHermesProject = findProject(":ReactAndroid:hermes-engine") != null
+def prebuiltHermesCacheHit = hasHermesProject && currentHermesVersion == prebuiltHermesVersion
+
 def FOR_HERMES = false
-def HERMES_ENGINE_DIR = null
+def HERMES_HEADER_DIR = null
 def HERMES_AAR = null
 if (findProject(":app")) {
   def appProjectExt = project(":app").ext
@@ -86,23 +93,30 @@ if (findProject(":app")) {
 }
 
 if (FOR_HERMES) {
-  // The `hermes-engine` package doesn't contain the correct version of the Hermes.
-  // The AAR we need to import is located in the React Native package.
-  // However, the version from RN doesn't include header files.
-  // To get those, we must fall back to the `hermes-engine` package.
-  HERMES_ENGINE_DIR = new File(["node", "--print", "require.resolve('hermes-engine/package.json')"].execute(null, rootDir).text.trim()).parent
-  if (REACT_NATIVE_BUILD_FROM_SOURCE) {
-    // TODO(@lukmccall): Use Hermes from the `ReactAndroid:hermes-engine`
-    HERMES_AAR = file("$HERMES_ENGINE_DIR/android/hermes-debug.aar")
+  if (prebuiltHermesCacheHit) {
+    HERMES_HEADER_DIR = file("${thirdPartyNdkDir}/hermes/prefab/modules/libhermes/include")
+    HERMES_AAR = file("${prebuiltHermesDir}/hermes-engine-debug.aar")
+  } else if (hasHermesProject) {
+    HERMES_HEADER_DIR = file("${thirdPartyNdkDir}/hermes/prefab/modules/libhermes/include")
+    HERMES_AAR = file("${REACT_NATIVE_DIR}/ReactAndroid/hermes-engine/build/outputs/aar/hermes-engine-debug.aar")
   } else {
+    // The `hermes-engine` package doesn't contain the correct version of the Hermes.
+    // The AAR we need to import is located in the React Native package.
+    // However, the version from RN doesn't include header files.
+    // To get those, we must fall back to the `hermes-engine` package.
+    def hermesEngineDir = new File(["node", "--print", "require.resolve('hermes-engine/package.json')"].execute(null, rootDir).text.trim()).parent
+
     def prebuiltAAR = fileTree(REACT_NATIVE_DIR).matching { include "**/hermes-engine/**/hermes-engine-*-debug.aar" }
     if (prebuiltAAR.any()) {
       HERMES_AAR = prebuiltAAR.singleFile
     } else {
-      HERMES_AAR = file("$HERMES_ENGINE_DIR/android/hermes-debug.aar")
+      HERMES_AAR = file("${hermesEngineDir}/android/hermes-debug.aar")
     }
+    HERMES_HEADER_DIR = file("${hermesEngineDir}/android/include")
   }
 }
+// END HERMES
+
 
 // Creating sources with comments
 task androidSourcesJar(type: Jar) {
@@ -156,7 +170,7 @@ android {
           "-DREACT_NATIVE_TARGET_VERSION=${REACT_NATIVE_TARGET_VERSION}",
           "-DBOOST_VERSION=${BOOST_VERSION}",
           "-DFOR_HERMES=${FOR_HERMES}",
-          "-DHERMES_DIR=${HERMES_ENGINE_DIR}"
+          "-DHERMES_HEADER_DIR=${HERMES_HEADER_DIR}"
       }
     }
   }
@@ -264,7 +278,8 @@ dependencies {
   androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0"
 
   if (FOR_HERMES) {
-    androidTestImplementation files(HERMES_AAR)
+    def hermesProject = findProject(":ReactAndroid:hermes-engine")
+    androidTestImplementation (hermesProject ?: files(HERMES_AAR))
   } else {
     androidTestImplementation "org.webkit:android-jsc:+"
   }
@@ -427,12 +442,14 @@ task prepareHermes(dependsOn: createNativeDepsDirectories) {
     return
   }
 
-  def soFiles = zipTree(HERMES_AAR).matching({ it.include "**/*.so" })
+  doLast {
+    def files = zipTree(HERMES_AAR).matching({ it.include "**/*.so", "prefab/modules/libhermes/include/**/*" })
 
-  copy {
-    from soFiles
-    from "$REACT_NATIVE_DIR/ReactAndroid/src/main/jni/first-party/hermes/Android.mk"
-    into "$thirdPartyNdkDir/hermes"
+    copy {
+      from files
+      from "$REACT_NATIVE_DIR/ReactAndroid/src/main/jni/first-party/hermes/Android.mk"
+      into "$thirdPartyNdkDir/hermes"
+    }
   }
 }
 
@@ -441,6 +458,9 @@ task prepareThirdPartyNdkHeaders(dependsOn: [prepareBoost, prepareDoubleConversi
 afterEvaluate {
   extractAARHeaders.dependsOn(prepareThirdPartyNdkHeaders)
   extractJNIFiles.dependsOn(prepareThirdPartyNdkHeaders)
+  if (hasHermesProject && !prebuiltHermesCacheHit) {
+    prepareHermes.dependsOn(":ReactAndroid:hermes-engine:assembleDebug")
+  }
 }
 
 tasks.whenTaskAdded { task ->

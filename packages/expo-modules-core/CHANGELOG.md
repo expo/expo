@@ -15,6 +15,7 @@
 ### 🐛 Bug fixes
 
 - Fix issue with Android builds when gradle clean and build were called concurrently.  ([#18518](https://github.com/expo/expo/pull/18518) by [EdwardDrapkin](https://github.com/EdwardDrapkin))
+- Fixed `FabricUIManager` errors when turning on new architecture mode on Android. ([#18472](https://github.com/expo/expo/pull/18472) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 

@@ -35,6 +35,8 @@ open class ReactNativeHostWrapperBase(
       handler.onDidCreateReactInstanceManager(result, developerSupport)
     }
 
+    injectHostReactInstanceManager(result)
+
     return result
   }
 
@@ -93,8 +95,7 @@ open class ReactNativeHostWrapperBase(
       reactNativeHostHandlers.forEach { handler ->
         handler.onRegisterJSIModules(reactApplicationContext, jsContext, useDeveloperSupport)
       }
-      userJSIModulePackage?.getJSIModules(reactApplicationContext, jsContext)
-      return emptyList()
+      return userJSIModulePackage?.getJSIModules(reactApplicationContext, jsContext)?.toList() ?: emptyList()
     }
   }
 
@@ -107,6 +108,16 @@ open class ReactNativeHostWrapperBase(
       methodMap[name] = method
     }
     return method!!.invoke(host) as T
+  }
+
+  /**
+   * Inject the @{ReactInstanceManager} from the wrapper to the wrapped host.
+   * In case the wrapped host to call `getReactInstanceManager` inside its methods.
+   */
+  fun injectHostReactInstanceManager(reactInstanceManager: ReactInstanceManager) {
+    val mReactInstanceManagerField = ReactNativeHost::class.java.getDeclaredField("mReactInstanceManager")
+    mReactInstanceManagerField.isAccessible = true
+    mReactInstanceManagerField.set(host, reactInstanceManager)
   }
 
   //endregion
