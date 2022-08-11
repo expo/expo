@@ -45,7 +45,7 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, RCTB
     self.reactDelegate = reactDelegate
     self.bridgeDelegate = EXRCTBridgeDelegateInterceptor(bridgeDelegate: bridgeDelegate, interceptor: self)
     self.launchOptions = launchOptions
-    
+
     EXDevLauncherController.sharedInstance().autoSetupPrepare(self, launchOptions: launchOptions)
     if (EXUpdatesControllerRegistry.sharedInstance().controller != nil) {
       EXDevLauncherController.sharedInstance().updatesInterface = EXUpdatesControllerRegistry.sharedInstance().controller
@@ -73,19 +73,18 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, RCTB
   // MARK: EXDevelopmentClientControllerDelegate implementations
 
   public func devLauncherController(_ developmentClientController: EXDevLauncherController, didStartWithSuccess success: Bool) {
-    
     var launchOptions: [AnyHashable: Any] = [:]
-    
+
     if let initialLaunchOptions = self.launchOptions {
       for (key, value) in initialLaunchOptions {
         launchOptions[key] = value
       }
     }
-    
+
     for (key, value) in developmentClientController.getLaunchOptions() {
       launchOptions[key] = value
     }
-    
+
     let bridge = RCTBridge(delegate: self.bridgeDelegate, launchOptions: launchOptions)
     developmentClientController.appBridge = bridge
 
