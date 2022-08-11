@@ -64,7 +64,7 @@ class PersistentFileLogSpec: ExpoSpec {
   func filterEntriesSync(filter: @escaping PersistentFileLogFilter) {
     serialQueue.sync {
       let sem = DispatchSemaphore(value: 0)
-      log.filterEntries(filter: filter) { _ in
+      log.purgeEntriesNotMatchingFilter(filter: filter) { _ in
         sem.signal()
       }
       sem.wait()

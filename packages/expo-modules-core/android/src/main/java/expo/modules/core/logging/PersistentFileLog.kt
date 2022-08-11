@@ -4,8 +4,6 @@ import android.content.Context
 import java.io.File
 import java.io.IOException
 import java.nio.charset.Charset
-import kotlinx.coroutines.*
-import kotlinx.coroutines.channels.*
 
 /**
  * A thread-safe class for reading and writing line-separated strings to a flat file
@@ -64,7 +62,7 @@ class PersistentFileLog(
   /**
    * Filter existing entries and remove ones where filter(entry) == false
    */
-  fun filterEntries(filter: (_: String) -> Boolean, completionHandler: (_: Error?) -> Unit) {
+  fun purgeEntriesNotMatchingFilter(filter: (_: String) -> Boolean, completionHandler: (_: Error?) -> Unit) {
     queue.add {
       try {
         this.ensureFileExists()
@@ -94,7 +92,7 @@ class PersistentFileLog(
 
   // Private functions
 
-  private val filePath = context.filesDir.path + "/" + category
+  private val filePath = "${context.filesDir.path}/$FILE_NAME_PREFIX.$category"
 
   private fun ensureFileExists() {
     val fd = File(filePath)
@@ -111,15 +109,12 @@ class PersistentFileLog(
     if (!file.exists()) {
       return 0L
     }
-    var size = 0L
-    try {
-      file.inputStream().use {
-        size = it.channel.size()
-      }
+    return try {
+      file.inputStream().use { it.channel.size() }
     } catch (e: IOException) {
       // File does not exist or is inaccessible
+      0L
     }
-    return size
   }
 
   private fun appendTextToFile(text: String) {
@@ -127,7 +122,7 @@ class PersistentFileLog(
   }
 
   private fun readFileLinesSync(): List<String> {
-    return stringToList(File(filePath).readText(Charset.defaultCharset()))
+    return File(filePath).readLines(Charset.defaultCharset()).filter { line -> line.isNotEmpty() }
   }
 
   private fun writeFileLinesSync(entries: List<String>) {
@@ -150,25 +145,6 @@ class PersistentFileLog(
 
   companion object {
     private val queue = PersistentFileLogSerialDispatchQueue()
-  }
-}
-
-// Private serial dispatch queue
-
-internal typealias PersistentFileLogSerialDispatchQueueBlock = () -> Unit
-
-internal class PersistentFileLogSerialDispatchQueue {
-  private val channel = Channel<PersistentFileLogSerialDispatchQueueBlock>(Channel.BUFFERED)
-
-  // Queue a block in the channel
-  fun add(block: PersistentFileLogSerialDispatchQueueBlock) = runBlocking { channel.send(block) }
-
-  fun stop() = sc.cancel()
-
-  // On creation, this starts and runs for the lifetime of the app, pulling blocks off the channel
-  // and running them as needed
-  @OptIn(DelicateCoroutinesApi::class)
-  private val sc = GlobalScope.launch {
-    while (true) { channel.receive()() }
+    private const val FILE_NAME_PREFIX = "dev.expo.modules.core.logging"
   }
 }

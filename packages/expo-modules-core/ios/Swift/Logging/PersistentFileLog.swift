@@ -26,16 +26,17 @@ public typealias PersistentFileLogCompletionHandler = (Error?) -> Void
  *
  */
 public class PersistentFileLog {
-  private static let EXPO_UPDATES_LOG_QUEUE_LABEL = "dev.expo.updates.logging"
-  private static let serialQueue = DispatchQueue(label: EXPO_UPDATES_LOG_QUEUE_LABEL)
+  private static let EXPO_MODULES_CORE_LOG_QUEUE_LABEL = "dev.expo.modules.core.logging"
+  private static let serialQueue = DispatchQueue(label: EXPO_MODULES_CORE_LOG_QUEUE_LABEL)
 
   private let category: String
   private let filePath: String
 
   public init(category: String) {
     self.category = category
-    let fileName = "\(PersistentFileLog.EXPO_UPDATES_LOG_QUEUE_LABEL).\(category).txt"
-    self.filePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent(fileName).path ?? ""
+    let fileName = "\(PersistentFileLog.EXPO_MODULES_CORE_LOG_QUEUE_LABEL).\(category).txt"
+    // Execution aborts if no documents directory
+    self.filePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent(fileName).path
   }
   /**
    Read entries from log file
@@ -44,11 +45,7 @@ public class PersistentFileLog {
     if getFileSize() == 0 {
       return []
     }
-    do {
-      return try self.readFileSync()
-    } catch {
-      return []
-    }
+    return (try? self.readFileSync()) ?? []
   }
 
   /**
@@ -67,7 +64,7 @@ public class PersistentFileLog {
   /**
    Filter existing entries and remove ones where filter(entry) == false
    */
-  public func filterEntries(filter: @escaping PersistentFileLogFilter, _ completionHandler: @escaping PersistentFileLogCompletionHandler) {
+  public func purgeEntriesNotMatchingFilter(filter: @escaping PersistentFileLogFilter, _ completionHandler: @escaping PersistentFileLogCompletionHandler) {
     PersistentFileLog.serialQueue.async {
       self.ensureFileExists()
       do {

@@ -7,11 +7,13 @@ import android.content.Context
  * Android context must be passed in as the second parameter in the constructor
  */
 internal class PersistentFileLogHandler(
-  override val category: String,
-  override val additionalInfo: Context
-) : LogHandler {
+  category: String,
+  context: Context
+) : LogHandler(
+  category
+) {
 
-  private val persistentFileLog = PersistentFileLog(category, additionalInfo)
+  private val persistentFileLog = PersistentFileLog(category, context)
 
   override fun log(type: LogType, message: String) {
     persistentFileLog.appendEntry(message)

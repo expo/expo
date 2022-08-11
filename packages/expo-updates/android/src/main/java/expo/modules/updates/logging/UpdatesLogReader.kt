@@ -21,8 +21,8 @@ class UpdatesLogReader(
     olderThan: Date = Date(Date().time - ONE_DAY_MILLISECONDS),
     completionHandler: (_: Error?) -> Unit
   ) {
-    val epochTimestamp = epochFromDate(olderThan)
-    persistentLog.filterEntries(
+    val epochTimestamp = epochFromDateOrOneDayAgo(olderThan)
+    persistentLog.purgeEntriesNotMatchingFilter(
       { entryString -> isEntryStringLaterThanTimestamp(entryString, epochTimestamp) },
       completionHandler
     )
@@ -33,7 +33,7 @@ class UpdatesLogReader(
    * Returns a list of strings in the JSON format of UpdatesLogEntry
    */
   fun getLogEntries(newerThan: Date): List<String> {
-    val epochTimestamp = epochFromDate(newerThan)
+    val epochTimestamp = epochFromDateOrOneDayAgo(newerThan)
     return persistentLog.readEntries()
       .filter { entryString -> isEntryStringLaterThanTimestamp(entryString, epochTimestamp) }
   }
@@ -45,7 +45,7 @@ class UpdatesLogReader(
     return entry.timestamp >= timestamp
   }
 
-  private fun epochFromDate(date: Date): Long {
+  private fun epochFromDateOrOneDayAgo(date: Date): Long {
     // Returns the epoch (milliseconds since 1/1/1970)
     // If date is earlier than one day ago, then the epoch for one day ago is returned
     // instead

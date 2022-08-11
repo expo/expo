@@ -6,9 +6,10 @@ import android.util.Log
  * Simple log handler that forwards all logs to Android native Log class.
  */
 internal class OSLogHandler(
-  override val category: String,
-  override val additionalInfo: Any? = null
-) : LogHandler {
+  category: String
+) : LogHandler(
+  category
+) {
   override fun log(type: LogType, message: String) {
     when (LogType.toOSLogType(type)) {
       Log.DEBUG -> Log.d(category, message)

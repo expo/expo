@@ -21,7 +21,7 @@ public class UpdatesLogReader: NSObject {
    */
   @objc(getLogEntriesNewerThan:error:)
   public func getLogEntries(newerThan: Date) throws -> [[String: Any]] {
-    let epoch = epochFromDate(date: newerThan)
+    let epoch = epochFromDateOrOneDayAgo(date: newerThan)
     return logPersistence.readEntries()
       .compactMap { entryString in
         logStringToFilteredLogEntry(entryString: entryString, epoch: epoch)?.asDict()
@@ -35,7 +35,7 @@ public class UpdatesLogReader: NSObject {
    */
   @objc(getLogEntryStringsNewerThan:)
   public func getLogEntries(newerThan: Date) -> [String] {
-    let epoch = epochFromDate(date: newerThan)
+    let epoch = epochFromDateOrOneDayAgo(date: newerThan)
     return logPersistence.readEntries()
       .compactMap { entryString in
         logStringToFilteredLogEntry(entryString: entryString, epoch: epoch)?.asString()
@@ -58,8 +58,8 @@ public class UpdatesLogReader: NSObject {
    */
   @objc(purgeLogEntriesOlderThan:completion:)
   public func purgeLogEntries(olderThan: Date, completion: @escaping (Error?) -> Void) {
-    let epoch = epochFromDate(date: olderThan)
-    logPersistence.filterEntries(filter: { entryString in
+    let epoch = epochFromDateOrOneDayAgo(date: olderThan)
+    logPersistence.purgeEntriesNotMatchingFilter(filter: { entryString in
       self.logStringToFilteredLogEntry(entryString: entryString, epoch: epoch) != nil
     }, {error in
       completion(error)
@@ -78,7 +78,10 @@ public class UpdatesLogReader: NSObject {
 
   private static let MAXIMUM_LOOKBACK_INTERVAL: TimeInterval = 86_400 // 1 day
 
-  private func epochFromDate(date: Date) -> UInt {
+  private func epochFromDateOrOneDayAgo(date: Date) -> UInt {
+    // Returns the epoch (milliseconds since 1/1/1970)
+    // If date is earlier than one day ago, then the epoch for one day ago is returned
+    // instead
     let earliestDate = Date().addingTimeInterval(-UpdatesLogReader.MAXIMUM_LOOKBACK_INTERVAL)
     let dateToUse = date.timeIntervalSince1970 < earliestDate.timeIntervalSince1970 ?
       earliestDate :
