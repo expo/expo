@@ -55,13 +55,13 @@ Async functions that are appended to the [Expo Config](#expo-config) for use in 
 
 ### Config Plugin
 
-A JavaScript function that is used to append [config mods](#config-mods) to the [Expo Config](#expo-config) for use in [Prebuild](#prebuild). [Learn more](/guides/config-plugins).
+A JavaScript function that is used to append [config mods](#config-mods) to the [Expo Config](#expo-config) for use in [Prebuild](#prebuild). For more information, see [Config Plugins](/guides/config-plugins).
 
 ### create-expo-app
 
 A standalone command line tool (CLI) for bootstrapping new React Native apps with the `expo` package installed.
 
-This package can be used by running:
+This package can be used by running any of the following commands:
 
 - `npx create-expo-app`
 - `yarn create expo-app`
@@ -71,7 +71,7 @@ This package can be used by running:
 
 A standalone command line tool (CLI) for bootstrapping new React Native apps with the `expo` package installed and the native code generated. This CLI also enables the use of bootstrapping from an example project in [expo/examples](https://github.com/expo/examples).
 
-This package can be used by running:
+This package can be used by running any of the following commands:
 
 - `npx create-expo-app`
 - `yarn create expo-app`
