@@ -30,7 +30,7 @@ body:
   - type: textarea
     attributes:
       label: Environment
-      description: Run `npx expo-env-info` command and paste its output in the field below.
+      description: Run the `npx expo-env-info` command and paste its output in the field below.
     validations:
       required: true
   - type: textarea
