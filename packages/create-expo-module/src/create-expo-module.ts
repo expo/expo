@@ -225,7 +225,7 @@ async function confirmTargetDirAsync(targetDir: string): Promise<void> {
       name: 'shouldContinue',
       message: `The target directory ${chalk.magenta(
         targetDir
-      )} is not empty.\nDo you want to continue anyway?`,
+      )} is not empty, do you want to continue anyway?`,
       initial: true,
     },
     {
