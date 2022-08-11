@@ -80,7 +80,7 @@ const renderTypePropertyRow = ({
         {renderFlags(flags, initValue)}
         {kind && renderIndexSignature(kind)}
       </Cell>
-      <Cell fitContent>{renderTypeOrSignatureType(type, signatures)}</Cell>
+      <Cell fitContent>{renderTypeOrSignatureType(type, signatures, true)}</Cell>
       <Cell fitContent>
         <APISectionDeprecationNote comment={comment} />
         <CommentTextBlock

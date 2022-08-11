@@ -351,6 +351,7 @@ export function Main({ registeredCallbacks = [] }: MainProps) {
           </Row>
         </Button.ScaleOnPressContainer>
       </View>
+      <Spacer.Vertical size="large" />
     </View>
   );
 }

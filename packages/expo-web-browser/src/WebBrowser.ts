@@ -1,5 +1,12 @@
 import { UnavailabilityError } from 'expo-modules-core';
-import { AppState, AppStateStatus, Linking, Platform, EmitterSubscription } from 'react-native';
+import {
+  AppState,
+  AppStateStatus,
+  Linking,
+  Platform,
+  EmitterSubscription,
+  processColor,
+} from 'react-native';
 
 import ExponentWebBrowser from './ExpoWebBrowser';
 import {
@@ -177,7 +184,7 @@ export async function openBrowserAsync(
 
   let result: WebBrowserResult;
   try {
-    result = await ExponentWebBrowser.openBrowserAsync(url, browserParams);
+    result = await ExponentWebBrowser.openBrowserAsync(url, _processOptions(browserParams));
   } finally {
     // WebBrowser session complete, unset lock
     browserLocked = false;
@@ -256,7 +263,7 @@ export async function openAuthSessionAsync(
       throw new UnavailabilityError('WebBrowser', 'openAuthSessionAsync');
     }
     if (['ios', 'web'].includes(Platform.OS)) {
-      return ExponentWebBrowser.openAuthSessionAsync(url, redirectUrl, options);
+      return ExponentWebBrowser.openAuthSessionAsync(url, redirectUrl, _processOptions(options));
     }
     return ExponentWebBrowser.openAuthSessionAsync(url, redirectUrl);
   } else {
@@ -315,6 +322,15 @@ export function maybeCompleteAuthSession(
     return ExponentWebBrowser.maybeCompleteAuthSession(options);
   }
   return { type: 'failed', message: 'Not supported on this platform' };
+}
+
+function _processOptions(options: WebBrowserOpenOptions) {
+  return {
+    ...options,
+    controlsColor: processColor(options.controlsColor),
+    toolbarColor: processColor(options.toolbarColor),
+    secondaryToolbarColor: processColor(options.secondaryToolbarColor),
+  };
 }
 
 /* iOS <= 10 and Android polyfill for SFAuthenticationSession flow */
