@@ -35,7 +35,7 @@ The default [Prebuild template](#prebuild-template) includes support for [Expo A
 
 ### Babel
 
-Transpiler used for removing language features that aren't available in the runtime's JavaScript engine. [Metro](#metro-bundler) uses Babel internally. Project's can configure how Babel is used by modifying the `babel.config.js` file in their project directory. This file is optional when using [Expo CLI](#expo-cli). Expo projects should extend the default Babel preset [`babel-preset-expo`](https://github.com/expo/expo/tree/main/packages/babel-preset-expo).
+Transpiler used for removing language features that aren't available in the runtime's [JavaScript engine](#javascript-engine). [Metro](#metro-bundler) uses Babel internally. Project's can configure how Babel is used by modifying the `babel.config.js` file in their project directory. This file is optional when using [Expo CLI](#expo-cli). Expo projects should extend the default Babel preset [`babel-preset-expo`](https://github.com/expo/expo/tree/main/packages/babel-preset-expo).
 
 ### CocoaPods
 
@@ -213,7 +213,7 @@ The Android package manager and build tools.
 
 ### Hermes Engine
 
-A JavaScript engine developed by Meta for use with React Native. Hermes uses Bytecode to improve startup time. Hermes is better at debugging than JavaScriptCore as it implements parts of the [Chrome DevTools Protocol](https://chromedevtools.github.io/devtools-protocol/).
+A [JavaScript engine](#javascript-engine) developed by [Meta](#meta) for use with [React Native](#react-native). Hermes uses Bytecode to improve startup time. Hermes is better at debugging than [JavaScriptCore](#javascriptcore-engine) as it implements parts of the [Chrome DevTools Protocol](https://chromedevtools.github.io/devtools-protocol/).
 
 ### iOS
 
@@ -221,7 +221,11 @@ The operating system used on iPhone, iPad, and Apple TV. [Expo Go](#expo-go) cur
 
 ### JavaScript Engine
 
-A native package that can evaluate JavaScript on-device. In React Native we often use JavaScriptCore by Apple. Other options include [Hermes](#hermes-engine) by Meta, and V8 by Google.
+A native package that can evaluate JavaScript on-device. In React Native we often use [JavaScriptCore](#javascript-engine). Other options include [Hermes](#hermes-engine) by [Meta](#meta), and V8 by Google.
+
+### JavaScriptCore Engine
+
+A [JavaScript engine](#javascript-engine) developed by Apple and built-in to [iOS](#ios). React for [Android](#android) also uses a version of JavaScriptCore for parity. Debugging with JavaScriptCore is less sophisticated than V8 or [Hermes](#hermes-engine) which implement the [Chrome DevTools Protocol](https://chromedevtools.github.io/devtools-protocol/).
 
 ### Linking
 
@@ -241,7 +245,7 @@ Formerly Facebook, Meta is the group that develops [React Native](#react-native)
 
 ### Metro Bundler
 
-The bundler used for converting JavaScript files and assets into a format that runs on a native client. This bundler is maintained by Meta and used exclusively for React Native apps. [Learn more](https://facebook.github.io/metro).
+The bundler used for converting JavaScript files and assets into a format that runs on a native client. This bundler is maintained by [Meta](#meta) and used exclusively for React Native apps. [Learn more](https://facebook.github.io/metro).
 
 ### Metro Config
 
@@ -368,7 +372,7 @@ The VS Code extension for improving the developer experience of working with Exp
 
 ### Watchman
 
-The file watcher used by [Metro](#metro-bundler) to perform hot reloads during development. Watchman contains native code and may cause issues when installing globally. Watchman is maintained by Meta and used in Jest.
+The file watcher used by [Metro](#metro-bundler) to perform hot reloads during development. Watchman contains native code and may cause issues when installing globally. Watchman is maintained by [Meta](#meta) and used in Jest.
 
 ### Webpack
 
