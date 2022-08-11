@@ -47,7 +47,7 @@ This refers to the React Native community [fork](https://github.com/react-native
 
 ### Config Introspection
 
-A process for evaluating the results of [`expo prebuild`](#prebuild) in-memory without persisting any code changes. This is used in [Auto Capability Signing](#auto-capability-signing) to determine what the entitlements file will look like without generating any native code. This process is also used in the [VS Code Expo](#vscode-expo) extension to debug [Config Mods](#config-mods).
+A process for evaluating the results of [`expo prebuild`](#prebuild) in-memory without persisting any code changes. This is used in [Auto Capability Signing](#auto-capability-signing) to determine what the entitlements file will look like without generating any native code. This process is also used in the [VS Code Expo](#vs-code-expo) extension to debug [Config Mods](#config-mods).
 
 ### Config Mods
 
@@ -93,7 +93,7 @@ A [native runtime](#native-runtime) that has been built in development mode. The
 
 ### Development Server
 
-A development server (or dev server) is a server that is started locally, usually by running `npx expo start` from [Expo CLI](#expo-cli). 
+A development server (or dev server) is a server that is started locally, usually by running `npx expo start` from [Expo CLI](#expo-cli).
 
 The development server is typically hosted on `http://localhost:19000`. It hosts a [manifest](#manifest) from `/` which the client uses to request the JavaScript bundle from the bundler.
 
@@ -376,7 +376,7 @@ Traditionally, apps for iOS and Android are updated by submitting an updated bin
 
 ### VS Code Expo
 
-The VSCode extension for improving the developer experience of working with Expo config files. This extension provides autocomplete and intellisense for the [Expo Config](#expo-config), [Store Config](#store-config), [Expo Module Config](#expo-module-config), and [EAS Config](#eas-config). For more information, see the [VSCode Expo extension](https://marketplace.visualstudio.com/items?itemName=byCedric.vscode-expo).
+The VS Code extension for improving the developer experience of working with Expo config files. This extension provides autocomplete and intellisense for the [Expo Config](#expo-config), [Store Config](#store-config), [Expo Module Config](#expo-module-config), and [EAS Config](#eas-config). For more information, see the [VSCode Expo extension](https://marketplace.visualstudio.com/items?itemName=byCedric.vscode-expo).
 
 ### Watchman
 
