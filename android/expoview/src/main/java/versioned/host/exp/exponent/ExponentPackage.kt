@@ -223,7 +223,11 @@ class ExponentPackage : ReactPackage {
 
     // Need to avoid initializing duplicated packages
     private val stripePackage = StripeSdkPackage()
-    private val skiaPackageClass = Class.forName("com.shopify.reactnative.skia.RNSkiaPackage")
+    private val skiaPackageClass = try {
+      Class.forName("com.shopify.reactnative.skia.RNSkiaPackage")
+    } catch (e: ClassNotFoundException) {
+      null
+    }
 
     fun kernelExponentPackage(
       context: Context,
