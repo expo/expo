@@ -93,7 +93,9 @@ A [native runtime](#native-runtime) that has been built in development mode. The
 
 ### Development Server
 
-A development server (or dev server) is a server that is started locally, usually by running `npx expo start` from [Expo CLI](#expo-cli). The development server is typically hosted on `http://localhost:19000`. The development server hosts a [manifest](#manifest) from `/` which the client uses to request the JavaScript bundle from the bundler.
+A development server (or dev server) is a server that is started locally, usually by running `npx expo start` from [Expo CLI](#expo-cli). 
+
+The development server is typically hosted on `http://localhost:19000`. It hosts a [manifest](#manifest) from `/` which the client uses to request the JavaScript bundle from the bundler.
 
 ### EAS
 
@@ -105,7 +107,7 @@ The command-line tool for working with EAS. <!-- Pending creation of eas-cli [Re
 
 ### EAS Config
 
-The `eas.json` file used to configure [EAS CLI](#eas-cli). [Learn more](/build/eas-json/).
+The `eas.json` file used to configure [EAS CLI](#eas-cli). For more information, see [Configuring EAS Build with `eas.json`](/build/eas-json/).
 
 ### EAS Metadata
 
@@ -131,7 +133,7 @@ Emulator is used to describe software emulators of Android devices on your compu
 
 ### Entry Point
 
-The entry point usually refers to the initial JavaScript file used to load an application. In apps using [Expo CLI](#expo-cli), the default entry point is `./node_modules/expo/AppEntry.js` which simply imports the file `./App.js` from the root project directory and registers it as the initial component in the native app.
+The entry point usually refers to the initial JavaScript file used to load an application. In apps using [Expo CLI](#expo-cli), the default entry point is `./node_modules/expo/AppEntry.js` which simply imports the **App.js** file from the root project directory and registers it as the initial component in the native app.
 
 ### Experience
 
@@ -139,11 +141,11 @@ A synonym for app that usually implies something more single-use and smaller in 
 
 ### Expo Autolinking
 
-The original [Autolinking](#autolinking) system that is designed for project's using `expo-modules-core`. This system links modules based on the existence of a `expo-module.config.json` file in the library's root directory.
+The original [Autolinking](#autolinking) system that is designed for projects using `expo-modules-core`. This system links modules based on the existence of an `expo-module.config.json` file in the library's root directory.
 
 ### Expo CLI
 
-The command-line tool for working with Expo. [Read more](expo-cli.md). This term now refers to the [Local Expo CLI](#local-expo-cli), but historically referred to the [Global Expo CLI](#global-expo-cli).
+The command-line tool for working with Expo. This term now refers to the [Local Expo CLI](#local-expo-cli), but historically referred to the [Global Expo CLI](#global-expo-cli). For more information, see [Expo CLI](expo-cli.md).
 
 ### Expo client
 
@@ -169,11 +171,11 @@ The iOS and Android app that runs Expo apps. When you want to run your app outsi
 
 ### Expo Install
 
-Refers to the command `npx expo install` from [Expo CLI](#expo-cli). This command is used to install NPM packages containing [native modules](#native-module) that work with the currently installed version of `expo` in the project. Not all packages are supported. This command wraps the globally installed [package managers](#package-manager).
+Refers to the command `npx expo install` from [Expo CLI](#expo-cli). This command is used to install npm packages containing [native modules](#native-module) that work with the currently installed version of `expo` in the project. Not all packages are supported. This command wraps the globally installed [package managers](#package-manager).
 
 ### Expo Module Config
 
-A file named `expo-module.config.json` that lives in the root directory of a [native module](#native-module). [Learn more](/modules/module-config/).
+A file named `expo-module.config.json` that lives in the root directory of a [native module](#native-module). For more information, see [Module Config](/modules/module-config/).
 
 ### Expo SDK
 
@@ -193,7 +195,7 @@ ExpoKit is an Objective-C and Java library that allows you to use the [Expo SDK]
 
 ### Fabric
 
-The React Native rendering system, used to create an manage native views. [Learn more](https://reactnative.dev/architecture/fabric-renderer). This package supports [iOS](#ios) and [Android](#android).
+The React Native rendering system that is used to create and manage native views. This package supports [iOS](#ios) and [Android](#android). For more information, see [Fabric Renderer](https://reactnative.dev/architecture/fabric-renderer).
 
 ### Flipper
 
