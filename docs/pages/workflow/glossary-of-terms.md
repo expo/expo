@@ -179,7 +179,13 @@ A file named `expo-module.config.json` that lives in the root directory of a [na
 
 ### Expo SDK
 
-The Expo SDK provides access to device/system functionality such as camera, push notification, contacts, file system, and more. Scroll to the SDK API reference in the documentation navigation to see a full list of APIs and to explore them. [Read more about the Expo SDK](/versions/latest/). [Find it on GitHub](https://github.com/expo/expo-sdk).
+A collection of [npm](#npm) packages containing [native modules](#native-module) that provides access to device/system functionality such as camera, push notification, contacts, file system, and more.
+
+- Each package supports iOS, Android, and web whenever possible.
+- The interface is completely written in [TypeScript](#typescript).
+- All packages in the Expo SDK work with each other and can safely be compiled together.
+- Any package in the SDK can be used in any [React Native](#react-native) app, with minimal, shared setup. [Learn more](/bare/installing-expo-modules/).
+- All packages are [open source](https://github.com/expo/expo/tree/main/packages) and can be freely customized. Many popular community React Native packages started as forks of packages in the Expo SDK.
 
 ### Expo Start
 
