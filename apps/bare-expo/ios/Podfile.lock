@@ -90,21 +90,21 @@ PODS:
     - ExpoModulesCore
   - Expo (46.0.1):
     - ExpoModulesCore
-  - expo-dev-client (1.1.1):
+  - expo-dev-client (1.2.0):
     - EXManifests
     - expo-dev-launcher
     - expo-dev-menu
     - expo-dev-menu-interface
     - EXUpdatesInterface
-  - expo-dev-launcher (1.1.1):
+  - expo-dev-launcher (1.2.0):
     - EXManifests
-    - expo-dev-launcher/Main (= 1.1.1)
+    - expo-dev-launcher/Main (= 1.2.0)
     - expo-dev-menu
     - expo-dev-menu-interface
     - ExpoModulesCore
     - EXUpdatesInterface
     - React-Core
-  - expo-dev-launcher/Main (1.1.1):
+  - expo-dev-launcher/Main (1.2.0):
     - EXManifests
     - expo-dev-launcher/Unsafe
     - expo-dev-menu
@@ -112,24 +112,24 @@ PODS:
     - ExpoModulesCore
     - EXUpdatesInterface
     - React-Core
-  - expo-dev-launcher/Unsafe (1.1.1):
+  - expo-dev-launcher/Unsafe (1.2.0):
     - EXManifests
     - expo-dev-menu
     - expo-dev-menu-interface
     - ExpoModulesCore
     - EXUpdatesInterface
     - React-Core
-  - expo-dev-menu (1.1.1):
-    - expo-dev-menu/Main (= 1.1.1)
-  - expo-dev-menu-interface (0.7.1)
-  - expo-dev-menu/GestureHandler (1.1.1)
-  - expo-dev-menu/Main (1.1.1):
+  - expo-dev-menu (1.2.0):
+    - expo-dev-menu/Main (= 1.2.0)
+  - expo-dev-menu-interface (0.7.2)
+  - expo-dev-menu/GestureHandler (1.2.0)
+  - expo-dev-menu/Main (1.2.0):
     - EXManifests
     - expo-dev-menu-interface
     - expo-dev-menu/Vendored
     - ExpoModulesCore
     - React-Core
-  - expo-dev-menu/Reanimated (1.1.1):
+  - expo-dev-menu/Reanimated (1.2.0):
     - DoubleConversion
     - FBLazyVector
     - FBReactNativeSpec
@@ -157,15 +157,15 @@ PODS:
     - React-RCTVibration
     - ReactCommon/turbomodule/core
     - Yoga
-  - expo-dev-menu/SafeAreaView (1.1.1)
-  - expo-dev-menu/Tests (1.1.1):
+  - expo-dev-menu/SafeAreaView (1.2.0)
+  - expo-dev-menu/Tests (1.2.0):
     - Nimble
     - Quick
     - React-CoreModules
-  - expo-dev-menu/UITests (1.1.1):
+  - expo-dev-menu/UITests (1.2.0):
     - React
     - React-CoreModules
-  - expo-dev-menu/Vendored (1.1.1):
+  - expo-dev-menu/Vendored (1.2.0):
     - expo-dev-menu/GestureHandler
     - expo-dev-menu/Reanimated
     - expo-dev-menu/SafeAreaView
