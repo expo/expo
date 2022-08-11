@@ -4,7 +4,7 @@
 
 ### 🛠 Breaking changes
 
-- Remove deprecated `requestCameraRollPermissionsAsync` and `getCameraRollPermissionsAsync` methods, as well as associated to them `CameraRollPermissionResponse` type.
+- Remove deprecated `requestCameraRollPermissionsAsync` and `getCameraRollPermissionsAsync` methods, as well as associated to them `CameraRollPermissionResponse` type. ([#18600](https://github.com/expo/expo/pull/18600) by [@Simek](https://github.com/Simek))
 
 ### 🎉 New features
 
