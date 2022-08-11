@@ -10,6 +10,8 @@
 - [Android] New logger and log reader for unifying logging support in expo-updates. ([#18318](https://github.com/expo/expo/pull/18318) by [@douglowder](https://github.com/douglowder))
 - Add JS methods to read and clear client logs. ([#18390](https://github.com/expo/expo/pull/18390) by [@douglowder](https://github.com/douglowder))
 - Add Logger support for writing logs to a file; add Logger and associated classes to Android. ([#18513](https://github.com/expo/expo/pull/18513) by [@douglowder](https://github.com/douglowder))
+||||||| 441f9e2708
+- Make extra header processing code consistent between manifests and assets. ([#18564](https://github.com/expo/expo/pull/18564) by [@wschurman](https://github.com/wschurman))
 
 ### 🐛 Bug fixes
 
