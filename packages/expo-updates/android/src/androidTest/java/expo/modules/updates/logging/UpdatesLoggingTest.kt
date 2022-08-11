@@ -74,7 +74,7 @@ class UpdatesLoggingTest : TestCase() {
     asyncTestUtil.waitForTimeout(500)
     val sinceThen = Date(now.time - 5000)
     val logs = UpdatesLogReader(instrumentationContext).getLogEntries(sinceThen)
-    Assert.assertTrue(logs.size > 0)
+    Assert.assertTrue(logs.isNotEmpty())
     val actualLogEntry = UpdatesLogEntry.create(logs[logs.size - 1]) as UpdatesLogEntry
     Assert.assertEquals(expectedLogEntry.timestamp / 1000, actualLogEntry.timestamp / 1000)
     Assert.assertEquals(expectedLogEntry.message, actualLogEntry.message)
@@ -119,6 +119,7 @@ class UpdatesLoggingTest : TestCase() {
       asyncTestUtil.asyncMethodRunning = false
     }
     asyncTestUtil.waitForAsyncMethodToFinish("purgeLogEntries timed out", 1000)
+    Assert.assertNull(err)
     val purgedLogs = reader.getLogEntries(firstTime)
     Assert.assertEquals(1, purgedLogs.size)
     Assert.assertEquals("Message 2", UpdatesLogEntry.create(purgedLogs[0])?.message)
@@ -142,7 +143,7 @@ class UpdatesLoggingTest : TestCase() {
           entries = result as? List<Bundle>
           asyncTestUtil.asyncMethodRunning = false
         },
-        reject = { code, message, e ->
+        reject = { _, _, _ ->
           rejected = true
           asyncTestUtil.asyncMethodRunning = false
         }
@@ -181,7 +182,7 @@ class UpdatesLoggingTest : TestCase() {
           entries = result as? List<Bundle>
           asyncTestUtil.asyncMethodRunning = false
         },
-        reject = { code, message, e ->
+        reject = { _, _, _ ->
           rejected = true
           asyncTestUtil.asyncMethodRunning = false
         }

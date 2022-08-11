@@ -136,13 +136,6 @@ class PersistentFileLog(
     }
   }
 
-  private fun stringToList(text: String): List<String> {
-    return when (text.length) {
-      0 -> listOf()
-      else -> text.split("\n")
-    }
-  }
-
   companion object {
     private val queue = PersistentFileLogSerialDispatchQueue()
     private const val FILE_NAME_PREFIX = "dev.expo.modules.core.logging"
