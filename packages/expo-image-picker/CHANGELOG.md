@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Remove deprecated `requestCameraRollPermissionsAsync` and `getCameraRollPermissionsAsync` methods, as well as associated to them `CameraRollPermissionResponse` type.
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
