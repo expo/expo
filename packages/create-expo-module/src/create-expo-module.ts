@@ -9,7 +9,7 @@ import prompts from 'prompts';
 
 import { createExampleApp } from './createExampleApp';
 import { installDependencies } from './packageManager';
-import getPrompts from './prompts';
+import { getSlugPrompt, getSubstitutionDataPrompts } from './prompts';
 import { resolvePackageManager } from './resolvePackageManager';
 import { CommandOptions, SubstitutionData } from './types';
 import { newStep } from './utils';
@@ -30,14 +30,15 @@ const IGNORES_PATHS = ['.DS_Store', 'build', 'node_modules', 'package.json'];
  * @param command An object from `commander`.
  */
 async function main(target: string | undefined, options: CommandOptions) {
-  const targetDir = target ? path.join(CWD, target) : CWD;
+  const slug = await askForPackageSlugAsync(target);
+  const targetDir = path.join(CWD, target || slug);
 
   await fs.ensureDir(targetDir);
   await confirmTargetDirAsync(targetDir);
 
   options.target = targetDir;
 
-  const data = await askForSubstitutionDataAsync(targetDir);
+  const data = await askForSubstitutionDataAsync(slug);
 
   // Make one line break between prompts and progress logs
   console.log();
@@ -164,11 +165,21 @@ async function createModuleFromTemplate(
 }
 
 /**
+ * Asks the user for the package slug (npm package name).
+ */
+async function askForPackageSlugAsync(customTargetPath?: string): Promise<string> {
+  const { slug } = await prompts(getSlugPrompt(customTargetPath), {
+    onCancel: () => process.exit(0),
+  });
+  return slug;
+}
+
+/**
  * Asks the user for some data necessary to render the template.
  * Some values may already be provided by command options, the prompt is skipped in that case.
  */
-async function askForSubstitutionDataAsync(targetDir: string): Promise<SubstitutionData> {
-  const promptQueries = await getPrompts(targetDir);
+async function askForSubstitutionDataAsync(slug: string): Promise<SubstitutionData> {
+  const promptQueries = await getSubstitutionDataPrompts(slug);
 
   // Stop the process when the user cancels/exits the prompt.
   const onCancel = () => {
@@ -176,7 +187,6 @@ async function askForSubstitutionDataAsync(targetDir: string): Promise<Substitut
   };
 
   const {
-    slug,
     name,
     description,
     package: projectPackage,
@@ -215,7 +225,7 @@ async function confirmTargetDirAsync(targetDir: string): Promise<void> {
       name: 'shouldContinue',
       message: `The target directory ${chalk.magenta(
         targetDir
-      )} is not empty.\nDo you want to continue anyway?`,
+      )} is not empty, do you want to continue anyway?`,
       initial: true,
     },
     {
@@ -233,7 +243,7 @@ program
   .name(packageJson.name)
   .version(packageJson.version)
   .description(packageJson.description)
-  .arguments('[target_dir]')
+  .arguments('[path]')
   .option(
     '-s, --source <source_dir>',
     'Local path to the template. By default it downloads `expo-module-template` from NPM.'

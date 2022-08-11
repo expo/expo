@@ -1,2 +1,3 @@
 import { PromptObject } from 'prompts';
-export default function getPrompts(targetDir: string): Promise<PromptObject<string>[]>;
+export declare function getSlugPrompt(customTargetPath?: string | null): PromptObject<string>;
+export declare function getSubstitutionDataPrompts(slug: string): Promise<PromptObject<string>[]>;

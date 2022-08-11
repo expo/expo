@@ -4,24 +4,31 @@ import validateNpmPackage from 'validate-npm-package-name';
 
 import { findGitHubEmail, findGitHubProfileUrl, findMyName, guessRepoUrl } from './utils';
 
-export default async function getPrompts(targetDir: string): Promise<PromptObject<string>[]> {
-  const targetBasename = path.basename(targetDir);
+export function getSlugPrompt(customTargetPath?: string | null): PromptObject<string> {
+  const targetBasename = customTargetPath && path.basename(customTargetPath);
+  const initial =
+    targetBasename && validateNpmPackage(targetBasename).validForNewPackages
+      ? targetBasename
+      : 'my-module';
 
+  return {
+    type: 'text',
+    name: 'slug',
+    message: 'What is the name of the npm package?',
+    initial,
+    validate: (input) =>
+      validateNpmPackage(input).validForNewPackages || 'Must be a valid npm package name',
+  };
+}
+
+export async function getSubstitutionDataPrompts(slug: string): Promise<PromptObject<string>[]> {
   return [
-    {
-      type: 'text',
-      name: 'slug',
-      message: 'What is the name of the npm package?',
-      initial: validateNpmPackage(targetBasename).validForNewPackages ? targetBasename : undefined,
-      validate: (input) =>
-        validateNpmPackage(input).validForNewPackages || 'Must be a valid npm package name',
-    },
     {
       type: 'text',
       name: 'name',
       message: 'What is the native module name?',
-      initial: (_, answers: Answers<string>) => {
-        return answers.slug
+      initial: () => {
+        return slug
           .replace(/^@/, '')
           .replace(/^./, (match) => match.toUpperCase())
           .replace(/\W+(\w)/g, (_, p1) => p1.toUpperCase());
@@ -39,8 +46,8 @@ export default async function getPrompts(targetDir: string): Promise<PromptObjec
       type: 'text',
       name: 'package',
       message: 'What is the Android package name?',
-      initial: (_, answers: Answers<string>) => {
-        const namespace = answers.slug
+      initial: () => {
+        const namespace = slug
           .replace(/\W/g, '')
           .replace(/^(expo|reactnative)/, '')
           .toLowerCase();
@@ -72,8 +79,7 @@ export default async function getPrompts(targetDir: string): Promise<PromptObjec
       type: 'text',
       name: 'repo',
       message: 'What is the URL for the repository?',
-      initial: async (_, answers: Answers<string>) =>
-        await guessRepoUrl(answers.authorUrl, answers.slug),
+      initial: async (_, answers: Answers<string>) => await guessRepoUrl(answers.authorUrl, slug),
       validate: (input) => /^https?:\/\//.test(input) || 'Must be a valid URL',
     },
   ];
