@@ -544,9 +544,6 @@
     
     [self _ensureUserInterfaceStyleIsInSyncWithTraitEnv:self.window.rootViewController];
 
-    [[UIDevice currentDevice] setValue:@(orientation) forKey:@"orientation"];
-    [UIViewController attemptRotationToDeviceOrientation];
-    
     if (backgroundColor) {
       self.window.rootViewController.view.backgroundColor = backgroundColor;
       self.window.backgroundColor = backgroundColor;
