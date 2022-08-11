@@ -89,7 +89,7 @@ The term "detach" was previously used in Expo to mean [ejecting](#eject) your ap
 
 ### Dev Clients
 
-A [native runtime](#native-runtime) that has been built in development mode, these builds often include the `expo-dev-client` [native module](#native-module) for improved debugging.
+A [native runtime](#native-runtime) that has been built in development mode. These builds often include the `expo-dev-client` [native module](#native-module) for improved debugging.
 
 ### Development Server
 
