@@ -38,7 +38,12 @@ With this **eas.json**, the version for all builds will be based on the value st
       }
     },
     "production": {
-      "autoIncrement": true
+      "ios": {
+        "autoIncrement": true
+      },
+      "android": {
+        "autoIncrement": true
+      }
     }
   }
 }
@@ -63,7 +68,12 @@ With this **eas.json**, the version for all builds will be based on the value fr
       }
     },
     "production": {
-      "autoIncrement": true
+      "ios": {
+        "autoIncrement": true
+      },
+      "android": {
+        "autoIncrement": true
+      }
     }
   }
 }
