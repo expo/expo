@@ -12,7 +12,7 @@ body:
     attributes:
       label: Summary
       description: Describe the issue
-      placeholder: Clearly describe what the expected behavior is and what instead is actually happening. Be concise and precise in your description. Ex: if you report that "X library/method isn't working", then you will need to [continue debugging on your own](https://expo.fyi/manual-debugging) to more precisely define your issue before proceeding.
+      placeholder: 'Clearly describe what the expected behavior is and what instead is actually happening. Be concise and precise in your description. Ex: if you report that "X library/method isn't working", then you will need to [continue debugging on your own](https://expo.fyi/manual-debugging) to more precisely define your issue before proceeding.'
     validations:
       required: true
   - type: dropdown
