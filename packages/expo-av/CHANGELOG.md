@@ -15,8 +15,6 @@
 
 ### 💡 Others
 
-- Drop `@expo/config-plugins` dependency in favor of peer dependency on `expo`.
-
 ## 12.0.2 — 2022-07-18
 
 ### 🐛 Bug fixes
