@@ -99,12 +99,12 @@ A single native project on its own is very complicated to maintain, scale, and g
 
 This quickly grows to become a massive technical debt. Here are a few reasons why:
 
-- Cross-platform concepts like the app icon, name, splash screen, etc. must be implemented manually in native code, these are often implemented very differently across platforms.
-- Building native code requires a basic familiarity with that native platform's default tooling leading to a fair learning curve. In cross-platform, this curve is multiplied by the amount of platforms you wish to develop for.
-- Most complex native packages have additional setup required e.g. a camera library may require permission messages, event forwarding in the AppDelegate, custom XML, etc. This additional setup can be considered a side-effect that makes it harder to upgrade or uninstall a library. When you miss side-effects they become orphaned code that you cannot trace back to any particular package, this code builds up and makes your project harder to maintain.
+- Cross-platform configuration like the app icon, name, splash screen, etc. must be implemented manually in native code, these are often implemented very differently across platforms.
+- Building native code requires a basic familiarity with that native platform's default tooling leading to a fairly difficult learning curve. In cross-platform, this curve is multiplied by the amount of platforms you wish to develop for. Cross-platform tooling doesn't solve this issue if you need to drop down and implement many features individually, instead it often creates a harder system for developing apps.
+- Most complex native packages have additional setup required, for example a camera library requires permission settings be added to the iOS `Info.plist` and the Android `AndroidManifest.xml` file. This additional setup can be considered a side-effect that makes it harder to upgrade or uninstall a library. When you miss side-effects they become orphaned code that you cannot trace back to any particular package, this code builds up and makes your project harder to maintain.
 - When you bootstrap a native app, it has a bunch of preset values and code that you don't need to understand in order to get started. Eventually you'll want to upgrade your native application and now you'll need to be acutely familiar with how all of the initial code works in order to safely upgrade it. This is extremely challenging and users will either upgrade their app incorrectly, missing crucial changes, or they'll bootstrap a new app and copy all of their source code into the new application.
 
-These native development issues are crippling at scale, to combat them we created the `npx expo prebuild` command and [Expo Config Plugins][config-plugins]. if you aren't satisfied with how prebuild works you can simply develop your app without it and continue to utilize the rest of the Expo developer tools.
+These native development issues are crippling at scale, to combat them we created the _optional_ Expo Prebuild feature.
 
 ## Anti Pitch
 
