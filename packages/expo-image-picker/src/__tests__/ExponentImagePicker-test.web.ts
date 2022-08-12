@@ -1,7 +1,7 @@
 import ExponentImagePicker from '../ExponentImagePicker';
 
 describe('ExponentImagePicker', () => {
-  describe('getCameraRollPermissionsAsync', () => {
+  describe('getMediaLibraryPermissionsAsync', () => {
     it(`is always granted`, async () => {
       const response = await ExponentImagePicker.getMediaLibraryPermissionsAsync(true);
       expect(response.granted).toBeTruthy();
@@ -9,7 +9,7 @@ describe('ExponentImagePicker', () => {
     });
   });
 
-  describe('requestCameraRollPermissionsAsync', () => {
+  describe('requestMediaLibraryPermissionsAsync', () => {
     it(`is always granted`, async () => {
       const response = await ExponentImagePicker.requestMediaLibraryPermissionsAsync(true);
       expect(response.granted).toBeTruthy();

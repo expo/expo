@@ -12,11 +12,6 @@ export declare type MediaLibraryPermissionResponse = PermissionResponse & {
      */
     accessPrivileges?: 'all' | 'limited' | 'none';
 };
-/**
- * An alias for the `MediaLibraryPermissionResponse` object.
- * @deprecated Use `ImagePicker.MediaLibraryPermissionResponse` instead.
- */
-export declare type CameraRollPermissionResponse = MediaLibraryPermissionResponse;
 export declare enum MediaTypeOptions {
     /**
      * Images and videos.
