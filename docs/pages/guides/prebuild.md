@@ -35,7 +35,7 @@ Prebuild currently supports iOS and Android, web support is not required as the 
 
 Prebuild requires specific packages and versions are used in order to ensure the template works. The packages are inferred from the `dependencies` field in the [template](#templates) `package.json` file.
 
-You can skip changing NPM package versions with the `--skip-dependency-update` flag:
+You can skip changing npm package versions with the `--skip-dependency-update` flag:
 
 <Terminal cmd={[
 '$ npx expo prebuild --skip-dependency-update react-native,react',
@@ -55,9 +55,9 @@ When you re-run `npx expo prebuild`, it layers changes on top of your existing f
 
 Due to the pivotal nature of the flag, you'll be warned to have a clean git status when the `--clean` flag is used. This prompt is optional and will be skipped when encountered in CI.
 
-You can disable the check by enabling the environment variable `EXPO_NO_GIT_STATUS=1` if you'd like.
+If you'd like, you can disable the check by enabling the environment variable `EXPO_NO_GIT_STATUS=1`.
 
-The purpose of the prompt is to encourage managed workflow users to add the `/ios` and `/android` folders to the project's `.gitignore`, ensuring that the project is always managed. This can however make custom config plugins harder to develop so we haven't introduced any mechanism to enforce this behavior.
+The purpose of the prompt is to encourage managed workflow users to add the `/ios` and `/android` folders to the project's `.gitignore`, ensuring that the project is always managed. However, this can make custom config plugins harder to develop so we haven't introduced any mechanism to enforce this behavior.
 
 Advanced projects may need to swap between workflows often, building custom functionality natively in Xcode and Android Studio, then moving that functionality into local Config Plugins, and repeating. As the Expo Config Plugin ecosystem matures, the need to develop plugins like this will be drastically reduced.
 
@@ -65,9 +65,9 @@ Advanced projects may need to swap between workflows often, building custom func
 
 ## Templates
 
-You can customize how the native folders are generated while remaining in the managed workflow by building [Expo Config Plugins][config-plugins]. Many config plugins already exist for lots of modifications, you can find an [incomplete list here][config-plugins-repo].
+You can customize how the native folders are generated while remaining in the managed workflow by building [Expo Config Plugins][config-plugins]. Many config plugins already exist for lots of modifications. You can see the [list][config-plugins-repo] for more information.
 
-Prebuild generates template files before modifying them with Expo Config Plugins. The template files are versioned and come from the NPM package [`expo-template-bare-minimum`][template]. You can change which template is used by passing `--template /path/to/template.tgz` to the `npx expo prebuild` command. This is not recommended as the base modifiers in `@expo/prebuild-config` make some undocumented assumptions about the template files.
+Prebuild generates template files before modifying them with Expo Config Plugins. The template files are versioned and come from the npm package [`expo-template-bare-minimum`][template]. You can change the template used by passing `--template /path/to/template.tgz` to the `npx expo prebuild` command. This is not recommended as the base modifiers in `@expo/prebuild-config` make some undocumented assumptions about the template files.
 
 ## Side-Effects
 
@@ -91,11 +91,11 @@ Everything offered by Expo including [EAS][eas], Expo CLI, and the libraries in 
 
 The main exception is the [Expo Go][expo-go] app which has partial support for the _bare workflow_, given the project in question only utilizes native features that are already available in the Expo Go app.
 
-We develop new [Native Modules][native-modules] without using `npx expo prebuild` as it's currently the fastest way to do so, however we recommend users building apps with Expo attempt to use Prebuild as much as possible for the reasons listed in the [pitch](#pitch) section.
+We develop new [Native Modules][native-modules] without using `npx expo prebuild` as it's currently the fastest way to do so. However, we recommend users building apps with Expo attempt to use Prebuild as much as possible for the reasons listed in the [pitch](#pitch) section.
 
 ## Pitch
 
-A single native project on its own is very complicated to maintain, scale, and grow. In a cross-platform app, you have multiple native projects that you must maintain and keep updated. To streamline this process we created the _optional_ Expo Prebuild system. Below are a few issues we've identified with native development and some corresponding reasons we believe Expo Prebuild solves these issues.
+A single native project on its own is very complicated to maintain, scale, and grow. In a cross-platform app, you have multiple native projects that you must maintain and keep them up to date. We created the _optional_ Expo Prebuild system to streamline this process. Below are a few issues we've identified with native development and some corresponding reasons we believe Expo Prebuild solves these issues.
 
 ### Sensible upgrades
 
@@ -107,13 +107,13 @@ When you bootstrap a native app, it has a bunch of preset values and code that y
 
 ### Cross-platform configuration
 
-Cross-platform configuration like the app icon, name, splash screen, etc. must be implemented manually in native code, these are often implemented very differently across platforms.
+Cross-platform configuration like the app icon, name, splash screen, and so on must be implemented manually in native code. These are often implemented very differently across platforms.
 
 **With Prebuild** cross-platform configuration is handled at the Config Plugin level and the user often just has to set a single value like `"icon": "./icon.png"` to have all icon generation taken care of.
 
 ### Dependency side-effects
 
-Most complex native packages have additional setup required, for example a camera library requires permission settings be added to the iOS `Info.plist` and the Android `AndroidManifest.xml` file. This additional setup can be considered a disjointed side-effect of a package. Pasting required side-effect code into your project's native files can lead to difficult native compilation errors, it's also hard for library authors to document every possible combination of code blocks to paste.
+Most complex native packages have additional setup required. For example, a camera library requires permission settings be added to the iOS `Info.plist` and the Android `AndroidManifest.xml` file. This additional setup can be considered a disjointed side-effect of a package. Pasting required side-effect code into your project's native files can lead to difficult native compilation errors. It's also hard for library authors to document every possible combination of code blocks to paste.
 
 **With Prebuild** library authors, who know how configure their library better than anyone, can create a testable and versioned script (Expo Config Plugin) to automate adding the required configuration side-effects. This means library side-effects can be more expressive, powerful, and stable. For native code side-effects, we also provide: [AppDelegate Subscribers](/modules/appdelegate-subscribers) and [Android Lifecycle Listeners](/modules/android-lifecycle-listeners) which come standard in the default [Prebuild template](#templates).
 
@@ -157,7 +157,7 @@ Some packages like [`react-native-blurhash`](https://github.com/mrousavy/react-n
 
 Other packages like [`react-native-ble-plx`](https://github.com/Polidea/react-native-ble-plx) do require additional setup and therefore require a Config Plugin to be used with `npx expo prebuild` (in this case there's an external plugin called [`@config-plugins/react-native-ble-plx`](https://github.com/expo/config-plugins/tree/main/packages/react-native-ble-plx)).
 
-Alternatively, we also have a repo for [out-of-tree Expo Config Plugins][config-plugins-repo] which provides plugins for popular packages that haven't adopted the system yet. Think of this like [DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped) for TypeScript. We prefer packages ship their own Expo Config Plugin to ensure versioning is always aligned, but if they haven't adopted the system yet, the community can easily get unblocked.
+Alternatively, we also have a repo for [out-of-tree Expo Config Plugins][config-plugins-repo] which provides plugins for popular packages that haven't adopted the system yet. Think of this like [DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped) for TypeScript. We prefer packages ship their own Expo Config Plugin to ensure versioning is always aligned, but if they haven't adopted the system yet, the community can easily get unblocked using the packages listed in the repo.
 
 [config-plugins-repo]: https://github.com/expo/config-plugins
 [template]: https://github.com/expo/expo/tree/main/templates/expo-template-bare-minimum
