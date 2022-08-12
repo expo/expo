@@ -57,7 +57,11 @@ public class PersistentFileLog {
     PersistentFileLog.serialQueue.async {
       self.ensureFileExists()
       self.appendTextToFile(text: entry + "\n")
-      completionHandler?(nil)
+      if completionHandler != nil {
+        DispatchQueue.main.async {
+          completionHandler?(nil)
+        }
+      }
     }
   }
 
@@ -71,9 +75,13 @@ public class PersistentFileLog {
         let contents = try self.readFileSync()
         let newcontents = contents.filter { entry in filter(entry) }
         try self.writeFileSync(newcontents)
-        completionHandler(nil)
+        DispatchQueue.main.async {
+          completionHandler(nil)
+        }
       } catch {
-        completionHandler(error)
+        DispatchQueue.main.async {
+          completionHandler(error)
+        }
       }
     }
   }
@@ -85,9 +93,13 @@ public class PersistentFileLog {
     PersistentFileLog.serialQueue.async {
       do {
         try self.deleteFileSync()
-        completionHandler(nil)
+        DispatchQueue.main.async {
+          completionHandler(nil)
+        }
       } catch {
-        completionHandler(error)
+        DispatchQueue.main.async {
+          completionHandler(error)
+        }
       }
     }
   }

@@ -8,6 +8,16 @@ class PersistentFileLogSpec: ExpoSpec {
       self.clearEntriesSync()
     }
 
+    it("callbacks run in main thread") {
+      let expectation = self.expectation(description: "running in main thread")
+      self.log.clearEntries { _ in
+        if Thread.current == Thread.main {
+          expectation.fulfill()
+        }
+      }
+      self.wait(for: [expectation], timeout: 0.5)
+    }
+
     it("cleared file has 0 entries") {
       let entries = self.log.readEntries()
       expect(entries.count).to(be(0))
@@ -47,37 +57,29 @@ class PersistentFileLogSpec: ExpoSpec {
 
   // Private fields and methods
 
-  let serialQueue = DispatchQueue(label: "dev.expo.modules.test.persistentlog")
-
   let log = PersistentFileLog(category: "dev.expo.modules.test.persistentlog")
 
   func clearEntriesSync() {
-    serialQueue.sync {
-      let sem = DispatchSemaphore(value: 0)
-      log.clearEntries { _ in
-        sem.signal()
-      }
-      sem.wait()
+    let expectation = self.expectation(description: "entries cleared")
+    log.clearEntries { _ in
+      expectation.fulfill()
     }
+    wait(for: [expectation], timeout: 0.5)
   }
 
   func filterEntriesSync(filter: @escaping PersistentFileLogFilter) {
-    serialQueue.sync {
-      let sem = DispatchSemaphore(value: 0)
-      log.purgeEntriesNotMatchingFilter(filter: filter) { _ in
-        sem.signal()
-      }
-      sem.wait()
+    let expectation = self.expectation(description: "entries filtered")
+    log.purgeEntriesNotMatchingFilter(filter: filter) { _ in
+      expectation.fulfill()
     }
+    wait(for: [expectation], timeout: 0.5)
   }
 
   func appendEntrySync(entry: String) {
-    serialQueue.sync {
-      let sem = DispatchSemaphore(value: 0)
-      log.appendEntry(entry: entry) { _ in
-        sem.signal()
-      }
-      sem.wait()
+    let expectation = self.expectation(description: "entry appended")
+    log.appendEntry(entry: entry) { _ in
+      expectation.fulfill()
     }
+    wait(for: [expectation], timeout: 0.5)
   }
 }

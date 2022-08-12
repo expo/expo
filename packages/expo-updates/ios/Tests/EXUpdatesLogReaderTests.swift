@@ -72,54 +72,48 @@ class EXUpdatesLogReaderTests: XCTestCase {
     let entries2: [String] = logReader.getLogEntries(newerThan: date2)
     XCTAssertEqual(1, entries2.count)
 
-    let sem = DispatchSemaphore(value: 0)
-    serialQueue.sync {
-      logReader.purgeLogEntries(olderThan: date2) { _ in
-        sem.signal()
-      }
-      sem.wait()
-    }
+    purgeEntriesSync(logReader: logReader, olderThan: date2)
 
     let entries3: [String] = logReader.getLogEntries(newerThan: date1)
     XCTAssertEqual(1, entries3.count)
   }
 
   // MARK: - - Private methods
-  let serialQueue = DispatchQueue(label: "dev.expo.updates.logger.test")
 
   func clearLogSync() {
-    let sem = DispatchSemaphore(value: 0)
+    let expectation = self.expectation(description: "log cleared")
     let persistentLog = PersistentFileLog(category: UpdatesLogger.EXPO_UPDATES_LOG_CATEGORY)
-    serialQueue.sync {
-      persistentLog.clearEntries { _ in
-        sem.signal()
-      }
-      sem.wait()
+    persistentLog.clearEntries { _ in
+      expectation.fulfill()
     }
+    wait(for: [expectation], timeout: 0.5)
   }
 
   func logErrorSync(message: String, code: UpdatesErrorCode) {
-    let sem = DispatchSemaphore(value: 0)
+    let expectation = self.expectation(description: "error logged")
     let persistentLog = PersistentFileLog(category: UpdatesLogger.EXPO_UPDATES_LOG_CATEGORY)
-    serialQueue.sync {
-      let logEntryString = "xx" + UpdatesLogger().logEntryString(message: message, code: code, level: .error, updateId: nil, assetId: nil)
-
-      persistentLog.appendEntry(entry: logEntryString, {_ in
-        sem.signal()
-      })
-      sem.wait()
+    let logEntryString = "xx" + UpdatesLogger().logEntryString(message: message, code: code, level: .error, updateId: nil, assetId: nil)
+    persistentLog.appendEntry(entry: logEntryString) {_ in
+      expectation.fulfill()
     }
+    wait(for: [expectation], timeout: 0.5)
   }
 
   func logWarnSync(message: String, code: UpdatesErrorCode, updateId: String?, assetId: String?) {
-    let sem = DispatchSemaphore(value: 0)
+    let expectation = self.expectation(description: "error logged")
     let persistentLog = PersistentFileLog(category: UpdatesLogger.EXPO_UPDATES_LOG_CATEGORY)
-    serialQueue.sync {
-      let logEntryString = "xx" + UpdatesLogger().logEntryString(message: message, code: code, level: .warn, updateId: updateId, assetId: assetId)
-      persistentLog.appendEntry(entry: logEntryString) { _ in
-        sem.signal()
-      }
-      sem.wait()
+    let logEntryString = "xx" + UpdatesLogger().logEntryString(message: message, code: code, level: .warn, updateId: updateId, assetId: assetId)
+    persistentLog.appendEntry(entry: logEntryString) {_ in
+      expectation.fulfill()
     }
+    wait(for: [expectation], timeout: 0.5)
+  }
+
+  func purgeEntriesSync(logReader: UpdatesLogReader, olderThan: Date) {
+    let expectation = self.expectation(description: "logs purged")
+    logReader.purgeLogEntries(olderThan: olderThan) { _ in
+      expectation.fulfill()
+    }
+    wait(for: [expectation], timeout: 0.5)
   }
 }

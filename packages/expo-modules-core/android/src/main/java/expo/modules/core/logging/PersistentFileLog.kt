@@ -1,9 +1,12 @@
 package expo.modules.core.logging
 
 import android.content.Context
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
 import java.io.File
 import java.io.IOException
 import java.nio.charset.Charset
+import kotlinx.coroutines.*
 
 /**
  * A thread-safe class for reading and writing line-separated strings to a flat file
@@ -41,20 +44,31 @@ class PersistentFileLog(
    * Append entry to the log file
    * Since logging may not require a result handler, the handler parameter is optional
    */
-  fun appendEntry(entry: String, completionHandler: ((_: Error?) -> Unit) = { }) {
+  fun appendEntry(entry: String, completionHandler: ((_: Error?) -> Unit)? = null) {
     queue.add {
-      try {
-        this.ensureFileExists()
-        val text = when (this.getFileSize()) {
-          0L -> entry
-          else -> {
-            "\n" + entry
+      val persistentFileLog: PersistentFileLog = this
+      runBlocking {
+        try {
+          persistentFileLog.ensureFileExists()
+          val text = when (persistentFileLog.getFileSize()) {
+            0L -> entry
+            else -> {
+              "\n" + entry
+            }
+          }
+          persistentFileLog.appendTextToFile(text)
+          if (completionHandler != null) {
+            launch(Dispatchers.Main) {
+              completionHandler.invoke(null)
+            }
+          }
+        } catch (e: Error) {
+          if (completionHandler != null) {
+            launch(Dispatchers.Main) {
+              completionHandler.invoke(e)
+            }
           }
         }
-        this.appendTextToFile(text)
-        completionHandler.invoke(null)
-      } catch (e: Error) {
-        completionHandler.invoke(e)
       }
     }
   }
@@ -64,14 +78,21 @@ class PersistentFileLog(
    */
   fun purgeEntriesNotMatchingFilter(filter: (_: String) -> Boolean, completionHandler: (_: Error?) -> Unit) {
     queue.add {
-      try {
-        this.ensureFileExists()
-        val contents = this.readFileLinesSync()
-        val reducedContents = contents.filter(filter)
-        this.writeFileLinesSync(reducedContents)
-        completionHandler.invoke(null)
-      } catch (e: Throwable) {
-        completionHandler.invoke(Error(e))
+      val persistentFileLog: PersistentFileLog = this
+      runBlocking {
+        try {
+          persistentFileLog.ensureFileExists()
+          val contents = persistentFileLog.readFileLinesSync()
+          val reducedContents = contents.filter(filter)
+          persistentFileLog.writeFileLinesSync(reducedContents)
+          launch(Dispatchers.Main) {
+            completionHandler.invoke(null)
+          }
+        } catch (e: Throwable) {
+          launch(Dispatchers.Main) {
+            completionHandler.invoke(Error(e))
+          }
+        }
       }
     }
   }
@@ -81,11 +102,18 @@ class PersistentFileLog(
    */
   fun clearEntries(completionHandler: (_: Error?) -> Unit) {
     queue.add {
-      try {
-        this.deleteFileSync()
-        completionHandler.invoke(null)
-      } catch (e: Error) {
-        completionHandler.invoke(e)
+      val persistentFileLog: PersistentFileLog = this
+      runBlocking {
+        try {
+          persistentFileLog.deleteFileSync()
+          launch(Dispatchers.Main) {
+            completionHandler.invoke(null)
+          }
+        } catch (e: Error) {
+          launch(Dispatchers.Main) {
+            completionHandler.invoke(e)
+          }
+        }
       }
     }
   }
