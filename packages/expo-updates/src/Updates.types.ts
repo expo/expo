@@ -40,12 +40,11 @@ export type Manifest = ClassicManifest | typeof Constants.manifest2;
  */
 type UpdateCheckResultSuccess = {
   /**
-   * `true` if an update is available, `false` if the app is already running the latest available
-   * update.
+   * Signifies that an update is available.
    */
   isAvailable: true;
   /**
-   * If `isAvailable` is `true`, the manifest of the available update, and `undefined` otherwise.
+   * The manifest of the available update.
    */
   manifest: Manifest;
 };
@@ -55,12 +54,11 @@ type UpdateCheckResultSuccess = {
  */
 type UpdateCheckResultFailure = {
   /**
-   * `true` if an update is available, `false` if the app is already running the latest available
-   * update.
+   * Signifies that the app is already running the latest available update.
    */
   isAvailable: false;
   /**
-   * If `isAvailable` is `true`, the manifest of the available update, and `undefined` otherwise.
+   * No manifest, since the app is already running the latest available version.
    */
   manifest: undefined;
 };
