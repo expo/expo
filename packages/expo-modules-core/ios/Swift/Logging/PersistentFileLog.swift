@@ -35,8 +35,8 @@ public class PersistentFileLog {
   public init(category: String) {
     self.category = category
     let fileName = "\(PersistentFileLog.EXPO_MODULES_CORE_LOG_QUEUE_LABEL).\(category).txt"
-    // Execution aborts if no documents directory
-    self.filePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent(fileName).path
+    // Execution aborts if no application support directory
+    self.filePath = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!.appendingPathComponent(fileName).path
   }
   /**
    Read entries from log file

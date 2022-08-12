@@ -38,7 +38,7 @@ import java.io.File
 import java.lang.ref.WeakReference
 
 class UpdatesController private constructor(
-  val context: Context,
+  context: Context,
   var updatesConfiguration: UpdatesConfiguration
 ) {
   private var reactNativeHost: WeakReference<ReactNativeHost>? = if (context is ReactApplication) {
@@ -63,7 +63,7 @@ class UpdatesController private constructor(
     }
   }
 
-  private fun purgeUpdatesLogsOlderThanOneDay() {
+  private fun purgeUpdatesLogsOlderThanOneDay(context: Context) {
     UpdatesLogReader(context).purgeLogEntries {
       if (it != null) {
         Log.e(TAG, "UpdatesLogReader: error in purgeLogEntries", it)
@@ -223,7 +223,7 @@ class UpdatesController private constructor(
       return
     }
 
-    purgeUpdatesLogsOlderThanOneDay()
+    purgeUpdatesLogsOlderThanOneDay(context)
 
     initializeDatabaseHandler()
     initializeErrorRecovery(context)
