@@ -42,7 +42,11 @@ buildscript {
 def isAndroidTest() {
   Gradle gradle = getGradle()
   String tskReqStr = gradle.getStartParameter().getTaskRequests().toString()
-  return tskReqStr.contains("AndroidTest")
+  if (tskReqStr =~ /:expo-modules-core:connected\w+AndroidTest/) {
+    def androidTests = project.file("src/androidTest")
+    return androidTests.exists() && androidTests.isDirectory()
+  }
+  return false
 }
 
 def downloadsDir = new File("$buildDir/downloads")
