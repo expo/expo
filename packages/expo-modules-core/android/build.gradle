@@ -42,11 +42,10 @@ buildscript {
 def isAndroidTest() {
   Gradle gradle = getGradle()
   String tskReqStr = gradle.getStartParameter().getTaskRequests().toString()
-  if (tskReqStr.contains(":expo-modules-core:connectedDebugAndroidTest") || tskReqStr.contains(":expo-modules-core:connectedReleaseAndroidTest")) {
+  if (tskReqStr =~ /:expo-modules-core:connected\w+AndroidTest/) {
     def androidTests = project.file("src/androidTest")
     return androidTests.exists() && androidTests.isDirectory()
   }
-
   return false
 }
 
