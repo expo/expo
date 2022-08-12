@@ -34,11 +34,11 @@ export async function createExampleApp(
 
   await newStep('Initializing the example app', async (step) => {
     await spawnAsync(
-      'expo',
-      ['init', exampleProjectSlug, '--template', 'expo-template-blank-typescript'],
+      packageManager,
+      ['create', 'expo-app', exampleProjectSlug, '--template', 'blank-typescript'],
       {
         cwd: targetDir,
-        stdio: ['ignore', 'ignore', 'inherit'],
+        stdio: 'ignore',
       }
     );
     step.succeed('Initialized the example app');

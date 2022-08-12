@@ -26,9 +26,9 @@ async function createExampleApp(data, targetDir, packageManager) {
         return;
     }
     await (0, utils_1.newStep)('Initializing the example app', async (step) => {
-        await (0, spawn_async_1.default)('expo', ['init', exampleProjectSlug, '--template', 'expo-template-blank-typescript'], {
+        await (0, spawn_async_1.default)(packageManager, ['create', 'expo-app', exampleProjectSlug, '--template', 'blank-typescript'], {
             cwd: targetDir,
-            stdio: ['ignore', 'ignore', 'inherit'],
+            stdio: 'ignore',
         });
         step.succeed('Initialized the example app');
     });
