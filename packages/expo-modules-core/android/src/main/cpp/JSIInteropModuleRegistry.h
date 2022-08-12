@@ -6,7 +6,8 @@
 #include "JavaScriptModuleObject.h"
 #include "JavaScriptValue.h"
 #include "JavaScriptObject.h"
-#include "CachedReferencesRegistry.h"
+#include "JavaReferencesCache.h"
+#include "JSReferencesCache.h"
 
 #include <fbjni/fbjni.h>
 #include <jsi/jsi.h>
@@ -83,7 +84,7 @@ public:
   std::shared_ptr<react::CallInvoker> jsInvoker;
   std::shared_ptr<react::CallInvoker> nativeInvoker;
   std::shared_ptr<JavaScriptRuntime> runtimeHolder;
-  std::unique_ptr<JSCachedReferencesRegistry> jsRegistry;
+  std::unique_ptr<JSReferencesCache> jsRegistry;
 private:
   friend HybridBase;
   jni::global_ref<JSIInteropModuleRegistry::javaobject> javaPart_;

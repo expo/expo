@@ -3,6 +3,7 @@
 #include "Exceptions.h"
 
 #include "JSIInteropModuleRegistry.h"
+#include "JSReferencesCache.h"
 
 namespace jni = facebook::jni;
 
@@ -57,7 +58,7 @@ void rethrowAsCodedError(
     auto message = codedException->getLocalizedMessage();
 
     auto *codedErrorPointer = registry->jsRegistry->getOptionalObject<jsi::Function>(
-      JSCachedReferencesRegistry::JSKeys::CODED_ERROR
+      JSReferencesCache::JSKeys::CODED_ERROR
     );
     if (codedErrorPointer != nullptr) {
       auto &jsCodedError = *codedErrorPointer;

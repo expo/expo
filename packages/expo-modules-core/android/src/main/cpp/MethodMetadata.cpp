@@ -3,13 +3,14 @@
 #include "JavaScriptValue.h"
 #include "JavaScriptObject.h"
 #include "JavaScriptTypedArray.h"
-#include "CachedReferencesRegistry.h"
+#include "JavaReferencesCache.h"
 #include "Exceptions.h"
 
 #include <utility>
 
 #include "react/jni/ReadableNativeMap.h"
 #include "react/jni/ReadableNativeArray.h"
+#include "JSReferencesCache.h"
 
 namespace jni = facebook::jni;
 namespace jsi = facebook::jsi;
@@ -124,13 +125,13 @@ std::vector<jvalue> MethodMetadata::convertJSIArgsToJNI(
     } else if (arg->isNull() || arg->isUndefined()) {
       jarg->l = nullptr;
     } else if (arg->isNumber()) {
-      auto &doubleClass = JavaCachedReferencesRegistry::instance()
+      auto &doubleClass = JavaReferencesCache::instance()
         ->getJClass("java/lang/Double");
       jmethodID doubleConstructor = doubleClass.getMethod("<init>", "(D)V");
       jarg->l = makeGlobalIfNecessary(
         env->NewObject(doubleClass.clazz, doubleConstructor, arg->getNumber()));
     } else if (arg->isBool()) {
-      auto &booleanClass = JavaCachedReferencesRegistry::instance()
+      auto &booleanClass = JavaReferencesCache::instance()
         ->getJClass("java/lang/Boolean");
       jmethodID booleanConstructor = booleanClass.getMethod("<init>", "(Z)V");
       jarg->l = makeGlobalIfNecessary(
@@ -240,7 +241,7 @@ jsi::Value MethodMetadata::callSync(
   // TODO(@lukmccall): Remove this temp array
   auto tempArray = env->NewObjectArray(
     convertedArgs.size(),
-    JavaCachedReferencesRegistry::instance()->getJClass("java/lang/Object").clazz,
+    JavaReferencesCache::instance()->getJClass("java/lang/Object").clazz,
     nullptr
   );
   for (size_t i = 0; i < convertedArgs.size(); i++) {
@@ -291,7 +292,7 @@ jsi::Function MethodMetadata::toAsyncFunction(
                                                                 count,
                                                                 true);
         auto &Promise = moduleRegistry->jsRegistry->getObject<jsi::Function>(
-          JSCachedReferencesRegistry::JSKeys::PROMISE
+          JSReferencesCache::JSKeys::PROMISE
         );
         // Creates a JSI promise
         jsi::Value promise = Promise.callAsConstructor(
@@ -343,7 +344,7 @@ jsi::Function MethodMetadata::createPromiseBody(
 
       JNIEnv *env = jni::Environment::current();
 
-      auto &jPromise = JavaCachedReferencesRegistry::instance()->getJClass(
+      auto &jPromise = JavaReferencesCache::instance()->getJClass(
         "com/facebook/react/bridge/PromiseImpl");
       jmethodID jPromiseConstructor = jPromise.getMethod(
         "<init>",
@@ -362,7 +363,7 @@ jsi::Function MethodMetadata::createPromiseBody(
       // TODO(@lukmccall): Remove this temp array
       auto tempArray = env->NewObjectArray(
         argsSize,
-        JavaCachedReferencesRegistry::instance()->getJClass("java/lang/Object").clazz,
+        JavaReferencesCache::instance()->getJClass("java/lang/Object").clazz,
         nullptr
       );
       for (size_t i = 0; i < argsSize; i++) {

@@ -2,7 +2,8 @@
 
 #include "JSIInteropModuleRegistry.h"
 #include "ExpoModulesHostObject.h"
-#include "CachedReferencesRegistry.h"
+#include "JavaReferencesCache.h"
+#include "JSReferencesCache.h"
 
 #include <fbjni/detail/Meta.h>
 #include <fbjni/fbjni.h>
@@ -41,7 +42,7 @@ void JSIInteropModuleRegistry::installJSI(
 ) {
   auto runtime = reinterpret_cast<jsi::Runtime *>(jsRuntimePointer);
 
-  jsRegistry = std::make_unique<JSCachedReferencesRegistry>(*runtime);
+  jsRegistry = std::make_unique<JSReferencesCache>(*runtime);
 
   runtimeHolder = std::make_shared<JavaScriptRuntime>(
     runtime,
@@ -65,7 +66,7 @@ void JSIInteropModuleRegistry::installJSIForTests() {
   runtimeHolder = std::make_shared<JavaScriptRuntime>();
   jsi::Runtime &jsiRuntime = runtimeHolder->get();
 
-  jsRegistry = std::make_unique<JSCachedReferencesRegistry>(jsiRuntime);
+  jsRegistry = std::make_unique<JSReferencesCache>(jsiRuntime);
 
   auto expoModules = std::make_shared<ExpoModulesHostObject>(this);
   auto expoModulesObject = jsi::Object::createFromHostObject(jsiRuntime, expoModules);
