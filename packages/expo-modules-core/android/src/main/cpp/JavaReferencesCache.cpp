@@ -17,6 +17,14 @@ void JavaReferencesCache::loadJClasses(JNIEnv *env) {
     {"<init>", "(Z)V"}
   });
 
+  loadJClass(env, "java/lang/Integer", {
+    {"<init>", "(I)V"}
+  });
+
+  loadJClass(env, "java/lang/Float", {
+    {"<init>", "(F)V"}
+  });
+
   loadJClass(env, "com/facebook/react/bridge/PromiseImpl", {
     {"<init>", "(Lcom/facebook/react/bridge/Callback;Lcom/facebook/react/bridge/Callback;)V"}
   });

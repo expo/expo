@@ -6,6 +6,7 @@ import com.facebook.react.bridge.ReadableMap
 import expo.modules.kotlin.typedarray.BigInt64Array
 import expo.modules.kotlin.typedarray.BigUint64Array
 import expo.modules.kotlin.jni.CppType
+import expo.modules.kotlin.jni.ExpectedType
 import expo.modules.kotlin.typedarray.Float32Array
 import expo.modules.kotlin.typedarray.Float64Array
 import expo.modules.kotlin.typedarray.Int16Array
@@ -27,7 +28,7 @@ class IntTypeConverter(isOptional: Boolean) : DynamicAwareTypeConverters<Int>(is
     else -> value as Int
   }
 
-  override fun getCppRequiredTypes(): List<CppType> = listOf(CppType.DOUBLE)
+  override fun getCppRequiredTypes(): ExpectedType = ExpectedType(CppType.INT)
 }
 
 class DoubleTypeConverter(isOptional: Boolean) : DynamicAwareTypeConverters<Double>(isOptional) {
@@ -37,7 +38,7 @@ class DoubleTypeConverter(isOptional: Boolean) : DynamicAwareTypeConverters<Doub
     else -> value as Double
   }
 
-  override fun getCppRequiredTypes(): List<CppType> = listOf(CppType.DOUBLE)
+  override fun getCppRequiredTypes(): ExpectedType = ExpectedType(CppType.DOUBLE)
 }
 
 class FloatTypeConverter(isOptional: Boolean) : DynamicAwareTypeConverters<Float>(isOptional) {
@@ -47,31 +48,31 @@ class FloatTypeConverter(isOptional: Boolean) : DynamicAwareTypeConverters<Float
     else -> value as Float
   }
 
-  override fun getCppRequiredTypes(): List<CppType> = listOf(CppType.DOUBLE)
+  override fun getCppRequiredTypes(): ExpectedType = ExpectedType(CppType.FLOAT)
 }
 
 class BoolTypeConverter(isOptional: Boolean) : DynamicAwareTypeConverters<Boolean>(isOptional) {
   override fun convertFromDynamic(value: Dynamic): Boolean = value.asBoolean()
   override fun convertFromAny(value: Any): Boolean = value as Boolean
-  override fun getCppRequiredTypes(): List<CppType> = listOf(CppType.BOOLEAN)
+  override fun getCppRequiredTypes(): ExpectedType = ExpectedType(CppType.BOOLEAN)
 }
 
 class StringTypeConverter(isOptional: Boolean) : DynamicAwareTypeConverters<String>(isOptional) {
   override fun convertFromDynamic(value: Dynamic): String = value.asString()
   override fun convertFromAny(value: Any): String = value as String
-  override fun getCppRequiredTypes(): List<CppType> = listOf(CppType.STRING)
+  override fun getCppRequiredTypes(): ExpectedType = ExpectedType(CppType.STRING)
 }
 
 class ReadableArrayTypeConverter(isOptional: Boolean) : DynamicAwareTypeConverters<ReadableArray>(isOptional) {
   override fun convertFromDynamic(value: Dynamic): ReadableArray = value.asArray()
   override fun convertFromAny(value: Any): ReadableArray = value as ReadableArray
-  override fun getCppRequiredTypes(): List<CppType> = listOf(CppType.READABLE_ARRAY)
+  override fun getCppRequiredTypes(): ExpectedType = ExpectedType(CppType.READABLE_ARRAY)
 }
 
 class ReadableMapTypeConverter(isOptional: Boolean) : DynamicAwareTypeConverters<ReadableMap>(isOptional) {
   override fun convertFromDynamic(value: Dynamic): ReadableMap = value.asMap()
   override fun convertFromAny(value: Any): ReadableMap = value as ReadableMap
-  override fun getCppRequiredTypes(): List<CppType> = listOf(CppType.READABLE_MAP)
+  override fun getCppRequiredTypes(): ExpectedType = ExpectedType(CppType.READABLE_MAP)
 }
 
 class PrimitiveIntArrayTypeConverter(isOptional: Boolean) : DynamicAwareTypeConverters<IntArray>(isOptional) {
@@ -83,7 +84,7 @@ class PrimitiveIntArrayTypeConverter(isOptional: Boolean) : DynamicAwareTypeConv
   }
 
   override fun convertFromAny(value: Any): IntArray = value as IntArray
-  override fun getCppRequiredTypes(): List<CppType> = listOf(CppType.READABLE_ARRAY)
+  override fun getCppRequiredTypes(): ExpectedType = ExpectedType(CppType.READABLE_ARRAY)
 }
 
 class PrimitiveDoubleArrayTypeConverter(isOptional: Boolean) : DynamicAwareTypeConverters<DoubleArray>(isOptional) {
@@ -95,7 +96,7 @@ class PrimitiveDoubleArrayTypeConverter(isOptional: Boolean) : DynamicAwareTypeC
   }
 
   override fun convertFromAny(value: Any): DoubleArray = value as DoubleArray
-  override fun getCppRequiredTypes(): List<CppType> = listOf(CppType.READABLE_ARRAY)
+  override fun getCppRequiredTypes(): ExpectedType = ExpectedType(CppType.READABLE_ARRAY)
 }
 
 class PrimitiveFloatArrayTypeConverter(isOptional: Boolean) : DynamicAwareTypeConverters<FloatArray>(isOptional) {
@@ -107,17 +108,17 @@ class PrimitiveFloatArrayTypeConverter(isOptional: Boolean) : DynamicAwareTypeCo
   }
 
   override fun convertFromAny(value: Any): FloatArray = value as FloatArray
-  override fun getCppRequiredTypes(): List<CppType> = listOf(CppType.READABLE_ARRAY)
+  override fun getCppRequiredTypes(): ExpectedType = ExpectedType(CppType.READABLE_ARRAY)
 }
 
 class JavaScriptValueTypeConvert(isOptional: Boolean) : TypeConverter<JavaScriptValue>(isOptional) {
   override fun convertNonOptional(value: Any): JavaScriptValue = value as JavaScriptValue
-  override fun getCppRequiredTypes(): List<CppType> = CppType.values().toList()
+  override fun getCppRequiredTypes(): ExpectedType = ExpectedType(CppType.JS_VALUE)
 }
 
 class JavaScriptObjectTypeConverter(isOptional: Boolean) : TypeConverter<JavaScriptObject>(isOptional) {
   override fun convertNonOptional(value: Any): JavaScriptObject = value as JavaScriptObject
-  override fun getCppRequiredTypes(): List<CppType> = listOf(CppType.JS_OBJECT)
+  override fun getCppRequiredTypes(): ExpectedType = ExpectedType(CppType.JS_OBJECT)
 }
 
 abstract class BaseTypeArrayConverter<T : TypedArray>(isOptional: Boolean) : TypeConverter<T>(isOptional) {
@@ -125,7 +126,7 @@ abstract class BaseTypeArrayConverter<T : TypedArray>(isOptional: Boolean) : Typ
 
   override fun convertNonOptional(value: Any): T = wrapJavaScriptTypedArray(value as JavaScriptTypedArray)
 
-  override fun getCppRequiredTypes(): List<CppType> = listOf(CppType.TYPED_ARRAY)
+  override fun getCppRequiredTypes(): ExpectedType = ExpectedType(CppType.TYPED_ARRAY)
 }
 
 class Int8ArrayTypeConverter(isOptional: Boolean) : BaseTypeArrayConverter<Int8Array>(isOptional) {
