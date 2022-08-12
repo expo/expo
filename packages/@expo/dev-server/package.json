@@ -33,7 +33,7 @@
     "@expo/bunyan": "4.0.0",
     "@expo/metro-config": "~0.3.18",
     "@expo/osascript": "2.0.33",
-    "body-parser": "1.19.0",
+    "body-parser": "1.20.0",
     "chalk": "^4.0.0",
     "connect": "^3.7.0",
     "fs-extra": "9.0.0",
