@@ -6,6 +6,16 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+- Refactored inline Android emulator checks to use enhanced checking in `EmulatorUtilities.isRunningOnEmulator()`. ([#16177](https://github.com/expo/expo/pull/16177)) by [@kbrandwijk](https://github.com/kbrandwijk), [@keith-kurak](https://github.com/keith-kurak))
+
+## 1.2.0 — 2022-08-11
+
+### 🎉 New features
+
 - Add landscape orienation support. ([#18509](https://github.com/expo/expo/pull/18509)) by [@ajsmth](https://github.com/ajsmth)
 
 ### 🐛 Bug fixes
@@ -14,7 +24,6 @@
 
 ### 💡 Others
 
-- Refactored inline Android emulator checks to use enhanced checking in `EmulatorUtilities.isRunningOnEmulator()`. ([#16177](https://github.com/expo/expo/pull/16177)) by [@kbrandwijk](https://github.com/kbrandwijk), [@keith-kurak](https://github.com/keith-kurak))
 - Made deep link error screen on iOS show a friendlier message. ([#18467](https://github.com/expo/expo/pull/18467) by [@esamelson](https://github.com/esamelson))
 - Added URL to deep link error screen message on iOS. ([#18511](https://github.com/expo/expo/pull/18511) by [@esamelson](https://github.com/esamelson))
 
