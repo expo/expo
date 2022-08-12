@@ -3,12 +3,17 @@
 #pragma once
 
 #include <fbjni/fbjni.h>
+#include <jsi/jsi.h>
 
 #include <optional>
 
 namespace jni = facebook::jni;
+namespace jsi = facebook::jsi;
 
 namespace expo {
+
+class JSIInteropModuleRegistry;
+
 /**
  * A convenient wrapper for the Kotlin CodedException.
  * It can be used with the `jni::throwNewJavaException` function to throw a cpp exception that
@@ -54,4 +59,13 @@ public:
     const std::string &message
   );
 };
+
+/**
+ * Tries to rethrow an jni::JniException as a js version of the CodedException
+ */
+[[noreturn]] void rethrowAsCodedError(
+  jsi::Runtime &rt,
+  JSIInteropModuleRegistry *registry,
+  jni::JniException &jniException
+);
 } // namespace expo

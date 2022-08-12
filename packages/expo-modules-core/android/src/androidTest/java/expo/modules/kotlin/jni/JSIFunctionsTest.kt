@@ -307,4 +307,14 @@ class JSIFunctionsTest {
       """.trimIndent()
     )
   }
+
+  @Test(expected = JavaScriptEvaluateException::class)
+  fun should_throw_if_js_value_cannnot_be_passed() = withJSIInterop(
+    inlineModule {
+      Name("TestModule")
+      Function("f") { _: Int -> }
+    }
+  ) {
+    evaluateScript("ExpoModules.TestModule.f(Symbol())")
+  }
 }
