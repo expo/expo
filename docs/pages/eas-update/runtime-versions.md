@@ -36,7 +36,7 @@ The `"sdkVersion"` policy will set the runtime version to the current SDK versio
 
 This runtime version policy is perfect if you are not including custom native code in your project and the only native changes you make are when upgrading Expo SDKs.
 
-### `"appVersion"` runtime version policy
+### `"appVersion"` runtime version policy (available in SDK 46 and higher)
 
 We provide the `"appVersion"` runtime version policy for projects that have custom native code that may change between builds:
 
