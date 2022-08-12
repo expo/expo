@@ -165,7 +165,7 @@ class JavaScriptEvaluateException(
   val jsStack: String
 ) : CodedException(
   message = """
-  Cannot evaluate JavaScript code: $message${if (message.lastOrNull() == '.') "" else "."}
+  Cannot evaluate JavaScript code: $message
   $jsStack
   """.trimIndent()
 )

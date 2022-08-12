@@ -153,7 +153,7 @@ std::vector<jvalue> MethodMetadata::convertJSIArgsToJNI(
       auto stringRepresentation = arg->toString(rt).utf8(rt);
       jni::throwNewJavaException(
         UnexpectedException::create(
-          "Cannot convert " + stringRepresentation + " to a Kotlin type.").get()
+          "Cannot convert '" + stringRepresentation + "' to a Kotlin type.").get()
       );
     }
   }
