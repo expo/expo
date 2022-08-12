@@ -1,7 +1,7 @@
 // Copyright © 2021-present 650 Industries, Inc. (aka Expo)
 
 #include "JNIFunctionBody.h"
-#include "CachedReferencesRegistry.h"
+#include "JavaReferencesCache.h"
 
 namespace jni = facebook::jni;
 namespace react = facebook::react;

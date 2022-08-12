@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include <jsi/jsi.h>
 #include <fbjni/fbjni.h>
 #include "boost/functional/hash.hpp"
 
@@ -10,7 +9,6 @@
 #include <unordered_map>
 
 namespace jni = facebook::jni;
-namespace jsi = facebook::jsi;
 
 namespace expo {
 using MethodHashMap = std::unordered_map<
@@ -21,10 +19,8 @@ using MethodHashMap = std::unordered_map<
 
 /**
  * Singleton registry used to store references to often used Java classes.
- *
- * TODO(@lukmccall): also store reference to jsi objects like `Promise`.
  */
-class CachedReferencesRegistry {
+class JavaReferencesCache {
 public:
   /**
    * An entry in the Java class registry.
@@ -47,14 +43,14 @@ public:
     MethodHashMap methods;
   };
 
-  CachedReferencesRegistry(CachedReferencesRegistry const &) = delete;
+  JavaReferencesCache(JavaReferencesCache const &) = delete;
 
-  CachedReferencesRegistry &operator=(CachedReferencesRegistry const &) = delete;
+  JavaReferencesCache &operator=(JavaReferencesCache const &) = delete;
 
   /**
    * Gets a singleton instance
    */
-  static std::shared_ptr<CachedReferencesRegistry> instance();
+  static std::shared_ptr<JavaReferencesCache> instance();
 
   /**
    * Gets a cached Java class entry.
@@ -67,7 +63,7 @@ public:
   void loadJClasses(JNIEnv *env);
 
 private:
-  CachedReferencesRegistry() = default;
+  JavaReferencesCache() = default;
 
   std::unordered_map<std::string, CachedJClass> jClassRegistry;
 
