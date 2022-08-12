@@ -26,37 +26,50 @@ import SnackInline from '~/components/plugins/SnackInline';
 <SnackInline label='Basic Camera usage' dependencies={['expo-camera']}>
 
 ```jsx
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { Camera, CameraType } from 'expo-camera';
+import { useState } from 'react';
+import { Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export default function App() {
-  const [hasPermission, setHasPermission] = useState(null);
   const [type, setType] = useState(CameraType.back);
+  const [permission, requestPermission] = Camera.useCameraPermissions();
 
-  useEffect(() => {
-    (async () => {
-      const { status } = await Camera.requestCameraPermissionsAsync();
-      setHasPermission(status === 'granted');
-    })();
-  }, []);
-
-  if (hasPermission === null) {
+  /* @hide if (!permission) ... */
+  if (!permission) {
+    // Camera permissions are still loading
     return <View />;
   }
-  if (hasPermission === false) {
-    return <Text>No access to camera</Text>;
+  /* @end */
+
+  /* @hide if (!permission.granted) ... */
+  if (!permission.granted) {
+    // Camera permissions are not granted yet
+    return (
+      <View style={styles.container}>
+        <Text style={{ textAlign: 'center' }}>
+          We need your permission to show the camera
+        </Text>
+        <Button onPress={requestPermission} title="grant permission" />
+      </View>
+    );
   }
+  /* @end */
+
+
+  function toggleCameraType() {
+    setType((current) => (
+      current === CameraType.back ? CameraType.front : CameraType.back
+    ));
+  }
+
   return (
     <View style={styles.container}>
       <Camera style={styles.camera} type={type}>
         <View style={styles.buttonContainer}>
           <TouchableOpacity
             style={styles.button}
-            onPress={() => {
-              setType(type === CameraType.back ? CameraType.front : CameraType.back);
-            }}>
-            <Text style={styles.text}> Flip </Text>
+            onPress={toggleCameraType}>
+            <Text style={styles.text}>Flip Camera</Text>
           </TouchableOpacity>
         </View>
       </Camera>
@@ -68,23 +81,25 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    justifyContent: 'center',
   },
   camera: {
     flex: 1,
   },
   buttonContainer: {
     flex: 1,
-    backgroundColor: 'transparent',
     flexDirection: 'row',
-    margin: 20,
+    backgroundColor: 'transparent',
+    margin: 64,
   },
   button: {
-    flex: 0.1,
+    flex: 1,
     alignSelf: 'flex-end',
     alignItems: 'center',
   },
   text: {
-    fontSize: 18,
+    fontSize: 24,
+    fontWeight: 'bold',
     color: 'white',
   },
 });
