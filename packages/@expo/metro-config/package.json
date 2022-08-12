@@ -33,7 +33,7 @@
     "transformer"
   ],
   "dependencies": {
-    "@expo/config": "7.0.0",
+    "@expo/config": "7.0.1",
     "@expo/json-file": "8.2.36",
     "chalk": "^4.1.0",
     "debug": "^4.3.2",
