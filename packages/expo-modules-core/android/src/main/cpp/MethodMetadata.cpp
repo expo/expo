@@ -150,8 +150,11 @@ std::vector<jvalue> MethodMetadata::convertJSIArgsToJNI(
           react::ReadableNativeMap::createWithContents(std::move(dynamic)).release());
       }
     } else {
-      // TODO(@lukmccall): throw an exception
-      jarg->l = nullptr;
+      auto stringRepresentation = arg->toString(rt).utf8(rt);
+      jni::throwNewJavaException(
+        UnexpectedException::create(
+          "Cannot convert '" + stringRepresentation + "' to a Kotlin type.").get()
+      );
     }
   }
 

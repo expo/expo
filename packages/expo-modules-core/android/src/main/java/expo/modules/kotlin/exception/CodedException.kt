@@ -88,8 +88,14 @@ internal class NullArgumentException :
 internal class FieldRequiredException(property: KProperty1<*, *>) :
   CodedException(message = "Value for field '$property' is required, got nil")
 
-internal class UnexpectedException(val throwable: Throwable) :
-  CodedException(message = throwable.toString(), throwable)
+@DoNotStrip
+class UnexpectedException(
+  message: String?,
+  cause: Throwable? = null
+) : CodedException(message = message, cause) {
+  constructor(throwable: Throwable) : this(throwable.toString(), throwable)
+  constructor(message: String) : this(message, null)
+}
 
 internal class ValidationException(message: String) :
   CodedException(message = message)
@@ -159,7 +165,7 @@ class JavaScriptEvaluateException(
   val jsStack: String
 ) : CodedException(
   message = """
-  Cannot evaluate JavaScript code: $message.
+  Cannot evaluate JavaScript code: $message
   $jsStack
   """.trimIndent()
 )
