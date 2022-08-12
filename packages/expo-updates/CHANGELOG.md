@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 0.14.4 — 2022-08-12
+
+_This version does not introduce any user-facing changes._
+
 ## 0.14.3 — 2022-07-25
 
 ### 🐛 Bug fixes
