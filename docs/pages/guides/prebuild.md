@@ -103,11 +103,9 @@ The convenience change to the `scripts` field is the only side effect that alter
 
 ## Optionality
 
-Prebuilding is completely optional and does not disqualify a project from using other features or services offered by Expo. We created the designation _bare workflow_ to refer projects that do not use `npx expo prebuild`.
+Prebuilding is completely optional and it works great with all tools and services offered by Expo. We created the designation _bare workflow_ to refer projects that do not use `npx expo prebuild` — projects where developers make direct changes to their native projects, rather than continuously generating them on demand as with prebuild.
 
 Everything offered by Expo including [EAS][eas], Expo CLI, and the libraries in the Expo SDK are built to **fully support** the _bare workflow_ as this is a minimum requirement for supporting projects using `npx expo prebuild`. The only exception is the [Expo Go][expo-go] app, which can load _bare workflow_ projects, but only if they are structured to provide JavaScript fallbacks for native code that does not exist in the Expo Go runtime.
-
-We develop new [Native Modules][native-modules] without using `npx expo prebuild` as it's currently the fastest way to do so. However, we recommend users building apps with Expo attempt to use Prebuild as much as possible for the reasons listed in the [pitch](#pitch) section.
 
 ## Pitch
 
@@ -117,7 +115,7 @@ A single native project on its own is complicated to maintain, scale, and grow. 
 
 Building native code requires a basic familiarity with that native platform's default tooling leading to a fairly difficult learning curve. In cross-platform, this curve is multiplied by the amount of platforms you wish to develop for. Cross-platform tooling doesn't solve this issue if you need to drop down and implement many features individually in platform-specific native code.
 
-When you bootstrap a native app, it has a bunch of preset values and code that you don't need to understand in order to get started. Eventually you'll want to upgrade your native application and now you'll need to be acutely familiar with how all of the initial code works in order to safely upgrade it. This is extremely challenging and users will either upgrade their app incorrectly, missing crucial changes, or they'll bootstrap a new app and copy all of their source code into the new application.
+When you bootstrap a native app, there is a bunch of code and configuration that you don't need to understand in order to get started. But you now own it. Eventually, you will want to upgrade your native application and now you'll need to be familiar with how all of the initial code works in order to safely upgrade it. This is extremely challenging and users often either upgrade their app incorrectly, missing crucial changes, or they'll bootstrap a new app and copy all of their source code into the new application.
 
 **With Prebuild** upgrading is much closer to upgrading a pure JavaScript application. Bump the versions in your **package.json** and regenerate the native project.
 
@@ -149,13 +147,11 @@ Here are some reasons _Expo Prebuilding_ might **not** be the right fit for a pa
 
 Expo releases a new version approximately every quarter, and `react-native` does not follow a calendar based release schedule. This means there are times where you cannot use `npx expo prebuild` with the latest release of React Native. This could potentially be circumvented by using a custom [prebuild template](#templates) if you are willing to experiment. You can also mitigate this by cherry-picking any changes you need from the latest version of React Native into a fork and using that in your project.
 
-If React Native moves to a more predictable and stable release schedule then we could potentially add support during a beta release period.
-
 ### Platform compatibility
 
 Prebuild can only be used for native platforms that are supported by the Expo SDK. This means iOS and Android for the time being. With the exception of web, which doesn't require `npx expo prebuild` since it uses the browser instead of a custom native runtime.
 
-We plan to support more platforms in the future, but team size and limited resources prevent us from being able to maintain them at the moment. The stability of out-of-tree platforms like `react-native-macos` and `react-native-windows` are also considered.
+In the future, we would like to support additional platforms, such as `react-native-macos` and `react-native-windows`, but this is not currently a priority.
 
 If you are targeting additional platforms, you can still use prebuild for your `ios`, and `android` projects — any extra platforms will have to be configured manually in the meantime.
 
