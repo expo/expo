@@ -23,7 +23,7 @@ This creates the `ios/` and `android/` folders for running your React code. If y
 
 We highly recommend using prebuild for the reasons listed in the [pitch](#pitch) section, but the system is [fully optional](#optionality) and you can stop using it at any time.
 
-## Platforms
+## Platform support
 
 Prebuild currently supports iOS and Android. Web support is not required because there is no native project to generate for web — the app it runs in is always your web browser. You can build for individual platforms by using the `--platform` flag:
 
