@@ -35,7 +35,7 @@ export async function createExampleApp(
   await newStep('Initializing the example app', async (step) => {
     await spawnAsync(
       packageManager,
-      ['create', 'expo-app', exampleProjectSlug, '--template', 'blank-typescript'],
+      ['create', 'expo-app', '--', exampleProjectSlug, '--template', 'blank-typescript', '--yes'],
       {
         cwd: targetDir,
         stdio: 'ignore',
