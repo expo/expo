@@ -32,7 +32,6 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/branch/",
   "dependencies": {
-    "@expo/config-plugins": "~5.0.0",
     "react-native-branch": "5.0.0"
   },
   "devDependencies": {

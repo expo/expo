@@ -34,7 +34,6 @@
     "preset": "expo-module-scripts"
   },
   "dependencies": {
-    "@expo/config-plugins": "~5.0.0",
     "@koale/useworker": "^4.0.2",
     "invariant": "^2.2.4"
   },
