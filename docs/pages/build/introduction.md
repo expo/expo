@@ -16,4 +16,10 @@ It's the next generation of the [`expo build:[ios/android]`](/distribution/build
 
 <BoxLink title="Creating your first build" description="It should only take a few minutes in total to get up and running for iOS and/or Android." href="/build/setup" />
 
-<BoxLink title="Learning about the limitations" description="EAS Build is a new and rapidly evolving service, so we recommend getting familiar with the current limitations." href="/build-reference/limitations" />
+<BoxLink title="Share your apps with internal testers" description="EAS Build can help share preview builds of your app with a single URL." href="/build/internal-distribution" />
+
+<BoxLink title="Automate submissions" description="Learn how you can have the service take your successful builds and handle uploading them to app stores for you automatically." href="/build/automating-submissions" />
+
+<BoxLink title="App version management" description="Automate away versions bumps so you never have to think about it again." href="/build/automating-submissions" />
+
+<BoxLink title="Learning about the limitations" description="EAS Build is a new and rapidly evolving, so we recommend getting familiar with the current limitations." href="/build-reference/limitations" />
