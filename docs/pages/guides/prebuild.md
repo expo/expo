@@ -8,8 +8,8 @@ Before a native app can be compiled, the native source code must be generated. E
 
 1. The [Expo Config][expo-config] file (`app.json`, `app.config.js`).
 2. Arguments passed to the `npx expo prebuild` command.
-3. Version of `expo` that's installed in the project.
-4. Expo [Autolinking](/workflow/glossary-of-terms#autolinking), which finds native modules in your `package.json` and automatically links them as CocoaPods on iOS and Gradle packages on Android.
+3. Version of `expo` that's installed in the project and its corresponding [prebuild template](#templates).
+4. [Autolinking][autolinking], for linking [native modules][native-modules] found in the `package.json`.
 
 ## Usage
 
@@ -22,6 +22,24 @@ Prebuild can be used by running:
 This creates the `ios/` and `android/` folders for running your React code. If you modify the generated directories manually then you risk losing your changes the next time you run `npx expo prebuild --clean`. Instead, you should create ["config plugins"][config-plugins] — functions that perform modifications on native projects during prebuild.
 
 We highly recommend using prebuild for the reasons listed in the [pitch](#pitch) section, but the system is [fully optional](#optionality) and you can stop using it at any time.
+
+### Usage with EAS Build
+
+You can configure EAS Build to run `npx expo prebuild` before building by using the "managed" preset ([learn more](/build-reference/ios-builds/)).
+
+### Usage with Expo CLI run commands
+
+You can perform a native build locally by running:
+
+<Terminal cmd={[
+'# Build your native Android project',
+'$ npx expo run:android',
+'',
+'# Build your native iOS project',
+'$ npx expo run:ios'
+]} />
+
+If native build folders are not present, `npx expo prebuild` will be run one time for the specific platform you wish to run. On subsequent uses of the run commands, you will need to manually run `npx expo prebuild` to ensure the native code is freshly synchronized with your local configuration.
 
 ## Platform support
 
@@ -143,7 +161,7 @@ If you are targeting additional platforms, you can still use prebuild for your `
 
 ### Making changes directly is quicker than modularizing and automating
 
-All native changes must be added with native modules (using React Native's built-in Native Module APIs or the Expo Modules API) and config plugins. This means if you want to quickly add a native file to your project to experiment, then you may be better off running prebuild and adding the file manually, then working your way back into the system with a [monorepo](https://docs.expo.dev/guides/monorepos/). We plan to speed this process up by adding functionality to Expo Autolinking that finds project native files outside of the native folders and links them before building.
+All native changes must be added with native modules (using React Native's built-in Native Module APIs or the Expo Modules API) and config plugins. This means if you want to quickly add a native file to your project to experiment, then you may be better off running prebuild and adding the file manually, then working your way back into the system with a [monorepo](https://docs.expo.dev/guides/monorepos/). We plan to speed this process up by adding functionality to [Expo Autolinking](/workflow/glossary-of-terms#expo-autolinking) that finds project native files outside of the native folders and links them before building.
 
 If you want to modify configuration, such as the **gradle.properties** file, you'll have to write a plugin ([example](https://github.com/expo/expo/blob/1c994bb042ad47fbf6878e3b5793d4545f2d1208/apps/native-component-list/app.config.js#L21-L28)). This can be easily automated with helper plugin libraries, but it is a bit slower if you need to do it often.
 
@@ -151,7 +169,7 @@ If you want to modify configuration, such as the **gradle.properties** file, you
 
 Not all packages support _Expo Prebuilding_ yet. If you find a library that requires extra setup after installation and doesn't yet have a config plugin, we recommend opening a pull request or an issue so that the maintainer is aware of the feature request.
 
-Many packages, such as [`react-native-blurhash`](https://github.com/mrousavy/react-native-blurhash), don't require any additional native configuration beyond what is handled by autolinking and so no config plugin is required.
+Many packages, such as [`react-native-blurhash`](https://github.com/mrousavy/react-native-blurhash), don't require any additional native configuration beyond what is handled by [autolinking][autolinking] and so no config plugin is required.
 
 Other packages, such as [`react-native-ble-plx`](https://github.com/Polidea/react-native-ble-plx), do require additional setup and therefore require a config plugin to be used with `npx expo prebuild` (in this case there's an external plugin called [`@config-plugins/react-native-ble-plx`](https://github.com/expo/config-plugins/tree/main/packages/react-native-ble-plx)).
 
@@ -160,6 +178,7 @@ Alternatively, we also have a repo for [out-of-tree config plugins][config-plugi
 [config-plugins-repo]: https://github.com/expo/config-plugins
 [template]: https://github.com/expo/expo/tree/main/templates/expo-template-bare-minimum
 [native-modules]: /workflow/glossary-of-terms/#native-module
+[autolinking]: /workflow/glossary-of-terms#autolinking
 [eas]: /eas
 [expo-go]: https://expo.dev/expo-go
 [config-plugins]: /guides/config-plugins/
