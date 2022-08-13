@@ -39,7 +39,7 @@ You can perform a native build locally by running:
 '$ npx expo run:ios'
 ]} />
 
-If native build folders are not present, `npx expo prebuild` will be run one time for the specific platform you wish to run. On subsequent uses of the run commands, you will need to manually run `npx expo prebuild` to ensure the native code is freshly synchronized with your local configuration.
+If native build directories are not present `npx expo prebuild` will be run one time for the specific platform you wish to run. On subsequent uses of the run commands, you will need to manually run `npx expo prebuild` to ensure the native code is freshly synchronized with your local configuration.
 
 ## Platform support
 
