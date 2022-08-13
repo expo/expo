@@ -10,7 +10,7 @@ The tradeoff is that Expo Go does not allow you to add custom native code, you c
 
 ## Adding custom native code with development builds
 
-To make use of third party libraries with custom native code and continue with the same developer experience of Expo Go, you can migrate to using ["development builds"](/development/introduction). Development builds are like your own personal version of Expo Go — they include the native runtime that powers your app, and you control what is included in that native runtime by adding or removing packages in your **package.json**. Development builds allow you to continue to continue to build your app in JavaScript while still taking advantage of the full ecosystem of native packages available for Expo and React Native projects.
+To make use of third party libraries with custom native code and continue with the same developer experience of Expo Go, you can migrate to using ["development builds"](/development/introduction). Development builds are like your own personal version of Expo Go — they include the native runtime that powers your app, and you control what is included in that native runtime by adding or removing packages in your **package.json**. Development builds allow you to continue to build your app in JavaScript while taking advantage of the full ecosystem of native packages available for Expo and React Native projects.
 
 Learn how to start using custom native code in your app by switching from Expo Go to development builds in the ["Getting Started" guide for development builds](/development/getting-started).
 
