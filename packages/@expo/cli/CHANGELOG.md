@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Implement getApplicationIdFromBundle fixing iOS app launch issue with SDK 46. ([#18537](https://github.com/expo/expo/pull/18537) by [@Anthony Mittaz](https://github.com/Anthony Mittaz))
+
 ### 💡 Others
 
 ## 0.2.8 — 2022-08-12
