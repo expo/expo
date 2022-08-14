@@ -25,6 +25,7 @@ import React from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View, /* @info This is required to determine which platform the code is going to run */ Platform /* @end */ } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 /* @info As always, we must import it to use it */ import * as Sharing from 'expo-sharing'; /* @end */
+import * as ImageManipulator from "expo-image-manipulator";
 
 export default function App() {
   const [selectedImage, setSelectedImage] = React.useState(null);
@@ -42,7 +43,8 @@ export default function App() {
       return;
     }
 
-    await Sharing.shareAsync(selectedImage.localUri);
+    const imageTmp = await ImageManipulator.manipulateAsync(selectedImage.localUri);
+    await Sharing.shareAsync(imageTmp.uri);
   }; /* @end */
 
   if (selectedImage !== null) {
