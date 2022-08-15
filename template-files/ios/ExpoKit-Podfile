@@ -1,4 +1,4 @@
-platform :ios, '12.0'
+platform :ios, '12.4'
 
 # Disable expo-updates auto create manifest in podspec script_phase
 $expo_updates_create_manifest = false
@@ -38,7 +38,13 @@ target 'ExpoKitApp' do
 
   # Install React Native and its dependencies
   require_relative '../node_modules/react-native/scripts/react_native_pods'
-  use_react_native!(production: true)
+  use_react_native!(
+    :path => '../node_modules/react-native',
+    :hermes_enabled => false,
+    :fabric_enabled => false,
+    :app_path => "#{Dir.pwd}/..",
+    :production => true,
+  )
 
   # Install vendored pods.
   require_relative '../../../ios/podfile_helpers.rb'
