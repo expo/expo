@@ -48,11 +48,11 @@ jobs:
       - name: 🍏 Generate dynamic macros
         run: expotools ios-generate-dynamic-macros
       - name: 📦 Build iOS shell app for real devices
-        timeout-minutes: 30
+        timeout-minutes: 50
         run: |
           expotools ios-shell-app --action build --type archive --verbose true --skipRepoUpdate --shellAppSdkVersion UNVERSIONED
       - name: 📦 Build iOS shell app for simulators
-        timeout-minutes: 30
+        timeout-minutes: 50
         run: |
           expotools ios-shell-app --action build --type simulator --verbose true --skipRepoUpdate --shellAppSdkVersion UNVERSIONED
       - name: ✏️ Set tarball name
