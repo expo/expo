@@ -1,12 +1,12 @@
-package expo.modules.updates.logging
+package expo.modules.core.logging
 
 import android.util.Log
 
 /**
- * Log types (levels) for expo-updates logs
+ * Log types (levels)
  * These correspond to ExpoModulesCore.LogType in iOS
  */
-enum class UpdatesLogType(val type: String) {
+enum class LogType(val type: String) {
   Trace("trace"),
   Timer("timer"),
   Stacktrace("stacktrace"),
@@ -17,7 +17,7 @@ enum class UpdatesLogType(val type: String) {
   Fatal("fatal");
 
   companion object {
-    fun toOSLogType(type: UpdatesLogType): Int {
+    fun toOSLogType(type: LogType): Int {
       return when (type) {
         Trace -> Log.DEBUG
         Timer -> Log.DEBUG

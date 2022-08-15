@@ -12,14 +12,14 @@ import ExpoModulesCore
 public class UpdatesLogger: NSObject {
   public static let EXPO_UPDATES_LOG_CATEGORY = "expo-updates"
 
-  private let logger = ExpoModulesCore.Logger(category: UpdatesLogger.EXPO_UPDATES_LOG_CATEGORY)
+  private let logger = ExpoModulesCore.Logger(category: UpdatesLogger.EXPO_UPDATES_LOG_CATEGORY, options: [.logToOS, .logToFile])
 
   // MARK: - Public logging functions
 
   @objc(trace:code:updateId:assetId:)
   public func trace(
     message: String,
-    code: UpdatesErrorCode = .None,
+    code: UpdatesErrorCode = .none,
     updateId: String?,
     assetId: String?
   ) {
@@ -30,7 +30,7 @@ public class UpdatesLogger: NSObject {
   @objc(trace:code:)
   public func trace(
     message: String,
-    code: UpdatesErrorCode = .None
+    code: UpdatesErrorCode = .none
   ) {
     trace(message: message, code: code, updateId: nil, assetId: nil)
   }
@@ -38,7 +38,7 @@ public class UpdatesLogger: NSObject {
   @objc(debug:code:updateId:assetId:)
   public func debug(
     message: String,
-    code: UpdatesErrorCode = .None,
+    code: UpdatesErrorCode = .none,
     updateId: String?,
     assetId: String?
   ) {
@@ -49,7 +49,7 @@ public class UpdatesLogger: NSObject {
   @objc(debug:code:)
   public func debug(
     message: String,
-    code: UpdatesErrorCode = .None
+    code: UpdatesErrorCode = .none
   ) {
     debug(message: message, code: code, updateId: nil, assetId: nil)
   }
@@ -57,7 +57,7 @@ public class UpdatesLogger: NSObject {
   @objc(info:code:updateId:assetId:)
   public func info(
     message: String,
-    code: UpdatesErrorCode = .None,
+    code: UpdatesErrorCode = .none,
     updateId: String?,
     assetId: String?
   ) {
@@ -68,7 +68,7 @@ public class UpdatesLogger: NSObject {
   @objc(info:code:)
   public func info(
     message: String,
-    code: UpdatesErrorCode = .None
+    code: UpdatesErrorCode = .none
   ) {
     info(message: message, code: code, updateId: nil, assetId: nil)
   }
@@ -76,7 +76,7 @@ public class UpdatesLogger: NSObject {
   @objc(warn:code:updateId:assetId:)
   public func warn(
     message: String,
-    code: UpdatesErrorCode = .None,
+    code: UpdatesErrorCode = .none,
     updateId: String?,
     assetId: String?
   ) {
@@ -87,7 +87,7 @@ public class UpdatesLogger: NSObject {
   @objc(warn:code:)
   public func warn(
     message: String,
-    code: UpdatesErrorCode = .None
+    code: UpdatesErrorCode = .none
   ) {
     warn(message: message, code: code, updateId: nil, assetId: nil)
   }
@@ -95,7 +95,7 @@ public class UpdatesLogger: NSObject {
   @objc(error:code:updateId:assetId:)
   public func error(
     message: String,
-    code: UpdatesErrorCode = .None,
+    code: UpdatesErrorCode = .none,
     updateId: String?,
     assetId: String?
   ) {
@@ -106,7 +106,7 @@ public class UpdatesLogger: NSObject {
   @objc(error:code:)
   public func error(
     message: String,
-    code: UpdatesErrorCode = .None
+    code: UpdatesErrorCode = .none
   ) {
     error(message: message, code: code, updateId: nil, assetId: nil)
   }
@@ -114,7 +114,7 @@ public class UpdatesLogger: NSObject {
   @objc(fatal:code:updateId:assetId:)
   public func fatal(
     message: String,
-    code: UpdatesErrorCode = .None,
+    code: UpdatesErrorCode = .none,
     updateId: String?,
     assetId: String?
   ) {
@@ -125,16 +125,14 @@ public class UpdatesLogger: NSObject {
   @objc(fatal:code:)
   public func fatal(
     message: String,
-    code: UpdatesErrorCode = .None
+    code: UpdatesErrorCode = .none
   ) {
     fatal(message: message, code: code, updateId: nil, assetId: nil)
   }
 
-  // MARK: - Private methods
-
-  func logEntryString(
+  public func logEntryString(
     message: String,
-    code: UpdatesErrorCode = .None,
+    code: UpdatesErrorCode = .none,
     level: ExpoModulesCore.LogType = .trace,
     updateId: String?,
     assetId: String?
@@ -145,7 +143,7 @@ public class UpdatesLogger: NSObject {
     //   and the one below
     let symbols = (level == .error || level == .fatal) ? UpdatesLogEntry.currentStackTrace() : nil
     let logEntry = UpdatesLogEntry(
-      timestamp: UInt(Date().timeIntervalSince1970) * 1000,
+      timestamp: UInt(Date().timeIntervalSince1970) * 1_000,
       message: message,
       code: code.asString,
       level: "\(level)",

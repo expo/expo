@@ -4,6 +4,33 @@ import Dispatch
 
 public let log = Logger(category: Logger.EXPO_LOG_CATEGORY)
 
+/**
+ An OptionSet defining the logging options that are currently supported.
+ Future options may include writing to a DB or other destinations
+ */
+public struct LoggerOptions: OptionSet {
+  public let rawValue: Int
+
+  public init(rawValue: Int) {
+    self.rawValue = rawValue
+  }
+
+  /**
+   Including this option will result in logs being written using os.log() or print(),
+   depending on the iOS version.
+   */
+  public static let logToOS = LoggerOptions(rawValue: 1 << 0)
+  /**
+   Including this option will result in logs being written to a flat file, as
+   strings separated by carriage returns.
+   */
+  public static let logToFile = LoggerOptions(rawValue: 1 << 1)
+}
+
+/**
+ Native iOS logging class for Expo, with options to direct logs
+ to different destinations.
+ */
 public class Logger {
   public static let EXPO_MODULES_LOG_SUBSYSTEM = "dev.expo.modules"
   public static let EXPO_LOG_CATEGORY = "expo"
@@ -18,13 +45,18 @@ public class Logger {
 
   private var handlers: [LogHandler] = []
 
-  public init(category: String = "main") {
+  public init(category: String = "main", options: LoggerOptions = [.logToOS]) {
     self.category = category
 
-    if #available(macOS 11.0, iOS 14.0, watchOS 7.0, tvOS 14.0, *) {
-      addHandler(withType: OSLogHandler.self)
-    } else {
-      addHandler(withType: PrintLogHandler.self)
+    if options.contains(.logToFile) {
+      addHandler(withType: PersistentFileLogHandler.self)
+    }
+    if options.contains(.logToOS) {
+      if #available(macOS 11.0, iOS 14.0, watchOS 7.0, tvOS 14.0, *) {
+        addHandler(withType: OSLogHandler.self)
+      } else {
+        addHandler(withType: PrintLogHandler.self)
+      }
     }
   }
 

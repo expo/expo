@@ -149,6 +149,8 @@ static NSString * const EXUpdatesErrorEventName = @"error";
 
   _isStarted = YES;
 
+  [self purgeUpdatesLogsOlderThanOneDay];
+
   NSError *fsError;
   [self initializeUpdatesDirectoryWithError:&fsError];
   if (fsError) {
@@ -180,7 +182,7 @@ static NSString * const EXUpdatesErrorEventName = @"error";
   UIView *view = nil;
   NSBundle *mainBundle = [NSBundle mainBundle];
   NSString *launchScreen = (NSString *)[mainBundle objectForInfoDictionaryKey:@"UILaunchStoryboardName"] ?: @"LaunchScreen";
-  
+
   if ([mainBundle pathForResource:launchScreen ofType:@"nib"] != nil) {
     NSArray *views = [mainBundle loadNibNamed:launchScreen owner:self options:nil];
     view = views.firstObject;
@@ -196,7 +198,7 @@ static NSString * const EXUpdatesErrorEventName = @"error";
     view = [UIView new];
     view.backgroundColor = [UIColor whiteColor];
   }
-  
+
   if (window.rootViewController == nil) {
       UIViewController *rootViewController = [UIViewController new];
       window.rootViewController = rootViewController;
@@ -323,6 +325,11 @@ static NSString * const EXUpdatesErrorEventName = @"error";
     *error = dbError;
   }
   return dbError == nil;
+}
+
+- (void)purgeUpdatesLogsOlderThanOneDay
+{
+  [EXUpdatesUtils purgeUpdatesLogsOlderThanOneDay];
 }
 
 - (void)setDefaultSelectionPolicy:(EXUpdatesSelectionPolicy *)selectionPolicy
