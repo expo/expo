@@ -1,17 +1,16 @@
 import { getConfig } from '@expo/config';
-import { MetroDevServerOptions } from '@expo/dev-server';
 import http from 'http';
 import Metro from 'metro';
 import { Terminal } from 'metro-core';
 
-import { createDevServerMiddleware } from '../middleware/createDevServerMiddleware';
+import { MetroDevServerOptions } from '../../../export/fork-bundleAsync';
 import { getPlatformBundlers } from '../platformBundlers';
 import { MetroTerminalReporter } from './MetroTerminalReporter';
+import { createDevServerMiddleware } from '../middleware/devServerMiddleware';
 import { importExpoMetroConfigFromProject, importMetroFromProject } from './resolveFromProject';
 import { withMetroMultiPlatform } from './withMetroMultiPlatform';
 
-// From expo/dev-server but with ability to use custom logger.
-type MessageSocket = {
+export type MessageSocket = {
   broadcast: (method: string, params?: Record<string, any> | undefined) => void;
 };
 
@@ -50,8 +49,6 @@ export async function instantiateMetroAsync(
 
   const {
     middleware,
-    attachToServer,
-
     // New
     websocketEndpoints,
     eventsSocketEndpoint,
@@ -75,24 +72,11 @@ export async function instantiateMetroAsync(
     websocketEndpoints,
   });
 
-  if (attachToServer) {
-    // Expo SDK 44 and lower
-    const { messageSocket, eventsSocket } = attachToServer(server);
-    reportEvent = eventsSocket.reportEvent;
+  reportEvent = eventsSocketEndpoint.reportEvent;
 
-    return {
-      server,
-      middleware,
-      messageSocket,
-    };
-  } else {
-    // RN +68 -- Expo SDK +45
-    reportEvent = eventsSocketEndpoint.reportEvent;
-
-    return {
-      server,
-      middleware,
-      messageSocket: messageSocketEndpoint,
-    };
-  }
+  return {
+    server,
+    middleware,
+    messageSocket: messageSocketEndpoint,
+  };
 }

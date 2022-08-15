@@ -1,5 +1,4 @@
 import { Platform } from '@expo/config';
-import { BundleOutput } from '@expo/dev-server';
 import chalk from 'chalk';
 import prettyBytes from 'pretty-bytes';
 import table from 'text-table';
@@ -7,6 +6,7 @@ import table from 'text-table';
 import * as Log from '../log';
 import { stripAnsi } from '../utils/ansi';
 import { learnMore } from '../utils/link';
+import { BundleOutput } from './fork-bundleAsync';
 
 export function printBundleSizes(bundles: Partial<Record<Platform, BundleOutput>>) {
   const files: [string, string | Uint8Array][] = [];

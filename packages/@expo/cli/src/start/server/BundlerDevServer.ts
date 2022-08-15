@@ -1,4 +1,3 @@
-import { MessageSocket } from '@expo/dev-server';
 import assert from 'assert';
 import openBrowserAsync from 'better-opn';
 import chalk from 'chalk';
@@ -19,6 +18,7 @@ import { AsyncNgrok } from './AsyncNgrok';
 import { DevelopmentSession } from './DevelopmentSession';
 import { CreateURLOptions, UrlCreator } from './UrlCreator';
 import { PlatformBundlers } from './platformBundlers';
+import { MessageSocket } from './metro/instantiateMetro';
 
 const debug = require('debug')('expo:start:server:devServer') as typeof console.log;
 

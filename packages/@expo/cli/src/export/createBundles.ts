@@ -1,6 +1,5 @@
 import { getConfig, Platform, ProjectTarget } from '@expo/config';
 
-import * as Log from '../log';
 import { resolveEntryPoint } from '../start/server/middleware/resolveEntryPoint';
 import { bundleAsync, BundleOutput } from './fork-bundleAsync';
 
@@ -26,14 +25,6 @@ export async function createBundlesAsync(
       // If not legacy, ignore the target option to prevent warnings from being thrown.
       resetCache: publishOptions.resetCache,
       maxWorkers: publishOptions.maxWorkers,
-      logger: {
-        info(tag: unknown, message: string) {
-          Log.log(message);
-        },
-        error(tag: unknown, message: string) {
-          Log.error(message);
-        },
-      } as any,
       quiet: false,
     },
     bundleOptions.platforms.map((platform: Platform) => ({

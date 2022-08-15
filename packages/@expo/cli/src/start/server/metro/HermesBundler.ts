@@ -9,7 +9,7 @@ import semver from 'semver';
 import {
   importHermesCommandFromProject,
   importMetroSourceMapComposeSourceMapsFromProject,
-} from './metro/importMetroFromProject';
+} from './resolveFromProject';
 
 export function isEnableHermesManaged(expoConfig: ExpoConfig, platform: Platform): boolean {
   switch (platform) {

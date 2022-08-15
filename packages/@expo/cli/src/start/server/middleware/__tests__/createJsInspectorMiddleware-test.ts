@@ -2,8 +2,8 @@ import type { IncomingMessage, ServerResponse } from 'http';
 import type { Socket } from 'net';
 import { URL } from 'url';
 
-import * as JsInspector from '../../JsInspector';
-import { METRO_INSPECTOR_RESPONSE_FIXTURE } from '../../__tests__/fixtures/metroInspectorResponse';
+import * as JsInspector from '../../metro/JsInspector';
+import { METRO_INSPECTOR_RESPONSE_FIXTURE } from '../../metro/__tests__/fixtures/metroInspectorResponse';
 import createJsInspectorMiddleware from '../createJsInspectorMiddleware';
 
 jest.mock('../../JsInspector');

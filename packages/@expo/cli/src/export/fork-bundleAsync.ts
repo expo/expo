@@ -1,26 +1,26 @@
 import { ExpoConfig, getConfig, getConfigFilePaths, Platform } from '@expo/config';
-import {
-  buildHermesBundleAsync,
-  isEnableHermesManaged,
-  maybeThrowFromInconsistentEngineAsync,
-} from '@expo/dev-server/build/HermesBundler';
-import {
-  importExpoMetroConfigFromProject,
-  importMetroFromProject,
-  importMetroServerFromProject,
-} from '@expo/dev-server/build/metro/importMetroFromProject';
 import { LoadOptions } from '@expo/metro-config';
 import chalk from 'chalk';
 import Metro from 'metro';
 import { Terminal } from 'metro-core';
 
+import { Log } from '../log';
 import { WebSupportProjectPrerequisite } from '../start/doctor/web/WebSupportProjectPrerequisite';
+import {
+  buildHermesBundleAsync,
+  isEnableHermesManaged,
+  maybeThrowFromInconsistentEngineAsync,
+} from '../start/server/metro/HermesBundler';
 import { MetroTerminalReporter } from '../start/server/metro/MetroTerminalReporter';
+import {
+  importExpoMetroConfigFromProject,
+  importMetroFromProject,
+  importMetroServerFromProject,
+} from '../start/server/metro/resolveFromProject';
 import { withMetroMultiPlatform } from '../start/server/metro/withMetroMultiPlatform';
 import { getPlatformBundlers } from '../start/server/platformBundlers';
 
 export type MetroDevServerOptions = LoadOptions & {
-  logger: import('@expo/bunyan');
   quiet?: boolean;
 };
 export type BundleOptions = {
@@ -41,10 +41,7 @@ export type BundleOutput = {
   assets: readonly BundleAssetWithFileHashes[];
 };
 
-function getExpoMetroConfig(
-  projectRoot: string,
-  { logger }: Pick<MetroDevServerOptions, 'logger'>
-): typeof import('@expo/metro-config') {
+function getExpoMetroConfig(projectRoot: string): typeof import('@expo/metro-config') {
   try {
     return importExpoMetroConfigFromProject(projectRoot);
   } catch {
@@ -52,8 +49,7 @@ function getExpoMetroConfig(
   }
 
   const unversionedVersion = require('@expo/metro-config/package.json').version;
-  logger.info(
-    { tag: 'expo' },
+  Log.log(
     chalk.gray(
       `\u203A Unversioned ${chalk.bold`@expo/metro-config@${unversionedVersion}`} is being used. Bundling apps may not work as expected, and is subject to breaking changes. Install ${chalk.bold`expo`} or set the app.json sdkVersion to use a stable version of @expo/metro-config.`
     )
@@ -63,8 +59,6 @@ function getExpoMetroConfig(
 }
 
 let nextBuildID = 0;
-
-// Fork of @expo/dev-server bundleAsync to add Metro logging back.
 
 async function assertEngineMismatchAsync(projectRoot: string, exp: ExpoConfig, platform: Platform) {
   const isHermesManaged = isEnableHermesManaged(exp, platform);
@@ -103,7 +97,7 @@ export async function bundleAsync(
     },
   };
 
-  const ExpoMetroConfig = getExpoMetroConfig(projectRoot, options);
+  const ExpoMetroConfig = getExpoMetroConfig(projectRoot);
 
   const { exp } = getConfig(projectRoot, { skipSDKVersionRequirement: true });
   let config = await ExpoMetroConfig.loadAsync(projectRoot, { reporter, ...options });

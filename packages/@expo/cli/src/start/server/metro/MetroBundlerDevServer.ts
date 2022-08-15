@@ -1,5 +1,3 @@
-import { prependMiddleware } from '@expo/dev-server';
-
 import { getFreePortAsync } from '../../../utils/port';
 import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
 import { HistoryFallbackMiddleware } from '../middleware/HistoryFallbackMiddleware';
@@ -7,6 +5,7 @@ import { InterstitialPageMiddleware } from '../middleware/InterstitialPageMiddle
 import { RuntimeRedirectMiddleware } from '../middleware/RuntimeRedirectMiddleware';
 import { ServeStaticMiddleware } from '../middleware/ServeStaticMiddleware';
 import { instantiateMetroAsync } from './instantiateMetro';
+import { prependMiddleware } from './middlwareMutations';
 
 /** Default port to use for apps running in Expo Go. */
 const EXPO_GO_METRO_PORT = 19000;

@@ -1,4 +1,3 @@
-import { openJsInspector, queryAllInspectorAppsAsync } from '@expo/dev-server';
 import assert from 'assert';
 import chalk from 'chalk';
 
@@ -6,6 +5,7 @@ import * as Log from '../../log';
 import { learnMore } from '../../utils/link';
 import { selectAsync } from '../../utils/prompts';
 import { DevServerManager } from '../server/DevServerManager';
+import { openJsInspector, queryAllInspectorAppsAsync } from '../server/metro/JsInspector';
 import { BLT, printHelp, printItem, printQRCode, printUsage, StartOptions } from './commandsTable';
 
 const debug = require('debug')('expo:start:interface:interactiveActions') as typeof console.log;

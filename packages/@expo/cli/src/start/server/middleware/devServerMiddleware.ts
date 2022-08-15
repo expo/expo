@@ -1,10 +1,8 @@
-import Log from '@expo/bunyan';
 import bodyParser from 'body-parser';
 import { Server as ConnectServer } from 'connect';
 
-import { importCliServerApiFromProject } from '../metro/importMetroFromProject';
-import { prependMiddleware, replaceMiddlewareWith } from '../middlwareMutations';
-import clientLogsMiddleware from './clientLogsMiddleware';
+import { importCliServerApiFromProject } from '../metro/resolveFromProject';
+import { prependMiddleware, replaceMiddlewareWith } from '../metro/middlwareMutations';
 import createJsInspectorMiddleware from './createJsInspectorMiddleware';
 import { remoteDevtoolsCorsMiddleware } from './remoteDevtoolsCorsMiddleware';
 import { remoteDevtoolsSecurityHeadersMiddleware } from './remoteDevtoolsSecurityHeadersMiddleware';
@@ -22,7 +20,6 @@ import { suppressRemoteDebuggingErrorMiddleware } from './suppressErrorMiddlewar
  *
  * @param props.watchFolders array of directory paths to use with watchman
  * @param props.port port that the dev server will run on
- * @param props.logger bunyan instance that all runtime `console` logs will be piped through.
  *
  * @returns
  */
@@ -31,11 +28,9 @@ export function createDevServerMiddleware(
   {
     watchFolders,
     port,
-    logger,
   }: {
     watchFolders: readonly string[];
     port: number;
-    logger: Log;
   }
 ) {
   const { createDevServerMiddleware, securityHeadersMiddleware } =
@@ -66,11 +61,9 @@ export function createDevServerMiddleware(
   prependMiddleware(middleware, suppressRemoteDebuggingErrorMiddleware);
 
   middleware.use(bodyParser.json());
-  middleware.use('/logs', clientLogsMiddleware(logger));
   middleware.use('/inspector', createJsInspectorMiddleware());
 
   return {
-    logger,
     middleware,
     // Old
     attachToServer,

@@ -1,10 +1,10 @@
 import { Platform } from '@expo/config';
-import { BundleOutput } from '@expo/dev-server';
 import crypto from 'crypto';
 import fs from 'fs/promises';
 import path from 'path';
 
 import { createMetadataJson } from './createMetadataJson';
+import { BundleOutput } from './fork-bundleAsync';
 import { Asset } from './saveAssets';
 
 /**
