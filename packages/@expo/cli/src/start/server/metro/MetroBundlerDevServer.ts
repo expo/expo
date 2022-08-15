@@ -1,4 +1,5 @@
 import { prependMiddleware } from '@expo/dev-server';
+import chalk from 'chalk';
 import fs from 'fs';
 
 import { Log } from '../../../log';
@@ -60,9 +61,13 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     };
 
     if (options.https) {
-      debug('Configuring TLS to enable HTTPS support');
-      const tlsConfig = await ensureEnvironmentSupportsTLSAsync(this.projectRoot).catch((error) => {
-        Log.error(`Error creating TLS certificates: ${error}`);
+      const hostname = new URL(this.urlCreator.constructUrl()).hostname;
+      debug('Configuring TLS to enable HTTPS support:', hostname);
+
+      const tlsConfig = await ensureEnvironmentSupportsTLSAsync(this.projectRoot, {
+        name: hostname,
+      }).catch((error) => {
+        Log.error(chalk.red`Error creating TLS certificates: ${error}`);
       });
       if (tlsConfig) {
         debug('Using secure server options', tlsConfig);
