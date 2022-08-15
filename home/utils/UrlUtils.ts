@@ -41,13 +41,7 @@ export function toHttp(expUrl: string): string {
 
 export function toExp(httpUrl: string): string {
   const components = url.parse(httpUrl);
-  components.protocol = 'exp:';
-  return url.format(components);
-}
-
-export function toExps(httpUrl: string): string {
-  const components = url.parse(httpUrl);
-  components.protocol = 'exps:';
+  components.protocol = components.protocol === 'https:' ? 'exps:' : 'exp:';
   return url.format(components);
 }
 
@@ -59,7 +53,7 @@ export function conformsToExpoProtocol(str: string): boolean {
   // @username/experience
   if (str.match(/^@\w+\/\w+/)) {
     return true;
-  } else if (str.startsWith('exp://')) {
+  } else if (str.startsWith('exp://') || str.startsWith('exps://')) {
     return true;
   } else if (
     str.startsWith(`${Config.website.origin}/`) ||
