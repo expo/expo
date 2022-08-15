@@ -57,6 +57,7 @@ The following environment variables are exposed to each build job &mdash; they a
 - `CI=1` - indicates this is a CI environment
 - `EAS_BUILD=true` - indicates this is an EAS Build environment
 - `EAS_BUILD_PLATFORM` - either `android` or `ios`
+- `EAS_BUILD_RUNNER` - either `eas-build` for EAS Build cloud builds or `local-build-plugin` for [local builds](local-builds)
 - `EAS_BUILD_ID` - the build ID, e.g. `f51831f0-ea30-406a-8c5f-f8e1cc57d39c`
 - `EAS_BUILD_PROFILE` - the name of the build profile from **eas.json**, e.g. `production`
 - `EAS_BUILD_GIT_COMMIT_HASH` - the hash of the Git commit, e.g. `88f28ab5ea39108ade978de2d0d1adeedf0ece76`
@@ -64,10 +65,6 @@ The following environment variables are exposed to each build job &mdash; they a
 - `EAS_BUILD_MAVEN_CACHE_URL` - the URL of Maven cache ([learn more](/build-reference/caching/#android-dependencies))
 - `EAS_BUILD_USERNAME` - the username of the user initiating the build (it's undefined for bot users)
 - `EAS_BUILD_WORKINGDIR` - the remote directory path with your project
-
-<!-- TODO: uncomment when remote (managed) version are fully implemented -->
-<!-- - `EAS_BUILD_ANDROID_VERSION_CODE` - Android version code -->
-<!-- - `EAS_BUILD_IOS_BUILD_NUMBER` - iOS Build number -->
 
 ## Using secrets in environment variables
 
