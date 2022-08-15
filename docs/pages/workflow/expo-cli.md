@@ -229,43 +229,19 @@ You can export the JavaScript and assets for your web app using Webpack by runni
 
 This command will be disabled if your project is configured to use `metro` for bundling web projects in the `app.json` via the `expo.web.bundler: 'metro'` field.
 
-## Prebuilding
-
-Before a native runtime can be built, the native code must be generated. Expo CLI provides a unique and powerful system called "prebuild", which generates the native code for your project based on three factors:
-
-- The Expo config file (`app.json` or `app.config.js`).
-- Expo autolinking. Which finds native modules in your `package.json` and automatically links them as CocoaPods on iOS and Gradle packages on Android.
-- Arguments passed to the `npx expo prebuild` command.
-
-A project can be generated with:
+## Prebuild
 
 <Terminal cmd={[
 '$ npx expo prebuild',
-]} />
+]} cmdCopy="npx expo prebuild" />
 
-This creates the `ios/` and `android/` folders for running your React code. How you use these folders will indicate which "workflow" your project is using. If you modify the folders manually then you can no longer safely run `npx expo prebuild --clean`, this means your project is in the "bare" workflow. If your native folders can be regenerated anytime, then your project is in the "managed" workflow.
+Before a native app can be compiled, the native source code must be generated. Expo CLI provides a unique and powerful system called _prebuild_, which generates the native code for your project.
 
-### Clean Prebuilding
+**Learn more**
 
-The `--clean` flag will clear any existing native folder before generating files, this is the safest way to use the prebuild command, but it's also the slowest.
-
-When you re-run `npx expo prebuild`, it layers changes on top of your existing files to make rebuilding the native app faster. This is purely for convenience and starts to breakdown when your project utilizes a lot of "dangerous modifiers" for performing changes like adding regex changes to application code.
-
-Due to the pivotal nature of the flag, you'll be warned to have a clean git status when the `--clean` flag is used. This prompt is optional and will be skipped when encountered in CI.
-
-You can disable the check by enabling the environment variable `EXPO_NO_GIT_STATUS=1` if you'd like.
-
-The purpose of the prompt is to encourage managed workflow users to add the `/ios` and `/android` folders to the project's `.gitignore`, ensuring that the project is always managed. This can however make custom config plugins harder to develop so we haven't introduced any mechanism to enforce this behavior.
-
-Advanced projects may need to swap between workflows often, building custom functionality natively in Xcode and Android Studio, then moving it to project-level config plugins, and repeating. As the Expo Config Plugin ecosystem matures, the need to develop like plugins like this will be drastically reduced.
-
-It is also theoretically possible to make clean builds take seconds rather than minutes, meaning `--clean` could become the default behavior in the future.
-
-### Prebuild Templates
-
-You can customize how the native folders are generated while remaining in the managed workflow by building [Expo Config Plugins](/guides/config-plugins/). Many config plugins already exist for lots of modifications, you can find an [incomplete list here](https://github.com/expo/config-plugins).
-
-Prebuild generates template files before modifying them with Expo Config Plugins. The template files are versioned and come from the NPM package [`expo-template-bare-minimum`](https://github.com/expo/expo/tree/main/templates/expo-template-bare-minimum). You can change which template is used by passing `--template /path/to/template.tgz` to the `npx expo prebuild` command. This is not recommended as the base modifiers in `@expo/prebuild-config` make some undocumented assumptions about the template files.
+- [Prebuild](/guides/prebuild).
+- [Config plugins](/guides/config-plugins)
+- [Native modules API](/modules/module-api.md)
 
 ## Telemetry
 
