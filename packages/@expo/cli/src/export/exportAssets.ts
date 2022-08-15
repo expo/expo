@@ -6,7 +6,7 @@ import path from 'path';
 import * as Log from '../log';
 import { resolveGoogleServicesFile } from '../start/server/middleware/resolveAssets';
 import { uniqBy } from '../utils/array';
-import { BundleOutput } from './fork-bundleAsync';
+import { BundleOutput } from './bundleAsync';
 import { Asset, saveAssetsAsync } from './saveAssets';
 
 const debug = require('debug')('expo:export:exportAssets') as typeof console.log;

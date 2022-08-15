@@ -3,8 +3,8 @@ import crypto from 'crypto';
 import fs from 'fs/promises';
 import path from 'path';
 
+import { BundleOutput } from './bundleAsync';
 import { createMetadataJson } from './createMetadataJson';
-import { BundleOutput } from './fork-bundleAsync';
 import { Asset } from './saveAssets';
 
 /**

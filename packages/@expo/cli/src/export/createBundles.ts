@@ -1,7 +1,7 @@
 import { getConfig, Platform, ProjectTarget } from '@expo/config';
 
 import { resolveEntryPoint } from '../start/server/middleware/resolveEntryPoint';
-import { bundleAsync, BundleOutput } from './fork-bundleAsync';
+import { bundleAsync, BundleOutput } from './bundleAsync';
 
 export type PublishOptions = {
   releaseChannel?: string;

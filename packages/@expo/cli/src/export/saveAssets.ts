@@ -3,7 +3,7 @@ import path from 'path';
 import * as Log from '../log';
 import { chunk } from '../utils/array';
 import { copyAsync } from '../utils/dir';
-import { BundleAssetWithFileHashes } from './fork-bundleAsync';
+import { BundleAssetWithFileHashes } from './bundleAsync';
 
 const debug = require('debug')('expo:export:saveAssets') as typeof console.log;
 

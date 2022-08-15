@@ -3,10 +3,10 @@ import http from 'http';
 import Metro from 'metro';
 import { Terminal } from 'metro-core';
 
-import { MetroDevServerOptions } from '../../../export/fork-bundleAsync';
+import { MetroDevServerOptions } from '../../../export/bundleAsync';
+import { createDevServerMiddleware } from '../middleware/devServerMiddleware';
 import { getPlatformBundlers } from '../platformBundlers';
 import { MetroTerminalReporter } from './MetroTerminalReporter';
-import { createDevServerMiddleware } from '../middleware/devServerMiddleware';
 import { importExpoMetroConfigFromProject, importMetroFromProject } from './resolveFromProject';
 import { withMetroMultiPlatform } from './withMetroMultiPlatform';
 
