@@ -174,16 +174,16 @@ const general = [
       makePage('guides/monorepos.md'),
       makePage('guides/sharing-preview-releases.md'),
       makePage('guides/using-hermes.md'),
-    ])
+    ]),
   ]),
-makeSection('Expo Accounts', [
-  makeGroup('Expo Accounts', [
-    makePage('accounts/account-types.md'),
-    makePage('accounts/two-factor.md'),
-    makePage('accounts/programmatic-access.md'),
-    makePage('accounts/working-together.md'),
+  makeSection('Expo Accounts', [
+    makeGroup('Expo Accounts', [
+      makePage('accounts/account-types.md'),
+      makePage('accounts/two-factor.md'),
+      makePage('accounts/programmatic-access.md'),
+      makePage('accounts/working-together.md'),
+    ]),
   ]),
-]),
   makeSection('Bare Workflow', [
     makeGroup('Bare Workflow', [
       makePage('bare/exploring-bare-workflow.md'),
