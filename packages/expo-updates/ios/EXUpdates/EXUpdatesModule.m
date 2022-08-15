@@ -8,6 +8,12 @@
 #import <EXUpdates/EXUpdatesService.h>
 #import <EXUpdates/EXUpdatesUpdate.h>
 
+#if __has_include(<EXUpdates/EXUpdates-Swift.h>)
+#import <EXUpdates/EXUpdates-Swift.h>
+#else
+#import "EXUpdates-Swift.h"
+#endif
+
 @interface EXUpdatesModule ()
 
 @property (nonatomic, weak) id<EXUpdatesModuleInterface> updatesService;
@@ -130,6 +136,37 @@ EX_EXPORT_METHOD_AS(checkForUpdateAsync,
   } errorBlock:^(NSError *error) {
     reject(@"ERR_UPDATES_CHECK", error.localizedDescription, error);
   }];
+}
+
+EX_EXPORT_METHOD_AS(readLogEntriesAsync,
+                     readLogEntriesAsync:(NSNumber *)maxAge
+                                 resolve:(EXPromiseResolveBlock)resolve
+                                  reject:(EXPromiseRejectBlock)reject)
+{
+  // Once persistent logs are implemented, the iOS 15 restriction will be removed
+  if (@available(iOS 15.0, *)) {
+    EXUpdatesLogReader *reader = [EXUpdatesLogReader new];
+    NSError *error = nil;
+    // maxAge is in milliseconds, convert to seconds to compute NSDate
+    NSTimeInterval age = [maxAge intValue] / 1000;
+    NSDate *epoch = [NSDate dateWithTimeIntervalSinceNow:-age];
+    NSArray<NSDictionary *> *entries = [reader getLogEntriesNewerThan:epoch error:&error];
+    if (error != nil) {
+      reject(@"ERR_UPDATES_READ_LOGS", [error localizedDescription], error);
+    } else {
+      resolve(entries);
+    }
+  } else {
+    reject(@"ERR_UPDATES_READ_LOGS", @"Log reader requires iOS 15 or higher", nil);
+  }
+}
+
+EX_EXPORT_METHOD_AS(clearLogEntriesAsync,
+                     clearLogEntriesAsync:(EXPromiseResolveBlock)resolve
+                                   reject:(EXPromiseRejectBlock)reject)
+{
+  // This method is a no-op until persistent logs are implemented
+  resolve(nil);
 }
 
 EX_EXPORT_METHOD_AS(fetchUpdateAsync,

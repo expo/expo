@@ -2,12 +2,15 @@
 #include "JSIInteropModuleRegistry.h"
 #include "JavaScriptValue.h"
 #include "JavaScriptObject.h"
-#include "CachedReferencesRegistry.h"
+#include "JavaScriptTypedArray.h"
+#include "JavaReferencesCache.h"
+#include "Exceptions.h"
 
 #include <utility>
 
 #include "react/jni/ReadableNativeMap.h"
 #include "react/jni/ReadableNativeArray.h"
+#include "JSReferencesCache.h"
 
 namespace jni = facebook::jni;
 namespace jsi = facebook::jsi;
@@ -112,16 +115,23 @@ std::vector<jvalue> MethodMetadata::convertJSIArgsToJNI(
           std::make_shared<jsi::Object>(arg->getObject(rt))
         ).release()
       );
+    } else if (desiredType & CppType::TYPED_ARRAY) {
+      jarg->l = makeGlobalIfNecessary(
+        JavaScriptTypedArray::newObjectCxxArgs(
+          moduleRegistry->runtimeHolder->weak_from_this(),
+          std::make_shared<jsi::Object>(arg->getObject(rt))
+        ).release()
+      );
     } else if (arg->isNull() || arg->isUndefined()) {
       jarg->l = nullptr;
     } else if (arg->isNumber()) {
-      auto &doubleClass = CachedReferencesRegistry::instance()
+      auto &doubleClass = JavaReferencesCache::instance()
         ->getJClass("java/lang/Double");
       jmethodID doubleConstructor = doubleClass.getMethod("<init>", "(D)V");
       jarg->l = makeGlobalIfNecessary(
         env->NewObject(doubleClass.clazz, doubleConstructor, arg->getNumber()));
     } else if (arg->isBool()) {
-      auto &booleanClass = CachedReferencesRegistry::instance()
+      auto &booleanClass = JavaReferencesCache::instance()
         ->getJClass("java/lang/Boolean");
       jmethodID booleanConstructor = booleanClass.getMethod("<init>", "(Z)V");
       jarg->l = makeGlobalIfNecessary(
@@ -141,8 +151,11 @@ std::vector<jvalue> MethodMetadata::convertJSIArgsToJNI(
           react::ReadableNativeMap::createWithContents(std::move(dynamic)).release());
       }
     } else {
-      // TODO(@lukmccall): throw an exception
-      jarg->l = nullptr;
+      auto stringRepresentation = arg->toString(rt).utf8(rt);
+      jni::throwNewJavaException(
+        UnexpectedException::create(
+          "Cannot convert '" + stringRepresentation + "' to a Kotlin type.").get()
+      );
     }
   }
 
@@ -182,7 +195,7 @@ jsi::Function MethodMetadata::toSyncFunction(
 ) {
   return jsi::Function::createFromHostFunction(
     runtime,
-    jsi::PropNameID::forAscii(runtime, name),
+    moduleRegistry->jsRegistry->getPropNameID(runtime, name),
     args,
     [this, moduleRegistry](
       jsi::Runtime &rt,
@@ -190,12 +203,16 @@ jsi::Function MethodMetadata::toSyncFunction(
       const jsi::Value *args,
       size_t count
     ) -> jsi::Value {
-      return this->callSync(
-        rt,
-        moduleRegistry,
-        args,
-        count
-      );
+      try {
+        return this->callSync(
+          rt,
+          moduleRegistry,
+          args,
+          count
+        );
+      } catch (jni::JniException &jniException) {
+        rethrowAsCodedError(rt, moduleRegistry, jniException);
+      }
     });
 }
 
@@ -224,7 +241,7 @@ jsi::Value MethodMetadata::callSync(
   // TODO(@lukmccall): Remove this temp array
   auto tempArray = env->NewObjectArray(
     convertedArgs.size(),
-    CachedReferencesRegistry::instance()->getJClass("java/lang/Object").clazz,
+    JavaReferencesCache::instance()->getJClass("java/lang/Object").clazz,
     nullptr
   );
   for (size_t i = 0; i < convertedArgs.size(); i++) {
@@ -253,7 +270,7 @@ jsi::Function MethodMetadata::toAsyncFunction(
 ) {
   return jsi::Function::createFromHostFunction(
     runtime,
-    jsi::PropNameID::forAscii(runtime, name),
+    moduleRegistry->jsRegistry->getPropNameID(runtime, name),
     args,
     [this, moduleRegistry](
       jsi::Runtime &rt,
@@ -269,16 +286,23 @@ jsi::Function MethodMetadata::toAsyncFunction(
        * all LocalReferences are deleted.
        */
       jni::JniLocalScope scope(env, (int) count);
-      std::vector<jvalue> convertedArgs = convertJSIArgsToJNI(moduleRegistry, env, rt, args, count,
-                                                              true);
 
-      auto Promise = rt.global().getPropertyAsFunction(rt, "Promise");
-      // Creates a JSI promise
-      jsi::Value promise = Promise.callAsConstructor(
-        rt,
-        createPromiseBody(rt, moduleRegistry, std::move(convertedArgs))
-      );
-      return promise;
+      try {
+        std::vector<jvalue> convertedArgs = convertJSIArgsToJNI(moduleRegistry, env, rt, args,
+                                                                count,
+                                                                true);
+        auto &Promise = moduleRegistry->jsRegistry->getObject<jsi::Function>(
+          JSReferencesCache::JSKeys::PROMISE
+        );
+        // Creates a JSI promise
+        jsi::Value promise = Promise.callAsConstructor(
+          rt,
+          createPromiseBody(rt, moduleRegistry, std::move(convertedArgs))
+        );
+        return promise;
+      } catch (jni::JniException &jniException) {
+        rethrowAsCodedError(rt, moduleRegistry, jniException);
+      }
     }
   );
 }
@@ -290,7 +314,7 @@ jsi::Function MethodMetadata::createPromiseBody(
 ) {
   return jsi::Function::createFromHostFunction(
     runtime,
-    jsi::PropNameID::forAscii(runtime, "promiseFn"),
+    moduleRegistry->jsRegistry->getPropNameID(runtime, "promiseFn"),
     2,
     [this, args = std::move(args), moduleRegistry](
       jsi::Runtime &rt,
@@ -320,7 +344,7 @@ jsi::Function MethodMetadata::createPromiseBody(
 
       JNIEnv *env = jni::Environment::current();
 
-      auto &jPromise = CachedReferencesRegistry::instance()->getJClass(
+      auto &jPromise = JavaReferencesCache::instance()->getJClass(
         "com/facebook/react/bridge/PromiseImpl");
       jmethodID jPromiseConstructor = jPromise.getMethod(
         "<init>",
@@ -339,7 +363,7 @@ jsi::Function MethodMetadata::createPromiseBody(
       // TODO(@lukmccall): Remove this temp array
       auto tempArray = env->NewObjectArray(
         argsSize,
-        CachedReferencesRegistry::instance()->getJClass("java/lang/Object").clazz,
+        JavaReferencesCache::instance()->getJClass("java/lang/Object").clazz,
         nullptr
       );
       for (size_t i = 0; i < argsSize; i++) {

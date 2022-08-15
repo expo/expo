@@ -18,16 +18,37 @@ To get a tunneled URL, pass the `--tunnel` flag to `expo start` from the command
 
 ### Published Updates
 
-[`expo publish`](../workflow/publishing.md) packages the current state of your JavaScript and asset files into an optimized "update" stored on a free hosting service provided by Expo. A development build of your app can load published updates without needing to check out a particular commit or leave a development machine running.
+EAS CLI's `eas update` command bundles the current state of your JavaScript and asset files into an optimized "update" stored on a hosting service by Expo. A development build of your app can load published updates without needing to check out a particular commit or needing to leave a development machine running.
+
+### Manually entering an update's URL
+
+When a development build launches, it will expose UI to load a development server, or to "Enter URL manually". You can provide a URL manually that will launch a specific branch. The URL follows this pattern:
+
+```
+https://u.expo.dev/[your-project-id]?channel-name=[channel-name]
+
+# Example
+https://u.expo.dev/F767ADF57-B487-4D8F-9522-85549C39F43F?channel-name=main
+```
+
+To get your project's ID, use the URL in **app.json**'s `expo.updates.url` field. To see a list of channels, run `eas channel:list`.
 
 ### Deep linking URLs
 
 You can load your app on a device that has a compatible build of your custom client by opening a URL of the form `{scheme}://expo-development-client/?url={manifestUrl}` where
 
-| parameter | value                                                                                             |
-| --------- | ------------------------------------------------------------------------------------------------- |
-| `scheme`  | URL scheme of your client (defaults to `exp+{slug}` where slug is the value set in your app.json) |
-| `url`     | URL-encoded URL of a update manifest to load (e.g. as provided by `expo publish`)                 |
+| parameter | value                                                                                                                            |
+| --------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| `scheme`  | URL scheme of your client (defaults to `exp+{slug}` where slug is the value set in your app.json)                                |
+| `url`     | URL-encoded URL of a update manifest to load. The URL will be `https://u.expo.dev/[your-project-id]?channel-name=[channel-name]` |
+
+Example:
+
+```
+exp+app-slug://expo-development=client/?url=https%3A%2F%2Fu.expo.dev%2F767ADF57-B487-4D8F-9522-85549C39F43F%2F%3Fchannel-name%3Dmain
+```
+
+In the example above, the `scheme` is `exp+app-slug`, and the `url` is a project with an ID of `F767ADF57-B487-4D8F-9522-85549C39F43F` and a channel of `main`.
 
 ### QR Codes
 
@@ -38,9 +59,17 @@ Requests to `https://qr.expo.dev/development-client`, when supplied the query pa
 | parameter   | value                                                                                                                                |
 | ----------- | ------------------------------------------------------------------------------------------------------------------------------------ |
 | `appScheme` | URL-encoded deeplinking scheme of your development build (defaults to `exp+{slug}` where slug is the value set in your **app.json**) |
-| `url`       | URL of a update manifest to load (e.g. as provided by `expo publish`)                                                                |
+| `url`       | URL-encoded URL of a update manifest to load. The URL will be `https://u.expo.dev/[your-project-id]?channel-name=[channel-name]`     |
 
 receive a response with an SVG image containing a QR code that can be easily scanned to load a version of your project in your development build.
+
+Example:
+
+```
+https://qr.expo.dev/development-client?appScheme=exp%2Bapps-slug&url=https%3A%2F%2Fu.expo.dev%2FF767ADF57-B487-4D8F-9522-85549C39F43F0%3Fchannel-name%3Dmain
+```
+
+In the example above, the `scheme` is `exp+app-slug`, and the `url` is a project with an ID of `F767ADF57-B487-4D8F-9522-85549C39F43F` and a channel of `main`.
 
 ## Example Workflows
 
@@ -71,7 +100,6 @@ module.exports = () => {
   }
 };
 ```
-
 
 ### PR Previews
 

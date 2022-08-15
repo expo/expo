@@ -29,8 +29,8 @@ Jest will handle snapshots more strictly.
 To summarize we will set up the CI to run the following two scripts.
 
 <Terminal cmd={[
-  '$ npm ci',
-  '$ npx jest --ci'
+'$ npm ci',
+'$ npx jest --ci'
 ]} cmdCopy="npm ci && npx jest --ci" />
 
 <Collapsible summary="Travis CI">
@@ -244,7 +244,7 @@ It finalizes the whole workflow of creating, testing and shipping your applicati
 To create the builds, we will add this script to our configuration:
 
 ```sh
-$ npx expo publish --non-interactive
+$ npx eas update --auto
 ```
 
 <Collapsible summary="Travis CI">
@@ -271,7 +271,7 @@ jobs:
       script:
         - npm ci
         - npx expo login -u $EXPO_USERNAME -p $EXPO_PASSWORD
-        - npx expo publish --non-interactive
+        - npx eas update --auto
 ```
 
 > Put this into `.travis.yml` in the root of your repository.
@@ -304,7 +304,7 @@ expo-deployments:
   script:
     - apk add --no-cache bash
     - npx expo login -u $EXPO_USERNAME -p $EXPO_PASSWORD
-    - npx expo publish --non-interactive
+    - npx eas update --auto
 ```
 
 > Put this into `.gitlab-ci.yml` in the root of your repository.
@@ -341,7 +341,7 @@ pipelines:
           - apk add --no-cache bash
           - npm ci
           - npx expo login -u $EXPO_USERNAME -p $EXPO_PASSWORD
-          - npx expo publish --non-interactive
+          - npx eas update --auto
 ```
 
 > Put this into `bitbucket-pipelines.yml` in the root of your repository.
@@ -411,10 +411,9 @@ Here are some extra links that might help you further.
 
 ### Useful subjects
 
-- [Release channels](/distribution/release-channels.md)
 - [Creating your first build](/build/setup.md)
 - [Triggering builds from CI](/build/building-on-ci.md)
-- [Configuring Updates](configuring-updates.md)
+- [Configuring EAS Update](/eas-update/getting-started.md)
 
 ### Official documentation CI/CD vendors
 

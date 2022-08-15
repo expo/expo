@@ -12,7 +12,7 @@ import kotlin.reflect.KType
 @DoNotStrip
 open class CodedException(
   message: String?,
-  cause: Throwable?
+  cause: Throwable? = null
 ) : Exception(message, cause) {
   // We need that secondary property, cause we can't access
   // the javaClass property in the constructor.
@@ -21,13 +21,11 @@ open class CodedException(
   val code
     get() = providedCode ?: inferCode(javaClass)
 
-  constructor(code: String, message: String?, cause: Throwable?) : this(message, cause) {
+  constructor(code: String, message: String?, cause: Throwable?) : this(message = message, cause = cause) {
     providedCode = code
   }
 
-  constructor(message: String) : this(message, null)
-
-  constructor(cause: Throwable) : this(cause.localizedMessage, cause)
+  constructor(cause: Throwable) : this(message = cause.localizedMessage, cause = cause)
 
   constructor() : this(null, null)
 
@@ -90,8 +88,14 @@ internal class NullArgumentException :
 internal class FieldRequiredException(property: KProperty1<*, *>) :
   CodedException(message = "Value for field '$property' is required, got nil")
 
-internal class UnexpectedException(val throwable: Throwable) :
-  CodedException(message = throwable.toString(), throwable)
+@DoNotStrip
+class UnexpectedException(
+  message: String?,
+  cause: Throwable? = null
+) : CodedException(message = message, cause) {
+  constructor(throwable: Throwable) : this(throwable.toString(), throwable)
+  constructor(message: String) : this(message, null)
+}
 
 internal class ValidationException(message: String) :
   CodedException(message = message)
@@ -161,7 +165,7 @@ class JavaScriptEvaluateException(
   val jsStack: String
 ) : CodedException(
   message = """
-  Cannot evaluate JavaScript code: $message.
+  Cannot evaluate JavaScript code: $message
   $jsStack
   """.trimIndent()
 )

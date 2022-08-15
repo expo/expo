@@ -22,7 +22,7 @@ class ModuleHolder(val module: Module) {
    * Cached instance of HybridObject used by CPP to interact with underlying [expo.modules.kotlin.modules.Module] object.
    */
   val jsObject by lazy {
-    JavaScriptModuleObject()
+    JavaScriptModuleObject(name)
       .apply {
         val constants = definition.constantsProvider()
         val convertedConstants = Arguments.makeNativeMap(constants)

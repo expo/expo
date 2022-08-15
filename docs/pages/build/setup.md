@@ -108,10 +108,11 @@ After you have confirmed that you have an Apple App Store or a Google Play Store
 
 <Terminal cmd={['$ eas build --platform ios']} />
 
+> You can attach a message to the build by passing `--message` to the build command, for example, `eas build --platform ios --message "Some message"`. The message will appear on the website. It comes in handy when you want to leave a note with the purpose of the build for your team.
+
 Alternatively, you can use `--platform all` option to build for Android and iOS at the same time:
 
 <Terminal cmd={['$ eas build --platform all']} />
-
 
 > If you have released your app to stores previously and have existing [app signing credentials](/distribution/app-signing) that you want to use, [follow these instructions to configure them](/app-signing/existing-credentials).
 
@@ -164,6 +165,7 @@ When you are ready to learn more, we recommend proceeding through the "Start Bui
 - [Triggering builds from CI](/build/building-on-ci)
 
 You may also want to dig through the reference section to learn more about the topics that interest you most, such as:
+
 - [Build webhooks](/eas/webhooks)
 - [Build server infrastructure](/build-reference/infrastructure)
 - How the [Android](/build-reference/android-builds) and [iOS](/build-reference/ios-builds) build processes work

@@ -3,10 +3,17 @@
 #pragma once
 
 #include <fbjni/fbjni.h>
+#include <jsi/jsi.h>
+
+#include <optional>
 
 namespace jni = facebook::jni;
+namespace jsi = facebook::jsi;
 
 namespace expo {
+
+class JSIInteropModuleRegistry;
+
 /**
  * A convenient wrapper for the Kotlin CodedException.
  * It can be used with the `jni::throwNewJavaException` function to throw a cpp exception that
@@ -20,6 +27,10 @@ public:
   static auto constexpr kJavaDescriptor = "Lexpo/modules/kotlin/exception/CodedException;";
 
   static jni::local_ref<CodedException> create(const std::string &message);
+
+  std::string getCode();
+
+  std::optional<std::string> getLocalizedMessage();
 };
 
 /**
@@ -35,4 +46,26 @@ public:
     const std::string &jsStack
   );
 };
+
+/**
+ * A convenient wrapper for the Kotlin UnexpectedException.
+ */
+class UnexpectedException
+  : public jni::JavaClass<UnexpectedException, CodedException> {
+public:
+  static auto constexpr kJavaDescriptor = "Lexpo/modules/kotlin/exception/UnexpectedException;";
+
+  static jni::local_ref<UnexpectedException> create(
+    const std::string &message
+  );
+};
+
+/**
+ * Tries to rethrow an jni::JniException as a js version of the CodedException
+ */
+[[noreturn]] void rethrowAsCodedError(
+  jsi::Runtime &rt,
+  JSIInteropModuleRegistry *registry,
+  jni::JniException &jniException
+);
 } // namespace expo
