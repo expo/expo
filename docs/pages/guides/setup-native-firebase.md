@@ -1,6 +1,6 @@
 ---
 title: Using the native Firebase SDK
-sidebar_title: Native Firebase
+sidebar_title: Using Native Firebase
 ---
 
 It's possible to use Firebase through the web SDK, built only in JavaScript, or the native SDK, which is built in native code for iOS and Android. The web SDK only provides access to some Firebase features and the most notable limitation is the lack of support for browser features used in Firebase Analytics or the redirect URI scheme used for phone authentication. If this is important for you, it may make sense to install the native SDK in your app.
