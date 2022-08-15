@@ -8,6 +8,7 @@
 
 - Added support for audio panning on Android (MediaPlayer implementation only) via `audioPan` prop. ([#15530](https://github.com/expo/expo/pull/15530) by [@DominickVale](https://github.com/DominickVale))
 - Added `videoStyle` prop for Video component. ([#18549](https://github.com/expo/expo/pull/18549) by [@alantoa](https://github.com/alantoa))
+- Native module for video view is now written in Swift using the new API. ([#18633](https://github.com/expo/expo/pull/18633) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🐛 Bug fixes
 
