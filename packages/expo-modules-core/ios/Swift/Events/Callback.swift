@@ -3,7 +3,7 @@
 /**
  An alias for type-erased callback handler.
  */
-typealias AnyCallbackHandlerType = (Any) -> Void
+typealias AnyCallbackHandlerType = @convention(block) ([String: Any]) -> Void
 
 /**
  Public type-erased protocol that `Callback` object conforms to.
@@ -59,8 +59,8 @@ public class Callback<ArgType>: AnyCallback, AnyCallbackInternal {
   /**
    Allows the callback instance to be called as a function.
    */
-  public func callAsFunction(_ arg: ArgType) {
+  public func callAsFunction(_ arg: [String: Any]) {
     // TODO: Convert records to dictionaries (@tsapeta)
-    handler?(arg as Any)
+    handler?(arg)
   }
 }
