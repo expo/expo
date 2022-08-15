@@ -609,12 +609,33 @@ certificateChainFromManifestResponse:(nullable NSString *)certificateChainFromMa
   return nil;
 }
 
++ (void)_setHTTPHeaderFields:(nullable NSDictionary *)headers onRequest:(NSMutableURLRequest *)request {
+  if (!headers) {
+    return;
+  }
+  
+  for (NSString *key in headers) {
+    id value = headers[key];
+    if ([value isKindOfClass:[NSString class]]) {
+      [request setValue:value forHTTPHeaderField:key];
+    } else if ([value isKindOfClass:[NSNumber class]]) {
+      if (CFGetTypeID((__bridge CFTypeRef)(value)) == CFBooleanGetTypeID()) {
+        [request setValue:((NSNumber *)value).boolValue ? @"true" : @"false" forHTTPHeaderField:key];
+      } else {
+        [request setValue:((NSNumber *)value).stringValue forHTTPHeaderField:key];
+      }
+    } else if ([value isKindOfClass:[NSNull class]]) {
+      [request setValue:@"null" forHTTPHeaderField:key];
+    } else {
+      [request setValue:[(NSObject *)value description] forHTTPHeaderField:key];
+    }
+  }
+}
+
 - (void)_setHTTPHeaderFields:(NSMutableURLRequest *)request
                 extraHeaders:(NSDictionary *)extraHeaders
 {
-  for (NSString *key in extraHeaders) {
-    [request setValue:extraHeaders[key] forHTTPHeaderField:key];
-  }
+  [EXUpdatesFileDownloader _setHTTPHeaderFields:extraHeaders onRequest:request];
 
   [request setValue:@"ios" forHTTPHeaderField:@"Expo-Platform"];
   [request setValue:@"1" forHTTPHeaderField:@"Expo-API-Version"];
@@ -629,22 +650,7 @@ certificateChainFromManifestResponse:(nullable NSString *)certificateChainFromMa
 - (void)_setManifestHTTPHeaderFields:(NSMutableURLRequest *)request withExtraHeaders:(nullable NSDictionary *)extraHeaders
 {
   // apply extra headers before anything else, so they don't override preset headers
-  if (extraHeaders) {
-    for (NSString *key in extraHeaders) {
-      id value = extraHeaders[key];
-      if ([value isKindOfClass:[NSString class]]) {
-        [request setValue:value forHTTPHeaderField:key];
-      } else if ([value isKindOfClass:[NSNumber class]]) {
-        if (CFGetTypeID((__bridge CFTypeRef)(value)) == CFBooleanGetTypeID()) {
-          [request setValue:((NSNumber *)value).boolValue ? @"true" : @"false" forHTTPHeaderField:key];
-        } else {
-          [request setValue:((NSNumber *)value).stringValue forHTTPHeaderField:key];
-        }
-      } else {
-        [request setValue:[(NSObject *)value description] forHTTPHeaderField:key];
-      }
-    }
-  }
+  [EXUpdatesFileDownloader _setHTTPHeaderFields:extraHeaders onRequest:request];
 
   [request setValue:@"multipart/mixed,application/expo+json,application/json" forHTTPHeaderField:@"Accept"];
   [request setValue:@"ios" forHTTPHeaderField:@"Expo-Platform"];

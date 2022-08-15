@@ -39,7 +39,7 @@ Every quarter there is a new Expo SDK release that typically updates to the late
 
 | Expo SDK Version | React Native Version |
 | ---------------- | -------------------- |
-| 46.0.0           | 0.69.1               |
+| 46.0.0           | 0.69.4               |
 | 45.0.0           | 0.68.2               |
 | 44.0.0           | 0.64.3               |
 | 43.0.0           | 0.64.3               |

@@ -21,9 +21,7 @@ export default [
       ' - `"buildNumber"` (or `true`) - the last component of `expo.ios.buildNumber` is bumped (e.g. `1.2.3.39` -> `1.2.3.40`).',
       ' - `false` - versions won\'t be bumped automatically (default)',
       '',
-      'In the case of a bare project, it also updates versions in native code. `expo.version` corresponds to `CFBundleShortVersionString` and `expo.ios.buildNumber` to `CFBundleVersion` in the `Info.plist`. The App Store is using those values to identify the app build, `CFBundleShortVersionString` is the version visible to users, whereas `CFBundleVersion` defines the build number. The combination of those needs to be unique, so you can bump either of them.',
-      '',
-      `This feature is not intended for use with dynamic configuration (app.config.js). EAS CLI will throw an error if you don't use app.json.`,
+      `Based on the value of "cli.appVersionSource" option in **eas.json**, the values will be updated locally in your project or on EAS servers. [Learn more](../build-reference/app-versions)`,
     ],
   },
   {

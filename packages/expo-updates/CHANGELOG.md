@@ -8,6 +8,8 @@
 
 - [Android] New logger and log reader for unifying logging support in expo-updates. ([#18318](https://github.com/expo/expo/pull/18318) by [@douglowder](https://github.com/douglowder))
 - Add JS methods to read and clear client logs. ([#18390](https://github.com/expo/expo/pull/18390) by [@douglowder](https://github.com/douglowder))
+- Make extra header processing code consistent between manifests and assets. ([#18564](https://github.com/expo/expo/pull/18564) by [@wschurman](https://github.com/wschurman))
+- Type `UpdateCheckResult` and `UpdateFetchResult` to reflect when `manifest` is defined or not. ([#18577](https://github.com/expo/expo/pull/18577) by [@SimenB](https://github.com/SimenB))
 
 ### 🐛 Bug fixes
 
@@ -15,6 +17,7 @@
 
 ### 💡 Others
 
+- Drop `@expo/config-plugins` dependency in favor of peer dependency on `expo`. ([#18595](https://github.com/expo/expo/pull/18595) by [@EvanBacon](https://github.com/EvanBacon))
 - [iOS] New logger and log reader for unifying logging support in expo-updates. ([#18284](https://github.com/expo/expo/pull/18284) by [@douglowder](https://github.com/douglowder))
 
 ## 0.14.3 — 2022-07-25

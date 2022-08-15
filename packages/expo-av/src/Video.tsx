@@ -332,6 +332,7 @@ class Video extends React.Component<VideoProps, VideoState> implements Playback 
         ...Object.keys(status),
       ]),
       style: StyleSheet.flatten([_STYLES.base, this.props.style]),
+      videoStyle: StyleSheet.flatten([_STYLES.video, this.props.videoStyle]),
       source,
       resizeMode: nativeResizeMode,
       status,
@@ -345,7 +346,7 @@ class Video extends React.Component<VideoProps, VideoState> implements Playback 
 
     return (
       <View style={nativeProps.style} pointerEvents="box-none">
-        <ExponentVideo ref={this._nativeRef} {...nativeProps} style={_STYLES.video} />
+        <ExponentVideo ref={this._nativeRef} {...nativeProps} style={nativeProps.videoStyle} />
         {this._renderPoster()}
       </View>
     );

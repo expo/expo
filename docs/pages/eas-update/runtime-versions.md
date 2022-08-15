@@ -4,8 +4,6 @@ title: Runtime versions and updates
 
 import ImageSpotlight from '~/components/plugins/ImageSpotlight'
 
-> EAS Update is currently available only to customers with an EAS subscription plan. [Sign up](https://expo.dev/accounts/[account]/settings/subscriptions).
-
 Runtime versions are a property that guarantees compatibility between a build's native code and an update. When a project is made into a build, the build will contain some native code that cannot be changed with an update. Therefore, an update must be compatible with a build's native code to run on the build.
 
 To illustrate how builds and updates interact, take a look at the following diagram:
@@ -37,6 +35,45 @@ By default, we provide the `"sdkVersion"` runtime version policy after running `
 The `"sdkVersion"` policy will set the runtime version to the current SDK version of a project. For instance, if the project is on Expo SDK 1.0.0, the runtime version with this policy will be `"exposdk:1.0.0"`. This runtime version will update any time we update the project's Expo SDK. So, if we ran `expo upgrade` and installed Expo SDK 2.0.0, then the runtime version would become `"exposdk:2.0.0"`.
 
 This runtime version policy is perfect if you are not including custom native code in your project and the only native changes you make are when upgrading Expo SDKs.
+
+### `"appVersion"` runtime version policy (available in SDK 46 and higher)
+
+We provide the `"appVersion"` runtime version policy for projects that have custom native code that may change between builds:
+
+```json
+{
+  "expo": {
+    "runtimeVersion": {
+      "policy": "appVersion"
+    }
+  }
+}
+```
+
+For a project that has the following in its app config:
+
+```json
+{
+  "expo": {
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "version": "1.0.0",
+    "ios": {
+      "buildNumber": "1"
+    },
+    "android": {
+      "versionCode": 1
+    }
+  }
+}
+```
+
+The `"appVersion"` policy will set the runtime version to the projects current `"version"` property. The runtime version for the iOS and Android builds and any updates would be in this case `"1.0.0"`.
+
+This policy is great for projects that contain custom native code and that update the `"version"` field after every public release. To submit an app, the app stores require an updated native version number for each submitted build, which makes this policy convenient if you want to be sure that every version installed on user devices has a different runtime version.
+
+When using this policy, you need to manually update `"version"` field in app config every time there is a public release, but for Play Store's Internal Test Track and the App Store's TestFlight uploads, you can rely on `"autoIncrement"` option in **eas.json** to [manage versions for you](../build-reference/app-versions/#remote-version-source).
 
 ### `"nativeVersion"` runtime version policy
 
@@ -73,7 +110,7 @@ The `"nativeVersion"` policy will set the runtime version to the projects curren
 
 The runtime version for the iOS and Android builds and any updates would be the combination of `"[version]([buildNumber|versionCode])"`, which in this case would be `"1.0.0(1)"`.
 
-This policy is great for projects that contain custom native code and that update the native version numbers (`"buildNumber"`for iOS and `"versionCode"` for Android) for each build. To submit an app, the app stores require an updated native version number for each submitted build, which makes this policy convenient for projects who use the Play Store's Internal Test Track and the App Store's TestFlight distribution tools.
+This policy is great for projects that contain custom native code and that update the native version numbers (`"buildNumber"` for iOS and `"versionCode"` for Android) for each build. To submit an app, the app stores require an updated native version number for each submitted build, which makes this policy convenient if you want to be sure that every app uploaded to Play Store's Internal Test Track and the App Store's TestFlight distribution tools has a different `runtimeVersion`.
 
 It's important to know that this policy does require the developer to manage the native version numbers manually between each build.
 

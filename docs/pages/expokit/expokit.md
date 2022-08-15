@@ -31,7 +31,7 @@ Run `expo start` from the project directory.
 
 This step ensures that the Metro bundler is running and serving your app's JS bundle for development. Leave this running and continue with the following steps.
 
-> Note: Before building for release, you **must** run `expo publish` to serve your app's JS bundle in TestFlight and production.
+> Note: Before building for release, you **must** run the Classic Update's `expo publish` command to serve your app's JS bundle in TestFlight and production.
 
 ### 3. iOS: Configure, build and run
 

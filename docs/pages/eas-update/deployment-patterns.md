@@ -4,9 +4,7 @@ title: Deployment patterns
 
 import ImageSpotlight from '~/components/plugins/ImageSpotlight'
 
-> EAS Update is currently available only to customers with an EAS subscription plan. [Sign up](https://expo.dev/accounts/[account]/settings/subscriptions).
-
-Once we've created features and fixed bugs in our app, we want to deliver those features and bug fixes out to our users as quickly and safely as we can. Often "safe" and "fast" are opposing forces when delivering code to our users. 
+Once we've created features and fixed bugs in our app, we want to deliver those features and bug fixes out to our users as quickly and safely as we can. Often "safe" and "fast" are opposing forces when delivering code to our users.
 We could push our code directly to production, which would be fast yet less safe since we never tested our code. On the other hand, we could make test builds, share them with a QA team, and release periodically, which would be safer but slower to deliver changes to our users.
 
 Depending on your project, you'll have some tolerance for how "fast" and how "safe" you'll need to be when delivering updates to your users.
@@ -88,7 +86,7 @@ This flow is great for managing versioned releases. Here are the parts of the de
 #### Advantages of this flow
 
 - This flow is safer than the other flows. All updates are tested on test builds, and branches are moved between channels, so the exact artifact tested is the one deployed to production builds.
-- This flow creates a direct mapping between GitHub branches and EAS Update branches. It also creates a mapping between GitHub commits and EAS Update updates. If you're keeping track of GitHub branches, you can create EAS Update branches for each GitHub branch and link those branches to a build's channel. 
+- This flow creates a direct mapping between GitHub branches and EAS Update branches. It also creates a mapping between GitHub commits and EAS Update updates. If you're keeping track of GitHub branches, you can create EAS Update branches for each GitHub branch and link those branches to a build's channel.
   In practice, this makes it so you can push to GitHub, then select the same branch name on Expo to link to builds.
 - Previous versions of your deployments are always preserved on GitHub. Once the "version-1.0" branch is deployed, then another version is deployed after it (like "version-1.1"), the "version-1.0" branch is forever preserved, making it easy to checkout a previous version of your project.
 

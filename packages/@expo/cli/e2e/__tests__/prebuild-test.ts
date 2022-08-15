@@ -141,9 +141,7 @@ it(
       'expo-splash-screen',
       'expo-status-bar',
       'react',
-      'react-dom',
       'react-native',
-      'react-native-web',
     ]);
 
     // Updated scripts
