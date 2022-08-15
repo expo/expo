@@ -8,16 +8,6 @@ class PersistentFileLogSpec: ExpoSpec {
       self.clearEntriesSync()
     }
 
-    it("callbacks run in main thread") {
-      let expectation = self.expectation(description: "running in main thread")
-      self.log.clearEntries { _ in
-        if Thread.current == Thread.main {
-          expectation.fulfill()
-        }
-      }
-      self.wait(for: [expectation], timeout: 0.5)
-    }
-
     it("cleared file has 0 entries") {
       let entries = self.log.readEntries()
       expect(entries.count).to(be(0))

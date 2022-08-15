@@ -1,6 +1,5 @@
 package expo.modules.core.logging
 
-import android.os.Looper
 import androidx.test.platform.app.InstrumentationRegistry
 import junit.framework.TestCase
 import org.junit.Assert
@@ -15,18 +14,15 @@ class PersistentFileLogTest : TestCase() {
     val persistentLog = PersistentFileLog("dev.expo.modules.core.logging.test", instrumentationContext)
 
     var err: Error? = null
-    var thread: Thread? = null
     asyncTestUtil.asyncMethodRunning = true
     persistentLog.clearEntries {
       err = it
-      thread = Thread.currentThread()
       asyncTestUtil.asyncMethodRunning = false
     }
     asyncTestUtil.waitForAsyncMethodToFinish("clearEntries timed out", 1000L)
     Assert.assertNull(err)
     Assert.assertEquals(0, persistentLog.readEntries().size)
-    // Check that callback happens on the main thread
-    Assert.assertEquals(Looper.getMainLooper().thread, thread)
+
     err = null
     asyncTestUtil.asyncMethodRunning = true
     persistentLog.appendEntry(
