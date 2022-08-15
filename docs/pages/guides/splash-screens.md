@@ -83,11 +83,9 @@ Any of the splash options can be configured on a per-platform basis by nesting t
 - On iOS, you can set [ios.splash.tabletImage](../workflow/configuration.md#tabletimage) if you would like to have a different splash image on iPads.
 - On Android, you can set splash images for [different device DPIs](../workflow/configuration.md#android), from `mdpi` to `xxxhdpi`.
 
-### Using `AppLoading` and/or `SplashScreen`
+### Using `SplashScreen` when caching assets
 
-As long as `AppLoading` is the only component rendered in your application, your splash screen will remain visible. We recommend using `AppLoading` while caching assets or fetching any data from `AsyncStorage` to set the app up. However, if you want to control the moment of splash screen visibility change use `SplashScreen`.
-
-Read more about [AppLoading](../versions/latest/sdk/app-loading.md) and [SplashScreen](../versions/latest/sdk/splash-screen.md).
+We recommend displaying a `SplashScreen` when [pre-loading and caching assets](/guides/preloading-and-caching-assets/#pre-loading-and-caching-assets) or fetching any data from `AsyncStorage` to set the app up using [`expo-splash-screen`](/versions/latest/sdk/splash-screen) package. You can also use this package to control the moment of splash screen visibility changes.
 
 ### Differences between environments - iOS
 

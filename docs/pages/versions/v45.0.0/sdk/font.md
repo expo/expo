@@ -9,7 +9,7 @@ import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
 
-**`expo-font`** allows loading fonts from the web and using them in React Native components. See more detailed usage information in the [Fonts](../../../guides/using-custom-fonts.md) guide.
+`expo-font` allows loading fonts from the web and using them in React Native components. See more detailed usage information in the [Fonts](/guides/using-custom-fonts) guide.
 
 <PlatformsSection android emulator ios simulator web />
 
@@ -21,31 +21,49 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 ### Example: hook
 
-<SnackInline
-label='useFonts'
-dependencies={['expo-font']}
-files={{
-'assets/fonts/Montserrat.ttf': 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/ee6539921d713482b8ccd4d0d23961bb'
-}}>
+<SnackInline label="Minimal Example of Using Custom Font" dependencies={['expo-font', 'expo-splash-screen']} files={{ 'assets/fonts/Inter-Black.otf': 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/44b1541a96341780b29112665c66ac67' }}>
 
-```tsx
-import * as React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+```jsx
+import { useEffect, useCallback } from 'react';
+import { Text, View, StyleSheet } from 'react-native';
+/* @info Import useFonts hook from 'expo-font'. */
 import { useFonts } from 'expo-font';
+/* @end */
+/* @info Also, import SplashScreen so that when the fonts are not loaded, we can continue to show SplashScreen. */
+import * as SplashScreen from 'expo-splash-screen';
+/* @end */
 
 export default function App() {
-  /* @info */ const [loaded] = useFonts({
-    Montserrat: require('./assets/fonts/Montserrat.ttf'),
+  const [fontsLoaded] = useFonts({
+    'Inter-Black': require('./assets/fonts/Inter-Black.otf'),
   });
+
+  useEffect(() => {
+    /* @info This asynchronous function prevents SplashScreen from auto hiding while the fonts are loaded. */
+    async function prepare() {
+      await SplashScreen.preventAutoHideAsync();
+    }
+    /* @end */
+
+    prepare();
+  }, []);
+
+  /* @info After the custom fonts have loaded, we can hide the splash screen and display the app screen. */
+  const onLayoutRootView = useCallback(async () => {
+    if (fontsLoaded) {
+      await SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded]);
   /* @end */
 
-  if (!loaded) {
+  if (!fontsLoaded) {
     return null;
   }
 
   return (
-    <View style={styles.container}>
-      <Text style={{ fontFamily: 'Montserrat', fontSize: 30 }}>Montserrat</Text>
+    <View style={styles.container} onLayout={onLayoutRootView}>
+      <Text style={{ fontFamily: 'Inter-Black', fontSize: 30 }}>Inter Black</Text>
+      <Text style={{ fontSize: 30 }}>Platform Default</Text>
     </View>
   );
 }
@@ -54,80 +72,8 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
     justifyContent: 'center',
-  },
-});
-/* @end */
-```
-
-</SnackInline>
-
-### Example: functions
-
-<SnackInline
-label='Font.loadAsync'
-dependencies={['expo-font']}
-files={{
-'assets/fonts/Montserrat.ttf': 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/ee6539921d713482b8ccd4d0d23961bb',
-'assets/fonts/Montserrat-SemiBold.ttf': 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/c641dbee1d75892e4d88bdc31560c91b'
-}}>
-
-```tsx
-import * as React from 'react';
-import { Text, View, StyleSheet } from 'react-native';
-import * as Font from 'expo-font';
-
-export default class App extends React.Component {
-  state = {
-    fontsLoaded: false,
-  };
-
-  async loadFonts() {
-    /* @info */ await Font.loadAsync({
-      // Load a font `Montserrat` from a static resource
-      Montserrat: require('./assets/fonts/Montserrat.ttf'),
-
-      // Any string can be used as the fontFamily name. Here we use an object to provide more control
-      'Montserrat-SemiBold': {
-        uri: require('./assets/fonts/Montserrat-SemiBold.ttf'),
-        display: Font.FontDisplay.FALLBACK,
-      },
-    });
-    /* @end */
-    this.setState({ fontsLoaded: true });
-  }
-
-  componentDidMount() {
-    this.loadFonts();
-  }
-
-  render() {
-    // Use the font with the fontFamily property after loading
-    if (this.state.fontsLoaded) {
-      return (
-        <View style={styles.container}>
-          <Text style={{ fontSize: 20 }}>Default Font</Text>
-          <Text style={{ fontFamily: 'Montserrat', fontSize: 20 }}>Montserrat</Text>
-          <Text style={{ fontFamily: 'Montserrat-SemiBold', fontSize: 20 }}>
-            Montserrat-SemiBold
-          </Text>
-        </View>
-      );
-    } else {
-      return null;
-    }
-  }
-}
-
-/* @hide const styles = StyleSheet.create({ ... }); */
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
     alignItems: 'center',
-    justifyContent: 'center',
   },
 });
 /* @end */
