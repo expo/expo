@@ -342,10 +342,18 @@ export abstract class BundlerDevServer {
     return this.urlCreator;
   }
 
+  private getExpoGoScheme(): 'exp' | 'exps' {
+    const instance = this.getInstance();
+    if (!instance?.location) {
+      return 'exp';
+    }
+    return instance.location.protocol === 'https' ? 'exps' : 'exp';
+  }
+
   public getNativeRuntimeUrl(opts: Partial<CreateURLOptions> = {}) {
     return this.isDevClient
       ? this.getUrlCreator().constructDevClientUrl(opts) ?? this.getDevServerUrl()
-      : this.getUrlCreator().constructUrl({ ...opts, scheme: 'exp' });
+      : this.getUrlCreator().constructUrl({ ...opts, scheme: this.getExpoGoScheme() });
   }
 
   /** Get the URL for the running instance of the dev server. */
@@ -410,15 +418,19 @@ export abstract class BundlerDevServer {
 
   /** Get the URL for opening in Expo Go. */
   protected getExpoGoUrl(platform: keyof typeof PLATFORM_MANAGERS): string | null {
+    if (!this.urlCreator) {
+      return null;
+    }
+
     if (this.shouldUseInterstitialPage()) {
       const loadingUrl =
         platform === 'emulator'
-          ? this.urlCreator?.constructLoadingUrl({}, 'android')
-          : this.urlCreator?.constructLoadingUrl({ hostType: 'localhost' }, 'ios');
-      return loadingUrl ?? null;
+          ? this.urlCreator.constructLoadingUrl({}, 'android')
+          : this.urlCreator.constructLoadingUrl({ hostType: 'localhost' }, 'ios');
+      return loadingUrl;
     }
 
-    return this.urlCreator?.constructUrl({ scheme: 'exp' }) ?? null;
+    return this.urlCreator.constructUrl({ scheme: this.getExpoGoScheme() });
   }
 
   protected async getPlatformManagerAsync(platform: keyof typeof PLATFORM_MANAGERS) {

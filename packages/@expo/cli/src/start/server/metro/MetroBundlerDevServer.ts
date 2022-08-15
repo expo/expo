@@ -101,7 +101,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           return this.urlCreator?.constructDevClientUrl();
         } else {
           return this.urlCreator?.constructUrl({
-            scheme: 'exp',
+            scheme: options.https ? 'exps' : 'exp',
           });
         }
       },
