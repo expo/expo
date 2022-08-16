@@ -39,22 +39,23 @@ export function createProxyForNativeModules(NativeModules) {
     return new Proxy(NativeModules, {
         get(target, prop) {
             const value = target[prop];
+            const propName = prop.toString();
             if (enabled &&
                 (value === null || value === undefined) &&
-                !PROPS_TO_IGNORE.includes(prop.toString()) &&
-                !additionalModulesToIgnore.includes(prop.toString()) &&
+                !PROPS_TO_IGNORE.includes(propName) &&
+                !additionalModulesToIgnore.includes(propName) &&
                 // only want to throw once per module
-                !hasWarnedForModule.includes(prop.toString())) {
-                hasWarnedForModule.push(prop.toString());
+                !hasWarnedForModule.includes(propName)) {
+                hasWarnedForModule.push(propName);
                 const isRunningInStoreClient = global.ExpoModules?.NativeModulesProxy?.modulesConstants?.ExponentConstants
                     ?.executionEnvironment === ExecutionEnvironment.StoreClient ||
                     target.NativeUnimoduleProxy?.modulesConstants?.ExponentConstants?.executionEnvironment ===
                         ExecutionEnvironment.StoreClient;
                 if (isRunningInStoreClient) {
-                    throw new Error(createErrorMessageForStoreClient(prop.toString()));
+                    throw new Error(createErrorMessageForStoreClient(propName));
                 }
                 else if (target.EXDevLauncher) {
-                    throw new Error(createErrorMessageForDevelopmentBuild(prop.toString()));
+                    throw new Error(createErrorMessageForDevelopmentBuild(propName));
                 }
             }
             return value;
