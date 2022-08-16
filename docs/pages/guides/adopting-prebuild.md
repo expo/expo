@@ -4,7 +4,7 @@ title: Adopting Prebuild
 
 import { Terminal } from '~/ui/components/Snippet';
 
-There are many advantages to using Prebuild to manage your native projects. This guide will show you how to adopt prebuilding in a project that was bootstrapped with `npx react-native init`.
+There are many advantages of using Prebuild to manage your native projects. This guide will show you how to adopt prebuilding in a project that was bootstrapped with `npx react-native init`.
 
 > **Note:** Adopting prebuild automatically adds support for developing modules with the [Sweet API][expo-modules-core] by linking `expo-modules-core` natively. You can also use any command from Expo CLI `npx expo` in your project.
 
@@ -14,7 +14,7 @@ There are many advantages to using Prebuild to manage your native projects. This
 
 <Terminal cmd={["$ npx react-native init --version 0.69.4"]} />
 
-This will create a new React Native project. Note that not all versions of `react-native` are supported, be sure to use a version of `react-native` that has a corresponding Expo SDK version.
+This will create a new React Native project. Note that [not all versions of `react-native` are explicitly supported](/versions/latest/#each-expo-sdk-version-depends-on-a), be sure to use a version of `react-native` that has a corresponding Expo SDK version.
 
 ## Install the `expo` package
 
@@ -39,7 +39,7 @@ import App from './App';
 + registerRootComponent(App);
 ```
 
-Alternatively, you can just change `appName` to `"main"`. Switching to `registerRootComponent` is useful if you want to take advantage of other features like web support. Importing `expo` adds side-effects for development environments that are removed in production bundles, meaning there isn't some massive bundle size increase.
+Alternatively, you can change `appName` to `"main"`. Switching to `registerRootComponent` is useful if you want to take advantage of other features like web support. Importing `expo` adds side-effects for development environments that are removed in production bundles.
 
 ## Prebuild
 
@@ -103,13 +103,13 @@ You may want to change the scripts to use the Expo CLI run commands:
 
 These have better logging, auto code signing, better simulator handling, and they ensure you run `npx expo start` to host files.
 
-## Advanced Migration
+## Re-applying native customizations
 
 If you're project already has a number of custom native modifications then you'll need to configure your Expo config (`app.json`) to reflect those native changes. There is currently no automated system for doing this. So instead we'll provide some pointers:
 
 - Check to see if your changes overlap with the built-in [Expo config fields](/versions/latest/config/app/). For example, if you have an app icon, be sure to define it as `expo.icon` in the `app.json` then re-run `npx expo prebuild`.
 - Look up if any of the packages you're using require an [Expo Config Plugin][config-plugins]. If a package in your project required additional changes inside of the `ios/` or `android/` folders, then you will probably need a Config Plugin. Some plugins can be automatically added by running `npx expo install` with all of the packages in your `package.json` `dependencies`. If a package requires a plugin but doesn't supply one, then you can try checking the community plugins at [`expo/config-plugins`](https://github.com/expo/config-plugins) to see if one already exists.
-- You can use the [VS code Expo extension][vs-code-expo] to "introspect" your changes and debug if prebuild is generating the native code you expect. Just press `cmd+shift+P`, type "Expo: Preview Modifier", and select the native file you wish to introspect.
+- You can use the [VS Code Expo extension][vs-code-expo] to introspect your changes and debug if prebuild is generating the native code you expect. Just press `cmd+shift+P`, type "Expo: Preview Modifier", and select the native file you wish to introspect.
 - Additionally, you can develop local Config Plugins to fit your needs. [Learn more](/guides/config-plugins#developing-a-plugin).
 
 ## Adding More Features
@@ -119,7 +119,7 @@ Prebuild is the tip of the automation iceberg, here are some features you can ad
 - [EAS Build](/build/setup): Code signing and cloud building.
 - [EAS Update](/build/updates): Send over-the-air updates instantly.
 - [Expo for web](/workflow/web): Run your app in the browser.
-- [Expo Dev Client][dev-client]: Improved developer experience for teams.
+- [Expo Dev Client][dev-client]: Create your own personal "Expo Go" type app around your native runtime.
 - [Sweet API][expo-modules-core]: Write modules with Swift and Kotlin. This is automatically supported when using `npx expo prebuild`.
 
 [vs-code-expo]: https://marketplace.visualstudio.com/items?itemName=byCedric.vscode-expo
