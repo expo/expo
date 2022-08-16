@@ -24,6 +24,9 @@ const PROPS_TO_IGNORE: string[] = [
 ];
 const hasWarnedForModule: string[] = [];
 
+let additionalModulesToIgnore: string[] = [];
+let enabled = true;
+
 function createErrorMessageForStoreClient(moduleName: string) {
   return `Your JavaScript code tried to access a native module, ${moduleName}, that isn't supported in Expo Go.
 To continue development with ${moduleName}, you need to create a development build of your app. See https://docs.expo.dev/development/introduction/ for more info.`;
@@ -42,8 +45,10 @@ export function createProxyForNativeModules(NativeModules: any) {
     get(target, prop) {
       const value = target[prop];
       if (
+        enabled &&
         (value === null || value === undefined) &&
         !PROPS_TO_IGNORE.includes(prop.toString()) &&
+        !additionalModulesToIgnore.includes(prop.toString()) &&
         // only want to throw once per module
         !hasWarnedForModule.includes(prop.toString())
       ) {
@@ -63,4 +68,13 @@ export function createProxyForNativeModules(NativeModules: any) {
       return value;
     },
   });
+}
+
+export function disableMissingNativeModuleErrors(moduleNames?: string[] | string) {
+  if (moduleNames) {
+    additionalModulesToIgnore = typeof moduleNames === 'string' ? [moduleNames] : moduleNames;
+    enabled = true;
+  } else {
+    enabled = false;
+  }
 }
