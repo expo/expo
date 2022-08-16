@@ -47,8 +47,8 @@
 /packages/expo-media-library                    @tsapeta @lukmccall
 /packages/expo-module-scripts                   @ide
 /packages/expo-module-template                  @tsapeta @EvanBacon
-/packages/expo-modules-autolinking              @tsapeta @kudo
-/packages/expo-modules-core                     @tsapeta @kudo
+/packages/expo-modules-autolinking              @tsapeta @kudo @lukmccall
+/packages/expo-modules-core                     @tsapeta @kudo @lukmccall
 /packages/expo-navigation-bar                   @EvanBacon
 /packages/expo-network                          @ide
 /packages/expo-notifications                    @tsapeta
