@@ -136,12 +136,12 @@ export default function vendoredModulesTransformsFactory(prefix: string): Config
         {
           paths: 'RNGestureHandler.m',
           find: /UIGestureRecognizer \(GestureHandler\)/g,
-          replaceWith: `UIGestureRecognizer (${prefix}GestureHandler)`
+          replaceWith: `UIGestureRecognizer (${prefix}GestureHandler)`,
         },
         {
           paths: 'RNGestureHandler.m',
           find: /gestureHandler/g,
-          replaceWith: `${prefix}gestureHandler`
+          replaceWith: `${prefix}gestureHandler`,
         },
       ],
     },
