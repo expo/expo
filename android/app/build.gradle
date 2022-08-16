@@ -197,6 +197,7 @@ dependencies {
     transitive = true
     exclude group: 'com.squareup.okhttp3', module: 'okhttp'
     exclude group: 'com.squareup.okhttp3', module: 'okhttp-urlconnection'
+    exclude group: 'com.shopify', module: 'react-native-skia'
   }
   END UNCOMMENT WHEN DISTRIBUTING */
 

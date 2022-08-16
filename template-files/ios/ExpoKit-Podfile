@@ -48,7 +48,7 @@ target 'ExpoKitApp' do
 
   # Install vendored pods.
   require_relative '../../../ios/podfile_helpers.rb'
-  excluded_pods = ['stripe-react-native']
+  excluded_pods = ['stripe-react-native', 'react-native-skia']
   use_pods!('../../../ios/vendored/unversioned/**/*.podspec.json', nil, excluded_pods)
 
   post_install do |installer|
