@@ -110,3 +110,6 @@ Curious about who makes Expo? Here are our [team members](https://expo.dev/about
 ## License
 
 The Expo source code is made available under the [MIT license](LICENSE). Some of the dependencies are licensed differently, with the BSD license, for example.
+
+
+<img alt="Star the Expo repo on GitHub to support the project" src="https://user-images.githubusercontent.com/9664363/184970424-8ee22290-b0e4-459f-a21e-a6581d8c0f3a.gif" width="50%">
