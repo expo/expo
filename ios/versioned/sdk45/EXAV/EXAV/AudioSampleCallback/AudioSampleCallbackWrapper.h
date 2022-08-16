@@ -1,5 +1,7 @@
 // Copyright 2017-present 650 Industries. All rights reserved.
 
+#ifdef __cplusplus
+
 #import <AVFoundation/AVFoundation.h>
 
 #import <ABI45_0_0jsi/ABI45_0_0jsi.h>
@@ -43,3 +45,5 @@ private:
 
 } // namespace av
 } // namespace ABI45_0_0expo
+
+#endif // __cplusplus
