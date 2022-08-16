@@ -58,20 +58,20 @@ The UI that shows up is referred to as the **Terminal UI**.
 
 The default UI has a QR code and a list of keyboard shortcuts you can press, these commands are only available in interactive terminals (not available in CI):
 
-- <kbd>a</kbd> Open the project in Expo Go on Android.
-- <kbd>shift</kbd> + <kbd>a</kbd> Select an Android device or emulator to open.
+- `a`: Open the project in Expo Go on Android.
+- `shift` + `a`: Select an Android device or emulator to open.
 
-- <kbd>i</kbd> Open the project in Expo Go on iOS.
-- <kbd>shift</kbd> + <kbd>i</kbd> Select an iOS Simulator to open.
-- <kbd>w</kbd> Open the project in a web browser. This may require Webpack to be installed in your project.
+- `i`: Open the project in Expo Go on iOS.
+- `shift` + `i`: Select an iOS Simulator to open.
+- `w`: Open the project in a web browser. This may require Webpack to be installed in your project.
 
-- <kbd>r</kbd> Reload the app on any connected device.
-- <kbd>m</kbd> Open the dev menu on any connected native device (web not supported).
-- <kbd>shift</kbd> + <kbd>m</kbd> Choose more commands to trigger on connected devices. This includes toggling the performance monitor, opening the element inspector, reloading the device, and opening the dev menu.
-- <kbd>j</kbd> Open Chrome Dev Tools for any connected device that is using Hermes as the JavaScript engine. [Learn more](/guides/using-hermes/).
-- <kbd>o</kbd> Open project code in your editor. This can be configured with the `EXPO_EDITOR` and `EDITOR` environment variables.
-- <kbd>c</kbd> Show development server URL as a QR code in the terminal.
-- <kbd>?</kbd> Show all Terminal UI commands.
+- `r`: Reload the app on any connected device.
+- `m`: Open the dev menu on any connected native device (web not supported).
+- `shift` + `m`: Choose more commands to trigger on connected devices. This includes toggling the performance monitor, opening the element inspector, reloading the device, and opening the dev menu.
+- `j`: Open Chrome Dev Tools for any connected device that is using Hermes as the JavaScript engine. [Learn more](/guides/using-hermes/).
+- `o`: Open project code in your editor. This can be configured with the `EXPO_EDITOR` and `EDITOR` environment variables.
+- `c`: Show development server URL as a QR code in the terminal.
+- `?`: Show all Terminal UI commands.
 
 ### Server URL
 
