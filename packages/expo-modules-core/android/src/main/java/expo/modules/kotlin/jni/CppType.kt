@@ -7,14 +7,16 @@ private fun nextValue(): Int = (1 shl nextValue).also { nextValue++ }
 /**
  * Enum that represents Cpp types. Objects of those types can be obtained via JNI.
  */
-enum class CppType(val value: Int) {
+enum class CppType(val value: Int = nextValue()) {
   NONE(0),
-  DOUBLE(nextValue()),
-  BOOLEAN(nextValue()),
-  STRING(nextValue()),
-  JS_OBJECT(nextValue()),
-  JS_VALUE(nextValue()),
-  READABLE_ARRAY(nextValue()),
-  READABLE_MAP(nextValue()),
-  TYPED_ARRAY(nextValue());
+  DOUBLE,
+  INT,
+  FLOAT,
+  BOOLEAN,
+  STRING,
+  JS_OBJECT,
+  JS_VALUE,
+  READABLE_ARRAY,
+  READABLE_MAP,
+  TYPED_ARRAY;
 }

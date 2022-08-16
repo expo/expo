@@ -65,11 +65,16 @@ void JavaScriptModuleObject::exportConstants(
 void JavaScriptModuleObject::registerSyncFunction(
   jni::alias_ref<jstring> name,
   jint args,
-  jni::alias_ref<jni::JArrayInt> desiredTypes,
+  jni::alias_ref<jni::JArrayClass<ExpectedType>> desiredTypes,
   jni::alias_ref<JNIFunctionBody::javaobject> body
 ) {
   std::string cName = name->toStdString();
-  std::unique_ptr<int[]> types = desiredTypes->getRegion(0, args);
+
+  std::unique_ptr<int[]> types = std::make_unique<int[]>(args);
+  for (size_t i = 0; i < args; i++) {
+    auto expectedType = desiredTypes->getElement(i);
+    types[i] = expectedType->getCombinedTypes();
+  }
 
   methodsMetadata.try_emplace(
     cName,
@@ -84,11 +89,16 @@ void JavaScriptModuleObject::registerSyncFunction(
 void JavaScriptModuleObject::registerAsyncFunction(
   jni::alias_ref<jstring> name,
   jint args,
-  jni::alias_ref<jni::JArrayInt> desiredTypes,
+  jni::alias_ref<jni::JArrayClass<ExpectedType>> desiredTypes,
   jni::alias_ref<JNIAsyncFunctionBody::javaobject> body
 ) {
   auto cName = name->toStdString();
-  std::unique_ptr<int[]> types = desiredTypes->getRegion(0, args);
+
+  std::unique_ptr<int[]> types = std::make_unique<int[]>(args);
+  for (size_t i = 0; i < args; i++) {
+    auto expectedType = desiredTypes->getElement(i);
+    types[i] = expectedType->getCombinedTypes();
+  }
 
   methodsMetadata.try_emplace(
     cName,

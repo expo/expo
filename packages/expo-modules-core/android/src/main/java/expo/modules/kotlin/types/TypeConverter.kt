@@ -3,6 +3,7 @@ package expo.modules.kotlin.types
 import com.facebook.react.bridge.Dynamic
 import expo.modules.kotlin.exception.NullArgumentException
 import expo.modules.kotlin.jni.CppType
+import expo.modules.kotlin.jni.ExpectedType
 
 /**
  * Basic type converter. It has to handle two different inputs - [Dynamic] and [Any].
@@ -34,12 +35,12 @@ abstract class TypeConverter<Type : Any>(
   abstract fun convertNonOptional(value: Any): Type
 
   /**
-   * Returns a list of C++ types that can be converted to the desired type.
+   * Returns a list of [ExpectedType] types that can be converted to the desired type.
    * Sometimes we have a choice between multiple representations of the same value.
    * For instance js object can be pass as [Map] or [expo.modules.kotlin.jni.JavaScriptObject].
    * This value tells us which one we should choose.
    */
-  abstract fun getCppRequiredTypes(): List<CppType>
+  abstract fun getCppRequiredTypes(): ExpectedType
 }
 
 /**

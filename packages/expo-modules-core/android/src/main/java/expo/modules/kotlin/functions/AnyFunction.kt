@@ -8,6 +8,7 @@ import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.InvalidArgsNumberException
 import expo.modules.kotlin.exception.exceptionDecorator
 import expo.modules.kotlin.iterator
+import expo.modules.kotlin.jni.ExpectedType
 import expo.modules.kotlin.jni.JavaScriptModuleObject
 import expo.modules.kotlin.recycle
 import expo.modules.kotlin.types.AnyType
@@ -82,7 +83,7 @@ abstract class AnyFunction(
    */
   abstract fun attachToJSObject(appContext: AppContext, jsObject: JavaScriptModuleObject)
 
-  fun getCppRequiredTypes(): IntArray {
-    return desiredArgsTypes.map { it.getCppRequiredTypes() }.toIntArray()
+  fun getCppRequiredTypes(): List<ExpectedType> {
+    return desiredArgsTypes.map { it.getCppRequiredTypes() }
   }
 }

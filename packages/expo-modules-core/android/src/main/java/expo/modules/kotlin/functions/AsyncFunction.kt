@@ -28,7 +28,7 @@ abstract class AsyncFunction(
     jsObject.registerAsyncFunction(
       name,
       argsCount,
-      desiredArgsTypes.map { it.getCppRequiredTypes() }.toIntArray()
+      desiredArgsTypes.map { it.getCppRequiredTypes() }.toTypedArray()
     ) { args, bridgePromise ->
       val kotlinPromise = KPromiseWrapper(bridgePromise as com.facebook.react.bridge.Promise)
       appContext.modulesQueue.launch {
