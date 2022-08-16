@@ -6,7 +6,7 @@ When you run `expo start --web` or `expo export:web` the CLI will check to see i
 
 > This is akin to `react-scripts` & `create-react-app`.
 
-If you need to edit the config the best way to do this is by running `npx expo customize webpack.config.js`.
+If you need to edit the config the best way to do this is by running `npx expo customize:web`.
 This will install `@expo/webpack-config` as a dev dependency and create a template `./webpack.config.js` in your project.
 You can now make changes to a config object based on the default config and return it for Expo CLI to use.
 Deleting the config will cause Expo to fall back to the default again.
