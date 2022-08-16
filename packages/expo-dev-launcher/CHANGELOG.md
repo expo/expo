@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fix deferred deep link handling on iOS. ([#18614](https://github.com/expo/expo/pull/18614)) by [@ajsmth](https://github.com/ajsmth)
-
 ### 💡 Others
+
+## 1.2.1 — 2022-08-16
+
+### 🐛 Bug fixes
+
+- Fix deferred deep link handling on iOS. ([#18614](https://github.com/expo/expo/pull/18614)) by [@ajsmth](https://github.com/ajsmth)
 
 ## 1.2.0 — 2022-08-11
 
