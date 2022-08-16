@@ -26,7 +26,7 @@ typedef NS_OPTIONS(NSUInteger, EXVideoFullscreenUpdate)
 @property (nonatomic, copy) EXDirectEventBlock onReadyForDisplay;
 @property (nonatomic, copy) EXDirectEventBlock onFullscreenUpdate;
 
-- (instancetype)initWithModuleRegistry:(EXModuleRegistry *)moduleRegistry;
+- (instancetype)initWithAvModule:(nullable id<EXAVInterface>)avModule;
 
 - (void)setStatus:(NSDictionary *)status
          resolver:(EXPromiseResolveBlock)resolve
