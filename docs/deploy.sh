@@ -123,6 +123,7 @@ redirects[introduction/walkthrough]=tutorial/planning/
 
 # Guides that have been deleted
 redirects[guides/using-gatsby]=guides/
+redirects[guides/testing-on-devices]=workflow/run-on-device
 
 # Moved classic updates
 redirects[distribution/release-channels]=archive/classic-updates/release-channels
