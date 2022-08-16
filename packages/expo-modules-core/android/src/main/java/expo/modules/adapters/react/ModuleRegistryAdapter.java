@@ -101,14 +101,11 @@ public class ModuleRegistryAdapter implements ReactPackage {
     // Saves all holders that needs to be in sync with module registry
     mWrapperDelegateHolders = kotlinInteropModuleRegistry.extractViewManagersDelegateHolders(kViewManager);
     viewManagerList.addAll(kViewManager);
-
     if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
-      List<ViewManager<?, ?>> viewManagers = new ArrayList<>();
-      for (ViewManager viewManager : viewManagerList) {
-        viewManagers.add(viewManager);
-      }
-      mFabricComponentsRegistry = new FabricComponentsRegistry(viewManagers);
+      // Intentionally to only add Sweet API view managers for Fabric support
+      mFabricComponentsRegistry = new FabricComponentsRegistry(kViewManager);
     }
+
     return viewManagerList;
   }
 
