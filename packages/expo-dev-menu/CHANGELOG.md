@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fixes `PanGestureHandler` does not get active when it has a `simultaneousHandler` on iOS.
+- Fixes `PanGestureHandler` does not get active when it has a `simultaneousHandler` on iOS. ([#18657](https://github.com/expo/expo/pull/18657) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 
