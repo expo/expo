@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixes `PanGestureHandler` does not get active when it has a `simultaneousHandler` on iOS.
+
 ### 💡 Others
 
 ## 1.2.0 — 2022-08-11
