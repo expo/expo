@@ -1,0 +1,78 @@
+<!-- 
+    Copyright (c) 2021-present 650 Industries, Inc. (aka Expo).
+    Author: Evan Bacon (bacon@expo.io)
+-->
+<svg fill="none" viewBox="0 0 113 180" width="100%" height="auto"
+    xmlns="http://www.w3.org/2000/svg" style="height: auto">
+    <foreignObject width="100%" height="100%">
+        <div xmlns="http://www.w3.org/1999/xhtml">
+            <style>
+                
+                @keyframes float-window {
+					0% {
+						transform: translate3d(0, 0, 0);
+					}
+					100% {
+						transform: translate3d(0, -30px, 0);
+					}
+				}
+
+                @keyframes fade-shadow {
+					0% {
+                        transform-origin: center;
+                        opacity: 0.8;
+                        transform: scale(1);
+					}
+					100% {
+                        transform-origin: center;
+                        opacity: 0.5;
+                        transform: scale(0.9);
+					}
+				}
+
+                                                <!-- Move down -->
+                svg > g {
+                    transform: translate3d(0, 30px, 0);
+                }
+
+                                                <!-- Float up -->
+                svg > g > g.box {
+                    animation: float-window ease-in-out 3.5s infinite alternate;
+                }
+                svg > g > path.shadow {
+                    animation: fade-shadow ease-in-out 3.5s infinite alternate;
+                }
+
+            </style>
+            <svg width="100%" viewBox="0 0 113 180" fill="none"
+                xmlns="http://www.w3.org/2000/svg">
+
+                <g class="scene">
+                    <path class="shadow" d="M56.8815 81.5098L113 114.064L56.5 146.039L0 114.301L56.8815 81.5098Z" fill="#464D55"/>
+                    <g class="box">
+                        <path d="M57.0798 63.9216L1.17383 31.6934V96.1493L56.3274 127.61L57.0798 63.9216Z" fill="url(#paint0_linear)"/>
+                        <path d="M112.606 31.6948L57.0763 63.927L56.3301 127.607L111.862 96.1831L111.864 96.182L112.606 31.6948Z" fill="url(#paint1_linear)"/>
+                        <path d="M112.61 31.6936L56.785 0L1.17383 31.693L57.0798 63.9212L112.61 31.6936Z" fill="url(#paint2_linear)"/>
+                        <path d="M88.3693 97.1443L91.1198 95.699V84.5463L87.8262 88.0672V86.1492L91.1025 82.6675L92.8718 81.7378V94.7783L95.5876 93.3513V95.0219L88.3693 98.8154V97.1443Z" fill="#6C737C"/>
+                        <path d="M102.214 76.5632C103.61 75.8297 104.664 75.9179 105.376 76.8292C106.095 77.7371 106.454 79.4494 106.454 81.9675C106.454 84.4855 106.095 86.5756 105.376 88.2383C104.664 89.8981 103.61 91.0949 102.214 91.8279C100.818 92.5614 99.764 92.4731 99.0514 91.5619C98.3387 90.6512 97.9824 88.9366 97.9824 86.4191C97.9824 83.9011 98.3387 81.8122 99.0514 80.1528C99.764 78.493 100.818 77.2963 102.214 76.5632ZM102.214 90.2462C103.043 89.8104 103.66 88.9891 104.062 87.7818C104.471 86.5717 104.675 84.9453 104.675 82.9022C104.675 81.8144 104.617 80.863 104.5 80.0478L100.33 89.6048C100.769 90.4618 101.396 90.6758 102.214 90.2462ZM102.214 78.1449C101.39 78.5773 100.774 79.3992 100.365 80.6093C99.9626 81.8161 99.7613 83.4413 99.7613 85.4845C99.7613 86.4141 99.8166 87.255 99.9274 88.007L104.01 78.5159C103.566 77.8728 102.967 77.7488 102.214 78.1449Z" fill="#6C737C"/>
+                    </g>
+                </g>
+                <defs>
+                    <linearGradient id="paint0_linear" x1="29.1268" y1="31.6934" x2="29.1268" y2="127.343" gradientUnits="userSpaceOnUse">
+                        <stop stop-color="#DDDDE1"/>
+                        <stop offset="1" stop-color="#8F8F9D"/>
+                    </linearGradient>
+                    <linearGradient id="paint1_linear" x1="84.2847" y1="31.9602" x2="84.2847" y2="127.61" gradientUnits="userSpaceOnUse">
+                        <stop stop-color="#F5F5F7"/>
+                        <stop offset="1" stop-color="#DDDDE1"/>
+                    </linearGradient>
+                    <linearGradient id="paint2_linear" x1="56.8918" y1="0" x2="56.8918" y2="63.9212" gradientUnits="userSpaceOnUse">
+                        <stop stop-color="#7F6DF3"/>
+                        <stop offset="1" stop-color="#3423CA"/>
+                    </linearGradient>
+                </defs>
+
+            </svg>
+        </div>
+    </foreignObject>
+</svg>
