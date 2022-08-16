@@ -93,7 +93,7 @@ Will open apps to: `exp://expo.dev:80` (the `:80` is a temporary workaround for 
 
 #### Tunneling
 
-Sometimes you may find it difficult to connect your device to your machine. Many factors can cause this to happen: restrictive network conditions (common for public Wifi), firewalls (common for Windows users), or Emulator misconfiguration.
+Sometimes you may find it difficult to connect your device to your machine. Many factors can cause this to happen: restrictive network conditions (common for public Wi-Fi), firewalls (common for Windows users), or Emulator misconfiguration.
 
 To combat these, we provide built-in URL "tunneling" with ngrok for free! This enables you to forward your `localhost` URL to a public URL that's accessible from anywhere in the world (more on the security implications later).
 
@@ -180,7 +180,7 @@ If your project does not have the corresponding native folder, the prebuild will
 
 #### Compiling iOS
 
-An iOS app can have multiple "schemes" for things like App Clips, WatchOS apps, Safari Extensions, and so on. By default, `expo run:ios` will choose the scheme for your application. You can pick a custom scheme with the `--scheme <my-scheme>` argument. If you pass in the `--scheme` alone, then you will be prompted to choose a scheme from the list of available options in your Xcode project.
+An iOS app can have multiple "schemes" for things like App Clips, watchOS apps, Safari Extensions, and so on. By default, `expo run:ios` will choose the scheme for your application. You can pick a custom scheme with the `--scheme <my-scheme>` argument. If you pass in the `--scheme` alone, then you will be prompted to choose a scheme from the list of available options in your Xcode project.
 
 The scheme you select can filter out which `--device` options show up in the selection prompt, for example, selecting an Apple TV scheme will only show available Apple TV devices.
 
