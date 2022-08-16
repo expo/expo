@@ -5,9 +5,9 @@ maxHeadingDepth: 4
 
 import { Terminal } from '~/ui/components/Snippet';
 
-The global Expo CLI `expo-cli` was succeeded by the local CLI `@expo/cli` in SDK 46. This doc contains info on the now deprecated `expo-cli` package.
+The global Expo CLI `expo-cli` was succeeded by the local CLI `@expo/cli` in SDK 46. This documentaion contains info on the now deprecated `expo-cli` package.
 
-If you're using a project that is SDK 46 or higher, please refer to the [Expo CLI docs](/workflow/expo-cli/).
+If you're using a project that is SDK 46 or higher, refer to the [Expo CLI docs](/workflow/expo-cli/).
 
 ## Installation
 
@@ -15,11 +15,11 @@ The legacy Expo CLI can be installed as a global npm package on your development
 
 <Terminal cmd={['$ npm install -g expo-cli']} />
 
-Not versioning the CLI with your project lowers backwards compatibility, and makes it harder to use your project in continuos environments like GitHub Actions. To combat this, we moved to using a versioned CLI in SDK 46.
+Not versioning the CLI with your project lowers backwards compatibility, and makes it harder to use your project in continuous environments like GitHub Actions. To combat this, we moved to using a versioned CLI in SDK 46.
 
 ## Checking CLI Version
 
-To check the current version of global Expo CLI you are using, use the `--version` option.
+To check the current version of the global Expo CLI you are using, use the `--version` option.
 
 <Terminal cmd={['$ expo --version']} />
 
@@ -29,7 +29,7 @@ You can view the list of commands available with your version in your terminal u
 
 <Terminal cmd={['$ expo --help']} />
 
-To learn more about a specific command and its options, use `expo [command] --help`.
+To learn more about a specific command and the options it may have, use `expo [command] --help`.
 
 <Terminal cmd={[`# Usage: expo [command] [options]`]} />
 
@@ -1077,6 +1077,3 @@ In Expo SDK 46, we migrated to a new suite of tooling that is versioned in the `
 #### Environment Variables
 
 - Dropped `$XDL_PORT`, `$XDL_HOST`, `$XDL_SCHEME`, `$SERVER_URL` in favor of `$EXPO_STAGING` and `$EXPO_LOCAL` environment variables.
-- Dropped `$EXPO_PACKAGER_HOSTNAME`, `$EXPO_MANIFEST_PROXY_URL` environment variables.
-- Dropped `$EXPO_EDITOR` in favor of `$EDITOR` environment variable.
-- Utilize `$DEBUG=expo:*` more and `$EXPO_DEBUG` less (more control).
