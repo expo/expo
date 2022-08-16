@@ -78,7 +78,7 @@ jni::local_ref<react::JCxxCallbackImpl::JavaPart> createJavaCallbackFromJSIFunct
   return react::JCxxCallbackImpl::newObjectCxxArgs(fn);
 }
 
-std::vector<jvalue> MethodMetadata::convertJSIArgsToJNI(
+std::vector<jobject> MethodMetadata::convertJSIArgsToJNI(
   JSIInteropModuleRegistry *moduleRegistry,
   JNIEnv *env,
   jsi::Runtime &rt,
@@ -86,7 +86,7 @@ std::vector<jvalue> MethodMetadata::convertJSIArgsToJNI(
   size_t count,
   bool returnGlobalReferences
 ) {
-  std::vector<jvalue> result(count);
+  std::vector<jobject> result(count);
 
   auto makeGlobalIfNecessary = [env, returnGlobalReferences](jobject obj) -> jobject {
     if (returnGlobalReferences) {
@@ -97,11 +97,11 @@ std::vector<jvalue> MethodMetadata::convertJSIArgsToJNI(
 
   for (unsigned int argIndex = 0; argIndex < count; argIndex++) {
     const jsi::Value *arg = &args[argIndex];
-    jvalue *jarg = &result[argIndex];
+    jobject *jarg = &result[argIndex];
     int desiredType = desiredTypes[argIndex];
 
     if (desiredType & CppType::JS_VALUE) {
-      jarg->l = makeGlobalIfNecessary(
+      *jarg = makeGlobalIfNecessary(
         JavaScriptValue::newObjectCxxArgs(
           moduleRegistry->runtimeHolder->weak_from_this(),
           // TODO(@lukmccall): make sure that copy here is necessary
@@ -109,45 +109,60 @@ std::vector<jvalue> MethodMetadata::convertJSIArgsToJNI(
         ).release()
       );
     } else if (desiredType & CppType::JS_OBJECT) {
-      jarg->l = makeGlobalIfNecessary(
+      *jarg = makeGlobalIfNecessary(
         JavaScriptObject::newObjectCxxArgs(
           moduleRegistry->runtimeHolder->weak_from_this(),
           std::make_shared<jsi::Object>(arg->getObject(rt))
         ).release()
       );
     } else if (desiredType & CppType::TYPED_ARRAY) {
-      jarg->l = makeGlobalIfNecessary(
+      *jarg = makeGlobalIfNecessary(
         JavaScriptTypedArray::newObjectCxxArgs(
           moduleRegistry->runtimeHolder->weak_from_this(),
           std::make_shared<jsi::Object>(arg->getObject(rt))
         ).release()
       );
     } else if (arg->isNull() || arg->isUndefined()) {
-      jarg->l = nullptr;
+      *jarg = nullptr;
     } else if (arg->isNumber()) {
-      auto &doubleClass = JavaReferencesCache::instance()
-        ->getJClass("java/lang/Double");
-      jmethodID doubleConstructor = doubleClass.getMethod("<init>", "(D)V");
-      jarg->l = makeGlobalIfNecessary(
-        env->NewObject(doubleClass.clazz, doubleConstructor, arg->getNumber()));
+      if (desiredType & CppType::INT) {
+        auto &integerClass = JavaReferencesCache::instance()
+          ->getJClass("java/lang/Integer");
+        jmethodID integerConstructor = integerClass.getMethod("<init>", "(I)V");
+        *jarg = makeGlobalIfNecessary(
+          env->NewObject(integerClass.clazz, integerConstructor,
+                         static_cast<int>(arg->getNumber())));
+      } else if (desiredType & CppType::FLOAT) {
+        auto &floatClass = JavaReferencesCache::instance()
+          ->getJClass("java/lang/Float");
+        jmethodID floatConstructor = floatClass.getMethod("<init>", "(F)V");
+        *jarg = makeGlobalIfNecessary(
+          env->NewObject(floatClass.clazz, floatConstructor, static_cast<float>(arg->getNumber())));
+      } else {
+        auto &doubleClass = JavaReferencesCache::instance()
+          ->getJClass("java/lang/Double");
+        jmethodID doubleConstructor = doubleClass.getMethod("<init>", "(D)V");
+        *jarg = makeGlobalIfNecessary(
+          env->NewObject(doubleClass.clazz, doubleConstructor, arg->getNumber()));
+      }
     } else if (arg->isBool()) {
       auto &booleanClass = JavaReferencesCache::instance()
         ->getJClass("java/lang/Boolean");
       jmethodID booleanConstructor = booleanClass.getMethod("<init>", "(Z)V");
-      jarg->l = makeGlobalIfNecessary(
+      *jarg = makeGlobalIfNecessary(
         env->NewObject(booleanClass.clazz, booleanConstructor, arg->getBool()));
     } else if (arg->isString()) {
-      jarg->l = makeGlobalIfNecessary(env->NewStringUTF(arg->getString(rt).utf8(rt).c_str()));
+      *jarg = makeGlobalIfNecessary(env->NewStringUTF(arg->getString(rt).utf8(rt).c_str()));
     } else if (arg->isObject()) {
       const jsi::Object object = arg->getObject(rt);
 
       // TODO(@lukmccall): stop using dynamic
       auto dynamic = jsi::dynamicFromValue(rt, *arg);
       if (arg->getObject(rt).isArray(rt)) {
-        jarg->l = makeGlobalIfNecessary(
+        *jarg = makeGlobalIfNecessary(
           react::ReadableNativeArray::newObjectCxxArgs(std::move(dynamic)).release());
       } else {
-        jarg->l = makeGlobalIfNecessary(
+        *jarg = makeGlobalIfNecessary(
           react::ReadableNativeMap::createWithContents(std::move(dynamic)).release());
       }
     } else {
@@ -235,7 +250,7 @@ jsi::Value MethodMetadata::callSync(
    */
   jni::JniLocalScope scope(env, (int) count);
 
-  std::vector<jvalue> convertedArgs = convertJSIArgsToJNI(moduleRegistry, env, rt, args, count,
+  std::vector<jobject> convertedArgs = convertJSIArgsToJNI(moduleRegistry, env, rt, args, count,
                                                           false);
 
   // TODO(@lukmccall): Remove this temp array
@@ -245,7 +260,7 @@ jsi::Value MethodMetadata::callSync(
     nullptr
   );
   for (size_t i = 0; i < convertedArgs.size(); i++) {
-    env->SetObjectArrayElement(tempArray, i, convertedArgs[i].l);
+    env->SetObjectArrayElement(tempArray, i, convertedArgs[i]);
   }
 
   // Cast in this place is safe, cause we know that this function is promise-less.
@@ -288,7 +303,7 @@ jsi::Function MethodMetadata::toAsyncFunction(
       jni::JniLocalScope scope(env, (int) count);
 
       try {
-        std::vector<jvalue> convertedArgs = convertJSIArgsToJNI(moduleRegistry, env, rt, args,
+        std::vector<jobject> convertedArgs = convertJSIArgsToJNI(moduleRegistry, env, rt, args,
                                                                 count,
                                                                 true);
         auto &Promise = moduleRegistry->jsRegistry->getObject<jsi::Function>(
@@ -310,7 +325,7 @@ jsi::Function MethodMetadata::toAsyncFunction(
 jsi::Function MethodMetadata::createPromiseBody(
   jsi::Runtime &runtime,
   JSIInteropModuleRegistry *moduleRegistry,
-  std::vector<jvalue> &&args
+  std::vector<jobject> &&args
 ) {
   return jsi::Function::createFromHostFunction(
     runtime,
@@ -367,7 +382,7 @@ jsi::Function MethodMetadata::createPromiseBody(
         nullptr
       );
       for (size_t i = 0; i < argsSize; i++) {
-        env->SetObjectArrayElement(tempArray, i, args[i].l);
+        env->SetObjectArrayElement(tempArray, i, args[i]);
       }
 
       // Cast in this place is safe, cause we know that this function expects promise.
@@ -383,7 +398,7 @@ jsi::Function MethodMetadata::createPromiseBody(
       env->DeleteLocalRef(promise);
 
       for (const auto &arg: args) {
-        env->DeleteGlobalRef(arg.l);
+        env->DeleteGlobalRef(arg);
       }
       env->DeleteLocalRef(tempArray);
 

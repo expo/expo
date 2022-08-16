@@ -46,7 +46,7 @@ class PropertyComponent(
 
     jsObject.registerProperty(
       name,
-      setter?.getCppRequiredTypes()?.first() ?: CppType.NONE.value,
+      setter?.getCppRequiredTypes()?.first()?.combinedTypes ?: CppType.NONE.value,
       jniGetter,
       jniSetter
     )

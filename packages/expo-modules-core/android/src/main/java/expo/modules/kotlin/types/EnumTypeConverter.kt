@@ -3,6 +3,7 @@ package expo.modules.kotlin.types
 import com.facebook.react.bridge.Dynamic
 import expo.modules.kotlin.exception.IncompatibleArgTypeException
 import expo.modules.kotlin.jni.CppType
+import expo.modules.kotlin.jni.ExpectedType
 import expo.modules.kotlin.toKType
 import kotlin.reflect.KClass
 import kotlin.reflect.full.createType
@@ -25,7 +26,10 @@ class EnumTypeConverter(
     "Cannot convert js value to enum without the primary constructor"
   }
 
-  override fun getCppRequiredTypes(): List<CppType> = listOf(CppType.READABLE_MAP)
+  override fun getCppRequiredTypes(): ExpectedType = ExpectedType(
+    CppType.STRING,
+    CppType.DOUBLE
+  )
 
   override fun convertFromDynamic(value: Dynamic): Enum<*> {
     if (primaryConstructor.parameters.isEmpty()) {
