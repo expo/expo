@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix deferred deep link handling on iOS. ([#18614](https://github.com/expo/expo/pull/18614)) by [@ajsmth](https://github.com/ajsmth)
+
 ### 💡 Others
 
 - Refactored inline Android emulator checks to use enhanced checking in `EmulatorUtilities.isRunningOnEmulator()`. ([#16177](https://github.com/expo/expo/pull/16177)) by [@kbrandwijk](https://github.com/kbrandwijk), [@keith-kurak](https://github.com/keith-kurak))
@@ -21,7 +23,6 @@
 ### 🐛 Bug fixes
 
 - Fixed `the function must be called on main queue` error when the app is reload from the error screen on iOS. ([#18563](https://github.com/expo/expo/pull/18563) by [@lukmccall](https://github.com/lukmccall))
-- Fix deferred deep link handling on iOS. ([#18614](https://github.com/expo/expo/pull/18614)) by [@ajsmth](https://github.com/ajsmth)
 
 ### 💡 Others
 
