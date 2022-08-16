@@ -20,6 +20,6 @@ It's the next generation of the [`expo build:[ios/android]`](/distribution/build
 
 <BoxLink title="Automate submissions" description="Learn how you can have the service take your successful builds and handle uploading them to app stores for you automatically." href="/build/automating-submissions" />
 
-<BoxLink title="App version management" description="Automate away versions bumps so you never have to think about it again." href="/build/automating-submissions" />
+<BoxLink title="App version management" description="Automate away versions bumps so you never have to think about it again." href="/build-reference/app-versions" />
 
 <BoxLink title="Learning about the limitations" description="EAS Build is a new and rapidly evolving, so we recommend getting familiar with the current limitations." href="/build-reference/limitations" />
