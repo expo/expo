@@ -2,7 +2,7 @@
 
 <p align="center">
   <a href="https://expo.dev/">
-    <img alt="Expo CLI" src="./.gh-assets/banner.svg">
+    <img alt="Expo CLI" src="../../../.github/resources/cli-banner.svg">
   </a>
 </p>
 
