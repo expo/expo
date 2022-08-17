@@ -1,10 +1,13 @@
 cmake_minimum_required(VERSION 3.4.1)
 
+project(expo-modules-core)
+
 set(CMAKE_VERBOSE_MAKEFILE ON)
 set(CMAKE_ANDROID_STL_TYPE c++_shared)
 set(CMAKE_CXX_STANDARD 17)
 set(PACKAGE_NAME "expo-modules-core")
 set(BUILD_DIR ${CMAKE_SOURCE_DIR}/build)
+set(ignoreMe "${PROJECT_BUILD_DIR} ${REACT_ANDROID_BUILD_DIR} ${REACT_ANDROID_DIR}")
 
 if (${NATIVE_DEBUG})
     set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -g")
@@ -18,11 +21,32 @@ file(GLOB common_sources "${COMMON_DIR}/*.cpp")
 
 # shared
 
+add_library(CommonSettings INTERFACE)
+
 add_library(
         ${PACKAGE_NAME}
         SHARED
         ${common_sources}
         ${sources_android}
+)
+
+if(IS_NEW_ARCHITECTURE_ENABLED)
+  add_subdirectory("${SRC_DIR}/fabric")
+  set(NEW_ARCHITECTURE_DEPENDENCIES "fabric")
+  set(NEW_ARCHITECTURE_COMPILE_OPTIONS -DIS_NEW_ARCHITECTURE_ENABLED=1 -DRN_FABRIC_ENABLED=1)
+else()
+  set(NEW_ARCHITECTURE_DEPENDENCIES "")
+  set(NEW_ARCHITECTURE_COMPILE_OPTIONS "")
+endif()
+
+target_compile_options(CommonSettings INTERFACE
+  -O2
+  -frtti
+  -fexceptions
+  -Wall
+  -fstack-protector-all
+  -DFOR_HERMES=${FOR_HERMES}
+  ${NEW_ARCHITECTURE_COMPILE_OPTIONS}
 )
 
 # Extracted AAR: ${BUILD_DIR}/react-native-0*/jni/${ANDROID_ABI}
@@ -56,6 +80,7 @@ target_include_directories(
         "${BUILD_DIR}/third-party-ndk/folly"
         "${libfbjni_include_DIRS}"
         "${COMMON_DIR}"
+        "${SRC_DIR}/fabric"
 )
 
 # find libraries
@@ -131,17 +156,12 @@ target_compile_options(
         -DFOLLY_HAVE_MEMRCHR=1
         -DFOLLY_USE_LIBCPP=1
         -DFOLLY_MOBILE=1
-        -DFOR_HERMES=${FOR_HERMES}
-        -O2
-        -frtti
-        -fexceptions
-        -Wall
-        -fstack-protector-all
 )
 
 if (${FOR_HERMES})
     target_link_libraries(
             ${PACKAGE_NAME}
+            CommonSettings
             ${LOG_LIB}
             ${FBJNI_LIB}
             ${JSI_LIB}
@@ -150,10 +170,12 @@ if (${FOR_HERMES})
             ${FOLLY_LIB}
             ${REACT_NATIVE_MODULES_CORE}
             android
+            ${NEW_ARCHITECTURE_DEPENDENCIES}
     )
 else ()
     target_link_libraries(
             ${PACKAGE_NAME}
+            CommonSettings
             ${LOG_LIB}
             ${FBJNI_LIB}
             ${JSI_LIB}
@@ -162,5 +184,6 @@ else ()
             ${FOLLY_LIB}
             ${REACT_NATIVE_MODULES_CORE}
             android
+            ${NEW_ARCHITECTURE_DEPENDENCIES}
     )
 endif ()

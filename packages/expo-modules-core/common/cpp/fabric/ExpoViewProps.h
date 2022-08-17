@@ -1,5 +1,7 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
+#pragma once
+
 #ifdef __cplusplus
 
 #include <folly/dynamic.h>
