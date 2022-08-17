@@ -145,6 +145,10 @@ docs/pages/versions/*/react-native/*.diff
 /packages/**/*.spec.json
 /packages/**/Info-generated.plist
 
+!/packages/expo-dev-menu/vendored/**/*.xcframework
+!/packages/expo-dev-menu/vendored/**/*.spec.json
+!/packages/expo-dev-menu/vendored/**/Info-generated.plist
+
 # iOS
 /ios/Pods
 /ios/build

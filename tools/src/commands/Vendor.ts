@@ -4,6 +4,12 @@ import inquirer from 'inquirer';
 import os from 'os';
 import path from 'path';
 
+import { readPodspecAsync } from '../CocoaPods';
+import {
+  buildFrameworksForProjectAsync,
+  cleanTemporaryFilesAsync,
+  generateXcodeProjectSpecBaseOnPodspecAsync,
+} from '../prebuilds/Prebuilder';
 import {
   Append,
   Clone,
@@ -18,23 +24,34 @@ import {
   TransformFilesContent,
   TransformFilesName,
 } from '../vendoring/devmenu';
+import { AddFile } from '../vendoring/devmenu/steps/AddFile';
+import { MessageType, Print } from '../vendoring/devmenu/steps/Print';
 import { RemoveFiles } from '../vendoring/devmenu/steps/RemoveFiles';
+import { toRepoPath } from '../vendoring/devmenu/utils';
 
-const CONFIGURATIONS = {
+type Config = {
+  transformations: Pipe;
+  prebuild?: PrebuildConfig;
+};
+
+type PrebuildConfig = {
+  podspecPath: string;
+  output: string;
+};
+
+const CONFIGURATIONS: { [name: string]: Config } = {
   '[dev-menu] reanimated': getReanimatedPipe(),
   '[dev-menu] gesture-handler': getGestureHandlerPipe(),
-  '[dev-menu] safe-area-context': getSafeAreaPipe(),
+  '[dev-menu] safe-area-context': getSafeAreaConfig(),
 };
 
 function getReanimatedPipe() {
-  console.warn(
-    'You have to adjust the installation steps of the react-native-reanimated to work well with the react-native-gesture-handler. For more information go to the https://github.com/expo/expo/pull/17878 and https://github.com/expo/expo/pull/18562'
-  );
   const destination = 'packages/expo-dev-menu/vendored/react-native-reanimated';
 
   // prettier-ignore
-  return new Pipe().addSteps(
+  const transformations = new Pipe().addSteps(
     'all',
+      new Print(MessageType.WARNING, 'You have to adjust the installation steps of the react-native-reanimated to work well with the react-native-gesture-handler. For more information go to the https://github.com/expo/expo/pull/17878 and https://github.com/expo/expo/pull/18562' ),
       new Clone({
         url: 'git@github.com:software-mansion/react-native-reanimated.git',
         tag: '2.9.1',
@@ -189,13 +206,15 @@ function getReanimatedPipe() {
         to: destination,
       }),
   );
+
+  return { transformations };
 }
 
 function getGestureHandlerPipe() {
   const destination = 'packages/expo-dev-menu/vendored/react-native-gesture-handler';
 
   // prettier-ignore
-  return new Pipe().addSteps(
+  const transformations = new Pipe().addSteps(
     'all',
       new Clone({
         url: 'git@github.com:software-mansion/react-native-gesture-handler.git',
@@ -281,13 +300,15 @@ function getGestureHandlerPipe() {
         to: destination,
       })
   );
+
+  return { transformations };
 }
 
-function getSafeAreaPipe() {
+function getSafeAreaConfig() {
   const destination = 'packages/expo-dev-menu/vendored/react-native-safe-area-context';
 
   // prettier-ignore
-  return new Pipe().addSteps(
+  const transformations = new Pipe().addSteps(
     'all',
       new Clone({
         url: 'git@github.com:th3rdwave/react-native-safe-area-context.git',
@@ -419,7 +440,30 @@ function getSafeAreaPipe() {
         filePattern: 'ios/**/*.@(m|h)',
         to: destination,
       }),
+      new AddFile({
+        destination: `${destination}/react-native-safe-area-context.podspec`,
+        content: `require 'json'
+
+Pod::Spec.new do |s|
+  s.name         = "dev-menu-react-native-safe-area-context"
+  s.version      = "3.3.2"
+  s.platform       = :ios, '12.0'
+  s.source       = { :git => "https://github.com/th3rdwave/react-native-safe-area-context.git", :tag => "v3.3.2" }
+  s.source_files  = "ios/**/*.{h,m}"
+
+  s.dependency 'React-Core'
+end
+`
+      })
   );
+
+  return {
+    transformations,
+    prebuild: {
+      podspecPath: `${destination}/react-native-safe-area-context.podspec`,
+      output: destination,
+    },
+  };
 }
 
 async function askForConfigurations(): Promise<string[]> {
@@ -438,20 +482,38 @@ async function askForConfigurations(): Promise<string[]> {
 type ActionOptions = {
   platform: Platform;
   configuration: string[];
+  onlyPrebuild: boolean;
 };
 
-async function action({ configuration, platform }: ActionOptions) {
+async function action({ configuration, platform, onlyPrebuild }: ActionOptions) {
   if (!configuration.length) {
     configuration = await askForConfigurations();
   }
 
-  const pipes = configuration.map((name) => ({ name, pipe: CONFIGURATIONS[name] as Pipe }));
+  const configurations = configuration.map((name) => ({ name, config: CONFIGURATIONS[name] }));
   const tmpdir = os.tmpdir();
-  for (const { name, pipe } of pipes) {
+  for (const { name, config } of configurations) {
     console.log(`Run configuration: ${chalk.green(name)}`);
-    pipe.setWorkingDirectory(path.join(tmpdir, name));
-    await pipe.start(platform);
-    console.log();
+    const { transformations, prebuild } = config;
+    if (!onlyPrebuild) {
+      transformations.setWorkingDirectory(path.join(tmpdir, name));
+      await transformations.start(platform);
+      console.log();
+    }
+
+    if (prebuild) {
+      const { podspecPath, output } = prebuild;
+      console.log('🏗 Prebuilding ...');
+
+      const podspec = await readPodspecAsync(podspecPath);
+      const xcodeProject = await generateXcodeProjectSpecBaseOnPodspecAsync(
+        podspec,
+        toRepoPath(output)
+      );
+      await buildFrameworksForProjectAsync(xcodeProject);
+      await cleanTemporaryFilesAsync(xcodeProject);
+      console.log();
+    }
   }
 }
 
@@ -465,6 +527,7 @@ export default (program: Command) => {
       "A platform on which the vendored module will be updated. Valid options: 'all' | 'ios' | 'android'.",
       'all'
     )
+    .option('--only-prebuild', 'Run only prebuild script.')
     .option(
       '-c, --configuration [string]',
       'Vendor configuration which should be run. Can be passed multiple times.',
