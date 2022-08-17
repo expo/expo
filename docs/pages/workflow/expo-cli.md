@@ -14,7 +14,7 @@ The Expo CLI enables you to do the following:
 - Generate the native iOS and Android apps for your project: `npx expo prebuild`.
 - Build and run the native app as standalone development clients: `npx expo run:ios` and `npx expo run:android`.
 - Install npm packages that work with the version of `expo` in your project: `npx expo install package-name`.
-- Login to your Expo account to enable sandboxed features like local storage in the Expo Go app: `npx expo login`, `logout`, `register`, `whoami`.
+- Log in to your Expo account to enable sandboxed features like local storage in the Expo Go app: `npx expo login`, `logout`, `register`, `whoami`.
 - Evaluate the Expo config (**app.json**, or **app.config.js**): `npx expo config`.
 
 To view a list of available commands in Expo CLI, run the following in your project:
@@ -52,7 +52,7 @@ Start a development server for developing your project by running:
 
 > You can also run `npx expo` as an alias to `npx expo start`.
 
-This command starts a server on `http://localhost:19000` which a client can fetch from to interact with the bundler (default bundler is [Metro](https://facebook.github.io/metro/)).
+This command starts a server on `http://localhost:19000` which a client can fetch from to interact with the bundler (the default bundler is [Metro](https://facebook.github.io/metro/)).
 
 The UI that shows up is referred to as the **Terminal UI**.
 
@@ -111,9 +111,9 @@ This will serve your app from a public URL like: `http://xxxxxxx.bacon.19000.exp
 
 **Drawbacks**
 
-- Tunnelling is slower than local connections because requests must be forwarded to a public URL.
+- Tunneling is slower than local connections because requests must be forwarded to a public URL.
 - Tunnel URLs are public and can be accessed by anyone! We attempt to mitigate the risk of project exposure by:
-  - Adding some simply entropy to the beginning of the URL. This can be reset by clearing the `.expo` folder in your project.
+  - Adding entropy to the beginning of the URL. This can be reset by clearing the `.expo` folder in your project.
   - Destroying the tunnel when the project stops.
 - Tunnels require a network connection, meaning this feature cannot be used offline or with the `--offline` flag.
 
@@ -137,7 +137,7 @@ You can export the JavaScript and assets for your app using Metro bundler by run
 '$ npx expo export',
 ]} />
 
-This is done automatically when using `eas update` or when compiling the native runtime. The `export` command works very similar to most web frameworks:
+This is done automatically when using `eas update` or when compiling the native runtime. The `export` command works similar to most web frameworks:
 
 - A bundler transpiles and bundles your application code in "production" mode, stripping all code guarded by the `__DEV__` boolean.
 - All static files are copied into a static `dist/` folder which can be served from a static host.
@@ -164,7 +164,7 @@ You can compile your app locally with the `run` commands:
 
 `expo run:ios` can only be run on a Mac, and Xcode must be installed. You can build the app in the cloud from any computer using `eas build -p ios`. Similarly, `expo run:android` requires Android Studio and Java to be installed and configured on your computer.
 
-Building locally is useful for developing native modules, and debugging complex native issues. Building remotely with `eas build` is often much more resilient due to the preconfigured environment.
+Building locally is useful for developing native modules and debugging complex native issues. Building remotely with `eas build` is often much more resilient due to the preconfigured environment.
 
 If your project does not have the corresponding native folder, the prebuild will run once to generate the folder before building. For example, if your project does not have an `ios/` folder in the root directory, then running `npx expo run:ios` will first run `npx expo prebuild -p ios` before building your app. This folder can be treated as a temporary folder, and you can add it to your project's `.gitignore` to remain in the managed workflow. The native project can be regenerated with `npx expo prebuild --clean` at any time. Because the iOS build cache (also known as "derived data") folder lives outside of your project, you can `--clean` while retaining relatively fast rebuild times.
 
@@ -245,7 +245,7 @@ Native source code must be generated before a native app can compile. Expo CLI p
 
 ## Telemetry
 
-Expo dev tools collect anonymous data about general usage. This helps us know when a command is safe to deprecate (low usage), or when a feature is not working as expected. Telemetry is completely optional, and you can opt-out by using the `EXPO_NO_TELEMETRY=1` environment variable.
+Expo dev tools collect anonymous data about general usage. This helps us know when a command is safe to deprecate (low usage), or when a feature is not working as expected. Telemetry is completely optional, and you can opt out by using the `EXPO_NO_TELEMETRY=1` environment variable.
 
 ## Authentication
 
@@ -260,7 +260,7 @@ These credentials are shared across Expo CLI and EAS CLI.
 
 ## Customizing
 
-Sometimes you may want to customize a project file that would otherwise be managed in-memory by the CLI. When you utilize tools other than Expo CLI, you'll need to have the default config files present. Otherwise, your app may not work as expected. You can generate files by running:
+Sometimes you may want to customize a project file that would otherwise be managed in memory by the CLI. When you utilize tools other than Expo CLI, you'll need to have the default config files present. Otherwise, your app may not work as expected. You can generate files by running:
 
 <Terminal cmd={['$ npx expo customize']} />
 
