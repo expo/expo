@@ -270,6 +270,16 @@ function getGestureHandlerPipe() {
         find: '@interface DevMenuRNGestureHandlerButtonManager([\\s\\S]*?)@end',
         replace: ''
       }),
+      new TransformFilesContent({
+        filePattern: 'ios/**/DevMenuRNGestureHandler',
+        find: 'UIGestureRecognizer (GestureHandler)',
+        replace: 'UIGestureRecognizer \(DevMenuGestureHandler\)'
+      }),
+      new TransformFilesContent({
+        filePattern: 'ios/**/DevMenuRNGestureHandler',
+        find: 'gestureHandler',
+        replace: 'devMenuGestureHandler'
+      }),
       new Append({
         filePattern: 'ios/**/DevMenuRNGestureHandlerModule.h',
         append: `@interface DevMenuRNGestureHandlerButtonManager : RCTViewManager
