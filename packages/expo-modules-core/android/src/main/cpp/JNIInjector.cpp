@@ -7,7 +7,7 @@
 #include "JavaScriptTypedArray.h"
 #include "JavaReferencesCache.h"
 
-#if RCT_NEW_ARCH_ENABLED
+#if RN_FABRIC_ENABLED
 #include "FabricComponentsRegistry.h"
 #endif
 
@@ -25,7 +25,7 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *) {
     expo::JavaScriptValue::registerNatives();
     expo::JavaScriptObject::registerNatives();
     expo::JavaScriptTypedArray::registerNatives();
-#if RCT_NEW_ARCH_ENABLED
+#if RN_FABRIC_ENABLED
     expo::FabricComponentsRegistry::registerNatives();
 #endif
   });
