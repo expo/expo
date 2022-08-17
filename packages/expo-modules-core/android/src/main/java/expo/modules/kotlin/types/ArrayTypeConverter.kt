@@ -54,8 +54,11 @@ class ArrayTypeConverter(
   }
 
   override fun getCppRequiredTypes(): ExpectedType = ExpectedType(
-    SingleType(CppType.READABLE_ARRAY, arrayOf(
-      arrayElementConverter.getCppRequiredTypes()
-    ))
+    SingleType(
+      CppType.READABLE_ARRAY,
+      arrayOf(
+        arrayElementConverter.getCppRequiredTypes()
+      )
+    )
   )
 }
