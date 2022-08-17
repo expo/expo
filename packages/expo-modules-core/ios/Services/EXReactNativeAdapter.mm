@@ -9,6 +9,14 @@
 
 #import <ExpoModulesCore/EXReactNativeAdapter.h>
 
+#if RN_FABRIC_ENABLED
+#import <React/RCTComponentViewRegistry.h>
+#import <React/RCTSurfacePresenter.h>
+#import <React/RCTMountingManager.h>
+
+#import <ExpoModulesCore/ExpoFabricViewObjC.h>
+#endif
+
 @interface EXReactNativeAdapter ()
 
 @property (nonatomic, weak) RCTBridge *bridge;
@@ -153,7 +161,7 @@ EX_REGISTER_MODULE();
 - (void)unregisterAppLifecycleListener:(id<EXAppLifecycleListener>)listener
 {
   for (int i = 0; i < _lifecycleListeners.count; i++) {
-    id pointer = [_lifecycleListeners pointerAtIndex:i];
+    void * _Nullable pointer = [_lifecycleListeners pointerAtIndex:i];
     if (pointer == (__bridge void * _Nullable)(listener) || !pointer) {
       [_lifecycleListeners removePointerAtIndex:i];
       i--;
@@ -293,7 +301,13 @@ EX_REGISTER_MODULE();
     __strong EXReactNativeAdapter *strongSelf = weakSelf;
     if (strongSelf) {
       [strongSelf.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+#if RN_FABRIC_ENABLED
+        RCTSurfacePresenter *surfacePresenter = strongSelf.bridge.surfacePresenter;
+        UIView<RCTComponentViewProtocol> *componentView = [surfacePresenter.mountingManager.componentViewRegistry findComponentViewWithTag:[viewId integerValue]];
+        UIView *view = [(ExpoFabricViewObjC *)componentView contentView];
+#else
         UIView *view = viewRegistry[viewId];
+#endif
         block(view);
       }];
       [strongSelf.bridge.uiManager setNeedsLayout];
