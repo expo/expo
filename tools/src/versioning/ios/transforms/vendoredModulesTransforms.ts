@@ -133,6 +133,16 @@ export default function vendoredModulesTransformsFactory(prefix: string): Config
           find: /\bRN(\w+?)\b/g,
           replaceWith: `${prefix}RN$1`,
         },
+        {
+          paths: 'RNGestureHandler.m',
+          find: /UIGestureRecognizer \(GestureHandler\)/g,
+          replaceWith: `UIGestureRecognizer (${prefix}GestureHandler)`,
+        },
+        {
+          paths: 'RNGestureHandler.m',
+          find: /gestureHandler/g,
+          replaceWith: `${prefix}gestureHandler`,
+        },
       ],
     },
     'react-native-pager-view': {
