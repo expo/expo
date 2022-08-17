@@ -29,7 +29,7 @@ Inside your preferred directory for storing your software projects, run the comm
 '$ cd ImageShare'
 ]} cmdCopy="npx create-expo-app ImageShare && cd ImageShare" />
 
-This will create a new project for the app that we will call "Image Share". Navigate to the directory and run `expo start` in it, open the project on your device, and open the code in your code editor of choice.
+This will create a new project for the app that we will call "Image Share". Navigate to the directory and run `npx expo start` in it, open the project on your device, and open the code in your code editor of choice.
 
 - If you have any trouble with this, please refer back to the ["Create a new app" page](/get-started/create-a-new-app).
 - If your app is up and running, it is time to [continue to the next step](/tutorial/text).
