@@ -51,6 +51,7 @@ Pod::Spec.new do |s|
   exclude_files = ['ios/Tests/']
   if !fabric_enabled
     exclude_files.append('ios/Fabric/')
+    exclude_files.append('common/cpp/fabric/')
   end
   s.exclude_files = exclude_files
 

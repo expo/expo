@@ -122,6 +122,8 @@ if (FOR_HERMES) {
 // END HERMES
 
 
+def isNewArchitectureEnabled = findProperty("newArchEnabled") == "true"
+
 // Creating sources with comments
 task androidSourcesJar(type: Jar) {
   classifier = 'sources'
@@ -163,6 +165,7 @@ android {
     consumerProguardFiles 'proguard-rules.pro'
     versionCode 1
     versionName "0.11.3"
+    buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled.toString()
 
     testInstrumentationRunner "expo.modules.TestRunner"
 
@@ -174,7 +177,11 @@ android {
           "-DREACT_NATIVE_TARGET_VERSION=${REACT_NATIVE_TARGET_VERSION}",
           "-DBOOST_VERSION=${BOOST_VERSION}",
           "-DFOR_HERMES=${FOR_HERMES}",
-          "-DHERMES_HEADER_DIR=${HERMES_HEADER_DIR}"
+          "-DHERMES_HEADER_DIR=${HERMES_HEADER_DIR}",
+          "-DIS_NEW_ARCHITECTURE_ENABLED=${isNewArchitectureEnabled}",
+          "-DPROJECT_BUILD_DIR=$buildDir",
+          "-DREACT_ANDROID_DIR=${REACT_NATIVE_DIR}/ReactAndroid",
+          "-DREACT_ANDROID_BUILD_DIR=${REACT_NATIVE_DIR}/ReactAndroid/build"
       }
     }
   }
@@ -194,15 +201,24 @@ android {
     // Theses files are intermediated linking files to build modules-core and should not be in final package.
     def sharedLibraries = [
       "**/libc++_shared.so",
-      "**/libreactnativejni.so",
-      "**/libreact_nativemodule_core.so",
-      "**/libglog.so",
-      "**/libjscexecutor.so",
+      "**/libfabricjni.so",
       "**/libfbjni.so",
       "**/libfolly_json.so",
       "**/libfolly_runtime.so",
+      "**/libglog.so",
       "**/libhermes.so",
+      "**/libjscexecutor.so",
       "**/libjsi.so",
+      "**/libreactnativejni.so",
+      "**/libreact_debug.so",
+      "**/libreact_render_debug.so",
+      "**/libreact_render_graphics.so",
+      "**/libreact_render_core.so",
+      "**/libreact_render_componentregistry.so",
+      "**/libreact_render_mapbuffer.so",
+      "**/librrc_view.so",
+      "**/libruntimeexecutor.so",
+      "**/libyoga.so",
     ]
 
     // In android (instrumental) tests, we want to package all so files to enable our JSI functionality.
@@ -459,11 +475,41 @@ task prepareHermes(dependsOn: createNativeDepsDirectories) {
 
 task prepareThirdPartyNdkHeaders(dependsOn: [prepareBoost, prepareDoubleConversion, prepareFolly, prepareHermes]) {}
 
+def packageReactNdkDebugLibs = tasks.register("packageReactNdkDebugLibs", Copy) {
+  dependsOn(":ReactAndroid:packageReactNdkDebugLibsForBuck")
+  from("$REACT_NATIVE_DIR/ReactAndroid/src/main/jni/prebuilt/lib")
+  into("$buildDir/react-ndk/exported")
+}
+def packageReactNdkReleaseLibs = tasks.register("packageReactNdkReleaseLibs", Copy) {
+  dependsOn(":ReactAndroid:packageReactNdkReleaseLibsForBuck")
+  from("$REACT_NATIVE_DIR/ReactAndroid/src/main/jni/prebuilt/lib")
+  into("$buildDir/react-ndk/exported")
+}
+
 afterEvaluate {
   extractAARHeaders.dependsOn(prepareThirdPartyNdkHeaders)
   extractJNIFiles.dependsOn(prepareThirdPartyNdkHeaders)
   if (hasHermesProject && !prebuiltHermesCacheHit) {
     prepareHermes.dependsOn(":ReactAndroid:hermes-engine:assembleDebug")
+  }
+
+  if (isNewArchitectureEnabled) {
+    preDebugBuild.dependsOn(packageReactNdkDebugLibs)
+    preReleaseBuild.dependsOn(packageReactNdkReleaseLibs)
+
+    // Due to a bug inside AGP, we have to explicitly set a dependency
+    // between configureCMake* tasks and the preBuild tasks.
+    // This can be removed once this is solved: https://issuetracker.google.com/issues/207403732
+    configureCMakeDebug.dependsOn(preDebugBuild)
+    configureCMakeRelWithDebInfo.dependsOn(preReleaseBuild)
+    reactNativeArchitectures().each { architecture ->
+      tasks.findByName("configureCMakeDebug[${architecture}]")?.configure {
+        dependsOn("preDebugBuild")
+      }
+      tasks.findByName("configureCMakeRelWithDebInfo[${architecture}]")?.configure {
+        dependsOn("preReleaseBuild")
+      }
+    }
   }
 }
 

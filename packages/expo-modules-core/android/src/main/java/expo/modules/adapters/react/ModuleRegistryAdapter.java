@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import expo.modules.BuildConfig;
 import expo.modules.adapters.react.views.SimpleViewManagerAdapter;
 import expo.modules.adapters.react.views.ViewGroupManagerAdapter;
 import expo.modules.core.ModuleRegistry;
@@ -30,6 +31,7 @@ public class ModuleRegistryAdapter implements ReactPackage {
   private NativeModulesProxy mModulesProxy;
   // We need to save all view holders to update them when the new kotlin module registry will be created.
   private List<ViewWrapperDelegateHolder> mWrapperDelegateHolders = null;
+  private FabricComponentsRegistry mFabricComponentsRegistry = null;
 
   public ModuleRegistryAdapter(List<Package> packageList) {
     mModuleRegistryProvider = new ReactModuleRegistryProvider(packageList, null);
@@ -99,6 +101,10 @@ public class ModuleRegistryAdapter implements ReactPackage {
     // Saves all holders that needs to be in sync with module registry
     mWrapperDelegateHolders = kotlinInteropModuleRegistry.extractViewManagersDelegateHolders(kViewManager);
     viewManagerList.addAll(kViewManager);
+    if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
+      // Intentionally to only add Sweet API view managers for Fabric support
+      mFabricComponentsRegistry = new FabricComponentsRegistry(kViewManager);
+    }
 
     return viewManagerList;
   }
