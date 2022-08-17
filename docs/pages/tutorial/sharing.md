@@ -13,7 +13,7 @@ Similar to expo-image-picker, the functionality that we need to share is availab
 
 You can install expo-sharing in the same way as you installed expo-image-picker. In your project directory run:
 
-<Terminal cmd={['$ expo install expo-sharing']} />
+<Terminal cmd={['$ npx expo install expo-sharing']} />
 
 ## Using expo-sharing to share an image
 
@@ -25,6 +25,7 @@ import React from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View, /* @info This is required to determine which platform the code is going to run */ Platform /* @end */ } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 /* @info As always, we must import it to use it */ import * as Sharing from 'expo-sharing'; /* @end */
+
 import * as ImageManipulator from "expo-image-manipulator";
 
 export default function App() {
