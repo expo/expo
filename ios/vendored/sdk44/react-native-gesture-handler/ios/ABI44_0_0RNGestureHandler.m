@@ -7,14 +7,14 @@
 
 #import <ABI44_0_0React/ABI44_0_0UIView+React.h>
 
-@interface UIGestureRecognizer (GestureHandler)
-@property (nonatomic, readonly) ABI44_0_0RNGestureHandler *gestureHandler;
+@interface UIGestureRecognizer (ABI44_0_0GestureHandler)
+@property (nonatomic, readonly) ABI44_0_0RNGestureHandler *ABI44_0_0gestureHandler;
 @end
 
 
-@implementation UIGestureRecognizer (GestureHandler)
+@implementation UIGestureRecognizer (ABI44_0_0GestureHandler)
 
-- (ABI44_0_0RNGestureHandler *)gestureHandler
+- (ABI44_0_0RNGestureHandler *)ABI44_0_0gestureHandler
 {
     id delegate = self.delegate;
     if ([delegate isKindOfClass:[ABI44_0_0RNGestureHandler class]]) {
@@ -327,7 +327,7 @@ static NSHashTable<ABI44_0_0RNGestureHandler *> *allGestureHandlers;
 
 + (ABI44_0_0RNGestureHandler *)findGestureHandlerByRecognizer:(UIGestureRecognizer *)recognizer
 {
-    ABI44_0_0RNGestureHandler *handler = recognizer.gestureHandler;
+    ABI44_0_0RNGestureHandler *handler = recognizer.ABI44_0_0gestureHandler;
     if (handler != nil) {
         return handler;
     }
@@ -341,7 +341,7 @@ static NSHashTable<ABI44_0_0RNGestureHandler *> *allGestureHandlers;
 
     for (UIGestureRecognizer *recognizer in reactView.gestureRecognizers) {
         if ([recognizer isKindOfClass:[ABI44_0_0RNDummyGestureRecognizer class]]) {
-            return recognizer.gestureHandler;
+            return recognizer.ABI44_0_0gestureHandler;
         }
     }
 
