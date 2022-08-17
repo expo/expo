@@ -1,22 +1,28 @@
 // Copyright © 2021-present 650 Industries, Inc. (aka Expo)
 
-#include "CachedReferencesRegistry.h"
-
-#include <utility>
+#include "JavaReferencesCache.h"
 
 namespace expo {
-std::shared_ptr<CachedReferencesRegistry> CachedReferencesRegistry::instance() {
-  static std::shared_ptr<CachedReferencesRegistry> singleton{new CachedReferencesRegistry};
+std::shared_ptr<JavaReferencesCache> JavaReferencesCache::instance() {
+  static std::shared_ptr<JavaReferencesCache> singleton{new JavaReferencesCache};
   return singleton;
 }
 
-void CachedReferencesRegistry::loadJClasses(JNIEnv *env) {
+void JavaReferencesCache::loadJClasses(JNIEnv *env) {
   loadJClass(env, "java/lang/Double", {
     {"<init>", "(D)V"}
   });
 
   loadJClass(env, "java/lang/Boolean", {
     {"<init>", "(Z)V"}
+  });
+
+  loadJClass(env, "java/lang/Integer", {
+    {"<init>", "(I)V"}
+  });
+
+  loadJClass(env, "java/lang/Float", {
+    {"<init>", "(F)V"}
   });
 
   loadJClass(env, "com/facebook/react/bridge/PromiseImpl", {
@@ -26,7 +32,7 @@ void CachedReferencesRegistry::loadJClasses(JNIEnv *env) {
   loadJClass(env, "java/lang/Object", {});
 }
 
-void CachedReferencesRegistry::loadJClass(
+void JavaReferencesCache::loadJClass(
   JNIEnv *env,
   const std::string &name,
   const std::vector<std::pair<std::string, std::string>> &methodsNames
@@ -49,18 +55,20 @@ void CachedReferencesRegistry::loadJClass(
   );
 }
 
-CachedReferencesRegistry::CachedJClass &CachedReferencesRegistry::getJClass(
+JavaReferencesCache::CachedJClass &JavaReferencesCache::getJClass(
   const std::string &className
 ) {
   return jClassRegistry.at(className);
 }
 
-jmethodID CachedReferencesRegistry::CachedJClass::getMethod(const std::string &name,
-                                                            const std::string &signature) {
+jmethodID JavaReferencesCache::CachedJClass::getMethod(
+  const std::string &name,
+  const std::string &signature
+) {
   return methods.at({name, signature});
 }
 
-CachedReferencesRegistry::CachedJClass::CachedJClass(
+JavaReferencesCache::CachedJClass::CachedJClass(
   jclass clazz,
   MethodHashMap methods
 ) : clazz(clazz), methods(std::move(methods)) {}

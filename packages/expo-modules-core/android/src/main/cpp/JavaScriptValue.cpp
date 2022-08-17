@@ -6,6 +6,7 @@
 #include "JavaScriptObject.h"
 #include "JavaScriptTypedArray.h"
 #include "TypedArray.h"
+#include "Exceptions.h"
 
 namespace expo {
 void JavaScriptValue::registerNatives() {
@@ -77,8 +78,9 @@ std::string JavaScriptValue::kind() {
     return "object";
   }
 
-  // TODO(@lukmccall): maybe throw exception?
-  return "unknown";
+  jni::throwNewJavaException(
+    UnexpectedException::create("Unknown type").get()
+  );
 }
 
 bool JavaScriptValue::isNull() {
@@ -178,6 +180,7 @@ jni::local_ref<jstring> JavaScriptValue::jniKind() {
   auto result = kind();
   return jni::make_jstring(result);
 }
+
 jni::local_ref<jstring> JavaScriptValue::jniGetString() {
   auto result = getString();
   return jni::make_jstring(result);

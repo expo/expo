@@ -41,7 +41,6 @@
   "dependencies": {
     "@expo/code-signing-certificates": "0.0.2",
     "@expo/config": "~7.0.0",
-    "@expo/config-plugins": "~5.0.0",
     "@expo/metro-config": "~0.3.18",
     "arg": "4.1.0",
     "expo-eas-client": "~0.3.0",

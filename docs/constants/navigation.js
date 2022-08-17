@@ -14,7 +14,15 @@ const PAGES_DIR = path.resolve(__dirname, '../pages');
 /** Manual list of directories to pull in to the getting started tutorial */
 const startingDirectories = ['introduction', 'get-started', 'tutorial', 'next-steps'];
 /** Manual list of directories to categorize as "EAS content" */
-const easDirectories = ['eas', 'build', 'app-signing', 'build-reference', 'submit'];
+const easDirectories = [
+  'eas',
+  'build',
+  'app-signing',
+  'build-reference',
+  'submit',
+  'eas-update',
+  'eas-metadata',
+];
 /** Manual list of directories to categorize as "Archive content" */
 const archiveDirectories = ['archive'];
 /** Private preview section which isn't linked in the documentation */
@@ -92,6 +100,7 @@ const general = [
     makePage('workflow/development-mode.md'),
     makePage('workflow/ios-simulator.md'),
     makePage('workflow/android-studio-emulator.md'),
+    makePage('workflow/run-on-device.md'),
     makePage('workflow/debugging.md'),
     makePage('workflow/configuration.md'),
     makePage('workflow/upgrading-expo-sdk-walkthrough.md'),
@@ -123,6 +132,18 @@ const general = [
     makePage('development/upgrading.md'),
     makePage('development/troubleshooting.md'),
   ]),
+  makeSection('Integrations', [
+    makePage('guides/using-firebase.md'),
+    makePage('guides/setup-native-firebase.md'),
+    makePage('guides/using-sentry.md'),
+    makePage('guides/using-bugsnag.md'),
+    makePage('guides/using-clojurescript.md'),
+    makePage('guides/using-graphql.md'),
+    makePage('guides/using-styled-components.md'),
+    makePage('guides/using-electron.md'),
+    makePage('guides/using-nextjs.md'),
+    makePage('guides/using-preact.md'),
+  ]),
   makeSection('Assorted Guides', [
     makePage('guides/assets.md'),
     makePage('guides/using-custom-fonts.md'),
@@ -149,22 +170,11 @@ const general = [
     makePage('guides/linking.md'),
     makePage('guides/running-in-the-browser.md'),
     makePage('guides/setting-up-continuous-integration.md'),
-    makePage('guides/testing-on-devices.md'),
     makePage('guides/troubleshooting-proxies.md'),
-    makePage('guides/using-firebase.md'),
-    makePage('guides/using-sentry.md'),
-    makePage('guides/using-bugsnag.md'),
-    makePage('guides/using-clojurescript.md'),
-    makePage('guides/using-graphql.md'),
-    makePage('guides/using-styled-components.md'),
     makePage('guides/config-plugins.md'),
     makePage('guides/monorepos.md'),
-    makePage('guides/setup-native-firebase.md'),
     makePage('guides/sharing-preview-releases.md'),
-    makePage('guides/using-electron.md'),
     makePage('guides/using-hermes.md'),
-    makePage('guides/using-nextjs.md'),
-    makePage('guides/using-preact.md'),
   ]),
   makeSection('Expo Module API (Alpha)', [
     makePage('modules/overview.md'),
@@ -351,6 +361,15 @@ const archive = [
     {
       expanded: true,
     }
+  ),
+  makeSection(
+    'EAS Metadata',
+    [
+      makePage('eas-metadata/introduction.md'),
+      makePage('eas-metadata/getting-started.md'),
+      // makePage('eas-metadata/store-json.md'), Disabled due to missing config overview
+    ],
+    { expanded: true }
   ),
 ];
 
