@@ -15,6 +15,10 @@ internal data class DevLauncherRemoteLog(
     mode: String = "BRIDGE"
   ) : this(throwable.toRemoteLogString(), level, mode)
 
+  /**
+   * `data` is an array whose members are simply concatenated before printing, so we use a trivial
+   * array of just a single string (which may span multiple lines).
+   */
   @Expose
   private val data = arrayOf(logBody)
 
@@ -34,10 +38,11 @@ internal fun Throwable.toRemoteLogString(): String {
   val baseTrace = stackTrace.joinToString(separator) {
     it.toString()
   }
+  val remoteLogString = "$this$separator$baseTrace"
 
   cause?.let {
-    return baseTrace + "\nCaused by ${it.toRemoteLogString()}"
+    return "$remoteLogString\nCaused by ${it.toRemoteLogString()}"
   }
 
-  return "$this$separator$baseTrace"
+  return remoteLogString
 }
