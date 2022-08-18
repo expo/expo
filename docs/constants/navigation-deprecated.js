@@ -22,7 +22,7 @@ const easDirectories = [
   'eas-metadata',
 ];
 /** Manual list of directories to categorize as "Archive" */
-const archiveDirectores = ['archive'];
+const archiveDirectories = ['archive'];
 /** Private preview section which isn't linked in the documentation */
 const previewDirectories = ['preview'];
 /** All other unlisted directories */
@@ -34,7 +34,7 @@ const generalDirectories = fs
     name =>
       name !== 'api' &&
       name !== 'versions' &&
-      ![...previewDirectories, ...featurePreviewDirectories, ...easDirectories, ...archiveDirectories].includes(name)
+      ![...previewDirectories, ...easDirectories, ...archiveDirectories].includes(name)
   );
 
 // --- Navigation ---

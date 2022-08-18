@@ -34,7 +34,7 @@ const generalDirectories = fs
     name =>
       name !== 'api' &&
       name !== 'versions' &&
-      ![...previewDirectories, ...featurePreviewDirectories, ...easDirectories, ...archiveDirectories].includes(name)
+      ![...previewDirectories, ...easDirectories, ...archiveDirectories].includes(name)
   );
 
 // --- Navigation ---

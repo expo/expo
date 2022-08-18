@@ -1,5 +1,6 @@
 import { css } from '@emotion/react';
 import { theme } from '@expo/styleguide';
+import some from 'lodash/some';
 import Router, { NextRouter } from 'next/router';
 import * as React from 'react';
 
@@ -94,17 +95,17 @@ class DocumentationPageWithApiVersion extends React.Component<Props, State> {
     return this.pathStartsWith('versions', path);
   };
 
-  private isGeneralPath = (path?: string) => {
+  private isGeneralPath = () => {
     return some(navigation.generalDirectories, name =>
       this.props.router.pathname.startsWith(`/${name}`)
     );
   };
 
   private isFeaturePreviewPath = (path?: string) => {
-    return navigation.featurePreviewDirectories.some(name => this.pathStartsWith(name, path));
+    return navigation.featurePreview.some(name => this.pathStartsWith(name, path));
   };
 
-  private isPreviewPath = (path?: string) => {
+  private isPreviewPath = () => {
     return some(navigation.previewDirectories, name =>
       this.props.router.pathname.startsWith(`/${name}`)
     );
@@ -144,13 +145,11 @@ class DocumentationPageWithApiVersion extends React.Component<Props, State> {
   private getActiveTopLevelSection = (path?: string) => {
     if (this.isReferencePath(path)) {
       return 'reference';
-    } else if (this.isGeneralPath(path)) {
+    } else if (this.isGeneralPath()) {
       return 'general';
-    } else if (this.isGettingStartedPath()) {
-      return 'starting';
     } else if (this.isFeaturePreviewPath(path)) {
       return 'featurePreview';
-    } else if (this.isPreviewPath(path)) {
+    } else if (this.isPreviewPath()) {
       return 'preview';
     } else if (this.isEasPath(path)) {
       return 'eas';
