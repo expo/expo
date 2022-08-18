@@ -1,14 +1,15 @@
 import { Command } from '@expo/commander';
 import chalk from 'chalk';
+import fs from 'fs-extra';
 import inquirer from 'inquirer';
 import os from 'os';
 import path from 'path';
 
-import { readPodspecAsync } from '../CocoaPods';
+import { Podspec, readPodspecAsync } from '../CocoaPods';
 import {
   buildFrameworksForProjectAsync,
   cleanTemporaryFilesAsync,
-  generateXcodeProjectSpecBaseOnPodspecAsync,
+  generateXcodeProjectSpecFromPodspecAsync,
 } from '../prebuilds/Prebuilder';
 import {
   Append,
@@ -24,10 +25,18 @@ import {
   TransformFilesContent,
   TransformFilesName,
 } from '../vendoring/devmenu';
-import { AddFile } from '../vendoring/devmenu/steps/AddFile';
+import { GenerateJsonFromPodspec } from '../vendoring/devmenu/steps/GenerateJsonFromPodspec';
 import { MessageType, Print } from '../vendoring/devmenu/steps/Print';
 import { RemoveFiles } from '../vendoring/devmenu/steps/RemoveFiles';
 import { toRepoPath } from '../vendoring/devmenu/utils';
+
+async function getRequierdIOSVersion(): Promise<string> {
+  const devMenuPodspec = await readPodspecAsync(
+    toRepoPath('packages/expo-dev-menu/expo-dev-menu.podspec')
+  );
+
+  return devMenuPodspec['platforms']['ios'] as string;
+}
 
 type Config = {
   transformations: Pipe;
@@ -306,13 +315,14 @@ function getGestureHandlerPipe() {
 
 function getSafeAreaConfig() {
   const destination = 'packages/expo-dev-menu/vendored/react-native-safe-area-context';
+  const version = '3.3.2';
 
   // prettier-ignore
   const transformations = new Pipe().addSteps(
     'all',
       new Clone({
         url: 'git@github.com:th3rdwave/react-native-safe-area-context.git',
-        tag: 'v3.3.2',
+        tag: `v${version}`,
       }),
       new RemoveDirectory({
         name: 'clean vendored folder',
@@ -435,32 +445,21 @@ function getSafeAreaConfig() {
 @end
 `
       }),
-      
       new CopyFiles({
         filePattern: 'ios/**/*.@(m|h)',
         to: destination,
       }),
-      new AddFile({
-        destination: `${destination}/react-native-safe-area-context.podspec`,
-        content: `require 'json'
-
-Pod::Spec.new do |s|
-  s.name         = "dev-menu-react-native-safe-area-context"
-  s.version      = "3.3.2"
-  s.platform       = :ios, '12.0'
-  s.source       = { :git => "https://github.com/th3rdwave/react-native-safe-area-context.git", :tag => "v3.3.2" }
-  s.source_files  = "ios/**/*.{h,m}"
-
-  s.dependency 'React-Core'
-end
-`
+      new GenerateJsonFromPodspec({
+        from: 'react-native-safe-area-context.podspec',
+        saveTo: `${destination}/react-native-safe-area-context.podspec.json`,
+        transfrom: async (podspec) => ({...podspec, name: 'dev-menu-react-native-safe-area-context', platforms: {'ios': await getRequierdIOSVersion()}})
       })
   );
 
   return {
     transformations,
     prebuild: {
-      podspecPath: `${destination}/react-native-safe-area-context.podspec`,
+      podspecPath: `${destination}/react-native-safe-area-context.podspec.json`,
       output: destination,
     },
   };
@@ -505,8 +504,8 @@ async function action({ configuration, platform, onlyPrebuild }: ActionOptions) 
       const { podspecPath, output } = prebuild;
       console.log('🏗 Prebuilding ...');
 
-      const podspec = await readPodspecAsync(podspecPath);
-      const xcodeProject = await generateXcodeProjectSpecBaseOnPodspecAsync(
+      const podspec = JSON.parse(await fs.readFile(toRepoPath(podspecPath), 'utf8')) as Podspec;
+      const xcodeProject = await generateXcodeProjectSpecFromPodspecAsync(
         podspec,
         toRepoPath(output)
       );

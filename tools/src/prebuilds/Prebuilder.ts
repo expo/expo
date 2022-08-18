@@ -171,7 +171,7 @@ export async function generateXcodeProjectSpecAsync(pkg: Package): Promise<Xcode
 
   logger.log('   Generating Xcode project spec');
 
-  return await generateXcodeProjectSpecBaseOnPodspecAsync(
+  return await generateXcodeProjectSpecFromPodspecAsync(
     podspec,
     path.join(pkg.path, pkg.iosSubdirectory)
   );
@@ -180,7 +180,7 @@ export async function generateXcodeProjectSpecAsync(pkg: Package): Promise<Xcode
 /**
  * Generates Xcode project based on the given podspec.
  */
-export async function generateXcodeProjectSpecBaseOnPodspecAsync(
+export async function generateXcodeProjectSpecFromPodspecAsync(
   podspec: Podspec,
   dir: string
 ): Promise<XcodeProject> {
