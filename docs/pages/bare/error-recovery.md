@@ -88,7 +88,7 @@ Last Exception Backtrace:
 
 Even though it appears the exception was thrown from expo-updates, this stacktrace generally indicates **an error that originated in JavaScript**.
 
-Unfortunately, Apple's crash reporting does not include the exception message, which details the underlying error and its location in JavaScript. To see the message and help you narrow down the issue, you may need to reproduce the crash locally with the Xcode debugger or Console app attached.
+Unfortunately, Apple's crash reporting does not include the exception message, which details the underlying error and its location in JavaScript. To see the message and help you narrow down the issue, you may need to reproduce the crash locally with the Xcode debugger or macOS Console app attached.
 
 </Tab>
 
