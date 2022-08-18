@@ -86,12 +86,18 @@ class DocumentationPageWithApiVersion extends React.Component<Props, State> {
     return path.startsWith(`/${name}`);
   };
 
+  private isArchivePath = () => {
+    return this.props.router.pathname.startsWith('/archive');
+  };
+
   private isReferencePath = (path?: string) => {
     return this.pathStartsWith('versions', path);
   };
 
   private isGeneralPath = (path?: string) => {
-    return navigation.generalDirectories.some(name => this.pathStartsWith(name, path));
+    return some(navigation.generalDirectories, name =>
+      this.props.router.pathname.startsWith(`/${name}`)
+    );
   };
 
   private isFeaturePreviewPath = (path?: string) => {
@@ -99,7 +105,9 @@ class DocumentationPageWithApiVersion extends React.Component<Props, State> {
   };
 
   private isPreviewPath = (path?: string) => {
-    return navigation.previewDirectories.some(name => this.pathStartsWith(name, path));
+    return some(navigation.previewDirectories, name =>
+      this.props.router.pathname.startsWith(`/${name}`)
+    );
   };
 
   private isEasPath = (path?: string) => {
@@ -138,12 +146,16 @@ class DocumentationPageWithApiVersion extends React.Component<Props, State> {
       return 'reference';
     } else if (this.isGeneralPath(path)) {
       return 'general';
+    } else if (this.isGettingStartedPath()) {
+      return 'starting';
     } else if (this.isFeaturePreviewPath(path)) {
       return 'featurePreview';
     } else if (this.isPreviewPath(path)) {
       return 'preview';
     } else if (this.isEasPath(path)) {
       return 'eas';
+    } else if (this.isArchivePath()) {
+      return 'archive';
     }
 
     return 'general';

@@ -42,11 +42,10 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
 
 #pragma mark - EXVideoView interface methods
 
-- (instancetype)initWithModuleRegistry:(EXModuleRegistry *)moduleRegistry
+- (instancetype)initWithAvModule:(id<EXAVInterface>)avModule
 {
   if ((self = [super init])) {
-    _moduleRegistry = moduleRegistry;
-    _exAV = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXAVInterface)];
+    _exAV = avModule;
     [_exAV registerVideoForAudioLifecycle:self];
     
     _data = nil;

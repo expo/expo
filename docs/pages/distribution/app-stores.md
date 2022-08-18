@@ -2,13 +2,28 @@
 title: Deploying to App Stores
 ---
 
+import { Collapsible } from '~/ui/components/Collapsible';
 import { ConfigClassic } from '~/components/plugins/ConfigSection';
 
 This guide offers best practices around submitting your Expo app to the Apple App Store and Google Play Store. To learn how to generate native binaries for submission, refer to ["Creating your first build"](../build/setup.md).
 
 Although you can share your published project through the Expo Go app and on your [expo.dev](https://expo.dev) profile, submitting a standalone app to the Apple and Google stores is necessary to have a dedicated piece of real estate on your users' devices. Submitting to these stores carries stronger requirements and quality standards than sharing a toy project with a few friends, because it makes your app available through a much wider distribution platform.
 
-**Disclaimer:** Especially in the case of Apple, review guidelines and rules change all the time, and Apple's enforcement of various rules tends to be finicky and inconsistent. We can't guarantee that your particular project will be accepted by either platform, and you are ultimately responsible for your app's behavior. However, Expo apps are native apps and behave just like any other apps, so if you've created something awesome, you should have nothing to worry about!
+> **Disclaimer:** Review guidelines and rules are updated frequently, and enforcement of various rules can sometimes be inconsistent. There is no guarantee that your particular project will be accepted by either platform, and you are ultimately responsible for your app's behavior. That said, you can re-submit your app as needed to address feedback from reviews.
+
+## Prerequisites
+
+<Collapsible summary="Apple Developer Program membership is required to distribute to the Apple App Store.">
+
+You will need an Apple account with a $99 USD [Apple Developer Program](https://developer.apple.com/programs) membership in order to submit your app to the Apple App Store.
+
+</Collapsible>
+
+<Collapsible summary="Google Play Developer membership is required to distribute to the Google Play Store.">
+
+You will need a Google account with a [Google Play Developer membership](https://play.google.com/apps/publish/signup/), which can be purchased for a one-time $25 USD fee.
+
+</Collapsible>
 
 ## Make sure your app works on many form factors
 
@@ -36,8 +51,8 @@ Add a [splash screen](../guides/splash-screens.md), the very first thing your us
 You'll use the **app.json** file to specify the version of your app, but there are a few different fields each with specific functionality.
 
 - [`version`](../versions/latest/config/app/#version) will apply both to iOS and Android. For iOS, this corresponds to `CFBundleShortVersionString`, and for Android this corresponds to `versionName`. This is your user-facing version string for both platforms.
-- [`android.versionCode`](../versions/latest/config/app/#versioncode) functions as your internal Android version number. This will be used to distinguish different binaries of your app.
-- [`ios.buildNumber`](../versions/latest/config/app/#buildnumber) functions as your internal iOS version number, and corresponds to `CFBundleVersion`. This will be used to distinguish different binaries of your app.
+- [`android.versionCode`](../versions/latest/config/app/#versioncode) functions as your internal Android version number. This will be used to distinguish different binaries of your app. You can let EAS manage and increment this value for you by switching to the [remote version source](../build-reference/app-versions/#remote-version-source).
+- [`ios.buildNumber`](../versions/latest/config/app/#buildnumber) functions as your internal iOS version number, and corresponds to `CFBundleVersion`. This will be used to distinguish different binaries of your app. You can let EAS manage and increment this value for you by switching to the [remote version source](../build-reference/app-versions/#remote-version-source).
 
 To access these values at runtime, you can use the [Expo Application API](../versions/latest/sdk/application.md):
 

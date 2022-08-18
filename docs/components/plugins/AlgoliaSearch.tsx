@@ -142,7 +142,8 @@ class AlgoliaSearchWithApiVersion extends React.Component<Props> {
     const currentVersion = this.props.version === 'latest' ? LATEST_VERSION : this.props.version;
 
     this.docsearch = docsearch({
-      apiKey: '2955d7b41a0accbe5b6aa2db32f3b8ac',
+      appId: 'QEX7PB7D46',
+      apiKey: '89231e630c63f383765538848f9a0e9e',
       indexName: 'expo',
       inputSelector: this.props.hiddenOnMobile
         ? '#algolia-search-box'

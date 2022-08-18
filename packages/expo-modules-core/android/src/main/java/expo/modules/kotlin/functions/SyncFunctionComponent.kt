@@ -28,7 +28,7 @@ class SyncFunctionComponent(
     jsObject.registerSyncFunction(
       name,
       argsCount,
-      getCppRequiredTypes()
+      getCppRequiredTypes().toTypedArray()
     ) { args ->
       return@registerSyncFunction exceptionDecorator({
         FunctionCallException(jsObject.name, name, it)

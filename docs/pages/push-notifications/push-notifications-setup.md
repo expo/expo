@@ -103,11 +103,9 @@ registerForPushNotificationsAsync = async () => {
 
 ## Credentials
 
-If you're using the bare workflow, or building a standalone app with `expo build:ios` or `expo build:android`, you'll also need to configure the necessary push credentials.
-
 For Android, both managed and bare workflow users need to follow our [FCM setup guide](using-fcm.md), it should only take about 5 minutes.
 
-For iOS, the Classic `expo build` service takes care of push notification credentials automatically when you run `expo build:ios`. But when using [EAS Build](/build/introduction.md) or the bare workflow, you'll need to use the `expo credentials:manager` command to upload your push notification credentials to Expo's servers. You can find more detailed instructions [here](/app-signing/managed-credentials.md#ios).
+For iOS, EAS Build will take care of push notification credentials automatically when you run a build. If are you using bare workflow and not building with EAS Build, you will need to run `eas credentials` manually.
 
 > Note: A paid Apple Developer Account is **required** to generate credentials.
 

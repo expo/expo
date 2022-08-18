@@ -10,7 +10,21 @@
 
 ### 💡 Others
 
-- Refactored inline Android emulator checks to use enhanced checking in `EmulatorUtilities.isRunningOnEmulator()`. ([#16177](https://github.com/expo/expo/pull/16177)) by [@kbrandwijk](https://github.com/kbrandwijk), [@keith-kurak](https://github.com/keith-kurak))
+## 1.2.1 — 2022-08-16
+
+### 🐛 Bug fixes
+
+- Fixes `PanGestureHandler` does not get active when it has a `simultaneousHandler` on iOS. ([#18657](https://github.com/expo/expo/pull/18657) by [@lukmccall](https://github.com/lukmccall))
+
+## 1.2.0 — 2022-08-11
+
+### 🎉 New features
+
+- Add landscape orienation support. ([#18509](https://github.com/expo/expo/pull/18509)) by [@ajsmth](https://github.com/ajsmth)
+
+### 🐛 Bug fixes
+
+- Fix the duplicated `DevMenuRNGestureHandlerStateManager.h` output file compilation error on iOS. ([#18562](https://github.com/expo/expo/pull/18562) by [@lukmccall](https://github.com/lukmccall))
 
 ## 1.1.1 — 2022-07-20
 

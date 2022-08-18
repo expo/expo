@@ -56,7 +56,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                       class="css-6n7j50"
                     >
                       <code
-                        class="inline css-1fz3od4-InlineCode"
+                        class="inline css-16lpqq8-InlineCode"
                       >
                         name
                       </code>
@@ -182,7 +182,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                       class="css-6n7j50"
                     >
                       <code
-                        class="inline css-1fz3od4-InlineCode"
+                        class="inline css-16lpqq8-InlineCode"
                       >
                         androidNavigationBar
                       </code>
@@ -351,7 +351,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                       class="css-6n7j50"
                     >
                       <code
-                        class="inline css-1fz3od4-InlineCode"
+                        class="inline css-16lpqq8-InlineCode"
                       >
                         visible
                       </code>
@@ -477,7 +477,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                       class="css-6n7j50"
                     >
                       <code
-                        class="inline css-1fz3od4-InlineCode"
+                        class="inline css-16lpqq8-InlineCode"
                       >
                         always
                       </code>
@@ -560,7 +560,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                       class="css-6n7j50"
                     >
                       <code
-                        class="inline css-1fz3od4-InlineCode"
+                        class="inline css-16lpqq8-InlineCode"
                       >
                         backgroundColor
                       </code>
@@ -618,7 +618,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             >
               6 character long hex color string, eg: 
               <code
-                class="inline css-1fz3od4-InlineCode"
+                class="inline css-16lpqq8-InlineCode"
               >
                 '#000000'
               </code>
@@ -654,7 +654,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                       class="css-6n7j50"
                     >
                       <code
-                        class="inline css-1fz3od4-InlineCode"
+                        class="inline css-16lpqq8-InlineCode"
                       >
                         intentFilters
                       </code>
@@ -818,7 +818,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                       class="css-6n7j50"
                     >
                       <code
-                        class="inline css-1fz3od4-InlineCode"
+                        class="inline css-16lpqq8-InlineCode"
                       >
                         autoVerify
                       </code>
@@ -901,7 +901,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                       class="css-6n7j50"
                     >
                       <code
-                        class="inline css-1fz3od4-InlineCode"
+                        class="inline css-16lpqq8-InlineCode"
                       >
                         data
                       </code>
@@ -983,7 +983,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                       class="css-6n7j50"
                     >
                       <code
-                        class="inline css-1fz3od4-InlineCode"
+                        class="inline css-16lpqq8-InlineCode"
                       >
                         host
                       </code>

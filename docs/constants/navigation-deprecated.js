@@ -12,11 +12,19 @@ const PAGES_DIR = path.resolve(__dirname, '../pages');
 // TODO(cedric): refactor docs to get rid of the directory lists
 
 /** Manual list of directories to categorize as "EAS content" */
-const easDirectories = ['eas', 'build', 'app-signing', 'build-reference', 'submit'];
+const easDirectories = [
+  'eas',
+  'build',
+  'app-signing',
+  'build-reference',
+  'submit',
+  'eas-update',
+  'eas-metadata',
+];
+/** Manual list of directories to categorize as "Archive" */
+const archiveDirectores = ['archive'];
 /** Private preview section which isn't linked in the documentation */
 const previewDirectories = ['preview'];
-/** Public preview section which is linked under `Feature Preview` */
-const featurePreviewDirectories = ['feature-preview', 'eas-update'];
 /** All other unlisted directories */
 const generalDirectories = fs
   .readdirSync(PAGES_DIR, { withFileTypes: true })
@@ -26,7 +34,7 @@ const generalDirectories = fs
     name =>
       name !== 'api' &&
       name !== 'versions' &&
-      ![...previewDirectories, ...featurePreviewDirectories, ...easDirectories].includes(name)
+      ![...previewDirectories, ...featurePreviewDirectories, ...easDirectories, ...archiveDirectories].includes(name)
   );
 
 // --- Navigation ---
@@ -73,13 +81,14 @@ const general = [
       makePage('workflow/development-mode.md'),
       makePage('workflow/ios-simulator.md'),
       makePage('workflow/android-studio-emulator.md'),
+      makePage('workflow/run-on-device.md'),
       makePage('workflow/debugging.md'),
       makePage('workflow/configuration.md'),
-      makePage('workflow/publishing.md'),
+      makePage('workflow/customizing.md'),
       makePage('workflow/upgrading-expo-sdk-walkthrough.md'),
       makePage('workflow/web.md'),
       makePage('workflow/snack.md'),
-      makePage('workflow/customizing.md'),
+      makePage('workflow/prebuild.md'),
       makePage('workflow/glossary-of-terms.md'),
       makePage('workflow/already-used-react-native.md'),
       makePage('workflow/common-development-errors.md'),
@@ -89,14 +98,11 @@ const general = [
     makeGroup('Distributing your app', [
       makePage('distribution/introduction.md'),
       makePage('distribution/app-stores.md'),
-      makePage('distribution/release-channels.md'),
-      makePage('distribution/advanced-release-channels.md'),
       makePage('distribution/runtime-versions.md'),
-      makePage('distribution/hosting-your-app.md'),
+      makePage('distribution/custom-updates-server.md'),
       makePage('distribution/uploading-apps.md'),
       makePage('distribution/app-transfers.md'),
       makePage('distribution/security.md'),
-      makePage('distribution/optimizing-updates.md'),
       makePage('distribution/publishing-websites.md'),
     ]),
   ]),
@@ -113,6 +119,20 @@ const general = [
       makePage('development/troubleshooting.md'),
     ]),
   ]),
+  makeSection('Integrations', [
+    makeGroup('Integrations', [
+      makePage('guides/using-firebase.md'),
+      makePage('guides/setup-native-firebase.md'),
+      makePage('guides/using-sentry.md'),
+      makePage('guides/using-bugsnag.md'),
+      makePage('guides/using-clojurescript.md'),
+      makePage('guides/using-graphql.md'),
+      makePage('guides/using-styled-components.md'),
+      makePage('guides/using-electron.md'),
+      makePage('guides/using-nextjs.md'),
+      makePage('guides/using-preact.md'),
+    ]),
+  ]),
   makeSection('Assorted guides', [
     makeGroup('Assorted guides', [
       makePage('guides/assets.md'),
@@ -127,12 +147,9 @@ const general = [
       makePage('guides/typescript.md'),
       makePage('guides/authentication.md'),
       makePage('guides/userinterface.md'),
-      makePage('guides/preloading-and-caching-assets.md'),
       makePage('guides/environment-variables.md'),
-      makePage('guides/configuring-updates.md'),
       makePage('guides/customizing-metro.md'),
       makePage('guides/customizing-webpack.md'),
-      makePage('guides/offline-support.md'),
       makePage('guides/progressive-web-apps.md'),
       makePage('guides/web-performance.md'),
       makePage('guides/delaying-code.md'),
@@ -143,22 +160,11 @@ const general = [
       makePage('guides/linking.md'),
       makePage('guides/running-in-the-browser.md'),
       makePage('guides/setting-up-continuous-integration.md'),
-      makePage('guides/testing-on-devices.md'),
       makePage('guides/troubleshooting-proxies.md'),
-      makePage('guides/using-firebase.md'),
-      makePage('guides/using-sentry.md'),
-      makePage('guides/using-bugsnag.md'),
-      makePage('guides/using-clojurescript.md'),
-      makePage('guides/using-graphql.md'),
-      makePage('guides/using-styled-components.md'),
       makePage('guides/config-plugins.md'),
       makePage('guides/monorepos.md'),
-      makePage('guides/setup-native-firebase.md'),
       makePage('guides/sharing-preview-releases.md'),
-      makePage('guides/using-electron.md'),
       makePage('guides/using-hermes.md'),
-      makePage('guides/using-nextjs.md'),
-      makePage('guides/using-preact.md'),
     ]),
   ]),
   makeSection('Expo accounts', [
@@ -197,11 +203,8 @@ const general = [
       makePage('push-notifications/faq.md'),
     ]),
   ]),
-  makeSection('Classic services', [
-    makeGroup('Classic services', sortAlphabetical(pagesFromDir('classic'))),
-  ]),
-  makeSection('UI programming', [
-    makeGroup('UI programming', [
+  makeSection('UI Programming', [
+    makeGroup('UI Programming', [
       makePage('ui-programming/image-background.md'),
       makePage('ui-programming/implementing-a-checkbox.md'),
       makePage('ui-programming/z-index.md'),
@@ -272,6 +275,7 @@ const eas = [
       makeGroup('Reference', [
         makePage('build-reference/eas-json.md'),
         makePage('build-reference/migrating.md'),
+        makePage('build-reference/npm-hooks.md'),
         makePage('build-reference/how-tos.md'),
         makePage('build-reference/private-npm-packages.md'),
         makePage('build-reference/variables.md'),
@@ -288,6 +292,7 @@ const eas = [
         makePage('build-reference/infrastructure.md'),
         makePage('build-reference/ios-capabilities.md'),
         makePage('build-reference/app-extensions.md'),
+        makePage('build-reference/app-versions.md'),
       ]),
     ],
     { expanded: true }
@@ -305,15 +310,6 @@ const eas = [
     ],
     { expanded: true }
   ),
-];
-
-const preview = [
-  makeSection('Preview', [
-    makeGroup('Preview', [makePage('preview/introduction.md'), makePage('preview/support.md')]),
-  ]),
-];
-
-const featurePreview = [
   makeSection(
     'EAS Update',
     [
@@ -327,9 +323,7 @@ const featurePreview = [
         makePage('eas-update/debug-updates.md'),
         makePage('eas-update/eas-update-and-eas-cli.md'),
         makePage('eas-update/optimize-assets.md'),
-        makePage('eas-update/custom-updates-server.md'),
         makePage('eas-update/migrate-to-eas-update.md'),
-        makePage('eas-update/bare-react-native.md'),
         makePage('eas-update/runtime-versions.md'),
         makePage('eas-update/environment-variables.md'),
         makePage('eas-update/expo-dev-client.md'),
@@ -339,7 +333,58 @@ const featurePreview = [
     ],
     { expanded: true }
   ),
+  makeSection(
+    'EAS Metadata',
+    [
+      makeGroup('EAS Metadata', [
+        makePage('eas-metadata/introduction.md'),
+        makePage('eas-metadata/getting-started.md'),
+        // makePage('eas-metadata/store-json.md'), Disabled due to missing config overview
+      ]),
+    ],
+    { expanded: true }
+  ),
 ];
+
+const preview = [
+  makeSection('Preview', [
+    makeGroup('Preview', [makePage('preview/introduction.md'), makePage('preview/support.md')]),
+  ]),
+];
+
+const archive = [
+  makeSection('Archive', [makeGroup('Archive', [makePage('archive/index.md')])], {
+    expanded: true,
+  }),
+  makeSection(
+    'Classic Updates',
+    [
+      makeGroup('Classic Updates', [makePage('archive/classic-updates/introduction.md')]),
+      makeGroup('Guides', [
+        makePage('archive/classic-updates/configuring-updates.md'),
+        makePage('archive/classic-updates/preloading-and-caching-assets.md'),
+      ]),
+      makeGroup('Distribution', [
+        makePage('archive/classic-updates/release-channels.md'),
+        makePage('archive/classic-updates/advanced-release-channels.md'),
+        makePage('archive/classic-updates/hosting-your-app.md'),
+        makePage('archive/classic-updates/offline-support.md'),
+        makePage('archive/classic-updates/optimizing-updates.md'),
+      ]),
+      makeGroup('Workflow', [makePage('archive/classic-updates/publishing.md')]),
+      makeGroup('Bare Workflow', [makePage('archive/classic-updates/updating-your-app.md')]),
+      makeGroup('Classic Services', [
+        makePage('archive/classic-updates/building-standalone-apps.md'),
+        makePage('archive/classic-updates/turtle-cli.md'),
+      ]),
+    ],
+    {
+      expanded: true,
+    }
+  ),
+];
+
+const featurePreview = [];
 
 const reference = VERSIONS.reduce(
   (all, version) => ({
@@ -372,13 +417,13 @@ module.exports = {
   general,
   eas,
   preview,
+  archive,
   featurePreview,
   /** @type {any} */
   reference: { ...reference, latest: reference[LATEST_VERSION] },
   generalDirectories,
   previewDirectories,
   easDirectories,
-  featurePreviewDirectories,
 };
 
 // --- MDX methods ---

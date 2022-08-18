@@ -12,6 +12,29 @@
 
 - Refactored inline Android emulator checks to use enhanced checking in `EmulatorUtilities.isRunningOnEmulator()`. ([#16177](https://github.com/expo/expo/pull/16177)) by [@kbrandwijk](https://github.com/kbrandwijk), [@keith-kurak](https://github.com/keith-kurak))
 
+## 1.2.1 — 2022-08-16
+
+### 🐛 Bug fixes
+
+- Fix deferred deep link handling on iOS. ([#18614](https://github.com/expo/expo/pull/18614)) by [@ajsmth](https://github.com/ajsmth)
+
+### 💡 Others
+
+## 1.2.0 — 2022-08-11
+
+### 🎉 New features
+
+- Add landscape orienation support. ([#18509](https://github.com/expo/expo/pull/18509)) by [@ajsmth](https://github.com/ajsmth)
+
+### 🐛 Bug fixes
+
+- Fixed `the function must be called on main queue` error when the app is reload from the error screen on iOS. ([#18563](https://github.com/expo/expo/pull/18563) by [@lukmccall](https://github.com/lukmccall))
+
+### 💡 Others
+
+- Made deep link error screen on iOS show a friendlier message. ([#18467](https://github.com/expo/expo/pull/18467) by [@esamelson](https://github.com/esamelson))
+- Added URL to deep link error screen message on iOS. ([#18511](https://github.com/expo/expo/pull/18511) by [@esamelson](https://github.com/esamelson))
+
 ## 1.1.1 — 2022-07-20
 
 _This version does not introduce any user-facing changes._

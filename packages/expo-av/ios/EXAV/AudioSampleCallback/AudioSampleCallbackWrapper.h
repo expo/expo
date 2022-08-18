@@ -1,5 +1,7 @@
 // Copyright 2017-present 650 Industries. All rights reserved.
 
+#ifdef __cplusplus
+
 #import <AVFoundation/AVFoundation.h>
 
 #import <jsi/jsi.h>
@@ -43,3 +45,5 @@ private:
 
 } // namespace av
 } // namespace expo
+
+#endif // __cplusplus

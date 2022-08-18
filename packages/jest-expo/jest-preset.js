@@ -7,7 +7,9 @@ const jestPreset = cloneDeep(require('react-native/jest-preset'));
 
 // transform
 if (!jestPreset.transform) {
-  jestPreset.transform = {};
+  jestPreset.transform = {
+    '\\.[jt]sx?$': 'babel-jest',
+  };
 }
 
 const defaultAssetNamePattern = '^.+\\.(bmp|gif|jpg|jpeg|mp4|png|psd|svg|webp)$';
