@@ -2,7 +2,7 @@
 // GETTING NESTED SCROLL RIGHT IS DELICATE BUSINESS. THEREFORE THIS COMPONENT
 // IS THE ONLY PLACE WHERE SCROLL CODE SHOULD BE HANDLED. THANKS.
 import { Global, css } from '@emotion/react';
-import { theme } from '@expo/styleguide';
+import { breakpoints, theme } from '@expo/styleguide';
 import * as React from 'react';
 
 import * as Constants from '~/constants/theme';
@@ -57,7 +57,7 @@ const STYLES_CONTAINER = css`
     border-right: 0px;
   }
 
-  @media screen and (max-width: ${Constants.breakpoints.mobile}) {
+  @media screen and (max-width: ${(breakpoints.medium + breakpoints.large) / 2}px) {
     display: block;
     height: auto;
   }
@@ -67,7 +67,7 @@ const STYLES_HEADER = css`
   flex-shrink: 0;
   width: 100%;
 
-  @media screen and (max-width: ${Constants.breakpoints.mobile}) {
+  @media screen and (max-width: ${(breakpoints.medium + breakpoints.large) / 2}px) {
     position: sticky;
     top: -57px;
     z-index: 3;
@@ -84,7 +84,7 @@ const STYLES_CONTENT = css`
   height: 100%;
   min-height: 25%;
 
-  @media screen and (max-width: ${Constants.breakpoints.mobile}) {
+  @media screen and (max-width: ${(breakpoints.medium + breakpoints.large) / 2}px) {
     height: auto;
   }
 `;
@@ -97,13 +97,13 @@ const STYLES_SIDEBAR = css`
   height: 100%;
   overflow: hidden;
   transition: 200ms ease max-width;
-  background: ${theme.background.secondary};
+  background: ${theme.background.default};
 
   @media screen and (max-width: 1200px) {
     max-width: 280px;
   }
 
-  @media screen and (max-width: ${Constants.breakpoints.mobile}) {
+  @media screen and (max-width: ${(breakpoints.medium + breakpoints.large) / 2}px) {
     display: none;
   }
 `;
@@ -125,7 +125,7 @@ const STYLES_CENTER = css`
   overflow: hidden;
   display: flex;
 
-  @media screen and (max-width: ${Constants.breakpoints.mobile}) {
+  @media screen and (max-width: ${(breakpoints.medium + breakpoints.large) / 2}px) {
     height: auto;
     overflow: auto;
   }
@@ -163,7 +163,7 @@ const STYLES_SCROLL_CONTAINER = css`
     background: ${theme.background.quaternary};
   }
 
-  @media screen and (max-width: ${Constants.breakpoints.mobile}) {
+  @media screen and (max-width: ${(breakpoints.medium + breakpoints.large) / 2}px) {
     overflow-y: auto;
   }
 `;

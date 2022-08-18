@@ -1,10 +1,9 @@
 import { css } from '@emotion/react';
-import { spacing, theme } from '@expo/styleguide';
+import { spacing, theme, PlanEnterpriseIcon, iconSize } from '@expo/styleguide';
 import * as React from 'react';
 
 import { APIIcon, APIInactiveIcon } from './icons/API';
 import { DocumentationIcon, DocumentationInactiveIcon } from './icons/Documentation';
-import { EASIcon, EASInactiveIcon } from './icons/EAS';
 import { PreviewIcon, PreviewInactiveIcon } from './icons/Preview';
 
 import { shouldShowFeaturePreviewLink } from '~/constants/FeatureFlags';
@@ -26,7 +25,14 @@ export const SidebarHead = ({ sidebarActiveGroup }: SidebarHeadProps) => {
       <SidebarHeadEntry
         href="/eas"
         title="Expo Application Services"
-        Icon={sidebarActiveGroup === 'eas' ? EASIcon : EASInactiveIcon}
+        Icon={() => (
+          <div css={easIconContainerStyle}>
+            <PlanEnterpriseIcon
+              color={sidebarActiveGroup === 'eas' ? theme.link.default : theme.icon.default}
+              size={iconSize.small}
+            />
+          </div>
+        )}
         isActive={sidebarActiveGroup === 'eas'}
       />
       <SidebarHeadEntry
@@ -56,5 +62,14 @@ const sidebarHeadContainer = css({
   flexDirection: 'column',
   padding: spacing[4],
   borderBottom: `1px solid ${theme.border.default}`,
-  background: theme.background.secondary,
+  background: theme.background.default,
+});
+
+const easIconContainerStyle = css({
+  height: spacing[5],
+  width: spacing[5],
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  marginRight: spacing[2.5],
 });

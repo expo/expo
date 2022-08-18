@@ -1,23 +1,26 @@
 import { css } from '@emotion/react';
-import { theme, typography, spacing } from '@expo/styleguide';
+import { theme, spacing } from '@expo/styleguide';
 import * as React from 'react';
+
+import { CALLOUT } from '../Text';
 
 type SidebarTitleProps = React.PropsWithChildren<object>;
 
 export const SidebarTitle = ({ children }: SidebarTitleProps) => (
-  <div css={STYLES_TITLE}>{children}</div>
+  <div css={STYLES_TITLE}>
+    <CALLOUT weight="medium" theme="secondary">
+      {children}
+    </CALLOUT>
+  </div>
 );
 
 const STYLES_TITLE = css({
-  ...typography.fontSizes[15],
   display: 'block',
   position: 'relative',
-  marginBottom: spacing[3],
-  fontFamily: typography.fontFaces.medium,
+  marginBottom: spacing[2],
   borderBottom: `1px solid ${theme.border.default}`,
-  paddingLeft: spacing[6],
-  paddingBottom: spacing[2],
+  marginLeft: spacing[6],
   marginRight: -spacing[5],
-  color: theme.text.secondary,
+  paddingBottom: spacing[2],
   userSelect: 'none',
 });

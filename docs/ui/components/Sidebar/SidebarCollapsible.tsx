@@ -1,45 +1,23 @@
 import { css } from '@emotion/react';
-import { theme, typography, iconSize, spacing, ChevronDownIcon } from '@expo/styleguide';
+import { theme, iconSize, spacing, ChevronDownIcon, borderRadius, shadows } from '@expo/styleguide';
 import { useRouter } from 'next/router';
 import React, { useState } from 'react';
 
+import { CALLOUT } from '../Text';
+
 import stripVersionFromPath from '~/common/stripVersionFromPath';
 import { NavigationRoute } from '~/types/common';
-
-const STYLES_CHEVRON_ICON = css({
-  marginRight: spacing[2],
-  transition: '100ms ease transform',
-});
-
-const STYLES_TITLE = css`
-  ${typography.fontSizes[15]}
-  display: flex;
-  align-items: center;
-  position: relative;
-  margin-bottom: ${spacing[2]}px;
-  font-family: ${typography.fontFaces.semiBold};
-  user-select: none;
-  min-height: 32px;
-  color: ${theme.text.default};
-
-  :hover {
-    cursor: pointer;
-  }
-`;
-
-const STYLES_CLOSED_CHEVRON_ICON = css({
-  transform: 'rotate(-90deg)',
-});
 
 if (typeof window !== 'undefined' && !window.hasOwnProperty('sidebarState')) {
   window.sidebarState = {};
 }
 
-type SidebarCollapsibleProps = React.PropsWithChildren<{
+type Props = React.PropsWithChildren<{
   info: NavigationRoute;
 }>;
 
-export const SidebarCollapsible = ({ info, children }: SidebarCollapsibleProps) => {
+export function SidebarCollapsible(props: Props) {
+  const { info, children } = props;
   const router = useRouter();
 
   const isChildRouteActive = () => {
@@ -82,14 +60,59 @@ export const SidebarCollapsible = ({ info, children }: SidebarCollapsibleProps) 
 
   return (
     <>
-      <a css={STYLES_TITLE} onClick={toggleIsOpen}>
-        <ChevronDownIcon
-          size={iconSize.small}
-          css={[STYLES_CHEVRON_ICON, !isOpen && STYLES_CLOSED_CHEVRON_ICON]}
-        />
-        {info.name}
+      <a css={titleStyle} onClick={toggleIsOpen}>
+        <div css={chevronContainerStyle}>
+          <ChevronDownIcon
+            size={iconSize.small}
+            css={[chevronStyle, !isOpen && chevronClosedStyle]}
+          />
+        </div>
+        <CALLOUT weight="medium">{info.name}</CALLOUT>
       </a>
       {isOpen && <div>{children}</div>}
     </>
   );
-};
+}
+
+const titleStyle = css({
+  display: 'flex',
+  alignItems: 'center',
+  gap: spacing[1.5],
+  position: 'relative',
+  marginBottom: spacing[2],
+  marginLeft: -spacing[1.5],
+  marginRight: -spacing[1.5],
+  userSelect: 'none',
+  transition: '100ms',
+  padding: `${spacing[1.5]}px ${spacing[1.5]}px`,
+
+  ':hover': {
+    cursor: 'pointer',
+    backgroundColor: theme.background.tertiary,
+    borderRadius: borderRadius.medium,
+    transition: '100ms',
+  },
+});
+const chevronContainerStyle = css({
+  backgroundColor: theme.background.default,
+  border: `1px solid ${theme.border.default}`,
+  borderRadius: borderRadius.small,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  boxShadow: shadows.micro,
+  height: 18,
+  width: 18,
+
+  '[data-expo-theme="dark"] &': {
+    backgroundColor: theme.background.tertiary,
+  },
+});
+
+const chevronStyle = css({
+  transition: '100ms ease transform',
+});
+
+const chevronClosedStyle = css({
+  transform: 'rotate(-90deg)',
+});

@@ -105,7 +105,7 @@ const leftColumnStyle = css`
   flex-grow: 1;
   align-items: center;
 
-  @media screen and (max-width: ${breakpoints.medium}px) {
+  @media screen and (max-width: ${(breakpoints.medium + breakpoints.large) / 2}px) {
     flex-basis: auto;
     width: auto;
   }
@@ -114,7 +114,7 @@ const leftColumnStyle = css`
 const rightColumnStyle = css`
   justify-content: flex-end;
 
-  @media screen and (max-width: ${breakpoints.medium}px) {
+  @media screen and (max-width: ${(breakpoints.medium + breakpoints.large) / 2}px) {
     flex-basis: auto;
     width: auto;
   }
@@ -123,13 +123,13 @@ const rightColumnStyle = css`
 const showOnMobileStyle = css`
   display: none;
 
-  @media screen and (max-width: ${breakpoints.medium}px) {
+  @media screen and (max-width: ${(breakpoints.medium + breakpoints.large) / 2}px) {
     display: flex;
   }
 `;
 
 const hideOnMobileStyle = css`
-  @media screen and (max-width: ${breakpoints.medium}px) {
+  @media screen and (max-width: ${(breakpoints.medium + breakpoints.large) / 2}px) {
     display: none;
   }
 `;
