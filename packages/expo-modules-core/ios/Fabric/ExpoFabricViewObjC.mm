@@ -54,7 +54,22 @@ id convertFollyDynamicToId(const folly::dynamic &dyn)
 
 } // namespace
 
-@implementation ExpoFabricViewObjC
+/**
+ React Native doesn't use the "on" prefix internally. Instead, it uses "top" but it's on the roadmap to get rid of it too.
+ We're still using "on" in a few places, so let's make sure we normalize that.
+ */
+static NSString *normalizeEventName(NSString *eventName)
+{
+  if ([eventName hasPrefix:@"on"]) {
+    NSString *firstLetter = [[eventName substringWithRange:NSMakeRange(2, 1)] lowercaseString];
+    return [firstLetter stringByAppendingString:[eventName substringFromIndex:3]];
+  }
+  return eventName;
+}
+
+@implementation ExpoFabricViewObjC {
+  ExpoViewEventEmitter::Shared _eventEmitter;
+}
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
@@ -94,6 +109,21 @@ id convertFollyDynamicToId(const folly::dynamic &dyn)
   }
 
   [super updateProps:props oldProps:oldProps];
+}
+
+- (void)updateEventEmitter:(const react::EventEmitter::Shared &)eventEmitter
+{
+  [super updateEventEmitter:eventEmitter];
+  _eventEmitter = std::static_pointer_cast<const ExpoViewEventEmitter>(eventEmitter);
+}
+
+#pragma mark - Events
+
+- (void)dispatchEvent:(nonnull NSString *)eventName payload:(nullable id)payload
+{
+  _eventEmitter->dispatch([normalizeEventName(eventName) UTF8String], [payload](jsi::Runtime &runtime) {
+    return jsi::Value(runtime, expo::convertObjCObjectToJSIValue(runtime, payload));
+  });
 }
 
 #pragma mark - Methods to override in Swift
