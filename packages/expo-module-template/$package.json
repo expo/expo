@@ -29,7 +29,7 @@
   "dependencies": {},
   "devDependencies": {
     "expo-module-scripts": "^2.0.0",
-    "expo-modules-core": "^0.11.3"
+    "expo-modules-core": "^0.11.4"
   },
   "peerDependencies": {
     "expo": "*",
