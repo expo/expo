@@ -1,5 +1,5 @@
 import { ExecutionEnvironment } from 'expo-constants';
-const PROPS_TO_IGNORE = [
+const PROPS_TO_IGNORE = new Set([
     /**
      * We don't want to throw when the expo or expo-modules-core packages try to access any of these
      * modules, since they have built-in fallbacks.
@@ -20,9 +20,9 @@ const PROPS_TO_IGNORE = [
     'toString',
     'valueOf',
     '$$typeof',
-];
-const hasWarnedForModule = [];
-let additionalModulesToIgnore = [];
+]);
+const alreadyErroredModules = new Set();
+let additionalModulesToIgnore = new Set();
 let enabled = true;
 function createErrorMessageForStoreClient(moduleName) {
     return `Your JavaScript code tried to access a native module, ${moduleName}, that isn't supported in Expo Go.
@@ -37,34 +37,43 @@ export function createProxyForNativeModules(NativeModules) {
         return NativeModules;
     }
     return new Proxy(NativeModules, {
-        get(target, prop) {
-            const value = target[prop];
-            const propName = prop.toString();
+        get(target, prop, receiver) {
+            const value = Reflect.get(target, prop, receiver);
             if (enabled &&
+                typeof prop !== 'symbol' &&
                 (value === null || value === undefined) &&
-                !PROPS_TO_IGNORE.includes(propName) &&
-                !additionalModulesToIgnore.includes(propName) &&
-                // only want to throw once per module
-                !hasWarnedForModule.includes(propName)) {
-                hasWarnedForModule.push(propName);
-                const isRunningInStoreClient = global.ExpoModules?.NativeModulesProxy?.modulesConstants?.ExponentConstants
+                !PROPS_TO_IGNORE.has(prop) &&
+                !additionalModulesToIgnore.has(prop) &&
+                !alreadyErroredModules.has(prop)) {
+                alreadyErroredModules.add(prop);
+                const isRunningInStoreClient = global.ExpoModules?.NativeModulesProxy?.modulesConstants.ExponentConstants
                     ?.executionEnvironment === ExecutionEnvironment.StoreClient ||
-                    target.NativeUnimoduleProxy?.modulesConstants?.ExponentConstants?.executionEnvironment ===
+                    target.NativeUnimoduleProxy?.modulesConstants.ExponentConstants?.executionEnvironment ===
                         ExecutionEnvironment.StoreClient;
                 if (isRunningInStoreClient) {
-                    throw new Error(createErrorMessageForStoreClient(propName));
+                    throw new Error(createErrorMessageForStoreClient(prop));
                 }
                 else if (target.EXDevLauncher) {
-                    throw new Error(createErrorMessageForDevelopmentBuild(propName));
+                    throw new Error(createErrorMessageForDevelopmentBuild(prop));
                 }
             }
             return value;
         },
     });
 }
+/**
+ * Disable the error thrown when trying to access a native module that doesn't exist in the host
+ * runtime. If a module name or array of module names is provided, this method disables the error
+ * for only those modules, erasing a previous setting if one exists. If no parameter is provided,
+ * this method disables the error for all modules.
+ *
+ * @param moduleNames Name of module or modules for which to disable the missing native module
+ * error. If this parameter is omitted, the error will be disabled globally.
+ */
 export function disableMissingNativeModuleErrors(moduleNames) {
     if (moduleNames) {
-        additionalModulesToIgnore = typeof moduleNames === 'string' ? [moduleNames] : moduleNames;
+        additionalModulesToIgnore =
+            typeof moduleNames === 'string' ? new Set([moduleNames]) : new Set(moduleNames);
         enabled = true;
     }
     else {

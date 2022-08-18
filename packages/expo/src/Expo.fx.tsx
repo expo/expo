@@ -89,5 +89,7 @@ if (__DEV__) {
     get() {
       return proxiedNativeModules;
     },
+    configurable: true,
+    enumerable: true,
   });
 }
