@@ -5,104 +5,39 @@ sidebar_title: Workflows
 
 import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
 
-The two approaches to building applications with Expo tools are called the "managed" and "bare" workflows.
+You can use the [Expo Prebuild](/workflow/prebuild) feature to write your app entirely in JavaScript and continuously generate the native projects.
 
-- With the _managed workflow_ you write JavaScript for your app the same as you would with React Native, but the native code is _managed_ by Expo CLI and generated on demand.
-  - Native code is generated with `npx expo prebuild`
-  - The generated folders are `/ios` and `/android`, these can be git ignored.
-  - The prebuild process can be configured with the Expo config file (`app.json`, `app.config.js`) using [Expo Config Plugins](/guides/config-plugins/).
-- The _bare workflow_ is what we call projects that have native folders which cannot be safely regenerated using `npx expo prebuild`.
-  - Bare projects can be converted back to managed by creating local Config Plugins that reliably recreate your manual native changes.
+Prebuilding is [completely optional](/workflow/prebuild#optionality) and it works great with all tools and services offered by Expo. We created the designation _bare workflow_ to refer projects that do not use `npx expo prebuild` — projects where developers make direct changes to their native projects, rather than continuously generating them on demand as with prebuild.
 
-> TL;DR: "managed" workflow is a React Native app that generates the native folders with `npx expo prebuild`, meaning the user only writes JS code. "bare" workflow is essentially the absence of `npx expo prebuild`, a plain React Native app with native code in the source control.
-
-> **If you've used React Native without any Expo tools** then you have used the "bare workflow", but the name probably doesn't sound familiar. It's easier to talk about something when it has a name, so we call this "bare" – somewhat in jest, and because of the existing term "bare metal". If you have direct access to the native code it's a _bare_ project. The ["Already used React Native?"](/workflow/already-used-react-native) page might be useful for you to quickly understand where Expo fits in.
-
-## Bare workflow
-
-A single native project on its own is very complicated to maintain, scale, and grow. In a cross-platform app, you have multiple native projects that you must maintain and keep updated. These aren't standard projects either, they have a custom native framework, React, installed -- adding to the complexity.
-
-This quickly grows to become a massive technical debt. Here are a few reasons why:
-
-- Cross-platform concepts like the app icon, name, splash screen, etc. must be implemented manually in native code, these are often implemented very differently across platforms.
-- Building native code requires a basic familiarity with that native platform's default tooling leading to a fair learning curve. In cross-platform, this curve is multiplied by the amount of platforms you wish to develop for.
-- Most complex native packages have additional setup required e.g. a camera library may require permission messages, event forwarding in the AppDelegate, custom XML, etc. This additional setup can be considered a side-effect that makes it harder to upgrade or uninstall a library. When you miss side-effects they become orphaned code that you cannot trace back to any particular package, this code builds up and makes your project harder to maintain.
-- When you bootstrap a native app, it has a bunch of preset values and code that you don't need to understand in order to get started. Eventually you'll want to upgrade your native application and now you'll need to be acutely familiar with how all of the initial code works in order to safely upgrade it. This is extremely challenging and users will either upgrade their app incorrectly, missing crucial changes, or they'll bootstrap a new app and copy all of their source code into the new application.
-
-The _bare workflow_ refers to native development as-is with no management of the native code, effectively the absence of native code management. All of Expo's services, including [EAS](https://expo.dev/eas), and the libraries in the Expo SDK are built to **fully support** the bare workflow as this is a minimum requirement for supporting the _managed workflow_.
-
-## Managed workflow
-
-Managed workflow aims to solve all of the aforementioned issues by providing a layer on top of the bare workflow that **generates native code on demand**.
-
-With the _managed workflow_ you write JavaScript for your app the same as you would with a standard React Native project, but the native code is _managed_ by Expo CLI and generated on demand during a process called "prebuilding".
-
-- Native code is generated with the command `npx expo prebuild`
-- The generated folders are `/ios` and `/android`, these can be git ignored and deleted at any time.
-- The prebuild process can be configured with the Expo config file (`app.json`, `app.config.js`) using [Expo Config Plugins](/guides/config-plugins/). This is most commonly used for configuring library installation side-effects to ensure each package is self-contained.
-
-If a user modifies the generated `/ios` or `/android` folders in a way that cannot be safely regenerated by running `npx expo prebuild --clean`, then the project is considered _bare workflow_. This can be resolved by creating local Config Plugins which recreate the manual changes.
-If the local native folders exist but they are unmodified, the project is still considered to be _managed workflow_ as the native code can still be managed by prebuilding.
-
-Think of the managed workflow like NPM, where `npx expo prebuild` generates code like `npm install` does, except instead of a `node_modules` folder prebuild generates `ios` and `android` folders. Just like with NPM, if you modify the generated folders, you can no longer safely re-run the generation command, nothing has actually changed in the project, but you must now manually maintain all of the code going forward which is a hassle.
-
-The results of the managed workflow:
-
-1. You can easily change complex values across platforms by modifying the `app.json` and rerunning `npx expo prebuild`. For example, simply set the `icon` property to regenerate the icon across both platforms. This makes white-labeling apps a breeze.
-2. Uninstalling packages is very easy, simply uninstall with NPM, remove any Expo Config Plugin you may have added to configure the package from your `app.json`, and regenerate.
-3. Upgrading a _managed workflow_ project is as easy as upgrading any NPM project because no native code is involved. Simply upgrade the packages in your `package.json` to new versions that work together, and regenerate.
-
-### Building a Managed App
-
-Before a native app can be built, it needs code to compile. Simply run `npx expo prebuild` to generate the native code for your app, and build the code in the `ios` and `android` folders.
-
-For example, our build service EAS Build is a general native CI and capable of building any native app regardless of if it's using Expo.
-
-When you upload a managed workflow project to EAS, the build process will simply run `npx expo prebuild` and continue building the project as if it were a regular native app.
-
-This means that all Expo projects eventually go through prebuild at some point, it's up to you to decide when that point is. If you feel comfortable maintaining and upgrading native projects, then you can continue to use everything else Expo offers and skip using `npx expo prebuild`.
+We used to refer to the usage of Expo Prebuild as _managed workflow_ in older versions of Expo that utilized shell apps, this term is being phased out.
 
 ### Custom Native Code
 
-_Managed workflow_ allows for installing [libraries in the React Native ecosystem](https://reactnative.directory/), ([learn more](/workflow/using-libraries)). It's important to note that Expo Go, the app you download from the App Store or Google Play Store will not have access to any custom native code you add to your project. When you make custom build-time changes, you'll need to rebuild your app to see those changes, either locally with the Expo CLI run commands (`npx expo run:ios` and `npx expo run:android`) or in the cloud with `eas build` (preferred for production builds) -- both of which run `npx expo prebuild`.
+_Expo Prebuild_ allows for installing [libraries in the React Native ecosystem](https://reactnative.directory/), ([learn more](/workflow/using-libraries)). It's important to note that Expo Go, the app you download from the app stores will not have access to any custom native code you add to your project. When you make custom build-time changes, you'll need to rebuild your app to see those changes, either locally with the Expo CLI run commands (`npx expo run:ios` and `npx expo run:android`) or in the cloud with `eas build` (preferred for production builds) -- both of which run `npx expo prebuild`.
 
 ## Workflow comparison
 
-| Feature                                                      | Managed workflow | Bare workflow                                                           |
-| ------------------------------------------------------------ | ---------------- | ----------------------------------------------------------------------- |
-| Develop apps with **only** JavaScript/TypeScript             | <YesIcon />      | <NoIcon />                                                              |
-| Use Expo build service to create your iOS and Android builds | <YesIcon />      | <YesIcon /> ([with EAS Build](/build/introduction))                     |
-| Use Expo's push notification service                         | <YesIcon />      | <YesIcon />                                                             |
-| Use Expo's updates features                                  | <YesIcon />      | <YesIcon />                                                             |
-| Develop with the Expo Go app                                 | <YesIcon />      | <YesIcon /> (if you follow [these guidelines](/bare/using-expo-client)) |
-| Access to Expo SDK                                           | <YesIcon />      | <YesIcon />                                                             |
-| Add custom native code and manage native dependencies        | <YesIcon />      | <YesIcon />                                                             |
+| Feature                                                      | <YesIcon /> With Prebuild | <NoIcon /> Without Prebuild                                             |
+| ------------------------------------------------------------ | ------------------------- | ----------------------------------------------------------------------- |
+| Develop apps with **only** JavaScript/TypeScript             | <YesIcon />               | <NoIcon />                                                              |
+| Use Expo build service to create your iOS and Android builds | <YesIcon />               | <YesIcon /> ([with EAS Build](/build/introduction))                     |
+| Use Expo's push notification service                         | <YesIcon />               | <YesIcon />                                                             |
+| Use Expo's updates features                                  | <YesIcon />               | <YesIcon />                                                             |
+| Develop with the Expo Go app                                 | <YesIcon />               | <YesIcon /> (if you follow [these guidelines](/bare/using-expo-client)) |
+| Access to Expo SDK                                           | <YesIcon />               | <YesIcon />                                                             |
+| Add custom native code and manage native dependencies        | <YesIcon />               | <YesIcon />                                                             |
 
-<!-- | Develop in Xcode and Android Studio                          | <NoIcon />       | <YesIcon />                                                             | -->
+## Deprecated term
 
-## Which workflow is right for me?
-
-- **Expo never locks you in**, you can generate the native iOS and Android projects from your managed project at any time you like. You can use one library or service or many, in managed or bare projects.
-- **If you are new to mobile development** or **new to development in general** we recommend that you use the managed workflow. There is a huge amount of complexity that comes along with the native development toolchain and the managed workflow allows you to deal with that complexity only when absolutely necessary.
-- **If you are more experienced** it also doesn't hurt to start every new project with the managed workflow and only generate the native projects when needed. Managed workflow is about native automation and easy upgrades, the benefits are broadly applicable to every native app.
-
-In summary, always start with the managed workflow, drop down to bare workflow at any time to develop new complex features, and work your way back into the managed workflow to ensure easy upgrades and reliable native projects.
-
-<!-- TODO: Maybe move this to another page. -->
-
-## Legacy Workflow Definitions
-
-> TL;DR: Everything changed when we released: `npx expo prebuild`, Expo Config Plugins, and EAS Build.
+> TL;DR: "Managed workflow" is now just referred to as "Using Expo Prebuild".
 
 Up until SDK 41, the workflows had a completely different set of limitations and developers had to choose which set of features they wanted to use.
 
-The term "managed workflow" used to refer to a project that could only be used in Expo Go, had no ability to add custom native code, and was the only way to use Expo's classic services. The term "bare workflow" referred to a project that couldn't make use of Expo services (notifications, updates, builds, submissions), and had a less smooth developer experience -- often it made sense to simply 'not use Expo'. The most fatal issue with the legacy workflows is that you couldn't switch between them as seamlessly as you can now. You would "eject" from the managed workflow to the bare workflow by running `expo eject` (formerly `exp detach`), a now deprecated command that would perform some archaic native code generation (imagine `npx expo prebuild` if it was completely broken).
+The term "managed workflow" used to refer to a project that could only be used in Expo Go, had no ability to add custom native code, and was the only way to use Expo's classic services. The term "bare workflow" referred to a project that couldn't make use of Expo services (notifications, updates, builds, submissions), and had a less smooth developer experience -- often it made sense to simply 'not use Expo'.
 
-For returning users, we are very pleased to say:
+The most fatal issue with the legacy workflows is that you couldn't switch between them as seamlessly as you can now. You would "eject" from the managed workflow to the bare workflow by running `expo eject` (formerly `exp detach`), a now deprecated command that would perform some archaic native code generation that often didn't work.
 
-- `expo eject` is deprecated and removed from Expo CLI, fully replaced by `npx expo prebuild`.
-- Expo's NEW _Managed Workflow_ supports any custom native code.
-- Expo's NEW _Bare Workflow_ is a first-class solution that supports all Expo services, libraries, and the Expo CLI.
+With _Expo Prebuild_ you can enjoy all of the features of React Native and scale massive projects with ease!
 
 ## Up next
 
