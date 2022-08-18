@@ -261,10 +261,5 @@ export class BarCodeScanner extends React.Component<BarCodeScannerProps> {
 }
 
 export { PermissionResponse, PermissionStatus, PermissionHookOptions };
-export const {
-  Constants,
-  getPermissionsAsync,
-  requestPermissionsAsync,
-  usePermissions,
-  scanFromURLAsync,
-} = BarCodeScanner;
+export const { Constants, getPermissionsAsync, requestPermissionsAsync, scanFromURLAsync } =
+  BarCodeScanner;

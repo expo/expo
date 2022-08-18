@@ -7205,11 +7205,11 @@ Same as
       >
         <span
           class="css-120d683"
-          id="usepermissions"
+          id="usepermissionsoptions"
         />
         <a
           class="css-8y2kaf"
-          href="#usepermissions"
+          href="#usepermissionsoptions"
         >
           <span
             class="css-6n7j50"
@@ -7217,7 +7217,7 @@ Same as
             <code
               class="inline css-1lmmqpm-InlineCode"
             >
-              usePermissions
+              usePermissions(options)
             </code>
           </span>
           <span
@@ -7334,6 +7334,89 @@ Same as
       Create a new permission hook with the permission methods built-in.
 This can be used to quickly create specific permission hooks in every module.
     </p>
+    <div
+      class="css-152mimm-CommentTextBlock"
+    >
+      <h4
+        class="css-crowgh-H4"
+        data-heading="true"
+      >
+        Example
+      </h4>
+    </div>
+    <pre>
+      <pre
+        class="css-1kjja91"
+        data-text="true"
+      >
+        <code
+          class="css-tqrxwq"
+        >
+          <span
+            class="token keyword"
+          >
+            const
+          </span>
+           
+          <span
+            class="token punctuation"
+          >
+            [
+          </span>
+          status
+          <span
+            class="token punctuation"
+          >
+            ,
+          </span>
+           requestPermission
+          <span
+            class="token punctuation"
+          >
+            ]
+          </span>
+           
+          <span
+            class="token operator"
+          >
+            =
+          </span>
+           
+          <span
+            class="token maybe-class-name"
+          >
+            BarCodeScanner
+          </span>
+          <span
+            class="token punctuation"
+          >
+            .
+          </span>
+          <span
+            class="token method function property-access"
+          >
+            usePermissions
+          </span>
+          <span
+            class="token punctuation"
+          >
+            (
+          </span>
+          <span
+            class="token punctuation"
+          >
+            )
+          </span>
+          <span
+            class="token punctuation"
+          >
+            ;
+          </span>
+          
+
+        </code>
+      </pre>
+    </pre>
     <div
       class="css-1remai5-APISectionMethods"
     >
@@ -8344,19 +8427,7 @@ code.
       class="css-1bjvyhe-P"
       data-text="true"
     >
-      An object obtained by 
-      <code
-        class="inline css-16lpqq8-InlineCode"
-      >
-        getPermissionsAsync
-      </code>
-       and 
-      <code
-        class="inline css-16lpqq8-InlineCode"
-      >
-        requestPermissionsAsync
-      </code>
-       functions.
+      An object obtained by permissions get and request functions.
     </p>
     <div
       class="css-1smmlx-APISectionInterfaces"
