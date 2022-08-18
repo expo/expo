@@ -1,49 +1,35 @@
 package expo.modules.devlauncher.logs
 
 import android.net.Uri
-import android.os.Build
-import expo.modules.devlauncher.helpers.await
-import expo.modules.devlauncher.helpers.post
-import kotlinx.coroutines.runBlocking
-import okhttp3.MediaType
 import okhttp3.OkHttpClient
-import okhttp3.RequestBody
+import okhttp3.Request
+import okhttp3.Response
+import okhttp3.WebSocket
+import okhttp3.WebSocketListener
 
-class DevLauncherRemoteLogManager(private val httpClient: OkHttpClient, private val url: Uri) {
+class DevLauncherRemoteLogManager(private val httpClient: OkHttpClient, private val url: Uri) : WebSocketListener() {
   private val batch: MutableList<DevLauncherRemoteLog> = mutableListOf()
 
   fun deferError(throwable: Throwable) {
-    addToBatch(
-      DevLauncherRemoteLog(
-        DevLauncherExceptionRemoteLogBody(throwable)
-      )
-    )
+    batch.add(DevLauncherRemoteLog(throwable))
   }
 
   fun deferError(message: String) {
-    addToBatch(
-      DevLauncherRemoteLog(
-        DevLauncherSimpleRemoteLogBody(message)
-      )
-    )
+    batch.add(DevLauncherRemoteLog(message))
   }
 
-  private fun addToBatch(log: DevLauncherRemoteLog) {
-    batch.add(log)
+  fun sendViaWebSocket() {
+    val request = Request.Builder().url(url.toString()).build()
+    httpClient.newWebSocket(request, this)
+
+    httpClient.dispatcher().executorService().shutdown()
   }
 
-  fun sendSync() = runBlocking {
-    val content = batch.joinToString(separator = ",") { it.toJson() }
-    val requestBody = RequestBody.create(MediaType.get("application/json"), "[$content]")
-
-    val postRequest = post(
-      url,
-      requestBody,
-      "Device-Id" to Build.ID,
-      "Device-Name" to Build.DISPLAY
-    )
-    postRequest.await(httpClient)
-
+  override fun onOpen(webSocket: WebSocket, response: Response) {
+    batch.forEach {
+      webSocket.send(it.toJson())
+    }
+    webSocket.close(1000, null)
     batch.clear()
   }
 }
