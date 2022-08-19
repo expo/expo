@@ -6,17 +6,19 @@ sidebar_title: Running E2E tests
 import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
 
+> **Warning**: EAS Build support for E2E testing is in a _very early_ state. The intention of this guide is to explain how you can run E2E tests on the service today, without all of the affordances that we plan to build in the future. This guide will evolve over time as support for testing workflows in EAS Build improves.
+
+> **Android not yet supported**: EAS Build does not yet support running tests on an Android Emulator — this will be coming soon.
+
 With EAS Build, you can build a workflow for running E2E tests for your application. In this guide, you will learn how to use one of the most popular libraries ([Detox](https://wix.github.io/Detox)) to do that.
 
-> This guide assumes that you have a **Bare Workflow** project.
-
-> **Warning**: Currently, EAS Build does not support running tests on Android Emulator. More information on this is comming soon.
+This guide explains how to run E2E tests with Detox in a bare workflow project. You can use [@config-plugins/detox](https://github.com/expo/config-plugins/tree/main/packages/detox) for a managed project, but you may need to adjust some of the instructions in this guide in order to do so.
 
 ## Running iOS tests
 
 ### 0. Initialize a new Bare Workflow project
 
-Let's start by initializing a fresh Expo project and running `expo prebuild` to convert it to a Bare Workflow project.
+Let's start by initializing a new Expo project and running `expo prebuild` to generate the native projects.
 
 <Terminal cmd={[
 '# Initialize a new project',
@@ -29,7 +31,7 @@ Let's start by initializing a fresh Expo project and running `expo prebuild` to 
 
 ### 1. Make home screen interactive
 
-The first step to writing E2E tests is to make our app interactive. Let's add a button and handle the press event to display some text.
+The first step to writing E2E tests is to have something to test - we have an empty app, so let's make our app interactive. We can add a button and display some new text when it's pressed.
 Later, we're going to write a test that's going to tap the button and check whether the text has been displayed.
 
 <img src="/static/images/eas-build/tests/01-click-me.png" style={{maxWidth: "50%" }} />
