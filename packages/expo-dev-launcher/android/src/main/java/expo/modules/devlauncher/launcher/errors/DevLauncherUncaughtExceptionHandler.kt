@@ -125,7 +125,6 @@ class DevLauncherUncaughtExceptionHandler(
     return Uri
       .parse(controller.appHost.reactInstanceManager.devSupportManager.sourceUrl)
       .buildUpon()
-      .scheme("http")
       .path("hot")
       .clearQuery()
       .build()
