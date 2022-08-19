@@ -20,6 +20,7 @@ import expo.modules.interfaces.facedetector.FaceDetectorInterface
 import expo.modules.camera.events.FaceDetectionErrorEvent
 import expo.modules.camera.events.PictureSavedEvent
 import expo.modules.camera.events.BarCodeScannedEvent
+import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
@@ -152,9 +153,9 @@ object CameraViewHelper {
     baseExif.saveAttributes()
   }
 
-  fun generateSimulatorPhoto(width: Int, height: Int): Bitmap {
-    val fakePhoto = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
-    val canvas = Canvas(fakePhoto)
+  fun generateSimulatorPhoto(width: Int, height: Int): ByteArray {
+    val fakePhotoBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+    val canvas = Canvas(fakePhotoBitmap)
     val background = Paint().apply {
       color = Color.BLACK
     }
@@ -166,6 +167,10 @@ object CameraViewHelper {
     val calendar = Calendar.getInstance()
     val simpleDateFormat = SimpleDateFormat("dd.MM.yy HH:mm:ss", Locale.US)
     canvas.drawText(simpleDateFormat.format(calendar.time), width * 0.1f, height * 0.9f, textPaint)
-    return fakePhoto
+
+    val stream = ByteArrayOutputStream()
+    fakePhotoBitmap.compress(Bitmap.CompressFormat.PNG, 90, stream)
+    val fakePhotoByteArray = stream.toByteArray()
+    return fakePhotoByteArray
   }
 }

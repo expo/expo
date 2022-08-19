@@ -44,25 +44,12 @@ private const val ID_KEY = "id"
 private const val DEFAULT_QUALITY = 1
 
 class ResolveTakenPictureAsyncTask(
+  private var imageData: ByteArray,
   private var promise: Promise,
   private var options: Map<String, Any>,
   private val directory: File,
   private var pictureSavedDelegate: PictureSavedDelegate
 ) : AsyncTask<Void?, Void?, Bundle?>() {
-  private var imageData: ByteArray? = null
-  private var bitmap: Bitmap? = null
-
-  constructor(imageData: ByteArray?, promise: Promise, options: Map<String, Any>, directory: File, delegate: PictureSavedDelegate) : this(
-    promise, options, directory, delegate
-  ) {
-    this.imageData = imageData
-  }
-
-  constructor(bitmap: Bitmap?, promise: Promise, options: Map<String, Any>, directory: File, delegate: PictureSavedDelegate) : this(
-    promise, options, directory, delegate
-  ) {
-    this.bitmap = bitmap
-  }
 
   private val quality: Int
     get() = options[QUALITY_KEY]?.let {
@@ -72,12 +59,13 @@ class ResolveTakenPictureAsyncTask(
 
   override fun doInBackground(vararg params: Void?): Bundle? {
     // handle SkipProcessing
-    if (imageData != null && isOptionEnabled(SKIP_PROCESSING_KEY)) {
+    if (isOptionEnabled(SKIP_PROCESSING_KEY)) {
       return handleSkipProcessing()
     }
-    if (bitmap == null) {
-      bitmap = imageData?.let { BitmapFactory.decodeByteArray(imageData, 0, it.size) }
-    }
+
+    var bitmap = BitmapFactory.decodeByteArray(imageData, 0, imageData.size)
+
+    // set, read, and apply EXIF data
     try {
       ByteArrayInputStream(imageData).use { inputStream ->
         val response = Bundle()
@@ -97,9 +85,7 @@ class ResolveTakenPictureAsyncTask(
 
         // Rotate the bitmap to the proper orientation if needed
         if (orientation != ExifInterface.ORIENTATION_UNDEFINED) {
-          bitmap = bitmap?.let {
-            rotateBitmap(it, getImageRotation(orientation))
-          }
+          bitmap = rotateBitmap(bitmap, getImageRotation(orientation))
         }
 
         // Write Exif data to the response if requested
