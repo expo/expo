@@ -226,4 +226,4 @@ public:
 private:
   std::vector<std::shared_ptr<FrontendConverter>> converters;
 };
-}
+} // namespace expo

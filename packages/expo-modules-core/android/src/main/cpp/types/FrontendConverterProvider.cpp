@@ -8,7 +8,7 @@ std::shared_ptr<FrontendConverterProvider> FrontendConverterProvider::instance()
   return singleton;
 }
 
-void FrontendConverterProvider::createsConverters() {
+void FrontendConverterProvider::createConverters() {
 #define RegisterConverter(type, clazz)  simpleConverters.insert({type, std::make_shared<clazz>()})
   RegisterConverter(CppType::NONE, UnknownFrontendConverter);
   RegisterConverter(CppType::INT, IntegerFrontendConverter);
@@ -62,4 +62,4 @@ std::shared_ptr<FrontendConverter> FrontendConverterProvider::obtainConverter(
 
   return result->second;
 }
-}
+} // namespace expo

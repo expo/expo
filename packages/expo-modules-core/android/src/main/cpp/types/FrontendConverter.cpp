@@ -241,4 +241,4 @@ jobject PolyFrontendConverter::convert(
       "Cannot convert '" + stringRepresentation + "' to a Kotlin type.").get()
   );
 }
-}
+} // namespace expo

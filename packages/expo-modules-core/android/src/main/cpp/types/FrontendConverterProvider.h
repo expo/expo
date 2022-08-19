@@ -27,7 +27,7 @@ public:
   /**
    * Creates converters.
    */
-  void createsConverters();
+  void createConverters();
 
   /**
    * Obtains a converter for an expected type.
@@ -39,4 +39,4 @@ private:
 
   std::unordered_map<CppType, std::shared_ptr<FrontendConverter>> simpleConverters;
 };
-}
+} // namespace expo
