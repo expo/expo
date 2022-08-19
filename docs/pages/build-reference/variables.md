@@ -91,7 +91,7 @@ To create **app-specific secrets**, navigate to [the "Secrets" tab in your proje
 To create a new secret, run `eas secret:create`
 
 ```
-> eas secret:create project SECRET_NAME secretvalue
+> eas secret:create --scope project --name SECRET_NAME --value secretvalue
 ✔ Linked to project @fiberjw/goodweebs
 ✔ You're inside the project directory. Would you like to use fiberjw account? … yes
 ✔ ️Created a new secret SECRET_NAME on project @fiberjw/goodweebs.
