@@ -1,10 +1,10 @@
 ---
-title: EAS Build hooks
+title: Build lifecycle hooks
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
 
-There are five EAS Build-specific npm hooks that you can set in your **package.json**. See the [Android build process](android-builds.md) and [iOS build process](ios-builds.md) docs to get a better understanding about the internals of the build process.
+There are five EAS Build lifecycle npm hooks that you can set in your **package.json**. See the [Android build process](android-builds.md) and [iOS build process](ios-builds.md) docs to get a better understanding about the internals of the build process.
 
 - `eas-build-pre-install` - executed before EAS Build runs `yarn install`.
 - `eas-build-post-install` - the behavior depends on the platform and project type:
