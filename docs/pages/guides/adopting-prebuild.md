@@ -120,7 +120,7 @@ Prebuild is the tip of the automation iceberg, here are some features you can ad
 - [EAS Update](/build/updates): Send over-the-air updates instantly.
 - [Expo for web](/workflow/web): Run your app in the browser.
 - [Expo Dev Client][dev-client]: Create your own personal "Expo Go" type app around your native runtime.
-- [Sweet API][expo-modules-core]: Write modules with Swift and Kotlin. This is automatically supported when using `npx expo prebuild`.
+- [Expo native module API][expo-modules-core]: Write modules with Swift and Kotlin. This is automatically supported when using `npx expo prebuild`.
 
 [vs-code-expo]: https://marketplace.visualstudio.com/items?itemName=byCedric.vscode-expo
 [expo-modules-core]: /modules/module-api
