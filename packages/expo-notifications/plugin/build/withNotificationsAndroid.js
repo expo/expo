@@ -65,13 +65,11 @@ const withNotificationSounds = (config, { sounds }) => {
 };
 exports.withNotificationSounds = withNotificationSounds;
 function getNotificationIcon(config) {
-    var _a;
-    return ((_a = config.notification) === null || _a === void 0 ? void 0 : _a.icon) || null;
+    return config.notification?.icon || null;
 }
 exports.getNotificationIcon = getNotificationIcon;
 function getNotificationColor(config) {
-    var _a;
-    return ((_a = config.notification) === null || _a === void 0 ? void 0 : _a.color) || null;
+    return config.notification?.color || null;
 }
 exports.getNotificationColor = getNotificationColor;
 function setNotificationIconColor(color, colors) {

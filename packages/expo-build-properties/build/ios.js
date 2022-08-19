@@ -6,12 +6,11 @@ const { createBuildPodfilePropsConfigPlugin } = config_plugins_1.IOSConfig.Build
 exports.withIosBuildProperties = createBuildPodfilePropsConfigPlugin([
     {
         propName: 'ios.useFrameworks',
-        propValueGetter: (config) => { var _a; return (_a = config.ios) === null || _a === void 0 ? void 0 : _a.useFrameworks; },
+        propValueGetter: (config) => config.ios?.useFrameworks,
     },
 ], 'withIosBuildProperties');
 const withIosDeploymentTarget = (config, props) => {
-    var _a;
-    const deploymentTarget = (_a = props.ios) === null || _a === void 0 ? void 0 : _a.deploymentTarget;
+    const deploymentTarget = props.ios?.deploymentTarget;
     if (!deploymentTarget) {
         return config;
     }
@@ -37,7 +36,7 @@ function updateDeploymentTargetXcodeProject(project, deploymentTarget) {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         for (const [_, configurations] of config_plugins_1.IOSConfig.XcodeUtils.getBuildConfigurationsForListId(project, buildConfigListId)) {
             const { buildSettings } = configurations;
-            if (buildSettings === null || buildSettings === void 0 ? void 0 : buildSettings.IPHONEOS_DEPLOYMENT_TARGET) {
+            if (buildSettings?.IPHONEOS_DEPLOYMENT_TARGET) {
                 buildSettings.IPHONEOS_DEPLOYMENT_TARGET = deploymentTarget;
             }
         }
@@ -47,6 +46,6 @@ function updateDeploymentTargetXcodeProject(project, deploymentTarget) {
 const withIosDeploymentTargetPodfile = createBuildPodfilePropsConfigPlugin([
     {
         propName: 'ios.deploymentTarget',
-        propValueGetter: (config) => { var _a; return (_a = config.ios) === null || _a === void 0 ? void 0 : _a.deploymentTarget; },
+        propValueGetter: (config) => config.ios?.deploymentTarget,
     },
 ], 'withIosDeploymentTargetPodfile');

@@ -153,7 +153,7 @@ const DEV_LAUNCHER_INITIALIZE_REACT_NATIVE_APP_FUNCTION_DEFINITION = (viewContro
     rootView.backgroundColor = [UIColor whiteColor];
   }
 
-  UIViewController *rootViewController = ${viewControllerInit !== null && viewControllerInit !== void 0 ? viewControllerInit : '[UIViewController new]'};
+  UIViewController *rootViewController = ${viewControllerInit ?? '[UIViewController new]'};
   rootViewController.view = rootView;
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];

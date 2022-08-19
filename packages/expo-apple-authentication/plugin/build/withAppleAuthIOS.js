@@ -11,9 +11,8 @@ const config_plugins_1 = require("@expo/config-plugins");
  */
 const withIOSMixedLocales = (config) => {
     return (0, config_plugins_1.withInfoPlist)(config, (config) => {
-        var _a;
         config.modResults.CFBundleAllowMixedLocalizations =
-            (_a = config.modResults.CFBundleAllowMixedLocalizations) !== null && _a !== void 0 ? _a : true;
+            config.modResults.CFBundleAllowMixedLocalizations ?? true;
         return config;
     });
 };
