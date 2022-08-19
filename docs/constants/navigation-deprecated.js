@@ -303,6 +303,7 @@ const eas = [
         makePage('build-reference/ios-capabilities.md'),
         makePage('build-reference/app-extensions.md'),
         makePage('build-reference/app-versions.md'),
+        makePage('build-reference/e2e-tests.md'),
       ]),
     ],
     { expanded: true }
