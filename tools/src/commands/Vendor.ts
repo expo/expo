@@ -30,7 +30,7 @@ import { MessageType, Print } from '../vendoring/devmenu/steps/Print';
 import { RemoveFiles } from '../vendoring/devmenu/steps/RemoveFiles';
 import { toRepoPath } from '../vendoring/devmenu/utils';
 
-async function getRequierdIOSVersion(): Promise<string> {
+async function getRequierdIosVersion(): Promise<string> {
   const devMenuPodspec = await readPodspecAsync(
     toRepoPath('packages/expo-dev-menu/expo-dev-menu.podspec')
   );
@@ -452,7 +452,7 @@ function getSafeAreaConfig() {
       new GenerateJsonFromPodspec({
         from: 'react-native-safe-area-context.podspec',
         saveTo: `${destination}/react-native-safe-area-context.podspec.json`,
-        transfrom: async (podspec) => ({...podspec, name: 'dev-menu-react-native-safe-area-context', platforms: {'ios': await getRequierdIOSVersion()}})
+        transform: async (podspec) => ({...podspec, name: 'dev-menu-react-native-safe-area-context', platforms: {'ios': await getRequierdIosVersion()}})
       })
   );
 

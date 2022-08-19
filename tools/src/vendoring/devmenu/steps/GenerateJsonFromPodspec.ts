@@ -9,19 +9,19 @@ import { Task } from './Task';
 type GenerateJsonFromPodspecSettings = {
   from: string;
   saveTo: string;
-  transfrom: (map: Record<string, any>) => Promise<Record<string, any>>;
+  transform: (map: Record<string, any>) => Promise<Record<string, any>>;
 };
 
 export class GenerateJsonFromPodspec extends Task {
   protected readonly from: string;
   protected readonly saveTo: string;
-  protected readonly transfrom: (map: Record<string, any>) => Promise<Record<string, any>>;
+  protected readonly transform: (map: Record<string, any>) => Promise<Record<string, any>>;
 
-  constructor({ from, saveTo, transfrom }: GenerateJsonFromPodspecSettings) {
+  constructor({ from, saveTo, transform }: GenerateJsonFromPodspecSettings) {
     super();
     this.from = from;
     this.saveTo = toRepoPath(saveTo);
-    this.transfrom = transfrom;
+    this.transform = transform;
   }
 
   async execute() {
@@ -31,7 +31,7 @@ export class GenerateJsonFromPodspec extends Task {
       `➕ generating podspec from ${chalk.green('<workingDirectory>')}/${chalk.green(this.from)}`
     );
     const podspec = await readPodspecAsync(path.join(workDirectory, this.from));
-    const transformedPodspec = await this.transfrom(podspec);
+    const transformedPodspec = await this.transform(podspec);
     return await fs.writeFile(this.saveTo, JSON.stringify(transformedPodspec, null, 2));
   }
 }
