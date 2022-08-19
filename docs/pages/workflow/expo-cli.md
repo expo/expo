@@ -5,8 +5,6 @@ maxHeadingDepth: 4
 
 import { Terminal } from '~/ui/components/Snippet';
 
-> This documentation refers to the Local Expo CLI (SDK 46 and greater). For information on legacy Expo CLI, see [legacy Global Expo CLI](/workflow/legacy-expo-cli/).
-
 The Expo CLI enables you to do the following:
 
 - Start a server for developing your app: `npx expo start`.
@@ -16,6 +14,10 @@ The Expo CLI enables you to do the following:
 - Install npm packages that work with the version of `expo` in your project: `npx expo install package-name`.
 - Log in to your Expo account to enable sandboxed features like local storage in the Expo Go app: `npx expo login`, `logout`, `register`, `whoami`.
 - Evaluate the Expo config (**app.json**, or **app.config.js**): `npx expo config`.
+
+> This documentation refers to the Local Expo CLI (SDK 46 and greater). For information on legacy Expo CLI, see [legacy Global Expo CLI](/archived/expo-cli/).
+
+<hr />
 
 To view a list of available commands in Expo CLI, run the following in your project:
 
