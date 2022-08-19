@@ -41,10 +41,20 @@ async function openDatabase(pathToDatabaseFile: string): Promise<SQLite.WebSQLDa
   if (!(await FileSystem.getInfoAsync(FileSystem.documentDirectory + 'SQLite')).exists) {
     await FileSystem.makeDirectoryAsync(FileSystem.documentDirectory + 'SQLite');
   }
-  await FileSystem.downloadAsync(
-    Asset.fromModule(require(pathToDatabaseFile)).uri,
-    FileSystem.documentDirectory + 'SQLite/myDatabaseName.db'
-  );
+  
+  const file = require(pathToDatabaseFile);
+  const dbURI = Asset.fromModule(file).uri;
+  
+  // Support Debug mode request(http://) and device request(file://) when load an asset
+  if (dbURI.includes("http")) {
+    await FileSystem.downloadAsync(dbURI, FileSystem.documentDirectory + 'SQLite/myDatabaseName.db');
+  } else {
+    await FileSystem.copyAsync({
+      from: dbURI,
+      to: FileSystem.documentDirectory + 'SQLite/myDatabaseName.db',
+    });
+  }
+    
   return SQLite.openDatabase('myDatabaseName.db');
 }
 ```
