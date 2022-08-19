@@ -20,7 +20,7 @@ namespace expo {
 class FrontendConverterProvider {
 public:
   /**
-   * Gets a singleton instance
+   * Gets a singleton instance.
    */
   static std::shared_ptr<FrontendConverterProvider> instance();
 

@@ -12,9 +12,9 @@ namespace expo {
 class JSIInteropModuleRegistry;
 
 /**
- * A base interface for all frontend converter classes - converters that cast jsi values into jni objects.
- * Right now, we have two step arguments conversion. Firstly, we unwrapped jsi value into selected jni objects (see CppType).
- * Then, we do more sophisticated conversion like creating record or mapping into enums.
+ * A base interface for all frontend converter classes - converters that cast jsi values into JNI objects.
+ * Right now, we have two-step arguments conversion. Firstly, we unwrapped the JSI value into selected JNI objects (see CppType).
+ * Then, we do a more sophisticated conversion like creating records or mapping into enums.
  * The second step lives in the Kotlin codebase.
  */
 class FrontendConverter {
@@ -27,7 +27,7 @@ public:
   virtual bool canConvert(jsi::Runtime &rt, const jsi::Value &value) const = 0;
 
   /**
-   * Converts the provided value .
+   * Converts the provided value.
    */
   virtual jobject convert(
     jsi::Runtime &rt,
@@ -38,7 +38,7 @@ public:
 };
 
 /**
- * Converter from js number to [java.lang.Integer]
+ * Converter from js number to [java.lang.Integer].
  */
 class IntegerFrontendConverter : public FrontendConverter {
 public:
@@ -53,7 +53,7 @@ public:
 };
 
 /**
- * Converter from js number to [java.lang.Float]
+ * Converter from js number to [java.lang.Float].
  */
 class FloatFrontendConverter : public FrontendConverter {
 public:
@@ -68,7 +68,7 @@ public:
 };
 
 /**
- * Converter from js bool to [java.lang.Boolean]
+ * Converter from js bool to [java.lang.Boolean].
  */
 class BooleanFrontendConverter : public FrontendConverter {
 public:
@@ -83,7 +83,7 @@ public:
 };
 
 /**
- * Converter from js number to [java.lang.Double]
+ * Converter from js number to [java.lang.Double].
  */
 class DoubleFrontendConverter : public FrontendConverter {
 public:
@@ -98,7 +98,7 @@ public:
 };
 
 /**
- * Converter from js string to [java.lang.String]
+ * Converter from js string to [java.lang.String].
  */
 class StringFrontendConverter : public FrontendConverter {
 public:
@@ -113,7 +113,7 @@ public:
 };
 
 /**
- * Converter from js array to [com.facebook.react.bridge.ReadableNativeArray]
+ * Converter from js array to [com.facebook.react.bridge.ReadableNativeArray].
  */
 class ReadableNativeArrayFrontendConverter : public FrontendConverter {
 public:
@@ -128,7 +128,7 @@ public:
 };
 
 /**
- * Converter from js object to [com.facebook.react.bridge.ReadableNativeMap]
+ * Converter from js object to [com.facebook.react.bridge.ReadableNativeMap].
  */
 class ReadableNativeMapArrayFrontendConverter : public FrontendConverter {
 public:
@@ -143,7 +143,7 @@ public:
 };
 
 /**
- * Converter from js type array to [expo.modules.kotlin.jni.JavaScriptTypedArray]
+ * Converter from js type array to [expo.modules.kotlin.jni.JavaScriptTypedArray].
  */
 class TypedArrayFrontendConverter : public FrontendConverter {
 public:
@@ -158,7 +158,7 @@ public:
 };
 
 /**
- * Converter from any js value to [expo.modules.kotlin.jni.JavaScriptValue]
+ * Converter from any js value to [expo.modules.kotlin.jni.JavaScriptValue].
  */
 class JavaScriptValueFrontendConverter : public FrontendConverter {
 public:
@@ -173,7 +173,7 @@ public:
 };
 
 /**
- * Converter from js object to [expo.modules.kotlin.jni.JavaScriptObject]
+ * Converter from js object to [expo.modules.kotlin.jni.JavaScriptObject].
  */
 class JavaScriptObjectFrontendConverter : public FrontendConverter {
 public:
@@ -205,7 +205,7 @@ public:
 };
 
 /**
- * Same types likes enums can be represented by multiply js types.
+ * Same types like enums can be represented by multiply js types.
  * That's why we have a converter that can combine multiple converters into one.
  *
  * For instance, enum classes will be represented as a PolyFrontendConverter({StringFrontendConverter, IntegerFrontendConverter})

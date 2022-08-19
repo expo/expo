@@ -234,7 +234,7 @@ jobject PolyFrontendConverter::convert(
       return converter->convert(rt, env, moduleRegistry, value);
     }
   }
-  // That shouldn't happened.
+  // That shouldn't happen.
   auto stringRepresentation = value.toString(rt).utf8(rt);
   jni::throwNewJavaException(
     UnexpectedException::create(
