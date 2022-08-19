@@ -1,5 +1,5 @@
 ---
-title: Legacy Global Expo CLI
+title: Global Expo CLI
 maxHeadingDepth: 4
 ---
 
