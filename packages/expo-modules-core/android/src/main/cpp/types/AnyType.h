@@ -20,7 +20,7 @@ public:
   AnyType(jni::local_ref<ExpectedType> expectedType);
 
   /*
-   * A instance of convert that should be use to convert from the jsi to the expected jni type.
+   * An instance of convert that should be used to convert from the jsi to the expected JNI type.
    */
   std::shared_ptr<FrontendConverter> converter;
 };
