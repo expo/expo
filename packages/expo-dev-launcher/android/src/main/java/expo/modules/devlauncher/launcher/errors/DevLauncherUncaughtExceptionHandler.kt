@@ -80,9 +80,6 @@ class DevLauncherUncaughtExceptionHandler(
         return@schedule
       }
 
-      // Before crashing, gracefully close all websocket connections that are still active
-      DevLauncherRemoteLogManager.closeAll()
-
       // The error screen didn't appear in time.
       // We fallback to the default exception handler.
       if (defaultUncaughtHandler != null) {
@@ -113,11 +110,12 @@ class DevLauncherUncaughtExceptionHandler(
 
     try {
       val url = getWebSocketUrl()
-      DevLauncherRemoteLogManager.forUrl(url)
+      val remoteLogManager = DevLauncherRemoteLogManager(DevLauncherKoinContext.app.koin.get(), url)
         .apply {
-          sendError("Your app just crashed. See the error below.")
-          sendError(exception)
+          deferError("Your app just crashed. See the error below.")
+          deferError(exception)
         }
+      remoteLogManager.sendViaWebSocket()
     } catch (e: Throwable) {
       Log.e("DevLauncher", "Couldn't send an exception to bundler. $e", e)
     }
