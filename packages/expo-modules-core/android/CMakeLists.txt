@@ -189,4 +189,3 @@ else ()
             ${NEW_ARCHITECTURE_DEPENDENCIES}
     )
 endif ()
-
