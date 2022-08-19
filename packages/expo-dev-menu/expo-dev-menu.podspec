@@ -116,10 +116,16 @@ Pod::Spec.new do |s|
 
 
   s.subspec 'SafeAreaView' do |safearea|
-    safearea.source_files = 'vendored/react-native-safe-area-context/**/*.{h,m}'
-    safearea.private_header_files = 'vendored/react-native-safe-area-context/**/*.h'
+    if File.exist?("vendored/react-native-safe-area-context/dev-menu-react-native-safe-area-context.xcframework") && Gem::Version.new(Pod::VERSION) >= Gem::Version.new('1.10.0')
+      safearea.source_files = "vendored/react-native-safe-area-context/**/*.{h}"
+      safearea.vendored_frameworks = "vendored/react-native-safe-area-context/dev-menu-react-native-safe-area-context.xcframework"
+      safearea.private_header_files = 'vendored/react-native-safe-area-context/**/*.h'
+    else
+      safearea.source_files = 'vendored/react-native-safe-area-context/**/*.{h,m}'
+      safearea.private_header_files = 'vendored/react-native-safe-area-context/**/*.h'
 
-    safearea.compiler_flags = '-w -Xanalyzer -analyzer-disable-all-checks'
+      safearea.compiler_flags = '-w -Xanalyzer -analyzer-disable-all-checks'
+    end
   end
 
   s.subspec 'Vendored' do |vendored|
