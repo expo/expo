@@ -16,6 +16,7 @@ const PROPS_TO_IGNORE: Set<string> = new Set([
    */
   'hasOwnProperty',
   'isPrototypeOf',
+  'propertyIsEnumerable',
   'toJSON',
   'toLocaleString',
   'toString',
