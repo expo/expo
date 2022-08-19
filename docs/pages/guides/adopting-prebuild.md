@@ -4,9 +4,9 @@ title: Adopting Prebuild
 
 import { Terminal } from '~/ui/components/Snippet';
 
-There are many advantages of using Prebuild to manage your native projects. This guide will show you how to adopt prebuilding in a project that was bootstrapped with `npx react-native init`.
+There are many advantages of using Prebuild to manage your native projects. This guide will show you how to adopt prebuilding in a project that was bootstrapped with `npx react-native init`. The amount of time it will take to convert your project depends on the amount of custom native changes that you have made to your iOS and Android native projects — on a brand new project, this may take a minute or two, and on a large project it could be much longer.
 
-> **Note:** Adopting prebuild automatically adds support for developing modules with the [Sweet API][expo-modules-core] by linking `expo-modules-core` natively. You can also use any command from Expo CLI `npx expo` in your project.
+> **Note:** Adopting prebuild automatically adds support for developing modules with the [Expo native module API][expo-modules-core] by linking `expo-modules-core` natively. You can also use any command from Expo CLI `npx expo` in your project.
 
 ## Bootstrap a new project
 
@@ -105,7 +105,7 @@ These have better logging, auto code signing, better simulator handling, and the
 
 ## Re-applying native customizations
 
-If you're project already has a number of custom native modifications then you'll need to configure your Expo config (`app.json`) to reflect those native changes. There is currently no automated system for doing this. So instead we'll provide some pointers:
+If your project has any native modifications (changes to the `ios` or `android` directories, such as app icon configuration or splash screen) then you'll need to configure your Expo config (`app.json`) to reflect those native changes.
 
 - Check to see if your changes overlap with the built-in [Expo config fields](/versions/latest/config/app/). For example, if you have an app icon, be sure to define it as `expo.icon` in the `app.json` then re-run `npx expo prebuild`.
 - Look up if any of the packages you're using require an [Expo Config Plugin][config-plugins]. If a package in your project required additional changes inside of the `ios/` or `android/` folders, then you will probably need a Config Plugin. Some plugins can be automatically added by running `npx expo install` with all of the packages in your `package.json` `dependencies`. If a package requires a plugin but doesn't supply one, then you can try checking the community plugins at [`expo/config-plugins`](https://github.com/expo/config-plugins) to see if one already exists.
