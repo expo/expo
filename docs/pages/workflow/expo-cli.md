@@ -239,7 +239,7 @@ Native source code must be generated before a native app can compile. Expo CLI p
 
 **For more information:**
 
-- [Prebuild](/guides/prebuild).
+- [Prebuild](/guides/prebuild)
 - [Config plugins](/guides/config-plugins)
 - [Native modules API](/modules/module-api.md)
 
