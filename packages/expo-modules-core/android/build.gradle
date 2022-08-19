@@ -211,6 +211,7 @@ android {
       "**/libjsi.so",
       "**/libreactnativejni.so",
       "**/libreact_debug.so",
+      "**/libreact_nativemodule_core.so",
       "**/libreact_render_debug.so",
       "**/libreact_render_graphics.so",
       "**/libreact_render_core.so",
@@ -489,7 +490,7 @@ def packageReactNdkReleaseLibs = tasks.register("packageReactNdkReleaseLibs", Co
 afterEvaluate {
   extractAARHeaders.dependsOn(prepareThirdPartyNdkHeaders)
   extractJNIFiles.dependsOn(prepareThirdPartyNdkHeaders)
-  if (hasHermesProject && !prebuiltHermesCacheHit) {
+  if (FOR_HERMES && hasHermesProject && !prebuiltHermesCacheHit) {
     prepareHermes.dependsOn(":ReactAndroid:hermes-engine:assembleDebug")
   }
 
