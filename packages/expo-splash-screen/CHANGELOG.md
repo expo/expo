@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed `'SplashScreen.show' has already been called for given view controller.` warning being displayed when using `expo-dev-client` on iOS. ([#18682](https://github.com/expo/expo/pull/18682) by [@lukmccall](https://github.com/lukmccall))
+
 ### 💡 Others
 
 ## 0.16.1 — 2022-07-16
