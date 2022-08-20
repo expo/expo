@@ -32,19 +32,19 @@ Let's make our app support English and Japanese.
 
   ```tsx
   import * as Localization from 'expo-localization';
-  import i18n from 'i18n-js';
+  import { I18n } from 'i18n-js';
   // Set the key-value pairs for the different languages you want to support.
-  i18n.translations = {
+  const i18n = new I18n({
     en: { welcome: 'Hello' },
     ja: { welcome: 'こんにちは' },
-  };
+  });
   // Set the locale once at the beginning of your app.
   i18n.locale = Localization.locale;
   ```
 
 ### API Design Tips
 
-- You may want to refrain from localizing text for certain things, like names. In this case you can define them _once_ in your default language and reuse them with `i18n.fallbacks = true;`.
+- You may want to refrain from localizing text for certain things, like names. In this case you can define them _once_ in your default language and reuse them with `i18n.enableFallback = true;`.
 - When a user changes the device's language, your app will reset. This means you can set the language once, and don't need to update any of your React components to account for the language changes.
 - On iOS, you can add `"CFBundleAllowMixedLocalizations": true` to your `ios.infoPlist` property [in your app.json](/workflow/configuration/#ios) so that your app supports the retrieval of localized strings from frameworks.
   - This will allow you to translate app metadata, including the homescreen display name! Read [here](/distribution/app-stores#localizing-your-ios-app) for details.
@@ -57,24 +57,27 @@ Let's make our app support English and Japanese.
 import * as React from 'react';
 import { View, StyleSheet, Text } from 'react-native';
 import * as Localization from 'expo-localization';
-import i18n from 'i18n-js';
+import { I18n } from 'i18n-js';
 
 // Set the key-value pairs for the different languages you want to support.
-i18n.translations = {
+const translations = {
   en: { welcome: 'Hello', name: 'Charlie' },
   ja: { welcome: 'こんにちは' },
 };
-// Set the locale once at the beginning of your app.
-i18n.locale = Localization.locale;
-// When a value is missing from a language it'll fallback to another language with the key present.
-i18n.fallbacks = true;
+const i18n = new I18n(translations);
 
-export default App => {
+// Set the locale once at the beginning of your app.
+i18n.locale = 'ja';
+// When a value is missing from a language it'll fallback to another language with the key present.
+i18n.enableFallback = true;
+
+export default (App) => {
   return (
     <View style={styles.container}>
       <Text style={styles.text}>
         {i18n.t('welcome')} {i18n.t('name')}
       </Text>
+      <Text>Current locale: {i18n.locale}</Text>
     </View>
   );
 };
@@ -89,6 +92,7 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 20,
+    marginBottom: 16
   },
 });
 /* @end */
