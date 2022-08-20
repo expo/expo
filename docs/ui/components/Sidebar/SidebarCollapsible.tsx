@@ -63,7 +63,8 @@ export function SidebarCollapsible(props: Props) {
       <a css={titleStyle} onClick={toggleIsOpen}>
         <div css={chevronContainerStyle}>
           <ChevronDownIcon
-            size={iconSize.small}
+            size={iconSize.tiny}
+            color={theme.icon.secondary}
             css={[chevronStyle, !isOpen && chevronClosedStyle]}
           />
         </div>
@@ -80,11 +81,9 @@ const titleStyle = css({
   gap: spacing[1.5],
   position: 'relative',
   marginBottom: spacing[2],
-  marginLeft: -spacing[1.5],
-  marginRight: -spacing[1.5],
   userSelect: 'none',
   transition: '100ms',
-  padding: `${spacing[1.5]}px ${spacing[1.5]}px`,
+  padding: `${spacing[1.5]}px ${spacing[3]}px`,
 
   ':hover': {
     cursor: 'pointer',
@@ -93,6 +92,7 @@ const titleStyle = css({
     transition: '100ms',
   },
 });
+
 const chevronContainerStyle = css({
   backgroundColor: theme.background.default,
   border: `1px solid ${theme.border.default}`,
@@ -101,16 +101,14 @@ const chevronContainerStyle = css({
   alignItems: 'center',
   justifyContent: 'center',
   boxShadow: shadows.micro,
-  height: 18,
-  width: 18,
-
-  '[data-expo-theme="dark"] &': {
-    backgroundColor: theme.background.tertiary,
-  },
+  height: 20,
+  width: 20,
+  marginRight: spacing[1],
 });
 
 const chevronStyle = css({
   transition: '100ms ease transform',
+  transform: 'translateX(-0.5px)',
 });
 
 const chevronClosedStyle = css({

@@ -155,7 +155,6 @@ const STYLES_SCROLL_CONTAINER = css`
   /* Handle */
   ::-webkit-scrollbar-thumb {
     background: ${theme.background.tertiary};
-    border-radius: 10px;
   }
 
   /* Handle on hover */

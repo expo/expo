@@ -19,7 +19,7 @@ const STYLES_TITLE = css({
   position: 'relative',
   marginBottom: spacing[2],
   borderBottom: `1px solid ${theme.border.default}`,
-  marginLeft: spacing[6],
+  marginLeft: spacing[5] + spacing[0.5],
   marginRight: -spacing[5],
   paddingBottom: spacing[2],
   userSelect: 'none',

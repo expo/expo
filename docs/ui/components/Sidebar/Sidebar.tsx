@@ -8,7 +8,7 @@ import * as Constants from '~/constants/theme';
 import { NavigationType, NavigationRoute } from '~/types/common';
 
 const STYLES_SIDEBAR = css`
-  padding: 16px 20px 16px 16px;
+  padding: ${spacing[4]}px;
   width: 280px;
   position: relative;
   background-color: ${theme.background.default};

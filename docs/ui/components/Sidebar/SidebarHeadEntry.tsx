@@ -30,7 +30,7 @@ const entryContainerStyle = css({
   ...typography.fontSizes[14],
   minHeight: 38,
   lineHeight: '100%',
-  padding: `${spacing[2.5]}px ${spacing[3]}px`,
+  padding: `${spacing[2]}px ${spacing[3]}px`,
   color: theme.text.secondary,
   marginBottom: spacing[1.5],
   cursor: 'pointer',

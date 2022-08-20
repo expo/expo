@@ -2,36 +2,29 @@ import { css } from '@emotion/react';
 import {
   breakpoints,
   theme,
+  iconSize,
   spacing,
   typography,
+  ChevronRightIcon,
   Logo as LogoIcon,
   WordMarkLogo,
-  borderRadius,
 } from '@expo/styleguide';
 import React from 'react';
 
-import { H4, LinkBase } from '~/ui/components/Text';
+import { LinkBase } from '~/ui/components/Text';
 
 export const Logo = () => (
-  <div css={containerStyle}>
-    <LinkBase css={linkStyle} href="https://expo.dev">
+  <>
+    <LinkBase css={linkStyle} href="https://expo.dev" openInNewTab>
       <WordMarkLogo color={theme.text.default} css={[logoStyle, hideOnMobile]} />
       <LogoIcon color={theme.text.default} css={[logoStyle, showOnMobile]} />
     </LinkBase>
-    {/* <ChevronRightIcon size={iconSize.small} color={theme.icon.secondary} /> */}
+    <ChevronRightIcon size={iconSize.regular} css={chevronStyle} color={theme.icon.secondary} />
     <LinkBase css={linkStyle} href="/">
-      <H4 weight="medium" css={subtitleStyle}>
-        Docs
-      </H4>
+      <span css={subtitleStyle}>Docs</span>
     </LinkBase>
-  </div>
+  </>
 );
-
-const containerStyle = css({
-  display: 'flex',
-  alignItems: 'center',
-  gap: spacing[2.5],
-});
 
 const linkStyle = css`
   display: flex;
@@ -42,12 +35,20 @@ const linkStyle = css`
 `;
 
 const logoStyle = css`
-  height: ${spacing[5]}px;
+  height: 20px;
   margin-top: 1px;
 `;
 
+const chevronStyle = css`
+  margin: 0 ${spacing[2]}px;
+
+  @media screen and (max-width: ${breakpoints.medium}px) {
+    margin-left: ${spacing[0.5]}px;
+  }
+`;
+
 const hideOnMobile = css`
-  @media screen and (max-width: ${(breakpoints.medium + breakpoints.large) / 2}px) {
+  @media screen and (max-width: ${breakpoints.medium}px) {
     display: none;
   }
 `;
@@ -55,16 +56,14 @@ const hideOnMobile = css`
 const showOnMobile = css`
   display: none;
 
-  @media screen and (max-width: ${(breakpoints.medium + breakpoints.large) / 2}px) {
+  @media screen and (max-width: ${breakpoints.medium}px) {
     display: block;
     margin-top: 0;
+    margin-right: ${spacing[1.5]}px;
   }
 `;
 
 const subtitleStyle = css`
-  ${typography.fontSizes[15]};
-  background-color: ${theme.palette.primary[100]};
-  color: ${theme.palette.primary[900]};
-  padding: ${spacing[0]}px ${spacing[3]}px;
-  border-radius: ${borderRadius.medium}px;
+  color: ${theme.text.default};
+  ${typography.fontSizes[18]}
 `;
