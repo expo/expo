@@ -8,7 +8,7 @@ Writing to the logs in an Expo app works just like in the browser: use `console.
 
 ## Recommended: View logs with Expo tools
 
-When you open an app that is being served from Expo CLI, the app will send logs over to the server and make them conveniently available to you. 
+When you open an app that is being served from Expo CLI, the app will send logs over to the server and make them conveniently available to you.
 This means that you don't need to even have your device connected to your computer to see the logs -- in fact, if someone opens the app from the other side of the world you can still see your app's logs from their device.
 
 ### Viewing logs with Expo CLI
@@ -34,7 +34,7 @@ The following instructions apply to macOS.
 
 #### Option 1: Use GUI log
 
-- In simulator, press <kbd>Cmd ⌘</kbd> + <kbd>/</kbd>, _or_ go to `Debug -> Open System Log`.<br />Both of these open a log window that displays all of the logs from your device, including the logs from your Expo app.
+- In simulator, press <kbd>Cmd ⌘</kbd> + <kbd>/</kbd>, or go to `Debug -> Open System Log`.<br />Both of these open a log window that displays all of the logs from your device, including the logs from your Expo app.
 
 #### Option 2: Open it in terminal
 
