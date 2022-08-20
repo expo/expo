@@ -71,7 +71,7 @@ i18n.locale = 'ja';
 // When a value is missing from a language it'll fallback to another language with the key present.
 i18n.enableFallback = true;
 
-export default (App) => {
+export default App => {
   return (
     <View style={styles.container}>
       <Text style={styles.text}>
@@ -92,6 +92,7 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 20,
+    marginBottom: 16
   },
 });
 /* @end */
