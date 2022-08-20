@@ -8,6 +8,7 @@ import APISection from '~/components/plugins/APISection';
 import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
+import { Terminal } from '~/ui/components/Snippet';
 
 **`expo-localization`** allows you to Localize your app, customizing the experience for specific regions, languages, or cultures. It also provides access to the locale data on the native device.
 Using the popular library [`i18n-js`](https://github.com/fnando/i18n-js) with `expo-localization` will enable you to create a very accessible experience for users.
@@ -20,27 +21,25 @@ Using the popular library [`i18n-js`](https://github.com/fnando/i18n-js) with `e
 
 ## Usage
 
-Let's make our app support English and Japanese.
+Let's make our app support English and Japanese. To achive this install the i18n package `i18n-js`:
 
-- Install the i18n package `i18n-js`
+<Terminal cmd={['$ expo install i18n-js']} />
 
-  ```sh
-  yarn add i18n-js
-  ```
+Then, configure the languages for your app.
 
-- Configure the languages for your app.
+```tsx
+import * as Localization from 'expo-localization';
+import { I18n } from 'i18n-js';
 
-  ```tsx
-  import * as Localization from 'expo-localization';
-  import { I18n } from 'i18n-js';
-  // Set the key-value pairs for the different languages you want to support.
-  const i18n = new I18n({
-    en: { welcome: 'Hello' },
-    ja: { welcome: 'こんにちは' },
-  });
-  // Set the locale once at the beginning of your app.
-  i18n.locale = Localization.locale;
-  ```
+// Set the key-value pairs for the different languages you want to support.
+const i18n = new I18n({
+  en: { welcome: 'Hello' },
+  ja: { welcome: 'こんにちは' },
+});
+
+// Set the locale once at the beginning of your app.
+i18n.locale = Localization.locale;
+```
 
 ### API Design Tips
 
