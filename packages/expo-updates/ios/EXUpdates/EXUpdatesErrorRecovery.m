@@ -331,8 +331,8 @@ static NSInteger const EXUpdatesErrorRecoveryRemoteLoadTimeoutMs = 5000;
       return;
     }
 
-    [self->_logger error:[NSString stringWithFormat:@"RCTFatalError: %@", serializedError]
-              code:EXUpdatesErrorCodeJsRuntimeError];
+    [self->_logger error:[NSString stringWithFormat:@"EXUpdatesErrorRecovery fatal exception: %@", serializedError]
+                    code:EXUpdatesErrorCodeJsRuntimeError];
     NSData *data = [serializedError dataUsingEncoding:NSUTF8StringEncoding];
     NSString *errorLogFilePath = [[self class] _errorLogFilePath];
     if ([NSFileManager.defaultManager fileExistsAtPath:errorLogFilePath]) {
