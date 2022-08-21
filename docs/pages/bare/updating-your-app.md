@@ -96,6 +96,19 @@ In **Expo.plist**, you'll need to add the following, replacing `your-channel-nam
   <string>your-channel-name</string>
 </dict>
 ```
+This configuration is also genrated by `expo prebuild` if you set the requestHeaders key in your app.json: 
+
+```json
+...
+"updates": {
+  ...
+  "requestHeaders": {
+    "expo-channel-name": "your-channel-name"
+  }
+  ...
+}
+...
+```
 
 ## What's next
 
