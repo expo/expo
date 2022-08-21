@@ -47,6 +47,10 @@ describe('Android Updates config', () => {
           alg: 'rsa-v1_5-sha256',
           keyid: 'test',
         },
+        requestHeaders: {
+          'expo-channel-name': 'test',
+          testheader: 'test'
+        }
       },
     };
     androidManifestJson = Updates.setUpdatesConfig(
@@ -102,6 +106,14 @@ describe('Android Updates config', () => {
     expect(codeSigningMetadata).toHaveLength(1);
     expect(codeSigningMetadata[0].$['android:value']).toMatch(
       '{"alg":"rsa-v1_5-sha256","keyid":"test"}'
+    );
+
+    const requestHeaders = mainApplication['meta-data'].filter(
+      (e) => e.$['android:name'] === 'expo.modules.updates.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY'
+    );
+    expect(requestHeaders).toHaveLength(1);
+    expect(requestHeaders[0].$['android:value']).toMatch(
+      '{"expo-channel-name":"test","testheader":"test"}'
     );
   });
 

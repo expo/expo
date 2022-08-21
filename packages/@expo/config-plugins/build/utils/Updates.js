@@ -15,6 +15,8 @@ exports.getUpdatesCodeSigningCertificate = getUpdatesCodeSigningCertificate;
 exports.getUpdatesCodeSigningMetadata = getUpdatesCodeSigningMetadata;
 exports.getUpdatesCodeSigningMetadataStringified = getUpdatesCodeSigningMetadataStringified;
 exports.getUpdatesEnabled = getUpdatesEnabled;
+exports.getUpdatesRequestHeaders = getUpdatesRequestHeaders;
+exports.getUpdatesRequestHeadersStringified = getUpdatesRequestHeadersStringified;
 exports.getUpdatesTimeout = getUpdatesTimeout;
 exports.withRuntimeVersion = void 0;
 
@@ -281,6 +283,22 @@ function getUpdatesCodeSigningMetadata(config) {
 
 function getUpdatesCodeSigningMetadataStringified(config) {
   const metadata = getUpdatesCodeSigningMetadata(config);
+
+  if (!metadata) {
+    return undefined;
+  }
+
+  return JSON.stringify(metadata);
+}
+
+function getUpdatesRequestHeaders(config) {
+  var _config$updates9;
+
+  return (_config$updates9 = config.updates) === null || _config$updates9 === void 0 ? void 0 : _config$updates9.requestHeaders;
+}
+
+function getUpdatesRequestHeadersStringified(config) {
+  const metadata = getUpdatesRequestHeaders(config);
 
   if (!metadata) {
     return undefined;

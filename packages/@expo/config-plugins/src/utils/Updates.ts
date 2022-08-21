@@ -199,3 +199,20 @@ export function getUpdatesCodeSigningMetadataStringified(
 
   return JSON.stringify(metadata);
 }
+
+export function getUpdatesRequestHeaders(
+  config: Pick<ExpoConfigUpdates, 'updates'>
+): NonNullable<ExpoConfigUpdates['updates']>['requestHeaders'] {
+  return config.updates?.requestHeaders;
+}
+
+export function getUpdatesRequestHeadersStringified(
+  config: Pick<ExpoConfigUpdates, 'updates'>
+): string | undefined {
+  const metadata = getUpdatesRequestHeaders(config);
+  if (!metadata) {
+    return undefined;
+  }
+
+  return JSON.stringify(metadata);
+}

@@ -11,6 +11,7 @@ import {
   getUpdatesCheckOnLaunch,
   getUpdatesCodeSigningCertificate,
   getUpdatesCodeSigningMetadataStringified,
+  getUpdatesRequestHeadersStringified,
   getUpdatesEnabled,
   getUpdatesTimeout,
   getUpdateUrl,
@@ -109,6 +110,17 @@ export function setUpdatesConfig(
     );
   } else {
     removeMetaDataItemFromMainApplication(mainApplication, Config.CODE_SIGNING_METADATA);
+  }
+
+  const requestHeaders = getUpdatesRequestHeadersStringified(config);
+  if (requestHeaders) {
+    addMetaDataItemToMainApplication(
+      mainApplication,
+      Config.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY,
+      requestHeaders
+    );
+  } else {
+    removeMetaDataItemFromMainApplication(mainApplication, Config.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY);
   }
 
   return setVersionsConfig(config, androidManifest);

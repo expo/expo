@@ -12,6 +12,7 @@ import {
   getUpdatesCheckOnLaunch,
   getUpdatesCodeSigningCertificate,
   getUpdatesCodeSigningMetadata,
+  getUpdatesRequestHeaders,
   getUpdatesEnabled,
   getUpdatesTimeout,
   getUpdateUrl,
@@ -82,6 +83,13 @@ export function setUpdatesConfig(
   const codeSigningMetadata = getUpdatesCodeSigningMetadata(config);
   if (codeSigningMetadata) {
     newExpoPlist[Config.CODE_SIGNING_METADATA] = codeSigningMetadata;
+  } else {
+    delete newExpoPlist[Config.CODE_SIGNING_METADATA];
+  }
+
+  const requestHeaders = getUpdatesRequestHeaders(config);
+  if (requestHeaders) {
+    newExpoPlist[Config.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY] = requestHeaders;
   } else {
     delete newExpoPlist[Config.CODE_SIGNING_METADATA];
   }
