@@ -28,6 +28,21 @@ jest.mock('@expo/config', () => ({
 
 // Most cases are tested in the superclass.
 
+describe('hasNativeProjectAsync', () => {
+  it(`returns true when the AppDelegate file exists`, async () => {
+    const resolver = new AppleAppIdResolver('/');
+    asMock(IOSConfig.Paths.getAppDelegateFilePath).mockReturnValueOnce('/foo/bar/AppDelegate.m');
+    expect(await resolver.hasNativeProjectAsync()).toBe(true);
+  });
+  it(`returns false when the AppDelegate getter throws`, async () => {
+    const resolver = new AppleAppIdResolver('/');
+    asMock(IOSConfig.Paths.getAppDelegateFilePath).mockImplementationOnce(() => {
+      throw new Error('file missing');
+    });
+    expect(await resolver.hasNativeProjectAsync()).toBe(false);
+  });
+});
+
 describe('getAppIdAsync', () => {
   it('resolves the app id from native files', async () => {
     const resolver = new AppleAppIdResolver('/');
