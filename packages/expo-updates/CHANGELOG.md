@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fixed *with-node.sh* doesn't keep quotes when passing arguments to Node.js and caused build errors when there are spaces in target name. ([#18741](https://github.com/expo/expo/pull/18741) by [@kudo](https://github.com/kudo))
-
 ### 💡 Others
+
+## 0.14.5 — 2022-08-22
+
+### 🐛 Bug fixes
+
+- Fixed *with-node.sh* doesn't keep quotes when passing arguments to Node.js and caused build errors when there are spaces in target name. ([#18741](https://github.com/expo/expo/pull/18741) by [@kudo](https://github.com/kudo))
 
 ## 0.14.4 — 2022-08-12
 

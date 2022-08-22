@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Resolve bundle identifier from `app.json` correctly when using `npx expo start --dev-client --ios` with no local `ios` directory. ([#18747](https://github.com/expo/expo/pull/18747) by [@EvanBacon](https://github.com/EvanBacon))
-
 ### 💡 Others
+
+## 0.2.11 — 2022-08-22
+
+### 🐛 Bug fixes
+
+- Resolve bundle identifier from `app.json` correctly when using `npx expo start --dev-client --ios` with no local `ios` directory. ([#18747](https://github.com/expo/expo/pull/18747) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 0.2.10 — 2022-08-18
 
