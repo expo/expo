@@ -38,9 +38,9 @@ namespace expo {
 namespace gl_cpp {
 namespace method {
 
-EXGLContextWithLock getContext(jsi::Runtime &runtime, const jsi::Value &jsThis) {
+ContextWithLock getContext(jsi::Runtime &runtime, const jsi::Value &jsThis) {
   double exglCtxId = jsThis.asObject(runtime).getProperty(runtime, "contextId").asNumber();
-  return EXGLContextGet(static_cast<UEXGLContextId>(exglCtxId));
+  return ContextGet(static_cast<EXGLContextId>(exglCtxId));
 }
 
 // This listing follows the order in
@@ -196,7 +196,7 @@ NATIVE_METHOD(getParameter) {
       return static_cast<double>(glFloat);
     }
 
-      // UEXGLObjectId
+      // EXGLObjectId
     case GL_ARRAY_BUFFER_BINDING:
     case GL_ELEMENT_ARRAY_BUFFER_BINDING: {
       GLint glInt;
@@ -949,7 +949,7 @@ NATIVE_METHOD(getAttachedShaders) {
 
   jsi::Array jsResults(runtime, count);
   for (auto i = 0; i < count; ++i) {
-    UEXGLObjectId exglObjId = 0;
+    EXGLObjectId exglObjId = 0;
     for (const auto &pair : ctx->objects) {
       if (pair.second == glResults[i]) {
         exglObjId = pair.first;
@@ -957,7 +957,7 @@ NATIVE_METHOD(getAttachedShaders) {
     }
     if (exglObjId == 0) {
       throw std::runtime_error(
-          "EXGL: Internal error: couldn't find UEXGLObjectId "
+          "EXGL: Internal error: couldn't find EXGLObjectId "
           "associated with shader in getAttachedShaders()!");
     }
     jsResults.setValueAtIndex(
