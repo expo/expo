@@ -38,12 +38,7 @@ With this **eas.json**, the version for all builds will be based on the value st
       }
     },
     "production": {
-      "ios": {
-        "autoIncrement": true
-      },
-      "android": {
-        "autoIncrement": true
-      }
+      "autoIncrement": true
     }
   }
 }
@@ -68,12 +63,7 @@ With this **eas.json**, the version for all builds will be based on the value fr
       }
     },
     "production": {
-      "ios": {
-        "autoIncrement": true
-      },
-      "android": {
-        "autoIncrement": true
-      }
+      "autoIncrement": true
     }
   }
 }
@@ -87,7 +77,7 @@ You can configure your project to rely on EAS servers to store and manage the ve
 
 If you want to build your project locally in Android Studio or Xcode using the same version stored remotely on EAS, you can update your local project with the remote versions using `eas build:version:sync`.
 
-Enabling the `autoIncrement` option in the remote app version source mode is currently only available for `versionCode`/`buildNumber`. 
+Enabling the `autoIncrement` option in the remote app version source mode is currently only available for `versionCode`/`buildNumber`.
 
 When using a remote app version source, the values in **app.json** will not be updated when the version is incremented remotely, and so the local and remote values will fall out of sync. The remote source values will be set on the native project when running a build, and they are the source of truth  — however, the values specified in your **app.json** will be present in `Constants.expoConfig` and `Constants.manifest` exposed by `expo-constants`. Use `expo-application` to determine your application version at runtime instead, and remove `versionCode`/`buildNumber` from your **app.json**.
 
