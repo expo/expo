@@ -17,6 +17,7 @@ endif ()
 set(SRC_DIR ${CMAKE_SOURCE_DIR}/src)
 set(COMMON_DIR ${CMAKE_SOURCE_DIR}/../common/cpp)
 file(GLOB sources_android "${SRC_DIR}/main/cpp/*.cpp")
+file(GLOB sources_android_types "${SRC_DIR}/main/cpp/types/*.cpp")
 file(GLOB common_sources "${COMMON_DIR}/*.cpp")
 
 # shared
@@ -28,6 +29,7 @@ add_library(
         SHARED
         ${common_sources}
         ${sources_android}
+        ${sources_android_types}
 )
 
 if(IS_NEW_ARCHITECTURE_ENABLED)

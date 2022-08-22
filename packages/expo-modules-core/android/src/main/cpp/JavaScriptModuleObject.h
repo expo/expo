@@ -11,7 +11,7 @@
 
 #include "MethodMetadata.h"
 #include "JNIFunctionBody.h"
-#include "ExpectedType.h"
+#include "types/ExpectedType.h"
 
 namespace jni = facebook::jni;
 namespace jsi = facebook::jsi;
@@ -60,7 +60,7 @@ public:
   void registerSyncFunction(
     jni::alias_ref<jstring> name,
     jint args,
-    jni::alias_ref<jni::JArrayClass<ExpectedType>> desiredTypes,
+    jni::alias_ref<jni::JArrayClass<ExpectedType>> expectedArgTypes,
     jni::alias_ref<JNIFunctionBody::javaobject> body
   );
 
@@ -71,7 +71,7 @@ public:
   void registerAsyncFunction(
     jni::alias_ref<jstring> name,
     jint args,
-    jni::alias_ref<jni::JArrayClass<ExpectedType>> desiredTypes,
+    jni::alias_ref<jni::JArrayClass<ExpectedType>> expectedArgTypes,
     jni::alias_ref<JNIAsyncFunctionBody::javaobject> body
   );
 
@@ -84,7 +84,7 @@ public:
    */
   void registerProperty(
     jni::alias_ref<jstring> name,
-    jint desiredType,
+    jni::alias_ref<ExpectedType> expectedArgType,
     jni::alias_ref<JNIFunctionBody::javaobject> getter,
     jni::alias_ref<JNIFunctionBody::javaobject> setter
   );

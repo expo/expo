@@ -8,6 +8,7 @@ namespace expo {
  * Used to determine which representation of the js value should be sent to the Kotlin.
  */
 enum CppType {
+  NONE = 0,
   DOUBLE = 1 << 0,
   INT = 1 << 1,
   FLOAT = 1 << 2,

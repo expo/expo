@@ -65,23 +65,17 @@ void JavaScriptModuleObject::exportConstants(
 void JavaScriptModuleObject::registerSyncFunction(
   jni::alias_ref<jstring> name,
   jint args,
-  jni::alias_ref<jni::JArrayClass<ExpectedType>> desiredTypes,
+  jni::alias_ref<jni::JArrayClass<ExpectedType>> expectedArgTypes,
   jni::alias_ref<JNIFunctionBody::javaobject> body
 ) {
   std::string cName = name->toStdString();
-
-  std::unique_ptr<int[]> types = std::make_unique<int[]>(args);
-  for (size_t i = 0; i < args; i++) {
-    auto expectedType = desiredTypes->getElement(i);
-    types[i] = expectedType->getCombinedTypes();
-  }
 
   methodsMetadata.try_emplace(
     cName,
     cName,
     args,
     false,
-    std::move(types),
+    jni::make_local(expectedArgTypes),
     jni::make_global(body)
   );
 }
@@ -89,45 +83,39 @@ void JavaScriptModuleObject::registerSyncFunction(
 void JavaScriptModuleObject::registerAsyncFunction(
   jni::alias_ref<jstring> name,
   jint args,
-  jni::alias_ref<jni::JArrayClass<ExpectedType>> desiredTypes,
+  jni::alias_ref<jni::JArrayClass<ExpectedType>> expectedArgTypes,
   jni::alias_ref<JNIAsyncFunctionBody::javaobject> body
 ) {
-  auto cName = name->toStdString();
-
-  std::unique_ptr<int[]> types = std::make_unique<int[]>(args);
-  for (size_t i = 0; i < args; i++) {
-    auto expectedType = desiredTypes->getElement(i);
-    types[i] = expectedType->getCombinedTypes();
-  }
+  std::string cName = name->toStdString();
 
   methodsMetadata.try_emplace(
     cName,
     cName,
     args,
     true,
-    std::move(types),
+    jni::make_local(expectedArgTypes),
     jni::make_global(body)
   );
 }
 
 void JavaScriptModuleObject::registerProperty(
   jni::alias_ref<jstring> name,
-  jint desiredType,
+  jni::alias_ref<ExpectedType> expectedArgType,
   jni::alias_ref<JNIFunctionBody::javaobject> getter,
   jni::alias_ref<JNIFunctionBody::javaobject> setter
 ) {
   auto cName = name->toStdString();
-  std::unique_ptr<int[]> types = std::make_unique<int[]>(1);
-  types[0] = desiredType;
 
   auto getterMetadata = MethodMetadata(
     cName,
     0,
     false,
-    std::make_unique<int[]>(0),
+    std::vector<std::unique_ptr<AnyType>>(),
     jni::make_global(getter)
   );
 
+  auto types = std::vector<std::unique_ptr<AnyType>>();
+  types.push_back(std::make_unique<AnyType>(jni::make_local(expectedArgType)));
   auto setterMetadata = MethodMetadata(
     cName,
     1,

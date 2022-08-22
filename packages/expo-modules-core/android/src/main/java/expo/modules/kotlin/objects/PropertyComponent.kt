@@ -3,6 +3,7 @@ package expo.modules.kotlin.objects
 import com.facebook.react.bridge.Arguments
 import expo.modules.kotlin.functions.SyncFunctionComponent
 import expo.modules.kotlin.jni.CppType
+import expo.modules.kotlin.jni.ExpectedType
 import expo.modules.kotlin.jni.JNIFunctionBody
 import expo.modules.kotlin.jni.JavaScriptModuleObject
 
@@ -46,7 +47,7 @@ class PropertyComponent(
 
     jsObject.registerProperty(
       name,
-      setter?.getCppRequiredTypes()?.first()?.combinedTypes ?: CppType.NONE.value,
+      setter?.getCppRequiredTypes()?.first() ?: ExpectedType(CppType.NONE),
       jniGetter,
       jniSetter
     )
