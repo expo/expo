@@ -27,20 +27,18 @@
   - [3.1. Publish home](#31-publish-home)
   - [3.2. Build and submit](#32-build-and-submit)
   - [3.3. Make a simulator/emulator build](#33-make-a-simulatoremulator-build)
-- [Stage 4 - Standalone apps](#stage-4---standalone-apps)
-  - [4.1. Make shell app build](#41-make-shell-app-build)
-  - [4.2. Deploy Turtle with new shell tarballs](#42-deploy-turtle-with-new-shell-tarballs)
+- [Stage 4 - Sync with EAS Build](#stage-4---sync-with-eas-build)
+  - [4.1. Update default image for the new SDK version](#41-update-default-image-for-the-new-sdk-version)
 - [Stage 5 - Beta release](#stage-5---beta-release)
-  - [5.1. Deploy Turtle to production](#51-deploy-turtle-to-production)
-  - [5.2. Deploy new docs with beta version](#52-deploy-new-docs-with-beta-version)
-  - [5.3. Add related packages to versions endpoint](#53-add-related-packages-to-versions-endpoint)
-  - [5.4. Re-publish project templates](#54-re-publish-project-templates)
-  - [5.5. Promote versions to production with new SDK version flagged as beta](#55-promote-versions-to-production-with-new-sdk-version-flagged-as-beta)
-  - [5.6. Add SDK support to Snack](#56-add-sdk-support-to-snack)
-  - [5.7. Announce beta availability](#57-announce-beta-availability)
-  - [5.8. Test, fix, and monitor](#58-test-fix-and-monitor)
-  - [5.9. Submit iOS Expo Go for review](#59-submit-ios-expo-go-for-review)
-  - [5.10. Start release notes document](#510-start-release-notes-document)
+  - [5.1. Deploy new docs with beta version](#51-deploy-new-docs-with-beta-version)
+  - [5.2. Add related packages to versions endpoint](#52-add-related-packages-to-versions-endpoint)
+  - [5.3. Re-publish project templates](#53-re-publish-project-templates)
+  - [5.4. Promote versions to production with new SDK version flagged as beta](#54-promote-versions-to-production-with-new-sdk-version-flagged-as-beta)
+  - [5.5. Add SDK support to Snack](#55-add-sdk-support-to-snack)
+  - [5.6. Announce beta availability](#56-announce-beta-availability)
+  - [5.7. Test, fix, and monitor](#57-test-fix-and-monitor)
+  - [5.8. Submit iOS Expo Go for review](#58-submit-ios-expo-go-for-review)
+  - [5.9. Start release notes document](#59-start-release-notes-document)
 - [Stage 6 - Final release](#stage-6---final-release)
   - [6.1. Release Expo Go for iOS/Android to the general public](#61-release-expo-go-for-iosandroid-to-the-general-public)
   - [6.2. Promote packages to latest on NPM registry](#62-promote-packages-to-latest-on-npm-registry)
@@ -415,32 +413,19 @@ Web is comparatively well-tested in CI, so a few manual smoke tests suffice for 
   - `et update-versions-endpoint -k 'iosVersion' -v '2.19.3' --root`
   - `et update-versions-endpoint -k 'iosUrl' -v 'https://dpq5q02fu5f55.cloudfront.net/Exponent-2.19.3.tar.gz' --root`
 
-# Stage 4 - Standalone apps
+# Stage 4 - Sync with EAS Build
 
-## 4.1. Make shell app build
+## 4.1. Update default image for the new SDK version
 
-| Prerequisites                                                                                   |
-| ----------------------------------------------------------------------------------------------- |
-| [1.4. Update JS dependencies required for build](#14-update-js-dependencies-required-for-build) |
-
-**Why:** Shell app is a simple app on which Expo's Turtle work on to generate a standalone app. On iOS, shell app is compiled before it is uploaded to Turtle, so the process of building a standalone app is reduced to the minimum. We need to prepare such app for the new SDK, compile it, then put it into a tarball and put its url to Turtle's shellTarballs configs.
+**Why:** Each release works best with a specific image (Xcode/Node/npm/yarn/Java/NDK/etc version).
 
 **How:**
 
-- On the release branch, run `et dispatch shell-app-ios-upload` and/or `et dispatch shell-app-android` and wait for the job(s) to finish.
-- Copy the url to the tarball that has been uploaded to `exp-artifacts` S3 bucket (it's printed in `Upload shell app tarball to S3` step of the workflow).
-- Now go to `expo/turtle` repo and put the copied link into `shellTarballs/{ios,android}/sdkXX` file and put appropriate change information in the `CHANGELOG.md` file, commit and then push changes.
+Coordinate with the EAS Build team to do the following:
 
-## 4.2. Deploy Turtle with new shell tarballs
-
-**Why:** Once we've made standalone and adhoc client shell apps, we're now ready to deploy Turtle to staging, test it and then roll out to production.
-
-**How:**
-
-- Follow the instructions in the [`turtle-deploy` README](https://github.com/expo/turtle-deploy/). (Note that it refers to CI jobs in the `turtle` repo, not its own repo.)
-- Deploy both iOS and Android turtle to staging (not production!). Deployments generally take 15-75 minutes and ping #tmnt when finished.
-- Run a quick smoke test for each platform once the deployments finish - ensure you can build an app and that it runs on the simulator/emulator.
-- If you would like to test more broadly using your own apps, you can run `EXPO_BETA=1 expo upgrade <target-sdk-version>` to upgrade your app automatically. Note that you must provide the target SDK version argument at this point because we have not publicly rolled out the beta release yet.
+- If an appropriate image doesn't exist yet for this SDK, create one.
+- Add the SDK version to the [`reactNativeImageMatchRules` for Android](https://github.com/expo/eas-build/blob/main/packages/eas-build-job/src/android.ts) and [`sdkVersionToDefaultBuildImage` for iOS](https://github.com/expo/eas-build/blob/main/packages/eas-build-job/src/ios.ts).
+- Manually test building a managed project with the new default.
 
 # Stage 5 - Beta release
 
@@ -450,24 +435,13 @@ Web is comparatively well-tested in CI, so a few manual smoke tests suffice for 
 
 Once everything above is completed and Apple has approved Expo Go (iOS) for the TestFlight public beta, the beta release is ready to go. Complete the following steps **in order**, ideally in fairly quick succession (not spread over multiple days).
 
-## 5.1. Deploy Turtle to production
-
-**Why:** Turtle needs to be on production for beta testers to be able to easily use it with the same credentials and updates.
-
-**Warning:** This should not impact existing users because we have separate shell app tarballs for each, but it's possible that regressions will be introduced by changes in `@expo/xdl`. You should smoke test recent SDKs on staging before deploying this to production.
-
-**How:**
-
-- Publish a new version of `turtle-cli` [following this guide](https://github.com/expo/turtle/blob/main/CONTRIBUTING.md#publishing-a-release).
-- Follow the instructions in the [`turtle-deploy` README](https://github.com/expo/turtle-deploy/). (Note that it refers to CI jobs in the `turtle` repo, not its own repo.)
-
-## 5.2. Deploy new docs with beta version
+## 5.1. Deploy new docs with beta version
 
 **Why:** Make the docs available to beta testers and discoverable through the version selector, but not the default.
 
 **How:** Merge the new SDK docs into main, but don't update the `version` in `package.json` yet. Instead, set the `betaVersion` field to the SDK version number, eg: `"betaVersion": "40.0.0"`.
 
-## 5.3. Add related packages to versions endpoint
+## 5.2. Add related packages to versions endpoint
 
 **Why:** These package versions are used by `expo-cli` in the `install` command to ensure that the proper versions of packages are installed in developers' projects.
 
@@ -489,13 +463,13 @@ Once everything above is completed and Apple has approved Expo Go (iOS) for the 
   - `expo-modules-autolinking`
 - One way to get the right version numbers is to run `yarn why <package-name>` to see which version is used by apps in the expo/expo repo. Generally the version numbers should use the caret (`^`) semver symbol, please refer to the semver symbol used for the package on the most recent release on the versions endpoint.
 
-## 5.4. Re-publish project templates
+## 5.3. Re-publish project templates
 
 **Why:** Ensure that the templates include the latest version of packages, so when we release the beta
 
 **How:** Follow [0.9. Publish `sdk-XX` project templates](#09-publish-sdk-xx-project-templates) but be sure that the published template has the `sdk-xx` tag on npm in addition to `next`.
 
-## 5.5. Promote versions to production with new SDK version flagged as beta
+## 5.4. Promote versions to production with new SDK version flagged as beta
 
 | Prerequisites          |
 | ---------------------- |
@@ -509,29 +483,26 @@ Once everything above is completed and Apple has approved Expo Go (iOS) for the 
 - `et promote-versions-to-prod`
 - Double check every change before pressing `y`!
 
-## 5.6. Add SDK support to Snack
+## 5.5. Add SDK support to Snack
 
 | Prerequisites                                                                               |
 | ------------------------------------------------------------------------------------------- |
 | [2.6. Publish any missing or changed packages](#26-publish-any-missing-or-changed-packages) |
 | [4.2. Making a simulator/emulator build](#42-making-a-simulatoremulator-build)              |
 
-**How:** Reach out to Hein (@ijzerenhein)
+**How:** Reach out to Cedric (@byCedric)
 
-## 5.7. Announce beta availability
+## 5.6. Announce beta availability
 
 **Why:** We want interested developers to try it out and report any issues they encounter.
 
 **How:**
 
-Publish a blog post that includes the following information:
+- Copy the previous release notes blog post and replace versions with new versions, remove all content that doesn't apply to this version. Fill in the blanks.
+- Check for any notes in the beta release notes Linear task
+- Share the link in the #blog and #sdk-release channels and ask for suggestions.
 
-- Link to a GitHub umbrella issue for beta release issues
-- Link to CHANGELOG
-- Provide instructions for how to opt-in
-- Create and link to an issue that tracks changes and releases during beta testing
-
-## 5.8. Test, fix, and monitor
+## 5.7. Test, fix, and monitor
 
 **Why:** The beta period will run for approximately 1 week. During that time we should try to discover regressions and new bugs, fix them, and roll the fixes out to the beta users. The fixes will require repeating many of the previous steps, such as re-submitting an iOS build and re-deploying Turtle.
 
@@ -544,7 +515,7 @@ Publish a blog post that includes the following information:
 - Fix, test, repeat.
 - Update issue with fixes from latest beta release
 
-## 5.9. Submit iOS Expo Go for review
+## 5.8. Submit iOS Expo Go for review
 
 **Why:** When the Expo Go app for iOS appears to be a good candidate for the final release, we should submit it for review in order to have an accepted release ready to deploy to the App Store in one button click when we proceed to the next stage. This should be ideally be done ~1-3 days before moving on to the final release, to account for review delays.
 
@@ -556,17 +527,15 @@ Publish a blog post that includes the following information:
 - Click Submit to send the new binary to Apple.
 - If changes are required after submission, you can remove the release from review and repeat this step.
 
-## 5.10. Start release notes document
+## 5.9. Start release notes document
 
 **Why:** The release notes are a collaborative effort, we need contributions from folks who worked on the various improvements shipping with the release to draft brief explainations for them if they believe its worth calling out. It can take time for everyone to carve out time for this, so it's best to start it well before the final release in order to give people a week or so to contribute.
 
 **How:**
 
-- Create a "SDK XX Release Notes" doc and write start an "Outline" section. Add the items that you are aware of to this section, and short descriptions of those items where appropriate.
-- Share the link in the #blog channel and ask for help, for example:
-  > I started putting together some ideas for high-level items that will go into the SDK 39 release notes here: `<link to notes>`.
-  >
-  > I know there are probably some things I missed, so @bacon @brent @Cruzan @cedric could you all take a look at this before the end of the week and let me know what other things you think we should highlight (or just add them to the list yourself)?
+- Copy the previous release notes blog post and replace versions with new versions, remove all content that doesn't apply to this version. Fill in the blanks.
+- Check for any notes in the release notes Linear task
+- Share the link in the #blog channels and ask for suggestions.
 
 # Stage 6 - Final release
 
