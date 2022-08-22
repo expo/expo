@@ -2,7 +2,6 @@ package expo.modules.camera
 
 import android.Manifest
 import android.content.Context
-import android.os.Build
 
 import com.google.android.cameraview.AspectRatio
 
@@ -13,6 +12,7 @@ import expo.modules.core.interfaces.ExpoMethod
 import expo.modules.core.ModuleRegistryDelegate
 import expo.modules.core.Promise
 import expo.modules.core.interfaces.services.UIManager
+import expo.modules.core.utilities.EmulatorUtilities
 import expo.modules.interfaces.permissions.Permissions
 
 import java.lang.Exception
@@ -86,7 +86,7 @@ class CameraModule(
       viewTag,
       object : UIManager.UIBlock<ExpoCameraView> {
         override fun resolve(view: ExpoCameraView) {
-          if (!Build.FINGERPRINT.contains("generic")) {
+          if (!EmulatorUtilities.isRunningOnEmulator()) {
             if (view.isCameraOpened) {
               view.takePicture(options, promise, cacheDirectory)
             } else {

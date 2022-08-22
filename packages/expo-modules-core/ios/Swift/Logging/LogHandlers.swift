@@ -37,3 +37,18 @@ internal class PrintLogHandler: LogHandler {
     print(message)
   }
 }
+
+/**
+ Log handler that writes all logs to a file using PersistentFileLog
+ */
+internal class PersistentFileLogHandler: LogHandler {
+  private let persistentLog: PersistentFileLog
+
+  required init(category: String) {
+    self.persistentLog = PersistentFileLog(category: category)
+  }
+
+  func log(type: LogType, _ message: String) {
+    persistentLog.appendEntry(entry: message)
+  }
+}

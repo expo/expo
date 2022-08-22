@@ -4,6 +4,16 @@
 
 ### 🛠 Breaking changes
 
+- [plugin] Upgrade minimum runtime requirement to Node 14 (LTS). ([#18204](https://github.com/expo/expo/pull/18204) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 2.1.0 — 2022-08-04
+
 ### 🎉 New features
 
 - Add `templates/scripts/source-login-scripts.sh` vendoring tool for node binary resolution in Xcode build phases scripts. ([#15336](https://github.com/expo/expo/pull/15336) by [@kudo](https://github.com/kudo))

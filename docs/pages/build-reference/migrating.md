@@ -42,15 +42,15 @@ You may be using `expo build:[ios|android] --config app.production.json` to swit
 
 ### No more automatic publishing before building
 
-With classic builds, the default behavior is to automatically publish your app bundle as an update prior to running a build. This had some unintended consequences; for example, sometimes developers would run a build and be surprised to learn that their existing app was updated as a side effect.
+With classic builds, the default behavior is to automatically publish your app with Classic Updates as an update prior to running a build. This had some unintended consequences; for example, sometimes developers would run a build and be surprised to learn that their existing app was updated as a side effect.
 
-With EAS Build, `expo publish` is not run as part of the build process. Instead, the JavaScript bundle is generated locally on EAS Build at build time and directly embedded in the app.
+With EAS Build, the Classic Update's `expo publish` command is not run as part of the build process. Instead, the JavaScript bundle is generated locally on EAS Build at build time and directly embedded in the app.
 
 Because we no longer publish at build time, `postPublish` hooks in **app.json** will not be executed on build. If you use Sentry, be sure to update `sentry-expo` to the latest version and follow the updated instructions [in the README](https://github.com/expo/sentry-expo). If you have other custom `postPublish` hooks, you can follow the same approach used in `sentry-expo` to support `postPublish` hook type of behavior.
 
 ### `Constants.manifest` does not include update related fields until updated
 
-Given that we no longer publish the app prior to builds, there is no update manifest available until the app has download an update. Usually this means that at least for the first launch of the app you won't have some fields available. If you are using `Constants.manifest` to access update fields, in particular `Constants.manifest.releaseChannel`, you should switch to `Updates.releaseChannel` instead.
+Given that we no longer publish the app prior to builds, there is no update manifest available until the app has download an update. Usually this means that at least for the first launch of the app you won't have some fields available. If you are using `Constants.manifest` to access update fields, in particular `Constants.manifest.channel`, you should switch to `Updates.channel` instead from the expo-updates library.
 
 ### `Constants.appOwnership` will be `null` in the resulting standalone app
 

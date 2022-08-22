@@ -13,7 +13,7 @@ To learn how to build native binaries, see [Creating your first build](/build/se
 
 <ConfigClassic>
 
-To learn how to build native binaries, see [Building Standalone Apps](/classic/building-standalone-apps.md) or [Building Standalone Apps on Your CI](/classic/turtle-cli.md).
+To learn how to build native binaries, see [Building Standalone Apps](/archive/classic-updates/building-standalone-apps.md) or [Building Standalone Apps on Your CI](/archive/classic-updates/turtle-cli.md).
 
 </ConfigClassic>
 
@@ -63,8 +63,8 @@ To upload your iOS app to TestFlight, run `eas submit -p ios`. [Learn more about
 Start by creating an app profile in App Store Connect, if you haven't already:
 
 1. Go to https://appstoreconnect.apple.com/apps and sign in. Make sure you've accepted the terms.
-2. Click the blue plus button by the Apps header, then click "New App". 
-3. Add your app's name, language, bundle identifier, and SKU (this isn't seen by end users, it can be any unique string. A common choice is your app's bundle ID, then something like "\_1", e.g. "com.exampleco.appname_1"). 
+2. Click the blue plus button by the Apps header, then click "New App".
+3. Add your app's name, language, bundle identifier, and SKU (this isn't seen by end users, it can be any unique string. A common choice is your app's bundle ID, then something like "\_1", e.g. "com.exampleco.appname_1").
 4. Click create. If it succeeds, then you've created your application record and you can proceed to .
 
 #### Uploading with Transporter

@@ -6,7 +6,11 @@
 
 ### 🎉 New features
 
+- Added `includeTests` option to `use_expo_modules!` to include test specs from autolinked modules. ([#18496](https://github.com/expo/expo/pull/18496) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🐛 Bug fixes
+
+- Fixed node executable resolution errors on iOS when `pod install` is executed from package.json `scripts`. ([#18580](https://github.com/expo/expo/pull/18580) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
