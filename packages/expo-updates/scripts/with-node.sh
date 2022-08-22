@@ -40,5 +40,6 @@ fi
 
 # Execute argument, if present
 if [[ "$#" -gt 0 ]]; then
-  "$NODE_BINARY" $@
+  args=( "$@" )
+  "$NODE_BINARY" "${args[@]}"
 fi
