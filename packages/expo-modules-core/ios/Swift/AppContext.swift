@@ -342,14 +342,10 @@ public final class AppContext: NSObject {
 
 // MARK: - Public exceptions
 
-public final class AppContextLostException: Exception {
-  override public var reason: String {
-    "The app context has been lost"
-  }
-}
+// Deprecated since v1.0.0
+@available(*, deprecated, renamed: "Exceptions.AppContextLost")
+public typealias AppContextLostException = Exceptions.AppContextLost
 
-public final class RuntimeLostException: Exception {
-  override public var reason: String {
-    "The JavaScript runtime has been lost"
-  }
-}
+// Deprecated since v1.0.0
+@available(*, deprecated, renamed: "Exceptions.RuntimeLost")
+public typealias RuntimeLostException = Exceptions.RuntimeLost
