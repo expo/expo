@@ -32,12 +32,12 @@ Let's make our app support English and Japanese.
 
   ```tsx
   import * as Localization from 'expo-localization';
-  import i18n from 'i18n-js';
+  import { I18n } from 'i18n-js';
   // Set the key-value pairs for the different languages you want to support.
-  i18n.translations = {
+  const i18n = I18n({
     en: { welcome: 'Hello' },
     ja: { welcome: 'こんにちは' },
-  };
+  });
   // Set the locale once at the beginning of your app.
   i18n.locale = Localization.locale;
   ```
@@ -57,13 +57,13 @@ Let's make our app support English and Japanese.
 import * as React from 'react';
 import { View, StyleSheet, Text } from 'react-native';
 import * as Localization from 'expo-localization';
-import i18n from 'i18n-js';
+import { I18n } from 'i18n-js';
 
 // Set the key-value pairs for the different languages you want to support.
-i18n.translations = {
+const i18n = new I18n({
   en: { welcome: 'Hello', name: 'Charlie' },
   ja: { welcome: 'こんにちは' },
-};
+});
 // Set the locale once at the beginning of your app.
 i18n.locale = Localization.locale;
 // When a value is missing from a language it'll fallback to another language with the key present.
