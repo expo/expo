@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Resolve bundle identifier from `app.json` correctly when using `npx expo start --dev-client --ios` with no local `ios` directory. ([#18747](https://github.com/expo/expo/pull/18747) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 💡 Others
 
 ## 0.2.10 — 2022-08-18
@@ -18,7 +20,7 @@ _This version does not introduce any user-facing changes._
 
 ### 🐛 Bug fixes
 
-- Implement getApplicationIdFromBundle fixing iOS app launch issue with SDK 46. ([#18537](https://github.com/expo/expo/pull/18537) by [@Anthony Mittaz](https://github.com/Anthony Mittaz))
+- Implement getApplicationIdFromBundle fixing iOS app launch issue with SDK 46. ([#18537](https://github.com/expo/expo/pull/18537) by [@sync](https://github.com/sync))
 
 ## 0.2.8 — 2022-08-12
 
