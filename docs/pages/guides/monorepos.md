@@ -157,7 +157,7 @@ It's unaware of the dependency of `react@18.x.x` and installs the package in the
 Unfortunately, whenever `expo` imports `react`, it would resolve `react@17.x.x` and not `react@18.x.x`. This causes "multiple React versions" errors in your app.
 
 With the `disableHierarchicalLookup = true`, we can force Metro to only resolve folders from the `nodeModulesPaths = [...]` order we defined in #2.
-This option is documented in [the Metro Resolution Algorithm documentation](https://github.com/facebook/metro/blob/b0c5aacecd102e52b61233211223345351f94fa0/docs/Resolution.md#resolution-algorithm), under step 5.
+This option is documented in [the Metro Resolution Algorithm documentation](https://facebook.github.io/metro/docs/resolution/#algorithm), under step 5.
 
 When we disable this hierarchical lookup, it should not matter where the React Native library is installed.
 Whenever a library imports `react`, or any other library, Metro always resolves the library from the `nodeModulesPaths` we defined.
