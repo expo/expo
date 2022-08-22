@@ -17,13 +17,14 @@
 
 ### 🐛 Bug fixes
 
-- Fix issue with Android builds when gradle clean and build were called concurrently.  ([#18518](https://github.com/expo/expo/pull/18518) by [EdwardDrapkin](https://github.com/EdwardDrapkin))
+- Fix issue with Android builds when gradle clean and build were called concurrently. ([#18518](https://github.com/expo/expo/pull/18518) by [EdwardDrapkin](https://github.com/EdwardDrapkin))
 - Fixed `FabricUIManager` errors when turning on new architecture mode on Android. ([#18472](https://github.com/expo/expo/pull/18472) by [@kudo](https://github.com/kudo))
 - Fixed the `2 files found with path 'lib/arm64-v8a/libfbjni.so'` error on Android. ([#18607](https://github.com/expo/expo/pull/18607) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 
 - Centralized Android emulator detection for native code and added checks to pick up additional emulator types in `EmulatorUtilities`. ([#16177](https://github.com/expo/expo/pull/16177)) by [@kbrandwijk](https://github.com/kbrandwijk), [@keith-kurak](https://github.com/keith-kurak))
+- Created a separate high priority queue for all async function calls. ([#18734](https://github.com/expo/expo/pull/18734) by [@tsapeta](https://github.com/tsapeta))
 
 ## 0.11.3 — 2022-07-18
 

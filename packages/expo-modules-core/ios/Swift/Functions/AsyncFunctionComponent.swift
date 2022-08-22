@@ -13,6 +13,11 @@ internal protocol AnyAsyncFunctionComponent: AnyFunction {
 }
 
 /**
+ The default queue used for module's async function calls.
+ */
+private let defaultQueue = DispatchQueue(label: "expo.modules.AsyncFunctionQueue", qos: .userInitiated)
+
+/**
  Represents a function that can only be called asynchronously, thus its JavaScript equivalent returns a Promise.
  */
 public final class AsyncFunctionComponent<Args, FirstArgType, ReturnType>: AnyAsyncFunctionComponent {
@@ -86,7 +91,7 @@ public final class AsyncFunctionComponent<Args, FirstArgType, ReturnType>: AnyAs
       arguments.append(promise)
     }
 
-    let queue = queue ?? DispatchQueue.global(qos: .default)
+    let queue = queue ?? defaultQueue
 
     queue.async { [body, name] in
       let returnedValue: ReturnType?
