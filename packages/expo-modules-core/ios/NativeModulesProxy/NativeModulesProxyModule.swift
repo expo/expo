@@ -16,7 +16,7 @@ public class NativeModulesProxyModule: Module {
 
     AsyncFunction("callMethod") { (moduleName: String, methodName: String, arguments: [Any], promise: Promise) in
       guard let appContext = self.appContext else {
-        return promise.reject(AppContextLostException())
+        return promise.reject(Exceptions.AppContextLost())
       }
 
       // Call a method on the new module if exists
