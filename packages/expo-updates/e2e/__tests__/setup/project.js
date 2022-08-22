@@ -59,6 +59,8 @@ async function prepareLocalUpdatesModule(repoRoot) {
 }
 
 async function initAsync(workingDir, repoRoot, runtimeVersion) {
+  const localCliBin = path.join(repoRoot, 'packages/@expo/cli/build/bin/cli');
+
   // initialize project
   await spawnAsync('expo-cli', ['init', 'updates-e2e', '--yes'], {
     cwd: workingDir,
@@ -165,8 +167,9 @@ async function initAsync(workingDir, repoRoot, runtimeVersion) {
     stdio: 'inherit',
   });
   const templateVersion = require(path.join(localTemplatePath, 'package.json')).version;
+
   await spawnAsync(
-    'expo-cli',
+    localCliBin,
     ['prebuild', '--template', `expo-template-bare-minimum-${templateVersion}.tgz`],
     {
       cwd: projectRoot,
