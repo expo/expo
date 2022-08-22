@@ -97,7 +97,7 @@ describe('_fetchComputedManifestStringAsync', () => {
     middleware._getManifestStringAsync = jest
       .fn()
       .mockImplementationOnce(() => {
-        throw new CommandError('UNAUTHORIZED_ERROR');
+        throw new CommandError('UNAUTHORIZED');
       })
       .mockImplementationOnce(async () => 'signed-manifest-lol');
 
@@ -197,7 +197,7 @@ describe('_fetchComputedManifestStringAsync', () => {
     expect(Log.warn).toBeCalledTimes(1);
 
     middleware._getManifestStringAsync = jest.fn(() => {
-      throw new CommandError('UNAUTHORIZED_ERROR');
+      throw new CommandError('UNAUTHORIZED');
     });
 
     // Call again but with a different error.
