@@ -317,10 +317,21 @@ function getGestureHandlerPipe() {
       new CopyFiles({
         filePattern: 'ios/**/*.@(h|m)',
         to: destination,
+      }),
+      new GenerateJsonFromPodspec({
+        from: 'RNGestureHandler.podspec',
+        saveTo: `${destination}/RNGestureHandler.podspec.json`,
+        transform: async (podspec) => ({...podspec, name: 'DevMenuRNGestureHandler', platforms: {'ios': await getRequierdIosVersion()}})
       })
   );
 
-  return { transformations };
+  return {
+    transformations,
+    prebuild: {
+      podspecPath: `${destination}/RNGestureHandler.podspec.json`,
+      output: destination,
+    },
+  };
 }
 
 function getSafeAreaConfig() {

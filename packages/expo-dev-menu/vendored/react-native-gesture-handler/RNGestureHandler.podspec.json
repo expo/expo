@@ -1,0 +1,21 @@
+{
+  "name": "DevMenuRNGestureHandler",
+  "version": "2.1.2",
+  "summary": "Experimental implementation of a new declarative API for gesture handling in react-native",
+  "homepage": "https://github.com/software-mansion/react-native-gesture-handler",
+  "license": "MIT",
+  "authors": {
+    "Krzysztof Magiera": "krzys.magiera@gmail.com"
+  },
+  "platforms": {
+    "ios": "12.0"
+  },
+  "source": {
+    "git": "https://github.com/software-mansion/react-native-gesture-handler",
+    "tag": "2.1.2"
+  },
+  "source_files": "ios/**/*.{h,m}",
+  "dependencies": {
+    "React-Core": []
+  }
+}
