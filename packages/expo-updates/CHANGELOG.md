@@ -18,6 +18,7 @@
 ### 🐛 Bug fixes
 
 - Fix small race condition in recovery code on Android where in very rare scenarios, a bundle could be downloaded twice. ([#18377](https://github.com/expo/expo/pull/18377) by [@esamelson](https://github.com/esamelson))
+- Fixed *with-node.sh* doesn't keep quotes when passing arguments to Node.js and caused build errors when there are spaces in target name. ([#18741](https://github.com/expo/expo/pull/18741) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
