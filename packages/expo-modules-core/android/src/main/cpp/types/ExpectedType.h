@@ -9,11 +9,17 @@ namespace jni = facebook::jni;
 
 namespace expo {
 
+/**
+ * A C++ representation of the [expo.modules.kotlin.jni.SingleType] class.
+ */
 class SingleType : public jni::JavaClass<SingleType> {
   static auto constexpr
     kJavaDescriptor = "Lexpo/modules/kotlin/jni/SingleType;";
 };
 
+/**
+ * A C++ representation of the [expo.modules.kotlin.jni.ExpectedType] class.
+ */
 class ExpectedType : public jni::JavaClass<ExpectedType> {
 public:
   static auto constexpr

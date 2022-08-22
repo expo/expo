@@ -28,7 +28,7 @@ class EnumTypeConverter(
 
   override fun getCppRequiredTypes(): ExpectedType = ExpectedType(
     CppType.STRING,
-    CppType.DOUBLE
+    CppType.INT
   )
 
   override fun convertFromDynamic(value: Dynamic): Enum<*> {

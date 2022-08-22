@@ -96,81 +96,24 @@ std::vector<jobject> MethodMetadata::convertJSIArgsToJNI(
   };
 
   for (unsigned int argIndex = 0; argIndex < count; argIndex++) {
-    const jsi::Value *arg = &args[argIndex];
-    jobject *jarg = &result[argIndex];
-    int desiredType = desiredTypes[argIndex];
-
-    if (desiredType & CppType::JS_VALUE) {
-      *jarg = makeGlobalIfNecessary(
-        JavaScriptValue::newObjectCxxArgs(
-          moduleRegistry->runtimeHolder->weak_from_this(),
-          // TODO(@lukmccall): make sure that copy here is necessary
-          std::make_shared<jsi::Value>(jsi::Value(rt, *arg))
-        ).release()
-      );
-    } else if (desiredType & CppType::JS_OBJECT) {
-      *jarg = makeGlobalIfNecessary(
-        JavaScriptObject::newObjectCxxArgs(
-          moduleRegistry->runtimeHolder->weak_from_this(),
-          std::make_shared<jsi::Object>(arg->getObject(rt))
-        ).release()
-      );
-    } else if (desiredType & CppType::TYPED_ARRAY) {
-      *jarg = makeGlobalIfNecessary(
-        JavaScriptTypedArray::newObjectCxxArgs(
-          moduleRegistry->runtimeHolder->weak_from_this(),
-          std::make_shared<jsi::Object>(arg->getObject(rt))
-        ).release()
-      );
-    } else if (arg->isNull() || arg->isUndefined()) {
-      *jarg = nullptr;
-    } else if (arg->isNumber()) {
-      if (desiredType & CppType::INT) {
-        auto &integerClass = JavaReferencesCache::instance()
-          ->getJClass("java/lang/Integer");
-        jmethodID integerConstructor = integerClass.getMethod("<init>", "(I)V");
-        *jarg = makeGlobalIfNecessary(
-          env->NewObject(integerClass.clazz, integerConstructor,
-                         static_cast<int>(arg->getNumber())));
-      } else if (desiredType & CppType::FLOAT) {
-        auto &floatClass = JavaReferencesCache::instance()
-          ->getJClass("java/lang/Float");
-        jmethodID floatConstructor = floatClass.getMethod("<init>", "(F)V");
-        *jarg = makeGlobalIfNecessary(
-          env->NewObject(floatClass.clazz, floatConstructor, static_cast<float>(arg->getNumber())));
-      } else {
-        auto &doubleClass = JavaReferencesCache::instance()
-          ->getJClass("java/lang/Double");
-        jmethodID doubleConstructor = doubleClass.getMethod("<init>", "(D)V");
-        *jarg = makeGlobalIfNecessary(
-          env->NewObject(doubleClass.clazz, doubleConstructor, arg->getNumber()));
-      }
-    } else if (arg->isBool()) {
-      auto &booleanClass = JavaReferencesCache::instance()
-        ->getJClass("java/lang/Boolean");
-      jmethodID booleanConstructor = booleanClass.getMethod("<init>", "(Z)V");
-      *jarg = makeGlobalIfNecessary(
-        env->NewObject(booleanClass.clazz, booleanConstructor, arg->getBool()));
-    } else if (arg->isString()) {
-      *jarg = makeGlobalIfNecessary(env->NewStringUTF(arg->getString(rt).utf8(rt).c_str()));
-    } else if (arg->isObject()) {
-      const jsi::Object object = arg->getObject(rt);
-
-      // TODO(@lukmccall): stop using dynamic
-      auto dynamic = jsi::dynamicFromValue(rt, *arg);
-      if (arg->getObject(rt).isArray(rt)) {
-        *jarg = makeGlobalIfNecessary(
-          react::ReadableNativeArray::newObjectCxxArgs(std::move(dynamic)).release());
-      } else {
-        *jarg = makeGlobalIfNecessary(
-          react::ReadableNativeMap::createWithContents(std::move(dynamic)).release());
-      }
+    const jsi::Value &arg = args[argIndex];
+    auto &type = argTypes[argIndex];
+    if (arg.isNull() || arg.isUndefined()) {
+      // If value is null or undefined, we just passes a null
+      // Kotlin code will check if expected type is nullable.
+      result[argIndex] = nullptr;
     } else {
-      auto stringRepresentation = arg->toString(rt).utf8(rt);
-      jni::throwNewJavaException(
-        UnexpectedException::create(
-          "Cannot convert '" + stringRepresentation + "' to a Kotlin type.").get()
-      );
+      if (type->converter->canConvert(rt, arg)) {
+        result[argIndex] = makeGlobalIfNecessary(
+          type->converter->convert(rt, env, moduleRegistry, arg)
+        );
+      } else {
+        auto stringRepresentation = arg.toString(rt).utf8(rt);
+        jni::throwNewJavaException(
+          UnexpectedException::create(
+            "Cannot convert '" + stringRepresentation + "' to a Kotlin type.").get()
+        );
+      }
     }
   }
 
@@ -181,13 +124,33 @@ MethodMetadata::MethodMetadata(
   std::string name,
   int args,
   bool isAsync,
-  std::unique_ptr<int[]> desiredTypes,
+  jni::local_ref<jni::JArrayClass<ExpectedType>> expectedArgTypes,
   jni::global_ref<jobject> &&jBodyReference
 ) : name(std::move(name)),
     args(args),
     isAsync(isAsync),
-    desiredTypes(std::move(desiredTypes)),
-    jBodyReference(std::move(jBodyReference)) {}
+    jBodyReference(std::move(jBodyReference)) {
+  argTypes.reserve(args);
+  for (size_t i = 0; i < args; i++) {
+    auto expectedType = expectedArgTypes->getElement(i);
+    argTypes.push_back(
+      std::make_unique<AnyType>(std::move(expectedType))
+    );
+  }
+}
+
+MethodMetadata::MethodMetadata(
+  std::string name,
+  int args,
+  bool isAsync,
+  std::vector<std::unique_ptr<AnyType>> &&expectedArgTypes,
+  jni::global_ref<jobject> &&jBodyReference
+) : name(std::move(name)),
+    args(args),
+    isAsync(isAsync),
+    argTypes(std::move(expectedArgTypes)),
+    jBodyReference(std::move(jBodyReference)
+    ) {}
 
 std::shared_ptr<jsi::Function> MethodMetadata::toJSFunction(
   jsi::Runtime &runtime,
@@ -251,7 +214,7 @@ jsi::Value MethodMetadata::callSync(
   jni::JniLocalScope scope(env, (int) count);
 
   std::vector<jobject> convertedArgs = convertJSIArgsToJNI(moduleRegistry, env, rt, args, count,
-                                                          false);
+                                                           false);
 
   // TODO(@lukmccall): Remove this temp array
   auto tempArray = env->NewObjectArray(
@@ -304,8 +267,8 @@ jsi::Function MethodMetadata::toAsyncFunction(
 
       try {
         std::vector<jobject> convertedArgs = convertJSIArgsToJNI(moduleRegistry, env, rt, args,
-                                                                count,
-                                                                true);
+                                                                 count,
+                                                                 true);
         auto &Promise = moduleRegistry->jsRegistry->getObject<jsi::Function>(
           JSReferencesCache::JSKeys::PROMISE
         );
