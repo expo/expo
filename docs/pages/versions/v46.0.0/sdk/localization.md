@@ -67,7 +67,7 @@ const i18n = new I18n({
 // Set the locale once at the beginning of your app.
 i18n.locale = Localization.locale;
 // When a value is missing from a language it'll fallback to another language with the key present.
-i18n.fallbacks = true;
+i18n.enableFallback = true;
 
 export default App => {
   return (
