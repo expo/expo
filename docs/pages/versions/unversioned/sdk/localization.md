@@ -82,7 +82,7 @@ export default function App() {
       <Text>Device locale: {Localization.locale}</Text>
     </View>
   );
-};
+}
 
 /* @hide const styles = StyleSheet.create({ ... }); */
 const styles = StyleSheet.create({
