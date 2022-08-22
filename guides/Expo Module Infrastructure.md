@@ -1,6 +1,8 @@
-# Expo Universal Module Development Guide
+# Expo Module Development Guide
 
-- [Generating a new universal module using `expo-cli` command](#generating-a-new-universal-module-using--expo-cli--command)
+> **Warning:** This doc is outdated and will be updated soon.
+
+- [Generating a new module using `expo-cli` command](#generating-a-new-module-using-expo-cli-command)
 - [The Standard Configuration](#the-standard-configuration)
   - [npm Scripts](#npm-scripts)
   - [Auto-generated Configuration Files](#auto-generated-configuration-files)
@@ -9,22 +11,22 @@
   - [Fast Unit Tests](#fast-unit-tests)
 - [package.json Fields](#packagejson-fields)
 
-This guide explains the standard configuration and tools for working on universal modules in this repository. One of our goals is to write a coherent, high-quality SDK that is consistent across APIs and stays reliable in a way that is sustainable for the Expo team. Another goal is to reuse knowledge from working on one module and apply it to others by reducing disparity and fragmentation between modules. Expo has many modules and we need to keep Expo and working on Expo simple.
+This guide explains the standard configuration and tools for working on modules in this repository. One of our goals is to write a coherent, high-quality SDK that is consistent across APIs and stays reliable in a way that is sustainable for the Expo team. Another goal is to reuse knowledge from working on one module and apply it to others by reducing disparity and fragmentation between modules. Expo has many modules and we need to keep Expo and working on Expo simple.
 
-# Generating a new universal module using `expo-cli` command
+# Generating a new module using `expo-cli` command
 
-`expo-cli` has specific command that would generate universal module that support TypeScript!
+`expo-cli` has specific command that would generate module that support TypeScript!
 Run:
 
 - `expo generate-module [new module directory]`
   - optional `[new module directory]` parameter lets you specify module name (e.g. `expo generate-module expo-test-module` would create `expo-test-module`. If ommited, the script will prompt you about it.
-  - optional `--template <template directory>` will try to use provided `<template directory>` in universal module creation.
+  - optional `--template <template directory>` will try to use provided `<template directory>` in module creation.
 
 # The Standard Configuration
 
-We use a shared set of configuration files and tools like TypeScript across universal modules. The `expo-module-scripts` package is the source of truth for much of the configuration. With Yarn workspaces, all universal modules use the same version of `expo-module-scripts`, helping us structurally ensure we use the same configuration across modules and uniformly use the same versions of Babel, TypeScript, Jest, and other tools.
+We use a shared set of configuration files and tools like TypeScript across modules. The `expo-module-scripts` package is the source of truth for much of the configuration. With Yarn workspaces, all modules use the same version of `expo-module-scripts`, helping us structurally ensure we use the same configuration across modules and uniformly use the same versions of Babel, TypeScript, Jest, and other tools.
 
-In a universal module, include `expo-module-scripts` as a development dependency in package.json:
+In a module, include `expo-module-scripts` as a development dependency in package.json:
 
 ```json
 {
@@ -61,7 +63,7 @@ The `postinstall` script auto-generates configuration files in the package when 
 
 ## Directory Structure
 
-`expo-module-scripts` expects modules to be written in TypeScript under a directory named `src` and will compile the modules to a directory named `build`. **In a universal module package, commit the `build` directory to Git.** Only the people working on a module need to compile it instead of everyone needing to run `tsc` in each package whenever their local Git repository changes.
+`expo-module-scripts` expects modules to be written in TypeScript under a directory named `src` and will compile the modules to a directory named `build`. **In a module package, commit the `build` directory to Git.** Only the people working on a module need to compile it instead of everyone needing to run `tsc` in each package whenever their local Git repository changes.
 
 In package.json, define the main module of the package to be the compiled entry point under `build`:
 
@@ -97,7 +99,7 @@ Run `yarn test` to run Jest in watcher mode. By default, Jest will run tests aff
 
 # package.json Fields
 
-Inside of package.json, set the repository and bugs URLs to the Expo repository. For the homepage URL, link to the source of the universal module.
+Inside of package.json, set the repository and bugs URLs to the Expo repository. For the homepage URL, link to the source of the module.
 
 ```json
 {

@@ -1,5 +1,7 @@
 # Creating Unimodules
 
+> **Warning:** This doc is outdated and will be updated soon.
+
 Expo is moving towards a more extensible and configurable architecture, where different parts of the SDK can live with or without each other. We call those different parts of the SDK the Foundation unimodules.
 
 This rearchitecture will allow Expo users omit certain parts of the SDK they won't use, like Face Detector or GL.
