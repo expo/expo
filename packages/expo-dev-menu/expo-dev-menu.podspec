@@ -57,10 +57,16 @@ Pod::Spec.new do |s|
   s.pod_target_xcconfig = { "DEFINES_MODULE" => "YES" }
 
   s.subspec 'GestureHandler' do |handler|
-    handler.source_files = 'vendored/react-native-gesture-handler/**/*.{h,m}'
-    handler.private_header_files = 'vendored/react-native-gesture-handler/**/*.h'
+    if File.exist?("vendored/react-native-gesture-handler/DevMenuRNGestureHandler.xcframework") && Gem::Version.new(Pod::VERSION) >= Gem::Version.new('1.10.0')
+      handler.source_files = "vendored/react-native-gesture-handler/**/*.{h}"
+      handler.vendored_frameworks = "vendored/react-native-gesture-handler/DevMenuRNGestureHandler.xcframework"
+      handler.private_header_files = 'vendored/react-native-gesture-handler/**/*.h'
+    else
+      handler.source_files = 'vendored/react-native-gesture-handler/**/*.{h,m}'
+      handler.private_header_files = 'vendored/react-native-gesture-handler/**/*.h'
 
-    handler.compiler_flags = '-w -Xanalyzer -analyzer-disable-all-checks'
+      handler.compiler_flags = '-w -Xanalyzer -analyzer-disable-all-checks'
+    end
   end
 
   s.subspec 'Reanimated' do |reanimated|
