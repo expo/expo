@@ -2,6 +2,10 @@ import { AndroidConfig } from '@expo/config-plugins';
 
 import { AppIdResolver } from '../AppIdResolver';
 
+const debug = require('debug')(
+  'expo:start:platforms:android:AndroidAppIdResolver'
+) as typeof console.log;
+
 /** Resolves the Android package name from the Expo config or native files. */
 export class AndroidAppIdResolver extends AppIdResolver {
   constructor(projectRoot: string) {
@@ -12,7 +16,8 @@ export class AndroidAppIdResolver extends AppIdResolver {
     try {
       await AndroidConfig.Paths.getProjectPathOrThrowAsync(this.projectRoot);
       return true;
-    } catch {
+    } catch (error: any) {
+      debug('Expected error checking for native project:', error);
       return false;
     }
   }
@@ -33,7 +38,9 @@ export class AndroidAppIdResolver extends AppIdResolver {
       if (androidManifest.manifest?.$?.package) {
         return androidManifest.manifest.$.package;
       }
-    } catch {}
+    } catch (error: any) {
+      debug('Expected error resolving the package name from the AndroidManifest.xml:', error);
+    }
 
     return null;
   }

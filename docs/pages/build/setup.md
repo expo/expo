@@ -86,13 +86,13 @@ Before the build process can start for app stores, you will need to have a store
 
 Whether you have experience with generating app signing credentials or not, EAS CLI does the heavy lifting. You can opt-in for EAS CLI to handle the app signing credentials process. Check out the steps for [Android app signing credentials](#android-app-signing-credentials) or [iOS app signing credentials](#ios-app-signing-credentials) process below for more information.
 
-<Collapsible summary="Apple Developer Program membership is required to build for the App Store.">
+<Collapsible summary="Apple Developer Program membership is required to build for the Apple App Store.">
 
 If you are going to use EAS Build to create release builds for the Apple App Store, you need access to an account with a $99 USD [Apple Developer Program](https://developer.apple.com/programs) membership.
 
 </Collapsible>
 
-<Collapsible summary="Google Play Developer membership is required to distribute to the Play Store.">
+<Collapsible summary="Google Play Developer membership is required to distribute to the Google Play Store.">
 
 You can build and sign your app using EAS Build, but you can't upload it to the Google Play Store unless you have a membership, a one-time $25 USD fee.
 

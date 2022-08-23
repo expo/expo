@@ -4,14 +4,18 @@
 
 ### 🛠 Breaking changes
 
+- [plugin] Upgrade minimum runtime requirement to Node 14 (LTS). ([#18204](https://github.com/expo/expo/pull/18204) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🎉 New features
 
 - On iOS and Android, added new `additionalExif` parameter to `takePictureAsync()` method so that users can add extra information to the photos, such as GPS coordinates. ([#18469](https://github.com/expo/expo/pull/18469) by [@alexyangjie](https://github.com/alexyangjie))
 
 ### 🐛 Bug fixes
+- Fix error when calling `takePictureAsync()` on Android emulator. ([#18704](https://github.com/expo/expo/pull/18704)) by [@keith-kurak](https://github.com/keith-kurak))
 
 ### 💡 Others
 
+- Drop `@expo/config-plugins` dependency in favor of peer dependency on `expo`. ([#18595](https://github.com/expo/expo/pull/18595) by [@EvanBacon](https://github.com/EvanBacon))
 - Refactored inline Android emulator checks to use enhanced checking in `EmulatorUtilities.isRunningOnEmulator()`. ([#16177](https://github.com/expo/expo/pull/16177)) by [@kbrandwijk](https://github.com/kbrandwijk), [@keith-kurak](https://github.com/keith-kurak))
 
 ## 12.3.0 — 2022-07-07

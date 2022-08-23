@@ -31,8 +31,7 @@ const withScreenOrientationViewController = (config, { initialOrientation = 'DEF
     return config;
 };
 function getInitialOrientation(config) {
-    var _a;
-    return (_a = config.initialOrientation) !== null && _a !== void 0 ? _a : 'DEFAULT';
+    return config.initialOrientation ?? 'DEFAULT';
 }
 exports.getInitialOrientation = getInitialOrientation;
 function setInitialOrientation(config, infoPlist) {

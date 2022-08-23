@@ -14,7 +14,15 @@ const PAGES_DIR = path.resolve(__dirname, '../pages');
 /** Manual list of directories to pull in to the getting started tutorial */
 const startingDirectories = ['introduction', 'get-started', 'tutorial', 'next-steps'];
 /** Manual list of directories to categorize as "EAS content" */
-const easDirectories = ['eas', 'build', 'app-signing', 'build-reference', 'submit', 'eas-update'];
+const easDirectories = [
+  'eas',
+  'build',
+  'app-signing',
+  'build-reference',
+  'submit',
+  'eas-update',
+  'eas-metadata',
+];
 /** Manual list of directories to categorize as "Archive" */
 const archiveDirectores = ['archive'];
 /** Private preview section which isn't linked in the documentation */
@@ -83,12 +91,14 @@ const general = [
       makePage('workflow/development-mode.md'),
       makePage('workflow/ios-simulator.md'),
       makePage('workflow/android-studio-emulator.md'),
+      makePage('workflow/run-on-device.md'),
       makePage('workflow/debugging.md'),
       makePage('workflow/configuration.md'),
+      makePage('workflow/customizing.md'),
       makePage('workflow/upgrading-expo-sdk-walkthrough.md'),
       makePage('workflow/web.md'),
       makePage('workflow/snack.md'),
-      makePage('workflow/customizing.md'),
+      makePage('workflow/prebuild.md'),
       makePage('workflow/glossary-of-terms.md'),
       makePage('workflow/already-used-react-native.md'),
       makePage('workflow/common-development-errors.md'),
@@ -119,6 +129,20 @@ const general = [
       makePage('development/troubleshooting.md'),
     ]),
   ]),
+  makeSection('Integrations', [
+    makeGroup('Integrations', [
+      makePage('guides/using-firebase.md'),
+      makePage('guides/setup-native-firebase.md'),
+      makePage('guides/using-sentry.md'),
+      makePage('guides/using-bugsnag.md'),
+      makePage('guides/using-clojurescript.md'),
+      makePage('guides/using-graphql.md'),
+      makePage('guides/using-styled-components.md'),
+      makePage('guides/using-electron.md'),
+      makePage('guides/using-nextjs.md'),
+      makePage('guides/using-preact.md'),
+    ]),
+  ]),
   makeSection('Assorted Guides', [
     makeGroup('Assorted Guides', [
       makePage('guides/assets.md'),
@@ -146,22 +170,11 @@ const general = [
       makePage('guides/linking.md'),
       makePage('guides/running-in-the-browser.md'),
       makePage('guides/setting-up-continuous-integration.md'),
-      makePage('guides/testing-on-devices.md'),
       makePage('guides/troubleshooting-proxies.md'),
-      makePage('guides/using-firebase.md'),
-      makePage('guides/using-sentry.md'),
-      makePage('guides/using-bugsnag.md'),
-      makePage('guides/using-clojurescript.md'),
-      makePage('guides/using-graphql.md'),
-      makePage('guides/using-styled-components.md'),
       makePage('guides/config-plugins.md'),
       makePage('guides/monorepos.md'),
-      makePage('guides/setup-native-firebase.md'),
       makePage('guides/sharing-preview-releases.md'),
-      makePage('guides/using-electron.md'),
       makePage('guides/using-hermes.md'),
-      makePage('guides/using-nextjs.md'),
-      makePage('guides/using-preact.md'),
     ]),
   ]),
   makeSection('Expo Accounts', [
@@ -278,18 +291,19 @@ const eas = [
         makePage('build-reference/variables.md'),
         makePage('build-reference/apk.md'),
         makePage('build-reference/simulators.md'),
+        makePage('build-reference/app-versions.md'),
         makePage('build-reference/troubleshooting.md'),
-        makePage('build-reference/local-builds.md'),
         makePage('build-reference/variants.md'),
+        makePage('build-reference/ios-capabilities.md'),
+        makePage('build-reference/local-builds.md'),
         makePage('build-reference/caching.md'),
         makePage('build-reference/android-builds.md'),
         makePage('build-reference/ios-builds.md'),
-        makePage('build-reference/limitations.md'),
         makePage('build-reference/build-configuration.md'),
         makePage('build-reference/infrastructure.md'),
-        makePage('build-reference/ios-capabilities.md'),
         makePage('build-reference/app-extensions.md'),
-        makePage('build-reference/app-versions.md'),
+        makePage('build-reference/e2e-tests.md'),
+        makePage('build-reference/limitations.md'),
       ]),
     ],
     { expanded: true }
@@ -326,6 +340,17 @@ const eas = [
         makePage('eas-update/expo-dev-client.md'),
         makePage('eas-update/known-issues.md'),
         makePage('eas-update/faq.md'),
+      ]),
+    ],
+    { expanded: true }
+  ),
+  makeSection(
+    'EAS Metadata',
+    [
+      makeGroup('EAS Metadata', [
+        makePage('eas-metadata/introduction.md'),
+        makePage('eas-metadata/getting-started.md'),
+        // makePage('eas-metadata/store-json.md'), Disabled due to missing config overview
       ]),
     ],
     { expanded: true }

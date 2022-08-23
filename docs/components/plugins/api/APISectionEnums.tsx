@@ -44,7 +44,7 @@ const renderEnum = ({ name, children, comment }: EnumDefinitionData): JSX.Elemen
             <InlineCode>{enumValue.name}</InlineCode>
           </H4Code>
         </div>
-        <InlineCode customCss={enumValueStyles}>
+        <InlineCode css={enumValueStyles}>
           {name}.{enumValue.name}
           {enumValue?.defaultValue ? ` ＝ ${enumValue?.defaultValue}` : ''}
         </InlineCode>
