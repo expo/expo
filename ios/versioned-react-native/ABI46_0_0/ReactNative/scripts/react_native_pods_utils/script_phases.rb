@@ -7,7 +7,7 @@
 
 require "erb"
 
-def get_script_phases_with_codegen_discovery(options)
+def get_script_phases_with_codegen_discovery_ABI46_0_0(options)
     export_vars = {
         'RCT_SCRIPT_RN_DIR' => "$RCT_SCRIPT_POD_INSTALLATION_ROOT/#{options[:react_native_path]}",
         'RCT_SCRIPT_APP_PATH' => "$RCT_SCRIPT_POD_INSTALLATION_ROOT/#{options[:relative_app_root]}",
@@ -16,10 +16,10 @@ def get_script_phases_with_codegen_discovery(options)
         'RCT_SCRIPT_FABRIC_ENABLED' => "#{options[:fabric_enabled]}",
         'RCT_SCRIPT_TYPE' => "withCodegenDiscovery",
     }
-    return get_script_template(options[:react_native_path], export_vars)
+    return get_script_template_ABI46_0_0(options[:react_native_path], export_vars)
 end
 
-def get_script_phases_no_codegen_discovery(options)
+def get_script_phases_no_codegen_discovery_ABI46_0_0(options)
     export_vars = {
         'RCT_SCRIPT_RN_DIR' => "${PODS_TARGET_SRCROOT}/#{options[:react_native_path]}",
         'RCT_SCRIPT_LIBRARY_NAME' => "#{options[:library_name]}",
@@ -31,11 +31,11 @@ def get_script_phases_no_codegen_discovery(options)
         'RCT_SCRIPT_CODEGEN_COMPONENT_DIR' => "#{options[:codegen_component_dir]}",
         'RCT_SCRIPT_FILE_LIST' => ("#{options[:file_list]}").dump,
     }
-    return get_script_template(options[:react_native_path], export_vars)
+    return get_script_template_ABI46_0_0(options[:react_native_path], export_vars)
 end
 
 
-def get_script_template(react_native_path, export_vars={})
+def get_script_template_ABI46_0_0(react_native_path, export_vars={})
     template =<<~EOS
         pushd "$PODS_ROOT/../" > /dev/null
         RCT_SCRIPT_POD_INSTALLATION_ROOT=$(pwd)

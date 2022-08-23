@@ -5,6 +5,7 @@ import * as React from 'react';
 
 type LinkProps = React.PropsWithChildren<{
   href?: string;
+  className?: string;
 }>;
 
 const STYLES_EXTERNAL_LINK = css`
@@ -29,14 +30,16 @@ const Link = (props: LinkProps) =>
 
 export default Link;
 
-export const InternalLink = ({ href, children }: LinkProps) => (
+export const InternalLink = ({ href, children, className }: LinkProps) => (
   <NextLink href={href || ''} passHref>
-    <a css={STYLES_EXTERNAL_LINK}>{children}</a>
+    <a css={STYLES_EXTERNAL_LINK} className={className}>
+      {children}
+    </a>
   </NextLink>
 );
 
-export const ExternalLink = ({ href, children }: LinkProps) => (
-  <a href={href} css={STYLES_EXTERNAL_LINK} rel="noopener noreferrer">
+export const ExternalLink = ({ href, children, className }: LinkProps) => (
+  <a href={href} css={STYLES_EXTERNAL_LINK} className={className} rel="noopener noreferrer">
     {children}
   </a>
 );

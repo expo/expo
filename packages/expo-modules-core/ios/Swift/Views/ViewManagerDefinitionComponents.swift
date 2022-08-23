@@ -40,7 +40,7 @@ public func prop<ViewType: UIView, PropType: AnyArgument>(
 public func Prop<ViewType: UIView, PropType: AnyArgument>(
   _ name: String,
   _ setter: @escaping (ViewType, PropType) -> Void
-) -> ViewManagerDefinitionComponent {
+) -> ConcreteViewProp<ViewType, PropType> {
   return ConcreteViewProp(
     name: name,
     propType: ~PropType.self,

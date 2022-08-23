@@ -87,7 +87,7 @@ typedef NS_ENUM(NSInteger, EXCameraVideoCodec) {
 @property (nonatomic, assign) BOOL isDetectingFaces;
 @property (nonatomic, assign) AVVideoCodecType videoCodecType;
 
-- (id)initWithModuleRegistry:(EXModuleRegistry *)moduleRegistry;
+- (nonnull instancetype)initWithModuleRegistry:(nullable EXModuleRegistry *)moduleRegistry;
 - (void)updateType;
 - (void)updateFlashMode;
 - (void)updateFocusMode;
