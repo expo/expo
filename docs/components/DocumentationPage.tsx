@@ -9,9 +9,7 @@ import { AppJSBanner } from './AppJSBanner.tsx';
 import * as Utilities from '~/common/utilities';
 import * as WindowUtils from '~/common/window';
 import DocumentationFooter from '~/components/DocumentationFooter';
-import DocumentationHeader from '~/components/DocumentationHeader';
 import DocumentationNestedScrollLayout from '~/components/DocumentationNestedScrollLayout';
-import DocumentationSidebar from '~/components/DocumentationSidebar';
 import DocumentationSidebarRight, {
   SidebarRightComponentType,
 } from '~/components/DocumentationSidebarRight';
@@ -21,6 +19,8 @@ import navigation from '~/constants/navigation-deprecated';
 import * as Constants from '~/constants/theme';
 import { usePageApiVersion } from '~/providers/page-api-version';
 import { NavigationRoute } from '~/types/common';
+import { Header } from '~/ui/components/Header';
+import { Sidebar } from '~/ui/components/Sidebar';
 
 const STYLES_DOCUMENT = css`
   background: ${theme.background.default};
@@ -38,18 +38,6 @@ const STYLES_DOCUMENT = css`
   }
 `;
 
-const HIDDEN_ON_MOBILE = css`
-  @media screen and (max-width: ${Constants.breakpoints.mobile}) {
-    display: none;
-  }
-`;
-
-const HIDDEN_ON_DESKTOP = css`
-  @media screen and (min-width: ${Constants.breakpoints.mobile}) {
-    display: none;
-  }
-`;
-
 type Props = React.PropsWithChildren<{
   router: NextRouter;
   title?: string;
@@ -61,23 +49,24 @@ type Props = React.PropsWithChildren<{
 }>;
 
 type State = {
-  isMenuActive: boolean;
-  isMobileSearchActive: boolean;
+  isMobileMenuVisible: boolean;
 };
 
 class DocumentationPageWithApiVersion extends React.Component<Props, State> {
   state = {
-    isMenuActive: false,
-    isMobileSearchActive: false,
+    isMobileMenuVisible: false,
   };
 
   private layoutRef = React.createRef<DocumentationNestedScrollLayout>();
   private sidebarRightRef = React.createRef<SidebarRightComponentType>();
 
   componentDidMount() {
-    Router.events.on('routeChangeStart', () => {
+    Router.events.on('routeChangeStart', url => {
       if (this.layoutRef.current) {
-        window.__sidebarScroll = this.layoutRef.current.getSidebarScrollTop();
+        window.__sidebarScroll =
+          this.getActiveTopLevelSection() !== this.getActiveTopLevelSection(url)
+            ? 0
+            : this.layoutRef.current.getSidebarScrollTop();
       }
     });
     window.addEventListener('resize', this.handleResize);
@@ -89,41 +78,21 @@ class DocumentationPageWithApiVersion extends React.Component<Props, State> {
 
   private handleResize = () => {
     if (WindowUtils.getViewportSize().width >= Constants.breakpoints.mobileValue) {
+      this.setState({ isMobileMenuVisible: false });
       window.scrollTo(0, 0);
     }
   };
 
-  private handleShowMenu = () => {
-    this.setState({
-      isMenuActive: true,
-    });
-    this.handleHideSearch();
-  };
-
-  private handleHideMenu = () => {
-    this.setState({
-      isMenuActive: false,
-    });
-  };
-
-  private handleToggleSearch = () => {
-    this.setState(prevState => ({
-      isMobileSearchActive: !prevState.isMobileSearchActive,
-    }));
-  };
-
-  private handleHideSearch = () => {
-    this.setState({
-      isMobileSearchActive: false,
-    });
-  };
-
-  private isReferencePath = () => {
-    return this.props.router.pathname.startsWith('/versions');
+  private pathStartsWith = (name: string, path: string = this.props.router.pathname) => {
+    return path.startsWith(`/${name}`);
   };
 
   private isArchivePath = () => {
     return this.props.router.pathname.startsWith('/archive');
+  };
+
+  private isReferencePath = (path?: string) => {
+    return this.pathStartsWith('versions', path);
   };
 
   private isGeneralPath = () => {
@@ -132,13 +101,8 @@ class DocumentationPageWithApiVersion extends React.Component<Props, State> {
     );
   };
 
-  private isGettingStartedPath = () => {
-    return (
-      this.props.router.pathname === '/' ||
-      some(navigation.startingDirectories, name =>
-        this.props.router.pathname.startsWith(`/${name}`)
-      )
-    );
+  private isFeaturePreviewPath = (path?: string) => {
+    return navigation.featurePreview.some(name => this.pathStartsWith(name, path));
   };
 
   private isPreviewPath = () => {
@@ -147,10 +111,8 @@ class DocumentationPageWithApiVersion extends React.Component<Props, State> {
     );
   };
 
-  private isEasPath = () => {
-    return some(navigation.easDirectories, name =>
-      this.props.router.pathname.startsWith(`/${name}`)
-    );
+  private isEasPath = (path?: string) => {
+    return navigation.easDirectories.some(name => this.pathStartsWith(name, path));
   };
 
   private getCanonicalUrl = () => {
@@ -180,16 +142,16 @@ class DocumentationPageWithApiVersion extends React.Component<Props, State> {
     }
   };
 
-  private getActiveTopLevelSection = () => {
-    if (this.isReferencePath()) {
+  private getActiveTopLevelSection = (path?: string) => {
+    if (this.isReferencePath(path)) {
       return 'reference';
     } else if (this.isGeneralPath()) {
       return 'general';
-    } else if (this.isGettingStartedPath()) {
-      return 'starting';
+    } else if (this.isFeaturePreviewPath(path)) {
+      return 'featurePreview';
     } else if (this.isPreviewPath()) {
       return 'preview';
-    } else if (this.isEasPath()) {
+    } else if (this.isEasPath(path)) {
       return 'eas';
     } else if (this.isArchivePath()) {
       return 'archive';
@@ -201,20 +163,17 @@ class DocumentationPageWithApiVersion extends React.Component<Props, State> {
   render() {
     const sidebarScrollPosition = process.browser ? window.__sidebarScroll : 0;
     const routes = this.getRoutes();
+    const sidebarActiveGroup = this.getActiveTopLevelSection();
 
+    const sidebarElement = <Sidebar routes={routes} />;
     const headerElement = (
-      <DocumentationHeader
-        activeSection={this.getActiveTopLevelSection()}
-        isMenuActive={this.state.isMenuActive}
-        isMobileSearchActive={this.state.isMobileSearchActive}
-        isAlgoliaSearchHidden={this.state.isMenuActive}
-        onShowMenu={this.handleShowMenu}
-        onHideMenu={this.handleHideMenu}
-        onToggleSearch={this.handleToggleSearch}
+      <Header
+        sidebar={sidebarElement}
+        sidebarActiveGroup={sidebarActiveGroup}
+        isMobileMenuVisible={this.state.isMobileMenuVisible}
+        setMobileMenuVisible={isMobileMenuVisible => this.setState({ isMobileMenuVisible })}
       />
     );
-
-    const sidebarElement = <DocumentationSidebar router={this.props.router} routes={routes} />;
 
     const handleContentScroll = (contentScrollPosition: number) => {
       window.requestAnimationFrame(() => {
@@ -251,10 +210,10 @@ class DocumentationPageWithApiVersion extends React.Component<Props, State> {
         ref={this.layoutRef}
         header={headerElement}
         sidebar={sidebarElement}
+        sidebarActiveGroup={sidebarActiveGroup}
         sidebarRight={sidebarRight}
         tocVisible={this.props.tocVisible}
-        isMenuActive={this.state.isMenuActive}
-        isMobileSearchActive={this.state.isMobileSearchActive}
+        isMobileMenuVisible={this.state.isMobileMenuVisible}
         onContentScroll={handleContentScroll}
         sidebarScrollPosition={sidebarScrollPosition}>
         <Head title={this.props.title}>
@@ -293,17 +252,7 @@ class DocumentationPageWithApiVersion extends React.Component<Props, State> {
             <link rel="canonical" href={this.getCanonicalUrl()} />
           )}
         </Head>
-
-        {!this.state.isMenuActive ? (
-          <div css={STYLES_DOCUMENT}>{pageContent}</div>
-        ) : (
-          <div>
-            <div css={[STYLES_DOCUMENT, HIDDEN_ON_MOBILE]}>{pageContent}</div>
-            <div css={HIDDEN_ON_DESKTOP}>
-              <DocumentationSidebar router={this.props.router} routes={routes} />
-            </div>
-          </div>
-        )}
+        <div css={STYLES_DOCUMENT}>{pageContent}</div>
       </DocumentationNestedScrollLayout>
     );
   }

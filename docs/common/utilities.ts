@@ -1,4 +1,5 @@
 import GithubSlugger from 'github-slugger';
+import React from 'react';
 
 function hasChildren(node: React.ReactNode): node is React.ReactElement {
   return (node as React.ReactElement)?.props?.children !== undefined;
@@ -27,9 +28,7 @@ export const generateSlug = (slugger: GithubSlugger, node: React.ReactNode, leng
   const stringToSlug = toString(node).split(' ').splice(0, length).join('-');
 
   // NOTE(jim): This will strip out commas from stringToSlug
-  const slug = slugger.slug(stringToSlug);
-
-  return slug;
+  return slugger.slug(stringToSlug);
 };
 
 export const isVersionedUrl = (url: string) => {
@@ -47,24 +46,22 @@ export const getVersionFromUrl = (url: string) => {
 };
 
 /**
- * Get the user facing or human-readable version from the SDK verion.
- * If you provide a `latestVersion`, `latest` will include the sdk version in parentheses.
+ * Get the user facing or human-readable version from the SDK version.
+ * If you provide a `latestVersion` or `betaVersion`, matching entries will include the correct label in parentheses.
  */
 export const getUserFacingVersionString = (
   version: string,
   latestVersion?: string,
   betaVersion?: string
 ): string => {
-  if (version === 'latest') {
-    return latestVersion ? `Latest (${getUserFacingVersionString(latestVersion)})` : 'Latest';
-  } else if (version === 'unversioned') {
-    return 'Unversioned';
-  }
-
   const versionString = `SDK${version?.substring(1, 3)}`;
 
-  if (version === betaVersion) {
-    return `Beta (${versionString})`;
+  if (version === 'latest') {
+    return latestVersion ? `${getUserFacingVersionString(latestVersion)} (Latest)` : 'Latest';
+  } else if (version === betaVersion) {
+    return `${versionString} (Beta)`;
+  } else if (version === 'unversioned') {
+    return 'Unversioned';
   }
 
   return versionString;
