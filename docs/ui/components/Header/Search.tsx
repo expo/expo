@@ -68,7 +68,8 @@ export const Search = ({ version, mobile }: SearchProps) => {
     const currentVersion = isLatestVersion ? LATEST_VERSION : version;
 
     docsearch({
-      apiKey: '2955d7b41a0accbe5b6aa2db32f3b8ac',
+      appId: 'QEX7PB7D46',
+      apiKey: '6cc82aa9b0073c1bc5b2cfcd930ec39b',
       indexName: 'expo',
       inputSelector: mobile ? '#algolia-search-box' : '#algolia-search-box-mobile',
       enhancedSearchInput: false,
