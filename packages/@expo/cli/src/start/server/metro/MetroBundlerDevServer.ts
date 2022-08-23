@@ -1,5 +1,8 @@
+import { getConfig } from '@expo/config';
 import { prependMiddleware } from '@expo/dev-server';
 
+import getDevClientProperties from '../../../utils/analytics/getDevClientProperties';
+import { logEventAsync } from '../../../utils/analytics/rudderstackClient';
 import { getFreePortAsync } from '../../../utils/port';
 import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
 import { HistoryFallbackMiddleware } from '../middleware/HistoryFallbackMiddleware';
@@ -67,10 +70,13 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     middleware.use(new InterstitialPageMiddleware(this.projectRoot).getHandler());
 
     const deepLinkMiddleware = new RuntimeRedirectMiddleware(this.projectRoot, {
-      onDeepLink: ({ runtime }) => {
-        // eslint-disable-next-line no-useless-return
+      onDeepLink: async ({ runtime }) => {
         if (runtime === 'expo') return;
-        // TODO: Some heavy analytics...
+        const { exp } = getConfig(this.projectRoot);
+        await logEventAsync('dev client start command', {
+          status: 'started',
+          ...getDevClientProperties(this.projectRoot, exp),
+        });
       },
       getLocation: ({ runtime }) => {
         if (runtime === 'custom') {
