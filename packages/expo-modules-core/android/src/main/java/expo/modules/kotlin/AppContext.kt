@@ -5,10 +5,13 @@ package expo.modules.kotlin
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.view.View
 import androidx.annotation.MainThread
+import androidx.annotation.UiThread
 import androidx.appcompat.app.AppCompatActivity
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.turbomodule.core.CallInvokerHolderImpl
+import com.facebook.react.uimanager.UIManagerModule
 import expo.modules.core.errors.ContextDestroyedException
 import expo.modules.core.interfaces.ActivityProvider
 import expo.modules.interfaces.barcodescanner.BarCodeScannerInterface
