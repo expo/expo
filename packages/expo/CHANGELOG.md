@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Added capability to throw an error for missing native modules (and `disableMissingNativeModuleErrors` method to disable this). ([#18465](https://github.com/expo/expo/pull/18465) by [@esamelson](https://github.com/esamelson))
+- Added capability to throw an error for missing native modules (and `disable-missing-native-module-errors` import to disable this). ([#18465](https://github.com/expo/expo/pull/18465) by [@esamelson](https://github.com/esamelson))
 
 ### 🐛 Bug fixes
 
