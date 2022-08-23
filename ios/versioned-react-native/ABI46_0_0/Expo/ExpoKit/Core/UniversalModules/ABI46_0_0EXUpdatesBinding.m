@@ -91,6 +91,10 @@ NS_ASSUME_NONNULL_BEGIN
   // no-op in managed
 }
 
++ (const NSArray<Protocol *> *)exportedInterfaces {
+  return @[@protocol(ABI46_0_0EXUpdatesModuleInterface)];
+}
+
 @end
 
 NS_ASSUME_NONNULL_END
