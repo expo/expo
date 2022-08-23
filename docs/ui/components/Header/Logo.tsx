@@ -19,7 +19,7 @@ export const Logo = () => (
       <WordMarkLogo color={theme.text.default} css={[logoStyle, hideOnMobile]} />
       <LogoIcon color={theme.text.default} css={[logoStyle, showOnMobile]} />
     </LinkBase>
-    <ChevronRightIcon size={iconSize.regular} css={chevronStyle} color={theme.icon.secondary} />
+    <ChevronRightIcon css={chevronStyle} color={theme.icon.secondary} />
     <LinkBase css={linkStyle} href="/">
       <span css={subtitleStyle}>Docs</span>
     </LinkBase>
