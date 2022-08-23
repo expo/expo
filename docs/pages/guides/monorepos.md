@@ -140,9 +140,9 @@ We have to tell Metro to look in these two folders. The order is important here 
 
 This option is important for certain edge cases, such as a monorepo that includes multiple versions of the `react` package. Let's say you have the following monorepo:
 
-1. **apps/marketing** - A simple NextJS website to attract new users. (uses `react@17.x.x`)
+1. **apps/marketing** - A simple Next.js website to attract new users. (uses `react@17.x.x`)
 2. **apps/mobile** - Your awesome Expo app. (uses `react@18.x.x`)
-3. **apps/web** - Your awesome NextJS website. (uses `react@17.x.x`)
+3. **apps/web** - Your awesome Next.js website. (uses `react@17.x.x`)
 
 With monorepo tooling like Yarn, React is installed in two different **node_modules** folders.
 1. **node_modules** - The root folder, contains `react@17.x.x`.
