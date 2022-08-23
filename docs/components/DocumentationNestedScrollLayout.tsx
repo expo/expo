@@ -214,7 +214,6 @@ type Props = React.PropsWithChildren<{
   onContentScroll?: (scrollTop: number) => void;
   isMenuActive: boolean;
   tocVisible: boolean;
-  isMobileSearchActive: boolean;
   header: React.ReactNode;
   sidebarScrollPosition: number;
   sidebar: React.ReactNode;
@@ -239,7 +238,7 @@ export default class DocumentationNestedScrollLayout extends React.Component<Pro
   };
 
   render() {
-    const { isMobileSearchActive, isMenuActive, sidebarScrollPosition } = this.props;
+    const { isMenuActive, sidebarScrollPosition } = this.props;
 
     if (isMenuActive) {
       window.scrollTo(0, 0);
@@ -248,9 +247,7 @@ export default class DocumentationNestedScrollLayout extends React.Component<Pro
     return (
       <div css={STYLES_CONTAINER}>
         <Global styles={STYLES_GLOBAL} />
-        <div css={[STYLES_HEADER, (isMobileSearchActive || isMenuActive) && SHOW_SEARCH_AND_MENU]}>
-          {this.props.header}
-        </div>
+        <div css={[STYLES_HEADER, isMenuActive && SHOW_SEARCH_AND_MENU]}>{this.props.header}</div>
         <div css={STYLES_CONTENT}>
           <div css={[STYLES_SIDEBAR, STYLES_LEFT]}>
             <ScrollContainer ref={this.sidebarRef} scrollPosition={sidebarScrollPosition}>

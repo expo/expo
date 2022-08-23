@@ -1,7 +1,6 @@
 import { css } from '@emotion/react';
 import {
   theme,
-  palette,
   useTheme,
   ThemeDarkIcon,
   ThemeLightIcon,
@@ -16,11 +15,9 @@ import {
 import Link from 'next/link';
 import * as React from 'react';
 
-import { Search } from './icons/Search';
-
 import { paragraph } from '~/components/base/typography';
-import AlgoliaSearch from '~/components/plugins/AlgoliaSearch';
 import * as Constants from '~/constants/theme';
+import { DocSearch } from '~/ui/components/Search';
 
 const STYLES_LOGO = css`
   display: flex;
@@ -80,36 +77,11 @@ const STYLES_NAV = css`
   }
 `;
 
-const STYLES_MOBILE_NAV = css`
-  padding: 0px;
-  height: 56px;
-  background: ${theme.background.default};
-  display: none;
-
-  @media screen and (max-width: ${Constants.breakpoints.mobile}) {
-    display: flex;
-    border-bottom: 1px solid ${theme.border.default};
-  }
-`;
-
 const STYLES_STICKY = css`
   @media screen and (max-width: ${Constants.breakpoints.mobile}) {
     position: sticky;
     top: 0px;
     z-index: 3;
-  }
-`;
-
-const STYLES_SEARCH_OVERLAY = css`
-  @media screen and (max-width: ${Constants.breakpoints.mobile}) {
-    z-index: 1;
-    position: fixed;
-    top: 0px;
-    left: 0px;
-    right: 0px;
-    bottom: 0px;
-    opacity: 0.5;
-    background-color: ${palette.dark.black};
   }
 `;
 
@@ -125,12 +97,6 @@ const SECTION_LINKS_WRAPPER = css`
   @media screen and (max-width: ${Constants.breakpoints.mobile}) {
     margin-left: 0px;
   }
-`;
-
-const STYLES_MENU_BUTTON_CONTAINER = css`
-  display: grid;
-  grid-gap: 12px;
-  grid-auto-flow: column;
 `;
 
 const STYLES_MENU_BUTTON = css`
@@ -227,9 +193,15 @@ const SELECT_THEME_CHEVRON = css`
 `;
 
 const HEADER_RIGHT = css`
-  display: grid;
-  grid-template-columns: auto auto;
-  gap: 12px;
+  display: flex;
+`;
+
+const HEADER_RIGHT_CONTAINER = css`
+  display: flex;
+
+  @media screen and (max-width: ${Constants.breakpoints.mobile}) {
+    flex-direction: row-reverse;
+  }
 `;
 
 type SectionContainerProps = React.PropsWithChildren<{
@@ -260,11 +232,8 @@ const SectionContainer = ({
 };
 
 type Props = {
-  isAlgoliaSearchHidden: boolean;
   isMenuActive: boolean;
-  isMobileSearchActive: boolean;
   activeSection?: string;
-  onToggleSearch: () => void;
   onShowMenu: () => void;
   onHideMenu: () => void;
 };
@@ -321,7 +290,6 @@ export default class DocumentationHeader extends React.PureComponent<Props> {
                   </span>
                 </a>
               </Link>
-
               <Link href="/" passHref>
                 <a css={STYLES_UNSTYLED_ANCHOR}>
                   <h1 css={STYLES_TITLE_TEXT}>Expo</h1>
@@ -331,39 +299,23 @@ export default class DocumentationHeader extends React.PureComponent<Props> {
             </div>
           </div>
           <div css={STYLES_RIGHT}>
-            {!this.props.isAlgoliaSearchHidden && (
+            {!this.props.isMenuActive ? (
               <div css={HEADER_RIGHT}>
-                <AlgoliaSearch hiddenOnMobile />
-                <SelectTheme />
-              </div>
-            )}
-
-            {!this.props.isMenuActive && (
-              <div css={STYLES_MENU_BUTTON_CONTAINER}>
-                <span css={STYLES_MENU_BUTTON} onClick={this.props.onToggleSearch}>
-                  <Search />
-                </span>
+                <div css={HEADER_RIGHT_CONTAINER}>
+                  <DocSearch />
+                  <SelectTheme />
+                </div>
                 <span css={STYLES_MENU_BUTTON} onClick={this.props.onShowMenu}>
                   <HamburgerIcon />
                 </span>
               </div>
-            )}
-
-            {this.props.isMenuActive && (
+            ) : (
               <span css={STYLES_MENU_BUTTON} onClick={this.props.onHideMenu}>
                 <XIcon />
               </span>
             )}
           </div>
         </header>
-        <header css={[STYLES_NAV, STYLES_MOBILE_NAV]}>
-          {this.props.isMobileSearchActive ? (
-            <AlgoliaSearch hiddenOnMobile={false} onToggleSearch={this.props.onToggleSearch} />
-          ) : (
-            this.renderSectionLinks(false)
-          )}
-        </header>
-        <div css={this.props.isMobileSearchActive && STYLES_SEARCH_OVERLAY} />
       </div>
     );
   }

@@ -62,13 +62,11 @@ type Props = React.PropsWithChildren<{
 
 type State = {
   isMenuActive: boolean;
-  isMobileSearchActive: boolean;
 };
 
 class DocumentationPageWithApiVersion extends React.Component<Props, State> {
   state = {
     isMenuActive: false,
-    isMobileSearchActive: false,
   };
 
   private layoutRef = React.createRef<DocumentationNestedScrollLayout>();
@@ -97,24 +95,11 @@ class DocumentationPageWithApiVersion extends React.Component<Props, State> {
     this.setState({
       isMenuActive: true,
     });
-    this.handleHideSearch();
   };
 
   private handleHideMenu = () => {
     this.setState({
       isMenuActive: false,
-    });
-  };
-
-  private handleToggleSearch = () => {
-    this.setState(prevState => ({
-      isMobileSearchActive: !prevState.isMobileSearchActive,
-    }));
-  };
-
-  private handleHideSearch = () => {
-    this.setState({
-      isMobileSearchActive: false,
     });
   };
 
@@ -206,11 +191,8 @@ class DocumentationPageWithApiVersion extends React.Component<Props, State> {
       <DocumentationHeader
         activeSection={this.getActiveTopLevelSection()}
         isMenuActive={this.state.isMenuActive}
-        isMobileSearchActive={this.state.isMobileSearchActive}
-        isAlgoliaSearchHidden={this.state.isMenuActive}
         onShowMenu={this.handleShowMenu}
         onHideMenu={this.handleHideMenu}
-        onToggleSearch={this.handleToggleSearch}
       />
     );
 
@@ -254,7 +236,6 @@ class DocumentationPageWithApiVersion extends React.Component<Props, State> {
         sidebarRight={sidebarRight}
         tocVisible={this.props.tocVisible}
         isMenuActive={this.state.isMenuActive}
-        isMobileSearchActive={this.state.isMobileSearchActive}
         onContentScroll={handleContentScroll}
         sidebarScrollPosition={sidebarScrollPosition}>
         <Head title={this.props.title}>

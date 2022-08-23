@@ -1,16 +1,15 @@
 import { css } from '@emotion/react';
-import { theme, breakpoints, SearchIcon, HamburgerIcon, iconSize, spacing } from '@expo/styleguide';
+import { theme, breakpoints, HamburgerIcon, iconSize, spacing } from '@expo/styleguide';
 import React, { useState } from 'react';
 
 import { Logo } from './Logo';
-import { Search } from './Search';
 import { ThemeSelector } from './ThemeSelector';
 
 import { Button } from '~/ui/components/Button';
+import { DocSearch } from '~/ui/components/Search';
 import { BOLD } from '~/ui/components/Text';
 
 export const Header = () => {
-  const [isMobileSearchVisible, setMobileSearchVisible] = useState(false);
   const [isMobileMenuVisible, setMobileMenuVisible] = useState(false);
   return (
     <>
@@ -18,29 +17,21 @@ export const Header = () => {
         <div css={[columnStyle, leftColumnStyle]}>
           <Logo />
         </div>
-        <Search version="latest" css={hideOnMobileStyle} />
-        <div css={[columnStyle, rightColumnStyle, hideOnMobileStyle]}>
-          <ThemeSelector />
-        </div>
-        <div css={[columnStyle, rightColumnStyle, showOnMobileStyle]}>
-          <Button
-            theme="transparent"
-            css={[mobileButtonStyle, isMobileSearchVisible && mobileButtonActiveStyle]}
-            onClick={() => {
-              setMobileMenuVisible(false);
-              setMobileSearchVisible(prevState => !prevState);
-            }}>
-            <SearchIcon size={iconSize.small} color={theme.icon.default} />
-          </Button>
-          <Button
-            theme="transparent"
-            css={[mobileButtonStyle, isMobileMenuVisible && mobileButtonActiveStyle]}
-            onClick={() => {
-              setMobileSearchVisible(false);
-              setMobileMenuVisible(prevState => !prevState);
-            }}>
-            <HamburgerIcon size={iconSize.small} color={theme.icon.default} />
-          </Button>
+        <div css={[columnStyle, rightColumnStyle]}>
+          <DocSearch />
+          <div css={hideOnMobileStyle}>
+            <ThemeSelector />
+          </div>
+          <div css={showOnMobileStyle}>
+            <Button
+              theme="transparent"
+              css={[mobileButtonStyle, isMobileMenuVisible && mobileButtonActiveStyle]}
+              onClick={() => {
+                setMobileMenuVisible(prevState => !prevState);
+              }}>
+              <HamburgerIcon size={iconSize.small} color={theme.icon.default} />
+            </Button>
+          </div>
         </div>
       </nav>
       {isMobileMenuVisible && (
@@ -51,11 +42,6 @@ export const Header = () => {
           <div css={[columnStyle, rightColumnStyle]}>
             <ThemeSelector />
           </div>
-        </nav>
-      )}
-      {isMobileSearchVisible && (
-        <nav css={[containerStyle, showOnMobileStyle]}>
-          <Search mobile version="latest" css={mobileSearchInputStyle} />
         </nav>
       )}
     </>
@@ -129,8 +115,4 @@ const mobileButtonStyle = css`
 
 const mobileButtonActiveStyle = css`
   background-color: ${theme.background.secondary};
-`;
-
-const mobileSearchInputStyle = css`
-  margin: 0;
 `;
