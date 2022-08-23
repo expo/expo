@@ -3,6 +3,7 @@ package expo.modules.kotlin.exception
 import com.facebook.react.bridge.ReadableType
 import expo.modules.core.interfaces.DoNotStrip
 import java.util.*
+import kotlin.reflect.KClass
 import kotlin.reflect.KProperty1
 import kotlin.reflect.KType
 
@@ -118,6 +119,15 @@ internal class FunctionCallException(
   cause: CodedException
 ) : DecoratedException(
   message = "Call to function '$moduleName.$methodName' has been rejected.",
+  cause,
+)
+
+internal class PropSetException(
+  propName: String,
+  viewType: KClass<*>,
+  cause: CodedException
+) : DecoratedException(
+  message = "Cannot set prop '$propName' on view '$viewType'",
   cause,
 )
 
