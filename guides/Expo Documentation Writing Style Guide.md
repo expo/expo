@@ -311,7 +311,7 @@ Writing API documentation accurately and precisely helps developers use our APIs
 - When linking other SDK packages in a comment, use `./` instead of `../` at the beginning of the URL
   - For more information, check out [detect broken internal links in generated doc comments](https://github.com/expo/expo/pull/16771) PR on GitHub.
 
-## Formatting
+## Accuracy
 
 These are some topics that often come up with Expo development:
 
