@@ -28,7 +28,7 @@ class EXDevLauncherRemoteLogsManager {
       // the console, so we join messages with a newline and send an array consisting of just a
       // single item.
       "data": [batch.joined(separator: "\n")]
-    ] as [String : Any]
+    ] as [String: Any]
     guard let data = try? JSONSerialization.data(withJSONObject: messageJson, options: []) else {
       batch.removeAll()
       return
@@ -48,7 +48,7 @@ class EXDevLauncherRemoteLogsManager {
         return
       }
       let message = URLSessionWebSocketTask.Message.string(dataString)
-      task.send(message) { error in
+      task.send(message) { _ in
         group.leave()
       }
       _ = group.wait(timeout: DispatchTime.now() + .seconds(2))
