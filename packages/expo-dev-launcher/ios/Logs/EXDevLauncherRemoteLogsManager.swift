@@ -1,52 +1,52 @@
 import Foundation
 
 class EXDevLauncherRemoteLogsManager {
-  private var batch: [[String: Any]] = []
+  private var batch: [String] = []
   private let url: URL
-  
+
   init(withUrl url: URL) {
     self.url = url
   }
-  
+
   func deferError(exception: NSException) {
-    batch.append([
-      "level": "error",
-      "body": [
-        "message": exception.description,
-        "stack": exception.callStackSymbols.joined(separator: "\n")
-      ],
-      "includesStack": true
-    ])
+    batch.append("\(exception.name.rawValue): \(exception.reason ?? exception.description)")
+    batch.append("  \(exception.callStackSymbols.joined(separator: "\n  "))")
   }
-  
+
   func deferError(message: String) {
-    batch.append([
-      "level": "error",
-      "body": message,
-      "includesStack": false
-    ])
+    batch.append(message)
   }
-  
+
   func sendSync() {
-    guard let data = try? JSONSerialization.data(withJSONObject: batch, options: []) else {
+    let messageJson = [
+      "type": "log",
+      "level": "error",
+      "mode": "BRIDGE",
+      "data": [batch.joined(separator: "\n")]
+    ] as [String : Any]
+    guard let data = try? JSONSerialization.data(withJSONObject: messageJson, options: []) else {
       batch.removeAll()
       return
     }
-    
+
     batch.removeAll()
-    
-    var request = URLRequest.init(url: self.url)
-    request.httpMethod = "POST"
-    request.httpBody = data
-    request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-    request.setValue(UIDevice.current.identifierForVendor?.uuidString ?? UIDevice.current.name , forHTTPHeaderField: "Device-Id")
-    request.setValue(UIDevice.current.name, forHTTPHeaderField: "Device-Name")
-    
-    let group = DispatchGroup()
-    group.enter()
-    URLSession.shared.dataTask(with: request) { data, response, error in
-      group.leave()
-    }.resume()
-    group.wait(timeout: DispatchTime.now() + .seconds(2))
+
+    if #available(iOS 13.0, *) {
+      let group = DispatchGroup()
+      group.enter()
+
+      let task = URLSession.shared.webSocketTask(with: self.url)
+      task.resume()
+
+      guard let dataString = String(data: data, encoding: .utf8) else {
+        group.leave()
+        return
+      }
+      let message = URLSessionWebSocketTask.Message.string(dataString)
+      task.send(message) { error in
+        group.leave()
+      }
+      _ = group.wait(timeout: DispatchTime.now() + .seconds(2))
+    }
   }
 }
