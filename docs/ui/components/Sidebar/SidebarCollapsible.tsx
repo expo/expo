@@ -64,7 +64,6 @@ export function SidebarCollapsible(props: Props) {
         <div css={chevronContainerStyle}>
           <ChevronDownIcon
             size={iconSize.tiny}
-            color={theme.icon.secondary}
             css={[chevronStyle, !isOpen && chevronClosedStyle]}
           />
         </div>
