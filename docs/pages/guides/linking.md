@@ -450,7 +450,6 @@ const withAndroidVerifiedLinksWorkaround = config =>
  * @param {AndroidManifest} androidManifest
  */
 function removeExpoSchemaFromVerifiedIntentFilters(androidManifest) {
-  // see: https://github.com/expo/expo-cli/blob/f1624c75b52cc1c4f99354ec4021494e0eff74aa/packages/config-plugins/src/android/Scheme.ts#L164-L179
   for (const application of androidManifest.manifest.application || []) {
     for (const activity of application.activity || []) {
       if (activityHasSingleTaskLaunchMode(activity)) {
@@ -472,7 +471,6 @@ function removeExpoSchemaFromVerifiedIntentFilters(androidManifest) {
 /**
  * Determine if the activity should contain the intent filters to clean.
  *
- * @see https://github.com/expo/expo-cli/blob/f1624c75b52cc1c4f99354ec4021494e0eff74aa/packages/config-plugins/src/android/Scheme.ts#L166
  */
 function activityHasSingleTaskLaunchMode(activity) {
   return activity?.$?.['android:launchMode'] === 'singleTask';
