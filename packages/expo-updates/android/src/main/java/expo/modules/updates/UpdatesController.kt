@@ -30,7 +30,9 @@ import expo.modules.updates.loader.LoaderTask
 import expo.modules.updates.loader.LoaderTask.BackgroundUpdateStatus
 import expo.modules.updates.loader.LoaderTask.LoaderTaskCallback
 import expo.modules.updates.loader.RemoteLoader
+import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogReader
+import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.manifest.UpdateManifest
 import expo.modules.updates.selectionpolicy.SelectionPolicy
 import expo.modules.updates.selectionpolicy.SelectionPolicyFactory
@@ -71,6 +73,7 @@ class UpdatesController private constructor(
     }
   }
 
+  private val logger = UpdatesLogger(context)
   private var isStarted = false
   private var loaderTask: LoaderTask? = null
   private var remoteLoadStatus = ErrorRecoveryDelegate.RemoteLoadStatus.IDLE
@@ -240,6 +243,7 @@ class UpdatesController private constructor(
       selectionPolicy,
       object : LoaderTaskCallback {
         override fun onFailure(e: Exception) {
+          logger.error("UpdatesController loaderTask onFailure: ${e.localizedMessage}", UpdatesErrorCode.None)
           launcher = NoDatabaseLauncher(context, updatesConfiguration, e)
           isEmergencyLaunch = true
           notifyController()
@@ -271,6 +275,7 @@ class UpdatesController private constructor(
               if (exception == null) {
                 throw AssertionError("Background update with error status must have a nonnull exception object")
               }
+              logger.error("UpdatesController onBackgroundUpdateFinished: Error: ${exception.localizedMessage}", UpdatesErrorCode.None)
               remoteLoadStatus = ErrorRecoveryDelegate.RemoteLoadStatus.IDLE
               val params = Arguments.createMap()
               params.putString("message", exception.message)
@@ -281,12 +286,14 @@ class UpdatesController private constructor(
                 throw AssertionError("Background update with error status must have a nonnull update object")
               }
               remoteLoadStatus = ErrorRecoveryDelegate.RemoteLoadStatus.NEW_UPDATE_LOADED
+              logger.info("UpdatesController onBackgroundUpdateFinished: Update available", UpdatesErrorCode.None)
               val params = Arguments.createMap()
               params.putString("manifestString", update.manifest.toString())
               UpdatesUtils.sendEventToReactNative(reactNativeHost, UPDATE_AVAILABLE_EVENT, params)
             }
             BackgroundUpdateStatus.NO_UPDATE_AVAILABLE -> {
               remoteLoadStatus = ErrorRecoveryDelegate.RemoteLoadStatus.IDLE
+              logger.error("UpdatesController onBackgroundUpdateFinished: No update available", UpdatesErrorCode.NoUpdatesAvailable)
               UpdatesUtils.sendEventToReactNative(
                 reactNativeHost,
                 UPDATE_NO_UPDATE_AVAILABLE_EVENT,
@@ -321,6 +328,7 @@ class UpdatesController private constructor(
         val remoteLoader = RemoteLoader(context, updatesConfiguration, database, fileDownloader, updatesDirectory, launchedUpdate)
         remoteLoader.start(object : Loader.LoaderCallback {
           override fun onFailure(e: Exception) {
+            logger.error("UpdatesController loadRemoteUpdate onFailure: ${e.localizedMessage}", UpdatesErrorCode.UpdateFailedToLoad, launchedUpdate?.loggingId, null)
             setRemoteLoadStatus(ErrorRecoveryDelegate.RemoteLoadStatus.IDLE)
             releaseDatabase()
           }
