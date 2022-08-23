@@ -28,11 +28,7 @@ abstract class AsyncFunction(
     }
 
     if (queue == null) {
-      exceptionDecorator({
-        FunctionCallException(name, holder.name, it)
-      }) {
-        callUserImplementation(args, promise)
-      }
+      callUserImplementation(args, promise)
     } else {
       queue.launch {
         try {
