@@ -26,62 +26,62 @@ If a capability is enabled for your app remotely, but not present in the native 
 
 EAS Build will only enable capabilities that it has built-in support for, any unsupported entitlements must be manually enabled via [Apple Developer Portal][apple-dev-portal].
 
-| Capability                                        | Supported   |
-| ------------------------------------------------- | ----------- |
-| Access WiFi Information                           | <YesIcon /> |
-| App Attest                                        | <YesIcon /> |
-| App Groups                                        | <YesIcon /> |
-| Apple Pay Payment Processing                      | <YesIcon /> |
-| Associated Domains                                | <YesIcon /> |
-| AutoFill Credential Provider                      | <YesIcon /> |
-| ClassKit                                          | <YesIcon /> |
-| Communicates with Drivers                         | <YesIcon /> |
-| Communication Notifications                       | <YesIcon /> |
-| Custom Network Protocol                           | <YesIcon /> |
-| Data Protection                                   | <YesIcon /> |
-| DriverKit Allow Third Party UserClients           | <YesIcon /> |
-| DriverKit Family Audio (development)              | <YesIcon /> |
-| DriverKit Family HID Device (development)         | <YesIcon /> |
-| DriverKit Family HID EventService (development)   | <YesIcon /> |
-| DriverKit Family Networking (development)         | <YesIcon /> |
-| DriverKit Family SCSIController (development)     | <YesIcon /> |
-| DriverKit Family Serial (development)             | <YesIcon /> |
-| DriverKit Transport HID (development)             | <YesIcon /> |
-| DriverKit USB Transport (development)             | <YesIcon /> |
-| DriverKit for Development                         | <YesIcon /> |
-| Extended Virtual Address Space                    | <YesIcon /> |
-| Family Controls                                   | <YesIcon /> |
-| FileProvider TestingMode                          | <YesIcon /> |
-| Fonts                                             | <YesIcon /> |
-| Group Activities                                  | <YesIcon /> |
-| HealthKit                                         | <YesIcon /> |
-| HomeKit                                           | <YesIcon /> |
-| Hotspot                                           | <YesIcon /> |
-| Increased Memory Limit                            | <YesIcon /> |
-| Inter-App Audio                                   | <YesIcon /> |
-| Low Latency HLS                                   | <YesIcon /> |
-| MDM Managed Associated Domains                    | <YesIcon /> |
-| Maps                                              | <YesIcon /> |
-| Media Device Discovery                            | <YesIcon /> |
-| Multipath                                         | <YesIcon /> |
-| NFC Tag Reading                                   | <YesIcon /> |
-| Network Extensions                                | <YesIcon /> |
-| On Demand Install Capable for App Clip Extensions | <YesIcon /> |
-| Personal VPN                                      | <YesIcon /> |
-| Push Notifications                                | <YesIcon /> |
-| Push to Talk                                      | <YesIcon /> |
-| Recalibrate Estimates                             | <YesIcon /> |
-| Shared with You                                   | <YesIcon /> |
-| Sign In with Apple                                | <YesIcon /> |
-| SiriKit                                           | <YesIcon /> |
-| System Extension                                  | <YesIcon /> |
-| TV Services                                       | <YesIcon /> |
-| Time Sensitive Notifications                      | <YesIcon /> |
-| Wallet                                            | <YesIcon /> |
-| WeatherKit                                        | <YesIcon /> |
-| Wireless Accessory Configuration                  | <YesIcon /> |
-| iCloud                                            | <YesIcon /> |
-| HLS Interstitial Previews                         | <NoIcon />  |
+| Support     | Capability                                        | Entitlement string                                                         |
+| ----------- | ------------------------------------------------- | -------------------------------------------------------------------------- |
+| <YesIcon /> | Access WiFi Information                           | `com.apple.developer.networking.wifi-info`                                 |
+| <YesIcon /> | App Attest                                        | `com.apple.developer.devicecheck.appattest-environment`                    |
+| <YesIcon /> | App Groups                                        | `com.apple.security.application-groups`                                    |
+| <YesIcon /> | Apple Pay Payment Processing                      | `com.apple.developer.in-app-payments`                                      |
+| <YesIcon /> | Associated Domains                                | `com.apple.developer.associated-domains`                                   |
+| <YesIcon /> | AutoFill Credential Provider                      | `com.apple.developer.authentication-services.autofill-credential-provider` |
+| <YesIcon /> | ClassKit                                          | `com.apple.developer.ClassKit-environment`                                 |
+| <YesIcon /> | Communicates with Drivers                         | `com.apple.developer.driverkit.communicates-with-drivers`                  |
+| <YesIcon /> | Communication Notifications                       | `com.apple.developer.usernotifications.communication`                      |
+| <YesIcon /> | Custom Network Protocol                           | `com.apple.developer.networking.custom-protocol`                           |
+| <YesIcon /> | Data Protection                                   | `com.apple.developer.default-data-protection`                              |
+| <YesIcon /> | DriverKit Allow Third Party UserClients           | `com.apple.developer.driverkit.allow-third-party-userclients`              |
+| <YesIcon /> | DriverKit Family Audio (development)              | `com.apple.developer.driverkit.family.audio`                               |
+| <YesIcon /> | DriverKit Family HID Device (development)         | `com.apple.developer.driverkit.family.hid.device`                          |
+| <YesIcon /> | DriverKit Family HID EventService (development)   | `com.apple.developer.driverkit.family.hid.eventservice`                    |
+| <YesIcon /> | DriverKit Family Networking (development)         | `com.apple.developer.driverkit.family.networking`                          |
+| <YesIcon /> | DriverKit Family SCSIController (development)     | `com.apple.developer.driverkit.family.scsicontroller`                      |
+| <YesIcon /> | DriverKit Family Serial (development)             | `com.apple.developer.driverkit.family.serial`                              |
+| <YesIcon /> | DriverKit Transport HID (development)             | `com.apple.developer.driverkit.transport.hid`                              |
+| <YesIcon /> | DriverKit USB Transport (development)             | `com.apple.developer.driverkit.transport.usb`                              |
+| <YesIcon /> | DriverKit for Development                         | `com.apple.developer.driverkit`                                            |
+| <YesIcon /> | Extended Virtual Address Space                    | `com.apple.developer.kernel.extended-virtual-addressing`                   |
+| <YesIcon /> | Family Controls                                   | `com.apple.developer.family-controls`                                      |
+| <YesIcon /> | FileProvider TestingMode                          | `com.apple.developer.fileprovider.testing-mode`                            |
+| <YesIcon /> | Fonts                                             | `com.apple.developer.user-fonts`                                           |
+| <YesIcon /> | Group Activities                                  | `com.apple.developer.group-session`                                        |
+| <YesIcon /> | HealthKit                                         | `com.apple.developer.healthkit`                                            |
+| <YesIcon /> | HomeKit                                           | `com.apple.developer.homekit`                                              |
+| <YesIcon /> | Hotspot                                           | `com.apple.developer.networking.HotspotConfiguration`                      |
+| <YesIcon /> | Increased Memory Limit                            | `com.apple.developer.kernel.increased-memory-limit`                        |
+| <YesIcon /> | Inter-App Audio                                   | `inter-app-audio`                                                          |
+| <YesIcon /> | Low Latency HLS                                   | `com.apple.developer.coremedia.hls.low-latency`                            |
+| <YesIcon /> | MDM Managed Associated Domains                    | `com.apple.developer.associated-domains.mdm-managed`                       |
+| <YesIcon /> | Maps                                              | `com.apple.developer.maps`                                                 |
+| <YesIcon /> | Media Device Discovery                            | `com.apple.developer.media-device-discovery-extension`                     |
+| <YesIcon /> | Multipath                                         | `com.apple.developer.networking.multipath`                                 |
+| <YesIcon /> | NFC Tag Reading                                   | `com.apple.developer.nfc.readersession.formats`                            |
+| <YesIcon /> | Network Extensions                                | `com.apple.developer.networking.networkextension`                          |
+| <YesIcon /> | On Demand Install Capable for App Clip Extensions | `com.apple.developer.on-demand-install-capable`                            |
+| <YesIcon /> | Personal VPN                                      | `com.apple.developer.networking.vpn.api`                                   |
+| <YesIcon /> | Push Notifications                                | `aps-environment`                                                          |
+| <YesIcon /> | Push to Talk                                      | `com.apple.developer.push-to-talk`                                         |
+| <YesIcon /> | Recalibrate Estimates                             | `com.apple.developer.healthkit.recalibrate-estimates`                      |
+| <YesIcon /> | Shared with You                                   | `com.apple.developer.shared-with-you`                                      |
+| <YesIcon /> | Sign In with Apple                                | `com.apple.developer.applesignin`                                          |
+| <YesIcon /> | SiriKit                                           | `com.apple.developer.siri`                                                 |
+| <YesIcon /> | System Extension                                  | `com.apple.developer.system-extension.install`                             |
+| <YesIcon /> | TV Services                                       | `com.apple.developer.user-management`                                      |
+| <YesIcon /> | Time Sensitive Notifications                      | `com.apple.developer.usernotifications.time-sensitive`                     |
+| <YesIcon /> | Wallet                                            | `com.apple.developer.pass-type-identifiers`                                |
+| <YesIcon /> | WeatherKit                                        | `com.apple.developer.weatherkit`                                           |
+| <YesIcon /> | Wireless Accessory Configuration                  | `com.apple.external-accessory.wireless-configuration`                      |
+| <YesIcon /> | iCloud                                            | `com.apple.developer.icloud-container-identifiers`                         |
+| <NoIcon />  | HLS Interstitial Previews                         | ???                                                                        |
 
 The unsupported capabilities either don't support iOS, or they don't have a corresponding entitlement value.
 
