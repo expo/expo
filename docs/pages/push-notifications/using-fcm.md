@@ -14,7 +14,7 @@ Note that FCM is not currently available for Expo iOS apps.
 2. In your new project console, click **Add Firebase to your Android app** and follow the setup steps. **Make sure that the Android package name you enter is the same as the value of `android.package` in your app.json.**
 
 3. Download the `google-services.json` file and place it in your Expo app's root directory.
-
+  > **Note:** The `google-services.json` file contains unique and non-secret identifiers of your Firebase project. For more information, see [Understand Firebase Projects](https://firebase.google.com/docs/projects/learn-more#config-files-objects).
 4. In your app.json, add an `android.googleServicesFile` field with the relative path to the `google-services.json` file you just downloaded. If you placed it in the root directory, this will probably look like
 
   ```javascript
