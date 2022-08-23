@@ -31,7 +31,7 @@ class ViewCallback<T>(
         viewId = view.id,
         eventName = name,
         eventBody = convertEventBody(arg),
-        coalescingKey= coalescingKey?.invoke(arg)
+        coalescingKey = coalescingKey?.invoke(arg)
       )
   }
 
