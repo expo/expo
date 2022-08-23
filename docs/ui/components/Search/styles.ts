@@ -15,14 +15,14 @@ export const DocSearchStyles = css`
 
     /* modal */
     --docsearch-modal-width: 40vw;
-    --docsearch-modal-height: 60vh;
+    --docsearch-modal-height: 66vh;
     --docsearch-modal-background: ${theme.background.default};
     --docsearch-modal-shadow: ${shadows.popover};
 
     /* searchbox */
     --docsearch-searchbox-height: 56px;
-    --docsearch-searchbox-background: ${theme.background.secondary};
-    --docsearch-searchbox-focus-background: ${theme.background.tertiary};
+    --docsearch-searchbox-background: ${theme.background.default};
+    --docsearch-searchbox-focus-background: ${theme.background.default};
     --docsearch-searchbox-shadow: none;
 
     /* hit */
@@ -51,6 +51,16 @@ export const DocSearchStyles = css`
     .DocSearch-Hit-icon {
       opacity: 0.6;
     }
+
+    .DocSearch-Hit-action-button:hover path,
+    .DocSearch-Hit-action-button:focus path {
+      fill: ${theme.palette.primary[600]};
+      stroke: ${theme.palette.primary[600]};
+    }
+
+    .DocSearch-Hit[aria-selected='true'] .DocSearch-Hit-icon:before {
+      filter: brightness(1.25);
+    }
   }
 
   /* === Button === */
@@ -70,7 +80,9 @@ export const DocSearchStyles = css`
     padding: ${spacing[0.5]}px ${spacing[3]}px;
     user-select: none;
     width: 24vw;
-    max-width: 360px;
+    max-width: 320px;
+    box-shadow: ${shadows.input};
+    border: 1px solid ${theme.border.default};
   }
 
   .DocSearch-Button:hover,
@@ -111,6 +123,7 @@ export const DocSearchStyles = css`
     align-items: center;
     border-radius: 3px;
     border: 1px solid ${theme.border.default};
+    background: ${theme.background.secondary};
     color: ${theme.icon.secondary};
     box-shadow: ${shadows.micro};
     display: flex;
@@ -126,7 +139,7 @@ export const DocSearchStyles = css`
 
   @media (max-width: 768px) {
     .DocSearch-Button {
-      width: 40px;
+      width: 42px;
     }
 
     .DocSearch-Button-Keys,
@@ -183,7 +196,7 @@ export const DocSearchStyles = css`
     border-radius: 6px;
     box-shadow: var(--docsearch-modal-shadow);
     flex-direction: column;
-    margin: 90px auto auto;
+    margin: 72px auto auto;
     max-width: var(--docsearch-modal-width);
     min-width: 680px;
     position: relative;
@@ -193,12 +206,12 @@ export const DocSearchStyles = css`
 
   .DocSearch-SearchBar {
     display: flex;
-    padding: var(--docsearch-spacing) var(--docsearch-spacing) ${spacing[2]}px;
+    padding: var(--docsearch-spacing) var(--docsearch-spacing) ${spacing[3]}px;
   }
 
   .DocSearch-Form {
     align-items: center;
-    background: var(--docsearch-searchbox-background);
+    background: var(--docsearch-searchbox-focus-background);
     border-radius: 4px;
     box-shadow: var(--docsearch-searchbox-shadow);
     display: flex;
@@ -207,6 +220,8 @@ export const DocSearchStyles = css`
     padding: 0 var(--docsearch-spacing);
     position: relative;
     width: 100%;
+    box-shadow: ${shadows.input};
+    border: 1px solid ${theme.border.default};
   }
 
   .DocSearch-Input {
@@ -226,6 +241,10 @@ export const DocSearchStyles = css`
   .DocSearch-Input::placeholder {
     color: ${theme.text.secondary};
     opacity: 0.5;
+  }
+
+  .DocSearch-Input::selection {
+    color: ${theme.palette.white};
   }
 
   .DocSearch-Input::-webkit-search-cancel-button,
@@ -306,8 +325,9 @@ export const DocSearchStyles = css`
 
   .DocSearch-LoadingIndicator svg,
   .DocSearch-MagnifierLabel svg {
-    height: 24px;
-    width: 24px;
+    height: 20px;
+    width: 20px;
+    margin-right: 2px;
   }
 
   .DocSearch-Cancel {
@@ -368,6 +388,7 @@ export const DocSearchStyles = css`
   .DocSearch-Title {
     font-size: 1.2em;
     color: var(--docsearch-text-color);
+    user-select: none;
   }
 
   .DocSearch-Logo a {
@@ -468,6 +489,10 @@ export const DocSearchStyles = css`
     width: 24px;
   }
 
+  .DocSearch-Hit[aria-selected='true'] .DocSearch-Hit-icon:before {
+    filter: brightness(0.75);
+  }
+
   .DocSearch-Hit[aria-selected='true'] a {
     background-color: var(--docsearch-hit-active-color);
   }
@@ -552,7 +577,8 @@ export const DocSearchStyles = css`
 
   .DocSearch-Hit-action-button:hover path,
   .DocSearch-Hit-action-button:focus path {
-    fill: #fff;
+    fill: ${theme.palette.primary[400]};
+    stroke: ${theme.palette.primary[400]};
   }
 
   .DocSearch-Hit-content-wrapper {
@@ -574,14 +600,13 @@ export const DocSearchStyles = css`
     font-size: 0.9em;
     font-family: ${typography.fontFaces.medium};
     color: ${theme.text.default};
+    text-overflow: ellipsis;
+    overflow: hidden;
   }
 
   .DocSearch-Hit-path {
     color: var(--docsearch-muted-color);
     font-size: 0.75em;
-  }
-
-  .DocSearch-Hit[aria-selected='true'] {
   }
 
   @media screen and (prefers-reduced-motion: reduce) {
@@ -633,7 +658,7 @@ export const DocSearchStyles = css`
     background: none;
     border: 0;
     border-radius: 1em;
-    color: var(--docsearch-highlight-color);
+    color: ${theme.link.default};
     cursor: pointer;
     display: inline-block;
     font-size: 1em;
@@ -663,7 +688,7 @@ export const DocSearchStyles = css`
     user-select: none;
     width: 100%;
     z-index: 300;
-    margin-top: ${spacing[1]}px;
+    margin-top: ${spacing[2]}px;
   }
 
   .DocSearch-Commands {
@@ -714,9 +739,10 @@ export const DocSearchStyles = css`
     .DocSearch-Dropdown {
       height: 100%;
     }
-    
+
     .DocSearch-Button {
       background: ${theme.background.default};
+      margin: 0;
     }
 
     .DocSearch-Container {
@@ -729,6 +755,7 @@ export const DocSearchStyles = css`
       border-radius: 0;
       bottom: 0;
       position: absolute;
+      border-top: 1px solid ${theme.border.default};
     }
 
     .DocSearch-Hit-content-wrapper {
@@ -736,11 +763,11 @@ export const DocSearchStyles = css`
       position: relative;
       width: 80%;
     }
-    
+
     .DocSearch-Hit-title {
       font-size: 0.9rem;
     }
-    
+
     .DocSearch-Hit-path {
       font-size: 0.75rem;
     }
@@ -759,7 +786,7 @@ export const DocSearchStyles = css`
     .DocSearch-Dropdown {
       max-height: calc(
         100vh - var(--docsearch-searchbox-height) - (var(--docsearch-spacing) * 2) -
-          var(--docsearch-footer-height)
+          var(--docsearch-footer-height) - 4px
       );
       padding: ${spacing[3]}px;
     }
@@ -778,7 +805,7 @@ export const DocSearchStyles = css`
       margin-left: var(--docsearch-spacing);
       outline: none;
       overflow: hidden;
-      padding: 0;
+      padding: 0 4px 0 2px;
       user-select: none;
       white-space: nowrap;
     }
@@ -792,7 +819,9 @@ export const DocSearchStyles = css`
     }
 
     .DocSearch-SearchBar {
+      background: ${theme.background.secondary};
       border-bottom: 1px solid ${theme.border.default};
+      padding-bottom: ${spacing[2]}px;
     }
   }
 
