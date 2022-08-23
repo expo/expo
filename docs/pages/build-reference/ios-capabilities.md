@@ -28,7 +28,7 @@ EAS Build will only enable capabilities that it has built-in support for, any un
 
 | Support     | Capability                                        | Entitlement string                                                         |
 | ----------- | ------------------------------------------------- | -------------------------------------------------------------------------- |
-| <YesIcon /> | Access WiFi Information                           | `com.apple.developer.networking.wifi-info`                                 |
+| <YesIcon /> | Access Wi-Fi Information                          | `com.apple.developer.networking.wifi-info`                                 |
 | <YesIcon /> | App Attest                                        | `com.apple.developer.devicecheck.appattest-environment`                    |
 | <YesIcon /> | App Groups                                        | `com.apple.security.application-groups`                                    |
 | <YesIcon /> | Apple Pay Payment Processing                      | `com.apple.developer.in-app-payments`                                      |
