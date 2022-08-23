@@ -142,8 +142,9 @@ class GoogleAuthRequest extends AuthRequest {
 
     // Apply the default scopes
     const scopes = applyRequiredScopes(config.scopes, settings.minimumScopes);
-    const isImplicit =
-      config.responseType === ResponseType.Token || config.responseType === ResponseType.IdToken;
+    const responseType = config.responseType.split(' ');
+    const isImplicit = responseType.includes(ResponseType.Token) || responseType.includes(ResponseType.IdToken)
+
     if (isImplicit) {
       // PKCE must be disabled in implicit mode.
       config.usePKCE = false;
@@ -167,7 +168,7 @@ class GoogleAuthRequest extends AuthRequest {
    */
   async getAuthRequestConfigAsync(): Promise<AuthRequestConfig> {
     const { extraParams = {}, ...config } = await super.getAuthRequestConfigAsync();
-    if (config.responseType === ResponseType.IdToken && !extraParams.nonce && !this.nonce) {
+    if (config.responseType.split(' ').includes(ResponseType.Token) && !extraParams.nonce && !this.nonce) {
       if (!this.nonce) {
         this.nonce = await generateHexStringAsync(16);
       }
