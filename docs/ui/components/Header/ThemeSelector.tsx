@@ -70,7 +70,7 @@ const selectStyle = css`
   margin: 0;
   border: 1px solid ${theme.border.default};
   box-shadow: ${shadows.input};
-  border-radius: ${borderRadius.small}px;
+  border-radius: ${borderRadius.medium}px;
   -moz-appearance: none;
   -webkit-appearance: none;
   appearance: none;

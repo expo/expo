@@ -11,8 +11,6 @@ const PAGES_DIR = path.resolve(__dirname, '../pages');
 
 // TODO(cedric): refactor docs to get rid of the directory lists
 
-/** Manual list of directories to pull in to the getting started tutorial */
-const startingDirectories = ['introduction', 'get-started', 'tutorial', 'next-steps'];
 /** Manual list of directories to categorize as "EAS content" */
 const easDirectories = [
   'eas',
@@ -24,7 +22,7 @@ const easDirectories = [
   'eas-metadata',
 ];
 /** Manual list of directories to categorize as "Archive" */
-const archiveDirectores = ['archive'];
+const archiveDirectories = ['archive'];
 /** Private preview section which isn't linked in the documentation */
 const previewDirectories = ['preview'];
 /** All other unlisted directories */
@@ -36,21 +34,16 @@ const generalDirectories = fs
     name =>
       name !== 'api' &&
       name !== 'versions' &&
-      ![
-        ...startingDirectories,
-        ...previewDirectories,
-        ...easDirectories,
-        ...archiveDirectores,
-      ].includes(name)
+      ![...previewDirectories, ...easDirectories, ...archiveDirectories].includes(name)
   );
 
 // --- Navigation ---
 
-const starting = [
+const general = [
   makeSection(
-    'The Basics',
+    'Get started',
     [
-      makeGroup('Get Started', [
+      makeGroup('Set up', [
         makePage('get-started/installation.md'),
         makePage('get-started/create-a-new-app.md'),
         makePage('get-started/errors.md'),
@@ -66,13 +59,13 @@ const starting = [
         makePage('tutorial/configuration.md'),
         makePage('tutorial/follow-up.md'),
       ]),
-      makeGroup('Conceptual Overview', [
+      makeGroup('Conceptual overview', [
         makePage('introduction/managed-vs-bare.md'),
         // makePage('introduction/walkthrough.md'),
         makePage('introduction/why-not-expo.md'),
         makePage('introduction/faq.md'),
       ]),
-      makeGroup('Next Steps', [
+      makeGroup('Next steps', [
         makePage('next-steps/using-the-documentation.md'),
         makePage('next-steps/community.md'),
         makePage('next-steps/additional-resources.md'),
@@ -80,9 +73,6 @@ const starting = [
     ],
     { expanded: true }
   ),
-];
-
-const general = [
   makeSection('Fundamentals', [
     makeGroup('Fundamentals', [
       makePage('workflow/expo-cli.md'),
@@ -104,8 +94,8 @@ const general = [
       makePage('workflow/common-development-errors.md'),
     ]),
   ]),
-  makeSection('Distributing Your App', [
-    makeGroup('Distributing Your App', [
+  makeSection('Distributing your app', [
+    makeGroup('Distributing your app', [
       makePage('distribution/introduction.md'),
       makePage('distribution/app-stores.md'),
       makePage('distribution/runtime-versions.md'),
@@ -116,8 +106,8 @@ const general = [
       makePage('distribution/publishing-websites.md'),
     ]),
   ]),
-  makeSection('Development Builds', [
-    makeGroup('Development Builds', [
+  makeSection('Development builds', [
+    makeGroup('Development builds', [
       makePage('development/introduction.md'),
       makePage('development/getting-started.md'),
       makePage('development/build.md'),
@@ -143,8 +133,8 @@ const general = [
       makePage('guides/using-preact.md'),
     ]),
   ]),
-  makeSection('Assorted Guides', [
-    makeGroup('Assorted Guides', [
+  makeSection('Assorted guides', [
+    makeGroup('Assorted guides', [
       makePage('guides/assets.md'),
       makePage('guides/using-custom-fonts.md'),
       makePage('guides/icons.md'),
@@ -177,16 +167,16 @@ const general = [
       makePage('guides/using-hermes.md'),
     ]),
   ]),
-  makeSection('Expo Accounts', [
-    makeGroup('Expo Accounts', [
+  makeSection('Expo accounts', [
+    makeGroup('Expo accounts', [
       makePage('accounts/account-types.md'),
       makePage('accounts/two-factor.md'),
       makePage('accounts/programmatic-access.md'),
       makePage('accounts/working-together.md'),
     ]),
   ]),
-  makeSection('Bare Workflow', [
-    makeGroup('Bare Workflow', [
+  makeSection('Bare workflow', [
+    makeGroup('Bare workflow', [
       makePage('bare/exploring-bare-workflow.md'),
       makePage('bare/hello-world.md'),
       makePage('bare/using-libraries.md'),
@@ -202,8 +192,8 @@ const general = [
       makePage('bare/error-recovery.md'),
     ]),
   ]),
-  makeSection('Push Notifications', [
-    makeGroup('Push Notifications', [
+  makeSection('Push notifications', [
+    makeGroup('Push notifications', [
       makePage('push-notifications/overview.md'),
       makePage('push-notifications/push-notifications-setup.md'),
       makePage('push-notifications/sending-notifications.md'),
@@ -232,11 +222,11 @@ const general = [
       makePage('modules/module-config.md'),
     ]),
   ]),
-  makeSection('Regulatory Compliance', [
-    makeGroup('Regulatory Compliance', sortAlphabetical(pagesFromDir('regulatory-compliance'))),
+  makeSection('Regulatory compliance', [
+    makeGroup('Regulatory compliance', sortAlphabetical(pagesFromDir('regulatory-compliance'))),
   ]),
-  makeSection('Technical Specs', [
-    makeGroup('Technical Specs', [
+  makeSection('Technical specs', [
+    makeGroup('Technical specs', [
       makePage('technical-specs/expo-updates-0.md'),
       makePage('technical-specs/expo-sfv-0.md'),
     ]),
@@ -425,7 +415,6 @@ const reference = VERSIONS.reduce(
 );
 
 module.exports = {
-  starting,
   general,
   eas,
   preview,
@@ -434,7 +423,6 @@ module.exports = {
   /** @type {any} */
   reference: { ...reference, latest: reference[LATEST_VERSION] },
   generalDirectories,
-  startingDirectories,
   previewDirectories,
   easDirectories,
 };
