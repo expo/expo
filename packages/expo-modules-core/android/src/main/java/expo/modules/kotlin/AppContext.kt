@@ -251,6 +251,13 @@ class AppContext(
     )
   }
 
+  @Suppress("UNCHECKED_CAST")
+  @UiThread
+  fun <T : View> findView(viewTag: Int): T? {
+    val rnUIManager = reactContextHolder.get()?.getNativeModule(UIManagerModule::class.java)
+    return rnUIManager?.resolveView(viewTag) as? T
+  }
+
 // region CurrentActivityProvider
 
   override val currentActivity: AppCompatActivity?
