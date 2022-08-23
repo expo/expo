@@ -2,7 +2,6 @@ import { css } from '@emotion/react';
 import {
   breakpoints,
   theme,
-  iconSize,
   spacing,
   typography,
   ChevronRightIcon,
