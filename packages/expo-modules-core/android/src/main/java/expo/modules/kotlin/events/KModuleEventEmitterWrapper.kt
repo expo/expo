@@ -72,6 +72,7 @@ open class KEventEmitterWrapper(
     deviceEventEmitter
       ?.emit(eventName, eventBody)
   }
+
   override fun emit(eventName: String, eventBody: Record?) {
     deviceEventEmitter
       ?.emit(eventName, JSTypeConverter.convertToJSValue(eventBody))
@@ -82,19 +83,20 @@ open class KEventEmitterWrapper(
       ?.emit(eventName, JSTypeConverter.convertToJSValue(eventBody))
   }
 
-  override fun emit(viewId: Int, eventName: String, eventBody: WritableMap?) {
+  override fun emit(viewId: Int, eventName: String, eventBody: WritableMap?, coalescingKey: Short?) {
     uiEventDispatcher
-      ?.dispatchEvent(UIEvent(viewId, eventName, eventBody))
+      ?.dispatchEvent(UIEvent(viewId, eventName, eventBody, coalescingKey))
   }
 
   private class UIEvent(
     private val viewId: Int,
     private val eventName: String,
-    private val eventBody: WritableMap?
+    private val eventBody: WritableMap?,
+    private val coalescingKey: Short?
   ) : com.facebook.react.uimanager.events.Event<UIEvent>(viewId) {
     override fun getEventName(): String = eventName
-    override fun canCoalesce(): Boolean = false
-    override fun getCoalescingKey(): Short = 0
+    override fun canCoalesce(): Boolean = coalescingKey != null
+    override fun getCoalescingKey(): Short = coalescingKey ?: 0
     override fun dispatch(rctEventEmitter: RCTEventEmitter) {
       rctEventEmitter.receiveEvent(viewId, eventName, eventBody)
     }
