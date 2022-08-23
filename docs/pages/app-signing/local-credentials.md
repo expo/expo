@@ -154,11 +154,13 @@ For example, maybe you want to use local credentials when deploying to the Amazo
 ```json
 {
   "build": {
-    "android": {
-      "amazon": {
+    "amazon-production": {
+      "android": {
         "credentialsSource": "local"
-      },
-      "google": {
+      }
+    },
+    "google-production": {
+      "android": {
         "credentialsSource": "remote"
       }
     }
