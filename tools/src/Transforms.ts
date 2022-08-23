@@ -128,6 +128,12 @@ export async function copyFileWithTransformsAsync(
   // Save transformed source file at renamed target path.
   await fs.outputFile(targetPath, content);
 
+  // Keep original file mode if needed.
+  if (options.keepFileMode) {
+    const { mode } = await fs.stat(sourcePath);
+    await fs.chmod(targetPath, mode);
+  }
+
   return {
     content,
     targetFile,

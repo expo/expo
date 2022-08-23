@@ -11,6 +11,8 @@ import { runReactNativeCodegenAsync } from '../../Codegen';
 import { EXPO_DIR, IOS_DIR, VERSIONED_RN_IOS_DIR } from '../../Constants';
 import logger from '../../Logger';
 import { getListOfPackagesAsync, Package } from '../../Packages';
+import { copyFileWithTransformsAsync } from '../../Transforms';
+import type { FileTransforms, StringTransform } from '../../Transforms.types';
 import { renderExpoKitPodspecAsync } from '../../dynamic-macros/IosMacrosGenerator';
 import { runTransformPipelineAsync } from './transforms';
 import { injectMacros } from './transforms/injectMacros';
@@ -285,25 +287,6 @@ async function generateReactNativePodScriptAsync(
   versionedReactNativePath: string,
   versionName: string
 ): Promise<void> {
-  await fs.copy(
-    path.join(EXPO_DIR, RELATIVE_RN_PATH, 'scripts'),
-    path.join(versionedReactNativePath, 'scripts')
-  );
-
-  const targetAutolinkPath = path.join(versionedReactNativePath, 'scripts', 'react_native_pods.rb');
-  let targetSource = (await fs.readFile(targetAutolinkPath, 'utf8'))
-    .replace('def use_react_native!', `def use_react_native_${versionName}!`)
-    .replace('def use_react_native_codegen!', `def use_react_native_codegen_${versionName}!`)
-    .replace(/(\bpod\s+([^\n]+)\/third-party-podspecs\/([^\n]+))/g, '# $1')
-    .replace(/\bpod\s+'([^\']+)'/g, `pod '${versionName}$1'`)
-    .replace(/(:path => "[^"]+")/g, `$1, :project_name => '${versionName}'`)
-    // Removes duplicated constants
-    .replace("DEFAULT_OTHER_CPLUSPLUSFLAGS = '$(inherited)'", '')
-    .replace(
-      "NEW_ARCH_OTHER_CPLUSPLUSFLAGS = '$(inherited) -DRCT_NEW_ARCH_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1'",
-      ''
-    );
-  // Since `React-Codegen.podspec` is generated during `pod install`, versioning should be done in the pod script.
   const reactCodegenDependencies = [
     'FBReactNativeSpec',
     'React-jsiexecutor',
@@ -315,21 +298,85 @@ async function generateReactNativePodScriptAsync(
     'React-graphics',
     'React-rncore',
   ];
-  const reactCodegenDependenciesRegExp = new RegExp(
-    `["'](${reactCodegenDependencies.join('|')})["']:(\\s*\\[version\\],?)`,
-    'g'
-  );
-  targetSource = targetSource
-    .replace(
-      "$CODEGEN_OUTPUT_DIR = 'build/generated/ios'",
-      `$CODEGEN_OUTPUT_DIR = '${path.relative(IOS_DIR, versionedReactNativePath)}/codegen/ios'`
-    )
-    .replace(/\$(CODEGEN_OUTPUT_DIR)\b/g, `$${versionName}$1`)
-    .replace(/\b(React-Codegen)\b/g, `${versionName}$1`)
-    .replace(/(\$\(PODS_ROOT\)\/Headers\/Private\/)React-/g, `$1${versionName}React-`)
-    .replace(reactCodegenDependenciesRegExp, `"${versionName}$1":$2`);
 
-  await fs.writeFile(targetAutolinkPath, targetSource);
+  const reactNativePodScriptTransforms: StringTransform[] = [
+    {
+      find: /\b(def (use_react_native|use_react_native_codegen))!/g,
+      replaceWith: `$1_${versionName}!`,
+    },
+    {
+      find: /(\bpod\s+([^\n]+)\/third-party-podspecs\/([^\n]+))/g,
+      replaceWith: '# $1',
+    },
+    {
+      find: /\bpod\s+'([^\']+)'/g,
+      replaceWith: `pod '${versionName}$1'`,
+    },
+    {
+      find: /(:path => "[^"]+")/g,
+      replaceWith: `$1, :project_name => '${versionName}'`,
+    },
+
+    // Removes duplicated constants
+    {
+      find: "DEFAULT_OTHER_CPLUSPLUSFLAGS = '$(inherited)'",
+      replaceWith: '',
+    },
+    {
+      find: "NEW_ARCH_OTHER_CPLUSPLUSFLAGS = '$(inherited) -DRCT_NEW_ARCH_ENABLED=1 -DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1'",
+      replaceWith: '',
+    },
+
+    // Since `React-Codegen.podspec` is generated during `pod install`, versioning should be done in the pod script.
+    {
+      find: "$CODEGEN_OUTPUT_DIR = 'build/generated/ios'",
+      replaceWith: `$CODEGEN_OUTPUT_DIR = '${path.relative(
+        IOS_DIR,
+        versionedReactNativePath
+      )}/codegen/ios'`,
+    },
+    {
+      find: /\$(CODEGEN_OUTPUT_DIR)\b/g,
+      replaceWith: `$${versionName}$1`,
+    },
+    { find: /\b(React-Codegen)\b/g, replaceWith: `${versionName}$1` },
+    { find: /(\$\(PODS_ROOT\)\/Headers\/Private\/)React-/g, replaceWith: `$1${versionName}React-` },
+    {
+      find: new RegExp(
+        `["'](${reactCodegenDependencies.join('|')})["']:(\\s*\\[version\\],?)`,
+        'g'
+      ),
+      replaceWith: `"${versionName}$1":$2`,
+    },
+  ];
+
+  const transforms: FileTransforms = {
+    content: [
+      ...reactNativePodScriptTransforms.map((stringTransform) => ({
+        path: 'react_native_pods.rb',
+        ...stringTransform,
+      })),
+      {
+        paths: ['react_native_pods.rb', 'script_phases.rb'],
+        find: /\b(get_script_phases_with_codegen_discovery|get_script_phases_no_codegen_discovery|get_script_template)\b/g,
+        replaceWith: `$1_${versionName}`,
+      },
+    ],
+  };
+
+  const reactNativeScriptsDir = path.join(EXPO_DIR, RELATIVE_RN_PATH, 'scripts');
+  const scriptFiles = await glob('**/*', { cwd: reactNativeScriptsDir, nodir: true, dot: true });
+  await Promise.all(
+    scriptFiles.map(async (file) => {
+      await copyFileWithTransformsAsync({
+        sourceFile: file,
+        sourceDirectory: reactNativeScriptsDir,
+        targetDirectory: path.join(versionedReactNativePath, 'scripts'),
+        transforms,
+        keepFileMode: true,
+      });
+    })
+  );
 }
 
 async function generateReactNativePodspecsAsync(
