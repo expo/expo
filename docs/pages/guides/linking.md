@@ -499,7 +499,7 @@ module.exports = createRunOncePlugin(
 );
 ```
 
-Next, in you **app.json** file, add this plugin under `expo.plugins`:
+Next, in you **app.json**, add this plugin under `expo.plugins`:
 
 ```json
 {
