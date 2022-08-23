@@ -1,51 +1,12 @@
 package expo.modules.camera
 
 import androidx.exifinterface.media.ExifInterface
-import com.google.android.cameraview.Constants
-
-const val REACT_CLASS = "ExponentCamera"
-const val TAG = "ExponentCameraModule"
-const val ERROR_TAG = "E_CAMERA"
 
 const val VIDEO_2160P = 0
 const val VIDEO_1080P = 1
 const val VIDEO_720P = 2
 const val VIDEO_480P = 3
 const val VIDEO_4x3 = 4
-
-val typeConstants = mapOf(
-  "front" to Constants.FACING_FRONT,
-  "back" to Constants.FACING_BACK
-)
-
-val flashModeConstants = mapOf(
-  "off" to Constants.FLASH_OFF,
-  "on" to Constants.FLASH_ON,
-  "auto" to Constants.FLASH_AUTO,
-  "torch" to Constants.FLASH_TORCH
-)
-
-val autoFocusConstants = mapOf(
-  "on" to true,
-  "off" to false
-)
-
-val whiteBalanceConstants = mapOf(
-  "auto" to Constants.WB_AUTO,
-  "cloudy" to Constants.WB_CLOUDY,
-  "sunny" to Constants.WB_SUNNY,
-  "shadow" to Constants.WB_SHADOW,
-  "fluorescent" to Constants.WB_FLUORESCENT,
-  "incandescent" to Constants.WB_INCANDESCENT
-)
-
-val videoQualityConstants = mapOf(
-  "2160p" to VIDEO_2160P,
-  "1080p" to VIDEO_1080P,
-  "720p" to VIDEO_720P,
-  "480p" to VIDEO_480P,
-  "4:3" to VIDEO_4x3
-)
 
 val exifTags = arrayOf(
   arrayOf("string", ExifInterface.TAG_ARTIST),
