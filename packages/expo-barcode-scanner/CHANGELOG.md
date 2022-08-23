@@ -10,7 +10,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix camera not being correctly released on unmount (Android) (#18768 by [@stefan-schweiger](https://github.com/stefan-schweiger))
+- Fix camera not being correctly released on unmount (Android) ([#18768](https://github.com/expo/expo/pull/18768) by [@stefan-schweiger](https://github.com/stefan-schweiger))
 
 ### 💡 Others
 
