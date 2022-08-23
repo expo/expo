@@ -3,6 +3,10 @@ package expo.modules.devlauncher.logs
 import com.google.gson.GsonBuilder
 import com.google.gson.annotations.Expose
 
+/**
+ * object format comes from
+ * https://github.com/facebook/react-native/blob/0.69-stable/Libraries/Utilities/HMRClient.js#L119-L134
+ */
 @Suppress("UNUSED")
 internal data class DevLauncherRemoteLog(
   val messages: List<String>,

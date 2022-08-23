@@ -122,6 +122,8 @@ class DevLauncherUncaughtExceptionHandler(
   }
 
   private fun getWebSocketUrl(): Uri {
+    // URL structure replicates
+    // https://github.com/facebook/react-native/blob/0.69-stable/Libraries/Utilities/HMRClient.js#L164
     return Uri
       .parse(controller.appHost.reactInstanceManager.devSupportManager.sourceUrl)
       .buildUpon()
