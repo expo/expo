@@ -81,7 +81,7 @@ EAS Build will only enable capabilities that it has built-in support for, any un
 | <YesIcon /> | WeatherKit                                        | `com.apple.developer.weatherkit`                                           |
 | <YesIcon /> | Wireless Accessory Configuration                  | `com.apple.external-accessory.wireless-configuration`                      |
 | <YesIcon /> | iCloud                                            | `com.apple.developer.icloud-container-identifiers`                         |
-| <NoIcon />  | HLS Interstitial Previews                         | ???                                                                        |
+| <NoIcon />  | HLS Interstitial Previews                         | Unknown                                                                   |
 
 The unsupported capabilities either don't support iOS, or they don't have a corresponding entitlement value.
 
