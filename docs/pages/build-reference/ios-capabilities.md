@@ -24,43 +24,62 @@ If a capability is enabled for your app remotely, but not present in the native 
 
 EAS Build will only enable capabilities that it has built-in support for, any unsupported entitlements must be manually enabled via [Apple Developer Portal][apple-dev-portal].
 
-| Capability                       | Supported |
-|----------------------------------|-----------|
-| HomeKit                          | ✅         |
-| Hotspot                          | ✅         |
-| Multipath                        | ✅         |
-| SiriKit                          | ✅         |
-| Wireless Accessory Configuration | ✅         |
-| Extended Virtual Address Space   | ✅         |
-| Access Wi-Fi Information         | ✅         |
-| Associated Domains               | ✅         |
-| AutoFill Credential Provider     | ✅         |
-| HealthKit                        | ✅         |
-| Game Center                      | ✅         |
-| ClassKit                         | ✅         |
-| Data Protection                  | ✅         |
-| Inter-App Audio                  | ✅         |
-| Network Extensions               | ✅         |
-| NFC Tag Reading                  | ✅         |
-| Personal VPN                     | ✅         |
-| Push Notifications               | ✅         |
-| Wallet                           | ✅         |
-| Sign In with Apple               | ✅         |
-| Fonts                            | ✅         |
-| In-App Purchase                  | ✅         |
-| Communication Notifications      | ✅         |
-| Time Sensitive Notifications     | ✅         |
-| Group Activities                 | ✅         |
-| Family Controls                  | ✅         |
-| Apple Pay Payment Processing     | Partial   |
-| iCloud                           | Partial   |
-| App Groups                       | Partial   |
-| App Attest                       | ❌         |
-| FileProvider TestingMode         | ❌         |
-| HLS Interstitial Previews        | ❌         |
-| Low Latency HLS                  | ❌         |
-| MDM Managed Associated Domains   | ❌         |
-| HealthKit Estimate Recalibration | ❌         |
+| Capability                                        | Supported |
+| ------------------------------------------------- | --------- |
+| Access WiFi Information                           | ✅        |
+| App Attest                                        | ✅        |
+| App Groups                                        | ✅        |
+| Apple Pay Payment Processing                      | ✅        |
+| Associated Domains                                | ✅        |
+| AutoFill Credential Provider                      | ✅        |
+| ClassKit                                          | ✅        |
+| Communicates with Drivers                         | ✅        |
+| Communication Notifications                       | ✅        |
+| Custom Network Protocol                           | ✅        |
+| Data Protection                                   | ✅        |
+| DriverKit Allow Third Party UserClients           | ✅        |
+| DriverKit Family Audio (development)              | ✅        |
+| DriverKit Family HID Device (development)         | ✅        |
+| DriverKit Family HID EventService (development)   | ✅        |
+| DriverKit Family Networking (development)         | ✅        |
+| DriverKit Family SCSIController (development)     | ✅        |
+| DriverKit Family Serial (development)             | ✅        |
+| DriverKit Transport HID (development)             | ✅        |
+| DriverKit USB Transport (development)             | ✅        |
+| DriverKit for Development                         | ✅        |
+| Extended Virtual Address Space                    | ✅        |
+| Family Controls                                   | ✅        |
+| FileProvider TestingMode                          | ✅        |
+| Fonts                                             | ✅        |
+| Group Activities                                  | ✅        |
+| HealthKit                                         | ✅        |
+| HomeKit                                           | ✅        |
+| Hotspot                                           | ✅        |
+| Increased Memory Limit                            | ✅        |
+| Inter-App Audio                                   | ✅        |
+| Low Latency HLS                                   | ✅        |
+| MDM Managed Associated Domains                    | ✅        |
+| Maps                                              | ✅        |
+| Media Device Discovery                            | ✅        |
+| Multipath                                         | ✅        |
+| NFC Tag Reading                                   | ✅        |
+| Network Extensions                                | ✅        |
+| On Demand Install Capable for App Clip Extensions | ✅        |
+| Personal VPN                                      | ✅        |
+| Push Notifications                                | ✅        |
+| Push to Talk                                      | ✅        |
+| Recalibrate Estimates                             | ✅        |
+| Shared with You                                   | ✅        |
+| Sign In with Apple                                | ✅        |
+| SiriKit                                           | ✅        |
+| System Extension                                  | ✅        |
+| TV Services                                       | ✅        |
+| Time Sensitive Notifications                      | ✅        |
+| Wallet                                            | ✅        |
+| WeatherKit                                        | ✅        |
+| Wireless Accessory Configuration                  | ✅        |
+| iCloud                                            | ✅        |
+| HLS Interstitial Previews                         | ❌        |
 
 The unsupported capabilities either don't support iOS, or they don't have a corresponding entitlement value.
 
