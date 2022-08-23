@@ -33,7 +33,7 @@ Using the run commands will initially [prebuild](https://expo.fyi/prebuilding) y
 
 Your app can still run in Expo Go, but any custom native code won't be accessible if it's not already present in the Expo Go app. [Learn more](/bare/using-expo-client).
 
-If you install a package with a Expo [**config plugin**](/guides/config-plugins), you'll need to add the plugin to your **app.json**s [`plugins`](/versions/latest/config/app/#plugins) array, then re-run `expo prebuild` to sync the changes before rebuilding the native app. Often this does things like adding required permissions to the **Info.plist** or **AndroidManifest.xml**. You may need to run `expo prebuild --clean` depending on how complex the plugin is; this will delete and re-generate the native project files from scratch.
+If you install a package with an Expo [**config plugin**](/guides/config-plugins), you'll need to add the plugin to the [`plugins`](/versions/latest/config/app/#plugins) array in the project's **app.json**, then re-run `expo prebuild` to sync the changes before rebuilding the native app. Often this does things like adding required permissions to the **Info.plist** or **AndroidManifest.xml**. You may need to run `expo prebuild --clean` depending on how complex the plugin is; this will delete and re-generate the native project files from scratch.
 
 ### Manually changing the native project files
 
