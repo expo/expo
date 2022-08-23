@@ -42,7 +42,7 @@ public class ViewManagerDefinition: ObjectDefinition {
   /**
    Creates a new view using the view factory. Returns `nil` if the definition doesn't use the `view` function.
    */
-  func createView() -> UIView? {
+  func createView(appContext: AppContext) -> UIView? {
     return factory?.create()
   }
 

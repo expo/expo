@@ -29,8 +29,7 @@ EX_EXPORT_MODULE(ExpoVideoManager);
 
 - (UIView *)view
 {
-  id<EXAVInterface> avModule = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXAVInterface)];
-  return [[EXVideoView alloc] initWithAvModule:avModule];
+  return [[EXVideoView alloc] initWithModuleRegistry:_moduleRegistry];
 }
 
 - (NSDictionary *)constantsToExport

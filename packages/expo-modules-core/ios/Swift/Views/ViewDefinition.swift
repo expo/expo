@@ -8,10 +8,19 @@
  To integrate well with Fabric and its recycling mechanism, we have to disallow that and so call the view initializer internally.
  As a consequence, the user should just provide the type of the view.
  */
-public final class ViewDefinition: ViewManagerDefinition {
-  init<ViewType>(_ viewType: ViewType.Type, elements: [AnyDefinition]) where ViewType: UIView {
-    let factory = ViewFactory({ ViewType() })
-    super.init(definitions: elements + [factory])
+public final class ViewDefinition<ViewType: UIView>: ViewManagerDefinition {
+  init(_ viewType: ViewType.Type, elements: [AnyDefinition]) {
+    super.init(definitions: elements)
+  }
+
+  override func createView(appContext: AppContext) -> UIView? {
+    if let expoViewType = ViewType.self as? ExpoView.Type {
+      return expoViewType.init(appContext: appContext)
+    }
+    if let legacyViewType = ViewType.self as? EXLegacyExpoViewProtocol.Type {
+      return legacyViewType.init(moduleRegistry: appContext.legacyModuleRegistry) as? UIView
+    }
+    return ViewType(frame: .zero)
   }
 }
 
@@ -32,6 +41,6 @@ public struct ViewDefinitionElementsBuilder {
 public func View<ViewType: UIView>(
   _ viewType: ViewType.Type,
   @ViewDefinitionElementsBuilder _ elements: @escaping () -> [AnyDefinition]
-) -> ViewDefinition {
+) -> ViewDefinition<ViewType> {
   return ViewDefinition(viewType, elements: elements())
 }
