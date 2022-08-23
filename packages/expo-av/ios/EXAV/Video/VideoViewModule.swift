@@ -20,12 +20,7 @@ public final class VideoViewModule: Module {
       }
     }
 
-    ViewManager {
-      View {
-        let avModule: EXAVInterface? = self.appContext?.legacyModule(implementing: EXAVInterface.self)
-        return EXVideoView(avModule: avModule)
-      }
-
+    View(EXVideoView.self) {
       Events(
         "onStatusUpdate",
         "onLoadStart",
