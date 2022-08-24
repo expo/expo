@@ -13,6 +13,7 @@ import java.lang.ref.WeakReference;
 import expo.modules.core.ModuleRegistry;
 import expo.modules.core.interfaces.services.KeepAwakeManager;
 import expo.modules.av.player.PlayerData;
+import expo.modules.kotlin.AppContext;
 
 public class FullscreenVideoPlayer extends Dialog {
   private static class KeepScreenOnUpdater implements Runnable {
@@ -32,7 +33,8 @@ public class FullscreenVideoPlayer extends Dialog {
           boolean isPlaying =
               fullscreenVideoPlayer.mVideoView.getStatus().containsKey(PlayerData.STATUS_IS_PLAYING_KEY_PATH)
                   && fullscreenVideoPlayer.mVideoView.getStatus().getBoolean(PlayerData.STATUS_IS_PLAYING_KEY_PATH);
-          ModuleRegistry moduleRegistry = fullscreenVideoPlayer.mModuleRegistry;
+          AppContext appContext = fullscreenVideoPlayer.mAppContext.get();
+          ModuleRegistry moduleRegistry = appContext != null ? appContext.getLegacyModuleRegistry() : null;
           if (moduleRegistry != null) {
             KeepAwakeManager keepAwakeManager = moduleRegistry.getModule(KeepAwakeManager.class);
             boolean keepAwakeIsActivated = keepAwakeManager != null && keepAwakeManager.isActivated();
@@ -52,14 +54,14 @@ public class FullscreenVideoPlayer extends Dialog {
   private Runnable mKeepScreenOnUpdater;
 
   private FrameLayout mParent;
-  private ModuleRegistry mModuleRegistry;
+  private WeakReference<AppContext> mAppContext;
   private final VideoView mVideoView;
   private final FrameLayout mContainerView;
   private WeakReference<FullscreenVideoPlayerPresentationChangeListener> mUpdateListener;
 
-  FullscreenVideoPlayer(@NonNull Context context, VideoView videoView, ModuleRegistry moduleRegistry) {
+  FullscreenVideoPlayer(@NonNull Context context, VideoView videoView, AppContext appContext) {
     super(context, android.R.style.Theme_Black_NoTitleBar_Fullscreen);
-    mModuleRegistry = moduleRegistry;
+    mAppContext = new WeakReference<>(appContext);
 
     setCancelable(false);
 
