@@ -11,6 +11,7 @@ import expo.modules.barcodescanner.utils.mapX
 import expo.modules.barcodescanner.utils.mapY
 import expo.modules.core.ModuleRegistryDelegate
 import expo.modules.core.interfaces.services.EventEmitter
+import expo.modules.core.utilities.scalablevideoview.ScalableType
 import expo.modules.interfaces.barcodescanner.BarCodeScannerResult
 import expo.modules.interfaces.barcodescanner.BarCodeScannerSettings
 import kotlin.math.roundToInt
@@ -136,26 +137,10 @@ class BarCodeScannerView(
     if (!::viewFinder.isInitialized) {
       return
     }
-    val width = (right - left).toFloat()
-    val height = (bottom - top).toFloat()
-    val viewfinderWidth: Int
-    val viewfinderHeight: Int
-    val ratio = viewFinder.ratio
-
-    // Just fill the given space
-    if (ratio * height < width) {
-      viewfinderWidth = (ratio * height).toInt()
-      viewfinderHeight = height.toInt()
-    } else {
-      viewfinderHeight = (width / ratio).toInt()
-      viewfinderWidth = width.toInt()
-    }
-    val viewFinderPaddingX = ((width - viewfinderWidth) / 2).toInt()
-    val viewFinderPaddingY = ((height - viewfinderHeight) / 2).toInt()
-    leftPadding = viewFinderPaddingX
-    topPadding = viewFinderPaddingY
-    viewFinder.layout(viewFinderPaddingX, viewFinderPaddingY, viewFinderPaddingX + viewfinderWidth, viewFinderPaddingY + viewfinderHeight)
-    postInvalidate(left, top, right, bottom)
+    val width = (right - left).toInt()
+    val height = (bottom - top).toInt()
+    viewFinder.scaleViewFinderSize(width, height, ScalableType.CENTER_CROP)
+    //postInvalidate(left, top, right, bottom)
   }
 
   init {

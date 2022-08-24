@@ -1,14 +1,18 @@
 package expo.modules.barcodescanner
 
 import android.content.Context
+import android.graphics.Matrix
 import android.graphics.SurfaceTexture
 import android.hardware.Camera
 import android.hardware.Camera.PreviewCallback
 import android.util.Log
+import android.util.Size
 import android.view.TextureView
 import android.view.TextureView.SurfaceTextureListener
 import expo.modules.core.ModuleRegistryDelegate
 import expo.modules.core.errors.ModuleDestroyedException
+import expo.modules.core.utilities.scalablevideoview.ScalableType
+import expo.modules.core.utilities.scalablevideoview.ScaleManager
 import expo.modules.interfaces.barcodescanner.BarCodeScannerInterface
 import expo.modules.interfaces.barcodescanner.BarCodeScannerProviderInterface
 import expo.modules.interfaces.barcodescanner.BarCodeScannerSettings
@@ -83,6 +87,41 @@ internal class BarCodeScannerViewFinder(
       startPreview()
       isChanging = false
     }.start()
+  }
+
+  // WIP: attempt to duplicate the logic of VideoTextureView.java in expo-av, where VidewView requests rescaling onLayout
+  fun scaleViewFinderSize(viewWidth: Int, viewHeight: Int, resizeMode: ScalableType) {
+    if (viewWidth == 0 || viewHeight == 0) {
+      return
+    }
+
+    val viewSize = Size(viewWidth, viewHeight);
+    var previewWidth = ExpoBarCodeScanner.instance.getPreviewWidth(cameraType);
+
+     // Had to adapt this from the old BarCodeScannerView.layoutViewFinder() in order to get ExpoBarCodeScanner to initially
+    // layout and report a preview width/ height that could be transformed. (probably the first sign something was wrong/ different!)
+    if (previewWidth == -1) {
+      val viewfinderHeight = viewWidth
+      val viewfinderWidth = viewWidth
+      val viewFinderPaddingX = 0
+      val viewFinderPaddingY = ((viewHeight - viewfinderHeight) / 2).toInt()
+      layout(viewFinderPaddingX, viewFinderPaddingY, viewFinderPaddingX + viewfinderWidth, viewFinderPaddingY + viewfinderHeight)
+      return
+    }
+
+    // this is nearly the same logic as VideoTextureView, but seems to have no effect, even though it generates
+    // a different matrix and invalidate() is called
+    var previewHeight = ExpoBarCodeScanner.instance.getPreviewHeight(cameraType)
+    val previewSize = Size(previewWidth, previewHeight);
+    val matrix = ScaleManager(viewSize, previewSize).getScaleMatrix(resizeMode);
+    if (matrix != null) {
+      val prevMatrix = Matrix();
+      getTransform(prevMatrix);
+      if (!matrix.equals(prevMatrix)) {
+        setTransform(matrix);
+        invalidate();
+      }
+    }
   }
 
   private fun startPreview() {
