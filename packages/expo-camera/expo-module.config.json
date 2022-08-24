@@ -3,5 +3,8 @@
   "platforms": ["ios", "android"],
   "ios": {
     "modules": ["CameraViewModule"]
+  },
+  "android": {
+    "modules": ["expo.modules.camera.CameraModule", "expo.modules.camera.CameraViewModule"]
   }
 }
