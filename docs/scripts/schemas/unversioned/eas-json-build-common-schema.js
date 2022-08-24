@@ -83,6 +83,15 @@ export default [
     ],
   },
   {
+    name: 'autoIncrement',
+    type: 'boolean',
+    description: [
+      'Controls how EAS CLI bumps your application build version. Defaults to `false`.',
+      '',
+      'When enabled, for iOS, bumps the last component of `expo.ios.buildNumber` (e.g. `1.2.3.39` -> `1.2.3.40`) and for Android, bumps `expo.android.versionCode` (e.g. `3` -> `4`).',
+    ],
+  },
+  {
     name: 'cache',
     type: 'object',
     description: [
