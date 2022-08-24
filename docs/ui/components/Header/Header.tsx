@@ -2,7 +2,7 @@ import { css } from '@emotion/react';
 import { theme, breakpoints, HamburgerIcon, iconSize, spacing } from '@expo/styleguide';
 import React from 'react';
 
-import { DocSearch } from '../Search';
+import { Search } from '../Search';
 import { Logo } from './Logo';
 import { ThemeSelector } from './ThemeSelector';
 
@@ -30,7 +30,7 @@ export const Header = ({
           <Logo />
         </div>
         <div css={[columnStyle, rightColumnStyle]}>
-          <DocSearch />
+          <Search />
           <div css={hideOnMobileStyle}>
             <ThemeSelector />
           </div>

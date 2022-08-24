@@ -1,4 +1,4 @@
-import { DocSearch as DocSearchComponent } from '@docsearch/react';
+import { DocSearch } from '@docsearch/react';
 import { Global } from '@emotion/react';
 import * as React from 'react';
 
@@ -6,12 +6,12 @@ import { LATEST_VERSION } from '~/constants/versions';
 import { usePageApiVersion } from '~/providers/page-api-version';
 import { DocSearchStyles } from '~/ui/components/Search/styles';
 
-export const DocSearch = () => {
+export const Search = () => {
   const { version } = usePageApiVersion();
   return (
     <>
       <Global styles={DocSearchStyles} />
-      <DocSearchComponent
+      <DocSearch
         appId="QEX7PB7D46"
         indexName="expo"
         apiKey="89231e630c63f383765538848f9a0e9e"
