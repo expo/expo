@@ -6,7 +6,7 @@ import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 
 Developing an application using Expo, it won't be long before you encounter a **Redbox** error or **Yellowbox** warning. These logging experiences are provided by [LogBox in React Native](https://reactnative.dev/blog/2020/07/06/version-0.63).
 
-A **redbox** error is displayed when a fatal error prevents your app from running. A **yellowbox** warning is displayed to inform you that there is a _possible_ issue and you should probably resolve it before shipping your app.
+A Redbox error is displayed when a fatal error prevents your app from running. A Yellowbox warning is displayed to inform you that there is a _possible_ issue and you should probably resolve it before shipping your app.
 
 You can also create warnings and errors on your own with `console.warn("Warning message")` and `console.error("Error message")`. Another way to trigger the redbox is to throw an error and not catch it: `throw Error("Error message")`.
 
