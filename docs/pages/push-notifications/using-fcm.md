@@ -65,9 +65,15 @@ In order for Expo to send notifications from our servers using your credentials,
 
 3. Copy the token listed next to **Server key**. 
 
-> ** Note:** Server Key is only available in **Cloud Messaging API (Legacy)**, which may be Disabled by default. Enable it by clicking the 3-dot menu > Manage API in Google Cloud Console and follow the flow there. Once the legacy messaging API is enabled, you should see Server Key in that section.
+  > **Note:** Server Key is only available in **Cloud Messaging API (Legacy)**, which may be Disabled by default. Enable it by clicking the 3-dot menu > Manage API in Google Cloud Console and follow the flow there. Once the legacy messaging API is enabled, you should see Server Key in that section.
 
-4. Run `expo push:android:upload --api-key <your-token-here>`, replacing `<your-token-here>` with the string you just copied. We'll store your token securely on our servers, where it will only be accessed when you send a push notification.
+4. In your [expo account](https://expo.dev/), select your project, and click on Credentials in the navigation menu. Click on your Application Identifier _(something like com.yourcompany.yourapp)_. 
+
+  > **Note:** For Legacy Application Identifiers, run `expo push:android:upload --api-key <your-token-here>`, replacing `<your-token-here>` with the string you just copied. We'll store your token securely on our servers, where it will only be accessed when you send a push notification.
+
+5. Check that all of your Service Credentials are correctly filled in. If your FCM Server Key is empty, add the copied Server key from step 3. If the FCM Server Key is populated, verify that the last characters match the Server Key from step 3.
+
+  > **Note:** Having Service Credentials in both Legacy and non-legacy Application Identifiers can prevent push notifications from working on android devices. If you have a Legacy Application Identifier, you might need to remove all of its Service Credentials. 
 
 That's it -- users who run this new version of the app will now receive notifications through FCM using your project's credentials. You just send the push notifications as you normally would (see [guide](sending-notifications.md)). We'll take care of choosing the correct service to send the notification.
 
