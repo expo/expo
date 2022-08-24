@@ -3,6 +3,7 @@ package expo.modules.kotlin.functions
 import com.facebook.react.bridge.ReadableArray
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.KPromiseWrapper
+import expo.modules.kotlin.ModuleHolder
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.FunctionCallException
@@ -13,16 +14,42 @@ import expo.modules.kotlin.types.AnyType
 import kotlinx.coroutines.launch
 
 /**
- * Base class of all function components that require a promise to be called.
+ * Base class of async function components that require a promise to be called.
  */
 abstract class AsyncFunction(
   name: String,
   desiredArgsTypes: Array<AnyType>
-) : AnyFunction(name, desiredArgsTypes) {
-  @Throws(CodedException::class)
-  abstract fun call(args: ReadableArray, promise: Promise)
+) : BaseAsyncFunctionComponent(name, desiredArgsTypes) {
 
-  abstract fun call(args: Array<Any?>, promise: Promise)
+  override fun call(holder: ModuleHolder, args: ReadableArray, promise: Promise) {
+    val queue = when (queue) {
+      Queues.MAIN -> holder.module.appContext.mainQueue
+      Queues.DEFAULT -> null
+    }
+
+    if (queue == null) {
+      callUserImplementation(args, promise)
+    } else {
+      queue.launch {
+        try {
+          exceptionDecorator({
+            FunctionCallException(name, holder.name, it)
+          }) {
+            callUserImplementation(args, promise)
+          }
+        } catch (e: CodedException) {
+          promise.reject(e)
+        } catch (e: Throwable) {
+          promise.reject(UnexpectedException(e))
+        }
+      }
+    }
+  }
+
+  @Throws(CodedException::class)
+  internal abstract fun callUserImplementation(args: ReadableArray, promise: Promise)
+
+  internal abstract fun callUserImplementation(args: Array<Any?>, promise: Promise)
 
   override fun attachToJSObject(appContext: AppContext, jsObject: JavaScriptModuleObject) {
     jsObject.registerAsyncFunction(
@@ -31,12 +58,18 @@ abstract class AsyncFunction(
       desiredArgsTypes.map { it.getCppRequiredTypes() }.toTypedArray()
     ) { args, bridgePromise ->
       val kotlinPromise = KPromiseWrapper(bridgePromise as com.facebook.react.bridge.Promise)
-      appContext.modulesQueue.launch {
+
+      val queue = when (queue) {
+        Queues.MAIN -> appContext.mainQueue
+        Queues.DEFAULT -> appContext.modulesQueue
+      }
+
+      queue.launch {
         try {
           exceptionDecorator({
-            FunctionCallException(jsObject.name, name, it)
+            FunctionCallException(name, jsObject.name, it)
           }) {
-            call(args, kotlinPromise)
+            callUserImplementation(args, kotlinPromise)
           }
         } catch (e: CodedException) {
           kotlinPromise.reject(e)
