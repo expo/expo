@@ -260,6 +260,37 @@ export default function App() {
 
 As mentioned earlier, using monorepos is not for everyone. You take on increased complexity and need to solve issues you most likely will run into. Here are a couple of common issues you might encounter.
 
+### Can I use another monorepo tool instead of yarn workspaces?
+
+There are a lot of monorepo tools available and each of these tools have their own benefits. It's hard for us to keep up with the latest tools and methods, and because of that, we won't officially support new monorepo tools. That being said, if the tool follows these 3 rules, it should work fine.
+
+<Collapsible summary="1. All dependencies must be installed in a node_modules directory">
+
+React Native dependencies contain a lot of other files besides JavaScript, like gradle files such as `react-native/react.gradle`. These native files are referenced from different sources other than Node, and because of that, makes it fundamentally incompatible with concepts like plug'n'play modules. All dependencies should be written to a **node_modules** directory to make sure these references work.
+
+</Collapsible>
+
+<Collapsible summary="2. Dependencies used in mulitple workspaces can be installed in the root node_modules directory">
+
+Whenever multiple workspaces use the same version of a single dependency, they can be installed in a root **node_modules** directory. Monorepo tools usually do this to save some duplicate tasks, like installing the exact same dependency twice in multiple places. This rule isn't necessary, but does set us up for rule #3.
+
+</Collapsible>
+
+<Collapsible summary="3. Different versions of dependencies must be installed in the app node_modules directory">
+
+In the [Modify the Metro config](#modify-the-metro-config) step, we instructed Metro to do a couple of this, specifically:
+
+- #2 - Resolve dependencies in the order of the local **/apps/<name\>/node_modules** and root **/node_modules** directories.
+- #3 - Disable resolving dependencies using the hierarchical lookup strategy.
+
+If a workspace uses a different version of a library, e.g. `react`, that different version should be installed in the workspace **node_modules** directory. When Metro resolves `react` from the workspace, it should find that different version in `**/apps/<name\>/node_modules** and not look inside the root **/node_modules** directory.
+
+When importing a dependency from the root **/node_modules** folder, that also imports `react`, it should still resolve to the different version installed in **/apps/<name\>/node_modules**. That's what the disable hierarchical lookup does for Metro. Without this, some libraries might be importing the wrong `react` version and cause "multiple react versions found" errors.
+
+</Collapsible>
+
+The default setting of tools like [pnpm](https://pnpm.io/) does not follow these rules. You can change that by adding the **.npmrc** file with `node-linker=hoisted` ([see docs](https://pnpm.io/npmrc#node-linker)). This will change the behavior to match these rules.
+
 ### Script '...' does not exist
 
 React Native uses packages to ship both JavaScript and native files. These files also need to be linked, like the [**react-native/react.Gradle**](https://github.com/facebook/react-native/blob/main/react.gradle) file from **android/app/build.Gradle**. Usually, this path is hardcoded to something like:
