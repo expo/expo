@@ -14,6 +14,7 @@ import expo.modules.kotlin.modules.ModuleDefinition
 
 class CameraModule : Module() {
   override fun definition() = ModuleDefinition {
+    // TODO(@lukmccall): combine with the `CameraViewManager` and rename to `ExponentCamera`
     Name("ExponentCameraModule")
     Constants(
       "Type" to mapOf(
@@ -45,7 +46,6 @@ class CameraModule : Module() {
         "480p" to VIDEO_480P,
         "4:3" to VIDEO_4x3
       ),
-      "FaceDetection" to emptyMap<String, Any>(),
     )
 
     AsyncFunction("pausePreview") { viewTag: Int ->

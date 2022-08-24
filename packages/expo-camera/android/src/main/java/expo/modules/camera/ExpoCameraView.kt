@@ -18,7 +18,6 @@ import expo.modules.camera.tasks.PictureSavedDelegate
 import expo.modules.camera.tasks.ResolveTakenPictureAsyncTask
 import expo.modules.camera.utils.FileSystemUtils
 import expo.modules.camera.utils.ImageDimensions
-import expo.modules.core.errors.CodedException
 import expo.modules.core.interfaces.LifecycleEventListener
 import expo.modules.core.interfaces.services.UIManager
 import expo.modules.core.utilities.EmulatorUtilities

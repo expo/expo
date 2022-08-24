@@ -27,8 +27,8 @@ class CameraViewModule : Module() {
       )
 
       OnViewDestroys<ExpoCameraView> { view ->
-        val uIManager = appContext.legacyModule<UIManager>()
-        uIManager?.unregisterLifecycleEventListener(view)
+        val uiManager = appContext.legacyModule<UIManager>()
+        uiManager?.unregisterLifecycleEventListener(view)
         view.stop()
       }
 
@@ -67,7 +67,6 @@ class CameraViewModule : Module() {
         if (size == null) {
           return@Prop
         }
-
         view.pictureSize = Size.parse(size)
       }
 
