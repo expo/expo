@@ -8,47 +8,63 @@ import kotlin.reflect.typeOf
 
 class AsyncFunctionBuilder(@PublishedApi internal val name: String) {
   @PublishedApi
-  internal var functionBuilder: SuspendFunctionComponentBuilder? = null
+  internal var suspendFunctionComponent: SuspendFunctionComponent? = null
 
-  inline fun <reified R> SuspendBody(crossinline block: suspend () -> R) {
-    functionBuilder = SuspendFunctionComponentBuilder(name, arrayOf()) { block() }
+  inline fun <reified R> SuspendBody(crossinline block: suspend () -> R): SuspendFunctionComponent {
+    return SuspendFunctionComponent(name, arrayOf()) { block() }.also {
+      suspendFunctionComponent = it
+    }
   }
 
-  inline fun <reified R, reified P0> SuspendBody(crossinline block: suspend (p0: P0) -> R) {
-    functionBuilder = SuspendFunctionComponentBuilder(name, arrayOf(typeOf<P0>().toAnyType())) { block(it[0] as P0) }
+  inline fun <reified R, reified P0> SuspendBody(crossinline block: suspend (p0: P0) -> R): SuspendFunctionComponent {
+    return SuspendFunctionComponent(name, arrayOf(typeOf<P0>().toAnyType())) { block(it[0] as P0) }.also {
+      suspendFunctionComponent = it
+    }
   }
 
-  inline fun <reified R, reified P0, reified P1> SuspendBody(crossinline block: suspend (p0: P0, p1: P1) -> R) {
-    functionBuilder = SuspendFunctionComponentBuilder(name, arrayOf(typeOf<P0>().toAnyType())) { block(it[0] as P0, it[0] as P1) }
+  inline fun <reified R, reified P0, reified P1> SuspendBody(crossinline block: suspend (p0: P0, p1: P1) -> R): SuspendFunctionComponent {
+    return SuspendFunctionComponent(name, arrayOf(typeOf<P0>().toAnyType())) { block(it[0] as P0, it[0] as P1) }.also {
+      suspendFunctionComponent = it
+    }
   }
 
-  inline fun <reified R, reified P0, reified P1, reified P2> SuspendBody(crossinline block: suspend (p0: P0, p1: P1, p2: P2) -> R) {
-    functionBuilder = SuspendFunctionComponentBuilder(name, arrayOf(typeOf<P0>().toAnyType())) { block(it[0] as P0, it[1] as P1, it[2] as P2) }
+  inline fun <reified R, reified P0, reified P1, reified P2> SuspendBody(crossinline block: suspend (p0: P0, p1: P1, p2: P2) -> R): SuspendFunctionComponent {
+    return SuspendFunctionComponent(name, arrayOf(typeOf<P0>().toAnyType())) { block(it[0] as P0, it[1] as P1, it[2] as P2) }.also {
+      suspendFunctionComponent = it
+    }
   }
 
-  inline fun <reified R, reified P0, reified P1, reified P2, reified P3> SuspendBody(crossinline block: suspend (p0: P0, p1: P1, p2: P2, p3: P3) -> R) {
-    functionBuilder = SuspendFunctionComponentBuilder(name, arrayOf(typeOf<P0>().toAnyType())) { block(it[0] as P0, it[1] as P1, it[2] as P2, it[3] as P3) }
+  inline fun <reified R, reified P0, reified P1, reified P2, reified P3> SuspendBody(crossinline block: suspend (p0: P0, p1: P1, p2: P2, p3: P3) -> R): SuspendFunctionComponent {
+    return SuspendFunctionComponent(name, arrayOf(typeOf<P0>().toAnyType())) { block(it[0] as P0, it[1] as P1, it[2] as P2, it[3] as P3) }.also {
+      suspendFunctionComponent = it
+    }
   }
 
-  inline fun <reified R, reified P0, reified P1, reified P2, reified P3, reified P4> SuspendBody(crossinline block: suspend (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4) -> R) {
-    functionBuilder = SuspendFunctionComponentBuilder(name, arrayOf(typeOf<P0>().toAnyType())) { block(it[0] as P0, it[1] as P1, it[2] as P2, it[3] as P3, it[4] as P4) }
+  inline fun <reified R, reified P0, reified P1, reified P2, reified P3, reified P4> SuspendBody(crossinline block: suspend (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4) -> R): SuspendFunctionComponent {
+    return SuspendFunctionComponent(name, arrayOf(typeOf<P0>().toAnyType())) { block(it[0] as P0, it[1] as P1, it[2] as P2, it[3] as P3, it[4] as P4) }.also {
+      suspendFunctionComponent = it
+    }
   }
 
-  inline fun <reified R, reified P0, reified P1, reified P2, reified P3, reified P4, reified P5> SuspendBody(crossinline block: suspend (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5) -> R) {
-    functionBuilder = SuspendFunctionComponentBuilder(name, arrayOf(typeOf<P0>().toAnyType())) { block(it[0] as P0, it[1] as P1, it[2] as P2, it[3] as P3, it[4] as P4, it[5] as P5) }
+  inline fun <reified R, reified P0, reified P1, reified P2, reified P3, reified P4, reified P5> SuspendBody(crossinline block: suspend (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5) -> R): SuspendFunctionComponent {
+    return SuspendFunctionComponent(name, arrayOf(typeOf<P0>().toAnyType())) { block(it[0] as P0, it[1] as P1, it[2] as P2, it[3] as P3, it[4] as P4, it[5] as P5) }.also {
+      suspendFunctionComponent = it
+    }
   }
 
-  inline fun <reified R, reified P0, reified P1, reified P2, reified P3, reified P4, reified P5, reified P6> SuspendBody(crossinline block: suspend (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5, p6: P6) -> R) {
-    functionBuilder = SuspendFunctionComponentBuilder(name, arrayOf(typeOf<P0>().toAnyType())) { block(it[0] as P0, it[1] as P1, it[2] as P2, it[3] as P3, it[4] as P4, it[5] as P5, it[6] as P6) }
+  inline fun <reified R, reified P0, reified P1, reified P2, reified P3, reified P4, reified P5, reified P6> SuspendBody(crossinline block: suspend (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5, p6: P6) -> R): SuspendFunctionComponent {
+    return SuspendFunctionComponent(name, arrayOf(typeOf<P0>().toAnyType())) { block(it[0] as P0, it[1] as P1, it[2] as P2, it[3] as P3, it[4] as P4, it[5] as P5, it[6] as P6) }.also {
+      suspendFunctionComponent = it
+    }
   }
 
-  inline fun <reified R, reified P0, reified P1, reified P2, reified P3, reified P4, reified P5, reified P6, reified P7> SuspendBody(crossinline block: suspend (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5, p6: P6, p7: P7) -> R) {
-    functionBuilder = SuspendFunctionComponentBuilder(name, arrayOf(typeOf<P0>().toAnyType())) { block(it[0] as P0, it[1] as P1, it[2] as P2, it[3] as P3, it[4] as P4, it[5] as P5, it[6] as P6, it[7] as P7) }
+  inline fun <reified R, reified P0, reified P1, reified P2, reified P3, reified P4, reified P5, reified P6, reified P7> SuspendBody(crossinline block: suspend (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5, p6: P6, p7: P7) -> R): SuspendFunctionComponent {
+    return SuspendFunctionComponent(name, arrayOf(typeOf<P0>().toAnyType())) { block(it[0] as P0, it[1] as P1, it[2] as P2, it[3] as P3, it[4] as P4, it[5] as P5, it[6] as P6, it[7] as P7) }.also {
+      suspendFunctionComponent = it
+    }
   }
 
-  internal fun build(): SuspendFunctionComponentBuilder {
-    return requireNotNull(functionBuilder)
-  }
+  internal fun build() = requireNotNull(suspendFunctionComponent)
 }
 
 inline infix fun <reified R> AsyncFunctionBuilder.Coroutine(crossinline block: suspend () -> R) = SuspendBody(block)
