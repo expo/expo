@@ -22,6 +22,11 @@ export function expoModulesTransforms(prefix: string): FileTransforms {
         find: /\b(RCT)([^/]*)\+([^/]*\.)(h|m|mm|cpp)\b/,
         replaceWith: `${prefix}$1$2+$3$4`,
       },
+      {
+        // expo-gl-cpp
+        find: /\bEXWebGL([^/]*)\.def\b/,
+        replaceWith: `${prefix}EXWebGL$1.def`,
+      },
     ],
     content: [
       {
@@ -78,12 +83,6 @@ export function expoModulesTransforms(prefix: string): FileTransforms {
         replaceWith: `#import "${prefix}$1$2-Swift.h"`,
       },
       {
-        // Unprefix imports to unversionable (e.g. expo-gl-cpp) modules.
-        paths: [objcFilesPattern, 'EXGL'],
-        find: new RegExp(`#import <${prefix}(EXGL_CPP)\\b`),
-        replaceWith: '#import <$1',
-      },
-      {
         paths: objcFilesPattern,
         find: /@import (Expo|EX|EAS)(\w+)/g,
         replaceWith: `@import ${prefix}$1$2`,
@@ -122,6 +121,11 @@ export function expoModulesTransforms(prefix: string): FileTransforms {
         paths: objcFilesPattern,
         find: /\bnamespace react(\s+[^=])/g,
         replaceWith: `namespace ${prefix}React$1`,
+      },
+      {
+        paths: 'EXGLImageUtils.cpp',
+        find: '#define STB_IMAGE_IMPLEMENTATION',
+        replaceWith: '',
       },
 
       // Prefix umbrella header imports
