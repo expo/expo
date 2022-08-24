@@ -31,6 +31,8 @@ private const val ATTR_DATA = "data"
 private const val ATTR_FLAGS = "flags"
 private const val ATTR_PACKAGE_NAME = "packageName"
 private const val ATTR_CLASS_NAME = "className"
+private const val ATTR_CHOOSER = "chooser"
+private const val ATTR_CHOOSER_TITLE = "title"
 
 class IntentLauncherModule(
   context: Context,
@@ -61,7 +63,7 @@ class IntentLauncherModule(
       return
     }
 
-    val intent = Intent(activityAction)
+    var intent = Intent(activityAction)
 
     if (params.containsKey(ATTR_CLASS_NAME)) {
       intent.component =
@@ -83,6 +85,18 @@ class IntentLauncherModule(
     params.getArguments(ATTR_EXTRA)?.let { intent.putExtras(it.toBundle()) }
     params.getInt(ATTR_FLAGS)?.let { intent.addFlags(it) }
     params.getString(ATTR_CATEGORY)?.let { intent.addCategory(it) }
+
+    if (params.containsKey(ATTR_CHOOSER)) {
+      var chooserParams = params.getArguments(ATTR_CHOOSER)
+
+      if (chooserParams.containsKey(ATTR_CHOOSER_TITLE))
+        intent = Intent.createChooser(intent, chooserParams.getString(ATTR_CHOOSER_TITLE));
+      else
+        intent = Intent.createChooser(intent, "");
+
+      chooserParams.getArguments(ATTR_EXTRA)?.let { intent.putExtras(it.toBundle()) }
+      chooserParams.getInt(ATTR_FLAGS)?.let { intent.addFlags(it) }
+    }
 
     uiManager.registerActivityEventListener(this)
     pendingPromise = promise
