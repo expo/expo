@@ -270,9 +270,9 @@ React Native dependencies contain many other files besides JavaScript, like Grad
 
 </Collapsible>
 
-<Collapsible summary="2. Dependencies used in mulitple workspaces can be installed in the root node_modules directory">
+<Collapsible summary="2. Dependencies used in multiple workspaces can be installed in the root node_modules directory">
 
-Whenever multiple workspaces use the same version of a single dependency, they can be installed in a root **node_modules** directory. Monorepo tools usually do this to save some duplicate tasks, like installing the exact same dependency twice in multiple places. This rule isn't necessary but does set us up for rule #3.
+Whenever multiple workspaces use the same version of a single dependency, they can be installed in a root **node_modules** directory. Monorepo tools usually do this to remove duplicate tasks, like installing the exact same dependency twice in different places. This rule isn't necessary but does set us up for rule #3.
 
 </Collapsible>
 
