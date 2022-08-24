@@ -8,3 +8,4 @@
       "modules": ["expo.modules.camera.CameraModule", "expo.modules.camera.CameraViewModule"]
     }
   }
+  
