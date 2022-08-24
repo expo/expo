@@ -22,7 +22,8 @@ const STYLES_GLOBAL = css`
 
       /* Track */
       ::-webkit-scrollbar-track {
-        background: ${theme.background.default};
+        backgroundColor: transparent,
+        cursor: pointer,
       }
 
       /* Handle */

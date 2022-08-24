@@ -14,11 +14,11 @@ import { LinkBase } from '~/ui/components/Text';
 
 export const Logo = () => (
   <>
-    <LinkBase css={linkStyle} href="https://expo.dev" openInNewTab>
-      <WordMarkLogo color={theme.text.default} css={[logoStyle, hideOnMobile]} />
-      <LogoIcon color={theme.text.default} css={[logoStyle, showOnMobile]} />
+    <LinkBase css={linkStyle} href="https://expo.dev">
+      <WordMarkLogo color={theme.text.default} css={[logoStyle, hideOnMobile]} title="Expo" />
+      <LogoIcon color={theme.text.default} css={[logoStyle, showOnMobile]} title="Expo" />
     </LinkBase>
-    <ChevronRightIcon css={chevronStyle} color={theme.icon.secondary} />
+    <ChevronRightIcon css={chevronStyle} color={theme.icon.secondary} title="" />
     <LinkBase css={linkStyle} href="/">
       <span css={subtitleStyle}>Docs</span>
     </LinkBase>
