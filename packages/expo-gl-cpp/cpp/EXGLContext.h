@@ -1,6 +1,6 @@
 #pragma once
 
-#include "UEXGL.h"
+#include "EXGL.h"
 
 #ifdef __ANDROID__
 #include <GLES3/gl3.h>
@@ -12,7 +12,7 @@
 #include <OpenGLES/ES3/glext.h>
 #endif
 
-#include "TypedArrayApi.h"
+#include "EXTypedArrayApi.h"
 
 #include <exception>
 #include <future>
@@ -26,7 +26,6 @@
 #include "EXJsiUtils.h"
 #include "EXPlatformUtils.h"
 #include "EXWebGLRenderer.h"
-#include "TypedArrayApi.h"
 
 // Constants in WebGL that aren't in OpenGL ES
 // https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API/Constants
@@ -50,7 +49,7 @@ class EXGLContext {
   using Batch = std::vector<Op>;
 
  public:
-  EXGLContext(UEXGLContextId ctxId): ctxId(ctxId) {}
+  EXGLContext(EXGLContextId ctxId): ctxId(ctxId) {}
   void prepareContext(jsi::Runtime &runtime, std::function<void(void)> flushMethod);
   void maybePrepareWorkletContext(jsi::Runtime &runtime, initGlesContext viewport);
 
@@ -101,10 +100,10 @@ class EXGLContext {
   // set and read on the GL thread, this prevents us from having to maintain a
   // mutex on the mapping.
 
-  UEXGLObjectId createObject(void) noexcept;
-  void destroyObject(UEXGLObjectId exglObjId) noexcept;
-  void mapObject(UEXGLObjectId exglObjId, GLuint glObj) noexcept;
-  GLuint lookupObject(UEXGLObjectId exglObjId) noexcept;
+  EXGLObjectId createObject(void) noexcept;
+  void destroyObject(EXGLObjectId exglObjId) noexcept;
+  void mapObject(EXGLObjectId exglObjId, GLuint glObj) noexcept;
+  GLuint lookupObject(EXGLObjectId exglObjId) noexcept;
 
   void tryRegisterOnJSRuntimeDestroy(jsi::Runtime &runtime);
   initGlesContext prepareOpenGLESContext();
@@ -117,10 +116,10 @@ class EXGLContext {
   std::mutex backlogMutex;
 
  public:
-  UEXGLContextId ctxId;
+  EXGLContextId ctxId;
 
   // Object mapping
-  std::unordered_map<UEXGLObjectId, GLuint> objects;
+  std::unordered_map<EXGLObjectId, GLuint> objects;
   std::atomic_uint nextObjectId = 1;
 
   bool supportsWebGL2 = false;

@@ -73,7 +73,7 @@
   return self;
 }
 
-- (UEXGLContextId)exglCtxId
+- (EXGLContextId)exglCtxId
 {
   return [_glContext contextId];
 }
@@ -84,7 +84,7 @@
   // we need to be sure that they all are done before we pass GL object to JS.
 
   if (_onSurfaceCreate && _glContext.isInitialized && _isLayouted) {
-    UEXGLContextId exglCtxId = _glContext.contextId;
+    EXGLContextId exglCtxId = _glContext.contextId;
     _onSurfaceCreate(@{ @"exglCtxId": @(exglCtxId) });
 
     // unset onSurfaceCreate - it will not be needed anymore
@@ -193,7 +193,7 @@
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
                               GL_RENDERBUFFER, self->_msaaRenderbuffer);
 
-    UEXGLContextSetDefaultFramebuffer(self->_glContext.contextId, self->_msaaFramebuffer);
+    EXGLContextSetDefaultFramebuffer(self->_glContext.contextId, self->_msaaFramebuffer);
 
     // Set up new depth+stencil renderbuffer
     glGenRenderbuffers(1, &self->_viewDepthStencilbuffer);
@@ -233,7 +233,7 @@
 
 - (void)draw
 {
-  // exglCtxId may be unset if we get here (on the UI thread) before UEXGLContextCreate(...) is
+  // exglCtxId may be unset if we get here (on the UI thread) before EXGLContextCreate(...) is
   // called on the JS thread to create the ABI45_0_0EXGL context and save its id (see ABI45_0_0EXGLContext.initializeContextWithBridge method).
   // In this case no GL work has been sent yet so we skip this frame.
   //
@@ -296,9 +296,9 @@
 - (void)glContextFlushed:(nonnull ABI45_0_0EXGLContext *)context
 {
   // blit framebuffers if endFrameEXP was called
-  if (UEXGLContextNeedsRedraw(_glContext.contextId)) {
+  if (EXGLContextNeedsRedraw(_glContext.contextId)) {
     // actually draw isn't yet finished, but it's here to prevent blitting the same thing multiple times
-    UEXGLContextDrawEnded(_glContext.contextId);
+    EXGLContextDrawEnded(_glContext.contextId);
 
     [self blitFramebuffers];
   }
@@ -320,7 +320,7 @@
   [self deleteViewBuffers];
 }
 
-- (UEXGLObjectId)glContextGetDefaultFramebuffer
+- (EXGLObjectId)glContextGetDefaultFramebuffer
 {
   return _msaaFramebuffer;
 }

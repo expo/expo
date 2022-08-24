@@ -1,5 +1,5 @@
-#ifndef __UEXGL_H__
-#define __UEXGL_H__
+#ifndef __EXGL_H__
+#define __EXGL_H__
 
 #ifdef __ANDROID__
 #include <GLES3/gl3.h>
@@ -25,60 +25,60 @@ extern "C" {
 
 // Identifies an EXGL context. No EXGL context has the id 0, so that can be
 // used as a 'null' value.
-typedef unsigned int UEXGLContextId;
+typedef unsigned int EXGLContextId;
 
 // Identifies an EXGL object. EXGL objects represent virtual mappings to underlying OpenGL objects.
 // No EXGL object has the id 0, so that can be used as a 'null' value.
-typedef unsigned int UEXGLObjectId;
+typedef unsigned int EXGLObjectId;
 
-UEXGLContextId UEXGLContextCreate();
+EXGLContextId EXGLContextCreate();
 
 #ifdef __cplusplus
 #endif
 
 #ifdef __APPLE__
-// Objective-C wrapper for UEXGLContextSetFlushMethod
-typedef void (^UEXGLFlushMethodBlock)(void);
+// Objective-C wrapper for EXGLContextSetFlushMethod
+typedef void (^EXGLFlushMethodBlock)(void);
 // [JS thread] Create an EXGL context and return its id number. Saves the
 // JavaScript interface object (has a WebGLRenderingContext-style API) at
 // `global.__EXGLContexts[id]` in JavaScript.
-void UEXGLContextPrepare(void *runtime, UEXGLContextId exglCtxId, UEXGLFlushMethodBlock flushMethod);
+void EXGLContextPrepare(void *runtime, EXGLContextId exglCtxId, EXGLFlushMethodBlock flushMethod);
 
 #else
 // [JS thread] Create an EXGL context and return its id number. Saves the
 // JavaScript interface object (has a WebGLRenderingContext-style API) at
 // `global.__EXGLContexts[id]` in JavaScript.
-void UEXGLContextPrepare(void *runtime, UEXGLContextId exglCtxId, std::function<void(void)> flushMethod);
+void EXGLContextPrepare(void *runtime, EXGLContextId exglCtxId, std::function<void(void)> flushMethod);
 #endif
 
 // [Any thread] Check whether we should redraw the surface
-bool UEXGLContextNeedsRedraw(UEXGLContextId exglCtxId);
+bool EXGLContextNeedsRedraw(EXGLContextId exglCtxId);
 
 // [GL thread] Tell cpp that we finished drawing to the surface
-void UEXGLContextDrawEnded(UEXGLContextId exglCtxId);
+void EXGLContextDrawEnded(EXGLContextId exglCtxId);
 
 // [Any thread] Release the resources for an EXGL context. The same id is never
 // reused.
-void UEXGLContextDestroy(UEXGLContextId exglCtxId);
+void EXGLContextDestroy(EXGLContextId exglCtxId);
 
 // [GL thread] Perform one frame's worth of queued up GL work
-void UEXGLContextFlush(UEXGLContextId exglCtxId);
+void EXGLContextFlush(EXGLContextId exglCtxId);
 
 // [GL thread] Set the default framebuffer (used when binding 0). Allows using
 // platform-specific extensions on the default framebuffer, such as MSAA.
-void UEXGLContextSetDefaultFramebuffer(UEXGLContextId exglCtxId, GLint framebuffer);
+void EXGLContextSetDefaultFramebuffer(EXGLContextId exglCtxId, GLint framebuffer);
 
 // [Any thread] Create an EXGL object. Initially maps to the OpenGL object zero.
-UEXGLObjectId UEXGLContextCreateObject(UEXGLContextId exglCtxId);
+EXGLObjectId EXGLContextCreateObject(EXGLContextId exglCtxId);
 
 // [GL thread] Destroy an EXGL object.
-void UEXGLContextDestroyObject(UEXGLContextId exglCtxId, UEXGLObjectId exglObjId);
+void EXGLContextDestroyObject(EXGLContextId exglCtxId, EXGLObjectId exglObjId);
 
 // [GL thread] Set the underlying OpenGL object an EXGL object maps to.
-void UEXGLContextMapObject(UEXGLContextId exglCtxId, UEXGLObjectId exglObjId, GLuint glObj);
+void EXGLContextMapObject(EXGLContextId exglCtxId, EXGLObjectId exglObjId, GLuint glObj);
 
 // [GL thread] Get the underlying OpenGL object an EXGL object maps to.
-GLuint UEXGLContextGetObject(UEXGLContextId exglCtxId, UEXGLObjectId exglObjId);
+GLuint EXGLContextGetObject(EXGLContextId exglCtxId, EXGLObjectId exglObjId);
 
 #ifdef __cplusplus
 }

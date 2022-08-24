@@ -96,19 +96,19 @@ void EXGLContext::flush(void) {
   }
 }
 
-UEXGLObjectId EXGLContext::createObject(void) noexcept {
+EXGLObjectId EXGLContext::createObject(void) noexcept {
   return nextObjectId++;
 }
 
-void EXGLContext::destroyObject(UEXGLObjectId exglObjId) noexcept {
+void EXGLContext::destroyObject(EXGLObjectId exglObjId) noexcept {
   objects.erase(exglObjId);
 }
 
-void EXGLContext::mapObject(UEXGLObjectId exglObjId, GLuint glObj) noexcept {
+void EXGLContext::mapObject(EXGLObjectId exglObjId, GLuint glObj) noexcept {
   objects[exglObjId] = glObj;
 }
 
-GLuint EXGLContext::lookupObject(UEXGLObjectId exglObjId) noexcept {
+GLuint EXGLContext::lookupObject(EXGLObjectId exglObjId) noexcept {
   auto iter = objects.find(exglObjId);
   return iter == objects.end() ? 0 : iter->second;
 }

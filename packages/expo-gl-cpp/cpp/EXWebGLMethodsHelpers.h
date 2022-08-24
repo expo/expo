@@ -21,7 +21,7 @@ template <typename Func>
 inline jsi::Value exglGetActiveInfo(
     EXGLContext *ctx,
     jsi::Runtime &runtime,
-    UEXGLObjectId fProgram,
+    EXGLObjectId fProgram,
     GLuint index,
     GLenum lengthParam,
     Func glFunc) {
@@ -94,7 +94,7 @@ exglVertexAttribv(EXGLContext *ctx, Func func, GLuint index, std::vector<T> &&da
 }
 
 inline jsi::Value
-exglIsObject(EXGLContext *ctx, UEXGLObjectId id, std::function<GLboolean(GLuint)> func) {
+exglIsObject(EXGLContext *ctx, EXGLObjectId id, std::function<GLboolean(GLuint)> func) {
   GLboolean glResult;
   ctx->addBlockingToNextBatch([&] { glResult = func(ctx->lookupObject(id)); });
   return glResult == GL_TRUE;
@@ -103,7 +103,7 @@ exglIsObject(EXGLContext *ctx, UEXGLObjectId id, std::function<GLboolean(GLuint)
 inline jsi::Value exglGenObject(
     EXGLContext *ctx,
     jsi::Runtime &runtime,
-    std::function<void(GLsizei, UEXGLObjectId *)> func,
+    std::function<void(GLsizei, EXGLObjectId *)> func,
     EXWebGLClass webglClass) {
   auto id = ctx->addFutureToNextBatch(runtime, [=] {
     GLuint buffer;
@@ -123,15 +123,15 @@ inline jsi::Value exglCreateObject(
 }
 
 inline jsi::Value
-exglDeleteObject(EXGLContext *ctx, UEXGLObjectId id, std::function<void(UEXGLObjectId)> func) {
+exglDeleteObject(EXGLContext *ctx, EXGLObjectId id, std::function<void(EXGLObjectId)> func) {
   ctx->addToNextBatch([=] { func(ctx->lookupObject(id)); });
   return nullptr;
 }
 
 inline jsi::Value exglDeleteObject(
     EXGLContext *ctx,
-    UEXGLObjectId id,
-    std::function<void(GLsizei, const UEXGLObjectId *)> func) {
+    EXGLObjectId id,
+    std::function<void(GLsizei, const EXGLObjectId *)> func) {
   ctx->addToNextBatch([=] {
     GLuint buffer = ctx->lookupObject(id);
     func(1, &buffer);

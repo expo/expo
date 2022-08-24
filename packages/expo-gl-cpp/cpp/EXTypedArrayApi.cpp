@@ -1,4 +1,4 @@
-#include "TypedArrayApi.h"
+#include "EXTypedArrayApi.h"
 
 #include <unordered_map>
 

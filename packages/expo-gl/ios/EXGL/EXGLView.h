@@ -1,6 +1,6 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
-#import <EXGL_CPP/UEXGL.h>
+#import <EXGL_CPP/EXGL.h>
 #import <EXGL/EXGLContext.h>
 #import <ExpoModulesCore/EXModuleRegistry.h>
 
@@ -9,7 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface EXGLView : UIView <EXGLContextDelegate>
 
 - (instancetype)initWithModuleRegistry:(EXModuleRegistry *)moduleRegistry;
-- (UEXGLContextId)exglCtxId;
+- (EXGLContextId)exglCtxId;
 
 // AR
 - (void)setArSessionManager:(id)arSessionManager;

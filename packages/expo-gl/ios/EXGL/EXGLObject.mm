@@ -8,7 +8,7 @@
 {
   if ((self = [super init])) {
     _exglCtxId = [config[@"exglCtxId"] unsignedIntValue];
-    _exglObjId = UEXGLContextCreateObject(_exglCtxId);
+    _exglObjId = EXGLContextCreateObject(_exglCtxId);
   }
   return self;
 }
@@ -16,7 +16,7 @@
 - (void)dealloc
 {
   if (_exglObjId != 0) {
-    UEXGLContextDestroyObject(_exglCtxId, _exglObjId);
+    EXGLContextDestroyObject(_exglCtxId, _exglObjId);
   }
 }
 
