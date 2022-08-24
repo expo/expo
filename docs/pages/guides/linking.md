@@ -211,7 +211,7 @@ const redirectUrl = Linking.createURL('path/into/app', {
 This will resolve into the following, depending on the environment:
 
 - _Published app in Expo Go_: `exp://u.expo.dev/[project-id]?channel-name=[channel-name]&runtime-version=[runtime-version]/--/path/into/app?hello=world`
-- _Published app in standalone_: `myapp://path/into/app?hello=world`
+- _Published app in standalone_: `myapp:///path/into/app?hello=world`
 - _Development in Expo Go_: `exp://127.0.0.1:19000/--/path/into/app?hello=world`
 
 > Notice in Expo Go that `/--/` is added to the URL when a path is specified. This indicates to Expo Go that the substring after it corresponds to the deep link path, and is not part of the path to the app itself.
