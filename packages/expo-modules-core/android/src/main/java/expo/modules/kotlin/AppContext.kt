@@ -1,5 +1,3 @@
-@file:OptIn(DelicateCoroutinesApi::class)
-
 package expo.modules.kotlin
 
 import android.app.Activity
@@ -24,9 +22,9 @@ import expo.modules.interfaces.permissions.Permissions
 import expo.modules.interfaces.sensors.SensorServiceInterface
 import expo.modules.interfaces.taskManager.TaskManagerInterface
 import expo.modules.kotlin.activityresult.ActivityResultsManager
-import expo.modules.kotlin.activityresult.AppContextActivityResultFallbackCallback
 import expo.modules.kotlin.activityresult.AppContextActivityResultCaller
 import expo.modules.kotlin.activityresult.AppContextActivityResultContract
+import expo.modules.kotlin.activityresult.AppContextActivityResultFallbackCallback
 import expo.modules.kotlin.activityresult.AppContextActivityResultLauncher
 import expo.modules.kotlin.defaultmodules.ErrorManagerModule
 import expo.modules.kotlin.events.EventEmitter
@@ -40,6 +38,7 @@ import expo.modules.kotlin.providers.CurrentActivityProvider
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.newSingleThreadContext
@@ -61,11 +60,18 @@ class AppContext(
   /**
    * A queue used to dispatch all async methods that are called via JSI.
    */
-  internal val modulesQueue = CoroutineScope(
+  @OptIn(DelicateCoroutinesApi::class)
+  val modulesQueue = CoroutineScope(
     // TODO(@lukmccall): maybe it will be better to use a thread pool
-    newSingleThreadContext("ExpoModulesCoreQueue") +
+    newSingleThreadContext("expo.modules.AsyncFunctionQueue") +
       SupervisorJob() +
-      CoroutineName("ExpoModulesCoreCoroutineQueue")
+      CoroutineName("expo.modules.AsyncFunctionQueue")
+  )
+
+  val mainQueue = CoroutineScope(
+    Dispatchers.Main +
+      SupervisorJob() +
+      CoroutineName("expo.modules.MainQueue")
   )
 
   private val activityResultsManager = ActivityResultsManager(this)
@@ -205,14 +211,15 @@ class AppContext(
   internal val errorManager: ErrorManagerModule?
     get() = registry.getModule()
 
-  fun onDestroy() {
+  internal fun onDestroy() {
     reactContextHolder.get()?.removeLifecycleEventListener(reactLifecycleDelegate)
     registry.post(EventName.MODULE_DESTROY)
     registry.cleanUp()
     modulesQueue.cancel(ContextDestroyedException())
+    mainQueue.cancel(ContextDestroyedException())
   }
 
-  fun onHostResume() {
+  internal fun onHostResume() {
     activityResultsManager.onHostResume(
       requireNotNull(currentActivity) {
         "Current Activity is not available at this moment. This is an invalid state and this should never happen"
@@ -221,11 +228,11 @@ class AppContext(
     registry.post(EventName.ACTIVITY_ENTERS_FOREGROUND)
   }
 
-  fun onHostPause() {
+  internal fun onHostPause() {
     registry.post(EventName.ACTIVITY_ENTERS_BACKGROUND)
   }
 
-  fun onHostDestroy() {
+  internal fun onHostDestroy() {
     activityResultsManager.onHostDestroy(
       requireNotNull(currentActivity) {
         "Current Activity is not available at this moment. This is an invalid state and this should never happen"
@@ -234,7 +241,7 @@ class AppContext(
     registry.post(EventName.ACTIVITY_DESTROYS)
   }
 
-  fun onActivityResult(activity: Activity, requestCode: Int, resultCode: Int, data: Intent?) {
+  internal fun onActivityResult(activity: Activity, requestCode: Int, resultCode: Int, data: Intent?) {
     activityResultsManager.onActivityResult(activity, requestCode, resultCode, data)
     registry.post(
       EventName.ON_ACTIVITY_RESULT,
@@ -247,7 +254,7 @@ class AppContext(
     )
   }
 
-  fun onNewIntent(intent: Intent?) {
+  internal fun onNewIntent(intent: Intent?) {
     registry.post(
       EventName.ON_NEW_INTENT,
       intent
