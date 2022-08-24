@@ -6,12 +6,10 @@ import { Collapsible } from '~/ui/components/Collapsible';
 
 There are five EAS Build lifecycle npm hooks that you can set in your **package.json**. See the [Android build process](android-builds.md) and [iOS build process](ios-builds.md) docs to get a better understanding about the internals of the build process.
 
-- `eas-build-pre-install` - executed before EAS Build runs `yarn install`.
+- `eas-build-pre-install` - executed before EAS Build runs `npm install`.
 - `eas-build-post-install` - the behavior depends on the platform and project type:
-  - Android
-    - managed projects - runs after `yarn install` and `expo prebuild`.
-    - bare projects - runs after `yarn install`.
-  - iOS - runs after `yarn install` and `pod install`.
+  - Android - runs after `npm install` and `npx expo prebuild` (if needed)
+  - iOS - runs after `npm install`, `npx expo prebuild` (if needed), and `pod install`.
 - `eas-build-on-success` - this hook is triggered at the end of the build process if the build was successful.
 - `eas-build-on-error` - this hook is triggered at the end of the build process if the build failed.
 - `eas-build-on-complete` - this hook is triggered at the end of the build process. You can check the build's status with the `EAS_BUILD_STATUS` environment variable. It's either `finished` or `errored`.

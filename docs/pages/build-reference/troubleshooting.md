@@ -32,7 +32,7 @@ For example, you might see something like this on your Android builds:
 `[stderr] Note: Recompile with -Xlint:deprecation for details.`
 ]} />
 
-While you may or may not be interested in following up on that warning, it is not the cause of your failed build. So how do you know which logs are truly responsible? If you are building a bare project, you will already be good at this. If you are building a [managed project](/introduction/managed-vs-bare.md), it may be tricky because you don't directly interact with the native code, only write JavaScript.
+While you may or may not be interested in following up on that warning, it is not the cause of your failed build.
 
 A good path forward is to **determine if the build failed due to a native or JavaScript error**. When your build fails due to a JavaScript build error, you will usually see something like this:
 
@@ -47,9 +47,9 @@ It's important to note that with iOS builds the build details page only displays
 
 <!-- TODO: native and js build phases should be separate in eas build logs, this is too much work for people to figure out -->
 
-If you are working on a managed app and the build error is a native error rather than a JavaScript error, this is likely due to a [config plugin](/guides/config-plugins.md) or a dependency in your project. Keep an eye out in the logs for any new packages that you've added since your previous successful build. Run `expo doctor` to determine that the versions of Expo SDK dependencies in your project are compatible with your Expo SDK version.
+Keep an eye out in the logs for any new packages that you've added since your previous successful build. Run `expo-cli doctor` to determine that the versions of Expo SDK dependencies in your project are compatible with your Expo SDK version.
 
-Armed with your error logs, you can often start to fix your build, or you can search the [forums](https://forums.expo.dev) and GitHub issues for related packages to dig deeper. Some common sources of problems are listed below.
+Armed with your error logs, you can often start to fix your build, or you can search the [forums](https://forums.expo.dev) and [GitHub issues](https://github.com/expo/expo/issues) for related packages to dig deeper. Some common sources of problems are listed below.
 
 <Collapsible summary="📦 Are you using a monorepo?">
 
@@ -57,9 +57,7 @@ Monorepos are incredibly useful but they do introduce their own set of problems.
 
 With EAS Build, it's necessary to upload the entire monorepo to the build worker, set it up, and run the build; but, on `expo build` you only had to be able to build the JavaScript bundle locally and upload that to the worker.
 
-EAS Build is more like a typical CI service in that we need the source code, rather than a compiled JavaScript bundle and manifest. EAS Build has first-class support for Yarn workspaces, and [your success may vary when using other monorepo tools](/build-reference/limitations.md).
-
-<!-- TODO: link to monorepos guide when ready -->
+EAS Build is more like a typical CI service in that we need the source code, rather than a compiled JavaScript bundle and manifest. [EAS Build has first-class support for Yarn workspaces](/guides/monorepos/), and your success may vary when using other monorepo tools.
 
 </Collapsible>
 
@@ -105,7 +103,7 @@ You can verify that your project builds on your local machine with the `expo run
 '$ expo run:ios --configuration Release'
 ]} />
 
-> In managed projects, these commands will run `expo prebuild` to generate native projects &mdash; you likely want to [clean up the changes](https://expo.fyi/prebuild-cleanup) once you are done troubleshooting.
+> These commands will run `expo prebuild` to generate native projects (`ios` and `android` directories) if needed &mdash; you may want to [clean up the changes](https://expo.fyi/prebuild-cleanup) once you are done troubleshooting, or add the directories to your `.gitignore`. Learn more in the [Prebuild guide](/workflow/prebuild/).
 
 <Collapsible summary="💡 Don't have Xcode and Android Studio set up on your machine?">
 

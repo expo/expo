@@ -8,11 +8,9 @@ When creating [development, preview, and production builds](../eas-json.md#commo
 
 In order to be able to have multiple instances of an app installed on your device, each instance must have a unique Application ID (Android) or Bundle Identifier (iOS).
 
-**If you have a bare project**, you can accomplish this using flavors (Android) and targets (iOS). To configure which flavor is used, use the `gradleCommand` field on your build profile; to configure which target is used, use the `scheme` field for iOS.
+This can be accomplished by using **app.config.js** and environment variables in **eas.json**. If you have a bare project, you will need to use flavors (Android) and targets (iOS) instead. To configure which flavor is used, use the `gradleCommand` field on your build profile; to configure which target is used, use the `scheme` field for iOS.
 
-**If you have a managed project**, this can be accomplished by using **app.config.js** and environment variables in **eas.json**.
-
-## Example: configuring development and production variants in a managed project
+## Example: configuring development and production variants in app.config.js and eas.json
 
 Let's say we wanted a development build and production build of our managed Expo project. Your **eas.json** might look like this:
 
