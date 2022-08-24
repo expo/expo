@@ -17,7 +17,7 @@ export const DocSearchStyles = css`
 
     /* modal */
     --docsearch-modal-width: 40vw;
-    --docsearch-modal-height: 66vh;
+    --docsearch-modal-height: 74vh;
     --docsearch-modal-background: ${theme.background.default};
     --docsearch-modal-shadow: ${shadows.popover};
 
