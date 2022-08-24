@@ -20,7 +20,7 @@ This stack trace is **extremely valuable** since it gives you the location of th
 
 <ImageSpotlight alt="An example of Stack trace in an Expo app." src="/static/images/stack-trace.jpg" style={{maxWidth: 720}} />
 
-When you look at that file, on line 7, you will see that a variable called `renderDescription` is referenced. The error message describes that the variable is not found, which is accurate since the variable is not declared in **HomeScreen.js**. This is a simple example of how helpful error messages and stack traces can be if you take the time to decipher them.
+When you look at that file, on line 7, you will see that a variable called `renderDescription` is referenced. The error message describes that the variable is not found because the variable is not declared in **HomeScreen.js**. This is a typical example of how helpful error messages and stack traces can be if you take the time to decipher them.
 
 Debugging errors is one of the most frustrating but satisfying parts of development. Remember that you're never alone. The **Expo community** and the React and React Native communities are great resources for help when you get stuck. There's a good chance someone else has run into your exact error. Make sure to read the documentation, search the [forums](https://forums.expo.dev/), [GitHub issues](https://github.com/expo/expo/issues/), and [StackOverflow](https://stackoverflow.com/).
 
