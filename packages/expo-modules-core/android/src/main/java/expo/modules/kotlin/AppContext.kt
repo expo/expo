@@ -7,9 +7,10 @@ import android.view.View
 import androidx.annotation.MainThread
 import androidx.annotation.UiThread
 import androidx.appcompat.app.AppCompatActivity
+import com.facebook.react.bridge.JSIModuleType
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.turbomodule.core.CallInvokerHolderImpl
-import com.facebook.react.uimanager.UIManagerModule
+import expo.modules.BuildConfig
 import expo.modules.core.errors.ContextDestroyedException
 import expo.modules.core.interfaces.ActivityProvider
 import expo.modules.interfaces.barcodescanner.BarCodeScannerInterface
@@ -264,8 +265,13 @@ class AppContext(
   @Suppress("UNCHECKED_CAST")
   @UiThread
   fun <T : View> findView(viewTag: Int): T? {
-    val rnUIManager = reactContextHolder.get()?.getNativeModule(UIManagerModule::class.java)
-    return rnUIManager?.resolveView(viewTag) as? T
+    return if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
+      val fabricUIManager = reactContextHolder.get()?.getJSIModule(JSIModuleType.UIManager) as? com.facebook.react.bridge.UIManager
+      fabricUIManager?.resolveView(viewTag) as? T
+    } else {
+      val paperUIManager = reactContextHolder.get()?.getNativeModule(com.facebook.react.uimanager.UIManagerModule::class.java)
+      paperUIManager?.resolveView(viewTag) as? T
+    }
   }
 
 // region CurrentActivityProvider
