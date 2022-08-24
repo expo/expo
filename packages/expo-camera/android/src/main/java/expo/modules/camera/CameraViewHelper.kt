@@ -7,66 +7,15 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.media.CamcorderProfile
 import android.os.Bundle
-import android.view.ViewGroup
 
 import com.google.android.cameraview.CameraView
 
-import expo.modules.camera.events.CameraMountErrorEvent
-import expo.modules.camera.events.CameraReadyEvent
-import expo.modules.interfaces.barcodescanner.BarCodeScannerResult
-import expo.modules.core.interfaces.services.EventEmitter
-import expo.modules.camera.events.FacesDetectedEvent
-import expo.modules.interfaces.facedetector.FaceDetectorInterface
-import expo.modules.camera.events.FaceDetectionErrorEvent
-import expo.modules.camera.events.PictureSavedEvent
-import expo.modules.camera.events.BarCodeScannedEvent
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 
 object CameraViewHelper {
-  // Mount error event
-  @JvmStatic
-  fun emitMountErrorEvent(emitter: EventEmitter, view: ViewGroup, message: String) {
-    val event = CameraMountErrorEvent.obtain(message)
-    emitter.emit(view.id, event)
-  }
-
-  // Camera ready event
-  @JvmStatic
-  fun emitCameraReadyEvent(emitter: EventEmitter, view: ViewGroup) {
-    val event = CameraReadyEvent.obtain()
-    emitter.emit(view.id, event)
-  }
-
-  // Bar code read event
-  @JvmStatic
-  fun emitBarCodeReadEvent(emitter: EventEmitter, view: ViewGroup, barCode: BarCodeScannerResult) {
-    val event = BarCodeScannedEvent.obtain(view.id, barCode)
-    emitter.emit(view.id, event)
-  }
-
-  // Face detection events
-  @JvmStatic
-  fun emitFacesDetectedEvent(emitter: EventEmitter, view: ViewGroup, faces: List<Bundle>) {
-    val event = FacesDetectedEvent.obtain(view.id, faces)
-    emitter.emit(view.id, event)
-  }
-
-  @JvmStatic
-  fun emitFaceDetectionErrorEvent(emitter: EventEmitter, view: ViewGroup, faceDetector: FaceDetectorInterface) {
-    val event = FaceDetectionErrorEvent.obtain(faceDetector)
-    emitter.emit(view.id, event)
-  }
-
-  // Picture saved
-  @JvmStatic
-  fun emitPictureSavedEvent(emitter: EventEmitter, view: ViewGroup, info: Bundle) {
-    val event = PictureSavedEvent.obtain(info)
-    emitter.emit(view.id, event)
-  }
-
   // Utilities
   @JvmStatic
   fun getCorrectCameraRotation(rotation: Int, facing: Int) =
