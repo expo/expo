@@ -1,11 +1,16 @@
 package expo.modules.av.video;
 
 import android.content.Context;
+import android.view.View;
+
 import androidx.annotation.Nullable;
+
+import com.facebook.react.bridge.ReactContext;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import expo.modules.av.ViewUtils;
 import expo.modules.av.video.scalablevideoview.ScalableType;
 import expo.modules.core.ExportedModule;
 import expo.modules.core.ModuleRegistry;
@@ -46,7 +51,7 @@ public class VideoManager extends ExportedModule {
 
   @ExpoMethod
   public void setFullscreen(final Integer tag, final Boolean shouldBeFullscreen, final Promise promise) {
-    tryRunWithVideoView(tag, new VideoViewCallback() {
+    ViewUtils.tryRunWithVideoView((ReactContext) getContext(), tag, new ViewUtils.VideoViewCallback() {
       @Override
       public void runWithVideoView(final VideoView videoView) {
         FullscreenVideoPlayerPresentationChangeProgressListener listener = new FullscreenVideoPlayerPresentationChangeProgressListener() {
@@ -89,24 +94,5 @@ public class VideoManager extends ExportedModule {
         }
       }
     }, promise);
-  }
-
-  private interface VideoViewCallback {
-    void runWithVideoView(final VideoView videoView);
-  }
-
-  // Rejects the promise if the VideoView is not found, otherwise executes the callback.
-  private void tryRunWithVideoView(final Integer tag, final VideoViewCallback callback, final Promise promise) {
-    mModuleRegistry.getModule(UIManager.class).addUIBlock(tag, new UIManager.UIBlock<VideoViewWrapper>() {
-      @Override
-      public void resolve(VideoViewWrapper videoViewWrapper) {
-        callback.runWithVideoView(videoViewWrapper.getVideoViewInstance());
-      }
-
-      @Override
-      public void reject(Throwable throwable) {
-        promise.reject("E_VIDEO_TAGINCORRECT", "Invalid view returned from registry.");
-      }
-    }, VideoViewWrapper.class);
   }
 }
