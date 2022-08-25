@@ -2,12 +2,11 @@ import spawnAsync from '@expo/spawn-async';
 import { vol } from 'memfs';
 import path from 'path';
 
+import { mockSpawnPromise, mockedSpawnAsync, STUB_SPAWN_CHILD } from '../../__tests__/spawn-utils';
 import { PnpmPackageManager } from '../PnpmPackageManager';
 
 jest.mock('@expo/spawn-async');
 jest.mock('fs');
-
-const mockedSpawnAsync = spawnAsync as jest.MockedFunction<typeof spawnAsync>;
 
 describe('PnpmPackageManager', () => {
   const projectRoot = '/project/with-pnpm';
@@ -43,7 +42,9 @@ describe('PnpmPackageManager', () => {
 
   describe('versionAsync', () => {
     it('returns version from pnpm', async () => {
-      mockedSpawnAsync.mockResolvedValue({ stdout: '7.0.0\n' } as any);
+      mockedSpawnAsync.mockImplementation(() =>
+        mockSpawnPromise(Promise.resolve({ stdout: '7.0.0\n' }))
+      );
 
       const pnpm = new PnpmPackageManager({ cwd: projectRoot });
 
@@ -54,7 +55,9 @@ describe('PnpmPackageManager', () => {
 
   describe('getConfigAsync', () => {
     it('returns a configuration key from pnpm', async () => {
-      mockedSpawnAsync.mockResolvedValue({ stdout: 'https://custom.registry.org/\n' } as any);
+      mockedSpawnAsync.mockImplementation(() =>
+        mockSpawnPromise(Promise.resolve({ stdout: 'https://custom.registry.org/\n' }))
+      );
 
       const pnpm = new PnpmPackageManager({ cwd: projectRoot });
 

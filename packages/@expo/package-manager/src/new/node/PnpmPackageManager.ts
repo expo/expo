@@ -16,39 +16,39 @@ export class PnpmPackageManager extends BasePackageManager {
     }
   }
 
-  async addAsync(namesOrFlags: string[] = []) {
+  addAsync(namesOrFlags: string[] = []) {
     if (!namesOrFlags.length) {
       return this.installAsync();
     }
 
-    await this.runAsync(['add', ...namesOrFlags]);
+    return this.runAsync(['add', ...namesOrFlags]);
   }
 
-  async addDevAsync(namesOrFlags: string[] = []) {
+  addDevAsync(namesOrFlags: string[] = []) {
     if (!namesOrFlags.length) {
       return this.installAsync();
     }
 
-    await this.runAsync(['add', '--save-dev', ...namesOrFlags]);
+    return this.runAsync(['add', '--save-dev', ...namesOrFlags]);
   }
 
-  async addGlobalAsync(namesOrFlags: string[] = []) {
+  addGlobalAsync(namesOrFlags: string[] = []) {
     if (!namesOrFlags.length) {
       return this.installAsync();
     }
 
-    await this.runAsync(['add', '--global', ...namesOrFlags]);
+    return this.runAsync(['add', '--global', ...namesOrFlags]);
   }
 
-  async removeAsync(namesOrFlags: string[]) {
-    await this.runAsync(['remove', ...namesOrFlags]);
+  removeAsync(namesOrFlags: string[]) {
+    return this.runAsync(['remove', ...namesOrFlags]);
   }
 
-  async removeDevAsync(namesOrFlags: string[]) {
-    await this.runAsync(['remove', '--save-dev', ...namesOrFlags]);
+  removeDevAsync(namesOrFlags: string[]) {
+    return this.runAsync(['remove', '--save-dev', ...namesOrFlags]);
   }
 
-  async removeGlobalAsync(namesOrFlags: string[]) {
-    await this.runAsync(['remove', '--global', ...namesOrFlags]);
+  removeGlobalAsync(namesOrFlags: string[]) {
+    return this.runAsync(['remove', '--global', ...namesOrFlags]);
   }
 }

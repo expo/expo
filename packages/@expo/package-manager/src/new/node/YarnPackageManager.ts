@@ -1,3 +1,4 @@
+import { createPendingSpawnAsync } from '../utils/spawn';
 import { isYarnOfflineAsync } from '../utils/yarn';
 import { BasePackageManager } from './BasePackageManager';
 
@@ -11,47 +12,55 @@ export class YarnPackageManager extends BasePackageManager {
     return (await isYarnOfflineAsync()) ? [...namesOrFlags, '--offline'] : namesOrFlags;
   }
 
-  async installAsync(flags: string[] = []): Promise<void> {
-    const args = await this.withOfflineFlagAsync(['install']);
-    await this.runAsync([...args, ...flags]);
+  installAsync(flags: string[] = []) {
+    return createPendingSpawnAsync(
+      () => this.withOfflineFlagAsync(['install']),
+      (args) => this.runAsync([...args, ...flags])
+    );
   }
 
-  async addAsync(namesOrFlags: string[] = []): Promise<void> {
+  addAsync(namesOrFlags: string[] = []) {
     if (!namesOrFlags.length) {
       return this.installAsync();
     }
 
-    const args = await this.withOfflineFlagAsync(['add', ...namesOrFlags]);
-    await this.runAsync(args);
+    return createPendingSpawnAsync(
+      () => this.withOfflineFlagAsync(['add', ...namesOrFlags]),
+      (args) => this.runAsync(args)
+    );
   }
 
-  async addDevAsync(namesOrFlags: string[] = []): Promise<void> {
+  addDevAsync(namesOrFlags: string[] = []) {
     if (!namesOrFlags.length) {
       return this.installAsync();
     }
 
-    const args = await this.withOfflineFlagAsync(['add', '--dev', ...namesOrFlags]);
-    await this.runAsync(args);
+    return createPendingSpawnAsync(
+      () => this.withOfflineFlagAsync(['add', '--dev', ...namesOrFlags]),
+      (args) => this.runAsync(args)
+    );
   }
 
-  async addGlobalAsync(namesOrFlags: string[] = []): Promise<void> {
+  addGlobalAsync(namesOrFlags: string[] = []) {
     if (!namesOrFlags.length) {
       return this.installAsync();
     }
 
-    const args = await this.withOfflineFlagAsync(['global', 'add', ...namesOrFlags]);
-    await this.runAsync(args);
+    return createPendingSpawnAsync(
+      () => this.withOfflineFlagAsync(['global', 'add', ...namesOrFlags]),
+      (args) => this.runAsync(args)
+    );
   }
 
-  async removeAsync(namesOrFlags: string[]): Promise<void> {
-    await this.runAsync(['remove', ...namesOrFlags]);
+  removeAsync(namesOrFlags: string[]) {
+    return this.runAsync(['remove', ...namesOrFlags]);
   }
 
-  async removeDevAsync(namesOrFlags: string[]): Promise<void> {
-    await this.runAsync(['remove', ...namesOrFlags]);
+  removeDevAsync(namesOrFlags: string[]) {
+    return this.runAsync(['remove', ...namesOrFlags]);
   }
 
-  async removeGlobalAsync(namesOrFlags: string[]): Promise<void> {
-    await this.runAsync(['global', 'remove', ...namesOrFlags]);
+  removeGlobalAsync(namesOrFlags: string[]) {
+    return this.runAsync(['global', 'remove', ...namesOrFlags]);
   }
 }

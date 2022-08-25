@@ -1,15 +1,13 @@
-module.exports = jest.fn(() => {
-  const actualModule = jest.requireActual('@expo/spawn-async');
+import { mockSpawnPromise } from '../../src/new/__tests__/spawn-utils';
 
-  return {
-    __esModule: true,
-    ...actualModule,
-    // minimal implementation is needed here because the packager manager depends on the child property to exist.
-    default: jest.fn((_command, _args, _options) => {
-      const promise = new Promise((resolve, _reject) => resolve({}));
-      // @ts-ignore: TypeScript isn't aware the Promise constructor argument runs synchronously
-      promise.child = {};
-      return promise;
-    }),
-  };
-});
+const actualModule = jest.requireActual('@expo/spawn-async');
+
+module.exports = {
+  ...actualModule,
+  __esModule: true,
+  // minimal implementation is needed here because the packager manager depends on the child property to exist.
+  // Note that `{ type: '<type>' }` stubs can be used in tests to assert the resolved values.
+  default: jest.fn((_command, _args, _options) => {
+    return mockSpawnPromise();
+  }),
+};

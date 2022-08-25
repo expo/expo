@@ -1,5 +1,7 @@
 import { SpawnOptions, SpawnPromise, SpawnResult } from '@expo/spawn-async';
 
+import { PendingSpawnPromise } from './utils/spawn';
+
 export interface PackageManagerOptions extends SpawnOptions {
   logger?: (...args: any[]) => void;
   silent?: boolean;
@@ -22,21 +24,30 @@ export interface PackageManager {
   workspaceRootAsync(): Promise<string | null>;
 
   /** Install all current dependencies using the package manager */
-  installAsync(): Promise<void>;
+  installAsync():
+    | Promise<SpawnResult>
+    | SpawnPromise<SpawnResult>
+    | PendingSpawnPromise<SpawnResult>;
   /** Uninstall all current dependencies by removing the folder containing the packages */
   uninstallAsync(): Promise<void>;
 
   /** Add a normal dependency to the project */
-  addAsync(namesOrFlags: string[]): Promise<void>;
+  addAsync(namesOrFlags: string[]): SpawnPromise<SpawnResult> | PendingSpawnPromise<SpawnResult>;
   /** Add a development dependency to the project */
-  addDevAsync(namesOrFlags: string[]): Promise<void>;
+  addDevAsync(namesOrFlags: string[]): SpawnPromise<SpawnResult> | PendingSpawnPromise<SpawnResult>;
   /** Add a global dependency to the environment */
-  addGlobalAsync(namesOrFlags: string[]): Promise<void>;
+  addGlobalAsync(
+    namesOrFlags: string[]
+  ): SpawnPromise<SpawnResult> | PendingSpawnPromise<SpawnResult>;
 
   /** Remove a normal dependency from the project */
-  removeAsync(namesOrFlags: string[]): Promise<void>;
+  removeAsync(namesOrFlags: string[]): SpawnPromise<SpawnResult> | PendingSpawnPromise<SpawnResult>;
   /** Remove a development dependency from the project */
-  removeDevAsync(namesOrFlags: string[]): Promise<void>;
+  removeDevAsync(
+    namesOrFlags: string[]
+  ): SpawnPromise<SpawnResult> | PendingSpawnPromise<SpawnResult>;
   /** Remove a global dependency from the environments */
-  removeGlobalAsync(namesOrFlags: string[]): Promise<void>;
+  removeGlobalAsync(
+    namesOrFlags: string[]
+  ): SpawnPromise<SpawnResult> | PendingSpawnPromise<SpawnResult>;
 }

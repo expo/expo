@@ -6,7 +6,7 @@ import os from 'os';
 import path from 'path';
 
 import { PackageManager, PackageManagerOptions } from '../PackageManager';
-import { spawnSudoAsync } from '../utils/spawnSudo';
+import { spawnSudoAsync } from '../utils/spawn';
 
 export type CocoaPodsErrorCode = 'NON_INTERACTIVE' | 'NO_CLI' | 'COMMAND_FAILED';
 
@@ -101,27 +101,27 @@ export class CocoaPodsPackageManager implements PackageManager {
     throw new Error('Unimplemented');
   }
 
-  async addAsync(namesOrFlags: string[] = []) {
+  addAsync(): SpawnPromise<never> {
     throw new Error('Unimplemented');
   }
 
-  async addDevAsync(namesOrFlags: string[] = []) {
+  addDevAsync(): SpawnPromise<never> {
     throw new Error('Unimplemented');
   }
 
-  async addGlobalAsync(namesOrFlags: string[] = []) {
+  addGlobalAsync(): SpawnPromise<never> {
     throw new Error('Unimplemented');
   }
 
-  async removeAsync(namesOrFlags: string[]) {
+  removeAsync(): SpawnPromise<never> {
     throw new Error('Unimplemented');
   }
 
-  async removeDevAsync(namesOrFlags: string[]) {
+  removeDevAsync(): SpawnPromise<never> {
     throw new Error('Unimplemented');
   }
 
-  async removeGlobalAsync(namesOrFlags: string[]) {
+  removeGlobalAsync(): SpawnPromise<never> {
     throw new Error('Unimplemented');
   }
 
@@ -261,8 +261,8 @@ export class CocoaPodsPackageManager implements PackageManager {
   }
 
   /** Runs `pod install` and attempts to automatically run known troubleshooting steps automatically. */
-  async installAsync(flags: string[] = [], { spinner }: { spinner?: Ora } = {}) {
-    await this._installAsync({ spinner });
+  installAsync(flags: string[] = [], { spinner }: { spinner?: Ora } = {}) {
+    return this._installAsync({ spinner });
   }
 
   public isCLIInstalledAsync() {
