@@ -110,7 +110,7 @@ then register the plugin in your `app.json`. Using this module will require new 
 
 Once you've generated new builds with EAS build or the `expo run:ios`/`expo run:android` commands, you can access the new capabilities in your app's code.
 
-Add the following code to your App.tsx, run `expo start --dev-client`, and load your JavaScript. Now you can convert speech to text in your app!
+Add the following code to your App.tsx, run `npx expo start --dev-client`, and load your JavaScript. Now you can convert speech to text in your app!
 
 <!-- prettier-ignore -->
 ```js

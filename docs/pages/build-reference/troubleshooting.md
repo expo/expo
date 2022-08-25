@@ -81,7 +81,7 @@ When you get the `Metro encountered an error` during a native iOS build, it mean
 `❌ Metro encountered an error:`
 ]} />
 
-You can reproduce this production bundle locally by running `expo export --experimental-bundle` which simply creates a production bundle. Continue doing this until the command passes without throwing. In general this should save you hours of debugging time.
+You can reproduce this production bundle locally by running `npx expo export` which simply creates a production bundle. Continue doing this until the command passes without throwing. In general this should save you hours of debugging time.
 
 This behavior comes from React Native on iOS, in the future we plan to rewrite this for EAS Build so the bundle is created before the native runtime.
 
@@ -130,7 +130,7 @@ The classic build service (`expo build`) works completely differently from EAS B
 
 ### Why does my production app does not match my development app?
 
-You can test how the JS part of your app will run in production by starting it with `expo start --no-dev`. This tells the bundler to minify JavaScript before serving it, most notably stripping code protected by the `__DEV__` boolean. This will remove most of the logging, HMR, Fast Refresh functionality, and make debugging a bit harder, but you can iterate on the production bundle faster this way.
+You can test how the JS part of your app will run in production by starting it with `npx expo start --no-dev`. This tells the bundler to minify JavaScript before serving it, most notably stripping code protected by the `__DEV__` boolean. This will remove most of the logging, HMR, Fast Refresh functionality, and make debugging a bit harder, but you can iterate on the production bundle faster this way.
 
 ## Still having trouble?
 

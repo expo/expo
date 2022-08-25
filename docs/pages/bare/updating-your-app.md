@@ -2,7 +2,7 @@
 title: Updating your app
 ---
 
-EAS update works with projects created with `react-native init` and with Expo projects that are ejected. These projects have **android** and **ios** directories so that we can modify native files directly.
+EAS update works with any bare React Native app. These projects have **android** and **ios** directories so that we can modify native files directly.
 
 The steps for configuring a bare React Native project are identical to the steps for configuring an Expo project. However, you may need to edit some of the code `eas update:configure` and `eas build:configure` generates depending on how you build and run your project.
 
@@ -79,7 +79,7 @@ Once we've built our project into a build, the `expo-updates` library will make 
 
 If we create a build with EAS Build, the channel name from **eas.json** will automatically be added to our build's **AndroidManifest.xml** and **Expo.plist** at build time. If you're using EAS Build, the following steps are not necessary.
 
-If your project is not using EAS Build or you are creating release builds with either `expo run:ios --configuration Release` or `expo run:android --variant release`, you'll need to set the channel configuration manually inside both **AndroidManifest.xml** and **Expo.plist**.
+If your project is not using EAS Build or you are creating release builds with either `npx expo run:ios --configuration Release` or `npx expo run:android --variant release`, you'll need to set the channel configuration manually inside both **AndroidManifest.xml** and **Expo.plist**.
 
 In **AndroidManifest.xml**, you'll need to add the following, replacing `your-channel-name` with the channel that matches your project:
 

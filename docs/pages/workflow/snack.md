@@ -1,5 +1,5 @@
 ---
-title: "Snack: a playground in your browser"
+title: 'Snack: a playground in your browser'
 ---
 
 import SnackEmbed from '~/components/plugins/SnackEmbed';
@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
 
 ## Debugging your code
 
-All logs from the web and mobile device previews are visible in toolbar below the editor. To inspect the logs, click on bottom toolbar and go to the "Logs" tab. While it's possible to view logs, it is not possible to connect a JavaScript debugger in Snack, you will need to download your project and run it with `expo-cli` in order to do this. Press the download button in the header bar on the right to download the project to your machine.
+All logs from the web and mobile device previews are visible in toolbar below the editor. To inspect the logs, click on bottom toolbar and go to the "Logs" tab. While it's possible to view logs, it is not possible to connect a JavaScript debugger in Snack, you will need to download your project and run it with [Expo CLI](/workflow/expo-cli) in order to do this. Press the download button in the header bar on the right to download the project to your machine.
 
 ## Static analysis
 

@@ -9,7 +9,7 @@ If you're a top-down learner and you would like to get a high-level understandin
 
 ## Initialize a project
 
-If you’re just starting a new bare project then you should initialize it with `expo-cli` so it will be preconfigured to include relevant Expo tools.
+If you’re just starting a new bare project then you should initialize it with [`create-expo-app`](/workflow/glossary-of-terms#create-expo-app) so it will have the `expo` npm package installed already.
 
 <Video file="exploring-bare/init.mp4" spaceAfter={30} />
 
@@ -17,13 +17,13 @@ If you’re just starting a new bare project then you should initialize it with 
 
 ### Existing React Native apps
 
-If you already have a React Native project that has been created with `react-native init`, `ignite init`, or another similar tool, we'll need to install and configure the `expo` package to enable you to use packages from the Expo SDK. For this, we will run `npx install-expo-modules`.
+If you already have a React Native project that has been created with `npx react-native init`, `ignite init`, or another similar tool, we'll need to install and configure the `expo` package to enable you to use packages from the Expo SDK. For this, we will run `npx install-expo-modules`.
 
 ### Existing Expo managed workflow apps
 
-If you already have an Expo managed workflow app and you need to customize the native code, you can generate the native projects by running `expo prebuild`.
+<!-- TODO: DROP. DROP. DROP!! -->
 
-> 💡 We recommend upgrading to the latest SDK version before ejecting. It will be more difficult to upgrade your app after ejecting because you will also be responsible for native iOS and Android related upgrade steps.
+If you already have an Expo managed workflow app and you need to customize the native code, you can generate the native projects by running `npx expo prebuild`.
 
 <Video file="exploring-bare/eject.mp4" spaceAfter />
 
@@ -35,7 +35,7 @@ Now we just run `yarn ios` or `yarn android` to start the JavaScript bundler ser
 
 ## Adding a library from the Expo SDK
 
-To add a library from the Expo SDK we install it with `expo install`, run `npx pod-install` to link the iOS native dependency, and then recompile our projects for iOS and Android.
+To add a library from the Expo SDK we install it with `npx expo install`, run `npx pod-install` to link the iOS native dependency, and then recompile our projects for iOS and Android.
 
 <Video file="exploring-bare/expoinstall.mp4" spaceAfter />
 
@@ -57,7 +57,7 @@ Now when we go to the screen where you would expect to see the `AttractionList`,
 
 ## Open the app in your web browser
 
-Expo for web also works on bare projects. Here we will just import one simple component into **App.web.js** to demonstrate it, and run `expo start --web`.
+Expo for web also works on bare projects. Here we will just import one simple component into **App.web.js** to demonstrate it, and run `npx expo start --web`.
 
 <Video file="exploring-bare/web.mp4" spaceAfter />
 
@@ -68,5 +68,7 @@ With [Expo Application Services (EAS)](/eas/index.md), you can build and submit 
 ## That's it!
 
 You are now, at a very high level, familiar with the steps you would go through to get started on building an app with the bare workflow. Continue on to [Up and Running](hello-world.md) to get started coding!
+
+<!-- TODO: Rephrase -->
 
 Are you feeling intimidated? It might be better for you to start out with the managed workflow if you're new to this. Check out the [First steps](../tutorial/planning/) for more information.

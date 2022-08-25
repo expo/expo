@@ -176,7 +176,7 @@ export default function App() {
 - Setup redirect URIs: Your Project > Permitted Redirect URIs: (be sure to save after making changes).
   - _Expo Go_: `exp://localhost:19000/--/`
   - _Web dev_: `https://localhost:19006`
-    - Run `expo start --web --https` to run with **https**, auth won't work otherwise.
+    - Run `npx expo start --web --https` to run with **https**, auth won't work otherwise.
     - Adding a slash to the end of the URL doesn't matter.
   - _Standalone and Bare_: `your-scheme://`
     - Scheme should be specified in app.json `expo.scheme: 'your-scheme'`, then added to the app code with `makeRedirectUri({ native: 'your-scheme://' })`)
@@ -592,7 +592,7 @@ Then add `<data android:scheme="fb<YOUR ID>"/>` to the `.MainActivity` `intent-f
 - Under "Valid OAuth Redirect URIs" add `https://localhost:19006` and any other web URLs you may want to add.
 - Press "Save Changes" in the footer.
 - Copy the "App ID" in the header into your `webClientId: '<YOUR FBID>'`. Ex: `{ webClientId: '474614477183384' }` (no `fb` prefix).
-- Now start the dev server with `expo start --https`, ensure this is the only server running, otherwise the port will not be `19006`.
+- Now start the dev server with `npx expo start --https`, ensure this is the only server running, otherwise the port will not be `19006`.
 
 <Tabs tabs={["Auth Code", "Implicit Flow", "Firebase"]}>
 
@@ -1076,7 +1076,7 @@ Expo web client ID for use in the browser.
 - Give it a name (e.g. "Web App").
 - **URIs** (Authorized JavaScript origins): https://localhost:19006 & https://yourwebsite.com
 - **Authorized redirect URIs**: https://localhost:19006 & https://yourwebsite.com
-- To test this be sure to start your app with `expo start --web --https`.
+- To test this be sure to start your app with `npx expo start --web --https`.
 
 <Tabs tabs={["Standard", "Firebase"]}>
 <Tab>
@@ -1677,7 +1677,7 @@ export default function App() {
   - _Expo Go_: `exp://localhost:19000/--/`
   - _Web dev_: `https://localhost:19006`
     - Important: Ensure there's no slash at the end of the URL unless manually changed in the app code with `makeRedirectUri({ path: '/' })`.
-    - Run `expo start --web --https` to run with **https**, auth won't work otherwise.
+    - Run `npx expo start --web --https` to run with **https**, auth won't work otherwise.
   - _Custom app_: `your-scheme://`
     - Scheme should be specified in app.json `expo.scheme: 'your-scheme'`, then added to the app code with `makeRedirectUri({ native: 'your-scheme://' })`)
   - _Proxy_: `https://auth.expo.io/@username/slug`
@@ -2075,7 +2075,7 @@ export default function App() {
 - Example redirects:
   - Expo Go + Proxy: `https://auth.expo.io/@you/your-app`
   - Standalone or Bare: `com.your.app://`
-  - Web (dev `expo start --https`): `https://localhost:19006` (no ending slash)
+  - Web (dev `npx expo start --https`): `https://localhost:19006` (no ending slash)
 - The `redirectUri` requires 2 slashes (`://`).
 
 #### Expo Go
@@ -2338,7 +2338,7 @@ exp://u.expo.dev/F767ADF57-B487-4D8F-9522-85549C39F43F?channel-name=main&runtime
 
 > `exp://localhost:19000`
 
-- **Environment:** Development projects in the Expo Go app when you run `expo start`.
+- **Environment:** Development projects in the Expo Go app when you run `npx expo start`.
 - **Create:** Use `AuthSession.makeRedirectUri({ useProxy: false })` to create this URI.
   - This link is built from your Expo server's `port` + `host`.
   - You could also create this link with using `Linking.makeUrl()` from `expo-linking`.

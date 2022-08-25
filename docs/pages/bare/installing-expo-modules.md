@@ -10,7 +10,7 @@ import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
 
 In order to use Expo modules in your app, you will need to install and configure the `expo` package.
 
-The `expo` package has a small footprint; it includes only a minimal set of packages that are needed in nearly every app and the module and autolinking infrastructure that other Expo SDK packages are built with. Once the `expo` package is installed and configured in your project, you can use `expo install` to add any other Expo module from the SDK.
+The `expo` package has a small footprint; it includes only a minimal set of packages that are needed in nearly every app and the module and autolinking infrastructure that other Expo SDK packages are built with. Once the `expo` package is installed and configured in your project, you can use `npx expo install` to add any other Expo module from the SDK.
 
 The easiest way to get started with Expo modules is to initialize a new bare workflow project with: `npx create-expo-app --template bare-minimum`.
 
@@ -18,7 +18,7 @@ If you have an existing project without Expo modules installed (perhaps created 
 
 ## Automatic installation
 
-Aside from initializing a new project with `expo-cli`, the easiest way to get up and running is with the `install-expo-modules` command.
+Aside from initializing a new project with `npx create-expo-app`, the easiest way to get up and running is with the `install-expo-modules` command.
 
 <InstallSection packageName="expo" cmd={["# Install and configure the expo package automatically", "npx install-expo-modules@latest"]} hideBareInstructions />
 
@@ -48,7 +48,7 @@ Optionally, you can also add additional delegate methods to your **AppDelegate.m
 
 Save all of your changes. In Xcode, update the iOS Deployment Target under `Target → Build Settings → Deployment` to `iOS 12.0`. The last step is to install the project's CocoaPods again in order to pull in Expo modules that are detected by `use_expo_modules!` directive that we added to the `Podfile`:
 
-<InstallSection packageName="expo" cmd={["# Install pods", "npx pod-install", "", "# Alternatively, the run command will install them for you", "expo run:ios"]} hideBareInstructions />
+<InstallSection packageName="expo" cmd={["# Install pods", "npx pod-install", "", "# Alternatively, the run command will install them for you", "npx expo run:ios"]} hideBareInstructions />
 
 <div style={{marginTop: 50}} />
 
@@ -62,7 +62,7 @@ Save all of your changes. In Xcode, update the iOS Deployment Target under `Targ
 
 ### Verifying installation
 
-You can verify that installation was successful by logging a value from [expo-constants](/versions/latest/sdk/constants/). Run `expo install expo-constants`, then run `expo run:[android|ios]` and modify your app JavaScript code to add the following:
+You can verify that installation was successful by logging a value from [expo-constants](/versions/latest/sdk/constants/). Run `npx expo install expo-constants`, then run `npx expo run:[android|ios]` and modify your app JavaScript code to add the following:
 
 ```js
 import Constants from 'expo-constants';
@@ -71,7 +71,7 @@ console.log(Constants.systemFonts);
 
 ### Using Expo SDK packages
 
-Once the `expo` package is installed and configured in your project, you can use `expo install` to add any other Expo module from the SDK. Learn more in ["Using Libraries"](/workflow/using-libraries).
+Once the `expo` package is installed and configured in your project, you can use `npx expo install` to add any other Expo module from the SDK. Learn more in ["Using Libraries"](/workflow/using-libraries).
 
 ### Expo modules included in the `expo` package
 
@@ -85,7 +85,6 @@ The following Expo modules are brought in as dependencies of the `expo` package:
 - [expo-keep-awake](/versions/latest/sdk/keep-awake.md) - Prevents your device from going to sleep while developing your app. This module is optional and can be safely removed.
 
 To exclude any of these modules, refer to the following guide on [excluding modules from autolinking](#excluding-specific-modules-from-autolinking).
-
 
 ### Excluding specific modules from autolinking
 

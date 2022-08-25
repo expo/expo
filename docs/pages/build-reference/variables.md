@@ -124,7 +124,7 @@ Environment variables can be tricky to use if you don't have the correct mental 
 
 ### Can I share environment variables defined in eas.json with `expo start` and `eas update`?
 
-When you define environment variables on build profiles in **eas.json**, they will not be available for local development when you run `expo start`. A concern that developers often raise about this is that they now have to duplicate their configuration in multiple places, leading to additional maintenance effort and possible bugs when values go out of sync. If you find yourself in this situation, one possible solution is to move your configuration out of environment variables and into JavaScript. For example, imagine we had the following **eas.json**:
+When you define environment variables on build profiles in **eas.json**, they will not be available for local development when you run `npx expo start`. A concern that developers often raise about this is that they now have to duplicate their configuration in multiple places, leading to additional maintenance effort and possible bugs when values go out of sync. If you find yourself in this situation, one possible solution is to move your configuration out of environment variables and into JavaScript. For example, imagine we had the following **eas.json**:
 
 ```json
 {
@@ -248,7 +248,7 @@ For example, if you create a secret with name `MY_TOKEN` and value `secret` and 
 
 ### How do environment variables work for my Expo Development Client builds?
 
-Environment variables set in your build profile that impact **app.config.js** will be used for configuring the development build. When you run `expo start` to load your app inside of your development build, only environment variables that are available on your development machine will be used for the app manifest; this becomes the same situation as described above for **expo start**.
+Environment variables set in your build profile that impact **app.config.js** will be used for configuring the development build. When you run `npx expo start` to load your app inside of your development build, only environment variables that are available on your development machine will be used for the app manifest; this becomes the same situation as described above for **expo start**.
 
 ### Can I just set my environment variables on a CI provider?
 

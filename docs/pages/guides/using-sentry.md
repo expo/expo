@@ -202,7 +202,7 @@ Skipping or misconfiguring either of these will result in sourcemaps not working
 
 ### Self-hosting updates?
 
-If you're self-hosting your updates (this means you run `expo export` instead of `expo publish`), you need to:
+If you're self-hosting your updates (this means you run `npx expo export` instead of `expo publish`), you need to:
 
 - replace `hooks.postPublish` in your **app.json** file with `hooks.postExport` (everything else stays the same)
 - add the `RewriteFrames` integration to your `Sentry.init` call like so:

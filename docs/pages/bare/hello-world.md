@@ -12,15 +12,15 @@ Before you get started with a bare React Native project, make sure you set up yo
 After this, let's get started with a bare project. Run `npx create-expo-app --template bare-minimum` (we'll use the native template here).
 
 <Terminal cmd={[
-  "# Create a new native project",
-  "$ npx create-expo-app --template bare-minimum",
-  "",
-  "# If you don't have expo-cli yet, get it",
-  "$ npm i -g expo-cli",
-  "",
+"# Create a new native project",
+"$ npx create-expo-app --template bare-minimum",
+"",
+"# If you don't have expo-cli yet, get it",
+"$ npm i -g expo-cli",
+"",
 ]} cmdCopy="npx create-expo-app --template bare-minimum && npm i -g expo-cli" />
 
-Next, let's get the project running. Go into your project directory and run `expo run:ios` or `expo run:android` &mdash; hurray! Your project is working.
+Next, let's get the project running. Go into your project directory and run `npx expo run:ios` or `npx expo run:android` &mdash; hurray! Your project is working.
 
 ## Using Expo modules
 
@@ -58,17 +58,17 @@ This will not yet work because we haven't linked the native code that powers it.
 ### iOS configuration
 
 <Terminal cmd={[
-  '# Build your native iOS project',
-  '$ expo run:ios'
+'# Build your native iOS project',
+'$ npx expo run:ios'
 ]}/>
 
-You may need to run `npx pod-install` to link the native iOS packages using [CocoaPods](https://cocoapods.org/), this is like running `yarn` or `npm install` in an Expo project. `expo run:ios` does this automatically when the **package.json** changes.
+You may need to run `npx pod-install` to link the native iOS packages using [CocoaPods](https://cocoapods.org/), this is like running `yarn` or `npm install` in an Expo project. `npx expo run:ios` does this automatically when the **package.json** changes.
 
 ### Android configuration
 
 <Terminal cmd={[
-  '# Build your native Android project',
-  '$ expo run:android'
+'# Build your native Android project',
+'$ expo run:android'
 ]} />
 
 Once the app is built, press the "Open a web browser" button and watch the browser open. Success! Happy times.
