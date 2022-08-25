@@ -73,7 +73,7 @@ export const UL = createTextComponent(TextElement.UL, css([typography.body.ul, l
 export const OL = createTextComponent(TextElement.OL, css([typography.body.ol, listStyle]));
 export const PRE = createTextComponent(TextElement.PRE, css(typography.utility.pre));
 
-const kbdStyle = css({
+export const kbdStyle = css({
   fontFamily: typography.fontFaces.medium,
   color: theme.text.secondary,
   padding: `${spacing[0.5]}px ${spacing[1.5]}px`,
