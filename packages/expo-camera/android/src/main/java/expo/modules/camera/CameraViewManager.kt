@@ -1,12 +1,9 @@
 package expo.modules.camera
 
-import android.view.View
 import com.google.android.cameraview.AspectRatio
 import com.google.android.cameraview.Size
 import expo.modules.core.interfaces.services.UIManager
 import expo.modules.interfaces.barcodescanner.BarCodeScannerSettings
-import expo.modules.kotlin.modules.Module
-import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 
@@ -69,7 +66,7 @@ class CameraViewModule : Module() {
         if (size == null) {
           return@Prop
         }
-        view.cameraView.setPictureSize(Size.parse(size))
+        view.cameraView.pictureSize = Size.parse(size)
       }
 
       Prop("barCodeScannerSettings") { view: ExpoCameraView, settings: Map<String, Any?>? ->
