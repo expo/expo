@@ -52,7 +52,7 @@ public final class SyncFunctionComponent<Args, FirstArgType, ReturnType>: AnySyn
   func call(by owner: AnyObject?, withArguments args: [Any], callback: @escaping (FunctionCallResult) -> ()) {
     do {
       let result = try call(by: owner, withArguments: args)
-      callback(.success(result))
+      callback(.success(Conversions.convertFunctionResult(result)))
     } catch let error as Exception {
       callback(.failure(error))
     } catch {
@@ -70,7 +70,8 @@ public final class SyncFunctionComponent<Args, FirstArgType, ReturnType>: AnySyn
         forFunction: self
       )
       let argumentsTuple = try Conversions.toTuple(arguments) as! Args
-      return try body(argumentsTuple)
+      let result = try body(argumentsTuple)
+      return Conversions.convertFunctionResult(result)
     } catch let error as Exception {
       throw FunctionCallException(name).causedBy(error)
     } catch {
@@ -85,7 +86,8 @@ public final class SyncFunctionComponent<Args, FirstArgType, ReturnType>: AnySyn
       guard let self = self else {
         throw NativeFunctionUnavailableException(name)
       }
-      return try self.call(by: this, withArguments: args)
+      let result = try self.call(by: this, withArguments: args)
+      return Conversions.convertFunctionResult(result)
     }
   }
 }
