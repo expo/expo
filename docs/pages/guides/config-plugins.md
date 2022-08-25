@@ -806,7 +806,7 @@ At this point, bare users can configure this value by creating a string in their
 </resources>
 ```
 
-For managed users, we can expose this functionality (safely!) via an Expo config plugin:
+For Prebuild users, we can expose this functionality (safely!) via an Expo config plugin:
 
 `expo-custom/app.plugin.js`
 

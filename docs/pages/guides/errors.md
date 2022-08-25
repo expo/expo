@@ -20,8 +20,6 @@ We recommend using [Sentry](../guides/using-sentry.md) to track JS errors in pro
 
 ## What about Native Errors?
 
-Since Expo's native code never changes with regard to your project, the native symbols aren't especially meaningful (they would show you a trace into the React Native core or into Expo's native SDK). In the vast majority of circumstances \*, the JS error is what you care about.
+You can compile your project locally to use the first-party native debuggers (Xcode/Android Studio). To learn more, visit the [native debugging guide](/workflow/debugging#native-debugging).
 
-If you need native crash reporting, then we recommend using the [Bare workflow](../introduction/managed-vs-bare.md#bare-workflow), which will allow you to install and use any native library in your project.
-
-`*` There are a few circumstances where it's possible to crash native code by writing bad JS. Usually these are in areas where it would be performance-prohibitive to add native validation to your code, e.g. the part of the React Native bridge that converts JS objects into typed native values. If you encounter an inexplicable native crash, double check that your parameters are of the right type.
+`*` There are a few circumstances where it's possible to crash native code by writing bad JS. Usually these are in areas where it would be performance-prohibitive to add native validation to your code, e.g. the part of the React Native bridge that converts JS objects into typed native values. If you encounter an inexplicable native crash, double check that your parameters are of the right type. These types of issues can be mitigated by [using TypeScript](/guides/typescript).

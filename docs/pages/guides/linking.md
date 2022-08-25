@@ -328,15 +328,35 @@ To support all iOS versions, you can provide both the above formats in your `det
 
 Note that iOS will download your AASA when your app is first installed and when updates are installed from the App Store, but it will not refresh any more frequently. If you wish to change the paths in your AASA for a production app, you will need to issue a full update via the App Store so that all of your users' apps re-fetch your AASA and recognize the new paths.
 
-#### Expo configuration
+#### Prebuild configuration
 
 After deploying your AASA, you must also configure your app to use your associated domain:
 
-1. Add the `associatedDomains` [configuration](/versions/latest/config/app/#associateddomains) to your **app.json**, and make sure to follow [Apple's specified format](https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_associated-domains). Make sure _not_ to include the protocol (`https`) in your URL (this is a common mistake, and will result in your universal links not working).
+Add the `ios.associatedDomains` [configuration](/versions/latest/config/app/#associateddomains) to your **app.json**, and make sure to follow [Apple's specified format](https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_associated-domains). Make sure _not_ to include the protocol (`https`) in your URL (this is a common mistake, and will result in your universal links not working).
 
-2. Edit your App ID on the Apple Developer portal and enable the "Associated Domains" application service. Go into the App IDs section and click on your App ID. Select Edit, check the Associated Domains checkbox and click Done. You will also need to regenerate your provisioning profile _after_ adding the service to the App ID. This can be done by clearing your provisioning profile (which can be done via `expo credentials:manager` or `eas credentials`, depending on if you use `expo build` or `eas build`, respectively). Next time you build your app, Expo will prompt you to create a new provisioning profile.
+For example, if my website is `https://expo.dev/`, the app links would look like:
 
-At this point, opening a link on your mobile device should now open your app! If it doesn't, re-check the previous steps to ensure that your AASA is valid, the path is specified in the AASA, and you have correctly configured your App ID in the Apple Developer Portal. Once you've got your app opening, move to the [Handling links into your app](#handling-links-into-your-app) section for details on how to handle the inbound link and show the user the content they requested.
+`app.json`
+
+```json
+{
+  "expo": {
+    "ios": {
+      "associatedDomains": ["applinks:expo.dev"]
+    }
+  }
+}
+```
+
+Next you need to enable the 'Associated Domains' capability for your app's bundle identifier on Apple's servers. For EAS Build users this is done automatically with `eas build -p ios` thanks to the [iOS capabilities signing](/build-reference/ios-capabilities) feature.
+
+If you're **not using EAS Build**, you can enable the entitlement for your bundle identifier manually:
+
+- Visit the details page of your [App ID in the Apple Developer interface](https://developer.apple.com/account/resources/identifiers/list).
+- Check the 'Associated Domains' checkbox and click 'Done'.
+- Finally, you will need to regenerate your Apple provisioning profile _after_ adding the service to the App ID. If you're using EAS Build, then this can be done via `eas credentials`.
+
+At this point, opening a link on your mobile device should now open your app! If it doesn't, re-check the previous steps to ensure that your AASA is valid, the path is specified in the AASA, and you have correctly configured your App ID in the [Apple Developer Portal](https://developer.apple.com/account/resources/identifiers/list). Once you've got your app opening, move to the [Handling links into your app](#handling-links-into-your-app) section for details on how to handle the inbound link and show the user the content they requested.
 
 ### Deep links on Android
 

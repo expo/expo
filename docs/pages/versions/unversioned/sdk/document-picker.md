@@ -30,7 +30,7 @@ For iOS, if you build your app without the `ios/` directory, then EAS Build will
 
 If you're **not using EAS Build**, you can enable the entitlement for your bundle identifier manually:
 
-- This can be done in the detail of your [App ID in the Apple Developer interface](https://developer.apple.com/account/ios/identifier/bundle).
+- This can be done in the detail of your [App ID in the Apple Developer interface](https://developer.apple.com/account/resources/identifiers/list).
 - Enable iCloud service with CloudKit support, and create an iCloud Container. When registering the new Container, you are asked to provide a description and identifier for the container. You may enter any name under the description. Under the identifier, add `iCloud.<your_bundle_identifier>`.
 
 ### Manual setup

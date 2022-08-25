@@ -14,6 +14,8 @@ All native iOS and Android apps require additional configuration to support swit
 
 ### Using Prebuild
 
+> The term **Using Prebuild** was formally referred to as the **Managed workflow**. [Learn more](/archived/managed-workflow).
+
 Configure your supported appearance styles in **app.json** / **app.config.js** with the `userInterfaceStyle` key. You can also configure specific platform to support different appearance styles by setting either `android.userInterfaceStyle` or `ios.userInterfaceStyle` to preferred value.
 
 The available options are: `automatic` (follow system appearance settings and notify about any change user makes), `light` (restrict app to support light theme only), and `dark` (restrict app to support dark theme only). If this key is absent, the app will default to the `light` style.
