@@ -1,6 +1,6 @@
 import { css } from '@emotion/react';
 import { SerializedStyles } from '@emotion/serialize';
-import {spacing, theme } from '@expo/styleguide';
+import { spacing, theme } from '@expo/styleguide';
 import * as React from 'react';
 
 import { paragraph } from './typography';
