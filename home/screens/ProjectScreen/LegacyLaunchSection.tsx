@@ -54,7 +54,7 @@ export function LegacyLaunchSection({ app }: { app: ProjectPageApp }) {
 
   return (
     <View>
-      <SectionHeader header="Classic Release Channels" style={{ paddingTop: 0 }} />
+      <SectionHeader header="Classic release channels" style={{ paddingTop: 0 }} />
       {warning ?? (
         <View bg="default" overflow="hidden" rounded="large" border="default">
           <TouchableOpacity
