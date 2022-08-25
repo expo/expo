@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Switched uncaught exception logging to use metro websocket instead of expo-cli logUrl. ([#18787](https://github.com/expo/expo/pull/18787) by [@esamelson](https://github.com/esamelson))
+
 ## 1.2.1 — 2022-08-16
 
 ### 🐛 Bug fixes
