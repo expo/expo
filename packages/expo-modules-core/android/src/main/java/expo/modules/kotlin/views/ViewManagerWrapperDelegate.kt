@@ -8,6 +8,7 @@ import com.facebook.react.common.MapBuilder
 import expo.modules.core.utilities.ifNull
 import expo.modules.kotlin.ModuleHolder
 import expo.modules.kotlin.callbacks.ViewCallbackDelegate
+import expo.modules.kotlin.events.normalizeEventName
 import kotlin.reflect.full.declaredMemberProperties
 import kotlin.reflect.jvm.isAccessible
 
@@ -43,7 +44,7 @@ class ViewManagerWrapperDelegate(internal var moduleHolder: ModuleHolder) {
       ?.names
       ?.forEach {
         builder.put(
-          it, MapBuilder.of<String, Any>("registrationName", it)
+          normalizeEventName(it), MapBuilder.of<String, Any>("registrationName", it)
         )
       }
     return builder.build()
