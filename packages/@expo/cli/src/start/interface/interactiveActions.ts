@@ -20,10 +20,13 @@ export class DevServerManagerActions {
     // If native dev server is running, print its URL.
     if (this.devServerManager.getNativeDevServerPort()) {
       try {
-        const url = this.devServerManager.getDefaultDevServer().getNativeRuntimeUrl()!;
+        const qrCodeUrl = this.devServerManager.getDefaultDevServer().getQRCodeUrl()!;
+        // even if the QR code points to the interstitial page, we want to display the native
+        // runtime URL
+        const nativeRuntimeUrl = this.devServerManager.getDefaultDevServer().getNativeRuntimeUrl()!;
 
-        printQRCode(url);
-        Log.log(printItem(chalk`Metro waiting on {underline ${url}}`));
+        printQRCode(qrCodeUrl);
+        Log.log(printItem(chalk`Metro waiting on {underline ${nativeRuntimeUrl}}`));
         // TODO: if development build, change this message!
         Log.log(printItem('Scan the QR code above with Expo Go (Android) or the Camera app (iOS)'));
       } catch (error) {

@@ -30,9 +30,11 @@ export class UrlCreator {
   /**
    * @returns URL like `http://localhost:19000/_expo/loading?platform=ios`
    */
-  public constructLoadingUrl(options: CreateURLOptions, platform: string): string {
+  public constructLoadingUrl(options: CreateURLOptions, platform: string | null): string {
     const url = new URL('_expo/loading', this.constructUrl({ scheme: 'http', ...options }));
-    url.search = new URLSearchParams({ platform }).toString();
+    if (platform) {
+      url.search = new URLSearchParams({ platform }).toString();
+    }
     const loadingUrl = url.toString();
     debug(`Loading URL: ${loadingUrl}`);
     return loadingUrl;
