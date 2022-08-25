@@ -46,7 +46,7 @@ Apps using dangerous or signature permissions without valid reasons _may be reje
 
 When adding Expo and other React Native modules to your project, certain Android permissions might be added automatically. The modules should only add relevant permissions **required** to use the module. However, sometimes you may want to remove some of these permissions.
 
-When you are building your app with [EAS Build](/build/introduction/), you can exclude Android permissions by adding `android.blockedPermissions` in **app.json**. For more information, see the example in [Android Permissions](https://docs.expo.dev/distribution/app-stores/#android-permissions) section in [Deploying to the App Stores](https://docs.expo.dev/distribution/app-stores).
+When you are building your app with [EAS Build](/build/introduction/), you can exclude Android permissions by adding `android.blockedPermissions` in **app.json**. For more information, see the example in the [Android Permissions](https://docs.expo.dev/distribution/app-stores/#android-permissions) section in [Deploying to the App Stores](https://docs.expo.dev/distribution/app-stores).
 
 <ConfigClassic>
 
