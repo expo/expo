@@ -78,7 +78,7 @@ No return value.
 
 You can set the `"main"` in **package.json** to any file within your
 project. If you do this, then you need to use `registerRootComponent`;
-`export default` will not make this component the root for the Expo app
+`export default` will not make this component the root for the React Native app
 if you are using a custom entry file.
 
 For example, let's say you want to make `"src/main.js"` the entry file
