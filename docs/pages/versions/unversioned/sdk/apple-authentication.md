@@ -24,11 +24,15 @@ Beginning with iOS 13, any app that includes third-party authentication options 
 
 This guide assumes [auto capability sync](../../../build-reference/ios-capabilities) is enabled (Default). Otherwise you'll need to manually enable the capabilities for your bundle identifier through the Apple Developer Console.
 
-#### Managed Workflow
+#### Using Expo Prebuild
 
-1. Build with `eas build -p ios`. EAS Build and the config plugin will automatically configure this service with Apple.
+1. Build with `eas build -p ios`.
 
-#### Bare Workflow
+If you build your app without the `ios/` directory, then EAS Build will automatically run `npx expo prebuild` to configure the entitlements and enable Apple Authentication using the [iOS capabilities signing](/build-reference/ios-capabilities) feature.
+
+#### Manual setup
+
+> Follow this guide if your project is **not** using [Expo Prebuild](/workflow/prebuild) to manage the native `ios` and `android` directories continuously.
 
 1. Ensure you've added enabled the Apple Sign In capability, either through the Xcode:
 
@@ -42,7 +46,7 @@ This guide assumes [auto capability sync](../../../build-reference/ios-capabilit
   ```
 
 2. Add `"CFBundleAllowMixedLocalizations": true` to your `ios/[app]/Info.plist` to ensure the sign in button uses the device locale.
-3. Build with `eas build -p ios`. EAS Build will automatically configure this service with Apple.
+3. Build with `eas build -p ios`. EAS Build will automatically configure this service with Apple using [auto iOS capabilities](/build-reference/ios-capabilities).
 
 ### Classic Build
 

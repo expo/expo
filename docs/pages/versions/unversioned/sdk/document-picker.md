@@ -21,23 +21,30 @@ Provides access to the system's UI for selecting documents from the available pr
 
 ## Configuration
 
-### Managed workflow
+### Using Expo Prebuild
 
-For iOS, outside of the Expo Go app, the DocumentPicker module requires the [iCloud Services Entitlement](https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_icloud-services) to work properly. You need to take the following steps:
+- Set the `expo.ios.usesIcloudStorage` key to `true` in your **app.json** as specified [configuration properties](/versions/latest/config/app/#usesicloudstorage).
+- Build with `eas build -p ios`.
 
-- Set the `usesIcloudStorage` key to `true` in your **app.json** as specified [configuration properties](/versions/latest/config/app/#usesicloudstorage).
-- You need to enable the iCloud Application Service in your App identifier. This can be done in the detail of your [App ID in the Apple Developer interface](https://developer.apple.com/account/ios/identifier/bundle).
+For iOS, if you build your app without the `ios/` directory, then EAS Build will automatically run `npx expo prebuild` to configure the entitlements and enable [iCloud Services][icloud-entitlement] using the [iOS capabilities signing](/build-reference/ios-capabilities) feature.
+
+If you're **not using EAS Build**, you can enable the entitlement for your bundle identifier manually:
+
+- This can be done in the detail of your [App ID in the Apple Developer interface](https://developer.apple.com/account/ios/identifier/bundle).
 - Enable iCloud service with CloudKit support, and create an iCloud Container. When registering the new Container, you are asked to provide a description and identifier for the container. You may enter any name under the description. Under the identifier, add `iCloud.<your_bundle_identifier>`.
 
-To apply these changes, you have to revoke your existing provisioning profile and use [EAS Build](/build/introduction/) to build the app binaries.
+### Manual setup
 
-### Bare workflow
+> Follow this guide if your project is **not** using [Expo Prebuild](/workflow/prebuild) to continuously generate the native `ios` and `android` directories.
 
-For iOS bare projects, the `DocumentPicker` module requires the iCloud entitlement to work properly. If your app doesn't have it already, you can add it by opening the project in Xcode and following these steps:
+For iOS projects, the `DocumentPicker` module requires the [iCloud entitlement][icloud-entitlement] to work properly.
 
-- In the project, go to the `Capabilities` tab
-- Set the iCloud switch to `on`
-- Check the `iCloud Documents` checkbox
+1. Open the `ios/` directory in Xcode with `xed ios`. If you don't have an `ios/` directory, run `npx expo prebuild -p ios` to generate one.
+2. Then follow [this guide][apple-enable-capability] to enable the "iCloud" capability.
+3. Ensure you toggle the `iCloud Documents` checkbox on.
+
+[apple-enable-capability]: https://help.apple.com/xcode/mac/current/#/dev88ff319e7
+[icloud-entitlement]: https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_icloud-services
 
 ## API
 

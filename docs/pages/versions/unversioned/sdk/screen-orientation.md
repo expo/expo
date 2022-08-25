@@ -12,7 +12,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 Screen Orientation is defined as the orientation in which graphics are painted on the device. For example, the figure below has a device in a vertical and horizontal physical orientation, but a portrait screen orientation. For physical device orientation, see the orientation section of [Device Motion](devicemotion.md).
 
-<ImageSpotlight alt="Portrait orientation in different physical orientations" src="/static/images/screen-orientation-portrait.png" containerStyle={{ backgroundColor: palette.light.gray['300'] }}  />
+<ImageSpotlight alt="Portrait orientation in different physical orientations" src="/static/images/screen-orientation-portrait.png" containerStyle={{ backgroundColor: palette.light.gray['300'] }} />
 
 `ScreenOrientation` from **`expo`** allows changing supported screen orientations at runtime, and subscribing to orientation changes. This will take priority over the `orientation` key in **app.json**.
 
@@ -30,7 +30,7 @@ On both iOS and Android platforms, changes to the screen orientation will overri
 
 Apple added support for _split view_ mode to iPads in iOS 9. This changed how the screen orientation is handled by the system. To put the matter shortly, for the iOS, your iPad is always in the landscape mode unless you open two applications side by side. In order to be able to lock screen orientation using this module you will need to disable support for this feature. For more information about the _split view_ mode, check out [the official Apple documentation](https://support.apple.com/en-us/HT207582).
 
-#### Managed workflow
+#### Usage with Expo Prebuild
 
 Open your **app.json** and add the following inside of the `"expo"` field:
 
@@ -46,9 +46,14 @@ Open your **app.json** and add the following inside of the `"expo"` field:
 }
 ```
 
-#### Bare workflow
+These are build-time setting so you'll need to recompile your native Android app with `eas build -p ios` or `npx expo run:ios` to see the changes.
 
-Tick the `Requires Full Screen` checkbox in Xcode. It should be located under `Project Target > General > Deployment Info`.
+#### Manual setup
+
+> Follow this guide if your project is **not** using [Expo Prebuild](/workflow/prebuild) to continuously generate the native `ios` and `android` directories.
+
+1. Open the `ios/` directory in Xcode with `xed ios`. If you don't have an `ios/` directory, run `npx expo prebuild -p ios` to generate one.
+2. Tick the `Requires Full Screen` checkbox in Xcode. It should be located under `Project Target > General > Deployment Info`.
 
 ## API
 
@@ -64,6 +69,6 @@ import * as ScreenOrientation from 'expo-screen-orientation';
 | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
 | ERR_SCREEN_ORIENTATION_UNSUPPORTED_ORIENTATION_LOCK  | The platform does not support the [`OrientationLock`](#screenorientationorientationlock) policy. |
 | ERR_SCREEN_ORIENTATION_INVALID_ORIENTATION_LOCK      | An invalid [`OrientationLock`](#screenorientationorientationlock) was passed in.                 |
-| ERR_SCREEN_ORIENTATION_GET_ORIENTATION_LOCK          | __Android Only.__ An unknown error occurred when trying to get the orientation lock.             |
-| ERR_SCREEN_ORIENTATION_GET_PLATFORM_ORIENTATION_LOCK | __Android Only.__ An unknown error occurred when trying to get the platform orientation lock.    |
-| ERR_SCREEN_ORIENTATION_MISSING_ACTIVITY              | __Android Only.__ Could not get the current activity.                                            |
+| ERR_SCREEN_ORIENTATION_GET_ORIENTATION_LOCK          | **Android Only.** An unknown error occurred when trying to get the orientation lock.             |
+| ERR_SCREEN_ORIENTATION_GET_PLATFORM_ORIENTATION_LOCK | **Android Only.** An unknown error occurred when trying to get the platform orientation lock.    |
+| ERR_SCREEN_ORIENTATION_MISSING_ACTIVITY              | **Android Only.** Could not get the current activity.                                            |

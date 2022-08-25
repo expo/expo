@@ -86,8 +86,8 @@ urlScheme:
 
 ### Apple Pay
 
-Apple Pay **is not** supported in Expo Go. To use Apple Pay, you must use either [EAS Build](/build/introduction.md), or run `expo run:ios` in your project directory.
+Apple Pay **is not** supported in Expo Go. To use Apple Pay, you must compile a [standalone app](/workflow/glossary-of-terms#standalone-app) or [dev client](/workflow/glossary-of-terms#dev-clients). This can be done with [EAS Build](/build/introduction.md), or locally by running `npx expo run:ios`.
 
 ### Google Pay
 
-Google Pay **is not** supported in Expo Go. To use Google Pay, you must use either [EAS Build](/build/introduction.md), or run `expo run:android` in your project directory.
+Google Pay **is not** supported in Expo Go. To use Google Pay, you must compile a [standalone app](/workflow/glossary-of-terms#standalone-app) or [dev client](/workflow/glossary-of-terms#dev-clients). This can be done with [EAS Build](/build/introduction.md), or locally by running `npx expo run:android`.
