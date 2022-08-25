@@ -45,7 +45,7 @@ After the platform compatibility table, there will be an Installation section, w
 
 <br />
 
-The `expo install` command will pick a version of the library that is compatible with your project and then use your JavaScript package manager (such as npm) to install it.
+The `npx expo install` command will pick a version of the library that is compatible with your project and then use your JavaScript package manager (such as npm) to install it.
 
 Next, under the API section the reference page will tell you how to import the library in your code:
 
@@ -103,7 +103,7 @@ Many libraries you can use with Expo and React Native will not be compatible wit
 
 ### Installing a Third-Party Library
 
-> We recommend always using `expo install` instead of `npm install` or `yarn add` directly because it allows `expo-cli` to pick a compatible version of a library when possible and also warn you about known incompatibilities.
+> We recommend always using `npx expo install` instead of `npm install` or `yarn add` directly because it allows `expo-cli` to pick a compatible version of a library when possible and also warn you about known incompatibilities.
 
 Once you have determined if the library is compatible, use `expo-cli` to install the package:
 

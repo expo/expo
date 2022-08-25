@@ -70,7 +70,7 @@ export default class Anchor extends React.Component {
 
 The following example illustrates the difference between opening a web link with `WebBrowser.openBrowserAsync` and React Native's `Linking.openURL`. Often `WebBrowser` is a better option because it's a modal within your app and users can easily close out of it and return to your app.
 
-Update: "WebBrowser" is in a separate package so first install `expo-web-browser` like `expo install expo-web-browser` and use it like this:
+Update: "WebBrowser" is in a separate package so first install `expo-web-browser` like `npx expo install expo-web-browser` and use it like this:
 
 <SnackInline label="WebBrowser vs Linking" dependencies={["expo-web-browser", "expo-constants"]}>
 
