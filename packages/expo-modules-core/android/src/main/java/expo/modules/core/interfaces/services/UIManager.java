@@ -2,6 +2,8 @@ package expo.modules.core.interfaces.services;
 
 import android.view.View;
 
+import androidx.annotation.Nullable;
+
 import expo.modules.core.interfaces.ActivityEventListener;
 import expo.modules.core.interfaces.LifecycleEventListener;
 
@@ -25,6 +27,10 @@ public interface UIManager {
 
   @Deprecated
   void addUIBlock(GroupUIBlock block);
+
+  @Deprecated
+  @Nullable
+  View resolveView(int viewTag);
 
   void runOnUiQueueThread(Runnable runnable);
 

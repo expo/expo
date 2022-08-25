@@ -51,7 +51,7 @@ public class VideoManager extends ExportedModule {
 
   @ExpoMethod
   public void setFullscreen(final Integer tag, final Boolean shouldBeFullscreen, final Promise promise) {
-    ViewUtils.tryRunWithVideoView((ReactContext) getContext(), tag, new ViewUtils.VideoViewCallback() {
+    ViewUtils.tryRunWithVideoView(mModuleRegistry, tag, new ViewUtils.VideoViewCallback() {
       @Override
       public void runWithVideoView(final VideoView videoView) {
         FullscreenVideoPlayerPresentationChangeProgressListener listener = new FullscreenVideoPlayerPresentationChangeProgressListener() {

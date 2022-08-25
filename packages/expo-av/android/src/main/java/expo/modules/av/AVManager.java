@@ -503,7 +503,7 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
 
   @Override
   public void loadForVideo(final Integer tag, final ReadableArguments source, final ReadableArguments status, final Promise promise) {
-    ViewUtils.tryRunWithVideoView((ReactContext) getContext(), tag, new ViewUtils.VideoViewCallback() {
+    ViewUtils.tryRunWithVideoView(mModuleRegistry, tag, new ViewUtils.VideoViewCallback() {
       @Override
       public void runWithVideoView(final VideoView videoView) {
         videoView.setSource(source, status, promise);
@@ -513,7 +513,7 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
 
   @Override
   public void unloadForVideo(final Integer tag, final Promise promise) {
-    ViewUtils.tryRunWithVideoView((ReactContext) getContext(), tag, new ViewUtils.VideoViewCallback() {
+    ViewUtils.tryRunWithVideoView(mModuleRegistry, tag, new ViewUtils.VideoViewCallback() {
       @Override
       public void runWithVideoView(final VideoView videoView) {
         videoView.setSource(null, null, promise);
@@ -523,7 +523,7 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
 
   @Override
   public void setStatusForVideo(final Integer tag, final ReadableArguments status, final Promise promise) {
-    ViewUtils.tryRunWithVideoView((ReactContext) getContext(), tag, new ViewUtils.VideoViewCallback() {
+    ViewUtils.tryRunWithVideoView(mModuleRegistry, tag, new ViewUtils.VideoViewCallback() {
       @Override
       public void runWithVideoView(final VideoView videoView) {
         videoView.setStatus(status, promise);
@@ -533,7 +533,7 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
 
   @Override
   public void replayVideo(final Integer tag, final ReadableArguments status, final Promise promise) {
-    ViewUtils.tryRunWithVideoView((ReactContext) getContext(), tag, new ViewUtils.VideoViewCallback() {
+    ViewUtils.tryRunWithVideoView(mModuleRegistry, tag, new ViewUtils.VideoViewCallback() {
       @Override
       public void runWithVideoView(final VideoView videoView) {
         videoView.setStatus(status, promise);
@@ -543,7 +543,7 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
 
   @Override
   public void getStatusForVideo(final Integer tag, final Promise promise) {
-    ViewUtils.tryRunWithVideoView((ReactContext) getContext(), tag, new ViewUtils.VideoViewCallback() {
+    ViewUtils.tryRunWithVideoView(mModuleRegistry, tag, new ViewUtils.VideoViewCallback() {
       @Override
       public void runWithVideoView(final VideoView videoView) {
         promise.resolve(videoView.getStatus());
