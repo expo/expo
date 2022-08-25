@@ -148,6 +148,16 @@ internal final class Conversions {
     return String(number) + (number == 1 ? singular : (plural ?? singular + "s"))
   }
 
+  /**
+   Converts the function result to the type compatible with JavaScript.
+   */
+  static func convertFunctionResult<ValueType>(_ value: ValueType?) -> Any {
+    if let value = value as? Record {
+      return value.toDictionary()
+    }
+    return value
+  }
+
   // MARK: - Exceptions
 
   /**

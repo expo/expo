@@ -80,7 +80,7 @@ class FunctionSpec: ExpoSpec {
         .callSync(function: functionName, args: [array])
       }
 
-      describe("converting dicts to records") {
+      describe("converting records") {
         struct TestRecord: Record {
           @Field var property: String = "expo"
           @Field var optionalProperty: Int?
@@ -126,11 +126,20 @@ class FunctionSpec: ExpoSpec {
           }
         }
 
-        it("returns the record back") {
+        it("returns the record back (sync)") {
+          let result = try Function(functionName) { (record: TestRecord) in record }
+            .call(by: nil, withArguments: [dict]) as? TestRecord.Dict
+
+          expect(result).notTo(beNil())
+          expect(result?["property"] as? String).to(equal(dict["property"]))
+          expect(result?["propertyWithCustomKey"] as? String).to(equal(dict["propertyWithCustomKey"]))
+        }
+
+        it("returns the record back (async)") {
           waitUntil { done in
             mockModuleHolder(appContext) {
               AsyncFunction(functionName) { (a: TestRecord) in
-                return a.toDictionary()
+                return a
               }
             }
             .call(function: functionName, args: [dict]) { result in
