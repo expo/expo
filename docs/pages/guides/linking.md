@@ -505,7 +505,7 @@ Next, in you **app.json**, add this plugin under `expo.plugins`:
 }
 ```
 
-If you are using [EAS Builds](/build/introduction/), you will have to create a new build after adding these changes to your project so that they are reflected in your Android app.
+If you are using [EAS Build](/build/introduction/), you will have to create a new build after adding these changes to your project so that they are reflected in your Android app.
 
 ## When to _not_ use deep links
 
