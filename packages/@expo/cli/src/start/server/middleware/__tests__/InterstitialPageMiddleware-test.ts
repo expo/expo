@@ -97,7 +97,7 @@ describe('_getPageAsync', () => {
 });
 
 describe('handleRequestAsync', () => {
-  it('returns the interstitial page', async () => {
+  it('returns the interstitial page with platform header', async () => {
     const middleware = new InterstitialPageMiddleware('/');
 
     middleware._getProjectOptions = jest.fn(() => ({
@@ -115,6 +115,44 @@ describe('handleRequestAsync', () => {
 
     await middleware.handleRequestAsync(
       asReq({ url: 'http://localhost:3000', headers: { 'expo-platform': 'ios' } }),
+      response
+    );
+    expect(response.statusCode).toBe(200);
+    expect(response.end).toBeCalledWith('mock-value');
+    expect(response.setHeader).toHaveBeenNthCalledWith(
+      1,
+      'Cache-Control',
+      'private, no-cache, no-store, must-revalidate'
+    );
+    expect(response.setHeader).toHaveBeenNthCalledWith(2, 'Expires', '-1');
+    expect(response.setHeader).toHaveBeenNthCalledWith(3, 'Pragma', 'no-cache');
+    expect(response.setHeader).toHaveBeenNthCalledWith(4, 'Content-Type', 'text/html');
+  });
+
+  it('returns the interstitial page with user-agent header', async () => {
+    const middleware = new InterstitialPageMiddleware('/');
+
+    middleware._getProjectOptions = jest.fn(() => ({
+      runtimeVersion: '123',
+      appName: 'App',
+    }));
+
+    middleware._getPageAsync = jest.fn(async () => 'mock-value');
+
+    const response = {
+      setHeader: jest.fn(),
+      end: jest.fn(),
+      statusCode: 200,
+    } as unknown as ServerResponse;
+
+    await middleware.handleRequestAsync(
+      asReq({
+        url: 'http://localhost:3000',
+        headers: {
+          'user-agent':
+            'Mozilla/5.0 (Linux; Android 11; Pixel 2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Mobile Safari/537.36',
+        },
+      }),
       response
     );
     expect(response.statusCode).toBe(200);

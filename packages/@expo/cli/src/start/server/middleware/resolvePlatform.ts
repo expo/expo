@@ -10,7 +10,7 @@ export type RuntimePlatform = 'ios' | 'android';
  * Extract the runtime platform from the server request.
  * 1. Query param `platform`: `?platform=ios`
  * 2. Header `expo-platform`: `'expo-platform': ios`
- * 2. Legacy header `exponent-platform`: `'exponent-platform': ios`
+ * 3. Legacy header `exponent-platform`: `'exponent-platform': ios`
  *
  * Returns first item in the case of an array.
  */
@@ -19,6 +19,18 @@ export function parsePlatformHeader(req: ServerRequest): string | null {
   const platform =
     url.query?.platform || req.headers['expo-platform'] || req.headers['exponent-platform'];
   return (Array.isArray(platform) ? platform[0] : platform) ?? null;
+}
+
+/** Guess the platform from the user-agent header. */
+export function resolvePlatformFromUserAgentHeader(req: ServerRequest): string | null {
+  const userAgent = req.headers['user-agent'];
+  if (userAgent?.match(/Android/i)) {
+    return 'android';
+  }
+  if (userAgent?.match(/iPhone|iPad/i)) {
+    return 'ios';
+  }
+  return null;
 }
 
 /** Assert if the runtime platform is not included. */

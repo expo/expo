@@ -9,6 +9,7 @@ import {
   assertMissingRuntimePlatform,
   assertRuntimePlatform,
   parsePlatformHeader,
+  resolvePlatformFromUserAgentHeader,
   RuntimePlatform,
 } from './resolvePlatform';
 import { ServerRequest, ServerResponse } from './server.types';
@@ -75,7 +76,7 @@ export class InterstitialPageMiddleware extends ExpoMiddleware {
     res = disableResponseCache(res);
     res.setHeader('Content-Type', 'text/html');
 
-    const platform = parsePlatformHeader(req);
+    const platform = parsePlatformHeader(req) ?? resolvePlatformFromUserAgentHeader(req);
     assertMissingRuntimePlatform(platform);
     assertRuntimePlatform(platform);
 

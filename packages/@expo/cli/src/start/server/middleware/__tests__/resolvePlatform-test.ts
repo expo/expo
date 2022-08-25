@@ -1,5 +1,6 @@
 import {
   parsePlatformHeader,
+  resolvePlatformFromUserAgentHeader,
   assertMissingRuntimePlatform,
   assertRuntimePlatform,
 } from '../resolvePlatform';
@@ -70,6 +71,45 @@ describe(parsePlatformHeader, () => {
         })
       )
     ).toBe('android');
+  });
+});
+
+describe(resolvePlatformFromUserAgentHeader, () => {
+  it(`resolves ios from user-agent string`, () => {
+    expect(
+      resolvePlatformFromUserAgentHeader(
+        asRequest({
+          url: 'http://localhost:3000',
+          headers: {
+            'user-agent':
+              'Mozilla/5.0 (iPhone; CPU iPhone OS 15_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.2 Mobile/15E148 Safari/604.1',
+          },
+        })
+      )
+    );
+  });
+  it(`resolves android from user-agent string`, () => {
+    expect(
+      resolvePlatformFromUserAgentHeader(
+        asRequest({
+          url: 'http://localhost:3000',
+          headers: {
+            'user-agent':
+              'Mozilla/5.0 (Linux; Android 11; Pixel 2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Mobile Safari/537.36',
+          },
+        })
+      )
+    );
+  });
+  it(`returns null`, () => {
+    expect(
+      resolvePlatformFromUserAgentHeader(
+        asRequest({
+          url: 'http://localhost:3000',
+          headers: {},
+        })
+      )
+    );
   });
 });
 
