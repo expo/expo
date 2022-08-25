@@ -23,7 +23,7 @@
 
 - (instancetype)initWithContext:(ABI46_0_0EXGLContext *)glContext andCamera:(id<ABI46_0_0EXCameraInterface>)camera
 {
-  EXGLContextId exglCtxId = [glContext contextId];
+  ABI46_0_0EXGLContextId exglCtxId = [glContext contextId];
 
   if (self = [super initWithConfig:@{ @"exglCtxId": @(exglCtxId) }]) {
     _eaglCtx = [glContext createSharedEAGLContext];
@@ -87,7 +87,7 @@
   
   if (textureRef) {
     GLuint textureName = CVOpenGLESTextureGetName(textureRef);
-    EXGLContextMapObject([self exglCtxId], [self exglObjId], textureName);
+    ABI46_0_0EXGLContextMapObject([self exglCtxId], [self exglObjId], textureName);
   }
 
   CVOpenGLESTextureCacheFlush(_cameraTextureCache, 0);
