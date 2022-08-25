@@ -23,7 +23,7 @@ If you have both OTF and TTF versions of a font, prefer OTF. OTF is a newer form
 
 ### Beyond OTF and TTF
 
-If your font is in another format, you may need to [customize the Metro bundler configuration](/guides/customizing-metro) to get anything other than TTF and OTF to work. In general, just don't do that unless you are really sure you want to. In some cases, trying to render a font format that a platform doesn't support may cause your app to crash.
+If your font is in another format, you may need to [customize the Metro bundler configuration](/guides/customizing-metro#adding-more-file-extensions-to-assetexts) to get anything other than TTF and OTF to work. In general, just don't do that unless you are really sure you want to. In some cases, trying to render a font format that a platform doesn't support may cause your app to crash.
 
 For reference, the following table provides what formats work on which platforms:
 
