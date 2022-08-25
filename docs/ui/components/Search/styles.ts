@@ -71,7 +71,7 @@ export const DocSearchStyles = css`
     align-items: center;
     background: var(--docsearch-searchbox-background);
     border: 0;
-    border-radius: ${borderRadius.small}px;
+    border-radius: ${borderRadius.medium}px;
     color: var(--docsearch-muted-color);
     cursor: pointer;
     display: flex;
