@@ -10,9 +10,9 @@ Regardless of whether you are personally on team light or team dark, it's becomi
 
 ## Configuration
 
-Both managed and bare projects for iOS and Android require additional configuration to support switching between light and dark mode. No additional configuration is required for web.
+All native iOS and Android apps require additional configuration to support switching between light and dark mode. No additional configuration is required for web.
 
-### Managed projects
+### Using Prebuild
 
 Configure your supported appearance styles in **app.json** / **app.config.js** with the `userInterfaceStyle` key. You can also configure specific platform to support different appearance styles by setting either `android.userInterfaceStyle` or `ios.userInterfaceStyle` to preferred value.
 
@@ -28,13 +28,15 @@ Example **app.json** configuration:
 }
 ```
 
-In EAS Build and custom development builds you'll need to install the native module `expo-system-ui` otherwise the `userInterfaceStyle` property will be ignored. Running `expo config --type introspect` will warn if the project is misconfigured:
+You'll also need to install the native module `expo-system-ui` otherwise the `userInterfaceStyle` property will be ignored. Running `npx expo config --type introspect` will warn if the project is misconfigured:
 
 ```
 » android: userInterfaceStyle: Install expo-system-ui in your project to enable this feature.
 ```
 
-### Bare projects
+### Manual setup
+
+> Follow this guide if your project is **not** using [Expo Prebuild](/workflow/prebuild) to generate the native `ios` and `android` directories continuously.
 
 #### iOS configuration
 
@@ -143,7 +145,7 @@ const styles = StyleSheet.create({
 
 While you're developing, you may want to change your simulator's or device's appearance.
 
-- If working with an iOS emulator locally, you can use the `command` + `shift` + `a` shortcut to toggle between light and dark mode.
-- If using an Android Emulator, you can run `adb shell "cmd uimode night yes"` to enable dark mode, and `adb shell "cmd uimode night no"` to disable dark mode.
-- If using a real device or an Android Emulator, you can toggle the system dark mode setting in the device's settings.
+- If working with an iOS simulator locally, you can use the `command` + `shift` + `a` shortcut to toggle between light and dark mode.
+- If using an Android emulator, you can run `adb shell "cmd uimode night yes"` to enable dark mode, and `adb shell "cmd uimode night no"` to disable dark mode.
+- If using a real device or an Android emulator, you can toggle the system dark mode setting in the device's settings.
 - [Snack](https://snack.expo.dev) is locked to light mode.

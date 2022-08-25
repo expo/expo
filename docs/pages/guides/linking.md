@@ -166,7 +166,7 @@ To link to your standalone app, you need to specify a scheme for your app. You c
 
 Once you build your standalone app and install it to your device, you will be able to open it with links to `myapp://`.
 
-If your app is ejected, note that like some other parts of **app.json**, changing the `scheme` key after your app is already ejected will not have the desired effect. If you'd like to change the deep link scheme in your bare app, you'll need to replace the existing scheme with the new one in the following locations:
+If your app is not using [Expo Prebuild](/workflow/prebuild) to continuously generate the `ios` and `android` directories, then you'll need to manually change the supported schemes. We recommend using the [`uri-scheme` CLI](https://www.npmjs.com/package/uri-scheme) to do this automatically. Otherwise you'll need to replace the existing scheme with the new one in the following locations:
 
 - `scheme` in **app.json**
 - Under the first occurrence of `CFBundleURLSchemes` in `ios/<your-project-name>/Info.plist`
