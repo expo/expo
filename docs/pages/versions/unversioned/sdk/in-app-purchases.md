@@ -16,19 +16,11 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 ## Installation
 
-<APIInstallSection hideBareInstructions cmd={['$ npm install expo-in-app-purchases']} />
+This module is **not** available in the [Expo Go app](https://expo.dev/expo-go) due to app store restrictions.
 
-This module is currently only available in the [bare](/introduction/managed-vs-bare.md#bare-workflow) workflow.
+You can create a [custom dev client](/workflow/customizing) to work with this package.
 
-You must ensure that you have [installed and configured Expo modules](/bare/installing-expo-modules.md) before continuing.
-
-### Configure for iOS
-
-Run `npx pod-install` after installing the npm package.
-
-### Configure for Android
-
-No additional set up necessary.
+<APIInstallSection />
 
 ## Setup
 
