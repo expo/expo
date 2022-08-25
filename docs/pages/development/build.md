@@ -34,6 +34,8 @@ This profile has two options set:
 - Setting `developmentClient` to `true` will create a Debug build, which allows the `expo-dev-client` library to allow you to choose the update to load in your app and provide tools to help you develop.
 - Setting `distribution` to "internal" will make a build ready for [internal distribution](/build/internal-distribution).
 
+iOS builds with a developmentClient should always be distributed as "internal". If you set `distribution` to "store" Apple will reject the build with "ITMS-90338: Non-public API usage"
+
 ### Running a build
 
 <Tabs tabs={["For Android", "For iOS"]}>
