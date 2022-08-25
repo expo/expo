@@ -7,7 +7,6 @@ import expo.modules.barcodescanner.BarCodeScannerPackage
 import expo.modules.battery.BatteryPackage
 import expo.modules.brightness.BrightnessPackage
 import expo.modules.calendar.CalendarPackage
-import expo.modules.camera.CameraPackage
 import expo.modules.cellular.CellularModule
 import expo.modules.clipboard.ClipboardModule
 import expo.modules.constants.ConstantsPackage
@@ -70,7 +69,6 @@ object ExperiencePackagePicker : ModulesProvider {
     BarCodeScannerPackage(),
     BrightnessPackage(),
     CalendarPackage(),
-    CameraPackage(),
     ConstantsPackage(),
     ContactsPackage(),
     DevicePackage(),
