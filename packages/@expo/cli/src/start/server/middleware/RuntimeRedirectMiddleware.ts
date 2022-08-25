@@ -17,14 +17,16 @@ const debug = require('debug')(
 /** Runtime to target: expo = Expo Go, custom = Dev Client. */
 type RuntimeTarget = 'expo' | 'custom';
 
+export type DeepLinkHandler = (props: {
+  runtime: RuntimeTarget;
+  platform: RuntimePlatform;
+}) => void | Promise<void>;
+
 export class RuntimeRedirectMiddleware extends ExpoMiddleware {
   constructor(
     protected projectRoot: string,
     protected options: {
-      onDeepLink: (props: {
-        runtime: RuntimeTarget;
-        platform: RuntimePlatform;
-      }) => void | Promise<void>;
+      onDeepLink: DeepLinkHandler;
       getLocation: (props: { runtime: RuntimeTarget }) => string | null | undefined;
     }
   ) {
