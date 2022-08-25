@@ -229,15 +229,15 @@ describe('installAsync', () => {
 it(`throws for unimplemented methods`, async () => {
   const manager = new CocoaPodsPackageManager({ cwd: projectRoot });
 
-  expect(manager.addAsync()).rejects.toThrow('Unimplemented');
-  expect(manager.addDevAsync()).rejects.toThrow('Unimplemented');
-  expect(manager.addGlobalAsync()).rejects.toThrow('Unimplemented');
-  expect(manager.removeAsync([])).rejects.toThrow('Unimplemented');
-  expect(manager.removeDevAsync([])).rejects.toThrow('Unimplemented');
-  expect(manager.removeGlobalAsync([])).rejects.toThrow('Unimplemented');
-  expect(manager.configAsync('')).rejects.toThrow('Unimplemented');
-  expect(manager.removeLockFileAsync()).rejects.toThrow('Unimplemented');
-  expect(manager.uninstallAsync()).rejects.toThrow('Unimplemented');
+  expect(() => manager.addAsync()).toThrow('Unimplemented');
+  expect(() => manager.addDevAsync()).toThrow('Unimplemented');
+  expect(() => manager.addGlobalAsync()).toThrow('Unimplemented');
+  expect(() => manager.removeAsync([])).toThrow('Unimplemented');
+  expect(() => manager.removeDevAsync([])).toThrow('Unimplemented');
+  expect(() => manager.removeGlobalAsync([])).toThrow('Unimplemented');
+  await expect(manager.configAsync('')).rejects.toThrow('Unimplemented');
+  await expect(manager.removeLockFileAsync()).rejects.toThrow('Unimplemented');
+  await expect(manager.uninstallAsync()).rejects.toThrow('Unimplemented');
 });
 
 it(`gets the cocoapods version`, async () => {

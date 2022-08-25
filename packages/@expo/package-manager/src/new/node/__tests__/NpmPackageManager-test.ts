@@ -2,12 +2,11 @@ import spawnAsync from '@expo/spawn-async';
 import { vol } from 'memfs';
 import path from 'path';
 
+import { mockSpawnPromise, mockedSpawnAsync, STUB_SPAWN_CHILD } from '../../__tests__/spawn-utils';
 import { NpmPackageManager } from '../NpmPackageManager';
 
 jest.mock('@expo/spawn-async');
 jest.mock('fs');
-
-const mockedSpawnAsync = spawnAsync as jest.MockedFunction<typeof spawnAsync>;
 
 describe('NpmPackageManager', () => {
   const projectRoot = '/project/with-npm';
@@ -18,6 +17,14 @@ describe('NpmPackageManager', () => {
   });
 
   describe('runAsync', () => {
+    it('returns spawn promise with child', () => {
+      const npm = new NpmPackageManager({ cwd: projectRoot });
+      expect(npm.runAsync(['install'])).toHaveProperty(
+        'child',
+        expect.objectContaining(STUB_SPAWN_CHILD)
+      );
+    });
+
     it('adds a single package with custom parameters', async () => {
       const npm = new NpmPackageManager({ cwd: projectRoot });
       await npm.runAsync(['install', '--save-peer', '@babel/core']);
@@ -43,7 +50,9 @@ describe('NpmPackageManager', () => {
 
   describe('versionAsync', () => {
     it('returns version from npm', async () => {
-      mockedSpawnAsync.mockResolvedValue({ stdout: '7.0.0\n' } as any);
+      mockedSpawnAsync.mockImplementation(() =>
+        mockSpawnPromise(Promise.resolve({ stdout: '7.0.0\n' }))
+      );
 
       const npm = new NpmPackageManager({ cwd: projectRoot });
 
@@ -54,7 +63,9 @@ describe('NpmPackageManager', () => {
 
   describe('getConfigAsync', () => {
     it('returns a configuration key from npm', async () => {
-      mockedSpawnAsync.mockResolvedValue({ stdout: 'https://custom.registry.org/\n' } as any);
+      mockedSpawnAsync.mockImplementation(() =>
+        mockSpawnPromise(Promise.resolve({ stdout: 'https://custom.registry.org/\n' }))
+      );
 
       const npm = new NpmPackageManager({ cwd: projectRoot });
 
@@ -131,6 +142,14 @@ describe('NpmPackageManager', () => {
       );
     });
 
+    it('returns pending spawn promise with child', async () => {
+      const npm = new NpmPackageManager({ cwd: projectRoot });
+      const pending = npm.addAsync(['expo']);
+
+      expect(pending).toHaveProperty('child', expect.any(Promise));
+      await expect(pending.child).resolves.toMatchObject(STUB_SPAWN_CHILD);
+    });
+
     it('adds a single unversioned package to dependencies', async () => {
       const npm = new NpmPackageManager({ cwd: projectRoot });
       await npm.addAsync(['expo']);
@@ -194,12 +213,7 @@ describe('NpmPackageManager', () => {
       );
       expect(spawnAsync).toBeCalledWith(
         'npm',
-        ['install', '--ignore-scripts'],
-        expect.objectContaining({ cwd: projectRoot })
-      );
-      expect(spawnAsync).toBeCalledWith(
-        'npm',
-        ['install', '--save', 'jest', '--ignore-scripts'],
+        ['install', '--save', '--ignore-scripts', 'jest'],
         expect.objectContaining({ cwd: projectRoot })
       );
     });
@@ -215,6 +229,14 @@ describe('NpmPackageManager', () => {
         ['install'],
         expect.objectContaining({ cwd: projectRoot })
       );
+    });
+
+    it('returns pending spawn promise with child', async () => {
+      const npm = new NpmPackageManager({ cwd: projectRoot });
+      const pending = npm.addDevAsync(['expo']);
+
+      expect(pending).toHaveProperty('child', expect.any(Promise));
+      await expect(pending.child).resolves.toMatchObject(STUB_SPAWN_CHILD);
     });
 
     it('adds a single unversioned package to dependencies', async () => {
@@ -280,12 +302,7 @@ describe('NpmPackageManager', () => {
       );
       expect(spawnAsync).toBeCalledWith(
         'npm',
-        ['install', '--ignore-scripts'],
-        expect.objectContaining({ cwd: projectRoot })
-      );
-      expect(spawnAsync).toBeCalledWith(
-        'npm',
-        ['install', '--save-dev', 'jest', '--ignore-scripts'],
+        ['install', '--save-dev', '--ignore-scripts', 'jest'],
         expect.objectContaining({ cwd: projectRoot })
       );
     });

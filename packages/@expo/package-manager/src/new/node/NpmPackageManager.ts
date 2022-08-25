@@ -2,6 +2,7 @@ import JsonFile from '@expo/json-file';
 import npmPackageArg from 'npm-package-arg';
 import path from 'path';
 
+import { createPendingSpawnAsync } from '../utils/spawn';
 import { BasePackageManager } from './BasePackageManager';
 
 export class NpmPackageManager extends BasePackageManager {
@@ -9,63 +10,61 @@ export class NpmPackageManager extends BasePackageManager {
   readonly bin = 'npm';
   readonly lockFile = 'package-lock.json';
 
-  async addAsync(namesOrFlags: string[] = []): Promise<void> {
+  addAsync(namesOrFlags: string[] = []) {
     if (!namesOrFlags.length) {
       return this.installAsync();
     }
 
     const { flags, versioned, unversioned } = this.parsePackageSpecs(namesOrFlags);
 
-    if (versioned.length) {
-      await this.updatePackageFileAsync(versioned, 'dependencies');
-      await this.installAsync(flags);
-    }
-
-    if (unversioned.length) {
-      await this.runAsync(['install', '--save', ...unversioned.map((spec) => spec.raw), ...flags]);
-    }
+    return createPendingSpawnAsync(
+      () => this.updatePackageFileAsync(versioned, 'dependencies'),
+      () =>
+        !unversioned.length
+          ? this.runAsync(['install', ...flags])
+          : this.runAsync(['install', '--save', ...flags, ...unversioned.map((spec) => spec.raw)])
+    );
   }
 
-  async addDevAsync(namesOrFlags: string[] = []): Promise<void> {
+  addDevAsync(namesOrFlags: string[] = []) {
     if (!namesOrFlags.length) {
       return this.installAsync();
     }
 
     const { flags, versioned, unversioned } = this.parsePackageSpecs(namesOrFlags);
 
-    if (versioned.length) {
-      await this.updatePackageFileAsync(versioned, 'devDependencies');
-      await this.installAsync(flags);
-    }
-
-    if (unversioned.length) {
-      await this.runAsync([
-        'install',
-        '--save-dev',
-        ...unversioned.map((spec) => spec.raw),
-        ...flags,
-      ]);
-    }
+    return createPendingSpawnAsync(
+      () => this.updatePackageFileAsync(versioned, 'devDependencies'),
+      () =>
+        !unversioned.length
+          ? this.runAsync(['install', ...flags])
+          : this.runAsync([
+              'install',
+              '--save-dev',
+              ...flags,
+              ...unversioned.map((spec) => spec.raw),
+            ])
+    );
   }
 
-  async addGlobalAsync(namesOrFlags: string[] = []): Promise<void> {
+  addGlobalAsync(namesOrFlags: string[] = []) {
     if (!namesOrFlags.length) {
       return this.installAsync();
     }
 
-    await this.runAsync(['install', '--global', ...namesOrFlags]);
+    return this.runAsync(['install', '--global', ...namesOrFlags]);
   }
 
-  async removeAsync(namesOrFlags: string[]): Promise<void> {
-    await this.runAsync(['uninstall', ...namesOrFlags]);
+  removeAsync(namesOrFlags: string[]) {
+    return this.runAsync(['uninstall', ...namesOrFlags]);
   }
 
-  async removeDevAsync(namesOrFlags: string[]): Promise<void> {
-    await this.runAsync(['uninstall', '--save-dev', ...namesOrFlags]);
+  removeDevAsync(namesOrFlags: string[]) {
+    return this.runAsync(['uninstall', '--save-dev', ...namesOrFlags]);
   }
 
-  async removeGlobalAsync(namesOrFlags: string[]): Promise<void> {
-    await this.runAsync(['uninstall', '--global', ...namesOrFlags]);
+  removeGlobalAsync(namesOrFlags: string[]) {
+    return this.runAsync(['uninstall', '--global', ...namesOrFlags]);
   }
 
   /**
@@ -108,6 +107,10 @@ export class NpmPackageManager extends BasePackageManager {
     packageSpecs: npmPackageArg.Result[],
     packageType: 'dependencies' | 'devDependencies'
   ) {
+    if (!packageSpecs.length) {
+      return;
+    }
+
     const pkgPath = path.join(this.options.cwd?.toString() || '.', 'package.json');
     const pkg = await JsonFile.readAsync<Record<typeof packageType, { [pkgName: string]: string }>>(
       pkgPath

@@ -1,4 +1,4 @@
-import spawnAsync from '@expo/spawn-async';
+import spawnAsync, { SpawnPromise, SpawnResult } from '@expo/spawn-async';
 import assert from 'assert';
 import findWorkspaceRoot from 'find-yarn-workspace-root';
 import fs from 'fs';
@@ -6,6 +6,7 @@ import path from 'path';
 import rimraf from 'rimraf';
 
 import { PackageManager, PackageManagerOptions } from '../PackageManager';
+import { PendingSpawnPromise } from '../utils/spawn';
 
 export abstract class BasePackageManager implements PackageManager {
   readonly silent: boolean;
@@ -25,13 +26,25 @@ export abstract class BasePackageManager implements PackageManager {
   /** Get the lockfile for this package manager */
   abstract readonly lockFile: string;
 
-  abstract addAsync(namesOrFlags: string[]): Promise<void>;
-  abstract addDevAsync(namesOrFlags: string[]): Promise<void>;
-  abstract addGlobalAsync(namesOrFlags: string[]): Promise<void>;
+  abstract addAsync(
+    namesOrFlags: string[]
+  ): SpawnPromise<SpawnResult> | PendingSpawnPromise<SpawnResult>;
+  abstract addDevAsync(
+    namesOrFlags: string[]
+  ): SpawnPromise<SpawnResult> | PendingSpawnPromise<SpawnResult>;
+  abstract addGlobalAsync(
+    namesOrFlags: string[]
+  ): SpawnPromise<SpawnResult> | PendingSpawnPromise<SpawnResult>;
 
-  abstract removeAsync(namesOrFlags: string[]): Promise<void>;
-  abstract removeDevAsync(namesOrFlags: string[]): Promise<void>;
-  abstract removeGlobalAsync(namesOrFlags: string[]): Promise<void>;
+  abstract removeAsync(
+    namesOrFlags: string[]
+  ): SpawnPromise<SpawnResult> | PendingSpawnPromise<SpawnResult>;
+  abstract removeDevAsync(
+    namesOrFlags: string[]
+  ): SpawnPromise<SpawnResult> | PendingSpawnPromise<SpawnResult>;
+  abstract removeGlobalAsync(
+    namesOrFlags: string[]
+  ): SpawnPromise<SpawnResult> | PendingSpawnPromise<SpawnResult>;
 
   /** Ensure the CWD is set to a non-empty string */
   protected ensureCwdDefined(method?: string): string {
@@ -75,8 +88,8 @@ export abstract class BasePackageManager implements PackageManager {
     }
   }
 
-  async installAsync(flags: string[] = []) {
-    await this.runAsync(['install', ...flags]);
+  installAsync(flags: string[] = []): SpawnPromise<SpawnResult> | PendingSpawnPromise<SpawnResult> {
+    return this.runAsync(['install', ...flags]);
   }
 
   async uninstallAsync() {
