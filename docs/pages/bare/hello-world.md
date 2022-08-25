@@ -30,7 +30,7 @@ Bare template projects come with `expo` installed and configured, so you're read
 
 We're going to install [`expo-web-browser`](/versions/latest/sdk/webbrowser/), it's a useful little package for showing a modal web browser using the appropriate native APIs on each platform.
 
-<Terminal cmd={['$ expo install expo-web-browser']} />
+<Terminal cmd={['$ npx expo install expo-web-browser']} />
 
 Open up **App.js** and add a button that, when pressed, opens up a web browser. Here's some code for you.
 
@@ -68,7 +68,7 @@ You may need to run `npx pod-install` to link the native iOS packages using [Coc
 
 <Terminal cmd={[
 '# Build your native Android project',
-'$ expo run:android'
+'$ npx expo run:android'
 ]} />
 
 Once the app is built, press the "Open a web browser" button and watch the browser open. Success! Happy times.

@@ -527,7 +527,7 @@ Consider using the [`expo-facebook`](/versions/latest/sdk/facebook) module for n
   - iOS: `eas build` or `expo build:ios`.
   - Android: `eas build` or `expo build:android`.
 - **Bare:**
-  - Regenerate your native projects with `expo prebuild`, or add the redirects manually with `npx uri-scheme add fb<YOUR FBID>`
+  - Regenerate your native projects with `npx expo prebuild`, or add the redirects manually with `npx uri-scheme add fb<YOUR FBID>`
   - Rebuild the projects with `yarn ios` & `yarn android`
 
 #### Native iOS
@@ -537,7 +537,7 @@ Consider using the [`expo-facebook`](/versions/latest/sdk/facebook) module for n
 
 <img alt="Facebook Console for URIs" src="/static/images/sdk/auth-session/guide/facebook-ios-guide.png" />
 
-- Under iOS > Bundle ID: Add your app's bundle identifier, this should match the value in your **app.json** - `expo.ios.bundleIdentifier`. If you don't have one set, run `expo prebuild` to create one (then rebuild the native app).
+- Under iOS > Bundle ID: Add your app's bundle identifier, this should match the value in your **app.json** - `expo.ios.bundleIdentifier`. If you don't have one set, run `npx expo prebuild` to create one (then rebuild the native app).
 - Press "Save Changes" in the footer.
 - Copy the "App ID" in the header into your `iosClientId: '<YOUR FBID>'` or `clientId`. Ex: `{ iosClientId: '474614477183384' }` (no `fb` prefix).
 - Now you're ready to use the demo component in your native iOS app.
@@ -549,7 +549,7 @@ Consider using the [`expo-facebook`](/versions/latest/sdk/facebook) module for n
 
 <img alt="Facebook Console for URIs" src="/static/images/sdk/auth-session/guide/facebook-android-guide.png" />
 
-- Under Android > Google Play Package Name: Add your app's android package, this should match the value in your **app.json** - `expo.android.package`. If you don't have one set, run `expo prebuild` to create one (then rebuild the native app).
+- Under Android > Google Play Package Name: Add your app's android package, this should match the value in your **app.json** - `expo.android.package`. If you don't have one set, run `npx expo prebuild` to create one (then rebuild the native app).
 - Under Android > Class Name: This should match the package name + `.MainActivity`, i.e. `com.bacon.yolo15.MainActivity`.
 - Under Android > Key Hashes: You'll need to create two different values, one for Debug and one for Release. Learn how to create the [Key Hash here](https://stackoverflow.com/questions/4388992/key-hash-for-android-facebook-app).
   - In your app root, run: `keytool -exportcert -alias androiddebugkey -keystore android/app/debug.keystore | openssl sha1 -binary | openssl base64` you don't need a password, but it is recommended.
@@ -1020,7 +1020,7 @@ To create a client ID, go to the [Credentials Page][c-google]:
 
 While developing in Expo Go, you cannot use proper native authentication. Instead you must use web login during development. Be sure to follow the **standalone** guide below for setting up production apps.
 
-First, be sure to login to your Expo account `expo login`. This will be part of the redirect URL.
+First, be sure to login to your Expo account `npx expo login`. This will be part of the redirect URL.
 
 [Create a new Google Client ID][c-google] that will be used with `expoClientId`.
 
@@ -2346,6 +2346,8 @@ exp://u.expo.dev/F767ADF57-B487-4D8F-9522-85549C39F43F?channel-name=main&runtime
 
 #### Standalone and Bare
 
+<!-- TODO: Rework definition -->
+
 > `yourscheme://path`
 
 In some cases there will be anywhere between 1 to 3 slashes (`/`).
@@ -2353,7 +2355,7 @@ In some cases there will be anywhere between 1 to 3 slashes (`/`).
 - **Environment:**
 
   - Bare workflow
-    - `npx create-react-native-app` or `expo prebuild`
+    - `npx create-react-native-app` or `npx expo prebuild`
   - Standalone builds in the App or Play Store
     - `expo build:ios` or `expo build:android`
   - Standalone builds for local testing

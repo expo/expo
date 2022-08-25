@@ -21,7 +21,7 @@ In **./dist/bundles**, we can see the size of the **index.ios.js** and **index.a
 
 Users will have to download any new images or other assets when they detect a new update, if those assets are not already a part of their build. You can view all the assets uploaded to EAS' servers in **./dist/assets**. The assets there are hashed with their extensions removed, so it is difficult to know what assets are there. To see a pretty-printed list of assets, we can run:
 
-<Terminal cmd={["$ expo export --experimental-bundle"]} />
+<Terminal cmd={["$ npx expo export"]} />
 
 To optimize all the images in an app at once, we can use the [expo-optimize library](https://www.npmjs.com/package/expo-optimize). `expo-optimize` uses `sharp-cli` to optimize all image assets.
 

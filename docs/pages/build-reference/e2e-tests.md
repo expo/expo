@@ -18,7 +18,7 @@ This guide explains how to run E2E tests with Detox in a bare workflow project. 
 
 ### 0. Initialize a new Bare Workflow project
 
-Let's start by initializing a new Expo project and running `expo prebuild` to generate the native projects.
+Let's start by initializing a new Expo project and running `npx expo prebuild` to generate the native projects.
 
 <Terminal cmd={[
 '# Initialize a new project',

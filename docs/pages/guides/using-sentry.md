@@ -43,14 +43,14 @@ Once you have each of these: organization name, project name, DSN, and auth toke
 
 In your project directory, run:
 
-<Terminal cmd={['$ expo install sentry-expo']} />
+<Terminal cmd={['$ npx expo install sentry-expo']} />
 
 > If you're using SDK 39 or lower, run `yarn add sentry-expo@~3.0.0`
 
 `sentry-expo` also requires some additional dependencies, otherwise it won't work properly. To install them, run:
 
 <Terminal
-cmd={['$ expo install expo-application expo-constants expo-device expo-updates @sentry/react-native']}
+cmd={['$ npx expo install expo-application expo-constants expo-device expo-updates @sentry/react-native']}
 />
 
 ### Step 2: Code

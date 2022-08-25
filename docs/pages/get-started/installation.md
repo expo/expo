@@ -11,6 +11,7 @@ To develop applications with Expo, you need two tools. A command-line applicatio
 ## 1. Expo CLI
 
 [Expo CLI](/workflow/expo-cli) is a command-line app that is the primary interface between a developer and Expo tools. You are going to use it for different tasks in the development life cycle of your project such as serving the project in development, viewing logs, opening the app on an emulator or a physical device, etc.
+
 ### Requirements
 
 To install and use Expo CLI, you need to have the following tools installed on your developer machine:
@@ -33,21 +34,21 @@ To install and use Expo CLI, you need to have the following tools installed on y
 To install Expo CLI, you need to install it as a global npm package. Open the terminal on your development machine and run the following command:
 
 <Terminal cmd={[
-  '# Install the command line tools',
-  '$ npm install --global expo-cli'
+'# Install the command line tools',
+'$ npm install --global expo-cli'
 ]} />
 
 To verify the successful installation of CLI, run the following command:
 
-<Terminal cmd={['$ expo whoami']} />
+<Terminal cmd={['$ npx expo whoami']} />
 
 If the installation is successful, you will see a "Not logged in" message since you are not logged in to an Expo account yet. You do not need an account to start and can proceed further with your project. However, if you want to register a new expo account, run the command:
 
-<Terminal cmd={['$ expo register']} />
+<Terminal cmd={['$ npx expo register']} />
 
 If you already have an Expo account, you can log in to it by running the command:
 
-<Terminal cmd={['$ expo login']} />
+<Terminal cmd={['$ npx expo login']} />
 
 > **Need help?** Try searching the [forums](https://forums.expo.dev) &mdash; which are great resources for troubleshooting.
 

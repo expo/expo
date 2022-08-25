@@ -168,7 +168,7 @@ Expo has first-class support for all fonts listed in [Google Fonts](https://font
 
 For example, to use Inter font you can install the [`@expo-google-fonts/inter`](https://www.npmjs.com/package/@expo-google-fonts/inter) package with the command below.
 
-<Terminal cmd={["$ expo install expo-font @expo-google-fonts/inter"]} />
+<Terminal cmd={["$ npx expo install expo-font @expo-google-fonts/inter"]} />
 
 Then, you can integrate it in your project by using the `useFonts` hook. You can directly use this hook from the Google Fonts package. Under the hood, the hook uses [`Font.loadAsync`](/versions/latest/sdk/font/#loadasyncfontfamilyorfontmap-source). You do not have to explicitly import the font file since that is done by the package itself.
 

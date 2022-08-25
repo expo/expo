@@ -97,13 +97,13 @@ You can verify that your project builds on your local machine with the `expo run
 
 <Terminal cmd={[
 '# Locally compile and run the Android app in release mode',
-'$ expo run:android --variant release',
+'$ npx expo run:android --variant release',
 '',
 '# Locally compile and run the iOS app in release mode',
-'$ expo run:ios --configuration Release'
+'$ npx expo run:ios --configuration Release'
 ]} />
 
-> These commands will run `expo prebuild` to generate native projects (`ios` and `android` directories) if needed &mdash; you may want to [clean up the changes](https://expo.fyi/prebuild-cleanup) once you are done troubleshooting, or add the directories to your `.gitignore`. Learn more in the [Prebuild guide](/workflow/prebuild/).
+> These commands will run `npx expo prebuild` to generate native projects (`ios` and `android` directories) if needed &mdash; you may want to [clean up the changes](https://expo.fyi/prebuild-cleanup) once you are done troubleshooting, or add the directories to your `.gitignore`. Learn more in the [Prebuild guide](/workflow/prebuild/).
 
 <Collapsible summary="💡 Don't have Xcode and Android Studio set up on your machine?">
 

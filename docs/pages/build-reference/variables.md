@@ -48,7 +48,7 @@ See the [eas.json reference](/build/eas-json.md) for more information.
 
 ## Environment variables and app.config.js
 
-Environment variables used in your build profile will also be used to evaluate **app.config.js** when you run `eas build`. This is important in order to ensure that the result of evaluating **app.config.js** is the same when it's done locally while initiating the build (in order to gather metadata for the build job) and when it occurs on the remote build worker, for example to configure the project during `expo prebuild` or to embed the configuration data in the app.
+Environment variables used in your build profile will also be used to evaluate **app.config.js** when you run `eas build`. This is important in order to ensure that the result of evaluating **app.config.js** is the same when it's done locally while initiating the build (in order to gather metadata for the build job) and when it occurs on the remote build worker, for example to configure the project during `npx expo prebuild` or to embed the configuration data in the app.
 
 ## Built-in environment variables
 
