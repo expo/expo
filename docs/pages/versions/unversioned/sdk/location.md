@@ -22,7 +22,7 @@ import { AndroidPermissions } from '~/components/plugins/permissions';
 
 ### Android permissions
 
-The `expo-location` module requires permission for approximate (`ACCESS_COARSE_LOCATION`) and precise (`ACCESS_FINE_LOCATION`) device location in the `android.permission` property in **app.json**. It also needs the foreground service permission (`FOREGROUND_SERVICE`) to subscribe to location updates while the app is in use. When you install this module in your Expo project, all of the three permissions are added automatically.
+The `expo-location` module requires permission for approximate (`ACCESS_COARSE_LOCATION`) and precise (`ACCESS_FINE_LOCATION`) device location in the `android.permission` property in **app.json**. It also needs foreground service permission (`FOREGROUND_SERVICE`) to subscribe to location updates while the app is in use. When you install this module in your Expo project, all of the three permissions are added automatically.
 
 To use background location features, you must add the `ACCESS_BACKGROUND_LOCATION` and [submit your app for review and request access to use the background location permission](https://support.google.com/googleplay/android-developer/answer/9799150?hl=en).
 
@@ -30,7 +30,9 @@ To use background location features, you must add the `ACCESS_BACKGROUND_LOCATIO
 
 #### Excluding a permission
 
-When your Expo project doesn't benefit from having a particular permission included, you can omit it. For example, if your application doesn't need access to the precise location, you can exclude the `ACCESS_FINE_LOCATION` permission.
+When your Expo project doesn't benefit from having particular permission included, you can omit it. For example, if your application doesn't need access to the precise location, you can exclude the `ACCESS_FINE_LOCATION` permission.
+
+Another example can be stated using [available location accuracies](#accuracy). Android defines the approximate location accuracy estimation within about 3 square kilometers, and the precise location accuracy estimation within about 50 meters. For example, if the location accuracy value is [Low](#low), you can exclude `ACCESS_FINE_LOCATION` permission. To learn more about levels of location accuracies, see [Android documentation](https://developer.android.com/training/location/permissions#accuracy).
 
 To learn more on how to exclude a permission, see [Excluding Android permissions](/guides/permissions/#excluding-android-permissions).
 
