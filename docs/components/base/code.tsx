@@ -64,6 +64,13 @@ const STYLES_INLINE_CODE = css`
   a & {
     border-color: ${theme.border.default};
   }
+
+  h2 &,
+  h3 &,
+  h4 & {
+    position: relative;
+    top: -2px;
+  }
 `;
 
 const STYLES_CODE_CONTAINER = css`

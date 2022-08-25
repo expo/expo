@@ -1,6 +1,6 @@
 import { css } from '@emotion/react';
 import { SerializedStyles } from '@emotion/serialize';
-import { theme } from '@expo/styleguide';
+import {spacing, theme } from '@expo/styleguide';
 import * as React from 'react';
 
 import { paragraph } from './typography';
@@ -12,8 +12,8 @@ const attributes = {
 const STYLES_UNORDERED_LIST = css`
   ${paragraph}
   list-style: disc;
-  margin-left: 1rem;
-  margin-bottom: 1rem;
+  margin-left: ${spacing[4]}px;
+  margin-bottom: ${spacing[6]}px;
 
   .anchor-icon {
     display: none;
