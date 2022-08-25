@@ -67,8 +67,10 @@ PODS:
   - ABI45_0_0EXFont (10.1.0):
     - ABI45_0_0ExpoModulesCore
   - ABI45_0_0EXGL (11.2.0):
+    - ABI45_0_0EXGL_CPP
     - ABI45_0_0ExpoModulesCore
-    - EXGL_CPP
+  - ABI45_0_0EXGL_CPP (11.4.0):
+    - ABI45_0_0React-jsi
   - ABI45_0_0EXGoogleSignIn (10.2.0):
     - ABI45_0_0ExpoModulesCore
     - GoogleSignIn (~> 5.0.2)
@@ -681,8 +683,10 @@ PODS:
   - ABI46_0_0EXFont (10.2.0):
     - ABI46_0_0ExpoModulesCore
   - ABI46_0_0EXGL (11.4.0):
+    - ABI46_0_0EXGL_CPP
     - ABI46_0_0ExpoModulesCore
-    - EXGL_CPP
+  - ABI46_0_0EXGL_CPP (11.4.0):
+    - ABI46_0_0React-jsi
   - ABI46_0_0EXImageLoader (3.2.0):
     - ABI46_0_0ExpoModulesCore
     - ABI46_0_0React-Core
@@ -2098,6 +2102,7 @@ DEPENDENCIES:
   - ABI45_0_0EXFirebaseCore (from `./versioned/sdk45/EXFirebaseCore`)
   - ABI45_0_0EXFont (from `./versioned/sdk45/EXFont`)
   - ABI45_0_0EXGL (from `./versioned/sdk45/EXGL`)
+  - ABI45_0_0EXGL_CPP (from `./versioned/sdk45/EXGL_CPP`)
   - ABI45_0_0EXGoogleSignIn (from `./versioned/sdk45/EXGoogleSignIn`)
   - ABI45_0_0EXImageLoader (from `./versioned/sdk45/EXImageLoader`)
   - ABI45_0_0EXJSONUtils (from `./versioned/sdk45/EXJSONUtils`)
@@ -2205,6 +2210,7 @@ DEPENDENCIES:
   - ABI46_0_0EXFirebaseCore (from `./versioned/sdk46/EXFirebaseCore`)
   - ABI46_0_0EXFont (from `./versioned/sdk46/EXFont`)
   - ABI46_0_0EXGL (from `./versioned/sdk46/EXGL`)
+  - ABI46_0_0EXGL_CPP (from `./versioned/sdk46/EXGL_CPP`)
   - ABI46_0_0EXImageLoader (from `./versioned/sdk46/EXImageLoader`)
   - ABI46_0_0EXJSONUtils (from `./versioned/sdk46/EXJSONUtils`)
   - ABI46_0_0EXLocalAuthentication (from `./versioned/sdk46/EXLocalAuthentication`)
@@ -2522,6 +2528,8 @@ EXTERNAL SOURCES:
     :path: "./versioned/sdk45/EXFont"
   ABI45_0_0EXGL:
     :path: "./versioned/sdk45/EXGL"
+  ABI45_0_0EXGL_CPP:
+    :path: "./versioned/sdk45/EXGL_CPP"
   ABI45_0_0EXGoogleSignIn:
     :path: "./versioned/sdk45/EXGoogleSignIn"
   ABI45_0_0EXImageLoader:
@@ -2730,6 +2738,8 @@ EXTERNAL SOURCES:
     :path: "./versioned/sdk46/EXFont"
   ABI46_0_0EXGL:
     :path: "./versioned/sdk46/EXGL"
+  ABI46_0_0EXGL_CPP:
+    :path: "./versioned/sdk46/EXGL_CPP"
   ABI46_0_0EXImageLoader:
     :path: "./versioned/sdk46/EXImageLoader"
   ABI46_0_0EXJSONUtils:
@@ -3151,7 +3161,8 @@ SPEC CHECKSUMS:
   ABI45_0_0EXFirebaseAnalytics: 520fd98fa3ffa399cb37339cecf3f0113ac868fc
   ABI45_0_0EXFirebaseCore: 55bf01d30e97904971c5faa606c45e06ed1f8921
   ABI45_0_0EXFont: 39fc4deba2d33f2af49af3f8e583a5323a38ea8d
-  ABI45_0_0EXGL: cd65ac21d5a9dd629cfbbdae94787e1428a61151
+  ABI45_0_0EXGL: 77cf0d4482330ccecc3faa480e8fdb048619e504
+  ABI45_0_0EXGL_CPP: 3f7a28c010d3876f4ff01d7142caa07610066afd
   ABI45_0_0EXGoogleSignIn: 5023e743d72daacb83fd64aabc841b5f64881087
   ABI45_0_0EXImageLoader: e512e1894a8181334b3b35ac0de0081067606f16
   ABI45_0_0EXJSONUtils: a283db352fe87443324ce864b49fae7be5037d26
@@ -3255,7 +3266,8 @@ SPEC CHECKSUMS:
   ABI46_0_0EXFirebaseAnalytics: c8430b5fec21d454ac20a2e6cb589b657d21e453
   ABI46_0_0EXFirebaseCore: c882bef027a336c3fc7c99ffb79d0476b52896e5
   ABI46_0_0EXFont: 07cddb696a53caef3fe8d3685d8008cdd76885b3
-  ABI46_0_0EXGL: e8bcf0b19e02f3e3def880ba3d98210437e10171
+  ABI46_0_0EXGL: 18dcc889e7caeca13a4883282f3aa068b1f33b43
+  ABI46_0_0EXGL_CPP: c00848d40a2f0a746ccb231ea3cc7ea5bedc6dcc
   ABI46_0_0EXImageLoader: e52d34e905630f082cc23c41b28dd2408d6aa0e8
   ABI46_0_0EXJSONUtils: 89154664b8ecb4315a47591caaa3ccf12f1f2ca8
   ABI46_0_0EXLocalAuthentication: bd9445fdda9de37a0b1f73df7844de2ce6a76d8b
