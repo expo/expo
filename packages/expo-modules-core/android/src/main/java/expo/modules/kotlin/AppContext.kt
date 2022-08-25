@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.facebook.react.bridge.JSIModuleType
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.turbomodule.core.CallInvokerHolderImpl
+import com.facebook.react.uimanager.UIManagerHelper
 import expo.modules.BuildConfig
 import expo.modules.core.errors.ContextDestroyedException
 import expo.modules.core.interfaces.ActivityProvider
@@ -265,13 +266,8 @@ class AppContext(
   @Suppress("UNCHECKED_CAST")
   @UiThread
   fun <T : View> findView(viewTag: Int): T? {
-    return if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
-      val fabricUIManager = reactContextHolder.get()?.getJSIModule(JSIModuleType.UIManager) as? com.facebook.react.bridge.UIManager
-      fabricUIManager?.resolveView(viewTag) as? T
-    } else {
-      val paperUIManager = reactContextHolder.get()?.getNativeModule(com.facebook.react.uimanager.UIManagerModule::class.java)
-      paperUIManager?.resolveView(viewTag) as? T
-    }
+    val reactContext = reactContextHolder.get() ?: return null
+    return UIManagerHelper.getUIManagerForReactTag(reactContext, viewTag)?.resolveView(viewTag) as? T
   }
 
 // region CurrentActivityProvider
