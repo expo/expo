@@ -21,7 +21,7 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 ## Configuration
 
-In managed apps, scanning barcodes with the camera requires the [`Permission.CAMERA`](permissions.md#permissionscamera) permission. See the [usage example](#usage) below.
+In apps using [Expo Prebuild](/workflow/prebuild), scanning barcodes with the camera requires the [`Permission.CAMERA`](permissions.md#permissionscamera) permission. See the [usage example](#usage) below.
 
 ## Supported formats
 

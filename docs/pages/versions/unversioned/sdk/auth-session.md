@@ -181,11 +181,9 @@ A hook used for opinionated Facebook authentication that works across platforms.
 
 A [`DiscoveryDocument`](#discoverydocument) object containing the discovery URLs used for Facebook auth.
 
-## Usage in the bare React Native app
+## Proxy Service
 
-In managed apps, `AuthSession` uses Expo servers to create a proxy between your application and the auth provider. If you'd like, you can also create your own proxy service.
-
-### Proxy Service
+`AuthSession` uses Expo servers to create a proxy between your application and the auth provider. If you'd like, you can also create your own proxy service.
 
 This service is responsible for:
 
@@ -206,7 +204,7 @@ const redirect = (response, url) => {
     Location: url,
   });
   response.end();
-}
+};
 
 http
   .createServer((request, response) => {

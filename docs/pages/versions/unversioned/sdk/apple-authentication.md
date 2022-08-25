@@ -50,6 +50,8 @@ If you build your app without the `ios/` directory, then EAS Build will automati
 
 ### Classic Build
 
+<!-- TODO: Remove this entire section -->
+
 1. For managed projects, set `ios.usesAppleSignIn` to `true` in `app.json`. For bare, enable the "Sign In with Apple" capability in your app. For bare projects, enable the capability in Xcode under "Signing & Capabilities" -- you'll need to be on Xcode 11 or later.
 2. Log into the Apple Developer Console, go to "Certificates, Identifiers, & Profiles" and then "Identifiers".
 3. You need to choose a primary app for the Apple Sign In configuration. This is the app whose icon will show up in the Apple Sign In system UI. If you have a set of related apps you might choose the "main" app as the primary, but most likely you'll want to just use the app you're working on now as the primary.
