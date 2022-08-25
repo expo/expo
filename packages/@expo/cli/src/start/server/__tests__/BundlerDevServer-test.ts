@@ -98,6 +98,10 @@ class MockBundlerDevServer extends BundlerDevServer {
   public getExpoGoUrl(platform: 'simulator' | 'emulator') {
     return super.getExpoGoUrl(platform);
   }
+
+  public getInterstitialPageUrl(platform: 'simulator' | 'emulator'): string | null {
+    return super.getInterstitialPageUrl(platform);
+  }
 }
 
 async function getRunningServer() {
@@ -167,7 +171,19 @@ describe('stopAsync', () => {
 });
 
 describe('getExpoGoUrl', () => {
-  it(`gets the interstitial page URL`, async () => {
+  it(`gets the native Expo Go URL`, async () => {
+    const server = new MockBundlerDevServer('/', getPlatformBundlers({}));
+    await server.startAsync({
+      location: {},
+    });
+
+    expect(server.getExpoGoUrl('emulator')).toBe('exp://100.100.1.100:3000');
+    expect(server.getExpoGoUrl('simulator')).toBe('exp://100.100.1.100:3000');
+  });
+});
+
+describe('getInterstitialPageUrl', () => {
+  it(`gets the interstitial page URL if dev-launcher is installed`, async () => {
     process.env.EXPO_ENABLE_INTERSTITIAL_PAGE = '1';
     vol.fromJSON(
       {
@@ -184,22 +200,23 @@ describe('getExpoGoUrl', () => {
     const urlCreator = server.getPublicUrlCreator();
     urlCreator.constructLoadingUrl = jest.fn(urlCreator.constructLoadingUrl);
 
-    expect(server.getExpoGoUrl('emulator')).toBe(
+    expect(server.getInterstitialPageUrl('emulator')).toBe(
       'http://100.100.1.100:3000/_expo/loading?platform=android'
     );
-    expect(server.getExpoGoUrl('simulator')).toBe(
+    expect(server.getInterstitialPageUrl('simulator')).toBe(
       'http://127.0.0.1:3000/_expo/loading?platform=ios'
     );
     expect(urlCreator.constructLoadingUrl).toBeCalledTimes(2);
   });
-  it(`gets the native Expo Go URL`, async () => {
+  it(`returns null if dev-launcher is not installed`, async () => {
+    process.env.EXPO_ENABLE_INTERSTITIAL_PAGE = '1';
     const server = new MockBundlerDevServer('/', getPlatformBundlers({}));
     await server.startAsync({
       location: {},
     });
 
-    expect(server.getExpoGoUrl('emulator')).toBe('exp://100.100.1.100:3000');
-    expect(server.getExpoGoUrl('simulator')).toBe('exp://100.100.1.100:3000');
+    expect(server.getInterstitialPageUrl('emulator')).toBeNull();
+    expect(server.getInterstitialPageUrl('simulator')).toBeNull();
   });
 });
 

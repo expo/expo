@@ -1,6 +1,7 @@
 import { getConfig } from '@expo/config';
 import assert from 'assert';
 
+import { Log } from '../../log';
 import { logEventAsync } from '../../utils/analytics/rudderstackClient';
 import { CommandError, UnimplementedError } from '../../utils/errors';
 import { learnMore } from '../../utils/link';
@@ -37,6 +38,8 @@ export class PlatformManager<
       getExpoGoUrl: () => string | null;
       /** Dev Client */
       getCustomRuntimeUrl: (props?: { scheme?: string }) => string | null;
+      /** Interstitial page URL, or null if the interstitial page should not open */
+      getInterstitialPageUrl: () => string | null;
       /** Resolve a device, this function should automatically handle opening the device and asserting any system validations. */
       resolveDeviceAsync: (
         resolver?: Partial<IResolveDeviceProps>
@@ -50,13 +53,12 @@ export class PlatformManager<
   }
 
   protected async openProjectInExpoGoAsync(
-    resolveSettings: Partial<IResolveDeviceProps> = {}
+    deviceManager: DeviceManager<IDevice>
   ): Promise<{ url: string }> {
     const url = this.props.getExpoGoUrl();
     // This should never happen, but just in case...
     assert(url, 'Could not get dev server URL');
 
-    const deviceManager = await this.props.resolveDeviceAsync(resolveSettings);
     deviceManager.logOpeningUrl(url);
 
     // TODO: Expensive, we should only do this once.
@@ -66,6 +68,31 @@ export class PlatformManager<
     deviceManager.activateWindowAsync();
     await deviceManager.openUrlAsync(url);
 
+    await logEventAsync('Open Url on Device', {
+      platform: this.props.platform,
+      installedExpo,
+    });
+
+    return { url };
+  }
+
+  private async openProjectInterstitialPageAsync(
+    deviceManager: DeviceManager<IDevice>
+  ): Promise<{ url: string }> {
+    const url = this.props.getInterstitialPageUrl();
+    // This should never happen, but just in case...
+    assert(url, 'Could not get interstitial page URL');
+
+    deviceManager.logOpeningUrl(url);
+
+    // TODO: Expensive, we should only do this once.
+    const { exp } = getConfig(this.projectRoot);
+    const installedExpo = await deviceManager.ensureExpoGoAsync(exp.sdkVersion);
+
+    deviceManager.activateWindowAsync();
+    await deviceManager.openUrlAsync(url);
+
+    // TODO: probably don't want to log this here, but keeping it for parity with old CLI
     await logEventAsync('Open Url on Device', {
       platform: this.props.platform,
       installedExpo,
@@ -93,8 +120,8 @@ export class PlatformManager<
 
     if (!(await deviceManager.isAppInstalledAsync(applicationId))) {
       throw new CommandError(
-        `The development client (${applicationId}) for this project is not installed. ` +
-          `Please build and install the client on the device first.\n${learnMore(
+        `No development build (${applicationId}) for this project is installed. ` +
+          `Please make and install a development build on the device first.\n${learnMore(
             'https://docs.expo.dev/development/build/'
           )}`
       );
@@ -136,7 +163,22 @@ export class PlatformManager<
       resolveSettings.device
     );
     if (options.runtime === 'expo') {
-      return this.openProjectInExpoGoAsync(resolveSettings);
+      const deviceManager = await this.props.resolveDeviceAsync(resolveSettings);
+      if (this.props.getInterstitialPageUrl()) {
+        const applicationId = await this._getAppIdResolver().getAppIdAsync();
+        if (await deviceManager.isAppInstalledAsync(applicationId)) {
+          return this.openProjectInterstitialPageAsync(deviceManager);
+        } else {
+          Log.warn(
+            `\u203A The 'expo-dev-client' package is installed, but a development build isn't ` +
+              `available.\nYour app will open in Expo Go instead. If you want to use a ` +
+              `development build, you need to make and install one first.\n${learnMore(
+                'https://docs.expo.dev/development/build/'
+              )}`
+          );
+        }
+      }
+      return this.openProjectInExpoGoAsync(deviceManager);
     } else if (options.runtime === 'web') {
       return this.openWebProjectAsync(resolveSettings);
     } else if (options.runtime === 'custom') {

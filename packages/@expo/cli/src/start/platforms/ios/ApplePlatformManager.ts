@@ -16,6 +16,8 @@ export class ApplePlatformManager extends PlatformManager<Device> {
       getExpoGoUrl: () => string | null;
       /** Dev Client */
       getCustomRuntimeUrl: (props?: { scheme?: string }) => string | null;
+      /** Interstitial page URL */
+      getInterstitialPageUrl: () => string | null;
     }
   ) {
     super(projectRoot, {

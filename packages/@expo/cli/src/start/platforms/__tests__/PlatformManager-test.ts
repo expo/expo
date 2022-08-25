@@ -18,10 +18,15 @@ jest.mock('@expo/config', () => ({
 
 describe('openAsync', () => {
   // Mock haven
-  function createManager({ customUrl = 'custom://path', isAppInstalled = true } = {}) {
+  function createManager({
+    customUrl = 'custom://path',
+    interstitialUrl = null,
+    isAppInstalled = true,
+  } = {}) {
     const getExpoGoUrl = jest.fn(() => 'exp://localhost:19000/');
     const getDevServerUrl = jest.fn(() => 'http://localhost:19000/');
     const getCustomRuntimeUrl = jest.fn(() => customUrl);
+    const getInterstitialPageUrl = jest.fn(() => interstitialUrl);
     const device = {
       name: 'iPhone 13',
       logOpeningUrl: jest.fn(),
@@ -38,6 +43,7 @@ describe('openAsync', () => {
       getCustomRuntimeUrl,
       getDevServerUrl,
       getExpoGoUrl,
+      getInterstitialPageUrl,
     });
 
     // @ts-expect-error
@@ -51,6 +57,7 @@ describe('openAsync', () => {
       getCustomRuntimeUrl,
       getDevServerUrl,
       getExpoGoUrl,
+      getInterstitialPageUrl,
     };
   }
 
@@ -80,6 +87,65 @@ describe('openAsync', () => {
     // Logging
     expect(device.logOpeningUrl).toHaveBeenNthCalledWith(1, url);
     expect(Log.warn).toHaveBeenCalledTimes(0);
+    expect(Log.error).toHaveBeenCalledTimes(0);
+  });
+
+  it(`opens a project interstitial page when dev build is installed`, async () => {
+    const url = 'http://localhost:19000/_expo/loading';
+    const { manager, getInterstitialPageUrl, device, resolveDeviceAsync } = createManager({
+      interstitialUrl: url,
+      isAppInstalled: true,
+    });
+
+    expect(await manager.openAsync({ runtime: 'expo' })).toStrictEqual({
+      url,
+    });
+
+    expect(resolveDeviceAsync).toHaveBeenCalledTimes(1);
+    expect(getInterstitialPageUrl).toHaveBeenCalledTimes(2);
+
+    // Both Expo Go and dev build are checked
+    expect(device.ensureExpoGoAsync).toHaveBeenCalledTimes(1);
+    expect(device.isAppInstalledAsync).toHaveBeenCalledTimes(1);
+    expect(device.isAppInstalledAsync).toHaveBeenNthCalledWith(1, 'dev.bacon.app');
+
+    expect(device.activateWindowAsync).toHaveBeenCalledTimes(1);
+    expect(device.openUrlAsync).toHaveBeenNthCalledWith(1, url);
+
+    // Logging
+    expect(device.logOpeningUrl).toHaveBeenNthCalledWith(1, url);
+    expect(Log.warn).toHaveBeenCalledTimes(0);
+    expect(Log.error).toHaveBeenCalledTimes(0);
+  });
+
+  it(`skips interstitial page when dev build is not installed`, async () => {
+    const interstitialUrl = 'http://localhost:19000/_expo/loading';
+    const { manager, getInterstitialPageUrl, device, resolveDeviceAsync } = createManager({
+      interstitialUrl,
+      isAppInstalled: false,
+    });
+
+    const expoGoUrl = 'exp://localhost:19000/';
+    expect(await manager.openAsync({ runtime: 'expo' })).toStrictEqual({
+      url: expoGoUrl,
+    });
+
+    expect(resolveDeviceAsync).toHaveBeenCalledTimes(1);
+    expect(getInterstitialPageUrl).toHaveBeenCalledTimes(1);
+
+    // Both Expo Go and dev build are checked
+    expect(device.ensureExpoGoAsync).toHaveBeenCalledTimes(1);
+    expect(device.isAppInstalledAsync).toHaveBeenCalledTimes(1);
+    expect(device.isAppInstalledAsync).toHaveBeenNthCalledWith(1, 'dev.bacon.app');
+
+    expect(device.activateWindowAsync).toHaveBeenCalledTimes(1);
+    expect(device.openUrlAsync).toHaveBeenNthCalledWith(1, expoGoUrl);
+
+    // Logging
+    expect(device.logOpeningUrl).toHaveBeenNthCalledWith(1, expoGoUrl);
+
+    // Should warn about skipping interstitial page and opening in Expo Go
+    expect(Log.warn).toHaveBeenCalledTimes(1);
     expect(Log.error).toHaveBeenCalledTimes(0);
   });
 
@@ -144,7 +210,7 @@ describe('openAsync', () => {
     });
 
     await expect(manager.openAsync({ runtime: 'custom' })).rejects.toThrow(
-      /The development client \(dev\.bacon\.app\) for this project is not installed/
+      /No development build \(dev\.bacon\.app\) for this project is installed/
     );
 
     expect(resolveDeviceAsync).toHaveBeenCalledTimes(1);

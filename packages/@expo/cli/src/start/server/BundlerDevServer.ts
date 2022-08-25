@@ -409,16 +409,19 @@ export abstract class BundlerDevServer {
   }
 
   /** Get the URL for opening in Expo Go. */
-  protected getExpoGoUrl(platform: keyof typeof PLATFORM_MANAGERS): string | null {
-    if (this.shouldUseInterstitialPage()) {
-      const loadingUrl =
-        platform === 'emulator'
-          ? this.urlCreator?.constructLoadingUrl({}, 'android')
-          : this.urlCreator?.constructLoadingUrl({ hostType: 'localhost' }, 'ios');
-      return loadingUrl ?? null;
-    }
-
+  protected getExpoGoUrl(): string | null {
     return this.urlCreator?.constructUrl({ scheme: 'exp' }) ?? null;
+  }
+
+  protected getInterstitialPageUrl(platform: keyof typeof PLATFORM_MANAGERS): string | null {
+    if (!this.shouldUseInterstitialPage()) {
+      return null;
+    }
+    const loadingUrl =
+      platform === 'emulator'
+        ? this.urlCreator?.constructLoadingUrl({}, 'android')
+        : this.urlCreator?.constructLoadingUrl({ hostType: 'localhost' }, 'ios');
+    return loadingUrl ?? null;
   }
 
   protected async getPlatformManagerAsync(platform: keyof typeof PLATFORM_MANAGERS) {
@@ -434,7 +437,8 @@ export abstract class BundlerDevServer {
       debug(`Creating platform manager (platform: ${platform}, port: ${port})`);
       this.platformManagers[platform] = new Manager(this.projectRoot, port, {
         getCustomRuntimeUrl: this.urlCreator.constructDevClientUrl.bind(this.urlCreator),
-        getExpoGoUrl: this.getExpoGoUrl.bind(this, platform),
+        getExpoGoUrl: this.getExpoGoUrl.bind(this),
+        getInterstitialPageUrl: this.getInterstitialPageUrl.bind(this, platform),
         getDevServerUrl: this.getDevServerUrl.bind(this, { hostType: 'localhost' }),
       });
     }

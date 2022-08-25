@@ -20,6 +20,8 @@ export class AndroidPlatformManager extends PlatformManager<Device, AndroidOpenI
       getExpoGoUrl: () => string | null;
       /** Dev Client URL. */
       getCustomRuntimeUrl: (props?: { scheme?: string }) => string | null;
+      /** Interstitial page URL */
+      getInterstitialPageUrl: () => string | null;
     }
   ) {
     super(projectRoot, {
