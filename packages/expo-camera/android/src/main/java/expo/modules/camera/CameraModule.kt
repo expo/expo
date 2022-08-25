@@ -51,16 +51,16 @@ class CameraModule : Module() {
     AsyncFunction("pausePreview") { viewTag: Int ->
       val view = findView(viewTag)
 
-      if (view.isCameraOpened) {
-        view.pausePreview()
+      if (view.cameraView.isCameraOpened) {
+        view.cameraView.pausePreview()
       }
     }.runOnQueue(Queues.MAIN)
 
     AsyncFunction("resumePreview") { viewTag: Int ->
       val view = findView(viewTag)
 
-      if (view.isCameraOpened) {
-        view.resumePreview()
+      if (view.cameraView.isCameraOpened) {
+        view.cameraView.resumePreview()
       }
     }.runOnQueue(Queues.MAIN)
 
@@ -69,7 +69,7 @@ class CameraModule : Module() {
       val view = findView(viewTag)
 
       if (!EmulatorUtilities.isRunningOnEmulator()) {
-        if (!view.isCameraOpened) {
+        if (!view.cameraView.isCameraOpened) {
           throw CameraExceptions.CameraIsNotRunning()
         }
 
@@ -88,7 +88,7 @@ class CameraModule : Module() {
       val cacheDirectory = reactContext.cacheDir
       val view = findView(viewTag)
 
-      if (!view.isCameraOpened) {
+      if (!view.cameraView.isCameraOpened) {
         throw CameraExceptions.CameraIsNotRunning()
       }
 
@@ -98,29 +98,29 @@ class CameraModule : Module() {
     AsyncFunction("stopRecording") { viewTag: Int ->
       val view = findView(viewTag)
 
-      if (view.isCameraOpened) {
-        view.stopRecording()
+      if (view.cameraView.isCameraOpened) {
+        view.cameraView.stopRecording()
       }
     }.runOnQueue(Queues.MAIN)
 
     AsyncFunction("getSupportedRatios") { viewTag: Int ->
       val view = findView(viewTag)
 
-      if (!view.isCameraOpened) {
+      if (!view.cameraView.isCameraOpened) {
         throw CameraExceptions.CameraIsNotRunning()
       }
 
-      return@AsyncFunction view.supportedAspectRatios.map { it.toString() }
+      return@AsyncFunction view.cameraView.supportedAspectRatios.map { it.toString() }
     }.runOnQueue(Queues.MAIN)
 
     AsyncFunction("getAvailablePictureSizes") { ratio: String?, viewTag: Int ->
       val view = findView(viewTag)
 
-      if (!view.isCameraOpened) {
+      if (!view.cameraView.isCameraOpened) {
         throw CameraExceptions.CameraIsNotRunning()
       }
 
-      val sizes = view.getAvailablePictureSizes(AspectRatio.parse(ratio))
+      val sizes = view.cameraView.getAvailablePictureSizes(AspectRatio.parse(ratio))
       return@AsyncFunction sizes.map { it.toString() }
     }.runOnQueue(Queues.MAIN)
 
