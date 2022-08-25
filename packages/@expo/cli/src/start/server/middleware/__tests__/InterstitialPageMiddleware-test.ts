@@ -1,5 +1,5 @@
 import { getConfig, getNameFromConfig } from '@expo/config';
-import { getRuntimeVersionNullable } from '@expo/config-plugins/build/utils/Updates';
+import { getRuntimeVersionNullable, getSDKVersion } from '@expo/config-plugins/build/utils/Updates';
 import { vol } from 'memfs';
 
 import { asMock } from '../../../../__tests__/asMock';
@@ -20,6 +20,7 @@ jest.mock('@expo/config', () => ({
 }));
 jest.mock('@expo/config-plugins/build/utils/Updates', () => ({
   getRuntimeVersionNullable: jest.fn(),
+  getSDKVersion: jest.fn(() => '45.0.0'),
 }));
 
 const asReq = (req: Partial<ServerRequest>) => req as ServerRequest;
@@ -66,22 +67,24 @@ describe('_getProjectOptions', () => {
     expect(middleware._getProjectOptions('ios')).toEqual({
       runtimeVersion: '123',
       appName: 'my-app',
+      sdkVersion: '45.0.0',
     });
     expect(getConfig).toBeCalled();
     expect(getRuntimeVersionNullable).toBeCalledWith(
       { name: 'my-app', sdkVersion: '45.0.0', slug: 'my-app' },
       'ios'
     );
+    expect(getSDKVersion).toBeCalledWith({ name: 'my-app', sdkVersion: '45.0.0', slug: 'my-app' });
   });
 });
 
 describe('_getPageAsync', () => {
-  it('returns the static HTML with templates filled in', async () => {
+  it('returns the static HTML with templates filled in for runtime version', async () => {
     const projectRoot = '/';
     vol.fromJSON(
       {
         'node_modules/expo/static/loading-page/index.html':
-          'AppName: "{{ AppName }}", RuntimeVersion "{{ RuntimeVersion }}", Path: {{ Path }}',
+          'AppName: "{{ AppName }}", {{ ProjectVersionType }} "{{ ProjectVersion }}", Path: {{ Path }}, Scheme: "{{ Scheme }}"',
       },
       projectRoot
     );
@@ -91,8 +94,49 @@ describe('_getPageAsync', () => {
       middleware._getPageAsync({
         appName: 'App',
         runtimeVersion: '123',
+        sdkVersion: '45.0.0',
       })
-    ).resolves.toEqual('AppName: "App", RuntimeVersion "123", Path: /');
+    ).resolves.toEqual('AppName: "App", Runtime version "123", Path: /, Scheme: "Unknown"');
+  });
+
+  it('returns the static HTML with templates filled in for SDK version', async () => {
+    const projectRoot = '/';
+    vol.fromJSON(
+      {
+        'node_modules/expo/static/loading-page/index.html':
+          'AppName: "{{ AppName }}", {{ ProjectVersionType }} "{{ ProjectVersion }}", Path: {{ Path }}, Scheme: "{{ Scheme }}"',
+      },
+      projectRoot
+    );
+
+    const middleware = new InterstitialPageMiddleware(projectRoot);
+    await expect(
+      middleware._getPageAsync({
+        appName: 'App',
+        runtimeVersion: null,
+        sdkVersion: '45.0.0',
+      })
+    ).resolves.toEqual('AppName: "App", SDK version "45.0.0", Path: /, Scheme: "Unknown"');
+  });
+
+  it('returns the static HTML with templates filled in for scheme', async () => {
+    const projectRoot = '/';
+    vol.fromJSON(
+      {
+        'node_modules/expo/static/loading-page/index.html':
+          'AppName: "{{ AppName }}", {{ ProjectVersionType }} "{{ ProjectVersion }}", Path: {{ Path }}, Scheme: "{{ Scheme }}"',
+      },
+      projectRoot
+    );
+
+    const middleware = new InterstitialPageMiddleware(projectRoot, 'testscheme');
+    await expect(
+      middleware._getPageAsync({
+        appName: 'App',
+        runtimeVersion: '123',
+        sdkVersion: '45.0.0',
+      })
+    ).resolves.toEqual('AppName: "App", Runtime version "123", Path: /, Scheme: "testscheme"');
   });
 });
 
@@ -103,6 +147,7 @@ describe('handleRequestAsync', () => {
     middleware._getProjectOptions = jest.fn(() => ({
       runtimeVersion: '123',
       appName: 'App',
+      sdkVersion: '45.0.0',
     }));
 
     middleware._getPageAsync = jest.fn(async () => 'mock-value');
@@ -135,6 +180,7 @@ describe('handleRequestAsync', () => {
     middleware._getProjectOptions = jest.fn(() => ({
       runtimeVersion: '123',
       appName: 'App',
+      sdkVersion: '45.0.0',
     }));
 
     middleware._getPageAsync = jest.fn(async () => 'mock-value');

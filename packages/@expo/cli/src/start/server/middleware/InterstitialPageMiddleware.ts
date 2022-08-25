@@ -1,5 +1,5 @@
-import { ExpoConfig, getConfig, getNameFromConfig } from '@expo/config';
-import { getRuntimeVersionNullable } from '@expo/config-plugins/build/utils/Updates';
+import { getConfig, getNameFromConfig } from '@expo/config';
+import { getRuntimeVersionNullable, getSDKVersion } from '@expo/config-plugins/build/utils/Updates';
 import { readFile } from 'fs/promises';
 import path from 'path';
 import resolveFrom from 'resolve-from';
@@ -20,26 +20,23 @@ const debug = require('debug')(
 
 export const LoadingEndpoint = '/_expo/loading';
 
-function getRuntimeVersion(exp: ExpoConfig, platform: 'android' | 'ios' | null): string {
-  if (!platform) {
-    return 'Undetected';
-  }
-
-  return getRuntimeVersionNullable(exp, platform) ?? 'Undetected';
-}
-
 export class InterstitialPageMiddleware extends ExpoMiddleware {
-  constructor(projectRoot: string) {
+  private scheme: string | null;
+
+  constructor(projectRoot: string, scheme?: string | null) {
     super(projectRoot, [LoadingEndpoint]);
+    this.scheme = scheme ?? null;
   }
 
   /** Get the template HTML page and inject values. */
   async _getPageAsync({
     appName,
     runtimeVersion,
+    sdkVersion,
   }: {
     appName: string;
     runtimeVersion: string | null;
+    sdkVersion: string | null;
   }): Promise<string> {
     const templatePath =
       // Production: This will resolve when installed in the project.
@@ -49,8 +46,16 @@ export class InterstitialPageMiddleware extends ExpoMiddleware {
     let content = (await readFile(templatePath)).toString('utf-8');
 
     content = content.replace(/{{\s*AppName\s*}}/, appName);
-    content = content.replace(/{{\s*RuntimeVersion\s*}}/, runtimeVersion ?? '');
     content = content.replace(/{{\s*Path\s*}}/, this.projectRoot);
+    content = content.replace(/{{\s*Scheme\s*}}/, this.scheme ?? 'Unknown');
+
+    if (!runtimeVersion && sdkVersion) {
+      content = content.replace(/{{\s*ProjectVersionType\s*}}/, 'SDK version');
+      content = content.replace(/{{\s*ProjectVersion\s*}}/, sdkVersion);
+    } else {
+      content = content.replace(/{{\s*ProjectVersionType\s*}}/, 'Runtime version');
+      content = content.replace(/{{\s*ProjectVersion\s*}}/, runtimeVersion ?? 'Undetected');
+    }
 
     return content;
   }
@@ -59,16 +64,19 @@ export class InterstitialPageMiddleware extends ExpoMiddleware {
   _getProjectOptions(platform: RuntimePlatform): {
     appName: string;
     runtimeVersion: string | null;
+    sdkVersion: string | null;
   } {
     assertRuntimePlatform(platform);
 
     const { exp } = getConfig(this.projectRoot);
     const { appName } = getNameFromConfig(exp);
-    const runtimeVersion = getRuntimeVersion(exp, platform);
+    const runtimeVersion = getRuntimeVersionNullable(exp, platform);
+    const sdkVersion = getSDKVersion(exp);
 
     return {
       appName: appName ?? 'App',
       runtimeVersion,
+      sdkVersion,
     };
   }
 
@@ -80,11 +88,11 @@ export class InterstitialPageMiddleware extends ExpoMiddleware {
     assertMissingRuntimePlatform(platform);
     assertRuntimePlatform(platform);
 
-    const { appName, runtimeVersion } = this._getProjectOptions(platform);
+    const { appName, runtimeVersion, sdkVersion } = this._getProjectOptions(platform);
     debug(
       `Create loading page. (platform: ${platform}, appName: ${appName}, runtimeVersion: ${runtimeVersion})`
     );
-    const content = await this._getPageAsync({ appName, runtimeVersion });
+    const content = await this._getPageAsync({ appName, runtimeVersion, sdkVersion });
     res.end(content);
   }
 }
