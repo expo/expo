@@ -488,6 +488,7 @@ function sortLegacyReactNative(version) {
     'DrawerLayoutAndroid',
     'FlatList',
     'Image',
+    'ImageBackground',
     'InputAccessoryView',
     'KeyboardAvoidingView',
     'ListView',
@@ -496,6 +497,7 @@ function sortLegacyReactNative(version) {
     'NavigatorIOS',
     'Picker',
     'PickerIOS',
+    'Pressable',
     'ProgressBarAndroid',
     'ProgressViewIOS',
     'RefreshControl',
@@ -529,6 +531,9 @@ function sortLegacyReactNative(version) {
     'Alert',
     'AlertIOS',
     'Animated',
+    'Animated.Value',
+    'Animated.ValueXY',
+    'Appearance',
     'AppState',
     'AsyncStorage',
     'BackAndroid',
@@ -536,6 +541,7 @@ function sortLegacyReactNative(version) {
     'Clipboard',
     'DatePickerAndroid',
     'Dimensions',
+    'DynamicColorIOS',
     'Easing',
     'ImageStore',
     'InteractionManager',
@@ -545,6 +551,8 @@ function sortLegacyReactNative(version) {
     'NetInfo',
     'PanResponder',
     'PixelRatio',
+    'Platform',
+    'PlatformColor',
     'Settings',
     'Share',
     'StatusBarIOS',
@@ -557,6 +565,8 @@ function sortLegacyReactNative(version) {
     'VibrationIOS',
   ];
 
+  const hooks = ['useColorScheme', 'useWindowDimensions'];
+
   const props = [
     'Image Style Props',
     'Layout Props',
@@ -565,18 +575,34 @@ function sortLegacyReactNative(version) {
     'View Style Props',
   ];
 
+  const types = [
+    'LayoutEvent Object Type',
+    'PressEvent Object Type',
+    'React Node Object Type',
+    'Rect Object Type',
+    'ViewToken Object Type',
+  ];
+
   return [
     makeGroup(
       'Components',
       pages.filter(page => components.includes(page.name))
     ),
     makeGroup(
+      'Props',
+      pages.filter(page => props.includes(page.name))
+    ),
+    makeGroup(
       'APIs',
       pages.filter(page => apis.includes(page.name))
     ),
     makeGroup(
-      'Props',
-      pages.filter(page => props.includes(page.name))
+      'Hooks',
+      pages.filter(page => hooks.includes(page.name))
+    ),
+    makeGroup(
+      'Types',
+      pages.filter(page => types.includes(page.name))
     ),
   ];
 }
