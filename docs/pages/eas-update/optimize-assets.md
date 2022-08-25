@@ -23,9 +23,11 @@ Users will have to download any new images or other assets when they detect a ne
 
 <Terminal cmd={["$ expo export --experimental-bundle"]} />
 
-To optimize all the images in an app at once, we can use the [expo-optimize library](https://www.npmjs.com/package/expo-optimize). `expo-optimize` uses `sharp-cli` to optimize all image assets.
+You can compress images using tools such as [guetzli](https://github.com/google/guetzli), [pngcrush](https://pmt.sourceforge.io/pngcrush/), or [optipng](http://optipng.sourceforge.net/). [imagemin](https://github.com/imagemin/imagemin) is another program and JS library that supports plugins for various optimizers. There are also many online services that can optimize your images for you.
 
-<Terminal cmd={["$ npx expo-optimize"]} />
+Some image optimizers are lossless. This means they re-encode your image to be smaller without any change, or loss, in the pixels that are displayed. When you need each pixel to be untouched from the original image, a lossless optimizer and a lossless image format like PNG is a good choice.
+
+Other image optimizers are lossy, which means the optimized image is different than the original image. Often, lossy optimizers are more efficient because they discard visual information that reduces file size while making the image look nearly the same to humans. Tools like `imagemagick` can use comparison algorithms like [SSIM](https://en.wikipedia.org/wiki/Structural_similarity) to give a sense of how similar two images look. It's quite common for an optimized image that is over 95% similar to the original image to be far less than 95% of the original file size!
 
 ## **Other assets**
 
