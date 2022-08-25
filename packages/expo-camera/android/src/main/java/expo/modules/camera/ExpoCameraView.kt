@@ -39,15 +39,15 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentLinkedQueue
 
 class ExpoCameraView(
-  themedReactContext: Context,
+  context: Context,
   appContext: AppContext,
-) : ExpoView(themedReactContext, appContext),
+) : ExpoView(context, appContext),
   LifecycleEventListener,
   BarCodeScannerAsyncTaskDelegate,
   FaceDetectorAsyncTaskDelegate,
   PictureSavedDelegate,
   CameraViewInterface {
-  internal val cameraView = CameraView(themedReactContext, true)
+  internal val cameraView = CameraView(context, true)
 
   private val pictureTakenPromises: Queue<Promise> = ConcurrentLinkedQueue()
   private val pictureTakenOptions: MutableMap<Promise, PictureOptions> = ConcurrentHashMap()
@@ -324,19 +324,17 @@ class ExpoCameraView(
 
       override fun onFramePreview(cameraView: CameraView, data: ByteArray, width: Int, height: Int, rotation: Int) {
         val correctRotation = getCorrectCameraRotation(rotation, cameraView.facing)
-        if (mShouldScanBarCodes && !barCodeScannerTaskLock && cameraView is BarCodeScannerAsyncTaskDelegate) {
+        if (mShouldScanBarCodes && !barCodeScannerTaskLock) {
           barCodeScannerTaskLock = true
-          val delegate = cameraView as BarCodeScannerAsyncTaskDelegate
-          barCodeScanner?.let { BarCodeScannerAsyncTask(delegate, it, data, width, height, rotation).execute() }
+          barCodeScanner?.let { BarCodeScannerAsyncTask(this@ExpoCameraView, it, data, width, height, rotation).execute() }
         }
-        if (shouldDetectFaces && !faceDetectorTaskLock && cameraView is FaceDetectorAsyncTaskDelegate) {
+        if (shouldDetectFaces && !faceDetectorTaskLock) {
           faceDetectorTaskLock = true
           val density = cameraView.resources.displayMetrics.density
           val dimensions = ImageDimensions(width, height, correctRotation, cameraView.facing)
           val scaleX = cameraView.width.toDouble() / (dimensions.width * density)
           val scaleY = cameraView.height.toDouble() / (dimensions.height * density)
-          val delegate = cameraView as FaceDetectorAsyncTaskDelegate
-          val task = faceDetector?.let { FaceDetectorTask(delegate, it, data, width, height, correctRotation, cameraView.facing == CameraView.FACING_FRONT, scaleX, scaleY) }
+          val task = faceDetector?.let { FaceDetectorTask(this@ExpoCameraView, it, data, width, height, correctRotation, cameraView.facing == CameraView.FACING_FRONT, scaleX, scaleY) }
           task?.execute()
         }
       }
