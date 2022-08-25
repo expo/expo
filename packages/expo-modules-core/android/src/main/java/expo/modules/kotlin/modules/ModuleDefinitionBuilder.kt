@@ -60,7 +60,7 @@ class ModuleDefinitionBuilder(@PublishedApi internal val module: Module? = null)
   /**
    * Creates the view manager definition that scopes other view-related definitions.
    */
-  inline fun <T: View> View(viewType: KClass<T>, body: ViewDefinitionBuilder<T>.() -> Unit) {
+  inline fun <T : View> View(viewType: KClass<T>, body: ViewDefinitionBuilder<T>.() -> Unit) {
     require(viewManagerDefinition == null) { "The module definition may have exported only one view manager." }
 
     val viewDefinitionBuilder = ViewDefinitionBuilder(viewType)
