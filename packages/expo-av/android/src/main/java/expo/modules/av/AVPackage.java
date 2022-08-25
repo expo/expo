@@ -12,7 +12,6 @@ import expo.modules.core.ViewManager;
 import expo.modules.core.interfaces.InternalModule;
 import expo.modules.av.player.datasource.SharedCookiesDataSourceFactoryProvider;
 import expo.modules.av.video.VideoManager;
-import expo.modules.av.video.VideoViewManager;
 
 public class AVPackage extends BasePackage {
 
@@ -34,6 +33,6 @@ public class AVPackage extends BasePackage {
 
   @Override
   public List<ViewManager> createViewManagers(Context context) {
-    return Collections.singletonList((ViewManager) new VideoViewManager());
+    return Collections.emptyList();
   }
 }

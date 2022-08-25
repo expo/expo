@@ -20,8 +20,10 @@ public interface UIManager {
     void execute(ViewHolder viewHolder);
   }
 
+  @Deprecated
   <T> void addUIBlock(int viewTag, UIBlock<T> block, Class<T> tClass);
 
+  @Deprecated
   void addUIBlock(GroupUIBlock block);
 
   void runOnUiQueueThread(Runnable runnable);
