@@ -9,7 +9,7 @@ import androidx.annotation.UiThread
 import androidx.appcompat.app.AppCompatActivity
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.turbomodule.core.CallInvokerHolderImpl
-import com.facebook.react.uimanager.UIManagerModule
+import com.facebook.react.uimanager.UIManagerHelper
 import expo.modules.core.errors.ContextDestroyedException
 import expo.modules.core.interfaces.ActivityProvider
 import expo.modules.interfaces.barcodescanner.BarCodeScannerInterface
@@ -264,8 +264,8 @@ class AppContext(
   @Suppress("UNCHECKED_CAST")
   @UiThread
   fun <T : View> findView(viewTag: Int): T? {
-    val rnUIManager = reactContextHolder.get()?.getNativeModule(UIManagerModule::class.java)
-    return rnUIManager?.resolveView(viewTag) as? T
+    val reactContext = reactContextHolder.get() ?: return null
+    return UIManagerHelper.getUIManagerForReactTag(reactContext, viewTag)?.resolveView(viewTag) as? T
   }
 
 // region CurrentActivityProvider
