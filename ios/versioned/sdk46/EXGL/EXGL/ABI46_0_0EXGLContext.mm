@@ -71,7 +71,7 @@
 
 - (void)initialize
 {
-  self->_contextId = EXGLContextCreate();
+  self->_contextId = ABI46_0_0EXGLContextCreate();
   [self->_objectManager saveContext:self];
 
   // listen for foreground/background transitions
@@ -122,8 +122,8 @@
         return;
       }
 
-      EXGLContextSetDefaultFramebuffer(self->_contextId, [self defaultFramebuffer]);
-      EXGLContextPrepare(jsRuntimePtr, self->_contextId, ^{
+      ABI46_0_0EXGLContextSetDefaultFramebuffer(self->_contextId, [self defaultFramebuffer]);
+      ABI46_0_0EXGLContextPrepare(jsRuntimePtr, self->_contextId, ^{
         [self flush];
       });
 
@@ -146,7 +146,7 @@
       return;
   }
   [self runAsync:^{
-    EXGLContextFlush(self->_contextId);
+    ABI46_0_0EXGLContextFlush(self->_contextId);
 
     if ([self.delegate respondsToSelector:@selector(glContextFlushed:)]) {
       [self.delegate glContextFlushed:self];
@@ -165,10 +165,10 @@
     }
 
     // Flush all the stuff
-    EXGLContextFlush(self->_contextId);
+    ABI46_0_0EXGLContextFlush(self->_contextId);
 
     // Destroy JS binding
-    EXGLContextDestroy(self->_contextId);
+    ABI46_0_0EXGLContextDestroy(self->_contextId);
 
     // Remove from dictionary of contexts
     [self->_objectManager deleteContextWithId:@(self->_contextId)];
@@ -209,7 +209,7 @@
 
     if (options[@"framebuffer"] && options[@"framebuffer"][@"id"]) {
       int exglFramebufferId = [options[@"framebuffer"][@"id"] intValue];
-      sourceFramebuffer = EXGLContextGetObject(self.contextId, exglFramebufferId);
+      sourceFramebuffer = ABI46_0_0EXGLContextGetObject(self.contextId, exglFramebufferId);
     } else {
       // headless context doesn't have default framebuffer, so we use the current one
       sourceFramebuffer = [self defaultFramebuffer] || prevFramebuffer;

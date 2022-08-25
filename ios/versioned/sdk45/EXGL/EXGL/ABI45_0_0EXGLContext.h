@@ -1,7 +1,7 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
 #import <OpenGLES/EAGL.h>
-#import <EXGL_CPP/EXGL.h>
+#import <ABI45_0_0EXGL_CPP/ABI45_0_0EXGL.h>
 #import <ABI45_0_0ExpoModulesCore/ABI45_0_0EXModuleRegistry.h>
 
 @class ABI45_0_0EXGLContext;
@@ -11,7 +11,7 @@
 - (void)glContextFlushed:(nonnull ABI45_0_0EXGLContext *)context;
 - (void)glContextInitialized:(nonnull ABI45_0_0EXGLContext *)context;
 - (void)glContextWillDestroy:(nonnull ABI45_0_0EXGLContext *)context;
-- (EXGLObjectId)glContextGetDefaultFramebuffer;
+- (ABI45_0_0EXGLObjectId)glContextGetDefaultFramebuffer;
 
 @end
 
@@ -28,7 +28,7 @@
 - (void)destroy;
 
 // "protected"
-@property (nonatomic, assign) EXGLContextId contextId;
+@property (nonatomic, assign) ABI45_0_0EXGLContextId contextId;
 @property (nonatomic, strong, nonnull) EAGLContext *eaglCtx;
 @property (nonatomic, weak, nullable) id <ABI45_0_0EXGLContextDelegate> delegate;
 
