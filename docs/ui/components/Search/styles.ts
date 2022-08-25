@@ -149,7 +149,7 @@ export const DocSearchStyles = css`
   }
 
   .DocSearch--active #__next {
-    filter: blur(6px);
+    filter: blur(3px);
   }
 
   /* Container & Modal */
@@ -186,7 +186,7 @@ export const DocSearchStyles = css`
 
   .DocSearch-Modal {
     background: var(--docsearch-modal-background);
-    border-radius: 6px;
+    border-radius: ${borderRadius.large}px;
     box-shadow: var(--docsearch-modal-shadow);
     flex-direction: column;
     margin: 72px auto auto;
