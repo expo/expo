@@ -1,14 +1,12 @@
 package expo.modules.camera
 
 import android.view.View
-import android.view.ViewGroup
 import com.google.android.cameraview.AspectRatio
 import com.google.android.cameraview.Size
 import expo.modules.core.interfaces.services.UIManager
 import expo.modules.interfaces.barcodescanner.BarCodeScannerSettings
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
-import java.lang.ref.WeakReference
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 
