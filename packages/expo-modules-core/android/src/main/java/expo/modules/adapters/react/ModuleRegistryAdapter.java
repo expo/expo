@@ -1,5 +1,7 @@
 package expo.modules.adapters.react;
 
+import androidx.annotation.Nullable;
+
 import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -56,7 +58,7 @@ public class ModuleRegistryAdapter implements ReactPackage {
 
     List<NativeModule> nativeModules = getNativeModulesFromModuleRegistry(reactContext, moduleRegistry);
     if (mWrapperDelegateHolders != null) {
-      KotlinInteropModuleRegistry kotlinInteropModuleRegistry = getOrCreateNativeModulesProxy(reactContext).getKotlinInteropModuleRegistry();
+      KotlinInteropModuleRegistry kotlinInteropModuleRegistry = getOrCreateNativeModulesProxy(reactContext, null).getKotlinInteropModuleRegistry();
       kotlinInteropModuleRegistry.updateModuleHoldersInViewManagers(mWrapperDelegateHolders);
     }
 
@@ -66,7 +68,7 @@ public class ModuleRegistryAdapter implements ReactPackage {
   protected List<NativeModule> getNativeModulesFromModuleRegistry(ReactApplicationContext reactContext, ModuleRegistry moduleRegistry) {
     List<NativeModule> nativeModulesList = new ArrayList<>(2);
 
-    nativeModulesList.add(getOrCreateNativeModulesProxy(reactContext));
+    nativeModulesList.add(getOrCreateNativeModulesProxy(reactContext, moduleRegistry));
 
     // Add listener that will notify expo.modules.core.ModuleRegistry when all modules are ready
     nativeModulesList.add(new ModuleRegistryReadyNotifier(moduleRegistry));
@@ -95,7 +97,7 @@ public class ModuleRegistryAdapter implements ReactPackage {
       }
     }
 
-    NativeModulesProxy modulesProxy = Objects.requireNonNull(getOrCreateNativeModulesProxy(reactContext));
+    NativeModulesProxy modulesProxy = Objects.requireNonNull(getOrCreateNativeModulesProxy(reactContext, null));
     KotlinInteropModuleRegistry kotlinInteropModuleRegistry = modulesProxy.getKotlinInteropModuleRegistry();
     List<ViewManager<?, ?>> kViewManager = kotlinInteropModuleRegistry.exportViewManagers();
     // Saves all holders that needs to be in sync with module registry
@@ -109,13 +111,14 @@ public class ModuleRegistryAdapter implements ReactPackage {
     return viewManagerList;
   }
 
-  private NativeModulesProxy getOrCreateNativeModulesProxy(ReactApplicationContext reactContext) {
+  private NativeModulesProxy getOrCreateNativeModulesProxy(ReactApplicationContext reactContext,
+                                                           @Nullable ModuleRegistry moduleRegistry) {
     if (mModulesProxy == null) {
-      ModuleRegistry moduleRegistry = mModuleRegistryProvider.get(reactContext);
+      ModuleRegistry registry = moduleRegistry != null ? moduleRegistry : mModuleRegistryProvider.get(reactContext);
       if (mModulesProvider != null) {
-        mModulesProxy = new NativeModulesProxy(reactContext, moduleRegistry, mModulesProvider);
+        mModulesProxy = new NativeModulesProxy(reactContext, registry, mModulesProvider);
       } else {
-        mModulesProxy = new NativeModulesProxy(reactContext, moduleRegistry);
+        mModulesProxy = new NativeModulesProxy(reactContext, registry);
       }
     }
     return mModulesProxy;

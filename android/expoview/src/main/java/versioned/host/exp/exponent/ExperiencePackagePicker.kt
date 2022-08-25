@@ -2,6 +2,7 @@ package versioned.host.exp.exponent
 
 import expo.modules.application.ApplicationPackage
 import expo.modules.av.AVPackage
+import expo.modules.av.video.VideoViewModule
 import expo.modules.backgroundfetch.BackgroundFetchPackage
 import expo.modules.barcodescanner.BarCodeScannerPackage
 import expo.modules.battery.BatteryPackage
@@ -138,6 +139,7 @@ object ExperiencePackagePicker : ModulesProvider {
     LinearGradientModule::class.java,
     LocalizationModule::class.java,
     RandomModule::class.java,
+    VideoViewModule::class.java,
     WebBrowserModule::class.java,
   )
 }
