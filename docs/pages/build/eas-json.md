@@ -92,14 +92,17 @@ Similar to [development builds](#development-builds), you can configure your pre
 
 These builds are submitted to an app store, for release to the general public or as part of a store-facilitated testing process such as TestFlight.
 
-Production builds must be installed through their respective app stores; they cannot be installed directly to your iOS device/simulator or Android device/emulator. The only exception to this if you explicitly set `"buildType": "apk"` for Android on your build profile; however, it is recommended to use AAB when submitting to stores, and this is the default configuration.
+Production builds must be installed through their respective app stores; they cannot be installed directly to your iOS device/simulator or Android device/emulator. The only exception to this is if you explicitly set `"buildType": "apk"` for Android on your build profile; however, it is recommended to use AAB when submitting to stores, and this is the default configuration.
 
 A minimal `production` profile looks like this:
 
 ```json
 {
   "build": {
-    "production": {}
+    "production": {
+      "distribution": "store"
+      // ...
+    }
     // ...
   }
   // ...
