@@ -45,7 +45,7 @@ import { registerRootComponent } from 'expo';
 
 ### `registerRootComponent(component)`
 
-Sets the initial React component to render natively in your app's root React native view (`RCTView`).
+Sets the initial React component to render natively in your app's root React Native view (`RCTView`).
 
 This function does the following:
 
