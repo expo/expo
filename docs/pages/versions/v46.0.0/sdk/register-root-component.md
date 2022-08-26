@@ -7,27 +7,59 @@ packageName: 'expo'
 import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
-This function tells Expo what component to use as the root component for your app.
+Sets the initial React component to render natively in the app's root React Native view on iOS, Android, and the web. It also adds dev-only debugging tools for use with `npx expo start`.
 
 <PlatformsSection android emulator ios simulator web />
 
 ## Installation
 
-This API is pre-installed in [managed](../../../introduction/managed-vs-bare.md#managed-workflow) apps. It is not available for [bare](../../../introduction/managed-vs-bare.md#bare-workflow) React Native apps.
-
 <APIInstallSection hideBareInstructions />
+
+### Manual Android setup
+
+> This is only required if your app does **not** use [Expo Prebuild](/workflow/prebuild) to continuously generate the `android` directory.
+
+Update the Android `MainActivity.java` file to use the name `"main"` in the `getMainComponentName` function.
+
+`android/app/src/main/<package>/MainActivity.java`
+
+```diff
+  @Override
+  protected String getMainComponentName() {
++    return "main";
+  }
+```
+
+### Manual iOS setup
+
+> This is only required if your app does **not** use [Expo Prebuild](/workflow/prebuild) to continuously generate the `ios` directory.
+
+Update the iOS `ios/<name>/AppDelegate.(m|mm|swift)` file to use the **moduleName** `"main"` in the `createRootViewWithBridge:bridge moduleName:@"main" initialProperties:initProps` line of the `application:didFinishLaunchingWithOptions:` function.
 
 ## API
 
-```js
+```ts
 import { registerRootComponent } from 'expo';
 ```
 
 ### `registerRootComponent(component)`
 
-Sets the main component for Expo to use for your app.
+Sets the initial React component to render natively in your app's root React Native view (`RCTView`).
 
-> **Note:** Prior to SDK 18, it was necessary to use `registerRootComponent` directly, but for projects created as of SDK 18 or later, this is handled automatically in the Expo SDK.
+This function does the following:
+
+- Invokes React Native's [AppRegistry.registerComponent](https://reactnative.dev/docs/appregistry.html)
+- Invokes React Native web's `AppRegistry.runApplication` on web to render to the root `index.html` file.
+- Polyfills the [`process.nextTick`](https://nodejs.org/en/docs/guides/event-loop-timers-and-nexttick/#process-nexttick) function globally.
+- Adds support for using the `fontFamily` React Native style with the `expo-font` package.
+
+This function also adds the following dev-only features that are **removed** in production bundles.
+
+- Adds the Fast Refresh and bundle splitting indicator to the app.
+- Asserts if the `expo-updates` package is misconfigured.
+- Asserts if `react-native` is not aliased to `react-native-web` when running in the browser.
+<!-- TODO: Remove this after https://github.com/expo/expo/pull/18596 -->
+- Polyfills `console.log` to send logs to the dev server via `/logs`
 
 #### Arguments
 
@@ -37,30 +69,22 @@ Sets the main component for Expo to use for your app.
 
 No return value.
 
-> **Note:** `registerRootComponent` is roughly equivalent to React Native's [AppRegistry.registerComponent](https://reactnative.dev/docs/appregistry.html), with some additional hooks to provide Expo specific functionality.
-
 ## Common questions
-
-### I created my project before SDK 18 and I want to remove `registerRootComponent`, how do I do this?
-
-- Before continuing, make sure your project is running on SDK 18 or later.
-- Open up **main.js** (or if you changed it, whatever your `"main"` is in **package.json**).
-- Set `"main"` to `"node_modules/expo/AppEntry.js"`.
-- Delete the `registerRootComponent` call from **main.js** and put `export default` before your root component's class declaration.
-- Rename **main.js** to **App.js**.
 
 ### What if I want to name my main app file something other than App.js?
 
+<!-- NOTE: This is only accurate if we land https://github.com/expo/expo/pull/18381 -->
+
 You can set the `"main"` in **package.json** to any file within your
 project. If you do this, then you need to use `registerRootComponent`;
-`export default` will not make this component the root for the Expo app
+`export default` will not make this component the root for the app
 if you are using a custom entry file.
 
 For example, let's say you want to make `"src/main.js"` the entry file
 for your app -- maybe you don't like having JavaScript files in the
-project root, for example. First, set this in **package.json**:
+project root. First, set this in **package.json**:
 
-```javascript
+```json
 {
   "main": "src/main.js"
 }
@@ -69,15 +93,12 @@ project root, for example. First, set this in **package.json**:
 Then in `"src/main.js"`, make sure you call `registerRootComponent` and
 pass in the component you want to render at the root of the app.
 
-```javascript
+```tsx
 import { registerRootComponent } from 'expo';
-import React from 'react';
 import { View } from 'react-native';
 
-class App extends React.Component {
-  render() {
-    return <View />;
-  }
+function App() {
+  return <View />;
 }
 
 registerRootComponent(App);
