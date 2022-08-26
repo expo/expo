@@ -52,6 +52,10 @@ export async function createExampleApp(
     // Cleanup the "example" dir
     await fs.rmdir(appTargetPath);
 
+    // Clean up the ".git" from example app
+    // note, this directory has contents, rmdir will throw
+    await fs.remove(path.join(appTmpPath, '.git'));
+
     // Move the temporary example app to "example" dir
     await fs.rename(appTmpPath, appTargetPath);
 
