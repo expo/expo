@@ -4,6 +4,10 @@
 
 ### 🛠 Breaking changes
 
+### ⚠️ Notices
+
+- Removed deprecated module definition components that started with a lowercase letter.
+
 ### 🎉 New features
 
 - Added the interface for the light sensor support on Android. ([#18225](https://github.com/expo/expo/pull/18225) by [bearkillerPT](https://github.com/bearkillerPT))
