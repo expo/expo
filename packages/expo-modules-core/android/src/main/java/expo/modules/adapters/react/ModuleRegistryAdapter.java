@@ -113,8 +113,10 @@ public class ModuleRegistryAdapter implements ReactPackage {
     return viewManagerList;
   }
 
-  private synchronized NativeModulesProxy getOrCreateNativeModulesProxy(ReactApplicationContext reactContext,
-                                                           @Nullable ModuleRegistry moduleRegistry) {
+  private synchronized NativeModulesProxy getOrCreateNativeModulesProxy(
+    ReactApplicationContext reactContext,
+    @Nullable ModuleRegistry moduleRegistry
+  ) {
     if (mModulesProxy == null) {
       ModuleRegistry registry = moduleRegistry != null ? moduleRegistry : mModuleRegistryProvider.get(reactContext);
       if (mModulesProvider != null) {
