@@ -24,7 +24,7 @@ class ViewManagerWrapperDelegate(internal var moduleHolder: ModuleHolder) {
 
   fun createView(context: Context): View {
     return definition
-      .createView(context)
+      .createView(context, moduleHolder.module.appContext)
       .also {
         configureView(it)
       }
@@ -56,8 +56,7 @@ class ViewManagerWrapperDelegate(internal var moduleHolder: ModuleHolder) {
     val kClass = view.javaClass.kotlin
     val propertiesMap = kClass
       .declaredMemberProperties
-      .map { it.name to it }
-      .toMap()
+      .associateBy { it.name }
 
     callbacks.forEach {
       val property = propertiesMap[it].ifNull {
