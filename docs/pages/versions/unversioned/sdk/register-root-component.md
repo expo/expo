@@ -7,8 +7,7 @@ packageName: 'expo'
 import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
-Sets the initial React component to render natively in the app's root React Native view on iOS, Android, and web.
-Also adds dev-only debugging tools for use with `npx expo start`.
+Sets the initial React component to render natively in the app's root React Native view on iOS, Android, and the web. It also adds dev-only debugging tools for use with `npx expo start`.
 
 <PlatformsSection android emulator ios simulator web />
 
@@ -83,7 +82,7 @@ if you are using a custom entry file.
 
 For example, let's say you want to make `"src/main.js"` the entry file
 for your app -- maybe you don't like having JavaScript files in the
-project root, for example. First, set this in **package.json**:
+project root. First, set this in **package.json**:
 
 ```json
 {
