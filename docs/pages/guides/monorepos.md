@@ -153,7 +153,7 @@ Expo modules and React Native libraries usually don't add `react` as a peer depe
 1. **node_modules** - The root folder, contains `expo@...` and `react@17.x.x`.
 2. **apps/mobile/node_modules** - The Expo app's folder, contains `react@18.x.x`. 
 
-With hierarchical lookup enabled, whenever `expo` imports `react`, Metro will resolve to`react@17.x.x` and not `react@18.x.x`. This causes "multiple React versions" errors in your app.
+With hierarchical lookup enabled, whenever `expo` imports `react`, Metro will resolve to `react@17.x.x` and not `react@18.x.x`. This causes "multiple React versions" errors in your app.
 
 By disabling hierarchical lookup, we can force Metro to resolve only folders from the `nodeModulesPaths = [...]` order we defined in #2.
 This option is documented in [the Metro Resolution Algorithm documentation](https://facebook.github.io/metro/docs/resolution/#algorithm), under step 5.
