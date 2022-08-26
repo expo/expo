@@ -39,7 +39,7 @@ public func prop<ViewType: UIView, PropType: AnyArgument>(
  */
 public func Prop<ViewType: UIView, PropType: AnyArgument>(
   _ name: String,
-  _ setter: @escaping (ViewType, PropType) -> Void
+  @_implicitSelfCapture _ setter: @escaping (ViewType, PropType) -> Void
 ) -> ConcreteViewProp<ViewType, PropType> {
   return ConcreteViewProp(
     name: name,

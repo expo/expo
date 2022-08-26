@@ -14,7 +14,7 @@ public func constants(_ body: @escaping () -> [String: Any?]) -> AnyDefinition {
 /**
  Definition function setting the module's constants to export.
  */
-public func Constants(_ body: @escaping () -> [String: Any?]) -> AnyDefinition {
+public func Constants(@_implicitSelfCapture _ body: @escaping () -> [String: Any?]) -> AnyDefinition {
   return ConstantsDefinition(body: body)
 }
 
@@ -29,7 +29,7 @@ public func constants(_ body: @autoclosure @escaping () -> [String: Any?]) -> An
 /**
  Definition function setting the module's constants to export.
  */
-public func Constants(_ body: @autoclosure @escaping () -> [String: Any?]) -> AnyDefinition {
+public func Constants(@_implicitSelfCapture _ body: @autoclosure @escaping () -> [String: Any?]) -> AnyDefinition {
   return ConstantsDefinition(body: body)
 }
 
@@ -246,7 +246,7 @@ public func onStartObserving(_ body: @escaping () -> Void) -> AsyncFunctionCompo
 /**
  Function that is invoked when the first event listener is added.
  */
-public func OnStartObserving(_ body: @escaping () -> Void) -> AsyncFunctionComponent<(), Void, Void> {
+public func OnStartObserving(@_implicitSelfCapture _ body: @escaping () -> Void) -> AsyncFunctionComponent<(), Void, Void> {
   return AsyncFunctionComponent("startObserving", firstArgType: Void.self, dynamicArgumentTypes: [], body)
 }
 
@@ -261,6 +261,6 @@ public func onStopObserving(_ body: @escaping () -> Void) -> AsyncFunctionCompon
 /**
  Function that is invoked when all event listeners are removed.
  */
-public func OnStopObserving(_ body: @escaping () -> Void) -> AsyncFunctionComponent<(), Void, Void> {
+public func OnStopObserving(@_implicitSelfCapture _ body: @escaping () -> Void) -> AsyncFunctionComponent<(), Void, Void> {
   return AsyncFunctionComponent("stopObserving", firstArgType: Void.self, dynamicArgumentTypes: [], body)
 }
