@@ -523,6 +523,7 @@ Use the following dependencies in a library that provides a config plugin:
 
 - You may update the exact versions of `@expo/config-types` and `expo` to build against a specific version.
 - For simple config plugins that depend on core, stable APIs, such as a plugin that only modifies **Info.plist** or **AndroidManifest.xml**, you can use a loose dependency such as in the example above.
+- You may also want to install [`expo-module-scripts`](https://github.com/expo/expo/blob/main/packages/expo-module-scripts/README.md) as a development dependency, but it's not required.
 
 ### Importing the config plugins package
 
@@ -536,15 +537,13 @@ const { .. } = require('@expo/config-plugins');
 
 #### SDK 47 and higher
 
-For SDK 47 and higher, it's best practice to import the `@expo/config-plugins` package through the `expo` package.
+The `@expo/config-plugins` package is re-exported from the `expo` package starting in SDK 47. For SDK 47 and higher, it's best practice to import the `@expo/config-plugins` package through the `expo` package.
 
 ```js
 const { .. } = require('expo/config-plugins');
 ```
 
-This will ensure that you are using the version of the `@expo/config-plugins` package that is depended on by the `expo` package. If you do not do this, you may accidentally import an incorrect
-
-Plugins will generally have `@expo/config-plugins` installed as a dependency, and `expo-module-scripts`, `@expo/config-types` installed as a devDependencies.
+This will ensure that you are using the version of the `@expo/config-plugins` package that is depended on by the `expo` package. If you do not import the package through the `expo` re-export in this way, you may accidentally be importing an incompatible version (depending on the implementation details of module hoisting in the package manager used by the developer consuming the module) or be unable to import the module at all (if using "plug and play" features of a package manager like Yarn Berry or pnpm).
 
 ### Best practices for mods
 
