@@ -103,7 +103,7 @@ module.exports = config;
 
 This option enables the app to refresh or reload when you edit imported files outside the app folder. It's important for libraries within your monorepo that are imported into your app. Without this setting, you must manually reload your app and possibly clear the Metro cache to see the changed library files.
 
-As your monorepo increases in size, watching all files within the monorepo becomes slower. If you want to speed that up, you can (dynamically) watch the relevant paths to minimize the watchers. E.g.
+As your monorepo increases in size, watching all files within the monorepo becomes slower. If you want to speed that up, you can (dynamically) watch the relevant paths to minimize the watchers. For example:
 
 ```js
 const path = require('path');
@@ -148,14 +148,14 @@ With monorepo tooling like Yarn, React is installed in two different **node_modu
 1. **node_modules** - The root folder, contains `react@17.x.x`.
 2. **apps/mobile/node_modules** - The Expo app's folder, contains `react@18.x.x`. 
 
-React Native libraries, including Expo modules, usually don't add `react@18.x.x` as peer dependency. As a result, monorepo tooling, like Yarn, will install these dependencies to the root **node_modules** directory, for example:
+Expo modules and React Native libraries usually don't add `react` as a peer dependency. As a result, monorepo tooling, like Yarn, will install these dependencies to the root **node_modules** directory, for example:
 
 1. **node_modules** - The root folder, contains `expo@...` and `react@17.x.x`.
 2. **apps/mobile/node_modules** - The Expo app's folder, contains `react@18.x.x`. 
 
-With hierarchical lookup enabled, whenever `expo` imports `react` it will resolve `react@17.x.x` and not `react@18.x.x`. This causes "multiple React versions" errors in your app.
+With hierarchical lookup enabled, whenever `expo` imports `react`, Metro will resolve to`react@17.x.x` and not `react@18.x.x`. This causes "multiple React versions" errors in your app.
 
-By disabling hierarchical lookup, we can force Metro to only resolve folders from the `nodeModulesPaths = [...]` order we defined in #2.
+By disabling hierarchical lookup, we can force Metro to resolve only folders from the `nodeModulesPaths = [...]` order we defined in #2.
 This option is documented in [the Metro Resolution Algorithm documentation](https://facebook.github.io/metro/docs/resolution/#algorithm), under step 5.
 
 When we disable this hierarchical lookup, it should not matter where the React Native library is installed.
@@ -260,9 +260,9 @@ export default function App() {
 
 As mentioned earlier, using monorepos is not for everyone. You take on increased complexity and need to solve issues you most likely will run into. Here are a couple of common issues you might encounter.
 
-### Can I use another monorepo tool instead of yarn workspaces?
+### Can I use another monorepo tool instead of Yarn workspaces?
 
-There are a lot of monorepo tools available, and each of these tools has its benefits. It's hard for us to keep up with the latest tools and methods, and because of that, we won't officially support new monorepo tools. That being said, if the tool follows these three rules, it should work fine.
+There are a lot of monorepo tools available, and each of these tools has its benefits. It's hard for us to keep up with the latest tools and methods, and because of that, we can't officially support new monorepo tools. That being said, if the tool follows these three rules, it should work fine.
 
 <Collapsible summary="1. All dependencies must be installed in a node_modules directory">
 
@@ -285,13 +285,13 @@ In the [Modify the Metro config](#modify-the-metro-config) step, we instructed M
 
 If a workspace uses a different library version than the one installed in the root **/node_modules**, that different library version must be installed in the workspace **/apps/<name\>/node_modules** directory.
 
-When Metro resolves a library, e.g. `react`, from the workspace, it should find that different version in `**/apps/<name\>/node_modules** and not look inside the root **/node_modules** directory.
+When Metro resolves a library, e.g. `react`, from the workspace, it should find that different version in **/apps/<name\>/node_modules** and not look inside the root **/node_modules** directory.
 
-When importing a dependency from the root **/node_modules** folder, that also imports `react`, it should still resolve to the different version installed in **/apps/<name\>/node_modules**. That's what the disabled hierarchical lookup option does for Metro. Without this, some libraries might import the wrong `react` version and cause "multiple react versions found" errors.
+When importing a dependency from the root **/node_modules** folder that also imports `react`, `react` should still resolve to the different version installed in **/apps/<name\>/node_modules**. That's what the disabled hierarchical lookup option does for Metro. Without this, some libraries might import the wrong `react` version and cause "multiple React versions found" errors.
 
 </Collapsible>
 
-The default setting of tools like [pnpm](https://pnpm.io/) does not follow these rules. You can change that by adding the **.npmrc** file with `node-linker=hoisted` ([see docs](https://pnpm.io/npmrc#node-linker)). That config option will change the behavior to match these rules.
+The default settings of tools like [pnpm](https://pnpm.io/) do not follow these rules. You can change that by adding an **.npmrc** file with `node-linker=hoisted` ([see docs](https://pnpm.io/npmrc#node-linker)). That config option will change the behavior to match these rules.
 
 ### Script '...' does not exist
 
