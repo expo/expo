@@ -27,11 +27,12 @@ let additionalModulesToIgnore = new Set();
 let enabled = true;
 function createErrorMessageForStoreClient(moduleName) {
     return `Your JavaScript code tried to access a native module, ${moduleName}, that isn't supported in Expo Go.
-To continue development with ${moduleName}, you need to create a development build of your app. See https://docs.expo.dev/development/introduction/ for more info.`;
+To continue development with ${moduleName}, you need to create a development build of your app. See https://expo.fyi/missing-native-module for more info, including how to disable these errors.`;
 }
 function createErrorMessageForDevelopmentBuild(moduleName) {
     return `Your JavaScript code tried to access a native module, ${moduleName}, that doesn't exist in this development build.
-Make sure you are using the newest available development build of this app and running a compatible version of your JavaScript code. If you've installed a new library recently, you may need to make a new development build.`;
+Make sure you are using the newest available development build of this app and running a compatible version of your JavaScript code. If you've installed a new library recently, you may need to make a new development build.
+See https://expo.fyi/missing-native-module for more info, including how to disable these errors.`;
 }
 export function createProxyForNativeModules(NativeModules) {
     if (!__DEV__) {
