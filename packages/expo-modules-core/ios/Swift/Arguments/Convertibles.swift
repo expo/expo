@@ -23,24 +23,6 @@ extension URL: ConvertibleArgument {
   }
 }
 
-// MARK: - UIKit
-
-extension UIColor: ConvertibleArgument {
-  public static func convert(from value: Any?) throws -> Self {
-    if let value = value as? String {
-      return try Conversions.toColor(hexString: value) as! Self
-    }
-    if let components = value as? [Double] {
-      let alpha = components.count > 3 ? components[3] : 1.0
-      return Self.init(red: CGFloat(components[0]), green: CGFloat(components[1]), blue: CGFloat(components[2]), alpha: CGFloat(alpha))
-    }
-    if let value = value as? Int {
-      return try Conversions.toColor(argb: UInt64(value)) as! Self
-    }
-    throw Conversions.ConvertingException<UIColor>(value)
-  }
-}
-
 // MARK: - CoreGraphics
 
 extension CGPoint: ConvertibleArgument {
@@ -92,16 +74,5 @@ extension CGRect: ConvertibleArgument {
       return CGRect(x: args[0], y: args[1], width: args[2], height: args[3])
     }
     throw Conversions.ConvertingException<CGRect>(value)
-  }
-}
-
-extension CGColor: ConvertibleArgument {
-  public static func convert(from value: Any?) throws -> Self {
-    do {
-      return try UIColor.convert(from: value).cgColor as! Self
-    } catch _ as Conversions.ConvertingException<UIColor> {
-      // Rethrow `ConvertingError` with proper type
-      throw Conversions.ConvertingException<CGColor>(value)
-    }
   }
 }
