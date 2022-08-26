@@ -5,18 +5,15 @@ package expo.modules.kotlin.views
 
 import android.content.Context
 import android.view.View
+import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.modules.DefinitionMarker
 import expo.modules.kotlin.types.toAnyType
+import kotlin.reflect.KClass
+import kotlin.reflect.full.primaryConstructor
 import kotlin.reflect.typeOf
 
 @DefinitionMarker
-class ViewManagerDefinitionBuilder {
-  @PublishedApi
-  internal var viewFactory: ((Context) -> View)? = null
-
-  @PublishedApi
-  internal var viewType: Class<out View>? = null
-
+class ViewDefinitionBuilder<T : View>(private val viewType: KClass<T>) {
   @PublishedApi
   internal var props = mutableMapOf<String, AnyViewProp>()
 
@@ -29,21 +26,13 @@ class ViewManagerDefinitionBuilder {
 
   fun build(): ViewManagerDefinition =
     ViewManagerDefinition(
-      { context, _ -> requireNotNull(viewFactory)(context) },
-      requireNotNull(viewType),
+      createViewFactory(),
+      viewType.java,
       props,
       onViewDestroys,
       callbacksDefinition,
       viewGroupDefinition
     )
-
-  /**
-   * Defines the factory creating a native view when the module is used as a view.
-   */
-  inline fun <reified ViewType : View> View(noinline body: (Context) -> ViewType) {
-    viewType = ViewType::class.java
-    viewFactory = body
-  }
 
   /**
    * Creates view's lifecycle listener that is called right after the view isn't longer used by React Native.
@@ -82,5 +71,35 @@ class ViewManagerDefinitionBuilder {
     val groupViewDefinitionBuilder = ViewGroupDefinitionBuilder()
     body.invoke(groupViewDefinitionBuilder)
     viewGroupDefinition = groupViewDefinitionBuilder.build()
+  }
+
+  private fun createViewFactory(): (Context, AppContext) -> View = viewFactory@{ context: Context, appContext: AppContext ->
+    val primaryConstructor = requireNotNull(viewType.primaryConstructor)
+    val args = primaryConstructor.parameters
+
+    if (args.isEmpty()) {
+      throw IllegalStateException("Android view has to have a constructor with at least one argument.")
+    }
+
+    val firstArgType = args.first().type
+    if (Context::class != firstArgType.classifier) {
+      throw IllegalStateException("The type of the first constructor argument has to be `android.content.Context`.")
+    }
+
+    // Backward compatibility
+    if (args.size == 1) {
+      return@viewFactory primaryConstructor.call(context)
+    }
+
+    val secondArgType = args[1].type
+    if (AppContext::class != secondArgType.classifier) {
+      throw IllegalStateException("The type of the second constructor argument has to be `expo.modules.kotlin.AppContext`.")
+    }
+
+    if (args.size != 2) {
+      throw IllegalStateException("Android view has more constructor arguments than expected.")
+    }
+
+    return@viewFactory primaryConstructor.call(context, appContext)
   }
 }

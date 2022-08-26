@@ -8,12 +8,13 @@ import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.ReadableMap
 import expo.modules.adapters.react.NativeModulesProxy
 import expo.modules.core.ViewManager
+import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.UnexpectedException
 import expo.modules.kotlin.recycle
 
 class ViewManagerDefinition(
-  private val viewFactory: (Context) -> View,
+  private val viewFactory: (Context, AppContext) -> View,
   private val viewType: Class<out View>,
   private val props: Map<String, AnyViewProp>,
   val onViewDestroys: ((View) -> Unit)? = null,
@@ -21,7 +22,7 @@ class ViewManagerDefinition(
   val viewGroupDefinition: ViewGroupDefinition? = null
 ) {
 
-  fun createView(context: Context): View = viewFactory(context)
+  fun createView(context: Context, appContext: AppContext): View = viewFactory(context, appContext)
 
   val propsNames: List<String> = props.keys.toList()
 

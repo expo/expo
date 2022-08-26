@@ -11,11 +11,7 @@ class CameraViewModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("ExponentCamera")
 
-    ViewManager {
-      View { context ->
-        ExpoCameraView(context, appContext)
-      }
-
+    View(ExpoCameraView::class) {
       Events(
         "onCameraReady",
         "onMountError",
