@@ -23,7 +23,7 @@ export function expoModulesTransforms(prefix: string): FileTransforms {
         replaceWith: `${prefix}$1$2+$3$4`,
       },
       {
-        // expo-gl-cpp
+        // expo-gl
         find: /\bEXWebGL([^/]*)\.def\b/,
         replaceWith: `${prefix}EXWebGL$1.def`,
       },

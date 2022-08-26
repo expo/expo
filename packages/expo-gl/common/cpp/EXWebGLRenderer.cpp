@@ -180,7 +180,7 @@ void ensurePrototypes(jsi::Runtime &runtime) {
   runtime.global().setProperty(runtime, "__EXGLConstructorReady", true);
   
   auto evalBuffer = std::make_shared<jsi::StringBuffer>(evalStubConstructors);
-  runtime.evaluateJavaScript(evalBuffer, "expo-gl-cpp");
+  runtime.evaluateJavaScript(evalBuffer, "expo-gl");
 
   auto inheritFromJsObject = [&runtime](EXWebGLClass classEnum) {
     auto objectClass = runtime.global().getPropertyAsObject(runtime, "Object");

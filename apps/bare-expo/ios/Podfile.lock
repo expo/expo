@@ -57,9 +57,7 @@ PODS:
   - EXFont (10.2.0):
     - ExpoModulesCore
   - EXGL (11.4.0):
-    - EXGL_CPP
     - ExpoModulesCore
-  - EXGL_CPP (11.4.0):
     - React-jsi
   - EXImage (0.2.3):
     - React-Core
@@ -809,8 +807,7 @@ DEPENDENCIES:
   - EXFirebaseAnalytics (from `../../../packages/expo-firebase-analytics/ios`)
   - EXFirebaseCore (from `../../../packages/expo-firebase-core/ios`)
   - EXFont (from `../../../packages/expo-font/ios`)
-  - EXGL (from `../../../packages/expo-gl/ios`)
-  - EXGL_CPP (from `../../../packages/expo-gl-cpp/cpp`)
+  - EXGL (from `../../../packages/expo-gl`)
   - EXImage (from `../../../node_modules/expo-image`)
   - EXImageLoader (from `../../../packages/expo-image-loader/ios`)
   - EXInAppPurchases (from `../../../packages/expo-in-app-purchases/ios`)
@@ -1011,10 +1008,7 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-font/ios"
   EXGL:
     inhibit_warnings: false
-    :path: "../../../packages/expo-gl/ios"
-  EXGL_CPP:
-    inhibit_warnings: false
-    :path: "../../../packages/expo-gl-cpp/cpp"
+    :path: "../../../packages/expo-gl"
   EXImage:
     :path: "../../../node_modules/expo-image"
   EXImageLoader:
@@ -1277,8 +1271,7 @@ SPEC CHECKSUMS:
   EXFirebaseAnalytics: 15c5f2d5bae6668ecb1104f98b2b74a2d9fd3740
   EXFirebaseCore: 9ee5a9691a8480f0fbaeb7f3cd135f256d436fdf
   EXFont: a5d80bd9b3452b2d5abbce2487da89b0150e6487
-  EXGL: 764f418a6ea75d59903f870842af2cf28947b86d
-  EXGL_CPP: 675bb4ef2987925ab05981b41110e8db9c8fcf58
+  EXGL: daf52b32abf0b825d2ea436e1ab4c6cb609536fd
   EXImage: d5bf0125e80d274e7a1490ec0fc64788ab0ac886
   EXImageLoader: b88e053d760f85a82405b1db2de4abf11978fc9f
   EXInAppPurchases: 4eacf3e5acf1f160ca0f99310f08124620314121

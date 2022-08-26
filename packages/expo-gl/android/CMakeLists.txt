@@ -7,24 +7,25 @@ set(CMAKE_CXX_STANDARD 17)
 
 set(PACKAGE_NAME "expo-gl")
 set(BUILD_DIR ${CMAKE_SOURCE_DIR}/build)
+set(COMMON_DIR ${CMAKE_SOURCE_DIR}/../common/cpp)
 
 add_library(
     ${PACKAGE_NAME} SHARED
-    ./EXGL.cpp
-    ./EXGL.h
-    ./EXGLImageUtils.cpp
-    ./EXGLImageUtils.h
-    ./EXGLContext.cpp
-    ./EXGLContext.h
-    ./EXGLContextManager.cpp
-    ./EXGLContextManager.h
-    ./EXWebGLMethods.cpp
-    ./EXWebGLMethods.h
-    ./EXWebGLRenderer.cpp
-    ./EXWebGLRenderer.h
-    ./EXTypedArrayApi.cpp
-    ./EXTypedArrayApi.h
-    ./EXGLJniApi.cpp)
+    ${COMMON_DIR}/EXGL.cpp
+    ${COMMON_DIR}/EXGL.h
+    ${COMMON_DIR}/EXGLImageUtils.cpp
+    ${COMMON_DIR}/EXGLImageUtils.h
+    ${COMMON_DIR}/EXGLContext.cpp
+    ${COMMON_DIR}/EXGLContext.h
+    ${COMMON_DIR}/EXGLContextManager.cpp
+    ${COMMON_DIR}/EXGLContextManager.h
+    ${COMMON_DIR}/EXWebGLMethods.cpp
+    ${COMMON_DIR}/EXWebGLMethods.h
+    ${COMMON_DIR}/EXWebGLRenderer.cpp
+    ${COMMON_DIR}/EXWebGLRenderer.h
+    ${COMMON_DIR}/EXTypedArrayApi.cpp
+    ${COMMON_DIR}/EXTypedArrayApi.h
+    ./src/main/cpp/EXGLJniApi.cpp)
 
 # Extracted AAR: ${BUILD_DIR}/react-native-0*/jni/${ANDROID_ABI}
 file(GLOB LIBRN_DIR "${RN_SO_DIR}/${ANDROID_ABI}")
@@ -34,8 +35,9 @@ if(NOT LIBRN_DIR)
     file(GLOB LIBRN_DIR "${RN_SO_DIR}")
 endif()
 
-target_include_directories(${PACKAGE_NAME}
-                           PRIVATE "${REACT_NATIVE_DIR}/ReactCommon/jsi")
+target_include_directories(
+    ${PACKAGE_NAME} PRIVATE "${REACT_NATIVE_DIR}/ReactCommon/jsi"
+                            "${COMMON_DIR}")
 
 find_library(
     JSI_LIB jsi
