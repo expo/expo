@@ -4,9 +4,9 @@ title: Adopting Prebuild
 
 import { Terminal } from '~/ui/components/Snippet';
 
-There are many advantages of using Prebuild to manage your native projects. This guide will show you how to adopt prebuilding in a project that was bootstrapped with `npx react-native init`. The amount of time it will take to convert your project depends on the amount of custom native changes that you have made to your iOS and Android native projects — on a brand new project, this may take a minute or two, and on a large project it could be much longer.
+There are [many advantages](/workflow/prebuild#pitch) of using [Expo Prebuild][prebuild] to generate your native projects. This guide will show you how to adopt Expo Prebuild in a project that was bootstrapped with `npx react-native init`. The amount of time it will take to convert your project depends on the amount of custom native changes that you have made to your iOS and Android native projects — on a brand new project, this may take a minute or two, and on a large project it could be much longer.
 
-> **Note:** Adopting prebuild automatically adds support for developing modules with the [Expo native module API][expo-modules-core] by linking `expo-modules-core` natively. You can also use any command from Expo CLI `npx expo` in your project.
+> **Note:** Adopting prebuild will automatically add support for developing modules with the [Expo native module API][expo-modules-core] by linking `expo-modules-core` natively. You can also use any command from [Expo CLI][cli] in your project.
 
 ## Bootstrap a new project
 
@@ -14,19 +14,21 @@ There are many advantages of using Prebuild to manage your native projects. This
 
 <Terminal cmd={["$ npx react-native init --version 0.69.4"]} />
 
-This will create a new React Native project. Note that [not all versions of `react-native` are explicitly supported](/versions/latest/#each-expo-sdk-version-depends-on-a), be sure to use a version of `react-native` that has a corresponding Expo SDK version.
+This will create a new React Native project.
+
+> **Note**: [Not all versions of `react-native` are explicitly supported][version-support], be sure to use a version of `react-native` that has a corresponding Expo SDK version.
 
 ## Install the `expo` package
 
-The `expo` package contains the `npx expo prebuild` command and indicates which prebuild template to use:
+The `expo` package contains the [`npx expo prebuild`](/workflow/expo-cli#prebuild) command and indicates which [prebuild template](/workflow/prebuild#templates) to use:
 
 <Terminal cmd={["$ yarn add expo"]} />
 
-Ensure you install the version of `expo` that works for your currently installed version of `react-native`. Note that not all major versions of `react-native` are supported.
+Ensure you install the version of `expo` that works for your currently installed version of `react-native`: [supported versions](version-support).
 
 ## Update the entry file
 
-Modify the entry file like so:
+Modify the entry file to use [`registerRootComponent`](/versions/latest/sdk/register-root-component) instead of `AppRegistry.registerComponent`:
 
 ```diff
 + import {registerRootComponent} from 'expo';
@@ -39,13 +41,15 @@ import App from './App';
 + registerRootComponent(App);
 ```
 
-Alternatively, you can change `appName` to `"main"`. Switching to `registerRootComponent` is useful if you want to take advantage of other features like web support. Importing `expo` adds side-effects for development environments that are removed in production bundles.
+> Learn more here: [`registerRootComponent`](/versions/latest/sdk/register-root-component#registerrootcomponentcomponent).
 
 ## Prebuild
 
 > **Warning:** Make sure you've committed your changes in case you want to revert, the command will warn you about this too!
 
-Run the following command to regenerate the `/ios` and `/android` directories based on the `app.json` configuration.
+If you're migrating an existing project, then you may want to refer to [**migrating native customizations**](#migrating-native-customizations) first.
+
+Run the following command to regenerate the `/ios` and `/android` directories based on the Expo config (**app.json**) configuration:
 
 <Terminal cmd={[
 '$ npx expo prebuild --clean',
@@ -60,6 +64,8 @@ You can test that everything worked by building the projects locally:
 '# Build your native iOS project',
 '$ npx expo run:ios'
 ]} />
+
+> Learn more about [compiling native apps](/workflow/expo-cli#compiling).
 
 ## Extra changes
 
@@ -85,11 +91,11 @@ Remove all fields that are outside of the top-level `expo` object as these will 
 
 **metro.config.js**
 
-- See [Customizing Metro](/guides/customizing-metro.md)
+See: [Customizing Metro](/guides/customizing-metro.md)
 
 **package.json**
 
-You may want to change the scripts to use the Expo CLI run commands:
+You may want to change the scripts to use the [Expo CLI](/workflow/expo-cli#compiling) run commands:
 
 ```diff
   "scripts": {
@@ -101,16 +107,16 @@ You may want to change the scripts to use the Expo CLI run commands:
   },
 ```
 
-These have better logging, auto code signing, better simulator handling, and they ensure you run `npx expo start` to host files.
+These commands have better logging, auto code signing, better simulator handling, and they ensure you run `npx expo start` to serve files.
 
-## Re-applying native customizations
+## Migrating native customizations
 
 If your project has any native modifications (changes to the `ios` or `android` directories, such as app icon configuration or splash screen) then you'll need to configure your Expo config (`app.json`) to reflect those native changes.
 
 - Check to see if your changes overlap with the built-in [Expo config fields](/versions/latest/config/app/). For example, if you have an app icon, be sure to define it as `expo.icon` in the `app.json` then re-run `npx expo prebuild`.
 - Look up if any of the packages you're using require an [Expo Config Plugin][config-plugins]. If a package in your project required additional changes inside of the `ios/` or `android/` folders, then you will probably need a Config Plugin. Some plugins can be automatically added by running `npx expo install` with all of the packages in your `package.json` `dependencies`. If a package requires a plugin but doesn't supply one, then you can try checking the community plugins at [`expo/config-plugins`](https://github.com/expo/config-plugins) to see if one already exists.
 - You can use the [VS Code Expo extension][vs-code-expo] to introspect your changes and debug if prebuild is generating the native code you expect. Just press `cmd+shift+P`, type "Expo: Preview Modifier", and select the native file you wish to introspect.
-- Additionally, you can develop local Config Plugins to fit your needs. [Learn more](/guides/config-plugins#developing-a-plugin).
+- Additionally, you can develop local config plugins to fit your needs. [Learn more](/guides/config-plugins#developing-a-plugin).
 
 ## Adding More Features
 
@@ -126,3 +132,6 @@ Prebuild is the tip of the automation iceberg, here are some features you can ad
 [expo-modules-core]: /modules/module-api
 [dev-client]: /development/introduction
 [config-plugins]: /guides/config-plugins
+[prebuild]: /workflow/prebuild
+[cli]: /workflow/expo-cli.md
+[version-support]: /versions/latest/index#each-expo-sdk-version-depends-on-a-react-native-version
