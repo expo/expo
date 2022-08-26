@@ -2,6 +2,7 @@
 
 #import <AVFoundation/AVFoundation.h>
 
+#import <EXAV/EXAV.h>
 #import <EXAV/EXVideoManager.h>
 #import <EXAV/EXVideoView.h>
 #import <ExpoModulesCore/EXUIManager.h>

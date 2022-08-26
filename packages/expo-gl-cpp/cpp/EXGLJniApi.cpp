@@ -5,7 +5,7 @@
 #include <android/log.h>
 
 #include <jsi/jsi.h>
-#include "UEXGL.h"
+#include "EXGL.h"
 #include "EXPlatformUtils.h"
 
 extern "C" {
@@ -17,7 +17,7 @@ thread_local JNIEnv* threadLocalEnv;
 JNIEXPORT jint JNICALL
 Java_expo_modules_gl_cpp_EXGL_EXGLContextCreate
 (JNIEnv *env, jclass clazz) {
-  return UEXGLContextCreate();
+  return EXGLContextCreate();
 }
 
 JNIEXPORT void JNICALL
@@ -31,43 +31,43 @@ Java_expo_modules_gl_cpp_EXGL_EXGLContextPrepare
   std::function<void(void)> flushMethod = [glContextRef, flushMethodRef] {
     threadLocalEnv->CallVoidMethod(glContextRef, flushMethodRef);
   };
-  UEXGLContextPrepare((void*) jsiPtr, exglCtxId, flushMethod);
+  EXGLContextPrepare((void*) jsiPtr, exglCtxId, flushMethod);
 }
 
 JNIEXPORT void JNICALL
 Java_expo_modules_gl_cpp_EXGL_EXGLContextDestroy
 (JNIEnv *env, jclass clazz, jint exglCtxId) {
-  UEXGLContextDestroy(exglCtxId);
+  EXGLContextDestroy(exglCtxId);
 }
 
 JNIEXPORT void JNICALL
 Java_expo_modules_gl_cpp_EXGL_EXGLContextFlush
 (JNIEnv *env, jclass clazz, jint exglCtxId) {
-  UEXGLContextFlush(exglCtxId);
+  EXGLContextFlush(exglCtxId);
 }
 
 JNIEXPORT jint JNICALL
 Java_expo_modules_gl_cpp_EXGL_EXGLContextCreateObject
 (JNIEnv *env, jclass clazz, jint exglCtxId) {
-  return UEXGLContextCreateObject(exglCtxId);
+  return EXGLContextCreateObject(exglCtxId);
 }
 
 JNIEXPORT void JNICALL
 Java_expo_modules_gl_cpp_EXGL_EXGLContextDestroyObject
 (JNIEnv *env, jclass clazz, jint exglCtxId, jint exglObjId) {
-  UEXGLContextDestroyObject(exglCtxId, exglObjId);
+  EXGLContextDestroyObject(exglCtxId, exglObjId);
 }
 
 JNIEXPORT void JNICALL
 Java_expo_modules_gl_cpp_EXGL_EXGLContextMapObject
 (JNIEnv *env, jclass clazz, jint exglCtxId, jint exglObjId, jint glObj) {
-  UEXGLContextMapObject(exglCtxId, exglObjId, glObj);
+  EXGLContextMapObject(exglCtxId, exglObjId, glObj);
 }
 
 JNIEXPORT jint JNICALL
 Java_expo_modules_gl_cpp_EXGL_EXGLContextGetObject
 (JNIEnv *env, jclass clazz, jint exglCtxId, jint exglObjId) {
-  return UEXGLContextGetObject(exglCtxId, exglObjId);
+  return EXGLContextGetObject(exglCtxId, exglObjId);
 }
 
 JNIEXPORT void JNICALL
@@ -79,13 +79,13 @@ Java_expo_modules_gl_cpp_EXGL_EXGLRegisterThread
 JNIEXPORT bool JNICALL
 Java_expo_modules_gl_cpp_EXGL_EXGLContextNeedsRedraw
 (JNIEnv *env, jclass clazz, jint exglCtxId) {
-  return UEXGLContextNeedsRedraw(exglCtxId);
+  return EXGLContextNeedsRedraw(exglCtxId);
 }
 
 JNIEXPORT void JNICALL
 Java_expo_modules_gl_cpp_EXGL_EXGLContextDrawEnded
 (JNIEnv *env, jclass clazz, jint exglCtxId) {
-  UEXGLContextDrawEnded(exglCtxId);
+  EXGLContextDrawEnded(exglCtxId);
 }
 
 }

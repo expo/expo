@@ -16,8 +16,7 @@ const withAndroidUserInterfaceStyle = (config) => {
 };
 exports.withAndroidUserInterfaceStyle = withAndroidUserInterfaceStyle;
 function resolveProps(config) {
-    var _a, _b;
-    const userInterfaceStyle = (_b = (_a = config.android) === null || _a === void 0 ? void 0 : _a.userInterfaceStyle) !== null && _b !== void 0 ? _b : config.userInterfaceStyle;
+    const userInterfaceStyle = config.android?.userInterfaceStyle ?? config.userInterfaceStyle;
     (0, assert_1.default)(!userInterfaceStyle || ['automatic', 'light', 'dark'].includes(userInterfaceStyle), `expo-system-ui: Invalid userInterfaceStyle: "${userInterfaceStyle}"`);
     return { userInterfaceStyle };
 }

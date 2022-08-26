@@ -383,6 +383,130 @@ It may be desirable for links to your domain to always open your app (without pr
 ]
 ```
 
+### Handling App Links on Android with expo-dev-client
+
+From Android 12 onwards, there is an issue reported when verifying the App Links with [`expo-dev-client`](/development/getting-started/).
+
+When `expo.android.intentFilters` is used and `"autoVerify"` is set to `true`, the `expo-dev-client` adds a scheme `<data android:scheme="exp+<slug>" />` to the intent filter. This scheme breaks the App Links verification.
+
+An example of the `exp+` scheme breaking the verification process:
+
+```xml
+<activity android:name=".MainActivity" android:label="@string/app_name" android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode" android:launchMode="singleTask" android:windowSoftInputMode="adjustResize" android:theme="@style/Theme.App.SplashScreen" android:screenOrientation="portrait">
+  <intent-filter>
+    <action android:name="android.intent.action.MAIN"/>
+    <category android:name="android.intent.category.LAUNCHER"/>
+  </intent-filter>
+  <intent-filter>
+    <action android:name="android.intent.action.VIEW"/>
+    <category android:name="android.intent.category.DEFAULT"/>
+    <category android:name="android.intent.category.BROWSABLE"/>
+    <data android:scheme="<slug>"/>
+    <data android:scheme="<package>"/>
+    <data android:scheme="exp+<slug>"/>
+  </intent-filter>
+  <intent-filter android:autoVerify="true" data-generated="true">
+    <action android:name="android.intent.action.VIEW"/>
+    <data android:scheme="https" android:host="<name>.onelink.me" android:pathPrefix="/XXXX"/>
+    <data android:scheme="https" android:host="<name>.onelink.me" android:pathPrefix="/XXXX"/>
+    <data android:scheme="https" android:host="<name>.onelink.me" android:pathPrefix="/XXXX"/>
+    <!-- @info -->
+    <data android:scheme="exp+<slug>"/>
+    <!-- @end -->
+    <category android:name="android.intent.category.BROWSABLE"/>
+    <category android:name="android.intent.category.DEFAULT"/>
+  </intent-filter>
+</activity>
+```
+
+You can fix this issue by creating a custom [Config Plugin](/guides/config-plugins/) that removes the `exp+` schemes when verifying `intentFilters`.
+
+Create a new file called **withAndroidVerifiedLinksWorkaround.js** in your project with the following code snippet:
+
+```javascript
+const { createRunOncePlugin, withAndroidManifest } = require('@expo/config-plugins');
+
+/**
+ * @typedef {import('@expo/config-plugins').ConfigPlugin} ConfigPlugin
+ * @typedef {import('@expo/config-plugins').AndroidManifest} AndroidManifest
+ */
+
+/**
+ * Remove the custom Expo dev client scheme from intent filters, which are set to `autoVerify=true`.
+ * The custom scheme `<data android:scheme="exp+<slug>"/>` seems to block verification for these intent filters.
+ * This plugin makes sure there is no scheme in the autoVerify intent filters, that starts with `exp+`.
+ *
+ * @type {ConfigPlugin}
+ */
+const withAndroidVerifiedLinksWorkaround = config =>
+  withAndroidManifest(config, config => {
+    config.modResults = removeExpoSchemaFromVerifiedIntentFilters(config.modResults);
+    return config;
+  });
+
+/**
+ * Iterate over all `autoVerify=true` intent filters, and pull out schemes starting with `exp+`.
+ *
+ * @param {AndroidManifest} androidManifest
+ */
+function removeExpoSchemaFromVerifiedIntentFilters(androidManifest) {
+  for (const application of androidManifest.manifest.application || []) {
+    for (const activity of application.activity || []) {
+      if (activityHasSingleTaskLaunchMode(activity)) {
+        for (const intentFilter of activity['intent-filter'] || []) {
+          if (intentFilterHasAutoVerification(intentFilter) && intentFilter?.data) {
+            intentFilter.data = intentFilterRemoveSchemeFromData(intentFilter, scheme =>
+              scheme?.startsWith('exp+')
+            );
+          }
+        }
+        break;
+      }
+    }
+  }
+
+  return androidManifest;
+}
+
+/**
+ * Determine if the activity should contain the intent filters to clean.
+ *
+ */
+function activityHasSingleTaskLaunchMode(activity) {
+  return activity?.$?.['android:launchMode'] === 'singleTask';
+}
+
+/**
+ * Determine if the intent filter has `autoVerify=true`.
+ */
+function intentFilterHasAutoVerification(intentFilter) {
+  return intentFilter?.$?.['android:autoVerify'] === 'true';
+}
+
+/**
+ * Remove schemes from the intent filter that matches the function.
+ */
+function intentFilterRemoveSchemeFromData(intentFilter, schemeMatcher) {
+  return intentFilter?.data?.filter(entry => !schemeMatcher(entry?.$['android:scheme'] || ''));
+}
+
+module.exports = createRunOncePlugin(
+  withAndroidVerifiedLinksWorkaround,
+  'withAndroidVerifiedLinksWorkaround',
+  '1.0.0'
+);
+```
+
+Next, in you **app.json**, add this plugin under `expo.plugins`:
+
+```json
+{
+  "plugins": ["./plugins/withAndroidVerifiedLinksWorkaround"]
+}
+```
+
+If you are using [EAS Build](/build/introduction/), you will have to create a new build after adding these changes to your project so that they are reflected in your Android app.
+
 ## When to _not_ use deep links
 
 This is the easiest way to set up deep links into your app because it requires a minimal amount of configuration.

@@ -12,7 +12,8 @@ import kotlin.reflect.KType
 class ViewCallback<T>(
   private val name: String,
   private val type: KType,
-  private val view: View
+  private val view: View,
+  private val coalescingKey: CoalescingKey<T>?
 ) : Callback<T> {
   internal lateinit var module: Module
 
@@ -24,7 +25,14 @@ class ViewCallback<T>(
       ?: return
     val appContext = nativeModulesProxy.kotlinInteropModuleRegistry.appContext
 
-    appContext.callbackInvoker?.emit(view.id, name, convertEventBody(arg))
+    appContext
+      .callbackInvoker
+      ?.emit(
+        viewId = view.id,
+        eventName = name,
+        eventBody = convertEventBody(arg),
+        coalescingKey = coalescingKey?.invoke(arg)
+      )
   }
 
   private fun convertEventBody(arg: T): WritableMap? {

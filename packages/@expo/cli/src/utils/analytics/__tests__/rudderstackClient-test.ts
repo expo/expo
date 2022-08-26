@@ -1,8 +1,39 @@
 import os from 'os';
 
-import { getContext } from '../rudderstackClient';
+import {
+  getContext,
+  getRudderAnalyticsClient,
+  logEventAsync,
+  resetInternalStateForTesting,
+  setUserDataAsync,
+} from '../rudderstackClient';
 
 jest.mock('ci-info', () => ({ isCI: true, isPR: true, name: 'GitHub Actions' }));
+
+jest.mock('@expo/rudder-sdk-node');
+
+describe(logEventAsync, () => {
+  beforeEach(() => {
+    resetInternalStateForTesting();
+  });
+
+  it('logs when the user has been identified', async () => {
+    await setUserDataAsync('fake', {});
+    await logEventAsync('Start Project');
+    expect(getRudderAnalyticsClient().track).toHaveBeenCalledWith({
+      anonymousId: expect.any(String),
+      context: getContext(),
+      event: 'Start Project',
+      properties: { source: 'expo', source_version: undefined },
+      userId: 'fake',
+    });
+  });
+
+  it('does not log when the user has not been identified', async () => {
+    await logEventAsync('Start Project');
+    expect(getRudderAnalyticsClient().track).not.toHaveBeenCalled();
+  });
+});
 
 describe(getContext, () => {
   const originalVersion = process.env.__EXPO_VERSION;

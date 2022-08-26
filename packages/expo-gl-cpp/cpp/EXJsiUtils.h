@@ -4,7 +4,7 @@
 #include <vector>
 
 #include "EXPlatformUtils.h"
-#include "TypedArrayApi.h"
+#include "EXTypedArrayApi.h"
 
 namespace expo {
 namespace gl_cpp {

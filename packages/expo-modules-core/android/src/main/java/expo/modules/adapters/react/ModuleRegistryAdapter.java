@@ -1,5 +1,8 @@
 package expo.modules.adapters.react;
 
+import android.util.Log;
+import androidx.annotation.Nullable;
+
 import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -9,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import expo.modules.BuildConfig;
 import expo.modules.adapters.react.views.SimpleViewManagerAdapter;
 import expo.modules.adapters.react.views.ViewGroupManagerAdapter;
 import expo.modules.core.ModuleRegistry;
@@ -30,6 +34,7 @@ public class ModuleRegistryAdapter implements ReactPackage {
   private NativeModulesProxy mModulesProxy;
   // We need to save all view holders to update them when the new kotlin module registry will be created.
   private List<ViewWrapperDelegateHolder> mWrapperDelegateHolders = null;
+  private FabricComponentsRegistry mFabricComponentsRegistry = null;
 
   public ModuleRegistryAdapter(List<Package> packageList) {
     mModuleRegistryProvider = new ReactModuleRegistryProvider(packageList, null);
@@ -46,7 +51,8 @@ public class ModuleRegistryAdapter implements ReactPackage {
 
   @Override
   public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
-    ModuleRegistry moduleRegistry = mModuleRegistryProvider.get(reactContext);
+    NativeModulesProxy proxy = getOrCreateNativeModulesProxy(reactContext, null);
+    ModuleRegistry moduleRegistry = proxy.getModuleRegistry();
 
     for (InternalModule internalModule : mReactAdapterPackage.createInternalModules(reactContext)) {
       moduleRegistry.registerInternalModule(internalModule);
@@ -54,7 +60,7 @@ public class ModuleRegistryAdapter implements ReactPackage {
 
     List<NativeModule> nativeModules = getNativeModulesFromModuleRegistry(reactContext, moduleRegistry);
     if (mWrapperDelegateHolders != null) {
-      KotlinInteropModuleRegistry kotlinInteropModuleRegistry = mModulesProxy.getKotlinInteropModuleRegistry();
+      KotlinInteropModuleRegistry kotlinInteropModuleRegistry = proxy.getKotlinInteropModuleRegistry();
       kotlinInteropModuleRegistry.updateModuleHoldersInViewManagers(mWrapperDelegateHolders);
     }
 
@@ -64,8 +70,7 @@ public class ModuleRegistryAdapter implements ReactPackage {
   protected List<NativeModule> getNativeModulesFromModuleRegistry(ReactApplicationContext reactContext, ModuleRegistry moduleRegistry) {
     List<NativeModule> nativeModulesList = new ArrayList<>(2);
 
-    mModulesProxy = createNativeModulesProxy(reactContext, moduleRegistry);
-    nativeModulesList.add(mModulesProxy);
+    nativeModulesList.add(getOrCreateNativeModulesProxy(reactContext, moduleRegistry));
 
     // Add listener that will notify expo.modules.core.ModuleRegistry when all modules are ready
     nativeModulesList.add(new ModuleRegistryReadyNotifier(moduleRegistry));
@@ -94,22 +99,37 @@ public class ModuleRegistryAdapter implements ReactPackage {
       }
     }
 
-    // We assume that `createNativeModules` was called first.
-    NativeModulesProxy modulesProxy = Objects.requireNonNull(mModulesProxy);
+    NativeModulesProxy modulesProxy = Objects.requireNonNull(getOrCreateNativeModulesProxy(reactContext, null));
     KotlinInteropModuleRegistry kotlinInteropModuleRegistry = modulesProxy.getKotlinInteropModuleRegistry();
     List<ViewManager<?, ?>> kViewManager = kotlinInteropModuleRegistry.exportViewManagers();
     // Saves all holders that needs to be in sync with module registry
     mWrapperDelegateHolders = kotlinInteropModuleRegistry.extractViewManagersDelegateHolders(kViewManager);
     viewManagerList.addAll(kViewManager);
+    if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
+      // Intentionally to only add Sweet API view managers for Fabric support
+      mFabricComponentsRegistry = new FabricComponentsRegistry(kViewManager);
+    }
 
     return viewManagerList;
   }
 
-  private NativeModulesProxy createNativeModulesProxy(ReactApplicationContext reactContext, ModuleRegistry moduleRegistry) {
-    if (mModulesProvider != null) {
-      return new NativeModulesProxy(reactContext, moduleRegistry, mModulesProvider);
-    } else {
-      return new NativeModulesProxy(reactContext, moduleRegistry);
+  private synchronized NativeModulesProxy getOrCreateNativeModulesProxy(
+    ReactApplicationContext reactContext,
+    @Nullable ModuleRegistry moduleRegistry
+  ) {
+    if (mModulesProxy == null) {
+      ModuleRegistry registry = moduleRegistry != null ? moduleRegistry : mModuleRegistryProvider.get(reactContext);
+      if (mModulesProvider != null) {
+        mModulesProxy = new NativeModulesProxy(reactContext, registry, mModulesProvider);
+      } else {
+        mModulesProxy = new NativeModulesProxy(reactContext, registry);
+      }
     }
+
+    if (moduleRegistry != null && moduleRegistry != mModulesProxy.getModuleRegistry()) {
+      Log.e("expo-modules-core", "NativeModuleProxy was configured with a different instance of the modules registry.");
+    }
+
+    return mModulesProxy;
   }
 }

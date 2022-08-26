@@ -91,15 +91,39 @@ public class ExpoFabricView: ExpoFabricViewObjC {
     }
   }
 
+  // MARK: - Privates
+
   /**
    Creates the content view using the associated view module.
    */
   private func initializeContentView() {
-    guard let view = moduleHolder?.definition.viewManager?.createView() ?? legacyViewManager?.view() else {
-      fatalError()
+    guard let appContext = appContext else {
+      fatalError(Exceptions.AppContextLost().reason)
+    }
+    guard let view = moduleHolder?.definition.viewManager?.createView(appContext: appContext) ?? legacyViewManager?.view() else {
+      fatalError("Cannot create a view from module '\(moduleName)'")
     }
     // Setting the content view automatically adds the view as a subview.
     contentView = view
+    installEventDispatchers()
+  }
+
+  /**
+   Installs convenient event dispatchers for declared events, so the view can just invoke the block to dispatch the proper event.
+   */
+  private func installEventDispatchers() {
+    guard let view = contentView, let moduleHolder = moduleHolder else {
+      return
+    }
+    moduleHolder.viewManager?.eventNames.forEach { eventName in
+      installEventDispatcher(forEvent: eventName, onView: view) { [weak self] (body: [String: Any]) in
+        if let self = self {
+          self.dispatchEvent(eventName, payload: body)
+        } else {
+          log.error("Cannot dispatch an event while the managing ExpoFabricView is deallocated")
+        }
+      }
+    }
   }
 
   // MARK: - Statics

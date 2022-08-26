@@ -9,14 +9,14 @@ struct ContextState {
 };
 
 struct ContextManager {
-  std::unordered_map<UEXGLContextId, ContextState> contextMap;
+  std::unordered_map<EXGLContextId, ContextState> contextMap;
   std::mutex contextLookupMutex;
-  UEXGLContextId nextId = 1;
+  EXGLContextId nextId = 1;
 };
 
 ContextManager manager;
 
-EXGLContextWithLock EXGLContextGet(UEXGLContextId id) {
+ContextWithLock ContextGet(EXGLContextId id) {
   std::lock_guard lock(manager.contextLookupMutex);
   auto iter = manager.contextMap.find(id);
   // if ctx is null then destroy is in progress
@@ -26,15 +26,15 @@ EXGLContextWithLock EXGLContextGet(UEXGLContextId id) {
   return {iter->second.ctx, std::shared_lock(iter->second.mutex)};
 }
 
-UEXGLContextId EXGLContextCreate() {
+EXGLContextId ContextCreate() {
   // Out of ids?
-  if (manager.nextId >= std::numeric_limits<UEXGLContextId>::max()) {
+  if (manager.nextId >= std::numeric_limits<EXGLContextId>::max()) {
     EXGLSysLog("Ran out of EXGLContext ids!");
     return 0;
   }
 
   std::lock_guard<std::mutex> lock(manager.contextLookupMutex);
-  UEXGLContextId ctxId = manager.nextId++;
+  EXGLContextId ctxId = manager.nextId++;
   if (manager.contextMap.find(ctxId) != manager.contextMap.end()) {
     EXGLSysLog("Tried to reuse an EXGLContext id. This shouldn't really happen...");
     return 0;
@@ -43,7 +43,7 @@ UEXGLContextId EXGLContextCreate() {
   return ctxId;
 }
 
-void EXGLContextDestroy(UEXGLContextId id) {
+void ContextDestroy(EXGLContextId id) {
   std::lock_guard lock(manager.contextLookupMutex);
 
   auto iter = manager.contextMap.find(id);
