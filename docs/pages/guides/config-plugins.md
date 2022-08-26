@@ -501,17 +501,17 @@ To make plugin development easier, we've added plugin support to [`expo-module-s
 
 ### Installing dependencies
 
-For plugins that support SDK 46+, it is recommended to use the following dependencies in a library that provides a config plugin:
+Use the following dependencies in a library that provides a config plugin:
 
 ```json
 {
   "dependencies": {},
   "devDependencies": {
     "@expo/config-types": "^46.0.0",
-    "expo": "^46.0.10"
+    "expo": "^46.0.0"
   },
   "peerDependencies": {
-    "expo": ">=46.0.10"
+    "expo": ">=46.0.0"
   },
   "peerDependenciesMeta": {
     "expo": {
@@ -526,7 +526,17 @@ For plugins that support SDK 46+, it is recommended to use the following depende
 
 ### Importing the config plugins package
 
-In your plugin, you should import `@expo/config-plugins` through the `expo` package:
+#### SDK 46 and lower
+
+For SDK 46 and lower, it's best practice to import the `@expo/config-plugins` package directly. This is installed automatically by the `expo` package.
+
+```js
+const { .. } = require('@expo/config-plugins');
+```
+
+#### SDK 47 and higher
+
+For SDK 47 and higher, it's best practice to import the `@expo/config-plugins` package through the `expo` package.
 
 ```js
 const { .. } = require('expo/config-plugins');
