@@ -143,7 +143,7 @@ Here are some reasons _Expo Prebuilding_ might **not** be the right fit for a pa
 
 ### React Native versioning
 
-`npx expo prebuild` generates native code based on the version of `expo` a project has installed, so a project with SDK 46 (`expo@46.0.0`) would generate a `react-native@0.69.4` app.
+`npx expo prebuild` generates native code based on the version of `expo` a project has installed, so a project with SDK 46 (`expo@46.0.0`) would generate a `react-native@0.69.5` app.
 
 Expo releases a new version approximately every quarter, and `react-native` does not follow a calendar based release schedule. This means there are times where you cannot use `npx expo prebuild` with the latest release of React Native. This could potentially be circumvented by using a custom [prebuild template](#templates) if you are willing to experiment. You can also mitigate this by cherry-picking any changes you need from the latest version of React Native into a fork and using that in your project.
 
