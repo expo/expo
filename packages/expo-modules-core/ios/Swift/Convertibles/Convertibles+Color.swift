@@ -2,9 +2,10 @@
 
 extension UIColor: ConvertibleArgument {
   public static func convert(from value: Any?) throws -> Self {
+    // swiftlint:disable force_cast
     if let value = value as? String {
       if let namedColorComponents = namedColors[value] {
-        return uiColorWithComponents(namedColorComponents)
+        return uiColorWithComponents(namedColorComponents) as! Self
       }
       return try Conversions.toColor(hexString: value) as! Self
     }
@@ -15,23 +16,26 @@ extension UIColor: ConvertibleArgument {
       return try Conversions.toColor(argb: UInt64(value)) as! Self
     }
     throw Conversions.ConvertingException<UIColor>(value)
+    // swiftlint:enable force_cast
   }
 }
 
 extension CGColor: ConvertibleArgument {
   public static func convert(from value: Any?) throws -> Self {
+    // swiftlint:disable force_cast
     do {
       return try UIColor.convert(from: value).cgColor as! Self
     } catch _ as Conversions.ConvertingException<UIColor> {
       // Rethrow `ConvertingError` with proper type
       throw Conversions.ConvertingException<CGColor>(value)
     }
+    // swiftlint:enable force_cast
   }
 }
 
-private func uiColorWithComponents<ColorType: UIColor>(_ components: [Double]) -> ColorType {
+private func uiColorWithComponents(_ components: [Double]) -> UIColor {
   let alpha = components.count > 3 ? components[3] : 1.0
-  return UIColor(red: components[0], green: components[1], blue: components[2], alpha: alpha) as! ColorType
+  return UIColor(red: components[0], green: components[1], blue: components[2], alpha: alpha)
 }
 
 /**
@@ -39,6 +43,7 @@ private func uiColorWithComponents<ColorType: UIColor>(_ components: [Double]) -
  and additionally the transparent color.
  */
 private let namedColors: [String: [Double]] = [
+  // swiftlint:disable number_separator
   "aliceblue": [0.9411764705882353, 0.9725490196078431, 1.0, 1.0],
   "antiquewhite": [0.9803921568627451, 0.9215686274509803, 0.8431372549019608, 1.0],
   "aqua": [0.0, 1.0, 1.0, 1.0],
@@ -187,5 +192,6 @@ private let namedColors: [String: [Double]] = [
   "white": [1.0, 1.0, 1.0, 1.0],
   "whitesmoke": [0.9607843137254902, 0.9607843137254902, 0.9607843137254902, 1.0],
   "yellow": [1.0, 1.0, 0.0, 1.0],
-  "yellowgreen": [0.6039215686274509, 0.803921568627451, 0.19607843137254902, 1.0],
+  "yellowgreen": [0.6039215686274509, 0.803921568627451, 0.19607843137254902, 1.0]
+  // swiftlint:enable number_separator
 ]
