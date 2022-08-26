@@ -6,7 +6,7 @@ import PossibleRedirectNotification from '~/components/plugins/PossibleRedirectN
 
 <PossibleRedirectNotification newUrl="/versions/latest/config/app/" />
 
-The Expo config (**app.json**, **app.config.js**) is used for configuring how a project loads in [Expo Go](https://expo.dev/expo-go), [Expo Prebuild](/workflow/prebuild.md) generation, and the OTA update manifest (think of this like an `index.html` for React Native apps).
+The Expo config (**app.json**, **app.config.js**, **app.config.ts**) is used for configuring how a project loads in [Expo Go](https://expo.dev/expo-go), [Expo Prebuild](/workflow/prebuild) generation, and the OTA update manifest (think of this like an `index.html` for React Native apps).
 
 The Expo config must be located at the root of your project, next to your **package.json**. Example:
 
