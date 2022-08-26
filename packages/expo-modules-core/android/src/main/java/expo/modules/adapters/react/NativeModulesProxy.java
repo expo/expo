@@ -247,4 +247,8 @@ public class NativeModulesProxy extends ReactContextBaseJavaModule {
     mModuleRegistry.onDestroy();
     mKotlinInteropModuleRegistry.onDestroy();
   }
+
+  ModuleRegistry getModuleRegistry() {
+    return mModuleRegistry;
+  }
 }

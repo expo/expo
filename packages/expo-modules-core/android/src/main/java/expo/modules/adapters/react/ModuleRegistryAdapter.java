@@ -1,5 +1,6 @@
 package expo.modules.adapters.react;
 
+import android.util.Log;
 import androidx.annotation.Nullable;
 
 import com.facebook.react.ReactPackage;
@@ -50,7 +51,8 @@ public class ModuleRegistryAdapter implements ReactPackage {
 
   @Override
   public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
-    ModuleRegistry moduleRegistry = mModuleRegistryProvider.get(reactContext);
+    NativeModulesProxy proxy = getOrCreateNativeModulesProxy(reactContext, null);
+    ModuleRegistry moduleRegistry = proxy.getModuleRegistry();
 
     for (InternalModule internalModule : mReactAdapterPackage.createInternalModules(reactContext)) {
       moduleRegistry.registerInternalModule(internalModule);
@@ -58,7 +60,7 @@ public class ModuleRegistryAdapter implements ReactPackage {
 
     List<NativeModule> nativeModules = getNativeModulesFromModuleRegistry(reactContext, moduleRegistry);
     if (mWrapperDelegateHolders != null) {
-      KotlinInteropModuleRegistry kotlinInteropModuleRegistry = getOrCreateNativeModulesProxy(reactContext, null).getKotlinInteropModuleRegistry();
+      KotlinInteropModuleRegistry kotlinInteropModuleRegistry = proxy.getKotlinInteropModuleRegistry();
       kotlinInteropModuleRegistry.updateModuleHoldersInViewManagers(mWrapperDelegateHolders);
     }
 
@@ -111,8 +113,10 @@ public class ModuleRegistryAdapter implements ReactPackage {
     return viewManagerList;
   }
 
-  private NativeModulesProxy getOrCreateNativeModulesProxy(ReactApplicationContext reactContext,
-                                                           @Nullable ModuleRegistry moduleRegistry) {
+  private synchronized NativeModulesProxy getOrCreateNativeModulesProxy(
+    ReactApplicationContext reactContext,
+    @Nullable ModuleRegistry moduleRegistry
+  ) {
     if (mModulesProxy == null) {
       ModuleRegistry registry = moduleRegistry != null ? moduleRegistry : mModuleRegistryProvider.get(reactContext);
       if (mModulesProvider != null) {
@@ -121,6 +125,11 @@ public class ModuleRegistryAdapter implements ReactPackage {
         mModulesProxy = new NativeModulesProxy(reactContext, registry);
       }
     }
+
+    if (moduleRegistry != null && moduleRegistry != mModulesProxy.getModuleRegistry()) {
+      Log.e("expo-modules-core", "NativeModuleProxy was configured with a different instance of the modules registry.");
+    }
+
     return mModulesProxy;
   }
 }
