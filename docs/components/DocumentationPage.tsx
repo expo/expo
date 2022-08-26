@@ -245,9 +245,10 @@ class DocumentationPageWithApiVersion extends React.Component<Props, State> {
             content="https://docs.expo.dev/static/images/twitter.png"
           />
 
-          {(this.props.version === 'unversioned' || this.isPreviewPath()) && (
-            <meta name="robots" content="noindex" />
-          )}
+          {(this.props.version === 'unversioned' ||
+            this.isPreviewPath() ||
+            this.isArchivePath()) && <meta name="robots" content="noindex" />}
+
           {this.props.version !== 'unversioned' && (
             <link rel="canonical" href={this.getCanonicalUrl()} />
           )}
