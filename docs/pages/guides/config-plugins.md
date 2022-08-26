@@ -537,6 +537,8 @@ const { .. } = require('@expo/config-plugins');
 
 #### SDK 47 and higher
 
+> Note: SDK 47 is scheduled to be released in Q3 2022
+
 The `@expo/config-plugins` package is re-exported from the `expo` package starting in SDK 47. For SDK 47 and higher, it's best practice to import the `@expo/config-plugins` package through the `expo` package.
 
 ```js
