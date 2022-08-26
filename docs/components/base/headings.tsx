@@ -12,7 +12,7 @@ const attributes = {
 
 const STYLES_H1 = css`
   ${h1}
-  margin-top: 0;
+  margin-top: ${spacing[2]}px;
   margin-bottom: ${spacing[6]}px;
   padding-bottom: ${spacing[4]}px;
   border-bottom: 1px solid ${theme.border.default};
@@ -26,7 +26,7 @@ export const H1 = ({ children }: HeadingProps) => (
 
 const STYLES_H2 = css`
   ${h2}
-  margin-bottom: ${spacing[4]}px;
+  margin-bottom: ${spacing[2]}px;
   margin-top: ${spacing[8]}px;
 
   code {
@@ -45,7 +45,7 @@ export const H2 = ({ children }: HeadingProps) => (
 
 const STYLES_H3 = css`
   ${h3}
-  margin-bottom: ${spacing[4]}px;
+  margin-bottom: ${spacing[1.5]}px;
   margin-top: ${spacing[6]}px;
 
   code {
@@ -64,8 +64,8 @@ export const H3 = ({ children }: HeadingProps) => (
 
 const STYLES_H4 = css`
   ${h4}
-  margin-top: ${spacing[3]}px;
-  margin-bottom: ${spacing[3]}px;
+  margin-top: ${spacing[6]}px;
+  margin-bottom: ${spacing[1]}px;
 
   code {
     ${h4}

@@ -13,7 +13,7 @@ const attributes = {
 
 const STYLES_PARAGRAPH = css`
   ${paragraph}
-  margin-bottom: ${spacing[6]}px;
+  margin-bottom: ${spacing[4]}px;
 
   & + ul {
     margin-top: -${spacing[2]}px;

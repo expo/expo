@@ -2,7 +2,7 @@ import { css } from '@emotion/react';
 import { theme, typography } from '@expo/styleguide';
 
 export const h1 = css({
-  ...typography.headers.default.huge,
+  ...typography.headers.default.h1,
   color: theme.text.default,
 });
 
@@ -22,6 +22,6 @@ export const h4 = css({
 });
 
 export const paragraph = css({
-  ...typography.fontSizes[16],
+  ...typography.body.paragraph,
   color: theme.text.default,
 });
