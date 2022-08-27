@@ -3,6 +3,7 @@
 #ifdef __cplusplus
 
 #import <vector>
+#import <unordered_map>
 #import <jsi/jsi.h>
 
 namespace jsi = facebook::jsi;
@@ -10,6 +11,8 @@ namespace jsi = facebook::jsi;
 @class EXAppContext;
 
 namespace expo {
+
+using SharedJSIObject = std::shared_ptr<jsi::Object>;
 
 class JSI_EXPORT ExpoModulesHostObject : public jsi::HostObject {
 public:
@@ -25,6 +28,7 @@ public:
 
 private:
   EXAppContext *appContext;
+  std::unordered_map<std::string, SharedJSIObject> modulesCache;
 
 }; // class ExpoModulesHostObject
 
