@@ -147,7 +147,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
     override val name = "PanGestureHandler"
 
     override fun create(context: Context?): PanGestureHandler {
-      return PanGestureHandler(context)
+      return PanGestureHandler(context!!)
     }
 
     override fun configure(handler: PanGestureHandler, config: ReadableMap) {
