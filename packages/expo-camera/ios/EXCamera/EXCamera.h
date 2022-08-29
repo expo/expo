@@ -1,11 +1,8 @@
 #import <AVFoundation/AVFoundation.h>
 #import <UIKit/UIKit.h>
-#import <EXCamera/EXCameraManager.h>
 #import <ExpoModulesCore/EXModuleRegistry.h>
 #import <ExpoModulesCore/EXAppLifecycleListener.h>
 #import <ExpoModulesCore/EXCameraInterface.h>
-
-@class EXCameraManager;
 
 static const int EXFlashModeTorch = 3;
 
