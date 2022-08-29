@@ -140,7 +140,7 @@ public class ImagePickerModule: Module, OnMediaPickingResultHandler {
     let options = pickingContext.options
 
     // selection limit = 1 --> single selection, reflects the old picker behavior
-    configuration.selectionLimit = options.allowsMultipleSelection ? options.selectionLimit : 1
+    configuration.selectionLimit = options.allowsMultipleSelection ? options.selectionLimit : SINGLE_SELECTION
     configuration.filter = options.mediaTypes.toPickerFilter()
     if #available(iOS 15, *) {
       configuration.selection = options.orderedSelection ? .ordered : .default
