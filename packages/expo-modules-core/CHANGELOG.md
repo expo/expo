@@ -22,6 +22,7 @@
 - Automatically convert records to dicts when returned by the function. ([#18824](https://github.com/expo/expo/pull/18824) by [@tsapeta](https://github.com/tsapeta))
 - Closures passed to definition components are now implicitly capturing `self` on iOS. ([#18831](https://github.com/expo/expo/pull/18831) by [@tsapeta](https://github.com/tsapeta))
 - Support for CSS named colors in `UIColor` and `CGColor` convertibles on iOS. ([#18845](https://github.com/expo/expo/pull/18845) by [@tsapeta](https://github.com/tsapeta))
+- Lazy load building the module's JavaScript object from the definition on iOS (already implemented on Android). ([#18863](https://github.com/expo/expo/pull/18863) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🐛 Bug fixes
 
