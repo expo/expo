@@ -129,6 +129,7 @@ config.watchFolders = [__dirname, ...Object.values(monorepoPackages)];
 // Add the monorepo workspaces as `extraNodeModules` to Metro.
 // If your monorepo tooling creates workspace symlinks in the `node_modules` folder,
 // you can either add symlink support to Metro or set the `extraNodeModules` to avoid the symlinks.
+// See: https://facebook.github.io/metro/docs/configuration/#extranodemodules
 config.resolver.extraNodeModules = monorepoPackages;
 
 // 2. Let Metro know where to resolve packages and in what order
