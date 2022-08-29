@@ -49,7 +49,7 @@ You can run any command with the `--help` or `-h` flag to learn more about it:
 
 ## Develop
 
-Start a development server for working on your project by running:
+Start a development server to work on your project by running:
 
 <Terminal cmd={['$ npx expo start']} />
 
@@ -85,7 +85,7 @@ Other available options are:
 - `--port`: Port to start the dev server on (does not apply to Webpack or [tunnel URLs](#tunneling)). Default: **19000**.
 - `--https`: Start the dev server using a secure origin. This is currently only supported on web.
 
-You can force the URL to be any value with the `EXPO_PACKAGER_PROXY_URL` environment variable, for example:
+You can force the URL to be any value with the `EXPO_PACKAGER_PROXY_URL` environment variable. For example:
 
 <Terminal cmd={[
 'export EXPO_PACKAGER_PROXY_URL=http://expo.dev',
@@ -180,7 +180,7 @@ You can compile an iOS app for production by running:
 
 This build is not automatically code signed for submission to the Apple App Store. `npx expo run:ios` should mostly be used to test bugs that only show up in production builds. Native code signing requires several network requests and is prone to many different types of errors from the Apple servers. To generate a production build that is code signed for the App Store, we recommend using [EAS Build](/build/introduction).
 
-When you compile your app onto a Simulator, the Simulator's native error logs will be piped to the Expo CLI process in the terminal. This is useful for quickly seeing bugs that may cause a fatal error, for example missing permission messages. Error piping is not available for physical iOS devices.
+When you compile your app onto a Simulator, the Simulator's native error logs will be piped to the Expo CLI process in the terminal. This is useful for quickly seeing bugs that may cause a fatal error. For example, missing permission messages. Error piping is not available for physical iOS devices.
 
 You can debug using `lldb` and all of the native Apple debugging tools by opening the project in Xcode and rebuilding from Xcode:
 
@@ -267,7 +267,7 @@ Evaluate the Expo config (**app.json**, or **app.config.js**) by running:
 '$ npx expo config',
 ]} cmdCopy="npx expo config" />
 
-- `--full`: Include all project config data
+- `--full`: Include all project config data.
 - `--json`: Output in JSON format, useful for converting an `app.config.js` to an `app.config.json`.
 - `-t, --type`: [Type of config](#config-type) to show.
 
@@ -275,13 +275,13 @@ Evaluate the Expo config (**app.json**, or **app.config.js**) by running:
 
 There are three different config types that are generated from the Expo config:
 
-- `public`: The manifest file for use with OTA updates, think of this like an `index.html` file's `<head />` element but for native apps.
+- `public`: The manifest file to use with OTA updates. Think of this like an `index.html` file's `<head />` element but for native apps.
 - `prebuild`: The config that is used for [Expo Prebuild](/workflow/prebuild) including async modifiers. This is the only time the config is not serializable.
 - `introspect`: A subset of the `prebuild` config that only shows in-memory modifications like `Info.plist` or `AndroidManifest.xml` changes. Learn more about [introspection](/guides/config-plugins#introspection).
 
 ## Install
 
-Unlike the web, React Native is not backwards compatible, meaning npm packages often need to be the exact right version for the currently installed copy of `react-native` in your project. Expo CLI provides a best-effort tool for doing this using a list of popular packages and the known working version combinations. Simply use the `install` command as a drop-in replacement for `npm install`:
+Unlike the web, React Native is not backwards compatible. This means that npm packages often need to be the exact right version for the currently installed copy of `react-native` in your project. Expo CLI provides a best-effort tool for doing this using a list of popular packages and the known working version combinations. Simply use the `install` command as a drop-in replacement for `npm install`:
 
 <Terminal cmd={[
 '$ npx expo install expo-camera',
@@ -302,7 +302,7 @@ You can directly pass arguments to the underlying package manager by using the `
 
 ### Version validation
 
-You can also perform validation and correction with the `--fix` and `--check` flags:
+You can perform validation and correction with the `--check` and `--fix` flags:
 
 - `--check`: Check which installed packages need to be updated.
 - `--fix`: Automatically update any invalid package versions.
@@ -314,7 +314,7 @@ Example:
 '$ npx expo install --check',
 ]} cmdCopy="npx expo install --check" />
 
-`npx expo install --check` prompts you to install incorrect packages locally and exits with non-zero in CI, meaning you can use this to do continuous immutable validation. In contrast `npx expo install --fix` will always fix packages if needed, regardless of the environment.
+`npx expo install --check` prompts you about packages that are installed incorrectly. It also prompts about installing the these packages to their compatible versions locally. It exits with non-zero in Continuous Integration (CI). This means you can use this to do continuous immutable validation. In contrast, `npx expo install --fix` will always fix packages if needed, regardless of the environment.
 
 You can validate specific packages by passing them:
 
