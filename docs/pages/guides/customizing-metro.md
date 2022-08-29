@@ -158,7 +158,7 @@ Here are all of the [default Uglify options](https://github.com/facebook/metro/b
 
 By default, Metro uses `uglify-es` to minify code for production environments (`npx expo export`). According to [this benchmark](https://github.com/privatenumber/minification-benchmarks) `uglify` generally produces the smallest bundles but it isn't the fastest minifier. Here are some alternative packages you can use for minification:
 
-### Minification: ESBuild
+### Minification: esbuild
 
 You can use [`esbuild`](https://esbuild.github.io/) to minify exponentially faster than `uglify-es` and `terser`. Just follow this guide: [`metro-minify-esbuild` usage](https://github.com/EvanBacon/metro-minify-esbuild#usage).
 
