@@ -23,7 +23,7 @@ For this tutorial, we provide two different ways to get started:
 - [Initialize with the starter template](#initialize-with-the-starter-template)
 - [Manually initialize with `create-expo-app`](#manually-initialize-with-create-expo-app)
 
-Choose a way to initialize your app and open the project repository in your favorite code editor or IDE after initializing it. Throughout this tutorial, we use VSCode for our examples.
+Choose a way to initialize your app and open the project repository in your favorite code editor or IDE after initializing it. Throughout this tutorial, we use VS Code for our examples.
 
 ### Initialize with the starter template
 
