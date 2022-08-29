@@ -36,6 +36,7 @@ const STYLES_UNORDERED_LIST = css`
 const STYLES_NO_LIST_STYLE = css({
   listStyle: 'none',
   marginLeft: 0,
+  marginBottom: spacing[3],
 
   li: {
     marginLeft: '0.25rem',
