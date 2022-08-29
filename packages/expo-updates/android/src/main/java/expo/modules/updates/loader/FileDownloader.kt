@@ -78,7 +78,7 @@ open class FileDownloader(context: Context) {
               callback.onSuccess(destination, hash)
             }
           } catch (e: Exception) {
-            logger.error("Failed to download file to destination $destination: ${e.localizedMessage}", UpdatesErrorCode.UpdateFailedToLoad)
+            logger.error("Failed to download file to destination $destination: ${e.localizedMessage}", UpdatesErrorCode.AssetsFailedToLoad)
             callback.onFailure(e)
           }
         }
