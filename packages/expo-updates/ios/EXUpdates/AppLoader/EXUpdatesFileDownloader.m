@@ -256,7 +256,7 @@ const NSInteger EXUpdatesFileDownloaderErrorCodeCodeSigningSignatureError = 1048
                                      userInfo:@{
       NSLocalizedDescriptionKey: @"Could not read multipart manifest response",
     }];
-    [self->_logger error:error.userInfo[NSLocalizedDescriptionKey] code:EXUpdatesErrorCodeAssetsFailedToLoad];
+    [self->_logger error:error.localizedDescription code:EXUpdatesErrorCodeAssetsFailedToLoad];
     errorBlock(error);
     return;
   }
