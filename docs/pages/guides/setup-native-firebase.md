@@ -13,7 +13,7 @@ This will guide you through a series of steps to create your own Firebase projec
 
 ## Setup
 
-Follow the official [React Native Firebase documentation](https://rnfirebase.io/#expo) to get started with native Firebase packages in custom development builds.
+Follow the official [React Native Firebase documentation](https://rnfirebase.io/#expo) to get started with native Firebase packages in [development builds](/development/introduction).
 
 ## Manual setup
 
@@ -75,4 +75,4 @@ After following the iOS and Android setup, you can optionally configure your pro
 - Install the `react-native-firebase` packages (e.g. `yarn add @react-native-firebase/app @react-native-firebase/auth` etc..)
 - Rebuild with `npx expo run:ios` or `npx expo run:android`
 
-Continue further on the [react-native-firebase](https://rnfirebase.io/) website.
+Continue further on the [react-native-firebase](https://rnfirebase.io/#installation) website.
