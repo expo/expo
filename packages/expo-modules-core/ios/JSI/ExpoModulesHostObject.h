@@ -13,6 +13,7 @@ namespace jsi = facebook::jsi;
 namespace expo {
 
 using SharedJSIObject = std::shared_ptr<jsi::Object>;
+using UniqueJSIObject = std::unique_ptr<jsi::Object>;
 
 class JSI_EXPORT ExpoModulesHostObject : public jsi::HostObject {
 public:
@@ -28,7 +29,7 @@ public:
 
 private:
   EXAppContext *appContext;
-  std::unordered_map<std::string, SharedJSIObject> modulesCache;
+  std::unordered_map<std::string, UniqueJSIObject> modulesCache;
 
 }; // class ExpoModulesHostObject
 

@@ -23,7 +23,7 @@ jsi::Value ExpoModulesHostObject::get(jsi::Runtime &runtime, const jsi::PropName
     modulesCache.erase(moduleName);
     return jsi::Value::undefined();
   }
-  if (SharedJSIObject cachedObject = modulesCache[moduleName]) {
+  if (UniqueJSIObject &cachedObject = modulesCache[moduleName]) {
     return jsi::Value(runtime, *cachedObject);
   }
 
@@ -31,12 +31,11 @@ jsi::Value ExpoModulesHostObject::get(jsi::Runtime &runtime, const jsi::PropName
   LazyObject::Shared moduleLazyObject = std::make_shared<LazyObject>(^SharedJSIObject(jsi::Runtime &runtime) {
     return [[appContext getNativeModuleObject:nsModuleName] getShared];
   });
-  SharedJSIObject moduleObject = std::make_shared<jsi::Object>(jsi::Object::createFromHostObject(runtime, moduleLazyObject));
 
   // Save the module's lazy host object for later use.
-  modulesCache[moduleName] = moduleObject;
+  modulesCache[moduleName] = std::make_unique<jsi::Object>(jsi::Object::createFromHostObject(runtime, moduleLazyObject));
 
-  return jsi::Value(runtime, *moduleObject);
+  return jsi::Value(runtime, *modulesCache[moduleName]);
 }
 
 void ExpoModulesHostObject::set(jsi::Runtime &runtime, const jsi::PropNameID &name, const jsi::Value &value) {
