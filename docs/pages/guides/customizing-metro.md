@@ -5,7 +5,7 @@ title: Customizing Metro
 import { Terminal } from '~/ui/components/Snippet';
 import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
 
-When you run `expo start`, the CLI uses [Metro](https://facebook.github.io/metro/) to bundle JavaScript for Android and iOS platforms. By default Expo CLI will use the Metro configuration defined in the [`@expo/metro-config`](https://github.com/expo/expo-cli/tree/main/packages/metro-config) package (re-exported from `expo` as `expo/metro-config` in SDK 41 and greater). You can add custom options for Metro by creating a file named **metro.config.js** in the project root directory.
+When you run `npx expo start`, the Expo CLI uses [Metro](https://facebook.github.io/metro/) to bundle JavaScript for Android and iOS platforms. By default Expo CLI will use the Metro configuration defined in the [`@expo/metro-config`](https://github.com/expo/expo-cli/tree/main/packages/metro-config) package. You can add custom options for Metro by creating a file named **metro.config.js** in the project root directory.
 
 The **metro.config.js** file looks like this:
 
@@ -27,7 +27,7 @@ module.exports = async () => {
 
 You can find a complete list of supported options in the Metro docs: [Configuring Metro](https://facebook.github.io/metro/docs/configuration). Please note that you only need to specify the options that you want to customize: the custom config will be merged with the defaults from `expo/metro-config` when using Expo CLI.
 
-To add to a value, such as an array of file extensions, defined in the default configuration, you can access the defaults using the `getDefaultConfig(projectRoot)` function defined in `@expo/metro-config`. Add `@expo/metro-config` to the dependencies of your project to do this. In SDK +41 you can import from `expo/metro-config`.
+To add to a value, such as an array of file extensions, defined in the default configuration, you can access the defaults using the `getDefaultConfig(projectRoot)` function defined in `expo/metro-config`.
 
 ## Web Support
 
@@ -184,6 +184,8 @@ config.transformer.minifierConfig = {
 
 module.exports = config;
 ```
+
+<!-- TODO: ESBuild minifier is pretty good -->
 
 ### Source map exploration
 
