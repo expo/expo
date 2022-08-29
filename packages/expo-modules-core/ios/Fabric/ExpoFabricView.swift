@@ -97,8 +97,11 @@ public class ExpoFabricView: ExpoFabricViewObjC {
    Creates the content view using the associated view module.
    */
   private func initializeContentView() {
-    guard let view = moduleHolder?.definition.viewManager?.createView() ?? legacyViewManager?.view() else {
-      fatalError()
+    guard let appContext = appContext else {
+      fatalError(Exceptions.AppContextLost().reason)
+    }
+    guard let view = moduleHolder?.definition.viewManager?.createView(appContext: appContext) ?? legacyViewManager?.view() else {
+      fatalError("Cannot create a view from module '\(moduleName)'")
     }
     // Setting the content view automatically adds the view as a subview.
     contentView = view

@@ -4,7 +4,6 @@ title: Publishing Websites
 
 ## Creating a Build
 
-- Optimize the assets for speed - `npx expo-optimize` (formerly `expo optimize`)
 - Bundle the project for production - `npx expo export:web` (`expo build:web` in the legacy Expo CLI).
   - Creates a production ready static bundle in the `web-build/` directory. Don't edit this folder directly.
   - Uses Webpack to [optimize the project.][webpack-optimize]

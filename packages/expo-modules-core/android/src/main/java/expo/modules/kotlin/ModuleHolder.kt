@@ -11,10 +11,9 @@ import expo.modules.kotlin.exception.MethodNotFoundException
 import expo.modules.kotlin.exception.exceptionDecorator
 import expo.modules.kotlin.jni.JavaScriptModuleObject
 import expo.modules.kotlin.modules.Module
-import expo.modules.kotlin.modules.ProcessedModuleDefinition
 
 class ModuleHolder(val module: Module) {
-  val definition = ProcessedModuleDefinition(module.definition(), this)
+  val definition = module.definition()
 
   val name get() = definition.name
 
@@ -51,7 +50,7 @@ class ModuleHolder(val module: Module) {
     val method = definition.asyncFunctions[methodName]
       ?: throw MethodNotFoundException()
 
-    method.call(args, promise)
+    method.call(this, args, promise)
   }
 
   /**

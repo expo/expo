@@ -1,9 +1,9 @@
 import { css } from '@emotion/react';
-import { theme, breakpoints, SearchIcon, HamburgerIcon, iconSize, spacing } from '@expo/styleguide';
-import React, { useState } from 'react';
+import { theme, breakpoints, HamburgerIcon, iconSize, spacing } from '@expo/styleguide';
+import React from 'react';
 
+import { Search } from '../Search';
 import { Logo } from './Logo';
-import { Search } from './Search';
 import { ThemeSelector } from './ThemeSelector';
 
 import { Button } from '~/ui/components/Button';
@@ -23,36 +23,27 @@ export const Header = ({
   isMobileMenuVisible,
   setMobileMenuVisible,
 }: HeaderProps) => {
-  const [isMobileSearchVisible, setMobileSearchVisible] = useState(false);
   return (
     <>
       <nav css={[containerStyle, isMobileMenuVisible]}>
         <div css={[columnStyle, leftColumnStyle]}>
           <Logo />
         </div>
-        <Search version="latest" />
-        <div css={[columnStyle, rightColumnStyle, hideOnMobileStyle]}>
-          <ThemeSelector />
-        </div>
-        <div css={[columnStyle, rightColumnStyle, showOnMobileStyle]}>
-          <Button
-            theme="transparent"
-            css={[mobileButtonStyle, isMobileSearchVisible && mobileButtonActiveStyle]}
-            onClick={() => {
-              setMobileMenuVisible(false);
-              setMobileSearchVisible(prevState => !prevState);
-            }}>
-            <SearchIcon size={iconSize.small} />
-          </Button>
-          <Button
-            theme="transparent"
-            css={[mobileButtonStyle, isMobileMenuVisible && mobileButtonActiveStyle]}
-            onClick={() => {
-              setMobileMenuVisible(!isMobileMenuVisible);
-              setMobileSearchVisible(false);
-            }}>
-            <HamburgerIcon size={iconSize.small} />
-          </Button>
+        <div css={[columnStyle, rightColumnStyle]}>
+          <Search />
+          <div css={hideOnMobileStyle}>
+            <ThemeSelector />
+          </div>
+          <div css={showOnMobileStyle}>
+            <Button
+              theme="transparent"
+              css={[mobileButtonStyle, isMobileMenuVisible && mobileButtonActiveStyle]}
+              onClick={() => {
+                setMobileMenuVisible(!isMobileMenuVisible);
+              }}>
+              <HamburgerIcon size={iconSize.small} />
+            </Button>
+          </div>
         </div>
       </nav>
       {isMobileMenuVisible && (
@@ -70,11 +61,6 @@ export const Header = ({
           <SidebarHead sidebarActiveGroup={sidebarActiveGroup} />
           {sidebar}
         </div>
-      )}
-      {isMobileSearchVisible && (
-        <nav css={[containerStyle, showOnMobileStyle]}>
-          <Search mobile version="latest" css={mobileSearchInputStyle} />
-        </nav>
       )}
     </>
   );
@@ -148,12 +134,9 @@ const mobileButtonActiveStyle = css`
   background-color: ${theme.background.secondary};
 `;
 
-const mobileSearchInputStyle = css`
-  margin: 0;
-`;
-
 const mobileSidebarStyle = css`
   background-color: ${theme.background.secondary};
   height: calc(100vh - (60px * 2));
-  overflow: auto;
+  overflow-y: auto;
+  overflow-x: hidden;
 `;

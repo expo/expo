@@ -14,9 +14,9 @@ Let's go through some of our recommended practices when it comes to each of thes
 
 ## Development errors
 
-These are way more common, and we won't delve too much into how to approach these. Usually, debugging when running your app locally with Expo CLI is pretty easy, thanks to [all the tools available in the Expo Go app](#developer-menu).
+These are way more common, and we won't delve too much into how to approach these. Usually, debugging when running your app locally with [Expo CLI](/workflow/expo-cli/) is pretty easy, thanks to [all the tools available in the Expo Go app](#developer-menu).
 
-Sometimes you'll be able to tell exactly what's wrong just by the [stacktrace](../get-started/errors.md#redbox-errors-and-stack-traces), but other times the error message is a little more cryptic. For errors that aren't as intuitive to solve, here's a good list of steps to take:
+Sometimes you'll be able to tell exactly what's wrong just by the stack trace](../get-started/errors.md#redbox-errors-and-stack-traces), but other times the error message is a little more cryptic. For errors that aren't as intuitive to solve, here's a good list of steps to take:
 
 - Search for the error message in Google and [Stack Overflow](https://stackoverflow.com/questions), it's likely you're not the first person to ever run into this
 - **Isolate the code that's throwing the error**. This step is _vital_ in fixing obscure errors. To do this:
@@ -179,9 +179,9 @@ React DevTools can also be paired with remote debugging, allowing you to inspect
 
 You can debug Expo apps using the Chrome debugger tools. Rather than running your app's JavaScript on your phone, it will instead run it inside of a webworker in Chrome. You can then set breakpoints, inspect variables, execute code, etc, as you would when debugging a web app.
 
-- To ensure the best debugging experience, first change your host type to `npx expo start --lan` or `npx expo start --localhost`. If you use `npx expo start --tunnel` with debugging enabled, you are likely to experience so much latency that your app is unusable.
+- To ensure the best debugging experience, first, change your host type to `npx expo start --lan` or `npx expo start --localhost`. If you use `npx expo start --tunnel` with debugging enabled, you are likely to experience so much latency that your app is unusable.
 
-- If you are using `npx expo start --lan`, make sure your device is on the same wifi network as your development machine. This may not work on some public networks. `npx expo start --localhost` will not work for iOS unless you are in the simulator, and it only work on Android if your device is connected to your machine via usb.
+- If you are using `npx expo start --lan`, make sure your device is on the same wifi network as your development machine. This may not work on some public networks. `npx expo start --localhost` will not work for iOS unless you are in the simulator, and it only works on Android if your device is connected to your machine via USB.
 
 - Open the app on your device, reveal the developer menu then tap on `Debug JS Remotely`. This should open up a Chrome tab with the URL `http://localhost:19000/debugger-ui`. From there, you can set breakpoints and interact through the JavaScript console. Shake the device and stop Chrome debugging when you're done.
 

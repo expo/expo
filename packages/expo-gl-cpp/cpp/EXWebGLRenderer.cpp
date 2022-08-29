@@ -3,7 +3,7 @@
 #include "EXGLContextManager.h"
 #include "EXJsiUtils.h"
 #include "EXWebGLMethods.h"
-#include "jsi/jsi.h"
+#include <jsi/jsi.h>
 
 namespace expo {
 namespace gl_cpp {
@@ -246,7 +246,7 @@ void ensurePrototypes(jsi::Runtime &runtime) {
 
 void installConstants(jsi::Runtime &runtime, jsi::Object &gl) {
 #define GL_CONSTANT(name) gl.setProperty(runtime, #name, static_cast<double>(GL_##name));
-#include "EXGLConstants.def"
+#include "EXWebGLConstants.def"
 #undef GL_CONSTANT
 }
 

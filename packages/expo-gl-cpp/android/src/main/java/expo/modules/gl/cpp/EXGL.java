@@ -2,7 +2,7 @@ package expo.modules.gl.cpp;
 
 import com.facebook.soloader.SoLoader;
 
-// Java bindings for UEXGL.h interface
+// Java bindings for EXGL.h interface
 public class EXGL {
   static {
     SoLoader.loadLibrary("expo-gl");

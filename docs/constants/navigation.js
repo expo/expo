@@ -21,7 +21,7 @@ const easDirectories = [
   'eas-update',
   'eas-metadata',
 ];
-/** Manual list of directories to categorize as "Archive content" */
+/** Manual list of directories to categorize as "Archive" */
 const archiveDirectories = ['archive'];
 /** Private preview section which isn't linked in the documentation */
 const previewDirectories = ['preview'];
@@ -372,10 +372,7 @@ const reference = VERSIONS.reduce(
     [version]: [
       makeSection('Configuration Files', pagesFromDir(`versions/${version}/config`)),
       makeSection('Expo SDK', pagesFromDir(`versions/${version}/sdk`)),
-      makeSection(
-        'React Native',
-        sortLegacyReactNative(pagesFromDir(`versions/${version}/react-native`))
-      ),
+      makeSection('React Native', sortLegacyReactNative(version), { expanded: true }),
     ],
   }),
   {}
@@ -481,36 +478,17 @@ function sortAlphabetical(pages) {
 /**
  * Sort the list of React Native pages by legacy custom sorting.
  */
-function sortLegacyReactNative(pages) {
-  const order = [
-    'Learn the Basics',
-    'Props',
-    'State',
-    'Style',
-    'Height and Width',
-    'Layout with Flexbox',
-    'Handling Text Input',
-    'Handling Touches',
-    'Using a ScrollView',
-    'Using List Views',
-    'Networking',
-    'Platform Specific Code',
-    'Navigating Between Screens',
-    'Images',
-    'Animations',
-    'Accessibility',
-    'Timers',
-    'Performance',
-    'Gesture Responder System',
-    'JavaScript Environment',
-    'Direct Manipulation',
-    'Color Reference',
+function sortLegacyReactNative(version) {
+  const pages = pagesFromDir(`versions/${version}/react-native`);
+
+  const components = [
     'ActivityIndicator',
     'Button',
     'DatePickerIOS',
     'DrawerLayoutAndroid',
     'FlatList',
     'Image',
+    'ImageBackground',
     'InputAccessoryView',
     'KeyboardAvoidingView',
     'ListView',
@@ -519,6 +497,7 @@ function sortLegacyReactNative(pages) {
     'NavigatorIOS',
     'Picker',
     'PickerIOS',
+    'Pressable',
     'ProgressBarAndroid',
     'ProgressViewIOS',
     'RefreshControl',
@@ -544,11 +523,17 @@ function sortLegacyReactNative(pages) {
     'ViewPagerAndroid',
     'VirtualizedList',
     'WebView',
+  ];
+
+  const apis = [
     'AccessibilityInfo',
     'ActionSheetIOS',
     'Alert',
     'AlertIOS',
     'Animated',
+    'Animated.Value',
+    'Animated.ValueXY',
+    'Appearance',
     'AppState',
     'AsyncStorage',
     'BackAndroid',
@@ -556,35 +541,68 @@ function sortLegacyReactNative(pages) {
     'Clipboard',
     'DatePickerAndroid',
     'Dimensions',
+    'DynamicColorIOS',
     'Easing',
-    'Image Style Props',
     'ImageStore',
     'InteractionManager',
     'Keyboard',
-    'Layout Props',
     'LayoutAnimation',
     'ListViewDataSource',
     'NetInfo',
     'PanResponder',
     'PixelRatio',
+    'Platform',
+    'PlatformColor',
     'Settings',
-    'Shadow Props',
     'Share',
     'StatusBarIOS',
     'StyleSheet',
     'Systrace',
-    'Text Style Props',
     'TimePickerAndroid',
     'ToastAndroid',
     'Transforms',
     'Vibration',
     'VibrationIOS',
+  ];
+
+  const hooks = ['useColorScheme', 'useWindowDimensions'];
+
+  const props = [
+    'Image Style Props',
+    'Layout Props',
+    'Shadow Props',
+    'Text Style Props',
     'View Style Props',
   ];
 
-  return pages.sort((a, b) => {
-    const aIndex = order.indexOf(a.name);
-    const bIndex = order.indexOf(b.name);
-    return aIndex < 0 || bIndex < 0 ? bIndex - aIndex : aIndex - bIndex;
-  });
+  const types = [
+    'LayoutEvent Object Type',
+    'PressEvent Object Type',
+    'React Node Object Type',
+    'Rect Object Type',
+    'ViewToken Object Type',
+  ];
+
+  return [
+    makeGroup(
+      'Components',
+      pages.filter(page => components.includes(page.name))
+    ),
+    makeGroup(
+      'Props',
+      pages.filter(page => props.includes(page.name))
+    ),
+    makeGroup(
+      'APIs',
+      pages.filter(page => apis.includes(page.name))
+    ),
+    makeGroup(
+      'Hooks',
+      pages.filter(page => hooks.includes(page.name))
+    ),
+    makeGroup(
+      'Types',
+      pages.filter(page => types.includes(page.name))
+    ),
+  ];
 }

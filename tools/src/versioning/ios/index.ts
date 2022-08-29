@@ -1232,10 +1232,6 @@ function _getReactNativeTransformRules(versionPrefix, reactPodName) {
       pattern: `s/@"${versionPrefix}RCT"/@"RCT"/g`,
     },
     {
-      // Unversion EXGL_CPP imports: `<ABI37_0_0EXGL_CPP/` => `<EXGL_CPP/`
-      pattern: `s/<${versionPrefix}EXGL_CPP\\//<EXGL_CPP\\//g`,
-    },
-    {
       // Unprefix everything that got prefixed twice or more times.
       flags: '-Ei',
       pattern: `s/(${versionPrefix}){2,}/\\1/g`,

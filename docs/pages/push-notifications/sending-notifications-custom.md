@@ -129,7 +129,7 @@ request.write(
 request.end();
 ```
 
-> This example is **very** minimal, and includes no error handling nor connection pooling. For testing purposes, you should refer to [this example code](https://github.com/expo/fyi/blob/master/sendNotificationToAPNS.js), instead.
+> This example is **very** minimal, and includes no error handling nor connection pooling. For testing purposes, you should refer to [this example code instead](https://github.com/expo/fyi/expo/master/docs/public/static/code/sendNotificationToAPNS.js).
 
 APNs provides their full list of supported fields in the notification payload [here](https://developer.apple.com/library/archive/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/PayloadKeyReference.html#//apple_ref/doc/uid/TP40008194-CH17-SW1).
 

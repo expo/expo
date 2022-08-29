@@ -9,10 +9,11 @@ import Constants, { ExecutionEnvironment } from 'expo-constants';
 import * as Font from 'expo-font';
 import { NativeModulesProxy, Platform } from 'expo-modules-core';
 import React from 'react';
-import { AppRegistry, ErrorUtils, StyleSheet } from 'react-native';
+import ReactNative, { AppRegistry, ErrorUtils, StyleSheet } from 'react-native';
 
 import DevAppContainer from './environment/DevAppContainer';
 import { createErrorHandler } from './errors/ExpoErrorManager';
+import { createProxyForNativeModules } from './proxies/NativeModules';
 
 // Represents an app running in the store client or an app built with the legacy `expo build` command.
 // `false` when running in bare workflow, custom dev clients, or `eas build`s (managed or bare).
@@ -82,4 +83,13 @@ if (__DEV__) {
       originalSetWrapperComponentProvider(() => PatchedProviderComponent);
     };
   }
+
+  const proxiedNativeModules = createProxyForNativeModules(ReactNative.NativeModules);
+  Object.defineProperty(ReactNative, 'NativeModules', {
+    get() {
+      return proxiedNativeModules;
+    },
+    configurable: true,
+    enumerable: true,
+  });
 }

@@ -7,8 +7,7 @@ packageName: 'expo'
 import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
-Sets the initial React component to render natively in the app's root React Native view on iOS, Android, and web.
-Also adds dev-only debugging tools for use with `npx expo start`.
+Sets the initial React component to render natively in the app's root React Native view on iOS, Android, and the web. It also adds dev-only debugging tools for use with `npx expo start`.
 
 <PlatformsSection android emulator ios simulator web />
 
@@ -39,13 +38,13 @@ Update the iOS `ios/<name>/AppDelegate.(m|mm|swift)` file to use the **moduleNam
 
 ## API
 
-```js
+```ts
 import { registerRootComponent } from 'expo';
 ```
 
 ### `registerRootComponent(component)`
 
-Sets the initial React component to render natively in your app's root React native view (`RCTView`).
+Sets the initial React component to render natively in your app's root React Native view (`RCTView`).
 
 This function does the following:
 
@@ -83,9 +82,9 @@ if you are using a custom entry file.
 
 For example, let's say you want to make `"src/main.js"` the entry file
 for your app -- maybe you don't like having JavaScript files in the
-project root, for example. First, set this in **package.json**:
+project root. First, set this in **package.json**:
 
-```javascript
+```json
 {
   "main": "src/main.js"
 }
@@ -94,7 +93,7 @@ project root, for example. First, set this in **package.json**:
 Then in `"src/main.js"`, make sure you call `registerRootComponent` and
 pass in the component you want to render at the root of the app.
 
-```javascript
+```tsx
 import { registerRootComponent } from 'expo';
 import { View } from 'react-native';
 
@@ -104,11 +103,3 @@ function App() {
 
 registerRootComponent(App);
 ```
-
-### I created my project before SDK 18 and I want to remove `registerRootComponent`, how do I do this?
-
-- Before continuing, make sure your project is running on SDK 18 or later.
-- Open up **main.js** (or if you changed it, whatever your `"main"` is in **package.json**).
-- Set `"main"` to `"node_modules/expo/AppEntry.js"`.
-- Delete the `registerRootComponent` call from **main.js** and put `export default` before your root component's class declaration.
-- Rename **main.js** to **App.js**.

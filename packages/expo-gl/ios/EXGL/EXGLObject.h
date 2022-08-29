@@ -1,12 +1,12 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
 #import <Foundation/Foundation.h>
-#import <EXGL_CPP/UEXGL.h>
+#import <EXGL_CPP/EXGL.h>
 
 @interface EXGLObject : NSObject
 
-@property (nonatomic, assign) UEXGLContextId exglCtxId;
-@property (nonatomic, assign) UEXGLObjectId exglObjId;
+@property (nonatomic, assign) EXGLContextId exglCtxId;
+@property (nonatomic, assign) EXGLObjectId exglObjId;
 
 // For internal use by children -- use `[EXGLObject createWithConfig:...]` above to
 // create the `EXGLObject` of the right type

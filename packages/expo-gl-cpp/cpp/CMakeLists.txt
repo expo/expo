@@ -10,8 +10,8 @@ set(BUILD_DIR ${CMAKE_SOURCE_DIR}/build)
 
 add_library(
     ${PACKAGE_NAME} SHARED
-    ./UEXGL.cpp
-    ./UEXGL.h
+    ./EXGL.cpp
+    ./EXGL.h
     ./EXGLImageUtils.cpp
     ./EXGLImageUtils.h
     ./EXGLContext.cpp
@@ -22,8 +22,8 @@ add_library(
     ./EXWebGLMethods.h
     ./EXWebGLRenderer.cpp
     ./EXWebGLRenderer.h
-    ./TypedArrayApi.cpp
-    ./TypedArrayApi.h
+    ./EXTypedArrayApi.cpp
+    ./EXTypedArrayApi.h
     ./EXGLJniApi.cpp)
 
 # Extracted AAR: ${BUILD_DIR}/react-native-0*/jni/${ANDROID_ABI}

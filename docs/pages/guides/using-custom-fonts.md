@@ -77,7 +77,7 @@ Let's take a look at a minimal example that uses Inter font family. It uses [`us
 <SnackInline label="Minimal Example of Using Custom Font" dependencies={['expo-font', 'expo-splash-screen']} files={{ 'assets/fonts/Inter-Black.otf': 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/44b1541a96341780b29112665c66ac67' }}>
 
 ```jsx
-import { useEffect, useCallback } from 'react';
+import { useCallback } from 'react';
 import { Text, View, StyleSheet } from 'react-native';
 /* @info Import useFonts hook from 'expo-font'. */
 import { useFonts } from 'expo-font';
@@ -86,20 +86,13 @@ import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 /* @end */
 
+/* @info This prevents SplashScreen from auto hiding while the fonts are loaded. */
+SplashScreen.preventAutoHideAsync();
+
 export default function App() {
   const [fontsLoaded] = useFonts({
     'Inter-Black': require('./assets/fonts/Inter-Black.otf'),
   });
-
-  useEffect(() => {
-    /* @info This asynchronous function prevents SplashScreen from auto hiding while the fonts are loaded. */
-    async function prepare() {
-      await SplashScreen.preventAutoHideAsync();
-    }
-    /* @end */
-
-    prepare();
-  }, []);
 
   /* @info After the custom fonts have loaded, we can hide the splash screen and display the app screen. */
   const onLayoutRootView = useCallback(async () => {
