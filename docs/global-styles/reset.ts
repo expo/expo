@@ -1,8 +1,6 @@
 import { css } from '@emotion/react';
 import { theme, typography } from '@expo/styleguide';
 
-import * as Constants from '~/constants/theme';
-
 export const globalReset = css`
   html,
   body,

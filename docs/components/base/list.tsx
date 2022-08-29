@@ -31,6 +31,11 @@ const STYLES_UNORDERED_LIST = css`
       margin-bottom: 0;
     }
   }
+
+  ol,
+  ul {
+    margin-left: ${spacing[1]}px;
+  }
 `;
 
 const STYLES_NO_LIST_STYLE = css({
@@ -55,14 +60,8 @@ export const UL = ({ children, hideBullets }: ULProps) => (
 
 // TODO(jim): Get anchors working properly for ordered lists.
 const STYLES_ORDERED_LIST = css`
-  ${paragraph}
+  ${STYLES_UNORDERED_LIST}
   list-style: decimal;
-  margin-left: 1rem;
-  margin-bottom: 1rem;
-
-  .anchor-icon {
-    display: none;
-  }
 `;
 
 type OLProps = React.PropsWithChildren<object>;
@@ -74,12 +73,13 @@ export const OL = ({ children }: OLProps) => (
 );
 
 const STYLES_LIST_ITEM = css`
-  margin-left: 1rem;
-  padding: 0.25rem 0;
+  margin-left: ${spacing[4]}px;
+  padding: ${spacing[1]}px 0;
+
   :before {
     font-size: 130%;
     line-height: 0;
-    margin: 0 0.5rem 0 -1rem;
+    margin: 0 ${spacing[2]}px 0 -${spacing[4]}px;
     position: relative;
     color: ${theme.text.default};
   }
