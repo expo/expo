@@ -22,15 +22,17 @@ function sortLongest(obj: string[]): string[] {
 }
 
 // TODO: Revisit and test after run code is merged.
-export async function getSchemesForIosAsync(projectRoot: string) {
+export async function getSchemesForIosAsync(projectRoot: string): Promise<string[]> {
   try {
     const infoPlistBuildProperty = getInfoPlistPathFromPbxproj(projectRoot);
-    debug(`application Info.plist path:`, infoPlistBuildProperty);
+    debug(`ios application Info.plist path:`, infoPlistBuildProperty);
     if (infoPlistBuildProperty) {
       const configPath = path.join(projectRoot, 'ios', infoPlistBuildProperty);
       const rawPlist = fs.readFileSync(configPath, 'utf8');
       const plistObject = plist.parse(rawPlist);
-      return sortLongest(IOSConfig.Scheme.getSchemesFromPlist(plistObject));
+      const schemes = IOSConfig.Scheme.getSchemesFromPlist(plistObject);
+      debug(`ios application schemes:`, schemes);
+      return sortLongest(schemes);
     }
   } catch {}
   // No ios folder or some other error
@@ -38,11 +40,13 @@ export async function getSchemesForIosAsync(projectRoot: string) {
 }
 
 // TODO: Revisit and test after run code is merged.
-export async function getSchemesForAndroidAsync(projectRoot: string) {
+export async function getSchemesForAndroidAsync(projectRoot: string): Promise<string[]> {
   try {
     const configPath = await AndroidConfig.Paths.getAndroidManifestAsync(projectRoot);
     const manifest = await AndroidConfig.Manifest.readAndroidManifestAsync(configPath);
-    return sortLongest(await AndroidConfig.Scheme.getSchemesFromManifest(manifest));
+    const schemes = await AndroidConfig.Scheme.getSchemesFromManifest(manifest);
+    debug(`android application schemes:`, schemes);
+    return sortLongest(schemes);
   } catch {
     // No android folder or some other error
     return [];
