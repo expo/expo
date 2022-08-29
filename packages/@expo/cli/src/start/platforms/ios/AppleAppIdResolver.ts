@@ -1,7 +1,6 @@
 import { IOSConfig } from '@expo/config-plugins';
 import plist from '@expo/plist';
 import fs from 'fs';
-import * as glob from 'glob';
 
 import { AppIdResolver } from '../AppIdResolver';
 
@@ -13,14 +12,15 @@ export class AppleAppIdResolver extends AppIdResolver {
     super(projectRoot, 'ios', 'ios.bundleIdentifier');
   }
 
-  /** @return `true` if the app has valid AppDelegate file */
+  /** @return `true` if the app has valid `*.pbxproj` file */
   async hasNativeProjectAsync(): Promise<boolean> {
-    const found = glob.sync('ios/*/AppDelegate.@(m|mm|swift)', {
-      absolute: true,
-      cwd: this.projectRoot,
-      ignore: ['**/@(Carthage|Pods|vendor|node_modules)/**'],
-    });
-    return !!found.length;
+    try {
+      // Never returns nullish values.
+      return !!IOSConfig.Paths.getAllPBXProjectPaths(this.projectRoot).length;
+    } catch (error: any) {
+      debug('Expected error checking for native project:', error);
+      return false;
+    }
   }
 
   async resolveAppIdFromNativeAsync(): Promise<string | null> {

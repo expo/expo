@@ -1,6 +1,5 @@
 import { getConfig } from '@expo/config';
 import { IOSConfig } from '@expo/config-plugins';
-import { vol } from 'memfs';
 
 import { asMock } from '../../../../__tests__/asMock';
 import { AppleAppIdResolver } from '../AppleAppIdResolver';
@@ -9,6 +8,9 @@ jest.mock('@expo/config-plugins', () => ({
   IOSConfig: {
     BundleIdentifier: {
       getBundleIdentifierFromPbxproj: jest.fn(),
+    },
+    Paths: {
+      getAllPBXProjectPaths: jest.fn(() => '/path/to/file'),
     },
   },
 }));
@@ -27,24 +29,15 @@ jest.mock('@expo/config', () => ({
 // Most cases are tested in the superclass.
 
 describe('hasNativeProjectAsync', () => {
-  beforeEach(() => {
-    vol.reset();
-  });
-
   it(`returns true when the AppDelegate file exists`, async () => {
-    vol.fromJSON(
-      {
-        '/ios/HelloWorld/AppDelegate.mm': '...',
-      },
-      '/'
-    );
-
+    asMock(IOSConfig.Paths.getAllPBXProjectPaths).mockReturnValueOnce(['/path/to/file']);
     const resolver = new AppleAppIdResolver('/');
     expect(await resolver.hasNativeProjectAsync()).toBe(true);
   });
   it(`returns false when the AppDelegate getter throws`, async () => {
-    vol.fromJSON({}, '/');
-
+    asMock(IOSConfig.Paths.getAllPBXProjectPaths).mockImplementationOnce(() => {
+      throw new Error('file missing');
+    });
     const resolver = new AppleAppIdResolver('/');
     expect(await resolver.hasNativeProjectAsync()).toBe(false);
   });
