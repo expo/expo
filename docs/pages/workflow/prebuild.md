@@ -127,15 +127,15 @@ Cross-platform configuration like the app icon, name, splash screen, and so on m
 
 ### Dependency side effects
 
-Many complex native packages require additional setup beyond installing and linking. For example, a camera library requires permission settings be added to the iOS `Info.plist` and the Android `AndroidManifest.xml` file, and modifying your **app/build.gradle** to add a new repository. This additional setup can be considered a disjointed side effect of a package. Pasting required side effect code into your project's native files can lead to difficult native compilation errors, and it's also code that you now own and maintain.
+Many complex native packages require additional setup beyond installing and [autolinking][autolinking]. For example, a camera library requires permission settings be added to the iOS `Info.plist` and the Android `AndroidManifest.xml` file. This additional setup can be considered a configuration side effect of a package. Pasting required side effect code into your project's native files can lead to difficult native compilation errors, and it's also code that you now own and maintain.
 
-**With Prebuild** library authors, who know how configure their library better than anyone, can create a testable and versioned script (config plugin) to automate adding the required configuration side effects. This means library side effects can be more expressive, powerful, and stable. For native code side effects, we also provide: [AppDelegate Subscribers](/modules/appdelegate-subscribers) and [Android Lifecycle Listeners](/modules/android-lifecycle-listeners) which come standard in the default [prebuild template](#templates).
+**With Prebuild** library authors, who know how to configure their library better than anyone, can create a testable and versioned script called a [config plugin][config-plugins], to automate adding the required configuration side effects for their library. This means library side effects can be more expressive, powerful, and stable. For native code side effects, we also provide: [AppDelegate Subscribers](/modules/appdelegate-subscribers) and [Android Lifecycle Listeners](/modules/android-lifecycle-listeners) which come standard in the default [prebuild template](#templates).
 
 ### Orphaned code
 
 When you uninstall a package you have to be certain you removed all of the side effects required to make that package work. If you miss anything, it leads to orphaned code that you cannot trace back to any particular package, this code builds up and makes your project harder to understand and maintain.
 
-**With Prebuild** the only side effect is the config plugin entry in a project's Expo config (**app.json**), which will fail to evaluate when the corresponding package has been uninstalled, meaning a lot less orphaned configuration.
+**With Prebuild** the only side effect is the [config plugin][config-plugins] in a project's Expo config (**app.json**), which will throw an error when the corresponding node module has been uninstalled, meaning a lot less orphaned configuration.
 
 ## Anti-pitch
 
