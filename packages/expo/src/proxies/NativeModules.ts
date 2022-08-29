@@ -16,6 +16,7 @@ const PROPS_TO_IGNORE: Set<string> = new Set([
   'PlatformLocalStorage',
   'RNC_AsyncSQLiteDBStorage',
   'RNCAsyncStorage',
+  'RNGetRandomValues',
   'RNVectorIconsManager',
   'RNVectorIconsModule',
   /**
