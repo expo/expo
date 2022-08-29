@@ -97,12 +97,6 @@ Your app can be opened from the Expo Go app or in a standalone app, and it can b
 - **In the middle**, we are in the Expo Go app and we are loading a published app. Notice that again the splash image does not appear immediately.
 - **On the right**, we are in a standalone app. Notice that the splash image appears immediately.
 
-### Using a `.xib` file as the launch screen for the standalone iOS app
-
-For iOS, you can also choose to use a `.xib` interface builder document as the splash screen of the standalone iOS app. Simply set `ios.splash.xib` in **app.json** to the path to your `.xib` file. Using a `.xib` file is not compatible with `expo prebuild` and EAS builds.
-
-> **Note**: `.xib` file will only be used in the standalone app. The splash image will continue to be used in the Expo Go app.
-
 ### Splash screen API limitations on Android
 
 Splash screen behaves in most cases exactly the same as in iOS case.
@@ -129,7 +123,3 @@ The following exists are known to us and will be resolved shortly.
 ### iOS Caching
 
 Splash Screens on iOS standalone apps can sometimes encounter a caching issue where the previous image will flash before showing the new, intended image. When this occurs, we recommend you try power cycling your device and uninstalling and re-installing the application. However,the caching sometimes can persist for a day or two so be patient if the aforementioned steps were unable to resolve the issue.
-
-### Migrating from the `loading` API
-
-The `loading` API is deprecated as of SDK 22 and has a strictly worse user experience, so we recommend you change over to `splash` as soon as you have time - the `loading` API will be removed in favor of `splash` in SDK 25.
