@@ -3,7 +3,6 @@
 #import <ExpoModulesCore/EXBarCodeScannerProviderInterface.h>
 #import <EXCamera/EXCamera.h>
 #import <EXCamera/EXCameraUtils.h>
-#import <EXCamera/EXCameraManager.h>
 #import <EXCamera/EXCameraCameraPermissionRequester.h>
 #import <ExpoModulesCore/EXAppLifecycleService.h>
 #import <ExpoModulesCore/EXUtilities.h>
