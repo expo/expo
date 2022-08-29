@@ -6,7 +6,7 @@
 
 ### ⚠️ Notices
 
-- Removed deprecated module definition components that started with a lowercase letter.
+- Removed deprecated module definition components that started with a lowercase letter. ([#18851](https://github.com/expo/expo/pull/18851) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🎉 New features
 
