@@ -85,7 +85,7 @@ export const globalReset = css`
   mark,
   audio,
   video {
-    font-weight: 400;
+    font-weight: normal;
     box-sizing: border-box;
     margin: 0;
     padding: 0;
@@ -118,15 +118,9 @@ export const globalReset = css`
   }
 
   body {
+    ${typography.body.paragraph}
     font-family: ${typography.fontFaces.regular};
     text-rendering: optimizeLegibility;
-    font-size: 16px;
-  }
-
-  @media screen and (max-width: ${Constants.breakpoints.mobile}) {
-    body {
-      font-size: 14px;
-    }
   }
 
   ::selection {

@@ -26,7 +26,7 @@ export const H1 = ({ children }: HeadingProps) => (
 
 const STYLES_H2 = css`
   ${h2}
-  margin-bottom: ${spacing[2]}px;
+  margin-bottom: ${spacing[3]}px;
   margin-top: ${spacing[8]}px;
 
   code {
