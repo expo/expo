@@ -36,7 +36,7 @@ The following properties can be used to customize your PWA:
 | `web.barStyle`                                              |                               | `<meta name="apple-mobile-web-app-status-bar-style" />` |
 | <InlineCode>web.splash \| ios.splash \| splash</InlineCode> |                               | `<link rel="apple-touch-startup-image" >`               |
 
-If you need finer control on how the PWA is generated, you should eject the **web/index.html** and add it there.
+If you need finer control on how the PWA is generated, you should generate the **web/index.html** with `npx expo customize` and add it manually.
 
 ### Icons
 
@@ -113,7 +113,7 @@ export default {
 
 Under the hood `@expo/webpack-config` uses a CLI called `expo-pwa`. If you want more control on how PWAs are generated, you can use the `expo-pwa` CLI directly.
 
-Firstly, you'll need to eject the **web/index.html** with `npx expo customize`. Now you can generate custom files and link them in the **web/index.html**. `@expo/webpack-config` will check to see if assets are linked first before attempting to generate new ones.
+Firstly, you'll need to generate the **web/index.html** with `npx expo customize`. Now you can generate custom files and link them in the **web/index.html**. `@expo/webpack-config` will check to see if assets are linked first before attempting to generate new ones.
 
 #### manifest.json
 
