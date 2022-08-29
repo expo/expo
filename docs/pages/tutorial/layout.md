@@ -119,7 +119,7 @@ Our amazing designers provided a placeholder image that we will use throughout t
 
 You can download the above image and save it inside the **assets/images** directory of your Expo app. If you are starting from scratch, you must create **images** sub-directory inside **assets**.
 
-> If you are using the starter template, you will find this image inside the **assets/images** directory with a file name of `background-image.png`.
+> If you are using the starter template, find this image inside the **assets/images** directory with a file name of `background-image.png`.
 
 Next, import and use the `Image` component from React Native to display the image from the static resource. Let's also import the `background-image.png` in the **App.js**:
 

@@ -40,7 +40,7 @@ To add one, our designers provided us with a splash screen image. Here is the im
 
 <ImageSpotlight src="/static/images/tutorial/splash.png" style={{ maxWidth: 150 }} containerStyle={{ marginBottom: 0 }} />
 
-> If you use the starter template, all assets are available at **assets/splash.png**.
+> If you are using the starter template, the asset is available at **assets/splash.png**.
 
 You can download the above image and save it in the **assets/** folder and name **splash.png**. By default, an Expo project comes with a placeholder splash screen image. You can replace that with the image you downloaded.
 
@@ -102,7 +102,7 @@ Our designer provided us with this 1024px width x 1024px height app icon:
 
 <ImageSpotlight src="/static/images/tutorial/icon.png" style={{ maxWidth: 150 }} />
 
-> If you are using the starter template, all assets are available at the **assets/icon.png**.
+> If you are using the starter template, the asset is available at the **assets/icon.png**.
 
 Save this image to the **assets** directory inside your project and call it **icon.png** to replace the existing file. Then, reload the app. You will now see the icon in various places in Expo Go, and after submitting the app build to the stores, the icon will display on a user's home screen.
 

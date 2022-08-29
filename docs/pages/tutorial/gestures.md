@@ -30,7 +30,7 @@ To install these libraries, run the following command:
 
 <Terminal cmd={['$ npx expo install react-native-gesture-handler react-native-reanimated']} />
 
-> If you are using the starter template, you can skip this step. The library is already installed for you.
+> If you are using the starter template, you can skip this step. The library is already installed in the template.
 
 The `react-native-reanimated` library requires an extra configuration step:
 
@@ -50,7 +50,7 @@ module.exports = function (api) {
 };
 ```
 
-> If you are using the starter template, you can skip this step. The configuration is already done for you.
+> If you are using the starter template, you can skip this step. The configuration is already done in **app.json** file.
 
 ## Step 2: Enable gesture interactions
 

@@ -20,7 +20,7 @@ Install the `expo-image-picker` library in your Expo project by running the foll
 
 <Terminal cmd={['$ npx expo install expo-image-picker']} />
 
-> If you are using the starter template, you can skip this step.
+> If you are using the starter template, you can skip this step. The library is already installed in the template.
 
 This will tell npm (or yarn) to install a version of the library that is compatible with the Expo SDK version that your project uses.
 

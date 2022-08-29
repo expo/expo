@@ -419,6 +419,8 @@ Here is the output after this step:
 
 Let's implement a list of emoji in the modal's content. The list component uses a [`FlatList` from React Native](https://reactnative.dev/docs/flatlist) to display a horizontal list of emoji.
 
+<!-- TODO: Aman to add the GitHub template URL after its published -->
+
 Our designers have provided us with six emoji images to render them as a list. Download all of these assets from this [GitHub repo]() and then save the image files inside the **assets/images/** directory.
 
 > If you are using the starter template, all assets are available in the **assets/** folder.

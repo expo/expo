@@ -77,7 +77,7 @@ When you create a new project with `create-expo-app`, it uses the default [blank
 
 <Terminal cmd={['$ npx expo install react-native-web@~0.18.7 react-dom@18.0.0 @expo/webpack-config@^0.17.0']} />
 
-> If you have initialized your app with the starter template, you can skip this step.
+> If you have initialized your app with the starter template, you can skip this step. These dependencies are already installed in the template.
 
 Before running the above installation command, make sure to terminate `npx expo start` if it is already running the development server.
 
