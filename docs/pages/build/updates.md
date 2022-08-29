@@ -2,7 +2,7 @@
 title: Using EAS Update
 ---
 
-EAS Build includes some special affordances for Expo's [`expo-updates`](/versions/latest/sdk/updates.md) library. In particular, you can configure the `channel` property in **eas.json** and EAS Build will take care of updating it in your native project at build time. Not sure what a channel is? [Learn more about channels](eas-update/how-eas-update-works/#distributing-builds). This document covers concerns specific to using `expo-updates` with EAS Build; for more general information about configuring the expo-updates library with EAS Update, refer to the [EAS Update getting started doc](/eas-update/getting-started).
+EAS Build includes some special affordances for Expo's [`expo-updates`](/versions/latest/sdk/updates.md) library. In particular, you can configure the `channel` property in **eas.json** and EAS Build will take care of updating it in your native project at build time. Not sure what a channel is? [Learn more about channels](/eas-update/how-eas-update-works/#distributing-builds). This document covers concerns specific to using `expo-updates` with EAS Build; for more general information about configuring the expo-updates library with EAS Update, refer to the [EAS Update getting started doc](/eas-update/getting-started).
 
 ## Setting the channel for a build profile
 
