@@ -102,7 +102,7 @@ describe('openAsync', () => {
     });
 
     expect(resolveDeviceAsync).toHaveBeenCalledTimes(1);
-    expect(getInterstitialPageUrl).toHaveBeenCalledTimes(2);
+    expect(getInterstitialPageUrl).toHaveBeenCalledTimes(1);
 
     // Both Expo Go and dev build are checked
     expect(device.ensureExpoGoAsync).toHaveBeenCalledTimes(1);
