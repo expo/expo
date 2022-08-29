@@ -10,10 +10,7 @@ Writing to the logs in an Expo app works just like in the browser: use `console.
 
 When you run `npx expo start` and connect a device, console logs will show up in the terminal process. These logs are sent from the runtime to Expo CLI over web sockets, meaning the results are lower fidelity than connecting dev tools directly to the engine.
 
-You can view high fidelity logs and use advanced logging functions like `console.table` by doing either of the following:
-
-- Building a [custom dev client with Hermes](/guides/using-hermes), and [connecting the inspector](/guides/using-hermes#javascript-inspector-for-hermes).
-- Enabling [Remote Debugging](/workflow/glossary-of-terms.md#remote-debugging) **(not recommended)**.
+You can view **high fidelity** logs and use advanced logging functions like `console.table` by creating a _development build_ with [Hermes](/guides/using-hermes), and [connecting the inspector](/guides/using-hermes#javascript-inspector-for-hermes).
 
 ## Native logs
 
