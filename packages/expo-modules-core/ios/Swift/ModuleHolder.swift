@@ -101,6 +101,7 @@ public final class ModuleHolder {
     guard let runtime = appContext?.runtime else {
       return nil
     }
+    log.info("Creating JS object for module '\(name)'")
     return definition.build(inRuntime: runtime)
   }
 

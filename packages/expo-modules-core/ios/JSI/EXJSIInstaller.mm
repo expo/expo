@@ -3,6 +3,7 @@
 #import <ExpoModulesCore/EXJSIInstaller.h>
 #import <ExpoModulesCore/EXJavaScriptRuntime.h>
 #import <ExpoModulesCore/ExpoModulesHostObject.h>
+#import <ExpoModulesCore/LazyObject.h>
 #import <ExpoModulesCore/Swift.h>
 
 namespace jsi = facebook::jsi;
