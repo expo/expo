@@ -43,14 +43,14 @@ Once you have each of these: organization name, project name, DSN, and auth toke
 
 In your project directory, run:
 
-<Terminal cmd={['$ expo install sentry-expo']} />
+<Terminal cmd={['$ npx expo install sentry-expo']} />
 
 > If you're using SDK 39 or lower, run `yarn add sentry-expo@~3.0.0`
 
 `sentry-expo` also requires some additional dependencies, otherwise it won't work properly. To install them, run:
 
 <Terminal
-cmd={['$ expo install expo-application expo-constants expo-device expo-updates @sentry/react-native']}
+cmd={['$ npx expo install expo-application expo-constants expo-device expo-updates @sentry/react-native']}
 />
 
 ### Step 2: Code
@@ -166,7 +166,7 @@ Add `expo.plugins` to your project's `app.json` (or `app.config.js`) file:
 }
 ```
 
-If you directly edit your native `ios/` and `android/` directories (i.e. you have ejected your project, or have a bare workflow project), **you should not use the above `plugins` property**. Instead, use `yarn sentry-wizard -i reactNative -p ios android` to configure your native projects. This `sentry-wizard` command will add an extra:
+If you do not use [Expo Prebuild](/workflow/prebuild) (bare workflow), **you should not use the above `plugins` property**. Instead, use `yarn sentry-wizard -i reactNative -p ios android` to configure your native projects. This `sentry-wizard` command will add an extra:
 
 ```js
 import * as Sentry from '@sentry/react-native';
@@ -180,6 +180,8 @@ to your root project file (usually **App.js**), so make sure you remove it (but 
 
 ## Sourcemaps
 
+<!-- TODO: Drop `expo publish` mention -->
+
 With the `postPublish` hook in place, now all you need to do is run `expo publish` and the sourcemaps will be uploaded automatically. We automatically assign a unique release version for Sentry each time you hit publish, based on the version you specify in **app.json** and a release id on our backend -- this means that if you forget to update the version but hit publish, you will still get a unique Sentry release.
 
 > This hook can also be used as a `postExport` hook if you're [self-hosting your updates](../distribution/custom-updates-server.md).
@@ -192,15 +194,15 @@ With `expo-updates`, release builds of both iOS and Android apps will create and
 
 - Your `release` will automatically be set to Sentry's expected value- `${bundleIdentifier}@${version}+${buildNumber}` (iOS) or `${androidPackage}@${version}+${versionCode}` (Android).
 - Your `dist` will automatically be set to Sentry's expected value- `${buildNumber}` (iOS) or `${versionCode}` (Android).
-- The configuration for build time sourcemaps comes from the `ios/sentry.properties` and `android/sentry.properties` files. For more information, refer to [Sentry's documentation](https://docs.sentry.io/clients/java/config/#configuration-via-properties-file). If you're using the managed workflow, then we handle all of this setup for you via the [`plugin` you added above](#add-the-config-plugin).
+- The configuration for build time sourcemaps comes from the `ios/sentry.properties` and `android/sentry.properties` files. For more information, refer to [Sentry's documentation](https://docs.sentry.io/clients/java/config/#configuration-via-properties-file). If you're using [Expo Prebuild](/workflow/prebuild), then we handle all of this setup for you via the [`plugin` you added above](#add-the-config-plugin).
 
-> Please note that configuration for `expo publish` and `expo export` in bare and managed is still done via `app.json`.
+> Please note that configuration for `expo publish` and `npx expo export` for projects is still done via `app.json` regardless of if you're using [Expo Prebuild](/workflow/prebuild) or not.
 
 Skipping or misconfiguring either of these will result in sourcemaps not working, and thus you won't see proper stacktraces in your errors.
 
 ### Self-hosting updates?
 
-If you're self-hosting your updates (this means you run `expo export` instead of `expo publish`), you need to:
+If you're self-hosting your updates (this means you run `npx expo export` instead of `expo publish`), you need to:
 
 - replace `hooks.postPublish` in your **app.json** file with `hooks.postExport` (everything else stays the same)
 - add the `RewriteFrames` integration to your `Sentry.init` call like so:
