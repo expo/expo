@@ -1,5 +1,5 @@
 ---
-title: TypeScript
+title: Using TypeScript
 ---
 
 import { Terminal } from '~/ui/components/Snippet';
