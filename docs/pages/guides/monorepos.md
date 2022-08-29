@@ -77,18 +77,20 @@ We can configure that by creating a **metro.config.js** with the following conte
 > Learn more about customizing Metro in [our guide](/guides/customizing-metro).
 
 ```js
+// Learn more https://docs.expo.dev/guides/monorepos
 const { getDefaultConfig } = require('expo/metro-config');
 const path = require('path');
 
-// Find the workspace root, this can be replaced with `find-yarn-workspace-root`
-const workspaceRoot = path.resolve(__dirname, '../..');
+// Find the project and workspace directories
 const projectRoot = __dirname;
+// This can be replaced with `find-yarn-workspace-root`
+const workspaceRoot = path.resolve(projectRoot, '../..');
 
 const config = getDefaultConfig(projectRoot);
 
 // 1. Watch all files within the monorepo
 config.watchFolders = [workspaceRoot];
-// 2. Let Metro know where to resolve packages, and in what order
+// 2. Let Metro know where to resolve packages and in what order
 config.resolver.nodeModulesPaths = [
   path.resolve(projectRoot, 'node_modules'),
   path.resolve(workspaceRoot, 'node_modules'),
@@ -101,24 +103,41 @@ module.exports = config;
 
 <Collapsible summary="1. Why do we need to watch all files with the monorepo?">
 
-This option enables the app to refresh or reload when you edit imported files outside the app folder. It's important for libraries within your monorepo that are imported into your app. Without this setting, you must manually reload your app and possibly clear the Metro cache to see the changed library files.
+Metro has three separate stages in its bundling process, [documented here](https://facebook.github.io/metro/docs/concepts). During the first phase, **Resolution**, Metro resolves your app's required files and dependencies. Metro does that with the `watchFolders` option, which is set to the project directory by default. This default setting works great for apps that don't use a monorepo structure.
 
-As your monorepo increases in size, watching all files within the monorepo becomes slower. If you want to speed that up, you can (dynamically) watch the relevant paths to minimize the watchers. For example:
+When using monorepos, your app dependencies are split up into different directories. Each of these directories must be within the scope of the [watchFolders](https://facebook.github.io/metro/docs/configuration/#watchfolders). If a file is outside of that scope, Metro won't be able to find it. Setting this path to the root of your monorepo
+
+As your monorepo increases in size, watching all files within the monorepo becomes slower. If you want to speed that up, you can (dynamically) watch the relevant paths to minimize the watch scope. For example:
 
 ```js
+// Learn more https://docs.expo.dev/guides/monorepos
+const { getDefaultConfig } = require('expo/metro-config');
 const path = require('path');
-const workspaceRoot = path.resolve(__dirname, '../..');
 
-// If your monorepo tooling can give you a list of monorepo dependencies from a workspace,
-// you can automate this instead of hardcoding the paths.
-const appMonorepoPackages = ['ui', 'eslint-config'];
-const appPackagesPaths = appMonorepoPackages.map(
-  // Get the path of the package folder, not just the entry point.
-  packageName => path.resolve(workspaceRoot, 'packages', packageName)
-);
+const projectRoot = __dirname;
+const workspaceRoot = path.resolve(projectRoot, '../..');
 
-// 1. Watch the local app folder, and all related packages (limiting the watchers and speeding it up)
-config.watchFolders = [__dirname, ...appPackagesPaths];
+// If your monorepo tooling can give you the list of monorepo workspaces linked 
+// in your app workspace, you can automate this list instead of hardcoding them.
+const monorepoPackages = {
+  '@acme/api': path.resolve(workspaceRoot, 'packages/api'), 
+  '@acme/components': path.resolve(workspaceRoot, 'packages/components'),
+};
+
+// 1. Watch the local app folder, and all related packages (limiting the scope and speeding it up)
+config.watchFolders = [__dirname, ...Object.values(monorepoPackages)];
+// Add the monorepo workspaces as `extraNodeModules` to Metro.
+// If your monorepo tooling creates workspace symlinks in the `node_modules` folder,
+// you can either add symlink support to Metro or set the `extraNodeModules` to avoid the symlinks.
+config.resolver.extraNodeModules = monorepoPackages;
+
+// 2. Let Metro know where to resolve packages and in what order
+config.resolver.nodeModulesPaths = [
+  path.resolve(projectRoot, 'node_modules'),
+  path.resolve(workspaceRoot, 'node_modules'),
+];
+// 3. Force Metro to resolve (sub)dependencies only from the `nodeModulesPaths`
+config.resolver.disableHierarchicalLookup = true;
 ```
 
 </Collapsible>
