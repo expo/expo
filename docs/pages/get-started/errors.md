@@ -24,6 +24,6 @@ When you look at that file, on line 7, you will see that a variable called `rend
 
 Debugging errors is one of the most frustrating but satisfying parts of development. Remember that you're never alone. The **Expo community** and the React and React Native communities are great resources for help when you get stuck. There's a good chance someone else has run into your exact error. Make sure to read the documentation, search the [forums](https://forums.expo.dev/), [GitHub issues](https://github.com/expo/expo/issues/), and [StackOverflow](https://stackoverflow.com/).
 
-## Up Next
+## Up next
 
 We suggest [following a tutorial](../tutorial/planning.md) before proceeding to the rest of the documentation, this will guide you through building a simple but meaningful project. [Continue to the tutorial](../tutorial/planning.md).
