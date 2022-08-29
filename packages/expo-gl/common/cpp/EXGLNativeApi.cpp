@@ -1,5 +1,5 @@
-#include "EXGL.h"
-#include "EXGLContext.h"
+#include "EXGLNativeApi.h"
+#include "EXGLNativeContext.h"
 #include "EXGLContextManager.h"
 
 using namespace expo::gl_cpp;

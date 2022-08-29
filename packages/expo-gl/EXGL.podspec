@@ -15,20 +15,17 @@ Pod::Spec.new do |s|
   s.static_framework = true
 
   s.dependency 'ExpoModulesCore'
-
-  s.compiler_flags = '-x objective-c++ -std=c++1z -fno-aligned-allocation'
-  s.pod_target_xcconfig = {
-    'CLANG_WARN_COMMA' => 'NO',
-    'CLANG_WARN_UNGUARDED_AVAILABILITY' => 'NO',
-    'GCC_PREPROCESSOR_DEFINITIONS' => '$(inherited) GLES_SILENCE_DEPRECATION=1'
-  }
-  
   s.dependency 'React-jsi'
 
+  s.compiler_flags = '-x objective-c++ -std=c++1z'
+  s.pod_target_xcconfig = {
+    'GCC_PREPROCESSOR_DEFINITIONS' => '$(inherited) GLES_SILENCE_DEPRECATION=1'
+  }
+
   if !$ExpoUseSources&.include?(package['name']) && ENV['EXPO_USE_SOURCE'].to_i == 0 && File.exist?("#{s.name}.xcframework") && Gem::Version.new(Pod::VERSION) >= Gem::Version.new('1.10.0')
-    s.source_files = "#{s.name}/**/*.h"
+    s.source_files = "ios/**/*.h"
     s.vendored_frameworks = "#{s.name}.xcframework"
   else
-    s.source_files = "#{s.name}/**/*.{h,m,mm}", "common/cpp/**/*.{h,cpp}"
+    s.source_files = "ios/**/*.{h,m,mm}", "common/cpp/**/*.{h,cpp}"
   end
 end

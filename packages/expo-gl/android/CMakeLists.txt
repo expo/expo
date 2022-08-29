@@ -11,12 +11,12 @@ set(COMMON_DIR ${CMAKE_SOURCE_DIR}/../common/cpp)
 
 add_library(
     ${PACKAGE_NAME} SHARED
-    ${COMMON_DIR}/EXGL.cpp
-    ${COMMON_DIR}/EXGL.h
+    ${COMMON_DIR}/EXGLNativeApi.cpp
+    ${COMMON_DIR}/EXGLNativeApi.h
     ${COMMON_DIR}/EXGLImageUtils.cpp
     ${COMMON_DIR}/EXGLImageUtils.h
-    ${COMMON_DIR}/EXGLContext.cpp
-    ${COMMON_DIR}/EXGLContext.h
+    ${COMMON_DIR}/EXGLNativeContext.cpp
+    ${COMMON_DIR}/EXGLNativeContext.h
     ${COMMON_DIR}/EXGLContextManager.cpp
     ${COMMON_DIR}/EXGLContextManager.h
     ${COMMON_DIR}/EXWebGLMethods.cpp

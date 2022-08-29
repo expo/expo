@@ -1,5 +1,5 @@
 #include "EXWebGLRenderer.h"
-#include "EXGLContext.h"
+#include "EXGLNativeContext.h"
 #include "EXGLContextManager.h"
 #include "EXJsiUtils.h"
 #include "EXWebGLMethods.h"
