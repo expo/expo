@@ -1,5 +1,5 @@
 import { css } from '@emotion/react';
-import {darkTheme, spacing, typography} from '@expo/styleguide';
+import { darkTheme, spacing } from '@expo/styleguide';
 import React from 'react';
 
 import { Snippet } from '../Snippet';

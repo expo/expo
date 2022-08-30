@@ -3,7 +3,7 @@
 exports[`APISectionUtils.CommentTextBlock component basic comment 1`] = `
 <div>
   <p
-    class="css-gvfsz4-P"
+    class="css-6jxvia-P"
     data-text="true"
   >
     This is the basic comment.
@@ -23,11 +23,11 @@ exports[`APISectionUtils.CommentTextBlock component basic inline comment 1`] = `
 exports[`APISectionUtils.CommentTextBlock component comment with example 1`] = `
 <div>
   <p
-    class="css-gvfsz4-P"
+    class="css-6jxvia-P"
     data-text="true"
   >
     <strong
-      class="css-cyicbq-B"
+      class="css-1qx481h-B"
     >
       Android only.
     </strong>
@@ -38,7 +38,7 @@ exports[`APISectionUtils.CommentTextBlock component comment with example 1`] = `
       rel="noopener noreferrer"
     >
       <code
-        class="inline css-10jm9cu-InlineCode"
+        class="inline css-ov7own-InlineCode"
       >
         Install Referrer API
       </code>
@@ -62,7 +62,7 @@ from the Google Play Store. In practice, the referrer URL may not be a complete,
       data-text="true"
     >
       <code
-        class="css-tqrxwq"
+        class="css-3rj4bb"
       >
         <span
           class="token keyword"
