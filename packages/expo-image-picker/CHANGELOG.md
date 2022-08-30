@@ -8,6 +8,8 @@
 
 ### 🎉 New features
 
+- The new `PHPickerViewController` is now default picker interface on iOS 14+. ([#18871](https://github.com/expo/expo/pull/18871) by [@barthap](https://github.com/barthap))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

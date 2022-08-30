@@ -91,7 +91,7 @@ public class ImagePickerModule: Module, OnMediaPickingResultHandler {
                                         options: options,
                                         imagePickerHandler: imagePickerDelegate)
 
-    if #available(iOS 14, *), options.allowsMultipleSelection && sourceType != .camera {
+    if #available(iOS 14, *), !options.allowsEditing && sourceType != .camera {
       self.launchMultiSelectPicker(pickingContext: pickingContext)
     } else {
       self.launchLegacyImagePicker(sourceType: sourceType, pickingContext: pickingContext)
@@ -139,7 +139,8 @@ public class ImagePickerModule: Module, OnMediaPickingResultHandler {
     var configuration = PHPickerConfiguration(photoLibrary: PHPhotoLibrary.shared())
     let options = pickingContext.options
 
-    configuration.selectionLimit = options.selectionLimit
+    // selection limit = 1 --> single selection, reflects the old picker behavior
+    configuration.selectionLimit = options.allowsMultipleSelection ? options.selectionLimit : SINGLE_SELECTION
     configuration.filter = options.mediaTypes.toPickerFilter()
     if #available(iOS 15, *) {
       configuration.selection = options.orderedSelection ? .ordered : .default
