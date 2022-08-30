@@ -119,6 +119,7 @@ export const globalReset = css`
     ${typography.body.paragraph}
     font-family: ${typography.fontFaces.regular};
     text-rendering: optimizeLegibility;
+    line-height: 1;
   }
 
   ::selection {
