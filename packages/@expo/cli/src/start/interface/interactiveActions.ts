@@ -19,13 +19,20 @@ export class DevServerManagerActions {
   ) {
     // If native dev server is running, print its URL.
     if (this.devServerManager.getNativeDevServerPort()) {
+      const devServer = this.devServerManager.getDefaultDevServer();
       try {
-        const qrCodeUrl = this.devServerManager.getDefaultDevServer().getQRCodeUrl()!;
-        // even if the QR code points to the interstitial page, we want to display the native
-        // runtime URL
-        const nativeRuntimeUrl = this.devServerManager.getDefaultDevServer().getNativeRuntimeUrl()!;
+        const nativeRuntimeUrl = devServer.getNativeRuntimeUrl()!;
+        const interstitialPageUrl = devServer.getInterstitialPageUrl();
 
-        printQRCode(qrCodeUrl);
+        printQRCode(interstitialPageUrl ?? nativeRuntimeUrl);
+
+        if (interstitialPageUrl) {
+          Log.log(
+            printItem(
+              chalk`Choose an app to open your project at {underline ${interstitialPageUrl}}`
+            )
+          );
+        }
         Log.log(printItem(chalk`Metro waiting on {underline ${nativeRuntimeUrl}}`));
         // TODO: if development build, change this message!
         Log.log(printItem('Scan the QR code above with Expo Go (Android) or the Camera app (iOS)'));
@@ -34,7 +41,7 @@ export class DevServerManagerActions {
         if (error.code !== 'NO_DEV_CLIENT_SCHEME') {
           throw error;
         } else {
-          const serverUrl = this.devServerManager.getDefaultDevServer().getDevServerUrl();
+          const serverUrl = devServer.getDevServerUrl();
           Log.log(printItem(chalk`Metro waiting on {underline ${serverUrl}}`));
           Log.log(printItem(`Linking is disabled because the client scheme cannot be resolved.`));
         }

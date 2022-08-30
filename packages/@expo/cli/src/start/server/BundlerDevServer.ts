@@ -349,13 +349,6 @@ export abstract class BundlerDevServer {
       : this.getUrlCreator().constructUrl({ ...opts, scheme: 'exp' });
   }
 
-  public getQRCodeUrl(opts: Partial<CreateURLOptions> = {}) {
-    const { scheme, ...restOpts } = opts;
-    return this.shouldUseInterstitialPage()
-      ? this.getUrlCreator().constructLoadingUrl(restOpts, null)
-      : this.getNativeRuntimeUrl(opts);
-  }
-
   /** Get the URL for the running instance of the dev server. */
   public getDevServerUrl(options: { hostType?: 'localhost' } = {}): string | null {
     const instance = this.getInstance();
@@ -421,15 +414,18 @@ export abstract class BundlerDevServer {
 
   /** Get the URL for opening in Expo Go. */
   protected getExpoGoUrl(
-    platform: keyof typeof PLATFORM_MANAGERS,
+    platform: keyof typeof PLATFORM_MANAGERS | null = null,
     isDevelopmentBuildInstalled: boolean = true
   ): string | null {
     if (this.shouldUseInterstitialPage(isDevelopmentBuildInstalled)) {
-      const loadingUrl =
-        platform === 'emulator'
-          ? this.urlCreator?.constructLoadingUrl({}, 'android')
-          : this.urlCreator?.constructLoadingUrl({}, 'ios');
-      return loadingUrl ?? null;
+      if (platform) {
+        const loadingUrl =
+          platform === 'emulator'
+            ? this.urlCreator?.constructLoadingUrl({}, 'android')
+            : this.urlCreator?.constructLoadingUrl({}, 'ios');
+        return loadingUrl ?? null;
+      }
+      return this.urlCreator?.constructLoadingUrl({}, null) ?? null;
     }
 
     // Log a warning if no development build is available on the device, but the
