@@ -10,6 +10,7 @@
 
 ### 🐛 Bug fixes
 
+- Fixed native entry resolving in release builds when the `app.config.js` has console logs.
 - Fixed `FabricUIManager` errors when turning on new architecture mode on Android. ([#18472](https://github.com/expo/expo/pull/18472) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
