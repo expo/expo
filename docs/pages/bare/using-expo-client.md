@@ -7,7 +7,7 @@ import ImageSpotlight from '~/components/plugins/ImageSpotlight'
 
 It's not currently possible to include your own native code in Expo Go, so it might surprise you to learn that it is still possible to run your bare project in the Expo Go app.
 
-Inside a freshly initialized bare project, run `expo start` and you can now run it in the client. Read on to learn more about the limitations, why you might want to still use the client in spite of the limitations, and patterns you can apply to make this work well for you.
+Inside a freshly initialized bare project, run `npx expo start`, and you can now run it in the client. Read this documentation to learn more about the limitations, why you might want to still use the client despite the limitations, and patterns you can apply to make this work well for you.
 
 ## What are the limitations?
 
@@ -22,11 +22,11 @@ There are a number of benefits to keeping your project runnable in the Expo Go a
 - No need to do native builds for iOS and Android in development because you use the Expo Go app instead
 - Develop the JavaScript side of your app from any machine of your choice, eg: use Windows for iOS development if you have an iOS device
 - Easily get new contributors set up on the project, only Node.js and a phone are required
-- You can use `expo-cli` for a great development experience
+- You can use [Expo CLI](/workflow/expo-cli) for a great development experience
 
 ## Practical patterns for client-compatible bare apps
 
-### Prefer `expo install` over `npm install` to add Expo SDK packages
+### Prefer `npx expo install` over `npm install` to add Expo SDK packages
 
 This will ensure that you get a version of the package that is compatible with the SDK version in your app. If you use `npm install` directly instead, you may end up with a newer version of the package that isn't supported in Expo Go yet.
 

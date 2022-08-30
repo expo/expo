@@ -12,7 +12,7 @@ To get started, you'll need to install `jest-expo`. It's a Jest preset that mock
 
 To install a compatible version of `jest-expo` for your project, run:
 
-<Terminal cmd={[ '$ expo install jest-expo jest' ]} />
+<Terminal cmd={[ '$ npx expo install jest-expo jest' ]} />
 
 Then, we need to add/update **package.json** to include:
 

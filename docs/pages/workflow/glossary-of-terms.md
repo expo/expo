@@ -47,7 +47,7 @@ This refers to the React Native community [fork](https://github.com/react-native
 
 ### Config Introspection
 
-A process for evaluating the results of [`expo prebuild`](#prebuild) in-memory without persisting any code changes. This is used in [Auto Capability Signing](#auto-capability-signing) to determine what the entitlements file will look like without generating any native code. This process is also used in the [VS Code Expo](#vs-code-expo) extension to debug [Config Mods](#config-mods).
+A process for evaluating the results of [`npx expo prebuild`](#prebuild) in-memory without persisting any code changes. This is used in [Auto Capability Signing](#auto-capability-signing) to determine what the entitlements file will look like without generating any native code. This process is also used in the [VS Code Expo](#vs-code-expo) extension to debug [Config Mods](#config-mods).
 
 ### Config Mods
 
@@ -197,7 +197,7 @@ Refers to the command `npx expo start` from [Expo CLI](#expo-cli). This command 
 
 ExpoKit is an Objective-C and Java library that allows you to use the [Expo SDK](#expo-sdk) and platform and your existing Expo project as part of a larger standard native project — one that you would normally create using Xcode, Android Studio, or `react-native init`. [Read more](../expokit/eject.md).
 
-**Support for ExpoKit ended after SDK 38. Expo modules can implement support for custom native configuration, and projects that need even more custom native code can [expose their Android Studio and Xcode projects with `expo prebuild`](/workflow/customizing/).**
+**Support for ExpoKit ended after SDK 38. Expo modules can implement support for custom native configuration, and projects that need even more custom native code can [expose their Android Studio and Xcode projects with `npx expo prebuild`](/workflow/customizing/).**
 
 ### Fabric
 

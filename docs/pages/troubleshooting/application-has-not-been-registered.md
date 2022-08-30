@@ -73,4 +73,4 @@ By default, "main" is consistently used throughout the project. If you're runnin
 This error can also occur in a few other scenarios, but it's less predictable and the fixes would be more specific to your project. For example, some other cases are:
 
 - You're connecting to the wrong project's local development server. Try closing out other Expo CLI or React Native community CLI processes (find them with `ps -A | grep "expo\|react-native"`).
-- If this error is only occurring in your production app, then try running the app locally in production mode with `expo start --no-dev --minify` to find the source of the error.
+- If this error is only occurring in your production app, then try running the app locally in production mode with `npx expo start --no-dev --minify` to find the source of the error.

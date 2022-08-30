@@ -4,6 +4,7 @@ title: iOS Simulator
 
 import ImageSpotlight from '~/components/plugins/ImageSpotlight'
 import Video from '~/components/plugins/Video'
+import { Terminal } from '~/ui/components/Snippet';
 
 It's often convenient to develop your app directly on your computer rather than having to physically interact with an iPhone and iPad and load your app over the network, which may be slow under some conditions such as if you need to use a tunnel connection because LAN isn't possible on your network.
 
@@ -21,9 +22,11 @@ Open Xcode, then choose "Preferences..." from the Xcode menu (or press <kbd>Cmd 
 
 ## Step 3: Try it out
 
-Run your app with `expo-cli` and press <kbd>I</kbd> from the command line. You may get a warning about needing to accept the Xcode license. Run the command that it suggests. Open your app again, success! Or no? If no, please seek help on StackOverflow, Google, or the [Expo CLI section of the forums](https://forums.expo.dev/c/expo-cli). The troubleshooting tips below may be helpful too.
+Run your app with `npx expo start` and press <kbd>I</kbd> from the command line. You may get a warning about needing to accept the Xcode license. Run the command that it suggests. Open your app again, success! Or no? If no, please seek help on StackOverflow, Google, or the [Expo CLI section of the forums](https://forums.expo.dev/c/expo-cli). The troubleshooting tips below may be helpful too.
 
 <Video file="open-in-ios-simulator.mp4" />
+
+> Pro Tip: Press shift+I in the CLI UI to interactively select a simulator to open.
 
 ## Limitations
 
@@ -40,13 +43,13 @@ It should also be noted that Simulator suspends background apps and processes on
 
 ## Troubleshooting
 
-### The CLI seems to be stuck on "Trying to open the project in iOS simulator..."
+### The CLI seems to be stuck when opening a Simulator
 
 Sometimes the iOS simulator doesn't respond to commands to open. If it seems to be stuck on this prompt, you can open the iOS simulator manually (`open -a Simulator`) and then in the macOS toolbar choose Hardware &rarr; Device and select an iOS version and device that you'd like to open.
 
 <ImageSpotlight alt="Hardware > Device toolbar in Xcode" src="/static/images/open-simulator-manually.png" />
 
-You can also use this menu to open any version of the simulator that you like. You can open multiple simulators at the same time but `expo-cli` will always act on the most recently opened on.
+You can also use this menu to open any version of the simulator that you like. You can open multiple simulators at the same time but Expo CLI will always target the most recently opened simulator.
 
 ### The simulator opened but the Expo Go app isn't opening inside of it
 
@@ -54,8 +57,19 @@ The first time you install the app in the simulator, iOS will ask if you'd like 
 
 ### How do I force an update to the latest version?
 
-Run `expo client:install:ios` to download and install the latest Expo Go version in the simulator.
+Create a project with the desired SDK version and open it in a simulator to install a particular version of Expo Go.
 
-### expo-cli is printing an error message about xcrun, what do I do?
+<Terminal cmd={[
+'# Bootstrap an SDK 46 project',
+'$ npx create-expo-app --template blank@46',
+'',
+'# Open the app on a simulator to install the required Expo Go app',
+'$ npx expo start --ios'
+]} />
 
-Run `expo client:install:ios` again to uninstall and reinstall the Expo Go app. If that doesn't help, focus the simulator window and in the Mac toolbar choose Hardware &rarr; Erase All Content and Settings... This will reinitialize your simulator from a blank image. Good to go!
+### Expo CLI is printing an error message about xcrun, what do I do?
+
+For miscellaneous errors, try the following:
+
+- Manually uninstall Expo Go on your simulator and reinstall by pressing `shift+i` in the Expo CLI Terminal UI and selecting the desired simulator.
+- If that doesn't help, focus the simulator window and in the Mac toolbar choose Hardware &rarr; Erase All Content and Settings... This will reinitialize your simulator from a blank image. This is sometimes useful for cases where your computer is low on memory and the simulator fails to store some internal file, leaving the device in a corrupt state.

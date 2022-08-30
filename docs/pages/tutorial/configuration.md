@@ -27,7 +27,7 @@ Save this image to the **assets** directory inside of your project and call it *
 
 We can make the splash screen stick around for longer by manually controlling when it is hidden, rather than the default of automatically hiding it as soon as the app is ready.
 
-First, run `expo install expo-splash-screen`.
+First, run `npx expo install expo-splash-screen`.
 
 Next, add the following code to delay hiding the splash screen for five seconds.
 

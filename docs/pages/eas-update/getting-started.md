@@ -40,7 +40,7 @@ Create a project by running:
 
 1. Install the latest `expo-updates` library with:
 
-   <Terminal cmd={['$ expo install expo-updates']} />
+   <Terminal cmd={['$ npx expo install expo-updates']} />
 
 2. Initialize your project with EAS Update:
 
@@ -88,7 +88,7 @@ Once we've created a build, we're ready to iterate on our project. Start a local
 <Terminal cmd={[
 '$ yarn start',
 '# or',
-'$ expo start',
+'$ npx expo start',
 ]} />
 
 Then, make any desired changes to your project's JavaScript, styling, or image assets.

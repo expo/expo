@@ -31,7 +31,7 @@ The code above sets the `extra` property to an object with the environment varia
 
 ## Setting and getting environment variables during development
 
-To set the `API_URL` environment variable during development, we can prepend the variables before running `expo start` like this:
+To set the `API_URL` environment variable during development, we can prepend the variables before running `npx expo start` like this:
 
 ```bash
 API_URL="http://localhost:3000" expo start

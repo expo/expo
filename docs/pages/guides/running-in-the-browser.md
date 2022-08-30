@@ -26,12 +26,11 @@ And that's it! Packages in the Expo SDK are optimized for web and SSR environmen
 </summary>
 <p>
 
-All projects after _SDK 32_ come with web support by default. To add web support to an existing Expo app you can do the following:
+To add web support to an existing app you can do the following:
 
-- Install the latest version of the Expo CLI: `npm i -g expo-cli`
-- Add web dependencies: `expo install react-native-web react-dom`
-  - Ensure your project has at least `expo@^33.0.0` installed.
-- Start your project with `expo start` then press `w` to start Webpack and open the project in the browser.
+- Ensure your project has at least `expo@^46.0.0` installed.
+- Add web dependencies: `npx expo install react-native-web react-dom`
+- Start your project with `npx expo start` then press `w` to start Webpack and open the project in the browser.
 
 </p>
 </details>

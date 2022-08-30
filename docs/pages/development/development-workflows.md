@@ -12,9 +12,9 @@ To enforce an API contract between the JavaScript and native layers of your app,
 
 ### Tunnel URLs
 
-`expo start` exposes your development server on a publicly available URL that can be accessed through firewalls from around the globe. This option is useful if you are not able to connect to your development server with the default LAN option or if you want to get feedback on your implementation while you are developing.
+`npx expo start` exposes your development server on a publicly available URL that can be accessed through firewalls from around the globe. This option is useful if you are not able to connect to your development server with the default LAN option or if you want to get feedback on your implementation while you are developing.
 
-To get a tunneled URL, pass the `--tunnel` flag to `expo start` from the command line, or select the "tunnel" option for "CONNECTION" if you are using the developer tools.
+To get a tunneled URL, pass the `--tunnel` flag to `npx expo start` from the command line, or select the "tunnel" option for "CONNECTION" if you are using the developer tools.
 
 ### Published Updates
 

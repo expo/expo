@@ -21,9 +21,9 @@ Once we have a vector created inside a design program, like Figma, Illustrator, 
 Follow the installation steps to configure your Expo project to use this workflow. After your project is properly configured, you'll be able to use your local SVG files like this:
 
 ```javascript
-import Logo from "./assets/logo.svg";
+import Logo from './assets/logo.svg';
 
-<Logo width={120} height={40} />
+<Logo width={120} height={40} />;
 ```
 
 ## Converting individual SVG files for React Native
@@ -38,7 +38,7 @@ To automate this process, React-SVGR also [provides a CLI](https://react-svgr.co
 
 Once we have a compatible SVG, we'll need to add [react-native-svg](https://github.com/react-native-svg/react-native-svg) to our project. We can do so with:
 
-<Terminal cmd={['$ expo install react-native-svg']} />
+<Terminal cmd={['$ npx expo install react-native-svg']} />
 
 Then we can add code like the following to our project:
 

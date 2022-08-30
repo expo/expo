@@ -12,7 +12,7 @@ When you make a change to your iOS entitlements, this change needs to be updated
 
 In bare workflow apps, the entitlements are read from your `ios/**/*.entitlements` file.
 
-In managed workflow, the entitlements are read from the introspected Expo config. You can see what your introspected config looks like by running `expo config --type introspect` in your project, then look for the `ios.entitlements` object for the results.
+In managed workflow, the entitlements are read from the introspected Expo config. You can see what your introspected config looks like by running `npx expo config --type introspect` in your project, then look for the `ios.entitlements` object for the results.
 
 ## Enabling
 
@@ -81,7 +81,7 @@ EAS Build will only enable capabilities that it has built-in support for, any un
 | <YesIcon /> | WeatherKit                                        | `com.apple.developer.weatherkit`                                           |
 | <YesIcon /> | Wireless Accessory Configuration                  | `com.apple.external-accessory.wireless-configuration`                      |
 | <YesIcon /> | iCloud                                            | `com.apple.developer.icloud-container-identifiers`                         |
-| <NoIcon />  | HLS Interstitial Previews                         | Unknown                                                                   |
+| <NoIcon />  | HLS Interstitial Previews                         | Unknown                                                                    |
 
 The unsupported capabilities either don't support iOS, or they don't have a corresponding entitlement value.
 

@@ -79,7 +79,7 @@ EAS Update uses a [modern manifest format](/technical-specs/expo-updates-0). Whe
 <Terminal cmd={[
 '$ yarn start',
 '# or',
-'$ expo start',
+'$ npx expo start',
 ]} />
 
 ## Publishing an update
