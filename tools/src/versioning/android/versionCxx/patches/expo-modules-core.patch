@@ -198,6 +198,21 @@ index ebd5c60547..c469341691 100644
    static auto constexpr TAG = "JSIInteropModuleRegistry";
  
    static jni::local_ref<jhybriddata> initHybrid(jni::alias_ref<jhybridobject> jThis);
+diff --git a/packages/expo-modules-core/android/src/main/cpp/JavaReferencesCache.cpp b/packages/expo-modules-core/android/src/main/cpp/JavaReferencesCache.cpp
+index 21ea310271..43db4e425c 100644
+--- a/packages/expo-modules-core/android/src/main/cpp/JavaReferencesCache.cpp
++++ b/packages/expo-modules-core/android/src/main/cpp/JavaReferencesCache.cpp
+@@ -25,8 +25,8 @@ void JavaReferencesCache::loadJClasses(JNIEnv *env) {
+     {"<init>", "(F)V"}
+   });
+ 
+-  loadJClass(env, "com/facebook/react/bridge/PromiseImpl", {
+-    {"<init>", "(Lcom/facebook/react/bridge/Callback;Lcom/facebook/react/bridge/Callback;)V"}
++  loadJClass(env, "{VERSIONED_ABI_NAME}/com/facebook/react/bridge/PromiseImpl", {
++    {"<init>", "(L{VERSIONED_ABI_NAME}/com/facebook/react/bridge/Callback;L{VERSIONED_ABI_NAME}/com/facebook/react/bridge/Callback;)V"}
+   });
+ 
+   loadJClass(env, "java/lang/Object", {});
 diff --git a/packages/expo-modules-core/android/src/main/cpp/JavaScriptModuleObject.h b/packages/expo-modules-core/android/src/main/cpp/JavaScriptModuleObject.h
 index 4b1a65ecab..49d5a841db 100644
 --- a/packages/expo-modules-core/android/src/main/cpp/JavaScriptModuleObject.h
@@ -250,6 +265,23 @@ index 506176ccba..fe9a0df850 100644
    static auto constexpr TAG = "JavaScriptValue";
  
    static void registerNatives();
+diff --git a/packages/expo-modules-core/android/src/main/cpp/MethodMetadata.cpp b/packages/expo-modules-core/android/src/main/cpp/MethodMetadata.cpp
+index 3478452a60..2fa4354727 100644
+--- a/packages/expo-modules-core/android/src/main/cpp/MethodMetadata.cpp
++++ b/packages/expo-modules-core/android/src/main/cpp/MethodMetadata.cpp
+@@ -323,10 +323,10 @@ jsi::Function MethodMetadata::createPromiseBody(
+       JNIEnv *env = jni::Environment::current();
+ 
+       auto &jPromise = JavaReferencesCache::instance()->getJClass(
+-        "com/facebook/react/bridge/PromiseImpl");
++        "{VERSIONED_ABI_NAME}/com/facebook/react/bridge/PromiseImpl");
+       jmethodID jPromiseConstructor = jPromise.getMethod(
+         "<init>",
+-        "(Lcom/facebook/react/bridge/Callback;Lcom/facebook/react/bridge/Callback;)V"
++        "(L{VERSIONED_ABI_NAME}/com/facebook/react/bridge/Callback;L{VERSIONED_ABI_NAME}/com/facebook/react/bridge/Callback;)V"
+       );
+ 
+       // Creates a promise object
 diff --git a/packages/expo-modules-core/android/src/main/cpp/types/ExpectedType.h b/packages/expo-modules-core/android/src/main/cpp/types/ExpectedType.h
 index 9a722a051e..93c60369fc 100644
 --- a/packages/expo-modules-core/android/src/main/cpp/types/ExpectedType.h
