@@ -1,15 +1,21 @@
-/* eslint-disable import/order */
-const { copySync, removeSync } = require('fs-extra');
-const { join } = require('path');
-const semver = require('semver');
-const { info: logInfo } = require('next/dist/build/output/log');
+import fsExtra from 'fs-extra';
+import { info as logInfo } from 'next/dist/build/output/log.js';
+import { join } from 'path';
+import rehypeSlug from 'rehype-slug';
+import remarkFrontmatter from 'remark-frontmatter';
+import semver from 'semver';
+import { fileURLToPath } from 'url';
 
-const navigation = require('./constants/navigation');
-const { VERSIONS } = require('./constants/versions');
-const { version, betaVersion } = require('./package.json');
+import * as navigation from './constants/navigation.cjs';
+import { VERSIONS } from './constants/versions.cjs';
+import remarkExportHeadings from './mdx-plugins/remark-export-headings.cjs';
+import remarkExportYaml from './mdx-plugins/remark-export-yaml.cjs';
+import remarkLinkRewrite from './mdx-plugins/remark-link-rewrite.cjs';
+import createSitemap from './scripts/create-sitemap.cjs';
 
-// To generate a sitemap, we need context about the supported versions and navigational data
-const createSitemap = require('./scripts/create-sitemap');
+const { copySync, removeSync, readJsonSync } = fsExtra;
+const { version, betaVersion } = readJsonSync('./package.json');
+const dirname = fileURLToPath(new URL('.', import.meta.url));
 
 // Prepare the latest version by copying the actual exact latest version
 const vLatest = join('pages', 'versions', `v${version}/`);
@@ -19,7 +25,7 @@ copySync(vLatest, latest);
 logInfo(`Copied latest Expo SDK version from v${version}`);
 
 /** @type {import('next').NextConfig}  */
-module.exports = {
+export default {
   trailingSlash: true,
   pageExtensions: ['js', 'jsx', 'ts', 'tsx', 'md', 'mdx'],
   compiler: { emotion: true },
@@ -30,7 +36,7 @@ module.exports = {
     // See: https://github.com/kentcdodds/babel-plugin-preval/issues/19
     config.module.rules.push({
       test: /.js$/,
-      include: [join(__dirname, 'constants')],
+      include: [join(dirname, 'constants')],
       use: {
         loader: 'babel-loader',
         options: {
@@ -51,19 +57,19 @@ module.exports = {
           loader: '@mdx-js/loader',
           options: {
             remarkPlugins: [
-              [require('remark-frontmatter'), ['yaml']],
-              require('./mdx-plugins/remark-export-yaml'),
-              require('./mdx-plugins/remark-export-headings'),
-              require('./mdx-plugins/remark-link-rewrite'),
+              [remarkFrontmatter, ['yaml']],
+              remarkExportYaml,
+              remarkExportHeadings,
+              remarkLinkRewrite,
             ],
-            rehypePlugins: [require('rehype-slug')],
+            rehypePlugins: [rehypeSlug],
           },
         },
       ],
     });
 
     // Fix inline or browser MDX usage: https://mdxjs.com/getting-started/webpack#running-mdx-in-the-browser
-    config.resolve.fallback = { fs: false, path: require.resolve('path-browserify') };
+    config.resolve.fallback = { fs: false, path: 'path-browserify' };
 
     return config;
   },
