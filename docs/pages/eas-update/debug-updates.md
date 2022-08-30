@@ -21,13 +21,13 @@ When we set up EAS Update, we likely ran `eas update:configure` to configure exp
 
 Finally, make sure that `expo-updates` is included in **package.json**. If it's not, run:
 
-<Terminal cmd={['$ expo install expo-updates']} />
+<Terminal cmd={['$ npx expo install expo-updates']} />
 
 ### Inspecting expo-updates configuration after prebuild
 
-Whenever we run `eas build`, the `expo prebuild` command is run on our project on EAS' servers to unpack the **android** and **ios** directories that contain native files. This make it so EAS Build can build any project, whether it includes the native files or not.
+Whenever we run `eas build`, the `npx expo prebuild` command is run on our project on EAS' servers to unpack the **android** and **ios** directories that contain native files. This make it so EAS Build can build any project, whether it includes the native files or not.
 
-If our project does not have **android** or **ios** directories, we can make commit any existing changes, then run `expo prebuild` to inspect the project state that EAS Build will act on. After running this, look for the following files: **android/app/src/main/AndroidManifest.xml** and **ios/your-project-name/Supporting/Expo.plist**.
+If our project does not have **android** or **ios** directories, we can make commit any existing changes, then run `npx expo prebuild` to inspect the project state that EAS Build will act on. After running this, look for the following files: **android/app/src/main/AndroidManifest.xml** and **ios/your-project-name/Supporting/Expo.plist**.
 
 In each, we expect to see configuration for the EAS Update URL and the runtime version. Here are properties we'd expect to see in each file:
 
@@ -216,7 +216,7 @@ Below is a screenshot showing the request of a successful update manfiest reques
 
 ### Inspecting a build manually
 
-When building a project into an app, there can be multiple steps that alter the output of `expo prebuild`. After making a build, it is possible to open the build's contents and inspect native files to see its final configuration.
+When building a project into an app, there can be multiple steps that alter the output of `npx expo prebuild`. After making a build, it is possible to open the build's contents and inspect native files to see its final configuration.
 
 Here are the steps for inspecting an iOS simulator build on macOS:
 
@@ -263,7 +263,7 @@ https://u.expo.dev/your-project-id?runtime-version=1.0.0&channel-name=production
 
 It may be helpful to see which assets are included in our update bundle. We can see a list of named assets by running:
 
-<Terminal cmd={['$ expo export --experimental-bundle']} />
+<Terminal cmd={['$ npx expo export']} />
 
 ## Mitigation steps
 

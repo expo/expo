@@ -10,6 +10,16 @@ const PROPS_TO_IGNORE: Set<string> = new Set([
   'EXReactNativeEventEmitter',
   'NativeUnimoduleProxy',
   /**
+   * Other modules that are accessed via packages in the Expo SDK but have built-in fallbacks
+   */
+  'ExpoImageModule',
+  'PlatformLocalStorage',
+  'RNC_AsyncSQLiteDBStorage',
+  'RNCAsyncStorage',
+  'RNGetRandomValues',
+  'RNVectorIconsManager',
+  'RNVectorIconsModule',
+  /**
    * Other methods that can be called on the NativeModules object that we should ignore. The
    * underlying NativeModules object is sometimes a proxy itself so may not have these methods
    * defined.

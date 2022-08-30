@@ -76,10 +76,14 @@ export const PRE = createTextComponent(TextElement.PRE, css(typography.utility.p
 export const kbdStyle = css({
   fontFamily: typography.fontFaces.medium,
   color: theme.text.secondary,
-  padding: `${spacing[0.5]}px ${spacing[1.5]}px`,
+  padding: `0 ${spacing[1]}px`,
   boxShadow: `0 0.1rem 0 1px ${theme.border.default}`,
   borderRadius: borderRadius.small,
   position: 'relative',
+  display: 'inline-flex',
+  margin: 0,
+  minWidth: 22,
+  justifyContent: 'center',
   top: -1,
 });
 

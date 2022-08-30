@@ -43,7 +43,6 @@
   "expo-firebase-recaptcha": "~2.3.0",
   "expo-font": "~10.2.0",
   "expo-gl": "~11.4.0",
-  "expo-gl-cpp": "~11.4.0",
   "expo-google-app-auth": "~8.3.0",
   "expo-haptics": "~11.3.0",
   "expo-image-loader": "~3.2.0",

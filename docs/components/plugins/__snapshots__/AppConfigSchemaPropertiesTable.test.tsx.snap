@@ -38,7 +38,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               style="margin-left: 0px; display: block; list-style-type: circle; overflow-x: visible;"
             >
               <div
-                class=" css-izsx1d-PDIV"
+                class=" css-19f55nd-PDIV"
                 data-text="true"
               >
                 <div
@@ -56,7 +56,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                       class="css-6n7j50"
                     >
                       <code
-                        class="inline css-16lpqq8-InlineCode"
+                        class="inline css-ov7own-InlineCode"
                       >
                         name
                       </code>
@@ -98,11 +98,11 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             class="css-t44xva-Cell"
           >
             <div
-              class=" css-izsx1d-PDIV"
+              class=" css-19f55nd-PDIV"
               data-text="true"
             >
               <strong
-                class="css-1k788ud-B"
+                class="css-1qx481h-B"
               >
                 (string)
               </strong>
@@ -164,7 +164,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               style="margin-left: 0px; display: block; list-style-type: circle; overflow-x: visible;"
             >
               <div
-                class=" css-izsx1d-PDIV"
+                class=" css-19f55nd-PDIV"
                 data-text="true"
               >
                 <div
@@ -182,7 +182,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                       class="css-6n7j50"
                     >
                       <code
-                        class="inline css-16lpqq8-InlineCode"
+                        class="inline css-ov7own-InlineCode"
                       >
                         androidNavigationBar
                       </code>
@@ -224,11 +224,11 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             class="css-t44xva-Cell"
           >
             <div
-              class=" css-izsx1d-PDIV"
+              class=" css-19f55nd-PDIV"
               data-text="true"
             >
               <strong
-                class="css-1k788ud-B"
+                class="css-1qx481h-B"
               >
                 (object)
               </strong>
@@ -333,7 +333,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               style="margin-left: 32px; display: list-item; list-style-type: default; overflow-x: visible;"
             >
               <div
-                class=" css-izsx1d-PDIV"
+                class=" css-19f55nd-PDIV"
                 data-text="true"
               >
                 <div
@@ -351,7 +351,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                       class="css-6n7j50"
                     >
                       <code
-                        class="inline css-16lpqq8-InlineCode"
+                        class="inline css-ov7own-InlineCode"
                       >
                         visible
                       </code>
@@ -393,11 +393,11 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             class="css-t44xva-Cell"
           >
             <div
-              class=" css-izsx1d-PDIV"
+              class=" css-19f55nd-PDIV"
               data-text="true"
             >
               <strong
-                class="css-1k788ud-B"
+                class="css-1qx481h-B"
               >
                 (enum)
               </strong>
@@ -459,7 +459,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               style="margin-left: 64px; display: list-item; list-style-type: circle; overflow-x: visible;"
             >
               <div
-                class=" css-izsx1d-PDIV"
+                class=" css-19f55nd-PDIV"
                 data-text="true"
               >
                 <div
@@ -477,7 +477,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                       class="css-6n7j50"
                     >
                       <code
-                        class="inline css-16lpqq8-InlineCode"
+                        class="inline css-ov7own-InlineCode"
                       >
                         always
                       </code>
@@ -519,11 +519,11 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             class="css-t44xva-Cell"
           >
             <div
-              class=" css-izsx1d-PDIV"
+              class=" css-19f55nd-PDIV"
               data-text="true"
             >
               <strong
-                class="css-1k788ud-B"
+                class="css-1qx481h-B"
               >
                 (boolean)
               </strong>
@@ -542,7 +542,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               style="margin-left: 32px; display: list-item; list-style-type: default; overflow-x: visible;"
             >
               <div
-                class=" css-izsx1d-PDIV"
+                class=" css-19f55nd-PDIV"
                 data-text="true"
               >
                 <div
@@ -560,7 +560,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                       class="css-6n7j50"
                     >
                       <code
-                        class="inline css-16lpqq8-InlineCode"
+                        class="inline css-ov7own-InlineCode"
                       >
                         backgroundColor
                       </code>
@@ -602,23 +602,23 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             class="css-t44xva-Cell"
           >
             <div
-              class=" css-izsx1d-PDIV"
+              class=" css-19f55nd-PDIV"
               data-text="true"
             >
               <strong
-                class="css-1k788ud-B"
+                class="css-1qx481h-B"
               >
                 (string)
               </strong>
                - Specifies the background color of the navigation bar. 
             </div>
             <div
-              class=" css-izsx1d-PDIV"
+              class=" css-19f55nd-PDIV"
               data-text="true"
             >
               6 character long hex color string, eg: 
               <code
-                class="inline css-16lpqq8-InlineCode"
+                class="inline css-ov7own-InlineCode"
               >
                 '#000000'
               </code>
@@ -636,7 +636,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               style="margin-left: 0px; display: block; list-style-type: circle; overflow-x: visible;"
             >
               <div
-                class=" css-izsx1d-PDIV"
+                class=" css-19f55nd-PDIV"
                 data-text="true"
               >
                 <div
@@ -654,7 +654,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                       class="css-6n7j50"
                     >
                       <code
-                        class="inline css-16lpqq8-InlineCode"
+                        class="inline css-ov7own-InlineCode"
                       >
                         intentFilters
                       </code>
@@ -696,11 +696,11 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             class="css-t44xva-Cell"
           >
             <div
-              class=" css-izsx1d-PDIV"
+              class=" css-19f55nd-PDIV"
               data-text="true"
             >
               <strong
-                class="css-1k788ud-B"
+                class="css-1qx481h-B"
               >
                 (array)
               </strong>
@@ -750,7 +750,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               </div>
             </div>
             <blockquote
-              class="css-1yla49y-Quote"
+              class="css-1nn217x-Quote"
               data-text="true"
             >
               <div
@@ -775,7 +775,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               </div>
               <div>
                 <div
-                  class=" css-izsx1d-PDIV"
+                  class=" css-19f55nd-PDIV"
                   data-text="true"
                 >
                    
@@ -800,7 +800,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               style="margin-left: 32px; display: list-item; list-style-type: default; overflow-x: visible;"
             >
               <div
-                class=" css-izsx1d-PDIV"
+                class=" css-19f55nd-PDIV"
                 data-text="true"
               >
                 <div
@@ -818,7 +818,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                       class="css-6n7j50"
                     >
                       <code
-                        class="inline css-16lpqq8-InlineCode"
+                        class="inline css-ov7own-InlineCode"
                       >
                         autoVerify
                       </code>
@@ -860,11 +860,11 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             class="css-t44xva-Cell"
           >
             <div
-              class=" css-izsx1d-PDIV"
+              class=" css-19f55nd-PDIV"
               data-text="true"
             >
               <strong
-                class="css-1k788ud-B"
+                class="css-1qx481h-B"
               >
                 (boolean)
               </strong>
@@ -883,7 +883,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               style="margin-left: 32px; display: list-item; list-style-type: default; overflow-x: visible;"
             >
               <div
-                class=" css-izsx1d-PDIV"
+                class=" css-19f55nd-PDIV"
                 data-text="true"
               >
                 <div
@@ -901,7 +901,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                       class="css-6n7j50"
                     >
                       <code
-                        class="inline css-16lpqq8-InlineCode"
+                        class="inline css-ov7own-InlineCode"
                       >
                         data
                       </code>
@@ -943,11 +943,11 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             class="css-t44xva-Cell"
           >
             <div
-              class=" css-izsx1d-PDIV"
+              class=" css-19f55nd-PDIV"
               data-text="true"
             >
               <strong
-                class="css-1k788ud-B"
+                class="css-1qx481h-B"
               >
                 (array || object)
               </strong>
@@ -965,7 +965,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               style="margin-left: 64px; display: list-item; list-style-type: circle; overflow-x: visible;"
             >
               <div
-                class=" css-izsx1d-PDIV"
+                class=" css-19f55nd-PDIV"
                 data-text="true"
               >
                 <div
@@ -983,7 +983,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                       class="css-6n7j50"
                     >
                       <code
-                        class="inline css-16lpqq8-InlineCode"
+                        class="inline css-ov7own-InlineCode"
                       >
                         host
                       </code>
@@ -1025,11 +1025,11 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             class="css-t44xva-Cell"
           >
             <div
-              class=" css-izsx1d-PDIV"
+              class=" css-19f55nd-PDIV"
               data-text="true"
             >
               <strong
-                class="css-1k788ud-B"
+                class="css-1qx481h-B"
               >
                 (string)
               </strong>

@@ -138,7 +138,7 @@ Expo CLI requires you to have the `expo` package installed so it can maintain co
 
 ### Disable packager autostart when building for iOS
 
-When you start your project on iOS, the metro bundler will be started automatically. This behavior might not be ideal when you want to use `expo start`. Our recommended solution is to remove the `Start Packager` action from building scripts. To do that you need to open the Xcode, go to "Build Phases" and remove the "Start Packager" action.
+When you start your project on iOS, the metro bundler will be started automatically. This behavior might not be ideal when you want to use `npx expo start`. Our recommended solution is to remove the `Start Packager` action from building scripts. To do that you need to open the Xcode, go to "Build Phases" and remove the "Start Packager" action.
 
 <img src="/static/images/client/remove_start_packager.png" style={{maxWidth: "100%" }}/>
 
