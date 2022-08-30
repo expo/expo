@@ -7,7 +7,7 @@ import ImageSpotlight from '~/components/plugins/ImageSpotlight'
 
 It's not currently possible to include your own native code in Expo Go, so it might surprise you to learn that it is still possible to run your bare project in the Expo Go app.
 
-Inside a freshly initialized bare project, run `npx expo start` and you can now run it in the client. Read on to learn more about the limitations, why you might want to still use the client in spite of the limitations, and patterns you can apply to make this work well for you.
+Inside a freshly initialized bare project, run `npx expo start`, and you can now run it in the client. Read this documentation to learn more about the limitations, why you might want to still use the client despite the limitations, and patterns you can apply to make this work well for you.
 
 ## What are the limitations?
 
