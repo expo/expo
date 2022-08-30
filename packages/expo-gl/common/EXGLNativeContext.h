@@ -1,6 +1,6 @@
 #pragma once
 
-#include "EXGL.h"
+#include "EXGLNativeApi.h"
 
 #ifdef __ANDROID__
 #include <GLES3/gl3.h>

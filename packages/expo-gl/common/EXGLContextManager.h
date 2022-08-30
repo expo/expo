@@ -1,7 +1,7 @@
 #pragma once
 
 #include <shared_mutex>
-#include "EXGLContext.h"
+#include "EXGLNativeContext.h"
 
 namespace expo {
 namespace gl_cpp {

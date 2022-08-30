@@ -123,7 +123,7 @@
       }
 
       EXGLContextSetDefaultFramebuffer(self->_contextId, [self defaultFramebuffer]);
-      EXGLContextPrepare(jsRuntimePtr, self->_contextId, ^{
+      EXGLContextPrepare(jsRuntimePtr, self->_contextId, [self](){
         [self flush];
       });
 

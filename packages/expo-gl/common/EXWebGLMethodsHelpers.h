@@ -1,7 +1,7 @@
 #pragma once
 // it should be included only in EXWebGLMethods.cpp
 
-#include "EXGLContext.h"
+#include "EXGLNativeContext.h"
 #include "EXWebGLRenderer.h"
 
 #ifdef __ANDROID__

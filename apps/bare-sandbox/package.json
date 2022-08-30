@@ -65,7 +65,6 @@
         "expo-firebase-core",
         "expo-font",
         "expo-gl",
-        "expo-gl-cpp",
         "expo-updates",
         "expo-haptics",
         "expo-image-loader",

@@ -1,6 +1,6 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
-#import <EXGL_CPP/EXGL.h>
+#import <EXGL/EXGLNativeApi.h>
 #import <EXGL/EXGLContext.h>
 #import <ExpoModulesCore/EXModuleRegistry.h>
 

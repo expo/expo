@@ -1,7 +1,29 @@
-diff --git a/packages/expo-gl-cpp/android/build.gradle b/packages/expo-gl-cpp/android/build.gradle
-index e144ff2f21..c93b42466a 100644
---- a/packages/expo-gl-cpp/android/build.gradle
-+++ b/packages/expo-gl-cpp/android/build.gradle
+diff --git a/packages/expo-gl/android/CMakeLists.txt b/packages/expo-gl/android/CMakeLists.txt
+index 7e7547b603..5bc387fcfd 100644
+--- a/packages/expo-gl/android/CMakeLists.txt
++++ b/packages/expo-gl/android/CMakeLists.txt
+@@ -5,7 +5,7 @@ set(CMAKE_ANDROID_STL_TYPE c++_shared)
+ set(CMAKE_VERBOSE_MAKEFILE ON)
+ set(CMAKE_CXX_STANDARD 17)
+ 
+-set(PACKAGE_NAME "expo-gl")
++set(PACKAGE_NAME "expo-gl_{VERSIONED_ABI_NAME}")
+ set(BUILD_DIR ${CMAKE_SOURCE_DIR}/build)
+ set(COMMON_DIR ${CMAKE_SOURCE_DIR}/../common)
+ 
+@@ -40,7 +40,7 @@ target_include_directories(
+                             "${COMMON_DIR}")
+ 
+ find_library(
+-    JSI_LIB jsi
++    JSI_LIB jsi_{VERSIONED_ABI_NAME}
+     PATHS ${LIBRN_DIR}
+     NO_CMAKE_FIND_ROOT_PATH)
+ 
+diff --git a/packages/expo-gl/android/build.gradle b/packages/expo-gl/android/build.gradle
+index 78594d264b..eeab79bf64 100644
+--- a/packages/expo-gl/android/build.gradle
++++ b/packages/expo-gl/android/build.gradle
 @@ -13,6 +13,10 @@ def RN_SO_DIR = RN_BUILD_FROM_SOURCE
      ? Paths.get(findProject(":ReactAndroid").getProjectDir().toString(), "build", "intermediates", "library_*", "*", "jni")
      : "${buildDir}/react-native-0*/jni"
@@ -13,7 +35,7 @@ index e144ff2f21..c93b42466a 100644
  def reactNativeArchitectures() {
      def value = project.getProperties().get("reactNativeArchitectures")
      return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
-@@ -138,7 +142,7 @@ dependencies {
+@@ -139,7 +143,7 @@ dependencies {
  
  def extractReactNativeAAR = { buildType ->
    def suffix = buildType == 'Debug' ? '-debug' : '-release'
@@ -22,32 +44,10 @@ index e144ff2f21..c93b42466a 100644
    if (rnAARs.isEmpty()) {
      rnAARs = fileTree(RN_AAR_DIR).matching { include "**/react-native/**/*.aar" }
    }
-diff --git a/packages/expo-gl-cpp/cpp/CMakeLists.txt b/packages/expo-gl-cpp/cpp/CMakeLists.txt
-index 2c6948421c..eacc32ce19 100644
---- a/packages/expo-gl-cpp/cpp/CMakeLists.txt
-+++ b/packages/expo-gl-cpp/cpp/CMakeLists.txt
-@@ -5,7 +5,7 @@ set(CMAKE_ANDROID_STL_TYPE c++_shared)
- set(CMAKE_VERBOSE_MAKEFILE ON)
- set(CMAKE_CXX_STANDARD 17)
- 
--set(PACKAGE_NAME "expo-gl")
-+set(PACKAGE_NAME "expo-gl_{VERSIONED_ABI_NAME}")
- set(BUILD_DIR ${CMAKE_SOURCE_DIR}/build)
- 
- add_library(
-@@ -38,7 +38,7 @@ target_include_directories(${PACKAGE_NAME}
-                            PRIVATE "${REACT_NATIVE_DIR}/ReactCommon/jsi")
- 
- find_library(
--    JSI_LIB jsi
-+    JSI_LIB jsi_{VERSIONED_ABI_NAME}
-     PATHS ${LIBRN_DIR}
-     NO_CMAKE_FIND_ROOT_PATH)
- 
-diff --git a/packages/expo-gl-cpp/cpp/EXGLJniApi.cpp b/packages/expo-gl-cpp/cpp/EXGLJniApi.cpp
-index 9d554969df..405fa2b067 100644
---- a/packages/expo-gl-cpp/cpp/EXGLJniApi.cpp
-+++ b/packages/expo-gl-cpp/cpp/EXGLJniApi.cpp
+diff --git a/packages/expo-gl/android/src/main/cpp/EXGLJniApi.cpp b/packages/expo-gl/android/src/main/cpp/EXGLJniApi.cpp
+index e9211d47ad..6b2c3fbb85 100644
+--- a/packages/expo-gl/android/src/main/cpp/EXGLJniApi.cpp
++++ b/packages/expo-gl/android/src/main/cpp/EXGLJniApi.cpp
 @@ -15,13 +15,13 @@ extern "C" {
  thread_local JNIEnv* threadLocalEnv;
  
