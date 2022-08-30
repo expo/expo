@@ -8,21 +8,12 @@ EXGLContextId EXGLContextCreate() {
   return ContextCreate();
 }
 
-#ifdef __APPLE__
-void EXGLContextPrepare(void *jsiPtr, EXGLContextId exglCtxId, EXGLFlushMethodBlock flushMethod) {
-  auto [exglCtx, lock] = ContextGet(exglCtxId);
-  if (exglCtx) {
-    exglCtx->prepareContext(*reinterpret_cast<jsi::Runtime *>(jsiPtr), [flushMethod] { flushMethod(); });
-  }
-}
-#else
 void EXGLContextPrepare(void *jsiPtr, EXGLContextId exglCtxId, std::function<void(void)> flushMethod) {
   auto [exglCtx, lock] = ContextGet(exglCtxId);
   if (exglCtx) {
     exglCtx->prepareContext(*reinterpret_cast<jsi::Runtime *>(jsiPtr), flushMethod);
   }
 }
-#endif
 
 bool EXGLContextNeedsRedraw(EXGLContextId exglCtxId) {
   auto [exglCtx, lock] = ContextGet(exglCtxId);

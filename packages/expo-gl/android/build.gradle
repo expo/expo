@@ -103,10 +103,6 @@ android {
     }
   }
 
-  buildFeatures {
-    // prefab true
-  }
-
   packagingOptions {
     // Gradle will add cmake target dependencies into packaging.
     excludes = [
@@ -128,7 +124,6 @@ android {
 repositories {
   mavenCentral()
 }
-
 
 dependencies {
   compileOnly 'com.facebook.soloader:soloader:0.8.2'
