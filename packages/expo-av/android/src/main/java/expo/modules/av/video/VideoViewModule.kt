@@ -10,11 +10,7 @@ class VideoViewModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("ExpoVideoView")
 
-    ViewManager {
-      View {
-        VideoViewWrapper(it, appContext)
-      }
-
+    View(VideoViewWrapper::class) {
       OnViewDestroys<VideoViewWrapper> { view ->
         view.videoViewInstance.onDropViewInstance()
       }
