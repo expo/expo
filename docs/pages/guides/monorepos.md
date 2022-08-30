@@ -105,7 +105,7 @@ module.exports = config;
 
 Metro has three separate stages in its bundling process, [documented here](https://facebook.github.io/metro/docs/concepts). During the first phase, **Resolution**, Metro resolves your app's required files and dependencies. Metro does that with the `watchFolders` option, which is set to the project directory by default. This default setting works great for apps that don't use a monorepo structure.
 
-When using monorepos, your app dependencies are split up into different directories. Each of these directories must be within the scope of the [watchFolders](https://facebook.github.io/metro/docs/configuration/#watchfolders). If a file is outside of that scope, Metro won't be able to find it. Setting this path to the root of your monorepo
+When using monorepos, your app dependencies splits up into different directories. Each of these directories must be within the scope of the [watchFolders](https://facebook.github.io/metro/docs/configuration/#watchfolders). If a file is outside of that scope, Metro won't be able to find it. Setting this path to the root of your monorepo
 
 As your monorepo increases in size, watching all files within the monorepo becomes slower. If you want to speed that up, you can (dynamically) watch the relevant paths to minimize the watch scope. For example:
 
@@ -143,14 +143,14 @@ config.resolver.disableHierarchicalLookup = true;
 
 </Collapsible>
 
-<Collapsible summary="2. Why do we need tell Metro how to resolve packages?">
+<Collapsible summary="2. Why do we need to tell Metro how to resolve packages?">
 
 This option is important to resolve libraries in the correct **node_modules** directories. Monorepo tooling, like Yarn, usually creates two different **node_modules** directories which are used for a single workspace.
 
 1. **apps/mobile/node_modules** - The "project" folder
 2. **node_modules** - The "root" folder
 
-Yarn uses the root folder to install packages that are used in multiple workspaces. If a workspace uses a different package version, it installs that different version in the project folder.
+Yarn uses the root folder to install packages used in multiple workspaces. If a workspace uses a different package version, it installs that different version in the project folder.
 
 We have to tell Metro to look in these two folders. The order is important here because the project folder **node_modules** can contain specific versions we use for our app. When the package does not exist in the project folder, it should try the shared root folder.
 
@@ -158,7 +158,7 @@ We have to tell Metro to look in these two folders. The order is important here 
 
 <Collapsible summary="3. Why do we need to disable the hierarchical lookup?">
 
-This option is important for certain edge cases, such as a monorepo that includes multiple versions of the `react` package. Let's say you have the following monorepo:
+This option is important for certain edge cases, such as a monorepo that includes multiple versions of the `react` package. For example, let's say you have the following monorepo:
 
 1. **apps/marketing** - A simple Next.js website to attract new users. (uses `react@17.x.x`)
 2. **apps/mobile** - Your awesome Expo app. (uses `react@18.x.x`)
@@ -176,7 +176,7 @@ Expo modules and React Native libraries usually don't add `react` as a peer depe
 With hierarchical lookup enabled, whenever `expo` imports `react`, Metro will resolve to `react@17.x.x` and not `react@18.x.x`. This causes "multiple React versions" errors in your app.
 
 By disabling hierarchical lookup, we can force Metro to resolve only folders from the `nodeModulesPaths = [...]` order we defined in #2.
-This option is documented in [the Metro Resolution Algorithm documentation](https://facebook.github.io/metro/docs/resolution/#algorithm), under step 5.
+This option is documented in the [Metro Resolution Algorithm documentation](https://facebook.github.io/metro/docs/resolution/#algorithm), under step 5.
 
 When we disable this hierarchical lookup, it should not matter where the React Native library is installed.
 Whenever a library imports `react`, or any other library, Metro always resolves the library from the `nodeModulesPaths` we defined.
