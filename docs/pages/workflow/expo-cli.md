@@ -287,7 +287,7 @@ Unlike the web, React Native is not backwards compatible. This means that npm pa
 '$ npx expo install expo-camera',
 ]} cmdCopy="npx expo install expo-camera" />
 
-You can add as many packages as you'd like:
+Running a single instance of this command, you can also install multiple packages:
 
 <Terminal cmd={[
 '$ npx expo install typescript expo-sms',
