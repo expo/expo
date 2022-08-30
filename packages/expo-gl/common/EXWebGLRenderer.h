@@ -2,7 +2,7 @@
 
 #include <jsi/jsi.h>
 #include <unordered_map>
-#include "EXGL.h"
+#include "EXGLNativeApi.h"
 
 namespace expo {
 namespace gl_cpp {

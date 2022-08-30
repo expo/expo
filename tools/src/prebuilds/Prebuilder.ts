@@ -43,7 +43,6 @@ export const PACKAGES_TO_PREBUILD = [
   // 'expo-firebase-analytics',
   // 'expo-firebase-core',
   // 'expo-font',
-  'expo-gl-cpp',
   'expo-gl',
   // 'expo-haptics',
   // 'expo-image-loader',

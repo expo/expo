@@ -5,7 +5,7 @@
 #include <android/log.h>
 
 #include <jsi/jsi.h>
-#include "EXGL.h"
+#include "EXGLNativeApi.h"
 #include "EXPlatformUtils.h"
 
 extern "C" {

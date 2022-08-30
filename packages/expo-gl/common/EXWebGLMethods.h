@@ -1,6 +1,6 @@
 #pragma once
 
-#include "EXGLContext.h"
+#include "EXGLNativeContext.h"
 
 namespace expo {
 namespace gl_cpp {

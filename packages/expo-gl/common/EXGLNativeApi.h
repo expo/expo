@@ -14,11 +14,6 @@
 #include <stdbool.h>
 #endif
 
-// NOTE: The symbols exposed by this header are named with a `UEX` prefix rather than an `EX`
-//       prefix so that they are unaffected by the automated iOS versioning script when
-//       referenced in versioned Objective-C code. The EXGL C/C++ library is not versioned
-//       and there is only one copy of its code in the binary form of the Expo application.
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -33,23 +28,11 @@ typedef unsigned int EXGLObjectId;
 
 EXGLContextId EXGLContextCreate();
 
-#ifdef __cplusplus
-#endif
 
-#ifdef __APPLE__
-// Objective-C wrapper for EXGLContextSetFlushMethod
-typedef void (^EXGLFlushMethodBlock)(void);
-// [JS thread] Create an EXGL context and return its id number. Saves the
-// JavaScript interface object (has a WebGLRenderingContext-style API) at
-// `global.__EXGLContexts[id]` in JavaScript.
-void EXGLContextPrepare(void *runtime, EXGLContextId exglCtxId, EXGLFlushMethodBlock flushMethod);
-
-#else
 // [JS thread] Create an EXGL context and return its id number. Saves the
 // JavaScript interface object (has a WebGLRenderingContext-style API) at
 // `global.__EXGLContexts[id]` in JavaScript.
 void EXGLContextPrepare(void *runtime, EXGLContextId exglCtxId, std::function<void(void)> flushMethod);
-#endif
 
 // [Any thread] Check whether we should redraw the surface
 bool EXGLContextNeedsRedraw(EXGLContextId exglCtxId);

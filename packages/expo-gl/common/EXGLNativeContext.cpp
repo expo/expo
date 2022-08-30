@@ -1,4 +1,4 @@
-#include "EXGLContext.h"
+#include "EXGLNativeContext.h"
 #include "EXPlatformUtils.h"
 
 namespace expo {
