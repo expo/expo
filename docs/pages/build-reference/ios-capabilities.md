@@ -117,7 +117,7 @@ First step is to add the respective key/value pairs to your `ios/[app]/[app].ent
 
 If the last step is not done correctly then your iOS native build will fail with an error that looks something like:
 
-```log
+```
 ❌  error: Provisioning profile "*[expo] app.bacon.hello AppStore ..." doesn't support the Associated Domains capability.
 
 ❌  error: Provisioning profile "*[expo] app.bacon.hello AppStore ..." doesn't include the com.apple.developer.associated-domains entitlement.
