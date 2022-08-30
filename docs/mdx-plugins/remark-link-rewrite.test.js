@@ -1,6 +1,6 @@
 import path from 'path';
 
-import linkRewrite from './remark-link-rewrite';
+import linkRewrite from './remark-link-rewrite.cjs';
 
 // helper functions to construct remark nodes
 const makeFile = filePath => ({
