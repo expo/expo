@@ -143,19 +143,19 @@ Add `expo.hooks` to your project's `app.json` (or `app.config.js`) file:
 }
 ```
 
-The correct `authToken` value can be generated from the [Sentry API page ](https://sentry.io/settings/account/api/).
+The `authToken` value can be generated from the [Sentry API page](https://sentry.io/settings/account/api/).
 
-> You can also use environment variables for your config, if you prefer:
->
-> - organization = `SENTRY_ORG`
-> - project = `SENTRY_PROJECT`
-> - authToken = SENTRY_AUTH_TOKEN`
->
-> You can pass them in directly like this:
->
-> ```
-> SENTRY_PROJECT=myCoolProject expo publish
-> ```
+
+<Collapsible summary="Prefer to use environment variables instead of storing values in app.json?">
+
+You can also use environment variables for your config, if you prefer:
+
+- organization → `SENTRY_ORG`
+- project → `SENTRY_PROJECT`
+- authToken → `SENTRY_AUTH_TOKEN`
+
+</Collapsible>
+
 
 <Collapsible summary="Additional configuration options">
 
@@ -169,13 +169,15 @@ In addition to the required config fields above, you can also provide these **op
 
 > You can also use environment variables for your config, if you prefer:
 >
-> - setCommits = SENTRY_SET_COMMITS
-> - deployEnv = SENTRY_DEPLOY_ENV
-> - distribution = SENTRY_DIST
-> - release = SENTRY_RELEASE
-> - url = SENTRY_URL
+> - setCommits → `SENTRY_SET_COMMITS`
+> - deployEnv → `SENTRY_DEPLOY_ENV`
+> - distribution → `SENTRY_DIST`
+> - release → `SENTRY_RELEASE`
+> - url → `SENTRY_URL`
 
 </Collapsible>
+
+<br />
 
 #### Add the Config Plugin
 
@@ -198,16 +200,16 @@ With the `postPublish` hook in place, now all you need to do is run `expo publis
 
 > This hook can also be used as a `postExport` hook if you're [self-hosting your updates](../distribution/custom-updates-server.md).
 
-### "No publish builds"
+### Uploading sourcemaps at build time
 
 > Note: Disregard the following if you're using the classic build system (`expo build:[android|ios]`).
 
 With `expo-updates`, release builds of both iOS and Android apps will create and embed a new update from your JavaScript source at build-time. **This new update will not be published automatically** and will exist only in the binary with which it was bundled. Since it isn't published, the sourcemaps aren't uploaded in the usual way like they are when you run `expo publish` (actually, we are relying on Sentry's native scripts to handle that). Because of this you have some extra things to be aware of:
 
 - Your `release` will automatically be set to Sentry's expected value- `${bundleIdentifier}@${version}+${buildNumber}` (iOS) or `${androidPackage}@${version}+${versionCode}` (Android).
-- Your `dist` will automatically be set to Sentry's expected value- `${buildNumber}` (iOS) or `${versionCode}` (Android).
+- Your `dist` will automatically be set to Sentry's expected value: `${buildNumber}` (iOS) or `${versionCode}` (Android).
 - The configuration for build time sourcemaps comes from the `ios/sentry.properties` and `android/sentry.properties` files. For more information, refer to [Sentry's documentation](https://docs.sentry.io/clients/java/config/#configuration-via-properties-file). Manual configuration is only required for bare projects, the [sentry-expo config plugin handles it otherwise](#add-the-config-plugin).
-- Configuration for `expo publish` and `npx expo export` for projects is done via `app.json` whether using bare workflow or not.
+- Configuration for `expo publish` and `npx expo export` for projects is done via `app.json`, whether using bare workflow or not.
 
 Skipping or misconfiguring either of these can lead to invalid sourcemaps, and you won't see human readable stacktraces in your errors.
 
