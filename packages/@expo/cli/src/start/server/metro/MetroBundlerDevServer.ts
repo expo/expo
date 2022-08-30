@@ -71,7 +71,9 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     prependMiddleware(middleware, manifestMiddleware);
 
     middleware.use(
-      new InterstitialPageMiddleware(this.projectRoot, options.location.scheme).getHandler()
+      new InterstitialPageMiddleware(this.projectRoot, {
+        scheme: options.location.scheme ?? null,
+      }).getHandler()
     );
 
     const deepLinkMiddleware = new RuntimeRedirectMiddleware(this.projectRoot, {
