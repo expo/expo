@@ -46,8 +46,6 @@ In your project directory, run:
 
 <Terminal cmd={['$ npx expo install sentry-expo']} />
 
-> If you're using SDK 39 or lower, run `yarn add sentry-expo@~3.0.0`
-
 `sentry-expo` also requires some additional Expo module packages. To install them, run:
 
 <Terminal
