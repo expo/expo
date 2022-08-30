@@ -1,5 +1,6 @@
 ---
 title: Using Sentry
+maxHeadingDepth: 4
 ---
 
 import { ConfigReactNative, ConfigClassic } from '~/components/plugins/ConfigSection';
@@ -54,7 +55,7 @@ cmd={['$ npx expo install expo-application expo-constants expo-device expo-updat
 
 ### Step 2: Code
 
-#### Configuration
+#### Initialization
 
 Add the following to your app's main file such as **App.js**:
 
@@ -119,7 +120,7 @@ to your root project file (usually **App.js**), so make sure you remove it (but 
 
 <br />
 
-#### Configure your `postPublish` hook
+#### 3.1: Configure a `postPublish` hook
 
 Add `expo.hooks` to your project's `app.json` (or `app.config.js`) file:
 
@@ -179,7 +180,7 @@ In addition to the required config fields above, you can also provide these **op
 
 <br />
 
-#### Add the Config Plugin
+#### 3.2: Add the Config Plugin
 
 Add `expo.plugins` to your project's `app.json` (or `app.config.js`) file:
 
