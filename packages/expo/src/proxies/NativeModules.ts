@@ -13,6 +13,7 @@ const PROPS_TO_IGNORE: Set<string> = new Set([
    * Other modules that are accessed via packages in the Expo SDK but have built-in fallbacks
    */
   'ExpoImageModule',
+  'ExpoRandom',
   'PlatformLocalStorage',
   'RNC_AsyncSQLiteDBStorage',
   'RNCAsyncStorage',
@@ -38,6 +39,8 @@ const alreadyErroredModules: Set<string> = new Set();
 let additionalModulesToIgnore: Set<string> = new Set();
 let enabled = true;
 
+let originalNativeModules: any = null;
+
 function createErrorMessageForStoreClient(moduleName: string) {
   return `Your JavaScript code tried to access a native module, ${moduleName}, that isn't supported in Expo Go.
 To continue development with ${moduleName}, you need to create a development build of your app. See https://expo.fyi/missing-native-module for more info, including how to disable these errors.`;
@@ -50,6 +53,7 @@ See https://expo.fyi/missing-native-module for more info, including how to disab
 }
 
 export function createProxyForNativeModules(NativeModules: any) {
+  originalNativeModules = NativeModules;
   if (!__DEV__) {
     return NativeModules;
   }
@@ -99,4 +103,14 @@ export function disableMissingNativeModuleErrors(moduleNames?: string[] | string
   } else {
     enabled = false;
   }
+}
+
+/**
+ * Access a native module without throwing an error if it doesn't exist.
+ *
+ * @param moduleName Name of module to access
+ * @returns Corresponding native module object, or null if it doesn't exist
+ */
+export function getNativeModuleIfExists(moduleName: string): any {
+  return originalNativeModules[moduleName];
 }
