@@ -2,11 +2,13 @@
 title: Create a Splash Screen
 ---
 
-A splash screen, also known as a launch screen, is the first screen that a user sees when opening your app, and it stays visible while the app is loading. You can control when the splash screen disappears by using the [AppLoading](../versions/latest/sdk/app-loading.md) component or [SplashScreen module](../versions/latest/sdk/splash-screen.md).
+import { Terminal } from '~/ui/components/Snippet';
+
+A splash screen, also known as a launch screen, is the first screen that a user sees when opening your app, and it stays visible while the app is loading. You can control when the splash screen disappears by using the native [SplashScreen API](/versions/latest/sdk/splash-screen).
 
 ## Customize the splash screen for your app
 
-The default splash screen is a blank white screen. This might work for you, if it does, you're in luck! If not, you're also in luck because it's quite easy to customize using **app.json** and the `splash` key. Let's walk through it.
+The default splash screen is a blank white screen, this can be customized using the `splash` key in the project's [Expo config][expo-config] (**app.json**, **app.config.js**).
 
 ### Video walkthrough
 
@@ -32,26 +34,34 @@ Export the image as a PNG and put it in your project directory. I'll assume it's
 
 ### `splash.image`
 
-Open your **app.json** and add the following inside of the `"expo"` field:
+Open the [Expo config][expo-config] (**app.json**, **app.config.js**) and add the following:
 
-```
-"splash": {
-  "image": "./assets/splash.png"
+```diff
+{
+  "expo": {
++    "splash": {
++      "image": "./assets/splash.png"
++    }
+  }
 }
 ```
 
-Now re-open the Expo Go app and open your app, and you should see your beautiful splash screen. There may be a delay before it shows up, see ["Differences between environments" below](#differences-between-environments) for more information on that.
+Now re-open the [Expo Go][expo-go] app and launch your project, you should see your new splash screen. There may be a delay before it shows up in [Expo Go][expo-go], this won't happen in custom builds, see: ["Differences between environments" below](#differences-between-environments).
 
-> **Note**: It's required to close and re-open the Expo Go app on iOS in order to see changes to the splash screen in the manifest. This is a known issue that we are working to resolve. On Android, you need to press the refresh button from the notification drawer.
+> **Note**: It's required to close and re-open the [Expo Go][expo-go] app on iOS in order to see changes to the splash screen in the [Expo config][expo-config]. This is a known issue that we are working to resolve. On Android, you need to press the refresh button from the notification drawer.
 
 ### `splash.backgroundColor`
 
-If you set a background color other than white for your splash image, you may see white border around it. This is due to the `splash.resizeMode` property (which we will discuss shortly) and the default background color, which is `#ffffff` (white). Let's resolve this by setting the `splash.backgroundColor` to be the same as our splash image background color.
+If you set a background color other than white for your splash image, you may see white border around it. This is due to the `splash.resizeMode` property and the default background color, which is `#ffffff` (white). Let's resolve this by setting the `splash.backgroundColor` to be the same as our splash image background color.
 
-```
-"splash": {
-  "image": "./assets/splash.png",
-  "backgroundColor": "#FEF9B0"
+```diff
+{
+  "expo": {
+    "splash": {
+      "image": "./assets/splash.png",
++      "backgroundColor": "#FEF9B0"
+    }
+  }
 }
 ```
 
@@ -59,16 +69,20 @@ If you set a background color other than white for your splash image, you may se
 
 ### `splash.resizeMode`
 
-Any splash image that you provide will be resized to maintain its aspect ratio and to fit the resolution of the user's device. There are two strategies that can be used for resizing: `contain` (default) and `cover`. In both cases, the splash image is within the splash screen. These work the same as the React Native `<Image>` component's `resizeMode` style equivalents, as demonstrated in the following diagram.
+Any splash image that you provide will be resized to maintain its aspect ratio and to fit the resolution of the user's device. There are two strategies that can be used for resizing: `contain` (default) and `cover`. In both cases, the splash image is within the splash screen. These work the same as the React Native `Image` component's [`resizeMode`](/versions/latest/react-native/image/#resizemode), as demonstrated in the following diagram.
 
 ![resizeMode](/static/images/resizeMode.png)
 
 Applying this to our noodles example, let's remove the `backgroundColor` and try it out:
 
-```
-"splash": {
-  "image": "./assets/splash.png",
-  "resizeMode": "cover"
+```diff
+{
+  "expo": {
+    "splash": {
+      "image": "./assets/splash.png",
++      "resizeMode": "cover"
+    }
+  }
 }
 ```
 
@@ -89,19 +103,13 @@ We recommend displaying a `SplashScreen` when [pre-loading and caching assets](/
 
 ### Differences between environments - iOS
 
-Your app can be opened from the Expo Go app or in a standalone app, and it can be either published or in development. There are slight differences in the splash screen behavior between these environments.
+Your app can be opened from the [Expo Go][expo-go] app or in a standalone app, and it can be either published or in development. There are slight differences in the splash screen behavior between these environments.
 
 ![](https://media.giphy.com/media/l378l98EI0VQdwRzy/giphy.gif)
 
-- **On the left**, we are in the Expo Go app and loading an app that is currently in development. Notice that on the bottom of the splash screen you see an information bar that shows information relevant to preparing the JavaScript and downloading it to the device. We see an orange screen before the splash image appears, because the background color is set immediately but the image needs to be downloaded.
-- **In the middle**, we are in the Expo Go app and we are loading a published app. Notice that again the splash image does not appear immediately.
+- **On the left**, we are in the [Expo Go][expo-go] app and loading an app that is currently in development. Notice that on the bottom of the splash screen you see an information bar that shows information relevant to preparing the JavaScript and downloading it to the device. We see an orange screen before the splash image appears, because the background color is set immediately but the image needs to be downloaded.
+- **In the middle**, we are in the [Expo Go][expo-go] app and we are loading a published app. Notice that again the splash image does not appear immediately.
 - **On the right**, we are in a standalone app. Notice that the splash image appears immediately.
-
-### Using a `.xib` file as the launch screen for the standalone iOS app
-
-For iOS, you can also choose to use a `.xib` interface builder document as the splash screen of the standalone iOS app. Simply set `ios.splash.xib` in **app.json** to the path to your `.xib` file. Using a `.xib` file is not compatible with `expo prebuild` and EAS builds.
-
-> **Note**: `.xib` file will only be used in the standalone app. The splash image will continue to be used in the Expo Go app.
 
 ### Splash screen API limitations on Android
 
@@ -118,18 +126,16 @@ Depending on the `resizeMode` you will get the following behavior:
 
 ### Bare workflow apps
 
-To setup and customize your splash screen in a bare app, refer to [this guide](https://github.com/expo/expo/tree/main/packages/expo-splash-screen#-installation-in-bare-react-native-projects).
-
-### Known issues
-
-The following exists are known to us and will be resolved shortly.
-
-- iOS splash screen status bar is white in standalone apps but dark in Expo Go. It should be dark in standalone apps by default too, and also it should be customizable.
+If your app does not use [Expo Prebuild](/workflow/prebuild) (formerly the _managed workflow_) to generate the native `ios` and `android` directories, then changes in the [Expo config][expo-config] will have no effect. To setup and customize your splash screen manually, refer to [this guide](https://github.com/expo/expo/tree/main/packages/expo-splash-screen#-installation-in-bare-react-native-projects).
 
 ### iOS Caching
 
-Splash Screens on iOS standalone apps can sometimes encounter a caching issue where the previous image will flash before showing the new, intended image. When this occurs, we recommend you try power cycling your device and uninstalling and re-installing the application. However,the caching sometimes can persist for a day or two so be patient if the aforementioned steps were unable to resolve the issue.
+In custom iOS builds, launch screens can sometimes remain cached between builds, making it harder to test new images. Apple recommends clearing the _derived data_ folder before rebuilding, this can be done with [Expo CLI][expo-cli] by running:
 
-### Migrating from the `loading` API
+<Terminal cmd={['$ npx expo run:ios --no-build-cache']} />
 
-The `loading` API is deprecated as of SDK 22 and has a strictly worse user experience, so we recommend you change over to `splash` as soon as you have time - the `loading` API will be removed in favor of `splash` in SDK 25.
+Refer to Apple's guide for more on [testing launch screens](https://developer.apple.com/documentation/technotes/tn3118-debugging-your-apps-launch-screen).
+
+[expo-go]: https://expo.dev/expo-go
+[expo-cli]: /workflow/expo-cli
+[expo-config]: /workflow/configuration
