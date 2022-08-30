@@ -5,17 +5,18 @@ maxHeadingDepth: 4
 
 import { Terminal } from '~/ui/components/Snippet';
 
-The Expo CLI enables you to do the following:
+The `expo` package provides a small and powerful CLI tool `npx expo` which is designed to keep you moving fast during app development.
 
-- Start a server for developing your app: `npx expo start`.
-- Bundle the JavaScript and assets for your app: `npx expo export`.
-- Generate the native iOS and Android apps for your project: `npx expo prebuild`.
-- Build and run the native app as standalone development clients: `npx expo run:ios` and `npx expo run:android`.
-- Install npm packages that work with the version of `expo` in your project: `npx expo install package-name`.
-- Log in to your Expo account to enable sandboxed features like local storage in the Expo Go app: `npx expo login`, `logout`, `register`, `whoami`.
-- Evaluate the Expo config (**app.json**, or **app.config.js**): `npx expo config`.
+**Highlights**
 
-> This documentation refers to the Local Expo CLI (SDK 46 and greater). For information on legacy Expo CLI, see [legacy Global Expo CLI](/archived/expo-cli/).
+- [Start a server](#develop) for developing your app: `npx expo start`.
+<!-- - Bundle the JavaScript and assets for your app: `npx expo export`. -->
+- [Generate the native iOS and Android directories](#prebuild) for your project: `npx expo prebuild`.
+- [Build and run](#compiling) the native apps locally: `npx expo run:ios` and `npx expo run:android`.
+- [Install and update packages](#install) that work with the version of `react-native` in your project: `npx expo install package-name`.
+- `npx expo` can be used with `npx react-native` simultaneously.
+
+> This documentation refers to the Local Expo CLI (SDK 46 and greater). For information on legacy Expo CLI, see [Global Expo CLI](/archived/expo-cli/).
 
 <hr />
 
@@ -48,17 +49,17 @@ You can run any command with the `--help` or `-h` flag to learn more about it:
 
 ## Develop
 
-Start a development server for developing your project by running:
+Start a development server to work on your project by running:
 
 <Terminal cmd={['$ npx expo start']} />
 
 > You can also run `npx expo` as an alias to `npx expo start`.
 
-This command starts a server on `http://localhost:19000` which a client can fetch from to interact with the bundler (the default bundler is [Metro](https://facebook.github.io/metro/)).
+This command starts a server on `http://localhost:19000` which a client can use to interact with the bundler. The default bundler is [Metro](https://facebook.github.io/metro/).
 
-The UI that shows up is referred to as the **Terminal UI**.
+The UI that shows up in the process is referred to as the **Terminal UI**.
 
-The default UI has a QR code and a list of keyboard shortcuts you can press, these commands are only available in interactive terminals (not available in CI):
+The Terminal UI has a QR code (for the dev server URL) and a list of keyboard shortcuts you can press:
 
 - `a`: Open the project in Expo Go on Android.
 - `shift` + `a`: Select an Android device or emulator to open.
@@ -70,42 +71,40 @@ The default UI has a QR code and a list of keyboard shortcuts you can press, the
 - `r`: Reload the app on any connected device.
 - `m`: Open the dev menu on any connected native device (web not supported).
 - `shift` + `m`: Choose more commands to trigger on connected devices. This includes toggling the performance monitor, opening the element inspector, reloading the device, and opening the dev menu.
-- `j`: Open Chrome Dev Tools for any connected device that is using Hermes as the JavaScript engine. [Learn more](/guides/using-hermes/).
-- `o`: Open project code in your editor. This can be configured with the `EXPO_EDITOR` and `EDITOR` environment variables.
+- `j`: Open Chrome Dev Tools for any connected device that is using Hermes as the JavaScript engine. [Learn more](/guides/using-hermes#javascript-inspector-for-hermes).
+- `o`: Open project code in your editor. This can be configured with the `EXPO_EDITOR` and `EDITOR` [environment variables](#environment-variables).
 - `c`: Show development server URL as a QR code in the terminal.
 - `?`: Show all Terminal UI commands.
 
 ### Server URL
 
-The URL is served over a LAN connection that utilizes the local network by default. You can change this behavior to localhost-only by using the flag `--host localhost` or `--localhost`.
+By default, the project is served over a LAN connection. You can change this behavior to localhost-only by using the flag `npx expo start --localhost`.
 
-- `--port`: Port to start the dev server on (does not apply to Webpack or `--tunnel` URLs). Default: **19000**.
-- `--https`: Start the dev server using a secure origin. This is currently only supported in Webpack.
+Other available options are:
 
-You can force the URL to be whatever you like by using the `EXPO_PACKAGER_PROXY_URL` environment variable.
+- `--port`: Port to start the dev server on (does not apply to Webpack or [tunnel URLs](#tunneling)). Default: **19000**.
+- `--https`: Start the dev server using a secure origin. This is currently only supported on web.
 
-For example:
+You can force the URL to be any value with the `EXPO_PACKAGER_PROXY_URL` environment variable. For example:
 
 <Terminal cmd={[
 'export EXPO_PACKAGER_PROXY_URL=http://expo.dev',
 '$ npx expo start'
 ]} />
 
-Will open apps to: `exp://expo.dev:80` (the `:80` is a temporary workaround for Android support).
+Will open apps to: `exp://expo.dev:80` (the `:80` is a temporary workaround for Android websockets).
 
 #### Tunneling
 
-Sometimes you may find it difficult to connect your device to your machine. Many factors can cause this to happen: restrictive network conditions (common for public Wi-Fi), firewalls (common for Windows users), or Emulator misconfiguration.
+Restrictive network conditions (common for public Wi-Fi), firewalls (common for Windows users), or Emulator misconfiguration can make it difficult to connect a remote device to your dev server over lan/localhost.
 
-To combat these, we provide built-in URL "tunneling" with ngrok for free! This enables you to forward your `localhost` URL to a public URL that's accessible from anywhere in the world (more on the security implications later).
+Sometimes it's easier to connect to a dev server over a proxy URL that's accessible from any device with internet access, this is referred to as **tunneling**. `npx expo start` provides built-in support for **tunneling** via [ngrok][ngrok].
 
-This means your device simply needs to connect to the internet to access your dev server.
-
-To enable tunneling, you first need `@expo/ngrok` installed either globally (recommended) or locally in your project:
+To enable tunneling, first install `@expo/ngrok`:
 
 <Terminal cmd={['$ npm i -g @expo/ngrok']} />
 
-Then run the following in your project:
+Then run the following to start your dev server from a _tunnel_ URL:
 
 <Terminal cmd={['$ npx expo start --tunnel']} />
 
@@ -114,10 +113,8 @@ This will serve your app from a public URL like: `http://xxxxxxx.bacon.19000.exp
 **Drawbacks**
 
 - Tunneling is slower than local connections because requests must be forwarded to a public URL.
-- Tunnel URLs are public and can be accessed by anyone! We attempt to mitigate the risk of project exposure by:
-  - Adding entropy to the beginning of the URL. This can be reset by clearing the `.expo` folder in your project.
-  - Destroying the tunnel when the project stops.
-- Tunnels require a network connection, meaning this feature cannot be used offline or with the `--offline` flag.
+- Tunnel URLs are public and can be accessed by any device with a network connection. Expo CLI mitigates the risk of exposure by adding entropy to the beginning of the URL. Entropy can be reset by clearing the `.expo` directory in your project.
+- Tunnels require a network connection on both devices, meaning this feature cannot be used with the `--offline` flag.
 
 #### Offline
 
@@ -125,33 +122,13 @@ You can develop without a network connection by using the `--offline` flag:
 
 <Terminal cmd={['$ npx expo start --offline']} />
 
-This will prevent the CLI from attempting to make network requests (nominally faster DX). If you don't use the flag and your computer is offline, then offline support will automatically be enabled, it will just take a bit longer to verify the connection.
+Offline will prevent the CLI from making network requests. If you don't use the flag and your computer has no internet connection, then offline support will automatically be enabled, it will just take a bit longer to verify the reachability.
+
+Expo CLI makes network requests to sign manifests with your user credentials to ensure sensitive information is sandboxed in reusable runtimes like Expo Go.
 
 ## Building
 
-An Expo app consists of two parts: a native runtime, and static JavaScript files. The CLI provides commands for performing both tasks.
-
-### Exporting
-
-You can export the JavaScript and assets for your app using Metro bundler by running the following:
-
-<Terminal cmd={[
-'$ npx expo export',
-]} />
-
-This is done automatically when using `eas update` or when compiling the native runtime. The `export` command works similar to most web frameworks:
-
-- A bundler transpiles and bundles your application code in "production" mode, stripping all code guarded by the `__DEV__` boolean.
-- All static files are copied into a static `dist/` folder which can be served from a static host.
-- Contents of the `public/` folder are copied into the `dist/` folder as-is.
-
-The following options are provided:
-
-- `--platform <platform>`: Choose the platform to compile for: 'ios', 'android', 'all'. **Default: all**. 'web' is also available if configured in the Expo config. For more information, see [Customizing Metro](/guides/customizing-metro).
-- `--dev`: Bundle in 'development' mode without minifying code or stripping the `__DEV__` boolean.
-- `--output-dir <dir>`: The directory to export the static files to. **Default: dist**
-- `--max-workers <number>`: Maximum number of tasks to allow the bundler to spawn. Setting this to `0` will run all transpilation on the same process, meaning you can easily debug Babel transpilation.
-- `-c, --clear`: Clear the bundler cache before exporting.
+A React Native app consists of two parts: a native runtime ([compiling](#compiling)), and static files like JavaScript bundles and assets ([exporting](#exporting)). Expo CLI provides commands for performing both tasks.
 
 ### Compiling
 
@@ -164,45 +141,64 @@ You can compile your app locally with the `run` commands:
 '$ npx expo run:android'
 ]} />
 
+**Highlights**
+
+- Build directly on connected devices with no global side-effects using the `--device` flag. Supports locked devices, letting you retry instantly instead of needing to rebuild.
+- Automatically codesign iOS apps for development from the CLI without having to open Xcode.
+- Smart log parsing show you warnings and errors from your project source code, unlike Xcode which surfaces hundreds of benign warnings from your node modules.
+- Fatal errors causing your app to crash will be surfaced to the terminal preventing the need to reproduce in Xcode.
+
+---
+
 `expo run:ios` can only be run on a Mac, and Xcode must be installed. You can build the app in the cloud from any computer using `eas build -p ios`. Similarly, `expo run:android` requires Android Studio and Java to be installed and configured on your computer.
 
-Building locally is useful for developing native modules and debugging complex native issues. Building remotely with `eas build` is often much more resilient due to the preconfigured environment.
+Building locally is useful for developing native modules and [debugging complex native issues](/workflow/debugging#native-debugging). Building remotely with `eas build` is a much more resilient option due to the preconfigured cloud environment.
 
-If your project does not have the corresponding native folder, the prebuild will run once to generate the folder before building. For example, if your project does not have an `ios/` folder in the root directory, then running `npx expo run:ios` will first run `npx expo prebuild -p ios` before building your app. This folder can be treated as a temporary folder, and you can add it to your project's `.gitignore` to remain in the managed workflow. The native project can be regenerated with `npx expo prebuild --clean` at any time. Because the iOS build cache (also known as "derived data") folder lives outside of your project, you can `--clean` while retaining relatively fast rebuild times.
+If your project does not have the corresponding native directories, the `npx expo prebuild` command will run once to generate the respective directory before building.
+
+For example, if your project does not have a root `ios/` directory, then `npx expo run:ios` will first run `npx expo prebuild -p ios` before compiling your app. Learn more about about this process in the [Expo Prebuild](/workflow/prebuild) doc.
 
 <!-- TODO: multi-platform setup guide -->
 
 **Cross-Platform Arguments**
 
-- `--no-build-cache`: Clear the native build cache before building. On iOS this is the "derived data" folder. This is useful for profiling your build times.
+- `--no-build-cache`: Clear the native cache before building. On iOS this is the **derived data** folder. Cache clearing is useful for profiling your build times.
 - `--no-install`: Skip installing dependencies. On iOS this will also skip running `npx pod-install` if the `dependencies` field in the project's `package.json` have changed.
-- `--no-bundler`: Skip starting the dev server. This will automatically be activated if the dev server is serving the current app in a different tab.
-- `-d, --device [device]`: Device name or ID to build the app is on. You can pass `--device` without arguments to select a device from a list of available options. This supports connected devices as well as virtual devices.
-- `-p, --port <port>`: Port to start the development server. **Default: 8081**. This is only relevant for development builds. Production builds will "export" the project and embed the files in the native binary before installing.
+- `--no-bundler`: Skip starting the dev server. Enabled automatically if the dev server is already serving the app from a different process.
+- `-d, --device [device]`: Device name or ID to build the app on. You can pass `--device` without arguments to select a device from a list of available options. This supports connected devices as well as virtual devices.
+- `-p, --port <port>`: Port to start the development server. **Default: 8081**. This is only relevant for development builds. Production builds will [export](#exporting) the project and embed the files in the native binary before installing on a device.
 
 #### Compiling iOS
 
-An iOS app can have multiple "schemes" for things like App Clips, watchOS apps, Safari Extensions, and so on. By default, `expo run:ios` will choose the scheme for your application. You can pick a custom scheme with the `--scheme <my-scheme>` argument. If you pass in the `--scheme` alone, then you will be prompted to choose a scheme from the list of available options in your Xcode project.
+An iOS app can have multiple **schemes** for representing different sub-apps like App Clips, watchOS apps, Safari Extensions, and so on. By default, `expo run:ios` will choose the scheme for your iOS app. You can pick a custom scheme with the `--scheme <my-scheme>` argument. If you pass in the `--scheme` argument alone, then Expo CLI will prompt you to choose a scheme from the list of available options in your Xcode project.
 
-The scheme you select can filter out which `--device` options show up in the selection prompt, for example, selecting an Apple TV scheme will only show available Apple TV devices.
+The scheme you select will filter out which `--device` options show up in the selection prompt, for example, selecting an Apple TV scheme will only show available Apple TV devices.
 
-You can compile the app for production by running:
+You can compile an iOS app for production by running:
 
 <Terminal cmd={['$ npx expo run:ios --configuration Release']} />
 
-This build is not guaranteed to be code signed for submission to the Apple App Store. This command should be used to test bugs that may only show up in production builds. Code signing requires several network requests and is prone to many different types of errors from the Apple servers. To generate a production build that is code signed for the App Store, we recommend using `eas build -p ios`.
+This build is not automatically code signed for submission to the Apple App Store. `npx expo run:ios` should mostly be used to test bugs that only show up in production builds. Native code signing requires several network requests and is prone to many different types of errors from the Apple servers. To generate a production build that is code signed for the App Store, we recommend using [EAS Build](/build/introduction).
 
-When you compile your app onto a simulator, the Simulator's native error logs will be piped to the command line. This is useful for quickly seeing bugs that may cause a fatal error. This functionality is not available for apps that are built on physical iOS devices.
+When you compile your app onto a Simulator, the Simulator's native error logs will be piped to the Expo CLI process in the terminal. This is useful for quickly seeing bugs that may cause a fatal error. For example, missing permission messages. Error piping is not available for physical iOS devices.
 
 You can debug using `lldb` and all of the native Apple debugging tools by opening the project in Xcode and rebuilding from Xcode:
 
 <Terminal cmd={['$ xed ios']} />
 
-This is useful because you can set native breakpoints and profile any part of the application. Be sure to track changes in source control (git) in case you need to regenerate the native app with `npx expo prebuild -p ios --clean`.
+Building from Xcode is useful because you can set native breakpoints and profile any part of the application. Be sure to track changes in source control (git) in case you need to regenerate the native app with `npx expo prebuild -p ios --clean`.
+
+##### iOS development signing
+
+If you want to see how your app will run on your device, all you have to do is connect it, run `npx expo run:ios —-device`, select your connected device.
+
+Expo CLI will automatically sign the device for development, install the app, and launch into it.
+
+If you don't have any developer profiles setup on your computer then you'll need to set them up manually outside of Expo CLI by following this guide: [Setup Xcode signing](https://expo.fyi/setup-xcode-signing).
 
 #### Compiling Android
 
-Android apps can have multiple different "variants" which are defined in the project's `build.gradle`. Variants can be selected with the `--variant` flag:
+Android apps can have multiple different **variants** which are defined in the project's `build.gradle` file. Variants can be selected with the `--variant` flag:
 
 <Terminal cmd={['$ npx expo run:android --variant debug']} />
 
@@ -210,11 +206,35 @@ You can compile the Android app for production by running:
 
 <Terminal cmd={['$ npx expo run:android --variant release']} />
 
-This build is not guaranteed to be code signed for submission to the Google Play Store. This command should be used to test bugs that may only show up in production builds. To generate a production build that is code signed for the Play Store, we recommend using `eas build -p android`.
+This build is not automatically code signed for submission to the Google Play Store. This command should be used to test bugs that may only show up in production builds. To generate a production build that is code signed for the Play Store, we recommend using [EAS Build](/build/introduction).
 
-You can debug the project using native debugging tools by opening the `android/` folder in Android Studio:
+You can debug the native Android project using native debugging tools by opening the `android/` folder in Android Studio:
 
 <Terminal cmd={['$ open -a /Applications/Android\ Studio.app android']} />
+
+### Exporting
+
+You can export the JavaScript and assets for your app using Metro bundler by running:
+
+<Terminal cmd={[
+'$ npx expo export',
+]} />
+
+This is done automatically when using `eas update` or when compiling the native runtime. The `export` command works similar to most web frameworks:
+
+- A bundler transpiles and bundles your application code for **production** environments, stripping all code guarded by the `__DEV__` boolean.
+- All static files are copied into a static `dist/` folder which can be served from a static host.
+- Contents of the `public/` folder are copied into the `dist/` folder as-is.
+
+The following options are provided:
+
+- `--platform <platform>`: Choose the platform to compile for: 'ios', 'android', 'all'. **Default: all**. 'web' is also available if configured in the Expo config. For more information, see [Customizing Metro](/guides/customizing-metro).
+- `--dev`: Bundle for **development** environments without minifying code or stripping the `__DEV__` boolean.
+- `--output-dir <dir>`: The directory to export the static files to. **Default: dist**
+- `--max-workers <number>`: Maximum number of tasks to allow the bundler to spawn. Setting this to `0` will run all transpilation on the same process, meaning you can easily debug Babel transpilation.
+- `-c, --clear`: Clear the bundler cache before exporting.
+
+<!-- TODO: Link to docs about self hosting -->
 
 ### Exporting with Webpack
 
@@ -237,17 +257,87 @@ This command will be disabled if your project is configured to use `metro` for b
 '$ npx expo prebuild',
 ]} cmdCopy="npx expo prebuild" />
 
-Native source code must be generated before a native app can compile. Expo CLI provides a unique and powerful system called _prebuild_, that generates the native code for your project.
+Native source code must be generated before a native app can compile. Expo CLI provides a unique and powerful system called _prebuild_, that generates the native code for your project. To learn more, read the [Expo Prebuild docs](/workflow/prebuild.md).
 
-**For more information:**
+## Config
 
-- [Prebuild](/workflow/prebuild)
-- [Config plugins](/guides/config-plugins)
-- [Native modules API](/modules/module-api)
+Evaluate the Expo config (**app.json**, or **app.config.js**) by running:
 
-## Telemetry
+<Terminal cmd={[
+'$ npx expo config',
+]} cmdCopy="npx expo config" />
 
-Expo dev tools collect anonymous data about general usage. This helps us know when a command is safe to deprecate (low usage), or when a feature is not working as expected. Telemetry is completely optional, and you can opt out by using the `EXPO_NO_TELEMETRY=1` environment variable.
+- `--full`: Include all project config data.
+- `--json`: Output in JSON format, useful for converting an `app.config.js` to an `app.config.json`.
+- `-t, --type`: [Type of config](#config-type) to show.
+
+### Config Type
+
+There are three different config types that are generated from the Expo config:
+
+- `public`: The manifest file to use with OTA updates. Think of this like an `index.html` file's `<head />` element but for native apps.
+- `prebuild`: The config that is used for [Expo Prebuild](/workflow/prebuild) including async modifiers. This is the only time the config is not serializable.
+- `introspect`: A subset of the `prebuild` config that only shows in-memory modifications like `Info.plist` or `AndroidManifest.xml` changes. Learn more about [introspection](/guides/config-plugins#introspection).
+
+## Install
+
+Unlike the web, React Native is not backwards compatible. This means that npm packages often need to be the exact right version for the currently installed copy of `react-native` in your project. Expo CLI provides a best-effort tool for doing this using a list of popular packages and the known working version combinations. Simply use the `install` command as a drop-in replacement for `npm install`:
+
+<Terminal cmd={[
+'$ npx expo install expo-camera',
+]} cmdCopy="npx expo install expo-camera" />
+
+Running a single instance of this command, you can also install multiple packages:
+
+<Terminal cmd={[
+'$ npx expo install typescript expo-sms',
+]} cmdCopy="npx expo install typescript expo-sms" />
+
+You can directly pass arguments to the underlying package manager by using the `--` operator:
+
+<Terminal cmd={[
+'$ yarn expo install typescript -- -D',
+'# yarn add typescript -D',
+]} cmdCopy="yarn expo install typescript -- -D" />
+
+### Version validation
+
+You can perform validation and correction with the `--check` and `--fix` flags:
+
+- `--check`: Check which installed packages need to be updated.
+- `--fix`: Automatically update any invalid package versions.
+
+Example:
+
+<Terminal cmd={[
+'# Check all packages for incorrect versions, prompt to fix locally',
+'$ npx expo install --check',
+]} cmdCopy="npx expo install --check" />
+
+`npx expo install --check` prompts you about packages that are installed incorrectly. It also prompts about installing the these packages to their compatible versions locally. It exits with non-zero in Continuous Integration (CI). This means you can use this to do continuous immutable validation. In contrast, `npx expo install --fix` will always fix packages if needed, regardless of the environment.
+
+You can validate specific packages by passing them:
+
+<Terminal cmd={[
+'# Check only react-native and expo-sms',
+'$ npx expo install react-native expo-sms --check',
+]} cmdCopy="npx expo install react-native expo-sms --check"/>
+
+The command `npx expo install expo-camera` and `npx expo install expo-camera --fix` serve the same purpose, the `--fix` command is useful for upgrading all packages in your project like:
+
+<Terminal cmd={[
+'$ npx expo install --fix',
+]} cmdCopy="npx expo install --fix"/>
+
+### Install package managers
+
+`npx expo install` has support for `yarn`, `npm`, and `pnpm`.
+
+You can force the package manager using a named argument:
+
+- `--npm`: Use **npm** to install dependencies. **Default** when `package-lock.json` exists
+- `--yarn`: Use **Yarn** to install dependencies. **Default** when `yarn.lock` exists
+- `--pnpm`: Use **pnpm** to install dependencies. **Default** when `pnpm-lock.yaml` exists
 
 ## Authentication
 
@@ -262,7 +352,7 @@ These credentials are shared across Expo CLI and EAS CLI.
 
 ## Customizing
 
-Sometimes you may want to customize a project file that would otherwise be managed in memory by the CLI. When you utilize tools other than Expo CLI, you'll need to have the default config files present. Otherwise, your app may not work as expected. You can generate files by running:
+Sometimes you may want to customize a project file that would otherwise be generated in memory by Expo CLI. When utilizing tools other than Expo CLI, you'll need to have the default config files present, otherwise your app may not work as expected. You can generate files by running:
 
 <Terminal cmd={['$ npx expo customize']} />
 
@@ -270,7 +360,7 @@ From here, you can choose to generate basic project files like:
 
 - `babel.config.js` -- The Babel configuration. This is required to be present if you plan to use tooling other than Expo CLI to bundle your project.
 - `webpack.config.js` -- The default Webpack config for web development.
-- `metro.config.js` -- The default Metro config for universal development. This is required for usage with the React Native community CLI.
+- `metro.config.js` -- The default Metro config for universal development. This is required for usage with `npx react-native`.
 
 ## Environment Variables
 
@@ -281,10 +371,16 @@ From here, you can choose to generate basic project files like:
 - `EXPO_PROFILE` (**boolean**) enable profiling stats for the CLI, this does not profile your application.
 - `EXPO_NO_CACHE` (**boolean**) disable all global caching. By default, Expo config JSON schemas, Expo Go binaries for simulators and emulators, and project templates are cached in the global `.expo` folder on your machine.
 - `CI` (**boolean**) when enabled, the CLI will disable interactive functionality, skip optional prompts, and fail on non-optional prompts. Example: `CI=1 npx expo install --check` will fail if any installed packages are outdated.
-- `EXPO_NO_TELEMETRY` (**boolean**) disables anonymous usage collection.
+- `EXPO_NO_TELEMETRY` (**boolean**) disables anonymous usage collection. [Learn more](#telemetry).
 - `EXPO_NO_GIT_STATUS` (**boolean**) skips warning about git status during potentially dangerous actions like `npx expo prebuild --clean`.
 - `EXPO_ENABLE_INTERSTITIAL_PAGE` (**boolean**) enables the experimental "interstitial page" for selecting an app, that shows when a user has `expo-dev-client` installed, and starts the project with `npx expo start` instead of `npx expo start --dev-client`.
 - `EXPO_PUBLIC_FOLDER` (**string**) public folder path to use with Metro for web. Default: `public`. [Learn more](/guides/customizing-metro/).
 - `EDITOR` (**string**) name of the editor to open when pressing `o` in the Terminal UI. This value is used across many command line tools.
 - `EXPO_EDITOR` (**string**) an Expo-specific version of the `EDITOR` variable which takes higher priority when defined.
 - `EXPO_IMAGE_UTILS_NO_SHARP` (**boolean**) disable the usage of global Sharp CLI installation in favor of the slower Jimp package for image manipulation. This is used in places like `npx expo prebuild` for generating app icons.
+
+## Telemetry
+
+Expo dev tools collect anonymous data about general usage. This helps us know when a feature is not working as expected. Telemetry is completely optional, you can opt out by using the `EXPO_NO_TELEMETRY=1` environment variable.
+
+[ngrok]: https://ngrok.com
