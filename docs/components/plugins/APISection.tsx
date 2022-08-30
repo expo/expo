@@ -131,11 +131,7 @@ const renderAPI = (
       componentsPropNames.includes(entry.name)
     );
 
-    const classes = filterDataByKind(
-      data,
-      TypeDocKind.Class,
-      entry => !isComponent(entry) && (apiName ? !entry.name.includes(apiName) : true)
-    );
+    const classes = filterDataByKind(data, TypeDocKind.Class, entry => !isComponent(entry));
 
     const componentsChildren = components
       .map((cls: ClassDefinitionData) =>
