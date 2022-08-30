@@ -9,7 +9,7 @@ import { Collapsible } from '~/ui/components/Collapsible';
 
 [Next.js][nextjs] is a React framework that provides simple page-based routing as well as server-side rendering. To use Next.js with Expo for web we recommend that you use a library called [`@expo/next-adapter`][next-adapter] to handle the configuration and integration of the tools.
 
-Using Expo with Next.js means you can share all of your existing components and APIs across your mobile and web. Next.js has its own Webpack config so **you'll need to start your web projects with the `next-cli` and not with `expo start`.**
+Using Expo with Next.js means you can share all of your existing components and APIs across your mobile and web. Next.js has its own Webpack config so **you'll need to start your web projects with the Next.js CLI and not with `npx expo start`.**
 
 > Next.js can only be used with Expo for web, this doesn't provide Server-Side Rendering (SSR) for native apps.
 
@@ -28,7 +28,7 @@ npx create-react-native-app -t with-nextjs
 ```
 
 - **Web**: `yarn next dev` -- start the Next.js project
-- **Native**: `expo start` -- start the Expo project
+- **Native**: `npx expo start` -- start the Expo project
 
 ### Add Next.js to Expo projects
 

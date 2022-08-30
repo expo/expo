@@ -23,7 +23,7 @@ If you have both OTF and TTF versions of a font, prefer OTF. OTF is a newer form
 
 ### Beyond OTF and TTF
 
-If your font is in another format, you may need to [customize the Metro bundler configuration](/guides/customizing-metro) to get anything other than TTF and OTF to work. In general, just don't do that unless you are really sure you want to. In some cases, trying to render a font format that a platform doesn't support may cause your app to crash.
+If your font is in another format, you may need to [customize the Metro bundler configuration](/guides/customizing-metro#adding-more-file-extensions-to-assetexts) to get anything other than TTF and OTF to work. In general, just don't do that unless you are really sure you want to. In some cases, trying to render a font format that a platform doesn't support may cause your app to crash.
 
 For reference, the following table provides what formats work on which platforms:
 
@@ -161,7 +161,7 @@ Expo has first-class support for all fonts listed in [Google Fonts](https://font
 
 For example, to use Inter font you can install the [`@expo-google-fonts/inter`](https://www.npmjs.com/package/@expo-google-fonts/inter) package with the command below.
 
-<Terminal cmd={["$ expo install expo-font @expo-google-fonts/inter"]} />
+<Terminal cmd={["$ npx expo install expo-font @expo-google-fonts/inter"]} />
 
 Then, you can integrate it in your project by using the `useFonts` hook. You can directly use this hook from the Google Fonts package. Under the hood, the hook uses [`Font.loadAsync`](/versions/latest/sdk/font/#loadasyncfontfamilyorfontmap-source). You do not have to explicitly import the font file since that is done by the package itself.
 

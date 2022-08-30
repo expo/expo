@@ -22,7 +22,7 @@ If you have used Expo before, especially with the Managed workflow, [config plug
 "$ cd my-app",
 "",
 "# Install development client",
-"$ expo install expo-dev-client"
+"$ npx expo install expo-dev-client"
 ]} cmdCopy="npx create-expo-app my-app && cd my-app && expo install expo-dev-client" />
 
 > You can also improve error messages to be helpful during the development process. To do so, add `import 'expo-dev-client';` to the top of your `App.{js|tsx}` file. [Learn more](installation.md#add-better-error-handlers).
@@ -65,7 +65,7 @@ But now that you have a development build of your project installed on your devi
 
 Instead, all you need to do to start developing is to run:
 
-<Terminal cmd={["$ expo start --dev-client"]} />
+<Terminal cmd={["$ npx expo start --dev-client"]} />
 
 and scanning the resulting QR code with your system camera or QR code reader (if you want to develop against a physical device)
 
@@ -110,7 +110,7 @@ then register the plugin in your `app.json`. Using this module will require new 
 
 Once you've generated new builds with EAS build or the `expo run:ios`/`expo run:android` commands, you can access the new capabilities in your app's code.
 
-Add the following code to your App.tsx, run `expo start --dev-client`, and load your JavaScript. Now you can convert speech to text in your app!
+Add the following code to your App.tsx, run `npx expo start --dev-client`, and load your JavaScript. Now you can convert speech to text in your app!
 
 <!-- prettier-ignore -->
 ```js
