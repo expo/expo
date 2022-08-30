@@ -9,7 +9,7 @@ index 7e7547b603..5bc387fcfd 100644
 -set(PACKAGE_NAME "expo-gl")
 +set(PACKAGE_NAME "expo-gl_{VERSIONED_ABI_NAME}")
  set(BUILD_DIR ${CMAKE_SOURCE_DIR}/build)
- set(COMMON_DIR ${CMAKE_SOURCE_DIR}/../common/cpp)
+ set(COMMON_DIR ${CMAKE_SOURCE_DIR}/../common)
  
 @@ -40,7 +40,7 @@ target_include_directories(
                              "${COMMON_DIR}")
