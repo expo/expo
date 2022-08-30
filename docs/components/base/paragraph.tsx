@@ -1,5 +1,5 @@
 import { css } from '@emotion/react';
-import { theme, typography, iconSize, InfoIcon } from '@expo/styleguide';
+import { theme, typography, iconSize, InfoIcon, spacing, borderRadius } from '@expo/styleguide';
 import emojiRegex from 'emoji-regex';
 import { Children, PropsWithChildren, ReactNode, BlockquoteHTMLAttributes } from 'react';
 
@@ -13,7 +13,7 @@ const attributes = {
 
 const STYLES_PARAGRAPH = css`
   ${paragraph}
-  margin-bottom: 1rem;
+  margin-bottom: ${spacing[4]}px;
 `;
 
 export const P = ({ children }: PropsWithChildren<object>) => (
@@ -23,10 +23,9 @@ export const P = ({ children }: PropsWithChildren<object>) => (
 );
 
 const STYLES_BOLD_PARAGRAPH = css`
-  ${paragraph}
+  ${STYLES_PARAGRAPH}
   font-size: inherit;
   font-family: ${typography.fontFaces.semiBold};
-  font-weight: 500;
 `;
 
 export const B = ({ children }: PropsWithChildren<object>) => (
@@ -34,9 +33,8 @@ export const B = ({ children }: PropsWithChildren<object>) => (
 );
 
 const STYLES_PARAGRAPH_DIV = css`
-  ${paragraph}
+  ${STYLES_PARAGRAPH}
   display: block;
-  margin-bottom: 1rem;
 
   &.is-wider {
     max-width: 1200px;
@@ -64,12 +62,12 @@ const STYLES_BLOCKQUOTE = css`
     ${paragraph}
     display: grid;
     grid-template-columns: auto 1fr;
-    grid-gap: 12px;
-    padding: 12px;
-    margin-bottom: 1rem;
+    grid-gap: ${spacing[3]}px;
+    padding: ${spacing[3]}px;
+    margin-bottom: ${spacing[4]}px;
     border-left: 4px solid ${theme.border.default};
     background: ${theme.background.secondary};
-    border-radius: 4px;
+    border-radius: ${borderRadius.small};
 
     div {
       margin: 0;
@@ -81,7 +79,7 @@ const STYLES_BLOCKQUOTE = css`
   }
 
   table & {
-    margin: 0.5rem 0;
+    margin: ${spacing[2]}px 0;
 
     &:first-of-type {
       margin-top: 0;

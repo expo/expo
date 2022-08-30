@@ -110,7 +110,7 @@ const unselectableStyle = css`
 
 const codeStyle = css`
   display: inline-block;
-  line-height: 130%;
+  line-height: 140%;
   background-color: transparent;
   border: none;
   color: ${darkTheme.text.default};

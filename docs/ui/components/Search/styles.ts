@@ -118,16 +118,16 @@ export const DocSearchStyles = css`
 
   .DocSearch-Button-Keys {
     display: flex;
-    min-width: calc(2 * 20px + 2 * 0.4em);
+    gap: ${spacing[1.5]}px;
   }
 
   .DocSearch-Button-Key {
     display: flex;
     align-items: center;
-    height: 20px;
     ${typography.utility.pre}
     ${kbdStyle}
-    margin-left: 0.4em;
+    height: 20px;
+    min-width: 22px;
   }
 
   @media (max-width: 768px) {

@@ -603,6 +603,7 @@ export const STYLES_NESTED_SECTION_HEADER = css({
     ...typography.fontSizes[16],
     fontFamily: typography.fontFaces.medium,
     marginBottom: 0,
+    marginTop: 0,
     color: theme.text.secondary,
   },
 });
