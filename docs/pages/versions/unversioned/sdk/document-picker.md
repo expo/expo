@@ -4,7 +4,7 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-document-pi
 packageName: 'expo-document-picker'
 ---
 
-import { ConfigClassic, ConfigReactNative, ConfigPluginExample, ConfigPluginProperties } from '~/components/plugins/ConfigSection';
+import { ConfigReactNative, ConfigPluginExample, ConfigPluginProperties } from '~/components/plugins/ConfigSection';
 
 import APISection from '~/components/plugins/APISection';
 import {APIInstallSection} from '~/components/plugins/InstallSection';
@@ -76,7 +76,7 @@ Running [EAS Build](/build/introduction) locally will use [iOS capabilities sign
 </ConfigPluginExample>
 
 <ConfigPluginProperties properties={[
-{ name: 'iCloudContainerEnvironment', platform: 'ios', description: 'Sets the iOS `com.apple.developer.icloud-container-environment` entitlement used used for AdHoc iOS builds: https://github.com/expo/eas-cli/issues/693', default: 'undefined' },
+{ name: 'iCloudContainerEnvironment', platform: 'ios', description: 'Sets the iOS `com.apple.developer.icloud-container-environment` entitlement used used for AdHoc iOS builds. Possible values: `Development`, `Production`. Learn more: https://github.com/expo/eas-cli/issues/693', default: 'undefined' },
 ]} />
 
 ## API
