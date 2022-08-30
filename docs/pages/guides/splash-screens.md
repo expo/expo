@@ -4,7 +4,7 @@ title: Create a Splash Screen
 
 import { Terminal } from '~/ui/components/Snippet';
 
-A splash screen, also known as a launch screen, is the first screen that a user sees when opening your app, and it stays visible while the app is loading. You can control when the splash screen disappears by using the native [SplashScreen API](../versions/latest/sdk/splash-screen.md).
+A splash screen, also known as a launch screen, is the first screen that a user sees when opening your app, and it stays visible while the app is loading. You can control when the splash screen disappears by using the native [SplashScreen API](/versions/latest/sdk/splash-screen).
 
 ## Customize the splash screen for your app
 
@@ -69,7 +69,7 @@ If you set a background color other than white for your splash image, you may se
 
 ### `splash.resizeMode`
 
-Any splash image that you provide will be resized to maintain its aspect ratio and to fit the resolution of the user's device. There are two strategies that can be used for resizing: `contain` (default) and `cover`. In both cases, the splash image is within the splash screen. These work the same as the React Native `Image` component's [`resizeMode`](https://reactnative.dev/docs/image#resizemode), as demonstrated in the following diagram.
+Any splash image that you provide will be resized to maintain its aspect ratio and to fit the resolution of the user's device. There are two strategies that can be used for resizing: `contain` (default) and `cover`. In both cases, the splash image is within the splash screen. These work the same as the React Native `Image` component's [`resizeMode`](/versions/latest/react-native/image/#resizemode), as demonstrated in the following diagram.
 
 ![resizeMode](/static/images/resizeMode.png)
 
