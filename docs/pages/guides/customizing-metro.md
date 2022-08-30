@@ -154,7 +154,7 @@ module.exports = config;
 
 Here are all of the [default Uglify options](https://github.com/facebook/metro/blob/b629f44239bbb3414491755185cf19b5834b4b7a/packages/metro-config/src/defaults/index.js#L94-L111) applied in Metro bundler.
 
-### Minification
+## Minification
 
 By default, Metro uses `uglify-es` to minify code for production environments (`npx expo export`). According to [this benchmark](https://github.com/privatenumber/minification-benchmarks) `uglify` generally produces the smallest bundles but it isn't the fastest minifier. Here are some alternative packages you can use for minification:
 
