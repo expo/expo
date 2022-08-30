@@ -39,7 +39,7 @@ buildscript {
   }
 }
 
-def isAndroidTest() {
+def isAndroidTest = {
   Gradle gradle = getGradle()
   String tskReqStr = gradle.getStartParameter().getTaskRequests().toString()
   if (tskReqStr =~ /:expo-modules-core:connected\w*AndroidTest/) {
@@ -47,7 +47,7 @@ def isAndroidTest() {
     return androidTests.exists() && androidTests.isDirectory()
   }
   return false
-}
+}.call()
 
 def downloadsDir = new File("$buildDir/downloads")
 def thirdPartyNdkDir = new File("$buildDir/third-party-ndk")
@@ -82,21 +82,24 @@ def currentHermesVersion = file("${REACT_NATIVE_DIR}/sdks/.hermesversion").exist
 def hasHermesProject = findProject(":ReactAndroid:hermes-engine") != null
 def prebuiltHermesCacheHit = hasHermesProject && currentHermesVersion == prebuiltHermesVersion
 
-def FOR_HERMES = false
+def USE_HERMES = false
 def HERMES_HEADER_DIR = null
 def HERMES_AAR = null
 if (findProject(":app")) {
   def appProjectExt = project(":app").ext
   if (appProjectExt.has("react")) {
-    FOR_HERMES = project(":app").ext.react.enableHermes
+    USE_HERMES = project(":app").ext.react.enableHermes
   } else {
-    FOR_HERMES = (findProperty('expo.jsEngine') ?: "jsc") == "hermes"
+    USE_HERMES = (findProperty('expo.jsEngine') ?: "jsc") == "hermes"
   }
 } else {
-  FOR_HERMES = (findProperty('expo.jsEngine') ?: "jsc") == "hermes"
+  USE_HERMES = (findProperty('expo.jsEngine') ?: "jsc") == "hermes"
 }
 
-if (FOR_HERMES) {
+// Currently the needs for hermes/jsc are only for androidTest, so we turn on this flag only when `isAndroidTest` is true
+USE_HERMES = USE_HERMES && isAndroidTest
+
+if (USE_HERMES) {
   if (prebuiltHermesCacheHit) {
     HERMES_HEADER_DIR = file("${thirdPartyNdkDir}/hermes/prefab/modules/libhermes/include")
     HERMES_AAR = file("${prebuiltHermesDir}/hermes-engine-debug.aar")
@@ -176,12 +179,13 @@ android {
           "-DREACT_NATIVE_SO_DIR=${REACT_NATIVE_SO_DIR}",
           "-DREACT_NATIVE_TARGET_VERSION=${REACT_NATIVE_TARGET_VERSION}",
           "-DBOOST_VERSION=${BOOST_VERSION}",
-          "-DFOR_HERMES=${FOR_HERMES}",
+          "-DUSE_HERMES=${USE_HERMES}",
           "-DHERMES_HEADER_DIR=${HERMES_HEADER_DIR}",
           "-DIS_NEW_ARCHITECTURE_ENABLED=${isNewArchitectureEnabled}",
           "-DPROJECT_BUILD_DIR=$buildDir",
           "-DREACT_ANDROID_DIR=${REACT_NATIVE_DIR}/ReactAndroid",
-          "-DREACT_ANDROID_BUILD_DIR=${REACT_NATIVE_DIR}/ReactAndroid/build"
+          "-DREACT_ANDROID_BUILD_DIR=${REACT_NATIVE_DIR}/ReactAndroid/build",
+          "-DUNIT_TEST=${isAndroidTest}"
       }
     }
   }
@@ -224,7 +228,7 @@ android {
 
     // In android (instrumental) tests, we want to package all so files to enable our JSI functionality.
     // Otherwise, those files should be excluded, because will be loaded by the application.
-    if (isAndroidTest()) {
+    if (isAndroidTest) {
       excludes = [
         "META-INF/MANIFEST.MF",
         "META-INF/com.android.tools/proguard/coroutines.pro",
@@ -298,7 +302,7 @@ dependencies {
   androidTestImplementation "com.google.truth:truth:1.1.2"
   androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0"
 
-  if (FOR_HERMES) {
+  if (USE_HERMES) {
     def hermesProject = findProject(":ReactAndroid:hermes-engine")
     androidTestImplementation (hermesProject ?: files(HERMES_AAR))
   } else {
@@ -459,7 +463,7 @@ task prepareFolly(dependsOn: [downloadFolly], type: Copy) {
 // END FOLLy
 
 task prepareHermes(dependsOn: createNativeDepsDirectories) {
-  if (!FOR_HERMES) {
+  if (!USE_HERMES) {
     return
   }
 
@@ -474,7 +478,7 @@ task prepareHermes(dependsOn: createNativeDepsDirectories) {
   }
 }
 
-task prepareThirdPartyNdkHeaders(dependsOn: [prepareBoost, prepareDoubleConversion, prepareFolly, prepareHermes]) {}
+task prepareThirdPartyNdkHeaders(dependsOn: [prepareBoost, prepareDoubleConversion, prepareFolly]) {}
 
 def packageReactNdkDebugLibs = tasks.register("packageReactNdkDebugLibs", Copy) {
   dependsOn(":ReactAndroid:packageReactNdkDebugLibsForBuck")
@@ -490,8 +494,11 @@ def packageReactNdkReleaseLibs = tasks.register("packageReactNdkReleaseLibs", Co
 afterEvaluate {
   extractAARHeaders.dependsOn(prepareThirdPartyNdkHeaders)
   extractJNIFiles.dependsOn(prepareThirdPartyNdkHeaders)
-  if (FOR_HERMES && hasHermesProject && !prebuiltHermesCacheHit) {
-    prepareHermes.dependsOn(":ReactAndroid:hermes-engine:assembleDebug")
+  if (USE_HERMES) {
+    prepareThirdPartyNdkHeaders.dependsOn(prepareHermes)
+    if (hasHermesProject && !prebuiltHermesCacheHit) {
+      prepareHermes.dependsOn(":ReactAndroid:hermes-engine:assembleDebug")
+    }
   }
 
   if (isNewArchitectureEnabled) {
