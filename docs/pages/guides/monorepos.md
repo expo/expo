@@ -70,31 +70,121 @@ Metro doesn't come with monorepo support by default (yet). That's why we need to
 
 1. Make sure Metro is watching the full monorepo, not just **apps/cool-app**.
 2. Tell Metro where it can resolve packages. They might be installed in **apps/cool-app/node_modules** or **node_modules**.
+3. Force Metro to only resolve (sub)packages from the `nodeModulesPaths`.
 
 We can configure that by creating a **metro.config.js** with the following content.
 
 > Learn more about customizing Metro in [our guide](/guides/customizing-metro).
 
 ```js
+// Learn more https://docs.expo.dev/guides/monorepos
 const { getDefaultConfig } = require('expo/metro-config');
 const path = require('path');
 
-// Find the workspace root, this can be replaced with `find-yarn-workspace-root`
-const workspaceRoot = path.resolve(__dirname, '../..');
+// Find the project and workspace directories
 const projectRoot = __dirname;
+// This can be replaced with `find-yarn-workspace-root`
+const workspaceRoot = path.resolve(projectRoot, '../..');
 
 const config = getDefaultConfig(projectRoot);
 
 // 1. Watch all files within the monorepo
 config.watchFolders = [workspaceRoot];
-// 2. Let Metro know where to resolve packages, and in what order
+// 2. Let Metro know where to resolve packages and in what order
 config.resolver.nodeModulesPaths = [
   path.resolve(projectRoot, 'node_modules'),
   path.resolve(workspaceRoot, 'node_modules'),
 ];
+// 3. Force Metro to resolve (sub)dependencies only from the `nodeModulesPaths`
+config.resolver.disableHierarchicalLookup = true;
 
 module.exports = config;
 ```
+
+<Collapsible summary="1. Why do we need to watch all files with the monorepo?">
+
+Metro has three separate stages in its bundling process, [documented here](https://facebook.github.io/metro/docs/concepts). During the first phase, **Resolution**, Metro resolves your app's required files and dependencies. Metro does that with the `watchFolders` option, which is set to the project directory by default. This default setting works great for apps that don't use a monorepo structure.
+
+When using monorepos, your app dependencies splits up into different directories. Each of these directories must be within the scope of the [watchFolders](https://facebook.github.io/metro/docs/configuration/#watchfolders). If a file is outside of that scope, Metro won't be able to find it. Setting this path to the root of your monorepo
+
+As your monorepo increases in size, watching all files within the monorepo becomes slower. If you want to speed that up, you can (dynamically) watch the relevant paths to minimize the watch scope. For example:
+
+```js
+// Learn more https://docs.expo.dev/guides/monorepos
+const { getDefaultConfig } = require('expo/metro-config');
+const path = require('path');
+
+const projectRoot = __dirname;
+const workspaceRoot = path.resolve(projectRoot, '../..');
+
+// If your monorepo tooling can give you the list of monorepo workspaces linked 
+// in your app workspace, you can automate this list instead of hardcoding them.
+const monorepoPackages = {
+  '@acme/api': path.resolve(workspaceRoot, 'packages/api'), 
+  '@acme/components': path.resolve(workspaceRoot, 'packages/components'),
+};
+
+// 1. Watch the local app folder, and all related packages (limiting the scope and speeding it up)
+config.watchFolders = [__dirname, ...Object.values(monorepoPackages)];
+// Add the monorepo workspaces as `extraNodeModules` to Metro.
+// If your monorepo tooling creates workspace symlinks in the `node_modules` folder,
+// you can either add symlink support to Metro or set the `extraNodeModules` to avoid the symlinks.
+// See: https://facebook.github.io/metro/docs/configuration/#extranodemodules
+config.resolver.extraNodeModules = monorepoPackages;
+
+// 2. Let Metro know where to resolve packages and in what order
+config.resolver.nodeModulesPaths = [
+  path.resolve(projectRoot, 'node_modules'),
+  path.resolve(workspaceRoot, 'node_modules'),
+];
+// 3. Force Metro to resolve (sub)dependencies only from the `nodeModulesPaths`
+config.resolver.disableHierarchicalLookup = true;
+```
+
+</Collapsible>
+
+<Collapsible summary="2. Why do we need to tell Metro how to resolve packages?">
+
+This option is important to resolve libraries in the correct **node_modules** directories. Monorepo tooling, like Yarn, usually creates two different **node_modules** directories which are used for a single workspace.
+
+1. **apps/mobile/node_modules** - The "project" folder
+2. **node_modules** - The "root" folder
+
+Yarn uses the root folder to install packages used in multiple workspaces. If a workspace uses a different package version, it installs that different version in the project folder.
+
+We have to tell Metro to look in these two folders. The order is important here because the project folder **node_modules** can contain specific versions we use for our app. When the package does not exist in the project folder, it should try the shared root folder.
+
+</Collapsible>
+
+<Collapsible summary="3. Why do we need to disable the hierarchical lookup?">
+
+This option is important for certain edge cases, such as a monorepo that includes multiple versions of the `react` package. For example, let's say you have the following monorepo:
+
+1. **apps/marketing** - A simple Next.js website to attract new users. (uses `react@17.x.x`)
+2. **apps/mobile** - Your awesome Expo app. (uses `react@18.x.x`)
+3. **apps/web** - Your awesome Next.js website. (uses `react@17.x.x`)
+
+With monorepo tooling like Yarn, React is installed in two different **node_modules** folders.
+1. **node_modules** - The root folder, contains `react@17.x.x`.
+2. **apps/mobile/node_modules** - The Expo app's folder, contains `react@18.x.x`. 
+
+Expo modules and React Native libraries usually don't add `react` as a peer dependency. As a result, monorepo tooling, like Yarn, will install these dependencies to the root **node_modules** directory, for example:
+
+1. **node_modules** - The root folder, contains `expo@...` and `react@17.x.x`.
+2. **apps/mobile/node_modules** - The Expo app's folder, contains `react@18.x.x`. 
+
+With hierarchical lookup enabled, whenever `expo` imports `react`, Metro will resolve to `react@17.x.x` and not `react@18.x.x`. This causes "multiple React versions" errors in your app.
+
+By disabling hierarchical lookup, we can force Metro to resolve only folders from the `nodeModulesPaths = [...]` order we defined in #2.
+This option is documented in the [Metro Resolution Algorithm documentation](https://facebook.github.io/metro/docs/resolution/#algorithm), under step 5.
+
+When we disable this hierarchical lookup, it should not matter where the React Native library is installed.
+Whenever a library imports `react`, or any other library, Metro always resolves the library from the `nodeModulesPaths` we defined.
+As long as the **apps/mobile/node_modules** path has the correct library version and is listed as the first `nodeModulesPaths` entry, we should always get the correct version of that library.
+
+</Collapsible>
+
+<br />
 
 #### Change default entrypoint
 
@@ -189,6 +279,39 @@ export default function App() {
 ## Common issues
 
 As mentioned earlier, using monorepos is not for everyone. You take on increased complexity and need to solve issues you most likely will run into. Here are a couple of common issues you might encounter.
+
+### Can I use another monorepo tool instead of Yarn workspaces?
+
+There are a lot of monorepo tools available, and each of these tools has its benefits. It's hard for us to keep up with the latest tools and methods, and because of that, we can't officially support new monorepo tools. That being said, if the tool follows these three rules, it should work fine.
+
+<Collapsible summary="1. All dependencies must be installed in a node_modules directory">
+
+React Native dependencies contain many other files besides JavaScript, like Gradle files such as `react-native/react.gradle`. These native files are referenced from different sources other than Node, and because of that, it makes it fundamentally incompatible with concepts like Plug'n'Play modules.
+
+</Collapsible>
+
+<Collapsible summary="2. Dependencies used in multiple workspaces can be installed in the root node_modules directory">
+
+Whenever multiple workspaces use the same version of a single dependency, they can be installed in a root **node_modules** directory. Monorepo tools usually do this to remove duplicate tasks, like installing the exact same dependency twice in different places. This rule isn't necessary but does set us up for rule #3.
+
+</Collapsible>
+
+<Collapsible summary="3. Different versions of dependencies must be installed in the app node_modules directory">
+
+In the [Modify the Metro config](#modify-the-metro-config) step, we instructed Metro to do a couple of this, specifically:
+
+- #2 - Resolve dependencies in the order of the local **/apps/<name\>/node_modules** and root **/node_modules** directories.
+- #3 - Disable resolving dependencies using the hierarchical lookup strategy.
+
+If a workspace uses a different library version than the one installed in the root **/node_modules**, that different library version must be installed in the workspace **/apps/<name\>/node_modules** directory.
+
+When Metro resolves a library, e.g. `react`, from the workspace, it should find that different version in **/apps/<name\>/node_modules** and not look inside the root **/node_modules** directory.
+
+When importing a dependency from the root **/node_modules** folder that also imports `react`, `react` should still resolve to the different version installed in **/apps/<name\>/node_modules**. That's what the disabled hierarchical lookup option does for Metro. Without this, some libraries might import the wrong `react` version and cause "multiple React versions found" errors.
+
+</Collapsible>
+
+The default settings of tools like [pnpm](https://pnpm.io/) do not follow these rules. You can change that by adding an **.npmrc** file with `node-linker=hoisted` ([see docs](https://pnpm.io/npmrc#node-linker)). That config option will change the behavior to match these rules.
 
 ### Script '...' does not exist
 
