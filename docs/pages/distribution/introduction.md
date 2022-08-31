@@ -3,8 +3,9 @@ title: Overview
 ---
 
 import { Terminal } from '~/ui/components/Snippet';
+import { BoxLink } from '~/ui/components/BoxLink';
 
-Get your app into the hands of users by [submitting it to the app stores](/distribution/uploading-apps) or with [Internal Distribution](/build/internal-distribution).
+Get your app into the hands of users by submitting it to the app stores or with [Internal Distribution](/build/internal-distribution).
 
 <Terminal cmd={[
 '# Install the CLI',
@@ -21,6 +22,14 @@ You can run `eas build --auto-submit` with [EAS CLI](/eas/index) to build your a
 
 This automatically manages **all native code signing** for iOS and Android for any React Native app. Advanced features like payments, notifications, universal links, and iCloud can be automatically enabled based on your [config plugins](/guides/config-plugins.md) or native entitlements, meaning no more wrestling with slow portals to get libraries set up correctly.
 
-EAS builds and submits from a remote device meaning you can kick off from any device. [Get started now](/distribution/uploading-apps)!
+### Get started
 
-> Have company policies or restrictions preventing you from using third-party services? EAS Build can be run [locally or on your own infrastructure](/build-reference/local-builds/)!
+<BoxLink title="Submitting to the Apple App Store" description="Learn how to submit an iOS/iPadOS app to the Apple App Store from any operating system." href="/submit/ios" />
+
+<BoxLink title="Submitting to the Google Play Store" description="Learn how to submit an Android app to the Google Play Store." href="/submit/android" />
+
+<BoxLink title="Internal Distribution" description="Share your mobile app internally with testers using AdHoc builds." href="/build/internal-distribution" />
+
+<BoxLink title="Publishing websites" description="Export your website and upload to any web host." href="/distribution/publishing-websites" />
+
+<BoxLink title="OTA updates" description="Send over-the-air updates to your users instantly." href="/eas-update/introduction" />
