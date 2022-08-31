@@ -4,6 +4,9 @@ on:
   workflow_dispatch: {}
   schedule:
     - cron: '0 10 * * SAT' # 10:00 AM UTC time every Saturday
+  pull_request:
+    paths:
+      - .github/workflows/test-suite-nightly.yml
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
