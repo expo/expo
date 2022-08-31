@@ -71,6 +71,9 @@ export default {
       ],
     });
 
+    // Fix inline or browser MDX usage
+    config.resolve.fallback = { fs: false, path: 'path-browserify' };
+
     return config;
   },
 
