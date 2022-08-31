@@ -1,5 +1,7 @@
 ---
 title: Overview
+sidebar_title: Introduction
+hideTOC: true
 ---
 
 import { Terminal } from '~/ui/components/Snippet';
@@ -11,8 +13,8 @@ Get your app into the hands of users by submitting it to the app stores or with 
 '# Install the CLI',
 '$ npm i -g eas-cli',
 '',
-'# Build and submit your app!',
-'$ eas build --auto-submit'
+'# Build and submit your app',
+'$ eas build --auto-submit',
 '',
 '# OR -- Submit existing binaries',
 '$ eas submit'
