@@ -10,7 +10,7 @@ export default [
     name: 'credentialsSource',
     enum: ['local', 'remote'],
     description: [
-      'The source of credentials used to sign build artifacts.',
+      'The source of credentials used to sign the application archive.',
       ' - `local` - if you want to provide your own `credentials.json` file. ([Learn more on this here](/app-signing/local-credentials).)',
       ' - `remote` - if you want to use the credentials managed by EAS (this is the default option).',
     ],
@@ -57,6 +57,13 @@ export default [
       'Note: `--platform` and `--non-interactive` will be added automatically by the build engine, so you do not need to specify them manually.',
       '[Learn more about prebuild options](../../workflow/expo-cli/#expo-prebuild).',
     ],
+  },
+  {
+    name: 'buildArtifactsPaths',
+    type: 'string[]',
+    description: [
+      'List of paths (or patterns) where EAS Build is going to look for the build artifacts. Use `applicationArchivePath` for specifying the path for uploading the application archive. Build artifacts are uploaded even if the build fails. EAS Build uses the `fast-glob` npm package for pattern matching ([see their README to learn more about the syntax you can use](https://github.com/mrmlnc/fast-glob#pattern-syntax)).'
+    ]
   },
   {
     name: 'node',
