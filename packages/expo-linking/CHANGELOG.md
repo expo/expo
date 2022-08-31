@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- Update docs link.
+- Update docs link. ([#18935](https://github.com/expo/expo/pull/18935) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 3.2.2 — 2022-07-25
 
