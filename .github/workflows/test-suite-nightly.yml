@@ -1,4 +1,4 @@
-name: Test Suite on React Native nightly build2
+name: Test Suite on React Native nightly build
 
 on:
   workflow_dispatch: {}
