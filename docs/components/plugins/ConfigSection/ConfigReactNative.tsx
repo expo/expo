@@ -2,9 +2,9 @@ import React, { PropsWithChildren, useEffect } from 'react';
 
 import { Collapsible } from '~/ui/components/Collapsible';
 
-type Props = PropsWithChildren<object>;
+type Props = PropsWithChildren<object> & { title?: string; };
 
-export const ConfigReactNative = ({ children }: Props) => {
+export const ConfigReactNative = ({ children, title = "Are you using this library in a bare React Native app?" }: Props) => {
   useEffect(() => {
     if (typeof children === 'string') {
       throw new Error(
@@ -13,9 +13,5 @@ export const ConfigReactNative = ({ children }: Props) => {
     }
   }, [children]);
 
-  return (
-    <Collapsible summary="Are you using this library in a bare React Native app?">
-      {children}
-    </Collapsible>
-  );
+  return <Collapsible summary={title}>{children}</Collapsible>;
 };
