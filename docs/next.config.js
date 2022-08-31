@@ -14,6 +14,9 @@ import remarkLinkRewrite from './mdx-plugins/remark-link-rewrite.cjs';
 import createSitemap from './scripts/create-sitemap.cjs';
 
 const { copySync, removeSync, readJsonSync } = fsExtra;
+
+// note(simek): We cannot use direct JSON import because ESLint do not support `assert { type: 'json' }` syntax yet:
+// * https://github.com/eslint/eslint/discussions/15305
 const { version, betaVersion } = readJsonSync('./package.json');
 const dirname = fileURLToPath(new URL('.', import.meta.url));
 
@@ -48,7 +51,7 @@ export default {
       },
     });
 
-    // Add support for MDX with our custom loader and esbuild
+    // Add support for MDX with our custom loader
     config.module.rules.push({
       test: /.mdx?$/,
       use: [
@@ -68,11 +71,9 @@ export default {
       ],
     });
 
-    // Fix inline or browser MDX usage: https://mdxjs.com/getting-started/webpack#running-mdx-in-the-browser
-    config.resolve.fallback = { fs: false, path: 'path-browserify' };
-
     return config;
   },
+
   // Create a map of all pages to export
   async exportPathMap(defaultPathMap, { dev, outDir }) {
     if (dev) {
