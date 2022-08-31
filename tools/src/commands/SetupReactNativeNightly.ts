@@ -17,7 +17,23 @@ export default (program: Command) => {
 };
 
 async function main() {
-  await addReactNativeNightlyAsync();
+  const nightlyVersion = (await getPackageViewAsync('react-native'))?.['dist-tags'].nightly;
+  if (!nightlyVersion) {
+    throw new Error('Unable to get react-native nightly version.');
+  }
+
+  logger.info('Adding pinned packages:');
+  const pinnedPackages = {
+    'react-native': nightlyVersion,
+
+    // Remove this after we upgrade reanimated
+    'react-native-reanimated': '2.10.0',
+  };
+  await addPinnedPackagesAsync(pinnedPackages);
+
+  logger.info('Yarning...');
+  await workspaceInstallAsync();
+
   await updateReactNativePackageAsync();
 
   await patchReanimatedAsync();
@@ -28,26 +44,19 @@ async function main() {
   // https://github.com/react-navigation/react-navigation/commit/bd5cd55e130cba2c6c35bbf360e3727a9fcf00e4
   await patchReactNavigationAsync();
 
-  logger.log('Setting up project files for bare-expo.');
+  logger.info('Setting up project files for bare-expo.');
   await updateBareExpoAsync();
 }
 
-async function installPinnedPackageVersionAsync(name: string, version: string) {
-  logger.log(`Installing pinned ${name}@${version}.`);
+async function addPinnedPackagesAsync(packages: Record<string, string>) {
   const workspacePackageJsonPath = path.join(EXPO_DIR, 'package.json');
   const json = await JsonFile.readAsync(workspacePackageJsonPath);
   json.resolutions ||= {};
-  json.resolutions[name] = version;
-  await JsonFile.writeAsync(workspacePackageJsonPath, json);
-  await workspaceInstallAsync();
-}
-
-async function addReactNativeNightlyAsync() {
-  const version = (await getPackageViewAsync('react-native'))?.['dist-tags'].nightly;
-  if (!version) {
-    throw new Error('Unable to get react-native nightly version.');
+  for (const [name, version] of Object.entries(packages)) {
+    logger.log('  ', `${name}@${version}`);
+    json.resolutions[name] = version;
   }
-  await installPinnedPackageVersionAsync('react-native', version);
+  await JsonFile.writeAsync(workspacePackageJsonPath, json);
 }
 
 async function updateReactNativePackageAsync() {
@@ -79,9 +88,6 @@ async function updateReactNativePackageAsync() {
 }
 
 async function patchReanimatedAsync() {
-  // Remove this after we upgrade reanimated
-  await installPinnedPackageVersionAsync('react-native-reanimated', '2.10.0');
-
   // Workaround for reanimated doesn't support the hermes where building from source
   const root = path.join(EXPO_DIR, 'node_modules', 'react-native-reanimated');
   await transformFileAsync(path.join(root, 'android', 'build.gradle'), [
