@@ -60,6 +60,8 @@ class EXUpdatesLogReaderTests: XCTestCase {
     let logReader = UpdatesLogReader()
 
     let date1 = Date()
+    purgeEntriesSync(logReader: logReader, olderThan: date1)
+
     logErrorSync(message: "Test message", code: .noUpdatesAvailable)
     RunLoop.current.run(until: Date().addingTimeInterval(1))
 

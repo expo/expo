@@ -83,7 +83,7 @@ class UpdatesController private constructor(
     UpdatesUtils.getRuntimeVersion(updatesConfiguration)
   )
   val fileDownloader: FileDownloader = FileDownloader(context)
-  private val errorRecovery: ErrorRecovery = ErrorRecovery()
+  private val errorRecovery: ErrorRecovery = ErrorRecovery(context)
 
   private fun setRemoteLoadStatus(status: ErrorRecoveryDelegate.RemoteLoadStatus) {
     remoteLoadStatus = status
@@ -275,7 +275,7 @@ class UpdatesController private constructor(
               if (exception == null) {
                 throw AssertionError("Background update with error status must have a nonnull exception object")
               }
-              logger.error("UpdatesController onBackgroundUpdateFinished: Error: ${exception.localizedMessage}", UpdatesErrorCode.None)
+              logger.error("UpdatesController onBackgroundUpdateFinished: Error: ${exception.localizedMessage}", UpdatesErrorCode.Unknown, exception)
               remoteLoadStatus = ErrorRecoveryDelegate.RemoteLoadStatus.IDLE
               val params = Arguments.createMap()
               params.putString("message", exception.message)

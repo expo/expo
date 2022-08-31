@@ -135,15 +135,18 @@ static NSInteger const EXUpdatesErrorRecoveryRemoteLoadTimeoutMs = 5000;
   [_pipeline removeObjectAtIndex:0];
   switch ((EXUpdatesErrorRecoveryTask)nextTask.integerValue) {
     case EXUpdatesErrorRecoveryTaskWaitForRemoteUpdate:
+      [self->_logger info:@"EXUpdatesErrorRecovery runNextTask -- waiting for remote update"];
       [self _waitForRemoteLoaderToFinish];
       break;
     // EXUpdatesErrorRecoveryTaskLaunchNew is called only after a new update is downloaded
     // and added to the cache, so it is equivalent to EXUpdatesErrorRecoveryTaskLaunchCached
     case EXUpdatesErrorRecoveryTaskLaunchNew:
     case EXUpdatesErrorRecoveryTaskLaunchCached:
+      [self->_logger info:@"EXUpdatesErrorRecovery runNextTask -- launching a new or cached update"];
       [self _tryRelaunchFromCache];
       break;
     case EXUpdatesErrorRecoveryTaskCrash:
+      [self->_logger error:@"EXUpdatesErrorRecovery runNextTask -- invoking crash handler" code:EXUpdatesErrorCodeUpdateFailedToLoad];
       [self _crash];
       break;
     default:

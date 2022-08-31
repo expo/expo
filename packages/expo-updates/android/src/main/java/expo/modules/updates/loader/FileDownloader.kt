@@ -78,7 +78,7 @@ open class FileDownloader(context: Context) {
               callback.onSuccess(destination, hash)
             }
           } catch (e: Exception) {
-            logger.error("Failed to download file to destination $destination: ${e.localizedMessage}", UpdatesErrorCode.AssetsFailedToLoad)
+            logger.error("Failed to download file to destination $destination: ${e.localizedMessage}", UpdatesErrorCode.AssetsFailedToLoad, e)
             callback.onFailure(e)
           }
         }
@@ -163,7 +163,7 @@ open class FileDownloader(context: Context) {
       }
     } catch (e: Exception) {
       val message = "Error while reading multipart manifest response"
-      logger.error(message, UpdatesErrorCode.UpdateFailedToLoad)
+      logger.error(message, UpdatesErrorCode.UpdateFailedToLoad, e)
       callback.onFailure(
         message,
         e
@@ -270,8 +270,8 @@ open class FileDownloader(context: Context) {
         checkCodeSigningAndCreateManifest(manifestBody, preManifest, manifestHeaderData, extensions, certificateChainFromManifestResponse, false, configuration, callback)
       }
     } catch (e: Exception) {
-      val message = "Failed to parse manifest data"
-      logger.error(message, UpdatesErrorCode.UpdateFailedToLoad)
+      val message = "Failed to parse manifest data: ${e.localizedMessage}"
+      logger.error(message, UpdatesErrorCode.UpdateFailedToLoad, e)
       callback.onFailure(
         message,
         e
@@ -290,8 +290,8 @@ open class FileDownloader(context: Context) {
         createRequestForManifest(configuration, extraHeaders, context),
         object : Callback {
           override fun onFailure(call: Call, e: IOException) {
-            val message = "Failed to download manifest from URL: ${configuration.updateUrl}"
-            logger.error(message, UpdatesErrorCode.UpdateFailedToLoad)
+            val message = "Failed to download manifest from URL: ${configuration.updateUrl}: ${e.localizedMessage}"
+            logger.error(message, UpdatesErrorCode.UpdateFailedToLoad, e)
             callback.onFailure(
               message,
               e
@@ -317,8 +317,8 @@ open class FileDownloader(context: Context) {
         }
       )
     } catch (e: Exception) {
-      val message = "Failed to download manifest from URL: ${configuration.updateUrl}"
-      logger.error(message, UpdatesErrorCode.UpdateFailedToLoad)
+      val message = "Failed to download manifest from URL: ${configuration.updateUrl}: ${e.localizedMessage}"
+      logger.error(message, UpdatesErrorCode.UpdateFailedToLoad, e)
       callback.onFailure(
         message,
         e
@@ -364,7 +364,7 @@ open class FileDownloader(context: Context) {
           }
         )
       } catch (e: Exception) {
-        logger.error("Failed to download asset ${asset.key}", UpdatesErrorCode.AssetsFailedToLoad)
+        logger.error("Failed to download asset ${asset.key}: ${e.localizedMessage}", UpdatesErrorCode.AssetsFailedToLoad, e)
         callback.onFailure(e, asset)
       }
     }

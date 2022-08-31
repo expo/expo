@@ -81,8 +81,7 @@ static NSString * const EXUpdatesErrorEventName = @"error";
     _isStarted = NO;
     _remoteLoadStatus = EXUpdatesRemoteLoadStatusIdle;
     _logger = [EXUpdatesLogger new];
-    [_logger info:@"EXUpdatesAppController sharedInstance created"
-             code:EXUpdatesErrorCodeNone];
+    [_logger info:@"EXUpdatesAppController sharedInstance created"];
   }
   return self;
 }
@@ -270,8 +269,7 @@ static NSString * const EXUpdatesErrorEventName = @"error";
 - (void)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask didFinishWithLauncher:(id<EXUpdatesAppLauncher>)launcher isUpToDate:(BOOL)isUpToDate
 {
   NSString *logMessage = [NSString stringWithFormat:@"EXUpdatesAppController appLoaderTask didFinishWithLauncher, isUpToDate=%d, remoteLoadStatus=%ld", isUpToDate, _remoteLoadStatus];
-  [_logger info:logMessage
-           code:EXUpdatesErrorCodeNone];
+  [_logger info:logMessage];
   // if isUpToDate is false, that means a remote update is still loading in the background (this
   // method was called with a cached update because the timer ran out) so don't update the status
   if (_remoteLoadStatus == EXUpdatesRemoteLoadStatusLoading && isUpToDate) {
@@ -435,7 +433,7 @@ static NSString * const EXUpdatesErrorEventName = @"error";
       return;
     }
     [self->_logger error:@"EXUpdatesAppController markFailedLaunchForUpdate"
-                    code:EXUpdatesErrorCodeNone
+                    code:EXUpdatesErrorCodeUnknown
                 updateId:launchedUpdate.loggingId
                  assetId:nil];
     NSError *error;

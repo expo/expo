@@ -5,11 +5,14 @@ import android.os.Looper
 import android.os.Message
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.launcher.Launcher
+import expo.modules.updates.logging.UpdatesErrorCode
+import expo.modules.updates.logging.UpdatesLogger
 import java.lang.RuntimeException
 
 internal class ErrorRecoveryHandler(
   looper: Looper,
-  private val delegate: ErrorRecoveryDelegate
+  private val delegate: ErrorRecoveryDelegate,
+  private val logger: UpdatesLogger
 ) : Handler(looper) {
   private val pipeline = arrayListOf(
     Task.WAIT_FOR_REMOTE_UPDATE,
@@ -37,7 +40,10 @@ internal class ErrorRecoveryHandler(
 
   override fun handleMessage(msg: Message) {
     when (msg.what) {
-      MessageType.EXCEPTION_ENCOUNTERED -> maybeStartPipeline(msg.obj as Exception)
+      MessageType.EXCEPTION_ENCOUNTERED -> {
+        logger.error("ErrorRecoveryHandler: Exception encountered: ${(msg.obj as Exception).localizedMessage}", UpdatesErrorCode.Unknown, msg.obj as Exception)
+        maybeStartPipeline(msg.obj as Exception)
+      }
       MessageType.CONTENT_APPEARED -> handleContentAppeared()
       MessageType.REMOTE_LOAD_STATUS_CHANGED -> handleRemoteLoadStatusChanged(msg.obj as ErrorRecoveryDelegate.RemoteLoadStatus)
       else -> throw RuntimeException("ErrorRecoveryHandler cannot handle message " + msg.what)
@@ -65,10 +71,22 @@ internal class ErrorRecoveryHandler(
 
   private fun runNextTask() {
     when (val nextTask = pipeline.removeAt(0)) {
-      Task.WAIT_FOR_REMOTE_UPDATE -> waitForRemoteUpdate()
-      Task.LAUNCH_NEW_UPDATE -> tryRelaunchFromCache() // only called after a new update is downloaded and added to the cache, so the implementation is equivalent
-      Task.LAUNCH_CACHED_UPDATE -> tryRelaunchFromCache()
-      Task.CRASH -> crash()
+      Task.WAIT_FOR_REMOTE_UPDATE -> {
+        logger.info("UpdatesErrorRecovery runNextTask -- waiting for remote update")
+        waitForRemoteUpdate()
+      }
+      Task.LAUNCH_NEW_UPDATE -> {
+        logger.info("UpdatesErrorRecovery runNextTask -- launch new update")
+        tryRelaunchFromCache()
+      } // only called after a new update is downloaded and added to the cache, so the implementation is equivalent
+      Task.LAUNCH_CACHED_UPDATE -> {
+        logger.info("UpdatesErrorRecovery runNextTask -- launch cached update")
+        tryRelaunchFromCache()
+      }
+      Task.CRASH -> {
+        logger.error("UpdatesErrorRecovery runNextTask -- crash", UpdatesErrorCode.Unknown)
+        crash()
+      }
       else -> throw RuntimeException("ErrorRecoveryHandler cannot perform task $nextTask")
     }
   }
