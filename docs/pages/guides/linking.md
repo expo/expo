@@ -106,7 +106,7 @@ The [`expo-linking`][expo-linking] API enables you to open a URL with the operat
 
 <Terminal cmd={['$ npx expo install expo-web-browser']} />
 
-<SnackInline label="WebBrowser vs Linking" dependencies={["expo-web-browser"]}>
+<SnackInline label="WebBrowser vs Linking" dependencies={["expo-web-browser", "expo-linking"]}>
 
 ```js
 import React from 'react';
