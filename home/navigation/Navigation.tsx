@@ -218,11 +218,11 @@ export default (props: { theme: ColorTheme }) => {
       });
     }
 
-    Linking.addEventListener('url', handleDeepLinks);
+    const deepLinkSubscription = Linking.addEventListener('url', handleDeepLinks);
 
     return () => {
       isNavigationReadyRef.current = false;
-      Linking.removeEventListener('url', handleDeepLinks);
+      deepLinkSubscription.remove();
     };
   }, []);
 
