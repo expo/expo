@@ -3,7 +3,6 @@ title: Uploading to the Apple App Store and Google Play
 ---
 
 import { ConfigClassic } from '~/components/plugins/ConfigSection';
-import { Terminal } from '~/ui/components/Snippet';
 
 After you've [created a native binary](/build/setup), you can use [EAS Submit][eas-submit] to upload binaries for both app stores from _any_ computer.
 
