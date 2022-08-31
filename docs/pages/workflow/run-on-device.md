@@ -5,7 +5,7 @@ title: Running on device
 import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
 
-> This guide focuses on running a project on your own device. To learn about sharing your project with others, refer to ["Sharing pre-release versions of your app"](/guides/sharing-preview-releases/) and ["Deploying to App Stores"](/distribution/app-stores/).
+> This guide focuses on running a project on your own device. To learn about sharing your project with others, refer to ["Sharing pre-release versions of your app"](/guides/sharing-preview-releases/) and ["Deploying to App Stores"](/distribution/introduction/).
 
 You will approach running your project on your device differently depending on how you are using Expo tools. There are three main approaches: you can use Expo Go, a development build, or you can run your project as a standalone app.
 
@@ -34,7 +34,7 @@ If it still doesn't work, it may be due to the router configuration &mdash; this
 
 When you have hit the limitations of Expo Go and need to move on to development builds (for example, to [add custom native code](/workflow/customizing/)), the process for loading the project remains mostly the same but the mechanism to get the build on your device is different. Development builds can be created locally with [`npx expo run:[ios|android] --device`](/workflow/expo-cli/), with Xcode or Android Studio, or [remotely with EAS Build](/build/introduction/).
 
-Refer to the ["Getting Started" guide for development builds](/development/getting-started/) to learn how to create a development build and run it on your device. 
+Refer to the ["Getting Started" guide for development builds](/development/getting-started/) to learn how to create a development build and run it on your device.
 
 ## Running a project as a standalone app
 
