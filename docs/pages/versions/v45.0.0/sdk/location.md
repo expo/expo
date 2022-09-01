@@ -22,13 +22,19 @@ import { AndroidPermissions } from '~/components/plugins/permissions';
 
 ### Android permissions
 
-The `expo-location` module requires permission for approximate (`ACCESS_COARSE_LOCATION`) and precise (`ACCESS_FINE_LOCATION`) device location in the `android.permission` property in **app.json**. It also needs foreground service permission (`FOREGROUND_SERVICE`) to subscribe to location updates while the app is in use. When you install this module in your Expo project, all of the three permissions are added automatically.
+When you install the `expo-location` module, it automatically adds the following permissions:
 
-To use background location features, you must add the `ACCESS_BACKGROUND_LOCATION` and [submit your app for review and request access to use the background location permission](https://support.google.com/googleplay/android-developer/answer/9799150?hl=en).
+- `ACCESS_COARSE_LOCATION`: for approximate device location
+- `ACCESS_FINE_LOCATION`: for precise device location
+- `FOREGROUND_SERVICE`: to subscribe to location updates while the app is in use
+
+To use background location features, you must add the `ACCESS_BACKGROUND_LOCATION` in **app.json** and [submit your app for review and request access to use the background location permission](https://support.google.com/googleplay/android-developer/answer/9799150?hl=en).
 
 <AndroidPermissions permissions={['ACCESS_COARSE_LOCATION', 'ACCESS_FINE_LOCATION', 'FOREGROUND_SERVICE', 'ACCESS_BACKGROUND_LOCATION']} />
 
 #### Excluding a permission
+
+> **Note**: Excluding a **required permission** from a module in your app can break the functionality corresponding to that permission. Always make sure to include all permissions a module is dependent on.
 
 When your Expo project doesn't benefit from having particular permission included, you can omit it. For example, if your application doesn't need access to the precise location, you can exclude the `ACCESS_FINE_LOCATION` permission.
 

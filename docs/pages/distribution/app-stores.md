@@ -83,7 +83,7 @@ Apple will ask you a series of questions when you submit the app. Depending on w
 
 ## Android Permissions
 
-Permissions are configured via the [`android.permissions` and `android.blockedPermissions` keys in your **app.json** file](../workflow/configuration.md#android). Most permissions are added automatically by libraries that you use in your app, and so you won't often need to use `android.permissions` to add additional permissions. You may want to use `android.blockedPermissions` to exclude permissions from being included. To do this, specify the full permission name; for example, if you want to remove the audio recording permissions added by `expo-av`:
+Permissions are configured via the [`android.permissions` and `android.blockedPermissions` keys in your **app.json** file](../versions/latest/config/app/#android). Most permissions are added automatically by libraries that you use in your app, and so you won't often need to use `android.permissions` to add additional permissions. You may want to use `android.blockedPermissions` to exclude permissions from being included. To do this, specify the full permission name; for example, if you want to remove the audio recording permissions added by `expo-av`:
 
 ```json
 {

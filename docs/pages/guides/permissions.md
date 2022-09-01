@@ -12,7 +12,7 @@ In Expo Go, there isn't much you need to think about to interact with permission
 
 ### Managed workflow
 
-To request permissions on iOS, you have to describe why the permissions are requested and [install the library](#permissions-and-required-packages-on-ios) that can request this permission. In the managed workflow, you can do that by customizing the `ios.infoPlist` property in your [**app.json** file](../../../workflow/configuration.md#ios).
+To request permissions on iOS, you have to describe why the permissions are requested and [install the library](#permissions-and-required-packages-on-ios) that can request this permission. In the managed workflow, you can do that by customizing the `ios.infoPlist` property in your [**app.json** file](../versions/latest/config/app/#ios).
 
 You can find the full list of available properties in [Apple's InfoPlistKeyReference](https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CocoaKeys.html#//apple_ref/doc/uid/TP40009251-SW1). Apple also documents the basic guidelines for the structure of the message in the [Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/ios/app-architecture/requesting-permission/).
 
@@ -28,9 +28,9 @@ You can find the full list of available properties in [Apple's InfoPlistKeyRefer
 
 ### Managed workflow
 
-On Android, permissions are a bit simpler than on iOS. In the managed workflow, permissions are controlled via the `android.permissions` property in the [**app.json**](/versions/latest/config/app/#android).
+On Android, permissions are a bit simpler than on iOS. In the managed workflow, permissions are controlled via the `android.permissions` property in the [**app.json**](../versions/latest/config/app.md#android).
 
-Some Expo and React Native modules include permissions by default. For example, if you use `expo-location`, the `ACCESS_COARSE_LOCATION`, `ACCESS_FINE_LOCATION` and `FOREGROUND_SERVICE` permissions will be added to your app automatically. [See the `android.permissions` documentation](/versions/latest/config/app.md#permissions) to learn about which permissions are always included. To limit the permissions your managed workflow app requires, see [Excluding Android Permissions](#excluding-android-permissions).
+Some Expo and React Native modules include permissions by default. For example, if you use `expo-location`, the `ACCESS_COARSE_LOCATION`, `ACCESS_FINE_LOCATION` and `FOREGROUND_SERVICE` permissions will be added to your app automatically. [See the `android.permissions` documentation](../versions/latest/config/app.md#permissions) to learn about which permissions are always included. To limit the permissions your managed workflow app requires, see [Excluding Android Permissions](#excluding-android-permissions).
 
 Apps using dangerous or signature permissions without valid reasons _can be rejected by Google_. Make sure you follow the [Android permissions best practices](https://developer.android.com/training/permissions/usage-notes) when submitting your app.
 
@@ -38,15 +38,15 @@ Apps using dangerous or signature permissions without valid reasons _can be reje
 
 In the bare workflow, permissions are controlled in your project **AndroidManifest.xml**.
 
-Some Expo and React Native modules include permissions by default. For example, if you use `expo-location`, the `ACCESS_COARSE_LOCATION`, `ACCESS_FINE_LOCATION` and `FOREGROUND_SERVICE` are added to your app's permissions automatically. To limit the permissions your bare workflow app requires, see [Excluding Android Permissions](#excluding-android-permissions).
+Some Expo and React Native modules include permissions by default. For example, if you use `expo-location`, the `ACCESS_COARSE_LOCATION`, `ACCESS_FINE_LOCATION` and `FOREGROUND_SERVICE` permissions are added to your app's permissions automatically. To limit the permissions your bare workflow app requires, see [Excluding Android Permissions](#excluding-android-permissions).
 
 Apps using dangerous or signature permissions without valid reasons _may be rejected by Google_. Make sure you follow the [Android permissions best practices](https://developer.android.com/training/permissions/usage-notes) when submitting your app.
 
 ### Excluding Android permissions
 
-When adding Expo and other React Native modules to your project, certain Android permissions might be added automatically. The modules should only add relevant permissions **required** to use the module. However, sometimes you may want to remove some of these permissions.
+Adding packages to your project can result in new Android permissions being added automatically. Ideally, a module should only add the permissions **required** to use the module, and the rest should be opt-in. However, sometimes this isn't the case, and you may want to remove some of these permissions.
 
-When you are building your app with [EAS Build](/build/introduction/), you can exclude Android permissions by adding `android.blockedPermissions` in **app.json**. For more information, see the example in the [Android Permissions](/distribution/app-stores/#android-permissions) section in [Deploying to the App Stores](/distribution/app-stores).
+You can exclude Android permissions by adding `android.blockedPermissions` in **app.json**. For more information, see the example in the [Android Permissions](/distribution/app-stores/#android-permissions) section in [Deploying to the App Stores](/distribution/app-stores).
 
 <ConfigClassic>
 
@@ -58,7 +58,7 @@ Learn how to configure permissions with the [app manifest `permissions` property
 
 <ConfigReactNative>
 
-Since the `android.permissions` manifest property doesn't work in the bare workflow, you'll need to edit **AndroidManifest.xml** to exclude specific permissions from the build. You can do that with the `tools:node="remove"` attribute on the `<use-permission>` tag.
+Since the `android.blockedPermissions` isn't applied in bare workflow (because **app.json** is not used to configure bare workflow projects), you'll need to edit **AndroidManifest.xml** to exclude specific permissions from the build. You can do that with the `tools:node="remove"` attribute on the `<use-permission>` tag.
 
 > You can find a full list of all available permissions in the [Android Manifest.permissions reference](https://developer.android.com/reference/android/Manifest.permission).
 
