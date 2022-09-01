@@ -11,5 +11,6 @@ enum class UpdatesErrorCode(val code: String) {
   UpdateHasInvalidSignature("UpdateHasInvalidSignature"),
   UpdateFailedToLoad("UpdateFailedToLoad"),
   AssetsFailedToLoad("AssetsFailedToLoad"),
-  JSRuntimeError("JSRuntimeError")
+  JSRuntimeError("JSRuntimeError"),
+  Unknown("Unknown")
 }

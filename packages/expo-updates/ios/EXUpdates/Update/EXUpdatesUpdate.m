@@ -118,6 +118,11 @@ NSString * const EXUpdatesUpdateErrorDomain = @"EXUpdatesUpdate";
   return _assets;
 }
 
+- (NSString * _Nullable)loggingId
+{
+  return [[[self updateId] UUIDString] lowercaseString];
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

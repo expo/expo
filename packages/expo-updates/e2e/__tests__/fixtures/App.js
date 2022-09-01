@@ -1,14 +1,39 @@
 import { StatusBar } from 'expo-status-bar';
+import * as Updates from 'expo-updates';
 import { useEffect } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 const RETRY_COUNT = 5;
+const HOSTNAME = 'UPDATES_HOST';
+const PORT = 'UPDATES_PORT';
+
+async function sendLog(obj) {
+  const logUrl = `http://${HOSTNAME}:${PORT}/log`;
+  await fetch(logUrl, {
+    method: 'POST',
+    body: JSON.stringify(obj),
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+}
+
+async function readLogs() {
+  try {
+    const logEntries = await Updates.readLogEntriesAsync(60000);
+    await sendLog({
+      logEntries,
+    });
+  } catch (e) {
+    console.warn(`Error in reading log entries: ${e.message}`);
+  }
+}
 
 export default function App() {
   useEffect(async () => {
     for (let i = 0; i < RETRY_COUNT; i++) {
       try {
-        const response = await fetch('http://UPDATES_HOST:UPDATES_PORT/notify/test');
+        const response = await fetch(`http://${HOSTNAME}:${PORT}/notify/test`);
         if (response.status === 200) {
           break;
         }
@@ -18,6 +43,7 @@ export default function App() {
       // wait 50 ms and then try again
       await new Promise((resolve) => setTimeout(resolve, 50));
     }
+    await readLogs();
   }, []);
 
   return (

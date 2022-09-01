@@ -4,6 +4,7 @@ import android.content.Context
 import expo.modules.core.logging.LogType
 import expo.modules.core.logging.Logger
 import expo.modules.core.logging.LoggerOptions
+import java.lang.Exception
 import java.util.*
 
 /**
@@ -15,14 +16,14 @@ class UpdatesLogger(
 
   fun trace(
     message: String,
-    code: UpdatesErrorCode
+    code: UpdatesErrorCode = UpdatesErrorCode.None
   ) {
     trace(message, code, null, null)
   }
 
   fun trace(
     message: String,
-    code: UpdatesErrorCode,
+    code: UpdatesErrorCode = UpdatesErrorCode.None,
     updateId: String?,
     assetId: String?
   ) {
@@ -31,14 +32,14 @@ class UpdatesLogger(
 
   fun debug(
     message: String,
-    code: UpdatesErrorCode
+    code: UpdatesErrorCode = UpdatesErrorCode.None
   ) {
     debug(message, code, null, null)
   }
 
   fun debug(
     message: String,
-    code: UpdatesErrorCode,
+    code: UpdatesErrorCode = UpdatesErrorCode.None,
     updateId: String?,
     assetId: String?
   ) {
@@ -47,14 +48,14 @@ class UpdatesLogger(
 
   fun info(
     message: String,
-    code: UpdatesErrorCode
+    code: UpdatesErrorCode = UpdatesErrorCode.None
   ) {
     info(message, code, null, null)
   }
 
   fun info(
     message: String,
-    code: UpdatesErrorCode,
+    code: UpdatesErrorCode = UpdatesErrorCode.None,
     updateId: String?,
     assetId: String?
   ) {
@@ -63,14 +64,14 @@ class UpdatesLogger(
 
   fun warn(
     message: String,
-    code: UpdatesErrorCode
+    code: UpdatesErrorCode = UpdatesErrorCode.None
   ) {
     warn(message, code, null, null)
   }
 
   fun warn(
     message: String,
-    code: UpdatesErrorCode,
+    code: UpdatesErrorCode = UpdatesErrorCode.None,
     updateId: String?,
     assetId: String?
   ) {
@@ -79,34 +80,38 @@ class UpdatesLogger(
 
   fun error(
     message: String,
-    code: UpdatesErrorCode
+    code: UpdatesErrorCode = UpdatesErrorCode.None,
+    exception: Exception? = null
   ) {
-    error(message, code, null, null)
+    error(message, code, null, null, exception)
   }
 
   fun error(
     message: String,
-    code: UpdatesErrorCode,
+    code: UpdatesErrorCode = UpdatesErrorCode.None,
     updateId: String?,
-    assetId: String?
+    assetId: String?,
+    exception: Exception? = null
   ) {
-    logger.error(logEntryString(message, code, LogType.Error, updateId, assetId))
+    logger.error(logEntryString(message, code, LogType.Error, updateId, assetId, exception))
   }
 
   fun fatal(
     message: String,
-    code: UpdatesErrorCode
+    code: UpdatesErrorCode = UpdatesErrorCode.None,
+    exception: Exception? = null
   ) {
-    fatal(message, code, null, null)
+    fatal(message, code, null, null, exception)
   }
 
   fun fatal(
     message: String,
-    code: UpdatesErrorCode,
+    code: UpdatesErrorCode = UpdatesErrorCode.None,
     updateId: String?,
-    assetId: String?
+    assetId: String?,
+    exception: Exception? = null
   ) {
-    logger.fatal(logEntryString(message, code, LogType.Fatal, updateId, assetId))
+    logger.fatal(logEntryString(message, code, LogType.Fatal, updateId, assetId, exception))
   }
 
   // Private methods and fields
@@ -122,15 +127,18 @@ class UpdatesLogger(
     code: UpdatesErrorCode,
     level: LogType,
     updateId: String?,
-    assetId: String?
+    assetId: String?,
+    exception: Exception? = null
   ): String {
     val timestamp = Date().time
 
+    val throwable = exception as? Throwable ?: Throwable()
+
     val stacktrace = when (level) {
       // Limit stack to 20 frames
-      LogType.Error -> Throwable().stackTrace.take(MAX_FRAMES_IN_STACKTRACE)
+      LogType.Error -> throwable.stackTrace.take(MAX_FRAMES_IN_STACKTRACE)
         .map { f -> f.toString() }
-      LogType.Fatal -> Throwable().stackTrace.take(MAX_FRAMES_IN_STACKTRACE)
+      LogType.Fatal -> throwable.stackTrace.take(MAX_FRAMES_IN_STACKTRACE)
         .map { f -> f.toString() }
       else -> {
         null
