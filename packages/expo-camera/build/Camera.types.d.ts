@@ -314,7 +314,7 @@ export declare type CameraProps = ViewProps & {
     /**
      * A string representing aspect ratio of the preview, eg. `4:3`, `16:9`, `1:1`. To check if a ratio is supported
      * by the device use [`getSupportedRatiosAsync`](#getsupportedratiosasync).
-     * @default 4:3.
+     * @default 4:3
      * @platform android
      */
     ratio?: string;
