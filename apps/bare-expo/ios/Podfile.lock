@@ -88,7 +88,7 @@ PODS:
     - ExpoModulesCore
   - EXPermissions (13.2.0):
     - ExpoModulesCore
-  - Expo (46.0.9):
+  - Expo (46.0.10):
     - ExpoModulesCore
   - expo-dev-client (1.2.1):
     - EXManifests
@@ -190,7 +190,7 @@ PODS:
     - ExpoModulesCore
   - ExpoMailComposer (11.3.0):
     - ExpoModulesCore
-  - ExpoModulesCore (0.11.4):
+  - ExpoModulesCore (0.11.5):
     - React-Core
     - ReactCommon/turbomodule/core
   - ExpoRandom (12.3.0):
@@ -1290,7 +1290,7 @@ SPEC CHECKSUMS:
   EXNetwork: cba9570f90f4f27ce938afd57810b484febf1fab
   EXNotifications: 8df33b5e99f125ee729ef04c9c67ae60906833e8
   EXPermissions: 3dbb869e7f96a5711314f73d48ddc2f28009a7f6
-  Expo: 73412414e62f5cbc6e713def821de70b92cd3ad6
+  Expo: fcdb32274e2ca9c7638d3b21b30fb665c6869219
   expo-dev-client: 258dd6da471e23b8671a3634003e4c0ff55aaeda
   expo-dev-launcher: c0c466fe8fbda8a2e34e1c69e1b87df237698599
   expo-dev-menu: ab1e9353dbc761d5b62b1fc909f38e866857feba
@@ -1305,7 +1305,7 @@ SPEC CHECKSUMS:
   ExpoLinearGradient: 1a3af07c6dab3c612967a294836df9ae717431df
   ExpoLocalization: 63204f4b9d4f653469d266332ceaa6c6ac8a305d
   ExpoMailComposer: 49d37f2c7b0da7e7e4a0d1371c55b3c8302178cd
-  ExpoModulesCore: e281bb7b78ea47e227dd5af94d04b24d8b2e1255
+  ExpoModulesCore: 5a973701f4400d70254bc836305228731c829010
   ExpoRandom: f9f1faa299a40733867f344d6b7bfa2d1f4ab04d
   ExpoSystemUI: 9f550a8055e315f7b0c4da208de27e45fe7da0fb
   ExpoTrackingTransparency: 0a84ca31052b1d62b21afdffc43093c37c06e698

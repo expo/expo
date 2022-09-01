@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Removed the hard dependency to Hermes or JSC in *libexpo-modules-core.so* on Android and fixed the broken support for react-native-v8. ([#18899](https://github.com/expo/expo/pull/18899) by [@kudo](https://github.com/kudo))
-
 ### 💡 Others
+
+## 0.11.5 — 2022-09-01
+
+### 🐛 Bug fixes
+
+- Removed the hard dependency to Hermes or JSC in *libexpo-modules-core.so* on Android and fixed the broken support for react-native-v8. ([#18899](https://github.com/expo/expo/pull/18899) by [@kudo](https://github.com/kudo))
 
 ## 0.11.4 — 2022-08-18
 
