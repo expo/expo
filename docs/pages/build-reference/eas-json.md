@@ -141,7 +141,7 @@ This document is a reference that outlines the schema for the `"build"` key in *
     "version": /* @info Required EAS CLI version range. */"SEMVER_RANGE"/* @end */,
     "requireCommit": /* @info If true, ensures that all changes are committed before a build. Defaults to false. */boolean/* @end */,
     "appVersionSource": /* @info If set to remote, values stored on EAS servers will take precedense over local values. Defaults to local. */string/* @end */,
-    "promptToConfigurePushNotfications": /* @info If set to false, skips Push Notifications credentials setup for EAS Build. Defaults to true. */boolean/* @end */,
+    "promptToConfigurePushNotifications": /* @info If set to false, skips Push Notifications credentials setup for EAS Build. Defaults to true. */boolean/* @end */,
   },
   "build": {
     /* @info any arbitrary name - used as an identifier */"BUILD_PROFILE_NAME_1"/* @end */: {
