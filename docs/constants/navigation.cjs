@@ -6,7 +6,7 @@ const path = require('path');
 const make = require('unist-builder');
 const { URL } = require('url');
 
-const { LATEST_VERSION, VERSIONS } = require('./versions');
+const { LATEST_VERSION, VERSIONS } = require('./versions.cjs');
 const PAGES_DIR = path.resolve(__dirname, '../pages');
 
 // TODO(cedric): refactor docs to get rid of the directory lists
@@ -365,7 +365,7 @@ const archive = [
 
 const featurePreview = [];
 
-const reference = VERSIONS.reduce(
+const versionsReference = VERSIONS.reduce(
   (all, version) => ({
     ...all,
     [version]: [
@@ -377,6 +377,8 @@ const reference = VERSIONS.reduce(
   {}
 );
 
+const reference = { ...versionsReference, latest: versionsReference[LATEST_VERSION] };
+
 module.exports = {
   general,
   eas,
@@ -384,7 +386,7 @@ module.exports = {
   archive,
   featurePreview,
   /** @type {any} */
-  reference: { ...reference, latest: reference[LATEST_VERSION] },
+  reference,
   generalDirectories,
   previewDirectories,
   easDirectories,
