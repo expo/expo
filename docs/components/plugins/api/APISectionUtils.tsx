@@ -589,6 +589,10 @@ export const STYLES_APIBOX = css({
 
 export const STYLES_APIBOX_NESTED = css({
   boxShadow: 'none',
+
+  h4: {
+    marginTop: 0,
+  },
 });
 
 export const STYLES_NESTED_SECTION_HEADER = css({
