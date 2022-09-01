@@ -18,7 +18,7 @@ export declare type AuthSessionOptions = {
      */
     showInRecents?: boolean;
     /**
-     * Project name to use for the \`auth.expo.io\` proxy.
+     * Project name to use for the `auth.expo.io` proxy.
      */
     projectNameForProxy?: string;
 };
@@ -95,7 +95,7 @@ export declare type AuthSessionRedirectUriOptions = {
      */
     useProxy?: boolean;
     /**
-     * Project name to use for the \`auth.expo.io\` proxy when `useProxy` is true.
+     * Project name to use for the `auth.expo.io` proxy when `useProxy` is `true`.
      */
     projectNameForProxy?: string;
     /**
