@@ -5,23 +5,23 @@ title: Create your first app
 import { Terminal } from '~/ui/components/Snippet';
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 
-In this module, let's learn how to create a new Expo project and explore the app.
+In this chapter, you'll learn how to create a new Expo project and how to get it running.
 
 ## Prerequisites
 
-Before you get started, this tutorial assumes that you:
+You'll need the following tools to get started:
 
-- Have already installed the [Expo Go](https://expo.dev/client) app on your physical device.
-- Have gone through the [requirements under Installation](https://docs.expo.dev/get-started/installation/#requirements) to set up your development environment.
+- Install [Expo Go](https://expo.dev/client) on your physical device.
+- Prepare your computer by [installing required tools and dependencies](https://docs.expo.dev/get-started/installation/#requirements).
 
 This tutorial also assumes you have basic knowledge of JavaScript and React or React Native. If you have never written React code, go through [the official React tutorial](https://reactjs.org/tutorial/tutorial.html) first. For more resources, see [additional resources](https://docs.expo.dev/next-steps/additional-resources/).
 
 ## Step 1: Initialize a new Expo app
 
-For this tutorial, we provide two different ways to get started:
+We provide two different ways to get started:
 
 - [Initialize with the starter template](#initialize-with-the-starter-template)
-- [Manually initialize with `create-expo-app`](#manually-initialize-with-create-expo-app)
+- [Manually initialize with `create-expo-app`](#alternate-manually-initialize-with--create-expo-app)
 
 Choose a way to initialize your app and open the project repository in your favorite code editor or IDE after initializing it. Throughout this tutorial, we use VS Code for our examples.
 
@@ -36,8 +36,6 @@ The starter template you are downloading is an Expo project that comes with:
 - All dependencies pre-installed that you can use to build and run the app
 - All the assets available in the **assets** directory
 - Splash screen and app icon already configured
-
-You can skip installation steps in further modules mentioned in this tutorial using this path.
 
 ### Alternate: manually initialize with `create-expo-app`
 
@@ -57,23 +55,23 @@ This command will create a new directory for the project with the name: **Sticke
 
 ## Step 2: Run the app on mobile
 
-When you have initialized the app, navigate inside the project directory in your terminal window.
+After initializing the app, navigate inside the project directory in your terminal.
 
-After navigating inside the project directory, run the following command to trigger the [development server](/guides/how-expo-works/#expo-development-server) and see the bare-bones app in action:
+In the project directory, run the following command to start a [development server](/guides/how-expo-works/#expo-development-server):
 
 <Terminal cmd={['$ npx expo start']} />
 
-After starting the development server, you can open the project in the Expo Go app on your device. Learn more on [how to open the app when developing with Expo on a physical device](/get-started/create-a-new-app/#opening-the-app-on-your-phonetablet).
+Once your development server is running, the best way to develop is on your physical device with Expo Go. [Learn more](/get-started/create-a-new-app/#opening-the-app-on-your-phonetablet) on how to get the project running on your physical device.
 
-Here is how the app in the current state, running on an iOS simulator and a physical Android device:
+Once it is running, your project should look like this:
 
 <ImageSpotlight alt="App running on an iOS simulator and a physical Android device." src="/static/images/tutorial/app-running-on-mobile-platforms.jpg" style={{maxWidth: 480}} />
 
-The text displayed on the app's screen above can be found in the **App.js** file of the initialized project. It is the entry point of the app, and is executed when the app starts.
+The text displayed on the app's screen above can be found in the **App.js** file in the root of the project's directory. It is the entry point of the project and is executed when the development server starts.
 
 ## Step 3: Install dependencies for the web
 
-When you create a new project with `create-expo-app`, it uses the default [blank template](https://github.com/expo/expo/tree/main/templates/expo-template-blank) that comes pre-configured with necessary dependencies to run your app on mobile platforms. To support the web, you need to add a few additional dependencies to the project. In a terminal window, run the following command to install the necessary dependencies to include web support:
+When you create a new project with `create-expo-app`, it uses the default [blank template](https://github.com/expo/expo/tree/main/templates/expo-template-blank) that comes pre-configured with necessary dependencies to run your app on mobile platforms. To support the web, you need to add a few additional dependencies to the project. In a terminal, run the following command to install the necessary dependencies to include web support:
 
 <Terminal cmd={['$ npx expo install react-native-web@~0.18.7 react-dom@18.0.0 @expo/webpack-config@^0.17.0']} />
 

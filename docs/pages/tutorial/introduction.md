@@ -6,32 +6,31 @@ import Highlight from '~/components/plugins/Highlight';
 import SnackInline from '~/components/plugins/SnackInline';
 import Video from '~/components/plugins/Video';
 
-Welcome to the beginner Expo tutorial. This is a complete tutorial to start your journey on building universal applications with Expo. A universal app is simply an app that shares one code base and runs on multiple native platforms such as iOS, Android, and the web.
+Welcome to Expo. You're about to embark on a journey building universal apps. In this tutorial, you'll create a universal app that runs on Android, iOS, and the web; all with a single codebase. Let's get started!
 
 ## About this tutorial
 
-In this tutorial, you are going to build an app for iOS, Android, and the web that, in a nutshell, covers the following topics:
+In this tutorial, you will build an app for Android, iOS, and the web that covers the following topics:
 
 - Initializing an Expo App
-- Breaking down app layout and implementing it with Flexbox
+- Breaking down app layout and implementing it with flexbox
 - Use a native image picker user interface (UI) to select an image from the platform's media library
-- Create a sticker modal using Modal and FlatList components from React Native
-- Add and handle gestures to interact with the sticker
-- Use third-party libraries to capture a screenshot and save that image on the platform
-- Handle any platform differences between mobile and web
+- Create a sticker modal using the Modal and FlatList components from React Native
+- Add handle gestures to interact with a sticker
+- Use third-party libraries to capture a screenshot and save an image on the platform
+- Handle platform differences between Android, iOS, and web
 - Finally, go through the process of configuring a status bar, a splash screen, and an icon to complete the app
 
-Here is the final demo of the app working on an iOS simulator, an Android device, and the web browser:
+Before you get started, take a look at what you'll build: an app named StickerSmash that runs on Android, iOS, and the web:
 
 <Video file="tutorial/final.mp4" />
 
-From the topic list above, the objective of this tutorial is to get you started with Expo and familiarize you with the Expo SDK. You will use different Expo libraries such as `expo-image-picker`, `expo-media-library`, and `expo-status-bar`. Some of the functionalities these libraries will help you implement are picking an image from the platform's media library, saving the image back to the media library, and so on. In the Expo SDK ecosystem, these modules are available to you, as an app developer, to seamlessly use native functionalities across different platforms without worrying about handling the differences on the mobile platforms.
+The objective of this tutorial is to get you started with Expo and to get familiar with the Expo SDK. You will use different Expo libraries such as `expo-image-picker`, `expo-media-library`, and `expo-status-bar`. Some of the functionalities these libraries will help you implement are picking an image from a device's media library, saving the image on the device, and so on. Expo's SDK provides universal libraries that make implementing features across unique platforms a snap. With that said, you can use any native code or library in your apps.
 
-Further in the tutorial, we will also use libraries like [React Native Gesture Handler](https://docs.swmansion.com/react-native-gesture-handler/) and [Reanimated](https://docs.swmansion.com/react-native-reanimated/) to add interactivity and to implement pan and tap gestures to add interactive functionalities.
+Further in the tutorial, we will also use libraries like [React Native Gesture Handler](https://docs.swmansion.com/react-native-gesture-handler/) and [Reanimated](https://docs.swmansion.com/react-native-reanimated/) to add interactivity and to implement pan and tap gestures to add interactive features.
 
-We will also dive into using third-party libraries and what are the ways you can find which third-party library to use with your app. Then, using these third-party libraries, you will also learn how to create functionalities by handling platform differences across the web and mobile platforms.
 
-Each module of this tutorial contains the code for that specific part, so feel free to follow along either by creating your own app from scratch or using Expo Snack examples to copy and paste the code if you get lost in between.
+Each chapter of this tutorial contains the code for that specific part, so feel free to follow along either by creating your own app from scratch or using Expo Snack examples to copy and paste the code if you get lost in between.
 
 ## How to use this tutorial
 
@@ -78,4 +77,4 @@ const styles = StyleSheet.create({
 
 ## Up next
 
-If you're already familiar with Expo, feel free to jump ahead to specific modules you want to learn more about it. However, if you're completely new, go to the next step in which you will learn [how to initialize an app with Expo](/tutorial/initialize-app/).
+If you're already familiar with Expo, feel free to jump ahead to specific chapters. However, if you'd like to build an entire app, continue to the next step in which you will learn [how to initialize an app with Expo](/tutorial/initialize-app/).
