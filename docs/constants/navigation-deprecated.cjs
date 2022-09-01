@@ -6,7 +6,7 @@ const path = require('path');
 const make = require('unist-builder');
 const { URL } = require('url');
 
-const { LATEST_VERSION, VERSIONS } = require('./versions');
+const { LATEST_VERSION, VERSIONS } = require('./versions.cjs');
 const PAGES_DIR = path.resolve(__dirname, '../pages');
 
 // TODO(cedric): refactor docs to get rid of the directory lists

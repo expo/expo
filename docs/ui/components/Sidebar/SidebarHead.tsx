@@ -6,7 +6,7 @@ import { APIIcon, APIInactiveIcon } from './icons/API';
 import { DocumentationIcon, DocumentationInactiveIcon } from './icons/Documentation';
 import { PreviewIcon, PreviewInactiveIcon } from './icons/Preview';
 
-import { shouldShowFeaturePreviewLink } from '~/constants/FeatureFlags';
+import { shouldShowFeaturePreviewLink } from '~/constants/FeatureFlags.cjs';
 import { SidebarHeadEntry } from '~/ui/components/Sidebar/SidebarHeadEntry';
 
 type SidebarHeadProps = {
