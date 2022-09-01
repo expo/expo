@@ -32,7 +32,7 @@ On Android, permissions are a bit simpler than on iOS. In the managed workflow, 
 
 Some Expo and React Native modules include permissions by default. For example, if you use `expo-location`, the `ACCESS_COARSE_LOCATION`, `ACCESS_FINE_LOCATION` and `FOREGROUND_SERVICE` permissions will be added to your app automatically. [See the `android.permissions` documentation](/versions/latest/config/app.md#permissions) to learn about which permissions are always included. To limit the permissions your managed workflow app requires, see [Excluding Android Permissions](#excluding-android-permissions).
 
-Apps using dangerous or signature permissions without valid reasons _may be rejected by Google_. Make sure you follow the [Android permissions best practices](https://developer.android.com/training/permissions/usage-notes) when submitting your app.
+Apps using dangerous or signature permissions without valid reasons _can be rejected by Google_. Make sure you follow the [Android permissions best practices](https://developer.android.com/training/permissions/usage-notes) when submitting your app.
 
 ### Bare workflow
 
