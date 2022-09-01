@@ -149,6 +149,87 @@ describe('Basic updates e2e', () => {
     expect(updatedMessage).toBe('test');
   });
 
+  it('update with bad asset hash yields expected log entry', async () => {
+    jest.setTimeout(300000 * TIMEOUT_BIAS);
+    const bundleFilename = 'bundle2.js';
+    const newNotifyString = 'test-update-2';
+    const hash = await copyBundleToStaticFolder(updateDistPath, bundleFilename, newNotifyString);
+    const assets = await Promise.all(
+      [
+        'lubo-minar-j2RgHfqKhCM-unsplash.jpg',
+        'niklas-liniger-zuPiCN7xekM-unsplash.jpg',
+        'patrick-untersee-XJjsuuDwWas-unsplash.jpg',
+      ].map(async (sourceFilename, index) => {
+        const destinationFilename = `asset${index}.jpg`;
+        const hash = await copyAssetToStaticFolder(
+          path.join(__dirname, 'assets', sourceFilename),
+          destinationFilename
+        );
+        return {
+          hash:
+            index === 0 ? hash.substring(1, 2) + hash.substring(0, 1) + hash.substring(2) : hash,
+          key: `asset${index}`,
+          contentType: 'image/jpg',
+          fileExtension: '.jpg',
+          url: `http://${SERVER_HOST}:${SERVER_PORT}/static/${destinationFilename}`,
+        };
+      })
+    );
+    const manifest = {
+      id: uuid(),
+      createdAt: new Date().toISOString(),
+      runtimeVersion: RUNTIME_VERSION,
+      launchAsset: {
+        hash,
+        key: 'test-update-2-key',
+        contentType: 'application/javascript',
+        url: `http://${SERVER_HOST}:${SERVER_PORT}/static/${bundleFilename}`,
+      },
+      assets,
+      metadata: {},
+      extra: {},
+    };
+
+    Server.start(SERVER_PORT);
+    await Server.serveSignedManifest(manifest, projectRoot);
+    await Simulator.installApp('basic');
+    await Simulator.startApp();
+    const message = await Server.waitForRequest(10000 * TIMEOUT_BIAS);
+    expect(message).toBe('test');
+
+    // give the app time to load the new update in the background
+    await setTimeout(2000 * TIMEOUT_BIAS);
+    expect(Server.consumeRequestedStaticFiles().length).toBe(4);
+
+    // restart the app so it will launch the new update
+    await Simulator.stopApp();
+    await Simulator.startApp();
+    const updatedMessage = await Server.waitForRequest(10000 * TIMEOUT_BIAS);
+    // Because of the mismatch, the new update will not load, so updatedMessage will still be 'test'
+    expect(updatedMessage).toBe('test');
+
+    /**
+     * Check readLogEntriesAsync
+     */
+    const logEntries = await Server.waitForLogEntries(10000 * TIMEOUT_BIAS);
+    console.debug(
+      'Total number of log entries = ' +
+        logEntries.length +
+        '\n' +
+        JSON.stringify(logEntries, null, 2)
+    );
+
+    // Should have at least one message
+    expect(logEntries.length > 0).toBe(true);
+    // Check for message that hash is mismatched, with expected error code
+    expect(logEntries.map((entry) => entry.code)).toEqual(
+      expect.arrayContaining(['AssetsFailedToLoad'])
+    );
+    expect(logEntries.map((entry) => entry.message)).toEqual(
+      expect.arrayContaining([expect.stringContaining('SHA-256 did not match expected')])
+    );
+  });
+
   it('downloads and runs update with multiple assets', async () => {
     jest.setTimeout(300000 * TIMEOUT_BIAS);
     const bundleFilename = 'bundle2.js';
