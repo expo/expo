@@ -16,7 +16,7 @@ This guide is intended to help you know what tools are at your disposal to confi
 
 ## Configuring the status bar while your app is loading (Android only)
 
-> This type of configuration is currently only available on Android. On iOS, it is not possible in the Expo managed workflow to customize the status bar before the app has loaded, while the splash screen is presented.
+> This type of configuration is currently only available on Android. On iOS, it is not possible in the Expo Go app to customize the status bar before the app has loaded, while the splash screen is presented.
 
 The configuration for configuring the status bar while the splash screen is visible on Android is available through the `androidStatusBar` object in **app.json**. The options available are similar to those provided by [expo-status-bar](../versions/latest/sdk/status-bar.md).
 
@@ -63,23 +63,21 @@ Defaults to `false`.
 
 ## Updating the status bar while your app is running
 
-The `StatusBar` component provided by [expo-status-bar](../versions/latest/sdk/status-bar.md) allows you to control the appearance of the status bar while your app is running. expo-status-bar also provides imperative methods such as `setStatusBarStyle(style)` to control the style through function calls rather than the `StatusBar` component, if you find that to be helpful for your use case.
+The `StatusBar` component provided by [`expo-status-bar`](../versions/latest/sdk/status-bar.md) allows you to control the appearance of the status bar while your app is running. `expo-status-bar` also provides imperative methods such as `setStatusBarStyle(style)` to control the style through function calls rather than the `StatusBar` component, if you find that to be helpful for your use case.
 
 To fix the contrast issue from the screenshot at the top of this guide, we could use the following code:
 
-```js
-import React from 'react';
-import { View } from 'react-native';
+```tsx
 import { StatusBar } from 'expo-status-bar';
 
 export default function Playlists() {
   return (
-    <View>
+    <>
       {/* other code here to show the screen */}
 
       {/* use light text instead of dark text in the status bar to provide more contrast with a dark background */}
       <StatusBar style="light" />
-    </View>
+    </>
   );
 }
 ```
