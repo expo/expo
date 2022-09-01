@@ -11,7 +11,7 @@ import {
 import * as React from 'react';
 
 import * as Utilities from '~/common/utilities';
-import { VERSIONS, LATEST_VERSION, BETA_VERSION } from '~/constants/versions';
+import { VERSIONS, LATEST_VERSION, BETA_VERSION } from '~/constants/versions.cjs';
 import { usePageApiVersion } from '~/providers/page-api-version';
 
 const STYLES_CONTAINER = css({

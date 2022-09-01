@@ -28,7 +28,7 @@ const BETA_VERSION = betaVersion ? `v${betaVersion}` : undefined;
  *   - `latest`
  *   - versions from new to old (e.g. v39.0.0, v38.0.0, v37.0.0)
  */
-const VERSIONS = versionDirectories
+const Versions = versionDirectories
   .filter(dir => {
     // show all versions in dev mode
     if (process.env.NODE_ENV !== 'production') {
@@ -61,7 +61,7 @@ const VERSIONS = versionDirectories
   });
 
 module.exports = {
-  VERSIONS,
+  VERSIONS: Versions,
   LATEST_VERSION,
   BETA_VERSION,
 };

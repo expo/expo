@@ -1,4 +1,4 @@
-import { VERSIONS } from '~/constants/versions';
+import { VERSIONS } from '~/constants/versions.cjs';
 
 export function getRedirectPath(redirectPath: string): string {
   // index.html is no longer a thing in our docs

@@ -1,6 +1,6 @@
 import u from 'unist-builder';
 
-import exportHeadings from './remark-export-headings';
+import exportHeadings from './remark-export-headings.cjs';
 
 describe('exports constant', () => {
   it('when no headers are found', () => {

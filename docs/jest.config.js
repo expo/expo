@@ -1,4 +1,4 @@
-const nextJest = require('next/jest');
+import nextJest from 'next/jest.js';
 
 /** @type {import('@jest/types').Config.InitialOptions} */
 const jestConfig = {
@@ -13,4 +13,4 @@ const jestConfig = {
   },
 };
 
-module.exports = nextJest({ dir: './' })(jestConfig);
+export default nextJest({ dir: './' })(jestConfig);

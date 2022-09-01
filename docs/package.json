@@ -2,6 +2,7 @@
   "name": "expo-docs",
   "version": "46.0.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "rimraf .next/preval && next dev -p 3002",
     "build": "cross-env NODE_OPTIONS=--max-old-space-size=6656 next build",

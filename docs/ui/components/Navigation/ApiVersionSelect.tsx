@@ -2,7 +2,7 @@ import { css } from '@emotion/react';
 import { borderRadius, iconSize, shadows, spacing, theme, ChevronDownIcon } from '@expo/styleguide';
 import React from 'react';
 
-import { VERSIONS, LATEST_VERSION, BETA_VERSION } from '~/constants/versions';
+import { VERSIONS, LATEST_VERSION, BETA_VERSION } from '~/constants/versions.cjs';
 import { usePageApiVersion } from '~/providers/page-api-version';
 import { LABEL } from '~/ui/components/Text';
 
