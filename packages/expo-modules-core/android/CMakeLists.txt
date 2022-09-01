@@ -5,6 +5,7 @@ set(CMAKE_ANDROID_STL_TYPE c++_shared)
 set(CMAKE_CXX_STANDARD 17)
 set(PACKAGE_NAME "expo-modules-core")
 set(BUILD_DIR ${CMAKE_SOURCE_DIR}/build)
+set(ignoreMe "${HERMES_HEADER_DIR}")
 
 if (${NATIVE_DEBUG})
     set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -g")
