@@ -3,15 +3,18 @@ import { info as logInfo } from 'next/dist/build/output/log.js';
 import { join } from 'path';
 import rehypeSlug from 'rehype-slug';
 import remarkFrontmatter from 'remark-frontmatter';
+import remarkGFM from 'remark-gfm';
+import remarkMDX from 'remark-mdx';
+import remarkMDXFrontmatter from 'remark-mdx-frontmatter';
 import semver from 'semver';
 import { fileURLToPath } from 'url';
 
 import * as navigation from './constants/navigation.cjs';
 import { VERSIONS } from './constants/versions.cjs';
-import remarkExportHeadings from './mdx-plugins/remark-export-headings.cjs';
-import remarkExportYaml from './mdx-plugins/remark-export-yaml.cjs';
-import remarkLinkRewrite from './mdx-plugins/remark-link-rewrite.cjs';
-import createSitemap from './scripts/create-sitemap.cjs';
+import remarkCreateStaticProps from './mdx-plugins/remark-create-static-props.js';
+import remarkExportHeadings from './mdx-plugins/remark-export-headings.js';
+import remarkLinkRewrite from './mdx-plugins/remark-link-rewrite.js';
+import createSitemap from './scripts/create-sitemap.js';
 
 const { copySync, removeSync, readJsonSync } = fsExtra;
 
@@ -30,6 +33,7 @@ logInfo(`Copied latest Expo SDK version from v${version}`);
 /** @type {import('next').NextConfig}  */
 export default {
   trailingSlash: true,
+  experimental: { esmExternals: true },
   pageExtensions: ['js', 'jsx', 'ts', 'tsx', 'md', 'mdx'],
   compiler: { emotion: true },
   swcMinify: true,
@@ -58,12 +62,17 @@ export default {
         options.defaultLoaders.babel,
         {
           loader: '@mdx-js/loader',
+          /** @type {import('@mdx-js/loader').Options} */
           options: {
+            providerImportSource: '@mdx-js/react',
             remarkPlugins: [
-              [remarkFrontmatter, ['yaml']],
-              remarkExportYaml,
+              remarkMDX,
+              remarkGFM,
+              remarkFrontmatter,
+              [remarkMDXFrontmatter, { name: 'meta' }],
               remarkExportHeadings,
               remarkLinkRewrite,
+              [remarkCreateStaticProps, `{ meta, headings: headings || [] }`],
             ],
             rehypePlugins: [rehypeSlug],
           },

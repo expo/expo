@@ -19,7 +19,7 @@ The following method takes care of all this for you, so feel free to copy/paste 
 <Tabs>
 <Tab label="New notifications">
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```javascript
 registerForPushNotificationsAsync = async () => {
   /* @info We should also make sure the app is running on a physical device, since push notifications won't work on a simulator. */
@@ -60,7 +60,7 @@ registerForPushNotificationsAsync = async () => {
 </Tab>
 <Tab label="Legacy notifications">
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```javascript
 registerForPushNotificationsAsync = async () => {
   /* @info We should also make sure the app is running on a physical device, since push notifications won't work on a simulator. */

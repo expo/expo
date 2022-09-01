@@ -58,7 +58,7 @@ This function also adds the following dev-only features that are **removed** in 
 - Adds the Fast Refresh and bundle splitting indicator to the app.
 - Asserts if the `expo-updates` package is misconfigured.
 - Asserts if `react-native` is not aliased to `react-native-web` when running in the browser.
-<!-- TODO: Remove this after https://github.com/expo/expo/pull/18596 -->
+{/* TODO: Remove this after https://github.com/expo/expo/pull/18596 */}
 - Polyfills `console.log` to send logs to the dev server via `/logs`
 
 #### Arguments
@@ -73,7 +73,7 @@ No return value.
 
 ### What if I want to name my main app file something other than App.js?
 
-<!-- NOTE: This is only accurate if we land https://github.com/expo/expo/pull/18381 -->
+{/* NOTE: This is only accurate if we land https://github.com/expo/expo/pull/18381 */}
 
 You can set the `"main"` in **package.json** to any file within your
 project. If you do this, then you need to use `registerRootComponent`;

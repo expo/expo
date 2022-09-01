@@ -1,7 +1,7 @@
-import MDX from '@mdx-js/runtime';
 import * as React from 'react';
+import ReactMarkdown from 'react-markdown';
 
-import * as components from '~/common/translate-markdown';
+import { mdComponents } from '~/components/plugins/api/APISectionUtils';
 import { Cell, HeaderCell, Row, Table, TableHead } from '~/ui/components/Table';
 
 type PropertyMeta = {
@@ -141,11 +141,11 @@ const AppConfigSchemaPropertiesTable = ({ schema }: AppConfigSchemaProps) => {
                   listStyleType: nestingLevel % 2 ? 'default' : 'circle',
                   overflowX: 'visible',
                 }}>
-                <MDX components={components}>{name}</MDX>
+                <ReactMarkdown components={mdComponents}>{name}</ReactMarkdown>
               </div>
             </Cell>
             <Cell>
-              <MDX components={components}>{description}</MDX>
+              <ReactMarkdown components={mdComponents}>{description}</ReactMarkdown>
             </Cell>
           </Row>
         ))}

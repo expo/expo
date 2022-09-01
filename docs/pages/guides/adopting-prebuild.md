@@ -10,7 +10,7 @@ There are [many advantages](/workflow/prebuild#pitch) of using [Expo Prebuild][p
 
 ## Bootstrap a new project
 
-<!-- NOTE: Update the version when we bump support -->
+{/* NOTE: Update the version when we bump support */}
 
 <Terminal cmd={["$ npx react-native init --version 0.69.4"]} />
 

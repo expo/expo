@@ -47,8 +47,8 @@ If you don't have an app in the stores, EAS Metadata can't pull that information
 ## Update the store config
 
 Now it's time to edit the **store.config.json** file and customize it to your app needs. A complete overview of what can be defined is coming soon. In the meantime, you can use the [VS Code Expo plugin](https://github.com/expo/vscode-expo) and use the auto-completion.
-<!-- Disabled due to missing config overview
-You can find all available options for the **store.config.json** in the [store configuration reference](./store-json.md). -->
+{/* Disabled due to missing config overview
+You can find all available options for the **store.config.json** in the [store configuration reference](./store-json.md). */}
 
 ## Upload a new app version
 
@@ -64,8 +64,8 @@ When you are happy with the **store.config.json** settings, start syncing that d
 
 If EAS Metadata runs into any issues with the **store.config.json**, it will warn you when running this command. When the errors are minor, it will still try to upload the rest of the data. After correcting the **store.config.json**, you can rerun the same command to retry uploading the previously failed items.
 
-<!-- Disabled due to missing config overview
+{/* Disabled due to missing config overview
 ## Next
 
 You can explore all available configuration options in the [store configuration reference](./store-json.md).
--->
+*/}

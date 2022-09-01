@@ -134,7 +134,7 @@ This document is a reference that outlines the schema for the `"build"` key in *
 
 ## Schema
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```json
 {
   "cli": {

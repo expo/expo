@@ -167,10 +167,16 @@ export class Code extends React.Component<React.PropsWithChildren<Props>> {
   }
 
   render() {
-    let html = this.props.children?.toString() || '';
+    // note(simek): MDX dropped `inlineCode` pseudo-tag, and we need to relay on `pre` and `code` now,
+    // which results in this nesting mess, we should fix it in the future
+    const child = this.props.className
+      ? this
+      : (React.Children.toArray(this.props.children)[0] as JSX.Element);
+    let html = child?.props?.children?.toString() || '';
+
     // mdx will add the class `language-foo` to codeblocks with the tag `foo`
     // if this class is present, we want to slice out `language-`
-    let lang = this.props.className && this.props.className.slice(9).toLowerCase();
+    let lang = child.props.className && child.props.className.slice(9).toLowerCase();
 
     // Allow for code blocks without a language.
     if (lang) {

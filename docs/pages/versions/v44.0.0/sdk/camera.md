@@ -384,6 +384,6 @@ When using **Chrome versions 64+**, if you try to use a web camera in a cross-or
 
 ```html
 <iframe src="..." allow="microphone; camera;">
-  <!-- <Camera /> -->
+  {/* <Camera /> */}
 </iframe>
 ```

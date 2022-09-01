@@ -35,7 +35,7 @@ To learn more about a specific command and the options it may have, use `expo [c
 
 You will find a list of all commands derived from the latest version of Expo CLI.
 
-<!-- BEGIN GENERATED BLOCK. DO NOT MODIFY MANUALLY. https://github.com/expo/expo-cli/blob/main/packages/expo-cli/scripts/introspect.ts -->
+{/* BEGIN GENERATED BLOCK. DO NOT MODIFY MANUALLY. https://github.com/expo/expo-cli/blob/main/packages/expo-cli/scripts/introspect.ts */}
 
 > Based on `expo-cli` v5.2.0
 
@@ -985,7 +985,7 @@ Alias: `expo ui`
 </p>
 </details>
 
-<!-- END GENERATED BLOCK. DO NOT MODIFY MANUALLY. -->
+{/* END GENERATED BLOCK. DO NOT MODIFY MANUALLY. */}
 
 ## Expo CLI Migration
 
