@@ -40,10 +40,7 @@ internal class ErrorRecoveryHandler(
 
   override fun handleMessage(msg: Message) {
     when (msg.what) {
-      MessageType.EXCEPTION_ENCOUNTERED -> {
-        logger.error("ErrorRecoveryHandler: Exception encountered: ${(msg.obj as Exception).localizedMessage}", UpdatesErrorCode.Unknown, msg.obj as Exception)
-        maybeStartPipeline(msg.obj as Exception)
-      }
+      MessageType.EXCEPTION_ENCOUNTERED -> maybeStartPipeline(msg.obj as Exception)
       MessageType.CONTENT_APPEARED -> handleContentAppeared()
       MessageType.REMOTE_LOAD_STATUS_CHANGED -> handleRemoteLoadStatusChanged(msg.obj as ErrorRecoveryDelegate.RemoteLoadStatus)
       else -> throw RuntimeException("ErrorRecoveryHandler cannot handle message " + msg.what)
