@@ -1,6 +1,6 @@
 import u from 'unist-builder';
 
-import exportYaml from './remark-export-yaml';
+import exportYaml from './remark-export-yaml.cjs';
 
 describe('exports constant', () => {
   it('when yaml content was not found', () => {
