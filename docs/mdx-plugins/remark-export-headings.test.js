@@ -1,4 +1,4 @@
-import u from 'unist-builder';
+import { u } from 'unist-builder';
 
 import exportHeadings from './remark-export-headings.js';
 
