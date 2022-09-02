@@ -51,7 +51,7 @@ Next, this is what happens when EAS Build picks up your request:
 1. If the build was successful: run the `eas-build-on-success` script from **package.json** if defined.
 1. If the build failed: run the `eas-build-on-error` script from **package.json** if defined.
 1. Run the `eas-build-on-complete` script from **package.json** if defined. The `EAS_BUILD_STATUS` env variable is set to either `finished` or `errored`.
-1. Upload the build artifacts archive to a private AWS S3 bucket if `buildArtifactsPaths` is specified in the build profile.
+1. Upload the build artifacts archive to a private AWS S3 bucket if `buildArtifactPaths` is specified in the build profile.
 
 ## Project Auto-Configuration
 
