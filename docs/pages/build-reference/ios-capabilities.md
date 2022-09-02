@@ -4,7 +4,7 @@ title: iOS Capabilities
 
 import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
 
-When you make a change to your iOS entitlements, this change needs to be updated remotely on Apple's servers before making a production build. EAS Build automatically synchronizes capabilities on the Apple Developer Portal with your local entitlements configuration when you run `eas build`. Capabilities are web services provided by Apple, think of them like AWS or Firebase services.
+When you make a change to your iOS entitlements, this change needs to be updated remotely on Apple's servers before making a production build. EAS Build automatically synchronizes capabilities on the Apple Developer Console with your local entitlements configuration when you run `eas build`. Capabilities are web services provided by Apple, think of them like AWS or Firebase services.
 
 > This feature can be disabled with `EXPO_NO_CAPABILITY_SYNC=1 eas build`
 
@@ -16,7 +16,7 @@ In managed workflow, the entitlements are read from the introspected Expo config
 
 ## Enabling
 
-If a supported entitlement is present in the entitlements file, then running `eas build` will enable it on Apple Developer Portal. If the capability is already enabled, then EAS Build will skip it.
+If a supported entitlement is present in the entitlements file, then running `eas build` will enable it on Apple Developer Console. If the capability is already enabled, then EAS Build will skip it.
 
 ## Disabling
 
@@ -24,7 +24,7 @@ If a capability is enabled for your app remotely, but not present in the native 
 
 ## Supported Capabilities
 
-EAS Build will only enable capabilities that it has built-in support for, any unsupported entitlements must be manually enabled via [Apple Developer Portal][apple-dev-portal].
+EAS Build will only enable capabilities that it has built-in support for, any unsupported entitlements must be manually enabled via [Apple Developer Console][apple-dev-console].
 
 | Support     | Capability                                        | Entitlement string                                                         |
 | ----------- | ------------------------------------------------- | -------------------------------------------------------------------------- |
@@ -83,7 +83,7 @@ EAS Build will only enable capabilities that it has built-in support for, any un
 | <YesIcon /> | iCloud                                            | `com.apple.developer.icloud-container-identifiers`                         |
 | <NoIcon />  | HLS Interstitial Previews                         | Unknown                                                                    |
 
-The unsupported capabilities either don't support iOS, or they don't have a corresponding entitlement value.
+The unsupported capabilities either don't support iOS, or they don't have a corresponding entitlement value. Here are all of the [official Apple capabilities][apple-all-capabilities].
 
 Partially supported capabilities have extra configuration which EAS Build currently does not support. This includes Apple merchant IDs, App Group IDs, and iCloud container IDs. These values must all be [configured manually](https://expo.fyi/provisioning-profile-missing-capabilities) for the time being. You can also refer to this [Apple doc](https://developer.apple.com/documentation/xcode/adding-capabilities-to-your-app) for more information on manual setup.
 
@@ -93,6 +93,36 @@ You can run `EXPO_DEBUG=1 eas build` to get more detailed logs regarding the cap
 
 If you have trouble using this feature, you can disable it with the environment variable `EXPO_NO_CAPABILITY_SYNC=1`.
 
-To see all of the currently enabled capabilities, visit [Apple Developer Portal][apple-dev-portal], and find the bundle identifier matching your app, if you click on it you should see a list of all the currently enabled capabilities.
+To see all of the currently enabled capabilities, visit [Apple Developer Console][apple-dev-console], and find the bundle identifier matching your app, if you click on it you should see a list of all the currently enabled capabilities.
 
-[apple-dev-portal]: https://developer.apple.com/account/resources/identifiers/list
+## Manual setup
+
+There are two ways to manually enable Apple capabilities, both systems will require any existing Apple provisioning profiles to be regenerated.
+
+### Xcode
+
+> Preferred method for bare workflow or projects that do **not** using [Expo Prebuild](/workflow/prebuild) to continuously generate the native `ios` and `android` directories.
+
+1. Open the `ios/` directory in Xcode with `xed ios`. If you don't have an `ios/` directory, run `npx expo prebuild -p ios` to generate one.
+2. Then follow [this guide][apple-enable-capability].
+
+### Apple Developer Console
+
+First step is to add the respective key/value pairs to your `ios/[app]/[app].entitlements` (or more specific entitlements file for multi-target apps). You can refer to [Supported Capabilities](#supported-capabilities) to determine which entitlements keys should be added.
+
+1. Log into [Apple Developer Console][apple-dev-console]. Click on "Certificates, IDs & Profiles", then navigate to "Identifiers" page.
+2. Choose the bundle identifier that matches your app's bundle identifier.
+3. Scroll down and enable a capability, some capabilities may require extra setup.
+4. Scroll to the top and press "Save". You will see a dialog that says "Modify App Capabilities", press "Confirm" to continue. You will need to regenerate any provisioning profiles that use this bundle identifier before they'll be valid for building a code signed production ipa.
+
+If adding capabilities process has not been done correctly then your iOS native build will fail with an error that looks something like:
+
+```
+❌  error: Provisioning profile "*[expo] app.bacon.hello AppStore ..." doesn't support the Associated Domains capability.
+
+❌  error: Provisioning profile "*[expo] app.bacon.hello AppStore ..." doesn't include the com.apple.developer.associated-domains entitlement.
+```
+
+[apple-enable-capability]: https://help.apple.com/xcode/mac/current/#/dev88ff319e7
+[apple-all-capabilities]: https://help.apple.com/developer-account/#/dev21218dfd6
+[apple-dev-console]: https://developer.apple.com/account/resources/identifiers/list

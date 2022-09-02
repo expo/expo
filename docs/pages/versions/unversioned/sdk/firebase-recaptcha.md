@@ -18,7 +18,7 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 <APIInstallSection />
 
-Additionally, you'll also need to install the webview using `expo install react-native-webview`
+Additionally, you'll also need to install the webview using `npx expo install react-native-webview`
 
 ## Basic usage
 
@@ -92,7 +92,9 @@ const auth = getAuth();
 
 // Double-check that we can run the example
 if (!app?.options || Platform.OS === 'web') {
-  throw new Error('This example only works on Android or iOS, and requires a valid Firebase config.');
+  throw new Error(
+    'This example only works on Android or iOS, and requires a valid Firebase config.'
+  );
 }
 
 export default function App() {
@@ -157,10 +159,7 @@ export default function App() {
         disabled={!verificationId}
         onPress={async () => {
           try {
-            const credential = PhoneAuthProvider.credential(
-              verificationId,
-              verificationCode
-            );
+            const credential = PhoneAuthProvider.credential(verificationId, verificationCode);
             await signInWithCredential(auth, credential);
             showMessage({ text: 'Phone authentication successful 👍' });
           } catch (err) {
@@ -185,9 +184,7 @@ export default function App() {
             {message.text}
           </Text>
         </TouchableOpacity>
-      ) : (
-        undefined
-      )}
+      ) : undefined}
       {attemptInvisibleVerification && <FirebaseRecaptchaBanner />}
     </View>
   );
@@ -301,9 +298,7 @@ export default function PhoneAuthScreen() {
         {verifyInProgress && <ActivityIndicator style={styles.loader} />}
         {verificationId ? (
           <Text style={styles.success}>A verification code has been sent to your phone</Text>
-        ) : (
-          undefined
-        )}
+        ) : undefined}
         <Text style={styles.text}>Enter verification code</Text>
         <TextInput
           ref={verificationCodeTextInput}
@@ -319,10 +314,7 @@ export default function PhoneAuthScreen() {
             try {
               setConfirmError(undefined);
               setConfirmInProgress(true);
-              const credential = PhoneAuthProvider.credential(
-                verificationId,
-                verificationCode
-              );
+              const credential = PhoneAuthProvider.credential(verificationId, verificationCode);
               const authResult = await signInWithCredential(auth, credential);
               setConfirmInProgress(false);
               setVerificationId('');
