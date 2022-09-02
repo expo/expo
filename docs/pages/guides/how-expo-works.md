@@ -108,7 +108,7 @@ If you publish an update to your app with a new `sdkVersion`, if a user has yet 
 
 ## Opening a deployed Expo app
 
-The process is essentially the same as opening an Expo app in development, only now we hit an EAS Update server to get the manifest, and manifest points us to CloudFront to retrieve your app's JavaScript.
+The process is essentially the same as opening an Expo app in development, only now we hit an EAS Update server to get the manifest, and this manifest points us to CloudFront to retrieve your app's JavaScript.
 
 ![](/static/images/fetch-app-production.png)
 
@@ -120,4 +120,4 @@ If you build a standalone app with Expo, that standalone binary will also ship w
 
 ## Standalone Apps
 
-In order to submit your app to the app stores, you need to [create your first build](/build/setup.md).
+In order to submit your app to the app stores, you need to [create your first build](/build/setup).
