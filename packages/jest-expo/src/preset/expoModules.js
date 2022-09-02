@@ -527,7 +527,7 @@ module.exports = {
           { name: 'isAvailableAsync', argumentsCount: 0, key: 0 },
           { name: 'setUpdateInterval', argumentsCount: 1, key: 1 },
         ],
-        ExponentCameraManager: [
+        ExponentCamera: [
           { name: 'requestCameraPermissionsAsync', argumentsCount: 0, key: 0 },
           { name: 'record', argumentsCount: 2, key: 1 },
           { name: 'stopRecording', argumentsCount: 1, key: 2 },
@@ -787,7 +787,7 @@ module.exports = {
         },
         ExpoWebBrowser: {},
         ExponentAV: { Qualities: { type: 'object' } },
-        ExponentCameraManager: {
+        ExponentCamera: {
           AutoFocus: { type: 'object' },
           FlashMode: { type: 'object' },
           Type: { type: 'object' },
