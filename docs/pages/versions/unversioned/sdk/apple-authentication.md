@@ -27,7 +27,7 @@ You can configure `expo-apple-authentication` using its built-in [config plugin]
 
 Apps that don't use [EAS Build](/build/introduction) must [manually configure](/build-reference/ios-capabilities#manual-setup) the **Apple Sign In** capability for their bundle identifier.
 
-If you enable through the [Apple Developer Console](/build-reference/ios-capabilities#apple-developer-console), then be sure to add the following entitlements in your `ios/[app]/[app].entitlements` file:
+If you enable the **Apple Sign In** capability through the [Apple Developer Console](/build-reference/ios-capabilities#apple-developer-console), then be sure to add the following entitlements in your `ios/[app]/[app].entitlements` file:
 
 ```xml
 <key>com.apple.developer.applesignin</key>

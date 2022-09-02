@@ -110,12 +110,12 @@ There are two ways to manually enable Apple capabilities, both systems will requ
 
 First step is to add the respective key/value pairs to your `ios/[app]/[app].entitlements` (or more specific entitlements file for multi-target apps). You can refer to [Supported Capabilities](#supported-capabilities) to determine which entitlements keys should be added.
 
-1. Log into [Apple Developer Console][apple-dev-console]. Go to "Certificates, Identifiers, & Profiles" > "Identifiers".
+1. Log into [Apple Developer Console][apple-dev-console]. Click on "Certificates, IDs & Profiles", then navigate to "Identifiers" page.
 2. Choose the bundle identifier that matches your app's bundle identifier.
 3. Scroll down and enable a capability, some capabilities may require extra setup.
 4. Scroll to the top and press "Save". You will see a dialog that says "Modify App Capabilities", press "Confirm" to continue. You will need to regenerate any provisioning profiles that use this bundle identifier before they'll be valid for building a code signed production ipa.
 
-If the last step is not done correctly then your iOS native build will fail with an error that looks something like:
+If adding capabilities process has not been done correctly then your iOS native build will fail with an error that looks something like:
 
 ```
 ❌  error: Provisioning profile "*[expo] app.bacon.hello AppStore ..." doesn't support the Associated Domains capability.

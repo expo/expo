@@ -29,7 +29,7 @@ You can configure `expo-document-picker` using its built-in [config plugin](/gui
 
 Apps that don't use [EAS Build](/build/introduction) and want [iCloud storage features][icloud-entitlement] must [manually configure](/build-reference/ios-capabilities#manual-setup) the [**iCloud service with CloudKit support**](https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_icloud-container-environment) for their bundle identifier.
 
-If you enable through the [Apple Developer Console](/build-reference/ios-capabilities#apple-developer-console), then be sure to add the following entitlements in your `ios/[app]/[app].entitlements` file (where `dev.expo.my-app` if your bundle identifier):
+If you enable the **iCloud** capability through the [Apple Developer Console](/build-reference/ios-capabilities#apple-developer-console), then be sure to add the following entitlements in your `ios/[app]/[app].entitlements` file (where `dev.expo.my-app` if your bundle identifier):
 
 ```xml
 <key>com.apple.developer.icloud-container-identifiers</key>
