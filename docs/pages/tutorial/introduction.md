@@ -29,8 +29,9 @@ The objective of this tutorial is to get you started with Expo and to get famili
 
 Further in the tutorial, we will also use libraries like [React Native Gesture Handler](https://docs.swmansion.com/react-native-gesture-handler/) and [Reanimated](https://docs.swmansion.com/react-native-reanimated/) to add interactivity and to implement pan and tap gestures to add interactive features.
 
+This tutorial is divided into eight chapters. Each chapter covers a different topic that we thought will be essential for you to grasp the fundamentals of how different pieces come together when you are building a mobile app. This is a self-paced tutorial, so feel free to take your time and go through each chapter at your own pace or leave out any section and come back to it later.
 
-Each chapter of this tutorial contains the code for that specific part, so feel free to follow along either by creating your own app from scratch or using Expo Snack examples to copy and paste the code if you get lost in between.
+Each chapter also contains the code for that specific part. Feel free to follow along either by creating your own app from scratch or using Expo Snack examples to copy and paste the code if you get lost in between.
 
 ## How to use this tutorial
 
