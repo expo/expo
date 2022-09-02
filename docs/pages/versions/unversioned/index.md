@@ -8,9 +8,9 @@ import { Terminal } from '~/ui/components/Snippet';
 
 <VersionedRedirectNotification />
 
-The Expo SDK provides access to device and system functionality such as contacts, camera, gyroscope, GPS location, etc., in the form of packages. You can install any Expo SDK package using `expo-cli` with the `expo install` command. For example, three different packages are installed using the following command:
+The Expo SDK provides access to device and system functionality such as contacts, camera, gyroscope, GPS location, etc., in the form of packages. You can install any Expo SDK package using the `npx expo install` command. For example, three different packages are installed using the following command:
 
-<Terminal cmd={['$ expo install expo-camera expo-contacts expo-sensors']} />
+<Terminal cmd={['$ npx expo install expo-camera expo-contacts expo-sensors']} />
 
 After installing one or more packages, you can import them into your JavaScript code:
 
@@ -31,7 +31,7 @@ The easiest way to create a bare React Native app with support for the Expo SDK 
 '$ npx create-react-native-app my-app',
 ]} cmdCopy="npx create-react-native-app my-app" />
 
-You can install and import any Expo SDK package using the `expo install` command. If you have an existing app that you would like to add Expo SDK packages to, read about [integrating Expo SDK into existing apps](/bare/existing-apps).
+You can install and import any Expo SDK package using the `npx expo install` command. If you have an existing app that you would like to add Expo SDK packages to, read about [integrating Expo SDK into existing apps](/bare/existing-apps).
 
 ## Each Expo SDK version depends on a React Native version
 

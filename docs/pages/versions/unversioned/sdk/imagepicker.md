@@ -24,7 +24,7 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 ## Configuration in app.json / app.config.js
 
-You can configure `expo-image-picker` using its built-in [config plugin](../../../guides/config-plugins.md) if you use config plugins in your project ([EAS Build](../../../build/introduction.md) or `expo run:[android|ios]`). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect.
+You can configure `expo-image-picker` using its built-in [config plugin](/guides/config-plugins) if you use config plugins in your project ([EAS Build](/build/introduction) or `npx expo run:[android|ios]`). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect.
 
 <ConfigClassic>
 

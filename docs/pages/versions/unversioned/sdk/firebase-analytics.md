@@ -21,7 +21,7 @@ Learn more in the official [Firebase Docs](https://firebase.google.com/docs/anal
 
 <APIInstallSection />
 
-When using the web-platform, you'll also need to run `expo install firebase`, which install the Firebase JS SDK.
+When using the web-platform, you'll also need to run `npx expo install firebase`, which install the Firebase JS SDK.
 
 ## Configuration
 
@@ -156,6 +156,6 @@ export default () => (
 import * as Analytics from 'expo-firebase-analytics';
 ```
 
-To use web analytics, you'll also need to install the peer dependency **firebase** with `expo install firebase`.
+To use web analytics, you'll also need to install the peer dependency **firebase** with `npx expo install firebase`.
 
 <APISection packageName="expo-firebase-analytics" apiName="Analytics" />

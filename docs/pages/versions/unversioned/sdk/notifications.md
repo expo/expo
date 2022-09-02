@@ -40,7 +40,7 @@ The **`expo-notifications`** provides an API to fetch push notification tokens a
 
 ## Configuration in app.json / app.config.js
 
-You can configure `expo-notifications` using its built-in [config plugin](../../../guides/config-plugins.md) if you use config plugins in your project ([EAS Build](../../../build/introduction.md) or `expo run:[android|ios]`). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect.
+You can configure `expo-notifications` using its built-in [config plugin](/guides/config-plugins) if you use config plugins in your project ([EAS Build](/build/introduction) or `npx expo run:[android|ios]`). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect.
 
 <ConfigClassic>
 
@@ -133,8 +133,7 @@ Here are a few ways people claim to have solved this problem, maybe one of these
 Go read the Apple's [Technical Note on troubleshooting push notifications](https://developer.apple.com/library/archive/technotes/tn2265/_index.html)! This the single most reliable source of information on this problem. To help you grasp what they're suggesting:
 
 - Make sure the device has a reliable connection to the Internet (try turning off Wi-Fi or switching to another network, and disabling firewall block on port 5223, as suggested in [this SO answer](https://stackoverflow.com/a/34332047/1123156)).
-- Make sure your app configuration is set properly for registering for push notifications (for bare workflow check out [this guide](https://developer.apple.com/library/ios/documentation/IDEs/Conceptual/AppDistributionGuide/AddingCapabilities/AddingCapabilities.html#//apple_ref/doc/uid/TP40012582-CH26-SW6), for managed workflow this is done automatically for you by `expo-cli`) as also suggested by [this StackOverflow answer](https://stackoverflow.com/a/10791240/1123156).
-- If you're in bare workflow you may want to try to debug this even further by logging persistent connection debug information as outlined by [this StackOverflow answer](https://stackoverflow.com/a/8036052/1123156).
+- **Bare React Native apps** must [manually enable the **Push Notifications** capability](/build-reference/ios-capabilities#manual-setup). If you have trouble setting this up, refer to [this StackOverflow answer](https://stackoverflow.com/a/10791240/1123156). You may also want to try to debug this even further by logging persistent connection debug information as outlined by [this StackOverflow answer](https://stackoverflow.com/a/8036052/1123156).
 
 </Collapsible>
 
@@ -281,13 +280,13 @@ async function registerForPushNotificationsAsync() {
 
 ## Custom notification icon and colors (Android only)
 
-In the managed workflow, set your [`notification.icon`](../config/app.md#notification) and [`notification.color`](../config/app.md#notification) keys in **app.json**, rebuild your app, and you're good to go!
+[Expo Prebuild](/workflow/prebuild) users can configure the [`notification.icon`](../config/app.md#notification) and [`notification.color`](../config/app.md#notification) keys in the project's **app.json** or by using the [`expo-notifications` config plugin directly](#optional-setup). These are build-time setting so you'll need to recompile your native Android app with `eas build -p android` or `npx expo run:android` to see the changes.
 
-For bare workflow **and EAS Build users**, the configuration is also done in **app.json**, but you'll use the [`expo-notifications` config plugin instead](#optional-setup).
+Bare react native apps can follow [this guide](https://documentation.onesignal.com/docs/customize-notification-icons) to manually configure Android notification icons in Android Studio.
 
 For your notification icon, make sure you follow [Google's design guidelines](https://material.io/design/iconography/product-icons.html#design-principles) (the icon must be all white with a transparent background) or else it may not be displayed as intended.
 
-In both the managed and bare workflow, you can also set a custom notification color _per-notification_ directly in your [`NotificationContentInput`](#notificationcontentinput) under the `color` attribute.
+You can also set a custom notification color _per-notification_ directly in your [`NotificationContentInput`](#notificationcontentinput) under the `color` attribute.
 
 ## Setting custom notification sounds
 

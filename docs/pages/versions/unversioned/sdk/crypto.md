@@ -69,7 +69,7 @@ import * as Crypto from 'expo-crypto';
 
 ## Error Codes
 
-| Code                     | Description                                                                                                                                                     |
-|--------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `ERR_CRYPTO_UNAVAILABLE` | __Web Only.__ Access to the WebCrypto API is restricted to secure origins (https). <br/>You can run your web project from a secure origin with `expo start --https`. |
-| `ERR_CRYPTO_DIGEST`      | An invalid encoding type provided.                                                                                                                              |
+| Code                     | Description                                                                                                                                                              |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `ERR_CRYPTO_UNAVAILABLE` | **Web Only.** Access to the WebCrypto API is restricted to secure origins (https). <br/>You can run your web project from a secure origin with `npx expo start --https`. |
+| `ERR_CRYPTO_DIGEST`      | An invalid encoding type provided.                                                                                                                                       |

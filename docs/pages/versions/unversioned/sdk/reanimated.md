@@ -20,7 +20,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 **In all cases,** after the installation completes, you must also add the Babel plugin to **babel.config.js**:
 
 ```jsx
-module.exports = function(api) {
+module.exports = function (api) {
   api.cache(true);
   return {
     presets: ['babel-preset-expo'],
@@ -29,7 +29,7 @@ module.exports = function(api) {
 };
 ```
 
-After you add the Babel plugin, restart your development server and clear the bundler cache: `expo start --clear`.
+After you add the Babel plugin, restart your development server and clear the bundler cache: `npx expo start --clear`.
 
 > Note: If you load other Babel plugins, the Reanimated plugin has to be the last item in the plugins array.
 

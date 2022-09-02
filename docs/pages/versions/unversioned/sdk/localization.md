@@ -23,7 +23,7 @@ Using the popular library [`i18n-js`](https://github.com/fnando/i18n-js) with `e
 
 Let's make our app support English and Japanese. To achive this install the i18n package `i18n-js`:
 
-<Terminal cmd={['$ expo install i18n-js']} />
+<Terminal cmd={['$ npx expo install i18n-js']} />
 
 Then, configure the languages for your app.
 
@@ -94,7 +94,7 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 20,
-    marginBottom: 16
+    marginBottom: 16,
   },
 });
 /* @end */
