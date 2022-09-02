@@ -3,9 +3,9 @@ title: Using FCM for Push Notifications
 sidebar_title: Using FCM
 ---
 
-**Firebase Cloud Messaging is required for all managed and bare workflow Android apps made with Expo**, unless you're still running your app in the Expo Go app. To set up your Expo Android app to get push notifications using your own FCM credentials, follow this guide closely.
+**Firebase Cloud Messaging is required for all Android apps using Expo SDK**, unless you're still running your app in the Expo Go app. To set up your Expo Android app to get push notifications using your own FCM credentials, follow this guide closely.
 
-Note that FCM is not currently available for Expo iOS apps.
+Note that FCM is not currently available for `expo-notifications` on iOS.
 
 ## Client Setup
 
@@ -14,37 +14,37 @@ Note that FCM is not currently available for Expo iOS apps.
 2. In your new project console, click **Add Firebase to your Android app** and follow the setup steps. **Make sure that the Android package name you enter is the same as the value of `android.package` in your app.json.**
 
 3. Download the `google-services.json` file and place it in your app's root directory.
-   > **Note:** The `google-services.json` file contains unique and non-secret identifiers of your Firebase project. For more information, see [Understand Firebase Projects](https://firebase.google.com/docs/projects/learn-more#config-files-objects).
+  > **Note:** The `google-services.json` file contains unique and non-secret identifiers of your Firebase project. For more information, see [Understand Firebase Projects](https://firebase.google.com/docs/projects/learn-more#config-files-objects).
 4. In your app.json, add an `android.googleServicesFile` field with the relative path to the `google-services.json` file you just downloaded. If you placed it in the root directory, this will probably look like
 
-```javascript
-{
-  ...
-  "android": {
-    "googleServicesFile": "./google-services.json",
+  ```javascript
+  {
     ...
+    "android": {
+      "googleServicesFile": "./google-services.json",
+      ...
+    }
   }
-}
-```
+  ```
 
 5. Confirm that your API key in `google-services.json` has the correct "API restrictions" in the [Google Cloud Platform API Credentials console](https://console.cloud.google.com/apis/credentials). For push notifications to work correctly, Firebase requires the API key to either be unrestricted (the key can call any API), or have access to both `Firebase Cloud Messaging API` and `Firebase Installations API`. The API key can be found under the `client.api_key.current_key` field in `google-services.json`.
 
-```javascript
-{
-  ...
-  "client": [
-    {
-      "api_key": [
-        {
-          "current_key" "<your Google Cloud Platform API key>",
-        }
-      ],
-    }
-  ]
-}
-```
+  ```javascript
+  {
+    ...
+    "client": [
+      {
+        "api_key": [
+          {
+            "current_key" "<your Google Cloud Platform API key>",
+          }
+        ],
+      }
+    ]
+  }
+  ```
 
-> **Note:** Firebase will create an API key in the Google Cloud Platform console with a name like `Android key (auto created by Firebase)`. **This is not always the same key as the one found in `google-services.json`. Always confirm your key and associated restrictions in the Google Cloud Platform console.**
+  > **Note:** Firebase will create an API key in the Google Cloud Platform console with a name like `Android key (auto created by Firebase)`. **This is not always the same key as the one found in `google-services.json`. Always confirm your key and associated restrictions in the Google Cloud Platform console.**
 
 6. Finally, make a new build of your app by running `eas build --platform android` (or `expo build:android` if you're using the classic build system).
 
