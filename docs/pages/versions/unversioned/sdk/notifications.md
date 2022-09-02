@@ -104,6 +104,8 @@ Learn how push notification credentials can be automatically generated or upload
 
 - Starting from Android 12 (API level 31), to schedule the notification that triggers at the exact time, you need to add `<uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>` to **AndroidManifest.xml**. You can read more about the exact alarm permission [here](https://developer.android.com/about/versions/12/behavior-changes-12#exact-alarm-permission).
 
+- On devices running Android 13, users must be opt-in to receiving notifications via a permissions prompt automatically triggered by the operating system. This prompt will not appear until at least one notification channel is created. Therefore, `setNotificationChannelAsync` must be called prior to `getDevicePushTokenAsync` or `getExpoPushTokenAsync` in order to obtain a push token. You can read more about the new notification permission behavior for Android 13 [in the official documentation](https://developer.android.com/develop/ui/views/notifications/notification-permission#new-apps).
+
 <AndroidPermissions permissions={['RECEIVE_BOOT_COMPLETED', 'SCHEDULE_EXACT_ALARM']} />
 
 ### iOS
@@ -244,6 +246,16 @@ async function schedulePushNotification() {
 
 async function registerForPushNotificationsAsync() {
   let token;
+
+  if (Platform.OS === 'android') {
+    await Notifications.setNotificationChannelAsync('default', {
+      name: 'default',
+      importance: Notifications.AndroidImportance.MAX,
+      vibrationPattern: [0, 250, 250, 250],
+      lightColor: '#FF231F7C',
+    });
+  }
+
   if (Device.isDevice) {
     const { status: existingStatus } = await Notifications.getPermissionsAsync();
     let finalStatus = existingStatus;
@@ -259,15 +271,6 @@ async function registerForPushNotificationsAsync() {
     console.log(token);
   } else {
     alert('Must use physical device for Push Notifications');
-  }
-
-  if (Platform.OS === 'android') {
-    await Notifications.setNotificationChannelAsync('default', {
-      name: 'default',
-      importance: Notifications.AndroidImportance.MAX,
-      vibrationPattern: [0, 250, 250, 250],
-      lightColor: '#FF231F7C',
-    });
   }
 
   return token;
@@ -839,7 +842,7 @@ An optional object of conforming to the following interface:
 }
 ```
 
-Each option corresponds to a different native platform authorization option (a list of iOS options is available [here](https://developer.apple.com/documentation/usernotifications/unauthorizationoptions), on Android all available permissions are granted by default and if a user declines any permission an app can't prompt the user to change).
+Each option corresponds to a different native platform authorization option. A list of iOS options is available [in the official documentation](https://developer.apple.com/documentation/usernotifications/unauthorizationoptions). On Android, all available permissions are granted by default, and if a user declines any permission, an app cannot prompt the user to change.
 
 #### Returns
 
