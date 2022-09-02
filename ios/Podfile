@@ -45,7 +45,11 @@ abstract_target 'Expo Go' do
   use_pods! 'vendored/unversioned/**/*.podspec.json'
 
   # Unversioned React Native
-  use_react_native! path: '../react-native-lab/react-native'
+  use_react_native!(
+    :path => '../react-native-lab/react-native',
+    :hermes_enabled => true,
+    :fabric_enabled => false,
+  )
 
   # Build React Native with RCT_DEV enabled and RCT_ENABLE_INSPECTOR and
   # RCT_ENABLE_PACKAGER_CONNECTION disabled
@@ -98,7 +102,7 @@ abstract_target 'Expo Go' do
       target_installation_result.native_target.build_configurations.each do |config|
         config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)']
         config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'RCT_DEV=1'
-        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'RCT_ENABLE_INSPECTOR=0'
+        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'RCT_ENABLE_INSPECTOR=1'
         config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'RCT_DEV_SETTINGS_ENABLE_PACKAGER_CONNECTION=0'
       end
     end
