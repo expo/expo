@@ -1,5 +1,5 @@
 import { css } from '@emotion/react';
-import { theme } from '@expo/styleguide';
+import { breakpoints, theme } from '@expo/styleguide';
 import some from 'lodash/some';
 import Router, { NextRouter } from 'next/router';
 import * as React from 'react';
@@ -15,8 +15,7 @@ import DocumentationSidebarRight, {
 } from '~/components/DocumentationSidebarRight';
 import Head from '~/components/Head';
 import { H1 } from '~/components/base/headings';
-import navigation from '~/constants/navigation-deprecated.cjs';
-import * as Constants from '~/constants/theme';
+import navigation from '~/constants/navigation-deprecated.js';
 import { usePageApiVersion } from '~/providers/page-api-version';
 import { NavigationRoute } from '~/types/common';
 import { Header } from '~/ui/components/Header';
@@ -33,7 +32,7 @@ const STYLES_DOCUMENT = css`
     background-color: ${theme.border.default};
   }
 
-  @media screen and (max-width: ${Constants.breakpoints.mobile}) {
+  @media screen and (max-width: ${breakpoints.medium + 124}px) {
     padding: 20px 16px 48px 16px;
   }
 `;
@@ -77,7 +76,7 @@ class DocumentationPageWithApiVersion extends React.Component<Props, State> {
   }
 
   private handleResize = () => {
-    if (WindowUtils.getViewportSize().width >= Constants.breakpoints.mobileValue) {
+    if (WindowUtils.getViewportSize().width >= breakpoints.medium + 124) {
       this.setState({ isMobileMenuVisible: false });
       window.scrollTo(0, 0);
     }

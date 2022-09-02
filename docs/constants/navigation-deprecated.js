@@ -1,13 +1,15 @@
 // @preval
 
-const frontmatter = require('front-matter');
-const fs = require('fs');
-const path = require('path');
-const make = require('unist-builder');
-const { URL } = require('url');
+import frontmatter from 'front-matter';
+import fs from 'fs';
+import path from 'path';
+import { u as make } from 'unist-builder';
+import { URL, fileURLToPath } from 'url';
 
-const { LATEST_VERSION, VERSIONS } = require('./versions.cjs');
-const PAGES_DIR = path.resolve(__dirname, '../pages');
+import { LATEST_VERSION, VERSIONS } from './versions.cjs';
+
+const dirname = fileURLToPath(new URL('.', import.meta.url));
+const PAGES_DIR = path.resolve(dirname, '../pages');
 
 // TODO(cedric): refactor docs to get rid of the directory lists
 
@@ -387,7 +389,7 @@ const archive = [
 
 const featurePreview = [];
 
-const reference = VERSIONS.reduce(
+const versionsReference = VERSIONS.reduce(
   (all, version) => ({
     ...all,
     [version]: [
@@ -405,14 +407,16 @@ const reference = VERSIONS.reduce(
   {}
 );
 
-module.exports = {
+const reference = { ...versionsReference, latest: versionsReference[LATEST_VERSION] };
+
+export default {
   general,
   eas,
   preview,
   archive,
   featurePreview,
   /** @type {any} */
-  reference: { ...reference, latest: reference[LATEST_VERSION] },
+  reference,
   generalDirectories,
   previewDirectories,
   easDirectories,

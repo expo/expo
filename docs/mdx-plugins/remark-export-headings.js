@@ -1,5 +1,5 @@
 import { parse } from 'acorn';
-import visit from 'unist-util-visit';
+import { visit } from 'unist-util-visit';
 
 /**
  * @typedef {import('@types/mdast').Root} Root - https://github.com/syntax-tree/mdast#root

@@ -1,13 +1,15 @@
 // @preval
 
-const frontmatter = require('front-matter');
-const fs = require('fs');
-const path = require('path');
-const make = require('unist-builder');
-const { URL } = require('url');
+import frontmatter from 'front-matter';
+import fs from 'fs';
+import path from 'path';
+import { u as make } from 'unist-builder';
+import { URL, fileURLToPath } from 'url';
 
-const { LATEST_VERSION, VERSIONS } = require('./versions.cjs');
-const PAGES_DIR = path.resolve(__dirname, '../pages');
+import { LATEST_VERSION, VERSIONS } from './versions.cjs';
+
+const dirname = fileURLToPath(new URL('.', import.meta.url));
+const PAGES_DIR = path.resolve(dirname, '../pages');
 
 // TODO(cedric): refactor docs to get rid of the directory lists
 
@@ -380,7 +382,7 @@ const versionsReference = VERSIONS.reduce(
 
 const reference = { ...versionsReference, latest: versionsReference[LATEST_VERSION] };
 
-module.exports = {
+export default {
   general,
   eas,
   preview,

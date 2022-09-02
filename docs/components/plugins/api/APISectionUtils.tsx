@@ -1,5 +1,5 @@
 import { css } from '@emotion/react';
-import { borderRadius, shadows, spacing, theme, typography } from '@expo/styleguide';
+import { borderRadius, breakpoints, shadows, spacing, theme, typography } from '@expo/styleguide';
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -20,7 +20,6 @@ import {
   TypePropertyDataFlags,
 } from '~/components/plugins/api/APIDataTypes';
 import { APISectionPlatformTags } from '~/components/plugins/api/APISectionPlatformTags';
-import * as Constants from '~/constants/theme';
 import { Cell, HeaderCell, Row, Table, TableHead } from '~/ui/components/Table';
 import { tableWrapperStyle } from '~/ui/components/Table/Table';
 import { A } from '~/ui/components/Text';
@@ -582,7 +581,7 @@ export const STYLES_APIBOX = css({
     boxShadow: 'none',
   },
 
-  [`@media screen and (max-width: ${Constants.breakpoints.mobile})`]: {
+  [`@media screen and (max-width: ${breakpoints.medium + 124}px)`]: {
     padding: `0 ${spacing[4]}px`,
   },
 });

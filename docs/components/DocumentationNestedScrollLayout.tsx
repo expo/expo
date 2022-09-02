@@ -5,7 +5,6 @@ import { Global, css } from '@emotion/react';
 import { breakpoints, theme } from '@expo/styleguide';
 import * as React from 'react';
 
-import * as Constants from '~/constants/theme';
 import { SidebarHead } from '~/ui/components/Sidebar/SidebarHead';
 
 const STYLES_GLOBAL = css`
@@ -13,7 +12,7 @@ const STYLES_GLOBAL = css`
     background: ${theme.background.default};
   }
 
-  @media screen and (max-width: ${Constants.breakpoints.mobile}) {
+  @media screen and (max-width: ${breakpoints.medium + 124}px) {
     html {
       /* width */
       ::-webkit-scrollbar {

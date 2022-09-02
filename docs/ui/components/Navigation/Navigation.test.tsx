@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import React from 'react';
-import node from 'unist-builder';
-import visit from 'unist-util-visit';
+import { u as node } from 'unist-builder';
+import { visit } from 'unist-util-visit';
 
 import { findActiveRoute, Navigation } from './Navigation';
 import { NavigationNode } from './types';

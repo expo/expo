@@ -9,7 +9,7 @@ import remarkMDXFrontmatter from 'remark-mdx-frontmatter';
 import semver from 'semver';
 import { fileURLToPath } from 'url';
 
-import * as navigation from './constants/navigation.cjs';
+import navigation from './constants/navigation.js';
 import { VERSIONS } from './constants/versions.cjs';
 import remarkCreateStaticProps from './mdx-plugins/remark-create-static-props.js';
 import remarkExportHeadings from './mdx-plugins/remark-export-headings.js';
@@ -50,7 +50,18 @@ export default {
           // Keep this path in sync with package.json and other scripts that clear the cache
           cacheDirectory: '.next/preval',
           plugins: ['preval'],
-          presets: ['next/babel'],
+          presets: [
+            [
+              '@babel/preset-env',
+              {
+                targets: {
+                  esmodules: true,
+                },
+                modules: false,
+              },
+            ],
+            'next/babel',
+          ],
         },
       },
     });

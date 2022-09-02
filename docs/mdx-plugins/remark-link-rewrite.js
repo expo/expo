@@ -1,5 +1,5 @@
 import path from 'path';
-import visit from 'unist-util-visit';
+import { visit } from 'unist-util-visit';
 import { URL } from 'url';
 
 /**
