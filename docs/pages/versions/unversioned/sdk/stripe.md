@@ -82,12 +82,16 @@ urlScheme:
 
 ### Standalone apps
 
-`@stripe/stripe-react-native` is supported in Expo Go on Android and iOS out of the box, **however**, for iOS, it is only available for standalone apps built with [EAS Build](/build/introduction.md), and not for apps built on the classic build system- `expo build:ios`. Android apps built with `expo build:android` _will_ have access to the `@stripe/stripe-react-native` library.
+`@stripe/stripe-react-native` is supported in Expo Go on Android and iOS out of the box, **however**, for iOS, it is only available for standalone apps built with [EAS Build][eas-build], and not for apps built on the classic build system- `expo build:ios`. Android apps built with `expo build:android` _will_ have access to the `@stripe/stripe-react-native` library.
 
 ### Apple Pay
 
-Apple Pay **is not** supported in Expo Go. To use Apple Pay, you must use either [EAS Build](/build/introduction.md), or run `expo run:ios` in your project directory.
+Apple Pay **is not** supported in [Expo Go][expo-go]. To use Apple Pay, you must create a [development build][dev-build]. This can be done with [EAS Build][eas-build], or locally by running `npx expo run:ios`.
 
 ### Google Pay
 
-Google Pay **is not** supported in Expo Go. To use Google Pay, you must use either [EAS Build](/build/introduction.md), or run `expo run:android` in your project directory.
+Google Pay **is not** supported in [Expo Go][expo-go]. To use Google Pay, you must create a [development build][dev-build]. This can be done with [EAS Build][eas-build], or locally by running `npx expo run:android`.
+
+[eas-build]: /build/introduction
+[expo-go]: https://expo.dev/expo-go
+[dev-build]: /development/getting-started.md#creating-and-installing-your-first-development-build
