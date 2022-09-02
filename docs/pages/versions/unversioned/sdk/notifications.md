@@ -842,7 +842,7 @@ An optional object of conforming to the following interface:
 }
 ```
 
-Each option corresponds to a different native platform authorization option (a list of iOS options is available [here](https://developer.apple.com/documentation/usernotifications/unauthorizationoptions), on Android all available permissions are granted by default and if a user declines any permission an app can't prompt the user to change).
+Each option corresponds to a different native platform authorization option. A list of iOS options is available [in the official documentation](https://developer.apple.com/documentation/usernotifications/unauthorizationoptions). On Android, all available permissions are granted by default, and if a user declines any permission, an app cannot prompt the user to change.
 
 #### Returns
 
