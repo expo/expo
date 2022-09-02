@@ -8,7 +8,7 @@ import Video from '~/components/plugins/Video';
 
 React Native provides a [`Modal` component](https://reactnative.dev/docs/modal) to present the content above an underlying view. In general, Modals are used to draw a user's attention toward some critical information or guide them to take action to trigger the next step in an ongoing process.
 
-A modal can be the new view that disables the previous or the underlying view and covers up the whole screen or a certain amount percentage of the screen. In this module, let's create a modal that shows an emoji picker list.
+A modal can be the new view that disables the previous or the underlying view and covers up the whole screen or a certain amount percentage of the screen. In this chapter, let's create a modal that shows an emoji picker list.
 
 ## Step 1: Declare a state variable to show buttons
 
@@ -523,7 +523,7 @@ Add the code snippet to the **App.js** to display the selected emoji on the back
 
 Start by creating a new component file: **components/EmojiSticker.js** and add the following code snippet. This component receives two props:
 
-- `imageSize`: a constant value defined inside the `App` component. We will use this value in the next module to scale the image size on a tap gesture.
+- `imageSize`: a constant value defined inside the `App` component. We will use this value in the next chapter to scale the image size on a tap gesture.
 - `stickerSource`: the source of the selected emoji image.
 
 ```js

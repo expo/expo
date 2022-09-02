@@ -28,7 +28,7 @@ This will tell npm (or yarn) to install a version of the library that is compati
 
 After installing the library, you can use it in your project. `expo-image-picker` provides the `launchImageLibraryAsync()` method that displays the system UI for choosing an image or a video from the phone's library.
 
-The styled button created in the previous module is used to pick an image from the device's media library. To implement the functionality, a custom handler method is invoked when this button is pressed to pick the image.
+The styled button created in the previous chapter is used to pick an image from the device's media library. To implement the functionality, a custom handler method is invoked when this button is pressed to pick the image.
 
 In **App.js**, import the `expo-image-picker` library and create `pickImageHandler()` method inside the `App` component:
 
@@ -211,4 +211,4 @@ On running the app, you will get a similar output on all platforms:
 
 You have now added the functionality to pick an image from the device's media library. The `expo-image-picker` library supports both mobile and web platforms.
 
-In the next module, let's learn how to [create an emoji picker modal component](/tutorial/create-a-modal).
+In the next chapter, let's learn how to [create an emoji picker modal component](/tutorial/create-a-modal).
