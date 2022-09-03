@@ -247,6 +247,16 @@ const Home = () => {
         </Row>
       </CellContainer>
       <H3>Join the community</H3>
+      <JoinTheCommunity />
+    </DocumentationPage>
+  );
+};
+
+export function JoinTheCommunity() {
+  const { palette } = theme;
+
+  return (
+    <>
       <Description>See the source code, connect with others, and get connected.</Description>
       <CellContainer>
         <Row>
@@ -289,9 +299,9 @@ const Home = () => {
           />
         </Row>
       </CellContainer>
-    </DocumentationPage>
+    </>
   );
-};
+}
 
 const baseGradientStyle = css({
   top: 0,
