@@ -26,7 +26,7 @@ Expo makes it easy to create PWAs by generating web app data from your app confi
 
 [Read more about building a Progressive Web App with Expo Web](../guides/progressive-web-apps.md).
 
-<!-- - Password Sharing: Expo can automatically link your native app to your website with tools like Apple App-site Association which means your users can sign-in on one platform and auto-fill on another. -->
+{/* - Password Sharing: Expo can automatically link your native app to your website with tools like Apple App-site Association which means your users can sign-in on one platform and auto-fill on another. */}
 
 ## Highly Customizable
 

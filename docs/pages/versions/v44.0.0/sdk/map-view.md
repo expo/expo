@@ -120,7 +120,7 @@ To use this in web, add the following script to your **web/index.html**. This sc
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <!-- At the end of the <head/> element... -->
+    {/* At the end of the <head/> element... */}
 
     <script
       async
@@ -129,10 +129,10 @@ To use this in web, add the following script to your **web/index.html**. This sc
       type="text/javascript"
     ></script>
 
-    <!-- Use your web API Key in place of API_KEY: https://developers.google.com/maps/documentation/javascript/get-api-key -->
+    {/* Use your web API Key in place of API_KEY: https://developers.google.com/maps/documentation/javascript/get-api-key */}
   </head>
 
-  <!-- <body /> -->
+  {/* <body /> */}
 </html>
 ```
 

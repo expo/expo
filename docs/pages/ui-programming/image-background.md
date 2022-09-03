@@ -17,7 +17,7 @@ The `ImageBackground` component accepts mostly the same props as the `Image` com
 
 <SnackInline>
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```js
 import React from 'react';
 import { /* @info Import ImageBackground from react-native */ ImageBackground/* @end */, StyleSheet, Text, View } from 'react-native';

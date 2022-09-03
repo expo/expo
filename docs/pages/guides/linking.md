@@ -410,9 +410,9 @@ An example of the `exp+` scheme breaking the verification process:
     <data android:scheme="https" android:host="<name>.onelink.me" android:pathPrefix="/XXXX"/>
     <data android:scheme="https" android:host="<name>.onelink.me" android:pathPrefix="/XXXX"/>
     <data android:scheme="https" android:host="<name>.onelink.me" android:pathPrefix="/XXXX"/>
-    <!-- @info -->
+    {/* @info */}
     <data android:scheme="exp+<slug>"/>
-    <!-- @end -->
+    {/* @end */}
     <category android:name="android.intent.category.BROWSABLE"/>
     <category android:name="android.intent.category.DEFAULT"/>
   </intent-filter>
