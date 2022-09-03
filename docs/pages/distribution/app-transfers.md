@@ -7,10 +7,10 @@ import { BoxLink } from '~/ui/components/BoxLink';
 
 Universal apps using EAS have two parts:
 
-1. JavaScript files and assets, which are hosted with [EAS Update](/eas-update/introduction). These static files are used for over-the-air updates.
+1. JavaScript files and assets which are hosted with [EAS Update](/eas-update/introduction). These static files are used for over-the-air updates.
 2. [Native runtime](/workflow/glossary-of-terms#native-runtime) hosted in the respective app stores. Used for rendering the static hosted assets.
 
-Read more in the official guides for transferring each part.
+Learn more in the official guides for each:
 
 <BoxLink title="EAS project transfers" description="Transfer an EAS project to a different Expo account." href="/accounts/account-types/#transferring-projects-between-accounts" />
 
