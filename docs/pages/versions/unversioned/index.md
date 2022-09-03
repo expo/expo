@@ -5,6 +5,8 @@ hideTOC: true
 
 import VersionedRedirectNotification from '~/components/plugins/VersionedRedirectNotification';
 import { Terminal } from '~/ui/components/Snippet';
+import { BoxLink } from '~/ui/components/BoxLink';
+import { InlineCode } from '~/components/base/code';
 
 <VersionedRedirectNotification />
 
@@ -31,7 +33,9 @@ The easiest way to create a bare React Native app with support for the Expo SDK 
 '$ npx create-react-native-app my-app',
 ]} cmdCopy="npx create-react-native-app my-app" />
 
-You can install and import any Expo SDK package using the `npx expo install` command. If you have an existing app that you would like to add Expo SDK packages to, read about [integrating Expo SDK into existing apps](/bare/existing-apps).
+<BoxLink title="Existing apps" href="/bare/installing-expo-modules" description={<>Projects that were created with <InlineCode>npx react-native init</InlineCode> require additional setup to use the Expo SDK.</>} />
+
+<BoxLink title="Using libraries" description="Learn how to install Expo SDK packages in your project." href="/workflow/using-libraries" />
 
 ## Each Expo SDK version depends on a React Native version
 

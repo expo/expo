@@ -17,7 +17,7 @@ If you’re just starting a new bare project then you should initialize it with 
 
 > _Note: You may see several `peerDependencies` warnings when installing the dependencies for a new project. These are caused by some external packages having overly strict or unnecessary dependencies, and it's a work in progress to clean them up. They won't cause any harm to your project._
 
-<BoxLink title="Existing apps" href="/bare/existing-apps" description={<>React Native projects that were created with <InlineCode>npx react-native init</InlineCode> require additional setup to use the Expo SDK</>} />
+<BoxLink title="Existing apps" href="/bare/existing-apps" description={<>React Native projects that were created with <InlineCode>npx react-native init</InlineCode> require additional setup to use the Expo SDK.</>} />
 
 ## Build and open the project
 
