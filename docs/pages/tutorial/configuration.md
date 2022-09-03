@@ -7,7 +7,7 @@ import ImageSpotlight from '~/components/plugins/ImageSpotlight'
 import Video from '~/components/plugins/Video'
 import { Collapsible } from '~/ui/components/Collapsible';
 
-Before we can consider our app truly complete we need to add a splash screen and app icon. A splash screen is what users see when the app is launched, before it has loaded. The icon will be visible on the users' home screen when the app is installed, or inside of the Expo app when in development.
+Before we can consider our app truly complete we need to add a splash screen and app icon. A splash screen is what users see when the app is launched, before it has loaded. The icon will be visible on the users' home screen when the app is installed, or inside of the Expo Go app when in development.
 
 ## Splash screen
 

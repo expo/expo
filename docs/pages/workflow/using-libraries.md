@@ -14,7 +14,7 @@ If you are using the bare workflow, read the [guide for using libraries in the b
 
 React Native provides a set of built-in primitives that most developers will need in their app. These include components such as ActivityIndicator, TextInput, Text, ScrollView, and View. These are listed in the [Core Components and APIs](https://reactnative.dev/docs/components-and-apis) page of the React Native documentation. We also list the React Native Core Components and APIs in the [API Reference](/versions/latest/) section of the Expo documentation, so you can quickly see the documentation relevant to the SDK version that your app uses in the same place as you would find it for Expo SDK libraries. You can see the React Native version that corresponds to your Expo SDK version in the table on the [API Reference index](/versions/latest/).
 
-The `react-native` core library is installed automatically in every Expo app. To use a React Native library in your project, import it from the `react-native` package in your code:
+To use a React Native library in your project, import it from the `react-native` package in your code:
 
 ```jsx
 import * as React from 'react';

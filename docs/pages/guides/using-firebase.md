@@ -117,7 +117,7 @@ See the Facebook section of our docs for information on how to set this up. This
 
 ### Tying Sign-In Providers with Firebase
 
-Once you have added Facebook login to your Expo app, we need to adjust the Firebase console to check for it. Go to [Firebase Console](http://console.firebase.google.com/) >> _Authentication_ >> _Sign-In method_ tab to enable Facebook as a sign-in provider.
+Once you have added Facebook login to your React Native app, we need to adjust the Firebase console to check for it. Go to [Firebase Console](http://console.firebase.google.com/) >> _Authentication_ >> _Sign-In method_ tab to enable Facebook as a sign-in provider.
 
 You can add whichever provider makes sense for you, or even add multiple providers. We will stick with Facebook for now since we already have a simple drop-in Expo component already built.
 
