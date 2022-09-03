@@ -83,13 +83,11 @@ Example usage:
 
 <Terminal cmd={['$ eas submit -p ios --latest --profile foobar']} copyCmd="eas submit -p ios --latest --profile foobar" />
 
-## Automating submissions
-
-To learn how to automatically submit your app after a successful build, refer to the ["Automating submissions" guide](/build/automating-submissions.md).
-
 ## Manual submissions
 
-If you don't want to use EAS Submit, you can upload to the Apple App Store manually from a macOS devices.
+If you ever need to submit your build without going through EAS Submit, for example if the service is temporarily unavailable for maintenance, you can upload to the Apple App Store manually from a macOS devices.
+
+<Collapsible summary="How to upload to the Apple App Store manually from a macOS device">
 
 ### Creating an entry on App Store Connect
 
@@ -113,5 +111,11 @@ This process can take a few minutes, then another 10-15 minutes of processing on
 
 1. Visit [App Store Connect][asc], select **My Apps**, and click on the app entry you created earlier.
 2. Scroll down to the **Build** section and select your newly uploaded binary.
+
+</Collapsible>
+
+## Automating submissions
+
+To learn how to automatically submit your app after a successful build, refer to the ["Automating submissions" guide](/build/automating-submissions.md).
 
 [asc]: https://appstoreconnect.apple.com/apps
