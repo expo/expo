@@ -100,7 +100,6 @@ const general = [
       makePage('distribution/runtime-versions.md'),
       makePage('distribution/custom-updates-server.md'),
       makePage('distribution/app-transfers.md'),
-      makePage('distribution/security.md'),
       makePage('distribution/publishing-websites.md'),
     ]),
   ]),
@@ -268,6 +267,7 @@ const eas = [
         makePage('app-signing/local-credentials.md'),
         makePage('app-signing/existing-credentials.md'),
         makePage('app-signing/syncing-credentials.md'),
+        makePage('app-signing/security.md'),
       ]),
       makeGroup('Reference', [
         makePage('build-reference/eas-json.md'),

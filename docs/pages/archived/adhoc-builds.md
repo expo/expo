@@ -48,7 +48,7 @@ Run `expo client:ios`
 
 You are given a choice of letting `expo-cli` create the necessary credentials for you, while still having a chance to provide your own overrides. Your Apple ID and password are used locally and never saved on Expo's servers.
 
-Letting Expo handle credentials for you will greatly simplify the build process. Learn more [here](../distribution/security.md) on what these credentials are and how we store them.
+Letting Expo handle credentials for you will greatly simplify the build process. Learn more [here](/app-signing/security) on what these credentials are and how we store them.
 
 ```sh
 $ expo client:ios
