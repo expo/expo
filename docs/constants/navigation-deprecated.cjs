@@ -100,7 +100,6 @@ const general = [
       makePage('distribution/app-stores.md'),
       makePage('distribution/runtime-versions.md'),
       makePage('distribution/custom-updates-server.md'),
-      makePage('distribution/uploading-apps.md'),
       makePage('distribution/app-transfers.md'),
       makePage('distribution/security.md'),
       makePage('distribution/publishing-websites.md'),

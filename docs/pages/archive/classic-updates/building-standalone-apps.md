@@ -211,7 +211,7 @@ When the build process finishes, you will get a URL to your app file - an **.apk
 
 ## 6. Submit it to the appropriate store
 
-Read the documentation on [Uploading Apps to the Apple App Store and Google Play](/distribution/uploading-apps).
+Read the documentation on [Uploading Apps to the Apple App Store and Google Play](/submit/introduction).
 
 ## 7. Update your app
 

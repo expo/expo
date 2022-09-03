@@ -47,12 +47,13 @@ If you don't have an app in the stores, EAS Metadata can't pull that information
 ## Update the store config
 
 Now it's time to edit the **store.config.json** file and customize it to your app needs. A complete overview of what can be defined is coming soon. In the meantime, you can use the [VS Code Expo plugin](https://github.com/expo/vscode-expo) and use the auto-completion.
+
 <!-- Disabled due to missing config overview
 You can find all available options for the **store.config.json** in the [store configuration reference](./store-json.md). -->
 
 ## Upload a new app version
 
-Before you can upload the **store.config.json**, you must upload a new binary of your app. [Read more about uploading new binaries to stores](../distribution/uploading-apps.md).
+Before you can upload the **store.config.json**, you must upload a new binary of your app. [Read more about uploading new binaries to stores](/submit/introduction).
 
 After the binary is submitted and processed, we can upload the **store.config.json** to the app stores.
 
