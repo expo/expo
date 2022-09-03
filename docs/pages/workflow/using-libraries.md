@@ -41,7 +41,7 @@ To use a library from the Expo SDK, find the one you are looking for in the [API
 
 <ConfigReactNative>
 
-If you initialized your app using `npx react-native init` and you don't have the `expo` package installed in it yet, please refer to the guide for [installing Expo modules guide](../bare/installing-expo-modules.md). It should take about five minutes to configure in an existing app.
+If you initialized your app using `npx react-native init` and you don't have the `expo` package installed in it yet, please refer to the guide for [installing Expo modules guide](/bare/installing-expo-modules). It should take about five minutes to configure in an existing app.
 
 </ConfigReactNative>
 
