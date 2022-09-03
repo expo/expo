@@ -239,4 +239,5 @@ const RENAMED_PAGES: Record<string, string> = {
 
   // Consolidate distribution
   '/distribution/uploading-apps/': '/submit/introduction/',
+  '/versions/latest/distribution/uploading-apps/': '/submit/introduction/',
 };
