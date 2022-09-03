@@ -8,7 +8,7 @@ import InstallSection from '~/components/plugins/InstallSection';
 import { Terminal } from '~/ui/components/Snippet';
 import SnackInline from '~/components/plugins/SnackInline';
 
-Every app is made up of some combination of React Native libraries. It's important to understand how to determine whether a third-party library will work in your project or not.
+Every app is inevitably going to use a third-party library, so it's important to understand how to determine whether a library is compatible with your project.
 
 ## Using React Native Core Libraries
 
@@ -41,7 +41,7 @@ To use a library from the Expo SDK, find the one you are looking for in the [API
 
 <ConfigReactNative>
 
-If you initialized your app using `npx react-native init` and you don't have the `expo` package installed in it yet, please refer to the guide for [installing Expo modules guide](/bare/installing-expo-modules). It should take about five minutes to configure in an existing app.
+If you initialized your app using `npx react-native init` and you don't have the `expo` package installed in it yet, refer to the [installing Expo modules guide](/bare/installing-expo-modules).
 
 </ConfigReactNative>
 
@@ -133,7 +133,7 @@ If the module needs additional native configuration, you can do so using [config
 
 <ConfigReactNative>
 
-If your project does not support [Expo Prebuild](/workflow/prebuild) then you cannot use [config plugins](/guides/config-plugins). You can either [adopt Expo Prebuild](/guides/adopting-prebuild) or setup and configure each library manually by following any additional setup guides in the respective module's npm page.
+If your project does not support [Expo Prebuild](/workflow/prebuild) then you won't be able to use [config plugins](/guides/config-plugins). You can either [adopt Expo Prebuild](/guides/adopting-prebuild) or setup and configure each library manually by following any additional setup guides from the respective module's website or README.
 
 </ConfigReactNative>
 
