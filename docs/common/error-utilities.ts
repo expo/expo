@@ -237,6 +237,9 @@ const RENAMED_PAGES: Record<string, string> = {
   '/classic/building-standalone-apps/': '/archive/classic-updates/building-standalone-apps/',
   '/classic/turtle-cli/': '/archive/classic-updates/turtle-cli/',
 
+  // Redirect bare guides to unified workflow guides
+  '/bare/using-libraries/': '/workflow/using-libraries/',
+
   // Consolidate distribution
   '/distribution/uploading-apps/': '/submit/introduction/',
   '/versions/latest/distribution/uploading-apps/': '/submit/introduction/',

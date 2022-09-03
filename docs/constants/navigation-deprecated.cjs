@@ -170,7 +170,6 @@ const general = [
     makeGroup('Bare workflow', [
       makePage('bare/exploring-bare-workflow.md'),
       makePage('bare/hello-world.md'),
-      makePage('bare/using-libraries.md'),
       makePage('bare/existing-apps.md'),
       makePage('bare/installing-expo-modules.md'),
       makePage('bare/installing-unimodules.md'),
