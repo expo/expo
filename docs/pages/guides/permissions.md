@@ -12,7 +12,7 @@ Permissions in standalone and [development builds](/development/introduction.md)
 
 ## iOS
 
-If your iOS app asks for [system permissions](/versions/latest/sdk/permissions) from the user, e.g. to use the device's camera, or access photos, Apple requires an explanation for how your app makes use of that data. Most packages will automatically provide a boilerplate reason for a given permission with [config plugins](/guides/config-plugins). However, these default messages will most likely need to be tailored to your specific use case in order for your app to be accepted by the App Store.
+If your iOS app asks for [system permissions](/versions/latest/sdk/permissions) from the user, e.g. to use the device's camera, or access photos, Apple requires an explanation for how your app makes use of that data. Most packages will automatically provide a boilerplate reason for a given permission with [config plugins](/guides/config-plugins). These default messages will most likely need to be tailored to your specific use case in order for your app to be accepted by the App Store.
 
 To set permission messages, use the [`expo.ios.infoPlist`](/versions/latest/config/app/#infoplist) key in your app config (**app.json**, **app.config.js**), for example:
 
