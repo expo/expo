@@ -238,6 +238,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/classic/turtle-cli/': '/archive/classic-updates/turtle-cli/',
 
   // Consolidate distribution
+  '/distribution/security/': '/app-signing/security/',
   '/distribution/uploading-apps/': '/submit/introduction/',
   '/versions/latest/distribution/uploading-apps/': '/submit/introduction/',
 };
