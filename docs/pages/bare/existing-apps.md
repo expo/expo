@@ -1,5 +1,6 @@
 ---
 title: Existing Apps
+hideTOC: true
 sidebar_title: Existing Apps
 ---
 
