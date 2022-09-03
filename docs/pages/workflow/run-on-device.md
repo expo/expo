@@ -5,7 +5,7 @@ title: Running on device
 import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
 
-> This guide focuses on running a project on your own device. To learn about sharing your project with others, refer to ["Sharing pre-release versions of your app"](/guides/sharing-preview-releases/) and ["Deploying to App Stores"](/distribution/app-stores/).
+> This guide focuses on running a project on your own device. To learn about sharing your project with others, refer to ["Sharing pre-release versions of your app"](/guides/sharing-preview-releases/) and ["Distribution"](/distribution/introduction/).
 
 You will approach running your project on your device differently depending on how you are using Expo tools. There are three main approaches: you can use Expo Go, a development build, or you can run your project as a standalone app.
 
