@@ -14,14 +14,6 @@ Learn more in the official guides for each:
 
 <BoxLink title="EAS project transfers" description="Transfer an EAS project to a different Expo account." href="/accounts/account-types/#transferring-projects-between-accounts" />
 
-<BoxLink title="Apple project transfers" description="Transfer an iOS app to a different Apple developer account." href="https://help.apple.com/app-store-connect/#/deved688524f" />
+<BoxLink title="Apple project transfers" description="Transfer an iOS app to a different Apple Developer account." href="https://help.apple.com/app-store-connect/#/deved688524f" />
 
 <BoxLink title="Google project transfers" description="Transfer an Android app to a different Google Play developer account." href="https://support.google.com/googleplay/android-developer/answer/6230247" />
-
-
-
-
-
-
-
-
