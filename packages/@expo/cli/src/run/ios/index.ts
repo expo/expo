@@ -16,6 +16,7 @@ export const expoRunIos: Command = async (argv) => {
     '--no-install': Boolean,
     '--no-bundler': Boolean,
     '--configuration': String,
+    '--template': String,
 
     '--port': Number,
     // Aliases
@@ -44,6 +45,7 @@ export const expoRunIos: Command = async (argv) => {
         chalk`--configuration <configuration>  Xcode configuration to use. Debug or Release. {dim Default: Debug}`,
         `-d, --device [device]            Device name or UDID to build the app on`,
         chalk`-p, --port <port>                Port to start the Metro bundler on. {dim Default: 8081}`,
+        `--template <path|URL>                 Base template for the native project if it doesnt exists. {dim Default: bare-minimum}`,
         `-h, --help                       Usage info`,
       ].join('\n'),
       [
@@ -74,5 +76,6 @@ export const expoRunIos: Command = async (argv) => {
     device: parsed.args['--device'],
     scheme: parsed.args['--scheme'],
     configuration: parsed.args['--configuration'] as XcodeConfiguration,
+    template: args['--template'],
   }).catch(logCmdError);
 };

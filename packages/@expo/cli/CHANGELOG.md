@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unpublished
+- Add --template argument to run command
 
 ### 🛠 Breaking changes
 
