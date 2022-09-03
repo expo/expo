@@ -2,53 +2,85 @@
 title: Permissions
 ---
 
-When you are creating an app that requires access to potentially sensitive information on a user's device, such as their location or contacts, you need to ask for the user's permission first. For example, to access the user's media library, you will need to use [MediaLibrary.requestPermissionsAsync()](../../versions/latest/sdk/media-library.md#medialibraryrequestpermissionsasync).
+import { ConfigReactNative, ConfigClassic } from '~/components/plugins/ConfigSection';
 
-In Expo Go, there isn't much you need to think about to interact with permissions beyond requesting permissions before using certain APIs. This changes when you want to deploy your app to an app store. Please read the [permissions on iOS](#ios) and [permissions on Android](#android) sections carefully before deploying your app to stores. If you don't configure or explain the permissions properly **it may result in your app getting rejected or pulled from the stores**. Read more about deploying to the stores in the [App Store Deployment Guide](../../../distribution/app-stores.md#system-permissions-dialogs-on-ios).
+When developing a native app that requires access to potentially sensitive information on a user's device, such as their location or contacts, the app must request the user's permission first. For example, to access the user's media library, the app will need to run [`MediaLibrary.requestPermissionsAsync()`](/versions/latest/sdk/media-library#medialibraryrequestpermissionsasync).
+
+Permissions in standalone and [development builds](/development/introduction.md) require native build-time configuration before they can be requested using runtime JavaScript code. This is not required when developing projects in the [Expo Go][expo-go] app.
+
+> If you don't configure or explain the native permissions properly **it may result in your app getting rejected or pulled from the stores**.
 
 ## iOS
 
-### Managed workflow
+If your iOS app asks for [system permissions](/versions/latest/sdk/permissions) from the user, e.g. to use the device's camera, or access photos, Apple requires an explanation for how your app makes use of that data. Most packages will automatically provide a boilerplate reason for a given permission with [config plugins](/guides/config-plugins). These default messages will most likely need to be tailored to your specific use case in order for your app to be accepted by the App Store.
 
-To request permissions on iOS, you have to describe why the permissions are requested and [install the library](#permissions-and-required-packages-on-ios) that can request this permission. In the managed workflow, you can do that by customizing the `ios.infoPlist` property in your [**app.json** file](../../../workflow/configuration.md#ios).
+To set permission messages, use the [`expo.ios.infoPlist`](/versions/latest/config/app/#infoplist) key in your app config (**app.json**, **app.config.js**), for example:
 
-You can find the full list of available properties in [Apple's InfoPlistKeyReference](https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CocoaKeys.html#//apple_ref/doc/uid/TP40009251-SW1). Apple also documents the basic guidelines for the structure of the message in the [Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/ios/app-architecture/requesting-permission/).
+```json
+{
+  "expo": {
+    "ios": {
+      "infoPlist": {
+        "NSCameraUsageDescription": "This app uses the camera to scan barcodes on event tickets."
+      }
+    }
+  }
+}
+```
 
-> **Note:** apps using permissions without descriptions _may be rejected from the App Store_. (see the [App Store Deployment Guide](../../../distribution/app-stores.md#system-permissions-dialogs-on-ios))
+Many of these properties are also directly configurable using the [config plugin](/guides/config-plugins) properties associated with the library that adds them. For example, with [`expo-media-library`](/versions/latest/sdk/media-library) you can configure photo permission messages like this:
 
-### Bare workflow
+```json
+{
+  "expo": {
+    "plugins": [
+      [
+        "expo-media-library",
+        {
+          "photosPermission": "Allow $(PRODUCT_NAME) to access your photos.",
+          "savePhotosPermission": "Allow $(PRODUCT_NAME) to save photos."
+        }
+      ]
+    ]
+  }
+}
+```
 
-To request permissions on iOS, you have to describe why the permissions are requested and install the library that requests and uses the permission. When using the bare workflow, you have to edit the project **Info.plist**.
+- Changes to the **Info.plist** cannot be updated over-the-air, they will only be deployed when you submit a new native binary, eg: with [`eas build`](/build/introduction).
+- Apple's official [permission message recommendations](https://developer.apple.com/design/human-interface-guidelines/ios/app-architecture/requesting-permission/).
+- [All available **Info.plist** properties](https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CocoaKeys.html#//apple_ref/doc/uid/TP40009251-SW1).
 
-You can find the full list of available properties in [Apple's InfoPlistKeyReference](https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CocoaKeys.html#//apple_ref/doc/uid/TP40009251-SW1). Apple also documents the basic guidelines for the structure of the message in the [Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/ios/app-architecture/requesting-permission/).
+<ConfigReactNative>
+
+Add and modify the permission message values in **Info.plist** file directly. We recommend doing this directly in Xcode for autocompletion.
+
+</ConfigReactNative>
 
 ## Android
 
-### Managed workflow
+Permissions are configured with the [`expo.android.permissions`](/versions/latest/config/app/#permissions) and [`expo.android.blockedPermissions`](/versions/latest/config/app/#blockedpermissions) keys in your app config (**app.json**, **app.config.js**).
 
-On Android, permissions are little bit simpler than iOS. In the managed workflow, permissions are controlled via the `android.permissions` property in your [**app.json** file](../../workflow/configuration.md#android). In the bare workflow, they have to be defined in your **AndroidManifest.xml**.
+Most permissions are added automatically by libraries that you use in your app either with [config plugins](/guides/config-plugins) or with a package-level **AndroidManifest.xml**, so you won't often need to use `android.permissions` to add additional permissions.
 
-Some Expo and React Native modules include permissions by default. If you use `expo-location`, for example, both the `ACCESS_COARSE_LOCATION` and `ACCESS_FINE_LOCATION` are implied and added to your app's permissions automatically.
+The only way to remove permissions that are added by package-level **AndroidManifest.xml** files is to block them with the [`expo.android.blockedPermissions`](/versions/latest/config/app/#blockedpermissions) property. To do this, specify the **full permission name**; for example, if you want to remove the audio recording permissions added by `expo-av`:
 
-To limit the permissions your managed workflow app requires, set the `android.permissions` property in your [**app.json** file](../../workflow/configuration.md#android) to list only the permissions you need, and Expo will also include the minimum permissions it requires to run. See the [`Permission types`](#permission-types) below to learn about which Android permissions are added. You can find a full list of all available permissions in the [Android Manifest.permissions reference](https://developer.android.com/reference/android/Manifest.permission).
+```json
+{
+  "expo": {
+    "android": {
+      "blockedPermissions": ["android.permission.RECORD_AUDIO"]
+    }
+  }
+}
+```
 
-- [See the `android.permissions` documentation](/versions/latest/config/app.md#permissions) to learn about which permissions are always included.
-- Apps using dangerous or signature permissions without valid reasons _may be rejected by Google_. Make sure you follow the [Android permissions best practices](https://developer.android.com/training/permissions/usage-notes) when submitting your app.
-- By default, the permissions implied by the modules you installed are added to the **AndroidManifest.xml** at build time. To exclude permissions, you have to define the `android.permissions` manifest property.
+- See [`expo.android.permissions`](/versions/latest/config/app.md#permissions) to learn about which permissions are included in the default [prebuild template](/workflow/prebuild#templates).
+- Apps using _dangerous_ or _signature_ permissions without valid reasons **may be rejected by Google**. Ensure you follow the [Android permissions best practices](https://developer.android.com/training/permissions/usage-notes) when submitting your app.
+- [All available Android Manifest.permissions](https://developer.android.com/reference/android/Manifest.permission).
 
-### Bare workflow
+<ConfigReactNative>
 
-In the bare workflow, permissions are controlled in your project **AndroidManifest.xml**.
-
-Some Expo and React Native modules include permissions by default. If you use `expo-location`, for example, both the `ACCESS_COARSE_LOCATION` and `ACCESS_FINE_LOCATION` are implied and added to your app's permissions automatically. To limit the permissions your managed workflow app requires, add them them to a [list of explicitly excluded permissions](#excluding-android-permissions).
-
-Apps using dangerous or signature permissions without valid reasons _may be rejected by Google_. Make sure you follow the [Android permissions best practices](https://developer.android.com/training/permissions/usage-notes) when submitting your app.
-
-#### Excluding Android permissions
-
-When adding Expo and other React Native modules to your project, certain Android permissions might be implied automatically. The modules should only add relevant permissions **required** to use the module, however, sometimes you may want to remove some of these permissions.
-
-Since the `android.permissions` manifest property doesn't work in the bare workflow, you'll need to edit **AndroidManifest.xml** to exclude specific permissions from the build. You can do that with the `tools:node="remove"` attribute on the `<use-permission>` tag.
+Modify **AndroidManifest.xml** to exclude specific permissions: add the `tools:node="remove"` attribute to a `<use-permission>` tag to ensure it is removed, even if it's included in a library **AndroidManifest.xml**.
 
 ```xml
 <manifest xmlns:tools="http://schemas.android.com/tools">
@@ -58,10 +90,28 @@ Since the `android.permissions` manifest property doesn't work in the bare workf
 
 > **Note:** you have to define the `xmlns:tools` attribute on `<manifest>` before you can use the `tools:node` attribute on permissions.
 
-## Permissions on Web
+</ConfigReactNative>
 
-On web permissions like the `Camera` and `Location` can only be requested from a [secure context](https://developer.mozilla.org/en-US/docs/Web/Security/Secure_Contexts#When_is_a_context_considered_secure), e.g. using `https://` or `http://localhost`. This limitation is similar to Android's manifest permissions and iOS's infoPlist usage messages and enforced to increase privacy.
+<ConfigClassic>
 
-## Manually testing permissions
+By default, apps built with the Classic Build system will include **all** permissions required by any Expo SDK package (with exceptions only for background permissions). This is so that your standalone app will match its behavior in the [Expo Go][expo-go] app and simply "work out of the box" no matter what permissions you ask for, with minimal configuration required by the developer.
 
-Often you want to be able to test what happens when a user rejects a permission, to ensure that it has the desired behavior. An operating-system level restriction on both iOS and Android prohibits an app from asking for the same permission more than once (you can imagine how this could be annoying for the user to be repeatedly prompted for permissions). So in order to test different flows involving permissions in development, you may need to uninstall and reinstall the Expo Go app. In the simulator this is as easy as deleting the app, and `expo-cli` will automatically install it again next time you launch the project.
+There are some drawbacks to this. For example, let's say your To-do list app requests `CAMERA` permission upon installation. Your users may be wary of installing your app since nothing in the app seems to use the camera, so why would it need that permission?
+
+To solve this, add the `android.permissions` key in your **app.json** file and specify which permissions your app will use. Refer to this [list of all Android permissions and configuration](/workflow/configuration#android) for more information.
+
+To use _only_ the minimum necessary permissions that React Native requires to run, set `"permissions" : []`. To use those in addition to `CAMERA` permission, for example, you'd set `"permissions" : ["CAMERA"]`.
+
+</ConfigClassic>
+
+## Web
+
+On the web, permissions like the `Camera` and `Location` can only be requested from a [secure context](https://developer.mozilla.org/en-US/docs/Web/Security/Secure_Contexts#When_is_a_context_considered_secure), e.g. using `https://` or `http://localhost`. This limitation is similar to Android's manifest permissions and iOS's infoPlist usage messages and enforced to increase privacy.
+
+## Resetting permissions
+
+Often you want to be able to test what happens when a user rejects permissions, to ensure your app reacts gracefully. An operating-system level restriction on both iOS and Android prohibits an app from asking for the same permission more than once (you can imagine how this could be annoying for the user to be repeatedly prompted for permissions after rejecting them). To test different flows involving permissions in development, you may need to uninstall and reinstall the native app.
+
+When testing in [Expo Go][expo-go], you can delete the app and reinstall it by running `npx expo start` and pressing `i` or `a` in the [Expo CLI](/workflow/expo-cli) Terminal UI.
+
+[expo-go]: https://expo.dev/expo-go

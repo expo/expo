@@ -10,6 +10,7 @@
 
 ### 💡 Others
 
+- Updated docs link. ([#18972](https://github.com/expo/expo/pull/18972) by [@EvanBacon](https://github.com/EvanBacon))
 - Drop `@expo/config-plugins` dependency in favor of peer dependency on `expo`. ([#18595](https://github.com/expo/expo/pull/18595) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 12.3.0 — 2022-07-07
