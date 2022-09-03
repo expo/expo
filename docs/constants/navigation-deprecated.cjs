@@ -66,7 +66,6 @@ const general = [
         makePage('introduction/faq.md'),
       ]),
       makeGroup('Next steps', [
-        makePage('next-steps/using-the-documentation.md'),
         makePage('next-steps/community.md'),
         makePage('next-steps/additional-resources.md'),
       ]),

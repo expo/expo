@@ -76,11 +76,7 @@ const general = [
   ),
   makeSection(
     'Next Steps',
-    [
-      makePage('next-steps/using-the-documentation.md'),
-      makePage('next-steps/community.md'),
-      makePage('next-steps/additional-resources.md'),
-    ],
+    [makePage('next-steps/community.md'), makePage('next-steps/additional-resources.md')],
     { expanded: true }
   ),
   makeSection('Fundamentals', [
