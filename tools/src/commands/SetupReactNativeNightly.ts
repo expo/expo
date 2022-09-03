@@ -85,6 +85,31 @@ async function updateReactNativePackageAsync() {
       replaceWith: "version = '1000.0.0'",
     },
   ]);
+
+  // Remove unused hermes build artifacts to reduce build time
+  await transformFileAsync(path.join(root, 'sdks', 'hermes-engine', 'hermes-engine.podspec'), [
+    {
+      find: './utils/build-mac-framework.sh',
+      replaceWith: '',
+    },
+  ]);
+  await transformFileAsync(
+    path.join(root, 'sdks', 'hermes-engine', 'utils', 'build-ios-framework.sh'),
+    [
+      {
+        find: 'build_apple_framework "iphoneos" "arm64" "$ios_deployment_target"',
+        replaceWith: '',
+      },
+      {
+        find: 'build_apple_framework "catalyst" "x86_64;arm64" "$ios_deployment_target"',
+        replaceWith: '',
+      },
+      {
+        find: 'create_universal_framework "iphoneos" "iphonesimulator" "catalyst"',
+        replaceWith: 'create_universal_framework "iphonesimulator"',
+      },
+    ]
+  );
 }
 
 async function patchReanimatedAsync() {
