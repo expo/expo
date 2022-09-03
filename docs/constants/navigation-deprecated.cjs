@@ -66,7 +66,6 @@ const general = [
         makePage('introduction/faq.md'),
       ]),
       makeGroup('Next steps', [
-        makePage('next-steps/using-the-documentation.md'),
         makePage('next-steps/community.md'),
         makePage('next-steps/additional-resources.md'),
       ]),
@@ -101,7 +100,6 @@ const general = [
       makePage('distribution/runtime-versions.md'),
       makePage('distribution/custom-updates-server.md'),
       makePage('distribution/app-transfers.md'),
-      makePage('distribution/security.md'),
       makePage('distribution/publishing-websites.md'),
     ]),
   ]),
@@ -170,7 +168,6 @@ const general = [
     makeGroup('Bare workflow', [
       makePage('bare/exploring-bare-workflow.md'),
       makePage('bare/hello-world.md'),
-      makePage('bare/using-libraries.md'),
       makePage('bare/existing-apps.md'),
       makePage('bare/installing-expo-modules.md'),
       makePage('bare/installing-unimodules.md'),
@@ -269,6 +266,7 @@ const eas = [
         makePage('app-signing/local-credentials.md'),
         makePage('app-signing/existing-credentials.md'),
         makePage('app-signing/syncing-credentials.md'),
+        makePage('app-signing/security.md'),
       ]),
       makeGroup('Reference', [
         makePage('build-reference/eas-json.md'),
