@@ -252,7 +252,6 @@ const Home = () => {
   );
 };
 
-
 export function JoinTheCommunity() {
   const { palette } = theme;
 
@@ -301,7 +300,7 @@ export function JoinTheCommunity() {
         </Row>
       </CellContainer>
     </>
-  )
+  );
 }
 
 const baseGradientStyle = css({
