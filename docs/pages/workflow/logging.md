@@ -4,7 +4,7 @@ title: Viewing logs
 
 import { Terminal } from '~/ui/components/Snippet';
 
-Writing to the logs in an Expo app works just like in the browser: use `console.log`, `console.warn` and `console.error`.
+Writing to the logs in a React Native app works just like in the browser: use `console.log`, `console.warn` and `console.error`.
 
 ## Console logs
 

@@ -5,7 +5,7 @@ title: Deploying to App Stores
 import { Collapsible } from '~/ui/components/Collapsible';
 import { ConfigClassic } from '~/components/plugins/ConfigSection';
 
-This guide offers best practices around submitting your Expo app to the Apple App Store and Google Play Store. To learn how to generate native binaries for submission, refer to ["Creating your first build"](../build/setup.md).
+This guide offers best practices around submitting your app to the Apple App Store and Google Play Store. To learn how to generate native binaries for submission, refer to ["Creating your first build"](../build/setup.md).
 
 Although you can share your published project through the Expo Go app and on your [expo.dev](https://expo.dev) profile, submitting a standalone app to the Apple and Google stores is necessary to have a dedicated piece of real estate on your users' devices. Submitting to these stores carries stronger requirements and quality standards than sharing a toy project with a few friends, because it makes your app available through a much wider distribution platform.
 
@@ -62,7 +62,7 @@ To access these values at runtime, you can use the [Expo Application API](../ver
 ## Privacy Policy
 
 - Starting October 3, 2018, all new iOS apps and app updates will be required to have a privacy policy in order to pass the App Store Review Guidelines.
-- Additionally, a number of developers have reported warnings from Google if their app does not have a privacy policy, since by default all Expo apps contain code for requesting the Android Advertising ID. Though this code may not be executed depending on which Expo APIs you use, we still recommend that all apps on the Google Play Store include a privacy policy as well.
+- Additionally, a number of developers have reported warnings from Google if their app does not have a privacy policy, since by default all apps built with the classic build service contain code for requesting the Android Advertising ID. Though this code may not be executed depending on which native APIs you use, we still recommend that all apps on the Google Play Store include a privacy policy as well.
 
 ## iOS-specific guidelines
 

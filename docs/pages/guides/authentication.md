@@ -2314,7 +2314,7 @@ https://auth.expo.io/@johnsample/my-app
 
 - **Environment:** Development or production projects in Expo Go, or in a standalone build.
 - **Create:** Use `AuthSession.makeRedirectUri({ useProxy: true })` to create this URI.
-  - The link is constructed from your Expo username and the Expo app name, which are appended to the proxy website.
+  - The link is constructed from your Expo username and the Expo config (**app.json**) `slug`, which are appended to the proxy website.
   - For custom apps, you'll need to rebuild the native app if you change users or if you reassign your `slug`, or `owner` properties in the app.json. We highly recommend **not** using the proxy in custom apps (standalone, bare, custom).
 - **Usage:** `promptAsync({ useProxy: true, redirectUri })`
 
@@ -2330,7 +2330,7 @@ exp://u.expo.dev/F767ADF57-B487-4D8F-9522-85549C39F43F?channel-name=main&runtime
 
 - **Environment:** Production projects that you `eas update`'d and opened in the Expo Go app.
 - **Create:** Use `AuthSession.makeRedirectUri({ useProxy: false })` to create this URI.
-  - The link is constructed from your Expo username and the Expo app name, which are appended to the Expo Go app URI scheme.
+  - The link is constructed from your Expo username and the Expo config (**app.json**) `slug`, which are appended to the Expo Go app URI scheme.
   - You could also create this link with using `Linking.makeUrl()` from `expo-linking`.
 - **Usage:** `promptAsync({ redirectUri })`
 
