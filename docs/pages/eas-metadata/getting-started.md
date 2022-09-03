@@ -66,6 +66,4 @@ If EAS Metadata runs into any issues with the **store.config.json**, it will war
 
 {/* Disabled due to missing config overview
 ## Next
-
-You can explore all available configuration options in the [store configuration reference](./store-json.md).
--->
+*/}
