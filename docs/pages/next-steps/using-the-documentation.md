@@ -8,7 +8,7 @@ title: Using the documentation
 
 The "Managed Workflow" section also contains many how-to guides that show you how you can accomplish specific goals that you will likely come across while building an app, such as [Using Custom Fonts](../guides/using-custom-fonts.md) and sending [Push Notifications](../push-notifications/overview.md). It also goes in detail on the finer points of [distributing your apps to the stores](../distribution/introduction.md).
 
-**"Bare Workflow"**: this section helps you to up and running with the bare workflow (we only cover the managed workflow in "The Basics"), lists the [supported APIs from the Expo SDK](../bare/unimodules-full-list.md), and includes other how-to guides for integrating Expo tools into bare React Native apps.
+**"Bare Workflow"**: this section helps you to get up and running with the bare workflow (we only cover the managed workflow in "The Basics"), and includes other how-to guides for integrating Expo tools into bare React Native apps.
 
 **"API Reference"** includes information on every module in the Expo SDK, from [Accelerometer](/versions/latest/sdk/accelerometer/) to [WebView](/versions/latest/sdk/webview) and everything in between. You can browse this section to get an idea of what capabilities are available to you and refer back to it when you want to use an API.
 

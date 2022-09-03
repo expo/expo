@@ -178,7 +178,6 @@ const general = [
     makePage('bare/installing-expo-modules.md'),
     makePage('bare/installing-unimodules.md'),
     makePage('bare/installing-updates.md'),
-    makePage('bare/unimodules-full-list.md'),
     makePage('bare/using-expo-client.md'),
     makePage('bare/using-web.md'),
     makePage('bare/migrating-from-expokit.md'),
