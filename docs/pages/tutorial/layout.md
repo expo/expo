@@ -5,7 +5,9 @@ title: Build a layout
 import SnackInline from '~/components/plugins/SnackInline';
 import ImageSpotlight from '~/components/plugins/ImageSpotlight'
 
-In this chapter, you will create the first screen of your app which is based on a layout. This layout will display an image and two buttons. The image is later used as a background image to put an emoji sticker on it. We will provide a default image as a placeholder in case you do not want to pick a new image.
+In this module, you will create the first layout of your app.
+
+This layout will display an image and two buttons. The image is later used as a background image to put an emoji sticker on it. We will provide a default image as a placeholder in case you do not want to pick a new image.
 
 Both buttons have different functionalities. The first button will allow picking an image from the device's media library. The second button will allow using the placeholder image as the background image.
 
@@ -181,7 +183,7 @@ The `PlaceholderImage` variable:
 The `Image` component:
 
 - Uses a `borderRadius` property to apply rounded corners on the image.
-- It is also wrapped inside a `View` component that will be useful to add touch-based gesture events in a future chapter.
+- It is also wrapped inside a `View` component that will be useful to add touch-based gesture events in a future module.
 - The `backgroundColor` on the `View` component is set to `transparent` to make the rounded corners visible.
 
 ## Step 5: Dividing components into files

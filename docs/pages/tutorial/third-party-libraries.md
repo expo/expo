@@ -6,7 +6,7 @@ import SnackInline from '~/components/plugins/SnackInline';
 import { Terminal } from '~/ui/components/Snippet';
 import Video from '~/components/plugins/Video';
 
-In this chapter, you will learn how to use a third-party library compatible with the Expo Go app. These are the following libraries that we will use:
+In this module, you will learn how to use a third-party library compatible with the Expo Go app. These are the following libraries that we will use in this module:
 
 - [react-native-view-shot](https://github.com/gre/react-native-view-shot): the third-party library that allows you to add the functionality of taking a screenshot.
 - [`expo-media-library`](/versions/latest/sdk/media-library/): Expo module that allows you to access a device's media library and save an image.
@@ -180,4 +180,4 @@ At this point, capturing a screenshot and saving it on the machine using the web
 
 When developing your own apps, if any library you find is not compatible with the Expo Go client and uses custom native code, you can still use it with [Development Builds](/development/introduction/).
 
-In the next chapter, let's learn how to [handle the differences between mobile and web platforms](/tutorial/platform-differences).
+In the next module, let's learn how to [handle the differences between mobile and web platforms](/tutorial/platform-differences).

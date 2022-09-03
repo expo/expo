@@ -92,7 +92,7 @@ Then, define the component that you want to apply animations. To make the tap ge
 const AnimatedImage = Animated.createAnimatedComponent(Image);
 ```
 
-The `createAnimatedComponent` can wrap any component. It has a built-in case to look at the `style` prop of the component, determine which value is animated, and then apply those updates. It will be useful to apply animated styles later in this chapter.
+The `createAnimatedComponent` can wrap any component. It has a built-in case to look at the `style` prop of the component, determine which value is animated, and then apply those updates. It will be useful to apply animated styles later in this module.
 
 ## Step 4: Add a tap Gesture
 
@@ -329,4 +329,4 @@ On running the app, you will get a similar output on all platforms:
 
 You have successfully implemented pan and tap gesture recognizers to handle these gestures in the app.
 
-In the next chapter, let's learn [how to integrate a third-party library in an Expo app](/tutorial/third-party-libraries), use it to take a screenshot of the image and the sticker, and handle any platform differences between mobile and web.
+In the next module, let's learn [how to integrate a third-party library in an Expo app](/tutorial/third-party-libraries), use it to take a screenshot of the image and the sticker, and handle any platform differences between mobile and web.

@@ -6,7 +6,7 @@ import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import Video from '~/components/plugins/Video';
 import { Collapsible } from '~/ui/components/Collapsible';
 
-Before considering the app fully launchable, you have to configure the status bar and add a splash screen and app icon. In this chapter, you will learn how to do all of that.
+Before considering the app fully launchable, you have to configure the status bar and add a splash screen and app icon. In this module, you will learn how to do all of that.
 
 ## Step 1: Configure the status bar
 
