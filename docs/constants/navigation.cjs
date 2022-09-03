@@ -174,7 +174,6 @@ const general = [
     makePage('bare/installing-updates.md'),
     makePage('bare/using-expo-client.md'),
     makePage('bare/using-web.md'),
-    makePage('bare/migrating-from-expokit.md'),
     makePage('bare/updating-your-app.md'),
     makePage('bare/error-recovery.md'),
   ]),
