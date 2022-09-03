@@ -14,7 +14,7 @@ Permissions in standalone and [development builds](/development/introduction.md)
 
 If your iOS app asks for [system permissions](/versions/latest/sdk/permissions) from the user, e.g. to use the device's camera, or access photos, Apple requires an explanation for how your app makes use of that data. Most packages will automatically provide a boilerplate reason for a given permission via [Expo config plugins](/guides/config-plugins). However, these default messages will most likely need to be tailored to your specific use case in order for your app to be accepted by the App Store.
 
-To set custom permission messages, use the [`expo.ios.infoPlist`](/versions/latest/config/app/#infoplist) key in your Expo config (**app.json**, **app.config.js**), for example:
+To set permission messages, use the [`expo.ios.infoPlist`](/versions/latest/config/app/#infoplist) key in your app config (**app.json**, **app.config.js**), for example:
 
 ```json
 {
@@ -28,7 +28,7 @@ To set custom permission messages, use the [`expo.ios.infoPlist`](/versions/late
 }
 ```
 
-Many of these properties are also directly configurable using the [Expo config plugin](/guides/config-plugins) properties associated with the library that adds them. For example, with [`expo-media-library`](/versions/latest/sdk/media-library) you can configure photo permission messages like this:
+Many of these properties are also directly configurable using the [config plugin](/guides/config-plugins) properties associated with the library that adds them. For example, with [`expo-media-library`](/versions/latest/sdk/media-library) you can configure photo permission messages like this:
 
 ```json
 {
@@ -52,7 +52,7 @@ Many of these properties are also directly configurable using the [Expo config p
 
 <ConfigReactNative>
 
-Since the Expo config's `expo.ios.infoPlist` property doesn't work in bare React Native apps, you'll need to edit **Info.plist** file manually. We recommend doing this directly in Xcode.
+Add and modify the permission message values in **Info.plist** file directly. We recommend doing this directly in Xcode for autocompletion.
 
 </ConfigReactNative>
 
@@ -60,9 +60,9 @@ Since the Expo config's `expo.ios.infoPlist` property doesn't work in bare React
 
 Permissions are configured via the [`expo.android.permissions`](/versions/latest/config/app/#permissions) and [`expo.android.blockedPermissions`](/versions/latest/config/app/#blockedpermissions) keys in your Expo config (**app.json**, **app.config.js**).
 
-Most permissions are added automatically by libraries that you use in your app either with [Expo config plugins](/guides/config-plugins) or with a package-level **AndroidManifest.xml**, so you won't often need to use `android.permissions` to add additional permissions.
+Most permissions are added automatically by libraries that you use in your app either with [config plugins](/guides/config-plugins) or with a package-level **AndroidManifest.xml**, so you won't often need to use `android.permissions` to add additional permissions.
 
-The only way to remove permissions that are added via package-level **AndroidManifest.xml** files is to block them with [`expo.android.blockedPermissions`](/versions/latest/config/app/#blockedpermissions) property. To do this, specify the **full permission name**; for example, if you want to remove the audio recording permissions added by `expo-av`:
+The only way to remove permissions that are added by package-level **AndroidManifest.xml** files is to block them with the [`expo.android.blockedPermissions`](/versions/latest/config/app/#blockedpermissions) property. To do this, specify the **full permission name**; for example, if you want to remove the audio recording permissions added by `expo-av`:
 
 ```json
 {
@@ -74,13 +74,13 @@ The only way to remove permissions that are added via package-level **AndroidMan
 }
 ```
 
-- See the [`expo.android.permissions`](/versions/latest/config/app.md#permissions) docs to learn about which permissions are included in the default [prebuild template](/workflow/prebuild#templates).
+- See [`expo.android.permissions`](/versions/latest/config/app.md#permissions) to learn about which permissions are included in the default [prebuild template](/workflow/prebuild#templates).
 - Apps using _dangerous_ or _signature_ permissions without valid reasons **may be rejected by Google**. Ensure you follow the [Android permissions best practices](https://developer.android.com/training/permissions/usage-notes) when submitting your app.
 - [All available Android Manifest.permissions](https://developer.android.com/reference/android/Manifest.permission).
 
 <ConfigReactNative>
 
-Since the Expo config's `expo.android.permissions` manifest property doesn't work in bare React Native apps, you'll need to edit **AndroidManifest.xml** to exclude specific permissions from the build manually. You can do that with the `tools:node="remove"` attribute on the `<use-permission>` tag.
+Modify **AndroidManifest.xml** to exclude specific permissions: add the `tools:node="remove"` attribute to a `<use-permission>` tag to ensure it is removed, even if it's included in a library **AndroidManifest.xml**.
 
 ```xml
 <manifest xmlns:tools="http://schemas.android.com/tools">
@@ -94,11 +94,11 @@ Since the Expo config's `expo.android.permissions` manifest property doesn't wor
 
 <ConfigClassic>
 
-By default, apps built with the Classic Build system will include **all** permissions supported by Expo. This is so that your standalone app will match its behavior in the [Expo Go][expo-go] app and simply "work out of the box" no matter what permissions you ask for, with hardly any configuration needed on your part.
+By default, apps built with the Classic Build system will include **all** permissions required by any Expo SDK package (with exceptions only for background permissions). This is so that your standalone app will match its behavior in the [Expo Go][expo-go] app and simply "work out of the box" no matter what permissions you ask for, with minimal configuration required by the developer.
 
 There are some drawbacks to this. For example, let's say your To-do list app requests `CAMERA` permission upon installation. Your users may be wary of installing your app since nothing in the app seems to use the camera, so why would it need that permission?
 
-To remedy this, add the `android.permissions` key in your **app.json** file and specify which permissions your app will use. A list of all Android permissions and configuration options can be found [here](/workflow/configuration#android).
+To solve this, add the `android.permissions` key in your **app.json** file and specify which permissions your app will use. Refer to this [list of all Android permissions and configuration](/workflow/configuration#android) for more information. 
 
 To use _only_ the minimum necessary permissions that Expo requires to run, set `"permissions" : []`. To use those in addition to `CAMERA` permission, for example, you'd set `"permissions" : ["CAMERA"]`.
 
@@ -110,7 +110,7 @@ On the web, permissions like the `Camera` and `Location` can only be requested f
 
 ## Resetting permissions
 
-Often you want to be able to test what happens when a user rejects permissions, to ensure your app reacts gracefully. An operating-system level restriction on both iOS and Android prohibits an app from asking for the same permission more than once (you can imagine how this could be annoying for the user to be repeatedly prompted for permissions). To test different flows involving permissions in development, you may need to uninstall and reinstall the native app.
+Often you want to be able to test what happens when a user rejects permissions, to ensure your app reacts gracefully. An operating-system level restriction on both iOS and Android prohibits an app from asking for the same permission more than once (you can imagine how this could be annoying for the user to be repeatedly prompted for permissions after rejecting them). To test different flows involving permissions in development, you may need to uninstall and reinstall the native app.
 
 When testing in [Expo Go][expo-go], you can delete the app and reinstall it by running `npx expo start` and pressing `i` or `a` in the [Expo CLI](/workflow/expo-cli) Terminal UI.
 
