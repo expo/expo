@@ -11,7 +11,7 @@ Inside a freshly initialized bare project, run `npx expo start`, and you can now
 
 ## What are the limitations?
 
-You will not be able to use the parts of your app that require custom native code. To run your bare app in Expo Go, you need to avoid calling any custom native code (native code that isn't included in the Expo SDK). For some apps this may mean that you won't be able to use the Expo Go app almost at all &mdash; for example, if your app depends on custom native code for something as fundamental as navigation or state management (eg: Realm or the Firebase native SDK) then not much of your app will be usable in the client. If your app only has some in app purchases, analytics, a custom map view, an AR view, and so on, then this may actually work great for you &mdash; that particular functionality would not be usable in Expo Go but the rest of the app still would be.
+You will not be able to use the parts of your app that require custom native code. To run your app in Expo Go, you need to avoid calling any custom native code that isn't included in the Expo Go app. For some apps this may mean that you won't be able to use the Expo Go app almost at all &mdash; for example, if your app depends on custom native code for something as fundamental as navigation or state management (eg: Realm or the [Firebase native SDK](/guides/setup-native-firebase)) then not much of your app will be usable in the Expo Go app. If your app has features that are easy to mock like in-app purchases, analytics, a custom map view, and so on, then this may actually work great for you &mdash; that particular functionality would not be usable in Expo Go but the rest of the app still would be.
 
 ## Why might you want to do this?
 
@@ -32,7 +32,7 @@ This will ensure that you get a version of the package that is compatible with t
 
 ### Use conditional inline requires to provide fallbacks
 
-Picture this scenario: you need a beautiful map in your app and Google Maps just won't cut it, so you add '@react-native-mapbox-gl/maps'. Expo doesn't include this in the SDK, so you can't run any code that imports it in the Expo Go app. You can handle this by wrapping `MapView` access with a wrapper that provides a fallback in Expo Go, and otherwise uses the native Mapbox library:
+Picture this scenario: you need a beautiful map in your app and Google Maps just won't cut it, so you add `@react-native-mapbox-gl/maps`. Expo Go doesn't include this native module, so you can't run any code that imports it in the Expo Go app. You can handle this by wrapping `MapView` access with a wrapper that provides a fallback in Expo Go, and otherwise uses the native Mapbox library:
 
 ```js
 // MapView.js
@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
 });
 ```
 
-Problem solved! Now when we render the `<MapView />` component in the client, we'll fallback to a plain `View` placeholder. When we build the app in Xcode/Android Studio, we'll use the Mapbox map. You could also alternatively fallback to a map provided from `react-native-maps`, since it's included in the Expo SDK.
+Problem solved! Now when we render the `<MapView />` component in the client, we'll fallback to a plain `View` placeholder. When we build the app in Xcode/Android Studio, we'll use the Mapbox map. You could also alternatively fallback to a map provided from `react-native-maps`, since it's included in the Expo Go app.
 
 <ImageSpotlight alt="MapView working in an app built with Xcode and falling back to a placeholder in Expo Go" src="/static/images/expo-go-fallback.png" />
 

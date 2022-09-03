@@ -4,28 +4,20 @@ sidebar_title: Walkthrough
 ---
 
 import Video from '~/components/plugins/Video'
+import { BoxLink } from '~/ui/components/BoxLink';
+import { InlineCode } from '~/components/base/code';
 
 If you're a top-down learner and you would like to get a high-level understanding of what it looks like to build an app with the bare workflow, this is the right place for you. **Feel free to skip this if you just want to write code as quickly as possible** &mdash; [Up and Running](hello-world.md) is for you.
 
 ## Initialize a project
 
-If you’re just starting a new bare project then you should initialize it with `expo-cli` so it will be preconfigured to include relevant Expo tools.
+If you’re just starting a new bare project then you should initialize it with `npx create-expo-app` so it will be preconfigured to include relevant Expo tools.
 
 <Video file="exploring-bare/init.mp4" spaceAfter={30} />
 
 > _Note: You may see several `peerDependencies` warnings when installing the dependencies for a new project. These are caused by some external packages having overly strict or unnecessary dependencies, and it's a work in progress to clean them up. They won't cause any harm to your project._
 
-### Existing React Native apps
-
-If you already have a React Native project that has been created with `react-native init`, `ignite init`, or another similar tool, we'll need to install and configure the `expo` package to enable you to use packages from the Expo SDK. For this, we will run `npx install-expo-modules`.
-
-### Existing Expo managed workflow apps
-
-If you already have an Expo managed workflow app and you need to customize the native code, you can generate the native projects by running `expo prebuild`.
-
-> 💡 We recommend upgrading to the latest SDK version before ejecting. It will be more difficult to upgrade your app after ejecting because you will also be responsible for native iOS and Android related upgrade steps.
-
-<Video file="exploring-bare/eject.mp4" spaceAfter />
+<BoxLink title="Existing apps" href="/bare/existing-apps" description={<>React Native projects that were created with <InlineCode>npx react-native init</InlineCode> require additional setup to use the Expo SDK</>} />
 
 ## Build and open the project
 
@@ -35,7 +27,7 @@ Now we just run `yarn ios` or `yarn android` to start the JavaScript bundler ser
 
 ## Adding a library from the Expo SDK
 
-To add a library from the Expo SDK we install it with `expo install`, run `npx pod-install` to link the iOS native dependency, and then recompile our projects for iOS and Android.
+To add a library from the Expo SDK we install it with `npx expo install`, run `npx pod-install` to link the iOS native dependency, and then recompile our projects for iOS and Android.
 
 <Video file="exploring-bare/expoinstall.mp4" spaceAfter />
 
@@ -57,7 +49,7 @@ Now when we go to the screen where you would expect to see the `AttractionList`,
 
 ## Open the app in your web browser
 
-Expo for web also works on bare projects. Here we will just import one simple component into **App.web.js** to demonstrate it, and run `expo start --web`.
+Expo for web also works on bare projects. Here we will just import one simple component into **App.web.js** to demonstrate it, and run `npx expo start --web`.
 
 <Video file="exploring-bare/web.mp4" spaceAfter />
 
