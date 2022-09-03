@@ -34,10 +34,10 @@ If it still doesn't work, it may be due to the router configuration &mdash; this
 
 When you have hit the limitations of Expo Go and need to move on to development builds (for example, to [add custom native code](/workflow/customizing/)), the process for loading the project remains mostly the same but the mechanism to get the build on your device is different. Development builds can be created locally with [`npx expo run:[ios|android] --device`](/workflow/expo-cli/), with Xcode or Android Studio, or [remotely with EAS Build](/build/introduction/).
 
-Refer to the ["Getting Started" guide for development builds](/development/getting-started/) to learn how to create a development build and run it on your device. 
+Refer to the ["Getting Started" guide for development builds](/development/getting-started/) to learn how to create a development build and run it on your device.
 
 ## Running a project as a standalone app
 
 Both Expo Go and development builds include a user interface that is convenient for development, but that you would not use in a production release of your app. You can create standalone builds in the same way as development builds — locally with [`npx expo run:[ios|android] --device`](/workflow/expo-cli/), with Xcode or Android Studio, or [remotely with EAS Build](/build/introduction/). If you have `expo-dev-client` installed in your project, you will need to build the "Release" configuration/variant (`--configuration Release` for iOS and `--variant release` for Android).
 
-You may choose to install directly to your device (the `--device` flag with `npx expo run:[ios|android]`, or by selecting it in an IDE) or to use [internal distribution](/build/internal-distribution/), or [TestFlight](/distribution/uploading-apps/#22-if-you-choose-to-upload-your) / [Google Play](/distribution/uploading-apps/#21-if-you-choose-to-upload-your).
+You may choose to install directly to your device (the `--device` flag with `npx expo run:[ios|android]`, or by selecting it in an IDE) or to use [internal distribution](/build/internal-distribution/), or [TestFlight](/submit/ios) / [Google Play](/submit/android).

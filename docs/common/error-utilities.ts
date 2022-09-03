@@ -236,4 +236,8 @@ const RENAMED_PAGES: Record<string, string> = {
   '/worfkflow/publishing/': '/archive/classic-updates/publishing/',
   '/classic/building-standalone-apps/': '/archive/classic-updates/building-standalone-apps/',
   '/classic/turtle-cli/': '/archive/classic-updates/turtle-cli/',
+
+  // Consolidate distribution
+  '/distribution/uploading-apps/': '/submit/introduction/',
+  '/versions/latest/distribution/uploading-apps/': '/submit/introduction/',
 };
