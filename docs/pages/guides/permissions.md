@@ -12,7 +12,7 @@ Permissions in standalone and [development builds](/development/introduction.md)
 
 ## iOS
 
-If your iOS app asks for [system permissions](/versions/latest/sdk/permissions) from the user, e.g. to use the device's camera, or access photos, Apple requires an explanation for how your app makes use of that data. Most packages will automatically provide a boilerplate reason for a given permission via [Expo config plugins](/guides/config-plugins). However, these default messages will most likely need to be tailored to your specific use case in order for your app to be accepted by the App Store.
+If your iOS app asks for [system permissions](/versions/latest/sdk/permissions) from the user, e.g. to use the device's camera, or access photos, Apple requires an explanation for how your app makes use of that data. Most packages will automatically provide a boilerplate reason for a given permission with [config plugins](/guides/config-plugins). However, these default messages will most likely need to be tailored to your specific use case in order for your app to be accepted by the App Store.
 
 To set permission messages, use the [`expo.ios.infoPlist`](/versions/latest/config/app/#infoplist) key in your app config (**app.json**, **app.config.js**), for example:
 
@@ -58,7 +58,7 @@ Add and modify the permission message values in **Info.plist** file directly. We
 
 ## Android
 
-Permissions are configured via the [`expo.android.permissions`](/versions/latest/config/app/#permissions) and [`expo.android.blockedPermissions`](/versions/latest/config/app/#blockedpermissions) keys in your Expo config (**app.json**, **app.config.js**).
+Permissions are configured with the [`expo.android.permissions`](/versions/latest/config/app/#permissions) and [`expo.android.blockedPermissions`](/versions/latest/config/app/#blockedpermissions) keys in your app config (**app.json**, **app.config.js**).
 
 Most permissions are added automatically by libraries that you use in your app either with [config plugins](/guides/config-plugins) or with a package-level **AndroidManifest.xml**, so you won't often need to use `android.permissions` to add additional permissions.
 
@@ -98,9 +98,9 @@ By default, apps built with the Classic Build system will include **all** permis
 
 There are some drawbacks to this. For example, let's say your To-do list app requests `CAMERA` permission upon installation. Your users may be wary of installing your app since nothing in the app seems to use the camera, so why would it need that permission?
 
-To solve this, add the `android.permissions` key in your **app.json** file and specify which permissions your app will use. Refer to this [list of all Android permissions and configuration](/workflow/configuration#android) for more information. 
+To solve this, add the `android.permissions` key in your **app.json** file and specify which permissions your app will use. Refer to this [list of all Android permissions and configuration](/workflow/configuration#android) for more information.
 
-To use _only_ the minimum necessary permissions that Expo requires to run, set `"permissions" : []`. To use those in addition to `CAMERA` permission, for example, you'd set `"permissions" : ["CAMERA"]`.
+To use _only_ the minimum necessary permissions that React Native requires to run, set `"permissions" : []`. To use those in addition to `CAMERA` permission, for example, you'd set `"permissions" : ["CAMERA"]`.
 
 </ConfigClassic>
 
