@@ -8,7 +8,7 @@ import { Terminal } from '~/ui/components/Snippet';
 
 It is often desirable for regular HTTPS links (without a custom URL scheme) to directly open your app on mobile devices. This allows you to send notification emails with links that work as expected in a web browser on desktop, while opening the content in your app on mobile. iOS refers to this concept as "universal links" while Android calls it "deep links" (but in this section, we are specifically discussing deep links that do not use a custom URL scheme).
 
-> The Expo SDK also supports deferred deep links with the [Branch API](../versions/latest/sdk/branch.md).
+> The Expo SDK also supports deferred deep links with the [Branch API](/versions/latest/sdk/branch).
 
 ### Universal links on iOS
 
