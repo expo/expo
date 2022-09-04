@@ -167,7 +167,6 @@ const general = [
   ]),
   makeSection('Bare Workflow', [
     makePage('bare/hello-world.md'),
-    makePage('bare/existing-apps.md'),
     makePage('bare/installing-expo-modules.md'),
     makePage('bare/installing-unimodules.md'),
     makePage('bare/installing-updates.md'),

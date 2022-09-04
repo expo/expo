@@ -240,6 +240,7 @@ const RENAMED_PAGES: Record<string, string> = {
   // Redirect bare guides to unified workflow guides
   '/bare/using-libraries/': '/workflow/using-libraries/',
   '/bare/exploring-bare-workflow/': '/bare/hello-world/',
+  '/bare/existing-apps/': '/bare/hello-world/',
 
   // Consolidate distribution
   '/distribution/security/': '/app-signing/security/',

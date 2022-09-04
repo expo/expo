@@ -30,8 +30,8 @@ The easiest way to create a bare React Native app with support for the Expo SDK 
 
 <Terminal cmd={[
 '# Create a project named my-app',
-'$ npx create-react-native-app my-app',
-]} cmdCopy="npx create-react-native-app my-app" />
+'$ npx create-expo-app my-app --template bare-minimum',
+]} cmdCopy="npx create-expo-app my-app --template bare-minimum" />
 
 <BoxLink title="Existing apps" href="/bare/installing-expo-modules" description={<>Projects that were created with <InlineCode>npx react-native init</InlineCode> require additional setup to use the Expo SDK.</>} />
 
