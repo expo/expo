@@ -8,22 +8,18 @@ import { BoxLink } from '~/ui/components/BoxLink';
 import { Terminal } from '~/ui/components/Snippet';
 import { InlineCode } from '~/components/base/code';
 
-A bare React Native app is a project where developers make direct changes to their native `ios` and `android` project directories, rather than continuously generating them on demand using the [Expo config (**app.json**) and prebuild](/workflow/prebuild).
+A bare React Native app is a project where developers make direct changes to their native `ios` and `android` project directories, rather than continuously generating them on demand using the [Expo config (**app.json**) and prebuild](/workflow/prebuild). All tools and services offered by Expo including [EAS](/eas), Expo CLI, and the libraries in the Expo SDK are built around bare React Native apps.
 
-All tools and services offered by Expo including [EAS](/eas), Expo CLI, and the libraries in the Expo SDK are built to **fully support** bare React Native apps.
+Before you get started with a React Native app, make sure you set up your environment for [React Native CLI](https://reactnative.dev/docs/environment-setup).
 
-> If you already have a React Native app and want to use Expo tools, read the [existing apps guide](/bare/existing-apps).
-
-Before you get started with a bare React Native project, make sure you set up your environment for [React Native CLI](https://reactnative.dev/docs/environment-setup).
-
-Now we can bootstrap a new bare project with `create-expo-app`. If you want to bootstrap a project with `npx react-native init` then you'll need to [install and configure the `expo` package](/bare/installing-expo-modules) manually.
+Bootstrap a new React Native project with `create-expo-app`. If you have an existing project or want to bootstrap with `npx react-native init` then you will need to [install the `expo` package](/bare/installing-expo-modules) manually.
 
 <Terminal cmd={[
 "# Create a new native project",
 "$ npx create-expo-app --template bare-minimum",
 ]} cmdCopy="npx create-expo-app --template bare-minimum" />
 
-Change into your project directory, then run this project locally:
+Change into your project directory, then build the apps locally:
 
 <Terminal cmd={[
 '# Build your native Android project',
@@ -37,7 +33,7 @@ Change into your project directory, then run this project locally:
 
 ## Next
 
-<BoxLink title="Using libraries" description="Learn how to install and configure native libraries." href="/workflow/using-libraries#installing-a-third-party-library" />
-<BoxLink title="API Reference" description="Start adding more features to your app." href="/versions/" />
+<BoxLink title="Installing libraries" description="Learn how to install and configure native libraries." href="/workflow/using-libraries#installing-a-third-party-library" />
+<BoxLink title="Using the Expo SDK" description="Start adding features to your app." href="/versions/" />
 <BoxLink title="Adopting Prebuild" description="Automate your native directories using the app.json." href="/guides/adopting-prebuild" />
-<BoxLink title="Distributing" description="Build and submit your app to the app stores." href="/distribution/introduction" />
+<BoxLink title="Distributing your app" description="Build and submit your app to the app store with a single command!" href="/distribution/introduction" />
