@@ -41,7 +41,7 @@ export declare const isEmergencyLaunch: boolean;
 export declare const isUsingEmbeddedAssets: boolean;
 /**
  * If `expo-updates` is enabled, this is the
- * [manifest](/guides/how-expo-works#expo-development-server) object for the update that's currently
+ * [manifest](/workflow/expo-go#manifest) object for the update that's currently
  * running.
  *
  * In development mode, or any other environment in which `expo-updates` is disabled, this object is
