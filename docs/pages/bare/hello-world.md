@@ -39,4 +39,5 @@ Change into your project directory, then run this project locally:
 
 <BoxLink title="Using libraries" description="Learn how to install and configure native libraries." href="/workflow/using-libraries#installing-a-third-party-library" />
 <BoxLink title="API Reference" description="Start adding more features to your app." href="/versions/" />
-<BoxLink title="Adopt Prebuild" description="Automate your native directories using the app.json." href="/guides/adopting-prebuild" />
+<BoxLink title="Adopting Prebuild" description="Automate your native directories using the app.json." href="/guides/adopting-prebuild" />
+<BoxLink title="Distributing" description="Build and submit your app to the app stores." href="/distribution/introduction" />
