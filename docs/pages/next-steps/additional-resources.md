@@ -4,6 +4,10 @@ title: Additional resources
 
 The following resources are useful for learning about Expo tooling and services.
 
+## Expo Blog
+
+- [Exposition](https://blog.expo.dev/) - our official blog, where we post release notes every month and other Expo related content at random intervals.
+
 ## GitHub
 
 - [expo/expo](https://github.com/expo/expo): Expo Go, SDK, Docs, and the Expo CLI.
@@ -21,10 +25,6 @@ The following resources are useful for learning about Expo tooling and services.
 - [Metro bundler](https://facebook.github.io/metro/)
 - [Hermes engine](https://hermesengine.dev/)
 - [Apple's Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/guidelines/overview/)
-
-## Expo Blog
-
-- [Exposition](https://blog.expo.dev/) - our official blog, where we post release notes every month and other Expo related content at random intervals.
 
 ## React Native
 
