@@ -22,7 +22,7 @@ Expo Go is a native app that is installed on your device. When you run `npx expo
 
 The dev server returns a JSON manifest file that describes the project. Expo Go uses this manifest to download the JavaScript bundle and any assets that are required to run the project. The JavaScript bundle is executed in a [JavaScript engine](/workflow/glossary-of-terms#javascript-engine), and the React Native app is rendered.
 
-You can open and share projects with the members of your [organization](/accounts/account-types/#organizations) by publishing with [EAS Update](/eas-update/introduction).
+You can open and share projects with the members of your [organization](/accounts/account-types/#organizations) by publishing with [EAS Update](/eas-update/introduction). Updates are bundled for production environments using the [`npx expo export`](/workflow/expo-cli#exporting) command.
 
 <Terminal cmd={[
 '$ eas update'
@@ -31,8 +31,6 @@ You can open and share projects with the members of your [organization](/account
 ## Production
 
 Expo Go is not intended for public distribution. It is a development client that is not optimized for performance. We offer a suite of tools for building and submitting your apps directly to the app stores, learn more in the [distribution section](/distribution/introduction).
-
-If you want to distribute your app to users, you should use [EAS Build](/build/introduction) to create a standalone app.
 
 ## Manifest
 
