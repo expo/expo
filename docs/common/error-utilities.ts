@@ -1,4 +1,4 @@
-import { VERSIONS } from '~/constants/versions';
+import { VERSIONS } from '~/constants/versions.cjs';
 
 export function getRedirectPath(redirectPath: string): string {
   // index.html is no longer a thing in our docs
@@ -236,4 +236,12 @@ const RENAMED_PAGES: Record<string, string> = {
   '/worfkflow/publishing/': '/archive/classic-updates/publishing/',
   '/classic/building-standalone-apps/': '/archive/classic-updates/building-standalone-apps/',
   '/classic/turtle-cli/': '/archive/classic-updates/turtle-cli/',
+
+  // Redirect bare guides to unified workflow guides
+  '/bare/using-libraries/': '/workflow/using-libraries/',
+
+  // Consolidate distribution
+  '/distribution/security/': '/app-signing/security/',
+  '/distribution/uploading-apps/': '/submit/introduction/',
+  '/versions/latest/distribution/uploading-apps/': '/submit/introduction/',
 };

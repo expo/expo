@@ -6,7 +6,7 @@ const path = require('path');
 const make = require('unist-builder');
 const { URL } = require('url');
 
-const { LATEST_VERSION, VERSIONS } = require('./versions');
+const { LATEST_VERSION, VERSIONS } = require('./versions.cjs');
 const PAGES_DIR = path.resolve(__dirname, '../pages');
 
 // TODO(cedric): refactor docs to get rid of the directory lists
@@ -76,11 +76,7 @@ const general = [
   ),
   makeSection(
     'Next Steps',
-    [
-      makePage('next-steps/using-the-documentation.md'),
-      makePage('next-steps/community.md'),
-      makePage('next-steps/additional-resources.md'),
-    ],
+    [makePage('next-steps/community.md'), makePage('next-steps/additional-resources.md')],
     { expanded: true }
   ),
   makeSection('Fundamentals', [
@@ -106,9 +102,7 @@ const general = [
     makePage('distribution/app-stores.md'),
     makePage('distribution/runtime-versions.md'),
     makePage('distribution/custom-updates-server.md'),
-    makePage('distribution/uploading-apps.md'),
     makePage('distribution/app-transfers.md'),
-    makePage('distribution/security.md'),
     makePage('distribution/publishing-websites.md'),
   ]),
   makeSection('Development Builds', [
@@ -174,7 +168,6 @@ const general = [
   makeSection('Bare Workflow', [
     makePage('bare/exploring-bare-workflow.md'),
     makePage('bare/hello-world.md'),
-    makePage('bare/using-libraries.md'),
     makePage('bare/existing-apps.md'),
     makePage('bare/installing-expo-modules.md'),
     makePage('bare/installing-unimodules.md'),
@@ -252,6 +245,7 @@ const eas = [
         makePage('app-signing/local-credentials.md'),
         makePage('app-signing/existing-credentials.md'),
         makePage('app-signing/syncing-credentials.md'),
+        makePage('app-signing/security.md'),
       ]),
       makeGroup('Reference', [
         makePage('build-reference/eas-json.md'),
@@ -366,7 +360,7 @@ const archive = [
 
 const featurePreview = [];
 
-const reference = VERSIONS.reduce(
+const versionsReference = VERSIONS.reduce(
   (all, version) => ({
     ...all,
     [version]: [
@@ -378,6 +372,8 @@ const reference = VERSIONS.reduce(
   {}
 );
 
+const reference = { ...versionsReference, latest: versionsReference[LATEST_VERSION] };
+
 module.exports = {
   general,
   eas,
@@ -385,7 +381,7 @@ module.exports = {
   archive,
   featurePreview,
   /** @type {any} */
-  reference: { ...reference, latest: reference[LATEST_VERSION] },
+  reference,
   generalDirectories,
   previewDirectories,
   easDirectories,

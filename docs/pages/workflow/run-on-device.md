@@ -5,7 +5,7 @@ title: Running on device
 import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
 
-> This guide focuses on running a project on your own device. To learn about sharing your project with others, refer to ["Sharing pre-release versions of your app"](/guides/sharing-preview-releases/) and ["Deploying to App Stores"](/distribution/introduction/).
+> This guide focuses on running a project on your own device. To learn about sharing your project with others, refer to ["Sharing pre-release versions of your app"](/guides/sharing-preview-releases/) and ["Distribution"](/distribution/introduction/).
 
 You will approach running your project on your device differently depending on how you are using Expo tools. There are three main approaches: you can use Expo Go, a development build, or you can run your project as a standalone app.
 
@@ -40,4 +40,4 @@ Refer to the ["Getting Started" guide for development builds](/development/getti
 
 Both Expo Go and development builds include a user interface that is convenient for development, but that you would not use in a production release of your app. You can create standalone builds in the same way as development builds — locally with [`npx expo run:[ios|android] --device`](/workflow/expo-cli/), with Xcode or Android Studio, or [remotely with EAS Build](/build/introduction/). If you have `expo-dev-client` installed in your project, you will need to build the "Release" configuration/variant (`--configuration Release` for iOS and `--variant release` for Android).
 
-You may choose to install directly to your device (the `--device` flag with `npx expo run:[ios|android]`, or by selecting it in an IDE) or to use [internal distribution](/build/internal-distribution/), or [TestFlight](/distribution/uploading-apps/#22-if-you-choose-to-upload-your) / [Google Play](/distribution/uploading-apps/#21-if-you-choose-to-upload-your).
+You may choose to install directly to your device (the `--device` flag with `npx expo run:[ios|android]`, or by selecting it in an IDE) or to use [internal distribution](/build/internal-distribution/), or [TestFlight](/submit/ios) / [Google Play](/submit/android).
