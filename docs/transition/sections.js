@@ -9,7 +9,6 @@ const WORKFLOW = [
   'development-mode.png',
   'expo-refresh.png',
   'fetch-app-from-xde.png',
-  'fetch-app-production.png',
   'genymotion-android-sdk-location.png',
   'genymotion-android-tools.png',
   'genymotion-configure-sdk.png',

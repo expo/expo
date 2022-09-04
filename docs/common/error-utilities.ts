@@ -199,6 +199,7 @@ const RENAMED_PAGES: Record<string, string> = {
   // Fundamentals had too many things
   '/workflow/linking/': '/guides/linking/',
   '/workflow/how-expo-works/': '/guides/how-expo-works/',
+  '/guides/how-expo-works/': '/workflow/expo-go/',
 
   // Archive unused pages
   '/guides/notification-channels/': '/archived/notification-channels/',
