@@ -27,8 +27,8 @@ Modify the entry file to use [`registerRootComponent`](/versions/latest/sdk/regi
 ```diff
 + import {registerRootComponent} from 'expo';
 
-- import {AppRegistry} from 'react-native';
 import App from './App';
+- import {AppRegistry} from 'react-native';
 - import {name as appName} from './app.json';
 
 - AppRegistry.registerComponent(appName, () => App);
@@ -47,21 +47,21 @@ Finally you can start the Webpack dev server with:
 
 You can test secure web APIs like the camera and user location by adding the `--https` flag to `npx expo start`. This will host your app from a secure origin like `https://localhost:19006`.
 
-> Alternatively you can use experimental [Metro web support](/guides/customizing-metro#web-support) instead of Webpack.
+> You can try experimental [Metro web support](/guides/customizing-metro#web-support) instead of Webpack.
 
 ## Alternative Rendering Patterns
 
-> **Example:** The website [beatgig.com][beatgig] uses Expo web + Next.js to achieve SSR in the browser.
+> **Example:** The website [beatgig.com](https://beatgig.com/) uses Expo web + Next.js to achieve SSR in the browser.
 
 By default, Expo is rendering your web app as a "single page application" or SPA. This rendering pattern is the closest to how native rendering works. If you'd like to render your Expo web using "server-side rendering" (SSR) or "static site generation" (SSG) then you should try using the Expo SDK with another tool like Gatsby, Next.js, Remix, etc. The caveat is that these tools are less universal and require a bit more effort to share code across platforms.
 
 The ability to use Expo web with these other React frameworks is what makes it the most powerful way to build a universal app. The possibilities are endless and you won't hit a theoretic performance wall in the future.
 
-- [**Next.js**](/guides/using-nextjs).
-- [**Storybook**](https://github.com/expo/examples/tree/master/with-storybook).
-- [**Preact**](https://github.com/expo/examples/tree/master/with-preact).
-- [**Gatsby**](https://github.com/expo/examples/tree/master/with-gatsby).
-- [**Electron**](https://github.com/expo/examples/tree/master/with-electron).
+- [Next.js](/guides/using-nextjs).
+- [Storybook](https://github.com/expo/examples/tree/master/with-storybook).
+- [Preact](https://github.com/expo/examples/tree/master/with-preact).
+- [Gatsby](https://github.com/expo/examples/tree/master/with-gatsby).
+- [Electron](https://github.com/expo/examples/tree/master/with-electron).
 
 > Alternative framework implementations are maintained by the Expo community.
 
@@ -69,5 +69,4 @@ The ability to use Expo web with these other React frameworks is what makes it t
 
 <BoxLink title="Publishing websites" description="Export your website and upload to any web host." href="/distribution/publishing-websites" />
 <BoxLink title="Progressive web app" description="Learn how to make your website run offline." href="/guides/progressive-web-apps" />
-<!-- TODO: Use a better guide -->
 <BoxLink title="Responsive design" description="Make your website work across different screens." href="https://blog.expo.dev/media-queries-with-react-native-for-ios-android-and-web-e0b73ed5777b" />
