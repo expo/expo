@@ -14,7 +14,6 @@ const WORKFLOW = [
   'genymotion-configure-sdk.png',
   'genymotion',
   'glossary-of-terms',
-  'how-expo-works',
   'index',
   'linking',
   'logging',
