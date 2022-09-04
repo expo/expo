@@ -82,10 +82,4 @@ You can create your own Expo Go-type app by using the [`expo-dev-client`](/clien
   href="/workflow/configuration"
 />
 
-<BoxLink 
-  title="Bundling"
-  description="Learn how your JavaScript is bundled for execution in React Native apps."
-  href="/workflow/bundling"
-/>
-
 [version-support]: /versions/latest/index#each-expo-sdk-version-depends-on-a-react-native-version
