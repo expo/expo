@@ -3,7 +3,6 @@ import * as React from 'react';
 import { Platform } from 'react-native';
 
 import DevLoadingView from '../environment/DevLoadingView';
-import { attachRecoveredProps } from './RecoveryProps';
 
 export type InitialProps = {
   exp: {
@@ -24,15 +23,28 @@ const isDevLoadingDisabled =
 
 // This hook can be optionally imported because __DEV__ never changes during runtime.
 // Using __DEV__ like this enables tree shaking to remove the hook in production.
-let useDevKeepAwake: (tag?: string) => void = () => { };
+let useDevKeepAwake: (tag?: string) => void = () => {};
 
 if (__DEV__ && Platform.OS !== 'web') {
   try {
     // Optionally import expo-keep-awake
     const { useKeepAwake, ExpoKeepAwakeTag } = require('expo-keep-awake');
     useDevKeepAwake = () => useKeepAwake(ExpoKeepAwakeTag, { suppressDeactivateWarnings: true });
-  } catch { }
+  } catch {}
 }
+
+const attachRecoveredProps = <P extends InitialProps>(props: P): P => {
+  try {
+    // Optionally import expo-error-recovery
+    const { recoveredProps } = require('expo-error-recovery');
+    return {
+      ...props,
+      exp: { ...props.exp, errorRecovery: recoveredProps },
+    };
+  } catch {}
+
+  return props;
+};
 
 export default function withRestoration<P extends InitialProps>(
   AppRootComponent: React.ComponentType<P>

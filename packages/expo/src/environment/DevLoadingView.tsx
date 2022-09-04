@@ -16,7 +16,7 @@ export default function DevLoadingView() {
     } catch (error) {
       throw new Error(
         'Failed to instantiate native emitter in `DevLoadingView` because the native module `DevLoadingView` is undefined: ' +
-        error.message
+          error.message
       );
     }
   }, []);
