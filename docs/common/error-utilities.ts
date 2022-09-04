@@ -241,6 +241,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/bare/using-libraries/': '/workflow/using-libraries/',
   '/bare/exploring-bare-workflow/': '/bare/hello-world/',
   '/bare/existing-apps/': '/bare/installing-expo-modules/',
+  '/bare/installing-unimodules/': '/bare/installing-expo-modules/',
 
   // Consolidate distribution
   '/distribution/security/': '/app-signing/security/',
