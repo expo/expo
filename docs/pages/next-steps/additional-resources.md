@@ -11,7 +11,7 @@ The following resources are useful for learning about Expo tooling and services.
 - [expo/examples](https://github.com/expo/examples): Integrations and other examples.
 - [expo/config-plugins](https://github.com/expo/config-plugins): Expo Config Plugins for working with third-party packages.
 - [expo/snack](https://github.com/expo/snack): Build apps from the browser.
-- [expo/vscode-expo](https://github.com/expo/vscode-expo): VS code extension for working with Expo tools.
+- [expo/vscode-expo](https://github.com/expo/vscode-expo): VS Code extension for working with Expo tools.
 - [expo/fyi](https://github.com/expo/fyi): Troubleshooting guides for Expo tools and services.
 
 ## Documentation
