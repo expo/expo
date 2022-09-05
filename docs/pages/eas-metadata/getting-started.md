@@ -3,9 +3,13 @@ title: Getting started with EAS Metadata
 sidebar_title: Getting started
 ---
 
+import { Callout } from '~/ui/components/Callout';
 import { Terminal } from '~/ui/components/Snippet';
 
-> ⚠️ EAS Metadata is in beta and subject to breaking changes.
+<Callout type="warning">
+  EAS Metadata is in beta and subject to breaking changes.
+</Callout>
+<br />
 
 EAS Metadata helps you prepare your app for review by uploading most of the required app information using a simple JSON file. It also helps you prevent common pitfalls that may lead to a rejected app submission.
 

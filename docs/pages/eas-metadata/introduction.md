@@ -5,8 +5,12 @@ hideTOC: true
 ---
 
 import { BoxLink } from '~/ui/components/BoxLink';
+import { Callout } from '~/ui/components/Callout';
 
-> ⚠️ EAS Metadata is in beta and subject to breaking changes.
+<Callout type="warning">
+  EAS Metadata is in beta and subject to breaking changes.
+</Callout>
+<br />
 
 **EAS Metadata** is a service to help you provide all necessary information to the stores and get your app published.
 
