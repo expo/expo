@@ -63,7 +63,3 @@ Most apps have multiple screens, we just have one here! Learn more about how to 
 ### Debugging
 
 Sometimes things go wrong, and when they do you need to use debugging tools to figure out where your code is having trouble. [Read more about debugging](/workflow/debugging).
-
-### Using the documentation
-
-[Read more about how you can navigate this documentation and use it effectively](/next-steps/using-the-documentation).

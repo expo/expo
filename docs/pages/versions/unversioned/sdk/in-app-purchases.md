@@ -10,25 +10,17 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 > ⚠️ **Development of `expo-in-app-purchases` is currently paused to focus on other projects**. Alternative libraries include [`react-native-iap`](https://github.com/dooboolab/react-native-iap) and [`react-native-purchases` from RevenueCat](https://www.revenuecat.com/blog/using-revenuecat-with-expos-managed-workflow/).
 
-**`expo-in-app-purchases`** provides an API to accept payments for in-app products. Internally this relies on the [Google Play Billing](https://developer.android.com/google/play/billing/billing_library_overview) library on Android and the [Storekit](https://developer.apple.com/documentation/storekit?language=objc) framework on iOS.
+**`expo-in-app-purchases`** provides an API to accept payments for in-app products. Internally this relies on the [Google Play Billing](https://developer.android.com/google/play/billing/billing_library_overview) library on Android and the [StoreKit](https://developer.apple.com/documentation/storekit?language=objc) framework on iOS.
 
 <PlatformsSection android ios />
 
 ## Installation
 
-<APIInstallSection hideBareInstructions cmd={['$ npm install expo-in-app-purchases']} />
+This module is **not** available in the [Expo Go app](https://expo.dev/expo-go) due to app store restrictions.
 
-This module is currently only available in the [bare](/introduction/managed-vs-bare.md#bare-workflow) workflow.
+You can create a [development build][dev-build] to work with this package.
 
-You must ensure that you have [installed and configured Expo modules](/bare/installing-expo-modules.md) before continuing.
-
-### Configure for iOS
-
-Run `npx pod-install` after installing the npm package.
-
-### Configure for Android
-
-No additional set up necessary.
+<APIInstallSection />
 
 ## Setup
 
@@ -57,3 +49,5 @@ import * as InAppPurchases from 'expo-in-app-purchases';
 ```
 
 <APISection packageName="expo-in-app-purchases" apiName="InAppPurchases" />
+
+[dev-build]: /development/getting-started.md#creating-and-installing-your-first-development-build

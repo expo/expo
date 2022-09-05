@@ -58,6 +58,7 @@ typedef NS_ENUM(NSInteger, EXUpdatesUpdateStatus) {
 
 @property (nonatomic, strong, readonly, nullable) NSDictionary *serverDefinedHeaders;
 @property (nonatomic, strong, readonly, nullable) NSDictionary *manifestFilters;
+@property (nonatomic, strong, readonly, nullable) NSString *loggingId;
 
 @property (nonatomic, strong, readonly) EXManifestsManifest *manifest;
 
