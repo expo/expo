@@ -46,7 +46,7 @@ const firebaseConfig = {
   measurementId: 'G-measurement-id',
 };
 
-initializeApp(firebaseConfig);
+let myApp = initializeApp(firebaseConfig);
 ```
 
 ### Temporarily Bypass Default Security Rules
@@ -162,9 +162,9 @@ import {
 } from 'firebase/auth';
 import * as Facebook from 'expo-facebook';
 
-initializeApp(config);
+let myApp = initializeApp(config);
 
-const auth = getAuth();
+const auth = getAuth(myApp);
 
 // Listen for authentication state to change.
 onAuthStateChanged(auth, user => {
@@ -228,9 +228,9 @@ import { getFirestore, setDoc, doc } from 'firebase/firestore';
 
 const firebaseConfig = { ... }  // apiKey, authDomain, etc. (see above)
 
-initializeApp(firebaseConfig);
+let myApp = initializeApp(firebaseConfig);
 
-const firestore = getFirestore();
+const firestore = getFirestore(myApp);
 
 await setDoc(doc(firestore, "characters", "mario"), {
   employment: "plumber",
