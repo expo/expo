@@ -4,6 +4,8 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-document-pi
 packageName: 'expo-document-picker'
 ---
 
+import { ConfigReactNative, ConfigPluginExample, ConfigPluginProperties } from '~/components/plugins/ConfigSection';
+
 import APISection from '~/components/plugins/APISection';
 import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
@@ -19,25 +21,63 @@ Provides access to the system's UI for selecting documents from the available pr
 
 <APIInstallSection />
 
-## Configuration
+## Configuration in app.json / app.config.js
 
-### Managed workflow
+You can configure `expo-document-picker` using its built-in [config plugin](/guides/config-plugins) if you use config plugins in your project ([EAS Build](/build/introduction) or `npx expo run:[android|ios]`). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect. If your app does **not** use EAS Build, then you'll need to manually configure the package.
 
-For iOS, outside of the Expo Go app, the DocumentPicker module requires the iCloud entitlement to work properly. You need to set the `usesIcloudStorage` key to `true` in your **app.json** file as specified [here](../../../workflow/configuration.md#ios).
+<ConfigReactNative>
 
-In addition, you'll also need to enable the iCloud Application Service in your App identifier. This can be done in the detail of your [App ID in the Apple Developer interface](https://developer.apple.com/account/ios/identifier/bundle).
+Apps that don't use [EAS Build](/build/introduction) and want [iCloud storage features][icloud-entitlement] must [manually configure](/build-reference/ios-capabilities#manual-setup) the [**iCloud service with CloudKit support**](https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_icloud-container-environment) for their bundle identifier.
 
-Enable iCloud service with CloudKit support, create one iCloud Container, and name it `iCloud.<your_bundle_identifier>`.
+If you enable the **iCloud** capability through the [Apple Developer Console](/build-reference/ios-capabilities#apple-developer-console), then be sure to add the following entitlements in your `ios/[app]/[app].entitlements` file (where `dev.expo.my-app` if your bundle identifier):
 
-And finally, to apply those changes, you'll need to revoke your existing provisioning profile and run `expo build:ios -c`
+```xml
+<key>com.apple.developer.icloud-container-identifiers</key>
+<array>
+    <string>iCloud.dev.expo.my-app</string>
+</array>
+<key>com.apple.developer.icloud-services</key>
+<array>
+    <string>CloudDocuments</string>
+</array>
+<key>com.apple.developer.ubiquity-container-identifiers</key>
+<array>
+    <string>iCloud.dev.expo.my-app</string>
+</array>
+<key>com.apple.developer.ubiquity-kvstore-identifier</key>
+<string>$(TeamIdentifierPrefix)dev.expo.my-app</string>
+```
 
-### Bare workflow
+Apple Developer Console also requires an **iCloud Container** to be created. When registering the new container, you are asked to provide a description and identifier for the container. You may enter any name under the description. Under the identifier, add `iCloud.<your_bundle_identifier>` (same value used for `com.apple.developer.icloud-container-identifiers` and `com.apple.developer.ubiquity-container-identifiers` entitlements).
 
-For iOS bare projects, the `DocumentPicker` module requires the iCloud entitlement to work properly. If your app doesn't have it already, you can add it by opening the project in Xcode and following these steps:
+</ConfigReactNative>
 
-- In the project, go to the `Capabilities` tab
-- Set the iCloud switch to `on`
-- Check the `iCloud Documents` checkbox
+<ConfigPluginExample>
+
+If you want to enable [iCloud storage features][icloud-entitlement], set the `expo.ios.usesIcloudStorage` key to `true` in your Expo config (**app.json**, **app.config.js**) as specified [configuration properties](/versions/latest/config/app/#usesicloudstorage).
+
+Running [EAS Build](/build/introduction) locally will use [iOS capabilities signing](/build-reference/ios-capabilities) to enable the required capabilities before building.
+
+```json
+{
+  "expo": {
+    "plugins": [
+      [
+        "expo-document-picker",
+        {
+          "iCloudContainerEnvironment": "Production"
+        }
+      ]
+    ]
+  }
+}
+```
+
+</ConfigPluginExample>
+
+<ConfigPluginProperties properties={[
+{ name: 'iCloudContainerEnvironment', platform: 'ios', description: 'Sets the iOS `com.apple.developer.icloud-container-environment` entitlement used used for AdHoc iOS builds. Possible values: `Development`, `Production`. Learn more: https://github.com/expo/eas-cli/issues/693', default: 'undefined' },
+]} />
 
 ## API
 
@@ -46,3 +86,5 @@ import * as DocumentPicker from 'expo-document-picker';
 ```
 
 <APISection packageName="expo-document-picker" apiName="DocumentPicker" />
+
+[icloud-entitlement]: https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_icloud-services

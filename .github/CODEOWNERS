@@ -31,7 +31,6 @@
 /packages/expo-firebase-analytics               @brentvatne
 /packages/expo-firebase-recaptcha               @brentvatne
 /packages/expo-font                             @tsapeta
-/packages/expo-gl-cpp                           @tsapeta @wkozyra95
 /packages/expo-gl                               @tsapeta @wkozyra95
 /packages/expo-haptics                          @barthap
 /packages/expo-image-manipulator                @barthap
@@ -47,8 +46,8 @@
 /packages/expo-media-library                    @tsapeta @lukmccall
 /packages/expo-module-scripts                   @ide
 /packages/expo-module-template                  @tsapeta @EvanBacon
-/packages/expo-modules-autolinking              @tsapeta @kudo
-/packages/expo-modules-core                     @tsapeta @kudo
+/packages/expo-modules-autolinking              @tsapeta @kudo @lukmccall
+/packages/expo-modules-core                     @tsapeta @kudo @lukmccall
 /packages/expo-navigation-bar                   @EvanBacon
 /packages/expo-network                          @ide
 /packages/expo-notifications                    @tsapeta
@@ -83,6 +82,6 @@
 /packages/jest-expo-puppeteer                   @ide @EvanBacon
 /packages/jest-expo                             @brentvatne @EvanBacon
 /tools                                          @tsapeta
-/docs                                           @Simek @amandeepmittal
+/docs                                           @Simek @amandeepmittal @kbrandwijk
 /.github/workflows                              @tsapeta @brentvatne @kudo
 /.github/workflows/cli.yml                      @EvanBacon @bycedric

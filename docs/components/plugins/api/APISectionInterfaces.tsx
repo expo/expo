@@ -5,6 +5,7 @@ import { renderMethod } from './APISectionMethods';
 import { InlineCode } from '~/components/base/code';
 import { B, P } from '~/components/base/paragraph';
 import { H2, H3Code, H4 } from '~/components/plugins/Headings';
+import { APIDataType } from '~/components/plugins/api/APIDataType';
 import {
   CommentData,
   InterfaceDefinitionData,
@@ -25,6 +26,7 @@ import {
   renderDefaultValue,
   STYLES_APIBOX,
   STYLES_NESTED_SECTION_HEADER,
+  getTagNamesList,
 } from '~/components/plugins/api/APISectionUtils';
 import { Cell, Row, Table } from '~/ui/components/Table';
 
@@ -90,7 +92,7 @@ const renderInterfacePropertyRow = ({
         {renderFlags(flags, initValue)}
       </Cell>
       <Cell fitContent>
-        <InlineCode>{resolveTypeName(type)}</InlineCode>
+        <APIDataType typeDefinition={type} />
       </Cell>
       <Cell fitContent>{renderInterfaceComment(comment, signatures, initValue)}</Cell>
     </Row>
@@ -114,7 +116,7 @@ const renderInterface = ({
     <div key={`interface-definition-${name}`} css={STYLES_APIBOX}>
       <APISectionDeprecationNote comment={comment} />
       <APISectionPlatformTags comment={comment} prefix="Only for:" firstElement />
-      <H3Code>
+      <H3Code tags={getTagNamesList(comment)}>
         <InlineCode>{name}</InlineCode>
       </H3Code>
       {extendedTypes?.length ? (

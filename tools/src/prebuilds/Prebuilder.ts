@@ -3,6 +3,7 @@ import fs from 'fs-extra';
 import glob from 'glob-promise';
 import path from 'path';
 
+import { Podspec } from '../CocoaPods';
 import { IOS_DIR } from '../Constants';
 import logger from '../Logger';
 import { Package } from '../Packages';
@@ -42,7 +43,6 @@ export const PACKAGES_TO_PREBUILD = [
   // 'expo-firebase-analytics',
   // 'expo-firebase-core',
   // 'expo-font',
-  'expo-gl-cpp',
   'expo-gl',
   // 'expo-haptics',
   // 'expo-image-loader',
@@ -170,6 +170,19 @@ export async function generateXcodeProjectSpecAsync(pkg: Package): Promise<Xcode
 
   logger.log('   Generating Xcode project spec');
 
+  return await generateXcodeProjectSpecFromPodspecAsync(
+    podspec,
+    path.join(pkg.path, pkg.iosSubdirectory)
+  );
+}
+
+/**
+ * Generates Xcode project based on the given podspec.
+ */
+export async function generateXcodeProjectSpecFromPodspecAsync(
+  podspec: Podspec,
+  dir: string
+): Promise<XcodeProject> {
   const spec = await createSpecFromPodspecAsync(podspec, async (dependencyName) => {
     const frameworkPath = await findFrameworkForProjectAsync(dependencyName);
 
@@ -183,10 +196,7 @@ export async function generateXcodeProjectSpecAsync(pkg: Package): Promise<Xcode
     return null;
   });
 
-  const xcodeprojPath = await generateXcodeProjectAsync(
-    path.join(pkg.path, pkg.iosSubdirectory),
-    spec
-  );
+  const xcodeprojPath = await generateXcodeProjectAsync(dir, spec);
   return await XcodeProject.fromXcodeprojPathAsync(xcodeprojPath);
 }
 

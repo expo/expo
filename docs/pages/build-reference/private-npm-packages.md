@@ -4,7 +4,7 @@ title: Using private npm packages
 
 import ImageSpotlight from '~/components/plugins/ImageSpotlight'
 
-EAS Build comes with full support for using private npm packages in your project. These can either be published to npm (if you have [the Pro/Teams plan](https://www.npmjs.com/products)) or to a private registry (e.g. using self-hosted [verdaccio](https://verdaccio.org/)).
+EAS Build comes with full support for using private npm packages in your project. These can either be published to npm (if you have [the Pro/Teams plan](https://www.npmjs.com/products)) or to a private registry (for example, using self-hosted [verdaccio](https://verdaccio.org/)).
 
 You will need to configure your project and/or provide EAS Build with your npm token before you start the build.
 
@@ -35,11 +35,11 @@ The recommended way is to add the `NPM_TOKEN` secret to your account or project'
 When EAS detects that the `NPM_TOKEN` environment variable is available during a build, it automatically creates the following `.npmrc`:
 
 ```ini
-# registry.npmjs.org/:_authToken=${NPM_TOKEN}
+//registry.npmjs.org/:_authToken=${NPM_TOKEN}
 registry=https://registry.npmjs.org/
 ```
 
-However, this only happens when you don't already have an `.npmrc` in your project's root directory. If you do already have this file, you need to update it manually.
+However, this only happens when you don't already have a `.npmrc` in your project's root directory. If you do already have this file, you need to update it manually.
 
 You can verify it worked by viewing build logs and looking for the `Prepare project` build phase:
 
@@ -58,7 +58,7 @@ registry=__REPLACE_WITH_REGISTRY_URL__
 If your registry requires authentication, you will also need to provide the token. Assuming your registry URL is `https://registry.johndoe.com/`:
 
 ```ini
-# registry.johndoe.com/:_authToken=${NPM_TOKEN}
+//registry.johndoe.com/:_authToken=${NPM_TOKEN}
 registry=https://registry.johndoe.com/
 ```
 
@@ -67,7 +67,7 @@ registry=https://registry.johndoe.com/
 This is an advanced example, and you will probably never use it. Private npm packages are always scoped ([see npm docs](https://docs.npmjs.com/about-scopes#scopes-and-package-visibility)). Let's assume that your npm username is `johndoe` and your private self-hosted registry URL is `https://registry.johndoe.com/`. If you want to install dependencies from both sources, create the following `.npmrc` in your project's root directory:
 
 ```ini
-# registry.npmjs.org/:_authToken=${NPM_TOKEN}
+//registry.npmjs.org/:_authToken=${NPM_TOKEN}
 @johndoe:registry=https://registry.npmjs.org/
 registry=https://registry.johndoe.com/
 ```

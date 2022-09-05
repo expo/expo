@@ -167,13 +167,11 @@ type ManifestExtensions = {
 
 type ExpoAssetHeaderDictionary = {
   [assetKey: string]: {
-    'header-name': 'header-value',
-    ...
+    [headerName: string]: string,
   };
-  ...
 }
 ```
-  * `assetRequestHeaders`: MAY contain an dictionary of header (key, value) pairs to include with asset requests.
+  * `assetRequestHeaders`: MAY contain an dictionary of header (key, value) pairs to include with asset requests. Key and value MUST both be strings.
 
 ## Asset Request
 A conformant client library MUST make a GET request to the asset URLs specified by the manifest. The client library SHOULD include a header accepting the asset's content type as specified in the manifest. Additionally, the client library SHOULD specify the compression encoding the client library is capable of handling.

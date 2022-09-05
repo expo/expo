@@ -29,7 +29,7 @@ class ViewManagerDefinitionBuilder {
 
   fun build(): ViewManagerDefinition =
     ViewManagerDefinition(
-      requireNotNull(viewFactory),
+      { context, _ -> requireNotNull(viewFactory)(context) },
       requireNotNull(viewType),
       props,
       onViewDestroys,

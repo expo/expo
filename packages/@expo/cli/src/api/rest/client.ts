@@ -14,6 +14,7 @@ import { wrapFetchWithOffline } from './wrapFetchWithOffline';
 
 export class ApiV2Error extends Error {
   readonly name = 'ApiV2Error';
+  readonly code: string;
   readonly expoApiV2ErrorCode: string;
   readonly expoApiV2ErrorDetails?: JSONValue;
   readonly expoApiV2ErrorServerStack?: string;
@@ -27,6 +28,7 @@ export class ApiV2Error extends Error {
     metadata?: object;
   }) {
     super(response.message);
+    this.code = response.code;
     this.expoApiV2ErrorCode = response.code;
     this.expoApiV2ErrorDetails = response.details;
     this.expoApiV2ErrorServerStack = response.stack;

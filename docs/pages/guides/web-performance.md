@@ -17,18 +17,6 @@ There are a number of performance tools at your disposal that will not only opti
 - #### Webpack Config
   [`@expo/webpack-config`](https://www.npmjs.com/package/@expo/webpack-config) A default Webpack config that's optimized for running `react-native-web` apps and creating [progressive web apps](https://developers.google.com/web/progressive-web-apps/).
 
-## Optimize Your Assets
-
-The easiest and most **highly** recommended way to improve you project is to optimize your assets. You can reduce the size of your assets with the [Expo Optimize CLI](https://www.npmjs.com/package/expo-optimize).
-
-<Terminal cmd={[
-'# Make sure you can successfully install the native image editing library Sharp',
-'$ npm install -g sharp-cli',
-'',
-'# Then in your project run:',
-'$ npx expo-optimize',
-]} />
-
 ## What Makes My App Large?
 
 To inspect bundle sizes, you can use a Webpack plugin called [_Webpack Bundle Analyzer_](https://github.com/webpack-contrib/webpack-bundle-analyzer). This plugin will help you visualize the size of your static bundles. You can use this to identify unwanted large packages that you may not have bundled intentionally.

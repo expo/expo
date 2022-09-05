@@ -4,6 +4,8 @@ import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
+import { APIDataType } from './APIDataType';
+
 import { Code, InlineCode } from '~/components/base/code';
 import { H4 } from '~/components/base/headings';
 import Link from '~/components/base/link';
@@ -91,8 +93,6 @@ const nonLinkableTypes = [
   'ComponentClass',
   'E',
   'EventSubscription',
-  'File',
-  'FileList',
   'NativeSyntheticEvent',
   'ParsedQs',
   'ServiceActionResult',
@@ -135,6 +135,8 @@ const hardcodedTypeLinks: Record<string, string> = {
   Error: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error',
   ExpoConfig:
     'https://github.com/expo/expo/blob/main/packages/%40expo/config-types/src/ExpoConfig.ts',
+  File: 'https://developer.mozilla.org/en-US/docs/Web/API/File',
+  FileList: 'https://developer.mozilla.org/en-US/docs/Web/API/FileList',
   MessageEvent: 'https://developer.mozilla.org/en-US/docs/Web/API/MessageEvent',
   Omit: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#omittype-keys',
   Pick: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#picktype-keys',
@@ -282,15 +284,17 @@ export const resolveTypeName = (
     } else if (type === 'reflection' && declaration?.children) {
       return (
         <>
-          {'{ '}
+          {'{\n'}
           {declaration?.children.map((child: PropData, i) => (
             <span key={`reflection-${name}-${i}`}>
+              {'  '}
               {child.name + ': '}
               {resolveTypeName(child.type)}
               {i + 1 !== declaration?.children?.length ? ', ' : null}
+              {'\n'}
             </span>
           ))}
-          {' }'}
+          {'}'}
         </>
       );
     } else if (type === 'tuple' && elements) {
@@ -352,7 +356,7 @@ export const renderParamRow = ({
         {renderFlags(flags, initValue)}
       </Cell>
       <Cell>
-        <InlineCode>{resolveTypeName(type)}</InlineCode>
+        <APIDataType typeDefinition={type} />
       </Cell>
       <Cell>
         <CommentTextBlock
@@ -395,7 +399,8 @@ export const renderDefaultValue = (defaultValue?: string) =>
 
 export const renderTypeOrSignatureType = (
   type?: TypeDefinitionData,
-  signatures?: MethodSignatureData[]
+  signatures?: MethodSignatureData[],
+  allowBlock: boolean = false
 ) => {
   if (signatures && signatures.length) {
     return (
@@ -418,6 +423,9 @@ export const renderTypeOrSignatureType = (
       </InlineCode>
     );
   } else if (type) {
+    if (allowBlock) {
+      return <APIDataType typeDefinition={type} />;
+    }
     return <InlineCode key={`signature-type-${type.name}`}>{resolveTypeName(type)}</InlineCode>;
   }
   return undefined;
@@ -468,6 +476,13 @@ export const getTagData = (tagName: string, comment?: CommentData) =>
 
 export const getAllTagData = (tagName: string, comment?: CommentData) =>
   comment?.tags?.filter(tag => tag.tag === tagName);
+
+export const getTagNamesList = (comment?: CommentData) =>
+  comment && [
+    ...(getAllTagData('platform', comment)?.map(platformData => platformData.text) || []),
+    ...(getTagData('deprecated', comment) ? ['deprecated'] : []),
+    ...(getTagData('experimental', comment) ? ['experimental'] : []),
+  ];
 
 export const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
 
@@ -574,6 +589,10 @@ export const STYLES_APIBOX = css({
 
 export const STYLES_APIBOX_NESTED = css({
   boxShadow: 'none',
+
+  h4: {
+    marginTop: 0,
+  },
 });
 
 export const STYLES_NESTED_SECTION_HEADER = css({
@@ -588,6 +607,7 @@ export const STYLES_NESTED_SECTION_HEADER = css({
     ...typography.fontSizes[16],
     fontFamily: typography.fontFaces.medium,
     marginBottom: 0,
+    marginTop: 0,
     color: theme.text.secondary,
   },
 });

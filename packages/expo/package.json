@@ -56,6 +56,7 @@
   "dependencies": {
     "@babel/runtime": "^7.14.0",
     "@expo/cli": "0.2.6",
+    "@expo/config-plugins": "5.0.0",
     "@expo/vector-icons": "^13.0.0",
     "babel-preset-expo": "~9.2.0",
     "cross-spawn": "^6.0.5",
@@ -64,7 +65,7 @@
     "expo-constants": "~13.2.3",
     "expo-file-system": "~14.1.0",
     "expo-font": "~10.2.0",
-    "expo-keep-awake": "~10.2.0",
+    "expo-keep-awake": "~10.2.1",
     "expo-modules-autolinking": "0.10.1",
     "expo-modules-core": "0.11.3",
     "fbemitter": "^3.0.0",
@@ -85,9 +86,9 @@
     "@types/react-native": "~0.69.1",
     "@types/react-test-renderer": "^18.0.0",
     "@types/uuid": "^3.4.7",
-    "expo-module-scripts": "^2.0.0",
+    "expo-module-scripts": "^2.1.0",
     "react": "18.0.0",
     "react-dom": "18.0.0",
-    "react-native": "0.69.3"
+    "react-native": "0.69.5"
   }
 }

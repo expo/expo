@@ -2,11 +2,16 @@
 
 #pragma once
 
+#include "types/CppType.h"
+#include "types/ExpectedType.h"
+#include "types/AnyType.h"
+
 #include <jsi/jsi.h>
 #include <fbjni/fbjni.h>
 #include <ReactCommon/TurboModuleUtils.h>
 #include <react/jni/ReadableNativeArray.h>
 #include <memory>
+#include <vector>
 #include <folly/dynamic.h>
 #include <jsi/JSIDynamic.h>
 
@@ -16,21 +21,6 @@ namespace react = facebook::react;
 
 namespace expo {
 class JSIInteropModuleRegistry;
-
-/**
- * A cpp version of the `expo.modules.kotlin.jni.CppType` enum.
- * Used to determine which representation of the js value should be sent to the Kotlin.
- */
-enum CppType {
-  DOUBLE = 1 << 0,
-  BOOLEAN = 1 << 1,
-  STRING = 1 << 2,
-  JS_OBJECT = 1 << 3,
-  JS_VALUE = 1 << 4,
-  READABLE_ARRAY = 1 << 5,
-  READABLE_MAP = 1 << 6,
-  TYPED_ARRAY = 1 << 7
-};
 
 /**
  * A class that holds information about the exported function.
@@ -49,14 +39,24 @@ public:
    * Whether this function is async
    */
   bool isAsync;
-
-  std::unique_ptr<int[]> desiredTypes;
+  /**
+   * Representation of expected argument types.
+   */
+  std::vector<std::unique_ptr<AnyType>> argTypes;
 
   MethodMetadata(
     std::string name,
     int args,
     bool isAsync,
-    std::unique_ptr<int[]> desiredTypes,
+    jni::local_ref<jni::JArrayClass<ExpectedType>> expectedArgTypes,
+    jni::global_ref<jobject> &&jBodyReference
+  );
+
+  MethodMetadata(
+    std::string name,
+    int args,
+    bool isAsync,
+    std::vector<std::unique_ptr<AnyType>> &&expectedArgTypes,
     jni::global_ref<jobject> &&jBodyReference
   );
 
@@ -118,10 +118,10 @@ private:
   jsi::Function createPromiseBody(
     jsi::Runtime &runtime,
     JSIInteropModuleRegistry *moduleRegistry,
-    std::vector<jvalue> &&args
+    std::vector<jobject> &&args
   );
 
-  std::vector<jvalue> convertJSIArgsToJNI(
+  std::vector<jobject> convertJSIArgsToJNI(
     JSIInteropModuleRegistry *moduleRegistry,
     JNIEnv *env,
     jsi::Runtime &rt,

@@ -100,7 +100,7 @@ RCT_EXPORT_METHOD(getAuthSchemeAsync:(RCTPromiseResolveBlock)resolve
   NSArray<NSDictionary*> *urlTypes = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleURLTypes"];
   
   if (urlTypes != nil) {
-    for (int i = 1; i <= urlTypes.count; i++) {
+    for (int i = 0; i < urlTypes.count; i++) {
       NSDictionary *urlType = urlTypes[i];
       NSArray<NSString*> *schemes = urlType[@"CFBundleURLSchemes"];
       
@@ -116,24 +116,18 @@ RCT_EXPORT_METHOD(getAuthSchemeAsync:(RCTPromiseResolveBlock)resolve
 }
 
 RCT_EXPORT_METHOD(setSessionAsync:(NSString *)session
-                  resolver:(RCTPromiseResolveBlock)resolve
-                  rejecter:(RCTPromiseRejectBlock)reject)
-{
-  [[NSUserDefaults standardUserDefaults] setObject:session forKey:@"expo-session-secret"];
-  [DevMenuManager.shared setSession:session];
-  resolve(nil);
-}
+                   resolver:(RCTPromiseResolveBlock)resolve
+                   rejecter:(RCTPromiseRejectBlock)reject)
+ {
+   [[NSUserDefaults standardUserDefaults] setObject:session forKey:@"expo-session-secret"];
+   resolve(nil);
+ }
 
-RCT_EXPORT_METHOD(restoreSessionAsync:(RCTPromiseResolveBlock)resolve
-                  rejecter:(RCTPromiseRejectBlock)reject)
-{
-  NSString *session = [[NSUserDefaults standardUserDefaults] objectForKey:@"expo-session-secret"];
-  
-  if (session != nil) {
-    [DevMenuManager.shared setSession:session];
-  }
-  
-  resolve(session);
-}
+ RCT_EXPORT_METHOD(restoreSessionAsync:(RCTPromiseResolveBlock)resolve
+                   rejecter:(RCTPromiseRejectBlock)reject)
+ {
+   NSString *session = [[NSUserDefaults standardUserDefaults] objectForKey:@"expo-session-secret"];
+   resolve(session);
+ }
 
 @end

@@ -26,6 +26,7 @@ import {
   renderDefaultValue,
   renderIndexSignature,
   STYLES_APIBOX,
+  getTagNamesList,
 } from '~/components/plugins/api/APISectionUtils';
 import { Cell, Row, Table } from '~/ui/components/Table';
 
@@ -72,6 +73,7 @@ const renderTypePropertyRow = ({
 }: PropData): JSX.Element => {
   const initValue = parseCommentContent(defaultValue || getTagData('default', comment)?.text);
   const commentData = getCommentOrSignatureComment(comment, signatures);
+  const hasDeprecationNote = Boolean(getTagData('deprecated', comment));
   return (
     <Row key={name}>
       <Cell fitContent>
@@ -79,14 +81,14 @@ const renderTypePropertyRow = ({
         {renderFlags(flags, initValue)}
         {kind && renderIndexSignature(kind)}
       </Cell>
-      <Cell fitContent>{renderTypeOrSignatureType(type, signatures)}</Cell>
+      <Cell fitContent>{renderTypeOrSignatureType(type, signatures, true)}</Cell>
       <Cell fitContent>
         <APISectionDeprecationNote comment={comment} />
         <CommentTextBlock
           comment={commentData}
           components={mdInlineComponents}
           afterContent={renderDefaultValue(initValue)}
-          emptyCommentFallback="-"
+          emptyCommentFallback={hasDeprecationNote ? undefined : '-'}
         />
       </Cell>
     </Row>
@@ -104,7 +106,7 @@ const renderType = ({
     return (
       <div key={`type-definition-${name}`} css={STYLES_APIBOX}>
         <APISectionDeprecationNote comment={comment} />
-        <H3Code>
+        <H3Code tags={getTagNamesList(comment)}>
           <InlineCode>
             {name}
             {type.declaration.signatures ? '()' : ''}
@@ -131,7 +133,7 @@ const renderType = ({
       return (
         <div key={`prop-type-definition-${name}`} css={STYLES_APIBOX}>
           <APISectionDeprecationNote comment={comment} />
-          <H3Code>
+          <H3Code tags={getTagNamesList(comment)}>
             <InlineCode>{name}</InlineCode>
           </H3Code>
           <CommentTextBlock comment={comment} />
@@ -156,7 +158,7 @@ const renderType = ({
       return (
         <div key={`type-definition-${name}`} css={STYLES_APIBOX}>
           <APISectionDeprecationNote comment={comment} />
-          <H3Code>
+          <H3Code tags={getTagNamesList(comment)}>
             <InlineCode>{name}</InlineCode>
           </H3Code>
           <CommentTextBlock comment={comment} />
@@ -177,7 +179,7 @@ const renderType = ({
     return (
       <div key={`record-definition-${name}`} css={STYLES_APIBOX}>
         <APISectionDeprecationNote comment={comment} />
-        <H3Code>
+        <H3Code tags={getTagNamesList(comment)}>
           <InlineCode>{name}</InlineCode>
         </H3Code>
         <UL>
@@ -192,7 +194,7 @@ const renderType = ({
     return (
       <div key={`generic-type-definition-${name}`} css={STYLES_APIBOX}>
         <APISectionDeprecationNote comment={comment} />
-        <H3Code>
+        <H3Code tags={getTagNamesList(comment)}>
           <InlineCode>{name}</InlineCode>
         </H3Code>
         <CommentTextBlock comment={comment} />
@@ -206,7 +208,7 @@ const renderType = ({
     return (
       <div key={`conditional-type-definition-${name}`} css={STYLES_APIBOX}>
         <APISectionDeprecationNote comment={comment} />
-        <H3Code>
+        <H3Code tags={getTagNamesList(comment)}>
           <InlineCode>
             {name}&lt;{type.checkType.name}&gt;
           </InlineCode>

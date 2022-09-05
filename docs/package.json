@@ -2,6 +2,7 @@
   "name": "expo-docs",
   "version": "46.0.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "rimraf .next/preval && next dev -p 3002",
     "build": "cross-env NODE_OPTIONS=--max-old-space-size=6656 next build",
@@ -20,6 +21,7 @@
     "remove-version": "node --unhandled-rejections=strict ./scripts/remove-version.js"
   },
   "dependencies": {
+    "@docsearch/react": "^3.2.1",
     "@emotion/react": "^11.9.3",
     "@expo/styleguide": "^4.1.1",
     "@mdx-js/loader": "^1.6.22",
@@ -29,7 +31,6 @@
     "@reach/tabs": "^0.15.0",
     "@sentry/browser": "^5.6.1",
     "date-fns": "^2.28.0",
-    "docsearch.js": "^2.5.2",
     "emoji-regex": "^10.1.0",
     "front-matter": "^2.3.0",
     "fs-extra": "^6.0.1",

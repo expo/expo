@@ -1,6 +1,6 @@
 ---
 title: MapView
-sourceCodeUrl: 'https://github.com/react-native-community/react-native-maps'
+sourceCodeUrl: 'https://github.com/react-native-maps/react-native-maps'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';
@@ -17,7 +17,7 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 ## Usage
 
-See full documentation at [react-native-community/react-native-maps](https://github.com/react-native-community/react-native-maps).
+See full documentation at [react-native-maps/react-native-maps](https://github.com/react-native-maps/react-native-maps).
 
 <SnackInline label='MapView' dependencies={['react-native-maps']}>
 

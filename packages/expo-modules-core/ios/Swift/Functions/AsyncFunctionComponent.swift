@@ -13,6 +13,11 @@ internal protocol AnyAsyncFunctionComponent: AnyFunction {
 }
 
 /**
+ The default queue used for module's async function calls.
+ */
+private let defaultQueue = DispatchQueue(label: "expo.modules.AsyncFunctionQueue", qos: .userInitiated)
+
+/**
  Represents a function that can only be called asynchronously, thus its JavaScript equivalent returns a Promise.
  */
 public final class AsyncFunctionComponent<Args, FirstArgType, ReturnType>: AnyAsyncFunctionComponent {
@@ -61,7 +66,7 @@ public final class AsyncFunctionComponent<Args, FirstArgType, ReturnType>: AnyAs
 
   func call(by owner: AnyObject?, withArguments args: [Any], callback: @escaping (FunctionCallResult) -> ()) {
     let promise = Promise { value in
-      callback(.success(value as Any))
+      callback(.success(Conversions.convertFunctionResult(value)))
     } rejecter: { exception in
       callback(.failure(exception))
     }
@@ -86,7 +91,7 @@ public final class AsyncFunctionComponent<Args, FirstArgType, ReturnType>: AnyAs
       arguments.append(promise)
     }
 
-    let queue = queue ?? DispatchQueue.global(qos: .default)
+    let queue = queue ?? defaultQueue
 
     queue.async { [body, name] in
       let returnedValue: ReturnType?
@@ -149,7 +154,7 @@ internal final class NativeFunctionUnavailableException: GenericException<String
  */
 public func AsyncFunction<R>(
   _ name: String,
-  _ closure: @escaping () throws -> R
+  @_implicitSelfCapture _ closure: @escaping () throws -> R
 ) -> AsyncFunctionComponent<(), Void, R> {
   return AsyncFunctionComponent(
     name,
@@ -164,7 +169,7 @@ public func AsyncFunction<R>(
  */
 public func AsyncFunction<R, A0: AnyArgument>(
   _ name: String,
-  _ closure: @escaping (A0) throws -> R
+  @_implicitSelfCapture _ closure: @escaping (A0) throws -> R
 ) -> AsyncFunctionComponent<(A0), A0, R> {
   return AsyncFunctionComponent(
     name,
@@ -179,7 +184,7 @@ public func AsyncFunction<R, A0: AnyArgument>(
  */
 public func AsyncFunction<R, A0: AnyArgument, A1: AnyArgument>(
   _ name: String,
-  _ closure: @escaping (A0, A1) throws -> R
+  @_implicitSelfCapture _ closure: @escaping (A0, A1) throws -> R
 ) -> AsyncFunctionComponent<(A0, A1), A0, R> {
   return AsyncFunctionComponent(
     name,
@@ -194,7 +199,7 @@ public func AsyncFunction<R, A0: AnyArgument, A1: AnyArgument>(
  */
 public func AsyncFunction<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument>(
   _ name: String,
-  _ closure: @escaping (A0, A1, A2) throws -> R
+  @_implicitSelfCapture _ closure: @escaping (A0, A1, A2) throws -> R
 ) -> AsyncFunctionComponent<(A0, A1, A2), A0, R> {
   return AsyncFunctionComponent(
     name,
@@ -213,7 +218,7 @@ public func AsyncFunction<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument>(
  */
 public func AsyncFunction<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3: AnyArgument>(
   _ name: String,
-  _ closure: @escaping (A0, A1, A2, A3) throws -> R
+  @_implicitSelfCapture _ closure: @escaping (A0, A1, A2, A3) throws -> R
 ) -> AsyncFunctionComponent<(A0, A1, A2, A3), A0, R> {
   return AsyncFunctionComponent(
     name,
@@ -233,7 +238,7 @@ public func AsyncFunction<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, 
  */
 public func AsyncFunction<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3: AnyArgument, A4: AnyArgument>(
   _ name: String,
-  _ closure: @escaping (A0, A1, A2, A3, A4) throws -> R
+  @_implicitSelfCapture _ closure: @escaping (A0, A1, A2, A3, A4) throws -> R
 ) -> AsyncFunctionComponent<(A0, A1, A2, A3, A4), A0, R> {
   return AsyncFunctionComponent(
     name,
@@ -254,7 +259,7 @@ public func AsyncFunction<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, 
  */
 public func AsyncFunction<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3: AnyArgument, A4: AnyArgument, A5: AnyArgument>(
   _ name: String,
-  _ closure: @escaping (A0, A1, A2, A3, A4, A5) throws -> R
+  @_implicitSelfCapture _ closure: @escaping (A0, A1, A2, A3, A4, A5) throws -> R
 ) -> AsyncFunctionComponent<(A0, A1, A2, A3, A4, A5), A0, R> {
   return AsyncFunctionComponent(
     name,
@@ -276,7 +281,7 @@ public func AsyncFunction<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, 
  */
 public func AsyncFunction<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3: AnyArgument, A4: AnyArgument, A5: AnyArgument, A6: AnyArgument>(
   _ name: String,
-  _ closure: @escaping (A0, A1, A2, A3, A4, A5, A6) throws -> R
+  @_implicitSelfCapture _ closure: @escaping (A0, A1, A2, A3, A4, A5, A6) throws -> R
 ) -> AsyncFunctionComponent<(A0, A1, A2, A3, A4, A5, A6), A0, R> {
   return AsyncFunctionComponent(
     name,
@@ -299,7 +304,7 @@ public func AsyncFunction<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, 
  */
 public func AsyncFunction<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3: AnyArgument, A4: AnyArgument, A5: AnyArgument, A6: AnyArgument, A7: AnyArgument>(
   _ name: String,
-  _ closure: @escaping (A0, A1, A2, A3, A4, A5, A6, A7) throws -> R
+  @_implicitSelfCapture _ closure: @escaping (A0, A1, A2, A3, A4, A5, A6, A7) throws -> R
 ) -> AsyncFunctionComponent<(A0, A1, A2, A3, A4, A5, A6, A7), A0, R> {
   return AsyncFunctionComponent(
     name,

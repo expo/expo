@@ -52,7 +52,7 @@ public final class SyncFunctionComponent<Args, FirstArgType, ReturnType>: AnySyn
   func call(by owner: AnyObject?, withArguments args: [Any], callback: @escaping (FunctionCallResult) -> ()) {
     do {
       let result = try call(by: owner, withArguments: args)
-      callback(.success(result))
+      callback(.success(Conversions.convertFunctionResult(result)))
     } catch let error as Exception {
       callback(.failure(error))
     } catch {
@@ -70,7 +70,8 @@ public final class SyncFunctionComponent<Args, FirstArgType, ReturnType>: AnySyn
         forFunction: self
       )
       let argumentsTuple = try Conversions.toTuple(arguments) as! Args
-      return try body(argumentsTuple)
+      let result = try body(argumentsTuple)
+      return Conversions.convertFunctionResult(result)
     } catch let error as Exception {
       throw FunctionCallException(name).causedBy(error)
     } catch {
@@ -85,7 +86,8 @@ public final class SyncFunctionComponent<Args, FirstArgType, ReturnType>: AnySyn
       guard let self = self else {
         throw NativeFunctionUnavailableException(name)
       }
-      return try self.call(by: this, withArguments: args)
+      let result = try self.call(by: this, withArguments: args)
+      return Conversions.convertFunctionResult(result)
     }
   }
 }
@@ -95,7 +97,7 @@ public final class SyncFunctionComponent<Args, FirstArgType, ReturnType>: AnySyn
  */
 public func Function<R>(
   _ name: String,
-  _ closure: @escaping () throws -> R
+  @_implicitSelfCapture _ closure: @escaping () throws -> R
 ) -> SyncFunctionComponent<(), Void, R> {
   return SyncFunctionComponent(
     name,
@@ -110,7 +112,7 @@ public func Function<R>(
  */
 public func Function<R, A0: AnyArgument>(
   _ name: String,
-  _ closure: @escaping (A0) throws -> R
+  @_implicitSelfCapture _ closure: @escaping (A0) throws -> R
 ) -> SyncFunctionComponent<(A0), A0, R> {
   return SyncFunctionComponent(
     name,
@@ -125,7 +127,7 @@ public func Function<R, A0: AnyArgument>(
  */
 public func Function<R, A0: AnyArgument, A1: AnyArgument>(
   _ name: String,
-  _ closure: @escaping (A0, A1) throws -> R
+  @_implicitSelfCapture _ closure: @escaping (A0, A1) throws -> R
 ) -> SyncFunctionComponent<(A0, A1), A0, R> {
   return SyncFunctionComponent(
     name,
@@ -140,7 +142,7 @@ public func Function<R, A0: AnyArgument, A1: AnyArgument>(
  */
 public func Function<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument>(
   _ name: String,
-  _ closure: @escaping (A0, A1, A2) throws -> R
+  @_implicitSelfCapture _ closure: @escaping (A0, A1, A2) throws -> R
 ) -> SyncFunctionComponent<(A0, A1, A2), A0, R> {
   return SyncFunctionComponent(
     name,
@@ -159,7 +161,7 @@ public func Function<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument>(
  */
 public func Function<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3: AnyArgument>(
   _ name: String,
-  _ closure: @escaping (A0, A1, A2, A3) throws -> R
+  @_implicitSelfCapture _ closure: @escaping (A0, A1, A2, A3) throws -> R
 ) -> SyncFunctionComponent<(A0, A1, A2, A3), A0, R> {
   return SyncFunctionComponent(
     name,
@@ -179,7 +181,7 @@ public func Function<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3: A
  */
 public func Function<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3: AnyArgument, A4: AnyArgument>(
   _ name: String,
-  _ closure: @escaping (A0, A1, A2, A3, A4) throws -> R
+  @_implicitSelfCapture _ closure: @escaping (A0, A1, A2, A3, A4) throws -> R
 ) -> SyncFunctionComponent<(A0, A1, A2, A3, A4), A0, R> {
   return SyncFunctionComponent(
     name,
@@ -200,7 +202,7 @@ public func Function<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3: A
  */
 public func Function<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3: AnyArgument, A4: AnyArgument, A5: AnyArgument>(
   _ name: String,
-  _ closure: @escaping (A0, A1, A2, A3, A4, A5) throws -> R
+  @_implicitSelfCapture _ closure: @escaping (A0, A1, A2, A3, A4, A5) throws -> R
 ) -> SyncFunctionComponent<(A0, A1, A2, A3, A4, A5), A0, R> {
   return SyncFunctionComponent(
     name,
@@ -222,7 +224,7 @@ public func Function<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3: A
  */
 public func Function<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3: AnyArgument, A4: AnyArgument, A5: AnyArgument, A6: AnyArgument>(
   _ name: String,
-  _ closure: @escaping (A0, A1, A2, A3, A4, A5, A6) throws -> R
+  @_implicitSelfCapture _ closure: @escaping (A0, A1, A2, A3, A4, A5, A6) throws -> R
 ) -> SyncFunctionComponent<(A0, A1, A2, A3, A4, A5, A6), A0, R> {
   return SyncFunctionComponent(
     name,
@@ -245,7 +247,7 @@ public func Function<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3: A
  */
 public func Function<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3: AnyArgument, A4: AnyArgument, A5: AnyArgument, A6: AnyArgument, A7: AnyArgument>(
   _ name: String,
-  _ closure: @escaping (A0, A1, A2, A3, A4, A5, A6, A7) throws -> R
+  @_implicitSelfCapture _ closure: @escaping (A0, A1, A2, A3, A4, A5, A6, A7) throws -> R
 ) -> SyncFunctionComponent<(A0, A1, A2, A3, A4, A5, A6, A7), A0, R> {
   return SyncFunctionComponent(
     name,

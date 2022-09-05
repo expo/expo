@@ -13,7 +13,7 @@ Here is the [up-to-date list of worker IP addresses](https://expo.dev/eas-build-
 
 ## Configuring build environment
 
-Images for each platform have one specific version of Node, yarn, CocoaPods, Xcode, Ruby, Fastlane, and so on. You can override some of the versions in [eas.json](../build/eas-json). If there's no dedicated configuration option you're looking for, you can use [npm hooks](how-tos/#eas-build-specific-npm-hooks) to install or update any system dependencies with `apt-get` or `brew`. Please take into account that those customizations are applied during the build and will increase your build times.
+Images for each platform have one specific version of Node.js, yarn, CocoaPods, Xcode, Ruby, Fastlane, and so on. You can override some of the versions in [eas.json](../build/eas-json). If there is no dedicated configuration option you're looking for, you can use [npm hooks](npm-hooks) to install or update any system dependencies with `apt-get` or `brew`. Please take into account that those customizations are applied during the build and will increase your build times.
 
 When selecting an image for the build you can use the full name provided below or one of the aliases: `default`, `latest`.
 
@@ -51,8 +51,8 @@ When selecting an image for the build you can use the full name provided below o
 
   ```yml
   unsafeHttpWhitelist:
-    - "*"
-  npmRegistryServer: "http://npm-cache-service.worker-infra-production.svc.cluster.local:4873"
+    - '*'
+  npmRegistryServer: 'http://npm-cache-service.worker-infra-production.svc.cluster.local:4873'
   enableImmutableInstalls: false
   ```
 
@@ -157,8 +157,8 @@ When selecting an image for the build you can use the full name provided below o
 
   ```yml
   unsafeHttpWhitelist:
-    - "*"
-  npmRegistryServer: "registry=http://10.254.24.8:4873"
+    - '*'
+  npmRegistryServer: 'registry=http://10.254.24.8:4873'
   enableImmutableInstalls: false
   ```
 

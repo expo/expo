@@ -5,13 +5,11 @@ sidebar_title: Using Expo for web
 
 import Video from '~/components/plugins/Video'
 
-Expo for web can work on any React Native project. When you initialize a new project with a bare workflow template using `expo-cli`, if you run `yarn web` or `npm run web` it will start up `expo-cli` and open your project in a web browser.
+Expo web can work on any React Native project. When you initialize a new project with a bare workflow template using `npx create-expo-app`, if you run `npx expo start --web` it will prompt you to install any required web packages, then start up Webpack and open your project in a web browser.
 
 <Video file="bare-web.mp4" />
 
 ## Additional resources
-
-The same guides for web from the managed workflow apply here.
 
 - [Publishing Websites](../distribution/publishing-websites.md)
 - [Customizing Webpack](../guides/customizing-webpack.md)
