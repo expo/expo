@@ -112,6 +112,6 @@ On the web, permissions like the `Camera` and `Location` can only be requested f
 
 Often you want to be able to test what happens when a user rejects permissions, to ensure your app reacts gracefully. An operating-system level restriction on both iOS and Android prohibits an app from asking for the same permission more than once (you can imagine how this could be annoying for the user to be repeatedly prompted for permissions after rejecting them). To test different flows involving permissions in development, you may need to uninstall and reinstall the native app.
 
-When testing in [Expo Go][expo-go], you can delete the app and reinstall it by running `npx expo start` and pressing `i` or `a` in the [Expo CLI](/workflow/expo-cli) Terminal UI.
+When testing in [Expo Go][expo-go], you can delete the app and reinstall it by running `npx expo start` and pressing <kbd>i</kbd> or <kbd>a</kbd> in the [Expo CLI](/workflow/expo-cli) Terminal UI.
 
 [expo-go]: https://expo.dev/expo-go
