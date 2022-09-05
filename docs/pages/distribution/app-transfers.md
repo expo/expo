@@ -5,7 +5,7 @@ hideTOC: true
 
 import { BoxLink } from '~/ui/components/BoxLink';
 
-There are two different representations of your app to consider when handing over ownership to another entity: the app as it exists on Expo Application Services (in order to create builds with EAS Build, send updates with EAS Update, etc.) and the app records on the Apple App Store / Google Play Store (in order to distribute the app to end-users). The following guides explain how to handle app transfers in each of these cases.
+There are two different representations of your app to consider when handing over ownership to another entity: the app as it exists on Expo Application Services (to create builds with EAS Build, send updates with EAS Update, etc.) and the app records on the Apple App Store/Google Play Store (to distribute the app to end-users). The following guides explain how to handle app transfers in each case.
 
 
 
