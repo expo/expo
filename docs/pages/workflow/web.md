@@ -53,15 +53,15 @@ You can test secure web APIs like the camera and user location by adding the `--
 
 > **Example:** The website [beatgig.com](https://beatgig.com/) uses Expo web + Next.js to achieve SSR in the browser.
 
-By default, Expo is rendering your web app as a "single page application" or SPA. This rendering pattern is the closest to how native rendering works. If you'd like to render your Expo web using "server-side rendering" (SSR) or "static site generation" (SSG) then you should try using the Expo SDK with another tool like Gatsby, Next.js, Remix, etc. The caveat is that these tools are less universal and require a bit more effort to share code across platforms.
+By default, Expo renders your web app as a **single page application (SPA)**. This rendering pattern is the closest to how native rendering works. If you'd like to render your Expo web using **server-side rendering (SSR)** or **static site generation (SSG)**, then you should try using the Expo SDK with another tool like Gatsby, Next.js, Remix, and so on. One caveat is that these tools are less universal and require a bit more effort to share code across platforms.
 
 The ability to use Expo web with these other React frameworks is what makes it the most powerful way to build a universal app. The possibilities are endless and you won't hit a theoretic performance wall in the future.
 
-- [Next.js](/guides/using-nextjs).
-- [Storybook](https://github.com/expo/examples/tree/master/with-storybook).
-- [Preact](https://github.com/expo/examples/tree/master/with-preact).
-- [Gatsby](https://github.com/expo/examples/tree/master/with-gatsby).
-- [Electron](https://github.com/expo/examples/tree/master/with-electron).
+- [Next.js](/guides/using-nextjs)
+- [Storybook](https://github.com/expo/examples/tree/master/with-storybook)
+- [Preact](https://github.com/expo/examples/tree/master/with-preact)
+- [Gatsby](https://github.com/expo/examples/tree/master/with-gatsby)
+- [Electron](https://github.com/expo/examples/tree/master/with-electron)
 
 > Alternative framework implementations are maintained by the Expo community.
 
