@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "rimraf .next/preval && next dev -p 3002",
+    "dev": "yarn generate-static-resoures && next dev -p 3002",
     "build": "cross-env NODE_OPTIONS=--max-old-space-size=6656 next build",
     "export": "yarn run build && next export && yarn run export-issue-404",
     "export-issue-404": "echo \"🛠  Patching https://github.com/vercel/next.js/issues/16528\"; cp out/404/index.html out/404.html",
@@ -18,7 +18,8 @@
     "watch": "tsc --noEmit -w",
     "test": "yarn node --experimental-vm-modules $(yarn bin jest)",
     "schema-sync": "node --async-stack-traces --unhandled-rejections=strict ./scripts/schema-sync.js",
-    "remove-version": "node --unhandled-rejections=strict ./scripts/remove-version.js"
+    "remove-version": "node --unhandled-rejections=strict ./scripts/remove-version.js",
+    "generate-static-resoures": "rimraf public/static/constants && node --unhandled-rejections=strict ./scripts/generate-static-resources.js"
   },
   "dependencies": {
     "@docsearch/react": "^3.2.1",
@@ -57,9 +58,6 @@
   },
   "devDependencies": {
     "@apidevtools/json-schema-ref-parser": "^9.0.9",
-    "@babel/core": "^7.18.6",
-    "@babel/preset-env": "^7.18.10",
-    "@emotion/babel-preset-css-prop": "^11.2.0",
     "@emotion/jest": "^11.9.4",
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^13.3.0",
@@ -71,17 +69,12 @@
     "@types/google.analytics": "^0.0.42",
     "@types/gtag.js": "^0.0.10",
     "@types/lodash": "^4.14.182",
-    "@types/long": "^4.0.2",
-    "@types/mdx-js__react": "^1.5.5",
     "@types/node": "^16.11.45",
     "@types/nprogress": "^0.2.0",
     "@types/react": "^18.0.15",
     "@types/react-dom": "^18.0.6",
     "acorn": "^8.7.1",
     "axios": "^0.27.2",
-    "babel-loader": "^8.2.5",
-    "babel-plugin-module-resolver": "^4.1.0",
-    "babel-plugin-preval": "^5.1.0",
     "case-police": "^0.5.6",
     "cross-env": "^7.0.3",
     "danger": "^11.1.1",

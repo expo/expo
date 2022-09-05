@@ -1,14 +1,12 @@
-// @preval
-
 import frontmatter from 'front-matter';
 import fs from 'fs';
 import path from 'path';
-import { u as make } from 'unist-builder';
+import { u } from 'unist-builder';
 import { URL, fileURLToPath } from 'url';
 
-import { LATEST_VERSION, VERSIONS } from './versions.cjs';
+import { LATEST_VERSION, VERSIONS } from './versions.js';
 
-const dirname = fileURLToPath(new URL('.', import.meta.url));
+const dirname = path.dirname(fileURLToPath(import.meta.url));
 const PAGES_DIR = path.resolve(dirname, '../pages');
 
 // TODO(cedric): refactor docs to get rid of the directory lists
@@ -425,11 +423,11 @@ export default {
 // --- MDX methods ---
 
 function makeSection(name, children = [], props = {}) {
-  return make('section', { name, ...{ expanded: false, ...props } }, children);
+  return u('section', { name, ...{ expanded: false, ...props } }, children);
 }
 
 function makeGroup(name, children = [], props = {}) {
-  return make('group', { name, ...props }, children);
+  return u('group', { name, ...props }, children);
 }
 
 /**
@@ -466,7 +464,7 @@ function makePage(file) {
   if (data.hidden) {
     result.hidden = data.hidden;
   }
-  return make('page', result);
+  return u('page', result);
 }
 
 // --- Other helpers ---

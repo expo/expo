@@ -1,14 +1,12 @@
-// @preval
-
 import frontmatter from 'front-matter';
 import fs from 'fs';
 import path from 'path';
 import { u as make } from 'unist-builder';
 import { URL, fileURLToPath } from 'url';
 
-import { LATEST_VERSION, VERSIONS } from './versions.cjs';
+import { LATEST_VERSION, VERSIONS } from './versions.js';
 
-const dirname = fileURLToPath(new URL('.', import.meta.url));
+const dirname = path.dirname(fileURLToPath(import.meta.url));
 const PAGES_DIR = path.resolve(dirname, '../pages');
 
 // TODO(cedric): refactor docs to get rid of the directory lists

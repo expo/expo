@@ -1,7 +1,7 @@
-import MDX from '@mdx-js/runtime';
 import * as React from 'react';
+import ReactMarkdown from 'react-markdown';
 
-import * as components from '~/common/translate-markdown';
+import { mdInlineComponents } from '~/components/plugins/api/APISectionUtils';
 import { Cell, HeaderCell, Row, Table, TableHead } from '~/ui/components/Table';
 
 export type Property = {
@@ -97,11 +97,13 @@ export default class EasJsonPropertiesTable extends React.Component<{
                       listStyleType: property.nestingLevel % 2 ? 'default' : 'circle',
                       overflowX: 'visible',
                     }}>
-                    <MDX components={components}>{property.name}</MDX>
+                    <ReactMarkdown components={mdInlineComponents}>{property.name}</ReactMarkdown>
                   </div>
                 </Cell>
                 <Cell>
-                  <MDX components={components}>{property.description}</MDX>
+                  <ReactMarkdown components={mdInlineComponents}>
+                    {property.description}
+                  </ReactMarkdown>
                 </Cell>
               </Row>
             );

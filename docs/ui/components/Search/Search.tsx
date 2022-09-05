@@ -2,9 +2,11 @@ import { DocSearch } from '@docsearch/react';
 import { Global } from '@emotion/react';
 import * as React from 'react';
 
-import { LATEST_VERSION } from '~/constants/versions.cjs';
 import { usePageApiVersion } from '~/providers/page-api-version';
+import versions from '~/public/static/constants/versions.json';
 import { DocSearchStyles } from '~/ui/components/Search/styles';
+
+const { LATEST_VERSION } = versions;
 
 export const Search = () => {
   const { version } = usePageApiVersion();

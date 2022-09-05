@@ -15,8 +15,8 @@ import DocumentationSidebarRight, {
 } from '~/components/DocumentationSidebarRight';
 import Head from '~/components/Head';
 import { H1 } from '~/components/base/headings';
-import navigation from '~/constants/navigation-deprecated.js';
-import { usePageApiVersion } from '~/providers/page-api-version';
+import { PageApiVersionContextType, usePageApiVersion } from '~/providers/page-api-version';
+import navigation from '~/public/static/constants/navigationDeprecated.json';
 import { NavigationRoute } from '~/types/common';
 import { Header } from '~/ui/components/Header';
 import { Sidebar } from '~/ui/components/Sidebar';
@@ -44,7 +44,7 @@ type Props = React.PropsWithChildren<{
   tocVisible: boolean;
   /** If the page should not show up in the Algolia Docsearch results */
   hideFromSearch?: boolean;
-  version: string;
+  version: PageApiVersionContextType['version'];
 }>;
 
 type State = {
@@ -135,9 +135,9 @@ class DocumentationPageWithApiVersion extends React.Component<Props, State> {
 
   private getRoutes = (): NavigationRoute[] => {
     if (this.isReferencePath()) {
-      return navigation.reference[this.props.version];
+      return navigation.reference[this.props.version] as NavigationRoute[];
     } else {
-      return navigation[this.getActiveTopLevelSection()];
+      return navigation[this.getActiveTopLevelSection()] as NavigationRoute[];
     }
   };
 
