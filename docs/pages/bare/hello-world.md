@@ -8,18 +8,18 @@ import { BoxLink } from '~/ui/components/BoxLink';
 import { Terminal } from '~/ui/components/Snippet';
 import { InlineCode } from '~/components/base/code';
 
-A bare React Native app is a project where developers make direct changes to their native `ios` and `android` project directories, rather than continuously generating them on demand using the [Expo config (**app.json**) and prebuild](/workflow/prebuild). All tools and services offered by Expo including [EAS](/eas), Expo CLI, and the libraries in the Expo SDK are built around bare React Native apps.
+A bare React Native app is a project where developers make direct changes to their native `ios` and `android` project directories rather than continuously generating them on demand using the [Expo config (**app.json**) and prebuild](/workflow/prebuild). All tools and services offered by Expo including [EAS](/eas), Expo CLI, and the libraries in the Expo SDK, are built around bare React Native apps.
 
 Before you get started with a React Native app, make sure you set up your environment for [React Native CLI](https://reactnative.dev/docs/environment-setup).
 
-Bootstrap a new React Native project with `create-expo-app`. If you have an existing project or want to bootstrap with `npx react-native init` then you will need to [install the `expo` package](/bare/installing-expo-modules) manually.
+To bootstrap a new React Native project, you can use `create-expo-app`. If you have an existing project or want to bootstrap with `npx react-native init`, then you will need to [install the `expo` package](/bare/installing-expo-modules) manually.
 
 <Terminal cmd={[
 "# Create a new native project",
 "$ npx create-expo-app --template bare-minimum",
 ]} cmdCopy="npx create-expo-app --template bare-minimum" />
 
-Change into your project directory, then build the apps locally:
+Navigate into your project directory, then build the apps locally:
 
 <Terminal cmd={[
 '# Build your native Android project',
