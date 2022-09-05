@@ -3,8 +3,8 @@ import { PromisyClass, TaskQueue } from 'cwait';
 import fs from 'fs-extra';
 import os from 'os';
 import path from 'path';
-import { Podspec } from '../../CocoaPods';
 
+import { Podspec } from '../../CocoaPods';
 import logger from '../../Logger';
 import { Package } from '../../Packages';
 import { copyFileWithTransformsAsync } from '../../Transforms';
