@@ -38,9 +38,7 @@ export const INTERNAL_CALLSITES_REGEX = new RegExp(
     'node_modules/react-native/Libraries/Utilities/HMRClient.js$',
     'node_modules/eventemitter3/index.js',
     'node_modules/event-target-shim/dist/.+\\.js$',
-    // Ignore the log forwarder used in the Expo Go app
-    '/expo/build/environment/react-native-logs.fx.js$',
-    '/src/environment/react-native-logs.fx.ts$',
+    // Ignore the log forwarder used in the expo package.
     '/expo/build/logs/RemoteConsole.js$',
     // Improve errors thrown by invariant (ex: `Invariant Violation: "main" has not been registered`).
     'node_modules/invariant/.+\\.js$',

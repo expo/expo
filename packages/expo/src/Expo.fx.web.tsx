@@ -1,5 +1,3 @@
-import './environment/react-native-logs.fx';
-
 import { Platform } from 'expo-modules-core';
 import * as React from 'react';
 import { AppRegistry } from 'react-native';
