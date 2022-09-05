@@ -7,7 +7,7 @@ import { Collapsible } from '~/ui/components/Collapsible';
 import { ConfigClassic } from '~/components/plugins/ConfigSection';
 import { BoxLink } from '~/ui/components/BoxLink';
 
-This guide offers best practices around submitting your app to the app stores. To learn how to generate native binaries for submission, refer to ["Creating your first build"](/build/setup/).
+This guide offers best practices for submitting your app to the app stores. To learn how to generate native binaries for submission, refer to ["Creating your first build"](/build/setup/).
 
 > **Disclaimer:** Review guidelines and rules are updated frequently, and enforcement of various rules can sometimes be inconsistent. There is no guarantee that your particular project will be accepted by either platform, and you are ultimately responsible for your app's behavior. That said, you can re-submit your app as needed to address feedback from reviews.
 
@@ -21,7 +21,7 @@ This guide offers best practices around submitting your app to the app stores. T
 
 ## Responsive design
 
-It's a good idea to test your app on a device or simulator with a small screen (e.g. an iPhone SE) as well as a large screen (e.g. an iPhone X). Ensure your components render the way you expect, no buttons are blocked, and all text fields are accessible.
+It's a good idea to test your app on a device or simulator with a small screen (for example, an iPhone SE) and a large screen (for example, an iPhone X). Ensure your components render the way you expect, no buttons are blocked, and all text fields are accessible.
 
 Try your app on tablets in addition to handsets. Even if you have `ios.supportsTablet: false` configured, your app will still render at phone resolution on iPads and must be usable.
 
@@ -54,7 +54,7 @@ Apple will ask you a series of questions when you submit the app. Depending on w
 
 ## Localizing your iOS app
 
-If you plan on shipping your app to different countries, regions, or just want it to support various languages, you can provide [localized](/versions/latest/sdk/localization) strings for things like the display name and system dialogs. All of this is easily set up [in your app.json](/workflow/configuration). First, set `ios.infoPlist.CFBundleAllowMixedLocalizations: true`, then provide a list of file paths to `locales`.
+If you plan on shipping your app to different countries, or regions, or want it to support various languages, you can provide [localized](/versions/latest/sdk/localization) strings for things like the display name and system dialogs. All of this is easily set up [in your app.json](/workflow/configuration). First, set `ios.infoPlist.CFBundleAllowMixedLocalizations: true`, then provide a list of file paths to `locales`.
 
 ```json
 {
