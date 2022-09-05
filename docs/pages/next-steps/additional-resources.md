@@ -6,17 +6,17 @@ The following resources are useful for learning about Expo tooling and services.
 
 ## Expo Blog
 
-- [Exposition](https://blog.expo.dev/) - our official blog, where we post release notes every month and other Expo related content at random intervals.
+- [Exposition](https://blog.expo.dev/) - Our official blog, where we post release notes every month and other Expo related content at random intervals.
 
 ## GitHub
 
-- [expo/expo](https://github.com/expo/expo): Expo Go, SDK, Docs, and the Expo CLI.
-- [expo/eas-cli](https://github.com/expo/eas-cli): Fastest way to build, submit, and update iOS and Android apps.
-- [expo/examples](https://github.com/expo/examples): Integrations and other examples.
-- [expo/config-plugins](https://github.com/expo/config-plugins): Expo Config Plugins for working with third-party packages.
-- [expo/snack](https://github.com/expo/snack): Build apps from the browser.
-- [expo/vscode-expo](https://github.com/expo/vscode-expo): VS Code extension for working with Expo tools.
-- [expo/fyi](https://github.com/expo/fyi): Troubleshooting guides for Expo tools and services.
+- [expo/expo](https://github.com/expo/expo) - Expo Go, SDK, Docs, and the Expo CLI.
+- [expo/eas-cli](https://github.com/expo/eas-cli) - Fastest way to build, submit, and update iOS and Android apps.
+- [expo/examples](https://github.com/expo/examples) - Integrations and other examples.
+- [expo/config-plugins](https://github.com/expo/config-plugins) - Expo Config Plugins for working with third-party packages.
+- [expo/snack](https://github.com/expo/snack) - Build apps from the browser.
+- [expo/vscode-expo](https://github.com/expo/vscode-expo) - VS Code extension for working with Expo tools.
+- [expo/fyi](https://github.com/expo/fyi) - Troubleshooting guides for Expo tools and services.
 
 ## Documentation
 
