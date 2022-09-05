@@ -272,7 +272,7 @@ files={{
   }}>
 
 ```jsx
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Text, View, StyleSheet } from 'react-native';
 import * as Font from 'expo-font';
 
@@ -281,35 +281,30 @@ let customFonts = {
   'Inter-SemiBoldItalic': 'https://rsms.me/inter/font-files/Inter-SemiBoldItalic.otf?v=3.12',
 };
 
-export default class App extends React.Component {
-  state = {
-    fontsLoaded: false,
+export default function App() {
+  const [fontsLoaded, setFontsLoaded] = useState(false);
+
+  const loadFontsAsync = async () => {
+    await Font.loadAsync(customFonts);
+    setFontsLoaded(true);
   };
 
-  async _loadFontsAsync() {
-    await Font.loadAsync(customFonts);
-    this.setState({ fontsLoaded: true });
-  }
+ useEffect(() => {
+    loadFontsAsync();
+  }, []);
+  
+  
+  if (!fontsLoaded) return null;
 
-  componentDidMount() {
-    this._loadFontsAsync();
-  }
-
-  render() {
-    if (!this.state.fontsLoaded) {
-      return null;
-    }
-
-    return (
-      <View style={styles.container}>
-        <Text style={{ fontFamily: 'Inter-Black', fontSize: 30 }}>Inter Black</Text>
-        <Text style={{ fontFamily: 'Inter-SemiBoldItalic', fontSize: 30 }}>
-          Inter SemiBoldItalic
-        </Text>
-        <Text style={{ fontSize: 30 }}>Platform Default</Text>
-      </View>
-    );
-  }
+  return (
+    <View style={styles.container}>
+      <Text style={{ fontFamily: 'Inter-Black', fontSize: 30 }}>Inter Black</Text>
+      <Text style={{ fontFamily: 'Inter-SemiBoldItalic', fontSize: 30 }}>
+        Inter SemiBoldItalic
+      </Text>
+      <Text style={{ fontSize: 30 }}>Platform Default</Text>
+    </View>
+  );
 }
 
 /* @hide const styles = StyleSheet.create({ ... }); */
