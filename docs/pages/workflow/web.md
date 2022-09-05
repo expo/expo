@@ -3,45 +3,70 @@ title: Developing for Web
 sidebar_title: Developing for Web
 ---
 
-import { H2 } from '~/components/plugins/Headings';
+import { Terminal } from '~/ui/components/Snippet';
+import { BoxLink } from '~/ui/components/BoxLink';
 
-If you build your native mobile app with Expo then you can also run it directly in the browser with the CLI and universal Expo SDK. The web part of your app runs with [React Native for web](https://github.com/necolas/react-native-web) which powers massive websites and progressive web apps like [Twitter](https://mobile.twitter.com/), and [Major League Soccer](https://matchcenter.mlssoccer.com/). The Expo SDK also utilizes native browser functionality like Video, Camera, and Gestures without the need for a custom native browser.
+If you build your native app with the Expo SDK, then you can also run it directly in the browser with [Expo CLI](/workflow/expo-cli#develop). On web, your app is rendered with [React Native for web](https://github.com/necolas/react-native-web) which powers massive websites and progressive web apps like [Twitter](https://mobile.twitter.com/), and [Major League Soccer](https://matchcenter.mlssoccer.com/). The Expo SDK also utilizes native browser functionality like Video, Camera, and Gestures without the need for a custom native browser.
 
-## How does it work
+## Getting started
 
-You get a highly performant React website with progressive web app features enabled from the start. Because there is no "magical" canvas work going on in the background, you get a fully accessible website with a great lighthouse score right from the start.
+Install the `expo` package which contains the [Expo CLI](/workflow/expo-cli.md) used for starting the dev server:
 
-<H2 sidebarTitle="Progressive Web Apps">
+<Terminal cmd={["$ yarn add expo"]} />
 
-<a href="https://web.dev/progressive-web-apps/">
-Progressive Web Apps
-</a>
-</H2>
+Then you can use Expo CLI to install the web dependencies in your project:
 
-Expo makes it easy to create PWAs by generating web app data from your app config. You can add offline support to fully enable PWA features in your website. Run your app on a variety of different devices and reach a much wider user-base with a feature-filled PWA.
+<Terminal cmd={[
+"$ npx expo install react-dom react-native-web @expo/webpack-config",
+]} cmdCopy="npx expo install react-dom react-native-web @expo/webpack-config" />
 
-- **Share Icons:** Automatically reuse the App Icon and Splash Screens from your mobile app!
-- **Native Features:** Use secure features like the Sharing API in your PWA.
-- **Dark Mode:** Make your site accessible with the appearance API.
+### Update the entry file
 
-[Read more about building a Progressive Web App with Expo Web](../guides/progressive-web-apps.md).
+Modify the entry file to use [`registerRootComponent`](/versions/latest/sdk/register-root-component) instead of `AppRegistry.registerComponent`:
 
-<!-- - Password Sharing: Expo can automatically link your native app to your website with tools like Apple App-site Association which means your users can sign-in on one platform and auto-fill on another. -->
+```diff
++ import {registerRootComponent} from 'expo';
 
-## Highly Customizable
+import App from './App';
+- import {AppRegistry} from 'react-native';
+- import {name as appName} from './app.json';
 
-You can use Expo for web with any of your favorite frameworks to create whatever experience your project calls for!
+- AppRegistry.registerComponent(appName, () => App);
++ registerRootComponent(App);
+```
 
-- [**Next.js:**](https://dev.to/evanbacon/next-js-expo-and-react-native-for-web-3kd9) Server Side Render your website and get incredible SEO.
-- [**Gatsby:**](https://dev.to/evanbacon/gatsby-react-native-for-web-expo-2kgc) Prerender your static-site.
-- [**Storybook:**](https://github.com/expo/examples/tree/master/with-storybook) Create and test beautiful design languages.
+> Learn more here: [`registerRootComponent`](/versions/latest/sdk/register-root-component#registerrootcomponentcomponent).
 
-## Up Next
+### Start the dev server
 
-- Check out how to [Add Web Support to Your Project](../guides/running-in-the-browser.md#adding-web-support-to-expo-projects).
-- Learn about creating [Responsive web apps with Expo](https://blog.expo.dev/media-queries-with-react-native-for-ios-android-and-web-e0b73ed5777b).
-- Find out how to [Publish your website Anywhere!](../distribution/publishing-websites.md).
-- Look at some [Examples and Recipes for Building Universal Websites!](https://github.com/expo/examples).
-- Learn about building a [Progressive Web App](../guides/progressive-web-apps.md).
-- Found an issue with web support? [Report it here](https://github.com/expo/expo/issues)
-- Have a question? [Ask on our forums web](https://forums.expo.dev/c/expo-web)
+Finally you can start the Webpack dev server with:
+
+<Terminal cmd={[
+"$ npx expo start --web",
+]} cmdCopy="npx expo start --web" />
+
+You can test secure web APIs like the camera and user location by adding the `--https` flag to `npx expo start`. This will host your app from a secure origin like `https://localhost:19006`.
+
+> You can try experimental [Metro web support](/guides/customizing-metro#web-support) instead of Webpack.
+
+## Alternative Rendering Patterns
+
+> **Example:** The website [beatgig.com](https://beatgig.com/) uses Expo web + Next.js to achieve SSR in the browser.
+
+By default, Expo renders your web app as a **single page application (SPA)**. This rendering pattern is the closest to how native rendering works. If you'd like to render your Expo web using **server-side rendering (SSR)** or **static site generation (SSG)**, then you should try using the Expo SDK with another tool like Gatsby, Next.js, Remix, and so on. One caveat is that these tools are less universal and require a bit more effort to share code across platforms.
+
+The ability to use Expo web with these other React frameworks is what makes it the most powerful way to build a universal app. The possibilities are endless and you won't hit a theoretic performance wall in the future.
+
+- [Next.js](/guides/using-nextjs)
+- [Storybook](https://github.com/expo/examples/tree/master/with-storybook)
+- [Preact](https://github.com/expo/examples/tree/master/with-preact)
+- [Gatsby](https://github.com/expo/examples/tree/master/with-gatsby)
+- [Electron](https://github.com/expo/examples/tree/master/with-electron)
+
+> Alternative framework implementations are maintained by the Expo community.
+
+## Next
+
+<BoxLink title="Publishing websites" description="Export your website and upload to any web host." href="/distribution/publishing-websites" />
+<BoxLink title="Progressive web app" description="Learn how to make your website run offline." href="/guides/progressive-web-apps" />
+<BoxLink title="Responsive design" description="Make your website work across different screens." href="https://blog.expo.dev/media-queries-with-react-native-for-ios-android-and-web-e0b73ed5777b" />
