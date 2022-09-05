@@ -26,6 +26,16 @@ function importFromProject(projectRoot: string, moduleId: string) {
   return require(resolveFromProject(projectRoot, moduleId));
 }
 
+/** Import `react-native-web/dist/cjs/exports/AppRegistry` from the project. */
+export function importReactNativeWebAppRegistryFromProject(projectRoot: string): any {
+  return importFromProject(projectRoot, 'react-native-web').AppRegistry;
+}
+/** Import `react-dom/server` from the project. */
+export function importReactDomServerFromProject(
+  projectRoot: string
+): typeof import('react-dom/server') {
+  return importFromProject(projectRoot, 'react-dom/server');
+}
 /** Import `metro` from the project. */
 export function importMetroFromProject(projectRoot: string): typeof import('metro') {
   return importFromProject(projectRoot, 'metro');

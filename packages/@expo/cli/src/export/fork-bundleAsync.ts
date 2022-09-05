@@ -29,6 +29,10 @@ export type BundleOptions = {
   dev?: boolean;
   minify?: boolean;
   sourceMapUrl?: string;
+
+  runModule?: boolean;
+  modulesOnly?: boolean;
+  shallow?: boolean;
 };
 export type BundleAssetWithFileHashes = Metro.AssetData & {
   fileHashes: string[]; // added by the hashAssets asset plugin
@@ -128,6 +132,9 @@ export async function bundleAsync(
       platform: bundle.platform,
       entryFile: bundle.entryPoint,
       dev: bundle.dev ?? false,
+      runModule: bundle.runModule ?? true,
+      modulesOnly: bundle.modulesOnly ?? false,
+      shallow: bundle.shallow ?? false,
       minify: bundle.minify ?? !bundle.dev,
       inlineSourceMap: false,
       sourceMapUrl: bundle.sourceMapUrl,
