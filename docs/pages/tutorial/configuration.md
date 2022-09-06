@@ -6,7 +6,7 @@ import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import Video from '~/components/plugins/Video';
 import { Collapsible } from '~/ui/components/Collapsible';
 
-Before considering the app fully launchable, you have to configure the status bar and add a splash screen and app icon. In this module, you will learn how to do all of that.
+Before considering the app fully launchable, you have to configure the status bar and add a splash screen and app icon. In this chapter, you will learn how to do all of that.
 
 ## Step 1: Configure the status bar
 
@@ -31,6 +31,8 @@ Currently, the `style` value is `auto`. It means the status bar automatically pi
 ```
 
 <ImageSpotlight alt="Break down of initial layout." src="/static/images/tutorial/statusbar-example.jpg" style={{ maxWidth: 720 }} containerStyle={{ marginBottom: 0 }} />
+
+> Read more about [configuring the status bar](https://docs.expo.dev/guides/configuring-statusbar/).
 
 ## Step 2: Add splash screen
 

@@ -8,7 +8,7 @@ import { Terminal } from '~/ui/components/Snippet';
 
 In the perfect world, you will want to write code to perform the task just once and have it run the same on every platform. However, that's not the case sometimes. For example, capturing screenshots on mobile and web is handled differently. Even on the web, where this is an explicit design goal, it's often necessary to consider differences between web browsers.
 
-Expo tools try to sort out these differences between iOS, Android, and web (and different web browsers) for you, but it isn't always possible. In such scenarios, you can handle the code by distinguishing between the mobile and web platforms. In this module, let's handle capturing the screenshot and downloading the captured image for the web.
+Expo tools try to sort out these differences between iOS, Android, and web (and different web browsers) for you, but it isn't always possible. In such scenarios, you can handle the code by distinguishing between the mobile and web platforms. In this chapter, let's handle capturing the screenshot and downloading the captured image for the web.
 
 ## Step 1: Install dom-to-image
 
@@ -96,4 +96,4 @@ On running the app in a web browser, you will get a similar output:
 
 ## Up next
 
-The app does everything we set out for it to do, so it's time to shift our focus towards the purely aesthetic. In the next step of this tutorial, you will [customize the app's status bar, splash screen and app icon](/tutorial/configuration.md).
+The app does everything we set out for it to do, so it's time to shift our focus towards the purely aesthetic. In the next chapter, you will [customize the app's status bar, splash screen and app icon](/tutorial/configuration.md).

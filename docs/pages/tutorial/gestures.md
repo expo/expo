@@ -10,7 +10,7 @@ Gestures are a great way to provide an intuitive user experience in an applicati
 
 [React Native Gesture Handler library](https://docs.swmansion.com/react-native-gesture-handler/docs/) provides a way for built-in native components that can handle gestures. It uses the platform's native touch handling system to recognize pan, tap, rotation, and other gestures. It also solves the issue of performance handling complex gestures since it runs on the UI thread.
 
-In this module, you are going to add two different gestures using React Native Gesture Handler library:
+In this chapter, you are going to add two different gestures using React Native Gesture Handler library:
 
 - Tap to scale the size of the sticker on double tap.
 - Pan to move the sticker around the screen so that the sticker is placed anywhere on the image
@@ -92,7 +92,7 @@ Then, define the component that you want to apply animations. To make the tap ge
 const AnimatedImage = Animated.createAnimatedComponent(Image);
 ```
 
-The `createAnimatedComponent` can wrap any component. It has a built-in case to look at the `style` prop of the component, determine which value is animated, and then apply those updates. It will be useful to apply animated styles later in this module.
+The `createAnimatedComponent` can wrap any component. It has a built-in case to look at the `style` prop of the component, determine which value is animated, and then apply those updates. It will be useful to apply animated styles later in this chapter.
 
 ## Step 4: Add a tap Gesture
 
@@ -329,4 +329,4 @@ On running the app, you will get a similar output on all platforms:
 
 You have successfully implemented pan and tap gesture recognizers to handle these gestures in the app.
 
-In the next module, let's learn [how to integrate a third-party library in an Expo app](/tutorial/third-party-libraries), use it to take a screenshot of the image and the sticker, and handle any platform differences between mobile and web.
+In the next chapter, let's learn [how to integrate a third-party library in an Expo app](/tutorial/third-party-libraries), use it to take a screenshot of the image and the sticker, and handle any platform differences between mobile and web.

@@ -6,11 +6,11 @@ import Highlight from '~/components/plugins/Highlight';
 import SnackInline from '~/components/plugins/SnackInline';
 import Video from '~/components/plugins/Video';
 
-Welcome to Expo. You're about to embark on a journey building universal apps. In this tutorial, you'll create a universal app that runs on Android, iOS, and the web; all with a single codebase. Let's get started!
+Welcome to Expo. You're about to embark on a journey of building universal apps. In this tutorial, you'll create a universal app that runs on Android, iOS, and the web; all with a single codebase. Let's get started!
 
 ## About this tutorial
 
-In this tutorial, you will build an app for Android, iOS, and the web that covers the following topics:
+The objective of this tutorial is to get you started with Expo and get familiar with the Expo SDK. and build an app for Android, iOS and the web. It covers the following topics:
 
 - Initializing an Expo App
 - Breaking down app layout and implementing it with flexbox
@@ -21,15 +21,17 @@ In this tutorial, you will build an app for Android, iOS, and the web that cover
 - Handle platform differences between Android, iOS, and web
 - Finally, go through the process of configuring a status bar, a splash screen, and an icon to complete the app
 
-Before you get started, take a look at what you'll build: an app named StickerSmash that runs on Android, iOS, and the web:
+Before you get started, take a look at what you'll build: an app named **StickerSmash** that runs on Android, iOS, and the web:
 
 <Video file="tutorial/final.mp4" />
 
-The objective of this tutorial is to get you started with Expo and to get familiar with the Expo SDK. You will use different Expo libraries such as `expo-image-picker`, `expo-media-library`, and `expo-status-bar`. Some of the functionalities these libraries will help you implement are picking an image from a device's media library, saving the image on the device, and so on. Expo's SDK provides universal libraries that make implementing features across unique platforms a snap. With that said, you can use any native code or library in your apps.
+You will get some hands-on experience by using different Expo libraries such as `expo-image-picker`, `expo-media-library`, and `expo-status-bar`. Some of the functionalities these libraries offer are picking an image from a device's media library, saving the image on the device, and so on. Expo's SDK provides universal libraries that make implementing features across unique platforms a snap. With that said, you can use any native code or library in your apps.
 
-Further in the tutorial, we will also use libraries like [React Native Gesture Handler](https://docs.swmansion.com/react-native-gesture-handler/) and [Reanimated](https://docs.swmansion.com/react-native-reanimated/) to add interactivity and to implement pan and tap gestures to add interactive features.
+Further in the tutorial, you will also use libraries like [React Native Gesture Handler](https://docs.swmansion.com/react-native-gesture-handler/) and [Reanimated](https://docs.swmansion.com/react-native-reanimated/) to add interactivity and to implement pan and tap gestures to add interactive features.
 
-This tutorial is divided into eight chapters. Each chapter covers a different topic that we thought will be essential for you to grasp the fundamentals of how different pieces come together when you are building a mobile app. This is a self-paced tutorial, so feel free to take your time and go through each chapter at your own pace or leave out any section and come back to it later.
+This tutorial is divided into eight chapters. Each chapter covers a different topic that we thought will be essential for you to grasp the fundamentals of how different pieces come together when you are building a mobile app.
+
+This is a self-paced tutorial. On average, it will take around two and a half hours to complete this tutorial. Feel free to take your time and go through each chapter at your own pace or leave out any section and come back to it later.
 
 Each chapter also contains the code for that specific part. Feel free to follow along either by creating your own app from scratch or using Expo Snack examples to copy and paste the code if you get lost in between.
 
@@ -37,8 +39,8 @@ Each chapter also contains the code for that specific part. Feel free to follow 
 
 We believe in "learning by doing" so this tutorial emphasizes doing over explaining. You can follow along the journey of building the app in the following ways:
 
-- Create a new Expo project and start building the app from scratch
 - Clone the starter project and start building the app from scratch
+- Create a new Expo project and start building the app from scratch
 
 Throughout the tutorial, any important code or code that has changed between examples will be <Highlight>highlighted in yellow</Highlight>. You can hover over the highlights (on desktop) or tap them (on mobile) to see more context on the change. For example, the code highlighted in the snippet below explains what it does:
 
